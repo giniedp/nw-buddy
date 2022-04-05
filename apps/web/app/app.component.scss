@@ -1,0 +1,29 @@
+:host {
+  flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+
+  display: grid;
+  grid-template-columns: auto;
+  grid-template-rows: min-content auto;
+  grid-template-areas:
+    "header"
+    "content";
+
+  .nav-bar {
+    grid-area: header;
+  }
+  .app-content {
+    grid-area: content;
+    display: flex;
+    flex-direction: column;
+
+    ::ng-deep > * {
+      flex: 1;
+    }
+    router-outlet {
+      flex: none;
+    }
+  }
+}

@@ -1,0 +1,8 @@
+@import '~ag-grid-community/src/styles/ag-grid.scss';
+@import '~ag-grid-community/src/styles/ag-theme-alpine-dark/sass/ag-theme-alpine-dark-mixin';
+
+.ag-grid {
+  @include ag-theme-alpine-dark((
+    borders: false,
+  ));
+}

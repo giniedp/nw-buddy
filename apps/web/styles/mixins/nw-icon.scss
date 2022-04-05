@@ -1,0 +1,185 @@
+@mixin bgRaritySquare() {
+  position: relative;
+  background-size: contain;
+  &::before {
+    background-size: contain;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    content: '';
+    z-index: 1;
+  }
+
+  &.bg-rarity-0 {
+    background-image: url('/assets/icons/itembgsquare0.png');
+    &::before {
+      background-image: url('/assets/icons/itemraritybgsquare0.png');
+      display: block;
+    }
+  }
+
+  &.bg-rarity-1 {
+    background-image: url('/assets/icons/itembgsquare1.png');
+    &::before {
+      background-image: url('/assets/icons/itemraritybgsquare1.png');
+      display: block;
+    }
+  }
+
+  &.bg-rarity-2 {
+    background-image: url('/assets/icons/itembgsquare2.png');
+    &::before {
+      background-image: url('/assets/icons/itemraritybgsquare2.png');
+      display: block;
+    }
+  }
+
+  &.bg-rarity-3 {
+    background-image: url('/assets/icons/itembgsquare3.png');
+    &::before {
+      background-image: url('/assets/icons/itemraritybgsquare3.png');
+      display: block;
+    }
+  }
+
+  &.bg-rarity-4 {
+    background-image: url('/assets/icons/itembgsquare4.png');
+    &::before {
+      background-image: url('/assets/icons/itemraritybgsquare4.png');
+      display: block;
+    }
+  }
+}
+
+@mixin bgRarityLarge() {
+  position: relative;
+  background-size: contain;
+  &::before {
+    background-size: contain;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    content: '';
+    z-index: 1;
+  }
+
+  &.bg-rarity-0 {
+    background-image: url('/assets/icons/itembglarge0.png');
+    &::before {
+      background-image: url('/assets/icons/itemraritybglarge0.png');
+      display: block;
+    }
+  }
+
+  &.bg-rarity-1 {
+    background-image: url('/assets/icons/itembglarge1.png');
+    &::before {
+      background-image: url('/assets/icons/itemraritybglarge1.png');
+      display: block;
+    }
+  }
+
+  &.bg-rarity-2 {
+    background-image: url('/assets/icons/itembglarge2.png');
+    &::before {
+      background-image: url('/assets/icons/itemraritybglarge2.png');
+      display: block;
+    }
+  }
+
+  &.bg-rarity-3 {
+    background-image: url('/assets/icons/itembglarge3.png');
+    &::before {
+      background-image: url('/assets/icons/itemraritybglarge3.png');
+      display: block;
+    }
+  }
+
+  &.bg-rarity-4 {
+    background-image: url('/assets/icons/itembglarge4.png');
+    &::before {
+      background-image: url('/assets/icons/itemraritybglarge4.png');
+      display: block;
+    }
+  }
+}
+
+
+@mixin bgRarityCircle() {
+  position: relative;
+  background-size: contain;
+  &::before {
+    background-size: contain;
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    content: '';
+    z-index: 1;
+  }
+
+  &.bg-rarity-0 {
+    background-image: url('/assets/icons/itembgcircle0.png');
+    &::before {
+      background-image: url('/assets/icons/itemraritybgcircle0.png');
+      display: block;
+    }
+  }
+
+  &.bg-rarity-1 {
+    background-image: url('/assets/icons/itembgcircle1.png');
+    &::before {
+      background-image: url('/assets/icons/itemraritybgcircle1.png');
+      display: block;
+    }
+  }
+
+  &.bg-rarity-2 {
+    background-image: url('/assets/icons/itembgcircle2.png');
+    &::before {
+      background-image: url('/assets/icons/itemraritybgcircle2.png');
+      display: block;
+    }
+  }
+
+  &.bg-rarity-3 {
+    background-image: url('/assets/icons/itembgcircle3.png');
+    &::before {
+      background-image: url('/assets/icons/itemraritybgcircle3.png');
+      display: block;
+    }
+  }
+
+  &.bg-rarity-4 {
+    background-image: url('/assets/icons/itembgcircle4.png');
+    &::before {
+      background-image: url('/assets/icons/itemraritybgcircle4.png');
+      display: block;
+    }
+  }
+}
+
+
+@mixin nwPictureIcon() {
+  @include bgRaritySquare();
+
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  img {
+    object-fit: contain;
+    width: 85%;
+    height: 85%;
+    z-index: 2;
+  }
+
+}

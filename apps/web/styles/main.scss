@@ -1,0 +1,72 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+@import "vendor/ag-grid.scss";
+@import "mixins/nw-icon.scss";
+
+@font-face {
+  font-family: "New World";
+  src: url("/assets/fonts/IMFellDWPica-Regular.ttf") format("ttf");
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "New World";
+  src: url("/assets/fonts/IMFellDWPica-Italic.ttf") format("ttf");
+  font-style: italic;
+}
+
+body {
+  //font-family: 'New World';
+  @apply bg-stone-900 text-slate-50;
+  width: 100vw;
+  height: 100vh;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  background-image: url('/assets/mainbg.png');
+  background-size: cover;
+}
+
+.fade {
+  opacity: 0;
+  transition: 0.2s linear opacity;
+}
+.show {
+  opacity: 1;
+}
+.error {
+  opacity: 1;
+  img {
+    display: none;
+  }
+}
+
+picture.nw-icon {
+  @include nwPictureIcon();
+}
+
+.bg-dark {
+  @apply bg-neutral-900
+}
+
+.bg-light {
+  @apply bg-neutral-50
+}
+
+.dark-panel {
+  @apply bg-neutral-900 border border-neutral-700 rounded-sm;
+}
+
+.text-dimmed {
+  @apply text-gray-500
+}
+
+.text-dark {
+  @apply text-neutral-900;
+}
+
+.text-light {
+  @apply text-neutral-200;
+}

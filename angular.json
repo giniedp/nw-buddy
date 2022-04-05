@@ -1,0 +1,195 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "cli": {
+    "defaultCollection": "@angular-eslint/schematics"
+  },
+  "version": 1,
+  "newProjectRoot": "apps",
+  "projects": {
+    "nw-buddy": {
+      "root": "apps/web",
+      "prefix": "nwb",
+      "sourceRoot": "apps/web",
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        },
+        "@schematics/angular:application": {
+          "strict": true
+        }
+      },
+      "architect": {
+        "build": {
+          "builder": "@angular-builders/custom-webpack:browser",
+          "options": {
+            "outputPath": "dist/web",
+            "index": "apps/web/index.html",
+            "main": "apps/web/main.ts",
+            "tsConfig": "apps/web/tsconfig.app.json",
+            "polyfills": "apps/web/polyfills.ts",
+            "assets": [
+              "apps/web/favicon.ico",
+              "apps/web/assets",
+              "apps/web/nw-data"
+            ],
+            "styles": [
+              "apps/web/styles/main.scss"
+            ],
+            "scripts": [],
+            "customWebpackConfig": {
+              "path": "./angular.webpack.js",
+              "replaceDuplicatePlugins": true
+            }
+          },
+          "configurations": {
+            "dev": {
+              "optimization": false,
+              "outputHashing": "none",
+              "sourceMap": true,
+              "namedChunks": false,
+              "aot": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/web/environments/environment.ts",
+                  "with": "apps/web/environments/environment.dev.ts"
+                }
+              ]
+            },
+            "web": {
+              "optimization": false,
+              "outputHashing": "none",
+              "sourceMap": true,
+              "namedChunks": false,
+              "aot": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/web/environments/environment.ts",
+                  "with": "apps/web/environments/environment.web.ts"
+                }
+              ]
+            },
+            "production": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "apps/web/environments/environment.ts",
+                  "with": "apps/web/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "builder": "@angular-builders/custom-webpack:dev-server",
+          "options": {
+            "browserTarget": "nw-buddy:build"
+          },
+          "configurations": {
+            "dev": {
+              "browserTarget": "nw-buddy:build:dev"
+            },
+            "web": {
+              "browserTarget": "nw-buddy:build:web"
+            },
+            "production": {
+              "browserTarget": "nw-buddy:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "builder": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "nw-buddy:build"
+          }
+        },
+        "test": {
+          "builder": "@angular-builders/custom-webpack:karma",
+          "options": {
+            "main": "apps/web/test.ts",
+            "polyfills": "apps/web/polyfills-test.ts",
+            "tsConfig": "apps/web/tsconfig.spec.json",
+            "karmaConfig": "apps/web/karma.conf.js",
+            "scripts": [],
+            "styles": [
+              "apps/web/styles/main.scss"
+            ],
+            "assets": [
+              "apps/web/assets",
+              "apps/web/nw-data"
+            ],
+            "customWebpackConfig": {
+              "path": "./angular.webpack.js",
+              "replaceDuplicatePlugins": true
+            }
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/web/**/*.ts",
+              "apps/web/**/*.html"
+            ]
+          }
+        },
+        "storybook": {
+          "builder": "@storybook/angular:start-storybook",
+          "options": {
+            "configDir": "apps/storybook",
+            "browserTarget": "nw-buddy:build",
+            "port": 5200,
+            "compodoc": false,
+            "styles": ["apps/web/styles/main.scss"]
+          }
+        },
+        "build-storybook": {
+          "builder": "@storybook/angular:build-storybook",
+          "options": {
+            "configDir": "apps/storybook",
+            "browserTarget": "nw-buddy:build",
+            "compodoc": false,
+            "styles": ["apps/web/styles/main.scss"]
+          }
+        }
+      }
+    },
+    "nw-buddy-e2e": {
+      "root": "e2e",
+      "projectType": "application",
+      "architect": {
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "e2e/**/*.ts"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "defaultProject": "nw-buddy",
+  "schematics": {
+    "@schematics/angular:component": {
+      "prefix": "nwb",
+      "style": "scss"
+    },
+    "@schematics/angular:directive": {
+      "prefix": "nwb"
+    }
+  }
+}
