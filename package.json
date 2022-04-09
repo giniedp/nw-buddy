@@ -28,7 +28,7 @@
     "e2e:show-trace": "playwright show-trace e2e/tracing/trace.zip",
     "version": "conventional-changelog -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md",
     "lint": "ng lint",
-    "nw-import": "ts-node ./tools/nw-import.ts ../nw-extract/out/live ./apps/web/nw-data"
+    "nw-import": "ts-node ./tools/nw-import.ts NW_DATA_PATH ./apps/web/nw-data"
   },
   "dependencies": {
     "@angular/common": "13.2.6",
@@ -73,6 +73,7 @@
     "cli-progress": "3.10.0",
     "commander": "9.0.0",
     "conventional-changelog-cli": "2.2.2",
+    "dotenv": "16.0.0",
     "electron": "16.0.0",
     "electron-builder": "22.13.1",
     "electron-reload": "1.5.0",
