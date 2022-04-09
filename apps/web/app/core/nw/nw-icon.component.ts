@@ -3,10 +3,10 @@ import { NwService } from './nw.service'
 
 @Component({
   selector: 'picture[nwIcon]',
-  template: `<img [src]="src" (error)="onError($event)" (load)="onLoad($event)" class="fade" [class.show]="isLoaded" >`,
+  template: `<img loading="lazy" [src]="src" (error)="onError($event)" (load)="onLoad($event)" class="fade" [class.show]="isLoaded" >`,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[class.nw-icon]': 'true'
+    '[class.nw-icon]': 'true',
   }
 })
 export class NwIconComponent {

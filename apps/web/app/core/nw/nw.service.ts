@@ -1,20 +1,19 @@
 import { Injectable } from '@angular/core'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { ItemDefinitionMaster } from '@nw-data/types'
 
 import { GridOptions } from 'ag-grid-community'
 import { TranslateService } from '../i18n'
 import { NwDbService } from './nw-db.service'
+import { NwItemMetaService } from './nw-item-meta.service'
 import { nwdbLinkUrl } from './nwdbinfo'
 
 @Injectable({ providedIn: 'root' })
 export class NwService {
-
   public constructor(
+    public readonly meta: NwItemMetaService,
     public readonly db: NwDbService,
-    private translations: TranslateService,
-  ) {
-
-  }
+    public readonly translations: TranslateService
+  ) {}
 
   public gridOptions<T>(options: GridOptions): GridOptions {
     return {
@@ -23,29 +22,29 @@ export class NwService {
         sortable: true,
         filter: true,
         floatingFilter: true,
-        ...(options.defaultColDef || {})
+        ...(options.defaultColDef || {}),
       },
-      ...options
+      ...options,
     }
   }
 
-  public cellRendererIcon = <T>(key: keyof T, options?: { size?: number, rarity?: (item: T) => number }) => {
+  public cellRendererIcon = <T>(key: keyof T, options?: { size?: number; rarity?: (item: T) => number }) => {
     return (params: { data: T }) => {
       return this.renderIcon(params.data[key] as any, {
         size: options.size,
-        rarity: options?.rarity?.(params.data)
+        rarity: options?.rarity?.(params.data),
       })
     }
   }
 
   public nwdbLinkUrl = nwdbLinkUrl
 
-  public renderIcon(path: string, options?: { size?: number, rarity?: number }) {
+  public renderIcon(path: string, options?: { size?: number; rarity?: number }) {
     const iconPath = this.iconPath(path as string)
     const rarity = options?.rarity
     return createIconHtml(iconPath, {
       size: options?.size,
-      class: rarity ? `bg-rarity-${rarity}` : null
+      class: rarity ? `bg-rarity-${rarity}` : null,
     })
   }
 
@@ -88,7 +87,7 @@ export class NwService {
   }
 }
 
-function buildTranslateKey(key: string, options?: { prefix?: string, suffix?: string }) {
+function buildTranslateKey(key: string, options?: { prefix?: string; suffix?: string }) {
   if (key == null) {
     return key
   }
@@ -107,7 +106,7 @@ function buildTranslateKey(key: string, options?: { prefix?: string, suffix?: st
   return key
 }
 
-function createIconHtml(path: string, options: { size: number, class: string }) {
+function createIconHtml(path: string, options: { size: number; class: string }) {
   const size = options?.size ?? 36
   const cclass = ['nw-icon', 'fade', options?.class].filter((it) => !!it).join(' ')
   return `

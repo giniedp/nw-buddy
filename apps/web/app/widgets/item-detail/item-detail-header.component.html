@@ -1,0 +1,10 @@
+<picture class="nw-icon bg-rarity-{{itemRarity}}">
+  <img [attr.src]="iconPath">
+</picture>
+<aside class="flex-1 flex flex-col justify-between ml-2 font-bold">
+  <h3>{{ itemName }}</h3>
+  <div class="flex flex-row justify-between">
+    <span class="mr-2">{{ itemType }}</span>
+    <span>{{ itemRarityName }}</span>
+  </div>
+</aside>

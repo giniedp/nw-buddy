@@ -17,7 +17,6 @@ Chart.register(...registerables)
 
 @Component({
   selector: 'nwb-chart',
-  templateUrl: './chart.component.html',
   styleUrls: ['./chart.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<canvas #canvas></canvas>`,

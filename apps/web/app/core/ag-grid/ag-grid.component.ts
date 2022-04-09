@@ -14,7 +14,7 @@ import { ReplaySubject, Subject, takeUntil } from 'rxjs'
 
 @Component({
   selector: 'nwb-ag-grid',
-  templateUrl: './ag-grid.component.html',
+  template: '',
   styleUrls: ['./ag-grid.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {

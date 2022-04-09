@@ -12,6 +12,7 @@ const routes: Routes = [
   { path: 'armorsets', loadChildren: () => import('./pages/armorsets').then(m => m.SetsModule) },
   { path: 'xp', loadChildren: () => import('./pages/xp/xp.module').then(m => m.XpModule) },
   { path: 'trophies', loadChildren: () => import('./pages/trophies/trophies.module').then(m => m.TrophiesModule) },
+  { path: 'dungeons', loadChildren: () => import('./pages/dungeons/dungeons.module').then(m => m.DungeonsModule) },
   { path: '**', loadChildren: () => import('./pages/not-found').then((m) => m.NotFoundModule) },
 ]
 

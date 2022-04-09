@@ -1,15 +1,4 @@
-<div class="header p-2 flex flex-row">
-  <picture class="nw-icon bg-rarity-{{itemRarity}}" *ngIf="item">
-    <img [attr.src]="iconPath">
-  </picture>
-  <aside class="flex-1 flex flex-col justify-between ml-2">
-    <span>{{ itemName }}</span>
-    <div class="flex flex-row justify-between">
-      <span>{{ itemCategory }}</span>
-      <span>{{ itemRarityName }}</span>
-    </div>
-  </aside>
-</div>
+<nwb-item-detail-header class="header" [item]="item"></nwb-item-detail-header>
 <div class="body p-2 ">
 
   <p *ngIf="itemDescription" class="text-yellow-600 italic mb-2" [nwText]="itemDescription" [itemId]="itemId"></p>

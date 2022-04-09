@@ -8,7 +8,11 @@ export async function mkdir(dirPath: string, options?: fs.MakeDirectoryOptions) 
   }
   return new Promise<void>((resolve, reject) => {
     fs.mkdir(dirPath, options, (err) => {
-      err ? reject(err) : resolve()
+      if (err) {
+        reject(err)
+      } else {
+        resolve()
+      }
     })
   })
 }

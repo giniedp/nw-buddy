@@ -23,6 +23,7 @@ yarn-error.log
 .settings/
 *.sublime-workspace
 .angular
+.env
 
 # IDE - VSCode
 .vscode/*

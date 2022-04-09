@@ -1,0 +1,26 @@
+:host {
+  display: grid;
+  grid-template-columns: 76px auto;
+  padding: 0.5rem;
+
+  picture {
+    width: 76px;
+    height: 76px;
+  }
+
+  &.v-sm {
+    grid-template-columns: 48px auto;
+    picture {
+      width: 48px;
+      height: 48px;
+    }
+  }
+
+  &.v-lg {
+    grid-template-columns: 96px auto;
+    picture {
+      width: 96px;
+      height: 96px;
+    }
+  }
+}

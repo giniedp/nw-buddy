@@ -1,14 +1,14 @@
 import { InputData, jsonInputForTargetLanguage, quicktype } from 'quicktype-core'
 
 export async function tsFromJson(typeName: string, samples: string[]) {
-  const jsonInput = jsonInputForTargetLanguage('typescript');
+  const jsonInput = jsonInputForTargetLanguage('typescript')
   await jsonInput.addSource({
     name: typeName,
     samples: samples,
-  });
+  })
 
-  const inputData = new InputData();
-  inputData.addInput(jsonInput);
+  const inputData = new InputData()
+  inputData.addInput(jsonInput)
 
   return await quicktype({
     inputData,
@@ -21,7 +21,7 @@ export async function tsFromJson(typeName: string, samples: string[]) {
     inferUuids: false,
     alphabetizeProperties: true,
     rendererOptions: {
-      'just-types': true as any
-    }
-  });
+      'just-types': true as any,
+    },
+  })
 }

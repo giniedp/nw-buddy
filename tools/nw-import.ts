@@ -3,14 +3,23 @@ import * as fs from 'fs'
 import { program } from 'commander'
 import { glob } from './utils/glob'
 import { tsFromJson } from './utils/ts-from-json'
-
+import * as dotenv from 'dotenv'
 import { copyFile, generateDataFunctions, mkdir, processArrayWithProgress, renameExtname, spawn } from './utils'
+dotenv.config()
 
 program
   .argument('<input>', 'input dir')
   .argument('<output>', 'output dir')
-  .action(async (input, output) => {
-    input = path.join(process.cwd(), input)
+  .action(async (input: string, output: string) => {
+    if (process.env[input]) {
+      input = process.env[input]
+    } else {
+      input = path.join(process.cwd(), input)
+    }
+    const stat = await fs.promises.stat(input).catch((e) => {
+      console.error(e)
+      return null as fs.Stats
+    })
     output = path.join(process.cwd(), output)
     await importLocale(input, output)
     await importDatatables(input, output)
@@ -22,7 +31,9 @@ program
 async function importLocale(input: string, output: string) {
   console.log('import locales')
   const pattern = path.join(input, '**', 'localization', '**', '*.loc.json')
+  console.log(pattern)
   const files = await glob(pattern)
+  console.log(files)
   await processArrayWithProgress(files, async (file) => {
     if (path.basename(file).startsWith('javelindata_')) {
       const outFile = path.join(output, path.relative(input, file))
@@ -96,7 +107,7 @@ async function generateTypes(input: string, output: string) {
       const buf = await fs.promises.readFile(it)
       const json = JSON.parse(buf.toString())
       const jsonSamples = Array.isArray(json) ? json : [json]
-      samples.push(...jsonSamples.map((it) => JSON.stringify(it)))
+      samples.push(...jsonSamples.map((sample) => JSON.stringify(sample)))
     }))
 
 

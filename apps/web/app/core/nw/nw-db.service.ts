@@ -13,14 +13,13 @@ function toMap<T, K extends keyof T>(list: T[], id: K): Map<T[K], T> {
 
 function annotate<T>(key: string, value: string) {
   return map((items: T[]) => {
-    items.forEach((it) => it[key] = value)
+    items.forEach((it) => (it[key] = value))
     return items
   })
 }
 
 @Injectable({ providedIn: 'root' })
 export class NwDbService {
-
   public items = defer(() => {
     return combineLatest([
       this.data.datatablesItemdefinitionsMasterCommon().pipe(annotate('$source', 'common')),
@@ -35,13 +34,13 @@ export class NwDbService {
       this.data.datatablesItemdefinitionsMasterStore().pipe(annotate('$source', 'store')),
       this.data.datatablesItemdefinitionsMasterAi().pipe(annotate('$source', 'ai')),
     ])
-      .pipe(map((it) => it.flat(1)))
-      .pipe(shareReplay(1))
   })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
 
-  public itemsMap = defer(() => {
-    return this.items.pipe(map((items) => toMap(items, 'ItemID'))).pipe(shareReplay(1))
-  })
+  public itemsMap = defer(() => this.items)
+    .pipe(map((items) => toMap(items, 'ItemID')))
+    .pipe(shareReplay(1))
 
   public abilities = defer(() => {
     return combineLatest([
@@ -59,14 +58,13 @@ export class NwDbService {
       this.data.datatablesWeaponabilitiesAbilitySpear().pipe(annotate('$source', 'spear')),
       this.data.datatablesWeaponabilitiesAbilitySword().pipe(annotate('$source', 'sword')),
     ])
-      .pipe(map((it) => it.flat(1)))
-      .pipe(shareReplay(1))
   })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
 
-
-  public abilitiesMap = defer(() => {
-    return this.abilities.pipe(map((items) => toMap(items, 'AbilityID'))).pipe(shareReplay(1))
-  })
+  public abilitiesMap = defer(() => this.abilities)
+    .pipe(map((items) => toMap(items, 'AbilityID')))
+    .pipe(shareReplay(1))
 
   public statusEffects = defer(() => {
     return combineLatest([
@@ -89,13 +87,13 @@ export class NwDbService {
       this.data.datatablesStatuseffectsVoidgauntlet().pipe(annotate('$source', 'voidgauntlet')),
       this.data.datatablesStatuseffectsWarhammer().pipe(annotate('$source', 'warhammer')),
     ])
-      .pipe(map((it) => it.flat(1)))
-      .pipe(shareReplay(1))
   })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
 
-  public statusEffectsMap = defer(() => {
-    return this.statusEffects.pipe(map((items) => toMap(items, 'StatusID'))).pipe(shareReplay(1))
-  })
+  public statusEffectsMap = defer(() => this.statusEffects)
+    .pipe(map((items) => toMap(items, 'StatusID')))
+    .pipe(shareReplay(1))
 
   public damageTable = defer(() => {
     return combineLatest([
@@ -116,119 +114,97 @@ export class NwDbService {
       this.data.datatablesDamagetableTendrilCorrupted(),
       this.data.datatablesDamagetableUndead(),
     ])
-      .pipe(map((it) => it.flat(1)))
-      .pipe(shareReplay(1))
   })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
 
-  public damageTableMap = defer(() => {
-    return this.damageTable.pipe(map((items) => toMap(items, 'DamageID'))).pipe(shareReplay(1))
-  })
+  public damageTableMap = defer(() => this.damageTable)
+    .pipe(map((items) => toMap(items, 'DamageID')))
+    .pipe(shareReplay(1))
 
   public perks = defer(() => {
-    return combineLatest([
-      this.data.datatablesPerks(),
-    ])
-      .pipe(map((it) => it.flat(1)))
-      .pipe(shareReplay(1))
+    return combineLatest([this.data.datatablesPerks()])
   })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
 
-
-  public perksMap = defer(() => {
-    return this.perks.pipe(map((items) => toMap(items, 'PerkID'))).pipe(shareReplay(1))
-  })
+  public perksMap = defer(() => this.perks)
+    .pipe(map((items) => toMap(items, 'PerkID')))
+    .pipe(shareReplay(1))
 
   public perkBuckets = defer(() => {
-    return combineLatest([
-      this.data.datatablesPerkbuckets(),
-    ])
-      .pipe(map((it) => it.flat(1)))
-      .pipe(shareReplay(1))
+    return combineLatest([this.data.datatablesPerkbuckets()])
   })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
 
-
-  public perkBucketsMap = defer(() => {
-    return this.perkBuckets.pipe(map((items) => toMap(items, 'PerkBucketID'))).pipe(shareReplay(1))
-  })
-
+  public perkBucketsMap = defer(() => this.perkBuckets)
+    .pipe(map((items) => toMap(items, 'PerkBucketID')))
+    .pipe(shareReplay(1))
 
   public housingItems = defer(() => {
-    return combineLatest([
-      this.data.datatablesHousingitems(),
-    ])
-      .pipe(map((it) => it.flat(1)))
-      .pipe(shareReplay(1))
+    return combineLatest([this.data.datatablesHousingitems()])
   })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
 
   public recipes = defer(() => {
-    return combineLatest([
-      this.data.datatablesCrafting(),
-    ])
-      .pipe(map((it) => it.flat(1)))
-      .pipe(shareReplay(1))
+    return combineLatest([this.data.datatablesCrafting()])
   })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
 
-  public recipesMap = defer(() => {
-    return this.recipes.pipe(map((items) => toMap(items, 'RecipeID'))).pipe(shareReplay(1))
-  })
+  public recipesMap = defer(() => this.recipes)
+    .pipe(map((items) => toMap(items, 'RecipeID')))
+    .pipe(shareReplay(1))
 
-  public housingItemsMap = defer(() => {
-    return this.housingItems.pipe(map((items) => toMap(items, 'HouseItemID'))).pipe(shareReplay(1))
-  })
-
+  public housingItemsMap = defer(() => this.housingItems)
+    .pipe(map((items) => toMap(items, 'HouseItemID')))
+    .pipe(shareReplay(1))
 
   public affixdefinitions = defer(() => {
-    return combineLatest([
-      this.data.datatablesAffixdefinitions(),
-    ])
-      .pipe(map((it) => it.flat(1)))
-      .pipe(shareReplay(1))
+    return combineLatest([this.data.datatablesAffixdefinitions()])
   })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
 
-
-  public affixdefinitionsMap = defer(() => {
-    return this.affixdefinitions.pipe(map((items) => toMap(items, 'AffixID'))).pipe(shareReplay(1))
-  })
+  public affixdefinitionsMap = defer(() => this.affixdefinitions)
+    .pipe(map((items) => toMap(items, 'AffixID')))
+    .pipe(shareReplay(1))
 
   public affixStats = defer(() => {
-    return combineLatest([
-      this.data.datatablesAffixstats(),
-    ])
-      .pipe(map((it) => it.flat(1)))
-      .pipe(shareReplay(1))
+    return combineLatest([this.data.datatablesAffixstats()])
   })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
 
-
-  public affixStatsMap = defer(() => {
-    return this.affixStats.pipe(map((items) => toMap(items, 'StatusID'))).pipe(shareReplay(1))
-  })
+  public affixStatsMap = defer(() => this.affixStats)
+    .pipe(map((items) => toMap(items, 'StatusID')))
+    .pipe(shareReplay(1))
 
   public arenas = defer(() => {
-    return combineLatest([
-      this.data.datatablesArenasArenadefinitions(),
-    ])
-      .pipe(map((it) => it.flat(1)))
-      .pipe(shareReplay(1))
+    return combineLatest([this.data.datatablesArenasArenadefinitions()])
   })
-
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
 
   public arenasMap = defer(() => {
-    return this.arenas.pipe(map((items) => toMap(items, 'TerritoryID'))).pipe(shareReplay(1))
+    return this.arenas
   })
+    .pipe(map((items) => toMap(items, 'TerritoryID')))
+    .pipe(shareReplay(1))
 
   public itemsConsumables = defer(() => {
-    return combineLatest([
-      this.data.datatablesItemdefinitionsConsumables(),
-    ])
-      .pipe(map((it) => it.flat(1)))
-      .pipe(shareReplay(1))
+    return combineLatest([this.data.datatablesItemdefinitionsConsumables()])
   })
-
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
 
   public itemsConsumablesMap = defer(() => {
-    return this.itemsConsumables.pipe(map((items) => toMap(items, 'ConsumableID'))).pipe(shareReplay(1))
+    return this.itemsConsumables
   })
+    .pipe(map((items) => toMap(items, 'ConsumableID')))
+    .pipe(shareReplay(1))
 
-  public constructor(public readonly data: NwDataService) {
-
-  }
+  public constructor(public readonly data: NwDataService) {}
 }

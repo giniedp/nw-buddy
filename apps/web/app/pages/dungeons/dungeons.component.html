@@ -1,0 +1,6 @@
+<div *ngFor="let item of items" class="mb-4">
+  <h2 class="text-lg font-bold mb-1">{{item.DisplayName}}</h2>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  gap-1">
+    <nwb-item-detail-header class="dark-panel" *ngFor="let id of dropIds(item)" [itemId]="id"></nwb-item-detail-header>
+  </div>
+</div>
