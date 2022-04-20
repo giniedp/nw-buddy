@@ -46,7 +46,7 @@ export class NwDataService extends NwDataloader implements TranslateSource {
     return path
       .toLowerCase()
       .replace(/\\/g, '/')
-      .replace(/^\/?lyshineui\/images/, '/nw-data')
+      .replace(/^\/?lyshineui\/images/, './nw-data')
       .replace(/\.(png|dds)$/, '.webp')
   }
 

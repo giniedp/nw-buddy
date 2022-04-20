@@ -18,6 +18,7 @@ function createWindow(): BrowserWindow {
     y: 0,
     width: size.width,
     height: size.height,
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
       allowRunningInsecureContent: (serve) ? true : false,
@@ -29,20 +30,13 @@ function createWindow(): BrowserWindow {
   if (serve) {
     win.webContents.openDevTools();
     require('electron-reload')(__dirname, {
-      electron: require(path.join(__dirname, '/../node_modules/electron'))
+      electron: require(path.join(__dirname, '/../../node_modules/electron'))
     });
     win.loadURL('http://localhost:4200');
   } else {
-    // Path when running electron executable
-    let pathIndex = './index.html';
-
-    if (fs.existsSync(path.join(__dirname, '../dist/index.html'))) {
-       // Path when running electron in local folder
-      pathIndex = '../dist/index.html';
-    }
-
+    win.webContents.openDevTools();
     win.loadURL(url.format({
-      pathname: path.join(__dirname, pathIndex),
+      pathname: path.join(__dirname, '../web/index.html'),
       protocol: 'file:',
       slashes: true
     }));

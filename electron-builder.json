@@ -4,20 +4,15 @@
     "output": "release/"
   },
   "files": [
-    "**/*",
+    "dist/**/*",
     "!**/*.ts",
     "!*.map",
     "!package.json",
-    "!package-lock.json"
+    "!package-lock.json",
+    "!yarn.json"
   ],
   "extraResources": [
-    {
-      "from": "dist",
-      "to": "app",
-      "filter": [
-        "**/*"
-      ]
-    }
+
   ],
   "win": {
     "icon": "dist/web/assets/icons",
