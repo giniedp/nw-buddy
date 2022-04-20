@@ -1,16 +1,18 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
-import { ItemDetailComponent } from './item-detail.component'
+import { ItemComponent } from './item.component'
 import { ItemsComponent } from './items.component'
 
 const routes: Routes = [
   {
     path: '',
     component: ItemsComponent,
-  },
-  {
-    path: ':id',
-    component: ItemDetailComponent,
+    children: [
+      {
+        path: ':id',
+        component: ItemComponent,
+      }
+    ]
   },
 ]
 

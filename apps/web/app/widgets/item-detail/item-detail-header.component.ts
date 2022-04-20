@@ -52,15 +52,13 @@ export class ItemDetailHeaderComponent implements OnInit, OnChanges, OnDestroy {
     combineLatest([this.item$, this.locale.change])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([item]) => {
+        this.itemId = item?.ItemID
         this.item = item
-        this.iconPath = this.nw.iconPath(item.IconPath)
-        this.itemName = this.nw.translate(item.Name)
-        this.itemType = item.ItemTypeDisplayName?.replace('@ui_itemtypedescription_', '')
-          .split('_')
-          .map((it) => it[0].toLocaleUpperCase() + it.substring(1).toLocaleLowerCase())
-          .join(' ')
-        this.itemRarity = this.nw.itemRarity(item)
-        this.itemRarityName = this.nw.itemRarityName(item)
+        this.iconPath = this.nw.iconPath(item?.IconPath)
+        this.itemName = this.nw.translate(item?.Name)
+        this.itemType = this.nw.translate(item?.ItemTypeDisplayName)
+        this.itemRarity = item && this.nw.itemRarity(item)
+        this.itemRarityName = item && this.nw.itemRarityName(item)
         this.cdRef.markForCheck()
       })
   }

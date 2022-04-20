@@ -158,6 +158,20 @@ export class NwDbService {
     .pipe(map((items) => toMap(items, 'RecipeID')))
     .pipe(shareReplay(1))
 
+  public recipeCategories = defer(() => {
+    return combineLatest([this.data.datatablesCraftingcategories()])
+  })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
+
+  public recipeCategoriesMap = defer(() => this.recipeCategories)
+    .pipe(map((items) => toMap(items, 'CategoryID')))
+    .pipe(shareReplay(1))
+
+  public recipesMapByItemId = defer(() => this.recipes)
+    .pipe(map((items) => toMap(items, 'ItemID')))
+    .pipe(shareReplay(1))
+
   public housingItemsMap = defer(() => this.housingItems)
     .pipe(map((items) => toMap(items, 'HouseItemID')))
     .pipe(shareReplay(1))

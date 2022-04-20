@@ -1,2 +1,2 @@
-export * from './sets-routing.module'
-export * from './sets.module'
+export * from './armorsets-routing.module'
+export * from './armorsets.module'

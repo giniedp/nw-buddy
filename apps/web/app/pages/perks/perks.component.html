@@ -1,0 +1,18 @@
+
+<div class="btn-group col-span-2 flex-none">
+  <button class="btn" [class.btn-active]="!category" (click)="selectCategory(null)">
+    ALL
+  </button>
+  <button *ngFor="let it of categories" class="btn" [class.btn-active]="category === it" (click)="selectCategory(it)">
+    {{ it }}
+  </button>
+</div>
+<div class="main-frame rounded-md overflow-clip" [class.col-span-2]="!hasSelection">
+  <nwb-perks-table class="main-content" [selection]="selection" (selectionChange)="selected($event)"></nwb-perks-table>
+</div>
+<div class="detail-frame" *ngIf="hasSelection">
+  <div class="detail-content">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+

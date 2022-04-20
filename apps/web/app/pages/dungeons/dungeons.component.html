@@ -1,6 +1,18 @@
-<div *ngFor="let item of items" class="mb-4">
-  <h2 class="text-lg font-bold mb-1">{{item.DisplayName}}</h2>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  gap-1">
-    <nwb-item-detail-header class="dark-panel" *ngFor="let id of dropIds(item)" [itemId]="id"></nwb-item-detail-header>
+<div *ngFor="let item of items" class="mt-4 mb-4 bg-base-100 rounded-md overflow-clip">
+  <h2 class="text-lg font-bold px-1 bg-base-300 flex flex-row items-center">
+    <picture [nwIcon]="item.IconPath" class="w-10 h-10"></picture>
+    {{dungeonName(item)}}
+  </h2>
+  <div class="flex flex-col sm:flex-row items-stretch">
+    <picture class="inline-block sm:w-96 flex-none">
+      <img [nwImage]="item.BackgroundImagePath" class="block h-full object-cover">
+    </picture>
+    <aside class="flex-1">
+      <p class="p-2">{{dungeonDescription(item)}}</p>
+      <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3  gap-1">
+        <nwb-item-detail-header [nwdbLink]="true" class="dark-panel" *ngFor="let id of dropIds(item)" [itemId]="id"></nwb-item-detail-header>
+      </div>
+    </aside>
   </div>
+
 </div>

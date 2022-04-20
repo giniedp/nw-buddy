@@ -1,0 +1,11 @@
+<ng-container *ngIf="isVisible">
+  <div *ngFor="let item of items" class="flex flex-row items-start my-2">
+    <a [nwInfoLink]="item.ItemID" [nwInfoResource]="'item'" target="_blank">
+      <picture [nwIcon]="item.IconPath" [nwRarityBg]="itemRarity(item)"></picture>
+    </a>
+    <div class="flex flex-col content-between pl-2">
+      <div class="whitespace-nowrap text-ellipsis">{{ itemName(item, armorset) }}</div>
+      <nwb-item-tracker class="inline-block" [itemId]="item.ItemID" [mode]="'gs'"></nwb-item-tracker>
+    </div>
+  </div>
+</ng-container>

@@ -3,10 +3,11 @@
   flex-direction: column;
   flex: 1;
   width: 100%;
-  max-width: 1400px;
+  max-width: 2000px;
   margin: 0 auto;
+  padding: 0 1rem;
 
-  .nav-bar {
+  .navbar {
     position: sticky;
     top: 0;
   }

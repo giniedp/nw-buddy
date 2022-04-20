@@ -20,22 +20,22 @@
     }
   ],
   "win": {
-    "icon": "dist/assets/icons",
+    "icon": "dist/web/assets/icons",
     "target": [
       "portable"
     ]
   },
   "portable": {
-    "splashImage": "dist/assets/icons/electron.bmp"
+    "splashImage": "dist/web/assets/icons/electron.bmp"
   },
   "mac": {
-    "icon": "dist/assets/icons",
+    "icon": "dist/web/assets/icons",
     "target": [
       "dmg"
     ]
   },
   "linux": {
-    "icon": "dist/assets/icons",
+    "icon": "dist/web/assets/icons",
     "target": [
       "AppImage"
     ]

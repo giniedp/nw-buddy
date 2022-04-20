@@ -47,7 +47,7 @@ export class NwDataService extends NwDataloader implements TranslateSource {
       .toLowerCase()
       .replace(/\\/g, '/')
       .replace(/^\/?lyshineui\/images/, '/nw-data')
-      .replace(/\.png$/, '.webp')
+      .replace(/\.(png|dds)$/, '.webp')
   }
 
   public getLocaleKey(key: string) {

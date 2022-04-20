@@ -1,0 +1,30 @@
+:host {
+  display: block;
+  position: relative;
+
+  nwb-crafting-step {
+    margin-left: 14px;
+    padding-left: 14px;
+    border-left-width: 1px;
+
+    &::before {
+      content: '';
+      display: inline-block;
+      height: 18px;
+      width: 14px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      border-bottom-width: 1px;
+    }
+
+    &:last-child {
+      border-left-width: 0px;
+    }
+
+    &:last-child::before {
+      border-left-width: 1px;
+    }
+  }
+
+}

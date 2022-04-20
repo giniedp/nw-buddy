@@ -1,0 +1,10 @@
+<ng-container *ngIf="recipe">
+  <div class="form-control mb-2">
+    <div class="input-group">
+      <span class="font-bold">Craft amount</span>
+      <input type="number" min="0" [(ngModel)]="quantity" class="input input-bordered input-xs">
+    </div>
+  </div>
+  <nwb-crafting-step [ingredient]="itemId" [type]="'Item'" [quantity]="quantity" [expand]="true" #rootStep></nwb-crafting-step>
+  <nwb-crafting-summary [root]="rootStep" class="mt-2"></nwb-crafting-summary>
+</ng-container>

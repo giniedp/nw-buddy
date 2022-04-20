@@ -34,6 +34,14 @@ export class DungeonsComponent implements OnInit, OnDestroy {
     this.destroy$.complete()
   }
 
+  public dungeonName(item: Gamemodes) {
+    return this.nw.translate(item.DisplayName)
+  }
+
+  public dungeonDescription(item: Gamemodes) {
+    return this.nw.translate(item.Description)
+  }
+
   public dropIds(item: Gamemodes) {
     return item.PossibleItemDropIds?.split(',')
   }

@@ -1,4 +1,68 @@
-@mixin bgRaritySquare() {
+$nw-rarity-square-bg: (
+  "0": url('/assets/icons/itembgsquare0.png'),
+  "1": url('/assets/icons/itembgsquare1.png'),
+  "2": url('/assets/icons/itembgsquare2.png'),
+  "3": url('/assets/icons/itembgsquare3.png'),
+  "4": url('/assets/icons/itembgsquare4.png'),
+);
+$nw-rarity-square-fg: (
+  "0": url('/assets/icons/itemraritybgsquare0.png'),
+  "1": url('/assets/icons/itemraritybgsquare1.png'),
+  "2": url('/assets/icons/itemraritybgsquare2.png'),
+  "3": url('/assets/icons/itemraritybgsquare3.png'),
+  "4": url('/assets/icons/itemraritybgsquare4.png'),
+);
+$nw-rarity-large-bg: (
+  "0": url('/assets/icons/itembglarge0.png'),
+  "1": url('/assets/icons/itembglarge1.png'),
+  "2": url('/assets/icons/itembglarge2.png'),
+  "3": url('/assets/icons/itembglarge3.png'),
+  "4": url('/assets/icons/itembglarge4.png'),
+);
+$nw-rarity-large-fg: (
+  "0": url('/assets/icons/itemraritybglarge0.png'),
+  "1": url('/assets/icons/itemraritybglarge1.png'),
+  "2": url('/assets/icons/itemraritybglarge2.png'),
+  "3": url('/assets/icons/itemraritybglarge3.png'),
+  "4": url('/assets/icons/itemraritybglarge4.png'),
+);
+$nw-rarity-circle-bg: (
+  "0": url('/assets/icons/itembgcircle0.png'),
+  "1": url('/assets/icons/itembgcircle1.png'),
+  "2": url('/assets/icons/itembgcircle2.png'),
+  "3": url('/assets/icons/itembgcircle3.png'),
+  "4": url('/assets/icons/itembgcircle4.png'),
+);
+$nw-rarity-circle-fg: (
+  "0": url('/assets/icons/itemraritybgcircle0.png'),
+  "1": url('/assets/icons/itemraritybgcircle1.png'),
+  "2": url('/assets/icons/itemraritybgcircle2.png'),
+  "3": url('/assets/icons/itemraritybgcircle3.png'),
+  "4": url('/assets/icons/itemraritybgcircle4.png'),
+);
+$nw-rarity-header-bg: (
+  "0": url('/assets/icons/tooltip_header_bg_0.png'),
+  "1": url('/assets/icons/tooltip_header_bg_1.png'),
+  "2": url('/assets/icons/tooltip_header_bg_2.png'),
+  "3": url('/assets/icons/tooltip_header_bg_3.png'),
+  "4": url('/assets/icons/tooltip_header_bg_4.png'),
+);
+$nw-rarity-header-fg: (
+  "0": url('/assets/icons/tooltip_itemframe_rarity_0.png'),
+  "1": url('/assets/icons/tooltip_itemframe_rarity_1.png'),
+  "2": url('/assets/icons/tooltip_itemframe_rarity_2.png'),
+  "3": url('/assets/icons/tooltip_itemframe_rarity_3.png'),
+  "4": url('/assets/icons/tooltip_itemframe_rarity_4.png'),
+);
+$nw-rarity-color: (
+  "0": rgb(200, 200, 200),
+  "1": rgb(7, 192, 47),
+  "2": rgb(0, 203, 233),
+  "3": rgb(255, 22, 247),
+  "4": rgb(247, 162, 45),
+);
+
+@mixin bgRarity($bg, $fg) {
   position: relative;
   background-size: contain;
   &::before {
@@ -14,157 +78,57 @@
   }
 
   &.bg-rarity-0 {
-    background-image: url('/assets/icons/itembgsquare0.png');
+    background-image: map-get($bg, "0");
     &::before {
-      background-image: url('/assets/icons/itemraritybgsquare0.png');
+      background-image: map-get($fg, "0");
       display: block;
     }
   }
 
   &.bg-rarity-1 {
-    background-image: url('/assets/icons/itembgsquare1.png');
+    background-image: map-get($bg, "1");
     &::before {
-      background-image: url('/assets/icons/itemraritybgsquare1.png');
+      background-image: map-get($fg, "1");
       display: block;
     }
   }
 
   &.bg-rarity-2 {
-    background-image: url('/assets/icons/itembgsquare2.png');
+    background-image: map-get($bg, "2");
     &::before {
-      background-image: url('/assets/icons/itemraritybgsquare2.png');
+      background-image: map-get($fg, "2");
       display: block;
     }
   }
 
   &.bg-rarity-3 {
-    background-image: url('/assets/icons/itembgsquare3.png');
+    background-image: map-get($bg, "3");
     &::before {
-      background-image: url('/assets/icons/itemraritybgsquare3.png');
+      background-image: map-get($fg, "3");
       display: block;
     }
   }
 
   &.bg-rarity-4 {
-    background-image: url('/assets/icons/itembgsquare4.png');
+    background-image: map-get($bg, "4");
     &::before {
-      background-image: url('/assets/icons/itemraritybgsquare4.png');
+      background-image: map-get($fg, "4");
       display: block;
     }
   }
 }
 
+@mixin bgRaritySquare() {
+  @include bgRarity($nw-rarity-square-bg, $nw-rarity-square-fg);
+}
+
 @mixin bgRarityLarge() {
-  position: relative;
-  background-size: contain;
-  &::before {
-    background-size: contain;
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    content: '';
-    z-index: 1;
-  }
-
-  &.bg-rarity-0 {
-    background-image: url('/assets/icons/itembglarge0.png');
-    &::before {
-      background-image: url('/assets/icons/itemraritybglarge0.png');
-      display: block;
-    }
-  }
-
-  &.bg-rarity-1 {
-    background-image: url('/assets/icons/itembglarge1.png');
-    &::before {
-      background-image: url('/assets/icons/itemraritybglarge1.png');
-      display: block;
-    }
-  }
-
-  &.bg-rarity-2 {
-    background-image: url('/assets/icons/itembglarge2.png');
-    &::before {
-      background-image: url('/assets/icons/itemraritybglarge2.png');
-      display: block;
-    }
-  }
-
-  &.bg-rarity-3 {
-    background-image: url('/assets/icons/itembglarge3.png');
-    &::before {
-      background-image: url('/assets/icons/itemraritybglarge3.png');
-      display: block;
-    }
-  }
-
-  &.bg-rarity-4 {
-    background-image: url('/assets/icons/itembglarge4.png');
-    &::before {
-      background-image: url('/assets/icons/itemraritybglarge4.png');
-      display: block;
-    }
-  }
+  @include bgRarity($nw-rarity-large-bg, $nw-rarity-large-fg);
 }
 
 
 @mixin bgRarityCircle() {
-  position: relative;
-  background-size: contain;
-  &::before {
-    background-size: contain;
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    content: '';
-    z-index: 1;
-  }
-
-  &.bg-rarity-0 {
-    background-image: url('/assets/icons/itembgcircle0.png');
-    &::before {
-      background-image: url('/assets/icons/itemraritybgcircle0.png');
-      display: block;
-    }
-  }
-
-  &.bg-rarity-1 {
-    background-image: url('/assets/icons/itembgcircle1.png');
-    &::before {
-      background-image: url('/assets/icons/itemraritybgcircle1.png');
-      display: block;
-    }
-  }
-
-  &.bg-rarity-2 {
-    background-image: url('/assets/icons/itembgcircle2.png');
-    &::before {
-      background-image: url('/assets/icons/itemraritybgcircle2.png');
-      display: block;
-    }
-  }
-
-  &.bg-rarity-3 {
-    background-image: url('/assets/icons/itembgcircle3.png');
-    &::before {
-      background-image: url('/assets/icons/itemraritybgcircle3.png');
-      display: block;
-    }
-  }
-
-  &.bg-rarity-4 {
-    background-image: url('/assets/icons/itembgcircle4.png');
-    &::before {
-      background-image: url('/assets/icons/itemraritybgcircle4.png');
-      display: block;
-    }
-  }
+  @include bgRarity($nw-rarity-circle-bg, $nw-rarity-circle-fg);
 }
 
 

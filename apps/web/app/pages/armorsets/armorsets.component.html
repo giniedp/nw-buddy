@@ -1,0 +1,36 @@
+<div class="btn-group mt-4 mb-4">
+  <label class="input-group w-auto mr-2">
+    <span>Search</span>
+    <input type="text" placeholder="Armor name" class="input input-bordered" (input)="updateFilter($event)">
+  </label>
+
+  <button class="btn" [class.btn-active]="!categorySelection" (click)="selectCategory(null)">
+    ALL
+  </button>
+
+  <button *ngFor="let it of categories" class="btn" [class.btn-active]="it.value === categorySelection" (click)="selectCategory(it.value)">
+    {{ it.label }}
+  </button>
+</div>
+
+<div *ngFor="let group of armorsetGroups; trackBy: trackGroup" class="item-set-grid mt-4 mb-4">
+  <h3 class="text-base font-bold mb-2 flex flex-row items-center">
+    <ng-container *ngFor="let perk of group.perks">
+      <a [nwInfoLink]="perk.PerkID" [nwInfoResource]="'perk'" target="_blank" class="mr-1">
+        <picture [nwIcon]="perk.IconPath" class="w-8 h-8"></picture>
+      </a>
+      <span class="mr-2">{{ translate(perk.DisplayName)  }}</span>
+    </ng-container>
+  </h3>
+
+  <div class="grid grid-cols-3 gap-3">
+    <div *ngFor="let set of group.sets; trackBy: trackSet" class="bg-base-100 rounded-md overflow-clip min-w snap-start relative">
+      <h3 class="text-lg font-bold px-1 bg-base-300 flex flex-row items-center">
+        {{ set.name }}
+        <span class="font-light ml-1">{{ set.weight }}</span>
+        <span class="font-light ml-1">T{{ set.tier }}</span>
+      </h3>
+      <nwb-armorset [armorset]="set"></nwb-armorset>
+    </div>
+  </div>
+</div>

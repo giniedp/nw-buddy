@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
-import { AgGridModule } from '~/core/ag-grid'
+import { AgGridModule } from '~/ui/ag-grid'
 import { ItemsTableComponent } from './items-table.component'
 
 @NgModule({

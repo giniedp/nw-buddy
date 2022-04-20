@@ -16,10 +16,6 @@ program
     } else {
       input = path.join(process.cwd(), input)
     }
-    const stat = await fs.promises.stat(input).catch((e) => {
-      console.error(e)
-      return null as fs.Stats
-    })
     output = path.join(process.cwd(), output)
     await importLocale(input, output)
     await importDatatables(input, output)
@@ -31,11 +27,15 @@ program
 async function importLocale(input: string, output: string) {
   console.log('import locales')
   const pattern = path.join(input, '**', 'localization', '**', '*.loc.json')
-  console.log(pattern)
   const files = await glob(pattern)
-  console.log(files)
   await processArrayWithProgress(files, async (file) => {
-    if (path.basename(file).startsWith('javelindata_')) {
+    const basename = path.basename(file)
+    const pass =
+      basename.startsWith('javelindata_') ||
+      basename.startsWith('objectives') ||
+      basename.startsWith('weaponabilities') ||
+      basename.startsWith('globalcommontext')
+    if (pass) {
       const outFile = path.join(output, path.relative(input, file))
       const outDir = path.dirname(outFile)
       await mkdir(outDir, { recursive: true })
@@ -67,7 +67,10 @@ async function importIcons(input: string, output: string) {
     path.join(input, 'icons', 'perks', '**', '*.png'),
     path.join(input, 'icons', 'tradeskills', '**', '*.png'),
     path.join(input, 'icons', 'misc', '**', '*.png'),
-    path.join(input, 'crafting', '*.png')
+    path.join(input, 'status', '**', '*.png'),
+    path.join(input, 'map', 'icon', '**', '*.png'),
+    path.join(input, 'dungeons', '**', '*.png'),
+    path.join(input, 'crafting', '*.png'),
   ])
 
   await processArrayWithProgress(files, async (file) => {
@@ -81,7 +84,7 @@ async function importIcons(input: string, output: string) {
       shell: true,
       stdio: 'pipe',
       env: process.env,
-      cwd: process.cwd()
+      cwd: process.cwd(),
     }).catch(console.error)
   })
 }
@@ -103,13 +106,14 @@ async function generateTypes(input: string, output: string) {
 
   await processArrayWithProgress(Array.from(map.keys()), async (type) => {
     const samples: string[] = []
-    await Promise.all(map.get(type).map(async (it) => {
-      const buf = await fs.promises.readFile(it)
-      const json = JSON.parse(buf.toString())
-      const jsonSamples = Array.isArray(json) ? json : [json]
-      samples.push(...jsonSamples.map((sample) => JSON.stringify(sample)))
-    }))
-
+    await Promise.all(
+      map.get(type).map(async (it) => {
+        const buf = await fs.promises.readFile(it)
+        const json = JSON.parse(buf.toString())
+        const jsonSamples = Array.isArray(json) ? json : [json]
+        samples.push(...jsonSamples.map((sample) => JSON.stringify(sample)))
+      })
+    )
 
     const result = await tsFromJson(type, samples)
     const tsCode = result.lines.join('\n').trim()
@@ -120,66 +124,68 @@ async function generateTypes(input: string, output: string) {
     }
   })
 
-
   const localeFiles = await glob(path.join(output, 'localization', '**', '*.json'))
   const localeSources = Array.from(new Set(localeFiles.map((it) => path.basename(it))).values())
 
   await fs.promises.writeFile(path.join(output, 'types.ts'), Buffer.from(typesCode.join('\n'), 'utf-8'))
-  await fs.promises.writeFile(path.join(output, 'datatables.ts'), Buffer.from(generateDataFunctions(map, output, localeSources), 'utf-8'))
+  await fs.promises.writeFile(
+    path.join(output, 'datatables.ts'),
+    Buffer.from(generateDataFunctions(map, output, localeSources), 'utf-8')
+  )
 }
 
 const PATH_TO_TYPE_RULES = [
   {
     test: /_conversationstate[._]/,
-    name: 'ConversationState'
+    name: 'ConversationState',
   },
   {
     test: /_conversationtopics[._]/,
-    name: 'ConversationTopic'
+    name: 'ConversationTopic',
   },
   {
     test: /_damagetable[._]/,
-    name: 'Damagetable'
+    name: 'Damagetable',
   },
   {
     test: /_gameevents[._]/,
-    name: 'GameEvent'
+    name: 'GameEvent',
   },
   {
     test: /_itemdefinitions_master[._]/,
-    name: 'ItemDefinitionMaster'
+    name: 'ItemDefinitionMaster',
   },
   {
     test: /_npcs[._]/,
-    name: 'Npc'
+    name: 'Npc',
   },
   {
     test: /_objectives[._]/,
-    name: 'Objective'
+    name: 'Objective',
   },
   {
     test: /_spelltable[._]/,
-    name: 'Spelltable'
+    name: 'Spelltable',
   },
   {
     test: /_statuseffects[._]/,
-    name: 'Statuseffect'
+    name: 'Statuseffect',
   },
   {
     test: /_controbution[._]/,
-    name: 'Contribution'
+    name: 'Contribution',
   },
   {
     test: /_poidefinitions[._]/,
-    name: 'PoiDefinition'
+    name: 'PoiDefinition',
   },
   {
     test: /_ability[._]/,
-    name: 'Ability'
+    name: 'Ability',
   },
   {
     test: /_contribution[._]/,
-    name: 'Contribution'
+    name: 'Contribution',
   },
 ]
 

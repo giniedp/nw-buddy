@@ -28,7 +28,7 @@
     "e2e:show-trace": "playwright show-trace e2e/tracing/trace.zip",
     "version": "conventional-changelog -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md",
     "lint": "ng lint",
-    "nw-import": "ts-node ./tools/nw-import.ts NW_DATA_PATH ./apps/web/nw-data"
+    "nw-import": "ts-node ./tools/nw-import.ts ../nw-extract/out/live ./apps/web/nw-data"
   },
   "dependencies": {
     "@angular/common": "13.2.6",
@@ -41,6 +41,7 @@
     "@angular/router": "13.2.6",
     "ag-grid-community": "27.0.1",
     "chart.js": "3.7.1",
+    "daisyui": "2.13.6",
     "loadsh": "0.0.4",
     "rxjs": "7.4.0",
     "tslib": "^2.1.0",

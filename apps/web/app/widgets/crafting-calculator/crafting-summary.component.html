@@ -1,0 +1,19 @@
+<table class="table table-compact w-full">
+  <thead>
+    <tr>
+      <th class="w-6"></th>
+      <th>Name</th>
+      <th>Qty</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let row of table; trackBy: trackByIndex">
+      <th>
+        <picture [nwIcon]="row.item.IconPath" class="w-6 h-6"></picture>
+      </th>
+      <td [nwText]="row.item.Name"></td>
+      <td>{{ row.quantity }}</td>
+    </tr>
+
+  </tbody>
+</table>
