@@ -1,4 +1,4 @@
-<table class="table table-compact w-full">
+<table class="table table-compact w-full" *ngIf="table?.length">
   <thead>
     <tr>
       <th class="w-6"></th>
@@ -14,6 +14,20 @@
       <td [nwText]="row.item.Name"></td>
       <td>{{ row.quantity }}</td>
     </tr>
+  </tbody>
+</table>
 
+<table class="table table-compact w-full mt-2" *ngIf="xpTable?.length">
+  <thead>
+    <tr>
+      <th>Skill</th>
+      <th>XP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let row of xpTable; trackBy: trackByIndex">
+      <td [nwText]="row.skill"></td>
+      <td>{{ row.xp }}</td>
+    </tr>
   </tbody>
 </table>

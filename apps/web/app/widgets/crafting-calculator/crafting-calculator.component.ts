@@ -28,6 +28,8 @@ export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges
   @Input()
   public readonly: boolean = false
 
+  public optimize: boolean = false
+
   public item: ItemDefinitionMaster
   public recipe: Crafting
 
@@ -73,5 +75,10 @@ export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges
 
   public reportChange() {
     this.stepChange$.next(null)
+  }
+
+  public toggleOptimize() {
+    this.optimize = !this.optimize
+    this.cdRef.markForCheck()
   }
 }

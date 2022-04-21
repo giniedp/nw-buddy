@@ -220,5 +220,18 @@ export class NwDbService {
     .pipe(map((items) => toMap(items, 'ConsumableID')))
     .pipe(shareReplay(1))
 
+
+  public gameEvents = defer(() => {
+    return combineLatest([this.data.datatablesGameevents()])
+  })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
+
+  public gameEventsMap = defer(() => {
+    return this.gameEvents
+  })
+    .pipe(map((items) => toMap(items, 'EventID')))
+    .pipe(shareReplay(1))
+
   public constructor(public readonly data: NwDataService) {}
 }

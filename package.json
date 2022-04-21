@@ -22,7 +22,7 @@
     "electron:tsc": "tsc -p apps/electron/tsconfig.json",
     "electron:serve": "wait-on tcp:4200 && npm run electron:tsc && electron . --serve",
     "electron:local": "npm run build:prod && electron .",
-    "electron:build": "npm run build:prod && export CSC_IDENTITY_AUTO_DISCOVERY=false && electron-builder build --publish=never",
+    "electron:build": "npm run build:prod && electron-builder build --publish=never",
     "test": "ng test --watch=false",
     "test:watch": "ng test",
     "e2e": "npm run build:prod && playwright test -c e2e/playwright.config.ts e2e/",

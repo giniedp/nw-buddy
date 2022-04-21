@@ -24,7 +24,6 @@ export type IngredientType = 'Item' | 'Currency' | 'Category_Only'
 export interface IngredientStep {
   ingredient: string
   quantity?: number
-  bonus?: number
   type: IngredientType
 }
 
@@ -35,14 +34,12 @@ export interface IngredientStep {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, AfterContentChecked {
+
   @Input()
   public ingredient: string
 
   @Input()
   public quantity: number = 1
-
-  @Input()
-  public bonus: number = 0
 
   @Input()
   public type: IngredientType = 'Item'
@@ -53,11 +50,30 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
   @Input()
   public collapsible = true
 
+  @Input()
+  public optimize = false
+
   @Output()
   public updated = new EventEmitter()
 
+  public bonus: number = 0
+
+  public get bonusPercent() {
+    return Math.round(this.bonus * 100)
+  }
+
   public get bonusQuantity() {
-    return Math.round(this.bonus * this.quantity)
+    if (!this.expand || !this.bonus) {
+      return 0
+    }
+    return Math.round(this.bonus * this.actualQuantity)
+  }
+
+  public get actualQuantity() {
+    if (!this.expand || !this.optimize || !this.bonus) {
+      return this.quantity
+    }
+    return Math.ceil(this.quantity / (1 + this.bonus))
   }
 
   @ViewChildren(forwardRef(() => CraftingStepComponent), {
@@ -198,13 +214,12 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
       return
     }
 
-    const bonuses = this.children.toArray().map((child) => {
-      return this.nw.calculateBonusItemChance(this.item, child.item, this.recipe)
+    const bonus = this.nw.calculateBonusItemChance({
+      item: this.item,
+      ingredients: this.children.toArray().map((child) => child.item).filter((it) => !!it),
+      recipe: this.recipe
     })
-    console.log(bonuses)
-    const bonus = Math.max(...this.children.toArray().map((child) => {
-      return this.nw.calculateBonusItemChance(this.item, child.item, this.recipe)
-    }))
+    console.log(bonus)
     if (this.bonus !== bonus) {
       this.bonus = bonus
       this.markForCheck()
@@ -217,7 +232,7 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
 
   private markForCheck() {
     this.updated.emit()
-    this.cdRef.markForCheck()
+    this.cdRef.detectChanges()
     this.parent.reportChange()
   }
 }

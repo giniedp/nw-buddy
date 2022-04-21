@@ -4,10 +4,14 @@
   </button>
   <ng-container *ngIf="item">
     <picture [nwIcon]="item.IconPath" class="w-7 h-7 nw-icon flex-none bg-rarity-{{ itemRarity(item) }}"></picture>
-    <span class="ml-2">{{ quantity }}</span>
+    <span class="ml-2" [class.italic]="quantity !== actualQuantity">
+      {{ actualQuantity }}
+    </span>
+    <span  class="ml-2 text-xs" *ngIf="bonusPercent">
+      (+{{ bonusPercent}}%<ng-container *ngIf="bonusQuantity"> ≈ {{ bonusQuantity}}</ng-container>)
+    </span>
     <span class="ml-2"> &times; </span>
     <span class="ml-2" [nwText]="item.Name"></span>
-    <span class="ml-2 italic" *ngIf="bonusQuantity">(+{{ bonusQuantity }})</span>
   </ng-container>
   <ng-container *ngIf="category">
     <span class="flex-1"></span>
@@ -30,9 +34,9 @@
 <div *ngIf="expand && steps?.length">
   <nwb-crafting-step
     *ngFor="let step of steps; trackBy: trackStepBy"
-    [bonus]="step.bonus"
     [ingredient]="step.ingredient"
-    [quantity]="step.quantity * quantity"
+    [quantity]="step.quantity * actualQuantity"
+    [optimize]="optimize"
     [type]="step.type"
     (updated)="makrBonusUpdate()"
   ></nwb-crafting-step>

@@ -9,6 +9,18 @@ import { NwExpressionService } from './nw-expression'
 import { NwItemMetaService } from './nw-item-meta.service'
 import { nwdbLinkUrl } from './nwdbinfo'
 
+const CATEGORIES_GRANTING_BONUS = [
+  'Concoctions',
+  'ArcanaRefining',
+  'Consumables',
+  'Dyes',
+  'Foods',
+  'BasicCooking',
+  'Consumables',
+  'Cutstone',
+  'RefinedResources'
+]
+
 @Injectable({ providedIn: 'root' })
 export class NwService {
   public constructor(
@@ -137,30 +149,52 @@ export class NwService {
         )
       }
       return it.RecipeID === item.CraftingRecipe || it.ItemID === item.ItemID
-      // if (item.CraftingRecipe) {
-
-      // }
-      // return false
     })
   }
 
-  public calculateBonusItemChance(item: ItemDefinitionMaster, ingredient: ItemDefinitionMaster, recipe: Crafting) {
-    if (!item || !ingredient || !recipe) {
+  public calculateBonusItemChance({
+    item,
+    ingredients,
+    recipe,
+    skill,
+  }: {
+    item: ItemDefinitionMaster
+    ingredients: ItemDefinitionMaster[]
+    recipe: Crafting
+    skill?: number
+  }) {
+    if (!item || recipe?.BonusItemChance == null || !ingredients?.length) {
       return 0
     }
-    if (recipe.BonusItemChance == null) {
+    if (!CATEGORIES_GRANTING_BONUS.includes(recipe.CraftingCategory)) {
       return 0
     }
-    const base = 0.2 // skill / 10
-    const chance = recipe.BonusItemChance
-    const diff = ingredient.Tier - item.Tier
-    console.log(diff)
-    if (diff >= 0) {
-      return base + chance + recipe.BonusItemChanceIncrease.split(',').map(Number)[diff]
-    } else if (diff < 0) {
-      return base + chance +  recipe.BonusItemChanceDecrease.split(',').map(Number)[Math.abs(diff) - 1]
+    const base = (skill ?? 200) / 1000 + recipe.BonusItemChance
+    const chances = ingredients
+      // .filter((it) => {
+      //   return (
+      //     it.TradingGroup === 'RefiningComponents' ||
+      //     it.TradingGroup === 'AlchemyMedicinal' ||
+      //     it.TradingGroup === 'AlchemyProtective'
+      //   )
+      // })
+      .map((it) => {
+        const diff = it.Tier - item.Tier
+        if (!diff) {
+          return 0
+        }
+        const lookup = (diff < 0 ? recipe.BonusItemChanceDecrease : recipe.BonusItemChanceIncrease) || ''
+        const values = lookup.split(',').map(Number)
+        while (values.length && !values[0]) {
+          values.shift()
+        }
+        return values[Math.abs(diff) - 1] || 0
+      })
+    let result = base
+    for (const value of chances) {
+      result += value
     }
-    return base + chance
+    return Math.max(0, result)
   }
 }
 

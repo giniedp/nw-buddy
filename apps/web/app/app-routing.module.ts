@@ -16,6 +16,7 @@ const routes: Routes = [
   { path: 'dungeons', loadChildren: () => import('./pages/dungeons/dungeons.module').then(m => m.DungeonsModule) },
   { path: 'abilities', loadChildren: () => import('./pages/abilities/abilities.module').then(m => m.AbilitiesModule) },
   { path: 'housing', loadChildren: () => import('./pages/housing/housing.module').then(m => m.HousingModule) },
+  { path: 'crafting', loadChildren: () => import('./pages/crafting/crafting.module').then(m => m.CraftingModule) },
 
   { path: '**', loadChildren: () => import('./pages/not-found').then((m) => m.NotFoundModule) },
 ]

@@ -4,15 +4,14 @@ import {
   ChangeDetectionStrategy,
   OnChanges,
   OnDestroy,
-  SimpleChanges,
   ChangeDetectorRef,
   Input,
-  AfterViewChecked,
   NgZone,
   TrackByFunction,
 } from '@angular/core'
-import { ItemDefinitionMaster } from '@nw-data/types'
-import { asyncScheduler, debounce, debounceTime, Subject, subscribeOn, takeUntil } from 'rxjs'
+import { GameEvent, ItemDefinitionMaster } from '@nw-data/types'
+import { debounceTime, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { NwService } from '~/core/nw'
 import { CraftingCalculatorComponent } from './crafting-calculator.component'
 import { CraftingStepComponent } from './crafting-step.component'
 
@@ -25,28 +24,38 @@ import { CraftingStepComponent } from './crafting-step.component'
 export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
   public root: CraftingStepComponent
-  public table: Array<{ item: ItemDefinitionMaster, quantity: number }> = []
+  public table: Array<{ item: ItemDefinitionMaster; quantity: number }> = []
+  public xpTable: Array<{ skill: String; xp: number }> = []
 
   public trackByIndex: TrackByFunction<any> = (i) => i
 
   private destroy$ = new Subject()
+  private events: Map<string, GameEvent>
 
-  public constructor(private parent: CraftingCalculatorComponent, private cdRef: ChangeDetectorRef, private zone: NgZone) {
+  public constructor(
+    private parent: CraftingCalculatorComponent,
+    private cdRef: ChangeDetectorRef,
+    private zone: NgZone,
+    private nw: NwService
+  ) {
     //
   }
 
   public ngOnInit(): void {
-    this.parent.stepChange
-      .pipe(debounceTime(1))
+    this.nw.db.gameEventsMap
+      .pipe(
+        tap((events) => {
+          this.events = events
+        })
+      )
+      .pipe(switchMap(() => this.parent.stepChange.pipe(startWith(null))))
+      .pipe(debounceTime(100))
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.updateTable()
-      })
+      .subscribe(() => this.update())
   }
 
-  public ngOnChanges(changes: SimpleChanges): void {
-
-    // sconsole.log(this.root?.children)
+  public ngOnChanges(): void {
+    //
   }
 
   public ngOnDestroy(): void {
@@ -54,9 +63,10 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
     this.destroy$.complete()
   }
 
-  private updateTable() {
-    this.table = this.leaves()
-    this.cdRef.markForCheck()
+  private update() {
+    this.table = this.calculateItems()
+    this.xpTable = this.calculateXp()
+    this.cdRef.detectChanges()
   }
 
   private walk(node: CraftingStepComponent, fn: (node: CraftingStepComponent) => void) {
@@ -67,24 +77,50 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
     node.children?.forEach((it) => this.walk(it, fn))
   }
 
-  private leaves() {
-    const table = new Map<string, {
-      item: ItemDefinitionMaster,
-      quantity: number
-    }>()
+  private calculateItems() {
+    const table = new Map<
+      string,
+      {
+        item: ItemDefinitionMaster
+        quantity: number
+      }
+    >()
     this.walk(this.root, (node) => {
-      if (!node.item || node.expand && node.steps?.length) {
+      if (!node.item || (node.expand && node.steps?.length)) {
         return
       }
       if (!table.has(node.item.ItemID)) {
         table.set(node.item.ItemID, {
           item: node.item,
-          quantity: 0
+          quantity: 0,
         })
       }
       const data = table.get(node.item.ItemID)
-      data.quantity += node.quantity
+      data.quantity += node.actualQuantity
     })
     return Array.from(table.entries()).map(([_, data]) => data)
+  }
+
+  private calculateXp() {
+    const table = new Map<string, number>()
+    this.walk(this.root, (node) => {
+      if (!node.recipe) {
+        return
+      }
+      const recipe = node.recipe
+      const event = this.events.get(recipe.GameEventID)
+      if (!event) {
+        return
+      }
+      const key = event.CategoricalProgressionId
+      const reward = event.CategoricalProgressionReward || 0
+      if (!table.has(key)) {
+        table.set(key, 0)
+      }
+      table.set(key, table.get(key) + reward * node.actualQuantity)
+    })
+    return Array.from(table.entries()).map(([skill, xp]) => {
+      return { skill, xp }
+    })
   }
 }
