@@ -15,7 +15,7 @@ import {
   EventEmitter,
   AfterContentChecked,
 } from '@angular/core'
-import { Crafting, Craftingcategories, ItemDefinitionMaster } from '@nw-data/types'
+import { Crafting, Craftingcategories, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { combineLatest, ReplaySubject, Subject, take, takeUntil } from 'rxjs'
 import { NwService } from '~/core/nw'
 import { CraftingCalculatorComponent } from './crafting-calculator.component'
@@ -82,7 +82,7 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
   public children: QueryList<CraftingStepComponent>
 
   public recipe: Crafting
-  public item: ItemDefinitionMaster
+  public item: ItemDefinitionMaster | Housingitems
   public steps: Array<IngredientStep>
   public category: Craftingcategories
   public categoryOptions: ItemDefinitionMaster[]
@@ -167,12 +167,13 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
     this.showOptions = false
     this.markForCheck()
     combineLatest({
-      items: this.nw.db.items,
+      items: this.nw.db.itemsMap,
+      housings: this.nw.db.housingItemsMap,
       recipes: this.nw.db.recipes,
     })
       .pipe(take(1))
-      .subscribe(({ items, recipes }) => {
-        const item = items.find((it) => it.ItemID === itemId)
+      .subscribe(({ items, housings, recipes }) => {
+        const item = items.get(itemId) || housings.get(itemId)
         const recipe = item && this.nw.findRecipeForItem(item, recipes)
         const steps = Object.keys(recipe || {})
           .filter((it) => it.match(/^Ingredient\d+$/))

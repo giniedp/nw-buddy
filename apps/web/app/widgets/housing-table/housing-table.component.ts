@@ -62,7 +62,8 @@ export class HousingTableComponent implements OnInit, OnChanges, OnDestroy {
       {
         sortable: false,
         filter: false,
-        width: 74,
+        width: 54,
+        pinned: true,
         cellRenderer: ({ data }) => {
           const rarity = this.nw.itemRarity(data)
           const iconPath = this.nw.iconPath(field(data, 'IconPath'))
@@ -84,7 +85,7 @@ export class HousingTableComponent implements OnInit, OnChanges, OnDestroy {
         hide: true,
       },
       {
-        width: 120,
+        width: 100,
         headerName: 'Rarity',
         field: fieldName('ItemRarity'),
         filter: CategoryFilter,
@@ -131,7 +132,7 @@ export class HousingTableComponent implements OnInit, OnChanges, OnDestroy {
               return true
             },
             editable: true,
-            width: 100,
+            width: 90,
           },
           {
             headerName: 'Price',
@@ -146,7 +147,7 @@ export class HousingTableComponent implements OnInit, OnChanges, OnDestroy {
               return true
             },
             editable: true,
-            width: 100,
+            width: 90,
           },
         ]
       },
@@ -154,15 +155,18 @@ export class HousingTableComponent implements OnInit, OnChanges, OnDestroy {
         headerName: 'Placement',
         field: fieldName('HousingTag1 Placed'),
         filter: CategoryFilter,
+        width: 150,
       },
       {
         field: fieldName('UIHousingCategory'),
         filter: CategoryFilter,
+        width: 150,
       },
       {
         headerName: 'Obtain',
         field: fieldName('HowToOptain (Primarily)'),
         filter: CategoryFilter,
+        width: 150,
       },
       {
         field: fieldName('HousingTags')

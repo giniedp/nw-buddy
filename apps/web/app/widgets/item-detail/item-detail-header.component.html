@@ -1,11 +1,11 @@
 <div class="backdrop rarity-{{itemRarity}}"></div>
-<a [nwInfoLink]="nwdbLink ? itemId : null" [nwInfoResource]="'item'" target="_blank">
+<a [nwInfoLink]="nwdbLink ? entityId : null" [nwInfoResource]="'item'" target="_blank">
   <picture [nwIcon]="iconPath" class="nw-icon bg-rarity-{{itemRarity}}"></picture>
 </a>
 <aside class="flex-1 flex flex-col justify-between ml-2">
-  <h3 class="font-bold text-rarity-{{itemRarity}}">{{ itemName }}</h3>
+  <h3 class="font-bold text-rarity-{{itemRarity}}" [nwText]="itemName"></h3>
   <div class="flex flex-row justify-between">
-    <span class="mr-2">{{ itemType }}</span>
-    <span class="font-bold text-rarity-{{itemRarity}}">{{ itemRarityName }}</span>
+    <span class="mr-2" [nwText]="itemType"></span>
+    <span class="font-bold text-rarity-{{itemRarity}}" [nwText]="itemRarityName"></span>
   </div>
 </aside>

@@ -1,17 +1,18 @@
-<div class="bg-base-300 rounded-md" *ngIf="item">
-  <nwb-item-detail-header class="header" [item]="item"></nwb-item-detail-header>
-  <div class="body p-2 ">
-
-    <p *ngIf="itemDescription" class="text-yellow-600 italic mb-2" [nwText]="itemDescription" [itemId]="itemId"></p>
-
-    <ul class="perk-list">
+<div class="bg-base-300 rounded-md">
+  <nwb-item-detail-header class="header" [entity]="item || housing"></nwb-item-detail-header>
+  <div class="body p-2">
+    <ng-container *ngIf="itemDescription">
+      <p class="text-yellow-600 italic mb-2" [nwText]="itemDescription" [itemId]="itemId"></p>
+      <hr />
+    </ng-container>
+    <ul class="perk-list" *ngIf="perks?.length">
       <li *ngFor="let perk of perks" class="text-sky-500 mb-2">
         <a>
           <picture>
-            <img [attr.src]="perk.icon" class="inline-block">
+            <img [attr.src]="perk.icon" class="inline-block" />
           </picture>
           <div class="pl-2">
-            <b class="mr-2">{{ perk.name}}:</b>
+            <b class="mr-2">{{ perk.name }}:</b>
             <span [nwText]="perk.description" [itemId]="perk.id"></span>
           </div>
         </a>
@@ -19,5 +20,5 @@
     </ul>
   </div>
 
-  <nwb-crafting-calculator class="p-2" [itemId]="itemId"></nwb-crafting-calculator>
+  <nwb-crafting-calculator class="p-2" [itemId]="itemId || housingId"></nwb-crafting-calculator>
 </div>

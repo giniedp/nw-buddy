@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { Crafting, ItemDefinitionMaster } from '@nw-data/types'
+import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 
 import { GridOptions } from 'ag-grid-community'
 import { Observable, take } from 'rxjs'
@@ -75,30 +75,32 @@ export class NwService {
     })
   }
 
-  public itemRarity(item: ItemDefinitionMaster) {
+  public itemRarity(item: ItemDefinitionMaster | Housingitems) {
     if (item.ForceRarity) {
       return item.ForceRarity
     }
     let rarity = 0
-    if (item.Perk1 && !item.Perk1?.startsWith('PerkID_Stat_')) {
-      rarity += 1
-    }
-    if (item.Perk2 && !item.Perk2?.startsWith('PerkID_Stat_')) {
-      rarity += 1
-    }
-    if (item.Perk3 && !item.Perk3?.startsWith('PerkID_Stat_')) {
-      rarity += 1
-    }
-    if (item.Perk4 && !item.Perk4?.startsWith('PerkID_Stat_')) {
-      rarity += 1
-    }
-    if (item.Perk5 && !item.Perk5?.startsWith('PerkID_Stat_')) {
-      rarity += 1
+    if ('ItemID' in item) {
+      if (item.Perk1 && !item.Perk1?.startsWith('PerkID_Stat_')) {
+        rarity += 1
+      }
+      if (item.Perk2 && !item.Perk2?.startsWith('PerkID_Stat_')) {
+        rarity += 1
+      }
+      if (item.Perk3 && !item.Perk3?.startsWith('PerkID_Stat_')) {
+        rarity += 1
+      }
+      if (item.Perk4 && !item.Perk4?.startsWith('PerkID_Stat_')) {
+        rarity += 1
+      }
+      if (item.Perk5 && !item.Perk5?.startsWith('PerkID_Stat_')) {
+        rarity += 1
+      }
     }
     return rarity
   }
 
-  public itemTierRoman(item: ItemDefinitionMaster) {
+  public itemTierRoman(item: ItemDefinitionMaster | Housingitems) {
     switch (item.Tier) {
       case 0:
         return '-'
@@ -115,15 +117,13 @@ export class NwService {
       default:
         return String(item.Tier)
     }
-
-    this.itemRarity(item)
   }
 
-  public itemRarityKey(item: ItemDefinitionMaster) {
+  public itemRarityKey(item: ItemDefinitionMaster | Housingitems) {
     return `RarityLevel${this.itemRarity(item)}_DisplayName`
   }
 
-  public itemRarityName(item: ItemDefinitionMaster) {
+  public itemRarityName(item: ItemDefinitionMaster | Housingitems) {
     return this.translate(this.itemRarityKey(item))
   }
 
@@ -131,24 +131,36 @@ export class NwService {
     return this.db.data.iconPath(path)
   }
   public translate(key: string) {
-    return this.translations.get(buildTranslateKey(key))
+    if (typeof key === 'string' && key.startsWith('@')) {
+      key = key.substring(1)
+    }
+    return this.translations.get(key)
   }
-  public findRecipeForItem(item: ItemDefinitionMaster, recipes: Crafting[]) {
+
+  public itemIdFromRecipe(item: Crafting) {
+    return item && (item.ItemID || item.ProceduralTierID5 || item.ProceduralTierID4 || item.ProceduralTierID3 || item.ProceduralTierID2 || item.ProceduralTierID1)
+  }
+
+  public findRecipeForItem(item: ItemDefinitionMaster | Housingitems, recipes: Crafting[]) {
+    if (!item) {
+      return null
+    }
     return recipes.find((it) => {
       if (it.CraftingCategory === 'MaterialConversion' || !it.OutputQty) {
         return false
       }
+      const id = 'ItemID' in item ? item.ItemID : item.HouseItemID
       if (it.IsProcedural) {
         return (
           item.Tier === it.BaseTier &&
-          (it.ProceduralTierID1 === item.ItemID ||
-            it.ProceduralTierID2 === item.ItemID ||
-            it.ProceduralTierID3 === item.ItemID ||
-            it.ProceduralTierID4 === item.ItemID ||
-            it.ProceduralTierID5 === item.ItemID)
+          (it.ProceduralTierID1 === id ||
+            it.ProceduralTierID2 === id ||
+            it.ProceduralTierID3 === id ||
+            it.ProceduralTierID4 === id ||
+            it.ProceduralTierID5 === id)
         )
       }
-      return it.RecipeID === item.CraftingRecipe || it.ItemID === item.ItemID
+      return it.RecipeID === item.CraftingRecipe || it.ItemID === id
     })
   }
 
@@ -158,8 +170,8 @@ export class NwService {
     recipe,
     skill,
   }: {
-    item: ItemDefinitionMaster
-    ingredients: ItemDefinitionMaster[]
+    item: ItemDefinitionMaster | Housingitems
+    ingredients: Array<ItemDefinitionMaster | Housingitems>
     recipe: Crafting
     skill?: number
   }) {
@@ -196,25 +208,6 @@ export class NwService {
     }
     return Math.max(0, result)
   }
-}
-
-function buildTranslateKey(key: string, options?: { prefix?: string; suffix?: string }) {
-  if (key == null) {
-    return key
-  }
-  key = String(key)
-  if (options) {
-    if (options.prefix) {
-      key = options.prefix + key
-    }
-    if (options.suffix) {
-      key = key + options.suffix
-    }
-  }
-  if (key.startsWith('@')) {
-    return key.substring(1)
-  }
-  return key
 }
 
 function createIconHtml(path: string, options: { size: number; class: string }) {

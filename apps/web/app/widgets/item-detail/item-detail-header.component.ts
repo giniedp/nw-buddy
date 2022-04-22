@@ -8,9 +8,8 @@ import {
   OnDestroy,
   ChangeDetectorRef,
 } from '@angular/core'
-import { ItemDefinitionMaster } from '@nw-data/types'
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { combineLatest, map, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
-import { LocaleService } from '~/core/i18n'
 import { NwService } from '~/core/nw'
 
 @Component({
@@ -21,54 +20,76 @@ import { NwService } from '~/core/nw'
 })
 export class ItemDetailHeaderComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
-  public itemId: string
+  public entityId: string
 
   @Input()
-  public item: ItemDefinitionMaster
+  public type: 'item' | 'housing'
+
+  @Input()
+  public entity: ItemDefinitionMaster | Housingitems
 
   @Input()
   public nwdbLink: boolean
 
-  public iconPath: string
-  public itemName: string
-  public itemRarity: number
-  public itemRarityName: string
-  public itemType: string
+  public get iconPath(): string {
+    return this.entity?.IconPath
+  }
+  public get itemName(): string {
+    return this.entity?.Name
+  }
+  public get itemRarity(): number {
+    return this.entity && this.nw.itemRarity(this.entity)
+  }
+  public get itemRarityName(): string {
+    return this.entity && this.nw.itemRarityKey(this.entity)
+  }
+  public get itemType(): string {
+    if (this.entity) {
+      if ('ItemID' in this.entity) {
+        return this.entity.ItemTypeDisplayName
+      } else if ('HouseItemID' in this.entity) {
+        return this.entity.ItemType
+      }
+    }
+    return ''
+  }
 
   private destroy$ = new Subject()
-  private itemId$ = new ReplaySubject<string>()
-  private item$ = new ReplaySubject<ItemDefinitionMaster>()
+  private entityId$ = new ReplaySubject<string>()
+  private entity$ = new ReplaySubject<ItemDefinitionMaster | Housingitems>()
 
-  public constructor(private cdRef: ChangeDetectorRef, private nw: NwService, private locale: LocaleService) {}
+  public constructor(private cdRef: ChangeDetectorRef, private nw: NwService) {
+    //
+  }
 
   public ngOnInit(): void {
-    this.itemId$
-      .pipe(switchMap((id) => this.nw.db.itemsMap.pipe(map((map) => map.get(id)))))
+    this.entityId$
+      .pipe(switchMap((id) => {
+        if (this.type === 'item') {
+          return this.nw.db.itemsMap.pipe(map((map) => map.get(id)))
+        } else {
+          return this.nw.db.housingItemsMap.pipe(map((map) => map.get(id)))
+        }
+      }))
       .pipe(takeUntil(this.destroy$))
       .subscribe((item) => {
-        this.item$.next(item)
+        this.entity$.next(item)
       })
 
-    combineLatest([this.item$, this.locale.change])
+    combineLatest([this.entity$])
       .pipe(takeUntil(this.destroy$))
       .subscribe(([item]) => {
-        this.itemId = item?.ItemID
-        this.item = item
-        this.iconPath = this.nw.iconPath(item?.IconPath)
-        this.itemName = this.nw.translate(item?.Name)
-        this.itemType = this.nw.translate(item?.ItemTypeDisplayName)
-        this.itemRarity = item && this.nw.itemRarity(item)
-        this.itemRarityName = item && this.nw.itemRarityName(item)
+        this.entity = item
         this.cdRef.markForCheck()
       })
   }
 
   public ngOnChanges(ch: SimpleChanges): void {
-    if (this.getChange('itemId', ch)) {
-      this.itemId$.next(this.itemId)
+    if (this.getChange('entityId', ch)) {
+      this.entityId$.next(this.entityId)
     }
-    if (this.getChange('item', ch)) {
-      this.item$.next(this.item)
+    if (this.getChange('entity', ch)) {
+      this.entity$.next(this.entity)
     }
   }
 

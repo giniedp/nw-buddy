@@ -9,7 +9,7 @@ import {
   NgZone,
   TrackByFunction,
 } from '@angular/core'
-import { GameEvent, ItemDefinitionMaster } from '@nw-data/types'
+import { GameEvent, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { debounceTime, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { NwService } from '~/core/nw'
 import { CraftingCalculatorComponent } from './crafting-calculator.component'
@@ -24,7 +24,7 @@ import { CraftingStepComponent } from './crafting-step.component'
 export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
   public root: CraftingStepComponent
-  public table: Array<{ item: ItemDefinitionMaster; quantity: number }> = []
+  public table: Array<{ item: ItemDefinitionMaster | Housingitems; quantity: number }> = []
   public xpTable: Array<{ skill: String; xp: number }> = []
 
   public trackByIndex: TrackByFunction<any> = (i) => i
@@ -81,7 +81,7 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
     const table = new Map<
       string,
       {
-        item: ItemDefinitionMaster
+        item: ItemDefinitionMaster | Housingitems
         quantity: number
       }
     >()
@@ -89,13 +89,14 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
       if (!node.item || (node.expand && node.steps?.length)) {
         return
       }
-      if (!table.has(node.item.ItemID)) {
-        table.set(node.item.ItemID, {
+      const key = 'ItemID' in node.item ? node.item.ItemID : node.item.HouseItemID
+      if (!table.has(key)) {
+        table.set(key, {
           item: node.item,
           quantity: 0,
         })
       }
-      const data = table.get(node.item.ItemID)
+      const data = table.get(key)
       data.quantity += node.actualQuantity
     })
     return Array.from(table.entries()).map(([_, data]) => data)

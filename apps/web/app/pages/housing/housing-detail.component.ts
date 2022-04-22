@@ -29,6 +29,7 @@ export class HousingDetailComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((item) => {
         this.item = item
+        this.itemId = item?.HouseItemID
         this.cdRef.markForCheck()
       })
   }

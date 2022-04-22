@@ -9,6 +9,9 @@ import { Armorset, ArmorsetGroup } from './types'
   selector: 'nwb-armorsets',
   templateUrl: './armorsets.component.html',
   styleUrls: ['./armorsets.component.scss'],
+  host: {
+    class: 'page-frame',
+  },
 })
 export class SetsComponent implements OnInit, OnDestroy {
   public armorsetGroups: ArmorsetGroup[]

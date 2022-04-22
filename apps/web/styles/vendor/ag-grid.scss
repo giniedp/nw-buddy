@@ -4,5 +4,6 @@
 .ag-grid {
   @include ag-theme-alpine-dark((
     borders: false,
+    cell-horizontal-padding: 8px,
   ));
 }

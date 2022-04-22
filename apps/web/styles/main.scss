@@ -86,13 +86,10 @@ picture.nw-icon {
 
 .page-frame {
   display: grid;
-  grid-template-columns: auto minmax(350px, 25%);
+  grid-template-columns: minmax(0, max-content) auto minmax(350px, 25%);
+  grid-template-areas: "menu content detail";
   column-gap: 1rem;
   row-gap: 1rem;
-
-  &.has-detail {
-    grid-template-columns: auto minmax(350px, 25%);
-  }
 
   .main-frame, .detail-frame {
     position: relative;

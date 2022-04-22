@@ -71,7 +71,8 @@ export class ItemsTableComponent implements OnInit, OnChanges, OnDestroy {
       {
         sortable: false,
         filter: false,
-        width: 74,
+        width: 54,
+        pinned: true,
         cellRenderer: ({ data }) => {
           const rarity = this.nw.itemRarity(data)
           const iconPath = this.nw.iconPath(field(data, 'IconPath'))
@@ -95,6 +96,7 @@ export class ItemsTableComponent implements OnInit, OnChanges, OnDestroy {
       {
         width: 175,
         filter: false,
+        sortable: false,
         headerName: 'Perks',
         cellRenderer: (params: { data: ItemDefinitionMaster }) => {
           const item = params.data
@@ -122,6 +124,7 @@ export class ItemsTableComponent implements OnInit, OnChanges, OnDestroy {
         valueGetter: ({ data }) => this.nw.itemRarityName(data),
         filter: CategoryFilter,
         width: 130,
+        getQuickFilterText: ({ value }) => value
       },
       {
         width: 80,
@@ -165,7 +168,7 @@ export class ItemsTableComponent implements OnInit, OnChanges, OnDestroy {
               return true
             },
             editable: true,
-            width: 100,
+            width: 90,
           },
           {
             headerName: 'GS',
@@ -180,7 +183,7 @@ export class ItemsTableComponent implements OnInit, OnChanges, OnDestroy {
               return true
             },
             editable: true,
-            width: 100,
+            width: 90,
           },
           {
             headerName: 'Price',
@@ -226,6 +229,7 @@ export class ItemsTableComponent implements OnInit, OnChanges, OnDestroy {
         field: fieldName('ItemType'),
         width: 125,
         filter: CategoryFilter,
+        getQuickFilterText: ({ value }) => value
       },
       {
         field: fieldName('ItemClass'),

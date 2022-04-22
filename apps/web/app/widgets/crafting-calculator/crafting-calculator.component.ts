@@ -30,7 +30,7 @@ export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges
 
   public optimize: boolean = false
 
-  public item: ItemDefinitionMaster
+  //public item: ItemDefinitionMaster
   public recipe: Crafting
 
   public stepChange = defer(() => this.stepChange$)
@@ -45,20 +45,22 @@ export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges
     combineLatest({
       itemId: this.itemId$,
       items: this.nw.db.itemsMap,
+      housings: this.nw.db.housingItemsMap,
       recipes: this.nw.db.recipes,
     })
       .pipe(
-        map(({ itemId, items, recipes }) => {
+        map(({ itemId, items, housings, recipes }) => {
           const item = items.get(itemId)
+          const housing = housings.get(itemId)
           return {
             item,
-            recipe: item && this.nw.findRecipeForItem(item, recipes),
+            recipe: this.nw.findRecipeForItem(item || housing, recipes),
           }
         })
       )
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
-        this.item = data.item
+        //this.item = data.item
         this.recipe = data.recipe
         this.cdRef.markForCheck()
       })

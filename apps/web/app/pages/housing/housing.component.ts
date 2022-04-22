@@ -9,8 +9,8 @@ import { HousingTableComponent } from '~/widgets/housing-table/housing-table.com
   styleUrls: ['./housing.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'page-frame'
-  }
+    class: 'page-frame',
+  },
 })
 export class HousingComponent implements OnInit {
 

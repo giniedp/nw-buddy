@@ -1,30 +1,44 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnChanges, OnDestroy, ViewChild, Input, Output, EventEmitter, ChangeDetectorRef, NgZone, SimpleChanges } from '@angular/core';
-import { Crafting } from '@nw-data/types';
-import { isEqual } from 'lodash';
-import { BehaviorSubject, combineLatest, defer, filter, map, Subject, takeUntil } from 'rxjs';
-import { LocaleService } from '~/core/i18n';
-import { NwService } from '~/core/nw';
-import { NwItemMetaService } from '~/core/nw/nw-item-meta.service';
-import { AgGridComponent, CategoryFilter } from '~/ui/ag-grid';
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  OnChanges,
+  OnDestroy,
+  ViewChild,
+  Input,
+  Output,
+  EventEmitter,
+  ChangeDetectorRef,
+  NgZone,
+  SimpleChanges,
+} from '@angular/core'
+import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { isEqual } from 'lodash'
+import { BehaviorSubject, combineLatest, defer, filter, map, shareReplay, Subject, takeUntil } from 'rxjs'
+import { LocaleService } from '~/core/i18n'
+import { NwService } from '~/core/nw'
+import { NwItemMetaService } from '~/core/nw/nw-item-meta.service'
+import { AgGridComponent, CategoryFilter } from '~/ui/ag-grid'
 
-
-function fieldName(key: keyof Crafting) {
+function fieldName(key: keyof RecipeWithItem) {
   return key
 }
 
-function field(item: any, key: keyof Crafting) {
+function field<K extends keyof RecipeWithItem>(item: RecipeWithItem, key: K): RecipeWithItem[K] {
   return item[key]
 }
 
+export type RecipeWithItem = Crafting & {
+  $item: ItemDefinitionMaster | Housingitems
+}
 
 @Component({
   selector: 'nwb-crafting-table',
   templateUrl: './crafting-table.component.html',
   styleUrls: ['./crafting-table.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CraftingTableComponent implements OnInit, OnChanges, OnDestroy {
-
   @ViewChild(AgGridComponent, { static: true })
   public grid: AgGridComponent
 
@@ -49,33 +63,43 @@ export class CraftingTableComponent implements OnInit, OnChanges, OnDestroy {
       }
     },
     columnDefs: [
-      // {
-      //   sortable: false,
-      //   filter: false,
-      //   width: 74,
-      //   cellRenderer: ({ data }) => {
-      //     const rarity = this.nw.itemRarity(data)
-      //     const iconPath = this.nw.iconPath(field(data, ''))
-      //     const icon = this.nw.renderIcon(iconPath, {
-      //       size: 38,
-      //       rarity: rarity,
-      //     })
-      //     return `<a href="${this.nw.nwdbLinkUrl('item', field(data, 'ItemID'))}" target="_blank">${icon}</a>`
-      //   },
-      // },
-      // {
-      //   width: 250,
-      //   headerName: 'Name',
-      //   valueGetter: ({ data }) => this.nw.translate(field(data, '')),
-      //   getQuickFilterText: ({ value }) => value
-      // },
       {
         field: fieldName('RecipeID'),
-        // hide: true,
+        hide: true,
       },
       {
         field: fieldName('ItemID'),
-        // hide: true,
+        hide: true,
+      },
+      {
+        sortable: false,
+        filter: false,
+        pinned: true,
+        width: 54,
+        cellRenderer: ({ data }) => {
+          const recipe = data as RecipeWithItem
+          if (!recipe.$item) {
+            return ''
+          }
+          const rarity = this.nw.itemRarity(recipe.$item)
+          const iconPath = this.nw.iconPath(recipe.$item?.IconPath)
+          return this.nw.renderIcon(iconPath, {
+            size: 38,
+            rarity: rarity,
+          })
+        },
+      },
+      {
+        width: 250,
+        headerName: 'Name',
+        valueGetter: ({ data }) => {
+          const recipe = data as RecipeWithItem
+          if (!recipe.$item) {
+            return this.nw.translate(recipe.RecipeNameOverride)
+          }
+          return this.nw.translate(recipe.$item?.Name)
+        },
+        getQuickFilterText: ({ value }) => value,
       },
       {
         field: fieldName('Tradeskill'),
@@ -95,15 +119,26 @@ export class CraftingTableComponent implements OnInit, OnChanges, OnDestroy {
       },
       {
         field: fieldName('BonusItemChance'),
+        valueGetter: ({ data }) => `${Math.round((field(data, 'BonusItemChance') || 0) * 100)}%`,
         // filter: CategoryFilter,
       },
       {
         field: fieldName('BonusItemChanceIncrease'),
-        // filter: CategoryFilter,
+        filter: false,
+        valueGetter: ({ data }) =>
+          field(data, 'BonusItemChanceIncrease')
+            ?.split(',')
+            .map((it) => `${Math.round(Number(it || 0) * 100)}%`)
+            .join(' '),
       },
       {
         field: fieldName('BonusItemChanceDecrease'),
-        // filter: CategoryFilter,
+        filter: false,
+        valueGetter: ({ data }) =>
+          field(data, 'BonusItemChanceDecrease')
+            ?.split(',')
+            .map((it) => `${Math.round(Number(it || 0) * 100)}%`)
+            .join(' '),
       },
     ],
   })
@@ -137,7 +172,38 @@ export class CraftingTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public async ngOnInit() {
-    const item$ = this.nw.db.recipes.pipe(map((items) => (this.filter ? items.filter(this.filter) : items)))
+    const item$ = combineLatest({
+      items: this.nw.db.itemsMap,
+      housing: this.nw.db.housingItemsMap,
+      recipes: this.nw.db.recipes,
+    })
+      .pipe(
+        map(({ items, housing, recipes }) => {
+          recipes = recipes.filter((it) => !!it.Tradeskill)
+          if (this.filter) {
+            recipes = recipes.filter(this.filter)
+          }
+          return recipes.map<RecipeWithItem>((it) => {
+            const itemId =
+              it.ItemID ||
+              it.ProceduralTierID1 ||
+              it.ProceduralTierID2 ||
+              it.ProceduralTierID3 ||
+              it.ProceduralTierID4 ||
+              it.ProceduralTierID5
+            return {
+              ...it,
+              $item: items.get(itemId) || housing.get(itemId),
+            }
+          })
+        })
+      )
+      .pipe(
+        shareReplay({
+          refCount: true,
+          bufferSize: 1,
+        })
+      )
 
     item$
       .pipe(map((items) => Array.from(new Set(items.map((it) => it.Tradeskill).filter((it) => !!it)))))
