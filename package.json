@@ -44,6 +44,7 @@
     "chart.js": "3.7.1",
     "daisyui": "2.13.6",
     "loadsh": "0.0.4",
+    "mithril": "2.0.4",
     "rxjs": "7.4.0",
     "tslib": "^2.1.0",
     "zone.js": "~0.11.4"
@@ -68,6 +69,7 @@
     "@types/jasmine": "3.10.3",
     "@types/jasminewd2": "2.0.10",
     "@types/lodash": "4.14.181",
+    "@types/mithril": "2.0.10",
     "@types/node": "16.11.7",
     "@typescript-eslint/eslint-plugin": "5.14.0",
     "@typescript-eslint/parser": "5.14.0",

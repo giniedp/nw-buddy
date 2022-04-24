@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, Input, OnChanges, SimpleChanges } from '@angular/core'
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, Input, OnChanges } from '@angular/core'
 import { GridOptions } from 'ag-grid-community'
-import { Umbralgsupgrades, Xpamountsbylevel } from '@nw-data/types'
-import { BehaviorSubject, combineLatest, distinctUntilChanged, firstValueFrom, map, Subject, switchMap, takeUntil } from 'rxjs'
+import { Umbralgsupgrades } from '@nw-data/types'
+import { BehaviorSubject, combineLatest, distinctUntilChanged, map, Subject, takeUntil } from 'rxjs'
 import { NwDataService } from '~/core/nw'
 
 function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: keyof T) {

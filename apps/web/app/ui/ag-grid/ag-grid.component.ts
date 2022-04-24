@@ -50,6 +50,7 @@ export class AgGridComponent<T = any> implements OnInit, OnChanges, OnDestroy {
         ...(this.options || {}),
         onGridReady: (e) => this.onGridReady(e),
       })
+
       this.filter$.pipe(debounceTime(500)).pipe(distinctUntilChanged()).subscribe((value) => {
         this.api?.setQuickFilter(value)
       })

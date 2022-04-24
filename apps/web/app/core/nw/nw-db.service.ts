@@ -46,6 +46,7 @@ export class NwDbService {
     return combineLatest([
       this.data.datatablesWeaponabilitiesAbilityAi().pipe(annotate('$source', 'ai')),
       this.data.datatablesWeaponabilitiesAbilityAttributethreshold().pipe(annotate('$source', 'attributethreshold')),
+      this.data.datatablesWeaponabilitiesAbilityBlunderbuss().pipe(annotate('$source', 'blunderbuss')),
       this.data.datatablesWeaponabilitiesAbilityBow().pipe(annotate('$source', 'bow')),
       this.data.datatablesWeaponabilitiesAbilityFiremagic().pipe(annotate('$source', 'firemagic')),
       this.data.datatablesWeaponabilitiesAbilityGlobal().pipe(annotate('$source', 'global')),
@@ -71,6 +72,7 @@ export class NwDbService {
       this.data.datatablesStatuseffects().pipe(annotate('$source', '_')),
       this.data.datatablesStatuseffectsAi().pipe(annotate('$source', 'api')),
       this.data.datatablesStatuseffectsBow().pipe(annotate('$source', 'bow')),
+      this.data.datatablesStatuseffectsBlunderbuss().pipe(annotate('$source', 'blunderbuss')),
       this.data.datatablesStatuseffectsCommon().pipe(annotate('$source', 'common')),
       this.data.datatablesStatuseffectsFirestaff().pipe(annotate('$source', 'firestaff')),
       this.data.datatablesStatuseffectsGreataxe().pipe(annotate('$source', 'greataxe')),

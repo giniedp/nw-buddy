@@ -11,7 +11,7 @@ import {
   ViewChild,
 } from '@angular/core'
 import { distinctUntilChanged, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
-import { ItemMeta, NwItemMetaService } from './nw-item-meta.service'
+import { ItemMeta, ItemPreferencesService } from '../preferences'
 
 @Component({
   selector: 'nwb-item-tracker',
@@ -109,7 +109,7 @@ export class ItemTrackerComponent implements OnInit, OnChanges, OnDestroy, After
   private id: string
   private data: ItemMeta
 
-  public constructor(private meta: NwItemMetaService, private cdRef: ChangeDetectorRef) {}
+  public constructor(private meta: ItemPreferencesService, private cdRef: ChangeDetectorRef) {}
 
   public ngOnInit(): void {
     this.itemId$

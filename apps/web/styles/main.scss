@@ -84,17 +84,30 @@ picture.nw-icon {
   color: map-get($nw-rarity-color, "4") ;
 }
 
-.page-frame {
+.nwb-page {
   display: grid;
-  grid-template-columns: minmax(0, max-content) auto minmax(350px, 25%);
-  grid-template-areas: "menu content detail";
+  grid-template-columns: 1fr;
+  grid-template-areas: "content";
   column-gap: 1rem;
   row-gap: 1rem;
 
-  .main-frame, .detail-frame {
+  &.has-menu {
+    grid-template-columns: auto 1fr;
+    grid-template-areas: "menu content";
+  }
+  &.has-detail {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "content detail";
+  }
+  &.has-menu.has-detail {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas: "menu content detail";
+  }
+
+  .main-frame, .detail-frame, .menu-frame {
     position: relative;
   }
-  .main-content, .detail-content {
+  .main-content, .detail-content, .menu-content {
     position: absolute;
     top: 0;
     left: 0;

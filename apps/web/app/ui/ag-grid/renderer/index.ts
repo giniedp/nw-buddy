@@ -1,1 +1,1 @@
-export * from './bool-icon-renderer'
+export * from './mithril-cell-renderer'

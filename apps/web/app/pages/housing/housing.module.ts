@@ -3,14 +3,23 @@ import { CommonModule } from '@angular/common'
 
 import { HousingRoutingModule } from './housing-routing.module'
 import { HousingComponent } from './housing.component'
-import { HousingTableModule } from '~/widgets/housing-table'
 import { HousingDetailComponent } from './housing-detail.component'
-import { PropertyGridModule } from '~/widgets/property-grid'
+import { PropertyGridModule } from '~/ui/property-grid'
 import { FormsModule } from '@angular/forms'
 import { ItemDetailModule } from '~/widgets/item-detail'
+import { DataTableModule } from '~/ui/data-table'
+import { SidebarModule } from '~/ui/sidebar'
 
 @NgModule({
-  imports: [CommonModule, FormsModule, HousingRoutingModule, HousingTableModule, PropertyGridModule, ItemDetailModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    HousingRoutingModule,
+    DataTableModule,
+    PropertyGridModule,
+    ItemDetailModule,
+    SidebarModule,
+  ],
   declarations: [HousingComponent, HousingDetailComponent],
 })
 export class HousingModule {}

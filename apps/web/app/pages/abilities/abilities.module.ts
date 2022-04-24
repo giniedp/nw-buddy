@@ -3,10 +3,12 @@ import { CommonModule } from '@angular/common'
 
 import { AbilitiesRoutingModule } from './abilities-routing.module'
 import { AbilitiesComponent } from './abilities.component'
-import { AbilitiesTableModule } from '~/widgets/abilities-table'
+import { DataTableModule } from '~/ui/data-table'
+import { FormsModule } from '@angular/forms'
+import { SidebarModule } from '~/ui/sidebar'
 
 @NgModule({
   declarations: [AbilitiesComponent],
-  imports: [CommonModule, AbilitiesRoutingModule, AbilitiesTableModule],
+  imports: [CommonModule, AbilitiesRoutingModule, DataTableModule, SidebarModule],
 })
 export class AbilitiesModule {}

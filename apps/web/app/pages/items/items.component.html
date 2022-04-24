@@ -1,31 +1,20 @@
-<div class="w-36 xl:w-40">
-  <input class="input input-sm xl:input-md w-full" type="text" placeholder="Quickfilter"  [(ngModel)]="quickFilter" autofocus />
-  <ul class="menu menu-compact xl:menu-normal bg-base-100 rounded-md mt-4">
-    <li [class.bordered]="!category">
-      <a (click)="selectCategory(null)"> ALL</a>
-    </li>
-    <ng-container
-      *ngFor="let it of categories"
-      class="btn"
-      [class.btn-active]="category === it"
-      (click)="selectCategory(it)"
-    >
-      <li [class.bordered]="category === it">
-        <a (click)="selectCategory(it)"> {{ it }}</a>
-      </li>
-    </ng-container>
-  </ul>
+<div class="menu-frame w-36 xl:w-40">
+  <nwb-sidebar
+    #sidebar
+    [nwbSidebarRouteParam]="'cat'"
+    [categories]="table.categories | async"
+  ></nwb-sidebar>
 </div>
-
-<div class="main-frame rounded-md overflow-clip" [class.col-span-2]="!hasSelection">
-  <nwb-items-table
+<div class="main-frame rounded-md overflow-clip">
+  <nwb-data-table
+    #table
     class="main-content"
-    [selection]="selection"
-    (selectionChange)="selected($event)"
-    [quickFilter]="quickFilter"
-  ></nwb-items-table>
+    [nwbTableRouterParam]="'id'"
+    [category]="sidebar.category"
+    [quickFilter]="sidebar.quickFilter"
+  ></nwb-data-table>
 </div>
-<div class="detail-frame" *ngIf="hasSelection">
+<div class="detail-frame w-96">
   <div class="detail-content">
     <router-outlet></router-outlet>
   </div>

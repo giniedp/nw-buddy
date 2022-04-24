@@ -1,18 +1,21 @@
-
-<div class="btn-group col-span-2 flex-none">
-  <button class="btn" [class.btn-active]="!category" (click)="selectCategory(null)">
-    ALL
-  </button>
-  <button *ngFor="let it of categories" class="btn" [class.btn-active]="category === it" (click)="selectCategory(it)">
-    {{ it }}
-  </button>
+<div class="menu-frame w-36 xl:w-40">
+  <nwb-sidebar
+    #sidebar
+    [nwbSidebarRouteParam]="'cat'"
+    [categories]="table.categories | async"
+  ></nwb-sidebar>
 </div>
-<div class="main-frame rounded-md overflow-clip" [class.col-span-2]="!hasSelection">
-  <nwb-perks-table class="main-content" [selection]="selection" (selectionChange)="selected($event)"></nwb-perks-table>
+<div class="main-frame rounded-md overflow-clip">
+  <nwb-data-table
+    #table
+    class="main-content"
+    [nwbTableRouterParam]="'id'"
+    [category]="sidebar.category"
+    [quickFilter]="sidebar.quickFilter"
+  ></nwb-data-table>
 </div>
-<div class="detail-frame" *ngIf="hasSelection">
+<div class="detail-frame w-96">
   <div class="detail-content">
     <router-outlet></router-outlet>
   </div>
 </div>
-

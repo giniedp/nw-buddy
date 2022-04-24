@@ -3,7 +3,7 @@ import { groupBy, sortBy } from 'lodash'
 import { NwService } from '~/core/nw'
 import { Armorset, ArmorsetGroup } from './types'
 
-export function findSets(items: ItemDefinitionMaster[], perksMap: Map<string, Perks>, nw: NwService): ArmorsetGroup[] {
+export function findSets(items: ItemDefinitionMaster[], source: string, perksMap: Map<string, Perks>, nw: NwService): ArmorsetGroup[] {
   const groups1 = groupBy(items, (item) => {
     const family = getFamilyName(item)
     const weight = getItemClass(item)
@@ -28,6 +28,7 @@ export function findSets(items: ItemDefinitionMaster[], perksMap: Map<string, Pe
     sets[groupKey].push({
       key: getFamilyName(items[0]),
       name: getNameForSet(items, nw),
+      source: source,
       tier: items[0].Tier,
       weight: getItemClass(items[0]),
       perks: sharedPerks,

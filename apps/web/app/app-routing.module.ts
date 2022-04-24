@@ -17,6 +17,7 @@ const routes: Routes = [
   { path: 'abilities', loadChildren: () => import('./pages/abilities/abilities.module').then(m => m.AbilitiesModule) },
   { path: 'housing', loadChildren: () => import('./pages/housing/housing.module').then(m => m.HousingModule) },
   { path: 'crafting', loadChildren: () => import('./pages/crafting/crafting.module').then(m => m.CraftingModule) },
+  { path: 'preferences', loadChildren: () => import('./pages/preferences/preferences.module').then(m => m.PreferencesModule) },
 
   { path: '**', loadChildren: () => import('./pages/not-found').then((m) => m.NotFoundModule) },
 ]

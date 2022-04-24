@@ -1,0 +1,9 @@
+<input class="input input-sm xl:input-md w-full" type="text" placeholder="Quickfilter" [(ngModel)]="quickFilter" autofocus />
+<ul class="menu menu-compact xl:menu-normal bg-base-100 rounded-md mt-4">
+  <li [class.bordered]="!category">
+    <a (click)="selectCategory(null)"> ALL </a>
+  </li>
+  <li *ngFor="let it of categories" [class.bordered]="category === it">
+    <a (click)="selectCategory(it)"> {{ it }}</a>
+  </li>
+</ul>

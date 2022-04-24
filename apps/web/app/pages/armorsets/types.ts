@@ -9,6 +9,7 @@ export interface ArmorsetGroup {
 export interface Armorset {
   key: string
   name: string
+  source: string
   tier: number
   weight: string
   perks: Perks[]

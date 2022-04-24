@@ -4,9 +4,9 @@ import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { Observable, take } from 'rxjs'
 import { TranslateService } from '../i18n'
+import { ItemPreferencesService, RecipePreferencesService } from '../preferences'
 import { NwDbService } from './nw-db.service'
 import { NwExpressionService } from './nw-expression'
-import { NwItemMetaService } from './nw-item-meta.service'
 import { nwdbLinkUrl } from './nwdbinfo'
 
 const CATEGORIES_GRANTING_BONUS = [
@@ -24,10 +24,11 @@ const CATEGORIES_GRANTING_BONUS = [
 @Injectable({ providedIn: 'root' })
 export class NwService {
   public constructor(
-    public readonly meta: NwItemMetaService,
     public readonly db: NwDbService,
     public readonly translations: TranslateService,
-    public readonly expression: NwExpressionService
+    public readonly expression: NwExpressionService,
+    public readonly itemPref: ItemPreferencesService,
+    public readonly recipePref: RecipePreferencesService,
   ) {}
 
   public gridOptions(options: GridOptions): GridOptions {

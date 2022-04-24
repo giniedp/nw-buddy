@@ -1,50 +1,16 @@
-<div class="w-36 xl:w-40">
-  <input class="input input-sm xl:input-md w-full" type="text" placeholder="Quickfilter"  (input)="updateFilter($event)" autofocus />
-  <ul class="menu menu-compact xl:menu-normal bg-base-100 rounded-md mt-4">
-    <li [class.bordered]="!categorySelection">
-      <a (click)="selectCategory(null)"> ALL</a>
-    </li>
-    <ng-container
-      *ngFor="let it of categories"
-      class="btn"
-      [class.btn-active]="categorySelection === it.value"
-      (click)="selectCategory(it.value)"
-    >
-      <li [class.bordered]="categorySelection === it.value">
-        <a (click)="selectCategory(it.value)"> {{ it.label }}</a>
-      </li>
-    </ng-container>
-  </ul>
+<div class="menu-frame w-36 xl:w-40">
+  <nwb-sidebar
+    #sidebar
+    [nwbSidebarRouteParam]="'cat'"
+    [categories]="table.categories | async"
+  ></nwb-sidebar>
 </div>
-
-<div class="main-frame col-span-2">
-  <div class="main-content">
-    <div *ngFor="let group of armorsetGroups; trackBy: trackGroup" class="item-set-grid mt-4 mb-4">
-      <h3 class="text-base font-bold mb-2 flex flex-row items-center">
-        <ng-container *ngFor="let perk of group.perks">
-          <a [nwInfoLink]="perk.PerkID" [nwInfoResource]="'perk'" target="_blank" class="mr-1">
-            <picture [nwIcon]="perk.IconPath" class="w-8 h-8"></picture>
-          </a>
-          <span class="mr-2">{{ translate(perk.DisplayName)  }}</span>
-        </ng-container>
-      </h3>
-
-      <div class="grid grid-cols-3 gap-3">
-        <div *ngFor="let set of group.sets; trackBy: trackSet" class="bg-base-100 rounded-md overflow-clip min-w snap-start relative">
-          <h3 class="text-lg font-bold px-1 bg-base-300 flex flex-row items-center">
-            {{ set.name }}
-            <span class="font-light ml-1">{{ set.weight }}</span>
-            <span class="font-light ml-1">T{{ set.tier }}</span>
-          </h3>
-          <nwb-armorset [armorset]="set"></nwb-armorset>
-        </div>
-      </div>
-    </div>
-  </div>
-
+<div class="main-frame rounded-md overflow-clip">
+  <nwb-data-table
+    #table
+    class="main-content"
+    [nwbTableRouterParam]="'id'"
+    [category]="sidebar.category"
+    [quickFilter]="sidebar.quickFilter"
+  ></nwb-data-table>
 </div>
-<!-- <div class="detail-frame" *ngIf="hasSelection">
-  <div class="detail-content">
-    <router-outlet></router-outlet>
-  </div>
-</div> -->

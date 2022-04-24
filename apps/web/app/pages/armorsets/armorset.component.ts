@@ -3,18 +3,13 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
-  Input,
   OnChanges,
   OnDestroy,
   OnInit,
-  SimpleChanges,
 } from '@angular/core'
-import { ItemDefinitionMaster } from '@nw-data/types'
-import { filter, map, Subject, take, takeUntil } from 'rxjs'
+import { filter, Subject, take, takeUntil } from 'rxjs'
 import { NwService } from '~/core/nw'
 import { IntersectionObserverService } from '~/core/utils'
-import { ArmorsetsService } from './armorsets.service'
-import { Armorset } from './types'
 
 @Component({
   selector: 'nwb-armorset',
@@ -24,20 +19,12 @@ import { Armorset } from './types'
 })
 export class ArmorsetComponent implements OnInit, OnChanges, OnDestroy {
 
-  @Input()
-  public armorset: Armorset
-
-  public get items() {
-    return this.armorset.items
-  }
-
   private destoy$ = new Subject()
 
   public isVisible: boolean = false
 
   public constructor(
     private nw: NwService,
-    private sets: ArmorsetsService,
     private intersection: IntersectionObserverService,
     private elRef: ElementRef<HTMLElement>,
     private cdRef: ChangeDetectorRef
@@ -63,15 +50,4 @@ export class ArmorsetComponent implements OnInit, OnChanges, OnDestroy {
     this.destoy$.complete()
   }
 
-  public iconPath(path: string) {
-    return this.nw.iconPath(path)
-  }
-
-  public itemName(item: ItemDefinitionMaster, set: Armorset) {
-    return this.nw.translate(item.Name)?.replace(set.name, '')
-  }
-
-  public itemRarity(item: ItemDefinitionMaster) {
-    return this.nw.itemRarity(item)
-  }
 }
