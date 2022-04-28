@@ -22,17 +22,19 @@ export function findSets(items: ItemDefinitionMaster[], source: string, perksMap
       .samePerks
       .map((it) => perksMap.get(it))
       .filter((it) => it.PerkType !== 'Gem' && it.PerkType !== 'Inherent')
+    const naming = buildSetName(items, nw)
 
     const groupKey = sharedPerks.map((it) => it.PerkID).sort().join('-')
     sets[groupKey] = sets[groupKey] || []
     sets[groupKey].push({
       key: getFamilyName(items[0]),
-      name: getNameForSet(items, nw),
+      name: naming.name,
       source: source,
       tier: items[0].Tier,
       weight: getItemClass(items[0]),
       perks: sharedPerks,
       items: items,
+      itemNames: naming.names
     })
   })
   return Object.entries(sets).map(([key, itemSets]) => {
@@ -112,9 +114,46 @@ export function getPerkInfos(items: ItemDefinitionMaster[]) {
   }
 }
 
-export function getNameForSet(items: ItemDefinitionMaster[], nw: NwService) {
+export function buildSetName(items: ItemDefinitionMaster[], nw: NwService) {
   const names = items.map((it) => nw.translate(it.Name))
-  return longestCommonSubstring(names[0], names[1])
+  const i0 = commonPrefixLength(names)
+  const i1 = commonPrefixLength(names.map((it) => it.split('').reverse().join('')))
+  const data = names.map((name) => {
+    return {
+      prefix: name.substring(0, i0),
+      midname: name.substring(i0, Math.max(i0, name.length - i1)),
+      suffix: name.substring(Math.max(i0, name.length - i1), name.length),
+    }
+  })
+  if (data[0].prefix && data[0].suffix) {
+    return {
+      name: [data[0].prefix, '…', data[0].suffix].map((it) => it.trim()).filter((it) => !!it).join(' '),
+      names: data.map((it) => {
+        return [
+          it.prefix.trim() ? '…' : '',
+          it.midname.trim(),
+          it.suffix.trim() ? '…' : '',
+        ].filter((it) => !!it).join(' ')
+      })
+    }
+  }
+
+  const common = names.reduce((res, name) => longestCommonSubstring(res, name), names[0])
+  return {
+    name: common,
+    names: names.map((it) => it.replace(common, '…'))
+  }
+}
+
+function commonPrefixLength(names: string[]) {
+  const limit = Math.min(...names.map((it) => it.length))
+  let i = 0
+  for (; i < limit; i++) {
+    if (names.some((it) => it[i] !== names[0][i])) {
+      break
+    }
+  }
+  return i
 }
 
 export function longestCommonSubstring(string1: string, string2: string) {
@@ -122,8 +161,8 @@ export function longestCommonSubstring(string1: string, string2: string) {
   // For example:
   // '𐌵'.length === 2
   // [...'𐌵'].length === 1
-  const s1 = string1.split(' ')
-  const s2 = string2.split(' ')
+  const s1 = string1 // .split(' ')
+  const s2 = string2 // .split(' ')
 
   // Init the matrix of all substring lengths to use Dynamic Programming approach.
   const substringMatrix = Array(s2.length + 1)
@@ -173,7 +212,7 @@ export function longestCommonSubstring(string1: string, string2: string) {
   let longestSubstring = ''
 
   while (substringMatrix[longestSubstringRow][longestSubstringColumn] > 0) {
-    longestSubstring = s1[longestSubstringColumn - 1] + ' ' + longestSubstring
+    longestSubstring = s1[longestSubstringColumn - 1] + longestSubstring
     longestSubstringRow -= 1
     longestSubstringColumn -= 1
   }

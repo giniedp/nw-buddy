@@ -36,15 +36,16 @@ export class NwTextDirective implements OnInit, OnChanges, OnDestroy {
   public constructor(private elRef: ElementRef<HTMLElement>, private nw: NwService, private locale: LocaleService) {}
 
   public ngOnInit(): void {
-    combineLatest([this.change$.pipe(distinctUntilChanged()), this.locale.change])
-      .pipe(
-        map(([context]) => {
+    this.change$
+      .pipe(distinctUntilChanged())
+      .pipe(switchMap((context) => {
+        return this.nw.translate$(context.text).pipe(map((text) => {
           return {
             ...context,
-            text: this.nw.translate(context.text),
+            text
           }
-        })
-      )
+        }))
+      }))
       .pipe(switchMap((context) => this.nw.expression.solve(context)))
       .pipe(takeUntil(this.destroy$))
       .subscribe((res) => {

@@ -8,6 +8,7 @@ import { NwInfoLinkDirective } from './nw-info-link.directive'
 import { ItemTrackerComponent } from './nw-item-tracker.component'
 import { NwRarityBgDirective } from './nw-rarity-bg.directive'
 import { NwTextDirective } from './nw-text.directive'
+import { NwTradeskillCircleComponent } from './nw-tradeskill-circle.component'
 
 @NgModule({
   imports: [
@@ -21,6 +22,7 @@ import { NwTextDirective } from './nw-text.directive'
     NwRarityBgDirective,
     NwInfoLinkDirective,
     ItemTrackerComponent,
+    NwTradeskillCircleComponent,
   ],
   exports: [
     NwTextDirective,
@@ -29,6 +31,7 @@ import { NwTextDirective } from './nw-text.directive'
     NwRarityBgDirective,
     NwInfoLinkDirective,
     ItemTrackerComponent,
+    NwTradeskillCircleComponent
   ],
 })
 export class NwModule {

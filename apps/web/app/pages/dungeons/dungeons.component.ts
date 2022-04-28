@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
 import { Elementalmutations, GameEvent, Gamemodes, ItemDefinitionMaster, Mutationdifficulty } from '@nw-data/types'
-import { combineLatest, map, Subject, takeUntil } from 'rxjs'
+import { combineLatest, Subject, takeUntil } from 'rxjs'
 import { NwService } from '~/core/nw'
 
 export interface MutationdifficultyRow {

@@ -3,9 +3,11 @@ import {
   combineLatest,
   distinctUntilChanged,
   firstValueFrom,
+  isObservable,
   map,
   Observable,
   of,
+  startWith,
   Subject,
   switchMap,
   takeUntil,
@@ -27,11 +29,19 @@ export class TranslateService implements OnDestroy {
     this.attachLoader()
   }
 
-  public observe(key: string | Observable<string>, locale?: string) {
-    const key$ = typeof key === 'string' ? of(key) : key
-    return combineLatest([key$, this.change$])
-      .pipe(map(([k]) => this.get(k, locale)))
-      .pipe(distinctUntilChanged())
+  public observe(key: string | Observable<string>, locale?: string | Observable<string>) {
+    if (!locale) {
+      locale = this.locale.change
+    }
+    return combineLatest({
+      key: isObservable(key) ? key : of(key),
+      locale: isObservable(locale) ? locale : of(locale),
+      change: this.change$.pipe(startWith(null))
+    })
+    .pipe(map(({ key, locale }) => {
+      return this.get(key, locale)
+    }))
+    .pipe(distinctUntilChanged())
   }
 
   public get(key: string, locale: string = this.locale.value) {

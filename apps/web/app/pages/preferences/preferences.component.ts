@@ -1,5 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
+import { NwTradeskillService } from '~/core/nw/nw-tradeskill.service'
 import { AppPreferencesService, PreferencesService } from '~/core/preferences'
+import { TradeskillPreferencesService } from '~/core/preferences/tradeskill-preferences.service'
 
 @Component({
   selector: 'nwb-preferences',
@@ -11,7 +13,12 @@ import { AppPreferencesService, PreferencesService } from '~/core/preferences'
   },
 })
 export class PreferencesComponent implements OnInit {
-  public constructor(public app: AppPreferencesService, private preferences: PreferencesService) {
+  public constructor(
+    public readonly app: AppPreferencesService,
+    public readonly preferences: PreferencesService,
+    public readonly tradeskillPref: TradeskillPreferencesService,
+    public readonly tradeskillService: NwTradeskillService
+  ) {
     //
   }
 

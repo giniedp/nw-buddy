@@ -17,6 +17,12 @@ export class SidebarComponent implements OnChanges {
   @Input()
   public category: string
 
+  @Input()
+  public disableQuickfilter = false
+
+  @Input()
+  public disableAll = false
+
   @Output()
   public categoryChange = new EventEmitter<string>()
 

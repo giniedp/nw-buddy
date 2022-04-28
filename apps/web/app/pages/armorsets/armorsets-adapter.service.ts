@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core'
 import { ItemDefinitionMaster, Perks } from '@nw-data/types'
-import { GridOptions, IDetailCellRendererParams } from 'ag-grid-community'
+import { ColDef, GridOptions, IDetailCellRendererParams } from 'ag-grid-community'
 import { groupBy } from 'lodash'
 import { combineLatest, defer, map, Observable, shareReplay } from 'rxjs'
 import { LocaleService } from '~/core/i18n'
-import { NwService } from '~/core/nw'
-import { CategoryFilter } from '~/ui/ag-grid'
+import { IconComponent, NwService } from '~/core/nw'
+import { CategoryFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import { Armorset } from './types'
 import { findSets } from './utils'
+import m from 'mithril'
 
 function fieldName(key: keyof Armorset) {
   return key
@@ -36,7 +37,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
         {
           headerName: 'Name',
           field: fieldName('name'),
-          width: 120,
+          width: 200,
         },
         {
           headerName: 'Tier',
@@ -68,60 +69,92 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
           filter: CategoryFilter,
         },
         {
-          headerName: 'Pieces',
-          children: new Array(5).fill(null).map((_, i) => {
-            return {
-              children: [
-                {
-                  sortable: false,
-                  filter: false,
-                  width: 54,
-                  cellRenderer: ({ data }) => {
-                    const item = (data as Armorset).items[i]
-                    const rarity = this.nw.itemRarity(item)
-                    const iconPath = this.nw.iconPath(item.IconPath)
-                    const icon = this.nw.renderIcon(iconPath, {
-                      size: 38,
-                      rarity: rarity,
-                    })
-                    return `<a href="${this.nw.nwdbLinkUrl('item', item.ItemID)}" target="_blank">${icon}</a>`
-                  },
-                },
-                {
-                  width: 80,
-                  editable: true,
-
-                  valueGetter: ({ data }) => {
-                    const item = (data as Armorset).items[i]
-                    return this.nw.itemPref.get(item.ItemID)?.gs
-                  },
-                  valueSetter: ({ data, newValue }) => {
-                    const item = (data as Armorset).items[i]
-                    this.nw.itemPref.merge(item.ItemID, { gs: newValue })
-                    return true
-                  },
-                  cellRenderer: ({ data, value }: IDetailCellRendererParams) => {
-                    const set = data as Armorset
-                    const item = set.items[i]
-                    const name = this.nw.translate(item.Name)?.replace(set.name, '')
-                    const el = document.createElement('div')
-                    el.classList.add('flex', 'flex-col', 'text-sm')
-                    el.innerHTML = `
-                      <span>${name}</span>
-                      <span class="italic gs">${value || '•'}</span>
-                    `
-                    if (value) {
-                      el.querySelector('.gs').classList.add('text-success')
-                    } else {
-                      el.querySelector('.gs').classList.add('text-error')
-                    }
-                    return el
-                  },
-                },
-              ],
-            }
+          headerName: 'Common Perks',
+          width: 150,
+          cellRenderer: mithrilCell<Armorset>({
+            view: ({ attrs: { data } }) => {
+              return m('div.flex.flex-row.items-center.h-full', {}, [
+                m.fragment(
+                  {},
+                  data.perks.map((perk) => {
+                    return m('a.block.w-7.h-7', { target: '_blank', href: this.nw.nwdbLinkUrl('perk', perk.PerkID) }, [
+                      m(IconComponent, {
+                        src: this.nw.iconPath(perk.IconPath),
+                        class: `w-7 h-7 nw-icon`,
+                      }),
+                    ])
+                  })
+                ),
+              ])
+            },
           }),
         },
+        ...new Array(5).fill(null).map((_, i): ColDef[] => [
+          {
+            sortable: false,
+            filter: false,
+            width: 54,
+            cellRenderer: mithrilCell<Armorset>({
+              view: ({ attrs: { data } }) => {
+                const item = data.items[i]
+                const rarity = this.nw.itemRarity(item)
+                return m('a', { target: '_blank', href: this.nw.nwdbLinkUrl('item', item.ItemID) }, [
+                  m(IconComponent, {
+                    src: this.nw.iconPath(item.IconPath),
+                    class: `w-9 h-9 nw-icon bg-rarity-${rarity}`
+                  })
+                ])
+              },
+            }),
+          },
+          {
+            width: 150,
+            editable: true,
+            sortable: false,
+            filter: false,
+            getQuickFilterText: ({ data }) => {
+              const item = (data as Armorset).items[i]
+              return this.nw.translate(item.Name)
+            },
+            valueGetter: ({ data }) => {
+              const item = (data as Armorset).items[i]
+              return this.nw.itemPref.get(item.ItemID)?.gs
+            },
+            valueSetter: ({ data, newValue }) => {
+              const item = (data as Armorset).items[i]
+              this.nw.itemPref.merge(item.ItemID, { gs: newValue })
+              return true
+            },
+            cellRenderer: mithrilCell<Armorset>({
+              view: ({ attrs: { value, data } }) => {
+                const item = data.items[i]
+                const name = data.itemNames[i]
+                const max = (item.GearScoreOverride || item.MaxGearScore) <= value
+                return m('div.flex.flex-col.text-sm', {
+                  class: [
+                    value && max ? 'border-l-4 border-l-success pl-2 -ml-2 -mr-2' : '',
+                    value && !max ? 'border-l-4 border-l-warning pl-2 -ml-2 -mr-2' : '',
+                  ].join(' ')
+                }, [
+                  m('span', {
+                    class: value ? '' : 'text-error-content',
+                  }, name),
+                  m(
+                    'span.font-bold',
+                    {
+                      class: [
+                        value && max ? 'text-success' : '',
+                        value && !max ? 'text-warning' : '',
+                        !value ? 'text-error' : '',
+                      ].join(' '),
+                    },
+                    value ? `GS ${value}` : '•'
+                  ),
+                ])
+              },
+            }),
+          },
+        ]).flat(1),
       ],
     })
   }
@@ -131,8 +164,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
       items: this.nw.db.items,
       perks: this.nw.db.perksMap,
       locale: this.locale.change,
-    })
-    .pipe(
+    }).pipe(
       map(({ items, perks }) => {
         const MIN_RARITY = 2
         items = items.filter((it) => it.ItemType === 'Armor').filter((it) => this.nw.itemRarity(it) >= MIN_RARITY)

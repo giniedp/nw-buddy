@@ -3,15 +3,14 @@ import {
   OnInit,
   ChangeDetectionStrategy,
   Input,
-  OnChanges,
   OnDestroy,
-  SimpleChanges,
   ChangeDetectorRef,
   ElementRef,
   ViewChild,
   AfterViewChecked,
 } from '@angular/core'
 import { Chart, ChartConfiguration, registerables  } from 'chart.js'
+import { ReplaySubject, Subject, takeUntil } from 'rxjs'
 
 Chart.register(...registerables)
 
@@ -21,44 +20,41 @@ Chart.register(...registerables)
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<canvas #canvas></canvas>`,
 })
-export class ChartComponent implements OnInit, OnChanges, OnDestroy, AfterViewChecked {
+export class ChartComponent implements OnInit, OnDestroy {
   @Input()
-  public config: ChartConfiguration
+  public set config(value: ChartConfiguration) {
+    this.config$.next(value)
+  }
 
   @ViewChild('canvas', { static: true, read: ElementRef })
   public canvas: ElementRef<HTMLCanvasElement>
 
-  private needsUpdate = false
+  private config$ = new ReplaySubject<ChartConfiguration>(1)
+  private destroy$ = new Subject()
   private chart: Chart
-  public constructor(private cdRef: ChangeDetectorRef, private elRef: ElementRef<HTMLElement>) {
-    //
-  }
 
   public ngOnInit(): void {
-    // new ResizeObserver(() => {
-    //   this.chart?.resize()
-    // })
-  }
+    this.config$.pipe(takeUntil(this.destroy$)).subscribe((config) => {
+      this.destroyChart()
+      if (config) {
 
-  public ngOnChanges(changes: SimpleChanges): void {
-    this.needsUpdate = true
-    this.cdRef.markForCheck()
+      }
+      this.createChart(config)
+    })
   }
 
   public ngOnDestroy(): void {
+    this.destroy$.next(null)
+    this.destroy$.complete()
+    this.destroyChart()
+  }
+
+  private destroyChart() {
     this.chart?.destroy()
     this.chart = null
   }
 
-  public ngAfterViewChecked(): void {
-    if (this.needsUpdate) {
-      this.chart?.destroy()
-      this.chart = null
-      if (this.config) {
-        setTimeout(() => {
-          this.chart = new Chart(this.canvas.nativeElement.getContext('2d'), this.config)
-        })
-      }
-    }
+  private createChart(config: ChartConfiguration) {
+    this.chart = new Chart(this.canvas.nativeElement.getContext('2d'), config)
   }
 }

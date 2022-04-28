@@ -2,8 +2,17 @@
 @import '~ag-grid-community/src/styles/ag-theme-alpine-dark/sass/ag-theme-alpine-dark-mixin';
 
 .ag-grid {
-  @include ag-theme-alpine-dark((
-    borders: false,
-    cell-horizontal-padding: 8px,
-  ));
+  @include ag-theme-alpine-dark(
+    (
+      // alpine-active-color: var(--p),
+      borders: false,
+      cell-horizontal-padding: 8px,
+      background-color: hsl(var(--b1) / var(--tw-bg-opacity)),
+      header-background-color: hsl(var(--b1) / var(--tw-bg-opacity)),
+      odd-row-background-color: hsl(var(--b2) / var(--tw-bg-opacity)),
+      control-panel-background-color: hsl(var(--b1) / var(--tw-bg-opacity)),
+      input-focus-box-shadow: none,
+      card-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5)
+    )
+  );
 }

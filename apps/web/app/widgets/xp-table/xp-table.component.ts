@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@
 import { GridOptions } from 'ag-grid-community'
 import { Xpamountsbylevel } from '@nw-data/types'
 import { firstValueFrom } from 'rxjs'
-import { NwDataService } from '~/core/nw'
+import { NwDataService, NwService } from '~/core/nw'
 
 function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: keyof T) {
   let result = 0
@@ -65,10 +65,10 @@ export class XpTableComponent implements OnInit {
     ],
   }
 
-  public constructor(private nwService: NwDataService, private cdRef: ChangeDetectorRef) {}
+  public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {}
 
   public async ngOnInit() {
-    this.data = await firstValueFrom(this.nwService.datatablesXpamountsbylevel())
+    this.data = await firstValueFrom(this.nw.db.data.datatablesXpamountsbylevel())
     this.cdRef.markForCheck()
   }
 }

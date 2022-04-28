@@ -16,7 +16,7 @@ import {
   AfterContentChecked,
 } from '@angular/core'
 import { Crafting, Craftingcategories, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { combineLatest, ReplaySubject, Subject, take, takeUntil } from 'rxjs'
+import { combineLatest, of, ReplaySubject, Subject, take, takeUntil } from 'rxjs'
 import { NwService } from '~/core/nw'
 import { CraftingCalculatorComponent } from './crafting-calculator.component'
 
@@ -34,6 +34,9 @@ export interface IngredientStep {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, AfterContentChecked {
+
+  @Input()
+  public recipe: Crafting
 
   @Input()
   public ingredient: string
@@ -58,6 +61,10 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
 
   public bonus: number = 0
 
+  public get isDowngrade() {
+    return this.recipe?.CraftingCategory === 'ResourceDowngrade'
+  }
+
   public get bonusPercent() {
     return Math.round(this.bonus * 100)
   }
@@ -81,7 +88,6 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
   })
   public children: QueryList<CraftingStepComponent>
 
-  public recipe: Crafting
   public item: ItemDefinitionMaster | Housingitems
   public steps: Array<IngredientStep>
   public category: Craftingcategories
@@ -91,7 +97,7 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
 
   public trackStepBy: TrackByFunction<any> = (i) => i
   private destroy$ = new Subject()
-  private change$ = new ReplaySubject<IngredientStep>(1)
+  private change$ = new ReplaySubject<IngredientStep & { recipe?: Crafting }>(1)
   private needsBonusUpdate = false
 
   public constructor(private parent: CraftingCalculatorComponent, private nw: NwService, private cdRef: ChangeDetectorRef) {
@@ -105,7 +111,7 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
       changes: this.change$,
     })
       .pipe(takeUntil(this.destroy$))
-      .subscribe(({ items, categories }) => {
+      .subscribe(({ items, categories, changes }) => {
         this.item = null
         this.steps = null
         this.category = null
@@ -113,7 +119,7 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
         this.categorySelection = null
         switch (this.type) {
           case 'Item': {
-            this.selectItem(this.ingredient)
+            this.selectItem(this.ingredient, changes.recipe)
             break
           }
           case 'Currency': {
@@ -134,7 +140,15 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
   }
 
   public ngOnChanges(ch: SimpleChanges): void {
-    if (this.getChange(ch, 'ingredient') || this.getChange(ch, 'type')) {
+    if (this.getChange(ch, 'recipe')) {
+      this.ingredient = this.nw.itemIdFromRecipe(this.recipe)
+      this.type = 'Item'
+      this.change$.next({
+        recipe: this.recipe,
+        ingredient: this.ingredient,
+        type: this.type,
+      })
+    } else if (this.getChange(ch, 'ingredient') || this.getChange(ch, 'type')) {
       this.change$.next({
         ingredient: this.ingredient,
         type: this.type,
@@ -159,31 +173,24 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
     return this.nw.translate(key)
   }
 
-  public itemRarity(item: ItemDefinitionMaster) {
+  public itemRarity(item: ItemDefinitionMaster | Housingitems) {
     return this.nw.itemRarity(item)
   }
 
-  public selectItem(itemId: string) {
+  public selectItem(itemId: string, recipe?: Crafting) {
     this.showOptions = false
     this.markForCheck()
     combineLatest({
       items: this.nw.db.itemsMap,
       housings: this.nw.db.housingItemsMap,
       recipes: this.nw.db.recipes,
+      recipe: of(recipe)
     })
       .pipe(take(1))
-      .subscribe(({ items, housings, recipes }) => {
+      .subscribe(({ items, housings, recipes, recipe }) => {
         const item = items.get(itemId) || housings.get(itemId)
-        const recipe = item && this.nw.findRecipeForItem(item, recipes)
-        const steps = Object.keys(recipe || {})
-          .filter((it) => it.match(/^Ingredient\d+$/))
-          .map((_, i) => {
-            return {
-              ingredient: recipe[`Ingredient${i + 1}`],
-              quantity: recipe[`Qty${i + 1}`],
-              type: recipe[`Type${i + 1}`],
-            }
-          })
+        recipe = recipe || (item && this.nw.recipeForItem(item, recipes))
+        const steps = this.nw.recipeIngredients(recipe)
         this.recipe = recipe
         this.item = item
         this.steps = steps
@@ -214,13 +221,14 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
       this.markForCheck()
       return
     }
-
+    const ingredients = this.children.toArray().map((child) => child.item).filter((it) => !!it)
+    const skillLevel = this.nw.tradeskills.preferences.get(this.recipe.Tradeskill)?.level || 0
     const bonus = this.nw.calculateBonusItemChance({
       item: this.item,
-      ingredients: this.children.toArray().map((child) => child.item).filter((it) => !!it),
-      recipe: this.recipe
+      ingredients: ingredients,
+      recipe: this.recipe,
+      skill: skillLevel
     })
-    console.log(bonus)
     if (this.bonus !== bonus) {
       this.bonus = bonus
       this.markForCheck()

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { Crafting, GameEvent, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 
 import { GridOptions } from 'ag-grid-community'
 import { Observable, take } from 'rxjs'
@@ -7,7 +7,9 @@ import { TranslateService } from '../i18n'
 import { ItemPreferencesService, RecipePreferencesService } from '../preferences'
 import { NwDbService } from './nw-db.service'
 import { NwExpressionService } from './nw-expression'
+import { NwTradeskillService } from './nw-tradeskill.service'
 import { nwdbLinkUrl } from './nwdbinfo'
+import m from 'mithril'
 
 const CATEGORIES_GRANTING_BONUS = [
   'Concoctions',
@@ -29,6 +31,7 @@ export class NwService {
     public readonly expression: NwExpressionService,
     public readonly itemPref: ItemPreferencesService,
     public readonly recipePref: RecipePreferencesService,
+    public readonly tradeskills: NwTradeskillService
   ) {}
 
   public gridOptions(options: GridOptions): GridOptions {
@@ -37,7 +40,6 @@ export class NwService {
       defaultColDef: {
         sortable: true,
         filter: true,
-        // floatingFilter: true,
         ...(options.defaultColDef || {}),
       },
       ...options,
@@ -50,18 +52,6 @@ export class NwService {
         size: options.size,
         rarity: options?.rarity?.(params.data),
       })
-    }
-  }
-
-  public cellRendererAsync = <T>(valueFn: (data: T) => Observable<string>) => {
-    return (params: { data: T }) => {
-      const el = document.createElement('span')
-      valueFn(params.data)
-        .pipe(take(1)) // TODO:
-        .subscribe((value) => {
-          el.innerText = value
-        })
-      return el
     }
   }
 
@@ -101,8 +91,8 @@ export class NwService {
     return rarity
   }
 
-  public itemTierRoman(item: ItemDefinitionMaster | Housingitems) {
-    switch (item.Tier) {
+  public tierToRoman(tier: number) {
+    switch (tier) {
       case 0:
         return '-'
       case 1:
@@ -116,7 +106,7 @@ export class NwService {
       case 5:
         return 'V'
       default:
-        return String(item.Tier)
+        return String(tier ?? '')
     }
   }
 
@@ -138,31 +128,63 @@ export class NwService {
     return this.translations.get(key)
   }
 
-  public itemIdFromRecipe(item: Crafting) {
-    return item && (item.ItemID || item.ProceduralTierID5 || item.ProceduralTierID4 || item.ProceduralTierID3 || item.ProceduralTierID2 || item.ProceduralTierID1)
+  public translate$(key: string) {
+    if (typeof key === 'string' && key.startsWith('@')) {
+      key = key.substring(1)
+    }
+    return this.translations.observe(key)
   }
 
-  public findRecipeForItem(item: ItemDefinitionMaster | Housingitems, recipes: Crafting[]) {
+  public itemIdFromRecipe(item: Crafting) {
     if (!item) {
       return null
     }
-    return recipes.find((it) => {
-      if (it.CraftingCategory === 'MaterialConversion' || !it.OutputQty) {
+    if (item.ItemID) {
+      return item.ItemID
+    }
+    if (item[`ProceduralTierID${item.BaseTier}`]) {
+      return item[`ProceduralTierID${item.BaseTier}`]
+    }
+    return item && (item.ItemID || item.ProceduralTierID5 || item.ProceduralTierID4 || item.ProceduralTierID3 || item.ProceduralTierID2 || item.ProceduralTierID1)
+  }
+
+  public recipeForItem(item: ItemDefinitionMaster | Housingitems, recipes: Crafting[]) {
+    const itemId = 'ItemID' in item ? item?.ItemID : item?.HouseItemID
+    if (!itemId) {
+      return null
+    }
+    return recipes.find((recipe) => {
+      if (recipe.CraftingCategory === 'MaterialConversion' || !recipe.OutputQty) {
         return false
       }
-      const id = 'ItemID' in item ? item.ItemID : item.HouseItemID
-      if (it.IsProcedural) {
-        return (
-          item.Tier === it.BaseTier &&
-          (it.ProceduralTierID1 === id ||
-            it.ProceduralTierID2 === id ||
-            it.ProceduralTierID3 === id ||
-            it.ProceduralTierID4 === id ||
-            it.ProceduralTierID5 === id)
-        )
+      if (recipe.IsProcedural) {
+        return recipe[`ProceduralTierID${recipe.BaseTier}`] === itemId
       }
-      return it.RecipeID === item.CraftingRecipe || it.ItemID === id
+      return recipe.RecipeID === item.CraftingRecipe || recipe.ItemID === itemId
     })
+  }
+
+  public recipeItemQuantitySum(recipe: Crafting) {
+    return Object.keys(recipe)
+      .filter((it) => it.match(/^Qty\d+$/))
+      .map((key) => recipe[key] || 0)
+      .reduce((a, b) => a + b, 0)
+  }
+
+  public recipeIngredients(recipe: Crafting) {
+    return Object.keys(recipe || {})
+          .filter((it) => it.match(/^Ingredient\d+$/))
+          .map((_, i) => {
+            return {
+              ingredient: recipe[`Ingredient${i + 1}`],
+              quantity: recipe[`Qty${i + 1}`],
+              type: recipe[`Type${i + 1}`],
+            }
+          })
+  }
+
+  public recipeProgressionReward(recipe: Crafting, event: GameEvent) {
+    return this.recipeItemQuantitySum(recipe) * (event.CategoricalProgressionReward || 0)
   }
 
   public calculateBonusItemChance({
@@ -184,13 +206,6 @@ export class NwService {
     }
     const base = (skill ?? 200) / 1000 + recipe.BonusItemChance
     const chances = ingredients
-      // .filter((it) => {
-      //   return (
-      //     it.TradingGroup === 'RefiningComponents' ||
-      //     it.TradingGroup === 'AlchemyMedicinal' ||
-      //     it.TradingGroup === 'AlchemyProtective'
-      //   )
-      // })
       .map((it) => {
         const diff = it.Tier - item.Tier
         if (!diff) {
@@ -219,4 +234,31 @@ function createIconHtml(path: string, options: { size: number; class: string }) 
       <img src="${path}" onerror="this.parentElement.classList.add('error')" onload="this.parentElement.classList.add('show')"/>
     </picture>
   `
+}
+
+export interface IconComponentAttrs {
+  src: string
+  class: string
+}
+export const IconComponent: m.ClosureComponent<IconComponentAttrs> = () => {
+  let hasError = false
+  let didLoad = false
+  function onError() {
+    hasError = true
+  }
+  function onSuccess() {
+    didLoad = true
+  }
+  return {
+    view: ({ attrs }) => {
+      return m('picture', { class: attrs.class }, [
+        m('img', {
+          class: hasError ? 'error' : didLoad ? 'show' : '',
+          src: attrs.src,
+          onerror: onError,
+          onload: onSuccess,
+        })
+      ])
+    }
+  }
 }

@@ -34,7 +34,8 @@ async function importLocale(input: string, output: string) {
       basename.startsWith('javelindata_') ||
       basename.startsWith('objectives') ||
       basename.startsWith('weaponabilities') ||
-      basename.startsWith('globalcommontext')
+      basename.startsWith('globalcommontext') ||
+      basename.startsWith('frontendcommontext')
     if (pass) {
       const outFile = path.join(output, path.relative(input, file))
       const outDir = path.dirname(outFile)
@@ -62,11 +63,15 @@ async function importIcons(input: string, output: string) {
   input = path.join(input, 'lyshineui', 'images')
   const files = await glob([
     path.join(input, 'icons', 'abilities', '**', '*.png'),
+    path.join(input, 'icons', 'achievements', '**', 'skilllevel_*.png'),
+    path.join(input, 'icons', 'achievements', '**', 'refining_*.png'),
+    path.join(input, 'icons', 'achievements', '**', 'weaponmastery_*.png'),
     path.join(input, 'icons', 'housing', '**', '*.png'),
     path.join(input, 'icons', 'items', '**', '*.png'),
     path.join(input, 'icons', 'perks', '**', '*.png'),
     path.join(input, 'icons', 'tradeskills', '**', '*.png'),
     path.join(input, 'icons', 'misc', '**', '*.png'),
+    path.join(input, 'missionimages', '**', '*.png'),
     path.join(input, 'status', '**', '*.png'),
     path.join(input, 'map', 'icon', '**', '*.png'),
     path.join(input, 'dungeons', '**', '*.png'),
@@ -80,7 +85,7 @@ async function importIcons(input: string, output: string) {
     }
     const outDir = path.dirname(outFile)
     await mkdir(outDir, { recursive: true })
-    await spawn(`magick convert "${file}" -quality 50 "${outFile}"`, {
+    await spawn(`magick convert "${file}" -quality 65 "${outFile}"`, {
       shell: true,
       stdio: 'pipe',
       env: process.env,

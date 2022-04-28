@@ -3,12 +3,14 @@
     #sidebar
     [nwbSidebarRouteParam]="'cat'"
     [categories]="table.categories | async"
+    class="capitalize"
   ></nwb-sidebar>
 </div>
 <div class="main-frame rounded-md overflow-clip">
   <nwb-data-table
     #table
     class="main-content"
+    [stateKey]="'armorsets-table'"
     [nwbTableRouterParam]="'id'"
     [category]="sidebar.category"
     [quickFilter]="sidebar.quickFilter"

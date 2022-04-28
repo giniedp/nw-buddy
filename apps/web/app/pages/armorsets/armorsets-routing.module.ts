@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
-import { ArmorsetComponent } from './armorset.component'
 import { ArmorsetsComponent } from './armorsets.component'
 
 const routes: Routes = [
@@ -10,7 +9,6 @@ const routes: Routes = [
     children: [
       {
         path: ':id',
-        component: ArmorsetComponent,
       },
     ],
   },

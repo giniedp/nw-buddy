@@ -9,12 +9,13 @@
   <nwb-data-table
     #table
     class="main-content"
+    [stateKey]="'crafting-table'"
     [nwbTableRouterParam]="'id'"
     [category]="sidebar.category"
     [quickFilter]="sidebar.quickFilter"
   ></nwb-data-table>
 </div>
-<div class="detail-frame w-96">
+<div class="detail-frame w-[400px]">
   <div class="detail-content">
     <router-outlet></router-outlet>
   </div>

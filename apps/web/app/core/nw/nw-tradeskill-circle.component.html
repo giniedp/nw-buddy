@@ -1,0 +1,10 @@
+<div class="relative text-center">
+  <div class="radial-progress text-neutral text-xs absolute top-0" style="--value:100; --size:4rem; --thickness: 4px;"></div>
+  <div class="radial-progress text-primary text-xs" [style.--value]="levelRing + aptitudeRing" style="--size:4rem; --thickness: 4px;">
+    <span class="italic text-base-content">{{ levelStart }}</span>
+    <span class="font-bold text-base-content">
+      {{ levelEnd }}<ng-container *ngIf="aptitudeRing">+{{aptitudeEnd}}</ng-container>
+    </span>
+  </div>
+</div>
+

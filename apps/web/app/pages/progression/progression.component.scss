@@ -1,0 +1,16 @@
+:host {
+  flex: 1;
+  padding: 1rem 0;
+
+  .main-content {
+    display: flex;
+    flex-direction: column;
+  }
+  ::ng-deep.main-content > * {
+    flex: 1;
+
+  }
+  router-outlet {
+    flex: none !important;
+  }
+}

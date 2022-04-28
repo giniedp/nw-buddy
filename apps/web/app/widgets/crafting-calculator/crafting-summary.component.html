@@ -1,33 +1,31 @@
 <table class="table table-compact w-full" *ngIf="table?.length">
   <thead>
     <tr>
-      <th class="w-6"></th>
+      <th class="w-10"></th>
       <th>Name</th>
-      <th>Qty</th>
+      <th class="text-right">Quantity</th>
+      <th class="w-10"></th>
     </tr>
   </thead>
   <tbody>
     <tr *ngFor="let row of table; trackBy: trackByIndex">
       <th>
-        <picture [nwIcon]="row.item.IconPath" class="w-6 h-6"></picture>
+        <picture [nwIcon]="row.item.IconPath" class="w-10 h-10"></picture>
       </th>
       <td [nwText]="row.item.Name"></td>
-      <td>{{ row.quantity }}</td>
+      <td class="text-right">{{ row.quantity | number }}</td>
+      <td></td>
     </tr>
   </tbody>
 </table>
 
-<table class="table table-compact w-full mt-2" *ngIf="xpTable?.length">
-  <thead>
-    <tr>
-      <th>Skill</th>
-      <th>XP</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let row of xpTable; trackBy: trackByIndex">
-      <td [nwText]="row.skill"></td>
-      <td>{{ row.xp }}</td>
-    </tr>
-  </tbody>
-</table>
+<div class="bg-base-100 rounded-md mt-2" *ngIf="xpTable?.length">
+  <div class="flex flex-row items-center" *ngFor="let row of xpTable; trackBy: trackByIndex">
+    <img [nwImage]="row.icon" class="w-20 h-20"/>
+    <div class="flex-1 flex flex-col justify-center pl-2">
+      <span [nwText]="row.name" class="font-bold"></span>
+      <span>+{{ row.xp | number }}</span>
+    </div>
+    <nwb-tradeskill-progress class="m-2" [skillName]="row.id" [skillLevel]="'auto'" [skillPoints]="row.xp"></nwb-tradeskill-progress>
+  </div>
+</div>

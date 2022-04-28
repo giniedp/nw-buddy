@@ -1,0 +1,70 @@
+<table class="table table-compact w-full">
+  <thead>
+    <tr>
+      <th class="w-full">Slot</th>
+      <th class="text-right">Influence</th>
+      <th class="text-center">GS</th>
+      <th class="text-right flex flex-col">
+        <span>Shards</span>
+        <span class="text-xs">Contribution</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let row of data; trackBy: trackById">
+      <th [nwText]="row.name"></th>
+      <td class="text-right">{{ row.weight | percent:'1.0-3' }}</td>
+      <td>
+        <input
+          type="number"
+          placeholder="600"
+          class="input input-bordered"
+          type="number"
+          min="0"
+          class="input input-bordered input-sm text-right"
+          [ngModel]="row.value || 0"
+          (ngModelChange)="writeValue(row.id, $event)"
+        />
+      </td>
+      <td class="text-right" [class.bg-success]="row.next" [class.text-success-content]="row.next">
+         <div *ngIf="row.shards">{{ row.shards | number}}</div>
+         <div *ngIf="row.shards" class="text-xs">{{ row.contribution | number:'1.6-6' }}</div>
+      </td>
+    </tr>
+    <tr >
+      <td colspan="4">
+        <span class="stat place-items-center" *ngIf="upgradeNext">
+          <div class="stat-title">Upgrade next</div>
+          <div class="stat-value text-success">
+            <span [nwText]="upgradeNext.name"></span>
+          </div>
+          <div class="stat-desc">
+            <ng-container *ngFor="let row of data">
+
+            </ng-container>
+          </div>
+        </span>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<!-- <div class="bg-base-100 p-4 rounded-md grid grid-cols-3">
+  <div class="form-control" *ngFor="let row of data">
+    <label class="label">
+      <span class="label-text" [nwText]="row.name"></span>
+    </label>
+    <label class="input-group input-group-sm">
+      <input
+        type="number"
+        placeholder="600"
+        class="input input-bordered"
+        type="number"
+        min="0"
+        class="input input-bordered input-sm text-right"
+        [ngModel]="row.value || 0"
+        (ngModelChange)="writeValue(row.id, $event)"
+      />
+      <span class="w-16 justify-end">{{ row.shards | number }}</span>
+    </label>
+  </div>
+</div> -->

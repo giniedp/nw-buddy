@@ -33,6 +33,9 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   @Input()
   public quickFilter: string
 
+  @Input()
+  public stateKey: string
+
   public get gridData() {
     return this.displayItems
   }

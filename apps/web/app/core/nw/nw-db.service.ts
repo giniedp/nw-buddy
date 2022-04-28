@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core'
-import { combineLatest, defer, map, shareReplay } from 'rxjs'
+import { groupBy } from 'lodash'
+import { combineLatest, defer, map, shareReplay, tap } from 'rxjs'
 import { CaseInsensitiveMap } from '../utils'
 import { NwDataService } from './nw-data.service'
 
-function toMap<T, K extends keyof T>(list: T[], id: K): Map<T[K], T> {
+export function toMap<T, K extends keyof T>(list: T[], id: K): Map<T[K], T> {
   const result = new CaseInsensitiveMap<T[K], T>()
   for (const item of list) {
     result.set(item[id], item)
@@ -16,6 +17,10 @@ function annotate<T>(key: string, value: string) {
     items.forEach((it) => (it[key] = value))
     return items
   })
+}
+
+export function dictToMap<V>(record: Record<string, V>): Map<string, V> {
+  return new CaseInsensitiveMap<string, V>(Object.entries(record))
 }
 
 @Injectable({ providedIn: 'root' })
@@ -58,6 +63,7 @@ export class NwDbService {
       this.data.datatablesWeaponabilitiesAbilityRapier().pipe(annotate('$source', 'rapier')),
       this.data.datatablesWeaponabilitiesAbilitySpear().pipe(annotate('$source', 'spear')),
       this.data.datatablesWeaponabilitiesAbilitySword().pipe(annotate('$source', 'sword')),
+      this.data.datatablesWeaponabilitiesAbilityWarhammer().pipe(annotate('$source', 'warhammer')),
     ])
   })
     .pipe(map((it) => it.flat(1)))
@@ -97,6 +103,14 @@ export class NwDbService {
     .pipe(map((items) => toMap(items, 'StatusID')))
     .pipe(shareReplay(1))
 
+    public damageTable0 = defer(() => {
+      return combineLatest([
+        this.data.datatablesDamagetable(),
+      ])
+    })
+      .pipe(map((it) => it.flat(1)))
+      .pipe(shareReplay(1))
+
   public damageTable = defer(() => {
     return combineLatest([
       this.data.datatablesDamagetable(),
@@ -122,6 +136,16 @@ export class NwDbService {
 
   public damageTableMap = defer(() => this.damageTable)
     .pipe(map((items) => toMap(items, 'DamageID')))
+    .pipe(shareReplay(1))
+
+  public weapons = defer(() => {
+    return combineLatest([this.data.datatablesItemdefinitionsWeapons()])
+  })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
+
+  public weaponsMap = defer(() => this.weapons)
+    .pipe(map((items) => toMap(items, 'WeaponID')))
     .pipe(shareReplay(1))
 
   public perks = defer(() => {
@@ -222,7 +246,6 @@ export class NwDbService {
     .pipe(map((items) => toMap(items, 'ConsumableID')))
     .pipe(shareReplay(1))
 
-
   public gameEvents = defer(() => {
     return combineLatest([this.data.datatablesGameevents()])
   })
@@ -235,5 +258,72 @@ export class NwDbService {
     .pipe(map((items) => toMap(items, 'EventID')))
     .pipe(shareReplay(1))
 
+  public categoriesProgression = defer(() => {
+    return this.data.datatablesCategoricalprogression()
+  }).pipe(shareReplay(1))
+
+  public categoriesProgressionMap = defer(() => {
+    return this.categoriesProgression
+  })
+    .pipe(map((items) => toMap(items, 'CategoricalProgressionId')))
+    .pipe(shareReplay(1))
+
+  public metaAchievements = defer(() => {
+    return this.data.datatablesMetaachievements()
+  }).pipe(shareReplay(1))
+
+  public metaAchievementsMap = defer(() => {
+    return this.metaAchievements
+  })
+    .pipe(map((items) => toMap(items, 'MetaAchievementId')))
+    .pipe(shareReplay(1))
+
+  public tradeskillPostcap = defer(() => {
+    return this.data.datatablesTradeskillpostcap()
+  })
+    .pipe(shareReplay(1))
+
+  public vitals = defer(() => {
+    return this.data.datatablesVitals()
+  }).pipe(shareReplay(1))
+
+  public vitalsMap = defer(() => {
+    return this.vitals
+  })
+    .pipe(map((items) => toMap(items, 'VitalsID')))
+    .pipe(shareReplay(1))
+
+  public vitalsByFamily = defer(() => {
+    return this.vitals
+  })
+    .pipe(map((it) => dictToMap(groupBy(it, (i) => i.Family))))
+    .pipe(shareReplay(1))
+
+  public vitalsFamilies = defer(() => {
+    return this.vitalsByFamily
+  })
+    .pipe(map((it) => Array.from(it.keys())))
+    .pipe(shareReplay(1))
+
+
+  public damagetypes = defer(() => {
+    return this.data.datatablesDamagetypes()
+  }).pipe(shareReplay(1))
+
+  public damagetypesMap = defer(() => {
+    return this.damagetypes
+  })
+    .pipe(map((items) => toMap(items, 'TypeID')))
+    .pipe(shareReplay(1))
+
+  public affixstats = defer(() => {
+    return this.data.datatablesAffixstats()
+  }).pipe(shareReplay(1))
+
+  public affixstatsMap = defer(() => {
+    return this.affixstats
+  })
+    .pipe(map((items) => toMap(items, 'StatusID')))
+    .pipe(shareReplay(1))
   public constructor(public readonly data: NwDataService) {}
 }

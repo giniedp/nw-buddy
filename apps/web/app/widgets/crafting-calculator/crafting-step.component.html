@@ -38,6 +38,7 @@
     [quantity]="step.quantity * actualQuantity"
     [optimize]="optimize"
     [type]="step.type"
+    [collapsible]="!isDowngrade"
     (updated)="makrBonusUpdate()"
   ></nwb-crafting-step>
 </div>

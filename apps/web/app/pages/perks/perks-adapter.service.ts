@@ -2,8 +2,10 @@ import { Injectable } from '@angular/core'
 import { Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, Observable, shareReplay } from 'rxjs'
-import { NwService } from '~/core/nw'
+import { IconComponent, NwService } from '~/core/nw'
+import { mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
+import m from 'mithril'
 
 function fieldName(key: keyof Perks) {
   return key
@@ -33,15 +35,16 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           sortable: false,
           filter: false,
           width: 74,
-          cellRenderer: ({ data }) => {
-            const rarity = this.nw.itemRarity(data)
-            const iconPath = this.nw.iconPath(field(data, 'IconPath'))
-            const icon = this.nw.renderIcon(iconPath, {
-              size: 38,
-              rarity: rarity,
-            })
-            return `<a href="${this.nw.nwdbLinkUrl('perk', field(data, 'PerkID'))}" target="_blank">${icon}</a>`
-          },
+          cellRenderer: mithrilCell<Perks>({
+            view: ({ attrs: { data } }) => {
+              return m('a', { target: '_blank', href: this.nw.nwdbLinkUrl('perk', data.PerkID) }, [
+                m(IconComponent, {
+                  src: this.nw.iconPath(data.IconPath),
+                  class: `w-9 h-9 nw-icon`,
+                }),
+              ])
+            },
+          }),
         },
         {
           headerName: 'Name',

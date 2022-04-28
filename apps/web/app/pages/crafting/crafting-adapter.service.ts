@@ -53,7 +53,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
           },
         },
         {
-          width: 200,
+          width: 250,
           headerName: 'Name',
           valueGetter: ({ data }) => {
             const recipe = data as RecipeWithItem
@@ -82,7 +82,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
                         if (itemId) {
                           this.nw.itemPref.toggleFavourite(itemId)
                           attrs.api.refreshCells({
-                            rowNodes: [attrs.node],
+                            columns: [attrs.column]
                           })
                         }
                       },

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { GridOptions, ValueGetterParams } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, shareReplay, tap } from 'rxjs'
-import { NwService } from '~/core/nw'
+import { IconComponent, NwService } from '~/core/nw'
 import { CategoryFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
@@ -11,13 +11,11 @@ function fieldName(key: keyof ItemDefinitionMaster) {
   return key
 }
 
-function getter(fn: (params: ValueGetterParams & { data: ItemDefinitionMaster}) => any) {
+function getter(fn: (params: ValueGetterParams & { data: ItemDefinitionMaster }) => any) {
   return fn
 }
 
-getter(({ data }) => {
-
-})
+getter(({ data }) => {})
 function field(item: any, key: keyof ItemDefinitionMaster) {
   return item[key]
 }
@@ -42,15 +40,18 @@ export class ItemsAdapterService extends DataTableAdapter<ItemDefinitionMaster> 
           filter: false,
           width: 54,
           pinned: true,
-          cellRenderer: ({ data }) => {
-            const rarity = this.nw.itemRarity(data)
-            const iconPath = this.nw.iconPath(field(data, 'IconPath'))
-            const icon = this.nw.renderIcon(iconPath, {
-              size: 38,
-              rarity: rarity,
-            })
-            return `<a href="${this.nw.nwdbLinkUrl('item', field(data, 'ItemID'))}" target="_blank">${icon}</a>`
-          },
+          cellRenderer: mithrilCell<ItemDefinitionMaster>({
+            view: ({ attrs: { data } }) => {
+              const item = data
+              const rarity = this.nw.itemRarity(item)
+              return m('a', { target: '_blank', href: this.nw.nwdbLinkUrl('item', item.ItemID) }, [
+                m(IconComponent, {
+                  src: this.nw.iconPath(item.IconPath),
+                  class: `w-9 h-9 nw-icon bg-rarity-${rarity}`,
+                }),
+              ])
+            },
+          }),
         },
         {
           width: 250,
@@ -67,26 +68,42 @@ export class ItemsAdapterService extends DataTableAdapter<ItemDefinitionMaster> 
           filter: false,
           sortable: false,
           headerName: 'Perks',
-          cellRenderer: (params: { data: ItemDefinitionMaster }) => {
-            const item = params.data
-            const perks = [item.Perk1, item.Perk2, item.Perk3, item.Perk4, item.Perk5]
-              .filter((it) => !!it)
-              .map((it) => this.perks.get(it))
-              .filter((it) => !!it)
-              .map((it) => {
-                const iconPath = this.nw.iconPath(it.IconPath)
-                const icon = this.nw.renderIcon(iconPath, { size: 24 })
-                return `<a href="${this.nw.nwdbLinkUrl('perk', it.PerkID)}" target="_blank">${icon}</a>`
-              })
-              .join(' ')
-            const generated = [item.PerkBucket1, item.PerkBucket2, item.PerkBucket3, item.PerkBucket4, item.PerkBucket5]
-              .filter((it) => !!it)
-              .map(() => {
-                return this.nw.renderIcon('/nw-data/crafting/crafting_perkbackground.webp', { size: 24 })
-              })
-              .join(' ')
-            return perks + generated
-          },
+          cellRenderer: mithrilCell<ItemDefinitionMaster>({
+            view: ({ attrs: { data } }) => {
+              const perks = [data.Perk1, data.Perk2, data.Perk3, data.Perk4, data.Perk5]
+                .map((it) => this.perks.get(it))
+                .filter((it) => !!it)
+              const generated = [
+                data.PerkBucket1,
+                data.PerkBucket2,
+                data.PerkBucket3,
+                data.PerkBucket4,
+                data.PerkBucket5,
+              ].filter((it) => !!it)
+              return m('div.flex.flex-row.items-center.h-full', {}, [
+                m.fragment(
+                  {},
+                  perks.map((perk) => {
+                    return m('a.block.w-7.h-7', { target: '_blank', href: this.nw.nwdbLinkUrl('perk', perk.PerkID) }, [
+                      m(IconComponent, {
+                        src: this.nw.iconPath(perk.IconPath),
+                        class: `w-7 h-7 nw-icon`,
+                      }),
+                    ])
+                  })
+                ),
+                m.fragment(
+                  {},
+                  generated.map((it) => {
+                    return m(IconComponent, {
+                      src: '/nw-data/crafting/crafting_perkbackground.webp',
+                      class: `w-7 h-7 nw-icon`,
+                    })
+                  })
+                ),
+              ])
+            },
+          }),
         },
         {
           headerName: 'Rarity',
@@ -98,7 +115,7 @@ export class ItemsAdapterService extends DataTableAdapter<ItemDefinitionMaster> 
         {
           width: 80,
           field: fieldName('Tier'),
-          valueGetter: ({ data }) => this.nw.itemTierRoman(data),
+          valueGetter: ({ data }) => this.nw.tierToRoman(data.Tier),
           filter: CategoryFilter,
         },
         {
@@ -223,7 +240,7 @@ export class ItemsAdapterService extends DataTableAdapter<ItemDefinitionMaster> 
       items: this.nw.db.items,
       perks: this.nw.db.perksMap,
     })
-      .pipe(tap(({ perks }) => this.perks = perks))
+      .pipe(tap(({ perks }) => (this.perks = perks)))
       .pipe(map(({ items }) => items))
   }).pipe(
     shareReplay({

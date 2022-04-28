@@ -1,0 +1,24 @@
+<figure class="aspect-[4/3]">
+  <img [nwImage]="data?.Icon" class="aspect-[4/3] object-cover w-full">
+</figure>
+<div class="card-body p-4">
+  <h2 class="card-title flex flex-row" >
+    <span [nwText]="data?.Name"></span>
+  </h2>
+  <div class="stat px-0 py-2" *ngFor="let row of data?.Damage">
+    <a class="stat-figure text-primary" *ngIf="row.Perk" [nwInfoLink]="row.Perk.PerkID" [nwInfoResource]="'perk'">
+      <picture class="nw-icon w-16" [nwIcon]="row.Perk.IconPath"></picture>
+    </a>
+    <div class="stat-title" [nwText]="row.Name"></div>
+    <div class="stat-value"
+    [class.text-success]="row.Value > 0"
+    [class.text-warning]="row.Value < 0"
+    [class.text-error]="row.Value < -0.2"
+    >{{row.Value > 0 ? '+' : ''}}{{ row.Value | percent }}</div>
+    <div class="stat-desc">
+      <span class="badge badge-ghost" *ngFor="let weapon of row.Weapons">
+        {{ weapon }}
+      </span>
+    </div>
+  </div>
+</div>

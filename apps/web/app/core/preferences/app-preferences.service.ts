@@ -12,5 +12,6 @@ export class AppPreferencesService {
     const storage = new ScopedStorage(preferences.storage, 'app:')
     this.language = storage.createProperty('language', 'de-de')
     this.theme = storage.createProperty('theme', 'helloween')
+
   }
 }

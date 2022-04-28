@@ -8,8 +8,8 @@ import {
   SimpleChanges,
   ChangeDetectorRef,
 } from '@angular/core'
-import { Crafting, ItemDefinitionMaster } from '@nw-data/types'
-import { combineLatest, defer, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import { Crafting } from '@nw-data/types'
+import { defer, Subject } from 'rxjs'
 import { NwService } from '~/core/nw'
 
 @Component({
@@ -20,54 +20,25 @@ import { NwService } from '~/core/nw'
 })
 export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
-  public itemId: string
-
-  @Input()
   public quantity: number = 1
 
   @Input()
-  public readonly: boolean = false
-
   public optimize: boolean = false
 
-  //public item: ItemDefinitionMaster
+  @Input()
   public recipe: Crafting
 
   public stepChange = defer(() => this.stepChange$)
 
   private destroy$ = new Subject()
-  private itemId$ = new ReplaySubject<string>(1)
   private stepChange$ = new Subject()
 
   public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {}
 
-  public ngOnInit(): void {
-    combineLatest({
-      itemId: this.itemId$,
-      items: this.nw.db.itemsMap,
-      housings: this.nw.db.housingItemsMap,
-      recipes: this.nw.db.recipes,
-    })
-      .pipe(
-        map(({ itemId, items, housings, recipes }) => {
-          const item = items.get(itemId)
-          const housing = housings.get(itemId)
-          return {
-            item,
-            recipe: this.nw.findRecipeForItem(item || housing, recipes),
-          }
-        })
-      )
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-        //this.item = data.item
-        this.recipe = data.recipe
-        this.cdRef.markForCheck()
-      })
-  }
+  public ngOnInit(): void {}
 
   public ngOnChanges(changes: SimpleChanges): void {
-    this.itemId$.next(this.itemId)
+    this.cdRef.markForCheck()
   }
 
   public ngOnDestroy(): void {

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { ChangeDetectorRef, Component } from '@angular/core'
 
 import { TranslateService } from '@ngx-translate/core'
 import { ElectronService } from './core/electron'
@@ -15,7 +15,8 @@ export class AppComponent {
     private electronService: ElectronService,
     private translate: TranslateService,
     private locale: LocaleService,
-    private app: AppPreferencesService
+    private app: AppPreferencesService,
+    private cdRef: ChangeDetectorRef
   ) {
     this.app.language.observe().subscribe((value) => {
       this.locale.use(value)

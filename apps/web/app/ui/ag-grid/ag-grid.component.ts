@@ -11,6 +11,7 @@ import {
 } from '@angular/core'
 import { ColumnApi, Grid, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { debounceTime, distinctUntilChanged, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import { PreferencesService, ScopedStorage, StorageBase } from '~/core/preferences'
 
 @Component({
   selector: 'nwb-ag-grid',
@@ -33,6 +34,9 @@ export class AgGridComponent<T = any> implements OnInit, OnChanges, OnDestroy {
     this.filter$.next(value)
   }
 
+  @Input()
+  public stateKey: string
+
   public grid: Grid
   public api: GridApi
   public colApi: ColumnApi
@@ -40,8 +44,11 @@ export class AgGridComponent<T = any> implements OnInit, OnChanges, OnDestroy {
   private data$ = new ReplaySubject<T[]>(1)
   private destroy$ = new Subject()
   private filter$ = new Subject<string>()
+  private gridStorage: StorageBase
 
-  public constructor(private elRef: ElementRef<HTMLElement>, private zone: NgZone) {}
+  public constructor(private elRef: ElementRef<HTMLElement>, private zone: NgZone, preferences: PreferencesService) {
+    this.gridStorage = new ScopedStorage(preferences.storage, 'grid:')
+  }
 
   public ngOnInit(): void {
     this.zone.runOutsideAngular(() => {
@@ -64,6 +71,7 @@ export class AgGridComponent<T = any> implements OnInit, OnChanges, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    this.saveColumnState(this.stateKey)
     this.destroy$.next(null)
     this.destroy$.complete()
     this.grid.destroy()
@@ -72,9 +80,26 @@ export class AgGridComponent<T = any> implements OnInit, OnChanges, OnDestroy {
   private onGridReady(e: GridReadyEvent) {
     this.api = e.api
     this.colApi = e.columnApi
+    this.loadColumnState(this.stateKey)
     this.zone.run(() => {
       this.options?.onGridReady?.(e)
     })
     this.data$.pipe(takeUntil(this.destroy$)).subscribe((data) => this.api.setRowData(data))
+  }
+
+  private saveColumnState(key: string) {
+    if (key) {
+      this.gridStorage.write(key, this.colApi.getColumnState())
+    }
+  }
+
+  private loadColumnState(key) {
+    if (key) {
+      const data = this.gridStorage.read(key)
+      if (data) {
+        this.colApi.applyColumnState({ state: data });
+      }
+
+    }
   }
 }

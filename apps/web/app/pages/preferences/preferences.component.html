@@ -1,12 +1,15 @@
 <div class="main-frame mt-4">
-  <div class="main-content flex flex-col ">
+  <div class="main-content flex flex-col">
     <div class="w-80">
-
       <div class="form-control">
         <label class="label">
           <span class="label-text">Preferred language</span>
         </label>
-        <select class="select select-bordered" [ngModel]="app.language.get()" (ngModelChange)="app.language.set($event)">
+        <select
+          class="select select-bordered"
+          [ngModel]="app.language.get()"
+          (ngModelChange)="app.language.set($event)"
+        >
           <option disabled selected>Pick one</option>
           <option value="de-de">DE</option>
           <option value="en-us">EN</option>
@@ -33,5 +36,3 @@
     </div>
   </div>
 </div>
-
-

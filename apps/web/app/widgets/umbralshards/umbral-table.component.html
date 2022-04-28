@@ -1,0 +1,16 @@
+<table class="table table-compact w-full">
+  <thead>
+    <tr >
+      <th>Level</th>
+      <td class="text-right">to next</td>
+      <td class="text-right">to {{limit}}</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let row of data; let i = index" [class.active]="index == i" (click)="setIndex(i)" class="hover">
+      <th>{{ row.Level }}</th>
+      <td class="text-right">{{ row.RequiredItemQuantity | number }}</td>
+      <td class="text-right">{{ row['total'] | number }}</td>
+    </tr>
+  </tbody>
+</table>

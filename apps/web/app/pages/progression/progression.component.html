@@ -1,0 +1,21 @@
+<div class="menu-frame w-36 xl:w-40">
+  <ul class="menu menu-compact xl:menu-normal bg-base-100 rounded-md">
+    <li [routerLinkActive]="'bordered'">
+      <a [routerLink]="'tradeskills'">Tradeskills</a>
+    </li>
+    <li [routerLinkActive]="'bordered'">
+      <a [routerLink]="'level'">XP Level</a>
+    </li>
+    <li [routerLinkActive]="'bordered'">
+      <a [routerLink]="'standing'">Standing</a>
+    </li>
+    <li [routerLinkActive]="'bordered'">
+      <a [routerLink]="'umbral'" >Umbral upgrades</a>
+    </li>
+  </ul>
+</div>
+<div class="main-frame overflow-clip">
+  <div class="main-content rounded-md">
+    <router-outlet></router-outlet>
+  </div>
+</div>

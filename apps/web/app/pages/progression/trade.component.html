@@ -1,0 +1,4 @@
+<div class="skills-grid">
+  <nwb-tradeskill-input *ngFor="let skill of skills | async" [tradeskill]="skill.ID"></nwb-tradeskill-input>
+</div>
+<nwb-tradeskill-chart *ngFor="let item of categories | async" [category]="item" class="mt-4" ></nwb-tradeskill-chart>

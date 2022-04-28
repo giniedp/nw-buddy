@@ -10,11 +10,19 @@ import {
   TrackByFunction,
 } from '@angular/core'
 import { GameEvent, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { debounceTime, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { combineLatest, debounceTime, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { NwService } from '~/core/nw'
+import { NwTradeskillInfo, NwTradeskillService } from '~/core/nw/nw-tradeskill.service'
+import { TradeskillPreferencesService } from '~/core/preferences/tradeskill-preferences.service'
 import { CraftingCalculatorComponent } from './crafting-calculator.component'
 import { CraftingStepComponent } from './crafting-step.component'
 
+export interface XpTableRow {
+  id: string
+  name: string
+  icon: string
+  xp: number
+}
 @Component({
   selector: 'nwb-crafting-summary',
   templateUrl: './crafting-summary.component.html',
@@ -25,27 +33,34 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
   public root: CraftingStepComponent
   public table: Array<{ item: ItemDefinitionMaster | Housingitems; quantity: number }> = []
-  public xpTable: Array<{ skill: String; xp: number }> = []
+  public xpTable: Array<XpTableRow> = []
 
   public trackByIndex: TrackByFunction<any> = (i) => i
 
   private destroy$ = new Subject()
   private events: Map<string, GameEvent>
+  private skills: Map<string, NwTradeskillInfo>
 
   public constructor(
     private parent: CraftingCalculatorComponent,
     private cdRef: ChangeDetectorRef,
     private zone: NgZone,
-    private nw: NwService
+    private nw: NwService,
+    private tradeskills: NwTradeskillService,
+    private tradeskillPref: TradeskillPreferencesService
   ) {
     //
   }
 
   public ngOnInit(): void {
-    this.nw.db.gameEventsMap
+    combineLatest({
+      events: this.nw.db.gameEventsMap,
+      skills: this.tradeskills.skillsMap,
+    })
       .pipe(
-        tap((events) => {
+        tap(({ events, skills }) => {
           this.events = events
+          this.skills = skills
         })
       )
       .pipe(switchMap(() => this.parent.stepChange.pipe(startWith(null))))
@@ -103,25 +118,30 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private calculateXp() {
-    const table = new Map<string, number>()
+    const table = new Map<string, XpTableRow>()
     this.walk(this.root, (node) => {
       if (!node.recipe) {
         return
       }
+
       const recipe = node.recipe
       const event = this.events.get(recipe.GameEventID)
       if (!event) {
         return
       }
       const key = event.CategoricalProgressionId
-      const reward = event.CategoricalProgressionReward || 0
       if (!table.has(key)) {
-        table.set(key, 0)
+        table.set(key, {
+          id: key,
+          name: this.skills.get(key)?.Name,
+          icon: this.skills.get(key)?.Icon,
+          xp: 0,
+        })
       }
-      table.set(key, table.get(key) + reward * node.actualQuantity)
+      const data = table.get(key)
+      data.xp += this.nw.recipeProgressionReward(recipe, event) * node.actualQuantity
+      table.set(key, data)
     })
-    return Array.from(table.entries()).map(([skill, xp]) => {
-      return { skill, xp }
-    })
+    return Array.from(table.values())
   }
 }

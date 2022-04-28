@@ -14,4 +14,5 @@ export interface Armorset {
   weight: string
   perks: Perks[]
   items: ItemDefinitionMaster[]
+  itemNames: string[]
 }

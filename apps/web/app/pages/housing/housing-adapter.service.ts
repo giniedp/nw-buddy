@@ -65,7 +65,7 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
           width: 80,
           field: fieldName('Tier'),
           filter: CategoryFilter,
-          valueGetter: ({ data }) => this.nw.itemTierRoman(data),
+          valueGetter: ({ data }) => this.nw.tierToRoman(data.Tier),
         },
         {
           headerName: 'User Data',
