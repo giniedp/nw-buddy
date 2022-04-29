@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
-import { UmbralTableComponent, UmbralshardsModule } from '~/widgets/umbralshards'
-import { XpTableComponent, XpTableModule } from '~/widgets/xp-table'
+import { LevelComponent } from './level.component'
 import { ProgressionComponent } from './progression.component'
+import { StandingComponent } from './standing.component'
 import { TradeComponent } from './trade.component'
 import { UmbralComponent } from './umbral.component'
 
@@ -17,10 +17,11 @@ const routes: Routes = [
       },
       {
         path: 'standing',
+        component: StandingComponent,
       },
       {
         path: 'level',
-        component: XpTableComponent,
+        component: LevelComponent,
       },
       {
         path: 'umbral',

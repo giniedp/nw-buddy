@@ -1,1 +1,23 @@
-<nwb-ag-grid [data]="data" [options]="gridOptions"></nwb-ag-grid>
+<table class="table table-compact w-full">
+  <thead>
+    <tr >
+      <th>Level</th>
+      <td class="text-right">XP</td>
+      <td class="text-right">XP (total)</td>
+      <td class="text-right">Attribute Points</td>
+      <td class="text-right">Attribute Points (total)</td>
+      <td class="text-right">respec costs</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let row of data; let i = index" [class.active]="index == i" (click)="setIndex(i)" class="hover">
+      <th>{{ row.Level | number }}</th>
+      <td class="text-right">{{ row.XPToLevel | number }}</td>
+      <td class="text-right">{{ row.XPTotal | number }}</td>
+      <td class="text-right">{{ row.AttributePoints | number }}</td>
+      <td class="text-right">{{ row.AttributePointsTotal | number }}</td>
+      <td class="text-right">{{ row.AttributeRespecCost / 100 | currency }}</td>
+    </tr>
+  </tbody>
+</table>
+

@@ -35,6 +35,15 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
   public table: Array<{ item: ItemDefinitionMaster | Housingitems; quantity: number }> = []
   public xpTable: Array<XpTableRow> = []
 
+  public tab: 'resources' | 'skills' = 'resources'
+
+  public get resourceTab() {
+    return this.tab === 'resources'
+  }
+  public get skillsTab() {
+    return this.tab === 'skills'
+  }
+
   public trackByIndex: TrackByFunction<any> = (i) => i
 
   private destroy$ = new Subject()

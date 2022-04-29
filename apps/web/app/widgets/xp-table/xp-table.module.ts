@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
-import { AgGridModule } from '~/ui/ag-grid'
 
-
-import { XpTableComponent } from './xp-table.component'
+import { XpTableComponent } from './xp-table.component';
+import { XpChartComponent } from './xp-chart.component'
+import { ChartModule } from '~/ui/chart';
 
 @NgModule({
-  imports: [CommonModule, AgGridModule],
-  declarations: [XpTableComponent],
-  exports: [XpTableComponent],
+  imports: [CommonModule, ChartModule],
+  declarations: [XpTableComponent, XpChartComponent],
+  exports: [XpTableComponent, XpChartComponent],
 })
 export class XpTableModule {}

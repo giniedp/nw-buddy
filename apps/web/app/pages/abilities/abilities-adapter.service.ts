@@ -84,8 +84,6 @@ export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
     })
   )
 
-  private perks: Map<string, Perks>
-
   public constructor(private nw: NwService) {
     super()
   }

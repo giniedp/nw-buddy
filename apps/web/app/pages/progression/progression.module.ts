@@ -9,9 +9,12 @@ import { XpTableModule } from '~/widgets/xp-table'
 import { UmbralComponent } from './umbral.component'
 import { TradeComponent } from './trade.component'
 import { TradeskillsModule } from '~/widgets/tradeskills'
+import { LevelComponent } from './level.component'
+import { StandingComponent } from './standing.component'
+import { StandingTableModule } from '~/widgets/standing-table'
 
 @NgModule({
-  declarations: [ProgressionComponent, UmbralComponent, TradeComponent],
-  imports: [CommonModule, ProgressionRoutingModule, RouterModule, UmbralshardsModule, XpTableModule, TradeskillsModule],
+  declarations: [ProgressionComponent, UmbralComponent, TradeComponent, LevelComponent, StandingComponent],
+  imports: [CommonModule, ProgressionRoutingModule, RouterModule, UmbralshardsModule, XpTableModule, TradeskillsModule, StandingTableModule],
 })
 export class ProgressionModule {}

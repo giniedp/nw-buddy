@@ -1,9 +1,9 @@
 <div class="bg-base-300 rounded-md">
+  <button class="btn btn-ghost loading mx-auto" *ngIf="isLoading"></button>
   <nwb-item-detail-header class="header" [entity]="item || housing"></nwb-item-detail-header>
   <div class="body p-2">
-    <ng-container *ngIf="itemDescription">
-      <p class="text-yellow-600 italic mb-2" [nwText]="itemDescription" [itemId]="itemId"></p>
-      <hr />
+    <ng-container *ngIf="item">
+      <p class="text-yellow-600 italic mb-2" [nwText]="itemDescription" [itemId]="item?.ItemID"></p>
     </ng-container>
     <ul class="perk-list" *ngIf="perks?.length">
       <li *ngFor="let perk of perks" class="text-sky-500 mb-2">

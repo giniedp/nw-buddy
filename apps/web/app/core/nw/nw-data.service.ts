@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { NwDataloader } from '@nw-data/datatables'
-import { combineLatest, map, Observable, of, shareReplay, tap } from 'rxjs'
+import { combineLatest, map, Observable, shareReplay } from 'rxjs'
 import { TranslateSource } from '../i18n/translate-source'
 
 export type LocaleData = Record<string, { value: string }>

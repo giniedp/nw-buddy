@@ -40,7 +40,8 @@ export class UmbralCalculatorComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public data: UCRow[] = []
-  public upgradeNext: UCRow
+  public upgradeNext: UCRow[]
+  public totalGS: number = null
 
   private source$ = defer(() => {
     return combineLatest(BASE.map((it) => {
@@ -79,14 +80,16 @@ export class UmbralCalculatorComponent implements OnInit, OnChanges, OnDestroy {
       }
       const minLevel = Math.min(...table.map((it) => it.Level))
       const maxLevel = Math.max(...table.map((it) => it.Level))
+      this.totalGS = 0
       for (const row of input) {
+        this.totalGS += row.weight * row.value
         row.next = input.every((it) => row.contribution >= it.contribution)
         if (row.value < minLevel || row.value > maxLevel) {
           row.next = false
         }
       }
       this.data = input
-      this.upgradeNext = input.find((it) => it.next)
+      this.upgradeNext = input.filter((it) => it.next)
       this.cdRef.markForCheck()
     })
   }

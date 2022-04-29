@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { TradeskillsService } from '~/widgets/tradeskills';
 
 @Component({
   selector: 'nwb-progression',
@@ -11,7 +10,7 @@ import { TradeskillsService } from '~/widgets/tradeskills';
 })
 export class ProgressionComponent implements OnInit {
 
-  public constructor(public tradeskill: TradeskillsService) {
+  public constructor() {
 
   }
 

@@ -35,7 +35,8 @@ async function importLocale(input: string, output: string) {
       basename.startsWith('objectives') ||
       basename.startsWith('weaponabilities') ||
       basename.startsWith('globalcommontext') ||
-      basename.startsWith('frontendcommontext')
+      basename.startsWith('frontendcommontext') ||
+      basename.startsWith('territorystanding')
     if (pass) {
       const outFile = path.join(output, path.relative(input, file))
       const outDir = path.dirname(outFile)

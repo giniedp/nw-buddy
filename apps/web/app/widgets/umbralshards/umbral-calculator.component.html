@@ -27,21 +27,29 @@
         />
       </td>
       <td class="text-right" [class.bg-success]="row.next" [class.text-success-content]="row.next">
-         <div *ngIf="row.shards">{{ row.shards | number}}</div>
-         <div *ngIf="row.shards" class="text-xs">{{ row.contribution | number:'1.6-6' }}</div>
+         <div *ngIf="row.shards">
+           <span class="tooltip tooltip-left tooltip-info" data-tip="Shards required to upgrade to next item level">
+            {{ row.shards | number}}
+           </span>
+
+          </div>
+         <div *ngIf="row.shards" class="text-xs">
+           <span class="tooltip tooltip-left tooltip-info" data-tip="Ger score contribution per shard">
+             {{ row.contribution | number:'1.6-6' }}
+           </span>
+          </div>
       </td>
     </tr>
     <tr >
       <td colspan="4">
         <span class="stat place-items-center" *ngIf="upgradeNext">
-          <div class="stat-title">Upgrade next</div>
+          <div class="stat-title">Total GS</div>
           <div class="stat-value text-success">
-            <span [nwText]="upgradeNext.name"></span>
+            <span>{{ totalGS | number: '1.0-2' }}</span>
           </div>
-          <div class="stat-desc">
-            <ng-container *ngFor="let row of data">
-
-            </ng-container>
+          <div class="stat-desc" *ngIf="upgradeNext?.length">
+            Upgrade next:
+            <span *ngFor="let row of upgradeNext" [nwText]="row.name" class="mr-1"></span>
           </div>
         </span>
       </td>

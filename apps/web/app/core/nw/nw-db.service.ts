@@ -325,5 +325,17 @@ export class NwDbService {
   })
     .pipe(map((items) => toMap(items, 'StatusID')))
     .pipe(shareReplay(1))
+
+
+  public territories = defer(() => {
+    return this.data.datatablesTerritorydefinitions()
+  }).pipe(shareReplay(1))
+
+  public territoriesMap = defer(() => {
+    return this.territories
+  })
+    .pipe(map((items) => toMap(items, 'TerritoryID')))
+    .pipe(shareReplay(1))
+
   public constructor(public readonly data: NwDataService) {}
 }

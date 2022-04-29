@@ -1,8 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core'
-import { GridOptions } from 'ag-grid-community'
-import { Xpamountsbylevel } from '@nw-data/types'
-import { firstValueFrom } from 'rxjs'
-import { NwDataService, NwService } from '~/core/nw'
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy } from '@angular/core'
+import { BehaviorSubject, combineLatest, map, Subject, takeUntil } from 'rxjs'
+import { NwService } from '~/core/nw'
 
 function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: keyof T) {
   let result = 0
@@ -12,63 +10,65 @@ function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: key
   return result
 }
 
+export interface LevelingRow {
+  Level: number
+  XPToLevel: number
+  XPTotal: number
+  XPToMax: number
+  AttributePoints: number
+  AttributePointsTotal: number
+  AttributeRespecCost: number
+}
+
 @Component({
   selector: 'nwb-xp-table',
   templateUrl: './xp-table.component.html',
   styleUrls: ['./xp-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class XpTableComponent implements OnInit {
-  public data: Xpamountsbylevel[]
+export class XpTableComponent implements OnInit, OnDestroy {
 
-  public gridOptions: GridOptions = {
-    columnDefs: [
-      {
-        field: 'Level Number',
-        valueFormatter: (it) => it.value + 1
-      },
-      {
-        field: 'XPToLevel',
-        cellStyle: {
-          'text-align': 'right'
-        }
-      },
-      {
-        headerName: 'XP total',
-        cellStyle: {
-          'text-align': 'right'
-        },
-        valueGetter: (it) => accumulate(this.data, 0, it.node.rowIndex, 'XPToLevel'),
-      },
-      {
-        field: 'AttributePoints',
-        cellStyle: {
-          'text-align': 'right'
-        }
-      },
-      {
-        headerName: 'Attribute points total',
-        cellStyle: {
-          'text-align': 'right'
-        },
-        valueGetter: (it) => accumulate(this.data, 0, it.node.rowIndex, 'AttributePoints'),
-      },
-      {
-        field: 'AttributeRespecCost',
-        cellStyle: {
-          'text-align': 'right'
-        },
-        valueFormatter: (it) => {
-          return (it.value / 100).toFixed(2)
-        }
-      },
-    ],
-  }
+  public limit: number
+  public data: LevelingRow[]
+  public index: number
+  private destroy$ = new Subject()
+  private index$ = new BehaviorSubject(0)
 
   public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {}
 
   public async ngOnInit() {
-    this.data = await firstValueFrom(this.nw.db.data.datatablesXpamountsbylevel())
-    this.cdRef.markForCheck()
+
+    combineLatest({
+      index: this.index$,
+      data: this.nw.db.data.datatablesXpamountsbylevel()
+    }).pipe(map(({ index, data }) => {
+      this.index = index
+      return data.map((node, i): LevelingRow => {
+        return {
+          Level: node['Level Number'],
+          XPToLevel: node.XPToLevel,
+          XPTotal: accumulate(data, 0, i, 'XPToLevel'),
+          XPToMax: accumulate(data, index || 0, i, 'XPToLevel'),
+          AttributePoints: node.AttributePoints,
+          AttributePointsTotal: accumulate(data, 0, i, 'AttributePoints'),
+          AttributeRespecCost: node.AttributeRespecCost
+        }
+      })
+    }))
+    .pipe(takeUntil(this.destroy$))
+    .subscribe((data) => {
+      this.data = data
+      this.limit = Math.max(...data.map((it) => it['Level Number'])) + 1
+      this.cdRef.markForCheck()
+    })
+  }
+
+  public setIndex(value: number) {
+    this.index$.next(value)
+  }
+
+  public ngOnDestroy(): void {
+    this.destroy$.next(null)
+    this.destroy$.complete()
   }
 }

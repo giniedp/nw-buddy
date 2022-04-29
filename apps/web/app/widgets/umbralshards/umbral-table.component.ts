@@ -52,12 +52,8 @@ export class UmbralTableComponent implements OnInit, OnDestroy, OnChanges {
         data = data.filter((it) => it.Level <= max)
       }
       return data.map((node, i) => {
-        let iStart = 0
+        let iStart = index || 0
         let iEnd = i
-        if (index > 0) {
-          iStart = index
-          iEnd = i
-        }
         return {
           ...node,
           total: accumulate(data, iStart, iEnd, 'RequiredItemQuantity')

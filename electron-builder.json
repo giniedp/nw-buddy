@@ -1,5 +1,5 @@
 {
-  "asar": false,
+  "asar": true,
   "directories": {
     "output": "release/"
   },
