@@ -1,5 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, OnDestroy, ChangeDetectorRef, OnChanges } from '@angular/core'
-import { Crafting, Housingitems, ItemDefinitionMaster, ItemdefinitionsAmmo } from '@nw-data/types'
+import { Crafting, Housingitems, ItemDefinitionMaster, ItemdefinitionsAmmo, Perks } from '@nw-data/types'
 import { BehaviorSubject, combineLatest, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
 import { NwService } from '~/core/nw'
 
@@ -34,7 +34,7 @@ export class ItemDetailComponent implements OnInit, OnChanges, OnDestroy {
   }
   public itemRarity: number
   public itemRarityName: string
-  public perks: Array<{ id: string, name: string, description: string, icon: string }>
+  public perks: Perks[]
   public perkBuckets: Array<{ type: string, chance: number, icon: string }>
   public isLoading = true
 
@@ -53,12 +53,13 @@ export class ItemDetailComponent implements OnInit, OnChanges, OnDestroy {
       housingId: this.housingId$,
       recipeId: this.recipeId$,
 
+      perksMap: this.nw.db.perksMap,
       itemsMap: this.nw.db.itemsMap,
       housingMap: this.nw.db.housingItemsMap,
       craftingMap: this.nw.db.recipesMap,
       craftingList: this.nw.db.recipes,
     })
-      .pipe(map(({ itemId, housingId, recipeId, craftingMap, craftingList, housingMap, itemsMap }) => {
+      .pipe(map(({ itemId, housingId, recipeId, craftingMap, craftingList, housingMap, itemsMap, perksMap }) => {
 
         let item: ItemDefinitionMaster
         let housing: Housingitems
@@ -79,13 +80,15 @@ export class ItemDetailComponent implements OnInit, OnChanges, OnDestroy {
           recipe,
           housing,
           item,
+          perks: item && this.nw.itemPerks(item, perksMap)
         }
       }))
       .pipe(takeUntil(this.destroy$))
-      .subscribe(({ recipe, housing, item }) => {
+      .subscribe(({ recipe, housing, item, perks }) => {
         this.item = item
         this.housing = housing
         this.recipe = recipe
+        this.perks = perks
         this.isLoading = false
         this.cdRef.markForCheck()
       })

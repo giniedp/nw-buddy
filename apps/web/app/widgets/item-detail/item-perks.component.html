@@ -1,0 +1,11 @@
+<div class="flex flex-row text-blue-500" [class.mb-2]="!isLast" *ngFor="let perk of perks; let isLast = last">
+  <a class="flex-none">
+    <img [nwImage]="perk.IconPath" class="w-8">
+  </a>
+  <div class="ml-2">
+    <b class="mr-1" *ngIf="perk.AppliedPrefix" [nwText]="perk.AppliedPrefix"></b>
+    <b class="mr-1" *ngIf="perk.DisplayName" [nwText]="perk.DisplayName"></b>
+    <b class="mr-1" *ngIf="perk.AppliedSuffix" [nwText]="perk.AppliedSuffix"></b>
+    <span *ngIf="perk.Description" [nwText]="perk.Description" [itemId]="perk.PerkID"></span>
+  </div>
+</div>

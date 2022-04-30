@@ -2,37 +2,4 @@
 
 :host {
   display: block;
-
-  picture {
-    width: 76px;
-    height: 76px;
-  }
-  .perk-list {
-    li a {
-      display: grid;
-      grid-template-columns: 32px auto;
-    }
-    picture {
-      display: block;
-      width: 32px;
-      height: 32px;
-      img {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-    }
-  }
-
-  .header {
-
-  }
-
-  .body {
-
-  }
-
-  .footer {
-
-  }
 }
