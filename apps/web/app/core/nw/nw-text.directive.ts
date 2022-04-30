@@ -1,6 +1,5 @@
 import { Directive, ElementRef, Input, OnChanges, OnDestroy, OnInit } from '@angular/core'
 import {
-  combineLatest,
   distinctUntilChanged,
   map,
   ReplaySubject,
@@ -15,6 +14,7 @@ interface TextContext {
   text: string
   itemId: string
   charLevel: number
+  gearScore: number
 }
 
 @Directive({
@@ -29,6 +29,9 @@ export class NwTextDirective implements OnInit, OnChanges, OnDestroy {
 
   @Input()
   public charLevel: number = 60
+
+  @Input()
+  public gearScore: number = 600
 
   private destroy$ = new Subject()
   private change$ = new ReplaySubject<TextContext>(1)
@@ -58,6 +61,7 @@ export class NwTextDirective implements OnInit, OnChanges, OnDestroy {
       text: this.nwText,
       itemId: this.itemId,
       charLevel: this.charLevel,
+      gearScore: this.gearScore
     })
   }
 

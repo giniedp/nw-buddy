@@ -5,6 +5,7 @@ import { glob } from './utils/glob'
 import { tsFromJson } from './utils/ts-from-json'
 import * as dotenv from 'dotenv'
 import { copyFile, generateDataFunctions, mkdir, processArrayWithProgress, renameExtname, spawn } from './utils'
+import { extractExpressions } from './utils/extractExpressions'
 dotenv.config()
 
 program
@@ -28,6 +29,9 @@ async function importLocale(input: string, output: string) {
   console.log('import locales')
   const pattern = path.join(input, '**', 'localization', '**', '*.loc.json')
   const files = await glob(pattern)
+
+  const resourceTypes = new Set<string>()
+  const scalarTypes = new Set<string>()
   await processArrayWithProgress(files, async (file) => {
     const basename = path.basename(file)
     const pass =
@@ -40,10 +44,23 @@ async function importLocale(input: string, output: string) {
     if (pass) {
       const outFile = path.join(output, path.relative(input, file))
       const outDir = path.dirname(outFile)
+      await extractExpressions(file, (exp) => {
+        if (!Number.isFinite(Number(exp))) {
+          if (exp.includes('.')) {
+            resourceTypes.add(exp.split('.')[0])
+          } else {
+            scalarTypes.add(exp)
+          }
+        }
+      })
       await mkdir(outDir, { recursive: true })
       await copyFile(file, outFile)
     }
   })
+  console.log('Resource Types found in expressions')
+  console.log(Array.from(resourceTypes.values()).sort())
+  console.log('Scalar Types found in expressions')
+  console.log(Array.from(scalarTypes.values()).sort())
 }
 
 async function importDatatables(input: string, output: string) {

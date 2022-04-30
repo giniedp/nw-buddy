@@ -7,14 +7,51 @@ export interface NwExpressionContext {
   text: string
   itemId: string
   charLevel: number
+  gearScore: number
 }
 
-@Injectable({ providedIn: 'root'})
+type Expressionresource =
+  | 'AffixStatDataTable'
+  | 'Afflictions'
+  | 'ConsumableItemDefinitions'
+  | 'DamageTable'
+  | 'ManaCosts_Player'
+  | 'StaminaCosts_Player'
+  | 'Type_AbilityData'
+  | 'StatusEffect'
+  | 'StatusEffects'
+  | 'Type_StatusEffectData'
+  | 'BlunderbussAbilityTable'
+  | 'BowAbilityTable'
+  | 'FireMagicAbilityTable'
+  | 'GlobalAbilityTable'
+  | 'GreatAxeAbilityTable'
+  | 'HatchetAbilityTable'
+  | 'IceMagicAbilityTable'
+  | 'LifeMagicAbilityTable'
+  | 'MusketAbilityTable'
+  | 'RapierAbilityTable'
+  | 'SpearAbilityTable'
+  | 'SwordAbilityTable'
+  | 'VoidGauntletAbilityTable'
+  | 'WarHammerAbilityTable'
+  | 'SpellDataTable_Bow'
+  | 'SpellDataTable_Global'
+  | 'SpellDataTable_GreatAxe'
+  | 'SpellDataTable_Hatchet'
+  | 'SpellDataTable_IceMagic'
+  | 'SpellDataTable_Musket'
+  | 'SpellDataTable_VoidGauntlet'
+  | 'SpellDataTable_WarHammer'
+  | 'ConsumablePotency'
+  | 'perkMultiplier'
+
+@Injectable({ providedIn: 'root' })
 export class NwExpressionService {
   public constructor(private db: NwDbService) {}
 
   public parse(expression: string) {
-    return parsNwExpression(expression, true)
+    return parseNwExpression(expression, true)
   }
 
   public solve(context: NwExpressionContext) {
@@ -32,43 +69,54 @@ export class NwExpressionService {
   private lookup(expression: string, context: NwExpressionContext): Observable<string | number> {
     if (expression.includes('.')) {
       const [resource, id, attr] = expression.split('.')
-      return this.solveResource(resource).pipe(map((it) => it?.get(id)?.[attr]))
+      return this.solveResource(resource as any).pipe(
+        map((data) => {
+          if (!data) {
+            throw new Error(`Unknown resource "${resource}" (for expression "${expression}")`)
+          }
+          let object: any
+          if (data.has(id)) {
+            object = data.get(id)
+          } else if (data.has(Number(id))) {
+            object = data.get(Number(id))
+          }
+          if (!object) {
+            throw new Error(`Object for ID "${id}" not found (for expression "${expression}")`)
+          }
+          if (attr in object) {
+            return object[attr]
+          }
+          throw new Error(`Object has no attribute "${attr}" (for expression "${expression}")`)
+        })
+      )
     }
     switch (expression) {
       case 'ConsumablePotency': {
         return this.db.statusEffectsMap.pipe(
           map((it) => {
-            const effect = it.get(context.itemId)
-            if (!effect) {
-              console.warn(`ConsumablePotency not resolved for ID ${context.itemId} (${context.text})`)
-              return 1
+            if (it.has(context.itemId)) {
+              return it.get(context.itemId).PotencyPerLevel * context.charLevel
             }
-            return effect.PotencyPerLevel * context.charLevel
+            throw new Error(`ConsumablePotency not resolved (for expression "${expression}" and id "${context.itemId}")`)
           })
         )
       }
       case 'perkMultiplier':
         return this.db.perksMap.pipe(
           map((it) => {
-            const perk = it.get(context.itemId)
-            if (!perk) {
-              console.warn(`perkMultiplier not resolved for ID ${context.itemId} (${context.text})`)
-              return 1
+            if (it.has(context.itemId)) {
+              return it.get(context.itemId).ScalingPerGearScore * context.gearScore
             }
-            return perk.ScalingPerGearScore * context.charLevel
+            throw new Error(`perkMultiplier not resolved (for expression "${expression}" and id "${context.itemId}")`)
           })
         )
-      case 'perkMultip': {
-        console.warn(`${expression} not yet known. (${context.text})`)
-        return of(1)
-      }
       default: {
-        return throwError(() => new Error(`unknown lookup expression: ${expression}`))
+        return throwError(() => new Error(`unknown lookup expression: "${expression}"`))
       }
     }
   }
 
-  private solveResource(resource: string): Observable<Map<string, unknown>> {
+  private solveResource(resource: Expressionresource): Observable<Map<string | number, unknown>> {
     switch (resource) {
       case 'Type_StatusEffectData': {
         return this.db.statusEffectsMap
@@ -79,18 +127,56 @@ export class NwExpressionService {
       case 'ConsumableItemDefinitions': {
         return this.db.itemsConsumablesMap
       }
-      case 'GlobalAbilityTable': {
-        return this.db.abilitiesMap
-      }
       case 'AffixStatDataTable': {
         return this.db.affixStatsMap
+      }
+      case 'Afflictions': {
+        return this.db.afflictionsMap
+      }
+      case 'ManaCosts_Player': {
+        return this.db.manacostsMap
+      }
+      case 'StaminaCosts_Player': {
+        return this.db.staminacostsPlayerMap
+      }
+      case 'SpellDataTable_Bow':
+      case 'SpellDataTable_Global':
+      case 'SpellDataTable_GreatAxe':
+      case 'SpellDataTable_Hatchet':
+      case 'SpellDataTable_IceMagic':
+      case 'SpellDataTable_Musket':
+      case 'SpellDataTable_VoidGauntlet':
+      case 'SpellDataTable_WarHammer': {
+        return this.db.spellTableMap
+      }
+      case 'BlunderbussAbilityTable':
+      case 'BowAbilityTable':
+      case 'FireMagicAbilityTable':
+      case 'GlobalAbilityTable':
+      case 'GreatAxeAbilityTable':
+      case 'HatchetAbilityTable':
+      case 'IceMagicAbilityTable':
+      case 'LifeMagicAbilityTable':
+      case 'MusketAbilityTable':
+      case 'RapierAbilityTable':
+      case 'SpearAbilityTable':
+      case 'SwordAbilityTable':
+      case 'VoidGauntletAbilityTable':
+      case 'WarHammerAbilityTable': {
+        return this.db.abilitiesMap
+      }
+      case 'Type_AbilityData':
+      case 'StatusEffect':
+      case 'StatusEffects':
+      case 'Type_StatusEffectData': {
+        return this.db.statusEffectsMap
       }
     }
     return throwError(() => new Error(`unknown resource: ${resource}`))
   }
 }
 
-export function parsNwExpression(text: string, root: boolean = false): NwExp {
+export function parseNwExpression(text: string, root: boolean = false): NwExp {
   const reader = new TextReader(text)
   const expr: NwExp[] = []
 
@@ -99,7 +185,7 @@ export function parsNwExpression(text: string, root: boolean = false): NwExp {
 
     if (reader.substr(2) === '{[') {
       const block = reader.nextBlock('{[', ']}')
-      const node = parsNwExpression(block, false)
+      const node = parseNwExpression(block, false)
       if (!root) {
         throw new Error(`invalid expresssion. Nested '{[' detected`)
       }
@@ -108,7 +194,7 @@ export function parsNwExpression(text: string, root: boolean = false): NwExp {
       switch (reader.char) {
         case '{': {
           const block = reader.nextBlock('{', '}')
-          const node = parsNwExpression(block, root)
+          const node = parseNwExpression(block, root)
           if (root) {
             expr.push(new NwExpParen('{', '}', node))
           } else {
@@ -119,7 +205,7 @@ export function parsNwExpression(text: string, root: boolean = false): NwExp {
         }
         case '(': {
           const block = reader.nextBlock('(', ')')
-          const node = parsNwExpression(block, root)
+          const node = parseNwExpression(block, root)
           expr.push(new NwExpParen('(', ')', node))
           reader.next()
           break
@@ -199,9 +285,12 @@ class NwExpEval implements NwExp {
       .eval(solve)
       .pipe(
         map((value) => {
-          return Intl.NumberFormat(navigator.language || 'en', {
-            maximumFractionDigits: 2,
-          }).format(Number(eval(String(value))))
+          if (globalThis.navigator) {
+            return Intl.NumberFormat(navigator.language || 'en', {
+              maximumFractionDigits: 2,
+            }).format(Number(eval(String(value))))
+          }
+          return value
         })
       )
       .pipe(startWith('⟳'))

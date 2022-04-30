@@ -27,17 +27,17 @@ export function dictToMap<V>(record: Record<string, V>): Map<string, V> {
 export class NwDbService {
   public items = defer(() => {
     return combineLatest([
-      this.data.datatablesItemdefinitionsMasterCommon().pipe(annotate('$source', 'common')),
-      this.data.datatablesItemdefinitionsMasterCrafting().pipe(annotate('$source', 'crafting')),
-      this.data.datatablesItemdefinitionsMasterLoot().pipe(annotate('$source', 'loot')),
-      this.data.datatablesItemdefinitionsMasterNamed().pipe(annotate('$source', 'named')),
-      this.data.datatablesItemdefinitionsMasterFaction().pipe(annotate('$source', 'faction')),
-      this.data.datatablesItemdefinitionsMasterOmega().pipe(annotate('$source', 'omega')),
-      this.data.datatablesItemdefinitionsMasterPlaytest().pipe(annotate('$source', 'playtest')),
-      this.data.datatablesItemdefinitionsMasterPvp().pipe(annotate('$source', 'pvp')),
-      this.data.datatablesItemdefinitionsMasterQuest().pipe(annotate('$source', 'quest')),
-      this.data.datatablesItemdefinitionsMasterStore().pipe(annotate('$source', 'store')),
-      this.data.datatablesItemdefinitionsMasterAi().pipe(annotate('$source', 'ai')),
+      this.data.datatablesItemdefinitionsMasterCommon().pipe(annotate('$source', 'Common')),
+      this.data.datatablesItemdefinitionsMasterCrafting().pipe(annotate('$source', 'Crafting')),
+      this.data.datatablesItemdefinitionsMasterLoot().pipe(annotate('$source', 'Loot')),
+      this.data.datatablesItemdefinitionsMasterNamed().pipe(annotate('$source', 'Named')),
+      this.data.datatablesItemdefinitionsMasterFaction().pipe(annotate('$source', 'Faction')),
+      this.data.datatablesItemdefinitionsMasterOmega().pipe(annotate('$source', 'Omega')),
+      this.data.datatablesItemdefinitionsMasterPlaytest().pipe(annotate('$source', 'Playtest')),
+      this.data.datatablesItemdefinitionsMasterPvp().pipe(annotate('$source', 'Pvp')),
+      this.data.datatablesItemdefinitionsMasterQuest().pipe(annotate('$source', 'Quest')),
+      this.data.datatablesItemdefinitionsMasterStore().pipe(annotate('$source', 'Store')),
+      this.data.datatablesItemdefinitionsMasterAi().pipe(annotate('$source', 'Ai')),
     ])
   })
     .pipe(map((it) => it.flat(1)))
@@ -49,21 +49,21 @@ export class NwDbService {
 
   public abilities = defer(() => {
     return combineLatest([
-      this.data.datatablesWeaponabilitiesAbilityAi().pipe(annotate('$source', 'ai')),
-      this.data.datatablesWeaponabilitiesAbilityAttributethreshold().pipe(annotate('$source', 'attributethreshold')),
-      this.data.datatablesWeaponabilitiesAbilityBlunderbuss().pipe(annotate('$source', 'blunderbuss')),
-      this.data.datatablesWeaponabilitiesAbilityBow().pipe(annotate('$source', 'bow')),
-      this.data.datatablesWeaponabilitiesAbilityFiremagic().pipe(annotate('$source', 'firemagic')),
-      this.data.datatablesWeaponabilitiesAbilityGlobal().pipe(annotate('$source', 'global')),
-      this.data.datatablesWeaponabilitiesAbilityGreataxe().pipe(annotate('$source', 'greataxe')),
-      this.data.datatablesWeaponabilitiesAbilityHatchet().pipe(annotate('$source', 'hatchet')),
-      this.data.datatablesWeaponabilitiesAbilityIcemagic().pipe(annotate('$source', 'icemagic')),
-      this.data.datatablesWeaponabilitiesAbilityLifemagic().pipe(annotate('$source', 'lifemagic')),
-      this.data.datatablesWeaponabilitiesAbilityMusket().pipe(annotate('$source', 'musket')),
-      this.data.datatablesWeaponabilitiesAbilityRapier().pipe(annotate('$source', 'rapier')),
-      this.data.datatablesWeaponabilitiesAbilitySpear().pipe(annotate('$source', 'spear')),
-      this.data.datatablesWeaponabilitiesAbilitySword().pipe(annotate('$source', 'sword')),
-      this.data.datatablesWeaponabilitiesAbilityWarhammer().pipe(annotate('$source', 'warhammer')),
+      this.data.datatablesWeaponabilitiesAbilityAi().pipe(annotate('$source', 'Ai')),
+      this.data.datatablesWeaponabilitiesAbilityAttributethreshold().pipe(annotate('$source', 'Attributethreshold')),
+      this.data.datatablesWeaponabilitiesAbilityBlunderbuss().pipe(annotate('$source', 'Blunderbuss')),
+      this.data.datatablesWeaponabilitiesAbilityBow().pipe(annotate('$source', 'Bow')),
+      this.data.datatablesWeaponabilitiesAbilityFiremagic().pipe(annotate('$source', 'Firemagic')),
+      this.data.datatablesWeaponabilitiesAbilityGlobal().pipe(annotate('$source', 'Global')),
+      this.data.datatablesWeaponabilitiesAbilityGreataxe().pipe(annotate('$source', 'Greataxe')),
+      this.data.datatablesWeaponabilitiesAbilityHatchet().pipe(annotate('$source', 'Hatchet')),
+      this.data.datatablesWeaponabilitiesAbilityIcemagic().pipe(annotate('$source', 'Icemagic')),
+      this.data.datatablesWeaponabilitiesAbilityLifemagic().pipe(annotate('$source', 'Lifemagic')),
+      this.data.datatablesWeaponabilitiesAbilityMusket().pipe(annotate('$source', 'Musket')),
+      this.data.datatablesWeaponabilitiesAbilityRapier().pipe(annotate('$source', 'Rapier')),
+      this.data.datatablesWeaponabilitiesAbilitySpear().pipe(annotate('$source', 'Spear')),
+      this.data.datatablesWeaponabilitiesAbilitySword().pipe(annotate('$source', 'Sword')),
+      this.data.datatablesWeaponabilitiesAbilityWarhammer().pipe(annotate('$source', 'Warhammer')),
     ])
   })
     .pipe(map((it) => it.flat(1)))
@@ -76,24 +76,24 @@ export class NwDbService {
   public statusEffects = defer(() => {
     return combineLatest([
       this.data.datatablesStatuseffects().pipe(annotate('$source', '_')),
-      this.data.datatablesStatuseffectsAi().pipe(annotate('$source', 'api')),
-      this.data.datatablesStatuseffectsBow().pipe(annotate('$source', 'bow')),
-      this.data.datatablesStatuseffectsBlunderbuss().pipe(annotate('$source', 'blunderbuss')),
-      this.data.datatablesStatuseffectsCommon().pipe(annotate('$source', 'common')),
-      this.data.datatablesStatuseffectsFirestaff().pipe(annotate('$source', 'firestaff')),
-      this.data.datatablesStatuseffectsGreataxe().pipe(annotate('$source', 'greataxe')),
-      this.data.datatablesStatuseffectsGreatsword().pipe(annotate('$source', 'greatsword')),
-      this.data.datatablesStatuseffectsHatchet().pipe(annotate('$source', 'hatchet')),
-      this.data.datatablesStatuseffectsIcemagic().pipe(annotate('$source', 'icemagic')),
-      this.data.datatablesStatuseffectsItem().pipe(annotate('$source', 'item')),
-      this.data.datatablesStatuseffectsLifestaff().pipe(annotate('$source', 'lifestaff')),
-      this.data.datatablesStatuseffectsMusket().pipe(annotate('$source', 'musket')),
-      this.data.datatablesStatuseffectsPerks().pipe(annotate('$source', 'perks')),
-      this.data.datatablesStatuseffectsRapier().pipe(annotate('$source', 'rapier')),
-      this.data.datatablesStatuseffectsSpear().pipe(annotate('$source', 'spear')),
-      this.data.datatablesStatuseffectsSword().pipe(annotate('$source', 'sword')),
-      this.data.datatablesStatuseffectsVoidgauntlet().pipe(annotate('$source', 'voidgauntlet')),
-      this.data.datatablesStatuseffectsWarhammer().pipe(annotate('$source', 'warhammer')),
+      this.data.datatablesStatuseffectsAi().pipe(annotate('$source', 'Ai')),
+      this.data.datatablesStatuseffectsBow().pipe(annotate('$source', 'Bow')),
+      this.data.datatablesStatuseffectsBlunderbuss().pipe(annotate('$source', 'Blunderbuss')),
+      this.data.datatablesStatuseffectsCommon().pipe(annotate('$source', 'Common')),
+      this.data.datatablesStatuseffectsFirestaff().pipe(annotate('$source', 'Firestaff')),
+      this.data.datatablesStatuseffectsGreataxe().pipe(annotate('$source', 'Greataxe')),
+      this.data.datatablesStatuseffectsGreatsword().pipe(annotate('$source', 'Greatsword')),
+      this.data.datatablesStatuseffectsHatchet().pipe(annotate('$source', 'Hatchet')),
+      this.data.datatablesStatuseffectsIcemagic().pipe(annotate('$source', 'Icemagic')),
+      this.data.datatablesStatuseffectsItem().pipe(annotate('$source', 'Item')),
+      this.data.datatablesStatuseffectsLifestaff().pipe(annotate('$source', 'Lifestaff')),
+      this.data.datatablesStatuseffectsMusket().pipe(annotate('$source', 'Musket')),
+      this.data.datatablesStatuseffectsPerks().pipe(annotate('$source', 'Perks')),
+      this.data.datatablesStatuseffectsRapier().pipe(annotate('$source', 'Rapier')),
+      this.data.datatablesStatuseffectsSpear().pipe(annotate('$source', 'Spear')),
+      this.data.datatablesStatuseffectsSword().pipe(annotate('$source', 'Sword')),
+      this.data.datatablesStatuseffectsVoidgauntlet().pipe(annotate('$source', 'Voidgauntlet')),
+      this.data.datatablesStatuseffectsWarhammer().pipe(annotate('$source', 'Warhammer')),
     ])
   })
     .pipe(map((it) => it.flat(1)))
@@ -103,13 +103,11 @@ export class NwDbService {
     .pipe(map((items) => toMap(items, 'StatusID')))
     .pipe(shareReplay(1))
 
-    public damageTable0 = defer(() => {
-      return combineLatest([
-        this.data.datatablesDamagetable(),
-      ])
-    })
-      .pipe(map((it) => it.flat(1)))
-      .pipe(shareReplay(1))
+  public damageTable0 = defer(() => {
+    return combineLatest([this.data.datatablesDamagetable()])
+  })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
 
   public damageTable = defer(() => {
     return combineLatest([
@@ -146,6 +144,34 @@ export class NwDbService {
 
   public weaponsMap = defer(() => this.weapons)
     .pipe(map((items) => toMap(items, 'WeaponID')))
+    .pipe(shareReplay(1))
+
+  public spellTable = defer(() => {
+    return combineLatest([
+      this.data.datatablesSpelltable().pipe(annotate('$source', '_')),
+      this.data.datatablesSpelltableAi().pipe(annotate('$source', 'Ai')),
+      this.data.datatablesSpelltableBow().pipe(annotate('$source', 'Bow')),
+      this.data.datatablesSpelltableBlunderbuss().pipe(annotate('$source', 'Blunderbuss')),
+      this.data.datatablesSpelltableFiremagic().pipe(annotate('$source', 'Firemagic')),
+      this.data.datatablesSpelltableGlobal().pipe(annotate('$source', 'Global')),
+      this.data.datatablesSpelltableGreataxe().pipe(annotate('$source', 'Greataxe')),
+      this.data.datatablesSpelltableGreatsword().pipe(annotate('$source', 'Greatsword')),
+      this.data.datatablesSpelltableHatchet().pipe(annotate('$source', 'Hatchet')),
+      this.data.datatablesSpelltableIcemagic().pipe(annotate('$source', 'Icemagic')),
+      this.data.datatablesSpelltableLifemagic().pipe(annotate('$source', 'Lifemagic')),
+      this.data.datatablesSpelltableMusket().pipe(annotate('$source', 'Musket')),
+      this.data.datatablesSpelltableRapier().pipe(annotate('$source', 'Rapier')),
+      this.data.datatablesSpelltableSpear().pipe(annotate('$source', 'Spear')),
+      this.data.datatablesSpelltableSword().pipe(annotate('$source', 'Sword')),
+      this.data.datatablesSpelltableVoidgauntlet().pipe(annotate('$source', 'Voidgauntlet')),
+      this.data.datatablesSpelltableWarhammer().pipe(annotate('$source', 'Warhammer')),
+    ])
+  })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
+
+  public spellTableMap = defer(() => this.spellTable)
+    .pipe(map((items) => toMap(items, 'SpellID')))
     .pipe(shareReplay(1))
 
   public perks = defer(() => {
@@ -222,6 +248,36 @@ export class NwDbService {
     .pipe(map((items) => toMap(items, 'StatusID')))
     .pipe(shareReplay(1))
 
+  public afflictions = defer(() => {
+    return combineLatest([this.data.datatablesAfflictions()])
+  })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
+
+  public afflictionsMap = defer(() => this.afflictions)
+    .pipe(map((items) => toMap(items, 'AfflictionID')))
+    .pipe(shareReplay(1))
+
+  public manacosts = defer(() => {
+    return combineLatest([this.data.datatablesManacostsPlayer()])
+  })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
+
+  public manacostsMap = defer(() => this.manacosts)
+    .pipe(map((items) => toMap(items, 'ID')))
+    .pipe(shareReplay(1))
+
+  public staminacostsPlayer = defer(() => {
+    return combineLatest([this.data.datatablesStaminacostsPlayer()])
+  })
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
+
+  public staminacostsPlayerMap = defer(() => this.staminacostsPlayer)
+    .pipe(map((items) => toMap(items, 'CostID')))
+    .pipe(shareReplay(1))
+
   public arenas = defer(() => {
     return combineLatest([this.data.datatablesArenasArenadefinitions()])
   })
@@ -280,8 +336,7 @@ export class NwDbService {
 
   public tradeskillPostcap = defer(() => {
     return this.data.datatablesTradeskillpostcap()
-  })
-    .pipe(shareReplay(1))
+  }).pipe(shareReplay(1))
 
   public vitals = defer(() => {
     return this.data.datatablesVitals()
@@ -305,7 +360,6 @@ export class NwDbService {
     .pipe(map((it) => Array.from(it.keys())))
     .pipe(shareReplay(1))
 
-
   public damagetypes = defer(() => {
     return this.data.datatablesDamagetypes()
   }).pipe(shareReplay(1))
@@ -325,7 +379,6 @@ export class NwDbService {
   })
     .pipe(map((items) => toMap(items, 'StatusID')))
     .pipe(shareReplay(1))
-
 
   public territories = defer(() => {
     return this.data.datatablesTerritorydefinitions()
