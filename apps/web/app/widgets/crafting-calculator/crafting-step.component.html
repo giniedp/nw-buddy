@@ -19,7 +19,9 @@
         {{ requiredQuantity }}
       </span>
       <span
-        class="ml-2 text-xs tooltip tooltip-success tooltip-right"
+        class="ml-2 text-xs tooltip tooltip-right "
+        [class.text-success]="optimize && !!bonusQuantity"
+        [class.tooltip-success]="optimize && !!bonusQuantity"
         *ngIf="bonusPercent"
         attr.data-tip="+{{ bonusQuantity }} items"
       >
