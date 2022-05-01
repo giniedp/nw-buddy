@@ -16,6 +16,7 @@ import { GridOptions } from 'ag-grid-community'
 import { isEqual } from 'lodash'
 import { BehaviorSubject, combineLatest, defer, filter, map, Subject, takeUntil } from 'rxjs'
 import { LocaleService } from '~/core/i18n'
+import { PreferencesService, StorageNode } from '~/core/preferences'
 import { AgGridComponent } from '~/ui/ag-grid'
 import { DataTableAdapter } from './data-table-adapter'
 
@@ -52,6 +53,12 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
         })
       }
     },
+    onFirstDataRendered: () => {
+      // this.loadFilterState()
+    },
+    onFilterChanged: () => {
+      // this.saveFilterState()
+    }
   })
 
   @Input()
@@ -73,14 +80,16 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   private displayItems: T[]
   private destroy$ = new Subject()
   private category$ = new BehaviorSubject<string>(null)
+  private gridStorage: StorageNode<{ columns?: any, filter?: any }>
 
   public constructor(
     private locale: LocaleService,
     private cdRef: ChangeDetectorRef,
     private adapter: DataTableAdapter<T>,
-    private zone: NgZone
+    private zone: NgZone,
+    preferences: PreferencesService
   ) {
-    //
+    this.gridStorage = preferences.storage.storageScope('grid:')
   }
 
   public async ngOnInit() {
@@ -126,8 +135,13 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   public ngOnDestroy() {
+    this.saveColumnState()
     this.destroy$.next(null)
     this.destroy$.complete()
+  }
+
+  public onGridReady() {
+    this.loadColumnState()
   }
 
   public setCategory(category: string) {
@@ -165,4 +179,53 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       }
     }
   }
+
+  private saveColumnState() {
+    const key = this.stateKey
+    const api = this.grid.colApi
+    if (!key || !api) {
+      return
+    }
+    this.gridStorage.set(key, {
+      ...this.gridStorage.get(key) || {},
+      columns: api.getColumnState()
+    })
+  }
+
+  private saveFilterState() {
+    const key = this.stateKey
+    const api = this.grid.api
+    if (!key || !api) {
+      return
+    }
+    this.gridStorage.set(key, {
+      ...this.gridStorage.get(key) || {},
+      filter: api.getFilterModel()
+    })
+  }
+
+  private loadColumnState() {
+    const key = this.stateKey
+    const api = this.grid.colApi
+    if (!key || !api) {
+      return
+    }
+    const data = this.gridStorage.get(key)?.columns
+    if (data) {
+      api.applyColumnState({ state: data })
+    }
+  }
+
+  private loadFilterState() {
+    const key = this.stateKey
+    const api = this.grid.api
+    if (!key || !api) {
+      return
+    }
+    const data = this.gridStorage.get(key)?.filter
+    if (data) {
+      api.setFilterModel(data)
+    }
+  }
+
 }

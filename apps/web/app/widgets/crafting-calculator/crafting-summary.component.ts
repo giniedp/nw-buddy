@@ -27,6 +27,7 @@ export interface ResourceRow {
   item: ItemDefinitionMaster | Housingitems
   itemId: string
   quantity: number
+  ignore: boolean
 }
 
 
@@ -84,7 +85,7 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
       .pipe(switchMap(() => this.parent.stepChange.pipe(startWith(null))))
       .pipe(debounceTime(100))
       .pipe(switchMap(() => {
-        const resources = this.calculateResources()
+        const resources = this.calculateResources(this.resourceTable)
         const skills = this.calculateSkills()
         return combineLatest({
           resources: of(resources),
@@ -123,7 +124,7 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  private calculateResources(): ResourceRow[] {
+  private calculateResources(old?: ResourceRow[]): ResourceRow[] {
     const table = new Map<string, ResourceRow>()
     this.walk(this.root, (node) => {
       if (!node.item || (node.expand && node.steps?.length)) {
@@ -135,6 +136,7 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
           item: node.item,
           itemId: key,
           quantity: 0,
+          ignore: old?.find((it) => it.itemId === key)?.ignore
         })
       }
       const data = table.get(key)

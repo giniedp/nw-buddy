@@ -47,6 +47,10 @@ body {
     display: none;
   }
 }
+img.error {
+  opacity: 1;
+  display: none;
+}
 
 ::-webkit-scrollbar {
   width: 10px;
@@ -120,5 +124,8 @@ picture.nw-icon {
 .ag-header-cell-resize::after {
   top: 2px !important;
   height: calc(100% - 4px) !important;
-
+  width: 1px !important;
+}
+.ag-icon-filter {
+  color: hsl(var(--p) / var(--tw-text-opacity)) !important;
 }

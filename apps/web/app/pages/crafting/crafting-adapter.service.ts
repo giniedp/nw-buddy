@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, shareReplay, tap } from 'rxjs'
-import { NwService } from '~/core/nw'
+import { IconComponent, NwService } from '~/core/nw'
 import { CategoryFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
@@ -39,18 +39,18 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
           filter: false,
           pinned: true,
           width: 54,
-          cellRenderer: ({ data }) => {
-            const recipe = data as RecipeWithItem
-            if (!recipe.$item) {
-              return ''
+          cellRenderer: mithrilCell<RecipeWithItem>({
+            view: ({ attrs: { data } }) => {
+              const item = data?.$item
+              if (!item) {
+                return ''
+              }
+              return m(IconComponent, {
+                src: this.nw.iconPath(item.IconPath),
+                class: `w-9 h-9 nw-icon bg-rarity-${this.nw.itemRarity(item)}`,
+              })
             }
-            const rarity = this.nw.itemRarity(recipe.$item)
-            const iconPath = this.nw.iconPath(recipe.$item?.IconPath)
-            return this.nw.renderIcon(iconPath, {
-              size: 38,
-              rarity: rarity,
-            })
-          },
+          }),
         },
         {
           width: 250,

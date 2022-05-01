@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { Housingitems } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, map, Observable, shareReplay, tap } from 'rxjs'
-import { NwService } from '~/core/nw'
+import { IconComponent, NwService } from '~/core/nw'
 import { CategoryFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
@@ -35,15 +35,15 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
           filter: false,
           width: 54,
           pinned: true,
-          cellRenderer: ({ data }) => {
-            const rarity = this.nw.itemRarity(data)
-            const iconPath = this.nw.iconPath(field(data, 'IconPath'))
-            const icon = this.nw.renderIcon(iconPath, {
-              size: 38,
-              rarity: rarity,
-            })
-            return `<a href="${this.nw.nwdbUrl('item', field(data, 'HouseItemID'))}" target="_blank">${icon}</a>`
-          },
+          cellRenderer: mithrilCell<Housingitems>({
+            view: ({ attrs: { data } }) =>
+              m('a', { target: '_blank', href: this.nw.nwdbUrl('item', data.HouseItemID) }, [
+                m(IconComponent, {
+                  src: this.nw.iconPath(data.IconPath),
+                  class: `w-9 h-9 nw-icon bg-rarity-${this.nw.itemRarity(data)}`,
+                }),
+              ]),
+          }),
         },
         {
           width: 300,

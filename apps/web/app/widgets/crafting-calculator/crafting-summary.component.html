@@ -6,17 +6,20 @@
 <div class="bg-base-100 rounded-md mx-[1px] rounded-tl-none" *ngIf="resourceTab">
   <table class="table table-compact w-full">
     <tbody >
-      <tr *ngFor="let row of resourceTable; trackBy: trackByIndex" >
-        <th class="w-12">
+      <tr *ngFor="let row of resourceTable; trackBy: trackByIndex"  [class.opacity-75]="row.ignore" [class.grayscale]="row.ignore">
+        <td width="0" class="p-1 flex items-center">
           <picture [nwIcon]="row.item.IconPath" class="w-10 h-10"></picture>
-        </th>
-        <td >
-          <span>{{ row.quantity | number }}</span>
-          <span> × </span>
-          <span [nwText]="row.item.Name"></span>
+          <div class="ml-2">
+            <span>{{ row.quantity | number }}</span>
+            <span> × </span>
+            <span [nwText]="row.item.Name"></span>
+          </div>
         </td>
         <td class="w-0 text-right">
            <nwb-item-tracker [itemId]="row.itemId" [multiply]="row.quantity" [mode]="'price'" class=" opacity-75"></nwb-item-tracker>
+        </td>
+        <td class="w-0 px-2">
+          <input type="checkbox" [(ngModel)]="row.ignore" class="checkbox checkbox-xs checkbox-primary">
         </td>
       </tr>
     </tbody>

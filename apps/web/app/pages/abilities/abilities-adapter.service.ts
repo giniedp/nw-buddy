@@ -2,8 +2,10 @@ import { Injectable } from '@angular/core'
 import { Ability, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, Observable, shareReplay } from 'rxjs'
-import { NwService } from '~/core/nw'
+import { IconComponent, NwService } from '~/core/nw'
+import { mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
+import m from 'mithril'
 
 function fieldName(key: keyof Ability) {
   return key
@@ -33,15 +35,15 @@ export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
           filter: false,
           width: 54,
           pinned: true,
-          cellRenderer: ({ data }) => {
-            const rarity = this.nw.itemRarity(data)
-            const iconPath = this.nw.iconPath(field(data, 'Icon'))
-            const icon = this.nw.renderIcon(iconPath, {
-              size: 38,
-              rarity: rarity,
-            })
-            return `<a href="${this.nw.nwdbUrl('ability', field(data, 'AbilityID'))}" target="_blank">${icon}</a>`
-          },
+          cellRenderer: mithrilCell<Ability>({
+            view: ({ attrs: { data } }) =>
+              m('a', { target: '_blank', href: this.nw.nwdbUrl('ability', data.AbilityID) }, [
+                m(IconComponent, {
+                  src: this.nw.iconPath(data.Icon),
+                  class: `w-9 h-9 nw-icon`,
+                }),
+              ]),
+          }),
         },
         {
           width: 250,

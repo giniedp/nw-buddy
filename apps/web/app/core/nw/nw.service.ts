@@ -46,25 +46,7 @@ export class NwService {
     }
   }
 
-  public cellRendererIcon = <T>(key: keyof T, options?: { size?: number; rarity?: (item: T) => number }) => {
-    return (params: { data: T }) => {
-      return this.renderIcon(params.data[key] as any, {
-        size: options.size,
-        rarity: options?.rarity?.(params.data),
-      })
-    }
-  }
-
   public nwdbUrl = nwdbLinkUrl
-
-  public renderIcon(path: string, options?: { size?: number; rarity?: number }) {
-    const iconPath = this.iconPath(path as string)
-    const rarity = options?.rarity
-    return createIconHtml(iconPath, {
-      size: options?.size,
-      class: rarity ? `bg-rarity-${rarity}` : null,
-    })
-  }
 
   public itemRarity(item: ItemDefinitionMaster | Housingitems) {
     if (item.ForceRarity) {
@@ -96,15 +78,15 @@ export class NwService {
       case 0:
         return '-'
       case 1:
-        return 'I'
+        return 'Ⅰ'
       case 2:
-        return 'II'
+        return 'Ⅱ'
       case 3:
-        return 'III'
+        return 'Ⅲ'
       case 4:
-        return 'IV'
+        return 'Ⅳ'
       case 5:
-        return 'V'
+        return 'Ⅴ'
       default:
         return String(tier ?? '')
     }
@@ -263,16 +245,6 @@ export class NwService {
   }
 }
 
-function createIconHtml(path: string, options: { size: number; class: string }) {
-  const size = options?.size ?? 36
-  const cclass = ['nw-icon', 'fade', options?.class].filter((it) => !!it).join(' ')
-  return `
-    <picture class="${cclass}" style="width: ${size}px; height: ${size}px">
-      <img src="${path}" onerror="this.parentElement.classList.add('error')" onload="this.parentElement.classList.add('show')"/>
-    </picture>
-  `
-}
-
 export interface IconComponentAttrs {
   src: string
   class: string
@@ -288,10 +260,12 @@ export const IconComponent: m.ClosureComponent<IconComponentAttrs> = () => {
   }
   return {
     view: ({ attrs }) => {
-      return m('picture', { class: attrs.class }, [
-        m('img', {
-          class: hasError ? 'error' : didLoad ? 'show' : '',
+      return m('picture', {
+        class: attrs.class,
+      }, [
+        m('img.fade', {
           src: attrs.src,
+          class: [hasError ? 'error' : didLoad ? 'show' : ''].join(' '),
           onerror: onError,
           onload: onSuccess,
         })
