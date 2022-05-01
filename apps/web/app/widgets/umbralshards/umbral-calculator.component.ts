@@ -50,7 +50,7 @@ export class UmbralCalculatorComponent implements OnInit, OnChanges, OnDestroy {
           id: it.id,
           name: it.name,
           weight: it.weight,
-          value: data.value,
+          value: data.value || 0,
         }
       }))
     }))
