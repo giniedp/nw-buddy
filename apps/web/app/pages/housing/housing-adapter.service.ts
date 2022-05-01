@@ -42,7 +42,7 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
               size: 38,
               rarity: rarity,
             })
-            return `<a href="${this.nw.nwdbLinkUrl('item', field(data, 'HouseItemID'))}" target="_blank">${icon}</a>`
+            return `<a href="${this.nw.nwdbUrl('item', field(data, 'HouseItemID'))}" target="_blank">${icon}</a>`
           },
         },
         {
@@ -143,7 +143,19 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
           width: 150,
         },
         {
+          width: 250,
           field: fieldName('HousingTags'),
+          valueGetter: ({ data, colDef }) => {
+            return (data[colDef.field] || '').trim().split(('+'))
+          },
+          cellRenderer: mithrilCell({
+            view: ({ attrs: { value } }) => {
+              return m('div.flex.flex-row.flex-wrap.items-center.h-full', value.map((it: string) => {
+                return m('span.badge.badge-secondary.mr-1.badge-sm', it)
+              }))
+            }
+          }),
+          filter: CategoryFilter,
         },
       ],
     })

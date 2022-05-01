@@ -4,7 +4,7 @@ import m from 'mithril'
 export interface MithrilCellAttrs<T> extends ICellRendererParams {
   data: T
 }
-export function mithrilCell<T>(comp: m.Component<MithrilCellAttrs<T>, unknown>) {
+export function mithrilCell<T, S = any>(comp: m.Component<MithrilCellAttrs<T>, S>) {
   return class MithrilCellComponent {
     private el: HTMLElement
     private params: ICellRendererParams

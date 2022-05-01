@@ -37,6 +37,7 @@ export class NwService {
     return {
       rowHeight: 40,
       defaultColDef: {
+        resizable: true,
         sortable: true,
         filter: true,
         ...(options.defaultColDef || {}),
@@ -54,7 +55,7 @@ export class NwService {
     }
   }
 
-  public nwdbLinkUrl = nwdbLinkUrl
+  public nwdbUrl = nwdbLinkUrl
 
   public renderIcon(path: string, options?: { size?: number; rarity?: number }) {
     const iconPath = this.iconPath(path as string)
@@ -123,6 +124,10 @@ export class NwService {
 
   public itemPerks(item: ItemDefinitionMaster, perks: Map<string, Perks>) {
     return this.itemPerkIds(item).map((it) => perks.get(it))
+  }
+
+  public itemPerkPerkBucketIds(item: ItemDefinitionMaster) {
+    return [item.PerkBucket1, item.PerkBucket2, item.PerkBucket3, item.PerkBucket4, item.PerkBucket5].filter((it) => !!it)
   }
 
   public iconPath(path: string) {

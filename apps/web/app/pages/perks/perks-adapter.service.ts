@@ -37,7 +37,7 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           width: 74,
           cellRenderer: mithrilCell<Perks>({
             view: ({ attrs: { data } }) => {
-              return m('a', { target: '_blank', href: this.nw.nwdbLinkUrl('perk', data.PerkID) }, [
+              return m('a', { target: '_blank', href: this.nw.nwdbUrl('perk', data.PerkID) }, [
                 m(IconComponent, {
                   src: this.nw.iconPath(data.IconPath),
                   class: `w-9 h-9 nw-icon`,

@@ -77,7 +77,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
                 m.fragment(
                   {},
                   data.perks.map((perk) => {
-                    return m('a.block.w-7.h-7', { target: '_blank', href: this.nw.nwdbLinkUrl('perk', perk.PerkID) }, [
+                    return m('a.block.w-7.h-7', { target: '_blank', href: this.nw.nwdbUrl('perk', perk.PerkID) }, [
                       m(IconComponent, {
                         src: this.nw.iconPath(perk.IconPath),
                         class: `w-7 h-7 nw-icon`,
@@ -98,7 +98,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
               view: ({ attrs: { data } }) => {
                 const item = data.items[i]
                 const rarity = this.nw.itemRarity(item)
-                return m('a', { target: '_blank', href: this.nw.nwdbLinkUrl('item', item.ItemID) }, [
+                return m('a', { target: '_blank', href: this.nw.nwdbUrl('item', item.ItemID) }, [
                   m(IconComponent, {
                     src: this.nw.iconPath(item.IconPath),
                     class: `w-9 h-9 nw-icon bg-rarity-${rarity}`

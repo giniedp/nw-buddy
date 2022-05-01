@@ -40,7 +40,7 @@ export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
               size: 38,
               rarity: rarity,
             })
-            return `<a href="${this.nw.nwdbLinkUrl('ability', field(data, 'AbilityID'))}" target="_blank">${icon}</a>`
+            return `<a href="${this.nw.nwdbUrl('ability', field(data, 'AbilityID'))}" target="_blank">${icon}</a>`
           },
         },
         {

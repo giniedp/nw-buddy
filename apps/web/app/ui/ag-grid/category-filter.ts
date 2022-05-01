@@ -9,7 +9,7 @@ export class CategoryFilter<C> implements IFilterComp {
   public init(params: IFilterParams) {
     this.params = params
     this.el = document.createElement('ul')
-    this.el.classList.add('menu','menu-compact', 'bg-base-100')
+    this.el.classList.add('menu','menu-compact', 'rounded-md', 'min-w-[200px]', 'bg-base-300')
     this.renderFilter()
   }
 
@@ -18,7 +18,12 @@ export class CategoryFilter<C> implements IFilterComp {
   }
 
   public doesFilterPass(params: IDoesFilterPassParams) {
-    return !!this.state.get(this.getValue(params.node, params.data))
+
+    const value = this.getValue(params.node, params.data)
+    if (!Array.isArray(value)) {
+      return !!this.state.get(value)
+    }
+    return value.some((it) => this.state.get(it))
   }
 
   public isFilterActive() {
@@ -50,7 +55,8 @@ export class CategoryFilter<C> implements IFilterComp {
       this.el.append(li)
       const a = document.createElement('a')
       li.append(a)
-      a.setAttribute('filter-value', it.value)
+
+      a.setAttribute('filter-value', `${it.value}`)
       a.textContent = it.label
       a.addEventListener('click', () => {
         this.toggleFilter(it.value)
@@ -66,7 +72,7 @@ export class CategoryFilter<C> implements IFilterComp {
 
   private updaFilterUI() {
     this.state.forEach((value, key) => {
-      const el = this.el.querySelector(`[filter-value=${key}]`)
+      const el = this.el.querySelector(`[filter-value="${key}"]`)
       if (!el) {
         return
       }
@@ -82,8 +88,11 @@ export class CategoryFilter<C> implements IFilterComp {
     const values = new Set<any>()
     this.params.api.forEachNode((node) => {
       const value = this.getValue(node, node.data)
-      if (value) {
-        values.add(value)
+      const list = Array.isArray(value) ? value : [value]
+      for (const item of list) {
+        if (item) {
+          values.add(item)
+        }
       }
     })
     this.options = Array.from(values.values()).sort().map((it) => {
@@ -92,7 +101,7 @@ export class CategoryFilter<C> implements IFilterComp {
   }
 
   protected getValue(node: RowNode, data: any) {
-    return String(this.params.valueGetter({
+    return this.params.valueGetter({
       api: this.params.api,
       colDef: this.params.colDef,
       column: this.params.column,
@@ -101,6 +110,6 @@ export class CategoryFilter<C> implements IFilterComp {
       data: data,
       getValue: (field) => node.data[field],
       node: node
-    }))
+    })
   }
 }

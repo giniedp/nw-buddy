@@ -40,7 +40,7 @@ export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> 
               size: 38,
               rarity: rarity,
             })
-            return `<a href="${this.nw.nwdbLinkUrl('status-effect', field(data, 'StatusID'))}" target="_blank">${icon}</a>`
+            return `<a href="${this.nw.nwdbUrl('status-effect', field(data, 'StatusID'))}" target="_blank">${icon}</a>`
           },
         },
         {
