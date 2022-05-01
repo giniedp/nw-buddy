@@ -18,14 +18,11 @@
         <td class="w-0 text-right">
            <nwb-item-tracker [itemId]="row.itemId" [multiply]="row.quantity" [mode]="'price'" class=" opacity-75"></nwb-item-tracker>
         </td>
-        <td class="w-0 px-2">
-          <input type="checkbox" [(ngModel)]="row.ignore" class="checkbox checkbox-xs checkbox-primary">
-        </td>
       </tr>
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="3" class="text-right">{{ resourcesPrice | number:'1.2-2' }}🪙</td>
+        <td colspan="2" class="text-right">{{ resourcesPrice | number:'1.2-2' }}🪙</td>
       </tr>
 
     </tfoot>
