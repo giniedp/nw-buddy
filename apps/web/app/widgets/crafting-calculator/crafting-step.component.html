@@ -1,4 +1,4 @@
-<div class="flex flex-row items-center">
+<div class="flex flex-row items-center main-row">
   <nwb-crafting-step-toggle
     class="w-8 h-8"
     [disabled]="!collapsible || !steps?.length"
@@ -54,9 +54,7 @@
 </ul>
 <div *ngIf="expand && steps?.length" class="steps-container">
   <nwb-crafting-step
-    *ngFor="let step of steps; let isLast = last; trackBy: trackStepBy"
-    [class.is-last]="isLast"
-    [class.is-nested]="true"
+    *ngFor="let step of steps; trackBy: trackStepBy"
     [type]="step.type"
     [ingredient]="step.ingredient"
     [quantity]="step.quantity * requiredQuantity"

@@ -2,10 +2,6 @@
   display: block;
   position: relative;
 
-  nwb-crafting-step-toggle {
-    display: none;
-  }
-
   picture.cursor-pointer {
     &::after {
       position: absolute;
@@ -16,7 +12,12 @@
       z-index: 3;
     }
   }
-  &.is-nested {
+
+  nwb-crafting-step-toggle {
+    display: none;
+  }
+
+  nwb-crafting-step {
     nwb-crafting-step-toggle {
       display: inline-flex;
     }
@@ -34,14 +35,14 @@
       padding-left: 12px;
     }
   }
-  &.is-last  {
-    .steps-container, .menu {
-      border-left-color: transparent !important;
-    }
 
-    nwb-crafting-step-toggle::after {
+  &:last-child {
+    & > .main-row nwb-crafting-step-toggle::after {
       display: none !important;
     }
+    & > .steps-container,
+    & > .menu {
+      border-left-color: transparent !important;
+    }
   }
-
 }
