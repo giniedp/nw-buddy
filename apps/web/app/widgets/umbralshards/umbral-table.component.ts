@@ -28,11 +28,9 @@ export class UmbralTableComponent implements OnInit, OnDestroy, OnChanges {
 
   public limit: number
   public data: Umbralgsupgrades[]
-  public index: number
   private destroy$ = new Subject()
   private gsMin$ = new BehaviorSubject(this.gsMin)
   private gsMax$ = new BehaviorSubject(this.gsMax)
-  private index$ = new BehaviorSubject(0)
 
   public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {}
 
@@ -41,10 +39,8 @@ export class UmbralTableComponent implements OnInit, OnDestroy, OnChanges {
     combineLatest({
       min: this.gsMin$,
       max: this.gsMax$,
-      index: this.index$,
       data: this.nw.db.data.datatablesUmbralgsupgrades()
-    }).pipe(map(({ min, max, index, data }) => {
-      this.index = index
+    }).pipe(map(({ min, max, data }) => {
       if (min != null) {
         data = data.filter((it) => it.Level >= min)
       }
@@ -52,8 +48,8 @@ export class UmbralTableComponent implements OnInit, OnDestroy, OnChanges {
         data = data.filter((it) => it.Level <= max)
       }
       return data.map((node, i) => {
-        let iStart = index || 0
-        let iEnd = i
+        let iStart = i
+        let iEnd = data.length - 1
         return {
           ...node,
           total: accumulate(data, iStart, iEnd, 'RequiredItemQuantity')
@@ -76,9 +72,5 @@ export class UmbralTableComponent implements OnInit, OnDestroy, OnChanges {
   public ngOnDestroy(): void {
     this.destroy$.next(null)
     this.destroy$.complete()
-  }
-
-  public setIndex(value: number) {
-    this.index$.next(value)
   }
 }

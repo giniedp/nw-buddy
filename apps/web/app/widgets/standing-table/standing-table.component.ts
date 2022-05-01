@@ -39,7 +39,7 @@ export class StandingTableComponent implements OnInit, OnDestroy {
             return {
               Level: node.Rank,
               XPToLevel: node.InfluenceCost,
-              XPTotal: 0 ,// accumulate(data, 0, i, 'InfluenceCost'),
+              XPTotal: accumulate(data, 0, i, 'InfluenceCost'),
               Title: node.DisplayName,
               XPReward: node.XpReward,
             }

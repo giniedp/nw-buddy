@@ -7,7 +7,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let row of data; let i = index" [class.active]="index == i" (click)="setIndex(i)" class="hover">
+    <tr *ngFor="let row of data; let i = index">
       <th>{{ row.Level }}</th>
       <td class="text-right">{{ row.RequiredItemQuantity | number }}</td>
       <td class="text-right">{{ row['total'] | number }}</td>

@@ -14,7 +14,6 @@ export interface LevelingRow {
   Level: number
   XPToLevel: number
   XPTotal: number
-  XPToMax: number
   AttributePoints: number
   AttributePointsTotal: number
   AttributeRespecCost: number
@@ -32,23 +31,19 @@ export class XpTableComponent implements OnInit, OnDestroy {
   public data: LevelingRow[]
   public index: number
   private destroy$ = new Subject()
-  private index$ = new BehaviorSubject(0)
 
   public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {}
 
   public async ngOnInit() {
 
     combineLatest({
-      index: this.index$,
       data: this.nw.db.data.datatablesXpamountsbylevel()
-    }).pipe(map(({ index, data }) => {
-      this.index = index
+    }).pipe(map(({ data }) => {
       return data.map((node, i): LevelingRow => {
         return {
           Level: node['Level Number'],
           XPToLevel: node.XPToLevel,
           XPTotal: accumulate(data, 0, i, 'XPToLevel'),
-          XPToMax: accumulate(data, index || 0, i, 'XPToLevel'),
           AttributePoints: node.AttributePoints,
           AttributePointsTotal: accumulate(data, 0, i, 'AttributePoints'),
           AttributeRespecCost: node.AttributeRespecCost
@@ -61,10 +56,6 @@ export class XpTableComponent implements OnInit, OnDestroy {
       this.limit = Math.max(...data.map((it) => it['Level Number'])) + 1
       this.cdRef.markForCheck()
     })
-  }
-
-  public setIndex(value: number) {
-    this.index$.next(value)
   }
 
   public ngOnDestroy(): void {
