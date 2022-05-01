@@ -116,3 +116,9 @@ picture.nw-icon {
     overflow: auto;
   }
 }
+
+.ag-header-cell-resize::after {
+  top: 2px !important;
+  height: calc(100% - 4px) !important;
+
+}
