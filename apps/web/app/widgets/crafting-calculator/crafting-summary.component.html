@@ -1,26 +1,37 @@
 <div class="tabs">
-  <a class="tab tab-lifted flex-1"  [class.tab-active]="resourceTab" (click)="tab = 'resources'">Resources</a>
-  <a class="tab tab-lifted flex-1"   [class.tab-active]="skillsTab" (click)="tab = 'skills'">Skills</a>
+  <a class="tab tab-lifted flex-1" [class.tab-active]="resourceTab" (click)="tab = 'resources'">Resources</a>
+  <a class="tab tab-lifted flex-1" [class.tab-active]="skillsTab" (click)="tab = 'skills'">Skills</a>
 </div>
 
 <div class="bg-base-100 rounded-md mx-[1px] rounded-tl-none" *ngIf="resourceTab">
   <table class="table table-compact w-full">
     <tbody >
-      <tr *ngFor="let row of table; trackBy: trackByIndex" >
-        <th>
+      <tr *ngFor="let row of resourceTable; trackBy: trackByIndex" >
+        <th class="w-12">
           <picture [nwIcon]="row.item.IconPath" class="w-10 h-10"></picture>
         </th>
-        <td [nwText]="row.item.Name"></td>
-        <td class="text-right">{{ row.quantity | number }}</td>
-        <td></td>
+        <td >
+          <span>{{ row.quantity | number }}</span>
+          <span> × </span>
+          <span [nwText]="row.item.Name"></span>
+        </td>
+        <td class="w-0 text-right">
+           <nwb-item-tracker [itemId]="row.itemId" [multiply]="row.quantity" [mode]="'price'" class=" opacity-75"></nwb-item-tracker>
+        </td>
       </tr>
     </tbody>
+    <tfoot>
+      <tr>
+        <td colspan="3" class="text-right">{{ resourcesPrice | number:'1.2-2' }}🪙</td>
+      </tr>
+
+    </tfoot>
   </table>
 </div>
 
 
 <div class="bg-base-100 rounded-md mx-[1px] rounded-tr-none" *ngIf="skillsTab">
-  <div class="flex flex-row items-center" *ngFor="let row of xpTable; trackBy: trackByIndex">
+  <div class="flex flex-row items-center" *ngFor="let row of skillsTable; trackBy: trackByIndex">
     <img [nwImage]="row.icon" class="w-20 h-20"/>
     <div class="flex-1 flex flex-col justify-center pl-2">
       <span [nwText]="row.name" class="font-bold"></span>

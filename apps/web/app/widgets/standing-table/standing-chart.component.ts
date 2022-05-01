@@ -31,7 +31,7 @@ export class StandingChartComponent implements OnInit, OnDestroy {
               {
                 label: 'XP per level',
                 data: data.map((it) => it.InfluenceCost),
-                backgroundColor: '#003f5c',
+                backgroundColor: '#ffa600',
               },
             ],
           },

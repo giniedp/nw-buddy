@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core'
-import { Crafting, GameEvent, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { Crafting, GameEvent, Housingitems, ItemDefinitionMaster, Perks } from '@nw-data/types'
 
 import { GridOptions } from 'ag-grid-community'
-import { Observable, take } from 'rxjs'
 import { TranslateService } from '../i18n'
 import { ItemPreferencesService, RecipePreferencesService } from '../preferences'
 import { NwDbService } from './nw-db.service'
@@ -118,23 +117,31 @@ export class NwService {
     return this.translate(this.itemRarityKey(item))
   }
 
+  public itemPerkIds(item: ItemDefinitionMaster) {
+    return [item.Perk1, item.Perk2, item.Perk3, item.Perk4, item.Perk5].filter((it) => !!it)
+  }
+
+  public itemPerks(item: ItemDefinitionMaster, perks: Map<string, Perks>) {
+    return this.itemPerkIds(item).map((it) => perks.get(it))
+  }
+
   public iconPath(path: string) {
     return this.db.data.iconPath(path)
   }
   public translate(key: string) {
-    if (typeof key === 'string' && key.startsWith('@')) {
-      key = key.substring(1)
-    }
     return this.translations.get(key)
   }
 
   public translate$(key: string) {
-    if (typeof key === 'string' && key.startsWith('@')) {
-      key = key.substring(1)
-    }
     return this.translations.observe(key)
   }
 
+  public itemId(item: ItemDefinitionMaster | Housingitems) {
+    if (!item) {
+      return null
+    }
+    return 'ItemID' in item ? item?.ItemID : item?.HouseItemID
+  }
   public itemIdFromRecipe(item: Crafting) {
     if (!item) {
       return null
@@ -149,7 +156,7 @@ export class NwService {
   }
 
   public recipeForItem(item: ItemDefinitionMaster | Housingitems, recipes: Crafting[]) {
-    const itemId = 'ItemID' in item ? item?.ItemID : item?.HouseItemID
+    const itemId = this.itemId(item)
     if (!itemId) {
       return null
     }
@@ -204,24 +211,49 @@ export class NwService {
     if (!CATEGORIES_GRANTING_BONUS.includes(recipe.CraftingCategory)) {
       return 0
     }
-    const base = (skill ?? 200) / 1000 + recipe.BonusItemChance
-    const chances = ingredients
-      .map((it) => {
-        const diff = it.Tier - item.Tier
-        if (!diff) {
-          return 0
-        }
-        const lookup = (diff < 0 ? recipe.BonusItemChanceDecrease : recipe.BonusItemChanceIncrease) || ''
-        const values = lookup.split(',').map(Number)
-        while (values.length && !values[0]) {
-          values.shift()
-        }
-        return values[Math.abs(diff) - 1] || 0
-      })
-    let result = base
-    for (const value of chances) {
-      result += value
+
+    // only category ingrediens affect bonus chance
+    ingredients = ingredients.filter((_, i) => recipe[`Type${i + 1}`] === 'Category_Only')
+
+    // positive Tier difference lookup map
+    const increments = (recipe.BonusItemChanceIncrease || '').split(',').map(Number)
+    // negative Tier difference lookup map
+    const decrements = (recipe.BonusItemChanceDecrease || '').split(',').map(Number)
+    // seems to be a weird data bug in some recipes (Lumber) which leads
+    // to results different from values in the game, if we do not remove
+    // leading '0' entries
+    while (decrements[0] === 0) {
+      decrements.shift()
     }
+    while (increments[0] === 0) {
+      increments.shift()
+    }
+
+    const ingrTiers = ingredients.map((it) => it.Tier)
+    const ingrDiffs = ingrTiers.map((it) => it - item.Tier)
+    const ingrChances = ingrDiffs.map((diff) => {
+      if (diff === 0) {
+        return 0
+      }
+      return (diff < 0 ? decrements : increments)[Math.abs(diff) - 1]
+    })
+    const baseChance = recipe.BonusItemChance
+    const skillChance = (skill ?? 200) / 1000
+    const ingrChance = ingrChances.reduce((a, b) => a + b, 0)
+
+    let result = baseChance + skillChance + ingrChance
+
+    // console.table({
+    //   ingrTiers: ingrTiers.map(String),
+    //   ingrDiffs: ingrDiffs.map(String),
+    //   increments: increments.map((it) => (it * 100).toFixed(0)),
+    //   decrements: decrements.map((it) => (it * 100).toFixed(0)),
+    //   skillChance: [(skillChance * 100).toFixed(0)],
+    //   baseChance: [(baseChance * 100).toFixed(0)],
+    //   ingrChance: [(ingrChance * 100).toFixed(0)],
+    //   result: [(result * 100).toFixed(0)],
+    // })
+
     return Math.max(0, result)
   }
 }

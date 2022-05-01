@@ -4,10 +4,8 @@ import {
   ChangeDetectionStrategy,
   Input,
   OnDestroy,
-  ChangeDetectorRef,
   ElementRef,
   ViewChild,
-  AfterViewChecked,
 } from '@angular/core'
 import { Chart, ChartConfiguration, registerables  } from 'chart.js'
 import { ReplaySubject, Subject, takeUntil } from 'rxjs'

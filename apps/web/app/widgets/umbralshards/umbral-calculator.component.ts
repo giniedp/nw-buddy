@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, OnChanges, SimpleChanges, ChangeDetectorRef, TrackByFunction } from '@angular/core';
 import { combineLatest, defer, map, Subject, takeUntil } from 'rxjs';
 import { NwService } from '~/core/nw';
-import { PreferencesService, ScopedStorage, StorageBase } from '~/core/preferences';
+import { PreferencesService, StorageScopeNode, StorageNode } from '~/core/preferences';
 
 export interface UCRow {
   id: string,
@@ -57,10 +57,10 @@ export class UmbralCalculatorComponent implements OnInit, OnChanges, OnDestroy {
   })
 
   private destroy$ = new Subject()
-  private storage: StorageBase
+  private storage: StorageNode
 
   public constructor(private nw: NwService, pref: PreferencesService, private cdRef: ChangeDetectorRef) {
-    this.storage = new ScopedStorage(pref.storage, 'umbral-calculator')
+    this.storage = pref.storage.storageObject('umbral-calculator')
   }
 
   public ngOnInit(): void {
@@ -104,6 +104,6 @@ export class UmbralCalculatorComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public writeValue(id: string, value: number) {
-    this.storage.write(id, value)
+    this.storage.set(id, value)
   }
 }

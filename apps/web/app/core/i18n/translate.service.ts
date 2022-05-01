@@ -66,10 +66,9 @@ export class TranslateService implements OnDestroy {
     const target = (this.data.get(locale) || new Map<string, string>())
     Object.entries(data).forEach(([key, value]) => {
       key = key.toLowerCase()
-      if (target.get(key)) {
-        console.warn(`dublicate translate key:`, key)
+      if (!target.has(key)) {
+        target.set(key, value)
       }
-      target.set(key, value)
     })
     this.data.set(locale, target)
     this.change$.next(null)

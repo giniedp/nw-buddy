@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { map } from 'rxjs'
 import { PreferencesService } from './preferences.service'
-import { ScopedStorage, StorageBase } from './storage'
+import { StorageScopeNode, StorageNode } from './storage'
 
 export interface RecipeInfo {
   fav?: boolean
@@ -10,14 +10,14 @@ export interface RecipeInfo {
 
 @Injectable({ providedIn: 'root' })
 export class RecipePreferencesService {
-  private storage: StorageBase
+  private storage: StorageNode
 
   public constructor(preferences: PreferencesService) {
-    this.storage = new ScopedStorage(preferences.storage, 'recipes:')
+    this.storage = new StorageScopeNode(preferences.storage, 'recipes:')
   }
 
   public get(itemId: string): RecipeInfo {
-    return this.storage.read(itemId)
+    return this.storage.get(itemId)
   }
 
   public getFavouritesIds() {
@@ -38,7 +38,7 @@ export class RecipePreferencesService {
   }
 
   public update(itemId: string, meta: RecipeInfo) {
-    this.storage.write(itemId, meta)
+    this.storage.set(itemId, meta)
   }
 
   public observe(itemId: string) {

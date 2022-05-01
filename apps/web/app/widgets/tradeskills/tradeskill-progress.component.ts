@@ -8,12 +8,12 @@ import {
   OnInit,
 } from '@angular/core'
 import { BehaviorSubject, combineLatest, map, of, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
-import { NwTradeskillService } from './nw-tradeskill.service'
+import { NwTradeskillService } from '~/core/nw/nw-tradeskill.service'
 
 @Component({
   selector: 'nwb-tradeskill-progress',
-  templateUrl: './nw-tradeskill-circle.component.html',
-  styleUrls: ['./nw-tradeskill-circle.component.scss'],
+  templateUrl: './tradeskill-progress.component.html',
+  styleUrls: ['./tradeskill-progress.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NwTradeskillCircleComponent implements OnInit, OnChanges, OnDestroy {

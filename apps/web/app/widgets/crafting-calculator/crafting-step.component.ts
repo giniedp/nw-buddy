@@ -14,11 +14,15 @@ import {
   Output,
   EventEmitter,
   AfterContentChecked,
+  Inject,
+  SkipSelf,
 } from '@angular/core'
 import { Crafting, Craftingcategories, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { Optional } from 'ag-grid-community'
 import { combineLatest, of, ReplaySubject, Subject, take, takeUntil } from 'rxjs'
 import { NwService } from '~/core/nw'
 import { CraftingCalculatorComponent } from './crafting-calculator.component'
+import { CraftingPreferencesService } from './crafting-preferences.service'
 
 export type IngredientType = 'Item' | 'Currency' | 'Category_Only'
 export interface IngredientStep {
@@ -34,7 +38,6 @@ export interface IngredientStep {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, AfterContentChecked {
-
   @Input()
   public recipe: Crafting
 
@@ -61,6 +64,9 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
 
   public bonus: number = 0
 
+  @Input()
+  public showPrice = false
+
   public get isDowngrade() {
     return this.recipe?.CraftingCategory === 'ResourceDowngrade'
   }
@@ -73,14 +79,21 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
     if (!this.expand || !this.bonus) {
       return 0
     }
-    return Math.round(this.bonus * this.actualQuantity)
+    return Math.round(this.bonus * this.requiredQuantity)
   }
 
-  public get actualQuantity() {
+  public get requiredQuantity() {
     if (!this.expand || !this.optimize || !this.bonus) {
       return this.quantity
     }
     return Math.ceil(this.quantity / (1 + this.bonus))
+  }
+
+  public get outputQuantity() {
+    if (!this.expand || !this.optimize || !this.bonus) {
+      return Math.floor(this.quantity * (1 + this.bonus))
+    }
+    return this.quantity
   }
 
   @ViewChildren(forwardRef(() => CraftingStepComponent), {
@@ -89,18 +102,25 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
   public children: QueryList<CraftingStepComponent>
 
   public item: ItemDefinitionMaster | Housingitems
+  public itemId: string
   public steps: Array<IngredientStep>
   public category: Craftingcategories
   public categoryOptions: ItemDefinitionMaster[]
   public categorySelection: string
-  public showOptions: boolean
+  public showOptions = false
 
   public trackStepBy: TrackByFunction<any> = (i) => i
   private destroy$ = new Subject()
   private change$ = new ReplaySubject<IngredientStep & { recipe?: Crafting }>(1)
   private needsBonusUpdate = false
 
-  public constructor(private parent: CraftingCalculatorComponent, private nw: NwService, private cdRef: ChangeDetectorRef) {
+  public constructor(
+
+    private calculator: CraftingCalculatorComponent,
+    private pref: CraftingPreferencesService,
+    private nw: NwService,
+    private cdRef: ChangeDetectorRef
+  ) {
     //
   }
 
@@ -123,7 +143,7 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
             break
           }
           case 'Currency': {
-            // TODO:
+            // ignored
             this.markForCheck()
             break
           }
@@ -131,7 +151,7 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
             const reg = new RegExp(`\\b${this.ingredient}\\b`, 'i')
             this.category = categories.get(this.ingredient)
             this.categoryOptions = items.filter((it) => reg.test(it.IngredientCategories))
-            this.categorySelection = this.categoryOptions?.[0]?.ItemID
+            this.categorySelection = this.preselection(this.ingredient, this.categoryOptions)
             this.selectItem(this.categorySelection)
             break
           }
@@ -180,11 +200,14 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
   public selectItem(itemId: string, recipe?: Crafting) {
     this.showOptions = false
     this.markForCheck()
+    if (this.category) {
+      this.saveCategoryPreference(this.category.CategoryID, itemId)
+    }
     combineLatest({
       items: this.nw.db.itemsMap,
       housings: this.nw.db.housingItemsMap,
       recipes: this.nw.db.recipes,
-      recipe: of(recipe)
+      recipe: of(recipe),
     })
       .pipe(take(1))
       .subscribe(({ items, housings, recipes, recipe }) => {
@@ -193,6 +216,7 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
         const steps = this.nw.recipeIngredients(recipe)
         this.recipe = recipe
         this.item = item
+        this.itemId = this.nw.itemId(item)
         this.steps = steps
         this.markForCheck()
       })
@@ -200,6 +224,7 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
 
   public toggle() {
     this.expand = !this.expand
+    this.makrBonusUpdate()
     this.markForCheck()
   }
 
@@ -221,13 +246,16 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
       this.markForCheck()
       return
     }
-    const ingredients = this.children.toArray().map((child) => child.item).filter((it) => !!it)
+    const ingredients = this.children
+      .toArray()
+      .map((child) => child.item)
+      .filter((it) => !!it)
     const skillLevel = this.nw.tradeskills.preferences.get(this.recipe.Tradeskill)?.level || 0
     const bonus = this.nw.calculateBonusItemChance({
       item: this.item,
       ingredients: ingredients,
       recipe: this.recipe,
-      skill: skillLevel
+      skill: skillLevel,
     })
     if (this.bonus !== bonus) {
       this.bonus = bonus
@@ -239,9 +267,21 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
     return ch[key]
   }
 
+  private preselection(categoryId: string, options: ItemDefinitionMaster[]) {
+    options = options || []
+    const fallback = options[0]?.ItemID
+    const preference = categoryId && this.pref.categories.get(categoryId)
+    const found = options.find((it) => it.ItemID === preference)
+    return found ? preference : fallback
+  }
+
+  private saveCategoryPreference(categoryId: string, value: string) {
+    this.pref.categories.set(categoryId, value)
+  }
+
   private markForCheck() {
     this.updated.emit()
     this.cdRef.detectChanges()
-    this.parent.reportChange()
+    this.calculator.reportChange()
   }
 }

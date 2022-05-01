@@ -32,6 +32,7 @@ export class NwDataService extends NwDataloader implements TranslateSource {
         for (const record of data) {
           for (const key in record) {
             result[key] = record[key].value
+            result[`@${key}`] = record[key].value
           }
         }
         return result
@@ -48,12 +49,5 @@ export class NwDataService extends NwDataloader implements TranslateSource {
       .replace(/\\/g, '/')
       .replace(/^\/?lyshineui\/images/, './nw-data')
       .replace(/\.(png|dds)$/, '.webp')
-  }
-
-  public getLocaleKey(key: string) {
-    if (key && key.startsWith('@')) {
-      return key.substring(1)
-    }
-    return key
   }
 }

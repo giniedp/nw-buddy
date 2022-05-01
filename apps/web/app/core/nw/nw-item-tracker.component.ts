@@ -15,14 +15,15 @@ import { ItemMeta, ItemPreferencesService } from '../preferences'
 
 @Component({
   selector: 'nwb-item-tracker',
+  exportAs: 'itemTracker',
   template: `
     <ng-container *ngIf="showInput">
       <input
         #input
         type="number"
         min="0"
-        class="border-0 bg-transparent focus:outline-none w-10 appearance-none"
-        [ngModel]="badgeValue"
+        class="border-0 bg-transparent focus:outline-none w-12 appearance-none"
+        [ngModel]="dataValue"
         (ngModelChange)="submitValue($event)"
         [ngModelOptions]="{ updateOn: 'blur' }"
         (blur)="closeInput($event)"
@@ -30,7 +31,12 @@ import { ItemMeta, ItemPreferencesService } from '../preferences'
       />
     </ng-container>
     <ng-container *ngIf="!showInput">
-      {{ badgeValue }}
+      <ng-container *ngIf="isModePrice">
+        <ng-container *ngIf="displayValue">{{ displayValue | number:'1.2-2' }}{{suffix}}</ng-container>
+        <span [class.tooltip]="!!editTip" class="tooltip-left tooltip-info" attr.data-tip="{{editTip}}" *ngIf="!displayValue">{{ editText }}</span>
+      </ng-container>
+      <ng-container *ngIf="!isModePrice">{{ displayValue }}</ng-container>
+
     </ng-container>
   `,
   styles: [
@@ -46,11 +52,6 @@ import { ItemMeta, ItemPreferencesService } from '../preferences'
     `,
   ],
   host: {
-    '[class.badge]': 'true',
-    '[class.badge-lg]': 'size === "lg"',
-    '[class.badge-md]': 'size === "md"',
-    '[class.badge-sm]': 'size === "sm"',
-    '[class.badge-xs]': 'size === "xs"',
     '[class.badge-success]': 'showSuccess',
     '[class.badge-error]': 'showError',
   },
@@ -65,18 +66,34 @@ export class ItemTrackerComponent implements OnInit, OnChanges, OnDestroy, After
   public mode: 'gs' | 'price' | 'stock' = 'gs'
 
   @Input()
-  public size: 'lg' | 'md' | 'sm' | 'xs' = 'sm'
+  public multiply: number = 1
 
-  public get badgeValue() {
+  @Input()
+  public suffix: string
+
+  @Input()
+  public editText = "✎"
+
+  @Input()
+  public editTip = "Edit"
+
+  public get displayValue() {
+    if (this.mode === 'price') {
+      return (this.data?.price || 0) * this.multiply
+    }
+    return this.dataValue || '-'
+  }
+
+  public get dataValue() {
     switch (this.mode) {
       case 'price':
-        return this.data?.price
+        return this.data?.price || 0
       case 'stock':
-        return this.data?.stock || '-'
+        return this.data?.stock || 0
       case 'gs':
-        return this.data?.gs || '-'
+        return this.data?.gs || 0
       default:
-        return ''
+        return 0
     }
 
   }
@@ -97,6 +114,18 @@ export class ItemTrackerComponent implements OnInit, OnChanges, OnDestroy, After
       default:
         return false
     }
+  }
+
+  public get isModePrice() {
+    return this.mode === 'price'
+  }
+
+  public get isModeGs() {
+    return this.mode === 'gs'
+  }
+
+  public get isModeStock() {
+    return this.mode === 'stock'
   }
 
   @ViewChild('input', { read: ElementRef })
@@ -157,6 +186,9 @@ export class ItemTrackerComponent implements OnInit, OnChanges, OnDestroy, After
       e.stopImmediatePropagation()
       this.showInput = true
       this.cdRef.markForCheck()
+      setTimeout(() => {
+        this.input.nativeElement?.select()
+      })
     }
   }
 

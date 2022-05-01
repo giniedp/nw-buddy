@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { map } from 'rxjs'
 import { PreferencesService } from './preferences.service'
-import { ScopedStorage, StorageBase } from './storage'
+import { StorageNode } from './storage'
 
 export interface TradeskillMeta {
   level?: number
@@ -9,14 +9,14 @@ export interface TradeskillMeta {
 
 @Injectable({ providedIn: 'root' })
 export class TradeskillPreferencesService {
-  private storage: StorageBase
+  private storage: StorageNode
 
   public constructor(preferences: PreferencesService) {
-    this.storage = new ScopedStorage(preferences.storage, 'tradeskill:')
+    this.storage = preferences.storage.storageObject('tradeskills')
   }
 
   public get(itemId: string): TradeskillMeta {
-    return this.storage.read(itemId)
+    return this.storage.get(itemId)
   }
 
   public merge(itemId: string, meta: TradeskillMeta) {
@@ -27,7 +27,7 @@ export class TradeskillPreferencesService {
   }
 
   public update(itemId: string, meta: TradeskillMeta) {
-    this.storage.write(itemId, meta)
+    this.storage.set(itemId, meta)
   }
 
   public observe(itemId: string) {

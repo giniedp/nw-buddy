@@ -2,28 +2,45 @@
   display: block;
   position: relative;
 
-  nwb-crafting-step {
-    margin-left: 14px;
-    padding-left: 14px;
-    border-left-width: 1px;
+  nwb-crafting-step-toggle {
+    display: none;
+  }
 
-    &::before {
-      content: '';
-      display: inline-block;
-      height: 18px;
-      width: 14px;
+  picture.cursor-pointer {
+    &::after {
       position: absolute;
-      top: 0;
-      left: 0;
-      border-bottom-width: 1px;
+      display: block;
+      content: '…';
+      bottom: -3px;
+      font-weight: bold;
+      z-index: 3;
+    }
+  }
+  &.is-nested {
+    nwb-crafting-step-toggle {
+      display: inline-flex;
     }
 
-    &:last-child {
-      border-left-width: 0px;
+    .steps-container, .menu {
+      border-left: 2px solid currentColor;
+      margin-left: 15px;
+      nwb-crafting-step {
+        margin-left: 15px;
+      }
+    }
+    .menu {
+      border-left: 2px solid currentColor;
+      margin-left: 15px;
+      padding-left: 12px;
+    }
+  }
+  &.is-last  {
+    .steps-container, .menu {
+      border-left-color: transparent !important;
     }
 
-    &:last-child::before {
-      border-left-width: 1px;
+    nwb-crafting-step-toggle::after {
+      display: none !important;
     }
   }
 

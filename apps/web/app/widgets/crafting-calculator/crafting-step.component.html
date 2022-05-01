@@ -1,76 +1,67 @@
-<div class="flex flex-row items-center py-1">
-  <button type="button" *ngIf="collapsible && steps?.length" class="btn btn-xs w-7 btn-ghost" (click)="toggle()">
-    <ng-container *ngIf="expand; then iconMinus; else iconPlus"></ng-container>
-  </button>
+<div class="flex flex-row items-center">
+  <nwb-crafting-step-toggle
+    class="w-8 h-8"
+    [disabled]="!collapsible || !steps?.length"
+    [open]="expand"
+    (click)="toggle()"
+  ></nwb-crafting-step-toggle>
+
   <ng-container *ngIf="item">
-    <picture [nwIcon]="item.IconPath" class="w-7 h-7 nw-icon flex-none bg-rarity-{{ itemRarity(item) }}"></picture>
-    <span class="ml-2" [class.italic]="quantity !== actualQuantity">
-      {{ actualQuantity }}
-    </span>
-    <span  class="ml-2 text-xs" *ngIf="bonusPercent">
-      (+{{ bonusPercent}}%<ng-container *ngIf="bonusQuantity"> ≈ {{ bonusQuantity}}</ng-container>)
-    </span>
-    <span class="ml-2"> &times; </span>
-    <span class="ml-2" [nwText]="item.Name"></span>
+    <picture
+      [nwIcon]="item.IconPath"
+      class="w-7 h-7 nw-icon flex-none bg-rarity-{{ itemRarity(item) }}"
+      [class.cursor-pointer]="!!category"
+      (click)="toggleOptions()"
+    ></picture>
+
+    <div class="flex flex-row items-center overflow-hidden" *ngIf="item" (click)="toggle()">
+      <span class="ml-2" [class.italic]="quantity !== requiredQuantity">
+        {{ requiredQuantity }}
+      </span>
+      <span
+        class="ml-2 text-xs tooltip tooltip-success tooltip-right"
+        *ngIf="bonusPercent"
+        attr.data-tip="+{{ bonusQuantity }} items"
+      >
+        (+{{ bonusPercent }}%)
+      </span>
+      <span class="ml-2"> &times; </span>
+      <span class="ml-2 overflow-ellipsis overflow-hidden whitespace-nowrap" [nwText]="item.Name"></span>
+    </div>
   </ng-container>
-  <ng-container *ngIf="category">
-    <span class="flex-1"></span>
-    <button type="button" class="btn btn-xs w-7 btn-ghost" (click)="toggleOptions()">
-      <ng-container *ngIf="showOptions; then iconClose; else iconMore"></ng-container>
-    </button>
-  </ng-container>
+  <span class="flex-1"></span>
+
+  <span class="flex flex-col items-end" *ngIf="itemId">
+    <nwb-item-tracker
+      [itemId]="itemId"
+      [mode]="'price'"
+      [editTip]="'Edit item price'"
+      class="whitespace-nowrap opacity-75"
+      #itemTracker
+    ></nwb-item-tracker>
+    <div class="text-xs italic opacity-50" *ngIf="showPrice">
+      <span> {{ outputQuantity * itemTracker.dataValue | number: '1.2-2' }} </span>
+    </div>
+  </span>
 </div>
-<ul class="menu menu-compact w-full py-2" *ngIf="showOptions">
+<ul class="menu menu-compact w-full py-2" *ngIf="category && showOptions">
   <li *ngFor="let item of categoryOptions">
     <a (click)="selectItem(item.ItemID)" class="p-1">
-      <picture
-        [nwIcon]="item.IconPath"
-        class="w-7 h-7 nw-icon flex-none bg-rarity-{{ itemRarity(item) }}"
-      ></picture>
+      <picture [nwIcon]="item.IconPath" class="w-7 h-7 nw-icon flex-none bg-rarity-{{ itemRarity(item) }}"></picture>
       <span [nwText]="item.Name"></span>
     </a>
   </li>
 </ul>
-<div *ngIf="expand && steps?.length">
+<div *ngIf="expand && steps?.length" class="steps-container">
   <nwb-crafting-step
-    *ngFor="let step of steps; trackBy: trackStepBy"
-    [ingredient]="step.ingredient"
-    [quantity]="step.quantity * actualQuantity"
-    [optimize]="optimize"
+    *ngFor="let step of steps; let isLast = last; trackBy: trackStepBy"
+    [class.is-last]="isLast"
+    [class.is-nested]="true"
     [type]="step.type"
+    [ingredient]="step.ingredient"
+    [quantity]="step.quantity * requiredQuantity"
+    [optimize]="optimize"
     [collapsible]="!isDowngrade"
     (updated)="makrBonusUpdate()"
   ></nwb-crafting-step>
 </div>
-
-<ng-template #iconPlus>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="h-4 w-4 fill-base-content">
-    <path
-      d="M432 256c0 17.69-14.33 32.01-32 32.01H256v144c0 17.69-14.33 31.99-32 31.99s-32-14.3-32-31.99v-144H48c-17.67 0-32-14.32-32-32.01s14.33-31.99 32-31.99H192v-144c0-17.69 14.33-32.01 32-32.01s32 14.32 32 32.01v144h144C417.7 224 432 238.3 432 256z"
-    />
-  </svg>
-</ng-template>
-
-<ng-template #iconMinus>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" class="h-4 w-4 fill-base-content">
-    <path
-      d="M400 288h-352c-17.69 0-32-14.32-32-32.01s14.31-31.99 32-31.99h352c17.69 0 32 14.3 32 31.99S417.7 288 400 288z"
-    />
-  </svg>
-</ng-template>
-
-<ng-template #iconMore>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 512" class="h-4 w-4 fill-base-content">
-    <path
-      d="M64 360C94.93 360 120 385.1 120 416C120 446.9 94.93 472 64 472C33.07 472 8 446.9 8 416C8 385.1 33.07 360 64 360zM64 200C94.93 200 120 225.1 120 256C120 286.9 94.93 312 64 312C33.07 312 8 286.9 8 256C8 225.1 33.07 200 64 200zM64 152C33.07 152 8 126.9 8 96C8 65.07 33.07 40 64 40C94.93 40 120 65.07 120 96C120 126.9 94.93 152 64 152z"
-    />
-  </svg>
-</ng-template>
-
-<ng-template #iconClose>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" class="h-4 w-4 fill-base-content">
-    <path
-      d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"
-    />
-  </svg>
-</ng-template>

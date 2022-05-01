@@ -10,19 +10,26 @@ import {
   TrackByFunction,
 } from '@angular/core'
 import { GameEvent, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { combineLatest, debounceTime, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { combineLatest, debounceTime, map, of, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { NwService } from '~/core/nw'
 import { NwTradeskillInfo, NwTradeskillService } from '~/core/nw/nw-tradeskill.service'
-import { TradeskillPreferencesService } from '~/core/preferences/tradeskill-preferences.service'
 import { CraftingCalculatorComponent } from './crafting-calculator.component'
 import { CraftingStepComponent } from './crafting-step.component'
 
-export interface XpTableRow {
+export interface SkillRow {
   id: string
   name: string
   icon: string
   xp: number
 }
+
+export interface ResourceRow {
+  item: ItemDefinitionMaster | Housingitems
+  itemId: string
+  quantity: number
+}
+
+
 @Component({
   selector: 'nwb-crafting-summary',
   templateUrl: './crafting-summary.component.html',
@@ -32,8 +39,12 @@ export interface XpTableRow {
 export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
   public root: CraftingStepComponent
-  public table: Array<{ item: ItemDefinitionMaster | Housingitems; quantity: number }> = []
-  public xpTable: Array<XpTableRow> = []
+
+  public rootPrice: number
+  public resourcesPrice: number
+  public resourceTable: Array<ResourceRow> = []
+  public skillsTable: Array<SkillRow> = []
+
 
   public tab: 'resources' | 'skills' = 'resources'
 
@@ -53,10 +64,8 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
   public constructor(
     private parent: CraftingCalculatorComponent,
     private cdRef: ChangeDetectorRef,
-    private zone: NgZone,
     private nw: NwService,
     private tradeskills: NwTradeskillService,
-    private tradeskillPref: TradeskillPreferencesService
   ) {
     //
   }
@@ -74,8 +83,28 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
       )
       .pipe(switchMap(() => this.parent.stepChange.pipe(startWith(null))))
       .pipe(debounceTime(100))
+      .pipe(switchMap(() => {
+        const resources = this.calculateResources()
+        const skills = this.calculateSkills()
+        return combineLatest({
+          resources: of(resources),
+          skills: of(skills),
+          prices: combineLatest(resources.map((it) => {
+            return this.nw.itemPref.observe(it.itemId).pipe(map((data) => {
+              return (data.meta?.price || 0) * it.quantity
+            }))
+          }))
+        })
+      }))
       .pipe(takeUntil(this.destroy$))
-      .subscribe(() => this.update())
+      .subscribe(({ resources, skills, prices }) => {
+        this.rootPrice = this.root.quantity * this.nw.itemPref.get(this.root.itemId)?.price || 0
+        this.resourcesPrice = prices.reduce((a, b) => a + b, 0)
+        this.resourceTable = resources
+        this.skillsTable = skills
+
+        this.cdRef.markForCheck()
+      })
   }
 
   public ngOnChanges(): void {
@@ -87,28 +116,15 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
     this.destroy$.complete()
   }
 
-  private update() {
-    this.table = this.calculateItems()
-    this.xpTable = this.calculateXp()
-    this.cdRef.detectChanges()
-  }
-
   private walk(node: CraftingStepComponent, fn: (node: CraftingStepComponent) => void) {
-    if (!node) {
-      return
+    if (node) {
+      fn(node)
+      node.children?.forEach((it) => this.walk(it, fn))
     }
-    fn(node)
-    node.children?.forEach((it) => this.walk(it, fn))
   }
 
-  private calculateItems() {
-    const table = new Map<
-      string,
-      {
-        item: ItemDefinitionMaster | Housingitems
-        quantity: number
-      }
-    >()
+  private calculateResources(): ResourceRow[] {
+    const table = new Map<string, ResourceRow>()
     this.walk(this.root, (node) => {
       if (!node.item || (node.expand && node.steps?.length)) {
         return
@@ -117,17 +133,18 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
       if (!table.has(key)) {
         table.set(key, {
           item: node.item,
+          itemId: key,
           quantity: 0,
         })
       }
       const data = table.get(key)
-      data.quantity += node.actualQuantity
+      data.quantity += node.requiredQuantity
     })
     return Array.from(table.entries()).map(([_, data]) => data)
   }
 
-  private calculateXp() {
-    const table = new Map<string, XpTableRow>()
+  private calculateSkills() {
+    const table = new Map<string, SkillRow>()
     this.walk(this.root, (node) => {
       if (!node.recipe) {
         return
@@ -148,7 +165,7 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
         })
       }
       const data = table.get(key)
-      data.xp += this.nw.recipeProgressionReward(recipe, event) * node.actualQuantity
+      data.xp += this.nw.recipeProgressionReward(recipe, event) * node.requiredQuantity
       table.set(key, data)
     })
     return Array.from(table.values())

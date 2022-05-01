@@ -1,4 +1,8 @@
-<div class="skills-grid">
-  <nwb-tradeskill-input *ngFor="let skill of skills | async" [tradeskill]="skill.ID"></nwb-tradeskill-input>
+<div *ngFor="let category of categories | async" class="grid items-start grid-cols-1 2xl:grid-cols-12 mb-4 gap-2">
+  <div class="xl:col-span-4 grid grid-cols-5 2xl:grid-cols-3 gap-2">
+    <nwb-tradeskill-input *ngFor="let skill of skillsByCategory(category) | async" [tradeskill]="skill.ID"></nwb-tradeskill-input>
+  </div>
+  <div class="xl:col-span-8 overflow-hidden ">
+    <nwb-tradeskill-chart [category]="category"></nwb-tradeskill-chart>
+  </div>
 </div>
-<nwb-tradeskill-chart *ngFor="let item of categories | async" [category]="item" class="mt-4" ></nwb-tradeskill-chart>

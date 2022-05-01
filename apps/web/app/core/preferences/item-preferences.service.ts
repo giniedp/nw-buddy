@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { map } from 'rxjs'
 import { PreferencesService } from './preferences.service'
-import { ScopedStorage, StorageBase } from './storage'
+import { StorageScopeNode, StorageNode } from './storage'
 
 export interface ItemMeta {
   price?: number
@@ -12,14 +12,14 @@ export interface ItemMeta {
 
 @Injectable({ providedIn: 'root' })
 export class ItemPreferencesService {
-  private storage: StorageBase
+  private storage: StorageNode
 
   public constructor(preferences: PreferencesService) {
-    this.storage = new ScopedStorage(preferences.storage, 'items:')
+    this.storage = new StorageScopeNode(preferences.storage, 'items:')
   }
 
   public get(itemId: string): ItemMeta {
-    return this.storage.read(itemId)
+    return this.storage.get(itemId)
   }
 
   public getFavouritesIds() {
@@ -40,11 +40,11 @@ export class ItemPreferencesService {
   }
 
   public update(itemId: string, meta: ItemMeta) {
-    this.storage.write(itemId, meta)
+    this.storage.set(itemId, meta)
   }
 
   public observe(itemId: string) {
-    return this.storage.observe(itemId).pipe(
+    return this.storage.observe<ItemMeta>(itemId).pipe(
       map((it) => ({
         id: it.key,
         meta: it.value,

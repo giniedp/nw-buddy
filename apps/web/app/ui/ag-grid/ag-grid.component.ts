@@ -11,7 +11,7 @@ import {
 } from '@angular/core'
 import { ColumnApi, Grid, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { debounceTime, distinctUntilChanged, ReplaySubject, Subject, takeUntil } from 'rxjs'
-import { PreferencesService, ScopedStorage, StorageBase } from '~/core/preferences'
+import { PreferencesService, StorageScopeNode, StorageNode } from '~/core/preferences'
 
 @Component({
   selector: 'nwb-ag-grid',
@@ -44,10 +44,10 @@ export class AgGridComponent<T = any> implements OnInit, OnChanges, OnDestroy {
   private data$ = new ReplaySubject<T[]>(1)
   private destroy$ = new Subject()
   private filter$ = new Subject<string>()
-  private gridStorage: StorageBase
+  private gridStorage: StorageNode
 
   public constructor(private elRef: ElementRef<HTMLElement>, private zone: NgZone, preferences: PreferencesService) {
-    this.gridStorage = new ScopedStorage(preferences.storage, 'grid:')
+    this.gridStorage = new StorageScopeNode(preferences.storage, 'grid:')
   }
 
   public ngOnInit(): void {
@@ -89,13 +89,13 @@ export class AgGridComponent<T = any> implements OnInit, OnChanges, OnDestroy {
 
   private saveColumnState(key: string) {
     if (key) {
-      this.gridStorage.write(key, this.colApi.getColumnState())
+      this.gridStorage.set(key, this.colApi.getColumnState())
     }
   }
 
   private loadColumnState(key) {
     if (key) {
-      const data = this.gridStorage.read(key)
+      const data = this.gridStorage.get(key)
       if (data) {
         this.colApi.applyColumnState({ state: data });
       }

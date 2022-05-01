@@ -23,6 +23,10 @@ export class TradeComponent implements OnInit, OnDestroy {
 
   public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {}
 
+  public skillsByCategory(name: string) {
+    return this.nw.tradeskills.skillsByCategory(name)
+  }
+
   public ngOnInit(): void {
 
   }

@@ -7,7 +7,6 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs'
-import { LocaleService } from '../i18n'
 import { NwService } from './nw.service'
 
 interface TextContext {
@@ -36,7 +35,7 @@ export class NwTextDirective implements OnInit, OnChanges, OnDestroy {
   private destroy$ = new Subject()
   private change$ = new ReplaySubject<TextContext>(1)
 
-  public constructor(private elRef: ElementRef<HTMLElement>, private nw: NwService, private locale: LocaleService) {}
+  public constructor(private elRef: ElementRef<HTMLElement>, private nw: NwService) {}
 
   public ngOnInit(): void {
     this.change$

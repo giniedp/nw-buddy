@@ -4,7 +4,7 @@
       {
         "label": "Build.Main",
         "type": "shell",
-        "command": "npm run electron:serve-tsc",
+        "command": "npm run electron:tsc",
         "isBackground": false,
         "group": {
           "kind": "build",

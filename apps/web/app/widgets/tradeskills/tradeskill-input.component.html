@@ -1,19 +1,21 @@
 <ng-container *ngIf="data">
   <div class="flex-1 relative">
-    <picture class="opacity-10 absolute top-0 left-0 right-0 bottom-0">
-      <img [nwImage]="data.Icon" class="w-full h-full object-contain" />
+    <picture class="opacity-20 absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
+      <img [nwImage]="data.Icon" class="w-3/5 h-3/5 object-contain" />
     </picture>
     <div class="absolute top-0 left-0 right-0 bottom-0 z-10 flex flex-col items-center justify-center">
-      <input
-        min="0"
-        [attr.max]="data.MaxLevel"
-        class="input focus:outline-none bg-transparent w-4/5 h-4/5 text-center font-bold text-4xl appearance-none"
-        placeholder="0"
-        [(ngModel)]="level"
-      />
+      <div class="aspect-square h-full">
+        <input
+          min="0"
+          [attr.max]="data.MaxLevel"
+          class="input focus:outline-none bg-transparent h-full w-full p-0 text-center font-bold text-3xl appearance-none"
+          placeholder="0"
+          [(ngModel)]="level"
+        />
+      </div>
     </div>
   </div>
-  <h2 class="p-4 text-center font-bold text-lg">
+  <h2 class="p-2 pt-0 text-center font-bold text-lg">
     <span [nwText]="data.Name"></span>
   </h2>
 </ng-container>
