@@ -2,7 +2,7 @@
   <button class="btn btn-ghost loading mx-auto" *ngIf="isLoading"></button>
   <nwb-item-detail-header class="header" [entity]="item || housing"></nwb-item-detail-header>
   <div class="p-4">
-    <p class="text-primary italic" [nwText]="item.Description" [itemId]="item?.ItemID" *ngIf="item?.Description"></p>
+    <p class="text-primary italic" [nwText]="itemDescription" [itemId]="item?.ItemID" *ngIf="itemDescription"></p>
     <nwb-item-perks class="mt-2" [perks]="perks" *ngIf="perks?.length"></nwb-item-perks>
   </div>
   <nwb-crafting-calculator class="p-2" [recipe]="recipe" *ngIf="recipe"></nwb-crafting-calculator>
