@@ -55,10 +55,12 @@ const FAMILY_OGNORE_TOKENS = new RegExp(
     '_',
     //
     'Head',
+    'Chestguard',
     'Chest',
     'Hands',
     'Legs',
     'Feet',
+    'Feets',
     //
     'Shirt',
     'Hat',
@@ -83,7 +85,8 @@ const FAMILY_OGNORE_TOKENS = new RegExp(
     'Thighguards',
     'Handcovers',
     'Cowl',
-    'Masquet'
+    //
+    'Masque',
   ].join('|')})`,
   'gi'
 )
