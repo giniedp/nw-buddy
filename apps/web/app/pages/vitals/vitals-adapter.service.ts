@@ -57,6 +57,9 @@ export class VitalsAdapterService extends DataTableAdapter<Vitals> {
         },
         {
           field: fieldName('LootDropChance'),
+          cellClass: 'text-right',
+          valueGetter: ({ data }) => Math.round((field(data, 'LootDropChance') || 0) * 100),
+          valueFormatter: ({ value }) => `${value}%`
         },
       ],
     })
