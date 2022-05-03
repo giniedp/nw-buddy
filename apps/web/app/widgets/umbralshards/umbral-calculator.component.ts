@@ -65,7 +65,7 @@ export class UmbralCalculatorComponent implements OnInit, OnChanges, OnDestroy {
 
   public ngOnInit(): void {
     combineLatest({
-      table: this.nw.db.data.datatablesUmbralgsupgrades(),
+      table: this.nw.db.data.umbralgsupgrades(),
       input: this.source$
     })
     .pipe(takeUntil(this.destroy$))

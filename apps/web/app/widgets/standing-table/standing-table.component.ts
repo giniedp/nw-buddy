@@ -32,7 +32,7 @@ export class StandingTableComponent implements OnInit, OnDestroy {
 
   public async ngOnInit() {
     this.nw.db.data
-      .datatablesTerritoryStanding()
+      .territoryStanding()
       .pipe(
         map((data) => {
           return data.map((node, i): StandingRow => {

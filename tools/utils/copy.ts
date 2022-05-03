@@ -19,14 +19,25 @@ export async function mkdir(dirPath: string, options?: fs.MakeDirectoryOptions) 
 
 export async function copyFile(input: string, output: string, options?: { createDir: boolean }) {
   if (options?.createDir) {
-    await mkdir(path.dirname(input), { recursive: true })
+    await mkdir(path.dirname(output), { recursive: true })
   }
   return fs.promises.copyFile(input, output)
 }
 
-export async function copyJSONFile(input: string, output: string) {
+export async function copyJSONFile(input: string, output: string, options?: { createDir: boolean }) {
+  if (options?.createDir) {
+    await mkdir(path.dirname(output), { recursive: true })
+  }
   const data = await fs.promises.readFile(input)
   const dataOut = JSON.stringify(JSON.parse(data.toString('utf-8')), null, 1)
+  return fs.promises.writeFile(output, dataOut, 'utf-8')
+}
+
+export async function writeJSONFile(data: any, output: string, options?: { createDir: boolean }) {
+  if (options?.createDir) {
+    await mkdir(path.dirname(output), { recursive: true })
+  }
+  const dataOut = JSON.stringify(data, null, 1)
   return fs.promises.writeFile(output, dataOut, 'utf-8')
 }
 

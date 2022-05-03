@@ -16,7 +16,14 @@
           </div>
         </td>
         <td class="w-0 text-right">
-           <nwb-item-tracker [itemId]="row.itemId" [multiply]="row.quantity" [mode]="'price'" class=" opacity-75"></nwb-item-tracker>
+          <nwb-price-tracker
+            [itemId]="row.itemId"
+            [emptyTip]="'Edit item price'"
+            [format]="'1.2-2'"
+            [multiply]="row.quantity"
+            class="tooltip-left tooltip-info whitespace-nowrap opacity-75"
+            #itemTracker
+          ></nwb-price-tracker>
         </td>
       </tr>
     </tbody>

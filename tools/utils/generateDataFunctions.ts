@@ -1,16 +1,15 @@
 import * as path from 'path'
 
-export function generateDataFunctions(input: Map<string, string[]>, relativeTo: string, localeSources: string[]) {
+export function generateDataFunctions(input: Map<string, string[]>) {
+
 
   const types = Array.from(input.keys())
   const functionStatements: string[] = []
 
   for (const typeName of types) {
     for (const filePath of input.get(typeName)) {
-      const relativePath = path.relative(relativeTo, filePath)
-
-      const dirName = path.dirname(relativePath)
-      const basename = path.basename(relativePath)
+      const dirName = path.dirname(filePath)
+      const basename = path.basename(filePath)
 
       const assetPath = path.join(dirName, basename).replace(/[\\/]+/g, '/')
       const functionName = assetPath
@@ -37,9 +36,6 @@ export function generateDataFunctions(input: Map<string, string[]>, relativeTo: 
     'import { Observable } from \'rxjs\'',
     '',
     'export abstract class NwDataloader {',
-    '  public static localeFiles = [',
-    ...localeSources.map((it) => `    ${JSON.stringify(it)},`),
-    '  ]',
     '  public abstract load<T>(path: string): Observable<T>',
     ...functionStatements,
     '}'

@@ -39,7 +39,7 @@ export class UmbralTableComponent implements OnInit, OnDestroy, OnChanges {
     combineLatest({
       min: this.gsMin$,
       max: this.gsMax$,
-      data: this.nw.db.data.datatablesUmbralgsupgrades()
+      data: this.nw.db.data.umbralgsupgrades()
     }).pipe(map(({ min, max, data }) => {
       if (min != null) {
         data = data.filter((it) => it.Level >= min)

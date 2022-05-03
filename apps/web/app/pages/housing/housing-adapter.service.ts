@@ -6,6 +6,7 @@ import { IconComponent, NwService } from '~/core/nw'
 import { CategoryFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
+import { ItemTrackerCell } from '~/widgets/item-tracker'
 
 function fieldName(key: keyof Housingitems) {
   return key
@@ -96,31 +97,29 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
             {
               headerName: 'Stock',
               headerTooltip: 'Number of items currently owned',
-              valueGetter: ({ data }) => {
-                return this.nw.itemPref.get(field(data, 'HouseItemID'))?.stock
-              },
-              valueSetter: ({ data, newValue }) => {
-                this.nw.itemPref.merge(field(data, 'HouseItemID'), {
-                  stock: Number(newValue) || null,
-                })
-                return true
-              },
-              editable: true,
+              cellRenderer: mithrilCell<Housingitems>({
+                view: ({ attrs: { data } }) => {
+                  return m(ItemTrackerCell, {
+                    itemId: data.HouseItemID,
+                    meta: this.nw.itemPref,
+                    mode: 'stock',
+                  })
+                }
+              }),
               width: 90,
             },
             {
               headerName: 'Price',
               headerTooltip: 'Current price in Trading post',
-              valueGetter: ({ data }) => {
-                return this.nw.itemPref.get(field(data, 'HouseItemID'))?.price
-              },
-              valueSetter: ({ data, newValue }) => {
-                this.nw.itemPref.merge(field(data, 'HouseItemID'), {
-                  price: Number(newValue) || null,
-                })
-                return true
-              },
-              editable: true,
+              cellRenderer: mithrilCell<Housingitems>({
+                view: ({ attrs: { data } }) => {
+                  return m(ItemTrackerCell, {
+                    itemId: data.HouseItemID,
+                    meta: this.nw.itemPref,
+                    mode: 'price',
+                  })
+                }
+              }),
               width: 90,
             },
           ],

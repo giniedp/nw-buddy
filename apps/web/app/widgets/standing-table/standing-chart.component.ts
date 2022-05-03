@@ -17,7 +17,7 @@ export class StandingChartComponent implements OnInit, OnDestroy {
 
   public async ngOnInit() {
     this.nw.db.data
-      .datatablesTerritoryStanding()
+      .territoryStanding()
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
         this.chartConfig = {

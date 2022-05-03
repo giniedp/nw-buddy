@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, OnDestroy, ChangeDetectorRef, OnChanges } from '@angular/core'
-import { Crafting, Housingitems, ItemDefinitionMaster, ItemdefinitionsAmmo, Perks } from '@nw-data/types'
-import { BehaviorSubject, combineLatest, map, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import { Crafting, Housingitems, ItemDefinitionMaster, Perks } from '@nw-data/types'
+import { BehaviorSubject, combineLatest, map, Subject, takeUntil } from 'rxjs'
 import { NwService } from '~/core/nw'
 
 @Component({

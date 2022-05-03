@@ -6,6 +6,7 @@ import { IconComponent, NwService } from '~/core/nw'
 import { CategoryFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
+import { ItemTrackerCell } from '~/widgets/item-tracker'
 
 function fieldName(key: keyof ItemDefinitionMaster) {
   return key
@@ -151,56 +152,44 @@ export class ItemsAdapterService extends DataTableAdapter<ItemDefinitionMaster> 
             {
               headerName: 'Stock',
               headerTooltip: 'Number of items currently owned',
-              valueGetter: ({ data }) => {
-                return this.nw.itemPref.get(field(data, 'ItemID'))?.stock
-              },
-              valueSetter: ({ data, newValue }) => {
-                this.nw.itemPref.merge(field(data, 'ItemID'), {
-                  stock: Number(newValue) || null,
-                })
-                return true
-              },
-              editable: true,
+              cellRenderer: mithrilCell<ItemDefinitionMaster>({
+                view: ({ attrs: { data } }) => {
+                  return m(ItemTrackerCell, {
+                    itemId: data.ItemID,
+                    meta: this.nw.itemPref,
+                    mode: 'stock',
+                  })
+                }
+              }),
               width: 90,
             },
             {
               headerName: 'GS',
               headerTooltip: 'Item owned with this gear score',
-              valueGetter: ({ data }) => {
-                return this.nw.itemPref.get(field(data, 'ItemID'))?.gs
-              },
-              valueSetter: ({ data, newValue }) => {
-                this.nw.itemPref.merge(field(data, 'ItemID'), {
-                  gs: Number(newValue) || null,
-                })
-                return true
-              },
-              editable: true,
+              cellRenderer: mithrilCell<ItemDefinitionMaster>({
+                view: ({ attrs: { data } }) => {
+                  return m(ItemTrackerCell, {
+                    itemId: data.ItemID,
+                    meta: this.nw.itemPref,
+                    mode: 'gs',
+                  })
+                }
+              }),
               width: 90,
             },
             {
               headerName: 'Price',
               headerTooltip: 'Current price in Trading post',
               cellClass: 'text-right',
-              valueGetter: ({ data }) => {
-                return this.nw.itemPref.get(field(data, 'ItemID'))?.price
-              },
-              valueSetter: ({ data, newValue }) => {
-                this.nw.itemPref.merge(field(data, 'ItemID'), {
-                  price: Number(newValue) || null,
-                })
-                return true
-              },
-              valueFormatter: ({ value }) => {
-                if (value == null) {
-                  return ''
+              cellRenderer: mithrilCell<ItemDefinitionMaster>({
+                view: ({ attrs: { data } }) => {
+                  return m(ItemTrackerCell, {
+                    itemId: data.ItemID,
+                    meta: this.nw.itemPref,
+                    mode: 'price',
+                  })
                 }
-                return Intl.NumberFormat(navigator.language || 'en', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                }).format(Number(eval(String(value))))
-              },
-              editable: true,
+              }),
               width: 100,
             },
           ],

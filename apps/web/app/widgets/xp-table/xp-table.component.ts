@@ -37,7 +37,7 @@ export class XpTableComponent implements OnInit, OnDestroy {
   public async ngOnInit() {
 
     combineLatest({
-      data: this.nw.db.data.datatablesXpamountsbylevel()
+      data: this.nw.db.data.xpamountsbylevel()
     }).pipe(map(({ data }) => {
       return data.map((node, i): LevelingRow => {
         return {

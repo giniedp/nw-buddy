@@ -7,9 +7,10 @@ import { CraftingCalculatorComponent } from './crafting-calculator.component'
 import { CraftingStepComponent } from './crafting-step.component';
 import { CraftingSummaryComponent } from './crafting-summary.component';
 import { CraftingStepToggleComponent } from './crafting-step-toggle.component'
+import { ItemTrackerModule } from '../item-tracker'
 
 @NgModule({
-  imports: [CommonModule, NwModule, FormsModule, TradeskillsModule],
+  imports: [CommonModule, NwModule, FormsModule, TradeskillsModule, ItemTrackerModule],
   declarations: [CraftingCalculatorComponent, CraftingStepComponent, CraftingSummaryComponent, CraftingStepToggleComponent],
   exports: [CraftingCalculatorComponent],
 })

@@ -1,0 +1,49 @@
+import * as path from 'path'
+import { glob, processArrayWithProgress, writeJSONFile } from '../utils'
+import { readFile } from 'fs/promises'
+
+import { DatatableSource, walkStringProperties } from './loadDatatables'
+
+export async function importLocales(input: string, output: string, tables: Array<DatatableSource>) {
+  const keys = extractKeys(tables)
+  const locales = await loadLocales(input, keys)
+  await writeLocales(output, locales)
+}
+
+function extractKeys(tables: DatatableSource[]) {
+  const result = new Set<string>()
+  walkStringProperties(tables, (key, value, obj) => {
+    if (value?.startsWith('@')) {
+      obj[key] = value.substring(1)
+      result.add(value.substring(1))
+    }
+  })
+  return result
+}
+
+async function loadLocales(input: string, keys: Set<string>) {
+  const pattern = path.join(input, '**', '*.loc.json')
+  const files = await glob(pattern)
+  const result = new Map<string, Record<string, string>>()
+
+  await processArrayWithProgress(files, async (file) => {
+    const content = await readFile(file, 'utf-8')
+    const json = JSON.parse(content)
+    const lang = path.basename(path.dirname(file))
+    const bucket = result.get(lang) || {}
+    result.set(lang, bucket)
+    Object.entries(json).forEach(([key, entry]) => {
+      if (keys.has(key)) {
+        bucket[key] = entry['value']
+      }
+    })
+  })
+  return result
+}
+async function writeLocales(output: string, locales: Map<string, Record<string, string>>) {
+  for (const [locale, data] of Array.from(locales.entries())) {
+    await writeJSONFile(data, path.join(output, `${locale}.json`), {
+      createDir: true,
+    })
+  }
+}

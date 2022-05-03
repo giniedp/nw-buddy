@@ -18,7 +18,7 @@ export class XpChartComponent implements OnInit, OnDestroy {
 
   public async ngOnInit() {
     this.nw.db.data
-      .datatablesXpamountsbylevel()
+      .xpamountsbylevel()
       .pipe(takeUntil(this.destroy$))
       .subscribe((data) => {
 

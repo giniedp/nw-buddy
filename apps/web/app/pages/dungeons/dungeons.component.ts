@@ -31,9 +31,9 @@ export class DungeonsComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     combineLatest({
-      mutations: this.nw.db.data.datatablesGamemodemutatorsElementalmutations(),
-      difficulty: this.nw.db.data.datatablesGamemodemutatorsMutationdifficulty(),
-      modes: this.nw.db.data.datatablesGamemodes(),
+      mutations: this.nw.db.data.gamemodemutatorsElementalmutations(),
+      difficulty: this.nw.db.data.gamemodemutatorsMutationdifficulty(),
+      modes: this.nw.db.data.gamemodes(),
       events: this.nw.db.gameEventsMap,
       items: this.nw.db.itemsMap,
     })

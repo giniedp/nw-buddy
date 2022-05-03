@@ -22,14 +22,14 @@
       display: inline-flex;
     }
 
-    .steps-container, .menu {
+    .steps-container, .options-container {
       border-left: 2px solid currentColor;
       margin-left: 15px;
       nwb-crafting-step {
         margin-left: 15px;
       }
     }
-    .menu {
+    .options-container {
       border-left: 2px solid currentColor;
       margin-left: 15px;
       padding-left: 12px;
@@ -41,7 +41,7 @@
       display: none !important;
     }
     & > .steps-container,
-    & > .menu {
+    & > .options-container {
       border-left-color: transparent !important;
     }
   }

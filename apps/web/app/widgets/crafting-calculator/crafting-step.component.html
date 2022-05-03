@@ -34,26 +34,28 @@
   <span class="flex-1"></span>
 
   <span class="flex flex-col items-end" *ngIf="itemId">
-    <nwb-item-tracker
+    <nwb-price-tracker
       [itemId]="itemId"
-      [mode]="'price'"
-      [editTip]="'Edit item price'"
-      class="whitespace-nowrap opacity-75"
+      [emptyTip]="'Edit item price'"
+      [format]="'1.2-2'"
+      class="tooltip-left tooltip-info whitespace-nowrap opacity-75"
       #itemTracker
-    ></nwb-item-tracker>
+    ></nwb-price-tracker>
     <div class="text-xs italic opacity-50" *ngIf="showPrice">
-      <span> {{ outputQuantity * itemTracker.dataValue | number: '1.2-2' }} </span>
+      <span> {{ outputQuantity * itemTracker.value | number: '1.2-2' }} </span>
     </div>
   </span>
 </div>
-<ul class="menu menu-compact w-full py-2" *ngIf="category && showOptions">
-  <li *ngFor="let item of categoryOptions">
-    <a (click)="selectItem(item.ItemID)" class="p-1">
-      <picture [nwIcon]="item.IconPath" class="w-7 h-7 nw-icon flex-none bg-rarity-{{ itemRarity(item) }}"></picture>
-      <span [nwText]="item.Name"></span>
-    </a>
-  </li>
-</ul>
+<div class="options-container" *ngIf="category && showOptions">
+  <ul class="menu menu-compact py-2">
+    <li *ngFor="let item of categoryOptions">
+      <a (click)="selectItem(item.ItemID)" class="p-1">
+        <picture [nwIcon]="item.IconPath" class="w-7 h-7 nw-icon flex-none bg-rarity-{{ itemRarity(item) }}"></picture>
+        <span [nwText]="item.Name"></span>
+      </a>
+    </li>
+  </ul>
+</div>
 <div *ngIf="expand && steps?.length" class="steps-container">
   <nwb-crafting-step
     *ngFor="let step of steps; trackBy: trackStepBy"

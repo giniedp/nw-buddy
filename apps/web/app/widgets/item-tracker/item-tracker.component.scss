@@ -1,0 +1,13 @@
+:host {
+  display: inline-block;
+  line-height: 100%;
+  cursor: pointer;
+  input {
+    height: 100%;
+  }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+}

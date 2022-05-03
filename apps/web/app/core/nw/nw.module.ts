@@ -5,7 +5,6 @@ import { TranslateSource } from '../i18n/translate-source'
 import { NwDataService } from './nw-data.service'
 import { NwIconComponent, NwImageComponent } from './nw-icon.component'
 import { NwInfoLinkDirective } from './nw-info-link.directive'
-import { ItemTrackerComponent } from './nw-item-tracker.component'
 import { NwRarityBgDirective } from './nw-rarity-bg.directive'
 import { NwTextDirective } from './nw-text.directive'
 
@@ -20,7 +19,6 @@ import { NwTextDirective } from './nw-text.directive'
     NwImageComponent,
     NwRarityBgDirective,
     NwInfoLinkDirective,
-    ItemTrackerComponent,
   ],
   exports: [
     NwTextDirective,
@@ -28,7 +26,6 @@ import { NwTextDirective } from './nw-text.directive'
     NwImageComponent,
     NwRarityBgDirective,
     NwInfoLinkDirective,
-    ItemTrackerComponent,
   ],
 })
 export class NwModule {
