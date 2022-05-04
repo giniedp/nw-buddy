@@ -2,6 +2,9 @@
   display: block;
   position: relative;
 
+  &.hidden {
+    display: none !important;
+  }
   picture.cursor-pointer {
     &::after {
       position: absolute;

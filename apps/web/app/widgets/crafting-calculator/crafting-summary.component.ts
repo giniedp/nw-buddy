@@ -14,6 +14,7 @@ import { combineLatest, debounceTime, map, of, startWith, Subject, switchMap, ta
 import { NwService } from '~/core/nw'
 import { NwTradeskillInfo, NwTradeskillService } from '~/core/nw/nw-tradeskill.service'
 import { CraftingCalculatorComponent } from './crafting-calculator.component'
+import { CraftingCalculatorService } from './crafting-calculator.service'
 import { CraftingStepComponent } from './crafting-step.component'
 
 export interface SkillRow {
@@ -67,6 +68,7 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
     private cdRef: ChangeDetectorRef,
     private nw: NwService,
     private tradeskills: NwTradeskillService,
+    private service: CraftingCalculatorService
   ) {
     //
   }
@@ -118,10 +120,14 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private walk(node: CraftingStepComponent, fn: (node: CraftingStepComponent) => void) {
-    if (node) {
-      fn(node)
-      node.children?.forEach((it) => this.walk(it, fn))
+    if (!node) {
+      return
     }
+    fn(node)
+    if (node.steps?.length && !node.expand) {
+      return
+    }
+    node.children?.forEach((it) => this.walk(it, fn))
   }
 
   private calculateResources(old?: ResourceRow[]): ResourceRow[] {
@@ -148,11 +154,10 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
   private calculateSkills() {
     const table = new Map<string, SkillRow>()
     this.walk(this.root, (node) => {
-      if (!node.recipe) {
+      const recipe = this.service.findRecipeForItem(node.item)
+      if (!recipe) {
         return
       }
-
-      const recipe = node.recipe
       const event = this.events.get(recipe.GameEventID)
       if (!event) {
         return

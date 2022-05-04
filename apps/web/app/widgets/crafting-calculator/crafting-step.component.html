@@ -1,7 +1,7 @@
 <div class="flex flex-row items-center main-row">
   <nwb-crafting-step-toggle
     class="w-8 h-8"
-    [disabled]="!collapsible || !steps?.length"
+    [disabled]="!steps?.length"
     [open]="expand"
     (click)="toggle()"
   ></nwb-crafting-step-toggle>
@@ -14,7 +14,7 @@
       (click)="toggleOptions()"
     ></picture>
 
-    <div class="flex flex-row items-center overflow-hidden" *ngIf="item" (click)="toggle()">
+    <div class="flex flex-row items-center overflow-hidden" (click)="toggle()">
       <span class="ml-2" [class.italic]="quantity !== requiredQuantity">
         {{ requiredQuantity }}
       </span>
@@ -48,8 +48,8 @@
 </div>
 <div class="options-container" *ngIf="category && showOptions">
   <ul class="menu menu-compact py-2">
-    <li *ngFor="let item of categoryOptions">
-      <a (click)="selectItem(item.ItemID)" class="p-1">
+    <li *ngFor="let item of options">
+      <a (click)="selectOption(item.ItemID)" class="p-1">
         <picture [nwIcon]="item.IconPath" class="w-7 h-7 nw-icon flex-none bg-rarity-{{ itemRarity(item) }}"></picture>
         <span [nwText]="item.Name"></span>
       </a>
@@ -59,11 +59,9 @@
 <div *ngIf="expand && steps?.length" class="steps-container">
   <nwb-crafting-step
     *ngFor="let step of steps; trackBy: trackStepBy"
-    [type]="step.type"
-    [ingredient]="step.ingredient"
-    [quantity]="step.quantity * requiredQuantity"
+    [step]="step"
+    [quantity]="requiredQuantity"
     [optimize]="optimize"
-    [collapsible]="!isDowngrade"
-    (updated)="makrBonusUpdate()"
+    (stateChange)="childChanged()"
   ></nwb-crafting-step>
 </div>

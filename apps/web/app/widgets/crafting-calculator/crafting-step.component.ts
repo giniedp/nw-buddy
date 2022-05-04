@@ -13,16 +13,12 @@ import {
   forwardRef,
   Output,
   EventEmitter,
-  AfterContentChecked,
-  Inject,
-  SkipSelf,
 } from '@angular/core'
-import { Crafting, Craftingcategories, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { Optional } from 'ag-grid-community'
-import { combineLatest, of, ReplaySubject, Subject, take, takeUntil } from 'rxjs'
+import { Craftingcategories, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { filter, ReplaySubject, Subject, switchMapTo, takeUntil } from 'rxjs'
 import { NwService } from '~/core/nw'
 import { CraftingCalculatorComponent } from './crafting-calculator.component'
-import { CraftingPreferencesService } from './crafting-preferences.service'
+import { CraftingCalculatorService, CraftingStep } from './crafting-calculator.service'
 
 export type IngredientType = 'Item' | 'Currency' | 'Category_Only'
 export interface IngredientStep {
@@ -37,39 +33,33 @@ export interface IngredientStep {
   styleUrls: ['./crafting-step.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, AfterContentChecked {
-  @Input()
-  public recipe: Crafting
+export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy {
 
   @Input()
-  public ingredient: string
+  public step: CraftingStep
+
+  public get steps() {
+    return this.step?.steps
+  }
 
   @Input()
-  public quantity: number = 1
-
-  @Input()
-  public type: IngredientType = 'Item'
-
-  @Input()
-  public expand = false
-
-  @Input()
-  public collapsible = true
+  public quantity = 1
 
   @Input()
   public optimize = false
 
-  @Output()
-  public updated = new EventEmitter()
-
-  public bonus: number = 0
-
   @Input()
   public showPrice = false
 
-  public get isDowngrade() {
-    return this.recipe?.CraftingCategory === 'ResourceDowngrade'
+  public get expand() {
+    return this.step?.expand
   }
+
+  public get stepQuantity() {
+    return this.quantity * (this.step?.ingredient?.quantity || 0)
+  }
+
+  public bonus: number = 0
 
   public get bonusPercent() {
     return Math.round(this.bonus * 100)
@@ -84,16 +74,16 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
 
   public get requiredQuantity() {
     if (!this.expand || !this.optimize || !this.bonus) {
-      return this.quantity
+      return this.stepQuantity
     }
-    return Math.ceil(this.quantity / (1 + this.bonus))
+    return Math.ceil(this.stepQuantity / (1 + this.bonus))
   }
 
   public get outputQuantity() {
     if (!this.expand || !this.optimize || !this.bonus) {
-      return Math.floor(this.quantity * (1 + this.bonus))
+      return Math.floor(this.stepQuantity * (1 + this.bonus))
     }
-    return this.quantity
+    return this.stepQuantity
   }
 
   @ViewChildren(forwardRef(() => CraftingStepComponent), {
@@ -101,79 +91,41 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
   })
   public children: QueryList<CraftingStepComponent>
 
-  public item: ItemDefinitionMaster | Housingitems
   public itemId: string
-  public steps: Array<IngredientStep>
+  public item: ItemDefinitionMaster | Housingitems
   public category: Craftingcategories
-  public categoryOptions: ItemDefinitionMaster[]
-  public categorySelection: string
+  public options: ItemDefinitionMaster[]
   public showOptions = false
+
+  @Output()
+  public stateChange = new EventEmitter()
 
   public trackStepBy: TrackByFunction<any> = (i) => i
   private destroy$ = new Subject()
-  private change$ = new ReplaySubject<IngredientStep & { recipe?: Crafting }>(1)
-  private needsBonusUpdate = false
+  private change$ = new ReplaySubject<CraftingStep>(1)
 
   public constructor(
-
     private calculator: CraftingCalculatorComponent,
-    private pref: CraftingPreferencesService,
     private nw: NwService,
+    private service: CraftingCalculatorService,
     private cdRef: ChangeDetectorRef
   ) {
     //
   }
 
   public ngOnInit(): void {
-    combineLatest({
-      items: this.nw.db.items,
-      categories: this.nw.db.recipeCategoriesMap,
-      changes: this.change$,
-    })
+    this.service.ready
+      .pipe(switchMapTo(this.change$))
+      .pipe(filter((it) => !!it))
       .pipe(takeUntil(this.destroy$))
-      .subscribe(({ items, categories, changes }) => {
-        this.item = null
-        this.steps = null
-        this.category = null
-        this.categoryOptions = null
-        this.categorySelection = null
-        switch (this.type) {
-          case 'Item': {
-            this.selectItem(this.ingredient, changes.recipe)
-            break
-          }
-          case 'Currency': {
-            // ignored
-            this.markForCheck()
-            break
-          }
-          case 'Category_Only': {
-            const reg = new RegExp(`\\b${this.ingredient}\\b`, 'i')
-            this.category = categories.get(this.ingredient)
-            this.categoryOptions = items.filter((it) => reg.test(it.IngredientCategories))
-            this.categorySelection = this.preselection(this.ingredient, this.categoryOptions)
-            this.selectItem(this.categorySelection)
-            break
-          }
-        }
+      .subscribe((step) => {
+        this.updateState(step)
+        this.cdRef.markForCheck()
       })
   }
 
   public ngOnChanges(ch: SimpleChanges): void {
-    if (this.getChange(ch, 'recipe')) {
-      this.ingredient = this.nw.itemIdFromRecipe(this.recipe)
-      this.type = 'Item'
-      this.change$.next({
-        recipe: this.recipe,
-        ingredient: this.ingredient,
-        type: this.type,
-      })
-    } else if (this.getChange(ch, 'ingredient') || this.getChange(ch, 'type')) {
-      this.change$.next({
-        ingredient: this.ingredient,
-        type: this.type,
-      })
-    }
+    this.change$.next(this.step)
     this.markForCheck()
   }
 
@@ -182,49 +134,48 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
     this.destroy$.complete()
   }
 
-  public ngAfterContentChecked(): void {
-    if (this.needsBonusUpdate) {
-      this.needsBonusUpdate = false
-      this.updateBonus()
-    }
-  }
-
-  public translate(key: string) {
-    return this.nw.translate(key)
-  }
-
   public itemRarity(item: ItemDefinitionMaster | Housingitems) {
     return this.nw.itemRarity(item)
   }
 
-  public selectItem(itemId: string, recipe?: Crafting) {
+  public async selectOption(itemId: string) {
     this.showOptions = false
+    this.step.selection = itemId
+    this.service.updateSteps(this.step, itemId)
+    this.updateState(this.step)
     this.markForCheck()
-    if (this.category) {
-      this.saveCategoryPreference(this.category.CategoryID, itemId)
+    this.stateChange.emit()
+  }
+
+  public childChanged() {
+    this.updateBonus()
+    this.stateChange.emit()
+  }
+
+  private updateState(step: CraftingStep) {
+    this.step = step
+    if (step?.options?.length) {
+      this.itemId = step.selection
+      this.item = this.service.findItem(this.itemId)
+      this.category = this.service.categoriesMap.get(step.ingredient.id)
+      this.options = this.step.options.map((it) => this.service.itemsMap.get(it))
+    } else if (step) {
+      this.itemId = step.ingredient.id
+      this.item = this.service.findItem(this.itemId)
+      this.category = null
+      this.options = null
+    } else {
+      this.itemId = null
+      this.item = null
+      this.category = null
+      this.options = null
     }
-    combineLatest({
-      items: this.nw.db.itemsMap,
-      housings: this.nw.db.housingItemsMap,
-      recipes: this.nw.db.recipes,
-      recipe: of(recipe),
-    })
-      .pipe(take(1))
-      .subscribe(({ items, housings, recipes, recipe }) => {
-        const item = items.get(itemId) || housings.get(itemId)
-        recipe = recipe || (item && this.nw.recipeForItem(item, recipes))
-        const steps = this.nw.recipeIngredients(recipe)
-        this.recipe = recipe
-        this.item = item
-        this.itemId = this.nw.itemId(item)
-        this.steps = steps
-        this.markForCheck()
-      })
+    this.updateBonus()
   }
 
   public toggle() {
-    this.expand = !this.expand
-    this.makrBonusUpdate()
+    this.step.expand = !this.expand
+    this.stateChange.emit()
     this.markForCheck()
   }
 
@@ -233,54 +184,12 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy, Afte
     this.markForCheck()
   }
 
-  public makrBonusUpdate() {
-    if (!this.needsBonusUpdate) {
-      this.needsBonusUpdate = true
-      this.cdRef.markForCheck()
-    }
-  }
-
   public updateBonus() {
-    if (!this.item || !this.recipe || !this.expand || !this.children?.length) {
-      this.bonus = 0
-      this.markForCheck()
-      return
-    }
-    const ingredients = this.children
-      .toArray()
-      .map((child) => child.item)
-      .filter((it) => !!it)
-    const skillLevel = this.nw.tradeskills.preferences.get(this.recipe.Tradeskill)?.level || 0
-    const bonus = this.nw.calculateBonusItemChance({
-      item: this.item,
-      ingredients: ingredients,
-      recipe: this.recipe,
-      skill: skillLevel,
-    })
-    if (this.bonus !== bonus) {
-      this.bonus = bonus
-      this.markForCheck()
-    }
-  }
-
-  private getChange(ch: SimpleChanges, key: keyof CraftingStepComponent) {
-    return ch[key]
-  }
-
-  private preselection(categoryId: string, options: ItemDefinitionMaster[]) {
-    options = options || []
-    const fallback = options[0]?.ItemID
-    const preference = categoryId && this.pref.categories.get(categoryId)
-    const found = options.find((it) => it.ItemID === preference)
-    return found ? preference : fallback
-  }
-
-  private saveCategoryPreference(categoryId: string, value: string) {
-    this.pref.categories.set(categoryId, value)
+    this.bonus = this.expand ? this.service.calculateBonus(this.step) : 0
+    this.markForCheck()
   }
 
   private markForCheck() {
-    this.updated.emit()
     this.cdRef.detectChanges()
     this.calculator.reportChange()
   }

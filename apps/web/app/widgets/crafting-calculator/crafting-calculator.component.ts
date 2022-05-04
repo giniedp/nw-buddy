@@ -7,10 +7,14 @@ import {
   OnChanges,
   SimpleChanges,
   ChangeDetectorRef,
+  ViewChild,
 } from '@angular/core'
 import { Crafting } from '@nw-data/types'
-import { defer, Subject } from 'rxjs'
+import { debounceTime, defer, distinctUntilChanged, ReplaySubject, Subject, switchMap, switchMapTo, takeUntil, tap } from 'rxjs'
 import { NwService } from '~/core/nw'
+import { CraftingCalculatorService, CraftingStep, RecipeState } from './crafting-calculator.service'
+import { CraftingPreferencesService } from './crafting-preferences.service'
+import type { CraftingStepComponent } from './crafting-step.component'
 
 @Component({
   selector: 'nwb-crafting-calculator',
@@ -28,16 +32,37 @@ export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges
   @Input()
   public recipe: Crafting
 
+  public step: CraftingStep
+
+  @ViewChild('rootStep')
+  public rootStep: CraftingStepComponent
+
   public stepChange = defer(() => this.stepChange$)
 
   private destroy$ = new Subject()
   private stepChange$ = new Subject()
+  private recipeId$ = new ReplaySubject<string>(1)
 
-  public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {}
+  public constructor(private cdRef: ChangeDetectorRef, private nw: NwService, private service: CraftingCalculatorService) {}
 
-  public ngOnInit(): void {}
+  public ngOnInit(): void {
 
-  public ngOnChanges(changes: SimpleChanges): void {
+    this.service.ready.pipe(switchMapTo(this.recipeId$))
+      .pipe(distinctUntilChanged())
+      .pipe(tap((id) => {
+        this.step = this.loadState(id)
+        this.cdRef.markForCheck()
+      }))
+      .pipe(switchMap(() => this.stepChange$))
+      .pipe(debounceTime(0))
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.saveState(this.step)
+      })
+  }
+
+  public ngOnChanges(): void {
+    this.recipeId$.next(this.recipe?.RecipeID)
     this.cdRef.markForCheck()
   }
 
@@ -53,5 +78,20 @@ export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges
   public toggleOptimize() {
     this.optimize = !this.optimize
     this.cdRef.markForCheck()
+  }
+
+  private loadState(id: string) {
+    return this.service.getFromCache(id) || this.service.solve({
+      ingredient: {
+        id: this.nw.itemIdFromRecipe(this.recipe),
+        quantity: 1,
+        type: 'Item'
+      },
+      expand: true,
+    })
+  }
+
+  private saveState(step: CraftingStep) {
+    this.service.putToCache(step.ingredient.id, step)
   }
 }

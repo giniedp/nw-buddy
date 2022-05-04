@@ -10,7 +10,7 @@
       </div>
     </label>
   </div>
-  <nwb-crafting-step [recipe]="recipe" [quantity]="quantity" [optimize]="optimize" [expand]="true" [showPrice]="true" #rootStep></nwb-crafting-step>
+  <nwb-crafting-step [step]="step" [quantity]="quantity" [optimize]="optimize" [showPrice]="true" #rootStep (stateChange)="reportChange()"></nwb-crafting-step>
   <nwb-crafting-summary [root]="rootStep" class="mt-2"></nwb-crafting-summary>
 </ng-container>
 
