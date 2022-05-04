@@ -4,8 +4,21 @@ import { readFile } from 'fs/promises'
 
 import { DatatableSource, walkStringProperties } from './loadDatatables'
 
-export async function importLocales(input: string, output: string, tables: Array<DatatableSource>) {
+export async function importLocales({
+  input,
+  output,
+  tables,
+  preserveKeys
+}: {
+  input: string
+  output: string
+  tables: Array<DatatableSource>,
+  preserveKeys?: string[]
+}) {
   const keys = extractKeys(tables)
+  for (const key of preserveKeys || []) {
+    keys.add(key)
+  }
   const locales = await loadLocales(input, keys)
   await writeLocales(output, locales)
 }

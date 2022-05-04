@@ -8,21 +8,8 @@ import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemTrackerCell } from '~/widgets/item-tracker'
 
-function fieldName(key: keyof ItemDefinitionMaster) {
-  return key
-}
-
-function getter(fn: (params: ValueGetterParams & { data: ItemDefinitionMaster }) => any) {
-  return fn
-}
-
-getter(({ data }) => {})
-function field<K extends keyof ItemDefinitionMaster>(item: any, key: K): ItemDefinitionMaster[K] {
-  return item[key]
-}
-
 @Injectable()
-export class ItemsAdapterService extends DataTableAdapter<ItemDefinitionMaster> {
+export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
   public entityID(item: ItemDefinitionMaster): string {
     return item.ItemID
   }
@@ -41,7 +28,7 @@ export class ItemsAdapterService extends DataTableAdapter<ItemDefinitionMaster> 
           filter: false,
           width: 54,
           pinned: true,
-          cellRenderer: mithrilCell<ItemDefinitionMaster>({
+          cellRenderer: this.mithrilCell({
             view: ({ attrs: { data } }) =>
               m('a', { target: '_blank', href: this.nw.nwdbUrl('item', data.ItemID) }, [
                 m(IconComponent, {
@@ -54,11 +41,11 @@ export class ItemsAdapterService extends DataTableAdapter<ItemDefinitionMaster> 
         {
           width: 250,
           headerName: 'Name',
-          valueGetter: ({ data }) => this.nw.translate(field(data, 'Name')),
+          valueGetter: this.valueGetter(({ data }) => this.nw.translate(data.Name)),
           getQuickFilterText: ({ value }) => value,
         },
         {
-          field: fieldName('ItemID'),
+          field: this.fieldName('ItemID'),
           hide: true,
         },
         {
@@ -66,7 +53,7 @@ export class ItemsAdapterService extends DataTableAdapter<ItemDefinitionMaster> 
           filter: false,
           sortable: false,
           headerName: 'Perks',
-          cellRenderer: mithrilCell<ItemDefinitionMaster>({
+          cellRenderer: this.mithrilCell({
             view: ({ attrs: { data } }) => {
               const perks = this.nw.itemPerks(data, this.perks)
               const generated = this.nw.itemPerkPerkBucketIds(data)
@@ -104,7 +91,7 @@ export class ItemsAdapterService extends DataTableAdapter<ItemDefinitionMaster> 
         },
         {
           width: 80,
-          field: fieldName('Tier'),
+          field: this.fieldName('Tier'),
           valueGetter: ({ data }) => this.nw.tierToRoman(data.Tier),
           filter: CategoryFilter,
         },
@@ -114,7 +101,8 @@ export class ItemsAdapterService extends DataTableAdapter<ItemDefinitionMaster> 
             {
               width: 80,
               headerName: 'Fav',
-              valueGetter: ({ data }) => !!this.nw.itemPref.get(field(data, 'ItemID'))?.fav,
+              cellClass: 'cursor-pointer',
+              valueGetter: this.valueGetter(({ data }) => !!this.nw.itemPref.get(data.ItemID)?.fav),
               cellRenderer: mithrilCell<ItemDefinitionMaster, { destroy: Subject<any> }>({
                 oncreate: ({ attrs, state }) => {
                   state.destroy = new Subject()
@@ -152,28 +140,28 @@ export class ItemsAdapterService extends DataTableAdapter<ItemDefinitionMaster> 
             {
               headerName: 'Stock',
               headerTooltip: 'Number of items currently owned',
-              cellRenderer: mithrilCell<ItemDefinitionMaster>({
+              cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
                   return m(ItemTrackerCell, {
                     itemId: data.ItemID,
                     meta: this.nw.itemPref,
                     mode: 'stock',
                   })
-                }
+                },
               }),
               width: 90,
             },
             {
               headerName: 'GS',
               headerTooltip: 'Item owned with this gear score',
-              cellRenderer: mithrilCell<ItemDefinitionMaster>({
+              cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
                   return m(ItemTrackerCell, {
                     itemId: data.ItemID,
                     meta: this.nw.itemPref,
                     mode: 'gs',
                   })
-                }
+                },
               }),
               width: 90,
             },
@@ -181,14 +169,14 @@ export class ItemsAdapterService extends DataTableAdapter<ItemDefinitionMaster> 
               headerName: 'Price',
               headerTooltip: 'Current price in Trading post',
               cellClass: 'text-right',
-              cellRenderer: mithrilCell<ItemDefinitionMaster>({
+              cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
                   return m(ItemTrackerCell, {
                     itemId: data.ItemID,
                     meta: this.nw.itemPref,
                     mode: 'price',
                   })
-                }
+                },
               }),
               width: 100,
             },
@@ -200,50 +188,53 @@ export class ItemsAdapterService extends DataTableAdapter<ItemDefinitionMaster> 
             {
               headerName: 'Min',
               cellClass: 'text-right',
-              field: fieldName('MinGearScore'),
+              field: this.fieldName('MinGearScore'),
               width: 100,
             },
             {
               headerName: 'Max',
               cellClass: 'text-right',
-              field: fieldName('MaxGearScore'),
+              field: this.fieldName('MaxGearScore'),
               width: 100,
             },
           ],
         },
         {
-          field: fieldName('ItemType'),
+          field: this.fieldName('ItemType'),
           width: 125,
           filter: CategoryFilter,
           getQuickFilterText: ({ value }) => value,
         },
         {
           width: 250,
-          field: fieldName('ItemClass'),
+          field: this.fieldName('ItemClass'),
           valueGetter: ({ data, colDef }) => {
-            return (data[colDef.field] || '').trim().split(('+'))
+            return (data[colDef.field] || '').trim().split('+')
           },
           cellRenderer: mithrilCell({
             view: ({ attrs: { value } }) => {
-              return m('div.flex.flex-row.flex-wrap.items-center.h-full', value.map((it: string) => {
-                return m('span.badge.badge-secondary.mr-1.badge-sm', it)
-              }))
-            }
+              return m(
+                'div.flex.flex-row.flex-wrap.items-center.h-full',
+                value.map((it: string) => {
+                  return m('span.badge.badge-secondary.mr-1.badge-sm', it)
+                })
+              )
+            },
           }),
           filter: CategoryFilter,
         },
         {
-          field: fieldName('TradingGroup'),
+          field: this.fieldName('TradingGroup'),
           // width: 125,
           filter: CategoryFilter,
         },
         {
-          field: fieldName('TradingFamily'),
+          field: this.fieldName('TradingFamily'),
           width: 125,
           filter: CategoryFilter,
         },
         {
-          field: fieldName('TradingCategory'),
+          field: this.fieldName('TradingCategory'),
           width: 125,
           filter: CategoryFilter,
         },

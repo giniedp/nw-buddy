@@ -4,12 +4,20 @@ import { mkdir, processArrayWithProgress, renameExtname, spawn } from '../utils'
 import { DatatableSource, walkStringProperties } from './loadDatatables'
 
 export async function importImages(
-  input: string,
-  output: string,
-  tables: DatatableSource[],
-  options?: { ignoreKeys: string[] }
+  {
+    input,
+    output,
+    tables,
+    ignoreKeys,
+  }: {
+    input: string,
+    output: string,
+    tables: DatatableSource[],
+    ignoreKeys: string[] }
 ) {
-  const images = scanImages(tables, options)
+  const images = scanImages(tables, {
+    ignoreKeys: ignoreKeys
+  })
   const missing = new Set<string>()
   await processArrayWithProgress(Array.from(images), async ([source, target]) => {
     source = path.join(input, source)

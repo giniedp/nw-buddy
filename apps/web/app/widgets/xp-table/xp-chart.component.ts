@@ -38,7 +38,6 @@ export class XpChartComponent implements OnInit, OnDestroy {
             ],
           },
         }
-        console.log(this.chartConfig)
         this.cdRef.markForCheck()
       })
   }

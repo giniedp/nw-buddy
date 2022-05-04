@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core'
-import { ItemDefinitionMaster, Perks } from '@nw-data/types'
-import { ColDef, GridOptions, IDetailCellRendererParams } from 'ag-grid-community'
+import { ColDef, GridOptions } from 'ag-grid-community'
 import { groupBy } from 'lodash'
 import { combineLatest, defer, map, Observable, shareReplay } from 'rxjs'
 import { LocaleService } from '~/core/i18n'
@@ -10,6 +9,7 @@ import { DataTableAdapter } from '~/ui/data-table'
 import { Armorset } from './types'
 import { findSets } from './utils'
 import m from 'mithril'
+import { ItemTrackerCell } from '~/widgets/item-tracker'
 
 function fieldName(key: keyof Armorset) {
   return key
@@ -30,6 +30,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
   }
 
   public buildGridOptions(base: GridOptions): GridOptions {
+    const nw = this.nw
     return this.nw.gridOptions({
       ...base,
       rowSelection: 'single',
@@ -42,24 +43,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
         {
           headerName: 'Tier',
           width: 60,
-          valueGetter: ({ data }) => {
-            switch (field(data, 'tier')) {
-              case 0:
-                return '-'
-              case 1:
-                return 'I'
-              case 2:
-                return 'II'
-              case 3:
-                return 'III'
-              case 4:
-                return 'IV'
-              case 5:
-                return 'V'
-              default:
-                return String(field(data, 'tier'))
-            }
-          },
+          valueGetter: ({ data }) => this.nw.tierToRoman(field(data, 'tier')),
           filter: CategoryFilter,
         },
         {
@@ -120,17 +104,12 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
               const item = (data as Armorset).items[i]
               return this.nw.itemPref.get(item.ItemID)?.gs
             },
-            valueSetter: ({ data, newValue }) => {
-              const item = (data as Armorset).items[i]
-              this.nw.itemPref.merge(item.ItemID, { gs: newValue })
-              return true
-            },
             cellRenderer: mithrilCell<Armorset>({
               view: ({ attrs: { value, data } }) => {
                 const item = data.items[i]
                 const name = data.itemNames[i]
                 const max = (item.GearScoreOverride || item.MaxGearScore) <= value
-                return m('div.flex.flex-col.text-sm', {
+                return m('div.flex.flex-col.text-sm.font-bold', {
                   class: [
                     value && max ? 'border-l-4 border-l-success pl-2 -ml-2 -mr-2' : '',
                     value && !max ? 'border-l-4 border-l-warning pl-2 -ml-2 -mr-2' : '',
@@ -139,17 +118,18 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
                   m('span', {
                     class: value ? '' : 'text-error-content',
                   }, name),
-                  m(
-                    'span.font-bold',
-                    {
-                      class: [
-                        value && max ? 'text-success' : '',
-                        value && !max ? 'text-warning' : '',
-                        !value ? 'text-error' : '',
-                      ].join(' '),
-                    },
-                    value ? `GS ${value}` : '•'
-                  ),
+                  m(ItemTrackerCell, {
+                    class: [
+                      'self-start',
+                      value && max ? 'text-success' : '',
+                      value && !max ? 'text-warning' : '',
+                      !value ? 'text-error' : '',
+                    ].join(' '),
+                    itemId: item.ItemID,
+                    meta: this.nw.itemPref,
+                    mode: 'gs',
+                    emptyTip: '',
+                  }),
                 ])
               },
             }),

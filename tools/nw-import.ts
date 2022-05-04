@@ -4,7 +4,15 @@ import { program } from 'commander'
 import { glob } from './utils/glob'
 import { tsFromJson } from './utils/ts-from-json'
 import * as dotenv from 'dotenv'
-import { copyFile, generateDataFunctions, mkdir, processArrayWithProgress, renameExtname, spawn, writeJSONFile } from './utils'
+import {
+  copyFile,
+  generateDataFunctions,
+  mkdir,
+  processArrayWithProgress,
+  renameExtname,
+  spawn,
+  writeJSONFile,
+} from './utils'
 import { extractExpressions } from './utils/extractExpressions'
 import { loadDatatables } from './importer/loadDatatables'
 import { importLocales } from './importer/importLocales'
@@ -24,65 +32,89 @@ program
     output = output
 
     console.log('loading datatables')
-    const tables = await loadDatatables(input, [
-      '*_affixdefinitions',
-      '*_affixstats',
-      '*_afflictions',
-      '*_areadefinitions',
-      '*_categoricalprogression',
-      '*_crafting',
-      '*_craftingcategories',
-      '*_damagetable_*',
-      '*_damagetable',
-      '*_damagetypes',
-      '*_gameevents',
-      '*_gamemodes',
-      '*_gatherables',
-      '*_housingitems',
-      '*_itemdefinitions_master_*',
-      '*_itemdefinitions_weapons',
-      '*_itemdefinitions_consumables',
-      '*_staminacosts_player',
-      '*_manacosts_player',
-      '*_lootbuckets',
-      '*_lootlimits',
-      '*_metaachievements',
-      '*_perkbuckets',
-      '*_perks',
-      '*_spelltable_*',
-      '*_spelltable',
-      '*_statuseffectcategories',
-      '*_statuseffects_*',
-      '*_statuseffects',
-      '*_territory_standing',
-      '*_territorydefinitions',
-      '*_territorygovernance',
-      '*_tradeskill*',
-      '*_umbralgsupgrades',
-      '*_vitals',
-      '*_vitalscategories',
-      '*_vitalsleveldata',
-      '*_vitalsmodifierdata',
-      '*_weaponmastery',
-      '*_xpamountsbylevel',
-      'arenas/*',
-      'gamemodemutators/*',
-      'weaponabilities/*',
-    ].map((it) => it + '.json'))
+    const tables = await loadDatatables({
+      inputDir: input,
+      patterns: [
+        '*_affixdefinitions',
+        '*_affixstats',
+        '*_afflictions',
+        '*_areadefinitions',
+        '*_categoricalprogression',
+        '*_crafting',
+        '*_craftingcategories',
+        '*_damagetable_*',
+        '*_damagetable',
+        '*_damagetypes',
+        '*_gameevents',
+        '*_gamemodes',
+        '*_gatherables',
+        '*_housingitems',
+        '*_itemdefinitions_master_*',
+        '*_itemdefinitions_weapons',
+        '*_itemdefinitions_consumables',
+        '*_staminacosts_player',
+        '*_manacosts_player',
+        '*_lootbuckets',
+        '*_lootlimits',
+        '*_metaachievements',
+        '*_perkbuckets',
+        '*_perks',
+        '*_spelltable_*',
+        '*_spelltable',
+        '*_statuseffectcategories',
+        '*_statuseffects_*',
+        '*_statuseffects',
+        '*_territory_standing',
+        '*_territorydefinitions',
+        '*_territorygovernance',
+        '*_tradeskill*',
+        '*_umbralgsupgrades',
+        '*_vitals',
+        '*_vitalscategories',
+        '*_vitalsleveldata',
+        '*_vitalsmodifierdata',
+        '*_weaponmastery',
+        '*_xpamountsbylevel',
+        'arenas/*',
+        'gamemodemutators/*',
+        'weaponabilities/*',
+      ].map((it) => it + '.json'),
+    })
 
     console.log('importing locales')
-    await importLocales(input, path.join(output, 'localization') , tables)
+    await importLocales({
+      input,
+      output: path.join(output, 'localization'),
+      tables,
+      preserveKeys: [
+        'ui_itemtypedescription_head_slot',
+        'ui_itemtypedescription_chest_slot',
+        'ui_itemtypedescription_hands_slot',
+        'ui_itemtypedescription_legs_slot',
+        'ui_itemtypedescription_feet_slot',
+        'ui_weapon1',
+        'ui_weapon2',
+        'ui_ring_slot_tooltip',
+        'ui_unlock_token_slot',
+        'ui_amulet_slot_tooltip',
+        'RarityLevel0_DisplayName',
+        'RarityLevel1_DisplayName',
+        'RarityLevel2_DisplayName',
+        'RarityLevel3_DisplayName',
+        'RarityLevel4_DisplayName',
+      ],
+    })
     console.log('importing images')
-    await importImages(input, output, tables, {
-      ignoreKeys: [
-        'PlaceholderIcon',
-        'HiResIconPath'
-      ]
+    await importImages({
+      input,
+      output,
+      tables,
+      ignoreKeys: ['PlaceholderIcon', 'HiResIconPath'],
     })
     console.log('writing datatables')
-    processArrayWithProgress(tables, async ({ relative, data }) => {
+    await processArrayWithProgress(tables, async ({ relative, data }) => {
       await writeJSONFile(data, path.join(output, 'datatables', relative), {
-        createDir: true
+        createDir: true,
       })
     })
 

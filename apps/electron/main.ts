@@ -37,7 +37,6 @@ function createWindow(): BrowserWindow {
     })
     win.loadURL('http://localhost:4200')
   } else {
-    win.webContents.openDevTools()
     win.loadURL(
       url.format({
         pathname: path.join(__dirname, '../web/index.html'),

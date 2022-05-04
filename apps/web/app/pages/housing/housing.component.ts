@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
-import { HousingAdapterService } from './housing-adapter.service'
+import { HousingAdapterService } from './housing-table-adapter'
 
 @Component({
   selector: 'nwb-housing',

@@ -6,17 +6,6 @@ import { NwService } from '~/core/nw'
 import { CategoryFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 
-function fieldName(key: keyof Vitals) {
-  return key
-}
-
-function getter(fn: (params: Vitals) => any) {
-  return fn
-}
-
-function field(item: any, key: keyof Vitals) {
-  return item[key]
-}
 
 @Injectable()
 export class VitalsAdapterService extends DataTableAdapter<Vitals> {
@@ -36,29 +25,29 @@ export class VitalsAdapterService extends DataTableAdapter<Vitals> {
         {
           width: 250,
           headerName: 'Name',
-          valueGetter: ({ data }) => this.nw.translate(field(data, 'DisplayName')),
+          valueGetter: this.valueGetter(({ data }) => this.nw.translate(data.DisplayName)),
           getQuickFilterText: ({ value }) => value,
         },
         {
-          field: fieldName('VitalsID'),
+          field: this.fieldName('VitalsID'),
           hide: true,
         },
         {
           width: 80,
-          field: fieldName('Level'),
+          field: this.fieldName('Level'),
         },
         {
-          field: fieldName('Family'),
+          field: this.fieldName('Family'),
           filter: CategoryFilter,
         },
         {
-          field: fieldName('CreatureType'),
+          field: this.fieldName('CreatureType'),
           filter: CategoryFilter,
         },
         {
-          field: fieldName('LootDropChance'),
+          field: this.fieldName('LootDropChance'),
           cellClass: 'text-right',
-          valueGetter: ({ data }) => Math.round((field(data, 'LootDropChance') || 0) * 100),
+          valueGetter: this.valueGetter( ({ data }) => Math.round((Number(data.LootDropChance) || 0) * 100) ),
           valueFormatter: ({ value }) => `${value}%`
         },
       ],

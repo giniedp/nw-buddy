@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
-import { PerksAdapterService } from './perks-adapter.service'
+import { PerksAdapterService } from './perks-table-adapter'
 
 @Component({
   selector: 'nwb-perks',

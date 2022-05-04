@@ -36,7 +36,6 @@ export class StandingChartComponent implements OnInit, OnDestroy {
             ],
           },
         }
-        console.log(this.chartConfig)
         this.cdRef.markForCheck()
       })
   }

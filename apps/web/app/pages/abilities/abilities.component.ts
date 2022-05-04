@@ -3,7 +3,7 @@ import {
   Component,
 } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
-import { AbilitiesAdapterService } from './abilities-adapter.service'
+import { AbilitiesAdapterService } from './abilities-table-adapter'
 
 @Component({
   selector: 'nwb-abilities',

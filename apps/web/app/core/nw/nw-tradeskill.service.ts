@@ -116,8 +116,9 @@ export class NwTradeskillService {
     return name$.pipe(
       switchMap((it) => {
         const name = it.toLocaleLowerCase()
-        const fnName = `datatablesTradeskill${name}`
+        const fnName = `tradeskill${name}`
         if (!(fnName in this.db.data)) {
+          console.warn(`data function not found`, fnName)
           return of<NwTradeskillLevel[]>([])
         }
         return this.db.data[fnName]() as Observable<NwTradeskillLevel[]>

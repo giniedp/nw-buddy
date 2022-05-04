@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
-import { StatusEffectsAdapterService } from './status-effects-adapter.service'
+import { StatusEffectsAdapterService } from './status-effects-table-adapter'
 
 @Component({
   selector: 'nwb-status-effects',

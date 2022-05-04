@@ -3,7 +3,7 @@ import {
   Component,
 } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
-import { ItemsAdapterService } from './items-adapter.service'
+import { ItemsTableAdapter } from './items-table-adapter'
 
 @Component({
   selector: 'nwb-items',
@@ -14,7 +14,7 @@ import { ItemsAdapterService } from './items-adapter.service'
     class: 'nwb-page has-menu has-detail',
   },
   providers: [
-    DataTableAdapter.provideClass(ItemsAdapterService)
+    DataTableAdapter.provideClass(ItemsTableAdapter)
   ]
 })
 export class ItemsComponent {

@@ -8,7 +8,7 @@ export interface DatatableSource {
   data: any,
 }
 
-export async function loadDatatables(inputDir: string, patterns?: string[]) {
+export async function loadDatatables({ inputDir, patterns }: { inputDir: string, patterns?: string[] }) {
   const input = path.join(inputDir, 'sharedassets', 'springboardentitites', 'datatables')
   patterns = patterns || [path.join('**', '*.json')]
   patterns = patterns.map((it) => path.join(input, it))

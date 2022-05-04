@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
-import { VitalsAdapterService } from './vitals-adapter.service'
+import { VitalsAdapterService } from './vitals-table-adapter'
 
 @Component({
   selector: 'nwb-vitals',

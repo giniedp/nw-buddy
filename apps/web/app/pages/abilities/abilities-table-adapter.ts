@@ -7,14 +7,6 @@ import { mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 
-function fieldName(key: keyof Ability) {
-  return key
-}
-
-function field(item: any, key: keyof Ability) {
-  return item[key]
-}
-
 @Injectable()
 export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
   public entityID(item: Ability): string {
@@ -48,15 +40,15 @@ export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
         {
           width: 250,
           headerName: 'Name',
-          valueGetter: ({ data }) => this.nw.translate(field(data, 'DisplayName')),
+          valueGetter: this.valueGetter( ({ data }) => this.nw.translate(data.DisplayName) ),
           getQuickFilterText: ({ value }) => value,
         },
         {
-          field: fieldName('AbilityID'),
+          field: this.fieldName('AbilityID'),
           hide: true,
         },
         // {
-        //   field: fieldName('Description'),
+        //   field: this.fieldName('Description'),
         //   cellRenderer: this.nw.cellRendererAsync<Ability>((data) => {
         //     return this.nw.expression.solve({
         //       text: this.nw.translate(data.Description),
@@ -68,10 +60,10 @@ export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
         //   filter: false,
         // },
         {
-          field: fieldName('WeaponTag'),
+          field: this.fieldName('WeaponTag'),
         },
         {
-          field: fieldName('AttackType'),
+          field: this.fieldName('AttackType'),
         },
       ],
     })

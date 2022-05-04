@@ -7,15 +7,6 @@ import { mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 
-
-function fieldName(key: keyof Statuseffect) {
-  return key
-}
-
-function field(item: any, key: keyof Statuseffect) {
-  return item[key]
-}
-
 @Injectable()
 export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> {
   public entityID(item: Statuseffect): string {
@@ -35,7 +26,7 @@ export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> 
           sortable: false,
           filter: false,
           width: 74,
-          cellRenderer: mithrilCell<Statuseffect>({
+          cellRenderer: this.mithrilCell({
             view: ({ attrs: { data } }) =>
               m('a', { target: '_blank', href: this.nw.nwdbUrl('status-effect', data.StatusID) }, [
                 m(IconComponent, {
@@ -47,19 +38,17 @@ export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> 
         },
         {
           headerName: 'Name',
-          valueGetter: ({ data }) => {
-            return this.nw.translate(field(data, 'DisplayName'))
-          },
+          valueGetter: this.valueGetter(({ data }) => this.nw.translate(data.DisplayName)),
           width: 300,
         },
         {
-          field: fieldName('EffectCategories'),
+          field: this.fieldName('EffectCategories'),
         },
         {
-          field: fieldName('EffectDurationMods'),
+          field: this.fieldName('EffectDurationMods'),
         },
         {
-          field: fieldName('EffectPotencyMods'),
+          field: this.fieldName('EffectPotencyMods'),
         },
       ],
     })

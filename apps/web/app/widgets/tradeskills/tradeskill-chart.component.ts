@@ -1,7 +1,9 @@
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, Input, ChangeDetectorRef } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
-import { BehaviorSubject, combineLatest, debounceTime, defer, map, shareReplay, startWith, Subject, switchMap, takeUntil } from 'rxjs'
+import { isEqual } from 'lodash'
+import { BehaviorSubject, combineLatest, debounceTime, defer, distinctUntilChanged, map, shareReplay, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs'
 import { NwService } from '~/core/nw'
+import { NwTradeskillInfo } from '~/core/nw/nw-tradeskill.service'
 
 const COLORS = ['#003f5c', '#2f4b7c', '#665191', '#a05195', '#d45087', '#f95d6a', '#ff7c43', '#ffa600'].reverse()
 
@@ -34,6 +36,7 @@ export class TradeskillChartComponent implements OnInit, OnDestroy {
         }))
       }))
     }))
+    .pipe(distinctUntilChanged<NwTradeskillInfo[]>(isEqual))
     .pipe(shareReplay({
       refCount: true,
       bufferSize: 1

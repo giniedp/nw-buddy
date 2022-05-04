@@ -7,14 +7,6 @@ import { mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 
-function fieldName(key: keyof Perks) {
-  return key
-}
-
-function field(item: any, key: keyof Perks) {
-  return item[key]
-}
-
 @Injectable()
 export class PerksAdapterService extends DataTableAdapter<Perks> {
   public entityID(item: Perks): string {
@@ -35,7 +27,7 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           sortable: false,
           filter: false,
           width: 74,
-          cellRenderer: mithrilCell<Perks>({
+          cellRenderer: this.mithrilCell({
             view: ({ attrs: { data } }) => {
               return m('a', { target: '_blank', href: this.nw.nwdbUrl('perk', data.PerkID) }, [
                 m(IconComponent, {
@@ -48,51 +40,51 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
         },
         {
           headerName: 'Name',
-          valueGetter: ({ data }) => {
-            const name = field(data, 'DisplayName')
+          valueGetter: this.valueGetter(({ data }) => {
+            const name = data.DisplayName
             if (name) {
               return this.nw.translate(name)
             }
-            const suffix = field(data, 'AppliedSuffix')
+            const suffix = data.AppliedSuffix
             if (suffix) {
-              return `${field(data, 'ExclusiveLabels')}: ${this.nw.translate(suffix)}`
+              return `${data.ExclusiveLabels}: ${this.nw.translate(suffix)}`
             }
             return ''
-          },
+          }),
           width: 300,
         },
         {
           headerName: 'Type',
-          field: fieldName('PerkType'),
+          field: this.fieldName('PerkType'),
           width: 100,
         },
         {
           headerName: 'Prefix',
-          valueGetter: ({ data }) => this.nw.translate(field(data, 'AppliedPrefix')),
+          valueGetter: this.valueGetter(({ data }) => this.nw.translate(data.AppliedPrefix)),
           width: 150,
         },
         {
           headerName: 'Suffix',
-          valueGetter: ({ data }) => this.nw.translate(field(data, 'AppliedSuffix')),
+          valueGetter: this.valueGetter(({ data }) => this.nw.translate(data.AppliedSuffix)),
           width: 150,
         },
         {
-          field: fieldName('PerkID'),
+          field: this.fieldName('PerkID'),
           hide: true,
         },
         {
-          field: fieldName('Tier'),
+          field: this.fieldName('Tier'),
           width: 100,
         },
         {
-          field: fieldName('ItemClass'),
+          field: this.fieldName('ItemClass'),
         },
 
         {
-          field: fieldName('ExclusiveLabels'),
+          field: this.fieldName('ExclusiveLabels'),
         },
         {
-          field: fieldName('ExcludeItemClass'),
+          field: this.fieldName('ExcludeItemClass'),
         },
       ],
     })

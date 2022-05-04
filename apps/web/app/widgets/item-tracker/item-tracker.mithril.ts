@@ -46,22 +46,23 @@ export const ItemTrackerCell: ClosureComponent<ItemTrackerAtts> = () => {
     },
     view: ({ attrs }) => {
       const isEmpty = !(trackedValue > 0)
+      const tip = attrs.emptyTip ?? emptyTip
       if (!showInput) {
         return m(
-          'div.text-right.w-full.cursor-pointer.hover:opacity-75',
+          'div.w-full.cursor-pointer.hover:opacity-75',
           {
             class: [
               attrs.class,
-              isEmpty ? 'tooltip' : '',
+              isEmpty && !!tip ? 'tooltip' : '',
             ].join(' '),
 
-            ['data-tip']: emptyTip,
+            ['data-tip']: tip,
             onclick: () => (showInput = !showInput),
           },
           isEmpty ? emptyText : trackedValue * multiply
         )
       }
-      return m('input.input.input-ghost.input-xs.rounded-none.px-0.w-full.text-right', {
+      return m('input.input.input-ghost.input-xs.rounded-none.px-0.w-full', {
         type: 'number',
         min: 0,
         oncreate: (e) => {
