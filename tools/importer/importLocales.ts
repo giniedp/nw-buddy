@@ -27,8 +27,8 @@ function extractKeys(tables: DatatableSource[]) {
   const result = new Set<string>()
   walkStringProperties(tables, (key, value, obj) => {
     if (value?.startsWith('@')) {
-      obj[key] = normalizeKey(value)
-      result.add(obj[key])
+      obj[key] = value.substring(1)   // keep original case in object
+      result.add(normalizeKey(value)) // use lower case for dictionary
     }
   })
   return result
