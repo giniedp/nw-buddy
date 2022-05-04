@@ -27,8 +27,8 @@ function extractKeys(tables: DatatableSource[]) {
   const result = new Set<string>()
   walkStringProperties(tables, (key, value, obj) => {
     if (value?.startsWith('@')) {
-      obj[key] = value.substring(1)
-      result.add(value.substring(1))
+      obj[key] = normalizeKey(value)
+      result.add(obj[key])
     }
   })
   return result
@@ -46,6 +46,7 @@ async function loadLocales(input: string, keys: Set<string>) {
     const bucket = result.get(lang) || {}
     result.set(lang, bucket)
     Object.entries(json).forEach(([key, entry]) => {
+      key = normalizeKey(key)
       if (keys.has(key)) {
         bucket[key] = entry['value']
       }
@@ -59,4 +60,12 @@ async function writeLocales(output: string, locales: Map<string, Record<string, 
       createDir: true,
     })
   }
+}
+
+function normalizeKey(key: string) {
+  key = key || ''
+  if (key.startsWith('@')) {
+    key = key.substring(1)
+  }
+  return key.toLowerCase()
 }
