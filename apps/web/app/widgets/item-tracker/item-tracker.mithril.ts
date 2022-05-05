@@ -8,6 +8,7 @@ export interface ItemTrackerAtts {
   meta: ItemPreferencesService
   mode: keyof ItemMeta
   class?: string
+  classEmpty?: string
   emptyText?: string
   emptyTip?: string
   multiply?: number
@@ -54,6 +55,7 @@ export const ItemTrackerCell: ClosureComponent<ItemTrackerAtts> = () => {
             class: [
               attrs.class,
               isEmpty && !!tip ? 'tooltip' : '',
+              isEmpty && attrs.classEmpty ? attrs.classEmpty : ''
             ].join(' '),
 
             ['data-tip']: tip,

@@ -45,12 +45,11 @@ export class NwTradeskillService {
   public skills = defer(() => {
     return combineLatest({
       postcap: this.db.tradeskillPostcap,
-      achievements: this.db.metaAchievements,
       categories: this.db.categoriesProgression,
     })
   })
     .pipe(
-      map(({ postcap, achievements, categories }) => {
+      map(({ postcap, categories }) => {
         return categories
           .filter((it) => !!it.PostSkillCapSkill)
           .map((it): NwTradeskillInfo => {
@@ -59,7 +58,7 @@ export class NwTradeskillService {
               Category: CATEGORY_MAP[it.CategoricalProgressionId],
               Name: it.DisplayName,
               MaxLevel: it.MaxLevel,
-              Icon: achievements.find((ac) => ac['Categorical Progression'] === it.CategoricalProgressionId)?.Icon,
+              Icon: `./assets/icons/tradeskills/${it.CategoricalProgressionId.toLowerCase()}.png`,
               Postcap: postcap.find((cap) => cap.TradeSkillType === it.PostSkillCapSkill),
             }
           })

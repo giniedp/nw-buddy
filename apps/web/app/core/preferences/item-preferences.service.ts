@@ -8,6 +8,7 @@ export interface ItemMeta {
   stock?: number
   gs?: number
   fav?: boolean
+  mark?: number
 }
 
 @Injectable({ providedIn: 'root' })

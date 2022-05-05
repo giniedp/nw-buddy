@@ -25,7 +25,9 @@
         *ngIf="bonusPercent"
         attr.data-tip="+{{ bonusQuantity }} items"
       >
-        (+{{ bonusPercent }}%)
+        <ng-container *ngIf="optimize">+{{ bonusPercent }}%</ng-container>
+        <ng-container *ngIf="!optimize">(+{{ bonusPercent }}%)</ng-container>
+
       </span>
       <span class="ml-2"> &times; </span>
       <span class="ml-2 overflow-ellipsis overflow-hidden whitespace-nowrap" [nwText]="item.Name"></span>

@@ -17,7 +17,7 @@ export async function importLocales({
 }) {
   const keys = extractKeys(tables)
   for (const key of preserveKeys || []) {
-    keys.add(key)
+    keys.add(normalizeKey(key))
   }
   const locales = await loadLocales(input, keys)
   await writeLocales(output, locales)

@@ -119,6 +119,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
                     class: value ? '' : 'text-error-content',
                   }, name),
                   m(ItemTrackerCell, {
+                    classEmpty: 'opacity-0',
                     class: [
                       'self-start',
                       value && max ? 'text-success' : '',
