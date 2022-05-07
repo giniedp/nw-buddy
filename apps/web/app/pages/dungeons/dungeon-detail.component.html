@@ -1,4 +1,78 @@
-<ul class="menu w-full menu-horizontal bg-base-100 rounded-md mb-4">
+<ul class="menu bg-base-300 rounded-l-md flex-none w-56" *ngIf="isMutable">
+  <li class="menu-title mt-4">
+    <span>Normal</span>
+  </li>
+  <li [class.bordered]="!difficultyLevel">
+    <a [routerLink]="['.', {}]">
+      <span>Regular</span>
+    </a>
+  </li>
+  <li class="menu-title mt-4">
+    <span>Mutated</span>
+  </li>
+  <li *ngFor="let item of difficulties$ | async" [class.bordered]="item.MutationDifficulty == difficultyLevel">
+    <a [routerLink]="['.', { mutation: item.MutationDifficulty, tab: tab }]">
+      {{ item.MutationDifficulty }} ({{difficultyTier(item)}})
+    </a>
+  </li>
+</ul>
+<div class="flex-1 relative rounded-r-md bg-base-100 overflow-clip" [class.rounded-l-md]="!isMutable">
+  <picture class="absolute top-0 left-0 right-0 bottom-0 pointer-events-none">
+    <img [nwImage]="backgroundImage" class="block w-full h-full object-cover blur-sm" />
+  </picture>
+  <div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col px-4">
+    <div class="prose-base mt-8 flex-none">
+      <h1 class="mb-0 font-bold">
+        <span [nwText]="title" ></span>
+        <span *ngIf="difficultyLevel">, Difficulty {{difficultyLevel}}</span>
+      </h1>
+      <p>
+        <span [nwText]="description" class="text-primary italic"></span>
+        <br />
+        <span *ngIf="!requiredGearScore">
+          <span>Recommended Level: </span>
+          <span class="font-semibold text-accent">{{ requiredLevel }}</span>
+        </span>
+        <span *ngIf="requiredGearScore">
+          <span>Recommended Gear Score: </span>
+          <span class="font-semibold text-accent">{{ requiredGearScore }}</span>
+        </span>
+        <br />
+        <span>
+          <span>Minimum players: </span>
+          <span class="font-semibold text-accent">{{ groupSize }}</span>
+        </span>
+        <br />
+        <span>
+          <span class="text-primary">In order to complete this Expedition, your group must have at least </span>
+          <span [nwText]="requirementText"></span>
+        </span>
+      </p>
+    </div>
+
+    <div class="tabs mt-4 flex-none">
+      <ng-container *ngFor="let item of tabs">
+        <a class="tab tab-bordered" [class.tab-active]="item.id === tab" [routerLink]="['.', { mutation: difficultyLevel, tab: item.id }]">
+          {{ item.label }}
+        </a>
+      </ng-container>
+    </div>
+
+    <div class="flex-1 overflow-y-auto masked-overflow ">
+      <div class="grid gap-4">
+        <nwb-item-detail
+          *ngFor="let item of tabItems | async"
+          [itemId]="itemId(item)"
+          [enableNwdbLink]="true"
+          [enableTracker]="true"
+          [enableMarker]="true"
+        ></nwb-item-detail>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- <ul class="menu w-full menu-horizontal bg-base-100 rounded-md mb-4 flex-none">
   <li>
     <a [routerLink]="['./']">
       <picture [nwIcon]="dungeonIcon$ | async" class="w-5 h-5 scale-150"></picture>
@@ -13,4 +87,4 @@
   </li>
 </ul>
 
-<router-outlet></router-outlet>
+<router-outlet></router-outlet> -->

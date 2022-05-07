@@ -100,27 +100,17 @@ export class DungeonsService {
       housing: this.nw.db.housingItemsMap,
     }).pipe(
       map(({ dungeon, items, housing }) => {
-        return dungeon.PossibleItemDropIds.split(',')
-          .map((id) => items.get(id) || housing.get(id))
-          .filter((it) => !!it)
+        return dungeon.PossibleItemDropIds.map((id) => items.get(id) || housing.get(id)).filter((it) => !!it)
       })
     )
   }
 
-  public dungeonLootTags(dungeon: Gamemodes) {
-    return dungeon.LootTags.split(',')
-  }
-
   public dungeonLoot(dungeon: Gamemodes) {
     return combineLatest({
-      bossTags: this.dungeonBossesLootTags(dungeon).pipe(tap(console.log)),
-      lootTags: of(this.dungeonLootTags(dungeon)),
+      bossTags: this.dungeonBossesLootTags(dungeon),
+      lootTags: of(dungeon.LootTags),
     })
-      .pipe(
-        map(({ bossTags, lootTags }) => {
-          return uniq([...bossTags, ...lootTags])
-        })
-      )
+      .pipe(map(({ bossTags, lootTags }) => uniq([...bossTags, ...lootTags])))
       .pipe(
         switchMap((tags) => {
           return this.nw.lootbuckets.all().filter(tags).exclude(MUTATION_LOOT_TAGS).items()
@@ -128,12 +118,36 @@ export class DungeonsService {
       )
   }
 
-  public mutationLoot(dungeon: Gamemodes, mutation: Mutationdifficulty) {
-    return this.nw.lootbuckets
-      .all()
-      .filter((dungeon.MutLootTagsOverride || dungeon.LootTags).split(','))
-      .filter(mutation.InjectedLootTags.split(','))
-      .items()
+  public dungeonMutatedLoot(dungeon: Gamemodes) {
+    return combineLatest({
+      bossTags: this.dungeonBossesLootTags(dungeon),
+      lootTags: of(dungeon.MutLootTagsOverride || dungeon.LootTags),
+    })
+      .pipe(map(({ bossTags, lootTags }) => uniq([...bossTags, ...lootTags])))
+      .pipe(
+        switchMap((tags) => {
+          return this.nw.lootbuckets.all().filter(tags).exclude(MUTATION_LOOT_TAGS).items()
+        })
+      )
+  }
+
+  public dungeonMutationLoot(dungeon: Gamemodes, mutation: Mutationdifficulty) {
+    // return this.dungeonMutatedLoot(dungeon)
+    return combineLatest({
+      bossTags: this.dungeonBossesLootTags(dungeon),
+      lootTags: of(dungeon.MutLootTagsOverride || dungeon.LootTags),
+    })
+      .pipe(
+        map(({ bossTags, lootTags }) => {
+          return uniq([...bossTags, ...lootTags])
+        })
+      )
+      .pipe(tap(console.log))
+      .pipe(
+        switchMap((tags) => {
+          return this.nw.lootbuckets.all().filter(tags).filter(mutation.InjectedLootTags).items()
+        })
+      )
   }
 
   public dungeon(id: string): Observable<Gamemodes> {
@@ -144,7 +158,7 @@ export class DungeonsService {
     return dungeon.IsMutable ? this.difficultie$ : of([])
   }
 
-  public mutationDifficulty(difficulties: Mutationdifficulty[], level: number | Observable<number>) {
+  public dungeonDifficulty(difficulties: Mutationdifficulty[], level: number | Observable<number>) {
     return difficulties.find((it) => it.MutationDifficulty === Number(level))
   }
 
@@ -179,7 +193,7 @@ export class DungeonsService {
         const bosses = vitals.get('DungeonBoss')
         return bosses.filter((it) => {
           // const vc = it.VitalsCategories?.split(',') || []
-          const lt = it.LootTags?.split(',') || []
+          const lt = it.LootTags || []
           return /* vc.some((cat) => categories.includes(cat)) || */ lt.some((i) => include.includes(i))
         })
       })
@@ -188,7 +202,7 @@ export class DungeonsService {
 
   public dungeonBossesLootTags(dungeon: Gamemodes) {
     return this.dungeonBosses(dungeon)
-      .pipe(map((it) => it.map((e) => e.LootTags.split(',')).flat(1)))
+      .pipe(map((it) => it.map((e) => e.LootTags).flat(1)))
       .pipe(map((it) => Array.from(new Set(it))))
   }
 }

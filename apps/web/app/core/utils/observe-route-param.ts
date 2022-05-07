@@ -7,3 +7,10 @@ export function observeRouteParam(route: ActivatedRoute, param: string | Observa
   }
   return param.pipe(switchMap((key) => route.paramMap.pipe(map((map) => map.get(key)))))
 }
+
+export function observeQueryParam(route: ActivatedRoute, param: string | Observable<string>) {
+  if (!isObservable(param)) {
+    param = of(param)
+  }
+  return param.pipe(switchMap((key) => route.queryParamMap.pipe(map((map) => map.get(key)))))
+}

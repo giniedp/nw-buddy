@@ -14,7 +14,7 @@ import {
   writeJSONFile,
 } from './utils'
 import { extractExpressions } from './utils/extractExpressions'
-import { loadDatatables } from './importer/loadDatatables'
+import { loadDatatables, splitToArrayRule } from './importer/loadDatatables'
 import { importLocales } from './importer/importLocales'
 import { importImages } from './importer/importImages'
 import { generateTypes } from './importer/generateTypes'
@@ -79,6 +79,45 @@ program
         'gamemodemutators/*',
         'weaponabilities/*',
       ].map((it) => it + '.json'),
+      remap: [
+        {
+          file: /javelindata_gamemodes.json/,
+          rules: [
+            splitToArrayRule({
+              properties: ['PossibleItemDropIds', 'LootTags', 'MutLootTagsOverride'],
+              separator: ',',
+            }),
+          ],
+        },
+        {
+          file: /javelindata_vitals.json/,
+          rules: [
+            splitToArrayRule({
+              properties: ['VitalsCategories', 'LootTags'],
+              separator: ',',
+            }),
+          ],
+        },
+        {
+          file: /javelindata_mutationdifficulty.json/,
+          rules: [
+            splitToArrayRule({
+              properties: ['InjectedLootTags'],
+              separator: ',',
+            }),
+          ],
+        },
+        {
+          file: /javelindata_lootbuckets.json/,
+          rules: [
+            splitToArrayRule({
+              properties: /Tags\d+/,
+              separator: ',',
+            }),
+          ],
+        },
+
+      ],
     })
 
     console.log('importing locales')

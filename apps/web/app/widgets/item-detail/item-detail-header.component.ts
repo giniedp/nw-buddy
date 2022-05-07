@@ -47,7 +47,7 @@ export class ItemDetailHeaderComponent implements OnInit, OnChanges {
   public get itemRarityName(): string {
     return this.entity && this.nw.itemRarityKey(this.entity)
   }
-  public get itemType(): string {
+  public get itemTypeName(): string {
     if (this.entity) {
       if ('ItemID' in this.entity) {
         return this.entity.ItemTypeDisplayName
@@ -56,6 +56,21 @@ export class ItemDetailHeaderComponent implements OnInit, OnChanges {
       }
     }
     return ''
+  }
+
+  public get itemType(): string {
+    if (this.entity) {
+      if ('ItemID' in this.entity) {
+        return this.entity.ItemType
+      } else if ('HouseItemID' in this.entity) {
+        return this.entity.ItemType
+      }
+    }
+    return ''
+  }
+
+  public get showGsTracker() {
+    return this.enableTracker && (this.itemType === 'Weapon' || this.itemType === 'Armor')
   }
 
   private entityId$ = new ReplaySubject<string>()

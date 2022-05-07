@@ -24,7 +24,7 @@ export const ItemTrackerCell: ClosureComponent<ItemTrackerAtts> = () => {
   let showInput: boolean
 
   let multiply = 1
-  let emptyText = "✎"
+  let emptyText = "✏️"
   let emptyTip = "Edit"
 
   return {

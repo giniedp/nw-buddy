@@ -25,6 +25,7 @@ export type LootBucketTag = {
 }
 
 function convertRow(data: Lootbuckets): LootBucketRow {
+
   const bucketId = data.RowPlaceholders
   const keys = new Set<string>()
   const ids = new Set<number>()
@@ -44,7 +45,7 @@ function convertRow(data: Lootbuckets): LootBucketRow {
           (res, key) => {
             const value = data[`${key}${id}`]
             if (key === 'Tags') {
-              res[key] = ((value as string) || '').split(',').map(lootBucketTag)
+              res[key] = (value as string[] || []).map(lootBucketTag)
             } else if (key === 'Quantity') {
               res[key] = typeof value === 'string' ? value.split('-').map(Number) : [value]
             } else {

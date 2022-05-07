@@ -1,7 +1,17 @@
 :host {
-  display: block;
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+
+  overflow: auto;
 
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   }
+
+  nwb-item-detail {
+    content-visibility: auto;
+    min-height: 86px;
+  }
+
 }

@@ -9,64 +9,7 @@
 </div>
 
 <div class="main-frame col-span-2">
-  <div class="main-content ">
+  <div class="main-content flex flex-col">
     <router-outlet></router-outlet>
-    <!-- <div class="dungeons-grid">
-      <div class="card bg-base-100 shadow-xl" *ngFor="let item of items">
-        <figure>
-          <img [nwImage]="item.BackgroundImagePath">
-        </figure>
-        <div class="card-body p-4">
-          <h2 class="card-title" >
-            <picture [nwIcon]="item.IconPath" class="w-10 h-10"></picture>
-            <span [nwText]="item.DisplayName"></span>
-          </h2>
-          <p *ngIf="item.Description" [nwText]="item.Description"></p>
-          <p *ngIf="item.RequirementText" [nwText]="item.RequirementText"></p>
-          <table class="table table-compact w-full">
-            <tr>
-              <th>Level</th>
-              <td>{{item.RequiredLevel}}</td>
-            </tr>
-            <tr>
-              <th>Is Mutable</th>
-              <td>{{item.IsMutable}}</td>
-            </tr>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <table class="table table-compact mt-4 w-full">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Tier</th>
-          <th>Difficulty</th>
-          <th>Min GS</th>
-          <th>GS Nerf</th>
-          <th>Bronce</th>
-          <th>Silver</th>
-          <th>Gold</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let row of difficulties">
-          <th></th>
-          <td>{{ row.difficulty.DifficultyTier }}</td>
-          <td>{{ row.difficulty.MutationDifficulty }}</td>
-          <td>{{ row.difficulty.RecommendedGearScore }}</td>
-          <td>{{ row.difficulty.GearScoreDeltaModifier | percent }}</td>
-          <td>{{ row.rewards[0]?.event?.ItemRewardQty}}</td>
-          <td>{{ row.rewards[1]?.event?.ItemRewardQty}}</td>
-          <td>{{ row.rewards[2]?.event?.ItemRewardQty}}</td>
-        </tr>
-      </tbody>
-    </table> -->
-
   </div>
 </div>
-
-
-
-

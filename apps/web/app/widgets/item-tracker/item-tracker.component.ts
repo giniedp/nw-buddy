@@ -38,7 +38,7 @@ export class ItemTracker implements OnInit, OnChanges, AfterViewChecked {
   public format: string
 
   @Input()
-  public emptyText = "✎"
+  public emptyText = "✏️"
 
   @Input()
   @HostBinding('attr.data-tip')
