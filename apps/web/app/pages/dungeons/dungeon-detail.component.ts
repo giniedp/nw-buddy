@@ -46,9 +46,9 @@ export class DungeonDetailComponent implements OnInit {
     .pipe(map(({ difficulties, difficulty }) => this.ds.dungeonDifficulty(difficulties, Number(difficulty))))
     .pipe(shareReplayRefCount(1))
 
-  public dungeonDrops$ = defer(() => this.dungeon$)
-    .pipe(switchMap((dungeon) => this.ds.dungeonLoot(dungeon)))
-    .pipe(map((items) => items.filter((it) => this.nw.itemRarity(it) >= 2)))
+  public expeditionItems$ = defer(() => this.dungeon$)
+    .pipe(switchMap((dungeon) => this.ds.dungeonPossibleDrops(dungeon)))
+    .pipe(map((items) => this.filterAndSort(items)))
 
   public dungeon: Gamemodes
   public difficulty: Mutationdifficulty
@@ -114,33 +114,26 @@ export class DungeonDetailComponent implements OnInit {
       this.dungeon = dungeon
       this.difficulty = difficulty
       this.tabs = []
-      // this.tabs.push({
-      //   id: '',
-      //   label: 'Bosses',
-      //   vitals$: this.bosses$
-      // })
-      this.tabs.push({
-        id: '',
-        label: 'Expedition Items',
-        query$: this.ds.dungeonPossibleDrops(dungeon).pipe(map((it) => this.filterAndSort(it)))
-      })
-      this.tabs.push({
-        id: 'drops',
-        label: 'Available Drops',
-        query$: this.ds.dungeonLoot(dungeon).pipe(map((it) => this.filterAndSort(it)))
-      })
-      if (difficulty) {
+
+      if (!difficulty) {
         this.tabs.push({
-          id: 'drops-muta',
-          label: 'Mutation Drops',
+          id: '',
+          label: 'Available Drops',
+          query$: this.ds.dungeonLoot(dungeon).pipe(map((it) => this.filterAndSort(it)))
+        })
+      } else {
+        this.tabs.push({
+          id: '',
+          label: 'Available Drops',
           query$: this.ds.dungeonMutatedLoot(dungeon).pipe(map((it) => this.filterAndSort(it)))
         })
         this.tabs.push({
-          id: 'drops-difficulty',
+          id: 'difficulty',
           label: 'Difficulty Drops',
           query$: this.ds.dungeonMutationLoot(dungeon, difficulty).pipe(map((it) => this.filterAndSort(it)))
         })
       }
+
       this.cdRef.markForCheck()
     })
     this.tabParam$.pipe(takeUntil(this.destroy.$)).subscribe((tab) => {
@@ -160,6 +153,7 @@ export class DungeonDetailComponent implements OnInit {
   private filterAndSort(items: Array<ItemDefinitionMaster | Housingitems>) {
     return items
     .filter((it) => this.nw.itemRarity(it) >= 1)
+    .sort((a, b) => this.nw.itemId(a).localeCompare(this.nw.itemId(b)))
     .sort((a, b) => this.nw.itemRarity(b) - this.nw.itemRarity(a))
   }
 }

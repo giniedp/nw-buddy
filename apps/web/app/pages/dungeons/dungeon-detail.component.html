@@ -48,6 +48,14 @@
           <span [nwText]="requirementText"></span>
         </span>
       </p>
+      <h2 class="font-bold">
+        Expedition Items
+      </h2>
+      <div class="flex flex-row gap-2">
+        <a [nwInfoLink]="itemId(item)" [nwInfoResource]="'item'" *ngFor="let item of expeditionItems$ | async">
+          <picture  [nwItemIcon]="item" class="w-16 h-16"></picture>
+        </a>
+      </div>
     </div>
 
     <div class="tabs mt-4 flex-none">
@@ -72,19 +80,3 @@
 
   </div>
 </div>
-<!-- <ul class="menu w-full menu-horizontal bg-base-100 rounded-md mb-4 flex-none">
-  <li>
-    <a [routerLink]="['./']">
-      <picture [nwIcon]="dungeonIcon$ | async" class="w-5 h-5 scale-150"></picture>
-      <span [nwText]="dungeonName$ | async"></span>
-    </a>
-  </li>
-  <span class="flex-1"></span>
-  <li *ngFor="let item of difficulties$ | async">
-    <a [routerLink]="['mutation', item.MutationDifficulty]" [routerLinkActive]="'active'">
-      M{{ item.MutationDifficulty }}
-    </a>
-  </li>
-</ul>
-
-<router-outlet></router-outlet> -->
