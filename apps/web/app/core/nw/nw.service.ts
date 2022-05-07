@@ -35,6 +35,10 @@ export class NwService {
     public readonly tradeskills: NwTradeskillService
   ) {}
 
+  public moneyFormatter = Intl.NumberFormat(navigator.language, {
+    minimumFractionDigits: 2
+  })
+
   public gridOptions(options: GridOptions): GridOptions {
     return {
       rowHeight: 40,

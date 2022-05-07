@@ -66,24 +66,21 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public get bonusQuantity() {
-    if (!this.expand || !this.bonus) {
-      return 0
-    }
     return Math.round(this.bonus * this.requiredQuantity)
   }
 
   public get requiredQuantity() {
-    if (!this.expand || !this.optimize || !this.bonus) {
-      return this.stepQuantity
+    if (this.optimize) {
+      return Math.ceil(this.stepQuantity / (1 + this.bonus))
     }
-    return Math.ceil(this.stepQuantity / (1 + this.bonus))
+    return this.stepQuantity
   }
 
   public get outputQuantity() {
-    if (!this.expand || !this.optimize || !this.bonus) {
-      return Math.floor(this.stepQuantity * (1 + this.bonus))
+    if (this.optimize) {
+      return this.stepQuantity
     }
-    return this.stepQuantity
+    return Math.floor(this.stepQuantity * (1 + this.bonus))
   }
 
   @ViewChildren(forwardRef(() => CraftingStepComponent), {
@@ -175,6 +172,7 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy {
 
   public toggle() {
     this.step.expand = !this.expand
+    this.updateBonus()
     this.stateChange.emit()
     this.markForCheck()
   }

@@ -55,21 +55,21 @@ export const ItemMarkerCell: ClosureComponent<ItemMarkerAtts> = () => {
     },
     view: ({ attrs }) => {
       return m('div.flex.flex-row.h-full.items-center', {}, [
-        m('div.w-6.h-6.cursor-pointer.mask.mask-star-2', {
+        m('div.w-4.h-4.cursor-pointer.mask.mask-star-2.transition-all.scale-100.hover:scale-125', {
           class: [
             'bg-orange-400',
             checked(0) ? '' : 'opacity-25'
           ].join(' '),
           onclick: () => toggle(0, attrs.meta)
         }),
-        m('div.w-6.h-6.cursor-pointer.mask.mask-star-2', {
+        m('div.w-4.h-4.cursor-pointer.mask.mask-star-2.transition-all.scale-100.hover:scale-125', {
           class: [
             'bg-yellow-400',
             checked(1) ? '' : 'opacity-25'
           ].join(' '),
           onclick: () => toggle(1, attrs.meta)
         }),
-        m('div.w-6.h-6.cursor-pointer.mask.mask-star-2', {
+        m('div.w-4.h-4.cursor-pointer.mask.mask-star-2.transition-all.scale-100.hover:scale-125', {
           class: [
             'bg-green-400',
             checked(2) ? '' : 'opacity-25'

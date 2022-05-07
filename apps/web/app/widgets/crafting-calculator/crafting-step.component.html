@@ -20,9 +20,10 @@
       </span>
       <span
         class="ml-2 text-xs tooltip tooltip-right "
-        [class.text-success]="optimize && !!bonusQuantity"
-        [class.tooltip-success]="optimize && !!bonusQuantity"
-        *ngIf="bonusPercent"
+        [class.text-accent]="optimize && !!bonusQuantity"
+        [class.tooltip-accent]="optimize && !!bonusQuantity"
+        [class.tooltip-info]="!optimize"
+        *ngIf="bonusQuantity"
         attr.data-tip="+{{ bonusQuantity }} items"
       >
         <ng-container *ngIf="optimize">+{{ bonusPercent }}%</ng-container>

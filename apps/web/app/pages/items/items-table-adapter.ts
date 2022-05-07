@@ -6,7 +6,7 @@ import { IconComponent, NwService } from '~/core/nw'
 import { CategoryFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
-import { ItemMarkerCell, ItemTrackerCell } from '~/widgets/item-tracker'
+import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
 
 @Injectable()
 export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
@@ -102,6 +102,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
               width: 100,
               headerName: 'Bookmark',
               cellClass: 'cursor-pointer',
+              filter: ItemTrackerFilter,
               valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.mark || 0),
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
@@ -115,6 +116,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
             {
               headerName: 'Stock',
               headerTooltip: 'Number of items currently owned',
+              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.stock),
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
                   return m(ItemTrackerCell, {
@@ -122,7 +124,6 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
                     meta: this.nw.itemPref,
                     mode: 'stock',
                     class: 'text-right',
-                    classEmpty: 'opacity-25',
                   })
                 },
               }),
@@ -131,6 +132,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
             {
               headerName: 'GS',
               headerTooltip: 'Item owned with this gear score',
+              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.gs),
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
                   return m(ItemTrackerCell, {
@@ -138,7 +140,6 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
                     meta: this.nw.itemPref,
                     mode: 'gs',
                     class: 'text-right',
-                    classEmpty: 'opacity-25',
                   })
                 },
               }),
@@ -148,6 +149,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
               headerName: 'Price',
               headerTooltip: 'Current price in Trading post',
               cellClass: 'text-right',
+              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.price),
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
                   return m(ItemTrackerCell, {
@@ -155,7 +157,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
                     meta: this.nw.itemPref,
                     mode: 'price',
                     class: 'text-right',
-                    classEmpty: 'opacity-25',
+                    formatter: this.nw.moneyFormatter,
                   })
                 },
               }),

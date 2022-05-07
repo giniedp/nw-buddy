@@ -6,7 +6,7 @@ import { IconComponent, NwService } from '~/core/nw'
 import { CategoryFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
-import { ItemMarkerCell, ItemTrackerCell } from '~/widgets/item-tracker'
+import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
 
 export type RecipeWithItem = Crafting & {
   $item: ItemDefinitionMaster | Housingitems
@@ -64,6 +64,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
               width: 100,
               headerName: 'Bookmark',
               cellClass: 'cursor-pointer',
+              filter: ItemTrackerFilter,
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
                   const itemId = this.nw.itemIdFromRecipe(data)
@@ -82,6 +83,10 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
               headerName: 'Stock',
               headerTooltip: 'Number of items currently owned',
               cellClass: 'text-right',
+              valueGetter: this.valueGetter(({ data }) => {
+                const itemId = this.nw.itemIdFromRecipe(data)
+                return itemId && this.nw.itemPref.get(itemId)?.stock
+              }),
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
                   const itemId = this.nw.itemIdFromRecipe(data)
@@ -89,10 +94,9 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
                     itemId &&
                     m(ItemTrackerCell, {
                       class: 'text-right',
-                      classEmpty: 'opacity-25',
                       itemId: itemId,
                       meta: this.nw.itemPref,
-                      mode: 'stock',
+                      mode: 'stock'
                     })
                   )
                 },
@@ -104,6 +108,10 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
               headerName: 'Price',
               headerTooltip: 'Current price in Trading post',
               cellClass: 'text-right',
+              valueGetter: this.valueGetter(({ data }) => {
+                const itemId = this.nw.itemIdFromRecipe(data)
+                return itemId &&  this.nw.itemPref.get(itemId)?.price
+              }),
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
                   const itemId = this.nw.itemIdFromRecipe(data)
@@ -111,10 +119,10 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
                     itemId &&
                     m(ItemTrackerCell, {
                       class: 'text-right',
-                      classEmpty: 'opacity-25',
                       itemId: itemId,
                       meta: this.nw.itemPref,
                       mode: 'price',
+                      formatter: this.nw.moneyFormatter
                     })
                   )
                 },

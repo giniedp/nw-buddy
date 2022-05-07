@@ -121,7 +121,6 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
                     onchange: () => {
                       api.refreshCells({ rowNodes: [node] })
                     },
-                    classEmpty: 'opacity-0',
                     class: [
                       'self-start',
                       value && max ? 'text-success' : '',

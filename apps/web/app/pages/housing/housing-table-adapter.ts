@@ -6,7 +6,7 @@ import { IconComponent, NwService } from '~/core/nw'
 import { CategoryFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
-import { ItemMarkerCell, ItemTrackerCell } from '~/widgets/item-tracker'
+import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
 
 @Injectable()
 export class HousingAdapterService extends DataTableAdapter<Housingitems> {
@@ -66,6 +66,7 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
             {
               width: 100,
               headerName: 'Bookmark',
+              filter: ItemTrackerFilter,
               valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.mark || 0),
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
@@ -80,11 +81,11 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
               headerName: 'Stock',
               headerTooltip: 'Number of items currently owned',
               cellClass: 'text-right',
+              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.stock),
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
                   return m(ItemTrackerCell, {
                     class: 'text-right',
-                    classEmpty: 'opacity-25',
                     itemId: data.HouseItemID,
                     meta: this.nw.itemPref,
                     mode: 'stock',
@@ -97,14 +98,15 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
               headerName: 'Price',
               headerTooltip: 'Current price in Trading post',
               cellClass: 'text-right',
+              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.price),
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
                   return m(ItemTrackerCell, {
                     class: 'text-right',
-                    classEmpty: 'opacity-25',
                     itemId: data.HouseItemID,
                     meta: this.nw.itemPref,
                     mode: 'price',
+                    formatter: this.nw.moneyFormatter,
                   })
                 },
               }),

@@ -22,7 +22,10 @@ import { DestroyService } from '~/core/utils'
   styleUrls: ['./item-tracker.component.scss'],
   providers: [DestroyService],
   host: {
-    '[class.tooltip]': 'isEmpty && !!emptyTip'
+    '[class.tooltip]': 'isEmpty && !!emptyTip',
+    '[class.opacity-25]': 'isEmpty',
+    '[class.hover:opacity-100]': 'isEmpty',
+    '[class.transition-opacity]': 'isEmpty'
   }
 })
 export class ItemTracker implements OnInit, OnChanges, AfterViewChecked {

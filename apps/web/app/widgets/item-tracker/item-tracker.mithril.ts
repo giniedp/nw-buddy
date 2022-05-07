@@ -13,6 +13,7 @@ export interface ItemTrackerAtts {
   emptyTip?: string
   multiply?: number
   onchange?: () => void
+  formatter?: Intl.NumberFormat
 }
 
 export const ItemTrackerCell: ClosureComponent<ItemTrackerAtts> = () => {
@@ -49,20 +50,25 @@ export const ItemTrackerCell: ClosureComponent<ItemTrackerAtts> = () => {
     view: ({ attrs }) => {
       const isEmpty = !(trackedValue > 0)
       const tip = attrs.emptyTip ?? emptyTip
+      const result = attrs.formatter
+        ? attrs.formatter.format(trackedValue * multiply)
+        : trackedValue * multiply
+
       if (!showInput) {
         return m(
-          'div.w-full.cursor-pointer.hover:opacity-75',
+          'div.w-full.cursor-pointer.transition-opacity.hover:opacity-100',
           {
             class: [
               attrs.class,
               isEmpty && !!tip ? 'tooltip' : '',
-              isEmpty && attrs.classEmpty ? attrs.classEmpty : ''
+              isEmpty && attrs.classEmpty ? attrs.classEmpty : '',
+              isEmpty && 'opacity-25'
             ].join(' '),
 
             ['data-tip']: tip,
             onclick: () => (showInput = !showInput),
           },
-          isEmpty ? emptyText : trackedValue * multiply
+          isEmpty ? emptyText : result
         )
       }
       return m('input.input.input-ghost.input-xs.rounded-none.px-0.w-full', {
