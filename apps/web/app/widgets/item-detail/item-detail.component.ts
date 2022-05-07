@@ -8,6 +8,9 @@ import { NwService } from '~/core/nw'
   templateUrl: './item-detail.component.html',
   styleUrls: ['./item-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: "bg-base-300 rounded-md"
+  }
 })
 export class ItemDetailComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
@@ -21,9 +24,19 @@ export class ItemDetailComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   @Input()
-  public set housingId(value: string) {
-    this.housingId$.next(value)
-  }
+  public enableNwdbLink: boolean
+
+  @Input()
+  public enableMarker: boolean
+
+  @Input()
+  public enableTracker: boolean
+
+  @Input()
+  public enableRecipe: boolean
+
+  @Input()
+  public enableDescription: boolean
 
   public item: ItemDefinitionMaster
   public recipe: Crafting
@@ -39,7 +52,6 @@ export class ItemDetailComponent implements OnInit, OnChanges, OnDestroy {
   public isLoading = true
 
   private itemId$ = new BehaviorSubject<string>(null)
-  private housingId$ = new BehaviorSubject<string>(null)
   private recipeId$ = new BehaviorSubject<string>(null)
 
   private destroy$ = new Subject()
@@ -50,7 +62,7 @@ export class ItemDetailComponent implements OnInit, OnChanges, OnDestroy {
 
     combineLatest({
       itemId: this.itemId$,
-      housingId: this.housingId$,
+
       recipeId: this.recipeId$,
 
       perksMap: this.nw.db.perksMap,
@@ -59,15 +71,15 @@ export class ItemDetailComponent implements OnInit, OnChanges, OnDestroy {
       craftingMap: this.nw.db.recipesMap,
       craftingList: this.nw.db.recipes,
     })
-      .pipe(map(({ itemId, housingId, recipeId, craftingMap, craftingList, housingMap, itemsMap, perksMap }) => {
+      .pipe(map(({ itemId, recipeId, craftingMap, craftingList, housingMap, itemsMap, perksMap }) => {
 
         let item: ItemDefinitionMaster
         let housing: Housingitems
         let recipe: Crafting
 
-        if (itemId || housingId) {
+        if (itemId) {
           item = itemsMap.get(itemId)
-          housing = housingMap.get(housingId)
+          housing = housingMap.get(itemId)
           recipe = this.nw.recipeForItem(item || housing, craftingList)
         } else if (recipeId) {
           recipe = craftingMap.get(recipeId)
@@ -75,7 +87,6 @@ export class ItemDetailComponent implements OnInit, OnChanges, OnDestroy {
           housing = housingMap.get(itemId)
           item = itemsMap.get(itemId)
         }
-
         return {
           recipe,
           housing,
@@ -95,8 +106,8 @@ export class ItemDetailComponent implements OnInit, OnChanges, OnDestroy {
 
   }
 
-  public ngOnChanges(): void {
-    //
+  public ngOnChanges(ch): void {
+    this.cdRef.detectChanges()
   }
 
   public ngOnDestroy(): void {

@@ -1,6 +1,6 @@
 import { ClosureComponent } from 'mithril'
 import { distinctUntilChanged, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
-import { ItemMeta, ItemPreferencesService } from '~/core/preferences'
+import { ItemPreferencesService } from '~/core/preferences'
 import m from 'mithril'
 
 export interface ItemMarkerAtts {
@@ -26,7 +26,6 @@ export const ItemMarkerCell: ClosureComponent<ItemMarkerAtts> = () => {
     } else {
       result = result | value(index)
     }
-    console.log(result)
     pref.merge(trackedId, {
       mark: result
     })

@@ -1,0 +1,9 @@
+<div class="grid gap-4 mb-4">
+  <nwb-item-detail
+    *ngFor="let item of dungeonDrops$ | async"
+    [itemId]="itemId(item)"
+    [enableNwdbLink]="true"
+    [enableTracker]="true"
+    [enableMarker]="true"
+  ></nwb-item-detail>
+</div>

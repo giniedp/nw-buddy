@@ -1,0 +1,16 @@
+<ul class="menu w-full menu-horizontal bg-base-100 rounded-md mb-4">
+  <li>
+    <a [routerLink]="['./']">
+      <picture [nwIcon]="dungeonIcon$ | async" class="w-5 h-5 scale-150"></picture>
+      <span [nwText]="dungeonName$ | async"></span>
+    </a>
+  </li>
+  <span class="flex-1"></span>
+  <li *ngFor="let item of difficulties$ | async">
+    <a [routerLink]="['mutation', item.MutationDifficulty]" [routerLinkActive]="'active'">
+      M{{ item.MutationDifficulty }}
+    </a>
+  </li>
+</ul>
+
+<router-outlet></router-outlet>

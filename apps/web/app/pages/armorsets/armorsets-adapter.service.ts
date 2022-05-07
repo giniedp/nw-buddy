@@ -93,7 +93,6 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
           },
           {
             width: 150,
-            editable: true,
             sortable: false,
             filter: false,
             getQuickFilterText: ({ data }) => {
@@ -105,7 +104,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
               return this.nw.itemPref.get(item.ItemID)?.gs
             },
             cellRenderer: mithrilCell<Armorset>({
-              view: ({ attrs: { value, data } }) => {
+              view: ({ attrs: { value, data, api, node } }) => {
                 const item = data.items[i]
                 const name = data.itemNames[i]
                 const max = (item.GearScoreOverride || item.MaxGearScore) <= value
@@ -119,6 +118,9 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
                     class: value ? '' : 'text-error-content',
                   }, name),
                   m(ItemTrackerCell, {
+                    onchange: () => {
+                      api.refreshCells({ rowNodes: [node] })
+                    },
                     classEmpty: 'opacity-0',
                     class: [
                       'self-start',

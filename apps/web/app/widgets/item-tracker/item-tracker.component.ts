@@ -13,14 +13,19 @@ import {
 } from '@angular/core'
 import { distinctUntilChanged, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
 import { ItemMeta, ItemPreferencesService } from '~/core/preferences'
+import { DestroyService } from '~/core/utils'
 
 @Component({
   selector: 'nwb-gs-tracker,nwb-price-tracker,nwb-stock-tracker',
   exportAs: 'gsTracker',
   templateUrl: './item-tracker.component.html',
   styleUrls: ['./item-tracker.component.scss'],
+  providers: [DestroyService],
+  host: {
+    '[class.tooltip]': 'isEmpty && !!emptyTip'
+  }
 })
-export class ItemTracker implements OnInit, OnChanges, OnDestroy, AfterViewChecked {
+export class ItemTracker implements OnInit, OnChanges, AfterViewChecked {
   @Input()
   public set itemId(value: string) {
     this.itemId$.next(value)
@@ -39,7 +44,6 @@ export class ItemTracker implements OnInit, OnChanges, OnDestroy, AfterViewCheck
   @HostBinding('attr.data-tip')
   public emptyTip = "Edit"
 
-  @HostBinding('class.tooltip')
   public get isEmpty() {
     return !(this.value > 0)
   }
@@ -56,13 +60,12 @@ export class ItemTracker implements OnInit, OnChanges, OnDestroy, AfterViewCheck
 
   public showInput: boolean
 
-  private destroy$ = new Subject()
   private itemId$ = new ReplaySubject<string>(1)
   private trackedId: string
   private trackedValue: number
   private mode: keyof ItemMeta
 
-  public constructor(private meta: ItemPreferencesService, private cdRef: ChangeDetectorRef, elRef: ElementRef<HTMLElement>) {
+  public constructor(private destroy: DestroyService, private meta: ItemPreferencesService, private cdRef: ChangeDetectorRef, elRef: ElementRef<HTMLElement>) {
     this.mode = elRef.nativeElement.tagName.toLowerCase().match(/nwb-(\w+)-tracker/)[1] as any
   }
 
@@ -70,7 +73,7 @@ export class ItemTracker implements OnInit, OnChanges, OnDestroy, AfterViewCheck
     this.itemId$
       .pipe(distinctUntilChanged())
       .pipe(switchMap((id) => this.meta.observe(id)))
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy.$))
       .subscribe((data) => {
         this.trackedId = data.id
         this.trackedValue = this.cleanValue(data.meta?.[this.mode])
@@ -80,11 +83,6 @@ export class ItemTracker implements OnInit, OnChanges, OnDestroy, AfterViewCheck
 
   public ngOnChanges(): void {
     this.cdRef.markForCheck()
-  }
-
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
   }
 
   public ngAfterViewChecked(): void {

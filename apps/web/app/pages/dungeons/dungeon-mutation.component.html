@@ -1,0 +1,10 @@
+<div class="grid gap-4">
+  <nwb-item-detail
+    class=""
+    *ngFor="let item of lootItem$ | async"
+    [itemId]="itemId(item)"
+    [enableNwdbLink]="true"
+    [enableTracker]="true"
+    [enableMarker]="true"
+  ></nwb-item-detail>
+</div>

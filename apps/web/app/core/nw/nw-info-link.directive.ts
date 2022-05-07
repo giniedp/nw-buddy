@@ -26,7 +26,7 @@ export class NwInfoLinkDirective {
   public constructor(private cdRef: ChangeDetectorRef) {}
 
   private update() {
-    this.href = nwdbLinkUrl(this.resource, this.link)
+    this.href = this.link && nwdbLinkUrl(this.resource, this.link)
     this.cdRef.markForCheck()
   }
 }

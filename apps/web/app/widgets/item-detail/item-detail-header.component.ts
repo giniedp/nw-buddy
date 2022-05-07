@@ -5,31 +5,35 @@ import {
   Input,
   OnChanges,
   SimpleChanges,
-  OnDestroy,
   ChangeDetectorRef,
 } from '@angular/core'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { combineLatest, map, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
+import { combineLatest, map, ReplaySubject, switchMap, takeUntil } from 'rxjs'
 import { NwService } from '~/core/nw'
+import { DestroyService } from '~/core/utils'
 
 @Component({
   selector: 'nwb-item-detail-header',
   templateUrl: './item-detail-header.component.html',
   styleUrls: ['./item-detail-header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [DestroyService]
 })
-export class ItemDetailHeaderComponent implements OnInit, OnChanges, OnDestroy {
+export class ItemDetailHeaderComponent implements OnInit, OnChanges {
   @Input()
   public entityId: string
-
-  @Input()
-  public type: 'item' | 'housing'
 
   @Input()
   public entity: ItemDefinitionMaster | Housingitems
 
   @Input()
-  public nwdbLink: boolean
+  public enableNwdbLink: boolean
+
+  @Input()
+  public enableTracker: boolean
+
+  @Input()
+  public enableMarker: boolean
 
   public get iconPath(): string {
     return this.entity?.IconPath
@@ -54,32 +58,33 @@ export class ItemDetailHeaderComponent implements OnInit, OnChanges, OnDestroy {
     return ''
   }
 
-  private destroy$ = new Subject()
   private entityId$ = new ReplaySubject<string>()
   private entity$ = new ReplaySubject<ItemDefinitionMaster | Housingitems>()
 
-  public constructor(private cdRef: ChangeDetectorRef, private nw: NwService) {
+  public constructor(private cdRef: ChangeDetectorRef, private nw: NwService, private destroy: DestroyService) {
     //
   }
 
   public ngOnInit(): void {
     this.entityId$
       .pipe(switchMap((id) => {
-        if (this.type === 'item') {
-          return this.nw.db.itemsMap.pipe(map((map) => map.get(id)))
-        } else {
-          return this.nw.db.housingItemsMap.pipe(map((map) => map.get(id)))
-        }
+        return combineLatest({
+          items: this.nw.db.itemsMap,
+          housing: this.nw.db.housingItemsMap
+        }).pipe(map(({ items, housing }) => {
+          return items.get(id) || housing.get(id)
+        }))
       }))
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy.$))
       .subscribe((item) => {
         this.entity$.next(item)
       })
 
-    combineLatest([this.entity$])
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(([item]) => {
+    this.entity$
+      .pipe(takeUntil(this.destroy.$))
+      .subscribe((item) => {
         this.entity = item
+        this.entityId = this.nw.itemId(item)
         this.cdRef.markForCheck()
       })
   }
@@ -91,11 +96,6 @@ export class ItemDetailHeaderComponent implements OnInit, OnChanges, OnDestroy {
     if (this.getChange('entity', ch)) {
       this.entity$.next(this.entity)
     }
-  }
-
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
   }
 
   private getChange(key: keyof ItemDetailHeaderComponent, ch: SimpleChanges) {

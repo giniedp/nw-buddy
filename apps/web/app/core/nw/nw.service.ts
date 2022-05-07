@@ -9,6 +9,7 @@ import { NwExpressionService } from './nw-expression'
 import { NwTradeskillService } from './nw-tradeskill.service'
 import { nwdbLinkUrl } from './nwdbinfo'
 import m from 'mithril'
+import { LootbucketService } from './lootbucket.service'
 
 const CATEGORIES_GRANTING_BONUS = [
   'Concoctions',
@@ -26,6 +27,7 @@ const CATEGORIES_GRANTING_BONUS = [
 export class NwService {
   public constructor(
     public readonly db: NwDbService,
+    public readonly lootbuckets: LootbucketService,
     public readonly translations: TranslateService,
     public readonly expression: NwExpressionService,
     public readonly itemPref: ItemPreferencesService,

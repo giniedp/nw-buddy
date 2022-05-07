@@ -1,6 +1,17 @@
+<div class="menu-frame w-56">
+  <ul class="menu bg-base-100 rounded-md">
+    <li *ngFor="let item of dungeon$ | async"  [routerLinkActive]="'bordered'" >
+      <a [routerLink]="item.GameModeId">
+        <span [nwText]="item.DisplayName"></span>
+      </a>
+    </li>
+  </ul>
+</div>
+
 <div class="main-frame col-span-2">
   <div class="main-content ">
-    <div class="dungeons-grid">
+    <router-outlet></router-outlet>
+    <!-- <div class="dungeons-grid">
       <div class="card bg-base-100 shadow-xl" *ngFor="let item of items">
         <figure>
           <img [nwImage]="item.BackgroundImagePath">
@@ -51,7 +62,7 @@
           <td>{{ row.rewards[2]?.event?.ItemRewardQty}}</td>
         </tr>
       </tbody>
-    </table>
+    </table> -->
 
   </div>
 </div>

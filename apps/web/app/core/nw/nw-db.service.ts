@@ -258,7 +258,6 @@ export class NwDbService {
     .pipe(map((items) => toMap(items, 'AfflictionID')))
     .pipe(shareReplay(1))
 
-
   public manacosts = defer(() => {
     return combineLatest([this.data.manacostsPlayer()])
   })
@@ -287,21 +286,20 @@ export class NwDbService {
 
   public arenasMap = defer(() => {
     return this.arenas
+  }).pipe(map((items) => toMap(items, 'TerritoryID')))
+
+  public itemsConsumables = defer(() => {
+    return combineLatest([this.data.itemdefinitionsConsumables()])
   })
-    .pipe(map((items) => toMap(items, 'TerritoryID')))
+    .pipe(map((it) => it.flat(1)))
+    .pipe(shareReplay(1))
 
-    public itemsConsumables = defer(() => {
-      return combineLatest([this.data.itemdefinitionsConsumables()])
-    })
-      .pipe(map((it) => it.flat(1)))
-      .pipe(shareReplay(1))
-
-    public itemsConsumablesMap = defer(() => {
-      return this.itemsConsumables
-    })
-      .pipe(map((items) => toMap(items, 'ConsumableID')))
-      .pipe(shareReplay(1))
-      .pipe(shareReplay(1))
+  public itemsConsumablesMap = defer(() => {
+    return this.itemsConsumables
+  })
+    .pipe(map((items) => toMap(items, 'ConsumableID')))
+    .pipe(shareReplay(1))
+    .pipe(shareReplay(1))
 
   public gameEvents = defer(() => {
     return combineLatest([this.data.gameevents()])
@@ -355,10 +353,32 @@ export class NwDbService {
     .pipe(map((it) => dictToMap(groupBy(it, (i) => i.Family))))
     .pipe(shareReplay(1))
 
+  public vitalsByCreatureType = defer(() => {
+      return this.vitals
+    })
+      .pipe(map((it) => dictToMap(groupBy(it, (i) => i.CreatureType))))
+      .pipe(shareReplay(1))
+
   public vitalsFamilies = defer(() => {
     return this.vitalsByFamily
   })
     .pipe(map((it) => Array.from(it.keys())))
+    .pipe(shareReplay(1))
+
+  public vitalsCategories = defer(() => {
+    return this.data.vitalscategories()
+  }).pipe(shareReplay(1))
+
+  public vitalsCategoriesMap = defer(() => {
+    return this.vitalsCategories
+  })
+    .pipe(map((items) => toMap(items, 'VitalsCategoryID')))
+    .pipe(shareReplay(1))
+
+  public vitalsCategoriesMapByGroup = defer(() => {
+    return this.vitalsCategories
+  })
+    .pipe(map((it) => dictToMap(groupBy(it, (i) => i.GroupVitalsCategoryId))))
     .pipe(shareReplay(1))
 
   public damagetypes = defer(() => {

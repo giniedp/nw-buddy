@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { Elementalmutations, GameEvent, Gamemodes, ItemDefinitionMaster, Mutationdifficulty } from '@nw-data/types'
 import { combineLatest, Subject, takeUntil } from 'rxjs'
 import { NwService } from '~/core/nw'
+import { DungeonsService } from './dungeons.service'
 
 export interface MutationdifficultyRow {
   difficulty: Mutationdifficulty
@@ -17,17 +18,22 @@ export interface MutationdifficultyRow {
   styleUrls: ['./dungeons.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'nwb-page',
+    class: 'nwb-page has-menu has-detail',
   },
 })
 export class DungeonsComponent implements OnInit, OnDestroy {
+
+  public get dungeon$() {
+    return this.service.dungeon$
+  }
+
   public items: Gamemodes[]
   public mutations: Elementalmutations[]
   public difficulties: MutationdifficultyRow[]
 
   private destroy$ = new Subject()
 
-  public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {}
+  public constructor(private nw: NwService, private service: DungeonsService, private cdRef: ChangeDetectorRef) {}
 
   public ngOnInit(): void {
     combineLatest({

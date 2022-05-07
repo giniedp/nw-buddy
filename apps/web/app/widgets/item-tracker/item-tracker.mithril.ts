@@ -12,6 +12,7 @@ export interface ItemTrackerAtts {
   emptyText?: string
   emptyTip?: string
   multiply?: number
+  onchange?: () => void
 }
 
 export const ItemTrackerCell: ClosureComponent<ItemTrackerAtts> = () => {
@@ -76,6 +77,7 @@ export const ItemTrackerCell: ClosureComponent<ItemTrackerAtts> = () => {
           attrs.meta.merge(trackedId, {
             [attrs.mode]: cleanValue((e.target as HTMLInputElement).value)
           })
+          attrs.onchange?.()
         },
         onblur: () => {
           showInput = false

@@ -1,9 +1,17 @@
-<div class="bg-base-300 rounded-md">
-  <button class="btn btn-ghost loading mx-auto" *ngIf="isLoading"></button>
-  <nwb-item-detail-header class="header" [entity]="item || housing"></nwb-item-detail-header>
-  <div class="p-4">
-    <p class="text-primary italic" [nwText]="itemDescription" [itemId]="item?.ItemID" *ngIf="itemDescription"></p>
-    <nwb-item-perks class="mt-2" [perks]="perks" *ngIf="perks?.length"></nwb-item-perks>
-  </div>
-  <nwb-crafting-calculator class="p-2" [recipe]="recipe" *ngIf="recipe"></nwb-crafting-calculator>
+<div class="flex flex-row items-center justify-center" *ngIf="isLoading">
+  <button class="btn btn-ghost loading mx-auto"></button>
 </div>
+<ng-container *ngIf="!isLoading">
+  <nwb-item-detail-header
+    class="header"
+    [entity]="item || housing"
+    [enableNwdbLink]="enableNwdbLink"
+    [enableTracker]="enableTracker"
+    [enableMarker]="enableMarker"
+  ></nwb-item-detail-header>
+  <div class="p-4" *ngIf="enableDescription">
+    <p class="text-primary italic" [nwText]="itemDescription" [itemId]="item?.ItemID" *ngIf="itemDescription"></p>
+    <nwb-item-detail-perks class="mt-2" [perks]="perks" *ngIf="perks?.length"></nwb-item-detail-perks>
+  </div>
+  <nwb-crafting-calculator class="p-2" [recipe]="recipe" *ngIf="recipe && enableRecipe"></nwb-crafting-calculator>
+</ng-container>
