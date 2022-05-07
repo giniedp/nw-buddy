@@ -20,6 +20,7 @@ const routes: Routes = [
   { path: 'pve-damage', loadChildren: () => import('./pages/pve-damage/pve-damage.module').then(m => m.PveDamageModule) },
   { path: 'progression', loadChildren: () => import('./pages/progression/progression.module').then(m => m.ProgressionModule) },
   { path: 'vitals', loadChildren: () => import('./pages/vitals/vitals.module').then(m => m.VitalsModule) },
+  { path: 'about', loadChildren: () => import('./pages/about/about.module').then(m => m.AboutModule) },
 
   { path: '**', loadChildren: () => import('./pages/not-found').then((m) => m.NotFoundModule) },
 ]

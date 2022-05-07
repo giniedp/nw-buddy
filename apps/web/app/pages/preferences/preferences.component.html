@@ -1,7 +1,8 @@
 <div class="main-frame mt-4">
   <div class="main-content flex flex-col items-center">
+
     <div class="w-80 bg-base-100 rounded-md p-4">
-      <div class="form-control">
+      <div class="form-control w-full">
         <label class="label">
           <span class="label-text">Preferred language</span>
         </label>
@@ -19,20 +20,19 @@
         </label>
       </div>
 
-      <div class="form-control">
+      <div class="form-control w-full">
         <button class="btn w-full mt-4" (click)="exportPreferences()">Export Preferences</button>
         <label class="label">
           <span class="label-text-alt">Exports user data e.g. favourites, item prices etc.</span>
         </label>
       </div>
 
-      <div class="form-control">
+      <div class="form-control w-full">
         <button class="btn w-full mt-4" (click)="importPreferences()">Import Preferences</button>
         <label class="label">
           <span class="label-text-alt">Imports previously exported user data</span>
         </label>
       </div>
-
     </div>
   </div>
 </div>

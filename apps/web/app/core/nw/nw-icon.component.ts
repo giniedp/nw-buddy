@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, Input } from '@angular/core'
-import { ItemDefinitionMaster } from '@nw-data/types'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, HostListener, Input } from '@angular/core'
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { NwService } from './nw.service'
 
 @Component({
@@ -19,7 +19,7 @@ export class NwIconComponent {
   }
 
   @Input()
-  public set nwItemIcon(value: ItemDefinitionMaster) {
+  public set nwItemIcon(value: ItemDefinitionMaster | Housingitems) {
     this.src = this.nw.iconPath(value?.IconPath)
     this.itemRarity = this.nw.itemRarity(value)
     this.isLoaded = false
@@ -29,6 +29,11 @@ export class NwIconComponent {
   public src: string
   public isLoaded = false
   public itemRarity: number
+
+  @HostBinding('class')
+  public get itemRarityClass() {
+    return this.itemRarity && `bg-rarity-${this.itemRarity}`
+  }
 
   public constructor(private cdRef: ChangeDetectorRef, private nw: NwService) {}
 
