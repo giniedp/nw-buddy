@@ -7,7 +7,6 @@ const routes: Routes = [
     pathMatch: 'full',
     redirectTo: 'items'
   },
-  { path: 'character', loadChildren: () => import('./pages/character').then((m) => m.CharacterModule) },
   { path: 'items', loadChildren: () => import('./pages/items').then(m => m.ItemsModule) },
   { path: 'perks', loadChildren: () => import('./pages/perks').then(m => m.PerksModule) },
   { path: 'armorsets', loadChildren: () => import('./pages/armorsets').then(m => m.ArmorsetsModule) },

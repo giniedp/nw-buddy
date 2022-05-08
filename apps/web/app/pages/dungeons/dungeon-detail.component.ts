@@ -1,6 +1,7 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core'
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, TemplateRef, ViewChild, TrackByFunction } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty, Vitals } from '@nw-data/types'
+import { pick } from 'lodash'
 import { combineLatest, defer, map, Observable, switchMap, takeUntil, tap } from 'rxjs'
 import { NwService } from '~/core/nw'
 import { DestroyService, observeQueryParam, observeRouteParam, shareReplayRefCount } from '~/core/utils'
@@ -12,6 +13,11 @@ const DIFFICULTY_TIER_NAME = {
   3: 'Hard',
   4: 'Elite'
 }
+export interface Tab {
+  id: string
+  label: string
+  tpl: TemplateRef<unknown>
+}
 @Component({
   selector: 'nwb-dungeon-detail',
   templateUrl: './dungeon-detail.component.html',
@@ -20,6 +26,11 @@ const DIFFICULTY_TIER_NAME = {
   providers: [DestroyService],
 })
 export class DungeonDetailComponent implements OnInit {
+
+  public trackById: TrackByFunction<ItemDefinitionMaster | Housingitems> = (i, item) => this.nw.itemId(item)
+  public trackByIndex: TrackByFunction<any> = (i, item) => i
+  public trackByTabId: TrackByFunction<Tab> = (i, item) => item.id
+
   public dungeonId$ = defer(() => observeRouteParam(this.route, 'id'))
   public mutationParam$ = defer(() => observeRouteParam(this.route, 'mutation'))
     .pipe(map((it) => Number(it) || undefined))
@@ -49,6 +60,56 @@ export class DungeonDetailComponent implements OnInit {
   public expeditionItems$ = defer(() => this.dungeon$)
     .pipe(switchMap((dungeon) => this.ds.dungeonPossibleDrops(dungeon)))
     .pipe(map((items) => this.filterAndSort(items)))
+
+  public dungeonLoot$ = defer(() => this.dungeon$)
+    .pipe(switchMap((dungeon) => this.ds.dungeonLoot(dungeon)))
+    .pipe(map((it) => this.filterAndSort(it)))
+
+  public dungeonMutatedLoot$ = defer(() => this.dungeon$)
+    .pipe(switchMap((dungeon) => this.ds.dungeonMutatedLoot(dungeon)))
+    .pipe(map((it) => this.filterAndSort(it)))
+
+  public dungeonDifficultyLoot$ = defer(() => combineLatest([this.dungeon$, this.difficulty$]))
+    .pipe(switchMap(([dungeon, difficulty]) => this.ds.dungeonMutationLoot(dungeon, difficulty)))
+    .pipe(map((it) => this.filterAndSort(it)))
+
+  public difficyltyRewards$ = defer(() => combineLatest({
+    difficulty: this.difficulty$,
+    events: this.nw.db.gameEventsMap,
+    items: this.nw.db.itemsMap
+  }))
+    .pipe(map(({ difficulty, events, items }) => {
+      return [
+        [difficulty.CompletionEvent1, 'ui_dungeon_mutator_bronze'],
+        [difficulty.CompletionEvent2, 'ui_dungeon_mutator_silver'],
+        [difficulty.CompletionEvent3, 'ui_dungeon_mutator_gold']
+      ].map(([it, rank], i) => {
+        const event = events.get(it)
+        const item = items.get(event.ItemReward as string)
+        return {
+          RankName: rank,
+          ItemID: item.ItemID,
+          ItemName: item.Name,
+          IconPath: item.IconPath,
+          Quantity: event.ItemRewardQty
+        }
+      })
+    }))
+
+  @ViewChild('tplDungeonLoot')
+  public tplDungeonLoot: TemplateRef<unknown>
+
+  @ViewChild('tplDungeonMutatedLoot')
+  public tplDungeonMutatedLoot: TemplateRef<unknown>
+
+  @ViewChild('tplDungeonDifficultyLoot')
+  public tplDungeonDifficultyLoot: TemplateRef<unknown>
+
+  @ViewChild('tplDungeonBosses')
+  public tplDungeonBosses: TemplateRef<unknown>
+
+  @ViewChild('tplRewards')
+  public tplRewards: TemplateRef<unknown>
 
   public dungeon: Gamemodes
   public difficulty: Mutationdifficulty
@@ -84,16 +145,7 @@ export class DungeonDetailComponent implements OnInit {
     return this.difficulty?.MutationDifficulty
   }
 
-  public tabs: Array<{
-    id: string
-    label: string
-    vitals$?: Observable<Array<Vitals>>
-    query$?: Observable<Array<ItemDefinitionMaster | Housingitems>>
-  }>
-
-  public get tabItems() {
-    return this.tabs?.find((it) => it.id === this.tab)?.query$
-  }
+  public tabs: Array<Tab>
 
   public constructor(
     private nw: NwService,
@@ -119,23 +171,28 @@ export class DungeonDetailComponent implements OnInit {
         this.tabs.push({
           id: '',
           label: 'Available Drops',
-          query$: this.ds.dungeonLoot(dungeon).pipe(map((it) => this.filterAndSort(it)))
+          tpl: this.tplDungeonLoot
         })
       } else {
         this.tabs.push({
           id: '',
           label: 'Available Drops',
-          query$: this.ds.dungeonMutatedLoot(dungeon).pipe(map((it) => this.filterAndSort(it)))
+          tpl: this.tplDungeonMutatedLoot
         })
         this.tabs.push({
           id: 'difficulty',
           label: 'Difficulty Drops',
-          query$: this.ds.dungeonMutationLoot(dungeon, difficulty).pipe(map((it) => this.filterAndSort(it)))
+          tpl: this.tplDungeonDifficultyLoot
         })
       }
-
+      this.tabs.push({
+        id: 'bosses',
+        label: 'Bosses',
+        tpl: this.tplDungeonBosses
+      })
       this.cdRef.markForCheck()
     })
+
     this.tabParam$.pipe(takeUntil(this.destroy.$)).subscribe((tab) => {
       this.tab = tab || ''
       this.cdRef.markForCheck()

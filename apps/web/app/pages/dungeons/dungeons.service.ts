@@ -105,7 +105,7 @@ export class DungeonsService {
     )
   }
 
-  public dungeonLoot(dungeon: Gamemodes) {
+  public dungeonLoot(dungeon: Gamemodes): Observable<Array<ItemDefinitionMaster | Housingitems>> {
     return combineLatest({
       bossTags: this.dungeonBossesLootTags(dungeon),
       lootTags: of(dungeon.LootTags),
@@ -118,7 +118,7 @@ export class DungeonsService {
       )
   }
 
-  public dungeonMutatedLoot(dungeon: Gamemodes) {
+  public dungeonMutatedLoot(dungeon: Gamemodes): Observable<Array<ItemDefinitionMaster | Housingitems>> {
     return combineLatest({
       bossTags: this.dungeonBossesLootTags(dungeon),
       lootTags: of(dungeon.MutLootTagsOverride || dungeon.LootTags),
@@ -131,7 +131,13 @@ export class DungeonsService {
       )
   }
 
-  public dungeonMutationLoot(dungeon: Gamemodes, mutation: Mutationdifficulty) {
+  public dungeonMutationLoot(
+    dungeon: Gamemodes,
+    mutation: Mutationdifficulty
+  ): Observable<Array<ItemDefinitionMaster | Housingitems>> {
+    if (!dungeon.IsMutable) {
+      return of([])
+    }
     // return this.dungeonMutatedLoot(dungeon)
     return combineLatest({
       bossTags: this.dungeonBossesLootTags(dungeon),
@@ -191,10 +197,27 @@ export class DungeonsService {
     }).pipe(
       map(({ vitals }) => {
         const bosses = vitals.get('DungeonBoss')
-        return bosses.filter((it) => {
-          // const vc = it.VitalsCategories?.split(',') || []
-          const lt = it.LootTags || []
-          return /* vc.some((cat) => categories.includes(cat)) || */ lt.some((i) => include.includes(i))
+        const result = bosses.filter((it) => {
+          return (it.LootTags || []).some((i) => include.includes(i))
+        })
+        // console.log({
+        //   include,
+        //   bosses,
+        //   result
+        // })
+        return result
+      })
+    )
+  }
+
+  public dungeonCreatures(dungeon: Gamemodes) {
+    const include = [dungeon.GameModeId.replace(/^Dungeon/, '')]
+    return combineLatest({
+      vitals: this.nw.db.vitals,
+    }).pipe(
+      map(({ vitals }) => {
+        return vitals.filter((it) => {
+          return (it.LootTags || []).some((i) => include.includes(i))
         })
       })
     )

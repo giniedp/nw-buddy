@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core'
 import { groupBy } from 'lodash'
 import { combineLatest, defer, map, shareReplay, tap } from 'rxjs'
-import { CaseInsensitiveMap } from '../utils'
+import { CaseInsensitiveMap, shareReplayRefCount } from '../utils'
 import { NwDataService } from './nw-data.service'
+import { queryDamageTypeToWeaponType, queryGemPerksWithAffix, queryMutatorDifficultiesWithRewards } from './nw-db-views'
 
 export function toMap<T, K extends keyof T>(list: T[], id: K): Map<T[K], T> {
   const result = new CaseInsensitiveMap<T[K], T>()
@@ -410,6 +411,18 @@ export class NwDbService {
   })
     .pipe(map((items) => toMap(items, 'TerritoryID')))
     .pipe(shareReplay(1))
+
+  public mutatorDifficulties = defer(() => this.data.gamemodemutatorsMutationdifficulty())
+    .pipe(shareReplay(1))
+
+  public viewDamageTypeToWeaponType = defer(() => queryDamageTypeToWeaponType(this.damageTable0))
+    .pipe(shareReplayRefCount(1))
+
+  public viewGemPerksWithAffix = defer(() => queryGemPerksWithAffix(this))
+    .pipe(shareReplayRefCount(1))
+
+  public viewMutatorDifficultiesWithRewards = defer(() => queryMutatorDifficultiesWithRewards(this))
+    .pipe(shareReplayRefCount(1))
 
   public constructor(public readonly data: NwDataService) {}
 }

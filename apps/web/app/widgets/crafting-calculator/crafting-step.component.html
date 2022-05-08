@@ -14,7 +14,7 @@
       (click)="toggleOptions()"
     ></picture>
 
-    <div class="flex flex-row items-center overflow-hidden" (click)="toggle()">
+    <div class="flex flex-row items-center overflow-hidden" [class.cursor-pointer]="steps?.length" (click)="toggle()">
       <span class="ml-2" [class.italic]="quantity !== requiredQuantity">
         {{ requiredQuantity }}
       </span>

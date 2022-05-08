@@ -141,6 +141,9 @@ program
         'RarityLevel2_DisplayName',
         'RarityLevel3_DisplayName',
         'RarityLevel4_DisplayName',
+        'ui_dungeon_mutator_bronze',
+        'ui_dungeon_mutator_silver',
+        'ui_dungeon_mutator_gold',
       ],
     })
     console.log('importing images')
