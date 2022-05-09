@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core'
-import { Perks } from '@nw-data/types'
+import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { defer, Observable, shareReplay } from 'rxjs'
+import { combineLatest, defer, map, Observable, shareReplay, switchMap } from 'rxjs'
 import { IconComponent, NwService } from '~/core/nw'
-import { mithrilCell } from '~/ui/ag-grid'
+import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
+import { shareReplayRefCount } from '~/core/utils'
 
 @Injectable()
 export class PerksAdapterService extends DataTableAdapter<Perks> {
@@ -41,17 +42,43 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
         {
           headerName: 'Name',
           valueGetter: this.valueGetter(({ data }) => {
-            const name = data.DisplayName
-            if (name) {
-              return this.nw.translate(name)
+            return {
+              name: data.DisplayName && this.nw.translate(data.DisplayName),
+              suffix: data.AppliedSuffix && this.nw.translate(data.AppliedSuffix),
+              prefix: data.AppliedPrefix && this.nw.translate(data.AppliedPrefix),
             }
-            const suffix = data.AppliedSuffix
-            if (suffix) {
-              return `${data.ExclusiveLabels}: ${this.nw.translate(suffix)}`
+          }),
+          getQuickFilterText: ({ value }) => {
+            return [value.name, value.suffix, value.prefix].join(' ')
+          },
+          cellRenderer: this.mithrilCell({
+            view: ({ attrs: { value }}) => {
+              return m('div.flex.flex-col', [
+                value.name && m('span', value.name),
+                value.prefix && m('span.italic', `${value.prefix} …`),
+                value.suffix && m('span.italic', `… ${value.suffix}`),
+              ])
             }
-            return ''
           }),
           width: 300,
+        },
+        {
+          width: 500,
+          headerName: 'Description',
+          wrapText: true,
+          autoHeight: true,
+          cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
+          cellRenderer: this.asyncCell((data) => {
+            return this.nw.translate$(data.Description).pipe(switchMap((value) => {
+              return this.nw.expression.solve({
+                text: value,
+                charLevel: 60,
+                gearScore: 600,
+                itemId: data.PerkID,
+              })
+            }))
+
+          })
         },
         {
           headerName: 'Type',
@@ -59,32 +86,29 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           width: 100,
         },
         {
-          headerName: 'Prefix',
-          valueGetter: this.valueGetter(({ data }) => this.nw.translate(data.AppliedPrefix)),
-          width: 150,
-        },
-        {
-          headerName: 'Suffix',
-          valueGetter: this.valueGetter(({ data }) => this.nw.translate(data.AppliedSuffix)),
-          width: 150,
-        },
-        {
-          field: this.fieldName('PerkID'),
-          hide: true,
-        },
-        {
-          field: this.fieldName('Tier'),
-          width: 100,
-        },
-        {
+          width: 500,
           field: this.fieldName('ItemClass'),
+          wrapText: true,
+          autoHeight: true,
+          cellClass: ['multiline-cell', 'py-2'],
+          filter: SelectboxFilter,
+          cellRenderer: this.cellRendererTags(),
         },
-
         {
           field: this.fieldName('ExclusiveLabels'),
+          wrapText: true,
+          autoHeight: true,
+          cellClass: ['multiline-cell', 'py-2'],
+          filter: SelectboxFilter,
+          cellRenderer: this.cellRendererTags(),
         },
         {
           field: this.fieldName('ExcludeItemClass'),
+          wrapText: true,
+          autoHeight: true,
+          cellClass: ['multiline-cell', 'py-2'],
+          filter: SelectboxFilter,
+          cellRenderer: this.cellRendererTags(),
         },
       ],
     })
@@ -93,10 +117,7 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
   public entities: Observable<Perks[]> = defer(() => {
     return this.nw.db.perks
   }).pipe(
-    shareReplay({
-      refCount: true,
-      bufferSize: 1,
-    })
+    shareReplayRefCount(1)
   )
 
   public constructor(private nw: NwService) {
