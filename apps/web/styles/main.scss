@@ -69,6 +69,12 @@ img.error {
   border: transparent;
 }
 
+.multiline-cell {
+  line-height: 1.2 !important;
+  white-space: normal !important;
+  word-break: initial !important;
+}
+
 picture.nw-icon {
   @include nwPictureIcon();
 }

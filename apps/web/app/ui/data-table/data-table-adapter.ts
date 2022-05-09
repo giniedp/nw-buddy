@@ -1,6 +1,6 @@
 import { ClassProvider, Type } from "@angular/core"
 import { GridOptions, ValueGetterFunc, ValueGetterParams } from "ag-grid-community"
-import { Observable } from "rxjs"
+import { Observable, Subject, takeUntil } from "rxjs"
 import { mithrilCell, MithrilCellAttrs } from "../ag-grid"
 import m from 'mithril'
 
@@ -29,5 +29,31 @@ export abstract class DataTableAdapter<T> {
   }
   public mithrilCell(comp: m.Component<MithrilCellAttrs<T>>) {
     return mithrilCell<T>(comp)
+  }
+  public asyncCell(fn: (data: T) => Observable<string>) {
+    return mithrilCell<T, { d: Subject<any>, value: string }>({
+      oncreate: ({ attrs, state }) => {
+        state.d = new Subject()
+        fn(attrs.data).pipe(takeUntil(state.d)).subscribe((v) => {
+          state.value = v
+          m.redraw()
+        })
+      },
+      onremove: ({ state }) => {
+        state.d.next(null)
+        state.d.complete()
+      },
+      view: ({ state }) => state.value
+    })
+  }
+  public cellRendererTags() {
+    return this.mithrilCell({
+      view: ({ attrs }) => {
+        return m(
+          'div.flex.flex-row.flex-wrap.gap-2',
+          attrs.value?.map?.((it: string) => m('span.badge', it))
+        )
+      },
+    })
   }
 }

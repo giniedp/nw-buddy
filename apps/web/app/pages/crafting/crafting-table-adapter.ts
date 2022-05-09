@@ -3,7 +3,7 @@ import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, shareReplay, tap } from 'rxjs'
 import { IconComponent, NwService } from '~/core/nw'
-import { CategoryFilter, mithrilCell } from '~/ui/ag-grid'
+import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
@@ -133,17 +133,17 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
         {
           width: 120,
           field: this.fieldName('Tradeskill'),
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
         },
         {
           width: 150,
           field: this.fieldName('CraftingCategory'),
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
         },
         {
           width: 150,
           field: this.fieldName('CraftingGroup'),
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
         },
         {
           width: 120,

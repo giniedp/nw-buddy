@@ -3,7 +3,7 @@ import { Housingitems } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, map, Observable, shareReplay, tap } from 'rxjs'
 import { IconComponent, NwService } from '~/core/nw'
-import { CategoryFilter, mithrilCell } from '~/ui/ag-grid'
+import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
@@ -52,12 +52,12 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
           width: 100,
           headerName: 'Rarity',
           field: this.fieldName('ItemRarity'),
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
         },
         {
           width: 80,
           field: this.fieldName('Tier'),
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
           valueGetter: ({ data }) => this.nw.tierToRoman(data.Tier),
         },
         {
@@ -117,18 +117,18 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
         {
           headerName: 'Placement',
           field: this.fieldName('HousingTag1 Placed'),
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
           width: 150,
         },
         {
           field: this.fieldName('UIHousingCategory'),
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
           width: 150,
         },
         {
           headerName: 'Obtain',
           field: this.fieldName('HowToOptain (Primarily)'),
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
           width: 150,
         },
         {
@@ -147,7 +147,7 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
               )
             },
           }),
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
         },
       ],
     })

@@ -3,7 +3,7 @@ import { Vitals } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, Observable, shareReplay } from 'rxjs'
 import { NwService } from '~/core/nw'
-import { CategoryFilter } from '~/ui/ag-grid'
+import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 
 
@@ -38,11 +38,11 @@ export class VitalsAdapterService extends DataTableAdapter<Vitals> {
         },
         {
           field: this.fieldName('Family'),
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
         },
         {
           field: this.fieldName('CreatureType'),
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
         },
         {
           field: this.fieldName('LootDropChance'),

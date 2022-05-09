@@ -1,16 +1,44 @@
-import { ColumnApi, GridApi, IDoesFilterPassParams, IFilterComp, IFilterParams, RowNode } from 'ag-grid-community'
+import { IDoesFilterPassParams, IFilterComp, IFilterParams, RowNode } from 'ag-grid-community'
+import m from 'mithril'
 
-export class CategoryFilter<C> implements IFilterComp {
+export class SelectboxFilter implements IFilterComp {
   private el: HTMLElement
   private options: Array<{ label: string, value: string }> = []
+  private conditionAND: boolean
   private state: Map<any, boolean> = new Map()
   private params: IFilterParams
 
   public init(params: IFilterParams) {
     this.params = params
-    this.el = document.createElement('ul')
-    this.el.classList.add('menu','menu-compact', 'rounded-md', 'min-w-[200px]', 'bg-base-300')
-    this.renderFilter()
+    this.el = document.createElement('div')
+    this.el.classList.add('rounded-md', 'min-w-[200px]', 'bg-base-300', 'max-h-[50vh]', 'p-2','flex', 'flex-col', 'gap-2')
+    this.extractOptions()
+    m.mount(this.el, {
+      view: () => {
+        return m.fragment({}, [
+          m('div.form-control', [
+            m('label.label.cursor-pointer.font-bold', [
+              m('span.label-text', 'AND'),
+              m('input.toggle.toggle-sm.toggle-primary', {
+                type: 'checkbox',
+                checked: this.conditionAND,
+                onchange: () => {
+                  this.toggleCondition()
+                }
+              })
+            ])
+          ]),
+          m('ul.menu.menu-compact.rounded-md.overflow-y-auto.flex-1', this.options.map((option) => {
+            return m('li', [
+              m('a', {
+                class: this.state.get(option.value) ? 'active' : '',
+                onclick: () => this.toggleFilter(option.value)
+              }, option.label)
+            ])
+          }))
+        ])
+      }
+    })
   }
 
   public getGui() {
@@ -18,12 +46,20 @@ export class CategoryFilter<C> implements IFilterComp {
   }
 
   public doesFilterPass(params: IDoesFilterPassParams) {
-
     const value = this.getValue(params.node, params.data)
-    if (!Array.isArray(value)) {
-      return !!this.state.get(value)
-    }
-    return value.some((it) => this.state.get(it))
+    const toCheck = Array.isArray(value) ? value : [value]
+    let pass = null
+    this.state.forEach((active, key) => {
+      if (!active) {
+        return
+      }
+      if (this.conditionAND) {
+        pass = (pass == null || pass) && toCheck.includes(key)
+      } else {
+        pass = pass || toCheck.includes(key)
+      }
+    })
+    return !!pass
   }
 
   public isFilterActive() {
@@ -39,54 +75,34 @@ export class CategoryFilter<C> implements IFilterComp {
   }
 
   public onNewRowsLoaded() {
-    this.renderFilter()
+    this.extractOptions()
+    m.redraw()
   }
 
   public destroy(): void {
+    m.mount(this.el, null)
     this.params = null
     this.el = null
   }
 
-  private renderFilter() {
-    this.extractOptions()
-    this.el.innerHTML = ''
-    this.options.map((it) => {
-      const li = document.createElement('li')
-      this.el.append(li)
-      const a = document.createElement('a')
-      li.append(a)
-
-      a.setAttribute('filter-value', `${it.value}`)
-      a.textContent = it.label
-      a.addEventListener('click', () => {
-        this.toggleFilter(it.value)
-      })
-    })
-  }
-
   private toggleFilter(value: any) {
     this.state.set(value, !this.state.get(value))
-    this.updaFilterUI()
-    this.params.filterChangedCallback()
+    this.onFilterChanged()
   }
 
-  private updaFilterUI() {
-    this.state.forEach((value, key) => {
-      const el = this.el.querySelector(`[filter-value="${key}"]`)
-      if (!el) {
-        return
-      }
-      if (value) {
-        el.classList.add('active')
-      } else {
-        el.classList.remove('active')
-      }
-    })
+  private toggleCondition() {
+    this.conditionAND = !this.conditionAND
+    this.onFilterChanged()
+  }
+
+  private onFilterChanged() {
+    m.redraw()
+    this.params.filterChangedCallback()
   }
 
   protected extractOptions() {
     const values = new Set<any>()
-    this.params.api.forEachNode((node) => {
+    this.params.api.forEachLeafNode((node) => {
       const value = this.getValue(node, node.data)
       const list = Array.isArray(value) ? value : [value]
       for (const item of list) {
@@ -113,3 +129,4 @@ export class CategoryFilter<C> implements IFilterComp {
     })
   }
 }
+

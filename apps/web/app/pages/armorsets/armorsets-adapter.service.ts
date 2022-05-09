@@ -4,7 +4,7 @@ import { groupBy } from 'lodash'
 import { combineLatest, defer, map, Observable, shareReplay } from 'rxjs'
 import { LocaleService } from '~/core/i18n'
 import { IconComponent, NwService } from '~/core/nw'
-import { CategoryFilter, mithrilCell } from '~/ui/ag-grid'
+import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import { Armorset } from './types'
 import { findSets } from './utils'
@@ -44,13 +44,13 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
           headerName: 'Tier',
           width: 60,
           valueGetter: ({ data }) => this.nw.tierToRoman(field(data, 'tier')),
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
         },
         {
           headerName: 'Weight',
           width: 80,
           field: fieldName('weight'),
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
         },
         {
           headerName: 'Common Perks',

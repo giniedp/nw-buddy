@@ -148,7 +148,6 @@ export class DungeonsService {
           return uniq([...bossTags, ...lootTags])
         })
       )
-      .pipe(tap(console.log))
       .pipe(
         switchMap((tags) => {
           return this.nw.lootbuckets.all().filter(tags).filter(mutation.InjectedLootTags).items()

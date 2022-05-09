@@ -1,5 +1,6 @@
 import { ICellRendererParams } from 'ag-grid-community'
 import m from 'mithril'
+import { Subject } from 'rxjs'
 
 export interface MithrilCellAttrs<T> extends ICellRendererParams {
   data: T

@@ -3,7 +3,7 @@ import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { GridOptions, ValueGetterParams } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, shareReplay, Subject, takeUntil, tap } from 'rxjs'
 import { IconComponent, NwService } from '~/core/nw'
-import { CategoryFilter, mithrilCell } from '~/ui/ag-grid'
+import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
@@ -85,7 +85,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
         {
           headerName: 'Rarity',
           valueGetter: ({ data }) => this.nw.itemRarityName(data),
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
           width: 130,
           getQuickFilterText: ({ value }) => value,
         },
@@ -93,7 +93,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
           width: 80,
           field: this.fieldName('Tier'),
           valueGetter: ({ data }) => this.nw.tierToRoman(data.Tier),
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
         },
         {
           headerName: 'User Data',
@@ -185,7 +185,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
         {
           field: this.fieldName('ItemType'),
           width: 125,
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
           getQuickFilterText: ({ value }) => value,
         },
         {
@@ -194,32 +194,23 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
           valueGetter: ({ data, colDef }) => {
             return (data[colDef.field] || '').trim().split('+')
           },
-          cellRenderer: mithrilCell({
-            view: ({ attrs: { value } }) => {
-              return m(
-                'div.flex.flex-row.flex-wrap.items-center.h-full',
-                value.map((it: string) => {
-                  return m('span.badge.badge-secondary.mr-1.badge-sm', it)
-                })
-              )
-            },
-          }),
-          filter: CategoryFilter,
+          cellRenderer: this.cellRendererTags(),
+          filter: SelectboxFilter,
         },
         {
           field: this.fieldName('TradingGroup'),
           // width: 125,
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
         },
         {
           field: this.fieldName('TradingFamily'),
           width: 125,
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
         },
         {
           field: this.fieldName('TradingCategory'),
           width: 125,
-          filter: CategoryFilter,
+          filter: SelectboxFilter,
         },
       ],
     })
