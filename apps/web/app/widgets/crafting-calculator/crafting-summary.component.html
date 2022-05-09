@@ -5,14 +5,31 @@
 
 <div class="bg-base-100 rounded-md mx-[1px] rounded-tl-none" *ngIf="resourceTab">
   <table class="table table-compact w-full">
-    <tbody >
-      <tr *ngFor="let row of resourceTable; trackBy: trackByIndex"  [class.opacity-75]="row.ignore" [class.grayscale]="row.ignore">
+    <tbody>
+      <tr
+        *ngFor="let row of resourceTable$ | async; trackBy: trackByIndex"
+        [class.opacity-75]="row.ignored"
+        class="hover"
+        (click)="toggleIgnore(row)"
+        (dblclick)="enableStocked(row)"
+      >
         <td width="0" class="p-1 flex items-center">
-          <picture [nwIcon]="row.item.IconPath" class="w-10 h-10"></picture>
-          <div class="ml-2">
-            <span>{{ row.quantity | number }}</span>
+          <picture [nwIcon]="row.item.IconPath" class="w-10 h-10 mr-2" [class.grayscale]="row.ignored"></picture>
+          <div [class.text-accent]="row.stocked">
+            <span>
+              {{ row.quantity | number }}
+            </span>
+            <ng-container *ngIf="row.stocked">
+              <span> - </span>
+              <nwb-stock-tracker
+                [itemId]="row.itemId"
+                [emptyTip]="'Edit stock value'"
+                class="tooltip-right tooltip-accent whitespace-nowrap text-accent"
+                #stockTracker
+              ></nwb-stock-tracker>
+            </ng-container>
             <span> × </span>
-            <span [nwText]="row.item.Name"></span>
+            <span [nwText]="row.item.Name" [class.line-through]="row.ignored"></span>
           </div>
         </td>
         <td class="w-0 text-right">
@@ -20,8 +37,9 @@
             [itemId]="row.itemId"
             [emptyTip]="'Edit item price'"
             [format]="'1.2-2'"
-            [multiply]="row.quantity"
-            class="tooltip-left tooltip-info whitespace-nowrap opacity-75"
+            [multiply]="row.finalQuantity"
+            [class.line-through]="row.ignored"
+            class="tooltip-left tooltip-info whitespace-nowrap"
             #itemTracker
           ></nwb-price-tracker>
         </td>
@@ -29,21 +47,24 @@
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="2" class="text-right">{{ resourcesPrice | number:'1.2-2' }}🪙</td>
+        <td colspan="2" class="text-right">{{ resourcePrice$ | async | number: '1.2-2' }}🪙</td>
       </tr>
-
     </tfoot>
   </table>
 </div>
 
-
 <div class="bg-base-100 rounded-md mx-[1px] rounded-tr-none" *ngIf="skillsTab">
-  <div class="flex flex-row items-center" *ngFor="let row of skillsTable; trackBy: trackByIndex">
-    <img [nwImage]="row.icon" class="w-16 h-16"/>
+  <div class="flex flex-row items-center" *ngFor="let row of skillsTable$ | async; trackBy: trackByIndex">
+    <img [nwImage]="row.icon" class="w-16 h-16" />
     <div class="flex-1 flex flex-col justify-center pl-2">
       <span [nwText]="row.name" class="font-bold"></span>
       <span>+{{ row.xp | number }}</span>
     </div>
-    <nwb-tradeskill-progress class="m-2" [skillName]="row.id" [skillLevel]="'auto'" [skillPoints]="row.xp"></nwb-tradeskill-progress>
+    <nwb-tradeskill-progress
+      class="m-2"
+      [skillName]="row.id"
+      [skillLevel]="'auto'"
+      [skillPoints]="row.xp"
+    ></nwb-tradeskill-progress>
   </div>
 </div>
