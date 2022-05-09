@@ -1,19 +1,10 @@
 import * as path from 'path'
-import * as fs from 'fs'
 import { program } from 'commander'
-import { glob } from './utils/glob'
-import { tsFromJson } from './utils/ts-from-json'
 import * as dotenv from 'dotenv'
 import {
-  copyFile,
-  generateDataFunctions,
-  mkdir,
   processArrayWithProgress,
-  renameExtname,
-  spawn,
   writeJSONFile,
 } from './utils'
-import { extractExpressions } from './utils/extractExpressions'
 import { loadDatatables, splitToArrayRule } from './importer/loadDatatables'
 import { importLocales } from './importer/importLocales'
 import { importImages } from './importer/importImages'
@@ -49,6 +40,7 @@ program
         '*_gamemodes',
         '*_gatherables',
         '*_housingitems',
+        '*_itemdefinitions_resources',
         '*_itemdefinitions_master_*',
         '*_itemdefinitions_weapons',
         '*_itemdefinitions_consumables',
@@ -116,7 +108,15 @@ program
             }),
           ],
         },
-
+        {
+          file: /javelindata_perks.json/,
+          rules: [
+            splitToArrayRule({
+              properties: ['ItemClass', 'ExclusiveLabels', 'ExcludeItemClass'],
+              separator: '+',
+            }),
+          ],
+        },
       ],
     })
 
