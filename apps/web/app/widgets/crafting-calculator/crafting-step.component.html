@@ -14,15 +14,12 @@
       (click)="toggleOptions()"
     ></picture>
 
-    <div class="flex flex-row items-center overflow-hidden" [class.cursor-pointer]="steps?.length" (click)="toggle()">
-      <span class="ml-2" [class.italic]="quantity !== requiredQuantity">
+    <div class="flex flex-row items-center overflow-hidden">
+      <span class="ml-2" [class.italic]="quantity !== requiredQuantity" [class.text-accent]="optimize && bonusQuantity">
         {{ requiredQuantity }}
       </span>
       <span
-        class="ml-2 text-xs tooltip tooltip-right "
-        [class.text-accent]="optimize && !!bonusQuantity"
-        [class.tooltip-accent]="optimize && !!bonusQuantity"
-        [class.tooltip-info]="!optimize"
+        class="ml-2 text-xs tooltip tooltip-right text-accent tooltip-accent"
         *ngIf="bonusQuantity"
         attr.data-tip="+{{ bonusQuantity }} items"
       >
@@ -41,12 +38,12 @@
       [itemId]="itemId"
       [emptyTip]="'Edit item price'"
       [format]="'1.2-2'"
+      [multiply]="showPrice ? stepQuantity : 1"
+      [class.text-accent]="optimize && bonusQuantity"
       class="tooltip-left tooltip-info whitespace-nowrap opacity-75"
       #itemTracker
     ></nwb-price-tracker>
-    <div class="text-xs italic opacity-50" *ngIf="showPrice">
-      <span> {{ outputQuantity * itemTracker.value | number: '1.2-2' }} </span>
-    </div>
+    <span class="text-xs text-accent" *ngIf="!optimize && bonusQuantity">+{{ bonusQuantity * itemTracker.value | number:'1.2-2'}}</span>
   </span>
 </div>
 <div class="options-container" *ngIf="category && showOptions">
@@ -65,6 +62,7 @@
     [step]="step"
     [quantity]="requiredQuantity"
     [optimize]="optimize"
+    [showPrice]="showPrice"
     (stateChange)="childChanged()"
   ></nwb-crafting-step>
 </div>

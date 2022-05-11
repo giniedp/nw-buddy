@@ -114,7 +114,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
               })
             },
             {
-              headerName: 'Stock',
+              headerName: 'Owned',
               headerTooltip: 'Number of items currently owned',
               valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.stock),
               cellRenderer: this.mithrilCell({

@@ -78,7 +78,7 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
               })
             },
             {
-              headerName: 'Stock',
+              headerName: 'Owned',
               headerTooltip: 'Number of items currently owned',
               cellClass: 'text-right',
               valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.stock),

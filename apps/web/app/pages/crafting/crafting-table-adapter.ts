@@ -84,7 +84,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
               },
             },
             {
-              headerName: 'Stock',
+              headerName: 'Owned',
               headerTooltip: 'Number of items currently owned',
               cellClass: 'text-right',
               valueGetter: this.valueGetter(({ data }) => {
