@@ -2,8 +2,9 @@ import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, Template
 import { ActivatedRoute } from '@angular/router'
 import { Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty, Vitals } from '@nw-data/types'
 import { pick } from 'lodash'
-import { combineLatest, defer, map, Observable, switchMap, takeUntil, tap } from 'rxjs'
+import { combineLatest, defer, map, Observable, of, switchMap, takeUntil, tap } from 'rxjs'
 import { NwService } from '~/core/nw'
+import { DifficultyRank } from '~/core/preferences'
 import { DestroyService, observeQueryParam, observeRouteParam, shareReplayRefCount } from '~/core/utils'
 import { DungeonsService } from './dungeons.service'
 
@@ -13,6 +14,7 @@ const DIFFICULTY_TIER_NAME = {
   3: 'Hard',
   4: 'Elite'
 }
+
 export interface Tab {
   id: string
   label: string
@@ -74,27 +76,46 @@ export class DungeonDetailComponent implements OnInit {
     .pipe(map((it) => this.filterAndSort(it)))
 
   public difficyltyRewards$ = defer(() => combineLatest({
+    rank: this.difficultyRank$,
     difficulty: this.difficulty$,
     events: this.nw.db.gameEventsMap,
     items: this.nw.db.itemsMap
   }))
-    .pipe(map(({ difficulty, events, items }) => {
+    .pipe(map(({ rank, difficulty, events, items }) => {
+      if (!difficulty) {
+        return []
+      }
       return [
-        [difficulty.CompletionEvent1, 'ui_dungeon_mutator_bronze'],
-        [difficulty.CompletionEvent2, 'ui_dungeon_mutator_silver'],
-        [difficulty.CompletionEvent3, 'ui_dungeon_mutator_gold']
-      ].map(([it, rank], i) => {
-        const event = events.get(it)
+        { eventId: difficulty.CompletionEvent1, rankId: 'bronze' as DifficultyRank},
+        { eventId: difficulty.CompletionEvent2, rankId: 'silver' as DifficultyRank},
+        { eventId: difficulty.CompletionEvent3, rankId: 'gold' as DifficultyRank},
+      ].map(({ eventId, rankId }, i) => {
+        const event = events.get(eventId)
         const item = items.get(event.ItemReward as string)
         return {
-          RankName: rank,
+          RankName: `ui_dungeon_mutator_${rankId}`,
           ItemID: item.ItemID,
           ItemName: item.Name,
           IconPath: item.IconPath,
-          Quantity: event.ItemRewardQty
+          Quantity: event.ItemRewardQty,
+          Completed: rankId == rank,
+          toggle: () => {
+            if (rankId == rank) {
+              this.updateRank(null)
+            } else {
+              this.updateRank(rankId)
+            }
+          }
         }
       })
     }))
+
+  public difficultyRank$ = defer(() => combineLatest({
+    dungeon: this.dungeon$,
+    difficulty: this.difficulty$,
+  }))
+    .pipe(switchMap(({ dungeon, difficulty }) => this.difficultyRank(dungeon, difficulty)))
+
 
   @ViewChild('tplDungeonLoot')
   public tplDungeonLoot: TemplateRef<unknown>
@@ -205,6 +226,40 @@ export class DungeonDetailComponent implements OnInit {
 
   public difficultyTier(item: Mutationdifficulty) {
     return DIFFICULTY_TIER_NAME[item.DifficultyTier] ?? `${item.DifficultyTier}`
+  }
+
+  public difficultyRank(dungeon: Gamemodes, difficulty: Mutationdifficulty) {
+    if (dungeon && difficulty) {
+      return this.ds.preferences.observeRank(dungeon.GameModeId, difficulty.MutationDifficulty)
+    }
+    return of(null)
+  }
+
+  public rankIcon(rank: DifficultyRank) {
+    if (rank) {
+      return `assets/icons/mutator_rank_${rank}_sm.png`
+    }
+    return `assets/icons/icon_lock_small.png`
+  }
+
+  public updateRankToGold() {
+    this.updateRank('gold')
+  }
+
+  public updateRankToSilver() {
+    this.updateRank('silver')
+  }
+
+
+  public updateRankToBronze() {
+    this.updateRank('bronze')
+  }
+
+  public updateRank(value: DifficultyRank) {
+    if (this.dungeon && this.difficulty) {
+      this.ds.preferences.updateRank(this.dungeon.GameModeId, this.difficulty.MutationDifficulty, value)
+      this.cdRef.markForCheck()
+    }
   }
 
   private filterAndSort(items: Array<ItemDefinitionMaster | Housingitems>) {

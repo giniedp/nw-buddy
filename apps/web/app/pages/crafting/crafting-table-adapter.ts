@@ -7,6 +7,7 @@ import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
+import { shareReplayRefCount } from '~/core/utils'
 
 export type RecipeWithItem = Crafting & {
   $item: ItemDefinitionMaster | Housingitems
@@ -68,11 +69,14 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
                   const itemId = this.nw.itemIdFromRecipe(data)
-                  return itemId && m(ItemMarkerCell, {
-                    itemId: itemId,
-                    meta: this.nw.itemPref,
-                  })
-                }
+                  return (
+                    itemId &&
+                    m(ItemMarkerCell, {
+                      itemId: itemId,
+                      meta: this.nw.itemPref,
+                    })
+                  )
+                },
               }),
               valueGetter: ({ data }) => {
                 const itemId = this.nw.itemIdFromRecipe(data)
@@ -96,7 +100,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
                       class: 'text-right',
                       itemId: itemId,
                       meta: this.nw.itemPref,
-                      mode: 'stock'
+                      mode: 'stock',
                     })
                   )
                 },
@@ -110,7 +114,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
               cellClass: 'text-right',
               valueGetter: this.valueGetter(({ data }) => {
                 const itemId = this.nw.itemIdFromRecipe(data)
-                return itemId &&  this.nw.itemPref.get(itemId)?.price
+                return itemId && this.nw.itemPref.get(itemId)?.price
               }),
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
@@ -122,7 +126,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
                       itemId: itemId,
                       meta: this.nw.itemPref,
                       mode: 'price',
-                      formatter: this.nw.moneyFormatter
+                      formatter: this.nw.moneyFormatter,
                     })
                   )
                 },
@@ -162,26 +166,6 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
             'text-align': 'right',
           },
         },
-        {
-          headerName: 'Bonus Increments',
-          filter: false,
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs }) => {
-              const increments = parseItemChance(attrs.data.BonusItemChanceIncrease)
-              const decrements = parseItemChance(attrs.data.BonusItemChanceDecrease)
-              return m('div.flex.flex-col.text-sm.text-right', [
-                m(
-                  'span.flex.flex-row',
-                  increments.map((it) => m('span.w-12.flex-none', it))
-                ),
-                m(
-                  'span.flex.flex-row',
-                  decrements.map((it) => m('span.w-12.flex-none', it))
-                ),
-              ])
-            },
-          }),
-        },
       ],
     })
   }
@@ -203,12 +187,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
         })
       })
     )
-  }).pipe(
-    shareReplay({
-      refCount: true,
-      bufferSize: 1,
-    })
-  )
+  }).pipe(shareReplayRefCount(1))
 
   public constructor(private nw: NwService) {
     super()

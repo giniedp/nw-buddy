@@ -4,6 +4,7 @@ import { ValueService } from 'ag-grid-community'
 import { uniq } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, switchMap, tap } from 'rxjs'
 import { NwService } from '~/core/nw'
+import { DungeonPreferencesService } from '~/core/preferences'
 import { shareReplayRefCount } from '~/core/utils'
 
 export interface DifficultyWithRewards {
@@ -68,7 +69,9 @@ export class DungeonsService {
 
   public mutation$ = defer(() => this.nw.db.data.gamemodemutatorsElementalmutations()).pipe(shareReplayRefCount(1))
 
-  public constructor(public nw: NwService) {}
+  public constructor(public nw: NwService, public preferences: DungeonPreferencesService) {
+
+  }
 
   private buildDifficultyTable(
     difficulty: Mutationdifficulty[],

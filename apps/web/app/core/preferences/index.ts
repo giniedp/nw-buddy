@@ -1,4 +1,5 @@
 export * from './app-preferences.service'
+export * from './dungeon-preferences.service'
 export * from './item-preferences.service'
 export * from './preferences.service'
 export * from './recipe-preferences.service'
