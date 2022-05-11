@@ -1,8 +1,9 @@
-import { Inject, Injectable, LOCALE_ID, OnDestroy, StaticProvider } from '@angular/core'
-import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs'
+import { Inject, Injectable, LOCALE_ID, StaticProvider } from '@angular/core'
+import { BehaviorSubject, defer } from 'rxjs'
+import { shareReplayRefCount } from '../utils'
 
 @Injectable({ providedIn: 'root' })
-export class LocaleService implements OnDestroy {
+export class LocaleService {
   public static withLocale(value: string): StaticProvider[] {
     return [
       {
@@ -16,33 +17,22 @@ export class LocaleService implements OnDestroy {
   }
 
   public get value(): string {
-    return this.currentValue
+    return this.subject$.value
   }
 
-  public get change(): Observable<string> {
-    return this.currentValue$
-  }
+  public readonly value$ = defer(() => this.subject$).pipe(shareReplayRefCount(1))
 
-  private currentValue: string
-  private currentValue$: BehaviorSubject<string>
-  private destroy$ = new Subject()
+  private subject$: BehaviorSubject<string>
 
   public constructor(
     @Inject(LOCALE_ID)
     defaultLocale: string
   ) {
-    this.currentValue$ = new BehaviorSubject(defaultLocale)
-    this.currentValue$.pipe(takeUntil(this.destroy$)).subscribe((value) => {
-      this.currentValue = value
-    })
+
+    this.subject$ = new BehaviorSubject(defaultLocale)
   }
 
   public use(language: string) {
-    this.currentValue$.next(language)
-  }
-
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
+    this.subject$.next(language)
   }
 }
