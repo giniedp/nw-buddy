@@ -145,7 +145,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
     return combineLatest({
       items: this.nw.db.items,
       perks: this.nw.db.perksMap,
-      locale: this.locale.change,
+      locale: this.locale.value$,
     }).pipe(
       map(({ items, perks }) => {
         const MIN_RARITY = 2

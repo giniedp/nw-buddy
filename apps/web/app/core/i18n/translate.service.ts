@@ -31,7 +31,7 @@ export class TranslateService implements OnDestroy {
 
   public observe(key: string | Observable<string>, locale?: string | Observable<string>) {
     if (!locale) {
-      locale = this.locale.change
+      locale = this.locale.value$
     }
     return combineLatest({
       key: isObservable(key) ? key : of(key),
@@ -79,7 +79,7 @@ export class TranslateService implements OnDestroy {
       this.change$.next(null)
       return
     }
-    this.locale.change
+    this.locale.value$
       .pipe(switchMap((locale) => combineLatest([of(locale), this.source.loadTranslations(locale)])))
       .pipe(takeUntil(this.destroy$))
       .subscribe(([locale, data]) => {

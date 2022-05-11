@@ -98,7 +98,9 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
         map((items) => Array.from(new Set(items.map((it) => this.adapter.entityCategory(it)).filter((it) => !!it))))
       )
       .pipe(takeUntil(this.destroy$))
-      .subscribe((cats) => this.categories.emit(cats))
+      .subscribe((cats) => {
+        this.categories.emit(cats)
+      })
 
     combineLatest({
       entities: this.adapter.entities,
@@ -114,7 +116,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
         this.cdRef.markForCheck()
       })
 
-    this.locale.change
+    this.locale.value$
       .pipe(filter(() => !!this.grid?.api))
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
