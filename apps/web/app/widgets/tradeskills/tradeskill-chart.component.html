@@ -1,1 +1,3 @@
-<nwb-chart [config]="chartConfig" class="bg-base-100 rounded-md p-2"></nwb-chart>
+<ng-container *ngIf="chartConfig | async; let value">
+  <nwb-chart [config]="value" class="bg-base-100 rounded-md p-2"></nwb-chart>
+</ng-container>

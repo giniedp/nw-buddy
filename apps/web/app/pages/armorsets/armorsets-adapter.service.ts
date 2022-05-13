@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { groupBy } from 'lodash'
-import { combineLatest, defer, map, Observable, shareReplay } from 'rxjs'
+import { combineLatest, defer, map, merge, Observable, race, shareReplay, takeUntil } from 'rxjs'
 import { LocaleService } from '~/core/i18n'
 import { IconComponent, NwService } from '~/core/nw'
 import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
@@ -10,6 +10,7 @@ import { Armorset } from './types'
 import { findSets } from './utils'
 import m from 'mithril'
 import { ItemTrackerCell } from '~/widgets/item-tracker'
+import { shareReplayRefCount } from '~/core/utils'
 
 function fieldName(key: keyof Armorset) {
   return key
@@ -54,7 +55,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
         },
         {
           headerName: 'Common Perks',
-          width: 150,
+          width: 110,
           cellRenderer: mithrilCell<Armorset>({
             view: ({ attrs: { data } }) => {
               return m('div.flex.flex-row.items-center.h-full', {}, [
@@ -73,70 +74,85 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
             },
           }),
         },
-        ...new Array(5).fill(null).map((_, i): ColDef[] => [
-          {
-            sortable: false,
-            filter: false,
-            width: 54,
-            cellRenderer: mithrilCell<Armorset>({
-              view: ({ attrs: { data } }) => {
-                const item = data.items[i]
-                const rarity = this.nw.itemRarity(item)
-                return m('a', { target: '_blank', href: this.nw.nwdbUrl('item', item.ItemID) }, [
-                  m(IconComponent, {
-                    src: this.nw.iconPath(item.IconPath),
-                    class: `w-9 h-9 nw-icon bg-rarity-${rarity}`
-                  })
-                ])
+        ...new Array(5)
+          .fill(null)
+          .map((_, i): ColDef[] => [
+            {
+              sortable: false,
+              filter: false,
+              width: 54,
+              cellRenderer: mithrilCell<Armorset>({
+                view: ({ attrs: { data } }) => {
+                  const item = data.items[i]
+                  const rarity = this.nw.itemRarity(item)
+                  return m('a', { target: '_blank', href: this.nw.nwdbUrl('item', item.ItemID) }, [
+                    m(IconComponent, {
+                      src: this.nw.iconPath(item.IconPath),
+                      class: `w-9 h-9 nw-icon bg-rarity-${rarity}`,
+                    }),
+                  ])
+                },
+              }),
+            },
+            {
+              width: 150,
+              sortable: false,
+              filter: false,
+              getQuickFilterText: ({ data }) => {
+                const item = (data as Armorset).items[i]
+                return this.nw.translate(item.Name)
               },
-            }),
-          },
-          {
-            width: 150,
-            sortable: false,
-            filter: false,
-            getQuickFilterText: ({ data }) => {
-              const item = (data as Armorset).items[i]
-              return this.nw.translate(item.Name)
-            },
-            valueGetter: ({ data }) => {
-              const item = (data as Armorset).items[i]
-              return this.nw.itemPref.get(item.ItemID)?.gs
-            },
-            cellRenderer: mithrilCell<Armorset>({
-              view: ({ attrs: { value, data, api, node } }) => {
-                const item = data.items[i]
-                const name = data.itemNames[i]
-                const max = (item.GearScoreOverride || item.MaxGearScore) <= value
-                return m('div.flex.flex-col.text-sm.font-bold', {
-                  class: [
-                    value && max ? 'border-l-4 border-l-success pl-2 -ml-2 -mr-2' : '',
-                    value && !max ? 'border-l-4 border-l-warning pl-2 -ml-2 -mr-2' : '',
-                  ].join(' ')
-                }, [
-                  m('span', {
-                    class: value ? '' : 'text-error-content',
-                  }, name),
-                  m(ItemTrackerCell, {
-                    onchange: () => {
+              valueGetter: ({ data }) => {
+                const item = (data as Armorset).items[i]
+                return this.nw.itemPref.get(item.ItemID)?.gs
+              },
+              cellRenderer: mithrilCell<Armorset>({
+                oncreate: ({ attrs: { data, destroy$, api, node } }) => {
+                  merge(...data.items.map((it) => this.nw.itemPref.observe(it.ItemID)))
+                    .pipe(takeUntil(destroy$))
+                    .subscribe(() => {
                       api.refreshCells({ rowNodes: [node] })
+                    })
+                },
+                view: ({ attrs: { value, data } }) => {
+                  const item = data.items[i]
+                  const name = data.itemNames[i]
+                  const max = (item.GearScoreOverride || item.MaxGearScore) <= value
+                  return m(
+                    'div.flex.flex-col.text-sm.font-bold',
+                    {
+                      class: [
+                        value && max ? 'border-l-4 border-l-success pl-2 -ml-2 -mr-2' : '',
+                        value && !max ? 'border-l-4 border-l-warning pl-2 -ml-2 -mr-2' : '',
+                      ].join(' '),
                     },
-                    class: [
-                      'self-start',
-                      value && max ? 'text-success' : '',
-                      value && !max ? 'text-warning' : '',
-                      !value ? 'text-error' : '',
-                    ].join(' '),
-                    itemId: item.ItemID,
-                    meta: this.nw.itemPref,
-                    mode: 'gs',
-                    emptyTip: '',
-                  }),
-                ])
-              },
-            }),
-          },
-        ]).flat(1),
+                    [
+                      m(
+                        'span',
+                        {
+                          class: value ? '' : 'text-error-content',
+                        },
+                        name
+                      ),
+                      m(ItemTrackerCell, {
+                        class: [
+                          'self-start',
+                          value && max ? 'text-success' : '',
+                          value && !max ? 'text-warning' : '',
+                          !value ? 'text-error' : '',
+                        ].join(' '),
+                        itemId: item.ItemID,
+                        meta: this.nw.itemPref,
+                        mode: 'gs',
+                        emptyTip: '',
+                      }),
+                    ]
+                  )
+                },
+              }),
+            },
+          ])
+          .flat(1),
       ],
     })
   }
@@ -162,12 +178,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
           .flat(1)
       })
     )
-  }).pipe(
-    shareReplay({
-      refCount: true,
-      bufferSize: 1,
-    })
-  )
+  }).pipe(shareReplayRefCount(1))
 
   public constructor(private nw: NwService, private locale: LocaleService) {
     super()

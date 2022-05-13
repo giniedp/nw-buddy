@@ -32,16 +32,11 @@
             <span [nwText]="row.item.Name" [class.line-through]="row.ignored"></span>
           </div>
         </td>
-        <td class="w-0 text-right">
-          <nwb-price-tracker
-            [itemId]="row.itemId"
-            [emptyTip]="'Edit item price'"
-            [format]="'1.2-2'"
-            [multiply]="row.finalQuantity"
-            [class.line-through]="row.ignored"
-            class="tooltip-left tooltip-info whitespace-nowrap"
-            #itemTracker
-          ></nwb-price-tracker>
+        <td class="w-0 text-right whitespace-nowrap" [class.line-through]="row.ignored">
+          <ng-container *ngIf="row.finalPrice">
+            {{ row.finalPrice | number:'1.2-2'}}
+          </ng-container>
+
         </td>
       </tr>
     </tbody>

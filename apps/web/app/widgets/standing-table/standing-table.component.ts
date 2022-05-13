@@ -1,6 +1,7 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef } from '@angular/core'
-import { map, Subject, takeUntil } from 'rxjs'
+import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { defer, map } from 'rxjs'
 import { NwService } from '~/core/nw'
+import { DestroyService } from '~/core/utils'
 
 export interface StandingRow {
   Level: number
@@ -23,38 +24,25 @@ function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: key
   templateUrl: './standing-table.component.html',
   styleUrls: ['./standing-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [DestroyService],
 })
-export class StandingTableComponent implements OnInit, OnDestroy {
-  public data: StandingRow[]
-  private destroy$ = new Subject()
-
-  public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {}
-
-  public async ngOnInit() {
-    this.nw.db.data
-      .territoryStanding()
-      .pipe(
-        map((data) => {
-          return data.map((node, i): StandingRow => {
-            return {
-              Level: node.Rank,
-              XPToLevel: node.InfluenceCost,
-              XPTotal: accumulate(data, 0, i, 'InfluenceCost'),
-              Title: node.DisplayName,
-              XPReward: node.XpReward,
-            }
-          })
-        })
-      )
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-        this.data = data
-        this.cdRef.markForCheck()
+export class StandingTableComponent {
+  public data = defer(() => this.nw.db.data.territoryStanding()).pipe(
+    map((data) => {
+      return data.map((node, i): StandingRow => {
+        return {
+          Level: node.Rank,
+          XPToLevel: node.InfluenceCost,
+          XPTotal: accumulate(data, 0, i, 'InfluenceCost'),
+          Title: node.DisplayName,
+          XPReward: node.XpReward,
+        }
       })
+    })
+  )
+
+  public constructor(private nw: NwService) {
+    //
   }
 
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
-  }
 }

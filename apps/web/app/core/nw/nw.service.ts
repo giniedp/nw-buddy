@@ -228,7 +228,7 @@ export class NwService {
       if (diff === 0) {
         return 0
       }
-      return (diff < 0 ? decrements : increments)[Math.abs(diff) - 1]
+      return (diff < 0 ? decrements : increments)[Math.abs(diff) - 1] ?? 0
     })
     const baseChance = recipe.BonusItemChance
     const skillChance = (skill ?? 200) / 1000

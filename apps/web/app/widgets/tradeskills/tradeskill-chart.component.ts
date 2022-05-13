@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, Input, ChangeDetectorRef } from '@angular/core'
+import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
 import { isEqual } from 'lodash'
-import { BehaviorSubject, combineLatest, debounceTime, defer, distinctUntilChanged, map, shareReplay, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { BehaviorSubject, combineLatest, debounceTime, defer, distinctUntilChanged, map, shareReplay, startWith, Subject, switchMap } from 'rxjs'
 import { NwService } from '~/core/nw'
 import { NwTradeskillInfo } from '~/core/nw/nw-tradeskill.service'
 
@@ -13,13 +13,52 @@ const COLORS = ['#003f5c', '#2f4b7c', '#665191', '#a05195', '#d45087', '#f95d6a'
   styleUrls: ['./tradeskill-chart.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TradeskillChartComponent implements OnInit, OnDestroy {
+export class TradeskillChartComponent {
   @Input()
   public set category(value: string) {
     this.category$.next(value)
   }
 
-  public chartConfig: ChartConfiguration
+  public readonly chartConfig = defer(() => combineLatest({
+    skills: this.skillInfo$,
+    tables: this.skillTable$,
+    levels: this.skillLevel$
+  }))
+  .pipe(map(({ skills, tables, levels }): ChartConfiguration => {
+    return {
+      type: 'line',
+      options: {
+        animation: false,
+        elements: {
+          point: {
+            hoverRadius: (context) => {
+              if (levels[context.datasetIndex] === context.dataIndex) {
+                return 10
+              }
+              return 5
+            },
+            radius: (context) => {
+              if (levels[context.datasetIndex] === context.dataIndex) {
+                return 8
+              }
+              return 3
+            }
+          }
+        }
+      },
+      data: {
+        labels: tables[0].map((it) => String(it.Level)),
+        datasets: tables.map((table, i) => {
+          return {
+            label: skills[i].Name,
+            data: table.map((it) => it.MaximumInfluence),
+            backgroundColor: COLORS[i % COLORS.length],
+          }
+        }),
+      },
+
+    }
+  }))
 
   private destroy$ = new Subject()
   private category$ = new BehaviorSubject<string>(null)
@@ -62,57 +101,8 @@ export class TradeskillChartComponent implements OnInit, OnDestroy {
       }))
     }))
 
-  public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {
+  public constructor(private nw: NwService) {
     //
   }
 
-  public ngOnInit(): void {
-    combineLatest({
-      skills: this.skillInfo$,
-      tables: this.skillTable$,
-      levels: this.skillLevel$
-    })
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(({ skills, tables, levels }) => {
-      this.chartConfig = {
-        type: 'line',
-        options: {
-          animation: this.chartConfig ? false : undefined,
-          elements: {
-            point: {
-              hoverRadius: (context) => {
-                if (levels[context.datasetIndex] === context.dataIndex) {
-                  return 10
-                }
-                return 5
-              },
-              radius: (context) => {
-                if (levels[context.datasetIndex] === context.dataIndex) {
-                  return 8
-                }
-                return 3
-              }
-            }
-          }
-        },
-        data: {
-          labels: tables[0].map((it) => String(it.Level)),
-          datasets: tables.map((table, i) => {
-            return {
-              label: skills[i].Name,
-              data: table.map((it) => it.MaximumInfluence),
-              backgroundColor: COLORS[i % COLORS.length],
-            }
-          }),
-        },
-
-      }
-      this.cdRef.markForCheck()
-    })
-  }
-
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
-  }
 }

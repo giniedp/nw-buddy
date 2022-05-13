@@ -8,9 +8,10 @@ import { FormsModule } from '@angular/forms'
 import { ArmorsetsComponent } from './armorsets.component'
 import { SidebarModule } from '~/ui/sidebar'
 import { DataTableModule } from '~/ui/data-table'
+import { ItemDetailModule } from '~/widgets/item-detail'
 
 @NgModule({
-  imports: [CommonModule, NwModule, SetsRoutingModule, FormsModule, SidebarModule, DataTableModule],
+  imports: [CommonModule, NwModule, SetsRoutingModule, FormsModule, SidebarModule, DataTableModule, ItemDetailModule],
   declarations: [ArmorsetsComponent],
   exports: [ArmorsetsComponent],
 })

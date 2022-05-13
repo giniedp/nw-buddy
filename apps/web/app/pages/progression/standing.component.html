@@ -1,5 +1,11 @@
-<div class="grid grid-cols-1 2xl:grid-cols-12 gap-4">
-  <nwb-standing-chart class="2xl:col-span-7"></nwb-standing-chart>
+
+<div class="grid grid-cols-1 2xl:grid-cols-12 gap-4 auto items-start auto-rows-min">
+  <div class="2xl:col-span-7 flex flex-col gap-4">
+    <div class="grid grid-cols-3 gap-4">
+      <nwb-standing-input [territoryId]="item.TerritoryID" *ngFor="let item of territories$ | async" class="rounded-md overflow-clip"></nwb-standing-input>
+    </div>
+    <nwb-standing-chart class="2xl:col-span-7 row-start-2"></nwb-standing-chart>
+  </div>
   <nwb-standing-table class="2xl:col-span-5"></nwb-standing-table>
 </div>
 

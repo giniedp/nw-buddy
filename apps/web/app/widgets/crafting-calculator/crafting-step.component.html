@@ -1,4 +1,4 @@
-<div class="flex flex-row items-center main-row">
+<div class="flex flex-row items-center main-row" *ngIf="item">
   <nwb-crafting-step-toggle
     class="w-8 h-8"
     [disabled]="!steps?.length"
@@ -6,43 +6,41 @@
     (click)="toggle()"
   ></nwb-crafting-step-toggle>
 
-  <ng-container *ngIf="item">
-    <picture
-      [nwIcon]="item.IconPath"
-      class="w-7 h-7 nw-icon flex-none bg-rarity-{{ itemRarity(item) }}"
-      [class.cursor-pointer]="!!category"
-      (click)="toggleOptions()"
-    ></picture>
+  <picture
+    [nwIcon]="item.IconPath"
+    class="w-8 h-8 nw-icon flex-none bg-rarity-{{ itemRarity(item) }}"
+    [class.cursor-pointer]="!!category"
+    (click)="toggleOptions()"
+  ></picture>
 
-    <div class="flex flex-row items-center overflow-hidden">
-      <span class="ml-2" [class.italic]="quantity !== requiredQuantity" [class.text-accent]="optimize && bonusQuantity">
-        {{ requiredQuantity }}
-      </span>
-      <span
-        class="ml-2 text-xs tooltip tooltip-right text-accent tooltip-accent"
-        *ngIf="bonusQuantity"
-        attr.data-tip="+{{ bonusQuantity }} items"
-      >
-        <ng-container *ngIf="optimize">+{{ bonusPercent }}%</ng-container>
-        <ng-container *ngIf="!optimize">(+{{ bonusPercent }}%)</ng-container>
+  <div class="flex flex-row items-center overflow-hidden">
+    <span class="ml-2" [class.italic]="quantity !== requiredQuantity" [class.text-accent]="optimize && bonusQuantity">
+      {{ requiredQuantity }}
+    </span>
+    <span
+      class="ml-2 text-xs tooltip tooltip-right text-accent tooltip-accent"
+      *ngIf="bonusQuantity"
+      attr.data-tip="+{{ bonusQuantity }} items"
+    >
+      <ng-container *ngIf="optimize">+{{ bonusPercent }}%</ng-container>
+      <ng-container *ngIf="!optimize">(+{{ bonusPercent }}%)</ng-container>
 
-      </span>
-      <span class="ml-2"> &times; </span>
-      <span class="ml-2 overflow-ellipsis overflow-hidden whitespace-nowrap" [nwText]="item.Name"></span>
-    </div>
-  </ng-container>
+    </span>
+    <span class="ml-2"> &times; </span>
+    <span class="ml-2 overflow-ellipsis overflow-hidden whitespace-nowrap" [nwText]="item.Name"></span>
+    <span class="ml-2"> &times; </span>
+    <nwb-price-tracker
+        [itemId]="itemId"
+        [emptyTip]="'Edit item price'"
+        [format]="'1.2-2'"
+        class="ml-2 tooltip-left tooltip-info text-primary whitespace-nowrap"
+        #itemTracker
+      ></nwb-price-tracker>
+  </div>
   <span class="flex-1"></span>
 
-  <span class="flex flex-col items-end" *ngIf="itemId">
-    <nwb-price-tracker
-      [itemId]="itemId"
-      [emptyTip]="'Edit item price'"
-      [format]="'1.2-2'"
-      [multiply]="showPrice ? stepQuantity : 1"
-      [class.text-accent]="optimize && bonusQuantity"
-      class="tooltip-left tooltip-info whitespace-nowrap opacity-75"
-      #itemTracker
-    ></nwb-price-tracker>
+  <span class="flex flex-col items-end w-20" *ngIf="itemTracker.value">
+    <span class="whitespace-nowrap opacity-75" [class.text-accent]="optimize && bonusQuantity">{{ stepQuantity * itemTracker.value | number:'1.2-2' }}</span>
     <span class="text-xs text-accent" *ngIf="!optimize && bonusQuantity">+{{ bonusQuantity * itemTracker.value | number:'1.2-2'}}</span>
   </span>
 </div>

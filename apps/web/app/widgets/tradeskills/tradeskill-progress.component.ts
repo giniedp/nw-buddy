@@ -7,16 +7,18 @@ import {
   OnDestroy,
   OnInit,
 } from '@angular/core'
-import { BehaviorSubject, combineLatest, map, of, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
+import { BehaviorSubject, combineLatest, map, of, ReplaySubject, switchMap, takeUntil } from 'rxjs'
 import { NwTradeskillService } from '~/core/nw/nw-tradeskill.service'
+import { DestroyService } from '~/core/utils'
 
 @Component({
   selector: 'nwb-tradeskill-progress',
   templateUrl: './tradeskill-progress.component.html',
   styleUrls: ['./tradeskill-progress.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [DestroyService]
 })
-export class NwTradeskillCircleComponent implements OnInit, OnChanges, OnDestroy {
+export class NwTradeskillCircleComponent implements OnInit, OnChanges {
   @Input()
   public set skillName(value: string) {
     this.skillName$.next(value)
@@ -38,7 +40,6 @@ export class NwTradeskillCircleComponent implements OnInit, OnChanges, OnDestroy
   public aptitudeEnd: number
   public aptitudeRing: number
 
-  private destroy$ = new Subject()
   private skillName$ = new ReplaySubject<string>(1)
   private skillLevel$ = new BehaviorSubject<number | 'auto'>('auto')
   private skillPoint$ = new BehaviorSubject<number>(0)
@@ -46,7 +47,7 @@ export class NwTradeskillCircleComponent implements OnInit, OnChanges, OnDestroy
   private skill$ = this.skills.skillByName(this.skillName$)
   private skillTable$ = this.skills.skillTableByName(this.skillName$)
 
-  public constructor(private skills: NwTradeskillService, private cdRef: ChangeDetectorRef) {
+  public constructor(private skills: NwTradeskillService, private destroy: DestroyService, private cdRef: ChangeDetectorRef) {
     //
   }
 
@@ -66,7 +67,7 @@ export class NwTradeskillCircleComponent implements OnInit, OnChanges, OnDestroy
         })
       ),
     })
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy.$))
       .subscribe(({ skill, table, points, level }) => {
         const progress = this.skills.calculateProgress(skill, table, level, points)
         this.levelStart = level
@@ -80,10 +81,5 @@ export class NwTradeskillCircleComponent implements OnInit, OnChanges, OnDestroy
 
   public ngOnChanges(): void {
     this.cdRef.markForCheck()
-  }
-
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
   }
 }
