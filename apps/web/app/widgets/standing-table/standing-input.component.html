@@ -1,0 +1,23 @@
+<picture class="absolute top-0 left-0 right-0 bottom-0 pointer-events-none z-[-1]">
+  <img [nwImage]="territoryImage$ | async" class="object-cover w-full h-full" />
+</picture>
+<div class="flex flex-row bg-gradient-to-r from-black">
+  <div class="w-24 h-24 relative flex-none">
+    <img
+      [nwImage]="'assets/icons/territories/icon_territorystanding.png'"
+      class="object-cover absolute top-0 left-0 w-full h-full pointer-events-none"
+    />
+    <ng-container *ngIf="territory$ | async">
+      <input
+        [(ngModel)]="standingLevel"
+        min="0"
+        class="input focus:outline-none bg-transparent h-full w-full p-0 text-center text-3xl appearance-none relative z-10"
+        placeholder="0"
+      />
+    </ng-container>
+  </div>
+  <div class="py-4 flex flex-col relative flex-1">
+    <span [nwText]="standingTitle$ | async" class="font-bold"></span>
+    <span [nwText]="territoryName$ | async"></span>
+  </div>
+</div>
