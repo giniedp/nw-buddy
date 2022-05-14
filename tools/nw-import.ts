@@ -49,6 +49,7 @@ program
         '*_lootbuckets',
         '*_lootlimits',
         '*_metaachievements',
+        '*_milestonerewards',
         '*_perkbuckets',
         '*_perks',
         '*_spelltable_*',

@@ -18,12 +18,14 @@
       <span [nwText]="row.Name"></span>
 
     </div>
-    <div class="stat-desc">
-      <span *ngFor="let wpn of row.Weapons" class="px-1">{{ wpn }}</span>
-    </div>
-    <div class="stat-desc flex flex-row" *ngIf="row.Perk">
-      <img [nwImage]="row.Perk.IconPath" class="w-4 h-4 mr-1" />
-      <span [nwText]="row.Perk.DisplayName" class="px-1"></span>
+    <div class="stat-desc flex flex-row gap-1">
+      <ng-container *ngFor="let wpn of row.Weapons">
+        <img [nwImage]="wpn.IconPath" class="w-5 h-5 mr-1 tooltip"/>
+      </ng-container>
+      <ng-container *ngIf="row.Perk">
+        <img [nwImage]="row.Perk.IconPath" class="w-5 h-5 mr-1" />
+        <!-- <span [nwText]="row.Perk.DisplayName" class="px-1"></span> -->
+      </ng-container>
     </div>
   </div>
 </div>

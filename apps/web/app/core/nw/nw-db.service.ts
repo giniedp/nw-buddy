@@ -412,10 +412,14 @@ export class NwDbService {
     .pipe(map((items) => toMap(items, 'TerritoryID')))
     .pipe(shareReplay(1))
 
+  public milestoneRewards = defer(() => {
+    return this.data.milestonerewards()
+  }).pipe(shareReplay(1))
+
   public mutatorDifficulties = defer(() => this.data.gamemodemutatorsMutationdifficulty())
     .pipe(shareReplay(1))
 
-  public viewDamageTypeToWeaponType = defer(() => queryDamageTypeToWeaponType(this.damageTable0))
+  public viewDamageTypeToWeaponType = defer(() => queryDamageTypeToWeaponType())
     .pipe(shareReplayRefCount(1))
 
   public viewGemPerksWithAffix = defer(() => queryGemPerksWithAffix(this))

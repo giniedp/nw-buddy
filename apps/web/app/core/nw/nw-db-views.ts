@@ -1,34 +1,99 @@
-import { Damagetable } from '@nw-data/types'
-import { groupBy, mapValues, uniq } from 'lodash'
-import { combineLatest, map, Observable } from 'rxjs'
+import { groupBy } from 'lodash'
+import { combineLatest, map, Observable, of } from 'rxjs'
 import type { NwDbService } from './nw-db.service'
 
-export function queryDamageTypeToWeaponType(source: Observable<Damagetable[]>): Observable<Record<string, string[]>> {
-  return source.pipe(
-    map((damagetable) => {
-      const data = damagetable
-        .filter(
-          (it) =>
-            it.DamageID.includes('Primary') ||
-            it.DamageID === '1H_Sword_Attack1' ||
-            it.DamageID === 'MusketAttack1' ||
-            it.DamageID === 'BowAttack1'
-        )
-        .filter((it) => it.AttackType === 'Light' || it.AttackType === 'Heavy')
-        .map((it) => {
-          return {
-            Weapon: it.DamageID.replace(/_Primary.*$/i, '')
-              .replace(/_Damage.*$/i, '')
-              .replace(/_?Attack.*$/i, '')
-              .replace(/^\dH_/i, ''),
-            Damage: it.DamageType,
-          }
-        })
-      return mapValues(
-        groupBy(data, (it) => it.Damage),
-        (it) => uniq(it.map((i) => i.Weapon))
-      )
-    })
+export interface WeaponTypes {
+  WeaponTypeID: string
+  GroupName: string
+  IconPath: string
+  DamageType: string
+}
+
+const WEAPON_TYPES: Array<WeaponTypes> = [
+
+  {
+    WeaponTypeID: 'Hatchets',
+    GroupName: 'Hatchets_GroupName',
+    DamageType: 'Slash',
+    IconPath: 'assets/icons/weapons/1hhatchetsmall.png'
+  },
+  {
+    WeaponTypeID: 'Rapiers',
+    GroupName: 'Rapiers_GroupName',
+    DamageType: 'Thrust',
+    IconPath: 'assets/icons/weapons/1hrapiersmall.png'
+  },
+  {
+    WeaponTypeID: 'Swords',
+    GroupName: 'Swords_GroupName',
+    DamageType: 'Slash',
+    IconPath: 'assets/icons/weapons/1hswordsmall.png'
+  },
+  {
+    WeaponTypeID: 'WarHammers',
+    GroupName: 'WarHammers_GroupName',
+    DamageType: 'Strike',
+    IconPath: 'assets/icons/weapons/2hdemohammersmall.png'
+  },
+  {
+    WeaponTypeID: 'GreatAxe',
+    GroupName: 'GreatAxe_GroupName',
+    DamageType: 'Slash',
+    IconPath: 'assets/icons/weapons/2hgreataxesmall.png'
+  },
+  {
+    WeaponTypeID: 'Muskets',
+    GroupName: 'Muskets_GroupName',
+    DamageType: 'Thrust',
+    IconPath: 'assets/icons/weapons/2hmusketasmall.png'
+  },
+  {
+    WeaponTypeID: 'Bows',
+    GroupName: 'Bows_GroupName',
+    DamageType: 'Thrust',
+    IconPath: 'assets/icons/weapons/bowbsmall.png'
+  },
+  {
+    WeaponTypeID: 'Spears',
+    GroupName: 'Spears_GroupName',
+    DamageType: 'Thrust',
+    IconPath: 'assets/icons/weapons/spearasmall.png'
+  },
+  {
+    WeaponTypeID: 'StavesFire',
+    GroupName: 'StavesFire_GroupName',
+    DamageType: 'Fire',
+    IconPath: 'assets/icons/weapons/stafffiresmall.png'
+  },
+  {
+    WeaponTypeID: 'StavesLife',
+    GroupName: 'StavesLife_GroupName',
+    DamageType: 'Nature',
+    IconPath: 'assets/icons/weapons/stafflifesmall.png'
+  },
+  {
+    WeaponTypeID: 'GauntletVoid',
+    GroupName: 'GauntletVoid_GroupName',
+    DamageType: 'Corruption',
+    IconPath: 'assets/icons/weapons/voidgauntletsmall.png'
+  },
+  {
+    WeaponTypeID: 'GauntletIce',
+    GroupName: 'GauntletIce_GroupName',
+    DamageType: 'Ice',
+    IconPath: 'assets/icons/weapons/icegauntletsmall.png'
+  },
+  {
+    WeaponTypeID: 'Blunderbuss',
+    GroupName: 'Blunderbuss_GroupName',
+    DamageType: 'Thrust',
+    IconPath: 'assets/icons/weapons/blunderbusssmall.png'
+  },
+]
+
+export function queryDamageTypeToWeaponType(): Observable<Record<string, WeaponTypes[]>> {
+  return of(WEAPON_TYPES).pipe(
+    map((table) => groupBy(table, (it) => it.DamageType))
   )
 }
 

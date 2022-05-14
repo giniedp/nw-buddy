@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, Host } from '@angular/core'
 import { Vitals } from '@nw-data/types'
-import { combineLatest, defer, map, ReplaySubject, switchMap, takeUntil } from 'rxjs'
-import { NwService, queryDamageTypeToWeaponType, queryGemPerksWithAffix } from '~/core/nw'
-import { DestroyService, shareReplayRefCount } from '~/core/utils'
+import { combineLatest, defer, map, ReplaySubject } from 'rxjs'
+import { NwService } from '~/core/nw'
+import { DestroyService } from '~/core/utils'
 
 const ICON_MAP: Record<string, string> = {
   Arcane: 'icon_tooltip_arcane_opaque',
