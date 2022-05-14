@@ -10,8 +10,9 @@
     <ng-container *ngIf="territory$ | async">
       <input
         [(ngModel)]="standingLevel"
+        type="number"
         min="0"
-        class="input focus:outline-none bg-transparent h-full w-full p-0 text-center text-3xl appearance-none relative z-10"
+        class="input focus:outline-none bg-transparent h-full w-full p-0 text-center text-2xl appearance-none relative z-10 text-base-100 font-medium"
         placeholder="0"
       />
     </ng-container>
