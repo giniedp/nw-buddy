@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core'
 import { Ability, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { defer, Observable, shareReplay } from 'rxjs'
+import { defer, filter, map, Observable, shareReplay } from 'rxjs'
 import { IconComponent, NwService } from '~/core/nw'
-import { mithrilCell } from '~/ui/ag-grid'
+import { mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
+import { shareReplayRefCount } from '~/core/utils'
 
 @Injectable()
 export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
@@ -40,30 +41,39 @@ export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
         {
           width: 250,
           headerName: 'Name',
-          valueGetter: this.valueGetter( ({ data }) => this.nw.translate(data.DisplayName) ),
+          valueGetter: this.valueGetter(({ data }) => this.nw.translate(data.DisplayName)),
           getQuickFilterText: ({ value }) => value,
         },
         {
           field: this.fieldName('AbilityID'),
           hide: true,
         },
-        // {
-        //   field: this.fieldName('Description'),
-        //   cellRenderer: this.nw.cellRendererAsync<Ability>((data) => {
-        //     return this.nw.expression.solve({
-        //       text: this.nw.translate(data.Description),
-        //       charLevel: 60,
-        //       itemId: data.AbilityID
-        //     })
-        //   }),
-        //   width: 300,
-        //   filter: false,
-        // },
+        {
+
+          field: this.fieldName('Description'),
+          width: 400,
+          filter: false,
+          wrapText: true,
+          autoHeight: true,
+          cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
+          cellRenderer: this.asyncCell((data) => {
+            return this.nw.expression.solve({
+              text: this.nw.translate(data.Description),
+              charLevel: 60,
+              itemId: data.AbilityID,
+              gearScore: 600
+            }).pipe(map((it) => it.replace(/\\n/gi, '<br>')))
+          }, { trustHtml: true }),
+
+        },
         {
           field: this.fieldName('WeaponTag'),
+          filter: SelectboxFilter,
         },
         {
           field: this.fieldName('AttackType'),
+          filter: SelectboxFilter,
+
         },
       ],
     })
@@ -71,12 +81,9 @@ export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
 
   public entities: Observable<Ability[]> = defer(() => {
     return this.nw.db.abilities
-  }).pipe(
-    shareReplay({
-      refCount: true,
-      bufferSize: 1,
-    })
-  )
+  })
+    .pipe(map((list) => list.filter((it) => !!it.WeaponTag)))
+    .pipe(shareReplayRefCount(1))
 
   public constructor(private nw: NwService) {
     super()

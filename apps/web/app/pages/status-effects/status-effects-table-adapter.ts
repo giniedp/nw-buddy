@@ -3,7 +3,7 @@ import { Statuseffect, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, Observable, shareReplay } from 'rxjs'
 import { IconComponent, NwService } from '~/core/nw'
-import { mithrilCell } from '~/ui/ag-grid'
+import { mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 
@@ -38,17 +38,30 @@ export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> 
         },
         {
           headerName: 'Name',
-          valueGetter: this.valueGetter(({ data }) => this.nw.translate(data.DisplayName)),
+          valueGetter: this.valueGetter(({ data }) => this.nw.translate(data.DisplayName) || data.StatusID),
           width: 300,
         },
         {
+          headerName: 'Description',
+          width: 300,
+          filter: false,
+          wrapText: true,
+          autoHeight: true,
+          cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
+          cellRenderer: this.asyncCell((data) => {
+            return this.nw.expression.solve({
+              text: this.nw.translate(data.Description),
+              charLevel: 60,
+              itemId: data.Description,
+              gearScore: 600
+            })
+          }, { trustHtml: true }),
+        },
+        {
           field: this.fieldName('EffectCategories'),
-        },
-        {
-          field: this.fieldName('EffectDurationMods'),
-        },
-        {
-          field: this.fieldName('EffectPotencyMods'),
+          autoHeight: true,
+          filter: SelectboxFilter,
+          cellRenderer: this.cellRendererTags(),
         },
       ],
     })

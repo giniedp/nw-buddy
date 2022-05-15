@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
 import { VitalsAdapterService } from './vitals-table-adapter'
 
@@ -8,12 +8,10 @@ import { VitalsAdapterService } from './vitals-table-adapter'
   styleUrls: ['./vitals.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'nwb-page has-menu has-detail',
+    class: 'nwb-page has-menu',
   },
   providers: [DataTableAdapter.provideClass(VitalsAdapterService)],
 })
-export class VitalsComponent implements OnInit {
-  constructor() {}
+export class VitalsComponent {
 
-  ngOnInit(): void {}
 }

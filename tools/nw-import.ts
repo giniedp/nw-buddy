@@ -74,7 +74,7 @@ program
       ].map((it) => it + '.json'),
       remap: [
         {
-          file: /javelindata_gamemodes.json/,
+          file: /javelindata_gamemodes\.json/,
           rules: [
             splitToArrayRule({
               properties: ['PossibleItemDropIds', 'LootTags', 'MutLootTagsOverride'],
@@ -83,7 +83,7 @@ program
           ],
         },
         {
-          file: /javelindata_vitals.json/,
+          file: /javelindata_vitals\.json/,
           rules: [
             splitToArrayRule({
               properties: ['VitalsCategories', 'LootTags'],
@@ -92,7 +92,7 @@ program
           ],
         },
         {
-          file: /javelindata_mutationdifficulty.json/,
+          file: /javelindata_mutationdifficulty\.json/,
           rules: [
             splitToArrayRule({
               properties: ['InjectedLootTags'],
@@ -101,7 +101,7 @@ program
           ],
         },
         {
-          file: /javelindata_lootbuckets.json/,
+          file: /javelindata_lootbuckets\.json/,
           rules: [
             splitToArrayRule({
               properties: /Tags\d+/,
@@ -110,10 +110,28 @@ program
           ],
         },
         {
-          file: /javelindata_perks.json/,
+          file: /javelindata_perks\.json/,
           rules: [
             splitToArrayRule({
               properties: ['ItemClass', 'ExclusiveLabels', 'ExcludeItemClass'],
+              separator: '+',
+            }),
+          ],
+        },
+        {
+          file: /javelindata_weaponabilities\.json/,
+          rules: [
+            splitToArrayRule({
+              properties: ['AttackType'],
+              separator: ',',
+            }),
+          ],
+        },
+        {
+          file: /javelindata_statuseffects_.*\.json|javelindata_statuseffects\.json/,
+          rules: [
+            splitToArrayRule({
+              properties: ['EffectCategories'],
               separator: '+',
             }),
           ],
@@ -152,7 +170,7 @@ program
       input,
       output,
       tables,
-      ignoreKeys: ['PlaceholderIcon', 'HiResIconPath'],
+      ignoreKeys: ['HiResIconPath'],
     })
     console.log('writing datatables')
     await processArrayWithProgress(tables, async ({ relative, data }) => {

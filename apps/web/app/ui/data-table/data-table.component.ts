@@ -14,9 +14,10 @@ import {
 } from '@angular/core'
 import { GridOptions } from 'ag-grid-community'
 import { isEqual } from 'lodash'
-import { BehaviorSubject, combineLatest, defer, filter, map, Subject, takeUntil } from 'rxjs'
+import { BehaviorSubject, combineLatest, defer, filter, map, takeUntil } from 'rxjs'
 import { LocaleService } from '~/core/i18n'
 import { PreferencesService, StorageNode } from '~/core/preferences'
+import { DestroyService } from '~/core/utils'
 import { AgGridComponent } from '~/ui/ag-grid'
 import { DataTableAdapter } from './data-table-adapter'
 
@@ -25,6 +26,7 @@ import { DataTableAdapter } from './data-table-adapter'
   templateUrl: './data-table.component.html',
   styleUrls: ['./data-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [DestroyService]
 })
 export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
 
@@ -68,17 +70,28 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   public selectionChange = new EventEmitter<string[]>()
 
   @Input()
-  public filter: (item: T) => boolean
-
-  @Input()
-  public category: string
+  public set category(value: string) {
+    this.category$.next(value)
+  }
 
   @Output()
-  public categories = new EventEmitter<string[]>()
+  public categories = defer(() => this.items)
+    .pipe(map((items) => {
+      return Array.from(new Set(items.map((it) => this.adapter.entityCategory(it)).filter((it) => !!it)))
+    }))
 
-  private items: T[]
-  private displayItems: T[]
-  private destroy$ = new Subject()
+  private items = defer(() => this.adapter.entities)
+  private displayItems = defer(() => combineLatest({
+    items: this.items,
+    category: this.category$
+  }))
+  .pipe(map(({ items, category }) => {
+    if (!category) {
+      return items
+    }
+    return  items.filter((it) => this.adapter.entityCategory(it) === category)
+  }))
+
   private category$ = new BehaviorSubject<string>(null)
   private gridStorage: StorageNode<{ columns?: any, filter?: any }>
 
@@ -87,59 +100,32 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     private cdRef: ChangeDetectorRef,
     private adapter: DataTableAdapter<T>,
     private zone: NgZone,
+    private destroy: DestroyService,
     preferences: PreferencesService
   ) {
-    this.gridStorage = preferences.storage.storageScope('grid:')
+    this.gridStorage = preferences.session.storageScope('grid:')
   }
 
   public async ngOnInit() {
-    this.adapter.entities
-      .pipe(
-        map((items) => Array.from(new Set(items.map((it) => this.adapter.entityCategory(it)).filter((it) => !!it))))
-      )
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((cats) => {
-        this.categories.emit(cats)
-      })
-
-    combineLatest({
-      entities: this.adapter.entities,
-      category: this.category$,
-    })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(({ entities, category }) => {
-        this.items = entities
-        this.displayItems = this.items
-        if (category) {
-          this.displayItems = entities.filter((it) => this.adapter.entityCategory(it) === category)
-        }
-        this.cdRef.markForCheck()
-      })
-
     this.locale.value$
       .pipe(filter(() => !!this.grid?.api))
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this.destroy.$))
       .subscribe(() => {
         this.grid.api.refreshCells({ force: true })
       })
   }
 
   public ngOnChanges(changes: SimpleChanges) {
-    if (this.getChange(changes, 'selection')) {
-      this.select(this.selection)
-    }
-    if (this.getChange(changes, 'category')) {
-      this.category$.next(this.category)
-    }
-    if (this.getChange(changes, 'quickFilter')) {
-      this.cdRef.markForCheck()
-    }
+    this.cdRef.markForCheck()
+
+    // if (this.getChange(changes, 'selection')) {
+    //   this.select(this.selection)
+    // }
+
   }
 
   public ngOnDestroy() {
     this.saveColumnState()
-    this.destroy$.next(null)
-    this.destroy$.complete()
   }
 
   public onGridReady() {

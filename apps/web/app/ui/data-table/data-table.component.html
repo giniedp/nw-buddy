@@ -1,1 +1,1 @@
-<nwb-ag-grid [data]="gridData" [options]="gridOptions" [quickFilter]="quickFilter" (gridReady)="onGridReady()"></nwb-ag-grid>
+<nwb-ag-grid [data]="gridData | async" [options]="gridOptions" [quickFilter]="quickFilter" (gridReady)="onGridReady()"></nwb-ag-grid>

@@ -11,18 +11,6 @@ import { nwdbLinkUrl } from './nwdbinfo'
 import m from 'mithril'
 import { LootbucketService } from './lootbucket.service'
 
-const CATEGORIES_GRANTING_BONUS = [
-  'Concoctions',
-  'ArcanaRefining',
-  'Consumables',
-  'Dyes',
-  'Foods',
-  'BasicCooking',
-  'Consumables',
-  'Cutstone',
-  'RefinedResources'
-]
-
 @Injectable({ providedIn: 'root' })
 export class NwService {
   public constructor(
@@ -199,9 +187,6 @@ export class NwService {
     skill?: number
   }) {
     if (!item || recipe?.BonusItemChance == null || !ingredients?.length) {
-      return 0
-    }
-    if (!CATEGORIES_GRANTING_BONUS.includes(recipe.CraftingCategory)) {
       return 0
     }
 

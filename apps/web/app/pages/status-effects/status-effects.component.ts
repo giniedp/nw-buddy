@@ -8,7 +8,7 @@ import { StatusEffectsAdapterService } from './status-effects-table-adapter'
   styleUrls: ['./status-effects.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'nwb-page has-menu has-detail',
+    class: 'nwb-page has-menu',
   },
   providers: [
     DataTableAdapter.provideClass(StatusEffectsAdapterService)

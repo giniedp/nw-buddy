@@ -1,50 +1,8 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input, Host } from '@angular/core'
+import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core'
 import { Vitals } from '@nw-data/types'
 import { combineLatest, defer, map, ReplaySubject } from 'rxjs'
-import { NwService } from '~/core/nw'
+import { NwDamagetypeService, NwService, NwVitalsService } from '~/core/nw'
 import { DestroyService } from '~/core/utils'
-
-const ICON_MAP: Record<string, string> = {
-  Arcane: 'icon_tooltip_arcane_opaque',
-  Corruption: 'icon_tooltip_corruption_opaque',
-  Fire: 'icon_tooltip_fire_opaque',
-  Ice: 'icon_tooltip_ice_opaque',
-  Lightning: 'icon_tooltip_lightning_opaque',
-  Nature: 'icon_tooltip_nature',
-  Siege: 'icon_tooltip_siege_opaque',
-  Slash: 'icon_tooltip_slash_opaque',
-  Standard: 'icon_tooltip_standard_opaque',
-  Strike: 'icon_tooltip_strike_opaque',
-  Thrust: 'icon_tooltip_thrust_opaque',
-}
-
-type VitalInput = Pick<
-  Vitals,
-  | 'DisplayName'
-  | 'CreatureType'
-  | 'ABSArcane'
-  | 'ABSCorruption'
-  | 'ABSFire'
-  | 'ABSIce'
-  | 'ABSLightning'
-  | 'ABSNature'
-  | 'ABSSiege'
-  | 'ABSSlash'
-  | 'ABSStandard'
-  | 'ABSStrike'
-  | 'ABSThrust'
-  | 'WKNArcane'
-  | 'WKNCorruption'
-  | 'WKNFire'
-  | 'WKNIce'
-  | 'WKNLightning'
-  | 'WKNNature'
-  | 'WKNSiege'
-  | 'WKNSlash'
-  | 'WKNStandard'
-  | 'WKNStrike'
-  | 'WKNThrust'
->
 
 @Component({
   selector: 'nwb-vital-detail',
@@ -63,8 +21,8 @@ export class VitalDetailComponent implements OnInit {
     return combineLatest({
       vital: this.vital$,
       gems: this.nw.db.viewGemPerksWithAffix,
-      dmgwpn: this.nw.db.viewDamageTypeToWeaponType,
-      damagetypes: this.nw.db.damagetypes
+      dmgwpn: this.dmg.damageTypeToWeaponType,
+      damagetypes: this.dmg.damagetypes
     })
   }).pipe(
     map(({ vital, gems, damagetypes, dmgwpn }) => {
@@ -73,8 +31,8 @@ export class VitalDetailComponent implements OnInit {
           Name: dmgType.DisplayName,
           Type: dmgType.TypeID,
           Category: dmgType.Category,
-          Icon: `assets/icons/tooltip/${ICON_MAP[dmgType.TypeID] || 'icon_unknown'}.png`,
-          Value: (vital[`WKN${dmgType.TypeID}`] || 0) - (vital[`ABS${dmgType.TypeID}`] || 0),
+          Icon: this.dmg.damageTypeIcon(dmgType),
+          Value: this.vitals.damageEffectiveness(vital, dmgType.TypeID as any),
           Perk: gems.filter(({ stat }) => stat.DamageType === dmgType.TypeID).map(({ perk }) => perk).reverse()?.[0],
           Weapons: dmgwpn[dmgType.TypeID] || [],
         }
@@ -87,9 +45,9 @@ export class VitalDetailComponent implements OnInit {
   public readonly vital$ = new ReplaySubject<Vitals>(1)
 
   public constructor(
-    @Host()
-    private destroy: DestroyService,
-    private nw: NwService
+    private nw: NwService,
+    private dmg: NwDamagetypeService,
+    private vitals: NwVitalsService,
   ) {
     //
   }

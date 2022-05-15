@@ -77,7 +77,6 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
                 itemId: data.PerkID,
               })
             }))
-
           })
         },
         {

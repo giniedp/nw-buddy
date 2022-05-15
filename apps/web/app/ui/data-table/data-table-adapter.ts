@@ -1,7 +1,7 @@
 import { ClassProvider, Type } from "@angular/core"
 import { GridOptions, ValueGetterFunc, ValueGetterParams } from "ag-grid-community"
 import { Observable, Subject, takeUntil } from "rxjs"
-import { mithrilCell, MithrilCellAttrs } from "../ag-grid"
+import { AgGridComponent, mithrilCell, MithrilCellAttrs } from "../ag-grid"
 import m from 'mithril'
 
 export interface TypedValueGetterParams<T> extends ValueGetterParams {
@@ -21,6 +21,14 @@ export abstract class DataTableAdapter<T> {
   public abstract buildGridOptions(base: GridOptions): GridOptions
   public abstract entities: Observable<T[]>
 
+  public setActiveCategories(grid: AgGridComponent, value: string[]) {
+    //
+  }
+
+  public getActiveCategories(): string[] {
+    return []
+  }
+
   public fieldName(k: keyof T) {
     return String(k)
   }
@@ -30,7 +38,7 @@ export abstract class DataTableAdapter<T> {
   public mithrilCell(comp: m.Component<MithrilCellAttrs<T>>) {
     return mithrilCell<T>(comp)
   }
-  public asyncCell(fn: (data: T) => Observable<string>) {
+  public asyncCell(fn: (data: T) => Observable<string>, options?: { trustHtml: boolean }) {
     return mithrilCell<T, { d: Subject<any>, value: string }>({
       oncreate: ({ attrs, state }) => {
         state.d = new Subject()
@@ -43,7 +51,13 @@ export abstract class DataTableAdapter<T> {
         state.d.next(null)
         state.d.complete()
       },
-      view: ({ state }) => state.value
+      view: ({ state }) => {
+        if (options?.trustHtml) {
+          return m.trust(state.value)
+        } else {
+          return state.value
+        }
+      }
     })
   }
   public cellRendererTags() {

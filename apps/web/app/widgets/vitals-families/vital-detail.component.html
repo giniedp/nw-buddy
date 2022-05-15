@@ -1,31 +1,33 @@
-<div class="bg-base-300 rounded-t-md px-4 py-2 flex flex-row">
-  <a [nwInfoLink]="(vital$ | async).VitalsID" [nwInfoResource]="'creature'" target="_blank" [nwText]="(vital$ | async).DisplayName"></a>
-  <span class="flex-1"></span>
-  <span>{{ (vital$ | async).Family }} Lvl. {{ (vital$ | async).Level }}</span>
-</div>
-<div class="stats stats-vertical rounded-md w-full rounded-t-none backdrop-blur-sm bg-white/10">
-  <div class="stat place-items-center py-1 px-2" *ngFor="let row of stats$ | async">
-    <div
-      class="stat-value text-2xl"
-      [class.text-success]="row.Value > 0"
-      [class.text-warning]="row.Value < 0"
-      [class.text-error]="row.Value < -0.2"
-    >
-      {{ row.Value > 0 ? '+' : '' }}{{ row.Value | percent }}
-    </div>
-    <div class="stat-title flex flex-row">
-      <img [nwImage]="row.Icon" class="w-6 h-6 mr-1" />
-      <span [nwText]="row.Name"></span>
+<ng-container *ngIf="vital$ | async; let vital">
+  <div class="bg-base-300 rounded-t-md px-4 py-2 flex flex-row">
+    <a [nwInfoLink]="vital.VitalsID" [nwInfoResource]="'creature'" target="_blank" [nwText]="vital.DisplayName"></a>
+    <span class="flex-1"></span>
+    <span>{{ vital.Family }} Lvl. {{ vital.Level }}</span>
+  </div>
+  <div class="stats stats-vertical rounded-md w-full rounded-t-none backdrop-blur-sm bg-white/10">
+    <div class="stat place-items-center py-1 px-2" *ngFor="let row of stats$ | async">
+      <div
+        class="stat-value text-2xl"
+        [class.text-success]="row.Value > 0"
+        [class.text-warning]="row.Value < 0"
+        [class.text-error]="row.Value < -0.2"
+      >
+        {{ row.Value > 0 ? '+' : '' }}{{ row.Value | percent }}
+      </div>
+      <div class="stat-title flex flex-row">
+        <img [nwImage]="row.Icon" class="w-6 h-6 mr-1" />
+        <span [nwText]="row.Name"></span>
 
-    </div>
-    <div class="stat-desc flex flex-row gap-1">
-      <ng-container *ngFor="let wpn of row.Weapons">
-        <img [nwImage]="wpn.IconPath" class="w-5 h-5 mr-1 tooltip"/>
-      </ng-container>
-      <ng-container *ngIf="row.Perk">
-        <img [nwImage]="row.Perk.IconPath" class="w-5 h-5 mr-1" />
-        <!-- <span [nwText]="row.Perk.DisplayName" class="px-1"></span> -->
-      </ng-container>
+      </div>
+      <div class="stat-desc flex flex-row gap-1">
+        <ng-container *ngFor="let wpn of row.Weapons">
+          <img [nwImage]="wpn.IconPath" class="w-5 h-5 mr-1 tooltip"/>
+        </ng-container>
+        <ng-container *ngIf="row.Perk">
+          <img [nwImage]="row.Perk.IconPath" class="w-5 h-5 mr-1" />
+          <!-- <span [nwText]="row.Perk.DisplayName" class="px-1"></span> -->
+        </ng-container>
+      </div>
     </div>
   </div>
-</div>
+</ng-container>

@@ -3,6 +3,7 @@ import { Tradeskillpostcap } from '@nw-data/types'
 import { groupBy, uniq } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, shareReplay, switchMap } from 'rxjs'
 import { TradeskillPreferencesService } from '../preferences/tradeskill-preferences.service'
+import { shareReplayRefCount } from '../utils'
 import { NwDbService, toMap } from './nw-db.service'
 
 export interface NwTradeskillInfo {
@@ -74,21 +75,11 @@ export class NwTradeskillService {
 
   public skillsMap = defer(() => this.skills)
     .pipe(map((it) => toMap(it, 'ID')))
-    .pipe(
-      shareReplay({
-        refCount: true,
-        bufferSize: 1,
-      })
-    )
+    .pipe(shareReplayRefCount(1))
 
   public categories = defer(() => this.skills)
     .pipe(map((it) => uniq(it.map((i) => i.Category))))
-    .pipe(
-      shareReplay({
-        refCount: true,
-        bufferSize: 1,
-      })
-    )
+    .pipe(shareReplayRefCount(1))
 
   public constructor(private db: NwDbService, public preferences: TradeskillPreferencesService) {
     //
@@ -97,10 +88,12 @@ export class NwTradeskillService {
   public skillsByCategory(category: Observable<string> | string) {
     return combineLatest({
       cat: isObservable(category) ? category : of(category),
-      skills: this.skills
-    }).pipe(map(({ cat, skills }) => {
-      return skills.filter((it) => !cat || it.Category === cat)
-    }))
+      skills: this.skills,
+    }).pipe(
+      map(({ cat, skills }) => {
+        return skills.filter((it) => !cat || it.Category === cat)
+      })
+    )
   }
 
   public skillByName(name: Observable<string> | string) {

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Directive, Input } from '@angular/core'
+import { Directive, Input } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { distinctUntilChanged, map, Subject, takeUntil } from 'rxjs'
 import { SidebarComponent } from './sidebar.component'

@@ -3,7 +3,7 @@ import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { GridOptions, ValueGetterParams } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, shareReplay, Subject, takeUntil, tap } from 'rxjs'
 import { IconComponent, NwService } from '~/core/nw'
-import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
+import { SelectboxFilter, mithrilCell, AgGridComponent } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
@@ -229,6 +229,10 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
       bufferSize: 1,
     })
   )
+
+  public override setActiveCategories(grid: AgGridComponent, value: string[]): void {
+    console.log(grid.api.getFilterInstance('ItemType'))
+  }
 
   private perks: Map<string, Perks>
 
