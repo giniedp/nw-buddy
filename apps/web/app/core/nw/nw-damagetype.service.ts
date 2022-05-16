@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core'
-import { Damagetypes } from '@nw-data/types';
-import { NwDbService } from './nw-db.service';
+import { Damagetypes } from '@nw-data/types'
+import { groupBy } from 'lodash'
+import { defer, map, of } from 'rxjs'
+import { shareReplayRefCount } from '../utils'
+import { NwDbService } from './nw-db.service'
 
 const ICON_MAP: Record<string, string> = {
   Arcane: 'icon_tooltip_arcane_opaque',
@@ -16,11 +19,98 @@ const ICON_MAP: Record<string, string> = {
   Thrust: 'icon_tooltip_thrust_opaque',
 }
 
+export interface WeaponTypes {
+  WeaponTypeID: string
+  GroupName: string
+  IconPath: string
+  DamageType: string
+}
+
+const WEAPON_TYPES: Array<WeaponTypes> = [
+  {
+    WeaponTypeID: 'Hatchets',
+    GroupName: 'Hatchets_GroupName',
+    DamageType: 'Slash',
+    IconPath: 'assets/icons/weapons/1hhatchetsmall.png',
+  },
+  {
+    WeaponTypeID: 'Rapiers',
+    GroupName: 'Rapiers_GroupName',
+    DamageType: 'Thrust',
+    IconPath: 'assets/icons/weapons/1hrapiersmall.png',
+  },
+  {
+    WeaponTypeID: 'Swords',
+    GroupName: 'Swords_GroupName',
+    DamageType: 'Slash',
+    IconPath: 'assets/icons/weapons/1hswordsmall.png',
+  },
+  {
+    WeaponTypeID: 'WarHammers',
+    GroupName: 'WarHammers_GroupName',
+    DamageType: 'Strike',
+    IconPath: 'assets/icons/weapons/2hdemohammersmall.png',
+  },
+  {
+    WeaponTypeID: 'GreatAxe',
+    GroupName: 'GreatAxe_GroupName',
+    DamageType: 'Slash',
+    IconPath: 'assets/icons/weapons/2hgreataxesmall.png',
+  },
+  {
+    WeaponTypeID: 'Muskets',
+    GroupName: 'Muskets_GroupName',
+    DamageType: 'Thrust',
+    IconPath: 'assets/icons/weapons/2hmusketasmall.png',
+  },
+  {
+    WeaponTypeID: 'Bows',
+    GroupName: 'Bows_GroupName',
+    DamageType: 'Thrust',
+    IconPath: 'assets/icons/weapons/bowbsmall.png',
+  },
+  {
+    WeaponTypeID: 'Spears',
+    GroupName: 'Spears_GroupName',
+    DamageType: 'Thrust',
+    IconPath: 'assets/icons/weapons/spearasmall.png',
+  },
+  {
+    WeaponTypeID: 'StavesFire',
+    GroupName: 'StavesFire_GroupName',
+    DamageType: 'Fire',
+    IconPath: 'assets/icons/weapons/stafffiresmall.png',
+  },
+  {
+    WeaponTypeID: 'StavesLife',
+    GroupName: 'StavesLife_GroupName',
+    DamageType: 'Nature',
+    IconPath: 'assets/icons/weapons/stafflifesmall.png',
+  },
+  {
+    WeaponTypeID: 'GauntletVoid',
+    GroupName: 'GauntletVoid_GroupName',
+    DamageType: 'Corruption',
+    IconPath: 'assets/icons/weapons/voidgauntletsmall.png',
+  },
+  {
+    WeaponTypeID: 'GauntletIce',
+    GroupName: 'GauntletIce_GroupName',
+    DamageType: 'Ice',
+    IconPath: 'assets/icons/weapons/icegauntletsmall.png',
+  },
+  {
+    WeaponTypeID: 'Blunderbuss',
+    GroupName: 'Blunderbuss_GroupName',
+    DamageType: 'Thrust',
+    IconPath: 'assets/icons/weapons/blunderbusssmall.png',
+  },
+]
+
 @Injectable({
   providedIn: 'root',
 })
 export class NwDamagetypeService {
-
   public get damagetypes() {
     return this.db.damagetypes
   }
@@ -29,13 +119,13 @@ export class NwDamagetypeService {
     return this.db.damagetypesMap
   }
 
-  public get damageTypeToWeaponType() {
-    return this.db.viewDamageTypeToWeaponType
-  }
+  public weaponTypes = defer(() => of(WEAPON_TYPES)).pipe(shareReplayRefCount(1))
 
-  public constructor(private db: NwDbService) {
+  public damageTypeToWeaponType = defer(() => this.weaponTypes).pipe(
+    map((table) => groupBy(table, (it) => it.DamageType))
+  )
 
-  }
+  public constructor(private db: NwDbService) {}
 
   public damageTypeIdIcon(type: string) {
     return `assets/icons/tooltip/${ICON_MAP[type] || 'icon_unknown'}.png`

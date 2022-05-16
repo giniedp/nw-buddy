@@ -1,7 +1,14 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input, OnDestroy, ChangeDetectorRef, OnChanges } from '@angular/core'
-import { Crafting, Housingitems, ItemDefinitionMaster, Perks } from '@nw-data/types'
-import { BehaviorSubject, combineLatest, map, Subject, takeUntil } from 'rxjs'
+import {
+  Component,
+  ChangeDetectionStrategy,
+  Input,
+  ChangeDetectorRef,
+  OnChanges,
+} from '@angular/core'
+import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { BehaviorSubject, combineLatest, defer, map } from 'rxjs'
 import { NwService } from '~/core/nw'
+import { shareReplayRefCount } from '~/core/utils'
 
 @Component({
   selector: 'nwb-item-detail',
@@ -9,18 +16,24 @@ import { NwService } from '~/core/nw'
   styleUrls: ['./item-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: "bg-base-300 rounded-md"
-  }
+    class: 'bg-base-300 rounded-md',
+  },
 })
-export class ItemDetailComponent implements OnInit, OnChanges, OnDestroy {
+export class ItemDetailComponent implements OnChanges {
   @Input()
   public set itemId(value: string) {
     this.itemId$.next(value)
+  }
+  public get itemId() {
+    return this.itemId$.value
   }
 
   @Input()
   public set recipeId(value: string) {
     this.recipeId$.next(value)
+  }
+  public get recipeId() {
+    return this.recipeId$.value
   }
 
   @Input()
@@ -38,31 +51,20 @@ export class ItemDetailComponent implements OnInit, OnChanges, OnDestroy {
   @Input()
   public enableDescription: boolean
 
-  public item: ItemDefinitionMaster
-  public recipe: Crafting
-  public housing: Housingitems
+  public entity$ = defer(() => this.source$).pipe(map((it) => it.item || it.housing))
+  public item$ = defer(() => this.source$).pipe(map((it) => it.item))
+  public housing$ = defer(() => this.source$).pipe(map((it) => it.housing))
+  public recipe$ = defer(() => this.source$).pipe(map((it) => it.recipe))
+  public description$ = defer(() => this.source$).pipe(map(({ item, housing }) => item?.Description || housing?.Description))
+  public perks$ = defer(() => this.source$).pipe(map((it) => it.perks))
 
-  public get itemDescription(): string {
-    return this.item?.Description || this.housing?.Description
-  }
-  public itemRarity: number
-  public itemRarityName: string
-  public perks: Perks[]
-  public perkBuckets: Array<{ type: string, chance: number, icon: string }>
   public isLoading = true
 
   private itemId$ = new BehaviorSubject<string>(null)
   private recipeId$ = new BehaviorSubject<string>(null)
-
-  private destroy$ = new Subject()
-
-  public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {}
-
-  public ngOnInit(): void {
-
+  private source$ = defer(() =>
     combineLatest({
       itemId: this.itemId$,
-
       recipeId: this.recipeId$,
 
       perksMap: this.nw.db.perksMap,
@@ -71,47 +73,36 @@ export class ItemDetailComponent implements OnInit, OnChanges, OnDestroy {
       craftingMap: this.nw.db.recipesMap,
       craftingList: this.nw.db.recipes,
     })
-      .pipe(map(({ itemId, recipeId, craftingMap, craftingList, housingMap, itemsMap, perksMap }) => {
+  ).pipe(
+    map(({ itemId, recipeId, craftingMap, craftingList, housingMap, itemsMap, perksMap }) => {
+      let item: ItemDefinitionMaster
+      let housing: Housingitems
+      let recipe: Crafting
+      if (itemId) {
+        item = itemsMap.get(itemId)
+        housing = housingMap.get(itemId)
+        recipe = this.nw.recipeForItem(item || housing, craftingList)
+      } else if (recipeId) {
+        recipe = craftingMap.get(recipeId)
+        const itemId = this.nw.itemIdFromRecipe(recipe)
+        housing = housingMap.get(itemId)
+        item = itemsMap.get(itemId)
+      }
+      return {
+        recipe,
+        housing,
+        item,
+        perks: item && this.nw.itemPerks(item, perksMap),
+      }
+    })
+  )
+  .pipe(shareReplayRefCount(1))
 
-        let item: ItemDefinitionMaster
-        let housing: Housingitems
-        let recipe: Crafting
-
-        if (itemId) {
-          item = itemsMap.get(itemId)
-          housing = housingMap.get(itemId)
-          recipe = this.nw.recipeForItem(item || housing, craftingList)
-        } else if (recipeId) {
-          recipe = craftingMap.get(recipeId)
-          const itemId = this.nw.itemIdFromRecipe(recipe)
-          housing = housingMap.get(itemId)
-          item = itemsMap.get(itemId)
-        }
-        return {
-          recipe,
-          housing,
-          item,
-          perks: item && this.nw.itemPerks(item, perksMap)
-        }
-      }))
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(({ recipe, housing, item, perks }) => {
-        this.item = item
-        this.housing = housing
-        this.recipe = recipe
-        this.perks = perks
-        this.isLoading = false
-        this.cdRef.markForCheck()
-      })
-
+  public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {
+    //
   }
 
-  public ngOnChanges(ch): void {
+  public ngOnChanges(): void {
     this.cdRef.detectChanges()
-  }
-
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
   }
 }

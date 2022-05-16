@@ -3,9 +3,14 @@
     <img [nwImage]="perk.IconPath" class="w-8">
   </a>
   <div class="ml-2">
-    <b class="mr-1" *ngIf="perk.AppliedPrefix" [nwText]="perk.AppliedPrefix"></b>
-    <b class="mr-1" *ngIf="perk.DisplayName" [nwText]="perk.DisplayName"></b>
-    <b class="mr-1" *ngIf="perk.AppliedSuffix" [nwText]="perk.AppliedSuffix"></b>
-    <span *ngIf="perk.Description" [nwText]="perk.Description" [itemId]="perk.PerkID"></span>
+    <ng-container *ngIf="perk.Affix && perk.PerkType === 'Inherent'">
+      <nwb-affixstat [affix]="perk.Affix" [scale]="gearScore * perk.ScalingPerGearScore"></nwb-affixstat>
+    </ng-container>
+    <ng-container *ngIf="!(perk.Affix && perk.PerkType === 'Inherent')">
+      <b class="mr-1" *ngIf="perk.AppliedPrefix" [nwText]="perk.AppliedPrefix"></b>
+      <b class="mr-1" *ngIf="perk.DisplayName" [nwText]="perk.DisplayName"></b>
+      <b class="mr-1" *ngIf="perk.AppliedSuffix" [nwText]="perk.AppliedSuffix"></b>
+      <span *ngIf="perk.Description" [nwText]="perk.Description" [itemId]="perk.PerkID" [gearScore]="gearScore"></span>
+    </ng-container>
   </div>
 </div>

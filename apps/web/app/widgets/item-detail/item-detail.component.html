@@ -1,17 +1,28 @@
-<div class="flex flex-row items-center justify-center" *ngIf="isLoading">
-  <button class="btn btn-ghost loading mx-auto"></button>
-</div>
-<ng-container *ngIf="!isLoading">
+<ng-container *ngIf="entity$ | async">
   <nwb-item-detail-header
     class="header"
-    [entity]="item || housing"
+    [entity]="entity$ | async"
     [enableNwdbLink]="enableNwdbLink"
     [enableTracker]="enableTracker"
     [enableMarker]="enableMarker"
   ></nwb-item-detail-header>
   <div class="p-4" *ngIf="enableDescription">
-    <p class="text-primary italic" [nwText]="itemDescription" [itemId]="item?.ItemID" *ngIf="itemDescription"></p>
-    <nwb-item-detail-perks class="mt-2" [perks]="perks" *ngIf="perks?.length"></nwb-item-detail-perks>
+    <ng-container *ngIf="description$ | async; let description">
+      <p class="text-primary italic" [nwText]="description" [itemId]="itemId"></p>
+    </ng-container>
+    <ng-container *ngIf="perks$ | async; let perks">
+      <nwb-item-detail-perks class="mt-2" [perks]="perks"></nwb-item-detail-perks>
+    </ng-container>
   </div>
-  <nwb-crafting-calculator class="p-2" [recipe]="recipe" *ngIf="recipe && enableRecipe"></nwb-crafting-calculator>
+  <ng-container *ngIf="enableRecipe">
+    <nwb-crafting-calculator
+      class="p-2"
+      [recipe]="recipe"
+      *ngIf="recipe$ | async; let recipe"
+    ></nwb-crafting-calculator>
+  </ng-container>
 </ng-container>
+
+<div class="flex flex-row items-center justify-center" *ngIf="!(entity$ | async)">
+  <button class="btn btn-ghost loading mx-auto"></button>
+</div>

@@ -163,6 +163,11 @@ program
         'ui_dungeon_mutator_bronze',
         'ui_dungeon_mutator_silver',
         'ui_dungeon_mutator_gold',
+        'ui_strength',
+        'ui_dexterity',
+        'ui_intelligence',
+        'ui_constitution',
+        'ui_focus'
       ],
     })
     console.log('importing images')
