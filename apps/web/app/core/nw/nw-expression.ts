@@ -105,7 +105,7 @@ export class NwExpressionService {
         return this.db.perksMap.pipe(
           map((it) => {
             if (it.has(context.itemId)) {
-              return it.get(context.itemId).ScalingPerGearScore * context.gearScore
+              return it.get(context.itemId).ScalingPerGearScore * Math.max(0, context.gearScore - 100) + 1
             }
             throw new Error(`perkMultiplier not resolved (for expression "${expression}" and id "${context.itemId}")`)
           })
