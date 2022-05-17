@@ -35,6 +35,10 @@ export interface DifficultyWithRewards {
 //   DungeonShatterMtn00: ['ShatterMtn00']
 // }
 
+const MAP_DUNGEON_TO_VITALS_LOOT_TAGS: Record<string, string[]> = {
+  DungeonEbonscale00: ['Dynasty', 'IsabellaDynasty'],
+}
+
 const MUTATION_LOOT_TAGS = [
   'MutDiff',
   'MutDiff1',
@@ -69,9 +73,7 @@ export class DungeonsService {
 
   public mutation$ = defer(() => this.nw.db.data.gamemodemutatorsElementalmutations()).pipe(shareReplayRefCount(1))
 
-  public constructor(public nw: NwService, public preferences: DungeonPreferencesService) {
-
-  }
+  public constructor(public nw: NwService, public preferences: DungeonPreferencesService) {}
 
   private buildDifficultyTable(
     difficulty: Mutationdifficulty[],
@@ -138,7 +140,7 @@ export class DungeonsService {
     dungeon: Gamemodes,
     mutation: Mutationdifficulty
   ): Observable<Array<ItemDefinitionMaster | Housingitems>> {
-    if (!dungeon.IsMutable) {
+    if (!dungeon.IsMutable || !mutation) {
       return of([])
     }
     // return this.dungeonMutatedLoot(dungeon)
@@ -192,14 +194,15 @@ export class DungeonsService {
   // }
 
   public dungeonBosses(dungeon: Gamemodes) {
-    const include = [dungeon.GameModeId.replace(/^Dungeon/, '')]
+    const include = MAP_DUNGEON_TO_VITALS_LOOT_TAGS[dungeon.GameModeId] || [dungeon.GameModeId.replace(/^Dungeon/, '')]
     return combineLatest({
       // categories: this.dungeonCreaturesCategories(dungeon),
       vitals: this.nw.db.vitalsByCreatureType,
     }).pipe(
       map(({ vitals }) => {
-        const bosses = vitals.get('DungeonBoss')
-        const result = bosses.filter((it) => {
+        const miniBosses = vitals.get('DungeonMiniBoss') || []
+        const bosses = vitals.get('DungeonBoss') || []
+        const result = [...miniBosses, ...bosses].filter((it) => {
           return (it.LootTags || []).some((i) => include.includes(i))
         })
         // console.log({
@@ -213,7 +216,7 @@ export class DungeonsService {
   }
 
   public dungeonCreatures(dungeon: Gamemodes) {
-    const include = [dungeon.GameModeId.replace(/^Dungeon/, '')]
+    const include = MAP_DUNGEON_TO_VITALS_LOOT_TAGS[dungeon.GameModeId] || [dungeon.GameModeId.replace(/^Dungeon/, '')]
     return combineLatest({
       vitals: this.nw.db.vitals,
     }).pipe(
