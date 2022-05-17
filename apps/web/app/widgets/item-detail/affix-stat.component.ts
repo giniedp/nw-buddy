@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core'
+import { Perks } from '@nw-data/types'
 import { BehaviorSubject, combineLatest, defer, map, ReplaySubject } from 'rxjs'
 import { NwService } from '~/core/nw'
+import { getPerkAffixStat, hasPerkAffixStats } from '~/core/nw/utils'
 
 @Component({
   selector: 'nwb-affixstat',
@@ -12,40 +14,35 @@ import { NwService } from '~/core/nw'
 })
 export class AffixStatComponent {
   @Input()
-  public set affix(affix: string) {
-    this.affix$.next(affix)
+  public set perk(value: Perks) {
+    this.perk$.next(value)
   }
 
   @Input()
-  public set scale(value: number) {
-    this.scale$.next(value)
+  public set gearScore(value: number) {
+    this.gearScore$.next(value)
   }
 
-  public affixstats = defer(() => combineLatest({
-    affix: this.affix$,
+  public affix = defer(() => combineLatest({
+    perk: this.perk$,
     affixStats: this.nw.db.affixstatsMap,
-  })).pipe(map(({ affix, affixStats }) => affixStats.get(affix)))
+  })).pipe(map(({ perk, affixStats }) => affixStats.get(perk.Affix)))
 
   public mods = defer(() => combineLatest({
-    scale: this.scale$,
-    affix: this.affixstats
+    perk: this.perk$,
+    affix: this.affix,
+    score: this.gearScore$
   }) ).pipe(
-    map(({ scale, affix }) => {
-      return Object.keys(affix)
-        .filter((it) => it.startsWith('MOD'))
-        .map((key) => {
-          const label = key.replace('MOD', '').toLowerCase()
-          const rawValue = String(affix[key])
-          return {
-            label: `ui_${label}`,
-            value: rawValue.split('-').map((value) => Math.round(Number(value) * Math.floor(scale)) ).join('-'),
-          }
-        })
+    map(({ perk, affix, score }) => {
+      if (hasPerkAffixStats(perk)) {
+        return getPerkAffixStat(perk, affix, score)
+      }
+      return []
     })
   )
 
-  private affix$ = new ReplaySubject<string>(1)
-  private scale$ = new BehaviorSubject<number>(1)
+  private perk$ = new ReplaySubject<Perks>(1)
+  private gearScore$ = new BehaviorSubject<number>(600)
 
   public constructor(private nw: NwService) {}
 }

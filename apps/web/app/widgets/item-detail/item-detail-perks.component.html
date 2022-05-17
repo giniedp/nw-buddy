@@ -4,7 +4,7 @@
   </a>
   <div class="ml-2">
     <ng-container *ngIf="perk.Affix && perk.PerkType === 'Inherent'">
-      <nwb-affixstat [affix]="perk.Affix" [scale]="gearScore * perk.ScalingPerGearScore"></nwb-affixstat>
+      <nwb-affixstat [perk]="perk" [gearScore]="gearScore"></nwb-affixstat>
     </ng-container>
     <ng-container *ngIf="!(perk.Affix && perk.PerkType === 'Inherent')">
       <b class="mr-1" *ngIf="perk.AppliedPrefix" [nwText]="perk.AppliedPrefix"></b>

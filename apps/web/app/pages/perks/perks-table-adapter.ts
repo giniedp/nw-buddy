@@ -8,6 +8,7 @@ import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { shareReplayRefCount } from '~/core/utils'
 import { TranslateService } from '~/core/i18n'
+import { getPerkAffixStat, hasPerkAffixStats } from '~/core/nw/utils'
 
 @Injectable()
 export class PerksAdapterService extends DataTableAdapter<Perks> {
@@ -42,6 +43,9 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
         },
         {
           headerName: 'Name',
+          wrapText: true,
+          autoHeight: true,
+          width: 300,
           valueGetter: this.valueGetter(({ data }) => {
             return {
               name: data.DisplayName && this.i18n.get(data.DisplayName),
@@ -54,14 +58,14 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           },
           cellRenderer: this.mithrilCell({
             view: ({ attrs: { value }}) => {
-              return m('div.flex.flex-col', [
+              return m('div.flex.flex-col.text-sm', [
                 value.name && m('span', value.name),
-                value.prefix && m('span.italic', `${value.prefix} …`),
-                value.suffix && m('span.italic', `… ${value.suffix}`),
+                value.prefix && m('span.italic.text-accent', `${value.prefix} …`),
+                value.suffix && m('span.italic.text-accent', `… ${value.suffix}`),
               ])
             }
           }),
-          width: 300,
+
         },
         {
           width: 500,
@@ -70,6 +74,14 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           autoHeight: true,
           cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
           cellRenderer: this.asyncCell((data) => {
+            if (hasPerkAffixStats(data)) {
+              return this.nw.db.affixStatsMap.pipe(map((stats) => {
+                const affix = stats.get(data.Affix)
+                return getPerkAffixStat(data, affix, 600).map((it) => {
+                  return `<b>${this.i18n.get(it.label)}</b> ${it.value}`
+                }).join('<br>')
+              }))
+            }
             return this.i18n.observe(data.Description).pipe(switchMap((value) => {
               return this.nw.expression.solve({
                 text: value,
@@ -78,6 +90,8 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
                 itemId: data.PerkID,
               })
             }))
+          }, {
+            trustHtml: true
           })
         },
         {
