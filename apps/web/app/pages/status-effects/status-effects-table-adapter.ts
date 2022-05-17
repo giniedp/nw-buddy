@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core'
 import { Statuseffect, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { defer, Observable, shareReplay } from 'rxjs'
+import { defer, map, Observable, shareReplay } from 'rxjs'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/core/nw'
 import { mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { TranslateService } from '~/core/i18n'
+import { shareReplayRefCount } from '~/core/utils'
 
 @Injectable()
 export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> {
@@ -70,11 +71,10 @@ export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> 
 
   public entities: Observable<Statuseffect[]> = defer(() => {
     return this.nw.db.statusEffects
-  }).pipe(
-    shareReplay({
-      refCount: true,
-      bufferSize: 1,
-    })
+  })
+  .pipe(map((list) => list.filter((it) => !!it.Description)))
+  .pipe(
+    shareReplayRefCount(1)
   )
 
   private perks: Map<string, Perks>

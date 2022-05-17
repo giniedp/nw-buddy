@@ -84,7 +84,7 @@ export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
   public entities: Observable<Ability[]> = defer(() => {
     return this.db.abilities
   })
-    .pipe(map((list) => list.filter((it) => !!it.WeaponTag)))
+    .pipe(map((list) => list.filter((it) => !!it.WeaponTag && !!it.DisplayName && !!it.Description)))
     .pipe(shareReplayRefCount(1))
 
   public constructor(private db: NwDbService, private i18n: TranslateService, private expr: NwExpressionService) {
