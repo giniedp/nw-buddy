@@ -10,6 +10,7 @@ import {
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { combineLatest, map, ReplaySubject, switchMap, takeUntil } from 'rxjs'
 import { NwService } from '~/core/nw'
+import { getItemId, getItemRarity, getItemRarityName } from '~/core/nw/utils'
 import { DestroyService } from '~/core/utils'
 
 @Component({
@@ -42,10 +43,10 @@ export class ItemDetailHeaderComponent implements OnInit, OnChanges {
     return this.entity?.Name
   }
   public get itemRarity(): number {
-    return this.entity && this.nw.itemRarity(this.entity)
+    return getItemRarity(this.entity)
   }
   public get itemRarityName(): string {
-    return this.entity && this.nw.itemRarityKey(this.entity)
+    return getItemRarityName(this.entity)
   }
   public get itemTypeName(): string {
     if (this.entity) {
@@ -99,7 +100,7 @@ export class ItemDetailHeaderComponent implements OnInit, OnChanges {
       .pipe(takeUntil(this.destroy.$))
       .subscribe((item) => {
         this.entity = item
-        this.entityId = this.nw.itemId(item)
+        this.entityId = getItemId(item)
         this.cdRef.markForCheck()
       })
   }

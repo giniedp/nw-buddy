@@ -17,6 +17,7 @@ import {
 import { Craftingcategories, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { filter, ReplaySubject, Subject, switchMapTo, takeUntil } from 'rxjs'
 import { NwService } from '~/core/nw'
+import { getItemRarity } from '~/core/nw/utils'
 import { CraftingCalculatorComponent } from './crafting-calculator.component'
 import { CraftingCalculatorService, CraftingStep } from './crafting-calculator.service'
 
@@ -132,7 +133,7 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   public itemRarity(item: ItemDefinitionMaster | Housingitems) {
-    return this.nw.itemRarity(item)
+    return getItemRarity(item)
   }
 
   public async selectOption(itemId: string) {

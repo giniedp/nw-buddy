@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core'
 import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, shareReplay, switchMap } from 'rxjs'
-import { IconComponent, NwService } from '~/core/nw'
+import { IconComponent, nwdbLinkUrl, NwService } from '~/core/nw'
 import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { shareReplayRefCount } from '~/core/utils'
+import { TranslateService } from '~/core/i18n'
 
 @Injectable()
 export class PerksAdapterService extends DataTableAdapter<Perks> {
@@ -19,7 +20,7 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
   }
 
   public buildGridOptions(base: GridOptions): GridOptions {
-    return this.nw.gridOptions({
+    return {
       ...base,
       rowSelection: 'single',
 
@@ -30,9 +31,9 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           width: 74,
           cellRenderer: this.mithrilCell({
             view: ({ attrs: { data } }) => {
-              return m('a', { target: '_blank', href: this.nw.nwdbUrl('perk', data.PerkID) }, [
+              return m('a', { target: '_blank', href: nwdbLinkUrl('perk', data.PerkID) }, [
                 m(IconComponent, {
-                  src: this.nw.iconPath(data.IconPath),
+                  src: data.IconPath,
                   class: `w-9 h-9 nw-icon`,
                 }),
               ])
@@ -43,9 +44,9 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           headerName: 'Name',
           valueGetter: this.valueGetter(({ data }) => {
             return {
-              name: data.DisplayName && this.nw.translate(data.DisplayName),
-              suffix: data.AppliedSuffix && this.nw.translate(data.AppliedSuffix),
-              prefix: data.AppliedPrefix && this.nw.translate(data.AppliedPrefix),
+              name: data.DisplayName && this.i18n.get(data.DisplayName),
+              suffix: data.AppliedSuffix && this.i18n.get(data.AppliedSuffix),
+              prefix: data.AppliedPrefix && this.i18n.get(data.AppliedPrefix),
             }
           }),
           getQuickFilterText: ({ value }) => {
@@ -69,7 +70,7 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           autoHeight: true,
           cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
           cellRenderer: this.asyncCell((data) => {
-            return this.nw.translate$(data.Description).pipe(switchMap((value) => {
+            return this.i18n.observe(data.Description).pipe(switchMap((value) => {
               return this.nw.expression.solve({
                 text: value,
                 charLevel: 60,
@@ -110,7 +111,7 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           cellRenderer: this.cellRendererTags(),
         },
       ],
-    })
+    }
   }
 
   public entities: Observable<Perks[]> = defer(() => {
@@ -119,7 +120,7 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
     shareReplayRefCount(1)
   )
 
-  public constructor(private nw: NwService) {
+  public constructor(private nw: NwService, private i18n: TranslateService) {
     super()
   }
 }

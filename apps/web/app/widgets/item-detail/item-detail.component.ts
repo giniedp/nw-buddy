@@ -8,6 +8,7 @@ import {
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { BehaviorSubject, combineLatest, defer, map } from 'rxjs'
 import { NwService } from '~/core/nw'
+import { getItemIdFromRecipe, getItemPerks, getRecipeForItem } from '~/core/nw/utils'
 import { shareReplayRefCount } from '~/core/utils'
 
 @Component({
@@ -81,10 +82,10 @@ export class ItemDetailComponent implements OnChanges {
       if (itemId) {
         item = itemsMap.get(itemId)
         housing = housingMap.get(itemId)
-        recipe = this.nw.recipeForItem(item || housing, craftingList)
+        recipe = getRecipeForItem(item || housing, craftingList)
       } else if (recipeId) {
         recipe = craftingMap.get(recipeId)
-        const itemId = this.nw.itemIdFromRecipe(recipe)
+        const itemId = getItemIdFromRecipe(recipe)
         housing = housingMap.get(itemId)
         item = itemsMap.get(itemId)
       }
@@ -92,7 +93,7 @@ export class ItemDetailComponent implements OnChanges {
         recipe,
         housing,
         item,
-        perks: item && this.nw.itemPerks(item, perksMap),
+        perks: item && getItemPerks(item, perksMap),
       }
     })
   )

@@ -14,6 +14,7 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { combineLatest, debounceTime, defer, map, of, ReplaySubject, startWith, switchMap } from 'rxjs'
 import { NwService } from '~/core/nw'
 import { NwTradeskillService } from '~/core/nw/nw-tradeskill.service'
+import { calculateCraftingReward, getItemId } from '~/core/nw/utils'
 import { DestroyService, shareReplayRefCount } from '~/core/utils'
 import { CraftingCalculatorComponent } from './crafting-calculator.component'
 import { CraftingCalculatorService } from './crafting-calculator.service'
@@ -139,7 +140,7 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
       if (!node.item || (node.expand && node.steps?.length)) {
         return
       }
-      const key = this.nw.itemId(node.item)
+      const key = getItemId(node.item)
       if (!table.has(key)) {
         table.set(key, {
           item: node.item,
@@ -220,7 +221,7 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
             })
           }
           const data = table.get(key)
-          data.xp += this.nw.recipeProgressionReward(recipe, event) * node.requiredQuantity
+          data.xp += calculateCraftingReward(recipe, event) * node.requiredQuantity
           table.set(key, data)
         })
         return Array.from(table.values())

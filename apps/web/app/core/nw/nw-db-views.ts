@@ -1,5 +1,4 @@
-import { groupBy } from 'lodash'
-import { combineLatest, map, Observable, of } from 'rxjs'
+import { combineLatest, map } from 'rxjs'
 import type { NwDbService } from './nw-db.service'
 
 export function queryGemPerksWithAffix(db: NwDbService) {

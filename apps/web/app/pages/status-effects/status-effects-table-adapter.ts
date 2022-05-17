@@ -2,10 +2,11 @@ import { Injectable } from '@angular/core'
 import { Statuseffect, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, Observable, shareReplay } from 'rxjs'
-import { IconComponent, NwService } from '~/core/nw'
+import { IconComponent, nwdbLinkUrl, NwService } from '~/core/nw'
 import { mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
+import { TranslateService } from '~/core/i18n'
 
 @Injectable()
 export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> {
@@ -18,7 +19,7 @@ export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> 
   }
 
   public buildGridOptions(base: GridOptions): GridOptions {
-    return this.nw.gridOptions({
+    return {
       ...base,
       rowSelection: 'single',
       columnDefs: [
@@ -28,9 +29,9 @@ export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> 
           width: 74,
           cellRenderer: this.mithrilCell({
             view: ({ attrs: { data } }) =>
-              m('a', { target: '_blank', href: this.nw.nwdbUrl('status-effect', data.StatusID) }, [
+              m('a', { target: '_blank', href: nwdbLinkUrl('status-effect', data.StatusID) }, [
                 m(IconComponent, {
-                  src: this.nw.iconPath(data.PlaceholderIcon || data['IconPath']),
+                  src: data.PlaceholderIcon || data['IconPath'],
                   class: `w-9 h-9 nw-icon`,
                 }),
               ]),
@@ -38,7 +39,7 @@ export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> 
         },
         {
           headerName: 'Name',
-          valueGetter: this.valueGetter(({ data }) => this.nw.translate(data.DisplayName) || data.StatusID),
+          valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.DisplayName) || data.StatusID),
           width: 300,
         },
         {
@@ -50,7 +51,7 @@ export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> 
           cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
           cellRenderer: this.asyncCell((data) => {
             return this.nw.expression.solve({
-              text: this.nw.translate(data.Description),
+              text: this.i18n.get(data.Description),
               charLevel: 60,
               itemId: data.Description,
               gearScore: 600
@@ -64,7 +65,7 @@ export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> 
           cellRenderer: this.cellRendererTags(),
         },
       ],
-    })
+    }
   }
 
   public entities: Observable<Statuseffect[]> = defer(() => {
@@ -78,7 +79,7 @@ export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> 
 
   private perks: Map<string, Perks>
 
-  public constructor(private nw: NwService) {
+  public constructor(private nw: NwService, private i18n: TranslateService) {
     super()
   }
 }

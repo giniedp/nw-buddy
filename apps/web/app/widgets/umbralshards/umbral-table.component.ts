@@ -1,13 +1,12 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy, Input, OnChanges } from '@angular/core'
-import { GridOptions } from 'ag-grid-community'
-import { Umbralgsupgrades } from '@nw-data/types'
-import { BehaviorSubject, combineLatest, distinctUntilChanged, map, Subject, takeUntil } from 'rxjs'
-import { NwDataService, NwService } from '~/core/nw'
+import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
+import { BehaviorSubject, combineLatest, defer, map } from 'rxjs'
+import { NwService } from '~/core/nw'
+import { shareReplayRefCount } from '~/core/utils'
 
 function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: keyof T) {
   let result = 0
   for (let i = startIndex; i <= endIndex; i++) {
-    result += (data[i] as any) [key] as number
+    result += (data[i] as any)[key] as number
   }
   return result
 }
@@ -18,59 +17,56 @@ function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: key
   styleUrls: ['./umbral-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UmbralTableComponent implements OnInit, OnDestroy, OnChanges {
+export class UmbralTableComponent {
+  @Input()
+  public set gsMin(value: number) {
+    this.gsMin$.next(value)
+  }
+  public get gsMin() {
+    return this.gsMin$.value
+  }
 
   @Input()
-  public gsMin: number = null
+  public set gsMax(value: number) {
+    this.gsMax$.next(value)
+  }
+  public get gsMax() {
+    return this.gsMax$.value
+  }
 
-  @Input()
-  public gsMax: number = null
+  public limit$ = defer(() => this.data$).pipe(map((data) => Math.max(...data.map((it) => it.Level)) + 1))
 
-  public limit: number
-  public data: Umbralgsupgrades[]
-  private destroy$ = new Subject()
-  private gsMin$ = new BehaviorSubject(this.gsMin)
-  private gsMax$ = new BehaviorSubject(this.gsMax)
-
-  public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {}
-
-  public async ngOnInit() {
-
+  public data$ = defer(() =>
     combineLatest({
       min: this.gsMin$,
       max: this.gsMax$,
-      data: this.nw.db.data.umbralgsupgrades()
-    }).pipe(map(({ min, max, data }) => {
-      if (min != null) {
-        data = data.filter((it) => it.Level >= min)
-      }
-      if (max != null) {
-        data = data.filter((it) => it.Level <= max)
-      }
-      return data.map((node, i) => {
-        let iStart = i
-        let iEnd = data.length - 1
-        return {
-          ...node,
-          total: accumulate(data, iStart, iEnd, 'RequiredItemQuantity')
-        }
-      })
-    }))
-    .pipe(takeUntil(this.destroy$))
-    .subscribe((data) => {
-      this.data = data
-      this.limit = Math.max(...data.map((it) => it.Level)) + 1
-      this.cdRef.markForCheck()
+      data: this.nw.db.data.umbralgsupgrades(),
     })
-  }
+  )
+    .pipe(
+      map(({ min, max, data }) => {
+        if (min != null) {
+          data = data.filter((it) => it.Level >= min)
+        }
+        if (max != null) {
+          data = data.filter((it) => it.Level <= max)
+        }
+        return data.map((node, i) => {
+          let iStart = i
+          let iEnd = data.length - 1
+          return {
+            ...node,
+            total: accumulate(data, iStart, iEnd, 'RequiredItemQuantity'),
+          }
+        })
+      })
+    )
+    .pipe(shareReplayRefCount(1))
 
-  public ngOnChanges(): void {
-    this.gsMax$.next(this.gsMax)
-    this.gsMin$.next(this.gsMin)
-  }
+  private gsMin$ = new BehaviorSubject(null)
+  private gsMax$ = new BehaviorSubject(null)
 
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
+  public constructor(private nw: NwService) {
+    //
   }
 }

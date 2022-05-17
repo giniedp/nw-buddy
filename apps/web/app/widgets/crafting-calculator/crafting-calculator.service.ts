@@ -2,6 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core'
 import { Crafting, Craftingcategories, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { combineLatest, defer, ReplaySubject, Subject, takeUntil } from 'rxjs'
 import { NwService } from '~/core/nw'
+import { getRecipeForItem, calculateBonusItemChance, getIngretientsFromRecipe } from '~/core/nw/utils'
 
 export interface RecipeState {
   quantity: number
@@ -78,13 +79,13 @@ export class CraftingCalculatorService implements OnDestroy {
   }
 
   public findRecipeForItem(item: ItemDefinitionMaster | Housingitems) {
-    return this.nw.recipeForItem(item, this.recipes)
+    return getRecipeForItem(item, this.recipes)
   }
 
   public findRecipeIngrediendsForItem(itemId: string) {
     const item = this.findItem(itemId)
     const recipe = this.findRecipeForItem(item)
-    return (this.nw.recipeIngredients(recipe) || []).map(
+    return getIngretientsFromRecipe(recipe).map(
       (it): Ingredient => ({
         id: it.ingredient,
         type: it.type,
@@ -154,12 +155,12 @@ export class CraftingCalculatorService implements OnDestroy {
       return 0
     }
     const item = this.findItem(step.ingredient.id)
-    const recipe = this.nw.recipeForItem(item, this.recipes)
+    const recipe = getRecipeForItem(item, this.recipes)
     if (!recipe) {
       return 0
     }
 
-    return this.nw.calculateBonusItemChance({
+    return calculateBonusItemChance({
       item: item,
       ingredients: this.findItemsOrSelectedItems(step.steps),
       recipe: recipe,

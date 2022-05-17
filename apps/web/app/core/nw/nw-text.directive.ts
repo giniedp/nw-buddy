@@ -7,6 +7,8 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs'
+import { TranslateService } from '../i18n'
+import { NwExpressionService } from './nw-expression'
 import { NwService } from './nw.service'
 
 interface TextContext {
@@ -35,20 +37,20 @@ export class NwTextDirective implements OnInit, OnChanges, OnDestroy {
   private destroy$ = new Subject()
   private change$ = new ReplaySubject<TextContext>(1)
 
-  public constructor(private elRef: ElementRef<HTMLElement>, private nw: NwService) {}
+  public constructor(private elRef: ElementRef<HTMLElement>, private i18n: TranslateService, private expr: NwExpressionService) {}
 
   public ngOnInit(): void {
     this.change$
       .pipe(distinctUntilChanged())
       .pipe(switchMap((context) => {
-        return this.nw.translate$(context.text).pipe(map((text) => {
+        return this.i18n.observe(context.text).pipe(map((text) => {
           return {
             ...context,
             text
           }
         }))
       }))
-      .pipe(switchMap((context) => this.nw.expression.solve(context)))
+      .pipe(switchMap((context) => this.expr.solve(context)))
       .pipe(takeUntil(this.destroy$))
       .subscribe((res) => {
         this.elRef.nativeElement.textContent = String(res)

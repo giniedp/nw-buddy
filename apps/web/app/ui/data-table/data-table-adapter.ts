@@ -16,6 +16,10 @@ export abstract class DataTableAdapter<T> {
     }
   }
 
+  public moneyFormatter = Intl.NumberFormat(navigator.language, {
+    minimumFractionDigits: 2,
+  })
+
   public abstract entityID(item: T): string
   public abstract entityCategory(item: T): string
   public abstract buildGridOptions(base: GridOptions): GridOptions

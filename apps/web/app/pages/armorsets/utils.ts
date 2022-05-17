@@ -1,13 +1,15 @@
 import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { groupBy, sortBy } from 'lodash'
+import { TranslateService } from '~/core/i18n'
 import { NwService } from '~/core/nw'
+import { getItemRarity } from '~/core/nw/utils'
 import { Armorset, ArmorsetGroup } from './types'
 
-export function findSets(items: ItemDefinitionMaster[], source: string, perksMap: Map<string, Perks>, nw: NwService): ArmorsetGroup[] {
+export function findSets(items: ItemDefinitionMaster[], source: string, perksMap: Map<string, Perks>, i18n: TranslateService): ArmorsetGroup[] {
   const groups1 = groupBy(items, (item) => {
     const family = getFamilyName(item)
     const weight = getItemClass(item)
-    const rarity = nw.itemRarity(item)
+    const rarity = getItemRarity(item)
     const tier = item.Tier
     return `${family}-${weight}-${tier}-${rarity}`
   })
@@ -22,7 +24,7 @@ export function findSets(items: ItemDefinitionMaster[], source: string, perksMap
       .samePerks
       .map((it) => perksMap.get(it))
       .filter((it) => it.PerkType !== 'Gem' && it.PerkType !== 'Inherent')
-    const naming = buildSetName(items, nw)
+    const naming = buildSetName(items, i18n)
 
     const groupKey = sharedPerks.map((it) => it.PerkID).sort().join('-')
     sets[groupKey] = sets[groupKey] || []
@@ -117,8 +119,8 @@ export function getPerkInfos(items: ItemDefinitionMaster[]) {
   }
 }
 
-export function buildSetName(items: ItemDefinitionMaster[], nw: NwService) {
-  const names = items.map((it) => nw.translate(it.Name))
+export function buildSetName(items: ItemDefinitionMaster[], i18n: TranslateService) {
+  const names = items.map((it) => i18n.get(it.Name))
   const i0 = commonPrefixLength(names)
   const i1 = commonPrefixLength(names.map((it) => it.split('').reverse().join('')))
   const data = names.map((name) => {

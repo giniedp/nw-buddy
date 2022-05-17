@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core'
-import { Ability, Perks } from '@nw-data/types'
+import { Ability } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { defer, filter, map, Observable, shareReplay } from 'rxjs'
-import { IconComponent, NwService } from '~/core/nw'
+import { defer, map, Observable } from 'rxjs'
+import { IconComponent, nwdbLinkUrl, NwDbService } from '~/core/nw'
 import { mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { shareReplayRefCount } from '~/core/utils'
+import { TranslateService } from '~/core/i18n'
+import { NwExpressionService } from '~/core/nw/nw-expression'
 
 @Injectable()
 export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
@@ -19,7 +21,7 @@ export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
   }
 
   public buildGridOptions(base: GridOptions): GridOptions {
-    return this.nw.gridOptions({
+    return {
       ...base,
       rowSelection: 'single',
       columnDefs: [
@@ -30,9 +32,9 @@ export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
           pinned: true,
           cellRenderer: mithrilCell<Ability>({
             view: ({ attrs: { data } }) =>
-              m('a', { target: '_blank', href: this.nw.nwdbUrl('ability', data.AbilityID) }, [
+              m('a', { target: '_blank', href: nwdbLinkUrl('ability', data.AbilityID) }, [
                 m(IconComponent, {
-                  src: this.nw.iconPath(data.Icon),
+                  src: data.Icon,
                   class: `w-9 h-9 nw-icon`,
                 }),
               ]),
@@ -41,7 +43,7 @@ export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
         {
           width: 250,
           headerName: 'Name',
-          valueGetter: this.valueGetter(({ data }) => this.nw.translate(data.DisplayName)),
+          valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.DisplayName)),
           getQuickFilterText: ({ value }) => value,
         },
         {
@@ -57,8 +59,8 @@ export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
           autoHeight: true,
           cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
           cellRenderer: this.asyncCell((data) => {
-            return this.nw.expression.solve({
-              text: this.nw.translate(data.Description),
+            return this.expr.solve({
+              text: this.i18n.get(data.Description),
               charLevel: 60,
               itemId: data.AbilityID,
               gearScore: 600
@@ -76,16 +78,16 @@ export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
 
         },
       ],
-    })
+    }
   }
 
   public entities: Observable<Ability[]> = defer(() => {
-    return this.nw.db.abilities
+    return this.db.abilities
   })
     .pipe(map((list) => list.filter((it) => !!it.WeaponTag)))
     .pipe(shareReplayRefCount(1))
 
-  public constructor(private nw: NwService) {
+  public constructor(private db: NwDbService, private i18n: TranslateService, private expr: NwExpressionService) {
     super()
   }
 }

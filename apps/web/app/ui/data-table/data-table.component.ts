@@ -44,6 +44,12 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   public gridOptions: GridOptions = this.adapter.buildGridOptions({
+    rowHeight: 40,
+    defaultColDef: {
+      resizable: true,
+      sortable: true,
+      filter: true,
+    },
     onSelectionChanged: (it) => {
       const ids = it.api.getSelectedRows().map((it) => this.adapter.entityID(it))
       this.zone.run(() => this.selectionChange.next(ids))

@@ -12,6 +12,7 @@ import {
 import { Crafting } from '@nw-data/types'
 import { debounceTime, defer, distinctUntilChanged, ReplaySubject, Subject, switchMap, switchMapTo, takeUntil, tap } from 'rxjs'
 import { NwService } from '~/core/nw'
+import { getItemIdFromRecipe } from '~/core/nw/utils'
 import { CraftingCalculatorService, CraftingStep, RecipeState } from './crafting-calculator.service'
 import { CraftingPreferencesService } from './crafting-preferences.service'
 import type { CraftingStepComponent } from './crafting-step.component'
@@ -83,7 +84,7 @@ export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges
   private loadState(id: string) {
     return this.service.getFromCache(id) || this.service.solve({
       ingredient: {
-        id: this.nw.itemIdFromRecipe(this.recipe),
+        id: getItemIdFromRecipe(this.recipe),
         quantity: 1,
         type: 'Item'
       },

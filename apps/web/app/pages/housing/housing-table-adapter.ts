@@ -2,11 +2,13 @@ import { Injectable } from '@angular/core'
 import { Housingitems } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, map, Observable, shareReplay, tap } from 'rxjs'
-import { IconComponent, NwService } from '~/core/nw'
+import { IconComponent, nwdbLinkUrl, NwService } from '~/core/nw'
 import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
+import { getItemRarity, getItemTierAsRoman } from '~/core/nw/utils'
+import { TranslateService } from '~/core/i18n'
 
 @Injectable()
 export class HousingAdapterService extends DataTableAdapter<Housingitems> {
@@ -19,7 +21,7 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
   }
 
   public buildGridOptions(base: GridOptions): GridOptions {
-    return this.nw.gridOptions({
+    return {
       ...base,
       rowSelection: 'single',
       columnDefs: [
@@ -30,10 +32,10 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
           pinned: true,
           cellRenderer: this.mithrilCell({
             view: ({ attrs: { data } }) =>
-              m('a', { target: '_blank', href: this.nw.nwdbUrl('item', data.HouseItemID) }, [
+              m('a', { target: '_blank', href: nwdbLinkUrl('item', data.HouseItemID) }, [
                 m(IconComponent, {
-                  src: this.nw.iconPath(data.IconPath),
-                  class: `w-9 h-9 nw-icon bg-rarity-${this.nw.itemRarity(data)}`,
+                  src: data.IconPath,
+                  class: `w-9 h-9 nw-icon bg-rarity-${getItemRarity(data)}`,
                 }),
               ]),
           }),
@@ -41,7 +43,7 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
         {
           width: 300,
           headerName: 'Name',
-          valueGetter: this.valueGetter(({ data }) => this.nw.translate(data.Name)),
+          valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.Name)),
           getQuickFilterText: ({ value }) => value,
         },
         {
@@ -58,7 +60,7 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
           width: 80,
           field: this.fieldName('Tier'),
           filter: SelectboxFilter,
-          valueGetter: ({ data }) => this.nw.tierToRoman(data.Tier),
+          valueGetter: ({ data }) => getItemTierAsRoman(data.Tier),
         },
         {
           headerName: 'User Data',
@@ -106,7 +108,7 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
                     itemId: data.HouseItemID,
                     meta: this.nw.itemPref,
                     mode: 'price',
-                    formatter: this.nw.moneyFormatter,
+                    formatter: this.moneyFormatter,
                   })
                 },
               }),
@@ -150,7 +152,7 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
           filter: SelectboxFilter,
         },
       ],
-    })
+    }
   }
 
   public entities: Observable<Housingitems[]> = defer(() => {
@@ -162,7 +164,7 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
     })
   )
 
-  public constructor(private nw: NwService) {
+  public constructor(private nw: NwService, private i18n: TranslateService) {
     super()
   }
 }

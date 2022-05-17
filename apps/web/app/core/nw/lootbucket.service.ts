@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core"
 import { Housingitems, ItemDefinitionMaster } from "@nw-data/types"
 import { combineLatest, defer, map, Observable } from "rxjs"
 import { shareReplayRefCount } from "../utils"
-import { convertLootbuckets, LootBucketEntry } from "./lootbuckets"
+import { convertLootbuckets, LootBucketEntry } from "./utils"
 import { NwDbService } from "./nw-db.service"
 
 export interface LootBucketQuery {

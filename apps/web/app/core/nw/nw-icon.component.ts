@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, HostListener, Input } from '@angular/core'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { NwService } from './nw.service'
+import { getItemRarity } from './utils'
 
 @Component({
   selector: 'picture[nwIcon],picture[nwItemIcon]',
@@ -13,15 +14,15 @@ import { NwService } from './nw.service'
 export class NwIconComponent {
   @Input()
   public set nwIcon(value: string) {
-    this.src = this.nw.iconPath(value)
+    this.src = value
     this.isLoaded = false
     this.cdRef.markForCheck()
   }
 
   @Input()
   public set nwItemIcon(value: ItemDefinitionMaster | Housingitems) {
-    this.src = this.nw.iconPath(value?.IconPath)
-    this.itemRarity = this.nw.itemRarity(value)
+    this.src = value?.IconPath
+    this.itemRarity = getItemRarity(value)
     this.isLoaded = false
     this.cdRef.markForCheck()
   }
@@ -62,7 +63,7 @@ export class NwIconComponent {
 export class NwImageComponent {
   @Input()
   public set nwImage(value: string) {
-    this.src = this.nw.iconPath(value)
+    this.src = value
     this.isLoaded = false
     this.cdRef.markForCheck()
   }

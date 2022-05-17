@@ -4,6 +4,7 @@ import { Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty, Vita
 import { pick } from 'lodash'
 import { combineLatest, defer, map, Observable, of, switchMap, takeUntil, tap } from 'rxjs'
 import { NwService } from '~/core/nw'
+import { getItemId, getItemRarity } from '~/core/nw/utils'
 import { DifficultyRank } from '~/core/preferences'
 import { DestroyService, observeQueryParam, observeRouteParam, shareReplayRefCount } from '~/core/utils'
 import { DungeonsService } from './dungeons.service'
@@ -29,7 +30,7 @@ export interface Tab {
 })
 export class DungeonDetailComponent implements OnInit {
 
-  public trackById: TrackByFunction<ItemDefinitionMaster | Housingitems> = (i, item) => this.nw.itemId(item)
+  public trackById: TrackByFunction<ItemDefinitionMaster | Housingitems> = (i, item) => getItemId(item)
   public trackByIndex: TrackByFunction<any> = (i, item) => i
   public trackByTabId: TrackByFunction<Tab> = (i, item) => item.id
 
@@ -221,7 +222,7 @@ export class DungeonDetailComponent implements OnInit {
   }
 
   public itemId(item: ItemDefinitionMaster | Housingitems) {
-    return this.nw.itemId(item)
+    return getItemId(item)
   }
 
   public difficultyTier(item: Mutationdifficulty) {
@@ -264,8 +265,8 @@ export class DungeonDetailComponent implements OnInit {
 
   private filterAndSort(items: Array<ItemDefinitionMaster | Housingitems>) {
     return items
-    .filter((it) => this.nw.itemRarity(it) >= 1)
-    .sort((a, b) => this.nw.itemId(a).localeCompare(this.nw.itemId(b)))
-    .sort((a, b) => this.nw.itemRarity(b) - this.nw.itemRarity(a))
+    .filter((it) => getItemRarity(it) >= 1)
+    .sort((a, b) => getItemId(a).localeCompare(getItemId(b)))
+    .sort((a, b) => getItemRarity(b) - getItemRarity(a))
   }
 }

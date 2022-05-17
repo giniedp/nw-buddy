@@ -8,6 +8,8 @@ import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
 import { shareReplayRefCount } from '~/core/utils'
+import { getItemIdFromRecipe, getItemRarity } from '~/core/nw/utils'
+import { LocaleService, TranslateService } from '~/core/i18n'
 
 export type RecipeWithItem = Crafting & {
   $item: ItemDefinitionMaster | Housingitems
@@ -24,7 +26,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
   }
 
   public buildGridOptions(base: GridOptions): GridOptions {
-    return this.nw.gridOptions({
+    return {
       ...base,
       rowSelection: 'single',
       columnDefs: [
@@ -40,8 +42,8 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
                 return ''
               }
               return m(IconComponent, {
-                src: this.nw.iconPath(item.IconPath),
-                class: `w-9 h-9 nw-icon bg-rarity-${this.nw.itemRarity(item)}`,
+                src: item.IconPath,
+                class: `w-9 h-9 nw-icon bg-rarity-${getItemRarity(item)}`,
               })
             },
           }),
@@ -52,9 +54,9 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
           valueGetter: ({ data }) => {
             const recipe = data as RecipeWithItem
             if (!recipe.$item) {
-              return this.nw.translate(recipe.RecipeNameOverride)
+              return this.i18n.get(recipe.RecipeNameOverride)
             }
-            return this.nw.translate(recipe.$item?.Name)
+            return this.i18n.get(recipe.$item?.Name)
           },
           getQuickFilterText: ({ value }) => value,
         },
@@ -68,7 +70,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
               filter: ItemTrackerFilter,
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
-                  const itemId = this.nw.itemIdFromRecipe(data)
+                  const itemId = getItemIdFromRecipe(data)
                   return (
                     itemId &&
                     m(ItemMarkerCell, {
@@ -79,7 +81,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
                 },
               }),
               valueGetter: ({ data }) => {
-                const itemId = this.nw.itemIdFromRecipe(data)
+                const itemId = getItemIdFromRecipe(data)
                 return (itemId && this.nw.itemPref.get(itemId)?.mark) || 0
               },
             },
@@ -88,12 +90,12 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
               headerTooltip: 'Number of items currently owned',
               cellClass: 'text-right',
               valueGetter: this.valueGetter(({ data }) => {
-                const itemId = this.nw.itemIdFromRecipe(data)
+                const itemId = getItemIdFromRecipe(data)
                 return itemId && this.nw.itemPref.get(itemId)?.stock
               }),
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
-                  const itemId = this.nw.itemIdFromRecipe(data)
+                  const itemId = getItemIdFromRecipe(data)
                   return (
                     itemId &&
                     m(ItemTrackerCell, {
@@ -113,12 +115,12 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
               headerTooltip: 'Current price in Trading post',
               cellClass: 'text-right',
               valueGetter: this.valueGetter(({ data }) => {
-                const itemId = this.nw.itemIdFromRecipe(data)
+                const itemId = getItemIdFromRecipe(data)
                 return itemId && this.nw.itemPref.get(itemId)?.price
               }),
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
-                  const itemId = this.nw.itemIdFromRecipe(data)
+                  const itemId = getItemIdFromRecipe(data)
                   return (
                     itemId &&
                     m(ItemTrackerCell, {
@@ -126,7 +128,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
                       itemId: itemId,
                       meta: this.nw.itemPref,
                       mode: 'price',
-                      formatter: this.nw.moneyFormatter,
+                      formatter: this.moneyFormatter,
                     })
                   )
                 },
@@ -167,7 +169,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
           },
         },
       ],
-    })
+    }
   }
 
   public entities: Observable<RecipeWithItem[]> = defer(() => {
@@ -179,7 +181,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
       map(({ items, housing, recipes }) => {
         recipes = recipes.filter((it) => !!it.Tradeskill)
         return recipes.map<RecipeWithItem>((it) => {
-          const itemId = this.nw.itemIdFromRecipe(it)
+          const itemId = getItemIdFromRecipe(it)
           return {
             ...it,
             $item: items.get(itemId) || housing.get(itemId),
@@ -189,11 +191,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
     )
   }).pipe(shareReplayRefCount(1))
 
-  public constructor(private nw: NwService) {
+  public constructor(private nw: NwService, private i18n: TranslateService) {
     super()
   }
-}
-
-function parseItemChance(data: string) {
-  return (data || '')?.split(',').map((it) => `${Math.round(Number(it || 0) * 100)}%`)
 }

@@ -9,25 +9,28 @@ export async function importImages(
     output,
     tables,
     ignoreKeys,
+    rewritePath
   }: {
     input: string,
     output: string,
     tables: DatatableSource[],
-    ignoreKeys: string[] }
+    ignoreKeys: string[],
+    rewritePath?: (value: string) => string
+  }
 ) {
   const images = scanImages(tables, {
-    ignoreKeys: ignoreKeys
+    ignoreKeys: ignoreKeys,
+    rewritePath: rewritePath
   })
   const missing = new Set<string>()
   await processArrayWithProgress(Array.from(images), async ([source, target]) => {
     source = path.join(input, source)
-    target = path.join(input, target)
     if (!fs.existsSync(source)) {
       missing.add(source)
       return
     }
 
-    const outFile = path.join(output, path.relative(path.join(input, 'lyshineui', 'images'), target))
+    const outFile = path.join(output, target)
     if (fs.existsSync(outFile)) {
       return
     }
@@ -42,7 +45,7 @@ export async function importImages(
   })
 }
 
-function scanImages(tables: DatatableSource[], options?: { ignoreKeys: string[] }) {
+function scanImages(tables: DatatableSource[], options?: { ignoreKeys: string[], rewritePath?: (value: string) => string }) {
   const images = new Map<string, string>()
   const ignore = new Set<string>(options?.ignoreKeys || [])
   walkStringProperties(tables, (key, value, obj) => {
@@ -50,9 +53,14 @@ function scanImages(tables: DatatableSource[], options?: { ignoreKeys: string[] 
       return
     }
     const source = path.normalize(value.toLowerCase())
-    const sourcePNG = renameExtname(source, '.png').replace(/\\/gi, '/')
-    const targetWEBP = renameExtname(source, '.webp').replace(/\\/gi, '/')
-    obj[key] = targetWEBP
+    const sourcePNG = renameExtname(source, '.png')
+      .toLowerCase()
+      .replace(/\\/g, '/')
+    const targetWEBP = renameExtname(source, '.webp')
+      .toLowerCase()
+      .replace(/\\/g, '/')
+      .replace(/^\/?lyshineui\/images/, '')
+    obj[key] = options?.rewritePath ? options?.rewritePath(targetWEBP) : targetWEBP
     images.set(sourcePNG, targetWEBP)
   })
   return images

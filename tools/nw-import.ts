@@ -176,6 +176,7 @@ program
       output,
       tables,
       ignoreKeys: ['HiResIconPath'],
+      rewritePath: (value) => `${path.basename(output)}${value}`
     })
     console.log('writing datatables')
     await processArrayWithProgress(tables, async ({ relative, data }) => {

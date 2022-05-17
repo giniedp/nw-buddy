@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { groupBy } from 'lodash'
 import { combineLatest, defer, map, merge, Observable, race, shareReplay, takeUntil } from 'rxjs'
-import { LocaleService } from '~/core/i18n'
-import { IconComponent, NwService } from '~/core/nw'
+import { LocaleService, TranslateService } from '~/core/i18n'
+import { IconComponent, nwdbLinkUrl, NwService } from '~/core/nw'
 import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import { Armorset } from './types'
@@ -11,6 +11,7 @@ import { findSets } from './utils'
 import m from 'mithril'
 import { ItemTrackerCell } from '~/widgets/item-tracker'
 import { shareReplayRefCount } from '~/core/utils'
+import { getItemRarity, getItemTierAsRoman } from '~/core/nw/utils'
 
 function fieldName(key: keyof Armorset) {
   return key
@@ -31,8 +32,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
   }
 
   public buildGridOptions(base: GridOptions): GridOptions {
-    const nw = this.nw
-    return this.nw.gridOptions({
+    return {
       ...base,
       rowSelection: 'single',
       columnDefs: [
@@ -44,7 +44,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
         {
           headerName: 'Tier',
           width: 60,
-          valueGetter: ({ data }) => this.nw.tierToRoman(field(data, 'tier')),
+          valueGetter: ({ data }) => getItemTierAsRoman(field(data, 'tier')),
           filter: SelectboxFilter,
         },
         {
@@ -62,9 +62,9 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
                 m.fragment(
                   {},
                   data.perks.map((perk) => {
-                    return m('a.block.w-7.h-7', { target: '_blank', href: this.nw.nwdbUrl('perk', perk.PerkID) }, [
+                    return m('a.block.w-7.h-7', { target: '_blank', href: nwdbLinkUrl('perk', perk.PerkID) }, [
                       m(IconComponent, {
-                        src: this.nw.iconPath(perk.IconPath),
+                        src: perk.IconPath,
                         class: `w-7 h-7 nw-icon`,
                       }),
                     ])
@@ -84,10 +84,10 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
               cellRenderer: mithrilCell<Armorset>({
                 view: ({ attrs: { data } }) => {
                   const item = data.items[i]
-                  const rarity = this.nw.itemRarity(item)
-                  return m('a', { target: '_blank', href: this.nw.nwdbUrl('item', item.ItemID) }, [
+                  const rarity = getItemRarity(item)
+                  return m('a', { target: '_blank', href: nwdbLinkUrl('item', item.ItemID) }, [
                     m(IconComponent, {
-                      src: this.nw.iconPath(item.IconPath),
+                      src: item.IconPath,
                       class: `w-9 h-9 nw-icon bg-rarity-${rarity}`,
                     }),
                   ])
@@ -100,7 +100,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
               filter: false,
               getQuickFilterText: ({ data }) => {
                 const item = (data as Armorset).items[i]
-                return this.nw.translate(item.Name)
+                return this.i18n.get(item.Name)
               },
               valueGetter: ({ data }) => {
                 const item = (data as Armorset).items[i]
@@ -154,7 +154,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
           ])
           .flat(1),
       ],
-    })
+    }
   }
 
   public entities: Observable<Armorset[]> = defer(() => {
@@ -165,11 +165,11 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
     }).pipe(
       map(({ items, perks }) => {
         const MIN_RARITY = 2
-        items = items.filter((it) => it.ItemType === 'Armor').filter((it) => this.nw.itemRarity(it) >= MIN_RARITY)
+        items = items.filter((it) => it.ItemType === 'Armor').filter((it) => getItemRarity(it) >= MIN_RARITY)
         return Object.entries(groupBy(items, (it) => it['$source']))
           .map(([key, items]) => ({
             key: key,
-            sets: findSets(items, key, perks, this.nw),
+            sets: findSets(items, key, perks, this.i18n),
           }))
           .filter((group) => group.sets.length > 0)
           .map((it) => it.sets)
@@ -180,7 +180,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
     )
   }).pipe(shareReplayRefCount(1))
 
-  public constructor(private nw: NwService, private locale: LocaleService) {
+  public constructor(private nw: NwService, private i18n: TranslateService, private locale: LocaleService) {
     super()
   }
 }

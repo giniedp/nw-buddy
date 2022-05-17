@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core'
 import { Vitals } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, Observable, shareReplay } from 'rxjs'
-import { NwService, NwVitalsService } from '~/core/nw'
+import { nwdbLinkUrl, NwService, NwVitalsService } from '~/core/nw'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import { shareReplayRefCount } from '~/core/utils'
 import m from 'mithril'
+import { TranslateService } from '~/core/i18n'
 
 @Injectable()
 export class VitalsAdapterService extends DataTableAdapter<Vitals> {
@@ -19,7 +20,7 @@ export class VitalsAdapterService extends DataTableAdapter<Vitals> {
   }
 
   public buildGridOptions(base: GridOptions): GridOptions {
-    return this.nw.gridOptions({
+    return {
       ...base,
       rowSelection: 'single',
       columnDefs: [
@@ -27,11 +28,11 @@ export class VitalsAdapterService extends DataTableAdapter<Vitals> {
           width: 200,
           headerName: 'Name',
           pinned: true,
-          valueGetter: this.valueGetter(({ data }) => this.nw.translate(data.DisplayName)),
+          valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.DisplayName)),
           getQuickFilterText: ({ value }) => value,
           cellRenderer: this.mithrilCell({
             view: ({ attrs }) => m('a', {
-              href: this.nw.nwdbUrl('creature', attrs.data.VitalsID),
+              href: nwdbLinkUrl('creature', attrs.data.VitalsID),
               target: '_blank'
             }, [
               attrs.value
@@ -137,14 +138,14 @@ export class VitalsAdapterService extends DataTableAdapter<Vitals> {
           cellRenderer: this.cellRendererDamage()
         }
       ],
-    })
+    }
   }
 
   public entities: Observable<Vitals[]> = defer(() => {
     return this.nw.db.vitals
   }).pipe(shareReplayRefCount(1))
 
-  public constructor(private nw: NwService, private vitals: NwVitalsService) {
+  public constructor(private nw: NwService, private i18n: TranslateService, private vitals: NwVitalsService) {
     super()
   }
 

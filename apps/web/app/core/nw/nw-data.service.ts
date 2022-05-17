@@ -25,15 +25,4 @@ export class NwDataService extends NwDataloader implements TranslateSource {
   public loadTranslations(locale: string) {
     return this.http.get<Record<string, string>>(`./nw-data/localization/${locale}.json`)
   }
-
-  public iconPath(path: string) {
-    if (!path) {
-      return ''
-    }
-    return path
-      .toLowerCase()
-      .replace(/\\/g, '/')
-      .replace(/^\/?lyshineui\/images/, './nw-data')
-  }
-
 }

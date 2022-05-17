@@ -2,11 +2,13 @@ import { Injectable } from '@angular/core'
 import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { GridOptions, ValueGetterParams } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, shareReplay, Subject, takeUntil, tap } from 'rxjs'
-import { IconComponent, NwService } from '~/core/nw'
+import { IconComponent, nwdbLinkUrl, NwService } from '~/core/nw'
 import { SelectboxFilter, mithrilCell, AgGridComponent } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
+import { getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman } from '~/core/nw/utils'
+import { TranslateService } from '~/core/i18n'
 
 @Injectable()
 export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
@@ -19,7 +21,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
   }
 
   public buildGridOptions(base: GridOptions): GridOptions {
-    return this.nw.gridOptions({
+    return {
       ...base,
       rowSelection: 'single',
       columnDefs: [
@@ -30,10 +32,10 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
           pinned: true,
           cellRenderer: this.mithrilCell({
             view: ({ attrs: { data } }) =>
-              m('a', { target: '_blank', href: this.nw.nwdbUrl('item', data.ItemID) }, [
+              m('a', { target: '_blank', href: nwdbLinkUrl('item', data.ItemID) }, [
                 m(IconComponent, {
-                  src: this.nw.iconPath(data.IconPath),
-                  class: `w-9 h-9 nw-icon bg-rarity-${this.nw.itemRarity(data)}`,
+                  src: data.IconPath,
+                  class: `w-9 h-9 nw-icon bg-rarity-${getItemRarity(data)}`,
                 }),
               ]),
           }),
@@ -41,7 +43,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
         {
           width: 250,
           headerName: 'Name',
-          valueGetter: this.valueGetter(({ data }) => this.nw.translate(data.Name)),
+          valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.Name)),
           getQuickFilterText: ({ value }) => value,
         },
         {
@@ -55,15 +57,15 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
           headerName: 'Perks',
           cellRenderer: this.mithrilCell({
             view: ({ attrs: { data } }) => {
-              const perks = this.nw.itemPerks(data, this.perks)
-              const generated = this.nw.itemPerkPerkBucketIds(data)
+              const perks = getItemPerks(data, this.perks)
+              const generated = getItemPerkBucketIds(data)
               return m('div.flex.flex-row.items-center.h-full', {}, [
                 m.fragment(
                   {},
                   perks.map((perk) =>
-                    m('a.block.w-7.h-7', { target: '_blank', href: this.nw.nwdbUrl('perk', perk.PerkID) }, [
+                    m('a.block.w-7.h-7', { target: '_blank', href: nwdbLinkUrl('perk', perk.PerkID) }, [
                       m(IconComponent, {
-                        src: this.nw.iconPath(perk.IconPath),
+                        src: perk.IconPath,
                         class: `w-7 h-7 nw-icon`,
                       }),
                     ])
@@ -84,7 +86,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
         },
         {
           headerName: 'Rarity',
-          valueGetter: ({ data }) => this.nw.itemRarityName(data),
+          valueGetter: ({ data }) => this.i18n.get(getItemRarityName(data)) ,
           filter: SelectboxFilter,
           width: 130,
           getQuickFilterText: ({ value }) => value,
@@ -92,7 +94,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
         {
           width: 80,
           field: this.fieldName('Tier'),
-          valueGetter: ({ data }) => this.nw.tierToRoman(data.Tier),
+          valueGetter: ({ data }) => getItemTierAsRoman(data.Tier),
           filter: SelectboxFilter,
         },
         {
@@ -157,7 +159,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
                     meta: this.nw.itemPref,
                     mode: 'price',
                     class: 'text-right',
-                    formatter: this.nw.moneyFormatter,
+                    formatter: this.moneyFormatter,
                   })
                 },
               }),
@@ -213,7 +215,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
           filter: SelectboxFilter,
         },
       ],
-    })
+    }
   }
 
   public entities: Observable<ItemDefinitionMaster[]> = defer(() => {
@@ -236,7 +238,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
 
   private perks: Map<string, Perks>
 
-  public constructor(private nw: NwService) {
+  public constructor(private nw: NwService, private i18n: TranslateService) {
     super()
   }
 }
