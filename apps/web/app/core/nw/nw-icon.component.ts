@@ -49,6 +49,7 @@ export class NwIconComponent {
   }
 }
 
+const transparentPixel = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
 @Component({
   selector: 'img[nwImage]',
   template: ``,
@@ -63,7 +64,7 @@ export class NwIconComponent {
 export class NwImageComponent {
   @Input()
   public set nwImage(value: string) {
-    this.src = value
+    this.src = value || transparentPixel
     this.isLoaded = false
     this.cdRef.markForCheck()
   }
