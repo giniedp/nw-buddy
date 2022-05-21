@@ -7,17 +7,21 @@ import { SelectboxFilter, mithrilCell, AgGridComponent } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
-import { getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman } from '~/core/nw/utils'
+import { getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman, getPerkAffixStat } from '~/core/nw/utils'
 import { TranslateService } from '~/core/i18n'
-import { humanize } from '~/core/utils'
+import { humanize, shareReplayRefCount } from '~/core/utils'
+
+type ItemDefinitionMasterWithPerks = ItemDefinitionMaster & {
+  $perks: Perks[]
+}
 
 @Injectable()
-export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
-  public entityID(item: ItemDefinitionMaster): string {
+export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWithPerks> {
+  public entityID(item: ItemDefinitionMasterWithPerks): string {
     return item.ItemID
   }
 
-  public entityCategory(item: ItemDefinitionMaster): string {
+  public entityCategory(item: ItemDefinitionMasterWithPerks): string {
     return item.ItemType
   }
 
@@ -53,12 +57,12 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
         },
         {
           width: 175,
-          filter: false,
           sortable: false,
           headerName: 'Perks',
+          field: this.fieldName('$perks'),
           cellRenderer: this.mithrilCell({
             view: ({ attrs: { data } }) => {
-              const perks = getItemPerks(data, this.perks)
+              const perks = data.$perks || []
               const generated = getItemPerkBucketIds(data)
               return m('div.flex.flex-row.items-center.h-full', {}, [
                 m.fragment(
@@ -84,6 +88,21 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
               ])
             },
           }),
+          filter: SelectboxFilter,
+          filterParams: SelectboxFilter.params({
+            showSearch: true,
+            showCondition: true,
+            optionsGetter: (node) => {
+              const perks = (node.data as ItemDefinitionMasterWithPerks ).$perks || []
+              return perks.map((perk) => {
+                return {
+                  label: this.i18n.get(perk.DisplayName || perk.AppliedSuffix || perk.AppliedPrefix),
+                  value: perk,
+                  icon: perk.IconPath
+                }
+              })
+            }
+          })
         },
         {
           headerName: 'Rarity',
@@ -230,18 +249,22 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
     }
   }
 
-  public entities: Observable<ItemDefinitionMaster[]> = defer(() => {
+  public entities: Observable<ItemDefinitionMasterWithPerks[]> = defer(() => {
     return combineLatest({
       items: this.nw.db.items,
       perks: this.nw.db.perksMap,
     })
       .pipe(tap(({ perks }) => (this.perks = perks)))
-      .pipe(map(({ items }) => items))
+      .pipe(map(({ items }) => {
+        return items.map((it): ItemDefinitionMasterWithPerks => {
+          return {
+            ...it,
+            $perks: getItemPerks(it, this.perks)
+          }
+        })
+      }))
   }).pipe(
-    shareReplay({
-      refCount: true,
-      bufferSize: 1,
-    })
+    shareReplayRefCount(1)
   )
 
   public override setActiveCategories(grid: AgGridComponent, value: string[]): void {

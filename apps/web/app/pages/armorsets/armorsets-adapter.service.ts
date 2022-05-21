@@ -56,6 +56,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
         {
           headerName: 'Common Perks',
           width: 110,
+          field: this.fieldName('perks'),
           cellRenderer: mithrilCell<Armorset>({
             view: ({ attrs: { data } }) => {
               return m('div.flex.flex-row.items-center.h-full', {}, [
@@ -73,6 +74,21 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
               ])
             },
           }),
+          filter: SelectboxFilter,
+          filterParams: SelectboxFilter.params({
+            showSearch: true,
+            showCondition: true,
+            optionsGetter: (node) => {
+              const perks = (node.data as Armorset ).perks || []
+              return perks.map((perk) => {
+                return {
+                  label: this.i18n.get(perk.DisplayName || perk.AppliedSuffix || perk.AppliedPrefix),
+                  value: perk,
+                  icon: perk.IconPath
+                }
+              })
+            }
+          })
         },
         ...new Array(5)
           .fill(null)

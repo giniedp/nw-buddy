@@ -1,19 +1,28 @@
-import { IDoesFilterPassParams, IFilterComp, IFilterParams, RowNode, ValueCache } from 'ag-grid-community'
+import { IDoesFilterPassParams, IFilterComp, IFilterParams, RowNode } from 'ag-grid-community'
 import m from 'mithril'
 import { humanize } from '~/core/utils'
 
+export interface SelectFilterOption {
+  label: string
+  icon?: string
+  value: any
+}
 export interface SelectboxFilterParams {
   showCondition?: boolean
   showSearch?: boolean
   conditionAND?: boolean
+  optionsGetter?: (node: RowNode) => SelectFilterOption[]
 }
-export class SelectboxFilter implements IFilterComp {
+
+export class SelectboxFilter<T> implements IFilterComp {
   public static params(params: SelectboxFilterParams): SelectboxFilterParams {
     return params
   }
 
   private el: HTMLElement
-  private options: Array<{ label: string; value: string }> = []
+  private options: SelectFilterOption[] = []
+  private optionsGetter: (row: RowNode) => SelectFilterOption[]
+
   private conditionAND: boolean
   private searchQuery: string
   private showCondition: boolean
@@ -25,6 +34,7 @@ export class SelectboxFilter implements IFilterComp {
     this.conditionAND = params.conditionAND
     this.showCondition = params.showCondition
     this.showSearch = params.showSearch
+    this.optionsGetter = params.optionsGetter || ((node) => this.extractOptionsFromNode(node))
 
     this.params = params
     this.el = document.createElement('div')
@@ -65,6 +75,7 @@ export class SelectboxFilter implements IFilterComp {
               })
               .map((option) => {
                 return {
+                  icon: option.icon,
                   label: option.label,
                   active: this.state.get(option.value),
                   click: () => this.toggleFilter(option.value),
@@ -131,28 +142,33 @@ export class SelectboxFilter implements IFilterComp {
   }
 
   protected extractOptions() {
-    const values = new Map<any, any>()
+    const values = new Map<any, SelectFilterOption>()
     this.params.api.forEachLeafNode((node) => {
-      const value = this.getValue(node, node.data)
-      const label = this.getLabel(node, node.data, value)
-      if (Array.isArray(value)) {
-        for (const item of value) {
-          if (item) {
-            values.set(item, humanize(item))
-          }
-        }
-      } else if (value != null) {
-        values.set(value, label)
-      }
-    })
-
-    this.options = Array.from(values.entries())
-      .map(([value, label]) => {
-        return { label: label, value: value }
+      this.optionsGetter(node).forEach((option) => {
+        values.set(option.value, option)
       })
+    })
+    this.options = Array.from(values.values())
       .sort((a, b) => String(a.label).localeCompare(String(b.label)))
   }
 
+  protected extractOptionsFromNode(node: RowNode): SelectFilterOption[] {
+    const value = this.getValue(node, node.data)
+    if (Array.isArray(value)) {
+      return value.map((it) => {
+        return {
+          label: humanize(it),
+          value: it
+        }
+      })
+    }
+    return [
+      {
+        label: this.getLabel(node, node.data, value),
+        value: value
+      }
+    ]
+  }
   protected getValue(node: RowNode, data: any) {
     return this.params.valueGetter({
       api: this.params.api,
@@ -236,7 +252,7 @@ const SearchControl: m.Component<SearchControlAttrs> = {
 }
 
 interface SelectControlAttrs {
-  options: Array<{ label: string; active: boolean; click: Function }>
+  options: Array<{ label: string; icon?: string, active: boolean; click: Function }>
 }
 const SelectControls: m.Component<SelectControlAttrs, any> = {
   view: ({ attrs: { options } }) => [
@@ -250,7 +266,12 @@ const SelectControls: m.Component<SelectControlAttrs, any> = {
               class: option.active ? 'active' : '',
               onclick: option.click,
             },
-            option.label
+            [
+              option.icon && m('img.w-6.h-6', {
+                src: option.icon
+              }),
+              option.label
+            ]
           ),
         ])
       })
