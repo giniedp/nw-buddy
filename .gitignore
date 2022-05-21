@@ -53,3 +53,6 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+oo2core_8_win64.dll
+texconv.exe

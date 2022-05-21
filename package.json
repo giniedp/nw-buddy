@@ -8,7 +8,6 @@
   "author": "Ginie",
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
-    "ng": "ng",
     "dev": "npm-run-all -p dev:electron dev:web",
     "dev:electron": "npm run electron:serve",
     "dev:web": "npm run web:serve",
@@ -25,11 +24,11 @@
     "electron:build": "npm run build:prod && electron-builder build --publish=never",
     "test": "ng test --watch=false",
     "test:watch": "ng test",
-    "e2e": "npm run build:prod && playwright test -c e2e/playwright.config.ts e2e/",
-    "e2e:show-trace": "playwright show-trace e2e/tracing/trace.zip",
-    "version": "conventional-changelog -i CHANGELOG.md -s -r 0 && git add CHANGELOG.md",
     "lint": "ng lint",
-    "nw-import": "ts-node ./tools/nw-import.ts ../nw-extract/out/live ./apps/web/nw-data"
+    "import": "ts-node ./tools/nw-import.ts ./tmp/nw-data/live ./apps/web/nw-data",
+    "import:ptr": "ts-node ./tools/nw-import.ts ./tmp/nw-data/ptr ./apps/web/nw-data",
+    "extract": "yarn nw-extract \"C:\\Program Files (x86)\\Steam\\steamapps\\common\\New World\" -o ./tmp/nw-data/live -f \"datasheet:json,locale:json,icon:png,image:png\"",
+    "extract:ptr": "yarn nw-extract \"G:\\Steam\\steamapps\\common\\New World Public Test Realm\" -o ./tmp/nw-data/ptr -f \"datasheet:json,locale:json,icon:png,image:png\""
   },
   "dependencies": {
     "@angular/common": "13.2.6",
@@ -61,7 +60,6 @@
     "@angular/compiler-cli": "13.2.6",
     "@ngx-translate/core": "14.0.0",
     "@ngx-translate/http-loader": "7.0.0",
-    "@playwright/test": "1.16.3",
     "@storybook/angular": "6.4.19",
     "@storybook/builder-webpack5": "6.4.19",
     "@storybook/manager-webpack5": "6.4.19",
@@ -77,7 +75,6 @@
     "autoprefixer": "10.4.2",
     "cli-progress": "3.10.0",
     "commander": "9.0.0",
-    "conventional-changelog-cli": "2.2.2",
     "dotenv": "16.0.0",
     "electron": "16.0.0",
     "electron-builder": "22.13.1",
@@ -96,7 +93,7 @@
     "karma-jasmine-html-reporter": "1.7.0",
     "node-polyfill-webpack-plugin": "1.1.4",
     "npm-run-all": "4.1.5",
-    "playwright": "1.16.3",
+    "nw-extract": "1.0.3",
     "postcss": "8.4.8",
     "quicktype": "15.0.260",
     "quicktype-core": "6.0.70",
