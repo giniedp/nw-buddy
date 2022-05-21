@@ -34,11 +34,12 @@ export function getItemRarity(item: ItemDefinitionMaster | Housingitems) {
       rarity += 1
     }
   }
-  return rarity
+  return Math.min(rarity, 4)
 }
 
-export function getItemRarityName(item: ItemDefinitionMaster | Housingitems) {
-  return  `RarityLevel${getItemRarity(item)}_DisplayName`
+export function getItemRarityName(item: ItemDefinitionMaster | Housingitems | number) {
+  item = typeof item === 'number' ? item : getItemRarity(item)
+  return  `RarityLevel${item}_DisplayName`
 }
 
 export function getItemPerkIds(item: ItemDefinitionMaster) {

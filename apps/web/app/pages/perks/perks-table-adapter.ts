@@ -6,7 +6,7 @@ import { IconComponent, nwdbLinkUrl, NwService } from '~/core/nw'
 import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
-import { shareReplayRefCount } from '~/core/utils'
+import { humanize, shareReplayRefCount } from '~/core/utils'
 import { TranslateService } from '~/core/i18n'
 import { getPerkAffixStat, hasPerkAffixStats } from '~/core/nw/utils'
 
@@ -98,6 +98,7 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           headerName: 'Type',
           field: this.fieldName('PerkType'),
           width: 100,
+          filter: SelectboxFilter,
         },
         {
           width: 500,
@@ -106,7 +107,12 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           autoHeight: true,
           cellClass: ['multiline-cell', 'py-2'],
           filter: SelectboxFilter,
-          cellRenderer: this.cellRendererTags(),
+          cellRenderer: this.cellRendererTags(humanize),
+          filterParams: SelectboxFilter.params({
+            showCondition: true,
+            conditionAND: true,
+            showSearch: true
+          })
         },
         {
           field: this.fieldName('ExclusiveLabels'),
@@ -114,7 +120,12 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           autoHeight: true,
           cellClass: ['multiline-cell', 'py-2'],
           filter: SelectboxFilter,
-          cellRenderer: this.cellRendererTags(),
+          cellRenderer: this.cellRendererTags(humanize),
+          filterParams: SelectboxFilter.params({
+            showCondition: true,
+            conditionAND: true,
+            showSearch: true
+          })
         },
         {
           field: this.fieldName('ExcludeItemClass'),
@@ -122,7 +133,12 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           autoHeight: true,
           cellClass: ['multiline-cell', 'py-2'],
           filter: SelectboxFilter,
-          cellRenderer: this.cellRendererTags(),
+          cellRenderer: this.cellRendererTags(humanize),
+          filterParams: SelectboxFilter.params({
+            showCondition: true,
+            conditionAND: true,
+            showSearch: false
+          })
         },
       ],
     }

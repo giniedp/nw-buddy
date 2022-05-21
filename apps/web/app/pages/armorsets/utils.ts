@@ -98,7 +98,7 @@ export function getFamilyName(item: ItemDefinitionMaster) {
 }
 
 export function getItemClass(item: ItemDefinitionMaster) {
-  return item.ItemClass?.split('+')?.find((token) => token === 'Medium' || token === 'Light' || token === 'Heavy')
+  return item.ItemClass?.find((token) => token === 'Medium' || token === 'Light' || token === 'Heavy')
 }
 
 export function getPerkIds(item: ItemDefinitionMaster) {

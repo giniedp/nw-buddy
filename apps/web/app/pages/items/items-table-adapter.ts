@@ -9,6 +9,7 @@ import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
 import { getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman } from '~/core/nw/utils'
 import { TranslateService } from '~/core/i18n'
+import { humanize } from '~/core/utils'
 
 @Injectable()
 export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
@@ -86,7 +87,8 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
         },
         {
           headerName: 'Rarity',
-          valueGetter: ({ data }) => this.i18n.get(getItemRarityName(data)) ,
+          valueGetter: ({ data }) => getItemRarity(data),
+          valueFormatter: ({ value }) => this.i18n.get(getItemRarityName(value)),
           filter: SelectboxFilter,
           width: 130,
           getQuickFilterText: ({ value }) => value,
@@ -193,25 +195,35 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMaster> {
         {
           width: 250,
           field: this.fieldName('ItemClass'),
-          valueGetter: ({ data, colDef }) => {
-            return (data[colDef.field] || '').trim().split('+')
-          },
-          cellRenderer: this.cellRendererTags(),
+          cellRenderer: this.cellRendererTags(humanize),
           filter: SelectboxFilter,
+          filterParams: SelectboxFilter.params({
+            showCondition: true,
+            conditionAND: false,
+            showSearch: true
+          })
         },
         {
           field: this.fieldName('TradingGroup'),
-          // width: 125,
+          valueFormatter: ({ value }) => humanize(value),
           filter: SelectboxFilter,
+          filterParams: SelectboxFilter.params({
+            showSearch: true
+          })
         },
         {
+          width: 125,
           field: this.fieldName('TradingFamily'),
-          width: 125,
+          valueFormatter: ({ value }) => humanize(value),
           filter: SelectboxFilter,
+          filterParams: SelectboxFilter.params({
+            showSearch: true
+          })
         },
         {
-          field: this.fieldName('TradingCategory'),
           width: 125,
+          field: this.fieldName('TradingCategory'),
+          valueFormatter: ({ value }) => humanize(value),
           filter: SelectboxFilter,
         },
       ],

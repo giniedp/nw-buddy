@@ -45,6 +45,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
 
   public gridOptions: GridOptions = this.adapter.buildGridOptions({
     rowHeight: 40,
+    suppressMenuHide: true,
     defaultColDef: {
       resizable: true,
       sortable: true,

@@ -7,7 +7,7 @@ import { mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { TranslateService } from '~/core/i18n'
-import { shareReplayRefCount } from '~/core/utils'
+import { humanize, shareReplayRefCount } from '~/core/utils'
 
 @Injectable()
 export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> {
@@ -63,7 +63,12 @@ export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> 
           field: this.fieldName('EffectCategories'),
           autoHeight: true,
           filter: SelectboxFilter,
-          cellRenderer: this.cellRendererTags(),
+          cellRenderer: this.cellRendererTags(humanize),
+          filterParams: SelectboxFilter.params({
+            showCondition: true,
+            conditionAND: true,
+            showSearch: true
+          })
         },
       ],
     }

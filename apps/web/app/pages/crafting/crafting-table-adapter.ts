@@ -7,7 +7,7 @@ import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
-import { shareReplayRefCount } from '~/core/utils'
+import { humanize, shareReplayRefCount } from '~/core/utils'
 import { getItemIdFromRecipe, getItemRarity } from '~/core/nw/utils'
 import { LocaleService, TranslateService } from '~/core/i18n'
 
@@ -144,12 +144,20 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
         {
           width: 150,
           field: this.fieldName('CraftingCategory'),
+          valueFormatter: ({ value }) => humanize(value),
           filter: SelectboxFilter,
+          filterParams: SelectboxFilter.params({
+            showSearch: true
+          })
         },
         {
           width: 150,
           field: this.fieldName('CraftingGroup'),
           filter: SelectboxFilter,
+          valueFormatter: ({ value }) => humanize(value),
+          filterParams: SelectboxFilter.params({
+            showSearch: true
+          })
         },
         {
           width: 120,

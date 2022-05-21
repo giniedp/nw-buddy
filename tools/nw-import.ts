@@ -110,6 +110,15 @@ program
           ],
         },
         {
+          file: /_itemdefinitions_master_/,
+          rules: [
+            splitToArrayRule({
+              properties: ['ItemClass'],
+              separator: '+',
+            }),
+          ],
+        },
+        {
           file: /javelindata_perks\.json/,
           rules: [
             splitToArrayRule({

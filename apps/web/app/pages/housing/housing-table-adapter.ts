@@ -9,6 +9,7 @@ import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
 import { getItemRarity, getItemTierAsRoman } from '~/core/nw/utils'
 import { TranslateService } from '~/core/i18n'
+import { humanize } from '~/core/utils'
 
 @Injectable()
 export class HousingAdapterService extends DataTableAdapter<Housingitems> {
@@ -119,6 +120,7 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
         {
           headerName: 'Placement',
           field: this.fieldName('HousingTag1 Placed'),
+          valueFormatter: ({ value }) => humanize(value),
           filter: SelectboxFilter,
           width: 150,
         },
@@ -130,6 +132,7 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
         {
           headerName: 'Obtain',
           field: this.fieldName('HowToOptain (Primarily)'),
+          valueFormatter: ({ value }) => humanize(value),
           filter: SelectboxFilter,
           width: 150,
         },
@@ -139,17 +142,12 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
           valueGetter: ({ data, colDef }) => {
             return (data[colDef.field] || '').trim().split('+')
           },
-          cellRenderer: mithrilCell({
-            view: ({ attrs: { value } }) => {
-              return m(
-                'div.flex.flex-row.flex-wrap.items-center.h-full',
-                value.map((it: string) => {
-                  return m('span.badge.badge-secondary.mr-1.badge-sm', it)
-                })
-              )
-            },
-          }),
+          cellRenderer: this.cellRendererTags(humanize),
           filter: SelectboxFilter,
+          filterParams: SelectboxFilter.params({
+            showSearch: true,
+            showCondition: true
+          })
         },
       ],
     }

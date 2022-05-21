@@ -20,9 +20,9 @@
 html,
 body {
   min-width: 1024px;
+  font-weight: 500;
 }
 body {
-  // font-family: 'New World';
   @apply bg-base-100 text-slate-50;
   width: 100%;
   height: 100vh;

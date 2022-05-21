@@ -5,7 +5,7 @@ import { defer, Observable, shareReplay } from 'rxjs'
 import { nwdbLinkUrl, NwService, NwVitalsService } from '~/core/nw'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
-import { shareReplayRefCount } from '~/core/utils'
+import { humanize, shareReplayRefCount } from '~/core/utils'
 import m from 'mithril'
 import { TranslateService } from '~/core/i18n'
 
@@ -62,8 +62,9 @@ export class VitalsAdapterService extends DataTableAdapter<Vitals> {
           filter: SelectboxFilter,
         },
         {
-          field: this.fieldName('CreatureType'),
           width: 150,
+          field: this.fieldName('CreatureType'),
+          valueFormatter: ({ value }) => humanize(value),
           getQuickFilterText: ({ value }) => value,
           filter: SelectboxFilter,
         },

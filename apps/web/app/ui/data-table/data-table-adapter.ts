@@ -64,12 +64,12 @@ export abstract class DataTableAdapter<T> {
       }
     })
   }
-  public cellRendererTags() {
+  public cellRendererTags(format?: (value: any) => string) {
     return this.mithrilCell({
       view: ({ attrs }) => {
         return m(
-          'div.flex.flex-row.flex-wrap.gap-2',
-          attrs.value?.map?.((it: string) => m('span.badge', it))
+          'div.flex.flex-row.flex-wrap.gap-1.h-full.items-center',
+          attrs.value?.map?.((it: string) => m('span.badge.badge-secondary.badge-sm', format ? format(it) : it))
         )
       },
     })

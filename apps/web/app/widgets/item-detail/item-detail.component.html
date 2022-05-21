@@ -6,7 +6,7 @@
     [enableTracker]="enableTracker"
     [enableMarker]="enableMarker"
   ></nwb-item-detail-header>
-  <div class="p-4" *ngIf="enableDescription">
+  <div class="p-4 font-serif" *ngIf="enableDescription">
     <ng-container *ngIf="description$ | async; let description">
       <p class="text-primary italic" [nwText]="description" [itemId]="itemId"></p>
     </ng-container>
