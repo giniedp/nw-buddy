@@ -8,7 +8,7 @@ import { getPerkAffixStat, hasPerkAffixStats } from '~/core/nw/utils'
   selector: 'nwb-affixstat',
   template: `
     <div *ngFor="let mod of mods | async">
-      <b [nwText]="mod.label"></b> <span> {{ mod.value | number:'1.0-0' }}</span>
+      <b>{{ mod.value }} </b><span [nwText]="mod.label"></span>
     </div>
   `,
 })
