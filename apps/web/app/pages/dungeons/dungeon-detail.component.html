@@ -10,13 +10,14 @@
   <li class="menu-title mt-4">
     <span>Mutated</span>
   </li>
-  <li *ngFor="let item of difficulties$ | async" [class.bordered]="item.MutationDifficulty == difficultyLevel">
-
-    <a [routerLink]="['.', { mutation: item.MutationDifficulty, tab: tab }]">
-      <img [nwImage]="rankIcon(difficultyRank(dungeon, item) | async)" class="w-8 h-8">
-      {{ item.MutationDifficulty }} ({{difficultyTier(item)}})
-    </a>
-  </li>
+  <ng-container *ngIf="difficulties$ | async; let items">
+    <li *ngFor="let item of items" [class.bordered]="item.MutationDifficulty == difficultyLevel">
+        <a [routerLink]="['.', { mutation: item.MutationDifficulty, tab: tab }]">
+        <img [nwImage]="difficultyRankIcon(dungeon, item) | async" class="w-8 h-8">
+        {{ item.MutationDifficulty }} ({{difficultyTier(item)}})
+      </a>
+    </li>
+  </ng-container>
 </ul>
 <div class="flex-1 relative rounded-r-md bg-base-100 overflow-clip" [class.rounded-l-md]="!isMutable">
   <picture class="absolute top-0 left-0 right-0 bottom-0 pointer-events-none">

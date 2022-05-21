@@ -1,4 +1,12 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, TemplateRef, ViewChild, TrackByFunction } from '@angular/core'
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  TemplateRef,
+  ViewChild,
+  TrackByFunction,
+} from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty, Vitals } from '@nw-data/types'
 import { pick } from 'lodash'
@@ -13,7 +21,7 @@ const DIFFICULTY_TIER_NAME = {
   1: 'Normal',
   2: 'Intermediate',
   3: 'Hard',
-  4: 'Elite'
+  4: 'Elite',
 }
 
 export interface Tab {
@@ -29,14 +37,14 @@ export interface Tab {
   providers: [DestroyService],
 })
 export class DungeonDetailComponent implements OnInit {
-
   public trackById: TrackByFunction<ItemDefinitionMaster | Housingitems> = (i, item) => getItemId(item)
   public trackByIndex: TrackByFunction<any> = (i, item) => i
   public trackByTabId: TrackByFunction<Tab> = (i, item) => item.id
 
   public dungeonId$ = defer(() => observeRouteParam(this.route, 'id'))
-  public mutationParam$ = defer(() => observeRouteParam(this.route, 'mutation'))
-    .pipe(map((it) => Number(it) || undefined))
+  public mutationParam$ = defer(() => observeRouteParam(this.route, 'mutation')).pipe(
+    map((it) => Number(it) || undefined)
+  )
   public tabParam$ = defer(() => observeRouteParam(this.route, 'tab'))
 
   public dungeon$ = defer(() => this.dungeonId$)
@@ -49,6 +57,26 @@ export class DungeonDetailComponent implements OnInit {
 
   public difficulties$ = defer(() => this.dungeon$)
     .pipe(switchMap((it) => this.ds.dungeonDifficulties(it)))
+    .pipe(shareReplayRefCount(1))
+
+  public difficultiesRank$ = defer(() =>
+    combineLatest({
+      dungeon: this.dungeon$,
+      difficulties: this.difficulties$,
+    })
+  )
+    .pipe(
+      switchMap(({ dungeon, difficulties }) =>
+        combineLatest(
+          difficulties.map((it) => {
+            return combineLatest({
+              difficulty: of(it),
+              rank: this.difficultyRank(dungeon, it),
+            })
+          })
+        )
+      )
+    )
     .pipe(shareReplayRefCount(1))
 
   public difficulty$ = defer(() =>
@@ -76,20 +104,22 @@ export class DungeonDetailComponent implements OnInit {
     .pipe(switchMap(([dungeon, difficulty]) => this.ds.dungeonMutationLoot(dungeon, difficulty)))
     .pipe(map((it) => this.filterAndSort(it)))
 
-  public difficyltyRewards$ = defer(() => combineLatest({
-    rank: this.difficultyRank$,
-    difficulty: this.difficulty$,
-    events: this.nw.db.gameEventsMap,
-    items: this.nw.db.itemsMap
-  }))
-    .pipe(map(({ rank, difficulty, events, items }) => {
+  public difficyltyRewards$ = defer(() =>
+    combineLatest({
+      rank: this.difficultyRank$,
+      difficulty: this.difficulty$,
+      events: this.nw.db.gameEventsMap,
+      items: this.nw.db.itemsMap,
+    })
+  ).pipe(
+    map(({ rank, difficulty, events, items }) => {
       if (!difficulty) {
         return []
       }
       return [
-        { eventId: difficulty.CompletionEvent1, rankId: 'bronze' as DifficultyRank},
-        { eventId: difficulty.CompletionEvent2, rankId: 'silver' as DifficultyRank},
-        { eventId: difficulty.CompletionEvent3, rankId: 'gold' as DifficultyRank},
+        { eventId: difficulty.CompletionEvent1, rankId: 'bronze' as DifficultyRank },
+        { eventId: difficulty.CompletionEvent2, rankId: 'silver' as DifficultyRank },
+        { eventId: difficulty.CompletionEvent3, rankId: 'gold' as DifficultyRank },
       ].map(({ eventId, rankId }, i) => {
         const event = events.get(eventId)
         const item = items.get(event.ItemReward as string)
@@ -106,17 +136,18 @@ export class DungeonDetailComponent implements OnInit {
             } else {
               this.updateRank(rankId)
             }
-          }
+          },
         }
       })
-    }))
+    })
+  )
 
-  public difficultyRank$ = defer(() => combineLatest({
-    dungeon: this.dungeon$,
-    difficulty: this.difficulty$,
-  }))
-    .pipe(switchMap(({ dungeon, difficulty }) => this.difficultyRank(dungeon, difficulty)))
-
+  public difficultyRank$ = defer(() =>
+    combineLatest({
+      dungeon: this.dungeon$,
+      difficulty: this.difficulty$,
+    })
+  ).pipe(switchMap(({ dungeon, difficulty }) => this.difficultyRank(dungeon, difficulty)))
 
   @ViewChild('tplDungeonLoot')
   public tplDungeonLoot: TemplateRef<unknown>
@@ -183,37 +214,38 @@ export class DungeonDetailComponent implements OnInit {
     combineLatest({
       dungeon: this.dungeon$,
       difficulty: this.difficulty$,
-    }).pipe(takeUntil(this.destroy.$)).subscribe(({ dungeon, difficulty }) => {
-
-      this.dungeon = dungeon
-      this.difficulty = difficulty
-      this.tabs = []
-
-      if (!difficulty) {
-        this.tabs.push({
-          id: '',
-          label: 'Available Drops',
-          tpl: this.tplDungeonLoot
-        })
-      } else {
-        this.tabs.push({
-          id: '',
-          label: 'Available Drops',
-          tpl: this.tplDungeonMutatedLoot
-        })
-        this.tabs.push({
-          id: 'difficulty',
-          label: 'Difficulty Drops',
-          tpl: this.tplDungeonDifficultyLoot
-        })
-      }
-      this.tabs.push({
-        id: 'bosses',
-        label: 'Bosses',
-        tpl: this.tplDungeonBosses
-      })
-      this.cdRef.markForCheck()
     })
+      .pipe(takeUntil(this.destroy.$))
+      .subscribe(({ dungeon, difficulty }) => {
+        this.dungeon = dungeon
+        this.difficulty = difficulty
+        this.tabs = []
+
+        if (!difficulty) {
+          this.tabs.push({
+            id: '',
+            label: 'Available Drops',
+            tpl: this.tplDungeonLoot,
+          })
+        } else {
+          this.tabs.push({
+            id: '',
+            label: 'Available Drops',
+            tpl: this.tplDungeonMutatedLoot,
+          })
+          this.tabs.push({
+            id: 'difficulty',
+            label: 'Difficulty Drops',
+            tpl: this.tplDungeonDifficultyLoot,
+          })
+        }
+        this.tabs.push({
+          id: 'bosses',
+          label: 'Bosses',
+          tpl: this.tplDungeonBosses,
+        })
+        this.cdRef.markForCheck()
+      })
 
     this.tabParam$.pipe(takeUntil(this.destroy.$)).subscribe((tab) => {
       this.tab = tab || ''
@@ -230,10 +262,30 @@ export class DungeonDetailComponent implements OnInit {
   }
 
   public difficultyRank(dungeon: Gamemodes, difficulty: Mutationdifficulty) {
-    if (dungeon && difficulty) {
-      return this.ds.preferences.observeRank(dungeon.GameModeId, difficulty.MutationDifficulty)
+    if (!dungeon || !difficulty) {
+      return of(null)
     }
-    return of(null)
+    return this.ds.preferences.observeRank(dungeon.GameModeId, difficulty.MutationDifficulty)
+  }
+
+  public difficultyRankIcon(dungeon: Gamemodes, difficulty: Mutationdifficulty) {
+    if (!dungeon || !difficulty) {
+      return of(null)
+    }
+    return this.difficultiesRank$.pipe(map((ranks) => {
+      const index = ranks.findIndex((it) => it.difficulty.MutationDifficulty === difficulty.MutationDifficulty)
+      const rank = ranks[index]?.rank
+      if (rank) {
+        return this.rankIcon(rank)
+      }
+      if (ranks.some((it, i) => it.rank && i > index)) {
+        return 'assets/icons/icon_check_glowing.png' // unlocked and passed
+      }
+      if (ranks[index - 1]?.rank || index === 0) {
+        return null // unlocked
+      }
+      return `assets/icons/icon_lock_small.png`
+    }))
   }
 
   public rankIcon(rank: DifficultyRank) {
@@ -251,7 +303,6 @@ export class DungeonDetailComponent implements OnInit {
     this.updateRank('silver')
   }
 
-
   public updateRankToBronze() {
     this.updateRank('bronze')
   }
@@ -265,8 +316,8 @@ export class DungeonDetailComponent implements OnInit {
 
   private filterAndSort(items: Array<ItemDefinitionMaster | Housingitems>) {
     return items
-    .filter((it) => getItemRarity(it) >= 1)
-    .sort((a, b) => getItemId(a).localeCompare(getItemId(b)))
-    .sort((a, b) => getItemRarity(b) - getItemRarity(a))
+      .filter((it) => getItemRarity(it) >= 1)
+      .sort((a, b) => getItemId(a).localeCompare(getItemId(b)))
+      .sort((a, b) => getItemRarity(b) - getItemRarity(a))
   }
 }
