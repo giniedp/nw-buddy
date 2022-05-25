@@ -139,6 +139,7 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy {
   public async selectOption(itemId: string) {
     this.showOptions = false
     this.step.selection = itemId
+    this.service.savePreference(this.step.ingredient.id, this.step.selection)
     this.service.updateSteps(this.step, itemId)
     this.updateState(this.step)
     this.markForCheck()

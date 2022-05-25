@@ -1,8 +1,11 @@
 import { Injectable, OnDestroy } from '@angular/core'
 import { Crafting, Craftingcategories, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { combineLatest, defer, ReplaySubject, Subject, takeUntil } from 'rxjs'
-import { NwService } from '~/core/nw'
+import { NwDbService, NwService } from '~/core/nw'
+
 import { getRecipeForItem, calculateBonusItemChance, getIngretientsFromRecipe } from '~/core/nw/utils'
+import { TradeskillPreferencesService } from '~/core/preferences/tradeskill-preferences.service'
+import { CraftingPreferencesService } from './crafting-preferences.service'
 
 export interface RecipeState {
   quantity: number
@@ -41,15 +44,15 @@ export class CraftingCalculatorService implements OnDestroy {
   private recipesMap: Map<string, Crafting>
   private cache = new Map<string, CraftingStep>()
 
-  public constructor(private nw: NwService) {
+  public constructor(private skillPref: TradeskillPreferencesService, private craftPref: CraftingPreferencesService, db: NwDbService) {
     combineLatest({
-      items: nw.db.items,
-      itemsMap: nw.db.itemsMap,
-      housingItems: nw.db.housingItems,
-      housingMap: nw.db.housingItemsMap,
-      recipes: nw.db.recipes,
-      recipesMap: nw.db.recipesMap,
-      categoriesMap: nw.db.recipeCategoriesMap,
+      items: db.items,
+      itemsMap: db.itemsMap,
+      housingItems: db.housingItems,
+      housingMap: db.housingItemsMap,
+      recipes: db.recipes,
+      recipesMap: db.recipesMap,
+      categoriesMap: db.recipeCategoriesMap,
     })
       .pipe(takeUntil(this.destroy$))
       .subscribe(({ items, itemsMap, housingItems, housingMap, recipes, recipesMap, categoriesMap }) => {
@@ -123,7 +126,7 @@ export class CraftingCalculatorService implements OnDestroy {
     }
     if (ingredient.type === 'Category_Only') {
       const options = this.findItemIdsInCategory(ingredient.id)
-      const selection = clampSelection(options, step.selection)
+      const selection = this.clampSelection(ingredient, options, step.selection)
       return this.updateSteps(
         {
           ingredient: ingredient,
@@ -164,7 +167,7 @@ export class CraftingCalculatorService implements OnDestroy {
       item: item,
       ingredients: this.findItemsOrSelectedItems(step.steps),
       recipe: recipe,
-      skill: this.nw.tradeskills.preferences.get(recipe.Tradeskill)?.level || 0,
+      skill: this.skillPref.get(recipe.Tradeskill)?.level || 0,
     })
   }
 
@@ -183,8 +186,15 @@ export class CraftingCalculatorService implements OnDestroy {
       this.cache.set(id, JSON.parse(JSON.stringify(step)))
     }
   }
+
+  public savePreference(ingredient: string, selection: string) {
+    this.craftPref.categories.set(ingredient, selection)
+  }
+
+  private clampSelection(ingredient: Ingredient, options: string[], selection: string) {
+    const preference = this.craftPref.categories.get(ingredient.id)
+    const result = options.find((it) => it === selection) || options.find((it) => it === preference) || options[0]
+    return result
+  }
 }
 
-function clampSelection(options: string[], selection: string) {
-  return options.find((it) => it === selection) || options[0]
-}
