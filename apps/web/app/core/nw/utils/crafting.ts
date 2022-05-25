@@ -1,4 +1,5 @@
 import { Crafting, GameEvent, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { isHousingItem } from './item'
 
 export type CraftingIngredients = Pick<
   Crafting,
@@ -24,6 +25,19 @@ export type CraftingIngredients = Pick<
   | 'Type6'
   | 'Type7'
 >
+
+const CRAFTING_CATEGORY_GRANTING_BONUS = [
+  'ArcanaRefining',
+  'BasicCooking',
+  'Concoctions',
+  'CorruptedRefining',
+  'CutGems',
+  'CutStone',
+  'Dyes',
+  'Foods',
+  'FuseGems',
+  'RefinedResources'
+]
 
 export function sumIngredientQuantities(recipe: CraftingIngredients) {
   return Object.keys(recipe)
@@ -62,7 +76,12 @@ export function calculateBonusItemChance({
   if (!item || recipe?.BonusItemChance == null || !ingredients?.length) {
     return 0
   }
-
+  if (!CRAFTING_CATEGORY_GRANTING_BONUS.includes(recipe.CraftingCategory)) {
+    // this seems to work for all items except
+    // 'CorruptedRefining'
+    // TODO:
+    return 0
+  }
   // only category ingrediens affect bonus chance
   ingredients = ingredients.filter((_, i) => recipe[`Type${i + 1}`] === 'Category_Only')
 

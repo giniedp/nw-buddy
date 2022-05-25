@@ -3,7 +3,7 @@ import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { GridOptions, ValueGetterParams } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, shareReplay, Subject, takeUntil, tap } from 'rxjs'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/core/nw'
-import { SelectboxFilter, mithrilCell, AgGridComponent } from '~/ui/ag-grid'
+import { SelectboxFilter, mithrilCell, AgGridComponent, RangeFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
@@ -189,21 +189,22 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
           ],
         },
         {
-          headerName: 'GS',
-          children: [
-            {
-              headerName: 'Min',
-              cellClass: 'text-right',
-              field: this.fieldName('MinGearScore'),
-              width: 100,
-            },
-            {
-              headerName: 'Max',
-              cellClass: 'text-right',
-              field: this.fieldName('MaxGearScore'),
-              width: 100,
-            },
-          ],
+          width: 120,
+          headerName: 'Gear Score',
+          cellClass: 'text-right',
+          comparator: (a, b) => a[1] - b[1],
+          valueGetter: this.valueGetter(({ data }) => {
+            let min = data.MinGearScore
+            let max = data.MaxGearScore
+            return [min, max]
+          }),
+          valueFormatter: ({ value }) => {
+            if (value[0] === value[1]) {
+              return String(value[0])
+            }
+            return `${value[0]}-${value[1]}`
+          },
+          filter: RangeFilter
         },
         {
           field: this.fieldName('ItemType'),

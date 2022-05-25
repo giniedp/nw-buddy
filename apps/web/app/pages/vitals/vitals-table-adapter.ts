@@ -3,7 +3,7 @@ import { Vitals } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, Observable, shareReplay } from 'rxjs'
 import { nwdbLinkUrl, NwService, NwVitalsService } from '~/core/nw'
-import { SelectboxFilter } from '~/ui/ag-grid'
+import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/core/utils'
 import m from 'mithril'
@@ -72,6 +72,7 @@ export class VitalsAdapterService extends DataTableAdapter<Vitals> {
           field: this.fieldName('LootDropChance'),
           cellClass: 'text-right',
           width: 150,
+          filter: RangeFilter,
           valueGetter: this.valueGetter( ({ data }) => Math.round((Number(data.LootDropChance) || 0) * 100) ),
           valueFormatter: ({ value }) => `${value}%`
         },

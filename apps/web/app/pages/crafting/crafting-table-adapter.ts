@@ -3,7 +3,7 @@ import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, shareReplay, tap } from 'rxjs'
 import { IconComponent, NwService } from '~/core/nw'
-import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
+import { SelectboxFilter, mithrilCell, RangeFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
@@ -93,6 +93,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
                 const itemId = getItemIdFromRecipe(data)
                 return itemId && this.nw.itemPref.get(itemId)?.stock
               }),
+              filter: RangeFilter,
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
                   const itemId = getItemIdFromRecipe(data)
@@ -118,6 +119,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
                 const itemId = getItemIdFromRecipe(data)
                 return itemId && this.nw.itemPref.get(itemId)?.price
               }),
+              filter: RangeFilter,
               cellRenderer: this.mithrilCell({
                 view: ({ attrs: { data } }) => {
                   const itemId = getItemIdFromRecipe(data)
@@ -163,6 +165,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
           width: 120,
           headerName: 'Recipe Level',
           field: this.fieldName('RecipeLevel'),
+          filter: RangeFilter,
           cellStyle: {
             'text-align': 'right',
           },
@@ -171,7 +174,9 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
           width: 120,
           headerName: 'Bonus Chance',
           field: this.fieldName('BonusItemChance'),
-          valueGetter: this.valueGetter(({ data }) => `${Math.round((data.BonusItemChance || 0) * 100)}%`),
+          valueGetter: this.valueGetter(({ data }) => Math.round((data.BonusItemChance || 0) * 100)),
+          valueFormatter: ({ value }) => `${value}%`,
+          filter: RangeFilter,
           cellStyle: {
             'text-align': 'right',
           },
