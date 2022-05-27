@@ -43,6 +43,8 @@ type Expressionresource =
   | 'SpellDataTable_Musket'
   | 'SpellDataTable_VoidGauntlet'
   | 'SpellDataTable_WarHammer'
+  | 'SpellDataTable_FireMagic'
+  | 'SpellDataTable_LifeMagic'
   | 'ConsumablePotency'
   | 'perkMultiplier'
 
@@ -86,9 +88,22 @@ export class NwExpressionService {
           if (attr in object) {
             return object[attr]
           }
+          for (const key of Object.keys(object)) {
+            if (key.toLocaleLowerCase() === attr.toLocaleLowerCase()) {
+              return object[key]
+            }
+          }
+          console.log(object)
           throw new Error(`Object has no attribute "${attr}" (for expression "${expression}")`)
         })
-      )
+      ).pipe(map((it) => {
+        if (attr.endsWith('VitalsCategory') && String(it).includes('=')) {
+          return String(it).split('=')[1]
+        } else {
+          return it
+        }
+
+      }))
     }
     switch (expression) {
       case 'ConsumablePotency': {
@@ -97,7 +112,8 @@ export class NwExpressionService {
             if (it.has(context.itemId)) {
               return it.get(context.itemId).PotencyPerLevel * context.charLevel
             }
-            throw new Error(`ConsumablePotency not resolved (for expression "${expression}" and id "${context.itemId}")`)
+            console.error(`ConsumablePotency not resolved (for expression "${expression}" and id "${context.itemId}")`)
+            return 1
           })
         )
       }
@@ -146,9 +162,12 @@ export class NwExpressionService {
       case 'SpellDataTable_IceMagic':
       case 'SpellDataTable_Musket':
       case 'SpellDataTable_VoidGauntlet':
-      case 'SpellDataTable_WarHammer': {
+      case 'SpellDataTable_WarHammer':
+      case 'SpellDataTable_FireMagic':
+      case 'SpellDataTable_LifeMagic': {
         return this.db.spellTableMap
       }
+      case 'Type_AbilityData':
       case 'BlunderbussAbilityTable':
       case 'BowAbilityTable':
       case 'FireMagicAbilityTable':
@@ -165,7 +184,6 @@ export class NwExpressionService {
       case 'WarHammerAbilityTable': {
         return this.db.abilitiesMap
       }
-      case 'Type_AbilityData':
       case 'StatusEffect':
       case 'StatusEffects':
       case 'Type_StatusEffectData': {
@@ -177,6 +195,27 @@ export class NwExpressionService {
 }
 
 export function parseNwExpression(text: string, root: boolean = false): NwExp {
+  text = text
+    // ensure operators and operands have a space separator
+    // .replace(/[+-*\/]/g, (it) => ` ${it} `) TODO: does not compile, why?
+    .split('*').join(' * ')
+    .split('+').join(' + ')
+    .split('-').join(' - ')
+    .split('/').join(' / ')
+    // patch bug in expressions, where multiply operator is missing
+    .replace(/100\s*\{/, '100 * {')
+    // patch bad expressions
+    .replace('Type_StatusEffectData.Type_StatusEffectData.', 'Type_StatusEffectData.')
+    // collapse spaces
+    .replace(/\s+/g, ' ')
+
+
+  if (text.includes('Mut_Voi_Stacks') && text.includes('Mut_Lig_Stacks')) {
+    // example:
+    //  Filled with dread for {[Type_StatusEffectData.Mut_Lig_Stacks_1_Effect.BaseDuration]} seconds. At {[Type_StatusEffectData.Mut_Voi_Stacks_1_Effect.AddOnStackSize]} stacks, causes a void burst to appear at your location.
+    text = text.replace('Mut_Lig_Stacks', 'Mut_Voi_Stacks')
+  }
+
   const reader = new TextReader(text)
   const expr: NwExp[] = []
 
@@ -285,10 +324,16 @@ class NwExpEval implements NwExp {
       .eval(solve)
       .pipe(
         map((value) => {
+
           if (globalThis.navigator) {
-            return Intl.NumberFormat(navigator.language || 'en', {
-              maximumFractionDigits: 2,
-            }).format(Number(eval(String(value))))
+            try {
+              return Intl.NumberFormat(navigator.language || 'en', {
+                maximumFractionDigits: 2,
+              }).format(Number(eval(String(value))))
+            } catch (e) {
+              console.log(value)
+              throw e
+            }
           }
           return value
         })
