@@ -339,5 +339,9 @@ class NwExpEval implements NwExp {
         })
       )
       .pipe(startWith('⟳'))
+      .pipe(catchError((e) => {
+        console.error(e)
+        return '⚠'
+      }))
   }
 }
