@@ -42,7 +42,12 @@
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="2" class="text-right">{{ resourcePrice$ | async | number: '1.2-2' }}🪙</td>
+        <td colspan="2">
+          <div class="flex gap-1 justify-end">
+            <span>{{ resourcePrice$ | async | number: '1.2-2' }}</span>
+            <img src="assets/icons/icon_crown.png" class="inline-block">
+          </div>
+        </td>
       </tr>
     </tfoot>
   </table>

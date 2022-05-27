@@ -40,6 +40,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
           headerName: 'Name',
           field: fieldName('name'),
           width: 200,
+          pinned: true
         },
         {
           headerName: 'Tier',
@@ -155,7 +156,6 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
                           'self-start',
                           value && max ? 'text-success' : '',
                           value && !max ? 'text-warning' : '',
-                          !value ? 'text-error' : '',
                         ].join(' '),
                         itemId: item.ItemID,
                         meta: this.nw.itemPref,
