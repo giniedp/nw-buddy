@@ -5,10 +5,10 @@ import { StatusEffectsModuleRoutingModule } from './status-effects-routing.modul
 import { StatusEffectsComponent } from './status-effects.component'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { DataTableModule } from '~/ui/data-table'
-import { SidebarModule } from '~/ui/sidebar'
+import { QuicksearchModule } from '~/ui/quicksearch'
 
 @NgModule({
-  imports: [CommonModule, StatusEffectsModuleRoutingModule, PropertyGridModule, DataTableModule, SidebarModule],
+  imports: [CommonModule, StatusEffectsModuleRoutingModule, PropertyGridModule, DataTableModule, QuicksearchModule],
   declarations: [StatusEffectsComponent],
 })
 export class StatusEffectsModule {}

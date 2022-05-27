@@ -1,9 +1,6 @@
 <div class="menu-frame w-36 xl:w-40">
-  <nwb-sidebar
-    #sidebar
-    [nwbSidebarRouteParam]="'cat'"
-    [categories]="table.categories | async"
-  ></nwb-sidebar>
+  <nwb-quicksearch-input #search></nwb-quicksearch-input>
+  <nwb-data-table-categories [routeParam]="'category'"></nwb-data-table-categories>
 </div>
 <div class="main-frame rounded-md overflow-clip">
   <nwb-data-table
@@ -11,7 +8,6 @@
     class="main-content"
     [stateKey]="'abilities-table'"
     [nwbTableRouterParam]="'id'"
-    [category]="sidebar.category"
-    [quickFilter]="sidebar.quickFilter"
+    [quickFilter]="search.value"
   ></nwb-data-table>
 </div>

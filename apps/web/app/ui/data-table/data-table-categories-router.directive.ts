@@ -1,38 +1,39 @@
 import { Directive, Input } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { distinctUntilChanged, map, Subject, takeUntil } from 'rxjs'
-import { SidebarComponent } from './sidebar.component'
+import { DataTableAdapter } from './data-table-adapter'
 
 @Directive({
-  selector: '[nwbSidebarRouter],[nwbSidebarRouteParam]',
+  selector: 'nwb-data-table-categories[routeParam]',
 })
-export class SidebarRouterDirective {
+export class DataTableCategoriesRouterDirective {
   @Input()
-  public nwbSidebarRouteParam = 'cat'
+  public routeParam = 'cat'
 
   private destroy$ = new Subject()
 
-  public constructor(private route: ActivatedRoute, private router: Router, private parent: SidebarComponent) {}
+  public constructor(private route: ActivatedRoute, private router: Router, private adapter: DataTableAdapter<any>) {}
 
   public ngOnInit(): void {
-    this.route.paramMap
-      .pipe(map((m) => m.get(this.nwbSidebarRouteParam)))
+    this.route
+      .paramMap
+      .pipe(map((m) => m.get(this.routeParam)))
       .pipe(distinctUntilChanged())
       .pipe(takeUntil(this.destroy$))
       .subscribe((category) => {
-        this.parent.selectCategory(category)
+        this.adapter.category.next(category)
       })
 
-    this.parent.categoryChange
+    this.adapter.category
       .pipe(distinctUntilChanged())
       .pipe(takeUntil(this.destroy$))
       .subscribe((value) => {
         const params = {
           ...this.route.snapshot.params,
-          [this.nwbSidebarRouteParam]: value,
+          [this.routeParam]: value,
         }
         if (!value) {
-          delete params[this.nwbSidebarRouteParam]
+          delete params[this.routeParam]
         }
         this.router.navigate([params], {
           relativeTo: this.route,

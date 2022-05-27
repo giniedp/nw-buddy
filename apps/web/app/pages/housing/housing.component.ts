@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
+import { QuicksearchService } from '~/ui/quicksearch'
 import { HousingAdapterService } from './housing-table-adapter'
 
 @Component({
@@ -10,7 +11,7 @@ import { HousingAdapterService } from './housing-table-adapter'
   host: {
     class: 'nwb-page has-menu has-detail',
   },
-  providers: [DataTableAdapter.provideClass(HousingAdapterService)],
+  providers: [DataTableAdapter.provideClass(HousingAdapterService), QuicksearchService],
 })
 export class HousingComponent {
   //

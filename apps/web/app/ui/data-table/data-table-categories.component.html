@@ -1,0 +1,8 @@
+<ul class="menu menu-compact xl:menu-normal bg-base-100 rounded-md">
+  <li [class.bordered]="!category">
+    <a (click)="selectCategory(null)"> ALL </a>
+  </li>
+  <li *ngFor="let it of categories | async" [class.bordered]="(category$ | async) === it">
+    <a (click)="selectCategory(it)"> {{ it }}</a>
+  </li>
+</ul>

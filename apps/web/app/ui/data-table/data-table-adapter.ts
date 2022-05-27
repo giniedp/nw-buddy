@@ -1,6 +1,6 @@
 import { ClassProvider, Type } from "@angular/core"
 import { GridOptions, ValueGetterFunc, ValueGetterParams } from "ag-grid-community"
-import { Observable, Subject, takeUntil } from "rxjs"
+import { BehaviorSubject, Observable, Subject, takeUntil } from "rxjs"
 import { AgGridComponent, mithrilCell, MithrilCellAttrs } from "../ag-grid"
 import m from 'mithril'
 
@@ -24,6 +24,8 @@ export abstract class DataTableAdapter<T> {
   public abstract entityCategory(item: T): string
   public abstract buildGridOptions(base: GridOptions): GridOptions
   public abstract entities: Observable<T[]>
+
+  public readonly category = new BehaviorSubject<string>(null)
 
   public setActiveCategories(grid: AgGridComponent, value: string[]) {
     //

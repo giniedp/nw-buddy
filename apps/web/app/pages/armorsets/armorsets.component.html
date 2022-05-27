@@ -1,10 +1,6 @@
 <div class="menu-frame w-36 xl:w-40">
-  <nwb-sidebar
-    #sidebar
-    [nwbSidebarRouteParam]="'cat'"
-    [categories]="table.categories | async"
-    class="capitalize"
-  ></nwb-sidebar>
+  <nwb-quicksearch-input #search></nwb-quicksearch-input>
+  <nwb-data-table-categories class="capitalize" [routeParam]="'category'"></nwb-data-table-categories>
 </div>
 <div class="main-frame rounded-md overflow-clip">
   <nwb-data-table
@@ -12,8 +8,7 @@
     class="main-content"
     [stateKey]="'armorsets-table'"
     [nwbTableRouterParam]="'id'"
-    [category]="sidebar.category"
-    [quickFilter]="sidebar.quickFilter"
+    [quickFilter]="search.value"
     (selectionChange)="selectionChanged(table)"
   ></nwb-data-table>
 </div>

@@ -3,6 +3,7 @@ import {
   Component,
 } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
+import { QuicksearchService } from '~/ui/quicksearch'
 import { AbilitiesAdapterService } from './abilities-table-adapter'
 
 @Component({
@@ -14,7 +15,8 @@ import { AbilitiesAdapterService } from './abilities-table-adapter'
     class: 'nwb-page has-menu',
   },
   providers: [
-    DataTableAdapter.provideClass(AbilitiesAdapterService)
+    DataTableAdapter.provideClass(AbilitiesAdapterService),
+    QuicksearchService
   ]
 })
 export class AbilitiesComponent {

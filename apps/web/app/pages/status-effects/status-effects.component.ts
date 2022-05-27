@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
+import { QuicksearchService } from '~/ui/quicksearch'
 import { StatusEffectsAdapterService } from './status-effects-table-adapter'
 
 @Component({
@@ -10,9 +11,7 @@ import { StatusEffectsAdapterService } from './status-effects-table-adapter'
   host: {
     class: 'nwb-page has-menu',
   },
-  providers: [
-    DataTableAdapter.provideClass(StatusEffectsAdapterService)
-  ]
+  providers: [DataTableAdapter.provideClass(StatusEffectsAdapterService), QuicksearchService],
 })
 export class StatusEffectsComponent {
   //

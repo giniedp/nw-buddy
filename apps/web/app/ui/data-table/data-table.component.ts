@@ -76,11 +76,6 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   @Output()
   public selectionChange = new EventEmitter<string[]>()
 
-  @Input()
-  public set category(value: string) {
-    this.category$.next(value)
-  }
-
   @Output()
   public categories = defer(() => this.items)
     .pipe(map((items) => {
@@ -90,7 +85,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   private items = defer(() => this.adapter.entities)
   private displayItems = defer(() => combineLatest({
     items: this.items,
-    category: this.category$
+    category: this.adapter.category
   }))
   .pipe(map(({ items, category }) => {
     if (!category) {
@@ -99,7 +94,6 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     return  items.filter((it) => this.adapter.entityCategory(it) === category)
   }))
 
-  private category$ = new BehaviorSubject<string>(null)
   private gridStorage: StorageNode<{ columns?: any, filter?: any }>
 
   public constructor(
@@ -140,7 +134,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   public setCategory(category: string) {
-    this.category$.next(category)
+    this.adapter.category.next(category)
   }
 
   private getChange(ch: SimpleChanges, key: keyof this) {

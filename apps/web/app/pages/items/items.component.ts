@@ -1,8 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-} from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
+import { QuicksearchService } from '~/ui/quicksearch'
 import { ItemsTableAdapter } from './items-table-adapter'
 
 @Component({
@@ -13,10 +11,6 @@ import { ItemsTableAdapter } from './items-table-adapter'
   host: {
     class: 'nwb-page has-menu has-detail',
   },
-  providers: [
-    DataTableAdapter.provideClass(ItemsTableAdapter)
-  ]
+  providers: [DataTableAdapter.provideClass(ItemsTableAdapter), QuicksearchService],
 })
-export class ItemsComponent {
-
-}
+export class ItemsComponent {}

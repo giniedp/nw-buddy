@@ -8,7 +8,7 @@ import { PropertyGridModule } from '~/ui/property-grid'
 import { FormsModule } from '@angular/forms'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { DataTableModule } from '~/ui/data-table'
-import { SidebarModule } from '~/ui/sidebar'
+import { QuicksearchModule } from '~/ui/quicksearch'
 
 @NgModule({
   imports: [
@@ -18,7 +18,7 @@ import { SidebarModule } from '~/ui/sidebar'
     DataTableModule,
     PropertyGridModule,
     ItemDetailModule,
-    SidebarModule,
+    QuicksearchModule
   ],
   declarations: [HousingComponent, HousingDetailComponent],
 })

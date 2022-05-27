@@ -6,12 +6,12 @@ import { SetsRoutingModule } from './armorsets-routing.module'
 import { NwModule } from '~/core/nw'
 import { FormsModule } from '@angular/forms'
 import { ArmorsetsComponent } from './armorsets.component'
-import { SidebarModule } from '~/ui/sidebar'
 import { DataTableModule } from '~/ui/data-table'
 import { ItemDetailModule } from '~/widgets/item-detail'
+import { QuicksearchModule } from '~/ui/quicksearch'
 
 @NgModule({
-  imports: [CommonModule, NwModule, SetsRoutingModule, FormsModule, SidebarModule, DataTableModule, ItemDetailModule],
+  imports: [CommonModule, NwModule, SetsRoutingModule, FormsModule, DataTableModule, ItemDetailModule, QuicksearchModule],
   declarations: [ArmorsetsComponent],
   exports: [ArmorsetsComponent],
 })

@@ -1,6 +1,7 @@
 import { Component, OnChanges, OnDestroy, OnInit } from '@angular/core'
 import { Subject } from 'rxjs'
 import { DataTableAdapter } from '~/ui/data-table'
+import { QuicksearchService } from '~/ui/quicksearch'
 import { CraftingAdapterService } from './crafting-table-adapter'
 
 @Component({
@@ -10,8 +11,6 @@ import { CraftingAdapterService } from './crafting-table-adapter'
   host: {
     class: 'nwb-page has-menu has-detail',
   },
-  providers: [DataTableAdapter.provideClass(CraftingAdapterService)],
+  providers: [DataTableAdapter.provideClass(CraftingAdapterService), QuicksearchService],
 })
-export class CraftingComponent {
-
-}
+export class CraftingComponent {}
