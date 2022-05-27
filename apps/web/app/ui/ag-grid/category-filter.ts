@@ -56,7 +56,6 @@ export class SelectboxFilter<T> implements IFilterComp {
             m(SearchControl, {
               value: this.searchQuery,
               onchange: (value) => {
-                console.log(value)
                 this.searchQuery = value
               },
             }),
