@@ -269,7 +269,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
   )
 
   public override setActiveCategories(grid: AgGridComponent, value: string[]): void {
-    console.log(grid.api.getFilterInstance('ItemType'))
+    //
   }
 
   private perks: Map<string, Perks>
