@@ -17,9 +17,11 @@ type Expressionresource =
   | 'DamageTable'
   | 'ManaCosts_Player'
   | 'StaminaCosts_Player'
+  | 'Type_Ability'
   | 'Type_AbilityData'
   | 'StatusEffect'
   | 'StatusEffects'
+  | 'Type_StatusEffect'
   | 'Type_StatusEffectData'
   | 'BlunderbussAbilityTable'
   | 'BowAbilityTable'
@@ -71,39 +73,42 @@ export class NwExpressionService {
   private lookup(expression: string, context: NwExpressionContext): Observable<string | number> {
     if (expression.includes('.')) {
       const [resource, id, attr] = expression.split('.')
-      return this.solveResource(resource as any).pipe(
-        map((data) => {
-          if (!data) {
-            throw new Error(`Unknown resource "${resource}" (for expression "${expression}")`)
-          }
-          let object: any
-          if (data.has(id)) {
-            object = data.get(id)
-          } else if (data.has(Number(id))) {
-            object = data.get(Number(id))
-          }
-          if (!object) {
-            throw new Error(`Object for ID "${id}" not found (for expression "${expression}")`)
-          }
-          if (attr in object) {
-            return object[attr]
-          }
-          for (const key of Object.keys(object)) {
-            if (key.toLocaleLowerCase() === attr.toLocaleLowerCase()) {
-              return object[key]
+      return this.solveResource(resource as any)
+        .pipe(
+          map((data) => {
+            if (!data) {
+              throw new Error(`Unknown resource "${resource}" (for expression "${expression}")`)
             }
-          }
-          console.log(object)
-          throw new Error(`Object has no attribute "${attr}" (for expression "${expression}")`)
-        })
-      ).pipe(map((it) => {
-        if (attr.endsWith('VitalsCategory') && String(it).includes('=')) {
-          return String(it).split('=')[1]
-        } else {
-          return it
-        }
-
-      }))
+            let object: any
+            if (data.has(id)) {
+              object = data.get(id)
+            } else if (data.has(Number(id))) {
+              object = data.get(Number(id))
+            }
+            if (!object) {
+              throw new Error(`Object for ID "${id}" not found (for expression "${expression}")`)
+            }
+            if (attr in object) {
+              return object[attr]
+            }
+            for (const key of Object.keys(object)) {
+              if (key.toLocaleLowerCase() === attr.toLocaleLowerCase()) {
+                return object[key]
+              }
+            }
+            console.log(object)
+            throw new Error(`Object has no attribute "${attr}" (for expression "${expression}")`)
+          })
+        )
+        .pipe(
+          map((it) => {
+            if (attr.endsWith('VitalsCategory') && String(it).includes('=')) {
+              return String(it).split('=')[1]
+            } else {
+              return it
+            }
+          })
+        )
     }
     switch (expression) {
       case 'ConsumablePotency': {
@@ -134,7 +139,8 @@ export class NwExpressionService {
 
   private solveResource(resource: Expressionresource): Observable<Map<string | number, unknown>> {
     switch (resource) {
-      case 'Type_StatusEffectData': {
+      case 'Type_StatusEffectData':
+      case 'Type_StatusEffect': {
         return this.db.statusEffectsMap
       }
       case 'DamageTable': {
@@ -167,6 +173,7 @@ export class NwExpressionService {
       case 'SpellDataTable_LifeMagic': {
         return this.db.spellTableMap
       }
+      case 'Type_Ability':
       case 'Type_AbilityData':
       case 'BlunderbussAbilityTable':
       case 'BowAbilityTable':
@@ -198,17 +205,20 @@ export function parseNwExpression(text: string, root: boolean = false): NwExp {
   text = text
     // ensure operators and operands have a space separator
     // .replace(/[+-*\/]/g, (it) => ` ${it} `) TODO: does not compile, why?
-    .split('*').join(' * ')
-    .split('+').join(' + ')
-    .split('-').join(' - ')
-    .split('/').join(' / ')
+    .split('*')
+    .join(' * ')
+    .split('+')
+    .join(' + ')
+    .split('-')
+    .join(' - ')
+    .split('/')
+    .join(' / ')
     // patch bug in expressions, where multiply operator is missing
     .replace(/100\s*\{/, '100 * {')
     // patch bad expressions
     .replace('Type_StatusEffectData.Type_StatusEffectData.', 'Type_StatusEffectData.')
     // collapse spaces
     .replace(/\s+/g, ' ')
-
 
   if (text.includes('Mut_Voi_Stacks') && text.includes('Mut_Lig_Stacks')) {
     // example:
@@ -322,26 +332,23 @@ class NwExpEval implements NwExp {
   public eval(solve: solveFn) {
     return this.node
       .eval(solve)
+      .pipe(map((value) => Number(eval(String(value)))))
       .pipe(
         map((value) => {
-
           if (globalThis.navigator) {
-            try {
-              return Intl.NumberFormat(navigator.language || 'en', {
-                maximumFractionDigits: 2,
-              }).format(Number(eval(String(value))))
-            } catch (e) {
-              console.log(value)
-              throw e
-            }
+            return Intl.NumberFormat(navigator.language || 'en', {
+              maximumFractionDigits: 2,
+            }).format(value)
           }
           return value
         })
       )
       .pipe(startWith('⟳'))
-      .pipe(catchError((e) => {
-        console.error(e)
-        return '⚠'
-      }))
+      .pipe(
+        catchError((e) => {
+          console.error(e)
+          return '⚠'
+        })
+      )
   }
 }
