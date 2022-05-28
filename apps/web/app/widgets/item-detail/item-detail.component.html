@@ -6,12 +6,16 @@
     [enableTracker]="enableTracker"
     [enableMarker]="enableMarker"
   ></nwb-item-detail-header>
-  <div class="p-4 font-serif" *ngIf="enableDescription">
-    <ng-container *ngIf="description$ | async; let description">
-      <p class="text-primary italic" [nwText]="description" [itemId]="itemId"></p>
+  <div class="p-3 font-serif" *ngIf="enableDescription || enablePerks">
+    <ng-container *ngIf="enableDescription">
+      <ng-container *ngIf="description$ | async; let description">
+        <p class="text-primary italic" [nwText]="description" [itemId]="itemId"></p>
+      </ng-container>
     </ng-container>
-    <ng-container *ngIf="perks$ | async; let perks">
-      <nwb-item-detail-perks class="mt-2" [perks]="perks"></nwb-item-detail-perks>
+    <ng-container *ngIf="enablePerks">
+      <ng-container *ngIf="perks$ | async; let perks">
+        <nwb-item-detail-perks class="mt-2" [perks]="perks"></nwb-item-detail-perks>
+      </ng-container>
     </ng-container>
   </div>
   <ng-container *ngIf="enableRecipe">

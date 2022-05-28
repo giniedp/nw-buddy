@@ -16,9 +16,10 @@ const routes: Routes = [
   { path: 'crafting', loadChildren: () => import('./pages/crafting').then(m => m.CraftingModule) },
   { path: 'preferences', loadChildren: () => import('./pages/preferences').then(m => m.PreferencesModule) },
   { path: 'dungeons', loadChildren: () => import('./pages/dungeons').then(m => m.DungeonsModule) },
-  { path: 'progression', loadChildren: () => import('./pages/progression/progression.module').then(m => m.ProgressionModule) },
+  { path: 'progression', loadChildren: () => import('./pages/progression').then(m => m.ProgressionModule) },
   { path: 'vitals', loadChildren: () => import('./pages/vitals/vitals.module').then(m => m.VitalsModule) },
   { path: 'about', loadChildren: () => import('./pages/about/about.module').then(m => m.AboutModule) },
+  { path: 'attributes', loadChildren: () => import('./pages/attributes').then(m => m.AttributesModule) },
 
   { path: '**', loadChildren: () => import('./pages/not-found').then((m) => m.NotFoundModule) },
 ]

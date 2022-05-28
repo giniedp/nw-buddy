@@ -73,8 +73,7 @@ export class CraftingCalculatorService implements OnDestroy {
   }
 
   public findItemIdsInCategory(categoryId: string) {
-    const reg = new RegExp(`\\b${categoryId}\\b`, 'i')
-    return this.items.filter((it) => reg.test(it.IngredientCategories)).map((it) => it.ItemID)
+    return this.items.filter((it) => it.IngredientCategories?.some((it) => it.toLocaleLowerCase() === String(categoryId).toLocaleLowerCase())).map((it) => it.ItemID)
   }
 
   public findItem(itemId: string) {

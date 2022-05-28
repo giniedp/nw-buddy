@@ -116,6 +116,10 @@ program
               properties: ['ItemClass'],
               separator: '+',
             }),
+            splitToArrayRule({
+              properties: ['IngredientCategories'],
+              separator: ',',
+            }),
           ],
         },
         {

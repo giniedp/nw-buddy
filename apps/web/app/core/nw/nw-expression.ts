@@ -96,7 +96,6 @@ export class NwExpressionService {
                 return object[key]
               }
             }
-            console.log(object)
             throw new Error(`Object has no attribute "${attr}" (for expression "${expression}")`)
           })
         )

@@ -8,7 +8,7 @@ import {
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { BehaviorSubject, combineLatest, defer, map } from 'rxjs'
 import { NwService } from '~/core/nw'
-import { getItemIdFromRecipe, getItemPerks, getRecipeForItem } from '~/core/nw/utils'
+import { getItemIdFromRecipe, getItemPerks, getPerkbucketPerks, getRecipeForItem } from '~/core/nw/utils'
 import { shareReplayRefCount } from '~/core/utils'
 
 @Component({
@@ -52,6 +52,9 @@ export class ItemDetailComponent implements OnChanges {
   @Input()
   public enableDescription: boolean
 
+  @Input()
+  public enablePerks: boolean
+
   public entity$ = defer(() => this.source$).pipe(map((it) => it.item || it.housing))
   public item$ = defer(() => this.source$).pipe(map((it) => it.item))
   public housing$ = defer(() => this.source$).pipe(map((it) => it.housing))
@@ -73,9 +76,10 @@ export class ItemDetailComponent implements OnChanges {
       housingMap: this.nw.db.housingItemsMap,
       craftingMap: this.nw.db.recipesMap,
       craftingList: this.nw.db.recipes,
+      perkbucketsMap: this.nw.db.perkBucketsMap
     })
   ).pipe(
-    map(({ itemId, recipeId, craftingMap, craftingList, housingMap, itemsMap, perksMap }) => {
+    map(({ itemId, recipeId, craftingMap, craftingList, housingMap, itemsMap, perksMap, perkbucketsMap }) => {
       let item: ItemDefinitionMaster
       let housing: Housingitems
       let recipe: Crafting
@@ -89,11 +93,16 @@ export class ItemDetailComponent implements OnChanges {
         housing = housingMap.get(itemId)
         item = itemsMap.get(itemId)
       }
+      const itemPerks = item && getItemPerks(item, perksMap)
+      const perkItemPerks = item && item.IngredientCategories?.includes('PerkItem') && getPerkbucketPerks(perkbucketsMap.get(item.ItemID), perksMap)
       return {
         recipe,
         housing,
         item,
-        perks: item && getItemPerks(item, perksMap),
+        perks: [
+          ...(itemPerks || []),
+          ...(perkItemPerks || [])
+        ],
       }
     })
   )

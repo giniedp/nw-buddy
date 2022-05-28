@@ -1,4 +1,4 @@
-import { Crafting, Housingitems, ItemDefinitionMaster, Perks } from "@nw-data/types"
+import { Crafting, Housingitems, ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
 
 export function isMasterItem(item: ItemDefinitionMaster | Housingitems): item is ItemDefinitionMaster {
   return item && 'ItemID' in item
@@ -39,7 +39,7 @@ export function getItemRarity(item: ItemDefinitionMaster | Housingitems) {
 
 export function getItemRarityName(item: ItemDefinitionMaster | Housingitems | number) {
   item = typeof item === 'number' ? item : getItemRarity(item)
-  return  `RarityLevel${item}_DisplayName`
+  return `RarityLevel${item}_DisplayName`
 }
 
 export function getItemPerkIds(item: ItemDefinitionMaster) {

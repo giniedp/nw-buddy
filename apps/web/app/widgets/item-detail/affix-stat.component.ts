@@ -10,6 +10,9 @@ import { getPerkAffixStat, hasPerkAffixStats } from '~/core/nw/utils'
     <div *ngFor="let mod of mods | async">
       <b>{{ mod.value }} </b><span [nwText]="mod.label"></span>
     </div>
+    <div *ngIf="showName && perk && perk.DisplayName">
+      (<span *ngIf="perk && perk.DisplayName" [nwText]="perk.DisplayName"></span>)
+    </div>
   `,
 })
 export class AffixStatComponent {
@@ -17,6 +20,12 @@ export class AffixStatComponent {
   public set perk(value: Perks) {
     this.perk$.next(value)
   }
+  public get perk() {
+    return this.perk$.value
+  }
+
+  @Input()
+  public showName: boolean
 
   @Input()
   public set gearScore(value: number) {
@@ -41,7 +50,7 @@ export class AffixStatComponent {
     })
   )
 
-  private perk$ = new ReplaySubject<Perks>(1)
+  private perk$ = new BehaviorSubject<Perks>(null)
   private gearScore$ = new BehaviorSubject<number>(600)
 
   public constructor(private nw: NwService) {}

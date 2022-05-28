@@ -15,6 +15,7 @@ export function getAffixStats(affix: Affixstats, scale: number) {
       const label = key.replace('MOD', '').toLowerCase()
       const value = String(affix[key])
       return {
+        key: key,
         label: `ui_${label}`,
         value: value.includes('-') ? value : Math.round(Number(value) * Math.floor(scale))
       }

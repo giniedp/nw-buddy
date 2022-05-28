@@ -1,0 +1,5 @@
+<ng-container *ngFor="let row of table | async">
+  <ng-container *ngFor="let col of row">
+    <nwb-item-detail [itemId]="col.item.ItemID" [enablePerks]="true" class="w-full text-sm"></nwb-item-detail>
+  </ng-container>
+</ng-container>
