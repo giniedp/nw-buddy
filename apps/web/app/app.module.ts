@@ -12,13 +12,14 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { AppComponent } from './app.component';
 import { NwModule } from './core/nw';
+import { TitleBarComponent } from './title-bar.component';
 
 
 // AoT requires an exported function for factories
 const httpLoaderFactory = (http: HttpClient): TranslateHttpLoader =>  new TranslateHttpLoader(http, './assets/i18n/', '.json');
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, TitleBarComponent],
   imports: [
     BrowserModule,
     FormsModule,

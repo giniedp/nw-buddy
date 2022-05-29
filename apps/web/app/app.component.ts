@@ -11,8 +11,13 @@ import { AppPreferencesService } from './core/preferences'
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+
+  public get isElectron() {
+    return this.electron.isElectron
+  }
+
   constructor(
-    private electronService: ElectronService,
+    private electron: ElectronService,
     private translate: TranslateService,
     private locale: LocaleService,
     private app: AppPreferencesService,
@@ -22,11 +27,11 @@ export class AppComponent {
       this.locale.use(value)
     })
     this.translate.setDefaultLang('en')
-    if (electronService.isElectron) {
+    if (electron.isElectron) {
       console.log(process.env)
       console.log('Run in electron')
-      console.log('Electron ipcRenderer', this.electronService.ipcRenderer)
-      console.log('NodeJS childProcess', this.electronService.childProcess)
+      console.log('Electron ipcRenderer', this.electron.ipcRenderer)
+      console.log('NodeJS childProcess', this.electron.childProcess)
     } else {
       console.log('Run in browser')
     }

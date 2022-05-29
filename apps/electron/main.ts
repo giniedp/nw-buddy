@@ -1,4 +1,4 @@
-import { app, BrowserWindow, screen, shell } from 'electron'
+import { app, BrowserWindow, screen, shell, ipcMain } from 'electron'
 import * as path from 'path'
 import * as fs from 'fs'
 import * as url from 'url'
@@ -22,13 +22,15 @@ function createWindow(): BrowserWindow {
       nodeIntegration: true,
       allowRunningInsecureContent: serve ? true : false,
       contextIsolation: false, // false if you want to run e2e test with Spectron
+      nativeWindowOpen: true,
     },
+    frame: false,
   })
 
-  win.webContents.on('new-window', function(e, url) {
-    e.preventDefault();
-    shell.openExternal(url);
-  });
+  win.webContents.on('new-window', function (e, url) {
+    e.preventDefault()
+    shell.openExternal(url)
+  })
 
   if (serve) {
     win.webContents.openDevTools()
@@ -54,6 +56,27 @@ function createWindow(): BrowserWindow {
     win = null
   })
 
+  ipcMain.handle('window-close', async () => {
+    win.close()
+  })
+  ipcMain.handle('window-minimize', async () => {
+    win.minimize()
+  })
+  ipcMain.handle('window-maximize', async () => {
+    win.maximize()
+  })
+  ipcMain.handle('window-unmaximize', async () => {
+    win.unmaximize()
+  })
+  ipcMain.handle('is-window-maximized', async () => {
+    return win.isMaximized()
+  })
+  win.on('maximize', () => {
+    win.webContents.send('window-change')
+  })
+  win.on('unmaximize', () => {
+    win.webContents.send('window-change')
+  })
   return win
 }
 
