@@ -53,8 +53,14 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
               prefix: data.AppliedPrefix && this.i18n.get(data.AppliedPrefix),
             }
           }),
+          filterValueGetter: ({ data }) => {
+            const name = data.DisplayName && this.i18n.get(data.DisplayName)
+            const suffix = data.AppliedSuffix && this.i18n.get(data.AppliedSuffix)
+            const prefix = data.AppliedPrefix && this.i18n.get(data.AppliedPrefix)
+            return [name || '', suffix || '', prefix || ''].join(' ')
+          },
           getQuickFilterText: ({ value }) => {
-            return [value.name, value.suffix, value.prefix].join(' ')
+            return [value.name || '', value.suffix || '', value.prefix || ''].join(' ')
           },
           cellRenderer: this.mithrilCell({
             view: ({ attrs: { value }}) => {
@@ -73,6 +79,9 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           wrapText: true,
           autoHeight: true,
           cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
+          filterValueGetter: ({ data }) => {
+            return this.i18n.get(data.Description)
+          },
           cellRenderer: this.asyncCell((data) => {
             if (hasPerkAffixStats(data)) {
               return this.nw.db.affixStatsMap.pipe(map((stats) => {

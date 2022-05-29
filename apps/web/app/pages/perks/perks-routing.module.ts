@@ -7,7 +7,11 @@ const routes: Routes = [
   {
     path: '',
     component: PerksComponent,
-
+    children: [
+      {
+        path: ':id',
+      },
+    ],
   },
 ]
 

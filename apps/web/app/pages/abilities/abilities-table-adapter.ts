@@ -54,10 +54,12 @@ export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
 
           field: this.fieldName('Description'),
           width: 400,
-          filter: false,
           wrapText: true,
           autoHeight: true,
           cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
+          filterValueGetter: ({ data }) => {
+            return this.i18n.get(data.Description)
+          },
           cellRenderer: this.asyncCell((data) => {
             return this.expr.solve({
               text: this.i18n.get(data.Description),

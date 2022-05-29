@@ -46,7 +46,6 @@ export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> 
         {
           headerName: 'Description',
           width: 300,
-          filter: false,
           wrapText: true,
           autoHeight: true,
           cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
@@ -58,6 +57,7 @@ export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> 
               gearScore: 600
             })
           }, { trustHtml: true }),
+          filterValueGetter: ({data}) => this.i18n.get(data.Description)
         },
         {
           field: this.fieldName('EffectCategories'),

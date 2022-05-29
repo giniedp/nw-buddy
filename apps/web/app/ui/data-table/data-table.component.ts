@@ -14,7 +14,18 @@ import {
 } from '@angular/core'
 import { GridOptions } from 'ag-grid-community'
 import { isEqual } from 'lodash'
-import { BehaviorSubject, combineLatest, defer, filter, map, takeUntil } from 'rxjs'
+import {
+  combineLatest,
+  defer,
+  distinctUntilChanged,
+  map,
+  Observable,
+  ReplaySubject,
+  Subject,
+  switchMap,
+  switchMapTo,
+  takeUntil,
+} from 'rxjs'
 import { LocaleService } from '~/core/i18n'
 import { PreferencesService, StorageNode } from '~/core/preferences'
 import { DestroyService } from '~/core/utils'
@@ -26,10 +37,9 @@ import { DataTableAdapter } from './data-table-adapter'
   templateUrl: './data-table.component.html',
   styleUrls: ['./data-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [DestroyService]
+  providers: [DestroyService],
 })
 export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
-
   @ViewChild(AgGridComponent, { static: true })
   public grid: AgGridComponent
 
@@ -40,7 +50,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   public stateKey: string
 
   public get gridData() {
-    return this.displayItems
+    return this.displayItems$
   }
 
   public gridOptions: GridOptions = this.adapter.buildGridOptions({
@@ -51,50 +61,59 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       sortable: true,
       filter: true,
     },
-    onSelectionChanged: (it) => {
-      const ids = it.api.getSelectedRows().map((it) => this.adapter.entityID(it))
-      this.zone.run(() => this.selectionChange.next(ids))
+    onSelectionChanged: ({ api }) => {
+      this.zone.run(() => {
+        this.gridSelectionChanged$.next(api.getSelectedRows() || [])
+      })
     },
     onRowDataChanged: () => {
-      if (this.selection) {
-        this.select(this.selection, {
-          ensureVisible: true,
-        })
-      }
+      this.gridRowDataChanged$.next(null)
     },
     onFirstDataRendered: () => {
       // this.loadFilterState()
     },
     onFilterChanged: () => {
       // this.saveFilterState()
-    }
+    },
   })
 
-  @Input()
-  public selection: string[]
+  @Output()
+  public get selection(): Observable<string[]> {
+    return this.selection$
+  }
 
   @Output()
-  public selectionChange = new EventEmitter<string[]>()
+  public get selectedItems(): Observable<T[]> {
+    return this.gridSelectionChanged$
+  }
 
   @Output()
-  public categories = defer(() => this.items)
-    .pipe(map((items) => {
+  public categories = defer(() => this.items$).pipe(
+    map((items) => {
       return Array.from(new Set(items.map((it) => this.adapter.entityCategory(it)).filter((it) => !!it)))
-    }))
+    })
+  )
 
-  private items = defer(() => this.adapter.entities)
-  private displayItems = defer(() => combineLatest({
-    items: this.items,
-    category: this.adapter.category
-  }))
-  .pipe(map(({ items, category }) => {
-    if (!category) {
-      return items
-    }
-    return  items.filter((it) => this.adapter.entityCategory(it) === category)
-  }))
+  private gridReady$ = new ReplaySubject(1)
+  private gridSelectionChanged$ = new ReplaySubject<T[]>(1)
+  private gridRowDataChanged$ = new Subject()
+  private selection$ = new ReplaySubject<string[]>(1)
+  private items$ = defer(() => this.adapter.entities)
+  private displayItems$ = defer(() =>
+    combineLatest({
+      items: this.items$,
+      category: this.adapter.category,
+    })
+  ).pipe(
+    map(({ items, category }) => {
+      if (!category) {
+        return items
+      }
+      return items.filter((it) => this.adapter.entityCategory(it) === category)
+    })
+  )
 
-  private gridStorage: StorageNode<{ columns?: any, filter?: any }>
+  private gridStorage: StorageNode<{ columns?: any; filter?: any }>
 
   public constructor(
     private locale: LocaleService,
@@ -108,21 +127,36 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   public async ngOnInit() {
-    this.locale.value$
-      .pipe(filter(() => !!this.grid?.api))
+    this.gridReady$
+      .pipe(switchMapTo(this.locale.value$))
       .pipe(takeUntil(this.destroy.$))
       .subscribe(() => {
         this.grid.api.refreshCells({ force: true })
+      })
+
+    combineLatest({
+      selection: this.selection$.pipe(distinctUntilChanged<string[]>(isEqual)),
+      change: this.gridRowDataChanged$,
+      ready: this.gridReady$,
+    })
+      .pipe(takeUntil(this.destroy.$))
+      .subscribe(({ selection }) => {
+        this.syncSelection(selection, {
+          ensureVisible: true,
+        })
+      })
+
+    this.gridSelectionChanged$
+      .pipe(map((list) => list.map((it) => this.adapter.entityID(it))))
+      .pipe(distinctUntilChanged<string[]>(isEqual))
+      .pipe(takeUntil(this.destroy.$))
+      .subscribe((ids) => {
+        this.select(ids)
       })
   }
 
   public ngOnChanges(changes: SimpleChanges) {
     this.cdRef.markForCheck()
-
-    // if (this.getChange(changes, 'selection')) {
-    //   this.select(this.selection)
-    // }
-
   }
 
   public ngOnDestroy() {
@@ -130,6 +164,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   public onGridReady() {
+    this.gridReady$.next(null)
     this.loadColumnState()
   }
 
@@ -141,7 +176,13 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     return ch[key as any]
   }
 
-  private select(toSelect: string[], options?: { ensureVisible: boolean }) {
+  public select(ids: string[]) {
+    this.zone.run(() => {
+      this.selection$.next(ids)
+    })
+  }
+
+  private syncSelection(toSelect: string[], options?: { ensureVisible: boolean }) {
     const api = this.grid?.api
     if (!api) {
       return
@@ -176,8 +217,8 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       return
     }
     this.gridStorage.set(key, {
-      ...this.gridStorage.get(key) || {},
-      columns: api.getColumnState()
+      ...(this.gridStorage.get(key) || {}),
+      columns: api.getColumnState(),
     })
   }
 
@@ -188,8 +229,8 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       return
     }
     this.gridStorage.set(key, {
-      ...this.gridStorage.get(key) || {},
-      filter: api.getFilterModel()
+      ...(this.gridStorage.get(key) || {}),
+      filter: api.getFilterModel(),
     })
   }
 
@@ -216,5 +257,4 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       api.setFilterModel(data)
     }
   }
-
 }

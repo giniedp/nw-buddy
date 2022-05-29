@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, TrackByFunction } from '@angular/core'
+import { ItemDefinitionMaster } from '@nw-data/types'
 import { DataTableAdapter, DataTableComponent } from '~/ui/data-table'
 import { QuicksearchService } from '~/ui/quicksearch'
 import { ArmorsetsAdapterService } from './armorsets-adapter.service'
@@ -15,16 +16,15 @@ import { Armorset, ArmorsetGroup } from './types'
   providers: [DataTableAdapter.provideClass(ArmorsetsAdapterService), QuicksearchService],
 })
 export class ArmorsetsComponent {
-  public selectedIds: string[]
-
-  public constructor(private cdRef: ChangeDetectorRef) {
+  public selection: ItemDefinitionMaster[]
+  public trackByIndex: TrackByFunction<any> = (i) => i
+  public constructor(private cdRef: ChangeDetectorRef, private zone: NgZone) {
     //
   }
-  public selectionChanged(table: DataTableComponent<Armorset>) {
-    this.selectedIds = table.grid.api
-      .getSelectedNodes()
-      ?.map((it) => it.data as Armorset)[0]
-      ?.items?.map((it) => it.ItemID)
-    this.cdRef.markForCheck()
+  public selectionChanged(selection: Armorset[]) {
+    this.zone.run(() => {
+      this.selection = selection[0]?.items || []
+      this.cdRef.markForCheck()
+    })
   }
 }

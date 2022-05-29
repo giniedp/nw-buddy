@@ -16,7 +16,7 @@ export class DataTableRouterDirective implements OnInit, OnDestroy {
   public constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private parent: DataTableComponent<any>,
+    private table: DataTableComponent<any>,
     private cdRef: ChangeDetectorRef
   ) {
     //
@@ -24,20 +24,22 @@ export class DataTableRouterDirective implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     if (this.route.firstChild) {
-      this.parent.selection = [this.route.firstChild.snapshot.paramMap.get('id')]
-      this.cdRef.markForCheck()
+      const toSelect = this.route.firstChild.snapshot.paramMap.get(this.nwbTableRouterParam)
+      if (toSelect) {
+        this.table.select([toSelect])
+        this.cdRef.markForCheck()
+      }
     }
-    this.parent.selectionChange
+    this.table.selection
       .pipe<string[]>(distinctUntilChanged(isEqual))
       .pipe(takeUntil(this.destroy$))
       .subscribe((selection) => {
-        // const params = this.route.snapshot.params
-
-        this.router.navigate([selection?.[0] || '/'], {
+        this.router.navigate([selection?.[0] || '.'], {
           relativeTo: this.route,
           queryParamsHandling: 'preserve',
         })
       })
+
   }
 
   public ngOnDestroy(): void {
