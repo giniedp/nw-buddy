@@ -207,6 +207,12 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
           filter: RangeFilter
         },
         {
+          headerName: 'Item Source',
+          field: '$source',
+          width: 125,
+          filter: SelectboxFilter,
+        },
+        {
           field: this.fieldName('ItemType'),
           width: 125,
           filter: SelectboxFilter,
