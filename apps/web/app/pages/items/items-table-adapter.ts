@@ -64,6 +64,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
             view: ({ attrs: { data } }) => {
               const perks = data.$perks || []
               const generated = getItemPerkBucketIds(data)
+              const buckets = getItemPerkBucketIds(data)
               return m('div.flex.flex-row.items-center.h-full', {}, [
                 m.fragment(
                   {},
@@ -80,7 +81,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
                   {},
                   generated.map(() =>
                     m(IconComponent, {
-                      src: '/nw-data/crafting/crafting_perkbackground.webp',
+                      src: 'assets/icons/crafting_perkbackground.png',
                       class: `w-7 h-7 nw-icon`,
                     })
                   )

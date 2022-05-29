@@ -8,7 +8,7 @@ import {
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { BehaviorSubject, combineLatest, defer, map } from 'rxjs'
 import { NwService } from '~/core/nw'
-import { getItemIdFromRecipe, getItemPerks, getPerkbucketPerks, getRecipeForItem } from '~/core/nw/utils'
+import { getItemIdFromRecipe, getItemPerkBucket, getItemPerkBucketIds, getItemPerks, getPerkbucketPerks, getRecipeForItem } from '~/core/nw/utils'
 import { shareReplayRefCount } from '~/core/utils'
 
 @Component({
@@ -61,6 +61,7 @@ export class ItemDetailComponent implements OnChanges {
   public recipe$ = defer(() => this.source$).pipe(map((it) => it.recipe))
   public description$ = defer(() => this.source$).pipe(map(({ item, housing }) => item?.Description || housing?.Description))
   public perks$ = defer(() => this.source$).pipe(map((it) => it.perks))
+  public buckets$ = defer(() => this.source$).pipe(map((it) => it.perkBuckets))
 
   public isLoading = true
 
@@ -95,6 +96,7 @@ export class ItemDetailComponent implements OnChanges {
       }
       const itemPerks = item && getItemPerks(item, perksMap)
       const perkItemPerks = item && item.IngredientCategories?.includes('PerkItem') && getPerkbucketPerks(perkbucketsMap.get(item.ItemID), perksMap)
+      const perkBuckets = getItemPerkBucket(item, perkbucketsMap)
       return {
         recipe,
         housing,
@@ -103,6 +105,7 @@ export class ItemDetailComponent implements OnChanges {
           ...(itemPerks || []),
           ...(perkItemPerks || [])
         ],
+        perkBuckets: perkBuckets || []
       }
     })
   )

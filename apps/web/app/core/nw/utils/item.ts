@@ -54,6 +54,10 @@ export function getItemPerkBucketIds(item: ItemDefinitionMaster) {
   return [item.PerkBucket1, item.PerkBucket2, item.PerkBucket3, item.PerkBucket4, item.PerkBucket5].filter((it) => !!it)
 }
 
+export function getItemPerkBucket(item: ItemDefinitionMaster, buckets: Map<string, Perkbuckets>) {
+  return item && getItemPerkBucketIds(item).map((it) => buckets.get(it))
+}
+
 export function getItemId(item: ItemDefinitionMaster | Housingitems) {
   if (isMasterItem(item)) {
     return item.ItemID
