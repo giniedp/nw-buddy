@@ -136,7 +136,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
                   const name = data.itemNames[i]
                   const max = (item.GearScoreOverride || item.MaxGearScore) <= value
                   return m(
-                    'div.flex.flex-col.text-sm.font-bold',
+                    'div.flex.flex-col.text-sm',
                     {
                       class: [
                         value && max ? 'border-l-4 border-l-success pl-2 -ml-2 -mr-2' : '',
