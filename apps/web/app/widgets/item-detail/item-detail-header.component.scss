@@ -3,11 +3,12 @@
 :host {
   display: grid;
   grid-template-columns: 76px auto;
+  column-gap: 0.5rem;
   padding: 0.25rem;
   position: relative;
   text-shadow: 1px 1px 2px black;
 
-  picture {
+  picture, a {
     width: 76px;
     height: 76px;
     z-index: 2;
@@ -19,7 +20,7 @@
 
   &.v-sm {
     grid-template-columns: 48px auto;
-    picture {
+    picture, a {
       width: 48px;
       height: 48px;
     }
@@ -27,7 +28,7 @@
 
   &.v-lg {
     grid-template-columns: 96px auto;
-    picture {
+    picture, a {
       width: 96px;
       height: 96px;
     }

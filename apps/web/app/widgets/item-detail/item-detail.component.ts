@@ -5,11 +5,8 @@ import {
   ChangeDetectorRef,
   OnChanges,
 } from '@angular/core'
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { BehaviorSubject, combineLatest, defer, map } from 'rxjs'
 import { NwService } from '~/core/nw'
-import { getItemIdFromRecipe, getItemPerkBucket, getItemPerkBucketIds, getItemPerks, getPerkbucketPerks, getRecipeForItem } from '~/core/nw/utils'
-import { shareReplayRefCount } from '~/core/utils'
+import { ItemDetailService } from './item-detail.service'
 
 @Component({
   selector: 'nwb-item-detail',
@@ -19,22 +16,25 @@ import { shareReplayRefCount } from '~/core/utils'
   host: {
     class: 'bg-base-300 rounded-md',
   },
+  providers: [ItemDetailService]
 })
 export class ItemDetailComponent implements OnChanges {
   @Input()
   public set itemId(value: string) {
-    this.itemId$.next(value)
+    this.service.update(value)
   }
-  public get itemId() {
-    return this.itemId$.value
+
+  public get entity() {
+    return this.service.entity$
   }
 
   @Input()
   public set recipeId(value: string) {
-    this.recipeId$.next(value)
+    this.service.updateFromRecipe(value)
   }
-  public get recipeId() {
-    return this.recipeId$.value
+
+  public get recipe() {
+    return this.service.recipe$
   }
 
   @Input()
@@ -55,63 +55,8 @@ export class ItemDetailComponent implements OnChanges {
   @Input()
   public enablePerks: boolean
 
-  public entity$ = defer(() => this.source$).pipe(map((it) => it.item || it.housing))
-  public item$ = defer(() => this.source$).pipe(map((it) => it.item))
-  public housing$ = defer(() => this.source$).pipe(map((it) => it.housing))
-  public recipe$ = defer(() => this.source$).pipe(map((it) => it.recipe))
-  public description$ = defer(() => this.source$).pipe(map(({ item, housing }) => item?.Description || housing?.Description))
-  public perks$ = defer(() => this.source$).pipe(map((it) => it.perks))
-  public buckets$ = defer(() => this.source$).pipe(map((it) => it.perkBuckets))
 
-  public isLoading = true
-
-  private itemId$ = new BehaviorSubject<string>(null)
-  private recipeId$ = new BehaviorSubject<string>(null)
-  private source$ = defer(() =>
-    combineLatest({
-      itemId: this.itemId$,
-      recipeId: this.recipeId$,
-
-      perksMap: this.nw.db.perksMap,
-      itemsMap: this.nw.db.itemsMap,
-      housingMap: this.nw.db.housingItemsMap,
-      craftingMap: this.nw.db.recipesMap,
-      craftingList: this.nw.db.recipes,
-      perkbucketsMap: this.nw.db.perkBucketsMap
-    })
-  ).pipe(
-    map(({ itemId, recipeId, craftingMap, craftingList, housingMap, itemsMap, perksMap, perkbucketsMap }) => {
-      let item: ItemDefinitionMaster
-      let housing: Housingitems
-      let recipe: Crafting
-      if (itemId) {
-        item = itemsMap.get(itemId)
-        housing = housingMap.get(itemId)
-        recipe = getRecipeForItem(item || housing, craftingList)
-      } else if (recipeId) {
-        recipe = craftingMap.get(recipeId)
-        const itemId = getItemIdFromRecipe(recipe)
-        housing = housingMap.get(itemId)
-        item = itemsMap.get(itemId)
-      }
-      const itemPerks = item && getItemPerks(item, perksMap)
-      const perkItemPerks = item && item.IngredientCategories?.includes('PerkItem') && getPerkbucketPerks(perkbucketsMap.get(item.ItemID), perksMap)
-      const perkBuckets = getItemPerkBucket(item, perkbucketsMap)
-      return {
-        recipe,
-        housing,
-        item,
-        perks: [
-          ...(itemPerks || []),
-          ...(perkItemPerks || [])
-        ],
-        perkBuckets: perkBuckets || []
-      }
-    })
-  )
-  .pipe(shareReplayRefCount(1))
-
-  public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {
+  public constructor(private nw: NwService, private cdRef: ChangeDetectorRef, private service: ItemDetailService) {
     //
   }
 

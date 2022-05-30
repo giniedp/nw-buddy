@@ -1,28 +1,24 @@
 import { Component, ChangeDetectionStrategy, Input, OnChanges, ChangeDetectorRef } from '@angular/core'
-import { Perkbuckets, Perks } from '@nw-data/types'
+import { ItemDetailService } from './item-detail.service'
 
 @Component({
   selector: 'nwb-item-detail-perks',
   templateUrl: './item-detail-perks.component.html',
   styleUrls: ['./item-detail-perks.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    class: 'flex flex-col gap-2'
-  }
 })
-export class ItemDetailPerksComponent implements OnChanges {
-  @Input()
-  public perks: Perks[]
+export class ItemDetailPerksComponent {
 
-  @Input()
-  public buckets: Perkbuckets[]
+  public get perks() {
+    return this.service.perks$
+  }
+
+  public get buckets() {
+    return this.service.perkBuckets$
+  }
 
   @Input()
   public gearScore: number = 600
 
-  public constructor(private cdRef: ChangeDetectorRef) {}
-
-  public ngOnChanges(): void {
-    this.cdRef.markForCheck()
-  }
+  public constructor(private service: ItemDetailService) {}
 }

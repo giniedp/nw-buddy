@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core'
 import { combineLatest, defer, map, of } from 'rxjs'
 import { NwDbService } from '~/core/nw'
-import { getAffixStats, getPerkAffixStat } from '~/core/nw/utils'
+import { getAffixStats, getPerkAffixStat, getPerkbucketPerks } from '~/core/nw/utils'
 
 const ATTRIBUTES = [
   { attribute: 'AttributeStr', name: 'Strength' },
@@ -18,14 +18,17 @@ const ATTRIBUTES = [
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AttributesTableComponent implements OnInit {
+  public attributes = ATTRIBUTES
   public table = defer(() => combineLatest({
-    data: this.perksWithAffix,
-    items: this.items
+    items: this.items,
+    buckets: this.db.perkBucketsMap,
+    perks: this.db.perksMap
   })).pipe(
-    map(({ data, items }) => {
+    map(({ items, buckets, perks }) => {
       return ATTRIBUTES.map((primary) => {
         return ATTRIBUTES.map((secondary) => {
           const hasSecondary = primary.name !== secondary.name
+
           const item = items.find((it) => {
             if (it.IngredientCategories[1] !== primary.attribute) {
               return false
@@ -36,9 +39,10 @@ export class AttributesTableComponent implements OnInit {
             return true
           })
           return {
-            primary,
-            secondary: hasSecondary ? secondary : null,
-            item
+            // primary,
+            // secondary: hasSecondary ? secondary : null,
+            item,
+            suffix: getPerkbucketPerks(buckets.get(item.ItemID), perks).find((it) => it.AppliedSuffix)?.AppliedSuffix
           }
         })
       })

@@ -22,6 +22,9 @@ import type { CraftingStepComponent } from './crafting-step.component'
   templateUrl: './crafting-calculator.component.html',
   styleUrls: ['./crafting-calculator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.hidden]': '!recipe'
+  }
 })
 export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges {
   @Input()

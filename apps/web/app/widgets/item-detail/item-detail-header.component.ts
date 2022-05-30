@@ -4,27 +4,27 @@ import {
   ChangeDetectionStrategy,
   Input,
   OnChanges,
-  SimpleChanges,
   ChangeDetectorRef,
 } from '@angular/core'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { combineLatest, map, ReplaySubject, switchMap, takeUntil } from 'rxjs'
-import { NwService } from '~/core/nw'
-import { getItemId, getItemRarity, getItemRarityName } from '~/core/nw/utils'
+import { takeUntil } from 'rxjs'
+import { getItemId, getItemRarity, getItemRarityName, isHousingItem, isMasterItem } from '~/core/nw/utils'
 import { DestroyService } from '~/core/utils'
+import { ItemDetailService } from './item-detail.service'
 
 @Component({
   selector: 'nwb-item-detail-header',
   templateUrl: './item-detail-header.component.html',
   styleUrls: ['./item-detail-header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [DestroyService]
+  providers: [DestroyService],
+  host: {
+    '[class.v-lg]': 'size === "lg"',
+    '[class.v-sm]': 'size === "sm"'
+  }
 })
 export class ItemDetailHeaderComponent implements OnInit, OnChanges {
-  @Input()
-  public entityId: string
 
-  @Input()
   public entity: ItemDefinitionMaster | Housingitems
 
   @Input()
@@ -35,6 +35,13 @@ export class ItemDetailHeaderComponent implements OnInit, OnChanges {
 
   @Input()
   public enableMarker: boolean
+
+  @Input()
+  public size: 'sm' | 'lg' | 'md' = 'md'
+
+  public get entityId() {
+    return getItemId(this.entity)
+  }
 
   public get iconPath(): string {
     return this.entity?.IconPath
@@ -50,71 +57,38 @@ export class ItemDetailHeaderComponent implements OnInit, OnChanges {
   }
   public get itemTypeName(): string {
     if (this.entity) {
-      if ('ItemID' in this.entity) {
+      if (isMasterItem(this.entity)) {
         return this.entity.ItemTypeDisplayName
-      } else if ('HouseItemID' in this.entity) {
+      }
+      if (isHousingItem(this.entity)) {
         return this.entity.ItemType
       }
     }
     return ''
   }
-
   public get itemType(): string {
-    if (this.entity) {
-      if ('ItemID' in this.entity) {
-        return this.entity.ItemType
-      } else if ('HouseItemID' in this.entity) {
-        return this.entity.ItemType
-      }
-    }
-    return ''
+    return this.entity?.ItemType || ''
   }
-
   public get showGsTracker() {
     return this.enableTracker && (this.itemType === 'Weapon' || this.itemType === 'Armor')
   }
 
-  private entityId$ = new ReplaySubject<string>()
-  private entity$ = new ReplaySubject<ItemDefinitionMaster | Housingitems>()
-
-  public constructor(private cdRef: ChangeDetectorRef, private nw: NwService, private destroy: DestroyService) {
+  public constructor(
+    private cdRef: ChangeDetectorRef,
+    private destroy: DestroyService,
+    private service: ItemDetailService
+  ) {
     //
   }
 
   public ngOnInit(): void {
-    this.entityId$
-      .pipe(switchMap((id) => {
-        return combineLatest({
-          items: this.nw.db.itemsMap,
-          housing: this.nw.db.housingItemsMap
-        }).pipe(map(({ items, housing }) => {
-          return items.get(id) || housing.get(id)
-        }))
-      }))
-      .pipe(takeUntil(this.destroy.$))
-      .subscribe((item) => {
-        this.entity$.next(item)
-      })
-
-    this.entity$
-      .pipe(takeUntil(this.destroy.$))
-      .subscribe((item) => {
-        this.entity = item
-        this.entityId = getItemId(item)
-        this.cdRef.markForCheck()
-      })
+    this.service.entity$.pipe(takeUntil(this.destroy.$)).subscribe((it) => {
+      this.entity = it
+      this.cdRef.markForCheck()
+    })
   }
 
-  public ngOnChanges(ch: SimpleChanges): void {
-    if (this.getChange('entityId', ch)) {
-      this.entityId$.next(this.entityId)
-    }
-    if (this.getChange('entity', ch)) {
-      this.entity$.next(this.entity)
-    }
-  }
-
-  private getChange(key: keyof ItemDetailHeaderComponent, ch: SimpleChanges) {
-    return ch[key]
+  public ngOnChanges(): void {
+    this.cdRef.markForCheck()
   }
 }

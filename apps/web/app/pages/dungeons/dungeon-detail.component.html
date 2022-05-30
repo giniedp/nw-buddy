@@ -12,9 +12,9 @@
   </li>
   <ng-container *ngIf="difficulties$ | async; let items">
     <li *ngFor="let item of items" [class.bordered]="item.MutationDifficulty == difficultyLevel">
-        <a [routerLink]="['.', { mutation: item.MutationDifficulty, tab: tab }]">
-        <img [nwImage]="difficultyRankIcon(dungeon, item) | async" class="w-8 h-8">
-        {{ item.MutationDifficulty }} ({{difficultyTier(item)}})
+      <a [routerLink]="['.', { mutation: item.MutationDifficulty, tab: tab }]">
+        <img [nwImage]="difficultyRankIcon(dungeon, item) | async" class="w-8 h-8" />
+        {{ item.MutationDifficulty }} ({{ difficultyTier(item) }})
       </a>
     </li>
   </ng-container>
@@ -26,8 +26,8 @@
   <div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col px-4">
     <div class="prose-base mt-8 flex-none">
       <h1 class="mb-0 font-bold">
-        <span [nwText]="title" ></span>
-        <span *ngIf="difficultyLevel">, Difficulty {{difficultyLevel}}</span>
+        <span [nwText]="title"></span>
+        <span *ngIf="difficultyLevel">, Difficulty {{ difficultyLevel }}</span>
       </h1>
       <p>
         <span [nwText]="description" class="text-primary italic"></span>
@@ -53,18 +53,15 @@
       </p>
       <div class="flex flex-row gap-4 mt-12">
         <div>
-
-          <h2 class="font-bold mt-0">
-            Expedition Items
-          </h2>
+          <h2 class="font-bold mt-0">Expedition Items</h2>
           <div class="flex flex-row gap-2">
             <a [nwInfoLink]="itemId(item)" [nwInfoResource]="'item'" *ngFor="let item of expeditionItems$ | async">
-              <picture  [nwItemIcon]="item" class="w-16 h-16"></picture>
+              <picture [nwItemIcon]="item" class="w-16 h-16"></picture>
             </a>
           </div>
         </div>
         <div class="stats bg-opacity-0 self-end" *ngIf="difficulty">
-          <div class="stat place-items-center py-0"*ngFor="let row of difficyltyRewards$ | async">
+          <div class="stat place-items-center py-0" *ngFor="let row of difficyltyRewards$ | async">
             <div class="stat-title">
               <span [nwText]="row.RankName"></span>
             </div>
@@ -81,56 +78,59 @@
 
     <div class="tabs mt-4 flex-none">
       <ng-container *ngFor="let item of tabs; trackBy: trackByTabId">
-        <a class="tab tab-bordered" [class.tab-active]="item.id === tab" [routerLink]="['.', { mutation: difficultyLevel, tab: item.id }]">
+        <a
+          class="tab tab-bordered"
+          [class.tab-active]="item.id === tab"
+          [routerLink]="['.', { mutation: difficultyLevel, tab: item.id }]"
+        >
           {{ item.label }}
         </a>
       </ng-container>
     </div>
 
-    <div class="flex-1 overflow-y-auto masked-overflow ">
+    <div class="flex-1 overflow-y-auto masked-overflow">
       <ng-container *ngFor="let item of tabs; trackBy: trackByTabId">
         <ng-container *ngIf="item.id === tab">
           <ng-container *ngTemplateOutlet="item.tpl"></ng-container>
         </ng-container>
       </ng-container>
     </div>
-
   </div>
 </div>
 
 <ng-template #tplDungeonLoot>
   <div class="grid gap-4">
-    <nwb-item-detail
-      *ngFor="let item of dungeonLoot$ | async; trackBy: trackByIndex"
-      [itemId]="itemId(item)"
-      [enableNwdbLink]="true"
-      [enableTracker]="true"
-      [enableMarker]="true"
-    ></nwb-item-detail>
+    <div *ngFor="let item of dungeonLoot$ | async; trackBy: trackByIndex" [nwbItemDetail]="item">
+      <nwb-item-detail-header
+        [enableNwdbLink]="true"
+        [enableTracker]="true"
+        [enableMarker]="true"
+      ></nwb-item-detail-header>
+    </div>
   </div>
 </ng-template>
 
 <ng-template #tplDungeonMutatedLoot>
   <div class="grid gap-4">
-    <nwb-item-detail
-      *ngFor="let item of dungeonMutatedLoot$ | async; trackBy: trackByIndex"
-      [itemId]="itemId(item)"
-      [enableNwdbLink]="true"
-      [enableTracker]="true"
-      [enableMarker]="true"
-    ></nwb-item-detail>
+    <div *ngFor="let item of dungeonMutatedLoot$ | async; trackBy: trackByIndex" [nwbItemDetail]="item">
+      <nwb-item-detail-header
+        [enableNwdbLink]="true"
+        [enableTracker]="true"
+        [enableMarker]="true"
+      ></nwb-item-detail-header>
+    </div>
   </div>
 </ng-template>
 
 <ng-template #tplDungeonDifficultyLoot>
   <div class="grid gap-4">
-    <nwb-item-detail
-      *ngFor="let item of dungeonDifficultyLoot$ | async; trackBy: trackByIndex"
-      [itemId]="itemId(item)"
-      [enableNwdbLink]="true"
-      [enableTracker]="true"
-      [enableMarker]="true"
-    ></nwb-item-detail>
+    <div *ngFor="let item of dungeonDifficultyLoot$ | async; trackBy: trackByIndex" [nwbItemDetail]="item">
+      <nwb-item-detail-header
+        [enableNwdbLink]="true"
+        [enableTracker]="true"
+        [enableMarker]="true"
+      ></nwb-item-detail-header>
+    </div>
   </div>
 </ng-template>
 
