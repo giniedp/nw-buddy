@@ -158,7 +158,7 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy {
       this.item = this.service.findItem(this.itemId)
       this.category = this.service.categoriesMap.get(step.ingredient.id)
       this.options = this.step.options.map((it) => this.service.itemsMap.get(it))
-    } else if (step) {
+    } else if (step.ingredient) {
       this.itemId = step.ingredient.id
       this.item = this.service.findItem(this.itemId)
       this.category = null
