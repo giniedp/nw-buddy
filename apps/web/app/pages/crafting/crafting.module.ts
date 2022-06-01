@@ -8,7 +8,8 @@ import { FormsModule } from '@angular/forms'
 import { CraftingDetailComponent } from './crafting-detail.component'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { DataTableModule } from '~/ui/data-table'
-import { QuicksearchModule } from '~/ui/quicksearch'
+import { QuicksearchModule } from '~/ui/quicksearch';
+import { CraftingTableComponent } from './crafting-table.component'
 
 @NgModule({
   imports: [
@@ -20,6 +21,6 @@ import { QuicksearchModule } from '~/ui/quicksearch'
     DataTableModule,
     QuicksearchModule
   ],
-  declarations: [CraftingComponent, CraftingDetailComponent],
+  declarations: [CraftingComponent, CraftingDetailComponent, CraftingTableComponent],
 })
 export class CraftingModule {}

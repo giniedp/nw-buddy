@@ -9,7 +9,7 @@ import { VitalsAdapterService } from './vitals-table-adapter'
   styleUrls: ['./vitals.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'nwb-page has-menu',
+    class: 'layout-row gap-4',
   },
   providers: [DataTableAdapter.provideClass(VitalsAdapterService), QuicksearchService],
 })

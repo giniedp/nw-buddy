@@ -1,0 +1,20 @@
+<nwb-data-table
+  #table
+  [stateKey]="'armorsets-table'"
+  [categoryRouteParam]
+  [detailRoutParam]="'id'"
+  [quickFilter]="search.query | async"
+  class="rounded-md overflow-clip"
+></nwb-data-table>
+
+<div class="w-[400px] xl:w-[450px] 2xl:w-[500px] layout-content" *ngIf="table.selectedItems | async; let items">
+  <nwb-item-detail
+    *ngFor="let item of items; trackBy: trackByIndex"
+    [itemId]="item.ItemID"
+    class="rounded-md overflow-clip mb-4"
+    [enableMarker]="true"
+    [enableTracker]="true"
+    [enableDescription]="true"
+    [enablePerks]="true"
+  ></nwb-item-detail>
+</div>

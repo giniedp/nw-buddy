@@ -20,9 +20,13 @@ export class VitalsFamiliesListComponent implements OnInit, OnChanges, OnDestroy
     //
   }
 
-  public ngOnInit(): void {}
+  public ngOnInit(): void {
+    //
+  }
 
-  public ngOnChanges(changes: SimpleChanges): void {}
+  public ngOnChanges(): void {
+    //
+  }
 
   public ngOnDestroy(): void {
     this.destroy$.next(null)

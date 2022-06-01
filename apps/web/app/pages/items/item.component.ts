@@ -6,6 +6,9 @@ import { distinctUntilChanged, map, Subject, takeUntil } from 'rxjs'
   templateUrl: './item.component.html',
   styleUrls: ['./item.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'layout-content'
+  }
 })
 export class ItemComponent implements OnInit, OnDestroy {
   public itemId: string

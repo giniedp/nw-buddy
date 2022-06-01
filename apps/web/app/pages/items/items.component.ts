@@ -9,7 +9,7 @@ import { ItemsTableAdapter } from './items-table-adapter'
   styleUrls: ['./items.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'nwb-page has-menu has-detail',
+    class: 'layout-row gap-4',
   },
   providers: [DataTableAdapter.provideClass(ItemsTableAdapter), QuicksearchService],
 })

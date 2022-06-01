@@ -9,7 +9,7 @@ import { HousingAdapterService } from './housing-table-adapter'
   styleUrls: ['./housing.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'nwb-page has-menu has-detail',
+    class: 'layout-row gap-4',
   },
   providers: [DataTableAdapter.provideClass(HousingAdapterService), QuicksearchService],
 })

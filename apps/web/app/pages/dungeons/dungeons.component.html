@@ -1,4 +1,4 @@
-<div class="menu-frame w-56">
+<div class="w-56 flex flex-col gap-4">
   <ul class="menu bg-base-100 rounded-md">
     <li *ngFor="let item of dungeon$ | async"  [routerLinkActive]="'bordered'" >
       <a [routerLink]="item.GameModeId">
@@ -7,9 +7,4 @@
     </li>
   </ul>
 </div>
-
-<div class="main-frame col-span-2">
-  <div class="main-content flex flex-col">
-    <router-outlet></router-outlet>
-  </div>
-</div>
+<router-outlet></router-outlet>

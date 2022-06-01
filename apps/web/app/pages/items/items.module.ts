@@ -8,9 +8,10 @@ import { ItemComponent } from './item.component'
 import { FormsModule } from '@angular/forms'
 import { DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule } from '~/ui/quicksearch';
+import { ItemsTableComponent } from './items-table.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ItemsRoutingModule, DataTableModule, ItemDetailModule, QuicksearchModule],
-  declarations: [ItemsComponent, ItemComponent],
+  declarations: [ItemsComponent, ItemComponent, ItemsTableComponent],
 })
 export class ItemsModule {}

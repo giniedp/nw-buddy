@@ -7,6 +7,9 @@ import { distinctUntilChanged, map, Subject, takeUntil } from 'rxjs'
   templateUrl: './crafting-detail.component.html',
   styleUrls: ['./crafting-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'layout-content'
+  }
 })
 export class CraftingDetailComponent implements OnInit, OnDestroy {
   public itemId: string

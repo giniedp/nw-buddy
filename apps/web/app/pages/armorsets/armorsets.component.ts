@@ -11,7 +11,7 @@ import { Armorset, ArmorsetGroup } from './types'
   styleUrls: ['./armorsets.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'nwb-page has-menu has-detail',
+    class: 'layout-row gap-4',
   },
   providers: [DataTableAdapter.provideClass(ArmorsetsAdapterService), QuicksearchService],
 })

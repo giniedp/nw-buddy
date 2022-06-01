@@ -9,6 +9,9 @@ import { AppPreferencesService } from './core/preferences'
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
+  host: {
+    class: 'layout-frame layout-column'
+  }
 })
 export class AppComponent {
 

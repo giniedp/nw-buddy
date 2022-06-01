@@ -1,4 +1,4 @@
-<div class="menu-frame w-36 xl:w-40">
+<div class="w-36 xl:w-40">
   <ul class="menu menu-compact xl:menu-normal bg-base-100 rounded-md">
     <li [routerLinkActive]="'bordered'">
       <a [routerLink]="'tradeskills'">Tradeskills</a>
@@ -14,8 +14,4 @@
     </li>
   </ul>
 </div>
-<div class="main-frame overflow-clip">
-  <div class="main-content rounded-md">
-    <router-outlet></router-outlet>
-  </div>
-</div>
+<router-outlet></router-outlet>

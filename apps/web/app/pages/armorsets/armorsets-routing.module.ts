@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
+import { ArmorsetsTableComponent } from './armorsets-table.component'
 import { ArmorsetsComponent } from './armorsets.component'
 
 const routes: Routes = [
@@ -8,7 +9,23 @@ const routes: Routes = [
     component: ArmorsetsComponent,
     children: [
       {
-        path: ':id',
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'table',
+      },
+      {
+        path: 'table',
+        component: ArmorsetsTableComponent,
+        children: [{
+          path: ':id',
+        }]
+      },
+      {
+        path: ':category',
+        component: ArmorsetsTableComponent,
+        children: [{
+          path: ':id',
+        }]
       },
     ],
   },

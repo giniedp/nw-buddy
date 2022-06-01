@@ -8,9 +8,6 @@ import { TradeskillPreferencesService } from '~/core/preferences/tradeskill-pref
   templateUrl: './preferences.component.html',
   styleUrls: ['./preferences.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: {
-    class: 'nwb-page',
-  },
 })
 export class PreferencesComponent implements OnInit {
   public constructor(

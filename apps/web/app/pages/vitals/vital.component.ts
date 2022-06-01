@@ -8,6 +8,9 @@ import { observeRouteParam } from '~/core/utils'
   templateUrl: './vital.component.html',
   styleUrls: ['./vital.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'layout-content'
+  }
 })
 export class VitalComponent {
   public vitalId = observeRouteParam(this.route, 'id')

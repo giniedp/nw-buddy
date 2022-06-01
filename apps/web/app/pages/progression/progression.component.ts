@@ -5,7 +5,7 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './progression.component.html',
   styleUrls: ['./progression.component.scss'],
   host: {
-    class: 'nwb-page has-menu',
+    class: 'layout-row gap-4',
   },
 })
 export class ProgressionComponent implements OnInit {

@@ -7,9 +7,20 @@ import { DataTableModule } from '~/ui/data-table'
 import { VitalComponent } from './vital.component'
 import { VitalsFamiliesModule } from '~/widgets/vitals-families'
 import { QuicksearchModule } from '~/ui/quicksearch'
+import { VitalsFamiliesComponent } from './vitals-families.component'
+import { RouterModule } from '@angular/router'
+import { VitalsTableComponent } from './vitals-table.component'
 
 @NgModule({
-  declarations: [VitalsComponent, VitalComponent],
-  imports: [CommonModule, VitalsRoutingModule, DataTableModule, VitalsFamiliesModule, QuicksearchModule],
+  declarations: [VitalsComponent, VitalComponent, VitalsFamiliesComponent, VitalsTableComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    VitalsRoutingModule,
+    DataTableModule,
+    VitalsFamiliesModule,
+    QuicksearchModule,
+    VitalsFamiliesModule,
+  ],
 })
 export class VitalsModule {}

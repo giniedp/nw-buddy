@@ -1,4 +1,10 @@
 :host {
+  flex: 1;
+  max-width: 2100px;
+  margin-left: auto;
+  margin-right: auto;
+  overflow-y: auto;
+
   display: grid;
   grid-template-columns: 1fr 1fr;
   grid-template-rows: min-content 1fr;

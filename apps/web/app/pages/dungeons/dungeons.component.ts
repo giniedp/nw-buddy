@@ -7,7 +7,7 @@ import { DungeonsService } from './dungeons.service'
   styleUrls: ['./dungeons.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'nwb-page has-menu has-detail',
+    class: 'layout-row gap-4',
   },
 })
 export class DungeonsComponent {

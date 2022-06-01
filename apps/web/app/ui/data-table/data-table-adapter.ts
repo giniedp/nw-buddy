@@ -76,4 +76,7 @@ export abstract class DataTableAdapter<T> {
       },
     })
   }
+  public extractCategories(entities: T[]) {
+    return Array.from(new Set(entities.map((it) => this.entityCategory(it)).filter((it) => !!it)))
+  }
 }

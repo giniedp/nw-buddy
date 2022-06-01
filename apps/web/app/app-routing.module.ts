@@ -19,13 +19,14 @@ const routes: Routes = [
   { path: 'progression', loadChildren: () => import('./pages/progression').then(m => m.ProgressionModule) },
   { path: 'vitals', loadChildren: () => import('./pages/vitals/vitals.module').then(m => m.VitalsModule) },
   { path: 'about', loadChildren: () => import('./pages/about/about.module').then(m => m.AboutModule) },
-  { path: 'attributes', loadChildren: () => import('./pages/attributes').then(m => m.AttributesModule) },
 
   { path: '**', loadChildren: () => import('./pages/not-found').then((m) => m.NotFoundModule) },
 ]
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes, {  })],
+  imports: [RouterModule.forRoot(routes, {
+
+  })],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

@@ -1,43 +1,56 @@
-import { Directive, Input } from '@angular/core'
-import { ActivatedRoute, Router } from '@angular/router'
-import { distinctUntilChanged, map, Subject, takeUntil } from 'rxjs'
+import { Directive, forwardRef, Injectable, Input } from '@angular/core'
+import { ActivatedRoute} from '@angular/router'
+import { BehaviorSubject, combineLatest, distinctUntilChanged, map, Subject, takeUntil } from 'rxjs'
 import { DataTableAdapter } from './data-table-adapter'
 
-@Directive({
-  selector: 'nwb-data-table-categories[routeParam]',
-})
-export class DataTableCategoriesRouterDirective {
-  @Input()
-  public routeParam = 'cat'
+@Injectable()
+export abstract class CategoryLinkService {
+  public abstract categoryLink(category: string | null): any
+}
 
+@Directive({
+  selector: 'nwb-data-table-categories[categoryChildRoute]',
+  providers: [{
+    provide: CategoryLinkService,
+    useExisting: forwardRef(() => CategoryChildRouteParamDirective)
+  }]
+})
+export class CategoryChildRouteParamDirective extends CategoryLinkService {
+
+  @Input()
+  public childRouteIndex = '.'
+
+  public categoryLink(category: string | null) {
+    return [category || this.childRouteIndex]
+  }
+}
+
+
+@Directive({
+  selector: 'nwb-data-table[categoryRouteParam]',
+})
+export class CategoryRouteParamDirective {
+
+  @Input()
+  public set categoryRouteParam(value: string) {
+    this.param$.next(value)
+  }
+
+  private param$ = new BehaviorSubject(null)
   private destroy$ = new Subject()
 
-  public constructor(private route: ActivatedRoute, private router: Router, private adapter: DataTableAdapter<any>) {}
+  public constructor(private route: ActivatedRoute, private adapter: DataTableAdapter<any>) {}
 
   public ngOnInit(): void {
-    this.route
-      .paramMap
-      .pipe(map((m) => m.get(this.routeParam)))
+    combineLatest({
+      paramMap: this.route.paramMap,
+      param: this.param$
+    }).pipe(map(({ paramMap, param }) => paramMap.get(param || 'category')))
+
       .pipe(distinctUntilChanged())
       .pipe(takeUntil(this.destroy$))
       .subscribe((category) => {
         this.adapter.category.next(category)
-      })
-
-    this.adapter.category
-      .pipe(distinctUntilChanged())
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((value) => {
-        const params = {
-          ...this.route.snapshot.params,
-          [this.routeParam]: value,
-        }
-        if (!value) {
-          delete params[this.routeParam]
-        }
-        this.router.navigate([params], {
-          relativeTo: this.route,
-        })
       })
   }
 

@@ -8,7 +8,7 @@ import { PerksAdapterService } from './perks-table-adapter'
   styleUrls: ['./perks.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'nwb-page has-menu',
+    class: 'layout-row gap-4',
   },
   providers: [
     DataTableAdapter.provideClass(PerksAdapterService)

@@ -8,7 +8,8 @@ import { PropertyGridModule } from '~/ui/property-grid'
 import { FormsModule } from '@angular/forms'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { DataTableModule } from '~/ui/data-table'
-import { QuicksearchModule } from '~/ui/quicksearch'
+import { QuicksearchModule } from '~/ui/quicksearch';
+import { HousingTableComponent } from './housing-table.component'
 
 @NgModule({
   imports: [
@@ -20,6 +21,6 @@ import { QuicksearchModule } from '~/ui/quicksearch'
     ItemDetailModule,
     QuicksearchModule
   ],
-  declarations: [HousingComponent, HousingDetailComponent],
+  declarations: [HousingComponent, HousingDetailComponent, HousingTableComponent],
 })
 export class HousingModule {}

@@ -9,6 +9,9 @@ import { NwService } from '~/core/nw'
   templateUrl: './housing-detail.component.html',
   styleUrls: ['./housing-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'layout-content'
+  }
 })
 export class HousingDetailComponent implements OnInit, OnDestroy {
   public itemId: string

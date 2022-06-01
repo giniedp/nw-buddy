@@ -1,0 +1,9 @@
+<nwb-data-table
+  #table
+  [categoryRouteParam]
+  [detailRoutParam]="'id'"
+  [quickFilter]="search.query | async"
+  class="rounded-md overflow-clip"
+></nwb-data-table>
+
+<router-outlet></router-outlet>

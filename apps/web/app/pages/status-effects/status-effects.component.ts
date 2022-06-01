@@ -9,7 +9,7 @@ import { StatusEffectsAdapterService } from './status-effects-table-adapter'
   styleUrls: ['./status-effects.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'nwb-page has-menu',
+    class: 'layout-row gap-4',
   },
   providers: [DataTableAdapter.provideClass(StatusEffectsAdapterService), QuicksearchService],
 })

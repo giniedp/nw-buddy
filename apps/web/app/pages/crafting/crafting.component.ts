@@ -9,7 +9,7 @@ import { CraftingAdapterService } from './crafting-table-adapter'
   templateUrl: './crafting.component.html',
   styleUrls: ['./crafting.component.scss'],
   host: {
-    class: 'nwb-page has-menu has-detail',
+    class: 'layout-row gap-4',
   },
   providers: [DataTableAdapter.provideClass(CraftingAdapterService), QuicksearchService],
 })

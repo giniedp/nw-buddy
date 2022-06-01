@@ -4,12 +4,10 @@ import {
   ChangeDetectionStrategy,
   OnChanges,
   OnDestroy,
-  SimpleChanges,
   Input,
   ChangeDetectorRef,
 } from '@angular/core'
-import { Damagetable } from '@nw-data/types'
-import { chain, groupBy, mapValues, uniq } from 'lodash'
+import { groupBy, mapValues, uniq } from 'lodash'
 import { combineLatest, defer, map, ReplaySubject, shareReplay, Subject, takeUntil } from 'rxjs'
 import { NwService } from '~/core/nw'
 
