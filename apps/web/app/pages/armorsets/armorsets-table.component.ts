@@ -1,5 +1,9 @@
-import { Component, OnInit, ChangeDetectionStrategy, TrackByFunction } from '@angular/core'
+import { Component, OnInit, ChangeDetectionStrategy, TrackByFunction, ViewChild } from '@angular/core'
+import { defer, map } from 'rxjs'
+import { shareReplayRefCount } from '~/core/utils'
+import { DataTableComponent } from '~/ui/data-table'
 import { QuicksearchService } from '~/ui/quicksearch'
+import { Armorset } from './types'
 
 @Component({
   selector: 'nwb-armorsets-table',
@@ -9,7 +13,15 @@ import { QuicksearchService } from '~/ui/quicksearch'
 })
 export class ArmorsetsTableComponent implements OnInit {
   public trackByIndex: TrackByFunction<any> = (i) => i
-  constructor(public search: QuicksearchService) {}
 
-  ngOnInit(): void {}
+  @ViewChild(DataTableComponent, { static: true })
+  public table: DataTableComponent<Armorset>
+
+  public selectedItems = defer(() => this.table.selectedItem)
+    .pipe(map((it) => it?.items))
+    .pipe(shareReplayRefCount(1))
+
+  public constructor(public search: QuicksearchService) {}
+
+  public ngOnInit(): void {}
 }

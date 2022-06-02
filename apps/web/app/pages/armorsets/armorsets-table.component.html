@@ -7,7 +7,7 @@
   class="rounded-md overflow-clip"
 ></nwb-data-table>
 
-<div class="w-[400px] xl:w-[450px] 2xl:w-[500px] layout-content" *ngIf="table.selectedItems | async; let items">
+<div class="w-[400px] xl:w-[450px] 2xl:w-[500px] layout-content" *ngIf="selectedItems | async; let items">
   <nwb-item-detail
     *ngFor="let item of items; trackBy: trackByIndex"
     [itemId]="item.ItemID"
