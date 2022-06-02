@@ -7,6 +7,7 @@ import {
   ViewChild,
   TrackByFunction,
 } from '@angular/core'
+import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser'
 import { ActivatedRoute } from '@angular/router'
 import { Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty, Vitals } from '@nw-data/types'
 import { pick } from 'lodash'
@@ -164,9 +165,14 @@ export class DungeonDetailComponent implements OnInit {
   @ViewChild('tplRewards')
   public tplRewards: TemplateRef<unknown>
 
+  @ViewChild('tplDungeonMap')
+  public tplDungeonMap: TemplateRef<unknown>
+
   public dungeon: Gamemodes
   public difficulty: Mutationdifficulty
   public tab: string = ''
+  public mapEmbed: SafeResourceUrl
+
   public get title() {
     return this.dungeon?.DisplayName
   }
@@ -205,7 +211,8 @@ export class DungeonDetailComponent implements OnInit {
     private ds: DungeonsService,
     private route: ActivatedRoute,
     private destroy: DestroyService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private domSanitizer: DomSanitizer
   ) {
     //
   }
@@ -244,6 +251,14 @@ export class DungeonDetailComponent implements OnInit {
           label: 'Bosses',
           tpl: this.tplDungeonBosses,
         })
+        // this.mapEmbed = this.domSanitizer.bypassSecurityTrustResourceUrl(this.ds.dungeonMapEmbed(dungeon))
+        // if (this.mapEmbed) {
+        //   this.tabs.push({
+        //     id: 'map',
+        //     label: 'Map',
+        //     tpl: this.tplDungeonMap,
+        //   })
+        // }
         this.cdRef.markForCheck()
       })
 

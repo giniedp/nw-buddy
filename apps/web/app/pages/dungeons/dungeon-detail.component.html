@@ -139,3 +139,10 @@
     <nwb-vital-detail *ngFor="let item of bosses$ | async; trackBy: trackByIndex" [vital]="item"></nwb-vital-detail>
   </div>
 </ng-template>
+
+<ng-template #tplDungeonMap>
+  <iframe [attr.src]="mapEmbed" class="w-full h-full">
+
+  </iframe>
+</ng-template>
+

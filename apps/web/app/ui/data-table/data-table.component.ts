@@ -25,6 +25,7 @@ import {
   switchMap,
   switchMapTo,
   takeUntil,
+  tap,
 } from 'rxjs'
 import { LocaleService } from '~/core/i18n'
 import { PreferencesService, StorageNode } from '~/core/preferences'
@@ -86,6 +87,11 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   @Output()
   public get selectedItems(): Observable<T[]> {
     return this.gridSelectionChanged$
+  }
+
+  @Output()
+  public get selectedItem(): Observable<T> {
+    return this.gridSelectionChanged$.pipe(map((it) => it?.[0]))
   }
 
   @Output()

@@ -39,6 +39,26 @@ const MAP_DUNGEON_TO_VITALS_LOOT_TAGS: Record<string, string[]> = {
   DungeonEbonscale00: ['Dynasty', 'IsabellaDynasty'],
 }
 
+const MAP_DUNGEON_TO_ID_SUFFIX: Record<string, string> = {
+  DungeonAmrine: '_DG_Windsward_',
+  DungeonEdengrove00: '_DG_Edengrove_',
+  DungeonShatteredObelisk: '_DG_Everfall_',
+  DungeonRestlessShores01: '_DG_Restless_',
+  DungeonReekwater00: '_DG_Reekwater_',
+  DungeonEbonscale00: '_DG_Ebonscale_',
+  DungeonShatterMtn00: '_DG_ShatterMtn_',
+}
+
+const MAP_DUNGEON_TO_MAP: Record<string, string> = {
+  DungeonAmrine: 'https://mapgenie.io/new-world/maps/amrine-excavation?embed=light&popup=false',
+  DungeonEdengrove00: 'https://mapgenie.io/new-world/maps/garden-of-genesis?embed=light&popup=false',
+  DungeonShatteredObelisk: 'https://mapgenie.io/new-world/maps/starstone-barrows?embed=light&popup=false',
+  DungeonRestlessShores01: 'https://mapgenie.io/new-world/maps/the-depths?embed=light&popup=false',
+  DungeonReekwater00: 'https://mapgenie.io/new-world/maps/lazarus-instrumentality?embed=light&popup=false',
+  DungeonEbonscale00: 'https://mapgenie.io/new-world/maps/dynasty-shipyard?embed=light&popup=false',
+  DungeonShatterMtn00: 'https://mapgenie.io/new-world/maps/tempests-heart?embed=light&popup=false',
+}
+
 const MUTATION_LOOT_TAGS = [
   'MutDiff',
   'MutDiff1',
@@ -136,6 +156,10 @@ export class DungeonsService {
       )
   }
 
+  public dungeonMapEmbed(dungeon: Gamemodes) {
+    return MAP_DUNGEON_TO_MAP[dungeon.GameModeId]
+  }
+
   public dungeonMutationLoot(
     dungeon: Gamemodes,
     mutation: Mutationdifficulty
@@ -194,7 +218,9 @@ export class DungeonsService {
   // }
 
   public dungeonBosses(dungeon: Gamemodes) {
-    const include = MAP_DUNGEON_TO_VITALS_LOOT_TAGS[dungeon.GameModeId] || [dungeon.GameModeId.replace(/^Dungeon/, '')]
+    const dungeonId = dungeon.GameModeId
+    const vitalIdInclude = MAP_DUNGEON_TO_ID_SUFFIX[dungeonId]
+    const include = MAP_DUNGEON_TO_VITALS_LOOT_TAGS[dungeonId] || [dungeonId.replace(/^Dungeon/, '')]
     return combineLatest({
       // categories: this.dungeonCreaturesCategories(dungeon),
       vitals: this.nw.db.vitalsByCreatureType,
@@ -203,7 +229,13 @@ export class DungeonsService {
         const miniBosses = vitals.get('DungeonMiniBoss') || []
         const bosses = vitals.get('DungeonBoss') || []
         const result = [...miniBosses, ...bosses].filter((it) => {
-          return (it.LootTags || []).some((i) => include.includes(i))
+          if ((it.LootTags || []).some((i) => include.includes(i))) {
+            return true
+          }
+          if (vitalIdInclude && it.VitalsID.includes(vitalIdInclude)) {
+            return true
+          }
+          return false
         })
         // console.log({
         //   include,
@@ -216,13 +248,21 @@ export class DungeonsService {
   }
 
   public dungeonCreatures(dungeon: Gamemodes) {
-    const include = MAP_DUNGEON_TO_VITALS_LOOT_TAGS[dungeon.GameModeId] || [dungeon.GameModeId.replace(/^Dungeon/, '')]
+    const dungeonId = dungeon.GameModeId
+    const vitalIdInclude = MAP_DUNGEON_TO_ID_SUFFIX[dungeonId]
+    const include = MAP_DUNGEON_TO_VITALS_LOOT_TAGS[dungeonId] || [dungeonId.replace(/^Dungeon/, '')]
     return combineLatest({
       vitals: this.nw.db.vitals,
     }).pipe(
       map(({ vitals }) => {
         return vitals.filter((it) => {
-          return (it.LootTags || []).some((i) => include.includes(i))
+          if ((it.LootTags || []).some((i) => include.includes(i))) {
+            return true
+          }
+          if (vitalIdInclude && it.VitalsID.includes(vitalIdInclude)) {
+            return true
+          }
+          return false
         })
       })
     )
