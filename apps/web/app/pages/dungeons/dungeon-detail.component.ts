@@ -150,22 +150,22 @@ export class DungeonDetailComponent implements OnInit {
     })
   ).pipe(switchMap(({ dungeon, difficulty }) => this.difficultyRank(dungeon, difficulty)))
 
-  @ViewChild('tplDungeonLoot')
+  @ViewChild('tplDungeonLoot', { static: true })
   public tplDungeonLoot: TemplateRef<unknown>
 
-  @ViewChild('tplDungeonMutatedLoot')
+  @ViewChild('tplDungeonMutatedLoot', { static: true })
   public tplDungeonMutatedLoot: TemplateRef<unknown>
 
-  @ViewChild('tplDungeonDifficultyLoot')
+  @ViewChild('tplDungeonDifficultyLoot', { static: true })
   public tplDungeonDifficultyLoot: TemplateRef<unknown>
 
-  @ViewChild('tplDungeonBosses')
+  @ViewChild('tplDungeonBosses', { static: true })
   public tplDungeonBosses: TemplateRef<unknown>
 
-  @ViewChild('tplRewards')
+  @ViewChild('tplRewards', { static: true })
   public tplRewards: TemplateRef<unknown>
 
-  @ViewChild('tplDungeonMap')
+  @ViewChild('tplDungeonMap', { static: true })
   public tplDungeonMap: TemplateRef<unknown>
 
   public dungeon: Gamemodes
@@ -259,12 +259,12 @@ export class DungeonDetailComponent implements OnInit {
         //     tpl: this.tplDungeonMap,
         //   })
         // }
-        this.cdRef.markForCheck()
+        this.cdRef.detectChanges()
       })
 
     this.tabParam$.pipe(takeUntil(this.destroy.$)).subscribe((tab) => {
       this.tab = tab || ''
-      this.cdRef.markForCheck()
+      this.cdRef.detectChanges()
     })
   }
 
