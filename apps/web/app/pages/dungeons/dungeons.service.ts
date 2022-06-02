@@ -71,6 +71,8 @@ const MUTATION_LOOT_TAGS = [
   'MutDiff8',
   'MutDiff9',
   'MutDiff10',
+  'Restless01_Mut',
+  'Ebonscale00_Mut'
 ]
 
 @Injectable({ providedIn: 'root' })
@@ -151,7 +153,7 @@ export class DungeonsService {
       .pipe(map(({ bossTags, lootTags }) => uniq([...bossTags, ...lootTags])))
       .pipe(
         switchMap((tags) => {
-          return this.nw.lootbuckets.all().filter(tags).exclude(MUTATION_LOOT_TAGS).items()
+          return this.nw.lootbuckets.all().filter(tags).items()
         })
       )
   }
