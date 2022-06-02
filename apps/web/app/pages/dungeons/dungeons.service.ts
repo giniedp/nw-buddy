@@ -59,7 +59,7 @@ const MAP_DUNGEON_TO_MAP: Record<string, string> = {
   DungeonShatterMtn00: 'https://mapgenie.io/new-world/maps/tempests-heart?embed=light&popup=false',
 }
 
-const MUTATION_LOOT_TAGS = [
+const MUTATION_DIFFICULTY_LOOT_TAGS = [
   'MutDiff',
   'MutDiff1',
   'MutDiff2',
@@ -70,7 +70,11 @@ const MUTATION_LOOT_TAGS = [
   'MutDiff7',
   'MutDiff8',
   'MutDiff9',
-  'MutDiff10',
+  'MutDiff10'
+]
+
+const MUTATION_LOOT_TAGS = [
+  ...MUTATION_DIFFICULTY_LOOT_TAGS,
   'Restless01_Mut',
   'Ebonscale00_Mut'
 ]
@@ -153,7 +157,7 @@ export class DungeonsService {
       .pipe(map(({ bossTags, lootTags }) => uniq([...bossTags, ...lootTags])))
       .pipe(
         switchMap((tags) => {
-          return this.nw.lootbuckets.all().filter(tags).items()
+          return this.nw.lootbuckets.all().filter(tags).exclude(MUTATION_DIFFICULTY_LOOT_TAGS).items()
         })
       )
   }
