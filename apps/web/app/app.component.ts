@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Component } from '@angular/core'
 
 import { TranslateService } from '@ngx-translate/core'
+import { APP_CONFIG } from '../environments/environment'
 import { ElectronService } from './core/electron'
 import { LocaleService } from './core/i18n'
 import { AppPreferencesService } from './core/preferences'
