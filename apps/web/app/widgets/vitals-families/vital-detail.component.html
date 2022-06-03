@@ -1,5 +1,5 @@
 <ng-container *ngIf="vital$ | async; let vital">
-  <div class="bg-base-300 rounded-t-md px-4 py-2 flex flex-row items-center">
+  <div class="bg-base-300 px-4 py-2 flex flex-row items-center">
     <div class="avatar" *ngIf="showPortrait">
       <div class="w-10 mask mask-squircle">
         <img  [nwImage]="familyIcon | async" />
@@ -14,7 +14,7 @@
     <span *ngIf="vital.Level"> Lvl. {{ vital.Level }}</span>
   </div>
 
-  <div class="stats stats-vertical rounded-md w-full rounded-t-none backdrop-blur-sm bg-white/10">
+  <div class="stats stats-vertical w-full bg-transparent">
     <div class="stat place-items-center py-1 px-2" *ngFor="let row of stats$ | async">
       <div
         class="stat-value text-2xl"

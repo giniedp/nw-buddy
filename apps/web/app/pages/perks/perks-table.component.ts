@@ -1,16 +1,15 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { QuicksearchService } from '~/ui/quicksearch';
+import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { QuicksearchService } from '~/ui/quicksearch'
 
 @Component({
   templateUrl: './perks-table.component.html',
-  styleUrls: ['./perks-table.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'layout-row gap-4',
+  },
 })
-export class PerksTableComponent implements OnInit {
-
-  public constructor(public search: QuicksearchService) { }
-
-  ngOnInit(): void {
+export class PerksTableComponent {
+  public constructor(public search: QuicksearchService) {
+    //
   }
-
 }

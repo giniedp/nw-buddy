@@ -4,11 +4,13 @@ import { QuicksearchService } from '~/ui/quicksearch';
 @Component({
   selector: 'nwb-crafting-table',
   templateUrl: './crafting-table.component.html',
-  styleUrls: ['./crafting-table.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'layout-row gap-4',
+  },
 })
-export class CraftingTableComponent implements OnInit {
-  constructor(public search: QuicksearchService) {}
-
-  ngOnInit(): void {}
+export class CraftingTableComponent {
+  public constructor(public search: QuicksearchService) {
+    //
+  }
 }

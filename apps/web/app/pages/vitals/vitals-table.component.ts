@@ -4,8 +4,10 @@ import { QuicksearchService } from '~/ui/quicksearch';
 @Component({
   selector: 'nwb-vitals-table',
   templateUrl: './vitals-table.component.html',
-  styleUrls: ['./vitals-table.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'layout-row gap-4',
+  },
 })
 export class VitalsTableComponent implements OnInit {
 

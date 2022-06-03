@@ -9,7 +9,6 @@ import { AbilitiesAdapterService } from './abilities-table-adapter'
 @Component({
   selector: 'nwb-abilities',
   templateUrl: './abilities.component.html',
-  styleUrls: ['./abilities.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'layout-row gap-4',

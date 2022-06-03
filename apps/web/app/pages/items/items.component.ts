@@ -6,11 +6,12 @@ import { ItemsTableAdapter } from './items-table-adapter'
 @Component({
   selector: 'nwb-items',
   templateUrl: './items.component.html',
-  styleUrls: ['./items.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'layout-row gap-4',
   },
   providers: [DataTableAdapter.provideClass(ItemsTableAdapter), QuicksearchService],
 })
-export class ItemsComponent {}
+export class ItemsComponent {
+  //
+}

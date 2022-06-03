@@ -6,7 +6,6 @@ import { HousingAdapterService } from './housing-table-adapter'
 @Component({
   selector: 'nwb-housing',
   templateUrl: './housing.component.html',
-  styleUrls: ['./housing.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'layout-row gap-4',

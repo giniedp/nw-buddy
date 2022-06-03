@@ -1,35 +1,17 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef } from '@angular/core'
+import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import { distinctUntilChanged, map, Subject, takeUntil } from 'rxjs'
+import { observeRouteParam } from '~/core/utils'
 
 @Component({
   templateUrl: './item.component.html',
-  styleUrls: ['./item.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'layout-content'
+    class: 'layout-content flex-none max-w-lg'
   }
 })
-export class ItemComponent implements OnInit, OnDestroy {
-  public itemId: string
-
-  private destroy$ = new Subject()
-
-  public constructor(private route: ActivatedRoute, private cdRef: ChangeDetectorRef) {}
-
-  public ngOnInit(): void {
-    this.route.paramMap
-      .pipe(map((params) => params.get('id')))
-      .pipe(distinctUntilChanged())
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((id) => {
-        this.itemId = id
-        this.cdRef.markForCheck()
-      })
-  }
-
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
+export class ItemComponent {
+  public itemId = observeRouteParam(this.route, 'id')
+  public constructor(private route: ActivatedRoute) {
+    //
   }
 }

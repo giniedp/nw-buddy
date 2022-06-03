@@ -6,7 +6,6 @@ import { StatusEffectsAdapterService } from './status-effects-table-adapter'
 @Component({
   selector: 'nwb-status-effects',
   templateUrl: './status-effects.component.html',
-  styleUrls: ['./status-effects.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'layout-row gap-4',

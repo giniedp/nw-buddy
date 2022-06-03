@@ -5,7 +5,6 @@ import { PerksAdapterService } from './perks-table-adapter'
 @Component({
   selector: 'nwb-perks',
   templateUrl: './perks.component.html',
-  styleUrls: ['./perks.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'layout-row gap-4',

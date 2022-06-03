@@ -33,6 +33,9 @@ const FAMILY_META = {
   styleUrls: ['./vital-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [DestroyService],
+  host: {
+    class: 'backdrop-blur-sm bg-white/10 rounded-md overflow-clip'
+  }
 })
 export class VitalDetailComponent implements OnInit {
   @Input()

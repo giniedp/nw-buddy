@@ -4,8 +4,10 @@ import { QuicksearchService } from '~/ui/quicksearch'
 @Component({
   selector: 'nwb-housing-table',
   templateUrl: './housing-table.component.html',
-  styleUrls: ['./housing-table.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'layout-row gap-4',
+  },
 })
 export class HousingTableComponent implements OnInit {
   constructor(public search: QuicksearchService) {}
