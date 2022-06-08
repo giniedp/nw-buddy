@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
+import { VitalComponent } from './vital.component'
 import { VitalsFamiliesComponent } from './vitals-families.component'
 import { VitalsTableComponent } from './vitals-table.component'
 import { VitalsComponent } from './vitals.component'
@@ -22,14 +23,16 @@ const routes: Routes = [
         path: 'table',
         component: VitalsTableComponent,
         children: [{
-          path: ':id'
+          path: ':id',
+          // component: VitalComponent
         }]
       },
       {
         path: ':category',
         component: VitalsTableComponent,
         children: [{
-          path: ':id'
+          path: ':id',
+          // component: VitalComponent
         }]
       },
     ],

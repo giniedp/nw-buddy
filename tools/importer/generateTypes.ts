@@ -90,6 +90,10 @@ const PATH_TO_TYPE_RULES = [
     test: /_contribution[._]/,
     name: 'Contribution',
   },
+  {
+    test: /_loottables[._]/,
+    name: 'Loottable',
+  },
 ]
 
 function pathToTypeName(filePath: string) {

@@ -48,6 +48,7 @@ program
         '*_manacosts_player',
         '*_lootbuckets',
         '*_lootlimits',
+        '*_loottables*',
         '*_metaachievements',
         '*_milestonerewards',
         '*_perkbuckets',

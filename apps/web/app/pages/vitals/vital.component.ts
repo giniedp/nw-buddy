@@ -9,7 +9,7 @@ import { observeRouteParam } from '~/core/utils'
   styleUrls: ['./vital.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'layout-content'
+    class: 'layout-content flex-none max-w-lg'
   }
 })
 export class VitalComponent {
