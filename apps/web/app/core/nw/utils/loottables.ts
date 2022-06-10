@@ -1,6 +1,6 @@
 import { Loottable } from '@nw-data/types'
 
-export interface LoottableEntry {
+export interface LootTableEntry {
   'AND/OR'?: string
   Conditions?: string
   GSBonus?: number
@@ -12,33 +12,36 @@ export interface LoottableEntry {
   PerkBucketOverrides2?: string
   PerkOverrides3?: string
   UseLevelGS?: string
-  Items: LottableItem[]
+  Items: LootTableItem[]
 }
 
-export interface LottableItem {
+export interface LootTableItem {
   ItemID?: string
   LootBucketID?: string
+  LootTableID?: string
   Qty?: string
   Prob?: string
   GearScoreRange?: string
 }
 
 export function convertLoottables(data: Loottable[]) {
-  data
+  return data
     .filter((it) => !it.LootTableID.endsWith('_Qty') && !it.LootTableID.endsWith('_Probs'))
-    .map((it): LoottableEntry => {
+    .map((it): LootTableEntry => {
       const qty = findById(data, `${it.LootTableID}_Qty`)
       const probs = findById(data, `${it.LootTableID}_Probs`)
       return {
         ...it,
         MaxRoll: probs.MaxRoll,
-        Items: extractItemKeys(it).map((key): LottableItem => {
+        Items: extractItemKeys(it).map((key): LootTableItem => {
           const id = String(it[key] || '')
           const bucketID = id.startsWith('[LBID]') ? id.replace('[LBID]', '') : null
-          const itemID = bucketID ? null : id
+          const tableID = id.startsWith('[LTID]') ? id.replace('[LTID]', '') : null
+          const itemID = (bucketID || tableID) ? null : id
           return {
             ItemID: itemID,
             LootBucketID: bucketID,
+            LootTableID: tableID,
             GearScoreRange: probs[key.replace('Item', 'GearScoreRange')],
             Qty: qty?.[key],
             Prob: probs?.[key],

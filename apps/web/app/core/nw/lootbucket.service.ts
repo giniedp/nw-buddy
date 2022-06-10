@@ -16,11 +16,11 @@ export interface LootBucketQuery {
 @Injectable({ providedIn: 'root' })
 export class LootbucketService {
 
-  public table$ = defer(() => this.db.data.lootbuckets())
+  public bucket$ = defer(() => this.db.data.lootbuckets())
     .pipe(map((data) => convertLootbuckets(data)))
     .pipe(shareReplayRefCount(1))
 
-  public entrie$ = defer(() => this.table$)
+  public entrie$ = defer(() => this.bucket$)
     .pipe(map((table) => {
       return table.map((it) => it.Entries).flat(1)
     }))
@@ -28,6 +28,25 @@ export class LootbucketService {
 
   public constructor(private db: NwDbService) {
 
+  }
+
+  public bucket(id: string): LootBucketQuery {
+    const query = (q: Observable<LootBucketEntry[]>) => {
+      return {
+        $: q,
+        filter: (tags: string[]) => query(q.pipe(map((list) => filterEntries(list, tags)))),
+        exclude: (tags: string[]) => query(q.pipe(map((list) => excludeEntries(list, tags)))),
+        itemIds: () => this.mapIds(q),
+        items: () => this.mapItems(q)
+      }
+    }
+    return query(this.bucket$.pipe(map((rows) => {
+      const index = rows[0].Entries.findIndex((it) => it.LootBucket === id)
+      if (index >= 0) {
+        return rows.map((it) => it.Entries[index]).filter((it) => !!it && !!it.Item)
+      }
+      return []
+    })))
   }
 
   public all(): LootBucketQuery {

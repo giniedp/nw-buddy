@@ -25,8 +25,7 @@ export type LootBucketTag = {
 }
 
 function convertRow(data: Lootbuckets): LootBucketRow {
-
-  const bucketId = data.RowPlaceholders
+  const rowId = data.RowPlaceholders
   const keys = new Set<string>()
   const ids = new Set<number>()
   for (const key of Object.keys(data)) {
@@ -37,7 +36,7 @@ function convertRow(data: Lootbuckets): LootBucketRow {
     }
   }
   return {
-    Row: bucketId,
+    Row: rowId,
     Entries: Array.from(ids)
       .sort()
       .map((id) => {

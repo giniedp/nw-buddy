@@ -24,7 +24,7 @@ const routes: Routes = [
         component: VitalsTableComponent,
         children: [{
           path: ':id',
-          // component: VitalComponent
+          component: VitalComponent
         }]
       },
       {
@@ -32,7 +32,7 @@ const routes: Routes = [
         component: VitalsTableComponent,
         children: [{
           path: ':id',
-          // component: VitalComponent
+          component: VitalComponent
         }]
       },
     ],

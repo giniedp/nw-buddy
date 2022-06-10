@@ -10,6 +10,7 @@ import { QuicksearchModule } from '~/ui/quicksearch'
 import { VitalsFamiliesComponent } from './vitals-families.component'
 import { RouterModule } from '@angular/router'
 import { VitalsTableComponent } from './vitals-table.component'
+import { LootModule } from '~/widgets/loot'
 
 @NgModule({
   declarations: [VitalsComponent, VitalComponent, VitalsFamiliesComponent, VitalsTableComponent],
@@ -21,6 +22,7 @@ import { VitalsTableComponent } from './vitals-table.component'
     VitalsFamiliesModule,
     QuicksearchModule,
     VitalsFamiliesModule,
+    LootModule
   ],
 })
 export class VitalsModule {}
