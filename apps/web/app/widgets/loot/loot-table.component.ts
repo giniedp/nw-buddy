@@ -145,7 +145,7 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
     private db: NwDbService,
     private lbs: NwLootbucketService,
     private i18n: TranslateService,
-    protected search: QuicksearchService
+    public search: QuicksearchService
   ) {
     super()
   }
