@@ -8,10 +8,6 @@ export function isHousingItem(item: ItemDefinitionMaster | Housingitems): item i
   return item && 'HouseItemID' in item
 }
 
-function isPerkId(id: string) {
-  return id && id.startsWith('PerkID_Stat_')
-}
-
 export function getItemRarity(item: ItemDefinitionMaster | Housingitems) {
   if (item.ForceRarity) {
     return item.ForceRarity

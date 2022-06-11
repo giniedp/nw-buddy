@@ -1,4 +1,4 @@
 <ng-container *ngIf="vital$ | async; let vital">
   <nwb-vital-detail [vital]="vital"></nwb-vital-detail>
-  <nwb-loot-table [tableId]="vital.LootTableId" [tags]="vital.LootTags" class="flex-1"></nwb-loot-table>
+  <nwb-loot-table [tableId]="vital.LootTableId" [tags]="lootTags$ | async" [contentLevel]="vital.Level" class="flex-1"></nwb-loot-table>
 </ng-container>

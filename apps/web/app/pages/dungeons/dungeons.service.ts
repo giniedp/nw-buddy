@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core'
 import { GameEvent, Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty } from '@nw-data/types'
-import { ValueService } from 'ag-grid-community'
 import { uniq } from 'lodash'
-import { combineLatest, defer, isObservable, map, Observable, of, switchMap, tap } from 'rxjs'
-import { NwService } from '~/core/nw'
+import { combineLatest, defer, isObservable, map, Observable, of, switchMap } from 'rxjs'
+import { NwLootbucketService, NwService } from '~/core/nw'
+import { getVitalDungeon } from '~/core/nw/utils'
 import { DungeonPreferencesService } from '~/core/preferences'
 import { shareReplayRefCount } from '~/core/utils'
 
@@ -13,40 +13,6 @@ export interface DifficultyWithRewards {
     event: GameEvent
     item: ItemDefinitionMaster
   }>
-}
-
-// const MAP_DUNGEON_TO_VITALS_GROUP: Record<string, string[]> = {
-//   DungeonAmrine: ['Star_Excavation'],
-//   DungeonEdengrove00: ['Genesis'],
-//   DungeonShatteredObelisk: ['Starstone'],
-//   DungeonRestlessShores01: ['Skerryshiv'],
-//   DungeonReekwater00: ['Lazarus_Well'],
-//   DungeonEbonscale00: ['Shipyard'],
-//   DungeonShatterMtn00: ['IsabellaLair', 'IsabellaPhase1', 'IsabellaPhase2'],
-// }
-
-// const MAP_DUNGEON_TO_VITALS_LOOT_TAGS: Record<string, string[]> = {
-//   DungeonAmrine: ['Amrine'],
-//   DungeonEdengrove00: ['Edengrove00'],
-//   DungeonShatteredObelisk: ['ShatteredObelisk'],
-//   DungeonRestlessShores01: ['RestlessShores01'],
-//   DungeonReekwater00: ['Reekwater00'],
-//   DungeonEbonscale00: ['Ebonscale00'],
-//   DungeonShatterMtn00: ['ShatterMtn00']
-// }
-
-const MAP_DUNGEON_TO_VITALS_LOOT_TAGS: Record<string, string[]> = {
-  DungeonEbonscale00: ['Dynasty', 'IsabellaDynasty'],
-}
-
-const MAP_DUNGEON_TO_ID_SUFFIX: Record<string, string> = {
-  DungeonAmrine: '_DG_Windsward_',
-  DungeonEdengrove00: '_DG_Edengrove_',
-  DungeonShatteredObelisk: '_DG_Everfall_',
-  DungeonRestlessShores01: '_DG_Restless_',
-  DungeonReekwater00: '_DG_Reekwater_',
-  DungeonEbonscale00: '_DG_Ebonscale_',
-  DungeonShatterMtn00: '_DG_ShatterMtn_',
 }
 
 const MAP_DUNGEON_TO_MAP: Record<string, string> = {
@@ -70,14 +36,10 @@ const MUTATION_DIFFICULTY_LOOT_TAGS = [
   'MutDiff7',
   'MutDiff8',
   'MutDiff9',
-  'MutDiff10'
+  'MutDiff10',
 ]
 
-const MUTATION_LOOT_TAGS = [
-  ...MUTATION_DIFFICULTY_LOOT_TAGS,
-  'Restless01_Mut',
-  'Ebonscale00_Mut'
-]
+const MUTATION_LOOT_TAGS = [...MUTATION_DIFFICULTY_LOOT_TAGS, 'Restless01_Mut', 'Ebonscale00_Mut']
 
 @Injectable({ providedIn: 'root' })
 export class DungeonsService {
@@ -99,7 +61,11 @@ export class DungeonsService {
 
   public mutation$ = defer(() => this.nw.db.data.gamemodemutatorsElementalmutations()).pipe(shareReplayRefCount(1))
 
-  public constructor(public nw: NwService, public preferences: DungeonPreferencesService) {}
+  public constructor(
+    public nw: NwService,
+    public preferences: DungeonPreferencesService,
+    private lootBuckets: NwLootbucketService
+  ) {}
 
   private buildDifficultyTable(
     difficulty: Mutationdifficulty[],
@@ -144,7 +110,11 @@ export class DungeonsService {
       .pipe(map(({ bossTags, lootTags }) => uniq([...bossTags, ...lootTags])))
       .pipe(
         switchMap((tags) => {
-          return this.nw.lootbuckets.all().filter(tags).exclude(MUTATION_LOOT_TAGS).items()
+          return this.lootBuckets
+            .all()
+            .filter((it) => this.lootBuckets.hasAnyTag(it, tags))
+            .filter((it) => !this.lootBuckets.hasAnyTag(it, MUTATION_LOOT_TAGS))
+            .items()
         })
       )
   }
@@ -157,7 +127,11 @@ export class DungeonsService {
       .pipe(map(({ bossTags, lootTags }) => uniq([...bossTags, ...lootTags])))
       .pipe(
         switchMap((tags) => {
-          return this.nw.lootbuckets.all().filter(tags).exclude(MUTATION_DIFFICULTY_LOOT_TAGS).items()
+          return this.lootBuckets
+            .all()
+            .filter((it) => this.lootBuckets.hasAnyTag(it, tags))
+            .filter((it) => !this.lootBuckets.hasAnyTag(it, MUTATION_DIFFICULTY_LOOT_TAGS))
+            .items()
         })
       )
   }
@@ -185,7 +159,11 @@ export class DungeonsService {
       )
       .pipe(
         switchMap((tags) => {
-          return this.nw.lootbuckets.all().filter(tags).filter(mutation.InjectedLootTags).items()
+          return this.lootBuckets
+          .all()
+          .filter((it) => this.lootBuckets.hasAnyTag(it, tags))
+          .filter((it) => this.lootBuckets.hasAnyTag(it, mutation.InjectedLootTags))
+          .items()
         })
       )
   }
@@ -202,52 +180,18 @@ export class DungeonsService {
     return difficulties.find((it) => it.MutationDifficulty === Number(level))
   }
 
-  // public dungeonCreatureGroup(dungeon: Gamemodes): string[] {
-  //   return MAP_DUNGEON_TO_VITALS_GROUP[dungeon.GameModeId]
-  // }
-
-  // public dungeonCreaturesCategories(dungeon: Gamemodes) {
-  //   const groups = this.dungeonCreatureGroup(dungeon) || []
-  //   return this.nw.db.vitalsCategoriesMapByGroup
-  //     .pipe(
-  //       map((vitals) => {
-  //         return (
-  //           groups
-  //             .map((it) => vitals.get(it))
-  //             .filter((it) => !!it)
-  //             .flat(1)
-  //             .map((it) => it.VitalsCategoryID) || []
-  //         )
-  //       })
-  //     )
-  //     .pipe(map(uniq))
-  // }
-
   public dungeonBosses(dungeon: Gamemodes) {
     const dungeonId = dungeon.GameModeId
-    const vitalIdInclude = MAP_DUNGEON_TO_ID_SUFFIX[dungeonId]
-    const include = MAP_DUNGEON_TO_VITALS_LOOT_TAGS[dungeonId] || [dungeonId.replace(/^Dungeon/, '')]
     return combineLatest({
-      // categories: this.dungeonCreaturesCategories(dungeon),
       vitals: this.nw.db.vitalsByCreatureType,
+      dungeons: this.nw.db.gameModes
     }).pipe(
-      map(({ vitals }) => {
+      map(({ vitals, dungeons }) => {
         const miniBosses = vitals.get('DungeonMiniBoss') || []
         const bosses = vitals.get('DungeonBoss') || []
         const result = [...miniBosses, ...bosses].filter((it) => {
-          if ((it.LootTags || []).some((i) => include.includes(i))) {
-            return true
-          }
-          if (vitalIdInclude && it.VitalsID.includes(vitalIdInclude)) {
-            return true
-          }
-          return false
+          return getVitalDungeon(it, dungeons)?.GameModeId === dungeonId
         })
-        // console.log({
-        //   include,
-        //   bosses,
-        //   result
-        // })
         return result
       })
     )
@@ -255,21 +199,12 @@ export class DungeonsService {
 
   public dungeonCreatures(dungeon: Gamemodes) {
     const dungeonId = dungeon.GameModeId
-    const vitalIdInclude = MAP_DUNGEON_TO_ID_SUFFIX[dungeonId]
-    const include = MAP_DUNGEON_TO_VITALS_LOOT_TAGS[dungeonId] || [dungeonId.replace(/^Dungeon/, '')]
     return combineLatest({
       vitals: this.nw.db.vitals,
+      dungeons: this.nw.db.gameModes
     }).pipe(
-      map(({ vitals }) => {
-        return vitals.filter((it) => {
-          if ((it.LootTags || []).some((i) => include.includes(i))) {
-            return true
-          }
-          if (vitalIdInclude && it.VitalsID.includes(vitalIdInclude)) {
-            return true
-          }
-          return false
-        })
+      map(({ vitals, dungeons }) => {
+        return vitals.filter((it) => getVitalDungeon(it, dungeons)?.GameModeId === dungeonId)
       })
     )
   }

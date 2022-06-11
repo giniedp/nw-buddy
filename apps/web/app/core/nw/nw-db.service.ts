@@ -25,8 +25,11 @@ export function dictToMap<V>(record: Record<string, V>): Map<string, V> {
   return new CaseInsensitiveMap<string, V>(Object.entries(record))
 }
 
-function list<T>(source: () => Array<Observable<T[]>>) {
-  return defer(() => combineLatest(source()))
+function list<T, R>(source: () => Observable<T[]> | Array<Observable<T[]>>) {
+  return defer(() => {
+    const src = source()
+    return combineLatest(Array.isArray(src) ? src : [src])
+  })
     .pipe(map((it) => it.flat(1)))
     .pipe(shareReplay(1))
 }
@@ -44,9 +47,8 @@ function lookup<K, T>(getMap: () => Observable<Map<K, T>>) {
   return (id: K | Observable<K>) => {
     return combineLatest({
       data: defer(() => getMap()),
-      id: isObservable(id) ? id : of(id)
-    })
-    .pipe(map(({data, id}) => data.get(id)))
+      id: isObservable(id) ? id : of(id),
+    }).pipe(map(({ data, id }) => data.get(id)))
   }
 }
 
@@ -163,6 +165,10 @@ export class NwDbService {
   ])
   public spellTableMap = index(() => this.spellTable, 'SpellID')
 
+  public gameModes = list(() => [this.data.gamemodes()])
+  public gameModesMap = index(() => this.gameModes, 'GameModeId')
+  public gameMode = lookup(() => this.gameModesMap)
+
   public perks = list(() => [this.data.perks()])
   public perksMap = index(() => this.perks, 'PerkID')
   public perk = lookup(() => this.perksMap)
@@ -227,54 +233,45 @@ export class NwDbService {
   public vitalsByCreatureType = indexGroup(() => this.vitals, 'CreatureType')
   public vitalsOfCreatureType = lookup(() => this.vitalsByCreatureType)
 
-  public vitalsFamilies = defer(() => {
-    return this.vitalsByFamily
-  })
-    .pipe(map((it) => Array.from(it.keys())))
-    .pipe(shareReplay(1))
+  public vitalsFamilies = list(() => this.vitalsByFamily.pipe(map((it) => Array.from(it.keys()))))
 
   public vitalsCategories = list(() => [this.data.vitalscategories()])
   public vitalsCategoriesMap = index(() => this.vitalsCategories, 'VitalsCategoryID')
   public vitalsCategory = lookup(() => this.vitalsCategoriesMap)
   public vitalsCategoriesMapByGroup = indexGroup(() => this.vitalsCategories, 'GroupVitalsCategoryId')
 
-  public damagetypes = list(() => [this.data.damagetypes()])
+  public damagetypes = list(() => this.data.damagetypes())
   public damagetypesMap = index(() => this.damagetypes, 'TypeID')
   public damagetype = lookup(() => this.damagetypesMap)
 
-  public affixstats = list(() => [this.data.affixstats()])
+  public affixstats = list(() => this.data.affixstats())
   public affixstatsMap = index(() => this.affixstats, 'StatusID')
   public affixstat = lookup(() => this.affixstatsMap)
 
-  public territories = list(() => [this.data.territorydefinitions()])
+  public territories = list(() => this.data.territorydefinitions())
   public territoriesMap = index(() => this.territories, 'TerritoryID')
   public territory = lookup(() => this.territoriesMap)
 
-  public milestoneRewards = list(() => [this.data.milestonerewards()])
-
-  public mutatorDifficulties = list(() => [this.data.gamemodemutatorsMutationdifficulty()])
-
-  public viewGemPerksWithAffix = defer(() => queryGemPerksWithAffix(this))
-    .pipe(shareReplayRefCount(1))
-
-  public viewMutatorDifficultiesWithRewards = defer(() => queryMutatorDifficultiesWithRewards(this))
-    .pipe(shareReplayRefCount(1))
+  public milestoneRewards = list(() => this.data.milestonerewards())
+  public mutatorDifficulties = list(() => this.data.gamemodemutatorsMutationdifficulty())
+  public viewGemPerksWithAffix = list(() => queryGemPerksWithAffix(this))
+  public viewMutatorDifficultiesWithRewards = list(() => queryMutatorDifficultiesWithRewards(this))
 
   public lootTables = list(() => [
-    this.data.loottables().pipe(annotate('$source', 'Common')),
-    this.data.loottablesOmega().pipe(annotate('$source', 'Omega')),
-    this.data.loottablesPlaytest().pipe(annotate('$source', 'Playtest')),
-    this.data.loottablesPvpRewardsTrack().pipe(annotate('$source', 'PvpRewardsTrack')),
+    this.data.loottables().pipe(annotate('$source', 'Common')).pipe(map(convertLoottables)),
+    this.data.loottablesOmega().pipe(annotate('$source', 'Omega')).pipe(map(convertLoottables)),
+    this.data.loottablesPlaytest().pipe(annotate('$source', 'Playtest')).pipe(map(convertLoottables)),
+    this.data.loottablesPvpRewardsTrack().pipe(annotate('$source', 'PvpRewardsTrack')).pipe(map(convertLoottables)),
   ])
-  .pipe(map((it) => convertLoottables(it)))
-  .pipe(shareReplay(1))
   public lootTablesMap = index(() => this.lootTables, 'LootTableID')
   public lootTable = lookup(() => this.lootTablesMap)
 
-  public lootBuckets = defer(() => this.data.lootbuckets())
-    .pipe(map((data) => convertLootbuckets(data)))
-    .pipe(shareReplayRefCount(1))
+  public lootBuckets = list(() => this.data.lootbuckets().pipe(map(convertLootbuckets)))
+  public lootBucketsMap = indexGroup(() => this.lootBuckets, 'LootBucket')
+  public lootBucket = lookup(() => this.lootBucketsMap)
 
+  // defer(() => this.lootBuckets)
+  //   .pipe(map((data) => list(() => data.map((it) => of(it.Entries)))))
 
   public constructor(public readonly data: NwDataService) {
     //

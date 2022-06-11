@@ -1,5 +1,4 @@
 import { Crafting, GameEvent, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { isHousingItem } from './item'
 
 export type CraftingIngredients = Pick<
   Crafting,

@@ -5,13 +5,13 @@ import { NwDbService } from './nw-db.service'
 import { NwExpressionService } from './nw-expression'
 import { NwTradeskillService } from './nw-tradeskill.service'
 import m from 'mithril'
-import { LootbucketService } from './lootbucket.service'
+import { NwLootbucketService } from './nw-lootbucket.service'
 
 @Injectable({ providedIn: 'root' })
 export class NwService {
   public constructor(
     public readonly db: NwDbService,
-    public readonly lootbuckets: LootbucketService,
+    public readonly lootbuckets: NwLootbucketService,
     public readonly expression: NwExpressionService,
     public readonly itemPref: ItemPreferencesService,
     public readonly tradeskills: NwTradeskillService

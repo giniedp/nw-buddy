@@ -1,22 +1,25 @@
 import { Lootbuckets } from '@nw-data/types'
+import { uniq, uniqBy } from 'lodash'
+import { CaseInsensitiveMap } from '~/core/utils'
 
 export function convertLootbuckets(data: Lootbuckets[]) {
-  return data.map(convertRow)
+  const firstRow = data.find((it) => it.RowPlaceholders === 'FIRSTROW')
+  const result = data
+    .map((row) => convertRow(row, firstRow))
+    .flat(1)
+    .filter((it) => !!it.Item)
+  const tags = uniqBy(result.map((it) => Array.from(it.Tags.values())).flat(1), (it) => it.Name).sort((a, b) => a.Name.localeCompare(b.Name))
+  console.log('LootBucketTags', tags)
+  return result
 }
 
-export type LootBucketTable = LootBucketRow[]
-
-export type LootBucketRow = {
-  Row: string
-  Entries: LootBucketEntry[]
-}
 export type LootBucketEntry = {
   Column: number
   Item: string
   LootBucket: string
   MatchOne: string
   Quantity: number[]
-  Tags: LootBucketTag[]
+  Tags: Map<string, LootBucketTag>
 }
 
 export type LootBucketTag = {
@@ -24,8 +27,7 @@ export type LootBucketTag = {
   Value?: null | [number] | [number, number]
 }
 
-function convertRow(data: Lootbuckets): LootBucketRow {
-  const rowId = data.RowPlaceholders
+function convertRow(data: Lootbuckets, firstRow: Lootbuckets): LootBucketEntry[] {
   const keys = new Set<string>()
   const ids = new Set<number>()
   for (const key of Object.keys(data)) {
@@ -35,39 +37,46 @@ function convertRow(data: Lootbuckets): LootBucketRow {
       ids.add(Number(match[2]))
     }
   }
-  return {
-    Row: rowId,
-    Entries: Array.from(ids)
-      .sort()
-      .map((id) => {
-        return Array.from(keys).reduce(
-          (res, key) => {
-            const value = data[`${key}${id}`]
-            if (key === 'Tags') {
-              res[key] = (value as string[] || []).map(lootBucketTag)
-            } else if (key === 'Quantity') {
-              res[key] = typeof value === 'string' ? value.split('-').map(Number) : [value]
-            } else {
-              res[key] = value
+  return Array.from(ids)
+    .sort()
+    .map((id): LootBucketEntry => {
+      return {
+        Column: id,
+        Item: null as string,
+        LootBucket: firstRow[`LootBucket${id}`],
+        MatchOne: null as string,
+        Quantity: null as number[],
+        Tags: new CaseInsensitiveMap(),
+      }
+    })
+    .map((result) => {
+      for (const key of keys) {
+        const value = data[`${key}${result.Column}`]
+        if (key === 'Tags') {
+          const tags = (value as string[] || []).map(lootBucketTag)
+            for (const tag of tags) {
+              if (tag) {
+                result.Tags.set(tag.Name, tag)
+              }
             }
-            return res
-          },
-          {
-            Column: id,
-            Item: null as string,
-            LootBucket: null as string,
-            MatchOne: null as string,
-            Quantity: null as number[],
-            Tags: null as LootBucketTag[],
-          } as LootBucketEntry
-        )
-      }),
-  }
+        } else if (key === 'Quantity') {
+          result[key] = typeof value === 'string' ? value.split('-').map(Number) : [value]
+        } else {
+          result[key] = value
+        }
+      }
+      return result
+    })
 }
 
 function lootBucketTag(value: string): LootBucketTag {
   if (!value) {
     return null
+  }
+  if (!value.includes(':')) {
+    return {
+      Name: value,
+    }
   }
   const [name, range] = value.split(':')
   return {

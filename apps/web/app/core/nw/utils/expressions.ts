@@ -1,11 +1,31 @@
-import { combineLatest, map, Observable, of, startWith } from 'rxjs'
-import { TextReader } from './text-reader'
+import { catchError, combineLatest, map, Observable, of, startWith } from "rxjs"
+import { TextReader } from "./text-reader"
 
-export function parseNwexpression(text: string) {
-  return parse(text, true)
-}
+export function parseNwExpression(text: string, root: boolean = false): NwExp {
+  text = text
+    // ensure operators and operands have a space separator
+    // .replace(/[+-*\/]/g, (it) => ` ${it} `) TODO: does not compile, why?
+    .split('*')
+    .join(' * ')
+    .split('+')
+    .join(' + ')
+    .split('-')
+    .join(' - ')
+    .split('/')
+    .join(' / ')
+    // patch bug in expressions, where multiply operator is missing
+    .replace(/100\s*\{/, '100 * {')
+    // patch bad expressions
+    .replace('Type_StatusEffectData.Type_StatusEffectData.', 'Type_StatusEffectData.')
+    // collapse spaces
+    .replace(/\s+/g, ' ')
 
-function parse(text: string, root: boolean = false): NwExp {
+  if (text.includes('Mut_Voi_Stacks') && text.includes('Mut_Lig_Stacks')) {
+    // example:
+    //  Filled with dread for {[Type_StatusEffectData.Mut_Lig_Stacks_1_Effect.BaseDuration]} seconds. At {[Type_StatusEffectData.Mut_Voi_Stacks_1_Effect.AddOnStackSize]} stacks, causes a void burst to appear at your location.
+    text = text.replace('Mut_Lig_Stacks', 'Mut_Voi_Stacks')
+  }
+
   const reader = new TextReader(text)
   const expr: NwExp[] = []
 
@@ -14,7 +34,7 @@ function parse(text: string, root: boolean = false): NwExp {
 
     if (reader.substr(2) === '{[') {
       const block = reader.nextBlock('{[', ']}')
-      const node = parse(block, false)
+      const node = parseNwExpression(block, false)
       if (!root) {
         throw new Error(`invalid expresssion. Nested '{[' detected`)
       }
@@ -23,7 +43,7 @@ function parse(text: string, root: boolean = false): NwExp {
       switch (reader.char) {
         case '{': {
           const block = reader.nextBlock('{', '}')
-          const node = parse(block, root)
+          const node = parseNwExpression(block, root)
           if (root) {
             expr.push(new NwExpParen('{', '}', node))
           } else {
@@ -34,7 +54,7 @@ function parse(text: string, root: boolean = false): NwExp {
         }
         case '(': {
           const block = reader.nextBlock('(', ')')
-          const node = parse(block, root)
+          const node = parseNwExpression(block, root)
           expr.push(new NwExpParen('(', ')', node))
           reader.next()
           break
@@ -112,16 +132,23 @@ class NwExpEval implements NwExp {
   public eval(solve: solveFn) {
     return this.node
       .eval(solve)
+      .pipe(map((value) => Number(eval(String(value)))))
       .pipe(
         map((value) => {
           if (globalThis.navigator) {
             return Intl.NumberFormat(navigator.language || 'en', {
               maximumFractionDigits: 2,
-            }).format(Number(eval(String(value))))
+            }).format(value)
           }
           return value
         })
       )
       .pipe(startWith('⟳'))
+      .pipe(
+        catchError((e) => {
+          console.error(e)
+          return '⚠'
+        })
+      )
   }
 }

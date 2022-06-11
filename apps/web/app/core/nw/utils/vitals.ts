@@ -1,4 +1,4 @@
-import { Vitals } from "@nw-data/types"
+import { Gamemodes, Vitals } from "@nw-data/types"
 
 const CREATURE_TYPE_MARKER = {
   Boss: 'boss',
@@ -58,6 +58,107 @@ export function getVitalDamageEffectivenessIcon(vital: Vitals, damageType: Vital
   }
   if (dmg > 0) {
     return ICON_STRONG_ATTACK
+  }
+  return null
+}
+
+
+// const MAP_DUNGEON_TO_VITALS_GROUP: Record<string, string[]> = {
+//   DungeonAmrine: ['Star_Excavation'],
+//   DungeonEdengrove00: ['Genesis'],
+//   DungeonShatteredObelisk: ['Starstone'],
+//   DungeonRestlessShores01: ['Skerryshiv'],
+//   DungeonReekwater00: ['Lazarus_Well'],
+//   DungeonEbonscale00: ['Shipyard'],
+//   DungeonShatterMtn00: ['IsabellaLair', 'IsabellaPhase1', 'IsabellaPhase2'],
+// }
+
+// const MAP_DUNGEON_TO_VITALS_LOOT_TAGS: Record<string, string[]> = {
+//   DungeonAmrine: ['Amrine'],
+//   DungeonEdengrove00: ['Edengrove00'],
+//   DungeonShatteredObelisk: ['ShatteredObelisk'],
+//   DungeonRestlessShores01: ['RestlessShores01'],
+//   DungeonReekwater00: ['Reekwater00'],
+//   DungeonEbonscale00: ['Ebonscale00'],
+//   DungeonShatterMtn00: ['ShatterMtn00']
+// }
+
+// "ShatteredObelisk"
+// "Reekwater00"
+// "Edengrove00"
+// "Ebonscale00"
+// "Ebonscale00_Mut"
+// "RestlessShores01"
+// "ShatterMtn00"
+
+export type DungeonTerritory =
+  | 'Windsward'
+  | 'Edengrove'
+  | 'Everfall'
+  | 'Restless'
+  | 'Reekwater'
+  | 'Ebonscale'
+  | 'ShatterMtn'
+
+export function getVitalDungeonTerritory(vitalId: string): DungeonTerritory {
+  return vitalId?.match(/_DG_([a-zA-Z]+)_/)?.[1] as DungeonTerritory
+}
+export function getVitalDungeonTag(vitalId: string) {
+  switch (getVitalDungeonTerritory(vitalId)) {
+    case 'Windsward':
+      return 'Amrine'
+    case 'Edengrove':
+      return 'Edengrove00'
+    case 'Everfall':
+      return 'ShatteredObelisk'
+    case 'Restless':
+      return 'RestlessShores01'
+    case 'Reekwater':
+      return 'Reekwater00'
+    case 'Ebonscale':
+      return 'Ebonscale00'
+    case 'ShatterMtn':
+      return 'ShatterMtn00'
+    default:
+      return null
+  }
+}
+export function getVitalDungeonId(vitalId: string): string {
+  const tag = getVitalDungeonTag(vitalId)
+  return tag ? `Dungeon${tag}` : null
+}
+const MAP_DUNGEON_TO_VITALS_LOOT_TAGS: Record<string, string[]> = {
+  DungeonEbonscale00: ['Dynasty', 'IsabellaDynasty'],
+}
+export function getVitalDungeon(vital: Vitals, dungeons: Gamemodes[]) {
+  const vitalDungeonId = getVitalDungeonId(vital.VitalsID)
+  for (const dungeon of dungeons) {
+    if (!dungeon.IsDungeon) {
+      continue
+    }
+    // vital ID implicitly references dungeon ID
+    if (vitalDungeonId && vitalDungeonId === dungeon.GameModeId) {
+      return dungeon
+    }
+    if (!vital.LootTags?.length) {
+      continue
+    }
+    // vital references dungeon via LootTags
+    const dungeonTag = dungeon.GameModeId.replace(/^Dungeon/, '')
+    if (vital.LootTags.some((tag) => tag === dungeonTag)) {
+      return dungeon
+    }
+    // special case for
+    // - Dynasty_Empress
+    const tags = MAP_DUNGEON_TO_VITALS_LOOT_TAGS[dungeon.GameModeId]
+    if (tags && vital.LootTags.some((tag) => tags.includes(tag))) {
+      // console.debug('special case', {
+      //   vitalDungeonId,
+      //   vital,
+      //   dungeon
+      // })
+      return dungeon
+    }
   }
   return null
 }

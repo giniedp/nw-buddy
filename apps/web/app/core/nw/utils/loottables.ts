@@ -1,8 +1,9 @@
 import { Loottable } from '@nw-data/types'
+import { uniq } from 'lodash'
 
 export interface LootTableEntry {
   'AND/OR'?: string
-  Conditions?: string
+  Conditions?: string[]
   GSBonus?: number
   HWMMult?: number
   LootTableID: string
@@ -25,13 +26,14 @@ export interface LootTableItem {
 }
 
 export function convertLoottables(data: Loottable[]) {
-  return data
+  const result = data
     .filter((it) => !it.LootTableID.endsWith('_Qty') && !it.LootTableID.endsWith('_Probs'))
     .map((it): LootTableEntry => {
       const qty = findById(data, `${it.LootTableID}_Qty`)
       const probs = findById(data, `${it.LootTableID}_Probs`)
       return {
         ...it,
+        Conditions: it.Conditions?.split(','),
         MaxRoll: probs.MaxRoll,
         Items: extractItemKeys(it).map((key): LootTableItem => {
           const id = String(it[key] || '')
@@ -49,6 +51,9 @@ export function convertLoottables(data: Loottable[]) {
         }),
       }
     })
+  const conditions = uniq(result.map((it) => it.Conditions).flat(1).filter((it) => !!it))
+  console.log('LootTableConditions', conditions)
+  return result
 }
 
 function findById(items: Loottable[], id: string) {
