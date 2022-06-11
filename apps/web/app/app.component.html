@@ -11,6 +11,20 @@
       <a class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/housing"> Housing </a>
       <a class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/crafting"> Crafting </a>
 
+      <select
+        class="select select-bordered w-20"
+        [(ngModel)]="language"
+      >
+        <option disabled selected>Pick one</option>
+        <option value="de-de">DE</option>
+        <option value="en-us">EN</option>
+        <option value="es-es">ES</option>
+        <option value="fr-fr">FR</option>
+        <option value="it-it">IT</option>
+        <option value="pl-pl">PL</option>
+        <option value="pt-br">BR</option>
+      </select>
+
       <div class="dropdown dropdown-end">
         <label tabindex="0" class="btn btn-ghost btn-circle">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /></svg>

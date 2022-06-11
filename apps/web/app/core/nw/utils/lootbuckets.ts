@@ -8,8 +8,8 @@ export function convertLootbuckets(data: Lootbuckets[]) {
     .map((row) => convertRow(row, firstRow))
     .flat(1)
     .filter((it) => !!it.Item)
-  const tags = uniqBy(result.map((it) => Array.from(it.Tags.values())).flat(1), (it) => it.Name).sort((a, b) => a.Name.localeCompare(b.Name))
-  console.log('LootBucketTags', tags)
+  // const tags = uniqBy(result.map((it) => Array.from(it.Tags.values())).flat(1), (it) => it.Name).sort((a, b) => a.Name.localeCompare(b.Name))
+  // console.log('LootBucketTags', tags)
   return result
 }
 

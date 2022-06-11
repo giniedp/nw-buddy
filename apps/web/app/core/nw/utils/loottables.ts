@@ -51,8 +51,8 @@ export function convertLoottables(data: Loottable[]) {
         }),
       }
     })
-  const conditions = uniq(result.map((it) => it.Conditions).flat(1).filter((it) => !!it))
-  console.log('LootTableConditions', conditions)
+  // const conditions = uniq(result.map((it) => it.Conditions).flat(1).filter((it) => !!it))
+  // console.log('LootTableConditions', conditions)
   return result
 }
 

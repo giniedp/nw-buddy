@@ -1,9 +1,9 @@
 import { ChangeDetectorRef, Component } from '@angular/core'
+import { take } from 'rxjs'
 
-import { TranslateService } from '@ngx-translate/core'
-import { APP_CONFIG } from '../environments/environment'
 import { ElectronService } from './core/electron'
-import { LocaleService } from './core/i18n'
+import { LocaleService, TranslateService } from './core/i18n'
+import { NwDbService } from './core/nw'
 import { AppPreferencesService } from './core/preferences'
 
 @Component({
@@ -20,17 +20,27 @@ export class AppComponent {
     return this.electron.isElectron
   }
 
+  public get language() {
+    return this.app.language.get()
+  }
+  public set language(value: string) {
+    this.db.data.loadTranslations(value).pipe(take(1)).subscribe((data) => {
+      this.translate.merge(value, data)
+      this.app.language.set(value)
+    })
+  }
+
   constructor(
-    private electron: ElectronService,
-    private translate: TranslateService,
     private locale: LocaleService,
+    private translate: TranslateService,
+    private electron: ElectronService,
     private app: AppPreferencesService,
+    private db: NwDbService,
     private cdRef: ChangeDetectorRef
   ) {
     this.app.language.observe().subscribe((value) => {
       this.locale.use(value)
     })
-    this.translate.setDefaultLang('en')
     if (electron.isElectron) {
       console.log(process.env)
       console.log('Run in electron')
