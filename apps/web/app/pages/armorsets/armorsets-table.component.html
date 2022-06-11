@@ -4,10 +4,10 @@
   [categoryRouteParam]
   [detailRoutParam]="'id'"
   [quickFilter]="search.query | async"
-  class="rounded-md overflow-clip"
+  class="flex-1 rounded-md overflow-clip"
 ></nwb-data-table>
 
-<div class="w-[400px] xl:w-[450px] 2xl:w-[500px] layout-content" *ngIf="selectedItems | async; let items">
+<div class="flex-none w-[400px] xl:w-[450px] 2xl:w-[500px] overflow-y-auto" *ngIf="selectedItems | async; let items">
   <nwb-item-detail
     *ngFor="let item of items; trackBy: trackByIndex"
     [itemId]="item.ItemID"

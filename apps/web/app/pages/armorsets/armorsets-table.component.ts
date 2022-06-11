@@ -10,6 +10,9 @@ import { Armorset } from './types'
   templateUrl: './armorsets-table.component.html',
   styleUrls: ['./armorsets-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'layout-row gap-4',
+  },
 })
 export class ArmorsetsTableComponent implements OnInit {
   public trackByIndex: TrackByFunction<any> = (i) => i
