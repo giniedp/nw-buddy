@@ -23,6 +23,6 @@ export class NwDataService extends NwDataloader implements TranslateSource {
   }
 
   public loadTranslations(locale: string) {
-    return this.http.get<Record<string, string>>(`./nw-data/localization/${locale}.json`)
+    return this.http.get<Record<string, string>>(`./nw-data/localization/${locale.toLowerCase()}.json`)
   }
 }
