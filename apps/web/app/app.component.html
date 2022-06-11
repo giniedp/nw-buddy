@@ -1,53 +1,54 @@
 <nwb-title-bar *ngIf="isElectron"></nwb-title-bar>
 <div class="navbar bg-base-100 z-50 rounded-md font-bold">
-  <div class="flex-1 px-2 lg:flex-none">
+  <div class="px-2 flex-none">
     <a class="text-lg font-bold">
-      <img src="assets/icons/favicon.png" class="w-12">
+      <img src="assets/icons/favicon.png" class="w-12" />
     </a>
   </div>
-  <div class="flex justify-end flex-1 px-2">
-    <div class="flex items-stretch">
-      <a class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/items"> Items </a>
-      <a class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/housing"> Housing </a>
-      <a class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/crafting"> Crafting </a>
+  <div class="flex flex-1 px-2 overflow-x-overlay scrollable">
+    <a class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/items"> Items </a>
+    <a class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/housing"> Housing </a>
+    <a class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/crafting"> Crafting </a>
 
-      <select
-        class="select select-bordered w-20"
-        [(ngModel)]="language"
-      >
-        <option disabled selected>Pick one</option>
-        <option value="de-de">DE</option>
-        <option value="en-us">EN</option>
-        <option value="es-es">ES</option>
-        <option value="fr-fr">FR</option>
-        <option value="it-it">IT</option>
-        <option value="pl-pl">PL</option>
-        <option value="pt-br">BR</option>
-      </select>
+    <div class="divider divider-horizontal"></div>
+    <a class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/perks"> Perks </a>
+    <a class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/abilities"> Abilities </a>
+    <a class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/status-effects"> Statuseffects </a>
+    <a class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/vitals"> Vitals </a>
 
-      <div class="dropdown dropdown-end">
-        <label tabindex="0" class="btn btn-ghost btn-circle">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" /></svg>
-        </label>
-        <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-md w-52">
+    <div class="divider divider-horizontal"></div>
 
-          <li><a routerLinkActive="text-primary" routerLink="/perks"> Perks </a></li>
-          <li><a routerLinkActive="text-primary" routerLink="/abilities"> Abilities </a></li>
-          <li><a routerLinkActive="text-primary" routerLink="/status-effects"> Statuseffects </a></li>
-          <li><a routerLinkActive="text-primary" routerLink="/vitals"> Vitals </a></li>
-          <div class="divider"></div>
-          <li><a routerLinkActive="text-primary" routerLink="/armorsets">Armorsets</a></li>
-          <li><a routerLinkActive="text-primary" routerLink="/progression/tradeskills"> Progression </a></li>
-          <li><a routerLinkActive="text-primary" routerLink="/dungeons">Dungeons</a></li>
-          <div class="divider"></div>
-          <li>
-            <a routerLinkActive="text-primary" routerLink="/preferences"> Preferences </a>
-          </li>
-          <li>
-            <a routerLinkActive="text-primary" routerLink="/about"> About </a>
-          </li>
-        </ul>
-      </div>
+    <a class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/armorsets">Armorsets</a>
+    <a class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/progression/tradeskills"> Progression </a>
+    <a class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/dungeons">Dungeons</a>
+
+  </div>
+  <div class="flex flex-none px-2">
+    <select class="select select-bordered w-20" [(ngModel)]="language">
+      <option disabled selected>Pick one</option>
+      <option value="de-de">DE</option>
+      <option value="en-us">EN</option>
+      <option value="es-es">ES</option>
+      <option value="fr-fr">FR</option>
+      <option value="it-it">IT</option>
+      <option value="pl-pl">PL</option>
+      <option value="pt-br">BR</option>
+    </select>
+
+    <div class="dropdown dropdown-end">
+      <label tabindex="0" class="btn btn-ghost btn-circle">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+        </svg>
+      </label>
+      <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-md w-52">
+        <li>
+          <a routerLinkActive="text-primary" routerLink="/preferences"> Preferences </a>
+        </li>
+        <li>
+          <a routerLinkActive="text-primary" routerLink="/about"> About </a>
+        </li>
+      </ul>
     </div>
   </div>
 </div>
