@@ -1,10 +1,12 @@
-import { ChangeDetectorRef, Component } from '@angular/core'
+import { ChangeDetectorRef, Component, ElementRef, Query, QueryList, ViewChildren } from '@angular/core'
+import { RouterLink } from '@angular/router'
 import { take } from 'rxjs'
 
 import { ElectronService } from './core/electron'
 import { LocaleService, TranslateService } from './core/i18n'
 import { NwDbService } from './core/nw'
 import { AppPreferencesService } from './core/preferences'
+import { Hotkeys } from './core/utils'
 
 @Component({
   selector: 'app-root',
@@ -30,13 +32,17 @@ export class AppComponent {
     })
   }
 
+  @ViewChildren('link')
+  public tabs: QueryList<ElementRef<HTMLAnchorElement>>
+
   constructor(
     private locale: LocaleService,
     private translate: TranslateService,
     private electron: ElectronService,
     private app: AppPreferencesService,
     private db: NwDbService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private hotkeys: Hotkeys
   ) {
     this.app.language.observe().subscribe((value) => {
       this.locale.use(value)
@@ -49,5 +55,13 @@ export class AppComponent {
     } else {
       console.log('Run in browser')
     }
+
+    [1,2,3,4,5,6,7,8,9,0].forEach((i) => {
+      this.hotkeys.addShortcut({
+        keys: `control.${i}`
+      }).subscribe(() => {
+        this.tabs.get((i || 10) - 1)?.nativeElement?.click()
+      })
+    })
   }
 }
