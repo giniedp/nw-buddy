@@ -8,8 +8,7 @@ import {
   takeUntil,
 } from 'rxjs'
 import { TranslateService } from '../i18n'
-import { NwExpressionService } from './nw-expression'
-import { NwService } from './nw.service'
+import { NwExpressionService } from './nw-expression.service'
 
 interface TextContext {
   text: string
