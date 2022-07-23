@@ -1,7 +1,10 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "cli": {
-    "defaultCollection": "@angular-eslint/schematics"
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ],
+    "analytics": false
   },
   "version": 1,
   "newProjectRoot": "apps",
@@ -182,7 +185,6 @@
       }
     }
   },
-  "defaultProject": "nw-buddy",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "nwb",

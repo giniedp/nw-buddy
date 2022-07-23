@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 
 import { ItemPreferencesService } from '../preferences'
 import { NwDbService } from './nw-db.service'
-import { NwExpressionService } from './nw-expression'
+import { NwExpressionService } from './nw-expression.service'
 import { NwTradeskillService } from './nw-tradeskill.service'
 import m from 'mithril'
 import { NwLootbucketService } from './nw-lootbucket.service'

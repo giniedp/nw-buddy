@@ -6,7 +6,7 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "module": "commonjs",
-    "target": "es5",
+    "target": "ES2015",
     "skipLibCheck": true,
     "esModuleInterop": true,
     "types": [
