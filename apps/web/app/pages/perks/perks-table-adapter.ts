@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { defer, map, Observable, switchMap } from 'rxjs'
+import { combineLatest, defer, map, Observable, switchMap } from 'rxjs'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/core/nw'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
@@ -9,6 +9,7 @@ import m from 'mithril'
 import { humanize, shareReplayRefCount } from '~/core/utils'
 import { TranslateService } from '~/core/i18n'
 import { getPerkAffixStat, hasPerkAffixStats } from '~/core/nw/utils'
+import { ExprContextService } from './exp-context.service'
 
 @Injectable()
 export class PerksAdapterService extends DataTableAdapter<Perks> {
@@ -91,11 +92,18 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
                 }).join('<br>')
               }))
             }
-            return this.i18n.observe(data.Description).pipe(switchMap((value) => {
+            return combineLatest({
+              ctx: this.ctx.value,
+              text: this.i18n.observe(data.Description)
+            }).pipe(switchMap(({ ctx, text }) => {
+              let gs = ctx.gs
+              if (data.ItemClassGSBonus && ctx.gsBonus) {
+                gs += (Number(data.ItemClassGSBonus.split(':')[1]) || 0)
+              }
               return this.nw.expression.solve({
-                text: value,
-                charLevel: 60,
-                gearScore: 600,
+                text: text,
+                charLevel: ctx.level,
+                gearScore: gs,
                 itemId: data.PerkID,
               })
             }))
@@ -106,8 +114,30 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
         {
           headerName: 'Type',
           field: this.fieldName('PerkType'),
-          width: 100,
+          width: 120,
           filter: SelectboxFilter,
+        },
+        {
+          headerName: 'Item Class GS Bonus',
+          field: this.fieldName('ItemClassGSBonus'),
+          children: [
+            {
+              headerName: 'Class',
+              valueGetter: this.valueGetter(({ data }) => {
+                return data.ItemClassGSBonus?.split(':')[0]
+              }),
+              width: 70,
+              filter: SelectboxFilter,
+            },
+            {
+              headerName: 'GS',
+              valueGetter: this.valueGetter(({ data }) => {
+                return data.ItemClassGSBonus?.split(':')[1]
+              }),
+              width: 50,
+              filter: false
+            }
+          ]
         },
         {
           width: 500,
@@ -159,7 +189,7 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
     shareReplayRefCount(1)
   )
 
-  public constructor(private nw: NwService, private i18n: TranslateService) {
+  public constructor(private nw: NwService, private i18n: TranslateService, private ctx: ExprContextService) {
     super()
   }
 }

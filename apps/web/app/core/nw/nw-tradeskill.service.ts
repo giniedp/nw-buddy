@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { Tradeskillpostcap } from '@nw-data/types'
-import { groupBy, uniq } from 'lodash'
+import { uniq } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, shareReplay, switchMap } from 'rxjs'
 import { TradeskillPreferencesService } from '../preferences/tradeskill-preferences.service'
 import { shareReplayRefCount } from '../utils'
@@ -39,6 +39,7 @@ const CATEGORY_MAP = {
   Fishing: 'Gathering',
   Harvesting: 'Gathering',
   Skinning: 'Gathering',
+  Musician: 'Casual',
 }
 
 @Injectable({ providedIn: 'root' })

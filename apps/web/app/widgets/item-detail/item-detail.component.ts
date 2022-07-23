@@ -5,7 +5,7 @@ import {
   ChangeDetectorRef,
   OnChanges,
 } from '@angular/core'
-import { NwService } from '~/core/nw'
+import { defer } from 'rxjs'
 import { ItemDetailService } from './item-detail.service'
 
 @Component({
@@ -55,9 +55,13 @@ export class ItemDetailComponent implements OnChanges {
   @Input()
   public enablePerks: boolean
 
+  @Input()
+  public enableDroplist: boolean
 
-  public constructor(private nw: NwService, private cdRef: ChangeDetectorRef, private service: ItemDetailService) {
-    //
+  public droppedBy = defer(() => this.service.droppedByVitals$)
+
+  public constructor(private cdRef: ChangeDetectorRef, private service: ItemDetailService) {
+
   }
 
   public ngOnChanges(): void {

@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
+import { ExprContextService } from './exp-context.service'
 import { PerksAdapterService } from './perks-table-adapter'
 
 @Component({
@@ -10,9 +11,13 @@ import { PerksAdapterService } from './perks-table-adapter'
     class: 'layout-row gap-4',
   },
   providers: [
-    DataTableAdapter.provideClass(PerksAdapterService)
+    DataTableAdapter.provideClass(PerksAdapterService),
+    ExprContextService
   ]
 })
 export class PerksComponent {
-  //
+
+  public constructor(public ctx: ExprContextService) {
+
+  }
 }

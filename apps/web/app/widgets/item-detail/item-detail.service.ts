@@ -1,6 +1,6 @@
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { BehaviorSubject, combineLatest, defer, map, of, switchMap, take } from 'rxjs'
-import { NwDbService } from '~/core/nw'
+import { NwDbService, NwVitalsService } from '~/core/nw'
 import {
   getItemId,
   getItemIdFromRecipe,
@@ -82,10 +82,17 @@ export class ItemDetailService {
 
   public description$ = defer(() => this.entity$).pipe(map((it) => it?.Description))
 
+  public droppedByVitals$ = defer(() => this.entityid$)
+    .pipe(switchMap((id) => {
+      return this.vitals.vitalsThatCanDrop(id ? [id] : [])
+    }))
+
   private idOrEntity$ = new BehaviorSubject<string | ItemDefinitionMaster | Housingitems>(null)
   private idOrRecipe$ = new BehaviorSubject<string | Crafting>(null)
 
-  public constructor(private db: NwDbService) {}
+  public constructor(private db: NwDbService, private vitals: NwVitalsService) {
+    //
+  }
 
   public update(idOrEntity: string | ItemDefinitionMaster | Housingitems) {
     this.idOrEntity$.next(idOrEntity)

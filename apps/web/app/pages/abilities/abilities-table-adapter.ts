@@ -8,7 +8,7 @@ import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { shareReplayRefCount } from '~/core/utils'
 import { TranslateService } from '~/core/i18n'
-import { NwExpressionService } from '~/core/nw/nw-expression'
+import { NwExpressionService } from '~/core/nw'
 
 @Injectable()
 export class AbilitiesAdapterService extends DataTableAdapter<Ability> {

@@ -1,5 +1,26 @@
 <div class="w-36 xl:w-40 flex flex-col gap-4">
   <nwb-quicksearch-input #search></nwb-quicksearch-input>
+  <div class="bg-base-100 rounded-md overflow-y-auto p-2">
+    <div class="form-control w-full">
+      <label class="label">
+        <span class="label-text">Char Level: {{ctx.level}}</span>
+      </label>
+      <input type="range"  min="0" max="60" [(ngModel)]="ctx.level" class="range range-xs" />
+    </div>
+    <div class="form-control w-full">
+      <label class="label">
+        <span class="label-text">Gear Score: {{ctx.gs}}</span>
+      </label>
+      <input type="range" min="0" max="625" [(ngModel)]="ctx.gs" class="range range-xs" />
+    </div>
+    <div class="form-control w-full">
+      <label class="label cursor-pointer">
+        <span class="label-text">GS Bonus</span>
+        <input type="checkbox" checked="checked"  [(ngModel)]="ctx.gsBonus" class="checkbox checkbox-xs" />
+      </label>
+    </div>
+
+  </div>
   <nwb-data-table-categories
     categoryChildRoute
     [childRouteIndex]="'table'"
@@ -7,7 +28,7 @@
   ></nwb-data-table-categories>
   <ul class="menu menu-compact xl:menu-normal bg-base-100 rounded-md">
     <li [routerLinkActive]="'bordered'">
-      <a [routerLink]="['attributes']" > Attribute Mods </a>
+      <a [routerLink]="['attributes']"> Attribute Mods </a>
     </li>
   </ul>
 </div>

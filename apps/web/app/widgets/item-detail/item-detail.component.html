@@ -17,6 +17,9 @@
   </ng-container>
 </ng-container>
 
+<!-- <div *ngIf="droppedBy | async; let list">
+  {{ list.length }}
+</div> -->
 <div class="flex flex-row items-center justify-center" *ngIf="!(entity | async)">
   <button class="btn btn-ghost loading mx-auto"></button>
 </div>
