@@ -1,5 +1,4 @@
-import { ChangeDetectorRef, Component, ElementRef, Query, QueryList, ViewChildren } from '@angular/core'
-import { RouterLink } from '@angular/router'
+import { ChangeDetectorRef, Component, ElementRef, QueryList, ViewChildren } from '@angular/core'
 import { take } from 'rxjs'
 
 import { ElectronService } from './core/electron'
@@ -13,11 +12,10 @@ import { Hotkeys } from './core/utils'
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   host: {
-    class: 'layout-frame layout-column'
-  }
+    class: 'layout-frame layout-column',
+  },
 })
 export class AppComponent {
-
   public get isElectron() {
     return this.electron.isElectron
   }
@@ -26,10 +24,13 @@ export class AppComponent {
     return this.app.language.get()
   }
   public set language(value: string) {
-    this.db.data.loadTranslations(value).pipe(take(1)).subscribe((data) => {
-      this.translate.merge(value, data)
-      this.app.language.set(value)
-    })
+    this.db.data
+      .loadTranslations(value)
+      .pipe(take(1))
+      .subscribe((data) => {
+        this.translate.merge(value, data)
+        this.app.language.set(value)
+      })
   }
 
   @ViewChildren('link')
@@ -56,12 +57,14 @@ export class AppComponent {
       console.log('Run in browser')
     }
 
-    [1,2,3,4,5,6,7,8,9,0].forEach((i) => {
-      this.hotkeys.addShortcut({
-        keys: `control.${i}`
-      }).subscribe(() => {
-        this.tabs.get((i || 10) - 1)?.nativeElement?.click()
-      })
+    ;[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].forEach((i) => {
+      this.hotkeys
+        .addShortcut({
+          keys: `control.${i}`,
+        })
+        .subscribe(() => {
+          this.tabs.get((i || 10) - 1)?.nativeElement?.click()
+        })
     })
   }
 }

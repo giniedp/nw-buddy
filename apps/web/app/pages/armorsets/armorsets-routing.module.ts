@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
+import { EmptyComponent } from '~/widgets/empty'
 import { ArmorsetsTableComponent } from './armorsets-table.component'
 import { ArmorsetsComponent } from './armorsets.component'
 
@@ -18,6 +19,7 @@ const routes: Routes = [
         component: ArmorsetsTableComponent,
         children: [{
           path: ':id',
+          component: EmptyComponent
         }]
       },
       {
@@ -25,6 +27,7 @@ const routes: Routes = [
         component: ArmorsetsTableComponent,
         children: [{
           path: ':id',
+          component: EmptyComponent
         }]
       },
     ],

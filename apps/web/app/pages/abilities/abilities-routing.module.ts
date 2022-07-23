@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
+import { EmptyComponent } from '~/widgets/empty'
 import { AbilitiesTableComponent } from './abilities-table.component'
 import { AbilitiesComponent } from './abilities.component'
 
@@ -17,14 +18,16 @@ const routes: Routes = [
         path: 'table',
         component: AbilitiesTableComponent,
         children: [{
-          path: ':id'
+          path: ':id',
+          component: EmptyComponent
         }]
       },
       {
         path: ':category',
         component: AbilitiesTableComponent,
         children: [{
-          path: ':id'
+          path: ':id',
+          component: EmptyComponent
         }]
       },
     ],
