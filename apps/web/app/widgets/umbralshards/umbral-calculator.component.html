@@ -12,7 +12,7 @@
             type="number"
             min="0"
             class="input input-ghost text-2xl font-bold appearance-none w-20"
-            [ngModel]="row.value || 0"
+            [ngModel]="row.score || 0"
             (ngModelChange)="writeValue(row.id, $event)"
           />
         </div>
@@ -32,7 +32,7 @@
           type="number"
           min="0"
           class="input input-ghost text-2xl font-bold appearance-none w-20 text-right"
-          [ngModel]="row.value || 0"
+          [ngModel]="row.score || 0"
           (ngModelChange)="writeValue(row.id, $event)"
           />
         </div>

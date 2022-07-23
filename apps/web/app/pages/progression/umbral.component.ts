@@ -4,13 +4,10 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
   selector: 'nwb-umbral',
   templateUrl: './umbral.component.html',
   styleUrls: ['./umbral.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+   // changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UmbralComponent implements OnInit {
+export class UmbralComponent {
 
-  constructor() { }
-
-  ngOnInit(): void {
-  }
+  public tab = 0
 
 }

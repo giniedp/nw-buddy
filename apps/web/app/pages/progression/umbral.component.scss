@@ -7,20 +7,6 @@
 
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: min-content 1fr;
-  grid-template-areas:
-    "a b"
-    "c b";
   row-gap: 1rem;
   column-gap: 1rem;
-
-  .cell-a {
-    grid-area: a;
-  }
-  .cell-b {
-    grid-area: b;
-  }
-  .cell-c {
-    grid-area: c;
-  }
 }
