@@ -20,6 +20,15 @@ export function parseNwExpression(text: string, root: boolean = false): NwExp {
     // collapse spaces
     .replace(/\s+/g, ' ')
 
+  // example:
+  //  Base damage is increased by {[GlobalAbilityTable.GlobalPerk_Ability_Sword_WhirlingBlade.BaseDamage * 100] * {perkMultiplier}]}% while performing a Whirling Blade attack if 3 or more enemies are within the radius of the attack.
+  if (text.includes(']') && !text.includes('[')) {
+    text = text.replace(/\]/, '')
+  }
+  if (text.includes('[') && !text.includes(']')) {
+    text = text.replace(/\[/, '')
+  }
+
   if (text.includes('Mut_Voi_Stacks') && text.includes('Mut_Lig_Stacks')) {
     // example:
     //  Filled with dread for {[Type_StatusEffectData.Mut_Lig_Stacks_1_Effect.BaseDuration]} seconds. At {[Type_StatusEffectData.Mut_Voi_Stacks_1_Effect.AddOnStackSize]} stacks, causes a void burst to appear at your location.
