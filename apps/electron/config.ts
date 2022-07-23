@@ -10,22 +10,18 @@ export interface Config {
 }
 
 export function loadConfig(): Config {
-  console.debug('loadConfig', filePath)
   try {
-    const data = JSON.parse(fs.readFileSync(filePath).toString())
-    console.log(data)
-    return data
+    return JSON.parse(fs.readFileSync(filePath).toString())
   } catch (e) {
-    console.error(e)
+    //
   }
   return {}
 }
 
 export function writeConfig(config: Config) {
-  console.log('writeConfig', filePath, config)
   try {
     fs.writeFileSync(filePath, JSON.stringify(config, null, 2))
   } catch (e) {
-    console.error(e)
+    //
   }
 }
