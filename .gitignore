@@ -10,8 +10,6 @@ main.js
 src/**/*.js
 !src/karma.conf.js
 *.js.map
-apps/web/nw-data
-apps/web/nw-data.tmp
 # dependencies
 node_modules
 yarn-error.log
