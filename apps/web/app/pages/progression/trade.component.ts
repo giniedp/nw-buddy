@@ -1,6 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef } from '@angular/core'
-import { ActivatedRoute } from '@angular/router'
-import { combineLatest, Subject, takeUntil } from 'rxjs'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
+import { Subject } from 'rxjs'
 import { NwService } from '~/core/nw'
 
 @Component({
@@ -10,7 +9,6 @@ import { NwService } from '~/core/nw'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TradeComponent implements OnInit, OnDestroy {
-
   public get skills() {
     return this.nw.tradeskills.skills
   }
@@ -18,6 +16,8 @@ export class TradeComponent implements OnInit, OnDestroy {
   public get categories() {
     return this.nw.tradeskills.categories
   }
+
+  public selected: string
 
   private destroy$ = new Subject()
 
@@ -27,12 +27,17 @@ export class TradeComponent implements OnInit, OnDestroy {
     return this.nw.tradeskills.skillsByCategory(name)
   }
 
-  public ngOnInit(): void {
-
-  }
+  public ngOnInit(): void {}
 
   public ngOnDestroy(): void {
     this.destroy$.next(null)
     this.destroy$.complete()
+  }
+
+  public isActive(category: string, index: number) {
+    if (!this.selected) {
+      return index == 0
+    }
+    return this.selected === category
   }
 }
