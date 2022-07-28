@@ -25,6 +25,9 @@ export class NwTextDirective implements OnInit, OnChanges, OnDestroy {
   public nwText: string
 
   @Input()
+  public nwTextAttr: string
+
+  @Input()
   public itemId: string
 
   @Input()
@@ -50,9 +53,14 @@ export class NwTextDirective implements OnInit, OnChanges, OnDestroy {
         }))
       }))
       .pipe(switchMap((context) => this.expr.solve(context)))
+      .pipe(map((res) => String(res).replace(/\\n/g, ' ')))
       .pipe(takeUntil(this.destroy$))
       .subscribe((res) => {
-        this.elRef.nativeElement.textContent = String(res)
+        if (this.nwTextAttr) {
+          this.elRef.nativeElement.setAttribute(this.nwTextAttr, res)
+        } else {
+          this.elRef.nativeElement.innerHTML = res
+        }
       })
   }
 
