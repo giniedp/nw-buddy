@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core'
-import { map } from 'rxjs'
-import { NwService } from '~/core/nw'
+import { defer, map } from 'rxjs'
+import { NwDbService } from '~/core/nw'
 
 const REJECT = ['undefined', 'human']
 @Component({
@@ -11,12 +11,11 @@ const REJECT = ['undefined', 'human']
 })
 export class VitalsFamiliesListComponent {
 
-  public get families() {
-    return this.nw.db.vitalsFamilies.pipe(map((it) => it.filter((name) => !REJECT.includes(name))))
-  }
+  public families = defer(() => this.db.vitalsFamilies).pipe(
+    map((it) => it.filter((name) => !REJECT.includes(name)))
+  )
 
-  public constructor(private nw: NwService) {
+  public constructor(private db: NwDbService) {
     //
   }
-
 }
