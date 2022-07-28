@@ -63,6 +63,9 @@ export class SelectboxFilter<T> implements IFilterComp {
               click: () => this.toggleFilter(option.value),
             }
           })
+        const splitOptions = options.length > 15
+        const list1 = splitOptions ? options.filter((it) => it.active) : null
+        const list2 = splitOptions ? options.filter((it) => !it.active) : options
         return m.fragment({}, [
           this.showSearch &&
             m(SearchControl, {
@@ -79,13 +82,14 @@ export class SelectboxFilter<T> implements IFilterComp {
                 this.onFilterChanged()
               },
             }),
+          list1 &&
             m(SelectControls, {
               overflow: false,
               options: options.filter((it) => it.active),
             }),
           m(SelectControls, {
             overflow: true,
-            options: options.filter((it) => !it.active),
+            options: list2,
           }),
         ])
       },
@@ -153,8 +157,7 @@ export class SelectboxFilter<T> implements IFilterComp {
         values.set(option.value, option)
       })
     })
-    this.options = Array.from(values.values())
-      .sort((a, b) => String(a.label).localeCompare(String(b.label)))
+    this.options = Array.from(values.values()).sort((a, b) => String(a.label).localeCompare(String(b.label)))
   }
 
   protected extractOptionsFromNode(node: RowNode): SelectFilterOption[] {
@@ -163,15 +166,15 @@ export class SelectboxFilter<T> implements IFilterComp {
       return value.map((it) => {
         return {
           label: humanize(it),
-          value: it
+          value: it,
         }
       })
     }
     return [
       {
         label: this.getLabel(node, node.data, value),
-        value: value
-      }
+        value: value,
+      },
     ]
   }
   protected getValue(node: RowNode, data: any) {
@@ -213,15 +216,23 @@ const ConditionControl: m.Component<ConditionControlAttrs> = {
   view: ({ attrs: { checked, onchange } }) => [
     m('div.form-control', [
       m('div.btn-group', [
-        m('button.btn.btn-xs.flex-1', {
-          class: !checked ? 'btn-active' : '',
-          onclick: onchange,
-        }, 'Any'),
-        m('button.btn.btn-xs.flex-1', {
-          class: checked ? 'btn-active' : '',
-          onclick: onchange,
-        }, 'All'),
-      ])
+        m(
+          'button.btn.btn-xs.flex-1',
+          {
+            class: !checked ? 'btn-active' : '',
+            onclick: onchange,
+          },
+          'Any'
+        ),
+        m(
+          'button.btn.btn-xs.flex-1',
+          {
+            class: checked ? 'btn-active' : '',
+            onclick: onchange,
+          },
+          'All'
+        ),
+      ]),
     ]),
   ],
 }
@@ -242,15 +253,19 @@ const SearchControl: m.Component<SearchControlAttrs> = {
             onchange((e.target as HTMLInputElement).value)
           },
         }),
-        m('button.btn.btn-ghost.btn-xs', {
-          onclick: () => onchange('')
-        }, [
-          m.trust(
-            value
-              ? '<svg class="h-4 w-4" viewBox="0 0 320 512" fill="currentColor" stroke="currentColor"><path d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg>'
-              : '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>'
-          ),
-        ]),
+        m(
+          'button.btn.btn-ghost.btn-xs',
+          {
+            onclick: () => onchange(''),
+          },
+          [
+            m.trust(
+              value
+                ? '<svg class="h-4 w-4" viewBox="0 0 320 512" fill="currentColor" stroke="currentColor"><path d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg>'
+                : '<svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>'
+            ),
+          ]
+        ),
       ]),
     ]),
   ],
@@ -258,12 +273,12 @@ const SearchControl: m.Component<SearchControlAttrs> = {
 
 interface SelectControlAttrs {
   overflow: boolean
-  options: Array<{ label: string; icon?: string, active: boolean; click: Function }>
+  options: Array<{ label: string; icon?: string; active: boolean; click: Function }>
 }
 const SelectControls: m.Component<SelectControlAttrs, any> = {
   view: ({ attrs: { overflow, options } }) => [
     m(
-      `ul.menu.menu-compact.rounded-md.flex-1${ overflow ? '.overflow-y-auto' : ''}`,
+      `ul.menu.menu-compact.rounded-md.flex-1${overflow ? '.overflow-y-auto' : ''}`,
       options?.map((option) => {
         return m('li', [
           m(
@@ -273,10 +288,11 @@ const SelectControls: m.Component<SelectControlAttrs, any> = {
               onclick: option.click,
             },
             [
-              option.icon && m('img.w-6.h-6', {
-                src: option.icon
-              }),
-              option.label
+              option.icon &&
+                m('img.w-6.h-6', {
+                  src: option.icon,
+                }),
+              option.label || '-- empty --',
             ]
           ),
         ])
