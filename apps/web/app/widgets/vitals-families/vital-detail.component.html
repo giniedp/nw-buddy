@@ -29,14 +29,13 @@
         <span [nwText]="row.Name"></span>
 
       </div>
-      <div class="stat-desc flex flex-row gap-1">
-        <ng-container *ngFor="let wpn of row.Weapons">
-          <img [nwImage]="wpn.IconPath" class="w-5 h-5 mr-1 tooltip"/>
-        </ng-container>
-        <ng-container *ngIf="row.Perk">
+      <div class="stat-desc flex flex-row gap-1 opacity-100">
+        <span *ngFor="let wpn of row.Weapons" [nwText]="wpn.GroupName" [nwTextAttr]="'data-tip'" class="tooltip">
+          <img [nwImage]="wpn.IconPath" class="w-5 h-5 mr-1" />
+        </span>
+        <span *ngIf="row.Perk"  [nwText]="row.Perk.DisplayName" [nwTextAttr]="'data-tip'" class="tooltip">
           <img [nwImage]="row.Perk.IconPath" class="w-5 h-5 mr-1" />
-          <!-- <span [nwText]="row.Perk.DisplayName" class="px-1"></span> -->
-        </ng-container>
+        </span>
       </div>
     </div>
   </div>
