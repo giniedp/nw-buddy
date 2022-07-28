@@ -11,8 +11,8 @@ export function parseNwExpression(text: string, root: boolean = false): NwExp {
     .join(' + ')
     .split('-')
     .join(' - ')
-    .split('/')
-    .join(' / ')
+    // .split('/')
+    // .join(' / ')
     // patch bug in expressions, where multiply operator is missing
     .replace(/100\s*\{/, '100 * {')
     // patch bad expressions

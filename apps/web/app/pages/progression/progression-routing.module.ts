@@ -10,7 +10,13 @@ const routes: Routes = [
   {
     path: '',
     component: ProgressionComponent,
+
     children: [
+      {
+        path: '',
+        redirectTo: 'tradeskills',
+        pathMatch: 'full'
+      },
       {
         path: 'tradeskills',
         component: TradeComponent,

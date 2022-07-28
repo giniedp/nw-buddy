@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core'
 import { groupBy } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, shareReplay } from 'rxjs'
-import { CaseInsensitiveMap, shareReplayRefCount } from '../utils'
+import { CaseInsensitiveMap } from '../utils'
 import { NwDataService } from './nw-data.service'
 import { queryGemPerksWithAffix, queryMutatorDifficultiesWithRewards } from './nw-db-views'
-import { convertLootbuckets, convertLoottables } from './utils'
+import { convertLootbuckets, convertLoottables, createLootGraph } from './utils'
 
 export function toMap<T, K extends keyof T>(list: T[], id: K): Map<T[K], T> {
   const result = new CaseInsensitiveMap<T[K], T>()
@@ -143,6 +143,7 @@ export class NwDbService {
 
   public weapons = list(() => [this.data.itemdefinitionsWeapons()])
   public weaponsMap = index(() => this.weapons, 'WeaponID')
+  public weapon = lookup(() => this.weaponsMap)
 
   public spellTable = list(() => [
     this.data.spelltable().pipe(annotate('$source', '_')),
@@ -265,6 +266,14 @@ export class NwDbService {
   ])
   public lootTablesMap = index(() => this.lootTables, 'LootTableID')
   public lootTable = lookup(() => this.lootTablesMap)
+  public lootGraph = defer(() =>
+    combineLatest({
+      tables: this.lootTablesMap,
+      buckets: this.lootBucketsMap,
+    })
+  )
+    .pipe(map(({ tables, buckets }) => createLootGraph({ tables, buckets })))
+    .pipe(shareReplay(1))
 
   public lootBuckets = list(() => this.data.lootbuckets().pipe(map(convertLootbuckets)))
   public lootBucketsMap = indexGroup(() => this.lootBuckets, 'LootBucket')

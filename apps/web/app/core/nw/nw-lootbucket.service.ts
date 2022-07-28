@@ -4,6 +4,7 @@ import { combineLatest, map, Observable } from 'rxjs'
 import { LootBucketEntry, LootBucketTag } from './utils'
 import { NwDbService } from './nw-db.service'
 import { uniq } from 'lodash'
+import { LootBucketConditionNames, LootContext } from './nw-lootcontext'
 
 export interface LootBucketQuery {
   $: Observable<LootBucketEntry[]>
@@ -12,19 +13,10 @@ export interface LootBucketQuery {
   items: () => Observable<Array<ItemDefinitionMaster | Housingitems>>
 }
 
-export type ContextTagName = 'Level' | 'MinContLevel'
-
-export interface ContextTag {
-  Name: ContextTagName
-  Value: string | number
-}
-
 @Injectable({ providedIn: 'root' })
 export class NwLootbucketService {
-  public constructor(private db: NwDbService) {}
-
-  public hasAnyTag(entry: LootBucketEntry, tags: string[]) {
-    return tags.some((tag) => entry.Tags.has(tag))
+  public constructor(private db: NwDbService) {
+    //
   }
 
   public all(): LootBucketQuery {
@@ -35,30 +27,35 @@ export class NwLootbucketService {
     return this.query(this.db.lootBucket(id))
   }
 
-  public contextTag(name: ContextTagName, value: string | number): ContextTag {
-    return {
-      Name: name,
-      Value: value,
-    }
+  public context(options: {
+    tags: string[],
+    conditions: Partial<Record<LootBucketConditionNames, string | number>>
+  }) {
+    return new LootContext({
+      tags: (options.tags || []),
+      values: (options.conditions || {}),
+    })
   }
 
-  public matchContext(entry: LootBucketEntry, context: Array<string | ContextTag>): boolean {
-    const stringTags = context.filter((it) => typeof it === 'string') as string[]
-    const conditionTags = context.filter((it) => typeof it !== 'string') as ContextTag[]
-    const entryTags = Array.from(entry.Tags.values())
-    let result = true
-    for (const tag of entryTags) {
-      if (stringTags.find((it) => tagNameMatch(it, tag.Name))) {
-        continue
-      }
-      const condition = conditionTags.find((it) => tagNameMatch(it.Name, tag.Name))
-      if (condition && isInRange(tag, condition.Value)) {
-        continue
-      }
-      result = false
-      break
-    }
-    return result
+  /**
+   * Checks if entry has a specific tag
+   */
+  public matchTag(entry: LootBucketEntry, tag: string) {
+    return entry.Tags.has(tag)
+  }
+
+  /**
+   * Checks if entry has any given tag
+   */
+  public matchAnyTag(entry: LootBucketEntry, tags: string[]) {
+    return tags.some((tag) => this.matchTag(entry, tag))
+  }
+
+  /**
+   * Checks if entry has all of the given tags
+   */
+  public matchEveryTag(entry: LootBucketEntry, tags: string[]) {
+    return tags.every((tag) => this.matchTag(entry, tag))
   }
 
   private query(q: Observable<LootBucketEntry[]>): LootBucketQuery {
@@ -85,24 +82,5 @@ export class NwLootbucketService {
         return ids.map((id) => items.get(id) || housing.get(id)).filter((it) => !!it)
       })
     )
-  }
-}
-
-
-
-function tagNameMatch(a: string, b: string) {
-  return a.toLowerCase() === b.toLowerCase()
-}
-function isInRange(tag: LootBucketTag, value: string | number) {
-  switch (tag?.Value?.length) {
-    case 1: {
-      return tag.Value[0] <= Number(value)
-    }
-    case 2: {
-      return tag.Value[0] <= Number(value) && Number(value) <= tag.Value[1]
-    }
-    default: {
-      return false
-    }
   }
 }

@@ -15,16 +15,6 @@ export interface DifficultyWithRewards {
   }>
 }
 
-const MAP_DUNGEON_TO_MAP: Record<string, string> = {
-  DungeonAmrine: 'https://mapgenie.io/new-world/maps/amrine-excavation?embed=light&popup=false',
-  DungeonEdengrove00: 'https://mapgenie.io/new-world/maps/garden-of-genesis?embed=light&popup=false',
-  DungeonShatteredObelisk: 'https://mapgenie.io/new-world/maps/starstone-barrows?embed=light&popup=false',
-  DungeonRestlessShores01: 'https://mapgenie.io/new-world/maps/the-depths?embed=light&popup=false',
-  DungeonReekwater00: 'https://mapgenie.io/new-world/maps/lazarus-instrumentality?embed=light&popup=false',
-  DungeonEbonscale00: 'https://mapgenie.io/new-world/maps/dynasty-shipyard?embed=light&popup=false',
-  DungeonShatterMtn00: 'https://mapgenie.io/new-world/maps/tempests-heart?embed=light&popup=false',
-}
-
 const MUTATION_DIFFICULTY_LOOT_TAGS = [
   'MutDiff',
   'MutDiff1',
@@ -47,7 +37,7 @@ export class DungeonsService {
     .pipe(map((list) => list.filter((it) => it.IsDungeon).sort((a, b) => a.RequiredLevel - b.RequiredLevel)))
     .pipe(shareReplayRefCount(1))
 
-  public difficultie$ = defer(() => this.nw.db.data.gamemodemutatorsMutationdifficulty()).pipe(shareReplayRefCount(1))
+  public difficultie$ = defer(() => this.nw.db.mutatorDifficulties).pipe(shareReplayRefCount(1))
 
   public difficultieWithRewards$ = defer(() => {
     return combineLatest({
@@ -88,7 +78,7 @@ export class DungeonsService {
     })
   }
 
-  public dungeonPossibleDrops(
+  public possibleDrops(
     dungeon: Gamemodes | Observable<Gamemodes>
   ): Observable<Array<ItemDefinitionMaster | Housingitems>> {
     return combineLatest({
@@ -102,7 +92,7 @@ export class DungeonsService {
     )
   }
 
-  public dungeonLoot(dungeon: Gamemodes): Observable<Array<ItemDefinitionMaster | Housingitems>> {
+  public lootNormalMode(dungeon: Gamemodes): Observable<Array<ItemDefinitionMaster | Housingitems>> {
     return combineLatest({
       bossTags: this.dungeonBossesLootTags(dungeon),
       lootTags: of(dungeon.LootTags),
@@ -112,14 +102,14 @@ export class DungeonsService {
         switchMap((tags) => {
           return this.lootBuckets
             .all()
-            .filter((it) => this.lootBuckets.hasAnyTag(it, tags))
-            .filter((it) => !this.lootBuckets.hasAnyTag(it, MUTATION_LOOT_TAGS))
+            .filter((it) => this.lootBuckets.matchAnyTag(it, tags))
+            .filter((it) => !this.lootBuckets.matchAnyTag(it, MUTATION_LOOT_TAGS))
             .items()
         })
       )
   }
 
-  public dungeonMutatedLoot(dungeon: Gamemodes): Observable<Array<ItemDefinitionMaster | Housingitems>> {
+  public lootMutatedMode(dungeon: Gamemodes): Observable<Array<ItemDefinitionMaster | Housingitems>> {
     return combineLatest({
       bossTags: this.dungeonBossesLootTags(dungeon),
       lootTags: of(dungeon.MutLootTagsOverride || dungeon.LootTags),
@@ -129,18 +119,14 @@ export class DungeonsService {
         switchMap((tags) => {
           return this.lootBuckets
             .all()
-            .filter((it) => this.lootBuckets.hasAnyTag(it, tags))
-            .filter((it) => !this.lootBuckets.hasAnyTag(it, MUTATION_DIFFICULTY_LOOT_TAGS))
+            .filter((it) => this.lootBuckets.matchAnyTag(it, tags))
+            .filter((it) => !this.lootBuckets.matchAnyTag(it, MUTATION_DIFFICULTY_LOOT_TAGS))
             .items()
         })
       )
   }
 
-  public dungeonMapEmbed(dungeon: Gamemodes) {
-    return MAP_DUNGEON_TO_MAP[dungeon.GameModeId]
-  }
-
-  public dungeonMutationLoot(
+  public lootMutatedModeForDifficulty(
     dungeon: Gamemodes,
     mutation: Mutationdifficulty
   ): Observable<Array<ItemDefinitionMaster | Housingitems>> {
@@ -152,18 +138,14 @@ export class DungeonsService {
       bossTags: this.dungeonBossesLootTags(dungeon),
       lootTags: of(dungeon.MutLootTagsOverride || dungeon.LootTags),
     })
-      .pipe(
-        map(({ bossTags, lootTags }) => {
-          return uniq([...bossTags, ...lootTags])
-        })
-      )
+      .pipe(map(({ bossTags, lootTags }) => uniq([...bossTags, ...lootTags])))
       .pipe(
         switchMap((tags) => {
           return this.lootBuckets
-          .all()
-          .filter((it) => this.lootBuckets.hasAnyTag(it, tags))
-          .filter((it) => this.lootBuckets.hasAnyTag(it, mutation.InjectedLootTags))
-          .items()
+            .all()
+            .filter((it) => this.lootBuckets.matchAnyTag(it, tags))
+            .filter((it) => this.lootBuckets.matchAnyTag(it, mutation.InjectedLootTags))
+            .items()
         })
       )
   }
@@ -184,7 +166,7 @@ export class DungeonsService {
     const dungeonId = dungeon.GameModeId
     return combineLatest({
       vitals: this.nw.db.vitalsByCreatureType,
-      dungeons: this.nw.db.gameModes
+      dungeons: this.nw.db.gameModes,
     }).pipe(
       map(({ vitals, dungeons }) => {
         const miniBosses = vitals.get('DungeonMiniBoss') || []
@@ -201,7 +183,7 @@ export class DungeonsService {
     const dungeonId = dungeon.GameModeId
     return combineLatest({
       vitals: this.nw.db.vitals,
-      dungeons: this.nw.db.gameModes
+      dungeons: this.nw.db.gameModes,
     }).pipe(
       map(({ vitals, dungeons }) => {
         return vitals.filter((it) => getVitalDungeon(it, dungeons)?.GameModeId === dungeonId)

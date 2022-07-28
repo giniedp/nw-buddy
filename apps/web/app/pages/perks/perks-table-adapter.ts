@@ -126,7 +126,7 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
               valueGetter: this.valueGetter(({ data }) => {
                 return data.ItemClassGSBonus?.split(':')[0]
               }),
-              width: 70,
+              width: 90,
               filter: SelectboxFilter,
             },
             {

@@ -11,7 +11,7 @@
       <td *ngFor="let col of row">
         <div [nwbItemDetail]="col.item" class="flex gap-2">
           <a [nwInfoLink]="col.item.ItemID" [nwInfoResource]="'item'" target="_blank" class="w-10 h-10">
-            <picture [nwItemIcon]="col.item" class="nw-icon w-10 h-10"></picture>
+            <picture [nwIcon]="col.item" class="nw-icon w-10 h-10"></picture>
           </a>
           <div class="flex flex-col justify-between flex-1 whitespace-nowrap">
             <span [nwText]="col.item.Name" class="text-xs"></span>

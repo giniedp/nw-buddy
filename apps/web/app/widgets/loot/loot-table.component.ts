@@ -1,18 +1,20 @@
 import {
-  Component,
-  OnInit,
-  Input,
-  forwardRef,
-  OnChanges,
-  SimpleChanges,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
-  NgZone,
+  Component,
+  forwardRef,
+  Input,
+  OnChanges,
+  OnInit,
 } from '@angular/core'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { BehaviorSubject, combineLatest, defer, map, Observable, of, switchMap, tap } from 'rxjs'
-import { IconComponent, NwLootbucketService, nwdbLinkUrl, NwDbService, ContextTag } from '~/core/nw'
+import { sortBy, uniqBy } from 'lodash'
+import m from 'mithril'
+import { BehaviorSubject, combineLatest, defer, map, Observable, of, startWith, switchMap, tap } from 'rxjs'
+
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { TranslateService } from '~/core/i18n'
+import { IconComponent, nwdbLinkUrl, NwDbService, NwLootbucketService } from '~/core/nw'
 import {
   getItemId,
   getItemRarity,
@@ -22,51 +24,10 @@ import {
   LootTableItem,
 } from '~/core/nw/utils'
 import { shareReplayRefCount } from '~/core/utils'
-import { DataTableAdapter } from '~/ui/data-table'
-import m from 'mithril'
 import { SelectboxFilter } from '~/ui/ag-grid'
-import { TranslateService } from '~/core/i18n'
-import { sortBy, uniqBy } from 'lodash'
+import { DataTableAdapter } from '~/ui/data-table'
 import { QuicksearchService } from '~/ui/quicksearch'
-
-const INJECTED_TAGS = [
-  'GlobalMod',
-  'EnemyLevel',
-  'Level',
-  // 'MinPOIContLevel'
-  // 'LootTableDiverted'
-]
-
-// All Loot table Conditionas
-//
-// "EnemyLevel"
-// "Elite"
-// "MinPOIContLevel"
-// "Level"
-// "GlobalMod"
-// "LootTableDiverted"
-// "Fresh"
-// "FishRarity"
-// "FishSize"
-// "Salt"
-// "Named"
-// "Common"
-// "GypsumYellow"
-// "GypsumBlue"
-// "GypsumBlack"
-// "Amrine"
-// "ShatteredObelisk"
-// "Reekwater00"
-// "Edengrove00"
-// "Ebonscale00"
-// "Ebonscale00_Mut"
-// "RestlessShores01"
-// "ShatterMtn00"
-// "Fire"
-// "Nature"
-// "Void"
-// "MutDiff"
-// "Goblin"
+import { LootContext } from '~/core/nw/nw-lootcontext'
 
 type Item = ItemDefinitionMaster | Housingitems
 @Component({
@@ -79,7 +40,7 @@ type Item = ItemDefinitionMaster | Housingitems
       provide: DataTableAdapter,
       useExisting: forwardRef(() => LootTableComponent),
     },
-    QuicksearchService
+    QuicksearchService,
   ],
 })
 export class LootTableComponent extends DataTableAdapter<Item> implements OnInit, OnChanges {
@@ -94,51 +55,57 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
   }
 
   @Input()
-  public set contentLevel(value: number) {
-    this.contentLevel$.next(value || null)
+  public set enemyLevel(value: number) {
+    this.enemyLevel$.next(value || null)
   }
 
   @Input()
   public set playerLevel(value: number) {
-    this.contentLevel$.next(value || null)
+    this.playerLevel$.next(value || null)
   }
 
-  public table = defer(() => this.tableId$)
+  public table$ = defer(() => this.tableId$)
     .pipe(switchMap((id) => this.db.lootTable(id)))
     .pipe(shareReplayRefCount(1))
 
+  public context$ = defer(() => {
+    return combineLatest({
+      tags: this.tags$,
+      enemyLevel: this.enemyLevel$,
+      playerLevel: this.playerLevel$,
+    })
+  }).pipe(
+    map(({ tags, enemyLevel, playerLevel }) => {
+      return LootContext.create({
+        tags: [
+          'GlobalMod',          // unknown purpose
+          // 'MinContLevel',    // any zone
+          // 'MinPOIContLevel', // any zone
+          ...tags,
+        ],
+        values: {
+          MinContLevel: enemyLevel,
+          MinPOIContLevel: enemyLevel,
+          EnemyLevel: enemyLevel,
+          Level: playerLevel,
+        },
+      })
+    })
+  )
+
   public override entities: Observable<Item[]> = defer(() => {
     return combineLatest({
-      table: this.table,
-      tags: combineLatest({
-        tags: this.tags$,
-        contentLevelTag: this.contentLevelTag,
-        playerLevelTag: this.playerLevelTag
-      }).pipe(map(({ tags, contentLevelTag, playerLevelTag }) => {
-        return [
-          ...tags,
-          contentLevelTag,
-          playerLevelTag,
-          ...INJECTED_TAGS
-        ].filter((it) => !!it)
-      })),
+      context: this.context$,
+      table: this.table$,
     })
   })
-    .pipe(switchMap(({ table, tags }) => this.fetchTableItems(table, tags)))
-
+    .pipe(switchMap(({ table, context }) => this.fetchTableItems(table, context)))
     .pipe(shareReplayRefCount(1))
 
   private tableId$ = new BehaviorSubject<string>(null)
   private tags$ = new BehaviorSubject<string[]>([])
-  private contentLevel$ = new BehaviorSubject<number>(null)
+  private enemyLevel$ = new BehaviorSubject<number>(null)
   private playerLevel$ = new BehaviorSubject<number>(60)
-
-  private contentLevelTag = defer(() => this.contentLevel$).pipe(map((it) => {
-    return it ? this.lbs.contextTag('MinContLevel', it) : null
-  }))
-  private playerLevelTag = defer(() => this.playerLevel$).pipe(map((it) => {
-    return it ? this.lbs.contextTag('Level', it) : null
-  }))
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -154,7 +121,7 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
     //
   }
 
-  public ngOnChanges(changes: SimpleChanges): void {
+  public ngOnChanges(): void {
     this.cdRef.detectChanges()
   }
 
@@ -170,42 +137,35 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
     return this.db.lootTable(tableId)
   }
 
-  private fetchTableItems(table: LootTableEntry, tags: Array<string | ContextTag>) {
+  private fetchTableItems(table: LootTableEntry, context: LootContext): Observable<Item[]> {
     if (!table) {
-      return of<Item[]>([])
+      return of([])
     }
-    if (table.Conditions?.length && tags?.length) {
-      if (!table.Conditions.some((it) => tags.some((el) => it === el))) {
-        return of<Item[]>([])
-      }
-    }
-    return combineLatest(table.Items.map((it) => this.fetchItems(it, tags)))
+    const items = context.accessLoottable(table)
+    return combineLatest(items.map((it) => this.fetchItems(it, context)))
       .pipe(map((it) => it.flat(1)))
       .pipe(map((it) => uniqBy(it, (el) => getItemId(el))))
-      .pipe(map((list) => {
-        return sortBy(list, (it) => 5 - getItemRarity(it))
-      }))
+      .pipe(map((list) => sortBy(list, (it) => 5 - getItemRarity(it))))
+      .pipe(startWith([]))
   }
 
-  private fetchItems(item: LootTableItem, tags: Array<string | ContextTag>): Observable<Item[]> {
+  private fetchItems(item: LootTableItem, context: LootContext): Observable<Item[]> {
     if (item.ItemID) {
       return combineLatest({
         items: this.db.itemsMap,
         housings: this.db.housingItemsMap,
       })
-        .pipe(map(({ items, housings }) => {
-          return items.get(item.ItemID) || housings.get(item.ItemID)
-        }))
+        .pipe(map(({ items, housings }) => items.get(item.ItemID) || housings.get(item.ItemID)))
         .pipe(map((it) => (it ? [it] : [])))
     }
     if (item.LootBucketID) {
       return this.lbs
         .bucket(item.LootBucketID)
-        .filter((entry) => this.lbs.matchContext(entry, tags || []))
+        .filter((entry) => context.accessLootbucket(entry))
         .items()
     }
     if (item.LootTableID) {
-      return this.fetchTable(item.LootTableID).pipe(switchMap((table) => this.fetchTableItems(table, tags)))
+      return this.fetchTable(item.LootTableID).pipe(switchMap((table) => this.fetchTableItems(table, context)))
     }
     return of<Item[]>([])
   }

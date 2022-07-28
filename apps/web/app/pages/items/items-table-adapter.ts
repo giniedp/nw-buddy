@@ -49,6 +49,11 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
           width: 250,
           headerName: 'Name',
           valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.Name)),
+          cellRenderer: this.mithrilCell({
+            view: ({ attrs: { value } }) => m.trust(value.replace(/\\n/g, '<br>'))
+          }),
+          cellClass: ['multiline-cell', 'py-2'],
+          autoHeight: true,
           getQuickFilterText: ({ value }) => value,
         },
         {

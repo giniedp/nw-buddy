@@ -90,19 +90,19 @@ export class DungeonDetailComponent implements OnInit {
     .pipe(shareReplayRefCount(1))
 
   public expeditionItems$ = defer(() => this.dungeon$)
-    .pipe(switchMap((dungeon) => this.ds.dungeonPossibleDrops(dungeon)))
+    .pipe(switchMap((dungeon) => this.ds.possibleDrops(dungeon)))
     .pipe(map((items) => this.filterAndSort(items)))
 
   public dungeonLoot$ = defer(() => this.dungeon$)
-    .pipe(switchMap((dungeon) => this.ds.dungeonLoot(dungeon)))
+    .pipe(switchMap((dungeon) => this.ds.lootNormalMode(dungeon)))
     .pipe(map((it) => this.filterAndSort(it)))
 
   public dungeonMutatedLoot$ = defer(() => this.dungeon$)
-    .pipe(switchMap((dungeon) => this.ds.dungeonMutatedLoot(dungeon)))
+    .pipe(switchMap((dungeon) => this.ds.lootMutatedMode(dungeon)))
     .pipe(map((it) => this.filterAndSort(it)))
 
   public dungeonDifficultyLoot$ = defer(() => combineLatest([this.dungeon$, this.difficulty$]))
-    .pipe(switchMap(([dungeon, difficulty]) => this.ds.dungeonMutationLoot(dungeon, difficulty)))
+    .pipe(switchMap(([dungeon, difficulty]) => this.ds.lootMutatedModeForDifficulty(dungeon, difficulty)))
     .pipe(map((it) => this.filterAndSort(it)))
 
   public difficyltyRewards$ = defer(() =>
