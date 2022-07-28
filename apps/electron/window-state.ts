@@ -81,7 +81,7 @@ export function windowState(options: {
   function validateState() {
     const isValid = state && (hasBounds() || state.isMaximized || state.isFullScreen)
     if (!isValid) {
-      state = null
+      state = {}
       return
     }
 
@@ -179,7 +179,7 @@ export function windowState(options: {
   try {
     state = (options.load() || {}) as any
   } catch (err) {
-    //
+    state = {}
   }
 
   // Check state validity

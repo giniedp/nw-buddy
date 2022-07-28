@@ -9,24 +9,24 @@ const args = process.argv.slice(1),
 
 serve = args.some((val) => val === '--serve')
 
-const config = loadConfig()
-const winState = windowState({
-  defaultWidth: 800,
-  defaultHeight: 600,
-  load: () => config.window,
-  save: (state) => {
-    config.window = state
-    writeConfig(config)
-  }
-})
+// const config = loadConfig()
+// const winState = windowState({
+//   defaultWidth: 800,
+//   defaultHeight: 600,
+//   load: () => config.window,
+//   save: (state) => {
+//     config.window = state
+//     writeConfig(config)
+//   }
+// })
 
 function createWindow(): BrowserWindow {
   // Create the browser window.
   win = new BrowserWindow({
-    x: winState.x,
-    y: winState.y,
-    width: winState.width,
-    height: winState.height,
+    x: 0,
+    y: 0,
+    width: 800,
+    height: 600,
     autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
@@ -35,9 +35,9 @@ function createWindow(): BrowserWindow {
     },
     frame: false,
   })
-  app.whenReady().then(() => {
-    winState.manage(win)
-  })
+  // app.whenReady().then(() => {
+  //   winState.manage(win)
+  // })
 
 
   win.webContents.on('new-window', function (e, url) {
