@@ -1,14 +1,14 @@
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { BehaviorSubject, combineLatest, defer, map, of, switchMap, take } from 'rxjs'
+import { BehaviorSubject, combineLatest, defer, map, NEVER, of, switchMap, take } from 'rxjs'
 import { NwDbService, NwVitalsService } from '~/core/nw'
 import {
   getItemId,
   getItemIdFromRecipe,
   getItemPerkBucket,
-  getItemPerkIds,
   getItemPerks,
   getPerkbucketPerks,
   getRecipeForItem,
+  isItemWeapon,
   isMasterItem,
 } from '~/core/nw/utils'
 import { shareReplayRefCount } from '~/core/utils'
@@ -56,19 +56,30 @@ export class ItemDetailService {
     .pipe(map((it) => (!isMasterItem(it) ? it : null)))
     .pipe(shareReplayRefCount(1))
 
+  public readonly salvageEvent$ = defer(() => this.entity$)
+    .pipe(map((it) => it.SalvageGameEventID))
+    .pipe(switchMap((id) => this.db.gameEvent(id)))
+    .pipe(shareReplayRefCount(1))
+
+  public readonly weapon$ = defer(() => this.item$)
+    .pipe(switchMap((it) => (!isItemWeapon(it) ? NEVER : this.db.weaponsMap)))
+    .pipe(shareReplayRefCount(1))
+
   public readonly perks$ = defer(() =>
     combineLatest({
       item: this.item$,
       perks: this.db.perksMap,
-      buckets: this.db.perkBucketsMap
+      buckets: this.db.perkBucketsMap,
     })
   )
-    .pipe(map(({ item, perks, buckets }) => {
-      if (item?.IngredientCategories?.includes('PerkItem')) {
-        return getPerkbucketPerks(buckets.get(item.ItemID), perks)
-      }
-      return item && getItemPerks(item, perks)
-    }))
+    .pipe(
+      map(({ item, perks, buckets }) => {
+        if (item?.IngredientCategories?.includes('PerkItem')) {
+          return getPerkbucketPerks(buckets.get(item.ItemID), perks)
+        }
+        return item && getItemPerks(item, perks)
+      })
+    )
     .pipe(shareReplayRefCount(1))
 
   public readonly perkBuckets$ = defer(() =>
@@ -82,10 +93,11 @@ export class ItemDetailService {
 
   public description$ = defer(() => this.entity$).pipe(map((it) => it?.Description))
 
-  public droppedByVitals$ = defer(() => this.entityid$)
-    .pipe(switchMap((id) => {
+  public droppedByVitals$ = defer(() => this.entityid$).pipe(
+    switchMap((id) => {
       return this.vitals.vitalsThatCanDrop(id ? [id] : [])
-    }))
+    })
+  )
 
   private idOrEntity$ = new BehaviorSubject<string | ItemDefinitionMaster | Housingitems>(null)
   private idOrRecipe$ = new BehaviorSubject<string | Crafting>(null)

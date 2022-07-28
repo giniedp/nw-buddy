@@ -9,24 +9,24 @@ import { ItemDetailPerksComponent } from './item-detail-perks.component'
 import { ItemTrackerModule } from '../item-tracker'
 import { AffixStatComponent } from './affix-stat.component'
 import { ItemDetailDirective } from './item-detail.directive'
-import { ItemDetailDescriptionComponent } from './item-detail-description.component'
+import { ItemDetailSalvageComponent } from './item-detail-salvage.component'
+import { GameEventComponent } from '../game-event'
+import { ItemDetailInfoComponent } from './item-detail-info.component'
 
+const COMPONENTS = [
+  ItemDetailComponent,
+  ItemDetailHeaderComponent,
+  ItemDetailPerksComponent,
+  AffixStatComponent,
+  ItemDetailDirective,
+  ItemDetailSalvageComponent,
+  ItemDetailInfoComponent
+]
 @NgModule({
-  imports: [CommonModule, AgGridModule, NwModule, CraftingCalculatorModule, ItemTrackerModule],
-  declarations: [
-    ItemDetailComponent,
-    ItemDetailHeaderComponent,
-    ItemDetailDescriptionComponent,
-    ItemDetailPerksComponent,
-    AffixStatComponent,
-    ItemDetailDirective,
-  ],
-  exports: [
-    ItemDetailComponent,
-    ItemDetailHeaderComponent,
-    ItemDetailDescriptionComponent,
-    ItemDetailPerksComponent,
-    ItemDetailDirective,
-  ],
+  imports: [CommonModule, AgGridModule, NwModule, CraftingCalculatorModule, ItemTrackerModule, GameEventComponent],
+  declarations: [...COMPONENTS],
+  exports: [...COMPONENTS],
 })
-export class ItemDetailModule {}
+export class ItemDetailModule {
+  //
+}

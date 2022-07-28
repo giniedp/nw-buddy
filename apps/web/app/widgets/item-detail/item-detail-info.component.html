@@ -1,0 +1,19 @@
+<div *ngIf="bindOnEquip" class="text-emerald-500 text-lg">Bind On Equip</div>
+<div *ngIf="bindOnPickup" class="text-emerald-500 text-lg">Bind On Pickup</div>
+<div *ngIf="canReplaceGem" class="text-emerald-500 text-lg">Can Replace Gem</div>
+<div *ngIf="tier; let text">
+  <span class="text-zinc-500">Tier</span> <span class="text-white"> {{text}}</span>
+</div>
+<div *ngIf="weight; let text">
+  <span class="text-white">{{text | number:'1.1'}}</span> <span class="text-zinc-500"> Weight</span>
+</div>
+<div *ngIf="durability; let text">
+  <span class="text-white">{{text}}</span> <span class="text-zinc-500"> Durability</span>
+</div>
+<div *ngIf="requiredLevel; let text">
+  <span class="text-zinc-500">Requirement: Level</span> <span class="text-white"> {{text}}</span>
+</div>
+<div *ngIf="maxStackSize; let text">
+  <span class="text-zinc-500">Max Stack:</span> <span class="text-white"> {{text}}</span>
+</div>
+

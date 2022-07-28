@@ -13,5 +13,7 @@ export class ItemDetailDirective {
     this.service.update(value)
   }
 
-  public constructor(private service: ItemDetailService) {}
+  public constructor(private service: ItemDetailService) {
+    //
+  }
 }

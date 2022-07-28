@@ -1,11 +1,5 @@
-import {
-  Component,
-  ChangeDetectionStrategy,
-  Input,
-  ChangeDetectorRef,
-  OnChanges,
-} from '@angular/core'
-import { defer } from 'rxjs'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges } from '@angular/core'
+import { combineLatest, defer, EMPTY, map } from 'rxjs'
 import { ItemDetailService } from './item-detail.service'
 
 @Component({
@@ -16,7 +10,7 @@ import { ItemDetailService } from './item-detail.service'
   host: {
     class: 'bg-base-300 rounded-md',
   },
-  providers: [ItemDetailService]
+  providers: [ItemDetailService],
 })
 export class ItemDetailComponent implements OnChanges {
   @Input()
@@ -34,7 +28,7 @@ export class ItemDetailComponent implements OnChanges {
   }
 
   public get recipe() {
-    return this.service.recipe$
+    return this.enableRecipe ? this.service.recipe$ : EMPTY
   }
 
   @Input()
@@ -58,10 +52,36 @@ export class ItemDetailComponent implements OnChanges {
   @Input()
   public enableDroplist: boolean
 
+  @Input()
+  public enableInfo: boolean
+
+  protected get perks() {
+    if (!this.enablePerks) {
+      return EMPTY
+    }
+    return combineLatest({
+      perks: this.service.perks$,
+      buckets: this.service.perkBuckets$
+    }).pipe(map((it) => {
+      if (!it?.buckets?.length && !it?.perks?.length) {
+        return null
+      }
+      return it
+    }))
+  }
+
+  protected get description() {
+    return this.enableDescription ? this.service.description$ : EMPTY
+  }
+
+  protected get salvageEvent() {
+    return this.enableInfo ? this.service.salvageEvent$ : EMPTY
+  }
+
   public droppedBy = defer(() => this.service.droppedByVitals$)
 
   public constructor(private cdRef: ChangeDetectorRef, private service: ItemDetailService) {
-
+    //
   }
 
   public ngOnChanges(): void {

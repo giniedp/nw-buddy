@@ -1,6 +1,6 @@
-<div class="flex flex-row text-blue-500" *ngFor="let perk of perks | async; let isLast = last">
+<div class="flex flex-row text-sky-600" *ngFor="let perk of perks; let isLast = last">
   <a class="flex-none">
-    <img [nwImage]="perk.IconPath" class="w-8">
+    <img [nwImage]="perk.IconPath" class="w-8" />
   </a>
   <div class="ml-2">
     <ng-container *ngIf="perk.Affix && perk.PerkType === 'Inherent'">
@@ -14,14 +14,14 @@
     </ng-container>
   </div>
 </div>
-<div class="flex flex-row text-blue-500" *ngFor="let bucket of buckets | async">
+<div class="flex flex-row text-sky-600" *ngFor="let bucket of buckets">
   <picture class="w-8 h-8 relative flex items-center justify-center">
-    <img [nwImage]="'assets/icons/crafting_perkbackground.png'" class="absolute top-0 left-0 right-0 bottom-0 block object-cover scale-110">
+    <img
+      [nwImage]="'assets/icons/crafting_perkbackground.png'"
+      class="absolute top-0 left-0 right-0 bottom-0 block object-cover scale-110"
+    />
     <span class="relative text-2xs text-white">{{ bucket.PerkChance | percent }}</span>
   </picture>
-  <span>
-  </span>
-  <div class="ml-2">
-    Random Perk
-  </div>
+  <span> </span>
+  <div class="ml-2">Random Perk</div>
 </div>

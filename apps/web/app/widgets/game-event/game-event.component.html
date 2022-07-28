@@ -1,0 +1,21 @@
+<ng-container *ngIf="event | async; let item">
+  <div *ngIf="item.AzothReward">
+    Azoth {{ item.AzothReward }}
+  </div>
+  <div *ngIf="item.AzothSalt">
+    Azoth salt {{ item.AzothSalt }}
+  </div>
+  <div *ngIf="item.CurrencyReward">
+    Coins {{ item.CurrencyReward }}
+  </div>
+  <div *ngIf="item.FactionInfluenceAmount">
+    Faction Influence {{ item.FactionInfluenceAmount }}
+  </div>
+  <div *ngIf="item.FactionReputation">
+    Faction reputation {{ item.FactionReputation }}
+  </div>
+  <div *ngIf="item.FactionTokens">
+    Faction tokens {{ item.FactionTokens }}
+  </div>
+  <!-- <pre><code>{{ item | json }}</code></pre> -->
+</ng-container>

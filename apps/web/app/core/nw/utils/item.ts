@@ -8,6 +8,14 @@ export function isHousingItem(item: ItemDefinitionMaster | Housingitems): item i
   return item && 'HouseItemID' in item
 }
 
+export function isItemArmor(item: ItemDefinitionMaster) {
+  return item?.ItemType === 'Armor'
+}
+
+export function isItemWeapon(item: ItemDefinitionMaster) {
+  return item?.ItemType === 'Weapon'
+}
+
 export function getItemRarity(item: ItemDefinitionMaster | Housingitems) {
   if (item.ForceRarity) {
     return item.ForceRarity

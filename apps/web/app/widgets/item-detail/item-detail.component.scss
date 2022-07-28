@@ -2,4 +2,8 @@
 
 :host {
   display: block;
+
+  nwb-item-detail-header + .hr {
+    display: none
+  }
 }
