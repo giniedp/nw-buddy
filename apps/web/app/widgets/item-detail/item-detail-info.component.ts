@@ -27,7 +27,11 @@ export class ItemDetailInfoComponent {
   }
 
   protected get canReplaceGem() {
-    return isMasterItem(this.item) && this.item.CanReplaceGem
+    return isMasterItem(this.item) && this.item.CanHavePerks && this.item.CanReplaceGem
+  }
+
+  protected get cantReplaceGem() {
+    return isMasterItem(this.item) && this.item.CanHavePerks && !this.item.CanReplaceGem
   }
 
   protected get requiredLevel() {
