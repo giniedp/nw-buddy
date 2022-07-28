@@ -51,6 +51,18 @@ export class SelectboxFilter<T> implements IFilterComp {
     this.extractOptions()
     m.mount(this.el, {
       view: () => {
+        const options = this.options
+          .filter((it) => {
+            return !this.searchQuery || it.label.toLocaleLowerCase().includes(this.searchQuery.toLocaleLowerCase())
+          })
+          .map((option) => {
+            return {
+              icon: option.icon,
+              label: option.label,
+              active: this.state.get(option.value),
+              click: () => this.toggleFilter(option.value),
+            }
+          })
         return m.fragment({}, [
           this.showSearch &&
             m(SearchControl, {
@@ -67,19 +79,13 @@ export class SelectboxFilter<T> implements IFilterComp {
                 this.onFilterChanged()
               },
             }),
+            m(SelectControls, {
+              overflow: false,
+              options: options.filter((it) => it.active),
+            }),
           m(SelectControls, {
-            options: this.options
-              .filter((it) => {
-                return !this.searchQuery || it.label.toLocaleLowerCase().includes(this.searchQuery.toLocaleLowerCase())
-              })
-              .map((option) => {
-                return {
-                  icon: option.icon,
-                  label: option.label,
-                  active: this.state.get(option.value),
-                  click: () => this.toggleFilter(option.value),
-                }
-              }),
+            overflow: true,
+            options: options.filter((it) => !it.active),
           }),
         ])
       },
@@ -251,12 +257,13 @@ const SearchControl: m.Component<SearchControlAttrs> = {
 }
 
 interface SelectControlAttrs {
+  overflow: boolean
   options: Array<{ label: string; icon?: string, active: boolean; click: Function }>
 }
 const SelectControls: m.Component<SelectControlAttrs, any> = {
-  view: ({ attrs: { options } }) => [
+  view: ({ attrs: { overflow, options } }) => [
     m(
-      'ul.menu.menu-compact.rounded-md.overflow-y-auto.flex-1',
+      `ul.menu.menu-compact.rounded-md.flex-1${ overflow ? '.overflow-y-auto' : ''}`,
       options?.map((option) => {
         return m('li', [
           m(

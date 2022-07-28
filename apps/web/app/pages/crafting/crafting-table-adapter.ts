@@ -1,18 +1,19 @@
 import { Injectable } from '@angular/core'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { combineLatest, defer, map, Observable, shareReplay, tap } from 'rxjs'
-import { IconComponent, NwService } from '~/core/nw'
-import { SelectboxFilter, mithrilCell, RangeFilter } from '~/ui/ag-grid'
-import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
-import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
+import { combineLatest, defer, map, Observable } from 'rxjs'
+import { TranslateService } from '~/core/i18n'
+import { IconComponent, nwdbLinkUrl, NwService } from '~/core/nw'
+import { getIngretientsFromRecipe, getItemId, getItemIdFromRecipe, getItemRarity } from '~/core/nw/utils'
 import { humanize, shareReplayRefCount } from '~/core/utils'
-import { getItemIdFromRecipe, getItemRarity } from '~/core/nw/utils'
-import { LocaleService, TranslateService } from '~/core/i18n'
+import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
+import { DataTableAdapter } from '~/ui/data-table'
+import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
 
 export type RecipeWithItem = Crafting & {
   $item: ItemDefinitionMaster | Housingitems
+  $ingredients: Array<ItemDefinitionMaster | Housingitems>
 }
 
 @Injectable()
@@ -59,6 +60,45 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
             return this.i18n.get(recipe.$item?.Name)
           },
           getQuickFilterText: ({ value }) => value,
+        },
+        {
+          width: 175,
+          sortable: false,
+          headerName: 'Ingredients',
+          field: this.fieldName('$ingredients'),
+          cellRenderer: this.mithrilCell({
+            view: ({ attrs: { data } }) => {
+              const items = data.$ingredients || []
+              return m('div.flex.flex-row.items-center.h-full', {}, [
+                m.fragment(
+                  {},
+                  items.map((item) =>
+                    m('a.block.w-7.h-7', { target: '_blank', href: nwdbLinkUrl('item', getItemId(item)) }, [
+                      m(IconComponent, {
+                        src: item.IconPath,
+                        class: `w-7 h-7 nw-icon`,
+                      }),
+                    ])
+                  )
+                ),
+              ])
+            },
+          }),
+          filter: SelectboxFilter,
+          filterParams: SelectboxFilter.params({
+            showSearch: true,
+            showCondition: true,
+            optionsGetter: (node) => {
+              const items = (node.data as RecipeWithItem).$ingredients || []
+              return items.map((item) => {
+                return {
+                  label: this.i18n.get(item.Name),
+                  value: item,
+                  icon: item.IconPath,
+                }
+              })
+            },
+          }),
         },
         {
           headerName: 'User Data',
@@ -149,8 +189,8 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
           valueFormatter: ({ value }) => humanize(value),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
-            showSearch: true
-          })
+            showSearch: true,
+          }),
         },
         {
           width: 150,
@@ -158,8 +198,8 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
           filter: SelectboxFilter,
           valueFormatter: ({ value }) => humanize(value),
           filterParams: SelectboxFilter.params({
-            showSearch: true
-          })
+            showSearch: true,
+          }),
         },
         {
           width: 120,
@@ -198,6 +238,9 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
           return {
             ...it,
             $item: items.get(itemId) || housing.get(itemId),
+            $ingredients: getIngretientsFromRecipe(it)
+              .map((ing) => items.get(ing.ingredient) || housing.get(ing.ingredient))
+              .filter((it) => !!it),
           }
         })
       })
