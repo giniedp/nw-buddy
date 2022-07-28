@@ -5,35 +5,52 @@ import { DatatableSource } from './loadDatatables'
 
 export async function generateTypes(output: string, tables: DatatableSource[]) {
 
-  const mapSamples = new Map<string, any[]>()
-  const mapFiles = new Map<string, any[]>()
+  const samples = new Map<string, any[]>()
+  const files = new Map<string, any[]>()
   for (const { file, relative, data } of tables) {
     const type = pathToTypeName(file)
-    if (!mapSamples.has(type)) {
-      mapSamples.set(type, [])
-      mapFiles.set(type, [])
+    if (!samples.has(type)) {
+      samples.set(type, [])
+      files.set(type, [])
     }
-    mapSamples.get(type).push(data)
-    mapFiles.get(type).push(relative)
+    samples.get(type).push(data)
+    files.get(type).push(relative)
   }
 
   const typesCode: string[] = []
 
-  await processArrayWithProgress(Array.from(mapSamples.entries()), async ([type, candidates]) => {
-    const samples: string[] = candidates.flat(1).map((it) => JSON.stringify(it))
+  await processArrayWithProgress(Array.from(samples.entries()), async ([type, candidates]) => {
+    const enums = enumFieldsForType(type)
+    const samples: string[] = candidates.flat(1).map((it) => {
+      it = JSON.parse(JSON.stringify(it))
+      Object.keys(it).forEach((key) => {
+        if (enums.includes(key)) {
+          return
+        }
+        // map non enum strings to emtpy strings, so that enums are not generated
+        if (typeof it[key] === 'string') {
+          it[key] = ''
+        }
+        // map arrays of strings to `['']` so that enums are not generated
+        if (Array.isArray(it[key])) {
+          it[key] = ['']
+        }
+      })
+      return JSON.stringify(it)
+    })
     const result = await tsFromJson(type, samples)
     const tsCode = result.lines.join('\n').trim()
     if (tsCode) {
       typesCode.push(tsCode)
     } else {
-      mapFiles.delete(type)
+      files.delete(type)
     }
   })
 
   await fs.promises.writeFile(path.join(output, 'types.ts'), Buffer.from(typesCode.join('\n'), 'utf-8'))
   await fs.promises.writeFile(
     path.join(output, 'datatables.ts'),
-    Buffer.from(generateDataFunctions(mapFiles), 'utf-8')
+    Buffer.from(generateDataFunctions(files), 'utf-8')
   )
 }
 
@@ -121,4 +138,12 @@ function pathToTypeName(filePath: string) {
       return it[0].toUpperCase() + it.substring(1)
     })
     .join('')
+}
+
+const ENUMS = {
+  // Vitals: ['Family', 'CreatureType'],
+  // ItemDefinitionMaster: ['ItemType']
+}
+function enumFieldsForType(type: string): string[] {
+  return ENUMS[type] || []
 }
