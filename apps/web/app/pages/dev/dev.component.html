@@ -1,0 +1,16 @@
+<div class="w-56 flex flex-col gap-4">
+  <ul class="menu bg-base-100 rounded-md">
+    <li [routerLinkActive]="'bordered'" >
+      <a [routerLink]="'loottables'">Loottables</a>
+    </li>
+    <li [routerLinkActive]="'bordered'" >
+      <a [routerLink]="'lootbuckets'">Lootbuckets</a>
+    </li>
+    <li [routerLinkActive]="'bordered'" >
+      <a [routerLink]="'expressions'">Expressions</a>
+    </li>
+  </ul>
+</div>
+<div class="overflow-auto">
+  <router-outlet></router-outlet>
+</div>

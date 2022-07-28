@@ -19,7 +19,7 @@ const routes: Routes = [
   { path: 'progression', loadChildren: () => import('./pages/progression').then(m => m.ProgressionModule) },
   { path: 'vitals', loadChildren: () => import('./pages/vitals/vitals.module').then(m => m.VitalsModule) },
   { path: 'about', loadChildren: () => import('./pages/about/about.module').then(m => m.AboutModule) },
-
+  { path: 'dev', loadChildren: () => import('./pages/dev/dev.module').then(m => m.DevModule) },
   { path: '**', loadChildren: () => import('./pages/not-found').then((m) => m.NotFoundModule) },
 ]
 
