@@ -1,8 +1,8 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { uniq } from 'lodash'
 import { combineLatest, defer, map } from 'rxjs'
-import { NwService } from '~/core/nw'
+import { NwDbService } from '~/core/nw'
 import { getVitalDungeon } from '~/core/nw/utils'
 import { observeRouteParam } from '~/core/utils'
 
@@ -20,7 +20,7 @@ export class VitalComponent {
   public vital$ = defer(() =>
     combineLatest({
       id: this.vitalId,
-      vitals: this.nw.db.vitalsMap,
+      vitals: this.db.vitalsMap,
     })
   ).pipe(map(({ id, vitals }) => vitals.get(id)))
 
@@ -29,24 +29,27 @@ export class VitalComponent {
 
   public lootTags$ = defer(() => combineLatest({
     vital: this.vital$,
-    dungeons: this.nw.db.gameModes,
-    difficulties: this.nw.db.mutatorDifficulties,
-    territories: this.nw.db.territories
+    dungeons: this.db.gameModes,
+    difficulties: this.db.mutatorDifficulties,
+    territories: this.db.territories
   }))
   .pipe(map(({ vital, dungeons, difficulties, territories }) => {
-
     const dungeon = getVitalDungeon(vital, dungeons)
-    return [
-      // base
+    const result: string[] = [
       ...(vital.LootTags || []),
-      // include dungeons and mutations and mutation difficulties
-      ...(dungeon?.LootTags || []),
-      ...(dungeon?.MutLootTagsOverride || []),
-      ...uniq(difficulties.map((it) => it.InjectedLootTags).flat(1)),
-      // include all territories
-      ...territories.map((it) => it.LootTags?.split(',') || []).flat(1)
+      ...territories.map((it) => it.LootTags || []).flat(1)
     ]
+    if (dungeon) {
+      result.push(
+        ...(dungeon.LootTags || []),
+        ...(dungeon.MutLootTagsOverride || []),
+        ...difficulties.map((it) => it.InjectedLootTags).flat(1)
+      )
+    }
+    return uniq(result)
   }))
 
-  public constructor(private route: ActivatedRoute, private nw: NwService) {}
+  public constructor(private route: ActivatedRoute, private db: NwDbService) {
+    //
+  }
 }

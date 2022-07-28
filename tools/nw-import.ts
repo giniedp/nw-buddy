@@ -93,6 +93,15 @@ program
           ],
         },
         {
+          file: /javelindata_territorydefinitions\.json/,
+          rules: [
+            splitToArrayRule({
+              properties: ['LootTags'],
+              separator: ',',
+            }),
+          ],
+        },
+        {
           file: /javelindata_mutationdifficulty\.json/,
           rules: [
             splitToArrayRule({

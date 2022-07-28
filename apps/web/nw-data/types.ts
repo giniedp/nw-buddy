@@ -2681,7 +2681,7 @@ export interface Territorydefinitions {
     FactionControlTerritoryBuffs?:    string;
     IsPOI:                            boolean;
     IsTerritory:                      boolean;
-    LootTags?:                        string;
+    LootTags?:                        string[];
     MaxStructureLimit:                number;
     MaximumLevel:                     number;
     NameLocalizationKey?:             string;
