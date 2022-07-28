@@ -6,7 +6,7 @@ import type { WindowState } from './window-state'
 const filePath = path.join(app.getPath('userData'), 'config.json')
 
 export interface Config {
-  window?: WindowState
+  window?: Partial<WindowState>
 }
 
 export function loadConfig(): Config {

@@ -13,10 +13,10 @@ export interface WindowState {
 export function windowState(options: {
   defaultWidth: number
   defaultHeight: number
-  save: (state: WindowState) => void
-  load: () => WindowState
+  save: (state: Partial<WindowState>) => void
+  load: () => Partial<WindowState>
 }) {
-  let state: WindowState
+  let state: Partial<WindowState> = {}
   let winRef: BrowserWindow
   let stateChangeTimer
   const eventHandlingDelay = 100
@@ -56,8 +56,9 @@ export function windowState(options: {
     }
   }
 
-  function windowWithinBounds(bounds) {
+  function windowWithinBounds(bounds): boolean {
     return (
+      !!state && !!bounds &&
       state.x >= bounds.x &&
       state.y >= bounds.y &&
       state.x + state.width <= bounds.x + bounds.width &&
@@ -119,6 +120,7 @@ export function windowState(options: {
     try {
       options.save(state)
     } catch (err) {
+      console.log(err)
       // Don't care
     }
   }
@@ -140,10 +142,10 @@ export function windowState(options: {
   }
 
   function manage(win: BrowserWindow) {
-    if (config.maximize && state.isMaximized) {
+    if (config.maximize && state?.isMaximized) {
       win.maximize()
     }
-    if (config.fullScreen && state.isFullScreen) {
+    if (config.fullScreen && state?.isFullScreen) {
       win.setFullScreen(true)
     }
     win.on('resize', stateChangeHandler)
@@ -175,9 +177,9 @@ export function windowState(options: {
 
   // Load previous state
   try {
-    state = options.load()
+    state = (options.load() || {}) as any
   } catch (err) {
-    // Don't care
+    //
   }
 
   // Check state validity
@@ -197,25 +199,25 @@ export function windowState(options: {
 
   return {
     get x() {
-      return state.x
+      return state?.x
     },
     get y() {
-      return state.y
+      return state?.y
     },
     get width() {
-      return state.width
+      return state?.width
     },
     get height() {
-      return state.height
+      return state?.height
     },
     get displayBounds() {
-      return state.displayBounds
+      return state?.displayBounds
     },
     get isMaximized() {
-      return state.isMaximized
+      return state?.isMaximized
     },
     get isFullScreen() {
-      return state.isFullScreen
+      return state?.isFullScreen
     },
     saveState,
     unmanage,
