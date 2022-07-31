@@ -10,103 +10,111 @@ export interface WindowState {
   displayBounds: Electron.Rectangle
 }
 
+function isWithinBounds(bounds: Electron.Rectangle, state: Partial<Electron.Rectangle>): boolean {
+  return (
+    !!state &&
+    !!bounds &&
+    state.x >= bounds.x &&
+    state.y >= bounds.y &&
+    state.x + state.width <= bounds.x + bounds.width &&
+    state.y + state.height <= bounds.y + bounds.height
+  )
+}
+
+function isRectangle(bounds: Partial<Electron.Rectangle>): bounds is Electron.Rectangle {
+  return (
+    !!bounds &&
+    Number.isInteger(bounds.x) &&
+    Number.isInteger(bounds.y) &&
+    Number.isInteger(bounds.width) &&
+    bounds.width > 0 &&
+    Number.isInteger(bounds.height) &&
+    bounds.height > 0
+  )
+}
+
+function isStateValid(state: Partial<WindowState>) {
+  if (!state) {
+
+    return false
+  }
+  if (!isRectangle(state.displayBounds)) {
+
+    return false
+  }
+  if (!isRectangle(state)) {
+    return false
+  }
+  const display = screen.getAllDisplays().find((it) => isWithinBounds(it.bounds, state))
+  return !!display
+}
+
+function createDefaultState(bounds: Partial<Electron.Rectangle>): WindowState {
+  return {
+    width: 800,
+    height: 600,
+    x: 0,
+    y: 0,
+    displayBounds: screen.getPrimaryDisplay().bounds,
+    ...(bounds || {}),
+  }
+}
+
 export function windowState(options: {
-  defaultWidth: number
-  defaultHeight: number
+  defaultWidth?: number
+  defaultHeight?: number
   save: (state: Partial<WindowState>) => void
   load: () => Partial<WindowState>
 }) {
   let state: Partial<WindowState> = {}
   let winRef: BrowserWindow
-  let stateChangeTimer
+  let stateChangeTimer: any
   const eventHandlingDelay = 100
   const config = {
     maximize: true,
     fullScreen: true,
-    defaultWidth: options.defaultWidth,
-    defaultHeight: options.defaultHeight,
+    defaultWidth: options.defaultWidth || 800,
+    defaultHeight: options.defaultHeight || 600,
   }
 
-  function isNormal(win) {
-    return !win.isMaximized() && !win.isMinimized() && !win.isFullScreen()
+  // Load previous state
+  try {
+    state = (options.load() || {}) as any
+  } catch (err) {
+    console.error(err)
+    state = {}
   }
 
-  function hasBounds() {
-    return (
-      state &&
-      Number.isInteger(state.x) &&
-      Number.isInteger(state.y) &&
-      Number.isInteger(state.width) &&
-      state.width > 0 &&
-      Number.isInteger(state.height) &&
-      state.height > 0
-    )
+  // Set state fallback values
+  state = {
+    width: config.defaultWidth || 800,
+    height: config.defaultHeight || 600,
+    ...(state || {}),
   }
 
-  function resetStateToDefault() {
-    const displayBounds = screen.getPrimaryDisplay().bounds
-
-    // Reset state to default values on the primary display
-    state = {
-      width: config.defaultWidth || 800,
-      height: config.defaultHeight || 600,
-      x: 0,
-      y: 0,
-      displayBounds,
-    }
-  }
-
-  function windowWithinBounds(bounds): boolean {
-    return (
-      !!state && !!bounds &&
-      state.x >= bounds.x &&
-      state.y >= bounds.y &&
-      state.x + state.width <= bounds.x + bounds.width &&
-      state.y + state.height <= bounds.y + bounds.height
-    )
-  }
-
-  function ensureWindowVisibleOnSomeDisplay() {
-    const visible = screen.getAllDisplays().some((display) => {
-      return windowWithinBounds(display.bounds)
+  function resetState() {
+    state = createDefaultState({
+      width: config.defaultWidth,
+      height: config.defaultHeight,
     })
-
-    if (!visible) {
-      // Window is partially or fully not visible now.
-      // Reset it to safe defaults.
-      return resetStateToDefault()
-    }
   }
 
-  function validateState() {
-    const isValid = state && (hasBounds() || state.isMaximized || state.isFullScreen)
-    if (!isValid) {
-      state = {}
-      return
-    }
-
-    if (hasBounds() && state.displayBounds) {
-      ensureWindowVisibleOnSomeDisplay()
-    }
-  }
-
-  function updateState(win?: BrowserWindow) {
-    win = win || winRef
+  function updateState(win: BrowserWindow = winRef) {
     if (!win) {
       return
     }
     // Don't throw an error when window was closed
     try {
-      const winBounds = win.getBounds()
-      if (isNormal(win)) {
-        state.x = winBounds.x
-        state.y = winBounds.y
-        state.width = winBounds.width
-        state.height = winBounds.height
+      const bounds = win.getBounds()
+      if (!win.isMaximized() && !win.isMinimized() && !win.isFullScreen()) {
+        state.x = bounds.x
+        state.y = bounds.y
+        state.width = bounds.width
+        state.height = bounds.height
       }
       state.isMaximized = win.isMaximized()
       state.isFullScreen = win.isFullScreen()
-      state.displayBounds = screen.getDisplayMatching(winBounds).bounds
+      state.displayBounds = screen.getDisplayMatching(bounds).bounds
     } catch (err) {}
   }
 
@@ -121,7 +129,6 @@ export function windowState(options: {
       options.save(state)
     } catch (err) {
       console.log(err)
-      // Don't care
     }
   }
 
@@ -142,10 +149,19 @@ export function windowState(options: {
   }
 
   function manage(win: BrowserWindow) {
-    if (config.maximize && state?.isMaximized) {
+    if (!isStateValid(state)) {
+      resetState()
+      win.setBounds({
+        x: state.x,
+        y: state.y,
+        width: state.width,
+        height: state.height
+      }, true)
+    }
+    if (config.maximize && state.isMaximized) {
       win.maximize()
     }
-    if (config.fullScreen && state?.isFullScreen) {
+    if (config.fullScreen && state.isFullScreen) {
       win.setFullScreen(true)
     }
     win.on('resize', stateChangeHandler)
@@ -175,53 +191,31 @@ export function windowState(options: {
     }
   }
 
-  // Load previous state
-  try {
-    state = (options.load() || {}) as any
-  } catch (err) {
-    state = {}
-  }
-
-  // Check state validity
-  app.whenReady().then(() => {
-    validateState()
-  })
-
-
-  // Set state fallback values
-  state = Object.assign(
-    {
-      width: config.defaultWidth || 800,
-      height: config.defaultHeight || 600,
-    },
-    state
-  )
-
   return {
     get x() {
-      return state?.x
+      return state.x
     },
     get y() {
-      return state?.y
+      return state.y
     },
     get width() {
-      return state?.width
+      return state.width
     },
     get height() {
-      return state?.height
+      return state.height
     },
     get displayBounds() {
-      return state?.displayBounds
+      return state.displayBounds
     },
     get isMaximized() {
-      return state?.isMaximized
+      return state.isMaximized
     },
     get isFullScreen() {
-      return state?.isFullScreen
+      return state.isFullScreen
     },
     saveState,
     unmanage,
     manage,
-    resetStateToDefault,
+    resetStateToDefault: resetState,
   }
 }
