@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { APP_CONFIG } from 'apps/web/environments/environment';
+import { Component, OnInit } from '@angular/core'
+import { APP_CONFIG } from 'apps/web/environments/environment'
 
 @Component({
   selector: 'nwb-about',
@@ -13,7 +13,8 @@ export class AboutComponent implements OnInit {
   }
 
   public get gameVersion() {
-    return APP_CONFIG.version.split('-')[0]
+    return '1.6.2'
+    // return APP_CONFIG.version.split('-')[0]
   }
 
   constructor() { }
