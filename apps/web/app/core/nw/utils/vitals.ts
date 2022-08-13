@@ -99,6 +99,7 @@ export type DungeonTerritory =
   | 'Reekwater'
   | 'Ebonscale'
   | 'ShatterMtn'
+  | 'Cutlass'
 
 export function getVitalDungeonTerritory(vitalId: string): DungeonTerritory {
   return vitalId?.match(/_DG_([a-zA-Z]+)_/)?.[1] as DungeonTerritory
@@ -119,6 +120,8 @@ export function getVitalDungeonTag(vitalId: string) {
       return 'Ebonscale00'
     case 'ShatterMtn':
       return 'ShatterMtn00'
+    case 'Cutlass':
+      return 'CutlassKeys00'
     default:
       return null
   }
@@ -129,6 +132,7 @@ export function getVitalDungeonId(vitalId: string): string {
 }
 const MAP_DUNGEON_TO_VITALS_LOOT_TAGS: Record<string, string[]> = {
   DungeonEbonscale00: ['Dynasty', 'IsabellaDynasty'],
+  DungeonCutlassKeys00: ['DryadSiren']
 }
 export function getVitalDungeon(vital: Vitals, dungeons: Gamemodes[]) {
   const vitalDungeonId = getVitalDungeonId(vital.VitalsID)
