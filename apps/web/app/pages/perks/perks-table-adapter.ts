@@ -60,9 +60,6 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
             const prefix = data.AppliedPrefix && this.i18n.get(data.AppliedPrefix)
             return [name || '', suffix || '', prefix || ''].join(' ')
           },
-          getQuickFilterText: ({ value }) => {
-            return [value.name || '', value.suffix || '', value.prefix || ''].join(' ')
-          },
           cellRenderer: this.mithrilCell({
             view: ({ attrs: { value }}) => {
               return m('div.flex.flex-col.text-sm', [
