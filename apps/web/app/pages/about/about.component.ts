@@ -13,7 +13,7 @@ export class AboutComponent implements OnInit {
   }
 
   public get gameVersion() {
-    return '1.6.2'
+    return '1.6.3'
     // return APP_CONFIG.version.split('-')[0]
   }
 
