@@ -14,7 +14,7 @@ export interface SelectboxFilterParams {
   optionsGetter?: (node: RowNode) => SelectFilterOption[]
 }
 
-export class SelectboxFilter<T> implements IFilterComp {
+export class SelectboxFilter implements IFilterComp {
   public static params(params: SelectboxFilterParams): SelectboxFilterParams {
     return params
   }
@@ -51,21 +51,22 @@ export class SelectboxFilter<T> implements IFilterComp {
     this.extractOptions()
     m.mount(this.el, {
       view: () => {
-        const options = this.options
-          .filter((it) => {
-            return !this.searchQuery || it.label.toLocaleLowerCase().includes(this.searchQuery.toLocaleLowerCase())
-          })
-          .map((option) => {
-            return {
-              icon: option.icon,
-              label: option.label,
-              active: this.state.get(option.value),
-              click: () => this.toggleFilter(option.value),
-            }
-          })
-        const splitOptions = options.length > 15
-        const list1 = splitOptions ? options.filter((it) => it.active) : null
-        const list2 = splitOptions ? options.filter((it) => !it.active) : options
+        const allOptions = this.options.map((option) => {
+          return {
+            icon: option.icon,
+            label: option.label,
+            active: this.state.get(option.value),
+            click: () => this.toggleFilter(option.value),
+          }
+        })
+        const activeOptions = allOptions.filter((it) => it.active)
+        const filteredOptions = allOptions.filter((it) => {
+          return !this.searchQuery || it.label.toLocaleLowerCase().includes(this.searchQuery.toLocaleLowerCase())
+        })
+        const inactiveOptions = filteredOptions.filter((it) => !it.active)
+        const splitOptions = allOptions.length > 15
+        const list1 = splitOptions ? activeOptions : null
+        const list2 = splitOptions ? inactiveOptions : filteredOptions
         return m.fragment({}, [
           this.showSearch &&
             m(SearchControl, {
@@ -82,11 +83,19 @@ export class SelectboxFilter<T> implements IFilterComp {
                 this.onFilterChanged()
               },
             }),
-          list1 &&
+          !!list1?.length && [
             m(SelectControls, {
               overflow: false,
-              options: options.filter((it) => it.active),
+              options: list1,
             }),
+            m(
+              'button.btn.btn-outline.btn-xs',
+              {
+                onclick: () => this.clearFilter(),
+              },
+              'clear'
+            )
+          ],
           m(SelectControls, {
             overflow: true,
             options: list2,
@@ -142,6 +151,11 @@ export class SelectboxFilter<T> implements IFilterComp {
 
   private toggleFilter(value: any) {
     this.state.set(value, !this.state.get(value))
+    this.onFilterChanged()
+  }
+
+  private clearFilter() {
+    this.state.clear()
     this.onFilterChanged()
   }
 
