@@ -21,6 +21,7 @@ export async function importLocales({
   }
   const locales = await loadLocales(input, keys)
   await writeLocales(output, locales)
+  return locales
 }
 
 function extractKeys(tables: DatatableSource[]) {

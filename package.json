@@ -25,10 +25,9 @@
     "test": "ng test --watch=false",
     "test:watch": "ng test",
     "lint": "ng lint",
-    "import": "ts-node ./tools/nw-import.ts ./tmp/nw-data/live ./apps/web/nw-data",
-    "import:ptr": "ts-node ./tools/nw-import.ts ./tmp/nw-data/ptr ./apps/web/nw-data",
-    "extract": "yarn nw-extract \"C:\\Program Files (x86)\\Steam\\steamapps\\common\\New World\" -o ./tmp/nw-data/live -f \"datasheet:json,locale:json,icon:png,image:png\"",
-    "extract:ptr": "yarn nw-extract \"G:\\Steam\\steamapps\\common\\New World Public Test Realm\" -o ./tmp/nw-data/ptr -f \"datasheet:json,locale:json,icon:png,image:png\""
+    "import": "ts-node ./tools/nw-import.ts",
+    "extract": "ts-node ./tools/nw-extract.ts",
+    "winDebug": "@powershell -Command $env:DEBUG='nw-extract';"
   },
   "dependencies": {
     "@angular/common": "14.1.2",
@@ -91,7 +90,7 @@
     "karma-jasmine-html-reporter": "2.0.0",
     "node-polyfill-webpack-plugin": "2.0.1",
     "npm-run-all": "4.1.5",
-    "nw-extract": "1.0.3",
+    "nw-extract": "1.1.0",
     "postcss": "8.4.16",
     "quicktype": "15.0.261",
     "quicktype-core": "6.0.71",

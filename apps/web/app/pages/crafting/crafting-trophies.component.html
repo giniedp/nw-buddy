@@ -1,0 +1,15 @@
+<div class="grid grid-cols-3 gap-1">
+  <ng-container *ngFor="let row of rows | async">
+    <div *ngFor="let item of row" class="bg-base-300 flex flex-col">
+      <nwb-item-detail [itemId]="item.$itemId" [enableDescription]="true" [enablePerks]="true"></nwb-item-detail>
+      <div>
+        <div *ngFor="let ingr of item.$ingredients" class="flex flex-row gap-1 m-1 justify-start items-center">
+          <picture [nwIcon]="ingr.item" class="w-8 h-8 nw-icon flex-none"></picture>
+          <span>{{ ingr.quantity }}</span>
+          <span>&times;</span>
+          <span [nwText]="ingr.item.Name"></span>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

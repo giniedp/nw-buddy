@@ -2,6 +2,7 @@ import {
   ChangeDetectionStrategy, ChangeDetectorRef, Component, TrackByFunction
 } from '@angular/core'
 import { defer, map } from 'rxjs'
+import { getItemIconPath } from '~/core/nw/utils'
 import { UmbralCalculatorService } from './umbral-calculator.service'
 import { ItemState, UpgradeStep } from './utils'
 
@@ -16,7 +17,7 @@ export class UmbralCalculatorStepsComponent {
     return i
   }
 
-  public shardIcon = defer(() => this.service.shardItem).pipe(map((it) => it.IconPath))
+  public shardIcon = defer(() => this.service.shardItem).pipe(map((it) => getItemIconPath(it)))
   public data$ = defer(() => this.service.steps)
 
   public constructor(private service: UmbralCalculatorService, private cdRef: ChangeDetectorRef) {

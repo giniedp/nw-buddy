@@ -20,4 +20,5 @@ export function getAffixStats(affix: Affixstats, scale: number) {
         value: value.includes('-') ? value : Math.round(Number(value) * Math.floor(scale))
       }
     })
+    .filter((it) => it.value)
 }

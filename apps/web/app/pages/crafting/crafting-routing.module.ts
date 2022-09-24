@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 import { CraftingDetailComponent } from './crafting-detail.component'
+import { CraftingRunesComponent } from './crafting-runes.component'
 import { CraftingTableComponent } from './crafting-table.component'
+import { CraftingTrophiesComponent } from './crafting-trophies.component'
 import { CraftingComponent } from './crafting.component'
 
 const routes: Routes = [
@@ -13,6 +15,14 @@ const routes: Routes = [
         path: '',
         pathMatch: 'full',
         redirectTo: 'table',
+      },
+      {
+        path: 'runes',
+        component: CraftingRunesComponent
+      },
+      {
+        path: 'trophies',
+        component: CraftingTrophiesComponent
       },
       {
         path: 'table',

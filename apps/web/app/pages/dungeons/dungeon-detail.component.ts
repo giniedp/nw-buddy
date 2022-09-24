@@ -1,21 +1,20 @@
 import {
-  Component,
-  OnInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
+  Component,
+  OnInit,
   TemplateRef,
-  ViewChild,
   TrackByFunction,
+  ViewChild,
 } from '@angular/core'
-import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser'
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
 import { ActivatedRoute } from '@angular/router'
-import { Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty, Vitals } from '@nw-data/types'
-import { pick } from 'lodash'
-import { combineLatest, defer, map, Observable, of, switchMap, takeUntil, tap } from 'rxjs'
+import { Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty } from '@nw-data/types'
+import { combineLatest, defer, map, of, switchMap, takeUntil } from 'rxjs'
 import { NwService } from '~/core/nw'
-import { getItemId, getItemRarity } from '~/core/nw/utils'
+import { getItemIconPath, getItemId, getItemRarity } from '~/core/nw/utils'
 import { DifficultyRank } from '~/core/preferences'
-import { DestroyService, observeQueryParam, observeRouteParam, shareReplayRefCount } from '~/core/utils'
+import { DestroyService, observeRouteParam, shareReplayRefCount } from '~/core/utils'
 import { DungeonsService } from './dungeons.service'
 
 const DIFFICULTY_TIER_NAME = {
@@ -117,29 +116,35 @@ export class DungeonDetailComponent implements OnInit {
       if (!difficulty) {
         return []
       }
+
       return [
         { eventId: difficulty.CompletionEvent1, rankId: 'bronze' as DifficultyRank },
         { eventId: difficulty.CompletionEvent2, rankId: 'silver' as DifficultyRank },
         { eventId: difficulty.CompletionEvent3, rankId: 'gold' as DifficultyRank },
-      ].map(({ eventId, rankId }, i) => {
-        const event = events.get(eventId)
-        const item = items.get(event.ItemReward as string)
-        return {
-          RankName: `ui_dungeon_mutator_${rankId}`,
-          ItemID: item.ItemID,
-          ItemName: item.Name,
-          IconPath: item.IconPath,
-          Quantity: event.ItemRewardQty,
-          Completed: rankId == rank,
-          toggle: () => {
-            if (rankId == rank) {
-              this.updateRank(null)
-            } else {
-              this.updateRank(rankId)
-            }
-          },
-        }
-      })
+      ]
+        .map(({ eventId, rankId }, i) => {
+          const event = events.get(eventId)
+          const item = items.get(event.ItemReward as string)
+          if (!item) {
+            return null
+          }
+          return {
+            RankName: `ui_dungeon_mutator_${rankId}`,
+            ItemID: item.ItemID,
+            ItemName: item.Name,
+            IconPath: getItemIconPath(item),
+            Quantity: event.ItemRewardQty,
+            Completed: rankId == rank,
+            toggle: () => {
+              if (rankId == rank) {
+                this.updateRank(null)
+              } else {
+                this.updateRank(rankId)
+              }
+            },
+          }
+        })
+        .filter((it) => !!it)
     })
   )
 
@@ -287,20 +292,22 @@ export class DungeonDetailComponent implements OnInit {
     if (!dungeon || !difficulty) {
       return of(null)
     }
-    return this.difficultiesRank$.pipe(map((ranks) => {
-      const index = ranks.findIndex((it) => it.difficulty.MutationDifficulty === difficulty.MutationDifficulty)
-      const rank = ranks[index]?.rank
-      if (rank) {
-        return this.rankIcon(rank)
-      }
-      if (ranks.some((it, i) => it.rank && i > index)) {
-        return 'assets/icons/icon_check_glowing.png' // unlocked and passed
-      }
-      if (ranks[index - 1]?.rank || index === 0) {
-        return null // unlocked
-      }
-      return `assets/icons/icon_lock_small.png`
-    }))
+    return this.difficultiesRank$.pipe(
+      map((ranks) => {
+        const index = ranks.findIndex((it) => it.difficulty.MutationDifficulty === difficulty.MutationDifficulty)
+        const rank = ranks[index]?.rank
+        if (rank) {
+          return this.rankIcon(rank)
+        }
+        if (ranks.some((it, i) => it.rank && i > index)) {
+          return 'assets/icons/icon_check_glowing.png' // unlocked and passed
+        }
+        if (ranks[index - 1]?.rank || index === 0) {
+          return null // unlocked
+        }
+        return `assets/icons/icon_lock_small.png`
+      })
+    )
   }
 
   public rankIcon(rank: DifficultyRank) {

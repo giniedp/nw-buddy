@@ -16,6 +16,7 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { TranslateService } from '~/core/i18n'
 import { IconComponent, nwdbLinkUrl, NwDbService, NwLootbucketService } from '~/core/nw'
 import {
+  getItemIconPath,
   getItemId,
   getItemRarity,
   getItemRarityName,
@@ -104,7 +105,7 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
 
   private tableId$ = new BehaviorSubject<string>(null)
   private tags$ = new BehaviorSubject<string[]>([])
-  private enemyLevel$ = new BehaviorSubject<number>(null)
+  private enemyLevel$ = new BehaviorSubject<number>(0)
   private playerLevel$ = new BehaviorSubject<number>(60)
 
   constructor(
@@ -145,7 +146,7 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
     return combineLatest(items.map((it) => this.fetchItems(it, context)))
       .pipe(map((it) => it.flat(1)))
       .pipe(map((it) => uniqBy(it, (el) => getItemId(el))))
-      .pipe(map((list) => sortBy(list, (it) => 5 - getItemRarity(it))))
+      .pipe(map((list) => sortBy(list, (it) => getItemRarity(it)).reverse()))
       .pipe(startWith([]))
   }
 
@@ -184,7 +185,7 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
             view: ({ attrs: { data } }) =>
               m('a', { target: '_blank', href: nwdbLinkUrl('item', getItemId(data)) }, [
                 m(IconComponent, {
-                  src: data.IconPath,
+                  src: getItemIconPath(data),
                   class: `w-9 h-9 nw-icon bg-rarity-${getItemRarity(data)}`,
                 }),
               ]),

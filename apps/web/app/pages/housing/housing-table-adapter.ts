@@ -7,7 +7,7 @@ import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
-import { getItemRarity, getItemTierAsRoman } from '~/core/nw/utils'
+import { getItemIconPath, getItemRarity, getItemTierAsRoman } from '~/core/nw/utils'
 import { TranslateService } from '~/core/i18n'
 import { humanize } from '~/core/utils'
 
@@ -35,7 +35,7 @@ export class HousingAdapterService extends DataTableAdapter<Housingitems> {
             view: ({ attrs: { data } }) =>
               m('a', { target: '_blank', href: nwdbLinkUrl('item', data.HouseItemID) }, [
                 m(IconComponent, {
-                  src: data.IconPath,
+                  src: getItemIconPath(data),
                   class: `w-9 h-9 nw-icon bg-rarity-${getItemRarity(data)}`,
                 }),
               ]),

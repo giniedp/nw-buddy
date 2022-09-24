@@ -6,8 +6,11 @@ import { shareReplayRefCount } from '../utils'
 import { NwDbService } from './nw-db.service'
 
 const ICON_MAP: Record<string, string> = {
+  Acid: '',
   Arcane: 'icon_tooltip_arcane_opaque',
+  Brimstone: '',
   Corruption: 'icon_tooltip_corruption_opaque',
+  Falling: 'icon_tooltip_falling_opaque',
   Fire: 'icon_tooltip_fire_opaque',
   Ice: 'icon_tooltip_ice_opaque',
   Lightning: 'icon_tooltip_lightning_opaque',
@@ -125,7 +128,9 @@ export class NwDamagetypeService {
     map((table) => groupBy(table, (it) => it.DamageType))
   )
 
-  public constructor(private db: NwDbService) {}
+  public constructor(private db: NwDbService) {
+    //
+  }
 
   public damageTypeIdIcon(type: string) {
     return `assets/icons/tooltip/${ICON_MAP[type] || 'icon_unknown'}.png`

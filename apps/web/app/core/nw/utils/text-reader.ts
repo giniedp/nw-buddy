@@ -75,6 +75,20 @@ export class TextReader {
   }
 
   /**
+   * Reads text until occurance of any given character
+   * @param anyOf
+   * @returns
+   */
+  public readUntil(anyOf: string) {
+    if (!this.canRead) {
+      return ''
+    }
+    const i = this.index
+    this.skipUntil(anyOf)
+    return this.text.substr(i, this.index - i).trim()
+  }
+
+  /**
    * Reads until next occurrence of a new line character
    *
    * @param cb - on optional callback that will receive a new reader for the new line
@@ -230,6 +244,7 @@ export class TextReader {
       this.index += 1
     }
   }
+
   /**
    * Reads the next token but throws an error if it does not match the given value
    *

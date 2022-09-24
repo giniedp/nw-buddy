@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core'
 import { Vitals } from '@nw-data/types'
-import { uniq } from 'lodash'
-import { combineLatest, defer, firstValueFrom, map } from 'rxjs'
+import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService } from './nw-db.service'
 import { LootBucketEntry, LootNode, LootTableEntry } from './utils'
 

@@ -11,7 +11,7 @@ import { findSets } from './utils'
 import m from 'mithril'
 import { ItemTrackerCell } from '~/widgets/item-tracker'
 import { shareReplayRefCount } from '~/core/utils'
-import { getItemRarity, getItemTierAsRoman } from '~/core/nw/utils'
+import { getItemIconPath, getItemRarity, getItemTierAsRoman } from '~/core/nw/utils'
 
 function fieldName(key: keyof Armorset) {
   return key
@@ -104,7 +104,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
                   const rarity = getItemRarity(item)
                   return m('a', { target: '_blank', href: nwdbLinkUrl('item', item.ItemID) }, [
                     m(IconComponent, {
-                      src: item.IconPath,
+                      src: getItemIconPath(item),
                       class: `w-9 h-9 nw-icon bg-rarity-${rarity}`,
                     }),
                   ])

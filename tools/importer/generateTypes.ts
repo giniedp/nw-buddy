@@ -142,8 +142,10 @@ function pathToTypeName(filePath: string) {
 
 const ENUMS = {
   // Vitals: ['Family', 'CreatureType'],
-  // ItemDefinitionMaster: ['ItemType']
+  // ItemDefinitionMaster: ['ItemType'],
+  // Damagetypes: ['TypeID', 'Category']
 }
 function enumFieldsForType(type: string): string[] {
+  // console.log('enumFieldsForType', type)
   return ENUMS[type] || []
 }

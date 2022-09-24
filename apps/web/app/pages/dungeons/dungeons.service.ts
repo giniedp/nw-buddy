@@ -87,7 +87,7 @@ export class DungeonsService {
       housing: this.nw.db.housingItemsMap,
     }).pipe(
       map(({ dungeon, items, housing }) => {
-        return dungeon.PossibleItemDropIds.map((id) => items.get(id) || housing.get(id)).filter((it) => !!it)
+        return (dungeon.PossibleItemDropIds || []).map((id) => items.get(id) || housing.get(id)).filter((it) => !!it)
       })
     )
   }
@@ -95,35 +95,51 @@ export class DungeonsService {
   public lootNormalMode(dungeon: Gamemodes): Observable<Array<ItemDefinitionMaster | Housingitems>> {
     return combineLatest({
       bossTags: this.dungeonBossesLootTags(dungeon),
-      lootTags: of(dungeon.LootTags),
-    })
-      .pipe(map(({ bossTags, lootTags }) => uniq([...bossTags, ...lootTags])))
-      .pipe(
-        switchMap((tags) => {
-          return this.lootBuckets
-            .all()
-            .filter((it) => this.lootBuckets.matchAnyTag(it, tags))
-            .filter((it) => !this.lootBuckets.matchAnyTag(it, MUTATION_LOOT_TAGS))
-            .items()
+      lootTags: of(dungeon.LootTags || []),
+    }).pipe(
+      switchMap(({ bossTags, lootTags }) => {
+        const tags = uniq([...bossTags, ...lootTags])
+        const ctx = this.lootBuckets.context({
+          tags: [...tags],
+          conditions: {
+            MinContLevel: dungeon.ContainerLevel,
+            EnemyLevel: dungeon.RequiredLevel,
+            Level: dungeon.RequiredLevel,
+          },
         })
-      )
+        return this.lootBuckets
+          .all()
+          .filter((it) => this.lootBuckets.matchAnyTag(it, tags))
+          .filter((it) => !this.lootBuckets.matchAnyTag(it, MUTATION_LOOT_TAGS))
+          .filter((it) => ctx.accessLootbucket(it))
+          .items()
+      })
+    )
   }
 
   public lootMutatedMode(dungeon: Gamemodes): Observable<Array<ItemDefinitionMaster | Housingitems>> {
     return combineLatest({
       bossTags: this.dungeonBossesLootTags(dungeon),
       lootTags: of(dungeon.MutLootTagsOverride || dungeon.LootTags),
-    })
-      .pipe(map(({ bossTags, lootTags }) => uniq([...bossTags, ...lootTags])))
-      .pipe(
-        switchMap((tags) => {
-          return this.lootBuckets
-            .all()
-            .filter((it) => this.lootBuckets.matchAnyTag(it, tags))
-            .filter((it) => !this.lootBuckets.matchAnyTag(it, MUTATION_DIFFICULTY_LOOT_TAGS))
-            .items()
+    }).pipe(
+      switchMap(({ bossTags, lootTags }) => {
+        const tags = uniq([...bossTags, ...lootTags])
+        const ctx = this.lootBuckets.context({
+          tags: [...tags],
+          conditions: {
+            MinContLevel: dungeon.ContainerLevel,
+            EnemyLevel: dungeon.RequiredLevel,
+            Level: dungeon.RequiredLevel,
+          },
         })
-      )
+        return this.lootBuckets
+          .all()
+          .filter((it) => this.lootBuckets.matchAnyTag(it, tags))
+          .filter((it) => !this.lootBuckets.matchAnyTag(it, MUTATION_DIFFICULTY_LOOT_TAGS))
+          .filter((it) => ctx.accessLootbucket(it))
+          .items()
+      })
+    )
   }
 
   public lootMutatedModeForDifficulty(
@@ -133,21 +149,27 @@ export class DungeonsService {
     if (!dungeon.IsMutable || !mutation) {
       return of([])
     }
-    // return this.dungeonMutatedLoot(dungeon)
     return combineLatest({
       bossTags: this.dungeonBossesLootTags(dungeon),
       lootTags: of(dungeon.MutLootTagsOverride || dungeon.LootTags),
-    })
-      .pipe(map(({ bossTags, lootTags }) => uniq([...bossTags, ...lootTags])))
-      .pipe(
-        switchMap((tags) => {
-          return this.lootBuckets
-            .all()
-            .filter((it) => this.lootBuckets.matchAnyTag(it, tags))
-            .filter((it) => this.lootBuckets.matchAnyTag(it, mutation.InjectedLootTags))
-            .items()
+    }).pipe(
+      switchMap(({ bossTags, lootTags }) => {
+        const tags = uniq([...bossTags, ...lootTags, ...mutation.InjectedLootTags])
+        const ctx = this.lootBuckets.context({
+          tags: [...tags],
+          conditions: {
+            MinContLevel: dungeon.ContainerLevel,
+            EnemyLevel: dungeon.RequiredLevel,
+            Level: dungeon.RequiredLevel,
+          },
         })
-      )
+        return this.lootBuckets
+          .all()
+          .filter((it) => this.lootBuckets.matchAnyTag(it, mutation.InjectedLootTags))
+          .filter((it) => ctx.accessLootbucket(it))
+          .items()
+      })
+    )
   }
 
   public dungeon(id: string): Observable<Gamemodes> {
@@ -194,6 +216,6 @@ export class DungeonsService {
   public dungeonBossesLootTags(dungeon: Gamemodes) {
     return this.dungeonBosses(dungeon)
       .pipe(map((it) => it.map((e) => e.LootTags).flat(1)))
-      .pipe(map((it) => Array.from(new Set(it))))
+      .pipe(map((it) => uniq(it)))
   }
 }

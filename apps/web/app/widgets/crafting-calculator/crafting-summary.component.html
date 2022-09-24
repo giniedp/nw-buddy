@@ -14,7 +14,7 @@
         (dblclick)="enableStocked(row)"
       >
         <td width="0" class="p-1 flex items-center">
-          <picture [nwIcon]="row.item.IconPath" class="w-10 h-10 mr-2" [class.grayscale]="row.ignored"></picture>
+          <picture [nwIcon]="row.item" class="w-10 h-10 mr-2" [class.grayscale]="row.ignored"></picture>
           <div [class.text-accent]="row.stocked">
             <span>
               {{ row.quantity | number }}

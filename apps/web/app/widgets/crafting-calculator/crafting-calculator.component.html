@@ -11,6 +11,6 @@
     </label>
   </div>
   <nwb-crafting-step [step]="step" [quantity]="quantity" [optimize]="optimize" [showPrice]="true" #rootStep (stateChange)="reportChange()"></nwb-crafting-step>
-  <nwb-crafting-summary [root]="rootStep" class="mt-2"></nwb-crafting-summary>
+  <nwb-crafting-summary [root]="rootStep" class="mt-2" *ngIf="enableSummary"></nwb-crafting-summary>
 </ng-container>
 

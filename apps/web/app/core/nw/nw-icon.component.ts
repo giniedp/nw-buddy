@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, HostListener, Input } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input } from '@angular/core'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { getItemRarity } from './utils'
+import { getItemIconPath, getItemRarity } from './utils'
 
 @Component({
   selector: 'picture[nwIcon]',
@@ -20,13 +20,15 @@ import { getItemRarity } from './utils'
 export class NwIconComponent {
   @Input()
   public set nwIcon(value: string | ItemDefinitionMaster | Housingitems) {
-    if (typeof value === 'string') {
-      this.src = value
+    if (!value) {
+      this.rarity = null
+      this.updateSrc(null)
+    } else if (typeof value === 'string') {
+      this.updateSrc(value)
     } else {
-      this.src = value?.IconPath
+      this.updateSrc(getItemIconPath(value))
       this.rarity = getItemRarity(value)
     }
-    this.isLoaded = false
     this.cdRef.markForCheck()
   }
 
@@ -36,10 +38,10 @@ export class NwIconComponent {
 
   @HostBinding('class')
   protected get bgRarity() {
-    return this.rarity && `bg-rarity-${this.rarity}`
+    return this.rarity ? `bg-rarity-${this.rarity}` : null
   }
 
-  public constructor(private cdRef: ChangeDetectorRef) {
+  public constructor(private cdRef: ChangeDetectorRef, private elRef: ElementRef<HTMLImageElement>) {
     //
   }
 
@@ -51,6 +53,14 @@ export class NwIconComponent {
   protected onLoad(e: Event) {
     this.isLoaded = true
     this.cdRef.markForCheck()
+  }
+
+  private updateSrc(value: string) {
+    if (this.src !== value) {
+      this.src = value
+      this.isLoaded = false
+      this.cdRef.markForCheck()
+    }
   }
 }
 
@@ -70,9 +80,12 @@ const transparentPixel =
 export class NwImageComponent {
   @Input()
   public set nwImage(value: string) {
-    this.src = value || transparentPixel
-    this.isLoaded = false
-    this.cdRef.markForCheck()
+    value = value || transparentPixel
+    if (this.src !== value) {
+      this.src = value
+      this.isLoaded = false
+      this.cdRef.markForCheck()
+    }
   }
 
   public src: string

@@ -1,69 +1,48 @@
-import { catchError, combineLatest, map, Observable, of, startWith } from "rxjs"
-import { TextReader } from "./text-reader"
+import { catchError, combineLatest, map, Observable, of, startWith } from 'rxjs'
+import { TextReader } from './text-reader'
 
-export function parseNwExpression(text: string, root: boolean = false): NwExp {
-  text = text
-    // ensure operators and operands have a space separator
-    // .replace(/[+-*\/]/g, (it) => ` ${it} `) TODO: does not compile, why?
-    .split('*')
-    .join(' * ')
-    .split('+')
-    .join(' + ')
-    .split('-')
-    .join(' - ')
-    // .split('/')
-    // .join(' / ')
-    // patch bug in expressions, where multiply operator is missing
-    .replace(/100\s*\{/, '100 * {')
-    // patch bad expressions
-    .replace('Type_StatusEffectData.Type_StatusEffectData.', 'Type_StatusEffectData.')
-    // collapse spaces
-    .replace(/\s+/g, ' ')
-
-  // example:
-  //  Base damage is increased by {[GlobalAbilityTable.GlobalPerk_Ability_Sword_WhirlingBlade.BaseDamage * 100] * {perkMultiplier}]}% while performing a Whirling Blade attack if 3 or more enemies are within the radius of the attack.
-  if (text.includes(']') && !text.includes('[')) {
-    text = text.replace(/\]/, '')
+export function parseNwExpression(text: string): NwExp {
+  text = preprocessExpression(text)
+  let outside = true
+  const expr: NwExp[] = []
+  let start = 0
+  for (let i = 0; i < text.length; i++) {
+    if (outside && text[i] === '{' && text[i + 1] === '[') {
+      const value = text.substring(start, i)
+      start = i
+      outside = !outside
+      expr.push(new NwExpValue(value))
+    }
+    if (!outside && text[i] === '}' && text[i - 1] === ']') {
+      const value = text.substring(start + 2, i - 1)
+      start = i + 1
+      outside = !outside
+      expr.push(new NwExpEval(parseExpression(value)))
+    }
   }
-  if (text.includes('[') && !text.includes(']')) {
-    text = text.replace(/\[/, '')
-  }
+  expr.push(new NwExpValue(text.substring(start, text.length)))
+  return new NwExpJoin(expr, '')
+}
 
-  if (text.includes('Mut_Voi_Stacks') && text.includes('Mut_Lig_Stacks')) {
-    // example:
-    //  Filled with dread for {[Type_StatusEffectData.Mut_Lig_Stacks_1_Effect.BaseDuration]} seconds. At {[Type_StatusEffectData.Mut_Voi_Stacks_1_Effect.AddOnStackSize]} stacks, causes a void burst to appear at your location.
-    text = text.replace('Mut_Lig_Stacks', 'Mut_Voi_Stacks')
-  }
-
+function parseExpression(text: string): NwExp {
   const reader = new TextReader(text)
   const expr: NwExp[] = []
-
   while (reader.canRead) {
     const position = reader.position
-
     if (reader.substr(2) === '{[') {
-      const block = reader.nextBlock('{[', ']}')
-      const node = parseNwExpression(block, false)
-      if (!root) {
-        throw new Error(`invalid expresssion. Nested '{[' detected`)
-      }
-      expr.push(new NwExpEval(new NwExpParen('', '', node)))
+      throw new Error(`invalid expresssion. Nested '{[' detected`)
     } else {
       switch (reader.char) {
         case '{': {
           const block = reader.nextBlock('{', '}')
-          const node = parseNwExpression(block, root)
-          if (root) {
-            expr.push(new NwExpParen('{', '}', node))
-          } else {
-            expr.push(new NwExpParen('(', ')', node))
-          }
+          const node = parseExpression(block)
+          expr.push(new NwExpParen('(', ')', node))
           reader.next()
           break
         }
         case '(': {
           const block = reader.nextBlock('(', ')')
-          const node = parseNwExpression(block, root)
+          const node = parseExpression(block)
           expr.push(new NwExpParen('(', ')', node))
           reader.next()
           break
@@ -77,8 +56,13 @@ export function parseNwExpression(text: string, root: boolean = false): NwExp {
           reader.next()
           break
         default: {
-          const token = reader.nextToken()
-          if (root || /^\d+(\.\d+)?$/.test(token)) {
+          const token = reader.readUntil(' \t{(*/+-')
+
+          if (/^\s*\d+(.\d+)?\s*$/.test(token)) {
+            // Integer and Floating
+            expr.push(new NwExpValue(token))
+          } else if (/^\s*.\d+\s*$/.test(token)) {
+            // Floating without leading 0 e.g. .001
             expr.push(new NwExpValue(token))
           } else {
             expr.push(new NwExpLookup(token))
@@ -90,20 +74,53 @@ export function parseNwExpression(text: string, root: boolean = false): NwExp {
       throw new Error(`expression could not be parsed: "${text}" at position ${reader.position}`)
     }
   }
-  return new NwExpJoin(expr, ' ')
+
+  return new NwExpJoin(expr, '')
 }
 
-type solveFn = (key: string) => Observable<string | number>
-interface NwExp {
-  eval: (solve: solveFn) => Observable<string | number>
+function preprocessExpression(text: string) {
+  text = text
+    // ensure operators and operands have a space separator
+    // .replace(/[+-*\/]/g, (it) => ` ${it} `) TODO: does not compile, why?
+    // .split('*')
+    // .join(' * ')
+    // .split('+')
+    // .join(' + ')
+    // .split('-')
+    // .join(' - ')
+    // .split('/')
+    // .join(' / ')
+    // patch bug in expressions, where multiply operator is missing
+    .replace(/100\s*\{/, '100 * {')
+    // patch bug in expressions, where multiply operator is missing
+    .replace(/ \* 100] \* /, ' * 100 * ')
+    // patch bad expressions
+    .replace('Type_StatusEffectData.Type_StatusEffectData.', 'Type_StatusEffectData.')
+    // collapse spaces
+    .replace(/\s+/g, ' ')
+
+  if (text.includes('Mut_Voi_Stacks') && text.includes('Mut_Lig_Stacks')) {
+    // example:
+    //  Filled with dread for {[Type_StatusEffectData.Mut_Lig_Stacks_1_Effect.BaseDuration]} seconds. At {[Type_StatusEffectData.Mut_Voi_Stacks_1_Effect.AddOnStackSize]} stacks, causes a void burst to appear at your location.
+    text = text.replace('Mut_Lig_Stacks', 'Mut_Voi_Stacks')
+  }
+  return text
+}
+
+export type NwExpSolveFn = (key: string) => Observable<string | number>
+export interface NwExp {
+  eval: (solve: NwExpSolveFn) => Observable<string | number>
 }
 
 class NwExpJoin implements NwExp {
   public constructor(private children: NwExp[], private separator = '') {
     //
   }
-  public eval(solve: solveFn) {
-    return combineLatest(this.children.map((it) => it.eval(solve))).pipe(map((it) => it.join(this.separator)))
+  public eval(solve: NwExpSolveFn) {
+    if (this.children.length) {
+      return combineLatest(this.children.map((it) => it.eval(solve))).pipe(map((it) => it.join(this.separator)))
+    }
+    return of('')
   }
 }
 
@@ -111,7 +128,7 @@ class NwExpParen implements NwExp {
   public constructor(private lParen: string, private rParen: string, private node: NwExp) {
     //
   }
-  public eval(solve: solveFn) {
+  public eval(solve: NwExpSolveFn) {
     return this.node.eval(solve).pipe(map((value) => this.lParen + value + this.rParen))
   }
 }
@@ -120,7 +137,7 @@ class NwExpValue<T extends string | number> implements NwExp {
   public constructor(private value: T) {
     //
   }
-  public eval(solve: solveFn) {
+  public eval(solve: NwExpSolveFn) {
     return of(this.value)
   }
 }
@@ -129,7 +146,7 @@ class NwExpLookup implements NwExp {
   public constructor(private value: string) {
     //
   }
-  public eval(solve: solveFn) {
+  public eval(solve: NwExpSolveFn) {
     return solve(this.value)
   }
 }
@@ -138,13 +155,17 @@ class NwExpEval implements NwExp {
   public constructor(private node: NwExp) {
     //
   }
-  public eval(solve: solveFn) {
+  public eval(solve: NwExpSolveFn) {
     return this.node
       .eval(solve)
-      .pipe(map((value) => Number(eval(String(value)))))
       .pipe(
         map((value) => {
-          if (globalThis.navigator) {
+          return Number(eval(String(value)))
+        })
+      )
+      .pipe(
+        map((value) => {
+          if (globalThis.navigator && typeof value === 'number') {
             return Intl.NumberFormat(navigator.language || 'en', {
               maximumFractionDigits: 2,
             }).format(value)

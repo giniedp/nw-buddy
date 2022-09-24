@@ -82,13 +82,17 @@ export class NwDbService {
     this.data.weaponabilitiesAbilityFiremagic().pipe(annotate('$source', 'Firemagic')),
     this.data.weaponabilitiesAbilityGlobal().pipe(annotate('$source', 'Global')),
     this.data.weaponabilitiesAbilityGreataxe().pipe(annotate('$source', 'Greataxe')),
+    this.data.weaponabilitiesAbilityGreatsword().pipe(annotate('$source', 'Greatsword')),
     this.data.weaponabilitiesAbilityHatchet().pipe(annotate('$source', 'Hatchet')),
     this.data.weaponabilitiesAbilityIcemagic().pipe(annotate('$source', 'Icemagic')),
+    this.data.weaponabilitiesAbilityItems().pipe(annotate('$source', 'Items')),
     this.data.weaponabilitiesAbilityLifemagic().pipe(annotate('$source', 'Lifemagic')),
     this.data.weaponabilitiesAbilityMusket().pipe(annotate('$source', 'Musket')),
     this.data.weaponabilitiesAbilityRapier().pipe(annotate('$source', 'Rapier')),
+    this.data.weaponabilitiesAbilityRune().pipe(annotate('$source', 'Rune')),
     this.data.weaponabilitiesAbilitySpear().pipe(annotate('$source', 'Spear')),
     this.data.weaponabilitiesAbilitySword().pipe(annotate('$source', 'Sword')),
+    this.data.weaponabilitiesAbilityVoidgauntlet().pipe(annotate('$source', 'Voidgauntlet')),
     this.data.weaponabilitiesAbilityWarhammer().pipe(annotate('$source', 'Warhammer')),
   ])
   public abilitiesMap = index(() => this.abilities, 'AbilityID')
@@ -97,8 +101,8 @@ export class NwDbService {
   public statusEffects = list(() => [
     this.data.statuseffects().pipe(annotate('$source', '_')),
     this.data.statuseffectsAi().pipe(annotate('$source', 'Ai')),
-    this.data.statuseffectsBow().pipe(annotate('$source', 'Bow')),
     this.data.statuseffectsBlunderbuss().pipe(annotate('$source', 'Blunderbuss')),
+    this.data.statuseffectsBow().pipe(annotate('$source', 'Bow')),
     this.data.statuseffectsCommon().pipe(annotate('$source', 'Common')),
     this.data.statuseffectsFirestaff().pipe(annotate('$source', 'Firestaff')),
     this.data.statuseffectsGreataxe().pipe(annotate('$source', 'Greataxe')),
@@ -110,6 +114,7 @@ export class NwDbService {
     this.data.statuseffectsMusket().pipe(annotate('$source', 'Musket')),
     this.data.statuseffectsPerks().pipe(annotate('$source', 'Perks')),
     this.data.statuseffectsRapier().pipe(annotate('$source', 'Rapier')),
+    this.data.statuseffectsRunes().pipe(annotate('$source', 'Runes')),
     this.data.statuseffectsSpear().pipe(annotate('$source', 'Spear')),
     this.data.statuseffectsSword().pipe(annotate('$source', 'Sword')),
     this.data.statuseffectsVoidgauntlet().pipe(annotate('$source', 'Voidgauntlet')),
@@ -132,6 +137,7 @@ export class NwDbService {
     this.data.damagetableElk().pipe(annotate('$source', 'Elk')),
     this.data.damagetableGoat().pipe(annotate('$source', 'Goat')),
     this.data.damagetablePerks().pipe(annotate('$source', 'Perks')),
+    this.data.damagetableMutators().pipe(annotate('$source', 'Mutators')),
     this.data.damagetableSkeleton().pipe(annotate('$source', 'Skeleton')),
     this.data.damagetableSpirit().pipe(annotate('$source', 'Spirit')),
     this.data.damagetableStructures().pipe(annotate('$source', 'Structures')),
@@ -148,8 +154,8 @@ export class NwDbService {
   public spellTable = list(() => [
     this.data.spelltable().pipe(annotate('$source', '_')),
     this.data.spelltableAi().pipe(annotate('$source', 'Ai')),
-    this.data.spelltableBow().pipe(annotate('$source', 'Bow')),
     this.data.spelltableBlunderbuss().pipe(annotate('$source', 'Blunderbuss')),
+    this.data.spelltableBow().pipe(annotate('$source', 'Bow')),
     this.data.spelltableFiremagic().pipe(annotate('$source', 'Firemagic')),
     this.data.spelltableGlobal().pipe(annotate('$source', 'Global')),
     this.data.spelltableGreataxe().pipe(annotate('$source', 'Greataxe')),
@@ -159,6 +165,7 @@ export class NwDbService {
     this.data.spelltableLifemagic().pipe(annotate('$source', 'Lifemagic')),
     this.data.spelltableMusket().pipe(annotate('$source', 'Musket')),
     this.data.spelltableRapier().pipe(annotate('$source', 'Rapier')),
+    this.data.spelltableRunes().pipe(annotate('$source', 'Runes')),
     this.data.spelltableSpear().pipe(annotate('$source', 'Spear')),
     this.data.spelltableSword().pipe(annotate('$source', 'Sword')),
     this.data.spelltableVoidgauntlet().pipe(annotate('$source', 'Voidgauntlet')),
@@ -263,6 +270,7 @@ export class NwDbService {
     this.data.loottablesOmega().pipe(annotate('$source', 'Omega')).pipe(map(convertLoottables)),
     this.data.loottablesPlaytest().pipe(annotate('$source', 'Playtest')).pipe(map(convertLoottables)),
     this.data.loottablesPvpRewardsTrack().pipe(annotate('$source', 'PvpRewardsTrack')).pipe(map(convertLoottables)),
+    this.data.loottablesSalvage().pipe(annotate('$source', 'Salvage')).pipe(map(convertLoottables)),
   ])
   public lootTablesMap = index(() => this.lootTables, 'LootTableID')
   public lootTable = lookup(() => this.lootTablesMap)
@@ -279,8 +287,10 @@ export class NwDbService {
   public lootBucketsMap = indexGroup(() => this.lootBuckets, 'LootBucket')
   public lootBucket = lookup(() => this.lootBucketsMap)
 
-  // defer(() => this.lootBuckets)
-  //   .pipe(map((data) => list(() => data.map((it) => of(it.Entries)))))
+  public lootLimits = list(() => [
+    this.data.lootlimits()
+  ])
+  public lootLimitsMap = index(() => this.lootLimits, 'LootLimitID')
 
   public constructor(public readonly data: NwDataService) {
     //

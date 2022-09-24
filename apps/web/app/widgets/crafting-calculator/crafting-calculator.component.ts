@@ -41,6 +41,9 @@ export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges
   @ViewChild('rootStep')
   public rootStep: CraftingStepComponent
 
+  @Input()
+  public enableSummary: boolean = true
+
   public stepChange = defer(() => this.stepChange$)
 
   private destroy$ = new Subject()

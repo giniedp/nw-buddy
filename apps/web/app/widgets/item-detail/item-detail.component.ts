@@ -18,6 +18,10 @@ export class ItemDetailComponent implements OnChanges {
     this.service.update(value)
   }
 
+  public get entityId() {
+    return this.service.entityid$
+  }
+
   public get entity() {
     return this.service.entity$
   }

@@ -8,45 +8,53 @@ export interface NwExpressionContext {
   itemId: string
   charLevel: number
   gearScore: number
+  ConsumablePotency?: number
+  perkMultiplier?: number
 }
 
 type Expressionresource =
   | 'AffixStatDataTable'
   | 'Afflictions'
-  | 'ConsumableItemDefinitions'
-  | 'DamageTable'
-  | 'ManaCosts_Player'
-  | 'StaminaCosts_Player'
-  | 'Type_Ability'
-  | 'Type_AbilityData'
-  | 'StatusEffect'
-  | 'StatusEffects'
-  | 'Type_StatusEffect'
-  | 'Type_StatusEffectData'
   | 'BlunderbussAbilityTable'
   | 'BowAbilityTable'
+  | 'ConsumableItemDefinitions'
+  | 'DamageTable'
   | 'FireMagicAbilityTable'
   | 'GlobalAbilityTable'
   | 'GreatAxeAbilityTable'
+  | 'GreatswordAbilityTable'
   | 'HatchetAbilityTable'
+  | 'HouseItems'
   | 'IceMagicAbilityTable'
   | 'LifeMagicAbilityTable'
+  | 'LootLimits'
+  | 'ManaCosts_Player'
   | 'MusketAbilityTable'
   | 'RapierAbilityTable'
   | 'SpearAbilityTable'
-  | 'SwordAbilityTable'
-  | 'VoidGauntletAbilityTable'
-  | 'WarHammerAbilityTable'
   | 'SpellDataTable_Bow'
+  | 'SpellDataTable_FireMagic'
   | 'SpellDataTable_Global'
   | 'SpellDataTable_GreatAxe'
+  | 'SpellDataTable_Greatsword'
   | 'SpellDataTable_Hatchet'
   | 'SpellDataTable_IceMagic'
+  | 'SpellDataTable_LifeMagic'
   | 'SpellDataTable_Musket'
+  | 'SpellDataTable_Runes'
   | 'SpellDataTable_VoidGauntlet'
   | 'SpellDataTable_WarHammer'
-  | 'SpellDataTable_FireMagic'
-  | 'SpellDataTable_LifeMagic'
+  | 'StaminaCosts_Player'
+  | 'SwordAbilityTable'
+  | 'Type_AbilityData'
+  | 'Type_StatusEffectData'
+  | 'VoidGauntletAbilityTable'
+  | 'WarHammerAbilityTable'
+  //
+  | 'Type_Ability'
+  | 'Type_StatusEffect'
+  | 'StatusEffect'
+  | 'StatusEffects'
   | 'ConsumablePotency'
   | 'perkMultiplier'
 
@@ -55,7 +63,7 @@ export class NwExpressionService {
   public constructor(private db: NwDbService) {}
 
   public parse(expression: string) {
-    return parseNwExpression(expression, true)
+    return parseNwExpression(expression)
   }
 
   public solve(context: NwExpressionContext) {
@@ -70,14 +78,14 @@ export class NwExpressionService {
       )
   }
 
-  private lookup(expression: string, context: NwExpressionContext): Observable<string | number> {
-    if (expression.includes('.')) {
-      const [resource, id, attr] = expression.split('.')
-      return this.solveResource(resource as any)
+  private lookup(token: string, context: NwExpressionContext): Observable<string | number> {
+    if (token.includes('.')) {
+      const [resource, id, attr] = token.split('.')
+      return this.solveResource(resource as any, token)
         .pipe(
           map((data) => {
             if (!data) {
-              throw new Error(`Unknown resource "${resource}" (for expression "${expression}")`)
+              throw new Error(`Unknown resource "${resource}" (for token "${token}" in text "${context.text}")`)
             }
             let object: any
             if (data.has(id)) {
@@ -86,7 +94,7 @@ export class NwExpressionService {
               object = data.get(Number(id))
             }
             if (!object) {
-              throw new Error(`Object for ID "${id}" not found (for expression "${expression}")`)
+              throw new Error(`Object for ID "${id}" not found (for token "${token}" in text "${context.text}")`)
             }
             if (attr in object) {
               return object[attr]
@@ -96,7 +104,7 @@ export class NwExpressionService {
                 return object[key]
               }
             }
-            throw new Error(`Object has no attribute "${attr}" (for expression "${expression}")`)
+            throw new Error(`Object has no attribute "${attr}" (for token "${token}" in text "${context.text}")`)
           })
         )
         .pipe(
@@ -109,34 +117,40 @@ export class NwExpressionService {
           })
         )
     }
-    switch (expression) {
+    switch (token) {
       case 'ConsumablePotency': {
+        if (context.ConsumablePotency != null) {
+          return of(context.ConsumablePotency)
+        }
         return this.db.statusEffectsMap.pipe(
           map((it) => {
             if (it.has(context.itemId)) {
               return it.get(context.itemId).PotencyPerLevel * context.charLevel
             }
-            console.error(`ConsumablePotency not resolved (for expression "${expression}" and id "${context.itemId}")`)
+            console.error(`ConsumablePotency not resolved (for token "${token}" and id "${context.itemId}" in text "${context.text}")`)
             return 1
           })
         )
       }
       case 'perkMultiplier':
+        if (context.perkMultiplier != null) {
+          return of(context.perkMultiplier)
+        }
         return this.db.perksMap.pipe(
           map((it) => {
             if (it.has(context.itemId)) {
               return it.get(context.itemId).ScalingPerGearScore * Math.max(0, context.gearScore - 100) + 1
             }
-            throw new Error(`perkMultiplier not resolved (for expression "${expression}" and id "${context.itemId}")`)
+            throw new Error(`perkMultiplier not resolved (for token "${token}" and id "${context.itemId}" in text "${context.text}")`)
           })
         )
       default: {
-        return throwError(() => new Error(`unknown lookup expression: "${expression}"`))
+        return throwError(() => new Error(`unknown lookup token: "${token}" in text "${context.text}"`))
       }
     }
   }
 
-  private solveResource(resource: Expressionresource): Observable<Map<string | number, unknown>> {
+  private solveResource(resource: Expressionresource, expression: string): Observable<Map<string | number, unknown>> {
     switch (resource) {
       case 'Type_StatusEffectData':
       case 'Type_StatusEffect': {
@@ -161,24 +175,25 @@ export class NwExpressionService {
         return this.db.staminacostsPlayerMap
       }
       case 'SpellDataTable_Bow':
+      case 'SpellDataTable_FireMagic':
       case 'SpellDataTable_Global':
       case 'SpellDataTable_GreatAxe':
+      case 'SpellDataTable_Greatsword':
       case 'SpellDataTable_Hatchet':
       case 'SpellDataTable_IceMagic':
+      case 'SpellDataTable_LifeMagic':
       case 'SpellDataTable_Musket':
+      case 'SpellDataTable_Runes':
       case 'SpellDataTable_VoidGauntlet':
-      case 'SpellDataTable_WarHammer':
-      case 'SpellDataTable_FireMagic':
-      case 'SpellDataTable_LifeMagic': {
+      case 'SpellDataTable_WarHammer': {
         return this.db.spellTableMap
       }
-      case 'Type_Ability':
-      case 'Type_AbilityData':
       case 'BlunderbussAbilityTable':
       case 'BowAbilityTable':
       case 'FireMagicAbilityTable':
       case 'GlobalAbilityTable':
       case 'GreatAxeAbilityTable':
+      case 'GreatswordAbilityTable':
       case 'HatchetAbilityTable':
       case 'IceMagicAbilityTable':
       case 'LifeMagicAbilityTable':
@@ -186,6 +201,8 @@ export class NwExpressionService {
       case 'RapierAbilityTable':
       case 'SpearAbilityTable':
       case 'SwordAbilityTable':
+      case 'Type_Ability':
+      case 'Type_AbilityData':
       case 'VoidGauntletAbilityTable':
       case 'WarHammerAbilityTable': {
         return this.db.abilitiesMap
@@ -195,7 +212,13 @@ export class NwExpressionService {
       case 'Type_StatusEffectData': {
         return this.db.statusEffectsMap
       }
+      case 'LootLimits': {
+        return this.db.lootLimitsMap
+      }
+      case 'HouseItems': {
+        return this.db.housingItemsMap
+      }
     }
-    return throwError(() => new Error(`unknown resource: ${resource}`))
+    return throwError(() => new Error(`unknown resource '${resource}' in expression '${expression}'`))
   }
 }

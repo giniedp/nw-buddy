@@ -7,8 +7,8 @@
   ></nwb-crafting-step-toggle>
 
   <picture
-    [nwIcon]="item.IconPath"
-    class="w-8 h-8 nw-icon flex-none bg-rarity-{{ itemRarity(item) }}"
+    [nwIcon]="item"
+    class="w-8 h-8 nw-icon flex-none"
     [class.cursor-pointer]="!!category"
     (click)="toggleOptions()"
   ></picture>
@@ -48,7 +48,7 @@
   <ul class="menu menu-compact py-2">
     <li *ngFor="let item of options">
       <a (click)="selectOption(item.ItemID)" class="p-1">
-        <picture [nwIcon]="item.IconPath" class="w-7 h-7 nw-icon flex-none bg-rarity-{{ itemRarity(item) }}"></picture>
+        <picture [nwIcon]="item" class="w-7 h-7 nw-icon flex-none"></picture>
         <span [nwText]="item.Name"></span>
       </a>
     </li>

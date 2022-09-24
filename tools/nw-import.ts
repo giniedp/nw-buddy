@@ -9,18 +9,18 @@ import { loadDatatables, splitToArrayRule } from './importer/loadDatatables'
 import { importLocales } from './importer/importLocales'
 import { importImages } from './importer/importImages'
 import { generateTypes } from './importer/generateTypes'
+import { checkExpressions } from './importer/checkExpressions'
+import { env } from './env'
 dotenv.config()
 
 program
-  .argument('<input>', 'input dir')
-  .argument('<output>', 'output dir')
-  .action(async (input: string, output: string) => {
-    if (process.env[input]) {
-      input = process.env[input]
-    } else {
-      input = path.join(process.cwd(), input)
-    }
-    output = output
+  .option('-i, --input <path>', 'input directory')
+  .option('-o, --output <path>', 'output directory')
+  .option('--ptr', 'PTR mode', ['true', 'yes', '1'].includes(process.env['NW_PTR']))
+  .action(async () => {
+    const options = program.opts<{ input: string, output: string, ptr: boolean }>()
+    const input = options.input || env(options.ptr).dataDir
+    const output = options.output || './apps/web/nw-data'
 
     console.log('loading datatables')
     const tables = await loadDatatables({
@@ -192,6 +192,11 @@ program
         'ui_constitution',
         'ui_focus'
       ],
+    }).then((files) => {
+      checkExpressions({
+        locales: files,
+        output: './tmp/expressions.json'
+      })
     })
     console.log('importing images')
     await importImages({
@@ -199,6 +204,11 @@ program
       output,
       tables,
       ignoreKeys: ['HiResIconPath'],
+      rewrite: {
+        ArmorAppearanceF: (key, value, obj) => `lyshineui/images/icons/items/${obj.ItemType}/${value}`,
+        ArmorAppearanceM: (key, value, obj) => `lyshineui/images/icons/items/${obj.ItemType}/${value}`,
+        WeaponAppearanceOverride: (key, value, obj) => `lyshineui/images/icons/items/${obj.ItemType}/${value}`
+      },
       rewritePath: (value) => `${path.basename(output)}${value}`
     })
     console.log('writing datatables')

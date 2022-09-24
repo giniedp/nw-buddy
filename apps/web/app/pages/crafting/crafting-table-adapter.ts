@@ -5,7 +5,7 @@ import m from 'mithril'
 import { combineLatest, defer, map, Observable } from 'rxjs'
 import { TranslateService } from '~/core/i18n'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/core/nw'
-import { getIngretientsFromRecipe, getItemId, getItemIdFromRecipe, getItemRarity } from '~/core/nw/utils'
+import { getIngretientsFromRecipe, getItemIconPath, getItemId, getItemIdFromRecipe, getItemRarity } from '~/core/nw/utils'
 import { humanize, shareReplayRefCount } from '~/core/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
@@ -43,7 +43,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
                 return ''
               }
               return m(IconComponent, {
-                src: item.IconPath,
+                src: getItemIconPath(item),
                 class: `w-9 h-9 nw-icon bg-rarity-${getItemRarity(item)}`,
               })
             },
@@ -75,7 +75,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
                   items.map((item) =>
                     m('a.block.w-7.h-7', { target: '_blank', href: nwdbLinkUrl('item', getItemId(item)) }, [
                       m(IconComponent, {
-                        src: item.IconPath,
+                        src: getItemIconPath(item),
                         class: `w-7 h-7 nw-icon`,
                       }),
                     ])
@@ -94,7 +94,7 @@ export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
                 return {
                   label: this.i18n.get(item.Name),
                   value: item,
-                  icon: item.IconPath,
+                  icon: getItemIconPath(item),
                 }
               })
             },

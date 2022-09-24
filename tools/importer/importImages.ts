@@ -3,24 +3,26 @@ import * as fs from 'fs'
 import { mkdir, processArrayWithProgress, renameExtname, spawn } from '../utils'
 import { DatatableSource, walkStringProperties } from './loadDatatables'
 
-export async function importImages(
-  {
-    input,
-    output,
-    tables,
-    ignoreKeys,
-    rewritePath
-  }: {
-    input: string,
-    output: string,
-    tables: DatatableSource[],
-    ignoreKeys: string[],
-    rewritePath?: (value: string) => string
-  }
-) {
+export type ReqriteEntryFn = (key: string, value: string, obj: any) => string | null
+export async function importImages({
+  input,
+  output,
+  tables,
+  ignoreKeys,
+  rewrite,
+  rewritePath,
+}: {
+  input: string
+  output: string
+  tables: DatatableSource[]
+  ignoreKeys: string[]
+  rewrite?: Record<string, ReqriteEntryFn>
+  rewritePath?: (value: string) => string
+}) {
   const images = scanImages(tables, {
     ignoreKeys: ignoreKeys,
-    rewritePath: rewritePath
+    rewrite: rewrite,
+    rewritePath: rewritePath,
   })
   const missing = new Set<string>()
   await processArrayWithProgress(Array.from(images), async ([source, target]) => {
@@ -45,17 +47,23 @@ export async function importImages(
   })
 }
 
-function scanImages(tables: DatatableSource[], options?: { ignoreKeys: string[], rewritePath?: (value: string) => string }) {
+function scanImages(
+  tables: DatatableSource[],
+  options?: {
+    ignoreKeys: string[];
+    rewrite?: Record<string, ReqriteEntryFn>
+    rewritePath?: (value: string) => string
+  }
+) {
   const images = new Map<string, string>()
   const ignore = new Set<string>(options?.ignoreKeys || [])
   walkStringProperties(tables, (key, value, obj) => {
+    value = options?.rewrite?.[key]?.(key, value, obj) ?? value
     if (!value.match(/^lyshineui/gi) || ignore.has(key)) {
       return
     }
     const source = path.normalize(value.toLowerCase())
-    const sourcePNG = renameExtname(source, '.png')
-      .toLowerCase()
-      .replace(/\\/g, '/')
+    const sourcePNG = renameExtname(source, '.png').toLowerCase().replace(/\\/g, '/')
     const targetWEBP = renameExtname(source, '.webp')
       .toLowerCase()
       .replace(/\\/g, '/')

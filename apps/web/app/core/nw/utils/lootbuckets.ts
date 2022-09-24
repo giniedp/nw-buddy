@@ -8,8 +8,6 @@ export function convertLootbuckets(data: Lootbuckets[]) {
     .map((row) => convertRow(row, firstRow))
     .flat(1)
     .filter((it) => !!it.Item)
-  // const tags = uniqBy(result.map((it) => Array.from(it.Tags.values())).flat(1), (it) => it.Name).sort((a, b) => a.Name.localeCompare(b.Name))
-  // console.log('LootBucketTags', tags)
   return result
 }
 
@@ -17,7 +15,7 @@ export type LootBucketEntry = {
   Column: number
   Item: string
   LootBucket: string
-  MatchOne: string
+  MatchOne: boolean
   Quantity: number[]
   Tags: Map<string, LootBucketTag>
 }
@@ -44,7 +42,7 @@ function convertRow(data: Lootbuckets, firstRow: Lootbuckets): LootBucketEntry[]
         Column: id,
         Item: null as string,
         LootBucket: firstRow[`LootBucket${id}`],
-        MatchOne: null as string,
+        MatchOne: null,
         Quantity: null as number[],
         Tags: new CaseInsensitiveMap(),
       }
@@ -52,17 +50,28 @@ function convertRow(data: Lootbuckets, firstRow: Lootbuckets): LootBucketEntry[]
     .map((result) => {
       for (const key of keys) {
         const value = data[`${key}${result.Column}`]
-        if (key === 'Tags') {
-          const tags = (value as string[] || []).map(lootBucketTag)
+        switch(key) {
+          case 'Tags': {
+            const tags = (value as string[] || []).map(lootBucketTag)
             for (const tag of tags) {
               if (tag) {
                 result.Tags.set(tag.Name, tag)
               }
             }
-        } else if (key === 'Quantity') {
-          result[key] = typeof value === 'string' ? value.split('-').map(Number) : [value]
-        } else {
-          result[key] = value
+            break
+          }
+          case 'Quantity': {
+            result[key] = typeof value === 'string' ? value.split('-').map(Number) : [value]
+            break
+          }
+          case 'MatchOne': {
+            result[key] = String(value).toLowerCase() === 'true'
+            break
+          }
+          default: {
+            result[key] = value
+            break
+          }
         }
       }
       return result

@@ -1,6 +1,6 @@
 <div class="backdrop rarity-{{itemRarity}}"></div>
 <a [nwInfoLink]="enableNwdbLink ? entityId : null" [nwInfoResource]="'item'" target="_blank">
-  <picture [nwIcon]="iconPath" class="nw-icon bg-rarity-{{itemRarity}}"></picture>
+  <picture [nwIcon]="entity" class="nw-icon bg-rarity-{{itemRarity}}"></picture>
 </a>
 <aside class="flex-1 flex flex-col justify-between">
   <div class="flex flex-row justify-between">

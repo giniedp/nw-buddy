@@ -62,35 +62,6 @@ export function getVitalDamageEffectivenessIcon(vital: Vitals, damageType: Vital
   return null
 }
 
-
-// const MAP_DUNGEON_TO_VITALS_GROUP: Record<string, string[]> = {
-//   DungeonAmrine: ['Star_Excavation'],
-//   DungeonEdengrove00: ['Genesis'],
-//   DungeonShatteredObelisk: ['Starstone'],
-//   DungeonRestlessShores01: ['Skerryshiv'],
-//   DungeonReekwater00: ['Lazarus_Well'],
-//   DungeonEbonscale00: ['Shipyard'],
-//   DungeonShatterMtn00: ['IsabellaLair', 'IsabellaPhase1', 'IsabellaPhase2'],
-// }
-
-// const MAP_DUNGEON_TO_VITALS_LOOT_TAGS: Record<string, string[]> = {
-//   DungeonAmrine: ['Amrine'],
-//   DungeonEdengrove00: ['Edengrove00'],
-//   DungeonShatteredObelisk: ['ShatteredObelisk'],
-//   DungeonRestlessShores01: ['RestlessShores01'],
-//   DungeonReekwater00: ['Reekwater00'],
-//   DungeonEbonscale00: ['Ebonscale00'],
-//   DungeonShatterMtn00: ['ShatterMtn00']
-// }
-
-// "ShatteredObelisk"
-// "Reekwater00"
-// "Edengrove00"
-// "Ebonscale00"
-// "Ebonscale00_Mut"
-// "RestlessShores01"
-// "ShatterMtn00"
-
 export type DungeonTerritory =
   | 'Windsward'
   | 'Edengrove'
@@ -100,6 +71,7 @@ export type DungeonTerritory =
   | 'Ebonscale'
   | 'ShatterMtn'
   | 'Cutlass'
+  | 'BrimstoneSands'
 
 export function getVitalDungeonTerritory(vitalId: string): DungeonTerritory {
   return vitalId?.match(/_DG_([a-zA-Z]+)_/)?.[1] as DungeonTerritory
@@ -122,6 +94,8 @@ export function getVitalDungeonTag(vitalId: string) {
       return 'ShatterMtn00'
     case 'Cutlass':
       return 'CutlassKeys00'
+    case 'BrimstoneSands':
+      return 'BrimstoneSands00'
     default:
       return null
   }
@@ -132,7 +106,8 @@ export function getVitalDungeonId(vitalId: string): string {
 }
 const MAP_DUNGEON_TO_VITALS_LOOT_TAGS: Record<string, string[]> = {
   DungeonEbonscale00: ['Dynasty', 'IsabellaDynasty'],
-  DungeonCutlassKeys00: ['DryadSiren']
+  DungeonCutlassKeys00: ['DryadSiren'],
+  QuestApophis: ['Apophis']
 }
 export function getVitalDungeon(vital: Vitals, dungeons: Gamemodes[]) {
   const vitalDungeonId = getVitalDungeonId(vital.VitalsID)

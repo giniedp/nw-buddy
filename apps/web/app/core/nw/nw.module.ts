@@ -5,7 +5,6 @@ import { TranslateSource } from '../i18n/translate-source'
 import { NwDataService } from './nw-data.service'
 import { NwIconComponent, NwImageComponent } from './nw-icon.component'
 import { NwInfoLinkDirective } from './nw-info-link.directive'
-import { NwRarityBgDirective } from './nw-rarity-bg.directive'
 import { NwTextDirective } from './nw-text.directive'
 
 @NgModule({
@@ -17,14 +16,12 @@ import { NwTextDirective } from './nw-text.directive'
     NwTextDirective,
     NwIconComponent,
     NwImageComponent,
-    NwRarityBgDirective,
     NwInfoLinkDirective,
   ],
   exports: [
     NwTextDirective,
     NwIconComponent,
     NwImageComponent,
-    NwRarityBgDirective,
     NwInfoLinkDirective,
   ],
 })

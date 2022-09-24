@@ -6,7 +6,7 @@
   ></nwb-item-detail-header>
   <ng-container *ngIf="description | async; let text">
     <ng-container *ngTemplateOutlet="hr"></ng-container>
-    <p class="px-4 py-4 text-primary italic" [nwText]="text" [itemId]="itemId"></p>
+    <p class="px-4 py-4 text-primary italic" [nwText]="text" [itemId]="entityId | async"></p>
   </ng-container>
   <ng-container *ngIf="perks | async; let info">
     <ng-container *ngTemplateOutlet="hr"></ng-container>

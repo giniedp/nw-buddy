@@ -8,7 +8,7 @@ import { LootBucketConditionNames, LootContext } from './nw-lootcontext'
 
 export interface LootBucketQuery {
   $: Observable<LootBucketEntry[]>
-  filter: (predicate: (entry: LootBucketEntry) => boolean) => LootBucketQuery
+  filter: (predicate: (entry: LootBucketEntry, i?: number) => boolean) => LootBucketQuery
   itemIds: () => Observable<Array<string>>
   items: () => Observable<Array<ItemDefinitionMaster | Housingitems>>
 }
@@ -68,13 +68,13 @@ export class NwLootbucketService {
     }
   }
 
-  private mapIds(quer$: Observable<LootBucketEntry[]>) {
-    return quer$.pipe(map((entries) => entries.map((it) => it.Item).filter((it) => !!it))).pipe(map(uniq))
+  private mapIds(query$: Observable<LootBucketEntry[]>) {
+    return query$.pipe(map((entries) => entries.map((it) => it.Item).filter((it) => !!it))).pipe(map(uniq))
   }
 
-  private mapItems(quer$: Observable<LootBucketEntry[]>) {
+  private mapItems(query$: Observable<LootBucketEntry[]>) {
     return combineLatest({
-      ids: this.mapIds(quer$),
+      ids: this.mapIds(query$),
       items: this.db.itemsMap,
       housing: this.db.housingItemsMap,
     }).pipe(

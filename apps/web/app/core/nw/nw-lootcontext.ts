@@ -115,15 +115,21 @@ export class LootContext {
    */
   public accessLootbucket(entry: LootBucketEntry): boolean {
     const tags = Array.from(entry.Tags.keys())
-    if (!tags.length) {
+    if (entry.MatchOne) {
+      for (const tag of tags) {
+        if (testBucketCondition(tag, this, entry)) {
+          return true
+        }
+      }
+      return false
+    } else {
+      for (const tag of tags) {
+        if (!testBucketCondition(tag, this, entry)) {
+          return false
+        }
+      }
       return true
     }
-    for (const tag of tags) {
-      if (!testBucketCondition(tag, this, entry)) {
-        return false
-      }
-    }
-    return true
   }
 }
 

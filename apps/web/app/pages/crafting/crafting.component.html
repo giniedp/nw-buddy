@@ -5,5 +5,13 @@
     [childRouteIndex]="'table'"
     class="bg-base-100 rounded-md overflow-y-auto"
   ></nwb-data-table-categories>
+  <ul class="menu menu-compact xl:menu-normal bg-base-100 rounded-md">
+    <li [routerLinkActive]="'bordered'">
+      <a [routerLink]="'trophies'" > Trophies </a>
+    </li>
+    <li [routerLinkActive]="'bordered'">
+      <a [routerLink]="'runes'" > Runes </a>
+    </li>
+  </ul>
 </div>
 <router-outlet></router-outlet>

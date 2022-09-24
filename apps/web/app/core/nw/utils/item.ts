@@ -108,3 +108,21 @@ export function getRecipeForItem(item: ItemDefinitionMaster | Housingitems, reci
     return recipe.RecipeID === item.CraftingRecipe || recipe.ItemID === id
   })
 }
+
+export function getItemIconPath(item: ItemDefinitionMaster | Housingitems, female: boolean = false) {
+  if (!item) {
+    return null
+  }
+  if (isMasterItem(item)) {
+    if (female && item.ArmorAppearanceF) {
+      return item.ArmorAppearanceF
+    }
+    if (item.ArmorAppearanceM) {
+      return item.ArmorAppearanceM
+    }
+    if (item.WeaponAppearanceOverride) {
+      return item.WeaponAppearanceOverride
+    }
+  }
+  return item.IconPath
+}

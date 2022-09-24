@@ -7,7 +7,7 @@ import { SelectboxFilter, mithrilCell, AgGridComponent, RangeFilter } from '~/ui
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
-import { getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman, getPerkAffixStat } from '~/core/nw/utils'
+import { getItemIconPath, getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman, getPerkAffixStat } from '~/core/nw/utils'
 import { TranslateService } from '~/core/i18n'
 import { humanize, shareReplayRefCount } from '~/core/utils'
 
@@ -39,7 +39,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
             view: ({ attrs: { data } }) =>
               m('a', { target: '_blank', href: nwdbLinkUrl('item', data.ItemID) }, [
                 m(IconComponent, {
-                  src: data.IconPath,
+                  src: getItemIconPath(data),
                   class: `w-9 h-9 nw-icon bg-rarity-${getItemRarity(data)}`,
                 }),
               ]),
