@@ -15,15 +15,19 @@ import { QuicksearchService } from './quicksearch.service';
 export class QuicksearchInputComponent implements OnInit, OnDestroy {
 
   public get value() {
-    return this.search.query.value
+    return this.search.value
   }
 
   public set value(v: string) {
-    this.search.query.next(v)
+    this.search.value = v
   }
 
   @ViewChild('input')
   public input: ElementRef<HTMLInputElement>
+
+  protected get active() {
+    return this.search.active
+  }
 
   private destroy$ = new Subject()
   public constructor(private search: QuicksearchService, private keys: Hotkeys) {
