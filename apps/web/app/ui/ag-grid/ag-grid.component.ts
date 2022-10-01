@@ -14,7 +14,7 @@ import {
 import { ColumnApi, FilterChangedEvent, Grid, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { debounceTime, distinctUntilChanged, ReplaySubject, Subject, takeUntil } from 'rxjs'
 
-import { PreferencesService, StorageScopeNode, StorageNode } from '~/core/preferences'
+import { PreferencesService, StorageScopeNode, StorageNode } from '~/preferences'
 
 @Component({
   selector: 'nwb-ag-grid',

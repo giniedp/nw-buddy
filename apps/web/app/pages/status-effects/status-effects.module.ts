@@ -7,7 +7,7 @@ import { PropertyGridModule } from '~/ui/property-grid'
 import { DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule } from '~/ui/quicksearch'
 import { StatusEffectsTableComponent } from './status-effects-table.component'
-import { NwModule } from '~/core/nw'
+import { NwModule } from '~/nw'
 
 @NgModule({
   imports: [CommonModule, NwModule, StatusEffectsRoutingModule, DataTableModule, QuicksearchModule],

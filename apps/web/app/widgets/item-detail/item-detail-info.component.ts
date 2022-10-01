@@ -1,6 +1,6 @@
 import { Component, Input } from "@angular/core"
 import { Housingitems, ItemDefinitionMaster } from "@nw-data/types"
-import { getItemTierAsRoman, isMasterItem } from "~/core/nw/utils"
+import { getItemTierAsRoman, isMasterItem } from "~/nw/utils"
 
 @Component({
   selector: 'nwb-item-detail-info',

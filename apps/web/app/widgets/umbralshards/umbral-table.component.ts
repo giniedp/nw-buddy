@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
 import { BehaviorSubject, combineLatest, defer, map } from 'rxjs'
-import { NwService } from '~/core/nw'
-import { shareReplayRefCount } from '~/core/utils'
+import { NwService } from '~/nw'
+import { shareReplayRefCount } from '~/utils'
 
 function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: keyof T) {
   let result = 0

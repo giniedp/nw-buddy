@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { uniq } from 'lodash'
 import { combineLatest, defer, map } from 'rxjs'
-import { NwDbService } from '~/core/nw'
-import { getVitalDungeon } from '~/core/nw/utils'
-import { observeRouteParam } from '~/core/utils'
+import { NwDbService } from '~/nw'
+import { getVitalDungeon } from '~/nw/utils'
+import { observeRouteParam } from '~/utils'
 
 @Component({
   templateUrl: './vital.component.html',

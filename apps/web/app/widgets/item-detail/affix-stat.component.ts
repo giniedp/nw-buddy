@@ -1,8 +1,8 @@
 import { Component, Input } from '@angular/core'
 import { Perks } from '@nw-data/types'
 import { BehaviorSubject, combineLatest, defer, map, ReplaySubject } from 'rxjs'
-import { NwService } from '~/core/nw'
-import { getPerkAffixStat, hasPerkAffixStats } from '~/core/nw/utils'
+import { NwService } from '~/nw'
+import { getPerkAffixStat, hasPerkAffixStats } from '~/nw/utils'
 
 @Component({
   selector: 'nwb-affixstat',

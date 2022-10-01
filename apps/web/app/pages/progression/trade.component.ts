@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
 import { Subject } from 'rxjs'
-import { NwService } from '~/core/nw'
+import { NwService } from '~/nw'
 
 @Component({
   selector: 'nwb-trade',

@@ -7,7 +7,8 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs'
-import { TranslateService } from '../i18n'
+import { TranslateService } from '~/i18n'
+
 import { NwExpressionService } from './nw-expression.service'
 
 interface TextContext {

@@ -1,7 +1,7 @@
 import { Component, Input } from "@angular/core"
 import { GameEvent } from "@nw-data/types"
 import { combineLatest } from "rxjs"
-import { NwDbService } from "~/core/nw"
+import { NwDbService } from "~/nw"
 
 @Component({
   selector: 'nwb-item-detail-salvage',

@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core'
 import { Gamemodes, Vitals } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable } from 'rxjs'
-import { nwdbLinkUrl, NwDbService, NwVitalsService } from '~/core/nw'
+import { nwdbLinkUrl, NwDbService, NwVitalsService } from '~/nw'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
-import { humanize, shareReplayRefCount } from '~/core/utils'
+import { humanize, shareReplayRefCount } from '~/utils'
 import m from 'mithril'
-import { TranslateService } from '~/core/i18n'
-import { getVitalDungeon, getVitalDungeonId } from '~/core/nw/utils'
+import { TranslateService } from '~/i18n'
+import { getVitalDungeon, getVitalDungeonId } from '~/nw/utils'
 
 export interface Entity extends Vitals {
   $dungeon: Gamemodes

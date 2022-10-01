@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy } from '@angular/core'
 import { BehaviorSubject, combineLatest, map, Subject, takeUntil } from 'rxjs'
-import { NwService } from '~/core/nw'
+import { NwService } from '~/nw'
 
 function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: keyof T) {
   let result = 0

@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core'
 import { Housingitems } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, map, Observable, shareReplay, tap } from 'rxjs'
-import { IconComponent, nwdbLinkUrl, NwService } from '~/core/nw'
+import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
 import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
-import { getItemIconPath, getItemRarity, getItemTierAsRoman } from '~/core/nw/utils'
-import { TranslateService } from '~/core/i18n'
-import { humanize } from '~/core/utils'
+import { getItemIconPath, getItemRarity, getItemTierAsRoman } from '~/nw/utils'
+import { TranslateService } from '~/i18n'
+import { humanize } from '~/utils'
 
 @Injectable()
 export class HousingAdapterService extends DataTableAdapter<Housingitems> {

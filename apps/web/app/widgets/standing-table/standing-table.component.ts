@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { defer, map } from 'rxjs'
-import { NwService } from '~/core/nw'
-import { DestroyService } from '~/core/utils'
+import { NwService } from '~/nw'
+import { DestroyService } from '~/utils'
 
 export interface StandingRow {
   Level: number

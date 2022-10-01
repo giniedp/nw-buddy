@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core'
 import { Vitals } from '@nw-data/types'
 import { combineLatest, defer, map, merge, ReplaySubject, switchMap } from 'rxjs'
-import { NwDamagetypeService, NwService, NwVitalsService } from '~/core/nw'
-import { DestroyService } from '~/core/utils'
+import { NwDamagetypeService, NwService, NwVitalsService } from '~/nw'
+import { DestroyService } from '~/utils'
 
 const FAMILY_META = {
   wildlife: {

@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core'
 import { GameEvent, Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty } from '@nw-data/types'
 import { uniq } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, switchMap } from 'rxjs'
-import { NwLootbucketService, NwService } from '~/core/nw'
-import { getVitalDungeon } from '~/core/nw/utils'
-import { DungeonPreferencesService } from '~/core/preferences'
-import { shareReplayRefCount } from '~/core/utils'
+import { NwLootbucketService, NwService } from '~/nw'
+import { getVitalDungeon } from '~/nw/utils'
+import { DungeonPreferencesService } from '~/preferences'
+import { shareReplayRefCount } from '~/utils'
 
 export interface DifficultyWithRewards {
   difficulty: Mutationdifficulty

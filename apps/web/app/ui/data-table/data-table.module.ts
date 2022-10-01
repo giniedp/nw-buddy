@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { DataTableComponent } from './data-table.component'
-import { NwModule } from '~/core/nw'
+import { NwModule } from '~/nw'
 import { AgGridModule } from '../ag-grid'
 import { DataTableRouterDirective } from './data-table-router.directive'
 import { DataTableCategoriesComponent } from './data-table-categories.component'

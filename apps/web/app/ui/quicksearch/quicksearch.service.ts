@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { BehaviorSubject, defer, tap } from 'rxjs'
-import { shareReplayRefCount } from '~/core/utils'
+import { shareReplayRefCount } from '~/utils'
 
 @Injectable({
   providedIn: 'root',

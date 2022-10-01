@@ -2,7 +2,7 @@ import {
   ChangeDetectionStrategy, ChangeDetectorRef, Component, TrackByFunction
 } from '@angular/core'
 import { defer, map } from 'rxjs'
-import { getItemIconPath } from '~/core/nw/utils'
+import { getItemIconPath } from '~/nw/utils'
 import { UmbralCalculatorService } from './umbral-calculator.service'
 import { ItemState, UpgradeStep } from './utils'
 

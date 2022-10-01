@@ -27,9 +27,9 @@ import {
   takeUntil,
   tap,
 } from 'rxjs'
-import { LocaleService } from '~/core/i18n'
-import { PreferencesService, StorageNode } from '~/core/preferences'
-import { DestroyService } from '~/core/utils'
+import { LocaleService } from '~/i18n'
+import { PreferencesService, StorageNode } from '~/preferences'
+import { DestroyService } from '~/utils'
 import { AgGridComponent } from '~/ui/ag-grid'
 import { DataTableAdapter } from './data-table-adapter'
 

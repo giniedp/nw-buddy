@@ -1,6 +1,6 @@
 import { ClosureComponent } from 'mithril'
 import { distinctUntilChanged, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
-import { ItemMeta, ItemPreferencesService } from '~/core/preferences'
+import { ItemMeta, ItemPreferencesService } from '~/preferences'
 import m from 'mithril'
 
 export interface ItemTrackerAtts {

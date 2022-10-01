@@ -8,8 +8,8 @@ import {
   OnInit,
 } from '@angular/core'
 import { BehaviorSubject, combineLatest, map, of, ReplaySubject, switchMap, takeUntil } from 'rxjs'
-import { NwTradeskillService } from '~/core/nw/nw-tradeskill.service'
-import { DestroyService } from '~/core/utils'
+import { NwTradeskillService } from '~/nw/nw-tradeskill.service'
+import { DestroyService } from '~/utils'
 
 @Component({
   selector: 'nwb-tradeskill-progress',

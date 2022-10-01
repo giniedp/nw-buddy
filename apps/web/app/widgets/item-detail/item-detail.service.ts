@@ -1,6 +1,6 @@
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { BehaviorSubject, combineLatest, defer, map, NEVER, of, switchMap, take } from 'rxjs'
-import { NwDbService, NwVitalsService } from '~/core/nw'
+import { NwDbService, NwVitalsService } from '~/nw'
 import {
   getItemId,
   getItemIdFromRecipe,
@@ -10,8 +10,8 @@ import {
   getRecipeForItem,
   isItemWeapon,
   isMasterItem,
-} from '~/core/nw/utils'
-import { shareReplayRefCount } from '~/core/utils'
+} from '~/nw/utils'
+import { shareReplayRefCount } from '~/utils'
 
 import { Injectable } from '@angular/core'
 

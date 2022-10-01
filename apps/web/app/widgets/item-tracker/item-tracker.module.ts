@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { ItemTracker } from './item-tracker.component'
-import { NwModule } from '~/core/nw'
+import { NwModule } from '~/nw'
 import { FormsModule } from '@angular/forms'
 import { ItemMarkerComponent } from './item-marker.component'
 

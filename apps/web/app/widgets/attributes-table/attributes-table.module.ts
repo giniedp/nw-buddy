@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
 import { AttributesTableComponent } from './attributes-table.component'
-import { NwModule } from '~/core/nw'
+import { NwModule } from '~/nw'
 import { ItemDetailModule } from '../item-detail'
 
 @NgModule({

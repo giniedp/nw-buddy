@@ -1,8 +1,8 @@
 import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { groupBy, sortBy } from 'lodash'
-import { TranslateService } from '~/core/i18n'
-import { NwService } from '~/core/nw'
-import { getItemRarity } from '~/core/nw/utils'
+import { TranslateService } from '~/i18n'
+import { NwService } from '~/nw'
+import { getItemRarity } from '~/nw/utils'
 import { Armorset, ArmorsetGroup } from './types'
 
 export function findSets(items: ItemDefinitionMaster[], source: string, perksMap: Map<string, Perks>, i18n: TranslateService): ArmorsetGroup[] {

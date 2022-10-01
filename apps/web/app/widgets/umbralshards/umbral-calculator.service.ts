@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core'
 import { combineLatest, debounce, debounceTime, defer, map, of, switchMap } from 'rxjs'
-import { NwDbService } from '~/core/nw'
-import { PreferencesService, StorageNode } from '~/core/preferences'
-import { shareReplayRefCount } from '~/core/utils'
+import { NwDbService } from '~/nw'
+import { PreferencesService, StorageNode } from '~/preferences'
+import { shareReplayRefCount } from '~/utils'
 import { calculateSteps, CollectionState, createState, updateState } from './utils'
 
 @Injectable({

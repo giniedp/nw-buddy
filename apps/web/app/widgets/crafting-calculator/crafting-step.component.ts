@@ -16,8 +16,8 @@ import {
 } from '@angular/core'
 import { Craftingcategories, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { filter, ReplaySubject, Subject, switchMapTo, takeUntil } from 'rxjs'
-import { NwService } from '~/core/nw'
-import { getItemRarity } from '~/core/nw/utils'
+import { NwService } from '~/nw'
+import { getItemRarity } from '~/nw/utils'
 import { CraftingCalculatorComponent } from './crafting-calculator.component'
 import { CraftingCalculatorService, CraftingStep } from './crafting-calculator.service'
 

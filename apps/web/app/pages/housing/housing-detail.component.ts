@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
-import { observeRouteParam } from '~/core/utils'
+import { observeRouteParam } from '~/utils'
 
 @Component({
   selector: 'nwb-housing-detail',

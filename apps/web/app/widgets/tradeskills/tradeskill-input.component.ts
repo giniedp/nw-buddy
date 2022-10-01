@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
 import { BehaviorSubject, combineLatest, defer, map } from 'rxjs'
-import { NwService } from '~/core/nw'
-import { shareReplayRefCount } from '~/core/utils'
+import { NwService } from '~/nw'
+import { shareReplayRefCount } from '~/utils'
 
 @Component({
   selector: 'nwb-tradeskill-input',

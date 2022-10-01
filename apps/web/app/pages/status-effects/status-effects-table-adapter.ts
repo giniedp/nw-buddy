@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core'
 import { Statuseffect, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, map, Observable, shareReplay } from 'rxjs'
-import { IconComponent, nwdbLinkUrl, NwService } from '~/core/nw'
+import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
-import { TranslateService } from '~/core/i18n'
-import { humanize, shareReplayRefCount } from '~/core/utils'
+import { TranslateService } from '~/i18n'
+import { humanize, shareReplayRefCount } from '~/utils'
 
 @Injectable()
 export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> {

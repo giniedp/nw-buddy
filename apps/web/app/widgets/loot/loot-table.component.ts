@@ -13,8 +13,8 @@ import m from 'mithril'
 import { BehaviorSubject, combineLatest, defer, map, Observable, of, startWith, switchMap, tap } from 'rxjs'
 
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { TranslateService } from '~/core/i18n'
-import { IconComponent, nwdbLinkUrl, NwDbService, NwLootbucketService } from '~/core/nw'
+import { TranslateService } from '~/i18n'
+import { IconComponent, nwdbLinkUrl, NwDbService, NwLootbucketService } from '~/nw'
 import {
   getItemIconPath,
   getItemId,
@@ -23,12 +23,12 @@ import {
   getItemTierAsRoman,
   LootTableEntry,
   LootTableItem,
-} from '~/core/nw/utils'
-import { shareReplayRefCount } from '~/core/utils'
+} from '~/nw/utils'
+import { shareReplayRefCount } from '~/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import { QuicksearchService } from '~/ui/quicksearch'
-import { LootContext } from '~/core/nw/nw-lootcontext'
+import { LootContext } from '~/nw/nw-lootcontext'
 
 type Item = ItemDefinitionMaster | Housingitems
 @Component({

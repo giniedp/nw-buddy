@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy, Optional } from '@angular/core'
+import { Injectable, OnDestroy } from '@angular/core'
 import {
   combineLatest,
   distinctUntilChanged,
@@ -8,12 +8,12 @@ import {
   Observable,
   of,
   startWith,
-  Subject,
-  switchMap,
-  takeUntil,
+  Subject, switchMap,
+  take,
+  takeUntil
 } from 'rxjs'
 import { LocaleService } from './locale.service'
-import { TranslateSource } from './translate-source'
+import { TranslateLoader } from './translate-loader'
 
 @Injectable({ providedIn: 'root' })
 export class TranslateService implements OnDestroy {
@@ -22,9 +22,8 @@ export class TranslateService implements OnDestroy {
   private change$ = new Subject()
 
   public constructor(
-    private locale: LocaleService,
-    @Optional()
-    private source: TranslateSource
+    public readonly locale: LocaleService,
+    public readonly loader: TranslateLoader
   ) {
     this.attachLoader()
   }
@@ -38,9 +37,7 @@ export class TranslateService implements OnDestroy {
       locale: isObservable(locale) ? locale : of(locale),
       change: this.change$.pipe(startWith(null))
     })
-    .pipe(map(({ key, locale }) => {
-      return this.get(key, locale)
-    }))
+    .pipe(map(({ key, locale }) => this.get(key, locale)))
     .pipe(distinctUntilChanged())
   }
 
@@ -53,13 +50,20 @@ export class TranslateService implements OnDestroy {
     return value ?? key
   }
 
-  public async getAync(key: string, locale?: string) {
+  public async getAsync(key: string, locale?: string) {
     return firstValueFrom(this.observe(key, locale))
   }
 
   public ngOnDestroy(): void {
     this.destroy$.next(null)
     this.destroy$.complete()
+  }
+
+  public use(locale: string) {
+    this.loader.loadTranslations(locale).pipe(take(1)).subscribe((data) => {
+      this.merge(locale, data)
+      this.locale.use(locale)
+    })
   }
 
   public merge(locale: string, data: Record<string, string>) {
@@ -75,12 +79,13 @@ export class TranslateService implements OnDestroy {
   }
 
   private attachLoader() {
-    if (!this.source) {
+    if (!this.loader) {
       this.change$.next(null)
       return
     }
     this.locale.value$
-      .pipe(switchMap((locale) => combineLatest([of(locale), this.source.loadTranslations(locale)])))
+      // .pipe(subscribeOn(asapScheduler))
+      .pipe(switchMap((locale) => combineLatest([of(locale), this.loader.loadTranslations(locale)])))
       .pipe(takeUntil(this.destroy$))
       .subscribe(([locale, data]) => {
         this.merge(locale, data)

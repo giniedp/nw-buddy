@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core'
 import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { GridOptions, ValueGetterParams } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, shareReplay, Subject, takeUntil, tap } from 'rxjs'
-import { IconComponent, nwdbLinkUrl, NwService } from '~/core/nw'
+import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
 import { SelectboxFilter, mithrilCell, AgGridComponent, RangeFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
-import { getItemIconPath, getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman, getPerkAffixStat } from '~/core/nw/utils'
-import { TranslateService } from '~/core/i18n'
-import { humanize, shareReplayRefCount } from '~/core/utils'
+import { getItemIconPath, getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman, getPerkAffixStat } from '~/nw/utils'
+import { TranslateService } from '~/i18n'
+import { humanize, shareReplayRefCount } from '~/utils'
 
 type ItemDefinitionMasterWithPerks = ItemDefinitionMaster & {
   $perks: Perks[]

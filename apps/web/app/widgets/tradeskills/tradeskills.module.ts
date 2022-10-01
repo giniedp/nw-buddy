@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core'
 import { CommonModule } from '@angular/common'
-import { NwModule } from '~/core/nw'
+import { NwModule } from '~/nw'
 import { ChartModule } from '~/ui/chart'
 import { FormsModule } from '@angular/forms'
 import { TradeskillInputComponent } from './tradeskill-input.component';

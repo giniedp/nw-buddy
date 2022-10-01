@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core'
 import { Ability } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, map, Observable } from 'rxjs'
-import { IconComponent, nwdbLinkUrl, NwDbService } from '~/core/nw'
+import { IconComponent, nwdbLinkUrl, NwDbService } from '~/nw'
 import { mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
-import { shareReplayRefCount } from '~/core/utils'
-import { TranslateService } from '~/core/i18n'
-import { NwExpressionService } from '~/core/nw'
+import { shareReplayRefCount } from '~/utils'
+import { TranslateService } from '~/i18n'
+import { NwExpressionService } from '~/nw'
 
 @Injectable()
 export class AbilitiesAdapterService extends DataTableAdapter<Ability> {

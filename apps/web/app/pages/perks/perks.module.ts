@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common'
 
 import { PerksRoutingModule } from './perks-routing.module'
 import { PerksComponent } from './perks.component'
-import { NwModule } from '~/core/nw'
+import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule } from '~/ui/quicksearch';
 import { PerksTableComponent } from './perks-table.component';

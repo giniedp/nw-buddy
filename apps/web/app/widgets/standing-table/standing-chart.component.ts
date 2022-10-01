@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
 import { defer, map } from 'rxjs'
-import { NwService } from '~/core/nw'
+import { NwService } from '~/nw'
 
 @Component({
   selector: 'nwb-standing-chart',

@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, ChangeDetectorRef } from '@angular/core'
 import { distinctUntilChanged, ReplaySubject, switchMap, takeUntil } from 'rxjs';
-import { ItemPreferencesService } from '~/core/preferences';
-import { DestroyService } from '~/core/utils';
+import { ItemPreferencesService } from '~/preferences';
+import { DestroyService } from '~/utils';
 
 @Component({
   selector: 'nwb-item-marker',

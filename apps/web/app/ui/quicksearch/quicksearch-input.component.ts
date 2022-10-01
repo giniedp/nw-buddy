@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ElementRef, ViewChild } from '@angular/core'
 import { Subject, takeUntil } from 'rxjs';
-import { Hotkeys } from '~/core/utils';
+import { Hotkeys } from '~/utils';
 import { QuicksearchService } from './quicksearch.service';
 
 @Component({

@@ -1,8 +1,8 @@
 import { CommonModule } from "@angular/common"
 import { Component, Input } from "@angular/core"
 import { BehaviorSubject, defer, of, switchMap } from "rxjs"
-import { NwDbService } from "~/core/nw"
-import { shareReplayRefCount } from "~/core/utils"
+import { NwDbService } from "~/nw"
+import { shareReplayRefCount } from "~/utils"
 
 
 @Component({

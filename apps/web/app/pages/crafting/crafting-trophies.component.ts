@@ -2,8 +2,8 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { groupBy } from 'lodash'
 import { combineLatest, defer, map } from 'rxjs'
-import { NwDbService } from '~/core/nw'
-import { getIngretientsFromRecipe, getItemId, getItemIdFromRecipe } from '~/core/nw/utils'
+import { NwDbService } from '~/nw'
+import { getIngretientsFromRecipe, getItemId, getItemIdFromRecipe } from '~/nw/utils'
 
 function isTrophy(item: Crafting) {
   return item.CraftingGroup === 'Trophies'

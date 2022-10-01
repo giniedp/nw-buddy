@@ -12,8 +12,8 @@ import {
   ViewChild,
 } from '@angular/core'
 import { distinctUntilChanged, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
-import { ItemMeta, ItemPreferencesService } from '~/core/preferences'
-import { DestroyService } from '~/core/utils'
+import { ItemMeta, ItemPreferencesService } from '~/preferences'
+import { DestroyService } from '~/utils'
 
 @Component({
   selector: 'nwb-gs-tracker,nwb-price-tracker,nwb-stock-tracker',

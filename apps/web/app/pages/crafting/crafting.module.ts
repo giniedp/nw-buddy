@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
 
 import { FormsModule } from '@angular/forms'
-import { NwModule } from '~/core/nw'
+import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { QuicksearchModule } from '~/ui/quicksearch'

@@ -1,11 +1,10 @@
-import { ChangeDetectorRef, Component, ElementRef, QueryList, ViewChildren } from '@angular/core'
-import { take } from 'rxjs'
+import { Component, ElementRef, QueryList, ViewChildren } from '@angular/core'
 
-import { ElectronService } from './core/electron'
-import { LocaleService, TranslateService } from './core/i18n'
-import { NwDbService } from './core/nw'
-import { AppPreferencesService } from './core/preferences'
-import { Hotkeys } from './core/utils'
+import { ElectronService } from './electron'
+import { TranslateService } from './i18n'
+
+import { AppPreferencesService } from './preferences'
+import { Hotkeys } from './utils'
 
 @Component({
   selector: 'app-root',
@@ -21,38 +20,25 @@ export class AppComponent {
   }
 
   public get language() {
-    return this.app.language.get()
+    return this.preferences.language.get()
   }
   public set language(value: string) {
-    this.db.data
-      .loadTranslations(value)
-      .pipe(take(1))
-      .subscribe((data) => {
-        this.translate.merge(value, data)
-        this.app.language.set(value)
-      })
+    this.preferences.language.set(value)
   }
 
   @ViewChildren('link')
   public tabs: QueryList<ElementRef<HTMLAnchorElement>>
 
   constructor(
-    private locale: LocaleService,
-    private translate: TranslateService,
+    private preferences: AppPreferencesService,
     private electron: ElectronService,
-    private app: AppPreferencesService,
-    private db: NwDbService,
-    private cdRef: ChangeDetectorRef,
-    private hotkeys: Hotkeys
+    private hotkeys: Hotkeys,
+    translate: TranslateService
   ) {
-    this.app.language.observe().subscribe((value) => {
-      this.locale.use(value)
-    })
+    preferences.language.observe().subscribe((locale) => translate.use(locale))
     if (electron.isElectron) {
       console.log(process.env)
       console.log('Run in electron')
-      console.log('Electron ipcRenderer', this.electron.ipcRenderer)
-      console.log('NodeJS childProcess', this.electron.childProcess)
     } else {
       console.log('Run in browser')
     }

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { PreferencesService, StorageNode, StorageProperty } from '~/core/preferences'
+import { PreferencesService, StorageNode, StorageProperty } from '~/preferences'
 import { RecipeState } from './crafting-calculator.service'
 
 @Injectable({ providedIn: 'root' })

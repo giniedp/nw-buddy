@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { defer, map } from 'rxjs'
-import { NwDbService } from '~/core/nw'
+import { NwDbService } from '~/nw'
 
 const REJECT = ['undefined', 'human']
 @Component({

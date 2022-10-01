@@ -1,10 +1,10 @@
 import { Injectable, OnDestroy } from '@angular/core'
 import { Crafting, Craftingcategories, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { combineLatest, defer, ReplaySubject, Subject, takeUntil } from 'rxjs'
-import { NwDbService, NwService } from '~/core/nw'
+import { NwDbService, NwService } from '~/nw'
 
-import { getRecipeForItem, calculateBonusItemChance, getIngretientsFromRecipe } from '~/core/nw/utils'
-import { TradeskillPreferencesService } from '~/core/preferences/tradeskill-preferences.service'
+import { getRecipeForItem, calculateBonusItemChance, getIngretientsFromRecipe } from '~/nw/utils'
+import { TradeskillPreferencesService } from '~/preferences/tradeskill-preferences.service'
 import { CraftingPreferencesService } from './crafting-preferences.service'
 
 export interface RecipeState {

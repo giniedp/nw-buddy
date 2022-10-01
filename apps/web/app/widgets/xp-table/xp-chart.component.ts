@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
 import { map, Subject, takeUntil } from 'rxjs'
-import { NwService } from '~/core/nw'
+import { NwService } from '~/nw'
 
 @Component({
   selector: 'nwb-xp-chart',

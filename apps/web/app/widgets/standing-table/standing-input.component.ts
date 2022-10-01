@@ -1,8 +1,8 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
 import { BehaviorSubject, combineLatest, defer, map, of, switchMap } from 'rxjs'
-import { NwService } from '~/core/nw'
-import { TerritoriesPreferencesService } from '~/core/preferences/territories-preferences.service'
-import { shareReplayRefCount } from '~/core/utils'
+import { NwService } from '~/nw'
+import { TerritoriesPreferencesService } from '~/preferences/territories-preferences.service'
+import { shareReplayRefCount } from '~/utils'
 
 @Component({
   selector: 'nwb-standing-input',

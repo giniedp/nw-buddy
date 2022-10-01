@@ -1,6 +1,6 @@
 import { IDoesFilterPassParams, IFilterComp, IFilterParams, RowNode } from 'ag-grid-community'
 import m from 'mithril'
-import { humanize } from '~/core/utils'
+import { humanize } from '~/utils'
 
 export interface SelectFilterOption {
   label: string

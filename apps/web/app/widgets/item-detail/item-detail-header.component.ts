@@ -8,8 +8,8 @@ import {
 } from '@angular/core'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { takeUntil } from 'rxjs'
-import { getItemId, getItemRarity, getItemRarityName, isHousingItem, isMasterItem } from '~/core/nw/utils'
-import { DestroyService } from '~/core/utils'
+import { getItemId, getItemRarity, getItemRarityName, isHousingItem, isMasterItem } from '~/nw/utils'
+import { DestroyService } from '~/utils'
 import { ItemDetailService } from './item-detail.service'
 
 @Component({

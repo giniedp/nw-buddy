@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common'
 
 import { SetsRoutingModule } from './armorsets-routing.module'
 
-import { NwModule } from '~/core/nw'
+import { NwModule } from '~/nw'
 import { FormsModule } from '@angular/forms'
 import { ArmorsetsComponent } from './armorsets.component'
 import { DataTableModule } from '~/ui/data-table'

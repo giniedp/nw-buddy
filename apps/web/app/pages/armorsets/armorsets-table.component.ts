@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, TrackByFunction, ViewChild } from '@angular/core'
 import { defer, map } from 'rxjs'
-import { shareReplayRefCount } from '~/core/utils'
+import { shareReplayRefCount } from '~/utils'
 import { DataTableComponent } from '~/ui/data-table'
 import { QuicksearchService } from '~/ui/quicksearch'
 import { Armorset } from './types'

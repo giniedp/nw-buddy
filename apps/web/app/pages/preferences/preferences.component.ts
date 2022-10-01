@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
-import { NwTradeskillService } from '~/core/nw/nw-tradeskill.service'
-import { AppPreferencesService, PreferencesService } from '~/core/preferences'
-import { TradeskillPreferencesService } from '~/core/preferences/tradeskill-preferences.service'
+import { NwTradeskillService } from '~/nw/nw-tradeskill.service'
+import { AppPreferencesService, PreferencesService } from '~/preferences'
+import { TradeskillPreferencesService } from '~/preferences/tradeskill-preferences.service'
 
 @Component({
   selector: 'nwb-preferences',

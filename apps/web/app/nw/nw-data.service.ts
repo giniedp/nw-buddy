@@ -2,12 +2,11 @@ import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { NwDataloader } from '@nw-data/datatables'
 import { Observable, shareReplay } from 'rxjs'
-import { TranslateSource } from '../i18n/translate-source'
 
 export type LocaleData = Record<string, { value: string }>
 
 @Injectable({ providedIn: 'root' })
-export class NwDataService extends NwDataloader implements TranslateSource {
+export class NwDataService extends NwDataloader {
   private cache = new Map<string, Observable<any>>()
 
   public constructor(private http: HttpClient) {

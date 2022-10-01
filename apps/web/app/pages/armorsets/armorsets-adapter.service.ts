@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { groupBy } from 'lodash'
-import { combineLatest, defer, map, merge, Observable, race, shareReplay, takeUntil } from 'rxjs'
-import { LocaleService, TranslateService } from '~/core/i18n'
-import { IconComponent, nwdbLinkUrl, NwService } from '~/core/nw'
-import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
+import m from 'mithril'
+import { combineLatest, defer, map, merge, Observable, takeUntil } from 'rxjs'
+import { TranslateService } from '~/i18n'
+import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
+import { getItemIconPath, getItemRarity, getItemTierAsRoman } from '~/nw/utils'
+import { mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
+import { shareReplayRefCount } from '~/utils'
+import { ItemTrackerCell } from '~/widgets/item-tracker'
 import { Armorset } from './types'
 import { findSets } from './utils'
-import m from 'mithril'
-import { ItemTrackerCell } from '~/widgets/item-tracker'
-import { shareReplayRefCount } from '~/core/utils'
-import { getItemIconPath, getItemRarity, getItemTierAsRoman } from '~/core/nw/utils'
 
 function fieldName(key: keyof Armorset) {
   return key
@@ -177,7 +177,6 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
     return combineLatest({
       items: this.nw.db.items,
       perks: this.nw.db.perksMap,
-      locale: this.locale.value$,
     }).pipe(
       map(({ items, perks }) => {
         const MIN_RARITY = 2
@@ -196,7 +195,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
     )
   }).pipe(shareReplayRefCount(1))
 
-  public constructor(private nw: NwService, private i18n: TranslateService, private locale: LocaleService) {
+  public constructor(private nw: NwService, private i18n: TranslateService) {
     super()
   }
 }
