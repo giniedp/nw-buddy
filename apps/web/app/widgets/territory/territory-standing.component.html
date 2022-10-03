@@ -1,0 +1,26 @@
+<img
+  src="/assets/icons/territories/icon_territorystanding.png"
+  class="object-cover absolute top-0 left-0 w-full h-full pointer-events-none scale-125"
+/>
+<input
+  [disabled]="readonly"
+  [ngModel]="value | async"
+  (ngModelChange)="setValue($event)"
+  type="number"
+  min="0"
+  placeholder="0"
+  class="
+    input
+    focus:outline-none
+    bg-transparent
+    h-full
+    w-full
+    p-0
+    text-center text-2xl
+    appearance-none
+    relative
+    z-10
+    text-base-100
+    font-medium
+  "
+/>

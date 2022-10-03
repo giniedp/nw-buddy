@@ -21,6 +21,7 @@ program
     const options = program.opts<{ input: string, output: string, ptr: boolean }>()
     const input = options.input || env(options.ptr).dataDir
     const output = options.output || './apps/web/nw-data'
+    console.log('import', { input, output })
 
     console.log('loading datatables')
     const tables = await loadDatatables({
@@ -40,21 +41,21 @@ program
         '*_gamemodes',
         '*_gatherables',
         '*_housingitems',
-        '*_itemdefinitions_resources',
-        '*_itemdefinitions_master_*',
-        '*_itemdefinitions_weapons',
         '*_itemdefinitions_consumables',
-        '*_staminacosts_player',
-        '*_manacosts_player',
+        '*_itemdefinitions_master_*',
+        '*_itemdefinitions_resources',
+        '*_itemdefinitions_weapons',
         '*_lootbuckets',
         '*_lootlimits',
         '*_loottables*',
+        '*_manacosts_player',
         '*_metaachievements',
         '*_milestonerewards',
         '*_perkbuckets',
         '*_perks',
         '*_spelltable_*',
         '*_spelltable',
+        '*_staminacosts_player',
         '*_statuseffectcategories',
         '*_statuseffects_*',
         '*_statuseffects',
@@ -71,6 +72,7 @@ program
         '*_xpamountsbylevel',
         'arenas/*',
         'gamemodemutators/*',
+        'pointofinterestdefinitions/*',
         'weaponabilities/*',
       ].map((it) => it + '.json'),
       remap: [
@@ -159,6 +161,15 @@ program
             }),
           ],
         },
+        {
+          file: /pointofinterestdefinitions/,
+          rules: [
+            splitToArrayRule({
+              properties: ['LootTags'],
+              separator: ',',
+            }),
+          ],
+        },
       ],
     })
 
@@ -190,7 +201,8 @@ program
         'ui_dexterity',
         'ui_intelligence',
         'ui_constitution',
-        'ui_focus'
+        'ui_focus',
+        /ui_poi_.*_description/
       ],
     }).then((files) => {
       checkExpressions({

@@ -1,6 +1,7 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
 import { BehaviorSubject, combineLatest, defer, map, of, switchMap } from 'rxjs'
 import { NwService } from '~/nw'
+import { territoryImage } from '~/nw/utils'
 import { TerritoriesPreferencesService } from '~/preferences/territories-preferences.service'
 import { shareReplayRefCount } from '~/utils'
 
@@ -10,7 +11,7 @@ import { shareReplayRefCount } from '~/utils'
   styleUrls: ['./standing-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'relative'
+    class: 'block relative'
   }
 })
 export class StandingInputComponent {
@@ -33,12 +34,7 @@ export class StandingInputComponent {
     .pipe(map((it) => it?.NameLocalizationKey))
 
   public territoryImage$ = defer(() => this.territory$)
-    .pipe(map((it) => {
-      if (it?.TerritoryID >= 2 && it?.TerritoryID <= 15) {
-        return `assets/icons/territories/mappanel_territory${it.TerritoryID}.png`
-      }
-      return `assets/icons/territories/mappanel_territory_default.png`
-    }))
+    .pipe(map((it) => territoryImage(it, 'territory')))
 
   public standingLevel$ = defer(() => this.territoryId$)
     .pipe(switchMap((id) => !id ? of(0) : this.pref.observe(id).pipe(map((it) => it?.standing || 0))))

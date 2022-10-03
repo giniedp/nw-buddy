@@ -1,4 +1,5 @@
 <nwb-title-bar *ngIf="isElectron"></nwb-title-bar>
+
 <div class="navbar bg-base-100 z-50 rounded-md font-bold">
   <div class="px-2 flex-none">
     <a class="text-lg font-bold">
@@ -14,14 +15,17 @@
     <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/perks"> Perks </a>
     <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/abilities"> Abilities </a>
     <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/status-effects"> Statuseffects </a>
-    <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/vitals"> Vitals </a>
 
     <div class="divider divider-horizontal"></div>
 
     <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/armorsets">Armorsets</a>
     <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/progression"> Progression </a>
-    <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/dungeons">Dungeons</a>
 
+    <div class="divider divider-horizontal"></div>
+
+    <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/territories"> Territories </a>
+    <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/dungeons">Dungeons</a>
+    <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/vitals"> Vitals </a>
   </div>
   <div class="flex flex-none px-2">
     <select class="select select-bordered w-20" [(ngModel)]="language">
@@ -47,6 +51,22 @@
         </li>
         <li>
           <a routerLinkActive="text-primary" routerLink="/about"> About </a>
+        </li>
+
+        <li class="menu-title">
+          <span>Tools on the web</span>
+        </li>
+
+        <li *ngFor="let it of links">
+          <a target="_blank" [href]="it.url">
+            <svg viewBox="0 0 448 512" class="w-4 h-4">
+              <path
+                fill="currentColor"
+                d="M288 32c-17.7 0-32 14.3-32 32s14.3 32 32 32h50.7L169.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L384 141.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H288zM80 64C35.8 64 0 99.8 0 144v256c0 44.2 35.8 80 80 80h256c44.2 0 80-35.8 80-80v-80c0-17.7-14.3-32-32-32s-32 14.3-32 32v80c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V144c0-8.8 7.2-16 16-16h80c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"
+              />
+            </svg>
+            <span class="whitespace-nowrap">{{ it.label }}</span>
+          </a>
         </li>
       </ul>
     </div>

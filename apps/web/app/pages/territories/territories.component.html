@@ -1,0 +1,17 @@
+<div class="w-36 xl:w-40 flex flex-col gap-4">
+  <ul class="menu menu-compact xl:menu-normal bg-base-100 rounded-md">
+    <li [routerLinkActive]="'bordered'" >
+      <a [routerLink]="'list'">Territories</a>
+    </li>
+    <li [routerLinkActive]="'bordered'" >
+      <a [routerLink]="'standing'">Standing</a>
+    </li>
+    <li [routerLinkActive]="'bordered'" >
+      <a [routerLink]="'governance'">Governance</a>
+    </li>
+    <li [routerLinkActive]="'bordered'" >
+      <a [routerLink]="'poi'">POI</a>
+    </li>
+  </ul>
+</div>
+<router-outlet></router-outlet>

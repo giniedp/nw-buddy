@@ -189,7 +189,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     })
   }
 
-  private syncSelection(toSelect: string[], options?: { ensureVisible: boolean }) {
+  private syncSelection(toSelect: Array<string | number>, options?: { ensureVisible: boolean }) {
     const api = this.grid?.api
     if (!api) {
       return

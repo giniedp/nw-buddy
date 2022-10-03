@@ -2,7 +2,6 @@ import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 import { LevelComponent } from './level.component'
 import { ProgressionComponent } from './progression.component'
-import { StandingComponent } from './standing.component'
 import { TradeComponent } from './trade.component'
 import { UmbralComponent } from './umbral.component'
 
@@ -20,10 +19,6 @@ const routes: Routes = [
       {
         path: 'tradeskills',
         component: TradeComponent,
-      },
-      {
-        path: 'standing',
-        component: StandingComponent,
       },
       {
         path: 'level',

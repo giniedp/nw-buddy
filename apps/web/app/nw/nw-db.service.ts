@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core'
+import { NwDataloader } from '@nw-data/datatables'
 import { groupBy } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, shareReplay } from 'rxjs'
 import { CaseInsensitiveMap } from '../utils'
@@ -259,6 +260,13 @@ export class NwDbService {
   public territories = list(() => this.data.territorydefinitions())
   public territoriesMap = index(() => this.territories, 'TerritoryID')
   public territory = lookup(() => this.territoriesMap)
+
+  public pois = list(() => {
+    const keys = this.data.apiMethods.filter((it) => it.startsWith('pointofinterestdefinitionsPoidefinitions'))
+    return keys.map((k) => this.data[k](null) as ReturnType<NwDataService['pointofinterestdefinitionsPoidefinitions0202']>)
+  })
+  public poisMap = index(() => this.pois, 'TerritoryID')
+  public poi = lookup(() => this.poisMap)
 
   public milestoneRewards = list(() => this.data.milestonerewards())
   public mutatorDifficulties = list(() => this.data.gamemodemutatorsMutationdifficulty())

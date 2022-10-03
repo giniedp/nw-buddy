@@ -1,10 +1,9 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { groupBy } from 'lodash'
-import { combineLatest, defer, map, tap } from 'rxjs'
+import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { getIngretientsFromRecipe, getItemId, getItemIdFromRecipe } from '~/nw/utils'
-import { QuicksearchService } from '~/ui/quicksearch'
 
 type RecipeWithItem = Crafting & {
   $item: ItemDefinitionMaster | Housingitems

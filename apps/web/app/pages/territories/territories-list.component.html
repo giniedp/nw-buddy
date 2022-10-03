@@ -1,0 +1,7 @@
+<div class="flex-1 overflow-auto">
+  <div class="grid grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
+    <nwb-territory-card *ngFor="let item of territories$ | async"  [territory]="item" class="flex-1 select-none"></nwb-territory-card>
+
+  </div>
+</div>
+<router-outlet></router-outlet>

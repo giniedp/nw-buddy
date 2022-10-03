@@ -52,4 +52,10 @@ export class ItemPreferencesService {
       }))
     )
   }
+
+  public clearPrices() {
+    this.storage.keys().forEach((key) => {
+      this.merge(key, { price: 0 })
+    })
+  }
 }

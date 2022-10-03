@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common'
 
 import { ItemsRoutingModule } from './items-routing.module'
 import { ItemsComponent } from './items.component'
-import { ItemDetailModule } from '~/widgets/item-detail';
+import { ItemDetailModule } from '~/widgets/item-detail'
 import { ItemComponent } from './item.component'
 import { FormsModule } from '@angular/forms'
 import { DataTableModule } from '~/ui/data-table'
-import { QuicksearchModule } from '~/ui/quicksearch';
-import { ItemsTableComponent } from './items-table.component';
+import { QuicksearchModule } from '~/ui/quicksearch'
+import { ItemsTableComponent } from './items-table.component'
 
 @NgModule({
   imports: [CommonModule, FormsModule, ItemsRoutingModule, DataTableModule, ItemDetailModule, QuicksearchModule],

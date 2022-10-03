@@ -14,20 +14,20 @@ import type {
   Gatherables,
   VariationsLockedInteractGatherables,
   Housingitems,
+  ItemdefinitionsConsumables,
   ItemdefinitionsResources,
   ItemdefinitionsWeapons,
-  ItemdefinitionsConsumables,
-  StaminacostsPlayer,
-  ManacostsPlayer,
   Lootbuckets,
   Lootlimits,
   Loottable,
+  ManacostsPlayer,
   Metaachievements,
   Milestonerewards,
   Perkbuckets,
   Perks,
   Statuseffect,
   Spelltable,
+  StaminacostsPlayer,
   Statuseffectcategories,
   TerritoryStanding,
   Territorydefinitions,
@@ -66,6 +66,7 @@ import type {
   Mutationdifficulty,
   Mutationrankdata,
   Promotionmutations,
+  PoiDefinition,
   Ability,
 } from './types'
 import { Observable } from 'rxjs'
@@ -207,20 +208,14 @@ export abstract class NwDataloader {
   public housingitems() {
     return this.load<Housingitems[]>('javelindata_housingitems.json')
   }
+  public itemdefinitionsConsumables() {
+    return this.load<ItemdefinitionsConsumables[]>('javelindata_itemdefinitions_consumables.json')
+  }
   public itemdefinitionsResources() {
     return this.load<ItemdefinitionsResources[]>('javelindata_itemdefinitions_resources.json')
   }
   public itemdefinitionsWeapons() {
     return this.load<ItemdefinitionsWeapons[]>('javelindata_itemdefinitions_weapons.json')
-  }
-  public itemdefinitionsConsumables() {
-    return this.load<ItemdefinitionsConsumables[]>('javelindata_itemdefinitions_consumables.json')
-  }
-  public staminacostsPlayer() {
-    return this.load<StaminacostsPlayer[]>('javelindata_staminacosts_player.json')
-  }
-  public manacostsPlayer() {
-    return this.load<ManacostsPlayer[]>('javelindata_manacosts_player.json')
   }
   public lootbuckets() {
     return this.load<Lootbuckets[]>('javelindata_lootbuckets.json')
@@ -242,6 +237,9 @@ export abstract class NwDataloader {
   }
   public loottablesSalvage() {
     return this.load<Loottable[]>('javelindata_loottables_salvage.json')
+  }
+  public manacostsPlayer() {
+    return this.load<ManacostsPlayer[]>('javelindata_manacosts_player.json')
   }
   public metaachievements() {
     return this.load<Metaachievements[]>('javelindata_metaachievements.json')
@@ -372,6 +370,9 @@ export abstract class NwDataloader {
   public spelltable() {
     return this.load<Spelltable[]>('javelindata_spelltable.json')
   }
+  public staminacostsPlayer() {
+    return this.load<StaminacostsPlayer[]>('javelindata_staminacosts_player.json')
+  }
   public statuseffectcategories() {
     return this.load<Statuseffectcategories[]>('javelindata_statuseffectcategories.json')
   }
@@ -485,6 +486,69 @@ export abstract class NwDataloader {
   }
   public gamemodemutatorsPromotionmutations() {
     return this.load<Promotionmutations[]>('gamemodemutators/javelindata_promotionmutations.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0202() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_02_02.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0203() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_02_03.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0204() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_02_04.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0300() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_03_00.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0301() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_03_01.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0302() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_03_02.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0303() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_03_03.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0304() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_03_04.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0400() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_04_00.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0401() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_04_01.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0402() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_04_02.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0403() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_04_03.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0404() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_04_04.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0501() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_05_01.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0502() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_05_02.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0503() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_05_03.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0504() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_05_04.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0602() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_06_02.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0603() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_06_03.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0604() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_06_04.json')
+  }
+  public pointofinterestdefinitionsPoidefinitionsDevworld() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_devworld.json')
   }
   public weaponabilitiesAbilityAi() {
     return this.load<Ability[]>('weaponabilities/javelindata_ability_ai.json')

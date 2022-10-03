@@ -6,11 +6,8 @@ import {
   isObservable,
   map,
   Observable,
-  of,
-  startWith,
-  Subject, switchMap,
-  take,
-  takeUntil
+  of, startWith,
+  Subject, take
 } from 'rxjs'
 import { LocaleService } from './locale.service'
 import { TranslateLoader } from './translate-loader'
@@ -25,7 +22,7 @@ export class TranslateService implements OnDestroy {
     public readonly locale: LocaleService,
     public readonly loader: TranslateLoader
   ) {
-    this.attachLoader()
+    //
   }
 
   public observe(key: string | Observable<string>, locale?: string | Observable<string>) {
@@ -60,7 +57,7 @@ export class TranslateService implements OnDestroy {
   }
 
   public use(locale: string) {
-    this.loader.loadTranslations(locale).pipe(take(1)).subscribe((data) => {
+    this.loadTranslations(locale).pipe(take(1)).subscribe((data) => {
       this.merge(locale, data)
       this.locale.use(locale)
     })
@@ -78,17 +75,7 @@ export class TranslateService implements OnDestroy {
     this.change$.next(null)
   }
 
-  private attachLoader() {
-    if (!this.loader) {
-      this.change$.next(null)
-      return
-    }
-    this.locale.value$
-      // .pipe(subscribeOn(asapScheduler))
-      .pipe(switchMap((locale) => combineLatest([of(locale), this.loader.loadTranslations(locale)])))
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(([locale, data]) => {
-        this.merge(locale, data)
-      })
+  private loadTranslations(locale: string) {
+    return this.loader.loadTranslations(locale)
   }
 }

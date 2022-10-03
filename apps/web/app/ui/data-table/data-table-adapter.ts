@@ -20,7 +20,7 @@ export abstract class DataTableAdapter<T> {
     minimumFractionDigits: 2,
   })
 
-  public abstract entityID(item: T): string
+  public abstract entityID(item: T): string | number
   public abstract entityCategory(item: T): string
   public abstract buildGridOptions(base: GridOptions): GridOptions
   public abstract entities: Observable<T[]>

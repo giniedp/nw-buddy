@@ -1,4 +1,5 @@
 import { Component, ElementRef, QueryList, ViewChildren } from '@angular/core'
+import { sortBy } from 'lodash'
 
 import { ElectronService } from './electron'
 import { TranslateService } from './i18n'
@@ -25,6 +26,48 @@ export class AppComponent {
   public set language(value: string) {
     this.preferences.language.set(value)
   }
+
+  protected links = sortBy(
+    [
+      {
+        url: 'https://nwdb.info/',
+        label: 'nwdb.info',
+      },
+      {
+        url: 'https://www.nw-tools.info/',
+        label: 'www.nw-tools.info',
+      },
+      {
+        url: 'https://gaming.tools/newworld/',
+        label: 'gaming.tools',
+      },
+      {
+        url: 'https://new-world.exchange/',
+        label: 'new-world.exchange',
+      },
+      {
+        url: 'https://nwmarketprices.com/',
+        label: 'nwmarketprices.com',
+      },
+      {
+        url: 'https://newworldfans.com/',
+        label: 'newworldfans.com',
+      },
+      {
+        url: 'https://www.newworld-map.com/',
+        label: 'newworld-map.com',
+      },
+      {
+        url: 'https://mapgenie.io/new-world',
+        label: 'mapgenie.io',
+      },
+      {
+        url: 'https://raidplan.io/newworld',
+        label: 'raidplan.io'
+      }
+    ],
+    (it) => it.label
+  )
 
   @ViewChildren('link')
   public tabs: QueryList<ElementRef<HTMLAnchorElement>>

@@ -1,20 +1,23 @@
+import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
 import { NwTradeskillService } from '~/nw/nw-tradeskill.service'
-import { AppPreferencesService, PreferencesService } from '~/preferences'
+import { AppPreferencesService, ItemPreferencesService, PreferencesService } from '~/preferences'
 import { TradeskillPreferencesService } from '~/preferences/tradeskill-preferences.service'
+import { NwPricesImporterComponent } from './nw-marketprices-importer.component'
 
 @Component({
+  standalone: true,
   selector: 'nwb-preferences',
   templateUrl: './preferences.component.html',
   styleUrls: ['./preferences.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, NwPricesImporterComponent]
 })
 export class PreferencesComponent implements OnInit {
   public constructor(
     public readonly app: AppPreferencesService,
     public readonly preferences: PreferencesService,
-    public readonly tradeskillPref: TradeskillPreferencesService,
-    public readonly tradeskillService: NwTradeskillService
+    private readonly itemPref: ItemPreferencesService
   ) {
     //
   }
@@ -35,6 +38,10 @@ export class PreferencesComponent implements OnInit {
       return
     }
     this.preferences.import(JSON.parse(content))
+  }
+
+  protected clearPrices() {
+    this.itemPref.clearPrices()
   }
 }
 

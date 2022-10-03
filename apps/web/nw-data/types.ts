@@ -635,6 +635,28 @@ export interface Housingitems {
     UiItemClass:                 string;
     Weight:                      number;
 }
+export interface ItemdefinitionsConsumables {
+    AddStatusEffects?:             string;
+    ConsumableID:                  string;
+    CooldownDuration:              number;
+    CooldownId?:                   string;
+    DMGVitalsCategory?:            string;
+    DisableUseInCombat:            boolean;
+    DisplayStatusEffect?:          string;
+    DurationOverrides:             number;
+    DurationScaleFactor:           number;
+    MannequinTag?:                 string;
+    MaxDurationModifier:           number;
+    MaxPotencyModifier:            number;
+    MinDurationModifier:           number;
+    MinPotencyModifier:            number;
+    OnUseAffliction?:              string;
+    PotencyScaleFactor:            number;
+    RemoveStatusEffectCategories?: string;
+    RemoveStatusEffects?:          string;
+    StatusEffectMod:               number;
+    UseCount:                      number;
+}
 export interface ItemdefinitionsResources {
     IsGem:              boolean;
     IsSocketableNonGem: boolean;
@@ -724,39 +746,6 @@ export interface ItemdefinitionsWeapons {
     WeaponID:                     string;
     WeaponMasteryCategoryId?:     string;
     WeightOverride:               number;
-}
-export interface ItemdefinitionsConsumables {
-    AddStatusEffects?:             string;
-    ConsumableID:                  string;
-    CooldownDuration:              number;
-    CooldownId?:                   string;
-    DMGVitalsCategory?:            string;
-    DisableUseInCombat:            boolean;
-    DisplayStatusEffect?:          string;
-    DurationOverrides:             number;
-    DurationScaleFactor:           number;
-    MannequinTag?:                 string;
-    MaxDurationModifier:           number;
-    MaxPotencyModifier:            number;
-    MinDurationModifier:           number;
-    MinPotencyModifier:            number;
-    OnUseAffliction?:              string;
-    PotencyScaleFactor:            number;
-    RemoveStatusEffectCategories?: string;
-    RemoveStatusEffects?:          string;
-    StatusEffectMod:               number;
-    UseCount:                      number;
-}
-export interface StaminacostsPlayer {
-    Category?:   string;
-    CostID:      string;
-    StaminaCost: number;
-}
-export interface ManacostsPlayer {
-    CostID:    string;
-    ID:        number;
-    ManaCost:  number;
-    WeaponTag: string;
 }
 export interface Lootbuckets {
     Item1?:          string;
@@ -2130,6 +2119,12 @@ export interface Loottable {
     RollBonusSetting?:       string;
     UseLevelGS?:             string;
 }
+export interface ManacostsPlayer {
+    CostID:    string;
+    ID:        number;
+    ManaCost:  number;
+    WeaponTag: string;
+}
 export interface Metaachievements {
     AchievePoints:                     number;
     AchievementCategory?:              string;
@@ -2824,6 +2819,11 @@ export interface Spelltable {
     UseChainCasterPaperdoll?:                        boolean;
     UseStatusEffectDuration:                         boolean;
     WeaponSlotOverride?:                             string;
+}
+export interface StaminacostsPlayer {
+    Category?:   string;
+    CostID:      string;
+    StaminaCost: number;
 }
 export interface Statuseffectcategories {
     DurationDiminishingMod: number;
@@ -3555,6 +3555,39 @@ export interface Promotionmutations {
     Promotion3:          string;
     PromotionMutationId: string;
     TextColor:           string;
+}
+export interface PoiDefinition {
+    AudioGroup?:                string;
+    AudioState?:                string;
+    CanPlaceCamp:               boolean | string;
+    ChartedAchievement?:        string;
+    CompassIcon?:               string;
+    Containers?:                number;
+    Debug?:                     string;
+    DefaultAchievement:         number;
+    DevName?:                   string;
+    DiscoveredAchievement?:     string;
+    DiscoveryRadius:            number;
+    EventId?:                   string;
+    GameMode?:                  string;
+    GroupSize?:                 number | string;
+    IsChartable:                boolean;
+    IsCollapsible?:             boolean;
+    IsDiscoverable:             boolean;
+    IsPOI:                      boolean;
+    LevelRange?:                number | string;
+    LootTags?:                  string[];
+    MapIcon?:                   string;
+    NameLocalizationKey:        string;
+    OutpostId?:                 string;
+    POIObjectiveAchievementId?: string;
+    POITag?:                    string;
+    RecommendedLevel?:          number;
+    ReleaseVersion?:            string;
+    TerritoryID:                number;
+    TooltipBackground?:         string;
+    UnchartedIcon?:             string;
+    VitalsCategory?:            string;
 }
 export interface Ability {
     AbilityCooldownComparisonType?:           string;

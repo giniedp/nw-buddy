@@ -13,13 +13,18 @@ export async function importLocales({
   input: string
   output: string
   tables: Array<DatatableSource>,
-  preserveKeys?: string[]
+  preserveKeys?: Array<string | RegExp>
 }) {
   const keys = extractKeys(tables)
+  const regs: Array<RegExp> = []
   for (const key of preserveKeys || []) {
-    keys.add(normalizeKey(key))
+    if (typeof key === 'string') {
+      keys.add(normalizeKey(key))
+    } else {
+      regs.push(key)
+    }
   }
-  const locales = await loadLocales(input, keys)
+  const locales = await loadLocales(input, keys, regs)
   await writeLocales(output, locales)
   return locales
 }
@@ -35,7 +40,7 @@ function extractKeys(tables: DatatableSource[]) {
   return result
 }
 
-async function loadLocales(input: string, keys: Set<string>) {
+async function loadLocales(input: string, keys: Set<string>, regs: RegExp[]) {
   const pattern = path.join(input, '**', '*.loc.json')
   const files = await glob(pattern)
   const result = new Map<string, Record<string, string>>()
@@ -48,7 +53,7 @@ async function loadLocales(input: string, keys: Set<string>) {
     result.set(lang, bucket)
     Object.entries(json).forEach(([key, entry]) => {
       key = normalizeKey(key)
-      if (keys.has(key)) {
+      if (keys.has(key) || regs.some((it) => it.test(key))) {
         bucket[key] = entry['value']
       }
     })

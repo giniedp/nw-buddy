@@ -1,28 +1,5 @@
 <div class="main-content flex flex-col items-center">
   <div class="w-80 bg-base-100 rounded-md p-4">
-    <!-- <div class="form-control w-full">
-      <label class="label">
-        <span class="label-text">Preferred language</span>
-      </label>
-      <select
-        class="select select-bordered"
-        [ngModel]="app.language.get()"
-        (ngModelChange)="app.language.set($event)"
-      >
-        <option disabled selected>Pick one</option>
-        <option value="de-de">DE</option>
-        <option value="en-us">EN</option>
-        <option value="es-es">ES</option>
-        <option value="fr-fr">FR</option>
-        <option value="it-it">IT</option>
-        <option value="pl-pl">PL</option>
-        <option value="pt-br">BR</option>
-      </select>
-      <label class="label">
-        <span class="label-text-alt">Affects game item names only</span>
-      </label>
-    </div> -->
-
     <div class="form-control w-full">
       <button class="btn w-full mt-4" (click)="exportPreferences()">Export Preferences</button>
       <label class="label">
@@ -36,5 +13,14 @@
         <span class="label-text-alt">Imports previously exported user data</span>
       </label>
     </div>
+
+    <div class="form-control w-full">
+      <button class="btn w-full mt-4" (click)="clearPrices()">Clear Prices</button>
+      <label class="label">
+        <span class="label-text-alt">Clears all item prices</span>
+      </label>
+    </div>
+
+    <nw-marketprices-importer class="w-full mt-4"></nw-marketprices-importer>
   </div>
 </div>

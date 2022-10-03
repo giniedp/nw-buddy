@@ -9,6 +9,10 @@ export type LocaleData = Record<string, { value: string }>
 export class NwDataService extends NwDataloader {
   private cache = new Map<string, Observable<any>>()
 
+  public get apiMethods(): Array<keyof NwDataloader> {
+    return Object.getOwnPropertyNames(NwDataloader.prototype) as Array<keyof NwDataloader>
+  }
+
   public constructor(private http: HttpClient) {
     super()
   }

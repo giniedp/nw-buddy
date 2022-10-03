@@ -1,5 +1,5 @@
 import { Inject, Injectable, LOCALE_ID, StaticProvider } from '@angular/core'
-import { BehaviorSubject, defer } from 'rxjs'
+import { BehaviorSubject, defer, distinctUntilChanged } from 'rxjs'
 import { shareReplayRefCount } from '../utils'
 
 @Injectable({ providedIn: 'root' })
@@ -20,7 +20,7 @@ export class LocaleService {
     return this.subject$.value
   }
 
-  public readonly value$ = defer(() => this.subject$).pipe(shareReplayRefCount(1))
+  public readonly value$ = defer(() => this.subject$).pipe(distinctUntilChanged()).pipe(shareReplayRefCount(1))
 
   private subject$: BehaviorSubject<string>
 
@@ -28,11 +28,14 @@ export class LocaleService {
     @Inject(LOCALE_ID)
     defaultLocale: string
   ) {
-
-    this.subject$ = new BehaviorSubject(defaultLocale)
+    this.subject$ = new BehaviorSubject(normalizeLocale(defaultLocale))
   }
 
   public use(language: string) {
-    this.subject$.next(language)
+    this.subject$.next(normalizeLocale(language))
   }
+}
+
+function normalizeLocale(value: string) {
+  return String(value || '').toLocaleLowerCase()
 }

@@ -3,8 +3,16 @@ import { map } from 'rxjs'
 import { PreferencesService } from './preferences.service'
 import { StorageNode } from './storage'
 
-export interface TerritoryMeta {
+export interface TerritoryPreferences {
   standing?: number
+  taxHousing?: number
+  taxTrading?: number
+  taxCrafting?: number
+  taxRefining?: number
+  numUpgrades?: number
+  controlledBy?: string
+  governedBy?: string
+  notes?: string
 }
 
 @Injectable({ providedIn: 'root' })
@@ -15,23 +23,23 @@ export class TerritoriesPreferencesService {
     this.storage = preferences.storage.storageObject('territories')
   }
 
-  public get(id: number): TerritoryMeta {
+  public get(id: number): TerritoryPreferences {
     return this.storage.get(String(id))
   }
 
-  public merge(id: number, meta: TerritoryMeta) {
+  public merge(id: number, meta: TerritoryPreferences) {
     this.update(id, {
       ...(this.get(id) || {}),
       ...(meta || {}),
     })
   }
 
-  public update(id: number, meta: TerritoryMeta) {
+  public update(id: number, meta: TerritoryPreferences) {
     this.storage.set(String(id), meta)
   }
 
   public observe(id: number) {
-    return this.storage.observe<TerritoryMeta>(String(id)).pipe(
+    return this.storage.observe<TerritoryPreferences>(String(id)).pipe(
       map((it) => it.value)
     )
   }
