@@ -13,6 +13,7 @@ export interface TerritoryPreferences {
   controlledBy?: string
   governedBy?: string
   notes?: string
+  tags?: string[]
 }
 
 @Injectable({ providedIn: 'root' })

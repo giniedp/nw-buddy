@@ -1,0 +1,15 @@
+<div class="badge badge-primary px-2" *ngFor="let tag of value; let i = index">
+  {{ tag }}
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-4 h-4 stroke-current transition-opacity opacity-30 hover:opacity-100" (click)="removeChip(tag, i)">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+  </svg>
+</div>
+<input
+  #input
+  class="flex-1 input input-ghost input-xs placeholder-gray-500 placeholder-opacity-30 hover:placeholder-opacity-100"
+  style="min-width: 60px"
+  [placeholder]="placeholder"
+  type="text"
+  (keydown)="onInputKey($event)"
+  (blur)="onInputBlur($event)"
+/>

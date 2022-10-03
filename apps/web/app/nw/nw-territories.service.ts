@@ -26,6 +26,10 @@ export class TerritoriesService {
     return this.getPreferences(id).pipe(map((it) => it?.notes || ''))
   }
 
+  public getTags(id: number | Observable<number>) {
+    return this.getPreferences(id).pipe(map((it) => it?.tags || []))
+  }
+
   public getTerritory(id: number | Observable<number>) {
     return combineLatest({
       id: idStream(id),
@@ -54,6 +58,12 @@ export class TerritoriesService {
   public setNotes(id: number, value: string) {
     if (id != null) {
       this.pref.merge(id, { notes: value })
+    }
+  }
+
+  public setTags(id: number, value: string[]) {
+    if (id != null) {
+      this.pref.merge(id, { tags: value })
     }
   }
 

@@ -79,12 +79,6 @@ export class AppComponent {
     translate: TranslateService
   ) {
     preferences.language.observe().subscribe((locale) => translate.use(locale))
-    if (electron.isElectron) {
-      console.log(process.env)
-      console.log('Run in electron')
-    } else {
-      console.log('Run in browser')
-    }
 
     ;[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].forEach((i) => {
       this.hotkeys
