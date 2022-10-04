@@ -57,7 +57,6 @@ export class CraftingTrophiesComponent {
   protected rows = defer(() => this.trophies).pipe(
     map((list) => {
       const groups = groupBy(list, (it) => getItemId(it.$item).replace(/T[0-9][a-zA-Z]?$/i, ''))
-      console.log(groups)
       return Array.from(Object.values(groups))
     })
   )
