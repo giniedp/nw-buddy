@@ -85,7 +85,7 @@ export class NwPricesImporterComponent {
   private fetchPrices(server: string) {
     return this.http
       .get<Array<{ ItemId: string; Price: string; Availability: number }>>(
-        `https://nwmarketprices.com/api/latest-prices/${server}`,
+        `https://nwmarketprices.com/api/latest-prices/${server}/`,
         {
           params: {
             serverName: server,
