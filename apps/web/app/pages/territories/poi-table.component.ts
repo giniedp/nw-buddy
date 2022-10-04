@@ -12,7 +12,7 @@ import { PoiTableAdapter } from './poi-table-adapter'
   templateUrl: './poi-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, DataTableModule, RouterModule],
-  providers: [DataTableAdapter.provideClass(PoiTableAdapter), QuicksearchService],
+  providers: [DataTableAdapter.provideClass(PoiTableAdapter)],
   host: {
     class: 'layout-row gap-4',
   },
