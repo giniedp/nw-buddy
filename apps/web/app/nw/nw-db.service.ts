@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core'
-import { NwDataloader } from '@nw-data/datatables'
 import { groupBy } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, shareReplay } from 'rxjs'
 import { CaseInsensitiveMap } from '../utils'
@@ -26,7 +25,7 @@ export function dictToMap<V>(record: Record<string, V>): Map<string, V> {
   return new CaseInsensitiveMap<string, V>(Object.entries(record))
 }
 
-function list<T, R>(source: () => Observable<T[]> | Array<Observable<T[]>>) {
+function list<T>(source: () => Observable<T[]> | Array<Observable<T[]>>) {
   return defer(() => {
     const src = source()
     return combineLatest(Array.isArray(src) ? src : [src])
@@ -55,19 +54,11 @@ function lookup<K, T>(getMap: () => Observable<Map<K, T>>) {
 
 @Injectable({ providedIn: 'root' })
 export class NwDbService {
-  public items = list(() => [
-    this.data.itemdefinitionsMasterCommon().pipe(annotate('$source', 'Common')),
-    this.data.itemdefinitionsMasterCrafting().pipe(annotate('$source', 'Crafting')),
-    this.data.itemdefinitionsMasterLoot().pipe(annotate('$source', 'Loot')),
-    this.data.itemdefinitionsMasterNamed().pipe(annotate('$source', 'Named')),
-    this.data.itemdefinitionsMasterFaction().pipe(annotate('$source', 'Faction')),
-    this.data.itemdefinitionsMasterOmega().pipe(annotate('$source', 'Omega')),
-    this.data.itemdefinitionsMasterPlaytest().pipe(annotate('$source', 'Playtest')),
-    this.data.itemdefinitionsMasterPvp().pipe(annotate('$source', 'Pvp')),
-    this.data.itemdefinitionsMasterQuest().pipe(annotate('$source', 'Quest')),
-    this.data.itemdefinitionsMasterStore().pipe(annotate('$source', 'Store')),
-    this.data.itemdefinitionsMasterAi().pipe(annotate('$source', 'Ai')),
-  ])
+  public items = list(() =>
+    this.data
+      .apiMethodsByPrefix('itemdefinitionsMaster', 'itemdefinitionsMasterCommon')
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+  )
   public itemsMap = index(() => this.items, 'ItemID')
   public item = lookup(() => this.itemsMap)
 
@@ -75,76 +66,29 @@ export class NwDbService {
   public housingItemsMap = index(() => this.housingItems, 'HouseItemID')
   public housingItem = lookup(() => this.housingItemsMap)
 
-  public abilities = list(() => [
-    this.data.weaponabilitiesAbilityAi().pipe(annotate('$source', 'Ai')),
-    this.data.weaponabilitiesAbilityAttributethreshold().pipe(annotate('$source', 'Attributethreshold')),
-    this.data.weaponabilitiesAbilityBlunderbuss().pipe(annotate('$source', 'Blunderbuss')),
-    this.data.weaponabilitiesAbilityBow().pipe(annotate('$source', 'Bow')),
-    this.data.weaponabilitiesAbilityFiremagic().pipe(annotate('$source', 'Firemagic')),
-    this.data.weaponabilitiesAbilityGlobal().pipe(annotate('$source', 'Global')),
-    this.data.weaponabilitiesAbilityGreataxe().pipe(annotate('$source', 'Greataxe')),
-    //this.data.weaponabilitiesAbilityGreatsword().pipe(annotate('$source', 'Greatsword')),
-    this.data.weaponabilitiesAbilityHatchet().pipe(annotate('$source', 'Hatchet')),
-    this.data.weaponabilitiesAbilityIcemagic().pipe(annotate('$source', 'Icemagic')),
-    //this.data.weaponabilitiesAbilityItems().pipe(annotate('$source', 'Items')),
-    this.data.weaponabilitiesAbilityLifemagic().pipe(annotate('$source', 'Lifemagic')),
-    this.data.weaponabilitiesAbilityMusket().pipe(annotate('$source', 'Musket')),
-    this.data.weaponabilitiesAbilityRapier().pipe(annotate('$source', 'Rapier')),
-    //this.data.weaponabilitiesAbilityRune().pipe(annotate('$source', 'Rune')),
-    this.data.weaponabilitiesAbilitySpear().pipe(annotate('$source', 'Spear')),
-    this.data.weaponabilitiesAbilitySword().pipe(annotate('$source', 'Sword')),
-    this.data.weaponabilitiesAbilityVoidgauntlet().pipe(annotate('$source', 'Voidgauntlet')),
-    this.data.weaponabilitiesAbilityWarhammer().pipe(annotate('$source', 'Warhammer')),
-  ])
+  public abilities = list(() =>
+    this.data
+      .apiMethodsByPrefix('weaponabilitiesAbility', 'weaponabilitiesAbilityAi')
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+  )
   public abilitiesMap = index(() => this.abilities, 'AbilityID')
   public ability = lookup(() => this.abilitiesMap)
 
-  public statusEffects = list(() => [
-    this.data.statuseffects().pipe(annotate('$source', '_')),
-    this.data.statuseffectsAi().pipe(annotate('$source', 'Ai')),
-    this.data.statuseffectsBlunderbuss().pipe(annotate('$source', 'Blunderbuss')),
-    this.data.statuseffectsBow().pipe(annotate('$source', 'Bow')),
-    this.data.statuseffectsCommon().pipe(annotate('$source', 'Common')),
-    this.data.statuseffectsFirestaff().pipe(annotate('$source', 'Firestaff')),
-    this.data.statuseffectsGreataxe().pipe(annotate('$source', 'Greataxe')),
-    this.data.statuseffectsGreatsword().pipe(annotate('$source', 'Greatsword')),
-    this.data.statuseffectsHatchet().pipe(annotate('$source', 'Hatchet')),
-    this.data.statuseffectsIcemagic().pipe(annotate('$source', 'Icemagic')),
-    this.data.statuseffectsItem().pipe(annotate('$source', 'Item')),
-    this.data.statuseffectsLifestaff().pipe(annotate('$source', 'Lifestaff')),
-    this.data.statuseffectsMusket().pipe(annotate('$source', 'Musket')),
-    this.data.statuseffectsPerks().pipe(annotate('$source', 'Perks')),
-    this.data.statuseffectsRapier().pipe(annotate('$source', 'Rapier')),
-    //this.data.statuseffectsRunes().pipe(annotate('$source', 'Runes')),
-    this.data.statuseffectsSpear().pipe(annotate('$source', 'Spear')),
-    this.data.statuseffectsSword().pipe(annotate('$source', 'Sword')),
-    this.data.statuseffectsVoidgauntlet().pipe(annotate('$source', 'Voidgauntlet')),
-    this.data.statuseffectsWarhammer().pipe(annotate('$source', 'Warhammer')),
-  ])
+  public statusEffects = list(() =>
+    this.data
+      .apiMethodsByPrefix('statuseffects', 'statuseffectsAi')
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+  )
   public statusEffectsMap = index(() => this.statusEffects, 'StatusID')
   public statusEffect = lookup(() => this.statusEffectsMap)
 
   public damageTable0 = list(() => [this.data.damagetable()])
 
-  public damageTables = list(() => [
-    this.data.damagetable().pipe(annotate('$source', '_')),
-    this.data.damagetableAlligator().pipe(annotate('$source', 'Alligator')),
-    this.data.damagetableBoar().pipe(annotate('$source', 'Boar')),
-    this.data.damagetableBroken().pipe(annotate('$source', 'Broken')),
-    this.data.damagetableDamned().pipe(annotate('$source', 'Damned')),
-    this.data.damagetableDamnedCommander().pipe(annotate('$source', 'DamnedCommander')),
-    this.data.damagetableDamnedCommanderFtue().pipe(annotate('$source', 'DamnedCommanderFtue')),
-    this.data.damagetableDungeon().pipe(annotate('$source', 'Dungeon')),
-    this.data.damagetableElk().pipe(annotate('$source', 'Elk')),
-    this.data.damagetableGoat().pipe(annotate('$source', 'Goat')),
-    this.data.damagetablePerks().pipe(annotate('$source', 'Perks')),
-    this.data.damagetableMutators().pipe(annotate('$source', 'Mutators')),
-    this.data.damagetableSkeleton().pipe(annotate('$source', 'Skeleton')),
-    this.data.damagetableSpirit().pipe(annotate('$source', 'Spirit')),
-    this.data.damagetableStructures().pipe(annotate('$source', 'Structures')),
-    this.data.damagetableTendrilCorrupted().pipe(annotate('$source', 'TendrilCorrupted')),
-    this.data.damagetableUndead().pipe(annotate('$source', 'Undead')),
-  ])
+  public damageTables = list(() =>
+    this.data
+      .apiMethodsByPrefix('damagetable', 'damagetable')
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+  )
   public damageTableMap = index(() => this.damageTables, 'DamageID')
   public damageTable = lookup(() => this.damageTableMap)
 
@@ -152,26 +96,11 @@ export class NwDbService {
   public weaponsMap = index(() => this.weapons, 'WeaponID')
   public weapon = lookup(() => this.weaponsMap)
 
-  public spellTable = list(() => [
-    this.data.spelltable().pipe(annotate('$source', '_')),
-    this.data.spelltableAi().pipe(annotate('$source', 'Ai')),
-    this.data.spelltableBlunderbuss().pipe(annotate('$source', 'Blunderbuss')),
-    this.data.spelltableBow().pipe(annotate('$source', 'Bow')),
-    this.data.spelltableFiremagic().pipe(annotate('$source', 'Firemagic')),
-    this.data.spelltableGlobal().pipe(annotate('$source', 'Global')),
-    this.data.spelltableGreataxe().pipe(annotate('$source', 'Greataxe')),
-    this.data.spelltableGreatsword().pipe(annotate('$source', 'Greatsword')),
-    this.data.spelltableHatchet().pipe(annotate('$source', 'Hatchet')),
-    this.data.spelltableIcemagic().pipe(annotate('$source', 'Icemagic')),
-    this.data.spelltableLifemagic().pipe(annotate('$source', 'Lifemagic')),
-    this.data.spelltableMusket().pipe(annotate('$source', 'Musket')),
-    this.data.spelltableRapier().pipe(annotate('$source', 'Rapier')),
-    //this.data.spelltableRunes().pipe(annotate('$source', 'Runes')),
-    this.data.spelltableSpear().pipe(annotate('$source', 'Spear')),
-    this.data.spelltableSword().pipe(annotate('$source', 'Sword')),
-    this.data.spelltableVoidgauntlet().pipe(annotate('$source', 'Voidgauntlet')),
-    this.data.spelltableWarhammer().pipe(annotate('$source', 'Warhammer')),
-  ])
+  public spellTable = list(() =>
+    this.data
+      .apiMethodsByPrefix('spelltable', 'spelltable')
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+  )
   public spellTableMap = index(() => this.spellTable, 'SpellID')
 
   public gameModes = list(() => [this.data.gamemodes()])
@@ -261,10 +190,11 @@ export class NwDbService {
   public territoriesMap = index(() => this.territories, 'TerritoryID')
   public territory = lookup(() => this.territoriesMap)
 
-  public pois = list(() => {
-    const keys = this.data.apiMethods.filter((it) => it.startsWith('pointofinterestdefinitionsPoidefinitions'))
-    return keys.map((k) => this.data[k](null) as ReturnType<NwDataService['pointofinterestdefinitionsPoidefinitions0202']>)
-  })
+  public pois = list(() =>
+    this.data
+      .apiMethodsByPrefix('pointofinterestdefinitionsPoidefinitions', 'pointofinterestdefinitionsPoidefinitions0202')
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+  )
   public poisMap = index(() => this.pois, 'TerritoryID')
   public poi = lookup(() => this.poisMap)
 
@@ -273,13 +203,14 @@ export class NwDbService {
   public viewGemPerksWithAffix = list(() => queryGemPerksWithAffix(this))
   public viewMutatorDifficultiesWithRewards = list(() => queryMutatorDifficultiesWithRewards(this))
 
-  public lootTables = list(() => [
-    this.data.loottables().pipe(annotate('$source', 'Common')).pipe(map(convertLoottables)),
-    this.data.loottablesOmega().pipe(annotate('$source', 'Omega')).pipe(map(convertLoottables)),
-    this.data.loottablesPlaytest().pipe(annotate('$source', 'Playtest')).pipe(map(convertLoottables)),
-    this.data.loottablesPvpRewardsTrack().pipe(annotate('$source', 'PvpRewardsTrack')).pipe(map(convertLoottables)),
-    this.data.loottablesSalvage().pipe(annotate('$source', 'Salvage')).pipe(map(convertLoottables)),
-  ])
+  public lootTables = list(() =>
+    this.data.apiMethodsByPrefix('loottables', 'loottables').map((it) =>
+      this.data[it.name]()
+        .pipe(map(convertLoottables))
+        .pipe(annotate('$source', it.suffix || '_'))
+    )
+  )
+
   public lootTablesMap = index(() => this.lootTables, 'LootTableID')
   public lootTable = lookup(() => this.lootTablesMap)
   public lootGraph = defer(() =>
@@ -295,9 +226,7 @@ export class NwDbService {
   public lootBucketsMap = indexGroup(() => this.lootBuckets, 'LootBucket')
   public lootBucket = lookup(() => this.lootBucketsMap)
 
-  public lootLimits = list(() => [
-    this.data.lootlimits()
-  ])
+  public lootLimits = list(() => [this.data.lootlimits()])
   public lootLimitsMap = index(() => this.lootLimits, 'LootLimitID')
 
   public constructor(public readonly data: NwDataService) {

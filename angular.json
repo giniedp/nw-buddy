@@ -34,7 +34,8 @@
             "assets": [
               "apps/web/favicon.ico",
               "apps/web/assets",
-              "apps/web/nw-data"
+              "apps/web/nw-data/live",
+              "apps/web/nw-data/ptr"
             ],
             "styles": [
               "apps/web/styles/main.scss"
@@ -166,20 +167,6 @@
             "browserTarget": "nw-buddy:build",
             "compodoc": false,
             "styles": ["apps/web/styles/main.scss"]
-          }
-        }
-      }
-    },
-    "nw-buddy-e2e": {
-      "root": "e2e",
-      "projectType": "application",
-      "architect": {
-        "lint": {
-          "builder": "@angular-eslint/builder:lint",
-          "options": {
-            "lintFilePatterns": [
-              "e2e/**/*.ts"
-            ]
           }
         }
       }

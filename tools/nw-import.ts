@@ -1,27 +1,23 @@
 import * as path from 'path'
 import { program } from 'commander'
-import * as dotenv from 'dotenv'
-import {
-  processArrayWithProgress,
-  writeJSONFile,
-} from './utils'
+import { processArrayWithProgress, writeJSONFile } from './utils'
 import { loadDatatables, splitToArrayRule } from './importer/loadDatatables'
 import { importLocales } from './importer/importLocales'
 import { importImages } from './importer/importImages'
 import { generateTypes } from './importer/generateTypes'
 import { checkExpressions } from './importer/checkExpressions'
-import { env } from './env'
-dotenv.config()
+import { NW_PTR, dataDir } from '../env'
 
 program
   .option('-i, --input <path>', 'input directory')
   .option('-o, --output <path>', 'output directory')
-  .option('--ptr', 'PTR mode', ['true', 'yes', '1'].includes(process.env['NW_PTR']))
+  .option('--ptr', 'PTR mode', NW_PTR)
   .action(async () => {
-    const options = program.opts<{ input: string, output: string, ptr: boolean }>()
-    const input = options.input || env(options.ptr).dataDir
-    const output = options.output || './apps/web/nw-data'
-    console.log('import', { input, output })
+    const options = program.opts<{ input: string; output: string; ptr: boolean }>()
+    const input = options.input || dataDir(options.ptr)!
+    const outDir = options.output || `./apps/web/nw-data`
+    const outDirData = path.join(outDir, options.ptr ? 'ptr' : 'live')
+    console.log('import from', input, 'to', outDir)
 
     console.log('loading datatables')
     const tables = await loadDatatables({
@@ -176,7 +172,7 @@ program
     console.log('importing locales')
     await importLocales({
       input,
-      output: path.join(output, 'localization'),
+      output: path.join(outDirData, 'localization'),
       tables,
       preserveKeys: [
         'ui_itemtypedescription_head_slot',
@@ -202,35 +198,38 @@ program
         'ui_intelligence',
         'ui_constitution',
         'ui_focus',
-        /ui_poi_.*_description/
+        /ui_poi_.*_description/,
       ],
     }).then((files) => {
       checkExpressions({
         locales: files,
-        output: './tmp/expressions.json'
+        output: './tmp/expressions.json',
       })
     })
     console.log('importing images')
     await importImages({
       input,
-      output,
+      output: outDirData,
       tables,
       ignoreKeys: ['HiResIconPath'],
       rewrite: {
         ArmorAppearanceF: (key, value, obj) => `lyshineui/images/icons/items/${obj.ItemType}/${value}`,
         ArmorAppearanceM: (key, value, obj) => `lyshineui/images/icons/items/${obj.ItemType}/${value}`,
-        WeaponAppearanceOverride: (key, value, obj) => `lyshineui/images/icons/items/${obj.ItemType}/${value}`
+        WeaponAppearanceOverride: (key, value, obj) => `lyshineui/images/icons/items/${obj.ItemType}/${value}`,
       },
-      rewritePath: (value) => `${path.basename(output)}${value}`
+      rewritePath: (value) => {
+        return path.relative(path.join(outDir, '..'), path.join(outDirData, value)).replace(/\\/g, '/')
+      },
     })
     console.log('writing datatables')
     await processArrayWithProgress(tables, async ({ relative, data }) => {
-      await writeJSONFile(data, path.join(output, 'datatables', relative), {
+      const jsonPath = path.join(outDirData, 'datatables', relative)
+      await writeJSONFile(data, jsonPath, {
         createDir: true,
       })
     })
 
     console.log('generate types')
-    await generateTypes(output, tables)
+    await generateTypes(outDir, tables)
   })
   .parse(process.argv)

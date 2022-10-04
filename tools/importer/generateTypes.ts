@@ -3,7 +3,7 @@ import * as fs from 'fs'
 import { generateDataFunctions, processArrayWithProgress, tsFromJson } from '../utils'
 import { DatatableSource } from './loadDatatables'
 
-export async function generateTypes(output: string, tables: DatatableSource[]) {
+export async function generateTypes(output: string, tables: DatatableSource[], format: 'json' | 'csv' = 'json') {
 
   const samples = new Map<string, any[]>()
   const files = new Map<string, any[]>()
@@ -14,7 +14,7 @@ export async function generateTypes(output: string, tables: DatatableSource[]) {
       files.set(type, [])
     }
     samples.get(type).push(data)
-    files.get(type).push(relative)
+    files.get(type).push(relative.replace(/\.json$/, `.${format}`))
   }
 
   const typesCode: string[] = []

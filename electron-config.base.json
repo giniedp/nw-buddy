@@ -3,6 +3,7 @@
   "directories": {
     "output": "release/"
   },
+  "compression": "maximum",
   "files": [
     "dist/**/*",
     "!**/*.ts",

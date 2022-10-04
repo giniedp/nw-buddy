@@ -8,13 +8,14 @@ export function generateDataFunctions(input: Map<string, string[]>) {
 
   for (const typeName of types) {
     for (const filePath of input.get(typeName)) {
+      const extName = path.extname(filePath)
       const dirName = path.dirname(filePath)
-      const basename = path.basename(filePath)
+      const basename = path.basename(filePath, extName)
 
       const assetPath = path.join(dirName, basename).replace(/[\\/]+/g, '/')
       const functionName = assetPath
         .split(/[_/.]/)
-        .filter((it) => it && it !== 'javelindata' && it !== 'json')
+        .filter((it) => it && it !== 'javelindata')
         .map((it, i) => {
           return i === 0 ? it : (it[0].toLocaleUpperCase() + it.substring(1))
         })
@@ -22,7 +23,7 @@ export function generateDataFunctions(input: Map<string, string[]>) {
 
       functionStatements.push([
         `  public ${functionName}() {`,
-        `    return this.load<${typeName}[]>('${assetPath}')`,
+        `    return this.load<${typeName}[]>('${assetPath}${extName}')`,
         '  }',
       ].join('\n'))
     }

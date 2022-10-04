@@ -1,18 +1,17 @@
-import { extract, convert, createFilter, createConverter } from 'nw-extract'
+import { extract, createFilter, createConverter } from 'nw-extract'
 import { program } from 'commander'
-import { env } from './env'
 import { MultiBar, Presets } from 'cli-progress'
-import * as path from 'path'
+import { NW_PTR, gameDir, dataDir } from '../env'
 
 program
   .option('-g, --game <path>', 'game directory')
   .option('-o, --output <path>', 'output directory')
-  .option('--ptr', 'PTR mode', ['true', 'yes', '1'].includes(process.env['NW_PTR']))
+  .option('--ptr', 'PTR mode', NW_PTR)
   .action(async () => {
 
     const options = program.opts<{ game: string, output: string, ptr: boolean }>()
     const filter: any[] = [
-      '*',
+      // '*',
       'datasheet:json',
       'locale:json',
       'icon:png',
@@ -31,8 +30,8 @@ program
     const b2 = bar.create(0, 0)
 
     await extract({
-      inputDir: options.game || env(options.ptr).gameDir,
-      outputDir: options.output || env(options.ptr).dataDir,
+      inputDir: options.game || gameDir(options.ptr)!,
+      outputDir: options.output || dataDir(options.ptr)!,
       filter: createFilter(filter),
       converterFactory: createConverter(filter),
       onProgress: (p) => {

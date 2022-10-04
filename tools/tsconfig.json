@@ -1,8 +1,10 @@
 {
   "compilerOptions": {
+    "outDir": "./dist",
     "moduleResolution": "node",
     "module": "CommonJS",
     "target": "ES5",
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true
   }
 }

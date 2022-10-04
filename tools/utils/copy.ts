@@ -41,6 +41,13 @@ export async function writeJSONFile(data: any, output: string, options?: { creat
   return fs.promises.writeFile(output, dataOut, 'utf-8')
 }
 
+export async function writeFile(data: any, output: string, options?: { createDir: boolean }) {
+  if (options?.createDir) {
+    await mkdir(path.dirname(output), { recursive: true })
+  }
+  return fs.promises.writeFile(output, data, 'utf-8')
+}
+
 export function renameExtname(file: string, extname: string) {
   const dirName = path.dirname(file)
   const baseName = path.basename(file, path.extname(file))
