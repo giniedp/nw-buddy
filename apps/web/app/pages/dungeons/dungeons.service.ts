@@ -136,7 +136,7 @@ export class DungeonsService {
           .all()
           .filter((it) => this.lootBuckets.matchAnyTag(it, tags))
           .filter((it) => !this.lootBuckets.matchAnyTag(it, MUTATION_DIFFICULTY_LOOT_TAGS))
-          .filter((it) => ctx.accessLootbucket(it))
+          //.filter((it) => ctx.accessLootbucket(it))
           .items()
       })
     )
