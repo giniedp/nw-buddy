@@ -1,4 +1,4 @@
-<input class="input input-sm w-full focus:outline-none focus:border focus:border-primary-focus" #input type="text" [(ngModel)]="value" autofocus [disabled]="!(active | async)" />
+<input class="input input-sm w-full focus:outline-none focus:border focus:border-primary-focus" #input type="text" placeholder="CTRL+F" [(ngModel)]="value" autofocus [disabled]="!(active | async)" />
 <button class="btn btn-sm btn-square" (click)="value ? (value = '') : null" [disabled]="!(active | async)">
   <svg
     *ngIf="!value"
