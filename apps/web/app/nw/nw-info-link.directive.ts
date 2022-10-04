@@ -23,6 +23,9 @@ export class NwInfoLinkDirective {
   @HostBinding('attr.href')
   public href: string
 
+  @HostBinding('attr.target')
+  public target: string = '_blank'
+
   public constructor(private cdRef: ChangeDetectorRef) {}
 
   private update() {
