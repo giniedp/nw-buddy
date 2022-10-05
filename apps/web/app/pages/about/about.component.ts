@@ -13,7 +13,11 @@ export class AboutComponent implements OnInit {
   }
 
   public get gameVersion() {
-    return '1.6.4'
+    const version = APP_CONFIG.version.split('-')[0]
+    if (APP_CONFIG.isPTR) {
+      return `Public Test Realm ${version}`
+    }
+    return '1.6.6'
     // return APP_CONFIG.version.split('-')[0]
   }
 

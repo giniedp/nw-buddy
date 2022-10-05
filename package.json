@@ -6,8 +6,12 @@
   "main": "dist/electron/main.js",
   "private": true,
   "author": "Ginie",
+  "homepage": "https://giniedp.github.io/nw-buddy",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/giniedp/nw-buddy.git"
+  },
   "scripts": {
-    "postinstall": "electron-builder install-app-deps",
     "dev": "npm-run-all -p dev:electron dev:web",
     "dev:web": "ng serve -c web -o",
     "dev:electron": "yarn electron:serve",
@@ -25,6 +29,9 @@
     "nw-extract": "ts-node ./tools/nw-extract.ts"
   },
   "dependencies": {
+
+  },
+  "devDependencies": {
     "@angular/common": "14.1.2",
     "@angular/compiler": "14.1.2",
     "@angular/core": "14.1.2",
@@ -42,9 +49,7 @@
     "mithril": "2.2.2",
     "rxjs": "7.5.6",
     "tslib": "^2.4.0",
-    "zone.js": "~0.11.7"
-  },
-  "devDependencies": {
+    "zone.js": "~0.11.7",
     "@angular-builders/custom-webpack": "14.0.0",
     "@angular-devkit/build-angular": "14.1.2",
     "@angular-eslint/builder": "14.0.2",
