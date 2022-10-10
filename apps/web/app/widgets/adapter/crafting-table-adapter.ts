@@ -17,7 +17,7 @@ export type RecipeWithItem = Crafting & {
 }
 
 @Injectable()
-export class CraftingAdapterService extends DataTableAdapter<RecipeWithItem> {
+export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
   public entityID(item: RecipeWithItem): string {
     return item.RecipeID
   }

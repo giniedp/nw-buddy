@@ -1,9 +1,0 @@
-@import '.././../../styles/mixins/nw-icon.scss';
-
-:host {
-  display: block;
-
-  nwb-item-detail-header + .hr {
-    display: none
-  }
-}

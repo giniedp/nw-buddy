@@ -1,13 +1,17 @@
+import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef, Optional } from '@angular/core'
+import { RouterModule } from '@angular/router'
 import { defer, map, startWith } from 'rxjs'
 import { DataTableAdapter } from './data-table-adapter'
 import { CategoryLinkService } from './data-table-categories-router.directive'
 
 @Component({
+  standalone: true,
   selector: 'nwb-data-table-categories',
   templateUrl: './data-table-categories.component.html',
   styleUrls: ['./data-table-categories.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, RouterModule]
 })
 export class DataTableCategoriesComponent {
 

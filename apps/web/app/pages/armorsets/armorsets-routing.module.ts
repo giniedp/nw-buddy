@@ -23,6 +23,10 @@ const routes: Routes = [
         }]
       },
       {
+        path: 'builder',
+        loadChildren: () => import('../gearbuilder').then((it ) => it.GearbuilderModule)
+      },
+      {
         path: ':category',
         component: ArmorsetsTableComponent,
         children: [{

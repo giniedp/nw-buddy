@@ -1,7 +1,7 @@
 import { Component } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
 import { QuicksearchService } from '~/ui/quicksearch'
-import { CraftingAdapterService } from './crafting-table-adapter'
+import { CraftingTableAdapter } from '~/widgets/adapter'
 
 @Component({
   selector: 'nwb-crafting',
@@ -9,7 +9,7 @@ import { CraftingAdapterService } from './crafting-table-adapter'
   host: {
     class: 'layout-row gap-4',
   },
-  providers: [DataTableAdapter.provideClass(CraftingAdapterService), QuicksearchService],
+  providers: [DataTableAdapter.provideClass(CraftingTableAdapter), QuicksearchService],
 })
 export class CraftingComponent {
   //

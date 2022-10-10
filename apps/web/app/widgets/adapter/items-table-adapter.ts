@@ -1,22 +1,40 @@
-import { Injectable } from '@angular/core'
+import { Injectable, Optional } from '@angular/core'
 import { ItemDefinitionMaster, Perks } from '@nw-data/types'
-import { GridOptions, ValueGetterParams } from 'ag-grid-community'
-import { combineLatest, defer, map, Observable, shareReplay, Subject, takeUntil, tap } from 'rxjs'
-import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
-import { SelectboxFilter, mithrilCell, AgGridComponent, RangeFilter } from '~/ui/ag-grid'
-import { DataTableAdapter } from '~/ui/data-table'
+import { GridOptions } from 'ag-grid-community'
 import m from 'mithril'
-import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
-import { getItemIconPath, getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman, getPerkAffixStat } from '~/nw/utils'
+import { combineLatest, defer, map, Observable, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
+import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
+import { getItemIconPath, getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman } from '~/nw/utils'
+import { AgGridComponent, RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
+import { DataTableAdapter } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
+import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
 
 type ItemDefinitionMasterWithPerks = ItemDefinitionMaster & {
   $perks: Perks[]
 }
 
 @Injectable()
+export class ItemsTableAdapterConfig {
+  hideUserData?: boolean
+  source?: Observable<ItemDefinitionMaster[]>
+}
+
+@Injectable()
 export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWithPerks> {
+  public static provider(config?: ItemsTableAdapterConfig) {
+    const provider = []
+    if (config) {
+      provider.push({
+        provide: ItemsTableAdapterConfig,
+        useValue: config
+      })
+    }
+    provider.push(DataTableAdapter.provideClass(ItemsTableAdapter))
+    return provider
+  }
+
   public entityID(item: ItemDefinitionMasterWithPerks): string {
     return item.ItemID
   }
@@ -128,6 +146,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
           headerName: 'User Data',
           children: [
             {
+              hide: this.config?.hideUserData,
               width: 100,
               headerName: 'Bookmark',
               cellClass: 'cursor-pointer',
@@ -143,6 +162,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
               })
             },
             {
+              hide: this.config?.hideUserData,
               headerName: 'Owned',
               headerTooltip: 'Number of items currently owned',
               valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.stock),
@@ -159,6 +179,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
               width: 90,
             },
             {
+              hide: this.config?.hideUserData,
               headerName: 'GS',
               headerTooltip: 'Item owned with this gear score',
               valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.gs),
@@ -175,6 +196,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
               width: 90,
             },
             {
+              hide: this.config?.hideUserData,
               headerName: 'Price',
               headerTooltip: 'Current price in Trading post',
               cellClass: 'text-right',
@@ -264,15 +286,14 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
 
   public entities: Observable<ItemDefinitionMasterWithPerks[]> = defer(() => {
     return combineLatest({
-      items: this.nw.db.items,
+      items: this.config?.source || this.nw.db.items,
       perks: this.nw.db.perksMap,
     })
-      .pipe(tap(({ perks }) => (this.perks = perks)))
-      .pipe(map(({ items }) => {
+      .pipe(map(({ items, perks }) => {
         return items.map((it): ItemDefinitionMasterWithPerks => {
           return {
             ...it,
-            $perks: getItemPerks(it, this.perks)
+            $perks: getItemPerks(it, perks)
           }
         })
       }))
@@ -284,9 +305,12 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
     //
   }
 
-  private perks: Map<string, Perks>
-
-  public constructor(private nw: NwService, private i18n: TranslateService) {
+  public constructor(
+    private nw: NwService,
+    private i18n: TranslateService,
+    @Optional()
+    private config: ItemsTableAdapterConfig,
+  ) {
     super()
   }
 }

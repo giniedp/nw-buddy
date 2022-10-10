@@ -100,37 +100,25 @@
 
 <ng-template #tplDungeonLoot>
   <div class="grid gap-4">
-    <div *ngFor="let item of dungeonLoot$ | async; trackBy: trackByIndex" [nwbItemDetail]="item">
-      <nwb-item-detail-header
-        [enableNwdbLink]="true"
-        [enableTracker]="true"
-        [enableMarker]="true"
-      ></nwb-item-detail-header>
-    </div>
+    <nwb-item-detail *ngFor="let item of dungeonLoot$ | async; trackBy: trackByIndex" [entity]="item">
+      <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true"></nwb-item-detail-header>
+    </nwb-item-detail>
   </div>
 </ng-template>
 
 <ng-template #tplDungeonMutatedLoot>
   <div class="grid gap-4">
-    <div *ngFor="let item of dungeonMutatedLoot$ | async; trackBy: trackByIndex" [nwbItemDetail]="item">
-      <nwb-item-detail-header
-        [enableNwdbLink]="true"
-        [enableTracker]="true"
-        [enableMarker]="true"
-      ></nwb-item-detail-header>
-    </div>
+    <nwb-item-detail *ngFor="let item of dungeonMutatedLoot$ | async; trackBy: trackByIndex" [entity]="item">
+      <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true"></nwb-item-detail-header>
+    </nwb-item-detail>
   </div>
 </ng-template>
 
 <ng-template #tplDungeonDifficultyLoot>
   <div class="grid gap-4">
-    <div *ngFor="let item of dungeonDifficultyLoot$ | async; trackBy: trackByIndex" [nwbItemDetail]="item">
-      <nwb-item-detail-header
-        [enableNwdbLink]="true"
-        [enableTracker]="true"
-        [enableMarker]="true"
-      ></nwb-item-detail-header>
-    </div>
+    <nwb-item-detail *ngFor="let item of dungeonDifficultyLoot$ | async; trackBy: trackByIndex" [entity]="item">
+      <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true"></nwb-item-detail-header>
+    </nwb-item-detail>
   </div>
 </ng-template>
 
@@ -141,8 +129,5 @@
 </ng-template>
 
 <ng-template #tplDungeonMap>
-  <iframe [attr.src]="mapEmbed" class="w-full h-full">
-
-  </iframe>
+  <iframe [attr.src]="mapEmbed" class="w-full h-full"> </iframe>
 </ng-template>
-

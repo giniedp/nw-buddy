@@ -11,7 +11,7 @@ import { TranslateService } from '~/i18n'
 import { NwExpressionService } from '~/nw'
 
 @Injectable()
-export class AbilitiesAdapterService extends DataTableAdapter<Ability> {
+export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
   public entityID(item: Ability): string {
     return item.AbilityID
   }

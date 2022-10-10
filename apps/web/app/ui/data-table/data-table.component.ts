@@ -11,17 +11,22 @@ import {
   ChangeDetectorRef,
   SimpleChanges,
   NgZone,
+  Optional,
 } from '@angular/core'
-import { GridOptions } from 'ag-grid-community'
 import { isEqual } from 'lodash'
 import {
+  asyncScheduler,
+  BehaviorSubject,
   combineLatest,
   defer,
+  delay,
   distinctUntilChanged,
   map,
   Observable,
   ReplaySubject,
+  startWith,
   Subject,
+  subscribeOn,
   switchMap,
   switchMapTo,
   takeUntil,
@@ -30,14 +35,17 @@ import {
 import { LocaleService } from '~/i18n'
 import { PreferencesService, StorageNode } from '~/preferences'
 import { DestroyService } from '~/utils'
-import { AgGridComponent } from '~/ui/ag-grid'
+import { AgGridComponent, AgGridModule } from '~/ui/ag-grid'
 import { DataTableAdapter } from './data-table-adapter'
+import { CommonModule } from '@angular/common'
 
 @Component({
+  standalone: true,
   selector: 'nwb-data-table',
   templateUrl: './data-table.component.html',
   styleUrls: ['./data-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, AgGridModule],
   providers: [DestroyService],
 })
 export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
@@ -54,30 +62,35 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     return this.displayItems$
   }
 
-  public gridOptions: GridOptions = this.adapter.buildGridOptions({
-    rowHeight: 40,
-    rowMultiSelectWithClick: true,
-    suppressMenuHide: true,
-    defaultColDef: {
-      resizable: true,
-      sortable: true,
-      filter: true,
-    },
-    onSelectionChanged: ({ api }) => {
-      this.zone.run(() => {
-        this.gridSelectionChanged$.next(api.getSelectedRows() || [])
+  protected gridOptions = defer(() => this.adapter$).pipe(
+    map((adapter) =>
+      adapter.buildGridOptions({
+        rowHeight: 40,
+        rowMultiSelectWithClick: true,
+        suppressMenuHide: true,
+        defaultColDef: {
+          resizable: true,
+          sortable: true,
+          filter: true,
+        },
+        onSelectionChanged: ({ api }) => {
+          this.zone.run(() => {
+            this.gridSelectionChanged$.next(api.getSelectedRows() || [])
+          })
+        },
+        onRowDataChanged: () => {
+          this.gridRowDataChanged$.next(null)
+        },
+        onFirstDataRendered: () => {
+          this.gridRowDataChanged$.next(null)
+          // this.loadFilterState()
+        },
+        onFilterChanged: () => {
+          // this.saveFilterState()
+        },
       })
-    },
-    onRowDataChanged: () => {
-      this.gridRowDataChanged$.next(null)
-    },
-    onFirstDataRendered: () => {
-      // this.loadFilterState()
-    },
-    onFilterChanged: () => {
-      // this.saveFilterState()
-    },
-  })
+    )
+  )
 
   @Output()
   public get selection(): Observable<string[]> {
@@ -95,28 +108,44 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   @Output()
-  public categories = defer(() => this.items$).pipe(
-    map((items) => {
-      return Array.from(new Set(items.map((it) => this.adapter.entityCategory(it)).filter((it) => !!it)))
+  public categories = defer(() =>
+    combineLatest({
+      items: this.items$,
+      adapter: this.adapter$,
+    })
+  ).pipe(
+    map(({ items, adapter }) => {
+      return Array.from(new Set(items.map((it) => adapter.entityCategory(it)).filter((it) => !!it)))
     })
   )
 
+  @Input()
+  public set adapter(value: DataTableAdapter<T>) {
+    this.adapter$.next(value)
+  }
+  public get adapter() {
+    return this.adapter$.value
+  }
+
+  private adapter$ = new BehaviorSubject<DataTableAdapter<T>>(null)
   private gridReady$ = new ReplaySubject(1)
   private gridSelectionChanged$ = new ReplaySubject<T[]>(1)
   private gridRowDataChanged$ = new Subject()
   private selection$ = new ReplaySubject<string[]>(1)
-  private items$ = defer(() => this.adapter.entities)
+  private items$ = defer(() => this.adapter$).pipe(switchMap((adapter) => adapter.entities))
+  private category$ = defer(() => this.adapter$).pipe(switchMap((adapter) => adapter.category))
   private displayItems$ = defer(() =>
     combineLatest({
+      adapter: this.adapter$,
       items: this.items$,
-      category: this.adapter.category,
+      category: this.category$,
     })
   ).pipe(
-    map(({ items, category }) => {
+    map(({ adapter, items, category }) => {
       if (!category) {
         return items
       }
-      return items.filter((it) => this.adapter.entityCategory(it) === category)
+      return items.filter((it) => adapter.entityCategory(it) === category)
     })
   )
 
@@ -125,17 +154,19 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   public constructor(
     private locale: LocaleService,
     private cdRef: ChangeDetectorRef,
-    private adapter: DataTableAdapter<T>,
     private zone: NgZone,
     private destroy: DestroyService,
-    preferences: PreferencesService
+    preferences: PreferencesService,
+    @Optional()
+    adapter: DataTableAdapter<T>
   ) {
     this.gridStorage = preferences.session.storageScope('grid:')
+    this.adapter$.next(adapter)
   }
 
   public async ngOnInit() {
     this.gridReady$
-      .pipe(switchMapTo(this.locale.value$))
+      .pipe(switchMap(() => this.locale.value$))
       .pipe(takeUntil(this.destroy.$))
       .subscribe(() => {
         this.grid.api.refreshCells({ force: true })
@@ -146,6 +177,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       change: this.gridRowDataChanged$,
       ready: this.gridReady$,
     })
+      .pipe(subscribeOn(asyncScheduler))
       .pipe(takeUntil(this.destroy.$))
       .subscribe(({ selection }) => {
         this.syncSelection(selection, {
@@ -153,7 +185,8 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
         })
       })
 
-    this.gridSelectionChanged$
+    this.adapter$
+      .pipe(switchMap(() => this.gridSelectionChanged$))
       .pipe(map((list) => list.map((it) => this.adapter.entityID(it))))
       .pipe(distinctUntilChanged<string[]>(isEqual))
       .pipe(takeUntil(this.destroy.$))

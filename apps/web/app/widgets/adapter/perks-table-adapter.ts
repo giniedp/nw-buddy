@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable, Optional } from '@angular/core'
 import { Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, switchMap } from 'rxjs'
@@ -12,7 +12,24 @@ import { getPerkAffixStat, hasPerkAffixStats } from '~/nw/utils'
 import { ExprContextService } from './exp-context.service'
 
 @Injectable()
-export class PerksAdapterService extends DataTableAdapter<Perks> {
+export class PerksTableAdapterConfig {
+  source: Observable<Perks[]>
+}
+
+@Injectable()
+export class PerksTableAdapter extends DataTableAdapter<Perks> {
+  public static provider(config?: PerksTableAdapterConfig) {
+    const provider = []
+    if (config) {
+      provider.push({
+        provide: PerksTableAdapterConfig,
+        useValue: config,
+      })
+    }
+    provider.push(DataTableAdapter.provideClass(PerksTableAdapter))
+    return provider
+  }
+
   public entityID(item: Perks): string {
     return item.PerkID
   }
@@ -61,15 +78,14 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
             return [name || '', suffix || '', prefix || ''].join(' ')
           },
           cellRenderer: this.mithrilCell({
-            view: ({ attrs: { value }}) => {
+            view: ({ attrs: { value } }) => {
               return m('div.flex.flex-col.text-sm', [
                 value.name && m('span', value.name),
                 value.prefix && m('span.italic.text-accent', `${value.prefix} …`),
                 value.suffix && m('span.italic.text-accent', `… ${value.suffix}`),
               ])
-            }
+            },
           }),
-
         },
         {
           width: 500,
@@ -80,33 +96,42 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           filterValueGetter: ({ data }) => {
             return this.i18n.get(data.Description)
           },
-          cellRenderer: this.asyncCell((data) => {
-            if (hasPerkAffixStats(data)) {
-              return this.nw.db.affixStatsMap.pipe(map((stats) => {
-                const affix = stats.get(data.Affix)
-                return getPerkAffixStat(data, affix, 600).map((it) => {
-                  return `<b>${this.i18n.get(it.label)}</b> ${it.value}`
-                }).join('<br>')
-              }))
-            }
-            return combineLatest({
-              ctx: this.ctx.value,
-              text: this.i18n.observe(data.Description)
-            }).pipe(switchMap(({ ctx, text }) => {
-              let gs = ctx.gs
-              if (data.ItemClassGSBonus && ctx.gsBonus) {
-                gs += (Number(data.ItemClassGSBonus.split(':')[1]) || 0)
+          cellRenderer: this.asyncCell(
+            (data) => {
+              if (hasPerkAffixStats(data)) {
+                return this.nw.db.affixStatsMap.pipe(
+                  map((stats) => {
+                    const affix = stats.get(data.Affix)
+                    return getPerkAffixStat(data, affix, 600)
+                      .map((it) => {
+                        return `<b>${this.i18n.get(it.label)}</b> ${it.value}`
+                      })
+                      .join('<br>')
+                  })
+                )
               }
-              return this.nw.expression.solve({
-                text: text,
-                charLevel: ctx.level,
-                gearScore: gs,
-                itemId: data.PerkID,
-              })
-            }))
-          }, {
-            trustHtml: true
-          })
+              return combineLatest({
+                ctx: this.ctx.value,
+                text: this.i18n.observe(data.Description),
+              }).pipe(
+                switchMap(({ ctx, text }) => {
+                  let gs = ctx.gs
+                  if (data.ItemClassGSBonus && ctx.gsBonus) {
+                    gs += Number(data.ItemClassGSBonus.split(':')[1]) || 0
+                  }
+                  return this.nw.expression.solve({
+                    text: text,
+                    charLevel: ctx.level,
+                    gearScore: gs,
+                    itemId: data.PerkID,
+                  })
+                })
+              )
+            },
+            {
+              trustHtml: true,
+            }
+          ),
         },
         {
           headerName: 'Type',
@@ -132,9 +157,9 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
                 return data.ItemClassGSBonus?.split(':')[1]
               }),
               width: 50,
-              filter: false
-            }
-          ]
+              filter: false,
+            },
+          ],
         },
         {
           width: 500,
@@ -147,8 +172,8 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           filterParams: SelectboxFilter.params({
             showCondition: true,
             conditionAND: true,
-            showSearch: true
-          })
+            showSearch: true,
+          }),
         },
         {
           field: this.fieldName('ExclusiveLabels'),
@@ -160,8 +185,8 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           filterParams: SelectboxFilter.params({
             showCondition: true,
             conditionAND: true,
-            showSearch: true
-          })
+            showSearch: true,
+          }),
         },
         {
           field: this.fieldName('ExcludeItemClass'),
@@ -173,20 +198,24 @@ export class PerksAdapterService extends DataTableAdapter<Perks> {
           filterParams: SelectboxFilter.params({
             showCondition: true,
             conditionAND: true,
-            showSearch: false
-          })
+            showSearch: false,
+          }),
         },
       ],
     }
   }
 
   public entities: Observable<Perks[]> = defer(() => {
-    return this.nw.db.perks
-  }).pipe(
-    shareReplayRefCount(1)
-  )
+    return this.config?.source || this.nw.db.perks
+  }).pipe(shareReplayRefCount(1))
 
-  public constructor(private nw: NwService, private i18n: TranslateService, private ctx: ExprContextService) {
+  public constructor(
+    private nw: NwService,
+    private i18n: TranslateService,
+    @Optional()
+    private config: PerksTableAdapterConfig,
+    private ctx: ExprContextService
+  ) {
     super()
   }
 }

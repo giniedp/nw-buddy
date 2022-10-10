@@ -1,5 +1,8 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
+import { combineLatest, map } from 'rxjs'
+import { NwDbService } from '~/nw'
+import { getItemIdFromRecipe } from '~/nw/utils'
 import { observeRouteParam } from '~/utils'
 
 @Component({
@@ -11,8 +14,11 @@ import { observeRouteParam } from '~/utils'
   }
 })
 export class CraftingDetailComponent {
-  public itemId = observeRouteParam(this.route, 'id')
-  public constructor(private route: ActivatedRoute) {
+  protected id$ = observeRouteParam(this.route, 'id')
+  protected recipe$ = this.db.recipe(this.id$)
+  protected itemId$ = this.recipe$.pipe(map((it) => getItemIdFromRecipe(it)))
+
+  public constructor(private route: ActivatedRoute, private db: NwDbService) {
     //
   }
 }

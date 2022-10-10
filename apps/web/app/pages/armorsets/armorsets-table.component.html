@@ -7,14 +7,18 @@
   class="flex-1 rounded-md overflow-clip"
 ></nwb-data-table>
 
-<div class="flex-none w-[400px] xl:w-[450px] 2xl:w-[500px] overflow-y-auto" *ngIf="selectedItems | async; let items">
+<div
+  class="flex-none w-[400px] xl:w-[450px] 2xl:w-[500px] overflow-y-auto"
+  *ngIf="selectedItems | async; let items"
+>
   <nwb-item-detail
     *ngFor="let item of items; trackBy: trackByIndex"
-    [itemId]="item.ItemID"
-    class="rounded-md overflow-clip mb-4"
-    [enableMarker]="true"
-    [enableTracker]="true"
-    [enableDescription]="true"
-    [enablePerks]="true"
-  ></nwb-item-detail>
+    [entityId]="item.ItemID"
+    class="mb-3"
+  >
+    <nwb-item-detail-header [enableTracker]="true"></nwb-item-detail-header>
+    <nwb-item-detail-stats></nwb-item-detail-stats>
+    <hr class="item-detail-divider" />
+    <nwb-item-detail-perks></nwb-item-detail-perks>
+  </nwb-item-detail>
 </div>

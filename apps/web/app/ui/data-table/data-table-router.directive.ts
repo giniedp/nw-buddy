@@ -5,6 +5,7 @@ import { distinctUntilChanged, Subject, takeUntil } from 'rxjs'
 import { DataTableComponent } from './data-table.component'
 
 @Directive({
+  standalone: true,
   selector: 'nwb-data-table[detailRoutParam]',
 })
 export class DataTableRouterDirective implements OnInit, OnDestroy {

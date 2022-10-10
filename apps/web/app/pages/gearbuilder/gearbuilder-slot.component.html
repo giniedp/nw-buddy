@@ -1,0 +1,39 @@
+<ng-container *ngIf="vm$ | async; let vm">
+  <div *ngIf="!vm.itemId" class="flex-1 flex items-center justify-center cursor-pointer p-10" (click)="pickItem()">
+    <img [nwImage]="vm.icon" width="128" height="128" />
+  </div>
+  <nwb-item-detail
+    [entityId]="vm.itemId"
+    #detail="detail"
+    [gearScoreOverride]="vm.itemGs"
+    [perkOverride]="perksMapping"
+
+    *ngIf="vm.itemId"
+  >
+    <nwb-item-detail-header (click)="pickItem()" class="cursor-pointer"> </nwb-item-detail-header>
+    <nwb-item-detail-stats
+      [gearScoreEditable]="true"
+      (gearScoreEdit)="toggleGearScore()"
+      #stats="itemDetailStats"
+    ></nwb-item-detail-stats>
+    <hr class="item-detail-divider" />
+    <nwb-item-detail-perks (editPerk)="pickPerk($event)" [perkEditable]="true"></nwb-item-detail-perks>
+    <hr class="item-detail-divider" />
+    <nwb-item-detail-description></nwb-item-detail-description>
+    <hr class="item-detail-divider" />
+    <nwb-item-detail-info></nwb-item-detail-info>
+
+    <ng-template
+      cdkConnectedOverlay
+      [cdkConnectedOverlayOrigin]="stats.gearScoreOverlayOrigin"
+      [cdkConnectedOverlayOpen]="isGearScoreOpen"
+      [cdkConnectedOverlayHasBackdrop]="true"
+      (backdropClick)="toggleGearScore()"
+      (detach)="isGearScoreOpen = false"
+    >
+      <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
+        <input type="range" min="100" max="625" step="1" [ngModel]="vm.itemGs" (ngModelChange)="updateGearScore($event)" class="range range-sm range-primary" />
+      </div>
+    </ng-template>
+  </nwb-item-detail>
+</ng-container>

@@ -6,8 +6,8 @@ import { observeRouteParam } from '~/utils'
   templateUrl: './item.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'layout-content flex-none max-w-lg'
-  }
+    class: 'layout-content flex-none max-w-lg',
+  },
 })
 export class ItemComponent {
   public itemId = observeRouteParam(this.route, 'id')

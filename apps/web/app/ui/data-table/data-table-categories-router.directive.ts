@@ -9,6 +9,7 @@ export abstract class CategoryLinkService {
 }
 
 @Directive({
+  standalone: true,
   selector: 'nwb-data-table-categories[categoryChildRoute]',
   providers: [{
     provide: CategoryLinkService,
@@ -27,6 +28,7 @@ export class CategoryChildRouteParamDirective extends CategoryLinkService {
 
 
 @Directive({
+  standalone: true,
   selector: 'nwb-data-table[categoryRouteParam]',
 })
 export class CategoryRouteParamDirective {

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
 import { QuicksearchService } from '~/ui/quicksearch'
-import { StatusEffectsAdapterService } from './status-effects-table-adapter'
+import { StatusEffectsTableAdapter } from '~/widgets/adapter'
 
 @Component({
   selector: 'nwb-status-effects',
@@ -10,7 +10,7 @@ import { StatusEffectsAdapterService } from './status-effects-table-adapter'
   host: {
     class: 'layout-row gap-4',
   },
-  providers: [DataTableAdapter.provideClass(StatusEffectsAdapterService), QuicksearchService],
+  providers: [DataTableAdapter.provideClass(StatusEffectsTableAdapter), QuicksearchService],
 })
 export class StatusEffectsComponent {
   //

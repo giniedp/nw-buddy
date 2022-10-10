@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core'
 import { Routes, RouterModule } from '@angular/router'
 
-const routes: Routes = [
+export const ROUTES: Routes = [
   {
     path: '',
     pathMatch: 'full',
@@ -18,16 +18,9 @@ const routes: Routes = [
   { path: 'dungeons', loadChildren: () => import('./pages/dungeons').then(m => m.DungeonsModule) },
   { path: 'territories', loadChildren: () => import('./pages/territories').then(m => m.TerritoriesModule) },
   { path: 'progression', loadChildren: () => import('./pages/progression').then(m => m.ProgressionModule) },
+  { path: 'gearbuilder', loadChildren: () => import('./pages/gearbuilder').then(m => m.GearbuilderModule) },
   { path: 'vitals', loadChildren: () => import('./pages/vitals/vitals.module').then(m => m.VitalsModule) },
   { path: 'about', loadChildren: () => import('./pages/about/about.module').then(m => m.AboutModule) },
   { path: 'dev', loadChildren: () => import('./pages/dev/dev.module').then(m => m.DevModule) },
   { path: '**', loadChildren: () => import('./pages/not-found').then((m) => m.NotFoundModule) },
 ]
-
-@NgModule({
-  imports: [RouterModule.forRoot(routes, {
-
-  })],
-  exports: [RouterModule],
-})
-export class AppRoutingModule {}

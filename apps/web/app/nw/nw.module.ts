@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms'
 import { NwIconComponent, NwImageComponent } from './nw-icon.component'
 import { NwInfoLinkDirective } from './nw-info-link.directive'
 import { NwTextDirective } from './nw-text.directive'
+import { NwTextPipe } from './nw-text.pipe'
 
 @NgModule({
   imports: [
@@ -15,12 +16,14 @@ import { NwTextDirective } from './nw-text.directive'
     NwIconComponent,
     NwImageComponent,
     NwInfoLinkDirective,
+    NwTextPipe
   ],
   exports: [
     NwTextDirective,
     NwIconComponent,
     NwImageComponent,
     NwInfoLinkDirective,
+    NwTextPipe,
   ],
 })
 export class NwModule {

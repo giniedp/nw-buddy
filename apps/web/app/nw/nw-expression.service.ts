@@ -5,7 +5,7 @@ import { parseNwExpression } from './utils'
 
 export interface NwExpressionContext {
   text: string
-  itemId: string
+  itemId?: string
   charLevel: number
   gearScore: number
   ConsumablePotency?: number

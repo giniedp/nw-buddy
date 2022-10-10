@@ -41,6 +41,7 @@ program
         '*_itemdefinitions_master_*',
         '*_itemdefinitions_resources',
         '*_itemdefinitions_weapons',
+        '*_itemdefinitions_armor',
         '*_lootbuckets',
         '*_lootlimits',
         '*_loottables*',

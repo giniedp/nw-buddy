@@ -9,7 +9,7 @@
     <tr *ngFor="let row of table | async; let i = index">
       <th >{{ attributes[i].name }}</th>
       <td *ngFor="let col of row">
-        <div [nwbItemDetail]="col.item" class="flex gap-2">
+        <div class="flex gap-2">
           <a [nwInfoLink]="col.item.ItemID" [nwInfoResource]="'item'" target="_blank" class="w-10 h-10">
             <picture [nwIcon]="col.item" class="nw-icon w-10 h-10"></picture>
           </a>

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
 import { QuicksearchService } from '~/ui/quicksearch'
-import { ItemsTableAdapter } from './items-table-adapter'
+import { ItemsTableAdapter } from '~/widgets/adapter'
 
 @Component({
   selector: 'nwb-items',

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
 import { QuicksearchService } from '~/ui/quicksearch'
-import { VitalsAdapterService } from './vitals-table-adapter'
+import { VitalsTableAdapter } from '~/widgets/adapter'
 
 @Component({
   selector: 'nwb-vitals',
@@ -10,6 +10,6 @@ import { VitalsAdapterService } from './vitals-table-adapter'
   host: {
     class: 'layout-row gap-4',
   },
-  providers: [DataTableAdapter.provideClass(VitalsAdapterService), QuicksearchService],
+  providers: [DataTableAdapter.provideClass(VitalsTableAdapter), QuicksearchService],
 })
 export class VitalsComponent {}

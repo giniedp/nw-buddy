@@ -1,10 +1,10 @@
 import {
   ChangeDetectionStrategy,
-  Component,
+  Component
 } from '@angular/core'
 import { DataTableAdapter } from '~/ui/data-table'
 import { QuicksearchService } from '~/ui/quicksearch'
-import { AbilitiesAdapterService } from './abilities-table-adapter'
+import { AbilitiesTableAdapter } from '~/widgets/adapter'
 
 @Component({
   selector: 'nwb-abilities',
@@ -14,7 +14,7 @@ import { AbilitiesAdapterService } from './abilities-table-adapter'
     class: 'layout-row gap-4',
   },
   providers: [
-    DataTableAdapter.provideClass(AbilitiesAdapterService),
+    DataTableAdapter.provideClass(AbilitiesTableAdapter),
     QuicksearchService
   ]
 })

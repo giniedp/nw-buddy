@@ -714,6 +714,40 @@ export interface ItemdefinitionsWeapons {
     WeaponMasteryCategoryId?:     string;
     WeightOverride:               number;
 }
+export interface ItemdefinitionsArmor {
+    ABSCorruption:                number;
+    ABSFire:                      number;
+    ABSLightning:                 number;
+    ABSMagic:                     number;
+    ABSSiege:                     number;
+    ABSSlash:                     number;
+    ABSStandard:                  number;
+    ABSStrike:                    number;
+    ABSThrust:                    number;
+    ArmorRatingScaleFactor:       number;
+    DEFCorruption:                number;
+    DEFFire:                      number;
+    DEFLightning:                 number;
+    DEFMagic:                     number;
+    DEFSiege:                     number;
+    DEFSlash:                     number;
+    DEFStandard:                  number;
+    DEFStrike:                    number;
+    DEFThrust:                    number;
+    ElementalArmorSetScaleFactor: number;
+    Encumbrance:                  number;
+    EncumbrancePerGS:             number;
+    Grit:                         number;
+    PhysicalArmorSetScaleFactor:  number;
+    RESBleed:                     number;
+    RESCurse:                     number;
+    RESDisease:                   number;
+    RESFrostbite:                 number;
+    RESPoison:                    number;
+    WeaponID:                     string;
+    WeightClass?:                 string;
+    WeightOverride:               number;
+}
 export interface Lootbuckets {
     Item1?:          string;
     Item10?:         string;

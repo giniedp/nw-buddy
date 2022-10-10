@@ -1,4 +1,4 @@
-import { ClassProvider, Type } from "@angular/core"
+import { ClassProvider, ExistingProvider, Type } from "@angular/core"
 import { GridOptions, ValueGetterFunc, ValueGetterParams } from "ag-grid-community"
 import { BehaviorSubject, Observable, Subject, takeUntil } from "rxjs"
 import { AgGridComponent, mithrilCell, MithrilCellAttrs } from "../ag-grid"
@@ -13,6 +13,13 @@ export abstract class DataTableAdapter<T> {
     return {
       provide: DataTableAdapter,
       useClass: useClass,
+    }
+  }
+
+  public static provideExisting(useClass: Type<DataTableAdapter<any>>): ExistingProvider {
+    return {
+      provide: DataTableAdapter,
+      useExisting: useClass,
     }
   }
 

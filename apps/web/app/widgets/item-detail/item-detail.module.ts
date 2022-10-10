@@ -1,32 +1,25 @@
-import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
-import { AgGridModule } from '~/ui/ag-grid'
-import { NwModule } from '~/nw'
-import { ItemDetailComponent } from './item-detail.component'
+import { ItemCardComponent } from './item-card.component'
+import { ItemDetailDescriptionComponent } from './item-detail-description.component'
+import { ItemDetailDivider } from './item-detail-divider.component'
 import { ItemDetailHeaderComponent } from './item-detail-header.component'
-import { CraftingCalculatorModule } from '../crafting-calculator'
-import { ItemDetailPerksComponent } from './item-detail-perks.component'
-import { ItemTrackerModule } from '../item-tracker'
-import { AffixStatComponent } from './affix-stat.component'
-import { ItemDetailDirective } from './item-detail.directive'
-import { ItemDetailSalvageComponent } from './item-detail-salvage.component'
-import { GameEventComponent } from '../game-event'
 import { ItemDetailInfoComponent } from './item-detail-info.component'
+import { ItemDetailPerksComponent } from './item-detail-perks.component'
+import { ItemDetailStatsComponent } from './item-detail-stats.component'
+import { ItemDetailComponent } from './item-detail.component'
 
 const COMPONENTS = [
+  ItemCardComponent,
   ItemDetailComponent,
+  ItemDetailDescriptionComponent,
   ItemDetailHeaderComponent,
   ItemDetailPerksComponent,
-  AffixStatComponent,
-  ItemDetailDirective,
-  ItemDetailSalvageComponent,
-  ItemDetailInfoComponent
+  ItemDetailStatsComponent,
+  ItemDetailInfoComponent,
+  ItemDetailDivider,
 ]
 @NgModule({
-  imports: [CommonModule, AgGridModule, NwModule, CraftingCalculatorModule, ItemTrackerModule, GameEventComponent],
-  declarations: [...COMPONENTS],
+  imports: [...COMPONENTS],
   exports: [...COMPONENTS],
 })
-export class ItemDetailModule {
-  //
-}
+export class ItemDetailModule {}

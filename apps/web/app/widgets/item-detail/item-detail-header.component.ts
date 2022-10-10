@@ -1,94 +1,49 @@
-import {
-  Component,
-  OnInit,
-  ChangeDetectionStrategy,
-  Input,
-  OnChanges,
-  ChangeDetectorRef,
-} from '@angular/core'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { takeUntil } from 'rxjs'
-import { getItemId, getItemRarity, getItemRarityName, isHousingItem, isMasterItem } from '~/nw/utils'
-import { DestroyService } from '~/utils'
+import { CommonModule } from '@angular/common'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { BehaviorSubject, combineLatest, defer, map, tap } from 'rxjs'
+import { NwModule } from '~/nw'
+import { ItemTrackerModule } from '../item-tracker'
 import { ItemDetailService } from './item-detail.service'
 
 @Component({
+  standalone: true,
   selector: 'nwb-item-detail-header',
   templateUrl: './item-detail-header.component.html',
   styleUrls: ['./item-detail-header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [DestroyService],
+  imports: [CommonModule, NwModule, ItemTrackerModule],
   host: {
-    '[class.v-lg]': 'size === "lg"',
-    '[class.v-sm]': 'size === "sm"'
-  }
+    class: 'block',
+  },
 })
-export class ItemDetailHeaderComponent implements OnInit, OnChanges {
-
-  public entity: ItemDefinitionMaster | Housingitems
+export class ItemDetailHeaderComponent {
+  @Input()
+  public enableInfoLink: boolean
 
   @Input()
-  public enableNwdbLink: boolean
-
-  @Input()
-  public enableTracker: boolean
-
-  @Input()
-  public enableMarker: boolean
-
-  @Input()
-  public size: 'sm' | 'lg' | 'md' = 'md'
-
-  public get entityId() {
-    return getItemId(this.entity)
+  public set enableTracker(value: boolean) {
+    this.enableTracker$.next(value)
   }
 
-  public get iconPath(): string {
-    return this.entity?.IconPath
-  }
-  public get itemName(): string {
-    return this.entity?.Name
-  }
-  public get itemRarity(): number {
-    return getItemRarity(this.entity)
-  }
-  public get itemRarityName(): string {
-    return getItemRarityName(this.entity)
-  }
-  public get itemTypeName(): string {
-    if (this.entity) {
-      if (isMasterItem(this.entity)) {
-        return this.entity.ItemTypeDisplayName
-      }
-      if (isHousingItem(this.entity)) {
-        return this.entity.ItemType
-      }
-    }
-    return ''
-  }
-  public get itemType(): string {
-    return this.entity?.ItemType || ''
-  }
-  public get showGsTracker() {
-    return this.enableTracker && (this.itemType === 'Weapon' || this.itemType === 'Armor')
+  protected name$ = this.detail.name$
+  protected rarity$ = this.detail.rarity$
+  protected rarityName$ = this.detail.rarityName$
+
+  protected get vm$() {
+    return this.detail.vm$
   }
 
-  public constructor(
-    private cdRef: ChangeDetectorRef,
-    private destroy: DestroyService,
-    private service: ItemDetailService
-  ) {
-    //
-  }
-
-  public ngOnInit(): void {
-    this.service.entity$.pipe(takeUntil(this.destroy.$)).subscribe((it) => {
-      this.entity = it
-      this.cdRef.markForCheck()
+  protected showMarker$ = defer(() => this.enableTracker$)
+  protected showGsMarker$ = defer(() =>
+    combineLatest({
+      enabled: this.enableTracker$,
+      hasGs: this.detail.item$.pipe(map((it) => it?.ItemType === 'Weapon' || it?.ItemType === 'Armor')),
     })
-  }
+  ).pipe(map(({ enabled, hasGs }) => enabled && hasGs))
 
-  public ngOnChanges(): void {
-    this.cdRef.markForCheck()
+  private enableTracker$ = new BehaviorSubject(false)
+
+  public constructor(protected detail: ItemDetailService) {
+    //
   }
 }

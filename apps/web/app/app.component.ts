@@ -12,7 +12,7 @@ import { Hotkeys } from './utils'
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   host: {
-    class: 'layout-frame layout-column',
+    class: 'layout-frame layout-column p-0 md:p-3 gap-2 md:gap-4',
   },
 })
 export class AppComponent {

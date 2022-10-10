@@ -1,0 +1,19 @@
+<div *ngIf="gsLabel$ | async; let gs" class="flex gap-2">
+  <span
+    cdkOverlayOrigin
+    class="text-5xl font-bold rounded-md border border-transparent "
+    [class.hover:border-primary]="gearScoreEditable"
+    [class.cursor-pointer]="gearScoreEditable"
+    [class.select-none]="gearScoreEditable"
+    style="min-width: 3rem"
+    (click)="onGearScoreEdit($event)"
+    >{{ gs }}</span
+  >
+  <div class="flex flex-col justify-center opacity-50 leading-4">
+    <span>Gear</span>
+    <span>Score</span>
+  </div>
+</div>
+<div *ngFor="let row of stats$ | async">
+  <b>{{ row.value }} </b> <span class="opacity-50">{{ row.label }}</span>
+</div>

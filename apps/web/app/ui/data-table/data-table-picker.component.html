@@ -1,0 +1,15 @@
+<input
+  type="text"
+  placeholder="Type here"
+  [(ngModel)]="search"
+  class="flex-none input input-sm input-bordered w-full mb-2"
+  [disabled]="disabled"
+/>
+<nwb-data-table
+  *ngIf="adapter"
+  #table
+  [adapter]="adapter"
+  [quickFilter]="search"
+  (selection)="onSelectionChange($event)"
+  class="flex-1 rounded-md overflow-clip"
+></nwb-data-table>

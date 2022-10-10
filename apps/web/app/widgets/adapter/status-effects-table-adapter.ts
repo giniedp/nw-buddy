@@ -10,7 +10,7 @@ import { TranslateService } from '~/i18n'
 import { humanize, shareReplayRefCount } from '~/utils'
 
 @Injectable()
-export class StatusEffectsAdapterService extends DataTableAdapter<Statuseffect> {
+export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
   public entityID(item: Statuseffect): string {
     return item.StatusID
   }
