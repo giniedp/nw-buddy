@@ -7,17 +7,11 @@ const env = require('./env')
  * Custom angular webpack configuration
  */
 module.exports = (config, options) => {
-  config.target = 'electron-renderer'
-
   if (options.fileReplacements) {
-    for (let fileReplacement of options.fileReplacements) {
-      if (fileReplacement.replace !== 'apps/web/environments/environment.ts') {
-        continue
-      }
-
-      let fileReplacementParts = fileReplacement['with'].split('.')
-      if (fileReplacementParts.length > 1 && ['web'].indexOf(fileReplacementParts[1]) >= 0) {
-        config.target = 'web'
+    for (let replacement of options.fileReplacements) {
+      let parts = replacement.with.split('.')
+      if (parts.includes('electron')) {
+        config.target = 'electron-renderer'
       }
       break
     }
@@ -34,5 +28,6 @@ module.exports = (config, options) => {
    })
   ]
 
+  console.log('[WEBPACK] using target', config.target)
   return config
 }
