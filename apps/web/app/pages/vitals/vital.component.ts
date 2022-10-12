@@ -11,7 +11,7 @@ import { observeRouteParam } from '~/utils'
   styleUrls: ['./vital.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'layout-column flex-none max-w-lg gap-4'
+    class: 'layout-column xl:max-w-md bg-base-300 rounded-md overflow-clip',
   }
 })
 export class VitalComponent {

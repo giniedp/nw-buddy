@@ -11,6 +11,7 @@ import { VitalsFamiliesComponent } from './vitals-families.component'
 import { RouterModule } from '@angular/router'
 import { VitalsTableComponent } from './vitals-table.component'
 import { LootModule } from '~/widgets/loot'
+import { ScreenModule } from '~/ui/screen'
 
 @NgModule({
   declarations: [VitalsComponent, VitalComponent, VitalsFamiliesComponent, VitalsTableComponent],
@@ -22,7 +23,8 @@ import { LootModule } from '~/widgets/loot'
     VitalsFamiliesModule,
     QuicksearchModule,
     VitalsFamiliesModule,
-    LootModule
+    LootModule,
+    ScreenModule
   ],
 })
 export class VitalsModule {}

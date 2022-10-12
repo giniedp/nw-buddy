@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, TrackByFunction } from '@angular/core'
 import { ItemDefinitionMaster } from '@nw-data/types'
-import { DataTableAdapter, DataTableComponent } from '~/ui/data-table'
+import { DataTableAdapter } from '~/ui/data-table'
 import { QuicksearchService } from '~/ui/quicksearch'
 import { ArmorsetsAdapterService } from './armorsets-adapter.service'
-import { Armorset, ArmorsetGroup } from './types'
+import { Armorset } from './types'
 
 @Component({
   selector: 'nwb-armorsets',
@@ -11,7 +11,7 @@ import { Armorset, ArmorsetGroup } from './types'
   styleUrls: ['./armorsets.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'layout-row gap-4',
+    class: 'flex-1 layout-column',
   },
   providers: [DataTableAdapter.provideClass(ArmorsetsAdapterService), QuicksearchService],
 })

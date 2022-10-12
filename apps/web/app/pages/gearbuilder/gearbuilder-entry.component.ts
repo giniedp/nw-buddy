@@ -52,7 +52,7 @@ export class GearbuilderEntryComponent {
   protected async onCloneClicked() {
     const data = await firstValueFrom(this.data$)
     const id = await this.store.create({
-      name: `${data?.name || 'New Gearset'} (copy)`,
+      name: data?.name ? `${data?.name} (copy)` : 'Unnamed Gearset',
       items: JSON.parse(JSON.stringify(data?.items)),
     })
     this.router.navigate(['..', id], { relativeTo: this.route })

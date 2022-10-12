@@ -9,9 +9,18 @@ import { FormsModule } from '@angular/forms'
 import { DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule } from '~/ui/quicksearch'
 import { ItemsTableComponent } from './items-table.component'
+import { ScreenModule } from '~/ui/screen'
 
 @NgModule({
-  imports: [CommonModule, FormsModule, ItemsRoutingModule, DataTableModule, ItemDetailModule, QuicksearchModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ItemsRoutingModule,
+    DataTableModule,
+    ItemDetailModule,
+    QuicksearchModule,
+    ScreenModule,
+  ],
   declarations: [ItemsComponent, ItemComponent, ItemsTableComponent],
 })
 export class ItemsModule {}

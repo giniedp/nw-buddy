@@ -35,32 +35,18 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           pinned: true,
           valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.DisplayName)),
           getQuickFilterText: ({ value }) => value,
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs }) =>
-              m(
-                'a',
-                {
-                  href: nwdbLinkUrl('creature', attrs.data.VitalsID),
-                  target: '_blank',
-                },
-                [attrs.value]
-              ),
+          cellRenderer: this.cellRenderer(({ value, data }) => {
+            return `<a href="${nwdbLinkUrl('creature', data.VitalsID)}">${value}</a>`
           }),
         },
         {
           width: 200,
           field: this.fieldName('Level'),
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs }) => {
-              const icon = this.vitals.vitalMarkerIcon(attrs.data)
-              return m('div.relative.h-full.w-full', [
-                icon &&
-                  m('img.block.object-cover.absolute.left-0.top-0.h-full.w-full', {
-                    src: icon,
-                  }),
-                m('span.absolute.left-0.right-0.top-0.bottom-0.text-center.font-bold', attrs.value),
-              ])
-            },
+          cellRenderer: this.cellRenderer(({ data, value }) => {
+            const icon = this.vitals.vitalMarkerIcon(data)
+            const iconEl = icon && `<img src=${icon} class="block object-cover absolute left-0 top-0 h-full w-full" />`
+            const spanEl = `<span class="absolute left-0 right-0 top-0 bottom-0 text-center font-bold">${value}</span>`
+            return `${iconEl} ${spanEl}`
           }),
         },
         {
@@ -180,18 +166,18 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
   }
 
   public cellRendererDamage() {
-    return this.mithrilCell({
-      view: ({ attrs }) => {
-        if (!attrs.value) {
-          return null
-        }
-        return m('div.flex.flex-row.items-center.justify-center.relative', [
-          m('img.w-8.h-8.mr-1', {
-            src: attrs.value < 0 ? this.vitals.iconWeakattack : this.vitals.iconStronattack,
-          }),
-          m('span.font-bold', `${attrs.value > 0 ? '+' : ''}${attrs.value}%`),
-        ])
-      },
+    return this.cellRenderer(({ value }) => {
+      if (!value) {
+        return null
+      }
+      const icon = value < 0 ? this.vitals.iconWeakattack : this.vitals.iconStronattack
+      const text = `${value > 0 ? '+' : ''}${value}%`
+      return `
+      <div class="flex flex-row items-center justify-center relative">
+        <img class="w-8 h-8 mr-1" src="${icon}"/>
+        <span class="font-bold">${text}</span>
+      </div>
+      `
     })
   }
 }

@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
+import { ScreenModule } from '~/ui/screen'
 import { TerritoryModule } from '~/widgets/territory'
 
 @Component({
@@ -9,10 +10,10 @@ import { TerritoryModule } from '~/widgets/territory'
   standalone: true,
   templateUrl: './territories.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, TerritoryModule, QuicksearchModule],
+  imports: [CommonModule, RouterModule, TerritoryModule, QuicksearchModule, ScreenModule],
   providers: [QuicksearchService],
   host: {
-    class: 'layout-row gap-4',
+    class: 'layout-row screen-gap',
   },
 })
 export class TerritoriesComponent {

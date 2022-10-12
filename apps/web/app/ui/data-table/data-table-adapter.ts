@@ -1,5 +1,5 @@
 import { ClassProvider, ExistingProvider, Type } from "@angular/core"
-import { GridOptions, ValueGetterFunc, ValueGetterParams } from "ag-grid-community"
+import { GridOptions, ICellRendererFunc, ValueGetterFunc, ValueGetterParams } from "ag-grid-community"
 import { BehaviorSubject, Observable, Subject, takeUntil } from "rxjs"
 import { AgGridComponent, mithrilCell, MithrilCellAttrs } from "../ag-grid"
 import m from 'mithril'
@@ -47,6 +47,9 @@ export abstract class DataTableAdapter<T> {
   }
   public valueGetter(fn: keyof T | ((params: TypedValueGetterParams<T>) => any)): string | ValueGetterFunc {
     return fn as any
+  }
+  public cellRenderer(fn: ICellRendererFunc<T>) {
+    return fn
   }
   public mithrilCell(comp: m.Component<MithrilCellAttrs<T>>) {
     return mithrilCell<T>(comp)

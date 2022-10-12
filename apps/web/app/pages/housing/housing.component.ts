@@ -8,7 +8,7 @@ import { HousingAdapterService } from './housing-table-adapter'
   templateUrl: './housing.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'layout-row gap-4',
+    class: 'flex-1 layout-column',
   },
   providers: [DataTableAdapter.provideClass(HousingAdapterService), QuicksearchService],
 })

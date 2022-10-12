@@ -6,7 +6,7 @@ import { QuicksearchService } from '~/ui/quicksearch';
   templateUrl: './vitals-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'layout-row gap-4',
+    class: 'layout-row screen-gap',
   },
 })
 export class VitalsTableComponent implements OnInit {

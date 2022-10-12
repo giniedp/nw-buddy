@@ -23,7 +23,7 @@ type RecipeWithItem = Crafting & {
   templateUrl: './crafting-trophies.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'layout-content',
+    class: 'layout-row bg-base-300 rounded-md overflow-clip',
   },
 })
 export class CraftingTrophiesComponent {

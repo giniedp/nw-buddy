@@ -10,6 +10,7 @@ import { ItemDetailModule } from '~/widgets/item-detail'
 import { DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule } from '~/ui/quicksearch';
 import { HousingTableComponent } from './housing-table.component'
+import { ScreenModule } from '~/ui/screen'
 
 @NgModule({
   imports: [
@@ -19,7 +20,8 @@ import { HousingTableComponent } from './housing-table.component'
     DataTableModule,
     PropertyGridModule,
     ItemDetailModule,
-    QuicksearchModule
+    QuicksearchModule,
+    ScreenModule
   ],
   declarations: [HousingComponent, HousingDetailComponent, HousingTableComponent],
 })

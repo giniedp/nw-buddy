@@ -11,7 +11,7 @@ import { TerritoryModule } from '~/widgets/territory'
   imports: [CommonModule, TerritoryModule],
   providers: [DestroyService],
   host: {
-    class: 'layout-row gap-4',
+    class: 'layout-content rounded-md',
   },
 })
 export class TerritoriesStandingComponent {

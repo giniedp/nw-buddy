@@ -9,9 +9,10 @@ import { QuicksearchModule } from '~/ui/quicksearch';
 import { PerksTableComponent } from './perks-table.component';
 import { AttributesTableModule } from '~/widgets/attributes-table'
 import { FormsModule } from '@angular/forms'
+import { ScreenModule } from '~/ui/screen'
 
 @NgModule({
-  imports: [CommonModule, NwModule, PerksRoutingModule, DataTableModule, QuicksearchModule, AttributesTableModule, FormsModule],
+  imports: [CommonModule, NwModule, PerksRoutingModule, DataTableModule, QuicksearchModule, AttributesTableModule, FormsModule, ScreenModule],
   declarations: [PerksComponent, PerksTableComponent],
 })
 export class PerksModule {}

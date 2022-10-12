@@ -14,7 +14,7 @@ import { PoiTableAdapter } from './poi-table-adapter'
   imports: [CommonModule, NwModule, DataTableModule, RouterModule],
   providers: [DataTableAdapter.provideClass(PoiTableAdapter)],
   host: {
-    class: 'layout-row gap-4',
+    class: 'layout-row screen-gap',
   },
 })
 export class PoiTableComponent {

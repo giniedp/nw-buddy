@@ -37,7 +37,7 @@ export class GearbuilderStore {
     const id = createId()
     this.update(id, (data) => {
       data = value || data
-      data.name = 'New Gearset'
+      data.name = 'Unnamed Gearset'
       return data
     })
     return id

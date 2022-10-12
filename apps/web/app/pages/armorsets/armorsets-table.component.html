@@ -7,18 +7,21 @@
   class="flex-1 rounded-md overflow-clip"
 ></nwb-data-table>
 
-<div
-  class="flex-none w-[400px] xl:w-[450px] 2xl:w-[500px] overflow-y-auto"
-  *ngIf="selectedItems | async; let items"
->
-  <nwb-item-detail
-    *ngFor="let item of items; trackBy: trackByIndex"
-    [entityId]="item.ItemID"
-    class="mb-3"
-  >
-    <nwb-item-detail-header [enableTracker]="true"></nwb-item-detail-header>
-    <nwb-item-detail-stats></nwb-item-detail-stats>
-    <hr class="item-detail-divider" />
-    <nwb-item-detail-perks></nwb-item-detail-perks>
-  </nwb-item-detail>
+<!-- class="flex-none w-[400px] xl:w-[450px] 2xl:w-[500px] overflow-y-auto" -->
+
+<div class="flex-none layout-row bg-base-300 rounded-md overflow-clip xl:flex-none xl:w-[450px]" *ngIf="selectedItems | async; let items">
+  <div class="flex-1 layout-content p-3">
+    <div class="flex flex-row xl:flex-col screen-gap flex-nowrap">
+      <nwb-item-detail
+        *ngFor="let item of items; trackBy: trackByIndex"
+        [entityId]="item.ItemID"
+        class="flex-none w-80 xl:w-auto"
+      >
+        <nwb-item-detail-header [enableTracker]="true"></nwb-item-detail-header>
+        <nwb-item-detail-stats></nwb-item-detail-stats>
+        <hr class="item-detail-divider" />
+        <nwb-item-detail-perks></nwb-item-detail-perks>
+      </nwb-item-detail>
+    </div>
+  </div>
 </div>

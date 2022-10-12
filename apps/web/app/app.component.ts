@@ -1,4 +1,4 @@
-import { Component, ElementRef, QueryList, ViewChildren } from '@angular/core'
+import { Component, ElementRef, HostBinding, QueryList, ViewChildren } from '@angular/core'
 import { sortBy } from 'lodash'
 
 import { ElectronService } from './electron'
@@ -6,16 +6,19 @@ import { TranslateService } from './i18n'
 
 import { AppPreferencesService } from './preferences'
 import { Hotkeys } from './utils'
+import { MAIN_MENU, EXTERN_MENU, LANG_OPTIONS } from './menu'
+
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   host: {
-    class: 'layout-frame layout-column p-0 md:p-3 gap-2 md:gap-4',
+    class: 'layout-frame layout-column p-2 lg:p-4 screen-gap',
   },
 })
 export class AppComponent {
+  @HostBinding('class.is-electron')
   public get isElectron() {
     return this.electron.isElectron
   }
@@ -27,47 +30,9 @@ export class AppComponent {
     this.preferences.language.set(value)
   }
 
-  protected links = sortBy(
-    [
-      {
-        url: 'https://nwdb.info/',
-        label: 'nwdb.info',
-      },
-      {
-        url: 'https://www.nw-tools.info/',
-        label: 'www.nw-tools.info',
-      },
-      {
-        url: 'https://gaming.tools/newworld/',
-        label: 'gaming.tools',
-      },
-      {
-        url: 'https://new-world.exchange/',
-        label: 'new-world.exchange',
-      },
-      {
-        url: 'https://nwmarketprices.com/',
-        label: 'nwmarketprices.com',
-      },
-      {
-        url: 'https://newworldfans.com/',
-        label: 'newworldfans.com',
-      },
-      {
-        url: 'https://www.newworld-map.com/',
-        label: 'newworld-map.com',
-      },
-      {
-        url: 'https://mapgenie.io/new-world',
-        label: 'mapgenie.io',
-      },
-      {
-        url: 'https://raidplan.io/newworld',
-        label: 'raidplan.io'
-      }
-    ],
-    (it) => it.label
-  )
+  protected mainMenu = MAIN_MENU
+  protected links = sortBy(EXTERN_MENU, (it) => it.label)
+  protected langOptions = LANG_OPTIONS
 
   @ViewChildren('link')
   public tabs: QueryList<ElementRef<HTMLAnchorElement>>

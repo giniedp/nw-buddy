@@ -21,7 +21,7 @@
 
 html,
 body {
-  min-width: 1024px;
+  // min-width: 1024px;
   font-weight: 500;
 }
 body {
@@ -58,20 +58,26 @@ img.error {
   display: none;
 }
 
-::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+.screen-gap {
+  @apply gap-2 lg:gap-4;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-corner {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background-color: rgba(155, 155, 155, 0.5);
-  border-radius: 20px;
-  border: transparent;
+
+.is-electron {
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(155, 155, 155, 0.5);
+    border-radius: 20px;
+    border: transparent;
+  }
 }
 
 .multiline-cell {

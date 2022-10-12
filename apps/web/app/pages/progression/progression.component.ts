@@ -5,7 +5,7 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: './progression.component.html',
   styleUrls: ['./progression.component.scss'],
   host: {
-    class: 'layout-row gap-4',
+    class: 'layout-row screen-gap',
   },
 })
 export class ProgressionComponent implements OnInit {

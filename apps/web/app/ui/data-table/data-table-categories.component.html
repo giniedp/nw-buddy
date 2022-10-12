@@ -1,7 +1,6 @@
-<ul class="menu menu-compact xl:menu-normal bg-base-100 rounded-md">
-  <ng-container *ngFor="let it of categories | async">
-    <li [routerLinkActive]="'bordered'">
-      <a [routerLink]="categoryLink(it.value)"> {{ it.label }}</a>
-    </li>
-  </ng-container>
-</ul>
+<ng-container *ngFor="let it of categories | async">
+  <li [routerLinkActive]="'bordered'">
+    <a [routerLink]="categoryLink(it.value)"> {{ it.label }}</a>
+  </li>
+</ng-container>
+<ng-content></ng-content>

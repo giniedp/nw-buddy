@@ -6,6 +6,7 @@ import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { QuicksearchModule } from '~/ui/quicksearch'
+import { ScreenModule } from '~/ui/screen'
 import { CraftingCalculatorModule } from '~/widgets/crafting-calculator'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { CraftingDetailComponent } from './crafting-detail.component'
@@ -25,7 +26,8 @@ import { CraftingComponent } from './crafting.component'
     DataTableModule,
     QuicksearchModule,
     CraftingCalculatorModule,
-    NwModule
+    NwModule,
+    ScreenModule,
   ],
   declarations: [CraftingComponent, CraftingDetailComponent, CraftingTableComponent, CraftingRunesComponent, CraftingTrophiesComponent],
 })

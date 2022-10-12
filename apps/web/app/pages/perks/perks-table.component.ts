@@ -5,7 +5,7 @@ import { QuicksearchService } from '~/ui/quicksearch'
   templateUrl: './perks-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'layout-row gap-4',
+    class: 'layout-column xl:flex-row screen-gap',
   },
 })
 export class PerksTableComponent {

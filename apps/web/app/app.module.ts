@@ -10,6 +10,7 @@ import { AppComponent } from './app.component'
 import { TranslateModule } from './i18n'
 import { NwDataService } from './nw'
 import { TitleBarComponent } from './title-bar.component'
+import { ScreenModule } from './ui/screen'
 
 @NgModule({
   declarations: [AppComponent, TitleBarComponent],
@@ -18,6 +19,7 @@ import { TitleBarComponent } from './title-bar.component'
     BrowserModule,
     FormsModule,
     HttpClientModule,
+    ScreenModule,
     TranslateModule.forRoot({
       loader: NwDataService,
     }),

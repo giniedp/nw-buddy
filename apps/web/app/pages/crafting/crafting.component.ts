@@ -7,7 +7,7 @@ import { CraftingTableAdapter } from '~/widgets/adapter'
   selector: 'nwb-crafting',
   templateUrl: './crafting.component.html',
   host: {
-    class: 'layout-row gap-4',
+    class: 'flex-1 layout-column',
   },
   providers: [DataTableAdapter.provideClass(CraftingTableAdapter), QuicksearchService],
 })

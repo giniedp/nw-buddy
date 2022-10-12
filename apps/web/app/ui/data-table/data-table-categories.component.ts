@@ -11,7 +11,10 @@ import { CategoryLinkService } from './data-table-categories-router.directive'
   templateUrl: './data-table-categories.component.html',
   styleUrls: ['./data-table-categories.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule]
+  imports: [CommonModule, RouterModule],
+  host: {
+    class: 'menu'
+  }
 })
 export class DataTableCategoriesComponent {
 

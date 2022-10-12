@@ -11,7 +11,7 @@ import { Armorset } from './types'
   styleUrls: ['./armorsets-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'layout-row gap-4',
+    class: 'layout-column xl:flex-row screen-gap',
   },
 })
 export class ArmorsetsTableComponent implements OnInit {

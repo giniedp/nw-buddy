@@ -35,6 +35,9 @@ export interface Tab {
   styleUrls: ['./dungeon-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [DestroyService],
+  host: {
+    class: 'layout-column xl:flex-row'
+  }
 })
 export class DungeonDetailComponent implements OnInit {
   public trackById: TrackByFunction<ItemDefinitionMaster | Housingitems> = (i, item) => getItemId(item)

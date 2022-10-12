@@ -8,7 +8,7 @@ import { StatusEffectsTableAdapter } from '~/widgets/adapter'
   templateUrl: './status-effects.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'layout-row gap-4',
+    class: 'flex-1 layout-column',
   },
   providers: [DataTableAdapter.provideClass(StatusEffectsTableAdapter), QuicksearchService],
 })

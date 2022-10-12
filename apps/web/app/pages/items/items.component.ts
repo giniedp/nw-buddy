@@ -4,11 +4,11 @@ import { QuicksearchService } from '~/ui/quicksearch'
 import { ItemsTableAdapter } from '~/widgets/adapter'
 
 @Component({
-  selector: 'nwb-items',
+  selector: 'nwb-items-page',
   templateUrl: './items.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'layout-row gap-4',
+    class: 'flex-1 layout-column',
   },
   providers: [DataTableAdapter.provideClass(ItemsTableAdapter), QuicksearchService],
 })

@@ -7,7 +7,7 @@ import { observeRouteParam } from '~/utils'
   templateUrl: './housing-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'layout-content flex-none max-w-lg'
+    class: 'layout-content xl:max-w-md bg-base-300 rounded-md',
   }
 })
 export class HousingDetailComponent {

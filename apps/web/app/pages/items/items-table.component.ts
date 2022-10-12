@@ -6,7 +6,7 @@ import { QuicksearchService } from '~/ui/quicksearch'
   templateUrl: './items-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'layout-row gap-4',
+    class: 'layout-column xl:flex-row screen-gap',
   },
 })
 export class ItemsTableComponent {

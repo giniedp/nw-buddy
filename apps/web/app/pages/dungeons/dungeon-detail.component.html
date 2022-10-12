@@ -1,5 +1,18 @@
-<ul class="menu bg-base-300 rounded-l-md flex-none w-56" *ngIf="isMutable">
-  <li class="menu-title mt-4">
+<ul
+  class="
+    menu
+    bg-base-300
+    flex-none
+    menu-horizontal menu-compact
+    overflow-auto
+    w-full
+    flex-nowrap
+    xl:menu-vertical xl:menu-normal
+    xl:w-56
+  "
+  *ngIf="isMutable"
+>
+  <li class="menu-title mt-4 hidden xl:block">
     <span>Normal</span>
   </li>
   <li [class.bordered]="!difficultyLevel">
@@ -7,7 +20,7 @@
       <span>Regular</span>
     </a>
   </li>
-  <li class="menu-title mt-4">
+  <li class="menu-title mt-4 hidden xl:block">
     <span>Mutated</span>
   </li>
   <ng-container *ngIf="difficulties$ | async; let items">
@@ -23,7 +36,7 @@
   <picture class="absolute top-0 left-0 right-0 bottom-0 pointer-events-none">
     <img [nwImage]="backgroundImage" class="block w-full h-full object-cover blur-sm" />
   </picture>
-  <div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col px-4">
+  <div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col px-4 overflow-auto">
     <div class="prose-base mt-8 flex-none">
       <h1 class="mb-0 font-bold">
         <span [nwText]="title"></span>
@@ -51,7 +64,7 @@
           <span [nwText]="requirementText"></span>
         </span>
       </p>
-      <div class="flex flex-row gap-4 mt-12">
+      <div class="flex flex-row flex-wrap screen-gap mt-12">
         <div>
           <h2 class="font-bold mt-0">Expedition Items</h2>
           <div class="flex flex-row gap-2">
@@ -88,7 +101,7 @@
       </ng-container>
     </div>
 
-    <div class="flex-1 overflow-y-auto masked-overflow">
+    <div class="flex-1 mt-4">
       <ng-container *ngFor="let item of tabs; trackBy: trackByTabId">
         <ng-container *ngIf="item.id === tab">
           <ng-container *ngTemplateOutlet="item.tpl"></ng-container>
@@ -99,7 +112,7 @@
 </div>
 
 <ng-template #tplDungeonLoot>
-  <div class="grid gap-4">
+  <div class="grid screen-gap">
     <nwb-item-detail *ngFor="let item of dungeonLoot$ | async; trackBy: trackByIndex" [entity]="item">
       <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true"></nwb-item-detail-header>
     </nwb-item-detail>
@@ -107,7 +120,7 @@
 </ng-template>
 
 <ng-template #tplDungeonMutatedLoot>
-  <div class="grid gap-4">
+  <div class="grid screen-gap">
     <nwb-item-detail *ngFor="let item of dungeonMutatedLoot$ | async; trackBy: trackByIndex" [entity]="item">
       <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true"></nwb-item-detail-header>
     </nwb-item-detail>
@@ -115,7 +128,7 @@
 </ng-template>
 
 <ng-template #tplDungeonDifficultyLoot>
-  <div class="grid gap-4">
+  <div class="grid screen-gap">
     <nwb-item-detail *ngFor="let item of dungeonDifficultyLoot$ | async; trackBy: trackByIndex" [entity]="item">
       <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true"></nwb-item-detail-header>
     </nwb-item-detail>
@@ -123,7 +136,7 @@
 </ng-template>
 
 <ng-template #tplDungeonBosses>
-  <div class="grid gap-4">
+  <div class="grid screen-gap">
     <nwb-vital-detail *ngFor="let item of bosses$ | async; trackBy: trackByIndex" [vital]="item"></nwb-vital-detail>
   </div>
 </ng-template>

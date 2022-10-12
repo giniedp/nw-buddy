@@ -5,8 +5,10 @@ import { NwService } from '~/nw'
 @Component({
   selector: 'nwb-trade',
   templateUrl: './trade.component.html',
-  styleUrls: ['./trade.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'layout-column'
+  }
 })
 export class TradeComponent implements OnInit, OnDestroy {
   public get skills() {

@@ -51,7 +51,7 @@
     </ul>
   </div>
 </div>
-<div class="grid bg-base-300 gap-4 p-4 rounded-b-md" #pane>
+<div class="grid bg-base-300 screen-gap p-4 rounded-b-md" #pane>
   <ng-container *ngFor="let slot of slots">
     <nwb-gearbuilder-slot [recordId]="id$ | async" [slotId]="slot"></nwb-gearbuilder-slot>
   </ng-container>

@@ -18,7 +18,7 @@ import { TerritoryModule } from '~/widgets/territory'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, TerritoryModule],
   host: {
-    class: 'layout-row gap-4',
+    class: 'layout-row screen-gap',
   },
 })
 export class TerritoriesListComponent {

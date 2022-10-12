@@ -13,7 +13,7 @@
   },
   "scripts": {
     "dev": "npm-run-all -p dev:electron dev:web",
-    "dev:web": "ng serve -c web -o",
+    "dev:web": "ng serve --host 0.0.0.0 --disable-host-check -c web -o",
     "dev:electron": "yarn electron:serve",
     "build": "yarn build:electron && yarn build:web && electron-builder build --publish=never --config=electron-config.js",
     "build:web": "ng build --base-href ./ -c production",
