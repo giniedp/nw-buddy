@@ -1,15 +1,19 @@
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { BehaviorSubject, combineLatest, defer, map } from 'rxjs'
 import { NwService } from '~/nw'
+import { TradeskillLevelInputModule } from '~/ui/tradeskill-level-input'
 import { shareReplayRefCount } from '~/utils'
 
 @Component({
+  standalone: true,
   selector: 'nwb-tradeskill-input',
   templateUrl: './tradeskill-input.component.html',
-  styleUrls: ['./tradeskill-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FormsModule, TradeskillLevelInputModule],
   host: {
-    class: 'bg-base-100 shadow-xl rounded-md aspect-square flex flex-col',
+    class: 'contents',
   },
 })
 export class TradeskillInputComponent {
@@ -27,7 +31,6 @@ export class TradeskillInputComponent {
     .pipe(map(({ skills, id }) => skills.get(id)))
     .pipe(shareReplayRefCount(1))
 
-
   public get level() {
     return this.nw.tradeskills.preferences.get(this.id$.value)?.level || 0
   }
@@ -42,5 +45,4 @@ export class TradeskillInputComponent {
   constructor(private nw: NwService) {
     //
   }
-
 }

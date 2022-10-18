@@ -25,7 +25,7 @@ export class TranslateService implements OnDestroy {
     //
   }
 
-  public observe(key: string | Observable<string>, locale?: string | Observable<string>) {
+  public observe(key: string | string[] | Observable<string | string[]>, locale?: string | Observable<string>) {
     if (!locale) {
       locale = this.locale.value$
     }
@@ -38,7 +38,14 @@ export class TranslateService implements OnDestroy {
     .pipe(distinctUntilChanged())
   }
 
-  public get(key: string, locale: string = this.locale.value) {
+  public get(key: string | string[], locale: string = this.locale.value) {
+    if (Array.isArray(key)) {
+      return key.map((it) => this.lookup(it)).join(' ')
+    }
+    return this.lookup(key)
+  }
+
+  public lookup(key: string, locale: string = this.locale.value) {
     if (!key) {
       return ''
     }

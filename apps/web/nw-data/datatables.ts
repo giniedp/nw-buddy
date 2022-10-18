@@ -107,8 +107,14 @@ export abstract class NwDataloader {
   public itemdefinitionsMasterLoot() {
     return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_loot.json')
   }
+  public itemdefinitionsMasterMakegoods() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_makegoods.json')
+  }
   public itemdefinitionsMasterNamed() {
     return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_named.json')
+  }
+  public itemdefinitionsMasterNamedDepricated() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_named_depricated.json')
   }
   public itemdefinitionsMasterOmega() {
     return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_omega.json')
@@ -178,6 +184,9 @@ export abstract class NwDataloader {
   }
   public ftueDamagetableDamned() {
     return this.load<Damagetable[]>('javelindata_ftue_damagetable_damned.json')
+  }
+  public ftueDamagetableUndeadGrenadier() {
+    return this.load<Damagetable[]>('javelindata_ftue_damagetable_undead_grenadier.json')
   }
   public damagetable() {
     return this.load<Damagetable[]>('javelindata_damagetable.json')
@@ -290,6 +299,9 @@ export abstract class NwDataloader {
   public statuseffectsRapier() {
     return this.load<Statuseffect[]>('javelindata_statuseffects_rapier.json')
   }
+  public statuseffectsRunes() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_runes.json')
+  }
   public statuseffectsSpear() {
     return this.load<Statuseffect[]>('javelindata_statuseffects_spear.json')
   }
@@ -341,11 +353,17 @@ export abstract class NwDataloader {
   public spelltableRapier() {
     return this.load<Spelltable[]>('javelindata_spelltable_rapier.json')
   }
+  public spelltableRunes() {
+    return this.load<Spelltable[]>('javelindata_spelltable_runes.json')
+  }
   public spelltableSpear() {
     return this.load<Spelltable[]>('javelindata_spelltable_spear.json')
   }
   public spelltableSword() {
     return this.load<Spelltable[]>('javelindata_spelltable_sword.json')
+  }
+  public spelltableThrowables() {
+    return this.load<Spelltable[]>('javelindata_spelltable_throwables.json')
   }
   public spelltableVoidgauntlet() {
     return this.load<Spelltable[]>('javelindata_spelltable_voidgauntlet.json')
@@ -557,11 +575,17 @@ export abstract class NwDataloader {
   public weaponabilitiesAbilityGreataxe() {
     return this.load<Ability[]>('weaponabilities/javelindata_ability_greataxe.json')
   }
+  public weaponabilitiesAbilityGreatsword() {
+    return this.load<Ability[]>('weaponabilities/javelindata_ability_greatsword.json')
+  }
   public weaponabilitiesAbilityHatchet() {
     return this.load<Ability[]>('weaponabilities/javelindata_ability_hatchet.json')
   }
   public weaponabilitiesAbilityIcemagic() {
     return this.load<Ability[]>('weaponabilities/javelindata_ability_icemagic.json')
+  }
+  public weaponabilitiesAbilityItems() {
+    return this.load<Ability[]>('weaponabilities/javelindata_ability_items.json')
   }
   public weaponabilitiesAbilityLifemagic() {
     return this.load<Ability[]>('weaponabilities/javelindata_ability_lifemagic.json')
@@ -571,6 +595,9 @@ export abstract class NwDataloader {
   }
   public weaponabilitiesAbilityRapier() {
     return this.load<Ability[]>('weaponabilities/javelindata_ability_rapier.json')
+  }
+  public weaponabilitiesAbilityRune() {
+    return this.load<Ability[]>('weaponabilities/javelindata_ability_rune.json')
   }
   public weaponabilitiesAbilitySpear() {
     return this.load<Ability[]>('weaponabilities/javelindata_ability_spear.json')

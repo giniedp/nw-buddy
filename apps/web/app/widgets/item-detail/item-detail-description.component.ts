@@ -10,7 +10,7 @@ import { ItemDetailService } from './item-detail.service'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule],
   host: {
-    class: 'block p-3 text-primary italic'
+    class: 'block p-3 text-[#e1cb99] italic'
   },
 })
 export class ItemDetailDescriptionComponent {

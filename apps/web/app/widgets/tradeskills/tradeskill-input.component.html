@@ -1,22 +1,3 @@
-<ng-container *ngIf="tradeskill$ | async; let value">
-  <div class="flex-1 relative">
-    <picture class="opacity-20 absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center">
-      <img [nwImage]="value.Icon" class="w-3/5 h-3/5 object-contain" />
-    </picture>
-    <div class="absolute top-0 left-0 right-0 bottom-0 z-10 flex flex-col items-center justify-center">
-      <div class="aspect-square h-full">
-        <input
-          min="0"
-          type="number"
-          [attr.max]="value.MaxLevel"
-          class="input focus:outline-none bg-transparent h-full w-full p-0 text-center font-bold text-3xl appearance-none"
-          placeholder="0"
-          [(ngModel)]="level"
-        />
-      </div>
-    </div>
-  </div>
-  <h2 class="p-2 pt-0 text-center font-bold text-lg">
-    <span [nwText]="value.Name"></span>
-  </h2>
+<ng-container *ngIf="tradeskill$ | async; let item">
+  <nwb-tradeskill-level-input [(ngModel)]="level" [icon]="item.Icon" [label]="item.Name" [maxLevel]="item.MaxLevel" ></nwb-tradeskill-level-input>
 </ng-container>

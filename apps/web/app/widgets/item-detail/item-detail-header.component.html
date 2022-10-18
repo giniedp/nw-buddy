@@ -1,6 +1,7 @@
 <ng-container *ngIf="vm$ | async; let vm">
   <div class="backdrop rarity-{{vm.rarity}}"></div>
   <a [nwInfoLink]="enableInfoLink ? vm.entityId : null" [nwInfoResource]="'item'" class="relative">
+    <span class="italic">{{ tier$ | async }}</span>
     <picture [nwIcon]="vm.entity" [nwRarity]="vm.rarity"></picture>
     <ng-content select=".icon-overlay"></ng-content>
   </a>

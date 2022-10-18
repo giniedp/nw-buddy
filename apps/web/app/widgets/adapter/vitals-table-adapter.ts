@@ -40,12 +40,13 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           }),
         },
         {
-          width: 200,
+          width: 150,
           field: this.fieldName('Level'),
+          cellClass: '',
           cellRenderer: this.cellRenderer(({ data, value }) => {
             const icon = this.vitals.vitalMarkerIcon(data)
             const iconEl = icon && `<img src=${icon} class="block object-cover absolute left-0 top-0 h-full w-full" />`
-            const spanEl = `<span class="absolute left-0 right-0 top-0 bottom-0 text-center font-bold">${value}</span>`
+            const spanEl = `<span class="absolute left-0 right-0 top-0 bottom-0 font-bold flex items-center justify-center">${value}</span>`
             return `${iconEl} ${spanEl}`
           }),
         },

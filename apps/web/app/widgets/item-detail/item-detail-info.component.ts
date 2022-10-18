@@ -23,7 +23,8 @@ export class ItemDetailInfoComponent {
     housing: this.detail.housingItem$,
     weapon: this.detail.weaponStats$,
     armor: this.detail.armorStats$,
-  }).pipe(map(({ entity, item, weapon, armor }) => {
+    ingCats: this.detail.ingredientCategories$,
+  }).pipe(map(({ entity, item, weapon, armor, ingCats }) => {
     return {
       bindOnEquip: !!item?.BindOnEquip,
       bindOnPickup: !!entity?.BindOnPickup,
@@ -33,7 +34,8 @@ export class ItemDetailInfoComponent {
       weight: (weapon?.WeightOverride || armor?.WeightOverride || item?.Weight) / 10,
       durability: item?.Durability,
       maxStackSize: entity?.MaxStackSize,
-      requiredLevel: item?.RequiredLevel
+      requiredLevel: item?.RequiredLevel,
+      ingredientTypes: ingCats
     }
   }))
 

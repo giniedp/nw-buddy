@@ -11,7 +11,7 @@ export class ScreenDrawerToggleDirective {
   public action: 'toggle' | 'close' | 'open' = 'toggle'
 
   public constructor(private service: ScreenDrawerService) {
-    console.log(this)
+    //
   }
 
   @HostListener('click')

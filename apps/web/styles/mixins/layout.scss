@@ -4,7 +4,40 @@
   overflow: hidden;
 }
 
-.layout-column {
+.layout-gap {
+  @apply gap-2 lg:gap-4;
+}
+
+.layout-pad {
+  @apply p-2 lg:p-4;
+}
+
+.layout-pad-x {
+  @apply px-2 lg:px-4;
+}
+
+.layout-pad-y {
+  @apply py-2 lg:py-4;
+}
+
+.layout-pad-t {
+  @apply pt-2 lg:pt-4;
+}
+
+.layout-pad-b {
+  @apply pb-2 lg:pb-4;
+}
+
+.layout-pad-l {
+  @apply pl-2 lg:pl-4;
+}
+
+.layout-pad-r {
+  @apply pr-2 lg:pr-4;
+}
+
+.layout-col,
+.layout-col {
   flex: 1;
   display: flex;
   flex-direction: column;

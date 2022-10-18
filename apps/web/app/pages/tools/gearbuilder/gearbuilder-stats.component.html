@@ -1,0 +1,81 @@
+<ng-container *ngIf="data$ | async; let data">
+  <div class="stats stats-vertical">
+    <div class="stat">
+      <div class="stat-value"> {{ data.gearScore | number:'0.0-0' }}</div>
+      <div class="stat-desc">Gear Score</div>
+    </div>
+  </div>
+
+  <div class="flex flex-col layout-pad layout-gap">
+    <nwb-property-grid
+      *ngIf="data.summary; let summary"
+      [humanizeNames]="true"
+      [numberFormat]="'0.0-4'"
+      class="gap-x-1"
+    >
+      <ng-container *ngFor="let row of summary">
+        <span class="text-right font-bold">
+          <ng-container *ngIf="row.percent">{{ row.percent | percent: '0.0-1' }}</ng-container>
+          <ng-container *ngIf="row.value">{{ row.value | number: '0.0-2' }}</ng-container>
+        </span>
+        <span class="opacity-50">{{ row.label | nwText }}</span>
+      </ng-container>
+    </nwb-property-grid>
+
+    <nwb-property-grid class="gap-2">
+      <ng-container *ngFor="let info of data.stackable">
+        <a [nwInfoLink]="info.perk.PerkID" [nwInfoResource]="'perk'">
+          <img [nwImage]="info.perk.IconPath" class="w-8 h-8" />
+        </a>
+        <div class="text-sky-600">
+
+          <b [nwText]="info.perk.DisplayName"></b>
+          <b class="text-primary"> &times; {{ info.count }} </b>
+          <span>
+            {{ info.perk.Description | nwText: { perkMultiplier: getPerkMultiplier(info) } }}
+          </span>
+        </div>
+      </ng-container>
+    </nwb-property-grid>
+  </div>
+
+  <!-- <div class="flex-1 layout-pad transition-opacity opacity-0 hover:opacity-100">
+    <button class="btn btn-block btn-sm btn-outline" (click)="showSummary()">More</button>
+  </div> -->
+
+  <ng-template #tplSummary>
+    <div class="bg-base-300 p-3 rounded-md w-full h-full overflow-auto">
+      <div class="grid grid-cols-fill layout-gap">
+        <div *ngFor="let info of data.perks" class="bg-base-200 rounded-md overflow-x-hidden">
+          <div class="flex flex-row items-center gap-1 bg-base-100 px-2 py-1 font-bold">
+            <a [nwInfoLink]="info.perk.PerkID" [nwInfoResource]="'perk'">
+              <img [nwImage]="info.perk.IconPath" class="w-8 h-8" />
+            </a>
+            <span class="flex-1 text-sky-600 overflow-hidden text-ellipsis" [nwText]="info.perk.DisplayName"></span>
+          </div>
+          <div class="layout-pad italic text-md">
+            {{ info.perk.Description | nwText: { perkMultiplier: getPerkMultiplier(info) } }}
+          </div>
+          <nwb-property-grid class="gap-x-1 rounded-b-md layout-pad-x layout-pad-b pt-2 text-xs">
+            <ng-container *ngIf="info.count > 1">
+              <span class="italic min-w-[160px]">Times Equipped</span>
+              <code class="italic text-primary">&times; {{ info.count }}</code>
+            </ng-container>
+            <ng-container *ngIf="info.scale > 1">
+              <span class="italic min-w-[160px]">Perk Scale</span>
+              <code class="italic text-primary">&times; {{ info.scale | number: '1.0-4' }}</code>
+            </ng-container>
+            <ng-container *ngFor="let row of info.abilities | nwbEntries">
+              <span class="min-w-[160px]">{{ row.key }}</span>
+              <code>{{ valueFormatter(row.value, row.key) }}</code>
+            </ng-container>
+            <ng-container *ngFor="let row of info.affix | nwbEntries">
+              <span class="min-w-[160px]">{{ row.key }}</span>
+              <code>{{ valueFormatter(row.value, row.key) }}</code>
+            </ng-container>
+          </nwb-property-grid>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</ng-container>

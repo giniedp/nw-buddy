@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
-import { catchError, combineLatest, map, Observable, of, startWith, throwError } from 'rxjs'
+import { catchError, combineLatest, map, Observable, of, startWith, tap, throwError } from 'rxjs'
 import { NwDbService } from './nw-db.service'
-import { parseNwExpression } from './utils'
+import { getPerkMultiplier, parseNwExpression } from './utils'
 
 export interface NwExpressionContext {
   text: string
@@ -139,7 +139,7 @@ export class NwExpressionService {
         return this.db.perksMap.pipe(
           map((it) => {
             if (it.has(context.itemId)) {
-              return it.get(context.itemId).ScalingPerGearScore * Math.max(0, context.gearScore - 100) + 1
+              return getPerkMultiplier(it.get(context.itemId), context.gearScore)
             }
             throw new Error(`perkMultiplier not resolved (for token "${token}" and id "${context.itemId}" in text "${context.text}")`)
           })

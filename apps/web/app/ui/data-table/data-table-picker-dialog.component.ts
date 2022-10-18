@@ -53,15 +53,16 @@ export class DataTablePickerDialog implements AfterViewInit {
     }
   }
 
-  private commitValue(value: string) {
-    if (this.itemId !== value) {
-      this.itemId = value
-      this.dialogRef?.close(this.itemId)
-    }
-  }
-
   protected onSelectionChange(ids: string[]) {
     this.itemId = ids?.[0]
+  }
+
+  protected onRowDoubleClick(id: string) {
+    this.dialogRef.close(id)
+  }
+
+  protected clear() {
+    this.table.select([])
   }
 
   protected close() {

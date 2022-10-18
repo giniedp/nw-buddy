@@ -77,7 +77,10 @@ export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
         {
           field: this.fieldName('AttackType'),
           filter: SelectboxFilter,
-
+        },
+        {
+          field: this.fieldName('UICategory'),
+          filter: SelectboxFilter,
         },
       ],
     }

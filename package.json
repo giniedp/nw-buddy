@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@angular/cdk": "14.2.4",
+    "@types/file-saver": "2.0.5",
     "@types/nanoid": "3.0.0",
     "nanoid": "4.0.0"
   },
@@ -60,7 +61,6 @@
     "@capacitor/cli": "4.3.0",
     "@capacitor/core": "4.3.0",
     "@capacitor/ios": "4.3.0",
-    "@ionic/cli": "6.20.3",
     "@storybook/angular": "6.5.12",
     "@storybook/builder-webpack5": "6.5.12",
     "@storybook/manager-webpack5": "6.5.12",

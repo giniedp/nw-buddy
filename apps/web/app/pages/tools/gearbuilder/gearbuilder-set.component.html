@@ -1,0 +1,74 @@
+<div class="navbar bg-base-300 rounded-t-md">
+  <div class="flex-none">
+    <ul class="menu menu-horizontal p-0">
+      <li>
+        <a [routerLink]="'..'">
+          <svg viewBox="0 0 384 512" class="w-4 h-4">
+            <path
+              fill="currentColor"
+              d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l192 192c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 278.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-192 192z"
+            />
+          </svg>
+        </a>
+      </li>
+    </ul>
+  </div>
+  <div class="flex-1">
+    <input
+      type="text"
+      maxlength="100"
+      [ngModel]="name$ | async"
+      (ngModelChange)="updateName($event)"
+      [ngModelOptions]="{ updateOn: 'blur' }"
+      class="input input-md w-full"
+    />
+  </div>
+  <div class="flex-none">
+    <ul class="menu menu-horizontal p-0">
+      <li>
+        <nwb-screenshot-button class="tooltip-left"></nwb-screenshot-button>
+      </li>
+      <li class="tooltip tooltip-info tooltip-left" data-tip="Toggle compact mode">
+        <a (click)="onCompactClicked()" [class.text-primary]="compactMode">
+          <svg viewBox="0 0 448 512" class="w-4 h-4">
+            <path
+              fill="currentColor"
+              d="M160 64c0-17.7-14.3-32-32-32s-32 14.3-32 32v64H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V64zM32 320c-17.7 0-32 14.3-32 32s14.3 32 32 32H96v64c0 17.7 14.3 32 32 32s32-14.3 32-32V352c0-17.7-14.3-32-32-32H32zM352 64c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H352V64zM320 320c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32s32-14.3 32-32V384h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H320z"
+            />
+          </svg>
+        </a>
+      </li>
+      <li class="tooltip tooltip-info tooltip-left" data-tip="Create a copy">
+        <a (click)="onCloneClicked()">
+          <svg viewBox="0 0 512 512" class="w-4 h-4">
+            <path
+              fill="currentColor"
+              d="M64 464H288C296.8 464 304 456.8 304 448V384H352V448C352 483.3 323.3 512 288 512H64C28.65 512 0 483.3 0 448V224C0 188.7 28.65 160 64 160H128V208H64C55.16 208 48 215.2 48 224V448C48 456.8 55.16 464 64 464zM160 64C160 28.65 188.7 0 224 0H448C483.3 0 512 28.65 512 64V288C512 323.3 483.3 352 448 352H224C188.7 352 160 323.3 160 288V64zM224 304H448C456.8 304 464 296.8 464 288V64C464 55.16 456.8 48 448 48H224C215.2 48 208 55.16 208 64V288C208 296.8 215.2 304 224 304z"
+            />
+          </svg>
+        </a>
+      </li>
+      <li class="tooltip tooltip-error tooltip-left" data-tip="Delete">
+        <a (click)="onDeleteClicked()" >
+          <svg viewBox="0 0 448 512" class="w-4 h-4">
+            <path
+              fill="currentColor"
+              d="M135.2 17.7C140.6 6.8 151.7 0 163.8 0H284.2c12.1 0 23.2 6.8 28.6 17.7L320 32h96c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 96 0 81.7 0 64S14.3 32 32 32h96l7.2-14.3zM32 128H416V448c0 35.3-28.7 64-64 64H96c-35.3 0-64-28.7-64-64V128zm96 64c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16zm96 0c-8.8 0-16 7.2-16 16V432c0 8.8 7.2 16 16 16s16-7.2 16-16V208c0-8.8-7.2-16-16-16z"
+            />
+          </svg>
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="bg-base-300 p-4 rounded-b-md flex flex-col xl:flex-row layout-gap" [nwbScreenshotFrame]="name$ | async">
+  <div class="flex-1 grid layout-gap">
+    <nwb-gearbuilder-stats
+      [entry]="data$ | async"
+      [class.text-xs]="compactMode"
+    ></nwb-gearbuilder-stats>
+    <ng-container *ngFor="let slot of slots">
+      <nwb-gearbuilder-slot [recordId]="id$ | async" [slot]="slot" [compact]="compactMode"></nwb-gearbuilder-slot>
+    </ng-container>
+  </div>
+</div>

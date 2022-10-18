@@ -1,6 +1,10 @@
-<ng-container *ngFor="let it of categories | async">
-  <li [routerLinkActive]="'bordered'">
-    <a [routerLink]="categoryLink(it.value)"> {{ it.label }}</a>
-  </li>
-</ng-container>
+<nwb-tab-menu class="bg-base-300 flex-1">
+  <ng-template>
+    <ng-container *ngFor="let it of categories | async">
+      <li [routerLinkActive]="'bordered'">
+        <a [routerLink]="categoryLink(it.value)"> {{ it.label }}</a>
+      </li>
+    </ng-container>
+  </ng-template>
+</nwb-tab-menu>
 <ng-content></ng-content>

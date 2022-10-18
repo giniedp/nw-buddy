@@ -1,0 +1,11 @@
+<div class="flex-none flex flex-row bg-base-300 rounded-t-md">
+  <nwb-data-table-categories
+    categoryChildRoute
+    [childRouteIndex]="'table'"
+    class="flex-1"
+  ></nwb-data-table-categories>
+  <div class="flex-none p-2 max-w-[50%]">
+    <nwb-quicksearch-input #search></nwb-quicksearch-input>
+  </div>
+</div>
+<router-outlet></router-outlet>

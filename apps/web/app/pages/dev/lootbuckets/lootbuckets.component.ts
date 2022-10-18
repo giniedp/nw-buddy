@@ -8,7 +8,7 @@ import { NwDbService } from '~/nw'
   templateUrl: './lootbuckets.component.html',
   imports: [CommonModule],
   host: {
-    class: 'layout-row screen-gap',
+    class: 'layout-row layout-gap',
   },
 })
 export class LootbucketsComponent {

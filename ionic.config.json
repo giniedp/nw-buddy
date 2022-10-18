@@ -1,0 +1,7 @@
+{
+  "name": "nw-buddy",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

@@ -1,4 +1,5 @@
 import { Crafting, Housingitems, ItemDefinitionMaster, ItemdefinitionsArmor, ItemdefinitionsWeapons, Perkbuckets, Perks } from '@nw-data/types'
+import { NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE } from './constants'
 
 export function isMasterItem(item: ItemDefinitionMaster | Housingitems): item is ItemDefinitionMaster {
   return item && 'ItemID' in item
@@ -14,6 +15,10 @@ export function isItemArmor(item: ItemDefinitionMaster) {
 
 export function isItemWeapon(item: ItemDefinitionMaster) {
   return item?.ItemType === 'Weapon'
+}
+
+export function hasItemIngredientCategory(item: ItemDefinitionMaster, categoryId: string) {
+  return item.IngredientCategories?.some((it) => it.toLocaleLowerCase() === String(categoryId).toLocaleLowerCase())
 }
 
 export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPerkIds?: string[]) {
@@ -64,10 +69,10 @@ export function getItemPerkBucket(item: ItemDefinitionMaster, buckets: Map<strin
 }
 
 export function getItemMaxGearScore(item: ItemDefinitionMaster) {
-  return item?.GearScoreOverride || item?.MaxGearScore || 600
+  return item?.GearScoreOverride || item?.MaxGearScore || NW_MAX_GEAR_SCORE
 }
 export function getItemMinGearScore(item: ItemDefinitionMaster) {
-  return item?.GearScoreOverride || item?.MinGearScore || 100
+  return item?.GearScoreOverride || item?.MinGearScore || NW_MIN_GEAR_SCORE
 }
 export function getItemGearScoreLabel(item: ItemDefinitionMaster) {
   if (!item) {
@@ -172,4 +177,15 @@ export function getArmorRatingPhysical(item: ItemdefinitionsArmor | Itemdefiniti
     return 0
   }
   return Math.pow(gearScore, 1.2) * item.PhysicalArmorSetScaleFactor * item.ArmorRatingScaleFactor
+}
+
+export function getWeightLabel(weight: number) {
+  let label = 'light'
+  if (weight >= 13) {
+    label = 'medium'
+  }
+  if (weight >= 23) {
+    label = 'heavy'
+  }
+  return label
 }

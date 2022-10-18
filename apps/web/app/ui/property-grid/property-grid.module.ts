@@ -1,11 +1,9 @@
 import { NgModule } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { EntriesPipe } from './entries.pipe'
 import { PropertyGridComponent } from './property-grid.component'
 
 @NgModule({
-  imports: [CommonModule],
-  declarations: [PropertyGridComponent],
-
-  exports: [PropertyGridComponent],
+  imports: [PropertyGridComponent, EntriesPipe],
+  exports: [PropertyGridComponent, EntriesPipe],
 })
 export class PropertyGridModule {}

@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, Optional } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Optional } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { defer, map, startWith } from 'rxjs'
+import { TabMenuModule } from '../tab-menu'
 import { DataTableAdapter } from './data-table-adapter'
 import { CategoryLinkService } from './data-table-categories-router.directive'
 
@@ -11,28 +12,29 @@ import { CategoryLinkService } from './data-table-categories-router.directive'
   templateUrl: './data-table-categories.component.html',
   styleUrls: ['./data-table-categories.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, TabMenuModule],
   host: {
-    class: 'menu'
-  }
+    class: 'flex flex-row overflow-hidden',
+  },
 })
 export class DataTableCategoriesComponent {
-
   public categories = defer(() => this.adapter.entities)
-  .pipe(startWith([]))
-  .pipe(map((items) => this.adapter.extractCategories(items)))
-  .pipe(map((items) => {
-    return [
-      {
-        label: 'ALL',
-        value: null
-      },
-      ...items.map((it) => ({
-        label: it,
-        value: it
-      }))
-    ]
-  }))
+    .pipe(startWith([]))
+    .pipe(map((items) => this.adapter.extractCategories(items)))
+    .pipe(
+      map((items) => {
+        return [
+          {
+            label: 'ALL',
+            value: null,
+          },
+          ...items.map((it) => ({
+            label: it,
+            value: it,
+          })),
+        ]
+      })
+    )
 
   public get category() {
     return this.adapter.category.value
@@ -74,4 +76,3 @@ export class DataTableCategoriesComponent {
     }
   }
 }
-

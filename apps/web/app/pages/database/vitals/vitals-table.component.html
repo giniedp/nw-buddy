@@ -1,0 +1,10 @@
+<nwb-data-table
+  #table
+  [stateKey]="'vitals-table'"
+  [categoryRouteParam]
+  [detailRoutParam]="'id'"
+  [quickFilter]="search.query | async"
+  class="flex-1"
+></nwb-data-table>
+
+<router-outlet></router-outlet>

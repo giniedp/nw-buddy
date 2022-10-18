@@ -1,7 +1,4 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
-
+@import 'vendor/tailwind.scss';
 @import 'vendor/ag-grid.scss';
 @import 'vendor/cdk.scss';
 @import 'mixins/nw-icon.scss';
@@ -21,7 +18,7 @@
 
 html,
 body {
-  // min-width: 1024px;
+  //min-width: 1024px;
   font-weight: 500;
 }
 body {
@@ -34,6 +31,9 @@ body {
   background-image: url('^assets/mainbg.png');
   background-size: cover;
   background-attachment: fixed;
+}
+.cdk-global-scrollblock {
+  overflow: hidden;
 }
 
 router-outlet {
@@ -58,11 +58,8 @@ img.error {
   display: none;
 }
 
-.screen-gap {
-  @apply gap-2 lg:gap-4;
-}
 
-.is-electron {
+.is-electron, .is-web {
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -85,7 +82,16 @@ img.error {
   white-space: normal !important;
   word-break: initial !important;
 }
+/* For Webkit-based browsers (Chrome, Safari and Opera) */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
 
+/* For IE, Edge and Firefox */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
 picture.nw-icon {
   @include nwPictureIcon();
 }

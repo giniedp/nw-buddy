@@ -47,6 +47,9 @@ import { CommonModule } from '@angular/common'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, AgGridModule],
   providers: [DestroyService],
+  host: {
+    class: 'layout-col overflow-clip'
+  }
 })
 export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   @ViewChild(AgGridComponent, { static: true })
@@ -57,6 +60,9 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
 
   @Input()
   public stateKey: string
+
+  @Output()
+  public rowDoubleClick = new EventEmitter<any>()
 
   public get gridData() {
     return this.displayItems$
@@ -88,6 +94,9 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
         onFilterChanged: () => {
           // this.saveFilterState()
         },
+        onRowDoubleClicked: (e) => {
+          this.rowDoubleClick.emit(this.adapter.entityID(e.data))
+        }
       })
     )
   )

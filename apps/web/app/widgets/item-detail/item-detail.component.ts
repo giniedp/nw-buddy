@@ -14,7 +14,7 @@ import { ItemDetailService, PerkOverrideFn } from './item-detail.service'
   imports: [CommonModule],
   exportAs: 'detail',
   host: {
-    class: 'block class bg-base-100 rounded-md overflow-clip',
+    class: 'block bg-base-100 rounded-md overflow-clip',
   },
   providers: [
     {

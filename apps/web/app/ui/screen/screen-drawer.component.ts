@@ -8,12 +8,12 @@ import { ScreenDrawerService } from './screen-drawer.service'
   standalone: true,
   selector: 'nwb-screen-drawer',
   template: `
-    <input [ngModel]="drawer.isOpen$ | async" type="checkbox" class="drawer-toggle" />
+    <input [ngModel]="drawer.isOpen$ | async" type="checkbox" class="drawer-toggle " />
     <ng-content></ng-content>
   `,
   imports: [CommonModule, FormsModule],
   host: {
-    class: 'drawer drawer-mobile screen-gap',
+    class: 'drawer drawer-mobile flex-1 h-auto',
   },
 })
 export class ScreenDrawerComponent {

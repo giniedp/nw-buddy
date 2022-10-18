@@ -81,7 +81,7 @@ export abstract class DataTableAdapter<T> {
       view: ({ attrs }) => {
         return m(
           'div.flex.flex-row.flex-wrap.gap-1.h-full.items-center',
-          attrs.value?.map?.((it: string) => m('span.badge.badge-secondary.badge-sm', format ? format(it) : it))
+          attrs.value?.map?.((it: string) => m('span.badge.badge-sm.badge-secondary.bg-secondary.bg-opacity-50', format ? format(it) : it))
         )
       },
     })

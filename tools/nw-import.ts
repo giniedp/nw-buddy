@@ -138,6 +138,10 @@ program
               properties: ['ItemClass', 'ExclusiveLabels', 'ExcludeItemClass'],
               separator: '+',
             }),
+            splitToArrayRule({
+              properties: ['EquipAbility'],
+              separator: ',',
+            }),
           ],
         },
         {
@@ -162,7 +166,7 @@ program
           file: /pointofinterestdefinitions/,
           rules: [
             splitToArrayRule({
-              properties: ['LootTags'],
+              properties: ['LootTags', 'VitalsCategory'],
               separator: ',',
             }),
           ],
@@ -199,7 +203,14 @@ program
         'ui_intelligence',
         'ui_constitution',
         'ui_focus',
-        /ui_poi_.*_description/,
+        'ui_resistance',
+        'ui_bindOnEquip',
+        'ui_bindOnPickup',
+        'ui_durability',
+        'ui_level_requirement',
+        /^[a-zA-Z]+_DamageName/,
+        /^ui_poi_.*_description/,
+        /^ui_tooltip_.*/,
       ],
     }).then((files) => {
       checkExpressions({

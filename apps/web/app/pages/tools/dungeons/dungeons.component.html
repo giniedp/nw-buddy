@@ -1,0 +1,10 @@
+<nwb-tab-menu class="bg-base-300 rounded-t-md">
+  <ng-template>
+    <li *ngFor="let item of dungeon$ | async" [routerLinkActive]="'bordered'">
+      <a [routerLink]="item.GameModeId">
+        <span [nwText]="item.DisplayName"></span>
+      </a>
+    </li>
+  </ng-template>
+</nwb-tab-menu>
+<router-outlet></router-outlet>

@@ -8,7 +8,7 @@ import { NwDbService } from '~/nw'
   templateUrl: './loottables.component.html',
   imports: [CommonModule],
   host: {
-    class: 'layout-row screen-gap',
+    class: 'layout-row layout-gap',
   },
 })
 export class LoottablesComponent {

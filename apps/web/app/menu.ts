@@ -1,18 +1,44 @@
 export const MAIN_MENU = [
-  { label: 'Items', path: '/items' },
-  { label: 'Housing', path: '/housing' },
-  { label: 'Crafting', path: '/crafting' },
+  {
+    category: 'Database',
+    items: [
+      { label: 'Items', path: '/items' },
+      { label: 'Housing', path: '/housing' },
+      { label: 'Crafting', path: '/crafting' },
 
-  { label: 'Perks', path: '/perks', divider: true },
-  { label: 'Abilities', path: '/abilities' },
-  { label: 'Statuseffects', path: '/status-effects' },
+      { label: 'Perks', path: '/perks', divider: true },
+      { label: 'Abilities', path: '/abilities' },
+      { label: 'Statuseffects', path: '/status-effects' },
 
-  { label: 'Armorsets', path: '/armorsets', divider: true },
-  { label: 'Progression', path: '/progression' },
+      { label: 'Points Of Interest', path: '/poi', divider: true },
+      { label: 'Vitals', path: '/vitals' },
+    ]
+  },
+  {
+    category: 'Tools & Infos',
+    items: [
+      { label: 'Territories', path: '/territories' },
+      { label: 'Expeditions', path: '/dungeons' },
+      { label: 'Armorsets', path: '/armorsets' },
+      { label: 'Gear builder', path: '/gearbuilder' },
+      { label: 'Umbral Shards', path: '/umbral-shards' },
 
-  { label: 'Territories', path: '/territories', divider: true },
-  { label: 'Dungeons', path: '/dungeons' },
-  { label: 'Vitals', path: '/vitals' },
+      { label: 'Leveling and Skills', path: '/leveling' },
+
+      { label: 'Trophies', path: '/info-cards/trophies', divider: true },
+      { label: 'Runes', path: '/info-cards/runes' },
+      { label: 'Vitals', path: '/info-cards/vitals' },
+      { label: 'Gems', path: '/info-cards/gems' },
+    ]
+  },
+  {
+    category: null,
+    items: [
+      { label: 'Links', path: '/links' },
+      { label: 'Preferences', path: '/preferences' },
+      { label: 'About', path: '/about' },
+    ]
+  }
 ]
 
 export const LANG_OPTIONS = [
@@ -23,43 +49,4 @@ export const LANG_OPTIONS = [
   { value: 'it-it', label: 'IT' },
   { value: 'pl-pl', label: 'PL' },
   { value: 'pt-br', label: 'BR' },
-]
-
-export const EXTERN_MENU = [
-  {
-    url: 'https://nwdb.info/',
-    label: 'nwdb.info',
-  },
-  {
-    url: 'https://www.nw-tools.info/',
-    label: 'www.nw-tools.info',
-  },
-  {
-    url: 'https://gaming.tools/newworld/',
-    label: 'gaming.tools',
-  },
-  {
-    url: 'https://new-world.exchange/',
-    label: 'new-world.exchange',
-  },
-  {
-    url: 'https://nwmarketprices.com/',
-    label: 'nwmarketprices.com',
-  },
-  {
-    url: 'https://newworldfans.com/',
-    label: 'newworldfans.com',
-  },
-  {
-    url: 'https://www.newworld-map.com/',
-    label: 'newworld-map.com',
-  },
-  {
-    url: 'https://mapgenie.io/new-world',
-    label: 'mapgenie.io',
-  },
-  {
-    url: 'https://raidplan.io/newworld',
-    label: 'raidplan.io',
-  },
 ]

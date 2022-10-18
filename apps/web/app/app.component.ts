@@ -1,26 +1,30 @@
-import { Component, ElementRef, HostBinding, QueryList, ViewChildren } from '@angular/core'
+import { Component, HostBinding } from '@angular/core'
 import { sortBy } from 'lodash'
+import { APP_CONFIG } from '../environments/environment'
 
 import { ElectronService } from './electron'
 import { TranslateService } from './i18n'
 
+import { LANG_OPTIONS, MAIN_MENU } from './menu'
 import { AppPreferencesService } from './preferences'
-import { Hotkeys } from './utils'
-import { MAIN_MENU, EXTERN_MENU, LANG_OPTIONS } from './menu'
-
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   host: {
-    class: 'layout-frame layout-column p-2 lg:p-4 screen-gap',
+    class: 'layout-frame layout-col layout-gap',
   },
 })
 export class AppComponent {
   @HostBinding('class.is-electron')
   public get isElectron() {
     return this.electron.isElectron
+  }
+
+  @HostBinding('class.is-web')
+  public get isWeb() {
+    return APP_CONFIG.environment === 'WEB' || APP_CONFIG.environment === 'DEV'
   }
 
   public get language() {
@@ -31,28 +35,13 @@ export class AppComponent {
   }
 
   protected mainMenu = MAIN_MENU
-  protected links = sortBy(EXTERN_MENU, (it) => it.label)
   protected langOptions = LANG_OPTIONS
-
-  @ViewChildren('link')
-  public tabs: QueryList<ElementRef<HTMLAnchorElement>>
 
   constructor(
     private preferences: AppPreferencesService,
     private electron: ElectronService,
-    private hotkeys: Hotkeys,
     translate: TranslateService
   ) {
     preferences.language.observe().subscribe((locale) => translate.use(locale))
-
-    ;[1, 2, 3, 4, 5, 6, 7, 8, 9, 0].forEach((i) => {
-      this.hotkeys
-        .addShortcut({
-          keys: `control.${i}`,
-        })
-        .subscribe(() => {
-          this.tabs.get((i || 10) - 1)?.nativeElement?.click()
-        })
-    })
   }
 }

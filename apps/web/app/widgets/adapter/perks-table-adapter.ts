@@ -1,5 +1,5 @@
 import { Injectable, Optional } from '@angular/core'
-import { Perks } from '@nw-data/types'
+import { Ability, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, switchMap } from 'rxjs'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
@@ -8,7 +8,7 @@ import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { humanize, shareReplayRefCount } from '~/utils'
 import { TranslateService } from '~/i18n'
-import { getPerkAffixStat, hasPerkAffixStats } from '~/nw/utils'
+import { getPerksInherentMODs, hasPerkInherentAffix } from '~/nw/utils'
 import { ExprContextService } from './exp-context.service'
 
 @Injectable()
@@ -98,11 +98,11 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
           },
           cellRenderer: this.asyncCell(
             (data) => {
-              if (hasPerkAffixStats(data)) {
+              if (hasPerkInherentAffix(data)) {
                 return this.nw.db.affixStatsMap.pipe(
                   map((stats) => {
                     const affix = stats.get(data.Affix)
-                    return getPerkAffixStat(data, affix, 600)
+                    return getPerksInherentMODs(data, affix, 600)
                       .map((it) => {
                         return `<b>${this.i18n.get(it.label)}</b> ${it.value}`
                       })
@@ -201,13 +201,33 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
             showSearch: false,
           }),
         },
+        {
+          headerName: 'IsStackableAbility',
+          filter: SelectboxFilter,
+          valueGetter: this.valueGetter(({ data }) => {
+            const ability = data['$ability'] as Ability
+            return ability?.IsStackableAbility
+          }),
+        },
       ],
     }
   }
 
-  public entities: Observable<Perks[]> = defer(() => {
-    return this.config?.source || this.nw.db.perks
-  }).pipe(shareReplayRefCount(1))
+  public entities: Observable<Perks[]> = defer(() => combineLatest({
+    perks: this.config?.source || this.nw.db.perks,
+    abilities: this.nw.db.abilitiesMap,
+    affixstats: this.nw.db.affixstatsMap
+  }))
+  .pipe(map(({ perks, abilities, affixstats }) => {
+    return perks.map((it) => {
+      return {
+        ...it,
+        //$ability: abilities.get(it.EquipAbility),
+        $affix: affixstats.get(it.Affix)
+      }
+    })
+  }))
+  .pipe(shareReplayRefCount(1))
 
   public constructor(
     private nw: NwService,

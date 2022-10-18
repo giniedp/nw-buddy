@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Injectable } from '@angular/core'
-import { Affixstats, ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
+import { Affixstats, ItemDefinitionMaster, Perkbuckets, Perks, Craftingcategories } from '@nw-data/types'
 import { BehaviorSubject, combineLatest, defer, map, Observable, of, ReplaySubject, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import {
@@ -12,8 +12,10 @@ import {
   getItemRarity,
   getItemRarityName,
   getItemTypeName,
-  getPerkAffixStat,
-  hasPerkAffixStats,
+  getPerksInherentMODs,
+  getPerkbucketPerks,
+  hasPerkInherentAffix,
+  getItemTierAsRoman,
 } from '~/nw/utils'
 import { deferStateFlat, shareReplayRefCount } from '~/utils'
 
@@ -62,9 +64,15 @@ export class ItemDetailService {
   public readonly rarity$ = this.entity$.pipe(map((it) => getItemRarity(it)))
   public readonly rarityName$ = this.rarity$.pipe(map(getItemRarityName))
   public readonly typeName$ = this.entity$.pipe(map(getItemTypeName))
+  public readonly tierLabel$ = this.entity$.pipe(map((it) => getItemTierAsRoman(it?.Tier, true)))
 
   public readonly weaponStats$ = this.db.weapon(this.itemStatsRef$)
   public readonly armorStats$ = this.db.armor(this.itemStatsRef$)
+  public readonly ingredientCategories$ = combineLatest({
+    categories: this.db.recipeCategoriesMap,
+    item: this.item$,
+  }).pipe(map(({ categories, item }) => item.IngredientCategories?.map((it) => categories.get(it))))
+
   public readonly gearScoreOverride$ = new BehaviorSubject<number>(null)
   public readonly perkOverride$ = new BehaviorSubject<PerkOverrideFn>(null)
 
@@ -86,7 +94,10 @@ export class ItemDetailService {
       typeName: this.typeName$,
       hasDescription: this.description$.pipe(map(isTruthy)),
       hasStats: this.itemStatsRef$.pipe(map(isTruthy)),
-      hasPerks: this.item$.pipe(map((it) => !!it?.CanHavePerks)),
+      hasPerks: combineLatest({
+        item: this.item$,
+        buckets: this.db.perkBucketsMap,
+      }).pipe(map(({ item, buckets }) => item && (item.CanHavePerks || buckets.get(item.ItemID)))),
     })
   ).pipe(shareReplayRefCount(1))
 
@@ -99,39 +110,57 @@ export class ItemDetailService {
   }
 
   private resolveFinalRarity() {
-    return this.perkOverride$.pipe(switchMap((it) => {
-      if (!it) {
-        return this.rarity$
-      }
-      return combineLatest({
-        item: this.item$,
-        gs: this.itemGS$,
-        perks: this.perksDetails$
-      }).pipe(map(({ item, gs, perks }) => {
-        const perkIds = perks.map((it) => it.perk)
-          .filter((it) => !!it)
-          .map((it) => it.PerkID)
-        return getItemRarity(item, perkIds)
-      }))
-    }))
+    return this.perkOverride$.pipe(
+      switchMap((it) => {
+        if (!it) {
+          return this.rarity$
+        }
+        return combineLatest({
+          item: this.item$,
+          gs: this.itemGS$,
+          perks: this.perksDetails$,
+        }).pipe(
+          map(({ item, gs, perks }) => {
+            const perkIds = perks
+              .map((it) => it.perk)
+              .filter((it) => !!it)
+              .map((it) => it.PerkID)
+            return getItemRarity(item, perkIds)
+          })
+        )
+      })
+    )
   }
   private resolvePerkInfos() {
     const perks$ = combineLatest({
       item: this.item$,
       perks: this.db.perksMap,
+      buckets: this.db.perkBucketsMap,
     })
       .pipe(
-        map(({ item, perks }): PerkDetail[] => {
-          return getItemPerkKeys(item).map((key) => {
+        map(({ item, perks, buckets }): PerkDetail[] => {
+          const result = getItemPerkKeys(item).map((key) => {
             const perkId = item[key]
             const perk = perks.get(perkId)
             return {
               item: item,
               key: key,
               perk: perk,
-              editable: item.CanReplaceGem && (perk?.PerkType === 'Gem')
+              editable: item.CanReplaceGem && perk?.PerkType === 'Gem',
             }
           })
+          const bucket = buckets.get(item?.ItemID)
+          if (bucket) {
+            getPerkbucketPerks(bucket, perks)?.forEach((perk, i) => {
+              result.push({
+                item: item,
+                editable: false,
+                perk: perk,
+                key: `${bucket.PerkBucketID}-${i}`,
+              })
+            })
+          }
+          return result
         })
       )
       .pipe(switchMap((it) => this.remapPerks(it)))
@@ -142,12 +171,13 @@ export class ItemDetailService {
     })
       .pipe(
         map(({ item, buckets }): PerkDetail[] => {
-          return getItemPerkBucketKeys(item).map((key) => ({
+          const result = getItemPerkBucketKeys(item).map((key) => ({
             item: item,
             key: key,
             bucket: buckets.get(item[key]),
-            editable: true
+            editable: true,
           }))
+          return result
         })
       )
       .pipe(switchMap((it) => this.remapPerks(it)))
@@ -162,8 +192,8 @@ export class ItemDetailService {
           const perk = detail.perk
           detail.text = []
           detail.icon = perk?.IconPath
-          if (hasPerkAffixStats(perk)) {
-            getPerkAffixStat(perk, affix.get(perk.Affix), gearScore)?.forEach((mod) => {
+          if (hasPerkInherentAffix(perk)) {
+            getPerksInherentMODs(perk, affix.get(perk.Affix), gearScore)?.forEach((mod) => {
               detail.text.push({
                 label: String(mod.value),
                 description: mod.label,

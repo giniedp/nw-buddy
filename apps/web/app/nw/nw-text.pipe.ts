@@ -12,7 +12,7 @@ export type NwTextPipeOptions = Partial<NwExpressionContext>
 })
 export class NwTextPipe implements PipeTransform, OnDestroy {
   private dispose$ = new Subject<void>()
-  private key: string
+  private key: string | string[]
   private options: NwTextPipeOptions = null
   private value: string
 
@@ -22,8 +22,8 @@ export class NwTextPipe implements PipeTransform, OnDestroy {
     private cdRef: ChangeDetectorRef
   ) {}
 
-  public transform(key: string, options: NwTextPipeOptions = null) {
-    if (this.key === key && isEqual(this.options, options)) {
+  public transform(key: string | string[], options: NwTextPipeOptions = null) {
+    if (isEqual(this.key, key) && isEqual(this.options, options)) {
       return this.value
     }
     this.dispose$.next()

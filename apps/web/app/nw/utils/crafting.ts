@@ -1,4 +1,5 @@
 import { Crafting, GameEvent, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { NW_MAX_TRADESKILL_LEVEL } from './constants'
 
 export type CraftingIngredients = Pick<
   Crafting,
@@ -107,7 +108,7 @@ export function calculateBonusItemChance({
     return (diff < 0 ? decrements : increments)[Math.abs(diff) - 1] ?? 0
   })
   const baseChance = recipe.BonusItemChance
-  const skillChance = (skill ?? 200) / 1000
+  const skillChance = (skill ?? NW_MAX_TRADESKILL_LEVEL) / 1000
   const ingrChance = ingrChances.reduce((a, b) => a + b, 0)
 
   let result = baseChance + skillChance + ingrChance

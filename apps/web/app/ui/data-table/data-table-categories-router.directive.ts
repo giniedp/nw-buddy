@@ -1,5 +1,5 @@
 import { Directive, forwardRef, Injectable, Input } from '@angular/core'
-import { ActivatedRoute} from '@angular/router'
+import { ActivatedRoute, Router} from '@angular/router'
 import { BehaviorSubject, combineLatest, distinctUntilChanged, map, Subject, takeUntil } from 'rxjs'
 import { DataTableAdapter } from './data-table-adapter'
 
@@ -24,6 +24,7 @@ export class CategoryChildRouteParamDirective extends CategoryLinkService {
   public categoryLink(category: string | null) {
     return [category || this.childRouteIndex]
   }
+
 }
 
 
