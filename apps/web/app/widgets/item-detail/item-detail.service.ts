@@ -17,7 +17,7 @@ import {
   hasPerkInherentAffix,
   getItemTierAsRoman,
 } from '~/nw/utils'
-import { deferStateFlat, shareReplayRefCount } from '~/utils'
+import { deferStateFlat, humanize, shareReplayRefCount } from '~/utils'
 
 function isTruthy(value: any) {
   return !!value
@@ -59,6 +59,7 @@ export class ItemDetailService {
   public readonly itemStatsRef$ = this.item$.pipe(map((it) => it?.ItemStatsRef))
   public readonly entityId$ = new ReplaySubject<string>(1)
   public readonly name$ = this.entity$.pipe(map((it) => it?.Name))
+  public readonly source$ = this.entity$.pipe(map((it) => it?.['$source']))
   public readonly description$ = this.entity$.pipe(map((it) => it?.Description))
   public readonly icon$ = this.entity$.pipe(map((it) => getItemIconPath(it)))
   public readonly rarity$ = this.entity$.pipe(map((it) => getItemRarity(it)))
@@ -87,6 +88,8 @@ export class ItemDetailService {
       entity: this.entity$,
       entityId: this.entityId$,
       name: this.name$,
+      sourceLabel: this.source$.pipe(map((it) => humanize(it))),
+      isDeprecated: this.source$.pipe(map((it) => /depricated/i.test(it|| ''))),
       description: this.description$,
       icon: this.icon$,
       rarity: this.finalRarity$,

@@ -118,21 +118,28 @@ export class DungeonDetailComponent implements OnInit {
       difficulty: this.difficulty$,
       events: this.nw.db.gameEventsMap,
       items: this.nw.db.itemsMap,
+      loot: this.nw.db.lootTablesMap
     })
   ).pipe(
-    map(({ rank, difficulty, events, items }) => {
+    map(({ rank, difficulty, events, items, loot }) => {
+
       if (!difficulty) {
         return []
       }
 
       return [
-        { eventId: difficulty.CompletionEvent1, rankId: 'bronze' as DifficultyRank },
-        { eventId: difficulty.CompletionEvent2, rankId: 'silver' as DifficultyRank },
-        { eventId: difficulty.CompletionEvent3, rankId: 'gold' as DifficultyRank },
+        { eventId: difficulty.CompletionEvent1, rankPos: 1, rankId: 'bronze' as DifficultyRank },
+        { eventId: difficulty.CompletionEvent2, rankPos: 2, rankId: 'silver' as DifficultyRank },
+        { eventId: difficulty.CompletionEvent3, rankPos: 3, rankId: 'gold' as DifficultyRank },
       ]
-        .map(({ eventId, rankId }, i) => {
+        .map(({ eventId, rankPos, rankId }, i) => {
+          // TODO: cleanup
           const event = events.get(eventId)
-          const item = items.get(event.ItemReward as string)
+          const bucket = loot.get(`Loot_MutDiff${difficulty.MutationDifficulty}T${rankPos}`)
+          const bucketItem = bucket.Items?.[0]
+          const itemId = bucketItem?.ItemID
+          const item = items.get(itemId)
+
           if (!item) {
             return null
           }
@@ -141,7 +148,7 @@ export class DungeonDetailComponent implements OnInit {
             ItemID: item.ItemID,
             ItemName: item.Name,
             IconPath: getItemIconPath(item),
-            Quantity: event.ItemRewardQty,
+            Quantity: bucketItem?.Qty || '?',
             Completed: rankId == rank,
             toggle: () => {
               if (rankId == rank) {

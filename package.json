@@ -1,6 +1,6 @@
 {
   "name": "nw-buddy",
-  "version": "1.7.0-6",
+  "version": "1.7.0-7",
   "description": "New World Buddy",
   "keywords": [],
   "main": "dist/electron/main.js",
@@ -15,7 +15,7 @@
     "dev": "npm-run-all -p dev:electron dev:web",
     "dev:web": "ng serve --host 0.0.0.0 --disable-host-check -c dev -o",
     "dev:electron": "yarn electron:serve",
-    "build": "yarn build:electron && yarn build:web:capacitor && electron-builder build --publish=never --config=electron-config.js",
+    "build": "yarn build:electron && yarn build:web && electron-builder build --publish=never --config=electron-config.js",
     "build:web": "ng build --base-href ./",
     "build:web:electron": "yarn build:web -c electron",
     "build:web:capacitor": "yarn build:web -c capacitor",

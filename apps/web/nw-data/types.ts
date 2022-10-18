@@ -2842,7 +2842,7 @@ export interface Spelltable {
     SpellID:                                         string;
     SpellPrefabPath?:                                string;
     SpellTypes?:                                     string;
-    StatusEffectDurations?:                          string;
+    StatusEffectDurations?:                          number | string;
     StatusEffects?:                                  string;
     StickWhenAttached?:                              boolean;
     StoreOffsetWhenStuckToGDE?:                      boolean;

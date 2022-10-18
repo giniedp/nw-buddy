@@ -26,6 +26,7 @@ export class ItemDetailHeaderComponent {
   }
 
   protected name$ = this.detail.name$
+  protected source$ = this.detail.source$
   protected rarity$ = this.detail.rarity$
   protected rarityName$ = this.detail.rarityName$
   protected tier$ = this.detail.tierLabel$

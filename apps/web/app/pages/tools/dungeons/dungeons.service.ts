@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { GameEvent, Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty } from '@nw-data/types'
 import { uniq } from 'lodash'
-import { combineLatest, defer, isObservable, map, Observable, of, switchMap } from 'rxjs'
+import { combineLatest, defer, isObservable, map, Observable, of, switchMap, tap } from 'rxjs'
 import { NwLootbucketService, NwService } from '~/nw'
 import { getVitalDungeon } from '~/nw/utils'
 import { DungeonPreferencesService } from '~/preferences'

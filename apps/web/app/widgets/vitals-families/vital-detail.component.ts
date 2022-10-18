@@ -25,6 +25,10 @@ const FAMILY_META = {
     Icon: 'assets/images/missionimage_undead1.png',
     Name: 'VC_Lost',
   },
+  fae: {
+    Icon: '',
+    Name: 'Fae',
+  },
 }
 
 @Component({

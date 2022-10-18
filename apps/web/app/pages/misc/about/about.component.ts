@@ -21,8 +21,7 @@ export class AboutComponent implements OnInit {
     if (APP_CONFIG.isPTR) {
       return `Public Test Realm ${version}`
     }
-    return '1.6.6'
-    // return APP_CONFIG.version.split('-')[0]
+    return APP_CONFIG.version.split('-')[0]
   }
 
   constructor() {}
