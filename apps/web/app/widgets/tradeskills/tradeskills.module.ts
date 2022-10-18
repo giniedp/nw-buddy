@@ -7,9 +7,13 @@ import { TradeskillInputComponent } from './tradeskill-input.component';
 import { TradeskillChartComponent } from './tradeskill-chart.component'
 import { NwTradeskillCircleComponent } from './tradeskill-progress.component'
 
+const COMPONENTS = [
+  TradeskillChartComponent,
+  TradeskillInputComponent
+]
 @NgModule({
-  imports: [CommonModule, NwModule, ChartModule, FormsModule],
-  declarations: [TradeskillInputComponent, TradeskillChartComponent, NwTradeskillCircleComponent],
-  exports: [TradeskillInputComponent, TradeskillChartComponent, NwTradeskillCircleComponent],
+  imports: [CommonModule, NwModule, ChartModule, FormsModule, ...COMPONENTS],
+  declarations: [NwTradeskillCircleComponent],
+  exports: [NwTradeskillCircleComponent, ...COMPONENTS],
 })
 export class TradeskillsModule {}

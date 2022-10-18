@@ -7,7 +7,7 @@ import { RouterModule } from "@angular/router";
   templateUrl: './dev.component.html',
   imports: [CommonModule, RouterModule],
   host: {
-    class: 'layout-row gap-4',
+    class: 'layout-row layout-gap',
   },
 })
 export class DevComponent {

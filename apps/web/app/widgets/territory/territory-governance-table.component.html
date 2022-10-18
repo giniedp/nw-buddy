@@ -13,13 +13,13 @@
   </thead>
   <tbody>
     <tr *ngFor="let row of data$ | async; let i = index">
-      <td class="text-right">{{ row.Level | number }}</td>
+      <th class="text-right">{{ row.Level | number }}</th>
       <td class="text-right">{{ row.UpkeepCost / 100 | currency }}</td>
       <td class="text-right">{{ row.TradingPostLevel | number }}</td>
       <td class="text-right">{{ row.NumberOfUpgradesRegressed | number }}</td>
       <td class="text-right">{{ (row.IntervalEarningsCap * row.CapModifier) / 100 | currency }}</td>
       <ng-container *ngFor="let t of territries$ | async">
-        <td class="text-right">{{ row['EarningsDistributionTID' + t.TerritoryID] | number }}</td>
+        <td class="text-right">{{ row['EarningsDistributionTID' + t.TerritoryID] | percent:'0.2' }}</td>
       </ng-container>
     </tr>
   </tbody>

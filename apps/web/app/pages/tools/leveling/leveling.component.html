@@ -1,0 +1,16 @@
+<div class="flex-none flex flex-row layout-gap bg-base-300 rounded-t-md">
+  <ul class="menu menu-horizontal overflow-x-auto flex-nowrap">
+    <li [routerLinkActive]="'bordered'">
+      <a [routerLink]="'xp'"> Level XP </a>
+    </li>
+    <li [routerLinkActive]="'bordered'">
+      <a [routerLink]="'tradeskills'"> Tradeskills </a>
+    </li>
+
+  </ul>
+  <div class="flex-1"></div>
+  <div class="flex-none">
+    <!-- <nwb-screenshot-button class="btn btn-sm"></nwb-screenshot-button> -->
+  </div>
+</div>
+<router-outlet></router-outlet>

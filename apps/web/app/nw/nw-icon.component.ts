@@ -32,13 +32,20 @@ export class NwIconComponent {
     this.cdRef.markForCheck()
   }
 
+  @Input()
+  public set nwRarity(value: number) {
+    this.rarityOverride = value
+  }
+
   protected src: string
   protected isLoaded = false
   private rarity: number
+  private rarityOverride: number
 
   @HostBinding('class')
   protected get bgRarity() {
-    return this.rarity ? `bg-rarity-${this.rarity}` : null
+    const rarity = this.rarityOverride || this.rarity
+    return rarity ? `bg-rarity-${rarity}` : null
   }
 
   public constructor(private cdRef: ChangeDetectorRef, private elRef: ElementRef<HTMLImageElement>) {

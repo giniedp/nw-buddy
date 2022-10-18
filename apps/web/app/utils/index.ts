@@ -7,4 +7,4 @@ export * from './humanize'
 export * from './intersection-observer.service'
 export * from './observe-route-param'
 export * from './share-replay-refcount'
-
+export * from './rx-state'

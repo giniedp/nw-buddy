@@ -1,7 +1,8 @@
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ChangeDetectorRef } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
-import { map, Subject, takeUntil } from 'rxjs'
-import { NwService } from '~/nw'
+import { combineLatest, count, map } from 'rxjs'
+import { NwDbService } from '~/nw'
+import { CharacterPreferencesService } from '~/preferences'
 
 @Component({
   selector: 'nwb-xp-chart',
@@ -9,41 +10,43 @@ import { NwService } from '~/nw'
   styleUrls: ['./xp-chart.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class XpChartComponent implements OnInit, OnDestroy {
+export class XpChartComponent {
 
-  public chartConfig: ChartConfiguration
-  private destroy$ = new Subject()
-
-  public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {}
-
-  public async ngOnInit() {
-    this.nw.db.data
-      .xpamountsbylevel()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((data) => {
-
-        this.chartConfig = {
-          type: 'line',
-          options: {
-            backgroundColor: '#FFF',
-          },
-          data: {
-            labels: data.map((it) => it['Level Number']),
-            datasets: [
-              {
-                label: 'XP per level',
-                data: data.map((it) => it.XPToLevel),
-                backgroundColor: '#ffa600'
-              }
-            ],
-          },
+  protected config$ = combineLatest({
+    level: this.char.level$,
+    data: this.db.xpAmounts
+  })
+  .pipe(map(({ level, data }): ChartConfiguration => {
+    return {
+      type: 'line',
+      options: {
+        animation: false,
+        backgroundColor: '#FFF',
+        elements: {
+          point: {
+            hoverRadius: (context) => {
+              return (level - 1) === context.dataIndex ? 10 : 5
+            },
+            radius: (context) => {
+              return (level - 1) === context.dataIndex ? 8 : 3
+            }
+          }
         }
-        this.cdRef.markForCheck()
-      })
-  }
+      },
+      data: {
+        labels: data.map((it) => it['Level Number'] + 1),
+        datasets: [
+          {
+            label: 'XP per level',
+            data: data.map((it) => it.XPToLevel),
+            backgroundColor: '#ffa600'
+          }
+        ],
+      },
+    }
+  }))
 
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
+  public constructor(private db: NwDbService, private char: CharacterPreferencesService) {
+    //
   }
 }

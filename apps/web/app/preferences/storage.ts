@@ -64,7 +64,7 @@ export class StorageApiNode implements StorageNode {
 
   public get<T = any>(key: string): T {
     if (this.cache.has(key)) {
-      return this.cache.get(key)
+      return JSON.parse(JSON.stringify(this.cache.get(key)))
     }
     return JSON.parse(this.storage.getItem(key))
   }
@@ -75,8 +75,9 @@ export class StorageApiNode implements StorageNode {
         this.cache.delete(key)
         this.storage.removeItem(key)
       } else {
-        this.cache.set(key, value)
-        this.storage.setItem(key, JSON.stringify(value))
+        const json = JSON.stringify(value)
+        this.cache.set(key, JSON.parse(json))
+        this.storage.setItem(key, json)
       }
     })
   }

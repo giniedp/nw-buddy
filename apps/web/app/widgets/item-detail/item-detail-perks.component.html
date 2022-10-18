@@ -1,27 +1,29 @@
-<div class="flex flex-row text-sky-600" *ngFor="let perk of perks; let isLast = last">
-  <a class="flex-none">
-    <img [nwImage]="perk.IconPath" class="w-8" />
-  </a>
-  <div class="ml-2">
-    <ng-container *ngIf="perk.Affix && perk.PerkType === 'Inherent'">
-      <nwb-affixstat [perk]="perk" [gearScore]="gearScore"></nwb-affixstat>
-    </ng-container>
-    <ng-container *ngIf="!(perk.Affix && perk.PerkType === 'Inherent')">
-      <b class="mr-1" *ngIf="perk.AppliedPrefix" [nwText]="perk.AppliedPrefix"></b>
-      <b class="mr-1" *ngIf="perk.DisplayName" [nwText]="perk.DisplayName"></b>
-      <b class="mr-1" *ngIf="perk.AppliedSuffix" [nwText]="perk.AppliedSuffix"></b>
-      <span *ngIf="perk.Description" [nwText]="perk.Description" [itemId]="perk.PerkID" [gearScore]="gearScore"></span>
-    </ng-container>
-  </div>
-</div>
-<div class="flex flex-row text-sky-600" *ngFor="let bucket of buckets">
-  <picture class="w-8 h-8 relative flex items-center justify-center">
-    <img
-      [nwImage]="'assets/icons/crafting_perkbackground.png'"
-      class="absolute top-0 left-0 right-0 bottom-0 block object-cover scale-110"
-    />
-    <span class="relative text-2xs text-white">{{ bucket.PerkChance | percent }}</span>
-  </picture>
-  <span> </span>
-  <div class="ml-2">Random Perk</div>
+<div
+  class="flex flex-row gap-2 text-sky-600 relative rounded-md outline outline-1 outline-transparent"
+  [class.hover:outline-primary-focus]="perkEditable && item.editable"
+  [class.hover:cursor-pointer]="perkEditable && item.editable"
+  *ngFor="let item of perks$ | async; let isLast = last; trackBy: trackByIndex"
+  (click)="editPerkClicked(item)"
+>
+  <ng-container *ngIf="item.perk">
+    <a class="flex-none">
+      <img [nwImage]="item.icon" class="w-8" />
+    </a>
+    <div class="pt-1">
+      <div *ngFor="let row of item.text; trackBy: trackByIndex">
+        <b> {{ row.label | nwText }} </b>
+        <span> {{ row.description | nwText: { itemId: item.perk.PerkID, gearScore: gearScore$ | async } }} </span>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!item.perk">
+    <picture class="flex-none w-8 h-8 relative flex items-center justify-center">
+      <img
+        [nwImage]="'assets/icons/crafting_perkbackground.png'"
+        class="absolute top-0 left-0 right-0 bottom-0 block object-cover scale-110"
+      />
+      <span class="relative text-2xs text-white">{{ item.bucket?.PerkChance | percent }}</span>
+    </picture>
+    <div class="pt-1">Random Perk</div>
+  </ng-container>
 </div>

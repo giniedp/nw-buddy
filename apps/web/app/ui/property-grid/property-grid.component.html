@@ -1,5 +1,5 @@
-<ng-container *ngFor="let row of properties">
-  <label>{{ row.key }}</label>
-  <span>{{ row.value }}</span>
+<ng-container *ngFor="let row of rows">
+  <span>{{ formatKey(row.key) }}</span>
+  <span>{{ formatValue(row.value, row.key) }}</span>
 </ng-container>
-
+<ng-content></ng-content>

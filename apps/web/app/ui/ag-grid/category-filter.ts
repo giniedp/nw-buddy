@@ -292,7 +292,7 @@ interface SelectControlAttrs {
 const SelectControls: m.Component<SelectControlAttrs, any> = {
   view: ({ attrs: { overflow, options } }) => [
     m(
-      `ul.menu.menu-compact.rounded-md.flex-1${overflow ? '.overflow-y-auto' : ''}`,
+      `ul.menu.menu-compact.rounded-md.flex-nowrap.flex-1${overflow ? '.overflow-y-auto' : ''}`,
       options?.map((option) => {
         return m('li', [
           m(

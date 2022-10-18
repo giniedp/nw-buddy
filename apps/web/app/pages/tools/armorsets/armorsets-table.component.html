@@ -1,0 +1,19 @@
+<nwb-data-table
+  #table
+  [stateKey]="'armorsets-table'"
+  [categoryRouteParam]
+  [detailRoutParam]="'id'"
+  [quickFilter]="search.query | async"
+  class="flex-1"
+></nwb-data-table>
+
+<div class="flex-none layout-content xl:max-w-[350px] 4xl:max-w-[30%]" *ngIf="selectedItems | async; let items">
+  <div class="grid grid-cols-fill layout-gap p-3" nwbScreenshotFrame="Armor-Set">
+    <nwb-item-detail *ngFor="let item of items; trackBy: trackByIndex" [entityId]="item.ItemID">
+      <nwb-item-detail-header [enableTracker]="true"></nwb-item-detail-header>
+      <nwb-item-detail-stats></nwb-item-detail-stats>
+      <hr class="item-detail-divider" />
+      <nwb-item-detail-perks></nwb-item-detail-perks>
+    </nwb-item-detail>
+  </div>
+</div>

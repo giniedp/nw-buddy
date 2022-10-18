@@ -1,0 +1,17 @@
+<nwb-item-detail-header [enableTracker]="enableTracker" [enableInfoLink]="enableInfoLink"></nwb-item-detail-header>
+<ng-container *ngIf="vm$ | async; let vm">
+  <ng-container *ngIf="vm.hasStats">
+    <nwb-item-detail-stats></nwb-item-detail-stats>
+    <nwb-item-detail-divider></nwb-item-detail-divider>
+  </ng-container>
+  <ng-container *ngIf="vm.hasPerks">
+    <nwb-item-detail-perks></nwb-item-detail-perks>
+    <nwb-item-detail-divider></nwb-item-detail-divider>
+  </ng-container>
+  <ng-container *ngIf="vm.hasDescription">
+    <nwb-item-detail-description></nwb-item-detail-description>
+    <nwb-item-detail-divider></nwb-item-detail-divider>
+  </ng-container>
+  <nwb-item-detail-info></nwb-item-detail-info>
+</ng-container>
+<ng-content></ng-content>

@@ -1,0 +1,23 @@
+<input
+  type="text"
+  placeholder="search..."
+  [(ngModel)]="search"
+  class="input input-bordered w-full mb-2"
+  [disabled]="disabled"
+/>
+
+<nwb-data-table
+  *ngIf="adapter"
+  #table
+  [adapter]="adapter"
+  [quickFilter]="search"
+  (selection)="onSelectionChange($event)"
+  (rowDoubleClick)="onRowDoubleClick($event)"
+  class="flex-1 rounded-md overflow-clip"
+></nwb-data-table>
+
+<div class="modal-action">
+  <label class="btn btn-sm btn-outline btn-error" (click)="close()">Cancel</label>
+  <label class="btn btn-sm btn-outline btn-success" (click)="clear()">Clear selection</label>
+  <label class="btn btn-sm btn-success" (click)="commit()">OK</label>
+</div>

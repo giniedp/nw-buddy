@@ -1,0 +1,26 @@
+<div class="flex-none flex flex-row bg-base-300 rounded-t-md">
+  <nwb-tab-menu class="bg-base-300 rounded-t-md flex-1">
+    <ng-template>
+      <li [routerLinkActive]="'bordered'">
+        <a [routerLink]="'trophies'"> Trophies </a>
+      </li>
+      <li [routerLinkActive]="'bordered'">
+        <a [routerLink]="'runes'"> Runes </a>
+      </li>
+      <li [routerLinkActive]="'bordered'">
+        <a [routerLink]="'vitals'"> Vital Families </a>
+      </li>
+      <li [routerLinkActive]="'bordered'">
+        <a [routerLink]="'gems'"> Gems </a>
+      </li>
+    </ng-template>
+  </nwb-tab-menu>
+  <div class="flex-none">
+    <ul class="menu menu-horizontal p-0">
+      <li>
+        <nwb-screenshot-button class="tooltip-left"></nwb-screenshot-button>
+      </li>
+    </ul>
+  </div>
+</div>
+<router-outlet></router-outlet>

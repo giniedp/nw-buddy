@@ -1,18 +1,22 @@
+import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
 import { isEqual } from 'lodash'
 import { BehaviorSubject, combineLatest, debounceTime, defer, distinctUntilChanged, map, shareReplay, startWith, Subject, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwService } from '~/nw'
+import { NwModule, NwService } from '~/nw'
 import { NwTradeskillInfo } from '~/nw/nw-tradeskill.service'
+import { ChartModule } from '~/ui/chart'
 
 const COLORS = ['#003f5c', '#2f4b7c', '#665191', '#a05195', '#d45087', '#f95d6a', '#ff7c43', '#ffa600'].reverse()
 
 @Component({
+  standalone: true,
   selector: 'nwb-tradeskill-chart',
   templateUrl: './tradeskill-chart.component.html',
   styleUrls: ['./tradeskill-chart.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, ChartModule, NwModule]
 })
 export class TradeskillChartComponent {
   @Input()

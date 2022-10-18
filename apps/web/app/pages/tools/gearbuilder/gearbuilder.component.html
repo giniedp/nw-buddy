@@ -1,0 +1,9 @@
+<div class="rounded-md overflow-clip bg-base-100">
+  <ng-container *ngFor="let id of allIds | async; trackBy: trackByIndex">
+    <a [gearLink]="id" [routerLink]="[id]" class="flex flex-col p-4 transition-colors bg-base-100 hover:bg-base-300"></a>
+    <hr class="mx-4 opacity-25" />
+  </ng-container>
+  <div class="flex items-center justify-center p-10">
+    <button class="btn btn-primary" (click)="onCreateClicked()">Create New Gearset</button>
+  </div>
+</div>

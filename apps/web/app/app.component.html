@@ -1,75 +1,50 @@
 <nwb-title-bar *ngIf="isElectron"></nwb-title-bar>
 
-<div class="navbar bg-base-100 z-50 rounded-md font-bold">
-  <div class="px-2 flex-none">
-    <a class="text-lg font-bold">
-      <img src="assets/icons/favicon.png" class="w-12" />
-    </a>
-  </div>
-  <div class="flex flex-1 px-2 overflow-x-overlay scrollable">
-    <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/items"> Items </a>
-    <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/housing"> Housing </a>
-    <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/crafting"> Crafting </a>
-
-    <div class="divider divider-horizontal"></div>
-    <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/perks"> Perks </a>
-    <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/abilities"> Abilities </a>
-    <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/status-effects"> Statuseffects </a>
-
-    <div class="divider divider-horizontal"></div>
-
-    <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/armorsets">Armorsets</a>
-    <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/progression"> Progression </a>
-
-    <div class="divider divider-horizontal"></div>
-
-    <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/territories"> Territories </a>
-    <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/dungeons">Dungeons</a>
-    <a #link class="btn btn-ghost" routerLinkActive="text-primary" routerLink="/vitals"> Vitals </a>
-  </div>
-  <div class="flex flex-none px-2">
-    <select class="select select-bordered w-20" [(ngModel)]="language">
-      <option disabled selected>Pick one</option>
-      <option value="de-de">DE</option>
-      <option value="en-us">EN</option>
-      <option value="es-es">ES</option>
-      <option value="fr-fr">FR</option>
-      <option value="it-it">IT</option>
-      <option value="pl-pl">PL</option>
-      <option value="pt-br">BR</option>
-    </select>
-
-    <div class="dropdown dropdown-end">
-      <label tabindex="0" class="btn btn-ghost btn-circle">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
+<div class="layout-pad-x layout-pad-t">
+  <div class="navbar bg-base-100 z-50 font-bold rounded-md shadow-xl">
+    <div class="navbar-start w-auto flex-none">
+      <button class="btn btn-square btn-ghost text-primary lg:hidden" [nwbScreenDrawerToggle]="'toggle'">
+        <svg fill="none" viewBox="0 0 24 24" class="inline-block w-5 h-5 stroke-current">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
-      </label>
-      <ul tabindex="0" class="menu menu-compact dropdown-content mt-3 p-2 shadow bg-base-100 rounded-md w-52">
-        <li>
-          <a routerLinkActive="text-primary" routerLink="/preferences"> Preferences </a>
-        </li>
-        <li>
-          <a routerLinkActive="text-primary" routerLink="/about"> About </a>
-        </li>
-
-        <li class="menu-title">
-          <span>Tools on the web</span>
-        </li>
-
-        <li *ngFor="let it of links">
-          <a target="_blank" [href]="it.url">
-            <svg viewBox="0 0 448 512" class="w-4 h-4">
-              <path
-                fill="currentColor"
-                d="M288 32c-17.7 0-32 14.3-32 32s14.3 32 32 32h50.7L169.4 265.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L384 141.3V192c0 17.7 14.3 32 32 32s32-14.3 32-32V64c0-17.7-14.3-32-32-32H288zM80 64C35.8 64 0 99.8 0 144v256c0 44.2 35.8 80 80 80h256c44.2 0 80-35.8 80-80v-80c0-17.7-14.3-32-32-32s-32 14.3-32 32v80c0 8.8-7.2 16-16 16H80c-8.8 0-16-7.2-16-16V144c0-8.8 7.2-16 16-16h80c17.7 0 32-14.3 32-32s-14.3-32-32-32H80z"
-              />
-            </svg>
-            <span class="whitespace-nowrap">{{ it.label }}</span>
-          </a>
-        </li>
-      </ul>
+      </button>
+      <a class="hidden lg:inline-block text-lg font-bold">
+        <img src="assets/icons/favicon.png" class="w-12" />
+      </a>
+    </div>
+    <div class="navbar-center flex-1 items-center justify-center">
+      <a class=" lg:hidden text-lg font-bold">
+        <img src="assets/icons/favicon.png" class="w-12" />
+      </a>
+    </div>
+    <div class="navbar-end w-auto flex-none">
+      <select class="select select-bordered w-20" [(ngModel)]="language">
+        <option *ngFor="let item of langOptions" [value]="item.value">{{ item.label }}</option>
+      </select>
     </div>
   </div>
 </div>
-<router-outlet></router-outlet>
+<nwb-screen-drawer class="select-none">
+  <nwb-screen-drawer-side class="rounded-md layout-pad-l layout-pad-b" [nwbScreenDrawerToggle]="'close'">
+    <ng-container *ngFor="let group of mainMenu">
+      <ul class="menu menu-compact w-60 bg-base-300 rounded-md flex-none">
+        <li class="menu-title uppercase mt-2" *ngIf="group.category">
+          <span>{{ group.category }}</span>
+        </li>
+        <ng-container *ngFor="let item of group.items">
+          <li *ngIf="item.divider"></li>
+          <li routerLinkActive="bordered">
+            <a #link  [routerLink]="item.path"> {{ item.label }} </a>
+          </li>
+        </ng-container>
+
+      </ul>
+    </ng-container>
+
+
+
+  </nwb-screen-drawer-side>
+  <nwb-screen-drawer-content class="layout-row layout-gap layout-pad-x layout-pad-b">
+    <router-outlet></router-outlet>
+  </nwb-screen-drawer-content>
+</nwb-screen-drawer>

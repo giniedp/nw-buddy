@@ -1,0 +1,32 @@
+<div class="alert mb-3">
+  <div>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+    <div>
+      <div>Track your tradeskill levels here.</div>
+      <div>These values are used in the crafting calculator.</div>
+    </div>
+  </div>
+</div>
+
+<div class="flex-none tabs flex-nowrap overflow-x-auto">
+  <ng-container *ngFor="let category of categories | async; let i = index">
+    <a class="tab tab-lifted" [class.tab-active]="isActive(category, i)" (click)="selected = category">{{
+      category
+    }}</a>
+  </ng-container>
+</div>
+<div class="flex-1 bg-base-100 rounded-md rounded-tl-none overflow-auto">
+  <ng-container *ngFor="let category of categories | async; let i = index">
+    <div class="grid items-start grid-cols-1 2xl:grid-cols-12 min-w-[600px]" *ngIf="isActive(category, i)">
+      <div class="xl:col-span-4 grid grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-3 gap-2 p-2">
+        <nwb-tradeskill-input
+          *ngFor="let skill of skillsByCategory(category) | async"
+          [tradeskill]="skill.ID"
+        ></nwb-tradeskill-input>
+      </div>
+      <div class="xl:col-span-8 overflow-hidden">
+        <nwb-tradeskill-chart [category]="category"></nwb-tradeskill-chart>
+      </div>
+    </div>
+  </ng-container>
+</div>

@@ -63,23 +63,7 @@
                 }
               ]
             },
-            "web": {
-              "optimization": false,
-              "outputHashing": "none",
-              "sourceMap": true,
-              "namedChunks": false,
-              "aot": false,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": false,
-              "fileReplacements": [
-                {
-                  "replace": "apps/web/environments/environment.ts",
-                  "with": "apps/web/environments/environment.web.ts"
-                }
-              ]
-            },
-            "production": {
+            "capacitor": {
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -91,7 +75,23 @@
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",
-                  "with": "apps/web/environments/environment.prod.ts"
+                  "with": "apps/web/environments/environment.capacitor.ts"
+                }
+              ]
+            },
+            "electron": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "apps/web/environments/environment.ts",
+                  "with": "apps/web/environments/environment.electron.ts"
                 }
               ]
             }

@@ -1,6 +1,6 @@
 <div class="grid grid-cols-2">
   <div class="stats stats-vertical rounded-md rounded-r-none">
-    <div class="stat flex flex-row items-center gap-4 py-2" *ngFor="let row of data1; trackBy: trackById">
+    <div class="stat flex flex-row items-center layout-gap py-2" *ngFor="let row of data1; trackBy: trackById">
       <div class="text-secondary flex-none">
         <img [attr.src]="row.icon" class="w-16 h-16" />
       </div>
@@ -23,7 +23,7 @@
   </div>
 
   <div class="stats stats-vertical rounded-md rounded-l-none">
-    <div class="stat flex flex-row items-center gap-4 py-2" *ngFor="let row of data2; trackBy: trackById">
+    <div class="stat flex flex-row items-center layout-gap py-2" *ngFor="let row of data2; trackBy: trackById">
       <div class="flex-1 text-right">
         <div class="stat-value">
           <input

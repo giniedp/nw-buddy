@@ -1,6 +1,6 @@
-import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef, OnDestroy } from '@angular/core'
-import { BehaviorSubject, combineLatest, map, Subject, takeUntil } from 'rxjs'
-import { NwService } from '~/nw'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
+import { combineLatest, map, Subject, takeUntil } from 'rxjs'
+import { NwDbService } from '~/nw'
 
 function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: keyof T) {
   let result = 0
@@ -32,21 +32,21 @@ export class XpTableComponent implements OnInit, OnDestroy {
   public index: number
   private destroy$ = new Subject()
 
-  public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {}
+  public constructor(private db: NwDbService, private cdRef: ChangeDetectorRef) {}
 
   public async ngOnInit() {
 
     combineLatest({
-      data: this.nw.db.data.xpamountsbylevel()
+      data: this.db.xpAmounts
     }).pipe(map(({ data }) => {
-      return data.map((node, i): LevelingRow => {
+      return data.map((row, i): LevelingRow => {
         return {
-          Level: node['Level Number'],
-          XPToLevel: node.XPToLevel,
+          Level: row['Level Number'] + 1,
+          XPToLevel: row.XPToLevel || 0,
           XPTotal: accumulate(data, 0, i, 'XPToLevel'),
-          AttributePoints: node.AttributePoints,
+          AttributePoints: row.AttributePoints,
           AttributePointsTotal: accumulate(data, 0, i, 'AttributePoints'),
-          AttributeRespecCost: node.AttributeRespecCost
+          AttributeRespecCost: row.AttributeRespecCost
         }
       })
     }))

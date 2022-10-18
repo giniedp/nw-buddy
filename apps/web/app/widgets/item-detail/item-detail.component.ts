@@ -1,94 +1,58 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges } from '@angular/core'
-import { combineLatest, defer, EMPTY, map } from 'rxjs'
-import { ItemDetailService } from './item-detail.service'
+import { CommonModule } from '@angular/common'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Input, OnChanges } from '@angular/core'
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { map } from 'rxjs'
+import { NwDbService } from '~/nw'
+import { getItemId } from '~/nw/utils'
+import { ItemDetailService, PerkOverrideFn } from './item-detail.service'
 
 @Component({
+  standalone: true,
   selector: 'nwb-item-detail',
   templateUrl: './item-detail.component.html',
-  styleUrls: ['./item-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule],
+  exportAs: 'detail',
   host: {
-    class: 'bg-base-300 rounded-md',
+    class: 'block bg-base-100 rounded-md overflow-clip',
   },
-  providers: [ItemDetailService],
+  providers: [
+    {
+      provide: ItemDetailService,
+      useExisting: forwardRef(() => ItemDetailComponent),
+    },
+  ],
 })
-export class ItemDetailComponent implements OnChanges {
+export class ItemDetailComponent extends ItemDetailService implements OnChanges {
   @Input()
-  public set itemId(value: string) {
-    this.service.update(value)
-  }
-
-  public get entityId() {
-    return this.service.entityid$
-  }
-
-  public get entity() {
-    return this.service.entity$
+  public set entityId(value: string) {
+    this.entityId$.next(value)
   }
 
   @Input()
-  public set recipeId(value: string) {
-    this.service.updateFromRecipe(value)
-  }
-
-  public get recipe() {
-    return this.enableRecipe ? this.service.recipe$ : EMPTY
+  public set entity(value: ItemDefinitionMaster | Housingitems) {
+    this.entityId$.next(getItemId(value))
   }
 
   @Input()
-  public enableNwdbLink: boolean
-
-  @Input()
-  public enableMarker: boolean
-
-  @Input()
-  public enableTracker: boolean
-
-  @Input()
-  public enableRecipe: boolean
-
-  @Input()
-  public enableDescription: boolean
-
-  @Input()
-  public enablePerks: boolean
-
-  @Input()
-  public enableDroplist: boolean
-
-  @Input()
-  public enableInfo: boolean
-
-  protected get perks() {
-    if (!this.enablePerks) {
-      return EMPTY
-    }
-    return combineLatest({
-      perks: this.service.perks$,
-      buckets: this.service.perkBuckets$
-    }).pipe(map((it) => {
-      if (!it?.buckets?.length && !it?.perks?.length) {
-        return null
-      }
-      return it
-    }))
+  public set gearScoreOverride(value: number) {
+    this.gearScoreOverride$.next(value)
   }
 
-  protected get description() {
-    return this.enableDescription ? this.service.description$ : EMPTY
+  @Input()
+  public set perkOverride(value: PerkOverrideFn) {
+    this.perkOverride$.next(value)
   }
 
-  protected get salvageEvent() {
-    return this.enableInfo ? this.service.salvageEvent$ : EMPTY
+  public get isLoading$() {
+    return this.vm$.pipe(map((it) => it.loading))
   }
 
-  public droppedBy = defer(() => this.service.droppedByVitals$)
-
-  public constructor(private cdRef: ChangeDetectorRef, private service: ItemDetailService) {
-    //
+  public constructor(db: NwDbService, cdRef: ChangeDetectorRef) {
+    super(db, cdRef)
   }
 
-  public ngOnChanges(): void {
-    this.cdRef.detectChanges()
+  public ngOnChanges() {
+    this.cdRef.markForCheck()
   }
 }

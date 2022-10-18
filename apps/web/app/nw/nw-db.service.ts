@@ -92,6 +92,10 @@ export class NwDbService {
   public damageTableMap = index(() => this.damageTables, 'DamageID')
   public damageTable = lookup(() => this.damageTableMap)
 
+  public armors = list(() => [this.data.itemdefinitionsArmor()])
+  public armorsMap = index(() => this.armors, 'WeaponID')
+  public armor = lookup(() => this.armorsMap)
+
   public weapons = list(() => [this.data.itemdefinitionsWeapons()])
   public weaponsMap = index(() => this.weapons, 'WeaponID')
   public weapon = lookup(() => this.weaponsMap)
@@ -228,6 +232,8 @@ export class NwDbService {
 
   public lootLimits = list(() => [this.data.lootlimits()])
   public lootLimitsMap = index(() => this.lootLimits, 'LootLimitID')
+
+  public xpAmounts = this.data.xpamountsbylevel().pipe(shareReplay(1))
 
   public constructor(public readonly data: NwDataService) {
     //

@@ -15,7 +15,7 @@ import { TerritoryStandingComponent } from './territory-standing.component'
   templateUrl: './territory-card.component.html',
   imports: [CommonModule, NwModule, TerritoryStandingComponent, FormsModule, ChipsInputModule],
   host: {
-    class: 'flex flex-col bg-base-300 rounded-md overflow-hidden',
+    class: 'flex flex-col bg-base-200 rounded-md overflow-hidden',
   },
 })
 export class TerritoryCardCoponent {

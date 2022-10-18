@@ -6,10 +6,11 @@ import { NW_PTR, gameDir, dataDir } from '../env'
 program
   .option('-g, --game <path>', 'game directory')
   .option('-o, --output <path>', 'output directory')
+  .option('-u, --update', 'Force update, skip cache')
   .option('--ptr', 'PTR mode', NW_PTR)
   .action(async () => {
 
-    const options = program.opts<{ game: string, output: string, ptr: boolean }>()
+    const options = program.opts<{ game: string, output: string, ptr: boolean, update: boolean }>()
     const filter: any[] = [
       // '*',
       'datasheet:json',
@@ -32,6 +33,7 @@ program
     await extract({
       inputDir: options.game || gameDir(options.ptr)!,
       outputDir: options.output || dataDir(options.ptr)!,
+      update: options.update,
       filter: createFilter(filter),
       converterFactory: createConverter(filter),
       onProgress: (p) => {

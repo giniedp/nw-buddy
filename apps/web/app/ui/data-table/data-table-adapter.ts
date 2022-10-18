@@ -1,5 +1,5 @@
-import { ClassProvider, Type } from "@angular/core"
-import { GridOptions, ValueGetterFunc, ValueGetterParams } from "ag-grid-community"
+import { ClassProvider, ExistingProvider, Type } from "@angular/core"
+import { GridOptions, ICellRendererFunc, ValueGetterFunc, ValueGetterParams } from "ag-grid-community"
 import { BehaviorSubject, Observable, Subject, takeUntil } from "rxjs"
 import { AgGridComponent, mithrilCell, MithrilCellAttrs } from "../ag-grid"
 import m from 'mithril'
@@ -13,6 +13,13 @@ export abstract class DataTableAdapter<T> {
     return {
       provide: DataTableAdapter,
       useClass: useClass,
+    }
+  }
+
+  public static provideExisting(useClass: Type<DataTableAdapter<any>>): ExistingProvider {
+    return {
+      provide: DataTableAdapter,
+      useExisting: useClass,
     }
   }
 
@@ -40,6 +47,9 @@ export abstract class DataTableAdapter<T> {
   }
   public valueGetter(fn: keyof T | ((params: TypedValueGetterParams<T>) => any)): string | ValueGetterFunc {
     return fn as any
+  }
+  public cellRenderer(fn: ICellRendererFunc<T>) {
+    return fn
   }
   public mithrilCell(comp: m.Component<MithrilCellAttrs<T>>) {
     return mithrilCell<T>(comp)
@@ -71,7 +81,7 @@ export abstract class DataTableAdapter<T> {
       view: ({ attrs }) => {
         return m(
           'div.flex.flex-row.flex-wrap.gap-1.h-full.items-center',
-          attrs.value?.map?.((it: string) => m('span.badge.badge-secondary.badge-sm', format ? format(it) : it))
+          attrs.value?.map?.((it: string) => m('span.badge.badge-sm.badge-secondary.bg-secondary.bg-opacity-50', format ? format(it) : it))
         )
       },
     })
