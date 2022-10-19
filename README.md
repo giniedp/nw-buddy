@@ -1,13 +1,27 @@
 # Introduction
 
 New World Buddy is a desktop application that is meant to be used along while playing "New World".
-It provides tools to
-- browse ingame items
-- calculate resources for crafting
-- bookmark favourite items
-- track stock values and item prices
-- track armorsets
-- track tradeskill progression
+
+## Features
+
+- Browse ingame items (links to nwdb.info)
+- Bookmark items (3 star system)
+- Calculate crafting shopping list, prices and rewarded xp
+- Price importer
+- Expedition insights
+- Armorsets overview and tracker
+- XP and Tradeskill tracker
+- Gearset builder
+- Umbral shard upgrade tool
+
+## Links
+
+- website: https://nw-buddy.ginie.eu/
+- github: https://github.com/giniedp/nw-buddy
+- releases: https://github.com/giniedp/nw-buddy/releases
+- discord permalink: https://discord.gg/PWxUwUagVX 
+
+![](./docs/nw-buddy-1.png)
 
 # Development
 
