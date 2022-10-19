@@ -163,17 +163,25 @@
       fetch('https://api.github.com/repos/giniedp/nw-buddy/releases')
         .then((response) => response.json())
         .then((data) => {
-          const url = findWindowsUrl(data)
-          if (url) {
-            document.querySelector('#download-link').href = url
+          const release = findWindowsUrl(data)
+          if (release) {
+            const el = document.querySelector('#download-link')
+            el.href = release.url
+            el.append(release.version)
           }
         })
 
       function findWindowsUrl(data) {
         for (const release of data) {
+          if (release.draft || release.prerelease) {
+            continue
+          }
           for (const asset of release.assets) {
             if (asset.name.startsWith('nw-buddy.') && asset.name.endsWith('.exe')) {
-              return asset.browser_download_url
+              return {
+                url: asset.browser_download_url,
+                version: release.name
+              }
             }
           }
         }
