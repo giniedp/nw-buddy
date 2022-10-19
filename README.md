@@ -1,4 +1,6 @@
-# Introduction
+![New World Buddy](./docs/nw-buddy-1.png)
+
+# New World Buddy
 
 New World Buddy is a desktop application that is meant to be used along while playing "New World".
 
@@ -21,7 +23,6 @@ New World Buddy is a desktop application that is meant to be used along while pl
 - releases: https://github.com/giniedp/nw-buddy/releases
 - discord permalink: https://discord.gg/PWxUwUagVX 
 
-![](./docs/nw-buddy-1.png)
 
 # Development
 
