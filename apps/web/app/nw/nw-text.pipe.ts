@@ -7,6 +7,7 @@ import { NwExpressionContext, NwExpressionService } from './nw-expression.servic
 export type NwTextPipeOptions = Partial<NwExpressionContext>
 
 @Pipe({
+  standalone: true,
   name: 'nwText',
   pure: false,
 })

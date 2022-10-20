@@ -19,6 +19,7 @@ interface TextContext {
 }
 
 @Directive({
+  standalone: true,
   selector: '[nwText]',
 })
 export class NwTextDirective implements OnInit, OnChanges, OnDestroy {
@@ -40,7 +41,9 @@ export class NwTextDirective implements OnInit, OnChanges, OnDestroy {
   private destroy$ = new Subject()
   private change$ = new ReplaySubject<TextContext>(1)
 
-  public constructor(private elRef: ElementRef<HTMLElement>, private i18n: TranslateService, private expr: NwExpressionService) {}
+  public constructor(private elRef: ElementRef<HTMLElement>, private i18n: TranslateService, private expr: NwExpressionService) {
+    //
+  }
 
   public ngOnInit(): void {
     this.change$

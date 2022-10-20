@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { catchError, combineLatest, map, Observable, of, startWith, tap, throwError } from 'rxjs'
+import { catchError, map, Observable, of, throwError } from 'rxjs'
 import { NwDbService } from './nw-db.service'
 import { getPerkMultiplier, parseNwExpression } from './utils'
 

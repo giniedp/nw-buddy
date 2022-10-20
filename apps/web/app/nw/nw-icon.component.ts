@@ -3,6 +3,7 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { getItemIconPath, getItemRarity } from './utils'
 
 @Component({
+  standalone: true,
   selector: 'picture[nwIcon]',
   template: `<img
     loading="lazy"
@@ -48,7 +49,7 @@ export class NwIconComponent {
     return rarity ? `bg-rarity-${rarity}` : null
   }
 
-  public constructor(private cdRef: ChangeDetectorRef, private elRef: ElementRef<HTMLImageElement>) {
+  public constructor(private cdRef: ChangeDetectorRef) {
     //
   }
 
@@ -74,6 +75,7 @@ export class NwIconComponent {
 const transparentPixel =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
 @Component({
+  standalone: true,
   selector: 'img[nwImage]',
   template: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,

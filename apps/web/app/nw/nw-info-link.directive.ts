@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Directive, HostBinding, Input } from '@angular/core'
 import { nwdbLinkUrl, NwdbResource } from './nwdbinfo'
 
 @Directive({
+  standalone: true,
   selector: '[nwInfoLink]',
 })
 export class NwInfoLinkDirective {
@@ -26,7 +27,9 @@ export class NwInfoLinkDirective {
   @HostBinding('attr.target')
   public target: string = '_blank'
 
-  public constructor(private cdRef: ChangeDetectorRef) {}
+  public constructor(private cdRef: ChangeDetectorRef) {
+    //
+  }
 
   private update() {
     this.href = this.link && nwdbLinkUrl(this.resource, this.link)
