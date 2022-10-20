@@ -49,26 +49,51 @@
     bottom: 0px;
     z-index: 1;
 
-    &.rarity-0 {
-      background-image: map-get($nw-rarity-header-bg, "0");
-      background-size: 100% 100%;
+    &:not(.bg-named) {
+      &.rarity-0 {
+        background-image: map-get($nw-rarity-header-bg, "0");
+        background-size: 100% 100%;
+      }
+      &.rarity-1 {
+        background-image: map-get($nw-rarity-header-bg, "1");
+        background-size: 100% 100%;
+      }
+      &.rarity-2 {
+        background-image: map-get($nw-rarity-header-bg, "2");
+        background-size: 100% 100%;
+      }
+      &.rarity-3 {
+        background-image: map-get($nw-rarity-header-bg, "3");
+        background-size: 100% 100%;
+      }
+      &.rarity-4 {
+        background-image: map-get($nw-rarity-header-bg, "4");
+        background-size: 100% 100%;
+      }
     }
-    &.rarity-1 {
-      background-image: map-get($nw-rarity-header-bg, "1");
-      background-size: 100% 100%;
-    }
-    &.rarity-2 {
-      background-image: map-get($nw-rarity-header-bg, "2");
-      background-size: 100% 100%;
-    }
-    &.rarity-3 {
-      background-image: map-get($nw-rarity-header-bg, "3");
-      background-size: 100% 100%;
-    }
-    &.rarity-4 {
-      background-image: map-get($nw-rarity-header-bg, "4");
-      background-size: 100% 100%;
+
+    &.bg-named {
+      &.rarity-0 {
+        background-image: map-get($nw-rarity-header-bg, "0");
+        background-size: 100% 100%;
+      }
+      &.rarity-1 {
+        background-image: map-get($nw-rarity-header-bg-sprite, "1");
+        background-size: 100% 100%;
+      }
+      &.rarity-2 {
+        background-image: map-get($nw-rarity-header-bg-sprite, "2");
+        background-size: 100% 100%;
+      }
+      &.rarity-3 {
+        background-image: map-get($nw-rarity-header-bg-sprite, "3");
+        background-size: 100% 100%;
+      }
+      &.rarity-4 {
+        background-image: map-get($nw-rarity-header-bg-sprite, "4");
+        background-size: 100% 100%;
+      }
+
     }
   }
-
 }

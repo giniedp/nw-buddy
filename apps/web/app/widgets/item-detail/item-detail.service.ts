@@ -72,7 +72,7 @@ export class ItemDetailService {
   public readonly ingredientCategories$ = combineLatest({
     categories: this.db.recipeCategoriesMap,
     item: this.item$,
-  }).pipe(map(({ categories, item }) => item.IngredientCategories?.map((it) => categories.get(it))))
+  }).pipe(map(({ categories, item }) => item?.IngredientCategories?.map((it) => categories.get(it))))
 
   public readonly gearScoreOverride$ = new BehaviorSubject<number>(null)
   public readonly perkOverride$ = new BehaviorSubject<PerkOverrideFn>(null)
@@ -89,7 +89,8 @@ export class ItemDetailService {
       entityId: this.entityId$,
       name: this.name$,
       sourceLabel: this.source$.pipe(map((it) => humanize(it))),
-      isDeprecated: this.source$.pipe(map((it) => /depricated/i.test(it|| ''))),
+      isDeprecated: this.source$.pipe(map((it) => /depricated/i.test(it || ''))),
+      isNamed: this.item$.pipe(map((it) => it?.ItemClass?.includes('Named'))),
       description: this.description$,
       icon: this.icon$,
       rarity: this.finalRarity$,

@@ -315,21 +315,21 @@ export class DungeonDetailComponent implements OnInit {
           return this.rankIcon(rank)
         }
         if (ranks.some((it, i) => it.rank && i > index)) {
-          return 'assets/icons/icon_check_glowing.png' // unlocked and passed
+          return 'assets/icons/expedition/icon_check_glowing.png' // unlocked and passed
         }
         if (ranks[index - 1]?.rank || index === 0) {
           return null // unlocked
         }
-        return `assets/icons/icon_lock_small.png`
+        return `assets/icons/expedition/icon_lock_small.png`
       })
     )
   }
 
   public rankIcon(rank: DifficultyRank) {
     if (rank) {
-      return `assets/icons/mutator_rank_${rank}_sm.png`
+      return `assets/icons/expedition/mutator_rank_${rank}_sm.png`
     }
-    return `assets/icons/icon_lock_small.png`
+    return `assets/icons/expedition/icon_lock_small.png`
   }
 
   public updateRankToGold() {
