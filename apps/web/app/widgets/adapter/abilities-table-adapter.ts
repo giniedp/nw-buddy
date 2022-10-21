@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { Ability } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { defer, map, Observable } from 'rxjs'
+import { defer, map, Observable, of } from 'rxjs'
 import { IconComponent, nwdbLinkUrl, NwDbService } from '~/nw'
 import { mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
@@ -20,9 +20,8 @@ export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
     return item.WeaponTag
   }
 
-  public buildGridOptions(base: GridOptions): GridOptions {
-    return {
-      ...base,
+  public options = defer(() =>
+    of<GridOptions>({
       rowSelection: 'single',
       columnDefs: [
         {
@@ -51,7 +50,6 @@ export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
           hide: true,
         },
         {
-
           field: this.fieldName('Description'),
           width: 400,
           wrapText: true,
@@ -60,15 +58,19 @@ export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
           filterValueGetter: ({ data }) => {
             return this.i18n.get(data.Description)
           },
-          cellRenderer: this.asyncCell((data) => {
-            return this.expr.solve({
-              text: this.i18n.get(data.Description),
-              charLevel: 60,
-              itemId: data.AbilityID,
-              gearScore: 600
-            }).pipe(map((it) => it.replace(/\\n/gi, '<br>')))
-          }, { trustHtml: true }),
-
+          cellRenderer: this.asyncCell(
+            (data) => {
+              return this.expr
+                .solve({
+                  text: this.i18n.get(data.Description),
+                  charLevel: 60,
+                  itemId: data.AbilityID,
+                  gearScore: 600,
+                })
+                .pipe(map((it) => it.replace(/\\n/gi, '<br>')))
+            },
+            { trustHtml: true }
+          ),
         },
         {
           field: this.fieldName('WeaponTag'),
@@ -83,8 +85,8 @@ export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
           filter: SelectboxFilter,
         },
       ],
-    }
-  }
+    })
+  )
 
   public entities: Observable<Ability[]> = defer(() => {
     return this.db.abilities

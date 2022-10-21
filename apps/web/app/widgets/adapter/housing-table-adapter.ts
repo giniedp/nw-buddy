@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { Housingitems } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { defer, map, Observable, shareReplay, tap } from 'rxjs'
+import { defer, map, Observable, of, shareReplay, tap } from 'rxjs'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
 import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
@@ -21,9 +21,8 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
     return item.UIHousingCategory
   }
 
-  public buildGridOptions(base: GridOptions): GridOptions {
-    return {
-      ...base,
+  public options = defer(() =>
+    of<GridOptions>({
       rowSelection: 'single',
       columnDefs: [
         {
@@ -151,7 +150,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
         },
       ],
     }
-  }
+  ))
 
   public entities: Observable<Housingitems[]> = defer(() => {
     return this.nw.db.housingItems.pipe(map((items) => items.filter((it) => !it.ExcludeFromGame)))

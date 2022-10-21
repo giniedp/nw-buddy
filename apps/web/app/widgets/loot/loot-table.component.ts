@@ -171,9 +171,8 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
     return of<Item[]>([])
   }
 
-  public buildGridOptions(base: GridOptions): GridOptions {
-    return {
-      ...base,
+  public options = defer(() =>
+    of<GridOptions>({
       rowSelection: 'single',
       columnDefs: [
         {
@@ -218,5 +217,5 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
         },
       ],
     }
-  }
+    ))
 }

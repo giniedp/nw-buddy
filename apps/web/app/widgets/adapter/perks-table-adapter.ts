@@ -1,7 +1,7 @@
 import { Injectable, Optional } from '@angular/core'
 import { Ability, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { combineLatest, defer, map, Observable, switchMap } from 'rxjs'
+import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
@@ -38,9 +38,8 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
     return item.PerkType
   }
 
-  public buildGridOptions(base: GridOptions): GridOptions {
-    return {
-      ...base,
+  public options = defer(() =>
+    of<GridOptions>({
       rowSelection: 'single',
 
       columnDefs: [
@@ -211,7 +210,7 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
         },
       ],
     }
-  }
+  ))
 
   public entities: Observable<Perks[]> = defer(() => combineLatest({
     perks: this.config?.source || this.nw.db.perks,

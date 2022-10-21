@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core'
 import { NwTradeskillService } from '~/nw/nw-tradeskill.service'
 import { AppPreferencesService, ItemPreferencesService, PreferencesService } from '~/preferences'
 import { TradeskillPreferencesService } from '~/preferences/tradeskill-preferences.service'
+import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 import { NwPricesImporterComponent } from './nw-marketprices-importer.component'
 
 @Component({
@@ -11,7 +12,7 @@ import { NwPricesImporterComponent } from './nw-marketprices-importer.component'
   templateUrl: './preferences.component.html',
   styleUrls: ['./preferences.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwPricesImporterComponent],
+  imports: [CommonModule, NwPricesImporterComponent, PriceImporterModule],
   host: {
     class: 'layout-content flex flex-col items-center'
   }

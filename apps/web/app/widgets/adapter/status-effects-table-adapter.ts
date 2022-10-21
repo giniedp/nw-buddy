@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { Statuseffect, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { defer, map, Observable, shareReplay } from 'rxjs'
+import { defer, map, Observable, of, shareReplay } from 'rxjs'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
@@ -19,9 +19,8 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
     return item['$source']
   }
 
-  public buildGridOptions(base: GridOptions): GridOptions {
-    return {
-      ...base,
+  public options = defer(() =>
+    of<GridOptions>({
       rowSelection: 'single',
       columnDefs: [
         {
@@ -72,7 +71,7 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
         },
       ],
     }
-  }
+  ))
 
   public entities: Observable<Statuseffect[]> = defer(() => {
     return this.nw.db.statusEffects

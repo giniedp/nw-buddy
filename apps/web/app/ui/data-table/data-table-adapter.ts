@@ -29,7 +29,7 @@ export abstract class DataTableAdapter<T> {
 
   public abstract entityID(item: T): string | number
   public abstract entityCategory(item: T): string
-  public abstract buildGridOptions(base: GridOptions): GridOptions
+  public abstract options: Observable<GridOptions>
   public abstract entities: Observable<T[]>
 
   public readonly category = new BehaviorSubject<string>(null)

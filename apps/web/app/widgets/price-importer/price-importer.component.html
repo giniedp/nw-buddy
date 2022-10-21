@@ -1,0 +1,19 @@
+<label for="my-modal-3" class="btn btn-sm btn-circle absolute right-2 top-2" (click)="close()">✕</label>
+<ul class="menu menu-horizontal">
+  <li [class.bordered]="isJson">
+    <a (click)="select('json')" tabindex="0">JSON Importer</a>
+  </li>
+  <li [class.bordered]="isNWMP">
+    <a (click)="select('nwmp')" tabindex="0">NWMP Importer</a>
+  </li>
+</ul>
+
+<div class="layout-col w-full bg-base-100 min-h-[500px]">
+  <ng-container *ngIf="isNWMP">
+    <nw-marketprices-importer class="flex-1"></nw-marketprices-importer>
+  </ng-container>
+
+  <ng-container *ngIf="isJson">
+    <nwb-price-importer-json class="flex-1"></nwb-price-importer-json>
+  </ng-container>
+</div>

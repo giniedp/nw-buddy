@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { PoiDefinition } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import m from 'mithril'
-import { defer, Observable } from 'rxjs'
+import { defer, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
 import { AgGridComponent, SelectboxFilter } from '~/ui/ag-grid'
@@ -19,9 +19,8 @@ export class PoiTableAdapter extends DataTableAdapter<PoiDefinition> {
     return null
   }
 
-  public buildGridOptions(base: GridOptions): GridOptions {
-    return {
-      ...base,
+  public options = defer(() =>
+    of<GridOptions>({
       rowSelection: 'single',
       columnDefs: [
         {
@@ -85,7 +84,7 @@ export class PoiTableAdapter extends DataTableAdapter<PoiDefinition> {
         },
       ],
     }
-  }
+  ))
 
   public entities: Observable<PoiDefinition[]> = defer(() => {
     return this.nw.db.pois

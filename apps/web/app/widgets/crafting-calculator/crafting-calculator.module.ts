@@ -8,9 +8,10 @@ import { CraftingStepComponent } from './crafting-step.component';
 import { CraftingSummaryComponent } from './crafting-summary.component';
 import { CraftingStepToggleComponent } from './crafting-step-toggle.component'
 import { ItemTrackerModule } from '../item-tracker'
+import { PriceImporterModule } from '../price-importer/price-importer.module'
 
 @NgModule({
-  imports: [CommonModule, NwModule, FormsModule, TradeskillsModule, ItemTrackerModule],
+  imports: [CommonModule, NwModule, FormsModule, TradeskillsModule, ItemTrackerModule, PriceImporterModule],
   declarations: [CraftingCalculatorComponent, CraftingStepComponent, CraftingSummaryComponent, CraftingStepToggleComponent],
   exports: [CraftingCalculatorComponent],
 })

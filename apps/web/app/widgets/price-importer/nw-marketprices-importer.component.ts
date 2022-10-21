@@ -1,0 +1,283 @@
+import { CommonModule } from '@angular/common'
+import { HttpClient } from '@angular/common/http'
+import { ChangeDetectorRef, Component } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { GridOptions } from 'ag-grid-community'
+import { BehaviorSubject, combineLatest, defer, map, Observable, of, take, takeUntil, tap } from 'rxjs'
+import { IconComponent, nwdbLinkUrl, NwDbService, NwService } from '~/nw'
+import { getItemIconPath, getItemId, getItemRarity } from '~/nw/utils'
+import { AppPreferencesService, ItemPreferencesService, StorageProperty } from '~/preferences'
+import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
+import { DestroyService, shareReplayRefCount } from '~/utils'
+import m from 'mithril'
+import { ItemTrackerCell } from '../item-tracker'
+import { TranslateService } from '~/i18n'
+import { AgGridComponent } from '~/ui/ag-grid'
+import { Dialog } from '@angular/cdk/dialog'
+
+export interface ServerOption {
+  name: string
+  id: number
+}
+export interface PriceItem {
+  id: string
+  price: number
+  item: ItemDefinitionMaster | Housingitems
+  availability: number
+  updatedAt: Date
+}
+
+@Component({
+  standalone: true,
+  selector: 'nw-marketprices-importer',
+  templateUrl: './nw-marketprices-importer.component.html',
+  imports: [CommonModule, FormsModule, DataTableModule],
+  providers: [DestroyService],
+  host: {
+    class: 'layout-col',
+  },
+})
+export class NwPricesImporterComponent {
+
+  protected servers = defer(() => this.fetchServers())
+    .pipe(
+      tap({
+        error: () => {
+          this.isLoading = false
+          this.data = null
+          this.error = true
+          this.isComplete = true
+          this.cdRef.markForCheck()
+        },
+      })
+    )
+    .pipe(shareReplayRefCount(1))
+
+  protected serverId: string = ''
+  protected isLoading: boolean
+  protected isComplete: boolean
+  protected data: PriceItem[]
+  protected error: any
+  protected adapter: PricesTableAdapter
+  private nwmpServer: StorageProperty<string>
+
+  public get showInput() {
+    return !this.data && !this.isComplete && !this.error
+  }
+
+  public get showLoading() {
+    return this.isLoading
+  }
+
+  public get showPreview() {
+    return !this.isLoading && this.data
+  }
+
+  public get showSuccess() {
+    return !this.isLoading && this.isComplete && !this.error
+  }
+
+  public get showError() {
+    return !this.isLoading && this.isComplete && !!this.error
+  }
+
+  public constructor(
+    private http: HttpClient,
+    private db: NwDbService,
+    private pref: ItemPreferencesService,
+    private cdRef: ChangeDetectorRef,
+    private destroy: DestroyService,
+    private dialog: Dialog,
+    nw: NwService,
+    i18n: TranslateService,
+    app: AppPreferencesService
+  ) {
+    this.adapter = new PricesTableAdapter(nw, i18n)
+    this.nwmpServer = app.nwmpServer
+    this.serverId = this.nwmpServer.get()
+  }
+
+  public load(server: string) {
+    this.nwmpServer.set(server)
+    combineLatest({
+      items: this.db.itemsMap,
+      housing: this.db.housingItemsMap,
+      prices: this.fetchPrices(server),
+    })
+      .pipe(take(1))
+      .pipe(
+        tap({
+          subscribe: () => {
+            this.isLoading = true
+            this.data = null
+            this.cdRef.markForCheck()
+          },
+          complete: () => {
+            this.isLoading = false
+            this.cdRef.markForCheck()
+          },
+          error: () => {
+            this.isLoading = false
+            this.data = null
+            this.error = true
+            this.isComplete = true
+            this.cdRef.markForCheck()
+          },
+        })
+      )
+      .pipe(takeUntil(this.destroy.$))
+      .subscribe(({ items, housing, prices }) => {
+        this.data = prices.map((it): PriceItem => {
+          const item = items.get(it.id) || housing.get(it.id)
+          return {
+            id: it.id,
+            item: item,
+            price: it.price,
+            availability: it.availability,
+            updatedAt: it.updatedAt
+          }
+        })
+        this.adapter.entities.next(this.data)
+      })
+  }
+
+  public import() {
+    this.data.forEach((it) => {
+      if (it.item) {
+        this.pref.merge(getItemId(it.item), {
+          price: it.price,
+        })
+      }
+    })
+    this.data = null
+    this.isComplete = true
+  }
+
+  public close() {
+    this.dialog.closeAll()
+  }
+
+  private fetchServers() {
+    return this.http.get<Record<string, { name: string }>>('https://nwmarketprices.com/api/servers/').pipe(
+      map((it) => {
+        return Object.keys(it).map((k) => ({ id: k, name: it[k].name }))
+      })
+    )
+  }
+
+  private fetchPrices(server: string) {
+    return this.http
+      .get<Array<{ ItemId: string; Price: string; Availability: number, LastUpdated: string }>>(
+        `https://nwmarketprices.com/api/latest-prices/${server}/`,
+        {
+          params: {
+            serverName: server,
+          },
+        }
+      )
+      .pipe(
+        map((list) => {
+          return list.map((it) => ({
+            id: it.ItemId,
+            price: Number(it.Price),
+            availability: it.Availability,
+            updatedAt: it.LastUpdated ? new Date(it.LastUpdated) : null
+          }))
+        })
+      )
+  }
+}
+
+export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
+
+  public entityID(item: PriceItem): string {
+    return item.id
+  }
+
+  public entityCategory(item: PriceItem): string {
+    return null
+  }
+
+  public options = defer(() =>
+    of<GridOptions>({
+      rowSelection: 'single',
+      columnDefs: [
+        {
+          sortable: false,
+          filter: false,
+          width: 54,
+          pinned: true,
+          cellRenderer: this.mithrilCell({
+            view: ({ attrs: { data } }) =>
+              m('a', { target: '_blank', href: nwdbLinkUrl('item', data.id) }, [
+                m(IconComponent, {
+                  src: getItemIconPath(data.item),
+                  class: `w-9 h-9 nw-icon bg-rarity-${getItemRarity(data.item)}`,
+                }),
+              ]),
+          }),
+        },
+        {
+          width: 250,
+          headerName: 'Name',
+          valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.item.Name)),
+          cellRenderer: this.mithrilCell({
+            view: ({ attrs: { value } }) => m.trust(value.replace(/\\n/g, '<br>'))
+          }),
+          cellClass: ['multiline-cell', 'py-2'],
+          autoHeight: true,
+          getQuickFilterText: ({ value }) => value,
+        },
+        {
+          headerName: 'Old Price',
+          cellClass: 'text-right',
+          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(getItemId(data.item))?.price),
+          cellRenderer: this.mithrilCell({
+            view: ({ attrs: { data } }) => {
+              return m(ItemTrackerCell, {
+                itemId: getItemId(data.item),
+                meta: this.nw.itemPref,
+                mode: 'price',
+                class: 'text-right',
+                formatter: this.moneyFormatter,
+              })
+            },
+          }),
+          width: 100,
+        },
+        {
+          headerName: 'New Price',
+          cellClass: 'text-right',
+          valueGetter: this.valueGetter(({ data }) => data.price),
+          width: 100,
+        },
+        {
+          headerName: 'Availability',
+          cellClass: 'text-right',
+          valueGetter: this.valueGetter(({ data }) => data.availability),
+          width: 100,
+        },
+        {
+          headerName: 'Updated at',
+          cellClass: 'text-right',
+          valueGetter: this.valueGetter(({ data }) => data.updatedAt?.toLocaleDateString()),
+          width: 100,
+        },
+      ],
+    }
+  ))
+
+  public entities = new BehaviorSubject<PriceItem[]>(null)
+
+  public override setActiveCategories(grid: AgGridComponent, value: string[]): void {
+    //
+  }
+
+  public constructor(
+    private nw: NwService,
+    private i18n: TranslateService,
+  ) {
+    super()
+  }
+}

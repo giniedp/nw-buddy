@@ -48,8 +48,8 @@ import { CommonModule } from '@angular/common'
   imports: [CommonModule, AgGridModule],
   providers: [DestroyService],
   host: {
-    class: 'layout-col overflow-clip'
-  }
+    class: 'layout-col overflow-clip',
+  },
 })
 export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   @ViewChild(AgGridComponent, { static: true })
@@ -68,38 +68,41 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     return this.displayItems$
   }
 
-  protected gridOptions = defer(() => this.adapter$).pipe(
-    map((adapter) =>
-      adapter.buildGridOptions({
-        rowHeight: 40,
-        rowMultiSelectWithClick: true,
-        suppressMenuHide: true,
-        defaultColDef: {
-          resizable: true,
-          sortable: true,
-          filter: true,
-        },
-        onSelectionChanged: ({ api }) => {
-          this.zone.run(() => {
-            this.gridSelectionChanged$.next(api.getSelectedRows() || [])
-          })
-        },
-        onRowDataChanged: () => {
-          this.gridRowDataChanged$.next(null)
-        },
-        onFirstDataRendered: () => {
-          this.gridRowDataChanged$.next(null)
-          // this.loadFilterState()
-        },
-        onFilterChanged: () => {
-          // this.saveFilterState()
-        },
-        onRowDoubleClicked: (e) => {
-          this.rowDoubleClick.emit(this.adapter.entityID(e.data))
+  protected gridOptions = defer(() => this.adapter$)
+    .pipe(switchMap((adapter) => adapter.options))
+    .pipe(
+      map((options) => {
+        return {
+          rowHeight: 40,
+          rowMultiSelectWithClick: true,
+          suppressMenuHide: true,
+          defaultColDef: {
+            resizable: true,
+            sortable: true,
+            filter: true,
+          },
+          onSelectionChanged: ({ api }) => {
+            this.zone.run(() => {
+              this.gridSelectionChanged$.next(api.getSelectedRows() || [])
+            })
+          },
+          onRowDataChanged: () => {
+            this.gridRowDataChanged$.next(null)
+          },
+          onFirstDataRendered: () => {
+            this.gridRowDataChanged$.next(null)
+            // this.loadFilterState()
+          },
+          onFilterChanged: () => {
+            // this.saveFilterState()
+          },
+          onRowDoubleClicked: (e) => {
+            this.rowDoubleClick.emit(this.adapter.entityID(e.data))
+          },
+          ...options,
         }
       })
     )
-  )
 
   @Output()
   public get selection(): Observable<string[]> {

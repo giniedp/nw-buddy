@@ -2,7 +2,7 @@ import { Injectable, Optional } from '@angular/core'
 import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import m from 'mithril'
-import { combineLatest, defer, map, Observable, tap } from 'rxjs'
+import { combineLatest, defer, map, Observable, of, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
 import { getItemIconPath, getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman } from '~/nw/utils'
@@ -43,9 +43,8 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
     return item.ItemType
   }
 
-  public buildGridOptions(base: GridOptions): GridOptions {
-    return {
-      ...base,
+  public options = defer(() =>
+    of<GridOptions>({
       rowSelection: 'single',
       columnDefs: [
         {
@@ -282,7 +281,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
         },
       ],
     }
-  }
+  ))
 
   public entities: Observable<ItemDefinitionMasterWithPerks[]> = defer(() => {
     return combineLatest({

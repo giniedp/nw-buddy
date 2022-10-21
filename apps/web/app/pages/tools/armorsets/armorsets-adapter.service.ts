@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { groupBy } from 'lodash'
 import m from 'mithril'
-import { combineLatest, defer, map, merge, Observable, takeUntil } from 'rxjs'
+import { combineLatest, defer, map, merge, Observable, of, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
 import { getItemIconPath, getItemRarity, getItemTierAsRoman } from '~/nw/utils'
@@ -31,9 +31,8 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
     return item.source
   }
 
-  public buildGridOptions(base: GridOptions): GridOptions {
-    return {
-      ...base,
+  public options = defer(() =>
+    of<GridOptions>({
       rowSelection: 'single',
       columnDefs: [
         {
@@ -171,7 +170,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
           .flat(1),
       ],
     }
-  }
+  ))
 
   public entities: Observable<Armorset[]> = defer(() => {
     return combineLatest({

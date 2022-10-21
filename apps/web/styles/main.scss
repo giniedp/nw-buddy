@@ -186,3 +186,8 @@ input.appearance-none::-webkit-inner-spin-button {
 input.appearance-none[type=number] {
   -moz-appearance: textfield;
 }
+
+.cdk-dialog-container {
+  display: flex !important;
+  flex-direction: column;
+}

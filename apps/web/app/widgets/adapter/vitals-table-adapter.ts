@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { Gamemodes, Vitals } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import m from 'mithril'
-import { combineLatest, defer, map, Observable } from 'rxjs'
+import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwDbService, NwVitalsService } from '~/nw'
 import { getVitalDungeon } from '~/nw/utils'
@@ -24,9 +24,8 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
     return item.Family
   }
 
-  public buildGridOptions(base: GridOptions): GridOptions {
-    return {
-      ...base,
+  public options = defer(() =>
+    of<GridOptions>({
       rowSelection: 'single',
       columnDefs: [
         {
@@ -142,7 +141,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
         },
       ],
     }
-  }
+  ))
 
   public entities: Observable<Entity[]> = defer(() =>
     combineLatest({
