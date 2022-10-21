@@ -1,6 +1,6 @@
 import { Component, HostBinding } from '@angular/core'
 import { sortBy } from 'lodash'
-import { APP_CONFIG } from '../environments/environment'
+import { environment } from '../environments/environment'
 
 import { ElectronService } from './electron'
 import { TranslateService } from './i18n'
@@ -24,7 +24,7 @@ export class AppComponent {
 
   @HostBinding('class.is-web')
   public get isWeb() {
-    return APP_CONFIG.environment === 'WEB' || APP_CONFIG.environment === 'DEV'
+    return environment.environment === 'WEB' || environment.environment === 'DEV'
   }
 
   public get language() {

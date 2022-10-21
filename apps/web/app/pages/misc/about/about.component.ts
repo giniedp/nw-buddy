@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, OnInit } from '@angular/core'
-import { APP_CONFIG } from 'apps/web/environments/environment'
+import { environment } from 'apps/web/environments/environment'
 
 @Component({
   standalone: true,
@@ -13,15 +13,15 @@ import { APP_CONFIG } from 'apps/web/environments/environment'
 })
 export class AboutComponent implements OnInit {
   public get version() {
-    return APP_CONFIG.version
+    return environment.version
   }
 
   public get gameVersion() {
-    const version = APP_CONFIG.version.split('-')[0]
-    if (APP_CONFIG.isPTR) {
+    const version = environment.version.split('-')[0]
+    if (environment.isPTR) {
       return `Public Test Realm ${version}`
     }
-    return APP_CONFIG.version.split('-')[0]
+    return environment.version.split('-')[0]
   }
 
   constructor() {}

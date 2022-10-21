@@ -1,12 +1,12 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { NwDataloader } from '@nw-data/datatables'
-import { APP_CONFIG } from 'apps/web/environments/environment'
+import { environment } from 'apps/web/environments/environment'
 import { map, Observable, shareReplay, tap } from 'rxjs'
 import { parse } from 'papaparse'
 export type LocaleData = Record<string, { value: string }>
 
-const NW_DIR = `./nw-data/${APP_CONFIG.isPTR ? 'ptr' : 'live'}/`
+const NW_DIR = `./nw-data/${environment.isPTR ? 'ptr' : 'live'}/`
 
 @Injectable({ providedIn: 'root' })
 export class NwDataService extends NwDataloader {
