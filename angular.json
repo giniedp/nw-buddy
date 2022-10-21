@@ -168,6 +168,68 @@
             "compodoc": false,
             "styles": ["apps/web/styles/main.scss"]
           }
+        },
+        "server": {
+          "builder": "@angular-builders/custom-webpack:server",
+          "options": {
+            "customWebpackConfig": {
+              "path": "./angular.webpack.js",
+              "replaceDuplicatePlugins": true
+            },
+            "outputPath": "dist/server",
+            "main": "apps/server/main.ts",
+            "tsConfig": "apps/server/tsconfig.json"
+          },
+          "configurations": {
+            "production": {
+              "outputHashing": "media",
+              "fileReplacements": [
+                {
+                  "replace": "apps/web/environments/environment.ts",
+                  "with": "apps/web/environments/environment.web.ts"
+                }
+              ]
+            },
+            "dev": {
+              "optimization": false,
+              "sourceMap": true,
+              "extractLicenses": false
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve-ssr": {
+          "builder": "@nguniversal/builders:ssr-dev-server",
+          "configurations": {
+            "dev": {
+              "browserTarget": "nw-buddy:build:dev",
+              "serverTarget": "nw-buddy:server:dev"
+            },
+            "production": {
+              "browserTarget": "nw-buddy:build:production",
+              "serverTarget": "nw-buddy:server:production"
+            }
+          },
+          "defaultConfiguration": "dev"
+        },
+        "prerender": {
+          "builder": "@nguniversal/builders:prerender",
+          "options": {
+            "routes": [
+              "/"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "nw-buddy:build:production",
+              "serverTarget": "nw-buddy:server:production"
+            },
+            "development": {
+              "browserTarget": "nw-buddy:build:development",
+              "serverTarget": "nw-buddy:server:development"
+            }
+          },
+          "defaultConfiguration": "production"
         }
       }
     }
