@@ -2,7 +2,7 @@ import { Injectable, Optional } from '@angular/core'
 import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import m from 'mithril'
-import { combineLatest, defer, map, Observable, of, tap } from 'rxjs'
+import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
 import { getItemIconPath, getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman } from '~/nw/utils'
@@ -221,8 +221,8 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
           cellClass: 'text-right',
           comparator: (a, b) => a[1] - b[1],
           valueGetter: this.valueGetter(({ data }) => {
-            let min = data.MinGearScore
-            let max = data.MaxGearScore
+            let min = data.GearScoreOverride || data.MinGearScore
+            let max = data.GearScoreOverride || data.MaxGearScore
             return [min, max]
           }),
           valueFormatter: ({ value }) => {
