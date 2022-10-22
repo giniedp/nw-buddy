@@ -1,5 +1,6 @@
 <ng-container *ngIf="vm$ | async; let vm">
-  <div class="backdrop rarity-{{vm.rarity}}" [class.bg-named]="vm.isNamed" ></div>
+  <div class="backdrop rarity-{{vm.rarity}}"></div>
+  <div class="backdrop rarity-{{vm.rarity}} bg-named" *ngIf="vm.isNamed" ></div>
   <a [nwInfoLink]="enableInfoLink ? vm.entityId : null" [nwInfoResource]="'item'" class="relative">
     <span class="italic">{{ tier$ | async }}</span>
     <picture [nwIcon]="vm.entity" [nwRarity]="vm.rarity"></picture>
