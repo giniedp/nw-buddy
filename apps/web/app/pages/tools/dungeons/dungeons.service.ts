@@ -4,6 +4,7 @@ import { uniq } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, switchMap, tap } from 'rxjs'
 import { NwLootbucketService, NwService } from '~/nw'
 import { getVitalDungeon } from '~/nw/utils'
+import { NW_MAX_CHARACTER_LEVEL } from '~/nw/utils/constants'
 import { DungeonPreferencesService } from '~/preferences'
 import { shareReplayRefCount } from '~/utils'
 
@@ -104,7 +105,7 @@ export class DungeonsService {
           conditions: {
             MinContLevel: dungeon.ContainerLevel,
             EnemyLevel: dungeon.RequiredLevel,
-            Level: dungeon.RequiredLevel,
+            Level: NW_MAX_CHARACTER_LEVEL
           },
         })
         return this.lootBuckets
@@ -129,7 +130,7 @@ export class DungeonsService {
           conditions: {
             MinContLevel: dungeon.ContainerLevel,
             EnemyLevel: dungeon.RequiredLevel,
-            Level: dungeon.RequiredLevel,
+            Level: NW_MAX_CHARACTER_LEVEL,
           },
         })
         return this.lootBuckets
@@ -160,7 +161,7 @@ export class DungeonsService {
           conditions: {
             MinContLevel: dungeon.ContainerLevel,
             EnemyLevel: dungeon.RequiredLevel,
-            Level: dungeon.RequiredLevel,
+            Level: NW_MAX_CHARACTER_LEVEL,
           },
         })
         return this.lootBuckets
