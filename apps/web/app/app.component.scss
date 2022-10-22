@@ -1,8 +1,7 @@
 :host {
-
   .navbar {
     -webkit-app-region: drag;
-    a, li, label, select {
+    > * {
       -webkit-app-region: no-drag;
     }
   }

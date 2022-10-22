@@ -11,6 +11,7 @@ import { TranslateModule } from './i18n'
 import { NwDataService } from './nw'
 import { TitleBarComponent } from './title-bar.component'
 import { ScreenModule } from './ui/screen'
+import { UpdateAlertModule } from './widgets/update-alert'
 
 @NgModule({
   declarations: [AppComponent, TitleBarComponent],
@@ -23,6 +24,7 @@ import { ScreenModule } from './ui/screen'
     TranslateModule.forRoot({
       loader: NwDataService,
     }),
+    UpdateAlertModule,
   ],
   bootstrap: [AppComponent],
 })

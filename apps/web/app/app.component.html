@@ -18,6 +18,7 @@
       </a>
     </div>
     <div class="navbar-end w-auto flex-none">
+      <nwb-update-alert-button class="mr-2"></nwb-update-alert-button>
       <select class="select select-bordered w-20" [(ngModel)]="language">
         <option *ngFor="let item of langOptions" [value]="item.value">{{ item.label }}</option>
       </select>
