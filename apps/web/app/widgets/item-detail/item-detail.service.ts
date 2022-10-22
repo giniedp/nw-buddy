@@ -69,6 +69,7 @@ export class ItemDetailService {
 
   public readonly weaponStats$ = this.db.weapon(this.itemStatsRef$)
   public readonly armorStats$ = this.db.armor(this.itemStatsRef$)
+  public readonly runeStats$ = this.db.rune(this.itemStatsRef$)
   public readonly ingredientCategories$ = combineLatest({
     categories: this.db.recipeCategoriesMap,
     item: this.item$,
@@ -96,6 +97,7 @@ export class ItemDetailService {
       rarity: this.finalRarity$,
       rarityName: this.finalRarityName$,
       typeName: this.typeName$,
+      isRune: this.item$.pipe(map((it) => !!it.HeartgemTooltipBackgroundImage)),
       hasDescription: this.description$.pipe(map(isTruthy)),
       hasStats: this.itemStatsRef$.pipe(map(isTruthy)),
       hasPerks: combineLatest({

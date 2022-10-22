@@ -80,7 +80,9 @@ export class GearSlotComponent {
       itemId: this.slotItem$.pipe(map((it) => it?.itemId)),
       itemGs: this.slotItem$.pipe(map((it) => it?.gearScore)),
       itemPerks: this.slotItem$.pipe(map((it) => it?.perks)),
+      isRune: this.slot$.pipe(map((it) => it.id === 'heartgem'))
     })
+
   ).pipe(shareReplayRefCount(1))
 
   private slot$ = new BehaviorSubject<EquipSlot>(null)

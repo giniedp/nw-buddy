@@ -77,7 +77,6 @@ export class NwVitalsService {
           }
         })
         const tableIds = leafs.map((it) => LootNode.getRoot(it).table.LootTableID)
-        console.log(tableIds)
         // console.log(graph, leafs)
         // const bucketIds = uniq(bucketsLeadingToItems(itemIds, buckets).map((it) => it.LootBucket))
         // const tableIds = [...tablesLeadingToItems(itemIds, tables), ...tablesLeadingToBuckets(bucketIds, tables)]

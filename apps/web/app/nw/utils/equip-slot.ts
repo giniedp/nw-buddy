@@ -1,4 +1,4 @@
-export type EquipSlotId = 'head' | 'chest' | 'hands' | 'legs' | 'feet' | 'weapon1' | 'weapon2' | 'weapon3' | 'amulet' | 'ring' | 'earring'
+export type EquipSlotId = 'head' | 'chest' | 'hands' | 'legs' | 'feet' | 'weapon1' | 'weapon2' | 'weapon3' | 'amulet' | 'ring' | 'earring' | 'heartgem'
 export interface EquipSlot {
   id: EquipSlotId
   icon: string
@@ -51,7 +51,7 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
   },
   {
     id: 'weapon3',
-    icon: 'assets/icons/slots/weapon.png',
+    icon: 'assets/icons/slots/1hshieldd.png',
     name: 'ui_weapon3',
     itemType: 'Shield',
   },
@@ -73,6 +73,12 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     name: 'ui_unlock_token_slot',
     itemType: 'EquippableToken',
   },
+  {
+    id: 'heartgem',
+    icon: 'assets/icons/slots/rune.png',
+    name: 'ui_itemtypedescription_heartgem_rune',
+    itemType: 'HeartGem',
+  },
 ]
 
 const GS_WEIGHTS: Record<EquipSlotId, number> = {
@@ -87,6 +93,7 @@ const GS_WEIGHTS: Record<EquipSlotId, number> = {
   amulet: 40,
   ring: 40,
   earring: 40,
+  heartgem: 0
 }
 
 export function totalGearScore(equip: Array<{ id: EquipSlotId, gearScore: number }>) {

@@ -8,7 +8,6 @@ import { Crafting } from '@nw-data/types'
 export class GamingtoolsLinkDirective {
   @Input()
   public set nwGamingToolsLink(value: Crafting) {
-    console.log(value)
     this.item = value
     this.update()
   }

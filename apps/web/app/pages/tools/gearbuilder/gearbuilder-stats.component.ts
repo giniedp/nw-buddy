@@ -5,7 +5,7 @@ import { Ability, Affixstats, Perks } from '@nw-data/types'
 import { groupBy, sortBy } from 'lodash'
 import { combineLatest, defer, map, ReplaySubject } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwModule } from '~/nw'
+import { NwDamagetypeService, NwDbService, NwModule } from '~/nw'
 import {
   EquipSlotId,
   EQUIP_SLOTS,
@@ -41,7 +41,7 @@ interface PerkDetailInfo {
   imports: [CommonModule, NwModule, PropertyGridModule, DialogModule],
   providers: [PercentPipe, DecimalPipe],
   host: {
-    class: 'block bg-base-100 rounded-md flex flex-col',
+    class: 'block bg-base-100 rounded-md flex flex-col relative',
   },
 })
 export class GearbuilderStatsComponent {
@@ -68,9 +68,14 @@ export class GearbuilderStatsComponent {
     private db: NwDbService,
     private decimal: DecimalPipe,
     private dialog: Dialog,
+    private damage: NwDamagetypeService,
     private i18n: TranslateService
   ) {
     //
+  }
+
+  protected damageIcon(type: string) {
+    return this.damage.damageTypeIdIcon(type)
   }
 
   protected getPerkMultiplier(info: PerkDetailInfo) {
@@ -174,7 +179,7 @@ export class GearbuilderStatsComponent {
   }
 
   private collectStats(data: PerkDetailInfo[]) {
-    const stats: Record<string, { key: string; label: string[] | string; value: number; percent: number }> = {}
+    const stats: Record<string, { key: string; label: string[] | string; value: number; percent: number, icon?: string }> = {}
     for (const info of data) {
       for (const mod of getAffixMODs(info.affix, info.scale)) {
         stats[mod.key] = stats[mod.key] || { key: mod.key, label: [mod.label], value: 0, percent: 0 }
@@ -183,6 +188,7 @@ export class GearbuilderStatsComponent {
       for (const mod of getAffixABSs(info.affix, info.scale)) {
         stats[mod.key] = stats[mod.key] || { key: mod.key, label: mod.label, value: 0, percent: 0 }
         stats[mod.key].percent += Number(mod.value) * info.count
+        stats[mod.key].icon = this.damageIcon(mod.key.replace('ABS', ''))
       }
     }
     return sortBy(Object.values(stats), (it) => it.key)

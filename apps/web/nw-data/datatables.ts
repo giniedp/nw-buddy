@@ -18,6 +18,7 @@ import type {
   ItemdefinitionsResources,
   ItemdefinitionsWeapons,
   ItemdefinitionsArmor,
+  ItemdefinitionsRunes,
   Lootbuckets,
   Lootlimits,
   Loottable,
@@ -220,6 +221,9 @@ export abstract class NwDataloader {
   }
   public itemdefinitionsArmor() {
     return this.load<ItemdefinitionsArmor[]>('javelindata_itemdefinitions_armor.json')
+  }
+  public itemdefinitionsRunes() {
+    return this.load<ItemdefinitionsRunes[]>('javelindata_itemdefinitions_runes.json')
   }
   public lootbuckets() {
     return this.load<Lootbuckets[]>('javelindata_lootbuckets.json')

@@ -11,17 +11,26 @@
     *ngIf="vm.itemId"
   >
     <nwb-item-detail-header (click)="pickItem()" class="cursor-pointer"> </nwb-item-detail-header>
+    <ng-container *ngIf="vm.isRune && !compact">
+      <nwb-item-detail-divider></nwb-item-detail-divider>
+      <nwb-item-detail-description></nwb-item-detail-description>
+    </ng-container>
     <nwb-item-detail-stats
       [gearScoreEditable]="true"
       (gearScoreEdit)="isGearScoreOpen = !isGearScoreOpen"
       #stats="itemDetailStats"
     ></nwb-item-detail-stats>
-    <hr class="item-detail-divider" />
+
+    <nwb-item-detail-divider></nwb-item-detail-divider>
     <nwb-item-detail-perks (editPerk)="pickPerk($event)" [perkEditable]="true"></nwb-item-detail-perks>
+
     <ng-container *ngIf="!compact">
-      <hr class="item-detail-divider" />
-      <nwb-item-detail-description></nwb-item-detail-description>
-      <hr class="item-detail-divider" />
+      <ng-container *ngIf="!vm.isRune">
+        <nwb-item-detail-divider></nwb-item-detail-divider>
+        <nwb-item-detail-description></nwb-item-detail-description>
+      </ng-container>
+
+      <nwb-item-detail-divider></nwb-item-detail-divider>
       <nwb-item-detail-info></nwb-item-detail-info>
     </ng-container>
 

@@ -100,6 +100,10 @@ export class NwDbService {
   public weaponsMap = index(() => this.weapons, 'WeaponID')
   public weapon = lookup(() => this.weaponsMap)
 
+  public runes = list(() => [this.data.itemdefinitionsRunes()])
+  public runesMap = index(() => this.runes, 'WeaponID')
+  public rune = lookup(() => this.runesMap)
+
   public spellTable = list(() =>
     this.data
       .apiMethodsByPrefix('spelltable', 'spelltable')
