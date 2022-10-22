@@ -25,7 +25,14 @@ import { ItemsTableAdapter, PerksTableAdapter } from '~/widgets/adapter'
 import { ItemDetailModule, PerkDetail, PerkOverrideFn } from '~/widgets/item-detail'
 
 import { isEqual } from 'lodash'
-import { EquipSlot } from '~/nw/utils'
+import {
+  collectPerkbucketPerkIds,
+  EquipSlot,
+  isItemArmor,
+  isItemWeapon,
+  isPerkApplicableToItem,
+  isPerkGem,
+} from '~/nw/utils'
 import { deferStateFlat, shareReplayRefCount } from '~/utils'
 import { ItemDetailComponent } from '~/widgets/item-detail/item-detail.component'
 import { GearbuilderStore, GearsetRecord } from './gearbuidler-store'
@@ -209,36 +216,12 @@ export class GearSlotComponent {
   }
 
   private openPerksPicker(value: string, detail: PerkDetail) {
-    const src$ = combineLatest({
-      perks: this.db.perks,
-      buckets: this.db.perkBucketsMap,
-      type: this.slot$.pipe(map((it) => it.itemType)),
-      item: this.slotItem$?.pipe(map((it) => it.item)),
-    }).pipe(
-      map(({ perks, buckets, type, item }) => {
-        const bucketId = detail.bucket?.PerkBucketID
-        const ids = bucketId ? getPerkIds(bucketId, buckets) : new Set()
-        const isGem = detail.perk?.PerkType === 'Gem'
-        return perks
-          .filter((it) => {
-            if (ids.has(it.PerkID)) {
-              return true
-            }
-            if (isGem && item.CanReplaceGem) {
-              return it.PerkType === 'Gem'
-            }
-            return false
-          })
-          .filter((it) => item.ItemClass?.some((tag) => it.ItemClass?.includes(tag)))
-      })
-    )
-
     return this.dialog.open(DataTablePickerDialog, {
       data: value,
       injector: Injector.create({
         providers: [
           PerksTableAdapter.provider({
-            source: src$,
+            source: this.getAplicablePerks(detail),
           }),
         ],
         parent: this.injector,
@@ -246,22 +229,55 @@ export class GearSlotComponent {
       panelClass: ['w-full', 'h-full'],
     })
   }
-}
 
-function getPerkIds(bucketId: string, buckets: Map<string, Perkbuckets>) {
-  const bucket = buckets.get(bucketId)
-  const result = new Set<string>()
-  const ids = Object.keys(bucket)
-    .filter((key: string) => /^Perk\d+$/.test(key))
-    .map((key) => bucket[key] as string)
-  for (const id of ids) {
-    if (id.startsWith('[PBID]')) {
-      getPerkIds(id.replace('[PBID]', ''), buckets).forEach((value) => {
-        result.add(value)
+  private getAplicablePerks(detail: PerkDetail) {
+    return combineLatest({
+      perks: this.db.perks,
+      buckets: this.db.perkBucketsMap,
+      type: this.slot$.pipe(map((it) => it.itemType)),
+      item: this.slotItem$?.pipe(map((it) => it.item)),
+    }).pipe(
+      map(({ perks, buckets, type, item }) => {
+        const isWeapon = isItemWeapon(item)
+        const isArmor = isItemArmor(item)
+
+        const bucket = detail.bucket
+        const bucketIsGem = isPerkGem(bucket)
+        const perk = detail.perk
+        const perkIsGem = isPerkGem(perk)
+
+        const perkIds = collectPerkbucketPerkIds(bucket, buckets)
+
+        return perks.filter((it) => {
+          let isApplicable = isPerkApplicableToItem(it, item)
+          if (isArmor && !isApplicable) {
+            isApplicable = it.ItemClass?.includes('Armor')
+          }
+          if (isWeapon && !isApplicable) {
+            isApplicable = it.ItemClass?.includes('EquippableMainHand') || it.ItemClass?.includes('EquippableTwoHand')
+          }
+          if (!isApplicable) {
+            return false
+          }
+
+          if (perkIds.has(it.PerkID)) {
+            return true
+          }
+          if (bucketIsGem) {
+            return bucket.PerkType === it.PerkType
+          }
+          if (perkIsGem) {
+            return perk.PerkType === it.PerkType
+          }
+          if (bucket) {
+            return bucket.PerkType === it.PerkType
+          }
+          if (perk) {
+            return perk.PerkType === it.PerkType
+          }
+          return false
+        })
       })
-    } else {
-      result.add(id)
-    }
+    )
   }
-  return result
 }

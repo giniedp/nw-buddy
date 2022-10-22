@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core'
 import { customAlphabet } from 'nanoid/non-secure'
 import { map } from 'rxjs'
-import { EquipSlotId } from '~/nw/utils'
 import { PreferencesService, StorageScopeNode } from '~/preferences'
 
 const createId = customAlphabet('abcdefghijklmnopqestuvwxyz0123456789', 10)

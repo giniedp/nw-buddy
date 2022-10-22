@@ -1,15 +1,24 @@
-import { Ability, Affixstats, Perks } from '@nw-data/types'
+import { Ability, Affixstats, ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
 
-export function isPerkInherent(perk: Perks) {
+export function isPerkInherent(perk:  Perks | Perkbuckets) {
   return perk?.PerkType === 'Inherent'
 }
 
-export function isPerkGem(perk: Perks) {
+export function isPerkGem(perk: Perks | Perkbuckets) {
   return perk?.PerkType === 'Gem'
 }
 
-export function isPerkGenerated(perk: Perks) {
+export function isPerkGenerated(perk: Perks | Perkbuckets) {
   return perk?.PerkType === 'Generated'
+}
+
+export function isPerkApplicableToItem(perk: Perks, item: ItemDefinitionMaster) {
+  if (!perk || !item || !perk.ItemClass || !item.ItemClass) {
+    return false
+  }
+  const a = perk.ItemClass.map((it) => it.toLowerCase())
+  const b = item.ItemClass.map((it) => it.toLowerCase())
+  return a.some((it) => b.includes(it))
 }
 
 export function hasPerkInherentAffix(perk: Perks): boolean {
