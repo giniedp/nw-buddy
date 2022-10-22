@@ -97,7 +97,7 @@ export class ItemDetailService {
       rarity: this.finalRarity$,
       rarityName: this.finalRarityName$,
       typeName: this.typeName$,
-      isRune: this.item$.pipe(map((it) => !!it.HeartgemTooltipBackgroundImage)),
+      isRune: this.item$.pipe(map((it) => it && !!it.HeartgemTooltipBackgroundImage)),
       hasDescription: this.description$.pipe(map(isTruthy)),
       hasStats: this.itemStatsRef$.pipe(map(isTruthy)),
       hasPerks: combineLatest({
