@@ -5,14 +5,4 @@
       -webkit-app-region: no-drag;
     }
   }
-  .scrollable {
-    overflow-x: overlay;
-    scroll-snap-type: x mandatory;
-    a {
-      scroll-snap-align: start;
-    }
-    @media (min-width: 1440px) {
-      justify-content: center;
-    }
-  }
 }

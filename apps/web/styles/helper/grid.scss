@@ -1,0 +1,15 @@
+
+.multiline-cell {
+  line-height: 1.2 !important;
+  white-space: normal !important;
+  word-break: initial !important;
+}
+
+.ag-header-cell-resize::after {
+  top: 2px !important;
+  height: calc(100% - 4px) !important;
+  width: 1px !important;
+}
+.ag-icon-filter {
+  color: hsl(var(--p) / var(--tw-text-opacity)) !important;
+}

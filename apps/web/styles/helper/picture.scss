@@ -1,0 +1,22 @@
+picture,
+img {
+  .fade {
+    opacity: 0;
+    transition: 0.2s linear opacity;
+  }
+  .show {
+    opacity: 1;
+  }
+  .error {
+    opacity: 1;
+  }
+}
+
+picture.error img,
+img.error {
+  display: none;
+}
+
+picture.nw-icon {
+  @include nwPictureIcon();
+}

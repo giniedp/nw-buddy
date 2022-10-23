@@ -1,0 +1,17 @@
+
+.text-rarity-0 {
+  color: map-get($nw-rarity-color, '0');
+}
+.text-rarity-1 {
+  color: map-get($nw-rarity-color, '1');
+}
+.text-rarity-2 {
+  color: map-get($nw-rarity-color, '2');
+}
+.text-rarity-3 {
+  color: map-get($nw-rarity-color, '3');
+}
+.text-rarity-4 {
+  color: map-get($nw-rarity-color, '4');
+}
+
