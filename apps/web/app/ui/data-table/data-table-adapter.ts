@@ -1,14 +1,14 @@
-import { ClassProvider, ExistingProvider, Type } from "@angular/core"
-import { GridOptions, ICellRendererFunc, ValueGetterFunc, ValueGetterParams } from "ag-grid-community"
-import { BehaviorSubject, Observable, Subject, takeUntil } from "rxjs"
-import { AgGridComponent, mithrilCell, MithrilCellAttrs } from "../ag-grid"
+import { ClassProvider, ExistingProvider, Type } from '@angular/core'
+import { GridOptions, ICellRendererFunc, ValueGetterFunc, ValueGetterParams } from 'ag-grid-community'
+import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs'
+import { AgGridComponent, AsyncCellRenderer, AsyncCellRendererParams, mithrilCell, MithrilCellAttrs } from '../ag-grid'
 import m from 'mithril'
+import { createElement, CreateElementOptions } from '~/utils'
 
 export interface TypedValueGetterParams<T> extends ValueGetterParams {
   data: T
 }
 export abstract class DataTableAdapter<T> {
-
   public static provideClass(useClass: Type<DataTableAdapter<any>>): ClassProvider {
     return {
       provide: DataTableAdapter,
@@ -51,42 +51,103 @@ export abstract class DataTableAdapter<T> {
   public cellRenderer(fn: ICellRendererFunc<T>) {
     return fn
   }
-  public mithrilCell(comp: m.Component<MithrilCellAttrs<T>>) {
-    return mithrilCell<T>(comp)
+  public cellRendererAsync(): Type<AsyncCellRenderer<T>> {
+    return AsyncCellRenderer
   }
-  public asyncCell(fn: (data: T) => Observable<string>, options?: { trustHtml: boolean }) {
-    return mithrilCell<T, { d: Subject<any>, value: string }>({
-      oncreate: ({ attrs, state }) => {
-        state.d = new Subject()
-        fn(attrs.data).pipe(takeUntil(state.d)).subscribe((v) => {
-          state.value = v
-          m.redraw()
-        })
-      },
-      onremove: ({ state }) => {
-        state.d.next(null)
-        state.d.complete()
-      },
-      view: ({ state }) => {
-        if (options?.trustHtml) {
-          return m.trust(state.value)
-        } else {
-          return state.value
-        }
-      }
-    })
+  public cellRendererAsyncParams<R>(params: AsyncCellRendererParams<T, R>) {
+    return params
   }
+
   public cellRendererTags(format?: (value: any) => string) {
-    return this.mithrilCell({
-      view: ({ attrs }) => {
-        return m(
-          'div.flex.flex-row.flex-wrap.gap-1.h-full.items-center',
-          attrs.value?.map?.((it: string) => m('span.badge.badge-sm.badge-secondary.bg-secondary.bg-opacity-50', format ? format(it) : it))
-        )
-      },
+    return this.cellRenderer(({ value }) => {
+      return this.createElement({
+        tag: 'div',
+        classList: ['flex', 'flex-row', 'flex-wrap', 'gap-1', 'h-full', 'items-center'],
+        children: value?.map((it: string) => {
+          return {
+            tag: 'span',
+            classList: ['badge', 'badge-sm', 'badge-secondary', 'bg-secondary', 'bg-opacity-50'],
+            text: format ? format(it) : it,
+          }
+        }),
+      })
     })
   }
+
   public extractCategories(entities: T[]) {
     return Array.from(new Set(entities.map((it) => this.entityCategory(it)).filter((it) => !!it)))
+  }
+
+  public createIcon(cb: (el: HTMLPictureElement, img: HTMLImageElement) => void) {
+    return this.createElement('picture', (el) => {
+      const img = this.createElement('img', (img) => {
+        img.classList.add('fade')
+        img.onerror = () => {
+          img.classList.remove('show')
+          img.classList.add('error')
+        }
+        img.onload = () => {
+          img.classList.add('show')
+          img.classList.remove('error')
+        }
+      })
+      el.append(img)
+      cb(el, img)
+    })
+  }
+
+  public createLinkWithIcon({
+    href,
+    target,
+    icon,
+    iconClass,
+    rarity,
+  }: {
+    href: string
+    target: string
+    icon: string
+    iconClass?: string[]
+    rarity?: number
+  }) {
+    return this.createElement('a', (el) => {
+      el.target = target
+      el.href = href
+      el.append(
+        this.createIcon((pic, img) => {
+          pic.classList.add('w-9', 'h-9', 'nw-icon')
+          if (rarity) {
+            pic.classList.add(`bg-rarity-${rarity}`)
+          }
+          if (iconClass) {
+            pic.classList.add(...iconClass)
+          }
+          img.src = icon
+          img.loading = 'lazy'
+        })
+      )
+    })
+  }
+
+  public createElement<T extends keyof HTMLElementTagNameMap>(
+    tag: T,
+    cb?: (el: HTMLElementTagNameMap[T]) => void
+  ): HTMLElementTagNameMap[T]
+  public createElement<T extends keyof HTMLElementTagNameMap>(
+    tag: CreateElementOptions<T>,
+    cb?: (el: HTMLElementTagNameMap[T]) => void
+  ): HTMLElementTagNameMap[T]
+  public createElement<T extends keyof HTMLElementTagNameMap>(
+    tag: T | CreateElementOptions<T>,
+    cb?: (el: HTMLElementTagNameMap[T]) => void
+  ) {
+    const el = typeof tag === 'string' ? document.createElement(tag) : createElement(document, tag)
+    if (cb) {
+      cb(el)
+    }
+    return el
+  }
+
+  public makeLineBreaks(text: string) {
+    return text?.replace(/\\n/gi, '<br>')
   }
 }

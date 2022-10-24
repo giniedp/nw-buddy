@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core'
 import { PoiDefinition } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import m from 'mithril'
 import { defer, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
@@ -28,23 +27,20 @@ export class PoiTableAdapter extends DataTableAdapter<PoiDefinition> {
           filter: false,
           width: 54,
           pinned: true,
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs: { data } }) =>
-              m('a', { target: '_blank', href: nwdbLinkUrl('zone', String(data.TerritoryID)) }, [
-                m(IconComponent, {
-                  src: data.MapIcon || data.CompassIcon || data.TooltipBackground,
-                  class: `w-9 h-9 nw-icon scale-125`,
-                }),
-              ]),
-          }),
+          cellRenderer: this.cellRenderer(({ data }) => {
+            return this.createLinkWithIcon({
+              target: '_blank',
+              href: nwdbLinkUrl('zone', String(data.TerritoryID)),
+              icon: data.MapIcon || data.CompassIcon || data.TooltipBackground,
+              iconClass: ['scale-125', 'transition-all', 'translate-x-0', 'hover:translate-x-1']
+            })
+          })
         },
         {
           width: 250,
           headerName: 'Name',
           valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.NameLocalizationKey)),
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs: { value } }) => m.trust(value.replace(/\\n/g, '<br>'))
-          }),
+          cellRenderer: this.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
           cellClass: ['multiline-cell', 'py-2'],
           autoHeight: true,
           getQuickFilterText: ({ value }) => value,
@@ -53,9 +49,7 @@ export class PoiTableAdapter extends DataTableAdapter<PoiDefinition> {
           width: 250,
           headerName: 'Description',
           valueGetter: this.valueGetter(({ data }) => this.i18n.get(`${data.NameLocalizationKey}_description`)),
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs: { value } }) => m.trust(value.replace(/\\n/g, '<br>'))
-          }),
+          cellRenderer: this.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
           cellClass: ['multiline-cell', 'py-2'],
           autoHeight: true,
           getQuickFilterText: ({ value }) => value,
@@ -66,7 +60,6 @@ export class PoiTableAdapter extends DataTableAdapter<PoiDefinition> {
         },
         {
           field: this.fieldName('LootTags'),
-          // valueFormatter: ({ value }) => humanize(value),
           cellRenderer: this.cellRendererTags(humanize),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({

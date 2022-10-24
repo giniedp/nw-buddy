@@ -180,23 +180,20 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
           filter: false,
           width: 54,
           pinned: true,
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs: { data } }) =>
-              m('a', { target: '_blank', href: nwdbLinkUrl('item', getItemId(data)) }, [
-                m(IconComponent, {
-                  src: getItemIconPath(data),
-                  class: `w-9 h-9 nw-icon bg-rarity-${getItemRarity(data)}`,
-                }),
-              ]),
+          cellRenderer: this.cellRenderer(({ data }) => {
+            return this.createLinkWithIcon({
+              target: '_blank',
+              href: nwdbLinkUrl('item', getItemId(data)),
+              icon: getItemIconPath(data),
+              rarity: getItemRarity(data)
+            })
           }),
         },
         {
           width: 250,
           headerName: 'Name',
           valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.Name)),
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs: { value } }) => m.trust(value.replace(/\\n/g, '<br>'))
-          }),
+          cellRenderer: this.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
           cellClass: ['multiline-cell', 'py-2'],
           autoHeight: true,
           getQuickFilterText: ({ value }) => value,

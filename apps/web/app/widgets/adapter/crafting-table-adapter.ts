@@ -10,6 +10,7 @@ import { humanize, shareReplayRefCount } from '~/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
+import { BookmarkCell, TrackingCell } from './components'
 
 export type RecipeWithItem = Crafting & {
   $item: ItemDefinitionMaster | Housingitems
@@ -29,59 +30,57 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
   public options = defer(() =>
     of<GridOptions>({
       rowSelection: 'single',
+      rowBuffer: 0,
       columnDefs: [
         {
           sortable: false,
           filter: false,
           pinned: true,
           width: 54,
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs: { data } }) => {
-              const item = data?.$item
-              if (!item) {
-                return ''
-              }
-              return m(IconComponent, {
-                src: getItemIconPath(item),
-                class: `w-9 h-9 nw-icon bg-rarity-${getItemRarity(item)}`,
-              })
-            },
-          }),
+          cellRenderer: this.cellRenderer(({ data }) => {
+            const item = data?.$item
+            if (!item) {
+              return null
+            }
+            return this.createLinkWithIcon({
+              target: '_blank',
+              href: nwdbLinkUrl('item', getItemId(item)),
+              icon: getItemIconPath(item),
+              rarity: getItemRarity(item),
+              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+            })
+          })
         },
         {
           width: 250,
           headerName: 'Name',
-          valueGetter: ({ data }) => {
-            const recipe = data as RecipeWithItem
-            if (!recipe.$item) {
-              return this.i18n.get(recipe.RecipeNameOverride)
+          valueGetter: this.valueGetter(({ data }) => {
+            if (!data.$item) {
+              return this.i18n.get(data.RecipeNameOverride)
             }
-            return this.i18n.get(recipe.$item?.Name)
-          },
+            return this.i18n.get(data.$item?.Name)
+          }),
           getQuickFilterText: ({ value }) => value,
         },
         {
-          width: 175,
+          width: 200,
           sortable: false,
           headerName: 'Ingredients',
           field: this.fieldName('$ingredients'),
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs: { data } }) => {
-              const items = data.$ingredients || []
-              return m('div.flex.flex-row.items-center.h-full', {}, [
-                m.fragment(
-                  {},
-                  items.map((item) =>
-                    m('a.block.w-7.h-7', { target: '_blank', href: nwdbLinkUrl('item', getItemId(item)) }, [
-                      m(IconComponent, {
-                        src: getItemIconPath(item),
-                        class: `w-7 h-7 nw-icon`,
-                      }),
-                    ])
-                  )
-                ),
-              ])
-            },
+          cellRenderer: this.cellRenderer(({ data }) => {
+            const items = data.$ingredients || []
+            return this.createElement({
+              tag: 'div',
+              classList: ['flex', 'flex-row', 'items-center', 'h-full'],
+              children: items.map((item) => {
+                return this.createLinkWithIcon({
+                  target: '_blank',
+                  href: nwdbLinkUrl('item', getItemId(item)),
+                  icon: getItemIconPath(item),
+                  iconClass: ['transition-all', 'scale-90', 'hover:scale-110']
+                })
+              })
+            })
           }),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
@@ -107,73 +106,39 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
               headerName: 'Bookmark',
               cellClass: 'cursor-pointer',
               filter: ItemTrackerFilter,
-              cellRenderer: this.mithrilCell({
-                view: ({ attrs: { data } }) => {
-                  const itemId = getItemIdFromRecipe(data)
-                  return (
-                    itemId &&
-                    m(ItemMarkerCell, {
-                      itemId: itemId,
-                      meta: this.nw.itemPref,
-                    })
-                  )
-                },
+              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(getItemId(data.$item))?.mark || 0),
+              cellRenderer: BookmarkCell,
+              cellRendererParams: BookmarkCell.params({
+                getId: (data: RecipeWithItem) => getItemId(data.$item),
+                pref: this.nw.itemPref
               }),
-              valueGetter: ({ data }) => {
-                const itemId = getItemIdFromRecipe(data)
-                return (itemId && this.nw.itemPref.get(itemId)?.mark) || 0
-              },
             },
             {
               headerName: 'Owned',
               headerTooltip: 'Number of items currently owned',
-              cellClass: 'text-right',
-              valueGetter: this.valueGetter(({ data }) => {
-                const itemId = getItemIdFromRecipe(data)
-                return itemId && this.nw.itemPref.get(itemId)?.stock
-              }),
-              filter: RangeFilter,
-              cellRenderer: this.mithrilCell({
-                view: ({ attrs: { data } }) => {
-                  const itemId = getItemIdFromRecipe(data)
-                  return (
-                    itemId &&
-                    m(ItemTrackerCell, {
-                      class: 'text-right',
-                      itemId: itemId,
-                      meta: this.nw.itemPref,
-                      mode: 'stock',
-                    })
-                  )
-                },
+              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(getItemId(data.$item))?.stock),
+              cellRenderer: TrackingCell,
+              cellRendererParams: TrackingCell.params({
+                getId: (data: RecipeWithItem) => getItemId(data.$item),
+                pref: this.nw.itemPref,
+                mode: 'stock',
+                class: 'text-right',
               }),
               width: 90,
             },
             {
-              width: 100,
               headerName: 'Price',
               headerTooltip: 'Current price in Trading post',
               cellClass: 'text-right',
-              valueGetter: this.valueGetter(({ data }) => {
-                const itemId = getItemIdFromRecipe(data)
-                return itemId && this.nw.itemPref.get(itemId)?.price
+              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(getItemId(data.$item))?.price),
+              cellRenderer: TrackingCell,
+              cellRendererParams: TrackingCell.params({
+                getId: (data: RecipeWithItem) => getItemId(data.$item),
+                pref: this.nw.itemPref,
+                mode: 'price',
+                formatter: this.moneyFormatter,
               }),
-              filter: RangeFilter,
-              cellRenderer: this.mithrilCell({
-                view: ({ attrs: { data } }) => {
-                  const itemId = getItemIdFromRecipe(data)
-                  return (
-                    itemId &&
-                    m(ItemTrackerCell, {
-                      class: 'text-right',
-                      itemId: itemId,
-                      meta: this.nw.itemPref,
-                      mode: 'price',
-                      formatter: this.moneyFormatter,
-                    })
-                  )
-                },
-              }),
+              width: 100,
             },
           ],
         },

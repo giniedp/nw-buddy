@@ -10,6 +10,7 @@ import { humanize, shareReplayRefCount } from '~/utils'
 import { TranslateService } from '~/i18n'
 import { getPerksInherentMODs, hasPerkInherentAffix } from '~/nw/utils'
 import { ExprContextService } from './exp-context.service'
+import { NW_MAX_GEAR_SCORE, NW_MAX_GEAR_SCORE_BASE } from '~/nw/utils/constants'
 
 @Injectable()
 export class PerksTableAdapterConfig {
@@ -41,21 +42,19 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
   public options = defer(() =>
     of<GridOptions>({
       rowSelection: 'single',
-
+      rowBuffer: 0,
       columnDefs: [
         {
           sortable: false,
           filter: false,
           width: 74,
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs: { data } }) => {
-              return m('a', { target: '_blank', href: nwdbLinkUrl('perk', data.PerkID) }, [
-                m(IconComponent, {
-                  src: data.IconPath,
-                  class: `w-9 h-9 nw-icon`,
-                }),
-              ])
-            },
+          cellRenderer: this.cellRenderer(({ data }) => {
+            return this.createLinkWithIcon({
+              target: '_blank',
+              href: nwdbLinkUrl('perk', String(data.PerkID)),
+              icon: data.IconPath,
+              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+            })
           }),
         },
         {
@@ -76,14 +75,34 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
             const prefix = data.AppliedPrefix && this.i18n.get(data.AppliedPrefix)
             return [name || '', suffix || '', prefix || ''].join(' ')
           },
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs: { value } }) => {
-              return m('div.flex.flex-col.text-sm', [
-                value.name && m('span', value.name),
-                value.prefix && m('span.italic.text-accent', `${value.prefix} …`),
-                value.suffix && m('span.italic.text-accent', `… ${value.suffix}`),
-              ])
-            },
+          cellRenderer: this.cellRenderer(({ value }) => {
+            return this.createElement({
+              tag: 'div',
+              classList: ['flex', 'flex-col', 'text-sm'],
+              children: [
+                value.name
+                  ? {
+                      tag: 'span',
+                      classList: [],
+                      text: value.name as string,
+                    }
+                  : null,
+                value.prefix
+                  ? {
+                      tag: 'span',
+                      classList: ['italic', 'text-accent'],
+                      text: `${value.prefix} …`,
+                    }
+                  : null,
+                value.suffix
+                  ? {
+                      tag: 'span',
+                      classList: ['italic', 'text-accent'],
+                      text: `… ${value.suffix}`,
+                    }
+                  : null,
+              ],
+            })
           }),
         },
         {
@@ -92,28 +111,25 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
           wrapText: true,
           autoHeight: true,
           cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
-          filterValueGetter: ({ data }) => {
-            return this.i18n.get(data.Description)
-          },
-          cellRenderer: this.asyncCell(
-            (data) => {
-              if (hasPerkInherentAffix(data)) {
-                return this.nw.db.affixStatsMap.pipe(
-                  map((stats) => {
-                    const affix = stats.get(data.Affix)
-                    return getPerksInherentMODs(data, affix, 600)
-                      .map((it) => {
-                        return `<b>${this.i18n.get(it.label)}</b> ${it.value}`
-                      })
-                      .join('<br>')
-                  })
-                )
-              }
+          filterValueGetter: ({ data }) => this.i18n.get(data.Description),
+          valueGetter: ({ data }) => this.i18n.get(data.Description),
+          cellRenderer: this.cellRendererAsync(),
+          cellRendererParams: this.cellRendererAsyncParams<string>({
+            source: ({ data }) => {
               return combineLatest({
                 ctx: this.ctx.value,
                 text: this.i18n.observe(data.Description),
+                stats: this.nw.db.affixStatsMap,
               }).pipe(
-                switchMap(({ ctx, text }) => {
+                switchMap(({ ctx, text, stats }) => {
+                  if (hasPerkInherentAffix(data)) {
+                    const affix = stats.get(data.Affix)
+                    const result = getPerksInherentMODs(data, affix, ctx.gs)
+                      .map((it) => `+${it.value} <b>${this.i18n.get(it.label)}</b>`)
+                      .join('<br>')
+                    return of(result)
+                  }
+
                   let gs = ctx.gs
                   if (data.ItemClassGSBonus && ctx.gsBonus) {
                     gs += Number(data.ItemClassGSBonus.split(':')[1]) || 0
@@ -127,10 +143,10 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
                 })
               )
             },
-            {
-              trustHtml: true,
-            }
-          ),
+            update: (el, text) => {
+              el.innerHTML = this.makeLineBreaks(text)
+            },
+          }),
         },
         {
           headerName: 'Type',
@@ -209,24 +225,28 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
           }),
         },
       ],
-    }
-  ))
-
-  public entities: Observable<Perks[]> = defer(() => combineLatest({
-    perks: this.config?.source || this.nw.db.perks,
-    abilities: this.nw.db.abilitiesMap,
-    affixstats: this.nw.db.affixstatsMap
-  }))
-  .pipe(map(({ perks, abilities, affixstats }) => {
-    return perks.map((it) => {
-      return {
-        ...it,
-        //$ability: abilities.get(it.EquipAbility),
-        $affix: affixstats.get(it.Affix)
-      }
     })
-  }))
-  .pipe(shareReplayRefCount(1))
+  )
+
+  public entities: Observable<Perks[]> = defer(() =>
+    combineLatest({
+      perks: this.config?.source || this.nw.db.perks,
+      abilities: this.nw.db.abilitiesMap,
+      affixstats: this.nw.db.affixstatsMap,
+    })
+  )
+    .pipe(
+      map(({ perks, abilities, affixstats }) => {
+        return perks.map((it) => {
+          return {
+            ...it,
+            //$ability: abilities.get(it.EquipAbility),
+            $affix: affixstats.get(it.Affix),
+          }
+        })
+      })
+    )
+    .pipe(shareReplayRefCount(1))
 
   public constructor(
     private nw: NwService,

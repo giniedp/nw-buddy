@@ -2,9 +2,8 @@ import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
-import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
+import { DataTableModule } from '~/ui/data-table'
 import { QuicksearchService } from '~/ui/quicksearch'
-import { PoiTableAdapter } from './poi-table-adapter'
 
 @Component({
   standalone: true,

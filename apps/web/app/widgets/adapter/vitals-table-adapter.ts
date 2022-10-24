@@ -27,6 +27,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
   public options = defer(() =>
     of<GridOptions>({
       rowSelection: 'single',
+      rowBuffer: 0,
       columnDefs: [
         {
           width: 200,

@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
-import { HousingAdapterService } from './housing-table-adapter'
+import { HousingTableAdapter } from '~/widgets/adapter'
 
 @Component({
   standalone: true,
@@ -15,7 +15,7 @@ import { HousingAdapterService } from './housing-table-adapter'
   host: {
     class: 'layout-col bg-base-300 rounded-md overflow-clip',
   },
-  providers: [DataTableAdapter.provideClass(HousingAdapterService), QuicksearchService],
+  providers: [DataTableAdapter.provideClass(HousingTableAdapter), QuicksearchService],
 })
 export class HousingComponent {
   //

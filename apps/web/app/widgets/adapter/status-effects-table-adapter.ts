@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core'
 import { Statuseffect, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { defer, map, Observable, of, shareReplay } from 'rxjs'
+import { defer, exhaustAll, map, Observable, of, shareReplay } from 'rxjs'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
-import { SelectboxFilter } from '~/ui/ag-grid'
+import { AsyncCellRenderer, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { TranslateService } from '~/i18n'
@@ -22,19 +22,20 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
   public options = defer(() =>
     of<GridOptions>({
       rowSelection: 'single',
+      rowBuffer: 0,
+      suppressAnimationFrame: true,
       columnDefs: [
         {
           sortable: false,
           filter: false,
           width: 74,
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs: { data } }) =>
-              m('a', { target: '_blank', href: nwdbLinkUrl('status-effect', data.StatusID) }, [
-                m(IconComponent, {
-                  src: data.PlaceholderIcon || data['IconPath'],
-                  class: `w-9 h-9 nw-icon`,
-                }),
-              ]),
+          cellRenderer: this.cellRenderer(({ data }) => {
+            return this.createLinkWithIcon({
+              href: nwdbLinkUrl('status-effect', data.StatusID),
+              target: '_blank',
+              icon: data.PlaceholderIcon || data['IconPath'],
+              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+            })
           }),
         },
         {
@@ -48,15 +49,19 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
           wrapText: true,
           autoHeight: true,
           cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
-          cellRenderer: this.asyncCell((data) => {
-            return this.nw.expression.solve({
-              text: this.i18n.get(data.Description),
+          valueGetter: ({ data }) => this.i18n.get(data.Description),
+          cellRenderer: this.cellRendererAsync(),
+          cellRendererParams: this.cellRendererAsyncParams<string>({
+            source: ({ data, value }) => this.nw.expression.solve({
+              text: value,
               charLevel: 60,
               itemId: data.Description,
-              gearScore: 600
-            })
-          }, { trustHtml: true }),
-          filterValueGetter: ({data}) => this.i18n.get(data.Description)
+              gearScore: 600,
+            }),
+            update: (el, text) => {
+              el.innerHTML = this.makeLineBreaks(text)
+            }
+          }),
         },
         {
           field: this.fieldName('EffectCategories'),
@@ -66,20 +71,18 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
           filterParams: SelectboxFilter.params({
             showCondition: true,
             conditionAND: true,
-            showSearch: true
-          })
+            showSearch: true,
+          }),
         },
       ],
-    }
-  ))
+    })
+  )
 
   public entities: Observable<Statuseffect[]> = defer(() => {
     return this.nw.db.statusEffects
   })
-  .pipe(map((list) => list.filter((it) => !!it.Description)))
-  .pipe(
-    shareReplayRefCount(1)
-  )
+    .pipe(map((list) => list.filter((it) => !!it.Description)))
+    .pipe(shareReplayRefCount(1))
 
   private perks: Map<string, Perks>
 

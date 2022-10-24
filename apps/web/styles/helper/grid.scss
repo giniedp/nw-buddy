@@ -1,8 +1,15 @@
 
+.ag-cell  {
+  display:  flex;
+  flex-direction: column;
+  justify-content: center;
+}
 .multiline-cell {
   line-height: 1.2 !important;
   white-space: normal !important;
   word-break: initial !important;
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .ag-header-cell-resize::after {

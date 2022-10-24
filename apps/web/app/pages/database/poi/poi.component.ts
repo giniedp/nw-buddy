@@ -4,9 +4,8 @@ import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule } from '~/ui/quicksearch'
-import { PerksTableAdapter } from '~/widgets/adapter'
+import { PerksTableAdapter, PoiTableAdapter } from '~/widgets/adapter'
 import { ExprContextService } from '~/widgets/adapter/exp-context.service'
-import { PoiTableAdapter } from './poi-table-adapter'
 
 @Component({
   standalone: true,

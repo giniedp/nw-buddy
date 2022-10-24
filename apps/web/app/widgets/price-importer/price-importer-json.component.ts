@@ -12,6 +12,7 @@ import { IconComponent, nwdbLinkUrl, NwDbService, NwModule, NwService } from '~/
 import { getItemIconPath, getItemId, getItemRarity } from '~/nw/utils'
 import { ItemPreferencesService } from '~/preferences'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
+import { TrackingCell } from '../adapter/components'
 import { ItemTrackerCell } from '../item-tracker'
 
 interface PriceItem {
@@ -263,48 +264,43 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
             filter: false,
             width: 54,
             pinned: true,
-            cellRenderer: this.mithrilCell({
-              view: ({ attrs: { data } }) =>
-                m('a', { target: '_blank', href: nwdbLinkUrl('item', data.id) }, [
-                  m(IconComponent, {
-                    src: getItemIconPath(data.item),
-                    class: `w-9 h-9 nw-icon bg-rarity-${getItemRarity(data.item)}`,
-                  }),
-                ]),
-            }),
+            cellRenderer: this.cellRenderer(({ data }) => {
+              return this.createLinkWithIcon({
+                href: nwdbLinkUrl('item', data.id),
+                target: '_blank',
+                icon: getItemIconPath(data.item),
+                rarity: getItemRarity(data.item),
+                iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+              })
+            })
           },
           {
             width: 250,
             headerName: 'Name',
             valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.item.Name)),
-            cellRenderer: this.mithrilCell({
-              view: ({ attrs: { value } }) => m.trust(value.replace(/\\n/g, '<br>')),
-            }),
-            cellClass: ['multiline-cell', 'py-2'],
+            cellRenderer: this.cellRenderer(({ value }) => this.makeLineBreaks(value)),
+            cellClass: ['multiline-cell'],
             autoHeight: true,
             getQuickFilterText: ({ value }) => value,
           },
           {
             headerName: 'Old Price',
+            headerTooltip: 'Current price in Trading post',
             cellClass: 'text-right',
             valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(getItemId(data.item))?.price),
-            cellRenderer: this.mithrilCell({
-              view: ({ attrs: { data } }) => {
-                return m(ItemTrackerCell, {
-                  itemId: getItemId(data.item),
-                  meta: this.nw.itemPref,
-                  mode: 'price',
-                  class: 'text-right',
-                  formatter: this.moneyFormatter,
-                })
-              },
+            cellRenderer: TrackingCell,
+            cellRendererParams: TrackingCell.params({
+              getId: (value: PriceItem) => getItemId(value.item),
+              pref: this.nw.itemPref,
+              mode: 'price',
+              formatter: this.moneyFormatter,
             }),
             width: 100,
           },
           {
             headerName: 'New Price',
             cellClass: 'text-right',
-            valueGetter: this.valueGetter(({ data }) => data.price),
+            valueFormatter: ({ value }) => this.moneyFormatter.format(value),
             width: 100,
           },
           {

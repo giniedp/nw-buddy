@@ -1,15 +1,16 @@
 import { Injectable } from '@angular/core'
 import { Housingitems } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { defer, map, Observable, of, shareReplay, tap } from 'rxjs'
-import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
-import { SelectboxFilter, mithrilCell } from '~/ui/ag-grid'
-import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
-import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
-import { getItemIconPath, getItemRarity, getItemTierAsRoman } from '~/nw/utils'
+import { defer, map, Observable, of, shareReplay } from 'rxjs'
 import { TranslateService } from '~/i18n'
+import { nwdbLinkUrl, NwService } from '~/nw'
+import { getItemIconPath, getItemId, getItemRarity, getItemTierAsRoman } from '~/nw/utils'
+import { SelectboxFilter } from '~/ui/ag-grid'
+import { DataTableAdapter } from '~/ui/data-table'
 import { humanize } from '~/utils'
+import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
+import { BookmarkCell, TrackingCell } from './components'
 
 @Injectable()
 export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
@@ -24,20 +25,21 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
   public options = defer(() =>
     of<GridOptions>({
       rowSelection: 'single',
+      rowBuffer: 0,
       columnDefs: [
         {
           sortable: false,
           filter: false,
           width: 54,
           pinned: true,
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs: { data } }) =>
-              m('a', { target: '_blank', href: nwdbLinkUrl('item', data.HouseItemID) }, [
-                m(IconComponent, {
-                  src: getItemIconPath(data),
-                  class: `w-9 h-9 nw-icon bg-rarity-${getItemRarity(data)}`,
-                }),
-              ]),
+          cellRenderer: this.cellRenderer(({ data }) => {
+            return this.createLinkWithIcon({
+              target: '_blank',
+              href: nwdbLinkUrl('item', getItemId(data)),
+              rarity: getItemRarity(data),
+              icon: getItemIconPath(data),
+              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+            })
           }),
         },
         {
@@ -68,31 +70,25 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
             {
               width: 100,
               headerName: 'Bookmark',
+              cellClass: 'cursor-pointer',
               filter: ItemTrackerFilter,
               valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.mark || 0),
-              cellRenderer: this.mithrilCell({
-                view: ({ attrs: { data } }) => {
-                  return m(ItemMarkerCell, {
-                    itemId: data.HouseItemID,
-                    meta: this.nw.itemPref,
-                  })
-                }
-              })
+              cellRenderer: BookmarkCell,
+              cellRendererParams: BookmarkCell.params({
+                getId: (value: Housingitems) => getItemId(value),
+                pref: this.nw.itemPref
+              }),
             },
             {
               headerName: 'Owned',
               headerTooltip: 'Number of items currently owned',
-              cellClass: 'text-right',
               valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.stock),
-              cellRenderer: this.mithrilCell({
-                view: ({ attrs: { data } }) => {
-                  return m(ItemTrackerCell, {
-                    class: 'text-right',
-                    itemId: data.HouseItemID,
-                    meta: this.nw.itemPref,
-                    mode: 'stock',
-                  })
-                },
+              cellRenderer: TrackingCell,
+              cellRendererParams: TrackingCell.params({
+                getId: (value: Housingitems) => getItemId(value),
+                pref: this.nw.itemPref,
+                mode: 'stock',
+                class: 'text-right',
               }),
               width: 90,
             },
@@ -101,18 +97,14 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
               headerTooltip: 'Current price in Trading post',
               cellClass: 'text-right',
               valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.price),
-              cellRenderer: this.mithrilCell({
-                view: ({ attrs: { data } }) => {
-                  return m(ItemTrackerCell, {
-                    class: 'text-right',
-                    itemId: data.HouseItemID,
-                    meta: this.nw.itemPref,
-                    mode: 'price',
-                    formatter: this.moneyFormatter,
-                  })
-                },
+              cellRenderer: TrackingCell,
+              cellRendererParams: TrackingCell.params({
+                getId: (value: Housingitems) => getItemId(value),
+                pref: this.nw.itemPref,
+                mode: 'price',
+                formatter: this.moneyFormatter,
               }),
-              width: 90,
+              width: 100,
             },
           ],
         },
@@ -145,12 +137,12 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
             showSearch: true,
-            showCondition: true
-          })
+            showCondition: true,
+          }),
         },
       ],
-    }
-  ))
+    })
+  )
 
   public entities: Observable<Housingitems[]> = defer(() => {
     return this.nw.db.housingItems.pipe(map((items) => items.filter((it) => !it.ExcludeFromGame)))

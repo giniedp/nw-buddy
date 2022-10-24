@@ -4,15 +4,17 @@ import { GridOptions } from 'ag-grid-community'
 import m from 'mithril'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
-import { getItemIconPath, getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman } from '~/nw/utils'
+import { nwdbLinkUrl, NwService } from '~/nw'
+import { getItemIconPath, getItemId, getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman } from '~/nw/utils'
 import { AgGridComponent, RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
+import { BookmarkCell, TrackingCell } from './components'
 
 type ItemDefinitionMasterWithPerks = ItemDefinitionMaster & {
   $perks: Perks[]
+  $perkBuckets: string[]
 }
 
 @Injectable()
@@ -46,29 +48,29 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
   public options = defer(() =>
     of<GridOptions>({
       rowSelection: 'single',
+      rowBuffer: 0,
+      // suppressRowHoverHighlight: true,
       columnDefs: [
         {
           sortable: false,
           filter: false,
           width: 54,
           pinned: true,
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs: { data } }) =>
-              m('a', { target: '_blank', href: nwdbLinkUrl('item', data.ItemID) }, [
-                m(IconComponent, {
-                  src: getItemIconPath(data),
-                  class: `w-9 h-9 nw-icon bg-rarity-${getItemRarity(data)}`,
-                }),
-              ]),
-          }),
+          cellRenderer: this.cellRenderer(({ data }) => {
+            return this.createLinkWithIcon({
+              href: nwdbLinkUrl('item', data.ItemID),
+              target: '_blank',
+              icon: getItemIconPath(data),
+              rarity: getItemRarity(data),
+              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+            })
+          })
         },
         {
           width: 250,
           headerName: 'Name',
           valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.Name)),
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs: { value } }) => m.trust(value.replace(/\\n/g, '<br>'))
-          }),
+          cellRenderer: this.cellRenderer(({ value }) => this.makeLineBreaks(value)),
           cellClass: ['multiline-cell', 'py-2'],
           autoHeight: true,
           getQuickFilterText: ({ value }) => value,
@@ -82,34 +84,38 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
           sortable: false,
           headerName: 'Perks',
           field: this.fieldName('$perks'),
-          cellRenderer: this.mithrilCell({
-            view: ({ attrs: { data } }) => {
-              const perks = data.$perks || []
-              const generated = getItemPerkBucketIds(data)
-              const buckets = getItemPerkBucketIds(data)
-              return m('div.flex.flex-row.items-center.h-full', {}, [
-                m.fragment(
-                  {},
-                  perks.map((perk) =>
-                    m('a.block.w-7.h-7', { target: '_blank', href: nwdbLinkUrl('perk', perk.PerkID) }, [
-                      m(IconComponent, {
-                        src: perk.IconPath,
-                        class: `w-7 h-7 nw-icon`,
-                      }),
-                    ])
-                  )
-                ),
-                m.fragment(
-                  {},
-                  generated.map(() =>
-                    m(IconComponent, {
-                      src: 'assets/icons/crafting_perkbackground.png',
-                      class: `w-7 h-7 nw-icon`,
+          cellRenderer: this.cellRenderer(({ data }) => {
+            const perks = data.$perks || []
+            const buckets = data.$perkBuckets || []
+            if (!!perks && !buckets) {
+              return null
+            }
+            return this.createElement({
+              tag: 'div',
+              classList: ['flex', 'flex-row', 'items-center', 'h-full'],
+              children: [
+                ...perks.map((perk) => this.createElement({
+                  tag: 'a',
+                  classList: ['block', 'w-7', 'h-7'],
+                  tap: (a) => {
+                    a.target = '_blank'
+                    a.href = nwdbLinkUrl('perk', perk.PerkID)
+                  },
+                  children: [
+                    this.createIcon((pic, img) => {
+                      img.classList.add('w-7', 'h-7', 'nw-icon')
+                      img.src = perk.IconPath
                     })
-                  )
-                ),
-              ])
-            },
+                  ]
+                })),
+                ...buckets.map(() => {
+                  return this.createIcon((pic, img) => {
+                    img.classList.add('w-7', 'h-7', 'nw-icon')
+                    img.src = 'assets/icons/crafting_perkbackground.png'
+                  })
+                })
+              ]
+            })
           }),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
@@ -151,29 +157,23 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
               cellClass: 'cursor-pointer',
               filter: ItemTrackerFilter,
               valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.mark || 0),
-              cellRenderer: this.mithrilCell({
-                view: ({ attrs: { data } }) => {
-                  return m(ItemMarkerCell, {
-                    itemId: data.ItemID,
-                    meta: this.nw.itemPref,
-                  })
-                }
-              })
+              cellRenderer: BookmarkCell,
+              cellRendererParams: BookmarkCell.params({
+                getId: (value: ItemDefinitionMasterWithPerks) => getItemId(value),
+                pref: this.nw.itemPref
+              }),
             },
             {
               hide: this.config?.hideUserData,
               headerName: 'Owned',
               headerTooltip: 'Number of items currently owned',
               valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.stock),
-              cellRenderer: this.mithrilCell({
-                view: ({ attrs: { data } }) => {
-                  return m(ItemTrackerCell, {
-                    itemId: data.ItemID,
-                    meta: this.nw.itemPref,
-                    mode: 'stock',
-                    class: 'text-right',
-                  })
-                },
+              cellRenderer: TrackingCell,
+              cellRendererParams: TrackingCell.params({
+                getId: (value: ItemDefinitionMasterWithPerks) => getItemId(value),
+                pref: this.nw.itemPref,
+                mode: 'stock',
+                class: 'text-right',
               }),
               width: 90,
             },
@@ -182,15 +182,11 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
               headerName: 'GS',
               headerTooltip: 'Item owned with this gear score',
               valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.gs),
-              cellRenderer: this.mithrilCell({
-                view: ({ attrs: { data } }) => {
-                  return m(ItemTrackerCell, {
-                    itemId: data.ItemID,
-                    meta: this.nw.itemPref,
-                    mode: 'gs',
-                    class: 'text-right',
-                  })
-                },
+              cellRenderer: TrackingCell,
+              cellRendererParams: TrackingCell.params({
+                getId: (value: ItemDefinitionMasterWithPerks) => getItemId(value),
+                pref: this.nw.itemPref,
+                mode: 'gs',
               }),
               width: 90,
             },
@@ -200,16 +196,12 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
               headerTooltip: 'Current price in Trading post',
               cellClass: 'text-right',
               valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.price),
-              cellRenderer: this.mithrilCell({
-                view: ({ attrs: { data } }) => {
-                  return m(ItemTrackerCell, {
-                    itemId: data.ItemID,
-                    meta: this.nw.itemPref,
-                    mode: 'price',
-                    class: 'text-right',
-                    formatter: this.moneyFormatter,
-                  })
-                },
+              cellRenderer: TrackingCell,
+              cellRendererParams: TrackingCell.params({
+                getId: (value: ItemDefinitionMasterWithPerks) => getItemId(value),
+                pref: this.nw.itemPref,
+                mode: 'price',
+                formatter: this.moneyFormatter,
               }),
               width: 100,
             },
@@ -292,7 +284,8 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
         return items.map((it): ItemDefinitionMasterWithPerks => {
           return {
             ...it,
-            $perks: getItemPerks(it, perks)
+            $perks: getItemPerks(it, perks),
+            $perkBuckets: getItemPerkBucketIds(it)
           }
         })
       }))

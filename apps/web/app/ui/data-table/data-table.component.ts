@@ -12,6 +12,7 @@ import {
   SimpleChanges,
   NgZone,
   Optional,
+  Host,
 } from '@angular/core'
 import { isEqual } from 'lodash'
 import {

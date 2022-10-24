@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core'
 import { Ability } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { defer, map, Observable, of } from 'rxjs'
+import { defer, map, Observable, of, switchMap } from 'rxjs'
 import { IconComponent, nwdbLinkUrl, NwDbService } from '~/nw'
-import { mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
+import { AsyncCellRenderer, mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import m from 'mithril'
 import { shareReplayRefCount } from '~/utils'
@@ -23,20 +23,20 @@ export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
   public options = defer(() =>
     of<GridOptions>({
       rowSelection: 'single',
+      rowBuffer: 0,
       columnDefs: [
         {
           sortable: false,
           filter: false,
           width: 54,
           pinned: true,
-          cellRenderer: mithrilCell<Ability>({
-            view: ({ attrs: { data } }) =>
-              m('a', { target: '_blank', href: nwdbLinkUrl('ability', data.AbilityID) }, [
-                m(IconComponent, {
-                  src: data.Icon,
-                  class: `w-9 h-9 nw-icon`,
-                }),
-              ]),
+          cellRenderer: this.cellRenderer(({ data }) => {
+            return this.createLinkWithIcon({
+              href: nwdbLinkUrl('ability', data.AbilityID),
+              target: '_blank',
+              icon: data.Icon,
+              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+            })
           }),
         },
         {
@@ -54,23 +54,26 @@ export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
           width: 400,
           wrapText: true,
           autoHeight: true,
-          cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
-          filterValueGetter: ({ data }) => {
-            return this.i18n.get(data.Description)
-          },
-          cellRenderer: this.asyncCell(
-            (data) => {
-              return this.expr
+          cellClass: ['multiline-cell', 'text-primary', 'italic'],
+          filterValueGetter: ({ data }) => this.i18n.get(data.Description),
+          cellRenderer: this.cellRendererAsync(),
+          cellRendererParams: this.cellRendererAsyncParams<string>({
+            update: (el, text) => {
+              el.innerHTML = text
+            },
+            source: ({ data, value }) => {
+              return this.i18n.observe(data.Description).pipe(switchMap((v) => {
+                return this.expr
                 .solve({
-                  text: this.i18n.get(data.Description),
+                  text: v,
                   charLevel: 60,
                   itemId: data.AbilityID,
                   gearScore: 600,
                 })
+              }))
                 .pipe(map((it) => it.replace(/\\n/gi, '<br>')))
             },
-            { trustHtml: true }
-          ),
+          }),
         },
         {
           field: this.fieldName('WeaponTag'),
