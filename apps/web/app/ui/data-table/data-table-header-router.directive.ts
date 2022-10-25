@@ -1,5 +1,5 @@
 import { Directive, forwardRef, Injectable, Input } from '@angular/core'
-import { ActivatedRoute, Router} from '@angular/router'
+import { ActivatedRoute } from '@angular/router'
 import { BehaviorSubject, combineLatest, distinctUntilChanged, map, Subject, takeUntil } from 'rxjs'
 import { DataTableAdapter } from './data-table-adapter'
 
@@ -10,7 +10,7 @@ export abstract class CategoryLinkService {
 
 @Directive({
   standalone: true,
-  selector: 'nwb-data-table-categories[categoryChildRoute]',
+  selector: 'nwb-data-table-header[categoryChildRoute]',
   providers: [{
     provide: CategoryLinkService,
     useExisting: forwardRef(() => CategoryChildRouteParamDirective)

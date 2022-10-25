@@ -13,7 +13,7 @@ import { AbilityDetailModule } from '~/widgets/ability-detail'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, RouterModule, AbilityDetailModule, PropertyGridModule],
   host: {
-    class: 'layout-content xl:max-w-md p-3',
+    class: 'layout-content xl:max-w-md layout-pad-x layout-pad-b',
   },
 })
 export class AbilitiesDetailComponent {

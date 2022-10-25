@@ -1,44 +1,42 @@
+import { CommonModule } from '@angular/common'
 import {
-  Component,
-  OnInit,
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  Input,
+  NgZone,
   OnChanges,
   OnDestroy,
-  ViewChild,
-  Input,
-  Output,
-  EventEmitter,
-  ChangeDetectorRef,
-  SimpleChanges,
-  NgZone,
+  OnInit,
   Optional,
-  Host,
+  Output,
+  SimpleChanges,
 } from '@angular/core'
+import { ColumnApi, ColumnState, GridApi, GridReadyEvent, Events } from 'ag-grid-community'
 import { isEqual } from 'lodash'
 import {
   asyncScheduler,
   BehaviorSubject,
   combineLatest,
+  debounceTime,
   defer,
-  delay,
   distinctUntilChanged,
+  fromEvent,
   map,
   Observable,
   ReplaySubject,
-  startWith,
+  skip,
   Subject,
   subscribeOn,
   switchMap,
-  switchMapTo,
   takeUntil,
-  tap,
 } from 'rxjs'
 import { LocaleService } from '~/i18n'
 import { PreferencesService, StorageNode } from '~/preferences'
-import { DestroyService } from '~/utils'
-import { AgGridComponent, AgGridModule } from '~/ui/ag-grid'
+import { AgGridModule } from '~/ui/ag-grid'
+import { DestroyService, shareReplayRefCount } from '~/utils'
 import { DataTableAdapter } from './data-table-adapter'
-import { CommonModule } from '@angular/common'
 
 @Component({
   standalone: true,
@@ -53,17 +51,17 @@ import { CommonModule } from '@angular/common'
   },
 })
 export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
-  @ViewChild(AgGridComponent, { static: true })
-  public grid: AgGridComponent
-
   @Input()
   public quickFilter: string
 
   @Input()
-  public stateKey: string
+  public persistStateId: string
 
   @Output()
   public rowDoubleClick = new EventEmitter<any>()
+
+  private gridApi: GridApi
+  private colApi: ColumnApi
 
   public get gridData() {
     return this.displayItems$
@@ -74,6 +72,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     .pipe(
       map((options) => {
         return {
+          suppressColumnMoveAnimation: true,
           rowHeight: 40,
           rowMultiSelectWithClick: true,
           suppressMenuHide: true,
@@ -104,6 +103,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
         }
       })
     )
+    .pipe(shareReplayRefCount(1))
 
   @Output()
   public get selection(): Observable<string[]> {
@@ -141,7 +141,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   private adapter$ = new BehaviorSubject<DataTableAdapter<T>>(null)
-  private gridReady$ = new ReplaySubject(1)
+  private gridReady$ = new ReplaySubject<GridReadyEvent>(1)
   private gridSelectionChanged$ = new ReplaySubject<T[]>(1)
   private gridRowDataChanged$ = new Subject()
   private selection$ = new ReplaySubject<string[]>(1)
@@ -169,20 +169,38 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     private cdRef: ChangeDetectorRef,
     private zone: NgZone,
     private destroy: DestroyService,
-    preferences: PreferencesService,
     @Optional()
-    adapter: DataTableAdapter<T>
+    adapter: DataTableAdapter<T>,
+    preferences: PreferencesService
   ) {
     this.gridStorage = preferences.session.storageScope('grid:')
     this.adapter$.next(adapter)
   }
 
   public async ngOnInit() {
-    this.gridReady$
-      .pipe(switchMap(() => this.locale.value$))
+    this.gridReady$.pipe(takeUntil(this.destroy.$)).subscribe((e) => {
+      this.loadColumnState()
+      this.adapter.setGrid(e)
+    })
+
+    this.mergeEvents([
+      Events.EVENT_COLUMN_MOVED,
+      Events.EVENT_COLUMN_PINNED,
+      Events.EVENT_COLUMN_VISIBLE,
+      Events.EVENT_COLUMN_RESIZED,
+    ])
+      .pipe(debounceTime(1000))
       .pipe(takeUntil(this.destroy.$))
       .subscribe(() => {
-        this.grid.api.refreshCells({ force: true })
+        this.saveColumnState()
+      })
+
+    this.gridReady$
+      .pipe(switchMap(() => this.locale.value$))
+      .pipe(skip(1)) // skip initial value
+      .pipe(takeUntil(this.destroy.$))
+      .subscribe(() => {
+        this.gridApi.refreshCells({ force: true })
       })
 
     combineLatest({
@@ -208,21 +226,38 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       })
   }
 
-  public ngOnChanges(changes: SimpleChanges) {
+  public ngOnChanges() {
     this.cdRef.markForCheck()
   }
 
   public ngOnDestroy() {
-    this.saveColumnState()
+    //
   }
 
-  public onGridReady() {
-    this.gridReady$.next(null)
-    this.loadColumnState()
+  public onGridReady(e: GridReadyEvent) {
+    this.gridApi = e.api
+    this.colApi = e.columnApi
+    this.gridReady$.next(e)
   }
 
   public setCategory(category: string) {
     this.adapter.category.next(category)
+  }
+
+  private mergeEvents(events: string[]) {
+    return this.gridReady$.pipe(
+      switchMap(({ api }) => {
+        return new Observable((sub) => {
+          function emit() {
+            sub.next()
+          }
+          events.forEach((type) => api.addEventListener(type, emit))
+          return () => {
+            events.forEach((type) => api.removeEventListener(type, emit))
+          }
+        })
+      })
+    )
   }
 
   private getChange(ch: SimpleChanges, key: keyof this) {
@@ -236,7 +271,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   private syncSelection(toSelect: Array<string | number>, options?: { ensureVisible: boolean }) {
-    const api = this.grid?.api
+    const api = this.gridApi
     if (!api) {
       return
     }
@@ -263,21 +298,41 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     }
   }
 
-  private saveColumnState() {
-    const key = this.stateKey
-    const api = this.grid.colApi
+  public resetColumnState() {
+    this.colApi.resetColumnState()
+    this.writeColumnState(null)
+  }
+
+  public saveColumnState() {
+    const key = this.persistStateId
+    const api = this.colApi
     if (!key || !api) {
       return
     }
-    this.gridStorage.set(key, {
+    const state = api.getColumnState()
+    this.writeColumnState(state)
+  }
+
+  private writeColumnState(state: ColumnState[]) {
+    const key = this.persistStateId
+    const api = this.colApi
+    if (!key || !api) {
+      return
+    }
+    const data = {
       ...(this.gridStorage.get(key) || {}),
-      columns: api.getColumnState(),
-    })
+    }
+    if (state?.length) {
+      data.columns = state
+    } else {
+      delete data.columns
+    }
+    this.gridStorage.set(key, data)
   }
 
   private saveFilterState() {
-    const key = this.stateKey
-    const api = this.grid.api
+    const key = this.persistStateId
+    const api = this.gridApi
     if (!key || !api) {
       return
     }
@@ -288,20 +343,20 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   private loadColumnState() {
-    const key = this.stateKey
-    const api = this.grid.colApi
+    const key = this.persistStateId
+    const api = this.colApi
     if (!key || !api) {
       return
     }
     const data = this.gridStorage.get(key)?.columns
     if (data) {
-      api.applyColumnState({ state: data })
+      api.applyColumnState({ state: data, applyOrder: true })
     }
   }
 
   private loadFilterState() {
-    const key = this.stateKey
-    const api = this.grid.api
+    const key = this.persistStateId
+    const api = this.gridApi
     if (!key || !api) {
       return
     }

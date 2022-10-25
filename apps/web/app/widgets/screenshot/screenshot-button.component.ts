@@ -11,7 +11,7 @@ import { ScreenshotFrame, ScreenshotService } from './screenshot.service'
   templateUrl: './screenshot-button.component.html',
   imports: [CommonModule, FormsModule, OverlayModule, DialogModule],
   host: {
-    class: 'tooltip tooltip-info tooltip-left"',
+    class: 'flex tooltip tooltip-info tooltip-left"',
     '[attr.data-tip]': '"Grab Screenshot"',
   }
 })

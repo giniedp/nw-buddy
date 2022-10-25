@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
+import { NavToobalModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { StatusEffectsTableAdapter } from '~/widgets/adapter'
 
@@ -11,7 +12,7 @@ import { StatusEffectsTableAdapter } from '~/widgets/adapter'
   selector: 'nwb-status-effects',
   templateUrl: './status-effects.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, QuicksearchModule, DataTableModule],
+  imports: [CommonModule, RouterModule, NwModule, QuicksearchModule, DataTableModule, NavToobalModule],
   host: {
     class: 'layout-col bg-base-300 rounded-md overflow-clip',
   },

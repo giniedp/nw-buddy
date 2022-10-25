@@ -54,6 +54,7 @@ export class ItemCardComponent extends ItemDetailService implements OnChanges {
   @Input()
   public enableInfoLink: boolean
 
+
   public get isLoading$() {
     return this.vm$.pipe(map((it) => it.loading))
   }

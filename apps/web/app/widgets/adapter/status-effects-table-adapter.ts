@@ -25,26 +25,33 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
       rowBuffer: 0,
       suppressAnimationFrame: true,
       columnDefs: [
-        {
+        this.colDef({
+          colId: 'icon',
+          headerValueGetter: () => 'Icon',
+          resizable: false,
           sortable: false,
           filter: false,
-          width: 74,
+          pinned: true,
+          width: 54,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
               href: nwdbLinkUrl('status-effect', data.StatusID),
               target: '_blank',
               icon: data.PlaceholderIcon || data['IconPath'],
-              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
           }),
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'name',
+          headerValueGetter: () => 'Name',
           headerName: 'Name',
           valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.DisplayName) || data.StatusID),
           width: 300,
-        },
-        {
-          headerName: 'Description',
+        }),
+        this.colDef({
+          colId: 'description',
+          headerValueGetter: () => 'Description',
           width: 300,
           wrapText: true,
           autoHeight: true,
@@ -52,18 +59,21 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
           valueGetter: ({ data }) => this.i18n.get(data.Description),
           cellRenderer: this.cellRendererAsync(),
           cellRendererParams: this.cellRendererAsyncParams<string>({
-            source: ({ data, value }) => this.nw.expression.solve({
-              text: value,
-              charLevel: 60,
-              itemId: data.Description,
-              gearScore: 600,
-            }),
+            source: ({ data, value }) =>
+              this.nw.expression.solve({
+                text: value,
+                charLevel: 60,
+                itemId: data.Description,
+                gearScore: 600,
+              }),
             update: (el, text) => {
               el.innerHTML = this.makeLineBreaks(text)
-            }
+            },
           }),
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'effectCategories',
+          headerValueGetter: () => 'Effect Categories',
           field: this.fieldName('EffectCategories'),
           autoHeight: true,
           filter: SelectboxFilter,
@@ -73,7 +83,7 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
             conditionAND: true,
             showSearch: true,
           }),
-        },
+        }),
       ],
     })
   )

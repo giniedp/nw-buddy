@@ -16,7 +16,7 @@ import { VitalsFamiliesModule } from '~/widgets/vitals-families'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, NwModule, VitalsFamiliesModule, LootModule],
   host: {
-    class: 'layout-col xl:max-w-md layout-pad',
+    class: 'layout-col xl:max-w-md layout-pad-x',
   }
 })
 export class VitalComponent {

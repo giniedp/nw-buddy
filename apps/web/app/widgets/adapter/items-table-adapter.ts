@@ -51,11 +51,14 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
       rowBuffer: 0,
       // suppressRowHoverHighlight: true,
       columnDefs: [
-        {
+        this.colDef({
+          colId: 'icon',
+          headerValueGetter: () => 'Icon',
+          resizable: false,
           sortable: false,
           filter: false,
-          width: 54,
           pinned: true,
+          width: 54,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
               href: nwdbLinkUrl('item', data.ItemID),
@@ -65,24 +68,30 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
             })
           })
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'name',
+          headerValueGetter: () => 'Name',
+          sortable: true,
+          filter: true,
           width: 250,
-          headerName: 'Name',
           valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.Name)),
           cellRenderer: this.cellRenderer(({ value }) => this.makeLineBreaks(value)),
           cellClass: ['multiline-cell', 'py-2'],
           autoHeight: true,
           getQuickFilterText: ({ value }) => value,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'itemId',
+          headerValueGetter: () => 'Item ID',
           field: this.fieldName('ItemID'),
           hide: true,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'perks',
           width: 175,
           sortable: false,
-          headerName: 'Perks',
+          headerValueGetter: () => 'Perks',
           field: this.fieldName('$perks'),
           cellRenderer: this.cellRenderer(({ data }) => {
             const perks = data.$perks || []
@@ -132,84 +141,90 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
               })
             }
           })
-        },
-        {
-          headerName: 'Rarity',
+        }),
+        this.colDef({
+          colId: 'rarity',
+          headerValueGetter: () => 'Rarity',
           valueGetter: ({ data }) => getItemRarity(data),
           valueFormatter: ({ value }) => this.i18n.get(getItemRarityName(value)),
           filter: SelectboxFilter,
           width: 130,
           getQuickFilterText: ({ value }) => value,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'tier',
+          headerValueGetter: () => 'Tier',
           width: 80,
           field: this.fieldName('Tier'),
           valueGetter: ({ data }) => getItemTierAsRoman(data.Tier),
           filter: SelectboxFilter,
-        },
-        {
-          headerName: 'User Data',
-          children: [
-            {
-              hide: this.config?.hideUserData,
-              width: 100,
-              headerName: 'Bookmark',
-              cellClass: 'cursor-pointer',
-              filter: ItemTrackerFilter,
-              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.mark || 0),
-              cellRenderer: BookmarkCell,
-              cellRendererParams: BookmarkCell.params({
-                getId: (value: ItemDefinitionMasterWithPerks) => getItemId(value),
-                pref: this.nw.itemPref
-              }),
-            },
-            {
-              hide: this.config?.hideUserData,
-              headerName: 'Owned',
-              headerTooltip: 'Number of items currently owned',
-              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.stock),
-              cellRenderer: TrackingCell,
-              cellRendererParams: TrackingCell.params({
-                getId: (value: ItemDefinitionMasterWithPerks) => getItemId(value),
-                pref: this.nw.itemPref,
-                mode: 'stock',
-                class: 'text-right',
-              }),
-              width: 90,
-            },
-            {
-              hide: this.config?.hideUserData,
-              headerName: 'GS',
-              headerTooltip: 'Item owned with this gear score',
-              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.gs),
-              cellRenderer: TrackingCell,
-              cellRendererParams: TrackingCell.params({
-                getId: (value: ItemDefinitionMasterWithPerks) => getItemId(value),
-                pref: this.nw.itemPref,
-                mode: 'gs',
-              }),
-              width: 90,
-            },
-            {
-              hide: this.config?.hideUserData,
-              headerName: 'Price',
-              headerTooltip: 'Current price in Trading post',
-              cellClass: 'text-right',
-              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.price),
-              cellRenderer: TrackingCell,
-              cellRendererParams: TrackingCell.params({
-                getId: (value: ItemDefinitionMasterWithPerks) => getItemId(value),
-                pref: this.nw.itemPref,
-                mode: 'price',
-                formatter: this.moneyFormatter,
-              }),
-              width: 100,
-            },
-          ],
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'userBookmark',
+          headerValueGetter: () => 'Bookmark',
+          hide: this.config?.hideUserData,
+          width: 100,
+          cellClass: 'cursor-pointer',
+          filter: ItemTrackerFilter,
+          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.mark || 0),
+          cellRenderer: BookmarkCell,
+          cellRendererParams: BookmarkCell.params({
+            getId: (value: ItemDefinitionMasterWithPerks) => getItemId(value),
+            pref: this.nw.itemPref
+          }),
+        }),
+        this.colDef({
+          colId: 'userStockCount',
+          headerValueGetter: () => 'In Stock',
+          hide: this.config?.hideUserData,
+          suppressMenu: false,
+          headerTooltip: 'Number of items currently owned',
+          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.stock),
+          cellRenderer: TrackingCell,
+          cellRendererParams: TrackingCell.params({
+            getId: (value: ItemDefinitionMasterWithPerks) => getItemId(value),
+            pref: this.nw.itemPref,
+            mode: 'stock',
+            class: 'text-right',
+          }),
+          width: 90,
+        }),
+        this.colDef({
+          colId: 'userOwnedWithGS',
+          headerValueGetter: () => 'Owned GS',
+          hide: this.config?.hideUserData,
+          headerTooltip: 'Item owned with this gear score',
+          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.gs),
+          cellRenderer: TrackingCell,
+          cellRendererParams: TrackingCell.params({
+            getId: (value: ItemDefinitionMasterWithPerks) => getItemId(value),
+            pref: this.nw.itemPref,
+            mode: 'gs',
+          }),
+          width: 100,
+        }),
+        this.colDef({
+
+          colId: 'userPrice',
+          headerValueGetter: () => 'Price',
+          hide: this.config?.hideUserData,
+          headerTooltip: 'Current price in Trading post',
+          cellClass: 'text-right',
+          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.price),
+          cellRenderer: TrackingCell,
+          cellRendererParams: TrackingCell.params({
+            getId: (value: ItemDefinitionMasterWithPerks) => getItemId(value),
+            pref: this.nw.itemPref,
+            mode: 'price',
+            formatter: this.moneyFormatter,
+          }),
+          width: 100,
+        }),
+
+        this.colDef({
+          colId: 'gearScore',
+          headerValueGetter: () => 'Gear Score',
           width: 120,
-          headerName: 'Gear Score',
           cellClass: 'text-right',
           comparator: (a, b) => a[1] - b[1],
           valueGetter: this.valueGetter(({ data }) => {
@@ -224,20 +239,25 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
             return `${value[0]}-${value[1]}`
           },
           filter: RangeFilter
-        },
-        {
-          headerName: 'Item Source',
+        }),
+        this.colDef({
+          colId: 'source',
+          headerValueGetter: () => 'Item Source',
           field: '$source',
           width: 125,
           filter: SelectboxFilter,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'itemType',
+          headerValueGetter: () => 'Item Type',
           field: this.fieldName('ItemType'),
           width: 125,
           filter: SelectboxFilter,
           getQuickFilterText: ({ value }) => value,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'itemClass',
+          headerValueGetter: () => 'Item Class',
           width: 250,
           field: this.fieldName('ItemClass'),
           cellRenderer: this.cellRendererTags(humanize),
@@ -247,16 +267,20 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
             conditionAND: false,
             showSearch: true
           })
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'tradingGroup',
+          headerValueGetter: () => 'Trading Group',
           field: this.fieldName('TradingGroup'),
           valueFormatter: ({ value }) => humanize(value),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
             showSearch: true
           })
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'tradingFamily',
+          headerValueGetter: () => 'Trading Family',
           width: 125,
           field: this.fieldName('TradingFamily'),
           valueFormatter: ({ value }) => humanize(value),
@@ -264,13 +288,15 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
           filterParams: SelectboxFilter.params({
             showSearch: true
           })
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'tradingCategory',
+          headerValueGetter: () => 'Trading Category',
           width: 125,
           field: this.fieldName('TradingCategory'),
           valueFormatter: ({ value }) => humanize(value),
           filter: SelectboxFilter,
-        },
+        }),
       ],
     }
   ))
@@ -292,10 +318,6 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemDefinitionMasterWith
   }).pipe(
     shareReplayRefCount(1)
   )
-
-  public override setActiveCategories(grid: AgGridComponent, value: string[]): void {
-    //
-  }
 
   public constructor(
     private nw: NwService,

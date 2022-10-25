@@ -268,10 +268,6 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
 
   public entities = new BehaviorSubject<PriceItem[]>(null)
 
-  public override setActiveCategories(grid: AgGridComponent, value: string[]): void {
-    //
-  }
-
   public constructor(
     private nw: NwService,
     private i18n: TranslateService,

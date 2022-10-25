@@ -27,107 +27,122 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
       rowSelection: 'single',
       rowBuffer: 0,
       columnDefs: [
-        {
+        this.colDef({
+          colId: 'icon',
+          headerValueGetter: () => 'Icon',
+          resizable: false,
           sortable: false,
           filter: false,
-          width: 54,
           pinned: true,
+          width: 54,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
               target: '_blank',
               href: nwdbLinkUrl('item', getItemId(data)),
               rarity: getItemRarity(data),
               icon: getItemIconPath(data),
-              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
           }),
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'name',
+          headerValueGetter: () => 'Name',
           width: 300,
-          headerName: 'Name',
           valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.Name)),
           getQuickFilterText: ({ value }) => value,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'houseItemId',
+          headerValueGetter: () => 'Item ID',
           field: this.fieldName('HouseItemID'),
           hide: true,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'rarity',
+          headerValueGetter: () => 'Rarity',
           width: 100,
           headerName: 'Rarity',
           field: this.fieldName('ItemRarity'),
           filter: SelectboxFilter,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'tier',
+          headerValueGetter: () => 'Tier',
           width: 80,
           field: this.fieldName('Tier'),
           filter: SelectboxFilter,
           valueGetter: ({ data }) => getItemTierAsRoman(data.Tier),
-        },
-        {
-          headerName: 'User Data',
-          children: [
-            {
-              width: 100,
-              headerName: 'Bookmark',
-              cellClass: 'cursor-pointer',
-              filter: ItemTrackerFilter,
-              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.mark || 0),
-              cellRenderer: BookmarkCell,
-              cellRendererParams: BookmarkCell.params({
-                getId: (value: Housingitems) => getItemId(value),
-                pref: this.nw.itemPref
-              }),
-            },
-            {
-              headerName: 'Owned',
-              headerTooltip: 'Number of items currently owned',
-              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.stock),
-              cellRenderer: TrackingCell,
-              cellRendererParams: TrackingCell.params({
-                getId: (value: Housingitems) => getItemId(value),
-                pref: this.nw.itemPref,
-                mode: 'stock',
-                class: 'text-right',
-              }),
-              width: 90,
-            },
-            {
-              headerName: 'Price',
-              headerTooltip: 'Current price in Trading post',
-              cellClass: 'text-right',
-              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.price),
-              cellRenderer: TrackingCell,
-              cellRendererParams: TrackingCell.params({
-                getId: (value: Housingitems) => getItemId(value),
-                pref: this.nw.itemPref,
-                mode: 'price',
-                formatter: this.moneyFormatter,
-              }),
-              width: 100,
-            },
-          ],
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'userBookmark',
+          headerValueGetter: () => 'Bookmark',
+          width: 100,
+          cellClass: 'cursor-pointer',
+          filter: ItemTrackerFilter,
+          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.mark || 0),
+          cellRenderer: BookmarkCell,
+          cellRendererParams: BookmarkCell.params({
+            getId: (value: Housingitems) => getItemId(value),
+            pref: this.nw.itemPref,
+          }),
+        }),
+        this.colDef({
+          colId: 'userStockValue',
+          headerValueGetter: () => 'In Stock',
+          headerTooltip: 'Number of items currently owned',
+          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.stock),
+          cellRenderer: TrackingCell,
+          cellRendererParams: TrackingCell.params({
+            getId: (value: Housingitems) => getItemId(value),
+            pref: this.nw.itemPref,
+            mode: 'stock',
+            class: 'text-right',
+          }),
+          width: 90,
+        }),
+        this.colDef({
+          colId: 'userPrice',
+          headerValueGetter: () => 'Price',
+          headerTooltip: 'Current price in Trading post',
+          cellClass: 'text-right',
+          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.price),
+          cellRenderer: TrackingCell,
+          cellRendererParams: TrackingCell.params({
+            getId: (value: Housingitems) => getItemId(value),
+            pref: this.nw.itemPref,
+            mode: 'price',
+            formatter: this.moneyFormatter,
+          }),
+          width: 100,
+        }),
+        this.colDef({
+          colId: 'housingTag1Placed',
+          headerValueGetter: () => 'Placement',
           headerName: 'Placement',
           field: this.fieldName('HousingTag1 Placed'),
           valueFormatter: ({ value }) => humanize(value),
           filter: SelectboxFilter,
           width: 150,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'uiHousingCategory',
+          headerValueGetter: () => 'Housing Category',
           field: this.fieldName('UIHousingCategory'),
           filter: SelectboxFilter,
           width: 150,
-        },
-        {
-          headerName: 'Obtain',
+        }),
+        this.colDef({
+          colId: 'howToObtain',
+          headerValueGetter: () => 'Obtain',
           field: this.fieldName('HowToOptain (Primarily)'),
           valueFormatter: ({ value }) => humanize(value),
           filter: SelectboxFilter,
           width: 150,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'housingTags',
+          headerValueGetter: () => 'Housing Tags',
           width: 250,
           field: this.fieldName('HousingTags'),
           valueGetter: ({ data, colDef }) => {
@@ -139,7 +154,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
             showSearch: true,
             showCondition: true,
           }),
-        },
+        }),
       ],
     })
   )

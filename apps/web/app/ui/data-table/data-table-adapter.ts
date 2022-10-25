@@ -1,13 +1,10 @@
 import { ClassProvider, ExistingProvider, Type } from '@angular/core'
-import { GridOptions, ICellRendererFunc, ValueGetterFunc, ValueGetterParams } from 'ag-grid-community'
-import { BehaviorSubject, Observable, Subject, takeUntil } from 'rxjs'
-import { AgGridComponent, AsyncCellRenderer, AsyncCellRendererParams, mithrilCell, MithrilCellAttrs } from '../ag-grid'
-import m from 'mithril'
+import { ColDef, GridOptions, ICellRendererFunc, ValueGetterFunc, ValueGetterParams } from 'ag-grid-community'
+import { AgGridCommon } from 'ag-grid-community/dist/lib/interfaces/iCommon'
+import { BehaviorSubject, defer, Observable, ReplaySubject } from 'rxjs'
 import { createElement, CreateElementOptions } from '~/utils'
+import { AsyncCellRenderer, AsyncCellRendererParams } from '../ag-grid'
 
-export interface TypedValueGetterParams<T> extends ValueGetterParams {
-  data: T
-}
 export abstract class DataTableAdapter<T> {
   public static provideClass(useClass: Type<DataTableAdapter<any>>): ClassProvider {
     return {
@@ -31,22 +28,28 @@ export abstract class DataTableAdapter<T> {
   public abstract entityCategory(item: T): string
   public abstract options: Observable<GridOptions>
   public abstract entities: Observable<T[]>
-
   public readonly category = new BehaviorSubject<string>(null)
+  public readonly grid = defer(() => this.grid$)
 
-  public setActiveCategories(grid: AgGridComponent, value: string[]) {
-    //
+  private grid$ = new ReplaySubject<AgGridCommon<any>>(1)
+  public setGrid(grid: AgGridCommon<any>) {
+    this.grid$.next(grid)
   }
 
   public getActiveCategories(): string[] {
     return []
   }
+  public registerInstance() {
 
+  }
   public fieldName(k: keyof T) {
     return String(k)
   }
-  public valueGetter(fn: keyof T | ((params: TypedValueGetterParams<T>) => any)): string | ValueGetterFunc {
+  public valueGetter(fn: keyof T | ((params: ValueGetterParams<T>) => any)): string | ValueGetterFunc {
     return fn as any
+  }
+  public colDef(data: ColDef & Required<Pick<ColDef, 'colId' | 'headerValueGetter'>>): ColDef {
+    return data
   }
   public cellRenderer(fn: ICellRendererFunc<T>) {
     return fn

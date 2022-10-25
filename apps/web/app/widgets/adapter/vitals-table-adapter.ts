@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core'
 import { Gamemodes, Vitals } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import m from 'mithril'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwDbService, NwVitalsService } from '~/nw'
@@ -29,17 +28,33 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
       rowSelection: 'single',
       rowBuffer: 0,
       columnDefs: [
-        {
-          width: 200,
-          headerName: 'Name',
+        this.colDef({
+          colId: 'icon',
+          headerValueGetter: () => 'Icon',
+          resizable: false,
+          sortable: false,
+          filter: false,
           pinned: true,
+          width: 54,
+          cellRenderer: this.cellRenderer(({ data }) => {
+            return this.createLinkWithIcon({
+              href: nwdbLinkUrl('creature', data.VitalsID),
+              target: '_blank',
+              icon: this.vitals.vitalFamilyIcon(data),
+              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+            })
+          })
+        }),
+        this.colDef({
+          colId: 'name',
+          headerValueGetter: () => 'Name',
+          width: 200,
           valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.DisplayName)),
           getQuickFilterText: ({ value }) => value,
-          cellRenderer: this.cellRenderer(({ value, data }) => {
-            return `<a href="${nwdbLinkUrl('creature', data.VitalsID)}">${value}</a>`
-          }),
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'level',
+          headerValueGetter: () => 'Level',
           width: 150,
           field: this.fieldName('Level'),
           cellClass: '',
@@ -49,97 +64,113 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
             const spanEl = `<span class="absolute left-0 right-0 top-0 bottom-0 font-bold flex items-center justify-center">${value}</span>`
             return `${iconEl} ${spanEl}`
           }),
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'family',
+          headerValueGetter: () => 'Family',
           field: this.fieldName('Family'),
           width: 125,
           getQuickFilterText: ({ value }) => value,
           filter: SelectboxFilter,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'creatureType',
+          headerValueGetter: () => 'Creature Type',
           width: 150,
           field: this.fieldName('CreatureType'),
           valueFormatter: ({ value }) => humanize(value),
           getQuickFilterText: ({ value }) => value,
           filter: SelectboxFilter,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'lootDropChance',
+          headerValueGetter: () => 'Loot Drop Chance',
           field: this.fieldName('LootDropChance'),
           cellClass: 'text-right',
           width: 150,
           filter: RangeFilter,
           valueGetter: this.valueGetter(({ data }) => Math.round((Number(data.LootDropChance) || 0) * 100)),
           valueFormatter: ({ value }) => `${value}%`,
-        },
-        {
-          headerName: 'Dungeon',
+        }),
+        this.colDef({
+          colId: 'expedition',
+          headerValueGetter: () => 'Expedition',
           valueGetter: this.valueGetter(({ data }) => data?.$dungeon?.DisplayName),
           valueFormatter: ({ value }) => this.i18n.get(value),
           filter: SelectboxFilter,
-        },
-        {
-          headerName: 'Slash',
+        }),
+        this.colDef({
+          colId: 'dmgEffectivenessSlash',
+          headerValueGetter: () => 'Slash',
           filter: false,
           width: 80,
           valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Slash')),
           cellRenderer: this.cellRendererDamage(),
-        },
-        {
-          headerName: 'Thrust',
+        }),
+        this.colDef({
+          colId: 'dmgEffectivenessThrust',
+          headerValueGetter: () => 'Thrust',
           filter: false,
           width: 80,
           valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Thrust')),
           cellRenderer: this.cellRendererDamage(),
-        },
-        {
-          headerName: 'Strike',
+        }),
+        this.colDef({
+          colId: 'dmgEffectivenessStrike',
+          headerValueGetter: () => 'Strike',
           filter: false,
           width: 80,
           valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Strike')),
           cellRenderer: this.cellRendererDamage(),
-        },
-        {
-          headerName: 'Fire',
+        }),
+        this.colDef({
+          colId: 'dmgEffectivenessFire',
+          headerValueGetter: () => 'Fire',
           filter: false,
           width: 80,
           valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Fire')),
           cellRenderer: this.cellRendererDamage(),
-        },
-        {
-          headerName: 'Ice',
+        }),
+        this.colDef({
+          colId: 'dmgEffectivenessIce',
+          headerValueGetter: () => 'Ice',
           filter: false,
           width: 80,
           valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Ice')),
           cellRenderer: this.cellRendererDamage(),
-        },
-        {
-          headerName: 'Nature',
+        }),
+        this.colDef({
+          colId: 'dmgEffectivenessNature',
+          headerValueGetter: () => 'Nature',
           filter: false,
           width: 80,
           valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Nature')),
           cellRenderer: this.cellRendererDamage(),
-        },
-        {
-          headerName: 'Void',
+        }),
+        this.colDef({
+          colId: 'dmgEffectivenessVoid',
+          headerValueGetter: () => 'Void',
           filter: false,
           width: 80,
           valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Corruption')),
           cellRenderer: this.cellRendererDamage(),
-        },
-        {
-          headerName: 'Lighting',
+        }),
+        this.colDef({
+          colId: 'dmgEffectivenessLighting',
+          headerValueGetter: () => 'Lighting',
           filter: false,
           width: 80,
           valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Lightning')),
           cellRenderer: this.cellRendererDamage(),
-        },
-        {
-          headerName: 'Arcane',
+        }),
+        this.colDef({
+          colId: 'dmgEffectivenessArcane',
+          headerValueGetter: () => 'Arcane',
           filter: false,
           width: 80,
           valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Arcane')),
           cellRenderer: this.cellRendererDamage(),
-        },
+        }),
       ],
     }
   ))

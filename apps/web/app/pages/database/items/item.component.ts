@@ -2,16 +2,18 @@ import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
+import { ScreenModule } from '~/ui/screen'
 import { observeRouteParam } from '~/utils'
 import { ItemDetailModule } from '~/widgets/item-detail'
+import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   standalone: true,
   templateUrl: './item.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, ItemDetailModule],
+  imports: [CommonModule, RouterModule, NwModule, ItemDetailModule, ScreenshotModule],
   host: {
-    class: 'layout-content xl:max-w-md',
+    class: 'layout-content xl:max-w-md layout-pad-x layout-pad-b',
   },
 })
 export class ItemComponent {

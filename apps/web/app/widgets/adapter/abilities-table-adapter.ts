@@ -25,11 +25,14 @@ export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
       rowSelection: 'single',
       rowBuffer: 0,
       columnDefs: [
-        {
+        this.colDef({
+          colId: 'icon',
+          headerValueGetter: () => 'Icon',
+          resizable: false,
           sortable: false,
           filter: false,
-          width: 54,
           pinned: true,
+          width: 54,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
               href: nwdbLinkUrl('ability', data.AbilityID),
@@ -38,18 +41,23 @@ export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
             })
           }),
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'name',
+          headerValueGetter: () => 'Name',
           width: 250,
-          headerName: 'Name',
           valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.DisplayName)),
           getQuickFilterText: ({ value }) => value,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'abilityId',
+          headerValueGetter: () => 'Ability ID',
           field: this.fieldName('AbilityID'),
           hide: true,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'description',
+          headerValueGetter: () => 'Description',
           field: this.fieldName('Description'),
           width: 400,
           wrapText: true,
@@ -74,19 +82,25 @@ export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
                 .pipe(map((it) => it.replace(/\\n/gi, '<br>')))
             },
           }),
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'weaponTag',
+          headerValueGetter: () => 'Weapon Tag',
           field: this.fieldName('WeaponTag'),
           filter: SelectboxFilter,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'attackType',
+          headerValueGetter: () => 'Attack Type',
           field: this.fieldName('AttackType'),
           filter: SelectboxFilter,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'uiCategory',
+          headerValueGetter: () => 'UI Category',
           field: this.fieldName('UICategory'),
           filter: SelectboxFilter,
-        },
+        }),
       ],
     })
   )

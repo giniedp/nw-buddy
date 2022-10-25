@@ -24,6 +24,15 @@ const CREATURE_TYPE_MARKER = {
   'Solo-': 'solominus',
 }
 
+const FAMILIES_ICONS = {
+  Wildlife: 'assets/icons/families/bestialbane1.png',
+  AncientGuardian: 'assets/icons/families/ancientbane1.png',
+  Lost: 'assets/icons/families/lostbane1.png',
+  Corrupted: 'assets/icons/families/corruptedbane1.png',
+  AngryEarth: 'assets/icons/families/angryearthbane1.png',
+  default: 'assets/icons/families/marker_icondeathdoor.png',
+}
+
 export type VitalDamageType =
   | 'Arcane'
   | 'Corruption'
@@ -52,6 +61,10 @@ export class NwVitalsService {
 
   public vitalMarkerIcon(vital: Vitals) {
     return this.creatureTypeicon(vital?.CreatureType)
+  }
+
+  public vitalFamilyIcon(vital: Vitals) {
+    return FAMILIES_ICONS[vital.Family] || FAMILIES_ICONS.default
   }
 
   public damageEffectiveness(vital: Vitals, damageType: VitalDamageType) {

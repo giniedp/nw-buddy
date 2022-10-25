@@ -44,10 +44,14 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
       rowSelection: 'single',
       rowBuffer: 0,
       columnDefs: [
-        {
+        this.colDef({
+          colId: 'icon',
+          headerValueGetter: () => 'Icon',
+          resizable: false,
           sortable: false,
           filter: false,
-          width: 74,
+          pinned: true,
+          width: 54,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
               target: '_blank',
@@ -56,9 +60,10 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
             })
           }),
-        },
-        {
-          headerName: 'Name',
+        }),
+        this.colDef({
+          colId: 'name',
+          headerValueGetter: () => 'Name',
           wrapText: true,
           autoHeight: true,
           width: 300,
@@ -104,10 +109,11 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
               ],
             })
           }),
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'description',
+          headerValueGetter: () => 'Description',
           width: 500,
-          headerName: 'Description',
           wrapText: true,
           autoHeight: true,
           cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
@@ -147,36 +153,44 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
               el.innerHTML = this.makeLineBreaks(text)
             },
           }),
-        },
-        {
-          headerName: 'Type',
+        }),
+        this.colDef({
+          colId: 'type',
+          headerValueGetter: () => 'Type',
           field: this.fieldName('PerkType'),
           width: 120,
           filter: SelectboxFilter,
-        },
+        }),
         {
+          colId: 'itemClassGSBonus',
           headerName: 'Item Class GS Bonus',
           field: this.fieldName('ItemClassGSBonus'),
+          marryChildren: true,
           children: [
-            {
-              headerName: 'Class',
+            this.colDef({
+              colId: 'itemClassGSBonusClass',
+              headerValueGetter: 'Class',
               valueGetter: this.valueGetter(({ data }) => {
                 return data.ItemClassGSBonus?.split(':')[0]
               }),
               width: 90,
               filter: SelectboxFilter,
-            },
-            {
+            }),
+            this.colDef({
+              colId: 'itemClassGSBonusGS',
+              headerValueGetter: 'GS',
               headerName: 'GS',
               valueGetter: this.valueGetter(({ data }) => {
                 return data.ItemClassGSBonus?.split(':')[1]
               }),
               width: 50,
               filter: false,
-            },
+            }),
           ],
         },
-        {
+        this.colDef({
+          colId: 'itemClass',
+          headerValueGetter: () => 'Item Class',
           width: 500,
           field: this.fieldName('ItemClass'),
           wrapText: true,
@@ -189,8 +203,10 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
             conditionAND: true,
             showSearch: true,
           }),
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'exclusiveLabels',
+          headerValueGetter: () => 'Exclusive Labels',
           field: this.fieldName('ExclusiveLabels'),
           wrapText: true,
           autoHeight: true,
@@ -202,8 +218,10 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
             conditionAND: true,
             showSearch: true,
           }),
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'excludeItemClass',
+          headerValueGetter: () => 'Exclude Item Class',
           field: this.fieldName('ExcludeItemClass'),
           wrapText: true,
           autoHeight: true,
@@ -215,15 +233,16 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
             conditionAND: true,
             showSearch: false,
           }),
-        },
-        {
-          headerName: 'IsStackableAbility',
+        }),
+        this.colDef({
+          colId: 'isStackableAbility',
+          headerValueGetter: () => 'Is Stackable Ability',
           filter: SelectboxFilter,
           valueGetter: this.valueGetter(({ data }) => {
             const ability = data['$ability'] as Ability
             return ability?.IsStackableAbility
           }),
-        },
+        }),
       ],
     })
   )

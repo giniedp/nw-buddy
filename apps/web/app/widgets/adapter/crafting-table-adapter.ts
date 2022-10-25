@@ -32,7 +32,10 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
       rowSelection: 'single',
       rowBuffer: 0,
       columnDefs: [
-        {
+        this.colDef({
+          colId: 'icon',
+          headerValueGetter: () => 'Icon',
+          resizable: false,
           sortable: false,
           filter: false,
           pinned: true,
@@ -50,8 +53,10 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
             })
           })
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'name',
+          headerValueGetter: () => 'Name',
           width: 250,
           headerName: 'Name',
           valueGetter: this.valueGetter(({ data }) => {
@@ -61,8 +66,10 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
             return this.i18n.get(data.$item?.Name)
           }),
           getQuickFilterText: ({ value }) => value,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'ingredients',
+          headerValueGetter: () => 'Ingredients',
           width: 200,
           sortable: false,
           headerName: 'Ingredients',
@@ -97,57 +104,59 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
               })
             },
           }),
-        },
-        {
-          headerName: 'User Data',
-          children: [
-            {
-              width: 100,
-              headerName: 'Bookmark',
-              cellClass: 'cursor-pointer',
-              filter: ItemTrackerFilter,
-              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(getItemId(data.$item))?.mark || 0),
-              cellRenderer: BookmarkCell,
-              cellRendererParams: BookmarkCell.params({
-                getId: (data: RecipeWithItem) => getItemId(data.$item),
-                pref: this.nw.itemPref
-              }),
-            },
-            {
-              headerName: 'Owned',
-              headerTooltip: 'Number of items currently owned',
-              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(getItemId(data.$item))?.stock),
-              cellRenderer: TrackingCell,
-              cellRendererParams: TrackingCell.params({
-                getId: (data: RecipeWithItem) => getItemId(data.$item),
-                pref: this.nw.itemPref,
-                mode: 'stock',
-                class: 'text-right',
-              }),
-              width: 90,
-            },
-            {
-              headerName: 'Price',
-              headerTooltip: 'Current price in Trading post',
-              cellClass: 'text-right',
-              valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(getItemId(data.$item))?.price),
-              cellRenderer: TrackingCell,
-              cellRendererParams: TrackingCell.params({
-                getId: (data: RecipeWithItem) => getItemId(data.$item),
-                pref: this.nw.itemPref,
-                mode: 'price',
-                formatter: this.moneyFormatter,
-              }),
-              width: 100,
-            },
-          ],
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'userBookmark',
+          headerValueGetter: () => 'Bookmark',
+          width: 100,
+          cellClass: 'cursor-pointer',
+          filter: ItemTrackerFilter,
+          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(getItemId(data.$item))?.mark || 0),
+          cellRenderer: BookmarkCell,
+          cellRendererParams: BookmarkCell.params({
+            getId: (data: RecipeWithItem) => getItemId(data.$item),
+            pref: this.nw.itemPref
+          }),
+        }),
+        this.colDef({
+          colId: 'userStock',
+          headerValueGetter: () => 'In Stock',
+          headerTooltip: 'Number of items currently owned',
+          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(getItemId(data.$item))?.stock),
+          cellRenderer: TrackingCell,
+          cellRendererParams: TrackingCell.params({
+            getId: (data: RecipeWithItem) => getItemId(data.$item),
+            pref: this.nw.itemPref,
+            mode: 'stock',
+            class: 'text-right',
+          }),
+          width: 90,
+        }),
+        this.colDef({
+          colId: 'userPrice',
+          headerValueGetter: () => 'Price',
+          headerTooltip: 'Current price in Trading post',
+          cellClass: 'text-right',
+          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(getItemId(data.$item))?.price),
+          cellRenderer: TrackingCell,
+          cellRendererParams: TrackingCell.params({
+            getId: (data: RecipeWithItem) => getItemId(data.$item),
+            pref: this.nw.itemPref,
+            mode: 'price',
+            formatter: this.moneyFormatter,
+          }),
+          width: 100,
+        }),
+        this.colDef({
+          colId: 'tradeskill',
+          headerValueGetter: () => 'Tradeskill',
           width: 120,
           field: this.fieldName('Tradeskill'),
           filter: SelectboxFilter,
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'craftingCategory',
+          headerValueGetter: () => 'Crafting Category',
           width: 150,
           field: this.fieldName('CraftingCategory'),
           valueFormatter: ({ value }) => humanize(value),
@@ -155,8 +164,10 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           filterParams: SelectboxFilter.params({
             showSearch: true,
           }),
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'craftingGroup',
+          headerValueGetter: () => 'Crafting Group',
           width: 150,
           field: this.fieldName('CraftingGroup'),
           filter: SelectboxFilter,
@@ -164,19 +175,21 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           filterParams: SelectboxFilter.params({
             showSearch: true,
           }),
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'recipeLevel',
+          headerValueGetter: () => 'Recipe Level',
           width: 120,
-          headerName: 'Recipe Level',
           field: this.fieldName('RecipeLevel'),
           filter: RangeFilter,
           cellStyle: {
             'text-align': 'right',
           },
-        },
-        {
+        }),
+        this.colDef({
+          colId: 'bonusItemChance',
+          headerValueGetter: () => 'Bonus Chance',
           width: 120,
-          headerName: 'Bonus Chance',
           field: this.fieldName('BonusItemChance'),
           valueGetter: this.valueGetter(({ data }) => Math.round((data.BonusItemChance || 0) * 100)),
           valueFormatter: ({ value }) => `${value}%`,
@@ -184,7 +197,7 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           cellStyle: {
             'text-align': 'right',
           },
-        },
+        }),
       ],
     })
   )

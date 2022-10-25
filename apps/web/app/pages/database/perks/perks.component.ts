@@ -7,6 +7,7 @@ import { firstValueFrom } from 'rxjs'
 import { NwModule } from '~/nw'
 import { CharacterPreferencesService } from '~/preferences'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
+import { NavToobalModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule } from '~/ui/quicksearch'
 import { PerksTableAdapter } from '~/widgets/adapter'
 import { ExprContextService } from '~/widgets/adapter/exp-context.service'
@@ -16,7 +17,7 @@ import { ExprContextService } from '~/widgets/adapter/exp-context.service'
   selector: 'nwb-perks-page',
   templateUrl: './perks.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, FormsModule, OverlayModule, NwModule, QuicksearchModule, DataTableModule],
+  imports: [CommonModule, RouterModule, FormsModule, OverlayModule, NwModule, QuicksearchModule, DataTableModule, NavToobalModule],
   host: {
     class: 'layout-col bg-base-300 rounded-md overflow-clip',
   },

@@ -1,6 +1,6 @@
 <div class="flex-none flex flex-row bg-base-300 rounded-t-md">
-  <nwb-tab-menu class="bg-base-300 rounded-t-md flex-1">
-    <ng-template>
+  <nwb-nav-toolbar class="bg-base-300 rounded-t-md flex-1" [menu]="tplMenu">
+    <ng-template #tplMenu>
       <li [routerLinkActive]="'bordered'" >
         <a [routerLink]="'list'">Territories</a>
       </li>
@@ -11,7 +11,7 @@
         <a [routerLink]="'governance'">Governance</a>
       </li>
     </ng-template>
-  </nwb-tab-menu>
+  </nwb-nav-toolbar>
   <div class="flex-none p-2 max-w-[50%]">
     <nwb-quicksearch-input #search></nwb-quicksearch-input>
   </div>

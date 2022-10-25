@@ -1,0 +1,32 @@
+<div class="btn-group mx-auto">
+  <!-- <button class="btn btn-ghost btn-sm tooltip tooltip-info normal-case" (click)="exportCsv()" data-tip="Export CSV">
+    <nwb-icon [icon]="svgFileCsv" class="w-4 h-4"></nwb-icon>
+  </button> -->
+  <button class="btn btn-ghost btn-sm tooltip tooltip-info normal-case" (click)="autosizeColumns()" data-tip="Autosize columns">
+    <nwb-icon [icon]="svgArrowsLeftRight" class="w-4 h-4"></nwb-icon>
+  </button>
+  <!-- <button class="btn btn-ghost btn-sm tooltip tooltip-info normal-case" (click)="sizeToFit()" data-tip="Size columns to fit">
+    <nwb-icon [icon]="svgArrowsLeftRight" class="w-4 h-4"></nwb-icon>
+  </button> -->
+  <button class="btn btn-ghost btn-sm tooltip tooltip-info normal-case" (click)="resetColumsn()" data-tip="Reset columns">
+    <nwb-icon [icon]="svgEraser" class="w-4 h-4"></nwb-icon>
+  </button>
+
+</div>
+
+<div class="divider my-0"></div>
+
+<div *ngFor="let it of columns | async" class="flex flex-row gap-2">
+  <div class="btn-group">
+    <button class="btn btn-ghost btn-sm px-1" (click)="toggleHide(it.colId)" >
+      <nwb-icon [icon]="it.hide ? svgEyeSlash : svgEye" class="w-4 h-4" [class.opacity-10]="it.hide"></nwb-icon>
+    </button>
+    <button class="btn btn-ghost btn-sm px-1" (click)="togglePinLeft(it.colId)">
+      <nwb-icon [icon]="svgDockLeft" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'left'"></nwb-icon>
+    </button>
+    <button class="btn btn-ghost btn-sm px-1" (click)="togglePinRight(it.colId)">
+      <nwb-icon [icon]="svgDockRight" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'right'"></nwb-icon>
+    </button>
+  </div>
+  <span class="whitespace-nowrap truncate" [class.opacity-10]="it.hide">{{ it.name || it.colId }}</span>
+</div>
