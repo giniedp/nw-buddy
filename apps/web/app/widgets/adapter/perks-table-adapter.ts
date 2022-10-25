@@ -10,7 +10,7 @@ import { humanize, shareReplayRefCount } from '~/utils'
 import { TranslateService } from '~/i18n'
 import { getPerksInherentMODs, hasPerkInherentAffix } from '~/nw/utils'
 import { ExprContextService } from './exp-context.service'
-import { NW_MAX_GEAR_SCORE, NW_MAX_GEAR_SCORE_BASE } from '~/nw/utils/constants'
+import { NW_MAX_GEAR_SCORE, NW_MAX_GEAR_SCORE_BASE, NW_MAX_WEAPON_LEVEL } from '~/nw/utils/constants'
 
 @Injectable()
 export class PerksTableAdapterConfig {
@@ -169,22 +169,28 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
           children: [
             this.colDef({
               colId: 'itemClassGSBonusClass',
-              headerValueGetter: 'Class',
+              headerValueGetter: () => 'Class',
               valueGetter: this.valueGetter(({ data }) => {
                 return data.ItemClassGSBonus?.split(':')[0]
               }),
               width: 90,
+              minWidth: 90,
+              maxWidth: 90,
+              resizable: false,
               filter: SelectboxFilter,
             }),
             this.colDef({
               colId: 'itemClassGSBonusGS',
-              headerValueGetter: 'GS',
+              headerValueGetter: () => 'GS',
               headerName: 'GS',
               valueGetter: this.valueGetter(({ data }) => {
                 return data.ItemClassGSBonus?.split(':')[1]
               }),
               width: 50,
-              filter: false,
+              minWidth: 50,
+              maxWidth: 50,
+              resizable: false,
+
             }),
           ],
         },

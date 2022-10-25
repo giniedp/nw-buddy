@@ -1,0 +1,9 @@
+<nwb-data-table
+  #table
+  [persistStateId]="'loot-limits-table'"
+  [detailRoutParam]="'id'"
+  [quickFilter]="search.query | async"
+  class="flex-1 rounded-md overflow-clip"
+></nwb-data-table>
+
+<router-outlet></router-outlet>

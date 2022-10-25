@@ -14,6 +14,7 @@ import type {
   Gatherables,
   VariationsLockedInteractGatherables,
   Housingitems,
+  Housetypes,
   ItemdefinitionsConsumables,
   ItemdefinitionsResources,
   ItemdefinitionsWeapons,
@@ -209,6 +210,9 @@ export abstract class NwDataloader {
   }
   public housingitems() {
     return this.load<Housingitems[]>('javelindata_housingitems.json')
+  }
+  public housetypes() {
+    return this.load<Housetypes[]>('javelindata_housetypes.json')
   }
   public itemdefinitionsConsumables() {
     return this.load<ItemdefinitionsConsumables[]>('javelindata_itemdefinitions_consumables.json')

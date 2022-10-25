@@ -37,6 +37,7 @@ program
         '*_gamemodes',
         '*_gatherables',
         '*_housingitems',
+        '*_housetypes',
         '*_itemdefinitions_consumables',
         '*_itemdefinitions_master_*',
         '*_itemdefinitions_resources',

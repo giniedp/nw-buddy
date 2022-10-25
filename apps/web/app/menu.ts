@@ -12,6 +12,7 @@ export const MAIN_MENU = [
 
       { label: 'Points Of Interest', path: '/poi', divider: true },
       { label: 'Vitals', path: '/vitals' },
+      { label: 'Loot Limits', path: '/loot-limits' },
     ]
   },
   {

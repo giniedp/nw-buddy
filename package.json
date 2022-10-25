@@ -71,6 +71,7 @@
     "@tailwindcss/typography": "0.5.7",
     "@types/cli-progress": "3.11.0",
     "@types/compression": "1.7.2",
+    "@types/date-fns": "2.6.0",
     "@types/file-saver": "2.0.5",
     "@types/jasmine": "4.3.0",
     "@types/jasminewd2": "2.0.10",
@@ -135,6 +136,7 @@
   ],
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "6.2.0",
-    "@fortawesome/free-solid-svg-icons": "6.2.0"
+    "@fortawesome/free-solid-svg-icons": "6.2.0",
+    "date-fns": "2.29.3"
   }
 }

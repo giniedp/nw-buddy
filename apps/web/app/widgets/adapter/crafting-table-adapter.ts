@@ -11,6 +11,7 @@ import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
+import { addSeconds, formatDistanceStrict } from 'date-fns'
 
 export type RecipeWithItem = Crafting & {
   $item: ItemDefinitionMaster | Housingitems
@@ -50,9 +51,9 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
               href: nwdbLinkUrl('item', getItemId(item)),
               icon: getItemIconPath(item),
               rarity: getItemRarity(item),
-              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
-          })
+          }),
         }),
         this.colDef({
           colId: 'name',
@@ -84,9 +85,9 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
                   target: '_blank',
                   href: nwdbLinkUrl('item', getItemId(item)),
                   icon: getItemIconPath(item),
-                  iconClass: ['transition-all', 'scale-90', 'hover:scale-110']
+                  iconClass: ['transition-all', 'scale-90', 'hover:scale-110'],
                 })
-              })
+              }),
             })
           }),
           filter: SelectboxFilter,
@@ -115,7 +116,7 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           cellRenderer: BookmarkCell,
           cellRendererParams: BookmarkCell.params({
             getId: (data: RecipeWithItem) => getItemId(data.$item),
-            pref: this.nw.itemPref
+            pref: this.nw.itemPref,
           }),
         }),
         this.colDef({
@@ -197,6 +198,33 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           cellStyle: {
             'text-align': 'right',
           },
+        }),
+        this.colDef({
+          colId: 'cooldownQuantity',
+          headerValueGetter: () => 'Cooldown Quantity',
+          field: this.fieldName('CooldownQuantity'),
+          filter: RangeFilter,
+          valueFormatter: ({ value }) => {
+            return value ? value : ''
+          },
+          cellStyle: {
+            'text-align': 'right',
+          },
+          width: 130,
+        }),
+        this.colDef({
+          colId: 'cooldownSeconds',
+          headerValueGetter: () => 'Cooldown Time',
+          field: this.fieldName('CooldownSeconds'),
+          valueFormatter: ({ value }) => {
+            if (!value) {
+              return ''
+            }
+            const now = new Date()
+            const then = addSeconds(now, value)
+            return formatDistanceStrict(now, then)
+          },
+          width: 130,
         }),
       ],
     })

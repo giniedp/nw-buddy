@@ -3,5 +3,8 @@ export type NwdbResource = 'item' | 'resource' | 'recipe' | 'ability' | 'perk' |
 
 export function nwdbLinkUrl(itemType: NwdbResource, itemId: string) {
   const prefix = environment.isPTR ? 'ptr.' : ''
-  return `https://${prefix}nwdb.info/db/${itemType}/${encodeURIComponent(itemId)}`
+  if (itemType && itemId) {
+    return `https://${prefix}nwdb.info/db/${itemType}/${encodeURIComponent(itemId)}`
+  }
+  return ''
 }

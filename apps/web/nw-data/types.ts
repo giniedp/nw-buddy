@@ -636,6 +636,15 @@ export interface Housingitems {
     UiItemClass:                 string;
     Weight:                      number;
 }
+export interface Housetypes {
+    Cost:                                             number;
+    "Fast Travel Cooldown Time (Minutes)":            number;
+    HouseTypeID:                                      string;
+    "Housing Tag Limits":                             string;
+    "Localization Tag":                               string;
+    "Max Number Total Housing Items (Without Perks)": number;
+    "Territory Standing Required Level":              number;
+}
 export interface ItemdefinitionsConsumables {
     AddStatusEffects?:             string;
     ConsumableID:                  string;

@@ -18,6 +18,7 @@ export const ROUTES: Routes = [
     loadChildren: () => import('./pages/database/status-effects').then((m) => m.StatusEffectsModule),
   },
   { path: 'vitals', loadChildren: () => import('./pages/database/vitals').then((m) => m.VitalsModule) },
+  { path: 'loot-limits', loadChildren: () => import('./pages/database/loot-limits').then((m) => m.LootLimitsModule) },
 
   { path: 'armorsets', loadChildren: () => import('./pages/tools/armorsets').then((m) => m.ArmorsetsModule) },
   { path: 'dungeons', loadChildren: () => import('./pages/tools/dungeons').then((m) => m.DungeonsModule) },
