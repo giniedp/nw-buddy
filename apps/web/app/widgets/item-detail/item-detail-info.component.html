@@ -20,7 +20,7 @@
     <span class="text-zinc-500">Max Stack:</span> <span class="text-white"> {{ text }}</span>
   </div>
   <div *ngIf="vm.ingredientTypes?.length" class="font-bold">
-    <span class="text-zinc-500"> {{ 'ui_tooltip_ingredient_types' | nwText }}: </span>
+    <span class="text-zinc-500"> {{ 'ui_tooltip_ingredient_types' | nwText }} </span>
     <span class="text-white">
       <ng-container *ngFor="let it of vm.ingredientTypes; let last = last">
         {{ it.DisplayText | nwText }}<ng-container *ngIf="!last">,</ng-container>
