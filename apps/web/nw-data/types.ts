@@ -191,6 +191,7 @@ export interface Crafting {
     MaxPerkItemsAllowed:                 number;
     OutputQty:                           number;
     PerkCost:                            number;
+    PerkItemsBucketPush:                 boolean;
     ProceduralTierID1?:                  string;
     ProceduralTierID2?:                  string;
     ProceduralTierID3?:                  string;
@@ -1024,7 +1025,9 @@ export interface Lootbuckets {
     Item262?:        string;
     Item263?:        string;
     Item264?:        string;
+    Item267?:        string;
     Item27?:         string;
+    Item270?:        string;
     Item28?:         string;
     Item29?:         string;
     Item3?:          string;
@@ -1283,7 +1286,9 @@ export interface Lootbuckets {
     LootBucket262?:  string;
     LootBucket263?:  string;
     LootBucket264?:  string;
+    LootBucket267?:  string;
     LootBucket27?:   string;
+    LootBucket270?:  string;
     LootBucket28?:   string;
     LootBucket29?:   string;
     LootBucket3?:    string;
@@ -1542,7 +1547,9 @@ export interface Lootbuckets {
     MatchOne262?:    string;
     MatchOne263?:    string;
     MatchOne264?:    string;
+    MatchOne267?:    string;
     MatchOne27?:     string;
+    MatchOne270?:    string;
     MatchOne28?:     string;
     MatchOne29?:     string;
     MatchOne3?:      string;
@@ -1804,7 +1811,9 @@ export interface Lootbuckets {
     Quantity262:     number;
     Quantity263:     number;
     Quantity264:     number;
+    Quantity267:     number;
     Quantity27:      number;
+    Quantity270:     number;
     Quantity28:      number;
     Quantity29:      number;
     Quantity3:       number;
@@ -2054,7 +2063,9 @@ export interface Lootbuckets {
     Tags262?:        string[];
     Tags263?:        string[];
     Tags264?:        string[];
+    Tags267?:        string[];
     Tags27?:         string[];
+    Tags270?:        string[];
     Tags28?:         string[];
     Tags29?:         string[];
     Tags3?:          string[];
@@ -2175,7 +2186,7 @@ export interface Loottable {
     GearScoreRange8?:        string;
     GearScoreRange9?:        string;
     HWMMult?:                number;
-    Item1:                   string;
+    Item1?:                  string;
     Item10?:                 string;
     Item11?:                 string;
     Item12?:                 string;
