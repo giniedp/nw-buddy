@@ -17,7 +17,9 @@
 ></nwb-data-table>
 
 <div class="modal-action">
-  <label class="btn btn-sm btn-outline btn-error" (click)="close()">Cancel</label>
-  <label class="btn btn-sm btn-outline btn-success" (click)="clear()">Clear selection</label>
-  <label class="btn btn-sm btn-success" (click)="commit()">OK</label>
+  <div class="btn-group">
+    <label class="btn btn-sm btn-ghost" (click)="close()">Cancel</label>
+    <label class="btn btn-sm btn-outline btn-success" (click)="clear()">Clear selection</label>
+    <label class="btn btn-sm btn-success" (click)="commit()">OK</label>
+  </div>
 </div>

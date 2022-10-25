@@ -1,7 +1,7 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Injector, Input, QueryList, ViewChildren } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, Input, QueryList, ViewChildren } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ItemDefinitionMaster, Perkbuckets } from '@nw-data/types'
 import {
@@ -116,7 +116,8 @@ export class GearSlotComponent {
     private db: NwDbService,
     private dialog: Dialog,
     private injector: Injector,
-    private store: GearbuilderStore
+    private store: GearbuilderStore,
+    private cdRef: ChangeDetectorRef
   ) {
     //
   }
@@ -167,6 +168,7 @@ export class GearSlotComponent {
           }
           return data
         })
+        this.cdRef.detectChanges()
       })
   }
 
@@ -190,6 +192,7 @@ export class GearSlotComponent {
           data.items[slotId].perks[detail.key] = value
           return data
         })
+        this.cdRef.detectChanges()
       })
   }
 
@@ -213,6 +216,8 @@ export class GearSlotComponent {
         ],
         parent: this.injector,
       }),
+      maxWidth: 1400,
+      maxHeight: 1200,
       panelClass: ['w-full', 'h-full'],
     })
   }
@@ -228,6 +233,8 @@ export class GearSlotComponent {
         ],
         parent: this.injector,
       }),
+      maxWidth: 1400,
+      maxHeight: 1200,
       panelClass: ['w-full', 'h-full'],
     })
   }
