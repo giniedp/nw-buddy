@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { environment } from 'apps/web/environments/environment'
+import { sortBy } from 'lodash'
 import { catchError, defer, exhaustMap, filter, map, of, timer } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
 
@@ -28,6 +29,7 @@ export class UpdateAlertService {
 }
 
 function extractLatesRelease(data: Release[]) {
+  data = sortBy(data, (it) => it.published_at).reverse()
   for (const release of data) {
     if (release.draft || release.prerelease) {
       continue
