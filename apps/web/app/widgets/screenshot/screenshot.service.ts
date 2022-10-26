@@ -44,10 +44,17 @@ export class ScreenshotService {
       it.setAttribute('loading', 'eager')
       it.classList.add('show')
     })
+    const hiddenElements = el.querySelectorAll<HTMLElement>('.screenshot-hidden')
+    hiddenElements.forEach((it) => {
+      it.style.visibility = 'hidden'
+    })
     await new Promise((resolve) => setTimeout(resolve, 1000))
     const result = await toBlob(frame.elementRef.nativeElement)
     lazyElements.forEach((it) => {
       it.setAttribute('loading', 'lazy')
+    })
+    hiddenElements.forEach((it) => {
+      it.style.visibility = null
     })
     await new Promise((resolve) => setTimeout(resolve))
     return result

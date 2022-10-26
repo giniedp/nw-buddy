@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Injectable } from '@angular/core'
 import { Affixstats, ItemDefinitionMaster, Perkbuckets, Perks, Craftingcategories } from '@nw-data/types'
+import { sortBy } from 'lodash'
 import { BehaviorSubject, combineLatest, defer, map, Observable, of, ReplaySubject, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import {
