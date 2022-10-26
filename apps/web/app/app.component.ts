@@ -1,4 +1,5 @@
-import { Component, HostBinding } from '@angular/core'
+import { DOCUMENT } from '@angular/common'
+import { Component, HostBinding, Inject } from '@angular/core'
 import { sortBy } from 'lodash'
 import { environment } from '../environments/environment'
 
@@ -40,8 +41,16 @@ export class AppComponent {
   constructor(
     private preferences: AppPreferencesService,
     private electron: ElectronService,
+    @Inject(DOCUMENT)
+    document: Document,
     translate: TranslateService
   ) {
     preferences.language.observe().subscribe((locale) => translate.use(locale))
+    if (this.isWeb) {
+      document.body.classList.add('is-web')
+    }
+    if (this.isElectron) {
+      document.body.classList.add('is-electron')
+    }
   }
 }
