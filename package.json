@@ -19,6 +19,7 @@
     "build:web": "ng build --base-href ./",
     "build:web:electron": "yarn build:web -c electron",
     "build:web:capacitor": "yarn build:web -c capacitor",
+    "build:server": "ng run nw-buddy:server:production",
     "build:electron": "yarn electron:tsc",
     "ssr:dev": "ng run nw-buddy:serve-ssr",
     "ssr:serve": "node dist/server/main.js",
@@ -34,7 +35,12 @@
     "nw-extract": "ts-node ./tools/nw-extract.ts",
     "cap:sync": "npx cap sync",
     "cap:android:open": "npx cap open android",
-    "cap:android:run": "npx cap run android"
+    "cap:android:run": "npx cap run android",
+    "docker:build": "yarn build:web && yarn build:server && yarn docker:build:image",
+    "docker:build:image": "docker build -f Dockerfile -t nw-buddy:latest .",
+    "docker:stop": "docker-compose -f ./docker-compose.yml -p nw-buddy stop",
+    "docker:start": "docker-compose -f ./docker-compose.yml -p nw-buddy up -d",
+    "docker:restart": "yarn docker:stop && yarn docker:start"
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "14.0.1",
@@ -113,7 +119,6 @@
     "nanoid": "4.0.0",
     "node-polyfill-webpack-plugin": "2.0.1",
     "npm-run-all": "4.1.5",
-    "nw-extract": "1.1.0",
     "papaparse": "5.3.2",
     "postcss": "8.4.17",
     "quicktype": "15.1.0",
@@ -138,5 +143,8 @@
     "@fortawesome/fontawesome-svg-core": "6.2.0",
     "@fortawesome/free-solid-svg-icons": "6.2.0",
     "date-fns": "2.29.3"
+  },
+  "peerDependencies": {
+    "nw-extract": "1.1.0"
   }
 }

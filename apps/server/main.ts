@@ -6,7 +6,7 @@ import { app } from './app'
 
 program
   .version('0.0.0')
-  .option('--host [host]', 'The listening hostname', 'localhost')
+  .option('--host [host]', 'The listening hostname', '0.0.0.0')
   .option('--port [port]', 'The listening port', process.env['PORT'] || '4200')
   .option('--dir [dir]', 'The public directory with angular app', join('..', 'web'))
   .option('--storybook [storybook]', 'The public directory with storybook app', join('..', 'storybook'))
