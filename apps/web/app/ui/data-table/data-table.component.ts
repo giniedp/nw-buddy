@@ -193,6 +193,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       Events.EVENT_COLUMN_PINNED,
       Events.EVENT_COLUMN_VISIBLE,
       Events.EVENT_COLUMN_RESIZED,
+      Events.EVENT_SORT_CHANGED,
     ])
       .pipe(debounceTime(500))
       .pipe(takeUntil(this.destroy.$))
@@ -200,7 +201,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
         this.saveColumnState()
       })
 
-    this.mergeEvents([Events.EVENT_FILTER_CHANGED, Events.EVENT_SORT_CHANGED])
+    this.mergeEvents([Events.EVENT_FILTER_CHANGED])
       .pipe(debounceTime(500))
       .pipe(takeUntil(this.destroy.$))
       .subscribe(() => {
