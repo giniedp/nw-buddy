@@ -1,10 +1,11 @@
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ElementRef, ViewChild } from '@angular/core'
-import { Subject, takeUntil } from 'rxjs';
+import { defer, Subject, takeUntil } from 'rxjs';
 import { Hotkeys } from '~/utils';
 import { QuicksearchService } from './quicksearch.service';
 
 @Component({
   selector: 'nwb-quicksearch-input',
+  exportAs: 'quickSearch',
   templateUrl: './quicksearch-input.component.html',
   styleUrls: ['./quicksearch-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -21,6 +22,8 @@ export class QuicksearchInputComponent implements OnInit, OnDestroy {
   public set value(v: string) {
     this.search.value = v
   }
+
+  public readonly value$ = defer(() => this.search.query)
 
   @ViewChild('input')
   public input: ElementRef<HTMLInputElement>

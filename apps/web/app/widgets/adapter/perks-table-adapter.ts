@@ -15,6 +15,7 @@ import { NW_MAX_GEAR_SCORE, NW_MAX_GEAR_SCORE_BASE, NW_MAX_WEAPON_LEVEL } from '
 @Injectable()
 export class PerksTableAdapterConfig {
   source: Observable<Perks[]>
+  persistStateId?: string
 }
 
 @Injectable()
@@ -37,6 +38,9 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
 
   public entityCategory(item: Perks): string {
     return item.PerkType
+  }
+  public override get persistStateId(): string {
+    return this.config?.persistStateId
   }
 
   public options = defer(() =>

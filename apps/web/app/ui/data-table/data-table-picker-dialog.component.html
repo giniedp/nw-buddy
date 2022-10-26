@@ -1,25 +1,33 @@
-<input
-  type="text"
-  placeholder="search..."
-  [(ngModel)]="search"
-  class="input input-bordered w-full mb-2"
-  [disabled]="disabled"
-/>
+<div class="flex flex-row">
+  <div class="flex-1"></div>
+  <div class="flex-none flex justify-center items-center">
+    <nwb-quicksearch-input #search="quickSearch" class="w-60"></nwb-quicksearch-input>
+  </div>
+  <div class="flex-1 flex justify-end">
+    <ul class="menu  menu-horizontal">
+      <li>
+        <nwb-data-table-panel-button></nwb-data-table-panel-button>
+      </li>
+    </ul>
+  </div>
+</div>
 
 <nwb-data-table
   *ngIf="adapter"
   #table
   [adapter]="adapter"
-  [quickFilter]="search"
+  [quickFilter]="search.value$ | async"
   (selection)="onSelectionChange($event)"
   (rowDoubleClick)="onRowDoubleClick($event)"
   class="flex-1 rounded-md overflow-clip"
 ></nwb-data-table>
 
-<div class="modal-action">
+<div class="flex justify-between">
   <div class="btn-group">
-    <label class="btn btn-sm btn-ghost" (click)="close()">Cancel</label>
-    <label class="btn btn-sm btn-outline btn-success" (click)="clear()">Clear selection</label>
-    <label class="btn btn-sm btn-success" (click)="commit()">OK</label>
+    <label class="btn btn-sm text-error" (click)="close()">Cancel</label>
+  </div>
+  <div class="btn-group">
+    <label class="btn btn-sm " (click)="clear()">Clear selection</label>
+    <label class="btn btn-sm text-success" (click)="commit()">OK</label>
   </div>
 </div>

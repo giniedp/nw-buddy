@@ -140,6 +140,10 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     return this.adapter$.value
   }
 
+  protected get persistKey() {
+    return this.persistStateId || this.adapter?.persistStateId
+  }
+
   private adapter$ = new BehaviorSubject<DataTableAdapter<T>>(null)
   private gridReady$ = new ReplaySubject<GridReadyEvent>(1)
   private gridSelectionChanged$ = new ReplaySubject<T[]>(1)
@@ -304,7 +308,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   public saveColumnState() {
-    const key = this.persistStateId
+    const key = this.persistKey
     const api = this.colApi
     if (!key || !api) {
       return
@@ -314,7 +318,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   private writeColumnState(state: ColumnState[]) {
-    const key = this.persistStateId
+    const key = this.persistKey
     const api = this.colApi
     if (!key || !api) {
       return
@@ -331,7 +335,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   private saveFilterState() {
-    const key = this.persistStateId
+    const key = this.persistKey
     const api = this.gridApi
     if (!key || !api) {
       return
@@ -343,7 +347,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   private loadColumnState() {
-    const key = this.persistStateId
+    const key = this.persistKey
     const api = this.colApi
     if (!key || !api) {
       return
@@ -355,7 +359,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   private loadFilterState() {
-    const key = this.persistStateId
+    const key = this.persistKey
     const api = this.gridApi
     if (!key || !api) {
       return

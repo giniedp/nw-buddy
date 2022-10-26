@@ -212,6 +212,7 @@ export class GearSlotComponent {
           ItemsTableAdapter.provider({
             hideUserData: true,
             source: src$,
+            persistStateId: 'item-picker-table'
           }),
         ],
         parent: this.injector,
@@ -229,6 +230,7 @@ export class GearSlotComponent {
         providers: [
           PerksTableAdapter.provider({
             source: this.getAplicablePerks(detail),
+            persistStateId: 'perk-picker-table'
           }),
         ],
         parent: this.injector,

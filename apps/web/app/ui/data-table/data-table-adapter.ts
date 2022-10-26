@@ -30,6 +30,9 @@ export abstract class DataTableAdapter<T> {
   public abstract entities: Observable<T[]>
   public readonly category = new BehaviorSubject<string>(null)
   public readonly grid = defer(() => this.grid$)
+  public get persistStateId(): string {
+    return null
+  }
 
   private grid$ = new ReplaySubject<AgGridCommon<any>>(1)
   public setGrid(grid: AgGridCommon<any>) {

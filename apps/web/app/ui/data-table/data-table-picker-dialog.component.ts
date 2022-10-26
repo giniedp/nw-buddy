@@ -4,7 +4,9 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, Inject, Input, ViewC
 import { FormsModule } from '@angular/forms'
 import { Optional } from 'ag-grid-community'
 import { NwModule } from '~/nw'
+import { QuicksearchModule, QuicksearchService } from '../quicksearch'
 import { DataTableAdapter } from './data-table-adapter'
+import { DataTablePanelButtonComponent } from './data-table-panel-button.component'
 import { DataTableComponent } from './data-table.component'
 
 @Component({
@@ -12,9 +14,10 @@ import { DataTableComponent } from './data-table.component'
   selector: 'nwb-data-table-picker-dialog',
   templateUrl: './data-table-picker-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, DataTableComponent],
+  imports: [CommonModule, NwModule, FormsModule, DataTableComponent, DataTablePanelButtonComponent, QuicksearchModule],
+  providers: [QuicksearchService],
   host: {
-    class: 'flex flex-col h-full bg-base-300 rounded-md p-3',
+    class: 'flex flex-col gap-3 layout-pad h-full bg-base-300 rounded-md',
   },
 })
 export class DataTablePickerDialog implements AfterViewInit {

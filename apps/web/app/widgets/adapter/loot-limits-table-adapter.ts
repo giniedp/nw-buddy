@@ -1,17 +1,13 @@
-import { Injectable, Optional } from '@angular/core'
-import { Housingitems, ItemDefinitionMaster, Lootlimits, Perks } from '@nw-data/types'
+import { Injectable } from '@angular/core'
+import { Housingitems, ItemDefinitionMaster, Lootlimits } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { addSeconds, formatDistance, formatDistanceStrict, formatDuration } from 'date-fns'
-import m from 'mithril'
+import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl, NwService } from '~/nw'
-import { getItemIconPath, getItemId, getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman } from '~/nw/utils'
-import { AgGridComponent, RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
+import { nwdbLinkUrl, NwDbService, NwService } from '~/nw'
+import { getItemIconPath, getItemId, getItemRarity } from '~/nw/utils'
 import { DataTableAdapter } from '~/ui/data-table'
-import { humanize, shareReplayRefCount } from '~/utils'
-import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
-import { BookmarkCell, TrackingCell } from './components'
+import { shareReplayRefCount } from '~/utils'
 
 export type TableItem = Lootlimits & {
   $item: ItemDefinitionMaster | Housingitems
@@ -107,9 +103,9 @@ export class LootLimitsTableAdapter extends DataTableAdapter<TableItem> {
 
   public entities: Observable<TableItem[]> = defer(() => {
     return combineLatest({
-      items: this.nw.db.itemsMap,
-      housing: this.nw.db.housingItemsMap,
-      limits: this.nw.db.lootLimits
+      items: this.db.itemsMap,
+      housing: this.db.housingItemsMap,
+      limits: this.db.lootLimits
     })
       .pipe(map(({ items, housing, limits }) => {
         return limits.map((it): TableItem => {
@@ -124,7 +120,7 @@ export class LootLimitsTableAdapter extends DataTableAdapter<TableItem> {
   )
 
   public constructor(
-    private nw: NwService,
+    private db: NwDbService,
     private i18n: TranslateService,
   ) {
     super()
