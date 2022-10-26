@@ -172,6 +172,7 @@
         })
 
       function findWindowsUrl(data) {
+        data.sort((a, b) => a.published_at > b.published_at ? -1 : 1)
         for (const release of data) {
           if (release.draft || release.prerelease) {
             continue
