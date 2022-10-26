@@ -39,8 +39,12 @@ export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPer
   return Math.min(rarity, 4)
 }
 
-export function getItemRarityName(item: ItemDefinitionMaster | Housingitems | number) {
-  item = typeof item === 'number' ? item : getItemRarity(item)
+export function getItemRarityName(item: ItemDefinitionMaster | Housingitems | number | string) {
+  if (typeof item === 'number' || typeof item === 'string') {
+    //
+  } else {
+    item = getItemRarity(item)
+  }
   return `RarityLevel${item}_DisplayName`
 }
 

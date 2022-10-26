@@ -16,7 +16,7 @@ export class ItemTrackerFilter implements IFilterComp {
       color: 'bg-green-400'
     }
   ]
-  private state: Map<number, boolean> = new Map()
+  private state: Set<number> = new Set()
   private params: IFilterParams
 
   public init(params: IFilterParams) {
@@ -33,7 +33,7 @@ export class ItemTrackerFilter implements IFilterComp {
   public doesFilterPass(params: IDoesFilterPassParams) {
     const value = this.getValue(params.node, params.data)
     return value && this.options.some((opt) => {
-      return this.state.get(value & opt.value)
+      return this.state.has(value & opt.value)
     })
   }
 
@@ -41,12 +41,15 @@ export class ItemTrackerFilter implements IFilterComp {
     return Array.from(this.state.values()).some((it) => !!it)
   }
 
-  public getModel() {
-    return new Array(this.state.entries())
+  public getModel(): number[] {
+    const result = Array.from(this.state.values())
+    return result.length ? result : null
   }
 
-  public setModel(state: Array<[any, boolean]>) {
-    this.state = new Map(state)
+  public setModel(state: number[]) {
+    state = state || []
+    state = state.filter((it) => typeof it === 'number')
+    this.state = new Set(state)
   }
 
   public onNewRowsLoaded() {
@@ -68,27 +71,28 @@ export class ItemTrackerFilter implements IFilterComp {
       const a = document.createElement('a')
       li.append(a)
       a.classList.add('w-6','h-6','mask','mask-star-2', 'opacity-25', 'hover:opacity-50', it.color)
-      a.setAttribute('filter-value', `${it.value}`)
+      a.setAttribute('data-value', `${it.value}`)
       a.addEventListener('click', () => this.toggleFilter(it.value))
     })
   }
 
   private toggleFilter(value: number) {
-    this.state.set(value, !this.state.get(value))
+    if (this.state.has(value)) {
+      this.state.delete(value)
+    } else {
+      this.state.add(value)
+    }
     this.updaFilterUI()
     this.params.filterChangedCallback()
   }
 
   private updaFilterUI() {
-    this.state.forEach((value, key) => {
-      const el = this.el.querySelector(`[filter-value="${key}"]`)
-      if (!el) {
-        return
-      }
-      if (value) {
-        el.classList.remove('opacity-25', 'hover:opacity-50')
+    this.el.querySelectorAll<HTMLElement>(`[data-value]`).forEach((it) => {
+      const value = it.dataset['value']
+      if (this.state.has(Number(value))) {
+        it.classList.remove('opacity-25', 'hover:opacity-50')
       } else {
-        el.classList.add('opacity-25', 'hover:opacity-50')
+        it.classList.add('opacity-25', 'hover:opacity-50')
       }
     })
   }

@@ -3,9 +3,10 @@ import m from 'mithril'
 import { humanize } from '~/utils'
 
 export interface SelectFilterOption {
+  id: string
   label: string
   icon?: string
-  value: any
+  //value: any
 }
 export interface SelectboxFilterParams {
   showCondition?: boolean
@@ -27,7 +28,7 @@ export class SelectboxFilter implements IFilterComp {
   private searchQuery: string
   private showCondition: boolean
   private showSearch: boolean
-  private state: Map<any, boolean> = new Map()
+  private state: Set<string> = new Set()
   private params: IFilterParams
 
   public init(params: IFilterParams & SelectboxFilterParams) {
@@ -55,8 +56,8 @@ export class SelectboxFilter implements IFilterComp {
           return {
             icon: option.icon,
             label: option.label,
-            active: this.state.get(option.value),
-            click: () => this.toggleFilter(option.value),
+            active: this.state.has(option.id),
+            click: () => this.toggleFilter(option.id),
           }
         })
         const activeOptions = allOptions.filter((it) => it.active)
@@ -131,11 +132,14 @@ export class SelectboxFilter implements IFilterComp {
   }
 
   public getModel() {
-    return new Array(this.state.entries())
+    const result = Array.from(this.state.values())
+    return result.length ? result : null
   }
 
-  public setModel(state: Array<[any, boolean]>) {
-    this.state = new Map(state)
+  public setModel(state: Array<string>) {
+    state = state || []
+    state = state.filter((it) => typeof it === 'string')
+    this.state = new Set(state)
   }
 
   public onNewRowsLoaded() {
@@ -149,8 +153,12 @@ export class SelectboxFilter implements IFilterComp {
     this.el = null
   }
 
-  private toggleFilter(value: any) {
-    this.state.set(value, !this.state.get(value))
+  private toggleFilter(id: any) {
+    if (this.state.has(id)) {
+      this.state.delete(id)
+    } else {
+      this.state.add(id)
+    }
     this.onFilterChanged()
   }
 
@@ -168,7 +176,7 @@ export class SelectboxFilter implements IFilterComp {
     const values = new Map<any, SelectFilterOption>()
     this.params.api.forEachLeafNode((node) => {
       this.optionsGetter(node).forEach((option) => {
-        values.set(option.value, option)
+        values.set(option.id, option)
       })
     })
     this.options = Array.from(values.values()).sort((a, b) => String(a.label).localeCompare(String(b.label)))
@@ -179,6 +187,7 @@ export class SelectboxFilter implements IFilterComp {
     if (Array.isArray(value)) {
       return value.map((it) => {
         return {
+          id: String(it),
           label: humanize(it),
           value: it,
         }
@@ -186,8 +195,9 @@ export class SelectboxFilter implements IFilterComp {
     }
     return [
       {
+        id: String(value),
         label: this.getLabel(node, node.data, value),
-        value: value,
+        //value: value,
       },
     ]
   }

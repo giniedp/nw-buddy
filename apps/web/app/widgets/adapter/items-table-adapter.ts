@@ -95,7 +95,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           width: 175,
           sortable: false,
           headerValueGetter: () => 'Perks',
-          field: this.fieldName('$perks'),
+          valueGetter: this.valueGetter(({ data }) => data.$perks?.map((it) => it.PerkID)),
           cellRenderer: this.cellRenderer(({ data }) => {
             const perks = data.$perks || []
             const buckets = data.$perkBuckets || []
@@ -137,8 +137,8 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
               const perks = (node.data as ItemsTableItem ).$perks || []
               return perks.map((perk) => {
                 return {
+                  id: perk.PerkID,
                   label: this.i18n.get(perk.DisplayName || perk.AppliedSuffix || perk.AppliedPrefix),
-                  value: perk,
                   icon: perk.IconPath
                 }
               })
@@ -148,7 +148,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
         this.colDef({
           colId: 'rarity',
           headerValueGetter: () => 'Rarity',
-          valueGetter: ({ data }) => getItemRarity(data),
+          valueGetter: ({ data }) => String(getItemRarity(data)),
           valueFormatter: ({ value }) => this.i18n.get(getItemRarityName(value)),
           filter: SelectboxFilter,
           width: 130,

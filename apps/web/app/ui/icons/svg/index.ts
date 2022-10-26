@@ -23,3 +23,4 @@ export const svgXmark = require('!!raw-loader!./xmark.svg').default
 export const svgDockLeft = require('!!raw-loader!./dock-left.svg').default
 export const svgDockRight = require('!!raw-loader!./dock-right.svg').default
 export const svgEraser = require('!!raw-loader!./eraser.svg').default
+export const svgFilter = require('!!raw-loader!./filter.svg').default

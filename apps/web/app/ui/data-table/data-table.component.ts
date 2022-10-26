@@ -177,13 +177,14 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     adapter: DataTableAdapter<T>,
     preferences: PreferencesService
   ) {
-    this.gridStorage = preferences.session.storageScope('grid:')
+    this.gridStorage = preferences.storage.storageScope('grid:')
     this.adapter$.next(adapter)
   }
 
   public async ngOnInit() {
     this.gridReady$.pipe(takeUntil(this.destroy.$)).subscribe((e) => {
       this.loadColumnState()
+      this.loadFilterState()
       this.adapter.setGrid(e)
     })
 
@@ -193,10 +194,17 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       Events.EVENT_COLUMN_VISIBLE,
       Events.EVENT_COLUMN_RESIZED,
     ])
-      .pipe(debounceTime(1000))
+      .pipe(debounceTime(500))
       .pipe(takeUntil(this.destroy.$))
       .subscribe(() => {
         this.saveColumnState()
+      })
+
+    this.mergeEvents([Events.EVENT_FILTER_CHANGED, Events.EVENT_SORT_CHANGED])
+      .pipe(debounceTime(500))
+      .pipe(takeUntil(this.destroy.$))
+      .subscribe(() => {
+        this.saveFilterState()
       })
 
     this.gridReady$

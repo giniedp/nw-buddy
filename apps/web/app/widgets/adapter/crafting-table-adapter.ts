@@ -74,6 +74,7 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           width: 200,
           sortable: false,
           headerName: 'Ingredients',
+          valueGetter: this.valueGetter(({ data }) => data.$ingredients?.map((it) => getItemId(it))),
           field: this.fieldName('$ingredients'),
           cellRenderer: this.cellRenderer(({ data }) => {
             const items = data.$ingredients || []
@@ -98,8 +99,8 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
               const items = (node.data as RecipeWithItem).$ingredients || []
               return items.map((item) => {
                 return {
+                  id: getItemId(item),
                   label: this.i18n.get(item.Name),
-                  value: item,
                   icon: getItemIconPath(item),
                 }
               })

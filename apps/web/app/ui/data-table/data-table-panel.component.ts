@@ -5,7 +5,7 @@ import { AgGridCommon } from 'ag-grid-community/dist/lib/interfaces/iCommon'
 import { BehaviorSubject, defer, filter, firstValueFrom, map, switchMap } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
 import { IconsModule } from '../icons'
-import { svgArrowsLeftRight, svgDockLeft, svgDockRight, svgEraser, svgEye, svgEyeSlash, svgFileCsv } from '../icons/svg'
+import { svgArrowsLeftRight, svgDockLeft, svgDockRight, svgEraser, svgEye, svgEyeSlash, svgFileCsv, svgFilter } from '../icons/svg'
 import { DataTableAdapter } from './data-table-adapter'
 
 @Component({
@@ -48,6 +48,8 @@ export class DataTablePanelComponent {
   protected svgFileCsv = svgFileCsv
   protected svgArrowsLeftRight = svgArrowsLeftRight
   protected svgEraser = svgEraser
+  protected svgFilter = svgFilter
+
   public constructor(private adapter: DataTableAdapter<any>) {
     //
   }
@@ -70,10 +72,15 @@ export class DataTablePanelComponent {
     grid?.columnApi.autoSizeAllColumns()
   }
 
-  protected async resetColumsn() {
+  protected async resetColumns() {
     const grid = await firstValueFrom(this.adapter.grid)
     grid?.columnApi.resetColumnState()
     this.colState.next(grid.columnApi.getColumnState())
+  }
+
+  protected async resetFilter() {
+    const grid = await firstValueFrom(this.adapter.grid)
+    grid?.api.setFilterModel({})
   }
 
   protected toggleHide(id: string) {
