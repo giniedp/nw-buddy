@@ -2,7 +2,7 @@ import 'zone.js/node'
 
 import { program } from 'commander'
 import { isAbsolute, join } from 'path'
-import { app } from './app'
+import { initServer } from './server'
 
 program
   .version('0.0.0')
@@ -26,7 +26,7 @@ const host = options.host
 const port = options.port
 
 function run() {
-  let server = app({
+  let server = initServer({
     host: host,
     port: port,
     publicDir: publicDir,

@@ -36,7 +36,7 @@
     "cap:sync": "npx cap sync",
     "cap:android:open": "npx cap open android",
     "cap:android:run": "npx cap run android",
-    "docker:build": "yarn build:web && yarn build:server && yarn docker:build:image",
+    "docker:build": "yarn ng build --base-href / && yarn build:server && yarn docker:build:image",
     "docker:build:image": "docker build -f Dockerfile -t nw-buddy:latest .",
     "docker:stop": "docker-compose -f ./docker-compose.yml -p nw-buddy stop",
     "docker:start": "docker-compose -f ./docker-compose.yml -p nw-buddy up -d",
