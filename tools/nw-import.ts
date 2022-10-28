@@ -6,18 +6,17 @@ import { importLocales } from './importer/importLocales'
 import { importImages } from './importer/importImages'
 import { generateTypes } from './importer/generateTypes'
 import { checkExpressions } from './importer/checkExpressions'
-import { NW_PTR, dataDir } from '../env'
+import { NW_PTR, webAppRoot, nwDataRoot, extractDir, importDir } from '../env'
 
 program
   .option('-i, --input <path>', 'input directory')
-  .option('-o, --output <path>', 'output directory')
   .option('--ptr', 'PTR mode', NW_PTR)
   .action(async () => {
     const options = program.opts<{ input: string; output: string; ptr: boolean }>()
-    const input = options.input || dataDir(options.ptr)!
-    const outDir = options.output || `./apps/web/nw-data`
-    const outDirData = path.join(outDir, options.ptr ? 'ptr' : 'live')
-    console.log('import from', input, 'to', outDir)
+    const input = options.input || extractDir(options.ptr)!
+    const output = importDir(options.ptr)!
+
+    console.log('import from', input, 'to', nwDataRoot)
 
     console.log('loading datatables')
     const tables = await loadDatatables({
@@ -179,7 +178,7 @@ program
     console.log('importing locales')
     await importLocales({
       input,
-      output: path.join(outDirData, 'localization'),
+      output: path.join(output, 'localization'),
       tables,
       preserveKeys: [
         'ui_itemtypedescription_head_slot',
@@ -223,7 +222,7 @@ program
     console.log('importing images')
     await importImages({
       input,
-      output: outDirData,
+      output: output,
       tables,
       ignoreKeys: ['HiResIconPath'],
       rewrite: {
@@ -232,18 +231,18 @@ program
         WeaponAppearanceOverride: (key, value, obj) => `lyshineui/images/icons/items/${obj.ItemType}/${value}`,
       },
       rewritePath: (value) => {
-        return path.relative(path.join(outDir, '..'), path.join(outDirData, value)).replace(/\\/g, '/')
+        return path.relative(webAppRoot, path.join(output, value)).replace(/\\/g, '/')
       },
     })
     console.log('writing datatables')
     await processArrayWithProgress(tables, async ({ relative, data }) => {
-      const jsonPath = path.join(outDirData, 'datatables', relative)
+      const jsonPath = path.join(output, 'datatables', relative)
       await writeJSONFile(data, jsonPath, {
         createDir: true,
       })
     })
 
     console.log('generate types')
-    await generateTypes(outDir, tables)
+    await generateTypes(nwDataRoot, tables)
   })
   .parse(process.argv)

@@ -1,7 +1,7 @@
 import { extract, createFilter, createConverter } from 'nw-extract'
 import { program } from 'commander'
 import { MultiBar, Presets } from 'cli-progress'
-import { NW_PTR, gameDir, dataDir } from '../env'
+import { NW_PTR, gameDir, extractDir } from '../env'
 
 program
   .option('-g, --game <path>', 'game directory')
@@ -32,7 +32,7 @@ program
 
     await extract({
       inputDir: options.game || gameDir(options.ptr)!,
-      outputDir: options.output || dataDir(options.ptr)!,
+      outputDir: options.output || extractDir(options.ptr)!,
       update: options.update,
       filter: createFilter(filter),
       converterFactory: createConverter(filter),
