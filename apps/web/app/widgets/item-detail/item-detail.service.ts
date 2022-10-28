@@ -74,7 +74,12 @@ export class ItemDetailService {
   public readonly ingredientCategories$ = combineLatest({
     categories: this.db.recipeCategoriesMap,
     item: this.item$,
-  }).pipe(map(({ categories, item }) => item?.IngredientCategories?.map((it) => categories.get(it))))
+  }).pipe(map(({ categories, item }) => item?.IngredientCategories?.map((it) => {
+    return categories.get(it) || {
+      CategoryID: it,
+      DisplayText: it
+    }
+  })))
 
   public readonly gearScoreOverride$ = new BehaviorSubject<number>(null)
   public readonly perkOverride$ = new BehaviorSubject<PerkOverrideFn>(null)
