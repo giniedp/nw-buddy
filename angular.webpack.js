@@ -17,18 +17,22 @@ module.exports = (config, options) => {
     }
   }
 
+  const definitions = {
+    __VERSION__: JSON.stringify(require('./package.json').version),
+    __NW_USE_PTR__: JSON.stringify(env.NW_USE_PTR),
+    __NW_DATA_URL__: JSON.stringify(env.NW_USE_CDN ? env.cdnPath(env.NW_USE_PTR) : env.publicPath(env.NW_USE_PTR)),
+  }
   config.plugins = [
     ...config.plugins,
     new NodePolyfillPlugin({
       excludeAliases: ['console'],
     }),
-    new webpack.DefinePlugin({
-      __VERSION__: JSON.stringify(require('./package.json').version),
-      __NW_USE_PTR__: JSON.stringify(env.NW_USE_PTR),
-      __NW_DATA_URL__: JSON.stringify(env.NW_USE_CDN ? env.cdnPath(env.NW_USE_PTR) : env.publicPath(env.NW_USE_PTR)),
-   })
+    new webpack.DefinePlugin(definitions),
   ]
 
-  console.log('[WEBPACK] using target', config.target)
+  console.log('[WEBPACK]', {
+    target: config.target,
+    ...definitions,
+  })
   return config
 }

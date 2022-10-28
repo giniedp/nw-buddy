@@ -8,7 +8,7 @@ import { ROUTES } from './app.routes'
 
 import { AppComponent } from './app.component'
 import { TranslateModule } from './i18n'
-import { NwDataService } from './nw'
+import { NwDataInterceptor, NwDataService } from './nw'
 import { TitleBarComponent } from './title-bar.component'
 import { ScreenModule } from './ui/screen'
 import { UpdateAlertModule } from './widgets/update-alert'
@@ -25,6 +25,9 @@ import { UpdateAlertModule } from './widgets/update-alert'
       loader: NwDataService,
     }),
     UpdateAlertModule,
+  ],
+  providers: [
+    NwDataInterceptor.provide(),
   ],
   bootstrap: [AppComponent],
 })

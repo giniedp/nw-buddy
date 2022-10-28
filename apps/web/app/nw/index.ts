@@ -1,4 +1,5 @@
 export * from './nw-data.service'
+export * from './nw-data.interceptor'
 export * from './nw.service'
 export * from './nw-db.service'
 export * from './nw.module'

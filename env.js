@@ -7,7 +7,7 @@ const config = {
   NW_DATA_PTR: process.env.NW_DATA_PTR,
   NW_CDN_PTR: process.env.NW_CDN_PTR,
   NW_CDN_LIVE: process.env.NW_CDN_LIVE,
-  NW_USE_CDN: ['true', 'yes', '1'].includes(process.env.NW_DATA_PTR),
+  NW_USE_CDN: ['true', 'yes', '1'].includes(process.env.NW_USE_CDN),
   NW_USE_PTR: ['true', 'yes', '1'].includes(process.env.NW_USE_PTR),
   CDN_UPLOAD_SPACE: process.env.CDN_UPLOAD_SPACE,
   CDN_UPLOAD_KEY: process.env.CDN_UPLOAD_KEY,
