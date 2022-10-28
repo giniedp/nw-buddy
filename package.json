@@ -83,6 +83,7 @@
     "@types/jasmine": "4.3.0",
     "@types/jasminewd2": "2.0.10",
     "@types/lodash": "4.14.186",
+    "@types/mime-types": "2.1.1",
     "@types/mithril": "2.0.11",
     "@types/nanoid": "3.0.0",
     "@types/node": "16.11.7",
@@ -96,6 +97,7 @@
     "commander": "9.4.1",
     "compression": "1.7.4",
     "daisyui": "2.31.0",
+    "date-fns": "2.29.3",
     "dotenv": "16.0.3",
     "electron": "19.0.9",
     "electron-builder": "23.1.0",
@@ -144,13 +146,7 @@
   "browserslist": [
     "chrome 91"
   ],
-  "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "6.2.0",
-    "@fortawesome/free-solid-svg-icons": "6.2.0",
-    "@types/mime-types": "2.1.1",
-    "date-fns": "2.29.3"
-  },
-  "peerDependencies": {
+  "optionalDependencies": {
     "nw-extract": "1.1.0"
   }
 }
