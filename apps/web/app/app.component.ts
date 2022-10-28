@@ -1,6 +1,15 @@
+import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { DOCUMENT } from '@angular/common'
-import { Component, HostBinding, Inject } from '@angular/core'
-import { sortBy } from 'lodash'
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  HostBinding,
+  Inject,
+  OnDestroy,
+  OnInit,
+} from '@angular/core'
+import { Subject, take, takeUntil } from 'rxjs'
 import { environment } from '../environments/environment'
 
 import { ElectronService } from './electron'
@@ -16,8 +25,24 @@ import { AppPreferencesService } from './preferences'
   host: {
     class: 'layout-frame layout-col layout-gap',
   },
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  animations: [
+    trigger('listAnimation', [
+      transition('void => *', [
+        query(':enter', [
+          style({ opacity: 0, top: -10, position: 'relative' }),
+          stagger(100, [animate('0.5s', style({ opacity: 1, top: 0 }))]),
+        ]),
+      ]),
+    ]),
+    trigger('headerAnimation', [
+      state('void', style({ opacity: 0 })),
+      state('true', style({ opacity: 1 })),
+      transition('void => *', [animate('0.5s')]),
+    ]),
+  ],
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
   @HostBinding('class.is-electron')
   public get isElectron() {
     return this.electron.isElectron
@@ -37,20 +62,53 @@ export class AppComponent {
 
   protected mainMenu = MAIN_MENU
   protected langOptions = LANG_OPTIONS
+  protected langLoaded = false
+  private destroy$ = new Subject<void>()
 
   constructor(
     private preferences: AppPreferencesService,
     private electron: ElectronService,
+    private cdRef: ChangeDetectorRef,
     @Inject(DOCUMENT)
-    document: Document,
-    translate: TranslateService
+    private document: Document,
+    private translate: TranslateService
   ) {
-    preferences.language.observe().subscribe((locale) => translate.use(locale))
     if (this.isWeb) {
       document.body.classList.add('is-web')
     }
     if (this.isElectron) {
       document.body.classList.add('is-electron')
     }
+  }
+
+  public ngOnInit(): void {
+    this.preferences.language.observe().subscribe((locale) => {
+      this.translate.use(locale)
+    })
+    this.translate.locale.value$
+      .pipe(take(1))
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.onLangLoaded()
+      })
+  }
+
+  public ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
+  }
+
+  private onLangLoaded() {
+    this.removeLoader()
+    setTimeout(() => {
+      this.langLoaded = true
+      this.cdRef.markForCheck()
+    }, 500)
+  }
+
+  private removeLoader() {
+    const el = this.document.querySelector('[data-loader]')
+    el.classList.add('opacity-0', 'scale-150')
+    setTimeout(() => el.remove(), 300)
   }
 }

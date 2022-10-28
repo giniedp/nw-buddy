@@ -1,5 +1,5 @@
 <div class="layout-content p-3">
-  <div class="grid grid-cols-5 layout-gap min-w-[1800px]" [nwbScreenshotFrame]="'Runes'">
+  <div class="grid grid-cols-5 layout-gap min-w-[1600px]" [nwbScreenshotFrame]="'Runes'">
     <ng-container *ngFor="let row of rows | async">
       <div *ngFor="let item of row" class="bg-base-100 rounded-md">
         <nwb-item-detail [entityId]="item.$itemId">

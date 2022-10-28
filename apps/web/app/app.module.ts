@@ -8,19 +8,22 @@ import { ROUTES } from './app.routes'
 
 import { AppComponent } from './app.component'
 import { TranslateModule } from './i18n'
-import { NwDataInterceptor, NwDataService } from './nw'
+import { NwDataInterceptor, NwDataService, NwModule } from './nw'
 import { TitleBarComponent } from './title-bar.component'
 import { ScreenModule } from './ui/screen'
 import { UpdateAlertModule } from './widgets/update-alert'
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 
 @NgModule({
   declarations: [AppComponent, TitleBarComponent],
   imports: [
     RouterModule.forRoot(ROUTES),
     BrowserModule,
+    BrowserAnimationsModule,
     FormsModule,
     HttpClientModule,
     ScreenModule,
+    NwModule,
     TranslateModule.forRoot({
       loader: NwDataService,
     }),

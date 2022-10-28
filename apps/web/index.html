@@ -8,12 +8,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes, minimum-scale=1.0, maximum-scale=2.0">
   <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico">
   <script async src="https://nwdb.info/embed.js"></script>
+  <style></style>
 </head>
 <body class="overflow-x-hidden dark" data-theme="nwbuddy" >
-  <app-root>
-    <div class="flex flex-row justify-center items-center h-screen w-screen">
-      <button class="btn btn-square loading"></button>
-    </div>
-  </app-root>
+  <app-root></app-root>
+  <div class="flex flex-row justify-center items-center h-screen w-screen absolute top-0 left-0 transition-all opacity-100 scale-100" data-loader>
+    <button class="btn btn-square btn-ghost loading"></button>
+  </div>
 </body>
 </html>

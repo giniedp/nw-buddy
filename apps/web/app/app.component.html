@@ -1,6 +1,6 @@
 <nwb-title-bar *ngIf="isElectron"></nwb-title-bar>
 
-<div class="layout-pad-x layout-pad-t">
+<div class="layout-pad-x layout-pad-t" [@headerAnimation]="true">
   <div class="navbar bg-base-100 z-50 font-bold rounded-md shadow-xl">
     <div class="navbar-start w-auto flex-none">
       <button class="btn btn-square btn-ghost text-primary lg:hidden" [nwbScreenDrawerToggle]="'toggle'">
@@ -9,13 +9,16 @@
         </svg>
       </button>
       <a class="hidden lg:inline-block text-lg font-bold">
-        <img src="assets/icons/favicon.png" class="w-12" />
+        <img [nwImage]="'assets/icons/favicon.png'" class="w-12" />
       </a>
     </div>
-    <div class="navbar-center flex-1 items-center justify-center">
+    <div class="navbar-center flex-1 items-center justify-center lg:justify-start">
       <a class=" lg:hidden text-lg font-bold">
-        <img src="assets/icons/favicon.png" class="w-12" />
+        <img [nwImage]="'assets/icons/favicon.png'" class="w-12" />
       </a>
+      <h1 class="text-xl hidden md:block">
+        New World Buddy
+      </h1>
     </div>
     <div class="navbar-end w-auto flex-none">
       <nwb-update-alert-button class="mr-2"></nwb-update-alert-button>
@@ -26,7 +29,7 @@
   </div>
 </div>
 <nwb-screen-drawer class="select-none">
-  <nwb-screen-drawer-side class="rounded-md layout-pad-l layout-pad-b" [nwbScreenDrawerToggle]="'close'">
+  <nwb-screen-drawer-side class="rounded-md layout-pad-l layout-pad-b" [nwbScreenDrawerToggle]="'close'" [@listAnimation]="mainMenu.length">
     <ng-container *ngFor="let group of mainMenu">
       <ul class="menu menu-compact w-60 bg-base-300 rounded-md flex-none">
         <li class="menu-title uppercase mt-2" *ngIf="group.category">
@@ -38,14 +41,10 @@
             <a #link  [routerLink]="item.path"> {{ item.label }} </a>
           </li>
         </ng-container>
-
       </ul>
     </ng-container>
-
-
-
   </nwb-screen-drawer-side>
-  <nwb-screen-drawer-content class="layout-row layout-gap layout-pad-x layout-pad-b">
+  <nwb-screen-drawer-content class="layout-row layout-gap layout-pad-x layout-pad-b" *ngIf="langLoaded">
     <router-outlet></router-outlet>
   </nwb-screen-drawer-content>
 </nwb-screen-drawer>

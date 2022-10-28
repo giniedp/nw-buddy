@@ -1,17 +1,14 @@
 
 html,
 body {
-  //min-width: 1024px;
+  @apply bg-black text-slate-50;
   font-weight: 500;
-}
-body {
-  @apply bg-base-100 text-slate-50;
   width: 100%;
   height: 100vh;
   padding: 0;
   display: flex;
   flex-direction: column;
-  background-image: url('^assets/mainbg.png');
+  background-image: url('^assets/mainbg.jpg');
   background-size: cover;
   background-attachment: fixed;
 }

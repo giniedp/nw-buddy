@@ -1,6 +1,5 @@
 import { ChangeDetectorRef, Injectable } from '@angular/core'
-import { Affixstats, ItemDefinitionMaster, Perkbuckets, Perks, Craftingcategories } from '@nw-data/types'
-import { sortBy } from 'lodash'
+import { ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
 import { BehaviorSubject, combineLatest, defer, map, Observable, of, ReplaySubject, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import {
@@ -11,12 +10,7 @@ import {
   getItemPerkBucketKeys,
   getItemPerkKeys,
   getItemRarity,
-  getItemRarityName,
-  getItemTypeName,
-  getPerksInherentMODs,
-  getPerkbucketPerks,
-  hasPerkInherentAffix,
-  getItemTierAsRoman,
+  getItemRarityName, getItemTierAsRoman, getItemTypeName, getPerkbucketPerks, getPerksInherentMODs, hasPerkInherentAffix
 } from '~/nw/utils'
 import { deferStateFlat, humanize, shareReplayRefCount } from '~/utils'
 

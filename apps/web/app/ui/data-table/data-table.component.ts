@@ -31,6 +31,7 @@ import {
   subscribeOn,
   switchMap,
   takeUntil,
+  tap,
 } from 'rxjs'
 import { LocaleService } from '~/i18n'
 import { PreferencesService, StorageNode } from '~/preferences'
@@ -76,6 +77,17 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
           rowHeight: 40,
           rowMultiSelectWithClick: true,
           suppressMenuHide: true,
+          overlayLoadingTemplate: `
+            <button class="btn btn-square btn-ghost loading"></button>
+          `,
+          overlayNoRowsTemplate: `
+          <div class="alert shadow-lg max-w-[300px]">
+            <div>
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              <span>No rows to show</span>
+            </div>
+          </div>
+          `,
           defaultColDef: {
             resizable: true,
             sortable: true,
@@ -163,7 +175,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
         return items
       }
       return items.filter((it) => adapter.entityCategory(it) === category)
-    })
+    }),
   )
 
   private gridStorage: StorageNode<{ columns?: any; filter?: any }>

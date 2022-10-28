@@ -11,7 +11,7 @@ export class AppPreferencesService {
 
   public constructor(preferences: PreferencesService) {
     const storage = preferences.storage.storageObject('app')
-    this.language = storage.storageProperty('language', 'de-de')
+    this.language = storage.storageProperty('language', 'en-us')
     this.theme = storage.storageProperty('theme', 'helloween')
     this.nwmpServer = storage.storageProperty('nwmpServer', null)
   }

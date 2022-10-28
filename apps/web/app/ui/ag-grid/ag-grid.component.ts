@@ -13,7 +13,7 @@ import {
 } from '@angular/core'
 import { ColumnApi, Grid, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { merge } from 'lodash'
-import { debounceTime, distinctUntilChanged, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import { debounceTime, distinctUntilChanged, filter, ReplaySubject, skip, skipWhile, Subject, takeUntil, tap } from 'rxjs'
 
 @Component({
   selector: 'nwb-ag-grid',
@@ -79,7 +79,11 @@ export class AgGridComponent<T = any> implements OnInit, OnDestroy {
       options?.onGridReady?.(e)
     })
     const cancel$ = merge(this.destroy$, this.options$)
-    this.data$.pipe(takeUntil(cancel$)).subscribe((data) => e.api.setRowData(data))
+    this.data$
+      .pipe(takeUntil(cancel$))
+      .pipe(skipWhile((it) => it == null))
+      .pipe(filter((it) => it != null))
+      .subscribe((data) => e.api.setRowData(data))
     this.filter$
       .pipe(debounceTime(500))
       .pipe(distinctUntilChanged())
