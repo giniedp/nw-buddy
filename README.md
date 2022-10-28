@@ -45,6 +45,7 @@ For build commands please see package.json
 2. install `yarn` (https://yarnpkg.com/) and run `yarn install`
 3. create a `.env` file and copy contents of `.env.example`. Adjust env variables as you need
 4. When working on PTR change the `NW_PTR=true` in `.env`
+5. install `nw-extract` in some way. This is currently a peer dependency (does not work on unix). To install globally do `yarn global add nw-extract`
 
 ## Extracting and importing game data
 
