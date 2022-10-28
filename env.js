@@ -15,18 +15,27 @@ const config = {
   CDN_UPLOAD_ENDPOINT: process.env.CDN_UPLOAD_ENDPOINT,
 }
 
-const webAppRoot = path.join(process.cwd(), 'apps/web')
-const nwDataRoot = path.join(webAppRoot, 'nw-data')
-const gameDir = (isPtr) => (isPtr ? config.NW_GAME_PTR : config.NW_GAME_LIVE)
-const extractDir = (isPtr) => (isPtr ? config.NW_DATA_PTR : config.NW_DATA_LIVE)
-const importDir = (isPtr) => path.join(nwDataRoot, isPtr ? 'ptr' : 'live')
-const cdnPath = (isPtr) => (isPtr ? config.NW_CDN_PTR : config.NW_CDN_LIVE)
-const publicPath = (isPtr) => path.relative(webAppRoot, importDir(isPtr))
+function get(name) {
+  const result = config[name]
+  if (result == null) {
+    throw new Error(`env variable '${name}' is not defined `)
+  }
+  return result
+}
+
+const webAppDir = path.join(process.cwd(), 'apps/web')
+const distDir = path.join(process.cwd(), 'dist')
+const nwDataDir = path.join(distDir, 'nw-data')
+const gameDir = (isPtr) => (isPtr ? get('NW_GAME_PTR') : get('NW_GAME_LIVE'))
+const extractDir = (isPtr) => (isPtr ? get('NW_DATA_PTR') : get('NW_DATA_LIVE'))
+const importDir = (isPtr) => path.join(nwDataDir, isPtr ? 'ptr' : 'live')
+const cdnPath = (isPtr) => (isPtr ? get('NW_CDN_PTR') : get('NW_CDN_LIVE'))
+const publicPath = (isPtr) => path.relative(distDir, importDir(isPtr))
 
 module.exports = {
   ...config,
-  webAppRoot,
-  nwDataRoot,
+  webAppDir,
+  nwDataDir,
   gameDir,
   extractDir,
   importDir,

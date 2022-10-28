@@ -34,8 +34,12 @@
             "assets": [
               "apps/web/favicon.ico",
               "apps/web/assets",
-              "apps/web/nw-data/live",
-              "apps/web/nw-data/ptr"
+              {
+                "glob": "**/*",
+                "ignore": ["*.gz", "*.zip"],
+                "input": "dist/nw-data",
+                "output": "/nw-data/"
+              }
             ],
             "styles": [
               "apps/web/styles/main.scss"
@@ -63,7 +67,45 @@
                 }
               ]
             },
+            "web": {
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "apps/web/environments/environment.ts",
+                  "with": "apps/web/environments/environment.web.ts"
+                }
+              ]
+            },
+            "cloud": {
+              "outputPath": "dist/web-cloud",
+              "assets": [
+                "apps/web/favicon.ico",
+                "apps/web/assets"
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "apps/web/environments/environment.ts",
+                  "with": "apps/web/environments/environment.web.ts"
+                }
+              ]
+            },
             "capacitor": {
+              "outputPath": "dist/web-capacitor",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,
@@ -80,6 +122,7 @@
               ]
             },
             "electron": {
+              "outputPath": "dist/web-electron",
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": false,

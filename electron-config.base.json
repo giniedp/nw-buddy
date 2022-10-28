@@ -10,7 +10,8 @@
     "!*.map",
     "!package.json",
     "!package-lock.json",
-    "!yarn.json"
+    "!yarn.json",
+    "!*.gz"
   ],
   "extraResources": [
 
