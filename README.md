@@ -46,10 +46,6 @@ For build commands please see package.json
 3. create a `.env` file and copy contents of `.env.example`. Adjust env variables as you need
 4. When working on PTR change the `NW_PTR=true` in `.env`
 
-
-`nw-extract` is currently a peer dependency, since it does not work on unix. But is needed on windows in order to run the extract commands.
-Current workaround: add it temporarily to dev dependencies by runinng `yarn add nw-extract`
-
 ## Extracting and importing game data
 
 Run `yarn nw-extract`. This will extract all necessary game data to `tmp/nw-data/live` (or `tmp/nw-data/ptr`)
