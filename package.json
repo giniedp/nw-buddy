@@ -18,7 +18,7 @@
     "dev:server": "ng run nw-buddy:serve-ssr",
     "build:web": "ng build --base-href / -c web",
     "build:server": "ng run nw-buddy:server:production",
-    "build:web-cloud": "ng build --base-href / -c cloud",
+    "build:web-cloud": "ng build --base-href / -c cloud && yarn nw-download -o dist/web-cloud/nw-data",
     "build:web-electron": "ng build --base-href ./ -c electron",
     "build:web-capacitor": "ng build --base-href ./ -c capacitor",
     "build:electron": "yarn electron:tsc && yarn build:web-electron && yarn electron:builder",
