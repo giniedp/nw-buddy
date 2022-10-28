@@ -2,11 +2,10 @@ import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { NwDataloader } from '@nw-data/datatables'
 import { environment } from 'apps/web/environments/environment'
-import { map, Observable, shareReplay, tap } from 'rxjs'
-import { parse } from 'papaparse'
+import { Observable, shareReplay } from 'rxjs'
+
 export type LocaleData = Record<string, { value: string }>
 
-const NW_DIR = `./nw-data/${environment.isPTR ? 'ptr' : 'live'}/`
 
 @Injectable({ providedIn: 'root' })
 export class NwDataService extends NwDataloader {
@@ -16,13 +15,15 @@ export class NwDataService extends NwDataloader {
     return Object.getOwnPropertyNames(NwDataloader.prototype) as Array<keyof NwDataloader>
   }
 
+  public storagePath: string = environment.nwDataUrl.replace(/\/+$/, '')
+
   public constructor(private http: HttpClient) {
     super()
   }
 
   public load<T>(path: string): Observable<T> {
     if (!this.cache.has(path)) {
-      const url = NW_DIR + 'datatables/' + path.toLocaleLowerCase()
+      const url = `${this.storagePath}/datatables/${path}`.toLocaleLowerCase()
       const src$ = this.http.get(url).pipe(shareReplay(1))
       this.cache.set(path, src$)
     }
@@ -30,7 +31,8 @@ export class NwDataService extends NwDataloader {
   }
 
   public loadTranslations(locale: string) {
-    return this.http.get<Record<string, string>>(NW_DIR + `localization/${locale.toLowerCase()}.json`)
+    const url = `${this.storagePath}/localization/${locale}.json`.toLocaleLowerCase()
+    return this.http.get<Record<string, string>>(url)
   }
 
   public apiMethodsByPrefix<T extends keyof NwDataService>(prefix: string, asKey: T) {

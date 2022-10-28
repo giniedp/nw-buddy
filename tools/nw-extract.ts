@@ -1,13 +1,13 @@
 import { extract, createFilter, createConverter } from 'nw-extract'
 import { program } from 'commander'
 import { MultiBar, Presets } from 'cli-progress'
-import { NW_PTR, gameDir, extractDir } from '../env'
+import { NW_USE_PTR, gameDir, extractDir } from '../env'
 
 program
   .option('-g, --game <path>', 'game directory')
   .option('-o, --output <path>', 'output directory')
   .option('-u, --update', 'Force update, skip cache')
-  .option('--ptr', 'PTR mode', NW_PTR)
+  .option('--ptr', 'PTR mode', NW_USE_PTR)
   .action(async () => {
 
     const options = program.opts<{ game: string, output: string, ptr: boolean, update: boolean }>()

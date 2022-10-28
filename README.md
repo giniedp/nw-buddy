@@ -44,7 +44,7 @@ For build commands please see package.json
   - download [texconv.exe](https://github.com/microsoft/DirectXTex/releases) and put it in project root
 2. install `yarn` (https://yarnpkg.com/) and run `yarn install`
 3. create a `.env` file and copy contents of `.env.example`. Adjust env variables as you need
-4. When working on PTR change the `NW_PTR=true` in `.env`
+4. When working on PTR change the `NW_USE_PTR=true` in `.env`
 
 ## Extracting and importing game data
 

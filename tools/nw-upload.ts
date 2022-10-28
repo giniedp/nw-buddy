@@ -1,4 +1,4 @@
-import { PutObjectCommand, S3 } from '@aws-sdk/client-s3'
+import { PutObjectAclCommandInput, PutObjectCommand, PutObjectCommandInput, S3 } from '@aws-sdk/client-s3'
 import { program } from 'commander'
 import * as path from 'path'
 import * as fs from 'fs'
@@ -6,11 +6,11 @@ import * as mime from 'mime-types'
 import {
   importDir,
   nwDataRoot,
-  NW_PTR,
-  CDN_ENDPOINT,
+  NW_USE_PTR,
+  CDN_UPLOAD_ENDPOINT,
   CDN_UPLOAD_KEY,
   CDN_UPLOAD_SECRET,
-  CDN_SPACE,
+  CDN_UPLOAD_SPACE,
 } from '../env'
 import { glob } from './utils'
 import { MultiBar, Presets } from 'cli-progress'
@@ -19,7 +19,7 @@ program
   .option('-i, --input <path>', 'input directory')
   .option('-z, --gzip', 'gzip assets', true)
   .option('-o, --output <path>', 'output directory')
-  .option('--ptr', 'PTR mode', NW_PTR)
+  .option('--ptr', 'PTR mode', NW_USE_PTR)
   .action(async () => {
     const options = program.opts<{ input: string; output: string; ptr: boolean }>()
     const input = options.input || importDir(options.ptr)!
@@ -38,16 +38,20 @@ program
     for (let i = 0; i < files.length; i++) {
       const file = files[i]
       const key = path.relative(nwDataRoot, file)
+      const params: PutObjectCommandInput = {
+        Bucket: CDN_UPLOAD_SPACE,
+        Key: key,
+        Body: fs.readFileSync(file),
+        ACL: "public-read",
+        ContentType: mime.lookup(file) || 'application/octet-stream',
+      }
+      if (params.ContentType === 'application/gzip') {
+        params.Key = params.Key.replace(/\.gz$/, '')
+        params.ContentType = mime.lookup(params.Key) || 'application/octet-stream'
+        params.ContentEncoding = 'gzip'
+      }
       bar.update(i)
-      await client.send(
-        new PutObjectCommand({
-          Bucket: CDN_SPACE,
-          Key: key,
-          Body: fs.readFileSync(file),
-          ACL: "public-read",
-          ContentType: mime.lookup(file) || 'application/octet-stream'
-        })
-      )
+      await client.send(new PutObjectCommand(params))
     }
     bar.update(files.length, { filename: '' })
   })
@@ -56,7 +60,7 @@ program
 function createClient() {
   return new S3({
     forcePathStyle: false,
-    endpoint: CDN_ENDPOINT,
+    endpoint: CDN_UPLOAD_ENDPOINT,
     // Note, specifying us-east-1 does not result in slower performance, regardless of your Space’s location.
     // The SDK checks the region for verification purposes but never sends the payload there.
     // Instead, it sends the payload to the specified custom endpoint.

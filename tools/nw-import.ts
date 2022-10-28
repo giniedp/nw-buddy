@@ -6,11 +6,11 @@ import { importLocales } from './importer/importLocales'
 import { importImages } from './importer/importImages'
 import { generateTypes } from './importer/generateTypes'
 import { checkExpressions } from './importer/checkExpressions'
-import { NW_PTR, webAppRoot, nwDataRoot, extractDir, importDir } from '../env'
+import { NW_USE_PTR, webAppRoot, nwDataRoot, extractDir, importDir } from '../env'
 
 program
   .option('-i, --input <path>', 'input directory')
-  .option('--ptr', 'PTR mode', NW_PTR)
+  .option('--ptr', 'PTR mode', NW_USE_PTR)
   .action(async () => {
     const options = program.opts<{ input: string; output: string; ptr: boolean }>()
     const input = options.input || extractDir(options.ptr)!
