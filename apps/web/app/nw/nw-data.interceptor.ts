@@ -22,6 +22,10 @@ export class NwDataInterceptor implements HttpInterceptor {
 
   public storagePath: string = environment.nwDataUrl.replace(/\/+$/, '')
 
+  private get needsTransform() {
+    return !this.storagePath.startsWith('nw-data')
+  }
+
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (req.url.startsWith('localization/')) {
       // just prepend the CDN url, no transformation
@@ -41,6 +45,9 @@ export class NwDataInterceptor implements HttpInterceptor {
   }
 
   private transformResponse(res: HttpEvent<any>) {
+    if (!this.needsTransform) {
+      return res
+    }
     if (!(res instanceof HttpResponse)) {
       return res
     }
