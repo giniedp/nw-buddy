@@ -1,9 +1,19 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Injector, Input, QueryList, ViewChildren } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  Injector,
+  Input,
+  QueryList,
+  Renderer2,
+  ViewChildren
+} from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { ItemDefinitionMaster, Perkbuckets } from '@nw-data/types'
+import { ItemDefinitionMaster } from '@nw-data/types'
 import {
   BehaviorSubject,
   combineLatest,
@@ -16,7 +26,7 @@ import {
   of,
   switchMap,
   take,
-  tap,
+  tap
 } from 'rxjs'
 
 import { NwDbService, NwModule } from '~/nw'
@@ -31,7 +41,7 @@ import {
   isItemArmor,
   isItemWeapon,
   isPerkApplicableToItem,
-  isPerkGem,
+  isPerkGem
 } from '~/nw/utils'
 import { deferStateFlat, shareReplayRefCount } from '~/utils'
 import { ItemDetailComponent } from '~/widgets/item-detail/item-detail.component'
@@ -80,10 +90,19 @@ export class GearSlotComponent {
       itemId: this.slotItem$.pipe(map((it) => it?.itemId)),
       itemGs: this.slotItem$.pipe(map((it) => it?.gearScore)),
       itemPerks: this.slotItem$.pipe(map((it) => it?.perks)),
-      isRune: this.slot$.pipe(map((it) => it.id === 'heartgem'))
+      isRune: this.slot$.pipe(map((it) => it.id === 'heartgem')),
     })
-
-  ).pipe(shareReplayRefCount(1))
+  )
+    .pipe(shareReplayRefCount(1))
+    .pipe(
+      tap((it) => {
+        if (it?.itemId) {
+          this.renderer.removeClass(this.elRef.nativeElement, 'screenshot-hidden')
+        } else {
+          this.renderer.addClass(this.elRef.nativeElement, 'screenshot-hidden')
+        }
+      })
+    )
 
   private slot$ = new BehaviorSubject<EquipSlot>(null)
   private recordId$ = new BehaviorSubject<string>(null)
@@ -117,7 +136,9 @@ export class GearSlotComponent {
     private dialog: Dialog,
     private injector: Injector,
     private store: GearbuilderStore,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
+    private elRef: ElementRef<HTMLElement>,
+    private renderer: Renderer2
   ) {
     //
   }
@@ -212,7 +233,7 @@ export class GearSlotComponent {
           ItemsTableAdapter.provider({
             hideUserData: true,
             source: src$,
-            persistStateId: 'item-picker-table'
+            persistStateId: 'item-picker-table',
           }),
         ],
         parent: this.injector,
@@ -230,7 +251,7 @@ export class GearSlotComponent {
         providers: [
           PerksTableAdapter.provider({
             source: this.getAplicablePerks(detail),
-            persistStateId: 'perk-picker-table'
+            persistStateId: 'perk-picker-table',
           }),
         ],
         parent: this.injector,
