@@ -6,7 +6,7 @@ import { importLocales } from './importer/importLocales'
 import { importImages } from './importer/importImages'
 import { generateTypes } from './importer/generateTypes'
 import { checkExpressions } from './importer/checkExpressions'
-import { NW_USE_PTR, webAppDir, extractDir, importDir } from '../env'
+import { NW_USE_PTR, webAppDir, extractDir, importDir, distDir } from '../env'
 
 program
   .option('-i, --input <path>', 'input directory')
@@ -232,7 +232,7 @@ program
         WeaponAppearanceOverride: (key, value, obj) => `lyshineui/images/icons/items/${obj.ItemType}/${value}`,
       },
       rewritePath: (value) => {
-        return path.relative(webAppDir, path.join(output, value)).replace(/\\/g, '/')
+        return path.relative(distDir, path.join(output, value)).replace(/\\/g, '/')
       },
     })
     console.log('writing datatables')

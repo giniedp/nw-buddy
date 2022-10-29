@@ -36,6 +36,7 @@ module.exports = {
   ...config,
   webAppDir,
   nwDataDir,
+  distDir,
   gameDir,
   extractDir,
   importDir,
