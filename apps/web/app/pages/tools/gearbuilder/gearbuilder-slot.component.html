@@ -7,7 +7,6 @@
     #detail="detail"
     [gearScoreOverride]="vm.itemGs"
     [perkOverride]="perksMapping"
-
     *ngIf="vm.itemId"
   >
     <nwb-item-detail-header (click)="pickItem()" class="cursor-pointer"> </nwb-item-detail-header>
@@ -43,7 +42,15 @@
       (detach)="isGearScoreOpen = false"
     >
       <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
-        <input type="range" min="100" max="625" step="1" [ngModel]="vm.itemGs" (ngModelChange)="updateGearScore($event)" class="range range-sm range-primary" />
+        <input
+          type="range"
+          min="100"
+          max="625"
+          step="1"
+          [ngModel]="vm.itemGs"
+          (ngModelChange)="updateGearScore($event)"
+          class="range range-sm range-primary"
+        />
       </div>
     </ng-template>
   </nwb-item-detail>
