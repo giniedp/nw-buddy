@@ -6,7 +6,7 @@ import { importLocales } from './importer/importLocales'
 import { importImages } from './importer/importImages'
 import { generateTypes } from './importer/generateTypes'
 import { checkExpressions } from './importer/checkExpressions'
-import { NW_USE_PTR, webAppRoot, nwDataRoot, extractDir, importDir } from '../env'
+import { NW_USE_PTR, webAppDir, extractDir, importDir } from '../env'
 
 program
   .option('-i, --input <path>', 'input directory')
@@ -15,8 +15,9 @@ program
     const options = program.opts<{ input: string; output: string; ptr: boolean }>()
     const input = options.input || extractDir(options.ptr)!
     const output = importDir(options.ptr)!
+    const typesDir = path.join(webAppDir, 'nw-data')
 
-    console.log('import from', input, 'to', nwDataRoot)
+    console.log('import from', input, 'to', output)
 
     console.log('loading datatables')
     const tables = await loadDatatables({
@@ -231,7 +232,7 @@ program
         WeaponAppearanceOverride: (key, value, obj) => `lyshineui/images/icons/items/${obj.ItemType}/${value}`,
       },
       rewritePath: (value) => {
-        return path.relative(webAppRoot, path.join(output, value)).replace(/\\/g, '/')
+        return path.relative(webAppDir, path.join(output, value)).replace(/\\/g, '/')
       },
     })
     console.log('writing datatables')
@@ -243,6 +244,6 @@ program
     })
 
     console.log('generate types')
-    await generateTypes(nwDataRoot, tables)
+    await generateTypes(typesDir, tables)
   })
   .parse(process.argv)
