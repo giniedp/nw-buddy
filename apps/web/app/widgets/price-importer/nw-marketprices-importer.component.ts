@@ -4,7 +4,7 @@ import { ChangeDetectorRef, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { BehaviorSubject, combineLatest, defer, map, Observable, of, take, takeUntil, tap } from 'rxjs'
+import { BehaviorSubject, catchError, combineLatest, defer, map, Observable, of, take, takeUntil, tap } from 'rxjs'
 import { IconComponent, nwdbLinkUrl, NwDbService, NwService } from '~/nw'
 import { getItemIconPath, getItemId, getItemRarity } from '~/nw/utils'
 import { AppPreferencesService, ItemPreferencesService, StorageProperty } from '~/preferences'
@@ -40,17 +40,15 @@ export interface PriceItem {
   },
 })
 export class NwPricesImporterComponent {
-
   protected servers = defer(() => this.fetchServers())
     .pipe(
-      tap({
-        error: () => {
-          this.isLoading = false
-          this.data = null
-          this.error = true
-          this.isComplete = true
-          this.cdRef.markForCheck()
-        },
+      catchError(() => {
+        this.isLoading = false
+        this.data = null
+        this.error = true
+        this.isComplete = true
+        this.cdRef.detectChanges()
+        return of([])
       })
     )
     .pipe(shareReplayRefCount(1))
@@ -136,7 +134,7 @@ export class NwPricesImporterComponent {
             item: item,
             price: it.price,
             availability: it.availability,
-            updatedAt: it.updatedAt
+            updatedAt: it.updatedAt,
           }
         })
         this.adapter.entities.next(this.data)
@@ -169,7 +167,7 @@ export class NwPricesImporterComponent {
 
   private fetchPrices(server: string) {
     return this.http
-      .get<Array<{ ItemId: string; Price: string; Availability: number, LastUpdated: string }>>(
+      .get<Array<{ ItemId: string; Price: string; Availability: number; LastUpdated: string }>>(
         `https://nwmarketprices.com/api/latest-prices/${server}/`,
         {
           params: {
@@ -183,7 +181,7 @@ export class NwPricesImporterComponent {
             id: it.ItemId,
             price: Number(it.Price),
             availability: it.Availability,
-            updatedAt: it.LastUpdated ? new Date(it.LastUpdated) : null
+            updatedAt: it.LastUpdated ? new Date(it.LastUpdated) : null,
           }))
         })
       )
@@ -191,7 +189,6 @@ export class NwPricesImporterComponent {
 }
 
 export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
-
   public entityID(item: PriceItem): string {
     return item.id
   }
@@ -216,9 +213,9 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
               target: '_blank',
               icon: getItemIconPath(data.item),
               rarity: getItemRarity(data.item),
-              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
-          })
+          }),
         },
         {
           width: 250,
@@ -263,15 +260,12 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
           width: 100,
         },
       ],
-    }
-  ))
+    })
+  )
 
   public entities = new BehaviorSubject<PriceItem[]>(null)
 
-  public constructor(
-    private nw: NwService,
-    private i18n: TranslateService,
-  ) {
+  public constructor(private nw: NwService, private i18n: TranslateService) {
     super()
   }
 }
