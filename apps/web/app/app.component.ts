@@ -29,16 +29,16 @@ import { AppPreferencesService } from './preferences'
   animations: [
     trigger('listAnimation', [
       transition('void => *', [
-        query(':enter', [
-          style({ opacity: 0, top: -10, position: 'relative' }),
-          stagger(100, [animate('0.5s', style({ opacity: 1, top: 0 }))]),
-        ]),
+        query(':enter', [style({ opacity: 0 }), stagger(100, [animate('0.3s', style({ opacity: 1 }))])]),
       ]),
     ]),
     trigger('headerAnimation', [
       state('void', style({ opacity: 0 })),
       state('true', style({ opacity: 1 })),
-      transition('void => *', [animate('0.5s')]),
+      transition('void => *', [animate('0.3s')]),
+    ]),
+    trigger('enteranimation', [
+      transition(':enter', [style({ opacity: 0 }), animate('1s 0.3s ease-out', style({ opacity: 1 }))]),
     ]),
   ],
 })
@@ -99,16 +99,15 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private onLangLoaded() {
-    this.removeLoader()
-    setTimeout(() => {
-      this.langLoaded = true
-      this.cdRef.markForCheck()
-    }, 500)
+    // 1s delay 0.3s animation
+    this.langLoaded = true
+    this.cdRef.markForCheck()
+    setTimeout(() => this.removeLoader(), 150)
   }
 
   private removeLoader() {
     const el = this.document.querySelector('[data-loader]')
-    el.classList.add('opacity-0', 'scale-150')
+    el.classList.add('opacity-0')
     setTimeout(() => el.remove(), 300)
   }
 }

@@ -29,7 +29,7 @@
   </div>
 </div>
 <nwb-screen-drawer class="select-none">
-  <nwb-screen-drawer-side class="rounded-md layout-pad-l layout-pad-b" [nwbScreenDrawerToggle]="'close'" [@listAnimation]="mainMenu.length">
+  <nwb-screen-drawer-side class="rounded-md layout-pad-l layout-pad-b" [nwbScreenDrawerToggle]="'close'">
     <ng-container *ngFor="let group of mainMenu">
       <ul class="menu menu-compact w-60 bg-base-300 rounded-md flex-none">
         <li class="menu-title uppercase mt-2" *ngIf="group.category">
@@ -44,7 +44,7 @@
       </ul>
     </ng-container>
   </nwb-screen-drawer-side>
-  <nwb-screen-drawer-content class="layout-row layout-gap layout-pad-x layout-pad-b" *ngIf="langLoaded">
+  <nwb-screen-drawer-content class="layout-row layout-gap layout-pad-x layout-pad-b" *ngIf="langLoaded" [@enteranimation]>
     <router-outlet></router-outlet>
   </nwb-screen-drawer-content>
 </nwb-screen-drawer>
