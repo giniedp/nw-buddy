@@ -300,6 +300,7 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
           {
             headerName: 'New Price',
             cellClass: 'text-right',
+            valueGetter: ({ data }) => data.price,
             valueFormatter: ({ value }) => this.moneyFormatter.format(value),
             width: 100,
           },
