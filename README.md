@@ -50,7 +50,7 @@ For build commands please see package.json
 
 Run `yarn nw-extract`. This will extract all necessary game data to `tmp/nw-data/live` (or `tmp/nw-data/ptr`)
 
-Run `yarn nw-import`. This will import data from `tmp/nw-data/live` to `apps/web/nw-data/live` and convert images to `.webp`
+Run `yarn nw-import`. This will import data from `tmp/nw-data/live` to `dist/nw-data/live` and convert images to `.webp`
 
 ## Running dev server
 
@@ -59,11 +59,14 @@ Run `yarn dev:web` if you only need a web browser for development
 
 ## Building the app
 
-Run `yarn build` to compile the web and build the electron app. The resulting `.exe` is written to `releases/nw-buddy [VERSION].exe`
+There are multiple target that can be built
 
-Run `yarn ng build --base-href /` for a pure web build (wihtout electron). Result is written to `dist/web`
+### Electron App
+Run `build:electron`. This will build the electron frame, the web app with electron target and then bundle it all together. The resulting `.exe` is written to `releases/nw-buddy [VERSION].exe`
 
-## Building with docker
+### Web App
+Run `build:web`. This will build the web app that can be uploaded and hosted on a server. The result is written to `dist/web`
 
-Run `yarn docker:build` to build the web app and the docker container. The container is named `nw-buddy:latest`
+### Webserver in docker image
+Run `build:docker`. This will build the express server, the web app and then bundle it into a docker image. The image is called `nw-buddy:latest`
 Run `yarn docker:start` to start the container. Navigate to `http://0.0.0.0:4200`
