@@ -10,6 +10,7 @@ import {
   EquipSlotId,
   EQUIP_SLOTS,
   getAffixABSs,
+  getAffixDMGs,
   getAffixMODs,
   getArmorRatingElemental,
   getArmorRatingPhysical,
@@ -31,6 +32,8 @@ interface PerkDetailInfo {
   abilities: Array<Partial<Ability>>
   affix: Partial<Affixstats>
   maybeStackable?: boolean
+  isWeapon: boolean
+  isArmor: boolean
 }
 
 @Component({
@@ -124,10 +127,14 @@ export class GearbuilderStatsComponent {
             gearScore: gearScore,
           })
 
-          const stats = armorsMap.get(item.ItemStatsRef) || weaponsMap.get(item.ItemStatsRef)
-          weight += stats?.WeightOverride || item.Weight || 0
-          ratingElemental += getArmorRatingElemental(stats, gearScore) || 0
-          ratingPhysical += getArmorRatingPhysical(stats, gearScore) || 0
+          const weapon = weaponsMap.get(item.ItemStatsRef)
+          const armor = armorsMap.get(item.ItemStatsRef)
+
+          if (armor) {
+            weight += armor.WeightOverride || item.Weight || 0
+            ratingElemental += getArmorRatingElemental(armor, gearScore) || 0
+            ratingPhysical += getArmorRatingPhysical(armor, gearScore) || 0
+          }
 
           const fixedPerks = getItemPerkKeys(item)
             .map((key) => perksMap.get(slot?.perks?.[key] || item[key]))
@@ -149,6 +156,8 @@ export class GearbuilderStatsComponent {
               affix: affix ? stripAffixProperties(affix) : null,
               abilities: abilities,
               maybeStackable: abilities?.some((it) => it.IsStackableAbility),
+              isWeapon: !!weapon,
+              isArmor: !!armor,
             }
           }
         }
@@ -179,16 +188,26 @@ export class GearbuilderStatsComponent {
   }
 
   private collectStats(data: PerkDetailInfo[]) {
-    const stats: Record<string, { key: string; label: string[] | string; value: number; percent: number, icon?: string }> = {}
-    for (const info of data) {
-      for (const mod of getAffixMODs(info.affix, info.scale)) {
+    const stats: Record<
+      string,
+      { key: string; label: string[] | string; value: number; percent: number; icon?: string }
+    > = {}
+    for (const perk of data) {
+      for (const mod of getAffixMODs(perk.affix, perk.scale)) {
         stats[mod.key] = stats[mod.key] || { key: mod.key, label: [mod.label], value: 0, percent: 0 }
-        stats[mod.key].value += Number(mod.value) * info.count
+        stats[mod.key].value += Number(mod.value) * perk.count
       }
-      for (const mod of getAffixABSs(info.affix, info.scale)) {
-        stats[mod.key] = stats[mod.key] || { key: mod.key, label: mod.label, value: 0, percent: 0 }
-        stats[mod.key].percent += Number(mod.value) * info.count
-        stats[mod.key].icon = this.damageIcon(mod.key.replace('ABS', ''))
+      if (perk.isArmor) {
+        for (const mod of getAffixABSs(perk.affix, perk.scale)) {
+          stats[mod.key] = stats[mod.key] || { key: mod.key, label: mod.label, value: 0, percent: 0 }
+          stats[mod.key].percent += Number(mod.value) * perk.count
+          stats[mod.key].icon = this.damageIcon(mod.key.replace('ABS', ''))
+        }
+        for (const mod of getAffixDMGs(perk.affix, perk.scale)) {
+          stats[mod.key] = stats[mod.key] || { key: mod.key, label: mod.label, value: 0, percent: 0 }
+          stats[mod.key].percent += Number(mod.value) * perk.count
+          stats[mod.key].icon = this.damageIcon(mod.key.replace('DMG', ''))
+        }
       }
     }
     return sortBy(Object.values(stats), (it) => it.key)

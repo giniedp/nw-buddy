@@ -13,7 +13,7 @@
     >
       <ng-container *ngFor="let row of summary">
         <span class="text-right font-bold">
-          <ng-container *ngIf="row.percent">{{ row.percent | percent: '0.0-1' }}</ng-container>
+          <ng-container *ngIf="row.percent">+{{ row.percent | percent: '0.0-1' }}</ng-container>
           <ng-container *ngIf="row.value">{{ row.value | number: '0.0-2' }}</ng-container>
         </span>
         <div class="opacity-50 flex flex-row items-center">

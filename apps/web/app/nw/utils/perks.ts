@@ -73,6 +73,26 @@ export function getAffixABSs(affix: Partial<Affixstats>, scale: number) {
     })
 }
 
+
+export function getAffixDMGs(affix: Partial<Affixstats>, scale: number) {
+  return getAffixProperties(affix)
+    .filter((it) => it.key.startsWith('DMG'))
+    .map(({ key, value }) => {
+      const name = key.replace('DMG', '').toLowerCase()
+      let label: string
+      if (name.startsWith('vitalscategory ')) {
+        label = `VC_${name.replace('vitalscategory ', '')}`
+      } else {
+        label = `${name}_DamageName`
+      }
+      const valNum = Number(value)
+      return {
+        key: key,
+        label: [label],
+        value: Number.isFinite(valNum) ? valNum * scale : value,
+      }
+    })
+}
 export function getAffixProperties(affix: Partial<Affixstats>): Array<{ key: string; value: number | string }> {
   return Object.entries((affix || {}) as Affixstats)
     .filter(([key]) => key !== 'StatusID')
