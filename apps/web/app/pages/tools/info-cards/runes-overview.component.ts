@@ -1,5 +1,6 @@
+import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { groupBy } from 'lodash'
 import { combineLatest, defer, map } from 'rxjs'
@@ -33,6 +34,18 @@ function isRunestone(it: Crafting) {
   host: {
     class: 'layout-row bg-base-300',
   },
+  animations: [
+    trigger('listAnimation', [
+      transition('void => *', [
+        query(':enter', [style({ opacity: 0 }), stagger(50, [animate('0.3s', style({ opacity: 1 }))])]),
+      ]),
+    ]),
+    trigger('apperAnimation', [
+      state('*', style({ opacity: 0 })),
+      state('true', style({ opacity: 1 })),
+      transition('* => true', [animate('0.3s')]),
+    ]),
+  ]
 })
 export class RunesOverviewComponent {
   protected recipes = defer(() => this.db.recipes).pipe(map((it) => it.filter(isRunestone)))
@@ -62,12 +75,14 @@ export class RunesOverviewComponent {
     })
   )
 
-  protected rows = defer(() => this.runes).pipe(
+  protected rows$ = defer(() => this.runes).pipe(
     map((list) => {
       const groups = groupBy(list, (it) => getItemId(it.$item).replace(/T[0-9][a-zA-Z]?$/i, ''))
       return Array.from(Object.values(groups))
     })
   )
+
+  protected trackByIndex: TrackByFunction<any> = (i) => i
 
   public constructor(private db: NwDbService) {
     //

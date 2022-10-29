@@ -1,1 +1,3 @@
-<nwb-vital-detail *ngFor="let family of families | async" [family]="family" [showPortrait]="true"></nwb-vital-detail>
+<div class="contents" [@listAnimation]="families.length" *ngIf="families$ | async; let families">
+  <nwb-vital-detail *ngFor="let family of families" [family]="family" [showPortrait]="true" ></nwb-vital-detail>
+</div>

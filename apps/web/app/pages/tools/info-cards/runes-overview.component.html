@@ -1,7 +1,12 @@
 <div class="layout-content p-3">
-  <div class="grid grid-cols-5 layout-gap min-w-[1600px]" [nwbScreenshotFrame]="'Runes'">
-    <ng-container *ngFor="let row of rows | async">
-      <div *ngFor="let item of row" class="bg-base-100 rounded-md">
+  <div
+    *ngIf="rows$ | async; let rows"
+    [@listAnimation]="rows.length"
+    [nwbScreenshotFrame]="'Runes'"
+    class="grid grid-cols-5 layout-gap min-w-[1600px] max-w-[2000px] mx-auto"
+  >
+    <ng-container *ngFor="let row of rows; trackBy: trackByIndex">
+      <div *ngFor="let item of row; trackBy: trackByIndex" class="bg-base-100 rounded-md">
         <nwb-item-detail [entityId]="item.$itemId">
           <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true"></nwb-item-detail-header>
           <nwb-item-detail-description></nwb-item-detail-description>
@@ -11,7 +16,10 @@
           <nwb-item-detail-perks></nwb-item-detail-perks>
           <hr class="item-detail-divider" />
           <div class="p-3 flex flex-col gap-1">
-            <div *ngFor="let ingr of item.$ingredients" class="flex flex-row gap-1 justify-start items-center">
+            <div
+              *ngFor="let ingr of item.$ingredients; trackBy: trackByIndex"
+              class="flex flex-row gap-1 justify-start items-center"
+            >
               <picture [nwIcon]="ingr.item" class="w-8 h-8 nw-icon flex-none"></picture>
               <span>{{ ingr.quantity }}</span>
               <span>&times;</span>
