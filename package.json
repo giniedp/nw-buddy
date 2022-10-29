@@ -132,6 +132,7 @@
     "quicktype": "15.1.0",
     "quicktype-core": "6.1.0",
     "raw-loader": "4.0.2",
+    "resize-observer-polyfill": "1.5.1",
     "rxjs": "7.5.7",
     "s3": "4.4.0",
     "tailwindcss": "3.1.8",
