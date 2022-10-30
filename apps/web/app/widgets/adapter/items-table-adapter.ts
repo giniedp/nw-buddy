@@ -1,7 +1,7 @@
-import { Injectable, Optional } from '@angular/core'
+import { Inject, Injectable, Optional } from '@angular/core'
 import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { combineLatest, defer, map, Observable, of } from 'rxjs'
+import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwService } from '~/nw'
 import { getItemIconPath, getItemId, getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman } from '~/nw/utils'
@@ -10,6 +10,7 @@ import { DataTableAdapter } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
+import { ITEMS_TABLE_TASKS, ItemsTableTasks  } from './items-table-tasks'
 
 export type ItemsTableItem = ItemDefinitionMaster & {
   $perks: Perks[]
@@ -95,7 +96,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           width: 175,
           sortable: false,
           headerValueGetter: () => 'Perks',
-          valueGetter: this.valueGetter(({ data }) => data.$perks?.map((it) => it.PerkID)),
+          valueGetter: this.valueGetter(({ data }) => data.$perks?.map((it) => it?.PerkID)),
           cellRenderer: this.cellRenderer(({ data }) => {
             const perks = data.$perks || []
             const buckets = data.$perkBuckets || []
@@ -111,12 +112,12 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
                   classList: ['block', 'w-7', 'h-7'],
                   tap: (a) => {
                     a.target = '_blank'
-                    a.href = nwdbLinkUrl('perk', perk.PerkID)
+                    a.href = nwdbLinkUrl('perk', perk?.PerkID)
                   },
                   children: [
                     this.createIcon((pic, img) => {
                       img.classList.add('w-7', 'h-7', 'nw-icon')
-                      img.src = perk.IconPath
+                      img.src = perk?.IconPath
                     })
                   ]
                 })),
@@ -309,14 +310,14 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
       items: this.config?.source || this.nw.db.items,
       perks: this.nw.db.perksMap,
     })
-      .pipe(map(({ items, perks }) => {
-        return items.map((it): ItemsTableItem => {
-          return {
-            ...it,
-            $perks: getItemPerks(it, perks),
-            $perkBuckets: getItemPerkBucketIds(it)
-          }
-        })
+    .pipe(map(({ items, perks }) => {
+      return items.map((it): ItemsTableItem => {
+        return {
+          ...it,
+          $perks: getItemPerks(it, perks),
+          $perkBuckets: getItemPerkBucketIds(it)
+        }
+      })
       }))
   }).pipe(
     shareReplayRefCount(1)
@@ -327,6 +328,8 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
     private i18n: TranslateService,
     @Optional()
     private config: ItemsTableAdapterConfig,
+    @Inject(ITEMS_TABLE_TASKS)
+    private tasks: ItemsTableTasks
   ) {
     super()
   }

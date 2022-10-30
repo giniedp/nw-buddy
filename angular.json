@@ -30,6 +30,7 @@
             "index": "apps/web/index.html",
             "main": "apps/web/main.ts",
             "tsConfig": "apps/web/tsconfig.app.json",
+            "webWorkerTsConfig": "apps/web/tsconfig.worker.json",
             "polyfills": "apps/web/polyfills.ts",
             "assets": [
               "apps/web/favicon.ico",
@@ -169,6 +170,7 @@
             "main": "apps/web/test.ts",
             "polyfills": "apps/web/polyfills-test.ts",
             "tsConfig": "apps/web/tsconfig.spec.json",
+            "webWorkerTsConfig": "apps/web/tsconfig.worker.json",
             "karmaConfig": "apps/web/karma.conf.js",
             "scripts": [],
             "styles": [
