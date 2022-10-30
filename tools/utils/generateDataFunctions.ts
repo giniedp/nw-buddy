@@ -36,7 +36,7 @@ export function generateDataFunctions(input: Map<string, string[]>) {
     '} from \'./types\'',
     'import { Observable } from \'rxjs\'',
     '',
-    'export abstract class NwDataloader {',
+    'export abstract class NwDataLoader {',
     '  public abstract load<T>(path: string): Observable<T>',
     ...functionStatements,
     '}'

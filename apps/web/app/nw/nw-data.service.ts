@@ -2,18 +2,18 @@ import {
   HttpClient
 } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { NwDataloader } from '@nw-data/datatables'
+import { NwDataLoader } from '@nw-data/datatables'
 import { environment } from 'apps/web/environments/environment'
 import { Observable, shareReplay } from 'rxjs'
 
 export type LocaleData = Record<string, { value: string }>
 
 @Injectable({ providedIn: 'root' })
-export class NwDataService extends NwDataloader {
+export class NwDataService extends NwDataLoader {
   private cache = new Map<string, Observable<any>>()
 
-  public get apiMethods(): Array<keyof NwDataloader> {
-    return Object.getOwnPropertyNames(NwDataloader.prototype) as Array<keyof NwDataloader>
+  public get apiMethods(): Array<keyof NwDataLoader> {
+    return Object.getOwnPropertyNames(NwDataLoader.prototype) as Array<keyof NwDataLoader>
   }
 
   public storagePath: string = environment.nwDataUrl.replace(/\/+$/, '')

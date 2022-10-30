@@ -1,7 +1,7 @@
 import { extract, createFilter, createConverter } from 'nw-extract'
 import { program } from 'commander'
 import { MultiBar, Presets } from 'cli-progress'
-import { NW_USE_PTR, gameDir, extractDir } from '../env'
+import { NW_USE_PTR, nwData } from '../env'
 
 program
   .option('-g, --game <path>', 'game directory')
@@ -30,9 +30,14 @@ program
     const b1 = bar.create(0, 0, {})
     const b2 = bar.create(0, 0)
 
+    const inputDir = options.game || nwData.srcDir(options.ptr)!
+    const outputDir = options.output || nwData.tmpDir(options.ptr)!
+    console.log('[EXTRACT]', inputDir)
+    console.log('      to:', outputDir)
+
     await extract({
-      inputDir: options.game || gameDir(options.ptr)!,
-      outputDir: options.output || extractDir(options.ptr)!,
+      inputDir: inputDir,
+      outputDir: outputDir,
       update: options.update,
       filter: createFilter(filter),
       converterFactory: createConverter(filter),

@@ -3,18 +3,19 @@ import * as fs from 'fs'
 import * as http from 'https'
 import * as path from 'path'
 import * as unzipper from 'unzipper'
-import { cdnPath, NW_USE_PTR } from '../env'
+import { NW_USE_PTR, nwData } from '../env'
 
 program
   .option('--ptr', 'PTR mode', NW_USE_PTR)
   .option('-o, --output <path>', 'output directory')
   .action(async () => {
-    const options = program.opts<{ ptr: string; output: string }>()
-    const input = cdnPath(options.ptr) + '.zip'
+    const options = program.opts<{ ptr: boolean; output: string }>()
+    const input = nwData.cdnUrl(options.ptr) + '.zip'
     const outDir = options.output
     const zipFile = path.join(outDir, path.basename(input))
 
-    console.log('Download', input, '->', zipFile)
+    console.log('[DOWNLOAD]', input)
+    console.log('       to:', zipFile)
 
     if (!fs.existsSync(outDir)) {
       console.log('Create dir', outDir)

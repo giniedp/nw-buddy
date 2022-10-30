@@ -74,7 +74,7 @@ import type {
 } from './types'
 import { Observable } from 'rxjs'
 
-export abstract class NwDataloader {
+export abstract class NwDataLoader {
   public abstract load<T>(path: string): Observable<T>
   public affixdefinitions() {
     return this.load<Affixdefinitions[]>('javelindata_affixdefinitions.json')

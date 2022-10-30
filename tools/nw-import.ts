@@ -6,22 +6,26 @@ import { importLocales } from './importer/importLocales'
 import { importImages } from './importer/importImages'
 import { generateTypes } from './importer/generateTypes'
 import { checkExpressions } from './importer/checkExpressions'
-import { NW_USE_PTR, webAppDir, extractDir, importDir, distDir } from '../env'
+import { NW_USE_PTR, web, nwData } from '../env'
 
 program
   .option('-i, --input <path>', 'input directory')
   .option('--ptr', 'PTR mode', NW_USE_PTR)
   .action(async () => {
     const options = program.opts<{ input: string; output: string; ptr: boolean }>()
-    const input = options.input || extractDir(options.ptr)!
-    const output = importDir(options.ptr)!
-    const typesDir = path.join(webAppDir, 'nw-data')
+    const inputDir = options.input || nwData.tmpDir(options.ptr)!
+    const distDir = nwData.distDir(options.ptr)!
+    const publicDir = nwData.assetPath(options.ptr)
+    const typesDir = web.src('nw-data')
 
-    console.log('import from', input, 'to', output)
+    console.log('[IMPORT]', inputDir)
+    console.log('     to:', distDir)
+    console.log(' images:', publicDir)
+    console.log('  types:', typesDir)
 
     console.log('loading datatables')
     const tables = await loadDatatables({
-      inputDir: input,
+      inputDir: inputDir,
       patterns: [
         '*_affixdefinitions',
         '*_affixstats',
@@ -178,8 +182,8 @@ program
 
     console.log('importing locales')
     await importLocales({
-      input,
-      output: path.join(output, 'localization'),
+      input: inputDir,
+      output: path.join(distDir, 'localization'),
       tables,
       preserveKeys: [
         'ui_itemtypedescription_head_slot',
@@ -222,8 +226,8 @@ program
     })
     console.log('importing images')
     await importImages({
-      input,
-      output: output,
+      input: inputDir,
+      output: distDir,
       tables,
       ignoreKeys: ['HiResIconPath'],
       rewrite: {
@@ -232,12 +236,12 @@ program
         WeaponAppearanceOverride: (key, value, obj) => `lyshineui/images/icons/items/${obj.ItemType}/${value}`,
       },
       rewritePath: (value) => {
-        return path.relative(distDir, path.join(output, value)).replace(/\\/g, '/')
+        return path.join(publicDir, value).replace(/\\/g, '/')
       },
     })
     console.log('writing datatables')
     await processArrayWithProgress(tables, async ({ relative, data }) => {
-      const jsonPath = path.join(output, 'datatables', relative)
+      const jsonPath = path.join(distDir, 'datatables', relative)
       await writeJSONFile(data, jsonPath, {
         createDir: true,
       })

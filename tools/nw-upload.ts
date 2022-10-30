@@ -9,8 +9,7 @@ import {
   CDN_UPLOAD_KEY,
   CDN_UPLOAD_SECRET,
   CDN_UPLOAD_SPACE,
-  importDir,
-  nwDataDir,
+  nwData,
   NW_USE_PTR,
 } from '../env'
 import { glob } from './utils'
@@ -20,7 +19,7 @@ program
   .command('bundle')
   .action(async () => {
     const options = program.opts<{ ptr: boolean }>()
-    await uploadBundle(importDir(options.ptr) + '.zip')
+    await uploadBundle(nwData.distDir(options.ptr) + '.zip')
   })
 
 program
@@ -28,18 +27,18 @@ program
   .command('all')
   .action(async () => {
     const options = program.opts<{ ptr: boolean }>()
-    await uploadAll(importDir(options.ptr)!)
+    await uploadAll(nwData.distDir(options.ptr)!)
   })
 
 program.parse(process.argv)
 
 async function uploadBundle(file: string) {
-  console.log('uploadBundle', file)
+  console.log('[UPLOAD]', file)
   const client = createClient()
   const files = [file]
   for (let i = 0; i < files.length; i++) {
     const file = files[i]
-    const key = path.relative(nwDataDir, file)
+    const key = path.relative(nwData.dist(), file)
     await client.send(
       new PutObjectCommand({
         Bucket: CDN_UPLOAD_SPACE,
@@ -52,7 +51,7 @@ async function uploadBundle(file: string) {
 }
 
 async function uploadAll(from: string) {
-  console.log('uploadAll', from)
+  console.log('[UPLOAD]', from)
   const client = createClient()
   const files = await glob([path.join(from, '**', '*'), '!**/*.json'])
   const bars = new MultiBar(
@@ -66,7 +65,7 @@ async function uploadAll(from: string) {
   const bar = bars.create(files.length, 0, {})
   for (let i = 0; i < files.length; i++) {
     const file = files[i]
-    const key = path.relative(nwDataDir, file)
+    const key = path.relative(nwData.dist(), file)
     const params: PutObjectCommandInput = {
       Bucket: CDN_UPLOAD_SPACE,
       Key: key,

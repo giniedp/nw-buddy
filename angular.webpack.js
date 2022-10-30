@@ -17,10 +17,20 @@ module.exports = (config, options) => {
     }
   }
 
+  const VERSION = env.VERSION
+  const USE_PTR = env.NW_USE_PTR
+  const DATA_URL = env.nwData.publicUrl(env.NW_USE_PTR, env.NW_USE_CDN)
+  console.log('\n')
+  console.log('[WEBPACK]', config.target)
+  console.log('  version', VERSION)
+  console.log('    isPtr', !!USE_PTR)
+  console.log('   assets', DATA_URL)
+  console.log('\n')
+
   const definitions = {
-    __VERSION__: JSON.stringify(require('./package.json').version),
-    __NW_USE_PTR__: JSON.stringify(env.NW_USE_PTR),
-    __NW_DATA_URL__: JSON.stringify(env.NW_USE_CDN ? env.cdnPath(env.NW_USE_PTR) : env.publicPath(env.NW_USE_PTR)),
+    __VERSION__: JSON.stringify(VERSION),
+    __NW_USE_PTR__: JSON.stringify(USE_PTR),
+    __NW_DATA_URL__: JSON.stringify(DATA_URL),
   }
   config.plugins = [
     ...config.plugins,
@@ -29,10 +39,5 @@ module.exports = (config, options) => {
     }),
     new webpack.DefinePlugin(definitions),
   ]
-
-  console.log('[WEBPACK]', {
-    target: config.target,
-    ...definitions,
-  })
   return config
 }
