@@ -11,7 +11,7 @@ program
   .action(async () => {
     const options = program.opts<{ ptr: boolean; output: string }>()
     const input = nwData.cdnUrl(options.ptr) + '.zip'
-    const outDir = options.output
+    const outDir = nwData.dist()
     const zipFile = path.join(outDir, path.basename(input))
 
     console.log('[DOWNLOAD]', input)
