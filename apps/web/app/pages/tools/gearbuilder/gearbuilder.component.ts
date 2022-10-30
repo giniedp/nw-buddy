@@ -13,9 +13,7 @@ import { GearSlotComponent } from './gearbuilder-slot.component'
   template: `
     <ng-container *ngIf="infos$ | async; let info">
       <span>{{ info.name }} </span>
-      <span class="opacity-50 text-sm capitalize">
-        {{ info.gs || 0 | number: '0.0-0' }} GS {{ info.weight }}
-      </span>
+      <span class="opacity-50 text-sm capitalize"> {{ info.gs || 0 | number: '0.0-0' }} GS {{ info.weight }} </span>
     </ng-container>
   `,
   imports: [CommonModule, GearSlotComponent, RouterModule],
@@ -43,7 +41,7 @@ export class GearbuilderRowComponent {
         const item = items.get(entry?.itemId)
         gs.push({
           id: slotId as any,
-          gearScore: entry?.gearScore || item ? getItemMaxGearScore(item) : 0 || 0,
+          gearScore: entry?.gearScore || (item ? getItemMaxGearScore(item) : 0 || 0),
         })
         weight += (armors.get(item?.ItemStatsRef)?.WeightOverride || 0) / 10
       })
