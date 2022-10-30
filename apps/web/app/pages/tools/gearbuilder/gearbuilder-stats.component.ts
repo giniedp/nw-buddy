@@ -34,6 +34,7 @@ interface PerkDetailInfo {
   maybeStackable?: boolean
   isWeapon: boolean
   isArmor: boolean
+  isJewelery: boolean
 }
 
 @Component({
@@ -157,7 +158,8 @@ export class GearbuilderStatsComponent {
               abilities: abilities,
               maybeStackable: abilities?.some((it) => it.IsStackableAbility),
               isWeapon: !!weapon,
-              isArmor: !!armor,
+              isArmor: !!armor || perk?.ItemClass?.includes('Armor'),
+              isJewelery: perk?.ItemClass?.includes('EquippableAmulet') || perk?.ItemClass?.includes('EquippableToken') || perk?.ItemClass?.includes('EquippableRing') ,
             }
           }
         }
@@ -197,7 +199,7 @@ export class GearbuilderStatsComponent {
         stats[mod.key] = stats[mod.key] || { key: mod.key, label: [mod.label], value: 0, percent: 0 }
         stats[mod.key].value += Number(mod.value) * perk.count
       }
-      if (perk.isArmor) {
+      if (perk.isArmor || perk.isJewelery) {
         for (const mod of getAffixABSs(perk.affix, perk.scale)) {
           stats[mod.key] = stats[mod.key] || { key: mod.key, label: mod.label, value: 0, percent: 0 }
           stats[mod.key].percent += Number(mod.value) * perk.count
