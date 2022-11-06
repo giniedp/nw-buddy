@@ -4,9 +4,15 @@ import { ChangeDetectionStrategy, Component, ElementRef, Input } from '@angular/
   standalone: true,
   selector: 'nwb-icon',
   template: '',
+  styles: [`
+    ::ng-deep svg {
+      max-height: 100%;
+      max-width: 100%;
+    }
+  `],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'inline-block'
+    class: 'inline-block flex items-center justify-center'
   }
 })
 export class SvgIconComponent {

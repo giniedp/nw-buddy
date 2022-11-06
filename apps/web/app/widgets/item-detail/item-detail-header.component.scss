@@ -21,10 +21,6 @@
     left: 4px;
   }
 
-  aside {
-    z-index: 2;
-  }
-
   &.v-sm {
     grid-template-columns: 48px auto;
     picture, a {
@@ -38,62 +34,6 @@
     picture, a {
       width: 96px;
       height: 96px;
-    }
-  }
-
-  .backdrop {
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    right: 0px;
-    bottom: 0px;
-    z-index: 1;
-
-    &:not(.bg-named) {
-      &.rarity-0 {
-        background-image: map-get($nw-rarity-header-bg, "0");
-        background-size: 100% 100%;
-      }
-      &.rarity-1 {
-        background-image: map-get($nw-rarity-header-bg, "1");
-        background-size: 100% 100%;
-      }
-      &.rarity-2 {
-        background-image: map-get($nw-rarity-header-bg, "2");
-        background-size: 100% 100%;
-      }
-      &.rarity-3 {
-        background-image: map-get($nw-rarity-header-bg, "3");
-        background-size: 100% 100%;
-      }
-      &.rarity-4 {
-        background-image: map-get($nw-rarity-header-bg, "4");
-        background-size: 100% 100%;
-      }
-    }
-
-    &.bg-named {
-      &.rarity-0 {
-        background-image: map-get($nw-rarity-header-bg, "0");
-        background-size: 100% 100%;
-      }
-      &.rarity-1 {
-        background-image: map-get($nw-rarity-header-bg-sprite, "1");
-        background-size: 100% 100%;
-      }
-      &.rarity-2 {
-        background-image: map-get($nw-rarity-header-bg-sprite, "2");
-        background-size: 100% 100%;
-      }
-      &.rarity-3 {
-        background-image: map-get($nw-rarity-header-bg-sprite, "3");
-        background-size: 100% 100%;
-      }
-      &.rarity-4 {
-        background-image: map-get($nw-rarity-header-bg-sprite, "4");
-        background-size: 100% 100%;
-      }
-
     }
   }
 }

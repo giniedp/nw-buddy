@@ -8,7 +8,7 @@ import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
 import { getIngretientsFromRecipe, getItemIconPath, getItemId, getItemIdFromRecipe, getItemRarity } from '~/nw/utils'
 import { humanize, shareReplayRefCount } from '~/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter } from '~/ui/data-table'
+import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
@@ -20,6 +20,12 @@ export type RecipeWithItem = Crafting & {
 
 @Injectable()
 export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
+  public static provider() {
+    return dataTableProvider({
+      adapter: CraftingTableAdapter,
+    })
+  }
+
   public entityID(item: RecipeWithItem): string {
     return item.RecipeID
   }
@@ -40,7 +46,7 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           sortable: false,
           filter: false,
           pinned: true,
-          width: 54,
+          width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
             const item = data?.$item
             if (!item) {

@@ -1,5 +1,11 @@
 import { Ability, Affixstats, ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
 
+const PERK_SORT_WEIGHT = {
+  Inherent: 0,
+  Gem: 1,
+  Generated: 2
+}
+
 export function isPerkInherent(perk:  Perks | Perkbuckets) {
   return perk?.PerkType === 'Inherent'
 }
@@ -10,6 +16,10 @@ export function isPerkGem(perk: Perks | Perkbuckets) {
 
 export function isPerkGenerated(perk: Perks | Perkbuckets) {
   return perk?.PerkType === 'Generated'
+}
+
+export function getPerkTypeWeight(type: string) {
+  return PERK_SORT_WEIGHT[type] ?? 3
 }
 
 export function isPerkApplicableToItem(perk: Perks, item: ItemDefinitionMaster) {

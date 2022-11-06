@@ -17,7 +17,7 @@ import { ExprContextService } from '~/widgets/adapter/exp-context.service'
   host: {
     class: 'layout-col bg-base-300 rounded-md overflow-clip',
   },
-  providers: [DataTableAdapter.provideClass(LootLimitsTableAdapter), ExprContextService],
+  providers: [LootLimitsTableAdapter.provider(), ExprContextService],
 })
 export class LootLimitsComponent {
   public constructor(public ctx: ExprContextService) {}

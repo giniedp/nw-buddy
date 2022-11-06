@@ -1,6 +1,8 @@
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ContentChild, Input, TemplateRef } from '@angular/core'
+import { IconsModule } from '../icons'
+import { svgEllipsisVertical } from '../icons/svg'
 
 @Component({
   standalone: true,
@@ -31,7 +33,7 @@ export class NavToobalButtonsComponent {
   selector: 'nwb-nav-toolbar',
   templateUrl: './nav-toolbar.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, OverlayModule],
+  imports: [CommonModule, OverlayModule, IconsModule],
   host: {
     class: 'flex flex-row bg-base-300 overflow-hidden',
   },
@@ -39,6 +41,7 @@ export class NavToobalButtonsComponent {
 export class NavToolbarComponent {
 
   protected isMenuOpen = false
+  protected svgEllipsisVertical = svgEllipsisVertical
 
   @Input()
   public menu: TemplateRef<any>

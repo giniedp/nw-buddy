@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, TrackByF
 import { RouterModule } from '@angular/router'
 import { ItemDefinitionMaster } from '@nw-data/types'
 import { NwModule } from '~/nw'
-import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
+import { DataTableModule } from '~/ui/data-table'
 import { NavToobalModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -19,7 +19,7 @@ import { Armorset } from './types'
   host: {
     class: 'layout-col bg-base-300 rounded-md overflow-clip',
   },
-  providers: [DataTableAdapter.provideClass(ArmorsetsAdapterService), QuicksearchService],
+  providers: [ArmorsetsAdapterService.provider(), QuicksearchService],
 })
 export class ArmorsetsComponent {
   public selection: ItemDefinitionMaster[]

@@ -1,7 +1,7 @@
 import { ChangeDetectorRef, Directive, Input, OnDestroy, OnInit } from '@angular/core'
-import { ActivatedRoute, Route, Router } from '@angular/router'
+import { ActivatedRoute, NavigationEnd, Route, Router } from '@angular/router'
 import { isEqual } from 'lodash'
-import { distinctUntilChanged, Subject, takeUntil } from 'rxjs'
+import { distinctUntilChanged, filter, map, startWith, Subject, takeUntil } from 'rxjs'
 import { DataTableComponent } from './data-table.component'
 
 @Directive({
@@ -25,12 +25,6 @@ export class DataTableRouterDirective implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     const childConfig = this.childRouteConfig()
-    const childRoute = this.childRoute()
-    const toSelect = (childRoute || this.route).snapshot.paramMap.get(this.detailRoutParam)
-      if (toSelect) {
-        this.table.select([toSelect])
-        this.cdRef.markForCheck()
-      }
     this.table.selection
       .pipe<string[]>(distinctUntilChanged(isEqual))
       .pipe(takeUntil(this.destroy$))
@@ -40,6 +34,16 @@ export class DataTableRouterDirective implements OnInit, OnDestroy {
           relativeTo: this.route,
           queryParamsHandling: 'preserve',
         })
+      })
+
+    this.router
+      .events
+      .pipe(filter((it) => it instanceof NavigationEnd))
+      .pipe(map(() => this.getRouteId()))
+      .pipe(distinctUntilChanged())
+      .pipe(startWith(this.getRouteId()))
+      .subscribe((id) => {
+        this.selectIdInTable(id)
       })
   }
 
@@ -57,8 +61,16 @@ export class DataTableRouterDirective implements OnInit, OnDestroy {
     return this.route.children?.find((it) => it.routeConfig === config)
   }
 
-  private paramSnapshot() {
+  private getRouteId() {
+    const childRoute = this.childRoute()
+    return (childRoute || this.route).snapshot.paramMap.get(this.detailRoutParam)
+  }
 
+  private selectIdInTable(id: string) {
+    if (id) {
+      this.table.select([id])
+      this.cdRef.markForCheck()
+    }
   }
 
   private navigationTarget(selection: string, route: Route) {

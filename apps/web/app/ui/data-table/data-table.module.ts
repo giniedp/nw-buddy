@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core'
+import { ModuleWithProviders, NgModule } from '@angular/core'
 import { CategoryChildRouteParamDirective, CategoryRouteParamDirective } from './data-table-header-router.directive'
 import { DataTableCategoriesComponent } from './data-table-header.component'
 import { DataTableCategoriesDirective } from './data-table-categories.directive'

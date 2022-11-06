@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
-import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
+import { DataTableModule } from '~/ui/data-table'
 import { NavToobalModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { StatusEffectsTableAdapter } from '~/widgets/adapter'
@@ -16,7 +16,7 @@ import { StatusEffectsTableAdapter } from '~/widgets/adapter'
   host: {
     class: 'layout-col bg-base-300 rounded-md overflow-clip',
   },
-  providers: [DataTableAdapter.provideClass(StatusEffectsTableAdapter), QuicksearchService],
+  providers: [StatusEffectsTableAdapter.provider(), QuicksearchService],
 })
 export class StatusEffectsComponent {
   //

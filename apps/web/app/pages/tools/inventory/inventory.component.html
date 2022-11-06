@@ -1,0 +1,31 @@
+<nwb-data-table-header
+  class="flex flex-row bg-base-300 rounded-t-md"
+  categoryChildRoute
+  [childRouteIndex]="'table'"
+  #header="tableHeader"
+>
+  <nwb-nav-toolbar [menu]="tplMenu" [buttons]="tplButtons" class="flex-1">
+    <ng-template #tplMenu>
+      <li *ngFor="let item of header.categories | async" [routerLinkActive]="'bordered'">
+        <a [routerLink]="item.route">
+          <img [nwImage]="item.icon" *ngIf="item.icon" class="w-6 h-6"/>
+          <span  *ngIf="!item.icon">{{ item.label }}</span>
+        </a>
+      </li>
+    </ng-template>
+    <ng-template #tplButtons>
+      <li>
+        <span (click)="createItem()">
+          <nwb-icon [icon]="svgPlus" class="w-4 h-4"></nwb-icon>
+        </span>
+      </li>
+      <li>
+        <nwb-data-table-panel-button></nwb-data-table-panel-button>
+      </li>
+    </ng-template>
+  </nwb-nav-toolbar>
+  <div class="flex-none p-2 max-w-[30%]">
+    <nwb-quicksearch-input #search></nwb-quicksearch-input>
+  </div>
+</nwb-data-table-header>
+<router-outlet></router-outlet>

@@ -22,7 +22,8 @@ export const ROUTES: Routes = [
 
   { path: 'armorsets', loadChildren: () => import('./pages/tools/armorsets').then((m) => m.ArmorsetsModule) },
   { path: 'dungeons', loadChildren: () => import('./pages/tools/dungeons').then((m) => m.DungeonsModule) },
-  { path: 'gearbuilder', loadChildren: () => import('./pages/tools/gearbuilder').then((m) => m.GearbuilderModule) },
+  { path: 'inventory', loadChildren: () => import('./pages/tools/inventory').then((m) => m.InventoryModule) },
+  { path: 'gearsets', loadChildren: () => import('./pages/tools/gearsets').then((m) => m.GearsetsModule) },
   { path: 'info-cards', loadChildren: () => import('./pages/tools/info-cards').then((m) => m.InfoCardsModule) },
   { path: 'level-xp', loadChildren: () => import('./pages/tools/level-xp').then((m) => m.LevelXpModule) },
   { path: 'territories', loadChildren: () => import('./pages/tools/territories').then((m) => m.TerritoriesModule) },

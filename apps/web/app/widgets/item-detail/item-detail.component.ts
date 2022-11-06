@@ -4,7 +4,7 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { map } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { getItemId } from '~/nw/utils'
-import { ItemDetailService, PerkOverrideFn } from './item-detail.service'
+import { ItemDetailService } from './item-detail.service'
 
 @Component({
   standalone: true,
@@ -40,7 +40,7 @@ export class ItemDetailComponent extends ItemDetailService implements OnChanges 
   }
 
   @Input()
-  public set perkOverride(value: PerkOverrideFn) {
+  public set perkOverride(value: Record<string, string>) {
     this.perkOverride$.next(value)
   }
 

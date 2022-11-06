@@ -5,15 +5,13 @@ import {
   EventEmitter,
   Input,
   NgZone,
-  OnChanges,
   OnDestroy,
   OnInit,
   Output,
-  SimpleChanges,
 } from '@angular/core'
-import { ColumnApi, Grid, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
+import { Grid, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { merge } from 'lodash'
-import { debounceTime, distinctUntilChanged, filter, ReplaySubject, skip, skipWhile, Subject, takeUntil, tap } from 'rxjs'
+import { debounceTime, distinctUntilChanged, filter, ReplaySubject, skipWhile, Subject, takeUntil } from 'rxjs'
 
 @Component({
   selector: 'nwb-ag-grid',
@@ -21,7 +19,7 @@ import { debounceTime, distinctUntilChanged, filter, ReplaySubject, skip, skipWh
   styleUrls: ['./ag-grid.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'ag-grid select-text'
+    class: 'ag-grid select-text',
   },
 })
 export class AgGridComponent<T = any> implements OnInit, OnDestroy {
@@ -31,7 +29,7 @@ export class AgGridComponent<T = any> implements OnInit, OnDestroy {
   }
 
   @Input()
-  public set options(value: GridOptions) {
+  public set options(value: GridOptions<T>) {
     this.options$.next(value)
   }
 
@@ -42,9 +40,6 @@ export class AgGridComponent<T = any> implements OnInit, OnDestroy {
 
   @Output()
   public gridReady = new EventEmitter<GridReadyEvent>()
-
-  @Output()
-  public beforeDestroy = new EventEmitter<void>()
 
   public grid: Grid
 
@@ -67,7 +62,6 @@ export class AgGridComponent<T = any> implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.beforeDestroy.next()
     this.destroy$.next(null)
     this.destroy$.complete()
     this.disposeGrid()
@@ -105,5 +99,4 @@ export class AgGridComponent<T = any> implements OnInit, OnDestroy {
     this.grid = null
     grid?.destroy()
   }
-
 }

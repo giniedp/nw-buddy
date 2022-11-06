@@ -1,0 +1,105 @@
+<ng-container *ngIf="data$ | async; let data; else: tplEmpty">
+  <div class="navbar bg-base-300 rounded-t-md">
+    <div class="flex-none">
+      <ul class="menu menu-horizontal p-0">
+        <li>
+          <a [routerLink]="'..'">
+            <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="flex-1">
+      <input
+        type="text"
+        maxlength="100"
+        [ngModel]="name$ | async"
+        (ngModelChange)="updateName($event)"
+        [ngModelOptions]="{ updateOn: 'blur' }"
+        class="input input-md w-full"
+      />
+    </div>
+    <div class="flex-none">
+      <ul class="menu menu-horizontal p-0">
+        <li>
+          <nwb-screenshot-button class="tooltip-left"></nwb-screenshot-button>
+        </li>
+        <li class="tooltip tooltip-info tooltip-left" data-tip="Toggle compact mode">
+          <a (click)="onCompactClicked()" [class.text-primary]="compactMode">
+            <svg viewBox="0 0 448 512" class="w-4 h-4">
+              <path
+                fill="currentColor"
+                d="M160 64c0-17.7-14.3-32-32-32s-32 14.3-32 32v64H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V64zM32 320c-17.7 0-32 14.3-32 32s14.3 32 32 32H96v64c0 17.7 14.3 32 32 32s32-14.3 32-32V352c0-17.7-14.3-32-32-32H32zM352 64c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H352V64zM320 320c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32s32-14.3 32-32V384h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H320z"
+              />
+            </svg>
+          </a>
+        </li>
+        <li class="tooltip tooltip-info tooltip-left" data-tip="Create a copy">
+          <a (click)="onCloneClicked()">
+            <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
+          </a>
+        </li>
+        <li class="tooltip tooltip-error tooltip-left" data-tip="Delete">
+          <a (click)="onDeleteClicked()">
+            <nwb-icon [icon]="iconDelete" class="w-4 h-4"></nwb-icon>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="bg-base-300 px-4 pt-2">
+    <div class="alert prose mx-auto leading-tight">
+      <div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          class="stroke-info flex-shrink-0 w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          ></path>
+        </svg>
+        <div>Work in progress. At the moment you are able to create "invalid" perk combinations.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-base-300 p-4 rounded-b-md flex flex-col xl:flex-row layout-gap" [nwbScreenshotFrame]="name$ | async">
+    <div class="flex-1 grid layout-gap" [@listAnimation]="slots?.length">
+      <nwb-gearset-stats [class.text-xs]="compactMode"></nwb-gearset-stats>
+      <nwb-gearset-slot
+        *ngFor="let slot of slots; trackBy: trackByIndex"
+        [gearset]="data"
+        [slot]="slot"
+        [compact]="compactMode"
+        (itemRemove)="onItemRemove(slot)"
+        (itemUnlink)="onItemUnlink(slot, $event)"
+      ></nwb-gearset-slot>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #tplEmpty>
+  <div class="alert alert-error shadow-lg" *ngIf="!(isLoading$ | async)">
+    <div>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="stroke-current flex-shrink-0 h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span>Gearset not found</span>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,43 @@
+<ng-container *ngIf="data$ | async; let data">
+  <div class="flex flex-col layout-pad layout-gap">
+    <div class="flex flex-row items-center">
+      <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-14 h-14">
+      <div class="font-bold text-5xl"> {{ data.gearScore | number:'0.0-0' }}</div>
+    </div>
+
+    <nwb-property-grid
+      *ngIf="data.summary; let summary"
+      [humanizeNames]="true"
+      [numberFormat]="'0.0-4'"
+      class="gap-x-1"
+    >
+      <ng-container *ngFor="let row of summary">
+        <span class="text-right font-bold">
+          <ng-container *ngIf="row.percent">+{{ row.percent | percent: '0.0-1' }}</ng-container>
+          <ng-container *ngIf="row.value">{{ row.value | number: '0.0-2' }}</ng-container>
+        </span>
+        <div class="opacity-50 flex flex-row items-center">
+          <img *ngIf="row.icon" [nwImage]="row.icon" class="w-6 h-6"/>
+          <span> {{ row.label | nwText }} </span>
+        </div>
+
+      </ng-container>
+    </nwb-property-grid>
+
+    <nwb-property-grid class="gap-2">
+      <ng-container *ngFor="let info of data.stackable">
+        <a [nwInfoLink]="info.perk.PerkID" [nwInfoResource]="'perk'">
+          <img [nwImage]="info.perk.IconPath" class="w-8 h-8" />
+        </a>
+        <div class="text-sky-600">
+
+          <b [nwText]="info.perk.DisplayName"></b>
+          <b class="text-primary"> &times; {{ info.count }} </b>
+          <span>
+            {{ info.perk.Description | nwText: { perkMultiplier: getPerkMultiplier(info) } }}
+          </span>
+        </div>
+      </ng-container>
+    </nwb-property-grid>
+  </div>
+</ng-container>

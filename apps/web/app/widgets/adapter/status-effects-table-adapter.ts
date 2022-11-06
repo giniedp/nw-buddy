@@ -4,13 +4,19 @@ import { GridOptions } from 'ag-grid-community'
 import { defer, exhaustAll, map, Observable, of, shareReplay } from 'rxjs'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
 import { AsyncCellRenderer, SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter } from '~/ui/data-table'
+import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import m from 'mithril'
 import { TranslateService } from '~/i18n'
 import { humanize, shareReplayRefCount } from '~/utils'
 
 @Injectable()
 export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
+  public static provider() {
+    return dataTableProvider({
+      adapter: StatusEffectsTableAdapter,
+    })
+  }
+
   public entityID(item: Statuseffect): string {
     return item.StatusID
   }
@@ -32,7 +38,7 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
           sortable: false,
           filter: false,
           pinned: true,
-          width: 54,
+          width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
               href: nwdbLinkUrl('status-effect', data.StatusID),

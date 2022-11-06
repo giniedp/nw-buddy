@@ -1,14 +1,22 @@
 <div class="flex flex-row">
-  <div class="flex-1"></div>
+  <ul class="flex-1 menu menu-horizontal ">
+    <li (click)="close()">
+      <span>
+        <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
+      </span>
+    </li>
+    <li>
+      <span>
+        {{ title }}
+      </span>
+    </li>
+    <span class="flex-1"></span>
+    <li>
+      <nwb-data-table-panel-button></nwb-data-table-panel-button>
+    </li>
+  </ul>
   <div class="flex-none flex justify-center items-center">
     <nwb-quicksearch-input #search="quickSearch" class="w-60"></nwb-quicksearch-input>
-  </div>
-  <div class="flex-1 flex justify-end">
-    <ul class="menu  menu-horizontal">
-      <li>
-        <nwb-data-table-panel-button></nwb-data-table-panel-button>
-      </li>
-    </ul>
   </div>
 </div>
 
@@ -16,18 +24,19 @@
   *ngIf="adapter"
   #table
   [adapter]="adapter"
+  [multiSelect]="multiSelect"
   [quickFilter]="search.value$ | async"
   (selection)="onSelectionChange($event)"
   (rowDoubleClick)="onRowDoubleClick($event)"
   class="flex-1 rounded-md overflow-clip"
 ></nwb-data-table>
 
-<div class="flex justify-between">
+<div class="flex justify-end gap-1">
   <div class="btn-group">
-    <label class="btn btn-sm text-error" (click)="close()">Cancel</label>
+    <label class="btn btn-ghost" (click)="close()">Cancel</label>
   </div>
   <div class="btn-group">
-    <label class="btn btn-sm " (click)="clear()">Clear selection</label>
-    <label class="btn btn-sm text-success" (click)="commit()">OK</label>
+    <label class="btn btn-ghost " (click)="clear()">Clear selection</label>
+    <label class="btn btn-ghost text-success" (click)="commit()">OK</label>
   </div>
 </div>

@@ -1,16 +1,15 @@
 import { Inject, Injectable, Optional } from '@angular/core'
 import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
+import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwService } from '~/nw'
 import { getItemIconPath, getItemId, getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter } from '~/ui/data-table'
+import { DataTableAdapter, DataTableAdapterOptions, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
-import { ITEMS_TABLE_TASKS, ItemsTableTasks  } from './items-table-tasks'
 
 export type ItemsTableItem = ItemDefinitionMaster & {
   $perks: Perks[]
@@ -18,24 +17,17 @@ export type ItemsTableItem = ItemDefinitionMaster & {
 }
 
 @Injectable()
-export class ItemsTableAdapterConfig {
+export class ItemsTableAdapterConfig extends DataTableAdapterOptions<ItemDefinitionMaster> {
   hideUserData?: boolean
-  source?: Observable<ItemDefinitionMaster[]>
-  persistStateId?: string
 }
 
 @Injectable()
 export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
   public static provider(config?: ItemsTableAdapterConfig) {
-    const provider = []
-    if (config) {
-      provider.push({
-        provide: ItemsTableAdapterConfig,
-        useValue: config
-      })
-    }
-    provider.push(DataTableAdapter.provideClass(ItemsTableAdapter))
-    return provider
+    return dataTableProvider({
+      adapter: ItemsTableAdapter,
+      options: config
+    })
   }
 
   public entityID(item: ItemsTableItem): string {
@@ -45,6 +37,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
   public entityCategory(item: ItemsTableItem): string {
     return item.ItemType
   }
+
   public override get persistStateId(): string {
     return this.config?.persistStateId
   }
@@ -53,7 +46,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
     of<GridOptions>({
       rowSelection: 'single',
       rowBuffer: 0,
-      // suppressRowHoverHighlight: true,
+
       columnDefs: [
         this.colDef({
           colId: 'icon',
@@ -62,7 +55,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           sortable: false,
           filter: false,
           pinned: true,
-          width: 54,
+          width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
               href: nwdbLinkUrl('item', data.ItemID),
@@ -177,54 +170,52 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
             pref: this.nw.itemPref
           }),
         }),
-        this.colDef({
-          colId: 'userStockCount',
-          headerValueGetter: () => 'In Stock',
-          hide: this.config?.hideUserData,
-          suppressMenu: false,
-          headerTooltip: 'Number of items currently owned',
-          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.stock),
-          cellRenderer: TrackingCell,
-          cellRendererParams: TrackingCell.params({
-            getId: (value: ItemsTableItem) => getItemId(value),
-            pref: this.nw.itemPref,
-            mode: 'stock',
-            class: 'text-right',
+        ...(this.config?.hideUserData ? [] : [
+          this.colDef({
+            colId: 'userStockCount',
+            headerValueGetter: () => 'In Stock',
+            suppressMenu: false,
+            headerTooltip: 'Number of items currently owned',
+            valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.stock),
+            cellRenderer: TrackingCell,
+            cellRendererParams: TrackingCell.params({
+              getId: (value: ItemsTableItem) => getItemId(value),
+              pref: this.nw.itemPref,
+              mode: 'stock',
+              class: 'text-right',
+            }),
+            width: 90,
           }),
-          width: 90,
-        }),
-        this.colDef({
-          colId: 'userOwnedWithGS',
-          headerValueGetter: () => 'Owned GS',
-          hide: this.config?.hideUserData,
-          headerTooltip: 'Item owned with this gear score',
-          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.gs),
-          cellRenderer: TrackingCell,
-          cellRendererParams: TrackingCell.params({
-            getId: (value: ItemsTableItem) => getItemId(value),
-            pref: this.nw.itemPref,
-            mode: 'gs',
+          this.colDef({
+            colId: 'userOwnedWithGS',
+            headerValueGetter: () => 'Owned GS',
+            headerTooltip: 'Item owned with this gear score',
+            valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.gs),
+            cellRenderer: TrackingCell,
+            cellRendererParams: TrackingCell.params({
+              getId: (value: ItemsTableItem) => getItemId(value),
+              pref: this.nw.itemPref,
+              mode: 'gs',
+            }),
+            width: 100,
           }),
-          width: 100,
-        }),
-        this.colDef({
+          this.colDef({
 
-          colId: 'userPrice',
-          headerValueGetter: () => 'Price',
-          hide: this.config?.hideUserData,
-          headerTooltip: 'Current price in Trading post',
-          cellClass: 'text-right',
-          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.price),
-          cellRenderer: TrackingCell,
-          cellRendererParams: TrackingCell.params({
-            getId: (value: ItemsTableItem) => getItemId(value),
-            pref: this.nw.itemPref,
-            mode: 'price',
-            formatter: this.moneyFormatter,
+            colId: 'userPrice',
+            headerValueGetter: () => 'Price',
+            headerTooltip: 'Current price in Trading post',
+            cellClass: 'text-right',
+            valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.price),
+            cellRenderer: TrackingCell,
+            cellRendererParams: TrackingCell.params({
+              getId: (value: ItemsTableItem) => getItemId(value),
+              pref: this.nw.itemPref,
+              mode: 'price',
+              formatter: this.moneyFormatter,
+            }),
+            width: 100,
           }),
-          width: 100,
-        }),
-
+        ]),
         this.colDef({
           colId: 'gearScore',
           headerValueGetter: () => 'Gear Score',
@@ -326,10 +317,9 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
   public constructor(
     private nw: NwService,
     private i18n: TranslateService,
+    @Inject(DataTableAdapterOptions)
     @Optional()
     private config: ItemsTableAdapterConfig,
-    @Inject(ITEMS_TABLE_TASKS)
-    private tasks: ItemsTableTasks
   ) {
     super()
   }

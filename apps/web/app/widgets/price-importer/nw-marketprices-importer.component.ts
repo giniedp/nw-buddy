@@ -205,7 +205,7 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
         {
           sortable: false,
           filter: false,
-          width: 54,
+          width: 62,
           pinned: true,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({

@@ -4,7 +4,7 @@ import { GridOptions } from 'ag-grid-community'
 import { defer, map, Observable, of, switchMap } from 'rxjs'
 import { IconComponent, nwdbLinkUrl, NwDbService } from '~/nw'
 import { AsyncCellRenderer, mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter } from '~/ui/data-table'
+import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import m from 'mithril'
 import { shareReplayRefCount } from '~/utils'
 import { TranslateService } from '~/i18n'
@@ -12,6 +12,12 @@ import { NwExpressionService } from '~/nw'
 
 @Injectable()
 export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
+  public static provider() {
+    return dataTableProvider({
+      adapter: AbilitiesTableAdapter,
+    })
+  }
+
   public entityID(item: Ability): string {
     return item.AbilityID
   }
@@ -32,7 +38,7 @@ export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
           sortable: false,
           filter: false,
           pinned: true,
-          width: 54,
+          width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
               href: nwdbLinkUrl('ability', data.AbilityID),

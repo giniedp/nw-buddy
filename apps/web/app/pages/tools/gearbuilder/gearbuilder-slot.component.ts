@@ -32,7 +32,7 @@ import {
 import { NwDbService, NwModule } from '~/nw'
 import { DataTableModule, DataTablePickerDialog } from '~/ui/data-table'
 import { ItemsTableAdapter, PerksTableAdapter } from '~/widgets/adapter'
-import { ItemDetailModule, PerkDetail, PerkOverrideFn } from '~/widgets/item-detail'
+import { ItemDetailModule, PerkDetail } from '~/widgets/item-detail'
 
 import { isEqual } from 'lodash'
 import {
@@ -153,10 +153,7 @@ export class GearSlotComponent {
     })
   }
 
-  protected perksMapping: PerkOverrideFn = (item: ItemDefinitionMaster, key: string) => {
-    const perkId$ = this.slotItem$.pipe(map((it) => it.perks?.[key]))
-    return this.db.perk(perkId$)
-  }
+  protected perksMapping$ = this.slotItem$.pipe(map((it) => it.perks))
 
   protected async pickItem() {
     const slotId = this.slot.id
@@ -240,7 +237,7 @@ export class GearSlotComponent {
       }),
       maxWidth: 1400,
       maxHeight: 1200,
-      panelClass: ['w-full', 'h-full'],
+      panelClass: ['w-full', 'h-full', 'p-4'],
     })
   }
 
@@ -258,7 +255,7 @@ export class GearSlotComponent {
       }),
       maxWidth: 1400,
       maxHeight: 1200,
-      panelClass: ['w-full', 'h-full'],
+      panelClass: ['w-full', 'h-full', 'p-4'],
     })
   }
 

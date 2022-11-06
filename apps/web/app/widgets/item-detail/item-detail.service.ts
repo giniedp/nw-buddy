@@ -1,6 +1,7 @@
 import { ChangeDetectorRef, Injectable } from '@angular/core'
 import { ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
-import { BehaviorSubject, combineLatest, defer, map, Observable, of, ReplaySubject, switchMap } from 'rxjs'
+import { sortBy } from 'lodash'
+import { BehaviorSubject, combineLatest, defer, map, ReplaySubject, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import {
   getItemGearScoreLabel,
@@ -10,7 +11,13 @@ import {
   getItemPerkBucketKeys,
   getItemPerkKeys,
   getItemRarity,
-  getItemRarityName, getItemTierAsRoman, getItemTypeName, getPerkbucketPerks, getPerksInherentMODs, hasPerkInherentAffix
+  getItemRarityName,
+  getItemTierAsRoman,
+  getItemTypeName,
+  getPerkbucketPerks,
+  getPerksInherentMODs,
+  getPerkTypeWeight,
+  hasPerkInherentAffix
 } from '~/nw/utils'
 import { deferStateFlat, humanize, shareReplayRefCount } from '~/utils'
 
@@ -20,7 +27,6 @@ function isTruthy(value: any) {
 function isFalsy(value: any) {
   return !value
 }
-export type PerkOverrideFn = (item: ItemDefinitionMaster, key: string) => Observable<Perks>
 
 export interface PerkDetail {
   item: ItemDefinitionMaster
@@ -28,7 +34,6 @@ export interface PerkDetail {
   editable?: boolean
   bucket?: Perkbuckets
   perk?: Perks
-  override?: Perks
   icon?: string
   text?: Array<{ label: string; description: string }>
 }
@@ -68,15 +73,21 @@ export class ItemDetailService {
   public readonly ingredientCategories$ = combineLatest({
     categories: this.db.recipeCategoriesMap,
     item: this.item$,
-  }).pipe(map(({ categories, item }) => item?.IngredientCategories?.map((it) => {
-    return categories.get(it) || {
-      CategoryID: it,
-      DisplayText: it
-    }
-  })))
+  }).pipe(
+    map(({ categories, item }) =>
+      item?.IngredientCategories?.map((it) => {
+        return (
+          categories.get(it) || {
+            CategoryID: it,
+            DisplayText: it,
+          }
+        )
+      })
+    )
+  )
 
   public readonly gearScoreOverride$ = new BehaviorSubject<number>(null)
-  public readonly perkOverride$ = new BehaviorSubject<PerkOverrideFn>(null)
+  public readonly perkOverride$ = new BehaviorSubject<Record<string, string>>(null)
 
   public readonly perksDetails$ = defer(() => this.resolvePerkInfos()).pipe(shareReplayRefCount(1))
   public readonly finalRarity$ = defer(() => this.resolveFinalRarity())
@@ -123,10 +134,9 @@ export class ItemDetailService {
         }
         return combineLatest({
           item: this.item$,
-          gs: this.itemGS$,
           perks: this.perksDetails$,
         }).pipe(
-          map(({ item, gs, perks }) => {
+          map(({ item, perks }) => {
             const perkIds = perks
               .map((it) => it.perk)
               .filter((it) => !!it)
@@ -142,54 +152,57 @@ export class ItemDetailService {
       item: this.item$,
       perks: this.db.perksMap,
       buckets: this.db.perkBucketsMap,
-    })
-      .pipe(
-        map(({ item, perks, buckets }): PerkDetail[] => {
-          const result = getItemPerkKeys(item).map((key) => {
-            const perkId = item[key]
-            const perk = perks.get(perkId)
-            return {
-              item: item,
-              key: key,
-              perk: perk,
-              editable: item.CanReplaceGem && perk?.PerkType === 'Gem',
-            }
-          })
-          const bucket = buckets.get(item?.ItemID)
-          if (bucket) {
-            getPerkbucketPerks(bucket, perks)?.forEach((perk, i) => {
-              result.push({
-                item: item,
-                editable: false,
-                perk: perk,
-                key: `${bucket.PerkBucketID}-${i}`,
-              })
-            })
+      override: this.perkOverride$,
+    }).pipe(
+      map(({ item, perks, buckets, override }): PerkDetail[] => {
+        const result = getItemPerkKeys(item).map((key) => {
+          const perkId = item[key]
+          const overrideId = override?.[key]
+          const perk = perks.get(overrideId || perkId)
+          return {
+            item: item,
+            key: key,
+            perk: perk,
+            editable: item.CanReplaceGem && perk?.PerkType === 'Gem',
           }
-          return result
         })
-      )
-      .pipe(switchMap((it) => this.remapPerks(it)))
+        const bucket = buckets.get(item?.ItemID)
+        if (bucket) {
+          getPerkbucketPerks(bucket, perks)?.forEach((perk, i) => {
+            result.push({
+              item: item,
+              editable: false,
+              perk: perk,
+              key: `${bucket.PerkBucketID}-${i}`,
+            })
+          })
+        }
+        return result
+      })
+    )
 
     const buckets$ = combineLatest({
       item: this.item$,
+      perks: this.db.perksMap,
       buckets: this.db.perkBucketsMap,
-    })
-      .pipe(
-        map(({ item, buckets }): PerkDetail[] => {
-          const result = getItemPerkBucketKeys(item).map((key) => ({
-            item: item,
-            key: key,
-            bucket: buckets.get(item[key]),
-            editable: true,
-          }))
-          return result
-        })
-      )
-      .pipe(switchMap((it) => this.remapPerks(it)))
+      override: this.perkOverride$,
+    }).pipe(
+      map(({ item, perks, buckets, override }): PerkDetail[] => {
+        const result = getItemPerkBucketKeys(item).map((key) => ({
+          item: item,
+          key: key,
+          perk: perks.get(override?.[key]),
+          bucket: buckets.get(item[key]),
+          editable: true,
+        }))
+        return result
+      })
+    )
 
     return combineLatest({
-      infos: combineLatest([perks$, buckets$]).pipe(map(([a, b]) => [...a, ...b])),
+      infos: combineLatest([perks$, buckets$])
+        .pipe(map(([a, b]) => [...a, ...b]))
+        .pipe(map((list) => sortBy(list, (it) => getPerkTypeWeight((it.perk || it.bucket)?.PerkType)))),
       affix: this.db.affixstatsMap,
       gearScore: this.itemGS$,
     }).pipe(
@@ -215,25 +228,5 @@ export class ItemDetailService {
         return infos
       })
     )
-  }
-
-  private remapPerks(details: PerkDetail[]): Observable<PerkDetail[]> {
-    if (!details?.length) {
-      return of([])
-    }
-    return this.perkOverride$.pipe(
-      switchMap((fn) => combineLatest(details.map((detail) => this.remapPerk(detail, fn))))
-    )
-  }
-
-  private remapPerk(detail: PerkDetail, override: PerkOverrideFn) {
-    return !override
-      ? of(detail)
-      : override(detail.item, detail.key).pipe(
-          map((it) => ({
-            ...detail,
-            perk: it || detail.perk,
-          }))
-        )
   }
 }

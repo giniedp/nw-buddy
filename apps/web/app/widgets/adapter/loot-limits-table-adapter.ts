@@ -6,7 +6,7 @@ import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwDbService, NwService } from '~/nw'
 import { getItemIconPath, getItemId, getItemRarity } from '~/nw/utils'
-import { DataTableAdapter } from '~/ui/data-table'
+import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { shareReplayRefCount } from '~/utils'
 
 export type TableItem = Lootlimits & {
@@ -16,9 +16,9 @@ export type TableItem = Lootlimits & {
 @Injectable()
 export class LootLimitsTableAdapter extends DataTableAdapter<TableItem> {
   public static provider() {
-    const provider = []
-    provider.push(DataTableAdapter.provideClass(LootLimitsTableAdapter))
-    return provider
+    return dataTableProvider({
+      adapter: LootLimitsTableAdapter,
+    })
   }
 
   public entityID(item: TableItem): string {
@@ -42,7 +42,7 @@ export class LootLimitsTableAdapter extends DataTableAdapter<TableItem> {
           sortable: false,
           filter: false,
           pinned: true,
-          width: 54,
+          width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
             if (!data.$item) {
               return null

@@ -1,14 +1,20 @@
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ElementRef, ViewChild } from '@angular/core'
+import { FormsModule } from '@angular/forms';
 import { defer, Subject, takeUntil } from 'rxjs';
 import { Hotkeys } from '~/utils';
+import { IconsModule } from '../icons';
+import { svgMagnifyingGlass, svgXmark } from '../icons/svg';
 import { QuicksearchService } from './quicksearch.service';
 
 @Component({
+  standalone: true,
   selector: 'nwb-quicksearch-input',
   exportAs: 'quickSearch',
   templateUrl: './quicksearch-input.component.html',
   styleUrls: ['./quicksearch-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, FormsModule, IconsModule],
   host: {
     class: 'input-group input-group-sm',
   },
@@ -27,6 +33,9 @@ export class QuicksearchInputComponent implements OnInit, OnDestroy {
 
   @ViewChild('input')
   public input: ElementRef<HTMLInputElement>
+
+  protected svgSearch = svgMagnifyingGlass
+  protected svgXmark = svgXmark
 
   protected get active() {
     return this.search.active

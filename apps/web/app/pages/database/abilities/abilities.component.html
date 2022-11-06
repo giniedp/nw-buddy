@@ -7,7 +7,10 @@
   <nwb-nav-toolbar [menu]="tplMenu" [buttons]="tplButtons" class="flex-1">
     <ng-template #tplMenu>
       <li *ngFor="let item of header.categories | async" [routerLinkActive]="'bordered'">
-        <a [routerLink]="item.route"> {{ item.label }}</a>
+        <a [routerLink]="item.route">
+          <img [nwImage]="item.icon" *ngIf="item.icon" class="w-6 h-6"/>
+          <span *ngIf="!item.icon">{{ item.label }}</span>
+        </a>
       </li>
     </ng-template>
     <ng-template #tplButtons>

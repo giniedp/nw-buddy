@@ -1,0 +1,8 @@
+<h3 class="font-bold text-lg">{{ title }}</h3>
+<p class="pt-4">{{ body }}</p>
+<input [(ngModel)]="value" type="text" [placeholder]="placeholder" class="input input-bordered w-full max-w-xs mt-3">
+<div class="modal-action">
+  <button class="btn btn-ghost" (click)="abort()">{{ negative }}</button>
+  <button class="btn btn-ghost" (click)="close()" *ngIf="neutral">{{ neutral }}</button>
+  <button class="btn btn-ghost" (click)="submit()">{{ positive }}</button>
+</div>

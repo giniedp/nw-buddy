@@ -20,8 +20,9 @@ export const MAIN_MENU = [
     items: [
       { label: 'Territories', path: '/territories' },
       { label: 'Expeditions', path: '/dungeons' },
+      { label: 'Inventory', path: '/inventory' },
+      { label: 'Gearsets', path: '/gearsets' },
       { label: 'Armorsets', path: '/armorsets' },
-      { label: 'Gear builder', path: '/gearbuilder' },
       { label: 'Umbral Shards', path: '/umbral-shards' },
 
       { label: 'Leveling and Skills', path: '/leveling' },

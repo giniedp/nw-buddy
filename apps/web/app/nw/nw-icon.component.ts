@@ -1,18 +1,29 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, Input } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostBinding,
+  HostListener,
+  Input,
+} from '@angular/core'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { getItemIconPath, getItemRarity } from './utils'
 
 @Component({
   standalone: true,
   selector: 'picture[nwIcon]',
-  template: `<img
-    loading="lazy"
-    [src]="src"
-    (error)="onError($event)"
-    (load)="onLoad($event)"
-    class="fade"
-    [class.show]="isLoaded"
-  />`,
+  template: `
+    <img
+      loading="lazy"
+      [src]="src"
+      (error)="onError($event)"
+      (load)="onLoad($event)"
+      class="fade"
+      [class.show]="isLoaded"
+    />
+    <ng-content></ng-content>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '[class.nw-icon]': 'true',

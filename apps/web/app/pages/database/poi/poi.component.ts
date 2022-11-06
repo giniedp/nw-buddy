@@ -2,10 +2,10 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
-import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
+import { DataTableModule } from '~/ui/data-table'
 import { NavToobalModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule } from '~/ui/quicksearch'
-import { PerksTableAdapter, PoiTableAdapter } from '~/widgets/adapter'
+import { PoiTableAdapter } from '~/widgets/adapter'
 import { ExprContextService } from '~/widgets/adapter/exp-context.service'
 
 @Component({
@@ -18,7 +18,7 @@ import { ExprContextService } from '~/widgets/adapter/exp-context.service'
     class: 'layout-col bg-base-300 rounded-md overflow-clip',
   },
   providers: [
-    DataTableAdapter.provideClass(PoiTableAdapter),
+    PoiTableAdapter.provider(),
     ExprContextService
   ]
 })

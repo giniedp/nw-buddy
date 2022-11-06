@@ -1,0 +1,82 @@
+<ng-container *ngIf="vm$ | async; let vm">
+  <div *ngIf="!vm.instance" class="flex-1 flex items-center justify-center cursor-pointer p-10" (click)="pickItem(vm)">
+    <img [nwImage]="vm.slot.icon" width="128" height="128" />
+  </div>
+  <nwb-item-detail
+    *ngIf="vm.instance"
+    #detail="detail"
+    [entityId]="vm.instance.itemId"
+    [gearScoreOverride]="gearScore || vm.instance.gearScore"
+    [perkOverride]="vm.instance.perks"
+  >
+    <nwb-item-detail-header (click)="pickItem(vm)" class="cursor-pointer border border-transparent hover:border-primary" [cdkContextMenuTriggerFor]="menu">
+      <span
+        *ngIf="vm.canBreak"
+        class="header z-10 absolute top-0 right-0 p-1 bg-black bg-opacity-75 rounded-bl-xl screenshot-hidden"
+      >
+        <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
+      </span>
+    </nwb-item-detail-header>
+    <ng-container *ngIf="vm.isRune && !compact">
+      <nwb-item-detail-divider></nwb-item-detail-divider>
+      <nwb-item-detail-description></nwb-item-detail-description>
+    </ng-container>
+    <nwb-item-detail-stats
+      [gearScoreEditable]="true"
+      (gearScoreEdit)="isGearScoreOpen = !isGearScoreOpen"
+      #stats="itemDetailStats"
+    ></nwb-item-detail-stats>
+
+    <nwb-item-detail-divider></nwb-item-detail-divider>
+    <nwb-item-detail-perks (editPerk)="pickPerk(vm, $event.key)" [perkEditable]="true"></nwb-item-detail-perks>
+
+    <ng-container *ngIf="!compact">
+      <ng-container *ngIf="!vm.isRune">
+        <nwb-item-detail-divider></nwb-item-detail-divider>
+        <nwb-item-detail-description></nwb-item-detail-description>
+      </ng-container>
+
+      <nwb-item-detail-divider></nwb-item-detail-divider>
+      <nwb-item-detail-info></nwb-item-detail-info>
+    </ng-container>
+
+    <ng-template
+      cdkConnectedOverlay
+      [cdkConnectedOverlayOrigin]="stats.gearScoreOverlayOrigin"
+      [cdkConnectedOverlayOpen]="isGearScoreOpen"
+      [cdkConnectedOverlayHasBackdrop]="true"
+      (backdropClick)="isGearScoreOpen = false"
+      (detach)="isGearScoreOpen = false"
+    >
+      <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
+        <input
+          type="range"
+          min="100"
+          max="625"
+          step="1"
+          [ngModel]="gearScore || vm.instance.gearScore"
+          (ngModelChange)="updateGearScore($event)"
+          (blur)="commitGearScore(vm)"
+          class="range range-sm range-primary"
+        />
+      </div>
+    </ng-template>
+  </nwb-item-detail>
+</ng-container>
+
+<ng-template #menu>
+  <ul class="menu menu-compact bg-base-100 rounded-md w-40" cdkMenu *ngIf="vm$ | async; let vm">
+    <li *ngIf="vm.canBreak">
+      <button (click)="breakLink()" cdkMenuItem>
+        <nwb-icon [icon]="iconLinkBreak" class="w-4 h-4"></nwb-icon>
+        Break link
+      </button>
+    </li>
+    <li *ngIf="vm.canRemove">
+      <button (click)="remove()" cdkMenuItem>
+        <nwb-icon [icon]="iconRemove" class="w-4 h-4"></nwb-icon>
+        Remove item
+      </button>
+    </li>
+  </ul>
+</ng-template>

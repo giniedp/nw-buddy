@@ -5,11 +5,17 @@ import { defer, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
 import { AgGridComponent, SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter } from '~/ui/data-table'
+import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 
 @Injectable()
 export class PoiTableAdapter extends DataTableAdapter<PoiDefinition> {
+  public static provider() {
+    return dataTableProvider({
+      adapter: PoiTableAdapter,
+    })
+  }
+
   public entityID(item: PoiDefinition): string | number {
     return item.TerritoryID
   }
@@ -29,7 +35,7 @@ export class PoiTableAdapter extends DataTableAdapter<PoiDefinition> {
           sortable: false,
           filter: false,
           pinned: true,
-          width: 54,
+          width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
               target: '_blank',

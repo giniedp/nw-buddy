@@ -11,7 +11,6 @@ import { QuicksearchService } from '~/ui/quicksearch'
   templateUrl: './poi-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, DataTableModule, RouterModule],
-  //providers: [DataTableAdapter.provideClass(PoiTableAdapter)],
   host: {
     class: 'layout-row layout-gap',
   },

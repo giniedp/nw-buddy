@@ -1,34 +1,79 @@
-import { ClassProvider, ExistingProvider, Type } from '@angular/core'
-import { ColDef, GridOptions, ICellRendererFunc, ValueGetterFunc, ValueGetterParams } from 'ag-grid-community'
+import { ClassProvider, ExistingProvider, Injectable, StaticProvider, Type } from '@angular/core'
+import {
+  ColDef,
+  GridOptions,
+  ICellRendererFunc,
+  RowDataTransaction,
+  ValueGetterFunc,
+  ValueGetterParams,
+} from 'ag-grid-community'
 import { AgGridCommon } from 'ag-grid-community/dist/lib/interfaces/iCommon'
-import { BehaviorSubject, defer, Observable, ReplaySubject } from 'rxjs'
-import { createElement, CreateElementOptions } from '~/utils'
+import { BehaviorSubject, defer, firstValueFrom, map, Observable, ReplaySubject, Subject } from 'rxjs'
+import { createEl, CreateElAttrs, createElement, CreateElementOptions, shareReplayRefCount, TagName } from '~/utils'
 import { AsyncCellRenderer, AsyncCellRendererParams } from '../ag-grid'
 
-export abstract class DataTableAdapter<T> {
-  public static provideClass(useClass: Type<DataTableAdapter<any>>): ClassProvider {
-    return {
-      provide: DataTableAdapter,
-      useClass: useClass,
-    }
-  }
+export interface DataTableCategory {
+  label: string
+  value: string
+  icon: string
+}
 
-  public static provideExisting(useClass: Type<DataTableAdapter<any>>): ExistingProvider {
-    return {
-      provide: DataTableAdapter,
-      useExisting: useClass,
-    }
+@Injectable()
+export class DataTableAdapterOptions<T> {
+  /**
+   * Optional source basewhere entities should be pulled from
+   *
+   * @remarks
+   * If not given an adapter should use its own source
+   */
+  source?: Observable<T[]>
+  /**
+   * Optional persist key
+   */
+  persistStateId?: string
+  /**
+   * Optional base grid configuration.
+   */
+  defaultGridOptions?: GridOptions<T>
+}
+
+export function dataTableProvider<T>(options: {
+  adapter: Type<DataTableAdapter<T>>
+  options?: DataTableAdapterOptions<T>
+}): Array<StaticProvider | ClassProvider> {
+  const result: Array<StaticProvider | ClassProvider> = []
+  result.push({
+    provide: options.adapter,
+  })
+  result.push({
+    provide: DataTableAdapter,
+    useExisting: options.adapter,
+  })
+  if (options.options) {
+    result.push({
+      provide: DataTableAdapterOptions,
+      useValue: options.options,
+    })
   }
+  return result
+}
+
+export abstract class DataTableAdapter<T> {
 
   public moneyFormatter = Intl.NumberFormat(navigator.language, {
     minimumFractionDigits: 2,
   })
 
   public abstract entityID(item: T): string | number
-  public abstract entityCategory(item: T): string
+  public abstract entityCategory(item: T): string | DataTableCategory | Array<string | DataTableCategory>
   public abstract options: Observable<GridOptions>
   public abstract entities: Observable<T[]>
+  public readonly categories: Observable<DataTableCategory[]> = defer(() => this.entities)
+    .pipe(map((items) => this.extractCategories(items)))
+    .pipe(shareReplayRefCount())
+  public readonly transaction?: Observable<RowDataTransaction>
   public readonly category = new BehaviorSubject<string>(null)
+  public readonly select = new Subject<string[]>()
   public readonly grid = defer(() => this.grid$)
   public get persistStateId(): string {
     return null
@@ -39,12 +84,6 @@ export abstract class DataTableAdapter<T> {
     this.grid$.next(grid)
   }
 
-  public getActiveCategories(): string[] {
-    return []
-  }
-  public registerInstance() {
-
-  }
   public fieldName(k: keyof T) {
     return String(k)
   }
@@ -68,11 +107,11 @@ export abstract class DataTableAdapter<T> {
     return this.cellRenderer(({ value }) => {
       return this.createElement({
         tag: 'div',
-        classList: ['flex', 'flex-row', 'flex-wrap', 'gap-1', 'h-full', 'items-center'],
+        classList: ['flex', 'flex-row', 'flex-wrap', 'gap-1', 'items-center'],
         children: value?.map((it: string) => {
           return {
             tag: 'span',
-            classList: ['badge', 'badge-sm', 'badge-secondary', 'bg-secondary', 'bg-opacity-50'],
+            classList: ['badge', 'badge-sm', 'badge-secondary', 'bg-secondary', 'bg-opacity-50', 'px-1'],
             text: format ? format(it) : it,
           }
         }),
@@ -81,7 +120,17 @@ export abstract class DataTableAdapter<T> {
   }
 
   public extractCategories(entities: T[]) {
-    return Array.from(new Set(entities.map((it) => this.entityCategory(it)).filter((it) => !!it)))
+    const categories = new Map<string, DataTableCategory>()
+    entities.forEach((item) => {
+      const itemCats = convertCategory(this.entityCategory(item))
+      itemCats?.forEach((itemCat) => {
+        if (!itemCat || categories.has(itemCat?.value)) {
+          return
+        }
+        categories.set(itemCat.value, itemCat)
+      })
+    })
+    return Array.from(categories.values())
   }
 
   public createIcon(cb: (el: HTMLPictureElement, img: HTMLImageElement) => void) {
@@ -120,7 +169,7 @@ export abstract class DataTableAdapter<T> {
       el.href = href
       el.append(
         this.createIcon((pic, img) => {
-          pic.classList.add('w-9', 'h-9', 'nw-icon')
+          pic.classList.add('w-12', 'h-12', 'nw-icon')
           if (rarity) {
             pic.classList.add(`bg-rarity-${rarity}`)
           }
@@ -152,8 +201,64 @@ export abstract class DataTableAdapter<T> {
     }
     return el
   }
+  public el<T extends keyof HTMLElementTagNameMap>(
+    tagName: TagName<T>, attr: CreateElAttrs<T>, children?: Array<HTMLElement>
+  ) {
+    return createEl(document, tagName, attr, children)
+  }
 
   public makeLineBreaks(text: string) {
     return text?.replace(/\\n/gi, '<br>')
   }
+
+  protected async txInsert(items: T[]): Promise<RowDataTransaction> {
+    return {
+      add: items,
+    }
+  }
+
+  protected async txUpdate(items: T[]): Promise<RowDataTransaction> {
+    return {
+      update: items,
+    }
+  }
+
+  protected async txRemove(ids: string[]): Promise<RowDataTransaction> {
+    const grid = await firstValueFrom(this.grid$)
+    const nodes = []
+    grid.api.forEachNode((node) => {
+      if (ids.includes(this.entityID(node.data) as string)) {
+        nodes.push(node.data)
+      }
+    })
+    return {
+      remove: nodes,
+    }
+  }
+
+  protected async removeSelected() {
+    const grid = await firstValueFrom(this.grid$)
+    grid.api.applyTransactionAsync({
+      remove: grid.api.getSelectedRows(),
+    })
+  }
+}
+
+function convertCategory(catSet: string | DataTableCategory | Array<string | DataTableCategory>): DataTableCategory[] {
+  if (!catSet) {
+    return []
+  }
+  if (!Array.isArray(catSet)) {
+    catSet = [catSet]
+  }
+  return catSet.map((it) => {
+    if (typeof it === 'string') {
+      return {
+        value: it,
+        label: it,
+        icon: null,
+      }
+    }
+    return it
+  })
 }

@@ -3,6 +3,8 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { BehaviorSubject, combineLatest, defer, map, tap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { ItemTrackerModule } from '../item-tracker'
+import { ItemDetailHeaderBackdropComponent } from './item-detail-header-backdrop.component'
+import { ItemDetailHeaderContentComponent } from './item-detail-header-content.component'
 import { ItemDetailService } from './item-detail.service'
 
 @Component({
@@ -11,7 +13,13 @@ import { ItemDetailService } from './item-detail.service'
   templateUrl: './item-detail-header.component.html',
   styleUrls: ['./item-detail-header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemTrackerModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    ItemTrackerModule,
+    ItemDetailHeaderBackdropComponent,
+    ItemDetailHeaderContentComponent,
+  ],
   host: {
     class: 'block',
   },

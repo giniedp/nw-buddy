@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Directive, Optional } from '@angular/core'
 import { defer, map, startWith } from 'rxjs'
-import { DataTableAdapter } from './data-table-adapter'
+import { DataTableAdapter, DataTableCategory } from './data-table-adapter'
 import { CategoryLinkService } from './data-table-header-router.directive'
 
 @Directive({
@@ -9,21 +9,22 @@ import { CategoryLinkService } from './data-table-header-router.directive'
   selector: '[nwbTableCategories]',
 })
 export class DataTableCategoriesDirective {
-  public categories = defer(() => this.adapter.entities)
-    .pipe(startWith([]))
-    .pipe(map((items) => this.adapter.extractCategories(items)))
+  public categories = defer(() => this.adapter.categories)
+    .pipe(startWith<DataTableCategory[]>([]))
     .pipe(
       map((items) => {
         return [
           {
             label: 'ALL',
             value: null,
+            icon: null,
             route: this.categoryLink(null)
           },
           ...items.map((it) => ({
-            label: it,
-            value: it,
-            route: this.categoryLink(it)
+            label: it.label,
+            value: it.value,
+            icon: it.icon,
+            route: this.categoryLink(it.value)
           })),
         ]
       })

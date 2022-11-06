@@ -1,4 +1,12 @@
-import { Crafting, Housingitems, ItemDefinitionMaster, ItemdefinitionsArmor, ItemdefinitionsWeapons, Perkbuckets, Perks } from '@nw-data/types'
+import {
+  Crafting,
+  Housingitems,
+  ItemDefinitionMaster,
+  ItemdefinitionsArmor,
+  ItemdefinitionsWeapons,
+  Perkbuckets,
+  Perks,
+} from '@nw-data/types'
 import { NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE } from './constants'
 
 export function isMasterItem(item: ItemDefinitionMaster | Housingitems): item is ItemDefinitionMaster {
@@ -15,6 +23,10 @@ export function isItemArmor(item: ItemDefinitionMaster) {
 
 export function isItemWeapon(item: ItemDefinitionMaster) {
   return item?.ItemType === 'Weapon'
+}
+
+export function isItemNamed(item: ItemDefinitionMaster) {
+  return item?.ItemClass?.includes('Named')
 }
 
 export function hasItemIngredientCategory(item: ItemDefinitionMaster, categoryId: string) {
@@ -54,6 +66,37 @@ export function getItemPerkKeys(item: ItemDefinitionMaster) {
 
 export function getItemPerkIds(item: ItemDefinitionMaster) {
   return item && [item.Perk1, item.Perk2, item.Perk3, item.Perk4, item.Perk5].filter((it) => !!it)
+}
+
+export function getItemPerkIdsWithOverride(item: ItemDefinitionMaster, overrides: Record<string, string>) {
+  const perks = (getItemPerkKeys(item) || []).map((key) => overrides[key] || item[key])
+  const randoms = (getItemPerkBucketKeys(item) || []).map((key) => overrides[key])
+  return [...perks, ...randoms].filter((it) => !!it)
+}
+
+export function getItemPerkInfos(
+  item: ItemDefinitionMaster,
+  overrides?: Record<string, string>
+): Array<{ key: string; perkId?: string; bucketId?: string }> {
+  return [
+    ...getItemPerkKeys(item)
+      .map((key) => {
+        return {
+          key: key,
+          perkId: overrides?.[key] || item[key],
+        }
+      })
+      .filter((it) => !!it.perkId),
+    ...getItemPerkBucketKeys(item)
+      .map((key) => {
+        return {
+          key: key,
+          perkId: overrides?.[key],
+          bucketId: item[key],
+        }
+      })
+      .filter((it) => !!it.bucketId),
+  ]
 }
 
 export function getItemPerks(item: ItemDefinitionMaster, perks: Map<string, Perks>) {

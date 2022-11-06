@@ -6,10 +6,10 @@
     [entityId]="vm.itemId"
     #detail="detail"
     [gearScoreOverride]="vm.itemGs"
-    [perkOverride]="perksMapping"
+    [perkOverride]="perksMapping$ | async"
     *ngIf="vm.itemId"
   >
-    <nwb-item-detail-header (click)="pickItem()" class="cursor-pointer"> </nwb-item-detail-header>
+    <nwb-item-detail-header (click)="pickItem()" class="cursor-pointer"></nwb-item-detail-header>
     <ng-container *ngIf="vm.isRune && !compact">
       <nwb-item-detail-divider></nwb-item-detail-divider>
       <nwb-item-detail-description></nwb-item-detail-description>

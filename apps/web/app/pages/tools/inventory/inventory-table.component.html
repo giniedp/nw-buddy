@@ -1,0 +1,15 @@
+<nwb-data-table
+  #table
+  [persistStateId]="'inventory-table'"
+  [categoryRouteParam]
+  [detailRoutParam]="'id'"
+  [quickFilter]="search.query | async"
+></nwb-data-table>
+
+<div class="gearset layout-col">
+  <nwb-gearset-form></nwb-gearset-form>
+</div>
+
+<div class="detail layout-col">
+  <router-outlet></router-outlet>
+</div>

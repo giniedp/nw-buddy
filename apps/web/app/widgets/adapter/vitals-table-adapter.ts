@@ -6,7 +6,7 @@ import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwDbService, NwVitalsService } from '~/nw'
 import { getVitalDungeon } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter } from '~/ui/data-table'
+import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 
 export interface Entity extends Vitals {
@@ -15,6 +15,12 @@ export interface Entity extends Vitals {
 
 @Injectable()
 export class VitalsTableAdapter extends DataTableAdapter<Entity> {
+  public static provider() {
+    return dataTableProvider({
+      adapter: VitalsTableAdapter,
+    })
+  }
+
   public entityID(item: Vitals): string {
     return item.VitalsID
   }
@@ -35,7 +41,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           sortable: false,
           filter: false,
           pinned: true,
-          width: 54,
+          width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
               href: nwdbLinkUrl('creature', data.VitalsID),

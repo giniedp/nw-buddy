@@ -7,7 +7,7 @@ import { TranslateService } from '~/i18n'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
 import { getItemIconPath, getItemRarity, getItemTierAsRoman } from '~/nw/utils'
 import { mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter } from '~/ui/data-table'
+import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { shareReplayRefCount } from '~/utils'
 import { ItemTrackerCell } from '~/widgets/item-tracker'
 import { Armorset } from './types'
@@ -23,6 +23,12 @@ function field<K extends keyof Armorset>(item: Armorset, key: K): Armorset[K] {
 
 @Injectable()
 export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
+  public static provider() {
+    return dataTableProvider({
+      adapter: ArmorsetsAdapterService
+    })
+  }
+
   public entityID(item: Armorset): string {
     return item.key
   }
@@ -63,10 +69,10 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
                 m.fragment(
                   {},
                   data.perks.map((perk) => {
-                    return m('a.block.w-7.h-7', { target: '_blank', href: nwdbLinkUrl('perk', perk.PerkID) }, [
+                    return m('a.block.w-8.h-8', { target: '_blank', href: nwdbLinkUrl('perk', perk.PerkID) }, [
                       m(IconComponent, {
                         src: perk.IconPath,
-                        class: `w-7 h-7 nw-icon`,
+                        class: `w-8 h-8 nw-icon`,
                       }),
                     ])
                   })
@@ -96,7 +102,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
             {
               sortable: false,
               filter: false,
-              width: 54,
+              width: 62,
               cellRenderer: mithrilCell<Armorset>({
                 view: ({ attrs: { data } }) => {
                   const item = data.items[i]
@@ -104,7 +110,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
                   return m('a', { target: '_blank', href: nwdbLinkUrl('item', item.ItemID) }, [
                     m(IconComponent, {
                       src: getItemIconPath(item),
-                      class: `w-9 h-9 nw-icon bg-rarity-${rarity}`,
+                      class: `w-12 h-12 nw-icon bg-rarity-${rarity}`,
                     }),
                   ])
                 },

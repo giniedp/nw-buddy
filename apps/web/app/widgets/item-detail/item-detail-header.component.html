@@ -1,29 +1,27 @@
 <ng-container *ngIf="vm$ | async; let vm">
-  <div class="backdrop rarity-{{vm.rarity}}"></div>
-  <div class="backdrop rarity-{{vm.rarity}} bg-named" *ngIf="vm.isNamed" ></div>
+  <nwb-item-detail-header-backdrop [rarity]="vm.rarity" [animated]="vm.isNamed"></nwb-item-detail-header-backdrop>
   <a [nwInfoLink]="enableInfoLink ? vm.entityId : null" [nwInfoResource]="'item'" class="relative">
     <span class="italic">{{ tier$ | async }}</span>
     <picture [nwIcon]="vm.entity" [nwRarity]="vm.rarity"></picture>
     <ng-content select=".icon-overlay"></ng-content>
   </a>
-  <aside class="flex-1 flex flex-col justify-between overflow-hidden">
-    <div class="flex flex-row justify-between leading-4">
-      <h3 class="font-bold text-rarity-{{vm.rarity}} mt-[2px]" [nwText]="vm.name"></h3>
-      <div class="flex flex-col items-end screenshot-hidden">
-        <nwb-item-marker [itemId]="vm.entityId" *ngIf="showMarker$ | async" class="text-right"></nwb-item-marker>
-        <nwb-gs-tracker [itemId]="vm.entityId" *ngIf="showGsMarker$ | async" class="text-right mt-1 tooltip-left" [emptyTip]="'Track Gear Score'"></nwb-gs-tracker>
-      </div>
+  <nwb-item-detail-header-content
+    class="z-10"
+    [name]="vm.name | nwText"
+    [rarity]="vm.rarity"
+    [rarityName]="vm.rarityName | nwText"
+    [typeName]="vm.typeName | nwText"
+    [sourceName]="vm.sourceLabel"
+  >
+    <div class="header">
+      <nwb-item-marker [itemId]="vm.entityId" *ngIf="showMarker$ | async" class="text-right"></nwb-item-marker>
+      <nwb-gs-tracker
+        [itemId]="vm.entityId"
+        *ngIf="showGsMarker$ | async"
+        class="text-right mt-1 tooltip-left"
+        [emptyTip]="'Track Gear Score'"
+      ></nwb-gs-tracker>
     </div>
-    <div class="flex flex-col leading-4">
-      <div class="text-xs text-rarity-{{vm.rarity}}">
-        <ng-container *ngIf="vm.sourceLabel">
-          <span [class.text-error]="vm.isDeprecated">{{ vm.sourceLabel }}</span>
-        </ng-container>
-      </div>
-      <div class="flex flex-row justify-between gap-2 whitespace-nowrap">
-        <span [nwText]="vm.typeName" class="flex-1 overflow-hidden overflow-ellipsis"></span>
-        <span [nwText]="vm.rarityName" class="text-rarity-{{vm.rarity}} text-sm"></span>
-      </div>
-    </div>
-  </aside>
+  </nwb-item-detail-header-content>
 </ng-container>
+<ng-content></ng-content>

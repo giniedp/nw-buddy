@@ -1,0 +1,68 @@
+<ng-container *ngIf="vm$ | async; let vm">
+  <div *ngIf="vm.gearset; let gearset" class="layout-content layout-gap">
+    <div class="flex-none p-1 mb-2">
+      <div class="form-control">
+        <div class="input-group">
+          <button class="btn btn-ghost btn-square inline-flex" (click)="unloadSet()">
+            <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
+          </button>
+          <input
+            type="text"
+            placeholder=""
+            class="input input-bordered w-full"
+            [ngModel]="gearset.name"
+            (ngModelChange)="updateName($event)"
+            [ngModelOptions]="{ updateOn: 'blur' }"
+          />
+          <button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
+            <nwb-icon [icon]="vm.isLinkMode ? iconLink : iconCopy" class="w-4 h-4"></nwb-icon>
+          </button>
+          <a class="btn btn-ghost btn-square inline-flex" [routerLink]="['/gearsets', vm.gearset.id]">
+            <label>
+              <nwb-icon [icon]="iconNav" class="w-4 h-4"></nwb-icon>
+            </label>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="flex-none grid gap-1">
+      <ng-container *ngFor="let slot of slots">
+        <nwb-gearset-form-cell
+          [slot]="slot"
+          [gearset]="gearset"
+          (itemDropped)="onItemDropped(slot, $event)"
+          (itemRemove)="onItemRemove(slot)"
+          (itemUnlink)="onItemUnlink(slot, $event)"
+        ></nwb-gearset-form-cell>
+      </ng-container>
+    </div>
+  </div>
+
+  <div *ngIf="!vm.gearset && !vm.isLoading" class="max-w-md mx-auto layout-col layout-gap h-full items-center justify-center">
+    <button class="btn btn-primary w-full" (click)="loadSet()">
+      <nwb-icon [icon]="iconOpen" class="w-4 h-4 mr-2"></nwb-icon>
+      Open existing set
+    </button>
+    <button class="btn btn-primary w-full" (click)="createSet()">
+      <nwb-icon [icon]="iconCreate" class="w-4 h-4 mr-2"></nwb-icon>
+      Create new set
+    </button>
+  </div>
+
+  <ng-template #menu>
+    <ul class="menu menu-compact bg-base-100 rounded-md w-52" cdkMenu>
+      <li [class.bordered]="vm.isLinkMode" cdkMenuItem>
+        <button (click)="updateMode('link')">
+          <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
+          Link items mode
+        </button>
+      </li>
+      <li [class.bordered]="vm.isCopyMode" cdkMenuItem>
+        <button (click)="updateMode('copy')">
+          <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
+          Copy items mode
+        </button>
+      </li>
+    </ul>
+  </ng-template>
+</ng-container>

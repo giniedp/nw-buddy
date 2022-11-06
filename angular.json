@@ -178,7 +178,12 @@
             ],
             "assets": [
               "apps/web/assets",
-              "apps/web/nw-data"
+              {
+                "glob": "**/*",
+                "ignore": ["*.gz", "*.zip"],
+                "input": "dist/nw-data",
+                "output": "/nw-data/"
+              }
             ],
             "customWebpackConfig": {
               "path": "./angular.webpack.js",

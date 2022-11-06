@@ -1,0 +1,7 @@
+<h3 class="font-bold text-lg">{{ title }}</h3>
+<p class="pt-4">{{ body }}</p>
+<div class="modal-action">
+  <button class="btn btn-ghost" (click)="deny()">{{ negative }}</button>
+  <button class="btn btn-ghost" (click)="close()" *ngIf="neutral">{{ neutral }}</button>
+  <button class="btn btn-ghost" (click)="confirm()">{{ positive }}</button>
+</div>

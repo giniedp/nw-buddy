@@ -4,8 +4,7 @@ import { QuicksearchInputComponent } from './quicksearch-input.component'
 import { FormsModule } from '@angular/forms'
 
 @NgModule({
-  declarations: [QuicksearchInputComponent],
   exports: [QuicksearchInputComponent],
-  imports: [CommonModule, FormsModule],
+  imports: [QuicksearchInputComponent],
 })
 export class QuicksearchModule {}

@@ -75,7 +75,7 @@ $nw-rarity-color: (
 
   border: 1px solid transparent;
   border-image-width: 2px;
-  border-image-repeat: round;
+  border-image-repeat: stretch;
   border-image-slice: 2;
 
   &.bg-rarity-0 {

@@ -2,34 +2,21 @@ import { Injectable, Optional } from '@angular/core'
 import { Ability, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
-import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
-import { SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter } from '~/ui/data-table'
-import m from 'mithril'
-import { humanize, shareReplayRefCount } from '~/utils'
 import { TranslateService } from '~/i18n'
+import { nwdbLinkUrl, NwService } from '~/nw'
 import { getPerksInherentMODs, hasPerkInherentAffix } from '~/nw/utils'
+import { SelectboxFilter } from '~/ui/ag-grid'
+import { DataTableAdapter, DataTableAdapterOptions, dataTableProvider } from '~/ui/data-table'
+import { humanize, shareReplayRefCount } from '~/utils'
 import { ExprContextService } from './exp-context.service'
-import { NW_MAX_GEAR_SCORE, NW_MAX_GEAR_SCORE_BASE, NW_MAX_WEAPON_LEVEL } from '~/nw/utils/constants'
-
-@Injectable()
-export class PerksTableAdapterConfig {
-  source: Observable<Perks[]>
-  persistStateId?: string
-}
 
 @Injectable()
 export class PerksTableAdapter extends DataTableAdapter<Perks> {
-  public static provider(config?: PerksTableAdapterConfig) {
-    const provider = []
-    if (config) {
-      provider.push({
-        provide: PerksTableAdapterConfig,
-        useValue: config,
-      })
-    }
-    provider.push(DataTableAdapter.provideClass(PerksTableAdapter))
-    return provider
+  public static provider(config?: DataTableAdapterOptions<Perks>) {
+    return dataTableProvider({
+      adapter: PerksTableAdapter,
+      options: config
+    })
   }
 
   public entityID(item: Perks): string {
@@ -55,7 +42,7 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
           sortable: false,
           filter: false,
           pinned: true,
-          width: 54,
+          width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
               target: '_blank',
@@ -281,7 +268,7 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
     private nw: NwService,
     private i18n: TranslateService,
     @Optional()
-    private config: PerksTableAdapterConfig,
+    private config: DataTableAdapterOptions<Perks>,
     private ctx: ExprContextService
   ) {
     super()

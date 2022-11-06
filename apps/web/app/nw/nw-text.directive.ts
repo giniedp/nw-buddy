@@ -10,6 +10,7 @@ import {
 import { TranslateService } from '~/i18n'
 
 import { NwExpressionService } from './nw-expression.service'
+import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from './utils/constants'
 
 interface TextContext {
   text: string
@@ -33,10 +34,10 @@ export class NwTextDirective implements OnInit, OnChanges, OnDestroy {
   public itemId: string
 
   @Input()
-  public charLevel: number = 60
+  public charLevel: number = NW_MAX_CHARACTER_LEVEL
 
   @Input()
-  public gearScore: number = 600
+  public gearScore: number = NW_MAX_GEAR_SCORE_BASE
 
   private destroy$ = new Subject()
   private change$ = new ReplaySubject<TextContext>(1)

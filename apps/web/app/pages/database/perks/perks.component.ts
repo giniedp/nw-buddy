@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 import { NwModule } from '~/nw'
 import { CharacterPreferencesService } from '~/preferences'
-import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
+import { DataTableModule } from '~/ui/data-table'
 import { NavToobalModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule } from '~/ui/quicksearch'
 import { PerksTableAdapter } from '~/widgets/adapter'
@@ -22,7 +22,7 @@ import { ExprContextService } from '~/widgets/adapter/exp-context.service'
     class: 'layout-col bg-base-300 rounded-md overflow-clip',
   },
   providers: [
-    DataTableAdapter.provideClass(PerksTableAdapter),
+    PerksTableAdapter.provider(),
     ExprContextService
   ]
 })

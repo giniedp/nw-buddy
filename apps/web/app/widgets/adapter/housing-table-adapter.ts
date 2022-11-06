@@ -7,13 +7,19 @@ import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwService } from '~/nw'
 import { getItemIconPath, getItemId, getItemRarity, getItemTierAsRoman } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter } from '~/ui/data-table'
+import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { humanize } from '~/utils'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
 
 @Injectable()
 export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
+  public static provider() {
+    return dataTableProvider({
+      adapter: HousingTableAdapter,
+    })
+  }
+
   public entityID(item: Housingitems): string {
     return item.HouseItemID
   }
@@ -34,7 +40,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
           sortable: false,
           filter: false,
           pinned: true,
-          width: 54,
+          width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
               target: '_blank',

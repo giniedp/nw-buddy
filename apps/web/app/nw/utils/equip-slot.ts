@@ -38,24 +38,6 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     itemType: 'EquippableFeet',
   },
   {
-    id: 'weapon1',
-    icon: 'assets/icons/slots/weapon.png',
-    name: 'ui_weapon1',
-    itemType: 'Weapon',
-  },
-  {
-    id: 'weapon2',
-    icon: 'assets/icons/slots/weapon.png',
-    name: 'ui_weapon2',
-    itemType: 'Weapon',
-  },
-  {
-    id: 'weapon3',
-    icon: 'assets/icons/slots/1hshieldd.png',
-    name: 'ui_weapon3',
-    itemType: 'Shield',
-  },
-  {
     id: 'amulet',
     icon: 'assets/icons/slots/trinketp.png',
     name: 'ui_amulet_slot_tooltip',
@@ -72,6 +54,24 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     icon: 'assets/icons/slots/trinkete.png',
     name: 'ui_unlock_token_slot',
     itemType: 'EquippableToken',
+  },
+  {
+    id: 'weapon1',
+    icon: 'assets/icons/slots/weapon.png',
+    name: 'ui_weapon1',
+    itemType: 'Weapon',
+  },
+  {
+    id: 'weapon2',
+    icon: 'assets/icons/slots/weapon.png',
+    name: 'ui_weapon2',
+    itemType: 'Weapon',
+  },
+  {
+    id: 'weapon3',
+    icon: 'assets/icons/slots/1hshieldd.png',
+    name: 'ui_weapon3',
+    itemType: 'Shield',
   },
   {
     id: 'heartgem',

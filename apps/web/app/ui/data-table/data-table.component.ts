@@ -11,9 +11,8 @@ import {
   OnInit,
   Optional,
   Output,
-  SimpleChanges,
 } from '@angular/core'
-import { ColumnApi, ColumnState, GridApi, GridReadyEvent, Events } from 'ag-grid-community'
+import { ColumnApi, ColumnState, Events, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
 import { isEqual } from 'lodash'
 import {
   asyncScheduler,
@@ -22,8 +21,9 @@ import {
   debounceTime,
   defer,
   distinctUntilChanged,
-  fromEvent,
   map,
+  merge,
+  NEVER,
   Observable,
   ReplaySubject,
   skip,
@@ -35,9 +35,9 @@ import {
 } from 'rxjs'
 import { LocaleService } from '~/i18n'
 import { PreferencesService, StorageNode } from '~/preferences'
-import { AgGridModule } from '~/ui/ag-grid'
+import { AgGridModule, fromGridEvent } from '~/ui/ag-grid'
 import { DestroyService, shareReplayRefCount } from '~/utils'
-import { DataTableAdapter } from './data-table-adapter'
+import { DataTableAdapter, DataTableCategory } from './data-table-adapter'
 
 @Component({
   standalone: true,
@@ -58,6 +58,9 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   @Input()
   public persistStateId: string
 
+  @Input()
+  public multiSelect: boolean
+
   @Output()
   public rowDoubleClick = new EventEmitter<any>()
 
@@ -65,22 +68,27 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   private colApi: ColumnApi
 
   public get gridData() {
-    return this.displayItems$
+    return this.categoryItems$
   }
 
   protected gridOptions = defer(() => this.adapter$)
     .pipe(switchMap((adapter) => adapter.options))
     .pipe(
-      map((options) => {
+      map((options): GridOptions<T> => {
         return {
+          ...options,
           suppressColumnMoveAnimation: true,
-          rowHeight: 40,
-          rowMultiSelectWithClick: true,
+          rowHeight: options.rowHeight ?? 56,
+          rowSelection: this.multiSelect ? 'multiple' : options.rowSelection || 'single',
           suppressMenuHide: true,
-          overlayLoadingTemplate: `
+          overlayLoadingTemplate:
+            options.overlayLoadingTemplate ??
+            `
             <button class="btn btn-square btn-ghost loading"></button>
           `,
-          overlayNoRowsTemplate: `
+          overlayNoRowsTemplate:
+            options.overlayNoRowsTemplate ??
+            `
           <div class="alert shadow-lg max-w-[300px]">
             <div>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
@@ -88,30 +96,34 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
             </div>
           </div>
           `,
-          defaultColDef: {
+          defaultColDef: options.defaultColDef ?? {
             resizable: true,
             sortable: true,
             filter: true,
           },
-          onSelectionChanged: ({ api }) => {
+          onSelectionChanged: (params) => {
+            options.onSelectionChanged?.(params)
             this.zone.run(() => {
-              this.gridSelectionChanged$.next(api.getSelectedRows() || [])
+              this.gridSelectionChanged$.next(params.api.getSelectedRows() || [])
             })
           },
-          onRowDataChanged: () => {
+          onRowDataChanged: (params) => {
+            options.onRowDataChanged?.(params)
             this.gridRowDataChanged$.next(null)
           },
-          onFirstDataRendered: () => {
+          onFirstDataRendered: (params) => {
+            options.onFirstDataRendered?.(params)
             this.gridRowDataChanged$.next(null)
             // this.loadFilterState()
           },
-          onFilterChanged: () => {
+          onFilterChanged: (params) => {
+            options.onFilterChanged?.(params)
             // this.saveFilterState()
           },
-          onRowDoubleClicked: (e) => {
-            this.rowDoubleClick.emit(this.adapter.entityID(e.data))
+          onRowDoubleClicked: (params) => {
+            options.onRowDoubleClicked?.(params)
+            this.rowDoubleClick.emit(this.adapter.entityID(params.data))
           },
-          ...options,
         }
       })
     )
@@ -133,16 +145,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   @Output()
-  public categories = defer(() =>
-    combineLatest({
-      items: this.items$,
-      adapter: this.adapter$,
-    })
-  ).pipe(
-    map(({ items, adapter }) => {
-      return Array.from(new Set(items.map((it) => adapter.entityCategory(it)).filter((it) => !!it)))
-    })
-  )
+  public categories = defer(() => this.adapter$).pipe(switchMap((adapter) => (adapter ? adapter.categories : [])))
 
   @Input()
   public set adapter(value: DataTableAdapter<T>) {
@@ -163,7 +166,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   private selection$ = new ReplaySubject<string[]>(1)
   private items$ = defer(() => this.adapter$).pipe(switchMap((adapter) => adapter.entities))
   private category$ = defer(() => this.adapter$).pipe(switchMap((adapter) => adapter.category))
-  private displayItems$ = defer(() =>
+  private categoryItems$ = defer(() =>
     combineLatest({
       adapter: this.adapter$,
       items: this.items$,
@@ -174,8 +177,8 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       if (!category) {
         return items
       }
-      return items.filter((it) => adapter.entityCategory(it) === category)
-    }),
+      return items.filter((it) => intersectsCategory(adapter.entityCategory(it), category))
+    })
   )
 
   private gridStorage: StorageNode<{ columns?: any; filter?: any }>
@@ -190,16 +193,20 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     preferences: PreferencesService
   ) {
     this.gridStorage = preferences.storage.storageScope('grid:')
-    this.adapter$.next(adapter)
+    if (adapter) {
+      this.adapter$.next(adapter)
+    }
   }
 
   public async ngOnInit() {
+    // bind grid instance when it is ready
     this.gridReady$.pipe(takeUntil(this.destroy.$)).subscribe((e) => {
       this.loadColumnState()
       this.loadFilterState()
       this.adapter.setGrid(e)
     })
 
+    // save column state whenever a column has changed
     this.mergeEvents([
       Events.EVENT_COLUMN_MOVED,
       Events.EVENT_COLUMN_PINNED,
@@ -213,6 +220,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
         this.saveColumnState()
       })
 
+    // save filter state whenever a filter has changed
     this.mergeEvents([Events.EVENT_FILTER_CHANGED])
       .pipe(debounceTime(500))
       .pipe(takeUntil(this.destroy.$))
@@ -220,6 +228,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
         this.saveFilterState()
       })
 
+    // refresh cells whenever the language has changed
     this.gridReady$
       .pipe(switchMap(() => this.locale.value$))
       .pipe(skip(1)) // skip initial value
@@ -228,6 +237,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
         this.gridApi.refreshCells({ force: true })
       })
 
+    // sync selection state between grid and this instance
     combineLatest({
       selection: this.selection$.pipe(distinctUntilChanged<string[]>(isEqual)),
       change: this.gridRowDataChanged$,
@@ -241,6 +251,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
         })
       })
 
+    // delegate select event from grid to this instance
     this.adapter$
       .pipe(switchMap(() => this.gridSelectionChanged$))
       .pipe(map((list) => list.map((it) => this.adapter.entityID(it))))
@@ -248,6 +259,22 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       .pipe(takeUntil(this.destroy.$))
       .subscribe((ids) => {
         this.select(ids)
+      })
+
+    // delegate select event from adapter to this instance
+    this.adapter$
+      .pipe(switchMap((it) => it.select))
+      .pipe(takeUntil(this.destroy.$))
+      .subscribe((toSelect) => {
+        this.select(toSelect)
+      })
+
+    // listen for transaction events and apply them to the grid
+    this.adapter$
+      .pipe(switchMap((it) => it.transaction || NEVER))
+      .pipe(takeUntil(this.destroy.$))
+      .subscribe((tx) => {
+        this.gridApi.applyTransactionAsync(tx)
       })
   }
 
@@ -272,21 +299,11 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   private mergeEvents(events: string[]) {
     return this.gridReady$.pipe(
       switchMap(({ api }) => {
-        return new Observable((sub) => {
-          function emit() {
-            sub.next()
-          }
-          events.forEach((type) => api.addEventListener(type, emit))
-          return () => {
-            events.forEach((type) => api.removeEventListener(type, emit))
-          }
-        })
+        return merge(...events.map((event) => {
+          return fromGridEvent(api, event)
+        }))
       })
     )
-  }
-
-  private getChange(ch: SimpleChanges, key: keyof this) {
-    return ch[key as any]
   }
 
   public select(ids: string[]) {
@@ -361,9 +378,10 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     if (!key || !api) {
       return
     }
+    const filterState = api.getFilterModel()
     this.gridStorage.set(key, {
       ...(this.gridStorage.get(key) || {}),
-      filter: api.getFilterModel(),
+      filter: filterState,
     })
   }
 
@@ -390,4 +408,14 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       api.setFilterModel(data)
     }
   }
+}
+
+function intersectsCategory(catSet: string | DataTableCategory | Array<string | DataTableCategory>, category: string) {
+  if (Array.isArray(catSet)) {
+    return catSet.some((it) => (typeof it !== 'string' ? it.value : it) === category)
+  }
+  if (catSet) {
+    return (typeof catSet !== 'string' ? catSet.value : catSet) === category
+  }
+  return false
 }
