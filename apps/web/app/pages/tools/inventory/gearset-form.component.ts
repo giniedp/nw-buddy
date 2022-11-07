@@ -13,6 +13,7 @@ import { DataTablePickerDialog } from '~/ui/data-table'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft, svgFolderOpen, svgLink, svgPaste, svgPlus, svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { PromptDialogComponent } from '~/ui/modal'
+import { TooltipModule } from '~/ui/tooltip'
 import { GearsetTableAdapter } from '~/widgets/adapter'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { GearsetsTableAdapter } from '../gearsets/gearsets-table.adapter'
@@ -34,6 +35,7 @@ import { GearsetFormCellComponent } from './gearset-form-cell.component'
     IconsModule,
     ItemDetailModule,
     RouterModule,
+    TooltipModule,
   ],
   providers: [GearsetStore],
   host: {

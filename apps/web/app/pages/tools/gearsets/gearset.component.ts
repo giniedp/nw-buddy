@@ -139,4 +139,8 @@ export class GearsetComponent {
       },
     })
   }
+
+  protected goBack() {
+    history.back()
+  }
 }
