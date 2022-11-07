@@ -11,6 +11,7 @@ import { svgPlus } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/modal'
 import { NavToobalModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
+import { TooltipModule } from '~/ui/tooltip'
 import { GearsetMigrationService } from './gearset-migration.srvice'
 import { GearsetsTableAdapter } from './gearsets-table.adapter'
 
@@ -18,7 +19,7 @@ import { GearsetsTableAdapter } from './gearsets-table.adapter'
   standalone: true,
   selector: 'nwb-gearsets-page',
   templateUrl: './gearsets.component.html',
-  imports: [CommonModule, RouterModule, NwModule, DataTableModule, QuicksearchModule, NavToobalModule, IconsModule],
+  imports: [CommonModule, RouterModule, NwModule, DataTableModule, QuicksearchModule, NavToobalModule, IconsModule, TooltipModule],
   providers: [GearsetsTableAdapter.provider(), QuicksearchService, GearsetsStore],
   host: {
     class: 'layout-col bg-base-100',

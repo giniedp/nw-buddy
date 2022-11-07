@@ -15,7 +15,7 @@ import { UpdateAlertModule } from './widgets/update-alert'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { StoreModule } from '@ngrx/store'
 import { EffectsModule } from '@ngrx/effects'
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools'
 import { environment } from '../environments/environment'
 
 @NgModule({
@@ -40,11 +40,7 @@ import { environment } from '../environments/environment'
       autoPause: true, // Pauses recording actions and state changes when the extension window is not open
     }),
   ],
-  providers: [
-    NwDataInterceptor.provide(),
-  ],
+  providers: [NwDataInterceptor.provide()],
   bootstrap: [AppComponent],
 })
-export class AppModule {
-
-}
+export class AppModule {}

@@ -21,10 +21,10 @@
     </div>
     <div class="flex-none">
       <ul class="menu menu-horizontal p-0">
-        <li>
-          <nwb-screenshot-button class="tooltip-left"></nwb-screenshot-button>
+        <li [tooltip]="'Grab screenshot'" [color]="'info'">
+          <nwb-screenshot-button></nwb-screenshot-button>
         </li>
-        <li class="tooltip tooltip-info tooltip-left" data-tip="Toggle compact mode">
+        <li [tooltip]="compactMode ? 'Disable compact mode' : 'Enable compact mode'" [color]="'info'">
           <a (click)="onCompactClicked()" [class.text-primary]="compactMode">
             <svg viewBox="0 0 448 512" class="w-4 h-4">
               <path
@@ -34,12 +34,12 @@
             </svg>
           </a>
         </li>
-        <li class="tooltip tooltip-info tooltip-left" data-tip="Create a copy">
+        <li [tooltip]="'Create a copy'" [color]="'info'">
           <a (click)="onCloneClicked()">
             <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
           </a>
         </li>
-        <li class="tooltip tooltip-error tooltip-left" data-tip="Delete">
+        <li [tooltip]="'Delete'" [color]="'error'">
           <a (click)="onDeleteClicked()">
             <nwb-icon [icon]="iconDelete" class="w-4 h-4"></nwb-icon>
           </a>

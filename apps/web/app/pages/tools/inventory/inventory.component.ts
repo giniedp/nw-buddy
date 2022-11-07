@@ -10,6 +10,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgPlus, svgTrashCan } from '~/ui/icons/svg'
 import { NavToobalModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
+import { TooltipModule } from '~/ui/tooltip'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { GearsetMigrationService } from '../gearsets/gearset-migration.srvice'
 import { GearsetFormComponent } from './gearset-form.component'
@@ -31,6 +32,7 @@ import { PlayerItemsTableAdapter } from './inventory-table.adapter'
     ScreenshotModule,
     IconsModule,
     GearsetFormComponent,
+    TooltipModule
   ],
   host: {
     class: 'layout-col bg-base-300 rounded-md overflow-clip',

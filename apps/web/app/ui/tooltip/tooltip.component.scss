@@ -1,0 +1,34 @@
+:host {
+  display: none;
+  &.show {
+    display: block;
+  }
+
+  max-width: 250px;
+  box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 5px 8px 0 rgba(0, 0, 0, 0.14), 0 1px 14px 0 rgba(0, 0, 0, 0.12);
+  z-index: 999;
+
+  @apply bg-base-100;
+
+  &.info {
+    @apply bg-info
+  }
+  &.primary {
+    @apply bg-primary
+  }
+  &.secondary {
+    @apply bg-secondary
+  }
+  &.accent {
+    @apply bg-accent
+  }
+  &.success {
+    @apply bg-success
+  }
+  &.warning {
+    @apply bg-warning
+  }
+  &.error {
+    @apply bg-error
+  }
+}

@@ -14,7 +14,7 @@
       </li>
     </ng-template>
     <ng-template #tplButtons>
-      <li>
+      <li [tooltip]="'Create new item'" [color]="'accent'">
         <span (click)="createItem()">
           <nwb-icon [icon]="svgPlus" class="w-4 h-4"></nwb-icon>
         </span>

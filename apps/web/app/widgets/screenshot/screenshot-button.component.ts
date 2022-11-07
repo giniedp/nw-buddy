@@ -1,7 +1,7 @@
 import { Dialog, DialogModule, DialogRef } from '@angular/cdk/dialog'
-import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay'
+import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectorRef, Component, ElementRef, HostBinding, HostListener, TemplateRef, ViewChild } from '@angular/core'
+import { ChangeDetectorRef, Component, HostBinding, HostListener, TemplateRef, ViewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ScreenshotFrame, ScreenshotService } from './screenshot.service'
 
@@ -11,8 +11,7 @@ import { ScreenshotFrame, ScreenshotService } from './screenshot.service'
   templateUrl: './screenshot-button.component.html',
   imports: [CommonModule, FormsModule, OverlayModule, DialogModule],
   host: {
-    class: 'flex tooltip tooltip-info tooltip-left"',
-    '[attr.data-tip]': '"Grab Screenshot"',
+    class: 'flex',
   }
 })
 export class ScreenshotButtonComponent {

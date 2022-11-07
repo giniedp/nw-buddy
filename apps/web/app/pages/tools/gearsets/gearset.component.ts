@@ -10,6 +10,7 @@ import { EquipSlot, EQUIP_SLOTS } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { svgCamera, svgChevronLeft, svgClipboard, svgPaste, svgTrashCan } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/modal'
+import { TooltipModule } from '~/ui/tooltip'
 import { observeRouteParam } from '~/utils'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { GearsetSlotComponent } from './gearset-slot.component'
@@ -28,6 +29,7 @@ import { GearsetStatsComponent } from './gearset-stats.component'
     ScreenshotModule,
     DialogModule,
     IconsModule,
+    TooltipModule,
   ],
   providers: [GearsetStore],
   styleUrls: ['./gearset.component.scss'],
