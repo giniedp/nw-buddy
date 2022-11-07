@@ -54,7 +54,7 @@ export class GearsetsStore extends ComponentStore<GearsetsState> {
   private rowUpdated = new Subject<GearsetRow>()
   private rowDestroyed = new Subject<string>()
 
-  public constructor(private db: GearsetsDB, private itemsDb: ItemInstancesDB, private nwdb: NwDbService) {
+  public constructor(private setsDB: GearsetsDB, private itemsDB: ItemInstancesDB, private nwDB: NwDbService) {
     super({
       records: null,
       items: new Map(),
@@ -67,11 +67,11 @@ export class GearsetsStore extends ComponentStore<GearsetsState> {
   public loadAll() {
     this.loadItems(
       combineLatest({
-        records: this.db.observeAll(),
-        items: this.nwdb.itemsMap,
-        perks: this.nwdb.perksMap,
-        buckets: this.nwdb.perkBucketsMap,
-        instances: this.itemsDb.observeAll().pipe(
+        records: this.setsDB.observeAll(),
+        items: this.nwDB.itemsMap,
+        perks: this.nwDB.perksMap,
+        buckets: this.nwDB.perkBucketsMap,
+        instances: this.itemsDB.observeAll().pipe(
           map((items) => {
             const result = new Map<string, ItemInstance>()
             for (const item of items) {
@@ -94,7 +94,7 @@ export class GearsetsStore extends ComponentStore<GearsetsState> {
   public readonly createRecord = this.effect<{ record: GearsetRecord }>((value$) => {
     return value$.pipe(
       switchMap(async ({ record }) => {
-        await this.db
+        await this.setsDB
           .create(record)
           .then((created) => this.rowCreated.next(this.buildRow(created)))
           .catch(console.error)
@@ -105,7 +105,7 @@ export class GearsetsStore extends ComponentStore<GearsetsState> {
   public readonly updateRecord = this.effect<{ record: GearsetRecord }>((value$) => {
     return value$.pipe(
       switchMap(async ({ record }) => {
-        await this.db
+        await this.setsDB
           .update(record.id, record)
           .then((updated) => this.rowUpdated.next(this.buildRow(updated)))
           .catch(console.error)
@@ -116,7 +116,7 @@ export class GearsetsStore extends ComponentStore<GearsetsState> {
   public readonly destroyRecord = this.effect<{ recordId: string }>((value$) => {
     return value$.pipe(
       switchMap(async ({ recordId }) => {
-        await this.db
+        await this.setsDB
           .destroy(recordId)
           .then(() => this.rowDestroyed.next(recordId))
           .catch(console.error)

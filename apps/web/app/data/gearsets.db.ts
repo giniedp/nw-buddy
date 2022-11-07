@@ -28,9 +28,10 @@ export interface GearsetRecord {
   slots?: Record<string, string | ItemInstance>
 }
 
-export const DBT_GEARSETS = 'player-gearsets'
+export const DBT_GEARSETS = 'gearsets'
 @Injectable({ providedIn: 'root' })
 export class GearsetsDB extends DBTable<GearsetRecord> {
+  public static readonly tableName = DBT_GEARSETS
   public constructor(@Inject(APP_DB) db: Dexie) {
     super(db, DBT_GEARSETS)
   }

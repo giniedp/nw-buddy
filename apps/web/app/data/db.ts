@@ -1,4 +1,4 @@
-import { inject, InjectionToken } from '@angular/core'
+import { inject, Injectable, InjectionToken } from '@angular/core'
 import { Dexie } from 'dexie'
 import { DBT_GEARSETS } from './gearsets.db'
 import { DBT_ITEMS } from './item-instances.db'

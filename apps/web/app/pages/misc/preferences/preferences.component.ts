@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core'
+import { saveAs } from 'file-saver'
+import { DbService } from '~/data/db.service'
 import { NwTradeskillService } from '~/nw/nw-tradeskill.service'
 import { AppPreferencesService, ItemPreferencesService, PreferencesService } from '~/preferences'
 import { TradeskillPreferencesService } from '~/preferences/tradeskill-preferences.service'
@@ -21,6 +23,7 @@ export class PreferencesComponent implements OnInit {
   public constructor(
     public readonly app: AppPreferencesService,
     public readonly preferences: PreferencesService,
+    public readonly appDb: DbService,
     private readonly itemPref: ItemPreferencesService
   ) {
     //
@@ -28,8 +31,10 @@ export class PreferencesComponent implements OnInit {
 
   public ngOnInit(): void {}
 
-  public exportPreferences() {
-    downloadJson(this.preferences.export(), 'nwb-preferences.json')
+  public async exportPreferences() {
+    const prefExport = this.preferences.export()
+    prefExport['db:nw-buddy'] = await this.appDb.export()
+    downloadJson(prefExport, 'nwb-preferences.json')
   }
 
   public async importPreferences() {
@@ -41,7 +46,9 @@ export class PreferencesComponent implements OnInit {
     if (!content) {
       return
     }
-    this.preferences.import(JSON.parse(content))
+    const data = JSON.parse(content)
+    this.preferences.import(data)
+    await this.appDb.import(data['db:nw-buddy'])
   }
 
   protected clearPrices() {
@@ -51,18 +58,7 @@ export class PreferencesComponent implements OnInit {
 
 function downloadJson(data: any, filename: string) {
   const blob = new Blob([JSON.stringify(data)], { type: 'text/json' })
-  const link = document.createElement('a')
-  link.download = filename
-  link.href = window.URL.createObjectURL(blob)
-  link.dataset['downloadurl'] = ['text/json', link.download, link.href].join(':')
-  const evt = new MouseEvent('click', {
-    view: window,
-    bubbles: true,
-    cancelable: true,
-  })
-
-  link.dispatchEvent(evt)
-  link.remove()
+  saveAs(blob, filename)
 }
 
 const openFile = async () => {

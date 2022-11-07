@@ -106,6 +106,7 @@
     "daisyui": "2.31.0",
     "date-fns": "2.29.3",
     "dexie": "3.2.2",
+    "dexie-export-import": "1.0.3",
     "dotenv": "16.0.3",
     "electron": "19.0.9",
     "electron-builder": "23.1.0",

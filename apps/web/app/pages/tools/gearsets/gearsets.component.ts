@@ -11,6 +11,7 @@ import { svgPlus } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/modal'
 import { NavToobalModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
+import { GearsetMigrationService } from './gearset-migration.srvice'
 import { GearsetsTableAdapter } from './gearsets-table.adapter'
 
 @Component({
@@ -29,10 +30,12 @@ export class GearsetsComponent implements OnInit {
   public constructor(
     private store: GearsetsStore,
     protected search: QuicksearchService,
-    private dialog: Dialog
+    private dialog: Dialog,
+    private migration: GearsetMigrationService
   ) {}
 
-  public ngOnInit(): void {
+  public async ngOnInit() {
+    await this.migration.run()
     this.store.loadAll()
   }
 

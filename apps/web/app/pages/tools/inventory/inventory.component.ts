@@ -11,6 +11,7 @@ import { svgPlus, svgTrashCan } from '~/ui/icons/svg'
 import { NavToobalModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { ScreenshotModule } from '~/widgets/screenshot'
+import { GearsetMigrationService } from '../gearsets/gearset-migration.srvice'
 import { GearsetFormComponent } from './gearset-form.component'
 import { InventoryPickerService } from './inventory-picker.service'
 import { PlayerItemsTableAdapter } from './inventory-table.adapter'
@@ -44,12 +45,14 @@ export class PlayerItemsPageComponent implements OnInit {
     private sets: GearsetsStore,
     private items: ItemInstancesStore,
     private picker: InventoryPickerService,
-    private adapter: DataTableAdapter<ItemInstanceRow>
+    private adapter: DataTableAdapter<ItemInstanceRow>,
+    private migration: GearsetMigrationService
   ) {
     //
   }
 
-  public ngOnInit(): void {
+  public async ngOnInit() {
+    await this.migration.run()
     this.items.loadAll()
     this.sets.loadAll()
   }
