@@ -20,7 +20,7 @@ import {
   getPerkMultiplier,
   stripAbilityProperties,
   stripAffixProperties,
-  totalGearScore
+  totalGearScore,
 } from '~/nw/utils'
 import { PropertyGridModule } from '~/ui/property-grid'
 
@@ -34,6 +34,7 @@ interface PerkDetailInfo {
   isWeapon: boolean
   isArmor: boolean
   isJewelery: boolean
+  isShield: boolean
 }
 
 @Component({
@@ -48,7 +49,6 @@ interface PerkDetailInfo {
   },
 })
 export class GearsetStatsComponent {
-
   protected data$ = defer(() => this.resolvePerks())
 
   @ViewChild('tplSummary')
@@ -83,17 +83,19 @@ export class GearsetStatsComponent {
   }
 
   private resolvePerks() {
-    const sots$ = this.store.gearsetSlots$.pipe(switchMap((slots) => {
-      const result: Record<string, Observable<ItemInstance>> = {}
-      Object.entries(slots || {}).forEach(([key, value]) => {
-        if (typeof value !== 'string') {
-          result[key] = of(value)
-        } else {
-          result[key] = this.itemsDb.live((t) => t.get(value))
-        }
+    const sots$ = this.store.gearsetSlots$.pipe(
+      switchMap((slots) => {
+        const result: Record<string, Observable<ItemInstance>> = {}
+        Object.entries(slots || {}).forEach(([key, value]) => {
+          if (typeof value !== 'string') {
+            result[key] = of(value)
+          } else {
+            result[key] = this.itemsDb.live((t) => t.get(value))
+          }
+        })
+        return combineLatest(result)
       })
-      return combineLatest(result)
-    }))
+    )
 
     return combineLatest({
       slots: sots$,
@@ -119,6 +121,7 @@ export class GearsetStatsComponent {
           if (!item) {
             continue
           }
+          console.log(item)
 
           const gearScore = slot.gearScore || getItemMaxGearScore(item)
           gsSlots.push({
@@ -133,6 +136,9 @@ export class GearsetStatsComponent {
             weight += armor.WeightOverride || item.Weight || 0
             ratingElemental += getArmorRatingElemental(armor, gearScore) || 0
             ratingPhysical += getArmorRatingPhysical(armor, gearScore) || 0
+          } else if (weapon) {
+            ratingElemental += getArmorRatingElemental(weapon, gearScore) || 0
+            ratingPhysical += getArmorRatingPhysical(weapon, gearScore) || 0
           }
 
           const fixedPerks = getItemPerkKeys(item)
@@ -157,7 +163,15 @@ export class GearsetStatsComponent {
               maybeStackable: abilities?.some((it) => it.IsStackableAbility),
               isWeapon: !!weapon,
               isArmor: !!armor || perk?.ItemClass?.includes('Armor'),
-              isJewelery: perk?.ItemClass?.includes('EquippableAmulet') || perk?.ItemClass?.includes('EquippableToken') || perk?.ItemClass?.includes('EquippableRing') ,
+              isJewelery:
+                perk?.ItemClass?.includes('EquippableAmulet') ||
+                perk?.ItemClass?.includes('EquippableToken') ||
+                perk?.ItemClass?.includes('EquippableRing'),
+              isShield:
+                perk?.ItemClass?.includes('Shield') ||
+                perk?.ItemClass?.includes('RoundShield') ||
+                perk?.ItemClass?.includes('KiteShield') ||
+                perk?.ItemClass?.includes('TowerShield'),
             }
           }
         }
@@ -197,8 +211,9 @@ export class GearsetStatsComponent {
         stats[mod.key] = stats[mod.key] || { key: mod.key, label: [mod.label], value: 0, percent: 0 }
         stats[mod.key].value += Number(mod.value) * perk.count
       }
-      if (perk.isArmor || perk.isJewelery) {
+      if (perk.isArmor || perk.isJewelery || perk.isShield) {
         for (const mod of getAffixABSs(perk.affix, perk.scale)) {
+          console.log()
           stats[mod.key] = stats[mod.key] || { key: mod.key, label: mod.label, value: 0, percent: 0 }
           stats[mod.key].percent += Number(mod.value) * perk.count
           stats[mod.key].icon = this.damageIcon(mod.key.replace('ABS', ''))
