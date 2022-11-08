@@ -1,16 +1,9 @@
-<div class="w-56 flex flex-col layout-gap">
-  <ul class="menu bg-base-100 rounded-md">
-    <li [routerLinkActive]="'bordered'" >
-      <a [routerLink]="'loottables'">Loottables</a>
+<nwb-nav-toolbar [menu]="tplMenu" class="flex-none">
+  <ng-template #tplMenu>
+    <li [routerLinkActive]="'db-faults'" >
+      <a [routerLink]="'db-faults'">DB Faults</a>
     </li>
-    <li [routerLinkActive]="'bordered'" >
-      <a [routerLink]="'lootbuckets'">Lootbuckets</a>
-    </li>
-    <li [routerLinkActive]="'bordered'" >
-      <a [routerLink]="'expressions'">Expressions</a>
-    </li>
-  </ul>
-</div>
-<div class="overflow-auto">
-  <router-outlet></router-outlet>
-</div>
+  </ng-template>
+</nwb-nav-toolbar>
+
+<router-outlet></router-outlet>

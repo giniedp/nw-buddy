@@ -1,0 +1,11 @@
+<div class="prose p-3">
+  <p>
+    Shows all items where its item class does not intersect with some of its perks. <br>
+    Filter the "Fault Type" column to narrow down the results to Gem or Attribute faults.
+  </p>
+</div>
+<nwb-data-table
+  [adapter]="adapter"
+  [quickFilter]="search.query | async"
+  class="flex-1"
+></nwb-data-table>
