@@ -12,17 +12,14 @@ const routes: Routes = [
     component: DevComponent,
     children: [
       {
+        path: '',
+        redirectTo: 'db-faults',
+        pathMatch: 'full'
+      },
+      {
         path: 'db-faults',
         component: DbFaultsComponent
       },
-      {
-        path: 'lootbuckets',
-        component: LootbucketsComponent
-      },
-      {
-        path: 'loottables',
-        component: LoottablesComponent
-      }
     ]
   },
 
