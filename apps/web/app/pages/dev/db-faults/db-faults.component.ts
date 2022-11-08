@@ -7,7 +7,7 @@ import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwDbService, NwModule } from '~/nw'
 import { getItemIconPath, getItemPerks, getItemRarity, isPerkGem, isPerkGenerated, isPerkInherent } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter, DataTableCategory, DataTableModule } from '~/ui/data-table'
+import { CellRendererService, DataTableAdapter, DataTableCategory, DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { humanize } from '~/utils'
 
@@ -57,13 +57,16 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
           pinned: true,
           width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
-            return this.createLinkWithIcon({
+            return this.r.link({
               href: nwdbLinkUrl('item', data.item.ItemID),
-              target: '_blank',
-              icon: getItemIconPath(data.item),
-              rarity: getItemRarity(data.item),
-              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
-            })
+              target: '_blank'
+            }, [
+              this.r.icon({
+                src: getItemIconPath(data.item),
+                class: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
+                rarity: getItemRarity(data.item)
+              })
+            ])
           }),
         }),
         this.colDef({
@@ -73,7 +76,7 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
           filter: true,
           width: 250,
           valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.item.Name)),
-          cellRenderer: this.cellRenderer(({ value }) => this.makeLineBreaks(value)),
+          cellRenderer: this.r.lineBreaksRenderer(),
           cellClass: ['multiline-cell', 'py-2'],
           autoHeight: true,
           getQuickFilterText: ({ value }) => value,
@@ -119,7 +122,7 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
           headerValueGetter: () => 'Item Class',
           width: 250,
           valueGetter: this.valueGetter(({ data }) => data.item.ItemClass),
-          cellRenderer: this.cellRendererTags(humanize),
+          cellRenderer: this.r.tagListRenderer(humanize),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
             showCondition: true,
@@ -143,7 +146,7 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
               }
               return ''
             },
-            cellRenderer: this.cellRendererTags(humanize),
+            cellRenderer: this.r.tagListRenderer(humanize),
           })
         ),
       ],
@@ -153,7 +156,7 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
 
   protected adapter = this
 
-  public constructor(private nwDb: NwDbService, private i18n: TranslateService, protected search: QuicksearchService) {
+  public constructor(private nwDb: NwDbService, private i18n: TranslateService, protected search: QuicksearchService, private r: CellRendererService) {
     super()
   }
 

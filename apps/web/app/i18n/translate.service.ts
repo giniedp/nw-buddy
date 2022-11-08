@@ -42,7 +42,7 @@ export class TranslateService implements OnDestroy {
     if (Array.isArray(key)) {
       return key.map((it) => this.lookup(it)).join(' ')
     }
-    return this.lookup(key)
+    return this.lookup(key, locale)
   }
 
   public lookup(key: string, locale: string = this.locale.value) {

@@ -1,8 +1,10 @@
 import { catchError, combineLatest, map, Observable, of, startWith } from 'rxjs'
 import { TextReader } from './text-reader'
 
-export function parseNwExpression(text: string): NwExp {
-  text = preprocessExpression(text)
+export function parseNwExpression(text: string, skipPreprocess = false): NwExp {
+  if (!skipPreprocess) {
+    text = preprocessExpression(text)
+  }
   let outside = true
   const expr: NwExp[] = []
   let start = 0
@@ -110,10 +112,11 @@ function preprocessExpression(text: string) {
 export type NwExpSolveFn = (key: string) => Observable<string | number>
 export interface NwExp {
   eval: (solve: NwExpSolveFn) => Observable<string | number>
+  print: () => string
 }
 
-class NwExpJoin implements NwExp {
-  public constructor(private children: NwExp[], private separator = '') {
+export class NwExpJoin implements NwExp {
+  public constructor(public readonly children: NwExp[], private separator = '') {
     //
   }
   public eval(solve: NwExpSolveFn) {
@@ -122,36 +125,51 @@ class NwExpJoin implements NwExp {
     }
     return of('')
   }
+  public print() {
+    if (this.children.length) {
+      return this.children.map((it) => it.print()).join(this.separator)
+    }
+    return ''
+  }
 }
 
-class NwExpParen implements NwExp {
+export class NwExpParen implements NwExp {
   public constructor(private lParen: string, private rParen: string, private node: NwExp) {
     //
   }
   public eval(solve: NwExpSolveFn) {
     return this.node.eval(solve).pipe(map((value) => this.lParen + value + this.rParen))
   }
+  public print() {
+    return this.lParen + this.node.print() + this.rParen
+  }
 }
 
-class NwExpValue<T extends string | number> implements NwExp {
+export class NwExpValue<T extends string | number> implements NwExp {
   public constructor(private value: T) {
     //
   }
   public eval(solve: NwExpSolveFn) {
     return of(this.value)
   }
+  public print() {
+    return String(this.value)
+  }
 }
 
-class NwExpLookup implements NwExp {
+export class NwExpLookup implements NwExp {
   public constructor(private value: string) {
     //
   }
   public eval(solve: NwExpSolveFn) {
     return solve(this.value)
   }
+  public print() {
+    return String(this.value)
+  }
 }
 
-class NwExpEval implements NwExp {
+export class NwExpEval implements NwExp {
   public constructor(private node: NwExp) {
     //
   }
@@ -180,5 +198,8 @@ class NwExpEval implements NwExp {
           return '⚠'
         })
       )
+  }
+  public print() {
+    return this.node.print()
   }
 }
