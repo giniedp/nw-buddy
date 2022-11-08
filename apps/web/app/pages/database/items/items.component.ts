@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
-import { NavToobalModule } from '~/ui/nav-toolbar'
+import { NavToolbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { ItemsTableAdapter } from '~/widgets/adapter'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -19,7 +19,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     NwModule,
     QuicksearchModule,
     DataTableModule,
-    NavToobalModule,
+    NavToolbarModule,
     ScreenshotModule,
   ],
   host: {

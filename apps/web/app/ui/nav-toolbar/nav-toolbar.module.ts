@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core'
-import { NavToolbarComponent, NavToobalButtonsComponent, NavToobalMenuComponent } from './nav-toolbar.component'
+import { NavToolbarComponent, NavToolbarButtonsComponent, NavToolbarMenuComponent } from './nav-toolbar.component'
 
-const components = [NavToobalButtonsComponent, NavToolbarComponent, NavToobalMenuComponent]
+const components = [NavToolbarButtonsComponent, NavToolbarComponent, NavToolbarMenuComponent]
 @NgModule({
   imports: [...components],
   exports: [...components],
 })
-export class NavToobalModule {
+export class NavToolbarModule {
   //
 }

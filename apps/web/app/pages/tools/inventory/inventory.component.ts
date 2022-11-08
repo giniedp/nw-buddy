@@ -8,7 +8,7 @@ import { getItemId, getItemMaxGearScore } from '~/nw/utils'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
 import { IconsModule } from '~/ui/icons'
 import { svgPlus, svgTrashCan } from '~/ui/icons/svg'
-import { NavToobalModule } from '~/ui/nav-toolbar'
+import { NavToolbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -28,7 +28,7 @@ import { PlayerItemsTableAdapter } from './inventory-table.adapter'
     RouterModule,
     QuicksearchModule,
     DataTableModule,
-    NavToobalModule,
+    NavToolbarModule,
     ScreenshotModule,
     IconsModule,
     GearsetFormComponent,

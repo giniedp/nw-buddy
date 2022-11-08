@@ -10,7 +10,7 @@ import { svgEllipsisVertical } from '../icons/svg'
   template: '',
 
 })
-export class NavToobalMenuComponent {
+export class NavToolbarMenuComponent {
   public constructor(public template: TemplateRef<unknown>) {
     //
   }
@@ -21,7 +21,7 @@ export class NavToobalMenuComponent {
   selector: '[nwbNavToolbarButtons]',
   template: '',
 })
-export class NavToobalButtonsComponent {
+export class NavToolbarButtonsComponent {
   public constructor(public template: TemplateRef<unknown>) {
     //
   }
