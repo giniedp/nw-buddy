@@ -69,28 +69,28 @@ export class ItemDetailStatsComponent {
     if (stats?.BaseDamage != null) {
       result.push({
         item,
-        label: 'Base Damage',
+        label: 'ui_tooltip_basedamage',
         value: stats.BaseDamage,
       })
     }
     if (stats?.CritChance != null) {
       result.push({
         item,
-        label: 'Critical Hit Chance',
+        label: 'ui_tooltip_critical_hit_chance',
         value: toPercent(stats.CritChance),
       })
     }
     if (stats?.CritDamageMultiplier != null) {
       result.push({
         item,
-        label: 'Critical Damage Multiplier',
+        label: 'ui_tooltip_critical_damage_multiplier',
         value: stats.CritDamageMultiplier.toFixed(1),
       })
     }
     if (stats?.BlockStaminaDamage != null) {
       result.push({
         item,
-        label: 'Block Stamina Damage',
+        label: 'ui_tooltip_block_stamina_damage',
         value: stats.BlockStaminaDamage.toFixed(1),
       })
     }
@@ -105,7 +105,7 @@ export class ItemDetailStatsComponent {
       if (stats?.ElementalArmorSetScaleFactor != null && !!stats?.ArmorRatingScaleFactor) {
         result.push({
           item,
-          label: 'Armor Rating - Elemental',
+          label: 'ui_elemental',
           value: getArmorRatingElemental(stats, score).toFixed(1),
         })
       }
@@ -114,7 +114,7 @@ export class ItemDetailStatsComponent {
       if (stats?.PhysicalArmorSetScaleFactor != null && !!stats?.ArmorRatingScaleFactor) {
         result.push({
           item,
-          label: 'Armor Rating - Physical',
+          label: 'ui_physical',
           value: getArmorRatingPhysical(stats, score).toFixed(1),
         })
       }
@@ -122,7 +122,7 @@ export class ItemDetailStatsComponent {
     if (stats?.BlockStability != null) {
       result.push({
         item,
-        label: 'Blocking Stability',
+        label: 'ui_tooltip_blockingstability',
         value: `${stats.BlockStability}%`,
       })
     }
@@ -134,14 +134,14 @@ export class ItemDetailStatsComponent {
     if (stats?.ElementalArmorSetScaleFactor != null && !!stats?.ArmorRatingScaleFactor) {
       result.push({
         item,
-        label: 'Armor Rating - Elemental',
+        label: 'ui_elemental',
         value: getArmorRatingElemental(stats, score).toFixed(1),
       })
     }
     if (stats?.PhysicalArmorSetScaleFactor != null && !!stats?.ArmorRatingScaleFactor) {
       result.push({
         item,
-        label: 'Armor Rating - Physical',
+        label: 'ui_physical',
         value: getArmorRatingPhysical(stats, score).toFixed(1),
       })
     }

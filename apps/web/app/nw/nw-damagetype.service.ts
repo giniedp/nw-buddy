@@ -22,6 +22,14 @@ const ICON_MAP: Record<string, string> = {
   Thrust: 'icon_tooltip_thrust_opaque',
 }
 
+const WARD_ICON: Record<string, string> = {
+  Ancient: 'ancientward1',
+  Corrupted: 'corruptedward1',
+  AngryEarth: 'angryearthward1',
+  Lost: 'lostward1',
+  Bestial: 'bestialward1',
+}
+
 export interface WeaponTypes {
   WeaponTypeID: string
   GroupName: string
@@ -134,6 +142,13 @@ export class NwDamagetypeService {
 
   public damageTypeIdIcon(type: string) {
     return `assets/icons/tooltip/${ICON_MAP[type] || 'icon_unknown'}.png`
+  }
+
+  public wardTypeIcon(type: string) {
+    if (WARD_ICON[type]) {
+      return `assets/icons/families/${WARD_ICON[type]}.png`
+    }
+    return ''
   }
 
   public damageTypeIcon(type: Damagetypes) {

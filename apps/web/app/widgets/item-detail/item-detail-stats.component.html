@@ -12,5 +12,5 @@
   >
 </div>
 <div *ngFor="let row of stats$ | async">
-  <b>{{ row.value }} </b> <span class="opacity-50">{{ row.label }}</span>
+  <b>{{ row.value }} </b> <span class="opacity-50">{{ row.label | nwText }}</span>
 </div>

@@ -72,7 +72,7 @@ export class GearsetStatsComponent {
   }
 
   protected damageIcon(type: string) {
-    return this.damage.damageTypeIdIcon(type)
+    return this.damage.wardTypeIcon(type) || this.damage.damageTypeIdIcon(type)
   }
 
   protected getPerkMultiplier(info: PerkDetailInfo) {
@@ -121,7 +121,6 @@ export class GearsetStatsComponent {
           if (!item) {
             continue
           }
-          console.log(item)
 
           const gearScore = slot.gearScore || getItemMaxGearScore(item)
           gsSlots.push({
@@ -180,13 +179,13 @@ export class GearsetStatsComponent {
 
         summary.unshift({
           key: 'armor-rating-physical',
-          label: 'Armor Rating - Physical',
+          label: 'ui_physical',
           value: ratingPhysical,
           percent: 0,
         })
         summary.unshift({
           key: 'armor-rating-elemetnal',
-          label: 'Armor Rating - Elemental',
+          label: 'ui_elemental',
           value: ratingElemental,
           percent: 0,
         })
@@ -213,10 +212,9 @@ export class GearsetStatsComponent {
       }
       if (perk.isArmor || perk.isJewelery || perk.isShield) {
         for (const mod of getAffixABSs(perk.affix, perk.scale)) {
-          console.log()
           stats[mod.key] = stats[mod.key] || { key: mod.key, label: mod.label, value: 0, percent: 0 }
           stats[mod.key].percent += Number(mod.value) * perk.count
-          stats[mod.key].icon = this.damageIcon(mod.key.replace('ABS', ''))
+          stats[mod.key].icon = this.damageIcon(mod.type)
         }
         for (const mod of getAffixDMGs(perk.affix, perk.scale)) {
           stats[mod.key] = stats[mod.key] || { key: mod.key, label: mod.label, value: 0, percent: 0 }

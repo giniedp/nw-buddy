@@ -204,6 +204,16 @@ program
         'ui_dungeon_mutator_bronze',
         'ui_dungeon_mutator_silver',
         'ui_dungeon_mutator_gold',
+
+        'ui_physical',
+        'ui_elemental',
+        'ui_physical_defense_short',
+        'ui_physical_defense_full',
+        'ui_elemental_defense_short',
+        'ui_elemental_defense_full',
+        'inv_equipLoadFast',
+        'inv_equipLoadNormal',
+        'inv_equipLoadSlow',
         'ui_strength',
         'ui_dexterity',
         'ui_intelligence',
@@ -217,6 +227,7 @@ program
         /^[a-zA-Z]+_DamageName/,
         /^ui_poi_.*_description/,
         /^ui_tooltip_.*/,
+        'ui_tooltip_basedamage'
       ],
     }).then((files) => {
       checkExpressions({

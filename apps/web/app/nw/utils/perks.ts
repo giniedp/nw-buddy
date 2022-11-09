@@ -58,6 +58,7 @@ export function getAffixMODs(affix: Partial<Affixstats>, scale: number) {
       return {
         key: key,
         label: `ui_${label}`,
+        labelShort: `ui_${label}_short`,
         value: Number.isFinite(valNum) ? Math.floor(valNum * scale) : value,
       }
     })
@@ -67,16 +68,20 @@ export function getAffixABSs(affix: Partial<Affixstats>, scale: number) {
   return getAffixProperties(affix)
     .filter((it) => it.key.startsWith('ABS'))
     .map(({ key, value }) => {
-      const name = key.replace('ABS', '').toLowerCase()
+      const name = key.replace('ABS', '')
       let label: string
-      if (name.startsWith('vitalscategory ')) {
-        label = `VC_${name.replace('vitalscategory ', '')}`
+      let type: string
+      if (name.match(/^vitalscategory/i)) {
+        type = name.replace(/^vitalscategory\s+/i, '')
+        label = `VC_${type}`
       } else {
+        type = name
         label = `${name}_DamageName`
       }
       const valNum = Number(value)
       return {
         key: key,
+        type: type,
         label: [label, 'ui_resistance'],
         value: Number.isFinite(valNum) ? valNum * scale : value,
       }
@@ -90,7 +95,7 @@ export function getAffixDMGs(affix: Partial<Affixstats>, scale: number) {
     .map(({ key, value }) => {
       const name = key.replace('DMG', '').toLowerCase()
       let label: string
-      if (name.startsWith('vitalscategory ')) {
+      if (name.match(/^vitalscategory/i)) {
         label = `VC_${name.replace('vitalscategory ', '')}`
       } else {
         label = `${name}_DamageName`
