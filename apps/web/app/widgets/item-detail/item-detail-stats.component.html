@@ -2,8 +2,9 @@
   <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-14 h-14">
   <span
     cdkOverlayOrigin
-    class="text-5xl font-bold rounded-md border border-transparent "
-    [class.hover:border-primary]="gearScoreEditable"
+    class="text-5xl font-bold rounded-md outline outline-2 outline-offset-0 outline-transparent transition-all"
+    [class.hover:outline-primary]="gearScoreEditable"
+    [class.hover:outline-offset-4]="gearScoreEditable"
     [class.cursor-pointer]="gearScoreEditable"
     [class.select-none]="gearScoreEditable"
     style="min-width: 3rem"

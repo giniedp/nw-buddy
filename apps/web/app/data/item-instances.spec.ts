@@ -14,7 +14,6 @@ describe('PlayerItemsData', () => {
     const result = await service.create({
       gearScore: 100
     })
-    console.log(result)
     expect(result.id).not.toBeFalsy()
   })
 })

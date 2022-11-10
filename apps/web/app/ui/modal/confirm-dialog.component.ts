@@ -5,8 +5,9 @@ import { ChangeDetectionStrategy, Component, Inject } from '@angular/core'
 export interface ConfirmDialogOptions {
   title: string
   body: string
+  html?: boolean
   positive: string
-  negative: string
+  negative?: string
   neutral?: string
 }
 
@@ -37,6 +38,10 @@ export class ConfirmDialogComponent {
 
   protected get body() {
     return this.data.body
+  }
+
+  protected get isHtml() {
+    return this.data.html
   }
 
   protected get positive() {

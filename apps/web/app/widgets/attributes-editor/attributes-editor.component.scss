@@ -1,0 +1,9 @@
+:host {
+  .grid {
+    display: grid;
+    grid-template-columns: max-content max-content 1fr;
+  }
+  progress {
+    top: calc(50% - 4px);
+  }
+}

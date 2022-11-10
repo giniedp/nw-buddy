@@ -1,0 +1,43 @@
+
+<div class="grid gap-1">
+  <span class="text-2xl font-bold">Level</span>
+  <span class="text-2xl font-bold text-center">{{ level }}</span>
+  <span></span>
+  <span class="text-2xl font-bold">Points</span>
+  <span class="text-2xl font-bold text-center">{{ pointsAvailable$ | async }}</span>
+  <span></span>
+  <ng-container *ngFor="let stat of stats$ | async; trackBy: trackById" class="flex flex-row">
+    <label class=" inline-flex items-center justify-center font-bold text-2xl uppercase">{{ stat.name }}</label>
+    <div class="flex flex-row gap-1">
+      <button class="btn btn-ghost px-1" (click)="decrement(stat.name, 10)">
+        <nwb-icon [icon]="arrowsLeft" class="w-4 h-4"></nwb-icon>
+      </button>
+      <button class="btn btn-ghost px-1" (click)="decrement(stat.name, 1)">
+        <nwb-icon [icon]="arrowLeft" class="w-4 h-4"></nwb-icon>
+      </button>
+      <label class="w-12 px-1 inline-flex flex-col items-center justify-center font-bold">
+        <span class="text-2xl">{{ stat.total }}</span>
+        <span class="text-xs text-accent" *ngIf="stat.assigned">
+          (+{{ stat.assigned }})
+        </span>
+      </label>
+      <button class="btn btn-ghost px-1" (click)="increment(stat.name, 1)">
+        <nwb-icon [icon]="arrowLeft" class="w-4 h-4 rotate-180"></nwb-icon>
+      </button>
+      <button class="btn btn-ghost px-1" (click)="increment(stat.name, 10)">
+        <nwb-icon [icon]="arrowsLeft" class="w-4 h-4 rotate-180"></nwb-icon>
+      </button>
+    </div>
+    <div class="flex flex-row justify-between items-center relative">
+      <progress class="absolute left-0 progress progress-accent w-full" [value]="stat.total" [max]="stat.max"></progress>
+      <progress class="absolute left-0 progress progress-info w-full" [value]="stat.base" [max]="stat.max"></progress>
+      <span class="relative w-0 h-0"></span>
+      <span class="relative badge" [class.bg-accent]="stat.base < 50 && stat.total >= 50" [class.bg-info]="stat.base >= 50" ></span>
+      <span class="relative badge" [class.bg-accent]="stat.base < 100 && stat.total >= 100" [class.bg-info]="stat.base >= 100" ></span>
+      <span class="relative badge" [class.bg-accent]="stat.base < 150 && stat.total >= 150" [class.bg-info]="stat.base >= 150" ></span>
+      <span class="relative badge" [class.bg-accent]="stat.base < 200 && stat.total >= 200" [class.bg-info]="stat.base >= 200" ></span>
+      <span class="relative badge" [class.bg-accent]="stat.base < 250 && stat.total >= 250" [class.bg-info]="stat.base >= 250" ></span>
+      <span class="relative badge" [class.bg-accent]="stat.base < 300 && stat.total >= 300" [class.bg-info]="stat.base >= 300" ></span>
+    </div>
+  </ng-container>
+</div>

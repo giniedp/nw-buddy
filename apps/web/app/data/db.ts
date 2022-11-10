@@ -1,6 +1,7 @@
-import { inject, Injectable, InjectionToken } from '@angular/core'
+import { inject, InjectionToken } from '@angular/core'
 import { Dexie } from 'dexie'
 import { DBT_GEARSETS } from './gearsets.db'
+import { DBT_IMAGES } from './images.db'
 import { DBT_ITEMS } from './item-instances.db'
 
 export const APP_DB_NAME = new InjectionToken<string>('APP_DB_NAME', {
@@ -20,5 +21,8 @@ function initDb(db: Dexie) {
   db.version(1).stores({
     [DBT_ITEMS]: 'id,itemId,gearScore',
     [DBT_GEARSETS]: 'id,*tags',
+  })
+  db.version(2).stores({
+    [DBT_IMAGES]: 'id',
   })
 }

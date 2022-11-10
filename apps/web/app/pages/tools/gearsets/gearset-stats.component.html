@@ -1,36 +1,152 @@
-<ng-container *ngIf="data$ | async; let data">
-  <div class="flex flex-col layout-pad layout-gap">
-    <div class="flex flex-row items-center">
-      <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-14 h-14">
-      <div class="font-bold text-5xl"> {{ data.gearScore | number:'0.0-0' }}</div>
-    </div>
+<div class="relative flex-1 flex flex-col xl:flex-row layout-pad layout-gap">
+  <div class="flex-1 flex flex-col layout-gap">
+    <label class="flex">
+      <input type="file" class="hidden" accept=".jpg,.webp,.png" (change)="uploadFile($event)" />
+      <picture
+        class="
+          w-full
+          aspect-[3/4]
+          relative
+          rounded-md
+          transition-all
+          outline outline-transparent outline-2 outline-offset-0
+          hover:outline-offset-4 hover:outline-primary
+          cursor-pointer
+          shadow-md
+        "
+      >
+        <ng-container *ngIf="image$ | async; let img else tplNoImage">
+          <img
+            [src]="img"
+            class="absolute top-0 left-0 w-full h-full object-cover rounded-md"
+          />
+        </ng-container>
+        <ng-template #tplNoImage>
+          <img
+            [src]="'assets/icons/newworldcentered.png'"
+            class="absolute top-0 left-0 w-full h-full object-contain rounded-md opacity-50 scale-50"
+          />
+        </ng-template>
 
-    <nwb-property-grid
-      *ngIf="data.summary; let summary"
-      [humanizeNames]="true"
-      [numberFormat]="'0.0-4'"
-      class="gap-x-1"
-    >
-      <ng-container *ngFor="let row of summary">
-        <span class="text-right font-bold">
-          <ng-container *ngIf="row.percent">+{{ row.percent | percent: '0.0-1' }}</ng-container>
-          <ng-container *ngIf="row.value">{{ row.value | number: '0.0-2' }}</ng-container>
-        </span>
-        <div class="opacity-50 flex flex-row items-center">
-          <img *ngIf="row.icon" [nwImage]="row.icon" class="w-6 h-6"/>
-          <span> {{ row.label | nwText }} </span>
+
+        <div
+          class="absolute bottom-0 left-0 bg-opacity-50 p-2 flex flex-row items-center rounded-bl-md rounded-tr-md"
+          [class.bg-black]="hasImage$ | async"
+        >
+          <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-14 h-14" />
+          <div class="font-bold text-5xl">{{ gearScore$ | async | number: '0.0-0' }}</div>
         </div>
+      </picture>
+    </label>
 
+    <ng-container [ngTemplateOutlet]="tplScore"></ng-container>
+    <ng-container [ngTemplateOutlet]="tplAttrs"></ng-container>
+  </div>
+
+  <div class="flex-1 flex flex-col-reverse layout-gap">
+    <ng-container [ngTemplateOutlet]="tplResi"></ng-container>
+    <ng-container [ngTemplateOutlet]="tplPerks"></ng-container>
+  </div>
+</div>
+
+<ng-template #tplScore>
+  <nwb-property-grid class="gap-x-1">
+    <span class="w-16 text-right font-bold">{{ elementalRating$ | async | number: '0.0-1' }}</span>
+    <span class="opacity-50">{{ 'ui_elemental' | nwText }}</span>
+    <span class="w-16 text-right font-bold">{{ physicalRating$ | async | number: '0.0-1' }}</span>
+    <span class="opacity-50">{{ 'ui_physical' | nwText }}</span>
+  </nwb-property-grid>
+</ng-template>
+
+<ng-template #tplAttrs>
+  <div
+    *ngIf="attrs$ | async; let attrs"
+    class="
+      rounded-md
+      transition-all
+      outline outline-transparent outline-2 outline-offset-0
+      hover:outline-offset-4 hover:outline-primary
+      cursor-pointer
+    "
+    (click)="editAttributes()"
+  >
+    <span class="font-bold">Attributes</span>
+    <nwb-property-grid class="gap-x-1">
+      <ng-container *ngFor="let row of attrs">
+        <span class="w-16 text-right font-bold uppercase">{{ row.key }}</span>
+        <span class="">
+          {{ row.base + row.assigned }}
+          <ng-container *ngIf="row.assigned">({{ row.base }} + {{ row.assigned }})</ng-container>
+        </span>
       </ng-container>
     </nwb-property-grid>
+  </div>
+</ng-template>
 
-    <nwb-property-grid class="gap-2">
-      <ng-container *ngFor="let info of data.stackable">
+<ng-template #tplResi>
+  <div>
+    <span class="font-bold">Damage resistence</span>
+    <nwb-property-grid class="gap-x-1">
+      <ng-container *ngIf="elementalAbs$ | async; let rows">
+        <ng-container *ngFor="let row of rows; let isFirst = first">
+          <ng-container *ngIf="isFirst">
+            <span class="opacity-50 text-right uppercase">{{ 'ui_elemental_defense_short' | nwText }}</span>
+            <span></span>
+          </ng-container>
+          <span class="w-16 text-right font-bold">
+            <ng-container *ngIf="row.percent">+{{ row.percent | percent: '0.0-1' }}</ng-container>
+            <ng-container *ngIf="row.value">{{ row.value | number: '0.0-2' }}</ng-container>
+          </span>
+          <div class="opacity-50 flex flex-row items-center">
+            <img *ngIf="row.icon" [nwImage]="row.icon" class="w-6 h-6" />
+            <span> {{ row.label | nwText }} </span>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="physicalAbs$ | async; let rows">
+        <ng-container *ngFor="let row of rows; let isFirst = first">
+          <ng-container *ngIf="isFirst">
+            <span class="opacity-50 text-right uppercase">{{ 'ui_physical_defense_short' | nwText }}</span>
+            <span></span>
+          </ng-container>
+          <span class="w-16 text-right font-bold">
+            <ng-container *ngIf="row.percent">+{{ row.percent | percent: '0.0-1' }}</ng-container>
+            <ng-container *ngIf="row.value">{{ row.value | number: '0.0-2' }}</ng-container>
+          </span>
+          <div class="opacity-50 flex flex-row items-center">
+            <img *ngIf="row.icon" [nwImage]="row.icon" class="w-6 h-6" />
+            <span> {{ row.label | nwText }} </span>
+          </div>
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="otherAbs$ | async; let rows">
+        <ng-container *ngFor="let row of rows; let isFirst = first">
+          <ng-container *ngIf="isFirst">
+            <span class="opacity-50 text-right uppercase">‒</span>
+            <span></span>
+          </ng-container>
+          <span class="w-16 text-right font-bold">
+            <ng-container *ngIf="row.percent">+{{ row.percent | percent: '0.0-1' }}</ng-container>
+            <ng-container *ngIf="row.value">{{ row.value | number: '0.0-2' }}</ng-container>
+          </span>
+          <div class="opacity-50 flex flex-row items-center">
+            <img *ngIf="row.icon" [nwImage]="row.icon" class="w-6 h-6" />
+            <span> {{ row.label | nwText }} </span>
+          </div>
+        </ng-container>
+      </ng-container>
+    </nwb-property-grid>
+  </div>
+</ng-template>
+
+<ng-template #tplPerks>
+  <nwb-property-grid class="gap-2">
+    <ng-container *ngFor="let info of perkInfos$ | async">
+      <ng-container *ngIf="info.maybeStackable">
         <a [nwInfoLink]="info.perk.PerkID" [nwInfoResource]="'perk'">
           <img [nwImage]="info.perk.IconPath" class="w-8 h-8" />
         </a>
         <div class="text-sky-600">
-
           <b [nwText]="info.perk.DisplayName"></b>
           <b class="text-primary"> &times; {{ info.count }} </b>
           <span>
@@ -38,6 +154,6 @@
           </span>
         </div>
       </ng-container>
-    </nwb-property-grid>
-  </div>
-</ng-container>
+    </ng-container>
+  </nwb-property-grid>
+</ng-template>
