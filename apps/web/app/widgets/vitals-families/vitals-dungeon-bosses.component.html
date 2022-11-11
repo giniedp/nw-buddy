@@ -1,0 +1,10 @@
+
+<div *ngFor="let row of entities | async" class="mt-5">
+  <div class="flex flex-row items-center">
+    <img [nwImage]="row.dungeon?.IconPath" class="w-20" />
+    <span class="text-3xl">{{ row.dungeon?.DisplayName | nwText }}</span>
+  </div>
+  <div class="grid" [@listAnimation]="row.vitals.length">
+    <nwb-vital-detail *ngFor="let vital of row.vitals" [vital]="vital" [showPortrait]="true" ></nwb-vital-detail>
+  </div>
+</div>

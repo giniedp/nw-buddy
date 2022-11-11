@@ -1,19 +1,15 @@
 <ng-container *ngIf="vital$ | async; let vital">
-  <div class="bg-base-200 px-4 py-2 flex flex-row items-center">
-    <div class="avatar" *ngIf="showPortrait">
-      <div class="w-10 mask mask-squircle">
-        <img  [nwImage]="familyIcon | async" />
-      </div>
-    </div>
-
-    <ng-container *ngIf="vital.DisplayName">
-      <a [nwInfoLink]="vital.VitalsID" [nwInfoResource]="'creature'" target="_blank" [nwText]="vital.DisplayName"></a>
+  <a class="relative bg-base-200 flex flex-col items-center justify-center p-1"  [nwInfoLink]="vital.VitalsID" [nwInfoResource]="'creature'" target="_blank">
+    <ng-container *ngIf="vital.DisplayName; let name">
+      <a [nwText]="name"></a>
     </ng-container>
-    <span class="flex-1"></span>
-    <span [nwText]="familyName | async"></span>
-    <span *ngIf="vital.Level"> Lvl. {{ vital.Level }}</span>
-  </div>
+    <div class="relative flex items-center justify-center" style="margin-top: -16px">
+      <img [nwImage]="marker$ | async" class="h-10 w-36 object-cover" />
+      <span *ngIf="vital.Level" class="absolute top-2 mx-auto"> {{ vital.Level }}</span>
 
+    </div>
+    <span [nwText]="familyName | async" class="absolute right-2 bottom-1 text-xs italic"></span>
+  </a>
   <div class="stats stats-vertical w-full bg-transparent">
     <div class="stat place-items-center py-1 px-2" *ngFor="let row of stats$ | async">
       <div

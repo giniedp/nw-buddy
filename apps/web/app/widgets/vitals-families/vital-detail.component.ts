@@ -1,7 +1,9 @@
+import { CommonModule } from '@angular/common'
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core'
 import { Vitals } from '@nw-data/types'
 import { combineLatest, defer, map, merge, ReplaySubject, switchMap } from 'rxjs'
-import { NwDamagetypeService, NwService, NwVitalsService } from '~/nw'
+import { NwDamagetypeService, NwDbService, NwModule, NwService, NwVitalsService } from '~/nw'
+import { getVitalDamageEffectiveness } from '~/nw/utils'
 import { DestroyService } from '~/utils'
 
 const FAMILY_META = {
@@ -32,143 +34,59 @@ const FAMILY_META = {
 }
 
 @Component({
+  standalone: true,
   selector: 'nwb-vital-detail',
   templateUrl: './vital-detail.component.html',
   styleUrls: ['./vital-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, NwModule],
   providers: [DestroyService],
   host: {
-    class: 'backdrop-blur-sm bg-white/10 rounded-md overflow-clip'
-  }
+    class: 'backdrop-blur-sm bg-white/10 rounded-md overflow-clip',
+  },
 })
-export class VitalDetailComponent implements OnInit {
+export class VitalDetailComponent {
   @Input()
   public set vital(value: Vitals) {
-    this.vitalInput$.next(value)
-  }
-
-  @Input()
-  public set family(value: string) {
-    this.familyInput$.next(value)
+    this.vital$.next(value)
   }
 
   @Input()
   public showPortrait: boolean
 
-  public familyName = defer(() => this.vital$).pipe(map((it) => FAMILY_META[it?.Family]?.Name))
-  public familyIcon = defer(() => this.vital$).pipe(map((it) => FAMILY_META[it?.Family]?.Icon))
-
-  public stats$ = defer(() => {
+  protected readonly vital$ = new ReplaySubject<Vitals>(1)
+  protected readonly marker$ = defer(() => this.vital$).pipe(map((it) => this.vitals.vitalMarkerIcon(it)))
+  protected readonly familyName = defer(() => this.vital$).pipe(map((it) => FAMILY_META[it?.Family?.toLowerCase()]?.Name))
+  protected readonly familyIcon = defer(() => this.vital$).pipe(map((it) => FAMILY_META[it?.Family?.toLowerCase()]?.Icon))
+  protected readonly stats$ = defer(() => {
     return combineLatest({
       vital: this.vital$,
-      gems: this.nw.db.viewGemPerksWithAffix,
+      gems: this.db.viewGemPerksWithAffix,
       dmgwpn: this.dmg.damageTypeToWeaponType,
-      damagetypes: this.dmg.damagetypes
+      damagetypes: this.dmg.damagetypes,
     })
   }).pipe(
     map(({ vital, gems, damagetypes, dmgwpn }) => {
-      return damagetypes.map((dmgType) => {
-        return {
-          Name: dmgType.DisplayName,
-          Type: dmgType.TypeID,
-          Category: dmgType.Category,
-          Icon: this.dmg.damageTypeIcon(dmgType),
-          Value: this.vitals.damageEffectiveness(vital, dmgType.TypeID as any),
-          Perk: gems.filter(({ stat }) => stat.DamageType === dmgType.TypeID).map(({ perk }) => perk).reverse()?.[0],
-          Weapons: dmgwpn[dmgType.TypeID] || [],
-        }
-      })
+      return damagetypes
+        .map((dmgType) => {
+          return {
+            Name: dmgType.DisplayName,
+            Type: dmgType.TypeID,
+            Category: dmgType.Category,
+            Icon: this.dmg.damageTypeIcon(dmgType),
+            Value: getVitalDamageEffectiveness(vital, dmgType.TypeID as any),
+            Perk: gems
+              .filter(({ stat, perk }) => perk.Tier === 4 && stat.DamageType === dmgType.TypeID)
+              .map(({ perk }) => perk)[0],
+            Weapons: dmgwpn[dmgType.TypeID] || [],
+          }
+        })
         .filter((row) => !!row.Value)
         .sort((a, b) => a.Value - b.Value)
     })
   )
 
-  public readonly vital$ = defer(() => {
-    const vitals1 = this.vitalInput$
-    const vitals2 = this.familyInput$.pipe(switchMap((it) => this.vitalForFamily(it)))
-    return merge(vitals1, vitals2)
-  })
-
-  private readonly vitalInput$ = new ReplaySubject<Vitals>(1)
-  private readonly familyInput$ = new ReplaySubject<string>(1)
-
-
-  public constructor(
-    private nw: NwService,
-    private dmg: NwDamagetypeService,
-    private vitals: NwVitalsService,
-
-  ) {
+  public constructor(private db: NwDbService, private dmg: NwDamagetypeService, private vitals: NwVitalsService) {
     //
   }
-
-  public ngOnInit(): void {
-    //
-  }
-
-  public vitalForFamily(family: string) {
-    return this.nw.db.vitalsByFamily.pipe(map((it) => it.get(family)))
-      .pipe(map((vitals): Partial<Vitals> => {
-        return {
-          Family: family,
-          ...mostCommonProps(vitals, [
-            'ABSArcane',
-            'ABSCorruption',
-            'ABSFire',
-            'ABSIce',
-            'ABSLightning',
-            'ABSNature',
-
-            'ABSSiege',
-            'ABSSlash',
-            'ABSStandard',
-            'ABSStrike',
-            'ABSThrust',
-
-            'WKNArcane',
-            'WKNCorruption',
-            'WKNFire',
-            'WKNIce',
-            'WKNLightning',
-            'WKNNature',
-
-            'WKNSiege',
-            'WKNSlash',
-            'WKNStandard',
-            'WKNStrike',
-            'WKNThrust',
-          ])
-        }
-      }))
-      .pipe(map((it) => it as Vitals))
-  }
-}
-
-function mostCommonProps<T>(data: T[], k: Array<keyof T>): Partial<T> {
-  const map = new Map<
-    string,
-    {
-      count: number
-      value: Partial<T>
-    }
-  >()
-
-  for (const item of data) {
-    const values = k.map((it) => item[it])
-    if (values.every((it) => !it)) {
-      continue
-    }
-    const key = values.map((it) => it || '').join('-')
-    if (!map.has(key)) {
-      map.set(key, {
-        count: 0,
-        value: k.reduce((prev, lookup) => {
-          prev[lookup] = item[lookup]
-          return prev
-        }, {} as Partial<T>),
-      })
-    }
-    map.get(key).count += 1
-  }
-  return Array.from(map.values()).sort((a, b) => b.count - a.count)?.[0]?.value || {}
 }

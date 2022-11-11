@@ -4,7 +4,7 @@ import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwDbService, NwVitalsService } from '~/nw'
-import { getVitalDungeon } from '~/nw/utils'
+import { getVitalDamageEffectivenessPercent, getVitalDungeon } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
@@ -116,7 +116,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           minWidth: 80,
           maxWidth: 80,
           resizable: false,
-          valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Slash')),
+          valueGetter: this.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Slash')),
           cellRenderer: this.cellRendererDamage(),
         }),
         this.colDef({
@@ -127,7 +127,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           minWidth: 80,
           maxWidth: 80,
           resizable: false,
-          valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Thrust')),
+          valueGetter: this.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Thrust')),
           cellRenderer: this.cellRendererDamage(),
         }),
         this.colDef({
@@ -138,7 +138,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           minWidth: 80,
           maxWidth: 80,
           resizable: false,
-          valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Strike')),
+          valueGetter: this.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Strike')),
           cellRenderer: this.cellRendererDamage(),
         }),
         this.colDef({
@@ -149,7 +149,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           minWidth: 80,
           maxWidth: 80,
           resizable: false,
-          valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Fire')),
+          valueGetter: this.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Fire')),
           cellRenderer: this.cellRendererDamage(),
         }),
         this.colDef({
@@ -160,7 +160,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           minWidth: 80,
           maxWidth: 80,
           resizable: false,
-          valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Ice')),
+          valueGetter: this.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Ice')),
           cellRenderer: this.cellRendererDamage(),
         }),
         this.colDef({
@@ -171,7 +171,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           minWidth: 80,
           maxWidth: 80,
           resizable: false,
-          valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Nature')),
+          valueGetter: this.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Nature')),
           cellRenderer: this.cellRendererDamage(),
         }),
         this.colDef({
@@ -182,7 +182,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           minWidth: 80,
           maxWidth: 80,
           resizable: false,
-          valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Corruption')),
+          valueGetter: this.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Corruption')),
           cellRenderer: this.cellRendererDamage(),
         }),
         this.colDef({
@@ -193,7 +193,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           minWidth: 80,
           maxWidth: 80,
           resizable: false,
-          valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Lightning')),
+          valueGetter: this.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Lightning')),
           cellRenderer: this.cellRendererDamage(),
         }),
         this.colDef({
@@ -204,7 +204,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           minWidth: 80,
           maxWidth: 80,
           resizable: false,
-          valueGetter: this.valueGetter(({ data }) => this.vitals.damageEffectivenessPercent(data, 'Arcane')),
+          valueGetter: this.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Arcane')),
           cellRenderer: this.cellRendererDamage(),
         }),
       ],
