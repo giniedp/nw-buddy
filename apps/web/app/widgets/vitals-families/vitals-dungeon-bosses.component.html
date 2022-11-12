@@ -5,6 +5,6 @@
     <span class="text-3xl">{{ row.dungeon?.DisplayName | nwText }}</span>
   </div>
   <div class="grid" [@listAnimation]="row.vitals.length">
-    <nwb-vital-detail *ngFor="let vital of row.vitals" [vital]="vital" [showPortrait]="true" ></nwb-vital-detail>
+    <nwb-vital-detail *ngFor="let vital of row.vitals" [vital]="vital" ></nwb-vital-detail>
   </div>
 </div>
