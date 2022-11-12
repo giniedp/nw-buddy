@@ -17,6 +17,7 @@ import { StoreModule } from '@ngrx/store'
 import { EffectsModule } from '@ngrx/effects'
 import { StoreDevtoolsModule } from '@ngrx/store-devtools'
 import { environment } from '../environments/environment'
+import { CdkMenuModule } from '@angular/cdk/menu'
 
 @NgModule({
   declarations: [AppComponent, TitleBarComponent],
@@ -31,6 +32,7 @@ import { environment } from '../environments/environment'
     TranslateModule.forRoot({
       loader: NwDataService,
     }),
+    CdkMenuModule,
     UpdateAlertModule,
     StoreModule.forRoot({}),
     EffectsModule.forRoot(),

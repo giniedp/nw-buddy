@@ -8,12 +8,12 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
-      <a class="hidden lg:inline-block text-lg font-bold">
+      <a routerLink="/" class="hidden lg:inline-block text-lg font-bold">
         <img [nwImage]="'assets/icons/favicon.png'" class="w-12" />
       </a>
     </div>
     <div class="navbar-center flex-1 items-center justify-center lg:justify-start">
-      <a class=" lg:hidden text-lg font-bold">
+      <a routerLink="/" class=" lg:hidden text-lg font-bold">
         <img [nwImage]="'assets/icons/favicon.png'" class="w-12" />
       </a>
       <h1 class="text-xl hidden md:block">
@@ -22,9 +22,9 @@
     </div>
     <div class="navbar-end w-auto flex-none">
       <nwb-update-alert-button class="mr-2"></nwb-update-alert-button>
-      <select class="select select-bordered w-20" [(ngModel)]="language">
-        <option *ngFor="let item of langOptions" [value]="item.value">{{ item.label }}</option>
-      </select>
+      <button class="btn btn-square btn-ghost" [cdkMenuTriggerFor]="langMenu">
+        {{ lang }}
+      </button>
     </div>
   </div>
 </div>
@@ -48,3 +48,13 @@
     <router-outlet></router-outlet>
   </nwb-screen-drawer-content>
 </nwb-screen-drawer>
+
+<ng-template #langMenu>
+  <ul class="menu menu-compact bg-base-100 rounded-md w-40 shadow-md" cdkMenu>
+    <li *ngFor="let item of langOptions">
+      <button (click)="language = item.value" cdkMenuItem>
+        {{ item.label }}
+      </button>
+    </li>
+  </ul>
+</ng-template>

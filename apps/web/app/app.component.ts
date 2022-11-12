@@ -59,6 +59,9 @@ export class AppComponent implements OnInit, OnDestroy {
   public set language(value: string) {
     this.preferences.language.set(value)
   }
+  public get lang() {
+    return LANG_OPTIONS.find((it) => it.value === this.language)?.label
+  }
 
   protected mainMenu = MAIN_MENU
   protected langOptions = LANG_OPTIONS
