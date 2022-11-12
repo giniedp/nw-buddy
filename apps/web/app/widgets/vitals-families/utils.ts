@@ -42,6 +42,40 @@ export function vitalForFamily(family: string, db: NwDbService) {
     .pipe(map((it) => it as Vitals))
 }
 
+
+export function mergeVitals(family: string, vitals: Vitals[]): Partial<Vitals> {
+  return {
+    Family: family,
+    ...mostCommonProps(vitals, [
+      'ABSArcane',
+      'ABSCorruption',
+      'ABSFire',
+      'ABSIce',
+      'ABSLightning',
+      'ABSNature',
+
+      'ABSSiege',
+      'ABSSlash',
+      'ABSStandard',
+      'ABSStrike',
+      'ABSThrust',
+
+      'WKNArcane',
+      'WKNCorruption',
+      'WKNFire',
+      'WKNIce',
+      'WKNLightning',
+      'WKNNature',
+
+      'WKNSiege',
+      'WKNSlash',
+      'WKNStandard',
+      'WKNStrike',
+      'WKNThrust',
+    ]),
+  }
+}
+
 function mostCommonProps<T>(data: T[], k: Array<keyof T>): Partial<T> {
   const map = new Map<
     string,

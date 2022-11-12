@@ -48,7 +48,7 @@ export function getVitalDamageEffectiveness(vital: Vitals, damageType: VitalDama
 }
 
 export function getVitalDamageEffectivenessPercent(vital: Vitals, damageType: VitalDamageType) {
-  return Math.round(this.damageEffectiveness(vital, damageType) * 100)
+  return Math.round(getVitalDamageEffectiveness(vital, damageType) * 100)
 }
 
 export function getVitalDamageEffectivenessIcon(vital: Vitals, damageType: VitalDamageType) {

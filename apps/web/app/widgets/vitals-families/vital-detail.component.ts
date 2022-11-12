@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core'
-import { Vitals } from '@nw-data/types'
+import { Gamemodes, Vitals } from '@nw-data/types'
 import { combineLatest, defer, map, merge, ReplaySubject, switchMap } from 'rxjs'
 import { NwDamagetypeService, NwDbService, NwModule, NwService, NwVitalsService } from '~/nw'
 import { getVitalDamageEffectiveness } from '~/nw/utils'
@@ -47,12 +47,15 @@ const FAMILY_META = {
 })
 export class VitalDetailComponent {
   @Input()
-  public set vital(value: Vitals) {
-    this.vital$.next(value)
+  public set vital(value: Partial<Vitals>) {
+    this.vital$.next(value as Vitals)
   }
 
   @Input()
-  public showPortrait: boolean
+  public isGroup: boolean
+
+  @Input()
+  public dungeons: Gamemodes[]
 
   protected readonly vital$ = new ReplaySubject<Vitals>(1)
   protected readonly marker$ = defer(() => this.vital$).pipe(map((it) => this.vitals.vitalMarkerIcon(it)))
