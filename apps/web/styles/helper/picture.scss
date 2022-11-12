@@ -1,13 +1,13 @@
 picture,
 img {
-  .fade {
+  &.fade {
     opacity: 0;
     transition: 0.2s linear opacity;
   }
-  .show {
+  &.show {
     opacity: 1;
   }
-  .error {
+  &.error {
     opacity: 1;
   }
 }
