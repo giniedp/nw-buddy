@@ -91,10 +91,7 @@ const transparentPixel =
   template: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    '[class.fade]': 'true',
-    '[class.show]': 'isLoaded',
-    '[attr.loading]': '"lazy"',
-    '[attr.src]': 'src',
+    class: 'fase',
   },
 })
 export class NwImageComponent {
@@ -108,7 +105,14 @@ export class NwImageComponent {
     }
   }
 
+  @HostBinding()
   public src: string
+
+  @Input()
+  @HostBinding()
+  public loading: 'lazy' | 'eager' = 'lazy'
+
+  @HostBinding('class.show')
   public isLoaded = false
 
   public constructor(private cdRef: ChangeDetectorRef) {
