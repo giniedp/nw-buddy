@@ -10,7 +10,6 @@ import {
   Output,
 } from '@angular/core'
 import { Grid, GridOptions, GridReadyEvent } from 'ag-grid-community'
-import { merge } from 'lodash'
 import { debounceTime, distinctUntilChanged, filter, ReplaySubject, skipWhile, Subject, takeUntil } from 'rxjs'
 
 @Component({
@@ -47,6 +46,7 @@ export class AgGridComponent<T = any> implements OnInit, OnDestroy {
   private options$ = new ReplaySubject<GridOptions>(1)
   private destroy$ = new Subject<void>()
   private filter$ = new Subject<string>()
+  private dispose$ = new Subject<void>()
 
   public constructor(private elRef: ElementRef<HTMLElement>, private zone: NgZone) {
     //
@@ -72,7 +72,7 @@ export class AgGridComponent<T = any> implements OnInit, OnDestroy {
       this.gridReady.emit(e)
       options?.onGridReady?.(e)
     })
-    const cancel$ = merge(this.destroy$, this.options$)
+    const cancel$ = this.dispose$
     this.data$
       .pipe(takeUntil(cancel$))
       .pipe(skipWhile((it) => it == null))
@@ -95,6 +95,7 @@ export class AgGridComponent<T = any> implements OnInit, OnDestroy {
   }
 
   private disposeGrid() {
+    this.dispose$.next()
     const grid = this.grid
     this.grid = null
     grid?.destroy()
