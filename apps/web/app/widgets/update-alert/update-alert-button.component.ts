@@ -1,6 +1,8 @@
 import { DialogModule } from '@angular/cdk/dialog'
+import { Platform } from '@angular/cdk/platform'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostListener, OnInit, TemplateRef, ViewChild } from '@angular/core'
+import { environment } from 'apps/web/environments/environment'
 import { takeUntil } from 'rxjs'
 import { NwModule } from '~/nw'
 import { DestroyService } from '~/utils'
@@ -26,16 +28,18 @@ export class UpdateAlertButtonComponent implements OnInit {
   public constructor(
     private service: UpdateAlertService,
     private destroy: DestroyService,
-    private cdRef: ChangeDetectorRef,
+    private cdRef: ChangeDetectorRef
   ) {
     //
   }
 
   public ngOnInit(): void {
-    this.service.info$.pipe(takeUntil(this.destroy.$)).subscribe((value) => {
-      this.release = value
-      this.cdRef.markForCheck()
-    })
+    if (environment.environment === 'ELECTRON') {
+      this.service.info$.pipe(takeUntil(this.destroy.$)).subscribe((value) => {
+        this.release = value
+        this.cdRef.markForCheck()
+      })
+    }
   }
 
   @HostListener('click')
