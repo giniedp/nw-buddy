@@ -547,7 +547,6 @@ export interface Gatherables {
     BaseGatherTime:                  number;
     ConsumedStatusEffect?:           string;
     DepletedGatherableID:            number;
-    DisplayDescription?:             string;
     DisplayName?:                    string;
     FinalLootTable?:                 string;
     GameEventID?:                    string;
@@ -562,7 +561,6 @@ export interface Gatherables {
     IsLootContainer:                 boolean;
     ItemRestrictionId?:              string;
     ItemRestrictionQuantity?:        string;
-    LandmarkIconPath?:               string;
     MaxRespawnRate:                  number;
     MinRespawnRate:                  number;
     NumRequiredToGather:             number;
@@ -572,7 +570,6 @@ export interface Gatherables {
     RequiredWhisperId?:              string;
     ResetGatherTimeOnEndInteraction: boolean;
     Restriction:                     string;
-    TooltipImage?:                   string;
     Tradeskill:                      string;
     WaitForImpact:                   boolean;
 }
@@ -1007,6 +1004,7 @@ export interface Lootbuckets {
     Item245?:        string;
     Item246:         string;
     Item247?:        string;
+    Item248?:        string;
     Item249?:        string;
     Item25?:         string;
     Item250?:        string;
@@ -1268,6 +1266,7 @@ export interface Lootbuckets {
     LootBucket245?:  string;
     LootBucket246?:  string;
     LootBucket247?:  string;
+    LootBucket248?:  string;
     LootBucket249?:  string;
     LootBucket25?:   string;
     LootBucket250?:  string;
@@ -1529,6 +1528,7 @@ export interface Lootbuckets {
     MatchOne245?:    string;
     MatchOne246:     string;
     MatchOne247?:    string;
+    MatchOne248?:    string;
     MatchOne249?:    string;
     MatchOne25?:     string;
     MatchOne250?:    string;
@@ -1793,6 +1793,7 @@ export interface Lootbuckets {
     Quantity245:     number;
     Quantity246:     number;
     Quantity247:     number;
+    Quantity248:     number;
     Quantity249:     number;
     Quantity25:      number;
     Quantity250:     number;
@@ -2045,6 +2046,7 @@ export interface Lootbuckets {
     Tags244?:        string[];
     Tags245?:        string[];
     Tags247?:        string[];
+    Tags248?:        string[];
     Tags249?:        string[];
     Tags25?:         string[];
     Tags250?:        string[];

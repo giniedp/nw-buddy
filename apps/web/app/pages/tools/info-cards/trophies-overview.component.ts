@@ -5,7 +5,7 @@ import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { groupBy } from 'lodash'
 import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
-import { getIngretientsFromRecipe, getItemId, getItemIdFromRecipe } from '~/nw/utils'
+import { getIngretientsFromRecipe, getItemId, getRecipeForItem } from '~/nw/utils'
 import { ContentVisibilityDirective } from '~/utils'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -14,6 +14,9 @@ function isTrophy(item: Crafting) {
   return item.CraftingGroup === 'Trophies'
 }
 
+function isTrophyItem(item: Housingitems) {
+  return item.HousingTags?.includes('IsTrophyBuff')
+}
 type RecipeWithItem = Crafting & {
   $item: ItemDefinitionMaster | Housingitems
   $itemId: string
@@ -46,36 +49,41 @@ type RecipeWithItem = Crafting & {
   ]
 })
 export class TrophiesOverviewComponent {
+  protected housings$ = defer(() => this.db.housingItems).pipe(map((it) => it.filter(isTrophyItem)))
   protected recipes$ = defer(() => this.db.recipes).pipe(map((it) => it.filter(isTrophy)))
 
   protected items$ = defer(() =>
     combineLatest({
       recipes: this.recipes$,
+      housings: this.housings$,
       items: this.db.itemsMap,
-      housing: this.db.housingItemsMap,
+      housingItems: this.db.housingItemsMap,
     })
   ).pipe(
-    map(({ recipes, items, housing }) => {
-      return recipes.map((recipe): RecipeWithItem => {
-        const itemId = getItemIdFromRecipe(recipe)
+    map(({ recipes, items, housingItems, housings }) => {
+      return housings.map((housing) => {
+        const recipe = getRecipeForItem(housing, recipes)
+        const ingredients = getIngretientsFromRecipe(recipe).map((it) => {
+          return {
+            quantity: it.quantity,
+            item: items.get(it.ingredient) || housingItems.get(it.ingredient),
+          }
+        })
+
         return {
-          ...recipe,
-          $itemId: itemId,
-          $item: items.get(itemId) || housing.get(itemId),
-          $ingredients: getIngretientsFromRecipe(recipe).map((it) => {
-            return {
-              quantity: it.quantity,
-              item: items.get(it.ingredient) || housing.get(it.ingredient),
-            }
-          }),
+          itemId: getItemId(housing),
+          item: housing,
+          recipe: recipe,
+          ingredients: ingredients
         }
+
       })
     })
   )
 
   protected rows$ = defer(() => this.items$).pipe(
     map((list) => {
-      const groups = groupBy(list, (it) => getItemId(it.$item).replace(/T[0-9][a-zA-Z]?$/i, ''))
+      const groups = groupBy(list, (it) => it.itemId.replace(/T[0-9][a-zA-Z]?$/i, ''))
       return Array.from(Object.values(groups))
     })
   )
