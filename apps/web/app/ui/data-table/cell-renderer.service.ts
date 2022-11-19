@@ -19,7 +19,7 @@ export class CellRendererService {
   }
 
   public link(attrs: CreateElAttrs<'a'>['attrs'], children?: Array<HTMLElement>) {
-    return this.element('a', attrs, children)
+    return this.element('a', { attrs: attrs }, children)
   }
   public icon(attrs: CreateElAttrs<'picture'> & { rarity?: number; src: string }) {
     const result = this.element('picture.w-12.h-12.nw-icon', attrs, [

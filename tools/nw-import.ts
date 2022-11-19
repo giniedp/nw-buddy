@@ -227,7 +227,25 @@ program
         /^[a-zA-Z]+_DamageName/,
         /^ui_poi_.*_description/,
         /^ui_tooltip_.*/,
-        'ui_tooltip_basedamage'
+        /^ui_ability_.*/,
+        'ui_tooltip_basedamage',
+        /^ui_(hatchet|rapier|straightsword|warhammer|greataxe|musket|bowspear|).*/,
+        /^ui_(firestaff|lifestaff|voidmagic|icemagic|blunderbuss|greatsword).*/,
+        /^ui_.*_mastery$/,
+        /^ui_.*_tree1$/,
+        /^ui_.*_tree2$/,
+        'ui_sword',
+        'ui_shield',
+        'ui_blood',
+        'ui_evade',
+        'ui_juggernaut',
+        'ui_crowdcrusher',
+        'ui_onehanded_weapons',
+        'ui_twohanded_weapons',
+        'ui_ranged_weapons',
+        'ui_magic_skills',
+        'ui_available_points',
+        'ui_level'
       ],
     }).then((files) => {
       checkExpressions({

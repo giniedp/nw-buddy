@@ -25,9 +25,10 @@ import { deferStateFlat, shareReplayRefCount } from '~/utils'
 import { ItemDetailComponent } from '~/widgets/item-detail/item-detail.component'
 import { InventoryPickerService } from '../inventory/inventory-picker.service'
 import { ItemDefinitionMaster } from '@nw-data/types'
-import { svgLink16p, svgLinkSlash16p, svgTrashCan } from '~/ui/icons/svg'
+import { svgLink16p, svgLinkSlash16p, svgPlus, svgTrashCan } from '~/ui/icons/svg'
 import { IconsModule } from '~/ui/icons'
 import { CdkMenuModule } from '@angular/cdk/menu'
+import { TooltipModule } from '~/ui/tooltip'
 
 export interface GearsetSlotVM {
   slot?: EquipSlot
@@ -44,10 +45,21 @@ export interface GearsetSlotVM {
   selector: 'nwb-gearset-slot',
   templateUrl: './gearset-slot.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, DialogModule, FormsModule, OverlayModule, ItemDetailModule, DataTableModule, IconsModule, CdkMenuModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    DialogModule,
+    FormsModule,
+    OverlayModule,
+    ItemDetailModule,
+    DataTableModule,
+    IconsModule,
+    CdkMenuModule,
+    TooltipModule
+  ],
   providers: [GearsetSlotStore],
   host: {
-    class: 'block bg-base-100 rounded-md flex flex-col',
+    class: 'block bg-base-100 rounded-md flex flex-col overflow-hidden',
   },
 })
 export class GearsetSlotComponent {
@@ -81,6 +93,7 @@ export class GearsetSlotComponent {
   protected iconRemove = svgTrashCan
   protected iconLink = svgLink16p
   protected iconLinkBreak = svgLinkSlash16p
+  protected iconPlus = svgPlus
 
   protected vm$ = deferStateFlat<GearsetSlotVM>(() =>
     combineLatest({
@@ -134,7 +147,7 @@ export class GearsetSlotComponent {
         title: 'Choose item for slot',
         itemId: instance ? [instance.itemId] : [],
         multiple: false,
-        category: this.slot.itemType
+        category: this.slot.itemType,
       })
       .pipe(take(1))
       .subscribe(([item]) => {
@@ -142,8 +155,8 @@ export class GearsetSlotComponent {
           instance: {
             itemId: getItemId(item),
             gearScore: getItemMaxGearScore(item),
-            perks: {}
-          }
+            perks: {},
+          },
         })
       })
   }
@@ -166,7 +179,7 @@ export class GearsetSlotComponent {
   }
 
   protected async breakLink() {
-    const instance = (await firstValueFrom(this.store.instance$))
+    const instance = await firstValueFrom(this.store.instance$)
     this.itemUnlink.next(instance)
   }
 

@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { BehaviorSubject, combineLatest, defer, map } from 'rxjs'
+import { BehaviorSubject, combineLatest, defer, map, switchMap } from 'rxjs'
+import { CharacterStore } from '~/data'
 import { NwService } from '~/nw'
 import { TradeskillLevelInputModule } from '~/ui/tradeskill-level-input'
 import { shareReplayRefCount } from '~/utils'
@@ -22,7 +23,8 @@ export class TradeskillInputComponent {
     this.id$.next(value)
   }
 
-  public readonly tradeskill$ = defer(() =>
+  private id$ = new BehaviorSubject<string>(null)
+  protected readonly tradeskill$ = defer(() =>
     combineLatest({
       skills: this.nw.tradeskills.skillsMap,
       id: this.id$,
@@ -30,19 +32,15 @@ export class TradeskillInputComponent {
   )
     .pipe(map(({ skills, id }) => skills.get(id)))
     .pipe(shareReplayRefCount(1))
+  protected level$ = this.tradeskill$.pipe(switchMap((it) => {
+    return this.char.selectTradeSkillLevel(it.ID)
+  }))
 
-  public get level() {
-    return this.nw.tradeskills.preferences.get(this.id$.value)?.level || 0
-  }
-  public set level(value: number) {
-    this.nw.tradeskills.preferences.merge(this.id$.value, {
-      level: Number(value) || 0,
-    })
-  }
-
-  private id$ = new BehaviorSubject<string>(null)
-
-  constructor(private nw: NwService) {
+  constructor(private nw: NwService, private char: CharacterStore) {
     //
+  }
+
+  protected updateLevel(id: string, level: number) {
+    this.char.updateSkillLevel({ skill: id, level: level })
   }
 }

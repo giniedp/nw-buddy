@@ -1,0 +1,26 @@
+<div class="font-bold bg-base-300 layout-pad">
+  Choose a weapon type
+</div>
+<div class="flex-1 layout-content">
+  <ul class="menu w-full">
+    <ng-container *ngFor="let cat of categories$ | async">
+      <li class="menu-title">
+        <span>{{ cat.name | nwText }}</span>
+      </li>
+
+      <li *ngFor="let item of cat.weapons" [class.bordered]="isSelected(item)">
+        <a (click)="select(item)">
+          <img class="aspect-[7/4] w-12" [nwImage]="item.IconPathSmall" /> {{ item.UIName | nwText }}
+        </a>
+      </li>
+    </ng-container>
+  </ul>
+</div>
+<div class="flex justify-end gap-1 layout-pad">
+  <div class="btn-group">
+    <label class="btn btn-ghost" (click)="close()">Cancel</label>
+  </div>
+  <div class="btn-group">
+    <label class="btn btn-primary" (click)="commit()">OK</label>
+  </div>
+</div>

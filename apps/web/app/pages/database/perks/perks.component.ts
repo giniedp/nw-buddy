@@ -4,8 +4,8 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
+import { CharacterStore } from '~/data'
 import { NwModule } from '~/nw'
-import { CharacterPreferencesService } from '~/preferences'
 import { DataTableModule } from '~/ui/data-table'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule } from '~/ui/quicksearch'
@@ -29,7 +29,7 @@ import { ExprContextService } from '~/widgets/adapter/exp-context.service'
 export class PerksComponent {
 
   protected isToolOpen = false
-  public constructor(public ctx: ExprContextService, char: CharacterPreferencesService) {
+  public constructor(public ctx: ExprContextService, char: CharacterStore) {
     firstValueFrom(char.level$).then((value) => {
       ctx.level = value
     })

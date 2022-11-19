@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core'
 import { Tradeskillpostcap } from '@nw-data/types'
 import { uniq } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, shareReplay, switchMap } from 'rxjs'
-import { TradeskillPreferencesService } from '../preferences/tradeskill-preferences.service'
 import { shareReplayRefCount } from '../utils'
 import { NwDbService, toMap } from './nw-db.service'
+import { NW_TRADESKILLS_INFOS_MAP } from './nw-tradeskill'
 
 export interface NwTradeskillInfo {
   ID: string
@@ -21,27 +21,6 @@ export interface NwTradeskillLevel {
   InfluenceCost: number
 }
 
-const CATEGORY_MAP = {
-  Weaponsmithing: 'Crafting',
-  Armoring: 'Crafting',
-  Engineering: 'Crafting',
-  Jewelcrafting: 'Crafting',
-  Arcana: 'Crafting',
-  Cooking: 'Crafting',
-  Furnishing: 'Crafting',
-  Smelting: 'Refining',
-  Woodworking: 'Refining',
-  Leatherworking: 'Refining',
-  Weaving: 'Refining',
-  Stonecutting: 'Refining',
-  Logging: 'Gathering',
-  Mining: 'Gathering',
-  Fishing: 'Gathering',
-  Harvesting: 'Gathering',
-  Skinning: 'Gathering',
-  Musician: 'Casual',
-}
-
 @Injectable({ providedIn: 'root' })
 export class NwTradeskillService {
   public skills = defer(() => {
@@ -55,12 +34,13 @@ export class NwTradeskillService {
         return categories
           .filter((it) => !!it.PostSkillCapSkill)
           .map((it): NwTradeskillInfo => {
+            const info = NW_TRADESKILLS_INFOS_MAP.get(it.CategoricalProgressionId)
             return {
-              ID: it.CategoricalProgressionId,
-              Category: CATEGORY_MAP[it.CategoricalProgressionId],
+              ID: info.ID,
+              Category: info.Category,
+              Icon: info.Icon,
               Name: it.DisplayName,
               MaxLevel: it.MaxLevel,
-              Icon: `./assets/icons/tradeskills/${it.CategoricalProgressionId.toLowerCase()}.png`,
               Postcap: postcap.find((cap) => cap.TradeSkillType === it.PostSkillCapSkill),
             }
           })
@@ -82,7 +62,7 @@ export class NwTradeskillService {
     .pipe(map((it) => uniq(it.map((i) => i.Category))))
     .pipe(shareReplayRefCount(1))
 
-  public constructor(private db: NwDbService, public preferences: TradeskillPreferencesService) {
+  public constructor(private db: NwDbService) {
     //
   }
 

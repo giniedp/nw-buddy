@@ -1,10 +1,8 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
 import { saveAs } from 'file-saver'
 import { DbService } from '~/data/db.service'
-import { NwTradeskillService } from '~/nw/nw-tradeskill.service'
 import { AppPreferencesService, ItemPreferencesService, PreferencesService } from '~/preferences'
-import { TradeskillPreferencesService } from '~/preferences/tradeskill-preferences.service'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 import { NwPricesImporterComponent } from './nw-marketprices-importer.component'
 

@@ -1,8 +1,10 @@
 import { inject, InjectionToken } from '@angular/core'
 import { Dexie } from 'dexie'
+import { DBT_CHARACTERS } from './characters.db'
 import { DBT_GEARSETS } from './gearsets.db'
 import { DBT_IMAGES } from './images.db'
 import { DBT_ITEMS } from './item-instances.db'
+import { DBT_SKILL_BUILDS } from './skill-builds.db'
 
 export const APP_DB_NAME = new InjectionToken<string>('APP_DB_NAME', {
   factory: () => 'nw-buddy'
@@ -24,5 +26,11 @@ function initDb(db: Dexie) {
   })
   db.version(2).stores({
     [DBT_IMAGES]: 'id',
+  })
+  db.version(3).stores({
+    [DBT_CHARACTERS]: 'id',
+  })
+  db.version(4).stores({
+    [DBT_SKILL_BUILDS]: 'id',
   })
 }

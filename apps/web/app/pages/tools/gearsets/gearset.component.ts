@@ -13,6 +13,7 @@ import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/modal'
 import { TooltipModule } from '~/ui/tooltip'
 import { observeRouteParam } from '~/utils'
 import { ScreenshotModule } from '~/widgets/screenshot'
+import { GearsetSkillComponent } from './gearset-skill.component'
 import { GearsetSlotComponent } from './gearset-slot.component'
 import { GearsetStatsComponent } from './gearset-stats.component'
 
@@ -22,13 +23,14 @@ import { GearsetStatsComponent } from './gearset-stats.component'
   templateUrl: './gearset.component.html',
   imports: [
     CommonModule,
-    GearsetSlotComponent,
-    RouterModule,
-    FormsModule,
-    GearsetStatsComponent,
-    ScreenshotModule,
     DialogModule,
+    FormsModule,
+    GearsetSkillComponent,
+    GearsetSlotComponent,
+    GearsetStatsComponent,
     IconsModule,
+    RouterModule,
+    ScreenshotModule,
     TooltipModule,
   ],
   providers: [GearsetStore],

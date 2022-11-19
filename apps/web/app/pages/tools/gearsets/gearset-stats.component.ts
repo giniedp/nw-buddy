@@ -30,6 +30,8 @@ import {
   stripAffixProperties,
   totalGearScore,
 } from '~/nw/utils'
+import { IconsModule } from '~/ui/icons'
+import { svgEllipsisVertical } from '~/ui/icons/svg'
 import { ConfirmDialogComponent } from '~/ui/modal'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { shareReplayRefCount } from '~/utils'
@@ -62,7 +64,7 @@ export interface StatEntry {
   templateUrl: './gearset-stats.component.html',
   styleUrls: ['./gearset-stats.component.scss'] ,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, PropertyGridModule, DialogModule],
+  imports: [CommonModule, NwModule, PropertyGridModule, DialogModule, IconsModule],
   providers: [PercentPipe, DecimalPipe],
   host: {
     class: 'block bg-base-100 rounded-md flex flex-col relative justify-end',
@@ -111,6 +113,7 @@ export class GearsetStatsComponent {
   }))
   protected image$ = this.store.imageUrl$.pipe(shareReplay(1))
   protected hasImage$ = this.image$.pipe(map((it) => !!it ))
+  protected iconMenu = svgEllipsisVertical
 
   public constructor(
     private db: NwDbService,

@@ -16,16 +16,21 @@ export const MAIN_MENU = [
     ]
   },
   {
+    category: 'Character',
+    items: [
+      { label: 'Levels', path: '/leveling' },
+      { label: 'Inventory', path: '/inventory' },
+      { label: 'Gear Sets', path: '/gearsets' },
+      { label: 'Skill Trees', path: '/skill-trees' },
+    ]
+  },
+  {
     category: 'Tools & Infos',
     items: [
       { label: 'Territories', path: '/territories' },
       { label: 'Expeditions', path: '/dungeons' },
-      { label: 'Inventory', path: '/inventory' },
-      { label: 'Gearsets', path: '/gearsets' },
       { label: 'Armorsets', path: '/armorsets' },
       { label: 'Umbral Shards', path: '/umbral-shards' },
-
-      { label: 'Leveling and Skills', path: '/leveling' },
 
       { label: 'Trophies', path: '/info-cards/trophies', divider: true },
       { label: 'Runes', path: '/info-cards/runes' },

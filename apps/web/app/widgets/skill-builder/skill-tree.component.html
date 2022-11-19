@@ -1,0 +1,59 @@
+<div class="skill-tree-title text-center p-2 font-bold">{{ title$ | async | nwText }} - {{ value?.length || 0 }}</div>
+<div class="skill-tree-content grid p-3" [class]="colsClass | async">
+  <ng-container *ngFor="let row of rows$ | async; trackBy: trackByIndex">
+    <ng-container *ngFor="let cell of row; trackBy: trackByIndex">
+      <div
+        *ngIf="!cell.ability"
+        [class.is-unlocked]="cell.unlocked"
+        [class.is-invalid]="cell.invalid"
+        class="grid-cell aspect-square"
+        [class.edge-t]="cell.edgeTop"
+        [class.edge-l]="cell.edgeLeft"
+        [class.edge-r]="cell.edgeRight"
+        [class.edge-tl]="cell.edgeTopLeft"
+        [class.edge-tr]="cell.edgeTopRight"
+      ></div>
+      <div
+        *ngIf="cell.ability; let ability"
+        [tabindex]="cell.unlocked ? 0 : -1"
+        class="grid-cell aspect-square flex items-center justify-center transition-opacity relative"
+        [class.is-disabled]="!cell.unlocked"
+        [class.is-unlocked]="cell.unlocked"
+        [class.is-invalid]="cell.invalid"
+        [class.is-checked]="cell.checked"
+        [class.is-small]="cell.shrink"
+        [class.edge-t]="cell.edgeTop"
+        [class.edge-l]="cell.edgeLeft"
+        [class.edge-r]="cell.edgeRight"
+        [class.edge-tl]="cell.edgeTopLeft"
+        [class.edge-tr]="cell.edgeTopRight"
+        (click)="toggle(cell)"
+        (keydown.space)="toggle(cell)"
+        (keydown.enter)="toggle(cell)"
+      >
+        <ng-template #tip>
+          <div class="rounded-md overflow-hidden bg-base-200">
+            <div class="text-lg font-bold px-3 py-2 flex flex-row items-center bg-base-300 gap-3">
+              <img class="aspect-square w-6" [nwImage]="ability.Icon" />
+              <span>
+                {{ ability.DisplayName | nwText }}
+              </span>
+            </div>
+            <div [innerHTML]="ability.Description | nwText | nwTextBreak" class="p-3"></div>
+            <div *ngIf="cell.tooltip" class="p-3 text-warning rounded-md">
+              {{ cell.tooltip | nwText }}
+            </div>
+          </div>
+        </ng-template>
+        <picture
+          class="border-[2px] aspect-square"
+          [class.rounded-full]="!cell.square"
+          [class.rounded-sm]="cell.square"
+          [tooltip]="tip"
+        >
+          <img class="aspect-square w-full nw-icon" [class]="'bg-ability-' + cell.type" [nwImage]="cell.ability.Icon" />
+        </picture>
+      </div>
+    </ng-container>
+  </ng-container>
+</div>

@@ -1,7 +1,19 @@
 <ng-container *ngIf="vm$ | async; let vm">
-  <div *ngIf="!vm.instance" class="flex-1 flex items-center justify-center cursor-pointer p-10" (click)="pickItem(vm)">
-    <img [nwImage]="vm.slot.icon" width="128" height="128" />
+  <div *ngIf="!vm.instance" class="flex-1 ">
+    <div class="p-1 relative flex flex-row" (click)="pickItem(vm)">
+      <nwb-item-detail-header-backdrop [rarity]="0"></nwb-item-detail-header-backdrop>
+      <picture class="z-10 w-[76px] h-[76px]">
+        <img [nwImage]="vm.slot.icon" class="w-full h-full object-contain"/>
+      </picture>
+      <nwb-item-detail-header-content class="z-10">
+        <span class="title" [innerHTML]="vm.slot.name | nwText"></span>
+      </nwb-item-detail-header-content>
+      <button class="btn btn-square btn-ghost absolute top-0 right-0 z-10" [tooltip]="'Create Item'" [color]="'info'">
+        <nwb-icon [icon]="iconPlus" class="w-4 h-4"></nwb-icon>
+      </button>
+    </div>
   </div>
+
   <nwb-item-detail
     *ngIf="vm.instance"
     #detail="detail"

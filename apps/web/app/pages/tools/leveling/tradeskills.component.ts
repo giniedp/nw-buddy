@@ -9,10 +9,11 @@ import { TradeskillsModule } from '~/widgets/tradeskills'
   standalone: true,
   selector: 'nwb-tradeskills-page',
   templateUrl: './tradeskills.component.html',
+  styleUrls: ['./tradeskills.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, TradeskillsModule],
   host: {
-    class: 'layout-col layout-pad'
+    class: 'layout-content layout-pad'
   }
 })
 export class TradeskillsComponent implements OnInit, OnDestroy {

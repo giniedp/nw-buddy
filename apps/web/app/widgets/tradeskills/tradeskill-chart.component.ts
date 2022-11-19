@@ -3,6 +3,7 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
 import { isEqual } from 'lodash'
 import { BehaviorSubject, combineLatest, debounceTime, defer, distinctUntilChanged, map, shareReplay, startWith, Subject, switchMap } from 'rxjs'
+import { CharacterStore } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule, NwService } from '~/nw'
 import { NwTradeskillInfo } from '~/nw/nw-tradeskill.service'
@@ -97,16 +98,11 @@ export class TradeskillChartComponent {
   private skillLevel$ = defer(() => this.skillInfo$)
     .pipe(switchMap((skills) => {
       return combineLatest(skills.map((skill) => {
-        const pref = this.nw.tradeskills.preferences
-        return pref
-          .observe(skill.ID)
-          .pipe(map((it) => it.meta?.level))
-          .pipe(debounceTime(500))
-          .pipe(startWith(pref.get(skill.ID)?.level))
+        return this.char.selectTradeSkillLevel(skill.ID)
       }))
     }))
 
-  public constructor(private nw: NwService, private i18n: TranslateService) {
+  public constructor(private nw: NwService, private char: CharacterStore, private i18n: TranslateService) {
     //
   }
 

@@ -184,9 +184,14 @@ export class CraftingStepComponent implements OnInit, OnChanges, OnDestroy {
     this.markForCheck()
   }
 
-  public updateBonus() {
-    this.bonus = this.expand ? this.service.calculateBonus(this.step) : 0
-    this.markForCheck()
+  public async updateBonus() {
+    if (this.expand) {
+      this.bonus = await this.service.calculateBonus(this.step)
+      this.markForCheck()
+    } else {
+      this.bonus = 0
+      this.markForCheck()
+    }
   }
 
   private markForCheck() {

@@ -8,6 +8,7 @@ import {
   OnInit,
 } from '@angular/core'
 import { BehaviorSubject, combineLatest, map, of, ReplaySubject, switchMap, takeUntil } from 'rxjs'
+import { CharacterStore } from '~/data'
 import { NwTradeskillService } from '~/nw/nw-tradeskill.service'
 import { DestroyService } from '~/utils'
 
@@ -16,7 +17,7 @@ import { DestroyService } from '~/utils'
   templateUrl: './tradeskill-progress.component.html',
   styleUrls: ['./tradeskill-progress.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [DestroyService]
+  providers: [DestroyService],
 })
 export class NwTradeskillCircleComponent implements OnInit, OnChanges {
   @Input()
@@ -47,7 +48,12 @@ export class NwTradeskillCircleComponent implements OnInit, OnChanges {
   private skill$ = this.skills.skillByName(this.skillName$)
   private skillTable$ = this.skills.skillTableByName(this.skillName$)
 
-  public constructor(private skills: NwTradeskillService, private destroy: DestroyService, private cdRef: ChangeDetectorRef) {
+  public constructor(
+    private skills: NwTradeskillService,
+    private char: CharacterStore,
+    private destroy: DestroyService,
+    private cdRef: ChangeDetectorRef
+  ) {
     //
   }
 
@@ -61,9 +67,7 @@ export class NwTradeskillCircleComponent implements OnInit, OnChanges {
           if (value !== 'auto') {
             return of(value)
           }
-          return this.skillName$
-            .pipe(switchMap((name) => this.skills.preferences.observe(name)))
-            .pipe(map((data) => data?.meta?.level))
+          return this.skillName$.pipe(switchMap((name) => this.char.selectTradeSkillLevel(name)))
         })
       ),
     })

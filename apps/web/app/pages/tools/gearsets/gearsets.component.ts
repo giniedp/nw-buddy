@@ -19,7 +19,16 @@ import { GearsetsTableAdapter } from './gearsets-table.adapter'
   standalone: true,
   selector: 'nwb-gearsets-page',
   templateUrl: './gearsets.component.html',
-  imports: [CommonModule, RouterModule, NwModule, DataTableModule, QuicksearchModule, NavToolbarModule, IconsModule, TooltipModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    NwModule,
+    DataTableModule,
+    QuicksearchModule,
+    NavToolbarModule,
+    IconsModule,
+    TooltipModule,
+  ],
   providers: [GearsetsTableAdapter.provider(), QuicksearchService, GearsetsStore],
   host: {
     class: 'layout-col bg-base-100',

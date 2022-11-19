@@ -1,0 +1,24 @@
+<ng-container *ngIf="item$ | async; let item">
+  <div class="flex-none p-1 mb-2">
+    <div class="form-control">
+      <div class="input-group">
+        <a class="btn btn-ghost btn-square inline-flex" [routerLink]="'..'">
+          <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
+        </a>
+        <input
+          type="text"
+          placeholder=""
+          class="input input-bordered w-full"
+          [ngModel]="item.record.name"
+          (ngModelChange)="updateName(item.record, $event)"
+          [ngModelOptions]="{ updateOn: 'blur' }"
+        />
+        <button class="btn btn-ghost btn-square" [tooltip]="'Change weapon'" (click)="builder.switchWeapon()">
+          <nwb-icon [icon]="iconReset" class="w-4 h-4"></nwb-icon>
+        </button>
+        <button nwbScreenshotBtn class="btn btn-ghost btn-square" [tooltip]="'Screenshot'" [color]="'info'"></button>
+      </div>
+    </div>
+  </div>
+  <nwb-skill-builder [ngModel]="item.record" (ngModelChange)="updateModel(item.record, $event)" [nwbScreenshotFrame]="item.record.name" #builder></nwb-skill-builder>
+</ng-container>

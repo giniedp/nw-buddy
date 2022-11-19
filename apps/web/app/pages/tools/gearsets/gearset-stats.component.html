@@ -1,6 +1,6 @@
 <div class="relative flex-1 flex flex-col xl:flex-row layout-pad layout-gap">
   <div class="flex-1 flex flex-col layout-gap">
-    <label class="flex">
+    <label class="flex relative">
       <input type="file" class="hidden" accept=".jpg,.webp,.png" (change)="uploadFile($event)" />
       <picture
         class="
@@ -37,13 +37,14 @@
           <div class="font-bold text-5xl">{{ gearScore$ | async | number: '0.0-0' }}</div>
         </div>
       </picture>
+      <nwb-icon [icon]="iconMenu" class="w-4 h-4 absolute top-1 right-1 screenshot-hidden pointer-events-none"></nwb-icon>
     </label>
 
     <ng-container [ngTemplateOutlet]="tplScore"></ng-container>
     <ng-container [ngTemplateOutlet]="tplAttrs"></ng-container>
   </div>
 
-  <div class="flex-1 flex flex-col-reverse layout-gap">
+  <div class="flex-1 flex flex-col xl:flex-col-reverse layout-gap">
     <ng-container [ngTemplateOutlet]="tplResi"></ng-container>
     <ng-container [ngTemplateOutlet]="tplPerks"></ng-container>
   </div>
@@ -67,9 +68,11 @@
       outline outline-transparent outline-2 outline-offset-0
       hover:outline-offset-4 hover:outline-primary
       cursor-pointer
+      relative
     "
     (click)="editAttributes()"
   >
+    <nwb-icon [icon]="iconMenu" class="w-4 h-4 absolute top-1 right-1 screenshot-hidden pointer-events-none"></nwb-icon>
     <span class="font-bold">Attributes</span>
     <nwb-property-grid class="gap-x-1">
       <ng-container *ngFor="let row of attrs">

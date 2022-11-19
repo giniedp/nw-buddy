@@ -25,5 +25,14 @@
   }
   input {
     z-index: 3;
+    cursor: pointer;
+  }
+  input:focus::placeholder {
+    color: transparent;
+  }
+  @apply rounded-md transition-all outline outline-4 outline-transparent cursor-pointer;
+  @apply focus-within:outline-primary;
+  @media (hover: hover) and (pointer: fine) {
+    @apply hover:outline-primary;
   }
 }

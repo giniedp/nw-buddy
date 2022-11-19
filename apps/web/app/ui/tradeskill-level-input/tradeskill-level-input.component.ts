@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { NwModule } from '~/nw'
 
@@ -67,5 +67,11 @@ export class TradeskillLevelInputComponent implements ControlValueAccessor {
   }
   protected commitValue() {
     this.onChange(this.value)
+  }
+
+  @HostListener('click')
+  public onClick() {
+    this.input.nativeElement.focus()
+    this.input.nativeElement.select()
   }
 }

@@ -1,10 +1,10 @@
 import { Injectable, OnDestroy } from '@angular/core'
 import { Crafting, Craftingcategories, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { combineLatest, defer, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import { combineLatest, defer, firstValueFrom, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import { CharacterStore } from '~/data'
 import { NwDbService, NwService } from '~/nw'
 
 import { getRecipeForItem, calculateBonusItemChance, getIngretientsFromRecipe } from '~/nw/utils'
-import { TradeskillPreferencesService } from '~/preferences/tradeskill-preferences.service'
 import { CraftingPreferencesService } from './crafting-preferences.service'
 
 export interface RecipeState {
@@ -44,7 +44,7 @@ export class CraftingCalculatorService implements OnDestroy {
   private recipesMap: Map<string, Crafting>
   private cache = new Map<string, CraftingStep>()
 
-  public constructor(private skillPref: TradeskillPreferencesService, private craftPref: CraftingPreferencesService, db: NwDbService) {
+  public constructor(private craftPref: CraftingPreferencesService, private char: CharacterStore, db: NwDbService) {
     combineLatest({
       items: db.items,
       itemsMap: db.itemsMap,
@@ -152,7 +152,7 @@ export class CraftingCalculatorService implements OnDestroy {
     return step
   }
 
-  public calculateBonus(step: CraftingStep) {
+  public async calculateBonus(step: CraftingStep) {
     if (step.options?.length || !step.expand || step.ingredient.type !== 'Item') {
       return 0
     }
@@ -161,12 +161,12 @@ export class CraftingCalculatorService implements OnDestroy {
     if (!recipe) {
       return 0
     }
-
+    const skillLevel = await firstValueFrom(this.char.selectTradeSkillLevel(recipe.Tradeskill))
     return calculateBonusItemChance({
       item: item,
       ingredients: this.findItemsOrSelectedItems(step.steps),
       recipe: recipe,
-      skill: this.skillPref.get(recipe.Tradeskill)?.level || 0,
+      skill: skillLevel || 0,
     })
   }
 

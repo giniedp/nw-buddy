@@ -6,7 +6,7 @@ import { NwHumanizePipe } from './nw-humanize.pipe'
 import { NwIconComponent, NwImageComponent } from './nw-icon.component'
 import { NwInfoLinkDirective } from './nw-info-link.directive'
 import { NwTextDirective } from './nw-text.directive'
-import { NwTextPipe } from './nw-text.pipe'
+import { NwTextBreakPipe, NwTextPipe } from './nw-text.pipe'
 
 @NgModule({
   imports: [
@@ -18,6 +18,7 @@ import { NwTextPipe } from './nw-text.pipe'
     NwInfoLinkDirective,
     NwTextDirective,
     NwTextPipe,
+    NwTextBreakPipe,
     NwHumanizePipe
   ],
   exports: [
@@ -26,6 +27,7 @@ import { NwTextPipe } from './nw-text.pipe'
     NwImageComponent,
     NwInfoLinkDirective,
     NwTextPipe,
+    NwTextBreakPipe,
     NwHumanizePipe,
     GamingtoolsLinkDirective
   ],

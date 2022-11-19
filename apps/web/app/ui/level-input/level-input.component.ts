@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, ViewChild, ElementRef } from '@angular/core'
+import { Component, ChangeDetectionStrategy, ViewChild, ElementRef, HostBinding, HostListener } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 
 @Component({
@@ -57,6 +57,12 @@ export class LevelInputComponent implements ControlValueAccessor {
   }
   protected commitValue() {
     this.onChange(this.value)
+  }
+
+  @HostListener('click')
+  protected onClick() {
+    this.input.nativeElement.focus()
+    this.input.nativeElement.select()
   }
 }
 

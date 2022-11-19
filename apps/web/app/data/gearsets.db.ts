@@ -4,6 +4,7 @@ import { AttributeName } from '~/widgets/attributes-editor/attributes.store'
 import { APP_DB } from './db'
 import { DBTable } from './db-table'
 import { ItemInstance } from './item-instances.db'
+import { SkillBuild } from './skill-builds.db'
 
 export type GearsetCreateMode = 'link' | 'copy'
 export interface GearsetRecord {
@@ -31,6 +32,10 @@ export interface GearsetRecord {
    * Assigned attribute points
    */
   attrs?: Record<AttributeName, number>
+  /**
+   * Weapon skill builds
+   */
+  skills?: Record<string, string | SkillBuild>
   /**
    * Profile image id
    */

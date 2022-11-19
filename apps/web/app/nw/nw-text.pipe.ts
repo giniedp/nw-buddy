@@ -3,8 +3,9 @@ import { isEqual } from 'lodash'
 import { Subject, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwExpressionContext, NwExpressionService } from './nw-expression.service'
+import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from './utils/constants'
 
-export type NwTextPipeOptions = Partial<NwExpressionContext>
+export type NwTextPipeOptions = Partial<NwExpressionContext> & Record<string, string | number>
 
 @Pipe({
   standalone: true,
@@ -35,8 +36,8 @@ export class NwTextPipe implements PipeTransform, OnDestroy {
       .pipe(
         switchMap((value) =>
           this.expr.solve({
-            charLevel: 60,
-            gearScore: 600,
+            charLevel: NW_MAX_CHARACTER_LEVEL,
+            gearScore: NW_MAX_GEAR_SCORE_BASE,
             ...(options || {}),
             text: value,
           })
@@ -53,4 +54,16 @@ export class NwTextPipe implements PipeTransform, OnDestroy {
   public ngOnDestroy(): void {
     this.dispose$.next()
   }
+}
+
+@Pipe({
+  standalone: true,
+  name: 'nwTextBreak',
+  pure: true,
+})
+export class NwTextBreakPipe implements PipeTransform {
+  public transform(value: string) {
+    return value?.replace(/\\n/gi, '<br>')
+  }
+
 }

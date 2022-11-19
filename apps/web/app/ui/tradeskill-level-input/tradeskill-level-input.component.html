@@ -5,16 +5,29 @@
   <div class="absolute top-0 left-0 right-0 bottom-0 z-10 flex flex-col items-center justify-center">
     <div class="aspect-square h-full">
       <input
+        #input
         min="0"
         type="number"
         [attr.max]="maxLevel"
-        class="input focus:outline-none bg-transparent h-full w-full p-0 text-center font-bold text-3xl appearance-none"
+        class="
+          input
+          focus:outline-none
+          bg-transparent
+          h-full
+          w-full
+          p-0
+          text-center
+          font-bold
+          text-3xl
+          appearance-none
+          cursor-pointer
+        "
         placeholder="0"
         [(ngModel)]="modelValue"
       />
     </div>
   </div>
 </div>
-<h2 class="p-2 pt-0 text-center font-bold text-lg">
-  <span [nwText]="label"></span>
+<h2 class="p-2 pt-0 text-center font-bold text-lg text-ellipsis overflow-hidden">
+  <span [nwText]="label" class="whitespace-nowrap"></span>
 </h2>

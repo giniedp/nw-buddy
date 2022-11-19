@@ -57,6 +57,9 @@ export class TooltipDirective implements OnInit, OnDestroy {
 
   private show() {
     this.close()
+    if (!this.tooltip) {
+      return
+    }
     this.zone.run(() => {
       this.cRef = this.vcRef.createComponent(TooltipComponent)
       this.cRef.instance.content = this.tooltip

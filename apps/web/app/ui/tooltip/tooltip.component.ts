@@ -13,24 +13,26 @@ import { Component, HostBinding, Input, TemplateRef, Type } from '@angular/core'
   `,
   imports: [CommonModule],
   host: {
-    class: 'px-2 py-1 rounded-md fs-sm'
+    class: 'rounded-md fs-sm',
+    '[class.primary]': 'color == "primary"',
+    '[class.secondary]': 'color == "secondary"',
+    '[class.accent]': 'color == "accent"',
+    '[class.info]': 'color == "info"',
+    '[class.success]': 'color == "success"',
+    '[class.warning]': 'color == "warning"',
+    '[class.error]': 'color == "error"',
+    '[class.px-2]': '!!text',
+    '[class.py-1]': '!!text'
   }
 })
 export class TooltipComponent {
 
   @Input()
+  @HostBinding('class.show')
   public show: boolean
 
   @Input()
   public color: '' | 'primary' | 'secondary' | 'accent' | 'info' | 'success' | 'warning' | 'error'
-
-  @HostBinding('class')
-  public get elementClass() {
-    return {
-      show: this.show,
-      [this.color]: true
-    }
-  }
 
   @Input()
   public set content(value: string | TemplateRef<any> | Type<any>) {

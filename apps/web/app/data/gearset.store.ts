@@ -6,6 +6,7 @@ import { AttributeName } from '~/widgets/attributes-editor/attributes.store'
 import { GearsetCreateMode, GearsetRecord, GearsetsDB } from './gearsets.db'
 import { ImagesDB } from './images.db'
 import { ItemInstance } from './item-instances.db'
+import { SkillBuild } from './skill-builds.db'
 
 export interface GearsetStoreState {
   gearset: GearsetRecord
@@ -19,6 +20,7 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
   public readonly gearsetSlots$ = this.select(({ gearset }) => gearset?.slots)
   public readonly gearsetName$ = this.select(({ gearset }) => gearset?.name)
   public readonly gearsetAttrs$ = this.select(({ gearset }) => gearset?.attrs)
+  public readonly gearsetSkills$ = this.select(({ gearset }) => gearset?.skills)
   public readonly isLinkMode$ = this.select(({ gearset }) => gearset?.createMode !== 'copy')
   public readonly isCopyMode$ = this.select(({ gearset }) => gearset?.createMode === 'copy')
   public readonly isLoading$ = this.select(({ isLoading }) => isLoading)
@@ -139,6 +141,29 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
         return this.writeRecord({
           ...gearset,
           attrs: attrs,
+        })
+      })
+    )
+  })
+
+  /**
+   * Updates a skill set
+   */
+  public readonly updateSkill = this.effect<{ slot: string, skill: string | SkillBuild }>((value$) => {
+    return value$.pipe(
+      switchMap(({ slot, skill }) => {
+        const gearset = this.get().gearset
+        const skills = {
+          ...(gearset.skills || {}),
+        }
+        if (skill) {
+          skills[slot] = skill
+        } else {
+          delete skills[slot]
+        }
+        return this.writeRecord({
+          ...gearset,
+          skills: skills,
         })
       })
     )

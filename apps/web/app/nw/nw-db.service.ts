@@ -238,6 +238,7 @@ export class NwDbService {
   public lootLimitsMap = index(() => this.lootLimits, 'LootLimitID')
 
   public xpAmounts = this.data.xpamountsbylevel().pipe(shareReplay(1))
+  public weaponMastery = this.data.weaponmastery().pipe(shareReplay(1))
 
   public constructor(public readonly data: NwDataService) {
     //

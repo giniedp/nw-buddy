@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
 import { combineLatest, count, map } from 'rxjs'
+import { CharacterStore } from '~/data'
 import { NwDbService } from '~/nw'
-import { CharacterPreferencesService } from '~/preferences'
 
 @Component({
   selector: 'nwb-xp-chart',
@@ -46,7 +46,7 @@ export class XpChartComponent {
     }
   }))
 
-  public constructor(private db: NwDbService, private char: CharacterPreferencesService) {
+  public constructor(private db: NwDbService, private char: CharacterStore) {
     //
   }
 }

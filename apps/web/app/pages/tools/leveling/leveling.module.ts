@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router'
 import { LevelXpComponent } from './level-xp.component'
 import { LevelingComponent } from './leveling.component'
 import { TradeskillsComponent } from './tradeskills.component'
+import { WeaponsComponent } from './weapons.component'
 
 const routes: Routes = [
   {
@@ -21,6 +22,10 @@ const routes: Routes = [
       {
         path: 'tradeskills',
         component: TradeskillsComponent,
+      },
+      {
+        path: 'weapons',
+        component: WeaponsComponent,
       }
     ]
   }
