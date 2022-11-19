@@ -12,6 +12,7 @@ import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/modal'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
+import { SkillWeaponDialogComponent } from '~/widgets/skill-builder/skill-weapon-dialog.component'
 import { SkillBuildsTableAdapter } from './skill-builds-table.adapter'
 
 @Component({
@@ -40,27 +41,47 @@ export class SkillBuildsComponent {
   public constructor(private store: SkillBuildsStore, protected search: QuicksearchService, private dialog: Dialog) {}
 
   protected async createItem() {
-    PromptDialogComponent.open(this.dialog, {
-      data: {
-        title: 'Create new skill tree',
-        body: 'Give this set a name',
-        input: `New Skill Tree`,
-        positive: 'Create',
-        negative: 'Cancel',
-      },
+    SkillWeaponDialogComponent.open(this.dialog, {
+      width: '100vw',
+      height: '100vh',
+      maxWidth: 400,
+      maxHeight: 600,
+      data: null
     })
-      .closed.pipe(filter((it) => !!it))
-      .subscribe((newName) => {
-        this.store.createRecord({
-          record: {
-            id: null,
-            name: newName,
-            tree1: null,
-            tree2: null,
-            weapon: 'sword',
-          },
-        })
+    .closed.pipe(filter((it) => !!it))
+    .subscribe((weapon) => {
+      this.store.createRecord({
+        record: {
+          id: null,
+          name: `New Skill Tree`,
+          tree1: null,
+          tree2: null,
+          weapon: weapon,
+        },
       })
+    })
+
+    // PromptDialogComponent.open(this.dialog, {
+    //   data: {
+    //     title: 'Create new skill tree',
+    //     body: 'Give this set a name',
+    //     input: `New Skill Tree`,
+    //     positive: 'Create',
+    //     negative: 'Cancel',
+    //   },
+    // })
+    //   .closed.pipe(filter((it) => !!it))
+    //   .subscribe((newName) => {
+    //     this.store.createRecord({
+    //       record: {
+    //         id: null,
+    //         name: newName,
+    //         tree1: null,
+    //         tree2: null,
+    //         weapon: 'sword',
+    //       },
+    //     })
+    //   })
   }
 
   protected deleteItem(item: SkillBuildRow) {
