@@ -1,5 +1,5 @@
 <nwb-data-table-header
-  class="flex flex-row bg-base-300 rounded-t-md"
+class="flex flex-col-reverse md:flex-row bg-base-300 rounded-t-md"
   categoryChildRoute
   [childRouteIndex]="'table'"
   #header="tableHeader"
@@ -24,7 +24,7 @@
       </li>
     </ng-template>
   </nwb-nav-toolbar>
-  <div class="flex-none p-2 max-w-[30%]">
+  <div class="flex-none p-2 w-full md:max-w-[300px]">
     <nwb-quicksearch-input></nwb-quicksearch-input>
   </div>
 </nwb-data-table-header>

@@ -16,7 +16,7 @@ import { QuicksearchService } from './quicksearch.service';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, IconsModule],
   host: {
-    class: 'input-group input-group-sm',
+    class: 'relative',
   },
 })
 export class QuicksearchInputComponent implements OnInit, OnDestroy {
@@ -48,7 +48,12 @@ export class QuicksearchInputComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.keys.addShortcut({
-      keys: 'control.f'
+      keys: '/'
+    }).pipe(takeUntil(this.destroy$)).subscribe(()  => {
+      this.input.nativeElement.focus()
+    })
+    this.keys.addShortcut({
+      keys: ':'
     }).pipe(takeUntil(this.destroy$)).subscribe(()  => {
       this.input.nativeElement.focus()
     })

@@ -7,8 +7,9 @@
   autofocus
   [disabled]="!(active | async)"
 />
-<button class="btn btn-sm btn-ghost btn-square swap swap-rotate" (click)="value ? (value = '') : null" [disabled]="!(active | async)">
+<button class="absolute right-0 btn btn-sm btn-ghost btn-square swap swap-rotate" (click)="value ? (value = '') : null" [disabled]="!(active | async)">
   <input type="checkbox" [checked]="!!value" />
   <nwb-icon [icon]="svgXmark" class="swap-on w-4 h-4"></nwb-icon>
-  <nwb-icon [icon]="svgSearch" class="swap-off w-4 h-4"></nwb-icon>
+  <span class="swap-off w-4 h-4 hidden md:inline-block">/</span>
+  <nwb-icon [icon]="svgSearch" class="swap-off w-4 h-4 md:hidden"></nwb-icon>
 </button>
