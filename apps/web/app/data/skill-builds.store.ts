@@ -41,6 +41,7 @@ export class SkillBuildsStore extends ComponentStore<SkillBuildsState> {
       records: null,
       abilities: null
     })
+    this.loadAll()
   }
 
   public loadAll() {

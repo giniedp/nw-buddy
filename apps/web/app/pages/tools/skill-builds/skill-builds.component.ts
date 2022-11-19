@@ -39,10 +39,6 @@ export class SkillBuildsComponent {
 
   public constructor(private store: SkillBuildsStore, protected search: QuicksearchService, private dialog: Dialog) {}
 
-  public async ngOnInit() {
-    this.store.loadAll()
-  }
-
   protected async createItem() {
     PromptDialogComponent.open(this.dialog, {
       data: {

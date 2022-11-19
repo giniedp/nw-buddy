@@ -1,21 +1,22 @@
-import { DialogModule } from '@angular/cdk/dialog'
+import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, Input, Renderer2 } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, Injector, Input, Renderer2 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { BehaviorSubject, combineLatest, tap } from 'rxjs'
+import { BehaviorSubject, combineLatest, filter, switchMap, tap } from 'rxjs'
 
 import { NwModule } from '~/nw'
-import { DataTableModule } from '~/ui/data-table'
+import { DataTableModule, DataTablePickerDialog } from '~/ui/data-table'
 import { ItemDetailModule } from '~/widgets/item-detail'
 
 import { CdkMenuModule } from '@angular/cdk/menu'
-import { GearsetRecord, GearsetSkillSlot, GearsetSkillStore, SkillBuild } from '~/data'
+import { GearsetRecord, GearsetSkillSlot, GearsetSkillStore, SkillBuild, SkillBuildsDB, SkillBuildsStore } from '~/data'
 import { IconsModule } from '~/ui/icons'
-import { svgDiagramProject, svgEllipsisVertical, svgEraser, svgLink16p, svgLinkSlash16p, svgPlus, svgTrashCan } from '~/ui/icons/svg'
+import { svgDiagramProject, svgEllipsisVertical, svgEraser, svgFolderOpen, svgLink16p, svgLinkSlash16p, svgPlus, svgTrashCan } from '~/ui/icons/svg'
 import { deferStateFlat, shareReplayRefCount } from '~/utils'
 import { SkillTreeModule } from '~/widgets/skill-builder'
 import { TooltipModule } from '~/ui/tooltip'
+import { SkillBuildsTableAdapter } from '../skill-builds/skill-builds-table.adapter'
 
 export interface GearsetSkillVM {
   slot?: GearsetSkillSlot
@@ -81,6 +82,7 @@ export class GearsetSkillComponent {
   protected iconReset = svgEraser
   protected iconGraph = svgDiagramProject
   protected iconPlus = svgPlus
+  protected iconOpen = svgFolderOpen
 
   protected vm$ = deferStateFlat<GearsetSkillVM>(() =>
     combineLatest({
@@ -107,8 +109,11 @@ export class GearsetSkillComponent {
 
   public constructor(
     private store: GearsetSkillStore,
+    private skillsDB: SkillBuildsDB,
     private renderer: Renderer2,
-    private elRef: ElementRef<HTMLElement>
+    private elRef: ElementRef<HTMLElement>,
+    private dialog: Dialog,
+    private injector: Injector,
   ) {
     //
   }
@@ -144,6 +149,39 @@ export class GearsetSkillComponent {
         tree1: [],
         tree2: [],
       },
+    })
+  }
+
+  protected createExisting() {
+    DataTablePickerDialog.open(this.dialog, {
+      title: 'Choose Skill Tree',
+      selection: null,
+      adapter: SkillBuildsTableAdapter.provider({
+        noActions: true
+      }),
+      config: {
+        maxWidth: 1400,
+        maxHeight: 1200,
+        panelClass: ['w-full', 'h-full', 'p-4'],
+        injector: Injector.create({
+          parent: this.injector,
+          providers: [{
+            provide: SkillBuildsStore
+          }]
+        }),
+      },
+    })
+    .closed
+    .pipe(filter((it) => it?.length > 0))
+    .pipe(switchMap((id) => this.skillsDB.read(id[0])))
+    .subscribe((value) => {
+      this.store.updateSlot({
+        instance: {
+          weapon: value.weapon,
+          tree1: value.tree1,
+          tree2: value.tree2,
+        },
+      })
     })
   }
 }
