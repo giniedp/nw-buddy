@@ -13,12 +13,45 @@
           (ngModelChange)="updateName(item.record, $event)"
           [ngModelOptions]="{ updateOn: 'blur' }"
         />
-        <button class="btn btn-ghost btn-square" [tooltip]="'Change weapon'" (click)="builder.switchWeapon()">
-          <nwb-icon [icon]="iconReset" class="w-4 h-4"></nwb-icon>
+        <button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
+          <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>
         </button>
         <button nwbScreenshotBtn class="btn btn-ghost btn-square" [tooltip]="'Screenshot'" [color]="'info'"></button>
       </div>
     </div>
   </div>
-  <nwb-skill-builder [ngModel]="item.record" (ngModelChange)="updateModel(item.record, $event)" [nwbScreenshotFrame]="item.record.name" #builder></nwb-skill-builder>
+  <div [nwbScreenshotFrame]="item.record.name">
+    <nwb-skill-builder
+      [ngModel]="item.record"
+      (ngModelChange)="updateModel(item.record, $event)"
+
+      #builder
+    ></nwb-skill-builder>
+
+    <div *ngIf="item.record.attrs" class="layout-pad">
+      <nwb-attributes-editor [freeMode]="true" [assigned]="item.record.attrs" (assignedChanged)="updateAttributes(item.record, $event)"></nwb-attributes-editor>
+    </div>
+  </div>
+
+  <ng-template #menu>
+    <ul class="menu menu-compact bg-base-100 rounded-md shadow" cdkMenu>
+      <li>
+        <button (click)="builder.switchWeapon()">
+          <nwb-icon [icon]="iconReset" class="w-4 h-4"></nwb-icon> Change Weapon
+        </button>
+      </li>
+      <li *ngIf="attrs$ | async">
+        <button (click)="removeAttributes(item.record)" cdkMenuItem>
+          <nwb-icon [icon]="iconAttrs" class="w-4 h-4"></nwb-icon>
+          Remove Attributes
+        </button>
+      </li>
+      <li *ngIf="!(attrs$ | async)">
+        <button (click)="addAttributes(item.record)" cdkMenuItem>
+          <nwb-icon [icon]="iconAttrs" class="w-4 h-4"></nwb-icon>
+          Add Attributes
+        </button>
+      </li>
+    </ul>
+  </ng-template>
 </ng-container>

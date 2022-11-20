@@ -76,6 +76,7 @@ export class AttributesStore extends ComponentStore<AttributesState> {
     (
       value$: Observable<{
         level: number
+        points: number
         base: Record<AttributeName, number>
         assigned: Record<AttributeName, number>
       }>
@@ -84,8 +85,7 @@ export class AttributesStore extends ComponentStore<AttributesState> {
         input: value$,
         data: this.nwDb.xpAmounts,
       }).pipe(
-        switchMap(({ input: { level, base, assigned }, data }) => {
-          let points = 0
+        switchMap(({ input: { level, base, assigned, points }, data }) => {
           data.forEach((it) => {
             if (it['Level Number'] < level) {
               points += it.AttributePoints

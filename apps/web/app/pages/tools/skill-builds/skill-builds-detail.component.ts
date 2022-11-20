@@ -1,3 +1,4 @@
+import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -6,9 +7,10 @@ import { asyncScheduler, combineLatest, map, subscribeOn, switchMap } from 'rxjs
 import { SkillBuildRecord, SkillBuildsStore } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgChevronLeft, svgEraser } from '~/ui/icons/svg'
+import { svgBars, svgChevronLeft, svgEllipsis, svgEraser, svgRotate, svgSliders } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { observeRouteParam } from '~/utils'
+import { AttributeName, AttributesEditorModule } from '~/widgets/attributes-editor'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { SkillBuilderComponent, SkillBuildValue } from '~/widgets/skill-builder/skill-builder.component'
 
@@ -17,27 +19,40 @@ import { SkillBuilderComponent, SkillBuildValue } from '~/widgets/skill-builder/
   selector: 'nwb-skill-builds-detail',
   templateUrl: './skill-builds-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, RouterModule, SkillBuilderComponent, IconsModule, ScreenshotModule, TooltipModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    FormsModule,
+    RouterModule,
+    SkillBuilderComponent,
+    IconsModule,
+    ScreenshotModule,
+    TooltipModule,
+    CdkMenuModule,
+    AttributesEditorModule
+  ],
   host: {
     class: 'layout-content',
   },
 })
 export class SkillBuildsDetailComponent {
-
   protected item$ = combineLatest({
     id: observeRouteParam(this.route, 'id'),
     rows: this.store.whenLoaded$.pipe(switchMap(() => this.store.rows$)),
   })
-  .pipe(subscribeOn(asyncScheduler))
-  .pipe(
-    map(({ id, rows }) => {
-      const found = rows?.find((it) => it.record.id === id)
-      return found
-    })
-  )
+    .pipe(subscribeOn(asyncScheduler))
+    .pipe(
+      map(({ id, rows }) => {
+        const found = rows?.find((it) => it.record.id === id)
+        return found
+      })
+    )
 
+  protected attrs$ = this.item$.pipe(map((it) => it?.record?.attrs))
   protected iconBack = svgChevronLeft
-  protected iconReset = svgEraser
+  protected iconReset = svgRotate
+  protected iconMenu = svgBars
+  protected iconAttrs = svgSliders
 
   public constructor(private store: SkillBuildsStore, private route: ActivatedRoute) {
     //
@@ -59,6 +74,39 @@ export class SkillBuildsDetailComponent {
       record: {
         ...record,
         name: name,
+      },
+    })
+  }
+
+  protected addAttributes(record: SkillBuildRecord) {
+    this.store.updateRecord({
+      record: {
+        ...record,
+        attrs: record.attrs || {
+          con: 0,
+          dex: 0,
+          foc: 0,
+          int: 0,
+          str: 0,
+        },
+      },
+    })
+  }
+
+  protected updateAttributes(record: SkillBuildRecord, attrs: Record<AttributeName, number>) {
+    this.store.updateRecord({
+      record: {
+        ...record,
+        attrs: attrs,
+      },
+    })
+  }
+
+  protected removeAttributes(record: SkillBuildRecord) {
+    this.store.updateRecord({
+      record: {
+        ...record,
+        attrs: null,
       },
     })
   }

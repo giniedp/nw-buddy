@@ -15,19 +15,13 @@
           shadow-md
         "
       >
-        <ng-container *ngIf="image$ | async; let img else tplNoImage">
-          <img
-            [src]="img"
-            class="absolute top-0 left-0 w-full h-full object-cover rounded-md"
-          />
+        <ng-container *ngIf="image$ | async; let img; else: tplNoImage">
+          <img [src]="img" class="absolute top-0 left-0 w-full h-full object-cover rounded-md" />
         </ng-container>
         <ng-template #tplNoImage>
-          <img
-            [src]="'assets/icons/newworldcentered.png'"
-            class="absolute top-0 left-0 w-full h-full object-contain rounded-md opacity-50 scale-50"
-          />
+          <img [src]="'assets/landing.webp'" class="absolute top-0 left-0 w-full h-full object-cover rounded-md" />
         </ng-template>
-
+        <img [src]="'assets/landing-animation.webp'" class="absolute bottom-0 left-0 w-full" />
 
         <div
           class="absolute bottom-0 left-0 bg-opacity-50 p-2 flex flex-row items-center rounded-bl-md rounded-tr-md"
@@ -37,7 +31,10 @@
           <div class="font-bold text-5xl">{{ gearScore$ | async | number: '0.0-0' }}</div>
         </div>
       </picture>
-      <nwb-icon [icon]="iconMenu" class="w-4 h-4 absolute top-1 right-1 screenshot-hidden pointer-events-none"></nwb-icon>
+      <nwb-icon
+        [icon]="iconMenu"
+        class="w-4 h-4 absolute top-1 right-1 screenshot-hidden pointer-events-none"
+      ></nwb-icon>
     </label>
 
     <ng-container [ngTemplateOutlet]="tplScore"></ng-container>

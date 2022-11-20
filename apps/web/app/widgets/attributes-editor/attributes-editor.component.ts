@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy, Input, OnInit, Output } from '@angular/core'
 import { isEqual } from 'lodash'
-import { BehaviorSubject, combineLatest, distinctUntilChanged, tap } from 'rxjs'
+import { BehaviorSubject, combineLatest, distinctUntilChanged, map, of, switchMap, tap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { NW_MAX_CHARACTER_LEVEL } from '~/nw/utils/constants'
 import { IconsModule } from '~/ui/icons'
@@ -31,6 +31,14 @@ export class AttributesEditorComponent implements OnInit {
   }
 
   @Input()
+  public set freeMode(value: boolean) {
+    this.freeMode$.next(value)
+  }
+  public get freeMode() {
+    return this.freeMode$.value
+  }
+
+  @Input()
   public set base(value: Record<AttributeName, number>) {
     this.base$.next(value)
   }
@@ -55,6 +63,7 @@ export class AttributesEditorComponent implements OnInit {
   protected arrowLeft = svgAngleLeft
   protected arrowsLeft = svgAnglesLeft
   protected trackById = (i: number) => i
+  private freeMode$ = new BehaviorSubject<boolean>(false)
   private level$ = new BehaviorSubject<number>(NW_MAX_CHARACTER_LEVEL)
   private base$ = new BehaviorSubject<Record<AttributeName, number>>({
     con: 0,
@@ -78,7 +87,20 @@ export class AttributesEditorComponent implements OnInit {
   public ngOnInit() {
     const src = combineLatest({
       level: this.level$,
-      base: this.base$,
+      points: this.freeMode$.pipe(map((it) => it ? 270 : 0)),
+      base: this.freeMode$.pipe(switchMap((it) => {
+        if (!it) {
+          return this.base$
+        }
+        const base: Record<AttributeName, number> = {
+          con: 5,
+          dex: 5,
+          foc: 5,
+          int: 5,
+          str: 5
+        }
+        return of(base)
+      })),
       assigned: this.assigned$
     })
     this.store.loadLazy(src)

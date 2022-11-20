@@ -6,4 +6,28 @@
   progress {
     top: calc(50% - 4px);
   }
+  .badge.c1 {
+    @apply bg-[#F1CF72];
+  }
+  .badge.c2 {
+    @apply bg-[#35B6EB];
+  }
+  progress.progress-c1 {
+    color: #F1CF72;
+    &::-webkit-progress-value {
+      @apply bg-[#F1CF72];
+    }
+    &::-moz-progress-bar {
+      @apply bg-[#F1CF72];
+    }
+  }
+  progress.progress-c2 {
+    color: #F1CF72;
+    &::-webkit-progress-value {
+      @apply bg-[#35B6EB];
+    }
+    &::-moz-progress-bar {
+      @apply bg-[#35B6EB];
+    }
+  }
 }
