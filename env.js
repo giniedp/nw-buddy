@@ -9,7 +9,15 @@ function cmd(cmd) {
   return result.stdout.toString('utf8').replace(/^\s+|\s+$/g, '');
 }
 
-const branchName = cmd('git branch --show-current')
+// https://developers.cloudflare.com/pages/platform/build-configuration/#environment-variables
+const CF = {
+  pages: process.env.CF_PAGES,
+  commitHash: process.env.CF_PAGES_COMMIT_SHA,
+  branchName: process.env.CF_PAGES_BRANCH,
+  pagessUrl: CF_PAGES_URL
+}
+
+const branchName = CF.branchName || cmd('git branch --show-current')
 const path = require('path')
 const config = {
   NW_GAME_LIVE: process.env.NW_GAME_LIVE,
