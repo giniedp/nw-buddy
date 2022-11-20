@@ -1,5 +1,4 @@
 <nwb-title-bar *ngIf="isElectron"></nwb-title-bar>
-
 <div class="layout-pad-x layout-pad-t" [@headerAnimation]="true">
   <div class="navbar bg-base-100 z-50 font-bold rounded-md shadow-xl">
     <div class="navbar-start w-auto flex-none">
@@ -17,7 +16,10 @@
         <img [nwImage]="'assets/icons/favicon.png'" class="w-12" />
       </a>
       <h1 class="text-xl hidden md:block">
-        New World Buddy
+        <div class="indicator">
+          <span class="indicator-item badge badge-primary badge-xs" *ngIf="isPtr">PTR</span>
+          New World Buddy
+        </div>
       </h1>
     </div>
     <div class="navbar-end w-auto flex-none">

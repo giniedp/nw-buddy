@@ -53,6 +53,10 @@ export class AppComponent implements OnInit, OnDestroy {
     return environment.environment === 'WEB' || environment.environment === 'DEV'
   }
 
+  public get isPtr() {
+    return environment.isPTR
+  }
+
   public get language() {
     return this.preferences.language.get()
   }
