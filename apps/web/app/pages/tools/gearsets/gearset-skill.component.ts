@@ -12,11 +12,12 @@ import { ItemDetailModule } from '~/widgets/item-detail'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { GearsetRecord, GearsetSkillSlot, GearsetSkillStore, SkillBuild, SkillBuildsDB, SkillBuildsStore } from '~/data'
 import { IconsModule } from '~/ui/icons'
-import { svgDiagramProject, svgEllipsisVertical, svgEraser, svgFolderOpen, svgLink16p, svgLinkSlash16p, svgPlus, svgTrashCan } from '~/ui/icons/svg'
+import { svgDiagramProject, svgEllipsisVertical, svgEraser, svgFolderOpen, svgLink16p, svgLinkSlash16p, svgPlus, svgRotate, svgTrashCan } from '~/ui/icons/svg'
 import { deferStateFlat, shareReplayRefCount } from '~/utils'
 import { SkillTreeModule } from '~/widgets/skill-builder'
 import { TooltipModule } from '~/ui/tooltip'
 import { SkillBuildsTableAdapter } from '../skill-builds/skill-builds-table.adapter'
+import { SkillWeaponDialogComponent } from '~/widgets/skill-builder/skill-weapon-dialog.component'
 
 export interface GearsetSkillVM {
   slot?: GearsetSkillSlot
@@ -79,7 +80,7 @@ export class GearsetSkillComponent {
   protected iconRemove = svgTrashCan
   protected iconLink = svgLink16p
   protected iconLinkBreak = svgLinkSlash16p
-  protected iconReset = svgEraser
+  protected iconReset = svgRotate
   protected iconGraph = svgDiagramProject
   protected iconPlus = svgPlus
   protected iconOpen = svgFolderOpen
@@ -143,12 +144,22 @@ export class GearsetSkillComponent {
   protected loadSkill(slot: GearsetSkillSlot) {}
 
   protected create() {
-    this.store.updateSlot({
-      instance: {
-        weapon: 'sword',
-        tree1: [],
-        tree2: [],
-      },
+    SkillWeaponDialogComponent.open(this.dialog, {
+      width: '100vw',
+      height: '100vh',
+      maxWidth: 400,
+      maxHeight: 600,
+      data: null
+    })
+    .closed.pipe(filter((it) => !!it))
+    .subscribe((weapon) => {
+      this.store.updateSlot({
+        instance: {
+          weapon: weapon,
+          tree1: [],
+          tree2: [],
+        },
+      })
     })
   }
 
