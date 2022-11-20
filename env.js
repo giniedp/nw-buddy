@@ -14,7 +14,7 @@ const CF = {
   pages: process.env.CF_PAGES,
   commitHash: process.env.CF_PAGES_COMMIT_SHA,
   branchName: process.env.CF_PAGES_BRANCH,
-  pagessUrl: CF_PAGES_URL
+  pagessUrl: process.env.CF_PAGES_URL
 }
 
 const branchName = CF.branchName || cmd('git branch --show-current')
