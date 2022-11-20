@@ -1,4 +1,15 @@
 require('dotenv').config()
+
+function cmd(cmd) {
+  const shell = require('shelljs');
+  const result = shell.exec(cmd, {silent: true});
+  if (result.code !== 0) {
+    throw new Error('[git-rev-sync] failed to execute command: ' + result.stdout);
+  }
+  return result.stdout.toString('utf8').replace(/^\s+|\s+$/g, '');
+}
+
+const branchName = cmd('git branch --show-current')
 const path = require('path')
 const config = {
   NW_GAME_LIVE: process.env.NW_GAME_LIVE,
@@ -8,7 +19,7 @@ const config = {
   NW_CDN_PTR: process.env.NW_CDN_PTR,
   NW_CDN_LIVE: process.env.NW_CDN_LIVE,
   NW_USE_CDN: ['true', 'yes', '1'].includes(process.env.NW_USE_CDN),
-  NW_USE_PTR: ['true', 'yes', '1'].includes(process.env.NW_USE_PTR),
+  NW_USE_PTR: ['true', 'yes', '1'].includes(process.env.NW_USE_PTR ?? String(branchName === 'ptr')),
   CDN_UPLOAD_SPACE: process.env.CDN_UPLOAD_SPACE,
   CDN_UPLOAD_KEY: process.env.CDN_UPLOAD_KEY,
   CDN_UPLOAD_SECRET: process.env.CDN_UPLOAD_SECRET,

@@ -146,6 +146,7 @@
     "resize-observer-polyfill": "1.5.1",
     "rxjs": "7.5.7",
     "s3": "4.4.0",
+    "shelljs": "0.8.5",
     "tailwindcss": "3.1.8",
     "ts-node": "10.9.1",
     "tslib": "^2.4.0",
