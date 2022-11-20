@@ -3,6 +3,11 @@ import type {
   Affixstats,
   Afflictions,
   Areadefinitions,
+  Attributeconstitution,
+  Attributedexterity,
+  Attributefocus,
+  Attributeintelligence,
+  Attributestrength,
   Categoricalprogression,
   Crafting,
   ItemDefinitionMaster,
@@ -87,6 +92,21 @@ export abstract class NwDataLoader {
   }
   public areadefinitions() {
     return this.load<Areadefinitions[]>('javelindata_areadefinitions.json')
+  }
+  public attributeconstitution() {
+    return this.load<Attributeconstitution[]>('javelindata_attributeconstitution.json')
+  }
+  public attributedexterity() {
+    return this.load<Attributedexterity[]>('javelindata_attributedexterity.json')
+  }
+  public attributefocus() {
+    return this.load<Attributefocus[]>('javelindata_attributefocus.json')
+  }
+  public attributeintelligence() {
+    return this.load<Attributeintelligence[]>('javelindata_attributeintelligence.json')
+  }
+  public attributestrength() {
+    return this.load<Attributestrength[]>('javelindata_attributestrength.json')
   }
   public categoricalprogression() {
     return this.load<Categoricalprogression[]>('javelindata_categoricalprogression.json')
