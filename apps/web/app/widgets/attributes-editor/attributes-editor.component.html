@@ -1,4 +1,4 @@
-<div class="grid gap-1">
+<div class="grid gap-1 pr-[10px]">
   <span class="font-bold">Points</span>
   <span class="font-bold text-center">{{ pointsAvailable$ | async }}</span>
   <span></span>
@@ -12,7 +12,7 @@
       </span>
       <input
         type="number"
-        class="input input-bordered input-sm w-16 text-right"
+        class="input input-bordered input-sm w-16 px-1 text-right"
         [min]="stat.inputMin"
         [max]="stat.inputMax"
         [ngModel]="stat.total"
@@ -23,34 +23,30 @@
       />
     </div>
     <div class="flex flex-row justify-between items-center relative">
-      <progress
-        class="absolute left-0 progress progress-c1 w-full"
-        [value]="stat.total"
-        [max]="stat.sliderEnd"
-      ></progress>
-      <progress
-        class="absolute left-0 progress progress-c2 w-full"
-        [value]="stat.base"
-        [max]="stat.sliderEnd"
-      ></progress>
-      <span class="relative w-0 h-0"></span>
-      <ng-container *ngFor="let step of [50, 100, 150, 200, 250, 300]; trackBy: trackById">
-        <span
-          class="relative badge cursor-pointer"
-          [class.c1]="stat.base < step && stat.total >= step"
-          [class.c2]="stat.base >= step"
-          [tooltip]="tip"
-          (click)="attributeToggle(stat, step)"
-        >
-        </span>
-        <ng-template #tip>
-          <div *ngIf="getAbilities(stat, step) | async; let list" class="py-2 px-3">
-            <div *ngFor="let item of list" [class.text-success]="stat.total >= step">
-              <span [innerHTML]="item.Description | nwText | nwTextBreak"></span>
-            </div>
+      <div class="tracker absolute left-0 w-full flex flex-row overflow-hidden">
+        <span class="flex-none c2 rounded-l-md" [style.width.%]="(stat.base / stat.sliderEnd) * 100"></span>
+        <span class="flex-none c1 rounded-r-md" [style.width.%]="(stat.assigned / stat.sliderEnd) * 100"></span>
+      </div>
+      <div class="flex-1 flex flex-row justify-between items-center relative mr-[-10px]">
+        <ng-container *ngFor="let step of [50, 100, 150, 200, 250, 300]; trackBy: trackById">
+          <div class="segment relative flex-1 h-5 cursor-pointer" (click)="attributeToggle(stat, step)">
+            <span
+              class="badge absolute right-0"
+              [class.c1]="stat.base < step && stat.total >= step"
+              [class.c2]="stat.base >= step"
+              [tooltip]="tip"
+            >
+            </span>
+            <ng-template #tip>
+              <div *ngIf="getAbilities(stat, step) | async; let list" class="py-2 px-3">
+                <div *ngFor="let item of list" [class.text-success]="stat.total >= step">
+                  <span [innerHTML]="item.Description | nwText | nwTextBreak"></span>
+                </div>
+              </div>
+            </ng-template>
           </div>
-        </ng-template>
-      </ng-container>
+        </ng-container>
+      </div>
     </div>
   </ng-container>
 </div>

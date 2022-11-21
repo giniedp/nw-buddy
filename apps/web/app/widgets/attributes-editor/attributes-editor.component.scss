@@ -3,31 +3,17 @@
     display: grid;
     grid-template-columns: max-content max-content 1fr;
   }
-  progress {
-    top: calc(50% - 4px);
+  .badge {
+    @apply bg-zinc-800;
   }
-  .badge.c1 {
+  .c1 {
     @apply bg-[#F1CF72];
   }
-  .badge.c2 {
+  .c2 {
     @apply bg-[#35B6EB];
   }
-  progress.progress-c1 {
-    color: #F1CF72;
-    &::-webkit-progress-value {
-      @apply bg-[#F1CF72];
-    }
-    &::-moz-progress-bar {
-      @apply bg-[#F1CF72];
-    }
-  }
-  progress.progress-c2 {
-    color: #F1CF72;
-    &::-webkit-progress-value {
-      @apply bg-[#35B6EB];
-    }
-    &::-moz-progress-bar {
-      @apply bg-[#35B6EB];
-    }
+  .tracker {
+    @apply bg-zinc-800 h-2;
+    top: calc(50% - 4px);
   }
 }

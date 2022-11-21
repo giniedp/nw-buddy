@@ -316,7 +316,7 @@ export class GearsetStatsComponent {
     const assigned = await firstValueFrom(this.attrsAssigned$)
     console.log({ base, assigned })
     AttributeEditorDialogComponent.open(this.dialog, {
-      maxWidth: 1200,
+      maxWidth: 800,
       maxHeight: 400,
       panelClass: ['w-full', 'h-full', 'layout-pad', 'self-end', 'sm:self-center', 'shadow'],
       data: {
