@@ -5,7 +5,7 @@ import { Component, TrackByFunction } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { filter, firstValueFrom, switchMap } from 'rxjs'
-import { GearsetsDB, GearsetStore, ItemInstance, ItemInstanceRecord } from '~/data'
+import { GearsetsDB, GearsetStore, ItemInstance, ItemInstanceRecord, ItemInstancesDB, ItemInstancesStore } from '~/data'
 import { EquipSlot, EQUIP_SLOTS } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { svgCamera, svgChevronLeft, svgClipboard, svgPaste, svgTrashCan } from '~/ui/icons/svg'
@@ -33,7 +33,7 @@ import { GearsetStatsComponent } from './gearset-stats.component'
     ScreenshotModule,
     TooltipModule,
   ],
-  providers: [GearsetStore],
+  providers: [GearsetStore, ItemInstancesStore],
   styleUrls: ['./gearset.component.scss'],
   host: {
     class: 'layout-content flex-none overflow-x-hidden',
@@ -41,7 +41,9 @@ import { GearsetStatsComponent } from './gearset-stats.component'
   animations: [
     trigger('listAnimation', [
       transition('void => *', [
-        query(':enter', [style({ opacity: 0 }), stagger(50, [animate('0.3s', style({ opacity: 1 }))])]),
+        query(':enter', [style({ opacity: 0 }), stagger(50, [animate('0.3s', style({ opacity: 1 }))])], {
+          optional: true,
+        }),
       ]),
     ]),
     trigger('apperAnimation', [
@@ -49,7 +51,7 @@ import { GearsetStatsComponent } from './gearset-stats.component'
       state('true', style({ opacity: 1 })),
       transition('* => true', [animate('0.3s')]),
     ]),
-  ]
+  ],
 })
 export class GearsetComponent {
   protected id$ = observeRouteParam(this.route, 'id')
@@ -72,9 +74,11 @@ export class GearsetComponent {
     private route: ActivatedRoute,
     private store: GearsetStore,
     private gearDb: GearsetsDB,
+    private itemsStore: ItemInstancesStore,
     private dialog: Dialog
   ) {
     store.loadById(this.id$)
+    itemsStore.loadAll()
   }
 
   protected updateName(value: string) {
@@ -140,6 +144,29 @@ export class GearsetComponent {
         perks: record.perks,
       },
     })
+  }
+
+  protected async onItemInstantiate(slot: EquipSlot, record: ItemInstance) {
+    ConfirmDialogComponent.open(this.dialog, {
+      data: {
+        title: 'Convert to link',
+        body: 'This will create a new item in your inventory and link it to the slot.',
+        positive: 'Convert',
+        negative: 'Cancel',
+      },
+    })
+      .closed.pipe(filter((it) => !!it))
+      .subscribe(async () => {
+        const instance = await this.itemsStore.db.create({
+          gearScore: record.gearScore,
+          itemId: record.itemId,
+          perks: record.perks,
+        })
+        this.store.updateSlot({
+          slot: slot.id,
+          value: instance.id,
+        })
+      })
   }
 
   protected goBack() {

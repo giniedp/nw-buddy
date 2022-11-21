@@ -3,7 +3,7 @@ import { Injectable, Injector } from '@angular/core'
 import { ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
 import { isEqual } from 'lodash'
 import { combineLatest, filter, map, Observable, switchMap, take } from 'rxjs'
-import { ItemInstance } from '~/data'
+import { ItemInstance, ItemInstancesStore } from '~/data'
 import { NwDbService } from '~/nw'
 import {
   collectPerkbucketPerkIds,
@@ -11,10 +11,11 @@ import {
   isItemArmor,
   isItemWeapon,
   isPerkApplicableToItem,
-  isPerkGem
+  isPerkGem,
 } from '~/nw/utils'
 import { DataTablePickerDialog } from '~/ui/data-table'
 import { ItemsTableAdapter, PerksTableAdapter } from '~/widgets/adapter'
+import { PlayerItemsTableAdapter } from './inventory-table.adapter'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryPickerService {
@@ -22,7 +23,17 @@ export class InventoryPickerService {
     //
   }
 
-  public pickItem({ title, itemId, multiple, category }: { title?: string, itemId?: string[]; multiple?: boolean; category?: string }) {
+  public pickItem({
+    title,
+    itemId,
+    multiple,
+    category,
+  }: {
+    title?: string
+    itemId?: string[]
+    multiple?: boolean
+    category?: string
+  }) {
     return this.db.itemsMap.pipe(
       switchMap((items) => {
         return (
@@ -39,6 +50,29 @@ export class InventoryPickerService {
             )
         )
       })
+    )
+  }
+
+  public pickInstance({
+    title,
+    selection,
+    multiple,
+    category,
+    store,
+  }: {
+    title?: string
+    selection?: string[]
+    multiple?: boolean
+    category?: string
+    store: ItemInstancesStore
+  }) {
+    return (
+      this.openInstancePicker({ selection, title, multiple, category, store })
+        .closed.pipe(take(1))
+        // cancelled selection
+        .pipe(filter((it) => it !== undefined))
+        // unchanged selection
+        .pipe(filter((it) => !isEqual(it, selection)))
     )
   }
 
@@ -66,6 +100,43 @@ export class InventoryPickerService {
     )
   }
 
+  protected openInstancePicker({
+    title,
+    selection,
+    multiple,
+    category,
+    store,
+  }: {
+    title?: string
+    selection?: string[]
+    multiple?: boolean
+    category?: string
+    store: ItemInstancesStore
+  }) {
+    let types: Set<string>
+    if (category) {
+      types = new Set([category])
+    } else {
+      types = new Set<string>(EQUIP_SLOTS.map((it) => it.itemType))
+    }
+
+    return DataTablePickerDialog.open(this.dialog, {
+      title: title || 'Pick from inventory',
+      selection: selection,
+      multiselect: !!multiple,
+      adapter: PlayerItemsTableAdapter.provider({
+        source: store.rows$.pipe(map((items) => items.filter((it) => it.item?.ItemClass?.some((e) => types.has(e))))),
+        persistStateId: 'inventory-picker-table',
+      }),
+      config: {
+        maxWidth: 1400,
+        maxHeight: 1200,
+        panelClass: ['w-full', 'h-full', 'layout-pad', 'shadow'],
+        injector: this.injector,
+      },
+    })
+  }
+
   protected openItemsPicker({
     title,
     selection,
@@ -91,7 +162,7 @@ export class InventoryPickerService {
       adapter: ItemsTableAdapter.provider({
         source: this.db.items.pipe(map((items) => items.filter((it) => it.ItemClass?.some((e) => types.has(e))))),
         persistStateId: 'items-picker-table',
-        hideUserData: true
+        hideUserData: true,
       }),
       config: {
         maxWidth: 1400,

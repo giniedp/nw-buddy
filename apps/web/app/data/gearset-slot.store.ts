@@ -94,7 +94,6 @@ export class GearsetSlotStore extends ComponentStore<GearsetSlotState> {
       switchMap(({ instance, instanceId }) => {
         const gearset = this.get().gearset
         const slot = this.get().slot.id
-
         const record = makeCopy(gearset)
         record.slots = record.slots || {}
         if (!instanceId && !instance) {

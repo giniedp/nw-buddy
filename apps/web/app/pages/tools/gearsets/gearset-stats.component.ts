@@ -13,7 +13,8 @@ import {
 import { sumBy } from 'lodash'
 import { combineLatest, defer, filter, firstValueFrom, map, of, shareReplay, switchMap } from 'rxjs'
 import { GearsetStore, ItemInstance, ItemInstancesDB } from '~/data'
-import { AttributeRef, NwDbService, NwModule, NwWeaponTypesService, NW_ATTRIBUTE_TYPES } from '~/nw'
+import { NwDbService, NwModule, NwWeaponTypesService } from '~/nw'
+import { AttributeRef, NW_ATTRIBUTE_TYPES } from '~/nw/nw-attributes'
 import {
   getAffixABSs,
   getAffixDMGs,

@@ -18,16 +18,14 @@ export interface ConfirmDialogOptions {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   host: {
-    class: 'd-block bg-base-100 rounded-md p-3',
+    class: 'd-block bg-base-100 rounded-md overflow-hidden',
   },
 })
 export class ConfirmDialogComponent {
   public static open(dialog: Dialog, config: DialogConfig<ConfirmDialogOptions, DialogRef<boolean | null, ConfirmDialogComponent>>) {
     return dialog.open(ConfirmDialogComponent, {
-      maxWidth: 600,
-      maxHeight: 800,
-      minHeight: 320,
-      minWidth: 300,
+      maxWidth: 400,
+      panelClass: ['w-full', 'layout-pad', 'self-end', 'sm:self-center', 'shadow'],
       ...config
     })
   }

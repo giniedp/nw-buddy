@@ -47,7 +47,7 @@ export class ItemInstancesStore extends ComponentStore<ItemInstancesState> {
   private rowUpdated = new Subject<ItemInstanceRow>()
   private rowDestroyed = new Subject<string>()
 
-  public constructor(private db: ItemInstancesDB, private nwdb: NwDbService) {
+  public constructor(public readonly db: ItemInstancesDB, private nwdb: NwDbService) {
     super({ records: null, items: null, perks: null, buckets: null })
   }
 

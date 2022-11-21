@@ -1,26 +1,31 @@
 import { Dialog } from '@angular/cdk/dialog'
-import { Injectable, NgZone, OnDestroy } from '@angular/core'
+import { Inject, Injectable, NgZone, OnDestroy, Optional } from '@angular/core'
 import { GridOptions, RowDataTransaction } from 'ag-grid-community'
 import { uniqBy } from 'lodash'
-import { debounceTime, defer, filter, merge, Observable, of, Subject, switchMap, take, takeUntil } from 'rxjs'
+import { debounceTime, defer, EMPTY, filter, merge, Observable, of, Subject, switchMap, take, takeUntil } from 'rxjs'
 import { ItemInstanceRow, ItemInstancesStore } from '~/data'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl } from '~/nw'
 import { EQUIP_SLOTS, getItemIconPath, getItemId, getItemRarityName, getItemTierAsRoman } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
+import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { svgTrashCan } from '~/ui/icons/svg'
 import { ConfirmDialogComponent } from '~/ui/modal'
 import { humanize } from '~/utils'
 import { DnDService } from '~/utils/dnd.service'
 
 @Injectable()
+export class InventoryTableAdapterConfig extends DataTableAdapterOptions<ItemInstanceRow> {}
+
+@Injectable()
 export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> implements OnDestroy {
-  public static provider() {
+  public static provider(config?: InventoryTableAdapterConfig) {
     return dataTableProvider({
-      adapter: PlayerItemsTableAdapter
+      adapter: PlayerItemsTableAdapter,
+      options: config,
     })
   }
+
   public entityID(item: ItemInstanceRow): string {
     return item.record.id
   }
@@ -83,25 +88,33 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
             if (!perks.length) {
               return null
             }
-            return this.el('div.flex.flex-row.items-center.h-full', {}, perks.map((it) => {
-              if (!it?.perk) {
-                return this.createIcon((pic, img) => {
-                  img.classList.add('w-7', 'h-7', 'nw-icon')
-                  img.src = 'assets/icons/crafting_perkbackground.png'
-                })
-              }
-              return this.el('a.block.w-7.h-7', {
-                attrs: {
-                  target: '_blank',
-                  href: nwdbLinkUrl('perk', it?.perk?.PerkID)
+            return this.el(
+              'div.flex.flex-row.items-center.h-full',
+              {},
+              perks.map((it) => {
+                if (!it?.perk) {
+                  return this.createIcon((pic, img) => {
+                    img.classList.add('w-7', 'h-7', 'nw-icon')
+                    img.src = 'assets/icons/crafting_perkbackground.png'
+                  })
                 }
-              }, [
-                this.createIcon((pic, img) => {
-                  img.classList.add('w-7', 'h-7', 'nw-icon')
-                  img.src = it?.perk?.IconPath
-                }),
-              ])
-            }))
+                return this.el(
+                  'a.block.w-7.h-7',
+                  {
+                    attrs: {
+                      target: '_blank',
+                      href: nwdbLinkUrl('perk', it?.perk?.PerkID),
+                    },
+                  },
+                  [
+                    this.createIcon((pic, img) => {
+                      img.classList.add('w-7', 'h-7', 'nw-icon')
+                      img.src = it?.perk?.IconPath
+                    }),
+                  ]
+                )
+              })
+            )
           }),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
@@ -181,30 +194,35 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
           headerValueGetter: () => 'Actions',
           cellClass: 'text-center',
           width: 100,
-          rowDragText: ({  }) => "Text",
+          rowDragText: ({}) => 'Text',
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.el('div.btn-group.content-center', {}, [
-              this.el('button.btn.btn-ghost', {
-                ev: {
-                  onclick: (e) => {
-                    e.stopImmediatePropagation()
-                    this.zone.run(() => {
-                      ConfirmDialogComponent.open(this.dialog, {
-                        data: {
-                          title: 'Delete Item',
-                          body: 'Are you sure you want to delete this item? Gearsets linking to this item will loose the reference.',
-                          positive: 'Delete',
-                          negative: 'Cancel'
-                        }
-                      }).closed.pipe(take(1)).pipe(filter((it) => !!it)).subscribe(() => {
-                        this.store.destroyRecord({ recordId: data.record.id })
+              this.el(
+                'button.btn.btn-ghost',
+                {
+                  ev: {
+                    onclick: (e) => {
+                      e.stopImmediatePropagation()
+                      this.zone.run(() => {
+                        ConfirmDialogComponent.open(this.dialog, {
+                          data: {
+                            title: 'Delete Item',
+                            body: 'Are you sure you want to delete this item? Gearsets linking to this item will loose the reference.',
+                            positive: 'Delete',
+                            negative: 'Cancel',
+                          },
+                        })
+                          .closed.pipe(take(1))
+                          .pipe(filter((it) => !!it))
+                          .subscribe(() => {
+                            this.store.destroyRecord({ recordId: data.record.id })
+                          })
                       })
-                    })
-                  }
-                }
-              }, [
-                this.el('span.w-4.h-4', { html: svgTrashCan })
-              ])
+                    },
+                  },
+                },
+                [this.el('span.w-4.h-4', { html: svgTrashCan })]
+              ),
             ])
           }),
         }),
@@ -212,20 +230,25 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
     })
   )
 
-  public readonly entities: Observable<ItemInstanceRow[]> = defer(() => this.store.rows$)
+  public readonly entities: Observable<ItemInstanceRow[]> = defer(() => this.config?.source || this.store.rows$)
     .pipe(filter((it) => it != null))
     .pipe(take(1))
 
   public override categories: Observable<DataTableCategory[]> = defer(() => {
-    const result = EQUIP_SLOTS.map((it): DataTableCategory => ({
-      icon: it.icon,
-      value: it.itemType,
-      label: it.name
-    }))
+    const result = EQUIP_SLOTS.map(
+      (it): DataTableCategory => ({
+        icon: it.icon,
+        value: it.itemType,
+        label: it.name,
+      })
+    )
     return of(uniqBy(result, (it) => it.value))
   })
 
   public override transaction: Observable<RowDataTransaction> = defer(() => {
+    if (!this.store) {
+      return EMPTY
+    }
     return merge(
       this.store.rowCreated$.pipe(switchMap((item) => this.txInsert([item]))),
       this.store.rowUpdated$.pipe(switchMap((item) => this.txUpdate([item]))),
@@ -235,7 +258,17 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
 
   private destroy$ = new Subject<void>()
 
-  public constructor(private store: ItemInstancesStore, private dnd: DnDService, private i18n: TranslateService, private dialog: Dialog, private zone: NgZone) {
+  public constructor(
+    @Optional()
+    private store: ItemInstancesStore,
+    private dnd: DnDService,
+    private i18n: TranslateService,
+    private dialog: Dialog,
+    private zone: NgZone,
+    @Inject(DataTableAdapterOptions)
+    @Optional()
+    private config: InventoryTableAdapterConfig
+  ) {
     super()
     this.attachListener()
   }
@@ -246,7 +279,8 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
   }
 
   private attachListener() {
-    this.store.rowCreated$.pipe(debounceTime(100))
+    this.store?.rowCreated$
+      .pipe(debounceTime(100))
       .pipe(takeUntil(this.destroy$))
       .subscribe((item) => {
         this.select.next([item.record.id])

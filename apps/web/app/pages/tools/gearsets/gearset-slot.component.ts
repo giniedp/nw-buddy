@@ -19,13 +19,13 @@ import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
 import { ItemDetailModule } from '~/widgets/item-detail'
 
-import { GearsetRecord, GearsetSlotStore, ItemInstance } from '~/data'
+import { GearsetRecord, GearsetSlotStore, ItemInstance, ItemInstancesStore } from '~/data'
 import { EquipSlot, getItemId, getItemMaxGearScore } from '~/nw/utils'
 import { deferStateFlat, shareReplayRefCount } from '~/utils'
 import { ItemDetailComponent } from '~/widgets/item-detail/item-detail.component'
 import { InventoryPickerService } from '../inventory/inventory-picker.service'
 import { ItemDefinitionMaster } from '@nw-data/types'
-import { svgLink16p, svgLinkSlash16p, svgPlus, svgTrashCan } from '~/ui/icons/svg'
+import { svgEllipsisVertical, svgLink16p, svgLinkSlash16p, svgPlus, svgTrashCan } from '~/ui/icons/svg'
 import { IconsModule } from '~/ui/icons'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { TooltipModule } from '~/ui/tooltip'
@@ -33,6 +33,7 @@ import { TooltipModule } from '~/ui/tooltip'
 export interface GearsetSlotVM {
   slot?: EquipSlot
   gearset?: GearsetRecord
+  instanceId?: string
   instance?: ItemInstance
   canRemove?: boolean
   canBreak?: boolean
@@ -55,7 +56,7 @@ export interface GearsetSlotVM {
     DataTableModule,
     IconsModule,
     CdkMenuModule,
-    TooltipModule
+    TooltipModule,
   ],
   providers: [GearsetSlotStore],
   host: {
@@ -85,6 +86,9 @@ export class GearsetSlotComponent {
   @Output()
   public itemUnlink = new EventEmitter<ItemInstance>()
 
+  @Output()
+  public itemInstantiate = new EventEmitter<ItemInstance>()
+
   @Input()
   public compact: boolean
 
@@ -94,11 +98,13 @@ export class GearsetSlotComponent {
   protected iconLink = svgLink16p
   protected iconLinkBreak = svgLinkSlash16p
   protected iconPlus = svgPlus
+  protected iconMenu = svgEllipsisVertical
 
   protected vm$ = deferStateFlat<GearsetSlotVM>(() =>
     combineLatest({
       slot: this.slot$,
       gearset: this.gearset$,
+      instanceId: this.store.instanceId$,
       instance: this.store.instance$,
       canRemove: this.store.canRemove$,
       canBreak: this.store.canBreak$,
@@ -125,6 +131,7 @@ export class GearsetSlotComponent {
 
   public constructor(
     private store: GearsetSlotStore,
+    private itemsStore: ItemInstancesStore,
     private picker: InventoryPickerService,
     private renderer: Renderer2,
     private elRef: ElementRef<HTMLElement>
@@ -170,6 +177,24 @@ export class GearsetSlotComponent {
       })
   }
 
+  protected async linkItem(it: GearsetSlotVM) {
+
+    this.picker
+      .pickInstance({
+        title: 'Pick item',
+        store: this.itemsStore,
+        category: it.slot.itemType,
+        selection: [it.instanceId],
+        multiple: false,
+      })
+      .pipe(take(1))
+      .subscribe((it) => {
+        this.store.updateSlot({
+          instanceId: it[0]
+        })
+      })
+  }
+
   protected updateGearScore(value: number) {
     this.gearScore = value
   }
@@ -185,5 +210,10 @@ export class GearsetSlotComponent {
 
   protected remove() {
     this.itemRemove.next()
+  }
+
+  protected async instantiate() {
+    const instance = await firstValueFrom(this.store.instance$)
+    this.itemInstantiate.next(instance)
   }
 }

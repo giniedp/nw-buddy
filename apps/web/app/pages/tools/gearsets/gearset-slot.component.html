@@ -1,15 +1,15 @@
 <ng-container *ngIf="vm$ | async; let vm">
-  <div *ngIf="!vm.instance" class="flex-1 ">
-    <div class="p-1 relative flex flex-row" (click)="pickItem(vm)">
+  <div *ngIf="!vm.instance" class="flex-1">
+    <div class="p-1 relative flex flex-row">
       <nwb-item-detail-header-backdrop [rarity]="0"></nwb-item-detail-header-backdrop>
       <picture class="z-10 w-[76px] h-[76px]">
-        <img [nwImage]="vm.slot.icon" class="w-full h-full object-contain"/>
+        <img [nwImage]="vm.slot.icon" class="w-full h-full object-contain" />
       </picture>
       <nwb-item-detail-header-content class="z-10">
         <span class="title" [innerHTML]="vm.slot.name | nwText"></span>
       </nwb-item-detail-header-content>
-      <button class="btn btn-square btn-ghost absolute top-0 right-0 z-10" [tooltip]="'Create Item'" [color]="'info'">
-        <nwb-icon [icon]="iconPlus" class="w-4 h-4"></nwb-icon>
+      <button class="btn btn-square btn-ghost absolute top-0 right-0 z-10" [cdkMenuTriggerFor]="menu">
+        <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>
       </button>
     </div>
   </div>
@@ -21,14 +21,19 @@
     [gearScoreOverride]="gearScore || vm.instance.gearScore"
     [perkOverride]="vm.instance.perks"
   >
-    <nwb-item-detail-header (click)="pickItem(vm)" class="cursor-pointer border border-transparent hover:border-primary" [cdkContextMenuTriggerFor]="menu">
-      <span
-        *ngIf="vm.canBreak"
-        class="header z-10 absolute top-0 right-0 p-1 bg-black bg-opacity-75 rounded-bl-xl screenshot-hidden"
-      >
-        <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
-      </span>
-    </nwb-item-detail-header>
+    <div class="relative">
+      <nwb-item-detail-header (click)="pickItem(vm)">
+        <span
+          *ngIf="vm.canBreak"
+          class="icon-overlay z-10 absolute top-[2px] right-[2px] p-1 bg-black bg-opacity-75 rounded-bl-xl screenshot-hidden"
+        >
+          <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
+        </span>
+      </nwb-item-detail-header>
+      <button class="btn btn-square btn-ghost absolute top-0 right-0 z-10" [cdkMenuTriggerFor]="menu">
+        <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>
+      </button>
+    </div>
     <ng-container *ngIf="vm.isRune && !compact">
       <nwb-item-detail-divider></nwb-item-detail-divider>
       <nwb-item-detail-description></nwb-item-detail-description>
@@ -77,18 +82,40 @@
 </ng-container>
 
 <ng-template #menu>
-  <ul class="menu menu-compact bg-base-100 rounded-md w-40" cdkMenu *ngIf="vm$ | async; let vm">
-    <li *ngIf="vm.canBreak">
-      <button (click)="breakLink()" cdkMenuItem>
-        <nwb-icon [icon]="iconLinkBreak" class="w-4 h-4"></nwb-icon>
-        Break link
+  <ul class="menu menu-compact bg-base-100 rounded-md" cdkMenu *ngIf="vm$ | async; let vm">
+    <li>
+      <button (click)="pickItem(vm)" cdkMenuItem>
+        <nwb-icon [icon]="iconPlus" class="w-4 h-4"></nwb-icon>
+        Create item
       </button>
     </li>
-    <li *ngIf="vm.canRemove">
-      <button (click)="remove()" cdkMenuItem>
-        <nwb-icon [icon]="iconRemove" class="w-4 h-4"></nwb-icon>
-        Remove item
+    <li>
+      <button (click)="linkItem(vm)" cdkMenuItem>
+        <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
+        Link from inventory
       </button>
     </li>
+
+    <ng-container *ngIf="vm.item">
+      <span class="divider my-0"></span>
+      <li *ngIf="vm.canRemove && !vm.canBreak">
+        <button (click)="instantiate()" cdkMenuItem>
+          <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
+          Make link
+        </button>
+      </li>
+      <li *ngIf="vm.canBreak">
+        <button (click)="breakLink()" cdkMenuItem>
+          <nwb-icon [icon]="iconLinkBreak" class="w-4 h-4"></nwb-icon>
+          Break link
+        </button>
+      </li>
+      <li *ngIf="vm.canRemove">
+        <button (click)="remove()" cdkMenuItem>
+          <nwb-icon [icon]="iconRemove" class="w-4 h-4"></nwb-icon>
+          Remove item
+        </button>
+      </li>
+    </ng-container>
   </ul>
 </ng-template>
