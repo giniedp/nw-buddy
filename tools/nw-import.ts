@@ -182,6 +182,16 @@ program
             }),
           ],
         },
+        {
+          file: /javelindata_attribute.*.json/,
+          rules: [
+            splitToArrayRule({
+              properties: ['EquipAbilities'],
+              separator: ',',
+            }),
+          ],
+        },
+
       ],
     })
 

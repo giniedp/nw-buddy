@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common'
-import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { Gamemodes, Vitals } from '@nw-data/types'
-import { combineLatest, defer, map, merge, ReplaySubject, switchMap } from 'rxjs'
-import { NwDamagetypeService, NwDbService, NwModule, NwService, NwVitalsService } from '~/nw'
+import { combineLatest, defer, map, ReplaySubject } from 'rxjs'
+import { NwDbService, NwModule, NwVitalsService, NwWeaponTypesService } from '~/nw'
 import { getVitalDamageEffectiveness } from '~/nw/utils'
 import { DestroyService } from '~/utils'
 
@@ -65,18 +65,18 @@ export class VitalDetailComponent {
     return combineLatest({
       vital: this.vital$,
       gems: this.db.viewGemPerksWithAffix,
-      dmgwpn: this.dmg.damageTypeToWeaponType,
-      damagetypes: this.dmg.damagetypes,
+      dmgwpn: this.wpn.byDamageType$,
+      dmgTypes: this.wpn.damagetypes,
     })
   }).pipe(
-    map(({ vital, gems, damagetypes, dmgwpn }) => {
-      return damagetypes
+    map(({ vital, gems, dmgTypes, dmgwpn }) => {
+      return dmgTypes
         .map((dmgType) => {
           return {
             Name: dmgType.DisplayName,
             Type: dmgType.TypeID,
             Category: dmgType.Category,
-            Icon: this.dmg.damageTypeIcon(dmgType),
+            Icon: this.wpn.damageTypeIcon(dmgType.TypeID),
             Value: getVitalDamageEffectiveness(vital, dmgType.TypeID as any),
             Perk: gems
               .filter(({ stat, perk }) => perk.Tier === 4 && stat.DamageType === dmgType.TypeID)
@@ -89,7 +89,7 @@ export class VitalDetailComponent {
     })
   )
 
-  public constructor(private db: NwDbService, private dmg: NwDamagetypeService, private vitals: NwVitalsService) {
+  public constructor(private db: NwDbService, private wpn: NwWeaponTypesService, private vitals: NwVitalsService) {
     //
   }
 }

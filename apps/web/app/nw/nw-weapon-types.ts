@@ -1,3 +1,5 @@
+import { CaseInsensitiveMap } from '~/utils'
+
 export interface NwWeaponType {
   WeaponTypeID: string
   WeaponTag: string
@@ -6,7 +8,7 @@ export interface NwWeaponType {
   Tree1Name: string
   Tree2Name: string
   GroupName: string
-  CategoryName: string,
+  CategoryName: string
   IconPath: string
   IconPathSmall: string
   DamageType: string
@@ -202,3 +204,33 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     IconPathSmall: 'assets/icons/weapons/voidgauntletsmall.png',
   },
 ]
+
+export const NW_DAMAGE_TYPE_ICONS = new CaseInsensitiveMap(
+  Object.entries({
+    Acid: '',
+    Arcane: 'assets/icons/tooltip/icon_tooltip_arcane_opaque.png',
+    Brimstone: '',
+    Corruption: 'assets/icons/tooltip/icon_tooltip_corruption_opaque.png',
+    Falling: 'assets/icons/tooltip/icon_tooltip_falling_opaque.png',
+    Fire: 'assets/icons/tooltip/icon_tooltip_fire_opaque.png',
+    Ice: 'assets/icons/tooltip/icon_tooltip_ice_opaque.png',
+    Lightning: 'assets/icons/tooltip/icon_tooltip_lightning_opaque.png',
+    Nature: 'assets/icons/tooltip/icon_tooltip_nature.png',
+    Siege: 'assets/icons/tooltip/icon_tooltip_siege_opaque.png',
+    Slash: 'assets/icons/tooltip/icon_tooltip_slash_opaque.png',
+    Standard: 'assets/icons/tooltip/icon_tooltip_standard_opaque.png',
+    Strike: 'assets/icons/tooltip/icon_tooltip_strike_opaque.png',
+    Thrust: 'assets/icons/tooltip/icon_tooltip_thrust_opaque.png',
+    unknown: 'assets/icons/tooltip/icon_unknown.png',
+  })
+)
+
+export const NW_WARD_TYPE_ICONS = new CaseInsensitiveMap(
+  Object.entries({
+    Ancient: 'assets/icons/families/ancientward1.png',
+    Corrupted: 'assets/icons/families/corruptedward1.png',
+    AngryEarth: 'assets/icons/families/angryearthward1.png',
+    Lost: 'assets/icons/families/lostward1.png',
+    Bestial: 'assets/icons/families/bestialward1.png',
+  })
+)

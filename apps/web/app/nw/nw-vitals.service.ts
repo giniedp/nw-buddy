@@ -32,18 +32,6 @@ const FAMILIES_ICONS = {
   default: 'assets/icons/families/marker_icondeathdoor.png',
 }
 
-export type VitalDamageType =
-  | 'Arcane'
-  | 'Corruption'
-  | 'Fire'
-  | 'Ice'
-  | 'Lightning'
-  | 'Nature'
-  | 'Siege'
-  | 'Slash'
-  | 'Standard'
-  | 'Strike'
-  | 'Thrust'
 @Injectable({ providedIn: 'root' })
 export class NwVitalsService {
   public index = defer(() => this.db.vitalsMap)

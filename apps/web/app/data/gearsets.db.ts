@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@angular/core'
 import { Dexie } from 'dexie'
-import { AttributeName } from '~/widgets/attributes-editor/attributes.store'
+import { AttributeRef } from '~/nw'
+
 import { APP_DB } from './db'
 import { DBTable } from './db-table'
 import { ItemInstance } from './item-instances.db'
@@ -31,7 +32,7 @@ export interface GearsetRecord {
   /**
    * Assigned attribute points
    */
-  attrs?: Record<AttributeName, number>
+  attrs?: Record<AttributeRef, number>
   /**
    * Weapon skill builds
    */

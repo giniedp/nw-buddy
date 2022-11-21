@@ -3,7 +3,6 @@ import { ComponentStore } from '@ngrx/component-store'
 import { Ability } from '@nw-data/types'
 import { combineLatest, defer, distinctUntilChanged, filter, of, Subject, switchMap, tap } from 'rxjs'
 import { NwDbService } from '~/nw/nw-db.service'
-import { AttributeName } from '~/widgets/attributes-editor'
 
 import { SkillBuildRecord, SkillBuildsDB } from './skill-builds.db'
 

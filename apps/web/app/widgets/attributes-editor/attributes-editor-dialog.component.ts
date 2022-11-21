@@ -1,14 +1,13 @@
 import { Dialog, DialogConfig, DialogRef, DIALOG_DATA } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy, Inject } from '@angular/core'
-import { NwModule } from '~/nw'
+import { AttributeRef, NwModule } from '~/nw'
 import { AttributesEditorComponent } from './attributes-editor.component'
-import { AttributeName } from './attributes.store'
 
 export interface AttributeEditorDialogData {
   level: number
-  base: Record<AttributeName, number>
-  assigned: Record<AttributeName, number>
+  base: Record<AttributeRef, number>
+  assigned: Record<AttributeRef, number>
 }
 
 @Component({
@@ -18,12 +17,12 @@ export interface AttributeEditorDialogData {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, AttributesEditorComponent],
   host: {
-    class: 'flex flex-col gap-3 layout-pad h-full bg-base-300 rounded-md',
+    class: 'flex flex-col h-full bg-base-100 rounded-md overflow-hidden',
   },
 })
 export class AttributeEditorDialogComponent {
   public static open(dialog: Dialog, config: DialogConfig<AttributeEditorDialogData>) {
-    return dialog.open<Record<AttributeName, number>, AttributeEditorDialogData, AttributeEditorDialogComponent>(
+    return dialog.open<Record<AttributeRef, number>, AttributeEditorDialogData, AttributeEditorDialogComponent>(
       AttributeEditorDialogComponent,
       {
         ...config,
@@ -31,17 +30,17 @@ export class AttributeEditorDialogComponent {
     )
   }
 
-  private result: Record<AttributeName, number>
+  private result: Record<AttributeRef, number>
 
   public constructor(
-    private dialog: DialogRef<Record<AttributeName, number>, AttributeEditorDialogData>,
+    private dialog: DialogRef<Record<AttributeRef, number>, AttributeEditorDialogData>,
     @Inject(DIALOG_DATA)
     protected data: AttributeEditorDialogData
   ) {
     //
   }
 
-  protected setResult(value: Record<AttributeName, number>) {
+  protected setResult(value: Record<AttributeRef, number>) {
     this.result = value
   }
 

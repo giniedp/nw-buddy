@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core'
-import { Statuseffect, Perks } from '@nw-data/types'
+import { Perks, Statuseffect } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { defer, exhaustAll, map, Observable, of, shareReplay } from 'rxjs'
-import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
-import { AsyncCellRenderer, SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
-import m from 'mithril'
+import { defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
+import { nwdbLinkUrl, NwService } from '~/nw'
+import { SelectboxFilter } from '~/ui/ag-grid'
+import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 
 @Injectable()

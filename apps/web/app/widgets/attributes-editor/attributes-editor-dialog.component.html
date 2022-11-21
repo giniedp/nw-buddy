@@ -1,10 +1,10 @@
-<div class="text-xl text-center">
+<div class="text-xl text-center bg-base-300 px-2 py-3">
   Attributes
 </div>
 
 <nwb-attributes-editor [level]="data.level" [base]="data.base" [assigned]="data.assigned" (assignedChanged)="setResult($event)" class="p-3"></nwb-attributes-editor>
 
-<div class="flex justify-end gap-1">
+<div class="flex justify-end gap-1 layout-pad">
   <div class="btn-group">
     <label class="btn btn-ghost" (click)="close()">Cancel</label>
   </div>

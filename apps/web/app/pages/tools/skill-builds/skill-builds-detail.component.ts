@@ -5,12 +5,12 @@ import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { asyncScheduler, combineLatest, map, subscribeOn, switchMap } from 'rxjs'
 import { SkillBuildRecord, SkillBuildsStore } from '~/data'
-import { NwModule } from '~/nw'
+import { AttributeRef, NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgBars, svgChevronLeft, svgEllipsis, svgEraser, svgRotate, svgSliders } from '~/ui/icons/svg'
+import { svgBars, svgChevronLeft, svgRotate, svgSliders } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { observeRouteParam } from '~/utils'
-import { AttributeName, AttributesEditorModule } from '~/widgets/attributes-editor'
+import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { SkillBuilderComponent, SkillBuildValue } from '~/widgets/skill-builder/skill-builder.component'
 
@@ -93,7 +93,7 @@ export class SkillBuildsDetailComponent {
     })
   }
 
-  protected updateAttributes(record: SkillBuildRecord, attrs: Record<AttributeName, number>) {
+  protected updateAttributes(record: SkillBuildRecord, attrs: Record<AttributeRef, number>) {
     this.store.updateRecord({
       record: {
         ...record,

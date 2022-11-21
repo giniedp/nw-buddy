@@ -240,6 +240,12 @@ export class NwDbService {
   public xpAmounts = this.data.xpamountsbylevel().pipe(shareReplay(1))
   public weaponMastery = this.data.weaponmastery().pipe(shareReplay(1))
 
+  public attrCon = this.data.attributeconstitution().pipe(shareReplay(1))
+  public attrStr = this.data.attributestrength().pipe(shareReplay(1))
+  public attrDex = this.data.attributedexterity().pipe(shareReplay(1))
+  public attrFoc = this.data.attributefocus().pipe(shareReplay(1))
+  public attrInt = this.data.attributeintelligence().pipe(shareReplay(1))
+
   public constructor(public readonly data: NwDataService) {
     //
   }

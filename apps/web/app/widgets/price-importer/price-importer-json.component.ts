@@ -5,15 +5,13 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/
 import { FormsModule } from '@angular/forms'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import m from 'mithril'
 import { BehaviorSubject, combineLatest, defer, map, of, switchMap, take, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { IconComponent, nwdbLinkUrl, NwDbService, NwModule, NwService } from '~/nw'
+import { nwdbLinkUrl, NwDbService, NwModule, NwService } from '~/nw'
 import { getItemIconPath, getItemId, getItemRarity } from '~/nw/utils'
 import { ItemPreferencesService } from '~/preferences'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
 import { TrackingCell } from '../adapter/components'
-import { ItemTrackerCell } from '../item-tracker'
 
 interface PriceItem {
   id: string

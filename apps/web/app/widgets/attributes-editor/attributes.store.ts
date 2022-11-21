@@ -1,44 +1,48 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { combineLatest, Observable, of, switchMap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { AttributeRef, NwDbService, NW_ATTRIBUTE_TYPES } from '~/nw'
 import { NW_MAX_CHARACTER_LEVEL } from '~/nw/utils/constants'
 
-export type AttributeName = 'str' | 'dex' | 'int' | 'foc' | 'con'
 export interface AttributesState {
   level: number
   points: number
-  base: Record<AttributeName, number>
-  assigned: Record<AttributeName, number>
+  base: Record<AttributeRef, number>
+  assigned: Record<AttributeRef, number>
 }
 
 export interface AttributeState {
-  name: AttributeName
+  ref: AttributeRef
+  name: string
+  description: string
   base: number
   assigned: number
   total: number
-  max: number
+  inputMin: number
+  inputMax: number
+  sliderEnd: number
 }
-
-export const ATTRIBUTE_IDS: AttributeName[] = ['str', 'dex', 'int', 'foc', 'con']
 
 @Injectable()
 export class AttributesStore extends ComponentStore<AttributesState> {
-  public static names = ATTRIBUTE_IDS
   public readonly level$ = this.select(({ level }) => level)
   public readonly pointsSpent$ = this.select(({ assigned }) => sum(Object.values(assigned)))
   public readonly assigned$ = this.select(({ assigned }) => assigned)
   public readonly pointsAvailable$ = this.select(({ points, assigned }) => points - sum(Object.values(assigned)))
-  public readonly stats$ = this.select(({ base, assigned }) => {
-    return ATTRIBUTE_IDS.map((key): AttributeState => {
-      const b = (base?.[key] || 0)
-      const s = assigned?.[key] || 0
+  public readonly stats$ = this.select(({ points, base, assigned }) => {
+    return NW_ATTRIBUTE_TYPES.map(({ ref, shortName, description }): AttributeState => {
+      const b = (base?.[ref] || 0)
+      const s = assigned?.[ref] || 0
       return {
-        name: key,
+        ref: ref,
+        name: shortName,
+        description: description,
         base: b,
         assigned: s,
         total: b + s,
-        max: 300,
+        inputMin: b,
+        inputMax: b + s + Math.max(0, points - sum(Object.values(assigned))),
+        sliderEnd: 300,
       }
     })
   })
@@ -58,8 +62,8 @@ export class AttributesStore extends ComponentStore<AttributesState> {
       data: {
         level: number
         points: number
-        base?: Record<AttributeName, number>
-        assigned?: Record<AttributeName, number>
+        base?: Record<AttributeRef, number>
+        assigned?: Record<AttributeRef, number>
       }
     ) => {
       return {
@@ -77,8 +81,8 @@ export class AttributesStore extends ComponentStore<AttributesState> {
       value$: Observable<{
         level: number
         points: number
-        base: Record<AttributeName, number>
-        assigned: Record<AttributeName, number>
+        base: Record<AttributeRef, number>
+        assigned: Record<AttributeRef, number>
       }>
     ) => {
       return combineLatest({
@@ -100,24 +104,37 @@ export class AttributesStore extends ComponentStore<AttributesState> {
 
   public readonly increment = this.updater((state, data: { attribute: string; value: number }) => {
     const left = state.points - sum(Object.values(state.assigned))
-    const base = state.assigned[data.attribute] || 0
+    const assigned = state.assigned[data.attribute] || 0
     return {
 
       ...state,
       assigned: {
         ...state.assigned,
-        [data.attribute]: Math.max(0, base + Math.min(left, data.value)),
+        [data.attribute]: Math.max(0, assigned + Math.min(left, data.value)),
       },
     }
   })
 
   public readonly decrement = this.updater((state, data: { attribute: string; value: number }) => {
-    const base = state.assigned[data.attribute] || 0
+    const assigned = state.assigned[data.attribute] || 0
     return {
       ...state,
       assigned: {
         ...state.assigned,
-        [data.attribute]: Math.max(0, base - data.value),
+        [data.attribute]: Math.max(0, assigned - data.value),
+      },
+    }
+  })
+
+  public readonly update = this.updater((state, data: { attribute: string; value: number }) => {
+    const base = state.base[data.attribute] || 0
+    const assigned = state.assigned[data.attribute] || 0
+    const left = state.points - sum(Object.values(state.assigned)) + assigned
+    return {
+      ...state,
+      assigned: {
+        ...state.assigned,
+        [data.attribute]: Math.max(0, Math.min(left, data.value - base)),
       },
     }
   })
@@ -135,7 +152,7 @@ function empty() {
 function sum(values: number[]) {
   let result = 0
   for (const value of values) {
-    result += value
+    result += (value || 0)
   }
   return result
 }

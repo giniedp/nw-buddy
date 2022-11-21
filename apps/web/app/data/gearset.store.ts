@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ComponentStore } from '@ngrx/component-store'
 import { filter, from, map, Observable, switchMap, tap } from 'rxjs'
-import { AttributeName } from '~/widgets/attributes-editor/attributes.store'
+import { AttributeRef } from '~/nw'
+
 import { GearsetCreateMode, GearsetRecord, GearsetsDB } from './gearsets.db'
 import { ImagesDB } from './images.db'
 import { ItemInstance } from './item-instances.db'
@@ -134,7 +135,7 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
   /**
    * Updates the assigned attributes
    */
-  public readonly updateAttrs = this.effect<{ attrs: Record<AttributeName, number> }>((value$) => {
+  public readonly updateAttrs = this.effect<{ attrs: Record<AttributeRef, number> }>((value$) => {
     return value$.pipe(
       switchMap(({ attrs }) => {
         const gearset = this.get().gearset

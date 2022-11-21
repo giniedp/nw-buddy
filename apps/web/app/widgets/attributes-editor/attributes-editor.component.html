@@ -1,45 +1,56 @@
-
 <div class="grid gap-1">
-  <ng-container *ngIf="!freeMode">
-    <span class="text-xl font-bold">Level</span>
-    <span class="text-xl font-bold text-center">{{ level }}</span>
-    <span></span>
-  </ng-container>
-  <span class="text-xl font-bold">Points</span>
-  <span class="text-xl font-bold text-center">{{ pointsAvailable$ | async }}</span>
+  <span class="font-bold">Points</span>
+  <span class="font-bold text-center">{{ pointsAvailable$ | async }}</span>
   <span></span>
   <ng-container *ngFor="let stat of stats$ | async; trackBy: trackById" class="flex flex-row">
-    <label class=" inline-flex items-center justify-center font-bold text-xl uppercase">{{ stat.name }}</label>
-    <div class="flex flex-row gap-1">
-      <button class="btn btn-ghost px-1" (click)="decrement(stat.name, 10)">
-        <nwb-icon [icon]="arrowsLeft" class="w-4 h-4"></nwb-icon>
-      </button>
-      <button class="btn btn-ghost px-1" (click)="decrement(stat.name, 1)">
-        <nwb-icon [icon]="arrowLeft" class="w-4 h-4"></nwb-icon>
-      </button>
-      <label class="w-12 px-1 inline-flex flex-col items-center justify-center font-bold">
-        <span class="text-xl">{{ stat.total }}</span>
-        <span class="text-xs text-accent" *ngIf="stat.assigned && !freeMode">
-          (+{{ stat.assigned }})
-        </span>
-      </label>
-      <button class="btn btn-ghost px-1" (click)="increment(stat.name, 1)">
-        <nwb-icon [icon]="arrowLeft" class="w-4 h-4 rotate-180"></nwb-icon>
-      </button>
-      <button class="btn btn-ghost px-1" (click)="increment(stat.name, 10)">
-        <nwb-icon [icon]="arrowsLeft" class="w-4 h-4 rotate-180"></nwb-icon>
-      </button>
+    <label class="inline-flex items-center justify-center font-bold uppercase">{{ stat.name | nwText }}</label>
+    <div class="flex flex-row gap-1 indicator">
+      <span class="indicator-item text-2xs pl-14 whitespace-nowrap" *ngIf="stat.assigned">
+        <span class="text-[#35B6EB] text-opacity-75">{{ stat.base }}</span>
+        +
+        <span class="text-[#F1CF72] text-opacity-75">{{ stat.assigned }}</span>
+      </span>
+      <input
+        type="number"
+        class="input input-bordered input-sm w-16 text-right"
+        [min]="stat.inputMin"
+        [max]="stat.inputMax"
+        [ngModel]="stat.total"
+        (ngModelChange)="attributeInput(stat, $event)"
+        (focus)="attributeFocus($event)"
+        (blur)="attributeBlur(stat, $event)"
+        (wheel)="($event)"
+      />
     </div>
     <div class="flex flex-row justify-between items-center relative">
-      <progress class="absolute left-0 progress progress-c1 w-full" [value]="stat.total" [max]="stat.max"></progress>
-      <progress class="absolute left-0 progress progress-c2 w-full" [value]="stat.base" [max]="stat.max"></progress>
+      <progress
+        class="absolute left-0 progress progress-c1 w-full"
+        [value]="stat.total"
+        [max]="stat.sliderEnd"
+      ></progress>
+      <progress
+        class="absolute left-0 progress progress-c2 w-full"
+        [value]="stat.base"
+        [max]="stat.sliderEnd"
+      ></progress>
       <span class="relative w-0 h-0"></span>
-      <span class="relative badge" [class.c1]="stat.base < 50 && stat.total >= 50" [class.c2]="stat.base >= 50" ></span>
-      <span class="relative badge" [class.c1]="stat.base < 100 && stat.total >= 100" [class.c2]="stat.base >= 100" ></span>
-      <span class="relative badge" [class.c1]="stat.base < 150 && stat.total >= 150" [class.c2]="stat.base >= 150" ></span>
-      <span class="relative badge" [class.c1]="stat.base < 200 && stat.total >= 200" [class.c2]="stat.base >= 200" ></span>
-      <span class="relative badge" [class.c1]="stat.base < 250 && stat.total >= 250" [class.c2]="stat.base >= 250" ></span>
-      <span class="relative badge" [class.c1]="stat.base < 300 && stat.total >= 300" [class.c2]="stat.base >= 300" ></span>
+      <ng-container *ngFor="let step of [50, 100, 150, 200, 250, 300]; trackBy: trackById">
+        <span
+          class="relative badge cursor-pointer"
+          [class.c1]="stat.base < step && stat.total >= step"
+          [class.c2]="stat.base >= step"
+          [tooltip]="tip"
+          (click)="attributeToggle(stat, step)"
+        >
+        </span>
+        <ng-template #tip>
+          <div *ngIf="getAbilities(stat, step) | async; let list" class="py-2 px-3">
+            <div *ngFor="let item of list" [class.text-success]="stat.total >= step">
+              <span [innerHTML]="item.Description | nwText | nwTextBreak"></span>
+            </div>
+          </div>
+        </ng-template>
+      </ng-container>
     </div>
   </ng-container>
 </div>

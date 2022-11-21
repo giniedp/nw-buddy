@@ -146,7 +146,7 @@ export interface Attributeconstitution {
     DefStrike:        number;
     DefThrust:        number;
     Encumbrance:      number;
-    EquipAbilities?:  string;
+    EquipAbilities?:  string[];
     EquipLoad:        number;
     Health:           number;
     HealthRate:       number;
@@ -176,7 +176,7 @@ export interface Attributedexterity {
     DefStrike:        number;
     DefThrust:        number;
     Encumbrance:      number;
-    EquipAbilities?:  string;
+    EquipAbilities?:  string[];
     EquipLoad:        number;
     Health:           number;
     HealthRate:       number;
@@ -208,7 +208,7 @@ export interface Attributefocus {
     DefStrike:        number;
     DefThrust:        number;
     Encumbrance:      number;
-    EquipAbilities?:  string;
+    EquipAbilities?:  string[];
     EquipLoad:        number;
     HealScaling:      number;
     Health:           number;
@@ -240,7 +240,7 @@ export interface Attributeintelligence {
     DefStrike:        number;
     DefThrust:        number;
     Encumbrance:      number;
-    EquipAbilities?:  string;
+    EquipAbilities?:  string[];
     EquipLoad:        number;
     Health:           number;
     HealthRate:       number;
@@ -270,7 +270,7 @@ export interface Attributestrength {
     DefStrike:        number;
     DefThrust:        number;
     Encumbrance:      number;
-    EquipAbilities?:  string;
+    EquipAbilities?:  string[];
     EquipLoad:        number;
     Health:           number;
     HealthRate:       number;

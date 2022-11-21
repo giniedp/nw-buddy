@@ -1,6 +1,6 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule, DecimalPipe, PercentPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, TemplateRef, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import {
   Ability,
   Affixstats,
@@ -8,15 +8,13 @@ import {
   ItemDefinitionMaster,
   ItemdefinitionsArmor,
   ItemdefinitionsWeapons,
-  Perks,
+  Perks
 } from '@nw-data/types'
-import { sortBy, sumBy } from 'lodash'
-import { combineLatest, defer, filter, firstValueFrom, map, Observable, of, shareReplay, switchMap } from 'rxjs'
-import { GearsetRecord, GearsetStore, ItemInstance, ItemInstancesDB } from '~/data'
-import { NwDamagetypeService, NwDbService, NwModule } from '~/nw'
+import { sumBy } from 'lodash'
+import { combineLatest, defer, filter, firstValueFrom, map, of, shareReplay, switchMap } from 'rxjs'
+import { GearsetStore, ItemInstance, ItemInstancesDB } from '~/data'
+import { AttributeRef, NwDbService, NwModule, NwWeaponTypesService, NW_ATTRIBUTE_TYPES } from '~/nw'
 import {
-  EquipSlotId,
-  EQUIP_SLOTS,
   getAffixABSs,
   getAffixDMGs,
   getAffixMODs,
@@ -28,14 +26,14 @@ import {
   getPerkMultiplier,
   stripAbilityProperties,
   stripAffixProperties,
-  totalGearScore,
+  totalGearScore
 } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
 import { ConfirmDialogComponent } from '~/ui/modal'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { shareReplayRefCount } from '~/utils'
-import { AttributeEditorDialogComponent, AttributeName, ATTRIBUTE_IDS } from '~/widgets/attributes-editor'
+import { AttributeEditorDialogComponent } from '~/widgets/attributes-editor'
 
 interface PerkInfo {
   perk: Perks
@@ -103,11 +101,11 @@ export class GearsetStatsComponent {
     base: this.attrsBase$,
     assigned: this.attrsAssigned$
   }).pipe(map(({ base, assigned }) => {
-    return ATTRIBUTE_IDS.map((key) => {
+    return NW_ATTRIBUTE_TYPES.map(({ ref }) => {
       return {
-        key: key,
-        base: base?.[key] || 0,
-        assigned: assigned?.[key] || 0,
+        key: ref,
+        base: base?.[ref] || 0,
+        assigned: assigned?.[ref] || 0,
       }
     })
   }))
@@ -117,7 +115,7 @@ export class GearsetStatsComponent {
 
   public constructor(
     private db: NwDbService,
-    private damage: NwDamagetypeService,
+    private wpn: NwWeaponTypesService,
     private store: GearsetStore,
     private itemsDb: ItemInstancesDB,
     private dialog: Dialog
@@ -126,7 +124,7 @@ export class GearsetStatsComponent {
   }
 
   protected damageIcon(type: string) {
-    return this.damage.wardTypeIcon(type) || this.damage.damageTypeIdIcon(type)
+    return this.wpn.wardTypeIcon(type) || this.wpn.damageTypeIcon(type)
   }
 
   protected getPerkMultiplier(info: PerkInfo) {
@@ -285,14 +283,14 @@ export class GearsetStatsComponent {
     return Object.values(stats)
   }
   private sumMods(infos: Array<PerkInfo>) {
-    const mapping: Record<string, AttributeName> = {
+    const mapping: Record<string, AttributeRef> = {
       MODConstitution: 'con',
       MODDexterity: 'dex',
       MODFocus: 'foc',
       MODIntelligence: 'int',
       MODStrength: 'str',
     }
-    const mods: Record<AttributeName, number> = {
+    const mods: Record<AttributeRef, number> = {
       con: 5,
       dex: 5,
       foc: 5,
@@ -317,8 +315,9 @@ export class GearsetStatsComponent {
     const assigned = await firstValueFrom(this.attrsAssigned$)
     console.log({ base, assigned })
     AttributeEditorDialogComponent.open(this.dialog, {
-      width: '100vw',
       maxWidth: 1200,
+      maxHeight: 400,
+      panelClass: ['w-full', 'h-full', 'layout-pad', 'self-end', 'sm:self-center', 'shadow'],
       data: {
         level: 60,
         assigned: assigned,

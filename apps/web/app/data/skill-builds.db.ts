@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core'
 import { Dexie } from 'dexie'
-import { AttributeName } from '~/widgets/attributes-editor'
+import { AttributeRef } from '~/nw'
 import { APP_DB } from './db'
 import { DBTable } from './db-table'
 
@@ -31,7 +31,7 @@ export interface SkillBuildRecord extends SkillBuild {
   /**
    * Assigned attribute points
    */
-  attrs?: Record<AttributeName, number>
+  attrs?: Record<AttributeRef, number>
 }
 
 export const DBT_SKILL_BUILDS = 'skillbuilds'

@@ -5,16 +5,16 @@ import {
   forwardRef,
   Input,
   OnChanges,
-  OnInit,
+  OnInit
 } from '@angular/core'
 import { GridOptions } from 'ag-grid-community'
 import { sortBy, uniqBy } from 'lodash'
-import m from 'mithril'
-import { BehaviorSubject, combineLatest, defer, map, Observable, of, startWith, switchMap, tap } from 'rxjs'
+import { BehaviorSubject, combineLatest, defer, map, Observable, of, startWith, switchMap } from 'rxjs'
 
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { TranslateService } from '~/i18n'
-import { IconComponent, nwdbLinkUrl, NwDbService, NwLootbucketService } from '~/nw'
+import { nwdbLinkUrl, NwDbService, NwLootbucketService } from '~/nw'
+import { LootContext } from '~/nw/nw-lootcontext'
 import {
   getItemIconPath,
   getItemId,
@@ -22,13 +22,12 @@ import {
   getItemRarityName,
   getItemTierAsRoman,
   LootTableEntry,
-  LootTableItem,
+  LootTableItem
 } from '~/nw/utils'
-import { shareReplayRefCount } from '~/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter } from '~/ui/data-table'
 import { QuicksearchService } from '~/ui/quicksearch'
-import { LootContext } from '~/nw/nw-lootcontext'
+import { shareReplayRefCount } from '~/utils'
 
 type Item = ItemDefinitionMaster | Housingitems
 @Component({
