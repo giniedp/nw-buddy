@@ -82,7 +82,7 @@
 </ng-container>
 
 <ng-template #menu>
-  <ul class="menu menu-compact bg-base-100 rounded-md" cdkMenu *ngIf="vm$ | async; let vm">
+  <ul class="menu menu-compact bg-base-100 rounded-md shadow" cdkMenu *ngIf="vm$ | async; let vm">
     <li>
       <button (click)="pickItem(vm)" cdkMenuItem>
         <nwb-icon [icon]="iconPlus" class="w-4 h-4"></nwb-icon>
