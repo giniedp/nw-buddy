@@ -6,9 +6,9 @@
     <label class="inline-flex items-center justify-center font-bold uppercase">{{ stat.name | nwText }}</label>
     <div class="flex flex-row gap-1 indicator">
       <span class="indicator-item text-2xs pl-14 whitespace-nowrap" *ngIf="stat.assigned">
-        <span class="text-[#35B6EB] text-opacity-75">{{ stat.base }}</span>
+        <span class="text-c2 text-opacity-75">{{ stat.base }}</span>
         +
-        <span class="text-[#F1CF72] text-opacity-75">{{ stat.assigned }}</span>
+        <span class="text-c1 text-opacity-75">{{ stat.assigned }}</span>
       </span>
       <input
         type="number"
