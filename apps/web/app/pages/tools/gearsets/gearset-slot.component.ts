@@ -25,7 +25,7 @@ import { deferStateFlat, shareReplayRefCount } from '~/utils'
 import { ItemDetailComponent } from '~/widgets/item-detail/item-detail.component'
 import { InventoryPickerService } from '../inventory/inventory-picker.service'
 import { ItemDefinitionMaster } from '@nw-data/types'
-import { svgEllipsisVertical, svgLink16p, svgLinkSlash16p, svgPlus, svgTrashCan } from '~/ui/icons/svg'
+import { svgEllipsisVertical, svgLink16p, svgLinkSlash16p, svgPlus, svgRotate, svgTrashCan } from '~/ui/icons/svg'
 import { IconsModule } from '~/ui/icons'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { TooltipModule } from '~/ui/tooltip'
@@ -37,6 +37,7 @@ export interface GearsetSlotVM {
   instance?: ItemInstance
   canRemove?: boolean
   canBreak?: boolean
+  isConsumable?: boolean
   isRune?: boolean
   item?: ItemDefinitionMaster
 }
@@ -92,12 +93,16 @@ export class GearsetSlotComponent {
   @Input()
   public compact: boolean
 
+  @Input()
+  public minimal: boolean
+
   @ViewChildren(ItemDetailComponent)
   protected itemDetail: QueryList<ItemDetailComponent>
   protected iconRemove = svgTrashCan
   protected iconLink = svgLink16p
   protected iconLinkBreak = svgLinkSlash16p
   protected iconPlus = svgPlus
+  protected iconChange = svgRotate
   protected iconMenu = svgEllipsisVertical
 
   protected vm$ = deferStateFlat<GearsetSlotVM>(() =>
@@ -106,6 +111,7 @@ export class GearsetSlotComponent {
       gearset: this.gearset$,
       instanceId: this.store.instanceId$,
       instance: this.store.instance$,
+      isConsumable: this.store.isConsumable$,
       canRemove: this.store.canRemove$,
       canBreak: this.store.canBreak$,
       item: this.store.item$,

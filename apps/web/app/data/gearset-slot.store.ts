@@ -23,6 +23,10 @@ export interface GearsetSlotState {
   slot: EquipSlot
 }
 
+function isConsumable(slot: EquipSlot) {
+  return slot?.itemType === 'Consumable'
+}
+
 @Injectable()
 export class GearsetSlotStore extends ComponentStore<GearsetSlotState> {
   public readonly item$ = this.select(({ item }) => item)
@@ -30,6 +34,7 @@ export class GearsetSlotStore extends ComponentStore<GearsetSlotState> {
   public readonly typeName$ = this.select(({ item }) => getItemTypeName(item))
   public readonly tierLabel$ = this.select(({ item }) => getItemTierAsRoman(item?.Tier))
   public readonly isNamed$ = this.select(({ item }) => isItemNamed(item))
+  public readonly isConsumable$ = this.select(({ slot }) => isConsumable(slot))
   public readonly instanceId$ = this.select(({ instanceId }) => instanceId)
   public readonly instance$ = this.select(({ instance }) => instance)
   public readonly rarity$ = this.select(({ item, instance }) => {

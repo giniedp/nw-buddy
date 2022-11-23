@@ -12,11 +12,17 @@
   .c2 {
     @apply bg-[#35B6EB];
   }
+  .c3 {
+    @apply bg-secondary;
+  }
   .text-c1 {
     @apply text-[#F1CF72];
   }
   .text-c2 {
     @apply text-[#35B6EB];
+  }
+  .text-c3 {
+    @apply text-secondary;
   }
   .tracker {
     @apply bg-zinc-800 h-2;

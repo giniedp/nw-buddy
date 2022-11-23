@@ -5,10 +5,14 @@
   <ng-container *ngFor="let stat of stats$ | async; trackBy: trackById" class="flex flex-row">
     <label class="inline-flex items-center justify-center font-bold uppercase">{{ stat.name | nwText }}</label>
     <div class="flex flex-row gap-1 indicator">
-      <span class="indicator-item text-2xs pl-14 whitespace-nowrap" *ngIf="stat.assigned">
+      <span class="indicator-item text-2xs pl-14 whitespace-nowrap" *ngIf="stat.assigned || stat.buffs">
         <span class="text-c2 text-opacity-75">{{ stat.base }}</span>
-        +
-        <span class="text-c1 text-opacity-75">{{ stat.assigned }}</span>
+        <ng-container *ngIf="stat.buffs">
+          + <span class="text-c3 text-opacity-75">{{ stat.buffs }}</span>
+        </ng-container>
+        <ng-container *ngIf="stat.assigned">
+          + <span class="text-c1 text-opacity-75">{{ stat.assigned }}</span>
+        </ng-container>
       </span>
       <input
         type="number"
@@ -25,6 +29,7 @@
     <div class="flex flex-row justify-between items-center relative">
       <div class="tracker absolute left-0 w-full flex flex-row overflow-hidden">
         <span class="flex-none c2 rounded-l-md" [style.width.%]="(stat.base / stat.sliderEnd) * 100"></span>
+        <span class="flex-none c3 rounded-r-md" [style.width.%]="(stat.buffs / stat.sliderEnd) * 100"></span>
         <span class="flex-none c1 rounded-r-md" [style.width.%]="(stat.assigned / stat.sliderEnd) * 100"></span>
       </div>
       <div class="flex-1 flex flex-row justify-between items-center relative mr-[-10px]">
@@ -32,8 +37,9 @@
           <div class="segment relative flex-1 h-5 cursor-pointer" (click)="attributeToggle(stat, step)">
             <span
               class="badge absolute right-0"
-              [class.c1]="stat.base < step && stat.total >= step"
               [class.c2]="stat.base >= step"
+              [class.c3]="stat.base < step && (stat.base + stat.buffs) >= step"
+              [class.c1]="(stat.base + stat.buffs) < step && stat.total >= step"
               [tooltip]="tip"
             >
             </span>

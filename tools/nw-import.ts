@@ -260,7 +260,11 @@ program
         'ui_ranged_weapons',
         'ui_magic_skills',
         'ui_available_points',
-        'ui_level'
+        'ui_level',
+        'ui_quickslot1',
+        'ui_quickslot2',
+        'ui_quickslot3',
+        'ui_quickslot4'
       ],
     }).then((files) => {
       checkExpressions({

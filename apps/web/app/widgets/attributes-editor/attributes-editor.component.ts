@@ -57,6 +57,14 @@ export class AttributesEditorComponent implements OnInit {
     return this.assigned$.value
   }
 
+  @Input()
+  public set buffs(value: Record<AttributeRef, number>) {
+    this.buffs$.next(value)
+  }
+  public get buffs() {
+    return this.buffs$.value
+  }
+
   @Output()
   public assignedChanged = this.store.assigned$.pipe(distinctUntilChanged((a, b) => isEqual(a, b)))
 
@@ -76,6 +84,13 @@ export class AttributesEditorComponent implements OnInit {
     str: 0,
   })
   private assigned$ = new BehaviorSubject<Record<AttributeRef, number>>({
+    con: 0,
+    dex: 0,
+    foc: 0,
+    int: 0,
+    str: 0,
+  })
+  private buffs$ = new BehaviorSubject<Record<AttributeRef, number>>({
     con: 0,
     dex: 0,
     foc: 0,
@@ -111,16 +126,9 @@ export class AttributesEditorComponent implements OnInit {
         })
       ),
       assigned: this.assigned$,
+      buffs: this.buffs$,
     })
     this.store.loadLazy(src)
-  }
-
-  protected increment(name: AttributeRef, step = 1) {
-    this.store.increment({ attribute: name, value: step })
-  }
-
-  protected decrement(name: AttributeRef, step = 1) {
-    this.store.decrement({ attribute: name, value: step })
   }
 
   protected updateAttribute(state: AttributeState, points: number) {

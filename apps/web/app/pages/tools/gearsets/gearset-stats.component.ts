@@ -7,11 +7,13 @@ import {
   Damagetypes,
   ItemDefinitionMaster,
   ItemdefinitionsArmor,
+  ItemdefinitionsConsumables,
   ItemdefinitionsWeapons,
-  Perks
+  Perks,
+  Statuseffect,
 } from '@nw-data/types'
 import { sumBy } from 'lodash'
-import { combineLatest, defer, filter, firstValueFrom, map, of, shareReplay, switchMap } from 'rxjs'
+import { combineLatest, defer, filter, firstValueFrom, map, of, shareReplay, switchMap, tap } from 'rxjs'
 import { GearsetStore, ItemInstance, ItemInstancesDB } from '~/data'
 import { NwDbService, NwModule, NwWeaponTypesService } from '~/nw'
 import { AttributeRef, NW_ATTRIBUTE_TYPES } from '~/nw/nw-attributes'
@@ -27,7 +29,7 @@ import {
   getPerkMultiplier,
   stripAbilityProperties,
   stripAffixProperties,
-  totalGearScore
+  totalGearScore,
 } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
@@ -61,7 +63,7 @@ export interface StatEntry {
   standalone: true,
   selector: 'nwb-gearset-stats',
   templateUrl: './gearset-stats.component.html',
-  styleUrls: ['./gearset-stats.component.scss'] ,
+  styleUrls: ['./gearset-stats.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, PropertyGridModule, DialogModule, IconsModule],
   providers: [PercentPipe, DecimalPipe],
@@ -96,22 +98,40 @@ export class GearsetStatsComponent {
       return this.sumDamages(perks, types)
     })
   )
+  protected consumables$ = defer(() => this.slots$).pipe(
+    map((it) => it.filter((e) => e.consumable).map((it) => it.consumable))
+  )
   protected attrsAssigned$ = this.store.gearsetAttrs$
   protected attrsBase$ = defer(() => this.perkInfos$).pipe(map((it) => this.sumMods(it)))
+  protected attrsBuff$ = defer(() =>
+    combineLatest({
+      consumables: this.consumables$,
+      effects: this.db.statusEffectsMap,
+    })
+  ).pipe(
+    map(({ consumables, effects }) => {
+      return this.sumModBuffs(consumables, effects)
+    })
+  )
+
   protected attrs$ = combineLatest({
     base: this.attrsBase$,
-    assigned: this.attrsAssigned$
-  }).pipe(map(({ base, assigned }) => {
-    return NW_ATTRIBUTE_TYPES.map(({ ref }) => {
-      return {
-        key: ref,
-        base: base?.[ref] || 0,
-        assigned: assigned?.[ref] || 0,
-      }
+    assigned: this.attrsAssigned$,
+    buffs: this.attrsBuff$,
+  }).pipe(
+    map(({ base, assigned, buffs }) => {
+      return NW_ATTRIBUTE_TYPES.map(({ ref }) => {
+        return {
+          key: ref,
+          base: base?.[ref] || 0,
+          buffs: buffs?.[ref] || 0,
+          assigned: assigned?.[ref] || 0,
+        }
+      })
     })
-  }))
+  )
   protected image$ = this.store.imageUrl$.pipe(shareReplay(1))
-  protected hasImage$ = this.image$.pipe(map((it) => !!it ))
+  protected hasImage$ = this.image$.pipe(map((it) => !!it))
   protected iconMenu = svgEllipsisVertical
 
   public constructor(
@@ -144,6 +164,7 @@ export class GearsetStatsComponent {
         return combineLatest(slots$)
       })
     )
+    //.pipe(tap(console.log))
   }
 
   private resolveSlotInstance(slot: string | ItemInstance) {
@@ -159,8 +180,9 @@ export class GearsetStatsComponent {
       perks: this.db.perksMap,
       armors: this.db.armorsMap,
       weapons: this.db.weaponsMap,
+      consumables: this.db.consumablesMap,
     }).pipe(
-      switchMap(({ items, perks, armors, weapons }) => {
+      switchMap(({ items, perks, armors, weapons, consumables }) => {
         const item = items.get(instance?.itemId)
         return this.resolveSlotPerks(instance, item, perks).pipe(
           map((perks) => {
@@ -171,6 +193,7 @@ export class GearsetStatsComponent {
               item: item,
               armor: armors.get(item?.ItemStatsRef),
               weapon: weapons.get(item?.ItemStatsRef),
+              consumable: consumables.get(item?.ItemID),
               perks: perks,
             }
           })
@@ -283,6 +306,23 @@ export class GearsetStatsComponent {
     }
     return Object.values(stats)
   }
+
+  private sumModBuffs(items: ItemdefinitionsConsumables[], effects: Map<string, Statuseffect>) {
+    const item = items
+      .map((it) => it.AddStatusEffects?.split('+').map((e) => effects.get(e)))
+      .flat(1)
+      .filter((it) => !!it)
+      .filter((it) => it.EffectCategories?.includes('Attributes'))?.[0]
+    const mods: Record<AttributeRef, number> = {
+      con: item?.MODConstitution || 0,
+      dex: item?.MODDexterity || 0,
+      foc: item?.MODFocus || 0,
+      int: item?.MODIntelligence || 0,
+      str: item?.MODStrength || 0,
+    }
+    return mods
+  }
+
   private sumMods(infos: Array<PerkInfo>) {
     const mapping: Record<string, AttributeRef> = {
       MODConstitution: 'con',
@@ -296,7 +336,7 @@ export class GearsetStatsComponent {
       dex: 5,
       foc: 5,
       int: 5,
-      str: 5
+      str: 5,
     }
     for (const perk of infos) {
       for (const mod of getAffixMODs(perk.affix, perk.scale)) {
@@ -314,7 +354,8 @@ export class GearsetStatsComponent {
   protected async editAttributes() {
     const base = await firstValueFrom(this.attrsBase$)
     const assigned = await firstValueFrom(this.attrsAssigned$)
-    console.log({ base, assigned })
+    const buffs = await firstValueFrom(this.attrsBuff$)
+    console.log({ base, assigned, buffs })
     AttributeEditorDialogComponent.open(this.dialog, {
       maxWidth: 800,
       maxHeight: 400,
@@ -322,10 +363,11 @@ export class GearsetStatsComponent {
       data: {
         level: 60,
         assigned: assigned,
-        base: base
-      }
-    }).closed
-      .pipe(filter((it) => !!it))
+        base: base,
+        buffs: buffs
+      },
+    })
+      .closed.pipe(filter((it) => !!it))
       .subscribe((res) => {
         this.store.updateAttrs({ attrs: res })
       })
@@ -333,7 +375,7 @@ export class GearsetStatsComponent {
 
   protected async uploadFile(e: Event) {
     const file = (e.target as HTMLInputElement)?.files?.[0]
-    if (file.size > 1024*1024) {
+    if (file.size > 1024 * 1024) {
       this.showFileTooLargeError()
       return
     }
@@ -349,8 +391,8 @@ export class GearsetStatsComponent {
         <a href="https://www.google.com/search?q=online+image+optimizer" target="_blank" tabindex="-1" class="link">image optimizer</a>
         `,
         html: true,
-        positive: 'OK'
-      }
+        positive: 'OK',
+      },
     })
   }
 }

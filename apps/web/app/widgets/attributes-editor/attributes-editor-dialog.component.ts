@@ -9,6 +9,7 @@ export interface AttributeEditorDialogData {
   level: number
   base: Record<AttributeRef, number>
   assigned: Record<AttributeRef, number>
+  buffs?: Record<AttributeRef, number>
 }
 
 @Component({

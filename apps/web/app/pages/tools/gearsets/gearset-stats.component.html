@@ -75,8 +75,16 @@
       <ng-container *ngFor="let row of attrs">
         <span class="w-16 text-right font-bold uppercase">{{ row.key }}</span>
         <span class="">
-          {{ row.base + row.assigned }}
-          <ng-container *ngIf="row.assigned">({{ row.base }} + {{ row.assigned }})</ng-container>
+          {{ row.base + row.assigned + row.buffs }}
+          <ng-container *ngIf="row.assigned || row.buffs">
+            (<span class="c1">{{ row.base }}</span>
+            <ng-container *ngIf="row.buffs">
+              + <span class="c3">{{ row.buffs }}</span></ng-container
+            >
+            <ng-container *ngIf="row.assigned">
+              + <span class="c2">{{ row.assigned }}</span></ng-container
+            >)
+          </ng-container>
         </span>
       </ng-container>
     </nwb-property-grid>

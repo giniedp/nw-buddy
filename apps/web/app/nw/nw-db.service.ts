@@ -100,6 +100,10 @@ export class NwDbService {
   public weaponsMap = index(() => this.weapons, 'WeaponID')
   public weapon = lookup(() => this.weaponsMap)
 
+  public consumables = list(() => [this.data.itemdefinitionsConsumables()])
+  public consumablesMap = index(() => this.consumables, 'ConsumableID')
+  public consumable = lookup(() => this.consumablesMap)
+
   public runes = list(() => [this.data.itemdefinitionsRunes()])
   public runesMap = index(() => this.runes, 'WeaponID')
   public rune = lookup(() => this.runesMap)

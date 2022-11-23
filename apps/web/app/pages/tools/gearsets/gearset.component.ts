@@ -60,7 +60,8 @@ export class GearsetComponent {
   protected name$ = this.store.gearsetName$
   protected isLoading$ = this.store.isLoading$
 
-  protected slots = EQUIP_SLOTS
+  protected slots = EQUIP_SLOTS.filter((it) => it.itemType !== 'Consumable')
+  protected consumableSlots = EQUIP_SLOTS.filter((it) => it.itemType === 'Consumable')
   protected compactMode = false
   protected iconCamera = svgCamera
   protected iconDelete = svgTrashCan

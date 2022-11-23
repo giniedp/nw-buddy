@@ -25,7 +25,17 @@
       <nwb-item-detail-header (click)="pickItem(vm)">
         <span
           *ngIf="vm.canBreak"
-          class="icon-overlay z-10 absolute top-[2px] right-[2px] p-1 bg-black bg-opacity-75 rounded-bl-xl screenshot-hidden"
+          class="
+            icon-overlay
+            z-10
+            absolute
+            top-[2px]
+            right-[2px]
+            p-1
+            bg-black bg-opacity-75
+            rounded-bl-xl
+            screenshot-hidden
+          "
         >
           <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
         </span>
@@ -34,50 +44,59 @@
         <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>
       </button>
     </div>
-    <ng-container *ngIf="vm.isRune && !compact">
-      <nwb-item-detail-divider></nwb-item-detail-divider>
+
+    <ng-container *ngIf="minimal && !compact">
       <nwb-item-detail-description></nwb-item-detail-description>
     </ng-container>
-    <nwb-item-detail-stats
-      [gearScoreEditable]="true"
-      (gearScoreEdit)="isGearScoreOpen = !isGearScoreOpen"
-      #stats="itemDetailStats"
-    ></nwb-item-detail-stats>
+    <ng-container *ngIf="!minimal">
 
-    <nwb-item-detail-divider></nwb-item-detail-divider>
-    <nwb-item-detail-perks (editPerk)="pickPerk(vm, $event.key)" [perkEditable]="true"></nwb-item-detail-perks>
-
-    <ng-container *ngIf="!compact">
-      <ng-container *ngIf="!vm.isRune">
+      <ng-container *ngIf="vm.isRune && !compact">
         <nwb-item-detail-divider></nwb-item-detail-divider>
         <nwb-item-detail-description></nwb-item-detail-description>
       </ng-container>
 
-      <nwb-item-detail-divider></nwb-item-detail-divider>
-      <nwb-item-detail-info></nwb-item-detail-info>
-    </ng-container>
+      <ng-container *ngIf="!vm.isConsumable">
+        <nwb-item-detail-stats
+          [gearScoreEditable]="!vm.isConsumable"
+          (gearScoreEdit)="isGearScoreOpen = !isGearScoreOpen"
+          #stats="itemDetailStats"
+        >
+          <ng-template
+            cdkConnectedOverlay
+            [cdkConnectedOverlayOrigin]="stats.gearScoreOverlayOrigin"
+            [cdkConnectedOverlayOpen]="isGearScoreOpen"
+            [cdkConnectedOverlayHasBackdrop]="true"
+            (backdropClick)="isGearScoreOpen = false"
+            (detach)="isGearScoreOpen = false"
+          >
+            <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
+              <input
+                type="range"
+                min="100"
+                max="625"
+                step="1"
+                [ngModel]="gearScore || vm.instance.gearScore"
+                (ngModelChange)="updateGearScore($event)"
+                (blur)="commitGearScore(vm)"
+                class="range range-sm range-primary"
+              />
+            </div>
+          </ng-template>
+        </nwb-item-detail-stats>
+        <nwb-item-detail-divider></nwb-item-detail-divider>
+        <nwb-item-detail-perks (editPerk)="pickPerk(vm, $event.key)" [perkEditable]="true"></nwb-item-detail-perks>
+      </ng-container>
 
-    <ng-template
-      cdkConnectedOverlay
-      [cdkConnectedOverlayOrigin]="stats.gearScoreOverlayOrigin"
-      [cdkConnectedOverlayOpen]="isGearScoreOpen"
-      [cdkConnectedOverlayHasBackdrop]="true"
-      (backdropClick)="isGearScoreOpen = false"
-      (detach)="isGearScoreOpen = false"
-    >
-      <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
-        <input
-          type="range"
-          min="100"
-          max="625"
-          step="1"
-          [ngModel]="gearScore || vm.instance.gearScore"
-          (ngModelChange)="updateGearScore($event)"
-          (blur)="commitGearScore(vm)"
-          class="range range-sm range-primary"
-        />
-      </div>
-    </ng-template>
+      <ng-container *ngIf="!compact">
+        <ng-container *ngIf="!vm.isRune">
+          <nwb-item-detail-divider></nwb-item-detail-divider>
+          <nwb-item-detail-description></nwb-item-detail-description>
+        </ng-container>
+
+        <nwb-item-detail-divider></nwb-item-detail-divider>
+        <nwb-item-detail-info></nwb-item-detail-info>
+      </ng-container>
+    </ng-container>
   </nwb-item-detail>
 </ng-container>
 
@@ -86,10 +105,10 @@
     <li>
       <button (click)="pickItem(vm)" cdkMenuItem>
         <nwb-icon [icon]="iconPlus" class="w-4 h-4"></nwb-icon>
-        Create item
+        Equip item
       </button>
     </li>
-    <li>
+    <li *ngIf="!vm.isConsumable">
       <button (click)="linkItem(vm)" cdkMenuItem>
         <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
         Link from inventory
@@ -98,7 +117,7 @@
 
     <ng-container *ngIf="vm.item">
       <span class="divider my-0"></span>
-      <li *ngIf="vm.canRemove && !vm.canBreak">
+      <li *ngIf="vm.canRemove && !vm.canBreak && !vm.isConsumable">
         <button (click)="instantiate()" cdkMenuItem>
           <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
           Make link
