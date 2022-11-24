@@ -3,27 +3,6 @@
     display: grid;
     grid-template-columns: max-content max-content 1fr;
   }
-  .badge {
-    @apply bg-zinc-800;
-  }
-  .c1 {
-    @apply bg-[#F1CF72];
-  }
-  .c2 {
-    @apply bg-[#35B6EB];
-  }
-  .c3 {
-    @apply bg-secondary;
-  }
-  .text-c1 {
-    @apply text-[#F1CF72];
-  }
-  .text-c2 {
-    @apply text-[#35B6EB];
-  }
-  .text-c3 {
-    @apply text-secondary;
-  }
   .tracker {
     @apply bg-zinc-800 h-2;
     top: calc(50% - 4px);

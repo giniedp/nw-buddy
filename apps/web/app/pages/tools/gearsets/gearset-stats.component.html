@@ -77,12 +77,12 @@
         <span class="">
           {{ row.base + row.assigned + row.buffs }}
           <ng-container *ngIf="row.assigned || row.buffs">
-            (<span class="c1">{{ row.base }}</span>
+            (<span class="text-attr-base">{{ row.base }}</span>
             <ng-container *ngIf="row.buffs">
-              + <span class="c3">{{ row.buffs }}</span></ng-container
+              + <span class="text-attr-buff">{{ row.buffs }}</span></ng-container
             >
             <ng-container *ngIf="row.assigned">
-              + <span class="c2">{{ row.assigned }}</span></ng-container
+              + <span class="text-attr-assign">{{ row.assigned }}</span></ng-container
             >)
           </ng-container>
         </span>
