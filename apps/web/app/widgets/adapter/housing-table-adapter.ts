@@ -5,7 +5,14 @@ import m from 'mithril'
 import { defer, map, Observable, of, shareReplay } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwService } from '~/nw'
-import { getItemIconPath, getItemId, getItemRarity, getItemTierAsRoman } from '~/nw/utils'
+import {
+  getItemIconPath,
+  getItemId,
+  getItemRarity,
+  getItemRarityName,
+  getItemTierAsRoman,
+  getUIHousingCategory
+} from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { humanize } from '~/utils'
@@ -67,10 +74,11 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
         this.colDef({
           colId: 'rarity',
           headerValueGetter: () => 'Rarity',
-          width: 100,
-          headerName: 'Rarity',
-          field: this.fieldName('ItemRarity'),
+          valueGetter: ({ data }) => String(getItemRarity(data)),
+          valueFormatter: ({ value }) => this.i18n.get(getItemRarityName(value)),
           filter: SelectboxFilter,
+          width: 130,
+          getQuickFilterText: ({ value }) => value,
         }),
         this.colDef({
           colId: 'tier',
@@ -134,7 +142,8 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
         this.colDef({
           colId: 'uiHousingCategory',
           headerValueGetter: () => 'Housing Category',
-          field: this.fieldName('UIHousingCategory'),
+          valueGetter: ({ data }) => String(getUIHousingCategory(data)),
+          valueFormatter: ({ data }) => this.i18n.get(getUIHousingCategory(data)),
           filter: SelectboxFilter,
           width: 150,
         }),

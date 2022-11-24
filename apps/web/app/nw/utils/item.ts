@@ -8,6 +8,27 @@ import {
   Perks,
 } from '@nw-data/types'
 import { NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE } from './constants'
+import {empty} from "rxjs";
+
+const singular = [
+  'Armor',
+  'Currency'
+]
+
+ const plural = [
+   'Blueprint',
+   'Consumable',
+   'Weapon',
+   'Dye'
+ ]
+
+const lore = [
+   'Lore'
+ ]
+
+ const inv_ =[
+   'Resource'
+ ]
 
 export function isMasterItem(item: ItemDefinitionMaster | Housingitems): item is ItemDefinitionMaster {
   return item && 'ItemID' in item
@@ -134,7 +155,19 @@ export function getItemGearScoreLabel(item: ItemDefinitionMaster) {
   return String(item.MaxGearScore || item.MinGearScore || '')
 }
 export function getItemType(item: ItemDefinitionMaster | Housingitems) {
-  return item?.ItemType
+ if (singular.includes(item.ItemType)) {
+    return 'ui_' + item.ItemType
+ }
+ if (plural.includes(item.ItemType)) {
+   return 'ui_' + item.ItemType + 's'
+ }
+ if (lore.includes(item.ItemType)) {
+   return 'inv_' + item.ItemType + 'Items'
+ }
+  if (inv_.includes(item.ItemType)) {
+    return 'inv_' + item.ItemType + 's'
+   }
+  return 'inv_' + item.ItemType
 }
 
 export function getItemTypeName(item: ItemDefinitionMaster | Housingitems) {
@@ -235,4 +268,30 @@ export function getWeightLabel(weight: number) {
     label = 'heavy'
   }
   return label
+}
+
+export function getTradingGroup(item: ItemDefinitionMaster | Housingitems) {
+
+  if (item.TradingGroup == null){
+    return null
+  }
+  return  item.TradingGroup + '_GroupName'
+}
+
+export function getTradingFamily(item: ItemDefinitionMaster | Housingitems) {
+  if (item.TradingFamily == null){
+    return null
+  }
+  return 'CategoryData_' + item.TradingFamily
+}
+export function getTradingCategory(item: ItemDefinitionMaster | Housingitems) {
+  if (item.TradingCategory == null){
+    return null
+  }
+  return 'CategoryData_' + item.TradingCategory
+}
+
+export function getUIHousingCategory(item: Housingitems ){
+    return "ui_" + item.UIHousingCategory
+
 }

@@ -39,6 +39,57 @@ const CRAFTING_CATEGORY_GRANTING_BONUS = [
   'RefinedResources'
 ]
 
+const NotCategorizedItems = [
+  'TimelessShardsCon',
+  'TimelessShardsDex',
+  'TimelessShardsFoc',
+  'TimelessShardsInt',
+  'TimelessShardsStr',
+  'Salvage',
+  'SalvageCreate',
+  'SalvageResearch',
+  'SalvageExtract',
+  'Pattern',
+  'PatternRecipes',
+  'AttributeCon',
+  'AttributeDex',
+  'AttributeFoc',
+  'AttributeInt',
+  'AttributeStr'
+]
+
+const CategoryData = [
+  'Dyes',
+  'Bags',
+  'Charcoal',
+  'Alkahest',
+  'LargeFurnishings',
+  'SmallFurnishings',
+  'MeleeWeapons',
+  'RangedWeapons',
+  'Trophies',
+  'Potion'
+]
+
+const CategoryName = [
+  'Metal',
+  'MetalPrecious',
+  'Leather',
+  'Cloth'
+]
+
+const inventory = [
+  'Tools'
+]
+
+const CorruptedRefinement = [
+  'CorruptedRefining'
+]
+
+const KeyParts = [
+  'Keys'
+]
+
 export function sumIngredientQuantities(recipe: CraftingIngredients) {
   return Object.keys(recipe)
     .filter((it) => it.match(/^Qty\d+$/))
@@ -125,4 +176,45 @@ export function calculateBonusItemChance({
   // })
 
   return Math.max(0, result)
+}
+export function getTradeskill(item: Crafting ){
+  return 'ui_' + item.Tradeskill
+}
+
+export function getCraftingCategory(item: Crafting ){
+
+  if (NotCategorizedItems.includes(item.CraftingCategory)) {
+    return item.CraftingCategory
+  }
+  if (CategoryData.includes(item.CraftingCategory)) {
+    return 'CategoryData_' + item.CraftingCategory
+  }
+  if (inventory.includes(item.CraftingCategory)) {
+    return 'inv_' + item.CraftingCategory
+  }
+  if (CorruptedRefinement.includes(item.CraftingCategory)) {
+    return 'CorruptedRefinement_GroupName'
+  }
+  if (KeyParts.includes(item.CraftingCategory)) {
+    return 'KeyParts_GroupName'
+  }
+  else {
+    return item.CraftingCategory + '_groupname'
+  }
+}
+export function getCraftingGroup(item: Crafting ) {
+
+  if (NotCategorizedItems.includes(item.CraftingGroup)) {
+    return item.CraftingGroup
+  }
+
+  if (CategoryData.includes(item.CraftingGroup)) {
+    return 'CategoryData_' + item.CraftingGroup
+  }
+
+  if (CategoryName.includes(item.CraftingGroup)) {
+    return item.CraftingGroup + '_CategoryName'
+  }
+
+  return item.CraftingGroup  + '_groupname'
 }

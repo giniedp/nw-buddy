@@ -5,7 +5,15 @@ import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwService } from '~/nw'
-import { getIngretientsFromRecipe, getItemIconPath, getItemId, getItemIdFromRecipe, getItemRarity } from '~/nw/utils'
+import {
+  getCraftingCategory,
+  getCraftingGroup,
+  getIngretientsFromRecipe,
+  getItemIconPath,
+  getItemId,
+  getItemIdFromRecipe,
+  getItemRarity, getTradeskill
+} from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
@@ -158,15 +166,17 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           colId: 'tradeskill',
           headerValueGetter: () => 'Tradeskill',
           width: 120,
-          field: this.fieldName('Tradeskill'),
+          valueGetter: ({ data }) => String(getTradeskill(data)),
+          valueFormatter: ({ data }) => this.i18n.get(getTradeskill(data)),
+          //field: this.fieldName('Tradeskill'),
           filter: SelectboxFilter,
         }),
         this.colDef({
           colId: 'craftingCategory',
           headerValueGetter: () => 'Crafting Category',
           width: 150,
-          field: this.fieldName('CraftingCategory'),
-          valueFormatter: ({ value }) => humanize(value),
+          valueGetter: ({ data }) => String(getCraftingCategory(data)),
+          valueFormatter: ({ data }) => this.i18n.get(getCraftingCategory(data)),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
             showSearch: true,
@@ -176,9 +186,9 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           colId: 'craftingGroup',
           headerValueGetter: () => 'Crafting Group',
           width: 150,
-          field: this.fieldName('CraftingGroup'),
+          valueGetter: ({ data }) => String(getCraftingGroup(data)),
+          valueFormatter: ({ data }) => this.i18n.get(getCraftingGroup(data)),
           filter: SelectboxFilter,
-          valueFormatter: ({ value }) => humanize(value),
           filterParams: SelectboxFilter.params({
             showSearch: true,
           }),
