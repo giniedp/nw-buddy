@@ -33,6 +33,39 @@ export function hasItemIngredientCategory(item: ItemDefinitionMaster, categoryId
   return item.IngredientCategories?.some((it) => it.toLocaleLowerCase() === String(categoryId).toLocaleLowerCase())
 }
 
+const ITEM_TYPE_LABELS = {
+  Resource: 'ui_itemtypedescription_resource',
+  Consumable: 'ui_itemtypedescription_consumable',
+  Weapon: 'ui_itemtypedescription_weapon',
+  Ammo: 'ui_itemtypedescription_ammo',
+  Armor: 'ui_armor',
+  Dye: 'ui_itemtypedescription_dye',
+  Blueprint: 'ui_blueprints',
+  Currency: 'ui_currency_type',
+  // lore
+  // throwableitem
+}
+export function getItemTypeLabel(tag: string) {
+  return ITEM_TYPE_LABELS[tag]
+}
+
+const HOUSING_CATEGORY_LABELS = {
+  Chairs: 'ui_chairs',
+  Lighting: 'ui_lighting',
+  Pets: 'ui_pets',
+  Misc: 'ui_misc',
+  Decorations: 'ui_decorations',
+  Vegetation: 'ui_vegetation',
+  Beds: 'ui_beds',
+  Tables: 'ui_tables',
+  Shelves: 'ui_shelves',
+  Trophies: 'ui_trophies',
+}
+export function getHousingCategoryLabel(tag: string) {
+  return HOUSING_CATEGORY_LABELS[tag]
+}
+
+
 export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPerkIds?: string[]) {
   if (!item) {
     return 0

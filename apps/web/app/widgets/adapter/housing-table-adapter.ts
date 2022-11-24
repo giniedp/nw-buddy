@@ -5,9 +5,9 @@ import m from 'mithril'
 import { defer, map, Observable, of, shareReplay } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwService } from '~/nw'
-import { getItemIconPath, getItemId, getItemRarity, getItemTierAsRoman } from '~/nw/utils'
+import { getHousingCategoryLabel, getItemIconPath, getItemId, getItemRarity, getItemTierAsRoman } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
+import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize } from '~/utils'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
@@ -24,8 +24,15 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
     return item.HouseItemID
   }
 
-  public entityCategory(item: Housingitems): string {
-    return item.UIHousingCategory
+  public entityCategory(item: Housingitems): DataTableCategory {
+    if (!item.UIHousingCategory) {
+      return null
+    }
+    return {
+      value: item.UIHousingCategory,
+      label: this.i18n.get(getHousingCategoryLabel(item.UIHousingCategory)) || item.UIHousingCategory,
+      icon: ''
+    }
   }
 
   public options = defer(() =>
@@ -135,8 +142,10 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
           colId: 'uiHousingCategory',
           headerValueGetter: () => 'Housing Category',
           field: this.fieldName('UIHousingCategory'),
+          valueFormatter: ({ value }) => this.i18n.get(getHousingCategoryLabel(value)),
           filter: SelectboxFilter,
           width: 150,
+          getQuickFilterText: ({ value }) => this.i18n.get(getHousingCategoryLabel(value)),
         }),
         this.colDef({
           colId: 'howToObtain',

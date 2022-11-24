@@ -4,9 +4,9 @@ import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwService } from '~/nw'
-import { getItemIconPath, getItemId, getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman } from '~/nw/utils'
+import { getItemIconPath, getItemId, getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman, getItemTypeLabel } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter, DataTableAdapterOptions, dataTableProvider } from '~/ui/data-table'
+import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
@@ -34,8 +34,15 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
     return item.ItemID
   }
 
-  public entityCategory(item: ItemsTableItem): string {
-    return item.ItemType
+  public entityCategory(item: ItemsTableItem): DataTableCategory {
+    if (!item.ItemType) {
+      return null
+    }
+    return {
+      value: item.ItemType,
+      label: this.i18n.get(getItemTypeLabel(item.ItemType)) || item.ItemType,
+      icon: ''
+    }
   }
 
   public override get persistStateId(): string {
@@ -246,9 +253,10 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           colId: 'itemType',
           headerValueGetter: () => 'Item Type',
           field: this.fieldName('ItemType'),
+          valueFormatter: ({ value }) => this.i18n.get(getItemTypeLabel(value) || value),
           width: 125,
           filter: SelectboxFilter,
-          getQuickFilterText: ({ value }) => value,
+          getQuickFilterText: ({ value }) => this.i18n.get(getItemTypeLabel(value) || value),
         }),
         this.colDef({
           colId: 'itemClass',
