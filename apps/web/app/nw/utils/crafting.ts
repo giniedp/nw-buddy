@@ -169,28 +169,6 @@ export function getTradeskill(item: Crafting ){
   return 'ui_' + item.Tradeskill
 }
 
-// export function getCraftingCategory(item: Crafting ){
-//
-//   if (NotCategorizedItems.includes(item.CraftingCategory)) {
-//     return item.CraftingCategory
-//   }
-//   if (CategoryData.includes(item.CraftingCategory)) {
-//     return 'CategoryData_' + item.CraftingCategory
-//   }
-//   if (inventory.includes(item.CraftingCategory)) {
-//     return 'inv_' + item.CraftingCategory
-//   }
-//   if (CorruptedRefinement.includes(item.CraftingCategory)) {
-//     return 'CorruptedRefinement_GroupName'
-//   }
-//   if (KeyParts.includes(item.CraftingCategory)) {
-//     return 'KeyParts_GroupName'
-//   }
-//   else {
-//     return item.CraftingCategory + '_groupname'
-//   }
-// }
-
 export function getCraftingCategoryName(item: Crafting) {
   if (!item?.CraftingCategory) {
     return null
