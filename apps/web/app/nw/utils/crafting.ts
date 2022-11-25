@@ -26,6 +26,44 @@ export type CraftingIngredients = Pick<
   | 'Type7'
 >
 
+const NW_CRAFTING_GROUP_NAMES= {
+
+  Alkahest:'CategoryData_Alkahest',
+  LargeFurnishings:'CategoryData_LargeFurnishings',
+  SmallFurnishings:'CategoryData_SmallFurnishings',
+  MeleeWeapons:'CategoryData_MeleeWeapons',
+  RangedWeapons:'CategoryData_RangedWeapons',
+  Trophies:'CategoryData_Trophies',
+  Potion:'CategoryData_Potion',
+  Metal:'Metal_CategoryName',
+  MetalPrecious:'MetalPrecious_CategoryName',
+  AttributeDex: 'AttributeDex',
+  AttributeCon: 'AttributeCon',
+  AttributeFoc: 'AttributeFoc',
+  AttributeInt: 'AttributeInt',
+  AttributeStr: 'AttributeStr',
+  SalvageCreate:'SalvageCreate',
+  SalvageResearch:'SalvageResearch',
+  SalvageExtract: 'SalvageExtract',
+  PatternRecipes: 'PatternRecipes',
+  Keys: 'KeyParts_groupname',
+
+}
+const NW_CRAFTING_CATEGORY_NAMES= {
+  TimelessShardsCon: 'TimelessShardsCon',
+  TimelessShardsDex: 'TimelessShardsDex',
+  TimelessShardsFoc: 'TimelessShardsFoc',
+  TimelessShardsInt: 'TimelessShardsInt',
+  TimelessShardsStr: 'TimelessShardsStr',
+  Salvage: 'Salvage',
+  SalvageCreate: 'SalvageCreate',
+  Pattern: 'Pattern',
+  Keys: 'KeyParts_groupname',
+  CorruptedRefining:'CorruptedRefinement_GroupName',
+  Bags: 'CategoryData_Bags',
+  Tools:'inv_tools',
+  Dyes: 'CategoryData_Dyes'
+}
 const CRAFTING_CATEGORY_GRANTING_BONUS = [
   'ArcanaRefining',
   'BasicCooking',
@@ -37,57 +75,7 @@ const CRAFTING_CATEGORY_GRANTING_BONUS = [
   'Foods',
   'FuseGems',
   'RefinedResources'
-]
 
-const NotCategorizedItems = [
-  'TimelessShardsCon',
-  'TimelessShardsDex',
-  'TimelessShardsFoc',
-  'TimelessShardsInt',
-  'TimelessShardsStr',
-  'Salvage',
-  'SalvageCreate',
-  'SalvageResearch',
-  'SalvageExtract',
-  'Pattern',
-  'PatternRecipes',
-  'AttributeCon',
-  'AttributeDex',
-  'AttributeFoc',
-  'AttributeInt',
-  'AttributeStr'
-]
-
-const CategoryData = [
-  'Dyes',
-  'Bags',
-  'Charcoal',
-  'Alkahest',
-  'LargeFurnishings',
-  'SmallFurnishings',
-  'MeleeWeapons',
-  'RangedWeapons',
-  'Trophies',
-  'Potion'
-]
-
-const CategoryName = [
-  'Metal',
-  'MetalPrecious',
-  'Leather',
-  'Cloth'
-]
-
-const inventory = [
-  'Tools'
-]
-
-const CorruptedRefinement = [
-  'CorruptedRefining'
-]
-
-const KeyParts = [
-  'Keys'
 ]
 
 export function sumIngredientQuantities(recipe: CraftingIngredients) {
@@ -181,40 +169,38 @@ export function getTradeskill(item: Crafting ){
   return 'ui_' + item.Tradeskill
 }
 
-export function getCraftingCategory(item: Crafting ){
+// export function getCraftingCategory(item: Crafting ){
+//
+//   if (NotCategorizedItems.includes(item.CraftingCategory)) {
+//     return item.CraftingCategory
+//   }
+//   if (CategoryData.includes(item.CraftingCategory)) {
+//     return 'CategoryData_' + item.CraftingCategory
+//   }
+//   if (inventory.includes(item.CraftingCategory)) {
+//     return 'inv_' + item.CraftingCategory
+//   }
+//   if (CorruptedRefinement.includes(item.CraftingCategory)) {
+//     return 'CorruptedRefinement_GroupName'
+//   }
+//   if (KeyParts.includes(item.CraftingCategory)) {
+//     return 'KeyParts_GroupName'
+//   }
+//   else {
+//     return item.CraftingCategory + '_groupname'
+//   }
+// }
 
-  if (NotCategorizedItems.includes(item.CraftingCategory)) {
-    return item.CraftingCategory
+export function getCraftingCategoryName(item: Crafting) {
+  if (!item?.CraftingCategory) {
+    return null
   }
-  if (CategoryData.includes(item.CraftingCategory)) {
-    return 'CategoryData_' + item.CraftingCategory
-  }
-  if (inventory.includes(item.CraftingCategory)) {
-    return 'inv_' + item.CraftingCategory
-  }
-  if (CorruptedRefinement.includes(item.CraftingCategory)) {
-    return 'CorruptedRefinement_GroupName'
-  }
-  if (KeyParts.includes(item.CraftingCategory)) {
-    return 'KeyParts_GroupName'
-  }
-  else {
-    return item.CraftingCategory + '_groupname'
-  }
+  return NW_CRAFTING_CATEGORY_NAMES[item.CraftingCategory] || item.CraftingCategory  + '_groupname'
 }
-export function getCraftingGroup(item: Crafting ) {
 
-  if (NotCategorizedItems.includes(item.CraftingGroup)) {
-    return item.CraftingGroup
+export function getCraftingGroupName(item: Crafting) {
+  if (!item?.CraftingGroup) {
+    return null
   }
-
-  if (CategoryData.includes(item.CraftingGroup)) {
-    return 'CategoryData_' + item.CraftingGroup
-  }
-
-  if (CategoryName.includes(item.CraftingGroup)) {
-    return item.CraftingGroup + '_CategoryName'
-  }
-
-  return item.CraftingGroup  + '_groupname'
+  return NW_CRAFTING_GROUP_NAMES[item.CraftingGroup] || item.CraftingGroup  + '_groupname'
 }

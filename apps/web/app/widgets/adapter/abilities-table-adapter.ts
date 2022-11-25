@@ -7,6 +7,7 @@ import { nwdbLinkUrl, NwDbService, NwExpressionService } from '~/nw'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { shareReplayRefCount } from '~/utils'
+import {getWeapontagName} from "~/nw/utils";
 
 @Injectable()
 export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
@@ -90,7 +91,7 @@ export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
         this.colDef({
           colId: 'weaponTag',
           headerValueGetter: () => 'Weapon Tag',
-          field: this.fieldName('WeaponTag'),
+          valueGetter: ({ data }) => this.i18n.get(getWeapontagName(data)),
           filter: SelectboxFilter,
         }),
         this.colDef({

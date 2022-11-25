@@ -6,13 +6,14 @@ import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwService } from '~/nw'
 import {
-  getCraftingCategory,
-  getCraftingGroup,
+  getCraftingCategoryName,
+  getCraftingGroupName,
   getIngretientsFromRecipe,
   getItemIconPath,
   getItemId,
   getItemIdFromRecipe,
-  getItemRarity, getTradeskill
+  getItemRarity,
+  getTradeskill
 } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
@@ -166,17 +167,14 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           colId: 'tradeskill',
           headerValueGetter: () => 'Tradeskill',
           width: 120,
-          valueGetter: ({ data }) => String(getTradeskill(data)),
-          valueFormatter: ({ data }) => this.i18n.get(getTradeskill(data)),
-          //field: this.fieldName('Tradeskill'),
+          valueGetter: ({ data }) => this.i18n.get(getTradeskill(data)),
           filter: SelectboxFilter,
         }),
         this.colDef({
           colId: 'craftingCategory',
           headerValueGetter: () => 'Crafting Category',
           width: 150,
-          valueGetter: ({ data }) => String(getCraftingCategory(data)),
-          valueFormatter: ({ data }) => this.i18n.get(getCraftingCategory(data)),
+          valueGetter: ({ data }) => this.i18n.get(getCraftingCategoryName(data)),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
             showSearch: true,
@@ -186,8 +184,7 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           colId: 'craftingGroup',
           headerValueGetter: () => 'Crafting Group',
           width: 150,
-          valueGetter: ({ data }) => String(getCraftingGroup(data)),
-          valueFormatter: ({ data }) => this.i18n.get(getCraftingGroup(data)),
+          valueGetter: ({ data }) => this.i18n.get(getCraftingGroupName(data)),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
             showSearch: true,

@@ -254,8 +254,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
         this.colDef({
           colId: 'itemType',
           headerValueGetter: () => 'Item Type',
-          valueGetter: ({ data }) => String(getItemType(data)),
-          valueFormatter: ({ data }) => this.i18n.get(getItemType(data)),
+          valueGetter: ({ data }) => this.i18n.get(getItemType(data)),
           width: 125,
           filter: SelectboxFilter,
           getQuickFilterText: ({ value }) => value,
@@ -276,8 +275,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
         this.colDef({
           colId: 'tradingGroup',
           headerValueGetter: () => 'Trading Group',
-          valueGetter: ({ data }) => String(getTradingGroup(data)),
-          valueFormatter: ({ data }) => this.i18n.get(getTradingGroup(data)),
+          valueGetter: ({ data }) => this.i18n.get(getTradingGroup(data)),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
             showSearch: true
@@ -287,8 +285,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           colId: 'tradingFamily',
           headerValueGetter: () => 'Trading Family',
           width: 125,
-          valueGetter: ({ data }) => String(getTradingFamily(data)),
-          valueFormatter: ({ data }) => this.i18n.get(getTradingFamily(data)),
+          valueGetter: ({ data }) => this.i18n.get(getTradingFamily(data)),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
             showSearch: true
@@ -298,8 +295,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           colId: 'tradingCategory',
           headerValueGetter: () => 'Trading Category',
           width: 125,
-          valueGetter: ({ data }) => String(getTradingCategory(data)),
-          valueFormatter: ({ data }) => this.i18n.get(getTradingCategory(data)),
+          valueGetter: ({ data }) => this.i18n.get(getTradingCategory(data)),
           filter: SelectboxFilter,
         }),
       ],

@@ -142,8 +142,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
         this.colDef({
           colId: 'uiHousingCategory',
           headerValueGetter: () => 'Housing Category',
-          valueGetter: ({ data }) => String(getUIHousingCategory(data)),
-          valueFormatter: ({ data }) => this.i18n.get(getUIHousingCategory(data)),
+          valueGetter: ({ data }) => this.i18n.get(getUIHousingCategory(data)),
           filter: SelectboxFilter,
           width: 150,
         }),
