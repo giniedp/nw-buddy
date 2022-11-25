@@ -10,15 +10,15 @@ import {
   getItemPerkBucketIds,
   getItemPerks,
   getItemRarity,
-  getItemRarityName,
+  getItemRarityLabel,
   getItemTierAsRoman,
-  getItemType,
-  getTradingCategory,
-  getTradingFamily,
-  getTradingGroup,
+  getTradingCategoryLabel,
+  getItemTradingFamilyLabel,
+  getItemTradingGroupLabel,
+  getItemTypeLabel
 } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter, DataTableAdapterOptions, dataTableProvider } from '~/ui/data-table'
+import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
@@ -46,8 +46,15 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
     return item.ItemID
   }
 
-  public entityCategory(item: ItemsTableItem): string {
-    return item.ItemType
+  public entityCategory(item: ItemsTableItem): DataTableCategory {
+    if (!item.ItemType) {
+      return null
+    }
+    return {
+      value: item.ItemType,
+      label: this.i18n.get(getItemTypeLabel(item.ItemType)),
+      icon: ''
+    }
   }
 
   public override get persistStateId(): string {
@@ -154,18 +161,18 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
         this.colDef({
           colId: 'rarity',
           headerValueGetter: () => 'Rarity',
-          valueGetter: ({ data }) => String(getItemRarity(data)),
-          valueFormatter: ({ value }) => this.i18n.get(getItemRarityName(value)),
+          valueGetter: this.valueGetter(({ data }) => getItemRarity(data)) ,
+          valueFormatter: ({ value }) => this.i18n.get(getItemRarityLabel(value)),
+          getQuickFilterText: ({ value }) => this.i18n.get(getItemRarityLabel(value)),
           filter: SelectboxFilter,
           width: 130,
-          getQuickFilterText: ({ value }) => value,
         }),
         this.colDef({
           colId: 'tier',
           headerValueGetter: () => 'Tier',
           width: 80,
-          field: this.fieldName('Tier'),
-          valueGetter: ({ data }) => getItemTierAsRoman(data.Tier),
+          valueGetter: this.valueGetter(({ data }) => data.Tier || null) ,
+          valueFormatter: ({ value }) => getItemTierAsRoman(value),
           filter: SelectboxFilter,
         }),
         this.colDef({
@@ -212,7 +219,6 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
             width: 100,
           }),
           this.colDef({
-
             colId: 'userPrice',
             headerValueGetter: () => 'Price',
             headerTooltip: 'Current price in Trading post',
@@ -257,10 +263,11 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
         this.colDef({
           colId: 'itemType',
           headerValueGetter: () => 'Item Type',
-          valueGetter: ({ data }) => this.i18n.get(getItemType(data)),
+          valueGetter: this.valueGetter(({ data}) => data.ItemType ),
+          valueFormatter: ({ value }) => this.i18n.get(getItemTypeLabel(value)),
+          getQuickFilterText: ({ value }) => this.i18n.get(getItemTypeLabel(value)),
           width: 125,
           filter: SelectboxFilter,
-          getQuickFilterText: ({ value }) => value,
         }),
         this.colDef({
           colId: 'itemClass',
@@ -278,7 +285,8 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
         this.colDef({
           colId: 'tradingGroup',
           headerValueGetter: () => 'Trading Group',
-          valueGetter: ({ data }) => this.i18n.get(getTradingGroup(data)),
+          valueGetter: this.valueGetter(({ data}) => data.TradingGroup ),
+          valueFormatter: this.valueFormatter<string>(({ value }) => this.i18n.get(getItemTradingGroupLabel(value))),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
             showSearch: true
@@ -288,7 +296,8 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           colId: 'tradingFamily',
           headerValueGetter: () => 'Trading Family',
           width: 125,
-          valueGetter: ({ data }) => this.i18n.get(getTradingFamily(data)),
+          valueGetter: this.valueGetter(({ data}) => data.TradingFamily ),
+          valueFormatter: this.valueFormatter<string>(({ value }) => this.i18n.get(getItemTradingFamilyLabel(value))),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
             showSearch: true
@@ -298,7 +307,8 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           colId: 'tradingCategory',
           headerValueGetter: () => 'Trading Category',
           width: 125,
-          valueGetter: ({ data }) => this.i18n.get(getTradingCategory(data)),
+          valueGetter: this.valueGetter(({ data}) => data.TradingCategory),
+          valueFormatter: this.valueFormatter<string>(({ value }) => this.i18n.get(getTradingCategoryLabel(value))),
           filter: SelectboxFilter,
         }),
       ],

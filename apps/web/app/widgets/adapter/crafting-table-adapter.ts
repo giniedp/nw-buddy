@@ -6,17 +6,17 @@ import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwService } from '~/nw'
 import {
-  getCraftingCategoryName,
-  getCraftingGroupName,
+  getCraftingCategoryLabel,
+  getCraftingGroupLabel,
   getIngretientsFromRecipe,
   getItemIconPath,
   getItemId,
   getItemIdFromRecipe,
   getItemRarity,
-  getTradeskill
+  getTradeSkillLabel
 } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
+import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
@@ -38,8 +38,15 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
     return item.RecipeID
   }
 
-  public entityCategory(item: RecipeWithItem): string {
-    return item.Tradeskill
+  public entityCategory(item: RecipeWithItem): DataTableCategory {
+    if (!item.Tradeskill) {
+      return null
+    }
+    return {
+      value: item.Tradeskill,
+      label: this.i18n.get(getTradeSkillLabel(item.Tradeskill)),
+      icon: ''
+    }
   }
 
   public options = defer(() =>
@@ -167,14 +174,16 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           colId: 'tradeskill',
           headerValueGetter: () => 'Tradeskill',
           width: 120,
-          valueGetter: ({ data }) => this.i18n.get(getTradeskill(data)),
+          field: this.fieldName('Tradeskill'),
+          valueFormatter: this.valueFormatter<string>(({ value }) => this.i18n.get(getTradeSkillLabel(value))),
           filter: SelectboxFilter,
         }),
         this.colDef({
           colId: 'craftingCategory',
           headerValueGetter: () => 'Crafting Category',
           width: 150,
-          valueGetter: ({ data }) => this.i18n.get(getCraftingCategoryName(data)),
+          field: this.fieldName('CraftingCategory'),
+          valueFormatter: this.valueFormatter<string>(({ value }) => this.i18n.get(getCraftingCategoryLabel(value))),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
             showSearch: true,
@@ -184,7 +193,8 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           colId: 'craftingGroup',
           headerValueGetter: () => 'Crafting Group',
           width: 150,
-          valueGetter: ({ data }) => this.i18n.get(getCraftingGroupName(data)),
+          field: this.fieldName('CraftingGroup'),
+          valueFormatter: this.valueFormatter<string>(({ value }) => this.i18n.get(getCraftingGroupLabel(value))),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
             showSearch: true,

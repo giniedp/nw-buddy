@@ -165,20 +165,21 @@ export function calculateBonusItemChance({
 
   return Math.max(0, result)
 }
-export function getTradeskill(item: Crafting ){
-  return 'ui_' + item.Tradeskill
+
+export function getTradeSkillLabel(value: string){
+  return value != null ? `ui_${value}` : null
 }
 
-export function getCraftingCategoryName(item: Crafting) {
-  if (!item?.CraftingCategory) {
+export function getCraftingCategoryLabel(value: string) {
+  if (!value) {
     return null
   }
-  return NW_CRAFTING_CATEGORY_NAMES[item.CraftingCategory] || item.CraftingCategory  + '_groupname'
+  return NW_CRAFTING_CATEGORY_NAMES[value] || `${value}_groupname`
 }
 
-export function getCraftingGroupName(item: Crafting) {
-  if (!item?.CraftingGroup) {
+export function getCraftingGroupLabel(value: string) {
+  if (!value) {
     return null
   }
-  return NW_CRAFTING_GROUP_NAMES[item.CraftingGroup] || item.CraftingGroup  + '_groupname'
+  return NW_CRAFTING_GROUP_NAMES[value] || `${value}_groupname`
 }

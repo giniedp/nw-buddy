@@ -1,9 +1,11 @@
-import { CommonModule, DOCUMENT } from '@angular/common'
-import { Component, ChangeDetectionStrategy, Input, OnInit, Output, Inject } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { ChangeDetectionStrategy, Component, Input, OnInit, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { isEqual } from 'lodash'
-import { BehaviorSubject, combineLatest, distinctUntilChanged, fromEvent, map, of, switchMap, tap } from 'rxjs'
-import { AttributeRef, NwAttributesService, NwDbService, NwModule } from '~/nw'
+import { BehaviorSubject, combineLatest, distinctUntilChanged, map, of, switchMap } from 'rxjs'
+import { NwDbService, NwModule } from '~/nw'
+import { AttributeRef } from '~/nw/nw-attributes'
+import { NwAttributesService } from '~/nw/nw-attributes.service'
 import { NW_MAX_CHARACTER_LEVEL } from '~/nw/utils/constants'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgAnglesLeft } from '~/ui/icons/svg'
@@ -55,6 +57,14 @@ export class AttributesEditorComponent implements OnInit {
     return this.assigned$.value
   }
 
+  @Input()
+  public set buffs(value: Record<AttributeRef, number>) {
+    this.buffs$.next(value)
+  }
+  public get buffs() {
+    return this.buffs$.value
+  }
+
   @Output()
   public assignedChanged = this.store.assigned$.pipe(distinctUntilChanged((a, b) => isEqual(a, b)))
 
@@ -74,6 +84,13 @@ export class AttributesEditorComponent implements OnInit {
     str: 0,
   })
   private assigned$ = new BehaviorSubject<Record<AttributeRef, number>>({
+    con: 0,
+    dex: 0,
+    foc: 0,
+    int: 0,
+    str: 0,
+  })
+  private buffs$ = new BehaviorSubject<Record<AttributeRef, number>>({
     con: 0,
     dex: 0,
     foc: 0,
@@ -109,16 +126,9 @@ export class AttributesEditorComponent implements OnInit {
         })
       ),
       assigned: this.assigned$,
+      buffs: this.buffs$,
     })
     this.store.loadLazy(src)
-  }
-
-  protected increment(name: AttributeRef, step = 1) {
-    this.store.increment({ attribute: name, value: step })
-  }
-
-  protected decrement(name: AttributeRef, step = 1) {
-    this.store.decrement({ attribute: name, value: step })
   }
 
   protected updateAttribute(state: AttributeState, points: number) {

@@ -1,4 +1,4 @@
-import { IDoesFilterPassParams, IFilterComp, IFilterParams, RowNode } from 'ag-grid-community'
+import { IDoesFilterPassParams, IFilterComp, IFilterParams, RowNode, stringToArray } from 'ag-grid-community'
 import m from 'mithril'
 import { humanize } from '~/utils'
 
@@ -28,7 +28,7 @@ export class SelectboxFilter implements IFilterComp {
   private searchQuery: string
   private showCondition: boolean
   private showSearch: boolean
-  private state: Set<string> = new Set()
+  private state: Set<string | null> = new Set()
   private params: IFilterParams
 
   public init(params: IFilterParams & SelectboxFilterParams) {
@@ -112,7 +112,7 @@ export class SelectboxFilter implements IFilterComp {
 
   public doesFilterPass(params: IDoesFilterPassParams) {
     const value = this.getValue(params.node, params.data)
-    const toCheck = Array.isArray(value) ? value : [value]
+    const toCheck = (Array.isArray(value) ? value : [value]).map(valueToId)
     let pass = null
     this.state.forEach((active, key) => {
       if (!active) {
@@ -187,22 +187,20 @@ export class SelectboxFilter implements IFilterComp {
     if (Array.isArray(value)) {
       return value.map((it) => {
         return {
-          id: String(it),
+          id: valueToId(it),
           label: humanize(it),
-          value: it,
         }
       })
     }
     return [
       {
-        id: String(value),
+        id: valueToId(value),
         label: this.getLabel(node, node.data, value),
-        //value: value,
       },
     ]
   }
   protected getValue(node: RowNode, data: any) {
-    return this.params.valueGetter({
+    const result = this.params.valueGetter({
       api: this.params.api,
       colDef: this.params.colDef,
       column: this.params.column,
@@ -212,6 +210,7 @@ export class SelectboxFilter implements IFilterComp {
       getValue: (field) => node.data[field],
       node: node,
     })
+    return result ?? null
   }
 
   private getLabel(node: RowNode, data: any, value: any) {
@@ -323,4 +322,8 @@ const SelectControls: m.Component<SelectControlAttrs, any> = {
       })
     ),
   ],
+}
+
+function valueToId(value: string | null) {
+  return value ?? JSON.stringify(null)
 }

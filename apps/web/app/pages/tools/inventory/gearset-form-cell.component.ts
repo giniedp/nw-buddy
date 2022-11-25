@@ -14,7 +14,7 @@ import { RouterModule } from '@angular/router'
 import { BehaviorSubject, combineLatest, defer, firstValueFrom, map } from 'rxjs'
 import { GearsetRecord, GearsetSlotStore, ItemInstanceRecord, ItemInstanceRow } from '~/data'
 import { NwModule } from '~/nw'
-import { EquipSlot, getItemRarityName, getItemTierAsRoman, getItemTypeName } from '~/nw/utils'
+import { EquipSlot, getItemRarityLabel, getItemTierAsRoman, getItemTypeName } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical, svgLink16p, svgLinkSlash16p, svgTrashCan } from '~/ui/icons/svg'
 import { humanize } from '~/utils'
@@ -64,7 +64,7 @@ export class GearsetFormCellComponent implements OnInit {
       isNamed: this.cellStore.isNamed$,
       gearScore: this.cellStore.instance$.pipe(map((it) => it?.gearScore)),
       rarity: this.cellStore.rarity$,
-      rarityName: this.cellStore.rarity$.pipe(map(getItemRarityName)),
+      rarityName: this.cellStore.rarity$.pipe(map(getItemRarityLabel)),
       sourceLabel: this.cellStore.item$.pipe(map((it) => humanize(it?.['$source']))),
       tierLabel: this.cellStore.tierLabel$,
       slot: this.cellStore.slot$,

@@ -1,12 +1,14 @@
-<h3 class="font-bold text-lg mb-4">{{ title }}</h3>
-<ng-container *ngIf="isHtml">
-  <div [innerHTML]="body"></div>
-</ng-container>
-<ng-container *ngIf="!isHtml">
-  <p>{{ body }}</p>
-</ng-container>
-<div class="modal-action">
-  <button class="btn btn-ghost" (click)="deny()" *ngIf="negative">{{ negative }}</button>
-  <button class="btn btn-ghost" (click)="close()" *ngIf="neutral">{{ neutral }}</button>
+<h3 class="font-bold text-lg bg-base-300 p-3">{{ title }}</h3>
+<div class="layout-pad">
+  <ng-container *ngIf="isHtml">
+    <div [innerHTML]="body"></div>
+  </ng-container>
+  <ng-container *ngIf="!isHtml">
+    <p>{{ body }}</p>
+  </ng-container>
+</div>
+<div class="modal-action flex-row-reverse justify-start layout-pad">
   <button class="btn btn-primary" (click)="confirm()">{{ positive }}</button>
+  <button class="btn btn-ghost" (click)="close()" *ngIf="neutral">{{ neutral }}</button>
+  <button class="btn btn-ghost" (click)="deny()" *ngIf="negative">{{ negative }}</button>
 </div>

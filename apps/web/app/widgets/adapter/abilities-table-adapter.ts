@@ -5,9 +5,9 @@ import { defer, map, Observable, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwDbService, NwExpressionService } from '~/nw'
 import { SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
+import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { shareReplayRefCount } from '~/utils'
-import {getWeapontagName} from "~/nw/utils";
+import {getWeaponTagLabel} from "~/nw/utils";
 
 @Injectable()
 export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
@@ -21,8 +21,15 @@ export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
     return item.AbilityID
   }
 
-  public entityCategory(item: Ability): string {
-    return item.WeaponTag
+  public entityCategory(item: Ability): DataTableCategory {
+    if (!item.WeaponTag) {
+      return null
+    }
+    return {
+      value: item.WeaponTag,
+      label: this.i18n.get(getWeaponTagLabel(item.WeaponTag)),
+      icon: ''
+    }
   }
 
   public options = defer(() =>
@@ -91,7 +98,8 @@ export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
         this.colDef({
           colId: 'weaponTag',
           headerValueGetter: () => 'Weapon Tag',
-          valueGetter: ({ data }) => this.i18n.get(getWeapontagName(data)),
+          field: this.fieldName('WeaponTag'),
+          valueFormatter: ({ value }) => this.i18n.get(getWeaponTagLabel(value)),
           filter: SelectboxFilter,
         }),
         this.colDef({

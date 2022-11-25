@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ComponentStore } from '@ngrx/component-store'
 import { filter, from, map, Observable, switchMap, tap } from 'rxjs'
-import { AttributeRef } from '~/nw'
+import { AttributeRef } from '~/nw/nw-attributes'
 
 import { GearsetCreateMode, GearsetRecord, GearsetsDB } from './gearsets.db'
 import { ImagesDB } from './images.db'

@@ -1,18 +1,22 @@
-<div class="grid gap-1">
+<div class="grid gap-1 pr-[10px]">
   <span class="font-bold">Points</span>
   <span class="font-bold text-center">{{ pointsAvailable$ | async }}</span>
   <span></span>
   <ng-container *ngFor="let stat of stats$ | async; trackBy: trackById" class="flex flex-row">
     <label class="inline-flex items-center justify-center font-bold uppercase">{{ stat.name | nwText }}</label>
     <div class="flex flex-row gap-1 indicator">
-      <span class="indicator-item text-2xs pl-14 whitespace-nowrap" *ngIf="stat.assigned">
-        <span class="text-[#35B6EB] text-opacity-75">{{ stat.base }}</span>
-        +
-        <span class="text-[#F1CF72] text-opacity-75">{{ stat.assigned }}</span>
+      <span class="indicator-item text-2xs pl-14 whitespace-nowrap" *ngIf="stat.assigned || stat.buffs">
+        <span class="text-attr-base text-opacity-75">{{ stat.base }}</span>
+        <ng-container *ngIf="stat.buffs">
+          + <span class="text-attr-buff text-opacity-75">{{ stat.buffs }}</span>
+        </ng-container>
+        <ng-container *ngIf="stat.assigned">
+          + <span class="text-attr-assign text-opacity-75">{{ stat.assigned }}</span>
+        </ng-container>
       </span>
       <input
         type="number"
-        class="input input-bordered input-sm w-16 text-right"
+        class="input input-bordered input-sm w-16 px-1 text-right"
         [min]="stat.inputMin"
         [max]="stat.inputMax"
         [ngModel]="stat.total"
@@ -23,34 +27,33 @@
       />
     </div>
     <div class="flex flex-row justify-between items-center relative">
-      <progress
-        class="absolute left-0 progress progress-c1 w-full"
-        [value]="stat.total"
-        [max]="stat.sliderEnd"
-      ></progress>
-      <progress
-        class="absolute left-0 progress progress-c2 w-full"
-        [value]="stat.base"
-        [max]="stat.sliderEnd"
-      ></progress>
-      <span class="relative w-0 h-0"></span>
-      <ng-container *ngFor="let step of [50, 100, 150, 200, 250, 300]; trackBy: trackById">
-        <span
-          class="relative badge cursor-pointer"
-          [class.c1]="stat.base < step && stat.total >= step"
-          [class.c2]="stat.base >= step"
-          [tooltip]="tip"
-          (click)="attributeToggle(stat, step)"
-        >
-        </span>
-        <ng-template #tip>
-          <div *ngIf="getAbilities(stat, step) | async; let list" class="py-2 px-3">
-            <div *ngFor="let item of list" [class.text-success]="stat.total >= step">
-              <span [innerHTML]="item.Description | nwText | nwTextBreak"></span>
-            </div>
+      <div class="tracker absolute left-0 w-full flex flex-row overflow-hidden">
+        <span class="flex-none bg-attr-base rounded-l-md" [style.width.%]="(stat.base / stat.sliderEnd) * 100"></span>
+        <span class="flex-none bg-attr-buff rounded-r-md" [style.width.%]="(stat.buffs / stat.sliderEnd) * 100"></span>
+        <span class="flex-none bg-attr-assign rounded-r-md" [style.width.%]="(stat.assigned / stat.sliderEnd) * 100"></span>
+      </div>
+      <div class="flex-1 flex flex-row justify-between items-center relative mr-[-10px]">
+        <ng-container *ngFor="let step of [50, 100, 150, 200, 250, 300]; trackBy: trackById">
+          <div class="segment relative flex-1 h-5 cursor-pointer" (click)="attributeToggle(stat, step)">
+            <span
+              class="badge absolute right-0 "
+              [class.bg-zinc-800]="stat.total < step"
+              [class.bg-attr-base]="stat.base >= step"
+              [class.bg-attr-buff]="stat.base < step && (stat.base + stat.buffs) >= step"
+              [class.bg-attr-assign]="(stat.base + stat.buffs) < step && stat.total >= step"
+              [tooltip]="tip"
+            >
+            </span>
+            <ng-template #tip>
+              <div *ngIf="getAbilities(stat, step) | async; let list" class="py-2 px-3">
+                <div *ngFor="let item of list" [class.text-success]="stat.total >= step">
+                  <span [innerHTML]="item.Description | nwText | nwTextBreak"></span>
+                </div>
+              </div>
+            </ng-template>
           </div>
-        </ng-template>
-      </ng-container>
+        </ng-container>
+      </div>
     </div>
   </ng-container>
 </div>

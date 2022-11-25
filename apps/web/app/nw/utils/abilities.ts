@@ -21,7 +21,7 @@ export function getAbilityCategoryTag(ability: Ability) {
   return ability?.UICategory?.match(/(heal|melee|debuff|buff|range|magic|passive)/i)?.[0]?.toLowerCase() as any || 'none'
 }
 
-export function getWeapontagName(ability: Ability) {
-  return WEAPON_TAG_NAME[ability?.WeaponTag]
+export function getWeaponTagLabel(value: string) {
+  return WEAPON_TAG_NAME[value]
 }
 

@@ -9,12 +9,12 @@ import {
   getItemIconPath,
   getItemId,
   getItemRarity,
-  getItemRarityName,
+  getItemRarityLabel,
   getItemTierAsRoman,
-  getUIHousingCategory
+  getUIHousingCategoryLabel,
 } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
+import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize } from '~/utils'
 import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
@@ -31,8 +31,15 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
     return item.HouseItemID
   }
 
-  public entityCategory(item: Housingitems): string {
-    return item.UIHousingCategory
+  public entityCategory(item: Housingitems): DataTableCategory {
+    if (!item.UIHousingCategory) {
+      return null
+    }
+    return {
+      value: item.UIHousingCategory,
+      label: this.i18n.get(getUIHousingCategoryLabel(item.UIHousingCategory)),
+      icon: ''
+    }
   }
 
   public options = defer(() =>
@@ -75,7 +82,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
           colId: 'rarity',
           headerValueGetter: () => 'Rarity',
           valueGetter: ({ data }) => String(getItemRarity(data)),
-          valueFormatter: ({ value }) => this.i18n.get(getItemRarityName(value)),
+          valueFormatter: ({ value }) => this.i18n.get(getItemRarityLabel(value)),
           filter: SelectboxFilter,
           width: 130,
           getQuickFilterText: ({ value }) => value,
@@ -142,7 +149,9 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
         this.colDef({
           colId: 'uiHousingCategory',
           headerValueGetter: () => 'Housing Category',
-          valueGetter: ({ data }) => this.i18n.get(getUIHousingCategory(data)),
+          valueGetter: this.valueGetter(({ data }) => data.UIHousingCategory) ,
+          valueFormatter: ({ value }) => this.i18n.get(getUIHousingCategoryLabel(value)),
+          getQuickFilterText: ({ value }) => this.i18n.get(getUIHousingCategoryLabel(value)),
           filter: SelectboxFilter,
           width: 150,
         }),

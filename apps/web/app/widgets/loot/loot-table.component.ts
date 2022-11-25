@@ -19,7 +19,7 @@ import {
   getItemIconPath,
   getItemId,
   getItemRarity,
-  getItemRarityName,
+  getItemRarityLabel,
   getItemTierAsRoman,
   LootTableEntry,
   LootTableItem
@@ -200,7 +200,7 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
         {
           headerName: 'Rarity',
           valueGetter: ({ data }) => getItemRarity(data),
-          valueFormatter: ({ value }) => this.i18n.get(getItemRarityName(value)),
+          valueFormatter: ({ value }) => this.i18n.get(getItemRarityLabel(value)),
           filter: SelectboxFilter,
           width: 130,
           getQuickFilterText: ({ value }) => value,

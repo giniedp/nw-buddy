@@ -1,4 +1,22 @@
-export type EquipSlotId = 'head' | 'chest' | 'hands' | 'legs' | 'feet' | 'weapon1' | 'weapon2' | 'weapon3' | 'amulet' | 'ring' | 'earring' | 'heartgem'
+export type EquipSlotId =
+  | 'head'
+  | 'chest'
+  | 'hands'
+  | 'legs'
+  | 'feet'
+  | 'weapon1'
+  | 'weapon2'
+  | 'weapon3'
+  | 'amulet'
+  | 'ring'
+  | 'earring'
+  | 'heartgem'
+  | 'quickslot1'
+  | 'quickslot2'
+  | 'quickslot3'
+  | 'quickslot4'
+  | 'arrow'
+  | 'cartridge'
 export interface EquipSlot {
   id: EquipSlotId
   icon: string
@@ -79,9 +97,33 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     name: 'ui_itemtypedescription_heartgem_rune',
     itemType: 'HeartGem',
   },
+  {
+    id: 'quickslot1',
+    icon: 'assets/icons/slots/iconquickslot.png',
+    name: 'ui_quickslot1',
+    itemType: 'Consumable',
+  },
+  {
+    id: 'quickslot2',
+    icon: 'assets/icons/slots/iconquickslot.png',
+    name: 'ui_quickslot2',
+    itemType: 'Consumable',
+  },
+  {
+    id: 'quickslot3',
+    icon: 'assets/icons/slots/iconquickslot.png',
+    name: 'ui_quickslot3',
+    itemType: 'Consumable',
+  },
+  {
+    id: 'quickslot4',
+    icon: 'assets/icons/slots/iconquickslot.png',
+    name: 'ui_quickslot4',
+    itemType: 'Consumable',
+  },
 ]
 
-const GS_WEIGHTS: Record<EquipSlotId, number> = {
+const GS_WEIGHTS: Partial<Record<EquipSlotId, number>>  = {
   head: 42,
   chest: 73,
   hands: 31,
@@ -89,18 +131,16 @@ const GS_WEIGHTS: Record<EquipSlotId, number> = {
   feet: 21,
   weapon1: 135,
   weapon2: 135,
-  weapon3: 0,
   amulet: 40,
   ring: 40,
   earring: 40,
-  heartgem: 0
 }
 
-export function totalGearScore(equip: Array<{ id: EquipSlotId, gearScore: number }>) {
+export function totalGearScore(equip: Array<{ id: EquipSlotId; gearScore: number }>) {
   const total = Object.values(GS_WEIGHTS).reduce((a, b) => a + b, 0)
   let result = 0
   for (const slot of equip) {
-    result += slot.gearScore * (GS_WEIGHTS[slot.id] || 0) / total
+    result += (slot.gearScore * (GS_WEIGHTS[slot.id] || 0)) / total
   }
   return result
 }

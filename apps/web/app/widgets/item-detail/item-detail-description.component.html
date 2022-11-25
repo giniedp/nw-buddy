@@ -4,7 +4,7 @@
     <img [nwImage]="vm.item.HeartgemTooltipBackgroundImage" width="360" height="164"/>
     <h3 class="text-xl font-bold px-3">{{ vm.item.HeartgemRuneTooltipTitle | nwText }}</h3>
   </div>
-  <div *ngIf="vm.description; let text" class="p-3 text-[#e1cb99] italic">
+  <div *ngIf="vm.description; let text" class="p-3 text-nw-description italic">
     {{ detail.description$ | async | nwText }}
   </div>
 </ng-container>

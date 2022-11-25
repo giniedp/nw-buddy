@@ -11,7 +11,7 @@ import {
   getItemPerkBucketKeys,
   getItemPerkKeys,
   getItemRarity,
-  getItemRarityName,
+  getItemRarityLabel,
   getItemTierAsRoman,
   getItemTypeName,
   getPerkbucketPerks,
@@ -63,7 +63,7 @@ export class ItemDetailService {
   public readonly description$ = this.entity$.pipe(map((it) => it?.Description))
   public readonly icon$ = this.entity$.pipe(map((it) => getItemIconPath(it)))
   public readonly rarity$ = this.entity$.pipe(map((it) => getItemRarity(it)))
-  public readonly rarityName$ = this.rarity$.pipe(map(getItemRarityName))
+  public readonly rarityName$ = this.rarity$.pipe(map(getItemRarityLabel))
   public readonly typeName$ = this.entity$.pipe(map(getItemTypeName))
   public readonly tierLabel$ = this.entity$.pipe(map((it) => getItemTierAsRoman(it?.Tier, true)))
 
@@ -91,7 +91,7 @@ export class ItemDetailService {
 
   public readonly perksDetails$ = defer(() => this.resolvePerkInfos()).pipe(shareReplayRefCount(1))
   public readonly finalRarity$ = defer(() => this.resolveFinalRarity())
-  public readonly finalRarityName$ = this.finalRarity$.pipe(map(getItemRarityName))
+  public readonly finalRarityName$ = this.finalRarity$.pipe(map(getItemRarityLabel))
 
   public readonly vm$ = deferStateFlat(() =>
     combineLatest({

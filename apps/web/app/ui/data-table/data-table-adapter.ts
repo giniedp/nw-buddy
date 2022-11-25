@@ -4,6 +4,8 @@ import {
   GridOptions,
   ICellRendererFunc,
   RowDataTransaction,
+  ValueFormatterFunc,
+  ValueFormatterParams,
   ValueGetterFunc,
   ValueGetterParams,
 } from 'ag-grid-community'
@@ -88,6 +90,9 @@ export abstract class DataTableAdapter<T> {
     return String(k)
   }
   public valueGetter(fn: keyof T | ((params: ValueGetterParams<T>) => any)): string | ValueGetterFunc {
+    return fn as any
+  }
+  public valueFormatter<V>(fn: keyof T | ((params: ValueFormatterParams<T, V>) => any)): string | ValueFormatterFunc {
     return fn as any
   }
   public colDef(data: ColDef & Required<Pick<ColDef, 'colId' | 'headerValueGetter'>>): ColDef {

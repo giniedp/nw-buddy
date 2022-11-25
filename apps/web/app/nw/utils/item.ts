@@ -8,21 +8,6 @@ import {
   Perks,
 } from '@nw-data/types'
 import { NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE } from './constants'
-import {empty} from "rxjs";
-
-const ITEM_TYPE = {
-  Armor: 'ui_armor',
-  Ammo: 'inv_ammo',
-  Currency: 'ui_currency',
-  Blueprint: 'ui_blueprints',
-  Consumable: 'ui_consumables',
-  Weapon: 'ui_weapons',
-  Dye: 'ui_dyes',
-  Lore: 'inv_loreitems',
-  Resource: 'inv_resources',
-  ThrowableItem: 'ThrowableItem',
-
-}
 
 export function isMasterItem(item: ItemDefinitionMaster | Housingitems): item is ItemDefinitionMaster {
   return item && 'ItemID' in item
@@ -66,7 +51,7 @@ export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPer
   return Math.min(rarity, 4)
 }
 
-export function getItemRarityName(item: ItemDefinitionMaster | Housingitems | number | string) {
+export function getItemRarityLabel(item: ItemDefinitionMaster | Housingitems | number | string) {
   if (typeof item === 'number' || typeof item === 'string') {
     //
   } else {
@@ -149,13 +134,21 @@ export function getItemGearScoreLabel(item: ItemDefinitionMaster) {
   return String(item.MaxGearScore || item.MinGearScore || '')
 }
 
-
-
-export function getItemType(item: ItemDefinitionMaster | Housingitems) {
-if (!item?.ItemType){
-  return null
+const ITEM_TYPE_LABELS = {
+  Armor: 'ui_armor',
+  Ammo: 'inv_ammo',
+  Currency: 'ui_currency',
+  Blueprint: 'ui_blueprints',
+  Consumable: 'ui_consumables',
+  Weapon: 'ui_weapons',
+  Dye: 'ui_dyes',
+  Lore: 'inv_loreitems',
+  Resource: 'inv_resources',
+  ThrowableItem: 'ThrowableItem',
 }
-return ITEM_TYPE[item?.ItemType]
+
+export function getItemTypeLabel(type: string) {
+  return ITEM_TYPE_LABELS[type] || null
 }
 
 export function getItemTypeName(item: ItemDefinitionMaster | Housingitems) {
@@ -258,28 +251,17 @@ export function getWeightLabel(weight: number) {
   return label
 }
 
-export function getTradingGroup(item: ItemDefinitionMaster | Housingitems) {
-
-  if (item.TradingGroup == null){
-    return null
-  }
-  return  item.TradingGroup + '_GroupName'
+export function getItemTradingGroupLabel(value: string) {
+  return value != null ? `${value}_GroupName` : null
 }
 
-export function getTradingFamily(item: ItemDefinitionMaster | Housingitems) {
-  if (item.TradingFamily == null){
-    return null
-  }
-  return 'CategoryData_' + item.TradingFamily
+export function getItemTradingFamilyLabel(value: string) {
+  return value != null ? `CategoryData_${value}` : null
 }
-export function getTradingCategory(item: ItemDefinitionMaster | Housingitems) {
-  if (item.TradingCategory == null){
-    return null
-  }
-  return 'CategoryData_' + item.TradingCategory
+export function getTradingCategoryLabel(value: string) {
+  return value != null ? `CategoryData_${value}` : null
 }
 
-export function getUIHousingCategory(item: Housingitems ){
-    return "ui_" + item.UIHousingCategory
-
+export function getUIHousingCategoryLabel(value: string) {
+  return value != null ? `ui_${value}` : null
 }
