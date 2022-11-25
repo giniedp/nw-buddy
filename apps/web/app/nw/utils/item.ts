@@ -10,25 +10,19 @@ import {
 import { NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE } from './constants'
 import {empty} from "rxjs";
 
-const singular = [
-  'Armor',
-  'Currency'
-]
+const ITEM_TYPE = {
+  Armor: 'ui_armor',
+  Ammo: 'inv_ammo',
+  Currency: 'ui_currency',
+  Blueprint: 'ui_blueprints',
+  Consumable: 'ui_consumables',
+  Weapon: 'ui_weapons',
+  Dye: 'ui_dyes',
+  Lore: 'inv_loreitems',
+  Resource: 'inv_resources',
+  ThrowableItem: 'ThrowableItem',
 
- const plural = [
-   'Blueprint',
-   'Consumable',
-   'Weapon',
-   'Dye'
- ]
-
-const lore = [
-   'Lore'
- ]
-
- const inv_ =[
-   'Resource'
- ]
+}
 
 export function isMasterItem(item: ItemDefinitionMaster | Housingitems): item is ItemDefinitionMaster {
   return item && 'ItemID' in item
@@ -154,20 +148,14 @@ export function getItemGearScoreLabel(item: ItemDefinitionMaster) {
   }
   return String(item.MaxGearScore || item.MinGearScore || '')
 }
+
+
+
 export function getItemType(item: ItemDefinitionMaster | Housingitems) {
- if (singular.includes(item.ItemType)) {
-    return 'ui_' + item.ItemType
- }
- if (plural.includes(item.ItemType)) {
-   return 'ui_' + item.ItemType + 's'
- }
- if (lore.includes(item.ItemType)) {
-   return 'inv_' + item.ItemType + 'Items'
- }
-  if (inv_.includes(item.ItemType)) {
-    return 'inv_' + item.ItemType + 's'
-   }
-  return 'inv_' + item.ItemType
+if (!item?.ItemType){
+  return null
+}
+return ITEM_TYPE[item?.ItemType]
 }
 
 export function getItemTypeName(item: ItemDefinitionMaster | Housingitems) {

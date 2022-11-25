@@ -11,7 +11,10 @@ import {
   getItemPerks,
   getItemRarity,
   getItemRarityName,
-  getItemTierAsRoman, getItemType, getTradingCategory, getTradingFamily,
+  getItemTierAsRoman,
+  getItemType,
+  getTradingCategory,
+  getTradingFamily,
   getTradingGroup,
 } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
