@@ -4,7 +4,19 @@ import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwService } from '~/nw'
-import { getItemIconPath, getItemId, getItemPerkBucketIds, getItemPerks, getItemRarity, getItemRarityName, getItemTierAsRoman } from '~/nw/utils'
+import {
+  getItemIconPath,
+  getItemId,
+  getItemPerkBucketIds,
+  getItemPerks,
+  getItemRarity,
+  getItemRarityName,
+  getItemTierAsRoman,
+  getItemType,
+  getTradingCategory,
+  getTradingFamily,
+  getTradingGroup,
+} from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
@@ -245,7 +257,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
         this.colDef({
           colId: 'itemType',
           headerValueGetter: () => 'Item Type',
-          field: this.fieldName('ItemType'),
+          valueGetter: ({ data }) => this.i18n.get(getItemType(data)),
           width: 125,
           filter: SelectboxFilter,
           getQuickFilterText: ({ value }) => value,
@@ -266,8 +278,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
         this.colDef({
           colId: 'tradingGroup',
           headerValueGetter: () => 'Trading Group',
-          field: this.fieldName('TradingGroup'),
-          valueFormatter: ({ value }) => humanize(value),
+          valueGetter: ({ data }) => this.i18n.get(getTradingGroup(data)),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
             showSearch: true
@@ -277,8 +288,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           colId: 'tradingFamily',
           headerValueGetter: () => 'Trading Family',
           width: 125,
-          field: this.fieldName('TradingFamily'),
-          valueFormatter: ({ value }) => humanize(value),
+          valueGetter: ({ data }) => this.i18n.get(getTradingFamily(data)),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
             showSearch: true
@@ -288,8 +298,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           colId: 'tradingCategory',
           headerValueGetter: () => 'Trading Category',
           width: 125,
-          field: this.fieldName('TradingCategory'),
-          valueFormatter: ({ value }) => humanize(value),
+          valueGetter: ({ data }) => this.i18n.get(getTradingCategory(data)),
           filter: SelectboxFilter,
         }),
       ],

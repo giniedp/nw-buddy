@@ -26,6 +26,44 @@ export type CraftingIngredients = Pick<
   | 'Type7'
 >
 
+const NW_CRAFTING_GROUP_NAMES= {
+
+  Alkahest:'CategoryData_Alkahest',
+  LargeFurnishings:'CategoryData_LargeFurnishings',
+  SmallFurnishings:'CategoryData_SmallFurnishings',
+  MeleeWeapons:'CategoryData_MeleeWeapons',
+  RangedWeapons:'CategoryData_RangedWeapons',
+  Trophies:'CategoryData_Trophies',
+  Potion:'CategoryData_Potion',
+  Metal:'Metal_CategoryName',
+  MetalPrecious:'MetalPrecious_CategoryName',
+  AttributeDex: 'AttributeDex',
+  AttributeCon: 'AttributeCon',
+  AttributeFoc: 'AttributeFoc',
+  AttributeInt: 'AttributeInt',
+  AttributeStr: 'AttributeStr',
+  SalvageCreate:'SalvageCreate',
+  SalvageResearch:'SalvageResearch',
+  SalvageExtract: 'SalvageExtract',
+  PatternRecipes: 'PatternRecipes',
+  Keys: 'KeyParts_groupname',
+
+}
+const NW_CRAFTING_CATEGORY_NAMES= {
+  TimelessShardsCon: 'TimelessShardsCon',
+  TimelessShardsDex: 'TimelessShardsDex',
+  TimelessShardsFoc: 'TimelessShardsFoc',
+  TimelessShardsInt: 'TimelessShardsInt',
+  TimelessShardsStr: 'TimelessShardsStr',
+  Salvage: 'Salvage',
+  SalvageCreate: 'SalvageCreate',
+  Pattern: 'Pattern',
+  Keys: 'KeyParts_groupname',
+  CorruptedRefining:'CorruptedRefinement_GroupName',
+  Bags: 'CategoryData_Bags',
+  Tools:'inv_tools',
+  Dyes: 'CategoryData_Dyes'
+}
 const CRAFTING_CATEGORY_GRANTING_BONUS = [
   'ArcanaRefining',
   'BasicCooking',
@@ -37,6 +75,7 @@ const CRAFTING_CATEGORY_GRANTING_BONUS = [
   'Foods',
   'FuseGems',
   'RefinedResources'
+
 ]
 
 export function sumIngredientQuantities(recipe: CraftingIngredients) {
@@ -125,4 +164,21 @@ export function calculateBonusItemChance({
   // })
 
   return Math.max(0, result)
+}
+export function getTradeskill(item: Crafting ){
+  return 'ui_' + item.Tradeskill
+}
+
+export function getCraftingCategoryName(item: Crafting) {
+  if (!item?.CraftingCategory) {
+    return null
+  }
+  return NW_CRAFTING_CATEGORY_NAMES[item.CraftingCategory] || item.CraftingCategory  + '_groupname'
+}
+
+export function getCraftingGroupName(item: Crafting) {
+  if (!item?.CraftingGroup) {
+    return null
+  }
+  return NW_CRAFTING_GROUP_NAMES[item.CraftingGroup] || item.CraftingGroup  + '_groupname'
 }
