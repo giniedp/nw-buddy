@@ -17,7 +17,7 @@ import { VitalsFamiliesModule } from '~/widgets/vitals-families'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, NwModule, VitalsFamiliesModule, LootModule, LayoutModule],
   host: {
-    class: 'flex-none flex flex-col bg-base-300',
+    class: 'flex-none flex flex-col',
   },
 })
 export class VitalComponent {

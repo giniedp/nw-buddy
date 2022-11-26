@@ -14,7 +14,7 @@ import { AbilityDetailModule } from '~/widgets/ability-detail'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, RouterModule, AbilityDetailModule, PropertyGridModule, LayoutModule],
   host: {
-    class: 'flex-none flex flex-col bg-base-300',
+    class: 'flex-none flex flex-col',
   },
 })
 export class AbilitiesDetailComponent {

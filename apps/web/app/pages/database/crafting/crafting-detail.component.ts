@@ -17,7 +17,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, NwModule, ItemDetailModule, CraftingCalculatorModule, ScreenshotModule, LayoutModule],
   host: {
-    class: 'flex-none flex flex-col bg-base-300',
+    class: 'flex-none flex flex-col',
   },
 })
 export class CraftingDetailComponent {

@@ -5,7 +5,7 @@ import { OverlayModule } from '@angular/cdk/overlay'
 import { DialogModule } from '@angular/cdk/dialog'
 
 import { MenuCloseDirective, MenuConnectorDirective as MenuConnectorDirective } from './menu.directive'
-import { DetailDrawerComponent } from './detail-drawer.component'
+import { DetailDrawerComponent, DetailDrawerContent } from './detail-drawer.component'
 import { ConfirmDialogComponent, PromptDialogComponent } from './modal'
 
 const COMPONENTS = [
@@ -16,6 +16,7 @@ const COMPONENTS = [
   MenuConnectorDirective,
   MenuCloseDirective,
   DetailDrawerComponent,
+  DetailDrawerContent,
   ConfirmDialogComponent,
   PromptDialogComponent,
 ]

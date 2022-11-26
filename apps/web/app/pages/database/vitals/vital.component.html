@@ -1,10 +1,10 @@
-<nwb-detail-drawer class="hidden lg:block lg:w-96 layout-pad">
-  <ng-template>
+<nwb-detail-drawer class="hidden lg:block lg:w-96 layout-pad-x h-full" [breakpoints]="[0.25, 0.5, 1]">
+  <div *nwbDetailDraweContent class="layout-col layout-gap bg-base-300">
     <ng-container *ngIf="vital$ | async; let vital">
       <nwb-vital-detail [vital]="vital"></nwb-vital-detail>
       <nwb-loot-table [tableId]="vital.LootTableId" [tags]="lootTags$ | async" [enemyLevel]="vital.Level" class="flex-1"></nwb-loot-table>
     </ng-container>
-  </ng-template>
+  </div>
 </nwb-detail-drawer>
 
 

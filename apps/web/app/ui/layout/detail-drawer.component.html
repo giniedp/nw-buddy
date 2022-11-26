@@ -5,14 +5,19 @@
   [backdropBreakpoint]="backdropBreakpoint"
   [backdropDismiss]="false"
   [canDismiss]="true"
+  [handleBehavior]="'cycle'"
 >
   <ng-template>
-    <ion-content class="bg-base-200">
-      <ng-container *ngTemplateOutlet="template"></ng-container>
+    <ion-content style="--overflow: hidden">
+      <div class="h-full layout-col" >
+        <ng-container *ngTemplateOutlet="template"></ng-container>
+      </div>
     </ion-content>
   </ng-template>
 </ion-modal>
 
 <ng-container *ngIf="isLarge$ | async">
-  <ng-container *ngTemplateOutlet="template"></ng-container>
+  <div class="h-full layout-col">
+      <ng-container *ngTemplateOutlet="template"></ng-container>
+  </div>
 </ng-container>

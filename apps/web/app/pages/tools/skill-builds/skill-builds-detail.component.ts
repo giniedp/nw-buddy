@@ -32,7 +32,7 @@ import { SkillBuilderComponent, SkillBuildValue } from '~/widgets/skill-builder/
     AttributesEditorModule
   ],
   host: {
-    class: 'hidden xl:flex xl:flex-1 flex-col bg-base-300',
+    class: 'hidden xl:flex xl:flex-1 flex-col',
   },
 })
 export class SkillBuildsDetailComponent {

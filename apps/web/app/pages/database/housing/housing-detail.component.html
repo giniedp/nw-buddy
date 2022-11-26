@@ -1,7 +1,5 @@
-<nwb-detail-drawer class="hidden lg:block lg:w-96 layout-pad">
-  <ng-template>
+<nwb-detail-drawer class="hidden lg:block lg:w-96 layout-pad-x">
+  <div *nwbDetailDraweContent class="layout-col bg-base-300">
     <nwb-item-card [entityId]="itemId | async" [enableInfoLink]="true" [enableTracker]="true" [nwbScreenshotFrame]="card.name$ | async | nwText" #card="card"></nwb-item-card>
-  </ng-template>
+  </div>
 </nwb-detail-drawer>
-
-

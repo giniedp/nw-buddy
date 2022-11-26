@@ -1,5 +1,6 @@
 <nwb-detail-drawer class="hidden 2xl:block" breakOn="2xl">
-  <ng-template>
+  <div *nwbDetailDraweContent class="layout-col bg-base-300">
+
     <ng-container *ngIf="vm$ | async; let vm">
       <nwb-item-detail
         *ngIf="vm.instance"
@@ -51,5 +52,5 @@
         </ng-template>
       </nwb-item-detail>
     </ng-container>
-  </ng-template>
+  </div>
 </nwb-detail-drawer>

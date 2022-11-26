@@ -1,9 +1,19 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ContentChild, Injector, Input, TemplateRef, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ContentChild, Directive, Injector, Input, TemplateRef, ViewChild } from '@angular/core'
 import { IonicModule, IonMenu, IonModal } from '@ionic/angular'
 import { BehaviorSubject, combineLatest, map, merge, of, startWith, switchMap } from 'rxjs'
 import { BreakpointName, BREAKPOINTS } from './breakpoints'
 import { LayoutService } from './layout.service'
+
+@Directive({
+  standalone: true,
+  selector: '[nwbDetailDraweContent]'
+})
+export class DetailDrawerContent {
+  public constructor(public readonly tpl: TemplateRef<any>) {
+
+  }
+}
 
 @Component({
   standalone: true,
@@ -12,7 +22,7 @@ import { LayoutService } from './layout.service'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, IonicModule],
   host: {
-    class: 'layout-content',
+    class: 'block overflow-hidden',
   },
 })
 export class DetailDrawerComponent {
@@ -37,8 +47,15 @@ export class DetailDrawerComponent {
   @ViewChild(IonModal)
   protected modal: IonModal
 
+  @ContentChild(DetailDrawerContent)
+  protected content: DetailDrawerContent
+
   @ContentChild(TemplateRef)
-  protected template: TemplateRef<any>
+  protected contentTemplate: TemplateRef<any>
+
+  protected get template() {
+    return this.content?.tpl || this.contentTemplate
+  }
 
   protected breakpoint$ = new BehaviorSubject<BreakpointName>('lg')
   protected isLarge$ = this.breakpoint$

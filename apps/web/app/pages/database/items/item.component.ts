@@ -14,7 +14,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   imports: [CommonModule, RouterModule, NwModule, ItemDetailModule, ScreenshotModule, LayoutModule],
   providers: [DestroyService],
   host: {
-    class: 'flex-none flex flex-col bg-base-300',
+    class: 'flex-none flex flex-col',
   },
 })
 export class ItemComponent {

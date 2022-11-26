@@ -1,5 +1,5 @@
 <nwb-detail-drawer class="hidden lg:block layout-pad" [breakOn]="'xl'" [breakpoints]="[0.15, 0.25, 0.5, 1.0]">
-  <ng-template>
+  <div *nwbDetailDraweContent class="layout-col bg-base-300">
     <div *ngIf="item$ | async; let item" class="layout-col">
       <div class="flex-none p-1 mb-2">
         <div class="form-control">
@@ -57,6 +57,5 @@
         </ul>
       </ng-template>
     </div>
-
-  </ng-template>
+  </div>
 </nwb-detail-drawer>

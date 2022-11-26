@@ -14,7 +14,7 @@ import { PerkDetailModule } from '~/widgets/perk-detail'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, RouterModule, PerkDetailModule, PropertyGridModule, LayoutModule],
   host: {
-    class: 'flex-none flex flex-col bg-base-300',
+    class: 'flex-none flex flex-col',
   },
 })
 export class PerksDetailComponent {

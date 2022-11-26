@@ -25,7 +25,7 @@ export interface ItemDetailVM {
   imports: [CommonModule, RouterModule, FormsModule, NwModule, ItemDetailModule, ScreenshotModule, LayoutModule],
   providers: [GearsetStore],
   host: {
-    class: 'flex-none flex flex-col bg-base-300',
+    class: 'flex-none flex flex-col',
   },
 })
 export class PlayerItemsDetailComponent {

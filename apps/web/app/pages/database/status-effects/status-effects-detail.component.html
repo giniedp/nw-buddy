@@ -1,5 +1,5 @@
-<nwb-detail-drawer class="hidden lg:block lg:w-96 layout-pad">
-  <ng-template>
+<nwb-detail-drawer class="hidden lg:block lg:w-96 layout-pad-x">
+  <div *nwbDetailDraweContent class="layout-col bg-base-300">
     <div [nwbStatusEffectDetail]="itemId | async" #detail="effectDetail" class="flex flex-col layout-gap">
       <nwb-property-grid
         [rows]="detail.properties$ | async"
@@ -8,5 +8,5 @@
       >
       </nwb-property-grid>
     </div>
-  </ng-template>
+  </div>
 </nwb-detail-drawer>
