@@ -17,8 +17,8 @@ import { WeaponChartComponent } from './weapon-chart.component'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, FormsModule, NwModule, WeaponLevelInputModule, WeaponChartComponent],
   host: {
-    class: 'layout-content layout-pad'
-  }
+    class: 'block layout-pad',
+  },
 })
 export class WeaponsComponent {
 

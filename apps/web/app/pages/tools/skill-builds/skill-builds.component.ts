@@ -2,6 +2,7 @@ import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
+import { IonicModule } from '@ionic/angular'
 import { filter } from 'rxjs'
 import { SkillBuildRow, SkillBuildsStore } from '~/data'
 import { NwModule } from '~/nw'
@@ -29,10 +30,11 @@ import { SkillBuildsTableAdapter } from './skill-builds-table.adapter'
     NavToolbarModule,
     IconsModule,
     TooltipModule,
+    IonicModule
   ],
   providers: [SkillBuildsTableAdapter.provider(), QuicksearchService, SkillBuildsStore],
   host: {
-    class: 'layout-col bg-base-300 rounded-md overflow-clip',
+    class: 'layout-col bg-base-100',
   },
 })
 export class SkillBuildsComponent {

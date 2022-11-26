@@ -1,5 +1,5 @@
-<div class="layout-content p-3" *ngIf="rows$ | async; let rows">
-  <div class="grid grid-cols-3 layout-gap min-w-[1100px] max-w-[1500px] mx-auto" [nwbScreenshotFrame]="'Trophies'" [@listAnimation]="rows.length">
+<div class="min-w-[1100px] max-w-[1500px] mx-auto" *ngIf="rows$ | async; let rows">
+  <div class="grid grid-cols-3 layout-gap" [nwbScreenshotFrame]="'Trophies'" [@listAnimation]="rows.length">
     <ng-container *ngFor="let row of rows; trackBy: trackByIndex">
       <nwb-item-detail [entityId]="item.itemId" *ngFor="let item of row; trackBy: trackByIndex" #detail="detail" nwbContentVisibility>
         <nwb-item-detail-header [enableTracker]="true" [enableInfoLink]="true"></nwb-item-detail-header>

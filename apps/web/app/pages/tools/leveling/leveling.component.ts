@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
+import { IonicModule } from '@ionic/angular'
 import { QuicksearchModule } from '~/ui/quicksearch'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
@@ -9,9 +10,9 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   selector: 'nwb-leveling-page',
   templateUrl: './leveling.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, QuicksearchModule, ScreenshotModule],
+  imports: [CommonModule, RouterModule, QuicksearchModule, ScreenshotModule, IonicModule],
   host: {
-    class: 'layout-col bg-base-300 rounded-md overflow-clip',
+    class: 'layout-col',
   },
 })
 export class LevelingComponent {

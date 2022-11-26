@@ -32,7 +32,7 @@ function isRunestone(it: Crafting) {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ItemDetailModule, ScreenshotModule],
   host: {
-    class: 'layout-row bg-base-300',
+    class: 'layout-content layout-pad',
   },
   animations: [
     trigger('listAnimation', [

@@ -47,7 +47,7 @@ export interface GearsetSkillVM {
   ],
   providers: [GearsetSkillStore],
   host: {
-    class: 'block bg-base-100 rounded-md flex flex-col',
+    class: 'block flex flex-col',
   },
 })
 export class GearsetSkillComponent {

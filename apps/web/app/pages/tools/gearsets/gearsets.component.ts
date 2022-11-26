@@ -2,8 +2,9 @@ import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { Component, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { filter, switchMap } from 'rxjs'
-import { GearsetRow, GearsetsDB, GearsetsStore, ItemInstancesStore } from '~/data'
+import { IonicModule } from '@ionic/angular'
+import { filter } from 'rxjs'
+import { GearsetRow, GearsetsStore } from '~/data'
 import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
 import { IconsModule } from '~/ui/icons'
@@ -28,10 +29,11 @@ import { GearsetsTableAdapter } from './gearsets-table.adapter'
     NavToolbarModule,
     IconsModule,
     TooltipModule,
+    IonicModule
   ],
   providers: [GearsetsTableAdapter.provider(), QuicksearchService, GearsetsStore],
   host: {
-    class: 'layout-col bg-base-300 rounded-md overflow-clip',
+    class: 'layout-col bg-base-100',
   },
 })
 export class GearsetsComponent implements OnInit {

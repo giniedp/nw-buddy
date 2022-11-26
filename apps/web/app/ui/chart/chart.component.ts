@@ -19,6 +19,7 @@ Chart.register(...registerables)
   template: `<canvas #canvas></canvas>`,
 })
 export class ChartComponent implements OnInit, OnDestroy {
+
   @Input()
   public set config(value: ChartConfiguration) {
     this.config$.next(value)

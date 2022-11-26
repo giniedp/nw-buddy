@@ -1,6 +1,6 @@
 <ng-container *ngIf="vm$ | async; let vm">
   <div *ngIf="vm.gearset; let gearset" class="layout-content layout-gap">
-    <div class="flex-none p-1 mb-2">
+    <div class="flex-none p-1 mb-2 bg-base-200">
       <div class="form-control">
         <div class="input-group">
           <button class="btn btn-ghost btn-square inline-flex" (click)="unloadSet()">
@@ -25,7 +25,7 @@
         </div>
       </div>
     </div>
-    <div class="flex-none grid gap-1">
+    <div class="flex-none grid gap-1 layout-pad-x">
       <ng-container *ngFor="let slot of slots">
         <nwb-gearset-form-cell
           [slot]="slot"
@@ -38,7 +38,7 @@
     </div>
   </div>
 
-  <div *ngIf="!vm.gearset && !vm.isLoading" class="max-w-md mx-auto layout-col layout-gap h-full items-center justify-center">
+  <div *ngIf="!vm.gearset && !vm.isLoading" class="max-w-md mx-auto layout-col layout-gap layout-pad-t h-full items-center justify-center">
     <button class="btn btn-primary w-full" (click)="loadSet()">
       <nwb-icon [icon]="iconOpen" class="w-4 h-4 mr-2"></nwb-icon>
       Open existing set

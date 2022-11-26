@@ -1,33 +1,35 @@
-<nwb-data-table-header
-  class="flex flex-col-reverse md:flex-row bg-base-300 rounded-t-md"
-  categoryChildRoute
-  [childRouteIndex]="'table'"
-  #header="tableHeader"
->
-  <nwb-nav-toolbar [menu]="tplMenu" [buttons]="tplButtons" class="flex-1">
-    <ng-template #tplMenu>
-      <li *ngFor="let item of header.categories | async" [routerLinkActive]="'bordered'">
-        <a [routerLink]="item.route">
-          <img [nwImage]="item.icon" *ngIf="item.icon" class="w-6 h-6" />
-          <span *ngIf="!item.icon">{{ item.label }}</span>
-        </a>
-      </li>
-    </ng-template>
-    <ng-template #tplButtons>
-      <li [tooltip]="'Create new gearset'" [color]="'accent'">
-        <span (click)="createItem()">
-          <nwb-icon [icon]="iconCreate" class="w-4 h-4"></nwb-icon>
-        </span>
-      </li>
-      <li>
-        <nwb-data-table-panel-button></nwb-data-table-panel-button>
-      </li>
-    </ng-template>
-  </nwb-nav-toolbar>
-  <div class="flex-none p-2 w-full md:max-w-[300px]">
-    <nwb-quicksearch-input></nwb-quicksearch-input>
-  </div>
-</nwb-data-table-header>
+<ion-header class="bg-base-200">
+  <nwb-data-table-header
+    class="flex flex-col-reverse md:flex-row "
+    categoryChildRoute
+    [childRouteIndex]="'table'"
+    #header="tableHeader"
+  >
+    <nwb-nav-toolbar [menu]="tplMenu" [buttons]="tplButtons" class="flex-1">
+      <ng-template #tplMenu>
+        <li *ngFor="let item of header.categories | async" [routerLinkActive]="'bordered'">
+          <a [routerLink]="item.route">
+            <img [nwImage]="item.icon" *ngIf="item.icon" class="w-6 h-6" />
+            <span *ngIf="!item.icon">{{ item.label }}</span>
+          </a>
+        </li>
+      </ng-template>
+      <ng-template #tplButtons>
+        <li [tooltip]="'Create new gearset'" [color]="'accent'">
+          <span (click)="createItem()">
+            <nwb-icon [icon]="iconCreate" class="w-4 h-4"></nwb-icon>
+          </span>
+        </li>
+        <li>
+          <nwb-data-table-panel-button></nwb-data-table-panel-button>
+        </li>
+      </ng-template>
+    </nwb-nav-toolbar>
+    <div class="flex-none p-2 w-full md:max-w-[300px]">
+      <nwb-quicksearch-input></nwb-quicksearch-input>
+    </div>
+  </nwb-data-table-header>
+</ion-header>
 
 <div class="layout-col xl:flex-row w-full layout-gap">
   <nwb-data-table

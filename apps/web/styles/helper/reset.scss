@@ -12,9 +12,6 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  background-image: url('^assets/mainbg.jpg');
-  background-size: cover;
-  background-attachment: fixed;
 }
 
 router-outlet {

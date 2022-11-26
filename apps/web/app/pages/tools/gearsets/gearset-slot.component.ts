@@ -60,7 +60,7 @@ export interface GearsetSlotVM {
   ],
   providers: [GearsetSlotStore],
   host: {
-    class: 'block bg-base-100 rounded-md flex flex-col overflow-hidden',
+    class: 'block bg-base-300 rounded-md flex flex-col overflow-hidden',
   },
 })
 export class GearsetSlotComponent {

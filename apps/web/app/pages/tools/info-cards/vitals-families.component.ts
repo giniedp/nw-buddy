@@ -10,7 +10,7 @@ import { VitalsFamiliesModule } from '~/widgets/vitals-families'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, VitalsFamiliesModule, ScreenshotModule],
   host: {
-    class: 'layout-row bg-base-300',
+    class: 'layout-content layout-pad',
   },
 })
 export class VitalsFamiliesComponent {}

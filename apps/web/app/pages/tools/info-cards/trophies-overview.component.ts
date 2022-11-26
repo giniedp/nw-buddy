@@ -1,6 +1,7 @@
 import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
+import { IonicModule } from '@ionic/angular'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { groupBy } from 'lodash'
 import { combineLatest, defer, map } from 'rxjs'
@@ -17,23 +18,15 @@ function isTrophy(item: Crafting) {
 function isTrophyItem(item: Housingitems) {
   return item.HousingTags?.includes('IsTrophyBuff')
 }
-type RecipeWithItem = Crafting & {
-  $item: ItemDefinitionMaster | Housingitems
-  $itemId: string
-  $ingredients: Array<{
-    quantity: number
-    item: ItemDefinitionMaster | Housingitems
-  }>
-}
 
 @Component({
   standalone: true,
   selector: 'nwb-trophies-overview',
   templateUrl: './trophies-overview.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemDetailModule, ScreenshotModule, ContentVisibilityDirective],
+  imports: [CommonModule, NwModule, ItemDetailModule, ScreenshotModule, ContentVisibilityDirective, IonicModule],
   host: {
-    class: 'layout-row bg-base-300',
+    class: 'layout-content layout-pad',
   },
   animations: [
     trigger('listAnimation', [
@@ -46,7 +39,7 @@ type RecipeWithItem = Crafting & {
       state('true', style({ opacity: 1 })),
       transition('* => true', [animate('0.3s')]),
     ]),
-  ]
+  ],
 })
 export class TrophiesOverviewComponent {
   protected housings$ = defer(() => this.db.housingItems).pipe(map((it) => it.filter(isTrophyItem)))
@@ -74,9 +67,8 @@ export class TrophiesOverviewComponent {
           itemId: getItemId(housing),
           item: housing,
           recipe: recipe,
-          ingredients: ingredients
+          ingredients: ingredients,
         }
-
       })
     })
   )

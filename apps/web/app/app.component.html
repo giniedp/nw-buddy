@@ -5,44 +5,48 @@
     <ng-container *ngTemplateOutlet="tplHeader"></ng-container>
   </ng-container>
 
-  <ion-content>
+  <ion-content [scrollY]="false">
     <ion-split-pane when="xl" contentId="main-content">
       <ion-menu menuId="main-menu" contentId="main-content" class="xl:w-60" nwbMenu>
-        <div class="h-full w-full layout-content layout-pad bg-base-300 xl:bg-transparent">
-          <div class="layout-col layout-gap">
-            <ng-container *ngFor="let group of mainMenu">
-              <ul class="menu menu-compact bg-base-300 rounded-md flex-none m-0">
-                <li class="menu-title uppercase mt-2" *ngIf="group.category">
-                  <span>{{ group.category }}</span>
-                </li>
-                <ng-container *ngFor="let item of group.items">
-                  <li *ngIf="item.divider"></li>
-                  <li routerLinkActive="bordered">
-                    <a #link [routerLink]="item.path" nwbMenuClose>
-                      {{ item.label }}
-                    </a>
+        <ion-content [scrollY]="false" [scrollX]="false">
+          <div class="h-full w-full layout-content bg-base-300">
+            <div class="layout-col layout-gap">
+              <ng-container *ngFor="let group of mainMenu">
+                <ul class="menu menu-compact flex-none m-0">
+                  <li class="menu-title uppercase mt-2" *ngIf="group.category">
+                    <span>{{ group.category }}</span>
                   </li>
-                </ng-container>
-              </ul>
-            </ng-container>
+                  <ng-container *ngFor="let item of group.items">
+                    <li *ngIf="item.divider"></li>
+                    <li routerLinkActive="bordered">
+                      <a #link [routerLink]="item.path" nwbMenuClose>
+                        {{ item.label }}
+                      </a>
+                    </li>
+                  </ng-container>
+                </ul>
+              </ng-container>
+            </div>
           </div>
-        </div>
+        </ion-content>
       </ion-menu>
-      <div id="main-content" class="layout-col xl:ml-[-1rem]" >
+      <ion-content id="main-content" [scrollY]="false">
         <ng-container *ngIf="!(isDesktop$ | async)">
           <ng-container *ngTemplateOutlet="tplHeader"></ng-container>
         </ng-container>
-        <div class="layout-col layout-pad">
-          <router-outlet></router-outlet>
-        </div>
-      </div>
+        <ion-content [scrollY]="false" class="bg-base-200">
+          <div class="h-full layout-col">
+            <router-outlet></router-outlet>
+          </div>
+        </ion-content>
+      </ion-content>
     </ion-split-pane>
   </ion-content>
 </ion-app>
 
 <ng-template #tplHeader>
-  <ion-header class="layout-pad-x layout-pad-t">
-    <ion-toolbar class="bg-base-100 rounded-md">
+  <ion-header>
+    <ion-toolbar class="bg-base-300">
       <ion-buttons slot="start">
         <ion-menu-toggle menu="main-menu">
           <button class="btn btn-square btn-ghost text-primary">
@@ -68,7 +72,7 @@
 </ng-template>
 
 <ng-template #tplLangMenu>
-  <ul class="menu menu-compact bg-base-100 rounded-md w-40 shadow-md" cdkMenu>
+  <ul class="menu menu-compact bg-base-300 rounded-md w-40 shadow-md" cdkMenu>
     <li *ngFor="let item of langOptions">
       <button (click)="language = item.value" cdkMenuItem>
         {{ item.label }}

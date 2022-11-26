@@ -30,7 +30,7 @@ type RecipeWithItem = Crafting & {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ItemDetailModule, ScreenshotModule, ContentVisibilityDirective],
   host: {
-    class: 'layout-row bg-base-300',
+    class: 'layout-row',
   },
   animations: [
     trigger('listAnimation', [

@@ -35,7 +35,7 @@ export class NavToolbarButtonsComponent {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, OverlayModule, IconsModule],
   host: {
-    class: 'flex flex-row bg-base-300 overflow-hidden',
+    class: 'flex flex-row overflow-hidden',
   },
 })
 export class NavToolbarComponent {

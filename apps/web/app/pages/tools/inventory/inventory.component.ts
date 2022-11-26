@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
+import { IonicModule } from '@ionic/angular'
 import { firstValueFrom, take } from 'rxjs'
 import { GearsetsStore, ItemInstanceRow, ItemInstancesStore } from '~/data'
 import { NwModule } from '~/nw'
@@ -32,10 +33,11 @@ import { PlayerItemsTableAdapter } from './inventory-table.adapter'
     ScreenshotModule,
     IconsModule,
     GearsetFormComponent,
-    TooltipModule
+    TooltipModule,
+    IonicModule
   ],
   host: {
-    class: 'layout-col bg-base-300 rounded-md overflow-clip',
+    class: 'layout-col bg-base-100',
   },
   providers: [PlayerItemsTableAdapter.provider(), QuicksearchService, InventoryPickerService, ItemInstancesStore, GearsetsStore],
 })

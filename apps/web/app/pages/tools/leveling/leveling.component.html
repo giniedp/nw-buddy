@@ -1,4 +1,4 @@
-<div class="flex-none flex flex-row layout-gap bg-base-300 rounded-t-md">
+<ion-header class="bg-base-200">
   <ul class="menu menu-horizontal overflow-x-auto flex-nowrap">
     <li [routerLinkActive]="'bordered'">
       <a [routerLink]="'xp'"> Level </a>
@@ -10,8 +10,7 @@
       <a [routerLink]="'weapons'"> Weapon Mastery </a>
     </li>
   </ul>
-  <div class="flex-1"></div>
-</div>
-<div class="layout-col bg-base-300">
+</ion-header>
+<ion-content class="bg-base-200">
   <router-outlet></router-outlet>
-</div>
+</ion-content>

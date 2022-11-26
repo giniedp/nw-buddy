@@ -12,7 +12,7 @@ import { TooltipModule } from './ui/tooltip'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, TooltipModule],
   host: {
-    class: 'layout-content w-full',
+    class: 'layout-content w-full layout-pad-y',
   },
 })
 export class LandingComponent {

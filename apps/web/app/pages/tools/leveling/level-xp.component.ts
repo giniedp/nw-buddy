@@ -12,7 +12,7 @@ import { XpTableModule } from '~/widgets/xp-table'
   imports: [CommonModule, XpTableModule, LevelInputModule, FormsModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'layout-content layout-pad',
+    class: 'block layout-pad',
   },
 })
 export class LevelXpComponent {

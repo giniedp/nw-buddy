@@ -12,6 +12,9 @@ import { ChartModule } from '~/ui/chart'
   styleUrls: ['./weapon-chart.component.scss'],
   imports: [CommonModule, NwModule, ChartModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'block',
+  },
 })
 export class WeaponChartComponent {
 

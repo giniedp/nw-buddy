@@ -1,7 +1,7 @@
-<nwb-detail-drawer class="hidden lg:block layout-pad" [breakOn]="'xl'" [breakpoints]="[0.15, 0.25, 0.5, 1.0]">
-  <div *nwbDetailDraweContent class="layout-col bg-base-300">
-    <div *ngIf="item$ | async; let item" class="layout-col">
-      <div class="flex-none p-1 mb-2">
+<nwb-detail-drawer class="hidden lg:block" [breakOn]="'xl'" [breakpoints]="[0.15, 0.25, 0.5, 1.0]">
+  <div *nwbDetailDraweContent class="layout-col bg-base-100">
+    <ng-container *ngIf="item$ | async; let item">
+      <div class="flex-none p-1 bg-base-200">
         <div class="form-control">
           <div class="input-group">
             <a class="btn btn-ghost btn-square inline-flex" [routerLink]="'..'">
@@ -22,7 +22,7 @@
           </div>
         </div>
       </div>
-      <div [nwbScreenshotFrame]="item.record.name" class="layout-content bg-base-300">
+      <div [nwbScreenshotFrame]="item.record.name" class="layout-content bg-base-100">
         <nwb-skill-builder
           [ngModel]="item.record"
           (ngModelChange)="updateModel(item.record, $event)"
@@ -56,6 +56,6 @@
           </li>
         </ul>
       </ng-template>
-    </div>
+    </ng-container>
   </div>
 </nwb-detail-drawer>

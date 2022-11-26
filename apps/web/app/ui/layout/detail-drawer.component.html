@@ -8,7 +8,7 @@
   [handleBehavior]="'cycle'"
 >
   <ng-template>
-    <ion-content style="--overflow: hidden">
+    <ion-content [scrollY]="false">
       <div class="h-full layout-col" >
         <ng-container *ngTemplateOutlet="template"></ng-container>
       </div>

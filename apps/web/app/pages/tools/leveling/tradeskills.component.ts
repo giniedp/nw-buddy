@@ -13,8 +13,8 @@ import { TradeskillsModule } from '~/widgets/tradeskills'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, TradeskillsModule],
   host: {
-    class: 'layout-content layout-pad'
-  }
+    class: 'block layout-pad',
+  },
 })
 export class TradeskillsComponent implements OnInit, OnDestroy {
   public get skills() {

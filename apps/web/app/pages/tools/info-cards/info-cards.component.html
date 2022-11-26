@@ -1,24 +1,26 @@
-<div class="flex-none flex flex-row bg-base-300 rounded-t-md">
-  <nwb-nav-toolbar class="bg-base-300 rounded-t-md flex-1" [menu]="tplMenu" [buttons]="tplButtons">
-    <ng-template #tplMenu>
-      <li [routerLinkActive]="'bordered'">
-        <a [routerLink]="'trophies'"> Trophies </a>
-      </li>
-      <li [routerLinkActive]="'bordered'">
-        <a [routerLink]="'runes'"> Runes </a>
-      </li>
-      <li [routerLinkActive]="'bordered'">
-        <a [routerLink]="'vitals'"> Vitals</a>
-      </li>
-      <li [routerLinkActive]="'bordered'">
-        <a [routerLink]="'gems'"> Gems </a>
-      </li>
-    </ng-template>
-    <ng-template #tplButtons>
-      <li>
-        <nwb-screenshot-button class="tooltip-left"></nwb-screenshot-button>
-      </li>
-    </ng-template>
-  </nwb-nav-toolbar>
-</div>
+<ion-header class="bg-base-300">
+  <div class="flex flex-row">
+    <nwb-nav-toolbar class="flex-1" [menu]="tplMenu" [buttons]="tplButtons">
+      <ng-template #tplMenu>
+        <li [routerLinkActive]="'bordered'">
+          <a [routerLink]="'trophies'"> Trophies </a>
+        </li>
+        <li [routerLinkActive]="'bordered'">
+          <a [routerLink]="'runes'"> Runes </a>
+        </li>
+        <li [routerLinkActive]="'bordered'">
+          <a [routerLink]="'vitals'"> Vitals</a>
+        </li>
+        <li [routerLinkActive]="'bordered'">
+          <a [routerLink]="'gems'"> Gems </a>
+        </li>
+      </ng-template>
+      <ng-template #tplButtons>
+        <li>
+          <nwb-screenshot-button class="tooltip-left"></nwb-screenshot-button>
+        </li>
+      </ng-template>
+    </nwb-nav-toolbar>
+  </div>
+</ion-header>
 <router-outlet></router-outlet>

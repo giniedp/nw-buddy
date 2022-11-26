@@ -1,12 +1,12 @@
-<div class="layout-content p-3">
+<div class="min-w-[1600px] max-w-[2000px] mx-auto">
   <div
     *ngIf="rows$ | async; let rows"
     [@listAnimation]="rows.length"
     [nwbScreenshotFrame]="'Runes'"
-    class="grid grid-cols-5 layout-gap min-w-[1600px] max-w-[2000px] mx-auto"
+    class="grid grid-cols-5 layout-gap"
   >
     <ng-container *ngFor="let row of rows; trackBy: trackByIndex">
-      <div *ngFor="let item of row; trackBy: trackByIndex" class="bg-base-100 rounded-md">
+      <div *ngFor="let item of row; trackBy: trackByIndex" class="bg-base-300 rounded-md">
         <nwb-item-detail [entityId]="item.$itemId">
           <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true"></nwb-item-detail-header>
           <nwb-item-detail-description></nwb-item-detail-description>

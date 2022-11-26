@@ -13,7 +13,7 @@ import { TerritoryModule } from '~/widgets/territory'
   imports: [CommonModule, RouterModule, TerritoryModule, QuicksearchModule, NavToolbarModule],
   providers: [QuicksearchService],
   host: {
-    class: 'layout-col bg-base-300 rounded-md overflow-clip',
+    class: 'layout-col bg-base-200 rounded-md overflow-clip',
   },
 })
 export class TerritoriesComponent {

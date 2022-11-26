@@ -1,53 +1,55 @@
 <ng-container *ngIf="data$ | async; let data; else: tplEmpty">
-  <div class="navbar bg-base-300 rounded-t-md">
-    <div class="flex-none">
-      <ul class="menu menu-horizontal p-0">
-        <li>
-          <a (click)="goBack()">
-            <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
-          </a>
-        </li>
-      </ul>
+  <ion-header class="bg-base-200">
+    <div class="navbar">
+      <div class="flex-none">
+        <ul class="menu menu-horizontal p-0">
+          <li>
+            <a (click)="goBack()">
+              <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="flex-1">
+        <input
+          type="text"
+          maxlength="100"
+          [ngModel]="name$ | async"
+          (ngModelChange)="updateName($event)"
+          [ngModelOptions]="{ updateOn: 'blur' }"
+          class="input input-md w-full"
+        />
+      </div>
+      <div class="flex-none">
+        <ul class="menu menu-horizontal p-0">
+          <li [tooltip]="'Grab screenshot'" [color]="'info'">
+            <nwb-screenshot-button></nwb-screenshot-button>
+          </li>
+          <li [tooltip]="compactMode ? 'Disable compact mode' : 'Enable compact mode'" [color]="'info'">
+            <a (click)="onCompactClicked()" [class.text-primary]="compactMode">
+              <svg viewBox="0 0 448 512" class="w-4 h-4">
+                <path
+                  fill="currentColor"
+                  d="M160 64c0-17.7-14.3-32-32-32s-32 14.3-32 32v64H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V64zM32 320c-17.7 0-32 14.3-32 32s14.3 32 32 32H96v64c0 17.7 14.3 32 32 32s32-14.3 32-32V352c0-17.7-14.3-32-32-32H32zM352 64c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H352V64zM320 320c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32s32-14.3 32-32V384h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H320z"
+                />
+              </svg>
+            </a>
+          </li>
+          <li [tooltip]="'Create a copy'" [color]="'info'">
+            <a (click)="onCloneClicked()">
+              <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
+            </a>
+          </li>
+          <li [tooltip]="'Delete'" [color]="'error'">
+            <a (click)="onDeleteClicked()">
+              <nwb-icon [icon]="iconDelete" class="w-4 h-4"></nwb-icon>
+            </a>
+          </li>
+        </ul>
+      </div>
     </div>
-    <div class="flex-1">
-      <input
-        type="text"
-        maxlength="100"
-        [ngModel]="name$ | async"
-        (ngModelChange)="updateName($event)"
-        [ngModelOptions]="{ updateOn: 'blur' }"
-        class="input input-md w-full"
-      />
-    </div>
-    <div class="flex-none">
-      <ul class="menu menu-horizontal p-0">
-        <li [tooltip]="'Grab screenshot'" [color]="'info'">
-          <nwb-screenshot-button></nwb-screenshot-button>
-        </li>
-        <li [tooltip]="compactMode ? 'Disable compact mode' : 'Enable compact mode'" [color]="'info'">
-          <a (click)="onCompactClicked()" [class.text-primary]="compactMode">
-            <svg viewBox="0 0 448 512" class="w-4 h-4">
-              <path
-                fill="currentColor"
-                d="M160 64c0-17.7-14.3-32-32-32s-32 14.3-32 32v64H32c-17.7 0-32 14.3-32 32s14.3 32 32 32h96c17.7 0 32-14.3 32-32V64zM32 320c-17.7 0-32 14.3-32 32s14.3 32 32 32H96v64c0 17.7 14.3 32 32 32s32-14.3 32-32V352c0-17.7-14.3-32-32-32H32zM352 64c0-17.7-14.3-32-32-32s-32 14.3-32 32v96c0 17.7 14.3 32 32 32h96c17.7 0 32-14.3 32-32s-14.3-32-32-32H352V64zM320 320c-17.7 0-32 14.3-32 32v96c0 17.7 14.3 32 32 32s32-14.3 32-32V384h64c17.7 0 32-14.3 32-32s-14.3-32-32-32H320z"
-              />
-            </svg>
-          </a>
-        </li>
-        <li [tooltip]="'Create a copy'" [color]="'info'">
-          <a (click)="onCloneClicked()">
-            <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
-          </a>
-        </li>
-        <li [tooltip]="'Delete'" [color]="'error'">
-          <a (click)="onDeleteClicked()">
-            <nwb-icon [icon]="iconDelete" class="w-4 h-4"></nwb-icon>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </div>
-  <div class="bg-base-300 px-4 pt-2">
+  </ion-header>
+  <div class=" px-4 pt-2">
     <div class="alert prose mx-auto leading-tight">
       <div>
         <svg
@@ -68,16 +70,16 @@
     </div>
   </div>
 
-  <div class="bg-base-300 p-4 rounded-b-md flex flex-col xl:flex-row layout-gap" [nwbScreenshotFrame]="name$ | async">
+  <div class=" p-4 rounded-b-md flex flex-col xl:flex-row layout-gap" [nwbScreenshotFrame]="name$ | async">
     <div class="flex-1 grid layout-gap" [@listAnimation]="slots?.length">
-      <nwb-gearset-stats [class.text-xs]="compactMode" class="col-span-1 sm:col-span-2"></nwb-gearset-stats>
+      <nwb-gearset-stats [class.text-xs]="compactMode" class="col-span-1 sm:col-span-2 bg-base-300 rounded-md"></nwb-gearset-stats>
       <nwb-gearset-skill
-        class="col-span-1 sm:col-span-2 bg-base-100 rounded-md"
+        class="col-span-1 sm:col-span-2 bg-base-300 rounded-md"
         [slot]="'primary'"
         [gearset]="data"
       ></nwb-gearset-skill>
       <nwb-gearset-skill
-        class="col-span-1 sm:col-span-2 bg-base-100 rounded-md"
+        class="col-span-1 sm:col-span-2 bg-base-300 rounded-md"
         [slot]="'secondary'"
         [gearset]="data"
       ></nwb-gearset-skill>

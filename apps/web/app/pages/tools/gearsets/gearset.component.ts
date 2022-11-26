@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common'
 import { Component, TrackByFunction } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
+import { IonicModule } from '@ionic/angular'
 import { filter, firstValueFrom, switchMap } from 'rxjs'
 import { GearsetsDB, GearsetStore, ItemInstance, ItemInstancesStore } from '~/data'
 import { EquipSlot, EQUIP_SLOTS } from '~/nw/utils'
@@ -32,11 +33,12 @@ import { GearsetStatsComponent } from './gearset-stats.component'
     RouterModule,
     ScreenshotModule,
     TooltipModule,
+    IonicModule
   ],
   providers: [GearsetStore, ItemInstancesStore],
   styleUrls: ['./gearset.component.scss'],
   host: {
-    class: 'layout-content flex-none overflow-x-hidden',
+    class: 'layout-content flex-none',
   },
   animations: [
     trigger('listAnimation', [

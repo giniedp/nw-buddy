@@ -4,13 +4,12 @@
 .ag-grid {
   @include ag-theme-alpine-dark(
     (
-      // alpine-active-color: var(--p),
       borders: false,
       cell-horizontal-padding: 8px,
-      background-color: #1F1F1F,
-      header-background-color: #1F1F1F,
-      odd-row-background-color: #1A1A1A,
-      control-panel-background-color: #1F1F1F,
+      background-color: #1D1D1D,
+      header-background-color: #1D1D1D,
+      odd-row-background-color: #212121,
+      control-panel-background-color: #212121,
       input-focus-box-shadow: none,
       card-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5),
       range-selection-border-color: transparent,

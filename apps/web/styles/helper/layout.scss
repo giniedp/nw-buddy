@@ -10,48 +10,79 @@
 
 .layout-pad {
   @apply p-2 lg:p-4;
+  --padding-top: 0.5rem;
+  --padding-bottom: 0.5rem;
+  --padding-start: 0.5rem;
+  --padding-end: 0.5rem;
+  @media (min-width: 992px) {
+    --padding-top: 1rem;
+    --padding-bottom: 1rem;
+    --padding-start: 1rem;
+    --padding-end: 1rem;
+  }
 }
 
 .layout-pad-x {
   @apply px-2 lg:px-4;
+  --padding-start: 0.5rem;
+  --padding-end: 0.5rem;
+  @media (min-width: 992px) {
+    --padding-start: 1rem;
+    --padding-end: 1rem;
+  }
 }
 
 .layout-pad-y {
   @apply py-2 lg:py-4;
+  --padding-top: 0.5rem;
+  --padding-bottom: 0.5rem;
+  @media (min-width: 992px) {
+    --padding-top: 1rem;
+    --padding-bottom: 1rem;
+  }
 }
 
 .layout-pad-t {
   @apply pt-2 lg:pt-4;
+  --padding-top: 0.5rem;
+  @media (min-width: 992px) {
+    --padding-top: 1rem;
+  }
 }
 
 .layout-pad-b {
   @apply pb-2 lg:pb-4;
+  --padding-bottom: 0.5rem;
+  @media (min-width: 992px) {
+    --padding-bottom: 1rem;
+  }
 }
 
 .layout-pad-l {
   @apply pl-2 lg:pl-4;
+  --padding-start: 0.5rem;
+  @media (min-width: 992px) {
+    --padding-start: 1rem;
+  }
 }
 
 .layout-pad-r {
   @apply pr-2 lg:pr-4;
+  --padding-end: 0.5rem;
+  @media (min-width: 992px) {
+    --padding-end: 1rem;
+  }
 }
 
 .layout-col,
 .layout-col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  @apply flex-1 flex flex-col overflow-hidden;
 }
 
 .layout-row {
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-  overflow: hidden;
+  @apply flex-1 flex flex-row overflow-hidden;
 }
 
 .layout-content {
-  flex: 1;
-  overflow-y: auto;
+  @apply flex-1 overflow-auto;
 }

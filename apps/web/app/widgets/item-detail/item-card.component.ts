@@ -28,7 +28,7 @@ import { ItemDetailService } from './item-detail.service'
   ],
   exportAs: 'card',
   host: {
-    class: 'block class bg-base-200 rounded-md overflow-clip',
+    class: 'block class bg-base-300 rounded-md overflow-clip',
   },
   providers: [
     {
