@@ -27,8 +27,8 @@ import { InventoryPickerService } from '../inventory/inventory-picker.service'
 import { ItemDefinitionMaster } from '@nw-data/types'
 import { svgEllipsisVertical, svgLink16p, svgLinkSlash16p, svgPlus, svgRotate, svgTrashCan } from '~/ui/icons/svg'
 import { IconsModule } from '~/ui/icons'
-import { CdkMenuModule } from '@angular/cdk/menu'
 import { TooltipModule } from '~/ui/tooltip'
+import { LayoutModule } from '~/ui/layout'
 
 export interface GearsetSlotVM {
   slot?: EquipSlot
@@ -52,11 +52,10 @@ export interface GearsetSlotVM {
     NwModule,
     DialogModule,
     FormsModule,
-    OverlayModule,
     ItemDetailModule,
     DataTableModule,
     IconsModule,
-    CdkMenuModule,
+    LayoutModule,
     TooltipModule,
   ],
   providers: [GearsetSlotStore],

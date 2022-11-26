@@ -1,20 +1,18 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
-import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { combineLatest, filter, firstValueFrom, map, switchMap, take, tap } from 'rxjs'
-import { GearsetsDB, GearsetsStore, GearsetStore, ItemInstanceRecord } from '~/data'
+import { GearsetsDB, GearsetStore, ItemInstanceRecord } from '~/data'
 import { NwModule } from '~/nw'
 import { EquipSlot, EQUIP_SLOTS } from '~/nw/utils'
 import { PreferencesService } from '~/preferences'
 import { DataTablePickerDialog } from '~/ui/data-table'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft, svgFolderOpen, svgLink, svgPaste, svgPlus, svgSquareArrowUpRight } from '~/ui/icons/svg'
-import { PromptDialogComponent } from '~/ui/modal'
+import { LayoutModule, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { GearsetTableAdapter } from '~/widgets/adapter'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { GearsetsTableAdapter } from '../gearsets/gearsets-table.adapter'
 import { GearsetFormCellComponent } from './gearset-form-cell.component'
@@ -30,7 +28,7 @@ import { GearsetFormCellComponent } from './gearset-form-cell.component'
     FormsModule,
     NwModule,
     DialogModule,
-    CdkMenuModule,
+    LayoutModule,
     GearsetFormCellComponent,
     IconsModule,
     ItemDetailModule,

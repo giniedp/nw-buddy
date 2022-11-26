@@ -1,53 +1,55 @@
-<ng-container *ngIf="vm$ | async; let vm">
+<nwb-detail-drawer class="hidden 2xl:block" breakOn="2xl">
+  <ng-template>
+    <ng-container *ngIf="vm$ | async; let vm">
+      <nwb-item-detail
+        *ngIf="vm.instance"
+        [entityId]="vm.instance.itemId"
+        [gearScoreOverride]="overrideGearScore || vm.instance.gearScore"
+        [perkOverride]="vm.instance.perks"
+      >
+        <nwb-item-detail-header></nwb-item-detail-header>
+        <!-- <ng-container *ngIf="vm.isRune && !compact">
+        <nwb-item-detail-divider></nwb-item-detail-divider>
+        <nwb-item-detail-description></nwb-item-detail-description>
+      </ng-container> -->
+        <nwb-item-detail-stats
+          [gearScoreEditable]="true"
+          (gearScoreEdit)="isGearScoreOpen = !isGearScoreOpen"
+          #stats="itemDetailStats"
+        ></nwb-item-detail-stats>
 
+        <nwb-item-detail-divider></nwb-item-detail-divider>
+        <nwb-item-detail-perks (editPerk)="pickPerk(vm, $event.key)" [perkEditable]="true"></nwb-item-detail-perks>
 
-  <nwb-item-detail
-    *ngIf="vm.instance"
-    [entityId]="vm.instance.itemId"
-    [gearScoreOverride]="overrideGearScore || vm.instance.gearScore"
-    [perkOverride]="vm.instance.perks"
-  >
-    <nwb-item-detail-header></nwb-item-detail-header>
-    <!-- <ng-container *ngIf="vm.isRune && !compact">
-      <nwb-item-detail-divider></nwb-item-detail-divider>
-      <nwb-item-detail-description></nwb-item-detail-description>
-    </ng-container> -->
-    <nwb-item-detail-stats
-      [gearScoreEditable]="true"
-      (gearScoreEdit)="isGearScoreOpen = !isGearScoreOpen"
-      #stats="itemDetailStats"
-    ></nwb-item-detail-stats>
+        <!-- <ng-container *ngIf="!vm.isRune">
+        <nwb-item-detail-divider></nwb-item-detail-divider>
+        <nwb-item-detail-description></nwb-item-detail-description>
+      </ng-container> -->
+        <nwb-item-detail-divider></nwb-item-detail-divider>
+        <nwb-item-detail-info></nwb-item-detail-info>
 
-    <nwb-item-detail-divider></nwb-item-detail-divider>
-    <nwb-item-detail-perks (editPerk)="pickPerk(vm, $event.key)" [perkEditable]="true"></nwb-item-detail-perks>
-
-    <!-- <ng-container *ngIf="!vm.isRune">
-      <nwb-item-detail-divider></nwb-item-detail-divider>
-      <nwb-item-detail-description></nwb-item-detail-description>
-    </ng-container> -->
-    <nwb-item-detail-divider></nwb-item-detail-divider>
-    <nwb-item-detail-info></nwb-item-detail-info>
-
-    <ng-template
-      cdkConnectedOverlay
-      [cdkConnectedOverlayOrigin]="stats.gearScoreOverlayOrigin"
-      [cdkConnectedOverlayOpen]="isGearScoreOpen"
-      [cdkConnectedOverlayHasBackdrop]="true"
-      (backdropClick)="isGearScoreOpen = false"
-      (detach)="isGearScoreOpen = false"
-    >
-      <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
-        <input
-          type="range"
-          min="100"
-          max="625"
-          step="1"
-          [ngModel]="vm.instance.gearScore"
-          (ngModelChange)="setGearScore(vm, $event)"
-          (blur)="commitGearScore(vm)"
-          class="range range-sm range-primary"
-        />
-      </div>
-    </ng-template>
-  </nwb-item-detail>
-</ng-container>
+        <ng-template
+          cdkConnectedOverlay
+          [cdkConnectedOverlayOrigin]="stats.gearScoreOverlayOrigin"
+          [cdkConnectedOverlayOpen]="isGearScoreOpen"
+          [cdkConnectedOverlayHasBackdrop]="true"
+          (backdropClick)="isGearScoreOpen = false"
+          (detach)="isGearScoreOpen = false"
+        >
+          <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
+            <input
+              type="range"
+              min="100"
+              max="625"
+              step="1"
+              [ngModel]="vm.instance.gearScore"
+              (ngModelChange)="setGearScore(vm, $event)"
+              (blur)="commitGearScore(vm)"
+              class="range range-sm range-primary"
+            />
+          </div>
+        </ng-template>
+      </nwb-item-detail>
+    </ng-container>
+  </ng-template>
+</nwb-detail-drawer>

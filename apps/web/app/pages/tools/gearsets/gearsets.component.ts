@@ -8,7 +8,7 @@ import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
 import { IconsModule } from '~/ui/icons'
 import { svgPlus } from '~/ui/icons/svg'
-import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/modal'
+import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/layout'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
@@ -31,7 +31,7 @@ import { GearsetsTableAdapter } from './gearsets-table.adapter'
   ],
   providers: [GearsetsTableAdapter.provider(), QuicksearchService, GearsetsStore],
   host: {
-    class: 'layout-col bg-base-100',
+    class: 'layout-col bg-base-300 rounded-md overflow-clip',
   },
 })
 export class GearsetsComponent implements OnInit {

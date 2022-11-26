@@ -1,6 +1,6 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { filter } from 'rxjs'
 import { SkillBuildRow, SkillBuildsStore } from '~/data'
@@ -8,7 +8,7 @@ import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
 import { IconsModule } from '~/ui/icons'
 import { svgPlus } from '~/ui/icons/svg'
-import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/modal'
+import { ConfirmDialogComponent } from '~/ui/layout'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
@@ -32,7 +32,7 @@ import { SkillBuildsTableAdapter } from './skill-builds-table.adapter'
   ],
   providers: [SkillBuildsTableAdapter.provider(), QuicksearchService, SkillBuildsStore],
   host: {
-    class: 'layout-col',
+    class: 'layout-col bg-base-300 rounded-md overflow-clip',
   },
 })
 export class SkillBuildsComponent {

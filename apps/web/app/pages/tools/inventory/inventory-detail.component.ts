@@ -1,4 +1,3 @@
-import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -6,6 +5,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router'
 import { combineLatest, map, of, switchMap, take } from 'rxjs'
 import { GearsetRecord, GearsetStore, ItemInstance, ItemInstanceRow, ItemInstancesStore } from '~/data'
 import { NwModule } from '~/nw'
+import { LayoutModule } from '~/ui/layout'
 import { observeRouteParam } from '~/utils'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -22,10 +22,10 @@ export interface ItemDetailVM {
   selector: 'nwb-inventory-detail',
   templateUrl: './inventory-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, FormsModule, NwModule, ItemDetailModule, ScreenshotModule, OverlayModule],
+  imports: [CommonModule, RouterModule, FormsModule, NwModule, ItemDetailModule, ScreenshotModule, LayoutModule],
   providers: [GearsetStore],
   host: {
-    class: 'layout-content',
+    class: 'flex-none flex flex-col bg-base-300',
   },
 })
 export class PlayerItemsDetailComponent {

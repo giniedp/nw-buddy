@@ -2738,6 +2738,16 @@
   resolved "https://registry.yarnpkg.com/@humanwhocodes/object-schema/-/object-schema-1.2.1.tgz#b520529ec21d8e5945a1851dfd1c32e94e39ff45"
   integrity sha512-ZnQMnLV4e7hDlUvw8H+U8ASL02SS2Gn6+9Ac3wGGLIe7+je2AeAOxPY+izIPJDfFDb7eDjev0Us8MO1iFRN8hA==
 
+"@ionic/angular@6.3.7":
+  version "6.3.7"
+  resolved "https://registry.yarnpkg.com/@ionic/angular/-/angular-6.3.7.tgz#46f5ea78b35b4a361efa95874cd35cbfe8e1fcf1"
+  integrity sha512-a6EAhK5+elNNvnnSFKdNxdcNKd+epEpR1csQaiixisrWpWirxTNteqNLn9HAe+13iR8esI3mGgyOzVKr011ILw==
+  dependencies:
+    "@ionic/core" "^6.3.6"
+    ionicons "^6.0.4"
+    jsonc-parser "^3.0.0"
+    tslib "^2.0.0"
+
 "@ionic/cli-framework-output@^2.2.5":
   version "2.2.5"
   resolved "https://registry.yarnpkg.com/@ionic/cli-framework-output/-/cli-framework-output-2.2.5.tgz#0db9fba7efe0c27bb5085b12ee01f22053e44152"
@@ -2746,6 +2756,15 @@
     "@ionic/utils-terminal" "2.3.3"
     debug "^4.0.0"
     tslib "^2.0.1"
+
+"@ionic/core@^6.3.6":
+  version "6.3.7"
+  resolved "https://registry.yarnpkg.com/@ionic/core/-/core-6.3.7.tgz#53ef3e101b7d0949519736e104aa5c57aad6b4f0"
+  integrity sha512-HWntdPsc4lVHHwz7kY2BSQteafwXsPxc8y5wAdfeA8woRLGse+1Vq00CDUihf7tTUflM1CdmVgGtyYlDAnO2fA==
+  dependencies:
+    "@stencil/core" "^2.18.0"
+    ionicons "^6.0.4"
+    tslib "^2.1.0"
 
 "@ionic/utils-array@2.1.5":
   version "2.1.5"
@@ -3183,6 +3202,11 @@
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@socket.io/component-emitter/-/component-emitter-3.1.0.tgz#96116f2a912e0c02817345b3c10751069920d553"
   integrity sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==
+
+"@stencil/core@^2.18.0":
+  version "2.19.3"
+  resolved "https://registry.yarnpkg.com/@stencil/core/-/core-2.19.3.tgz#34a35d11982070801300d984ab8cbf9353fac698"
+  integrity sha512-rb6pBWTfD5xDg5M/uEJUeclatE/tqBE3zCCNrEB47AtdkNCzC9fOikdzCYbpdAEpU6GvC60REFr0bd8QFUjn3Q==
 
 "@storybook/addon-controls@6.5.13":
   version "6.5.13"
@@ -10541,6 +10565,13 @@ invert-kv@^2.0.0:
   resolved "https://registry.yarnpkg.com/invert-kv/-/invert-kv-2.0.0.tgz#7393f5afa59ec9ff5f67a27620d11c226e3eec02"
   integrity sha512-wPVv/y/QQ/Uiirj/vh3oP+1Ww+AWehmi1g5fFWGPF6IpCBCDVrhgHRMvrLfdYcwDh3QJbGXDW4JAuzxElLSqKA==
 
+ionicons@^6.0.4:
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/ionicons/-/ionicons-6.0.4.tgz#ab7aa439b7f17f29e0ef0a28568b4920c3167bfd"
+  integrity sha512-uDNOkBo0OVYV+kIhb51g9mb7r3Z0b+78GPZQBsjXuaetNmrB/mNTqN/uFtO+vxL/rQySKjzk8qeKJI5NWL9Ueg==
+  dependencies:
+    "@stencil/core" "^2.18.0"
+
 ip@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ip/-/ip-2.0.0.tgz#4cf4ab182fee2314c75ede1276f8c80b479936da"
@@ -11460,6 +11491,11 @@ jsonc-parser@3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/jsonc-parser/-/jsonc-parser-3.1.0.tgz#73b8f0e5c940b83d03476bc2e51a20ef0932615d"
   integrity sha512-DRf0QjnNeCUds3xTjKlQQ3DpJD51GvDjJfnxUVWg6PZTo2otSm+slzNAxU/35hF8/oJIKoG9slq30JYOsF2azg==
+
+jsonc-parser@^3.0.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/jsonc-parser/-/jsonc-parser-3.2.0.tgz#31ff3f4c2b9793f89c67212627c51c6394f88e76"
+  integrity sha512-gfFQZrcTc8CnKXp6Y4/CBT3fTc0OVuDofpre4aEeEpSBPV5X5v4+Vmx+8snU7RLPrNHPKSgLxGo9YuQzz20o+w==
 
 jsonfile@^3.0.0:
   version "3.0.1"

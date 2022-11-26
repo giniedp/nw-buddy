@@ -9,7 +9,7 @@ import { nwdbLinkUrl } from '~/nw'
 import { getAbilityCategoryTag } from '~/nw/utils'
 import { CellRendererService, DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { svgPen, svgTrashCan } from '~/ui/icons/svg'
-import { ConfirmDialogComponent } from '~/ui/modal'
+import { ConfirmDialogComponent, LayoutService } from '~/ui/layout'
 import { humanize } from '~/utils'
 
 export interface SkillBuildsTableAdapterOptions extends DataTableAdapterOptions<SkillBuildRow> {
@@ -43,7 +43,7 @@ export class SkillBuildsTableAdapter extends DataTableAdapter<SkillBuildRow> {
         this.colDef({
           colId: 'name',
           headerValueGetter: () => 'Name',
-          pinned: true,
+          pinned: !this.layout.isHandset,
           sortable: true,
           filter: true,
           width: 250,
@@ -149,7 +149,8 @@ export class SkillBuildsTableAdapter extends DataTableAdapter<SkillBuildRow> {
     private dialog: Dialog,
     private i18n: TranslateService,
     private zone: NgZone,
-    private r: CellRendererService
+    private r: CellRendererService,
+    private layout: LayoutService
   ) {
     super()
     this.attachListener()

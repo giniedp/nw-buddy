@@ -3,9 +3,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { RouterModule } from '@angular/router'
 import { Subject } from 'rxjs'
 import { NwService } from '~/nw'
-import { QuicksearchModule } from '~/ui/quicksearch'
-import { ScreenModule } from '~/ui/screen'
-import { TerritoryModule } from '~/widgets/territory'
 import { TradeskillsModule } from '~/widgets/tradeskills'
 
 @Component({

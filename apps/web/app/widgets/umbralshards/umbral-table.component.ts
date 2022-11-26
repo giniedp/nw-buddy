@@ -1,6 +1,6 @@
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
 import { BehaviorSubject, combineLatest, defer, map } from 'rxjs'
-import { NwService } from '~/nw'
+import { NwDbService, NwService } from '~/nw'
 import { shareReplayRefCount } from '~/utils'
 
 function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: keyof T) {
@@ -40,7 +40,7 @@ export class UmbralTableComponent {
     combineLatest({
       min: this.gsMin$,
       max: this.gsMax$,
-      data: this.nw.db.data.umbralgsupgrades(),
+      data: this.db.data.umbralgsupgrades(),
     })
   )
     .pipe(
@@ -66,7 +66,7 @@ export class UmbralTableComponent {
   private gsMin$ = new BehaviorSubject(null)
   private gsMax$ = new BehaviorSubject(null)
 
-  public constructor(private nw: NwService) {
+  public constructor(private db: NwDbService) {
     //
   }
 }

@@ -1,7 +1,20 @@
-import { ComponentRef, Directive, ElementRef, Input, NgZone, OnDestroy, OnInit, TemplateRef, ViewContainerRef } from '@angular/core';
-import { createPopper, Instance, Placement } from '@popperjs/core';
-import { fromEvent, merge, Subject, takeUntil } from 'rxjs';
-import { TooltipComponent } from './tooltip.component';
+import { Overlay, OverlayPositionBuilder, OverlayRef } from '@angular/cdk/overlay'
+import { ComponentPortal } from '@angular/cdk/portal'
+import {
+  ComponentRef,
+  Directive,
+  ElementRef,
+  HostListener,
+  Input,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  TemplateRef,
+  ViewContainerRef,
+} from '@angular/core'
+import { createPopper, Instance, Placement } from '@popperjs/core'
+import { fromEvent, map, merge, Subject, takeUntil } from 'rxjs'
+import { TooltipComponent } from './tooltip.component'
 
 @Directive({
   standalone: true,
@@ -18,15 +31,13 @@ export class TooltipDirective implements OnInit, OnDestroy {
   @Input()
   public placement: Placement = 'top'
 
-  @Input()
-  public target: ElementRef<HTMLElement>
 
   private destroy$ = new Subject<void>()
   private cRef: ComponentRef<TooltipComponent>
   private instance: Instance
 
   public constructor(private elRef: ElementRef<HTMLElement>, private vcRef: ViewContainerRef, private zone: NgZone) {
-    this.target = elRef
+
   }
 
   public ngOnInit(): void {
@@ -66,7 +77,7 @@ export class TooltipDirective implements OnInit, OnDestroy {
       this.cRef.instance.color = this.color
       this.cRef.changeDetectorRef.detectChanges()
     })
-    this.instance = createPopper((this.target || this.elRef).nativeElement, this.cRef.location.nativeElement, {
+    this.instance = createPopper(this.elRef.nativeElement, this.cRef.location.nativeElement, {
       placement: this.placement || 'top',
       strategy: 'fixed',
       modifiers: [

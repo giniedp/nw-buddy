@@ -1,15 +1,14 @@
 :host {
   display: grid;
   grid-template-areas:
-    "table"
-    "detail";
+    "table";
   grid-template-columns: 1fr;
-  grid-template-rows: minmax(300px, 50vh) 1fr;
+  grid-template-rows: 1fr;
   .gearset {
     display: none;
   }
 
-  @media (min-width: 1280px) {
+  @media (min-width: 1400px) {
     grid-template-areas:
       "table gearset"
       "table detail";

@@ -1,25 +1,29 @@
-<div [nwbPerkDetail]="itemId | async" #detail="perkDetail" class="flex flex-col layout-gap">
-  <nwb-property-grid
-    [rows]="detail.properties$ | async"
-    [numberFormat]="'0.0-4'"
-    class="gap-x-1 font-mono w-full bg-base-100 rounded-md p-3 overflow-auto"
-  >
-  </nwb-property-grid>
+<nwb-detail-drawer class="hidden lg:block lg:w-96 layout-pad">
+  <ng-template>
+    <div [nwbPerkDetail]="itemId | async" #detail="perkDetail" class="flex flex-col layout-gap">
+      <nwb-property-grid
+        [rows]="detail.properties$ | async"
+        [numberFormat]="'0.0-4'"
+        class="gap-x-1 font-mono w-full bg-base-100 rounded-md p-3 overflow-auto"
+      >
+      </nwb-property-grid>
 
-  <ng-container *ngFor="let data of detail.abilities$ | async">
-    <nwb-property-grid
-      [item]="data"
-      [numberFormat]="'0.0-4'"
-      class="gap-x-1 font-mono w-full bg-base-100 rounded-md p-3 overflow-auto"
-    >
-    </nwb-property-grid>
-  </ng-container>
+      <ng-container *ngFor="let data of detail.abilities$ | async">
+        <nwb-property-grid
+          [item]="data"
+          [numberFormat]="'0.0-4'"
+          class="gap-x-1 font-mono w-full bg-base-100 rounded-md p-3 overflow-auto"
+        >
+        </nwb-property-grid>
+      </ng-container>
 
-  <nwb-property-grid
-    *ngIf="detail.affix$ | async; let data"
-    [item]="data"
-    [numberFormat]="'0.0-4'"
-    class="gap-x-1 font-mono w-full bg-base-100 rounded-md p-3 overflow-auto"
-  >
-  </nwb-property-grid>
-</div>
+      <nwb-property-grid
+        *ngIf="detail.affix$ | async; let data"
+        [item]="data"
+        [numberFormat]="'0.0-4'"
+        class="gap-x-1 font-mono w-full bg-base-100 rounded-md p-3 overflow-auto"
+      >
+      </nwb-property-grid>
+    </div>
+  </ng-template>
+</nwb-detail-drawer>

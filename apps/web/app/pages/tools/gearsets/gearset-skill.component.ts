@@ -9,7 +9,6 @@ import { NwModule } from '~/nw'
 import { DataTableModule, DataTablePickerDialog } from '~/ui/data-table'
 import { ItemDetailModule } from '~/widgets/item-detail'
 
-import { CdkMenuModule } from '@angular/cdk/menu'
 import { GearsetRecord, GearsetSkillSlot, GearsetSkillStore, SkillBuild, SkillBuildsDB, SkillBuildsStore } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgDiagramProject, svgEllipsisVertical, svgEraser, svgFolderOpen, svgLink16p, svgLinkSlash16p, svgPlus, svgRotate, svgTrashCan } from '~/ui/icons/svg'
@@ -18,6 +17,7 @@ import { SkillTreeModule } from '~/widgets/skill-builder'
 import { TooltipModule } from '~/ui/tooltip'
 import { SkillBuildsTableAdapter } from '../skill-builds/skill-builds-table.adapter'
 import { SkillWeaponDialogComponent } from '~/widgets/skill-builder/skill-weapon-dialog.component'
+import { LayoutModule } from '~/ui/layout'
 
 export interface GearsetSkillVM {
   slot?: GearsetSkillSlot
@@ -41,7 +41,7 @@ export interface GearsetSkillVM {
     ItemDetailModule,
     DataTableModule,
     IconsModule,
-    CdkMenuModule,
+    LayoutModule,
     SkillTreeModule,
     TooltipModule
   ],

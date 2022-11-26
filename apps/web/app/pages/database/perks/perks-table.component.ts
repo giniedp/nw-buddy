@@ -11,7 +11,7 @@ import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, NwModule, QuicksearchModule, DataTableModule],
   host: {
-    class: 'layout-col xl:flex-row',
+    class: 'layout-row',
   },
 })
 export class PerksTableComponent {

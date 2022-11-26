@@ -1,4 +1,3 @@
-import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -8,6 +7,7 @@ import { SkillBuildRecord, SkillBuildsStore } from '~/data'
 import { AttributeRef, NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgBars, svgChevronLeft, svgRotate, svgSliders } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { observeRouteParam } from '~/utils'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
@@ -28,11 +28,11 @@ import { SkillBuilderComponent, SkillBuildValue } from '~/widgets/skill-builder/
     IconsModule,
     ScreenshotModule,
     TooltipModule,
-    CdkMenuModule,
+    LayoutModule,
     AttributesEditorModule
   ],
   host: {
-    class: 'layout-content',
+    class: 'hidden xl:flex xl:flex-1 flex-col bg-base-300',
   },
 })
 export class SkillBuildsDetailComponent {

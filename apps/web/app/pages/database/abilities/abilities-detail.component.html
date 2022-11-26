@@ -1,8 +1,12 @@
-<div [nwbAbilityDetail]="itemId | async" #detail="abilityDetail" class="flex flex-col layout-gap">
-  <nwb-property-grid
-    [rows]="detail.properties$ | async"
-    [numberFormat]="'0.0-4'"
-    class="gap-x-1 font-mono w-full bg-base-100 rounded-md p-3 overflow-auto"
-  >
-  </nwb-property-grid>
-</div>
+<nwb-detail-drawer class="hidden lg:block lg:w-96 layout-pad">
+  <ng-template>
+    <div [nwbAbilityDetail]="itemId | async" #detail="abilityDetail" class="flex flex-col layout-gap">
+      <nwb-property-grid
+        [rows]="detail.properties$ | async"
+        [numberFormat]="'0.0-4'"
+        class="gap-x-1 font-mono w-full bg-base-100 rounded-md p-3 overflow-auto"
+      >
+      </nwb-property-grid>
+    </div>
+  </ng-template>
+</nwb-detail-drawer>

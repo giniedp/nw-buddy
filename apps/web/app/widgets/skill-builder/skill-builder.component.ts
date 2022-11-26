@@ -1,5 +1,4 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
-import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
@@ -20,6 +19,7 @@ import { CharacterStore } from '~/data'
 import { NwModule, NwWeaponTypesService } from '~/nw'
 import { NwWeaponType } from '~/nw/nw-weapon-types'
 import { NW_MAX_WEAPON_LEVEL } from '~/nw/utils/constants'
+import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { mapDistinct } from '~/utils'
 import { SkillTreeComponent } from './skill-tree.component'
@@ -39,7 +39,7 @@ const TOTAL_POINTS = 19
   templateUrl: './skill-builder.component.html',
   styleUrls: ['./skill-builder.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, TooltipModule, SkillTreeComponent, FormsModule, CdkMenuModule, DialogModule],
+  imports: [CommonModule, NwModule, TooltipModule, SkillTreeComponent, FormsModule, LayoutModule, DialogModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

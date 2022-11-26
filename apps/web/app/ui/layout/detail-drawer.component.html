@@ -1,0 +1,18 @@
+<ion-modal
+  [isOpen]="shouldOpen$ | async"
+  [initialBreakpoint]="initialBreakpoint"
+  [breakpoints]="breakpoints"
+  [backdropBreakpoint]="backdropBreakpoint"
+  [backdropDismiss]="false"
+  [canDismiss]="true"
+>
+  <ng-template>
+    <ion-content class="bg-base-200">
+      <ng-container *ngTemplateOutlet="template"></ng-container>
+    </ion-content>
+  </ng-template>
+</ion-modal>
+
+<ng-container *ngIf="isLarge$ | async">
+  <ng-container *ngTemplateOutlet="template"></ng-container>
+</ng-container>

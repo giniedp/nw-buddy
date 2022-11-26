@@ -14,7 +14,7 @@ import { GearsetFormComponent } from './gearset-form.component'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, NwModule, DataTableModule, GearsetFormComponent],
   host: {
-    class: 'layout-col xl:flex-row w-full layout-gap',
+    class: 'layout-row',
   },
 })
 export class PlayerItemsTableComponentn {

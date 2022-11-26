@@ -4,10 +4,10 @@ import { GridOptions } from 'ag-grid-community'
 import { defer, map, Observable, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwDbService, NwExpressionService } from '~/nw'
+import { getWeaponTagLabel } from "~/nw/utils"
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { shareReplayRefCount } from '~/utils'
-import {getWeaponTagLabel} from "~/nw/utils";
 
 @Injectable()
 export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {

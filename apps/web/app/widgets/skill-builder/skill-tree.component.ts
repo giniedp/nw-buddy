@@ -3,21 +3,16 @@ import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { isEqual } from 'lodash'
 import {
-  asyncScheduler,
   BehaviorSubject,
   combineLatest,
   defer,
-  distinctUntilChanged,
-  filter,
-  map,
-  ReplaySubject,
-  subscribeOn,
-  switchMap,
-  takeUntil,
+  distinctUntilChanged, map,
+  ReplaySubject, switchMap,
+  takeUntil
 } from 'rxjs'
 import { NwModule, NwWeaponTypesService } from '~/nw'
-import { NW_WEAPON_TYPES } from '~/nw/nw-weapon-types'
 import { NW_MAX_WEAPON_LEVEL } from '~/nw/utils/constants'
+import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { SkillTreeCell } from './skill-tree.model'
 import { SkillTreeStore } from './skill-tree.store'
@@ -28,7 +23,7 @@ import { SkillTreeStore } from './skill-tree.store'
   templateUrl: './skill-tree.component.html',
   styleUrls: ['./skill-tree.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, TooltipModule],
+  imports: [CommonModule, NwModule, TooltipModule, LayoutModule],
   providers: [
     SkillTreeStore,
     {
@@ -89,7 +84,9 @@ export class SkillTreeComponent implements ControlValueAccessor, OnInit {
   protected onChange = (value: unknown) => {}
   protected onTouched = () => {}
 
-  public constructor(private store: SkillTreeStore, private weaponTypes: NwWeaponTypesService) {}
+  public constructor(private store: SkillTreeStore, private weaponTypes: NwWeaponTypesService) {
+    //
+  }
 
   public ngOnInit(): void {
     this.store.loadTree(

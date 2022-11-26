@@ -10,7 +10,7 @@ import { EQUIP_SLOTS, getItemIconPath, getItemId, getItemRarityLabel, getItemTie
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { svgTrashCan } from '~/ui/icons/svg'
-import { ConfirmDialogComponent } from '~/ui/modal'
+import { ConfirmDialogComponent } from '~/ui/layout'
 import { humanize } from '~/utils'
 import { DnDService } from '~/utils/dnd.service'
 

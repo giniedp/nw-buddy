@@ -48,7 +48,7 @@ import { DataTableAdapter, DataTableCategory } from './data-table-adapter'
   imports: [CommonModule, AgGridModule],
   providers: [DestroyService],
   host: {
-    class: 'layout-col overflow-clip',
+    class: 'layout-col h-full overflow-clip',
   },
 })
 export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {

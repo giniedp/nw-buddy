@@ -1,17 +1,16 @@
-.is-electron,
-.is-web {
+.plt-desktop {
   scrollbar-width: thin;
-  ::-webkit-scrollbar {
+  *::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
-  ::-webkit-scrollbar-track {
+  *::-webkit-scrollbar-track {
     background: transparent;
   }
-  ::-webkit-scrollbar-corner {
+  *::-webkit-scrollbar-corner {
     background: transparent;
   }
-  ::-webkit-scrollbar-thumb {
+  *::-webkit-scrollbar-thumb {
     background-color: rgba(155, 155, 155, 0.5);
     border-radius: 20px;
     border: transparent;

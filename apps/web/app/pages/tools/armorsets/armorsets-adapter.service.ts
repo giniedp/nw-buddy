@@ -8,6 +8,7 @@ import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
 import { getItemIconPath, getItemRarity, getItemTierAsRoman } from '~/nw/utils'
 import { mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
+import { LayoutService } from '~/ui/layout'
 import { shareReplayRefCount } from '~/utils'
 import { ItemTrackerCell } from '~/widgets/item-tracker'
 import { Armorset } from './types'
@@ -45,7 +46,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
           headerName: 'Name',
           field: fieldName('name'),
           width: 200,
-          pinned: true
+          pinned: !this.layout.isHandset
         },
         {
           headerName: 'Tier',
@@ -200,7 +201,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
     )
   }).pipe(shareReplayRefCount(1))
 
-  public constructor(private nw: NwService, private i18n: TranslateService) {
+  public constructor(private nw: NwService, private i18n: TranslateService, private layout: LayoutService) {
     super()
   }
 }

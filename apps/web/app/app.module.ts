@@ -3,21 +3,21 @@ import { NgModule } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { BrowserModule } from '@angular/platform-browser'
 import { RouterModule } from '@angular/router'
+import { IonicModule } from '@ionic/angular'
 
 import { ROUTES } from './app.routes'
 
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
+import { EffectsModule } from '@ngrx/effects'
+import { StoreModule } from '@ngrx/store'
+import { StoreDevtoolsModule } from '@ngrx/store-devtools'
+import { environment } from '../environments/environment'
 import { AppComponent } from './app.component'
 import { TranslateModule } from './i18n'
 import { NwDataInterceptor, NwDataService, NwModule } from './nw'
 import { TitleBarComponent } from './title-bar.component'
-import { ScreenModule } from './ui/screen'
 import { UpdateAlertModule } from './widgets/update-alert'
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
-import { StoreModule } from '@ngrx/store'
-import { EffectsModule } from '@ngrx/effects'
-import { StoreDevtoolsModule } from '@ngrx/store-devtools'
-import { environment } from '../environments/environment'
-import { CdkMenuModule } from '@angular/cdk/menu'
+import { LayoutModule } from './ui/layout'
 
 @NgModule({
   declarations: [AppComponent, TitleBarComponent],
@@ -27,15 +27,17 @@ import { CdkMenuModule } from '@angular/cdk/menu'
     BrowserAnimationsModule,
     FormsModule,
     HttpClientModule,
-    ScreenModule,
     NwModule,
     TranslateModule.forRoot({
       loader: NwDataService,
     }),
-    CdkMenuModule,
+    LayoutModule,
     UpdateAlertModule,
     StoreModule.forRoot({}),
     EffectsModule.forRoot(),
+    IonicModule.forRoot({
+      rippleEffect: false,
+    }),
     StoreDevtoolsModule.instrument({
       maxAge: 25,
       logOnly: environment.production,

@@ -8,7 +8,7 @@ import { TranslateService } from '~/i18n'
 import { EQUIP_SLOTS, getItemIconPath } from '~/nw/utils'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { svgPen, svgTrashCan } from '~/ui/icons/svg'
-import { ConfirmDialogComponent } from '~/ui/modal'
+import { ConfirmDialogComponent, LayoutService } from '~/ui/layout'
 
 export interface GearsetsTableAdapterOptions extends DataTableAdapterOptions<GearsetRow> {
   noActions: boolean
@@ -47,7 +47,7 @@ export class GearsetsTableAdapter extends DataTableAdapter<GearsetRow> {
         this.colDef({
           colId: 'name',
           headerValueGetter: () => 'Name',
-          pinned: true,
+          pinned: !this.layout.isHandset,
           sortable: true,
           filter: true,
           width: 250,
@@ -175,7 +175,8 @@ export class GearsetsTableAdapter extends DataTableAdapter<GearsetRow> {
     private route: ActivatedRoute,
     private dialog: Dialog,
     private i18n: TranslateService,
-    private zone: NgZone
+    private zone: NgZone,
+    private layout: LayoutService
   ) {
     super()
     this.attachListener()

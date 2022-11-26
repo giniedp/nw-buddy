@@ -1,57 +1,62 @@
-<ng-container *ngIf="item$ | async; let item">
-  <div class="flex-none p-1 mb-2">
-    <div class="form-control">
-      <div class="input-group">
-        <a class="btn btn-ghost btn-square inline-flex" [routerLink]="'..'">
-          <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
-        </a>
-        <input
-          type="text"
-          placeholder=""
-          class="input input-bordered w-full"
-          [ngModel]="item.record.name"
-          (ngModelChange)="updateName(item.record, $event)"
-          [ngModelOptions]="{ updateOn: 'blur' }"
-        />
-        <button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
-          <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>
-        </button>
-        <button nwbScreenshotBtn class="btn btn-ghost btn-square" [tooltip]="'Screenshot'" [color]="'info'"></button>
+<nwb-detail-drawer class="hidden lg:block layout-pad" [breakOn]="'xl'" [breakpoints]="[0.15, 0.25, 0.5, 1.0]">
+  <ng-template>
+    <div *ngIf="item$ | async; let item" class="layout-col">
+      <div class="flex-none p-1 mb-2">
+        <div class="form-control">
+          <div class="input-group">
+            <a class="btn btn-ghost btn-square inline-flex" [routerLink]="'..'">
+              <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
+            </a>
+            <input
+              type="text"
+              placeholder=""
+              class="input input-bordered w-full"
+              [ngModel]="item.record.name"
+              (ngModelChange)="updateName(item.record, $event)"
+              [ngModelOptions]="{ updateOn: 'blur' }"
+            />
+            <button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
+              <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>
+            </button>
+            <button nwbScreenshotBtn class="btn btn-ghost btn-square" [tooltip]="'Screenshot'" [color]="'info'"></button>
+          </div>
+        </div>
       </div>
+      <div [nwbScreenshotFrame]="item.record.name" class="layout-content bg-base-300">
+        <nwb-skill-builder
+          [ngModel]="item.record"
+          (ngModelChange)="updateModel(item.record, $event)"
+
+          #builder
+        ></nwb-skill-builder>
+
+        <div *ngIf="item.record.attrs" class="layout-pad">
+          <nwb-attributes-editor [freeMode]="true" [assigned]="item.record.attrs" (assignedChanged)="updateAttributes(item.record, $event)"></nwb-attributes-editor>
+        </div>
+      </div>
+
+      <ng-template #menu>
+        <ul class="menu menu-compact bg-base-100 rounded-md shadow" cdkMenu>
+          <li>
+            <button (click)="builder.switchWeapon()">
+              <nwb-icon [icon]="iconReset" class="w-4 h-4"></nwb-icon> Change Weapon
+            </button>
+          </li>
+          <li *ngIf="attrs$ | async">
+            <button (click)="removeAttributes(item.record)" cdkMenuItem>
+              <nwb-icon [icon]="iconAttrs" class="w-4 h-4"></nwb-icon>
+              Remove Attributes
+            </button>
+          </li>
+          <li *ngIf="!(attrs$ | async)">
+            <button (click)="addAttributes(item.record)" cdkMenuItem>
+              <nwb-icon [icon]="iconAttrs" class="w-4 h-4"></nwb-icon>
+              Add Attributes
+            </button>
+          </li>
+        </ul>
+      </ng-template>
     </div>
-  </div>
-  <div [nwbScreenshotFrame]="item.record.name">
-    <nwb-skill-builder
-      [ngModel]="item.record"
-      (ngModelChange)="updateModel(item.record, $event)"
 
-      #builder
-    ></nwb-skill-builder>
-
-    <div *ngIf="item.record.attrs" class="layout-pad">
-      <nwb-attributes-editor [freeMode]="true" [assigned]="item.record.attrs" (assignedChanged)="updateAttributes(item.record, $event)"></nwb-attributes-editor>
-    </div>
-  </div>
-
-  <ng-template #menu>
-    <ul class="menu menu-compact bg-base-100 rounded-md shadow" cdkMenu>
-      <li>
-        <button (click)="builder.switchWeapon()">
-          <nwb-icon [icon]="iconReset" class="w-4 h-4"></nwb-icon> Change Weapon
-        </button>
-      </li>
-      <li *ngIf="attrs$ | async">
-        <button (click)="removeAttributes(item.record)" cdkMenuItem>
-          <nwb-icon [icon]="iconAttrs" class="w-4 h-4"></nwb-icon>
-          Remove Attributes
-        </button>
-      </li>
-      <li *ngIf="!(attrs$ | async)">
-        <button (click)="addAttributes(item.record)" cdkMenuItem>
-          <nwb-icon [icon]="iconAttrs" class="w-4 h-4"></nwb-icon>
-          Add Attributes
-        </button>
-      </li>
-    </ul>
   </ng-template>
-</ng-container>
+</nwb-detail-drawer>

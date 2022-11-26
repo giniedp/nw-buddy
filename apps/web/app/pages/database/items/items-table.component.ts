@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
@@ -12,7 +12,7 @@ import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, NwModule, QuicksearchModule, DataTableModule],
   host: {
-    class: 'layout-col xl:flex-row',
+    class: 'layout-row',
   },
 })
 export class ItemsTableComponent {

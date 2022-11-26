@@ -1,5 +1,5 @@
 <nwb-data-table-header
-class="flex flex-col-reverse md:flex-row bg-base-300 rounded-t-md"
+  class="flex flex-col-reverse md:flex-row bg-base-300 rounded-t-md"
   categoryChildRoute
   [childRouteIndex]="'table'"
   #header="tableHeader"
@@ -36,7 +36,6 @@ class="flex flex-col-reverse md:flex-row bg-base-300 rounded-t-md"
     [detailRoutParam]="'id'"
     [categoryRouteParam]
     [quickFilter]="search.query | async"
-    class="flex-1"
   ></nwb-data-table>
   <router-outlet></router-outlet>
 </div>

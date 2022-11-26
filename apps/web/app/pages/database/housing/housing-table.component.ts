@@ -12,7 +12,7 @@ import { QuicksearchService } from '~/ui/quicksearch'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, NwModule, DataTableModule],
   host: {
-    class: 'layout-col xl:flex-row',
+    class: 'layout-row',
   },
 })
 export class HousingTableComponent implements OnInit {

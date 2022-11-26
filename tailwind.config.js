@@ -3,13 +3,19 @@ const defaultTheme = require('tailwindcss/defaultTheme')
 module.exports = {
   content: ['./apps/web/**/*.{html,js,ts}'],
   theme: {
+    screens: {
+      'xs': '0px',
+      'sm': '576px',
+      'md': '768px',
+      'lg': '992px',
+      'xl': '1200px',
+      '2xl': '1400px',
+      '3xl': '1600px',
+      '4xl': '2000px',
+      '5xl': '2400px',
+      '6xl': '3000px',
+    },
     extend: {
-      screens: {
-        '3xl': '1600px',
-        '4xl': '2000px',
-        '5xl': '2400px',
-        '6xl': '3000px',
-      },
       gridTemplateColumns: {
         'fill': 'repeat(auto-fill, minmax(20rem, 1fr))',
         'dl': 'max-content auto'

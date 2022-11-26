@@ -1,5 +1,9 @@
 import { groupBy, isEqual } from "lodash";
-import { distinctUntilChanged, map, pipe } from "rxjs";
+import { distinctUntilChanged, map, pipe, tap } from "rxjs";
+
+export function mapProp<T, K extends keyof T>(prop: K) {
+  return map<T, T[K]>((it) => it?.[prop])
+}
 
 export function mapFilter<T>(predicate: (value: T, index: number, array: T[]) => boolean) {
   return map<T[], T[]>((list) => list?.filter(predicate))
@@ -22,4 +26,18 @@ export function mapDistinct<T, R>(mapper: (value: T) => R) {
     map<T, R>(mapper),
     distinctUntilChanged((a, b) => isEqual(a, b))
   )
+}
+
+export function tapDebug<T>(tag: string) {
+  return tap<T>({
+    next(value) {
+      console.log(`%c[${tag}: Next]`, "background: #009688; color: #fff; padding: 3px; font-size: 9px;", value)
+    },
+    error(error) {
+      console.log(`%[${tag}: Error]`, "background: #E91E63; color: #fff; padding: 3px; font-size: 9px;", error)
+    },
+    complete() {
+      console.log(`%c[${tag}]: Complete`, "background: #00BCD4; color: #fff; padding: 3px; font-size: 9px;")
+    }
+  })
 }

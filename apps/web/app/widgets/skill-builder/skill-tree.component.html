@@ -30,7 +30,8 @@
         (click)="toggle(cell)"
         (keydown.space)="toggle(cell)"
         (keydown.enter)="toggle(cell)"
-      >
+        [tooltip]="tip"
+        >
         <ng-template #tip>
           <div class="rounded-md overflow-hidden bg-base-200">
             <div class="text-lg font-bold px-3 py-2 flex flex-row items-center bg-base-300 gap-3">
@@ -49,7 +50,6 @@
           class="border-[2px] aspect-square"
           [class.rounded-full]="!cell.square"
           [class.rounded-sm]="cell.square"
-          [tooltip]="tip"
         >
           <img class="aspect-square w-full nw-icon" [class]="'bg-ability-' + cell.type" [nwImage]="cell.ability.Icon" />
         </picture>

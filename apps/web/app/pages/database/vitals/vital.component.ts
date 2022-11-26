@@ -5,6 +5,7 @@ import { uniq } from 'lodash'
 import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { getVitalDungeon } from '~/nw/utils'
+import { LayoutModule } from '~/ui/layout'
 import { observeRouteParam } from '~/utils'
 import { LootModule } from '~/widgets/loot'
 import { VitalsFamiliesModule } from '~/widgets/vitals-families'
@@ -14,10 +15,10 @@ import { VitalsFamiliesModule } from '~/widgets/vitals-families'
   templateUrl: './vital.component.html',
   styleUrls: ['./vital.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, VitalsFamiliesModule, LootModule],
+  imports: [CommonModule, RouterModule, NwModule, VitalsFamiliesModule, LootModule, LayoutModule],
   host: {
-    class: 'layout-col xl:max-w-md layout-pad-x',
-  }
+    class: 'flex-none flex flex-col bg-base-300',
+  },
 })
 export class VitalComponent {
   public vitalId = observeRouteParam(this.route, 'id')

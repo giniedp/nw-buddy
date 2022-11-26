@@ -1,6 +1,14 @@
-<nwb-item-card [entityId]="itemId$ | async" [enableInfoLink]="true" [nwbScreenshotFrame]="card.name$ | async | nwText"  #card="card">
-  <div class="p-3">
-    <nwb-crafting-calculator [recipe]="recipe$ | async"></nwb-crafting-calculator>
-  </div>
-</nwb-item-card>
-
+<nwb-detail-drawer class="hidden lg:block max-w-md layout-pad">
+  <ng-template>
+    <nwb-item-card
+      [entityId]="itemId$ | async"
+      [enableInfoLink]="true"
+      [nwbScreenshotFrame]="card.name$ | async | nwText"
+      #card="card"
+    >
+      <div class="p-3">
+        <nwb-crafting-calculator [recipe]="recipe$ | async"></nwb-crafting-calculator>
+      </div>
+    </nwb-item-card>
+  </ng-template>
+</nwb-detail-drawer>

@@ -1,57 +1,73 @@
-<nwb-title-bar *ngIf="isElectron"></nwb-title-bar>
-<div class="layout-pad-x layout-pad-t" [@headerAnimation]="true">
-  <div class="navbar bg-base-100 z-50 font-bold rounded-md shadow-xl">
-    <div class="navbar-start w-auto flex-none">
-      <button class="btn btn-square btn-ghost text-primary lg:hidden" [nwbScreenDrawerToggle]="'toggle'">
-        <svg fill="none" viewBox="0 0 24 24" class="inline-block w-5 h-5 stroke-current">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-      </button>
-      <a routerLink="/" class="hidden lg:inline-block text-lg font-bold btn btn-square btn-ghost text-primary">
-        <img [nwImage]="'assets/icons/favicon.png'" class="w-12 aspect-square" alt="logo" />
-      </a>
-    </div>
-    <div class="navbar-center flex-1 items-center justify-center lg:justify-start">
-      <a routerLink="/" class=" lg:hidden text-lg font-bold">
-        <img [nwImage]="'assets/icons/favicon.png'" class="w-12" />
-      </a>
-      <h1 class="text-xl hidden md:block">
-        <div class="indicator">
-          <span class="indicator-item badge badge-primary badge-xs" *ngIf="isPtr">PTR</span>
-          New World Buddy
-        </div>
-      </h1>
-    </div>
-    <div class="navbar-end w-auto flex-none">
-      <nwb-update-alert-button class="mr-2"></nwb-update-alert-button>
-      <button class="btn btn-square btn-ghost" [cdkMenuTriggerFor]="langMenu">
-        {{ lang }}
-      </button>
-    </div>
-  </div>
-</div>
-<nwb-screen-drawer>
-  <nwb-screen-drawer-side class="rounded-md layout-pad-l layout-pad-b" [nwbScreenDrawerToggle]="'close'" [@listAnimation]="mainMenu.length">
-    <ng-container *ngFor="let group of mainMenu">
-      <ul class="menu menu-compact w-60 bg-base-300 rounded-md flex-none">
-        <li class="menu-title uppercase mt-2" *ngIf="group.category">
-          <span>{{ group.category }}</span>
-        </li>
-        <ng-container *ngFor="let item of group.items">
-          <li *ngIf="item.divider"></li>
-          <li routerLinkActive="bordered">
-            <a #link  [routerLink]="item.path"> {{ item.label }} </a>
-          </li>
-        </ng-container>
-      </ul>
-    </ng-container>
-  </nwb-screen-drawer-side>
-  <nwb-screen-drawer-content class="layout-row layout-gap layout-pad-x layout-pad-b" *ngIf="langLoaded" [@enteranimation]>
-    <router-outlet></router-outlet>
-  </nwb-screen-drawer-content>
-</nwb-screen-drawer>
+<ion-app>
+  <nwb-title-bar *ngIf="isElectron"></nwb-title-bar>
 
-<ng-template #langMenu>
+  <ng-container *ngIf="isDesktop$ | async">
+    <ng-container *ngTemplateOutlet="tplHeader"></ng-container>
+  </ng-container>
+
+  <ion-content>
+    <ion-split-pane when="xl" contentId="main-content">
+      <ion-menu menuId="main-menu" contentId="main-content" class="xl:w-60" nwbMenu>
+        <div class="h-full w-full layout-content layout-pad bg-base-300 xl:bg-transparent">
+          <div class="layout-col layout-gap">
+            <ng-container *ngFor="let group of mainMenu">
+              <ul class="menu menu-compact bg-base-300 rounded-md flex-none m-0">
+                <li class="menu-title uppercase mt-2" *ngIf="group.category">
+                  <span>{{ group.category }}</span>
+                </li>
+                <ng-container *ngFor="let item of group.items">
+                  <li *ngIf="item.divider"></li>
+                  <li routerLinkActive="bordered">
+                    <a #link [routerLink]="item.path" nwbMenuClose>
+                      {{ item.label }}
+                    </a>
+                  </li>
+                </ng-container>
+              </ul>
+            </ng-container>
+          </div>
+        </div>
+      </ion-menu>
+      <div id="main-content" class="layout-col xl:ml-[-1rem]" >
+        <ng-container *ngIf="!(isDesktop$ | async)">
+          <ng-container *ngTemplateOutlet="tplHeader"></ng-container>
+        </ng-container>
+        <div class="layout-col layout-pad">
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </ion-split-pane>
+  </ion-content>
+</ion-app>
+
+<ng-template #tplHeader>
+  <ion-header class="layout-pad-x layout-pad-t">
+    <ion-toolbar class="bg-base-100 rounded-md">
+      <ion-buttons slot="start">
+        <ion-menu-toggle menu="main-menu">
+          <button class="btn btn-square btn-ghost text-primary">
+            <svg fill="none" viewBox="0 0 24 24" class="inline-block w-5 h-5 stroke-current">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+          </button>
+        </ion-menu-toggle>
+      </ion-buttons>
+      <div class="w-full flex flex-row items-center justify-center lg:justify-start">
+        <a routerLink="/" class="flex flex-row items-center">
+          <img [nwImage]="'assets/icons/favicon.png'" class="w-12 aspect-square" alt="logo" />
+          <span> New World Buddy </span>
+        </a>
+      </div>
+      <ion-buttons slot="end">
+        <button class="btn btn-square btn-ghost" [cdkMenuTriggerFor]="tplLangMenu">
+          {{ lang }}
+        </button>
+      </ion-buttons>
+    </ion-toolbar>
+  </ion-header>
+</ng-template>
+
+<ng-template #tplLangMenu>
   <ul class="menu menu-compact bg-base-100 rounded-md w-40 shadow-md" cdkMenu>
     <li *ngFor="let item of langOptions">
       <button (click)="language = item.value" cdkMenuItem>

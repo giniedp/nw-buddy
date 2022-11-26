@@ -33,7 +33,7 @@ import {
 } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
-import { ConfirmDialogComponent } from '~/ui/modal'
+import { ConfirmDialogComponent } from '~/ui/layout'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { shareReplayRefCount } from '~/utils'
 import { AttributeEditorDialogComponent } from '~/widgets/attributes-editor'

@@ -7,7 +7,7 @@ import {
   HostBinding,
   Inject,
   OnDestroy,
-  OnInit,
+  OnInit
 } from '@angular/core'
 import { Subject, take, takeUntil } from 'rxjs'
 import { environment } from '../environments/environment'
@@ -17,14 +17,13 @@ import { TranslateService } from './i18n'
 
 import { LANG_OPTIONS, MAIN_MENU } from './menu'
 import { AppPreferencesService } from './preferences'
+import { LayoutService } from './ui/layout'
+import { mapProp } from './utils'
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  host: {
-    class: 'layout-frame layout-col layout-gap',
-  },
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('listAnimation', [
@@ -70,6 +69,7 @@ export class AppComponent implements OnInit, OnDestroy {
   protected mainMenu = MAIN_MENU
   protected langOptions = LANG_OPTIONS
   protected langLoaded = false
+  protected isDesktop$ = this.layout.breakpoint.observe('(min-width: 1200px)').pipe(mapProp('matches'))
   private destroy$ = new Subject<void>()
 
   constructor(
@@ -78,7 +78,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private cdRef: ChangeDetectorRef,
     @Inject(DOCUMENT)
     private document: Document,
-    private translate: TranslateService
+    private translate: TranslateService,
+    private layout: LayoutService
   ) {
     if (this.isWeb) {
       document.body.classList.add('is-web')

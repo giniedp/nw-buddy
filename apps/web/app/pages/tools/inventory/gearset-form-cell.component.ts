@@ -1,4 +1,3 @@
-import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectorRef,
@@ -14,9 +13,10 @@ import { RouterModule } from '@angular/router'
 import { BehaviorSubject, combineLatest, defer, firstValueFrom, map } from 'rxjs'
 import { GearsetRecord, GearsetSlotStore, ItemInstanceRecord, ItemInstanceRow } from '~/data'
 import { NwModule } from '~/nw'
-import { EquipSlot, getItemRarityLabel, getItemTierAsRoman, getItemTypeName } from '~/nw/utils'
+import { EquipSlot, getItemRarityLabel } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical, svgLink16p, svgLinkSlash16p, svgTrashCan } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
 import { humanize } from '~/utils'
 import { DnDService } from '~/utils/dnd.service'
 import { ItemDetailModule } from '~/widgets/item-detail'
@@ -27,7 +27,7 @@ import { ItemDetailModule } from '~/widgets/item-detail'
   selector: 'nwb-gearset-form-cell',
   templateUrl: './gearset-form-cell.component.html',
   styleUrls: ['./gearset-form-cell.component.scss'],
-  imports: [CommonModule, RouterModule, NwModule, IconsModule, CdkMenuModule, ItemDetailModule],
+  imports: [CommonModule, RouterModule, NwModule, IconsModule, LayoutModule, ItemDetailModule],
   providers: [GearsetSlotStore],
   host: {
     class: 'flex aspect-square rounded-md border bg-base-100 relative 4xl:aspect-auto flex-row',

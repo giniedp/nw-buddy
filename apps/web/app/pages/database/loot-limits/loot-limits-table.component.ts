@@ -12,7 +12,7 @@ import { QuicksearchService } from '~/ui/quicksearch'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, DataTableModule, RouterModule],
   host: {
-    class: 'layout-row layout-gap',
+    class: 'layout-row',
   },
 })
 export class LootLimitsTableComponent {

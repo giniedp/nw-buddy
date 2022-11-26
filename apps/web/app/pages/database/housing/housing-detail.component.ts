@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
+import { LayoutModule } from '~/ui/layout'
 import { observeRouteParam } from '~/utils'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -11,10 +12,10 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   selector: 'nwb-housing-detail',
   templateUrl: './housing-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, ItemDetailModule, ScreenshotModule],
+  imports: [CommonModule, RouterModule, NwModule, ItemDetailModule, ScreenshotModule, LayoutModule],
   host: {
-    class: 'layout-content xl:max-w-md layout-pad-x layout-pad-b',
-  }
+    class: 'flex-none flex flex-col bg-base-300',
+  },
 })
 export class HousingDetailComponent {
   public itemId = observeRouteParam(this.route, 'id')
