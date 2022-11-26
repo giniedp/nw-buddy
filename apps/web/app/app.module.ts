@@ -37,6 +37,7 @@ import { LayoutModule } from './ui/layout'
     EffectsModule.forRoot(),
     IonicModule.forRoot({
       rippleEffect: false,
+      mode: 'md',
     }),
     StoreDevtoolsModule.instrument({
       maxAge: 25,
