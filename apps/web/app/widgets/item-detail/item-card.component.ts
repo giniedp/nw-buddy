@@ -4,6 +4,7 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { map } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { getItemId } from '~/nw/utils'
+import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemDetailDescriptionComponent } from './item-detail-description.component'
 import { ItemDetailDivider } from './item-detail-divider.component'
 import { ItemDetailHeaderComponent } from './item-detail-header.component'
@@ -25,10 +26,11 @@ import { ItemDetailService } from './item-detail.service'
     ItemDetailInfoComponent,
     ItemDetailPerksComponent,
     ItemDetailStatsComponent,
+    ItemFrameModule
   ],
   exportAs: 'card',
   host: {
-    class: 'block class bg-base-300 rounded-md overflow-clip',
+    class: 'block class bg-black rounded-md overflow-clip font-nimbus',
   },
   providers: [
     {

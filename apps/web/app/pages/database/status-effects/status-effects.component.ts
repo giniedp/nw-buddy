@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
+import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
@@ -12,9 +13,9 @@ import { StatusEffectsTableAdapter } from '~/widgets/adapter'
   selector: 'nwb-status-effects',
   templateUrl: './status-effects.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, QuicksearchModule, DataTableModule, NavToolbarModule],
+  imports: [CommonModule, RouterModule, NwModule, QuicksearchModule, DataTableModule, NavToolbarModule, IonicModule],
   host: {
-    class: 'layout-col bg-base-300 rounded-md overflow-clip',
+    class: 'layout-col',
   },
   providers: [StatusEffectsTableAdapter.provider(), QuicksearchService],
 })

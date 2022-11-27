@@ -1,5 +1,5 @@
-<nwb-detail-drawer class="hidden lg:block lg:w-96 layout-pad-x">
-  <div *nwbDetailDraweContent class="layout-col bg-base-300">
+<nwb-detail-drawer class="hidden lg:block lg:w-96">
+  <div *nwbDetailDraweContent class="layout-col bg-base-200 layout-pad">
     <div [nwbPerkDetail]="itemId | async" #detail="perkDetail" class="flex flex-col layout-gap">
       <nwb-property-grid
         [rows]="detail.properties$ | async"

@@ -12,7 +12,7 @@ import { ItemDetailService } from "./item-detail.service"
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule],
   host: {
-    class: 'block p-3'
+    class: 'block'
   }
 })
 export class ItemDetailInfoComponent {

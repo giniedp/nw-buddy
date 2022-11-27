@@ -2,11 +2,12 @@ import { animate, query, stagger, state, style, transition, trigger } from '@ang
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
 import { IonicModule } from '@ionic/angular'
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { Crafting, Housingitems } from '@nw-data/types'
 import { groupBy } from 'lodash'
 import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { getIngretientsFromRecipe, getItemId, getRecipeForItem } from '~/nw/utils'
+import { ItemFrameModule } from '~/ui/item-frame'
 import { ContentVisibilityDirective } from '~/utils'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -24,7 +25,7 @@ function isTrophyItem(item: Housingitems) {
   selector: 'nwb-trophies-overview',
   templateUrl: './trophies-overview.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemDetailModule, ScreenshotModule, ContentVisibilityDirective, IonicModule],
+  imports: [CommonModule, NwModule, ItemDetailModule, ScreenshotModule, ContentVisibilityDirective, ItemFrameModule, IonicModule],
   host: {
     class: 'layout-content layout-pad',
   },

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
+import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
@@ -12,9 +13,9 @@ import { VitalsTableAdapter } from '~/widgets/adapter'
   selector: 'nwb-vitals-page',
   templateUrl: './vitals.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, DataTableModule, QuicksearchModule, NavToolbarModule],
+  imports: [CommonModule, RouterModule, NwModule, DataTableModule, QuicksearchModule, NavToolbarModule, IonicModule],
   host: {
-    class: 'layout-col bg-base-300 rounded-md overflow-clip',
+    class: 'layout-col',
   },
   providers: [VitalsTableAdapter.provider(), QuicksearchService],
 })

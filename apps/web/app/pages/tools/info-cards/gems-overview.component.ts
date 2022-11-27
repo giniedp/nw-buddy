@@ -5,6 +5,7 @@ import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { getIngretientsFromRecipe, getItemIdFromRecipe } from '~/nw/utils'
+import { ItemFrameModule } from '~/ui/item-frame'
 import { ContentVisibilityDirective } from '~/utils'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -28,7 +29,7 @@ type RecipeWithItem = Crafting & {
   templateUrl: './gems-overview.component.html',
   styleUrls: ['./gems-overview.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemDetailModule, ScreenshotModule, ContentVisibilityDirective],
+  imports: [CommonModule, NwModule, ItemDetailModule, ScreenshotModule, ContentVisibilityDirective, ItemFrameModule],
   host: {
     class: 'layout-row',
   },

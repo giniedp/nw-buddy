@@ -5,6 +5,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router'
 import { combineLatest, map, of, switchMap, take } from 'rxjs'
 import { GearsetRecord, GearsetStore, ItemInstance, ItemInstanceRow, ItemInstancesStore } from '~/data'
 import { NwModule } from '~/nw'
+import { ItemFrameModule } from '~/ui/item-frame'
 import { LayoutModule } from '~/ui/layout'
 import { observeRouteParam } from '~/utils'
 import { ItemDetailModule } from '~/widgets/item-detail'
@@ -22,7 +23,7 @@ export interface ItemDetailVM {
   selector: 'nwb-inventory-detail',
   templateUrl: './inventory-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, FormsModule, NwModule, ItemDetailModule, ScreenshotModule, LayoutModule],
+  imports: [CommonModule, RouterModule, FormsModule, NwModule, ItemDetailModule, ScreenshotModule, LayoutModule, ItemFrameModule],
   providers: [GearsetStore],
   host: {
     class: 'flex-none flex flex-col',

@@ -1,20 +1,22 @@
-<nwb-data-table-header
-  class="flex flex-col-reverse md:flex-row bg-base-300 rounded-t-md"
-  categoryChildRoute
-  [childRouteIndex]="'table'"
-  #header="tableHeader"
->
-  <ng-template #tplMenu>
-    <li *ngFor="let item of header.categories | async" [routerLinkActive]="'bordered'">
-      <a [routerLink]="item.route"> {{ item.label }}</a>
-    </li>
-  </ng-template>
+<ion-header class="bg-base-300">
+  <nwb-data-table-header
+    class="flex flex-col-reverse md:flex-row"
+    categoryChildRoute
+    [childRouteIndex]="'table'"
+    #header="tableHeader"
+  >
+    <ng-template #tplMenu>
+      <li *ngFor="let item of header.categories | async" [routerLinkActive]="'bordered'">
+        <a [routerLink]="item.route"> {{ item.label }}</a>
+      </li>
+    </ng-template>
 
-  <nwb-nav-toolbar [menu]="tplMenu" [buttons]="tplButtons" class="flex-1"></nwb-nav-toolbar>
-  <div class="flex-none p-2 w-full md:max-w-[300px]">
-    <nwb-quicksearch-input #search></nwb-quicksearch-input>
-  </div>
-</nwb-data-table-header>
+    <nwb-nav-toolbar [menu]="tplMenu" [buttons]="tplButtons" class="flex-1"></nwb-nav-toolbar>
+    <div class="flex-none p-2 w-full md:max-w-[300px]">
+      <nwb-quicksearch-input #search></nwb-quicksearch-input>
+    </div>
+  </nwb-data-table-header>
+</ion-header>
 <router-outlet></router-outlet>
 
 <ng-template #tplButtons>

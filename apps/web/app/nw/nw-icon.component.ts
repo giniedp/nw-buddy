@@ -95,14 +95,17 @@ const transparentPixel =
   },
 })
 export class NwImageComponent {
+
   @Input()
-  public set nwImage(value: string) {
-    value = value || transparentPixel
-    if (this.src !== value) {
-      this.src = value
-      this.isLoaded = false
-      this.cdRef.markForCheck()
+  public set nwImage(value: string | ItemDefinitionMaster | Housingitems) {
+    if (!value) {
+      this.updateSrc(transparentPixel)
+    } else if (typeof value === 'string') {
+      this.updateSrc(value)
+    } else {
+      this.updateSrc(getItemIconPath(value))
     }
+    this.cdRef.markForCheck()
   }
 
   @HostBinding()
@@ -129,5 +132,14 @@ export class NwImageComponent {
   public onLoad(e: Event) {
     this.isLoaded = true
     this.cdRef.markForCheck()
+  }
+
+
+  private updateSrc(value: string) {
+    if (this.src !== value) {
+      this.src = value
+      this.isLoaded = false
+      this.cdRef.markForCheck()
+    }
   }
 }

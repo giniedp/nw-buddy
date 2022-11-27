@@ -23,7 +23,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     DataTableModule,
     NavToolbarModule,
     ScreenshotModule,
-    IonicModule
+    IonicModule,
   ],
   host: {
     class: 'layout-col',

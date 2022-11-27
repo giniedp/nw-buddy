@@ -2,22 +2,23 @@ import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { Meta, moduleMetadata, Story } from '@storybook/angular'
 import { AppTestingModule } from '~/test'
+import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemDetailModule } from './item-detail.module'
 
 @Component({
-  imports: [CommonModule, ItemDetailModule],
+  imports: [CommonModule, ItemDetailModule, ItemFrameModule],
   template: `
     <nwb-item-detail [entityId]="'1htowershieldcastt5'" #detail="detail">
       <nwb-item-detail-header></nwb-item-detail-header>
-      <ng-container *ngIf="!(detail.isLoading$ | async)">
+      <div *ngIf="!(detail.isLoading$ | async)" class="p-4">
         <nwb-item-detail-stats></nwb-item-detail-stats>
-        <hr class="item-detail-divider" />
+        <nwb-item-divider class="my-3"></nwb-item-divider>
         <nwb-item-detail-perks></nwb-item-detail-perks>
-        <hr class="item-detail-divider" />
+        <nwb-item-divider class="my-3"></nwb-item-divider>
         <nwb-item-detail-description> </nwb-item-detail-description>
-        <hr class="item-detail-divider" />
+        <nwb-item-divider class="my-3"></nwb-item-divider>
         <nwb-item-detail-info> </nwb-item-detail-info>
-      </ng-container>
+      </div>
     </nwb-item-detail>
   `,
 })
@@ -31,7 +32,7 @@ const StoryMeta: Meta = {
   component: StoryComponent,
   decorators: [
     moduleMetadata({
-      imports: [AppTestingModule, ItemDetailModule],
+      imports: [AppTestingModule, ItemDetailModule, ItemFrameModule],
     }),
   ],
 }

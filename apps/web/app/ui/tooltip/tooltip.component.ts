@@ -1,3 +1,4 @@
+import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { Component, HostBinding, Input, TemplateRef, Type } from '@angular/core'
 
@@ -9,29 +10,27 @@ import { Component, HostBinding, Input, TemplateRef, Type } from '@angular/core'
     <ng-container *ngIf="text">{{ text }}</ng-container>
     <ng-container *ngComponentOutlet="component"></ng-container>
     <ng-container *ngTemplateOutlet="tpl"></ng-container>
-    <ng-content></ng-content>
   `,
   imports: [CommonModule],
   host: {
     class: 'rounded-md fs-sm',
-    '[class.primary]': 'color == "primary"',
-    '[class.secondary]': 'color == "secondary"',
-    '[class.accent]': 'color == "accent"',
-    '[class.info]': 'color == "info"',
-    '[class.success]': 'color == "success"',
-    '[class.warning]': 'color == "warning"',
-    '[class.error]': 'color == "error"',
     '[class.px-2]': '!!text',
-    '[class.py-1]': '!!text'
-  }
+    '[class.py-1]': '!!text',
+  },
+  animations: [
+    trigger('animate', [
+      transition(':enter', [style({ opacity: 0 }), animate('100ms', style({ opacity: 1 }))]),
+      transition(':leave', [animate('100ms', style({ opacity: 0 }))]),
+    ]),
+  ],
 })
 export class TooltipComponent {
 
-  @Input()
-  @HostBinding('class.show')
-  public show: boolean
+  @HostBinding('@animate')
+  protected animate: void
 
   @Input()
+  @HostBinding('class')
   public color: '' | 'primary' | 'secondary' | 'accent' | 'info' | 'success' | 'warning' | 'error'
 
   @Input()

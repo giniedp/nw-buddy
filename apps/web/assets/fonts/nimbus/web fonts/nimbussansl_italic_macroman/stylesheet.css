@@ -1,0 +1,13 @@
+@font-face {
+    font-family: 'nimbus_sans_lregular_italic';
+    src: url('NimbusSanL-RegIta-webfont.eot');
+    src: url('NimbusSanL-RegIta-webfont.eot?#iefix') format('embedded-opentype'),
+         url('NimbusSanL-RegIta-webfont.woff2') format('woff2'),
+         url('NimbusSanL-RegIta-webfont.woff') format('woff'),
+         url('NimbusSanL-RegIta-webfont.ttf') format('truetype'),
+         url('NimbusSanL-RegIta-webfont.svg#nimbus_sans_lregular_italic') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+

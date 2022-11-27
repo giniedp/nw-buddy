@@ -45,58 +45,61 @@
       </button>
     </div>
 
-    <ng-container *ngIf="minimal && !compact">
-      <nwb-item-detail-description></nwb-item-detail-description>
-    </ng-container>
-    <ng-container *ngIf="!minimal">
+    <div class="p-3">
 
-      <ng-container *ngIf="vm.isRune && !compact">
-        <nwb-item-detail-divider></nwb-item-detail-divider>
+      <ng-container *ngIf="minimal && !compact">
         <nwb-item-detail-description></nwb-item-detail-description>
       </ng-container>
 
-      <ng-container *ngIf="!vm.isConsumable">
-        <nwb-item-detail-stats
-          [gearScoreEditable]="!vm.isConsumable"
-          (gearScoreEdit)="isGearScoreOpen = !isGearScoreOpen"
-          #stats="itemDetailStats"
-        >
-          <ng-template
-            cdkConnectedOverlay
-            [cdkConnectedOverlayOrigin]="stats.gearScoreOverlayOrigin"
-            [cdkConnectedOverlayOpen]="isGearScoreOpen"
-            [cdkConnectedOverlayHasBackdrop]="true"
-            (backdropClick)="isGearScoreOpen = false"
-            (detach)="isGearScoreOpen = false"
-          >
-            <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
-              <input
-                type="range"
-                min="100"
-                max="625"
-                step="1"
-                [ngModel]="gearScore || vm.instance.gearScore"
-                (ngModelChange)="updateGearScore($event)"
-                (blur)="commitGearScore(vm)"
-                class="range range-sm range-primary"
-              />
-            </div>
-          </ng-template>
-        </nwb-item-detail-stats>
-        <nwb-item-detail-divider></nwb-item-detail-divider>
-        <nwb-item-detail-perks (editPerk)="pickPerk(vm, $event.key)" [perkEditable]="true"></nwb-item-detail-perks>
-      </ng-container>
+      <ng-container *ngIf="!minimal">
 
-      <ng-container *ngIf="!compact">
-        <ng-container *ngIf="!vm.isRune">
-          <nwb-item-detail-divider></nwb-item-detail-divider>
+        <ng-container *ngIf="vm.isRune && !compact">
           <nwb-item-detail-description></nwb-item-detail-description>
         </ng-container>
 
-        <nwb-item-detail-divider></nwb-item-detail-divider>
-        <nwb-item-detail-info></nwb-item-detail-info>
+        <ng-container *ngIf="!vm.isConsumable">
+          <nwb-item-detail-stats
+            [gearScoreEditable]="!vm.isConsumable"
+            (gearScoreEdit)="isGearScoreOpen = !isGearScoreOpen"
+            #stats="itemDetailStats"
+          >
+            <ng-template
+              cdkConnectedOverlay
+              [cdkConnectedOverlayOrigin]="stats.gearScoreOverlayOrigin"
+              [cdkConnectedOverlayOpen]="isGearScoreOpen"
+              [cdkConnectedOverlayHasBackdrop]="true"
+              (backdropClick)="isGearScoreOpen = false"
+              (detach)="isGearScoreOpen = false"
+            >
+              <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
+                <input
+                  type="range"
+                  min="100"
+                  max="625"
+                  step="1"
+                  [ngModel]="gearScore || vm.instance.gearScore"
+                  (ngModelChange)="updateGearScore($event)"
+                  (blur)="commitGearScore(vm)"
+                  class="range range-sm range-primary"
+                />
+              </div>
+            </ng-template>
+          </nwb-item-detail-stats>
+          <nwb-item-divider class="my-3"></nwb-item-divider>
+          <nwb-item-detail-perks (editPerk)="pickPerk(vm, $event.key)" [perkEditable]="true"></nwb-item-detail-perks>
+        </ng-container>
+
+        <ng-container *ngIf="!compact">
+          <ng-container *ngIf="!vm.isRune">
+            <nwb-item-divider class="my-3"></nwb-item-divider>
+            <nwb-item-detail-description></nwb-item-detail-description>
+          </ng-container>
+
+          <nwb-item-divider class="my-3"></nwb-item-divider>
+          <nwb-item-detail-info></nwb-item-detail-info>
+        </ng-container>
       </ng-container>
-    </ng-container>
+    </div>
   </nwb-item-detail>
 </ng-container>
 

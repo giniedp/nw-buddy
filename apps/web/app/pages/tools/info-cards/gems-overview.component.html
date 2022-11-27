@@ -2,8 +2,9 @@
   <div class="grid" [nwbScreenshotFrame]="'Gemstones'"  [@listAnimation]="items.length">
     <nwb-item-detail #detail="detail" *ngFor="let item of items" [entityId]="item.$itemId">
       <nwb-item-detail-header [enableInfoLink]="true"></nwb-item-detail-header>
-      <nwb-item-detail-perks></nwb-item-detail-perks>
       <div class="p-3">
+        <nwb-item-detail-perks></nwb-item-detail-perks>
+        <nwb-item-divider class="my-3"></nwb-item-divider>
         <div *ngFor="let ingr of item.$ingredients" class="flex flex-row gap-1 m-1 justify-start items-center">
           <picture [nwIcon]="ingr.item" class="w-8 h-8 nw-icon flex-none"></picture>
           <span>{{ ingr.quantity }}</span>

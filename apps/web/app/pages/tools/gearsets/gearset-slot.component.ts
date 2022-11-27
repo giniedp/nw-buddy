@@ -29,6 +29,7 @@ import { svgEllipsisVertical, svgLink16p, svgLinkSlash16p, svgPlus, svgRotate, s
 import { IconsModule } from '~/ui/icons'
 import { TooltipModule } from '~/ui/tooltip'
 import { LayoutModule } from '~/ui/layout'
+import { ItemFrameModule } from '~/ui/item-frame'
 
 export interface GearsetSlotVM {
   slot?: EquipSlot
@@ -57,10 +58,11 @@ export interface GearsetSlotVM {
     IconsModule,
     LayoutModule,
     TooltipModule,
+    ItemFrameModule
   ],
   providers: [GearsetSlotStore],
   host: {
-    class: 'block bg-base-300 rounded-md flex flex-col overflow-hidden',
+    class: 'block bg-black rounded-md flex flex-col overflow-hidden',
   },
 })
 export class GearsetSlotComponent {

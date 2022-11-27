@@ -1,25 +1,35 @@
 import {
-  Component,
-  OnInit,
   ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Injectable,
   Input,
   OnDestroy,
-  ElementRef,
+  OnInit,
+  Optional,
   ViewChild,
 } from '@angular/core'
-import { Chart, ChartConfiguration, registerables  } from 'chart.js'
-import { ReplaySubject, Subject, takeUntil } from 'rxjs'
+import { Chart, ChartConfiguration, registerables } from 'chart.js'
+import { Observable, ReplaySubject, Subject, takeUntil } from 'rxjs'
 
 Chart.register(...registerables)
 
+@Injectable()
+export abstract class ChartSource {
+  abstract config: Observable<ChartConfiguration>
+}
+
 @Component({
+  standalone: true,
   selector: 'nwb-chart',
-  styleUrls: ['./chart.component.scss'],
+  exportAs: 'chart',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<canvas #canvas></canvas>`,
+  host: {
+    class: 'block'
+  },
 })
 export class ChartComponent implements OnInit, OnDestroy {
-
   @Input()
   public set config(value: ChartConfiguration) {
     this.config$.next(value)
@@ -32,12 +42,16 @@ export class ChartComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject()
   private chart: Chart
 
+  public constructor(
+    @Optional()
+    private source: ChartSource
+  ) {}
   public ngOnInit(): void {
+    if (this.source) {
+      this.source.config.pipe(takeUntil(this.destroy$)).subscribe(this.config$)
+    }
     this.config$.pipe(takeUntil(this.destroy$)).subscribe((config) => {
       this.destroyChart()
-      if (config) {
-
-      }
       this.createChart(config)
     })
   }

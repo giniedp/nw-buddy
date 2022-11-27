@@ -3,8 +3,7 @@ import { CommonModule } from '@angular/common'
 import { ChartComponent } from './chart.component'
 
 @NgModule({
-  imports: [CommonModule],
-  declarations: [ChartComponent],
+  imports: [ChartComponent],
   exports: [ChartComponent]
 })
 export class ChartModule {}

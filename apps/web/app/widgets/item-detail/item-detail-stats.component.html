@@ -1,17 +1,17 @@
-<div *ngIf="gsLabel$ | async; let gs" class="flex">
-  <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-14 h-14">
-  <span
+<div *ngIf="gsLabel$ | async; let gs" class="flex flex-row">
+  <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-12 h-12 relative top-[2px]" />
+  <nwb-item-gs
+    [value]="gs"
     cdkOverlayOrigin
-    class="text-5xl font-bold rounded-md outline outline-2 outline-offset-0 outline-transparent transition-all"
+    class="text-6xl rounded-md outline outline-2 outline-offset-0 outline-transparent transition-all leading-none relative"
     [class.hover:outline-primary]="gearScoreEditable"
     [class.hover:outline-offset-4]="gearScoreEditable"
     [class.cursor-pointer]="gearScoreEditable"
     [class.select-none]="gearScoreEditable"
     style="min-width: 3rem"
     (click)="onGearScoreEdit($event)"
-    >{{ gs }}</span
-  >
+  ></nwb-item-gs>
 </div>
-<div *ngFor="let row of stats$ | async">
-  <b>{{ row.value }} </b> <span class="opacity-50">{{ row.label | nwText }}</span>
-</div>
+<ng-container *ngFor="let row of stats$ | async">
+  <nwb-item-stat [label]="row.value">{{ row.label | nwText }}</nwb-item-stat>
+</ng-container>

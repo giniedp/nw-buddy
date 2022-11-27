@@ -33,7 +33,7 @@ import { GearsetsTableAdapter } from './gearsets-table.adapter'
   ],
   providers: [GearsetsTableAdapter.provider(), QuicksearchService, GearsetsStore],
   host: {
-    class: 'layout-col bg-base-100',
+    class: 'layout-col',
   },
 })
 export class GearsetsComponent implements OnInit {

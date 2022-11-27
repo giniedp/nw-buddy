@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { BehaviorSubject, combineLatest, defer, map, tap } from 'rxjs'
 import { NwModule } from '~/nw'
+import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemTrackerModule } from '../item-tracker'
 import { ItemDetailHeaderBackdropComponent } from './item-detail-header-backdrop.component'
 import { ItemDetailHeaderContentComponent } from './item-detail-header-content.component'
@@ -19,6 +20,7 @@ import { ItemDetailService } from './item-detail.service'
     ItemTrackerModule,
     ItemDetailHeaderBackdropComponent,
     ItemDetailHeaderContentComponent,
+    ItemFrameModule,
   ],
   host: {
     class: 'block',

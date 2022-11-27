@@ -14,7 +14,7 @@ import { ItemDetailService } from './item-detail.service'
   imports: [CommonModule],
   exportAs: 'detail',
   host: {
-    class: 'block bg-base-300 rounded-md overflow-clip',
+    class: 'block bg-black rounded-md overflow-clip font-nimbus',
   },
   providers: [
     {

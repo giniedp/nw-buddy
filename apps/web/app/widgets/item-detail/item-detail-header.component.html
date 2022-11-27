@@ -1,9 +1,10 @@
-<ng-container *ngIf="vm$ | async; let vm">
-  <nwb-item-detail-header-backdrop [rarity]="vm.rarity" [animated]="vm.isNamed"></nwb-item-detail-header-backdrop>
-  <a [nwInfoLink]="enableInfoLink ? vm.entityId : null" [nwInfoResource]="'item'" class="relative">
-    <span class="italic">{{ tier$ | async }}</span>
-    <picture [nwIcon]="vm.entity" [nwRarity]="vm.rarity"></picture>
-    <ng-content select=".icon-overlay"></ng-content>
+<nwb-item-header *ngIf="vm$ | async; let vm" class="p-1 gap-2" [rarity]="vm.rarity" [named]="vm.isNamed">
+  <a [nwInfoLink]="enableInfoLink ? vm.entityId : null" [nwInfoResource]="'item'" class="w-[76px] h-[76px]">
+    <nwb-item-icon-frame [rarity]="vm.rarity">
+      <span class="italic">{{ tier$ | async }}</span>
+      <img [nwImage]="vm.entity" width="74" height="74"/>
+      <ng-content select=".icon-overlay"></ng-content>
+    </nwb-item-icon-frame>
   </a>
   <nwb-item-detail-header-content
     class="z-10"
@@ -23,5 +24,5 @@
       ></nwb-gs-tracker>
     </div>
   </nwb-item-detail-header-content>
-</ng-container>
-<ng-content></ng-content>
+  <ng-content></ng-content>
+</nwb-item-header>

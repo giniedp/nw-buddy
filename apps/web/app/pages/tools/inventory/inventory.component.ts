@@ -37,7 +37,7 @@ import { PlayerItemsTableAdapter } from './inventory-table.adapter'
     IonicModule
   ],
   host: {
-    class: 'layout-col bg-base-100',
+    class: 'layout-col',
   },
   providers: [PlayerItemsTableAdapter.provider(), QuicksearchService, InventoryPickerService, ItemInstancesStore, GearsetsStore],
 })

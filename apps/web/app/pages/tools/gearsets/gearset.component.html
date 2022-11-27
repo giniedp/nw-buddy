@@ -1,10 +1,10 @@
 <ng-container *ngIf="data$ | async; let data; else: tplEmpty">
-  <ion-header class="bg-base-200">
+  <ion-header class="bg-base-300">
     <div class="navbar">
       <div class="flex-none">
         <ul class="menu menu-horizontal p-0">
           <li>
-            <a (click)="goBack()">
+            <a (click)="goBack()" class="btn btn-ghost btn-square">
               <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
             </a>
           </li>
@@ -23,10 +23,10 @@
       <div class="flex-none">
         <ul class="menu menu-horizontal p-0">
           <li [tooltip]="'Grab screenshot'" [color]="'info'">
-            <nwb-screenshot-button></nwb-screenshot-button>
+            <nwb-screenshot-button class="btn btn-ghost btn-square"></nwb-screenshot-button>
           </li>
           <li [tooltip]="compactMode ? 'Disable compact mode' : 'Enable compact mode'" [color]="'info'">
-            <a (click)="onCompactClicked()" [class.text-primary]="compactMode">
+            <a (click)="onCompactClicked()" [class.text-primary]="compactMode" class="btn btn-ghost btn-square">
               <svg viewBox="0 0 448 512" class="w-4 h-4">
                 <path
                   fill="currentColor"
@@ -36,12 +36,12 @@
             </a>
           </li>
           <li [tooltip]="'Create a copy'" [color]="'info'">
-            <a (click)="onCloneClicked()">
+            <a (click)="onCloneClicked()" class="btn btn-ghost btn-square">
               <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
             </a>
           </li>
           <li [tooltip]="'Delete'" [color]="'error'">
-            <a (click)="onDeleteClicked()">
+            <a (click)="onDeleteClicked()" class="btn btn-ghost btn-square">
               <nwb-icon [icon]="iconDelete" class="w-4 h-4"></nwb-icon>
             </a>
           </li>
@@ -49,62 +49,64 @@
       </div>
     </div>
   </ion-header>
-  <div class=" px-4 pt-2">
-    <div class="alert prose mx-auto leading-tight">
-      <div>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          class="stroke-info flex-shrink-0 w-6 h-6"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          ></path>
-        </svg>
-        <div>Work in progress. At the moment you are able to create "invalid" perk combinations.</div>
+  <div class="layout-content">
+    <div class=" px-4 pt-2">
+      <div class="alert prose mx-auto leading-tight">
+        <div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            class="stroke-info flex-shrink-0 w-6 h-6"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path>
+          </svg>
+          <div>Work in progress. At the moment you are able to create "invalid" perk combinations.</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class=" p-4 rounded-b-md flex flex-col xl:flex-row layout-gap" [nwbScreenshotFrame]="name$ | async">
-    <div class="flex-1 grid layout-gap" [@listAnimation]="slots?.length">
-      <nwb-gearset-stats [class.text-xs]="compactMode" class="col-span-1 sm:col-span-2 bg-base-300 rounded-md"></nwb-gearset-stats>
-      <nwb-gearset-skill
-        class="col-span-1 sm:col-span-2 bg-base-300 rounded-md"
-        [slot]="'primary'"
-        [gearset]="data"
-      ></nwb-gearset-skill>
-      <nwb-gearset-skill
-        class="col-span-1 sm:col-span-2 bg-base-300 rounded-md"
-        [slot]="'secondary'"
-        [gearset]="data"
-      ></nwb-gearset-skill>
+    <div class=" p-4 rounded-b-md flex flex-col xl:flex-row layout-gap" [nwbScreenshotFrame]="name$ | async">
+      <div class="flex-1 grid layout-gap" [@listAnimation]="slots?.length">
+        <nwb-gearset-stats [class.text-xs]="compactMode" class="col-span-1 sm:col-span-2 bg-base-300 rounded-md"></nwb-gearset-stats>
+        <nwb-gearset-skill
+          class="col-span-1 sm:col-span-2 bg-base-300 rounded-md"
+          [slot]="'primary'"
+          [gearset]="data"
+        ></nwb-gearset-skill>
+        <nwb-gearset-skill
+          class="col-span-1 sm:col-span-2 bg-base-300 rounded-md"
+          [slot]="'secondary'"
+          [gearset]="data"
+        ></nwb-gearset-skill>
 
-      <div class="flex flex-col layout-gap">
+        <div class="flex flex-col layout-gap">
+          <nwb-gearset-slot
+            *ngFor="let slot of consumableSlots; trackBy: trackByIndex"
+            [gearset]="data"
+            [slot]="slot"
+            [compact]="compactMode"
+            [minimal]="true"
+            (itemRemove)="onItemRemove(slot)"
+            (itemUnlink)="onItemUnlink(slot, $event)"
+            (itemInstantiate)="onItemInstantiate(slot, $event)"
+          ></nwb-gearset-slot>
+        </div>
         <nwb-gearset-slot
-          *ngFor="let slot of consumableSlots; trackBy: trackByIndex"
+          *ngFor="let slot of slots; trackBy: trackByIndex"
           [gearset]="data"
           [slot]="slot"
           [compact]="compactMode"
-          [minimal]="true"
           (itemRemove)="onItemRemove(slot)"
           (itemUnlink)="onItemUnlink(slot, $event)"
           (itemInstantiate)="onItemInstantiate(slot, $event)"
         ></nwb-gearset-slot>
       </div>
-      <nwb-gearset-slot
-        *ngFor="let slot of slots; trackBy: trackByIndex"
-        [gearset]="data"
-        [slot]="slot"
-        [compact]="compactMode"
-        (itemRemove)="onItemRemove(slot)"
-        (itemUnlink)="onItemUnlink(slot, $event)"
-        (itemInstantiate)="onItemInstantiate(slot, $event)"
-      ></nwb-gearset-slot>
     </div>
   </div>
 </ng-container>

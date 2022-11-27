@@ -4,11 +4,11 @@ module.exports = {
   content: ['./apps/web/**/*.{html,js,ts}'],
   theme: {
     screens: {
-      'xs': '0px',
-      'sm': '576px',
-      'md': '768px',
-      'lg': '992px',
-      'xl': '1200px',
+      xs: '0px',
+      sm: '576px',
+      md: '768px',
+      lg: '992px',
+      xl: '1200px',
       '2xl': '1400px',
       '3xl': '1600px',
       '4xl': '2000px',
@@ -17,22 +17,22 @@ module.exports = {
     },
     extend: {
       gridTemplateColumns: {
-        'fill': 'repeat(auto-fill, minmax(20rem, 1fr))',
-        'dl': 'max-content auto'
+        fill: 'repeat(auto-fill, minmax(20rem, 1fr))',
+        dl: 'max-content auto',
       },
       colors: {
         nw: {
           success: '#69a762',
           warning: '#e47f35',
           danger: '#eb5050',
-          description: '#e1cb99'
+          description: '#e1cb99',
         },
         rarity: {
-          '1': '#c8c8c8',
-          '1': '#07c02f',
-          '2': '#00cbe9',
-          '3': '#ff16f7',
-          '4': '#f7a22d',
+          0: '#c8c8c8',
+          1: '#07c02f',
+          2: '#00cbe9',
+          3: '#ff16f7',
+          4: '#f7a22d',
         },
         syndicate: {
           light: '#8732d3',
@@ -52,27 +52,26 @@ module.exports = {
         attr: {
           base: '#4CB1FC',
           buff: '#B150E6',
-          assign: '#F5D15E'
-        }
+          assign: '#F5D15E',
+        },
       },
     },
     fontFamily: {
       ...defaultTheme.fontFamily,
-      serif: [
-        '"New World"',
-        ...defaultTheme.fontFamily.serif,
-      ],
+      serif: ['"New World"', ...defaultTheme.fontFamily.serif],
+      caslon: ['"Caslon-Antique"', ...defaultTheme.fontFamily.serif],
+      nimbus: ['"Nimbus"', ...defaultTheme.fontFamily.sans],
     },
   },
-  plugins: [require('@tailwindcss/typography'), require('daisyui')],
+  plugins: [require('@tailwindcss/typography'), require('daisyui'), require('./apps/web/styles/components/nw-item')],
   daisyui: {
     themes: [
       {
         nwbuddy: {
           ...require('daisyui/src/colors/themes')['[data-theme=halloween]'],
-          "base-100": '#212121',
-          "base-200": '#1D1D1D',
-          "base-300": '#181818'
+          'base-100': '#202020',
+          'base-200': '#181818',
+          'base-300': '#101010',
         },
       },
     ],

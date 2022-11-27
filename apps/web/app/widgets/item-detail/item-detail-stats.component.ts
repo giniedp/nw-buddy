@@ -1,12 +1,13 @@
+import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, EventEmitter, Output, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ItemDefinitionMaster, ItemdefinitionsArmor, ItemdefinitionsRunes, ItemdefinitionsWeapons } from '@nw-data/types'
-import { combineLatest, map, of } from 'rxjs'
+import { combineLatest, map } from 'rxjs'
 import { NwModule } from '~/nw'
 import { getArmorRatingElemental, getArmorRatingPhysical } from '~/nw/utils'
+import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemDetailService } from './item-detail.service'
-import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay'
 
 export interface ItemStat {
   item: ItemDefinitionMaster
@@ -20,9 +21,9 @@ export interface ItemStat {
   exportAs: 'itemDetailStats',
   templateUrl: 'item-detail-stats.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, OverlayModule],
+  imports: [CommonModule, NwModule, FormsModule, OverlayModule, ItemFrameModule],
   host: {
-    class: 'block p-3',
+    class: 'block',
   },
 })
 export class ItemDetailStatsComponent {

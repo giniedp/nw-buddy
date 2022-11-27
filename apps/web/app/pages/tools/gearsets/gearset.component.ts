@@ -38,7 +38,7 @@ import { GearsetStatsComponent } from './gearset-stats.component'
   providers: [GearsetStore, ItemInstancesStore],
   styleUrls: ['./gearset.component.scss'],
   host: {
-    class: 'layout-content flex-none',
+    class: 'layout-col flex-none',
   },
   animations: [
     trigger('listAnimation', [

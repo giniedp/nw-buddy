@@ -34,7 +34,7 @@ import { SkillBuildsTableAdapter } from './skill-builds-table.adapter'
   ],
   providers: [SkillBuildsTableAdapter.provider(), QuicksearchService, SkillBuildsStore],
   host: {
-    class: 'layout-col bg-base-100',
+    class: 'layout-col',
   },
 })
 export class SkillBuildsComponent {

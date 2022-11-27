@@ -1,6 +1,7 @@
-import { Overlay, OverlayPositionBuilder, OverlayRef } from '@angular/cdk/overlay'
-import { ComponentPortal } from '@angular/cdk/portal'
+import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay'
+import { ComponentPortal, DomPortal, Portal, TemplatePortal } from '@angular/cdk/portal'
 import {
+  ChangeDetectorRef,
   ComponentRef,
   Directive,
   ElementRef,
@@ -10,101 +11,160 @@ import {
   OnDestroy,
   OnInit,
   TemplateRef,
+  Type,
   ViewContainerRef,
 } from '@angular/core'
-import { createPopper, Instance, Placement } from '@popperjs/core'
-import { fromEvent, map, merge, Subject, takeUntil } from 'rxjs'
+import { delay, distinctUntilChanged, fromEvent, map, merge, of, Subject, switchMap, takeUntil } from 'rxjs'
+import { tapDebug } from '~/utils'
 import { TooltipComponent } from './tooltip.component'
+
+export declare type TooltipDirection = 'left' | 'top' | 'right' | 'bottom'
+export declare type TooltipTriggerType = 'click' | 'hover'
+export declare type TooltipScrollStrategy = 'close' | 'reposition'
 
 @Directive({
   standalone: true,
   selector: '[tooltip]',
+  exportAs: 'tooltip',
 })
 export class TooltipDirective implements OnInit, OnDestroy {
+  @Input('tooltip')
+  public tooltip: string | TemplateRef<any> | Type<any>
 
-  @Input()
-  public tooltip: string | TemplateRef<any>
+  @Input('tooltipPlacement')
+  public placement: TooltipDirection = 'top'
 
-  @Input()
-  public color: '' | 'primary' | 'secondary' | 'accent' | 'info' | 'success' | 'warning' | 'error'
+  @Input('tooltipTrigger')
+  public trigger: TooltipTriggerType = 'hover'
 
-  @Input()
-  public placement: Placement = 'top'
+  @Input('color')
+  public color: string = null
 
+  @Input('tooltipScrollStrategy')
+  public scrollStrategy: TooltipScrollStrategy = 'reposition'
+
+  @Input('tooltipDelay')
+  public delay: number = 150
+
+  @Input('tooltipOffset')
+  public offset: number = 4
 
   private destroy$ = new Subject<void>()
-  private cRef: ComponentRef<TooltipComponent>
-  private instance: Instance
 
-  public constructor(private elRef: ElementRef<HTMLElement>, private vcRef: ViewContainerRef, private zone: NgZone) {
+  private overlayRef: OverlayRef
+  private portal: ComponentPortal<TooltipComponent>
+  private portalRef: ComponentRef<TooltipComponent>
 
+  public constructor(
+    private elRef: ElementRef,
+    private vcRef: ViewContainerRef,
+    private overlay: Overlay,
+    private zone: NgZone
+  ) {}
+
+  public ngOnDestroy(): void {
+    this.destroy$.next()
   }
 
   public ngOnInit(): void {
     this.zone.runOutsideAngular(() => {
-      const open$ = fromEvent(this.elRef.nativeElement, 'mouseenter')
-      const close$ =  merge(...["touchend", "touchcancel", "mouseleave"].map((it) => fromEvent(this.elRef.nativeElement, it)))
+      const open$ = merge(
+        ...['mouseenter', 'focus'].map((it) =>
+          fromEvent(this.elRef.nativeElement, it, {
+            passive: true,
+          })
+        )
+      ).pipe(map(() => true))
+
+      const close$ = merge(
+        ...['touchend', 'touchcancel', 'mouseleave'].map((it) =>
+          fromEvent(this.elRef.nativeElement, it, {
+            passive: true,
+          })
+        )
+      ).pipe(map(() => false))
 
       open$
+        .pipe(
+          switchMap(() => {
+            return merge(close$, of(true).pipe(delay(this.delay)).pipe(takeUntil(close$)))
+          })
+        )
+        .pipe(distinctUntilChanged())
         .pipe(takeUntil(this.destroy$))
-        .subscribe(() => {
-          this.show()
-        })
-
-      close$
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(() => {
-          this.close()
+        .pipe(tapDebug('open'))
+        .subscribe((value) => {
+          this.zone.run(() => {
+            if (value) {
+              this.open()
+            } else {
+              this.close()
+            }
+          })
         })
     })
-
   }
 
-  public ngOnDestroy(): void {
-    this.close()
-    this.destroy$.next()
-    this.destroy$.complete()
-  }
-
-  private show() {
-    this.close()
-    if (!this.tooltip) {
+  protected open(): void {
+    if (this.overlayRef?.hasAttached()) {
       return
     }
-    this.zone.run(() => {
-      this.cRef = this.vcRef.createComponent(TooltipComponent)
-      this.cRef.instance.content = this.tooltip
-      this.cRef.instance.color = this.color
-      this.cRef.changeDetectorRef.detectChanges()
-    })
-    this.instance = createPopper(this.elRef.nativeElement, this.cRef.location.nativeElement, {
-      placement: this.placement || 'top',
-      strategy: 'fixed',
-      modifiers: [
-        {
-          name: 'offset',
-          options: {
-            offset: [5, 5],
-          },
-        },
-      ],
-      onFirstUpdate: () => {
-        this.zone.run(() => {
-          this.cRef.instance.show = true
-          this.cRef.changeDetectorRef.detectChanges()
-          this.instance?.forceUpdate()
-        })
-      }
-    })
-    setTimeout(() => this.instance?.forceUpdate())
+    this.overlayRef = this.overlayRef || this.createOverlay()
+    this.portal = this.portal || new ComponentPortal(TooltipComponent, this.vcRef)
+    this.portalRef = this.overlayRef.attach(this.portal)
+    this.portalRef.instance.content = this.tooltip
+    this.portalRef.instance.color = this.color as any
+    this.portalRef.changeDetectorRef.markForCheck()
   }
 
-  private close() {
-    this.zone.run(() => {
-      this.instance?.destroy()
-      this.instance = null
-      this.cRef?.destroy()
-      this.cRef = null
-    })
+  private close(): void {
+    const oRef = this.overlayRef
+    const pRef = this.portalRef
+    this.overlayRef = null
+    this.portalRef = null
+    if (oRef?.hasAttached()) {
+      pRef.changeDetectorRef.markForCheck()
+      oRef.detach()
+      setTimeout(() => {
+        oRef.dispose()
+      }, 150)
+    }
+  }
+
+  private createOverlay(): OverlayRef {
+    const overlayState = new OverlayConfig()
+    overlayState.positionStrategy = this.getPosition()
+    if (this.scrollStrategy === 'reposition') {
+      overlayState.scrollStrategy = this.overlay.scrollStrategies.reposition()
+    } else {
+      overlayState.scrollStrategy = this.overlay.scrollStrategies.close()
+    }
+    overlayState.scrollStrategy.enable()
+    return this.overlay.create(overlayState)
+  }
+
+  private getPosition() {
+    let strategy = this.overlay.position().flexibleConnectedTo(this.elRef)
+    if (this.placement === 'right') {
+      strategy = strategy
+        .withPositions([{ originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center' }])
+        .withDefaultOffsetX(this.offset)
+    }
+    if (this.placement === 'left') {
+      strategy = strategy
+        .withPositions([{ originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center' }])
+        .withDefaultOffsetX(-this.offset)
+    }
+    if (this.placement === 'top') {
+      strategy = strategy
+        .withPositions([{ originX: 'center', originY: 'top', overlayX: 'center', overlayY: 'bottom' }])
+        .withDefaultOffsetY(-this.offset)
+    }
+    if (this.placement === 'bottom') {
+      strategy = strategy
+        .withPositions([{ originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top' }])
+        .withDefaultOffsetY(this.offset)
+    }
+    return strategy
   }
 }

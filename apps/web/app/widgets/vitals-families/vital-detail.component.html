@@ -1,5 +1,5 @@
 <ng-container *ngIf="vital$ | async; let vital">
-  <a class="relative bg-base-200 flex flex-col items-center justify-center p-1"  [nwInfoLink]="vital.VitalsID" [nwInfoResource]="'creature'" target="_blank">
+  <a class="relative bg-base-300 flex flex-col items-center justify-center p-1"  [nwInfoLink]="vital.VitalsID" [nwInfoResource]="'creature'" target="_blank">
     <ng-container *ngIf="vital.VitalsID">
       <ng-container *ngIf="vital.DisplayName; let name">
         <a [nwText]="name"></a>

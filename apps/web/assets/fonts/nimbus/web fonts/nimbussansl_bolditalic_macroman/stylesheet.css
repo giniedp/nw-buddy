@@ -1,0 +1,13 @@
+@font-face {
+    font-family: 'nimbus_sans_lbold_italic';
+    src: url('NimbusSanL-BolIta-webfont.eot');
+    src: url('NimbusSanL-BolIta-webfont.eot?#iefix') format('embedded-opentype'),
+         url('NimbusSanL-BolIta-webfont.woff2') format('woff2'),
+         url('NimbusSanL-BolIta-webfont.woff') format('woff'),
+         url('NimbusSanL-BolIta-webfont.ttf') format('truetype'),
+         url('NimbusSanL-BolIta-webfont.svg#nimbus_sans_lbold_italic') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
