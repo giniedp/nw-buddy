@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { map } from 'rxjs'
 import { NwModule } from '~/nw'
 import { ItemDetailService } from './item-detail.service'
@@ -16,6 +16,9 @@ import { ItemDetailService } from './item-detail.service'
   },
 })
 export class ItemDetailDescriptionComponent {
+
+  @Input()
+  public innerClass: string
 
   public constructor(protected detail: ItemDetailService) {
 

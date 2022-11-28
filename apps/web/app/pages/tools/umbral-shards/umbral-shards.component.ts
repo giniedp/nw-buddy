@@ -12,7 +12,7 @@ import { UmbralshardsModule } from '~/widgets/umbralshards';
    changeDetection: ChangeDetectionStrategy.OnPush,
    imports: [CommonModule, RouterModule, NwModule, UmbralshardsModule, LayoutModule],
    host: {
-    class: 'layout-row bg-base-300 rounded-md'
+    class: 'layout-row'
   }
 })
 export class UmbralShardsComponent {

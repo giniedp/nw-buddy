@@ -9,7 +9,7 @@
     [routerLink]="getLink()"
     [cdkContextMenuTriggerFor]="menu"
   >
-    <nwb-item-detail-header-backdrop [rarity]="vm.rarity" [animated]="vm.isNamed"></nwb-item-detail-header-backdrop>
+
     <picture [nwIcon]="vm.item" [nwRarity]="vm.rarity" class="relative flex z-10 4xl:w-20 4xl:h-20">
       <span class="z-10 absolute top-0 left-1 italic">{{ vm.tierLabel }}</span>
       <span
@@ -19,7 +19,7 @@
         <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
       </span>
     </picture>
-    <nwb-item-detail-header-content
+    <nwb-item-header-content
       class="z-10 h-full hidden 4xl:flex"
       [name]="vm.name | nwText"
       [rarity]="vm.rarity"
@@ -28,23 +28,22 @@
       [sourceName]="vm.sourceLabel"
     >
       <span class="header flex gap-1"><img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-4 h-4"> {{ vm.gearScore }}</span>
-    </nwb-item-detail-header-content>
+    </nwb-item-header-content>
   </a>
 </ng-template>
 
 <ng-template #tplEmpty>
   <div class="detail-header 4xl:p-1" *ngIf="vm$ | async; let vm">
-    <nwb-item-detail-header-backdrop [rarity]="0"></nwb-item-detail-header-backdrop>
     <a class="relative flex z-10 4xl:w-20 4xl:h-20">
       <picture [nwIcon]="slot.icon" [nwRarity]="0" class="w-full h-full"></picture>
     </a>
-    <nwb-item-detail-header-content
+    <nwb-item-header-content
       class="z-10 h-full hidden 4xl:flex"
       [rarity]="0"
       [typeName]="slot.itemType | nwText"
     >
       <span class="title" [nwText]="slot.name"></span>
-    </nwb-item-detail-header-content>
+    </nwb-item-header-content>
   </div>
 </ng-template>
 

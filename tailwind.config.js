@@ -69,9 +69,9 @@ module.exports = {
       {
         nwbuddy: {
           ...require('daisyui/src/colors/themes')['[data-theme=halloween]'],
-          'base-100': '#202020',
-          'base-200': '#181818',
-          'base-300': '#101010',
+          'base-100': '#222222',
+          'base-200': '#191919',
+          'base-300': '#111111',
         },
       },
     ],

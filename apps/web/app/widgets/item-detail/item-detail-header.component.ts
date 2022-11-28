@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
-import { BehaviorSubject, combineLatest, defer, map, tap } from 'rxjs'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core'
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { Subject, takeUntil } from 'rxjs'
 import { NwModule } from '~/nw'
+import { getItemTierAsRoman, isItemArmor, isItemWeapon, isMasterItem } from '~/nw/utils'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemTrackerModule } from '../item-tracker'
-import { ItemDetailHeaderBackdropComponent } from './item-detail-header-backdrop.component'
-import { ItemDetailHeaderContentComponent } from './item-detail-header-content.component'
 import { ItemDetailService } from './item-detail.service'
 
 @Component({
@@ -14,48 +14,63 @@ import { ItemDetailService } from './item-detail.service'
   templateUrl: './item-detail-header.component.html',
   styleUrls: ['./item-detail-header.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    NwModule,
-    ItemTrackerModule,
-    ItemDetailHeaderBackdropComponent,
-    ItemDetailHeaderContentComponent,
-    ItemFrameModule,
-  ],
+  imports: [CommonModule, NwModule, ItemTrackerModule, ItemFrameModule],
   host: {
-    class: 'block',
+    class: 'nw-item-header flex flex-row p-1 gap-2',
+    '[class.bg-base-300]': 'isLoading',
+    '[class.nw-item-rarity-0]': '!isLoading && !rarity',
+    '[class.nw-item-rarity-1]': 'rarity === 1',
+    '[class.nw-item-rarity-2]': 'rarity === 2',
+    '[class.nw-item-rarity-3]': 'rarity === 3',
+    '[class.nw-item-rarity-4]': 'rarity === 4',
   },
 })
-export class ItemDetailHeaderComponent {
+export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
   @Input()
   public enableInfoLink: boolean
 
   @Input()
-  public set enableTracker(value: boolean) {
-    this.enableTracker$.next(value)
+  public enableTracker: boolean
+
+  protected name: string
+  protected named: boolean
+  protected rarity: number
+  protected rarityName: string
+  protected typeName: string
+  protected sourceLabel: string
+  protected entity: ItemDefinitionMaster | Housingitems
+  protected entityId: string
+  protected isLoading = true
+  protected get enableGsTracker(): boolean {
+    return this.enableTracker && isMasterItem(this.entity) && (isItemWeapon(this.entity) || isItemArmor(this.entity))
+  }
+  protected get tierLabel() {
+    return getItemTierAsRoman(this.entity?.Tier)
   }
 
-  protected name$ = this.detail.name$
-  protected source$ = this.detail.source$
-  protected rarity$ = this.detail.rarity$
-  protected rarityName$ = this.detail.rarityName$
-  protected tier$ = this.detail.tierLabel$
+  private destroy$ = new Subject<void>()
 
-  protected get vm$() {
-    return this.detail.vm$
-  }
-
-  protected showMarker$ = defer(() => this.enableTracker$)
-  protected showGsMarker$ = defer(() =>
-    combineLatest({
-      enabled: this.enableTracker$,
-      hasGs: this.detail.item$.pipe(map((it) => it?.ItemType === 'Weapon' || it?.ItemType === 'Armor')),
-    })
-  ).pipe(map(({ enabled, hasGs }) => enabled && hasGs))
-
-  private enableTracker$ = new BehaviorSubject(false)
-
-  public constructor(protected detail: ItemDetailService) {
+  public constructor(protected detail: ItemDetailService, private cdRef: ChangeDetectorRef) {
     //
+  }
+
+  public ngOnInit(): void {
+    this.detail.vm$.pipe(takeUntil(this.destroy$)).subscribe((it) => {
+      this.name = it.name
+      this.named = it.isNamed
+      this.rarity = it.rarity
+      this.rarityName = it.rarityName
+      this.typeName = it.typeName
+      this.sourceLabel = it.sourceLabel
+      this.entity = it.entity
+      this.entityId = it.entityId
+      this.isLoading = it.loading
+      this.cdRef.markForCheck()
+    })
+  }
+
+  public ngOnDestroy(): void {
+    this.destroy$.next()
+    this.destroy$.complete()
   }
 }

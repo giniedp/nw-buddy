@@ -1,6 +1,6 @@
 @import '~@ionic/angular/css/core.css';
 
-body {
+html, html.md, html.ios {
   --ion-default-font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
     Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   --ion-font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
@@ -9,8 +9,8 @@ body {
   --ion-background-color: transparent;
   --ion-background-color-rgb: rgb(0, 0, 0);
 
-  --ion-text-color: #fff;
-  --ion-text-color-rgb: rgb(255, 255, 255);
+  --ion-text-color:  hsl(var(--nc));
+  --ion-text-color-rgb: rgb(207, 211, 211);
 
   --ion-color-primary: #f28c18;
   --ion-color-primary-rgb: 242, 140, 24;

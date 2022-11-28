@@ -1,21 +1,25 @@
 <nwb-item-detail-header [enableTracker]="enableTracker" [enableInfoLink]="enableInfoLink"></nwb-item-detail-header>
-<div *ngIf="vm$ | async; let vm" class="px-4 py-2">
-  <ng-container *ngIf="vm.hasDescription && vm.isRune">
-    <nwb-item-detail-description></nwb-item-detail-description>
-    <nwb-item-divider class="my-2"></nwb-item-divider>
-  </ng-container>
-  <ng-container *ngIf="vm.hasStats">
-    <nwb-item-detail-stats></nwb-item-detail-stats>
-    <nwb-item-divider class="my-2"></nwb-item-divider>
-  </ng-container>
-  <ng-container *ngIf="vm.hasPerks">
-    <nwb-item-detail-perks></nwb-item-detail-perks>
-    <nwb-item-divider class="my-2"></nwb-item-divider>
-  </ng-container>
-  <ng-container *ngIf="vm.hasDescription && !vm.isRune">
-    <nwb-item-detail-description></nwb-item-detail-description>
-    <nwb-item-divider class="my-2"></nwb-item-divider>
-  </ng-container>
-  <nwb-item-detail-info></nwb-item-detail-info>
-</div>
-<ng-content></ng-content>
+<ng-container *ngIf="vm$ | async; let vm">
+  <div *ngIf="!vm.loading" class="p-4 flex flex-col overflow-y-auto gap-2">
+    <ng-container *ngIf="vm.hasDescription && vm.isRune && !disableDescription">
+      <nwb-item-detail-description class="-m-4" [innerClass]="'p-4'"></nwb-item-detail-description>
+      <nwb-item-divider></nwb-item-divider>
+    </ng-container>
+    <ng-container *ngIf="vm.hasStats && !disableStats">
+      <nwb-item-detail-stats></nwb-item-detail-stats>
+      <nwb-item-divider></nwb-item-divider>
+    </ng-container>
+    <ng-container *ngIf="vm.hasPerks">
+      <nwb-item-detail-perks></nwb-item-detail-perks>
+      <nwb-item-divider></nwb-item-divider>
+    </ng-container>
+    <ng-container *ngIf="vm.hasDescription && !vm.isRune && !disableDescription">
+      <nwb-item-detail-description></nwb-item-detail-description>
+      <nwb-item-divider></nwb-item-divider>
+    </ng-container>
+    <ng-container *ngIf="!disableInfo">
+      <nwb-item-detail-info></nwb-item-detail-info>
+    </ng-container>
+    <ng-content></ng-content>
+  </div>
+</ng-container>

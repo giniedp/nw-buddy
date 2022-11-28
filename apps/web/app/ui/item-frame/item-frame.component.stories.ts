@@ -9,7 +9,7 @@ import { ItemFrameModule } from './item-frame.module'
   template: `
     <nwb-item-frame class="font-nimbus">
       <nwb-item-header [rarity]="3" class="p-1 flex flex-row gap-3">
-        <nwb-item-icon-frame [solid]="false" class="w-20"> </nwb-item-icon-frame>
+        <nwb-item-icon [solid]="false" class="w-20"> </nwb-item-icon>
         <div class="flex flex-col justify-between">
           <div class="font-bold">Firevine Battlestaff</div>
           <div class="flex flex-col">

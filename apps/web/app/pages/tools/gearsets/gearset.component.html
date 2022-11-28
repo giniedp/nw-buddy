@@ -73,14 +73,14 @@
 
     <div class=" p-4 rounded-b-md flex flex-col xl:flex-row layout-gap" [nwbScreenshotFrame]="name$ | async">
       <div class="flex-1 grid layout-gap" [@listAnimation]="slots?.length">
-        <nwb-gearset-stats [class.text-xs]="compactMode" class="col-span-1 sm:col-span-2 bg-base-300 rounded-md"></nwb-gearset-stats>
+        <nwb-gearset-stats [class.text-xs]="compactMode" class="col-span-1 sm:col-span-2 bg-base-100 shadow-lg rounded-md"></nwb-gearset-stats>
         <nwb-gearset-skill
-          class="col-span-1 sm:col-span-2 bg-base-300 rounded-md"
+          class="col-span-1 sm:col-span-2 bg-base-100 shadow rounded-md"
           [slot]="'primary'"
           [gearset]="data"
         ></nwb-gearset-skill>
         <nwb-gearset-skill
-          class="col-span-1 sm:col-span-2 bg-base-300 rounded-md"
+          class="col-span-1 sm:col-span-2 bg-base-100 shadow rounded-md"
           [slot]="'secondary'"
           [gearset]="data"
         ></nwb-gearset-skill>

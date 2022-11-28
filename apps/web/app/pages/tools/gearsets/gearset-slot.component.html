@@ -1,13 +1,12 @@
 <ng-container *ngIf="vm$ | async; let vm">
   <div *ngIf="!vm.instance" class="flex-1">
     <div class="p-1 relative flex flex-row">
-      <nwb-item-detail-header-backdrop [rarity]="0"></nwb-item-detail-header-backdrop>
       <picture class="z-10 w-[76px] h-[76px]">
         <img [nwImage]="vm.slot.icon" class="w-full h-full object-contain" />
       </picture>
-      <nwb-item-detail-header-content class="z-10">
+      <nwb-item-header-content class="z-10">
         <span class="title" [innerHTML]="vm.slot.name | nwText"></span>
-      </nwb-item-detail-header-content>
+      </nwb-item-header-content>
       <button class="btn btn-square btn-ghost absolute top-0 right-0 z-10" [cdkMenuTriggerFor]="menu">
         <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>
       </button>

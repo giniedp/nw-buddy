@@ -30,7 +30,7 @@ import { ItemDetailService } from './item-detail.service'
   ],
   exportAs: 'card',
   host: {
-    class: 'block class bg-black rounded-md overflow-clip font-nimbus',
+    class: 'block bg-black rounded-md overflow-clip font-nimbus',
   },
   providers: [
     {
@@ -56,6 +56,14 @@ export class ItemCardComponent extends ItemDetailService implements OnChanges {
   @Input()
   public enableInfoLink: boolean
 
+  @Input()
+  public disableStats: boolean
+
+  @Input()
+  public disableInfo: boolean
+
+  @Input()
+  public disableDescription: boolean
 
   public get isLoading$() {
     return this.vm$.pipe(map((it) => it.loading))

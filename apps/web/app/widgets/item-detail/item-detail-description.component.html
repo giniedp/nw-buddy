@@ -1,11 +1,13 @@
 
 <ng-container *ngIf="detail.vm$ | async; let vm">
-  <div *ngIf="vm.item?.HeartgemRuneTooltipTitle">
+  <ng-container *ngIf="vm.item?.HeartgemRuneTooltipTitle; let title">
     <img [nwImage]="vm.item.HeartgemTooltipBackgroundImage" width="360" height="164"/>
-    <h3 class="text-xl font-bold">{{ vm.item.HeartgemRuneTooltipTitle | nwText }}</h3>
-  </div>
-  <div *ngIf="vm.description; let text" class=" text-nw-description italic">
-    {{ detail.description$ | async | nwText }}
+  </ng-container>
+  <div [class]="innerClass">
+    <h3 class="text-xl font-bold" *ngIf="vm.item?.HeartgemRuneTooltipTitle; let title">{{ title | nwText }}</h3>
+    <div *ngIf="vm.description; let text" class=" text-nw-description italic">
+      {{ text | nwText }}
+    </div>
   </div>
 </ng-container>
 
