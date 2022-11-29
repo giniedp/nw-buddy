@@ -34,18 +34,16 @@ export class UpdateAlertButtonComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    if (environment.environment === 'ELECTRON') {
-      this.service.info$.pipe(takeUntil(this.destroy.$)).subscribe((value) => {
-        this.release = value
-        this.cdRef.markForCheck()
-      })
-    }
+    this.service.info$.pipe(takeUntil(this.destroy.$)).subscribe((value) => {
+      this.release = value
+      this.cdRef.markForCheck()
+    })
   }
 
   @HostListener('click')
   public show() {
     if (this.release) {
-      window.open('http://nw-buddy.ginie.eu/', '_blank')
+      window.open('https://github.com/giniedp/nw-buddy/releases/latest', '_blank')
     }
   }
 }

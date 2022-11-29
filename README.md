@@ -18,7 +18,7 @@ New World Buddy is a desktop application that is meant to be used along while pl
 
 ## Links
 
-- website: https://nw-buddy.ginie.eu/
+- website: https://www.nw-buddy.de/
 - github: https://github.com/giniedp/nw-buddy
 - releases: https://github.com/giniedp/nw-buddy/releases
 - discord permalink: https://discord.gg/PWxUwUagVX 

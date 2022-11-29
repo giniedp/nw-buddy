@@ -11,6 +11,11 @@
         <ion-content [scrollY]="false" [scrollX]="false">
           <div class="h-full w-full layout-content bg-base-300">
             <div class="layout-col layout-gap">
+              <ul class="menu menu-compact flex-none m-0" *ngIf="isElectron">
+                <li>
+                  <nwb-update-alert-button></nwb-update-alert-button>
+                </li>
+              </ul>
               <ng-container *ngFor="let group of mainMenu">
                 <ul class="menu menu-compact flex-none m-0">
                   <li class="menu-title uppercase mt-2" *ngIf="group.category">
@@ -26,6 +31,7 @@
                   </ng-container>
                 </ul>
               </ng-container>
+
             </div>
           </div>
         </ion-content>

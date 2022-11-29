@@ -1,12 +1,17 @@
-import { NgModule } from '@angular/core'
-import { Routes, RouterModule } from '@angular/router'
+import { Routes } from '@angular/router'
 import { LandingComponent } from './landing.component'
+import { PrivacyComponent } from './privacy.component'
 
 export const ROUTES: Routes = [
   {
     path: '',
     pathMatch: 'full',
     component: LandingComponent,
+  },
+  {
+    path: 'privacy',
+    pathMatch: 'full',
+    component: PrivacyComponent,
   },
   { path: 'abilities', loadChildren: () => import('./pages/database/abilities').then((m) => m.AbilitiesModule) },
   { path: 'crafting', loadChildren: () => import('./pages/database/crafting').then((m) => m.CraftingModule) },
