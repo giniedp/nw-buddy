@@ -31,7 +31,7 @@ import { ItemDetailModule } from '~/widgets/item-detail'
   imports: [CommonModule, RouterModule, NwModule, IconsModule, LayoutModule, ItemDetailModule, ItemFrameModule],
   providers: [GearsetSlotStore],
   host: {
-    class: 'flex aspect-square rounded-md border bg-base-100 relative 4xl:aspect-auto flex-row',
+    class: 'flex flex-row relative rounded-md border aspect-square 4xl:aspect-auto',
   },
 })
 export class GearsetFormCellComponent implements OnInit {

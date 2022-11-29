@@ -15,6 +15,10 @@ export type EquipSlotId =
   | 'quickslot2'
   | 'quickslot3'
   | 'quickslot4'
+  | 'buff1'
+  | 'buff2'
+  | 'buff3'
+  | 'buff4'
   | 'arrow'
   | 'cartridge'
 export interface EquipSlot {
@@ -97,6 +101,32 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     name: 'ui_itemtypedescription_heartgem_rune',
     itemType: 'HeartGem',
   },
+
+  {
+    id: 'buff1',
+    icon: 'assets/icons/slots/iconquickslot.png',
+    name: 'ui_quickslot1',
+    itemType: 'Consumable',
+  },
+  {
+    id: 'buff2',
+    icon: 'assets/icons/slots/iconquickslot.png',
+    name: 'ui_quickslot2',
+    itemType: 'Consumable',
+  },
+  {
+    id: 'buff3',
+    icon: 'assets/icons/slots/iconquickslot.png',
+    name: 'ui_quickslot3',
+    itemType: 'Consumable',
+  },
+  {
+    id: 'buff4',
+    icon: 'assets/icons/slots/iconquickslot.png',
+    name: 'ui_quickslot4',
+    itemType: 'Consumable',
+  },
+
   {
     id: 'quickslot1',
     icon: 'assets/icons/slots/iconquickslot.png',
@@ -120,6 +150,19 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     icon: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot4',
     itemType: 'Consumable',
+  },
+
+  {
+    id: 'arrow',
+    icon: 'assets/icons/slots/iconarrow.png',
+    name: '',
+    itemType: 'Ammo',
+  },
+  {
+    id: 'cartridge',
+    icon: 'assets/icons/slots/iconcartridges.png',
+    name: '',
+    itemType: 'Ammo',
   },
 ]
 

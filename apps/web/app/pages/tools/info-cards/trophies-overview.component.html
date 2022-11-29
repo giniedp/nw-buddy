@@ -1,4 +1,4 @@
-<div class="min-w-[1100px] max-w-[1500px] mx-auto" *ngIf="rows$ | async; let rows">
+<div class="min-w-[1100px] max-w-[1500px] mx-auto mb-20" *ngIf="rows$ | async; let rows">
   <div class="grid grid-cols-3 layout-gap" [nwbScreenshotFrame]="'Trophies'" [@listAnimation]="rows.length">
     <ng-container *ngFor="let row of rows; trackBy: trackByIndex">
       <nwb-item-card [disableInfo]="true" [entityId]="item.itemId" *ngFor="let item of row; trackBy: trackByIndex" nwbContentVisibility>

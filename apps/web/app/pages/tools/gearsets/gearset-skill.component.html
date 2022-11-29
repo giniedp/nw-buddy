@@ -28,7 +28,7 @@
     </ng-template>
   </div>
   <div *ngIf="!vm.instance && !vm.loading" class="relative flex-1 flex flex-col layout-gap items-center justify-center">
-    <nwb-icon [icon]="iconGraph" class="w-32 h-32 text-white opacity-30"></nwb-icon>
+    <img [nwImage]="'assets/loaders/crafting_rune_clockwise.png'" class="w-64 h-64 text-white opacity-30"/>
 
     <button class="btn btn-ghost btn-square absolute top-0 right-0" [cdkMenuTriggerFor]="menu">
       <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>

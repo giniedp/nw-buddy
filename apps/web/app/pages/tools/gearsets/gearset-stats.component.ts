@@ -68,7 +68,7 @@ export interface StatEntry {
   imports: [CommonModule, NwModule, PropertyGridModule, DialogModule, IconsModule],
   providers: [PercentPipe, DecimalPipe],
   host: {
-    class: 'block flex flex-col relative justify-end',
+    class: 'block flex flex-col layout-pad layout-gap relative justify-end',
   },
 })
 export class GearsetStatsComponent {

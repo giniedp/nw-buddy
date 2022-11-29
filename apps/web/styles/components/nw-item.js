@@ -1,7 +1,22 @@
 module.exports = ({ addComponents }) => {
   addComponents({
     '.nw-panel-bg': {
-      background: "url('^assets/rune-bg.png') black",
+      background: "url('^assets/bg-panel.jpg') black",
+    },
+    '.nw-bg-pane': {
+      background: "url('^assets/bg-pane.png') black",
+    },
+    '.nw-bg-title': {
+      background: "url('^assets/bg-title.png')",
+    },
+    '.nw-bg-crafting-rune': {
+      background: "url('^assets/loaders/crafting_rune_clockwise.png')",
+    },
+    '.nw-mastery-bg': {
+      background: "url('^assets/masterytreebg.png')",
+      backgroundSize: '100%',
+      backgroundPosition: 'center top',
+      backgroundRepeat: 'repeat-y',
     },
     '.nw-item-frame': {
       border: '10px solid transparent',

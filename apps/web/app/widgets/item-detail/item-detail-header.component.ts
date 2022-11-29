@@ -33,6 +33,9 @@ export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
   @Input()
   public enableTracker: boolean
 
+  @Input()
+  public disableContent: boolean
+
   protected name: string
   protected named: boolean
   protected rarity: number

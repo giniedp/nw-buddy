@@ -3,25 +3,25 @@
   <div *ngIf="vm.bindOnPickup" class="text-emerald-500 font-bold">{{ 'ui_bindOnPickup' | nwText }}:</div>
   <div *ngIf="vm.canReplaceGem" class="text-emerald-500 font-bold">Can Replace Gem</div>
   <div *ngIf="vm.cantReplaceGem" class="text-red-600 font-bold">Can't Replace Gem</div>
-  <div *ngIf="vm.tier; let text" class="font-bold">
-    <span class="text-zinc-500">Tier</span> <span class="text-white"> {{ text }}</span>
+  <div *ngIf="vm.tier; let text" class="">
+    <span class="text-zinc-500">Tier</span> <span class="font-bold text-white"> {{ text }}</span>
   </div>
-  <div *ngIf="vm.weight; let text" class="font-bold">
-    <span class="text-white">{{ text | number: '1.1-1' }}</span> <span class="text-zinc-500"> Weight</span>
+  <div *ngIf="vm.weight; let text" class="">
+    <span class="font-bold text-white">{{ text | number: '1.1-1' }}</span> <span class="text-zinc-500"> Weight</span>
   </div>
-  <div *ngIf="vm.durability; let text" class="font-bold">
-    <span class="text-white">{{ text }}</span> <span class="text-zinc-500"> Durability</span>
+  <div *ngIf="vm.durability; let text" >
+    <span class="font-bold text-white">{{ text }}</span> <span class="text-zinc-500"> Durability</span>
   </div>
-  <div *ngIf="vm.requiredLevel; let text" class="font-bold">
+  <div *ngIf="vm.requiredLevel; let text" >
     <span class="text-zinc-500">{{ 'ui_level_requirement' | nwText }}:</span>
-    <span class="text-white"> {{ text }}</span>
+    <span class="font-bold text-white"> {{ text }}</span>
   </div>
-  <div *ngIf="vm.maxStackSize; let text" class="font-bold">
-    <span class="text-zinc-500">Max Stack:</span> <span class="text-white"> {{ text }}</span>
+  <div *ngIf="vm.maxStackSize; let text" >
+    <span class="text-zinc-500">Max Stack:</span> <span class="font-bold text-white"> {{ text }}</span>
   </div>
-  <div *ngIf="vm.ingredientTypes?.length" class="font-bold">
+  <div *ngIf="vm.ingredientTypes?.length" >
     <span class="text-zinc-500"> {{ 'ui_tooltip_ingredient_types' | nwText }} </span>
-    <span class="text-white">
+    <span class="font-bold text-white">
       <ng-container *ngFor="let it of vm.ingredientTypes; let last = last">
         {{ it?.DisplayText | nwText }}<ng-container *ngIf="!last">,</ng-container>
       </ng-container>

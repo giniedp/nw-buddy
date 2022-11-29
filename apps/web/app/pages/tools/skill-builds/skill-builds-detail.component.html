@@ -1,8 +1,7 @@
 <nwb-detail-drawer class="flex-1 hidden lg:block" [breakOn]="'xl'" [breakpoints]="[0.15, 0.25, 0.5, 1.0]">
-  <div *nwbDetailDraweContent class="layout-col bg-base-200 relative">
-    <div class="nw-panel-bg absolute inset-0 opacity-20 bg-center bg-cover"></div>
+  <div *nwbDetailDraweContent class="layout-col relative bg-base-300">
     <ng-container *ngIf="item$ | async; let item">
-      <div class="flex-none p-1 bg-base-200">
+      <div class="relative flex-none p-1 bg-base-300 bg-opacity-100">
         <div class="form-control">
           <div class="input-group">
             <a class="btn btn-ghost btn-square inline-flex" [routerLink]="'..'">
@@ -23,7 +22,8 @@
           </div>
         </div>
       </div>
-      <div [nwbScreenshotFrame]="item.record.name" class="layout-content">
+      <div [nwbScreenshotFrame]="item.record.name" class="layout-content relative">
+
         <nwb-skill-builder
           [ngModel]="item.record"
           (ngModelChange)="updateModel(item.record, $event)"

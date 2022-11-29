@@ -74,30 +74,70 @@
     <div class="p-4 rounded-b-md flex flex-col xl:flex-row layout-gap" [nwbScreenshotFrame]="name$ | async">
       <div class="flex-1 grid layout-gap" [@listAnimation]="slots?.length">
         <div class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative">
-          <div class="nw-panel-bg absolute inset-0 opacity-20 bg-center bg-cover"></div>
-          <nwb-gearset-stats class="relative" [class.text-xs]="compactMode"></nwb-gearset-stats>
+          <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
+          <nwb-gearset-stats class="relative" [class.text-xs]="compactMode">
+            <div>
+              <h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
+                <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
+                <span class="relative top-1">Buffs & Ammo</span>
+              </h3>
+              <div class="flex flex-row gap-1 justify-center">
+                <nwb-gearset-slot
+                  *ngFor="let slot of buffSlots; trackBy: trackByIndex"
+                  [gearset]="data"
+                  [slot]="slot"
+                  [compact]="compactMode"
+                  [minimal]="true"
+                  [square]="true"
+                  (itemRemove)="onItemRemove(slot)"
+                  (itemUnlink)="onItemUnlink(slot, $event)"
+                  (itemInstantiate)="onItemInstantiate(slot, $event)"
+                ></nwb-gearset-slot>
+
+                <nwb-gearset-slot
+                  *ngFor="let slot of ammoSlots; trackBy: trackByIndex"
+                  [gearset]="data"
+                  [slot]="slot"
+                  [compact]="compactMode"
+                  [minimal]="true"
+                  [square]="true"
+                  (itemRemove)="onItemRemove(slot)"
+                  (itemUnlink)="onItemUnlink(slot, $event)"
+                  (itemInstantiate)="onItemInstantiate(slot, $event)"
+                ></nwb-gearset-slot>
+              </div>
+            </div>
+            <div>
+              <h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
+                <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
+                <span class="relative top-1">Consumables</span>
+              </h3>
+              <div class="flex flex-row gap-1 justify-center">
+                <nwb-gearset-slot
+                  *ngFor="let slot of quickSlots; trackBy: trackByIndex"
+                  [gearset]="data"
+                  [slot]="slot"
+                  [compact]="compactMode"
+                  [minimal]="true"
+                  [square]="true"
+                  (itemRemove)="onItemRemove(slot)"
+                  (itemUnlink)="onItemUnlink(slot, $event)"
+                  (itemInstantiate)="onItemInstantiate(slot, $event)"
+                ></nwb-gearset-slot>
+              </div>
+            </div>
+          </nwb-gearset-stats>
         </div>
-        <div class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative">
-          <div class="nw-panel-bg absolute inset-0 opacity-20 bg-center bg-cover"></div>
+        <div class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad">
+          <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
           <nwb-gearset-skill class="relative" [slot]="'primary'" [gearset]="data"></nwb-gearset-skill>
         </div>
-        <div class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative">
-          <div class="nw-panel-bg absolute inset-0 opacity-20 bg-center bg-cover"></div>
+        <div class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad">
+          <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
           <nwb-gearset-skill class="relative" [slot]="'secondary'" [gearset]="data"></nwb-gearset-skill>
         </div>
 
-        <div class="flex flex-col layout-gap">
-          <nwb-gearset-slot
-            *ngFor="let slot of consumableSlots; trackBy: trackByIndex"
-            [gearset]="data"
-            [slot]="slot"
-            [compact]="compactMode"
-            [minimal]="true"
-            (itemRemove)="onItemRemove(slot)"
-            (itemUnlink)="onItemUnlink(slot, $event)"
-            (itemInstantiate)="onItemInstantiate(slot, $event)"
-          ></nwb-gearset-slot>
-        </div>
+
         <nwb-gearset-slot
           *ngFor="let slot of slots; trackBy: trackByIndex"
           [gearset]="data"

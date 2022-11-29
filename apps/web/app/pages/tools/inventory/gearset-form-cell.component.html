@@ -3,22 +3,26 @@
 </ng-container>
 
 <ng-template #tplItem>
-  <a
+  <nwb-item-header
+    class="w-full h-full gap-2 p-[2px] 4xl:p-1 cursor-pointer rounded-md overflow-clip"
     *ngIf="vm$ | async; let vm"
-    class="detail-header 4xl:p-1 border border-transparent hover:border-primary"
+    [rarity]="vm.rarity"
+    [named]="vm.isNamed"
     [routerLink]="getLink()"
     [cdkContextMenuTriggerFor]="menu"
   >
+    <picture
+      class="nw-item-icon-frame nw-item-icon-bg 4xl:nw-item-icon-mask aspect-square relative flex z-10 4xl:w-20 4xl:h-20"
+    >
+      <span class="nw-item-icon-border"></span>
 
-    <picture [nwIcon]="vm.item" [nwRarity]="vm.rarity" class="relative flex z-10 4xl:w-20 4xl:h-20">
+      <img [nwImage]="vm.item"/>
       <span class="z-10 absolute top-0 left-1 italic">{{ vm.tierLabel }}</span>
-      <span
-        *ngIf="vm.canBreak"
-        class="z-10 absolute top-[2px] right-[2px] p-1 bg-black bg-opacity-75 rounded-bl-xl"
-      >
+      <span *ngIf="vm.canBreak" class="z-10 absolute top-[2px] right-[2px] p-1 bg-black bg-opacity-75 rounded-bl-xl">
         <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
       </span>
     </picture>
+
     <nwb-item-header-content
       class="z-10 h-full hidden 4xl:flex"
       [name]="vm.name | nwText"
@@ -27,21 +31,19 @@
       [typeName]="vm.typeName | nwText"
       [sourceName]="vm.sourceLabel"
     >
-      <span class="header flex gap-1"><img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-4 h-4"> {{ vm.gearScore }}</span>
+      <span class="header flex gap-1">
+        <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-4 h-4" /> {{ vm.gearScore }}</span>
     </nwb-item-header-content>
-  </a>
+  </nwb-item-header>
+
 </ng-template>
 
 <ng-template #tplEmpty>
-  <div class="detail-header 4xl:p-1" *ngIf="vm$ | async; let vm">
+  <div class="detail-header bg-base-200 4xl:p-1 rounded-md overflow-clip" *ngIf="vm$ | async; let vm">
     <a class="relative flex z-10 4xl:w-20 4xl:h-20">
       <picture [nwIcon]="slot.icon" [nwRarity]="0" class="w-full h-full"></picture>
     </a>
-    <nwb-item-header-content
-      class="z-10 h-full hidden 4xl:flex"
-      [rarity]="0"
-      [typeName]="slot.itemType | nwText"
-    >
+    <nwb-item-header-content class="z-10 h-full hidden 4xl:flex" [rarity]="0" [typeName]="slot.itemType | nwText">
       <span class="title" [nwText]="slot.name"></span>
     </nwb-item-header-content>
   </div>

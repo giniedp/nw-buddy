@@ -7,7 +7,7 @@
   [nwInfoResource]="'item'"
   class="w-[76px] h-[76px]"
 >
-  <span class="italic">{{ tierLabel }}</span>
+  <span class="italic font-caslon relative">{{ tierLabel }}</span>
   <ng-content select=".icon-overlay"></ng-content>
 </a>
 <nwb-item-header-content
@@ -18,6 +18,7 @@
   [typeName]="typeName | nwText"
   [sourceName]="sourceLabel"
   [skeleton]="isLoading"
+  *ngIf="!disableContent"
 >
   <div class="header flex flex-col justify-end" *ngIf="enableTracker">
     <nwb-item-marker [itemId]="entityId" class="text-right"></nwb-item-marker>

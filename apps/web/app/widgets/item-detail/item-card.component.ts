@@ -109,6 +109,9 @@ export class ItemCardComponent extends ItemDetailService {
     this.disablePerks$.next(value)
   }
 
+  @Input()
+  public square: boolean
+
   protected disableInfo$ = new BehaviorSubject(false)
   protected disableStats$ = new BehaviorSubject(false)
   protected disablePerks$ = new BehaviorSubject(false)

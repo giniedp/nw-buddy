@@ -1,5 +1,6 @@
 <ng-container *ngIf="vm$ | async; let vm">
-  <div *ngIf="vm.weaponType; let type" class="weapon-input flex flex-col items-center py-2">
+  <div *ngIf="vm.weaponType; let type" class="weapon-input flex flex-col items-center py-2 relative font-caslon uppercase text-nw-description">
+    <img [nwImage]="'assets/loaders/crafting_rune_clockwise.png'" class="w-48 h-48 text-white opacity-30 absolute -top-6 "/>
     <picture class="block aspect-[7/4] w-52 relative select-none mx-auto z-0">
       <img [nwImage]="type.IconPath" class="w-full h-full object-contain" />
       <div class="absolute inset-0 flex flex-col items-center justify-center">

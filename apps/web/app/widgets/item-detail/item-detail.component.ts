@@ -13,7 +13,7 @@ import { ItemDetailService } from './item-detail.service'
   imports: [CommonModule],
   exportAs: 'detail',
   host: {
-    class: 'block rounded-md overflow-clip font-nimbus',
+    class: 'block font-nimbus',
   },
   providers: [
     {

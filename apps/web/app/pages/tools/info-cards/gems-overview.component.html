@@ -1,4 +1,4 @@
-<div class="layout-content p-3" *ngIf="items$ | async; let items">
+<div class="layout-content p-3 mb-20" *ngIf="items$ | async; let items">
   <div class="grid" [nwbScreenshotFrame]="'Gemstones'"  [@listAnimation]="items.length">
     <nwb-item-card *ngFor="let item of items" [entityId]="item.$itemId" [disableInfo]="true" [disableStats]="true">
       <nwb-item-divider class="mx-4"></nwb-item-divider>

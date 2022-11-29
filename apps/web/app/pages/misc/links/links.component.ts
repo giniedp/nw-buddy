@@ -74,7 +74,7 @@ export const LINKS = [
   templateUrl: './links.component.html',
   imports: [CommonModule],
   host: {
-    class: 'layout-content flex flex-col items-center',
+    class: 'layout-content flex flex-col items-center layout-pad',
   },
 })
 export class LinksComponent {

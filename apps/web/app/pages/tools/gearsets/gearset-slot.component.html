@@ -1,9 +1,12 @@
 <ng-container *ngIf="vm$ | async; let vm">
-  <div *ngIf="!vm.instance" class="flex-1">
-    <nwb-item-header [rarity]="0" class="relative">
-      <picture class="z-10 w-[76px] h-[76px]">
-        <img [nwImage]="vm.slot.icon" class="w-full h-full object-contain" />
-      </picture>
+  <ng-container *ngIf="!vm.instance">
+    <nwb-item-header [rarity]="0" class="relative font-nimbus gap-2" *ngIf="!square">
+      <nwb-item-icon
+        [nwbItemIcon]="vm.slot.icon"
+        [solid]="false"
+        [rarity]="0"
+        class="z-10 w-[76px] h-[76px]"
+      ></nwb-item-icon>
       <nwb-item-header-content class="z-10">
         <span class="title" [innerHTML]="vm.slot.name | nwText"></span>
       </nwb-item-header-content>
@@ -11,55 +14,81 @@
         <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>
       </button>
     </nwb-item-header>
-  </div>
 
-  <nwb-item-card
-    *ngIf="vm.instance"
-    class="relative"
-    [entityId]="vm.instance.itemId"
-    [gsOverride]="gearScore || vm.instance.gearScore"
-    [gsEditable]="!vm.isConsumable"
-    (gsEdit)="openGsEditor($event)"
-    [perkOverride]="vm.instance.perks"
-    [perkEditable]="true"
-    (editPerk)="pickPerk(vm, $event.key)"
-    [disableStats]="vm.isConsumable"
-    [disableInfo]="vm.isConsumable || compact"
-    [disableDescription]="compact"
-  >
-    <span
-      *ngIf="vm.canBreak"
-      class="absolute top-[5px] left-[55px] p-1 bg-black bg-opacity-75 rounded-bl-xl screenshot-hidden"
+    <nwb-item-header [rarity]="0" class="relative font-nimbus gap-2" *ngIf="square" [cdkMenuTriggerFor]="menu">
+      <nwb-item-icon [nwbItemIcon]="vm.slot.icon" [solid]="false" [rarity]="0" class="z-10 w-12 h-12"></nwb-item-icon>
+      <button class="btn btn-square btn-sm btn-ghost absolute top-0 right-0 z-10">
+        <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>
+      </button>
+    </nwb-item-header>
+  </ng-container>
+
+  <ng-container *ngIf="vm.instance">
+    <nwb-item-detail
+      *ngIf="square"
+      [entityId]="vm.instance.itemId"
+      #detail="detail"
+      class="p-1"
+      [cdkMenuTriggerFor]="menu"
+      class="flex flex-row gap-1"
     >
-      <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
-    </span>
+      <nwb-item-header [rarity]="detail.rarity$ | async" class="relative font-nimbus gap-2" *ngIf="square" [cdkMenuTriggerFor]="menu">
+        <nwb-item-icon [nwbItemIcon]="vm.item" [solid]="true" class="z-10 w-12 h-12"></nwb-item-icon>
+        <button class="btn btn-square btn-sm btn-ghost absolute top-0 right-0 z-10">
+          <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>
+        </button>
+      </nwb-item-header>
+    </nwb-item-detail>
 
-    <button class="btn btn-square btn-ghost absolute top-0 right-0 z-10" [cdkMenuTriggerFor]="menu">
-      <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>
-    </button>
-
-    <ng-template
-      cdkConnectedOverlay
-      [cdkConnectedOverlayOrigin]="gsTarget"
-      [cdkConnectedOverlayOpen]="!!gsTarget"
-      [cdkConnectedOverlayHasBackdrop]="true"
-      (backdropClick)="closeGsEditor()"
-      (detach)="closeGsEditor()"
+    <nwb-item-card
+      *ngIf="!square"
+      class="relative flex=1"
+      [entityId]="vm.instance.itemId"
+      [gsOverride]="gearScore || vm.instance.gearScore"
+      [gsEditable]="!vm.isConsumable"
+      (gsEdit)="openGsEditor($event)"
+      [perkOverride]="vm.instance.perks"
+      [perkEditable]="true"
+      (perkEdit)="pickPerk(vm, $event.key)"
+      [disableStats]="vm.isConsumable"
+      [disableInfo]="vm.isConsumable || compact"
+      [disableDescription]="compact"
+      [square]="square"
     >
-      <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
-        <input
-          type="range"
-          min="100"
-          max="625"
-          step="1"
-          [ngModel]="gearScore || vm.instance.gearScore"
-          (ngModelChange)="updateGearScore($event)"
-          (blur)="commitGearScore(vm)"
-          class="range range-sm range-primary"
-        />
-      </div>
-    </ng-template>
-  </nwb-item-card>
+      <span
+        *ngIf="vm.canBreak"
+        class="absolute top-[5px] left-[55px] p-1 bg-black bg-opacity-75 rounded-bl-xl screenshot-hidden"
+      >
+        <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
+      </span>
+
+      <button class="btn btn-square btn-ghost absolute top-0 right-0 z-10" [cdkMenuTriggerFor]="menu">
+        <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>
+      </button>
+
+      <ng-template
+        cdkConnectedOverlay
+        [cdkConnectedOverlayOrigin]="gsTarget"
+        [cdkConnectedOverlayOpen]="!!gsTarget"
+        [cdkConnectedOverlayHasBackdrop]="true"
+        (backdropClick)="closeGsEditor()"
+        (detach)="closeGsEditor()"
+      >
+        <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
+          <input
+            type="range"
+            min="100"
+            max="625"
+            step="1"
+            [ngModel]="gearScore || vm.instance.gearScore"
+            (ngModelChange)="updateGearScore($event)"
+            (blur)="commitGearScore(vm)"
+            class="range range-sm range-primary"
+          />
+        </div>
+      </ng-template>
+    </nwb-item-card>
+  </ng-container>
 </ng-container>
 
 <ng-template #menu>

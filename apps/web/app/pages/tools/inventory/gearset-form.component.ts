@@ -37,11 +37,11 @@ import { GearsetFormCellComponent } from './gearset-form-cell.component'
   ],
   providers: [GearsetStore],
   host: {
-    class: 'layout-col layout-gap',
+    class: 'layout-col layout-gap bg-base-300 rounded-bl-md',
   },
 })
 export class GearsetFormComponent {
-  public slots = EQUIP_SLOTS
+  public slots = EQUIP_SLOTS.filter((it) => it.itemType !== 'Consumable')
   public gearsetId: string
 
   protected vm$ = combineLatest({

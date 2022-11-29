@@ -97,6 +97,9 @@ export class GearsetSlotComponent {
   @Input()
   public minimal: boolean
 
+  @Input()
+  public square: boolean
+
   @ViewChildren(ItemDetailComponent)
   protected itemDetail: QueryList<ItemDetailComponent>
   protected iconRemove = svgTrashCan

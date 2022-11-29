@@ -14,7 +14,7 @@ import { NwPricesImporterComponent } from './nw-marketprices-importer.component'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwPricesImporterComponent, PriceImporterModule],
   host: {
-    class: 'layout-content flex flex-col items-center'
+    class: 'layout-content layout-pad flex flex-col items-center'
   }
 })
 export class PreferencesComponent implements OnInit {
