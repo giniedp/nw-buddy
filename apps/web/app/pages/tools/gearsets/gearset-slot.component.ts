@@ -133,8 +133,8 @@ export class GearsetSlotComponent {
   private slot$ = new BehaviorSubject<EquipSlot>(null)
   private gearset$ = new BehaviorSubject<GearsetRecord>(null)
 
-  protected isGearScoreOpen: boolean
   protected gearScore: number
+  protected gsTarget: Element
 
   public constructor(
     private store: GearsetSlotStore,
@@ -173,6 +173,13 @@ export class GearsetSlotComponent {
           },
         })
       })
+  }
+
+  protected openGsEditor(event: MouseEvent) {
+    this.gsTarget = event.currentTarget as Element
+  }
+  protected closeGsEditor() {
+    this.gsTarget = null
   }
 
   protected pickPerk({ instance }: GearsetSlotVM, key: string) {

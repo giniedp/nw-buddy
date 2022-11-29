@@ -19,7 +19,7 @@
   [sourceName]="sourceLabel"
   [skeleton]="isLoading"
 >
-  <div class="header" *ngIf="enableTracker">
+  <div class="header flex flex-col justify-end" *ngIf="enableTracker">
     <nwb-item-marker [itemId]="entityId" class="text-right"></nwb-item-marker>
     <nwb-gs-tracker
       *ngIf="enableGsTracker"

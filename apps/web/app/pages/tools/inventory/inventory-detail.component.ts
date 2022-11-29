@@ -70,6 +70,8 @@ export class PlayerItemsDetailComponent {
 
   protected isGearScoreOpen: boolean
   protected overrideGearScore: number
+  protected gsTarget: Element
+
   public constructor(
     private route: ActivatedRoute,
     private service: InventoryPickerService,
@@ -82,7 +84,12 @@ export class PlayerItemsDetailComponent {
   public setGearScore(vm: ItemDetailVM, gearScore: number) {
     this.overrideGearScore = gearScore
   }
-
+  protected openGsEditor(event: MouseEvent) {
+    this.gsTarget = event.currentTarget as Element
+  }
+  protected closeGsEditor() {
+    this.gsTarget = null
+  }
   public commitGearScore(vm: ItemDetailVM) {
     const gearScore = this.overrideGearScore
     if (vm.itemRow) {

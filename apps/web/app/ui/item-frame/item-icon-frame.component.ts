@@ -7,6 +7,7 @@ import { NwModule } from '~/nw'
   standalone: true,
   selector: 'nwb-item-icon,a[nwbItemIcon]',
   template: `
+    <div class="nw-item-icon-border"></div>
     <picture class="aspect-square" *ngIf="icon">
       <img [nwImage]="icon" class="w-full h-full object-contain"/>
     </picture>

@@ -18,11 +18,6 @@ export class ItemDetailDirective extends ItemDetailService {
     this.entityId$.next(value)
   }
 
-  @Input()
-  public set gearScoreOverride(value: number) {
-    this.gearScoreOverride$.next(value)
-  }
-
   public constructor(db: NwDbService, cdRef: ChangeDetectorRef) {
     super(db, cdRef)
   }

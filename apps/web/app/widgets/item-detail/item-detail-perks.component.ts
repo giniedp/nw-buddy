@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TrackByFunction } from '@angular/core'
-import { defer } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemDetailService, PerkDetail } from './item-detail.service'
 
@@ -16,25 +15,17 @@ import { ItemDetailService, PerkDetail } from './item-detail.service'
   },
 })
 export class ItemDetailPerksComponent {
-  protected gearScore$ = defer(() => this.detail.itemGS$)
+  protected items$ = this.detail.vmPerks$
 
-  @Input()
-  public perkEditable: boolean
+  protected trackByIndex = (i: number) => i
 
-  @Output()
-  public editPerk = new EventEmitter<PerkDetail>()
-
-  protected perks$ = defer(() => this.detail.perksDetails$)
-
-  protected trackByIndex: TrackByFunction<any> = (i) => i
-
-  public constructor(private detail: ItemDetailService, private db: NwDbService) {
+  public constructor(private detail: ItemDetailService) {
     //
   }
 
   protected editPerkClicked(item: PerkDetail) {
-    if (this.perkEditable && item?.editable) {
-      this.editPerk.next(item)
+    if (this.detail.perkEditable$.value) {
+      this.detail.perkEdit$.emit(item)
     }
   }
 }

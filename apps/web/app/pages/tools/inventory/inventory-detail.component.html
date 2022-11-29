@@ -1,59 +1,38 @@
 <nwb-detail-drawer class="hidden 2xl:block" breakOn="2xl" [breakpoints]="[0.15, 0.25, 0.5, 0.75, 1]">
   <div *nwbDetailDraweContent class="layout-content bg-base-300 rounded-md">
-
     <ng-container *ngIf="vm$ | async; let vm">
-      <nwb-item-detail
+      <nwb-item-card
         *ngIf="vm.instance"
         [entityId]="vm.instance.itemId"
-        [gearScoreOverride]="overrideGearScore || vm.instance.gearScore"
+        [gsOverride]="overrideGearScore || vm.instance.gearScore"
+        [gsEditable]="true"
+        (gsEdit)="openGsEditor($event)"
         [perkOverride]="vm.instance.perks"
+        [perkEditable]="true"
+        (perkEdit)="pickPerk(vm, $event.key)"
       >
-        <nwb-item-detail-header></nwb-item-detail-header>
-        <div class="p-3">
-
-          <!-- <ng-container *ngIf="vm.isRune && !compact">
-          <nwb-item-divider class="my-3"></nwb-item-divider>
-          <nwb-item-detail-description></nwb-item-detail-description>
-        </ng-container> -->
-          <nwb-item-detail-stats
-            [gearScoreEditable]="true"
-            (gearScoreEdit)="isGearScoreOpen = !isGearScoreOpen"
-            #stats="itemDetailStats"
-          ></nwb-item-detail-stats>
-
-          <nwb-item-divider class="my-3"></nwb-item-divider>
-          <nwb-item-detail-perks (editPerk)="pickPerk(vm, $event.key)" [perkEditable]="true"></nwb-item-detail-perks>
-
-          <!-- <ng-container *ngIf="!vm.isRune">
-          <nwb-item-divider class="my-3"></nwb-item-divider>
-          <nwb-item-detail-description></nwb-item-detail-description>
-        </ng-container> -->
-          <nwb-item-divider class="my-3"></nwb-item-divider>
-          <nwb-item-detail-info></nwb-item-detail-info>
-
-          <ng-template
-            cdkConnectedOverlay
-            [cdkConnectedOverlayOrigin]="stats.gearScoreOverlayOrigin"
-            [cdkConnectedOverlayOpen]="isGearScoreOpen"
-            [cdkConnectedOverlayHasBackdrop]="true"
-            (backdropClick)="isGearScoreOpen = false"
-            (detach)="isGearScoreOpen = false"
-          >
-            <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
-              <input
-                type="range"
-                min="100"
-                max="625"
-                step="1"
-                [ngModel]="vm.instance.gearScore"
-                (ngModelChange)="setGearScore(vm, $event)"
-                (blur)="commitGearScore(vm)"
-                class="range range-sm range-primary"
-              />
-            </div>
-          </ng-template>
-        </div>
-      </nwb-item-detail>
+        <ng-template
+          cdkConnectedOverlay
+          [cdkConnectedOverlayOrigin]="gsTarget"
+          [cdkConnectedOverlayOpen]="!!gsTarget"
+          [cdkConnectedOverlayHasBackdrop]="true"
+          (backdropClick)="closeGsEditor()"
+          (detach)="closeGsEditor()"
+        >
+          <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
+            <input
+              type="range"
+              min="100"
+              max="625"
+              step="1"
+              [ngModel]="vm.instance.gearScore"
+              (ngModelChange)="setGearScore(vm, $event)"
+              (blur)="commitGearScore(vm)"
+              class="range range-sm range-primary"
+            />
+          </div>
+        </ng-template>
+      </nwb-item-card>
     </ng-container>
   </div>
 </nwb-detail-drawer>

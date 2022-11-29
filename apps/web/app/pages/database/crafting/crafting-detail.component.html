@@ -1,4 +1,4 @@
-<nwb-detail-drawer class="hidden lg:block max-w-md" [breakpoints]="[0.25, 0.5, 0.75, 1.0]">
+<nwb-detail-drawer class="hidden lg:block w-[100vw] max-w-md" [breakpoints]="[0.25, 0.5, 0.75, 1.0]">
   <div *nwbDetailDraweContent class="layout-col bg-base-200 lg:p-3">
     <nwb-item-card
       [entityId]="itemId$ | async"
@@ -7,7 +7,7 @@
       #card="card"
       class="layout-col"
     >
-      <nwb-crafting-calculator [recipe]="recipe$ | async" class="-m-4 mt-0 p-4 bg-base-300"></nwb-crafting-calculator>
+      <nwb-crafting-calculator [recipe]="recipe$ | async" class="flex-1 p-4 bg-base-300"></nwb-crafting-calculator>
     </nwb-item-card>
   </div>
 </nwb-detail-drawer>

@@ -1,17 +1,26 @@
-<div *ngIf="gsLabel$ | async; let gs" class="flex flex-row">
-  <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-12 h-12 relative top-[2px]" />
-  <nwb-item-gs
-    [value]="gs"
-    cdkOverlayOrigin
-    class="text-6xl rounded-md outline outline-2 outline-offset-0 outline-transparent transition-all leading-none relative"
-    [class.hover:outline-primary]="gearScoreEditable"
-    [class.hover:outline-offset-4]="gearScoreEditable"
-    [class.cursor-pointer]="gearScoreEditable"
-    [class.select-none]="gearScoreEditable"
-    style="min-width: 3rem"
-    (click)="onGearScoreEdit($event)"
-  ></nwb-item-gs>
-</div>
-<ng-container *ngFor="let row of stats$ | async">
-  <nwb-item-stat [label]="row.value">{{ row.label | nwText }}</nwb-item-stat>
+<ng-container *ngIf="vm$ | async; let vm">
+  <div *ngIf="vm.gsLabel; let gs" class="flex flex-row">
+    <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-12 h-12 relative top-[2px]" />
+    <nwb-item-gs
+      [value]="gs"
+      cdkOverlayOrigin
+      class="
+        text-6xl
+        rounded-md
+        outline outline-2 outline-offset-0 outline-transparent
+        transition-all
+        leading-none
+        relative
+      "
+      [class.hover:outline-primary]="vm.gsEditable"
+      [class.hover:outline-offset-4]="vm.gsEditable"
+      [class.cursor-pointer]="vm.gsEditable"
+      [class.select-none]="vm.gsEditable"
+      style="min-width: 3rem"
+      (click)="onGearScoreEdit($event)"
+    ></nwb-item-gs>
+  </div>
+  <ng-container *ngFor="let row of vm.stats; trackBy: trackByIndex">
+    <nwb-item-stat [label]="row.value">{{ row.label | nwText }}</nwb-item-stat>
+  </ng-container>
 </ng-container>

@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
-import { map } from 'rxjs'
 import { NwModule } from '~/nw'
 import { ItemDetailService } from './item-detail.service'
 
@@ -19,6 +18,8 @@ export class ItemDetailDescriptionComponent {
 
   @Input()
   public innerClass: string
+
+  protected vm$ = this.detail.vmDescription$
 
   public constructor(protected detail: ItemDetailService) {
 

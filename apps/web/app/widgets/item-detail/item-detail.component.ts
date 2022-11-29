@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Input, OnChanges } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Input } from '@angular/core'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { map } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { getItemId } from '~/nw/utils'
 import { ItemDetailService } from './item-detail.service'
@@ -14,7 +13,7 @@ import { ItemDetailService } from './item-detail.service'
   imports: [CommonModule],
   exportAs: 'detail',
   host: {
-    class: 'block bg-black rounded-md overflow-clip font-nimbus',
+    class: 'block rounded-md overflow-clip font-nimbus',
   },
   providers: [
     {
@@ -23,7 +22,7 @@ import { ItemDetailService } from './item-detail.service'
     },
   ],
 })
-export class ItemDetailComponent extends ItemDetailService implements OnChanges {
+export class ItemDetailComponent extends ItemDetailService {
   @Input()
   public set entityId(value: string) {
     this.entityId$.next(value)
@@ -34,25 +33,7 @@ export class ItemDetailComponent extends ItemDetailService implements OnChanges 
     this.entityId$.next(getItemId(value))
   }
 
-  @Input()
-  public set gearScoreOverride(value: number) {
-    this.gearScoreOverride$.next(value)
-  }
-
-  @Input()
-  public set perkOverride(value: Record<string, string>) {
-    this.perkOverride$.next(value)
-  }
-
-  public get isLoading$() {
-    return this.vm$.pipe(map((it) => it.loading))
-  }
-
   public constructor(db: NwDbService, cdRef: ChangeDetectorRef) {
     super(db, cdRef)
-  }
-
-  public ngOnChanges() {
-    this.cdRef.markForCheck()
   }
 }

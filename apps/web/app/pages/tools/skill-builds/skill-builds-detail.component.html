@@ -1,7 +1,8 @@
-<nwb-detail-drawer class="hidden lg:block" [breakOn]="'xl'" [breakpoints]="[0.15, 0.25, 0.5, 1.0]">
-  <div *nwbDetailDraweContent class="layout-col">
+<nwb-detail-drawer class="flex-1 hidden lg:block" [breakOn]="'xl'" [breakpoints]="[0.15, 0.25, 0.5, 1.0]">
+  <div *nwbDetailDraweContent class="layout-col bg-base-200 relative">
+    <div class="nw-panel-bg absolute inset-0 opacity-20 bg-center bg-cover"></div>
     <ng-container *ngIf="item$ | async; let item">
-      <div class="flex-none p-1 bg-base-300">
+      <div class="flex-none p-1 bg-base-200">
         <div class="form-control">
           <div class="input-group">
             <a class="btn btn-ghost btn-square inline-flex" [routerLink]="'..'">

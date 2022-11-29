@@ -15,7 +15,6 @@ import {
   ViewContainerRef,
 } from '@angular/core'
 import { delay, distinctUntilChanged, fromEvent, map, merge, of, Subject, switchMap, takeUntil } from 'rxjs'
-import { tapDebug } from '~/utils'
 import { TooltipComponent } from './tooltip.component'
 
 export declare type TooltipDirection = 'left' | 'top' | 'right' | 'bottom'
@@ -92,7 +91,6 @@ export class TooltipDirective implements OnInit, OnDestroy {
         )
         .pipe(distinctUntilChanged())
         .pipe(takeUntil(this.destroy$))
-        .pipe(tapDebug('open'))
         .subscribe((value) => {
           this.zone.run(() => {
             if (value) {

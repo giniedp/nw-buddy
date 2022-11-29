@@ -3,6 +3,7 @@ import {
   Housingitems,
   ItemDefinitionMaster,
   ItemdefinitionsArmor,
+  ItemdefinitionsRunes,
   ItemdefinitionsWeapons,
   Perkbuckets,
   Perks,
@@ -115,11 +116,11 @@ export function getItemPerkBucket(item: ItemDefinitionMaster, buckets: Map<strin
   return item && getItemPerkBucketIds(item).map((it) => buckets.get(it))
 }
 
-export function getItemMaxGearScore(item: ItemDefinitionMaster) {
-  return item?.GearScoreOverride || item?.MaxGearScore || NW_MAX_GEAR_SCORE
+export function getItemMaxGearScore(item: ItemDefinitionMaster, fallback = true) {
+  return item?.GearScoreOverride || item?.MaxGearScore || (fallback ? NW_MAX_GEAR_SCORE : null)
 }
-export function getItemMinGearScore(item: ItemDefinitionMaster) {
-  return item?.GearScoreOverride || item?.MinGearScore || NW_MIN_GEAR_SCORE
+export function getItemMinGearScore(item: ItemDefinitionMaster, fallback = true) {
+  return item?.GearScoreOverride || item?.MinGearScore || (fallback ? NW_MIN_GEAR_SCORE : null)
 }
 export function getItemGearScoreLabel(item: ItemDefinitionMaster) {
   if (!item) {
@@ -132,6 +133,10 @@ export function getItemGearScoreLabel(item: ItemDefinitionMaster) {
     return `${item.MinGearScore}-${item.MaxGearScore}`
   }
   return String(item.MaxGearScore || item.MinGearScore || '')
+}
+
+export function hasItemGearScore(item: ItemDefinitionMaster) {
+  return item && (item.GearScoreOverride || item.MinGearScore || item.MaxGearScore)
 }
 
 const ITEM_TYPE_LABELS = {
@@ -264,4 +269,98 @@ export function getTradingCategoryLabel(value: string) {
 
 export function getUIHousingCategoryLabel(value: string) {
   return value != null ? `ui_${value}` : null
+}
+
+export interface ItemStat {
+  item: ItemDefinitionMaster
+  label: string
+  value: string | number
+}
+
+export function getItemStatsWeapon(item: ItemDefinitionMaster, stats: ItemdefinitionsWeapons | ItemdefinitionsRunes, score: number) {
+  const result: ItemStat[] = []
+  if (stats?.BaseDamage != null) {
+    result.push({
+      item,
+      label: 'ui_tooltip_basedamage',
+      value: stats.BaseDamage,
+    })
+  }
+  if (stats?.CritChance != null) {
+    result.push({
+      item,
+      label: 'ui_tooltip_critical_hit_chance',
+      value: toPercent(stats.CritChance),
+    })
+  }
+  if (stats?.CritDamageMultiplier != null) {
+    result.push({
+      item,
+      label: 'ui_tooltip_critical_damage_multiplier',
+      value: stats.CritDamageMultiplier.toFixed(1),
+    })
+  }
+  if (stats?.BlockStaminaDamage != null) {
+    result.push({
+      item,
+      label: 'ui_tooltip_block_stamina_damage',
+      value: stats.BlockStaminaDamage.toFixed(1),
+    })
+  }
+  if (stats?.BaseStaggerDamage != null) {
+    result.push({
+      item,
+      label: 'Base Stagger Damage',
+      value: stats.BaseStaggerDamage.toFixed(1),
+    })
+  }
+  if (stats && 'ElementalArmorSetScaleFactor' in stats) {
+    if (stats?.ElementalArmorSetScaleFactor != null && !!stats?.ArmorRatingScaleFactor) {
+      result.push({
+        item,
+        label: 'ui_elemental',
+        value: getArmorRatingElemental(stats, score).toFixed(1),
+      })
+    }
+  }
+  if (stats && 'PhysicalArmorSetScaleFactor' in stats) {
+    if (stats?.PhysicalArmorSetScaleFactor != null && !!stats?.ArmorRatingScaleFactor) {
+      result.push({
+        item,
+        label: 'ui_physical',
+        value: getArmorRatingPhysical(stats, score).toFixed(1),
+      })
+    }
+  }
+  if (stats?.BlockStability != null) {
+    result.push({
+      item,
+      label: 'ui_tooltip_blockingstability',
+      value: `${stats.BlockStability}%`,
+    })
+  }
+  return result
+}
+
+export function getItemStatsArmor(item: ItemDefinitionMaster, stats: ItemdefinitionsArmor, score: number) {
+  const result: ItemStat[] = []
+  if (stats?.ElementalArmorSetScaleFactor != null && !!stats?.ArmorRatingScaleFactor) {
+    result.push({
+      item,
+      label: 'ui_elemental',
+      value: getArmorRatingElemental(stats, score).toFixed(1),
+    })
+  }
+  if (stats?.PhysicalArmorSetScaleFactor != null && !!stats?.ArmorRatingScaleFactor) {
+    result.push({
+      item,
+      label: 'ui_physical',
+      value: getArmorRatingPhysical(stats, score).toFixed(1),
+    })
+  }
+  return result
+}
+
+function toPercent(value: number) {
+  return `${(value * 100).toFixed(1)}%`
 }

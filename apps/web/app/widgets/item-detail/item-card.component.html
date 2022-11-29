@@ -1,25 +1,11 @@
 <nwb-item-detail-header [enableTracker]="enableTracker" [enableInfoLink]="enableInfoLink"></nwb-item-detail-header>
-<ng-container *ngIf="vm$ | async; let vm">
-  <div *ngIf="!vm.loading" class="p-4 flex flex-col overflow-y-auto gap-2">
-    <ng-container *ngIf="vm.hasDescription && vm.isRune && !disableDescription">
-      <nwb-item-detail-description class="-m-4" [innerClass]="'p-4'"></nwb-item-detail-description>
-      <nwb-item-divider></nwb-item-divider>
-    </ng-container>
-    <ng-container *ngIf="vm.hasStats && !disableStats">
-      <nwb-item-detail-stats></nwb-item-detail-stats>
-      <nwb-item-divider></nwb-item-divider>
-    </ng-container>
-    <ng-container *ngIf="vm.hasPerks">
-      <nwb-item-detail-perks></nwb-item-detail-perks>
-      <nwb-item-divider></nwb-item-divider>
-    </ng-container>
-    <ng-container *ngIf="vm.hasDescription && !vm.isRune && !disableDescription">
-      <nwb-item-detail-description></nwb-item-detail-description>
-      <nwb-item-divider></nwb-item-divider>
-    </ng-container>
-    <ng-container *ngIf="!disableInfo">
-      <nwb-item-detail-info></nwb-item-detail-info>
-    </ng-container>
-    <ng-content></ng-content>
-  </div>
-</ng-container>
+<div class="flex flex-col layout-content ">
+  <ng-container *ngIf="components$ | async; let items">
+    <div *ngIf="items?.length" class="flex flex-col gap-2 p-4">
+      <ng-container *ngFor="let comp of components$ | async; trackBy: trackByIndex">
+        <ng-container [ngComponentOutlet]="comp"></ng-container>
+      </ng-container>
+    </div>
+  </ng-container>
+  <ng-content></ng-content>
+</div>

@@ -1,5 +1,8 @@
 module.exports = ({ addComponents }) => {
   addComponents({
+    '.nw-panel-bg': {
+      background: "url('^assets/rune-bg.png') black",
+    },
     '.nw-item-frame': {
       border: '10px solid transparent',
       borderImageWidth: '10px',
@@ -29,7 +32,7 @@ module.exports = ({ addComponents }) => {
       position: 'relative',
       '> *': {
         position: 'relative',
-      }
+      },
     },
     '.nw-item-header-bg': {
       background: "var(--rarity-bg-head, url('^assets/icons/item/tooltip_header_bg_0.png')) var(--rarity-c1)",
@@ -53,8 +56,18 @@ module.exports = ({ addComponents }) => {
     },
     '.nw-item-icon-frame': {
       display: 'block',
-      border: '1px solid var(--rarity-c0, #c8c8c8)',
-      borderImage: 'linear-gradient(to bottom, var(--rarity-c0, #c8c8c8), var(--rarity-c1, #a1a1a1)) 1',
+      position: 'relative',
+    },
+    '.nw-item-icon-border': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      border: '1px solid transparent',
+      background: 'linear-gradient(to bottom, var(--rarity-c0, #c8c8c8), var(--rarity-c1, #a1a1a1)) border-box',
+      mask: 'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)',
+      maskComposite: 'exclude',
     },
     '.nw-item-icon-bg': {
       backgroundImage: "var(--rarity-bg, url('^assets/icons/item/itemraritybgsquare0.png'))",

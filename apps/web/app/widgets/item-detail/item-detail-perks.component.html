@@ -6,27 +6,24 @@
     rounded-md
     outline outline-2 outline-offset-0 outline-transparent
     transition-all
-    cursor-pointer
   "
-  [class.hover:outline-primary-focus]="perkEditable && item.editable"
-  [class.hover:outline-offset-4]="perkEditable && item.editable"
-  [class.hover:cursor-pointer]="perkEditable && item.editable"
-  *ngFor="let item of perks$ | async; let isLast = last; trackBy: trackByIndex"
-  (click)="editPerkClicked(item)"
+  *ngFor="let item of items$ | async; let isLast = last; trackBy: trackByIndex"
+  [class.hover:outline-primary-focus]="item.editable"
+  [class.hover:outline-offset-4]="item.editable"
+  [class.hover:cursor-pointer]="item.editable"
+  (click)="editPerkClicked(item.detail)"
 >
   <ng-container *ngIf="item.perk">
-    <nwb-item-perk [icon]="item.icon" class="text-sky-600">
-      <div *ngFor="let row of item.text; trackBy: trackByIndex">
+    <nwb-item-perk [icon]="item.detail.icon" class="text-sky-600">
+      <div *ngFor="let row of item.detail.text; trackBy: trackByIndex">
         <b> {{ row.label | nwText }} </b>
-        <span> {{ row.description | nwText: { itemId: item.perk.PerkID, gearScore: gearScore$ | async } }} </span>
+        <span> {{ row.description | nwText: { itemId: item.perk.PerkID, gearScore: item.gs } }} </span>
       </div>
     </nwb-item-perk>
   </ng-container>
   <ng-container *ngIf="!item.perk">
-    <nwb-item-perk [icon]="'assets/icons/crafting_perkbackground.png'" [iconText]="item.bucket?.PerkChance | percent">
-      <div class="text-sky-600">
-        Random Perk
-      </div>
+    <nwb-item-perk [icon]="'assets/icons/crafting_perkbackground.png'" [iconText]="item.detail.bucket?.PerkChance | percent">
+      <div class="text-sky-600">Random Perk</div>
     </nwb-item-perk>
   </ng-container>
 </div>

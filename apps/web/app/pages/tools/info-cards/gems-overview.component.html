@@ -1,11 +1,14 @@
 <div class="layout-content p-3" *ngIf="items$ | async; let items">
   <div class="grid" [nwbScreenshotFrame]="'Gemstones'"  [@listAnimation]="items.length">
     <nwb-item-card *ngFor="let item of items" [entityId]="item.$itemId" [disableInfo]="true" [disableStats]="true">
-      <div *ngFor="let ingr of item.$ingredients" class="flex flex-row gap-1 justify-start items-center">
-        <picture [nwIcon]="ingr.item" class="w-8 h-8 nw-icon flex-none"></picture>
-        <span>{{ ingr.quantity }}</span>
-        <span>&times;</span>
-        <span [nwText]="ingr.item?.Name"></span>
+      <nwb-item-divider class="mx-4"></nwb-item-divider>
+      <div class="flex flex-col gap-1 p-4">
+        <div *ngFor="let ingr of item.$ingredients" class="flex flex-row gap-1 justify-start items-center">
+          <picture [nwIcon]="ingr.item" class="w-8 h-8 nw-icon flex-none"></picture>
+          <span>{{ ingr.quantity }}</span>
+          <span>&times;</span>
+          <span [nwText]="ingr.item?.Name"></span>
+        </div>
       </div>
     </nwb-item-card>
   </div>

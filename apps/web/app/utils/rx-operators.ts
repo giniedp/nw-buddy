@@ -5,6 +5,10 @@ export function mapProp<T, K extends keyof T>(prop: K) {
   return map<T, T[K]>((it) => it?.[prop])
 }
 
+export function mapPropTruthy<T, K extends keyof T>(prop: K) {
+  return map<T, boolean>((it) => !!it?.[prop])
+}
+
 export function mapFilter<T>(predicate: (value: T, index: number, array: T[]) => boolean) {
   return map<T[], T[]>((list) => list?.filter(predicate))
 }

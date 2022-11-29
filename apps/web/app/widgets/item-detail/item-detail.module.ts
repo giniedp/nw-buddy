@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core'
+import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemCardComponent } from './item-card.component'
 import { ItemDetailDescriptionComponent } from './item-detail-description.component'
-import { ItemDetailDivider } from './item-detail-divider.component'
 import { ItemDetailHeaderComponent } from './item-detail-header.component'
 import { ItemDetailInfoComponent } from './item-detail-info.component'
 import { ItemDetailPerksComponent } from './item-detail-perks.component'
@@ -16,7 +16,7 @@ const COMPONENTS = [
   ItemDetailPerksComponent,
   ItemDetailStatsComponent,
   ItemDetailInfoComponent,
-  ItemDetailDivider,
+  ItemFrameModule
 ]
 @NgModule({
   imports: [...COMPONENTS],

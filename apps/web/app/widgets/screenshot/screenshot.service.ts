@@ -39,6 +39,29 @@ export class ScreenshotService {
 
   public async makeScreenshot(frame: ScreenshotFrame): Promise<Blob> {
     const el = frame.elementRef.nativeElement
+    el.classList.add('screenshot-capture')
+    const result = await this.capture(frame).catch((err) => {
+      console.error(err)
+      return null
+    })
+    el.classList.remove('screenshot-capture')
+    return result
+  }
+
+  public saveBlobToClipoard(blob: Blob) {
+    navigator.clipboard.write([
+      new ClipboardItem({
+        'image/png': blob,
+      }),
+    ])
+  }
+
+  public saveBlobToFile(blob: Blob, filename: string = 'Screenshot') {
+    saveAs(blob, `${filename}.png`)
+  }
+
+  private async capture(frame: ScreenshotFrame) {
+    const el = frame.elementRef.nativeElement
     const lazyElements = el.querySelectorAll('[loading=lazy]')
     lazyElements.forEach((it) => {
       it.setAttribute('loading', 'eager')
@@ -59,17 +82,5 @@ export class ScreenshotService {
     })
     await new Promise((resolve) => setTimeout(resolve))
     return result
-  }
-
-  public saveBlobToClipoard(blob: Blob) {
-    navigator.clipboard.write([
-      new ClipboardItem({
-        'image/png': blob,
-      }),
-    ])
-  }
-
-  public saveBlobToFile(blob: Blob, filename: string = 'Screenshot') {
-    saveAs(blob, `${filename}.png`)
   }
 }

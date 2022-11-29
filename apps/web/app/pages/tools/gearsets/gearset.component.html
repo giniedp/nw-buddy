@@ -50,8 +50,8 @@
     </div>
   </ion-header>
   <div class="layout-content">
-    <div class=" px-4 pt-2">
-      <div class="alert prose mx-auto leading-tight">
+    <div class="px-4 pt-2">
+      <div class="alert prose mx-auto leading-tight bg-base-300">
         <div>
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -71,19 +71,20 @@
       </div>
     </div>
 
-    <div class=" p-4 rounded-b-md flex flex-col xl:flex-row layout-gap" [nwbScreenshotFrame]="name$ | async">
+    <div class="p-4 rounded-b-md flex flex-col xl:flex-row layout-gap" [nwbScreenshotFrame]="name$ | async">
       <div class="flex-1 grid layout-gap" [@listAnimation]="slots?.length">
-        <nwb-gearset-stats [class.text-xs]="compactMode" class="col-span-1 sm:col-span-2 bg-base-100 shadow-lg rounded-md"></nwb-gearset-stats>
-        <nwb-gearset-skill
-          class="col-span-1 sm:col-span-2 bg-base-100 shadow rounded-md"
-          [slot]="'primary'"
-          [gearset]="data"
-        ></nwb-gearset-skill>
-        <nwb-gearset-skill
-          class="col-span-1 sm:col-span-2 bg-base-100 shadow rounded-md"
-          [slot]="'secondary'"
-          [gearset]="data"
-        ></nwb-gearset-skill>
+        <div class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative">
+          <div class="nw-panel-bg absolute inset-0 opacity-20 bg-center bg-cover"></div>
+          <nwb-gearset-stats class="relative" [class.text-xs]="compactMode"></nwb-gearset-stats>
+        </div>
+        <div class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative">
+          <div class="nw-panel-bg absolute inset-0 opacity-20 bg-center bg-cover"></div>
+          <nwb-gearset-skill class="relative" [slot]="'primary'" [gearset]="data"></nwb-gearset-skill>
+        </div>
+        <div class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative">
+          <div class="nw-panel-bg absolute inset-0 opacity-20 bg-center bg-cover"></div>
+          <nwb-gearset-skill class="relative" [slot]="'secondary'" [gearset]="data"></nwb-gearset-skill>
+        </div>
 
         <div class="flex flex-col layout-gap">
           <nwb-gearset-slot

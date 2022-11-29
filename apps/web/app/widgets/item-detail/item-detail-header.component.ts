@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { Subject, takeUntil } from 'rxjs'
+import { combineLatest, Subject, takeUntil } from 'rxjs'
 import { NwModule } from '~/nw'
 import { getItemTierAsRoman, isItemArmor, isItemWeapon, isMasterItem } from '~/nw/utils'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -18,6 +18,7 @@ import { ItemDetailService } from './item-detail.service'
   host: {
     class: 'nw-item-header flex flex-row p-1 gap-2',
     '[class.bg-base-300]': 'isLoading',
+    '[class.named]': 'named',
     '[class.nw-item-rarity-0]': '!isLoading && !rarity',
     '[class.nw-item-rarity-1]': 'rarity === 1',
     '[class.nw-item-rarity-2]': 'rarity === 2',
@@ -55,18 +56,29 @@ export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.detail.vm$.pipe(takeUntil(this.destroy$)).subscribe((it) => {
-      this.name = it.name
-      this.named = it.isNamed
-      this.rarity = it.rarity
-      this.rarityName = it.rarityName
-      this.typeName = it.typeName
-      this.sourceLabel = it.sourceLabel
-      this.entity = it.entity
-      this.entityId = it.entityId
-      this.isLoading = it.loading
-      this.cdRef.markForCheck()
+    combineLatest({
+      name: this.detail.name$,
+      isNamed: this.detail.isNamed$,
+      rarity: this.detail.rarity$,
+      rarityName: this.detail.rarityName$,
+      typeName: this.detail.typeName$,
+      sourceLabel: this.detail.sourceLabel$,
+      entity: this.detail.entity$,
+      entityId: this.detail.entityId$,
     })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((it) => {
+        this.name = it.name
+        this.named = it.isNamed
+        this.rarity = it.rarity
+        this.rarityName = it.rarityName
+        this.typeName = it.typeName
+        this.sourceLabel = it.sourceLabel
+        this.entity = it.entity
+        this.entityId = it.entityId
+        this.isLoading = false
+        this.cdRef.markForCheck()
+      })
   }
 
   public ngOnDestroy(): void {

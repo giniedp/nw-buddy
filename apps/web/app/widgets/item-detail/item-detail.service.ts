@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Injectable } from '@angular/core'
+import { ChangeDetectorRef, EventEmitter, Injectable } from '@angular/core'
 import { ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
 import { sortBy } from 'lodash'
 import { BehaviorSubject, combineLatest, defer, map, ReplaySubject, switchMap } from 'rxjs'
@@ -12,14 +12,17 @@ import {
   getItemPerkKeys,
   getItemRarity,
   getItemRarityLabel,
+  getItemStatsArmor,
+  getItemStatsWeapon,
   getItemTierAsRoman,
   getItemTypeName,
   getPerkbucketPerks,
   getPerksInherentMODs,
   getPerkTypeWeight,
-  hasPerkInherentAffix
+  hasItemGearScore,
+  hasPerkInherentAffix,
 } from '~/nw/utils'
-import { deferStateFlat, humanize, shareReplayRefCount } from '~/utils'
+import { deferStateFlat, humanize, mapProp, mapPropTruthy, shareReplayRefCount } from '~/utils'
 
 function isTruthy(value: any) {
   return !!value
@@ -40,32 +43,46 @@ export interface PerkDetail {
 
 @Injectable()
 export class ItemDetailService {
-  public readonly item$ = defer(() => this.db.item(this.entityId$)).pipe(shareReplayRefCount(1))
-  public readonly itemGS$ = defer(() => combineLatest([this.item$, this.gearScoreOverride$]))
-    .pipe(map(([item, gs]) => gs || getItemMaxGearScore(item)))
-    .pipe(shareReplayRefCount(1))
-  public readonly itemGSLabel$ = defer(() => combineLatest([this.item$, this.gearScoreOverride$]))
-    .pipe(map(([item, gs]) => gs || getItemGearScoreLabel(item)))
-    .pipe(shareReplayRefCount(1))
-  public readonly itemGSMin$ = defer(() => combineLatest([this.item$, this.gearScoreOverride$]))
-    .pipe(map(([item, gs]) => gs || getItemMinGearScore(item)))
-    .pipe(shareReplayRefCount(1))
+  public readonly entityId$ = new ReplaySubject<string>(1)
+  public readonly gsOverride$ = new BehaviorSubject<number>(null)
+  public readonly gsEditable$ = new BehaviorSubject<boolean>(false)
+  public readonly gsEdit$ = new EventEmitter<MouseEvent>()
+  public readonly perkOverride$ = new BehaviorSubject<Record<string, string>>(null)
+  public readonly perkEditable$ = new BehaviorSubject<boolean>(false)
+  public readonly perkEdit$ = new EventEmitter<PerkDetail>()
 
-  public readonly housingItem$ = defer(() => this.db.housingItem(this.entityId$)).pipe(shareReplayRefCount(1))
-  public readonly entity$ = defer(() => combineLatest([this.item$, this.housingItem$]))
+  public readonly item$ = this.db.item(this.entityId$).pipe(shareReplayRefCount(1))
+  public readonly housingItem$ = this.db.housingItem(this.entityId$).pipe(shareReplayRefCount(1))
+  public readonly entity$ = combineLatest([this.item$, this.housingItem$])
     .pipe(map(([item, housing]) => item || housing))
     .pipe(shareReplayRefCount(1))
 
+  public readonly itemGS$ = combineLatest([this.item$, this.gsOverride$])
+    .pipe(map(([item, gs]) => (hasItemGearScore(item) ? gs || getItemMaxGearScore(item, false) : null)))
+    .pipe(shareReplayRefCount(1))
+  public readonly itemGSLabel$ = combineLatest([this.item$, this.gsOverride$])
+    .pipe(map(([item, gs]) => (hasItemGearScore(item) ? gs || getItemGearScoreLabel(item) : null)))
+    .pipe(shareReplayRefCount(1))
+
   public readonly itemStatsRef$ = this.item$.pipe(map((it) => it?.ItemStatsRef))
-  public readonly entityId$ = new ReplaySubject<string>(1)
   public readonly name$ = this.entity$.pipe(map((it) => it?.Name))
-  public readonly source$ = this.entity$.pipe(map((it) => it?.['$source']))
+  public readonly source$ = this.entity$.pipe(map((it) => it?.['$source'] as string))
+  public readonly sourceLabel$ = this.source$.pipe(map(humanize))
   public readonly description$ = this.entity$.pipe(map((it) => it?.Description))
   public readonly icon$ = this.entity$.pipe(map((it) => getItemIconPath(it)))
   public readonly rarity$ = this.entity$.pipe(map((it) => getItemRarity(it)))
   public readonly rarityName$ = this.rarity$.pipe(map(getItemRarityLabel))
   public readonly typeName$ = this.entity$.pipe(map(getItemTypeName))
   public readonly tierLabel$ = this.entity$.pipe(map((it) => getItemTierAsRoman(it?.Tier, true)))
+  public readonly isDeprecated$ = this.source$.pipe(map((it) => /depricated/i.test(it || '')))
+  public readonly isNamed$ = this.item$.pipe(map((it) => it?.ItemClass?.includes('Named')))
+  public readonly isRune$ = this.item$.pipe(map((it) => !!it?.HeartgemTooltipBackgroundImage))
+  public readonly hasDescription$ = this.description$.pipe(map(isTruthy))
+  public readonly hasStats$ = this.itemStatsRef$.pipe(map(isTruthy))
+  public readonly hasPerks = combineLatest({
+    item: this.item$,
+    buckets: this.db.perkBucketsMap,
+  }).pipe(map(({ item, buckets }) => item && (item.CanHavePerks || buckets.get(item.ItemID))))
 
   public readonly weaponStats$ = this.db.weapon(this.itemStatsRef$)
   public readonly armorStats$ = this.db.armor(this.itemStatsRef$)
@@ -86,37 +103,67 @@ export class ItemDetailService {
     )
   )
 
-  public readonly gearScoreOverride$ = new BehaviorSubject<number>(null)
-  public readonly perkOverride$ = new BehaviorSubject<Record<string, string>>(null)
-
   public readonly perksDetails$ = defer(() => this.resolvePerkInfos()).pipe(shareReplayRefCount(1))
   public readonly finalRarity$ = defer(() => this.resolveFinalRarity())
   public readonly finalRarityName$ = this.finalRarity$.pipe(map(getItemRarityLabel))
 
-  public readonly vm$ = deferStateFlat(() =>
-    combineLatest({
+  public readonly vmDescription$ = combineLatest({
+    description: this.description$,
+    runeImage: this.item$.pipe(mapProp('HeartgemTooltipBackgroundImage')),
+    runeTitle: this.item$.pipe(mapProp('HeartgemRuneTooltipTitle')),
+  }).pipe(shareReplayRefCount(1))
+
+  public readonly vmInfo$ = combineLatest({
+    bindOnEquip: this.item$.pipe(mapPropTruthy('BindOnEquip')),
+    bindOnPickup: this.entity$.pipe(mapPropTruthy('BindOnPickup')),
+    tier: this.tierLabel$,
+    canReplaceGem: this.item$.pipe(map((it) => it && it.CanHavePerks && it.CanReplaceGem)),
+    cantReplaceGem: this.item$.pipe(map((it) => it && it.CanHavePerks && !it.CanReplaceGem)),
+    weight: combineLatest({
+      weapon: this.weaponStats$,
+      armor: this.armorStats$,
       item: this.item$,
-      housingItem: this.housingItem$,
-      entity: this.entity$,
-      entityId: this.entityId$,
-      name: this.name$,
-      sourceLabel: this.source$.pipe(map((it) => humanize(it))),
-      isDeprecated: this.source$.pipe(map((it) => /depricated/i.test(it || ''))),
-      isNamed: this.item$.pipe(map((it) => it?.ItemClass?.includes('Named'))),
-      description: this.description$,
-      icon: this.icon$,
-      rarity: this.finalRarity$,
-      rarityName: this.finalRarityName$,
-      typeName: this.typeName$,
-      isRune: this.item$.pipe(map((it) => it && !!it.HeartgemTooltipBackgroundImage)),
-      hasDescription: this.description$.pipe(map(isTruthy)),
-      hasStats: this.itemStatsRef$.pipe(map(isTruthy)),
-      hasPerks: combineLatest({
-        item: this.item$,
-        buckets: this.db.perkBucketsMap,
-      }).pipe(map(({ item, buckets }) => item && (item.CanHavePerks || buckets.get(item.ItemID)))),
+    }).pipe(map(({ weapon, armor, item }) => (weapon?.WeightOverride || armor?.WeightOverride || item?.Weight) / 10)),
+    durability: this.item$.pipe(mapProp('Durability')),
+    maxStackSize: this.entity$.pipe(mapProp('MaxStackSize')),
+    requiredLevel: this.item$.pipe(mapProp('RequiredLevel')),
+    ingredientTypes: this.ingredientCategories$,
+  }).pipe(shareReplayRefCount(1))
+
+  public readonly vmStats$ = combineLatest({
+    item: this.item$,
+    weapon: this.weaponStats$,
+    armor: this.armorStats$,
+    rune: this.runeStats$,
+    gs: this.itemGS$,
+    gsEditable: this.gsEditable$,
+    gsLabel: this.itemGSLabel$,
+  }).pipe(
+    map(({ item, weapon, rune, armor, gs, gsEditable, gsLabel }) => {
+      return {
+        gsLabel: gsLabel,
+        gsEditable: gsEditable,
+        stats: [...getItemStatsWeapon(item, weapon || rune, gs), ...getItemStatsArmor(item, armor, gs)],
+      }
     })
-  ).pipe(shareReplayRefCount(1))
+  )
+
+  public readonly vmPerks$ = combineLatest({
+    gs: this.itemGS$,
+    editable: this.perkEditable$,
+    details: this.perksDetails$,
+  }).pipe(
+    map(({ gs, editable, details }) => {
+      return details.map((detail) => {
+        return {
+          detail: detail,
+          perk: detail?.perk,
+          gs,
+          editable: editable && detail?.editable,
+        }
+      })
+    })
+  )
 
   public constructor(protected db: NwDbService, protected cdRef: ChangeDetectorRef) {
     //
