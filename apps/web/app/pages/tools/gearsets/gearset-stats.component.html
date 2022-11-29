@@ -57,12 +57,12 @@
 </div>
 
 <ng-template #tplScore>
-  <nwb-property-grid class="gap-x-1">
+  <!-- <nwb-property-grid class="gap-x-1">
     <span class="w-16 text-right font-bold">{{ elementalRating$ | async | number: '0.0-1' }}</span>
     <span class="opacity-50">{{ 'ui_elemental' | nwText }}</span>
     <span class="w-16 text-right font-bold">{{ physicalRating$ | async | number: '0.0-1' }}</span>
     <span class="opacity-50">{{ 'ui_physical' | nwText }}</span>
-  </nwb-property-grid>
+  </nwb-property-grid> -->
 </ng-template>
 
 <ng-template #tplAttrs>
@@ -110,6 +110,10 @@
       <span class="relative top-1">Damage resistence</span>
     </h3>
     <nwb-property-grid class="gap-x-1">
+      <span class="w-16 text-right font-bold">{{ elementalRating$ | async | number: '0.0-1' }}</span>
+      <span class="opacity-50">{{ 'ui_elemental' | nwText }}</span>
+      <span class="w-16 text-right font-bold">{{ physicalRating$ | async | number: '0.0-1' }}</span>
+      <span class="opacity-50">{{ 'ui_physical' | nwText }}</span>
       <ng-container *ngIf="elementalAbs$ | async; let rows">
         <ng-container *ngFor="let row of rows; let isFirst = first">
           <ng-container *ngIf="isFirst">

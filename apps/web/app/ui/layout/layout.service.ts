@@ -14,7 +14,7 @@ export class LayoutService {
   private appMenu = new BehaviorSubject<IonMenu>(null)
 
   public constructor(public breakpoint: BreakpointObserver) {
-    console.log(Breakpoints)
+    //
   }
 
   public connectMenu(menu: IonMenu) {
