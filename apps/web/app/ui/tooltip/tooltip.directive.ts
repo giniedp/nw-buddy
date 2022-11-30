@@ -1,4 +1,4 @@
-import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay'
+import { ConnectedPosition, Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay'
 import { ComponentPortal, DomPortal, Portal, TemplatePortal } from '@angular/cdk/portal'
 import {
   ChangeDetectorRef,
@@ -17,7 +17,14 @@ import {
 import { delay, distinctUntilChanged, fromEvent, map, merge, of, Subject, switchMap, takeUntil } from 'rxjs'
 import { TooltipComponent } from './tooltip.component'
 
-export declare type TooltipDirection = 'left' | 'top' | 'right' | 'bottom'
+export declare type TooltipDirectionX = 'left' | 'right'
+export declare type TooltipDirectionY = 'top' | 'bottom'
+
+export declare type TooltipDirection =
+  | TooltipDirectionX
+  | TooltipDirectionY
+  | `${TooltipDirectionX}-${TooltipDirectionY}`
+  | `${TooltipDirectionY}-${TooltipDirectionX}`
 export declare type TooltipTriggerType = 'click' | 'hover'
 export declare type TooltipScrollStrategy = 'close' | 'reposition'
 
@@ -143,6 +150,16 @@ export class TooltipDirective implements OnInit, OnDestroy {
 
   private getPosition() {
     let strategy = this.overlay.position().flexibleConnectedTo(this.elRef)
+    const [x, y] = this.placement.split('-')
+    // const position: Partial<ConnectedPosition>  = {
+
+    // }
+
+    // if (!y) {
+
+    // } else {
+
+    // }
     if (this.placement === 'right') {
       strategy = strategy
         .withPositions([{ originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center' }])

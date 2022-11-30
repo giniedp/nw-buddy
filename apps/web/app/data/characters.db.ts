@@ -25,6 +25,14 @@ export interface CharacterRecord {
    * Character tradeskill levels
    */
   tradeskillLevels: Record<string, number>
+  /**
+   * Character tradeskill armor sets
+   */
+  tradeskillSets: Record<string, string[]>
+  /**
+   * Crafting preference: first light bonus
+   */
+  craftingFlBonus: boolean
 }
 
 export const DBT_CHARACTERS = 'characters'

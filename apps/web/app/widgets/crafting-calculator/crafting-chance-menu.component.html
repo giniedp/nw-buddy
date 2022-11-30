@@ -1,0 +1,53 @@
+<table class="table table-compact w-full">
+  <thead>
+    <tr>
+      <th></th>
+      <th class="text-center">Level</th>
+      <th class="text-center">Gear</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let row of rows$ | async; trackBy: trackBy">
+      <td>{{ row.skill.Name | nwText }}</td>
+      <td>
+        <input
+          type="number"
+          class="input input-xs input-bordered w-14"
+          [ngModel]="row.level"
+          (ngModelChange)="updateSkillLevel(row.skill.ID, $event)"
+          [min]="0"
+          [max]="200"
+        />
+      </td>
+      <td>
+        <div class="btn-group">
+          <button
+            *ngFor="let slot of slots; trackBy: trackBy"
+            class="btn btn-sm btn-square btn-ghost"
+            [class.btn-success]="row.gear.has(slot.id)"
+            (click)="toggleSkillSlot(row.skill.ID, slot.id)"
+          >
+            <span [class.opacity-10]="!row.gear.has(slot.id)">
+              <img [nwImage]="slot.iconSlot" class="w-6 h-6" />
+            </span>
+          </button>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="3">
+        <div class="form-control w-full">
+          <label class="cursor-pointer label">
+            <span class="label-text">First Light Bonus</span>
+            <input
+              type="checkbox"
+              class="toggle toggle-accent"
+              [ngModel]="flBonus$ | async"
+              (ngModelChange)="updateFlBonus($event)"
+            />
+          </label>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>

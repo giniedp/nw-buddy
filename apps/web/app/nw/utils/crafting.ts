@@ -106,11 +106,13 @@ export function calculateBonusItemChance({
   ingredients,
   recipe,
   skill,
+  customChance
 }: {
   item: ItemDefinitionMaster | Housingitems
   ingredients: Array<ItemDefinitionMaster | Housingitems>
   recipe: Crafting
   skill?: number
+  customChance?: number
 }) {
   if (!item || recipe?.BonusItemChance == null || !ingredients?.length) {
     return 0
@@ -150,7 +152,7 @@ export function calculateBonusItemChance({
   const skillChance = (skill ?? NW_MAX_TRADESKILL_LEVEL) / 1000
   const ingrChance = ingrChances.reduce((a, b) => a + b, 0)
 
-  let result = baseChance + skillChance + ingrChance
+  let result = baseChance + skillChance + ingrChance + (customChance || 0)
 
   // console.table({
   //   ingrTiers: ingrTiers.map(String),

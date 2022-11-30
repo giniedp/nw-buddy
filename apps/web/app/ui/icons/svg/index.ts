@@ -43,3 +43,5 @@ export const svgTrashCan = require('!!raw-loader!./trash-can.svg').default
 export const svgXmark = require('!!raw-loader!./xmark.svg').default
 export const svgDiagramProject = require('!!raw-loader!./diagram-project.svg').default
 export const svgRotate = require('!!raw-loader!./rotate.svg').default
+export const svgDollarSign = require('!!raw-loader!./dollar-sign.svg').default
+export const svgPercent = require('!!raw-loader!./percent.svg').default

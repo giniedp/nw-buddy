@@ -28,7 +28,7 @@ export interface Ingredient {
   quantity: number
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable()
 export class CraftingCalculatorService implements OnDestroy {
   public ready = defer(() => this.ready$)
 
@@ -36,39 +36,38 @@ export class CraftingCalculatorService implements OnDestroy {
   public housingMap: Map<string, Housingitems>
   public categoriesMap: Map<string, Craftingcategories>
 
-  private ready$ = new ReplaySubject()
-  private destroy$ = new Subject()
+  public readonly change = defer(() => this.change$)
+  public readonly forceRefresh = defer(() => this.refresh$)
+
+  private refresh$ = new Subject<void>()
+  private change$ = new Subject<void>()
+  private ready$ = new ReplaySubject<void>()
+  private destroy$ = new Subject<void>()
   private items: ItemDefinitionMaster[]
-  private housingItems: Housingitems[]
   private recipes: Crafting[]
-  private recipesMap: Map<string, Crafting>
   private cache = new Map<string, CraftingStep>()
 
   public constructor(private craftPref: CraftingPreferencesService, private char: CharacterStore, db: NwDbService) {
     combineLatest({
       items: db.items,
       itemsMap: db.itemsMap,
-      housingItems: db.housingItems,
       housingMap: db.housingItemsMap,
       recipes: db.recipes,
-      recipesMap: db.recipesMap,
       categoriesMap: db.recipeCategoriesMap,
     })
       .pipe(takeUntil(this.destroy$))
-      .subscribe(({ items, itemsMap, housingItems, housingMap, recipes, recipesMap, categoriesMap }) => {
+      .subscribe(({ items, itemsMap, housingMap, recipes, categoriesMap }) => {
         this.items = items
         this.itemsMap = itemsMap
-        this.housingItems = housingItems
         this.housingMap = housingMap
         this.recipes = recipes
-        this.recipesMap = recipesMap
         this.categoriesMap = categoriesMap
-        this.ready$.next(null)
+        this.ready$.next()
       })
   }
 
   public ngOnDestroy(): void {
-    this.destroy$.next(null)
+    this.destroy$.next()
     this.destroy$.complete()
   }
 
@@ -162,11 +161,17 @@ export class CraftingCalculatorService implements OnDestroy {
       return 0
     }
     const skillLevel = await firstValueFrom(this.char.selectTradeSkillLevel(recipe.Tradeskill))
+    const skillSet = await firstValueFrom(this.char.selectTradeSet(recipe.Tradeskill))
+    const flBonus = await firstValueFrom(this.char.craftingFlBonus$)
+
+    const flBonusChance = flBonus ? 0.1 : 0 // 10% first light bonus
+    const gearBonus = skillSet.length * 0.02 // 2% per gear item
     return calculateBonusItemChance({
       item: item,
       ingredients: this.findItemsOrSelectedItems(step.steps),
       recipe: recipe,
       skill: skillLevel || 0,
+      customChance: gearBonus + flBonusChance
     })
   }
 
@@ -188,6 +193,14 @@ export class CraftingCalculatorService implements OnDestroy {
 
   public savePreference(ingredient: string, selection: string) {
     this.craftPref.categories.set(ingredient, selection)
+  }
+
+  public reportChange() {
+    this.change$.next()
+  }
+
+  public refresh() {
+    this.refresh$.next()
   }
 
   private clampSelection(ingredient: Ingredient, options: string[], selection: string) {

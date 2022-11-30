@@ -1,30 +1,51 @@
+import { CommonModule } from '@angular/common'
 import {
-  Component,
-  OnInit,
   ChangeDetectionStrategy,
-  Input,
-  OnDestroy,
-  OnChanges,
-  SimpleChanges,
   ChangeDetectorRef,
-  ViewChild,
+  Component,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  ViewChild
 } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { Crafting } from '@nw-data/types'
-import { debounceTime, defer, distinctUntilChanged, ReplaySubject, Subject, switchMap, switchMapTo, takeUntil, tap } from 'rxjs'
-import { NwService } from '~/nw'
+import { debounceTime, distinctUntilChanged, ReplaySubject, Subject, switchMap, takeUntil, tap } from 'rxjs'
+import { NwModule } from '~/nw'
 import { getItemIdFromRecipe } from '~/nw/utils'
-import { CraftingCalculatorService, CraftingStep, RecipeState } from './crafting-calculator.service'
-import { CraftingPreferencesService } from './crafting-preferences.service'
-import type { CraftingStepComponent } from './crafting-step.component'
+import { IconsModule } from '~/ui/icons'
+import { svgDollarSign, svgGears, svgPercent } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
+import { TooltipModule } from '~/ui/tooltip'
+import { PriceImporterModule } from '../price-importer/price-importer.module'
+import { CraftingCalculatorService, CraftingStep } from './crafting-calculator.service'
+import { CraftingChanceMenuComponent } from './crafting-chance-menu.component'
+import { CraftingStepComponent } from './crafting-step.component'
+import { CraftingSummaryComponent } from './crafting-summary.component'
 
 @Component({
+  standalone: true,
   selector: 'nwb-crafting-calculator',
   templateUrl: './crafting-calculator.component.html',
   styleUrls: ['./crafting-calculator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    CommonModule,
+    NwModule,
+    IconsModule,
+    FormsModule,
+    PriceImporterModule,
+    CraftingSummaryComponent,
+    CraftingStepComponent,
+    TooltipModule,
+    LayoutModule,
+    CraftingChanceMenuComponent
+  ],
+  providers: [CraftingCalculatorService],
   host: {
-    '[class.hidden]': '!recipe'
-  }
+    '[class.hidden]': '!recipe',
+  },
 })
 export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges {
   @Input()
@@ -44,23 +65,28 @@ export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges
   @Input()
   public enableSummary: boolean = true
 
-  public stepChange = defer(() => this.stepChange$)
-
+  protected iconImporter = svgDollarSign
+  protected iconMode = svgPercent
+  protected iconOptions = svgGears
+  protected isToolOpen = false
   private destroy$ = new Subject()
-  private stepChange$ = new Subject()
   private recipeId$ = new ReplaySubject<string>(1)
 
-  public constructor(private cdRef: ChangeDetectorRef, private nw: NwService, private service: CraftingCalculatorService) {}
+  public constructor(private cdRef: ChangeDetectorRef, private service: CraftingCalculatorService) {
+    //
+  }
 
   public ngOnInit(): void {
-
-    this.service.ready.pipe(switchMapTo(this.recipeId$))
+    this.service.ready
+      .pipe(switchMap(() => this.recipeId$))
       .pipe(distinctUntilChanged())
-      .pipe(tap((id) => {
-        this.step = this.loadState(id)
-        this.cdRef.markForCheck()
-      }))
-      .pipe(switchMap(() => this.stepChange$))
+      .pipe(
+        tap((id) => {
+          this.step = this.loadState(id)
+          this.cdRef.markForCheck()
+        })
+      )
+      .pipe(switchMap(() => this.service.change))
       .pipe(debounceTime(0))
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
@@ -79,7 +105,11 @@ export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges
   }
 
   public reportChange() {
-    this.stepChange$.next(null)
+    this.service.reportChange()
+  }
+
+  public forceRefresh() {
+    this.service.refresh()
   }
 
   public toggleOptimize() {
@@ -88,14 +118,17 @@ export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges
   }
 
   private loadState(id: string) {
-    return this.service.getFromCache(id) || this.service.solve({
-      ingredient: {
-        id: getItemIdFromRecipe(this.recipe),
-        quantity: 1,
-        type: 'Item'
-      },
-      expand: true,
-    })
+    return (
+      this.service.getFromCache(id) ||
+      this.service.solve({
+        ingredient: {
+          id: getItemIdFromRecipe(this.recipe),
+          quantity: 1,
+          type: 'Item',
+        },
+        expand: true,
+      })
+    )
   }
 
   private saveState(step: CraftingStep) {

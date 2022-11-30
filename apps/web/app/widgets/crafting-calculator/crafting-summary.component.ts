@@ -1,22 +1,16 @@
+import { CommonModule } from '@angular/common'
 import {
-  Component,
-  OnInit,
-  ChangeDetectionStrategy,
-  OnChanges,
-  OnDestroy,
-  ChangeDetectorRef,
-  Input,
-  NgZone,
-  TrackByFunction,
-  Host,
+  ChangeDetectionStrategy, Component, Input, OnChanges,
+  OnDestroy, OnInit, TrackByFunction
 } from '@angular/core'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { combineLatest, debounceTime, defer, map, of, ReplaySubject, startWith, switchMap } from 'rxjs'
-import { NwService } from '~/nw'
+import { combineLatest, debounceTime, defer, map, ReplaySubject, startWith, switchMap } from 'rxjs'
+import { NwModule, NwService } from '~/nw'
 import { NwTradeskillService } from '~/nw/nw-tradeskill.service'
 import { calculateCraftingReward, getItemId } from '~/nw/utils'
 import { DestroyService, shareReplayRefCount } from '~/utils'
-import { CraftingCalculatorComponent } from './crafting-calculator.component'
+import { ItemTrackerModule } from '../item-tracker'
+import { TradeskillsModule } from '../tradeskills'
 import { CraftingCalculatorService } from './crafting-calculator.service'
 import { CraftingStepComponent } from './crafting-step.component'
 
@@ -46,10 +40,12 @@ export const enum RowMode {
 }
 
 @Component({
+  standalone: true,
   selector: 'nwb-crafting-summary',
   templateUrl: './crafting-summary.component.html',
   styleUrls: ['./crafting-summary.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, NwModule, ItemTrackerModule, TradeskillsModule],
   providers: [DestroyService],
 })
 export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
@@ -66,7 +62,7 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
 
   public trackByIndex: TrackByFunction<any> = (i) => i
 
-  public updateTrigger$ = defer(() => this.parent.stepChange.pipe(startWith(null)))
+  public updateTrigger$ = defer(() => this.service.change.pipe(startWith(null)))
     .pipe(debounceTime(100))
     .pipe(shareReplayRefCount(1))
 
@@ -86,13 +82,9 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
   private rowMode$ = new ReplaySubject<Map<string, RowMode>>(1)
 
   public constructor(
-    private parent: CraftingCalculatorComponent,
-    private cdRef: ChangeDetectorRef,
     private nw: NwService,
     private tradeskills: NwTradeskillService,
     private service: CraftingCalculatorService,
-    @Host()
-    private destroy: DestroyService
   ) {
     //
   }

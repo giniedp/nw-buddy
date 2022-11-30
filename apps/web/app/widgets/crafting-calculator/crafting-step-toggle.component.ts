@@ -1,10 +1,13 @@
-import { Component, OnInit, ChangeDetectionStrategy, forwardRef, Input, HostBinding, EventEmitter } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, EventEmitter, forwardRef, HostBinding, Input } from '@angular/core';
 import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
+  standalone: true,
   selector: 'nwb-crafting-step-toggle',
   templateUrl: './crafting-step-toggle.component.html',
   styleUrls: ['./crafting-step-toggle.component.scss'],
+  imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [
     {

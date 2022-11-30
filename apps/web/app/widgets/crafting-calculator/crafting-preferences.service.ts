@@ -9,6 +9,7 @@ export class CraftingPreferencesService {
   public expandAll: StorageProperty<boolean>
   public categories: StorageNode<string>
   public recipes: StorageNode<RecipeState>
+  public refiningBonus: StorageNode<Record<string, boolean>>
 
   constructor(preferences: PreferencesService) {
     const storage = preferences.storage.storageScope('crafting:')
