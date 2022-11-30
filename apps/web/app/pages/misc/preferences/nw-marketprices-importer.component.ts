@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http'
 import { ChangeDetectorRef, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { combineLatest, defer, map, take, takeUntil, tap } from 'rxjs'
+import { ElectronService } from '~/electron'
 import { NwDbService } from '~/nw'
 import { getItemId } from '~/nw/utils'
 import { ItemPreferencesService } from '~/preferences'
@@ -27,13 +28,17 @@ export class NwPricesImporterComponent {
 
   protected serverId: string = ''
   protected isLoading: boolean
+  protected get isElectron() {
+    return this.electron.isElectron
+  }
 
   public constructor(
     private http: HttpClient,
     private db: NwDbService,
     private pref: ItemPreferencesService,
     private cdRef: ChangeDetectorRef,
-    private destroy: DestroyService
+    private destroy: DestroyService,
+    private electron: ElectronService,
   ) {
     //
   }
@@ -75,7 +80,8 @@ export class NwPricesImporterComponent {
   }
 
   private fetchServers() {
-    return this.http.get<Record<string, { name: string }>>('https://nwmarketprices.com/api/servers/').pipe(
+    const url = this.isElectron ? 'https://nwmarketprices.com/api/servers/' : '/api/nwm/servers'
+    return this.http.get<Record<string, { name: string }>>(url).pipe(
       map((it) => {
         return Object.keys(it).map((k) => ({ id: k, name: it[k].name }))
       })
@@ -83,9 +89,10 @@ export class NwPricesImporterComponent {
   }
 
   private fetchPrices(server: string) {
+    const url = this.isElectron ? `https://nwmarketprices.com/api/latest-prices/${server}/` : `/api/nwm/servers/${server}`
     return this.http
       .get<Array<{ ItemId: string; Price: string; Availability: number }>>(
-        `https://nwmarketprices.com/api/latest-prices/${server}/`,
+        url,
         {
           params: {
             serverName: server,

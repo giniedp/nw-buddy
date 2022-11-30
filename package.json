@@ -16,6 +16,7 @@
     "dev:web": "ng serve --host 0.0.0.0 --disable-host-check -c dev -o",
     "dev:electron": "yarn electron:serve",
     "dev:server": "ng run nw-buddy:serve-ssr",
+    "dev:wrangler": "wrangler pages dev dist/web-cloud",
     "build:web": "ng build --base-href / -c web",
     "build:server": "ng run nw-buddy:server:production",
     "build:web-cloud": "ng build --base-href / -c cloud && yarn nw-download -o dist/web-cloud/nw-data",
@@ -71,6 +72,7 @@
     "@capacitor/cli": "4.3.0",
     "@capacitor/core": "4.3.0",
     "@capacitor/ios": "4.3.0",
+    "@cloudflare/workers-types": "4.20221111.1",
     "@ionic/angular": "6.3.7",
     "@ngrx/component-store": "14.3.2",
     "@ngrx/effects": "14.3.2",
@@ -156,6 +158,7 @@
     "unzipper": "0.10.11",
     "wait-on": "6.0.1",
     "webdriver-manager": "12.1.8",
+    "wrangler": "2.5.0",
     "zone.js": "~0.11.8"
   },
   "engines": {
