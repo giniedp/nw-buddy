@@ -1,4 +1,4 @@
-<nwb-item-detail-header [enableTracker]="enableTracker" [enableInfoLink]="enableInfoLink" [disableContent]="square"></nwb-item-detail-header>
+<nwb-item-detail-header [enableTracker]="enableTracker" [enableInfoLink]="enableInfoLink" [disableContent]="square" ></nwb-item-detail-header>
 <div class="flex flex-col layout-content" *ngIf="!square">
   <ng-container *ngIf="components$ | async; let items">
     <div *ngIf="items?.length" class="flex flex-col gap-2 p-4">

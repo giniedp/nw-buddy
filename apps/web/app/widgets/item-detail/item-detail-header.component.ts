@@ -62,7 +62,7 @@ export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
     combineLatest({
       name: this.detail.name$,
       isNamed: this.detail.isNamed$,
-      rarity: this.detail.rarity$,
+      rarity: this.detail.finalRarity$,
       rarityName: this.detail.rarityName$,
       typeName: this.detail.typeName$,
       sourceLabel: this.detail.sourceLabel$,
