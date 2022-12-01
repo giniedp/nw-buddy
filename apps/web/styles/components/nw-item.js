@@ -4,7 +4,7 @@ module.exports = ({ addComponents }) => {
       background: "url('^assets/bg-panel.jpg') black",
     },
     '.nw-bg-pane': {
-      background: "url('^assets/bg-pane.webp') black",
+      background: "url('^assets/bg-pane.png') black",
     },
     '.nw-bg-title': {
       background: "url('^assets/bg-title.png')",
