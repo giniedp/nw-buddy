@@ -1,4 +1,5 @@
 import { Ability, Affixstats, ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
+import { patchPrecision } from './precision'
 
 const PERK_SORT_WEIGHT = {
   Inherent: 0,
@@ -44,8 +45,7 @@ export function getPerksGemABSs(perk: Pick<Perks, 'ScalingPerGearScore'>, affix:
 }
 
 export function getPerkMultiplier(perk: Pick<Perks, 'ScalingPerGearScore'> , gearScore: number) {
-  // TODO: solve precision
-  const scale = Number(perk.ScalingPerGearScore.toFixed(8))
+  const scale = patchPrecision(perk.ScalingPerGearScore)
   return Math.max(0, gearScore - 100) * scale + 1
 }
 

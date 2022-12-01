@@ -36,6 +36,15 @@
         class="w-4 h-4 absolute top-1 right-1 screenshot-hidden pointer-events-none"
       ></nwb-icon>
     </label>
+
+    <nwb-property-grid class="gap-x-1">
+      <span class="w-16 text-right font-bold">{{ elementalRating$ | async | number: '0.1-1' }}</span>
+      <span class="opacity-50">{{ 'ui_elemental' | nwText }}</span>
+      <span class="w-16 text-right font-bold">{{ physicalRating$ | async | number: '0.1-1' }}</span>
+      <span class="opacity-50">{{ 'ui_physical' | nwText }}</span>
+      <span class="w-16 text-right font-bold">{{ health$ | async | number: '0.1-1' }}</span>
+      <span class="opacity-50">{{ 'ui_max_health' | nwText }}</span>
+    </nwb-property-grid>
   </div>
 
   <div class="flex-1 flex flex-col layout-gap">
@@ -98,6 +107,7 @@
             >)
           </ng-container>
         </span>
+
       </ng-container>
     </nwb-property-grid>
   </div>
@@ -110,10 +120,6 @@
       <span class="relative top-1">Damage resistence</span>
     </h3>
     <nwb-property-grid class="gap-x-1">
-      <span class="w-16 text-right font-bold">{{ elementalRating$ | async | number: '0.0-1' }}</span>
-      <span class="opacity-50">{{ 'ui_elemental' | nwText }}</span>
-      <span class="w-16 text-right font-bold">{{ physicalRating$ | async | number: '0.0-1' }}</span>
-      <span class="opacity-50">{{ 'ui_physical' | nwText }}</span>
       <ng-container *ngIf="elementalAbs$ | async; let rows">
         <ng-container *ngFor="let row of rows; let isFirst = first">
           <ng-container *ngIf="isFirst">

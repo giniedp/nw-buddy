@@ -12,10 +12,21 @@ import {
   Perks,
   Statuseffect,
 } from '@nw-data/types'
-import { sumBy } from 'lodash'
-import { combineLatest, defer, filter, firstValueFrom, map, of, shareReplay, switchMap, tap } from 'rxjs'
-import { GearsetStore, ItemInstance, ItemInstancesDB } from '~/data'
-import { NwDbService, NwModule, NwWeaponTypesService } from '~/nw'
+import { sum, sumBy } from 'lodash'
+import {
+  combineLatest,
+  defer,
+  distinctUntilChanged,
+  filter,
+  firstValueFrom,
+  map,
+  of,
+  shareReplay,
+  switchMap,
+  tap,
+} from 'rxjs'
+import { CharacterStore, GearsetStore, ItemInstance, ItemInstancesDB, SkillBuildsDB } from '~/data'
+import { NwAttributesService, NwDbService, NwModule, NwWeaponTypesService } from '~/nw'
 import { AttributeRef, NW_ATTRIBUTE_TYPES } from '~/nw/nw-attributes'
 import {
   getAffixABSs,
@@ -27,6 +38,7 @@ import {
   getItemPerkBucketKeys,
   getItemPerkKeys,
   getPerkMultiplier,
+  patchPrecision,
   stripAbilityProperties,
   stripAffixProperties,
   totalGearScore,
@@ -35,7 +47,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
 import { ConfirmDialogComponent } from '~/ui/layout'
 import { PropertyGridModule } from '~/ui/property-grid'
-import { shareReplayRefCount } from '~/utils'
+import { mapFilter, shareReplayRefCount, tapDebug } from '~/utils'
 import { AttributeEditorDialogComponent } from '~/widgets/attributes-editor'
 
 interface PerkInfo {
@@ -73,35 +85,48 @@ export interface StatEntry {
 })
 export class GearsetStatsComponent {
   protected slots$ = this.resolveSlots().pipe(shareReplayRefCount(1))
+  protected characterLevel$ = this.character.level$
+  protected baseElementalRating$ = this.slots$.pipe(map((slots) => this.sumRatingElemental(slots)))
+  protected basePhysicalRating$ = this.slots$.pipe(map((slots) => this.sumRatingPhysical(slots)))
+  protected elementalRating$ = defer(() => this.resolveElementalRating()).pipe(shareReplayRefCount(1))
+  protected physicalRating$ = defer(() => this.resolvePhysicalRating()).pipe(shareReplayRefCount(1))
+  protected health$ = defer(() => this.resolveHealth())
+
   protected perkInfos$ = this.resolvePerkInfos().pipe(shareReplayRefCount(1))
   protected gearScore$ = this.slots$.pipe(map((slots) => this.sumGearScore(slots)))
   protected weight$ = this.slots$.pipe(map((slots) => this.sumWeight(slots)))
-  protected elementalRating$ = this.slots$.pipe(map((slots) => this.sumRatingElemental(slots)))
-  protected physicalRating$ = this.slots$.pipe(map((slots) => this.sumRatingPhysical(slots)))
-  protected elementalAbs$ = combineLatest({ perks: this.perkInfos$, types: this.db.damagetypesMap }).pipe(
-    map(({ perks, types }) => {
-      return this.sumAbsorbtions(perks, types, 'Elemental')
-    })
-  )
-  protected physicalAbs$ = combineLatest({ perks: this.perkInfos$, types: this.db.damagetypesMap }).pipe(
-    map(({ perks, types }) => {
-      return this.sumAbsorbtions(perks, types, 'Physical')
-    })
-  )
-  protected otherAbs$ = combineLatest({ perks: this.perkInfos$, types: this.db.damagetypesMap }).pipe(
-    map(({ perks, types }) => {
-      return this.sumAbsorbtions(perks, types, null)
-    })
-  )
-  protected dmg$ = combineLatest({ perks: this.perkInfos$, types: this.db.damagetypesMap }).pipe(
-    map(({ perks, types }) => {
-      return this.sumDamages(perks, types)
-    })
-  )
+  protected elementalAbs$ = combineLatest({ perks: this.perkInfos$, types: this.db.damagetypesMap })
+    .pipe(
+      map(({ perks, types }) => {
+        return this.sumAbsorbtions(perks, types, 'Elemental')
+      })
+    )
+    .pipe(shareReplayRefCount(1))
+  protected physicalAbs$ = combineLatest({ perks: this.perkInfos$, types: this.db.damagetypesMap })
+    .pipe(
+      map(({ perks, types }) => {
+        return this.sumAbsorbtions(perks, types, 'Physical')
+      })
+    )
+    .pipe(shareReplayRefCount(1))
+  protected otherAbs$ = combineLatest({ perks: this.perkInfos$, types: this.db.damagetypesMap })
+    .pipe(
+      map(({ perks, types }) => {
+        return this.sumAbsorbtions(perks, types, null)
+      })
+    )
+    .pipe(shareReplayRefCount(1))
+  protected dmg$ = combineLatest({ perks: this.perkInfos$, types: this.db.damagetypesMap })
+    .pipe(
+      map(({ perks, types }) => {
+        return this.sumDamages(perks, types)
+      })
+    )
+    .pipe(shareReplayRefCount(1))
   protected consumables$ = defer(() => this.slots$).pipe(
     map((it) => it.filter((e) => e.consumable).map((it) => it.consumable))
   )
-  protected attrsAssigned$ = this.store.gearsetAttrs$
+  protected attrsAssigned$ = this.gearset.gearsetAttrs$
   protected attrsBase$ = defer(() => this.perkInfos$).pipe(map((it) => this.sumMods(it)))
   protected attrsBuff$ = defer(() =>
     combineLatest({
@@ -118,34 +143,48 @@ export class GearsetStatsComponent {
     base: this.attrsBase$,
     assigned: this.attrsAssigned$,
     buffs: this.attrsBuff$,
-  }).pipe(
-    map(({ base, assigned, buffs }) => {
-      return NW_ATTRIBUTE_TYPES.map(({ ref }) => {
-        return {
-          key: ref,
-          base: base?.[ref] || 0,
-          buffs: buffs?.[ref] || 0,
-          assigned: assigned?.[ref] || 0,
-        }
+  })
+    .pipe(
+      map(({ base, assigned, buffs }) => {
+        return NW_ATTRIBUTE_TYPES.map(({ ref }) => {
+          const ba = base?.[ref] || 0
+          const bu = buffs?.[ref] || 0
+          const as = assigned?.[ref] || 0
+          return {
+            key: ref,
+            base: ba,
+            buffs: bu,
+            assigned: as,
+            total: ba + bu + as,
+          }
+        })
       })
-    })
-  )
-  protected image$ = this.store.imageUrl$.pipe(shareReplay(1))
+    )
+    .pipe(shareReplayRefCount(1))
+
+  protected attrsAbilities$ = defer(() => this.resolveAttributeAbilities()).pipe(shareReplay(1))
+  protected skillAbilities$ = defer(() => this.resolveSkillAbilities()).pipe(shareReplay(1))
+
+  protected image$ = this.gearset.imageUrl$.pipe(shareReplay(1))
   protected hasImage$ = this.image$.pipe(map((it) => !!it))
   protected iconMenu = svgEllipsisVertical
 
   public constructor(
     private db: NwDbService,
-    private wpn: NwWeaponTypesService,
-    private store: GearsetStore,
-    private itemsDb: ItemInstancesDB,
+    private character: CharacterStore,
+    private items: ItemInstancesDB,
+    private gearset: GearsetStore,
+    private skillBuilds: SkillBuildsDB,
+    private weaponTypes: NwWeaponTypesService,
+    private attributes: NwAttributesService,
     private dialog: Dialog
   ) {
     //
+    this.attrsAbilities$.subscribe()
   }
 
   protected damageIcon(type: string) {
-    return this.wpn.wardTypeIcon(type) || this.wpn.damageTypeIcon(type)
+    return this.weaponTypes.wardTypeIcon(type) || this.weaponTypes.damageTypeIcon(type)
   }
 
   protected getPerkMultiplier(info: PerkInfo) {
@@ -156,7 +195,7 @@ export class GearsetStatsComponent {
   }
 
   private resolveSlots() {
-    return this.store.gearsetSlots$.pipe(
+    return this.gearset.gearsetSlots$.pipe(
       switchMap((slots) => {
         const slots$ = Object.entries(slots || {}).map(([id, slot]) => {
           return this.resolveSlotInstance(slot).pipe(switchMap((instance) => this.resolveSlot(id, instance)))
@@ -169,7 +208,7 @@ export class GearsetStatsComponent {
 
   private resolveSlotInstance(slot: string | ItemInstance) {
     if (typeof slot === 'string') {
-      return this.itemsDb.live((t) => t.get(slot))
+      return this.items.live((t) => t.get(slot))
     }
     return of(slot)
   }
@@ -253,6 +292,95 @@ export class GearsetStatsComponent {
           }
         }
         return Object.values(infos)
+      })
+    )
+  }
+
+  private resolveAttributeAbilities() {
+    return this.attrs$.pipe(
+      switchMap((attributes) => {
+        return combineLatest(attributes.map((it) => this.attributes.unlockedAbilities(it.key, it.total))).pipe(
+          map((it) => it.flat(1))
+        )
+      })
+    )
+  }
+
+  private resolveSkillAbilities() {
+    return combineLatest({
+      primary: this.gearset.skillsPrimary$.pipe(
+        switchMap((it) => (typeof it === 'string' ? this.skillBuilds.observeByid(it) : of(it)))
+      ),
+      secondary: this.gearset.skillsSecondary$.pipe(
+        switchMap((it) => (typeof it === 'string' ? this.skillBuilds.observeByid(it) : of(it)))
+      ),
+      abilities: this.db.abilitiesMap,
+    }).pipe(
+      map(({ primary, secondary, abilities }) => {
+        return [primary, secondary]
+          .map((it) => [it?.tree1, it?.tree2])
+          .flat(2)
+          .filter((it) => !!it)
+          .map((id) => abilities.get(id))
+          .filter((it) => !!it)
+      })
+    )
+  }
+
+  private resolvePhysicalRating() {
+    return combineLatest({
+      baseRating: this.basePhysicalRating$,
+      attrsAbilities: this.attrsAbilities$.pipe(mapFilter((it) => !!it?.PhysicalArmor)),
+      skillAbilities: this.skillAbilities$.pipe(mapFilter((it) => !!it?.PhysicalArmor)),
+    }).pipe(
+      map(({ baseRating, attrsAbilities, skillAbilities }) => {
+
+        const modAttrs = sum(attrsAbilities.map((it) => patchPrecision(it.PhysicalArmor))) || 0
+        const modSkills = sum(skillAbilities.map((it) => patchPrecision(it.PhysicalArmor))) || 0
+        const base = baseRating
+        const bonus = base * (modAttrs + modSkills)
+        const total = base + bonus
+        return total
+      })
+    )
+  }
+
+  private resolveElementalRating() {
+    return combineLatest({
+      baseRating: this.baseElementalRating$,
+      attrsAbilities: this.attrsAbilities$.pipe(mapFilter((it) => !!it?.ElementalArmor)),
+      skillAbilities: this.skillAbilities$.pipe(mapFilter((it) => !!it?.ElementalArmor)),
+    })
+    .pipe(
+      map(({ baseRating, attrsAbilities, skillAbilities }) => {
+
+        const modAttrs = sum(attrsAbilities.map((it) => patchPrecision(it.ElementalArmor))) || 0
+        const modSkills = sum(skillAbilities.map((it) => patchPrecision(it.ElementalArmor))) || 0
+        const base = baseRating
+        const bonus = base * (modAttrs + modSkills)
+        const total = base + bonus
+        return total
+      })
+    )
+  }
+
+  private resolveHealth() {
+    const level$ = this.character.level$.pipe(distinctUntilChanged())
+    const constitution$ = this.attrs$
+      .pipe(map((it) => it.find((e) => e.key === 'con')?.total || 0))
+      .pipe(distinctUntilChanged())
+    return combineLatest({
+      fromLevel: this.attributes.healthContributionFromLevel(level$),
+      fromConst: this.attributes.healthContributionFromConstitution(constitution$),
+      abilities: this.attrsAbilities$.pipe(mapFilter((it) => !!it?.PhysicalArmorMaxHealthMod)),
+      physicalRating: this.physicalRating$,
+    }).pipe(
+      map(({ fromLevel, fromConst, physicalRating, abilities }) => {
+        const modAttrs = sum(abilities.map((it) => patchPrecision(it.PhysicalArmorMaxHealthMod))) || 0
+        const base = fromLevel + fromConst
+        const fromArmor = (physicalRating) * modAttrs
+        const total = base + fromArmor
+        return total
       })
     )
   }
@@ -355,21 +483,21 @@ export class GearsetStatsComponent {
     const base = await firstValueFrom(this.attrsBase$)
     const assigned = await firstValueFrom(this.attrsAssigned$)
     const buffs = await firstValueFrom(this.attrsBuff$)
-    console.log({ base, assigned, buffs })
+    const level = await firstValueFrom(this.characterLevel$)
     AttributeEditorDialogComponent.open(this.dialog, {
       maxWidth: 800,
       maxHeight: 400,
       panelClass: ['w-full', 'h-full', 'layout-pad', 'self-end', 'sm:self-center', 'shadow'],
       data: {
-        level: 60,
+        level: level,
         assigned: assigned,
         base: base,
-        buffs: buffs
+        buffs: buffs,
       },
     })
       .closed.pipe(filter((it) => !!it))
       .subscribe((res) => {
-        this.store.updateAttrs({ attrs: res })
+        this.gearset.updateAttrs({ attrs: res })
       })
   }
 
@@ -379,7 +507,7 @@ export class GearsetStatsComponent {
       this.showFileTooLargeError()
       return
     }
-    this.store.updateImage({ file: file })
+    this.gearset.updateImage({ file: file })
   }
 
   protected showFileTooLargeError() {
