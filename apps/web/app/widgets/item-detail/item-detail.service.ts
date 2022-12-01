@@ -267,7 +267,7 @@ export class ItemDetailService {
             })
           } else if (perk) {
             detail.text.push({
-              label: perk.AppliedPrefix || perk.DisplayName || perk.AppliedSuffix,
+              label: perk.DisplayName || perk.AppliedPrefix || perk.AppliedSuffix,
               description: perk.Description,
             })
           }
