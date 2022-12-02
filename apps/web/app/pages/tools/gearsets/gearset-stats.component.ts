@@ -1,4 +1,6 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
+import { LayoutModule } from '@angular/cdk/layout'
+import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule, DecimalPipe, PercentPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import {
@@ -47,6 +49,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
 import { ConfirmDialogComponent } from '~/ui/layout'
 import { PropertyGridModule } from '~/ui/property-grid'
+import { TooltipModule } from '~/ui/tooltip'
 import { mapFilter, shareReplayRefCount, tapDebug } from '~/utils'
 import { AttributeEditorDialogComponent } from '~/widgets/attributes-editor'
 
@@ -77,7 +80,7 @@ export interface StatEntry {
   templateUrl: './gearset-stats.component.html',
   styleUrls: ['./gearset-stats.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, PropertyGridModule, DialogModule, IconsModule],
+  imports: [CommonModule, NwModule, PropertyGridModule, DialogModule, IconsModule, TooltipModule, CdkMenuModule],
   providers: [PercentPipe, DecimalPipe],
   host: {
     class: 'block flex flex-col layout-pad layout-gap relative justify-end',
@@ -376,26 +379,57 @@ export class GearsetStatsComponent {
     return combineLatest({
       fromLevel: this.attributes.healthContributionFromLevel(level$),
       fromConst: this.attributes.healthContributionFromConstitution(constitution$),
-      abilities: this.attrsAbilities$.pipe(mapFilter((it) => !!it?.PhysicalArmorMaxHealthMod)),
+      attrAbilities: this.attrsAbilities$.pipe(mapFilter((it) => !!it?.PhysicalArmorMaxHealthMod)),
       perks: this.perkInfos$,
       physicalRating: this.physicalRating$,
     }).pipe(
-      map(({ fromLevel, fromConst, physicalRating, abilities, perks }) => {
-        const modAttrs = sum(abilities.map((it) => patchPrecision(it.PhysicalArmorMaxHealthMod))) || 0
+      map(({ fromLevel, fromConst, physicalRating, attrAbilities, perks }) => {
+        const baseHealth = fromLevel + fromConst
 
-        let modGear = 0
-        for (const perk of perks || []) {
-          const ability = perk.abilities?.find((it) => it.MaxHealth)
-          if (ability) {
-            modGear += perk.scale * patchPrecision(ability.MaxHealth)
-          }
+        const description: Array<{
+          icon?: string
+          label?: string
+          text?: string
+          value: number
+        }> =[]
+
+        description.push({
+          label: 'Character Level',
+          value: fromLevel
+        })
+        description.push({
+          label: 'Constitution',
+          value: fromConst
+        })
+
+        for (const ability of attrAbilities) {
+          const physicalContribution = patchPrecision(ability.PhysicalArmorMaxHealthMod) || 0
+          description.push({
+            label: `Physical Armor`,
+            text: ability.Description,
+            value: physicalContribution * physicalRating
+          })
         }
 
-        const base = fromLevel + fromConst
-        const fromAttrs = (physicalRating) * modAttrs
-        const fromGear = (base) * modGear
-        const total = base + fromAttrs + fromGear
-        return total
+        for (const perk of perks || []) {
+          const ability = perk.abilities?.find((it) => it.MaxHealth)
+          if (!ability) {
+            continue
+          }
+          description.push({
+            icon: perk.perk.IconPath,
+            label: perk.perk.DisplayName,
+            // text: perk.perk.Description,
+            value: perk.scale * patchPrecision(ability.MaxHealth) * baseHealth
+          })
+        }
+        const total = sum(description.map((it) => it.value)) || 0
+
+        return {
+          total: total,
+          base: baseHealth,
+          description: description
+        }
       })
     )
   }
