@@ -164,6 +164,10 @@ export class GearsetStatsComponent {
 
   protected attrsAbilities$ = defer(() => this.resolveAttributeAbilities()).pipe(shareReplay(1))
   protected skillAbilities$ = defer(() => this.resolveSkillAbilities()).pipe(shareReplay(1))
+  protected armorAbilities$ = defer(() => this.perkInfos$)
+    .pipe(map((it) => it?.map((e) => e.abilities)))
+    .pipe(map((it) => it?.flat(1)))
+    .pipe(shareReplay(1))
 
   protected image$ = this.gearset.imageUrl$.pipe(shareReplay(1))
   protected hasImage$ = this.image$.pipe(map((it) => !!it))
@@ -373,13 +377,24 @@ export class GearsetStatsComponent {
       fromLevel: this.attributes.healthContributionFromLevel(level$),
       fromConst: this.attributes.healthContributionFromConstitution(constitution$),
       abilities: this.attrsAbilities$.pipe(mapFilter((it) => !!it?.PhysicalArmorMaxHealthMod)),
+      perks: this.perkInfos$,
       physicalRating: this.physicalRating$,
     }).pipe(
-      map(({ fromLevel, fromConst, physicalRating, abilities }) => {
+      map(({ fromLevel, fromConst, physicalRating, abilities, perks }) => {
         const modAttrs = sum(abilities.map((it) => patchPrecision(it.PhysicalArmorMaxHealthMod))) || 0
+
+        let modGear = 0
+        for (const perk of perks || []) {
+          const ability = perk.abilities?.find((it) => it.MaxHealth)
+          if (ability) {
+            modGear += perk.scale * patchPrecision(ability.MaxHealth)
+          }
+        }
+
         const base = fromLevel + fromConst
-        const fromArmor = (physicalRating) * modAttrs
-        const total = base + fromArmor
+        const fromAttrs = (physicalRating) * modAttrs
+        const fromGear = (base) * modGear
+        const total = base + fromAttrs + fromGear
         return total
       })
     )
