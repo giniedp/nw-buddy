@@ -5,7 +5,9 @@ import { ChangeDetectorRef, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
+import { environment } from 'apps/web/environments/environment'
 import { BehaviorSubject, catchError, combineLatest, defer, map, of, take, takeUntil, tap } from 'rxjs'
+import { ElectronService } from '~/electron'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwDbService, NwService } from '~/nw'
 import { getItemIconPath, getItemId, getItemRarity } from '~/nw/utils'
@@ -76,6 +78,10 @@ export class NwPricesImporterComponent {
 
   public get showError() {
     return !this.isLoading && this.isComplete && !!this.error
+  }
+
+  protected get isElectron() {
+    return environment.environment === 'ELECTRON'
   }
 
   public constructor(
@@ -155,7 +161,8 @@ export class NwPricesImporterComponent {
   }
 
   private fetchServers() {
-    return this.http.get<Record<string, { name: string }>>('https://nwmarketprices.com/api/servers/').pipe(
+    const url = this.isElectron ? 'https://nwmarketprices.com/api/servers/' : '/api/nwm/servers'
+    return this.http.get<Record<string, { name: string }>>(url).pipe(
       map((it) => {
         return Object.keys(it).map((k) => ({ id: k, name: it[k].name }))
       })
@@ -163,15 +170,15 @@ export class NwPricesImporterComponent {
   }
 
   private fetchPrices(server: string) {
+    const url = this.isElectron
+      ? `https://nwmarketprices.com/api/latest-prices/${server}/`
+      : `/api/nwm/servers/${server}`
     return this.http
-      .get<Array<{ ItemId: string; Price: string; Availability: number; LastUpdated: string }>>(
-        `https://nwmarketprices.com/api/latest-prices/${server}/`,
-        {
-          params: {
-            serverName: server,
-          },
-        }
-      )
+      .get<Array<{ ItemId: string; Price: string; Availability: number; LastUpdated: string }>>(url, {
+        params: {
+          serverName: server,
+        },
+      })
       .pipe(
         map((list) => {
           return list.map((it) => ({
