@@ -17,6 +17,6 @@
   height: calc(100% - 4px) !important;
   width: 1px !important;
 }
-.ag-icon-filter {
-  color: hsl(var(--p) / var(--tw-text-opacity)) !important;
+.ag-header-cell-filtered {
+  @apply bg-primary;
 }

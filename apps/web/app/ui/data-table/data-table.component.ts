@@ -182,6 +182,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   )
 
   private gridStorage: StorageNode<{ columns?: any; filter?: any }>
+  private filterStorage: StorageNode<{ filter?: any }>
 
   public constructor(
     private locale: LocaleService,
@@ -193,6 +194,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     preferences: PreferencesService
   ) {
     this.gridStorage = preferences.storage.storageScope('grid:')
+    this.filterStorage = preferences.session.storageScope('grid:')
     if (adapter) {
       this.adapter$.next(adapter)
     }
@@ -361,15 +363,14 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     if (!key || !api) {
       return
     }
-    const data = {
-      ...(this.gridStorage.get(key) || {}),
-    }
     if (state?.length) {
-      data.columns = state
+      this.gridStorage.set(key, {
+        columns: state
+      })
     } else {
-      delete data.columns
+      this.gridStorage.delete(key)
     }
-    this.gridStorage.set(key, data)
+
   }
 
   private saveFilterState() {
@@ -379,8 +380,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       return
     }
     const filterState = api.getFilterModel()
-    this.gridStorage.set(key, {
-      ...(this.gridStorage.get(key) || {}),
+    this.filterStorage.set(key, {
       filter: filterState,
     })
   }
@@ -403,7 +403,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     if (!key || !api) {
       return
     }
-    const data = this.gridStorage.get(key)?.filter
+    const data = this.filterStorage.get(key)?.filter
     if (data) {
       api.setFilterModel(data)
     }

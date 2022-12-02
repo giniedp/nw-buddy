@@ -161,7 +161,6 @@ export class InventoryPickerService {
       multiselect: !!multiple,
       adapter: ItemsTableAdapter.provider({
         source: this.db.items.pipe(map((items) => items.filter((it) => it.ItemClass?.some((e) => types.has(e))))),
-        persistStateId: 'items-picker-table',
         hideUserData: true,
       }),
       config: {
@@ -179,7 +178,6 @@ export class InventoryPickerService {
       selection: ('PerkID' in perkOrBucket ? perkOrBucket : null)?.PerkID,
       adapter: PerksTableAdapter.provider({
         source: this.getAplicablePerks(item, perkOrBucket),
-        persistStateId: 'perk-picker-table',
       }),
       config: {
         maxWidth: 1400,
