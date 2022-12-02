@@ -38,17 +38,69 @@
     </label>
 
     <nwb-property-grid class="gap-x-1">
-      <span class="w-16 text-right font-bold">{{ elementalRating$ | async | number: '0.1-1' }}</span>
-      <span class="opacity-50">{{ 'ui_elemental' | nwText }}</span>
-      <span class="w-16 text-right font-bold">{{ physicalRating$ | async | number: '0.1-1' }}</span>
-      <span class="opacity-50">{{ 'ui_physical' | nwText }}</span>
+      <ng-container *ngIf="elementalRating$ | async; let rating">
+        <span class="w-16 text-right font-bold">{{ rating.total | number: '0.1-1' }}</span>
+        <span class="opacity-50" [tooltip]="tplElementalTip">{{ 'ui_elemental' | nwText }}</span>
+        <ng-template #tplElementalTip>
+          <div class="p-2 bg-base-200 rounded-md shadow">
+            <table class="text-sm text-right">
+              <tr *ngFor="let mod of rating.summary; let isFirst = first">
+                <td class="px-1">
+                  <div class="whitespace-nowrap flex flex-row justify-end">
+                    <img [nwImage]="mod.icon" *ngIf="mod.icon" class="w-6 h-6"/> {{ mod.label | nwText }}
+                  </div>
+                </td>
+                <td>
+                  <ng-container *ngIf="!isFirst">+</ng-container>
+                </td>
+                <td class="text-right font-mono px-1">
+                  {{ mod.value | number: '0.1-1'}}
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td colspan="2" class="text-right font-mono border-double border-t-4">{{ rating.total | number:'0.1-1' }}</td>
+              </tr>
+            </table>
+          </div>
+        </ng-template>
+      </ng-container>
+
+      <ng-container *ngIf="physicalRating$ | async; let rating">
+        <span class="w-16 text-right font-bold">{{ rating.total | number: '0.1-1' }}</span>
+        <span class="opacity-50" [tooltip]="tplPhysicalTip">{{ 'ui_physical' | nwText }}</span>
+        <ng-template #tplPhysicalTip>
+          <div class="p-2 bg-base-200 rounded-md shadow">
+            <table class="text-sm text-right">
+              <tr *ngFor="let mod of rating.summary; let isFirst = first">
+                <td class="px-1">
+                  <div class="whitespace-nowrap flex flex-row justify-end">
+                    <img [nwImage]="mod.icon" *ngIf="mod.icon" class="w-6 h-6"/> {{ mod.label | nwText }}
+                  </div>
+                </td>
+                <td>
+                  <ng-container *ngIf="!isFirst">+</ng-container>
+                </td>
+                <td class="text-right font-mono px-1">
+                  {{ mod.value | number: '0.1-1'}}
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td colspan="2" class="text-right font-mono border-double border-t-4">{{ rating.total | number:'0.1-1' }}</td>
+              </tr>
+            </table>
+          </div>
+        </ng-template>
+      </ng-container>
+
       <ng-container *ngIf="health$ | async; let health">
         <span class="w-16 text-right font-bold">{{ health.total | number: '0.1-1' }}</span>
         <span class="opacity-50" [tooltip]="tplHealthTip">{{ 'ui_max_health' | nwText }}</span>
         <ng-template #tplHealthTip>
           <div class="p-2 bg-base-200 rounded-md shadow">
             <table class="text-sm text-right">
-              <tr *ngFor="let mod of health.description; let isFirst = first">
+              <tr *ngFor="let mod of health.summary; let isFirst = first">
                 <td class="px-1">
                   <div class="whitespace-nowrap flex flex-row justify-end">
                     <img [nwImage]="mod.icon" *ngIf="mod.icon" class="w-6 h-6"/> {{ mod.label | nwText }}

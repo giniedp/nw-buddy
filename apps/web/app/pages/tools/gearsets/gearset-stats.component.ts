@@ -341,13 +341,36 @@ export class GearsetStatsComponent {
       skillAbilities: this.skillAbilities$.pipe(mapFilter((it) => !!it?.PhysicalArmor)),
     }).pipe(
       map(({ baseRating, attrsAbilities, skillAbilities }) => {
+        const summary: Array<{
+          icon?: string
+          label?: string
+          text?: string
+          value: number
+        }> =[]
 
+        const base = baseRating
         const modAttrs = sum(attrsAbilities.map((it) => patchPrecision(it.PhysicalArmor))) || 0
         const modSkills = sum(skillAbilities.map((it) => patchPrecision(it.PhysicalArmor))) || 0
-        const base = baseRating
-        const bonus = base * (modAttrs + modSkills)
-        const total = base + bonus
-        return total
+        summary.push({
+          label: 'Base',
+          value: baseRating
+        })
+        if (modAttrs) {
+          summary.push({
+            label: 'Attributes Bonus',
+            value: modAttrs * base
+          })
+        }
+        if (modSkills) {
+          summary.push({
+            label: 'Skills Bonus',
+            value: modSkills * base
+          })
+        }
+        const total = sum(summary.map((it) => it.value)) || 0
+        return {
+          total, summary
+        }
       })
     )
   }
@@ -360,13 +383,35 @@ export class GearsetStatsComponent {
     })
     .pipe(
       map(({ baseRating, attrsAbilities, skillAbilities }) => {
-
+        const summary: Array<{
+          icon?: string
+          label?: string
+          text?: string
+          value: number
+        }> =[]
+        const base = baseRating
         const modAttrs = sum(attrsAbilities.map((it) => patchPrecision(it.ElementalArmor))) || 0
         const modSkills = sum(skillAbilities.map((it) => patchPrecision(it.ElementalArmor))) || 0
-        const base = baseRating
-        const bonus = base * (modAttrs + modSkills)
-        const total = base + bonus
-        return total
+        summary.push({
+          label: 'Base',
+          value: baseRating
+        })
+        if (modAttrs) {
+          summary.push({
+            label: 'Attributes Bonus',
+            value: modAttrs * base
+          })
+        }
+        if (modSkills) {
+          summary.push({
+            label: 'Skills Bonus',
+            value: modSkills * base
+          })
+        }
+        const total = sum(summary.map((it) => it.value)) || 0
+        return {
+          total, summary
+        }
       })
     )
   }
@@ -381,30 +426,30 @@ export class GearsetStatsComponent {
       fromConst: this.attributes.healthContributionFromConstitution(constitution$),
       attrAbilities: this.attrsAbilities$.pipe(mapFilter((it) => !!it?.PhysicalArmorMaxHealthMod)),
       perks: this.perkInfos$,
-      physicalRating: this.physicalRating$,
+      physicalRating: this.physicalRating$.pipe(map((it) => it.total)),
     }).pipe(
       map(({ fromLevel, fromConst, physicalRating, attrAbilities, perks }) => {
-        const baseHealth = fromLevel + fromConst
 
-        const description: Array<{
+        const baseHealth = fromLevel + fromConst
+        const summary: Array<{
           icon?: string
           label?: string
           text?: string
           value: number
         }> =[]
 
-        description.push({
+        summary.push({
           label: 'Character Level',
           value: fromLevel
         })
-        description.push({
+        summary.push({
           label: 'Constitution',
           value: fromConst
         })
 
         for (const ability of attrAbilities) {
           const physicalContribution = patchPrecision(ability.PhysicalArmorMaxHealthMod) || 0
-          description.push({
+          summary.push({
             label: `Physical Armor`,
             text: ability.Description,
             value: physicalContribution * physicalRating
@@ -416,19 +461,18 @@ export class GearsetStatsComponent {
           if (!ability) {
             continue
           }
-          description.push({
+          summary.push({
             icon: perk.perk.IconPath,
             label: perk.perk.DisplayName,
             // text: perk.perk.Description,
             value: perk.scale * patchPrecision(ability.MaxHealth) * baseHealth
           })
         }
-        const total = sum(description.map((it) => it.value)) || 0
+        const total = sum(summary.map((it) => it.value)) || 0
 
         return {
           total: total,
-          base: baseHealth,
-          description: description
+          summary: summary
         }
       })
     )
