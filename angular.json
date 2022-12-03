@@ -33,6 +33,7 @@
             "webWorkerTsConfig": "apps/web/tsconfig.worker.json",
             "polyfills": "apps/web/polyfills.ts",
             "assets": [
+              "apps/web/_routes.json",
               "apps/web/favicon.ico",
               "apps/web/assets",
               {
@@ -87,6 +88,7 @@
             "cloud": {
               "outputPath": "dist/web-cloud",
               "assets": [
+                "apps/web/_routes.json",
                 "apps/web/favicon.ico",
                 "apps/web/assets"
               ],
