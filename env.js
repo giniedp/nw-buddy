@@ -1,12 +1,12 @@
 require('dotenv').config()
 
 function cmd(cmd) {
-  const shell = require('shelljs');
-  const result = shell.exec(cmd, {silent: true});
+  const shell = require('shelljs')
+  const result = shell.exec(cmd, { silent: true })
   if (result.code !== 0) {
-    throw new Error('[git-rev-sync] failed to execute command: ' + result.stdout);
+    throw new Error('[git-rev-sync] failed to execute command: ' + result.stdout)
   }
-  return result.stdout.toString('utf8').replace(/^\s+|\s+$/g, '');
+  return result.stdout.toString('utf8').replace(/^\s+|\s+$/g, '')
 }
 
 // https://developers.cloudflare.com/pages/platform/build-configuration/#environment-variables
@@ -14,7 +14,7 @@ const CF = {
   pages: process.env.CF_PAGES,
   commitHash: process.env.CF_PAGES_COMMIT_SHA,
   branchName: process.env.CF_PAGES_BRANCH,
-  pagessUrl: process.env.CF_PAGES_URL
+  pagessUrl: process.env.CF_PAGES_URL,
 }
 
 const branchName = CF.branchName || cmd('git branch --show-current')
@@ -32,7 +32,7 @@ const config = {
   CDN_UPLOAD_KEY: process.env.CDN_UPLOAD_KEY,
   CDN_UPLOAD_SECRET: process.env.CDN_UPLOAD_SECRET,
   CDN_UPLOAD_ENDPOINT: process.env.CDN_UPLOAD_ENDPOINT,
-  VERSION: require('./package.json').version,
+  VERSION: require('./package.json').version + (CF.pages ? `#${CF.commitHash}` : ''),
 }
 
 function get(name) {
@@ -117,7 +117,7 @@ const nwData = {
    */
   publicUrl: (isPtr, isCdn) => {
     return isCdn ? nwData.cdnUrl(isPtr) : nwData.assetPath(isPtr)
-  }
+  },
 }
 
 module.exports = {
