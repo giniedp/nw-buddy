@@ -88,9 +88,15 @@ export interface StatEntry {
 })
 export class GearsetStatsComponent {
   protected slots$ = this.resolveSlots().pipe(shareReplayRefCount(1))
+  protected slotsArmor$ = this.slots$.pipe(mapFilter((it) => !!it.armor))
+  protected slotsWeapon$ = this.slots$.pipe(mapFilter((it) => !!it.weapon))
   protected characterLevel$ = this.character.level$
   protected baseElementalRating$ = this.slots$.pipe(map((slots) => this.sumRatingElemental(slots)))
+  protected baseElementalRatingArmor$ = this.slotsArmor$.pipe(map((slots) => this.sumRatingElemental(slots)))
+  protected baseElementalRatingWeapon$ = this.slotsWeapon$.pipe(map((slots) => this.sumRatingElemental(slots)))
   protected basePhysicalRating$ = this.slots$.pipe(map((slots) => this.sumRatingPhysical(slots)))
+  protected basePhysicalRatingArmor$ = this.slotsArmor$.pipe(map((slots) => this.sumRatingPhysical(slots)))
+  protected basePhysicalRatingWeapon$ = this.slotsWeapon$.pipe(map((slots) => this.sumRatingPhysical(slots)))
   protected elementalRating$ = defer(() => this.resolveElementalRating()).pipe(shareReplayRefCount(1))
   protected physicalRating$ = defer(() => this.resolvePhysicalRating()).pipe(shareReplayRefCount(1))
   protected health$ = defer(() => this.resolveHealth())
@@ -336,11 +342,12 @@ export class GearsetStatsComponent {
 
   private resolvePhysicalRating() {
     return combineLatest({
-      baseRating: this.basePhysicalRating$,
+      baseArmor: this.basePhysicalRatingArmor$,
+      baseWeapon: this.basePhysicalRatingWeapon$,
       attrsAbilities: this.attrsAbilities$.pipe(mapFilter((it) => !!it?.PhysicalArmor)),
       skillAbilities: this.skillAbilities$.pipe(mapFilter((it) => !!it?.PhysicalArmor)),
     }).pipe(
-      map(({ baseRating, attrsAbilities, skillAbilities }) => {
+      map(({ baseArmor, baseWeapon, attrsAbilities, skillAbilities }) => {
         const summary: Array<{
           icon?: string
           label?: string
@@ -348,9 +355,9 @@ export class GearsetStatsComponent {
           value: number
         }> =[]
 
-        const base = baseRating
         const modAttrs = sum(attrsAbilities.map((it) => patchPrecision(it.PhysicalArmor))) || 0
         const modSkills = sum(skillAbilities.map((it) => patchPrecision(it.PhysicalArmor))) || 0
+        const baseRating = baseArmor + baseWeapon
         summary.push({
           label: 'Base',
           value: baseRating
@@ -358,18 +365,19 @@ export class GearsetStatsComponent {
         if (modAttrs) {
           summary.push({
             label: 'Attributes Bonus',
-            value: modAttrs * base
+            value: modAttrs * baseArmor
           })
         }
         if (modSkills) {
           summary.push({
             label: 'Skills Bonus',
-            value: modSkills * base
+            value: modSkills * baseArmor
           })
         }
         const total = sum(summary.map((it) => it.value)) || 0
+        const totalForHealth = baseRating * (1 + modAttrs + modSkills)
         return {
-          total, summary
+          total, summary, totalForHealth
         }
       })
     )
@@ -377,35 +385,35 @@ export class GearsetStatsComponent {
 
   private resolveElementalRating() {
     return combineLatest({
-      baseRating: this.baseElementalRating$,
+      baseArmor: this.baseElementalRatingArmor$,
+      baseWeapon: this.baseElementalRatingWeapon$,
       attrsAbilities: this.attrsAbilities$.pipe(mapFilter((it) => !!it?.ElementalArmor)),
       skillAbilities: this.skillAbilities$.pipe(mapFilter((it) => !!it?.ElementalArmor)),
     })
     .pipe(
-      map(({ baseRating, attrsAbilities, skillAbilities }) => {
+      map(({ baseArmor, baseWeapon, attrsAbilities, skillAbilities }) => {
         const summary: Array<{
           icon?: string
           label?: string
           text?: string
           value: number
         }> =[]
-        const base = baseRating
         const modAttrs = sum(attrsAbilities.map((it) => patchPrecision(it.ElementalArmor))) || 0
         const modSkills = sum(skillAbilities.map((it) => patchPrecision(it.ElementalArmor))) || 0
         summary.push({
           label: 'Base',
-          value: baseRating
+          value: baseArmor + baseWeapon
         })
         if (modAttrs) {
           summary.push({
             label: 'Attributes Bonus',
-            value: modAttrs * base
+            value: modAttrs * baseArmor
           })
         }
         if (modSkills) {
           summary.push({
             label: 'Skills Bonus',
-            value: modSkills * base
+            value: modSkills * baseArmor
           })
         }
         const total = sum(summary.map((it) => it.value)) || 0
@@ -426,10 +434,9 @@ export class GearsetStatsComponent {
       fromConst: this.attributes.healthContributionFromConstitution(constitution$),
       attrAbilities: this.attrsAbilities$.pipe(mapFilter((it) => !!it?.PhysicalArmorMaxHealthMod)),
       perks: this.perkInfos$,
-      physicalRating: this.physicalRating$.pipe(map((it) => it.total)),
+      physicalRating: this.physicalRating$.pipe(map((it) => it.totalForHealth)),
     }).pipe(
       map(({ fromLevel, fromConst, physicalRating, attrAbilities, perks }) => {
-
         const baseHealth = fromLevel + fromConst
         const summary: Array<{
           icon?: string
@@ -472,7 +479,8 @@ export class GearsetStatsComponent {
 
         return {
           total: total,
-          summary: summary
+          summary: summary,
+          haleAndHeartyBonus: baseHealth * 0.1
         }
       })
     )

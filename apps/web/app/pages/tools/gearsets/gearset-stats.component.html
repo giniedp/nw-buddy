@@ -117,6 +117,15 @@
                 <td></td>
                 <td colspan="2" class="text-right font-mono border-double border-t-4">{{ health.total | number:'0.1-1' }}</td>
               </tr>
+              <tr>
+                <td>Hale & Heaty town buff</td>
+                <td>+</td>
+                <td>{{ health.haleAndHeartyBonus }}</td>
+              </tr>
+              <tr>
+                <td></td>
+                <td colspan="2" class="text-right font-mono border-double border-t-4">{{ health.haleAndHeartyBonus + health.total | number:'0.1-1' }}</td>
+              </tr>
             </table>
           </div>
         </ng-template>
