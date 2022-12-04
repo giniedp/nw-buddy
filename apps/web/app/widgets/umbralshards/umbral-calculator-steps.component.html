@@ -1,24 +1,19 @@
 <div class="stats w-full flex flex-row"  *ngFor="let row of data$ | async; let i = index; trackBy: trackByIndex">
   <div class="stat flex-1">
-    <div class="stat-figure text-primary">
-      <img [attr.src]="row.item.icon" class="w-16 h-16" />
+    <div class="stat-figure text-primary hidden sm:block">
+      <img [attr.src]="row.item.icon" class="w-12 h-12 opacity-50" />
     </div>
     <div class="stat-title" [nwText]="row.item.name"></div>
-    <!-- <div class="stat-desc">upgrade to gearscore</div> -->
     <div class="stat-value"> {{ row.item.score }} </div>
   </div>
   <div class="stat flex-1">
-    <!-- <div class="stat-figure text-secondary">
-      <img [nwImage]="shardIcon | async" class="w-12 h-12">
-    </div> -->
+
     <div class="stat-title">Shards</div>
-    <!-- <div class="stat-desc">accumulated shards to this level</div> -->
     <div class="stat-value">{{ row.shardsTotal }}</div>
   </div>
   <div class="stat flex-1">
     <div class="stat-title">Final Gearscore</div>
     <div class="stat-value  text-success">{{ row.score | number:'1.2-2' }}</div>
-    <!-- <div class="stat-desc">↗︎ {{ (row.scoreDelta) | number:'1.2-2' }}</div> -->
     <div class="stat-actions">
       <button class="btn btn-xs btn-success" (click)="upgrade(row)">Upgrade</button>
     </div>

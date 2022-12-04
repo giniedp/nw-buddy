@@ -1,18 +1,5 @@
 import { Umbralgsupgrades } from "@nw-data/types"
-
-
-const BASE = [
-  { id: 'head', icon: 'assets/icons/slots/lightheada.png', name: 'ui_itemtypedescription_head_slot', weight: 42 },
-  { id: 'chest', icon: 'assets/icons/slots/lightchesta.png', name: 'ui_itemtypedescription_chest_slot', weight: 73 },
-  { id: 'hands', icon: 'assets/icons/slots/lighthandsa.png', name: 'ui_itemtypedescription_hands_slot', weight: 31 },
-  { id: 'legs', icon: 'assets/icons/slots/lightlegsa.png', name: 'ui_itemtypedescription_legs_slot', weight: 42 },
-  { id: 'feet', icon: 'assets/icons/slots/lightfeeta.png', name: 'ui_itemtypedescription_feet_slot', weight: 21 },
-  { id: 'weapon1', icon: 'assets/icons/slots/weapon.png', name: 'ui_weapon1', weight: 135 },
-  { id: 'weapon2', icon: 'assets/icons/slots/weapon.png', name: 'ui_weapon2', weight: 135 },
-  { id: 'amulet', icon: 'assets/icons/slots/trinketp.png', name: 'ui_amulet_slot_tooltip', weight: 40 },
-  { id: 'ring', icon: 'assets/icons/slots/trinketa.png', name: 'ui_ring_slot_tooltip', weight: 40 },
-  { id: 'earring', icon: 'assets/icons/slots/trinkete.png', name: 'ui_unlock_token_slot', weight: 40 },
-]
+import { EQUIP_SLOTS, gearScoreRelevantSlots } from "~/nw/utils"
 
 export interface CollectionState {
   items: ItemState[]
@@ -40,18 +27,18 @@ export interface UpgradeStep {
 }
 
 export function createState(): CollectionState {
-  const total = BASE.reduce((res, it) => res + it.weight, 0)
+  const slots = gearScoreRelevantSlots()
   const result: CollectionState = {
-    items: BASE.map((it) => {
+    items: slots.map((it) => {
       return {
         id: it.id,
-        icon: it.icon,
+        icon: it.iconSlot,
         name: it.name,
         value: 0,
         shards: 0,
         contribution: 0,
         next: false,
-        weight: it.weight / total
+        weight: it.weight
       }
     }),
     score: 0

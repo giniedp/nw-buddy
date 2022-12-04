@@ -2,7 +2,7 @@
   <div class="stats stats-vertical rounded-md rounded-r-none">
     <div class="stat flex flex-row items-center layout-gap py-2" *ngFor="let row of data1; trackBy: trackById">
       <div class="text-secondary flex-none">
-        <img [attr.src]="row.icon" class="w-16 h-16" />
+        <img [attr.src]="row.icon" class="w-12 h-12 opacity-50" />
       </div>
       <div class="flex-1">
         <div class="stat-value">
@@ -40,7 +40,7 @@
         <div class="stat-desc transition-opacity opacity-100" [class.opacity-0]="!row.shards">{{ row.shards | number }} shards to next level</div>
       </div>
       <div class="stat-figure text-secondary flex-none">
-        <img [attr.src]="row.icon" class="w-16 h-16" />
+        <img [attr.src]="row.icon" class="w-12 h-12 opacity-50" />
       </div>
     </div>
   </div>
