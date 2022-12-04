@@ -1,23 +1,13 @@
-<div class="flex flex-row">
-  <ul class="flex-1 menu menu-horizontal ">
-    <li (click)="close()">
-      <span>
-        <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
-      </span>
-    </li>
-    <li>
-      <span>
-        {{ title }}
-      </span>
-    </li>
-    <span class="flex-1"></span>
-    <li>
-      <nwb-data-table-panel-button></nwb-data-table-panel-button>
-    </li>
-  </ul>
-  <div class="flex-none flex justify-center items-center">
-    <nwb-quicksearch-input #search="quickSearch" class="w-60"></nwb-quicksearch-input>
-  </div>
+<div class="flex-none bg-black flex flex-row flex-wrap items-center p-1">
+  <button class="btn btn-square btn-ghost" (click)="close()">
+    <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
+  </button>
+  <h3 class="font-bold text-lg">
+    {{ title }}
+  </h3>
+  <span class="flex-1"></span>
+  <nwb-data-table-panel-button class="btn btn-square btn-ghost"></nwb-data-table-panel-button>
+  <nwb-quicksearch-input #search="quickSearch" class="w-full md:w-60"></nwb-quicksearch-input>
 </div>
 
 <nwb-data-table
@@ -31,7 +21,7 @@
   class="flex-1 rounded-md overflow-clip"
 ></nwb-data-table>
 
-<div class="flex justify-end gap-1">
+<div class="flex-none modal-action flex-row justify-end layout-pad mt-0">
   <div class="btn-group">
     <label class="btn btn-ghost" (click)="close()">Cancel</label>
   </div>

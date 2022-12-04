@@ -162,21 +162,31 @@ export abstract class DataTableAdapter<T> {
     icon,
     iconClass,
     rarity,
+    named
   }: {
     href: string
     target: string
     icon: string
     iconClass?: string[]
     rarity?: number
+    named?: boolean
   }) {
     return this.createElement('a', (el) => {
       el.target = target
       el.href = href
       el.append(
         this.createIcon((pic, img) => {
-          pic.classList.add('w-12', 'h-12', 'nw-icon')
-          if (rarity) {
-            pic.classList.add(`bg-rarity-${rarity}`)
+          pic.classList.add('inline-block', 'w-12', 'h-12')
+          if (rarity != null) {
+            pic.classList.add(`nw-item-rarity-${rarity}`, 'nw-item-icon-frame', 'nw-item-icon-bg')
+            if (rarity) {
+              pic.prepend(this.createElement('span', (el) => {
+                el.classList.add('nw-item-icon-border')
+              }))
+            }
+          }
+          if (named) {
+            pic.classList.add(`named`)
           }
           if (iconClass) {
             pic.classList.add(...iconClass)

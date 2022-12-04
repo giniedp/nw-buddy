@@ -15,7 +15,8 @@ import {
   getTradingCategoryLabel,
   getItemTradingFamilyLabel,
   getItemTradingGroupLabel,
-  getItemTypeLabel
+  getItemTypeLabel,
+  isItemNamed
 } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
@@ -81,6 +82,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
               target: '_blank',
               icon: getItemIconPath(data),
               rarity: getItemRarity(data),
+              named: isItemNamed(data),
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
             })
           })

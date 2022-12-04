@@ -1,34 +1,39 @@
 import { Injectable } from '@angular/core'
 import { Ability } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { defer, map, Observable, of, switchMap } from 'rxjs'
+import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl, NwDbService, NwExpressionService } from '~/nw'
+import { nwdbLinkUrl, NwDbService, NwExpressionService, NwWeaponTypesService } from '~/nw'
+import { NwWeaponType } from '~/nw/nw-weapon-types'
 import { getWeaponTagLabel } from "~/nw/utils"
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
-import { shareReplayRefCount } from '~/utils'
+import { eqCaseInsensitive, shareReplayRefCount } from '~/utils'
+
+export type AbilityTableItem = Ability & {
+  $weaponType: NwWeaponType
+}
 
 @Injectable()
-export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
+export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
   public static provider() {
     return dataTableProvider({
       adapter: AbilitiesTableAdapter,
     })
   }
 
-  public entityID(item: Ability): string {
+  public entityID(item: AbilityTableItem): string {
     return item.AbilityID
   }
 
-  public entityCategory(item: Ability): DataTableCategory {
+  public entityCategory(item: AbilityTableItem): DataTableCategory {
     if (!item.WeaponTag) {
       return null
     }
     return {
       value: item.WeaponTag,
       label: this.i18n.get(getWeaponTagLabel(item.WeaponTag)),
-      icon: ''
+      icon: item.$weaponType?.IconPathSmall
     }
   }
 
@@ -118,13 +123,23 @@ export class AbilitiesTableAdapter extends DataTableAdapter<Ability> {
     })
   )
 
-  public entities: Observable<Ability[]> = defer(() => {
-    return this.db.abilities
-  })
-    .pipe(map((list) => list.filter((it) => !!it.WeaponTag && !!it.DisplayName && !!it.Description)))
+  public entities: Observable<AbilityTableItem[]> = defer(() => combineLatest({
+    abilities: this.db.abilities,
+    weaponTypes: this.weaponTypes.all$
+  }))
+    .pipe(map(({ abilities, weaponTypes }) => {
+      return abilities
+        .filter((it) => !!it.WeaponTag && !!it.DisplayName && !!it.Description)
+        .map((it): AbilityTableItem => {
+          return {
+            ...it,
+            $weaponType: weaponTypes.find((weapon) => eqCaseInsensitive(weapon.WeaponTag, it.WeaponTag))
+          }
+        })
+    }))
     .pipe(shareReplayRefCount(1))
 
-  public constructor(private db: NwDbService, private i18n: TranslateService, private expr: NwExpressionService) {
+  public constructor(private db: NwDbService, private i18n: TranslateService, private expr: NwExpressionService, private weaponTypes: NwWeaponTypesService) {
     super()
   }
 }

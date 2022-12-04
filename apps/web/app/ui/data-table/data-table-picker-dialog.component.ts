@@ -65,7 +65,7 @@ export interface DataTablePickerDialogOptions<T> {
   ],
   providers: [QuicksearchService],
   host: {
-    class: 'flex flex-col gap-3 layout-pad h-full bg-base-300 rounded-md',
+    class: 'layout-col bg-base-100 border border-base-100 rounded-md overflow-hidden',
   },
 })
 export class DataTablePickerDialog implements AfterViewInit {

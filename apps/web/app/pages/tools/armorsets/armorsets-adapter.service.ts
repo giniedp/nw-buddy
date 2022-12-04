@@ -5,7 +5,7 @@ import m from 'mithril'
 import { combineLatest, defer, map, merge, Observable, of, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
-import { getItemIconPath, getItemRarity, getItemTierAsRoman } from '~/nw/utils'
+import { getItemIconPath, getItemRarity, getItemTierAsRoman, isItemNamed } from '~/nw/utils'
 import { mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { LayoutService } from '~/ui/layout'
@@ -104,18 +104,17 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
               sortable: false,
               filter: false,
               width: 62,
-              cellRenderer: mithrilCell<Armorset>({
-                view: ({ attrs: { data } }) => {
-                  const item = data.items[i]
-                  const rarity = getItemRarity(item)
-                  return m('a', { target: '_blank', href: nwdbLinkUrl('item', item.ItemID) }, [
-                    m(IconComponent, {
-                      src: getItemIconPath(item),
-                      class: `w-12 h-12 nw-icon bg-rarity-${rarity}`,
-                    }),
-                  ])
-                },
-              }),
+              cellRenderer: this.cellRenderer(({ data }) => {
+                const item = data.items[i]
+                return this.createLinkWithIcon({
+                  href: nwdbLinkUrl('item', item.ItemID),
+                  target: '_blank',
+                  icon: getItemIconPath(item),
+                  rarity: getItemRarity(item),
+                  named: isItemNamed(item),
+                  iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+                })
+              })
             },
             {
               width: 150,

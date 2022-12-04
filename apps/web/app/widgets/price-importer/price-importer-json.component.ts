@@ -8,7 +8,7 @@ import { GridOptions } from 'ag-grid-community'
 import { BehaviorSubject, combineLatest, defer, map, of, switchMap, take, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwDbService, NwModule, NwService } from '~/nw'
-import { getItemIconPath, getItemId, getItemRarity } from '~/nw/utils'
+import { getItemIconPath, getItemId, getItemRarity, isItemNamed, isMasterItem } from '~/nw/utils'
 import { ItemPreferencesService } from '~/preferences'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
 import { TrackingCell } from '../adapter/components'
@@ -268,6 +268,7 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
                 target: '_blank',
                 icon: getItemIconPath(data.item),
                 rarity: getItemRarity(data.item),
+                named: isMasterItem(data.item) && isItemNamed(data.item),
                 iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
               })
             })

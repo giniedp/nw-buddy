@@ -6,7 +6,7 @@ import { debounceTime, defer, EMPTY, filter, merge, Observable, of, Subject, swi
 import { ItemInstanceRow, ItemInstancesStore } from '~/data'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl } from '~/nw'
-import { EQUIP_SLOTS, getItemIconPath, getItemId, getItemRarityLabel, getItemTierAsRoman } from '~/nw/utils'
+import { EQUIP_SLOTS, getItemIconPath, getItemId, getItemRarityLabel, getItemTierAsRoman, isItemNamed } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { svgTrashCan } from '~/ui/icons/svg'
@@ -61,6 +61,7 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
               target: '_blank',
               icon: getItemIconPath(data.item),
               rarity: data.rarity,
+              named: isItemNamed(data.item),
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
           }),
@@ -237,7 +238,7 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
   public override categories: Observable<DataTableCategory[]> = defer(() => {
     const result = EQUIP_SLOTS.map(
       (it): DataTableCategory => ({
-        icon: it.icon,
+        icon: it.iconSlot || it.icon,
         value: it.itemType,
         label: it.name,
       })

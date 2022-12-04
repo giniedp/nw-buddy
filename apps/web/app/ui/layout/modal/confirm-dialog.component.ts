@@ -18,7 +18,7 @@ export interface ConfirmDialogOptions {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   host: {
-    class: 'd-block bg-base-100 rounded-md overflow-hidden',
+    class: 'd-block bg-base-100 border border-base-100 rounded-md overflow-hidden',
   },
 })
 export class ConfirmDialogComponent {

@@ -4,9 +4,9 @@ import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwService } from '~/nw'
-import { getPerksInherentMODs, hasPerkInherentAffix } from '~/nw/utils'
+import { getPerksInherentMODs, hasPerkInherentAffix, isPerkGenerated, isPerkInherent } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter, DataTableAdapterOptions, dataTableProvider } from '~/ui/data-table'
+import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 import { ExprContextService } from './exp-context.service'
 
@@ -23,8 +23,13 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
     return item.PerkID
   }
 
-  public entityCategory(item: Perks): string {
-    return item.PerkType
+  public entityCategory(item: Perks): DataTableCategory {
+    return {
+      icon: null,
+      label: isPerkInherent(item) ? 'Attributes' : isPerkGenerated(item) ? 'Perks' : item.PerkType,
+      value: item.PerkType
+    }
+
   }
   public override get persistStateId(): string {
     return this.config?.persistStateId

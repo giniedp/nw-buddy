@@ -1,6 +1,4 @@
-<div class="font-bold bg-base-300 layout-pad">
-  Choose a weapon type
-</div>
+<h3 class="font-bold text-lg bg-black p-3">Choose a weapon type</h3>
 <div class="flex-1 layout-content">
   <ul class="menu w-full">
     <ng-container *ngFor="let cat of categories$ | async">
@@ -16,11 +14,7 @@
     </ng-container>
   </ul>
 </div>
-<div class="flex justify-end gap-1 layout-pad">
-  <div class="btn-group">
-    <label class="btn btn-ghost" (click)="close()">Cancel</label>
-  </div>
-  <div class="btn-group">
-    <label class="btn btn-primary" (click)="commit()">OK</label>
-  </div>
+<div class="modal-action flex-row-reverse justify-start layout-pad">
+  <button class="btn btn-primary" (click)="commit()">OK</button>
+  <button class="btn btn-ghost" (click)="close()">Cancel</button>
 </div>

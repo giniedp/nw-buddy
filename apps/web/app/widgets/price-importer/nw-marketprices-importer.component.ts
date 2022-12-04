@@ -10,7 +10,7 @@ import { BehaviorSubject, catchError, combineLatest, defer, map, of, take, takeU
 import { ElectronService } from '~/electron'
 import { TranslateService } from '~/i18n'
 import { nwdbLinkUrl, NwDbService, NwService } from '~/nw'
-import { getItemIconPath, getItemId, getItemRarity } from '~/nw/utils'
+import { getItemIconPath, getItemId, getItemRarity, isItemNamed, isMasterItem } from '~/nw/utils'
 import { AppPreferencesService, ItemPreferencesService, StorageProperty } from '~/preferences'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
 import { DestroyService, shareReplayRefCount } from '~/utils'
@@ -217,6 +217,7 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
               target: '_blank',
               icon: getItemIconPath(data.item),
               rarity: getItemRarity(data.item),
+              named: isMasterItem(data.item) && isItemNamed(data.item),
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
           }),

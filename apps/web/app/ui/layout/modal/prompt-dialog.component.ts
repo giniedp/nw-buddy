@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms'
 export interface PromptDialogOptions {
   title: string
   body: string
+  html?: boolean
   input?: string
   placeholder?: string
   positive: string
@@ -20,7 +21,7 @@ export interface PromptDialogOptions {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule],
   host: {
-    class: 'd-block bg-base-100 rounded-md p-3',
+    class: 'd-block bg-base-100 border border-base-100 rounded-md overflow-hidden',
   },
 })
 export class PromptDialogComponent {
@@ -40,6 +41,10 @@ export class PromptDialogComponent {
 
   protected get body() {
     return this.data.body
+  }
+
+  protected get isHtml() {
+    return this.data.html
   }
 
   protected get placeholder() {
