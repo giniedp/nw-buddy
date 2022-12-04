@@ -60,7 +60,8 @@ export class NwAttributesService {
   }
 
   public healthContributionFromLevel(level: Observable<number>) {
-    return level.pipe(map((level) => HP_LOOKUP[level - 1] || 0))
+    // HINT: 778 base value is from vitals.json "VitalsID": "Player"
+    return level.pipe(map((level) => 778 + 1.5 * Math.pow(level - 1, 2)))
   }
 
   public healthContributionFromConstitution(constitution: Observable<number>) {
@@ -84,24 +85,3 @@ function resolveShortType(type: string) {
   }
   return type.toLowerCase()
 }
-
-function baseHpTable(db: NwDbService) {
-  return db.xpAmounts.pipe(
-    map((table) => {
-      let value = 729
-      return table.map((it) => {
-        value = value + it.Health
-        return {
-          level: it['Level Number'],
-          hp: value,
-        }
-      })
-    })
-  )
-}
-
-const HP_LOOKUP = [
-  729, 779, 784, 791, 802, 815, 832, 851, 874, 899, 928, 959, 994, 1031, 1072, 1115, 1162, 1211, 1264, 1319, 1378, 1439,
-  1504, 1571, 1642, 1715, 1792, 1871, 1954, 2039, 2128, 2219, 2314, 2411, 2512, 2615, 2722, 2831, 2944, 3059, 3178,
-  3299, 3424, 3551, 3682, 3815, 3952, 4091, 4234, 4379, 4528, 4679, 4834, 4991, 5152, 5315, 5482, 5651, 5824, 5999,
-]
