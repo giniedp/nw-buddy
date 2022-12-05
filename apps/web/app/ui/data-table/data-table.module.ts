@@ -8,6 +8,7 @@ import { DataTablePickerDialog } from './data-table-picker-dialog.component'
 import { DataTablePicker } from './data-table-picker.component'
 import { DataTableRouterDirective } from './data-table-router.directive'
 import { DataTableComponent } from './data-table.component'
+import { FilterRouteParamDirective } from './data-table-filter.directive'
 
 const COMPONENTS = [
   DataTablePicker,
@@ -19,7 +20,8 @@ const COMPONENTS = [
   DataTablePanelButtonComponent,
   CategoryChildRouteParamDirective,
   CategoryRouteParamDirective,
-  DataTableCategoriesDirective
+  DataTableCategoriesDirective,
+  FilterRouteParamDirective,
 ]
 
 @NgModule({

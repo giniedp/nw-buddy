@@ -56,7 +56,7 @@ export class DataTablePanelComponent {
 
   protected async exportCsv() {
     const grid = await firstValueFrom(this.adapter.grid)
-    const data = grid.api.getDataAsCsv({})
+    //const data = grid.api.getDataAsCsv({})
     // console.log(data)
     // saveAs(data)
   }

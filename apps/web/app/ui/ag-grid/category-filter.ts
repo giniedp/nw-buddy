@@ -138,7 +138,7 @@ export class SelectboxFilter implements IFilterComp {
 
   public setModel(state: Array<string>) {
     state = state || []
-    state = state.filter((it) => typeof it === 'string')
+    state = state.filter((it) => typeof it === 'string' || typeof it === 'boolean' || typeof it === 'number')
     this.state = new Set(state)
   }
 

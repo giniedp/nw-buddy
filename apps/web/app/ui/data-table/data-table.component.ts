@@ -61,6 +61,14 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   @Input()
   public multiSelect: boolean
 
+  @Input()
+  public set filter(value: any) {
+    this.filter$.next(value)
+  }
+
+  @Output()
+  public filterSaved = new EventEmitter<any>()
+
   @Output()
   public rowDoubleClick = new EventEmitter<any>()
 
@@ -164,6 +172,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   private gridSelectionChanged$ = new ReplaySubject<T[]>(1)
   private gridRowDataChanged$ = new Subject()
   private selection$ = new ReplaySubject<string[]>(1)
+  private filter$ = new ReplaySubject<any>(1)
   private items$ = defer(() => this.adapter$).pipe(switchMap((adapter) => adapter.entities))
   private category$ = defer(() => this.adapter$).pipe(switchMap((adapter) => adapter.category))
   private categoryItems$ = defer(() =>
@@ -207,6 +216,13 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       this.loadFilterState()
       this.adapter.setGrid(e)
     })
+
+    this.adapter.grid
+      .pipe(switchMap(() => this.filter$))
+      .pipe(takeUntil(this.destroy.$))
+      .subscribe((filter) => {
+        this.applyfilterState(filter)
+      })
 
     // save column state whenever a column has changed
     this.mergeEvents([
@@ -301,9 +317,11 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   private mergeEvents(events: string[]) {
     return this.gridReady$.pipe(
       switchMap(({ api }) => {
-        return merge(...events.map((event) => {
-          return fromGridEvent(api, event)
-        }))
+        return merge(
+          ...events.map((event) => {
+            return fromGridEvent(api, event)
+          })
+        )
       })
     )
   }
@@ -365,12 +383,11 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     }
     if (state?.length) {
       this.gridStorage.set(key, {
-        columns: state
+        columns: state,
       })
     } else {
       this.gridStorage.delete(key)
     }
-
   }
 
   private saveFilterState() {
@@ -383,6 +400,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     this.filterStorage.set(key, {
       filter: filterState,
     })
+    this.filterSaved.next(filterState)
   }
 
   private loadColumnState() {
@@ -398,17 +416,20 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   private loadFilterState() {
+    this.applyfilterState
     const key = this.persistKey
-    const api = this.gridApi
-    if (!key || !api) {
-      return
-    }
     const data = this.filterStorage.get(key)?.filter
-    if (data) {
-      api.setFilterModel(data)
+    this.applyfilterState(data)
+  }
+
+  private applyfilterState(filter: any) {
+    const api = this.gridApi
+    if (filter && api) {
+      api.setFilterModel(filter)
     }
   }
 }
+
 
 function intersectsCategory(catSet: string | DataTableCategory | Array<string | DataTableCategory>, category: string) {
   if (Array.isArray(catSet)) {
