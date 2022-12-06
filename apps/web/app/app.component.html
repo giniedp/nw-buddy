@@ -63,9 +63,12 @@
         </ion-menu-toggle>
       </ion-buttons>
       <div class="w-full flex flex-row items-center justify-center lg:justify-start">
-        <a routerLink="/" class="flex flex-row items-center">
+        <a routerLink="/" class="flex flex-row items-center ">
           <img [nwImage]="'assets/icons/favicon.png'" class="w-12 aspect-square" alt="logo" />
-          <span> New World Buddy </span>
+          <span class="indicator">
+            <span class="indicator-item badge badge-sm badge-primary" *ngIf="isPtr">PTR</span>
+            New World Buddy
+          </span>
         </a>
       </div>
       <ion-buttons slot="end">
