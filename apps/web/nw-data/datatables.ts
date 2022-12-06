@@ -150,6 +150,9 @@ export abstract class NwDataLoader {
   public itemdefinitionsMasterQuest() {
     return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_quest.json')
   }
+  public itemdefinitionsMasterSkins() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_skins.json')
+  }
   public itemdefinitionsMasterStore() {
     return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_store.json')
   }
