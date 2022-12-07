@@ -4,7 +4,7 @@ import { Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of, switchMap, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl, NwDbService, NwModule } from '~/nw'
+import { NwDbService, NwInfoLinkService, NwModule } from '~/nw'
 import { NwExpEval, NwExpJoin, parseNwExpression } from '~/nw/utils'
 import { DataTableAdapter, DataTableCategory, DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
@@ -64,7 +64,7 @@ export class ExprFaultsComponent extends DataTableAdapter<FaultRow> {
           width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
-              href: nwdbLinkUrl('perk', data.perk.PerkID),
+              href: this.info.link('perk', data.perk.PerkID),
               target: '_blank',
               icon: data.perk.IconPath,
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
@@ -101,15 +101,24 @@ export class ExprFaultsComponent extends DataTableAdapter<FaultRow> {
 
   protected adapter = this
 
-  public constructor(private nwDb: NwDbService, private i18n: TranslateService, protected search: QuicksearchService) {
+  public constructor(
+    private nwDb: NwDbService,
+    private i18n: TranslateService,
+    protected search: QuicksearchService,
+    private info: NwInfoLinkService
+  ) {
     super()
   }
 
   private getFaultRows() {
-
-    const loadLang$ = combineLatest(KNOWN_LANG.map((it) => {
-      return this.i18n.loader.loadTranslations(it.value).pipe(tap((data) => this.i18n.merge(it.value, data))).pipe(map(() => it))
-    }))
+    const loadLang$ = combineLatest(
+      KNOWN_LANG.map((it) => {
+        return this.i18n.loader
+          .loadTranslations(it.value)
+          .pipe(tap((data) => this.i18n.merge(it.value, data)))
+          .pipe(map(() => it))
+      })
+    )
 
     return combineLatest({
       lang: loadLang$,
@@ -127,14 +136,16 @@ export class ExprFaultsComponent extends DataTableAdapter<FaultRow> {
 
   private mapPerks(perks: Perks[]) {
     return perks.map((perk) => {
-      const expressions = KNOWN_LANG.map((lang) => combineLatest({
-        lang: of(lang.value),
-        text: of(this.i18n.get(perk.Description, lang.value)),
-        expr: this.extractEpxression(perk.Description, lang.value)
-      }))
+      const expressions = KNOWN_LANG.map((lang) =>
+        combineLatest({
+          lang: of(lang.value),
+          text: of(this.i18n.get(perk.Description, lang.value)),
+          expr: this.extractEpxression(perk.Description, lang.value),
+        })
+      )
       return combineLatest({
         perk: of(perk),
-        expressions: combineLatest(expressions)
+        expressions: combineLatest(expressions),
       })
     })
   }

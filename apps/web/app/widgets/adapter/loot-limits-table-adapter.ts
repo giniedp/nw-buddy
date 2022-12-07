@@ -4,7 +4,7 @@ import { GridOptions } from 'ag-grid-community'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl, NwDbService, NwService } from '~/nw'
+import { NwDbService, NwInfoLinkService } from '~/nw'
 import { getItemIconPath, getItemId, getItemRarity } from '~/nw/utils'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { shareReplayRefCount } from '~/utils'
@@ -48,13 +48,13 @@ export class LootLimitsTableAdapter extends DataTableAdapter<TableItem> {
               return null
             }
             return this.createLinkWithIcon({
-              href: nwdbLinkUrl('item', getItemId(data.$item)),
+              href: this.info.link('item', getItemId(data.$item)),
               target: '_blank',
               icon: getItemIconPath(data.$item),
               rarity: getItemRarity(data.$item),
-              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
-          })
+          }),
         }),
         this.colDef({
           colId: 'name',
@@ -78,11 +78,14 @@ export class LootLimitsTableAdapter extends DataTableAdapter<TableItem> {
             return [data.MinLimitSeconds, data.MaxLimitSeconds]
           }),
           valueFormatter: ({ value }) => {
-            return (value as Number[]).filter((it) => !!it).map((it: number) => {
-              const now = new Date()
-              const then = addSeconds(now, it)
-              return formatDistanceStrict(now, then)
-            }).join(' - ')
+            return (value as Number[])
+              .filter((it) => !!it)
+              .map((it: number) => {
+                const now = new Date()
+                const then = addSeconds(now, it)
+                return formatDistanceStrict(now, then)
+              })
+              .join(' - ')
           },
           width: 130,
         }),
@@ -98,31 +101,27 @@ export class LootLimitsTableAdapter extends DataTableAdapter<TableItem> {
           width: 130,
         }),
       ],
-    }
-  ))
+    })
+  )
 
   public entities: Observable<TableItem[]> = defer(() => {
     return combineLatest({
       items: this.db.itemsMap,
       housing: this.db.housingItemsMap,
-      limits: this.db.lootLimits
-    })
-      .pipe(map(({ items, housing, limits }) => {
+      limits: this.db.lootLimits,
+    }).pipe(
+      map(({ items, housing, limits }) => {
         return limits.map((it): TableItem => {
           return {
             ...it,
-            $item: items.get(it.LootLimitID) || housing.get(it.LootLimitID)
+            $item: items.get(it.LootLimitID) || housing.get(it.LootLimitID),
           }
         })
-      }))
-  }).pipe(
-    shareReplayRefCount(1)
-  )
+      })
+    )
+  }).pipe(shareReplayRefCount(1))
 
-  public constructor(
-    private db: NwDbService,
-    private i18n: TranslateService,
-  ) {
+  public constructor(private db: NwDbService, private i18n: TranslateService, private info: NwInfoLinkService) {
     super()
   }
 }

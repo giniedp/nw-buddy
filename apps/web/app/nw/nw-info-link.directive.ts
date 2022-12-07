@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Directive, HostBinding, Input } from '@angular/core'
-import { nwdbLinkUrl, NwdbResource } from './nwdbinfo'
+import { NwInfoLinkService } from './nw-info-link.service'
+import { NwdbResource } from './nwdbinfo'
 
 @Directive({
   standalone: true,
@@ -27,12 +28,12 @@ export class NwInfoLinkDirective {
   @HostBinding('attr.target')
   public target: string = '_blank'
 
-  public constructor(private cdRef: ChangeDetectorRef) {
+  public constructor(private cdRef: ChangeDetectorRef, private service: NwInfoLinkService) {
     //
   }
 
   private update() {
-    this.href = this.link && nwdbLinkUrl(this.resource, this.link)
+    this.href = this.link && this.service.link(this.resource, this.link)
     this.cdRef.markForCheck()
   }
 }

@@ -7,9 +7,8 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { environment } from 'apps/web/environments/environment'
 import { BehaviorSubject, catchError, combineLatest, defer, map, of, take, takeUntil, tap } from 'rxjs'
-import { ElectronService } from '~/electron'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl, NwDbService, NwService } from '~/nw'
+import { NwDbService, NwInfoLinkService, NwService } from '~/nw'
 import { getItemIconPath, getItemId, getItemRarity, isItemNamed, isMasterItem } from '~/nw/utils'
 import { AppPreferencesService, ItemPreferencesService, StorageProperty } from '~/preferences'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
@@ -91,11 +90,12 @@ export class NwPricesImporterComponent {
     private cdRef: ChangeDetectorRef,
     private destroy: DestroyService,
     private dialog: Dialog,
+    info: NwInfoLinkService,
     nw: NwService,
     i18n: TranslateService,
     app: AppPreferencesService
   ) {
-    this.adapter = new PricesTableAdapter(nw, i18n)
+    this.adapter = new PricesTableAdapter(nw, i18n, info)
     this.nwmpServer = app.nwmpServer
     this.serverId = this.nwmpServer.get()
   }
@@ -213,7 +213,7 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
           pinned: true,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
-              href: nwdbLinkUrl('item', data.id),
+              href: this.info.link('item', data.id),
               target: '_blank',
               icon: getItemIconPath(data.item),
               rarity: getItemRarity(data.item),
@@ -270,7 +270,7 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
 
   public entities = new BehaviorSubject<PriceItem[]>(null)
 
-  public constructor(private nw: NwService, private i18n: TranslateService) {
+  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwInfoLinkService) {
     super()
   }
 }

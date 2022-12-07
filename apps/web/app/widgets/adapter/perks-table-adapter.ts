@@ -3,7 +3,7 @@ import { Ability, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl, NwService } from '~/nw'
+import { NwInfoLinkService, NwService } from '~/nw'
 import { getPerksInherentMODs, hasPerkInherentAffix, isPerkGenerated, isPerkInherent } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
@@ -51,7 +51,7 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
               target: '_blank',
-              href: nwdbLinkUrl('perk', String(data.PerkID)),
+              href: this.info.link('perk', String(data.PerkID)),
               icon: data.IconPath,
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
             })
@@ -274,7 +274,8 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
     private i18n: TranslateService,
     @Optional()
     private config: DataTableAdapterOptions<Perks>,
-    private ctx: ExprContextService
+    private ctx: ExprContextService,
+    private info: NwInfoLinkService
   ) {
     super()
   }

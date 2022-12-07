@@ -4,7 +4,7 @@ import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl, NwDbService, NwModule } from '~/nw'
+import { NwDbService, NwInfoLinkService, NwModule } from '~/nw'
 import { getItemIconPath, getItemPerks, getItemRarity, isPerkGem, isPerkGenerated, isPerkInherent } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { CellRendererService, DataTableAdapter, DataTableCategory, DataTableModule } from '~/ui/data-table'
@@ -57,16 +57,19 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
           pinned: true,
           width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
-            return this.r.link({
-              href: nwdbLinkUrl('item', data.item.ItemID),
-              target: '_blank'
-            }, [
-              this.r.icon({
-                src: getItemIconPath(data.item),
-                class: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
-                rarity: getItemRarity(data.item)
-              })
-            ])
+            return this.r.link(
+              {
+                href: this.info.link('item', data.item.ItemID),
+                target: '_blank',
+              },
+              [
+                this.r.icon({
+                  src: getItemIconPath(data.item),
+                  class: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
+                  rarity: getItemRarity(data.item),
+                }),
+              ]
+            )
           }),
         }),
         this.colDef({
@@ -156,7 +159,13 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
 
   protected adapter = this
 
-  public constructor(private nwDb: NwDbService, private i18n: TranslateService, protected search: QuicksearchService, private r: CellRendererService) {
+  public constructor(
+    private nwDb: NwDbService,
+    private i18n: TranslateService,
+    protected search: QuicksearchService,
+    private r: CellRendererService,
+    private info: NwInfoLinkService
+  ) {
     super()
   }
 
@@ -173,7 +182,7 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
             perks: [],
             gemFault: false,
             inherentFault: false,
-            generatedFault: false
+            generatedFault: false,
           }
           let isFault = false
           for (const perk of getItemPerks(item, perks) || []) {

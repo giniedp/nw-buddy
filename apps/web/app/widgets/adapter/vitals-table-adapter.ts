@@ -3,7 +3,7 @@ import { Gamemodes, Vitals } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl, NwDbService, NwVitalsService } from '~/nw'
+import { NwDbService, NwInfoLinkService, NwVitalsService } from '~/nw'
 import { getVitalDamageEffectivenessPercent, getVitalDungeon } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
@@ -44,12 +44,12 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
-              href: nwdbLinkUrl('creature', data.VitalsID),
+              href: this.info.link('creature', data.VitalsID),
               target: '_blank',
               icon: this.vitals.vitalFamilyIcon(data),
-              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
-          })
+          }),
         }),
         this.colDef({
           colId: 'name',
@@ -208,8 +208,8 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           cellRenderer: this.cellRendererDamage(),
         }),
       ],
-    }
-  ))
+    })
+  )
 
   public entities: Observable<Entity[]> = defer(() =>
     combineLatest({
@@ -229,7 +229,12 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
     )
     .pipe(shareReplayRefCount(1))
 
-  public constructor(private db: NwDbService, private i18n: TranslateService, private vitals: NwVitalsService) {
+  public constructor(
+    private db: NwDbService,
+    private i18n: TranslateService,
+    private vitals: NwVitalsService,
+    private info: NwInfoLinkService
+  ) {
     super()
   }
 

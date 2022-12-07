@@ -1,14 +1,13 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { Inject, Injectable, NgZone, Optional } from '@angular/core'
-import { ActivatedRoute, Router } from '@angular/router'
 import { GridOptions, RowDataTransaction } from 'ag-grid-community'
-import { debounceTime, defer, filter, merge, Observable, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
+import { debounceTime, defer, filter, merge, Observable, of, Subject, switchMap, take, takeUntil } from 'rxjs'
 import { SkillBuildRow, SkillBuildsStore } from '~/data'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl } from '~/nw'
+import { NwInfoLinkService } from '~/nw'
 import { getAbilityCategoryTag } from '~/nw/utils'
 import { CellRendererService, DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
-import { svgPen, svgTrashCan } from '~/ui/icons/svg'
+import { svgTrashCan } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutService } from '~/ui/layout'
 import { humanize } from '~/utils'
 
@@ -73,7 +72,7 @@ export class SkillBuildsTableAdapter extends DataTableAdapter<SkillBuildRow> {
 
               return this.r.link({
                 class: 'border border-1 transition-all translate-x-0 hover:translate-x-1',
-                href: nwdbLinkUrl('ability', it.AbilityID),
+                href: this.info.link('ability', it.AbilityID),
                 target: '_blank'
               }, [
                 this.r.icon({
@@ -150,7 +149,8 @@ export class SkillBuildsTableAdapter extends DataTableAdapter<SkillBuildRow> {
     private i18n: TranslateService,
     private zone: NgZone,
     private r: CellRendererService,
-    private layout: LayoutService
+    private layout: LayoutService,
+    private info: NwInfoLinkService
   ) {
     super()
     this.attachListener()

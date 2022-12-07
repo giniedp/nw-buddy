@@ -3,7 +3,7 @@ import { Perks, Statuseffect } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl, NwService } from '~/nw'
+import { NwInfoLinkService, NwService } from '~/nw'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
@@ -40,7 +40,7 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
           width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
-              href: nwdbLinkUrl('status-effect', data.StatusID),
+              href: this.info.link('status-effect', data.StatusID),
               target: '_blank',
               icon: data.PlaceholderIcon || data['IconPath'],
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
@@ -101,7 +101,7 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
 
   private perks: Map<string, Perks>
 
-  public constructor(private nw: NwService, private i18n: TranslateService) {
+  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwInfoLinkService) {
     super()
   }
 }

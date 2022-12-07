@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core'
 import { Housingitems } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import m from 'mithril'
 import { defer, map, Observable, of, shareReplay } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl, NwService } from '~/nw'
+import { NwInfoLinkService, NwService } from '~/nw'
 import {
   getItemIconPath,
   getItemId,
@@ -16,7 +15,7 @@ import {
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize } from '~/utils'
-import { ItemMarkerCell, ItemTrackerCell, ItemTrackerFilter } from '~/widgets/item-tracker'
+import { ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
 
 @Injectable()
@@ -38,7 +37,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
     return {
       value: item.UIHousingCategory,
       label: this.i18n.get(getUIHousingCategoryLabel(item.UIHousingCategory)),
-      icon: ''
+      icon: '',
     }
   }
 
@@ -58,7 +57,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
               target: '_blank',
-              href: nwdbLinkUrl('item', getItemId(data)),
+              href: this.info.link('item', getItemId(data)),
               rarity: getItemRarity(data),
               icon: getItemIconPath(data),
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
@@ -149,7 +148,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
         this.colDef({
           colId: 'uiHousingCategory',
           headerValueGetter: () => 'Housing Category',
-          valueGetter: this.valueGetter(({ data }) => data.UIHousingCategory) ,
+          valueGetter: this.valueGetter(({ data }) => data.UIHousingCategory),
           valueFormatter: ({ value }) => this.i18n.get(getUIHousingCategoryLabel(value)),
           getQuickFilterText: ({ value }) => this.i18n.get(getUIHousingCategoryLabel(value)),
           filter: SelectboxFilter,
@@ -191,7 +190,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
     })
   )
 
-  public constructor(private nw: NwService, private i18n: TranslateService) {
+  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwInfoLinkService) {
     super()
   }
 }

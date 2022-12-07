@@ -4,7 +4,7 @@ import { groupBy } from 'lodash'
 import m from 'mithril'
 import { combineLatest, defer, map, merge, Observable, of, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { IconComponent, nwdbLinkUrl, NwService } from '~/nw'
+import { IconComponent, NwInfoLinkService, NwService } from '~/nw'
 import { getItemIconPath, getItemRarity, getItemTierAsRoman, isItemNamed } from '~/nw/utils'
 import { mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
@@ -26,7 +26,7 @@ function field<K extends keyof Armorset>(item: Armorset, key: K): Armorset[K] {
 export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
   public static provider() {
     return dataTableProvider({
-      adapter: ArmorsetsAdapterService
+      adapter: ArmorsetsAdapterService,
     })
   }
 
@@ -46,7 +46,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
           headerName: 'Name',
           field: fieldName('name'),
           width: 200,
-          pinned: !this.layout.isHandset
+          pinned: !this.layout.isHandset,
         },
         {
           headerName: 'Tier',
@@ -70,7 +70,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
                 m.fragment(
                   {},
                   data.perks.map((perk) => {
-                    return m('a.block.w-8.h-8', { target: '_blank', href: nwdbLinkUrl('perk', perk.PerkID) }, [
+                    return m('a.block.w-8.h-8', { target: '_blank', href: this.info.link('perk', perk.PerkID) }, [
                       m(IconComponent, {
                         src: perk.IconPath,
                         class: `w-8 h-8 nw-icon`,
@@ -91,11 +91,11 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
                 return {
                   id: perk.PerkID,
                   label: this.i18n.get(perk.DisplayName || perk.AppliedSuffix || perk.AppliedPrefix),
-                  icon: perk.IconPath
+                  icon: perk.IconPath,
                 }
               })
-            }
-          })
+            },
+          }),
         },
         ...new Array(5)
           .fill(null)
@@ -107,14 +107,14 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
               cellRenderer: this.cellRenderer(({ data }) => {
                 const item = data.items[i]
                 return this.createLinkWithIcon({
-                  href: nwdbLinkUrl('item', item.ItemID),
+                  href: this.info.link('item', item.ItemID),
                   target: '_blank',
                   icon: getItemIconPath(item),
                   rarity: getItemRarity(item),
                   named: isItemNamed(item),
-                  iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+                  iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
                 })
-              })
+              }),
             },
             {
               width: 150,
@@ -175,8 +175,8 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
           ])
           .flat(1),
       ],
-    }
-  ))
+    })
+  )
 
   public entities: Observable<Armorset[]> = defer(() => {
     return combineLatest({
@@ -200,7 +200,12 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
     )
   }).pipe(shareReplayRefCount(1))
 
-  public constructor(private nw: NwService, private i18n: TranslateService, private layout: LayoutService) {
+  public constructor(
+    private nw: NwService,
+    private i18n: TranslateService,
+    private layout: LayoutService,
+    private info: NwInfoLinkService
+  ) {
     super()
   }
 }

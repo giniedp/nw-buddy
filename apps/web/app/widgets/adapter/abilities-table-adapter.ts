@@ -3,9 +3,9 @@ import { Ability } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl, NwDbService, NwExpressionService, NwWeaponTypesService } from '~/nw'
+import { NwDbService, NwExpressionService, NwInfoLinkService, NwWeaponTypesService } from '~/nw'
 import { NwWeaponType } from '~/nw/nw-weapon-types'
-import { getWeaponTagLabel } from "~/nw/utils"
+import { getWeaponTagLabel } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { eqCaseInsensitive, shareReplayRefCount } from '~/utils'
@@ -33,7 +33,7 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
     return {
       value: item.WeaponTag,
       label: this.i18n.get(getWeaponTagLabel(item.WeaponTag)),
-      icon: item.$weaponType?.IconPathSmall
+      icon: item.$weaponType?.IconPathSmall,
     }
   }
 
@@ -52,10 +52,10 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
           width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
-              href: nwdbLinkUrl('ability', data.AbilityID),
+              href: this.info.link('ability', data.AbilityID),
               target: '_blank',
               icon: data.Icon,
-              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
           }),
         }),
@@ -87,15 +87,18 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
               el.innerHTML = text
             },
             source: ({ data, value }) => {
-              return this.i18n.observe(data.Description).pipe(switchMap((v) => {
-                return this.expr
-                .solve({
-                  text: v,
-                  charLevel: 60,
-                  itemId: data.AbilityID,
-                  gearScore: 600,
-                })
-              }))
+              return this.i18n
+                .observe(data.Description)
+                .pipe(
+                  switchMap((v) => {
+                    return this.expr.solve({
+                      text: v,
+                      charLevel: 60,
+                      itemId: data.AbilityID,
+                      gearScore: 600,
+                    })
+                  })
+                )
                 .pipe(map((it) => it.replace(/\\n/gi, '<br>')))
             },
           }),
@@ -123,23 +126,33 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
     })
   )
 
-  public entities: Observable<AbilityTableItem[]> = defer(() => combineLatest({
-    abilities: this.db.abilities,
-    weaponTypes: this.weaponTypes.all$
-  }))
-    .pipe(map(({ abilities, weaponTypes }) => {
-      return abilities
-        .filter((it) => !!it.WeaponTag && !!it.DisplayName && !!it.Description)
-        .map((it): AbilityTableItem => {
-          return {
-            ...it,
-            $weaponType: weaponTypes.find((weapon) => eqCaseInsensitive(weapon.WeaponTag, it.WeaponTag))
-          }
-        })
-    }))
+  public entities: Observable<AbilityTableItem[]> = defer(() =>
+    combineLatest({
+      abilities: this.db.abilities,
+      weaponTypes: this.weaponTypes.all$,
+    })
+  )
+    .pipe(
+      map(({ abilities, weaponTypes }) => {
+        return abilities
+          .filter((it) => !!it.WeaponTag && !!it.DisplayName && !!it.Description)
+          .map((it): AbilityTableItem => {
+            return {
+              ...it,
+              $weaponType: weaponTypes.find((weapon) => eqCaseInsensitive(weapon.WeaponTag, it.WeaponTag)),
+            }
+          })
+      })
+    )
     .pipe(shareReplayRefCount(1))
 
-  public constructor(private db: NwDbService, private i18n: TranslateService, private expr: NwExpressionService, private weaponTypes: NwWeaponTypesService) {
+  public constructor(
+    private db: NwDbService,
+    private i18n: TranslateService,
+    private expr: NwExpressionService,
+    private weaponTypes: NwWeaponTypesService,
+    private info: NwInfoLinkService
+  ) {
     super()
   }
 }

@@ -3,7 +3,7 @@ import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl, NwService } from '~/nw'
+import { NwInfoLinkService, NwService } from '~/nw'
 import {
   getItemIconPath,
   getItemId,
@@ -11,12 +11,9 @@ import {
   getItemPerks,
   getItemRarity,
   getItemRarityLabel,
-  getItemTierAsRoman,
-  getTradingCategoryLabel,
-  getItemTradingFamilyLabel,
+  getItemTierAsRoman, getItemTradingFamilyLabel,
   getItemTradingGroupLabel,
-  getItemTypeLabel,
-  isItemNamed
+  getItemTypeLabel, getTradingCategoryLabel, isItemNamed
 } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
@@ -78,7 +75,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
-              href: nwdbLinkUrl('item', data.ItemID),
+              href: this.info.link('item', data.ItemID),
               target: '_blank',
               icon: getItemIconPath(data),
               rarity: getItemRarity(data),
@@ -126,7 +123,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
                   classList: ['block', 'w-7', 'h-7'],
                   tap: (a) => {
                     a.target = '_blank'
-                    a.href = nwdbLinkUrl('perk', perk?.PerkID)
+                    a.href = this.info.link('perk', perk?.PerkID)
                   },
                   children: [
                     this.createIcon((pic, img) => {
@@ -341,6 +338,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
     @Inject(DataTableAdapterOptions)
     @Optional()
     private config: ItemsTableAdapterConfig,
+    private info: NwInfoLinkService
   ) {
     super()
   }

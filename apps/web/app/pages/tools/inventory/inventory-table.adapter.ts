@@ -5,7 +5,7 @@ import { uniqBy } from 'lodash'
 import { debounceTime, defer, EMPTY, filter, merge, Observable, of, Subject, switchMap, take, takeUntil } from 'rxjs'
 import { ItemInstanceRow, ItemInstancesStore } from '~/data'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl } from '~/nw'
+import { NwInfoLinkService } from '~/nw'
 import { EQUIP_SLOTS, getItemIconPath, getItemId, getItemRarityLabel, getItemTierAsRoman, isItemNamed } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
@@ -57,7 +57,7 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
           },
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
-              href: nwdbLinkUrl('item', getItemId(data.item)),
+              href: this.info.link('item', getItemId(data.item)),
               target: '_blank',
               icon: getItemIconPath(data.item),
               rarity: data.rarity,
@@ -104,7 +104,7 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
                   {
                     attrs: {
                       target: '_blank',
-                      href: nwdbLinkUrl('perk', it?.perk?.PerkID),
+                      href: this.info.link('perk', it?.perk?.PerkID),
                     },
                   },
                   [
@@ -268,7 +268,8 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
     private zone: NgZone,
     @Inject(DataTableAdapterOptions)
     @Optional()
-    private config: InventoryTableAdapterConfig
+    private config: InventoryTableAdapterConfig,
+    private info: NwInfoLinkService
   ) {
     super()
     this.attachListener()

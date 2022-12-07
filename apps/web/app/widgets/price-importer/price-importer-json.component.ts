@@ -7,7 +7,7 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { BehaviorSubject, combineLatest, defer, map, of, switchMap, take, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl, NwDbService, NwModule, NwService } from '~/nw'
+import { NwDbService, NwInfoLinkService, NwModule, NwService } from '~/nw'
 import { getItemIconPath, getItemId, getItemRarity, isItemNamed, isMasterItem } from '~/nw/utils'
 import { ItemPreferencesService } from '~/preferences'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
@@ -88,9 +88,10 @@ export class PriceImporterJsonComponent {
     private http: HttpClient,
     private cdRef: ChangeDetectorRef,
     nw: NwService,
-    i18n: TranslateService
+    i18n: TranslateService,
+    info: NwInfoLinkService
   ) {
-    this.adapter = new PricesTableAdapter(nw, i18n)
+    this.adapter = new PricesTableAdapter(nw, i18n, info)
   }
 
   protected useFile(e: Event) {
@@ -264,14 +265,14 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
             pinned: true,
             cellRenderer: this.cellRenderer(({ data }) => {
               return this.createLinkWithIcon({
-                href: nwdbLinkUrl('item', data.id),
+                href: this.info.link('item', data.id),
                 target: '_blank',
                 icon: getItemIconPath(data.item),
                 rarity: getItemRarity(data.item),
                 named: isMasterItem(data.item) && isItemNamed(data.item),
-                iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+                iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
               })
-            })
+            }),
           },
           {
             width: 250,
@@ -320,7 +321,7 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
 
   public entities = new BehaviorSubject<PriceItem[]>(null)
 
-  public constructor(private nw: NwService, private i18n: TranslateService) {
+  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwInfoLinkService) {
     super()
   }
 }

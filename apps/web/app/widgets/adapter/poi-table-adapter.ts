@@ -3,7 +3,7 @@ import { PoiDefinition } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl, NwService } from '~/nw'
+import { NwInfoLinkService, NwService } from '~/nw'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
@@ -39,7 +39,7 @@ export class PoiTableAdapter extends DataTableAdapter<PoiDefinition> {
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
               target: '_blank',
-              href: nwdbLinkUrl('zone', String(data.TerritoryID)),
+              href: this.info.link('zone', String(data.TerritoryID)),
               icon: data.MapIcon || data.CompassIcon || data.TooltipBackground,
               iconClass: ['scale-125', 'transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
@@ -102,7 +102,7 @@ export class PoiTableAdapter extends DataTableAdapter<PoiDefinition> {
     return this.nw.db.pois
   }).pipe(shareReplayRefCount(1))
 
-  public constructor(private nw: NwService, private i18n: TranslateService) {
+  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwInfoLinkService) {
     super()
   }
 }

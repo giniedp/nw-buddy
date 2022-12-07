@@ -4,7 +4,7 @@ import { GridOptions } from 'ag-grid-community'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl, NwService } from '~/nw'
+import { NwInfoLinkService, NwService } from '~/nw'
 import {
   getCraftingCategoryLabel,
   getCraftingGroupLabel,
@@ -13,11 +13,11 @@ import {
   getItemId,
   getItemIdFromRecipe,
   getItemRarity,
-  getTradeSkillLabel
+  getTradeSkillLabel,
 } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
-import { humanize, shareReplayRefCount } from '~/utils'
+import { shareReplayRefCount } from '~/utils'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
 
@@ -45,7 +45,7 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
     return {
       value: item.Tradeskill,
       label: this.i18n.get(getTradeSkillLabel(item.Tradeskill)),
-      icon: ''
+      icon: '',
     }
   }
 
@@ -69,7 +69,7 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
             }
             return this.createLinkWithIcon({
               target: '_blank',
-              href: nwdbLinkUrl('item', getItemId(item)),
+              href: this.info.link('item', getItemId(item)),
               icon: getItemIconPath(item),
               rarity: getItemRarity(item),
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
@@ -105,7 +105,7 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
               children: items.map((item) => {
                 return this.createLinkWithIcon({
                   target: '_blank',
-                  href: nwdbLinkUrl('item', getItemId(item)),
+                  href: this.info.link('item', getItemId(item)),
                   icon: getItemIconPath(item),
                   iconClass: ['transition-all', 'scale-90', 'hover:scale-110'],
                 })
@@ -275,7 +275,7 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
     )
   }).pipe(shareReplayRefCount(1))
 
-  public constructor(private nw: NwService, private i18n: TranslateService) {
+  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwInfoLinkService) {
     super()
   }
 }

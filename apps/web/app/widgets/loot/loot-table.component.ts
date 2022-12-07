@@ -13,7 +13,7 @@ import { BehaviorSubject, combineLatest, defer, map, Observable, of, startWith, 
 
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { TranslateService } from '~/i18n'
-import { nwdbLinkUrl, NwDbService, NwLootbucketService } from '~/nw'
+import { NwDbService, NwInfoLinkService, NwLootbucketService } from '~/nw'
 import { LootContext } from '~/nw/nw-lootcontext'
 import {
   getItemIconPath,
@@ -112,7 +112,8 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
     private db: NwDbService,
     private lbs: NwLootbucketService,
     private i18n: TranslateService,
-    public search: QuicksearchService
+    public search: QuicksearchService,
+    private info: NwInfoLinkService
   ) {
     super()
   }
@@ -182,7 +183,7 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
               target: '_blank',
-              href: nwdbLinkUrl('item', getItemId(data)),
+              href: this.info.link('item', getItemId(data)),
               icon: getItemIconPath(data),
               rarity: getItemRarity(data)
             })
