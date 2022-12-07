@@ -12,11 +12,10 @@ export function nwdbLinkUrl(options: NwdbLinkOptions) {
     return ''
   }
   let prefix = ''
-  // TODO: enable when DE tooltips work for all items
-  // const lang = validLanguageToken(options.lang)
-  // if (lang) {
-  //   prefix = `${lang}.`
-  // }
+  const lang = validLanguageToken(options.lang)
+  if (lang) {
+    prefix = `${lang}.`
+  }
   if (options.ptr) {
     prefix = `ptr.`
   }
