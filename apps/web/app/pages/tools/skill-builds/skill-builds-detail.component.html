@@ -22,17 +22,18 @@
           </div>
         </div>
       </div>
-      <div [nwbScreenshotFrame]="item.record.name" class="layout-content relative">
+      <div class="layout-content relative">
+        <div [nwbScreenshotFrame]="item.record.name" class="bg-base-300">
+          <nwb-skill-builder
+            [ngModel]="item.record"
+            (ngModelChange)="updateModel(item.record, $event)"
 
-        <nwb-skill-builder
-          [ngModel]="item.record"
-          (ngModelChange)="updateModel(item.record, $event)"
+            #builder
+          ></nwb-skill-builder>
 
-          #builder
-        ></nwb-skill-builder>
-
-        <div *ngIf="item.record.attrs" class="layout-pad">
-          <nwb-attributes-editor [freeMode]="true" [assigned]="item.record.attrs" (assignedChanged)="updateAttributes(item.record, $event)"></nwb-attributes-editor>
+          <div *ngIf="item.record.attrs" class="layout-pad">
+            <nwb-attributes-editor [freeMode]="true" [assigned]="item.record.attrs" (assignedChanged)="updateAttributes(item.record, $event)"></nwb-attributes-editor>
+          </div>
         </div>
       </div>
 

@@ -8,6 +8,7 @@ module.exports = ({ addComponents }) => {
     },
     '.nw-bg-title': {
       background: "url('^assets/bg-title.png')",
+      backgroundRepeat: 'no-repeat'
     },
     '.nw-bg-crafting-rune': {
       background: "url('^assets/loaders/crafting_rune_clockwise.png')",
