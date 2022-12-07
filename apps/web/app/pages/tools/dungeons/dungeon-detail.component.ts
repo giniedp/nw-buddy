@@ -26,6 +26,19 @@ const DIFFICULTY_TIER_NAME = {
   3: 'Hard',
   4: 'Elite',
 }
+const MAP_EMBED_URLS = {
+  DungeonAmrine: 'https://aeternum-map.gg/Amrine%20Excavation?embed=true',
+  DungeonShatteredObelisk: 'https://aeternum-map.gg/Starstone%20Barrows?embed=true',
+  DungeonRestlessShores01: 'https://aeternum-map.gg/The%20Depths?embed=true',
+  DungeonEbonscale00: null,
+  DungeonEdengrove00: 'https://aeternum-map.gg/Garden%20of%20Genesis?embed=true',
+  DungeonReekwater00: 'https://aeternum-map.gg/Lazarus%20Instrumentality?embed=true',
+  DungeonCutlassKeys00: 'https://aeternum-map.gg/Barnacles%20&%20Black%20Powder?embed=true',
+  DungeonBrimstoneSands00: 'https://aeternum-map.gg/The%20Ennead?embed=true',
+  DungeonShatterMtn00: "https://aeternum-map.gg/Tempest's%20Heart?embed=true",
+  QuestApophis: null
+}
+
 
 export interface Tab {
   id: string
@@ -271,14 +284,16 @@ export class DungeonDetailComponent implements OnInit {
           label: 'Bosses',
           tpl: this.tplDungeonBosses,
         })
-        // this.mapEmbed = this.domSanitizer.bypassSecurityTrustResourceUrl(this.ds.dungeonMapEmbed(dungeon))
-        // if (this.mapEmbed) {
-        //   this.tabs.push({
-        //     id: 'map',
-        //     label: 'Map',
-        //     tpl: this.tplDungeonMap,
-        //   })
-        // }
+        console.log(dungeon.GameModeId)
+        const mapUrl = MAP_EMBED_URLS[dungeon.GameModeId]
+        this.mapEmbed = mapUrl ? this.domSanitizer.bypassSecurityTrustResourceUrl(mapUrl) : null
+        if (this.mapEmbed) {
+          this.tabs.push({
+            id: 'map',
+            label: 'Map',
+            tpl: this.tplDungeonMap,
+          })
+        }
         this.cdRef.detectChanges()
       })
 
