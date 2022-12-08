@@ -191,7 +191,9 @@ export abstract class DataTableAdapter<T> {
           if (iconClass) {
             pic.classList.add(...iconClass)
           }
-          img.src = icon
+          if (icon) {
+            img.src = icon
+          }
           img.loading = 'lazy'
         })
       )

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core'
 import { Ability } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
+import { sortBy } from 'lodash'
 import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwExpressionService, NwInfoLinkService, NwWeaponTypesService } from '~/nw'
@@ -8,7 +9,7 @@ import { NwWeaponType } from '~/nw/nw-weapon-types'
 import { getWeaponTagLabel } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
-import { eqCaseInsensitive, shareReplayRefCount } from '~/utils'
+import { shareReplayRefCount } from '~/utils'
 
 export type AbilityTableItem = Ability & {
   $weaponType: NwWeaponType
@@ -129,21 +130,21 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
   public entities: Observable<AbilityTableItem[]> = defer(() =>
     combineLatest({
       abilities: this.db.abilities,
-      weaponTypes: this.weaponTypes.all$,
+      weaponTypes: this.weaponTypes.byTag$,
     })
   )
     .pipe(
       map(({ abilities, weaponTypes }) => {
         return abilities
-          .filter((it) => !!it.WeaponTag && !!it.DisplayName && !!it.Description)
           .map((it): AbilityTableItem => {
             return {
               ...it,
-              $weaponType: weaponTypes.find((weapon) => eqCaseInsensitive(weapon.WeaponTag, it.WeaponTag)),
+              $weaponType: weaponTypes.get(it.WeaponTag),
             }
           })
       })
     )
+    .pipe(map((list) => sortBy(list, (it) => (!!it.WeaponTag && !!it.DisplayName && !!it.Description) ? -1 : 1)))
     .pipe(shareReplayRefCount(1))
 
   public constructor(

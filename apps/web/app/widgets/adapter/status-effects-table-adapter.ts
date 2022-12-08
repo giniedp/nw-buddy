@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core'
 import { Perks, Statuseffect } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
+import { sortBy } from 'lodash'
 import { defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwInfoLinkService, NwService } from '~/nw'
@@ -96,7 +97,8 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
   public entities: Observable<Statuseffect[]> = defer(() => {
     return this.nw.db.statusEffects
   })
-    .pipe(map((list) => list.filter((it) => !!it.Description)))
+    .pipe(map((list) => sortBy(list, (it) => it.StatusID)))
+    .pipe(map((list) => sortBy(list, (it) => it.Description ? -1 : 1)))
     .pipe(shareReplayRefCount(1))
 
   private perks: Map<string, Perks>
