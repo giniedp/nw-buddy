@@ -45,3 +45,6 @@ export const svgDiagramProject = require('!!raw-loader!./diagram-project.svg').d
 export const svgRotate = require('!!raw-loader!./rotate.svg').default
 export const svgDollarSign = require('!!raw-loader!./dollar-sign.svg').default
 export const svgPercent = require('!!raw-loader!./percent.svg').default
+export const svgMap = require('!!raw-loader!./map.svg').default
+export const svgExpand = require('!!raw-loader!./expand.svg').default
+export const svgCompress = require('!!raw-loader!./compress.svg').default

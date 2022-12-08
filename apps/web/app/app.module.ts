@@ -18,6 +18,8 @@ import { NwDataInterceptor, NwDataService, NwModule } from './nw'
 import { TitleBarComponent } from './title-bar.component'
 import { UpdateAlertModule } from './widgets/update-alert'
 import { LayoutModule } from './ui/layout'
+import { IconsModule } from './ui/icons'
+import { AeternumMapComponent } from './aeternum-map.component'
 
 @NgModule({
   declarations: [AppComponent, TitleBarComponent],
@@ -35,6 +37,7 @@ import { LayoutModule } from './ui/layout'
     UpdateAlertModule,
     StoreModule.forRoot({}),
     EffectsModule.forRoot(),
+    IconsModule,
     IonicModule.forRoot({
       rippleEffect: false,
       mode: 'md',
@@ -44,6 +47,7 @@ import { LayoutModule } from './ui/layout'
       logOnly: environment.production,
       autoPause: true, // Pauses recording actions and state changes when the extension window is not open
     }),
+    AeternumMapComponent
   ],
   providers: [NwDataInterceptor.provide()],
   bootstrap: [AppComponent],

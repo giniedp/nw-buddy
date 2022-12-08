@@ -17,6 +17,7 @@ import { TranslateService } from './i18n'
 
 import { LANG_OPTIONS, MAIN_MENU } from './menu'
 import { AppPreferencesService } from './preferences'
+import { svgMap } from './ui/icons/svg'
 import { LayoutService } from './ui/layout'
 import { mapProp } from './utils'
 
@@ -70,6 +71,10 @@ export class AppComponent implements OnInit, OnDestroy {
   protected langOptions = LANG_OPTIONS
   protected langLoaded = false
   protected isDesktop$ = this.layout.breakpoint.observe('(min-width: 1200px)').pipe(mapProp('matches'))
+  protected mapIcon = svgMap
+  protected mapActive = false
+  protected mapCollapsed = false
+
   private destroy$ = new Subject<void>()
 
   constructor(
@@ -99,11 +104,23 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.onLangLoaded()
       })
+    this.mapActive = this.preferences.mapActive.get()
+    this.mapCollapsed = this.preferences.mapCollapsed.get()
   }
 
   public ngOnDestroy(): void {
     this.destroy$.next()
     this.destroy$.complete()
+  }
+
+  protected toggleMap() {
+    this.mapActive = !this.mapActive
+    this.preferences.mapActive.set(this.mapActive)
+  }
+
+  protected toggleMapCollapes() {
+    this.mapCollapsed = !this.mapCollapsed
+    this.preferences.mapCollapsed.set(this.mapCollapsed)
   }
 
   private onLangLoaded() {
