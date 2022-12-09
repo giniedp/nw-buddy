@@ -20,7 +20,7 @@ import { LayoutModule } from './ui/layout'
   standalone: true,
   selector: 'nwb-aeternum-map',
   template: `
-    <div *ngIf="isFloating" class="mb-1 flex flex-row gap-1 justify-center absolute top-0 w-full">
+    <div *ngIf="isFloating" class="mb-1 flex flex-row gap-1 justify-center absolute top-0 w-full h-0 overflow-visible">
       <button class="btn btn-circle btn-primary btn-sm" (click)="togglePosition()" *ngIf="!isExpanded">
         <nwb-icon [icon]="iconArrows" class="w-4 h-4"></nwb-icon>
       </button>
