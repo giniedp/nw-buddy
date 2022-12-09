@@ -56,3 +56,4 @@ Thumbs.db
 oo2core_8_win64.dll
 texconv.exe
 *.exe
+tools/COLLADA2GLTF
