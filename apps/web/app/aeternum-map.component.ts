@@ -9,7 +9,8 @@ import {
   ElementRef,
   ChangeDetectorRef,
 } from '@angular/core'
-import { map, Subject, takeUntil } from 'rxjs'
+import { NavigationStart, Router } from '@angular/router'
+import { filter, map, Subject, takeUntil } from 'rxjs'
 import { NwModule } from '~/nw'
 import { IconsModule } from './ui/icons'
 import { svgArrowsLeftRight, svgCompress, svgExpand } from './ui/icons/svg'
@@ -20,20 +21,20 @@ import { LayoutModule } from './ui/layout'
   selector: 'nwb-aeternum-map',
   template: `
     <div *ngIf="isFloating" class="mb-1 flex flex-row gap-1 justify-center absolute top-0 w-full">
-      <button class="btn btn-circle btn-primary btn-sm" (click)="togglePosition()">
+      <button class="btn btn-circle btn-primary btn-sm" (click)="togglePosition()" *ngIf="!isExpanded">
         <nwb-icon [icon]="iconArrows" class="w-4 h-4"></nwb-icon>
       </button>
       <button class="btn btn-circle btn-primary btn-sm" (click)="toggleExpand()">
         <nwb-icon [icon]="isExpanded ? iconCollapse : iconExpand" class="w-4 h-4"></nwb-icon>
       </button>
     </div>
-    <iframe src="https://aeternum-map.gg" class="flex-1 rounded-md"></iframe>
+    <iframe src="https://aeternum-map.gg" class="flex-1"></iframe>
   `,
   styleUrls: ['./aeternum-map.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, LayoutModule, IconsModule],
   host: {
-    class: 'hidden xl:flex flex-col p-3',
+    class: 'hidden xl:flex flex-col',
     '[class.floating]': 'isFloating',
     '[class.expand]': 'isExpanded',
     '[class.left]': 'isLeft',
@@ -52,7 +53,7 @@ export class AeternumMapComponent implements OnInit, OnDestroy {
   private isFloating$ = this.bp.observe('(min-width: 3000px)').pipe(map((it) => !it.matches))
   private destroy$ = new Subject<void>()
 
-  public constructor(private bp: BreakpointObserver, private cdRef: ChangeDetectorRef) {
+  public constructor(private bp: BreakpointObserver, private cdRef: ChangeDetectorRef, private router: Router) {
     //
   }
 
@@ -61,6 +62,13 @@ export class AeternumMapComponent implements OnInit, OnDestroy {
       this.isFloating = isFloating
       this.cdRef.markForCheck()
     })
+    this.router.events
+      .pipe(filter((it) => it instanceof NavigationStart))
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.isExpanded = false
+        this.cdRef.markForCheck()
+      })
   }
 
   public ngOnDestroy(): void {

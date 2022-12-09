@@ -1,10 +1,11 @@
 :host {
   width: 40%;
+  @apply bg-base-300 p-3;
+  iframe {
+    @apply rounded-md;
+  }
   &.floating {
-    background: transparent;
-    position: absolute;
-    bottom: 0;
-    right: 0;
+    @apply bg-transparent absolute bottom-0 right-0;
     width: calc(max(25vw, 600px));
     height: calc(max(25vh, 400px));
   }
@@ -13,12 +14,11 @@
     left: 0;
   }
   &.floating.expand {
-    bottom: 0;
-    right: 0;
-    left: 0;
-    top: 52px;
+    @apply inset-0 p-0;
     width: initial;
     height: initial;
-    background-color: rgba(0, 0, 0, 0.25);
+    iframe {
+      @apply rounded-none;
+    }
   }
 }
