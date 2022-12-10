@@ -7,7 +7,7 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { BehaviorSubject, combineLatest, defer, map, of, switchMap, take, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwInfoLinkService, NwModule, NwService } from '~/nw'
+import { NwDbService, NwLinkService, NwModule, NwService } from '~/nw'
 import { getItemIconPath, getItemId, getItemRarity, isItemNamed, isMasterItem } from '~/nw/utils'
 import { ItemPreferencesService } from '~/preferences'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
@@ -89,7 +89,7 @@ export class PriceImporterJsonComponent {
     private cdRef: ChangeDetectorRef,
     nw: NwService,
     i18n: TranslateService,
-    info: NwInfoLinkService
+    info: NwLinkService
   ) {
     this.adapter = new PricesTableAdapter(nw, i18n, info)
   }
@@ -321,7 +321,7 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
 
   public entities = new BehaviorSubject<PriceItem[]>(null)
 
-  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwInfoLinkService) {
+  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwLinkService) {
     super()
   }
 }

@@ -1,25 +1,25 @@
 import { ChangeDetectorRef, Directive, HostBinding, Input } from '@angular/core'
-import { NwInfoLinkService } from './nw-info-link.service'
-import { NwdbResource } from './nwdbinfo'
+import { NwLinkService } from './nw-link.service'
+import { NwLinkResource } from './nw-link'
 
 @Directive({
   standalone: true,
-  selector: '[nwInfoLink]',
+  selector: '[nwLink]',
 })
-export class NwInfoLinkDirective {
+export class NwLinkDirective {
   @Input()
-  public set nwInfoResource(value: NwdbResource) {
+  public set nwLinkResource(value: NwLinkResource) {
     this.resource = value
     this.update()
   }
 
   @Input()
-  public set nwInfoLink(value: string) {
+  public set nwLink(value: string) {
     this.link = value
     this.update()
   }
 
-  private resource: NwdbResource
+  private resource: NwLinkResource
   private link: string
 
   @HostBinding('attr.href')
@@ -28,7 +28,7 @@ export class NwInfoLinkDirective {
   @HostBinding('attr.target')
   public target: string = '_blank'
 
-  public constructor(private cdRef: ChangeDetectorRef, private service: NwInfoLinkService) {
+  public constructor(private cdRef: ChangeDetectorRef, private service: NwLinkService) {
     //
   }
 

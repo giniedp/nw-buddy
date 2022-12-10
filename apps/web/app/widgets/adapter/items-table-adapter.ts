@@ -3,7 +3,7 @@ import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwInfoLinkService, NwService } from '~/nw'
+import { NwLinkService, NwService } from '~/nw'
 import {
   getItemIconPath,
   getItemId,
@@ -338,7 +338,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
     @Inject(DataTableAdapterOptions)
     @Optional()
     private config: ItemsTableAdapterConfig,
-    private info: NwInfoLinkService
+    private info: NwLinkService
   ) {
     super()
   }

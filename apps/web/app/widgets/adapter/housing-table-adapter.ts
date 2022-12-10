@@ -3,7 +3,7 @@ import { Housingitems } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, map, Observable, of, shareReplay } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwInfoLinkService, NwService } from '~/nw'
+import { NwLinkService, NwService } from '~/nw'
 import {
   getItemIconPath,
   getItemId,
@@ -190,7 +190,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
     })
   )
 
-  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwInfoLinkService) {
+  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwLinkService) {
     super()
   }
 }

@@ -70,7 +70,7 @@
         <div>
           <h2 class="font-bold mt-0">Expedition Items</h2>
           <div class="flex flex-row gap-2">
-            <a [nwInfoLink]="itemId(item)" [nwInfoResource]="'item'" *ngFor="let item of expeditionItems$ | async">
+            <a [nwLink]="itemId(item)" [nwLinkResource]="'item'" *ngFor="let item of expeditionItems$ | async">
               <picture [nwIcon]="item" class="w-16 h-16"></picture>
             </a>
           </div>

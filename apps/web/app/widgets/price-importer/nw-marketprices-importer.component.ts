@@ -8,7 +8,7 @@ import { GridOptions } from 'ag-grid-community'
 import { environment } from 'apps/web/environments/environment'
 import { BehaviorSubject, catchError, combineLatest, defer, map, of, take, takeUntil, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwInfoLinkService, NwService } from '~/nw'
+import { NwDbService, NwLinkService, NwService } from '~/nw'
 import { getItemIconPath, getItemId, getItemRarity, isItemNamed, isMasterItem } from '~/nw/utils'
 import { AppPreferencesService, ItemPreferencesService, StorageProperty } from '~/preferences'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
@@ -90,7 +90,7 @@ export class NwPricesImporterComponent {
     private cdRef: ChangeDetectorRef,
     private destroy: DestroyService,
     private dialog: Dialog,
-    info: NwInfoLinkService,
+    info: NwLinkService,
     nw: NwService,
     i18n: TranslateService,
     app: AppPreferencesService
@@ -270,7 +270,7 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
 
   public entities = new BehaviorSubject<PriceItem[]>(null)
 
-  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwInfoLinkService) {
+  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwLinkService) {
     super()
   }
 }

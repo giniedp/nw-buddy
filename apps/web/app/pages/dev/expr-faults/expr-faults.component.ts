@@ -4,7 +4,7 @@ import { Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of, switchMap, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwInfoLinkService, NwModule } from '~/nw'
+import { NwDbService, NwLinkService, NwModule } from '~/nw'
 import { NwExpEval, NwExpJoin, parseNwExpression } from '~/nw/utils'
 import { DataTableAdapter, DataTableCategory, DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
@@ -105,7 +105,7 @@ export class ExprFaultsComponent extends DataTableAdapter<FaultRow> {
     private nwDb: NwDbService,
     private i18n: TranslateService,
     protected search: QuicksearchService,
-    private info: NwInfoLinkService
+    private info: NwLinkService
   ) {
     super()
   }

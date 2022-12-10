@@ -257,7 +257,7 @@
     <nwb-property-grid class="gap-2">
       <ng-container *ngFor="let info of perkInfos$ | async">
         <ng-container *ngIf="info.maybeStackable">
-          <a [nwInfoLink]="info.perk.PerkID" [nwInfoResource]="'perk'">
+          <a [nwLink]="info.perk.PerkID" [nwLinkResource]="'perk'">
             <img [nwImage]="info.perk.IconPath" class="w-8 h-8" />
           </a>
           <div class="text-sky-600">

@@ -1,28 +1,38 @@
+import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { saveAs } from 'file-saver'
 import { DbService } from '~/data/db.service'
 import { AppPreferencesService, ItemPreferencesService, PreferencesService } from '~/preferences'
+import { ConfirmDialogComponent, LayoutModule } from '~/ui/layout'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
-import { NwPricesImporterComponent } from './nw-marketprices-importer.component'
 
 @Component({
   standalone: true,
   selector: 'nwb-preferences-page',
   templateUrl: './preferences.component.html',
-  styleUrls: ['./preferences.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwPricesImporterComponent, PriceImporterModule],
+  imports: [CommonModule, FormsModule, PriceImporterModule, LayoutModule],
   host: {
     class: 'layout-content layout-pad flex flex-col items-center'
   }
 })
 export class PreferencesComponent implements OnInit {
+
+  protected get tooltipProvider() {
+    return this.app.tooltipProvider.get()
+  }
+  protected set tooltipProvider(value: string) {
+    this.app.tooltipProvider.set(value as any)
+  }
+
   public constructor(
-    public readonly app: AppPreferencesService,
-    public readonly preferences: PreferencesService,
-    public readonly appDb: DbService,
-    private readonly itemPref: ItemPreferencesService
+    public app: AppPreferencesService,
+    public preferences: PreferencesService,
+    public appDb: DbService,
+    private itemPref: ItemPreferencesService,
+    private dialog: Dialog
   ) {
     //
   }
@@ -47,10 +57,25 @@ export class PreferencesComponent implements OnInit {
     const data = JSON.parse(content)
     this.preferences.import(data)
     await this.appDb.import(data['db:nw-buddy'])
+
+    ConfirmDialogComponent.open(this.dialog, {
+      data: {
+        title: 'Import complete',
+        body: 'Data was successfully imported',
+        positive: 'OK'
+      }
+    })
   }
 
   protected clearPrices() {
     this.itemPref.clearPrices()
+    ConfirmDialogComponent.open(this.dialog, {
+      data: {
+        title: 'Prices cleared',
+        body: 'All item prices have been cleared',
+        positive: 'OK'
+      }
+    })
   }
 }
 

@@ -4,7 +4,7 @@ import { GridOptions } from 'ag-grid-community'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwInfoLinkService, NwService } from '~/nw'
+import { NwLinkService, NwService } from '~/nw'
 import {
   getCraftingCategoryLabel,
   getCraftingGroupLabel,
@@ -275,7 +275,7 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
     )
   }).pipe(shareReplayRefCount(1))
 
-  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwInfoLinkService) {
+  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwLinkService) {
     super()
   }
 }

@@ -172,8 +172,10 @@ export abstract class DataTableAdapter<T> {
     named?: boolean
   }) {
     return this.createElement('a', (el) => {
-      el.target = target
-      el.href = href
+      if (href) {
+        el.href = href
+        el.target = target
+      }
       el.append(
         this.createIcon((pic, img) => {
           pic.classList.add('inline-block', 'w-12', 'h-12')

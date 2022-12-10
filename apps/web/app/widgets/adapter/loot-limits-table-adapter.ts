@@ -4,7 +4,7 @@ import { GridOptions } from 'ag-grid-community'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwInfoLinkService } from '~/nw'
+import { NwDbService, NwLinkService } from '~/nw'
 import { getItemIconPath, getItemId, getItemRarity } from '~/nw/utils'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { shareReplayRefCount } from '~/utils'
@@ -121,7 +121,7 @@ export class LootLimitsTableAdapter extends DataTableAdapter<TableItem> {
     )
   }).pipe(shareReplayRefCount(1))
 
-  public constructor(private db: NwDbService, private i18n: TranslateService, private info: NwInfoLinkService) {
+  public constructor(private db: NwDbService, private i18n: TranslateService, private info: NwLinkService) {
     super()
   }
 }

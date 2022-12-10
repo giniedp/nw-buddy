@@ -4,7 +4,7 @@ import { GridOptions, RowDataTransaction } from 'ag-grid-community'
 import { debounceTime, defer, filter, merge, Observable, of, Subject, switchMap, take, takeUntil } from 'rxjs'
 import { SkillBuildRow, SkillBuildsStore } from '~/data'
 import { TranslateService } from '~/i18n'
-import { NwInfoLinkService } from '~/nw'
+import { NwLinkService } from '~/nw'
 import { getAbilityCategoryTag } from '~/nw/utils'
 import { CellRendererService, DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { svgTrashCan } from '~/ui/icons/svg'
@@ -150,7 +150,7 @@ export class SkillBuildsTableAdapter extends DataTableAdapter<SkillBuildRow> {
     private zone: NgZone,
     private r: CellRendererService,
     private layout: LayoutService,
-    private info: NwInfoLinkService
+    private info: NwLinkService
   ) {
     super()
     this.attachListener()

@@ -4,7 +4,7 @@ import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwInfoLinkService, NwModule } from '~/nw'
+import { NwDbService, NwLinkService, NwModule } from '~/nw'
 import { getItemIconPath, getItemPerks, getItemRarity, isPerkGem, isPerkGenerated, isPerkInherent } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { CellRendererService, DataTableAdapter, DataTableCategory, DataTableModule } from '~/ui/data-table'
@@ -164,7 +164,7 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
     private i18n: TranslateService,
     protected search: QuicksearchService,
     private r: CellRendererService,
-    private info: NwInfoLinkService
+    private info: NwLinkService
   ) {
     super()
   }

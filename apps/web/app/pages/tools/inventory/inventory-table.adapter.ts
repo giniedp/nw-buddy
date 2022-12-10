@@ -5,7 +5,7 @@ import { uniqBy } from 'lodash'
 import { debounceTime, defer, EMPTY, filter, merge, Observable, of, Subject, switchMap, take, takeUntil } from 'rxjs'
 import { ItemInstanceRow, ItemInstancesStore } from '~/data'
 import { TranslateService } from '~/i18n'
-import { NwInfoLinkService } from '~/nw'
+import { NwLinkService } from '~/nw'
 import { EQUIP_SLOTS, getItemIconPath, getItemId, getItemRarityLabel, getItemTierAsRoman, isItemNamed } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
@@ -269,7 +269,7 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
     @Inject(DataTableAdapterOptions)
     @Optional()
     private config: InventoryTableAdapterConfig,
-    private info: NwInfoLinkService
+    private info: NwLinkService
   ) {
     super()
     this.attachListener()

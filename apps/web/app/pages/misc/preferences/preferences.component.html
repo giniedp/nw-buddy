@@ -1,13 +1,13 @@
 <div class="w-80 bg-base-300 rounded-md p-4 mb-20">
   <div class="form-control w-full">
-    <button class="btn w-full mt-4" (click)="exportPreferences()">Export Preferences</button>
+    <button class="btn w-full mt-4" (click)="exportPreferences()">Export Data</button>
     <label class="label">
       <span class="label-text-alt">Exports user data e.g. favourites, item prices etc.</span>
     </label>
   </div>
 
   <div class="form-control w-full">
-    <button class="btn w-full mt-4" (click)="importPreferences()">Import Preferences</button>
+    <button class="btn w-full mt-4" (click)="importPreferences()">Import Data</button>
     <label class="label">
       <span class="label-text-alt">Imports previously exported user data</span>
     </label>
@@ -20,6 +20,24 @@
     </label>
   </div>
 
-  <nwb-price-importer-button  class="btn w-full mt-4" [icon]="false"> Import Prices </nwb-price-importer-button>
+  <div class="form-control w-full">
+    <nwb-price-importer-button  class="btn w-full mt-4" [icon]="false"> Import Prices </nwb-price-importer-button>
+    <label class="label">
+      <span class="label-text-alt">Import prices from file or a website</span>
+    </label>
+  </div>
+
+  <div class="form-control w-full">
+    <label class="label cursor-pointer">
+      <span class="label-text">Use NWDB Tooltips</span>
+      <input type="radio" name="tooltipProvider" class="radio checked:bg-primary" [value]="'nwdb'" [(ngModel)]="tooltipProvider" />
+    </label>
+  </div>
+  <div class="form-control w-full">
+    <label class="label cursor-pointer">
+      <span class="label-text">Use NW Guide Tooltips</span>
+      <input type="radio" name="tooltipProvider" class="radio checked:bg-primary" [value]="'nwguide'" [(ngModel)]="tooltipProvider" />
+    </label>
+  </div>
 </div>
 

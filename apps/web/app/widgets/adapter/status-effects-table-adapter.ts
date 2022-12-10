@@ -4,7 +4,7 @@ import { GridOptions } from 'ag-grid-community'
 import { sortBy } from 'lodash'
 import { defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwInfoLinkService, NwService } from '~/nw'
+import { NwLinkService, NwService } from '~/nw'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
@@ -103,7 +103,7 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
 
   private perks: Map<string, Perks>
 
-  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwInfoLinkService) {
+  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwLinkService) {
     super()
   }
 }

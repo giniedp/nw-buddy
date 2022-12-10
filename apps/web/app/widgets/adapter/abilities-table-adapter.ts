@@ -4,7 +4,7 @@ import { GridOptions } from 'ag-grid-community'
 import { sortBy } from 'lodash'
 import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwExpressionService, NwInfoLinkService, NwWeaponTypesService } from '~/nw'
+import { NwDbService, NwExpressionService, NwLinkService, NwWeaponTypesService } from '~/nw'
 import { NwWeaponType } from '~/nw/nw-weapon-types'
 import { getWeaponTagLabel } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
@@ -152,7 +152,7 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
     private i18n: TranslateService,
     private expr: NwExpressionService,
     private weaponTypes: NwWeaponTypesService,
-    private info: NwInfoLinkService
+    private info: NwLinkService
   ) {
     super()
   }

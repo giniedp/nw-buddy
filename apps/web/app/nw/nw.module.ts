@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms'
 import { GamingtoolsLinkDirective } from './nw-gaming-tools-link.directive'
 import { NwHumanizePipe } from './nw-humanize.pipe'
 import { NwIconComponent, NwImageComponent } from './nw-icon.component'
-import { NwInfoLinkDirective } from './nw-info-link.directive'
+import { NwLinkDirective } from './nw-link.directive'
 import { NwTextDirective } from './nw-text.directive'
 import { NwTextBreakPipe, NwTextPipe } from './nw-text.pipe'
 
@@ -15,21 +15,21 @@ import { NwTextBreakPipe, NwTextPipe } from './nw-text.pipe'
     GamingtoolsLinkDirective,
     NwIconComponent,
     NwImageComponent,
-    NwInfoLinkDirective,
+    NwLinkDirective,
     NwTextDirective,
     NwTextPipe,
     NwTextBreakPipe,
-    NwHumanizePipe
+    NwHumanizePipe,
   ],
   exports: [
     NwTextDirective,
     NwIconComponent,
     NwImageComponent,
-    NwInfoLinkDirective,
+    NwLinkDirective,
     NwTextPipe,
     NwTextBreakPipe,
     NwHumanizePipe,
-    GamingtoolsLinkDirective
+    GamingtoolsLinkDirective,
   ],
 })
 export class NwModule {

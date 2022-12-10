@@ -13,7 +13,7 @@ import { BehaviorSubject, combineLatest, defer, map, Observable, of, startWith, 
 
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwInfoLinkService, NwLootbucketService } from '~/nw'
+import { NwDbService, NwLinkService, NwLootbucketService } from '~/nw'
 import { LootContext } from '~/nw/nw-lootcontext'
 import {
   getItemIconPath,
@@ -113,7 +113,7 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
     private lbs: NwLootbucketService,
     private i18n: TranslateService,
     public search: QuicksearchService,
-    private info: NwInfoLinkService
+    private info: NwLinkService
   ) {
     super()
   }

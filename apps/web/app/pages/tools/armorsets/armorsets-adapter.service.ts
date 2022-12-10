@@ -4,7 +4,7 @@ import { groupBy } from 'lodash'
 import m from 'mithril'
 import { combineLatest, defer, map, merge, Observable, of, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { IconComponent, NwInfoLinkService, NwService } from '~/nw'
+import { IconComponent, NwLinkService, NwService } from '~/nw'
 import { getItemIconPath, getItemRarity, getItemTierAsRoman, isItemNamed } from '~/nw/utils'
 import { mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
@@ -204,7 +204,7 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
     private nw: NwService,
     private i18n: TranslateService,
     private layout: LayoutService,
-    private info: NwInfoLinkService
+    private info: NwLinkService
   ) {
     super()
   }

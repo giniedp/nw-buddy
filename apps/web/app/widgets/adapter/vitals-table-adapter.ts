@@ -3,7 +3,7 @@ import { Gamemodes, Vitals } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwInfoLinkService, NwVitalsService } from '~/nw'
+import { NwDbService, NwLinkService, NwVitalsService } from '~/nw'
 import { getVitalDamageEffectivenessPercent, getVitalDungeon } from '~/nw/utils'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
@@ -44,7 +44,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
             return this.createLinkWithIcon({
-              href: this.info.link('creature', data.VitalsID),
+              href: this.info.link('vitals', data.VitalsID),
               target: '_blank',
               icon: this.vitals.vitalFamilyIcon(data),
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
@@ -233,7 +233,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
     private db: NwDbService,
     private i18n: TranslateService,
     private vitals: NwVitalsService,
-    private info: NwInfoLinkService
+    private info: NwLinkService
   ) {
     super()
   }
