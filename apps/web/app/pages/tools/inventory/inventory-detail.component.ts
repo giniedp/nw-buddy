@@ -92,6 +92,7 @@ export class PlayerItemsDetailComponent {
   }
   public commitGearScore(vm: ItemDetailVM) {
     const gearScore = this.overrideGearScore
+    this.overrideGearScore = null
     if (vm.itemRow) {
       this.itemsStore.updateRecord({
         record: {
