@@ -30,7 +30,7 @@ const MAP_EMBED_URLS = {
   DungeonAmrine: 'https://aeternum-map.gg/Amrine%20Excavation?embed=true',
   DungeonShatteredObelisk: 'https://aeternum-map.gg/Starstone%20Barrows?embed=true',
   DungeonRestlessShores01: 'https://aeternum-map.gg/The%20Depths?embed=true',
-  DungeonEbonscale00: 'https://aeternum-map.gg/?bounds=4435,4132.5,5076.5,4673&embed=true',
+  DungeonEbonscale00: 'https://aeternum-map.gg/?bounds=4480,4096,5088,4640&embed=true',
   DungeonEdengrove00: 'https://aeternum-map.gg/Garden%20of%20Genesis?embed=true',
   DungeonReekwater00: 'https://aeternum-map.gg/Lazarus%20Instrumentality?embed=true',
   DungeonCutlassKeys00: 'https://aeternum-map.gg/Barnacles%20&%20Black%20Powder?embed=true',
