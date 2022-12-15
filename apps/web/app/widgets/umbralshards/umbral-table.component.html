@@ -9,8 +9,8 @@
   <tbody >
     <tr *ngFor="let row of data$ | async; let i = index" >
       <th>{{ row.Level }}</th>
-      <td class="text-right">{{ row.RequiredItemQuantity | number }}</td>
-      <td class="text-right">{{ row['total'] | number }}</td>
+      <td class="text-right">{{ row.RequiredItemQuantity | number:'0.0-0' }}</td>
+      <td class="text-right">{{ row['total'] | number:'0.0-0' }}</td>
     </tr>
   </tbody>
 </table>
