@@ -116,7 +116,7 @@
 <ng-template #tplDungeonLoot>
   <div class="grid layout-gap">
     <nwb-item-detail *ngFor="let node of dungeonLoot$ | async; trackBy: trackByIndex" [entity]="node.item" [cdkContextMenuTriggerFor]="tplExplainMenu" (cdkContextMenuOpened)="explainItem = node">
-      <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true"></nwb-item-detail-header>
+      <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true" class="rounded-md overflow-clip"></nwb-item-detail-header>
     </nwb-item-detail>
   </div>
 </ng-template>
@@ -124,7 +124,7 @@
 <ng-template #tplDungeonMutatedLoot>
   <div class="grid layout-gap">
     <nwb-item-detail *ngFor="let node of dungeonMutatedLoot$ | async; trackBy: trackByIndex" [entity]="node.item" [cdkContextMenuTriggerFor]="tplExplainMenu" (cdkContextMenuOpened)="explainItem = node">
-      <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true"></nwb-item-detail-header>
+      <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true" class="rounded-md overflow-clip"></nwb-item-detail-header>
     </nwb-item-detail>
   </div>
 </ng-template>
@@ -132,7 +132,7 @@
 <ng-template #tplDungeonDifficultyLoot>
   <div class="grid layout-gap">
     <nwb-item-detail *ngFor="let node of dungeonDifficultyLoot$ | async; trackBy: trackByIndex" [entity]="node.item" [cdkContextMenuTriggerFor]="tplExplainMenu" (cdkContextMenuOpened)="explainItem = node">
-      <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true"></nwb-item-detail-header>
+      <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true" class="rounded-md overflow-clip"></nwb-item-detail-header>
     </nwb-item-detail>
   </div>
 </ng-template>
