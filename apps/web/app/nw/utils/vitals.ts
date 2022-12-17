@@ -105,6 +105,7 @@ export function getVitalDungeonId(vitalId: string): string {
   return tag ? `Dungeon${tag}` : null
 }
 const MAP_DUNGEON_TO_VITALS_LOOT_TAGS: Record<string, string[]> = {
+  DungeonAmrine: ['Nakashima', 'Simon'],
   DungeonEbonscale00: ['Dynasty', 'IsabellaDynasty'],
   DungeonCutlassKeys00: ['DryadSiren'],
   QuestApophis: ['Apophis']
