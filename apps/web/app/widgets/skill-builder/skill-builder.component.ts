@@ -16,8 +16,8 @@ import {
   switchMap,
 } from 'rxjs'
 import { CharacterStore } from '~/data'
-import { NwModule, NwWeaponTypesService } from '~/nw'
-import { NwWeaponType } from '~/nw/nw-weapon-types'
+import { NwModule } from '~/nw'
+import { NwWeaponType, NwWeaponTypesService } from '~/nw/weapon-types'
 import { NW_MAX_WEAPON_LEVEL } from '~/nw/utils/constants'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'

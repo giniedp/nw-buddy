@@ -1,0 +1,3 @@
+<ng-container *ngFor="let item of rows$ | async">
+  <nwb-loot-table-entry [tableId]="item.id" [highlightIds]="item.highlight" [expand]="item.expand"></nwb-loot-table-entry>
+</ng-container>

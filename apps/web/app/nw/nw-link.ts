@@ -54,6 +54,7 @@ const NWGUIDE_TYPE_MAP: Partial<Record<NwLinkResource, string>>  = {
   recipe: 'recipe',
   ability: 'ability',
   perk: 'perk',
+  vitals: 'mob',
   'status-effect': 'status-effect',
 }
 

@@ -3,7 +3,7 @@ import { Attributeconstitution } from '@nw-data/types'
 import { combineLatest, map, Observable, of } from 'rxjs'
 import { mapGroupBy, shareReplayRefCount, tapDebug } from '~/utils'
 import { AttributeRef, NW_ATTRIBUTE_TYPES } from './nw-attributes'
-import { NwDbService } from './nw-db.service'
+import { NwDbService } from '../nw-db.service'
 
 @Injectable({ providedIn: 'root' })
 export class NwAttributesService {

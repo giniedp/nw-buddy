@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { groupBy } from 'lodash'
 import { defer, map, of } from 'rxjs'
 import { CaseInsensitiveMap, eqCaseInsensitive, mapGroupBy, mapRecordEntries, shareReplayRefCount } from '~/utils'
-import { NwDbService } from './nw-db.service'
+import { NwDbService } from '../nw-db.service'
 import { NW_DAMAGE_TYPE_ICONS, NW_WARD_TYPE_ICONS, NW_WEAPON_TYPES } from './nw-weapon-types'
 
 @Injectable({ providedIn: 'root' })

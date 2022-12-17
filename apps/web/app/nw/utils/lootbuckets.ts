@@ -1,5 +1,4 @@
 import { Lootbuckets } from '@nw-data/types'
-import { uniq, uniqBy } from 'lodash'
 import { CaseInsensitiveMap } from '~/utils'
 
 export function convertLootbuckets(data: Lootbuckets[]) {

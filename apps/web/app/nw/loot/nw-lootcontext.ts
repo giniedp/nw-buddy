@@ -1,6 +1,5 @@
-import { Loottable } from '@nw-data/types'
-import { CaseInsensitiveMap, CaseInsensitiveSet } from '../utils'
-import { LootBucketEntry, LootBucketTag, LootTableEntry, LootTableItem } from './utils'
+import { CaseInsensitiveMap, CaseInsensitiveSet } from '~/utils'
+import { LootBucketEntry, LootTableEntry, LootTableItem } from '../utils'
 
 export type LootBucketConditionNames =
   | 'Level'
@@ -82,6 +81,16 @@ export class LootContext {
    */
   public readonly values: Map<string, number | string>
 
+  /**
+   * Table and bucket ids to ignore
+   */
+  public ignoreTablesAndBuckets: string[]
+
+  /**
+   * Collect only bucket items that have one of these tags
+   */
+  public bucketTags: string[]
+
   public constructor(options: {
     tags: string[]
     values: Record<string, number | string>
@@ -101,6 +110,9 @@ export class LootContext {
    * Resolves accessible items from given loottable
    */
   public accessLoottable(table: LootTableEntry) {
+    if (this.isIgnoredId(table.LootTableID)) {
+      return []
+    }
     const tags = table.Conditions
     if (!tags?.length) {
       return [...table.Items]
@@ -114,6 +126,9 @@ export class LootContext {
    * Checks whether this context can access the given lootbucket
    */
   public accessLootbucket(entry: LootBucketEntry): boolean {
+    if (this.isIgnoredId(entry.LootBucket) || this.isExcludedEntry(entry)) {
+      return false
+    }
     const tags = Array.from(entry.Tags.keys())
     if (entry.MatchOne) {
       for (const tag of tags) {
@@ -130,6 +145,17 @@ export class LootContext {
       }
       return true
     }
+  }
+
+  private isIgnoredId(tableOrBucketId: string) {
+    return this.ignoreTablesAndBuckets?.includes(tableOrBucketId)
+  }
+
+  private isExcludedEntry(entry: LootBucketEntry) {
+    if (!this.bucketTags) {
+      return false
+    }
+    return !this.bucketTags.some((tag) => entry.Tags.has(tag))
   }
 }
 

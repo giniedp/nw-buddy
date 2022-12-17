@@ -4,12 +4,13 @@ import { GridOptions } from 'ag-grid-community'
 import { sortBy } from 'lodash'
 import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwExpressionService, NwLinkService, NwWeaponTypesService } from '~/nw'
-import { NwWeaponType } from '~/nw/nw-weapon-types'
+import { NwDbService, NwLinkService,  } from '~/nw'
+import { NwWeaponType, NwWeaponTypesService } from '~/nw/weapon-types'
 import { getWeaponTagLabel } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { shareReplayRefCount } from '~/utils'
+import { NwExpressionService } from '~/nw/expression'
 
 export type AbilityTableItem = Ability & {
   $weaponType: NwWeaponType

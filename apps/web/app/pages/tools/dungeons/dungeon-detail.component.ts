@@ -1,3 +1,4 @@
+import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -6,19 +7,30 @@ import {
   OnInit,
   TemplateRef,
   TrackByFunction,
-  ViewChild,
+  ViewChild
 } from '@angular/core'
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty } from '@nw-data/types'
-import { combineLatest, defer, map, of, switchMap, takeUntil } from 'rxjs'
-import { NwModule, NwService } from '~/nw'
-import { getItemIconPath, getItemId, getItemRarity } from '~/nw/utils'
-import { DifficultyRank } from '~/preferences'
+import { combineLatest, defer, map, Observable, of, switchMap, takeUntil } from 'rxjs'
+import { NwDbService, NwModule, NwService } from '~/nw'
+import { LootItemWithNodes, LootItemNode } from '~/nw/loot'
+import {
+  getItemIconPath,
+  getItemId,
+  getItemRarity,
+  isItemArmor,
+  isItemNamed,
+  isItemWeapon,
+  isMasterItem
+} from '~/nw/utils'
+import { DifficultyRank, DungeonPreferencesService } from '~/preferences'
+import { LayoutModule } from '~/ui/layout'
 import { DestroyService, observeRouteParam, shareReplayRefCount } from '~/utils'
 import { ItemDetailModule } from '~/widgets/item-detail'
+import { LootModule } from '~/widgets/loot'
 import { VitalsFamiliesModule } from '~/widgets/vitals-families'
-import { DungeonsService } from './dungeons.service'
+import { DungeonDetailStore } from './dungeon-detail.store'
 
 const DIFFICULTY_TIER_NAME = {
   1: 'Normal',
@@ -36,9 +48,8 @@ const MAP_EMBED_URLS = {
   DungeonCutlassKeys00: 'https://aeternum-map.gg/Barnacles%20&%20Black%20Powder?embed=true',
   DungeonBrimstoneSands00: 'https://aeternum-map.gg/The%20Ennead?embed=true',
   DungeonShatterMtn00: "https://aeternum-map.gg/Tempest's%20Heart?embed=true",
-  QuestApophis: null
+  QuestApophis: null,
 }
-
 
 export interface Tab {
   id: string
@@ -51,15 +62,15 @@ export interface Tab {
   templateUrl: './dungeon-detail.component.html',
   styleUrls: ['./dungeon-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, ItemDetailModule, VitalsFamiliesModule],
-  providers: [DestroyService],
+  imports: [CommonModule, RouterModule, NwModule, ItemDetailModule, VitalsFamiliesModule, LootModule, LayoutModule],
+  providers: [DestroyService, DungeonDetailStore],
   host: {
-    class: 'layout-col xl:flex-row'
-  }
+    class: 'layout-col xl:flex-row',
+  },
 })
 export class DungeonDetailComponent implements OnInit {
   public trackById: TrackByFunction<ItemDefinitionMaster | Housingitems> = (i, item) => getItemId(item)
-  public trackByIndex: TrackByFunction<any> = (i, item) => i
+  public trackByIndex = (i: number) => i
   public trackByTabId: TrackByFunction<Tab> = (i, item) => item.id
 
   public dungeonId$ = defer(() => observeRouteParam(this.route, 'id'))
@@ -68,17 +79,15 @@ export class DungeonDetailComponent implements OnInit {
   )
   public tabParam$ = defer(() => observeRouteParam(this.route, 'tab'))
 
-  public dungeon$ = defer(() => this.dungeonId$)
-    .pipe(switchMap((id) => this.ds.dungeon(id)))
-    .pipe(shareReplayRefCount(1))
-
-  public bosses$ = defer(() => this.dungeon$)
-    .pipe(switchMap((it) => this.ds.dungeonBosses(it)))
-    .pipe(shareReplayRefCount(1))
-
-  public difficulties$ = defer(() => this.dungeon$)
-    .pipe(switchMap((it) => this.ds.dungeonDifficulties(it)))
-    .pipe(shareReplayRefCount(1))
+  public dungeon$ = this.store.dungeon$
+  public bosses$ = this.store.bosses$
+  public difficulties$ = this.store.difficulties$
+  public difficulty$ = this.store.difficulty$.pipe(shareReplayRefCount(1))
+  public dungeonLoot$ = this.store.lootNormalMode$.pipe(map((it) => this.filterAndSort(it)))
+  public dungeonMutatedLoot$ = this.store.lootMutatedMode.pipe(map((it) => this.filterAndSort(it)))
+  public dungeonDifficultyLoot$ = this.store.lootDifficulty$.pipe(map((it) => this.filterAndSort(it)))
+  public expeditionItems$ = this.store.possibleItemDrops$
+  public explainItem: LootItemWithNodes
 
   public difficultiesRank$ = defer(() =>
     combineLatest({
@@ -100,42 +109,16 @@ export class DungeonDetailComponent implements OnInit {
     )
     .pipe(shareReplayRefCount(1))
 
-  public difficulty$ = defer(() =>
-    combineLatest({
-      difficulties: this.difficulties$,
-      difficulty: this.mutationParam$,
-    })
-  )
-    .pipe(map(({ difficulties, difficulty }) => this.ds.dungeonDifficulty(difficulties, Number(difficulty))))
-    .pipe(shareReplayRefCount(1))
-
-  public expeditionItems$ = defer(() => this.dungeon$)
-    .pipe(switchMap((dungeon) => this.ds.possibleDrops(dungeon)))
-    .pipe(map((items) => this.filterAndSort(items)))
-
-  public dungeonLoot$ = defer(() => this.dungeon$)
-    .pipe(switchMap((dungeon) => this.ds.lootNormalMode(dungeon)))
-    .pipe(map((it) => this.filterAndSort(it)))
-
-  public dungeonMutatedLoot$ = defer(() => this.dungeon$)
-    .pipe(switchMap((dungeon) => this.ds.lootMutatedMode(dungeon)))
-    .pipe(map((it) => this.filterAndSort(it)))
-
-  public dungeonDifficultyLoot$ = defer(() => combineLatest([this.dungeon$, this.difficulty$]))
-    .pipe(switchMap(([dungeon, difficulty]) => this.ds.lootMutatedModeForDifficulty(dungeon, difficulty)))
-    .pipe(map((it) => this.filterAndSort(it)))
-
   public difficyltyRewards$ = defer(() =>
     combineLatest({
       rank: this.difficultyRank$,
       difficulty: this.difficulty$,
       events: this.nw.db.gameEventsMap,
       items: this.nw.db.itemsMap,
-      loot: this.nw.db.lootTablesMap
+      loot: this.nw.db.lootTablesMap,
     })
   ).pipe(
     map(({ rank, difficulty, events, items, loot }) => {
-
       if (!difficulty) {
         return []
       }
@@ -201,6 +184,9 @@ export class DungeonDetailComponent implements OnInit {
   @ViewChild('tplDungeonMap', { static: true })
   public tplDungeonMap: TemplateRef<unknown>
 
+  @ViewChild('tplExplain', { static: true })
+  public tplExplain: TemplateRef<unknown>
+
   public dungeon: Gamemodes
   public difficulty: Mutationdifficulty
   public tab: string = ''
@@ -241,16 +227,35 @@ export class DungeonDetailComponent implements OnInit {
 
   public constructor(
     private nw: NwService,
-    private ds: DungeonsService,
+    private db: NwDbService,
+    // private ds: DungeonsService,
     private route: ActivatedRoute,
     private destroy: DestroyService,
     private cdRef: ChangeDetectorRef,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    private store: DungeonDetailStore,
+    private preferences: DungeonPreferencesService,
+    private dialog: Dialog
   ) {
     //
   }
 
   public ngOnInit(): void {
+    const dungeon$ = this.db.gameMode(this.dungeonId$)
+    const difficulty$ = combineLatest({
+      difficulty: this.mutationParam$,
+      difficulties: this.db.mutatorDifficulties,
+    }).pipe(
+      map(({ difficulties, difficulty }) => {
+        return difficulties?.find((it) => it.MutationDifficulty === Number(difficulty))
+      })
+    )
+    const input$ = combineLatest({
+      dungeon: dungeon$,
+      difficulty: difficulty$,
+    })
+    this.store.update(input$)
+
     combineLatest({
       dungeon: this.dungeon$,
       difficulty: this.difficulty$,
@@ -284,7 +289,7 @@ export class DungeonDetailComponent implements OnInit {
           label: 'Bosses',
           tpl: this.tplDungeonBosses,
         })
-        console.log(dungeon.GameModeId)
+        //console.log(dungeon.GameModeId)
         const mapUrl = MAP_EMBED_URLS[dungeon.GameModeId]
         this.mapEmbed = mapUrl ? this.domSanitizer.bypassSecurityTrustResourceUrl(mapUrl) : null
         if (this.mapEmbed) {
@@ -315,7 +320,7 @@ export class DungeonDetailComponent implements OnInit {
     if (!dungeon || !difficulty) {
       return of(null)
     }
-    return this.ds.preferences.observeRank(dungeon.GameModeId, difficulty.MutationDifficulty)
+    return this.preferences.observeRank(dungeon.GameModeId, difficulty.MutationDifficulty)
   }
 
   public difficultyRankIcon(dungeon: Gamemodes, difficulty: Mutationdifficulty) {
@@ -361,15 +366,46 @@ export class DungeonDetailComponent implements OnInit {
 
   public updateRank(value: DifficultyRank) {
     if (this.dungeon && this.difficulty) {
-      this.ds.preferences.updateRank(this.dungeon.GameModeId, this.difficulty.MutationDifficulty, value)
+      this.preferences.updateRank(this.dungeon.GameModeId, this.difficulty.MutationDifficulty, value)
       this.cdRef.markForCheck()
     }
   }
 
-  private filterAndSort(items: Array<ItemDefinitionMaster | Housingitems>) {
+  public openExplainDialog() {
+
+    this.dialog.open(this.tplExplain, {
+      maxWidth: 1600,
+      maxHeight: 1200,
+      panelClass: ['w-full', 'h-full', 'bg-base-300'],
+    })
+  }
+
+  public closeDialog() {
+    this.dialog.closeAll()
+  }
+
+  private filterAndSort(items: LootItemWithNodes[]) {
     return items
-      .filter((it) => getItemRarity(it) >= 1)
-      .sort((a, b) => getItemId(a).localeCompare(getItemId(b)))
-      .sort((a, b) => getItemRarity(b) - getItemRarity(a))
+      .filter((it) => getItemRarity(it.item) >= 1)
+      .sort((nodeA, nodeB) => {
+        const a = nodeA.item
+        const b = nodeB.item
+        const isGearA = isMasterItem(a) && (isItemArmor(a) || isItemWeapon(a))
+        const isGearB = isMasterItem(b) && (isItemArmor(b) || isItemWeapon(b))
+        if (isGearA !== isGearB) {
+          return isGearA ? -1 : 1
+        }
+        const isNamedA = isMasterItem(a) && isItemNamed(a)
+        const isNamedB = isMasterItem(b) && isItemNamed(b)
+        if (isNamedA !== isNamedB) {
+          return isNamedA ? -1 : 1
+        }
+        const rarrityA = getItemRarity(a)
+        const rarrityB = getItemRarity(b)
+        if (rarrityA !== rarrityB) {
+          return rarrityA >= rarrityB ? -1 : 1
+        }
+        return getItemId(a).localeCompare(getItemId(b))
+      })
   }
 }

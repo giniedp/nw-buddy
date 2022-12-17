@@ -9,7 +9,7 @@ import {
 } from 'rxjs'
 import { TranslateService } from '~/i18n'
 
-import { NwExpressionService } from './nw-expression.service'
+import { NwExpressionService } from './expression'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from './utils/constants'
 
 interface TextContext {

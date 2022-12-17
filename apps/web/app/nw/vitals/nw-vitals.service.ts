@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core'
 import { Vitals } from '@nw-data/types'
-import { defer } from 'rxjs'
-import { NwDbService } from './nw-db.service'
+import { combineLatest, defer, map, Observable } from 'rxjs'
+import { NwDbService } from '../nw-db.service'
+import { getVitalDungeon } from '../utils/vitals'
 
 const CREATURE_TYPE_MARKER = {
   Boss: 'boss',
@@ -34,7 +35,8 @@ const FAMILIES_ICONS = {
 
 @Injectable({ providedIn: 'root' })
 export class NwVitalsService {
-  public index = defer(() => this.db.vitalsMap)
+  public all$ = defer(() => this.db.vitals)
+  public byId$ = defer(() => this.db.vitalsMap)
 
   public iconStronattack = 'assets/icons/strongattack.png'
   public iconWeakattack = 'assets/icons/weakattack.png'
@@ -54,4 +56,15 @@ export class NwVitalsService {
     return FAMILIES_ICONS[vital.Family] || FAMILIES_ICONS.default
   }
 
+  public byExpedition(gameModeId: Observable<string>) {
+    return combineLatest({
+      vitals: this.all$,
+      dungeons: this.db.gameModes,
+      dungeonId: gameModeId,
+    }).pipe(
+      map(({ vitals, dungeons, dungeonId }) => {
+        return vitals.filter((it) => getVitalDungeon(it, dungeons)?.GameModeId === dungeonId)
+      })
+    )
+  }
 }

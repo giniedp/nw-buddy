@@ -2,8 +2,10 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { Gamemodes, Vitals } from '@nw-data/types'
 import { combineLatest, defer, map, ReplaySubject } from 'rxjs'
-import { NwDbService, NwModule, NwVitalsService, NwWeaponTypesService } from '~/nw'
+import { NwDbService, NwModule } from '~/nw'
 import { getVitalDamageEffectiveness } from '~/nw/utils'
+import { NwVitalsService } from '~/nw/vitals'
+import { NwWeaponTypesService } from '~/nw/weapon-types'
 import { DestroyService } from '~/utils'
 
 const FAMILY_META = {

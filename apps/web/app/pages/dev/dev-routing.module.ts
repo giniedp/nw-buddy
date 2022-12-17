@@ -3,6 +3,7 @@ import { RouterModule, Routes } from "@angular/router"
 import { DbFaultsComponent } from "./db-faults"
 import { DevComponent } from "./dev.component"
 import { ExprFaultsComponent } from "./expr-faults"
+import { DevLootComponent } from "./loottables"
 import { DevThemeComponent } from "./theme/dev-theme.component"
 
 const routes: Routes = [
@@ -26,6 +27,10 @@ const routes: Routes = [
       {
         path: 'theme',
         component: DevThemeComponent
+      },
+      {
+        path: 'loot',
+        component: DevLootComponent
       },
     ]
   },

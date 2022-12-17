@@ -6,7 +6,7 @@ import { BehaviorSubject, combineLatest, debounceTime, defer, distinctUntilChang
 import { CharacterStore } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule, NwService } from '~/nw'
-import { NwTradeskillInfo } from '~/nw/nw-tradeskill.service'
+import { NwTradeskillInfo } from '~/nw/tradeskill'
 import { ChartModule } from '~/ui/chart'
 
 const COLORS = ['#003f5c', '#2f4b7c', '#665191', '#a05195', '#d45087', '#f95d6a', '#ff7c43', '#ffa600'].reverse()

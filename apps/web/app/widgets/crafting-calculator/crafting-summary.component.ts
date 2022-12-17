@@ -6,7 +6,7 @@ import {
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { combineLatest, debounceTime, defer, map, ReplaySubject, startWith, switchMap } from 'rxjs'
 import { NwModule, NwService } from '~/nw'
-import { NwTradeskillService } from '~/nw/nw-tradeskill.service'
+import { NwTradeskillService } from '~/nw/tradeskill'
 import { calculateCraftingReward, getItemId } from '~/nw/utils'
 import { DestroyService, shareReplayRefCount } from '~/utils'
 import { ItemTrackerModule } from '../item-tracker'

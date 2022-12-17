@@ -10,8 +10,9 @@ import {
   ReplaySubject, switchMap,
   takeUntil
 } from 'rxjs'
-import { NwModule, NwWeaponTypesService } from '~/nw'
+import { NwModule } from '~/nw'
 import { NW_MAX_WEAPON_LEVEL } from '~/nw/utils/constants'
+import { NwWeaponTypesService } from '~/nw/weapon-types'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { SkillTreeCell } from './skill-tree.model'

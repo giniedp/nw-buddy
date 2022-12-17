@@ -1,6 +1,6 @@
 <nwb-nav-toolbar class="bg-base-300 rounded-t-md" [menu]="tplMenu">
   <ng-template #tplMenu>
-    <li *ngFor="let item of dungeon$ | async" [routerLinkActive]="'bordered'">
+    <li *ngFor="let item of dungeons$ | async" [routerLinkActive]="'bordered'">
       <a [routerLink]="item.GameModeId">
         <picture [nwIcon]="item.IconPath" class="w-6 h-6 scale-150"></picture>
         <span [nwText]="item.DisplayName"></span>

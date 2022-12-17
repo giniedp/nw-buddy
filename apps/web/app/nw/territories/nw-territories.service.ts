@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core'
-import { Territorydefinitions } from '@nw-data/types'
 import { combineLatest, isObservable, map, Observable, of, switchMap } from 'rxjs'
 import { TerritoriesPreferencesService } from '~/preferences/territories-preferences.service'
 import { shareReplayRefCount } from '~/utils'
-import { NwDbService } from './nw-db.service'
-import { territoryImage } from './utils'
+import { NwDbService } from '../nw-db.service'
+import { territoryImage } from '../utils'
 
 
 @Injectable({ providedIn: 'root' })

@@ -1,8 +1,2 @@
-<ng-container *ngIf="tags | async; let t">
-  <ul class="bg-base-100 p-4 rounded-md flex-1">
-    <li *ngFor="let item of t.tags" >{{item}}</li>
-  </ul>
-  <ul class="bg-base-100 p-4 rounded-md flex-1">
-    <li *ngFor="let item of t.conditions" >{{item}}</li>
-  </ul>
-</ng-container>
+<!-- <nwb-loot-table-entry [tableId]="'CreatureLootMaster_MutatedContainer'" [expand]="true" class="flex-1"></nwb-loot-table-entry> -->
+<nwb-loot-table-list class="flex-1 flex flex-col gap-2"></nwb-loot-table-list>

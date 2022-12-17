@@ -2,9 +2,10 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { Gamemodes } from '@nw-data/types'
-import { NwModule } from '~/nw'
+import { map } from 'rxjs'
+import { NwDbService, NwModule } from '~/nw'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
-import { DungeonsService } from './dungeons.service'
+import { shareReplayRefCount } from '~/utils'
 
 @Component({
   standalone: true,
@@ -18,14 +19,14 @@ import { DungeonsService } from './dungeons.service'
   },
 })
 export class DungeonsComponent {
-
-  public get dungeon$() {
-    return this.ds.dungeon$
-  }
+  protected dungeons$ = this.db.data
+    .gamemodes()
+    .pipe(map((list) => list.filter((it) => it.IsDungeon).sort((a, b) => a.RequiredLevel - b.RequiredLevel)))
+    .pipe(shareReplayRefCount(1))
 
   protected activeItem: Gamemodes
 
-  public constructor(private ds: DungeonsService) {
+  public constructor(private db: NwDbService) {
     //
   }
 

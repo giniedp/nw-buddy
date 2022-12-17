@@ -3,7 +3,7 @@ import { Component, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Territorydefinitions } from '@nw-data/types'
 import { BehaviorSubject, defer, switchMap } from 'rxjs'
-import { TerritoriesService } from '~/nw'
+import { TerritoriesService } from '~/nw/territories'
 
 @Component({
   selector: 'nwb-territory-standing',

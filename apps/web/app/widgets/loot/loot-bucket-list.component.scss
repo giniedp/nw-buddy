@@ -1,0 +1,12 @@
+:host {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  }
+  nwb-item-detail.v-highlight {
+    @apply outline outline-2 outline-success outline-offset-2;
+  }
+  nwb-item-detail {
+    content-visibility: auto;
+    min-height: 86px;
+  }
+}

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { combineLatest, map, Observable } from 'rxjs'
-import { LootBucketEntry, LootBucketTag } from './utils'
-import { NwDbService } from './nw-db.service'
+import { LootBucketEntry, LootBucketTag } from '../utils'
+import { NwDbService } from '../nw-db.service'
 import { uniq } from 'lodash'
 import { LootBucketConditionNames, LootContext } from './nw-lootcontext'
 

@@ -1,6 +1,5 @@
-import { ItemDefinitionMaster, Loottable } from '@nw-data/types'
+import { Loottable } from '@nw-data/types'
 import { uniq } from 'lodash'
-import { LootBucketEntry } from './lootbuckets'
 
 export interface LootTableEntry {
   'AND/OR'?: string

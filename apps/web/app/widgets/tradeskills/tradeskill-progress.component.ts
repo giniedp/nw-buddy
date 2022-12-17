@@ -9,7 +9,7 @@ import {
 } from '@angular/core'
 import { BehaviorSubject, combineLatest, map, of, ReplaySubject, switchMap, takeUntil } from 'rxjs'
 import { CharacterStore } from '~/data'
-import { NwTradeskillService } from '~/nw/nw-tradeskill.service'
+import { NwTradeskillService } from '~/nw/tradeskill'
 import { DestroyService } from '~/utils'
 
 @Component({

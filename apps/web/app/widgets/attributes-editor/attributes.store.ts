@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { combineLatest, Observable, of, switchMap } from 'rxjs'
-import { AttributeRef, NwDbService, NW_ATTRIBUTE_TYPES } from '~/nw'
+import { NwDbService } from '~/nw'
+import { AttributeRef, NW_ATTRIBUTE_TYPES } from '~/nw/attributes'
 import { NW_MAX_CHARACTER_LEVEL } from '~/nw/utils/constants'
 
 export interface AttributesState {

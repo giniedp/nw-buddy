@@ -1,8 +1,8 @@
 import { Dialog, DialogConfig, DialogModule, DialogRef, DIALOG_DATA } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy, Inject } from '@angular/core'
-import { NwModule, NwWeaponTypesService } from '~/nw'
-import { NwWeaponType } from '~/nw/nw-weapon-types'
+import { NwModule } from '~/nw'
+import { NwWeaponType, NwWeaponTypesService } from '~/nw/weapon-types'
 import { eqCaseInsensitive } from '~/utils'
 
 @Component({

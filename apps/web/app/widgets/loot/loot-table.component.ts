@@ -13,8 +13,7 @@ import { BehaviorSubject, combineLatest, defer, map, Observable, of, startWith, 
 
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwLinkService, NwLootbucketService } from '~/nw'
-import { LootContext } from '~/nw/nw-lootcontext'
+import { NwDbService, NwLinkService } from '~/nw'
 import {
   getItemIconPath,
   getItemId,
@@ -25,16 +24,20 @@ import {
   LootTableItem
 } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter } from '~/ui/data-table'
-import { QuicksearchService } from '~/ui/quicksearch'
+import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
+import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { shareReplayRefCount } from '~/utils'
+import { LootContext, NwLootbucketService } from '~/nw/loot'
+import { CommonModule } from '@angular/common'
 
 type Item = ItemDefinitionMaster | Housingitems
 @Component({
+  standalone: true,
   selector: 'nwb-loot-table',
   templateUrl: './loot-table.component.html',
   styleUrls: ['./loot-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, DataTableModule, QuicksearchModule],
   providers: [
     {
       provide: DataTableAdapter,

@@ -2,10 +2,10 @@ import { Injectable } from '@angular/core'
 
 import { ItemPreferencesService } from '../preferences'
 import { NwDbService } from './nw-db.service'
-import { NwExpressionService } from './nw-expression.service'
-import { NwTradeskillService } from './nw-tradeskill.service'
+import { NwExpressionService } from './expression'
+import { NwTradeskillService } from './tradeskill'
 import m from 'mithril'
-import { NwLootbucketService } from './nw-lootbucket.service'
+import { NwLootbucketService } from './loot'
 
 @Injectable({ providedIn: 'root' })
 export class NwService {

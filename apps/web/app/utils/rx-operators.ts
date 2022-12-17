@@ -32,16 +32,17 @@ export function mapDistinct<T, R>(mapper: (value: T) => R) {
   )
 }
 
-export function tapDebug<T>(tag: string) {
+export function tapDebug<T>(tag: string, transform?: (it: T) => any) {
   return tap<T>({
     next(value) {
-      console.log(`%c[${tag}: Next]`, "background: #009688; color: #fff; padding: 3px; font-size: 9px;", value)
+      const data = transform ? transform(value) : value
+      console.log(`%c[${tag}: Next]`, "background: #009688; color: #fff; padding: 2px; font-size: 10px;", data)
     },
     error(error) {
-      console.log(`%[${tag}: Error]`, "background: #E91E63; color: #fff; padding: 3px; font-size: 9px;", error)
+      console.log(`%[${tag}: Error]`, "background: #E91E63; color: #fff; padding: 2px; font-size: 10px;", error)
     },
     complete() {
-      console.log(`%c[${tag}]: Complete`, "background: #00BCD4; color: #fff; padding: 3px; font-size: 9px;")
+      console.log(`%c[${tag}]: Complete`, "background: #00BCD4; color: #fff; padding: 2px; font-size: 10px;")
     }
   })
 }

@@ -111,15 +111,14 @@ const MAP_DUNGEON_TO_VITALS_LOOT_TAGS: Record<string, string[]> = {
 }
 export function getVitalDungeon(vital: Vitals, dungeons: Gamemodes[]) {
   const vitalDungeonId = getVitalDungeonId(vital.VitalsID)
+  if (vitalDungeonId) {
+    return dungeons.find((it) => it.GameModeId === vitalDungeonId)
+  }
+  if (!vital.LootTags?.length) {
+    return null
+  }
   for (const dungeon of dungeons) {
     if (!dungeon.IsDungeon) {
-      continue
-    }
-    // vital ID implicitly references dungeon ID
-    if (vitalDungeonId && vitalDungeonId === dungeon.GameModeId) {
-      return dungeon
-    }
-    if (!vital.LootTags?.length) {
       continue
     }
     // vital references dungeon via LootTags
@@ -127,16 +126,18 @@ export function getVitalDungeon(vital: Vitals, dungeons: Gamemodes[]) {
     if (vital.LootTags.some((tag) => tag === dungeonTag)) {
       return dungeon
     }
-    // special case for
-    // - Dynasty_Empress
-    const tags = MAP_DUNGEON_TO_VITALS_LOOT_TAGS[dungeon.GameModeId]
-    if (tags && vital.LootTags.some((tag) => tags.includes(tag))) {
-      // console.debug('special case', {
-      //   vitalDungeonId,
-      //   vital,
-      //   dungeon
-      // })
-      return dungeon
+    if (vital.CreatureType === 'DungeonBoss') {
+      // special case for
+      // - Dynasty_Empress
+      const tags = MAP_DUNGEON_TO_VITALS_LOOT_TAGS[dungeon.GameModeId]
+      if (tags && vital.LootTags.some((tag) => tags.includes(tag))) {
+        // console.debug('special case', {
+        //   vitalDungeonId,
+        //   vital,
+        //   dungeon
+        // })
+        return dungeon
+      }
     }
   }
   return null

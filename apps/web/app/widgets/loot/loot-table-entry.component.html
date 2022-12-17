@@ -1,0 +1,92 @@
+<!--
+'AND/OR'?: string
+Conditions?: string[]
+GSBonus?: number
+HWMMult?: number
+LootTableID: string
+LuckSafe?: string
+MaxRoll: number
+PerkBucketOverrides1?: string
+PerkBucketOverrides2?: string
+PerkOverrides3?: string
+UseLevelGS?: string
+Items: LootTableItem[]
+-->
+
+<ng-container *ngIf="vm$ | async; let vm">
+  <div
+    class="px-2 py-1 flex flex-row items-center cursor-pointer gap-x-1"
+    [class.bg-base-100]="!vm.highlight"
+    [class.bg-accent]="vm.highlight"
+    (click)="toggle()"
+  >
+    <ng-content></ng-content>
+    <span>{{ vm.table.LootTableID }}</span>
+    <span class="flex-1"></span>
+    <nwb-icon
+      [icon]="iconExpand"
+      class="transition-transform w-4 h-4"
+      [class.rotate-90]="expand$ | async"
+      [class.-rotate-90]="!(expand$ | async)"
+    ></nwb-icon>
+  </div>
+  <div class="bg-base-200 rounded-md p-3 pr-0 mr-[-1px] flex flex-col gap-2" *ngIf="expand$ | async">
+    <div class="flex flex-row flex-wrap gap-1">
+      <span *ngIf="vm.table['AND/OR']" class="whitespace-nowrap badge badge-sm badge-info">
+        {{ vm.table['AND/OR'] }}
+      </span>
+      <span *ngIf="vm.table.MaxRoll" class="whitespace-nowrap badge badge-sm badge-primary">
+        MaxRoll: {{ vm.table.MaxRoll }}
+      </span>
+      <span *ngIf="vm.table.GSBonus" class="whitespace-nowrap badge badge-sm badge-accent">
+        GSBonus: {{ vm.table.GSBonus }}
+      </span>
+      <span *ngIf="vm.table.UseLevelGS" class="whitespace-nowrap badge badge-sm badge-accent">
+        UseLevelGS: {{ vm.table.UseLevelGS }}
+      </span>
+      <span *ngIf="vm.table.HWMMult" class="whitespace-nowrap badge badge-sm badge-accent">
+        HWMMult: {{ vm.table.HWMMult }}
+      </span>
+      <span *ngIf="vm.table.LuckSafe" class="whitespace-nowrap badge badge-sm badge-primary">
+        LuckSafe: {{ vm.table.LuckSafe }}
+      </span>
+
+      <span *ngFor="let item of vm.table.Conditions" class="whitespace-nowrap badge badge-sm badge-secondary">{{
+        item
+      }}</span>
+    </div>
+    <ng-container *ngFor="let row of vm.items">
+      <ng-template #tplHeader>
+        <span *ngIf="vm.table.MaxRoll" class="whitespace-nowrap badge badge-sm badge-primary"
+          >>= {{ row.item.Prob }}
+        </span>
+        <span *ngIf="!vm.table.MaxRoll && row.item.Prob != '0'" class="whitespace-nowrap badge badge-sm badge-secondary"
+          >>= {{ row.item.Prob }}
+        </span>
+        <span>{{ row.item.Qty }} &times; </span>
+      </ng-template>
+      <div>
+        <ng-container *ngIf="row.item.ItemID">
+          <div class="flex flex-row gap-1 items-center">
+            <ng-container [ngTemplateOutlet]="tplHeader"></ng-container>
+          </div>
+          <nwb-item-detail [entityId]="row.item.ItemID">
+            <nwb-item-detail-header></nwb-item-detail-header>
+          </nwb-item-detail>
+        </ng-container>
+
+        <ng-container *ngIf="row.item.LootBucketID">
+          <nwb-loot-bucket-list [bucketId]="row.item.LootBucketID" [expand]="row.expand" [highlightIds]="highlightIds">
+            <ng-container [ngTemplateOutlet]="tplHeader"></ng-container>
+          </nwb-loot-bucket-list>
+        </ng-container>
+
+        <ng-container *ngIf="row.item.LootTableID">
+          <nwb-loot-table-entry [tableId]="row.item.LootTableID" [expand]="row.expand" [highlightIds]="highlightIds">
+            <ng-container [ngTemplateOutlet]="tplHeader"></ng-container>
+          </nwb-loot-table-entry>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+</ng-container>

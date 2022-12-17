@@ -28,8 +28,8 @@ import {
   tap,
 } from 'rxjs'
 import { CharacterStore, GearsetStore, ItemInstance, ItemInstancesDB, SkillBuildsDB } from '~/data'
-import { NwAttributesService, NwDbService, NwModule, NwWeaponTypesService } from '~/nw'
-import { AttributeRef, NW_ATTRIBUTE_TYPES } from '~/nw/nw-attributes'
+import { NwDbService, NwModule } from '~/nw'
+import { AttributeRef, NwAttributesService, NW_ATTRIBUTE_TYPES } from '~/nw/attributes'
 import {
   getAffixABSs,
   getAffixDMGs,
@@ -45,6 +45,7 @@ import {
   stripAffixProperties,
   totalGearScore,
 } from '~/nw/utils'
+import { NwWeaponTypesService } from '~/nw/weapon-types'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
 import { ConfirmDialogComponent } from '~/ui/layout'

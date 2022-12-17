@@ -19,6 +19,8 @@ module.exports = {
       gridTemplateColumns: {
         fill: 'repeat(auto-fill, minmax(20rem, 1fr))',
         dl: 'max-content auto',
+        dl2: 'repeat(2, max-content) auto',
+        dl3: 'repeat(3, max-content) auto',
       },
       colors: {
         nw: {

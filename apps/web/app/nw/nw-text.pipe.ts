@@ -2,7 +2,7 @@ import { ChangeDetectorRef, OnDestroy, Pipe, PipeTransform } from '@angular/core
 import { isEqual } from 'lodash'
 import { Subject, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwExpressionContext, NwExpressionService } from './nw-expression.service'
+import { NwExpressionContext, NwExpressionService } from './expression'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from './utils/constants'
 
 export type NwTextPipeOptions = Partial<NwExpressionContext> & Record<string, string | number>

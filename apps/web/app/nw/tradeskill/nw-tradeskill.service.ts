@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core'
 import { Tradeskillpostcap } from '@nw-data/types'
 import { uniq } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, shareReplay, switchMap } from 'rxjs'
-import { shareReplayRefCount } from '../utils'
-import { NwDbService, toMap } from './nw-db.service'
+import { shareReplayRefCount } from '~/utils'
+import { NwDbService, toMap } from '../nw-db.service'
 import { NW_TRADESKILLS_INFOS_MAP } from './nw-tradeskill'
 
 export interface NwTradeskillInfo {

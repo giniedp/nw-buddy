@@ -7,6 +7,7 @@
       <ng-content select=".header"></ng-content>
     </div>
   </div>
+  <ng-content select=".sub-header"></ng-content>
   <div class="flex flex-col leading-4">
     <div class="text-xs text-rarity-{{rarity}}">
       <span *ngIf="sourceName">{{ sourceName }}</span>
@@ -18,6 +19,7 @@
       <span class="text-rarity-{{rarity}} text-sm">{{ rarityName }}</span>
     </div>
   </div>
+  <ng-content></ng-content>
 </ng-container>
 
 <ng-template #tplSkeleton>

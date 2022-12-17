@@ -115,7 +115,7 @@
 
 <ng-template #tplDungeonLoot>
   <div class="grid layout-gap">
-    <nwb-item-detail *ngFor="let item of dungeonLoot$ | async; trackBy: trackByIndex" [entity]="item">
+    <nwb-item-detail *ngFor="let node of dungeonLoot$ | async; trackBy: trackByIndex" [entity]="node.item" [cdkContextMenuTriggerFor]="tplExplainMenu" (cdkContextMenuOpened)="explainItem = node">
       <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true"></nwb-item-detail-header>
     </nwb-item-detail>
   </div>
@@ -123,7 +123,7 @@
 
 <ng-template #tplDungeonMutatedLoot>
   <div class="grid layout-gap">
-    <nwb-item-detail *ngFor="let item of dungeonMutatedLoot$ | async; trackBy: trackByIndex" [entity]="item">
+    <nwb-item-detail *ngFor="let node of dungeonMutatedLoot$ | async; trackBy: trackByIndex" [entity]="node.item" [cdkContextMenuTriggerFor]="tplExplainMenu" (cdkContextMenuOpened)="explainItem = node">
       <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true"></nwb-item-detail-header>
     </nwb-item-detail>
   </div>
@@ -131,7 +131,7 @@
 
 <ng-template #tplDungeonDifficultyLoot>
   <div class="grid layout-gap">
-    <nwb-item-detail *ngFor="let item of dungeonDifficultyLoot$ | async; trackBy: trackByIndex" [entity]="item">
+    <nwb-item-detail *ngFor="let node of dungeonDifficultyLoot$ | async; trackBy: trackByIndex" [entity]="node.item" [cdkContextMenuTriggerFor]="tplExplainMenu" (cdkContextMenuOpened)="explainItem = node">
       <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true"></nwb-item-detail-header>
     </nwb-item-detail>
   </div>
@@ -145,4 +145,27 @@
 
 <ng-template #tplDungeonMap>
   <iframe [attr.src]="mapEmbed" class="map-frame"></iframe>
+</ng-template>
+
+<ng-template #tplExplain>
+  <ng-container *ngIf="explainItem">
+    <nwb-loot-table-list [highlight]="explainItem"></nwb-loot-table-list>
+  </ng-container>
+  <div class="flex-none modal-action flex-row justify-end layout-pad mt-0">
+    <div class="btn-group">
+      <label class="btn btn-primary" (click)="closeDialog()">Close</label>
+    </div>
+  </div>
+
+</ng-template>
+
+
+<ng-template #tplExplainMenu>
+  <ul class="menu menu-compact bg-base-100 rounded-md w-40" cdkMenu>
+    <li>
+      <button (click)="openExplainDialog()" cdkMenuItem>
+        Explain Drop
+      </button>
+    </li>
+  </ul>
 </ng-template>
