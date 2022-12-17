@@ -103,6 +103,23 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           valueFormatter: ({ value }) => `${value}%`,
         }),
         this.colDef({
+          colId: 'lootTableId',
+          headerValueGetter: () => 'Loot Table',
+          field: this.fieldName('LootTableId'),
+          filter: SelectboxFilter,
+        }),
+        this.colDef({
+          colId: 'lootTags',
+          headerValueGetter: () => 'Loot Tags',
+          field: this.fieldName('LootTags'),
+          cellRenderer: this.cellRendererTags(humanize),
+          filter: SelectboxFilter,
+          filterParams: SelectboxFilter.params({
+            showSearch: true,
+            showCondition: true,
+          }),
+        }),
+        this.colDef({
           colId: 'expedition',
           headerValueGetter: () => 'Expedition',
           valueGetter: this.valueGetter(({ data }) => data?.$dungeon?.DisplayName),
