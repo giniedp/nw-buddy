@@ -7168,6 +7168,18 @@ babel-plugin-polyfill-regenerator@^0.4.0, babel-plugin-polyfill-regenerator@^0.4
   dependencies:
     "@babel/helper-define-polyfill-provider" "^0.3.3"
 
+babylonjs-gltf2interface@^5.38.0:
+  version "5.38.0"
+  resolved "https://registry.yarnpkg.com/babylonjs-gltf2interface/-/babylonjs-gltf2interface-5.38.0.tgz#74c465f864e9b2d17453796ddd94f04639fbcfe0"
+  integrity sha512-5ey5B/H19InFIrHWtX8ggC3xRQQuiqKJ+muDMi8P7PGwS1RyBuNUAvJj8Iqn5wq6dCjcxYZoGzYvDw/TLiWv9g==
+
+babylonjs-viewer@5.38.0:
+  version "5.38.0"
+  resolved "https://registry.yarnpkg.com/babylonjs-viewer/-/babylonjs-viewer-5.38.0.tgz#fa4e3a6ec98a0268014e222da70333697d579cd2"
+  integrity sha512-XrXNNY2Du+2tzhXfwgWaYYC48juBoj4sdCvy82CtezVgLrP3+BEHgOl0oBwu8EAJjjHEvs+N4C2hvC+V6u3+YQ==
+  dependencies:
+    babylonjs-gltf2interface "^5.38.0"
+
 bail@^1.0.0:
   version "1.0.5"
   resolved "https://registry.yarnpkg.com/bail/-/bail-1.0.5.tgz#b6fa133404a392cbc1f8c4bf63f5953351e7a776"

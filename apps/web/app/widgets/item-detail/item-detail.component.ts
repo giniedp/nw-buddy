@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Inpu
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { NwDbService } from '~/nw'
 import { getItemId } from '~/nw/utils'
+import { ModelViewerService } from '../model-viewer/model-viewer.service'
 import { ItemDetailService } from './item-detail.service'
 
 @Component({
@@ -33,7 +34,7 @@ export class ItemDetailComponent extends ItemDetailService {
     this.entityId$.next(getItemId(value))
   }
 
-  public constructor(db: NwDbService, cdRef: ChangeDetectorRef) {
-    super(db, cdRef)
+  public constructor(db: NwDbService, ms: ModelViewerService, cdRef: ChangeDetectorRef) {
+    super(db, ms, cdRef)
   }
 }

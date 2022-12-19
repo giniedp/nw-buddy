@@ -106,6 +106,7 @@
     "@typescript-eslint/parser": "5.39.0",
     "ag-grid-community": "28.2.0",
     "autoprefixer": "10.4.12",
+    "babylonjs-viewer": "5.38.0",
     "chart.js": "3.9.1",
     "cli-progress": "3.11.2",
     "comlink": "4.3.1",
@@ -128,6 +129,8 @@
     "file-saver": "2.0.5",
     "gzipper": "7.1.0",
     "html-to-image": "1.10.8",
+    "ipfs-core": "0.17.0",
+    "ipfs-core-types": "0.13.0",
     "jasmine-core": "4.4.0",
     "jasmine-spec-reporter": "7.0.0",
     "karma": "6.4.1",
@@ -159,9 +162,7 @@
     "wait-on": "6.0.1",
     "webdriver-manager": "12.1.8",
     "wrangler": "2.5.0",
-    "zone.js": "~0.11.8",
-    "ipfs-core": "0.17.0",
-    "ipfs-core-types": "0.13.0"
+    "zone.js": "~0.11.8"
   },
   "engines": {
     "node": ">=16.0.0"

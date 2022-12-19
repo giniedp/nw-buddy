@@ -23,6 +23,7 @@ import {
   hasPerkInherentAffix,
 } from '~/nw/utils'
 import { deferStateFlat, humanize, mapProp, mapPropTruthy, shareReplayRefCount } from '~/utils'
+import { ModelViewerService } from '../model-viewer/model-viewer.service'
 
 function isTruthy(value: any) {
   return !!value
@@ -64,6 +65,7 @@ export class ItemDetailService {
     .pipe(map(([item, gs]) => (hasItemGearScore(item) ? gs || getItemGearScoreLabel(item) : null)))
     .pipe(shareReplayRefCount(1))
 
+  public readonly itemModels$ = this.entityId$.pipe(switchMap((id) => this.ms.getModelInfos(id)))
   public readonly itemStatsRef$ = this.item$.pipe(map((it) => it?.ItemStatsRef))
   public readonly name$ = this.entity$.pipe(map((it) => it?.Name))
   public readonly source$ = this.entity$.pipe(map((it) => it?.['$source'] as string))
@@ -165,7 +167,7 @@ export class ItemDetailService {
     })
   )
 
-  public constructor(protected db: NwDbService, protected cdRef: ChangeDetectorRef) {
+  public constructor(protected db: NwDbService, private ms: ModelViewerService, protected cdRef: ChangeDetectorRef) {
     //
   }
 

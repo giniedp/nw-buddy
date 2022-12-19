@@ -491,12 +491,12 @@ export interface Damagetable {
     AddThreat?:                   number;
     Affixes?:                     string;
     Affliction?:                  string;
-    AfflictionPercent?:           number;
+    AfflictionPercent?:           boolean | number;
     AttackBlockedRuneCharge?:     number;
     AttackDealsNoDurability?:     boolean;
     AttackRuneCharge?:            number;
     AttackType?:                  string;
-    BlockAbsorptionModifier:      number;
+    BlockAbsorptionModifier?:     number | string;
     BlockCameraShakeID?:          string;
     BlockHitStun:                 number;
     BlockImpactDecayRate:         number;
@@ -507,7 +507,8 @@ export interface Damagetable {
     BlockStaminaDmgMod:           number;
     BlockTargetCameraShakeID?:    string;
     CameraShakeID?:               string;
-    CanCrit?:                     boolean;
+    CanBeBlocked?:                boolean;
+    CanCrit?:                     boolean | string;
     CancelTargetHoming?:          boolean;
     CritCameraShakeID?:           string;
     CritHitStun?:                 number;
@@ -518,6 +519,7 @@ export interface Damagetable {
     CritPowerLevel?:              number;
     CritStaggerDmgModifier?:      number;
     CritTargetCameraShakeID?:     string;
+    DamageGuildAndGroup?:         boolean;
     DamageID:                     string;
     DamageReceiverCooldown?:      number;
     DamageType?:                  string;
@@ -527,19 +529,21 @@ export interface Damagetable {
     DmgCoefHead:                  number;
     DurabilityCostOverride?:      number;
     EffectOnlyOnDamage?:          boolean | number | string;
+    EffectWhenNotBlocked?:        boolean;
     HitBlockedRuneCharge?:        number;
     HitRateDmgModifier?:          number;
     HitRuneCharge?:               number;
     HitStun:                      number;
     HungerDmg?:                   number;
-    IgnoreInvulnerable:           number | string;
+    IgnoreInvulnerable?:          boolean | number | string;
+    IgnoreSheatheStatus?:         boolean;
     ImpactDecayRate:              number;
     ImpactDistanceX:              number;
     ImpactDistanceY:              number;
     ImpactDistanceZ:              number;
-    ImpactRating:                 number;
+    ImpactRating?:                number | string;
     IsAbility?:                   boolean;
-    IsRanged?:                    boolean | string;
+    IsRanged?:                    boolean | number | string;
     IsSiege?:                     boolean;
     IsTaunt?:                     boolean;
     LOSCheckVerticalAngleOffset?: number;
@@ -547,9 +551,9 @@ export interface Damagetable {
     NoBackstab?:                  boolean;
     NoHeadshot?:                  boolean;
     NoLegShots?:                  boolean;
-    NoReaction:                   number;
+    NoReaction?:                  boolean | number;
     PowerLevel:                   number;
-    StaggerDmgModifier?:          number;
+    StaggerDmgModifier?:          number | string;
     StaggerResistModifier?:       number;
     StaminaDmg?:                  number;
     StatusEffect?:                string;
@@ -561,9 +565,9 @@ export interface Damagetable {
     TauntThreatBoostPercentage?:  number;
     ThirstDmg?:                   number;
     ThreatMultiplier?:            number;
-    Unblockable?:                 boolean;
+    Unblockable?:                 boolean | number | string;
     UseAttackerPosForReaction?:   boolean;
-    WeaponCategory:               string;
+    WeaponCategory?:              string;
     stunBreakoutIncrementer?:     number;
 }
 export interface Damagetypes {
@@ -3768,6 +3772,11 @@ export interface Arenadefinitions {
     RecommendedLevel:      number;
     TerritoryID:           number;
     TooltipBackground?:    string;
+}
+export interface StaminacostsAncientguardian {
+    Category?:   string;
+    CostID:      string;
+    StaminaCost: number;
 }
 export interface Cursemutations {
     CurseMajor:        string;

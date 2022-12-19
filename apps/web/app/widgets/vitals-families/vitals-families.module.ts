@@ -1,12 +1,18 @@
 import { NgModule } from '@angular/core'
-import { CommonModule } from '@angular/common'
 import { VitalsFamiliesListComponent } from './vitals-families-list.component'
-import { NwModule } from '~/nw';
+import { NwModule } from '~/nw'
 import { VitalDetailComponent } from './vital-detail.component'
-import { VitalsDungeonBossesListComponent } from './vitals-dungeon-bosses.component';
+import { VitalsDungeonBossesListComponent } from './vitals-dungeon-bosses.component'
+import { VitalDamageTableComponent } from './vital-damage-table.component'
 
+const COMPONENTS = [
+  VitalsDungeonBossesListComponent,
+  VitalsFamiliesListComponent,
+  VitalDetailComponent,
+  VitalDamageTableComponent,
+]
 @NgModule({
-  imports: [VitalsDungeonBossesListComponent, VitalsFamiliesListComponent, VitalDetailComponent],
-  exports: [VitalsDungeonBossesListComponent, VitalsFamiliesListComponent, VitalDetailComponent],
+  imports: [...COMPONENTS],
+  exports: [...COMPONENTS],
 })
 export class VitalsFamiliesModule {}

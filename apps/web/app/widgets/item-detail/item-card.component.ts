@@ -18,6 +18,7 @@ import { NwDbService } from '~/nw'
 import { getItemId } from '~/nw/utils'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemDividerComponent } from '~/ui/item-frame/item-divider.component'
+import { ModelViewerService } from '../model-viewer/model-viewer.service'
 import { ItemDetailDescriptionComponent } from './item-detail-description.component'
 import { ItemDetailHeaderComponent } from './item-detail-header.component'
 import { ItemDetailInfoComponent } from './item-detail-info.component'
@@ -146,8 +147,8 @@ export class ItemCardComponent extends ItemDetailService {
 
   protected trackByIndex: TrackByFunction<any> = (i) => i
 
-  public constructor(db: NwDbService, cdRef: ChangeDetectorRef) {
-    super(db, cdRef)
+  public constructor(db: NwDbService, ms: ModelViewerService, cdRef: ChangeDetectorRef) {
+    super(db, ms, cdRef)
   }
 }
 

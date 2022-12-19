@@ -1,5 +1,11 @@
 <nwb-detail-drawer class="hidden lg:block lg:w-96 layout-pad">
   <div *nwbDetailDraweContent class="layout-col">
-    <nwb-item-card [entityId]="itemId$ | async" [enableInfoLink]="true" [enableTracker]="true" [nwbScreenshotFrame]="card.name$ | async | nwText" #card="card" class="flex-1"></nwb-item-card>
+    <nwb-item-card [entityId]="itemId$ | async" [enableInfoLink]="true" [enableTracker]="true" [nwbScreenshotFrame]="card.name$ | async | nwText" #card="card" class="flex-1" >
+      <div class="p-4 pt-0"*ngIf="card.itemModels$ | async; let models">
+        <button class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50"  (click)="openViewer(models)">
+          View 3D Model
+        </button>
+      </div>
+    </nwb-item-card>
   </div>
 </nwb-detail-drawer>

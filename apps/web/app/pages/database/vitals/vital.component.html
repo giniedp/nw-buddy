@@ -2,9 +2,14 @@
   <div *nwbDetailDraweContent class="layout-col layout-gap bg-base-200 layout-pad">
     <ng-container *ngIf="vital$ | async; let vital">
       <nwb-vital-detail [vital]="vital"></nwb-vital-detail>
-      <nwb-loot-table [tableId]="vital.LootTableId" [tags]="lootTags$ | async" [enemyLevel]="vital.Level" class="flex-1"></nwb-loot-table>
+      <div class="layout-col">
+        <div class="tabs flex-none justify-center">
+          <a class="tab tab-bordered flex-1" [class.tab-active]="!showAttacks" (click)="showAttacks = false">Loot</a>
+          <a class="tab tab-bordered flex-1" [class.tab-active]="showAttacks" (click)="showAttacks = true">Attacks</a>
+        </div>
+        <nwb-vital-damage-table [vitalId]="vitalId$ | async" *ngIf="showAttacks"></nwb-vital-damage-table>
+        <nwb-loot-table [tableId]="vital.LootTableId" [tags]="lootTags$ | async" [enemyLevel]="vital.Level" class="flex-1" *ngIf="!showAttacks"></nwb-loot-table>
+      </div>
     </ng-container>
   </div>
 </nwb-detail-drawer>
-
-

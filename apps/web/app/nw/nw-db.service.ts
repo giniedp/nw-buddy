@@ -230,14 +230,6 @@ export class NwDbService {
   )
   public lootTablesMap = index(() => this.lootTables, 'LootTableID')
   public lootTable = lookup(() => this.lootTablesMap)
-  // public lootGraph = defer(() =>
-  //   combineLatest({
-  //     tables: this.lootTablesMap,
-  //     buckets: this.lootBucketsMap,
-  //   })
-  // )
-  //   .pipe(map(({ tables, buckets }) => createLootGraph({ tables, buckets })))
-  //   .pipe(shareReplay(1))
 
   public lootBuckets = list(() => this.data.lootbuckets().pipe(map(convertLootbuckets)))
   public lootBucketsMap = indexGroup(() => this.lootBuckets, 'LootBucket')

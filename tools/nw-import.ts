@@ -79,6 +79,7 @@ program
         '*_weaponmastery',
         '*_xpamountsbylevel',
         'arenas/*',
+        'charactertables/**/*',
         'gamemodemutators/*',
         'pointofinterestdefinitions/*',
         'weaponabilities/*',
