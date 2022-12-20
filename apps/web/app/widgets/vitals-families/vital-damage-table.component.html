@@ -6,9 +6,11 @@
     </div>
   </div>
 </div>
-<ng-container *ngIf="rows$ | async; let rows">
-  <div class="stat place-items-center py-1 px-2" *ngFor="let row of rows">
-    <div class="stat-value text-lg">
+
+<ng-container *ngIf="table$ | async; let table">
+  <div class="text-center text-primary font-bold text-lg">{{ table.name | nwHumanize }}</div>
+  <div class="stat place-items-center py-1 px-2" *ngFor="let row of table.rows">
+    <div class="stat-value text-lg text-secondary">
       {{ row.Name }}
     </div>
     <div class="stat-title flex flex-row">
