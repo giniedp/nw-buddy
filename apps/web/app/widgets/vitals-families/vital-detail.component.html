@@ -1,24 +1,37 @@
 <ng-container *ngIf="vital$ | async; let vital">
-  <a class="relative bg-base-300 flex flex-col items-center justify-center p-1"  [nwLink]="vital.VitalsID" [nwLinkResource]="'vitals'" target="_blank">
-    <ng-container *ngIf="vital.VitalsID">
-      <ng-container *ngIf="vital.DisplayName; let name">
-        <a [nwText]="name"></a>
+  <div class="relative bg-base-300 flex flex-row items-center p-1">
+    <div class="flex-1 flex flex-col items-center justify-center">
+      <ng-container *ngIf="vital.VitalsID">
+        <ng-container *ngIf="vital.DisplayName; let name">
+          <span>{{ name | nwText }}</span>
+        </ng-container>
+        <div class="relative flex items-center justify-center" style="margin-top: -16px">
+          <img [nwImage]="marker$ | async" class="h-10 w-36 object-cover" />
+          <span *ngIf="vital.Level" class="absolute top-2 mx-auto"> {{ vital.Level }}</span>
+        </div>
+        <a
+          [nwLink]="vital.VitalsID"
+          [nwLinkResource]="'vitals'"
+          target="_blank"
+          class="absolute right-2 bottom-1 text-xs italic flex flex-row items-center gap-1"
+          *ngIf="familyInfo$ | async; let info"
+        >
+          <span>{{ info.Name | nwText }}</span>
+          <img [nwImage]="info.Icon" class="w-6 h-6" />
+        </a>
+        <span class="badge badge-sm badge-primary absolute top-2 right-2" *ngIf="isNamed$ | async">Named</span>
       </ng-container>
-      <div class="relative flex items-center justify-center" style="margin-top: -16px">
-        <img [nwImage]="marker$ | async" class="h-10 w-36 object-cover" />
-        <span *ngIf="vital.Level" class="absolute top-2 mx-auto"> {{ vital.Level }}</span>
-      </div>
-      <span [nwText]="familyName | async" class="absolute right-2 bottom-1 text-xs italic"></span>
-    </ng-container>
-    <ng-container *ngIf="!vital.VitalsID">
-      <span [nwText]="familyName | async"></span>
-    </ng-container>
-    <div *ngIf="dungeons" class="flex flex-row flex-wrap gap-1 items-center">
-      <span *ngFor="let item of dungeons" class="badge badge-sm badge-ghost px-1 italic">
-        {{ item.DisplayName | nwText }}
-      </span>
+      <ng-container *ngIf="!vital.VitalsID && familyInfo$ | async; let info">
+        <span>{{ info.Name | nwText }}</span>
+        <img [nwImage]="info.Icon" class="w-6 h-6" />
+      </ng-container>
+      <a *ngIf="dungeons" class="flex flex-row flex-wrap gap-1 items-center">
+        <span *ngFor="let item of dungeons" class="badge badge-sm badge-ghost px-1 italic">
+          {{ item.DisplayName | nwText }}
+        </span>
+      </a>
     </div>
-  </a>
+  </div>
   <div class="stats stats-vertical w-full bg-transparent">
     <div class="stat place-items-center py-1 px-2" *ngFor="let row of stats$ | async">
       <div
@@ -32,16 +45,30 @@
       <div class="stat-title flex flex-row">
         <img [nwImage]="row.Icon" class="w-6 h-6 mr-1" />
         <span [nwText]="row.Name"></span>
-
       </div>
       <div class="stat-desc flex flex-row gap-1 opacity-100">
         <span *ngFor="let wpn of row.Weapons" [nwText]="wpn.GroupName" [nwTextAttr]="'data-tip'" class="tooltip">
           <img [nwImage]="wpn.IconPath" class="w-5 h-5 mr-1" />
         </span>
-        <span *ngIf="row.Perk"  [nwText]="row.Perk.DisplayName" [nwTextAttr]="'data-tip'" class="tooltip">
+        <span *ngIf="row.Perk" [nwText]="row.Perk.DisplayName" [nwTextAttr]="'data-tip'" class="tooltip">
           <img [nwImage]="row.Perk.IconPath" class="w-5 h-5 mr-1" />
         </span>
       </div>
     </div>
+    <!-- <div class="stat place-items-center py-1 px-2" *ngIf="vital.VitalsID">
+      <div class="stat-title flex flex-row">Categories</div>
+      <div class="stat-desc flex flex-row flex-wrap items-center justify-center p-1 gap-1 opacity-100">
+        <ng-container *ngFor="let category of categories$ | async">
+          <span
+            class="badge badge-sm whitespace-nowrap"
+            [class.badge-primary]="category.IsNamed"
+            [class.badge-secondary]="!category.IsNamed"
+            *ngIf="category.DisplayName"
+          >
+            {{ category.DisplayName | nwText }}</span
+          >
+        </ng-container>
+      </div>
+    </div> -->
   </div>
 </ng-container>

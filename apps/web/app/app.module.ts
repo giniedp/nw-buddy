@@ -41,6 +41,9 @@ import { AeternumMapComponent } from './aeternum-map.component'
     IonicModule.forRoot({
       rippleEffect: false,
       mode: 'md',
+      platform: {
+        desktop: (win) => !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(win.navigator.userAgent)
+      }
     }),
     StoreDevtoolsModule.instrument({
       maxAge: 25,

@@ -1,24 +1,64 @@
-import { Gamemodes, Vitals } from "@nw-data/types"
+import { Gamemodes, Vitals, Vitalscategories } from "@nw-data/types"
 
+const NAMED_FAIMILY_TYPES = ['Dungeon+', 'DungeonMiniBoss', 'Elite+', 'EliteMiniBoss']
 const CREATURE_TYPE_MARKER = {
-  Boss: 'boss',
-  // Critter
-  Dungeon: 'dungeon',
-  'Dungeon+': 'dungeon', // TODO
-  'Dungeon-': 'dungeonminus',
-  DungeonBoss: 'boss',
-  DungeonMiniBoss: 'groupplus',
-  Elite: 'group',
-  'Elite+': 'groupplus',
-  'Elite-': 'groupminus',
-  EliteBoss: 'boss',
-  EliteMiniBoss: 'groupplus',
-  // Player: '',
-  'Named_Solo+': 'soloplus', // TODO
-  Solo: 'solo',
-  'Solo+': 'soloplus',
-  'Solo-': 'solominus'
+  Boss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
+  Critter: 'assets/icons/marker/marker_ai_level_bg_critter.png',
+  Dungeon: 'assets/icons/marker/marker_ai_level_bg_dungeon.png',
+  'Dungeon+': 'assets/icons/marker/marker_ai_level_bg_groupplus.png', // TODO
+  'Dungeon-': 'assets/icons/marker/marker_ai_level_bg_dungeonminus.png',
+  DungeonBoss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
+  DungeonMiniBoss: 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
+  Elite: 'assets/icons/marker/marker_ai_level_bg_group.png',
+  'Elite+': 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
+  'Elite-': 'assets/icons/marker/marker_ai_level_bg_groupminus.png',
+  EliteBoss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
+  EliteMiniBoss: 'assets/icons/marker/marker_ai_level_bg_groupplus.png',
+  Player: 'assets/icons/marker/marker_ai_level_bg_groupplus_ally.png',
+  'Named_Solo+': 'assets/icons/marker/marker_ai_level_bg_soloplus.png', // TODO
+  Solo: 'assets/icons/marker/marker_ai_level_bg_solo.png',
+  'Solo+': 'assets/icons/marker/marker_ai_level_bg_soloplus.png',
+  'Solo-': 'assets/icons/marker/marker_ai_level_bg_solominus.png',
 }
+
+const VITAL_FAMILIES: Record<string, { Icon: string, Img: string, Name: string }> = {
+  wildlife: {
+    Icon: 'assets/icons/families/bestialbane1.png',
+    Img: 'assets/images/missionimage_wolf.png',
+    Name: 'VC_Beast',
+  },
+  ancientguardian: {
+    Icon: 'assets/icons/families/ancientbane1.png',
+    Img: 'assets/images/missionimage_ancient1.png',
+    Name: 'VC_Ancient',
+  },
+  corrupted: {
+    Icon: 'assets/icons/families/corruptedbane1.png',
+    Img: 'assets/images/missionimage_corrupted2.png',
+    Name: 'VC_Corrupted',
+  },
+  angryearth: {
+    Icon: 'assets/icons/families/angryearthbane1.png',
+    Img: 'assets/images/missionimage_angryearth1.png',
+    Name: 'VC_Angryearth',
+  },
+  lost: {
+    Icon: 'assets/icons/families/lostbane1.png',
+    Img: 'assets/images/missionimage_undead1.png',
+    Name: 'VC_Lost',
+  },
+  fae: {
+    Icon: 'assets/icons/families/marker_icondeathdoor.png',
+    Img: '',
+    Name: 'Fae',
+  },
+  unknown: {
+    Icon: 'assets/icons/families/marker_icondeathdoor.png',
+    Img: '',
+    Name: '',
+  },
+}
+
 const ICON_STRONG_ATTACK = 'assets/icons/strongattack.png'
 const ICON_WEAK_ATTACK = 'assets/icons/weakattack.png'
 
@@ -39,8 +79,38 @@ export function getVitalTypeMarker(vitalOrcreatureType: string | Vitals) {
   if (typeof vitalOrcreatureType !== 'string') {
     vitalOrcreatureType = vitalOrcreatureType?.CreatureType
   }
-  const marker = CREATURE_TYPE_MARKER[vitalOrcreatureType]
-  return marker && `assets/icons/marker/marker_ai_level_bg_${marker}.png`
+  return CREATURE_TYPE_MARKER[vitalOrcreatureType] || CREATURE_TYPE_MARKER['Critter']
+}
+
+export function getVitalAliasName(categories: Vitalscategories[]) {
+  if (categories.find((it) => it.IsNamed && it.VitalsCategoryID === 'Named')) {
+    return categories.find((it) => it.IsNamed && it.VitalsCategoryID !== 'Named')?.DisplayName
+  }
+  return null
+}
+
+
+export function getVitalsCategories(vital: Vitals, categories: Map<string, Vitalscategories>) {
+  if (!vital?.VitalsCategories?.length) {
+    return []
+  }
+  return vital.VitalsCategories.map((it) => {
+      const category = categories.get(it)
+      if (!category) {
+        console.warn(`category not found`, it)
+      }
+      return category
+    })
+    .filter((it) => !!it)
+}
+
+
+export function isVitalNamed(vital: Vitals) {
+  return NAMED_FAIMILY_TYPES.includes(vital.CreatureType)
+}
+
+export function getVitalFamilyInfo(vital: Vitals) {
+  return VITAL_FAMILIES[vital?.Family?.toLowerCase()] || VITAL_FAMILIES['unknown']
 }
 
 export function getVitalDamageEffectiveness(vital: Vitals, damageType: VitalDamageType) {

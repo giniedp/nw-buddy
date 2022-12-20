@@ -1,16 +1,18 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { ActivatedRoute, RouterModule } from '@angular/router'
+import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { Damagetable, Vitals } from '@nw-data/types'
 import { uniq } from 'lodash'
-import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
+import { combineLatest, defer, map, Observable, of, shareReplay, switchMap } from 'rxjs'
 
 import { NwDbService, NwModule } from '~/nw'
 import { getVitalDungeon } from '~/nw/utils'
 import { LayoutModule } from '~/ui/layout'
-import { CaseInsensitiveMap, observeRouteParam, tapDebug } from '~/utils'
+import { CaseInsensitiveMap, observeQueryParam, observeRouteParam, shareReplayRefCount, tapDebug } from '~/utils'
 import { LootModule } from '~/widgets/loot'
 import { VitalsFamiliesModule } from '~/widgets/vitals-families'
+
+export type DetailTabId = 'loot-items' | 'loot-table' | 'damage-table'
 
 @Component({
   standalone: true,
@@ -24,19 +26,10 @@ import { VitalsFamiliesModule } from '~/widgets/vitals-families'
 })
 export class VitalComponent {
   public vitalId$ = observeRouteParam(this.route, 'id')
+  public tabId$ = observeQueryParam(this.route, 'tab').pipe(map((it: DetailTabId): DetailTabId => it || 'loot-items'))
 
-  public vital$ = defer(() =>
-    combineLatest({
-      id: this.vitalId$,
-      vitals: this.db.vitalsMap,
-    })
-  ).pipe(
-    map(({ id, vitals }) => {
-      return vitals.get(id)
-    })
-  )
-
-  public lootTableId$ = defer(() => this.vital$).pipe(map((it) => it.LootTableId))
+  public vital$ = this.db.vital(this.vitalId$).pipe(shareReplayRefCount(1))
+  public lootTableId$ = this.vital$.pipe(map((it) => it?.LootTableId))
 
   public lootTags$ = defer(() =>
     combineLatest({
@@ -60,8 +53,17 @@ export class VitalComponent {
     })
   )
 
-  protected showAttacks = false
-  public constructor(private route: ActivatedRoute, private db: NwDbService) {
+  public constructor(private route: ActivatedRoute, private router: Router, private db: NwDbService) {
     //
+  }
+
+  public openTab(tab: DetailTabId) {
+    this.router.navigate([], {
+      queryParams: {
+        tab: tab
+      },
+      queryParamsHandling: 'merge',
+      relativeTo: this.route
+    })
   }
 }

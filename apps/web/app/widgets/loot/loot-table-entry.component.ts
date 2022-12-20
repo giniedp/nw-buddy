@@ -52,6 +52,9 @@ export class LootTableEntryComponent {
   )
     .pipe(
       map(({ table, highlight }) => {
+        if (!table) {
+          return null
+        }
         return {
           table: table,
           highlight: highlight.includes(table.LootTableID),

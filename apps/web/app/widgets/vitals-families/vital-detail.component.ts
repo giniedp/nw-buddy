@@ -1,12 +1,12 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { Gamemodes, Vitals } from '@nw-data/types'
-import { combineLatest, defer, map, ReplaySubject } from 'rxjs'
+import { combineLatest, defer, map, of, ReplaySubject, switchMap } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
-import { getVitalDamageEffectiveness } from '~/nw/utils'
+import { getVitalDamageEffectiveness, getVitalFamilyInfo, isVitalNamed } from '~/nw/utils'
 import { NwVitalsService } from '~/nw/vitals'
 import { NwWeaponTypesService } from '~/nw/weapon-types'
-import { DestroyService } from '~/utils'
+import { DestroyService, shareReplayRefCount } from '~/utils'
 
 const FAMILY_META = {
   wildlife: {
@@ -60,9 +60,17 @@ export class VitalDetailComponent {
   public dungeons: Gamemodes[]
 
   protected readonly vital$ = new ReplaySubject<Vitals>(1)
-  protected readonly marker$ = defer(() => this.vital$).pipe(map((it) => this.vitals.vitalMarkerIcon(it)))
-  protected readonly familyName = defer(() => this.vital$).pipe(map((it) => FAMILY_META[it?.Family?.toLowerCase()]?.Name))
-  protected readonly familyIcon = defer(() => this.vital$).pipe(map((it) => FAMILY_META[it?.Family?.toLowerCase()]?.Icon))
+  protected readonly categories$ = combineLatest({
+    ids: this.vital$.pipe(map((it) => it?.VitalsCategories || [])),
+    categories: this.db.vitalsCategoriesMap,
+  })
+    .pipe(map(({ ids, categories }) => ids.map((it) => categories.get(it)).filter((it) => !!it)))
+    .pipe(shareReplayRefCount(1))
+
+  protected readonly isNamed$ = this.vital$.pipe(map((it) => isVitalNamed(it)))
+  protected readonly marker$ = this.vital$.pipe(map((vital) => this.vitals.vitalMarkerIcon(vital)))
+  protected readonly familyInfo$ = this.vital$.pipe(map((it) => getVitalFamilyInfo(it)))
+
   protected readonly stats$ = defer(() => {
     return combineLatest({
       vital: this.vital$,

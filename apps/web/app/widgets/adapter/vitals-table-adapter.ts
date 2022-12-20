@@ -1,17 +1,26 @@
 import { Injectable } from '@angular/core'
-import { Gamemodes, Vitals } from '@nw-data/types'
+import { Gamemodes, Vitals, Vitalscategories } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService } from '~/nw'
-import { getVitalDamageEffectivenessPercent, getVitalDungeon } from '~/nw/utils'
+import {
+  getVitalAliasName,
+  getVitalDamageEffectivenessPercent,
+  getVitalDungeon,
+  getVitalFamilyInfo,
+  getVitalsCategories,
+  getVitalTypeMarker,
+  isVitalNamed,
+} from '~/nw/utils'
 import { NwVitalsService } from '~/nw/vitals'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
+import { CellRendererService, DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 
 export interface Entity extends Vitals {
   $dungeon: Gamemodes
+  $categories: Vitalscategories[]
 }
 
 @Injectable()
@@ -47,7 +56,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
             return this.createLinkWithIcon({
               href: this.info.link('vitals', data.VitalsID),
               target: '_blank',
-              icon: this.vitals.vitalFamilyIcon(data),
+              icon: getVitalFamilyInfo(data)?.Icon,
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
           }),
@@ -56,8 +65,24 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           colId: 'name',
           headerValueGetter: () => 'Name',
           width: 200,
-          valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.DisplayName)),
-          getQuickFilterText: ({ value }) => value,
+          valueGetter: this.valueGetter(({ data }) => {
+            const name = this.i18n.get(data.DisplayName)
+            const alias = this.i18n.get(getVitalAliasName(data.$categories))
+            return {
+              name: name,
+              alias: alias && name !== alias ? alias : null,
+            }
+          }),
+          cellRenderer: this.cellRenderer(({ value }) => {
+            if (!value.alias) {
+              return value.name
+            }
+            return `
+              <span>${value.alias}</span><br>
+              <span class="italic opacity-50">${value.name}</span>
+            `
+          }),
+          getQuickFilterText: ({ value }) => [value.name, value.alias].filter((it) => !!it).join(' '),
         }),
         this.colDef({
           colId: 'level',
@@ -69,7 +94,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           field: this.fieldName('Level'),
           cellClass: '',
           cellRenderer: this.cellRenderer(({ data, value }) => {
-            const icon = this.vitals.vitalMarkerIcon(data)
+            const icon = getVitalTypeMarker(data)
             const iconEl = icon && `<img src=${icon} class="block object-cover absolute left-0 top-0 h-full w-full" />`
             const spanEl = `<span class="absolute left-0 right-0 top-0 bottom-0 font-bold flex items-center justify-center">${value}</span>`
             return `${iconEl} ${spanEl}`
@@ -93,6 +118,17 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           filter: SelectboxFilter,
         }),
         this.colDef({
+          colId: 'categories',
+          headerValueGetter: () => 'Categories',
+          width: 200,
+          hide: true,
+          valueGetter: this.valueGetter(({ data }) => {
+            return data.$categories.map((it) => (it.DisplayName ? this.i18n.get(it.DisplayName) : ''))
+          }),
+          cellRenderer: this.cellRendererTags(humanize),
+          filter: SelectboxFilter,
+        }),
+        this.colDef({
           colId: 'lootDropChance',
           headerValueGetter: () => 'Loot Drop Chance',
           field: this.fieldName('LootDropChance'),
@@ -104,12 +140,14 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
         }),
         this.colDef({
           colId: 'lootTableId',
+          hide: true,
           headerValueGetter: () => 'Loot Table',
           field: this.fieldName('LootTableId'),
           filter: SelectboxFilter,
         }),
         this.colDef({
           colId: 'lootTags',
+          hide: true,
           headerValueGetter: () => 'Loot Tags',
           field: this.fieldName('LootTags'),
           cellRenderer: this.cellRendererTags(humanize),
@@ -233,14 +271,16 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
     combineLatest({
       vitals: this.db.vitals,
       dungeons: this.db.gameModes,
+      categories: this.db.vitalsCategoriesMap,
     })
   )
     .pipe(
-      map(({ vitals, dungeons }) => {
+      map(({ vitals, dungeons, categories }) => {
         return vitals.map((vital) => {
           return {
             ...vital,
             $dungeon: getVitalDungeon(vital, dungeons),
+            $categories: getVitalsCategories(vital, categories),
           }
         })
       })
