@@ -1,6 +1,6 @@
 import { Gamemodes, Vitals, Vitalscategories } from "@nw-data/types"
 
-const NAMED_FAIMILY_TYPES = ['Dungeon+', 'DungeonMiniBoss', 'Elite+', 'EliteMiniBoss']
+const NAMED_FAIMILY_TYPES = ['DungeonBoss', 'Dungeon+', 'DungeonMiniBoss', 'Elite+', 'EliteMiniBoss']
 const CREATURE_TYPE_MARKER = {
   Boss: 'assets/icons/marker/marker_ai_level_bg_boss.png',
   Critter: 'assets/icons/marker/marker_ai_level_bg_critter.png',
