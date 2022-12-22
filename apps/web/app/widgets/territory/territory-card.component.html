@@ -3,7 +3,7 @@
     <img [nwImage]="vm.background" class="z-10 w-full" width="540" height="260" />
     <div class="absolute top-0 left-0 right-0 bottom-0 from-transparent to-base-300 bg-gradient-to-b z-20"></div>
   </figure>
-  <div class="px-4 z-30 relative">
+  <div class="px-4 z-30 relative" style="text-shadow: 1px 1px 2px black">
     <div [nwText]="vm.name" class="font-bold text-lg"></div>
     <div *ngIf="vm.level; let level">Recommended Level: {{ level }}</div>
 

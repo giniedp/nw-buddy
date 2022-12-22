@@ -603,7 +603,6 @@ export interface GameEvent {
     GearScoreRange:                number;
     ItemReward?:                   string;
     ItemRewardQty:                 number;
-    LeaderboardValue:              number;
     Level:                         number;
     LootLimitId?:                  string;
     LootLimitReachedGameEventId?:  string;
