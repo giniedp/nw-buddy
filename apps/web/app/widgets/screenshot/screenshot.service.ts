@@ -6,6 +6,7 @@ import { BehaviorSubject, defer, map } from 'rxjs'
 export interface ScreenshotFrame {
   elementRef: ElementRef<HTMLElement>
   description: string
+  width: number
 }
 
 @Injectable({ providedIn: 'root' })
@@ -40,11 +41,17 @@ export class ScreenshotService {
   public async makeScreenshot(frame: ScreenshotFrame): Promise<Blob> {
     const el = frame.elementRef.nativeElement
     el.classList.add('screenshot-capture')
+    if (frame.width) {
+      el.style.width = `${frame.width}px`
+    }
     const result = await this.capture(frame).catch((err) => {
       console.error(err)
       return null
     })
     el.classList.remove('screenshot-capture')
+    if (frame.width) {
+      el.style.width = null
+    }
     return result
   }
 

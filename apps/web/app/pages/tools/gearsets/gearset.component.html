@@ -71,7 +71,7 @@
       </div>
     </div>
 
-    <div class="p-4 rounded-b-md flex flex-col xl:flex-row layout-gap" [nwbScreenshotFrame]="name$ | async">
+    <div class="p-4 rounded-b-md flex flex-col xl:flex-row layout-gap" [nwbScreenshotFrame]="name$ | async" [nwbScreenshotWidth]="2200">
       <div class="flex-1 grid layout-gap" [@listAnimation]="slots?.length">
         <div class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative">
           <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
