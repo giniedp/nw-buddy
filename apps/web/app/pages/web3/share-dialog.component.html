@@ -1,10 +1,10 @@
 <div class="text-xl flex flex-row items-center gap-1 bg-base-300 px-2 py-3">
-  <nwb-icon [icon]="iconShare" class="w-4 h-4"></nwb-icon> Create share link
+  <nwb-icon [icon]="iconShare" class="w-4 h-4"></nwb-icon> Share content
 </div>
 
 <div *ngIf="state$ | async; let state" class="p-3">
   <ng-container *ngIf="state.loading">
-    <button class="btn loading">your link is being generated</button>
+    <button class="btn loading">Public link is being generated</button>
   </ng-container>
   <ng-container *ngIf="state.error">
     <div class="alert bg-transparent">
@@ -21,21 +21,31 @@
     <div class="alert bg-transparent">
       <div>
         <nwb-icon [icon]="iconSuccess" class="w-6 h-6 text-success"></nwb-icon>
-        <div>
-          <h3 class="font-bold">Success!</h3>
-          <div class="text-xs">{{ value.appUrl }}</div>
+        <div class="prose">
+          <p class="overflow-hidden text-ellipsis">
+            Your share URL is: <a class="link" [href]="value.shareUrl" target="_blank">{{ value.shareUrl }}</a>
+          </p>
+          <p class="text-xs">
+            Your data has been stored on the IPFS network and is publicly available for everyone.
+            As long a a copy exists on the network the link above should work.
+            For more info about IPFS <a href="https://ipfs.tech/#how" target="_blank">click here</a>
+            To see the actual data on the network <a [href]="value.ipfsUrl" target="_blank">click here</a>
+          </p>
         </div>
-      </div>
-      <div class="flex-none">
-        <button class="btn btn-sm" [class.btn-success]="copied" (click)="copy(value.appUrl)">Copy</button>
       </div>
     </div>
   </ng-container>
 </div>
 
 <div class="flex justify-end gap-1 layout-pad">
+  <div class="btn-group" *ngIf="(state$ | async).value?.shareUrl; let url">
+    <button class="btn" [class.btn-success]="copied" (click)="copy(url)">
+      <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1"></nwb-icon>
+      Copy link
+    </button>
+  </div>
   <div class="btn-group">
-    <label class="btn btn-primary btn-sm" (click)="close()">Close</label>
+    <label class="btn btn-primary" (click)="close()">Close</label>
   </div>
 </div>
 

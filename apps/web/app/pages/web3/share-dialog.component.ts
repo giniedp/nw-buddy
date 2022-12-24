@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject } from '@
 import { from, map } from 'rxjs'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgCircleCheck, svgCircleExclamation, svgShareNodes } from '~/ui/icons/svg'
+import { svgCircleCheck, svgCircleExclamation, svgCopy, svgShareNodes } from '~/ui/icons/svg'
 import { deferState } from '~/utils'
 import { ShareObject, Web3Service } from './web3.service'
 
@@ -24,12 +24,18 @@ export class ShareDialogComponent {
   }
 
   protected state$ = deferState(() => {
-    return from(this.web3.shareObject(this.object)).pipe(map((it) => this.web3.buildLink(it)))
+    return from(this.web3.shareObject(this.object)).pipe(map((it) => {
+      return {
+        shareUrl: this.web3.buildInternalLink(it.cid),
+        ipfsUrl: this.web3.buildIpfsLink(it.cid)
+      }
+    }))
   })
 
   protected iconError = svgCircleExclamation
   protected iconSuccess = svgCircleCheck
   protected iconShare = svgShareNodes
+  protected iconCopy = svgCopy
 
   protected copied = false
   public constructor(

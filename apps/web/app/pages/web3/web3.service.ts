@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { defer, firstValueFrom, map, of, shareReplay } from 'rxjs'
 import { Web3Storage } from 'web3.storage'
@@ -17,6 +18,7 @@ export interface ShareInfo {
 
 const ENTRY_FILE_NAME = 'nw-buddy.json'
 const APPLICATION_NAME = 'nw-buddy'
+const IPFS_GATEWAY = 'w3s.link'
 
 @Injectable({
   providedIn: 'root',
@@ -29,7 +31,7 @@ export class Web3Service {
     .pipe(map((it) => (it ? new Web3Storage({ token: it }) : null)))
     .pipe(shareReplay(1))
 
-  public constructor(private pref: AppPreferencesService) {
+  public constructor(private pref: AppPreferencesService, private http: HttpClient) {
     //
   }
 
@@ -54,18 +56,10 @@ export class Web3Service {
   }
 
   public async readObject(cid: string) {
-    const storage = await firstValueFrom(this.storage$)
-    if (!storage) {
-      return null
-    }
-    const result = await storage.get(cid)
-    const files = await result.files()
-    const file = files.find((it) => it.name === ENTRY_FILE_NAME)
-    if (!file) {
-      return null
-    }
-    const text = await file.text()
-    const object = JSON.parse(text) as ShareObject<any>
+    const request$ = this.http.get<ShareObject<any>>(this.buildIpfsLink(cid, ENTRY_FILE_NAME), {
+      responseType: 'json'
+    })
+    const object = await firstValueFrom(request$)
     if (!this.validateObject(object)) {
       return null
     }
@@ -85,12 +79,16 @@ export class Web3Service {
     return true
   }
 
-  public buildLink(info: ShareInfo) {
-    const gateway = this.pref.web3gateway.get() || 'dweb.link'
-    return {
-      gatewayUrl: `https://${info.cid}.ipfs.${gateway}/${info.file}`,
-      appUrl: `${location.origin}/ipfs/${info.cid}`,
+  public buildInternalLink(cid: string) {
+    return `${location.origin}/ipfs/${cid}`
+  }
+
+  public buildIpfsLink(cid: string, fileName?: string) {
+    const url = `https://${cid}.ipfs.${IPFS_GATEWAY}`
+    if (!fileName) {
+      return url
     }
+    return `${url}/${fileName}`
   }
 
   private createJsonFile(fileName: string, data: object) {
