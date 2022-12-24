@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { defer, firstValueFrom, map, shareReplay } from 'rxjs'
+import { defer, firstValueFrom, map, of, shareReplay } from 'rxjs'
 import { Web3Storage } from 'web3.storage'
 import { AppPreferencesService } from '~/preferences'
 
@@ -24,8 +24,7 @@ const APPLICATION_NAME = 'nw-buddy'
 export class Web3Service {
   public isActive = defer(() => this.storage$).pipe(map((it) => !!it))
 
-  private storage$ = this.pref.web3token
-    .observe()
+  private storage$ = of('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9')// this.pref.web3token.observe()
     .pipe(map((it) => (it ? new Web3Storage({ token: it }) : null)))
     .pipe(shareReplay(1))
 
