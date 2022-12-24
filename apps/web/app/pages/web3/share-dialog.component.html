@@ -1,0 +1,42 @@
+<div class="text-xl flex flex-row items-center gap-1 bg-base-300 px-2 py-3">
+  <nwb-icon [icon]="iconShare" class="w-4 h-4"></nwb-icon> Create share link
+</div>
+
+<div *ngIf="state$ | async; let state" class="p-3">
+  <ng-container *ngIf="state.loading">
+    <button class="btn loading">your link is being generated</button>
+  </ng-container>
+  <ng-container *ngIf="state.error">
+    <div class="alert bg-transparent">
+      <div>
+        <nwb-icon [icon]="iconError" class="w-6 h-6 text-error"></nwb-icon>
+        <div>
+          <h3 class="font-bold">Error!</h3>
+          <div class="text-xs">Unable to share content</div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="state.value; let value">
+    <div class="alert bg-transparent">
+      <div>
+        <nwb-icon [icon]="iconSuccess" class="w-6 h-6 text-success"></nwb-icon>
+        <div>
+          <h3 class="font-bold">Success!</h3>
+          <div class="text-xs">{{ value.appUrl }}</div>
+        </div>
+      </div>
+      <div class="flex-none">
+        <button class="btn btn-sm" [class.btn-success]="copied" (click)="copy(value.appUrl)">Copy</button>
+      </div>
+    </div>
+  </ng-container>
+</div>
+
+<div class="flex justify-end gap-1 layout-pad">
+  <div class="btn-group">
+    <label class="btn btn-primary btn-sm" (click)="close()">Close</label>
+  </div>
+</div>
+
+

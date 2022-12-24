@@ -39,5 +39,31 @@
       <input type="radio" name="tooltipProvider" class="radio checked:bg-primary" [value]="'nwguide'" [(ngModel)]="tooltipProvider" />
     </label>
   </div>
+
+  <div class="form-control w-full">
+    <label class="label cursor-pointer">
+      <span class="label-text">Web 3 Token</span>
+    </label>
+    <input type="text" class="input input-bordered" [(ngModel)]="web3token" />
+
+    <label class="label">
+      <span class="label-text-alt">
+        Your <a href="https://web3.storage/" target="_blank" class="link">web3.storage</a> api token.
+        Is used to store your data and enables sharing functionality.
+      </span>
+    </label>
+  </div>
+  <div class="form-control w-full">
+    <label class="label cursor-pointer">
+      <span class="label-text">Web 3 Gateway</span>
+    </label>
+    <input type="text" class="input input-bordered" [(ngModel)]="web3gateway" placeholder="dweb.link" />
+    <label class="label">
+      <span class="label-text-alt">
+        One of the <a href="https://ipfs.github.io/public-gateway-checker/" target="_blank" class="link">public gateway names</a>.
+        Is used to download data from shared links. Leave it blank to use default gateway (dweb.link).
+      </span>
+    </label>
+  </div>
 </div>
 

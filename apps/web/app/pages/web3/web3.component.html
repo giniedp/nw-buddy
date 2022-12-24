@@ -1,0 +1,35 @@
+<ng-container *ngIf="state$ | async; let state">
+  <ng-container *ngIf="state.loading">
+    <div class="flex flex-row justify-center p-10">
+      <button class="btn loading">loading...</button>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="state.error">
+    <div class="alert bg-transparent">
+      <div>
+        <nwb-icon [icon]="iconError" class="w-6 h-6 text-error"></nwb-icon>
+        <div>
+          <h3 class="font-bold">Error!</h3>
+          <div class="text-xs">Data is unavailable</div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+  <div *ngIf="state.value?.type === 'skill-build'" class="max-w-7xl mx-auto">
+    <nwb-skill-builder [ngModel]="state.value.data" [disabled]="true"></nwb-skill-builder>
+    <div *ngIf="state.value.data.attrs; let attrs" class="layout-pad">
+      <nwb-attributes-editor [freeMode]="true" [assigned]="attrs"></nwb-attributes-editor>
+    </div>
+    <div class="alert alert-info shadow-lg max-w-lg mx-auto">
+      <div>
+        <nwb-icon [icon]="iconInfo" class="w-6 h-6"></nwb-icon>
+        <span>You can import this build into your collection</span>
+      </div>
+      <div class="flex-none">
+        <button class="btn btn-sm btn-primary" (click)="importSkillBuild(state.value.data)">Import</button>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+

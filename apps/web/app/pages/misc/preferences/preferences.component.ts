@@ -27,6 +27,21 @@ export class PreferencesComponent implements OnInit {
     this.app.tooltipProvider.set(value as any)
   }
 
+
+  protected get web3token() {
+    return this.app.web3token.get()
+  }
+  protected set web3token(value: string) {
+    this.app.web3token.set(value as any)
+  }
+
+  protected get web3gateway() {
+    return this.app.web3gateway.get()
+  }
+  protected set web3gateway(value: string) {
+    this.app.web3gateway.set(value as any)
+  }
+
   public constructor(
     public app: AppPreferencesService,
     public preferences: PreferencesService,

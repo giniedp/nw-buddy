@@ -161,7 +161,9 @@
     "tslib": "^2.4.0",
     "typescript": "~4.7.4",
     "unzipper": "0.10.11",
+    "w3name": "1.0.7",
     "wait-on": "6.0.1",
+    "web3.storage": "4.4.0",
     "webdriver-manager": "12.1.8",
     "wrangler": "2.5.0",
     "zone.js": "~0.11.8"

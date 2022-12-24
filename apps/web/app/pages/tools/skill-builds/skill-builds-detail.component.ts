@@ -1,3 +1,4 @@
+import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -6,14 +7,15 @@ import { asyncScheduler, combineLatest, map, subscribeOn, switchMap } from 'rxjs
 import { SkillBuildRecord, SkillBuildsStore } from '~/data'
 import { NwModule } from '~/nw'
 import { AttributeRef } from '~/nw/attributes'
+import { ShareDialogComponent, Web3Service } from '~/pages/web3'
 import { IconsModule } from '~/ui/icons'
-import { svgBars, svgChevronLeft, svgRotate, svgSliders } from '~/ui/icons/svg'
+import { svgBars, svgChevronLeft, svgRotate, svgShareNodes, svgSliders } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { observeRouteParam } from '~/utils'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { ScreenshotModule } from '~/widgets/screenshot'
-import { SkillBuilderComponent, SkillBuildValue } from '~/widgets/skill-builder/skill-builder.component'
+import { SkillBuilderComponent, SkillBuildValue } from '~/widgets/skill-builder'
 
 @Component({
   standalone: true,
@@ -54,8 +56,9 @@ export class SkillBuildsDetailComponent {
   protected iconReset = svgRotate
   protected iconMenu = svgBars
   protected iconAttrs = svgSliders
+  protected iconShare = svgShareNodes
 
-  public constructor(private store: SkillBuildsStore, private route: ActivatedRoute) {
+  public constructor(private store: SkillBuildsStore, private route: ActivatedRoute, private dialog: Dialog) {
     //
   }
 
@@ -109,6 +112,17 @@ export class SkillBuildsDetailComponent {
         ...record,
         attrs: null,
       },
+    })
+  }
+
+  protected shareItem(record: SkillBuildRecord) {
+    ShareDialogComponent.open(this.dialog, {
+      data: {
+
+        ref: record.id,
+        type: 'skill-build',
+        data: record,
+      }
     })
   }
 }

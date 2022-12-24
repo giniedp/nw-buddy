@@ -56,6 +56,12 @@
               Add Attributes
             </button>
           </li>
+          <li>
+            <button (click)="shareItem(item.record)" cdkMenuItem>
+              <nwb-icon [icon]="iconShare" class="w-4 h-4"></nwb-icon>
+              Create share lnk
+            </button>
+          </li>
         </ul>
       </ng-template>
     </ng-container>

@@ -11,6 +11,8 @@ export class AppPreferencesService {
   public readonly nwmpServer: StorageProperty<string>
   public readonly mapActive: StorageProperty<boolean>
   public readonly mapCollapsed: StorageProperty<boolean>
+  public readonly web3token: StorageProperty<string>
+  public readonly web3gateway: StorageProperty<string>
 
   public constructor(preferences: PreferencesService) {
     const storage = preferences.storage.storageObject('app')
@@ -18,6 +20,8 @@ export class AppPreferencesService {
     this.theme = storage.storageProperty('theme', 'helloween')
     this.nwmpServer = storage.storageProperty('nwmpServer', null)
     this.tooltipProvider = storage.storageProperty('tooltipProvider', null)
+    this.web3token = storage.storageProperty('web3token', null)
+    this.web3gateway = storage.storageProperty('web3gateway', null)
 
     const session = preferences.session.storageObject('app')
     this.mapActive = session.storageProperty('mapActive', false)

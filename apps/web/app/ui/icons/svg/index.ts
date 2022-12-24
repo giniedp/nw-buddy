@@ -48,3 +48,6 @@ export const svgPercent = require('!!raw-loader!./percent.svg').default
 export const svgMap = require('!!raw-loader!./map.svg').default
 export const svgExpand = require('!!raw-loader!./expand.svg').default
 export const svgCompress = require('!!raw-loader!./compress.svg').default
+export const svgShareNodes = require('!!raw-loader!./share-nodes.svg').default
+export const svgCircleExclamation = require('!!raw-loader!./circle-exclamation.svg').default
+export const svgCircleCheck = require('!!raw-loader!./circle-check.svg').default

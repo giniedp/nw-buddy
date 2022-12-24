@@ -13,6 +13,7 @@ export const ROUTES: Routes = [
     pathMatch: 'full',
     component: PrivacyComponent,
   },
+  { path: 'ipfs', loadChildren: () => import('./pages/web3').then((m) => m.Web3Module) },
   { path: 'abilities', loadChildren: () => import('./pages/database/abilities').then((m) => m.AbilitiesModule) },
   { path: 'crafting', loadChildren: () => import('./pages/database/crafting').then((m) => m.CraftingModule) },
   { path: 'housing', loadChildren: () => import('./pages/database/housing').then((m) => m.HousingModule) },
