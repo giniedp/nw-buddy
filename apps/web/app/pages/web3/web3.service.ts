@@ -24,7 +24,8 @@ const APPLICATION_NAME = 'nw-buddy'
 export class Web3Service {
   public isActive = defer(() => this.storage$).pipe(map((it) => !!it))
 
-  private storage$ = of('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9')// this.pref.web3token.observe()
+  private storage$ = of('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweEI0MTk2MDAzZjM1ODUwQjc4OTVBNDg5ODUzMEM2NzlEMDdCQTU3QjkiLCJpc3MiOiJ3ZWIzLXN0b3JhZ2UiLCJpYXQiOjE2NzE4MDQxMDY5NDYsIm5hbWUiOiJudy1idWRkeSJ9.GclwInW6NE81iwzwDQ0jMvvAh6d_UWM_Up8PVTINMc8')
+    // this.pref.web3token.observe()
     .pipe(map((it) => (it ? new Web3Storage({ token: it }) : null)))
     .pipe(shareReplay(1))
 
