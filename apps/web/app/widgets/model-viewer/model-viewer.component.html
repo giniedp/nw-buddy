@@ -1,0 +1,14 @@
+<button class="btn btn-ghost btn-circle absolute top-2 right-2 z-10" (click)="close()">
+  <nwb-icon [icon]="iconClose" class="w-4 h-4"></nwb-icon>
+</button>
+<div class="btn-group absolute bottom-2 right-2 z-10" *ngIf="isLoaded">
+  <button
+    *ngFor="let item of buttons"
+    class="btn btn-ghost"
+    [class.text-primary]="item.index === index"
+    style="text-shadow: 1px 1px 2px black"
+    (click)="show(item.index)"
+  >
+    {{ item.label }}
+  </button>
+</div>

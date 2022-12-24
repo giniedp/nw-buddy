@@ -4,10 +4,19 @@ import { defer, map, shareReplay } from 'rxjs'
 import { CaseInsensitiveMap } from '~/utils'
 
 export interface ItemModelInfo {
+  itemId: string
   url: string
   isMale: boolean
   isFemale: boolean
   isMesh: boolean
+}
+
+export interface StatRow {
+  itemId: string
+  itemType: string
+  model: string
+  size: number
+  tags: string[]
 }
 
 @Injectable({ providedIn: 'root' })
@@ -23,20 +32,22 @@ export class ModelViewerService {
   }
 
   private fetch() {
-    return this.http.get<any>('assets/models/stats.json').pipe(
+    return this.http.get<{ rows: StatRow[] }>('assets/models/stats.json').pipe(
       map((data): Map<string, ItemModelInfo[]> => {
         const result = new CaseInsensitiveMap<string, ItemModelInfo[]>()
-        data.rows.map(({ itemId, tags, model }) => {
+        data.rows.forEach(({ itemId, tags, model, size }) => {
+          if (!size || !model) {
+            return
+          }
           if (!result.has(itemId)) {
             result.set(itemId, [])
           }
           result.get(itemId).push({
+            itemId,
             isMesh: tags.includes('mesh'),
             isMale: tags.includes('male'),
             isFemale: tags.includes('female'),
-            url: `https://new-world.guide/cdn/item-models/${String(itemId).toLowerCase()}_${String(model)
-              .split(/[\\/]/)
-              .pop()}`,
+            url: `https://cdn.cany.link/item-models/${String(itemId).toLowerCase()}_${String(model).split(/[\\/]/).pop()}`,
           })
         })
         return result
