@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { combineLatest, map, of, switchMap, take } from 'rxjs'
-import { GearsetRecord, GearsetStore, ItemInstance, ItemInstanceRow, ItemInstancesStore } from '~/data'
+import { GearsetRecord, GearsetsDB, GearsetStore, ItemInstance, ItemInstanceRow, ItemInstancesStore } from '~/data'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { LayoutModule } from '~/ui/layout'
@@ -30,25 +30,20 @@ export interface ItemDetailVM {
   },
 })
 export class PlayerItemsDetailComponent {
+  protected routeId$ = observeRouteParam(this.route, 'id')
+  protected routeSlot$ = observeRouteParam(this.route, 'slot')
+
   protected itemRow$ = combineLatest({
-    id: observeRouteParam(this.route, 'id'),
+    id: this.routeId$,
     rows: this.itemsStore.rows$,
   }).pipe(map(({ id, rows }) => (id ? rows?.find((it) => it.record.id === id) : null)))
 
-  protected itemSet$ = observeRouteParam(this.route, 'set').pipe(
-    switchMap((id) => {
-      if (!id) {
-        return of(null)
-      }
-      this.gearsetStore.loadById(id)
-      return this.gearsetStore.gearset$
-    })
-  )
+  protected gearset$ = this.gearsetDb.observeByid(this.routeSlot$)
 
   protected vm$ = combineLatest({
     itemRow: this.itemRow$,
-    itemSet: this.itemSet$,
-    itemSlot: observeRouteParam(this.route, 'slot'),
+    itemSet: this.gearset$,
+    itemSlot: this.routeSlot$,
   }).pipe(
     map((data): ItemDetailVM => {
       let instance: ItemInstance
@@ -76,9 +71,10 @@ export class PlayerItemsDetailComponent {
     private route: ActivatedRoute,
     private service: InventoryPickerService,
     private itemsStore: ItemInstancesStore,
-    private gearsetStore: GearsetStore
+    private gearsetStore: GearsetStore,
+    private gearsetDb: GearsetsDB
   ) {
-    //
+    this.gearsetStore.load(this.gearset$)
   }
 
   public setGearScore(vm: ItemDetailVM, gearScore: number) {

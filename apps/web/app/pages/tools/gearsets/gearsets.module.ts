@@ -1,16 +1,21 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
-import { GearsetComponent } from './gearset.component'
-import { GearsetsComponent } from './gearsets.component'
+import { GearsetsDetailPageComponent } from './gearsets-detail-page.component'
+import { GearsetsPageComponent } from './gearsets-page.component'
+import { GearsetsSharePageComponent } from './gearsets-share-page.component'
 
 export const routes: Routes = [
   {
     path: '',
-    component: GearsetsComponent,
+    component: GearsetsPageComponent,
+  },
+  {
+    path: 'share/:cid',
+    component: GearsetsSharePageComponent,
   },
   {
     path: ':id',
-    component: GearsetComponent,
+    component: GearsetsDetailPageComponent,
   },
 ]
 

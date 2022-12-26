@@ -1,7 +1,13 @@
 <div class="relative flex-1 flex flex-col xl:flex-row layout-gap font-nimbus">
   <div class="flex-1 flex flex-col layout-gap">
     <label class="flex relative">
-      <input type="file" class="hidden" accept=".jpg,.webp,.png" (change)="uploadFile($event)" />
+      <input
+        type="file"
+        class="hidden"
+        accept=".jpg,.webp,.png"
+        (change)="uploadFile($event)"
+        *ngIf="isPersistable$ | async"
+      />
       <picture
         class="
           w-full
@@ -10,10 +16,11 @@
           rounded-md
           transition-all
           outline outline-transparent outline-2 outline-offset-0
-          hover:outline-offset-4 hover:outline-primary
-          cursor-pointer
+          hover:outline-offset-4
           shadow-md
         "
+        [class.cursor-pointer]="isPersistable$ | async"
+        [class.hover:outline-primary]="isPersistable$ | async"
       >
         <ng-container *ngIf="image$ | async; let img; else: tplNoImage">
           <img [src]="img" class="absolute top-0 left-0 w-full h-full object-cover rounded-md" />
@@ -28,10 +35,11 @@
           [class.bg-black]="hasImage$ | async"
         >
           <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-14 h-14" />
-          <div class="font-bold text-5xl">{{ gearScore$ | async | number: '0.0-0' }}</div>
+          <div class="text-6xl font-caslon relative top-1">{{ gearScore$ | async | number: '0.0-0' }}</div>
         </div>
       </picture>
       <nwb-icon
+        *ngIf="isPersistable$ | async"
         [icon]="iconMenu"
         class="w-4 h-4 absolute top-1 right-1 screenshot-hidden pointer-events-none"
       ></nwb-icon>
@@ -47,19 +55,21 @@
               <tr *ngFor="let mod of rating.summary; let isFirst = first">
                 <td class="px-1">
                   <div class="whitespace-nowrap flex flex-row justify-end">
-                    <img [nwImage]="mod.icon" *ngIf="mod.icon" class="w-6 h-6"/> {{ mod.label | nwText }}
+                    <img [nwImage]="mod.icon" *ngIf="mod.icon" class="w-6 h-6" /> {{ mod.label | nwText }}
                   </div>
                 </td>
                 <td>
                   <ng-container *ngIf="!isFirst">+</ng-container>
                 </td>
                 <td class="text-right font-mono px-1">
-                  {{ mod.value | number: '0.1-1'}}
+                  {{ mod.value | number: '0.1-1' }}
                 </td>
               </tr>
               <tr>
                 <td></td>
-                <td colspan="2" class="text-right font-mono border-double border-t-4">{{ rating.total | number:'0.1-1' }}</td>
+                <td colspan="2" class="text-right font-mono border-double border-t-4">
+                  {{ rating.total | number: '0.1-1' }}
+                </td>
               </tr>
             </table>
           </div>
@@ -75,19 +85,21 @@
               <tr *ngFor="let mod of rating.summary; let isFirst = first">
                 <td class="px-1">
                   <div class="whitespace-nowrap flex flex-row justify-end">
-                    <img [nwImage]="mod.icon" *ngIf="mod.icon" class="w-6 h-6"/> {{ mod.label | nwText }}
+                    <img [nwImage]="mod.icon" *ngIf="mod.icon" class="w-6 h-6" /> {{ mod.label | nwText }}
                   </div>
                 </td>
                 <td>
                   <ng-container *ngIf="!isFirst">+</ng-container>
                 </td>
                 <td class="text-right font-mono px-1">
-                  {{ mod.value | number: '0.1-1'}}
+                  {{ mod.value | number: '0.1-1' }}
                 </td>
               </tr>
               <tr>
                 <td></td>
-                <td colspan="2" class="text-right font-mono border-double border-t-4">{{ rating.total | number:'0.1-1' }}</td>
+                <td colspan="2" class="text-right font-mono border-double border-t-4">
+                  {{ rating.total | number: '0.1-1' }}
+                </td>
               </tr>
             </table>
           </div>
@@ -103,28 +115,32 @@
               <tr *ngFor="let mod of health.summary; let isFirst = first">
                 <td class="px-1">
                   <div class="whitespace-nowrap flex flex-row justify-end">
-                    <img [nwImage]="mod.icon" *ngIf="mod.icon" class="w-6 h-6"/> {{ mod.label | nwText }}
+                    <img [nwImage]="mod.icon" *ngIf="mod.icon" class="w-6 h-6" /> {{ mod.label | nwText }}
                   </div>
                 </td>
                 <td>
                   <ng-container *ngIf="!isFirst">+</ng-container>
                 </td>
                 <td class="text-right font-mono px-1">
-                  {{ mod.value | number: '0.1-1'}}
+                  {{ mod.value | number: '0.1-1' }}
                 </td>
               </tr>
               <tr>
                 <td></td>
-                <td colspan="2" class="text-right font-mono border-double border-t-4">{{ health.total | number:'0.1-1' }}</td>
+                <td colspan="2" class="text-right font-mono border-double border-t-4">
+                  {{ health.total | number: '0.1-1' }}
+                </td>
               </tr>
               <tr>
                 <td>Hale & Heaty Town Bonus</td>
                 <td>+</td>
-                <td>{{ health.haleAndHeartyBonus | number:'0.1-1' }}</td>
+                <td>{{ health.haleAndHeartyBonus | number: '0.1-1' }}</td>
               </tr>
               <tr>
                 <td></td>
-                <td colspan="2" class="text-right font-mono border-double border-t-4">{{ health.haleAndHeartyBonus + health.total | number:'0.1-1' }}</td>
+                <td colspan="2" class="text-right font-mono border-double border-t-4">
+                  {{ health.haleAndHeartyBonus + health.total | number: '0.1-1' }}
+                </td>
               </tr>
             </table>
           </div>
@@ -134,7 +150,6 @@
   </div>
 
   <div class="flex-1 flex flex-col layout-gap">
-
     <ng-container [ngTemplateOutlet]="tplAttrs"></ng-container>
     <ng-container [ngTemplateOutlet]="tplResi"></ng-container>
   </div>
@@ -157,17 +172,22 @@
       rounded-md
       transition-all
       outline outline-transparent outline-2 outline-offset-0
-      hover:outline-offset-4 hover:outline-primary
-      cursor-pointer
+      hover:outline-offset-4
       relative
     "
+    [class.cursor-pointer]="!disabled"
+    [class.hover:outline-primary]="!disabled"
     (click)="editAttributes()"
   >
     <h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
       <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
       <span class="relative top-1">Attributes</span>
     </h3>
-    <nwb-icon [icon]="iconMenu" class="w-4 h-4 absolute top-1 right-1 screenshot-hidden pointer-events-none"></nwb-icon>
+    <nwb-icon
+      *ngIf="!disabled"
+      [icon]="iconMenu"
+      class="w-4 h-4 absolute top-1 right-1 screenshot-hidden pointer-events-none"
+    ></nwb-icon>
     <nwb-property-grid class="gap-x-1">
       <ng-container *ngFor="let row of attrs">
         <span class="w-16 text-right font-bold uppercase">{{ row.key }}</span>
@@ -183,7 +203,6 @@
             >)
           </ng-container>
         </span>
-
       </ng-container>
     </nwb-property-grid>
   </div>

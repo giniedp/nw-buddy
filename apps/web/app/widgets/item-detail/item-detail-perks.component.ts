@@ -23,9 +23,9 @@ export class ItemDetailPerksComponent {
     //
   }
 
-  protected editPerkClicked(item: PerkDetail) {
-    if (this.detail.perkEditable$.value) {
-      this.detail.perkEdit$.emit(item)
+  protected async editPerkClicked({ detail, editable }: { detail: PerkDetail; editable: boolean }) {
+    if (this.detail.perkEditable$.value && editable) {
+      this.detail.perkEdit$.emit(detail)
     }
   }
 }

@@ -94,7 +94,7 @@ export class GearsetSlotStore extends ComponentStore<GearsetSlotState> {
   /**
    * Updates a gearset slot
    */
-  public readonly updateSlot = this.effect<{ instance?: ItemInstance, instanceId?: string }>((value$) => {
+  public readonly updateSlot = this.effect<{ instance?: ItemInstance; instanceId?: string }>((value$) => {
     return value$.pipe(
       switchMap(({ instance, instanceId }) => {
         const gearset = this.get().gearset
@@ -126,7 +126,7 @@ export class GearsetSlotStore extends ComponentStore<GearsetSlotState> {
         record.slots = record.slots || {}
         record.slots[slot.id] = {
           ...instance,
-          gearScore: gearScore
+          gearScore: gearScore,
         }
         return this.writeRecord(record)
       })
@@ -166,7 +166,8 @@ export class GearsetSlotStore extends ComponentStore<GearsetSlotState> {
   })
 
   private writeRecord(record: GearsetRecord) {
-    return from(this.gearDb.update(record.id, record)).pipe(
+    const record$ = record.id ? from(this.gearDb.update(record.id, record)) : of(record)
+    return record$.pipe(
       tap({
         next: (value) => this.useSlot({ gearset: value, slot: this.get().slot }),
         error: (e) => console.error(e),

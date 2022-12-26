@@ -95,10 +95,10 @@ export class GearsetSlotComponent {
   public compact: boolean
 
   @Input()
-  public minimal: boolean
+  public square: boolean
 
   @Input()
-  public square: boolean
+  public disabled: boolean
 
   @ViewChildren(ItemDetailComponent)
   protected itemDetail: QueryList<ItemDetailComponent>
@@ -124,11 +124,8 @@ export class GearsetSlotComponent {
   )
     .pipe(
       tap((it) => {
-        if (it?.item) {
-          this.renderer.removeClass(this.elRef.nativeElement, 'screenshot-hidden')
-        } else {
-          this.renderer.addClass(this.elRef.nativeElement, 'screenshot-hidden')
-        }
+        this.updateClass('screenshot-hidden', !it?.item)
+        this.updateClass('hidden', !it?.item && this.disabled)
       })
     )
     .pipe(shareReplayRefCount(1))
@@ -232,5 +229,13 @@ export class GearsetSlotComponent {
   protected async instantiate() {
     const instance = await firstValueFrom(this.store.instance$)
     this.itemInstantiate.next(instance)
+  }
+
+  private updateClass(name: string, hasClass: boolean) {
+    if (hasClass) {
+      this.renderer.addClass(this.elRef.nativeElement, name)
+    } else {
+      this.renderer.removeClass(this.elRef.nativeElement, name)
+    }
   }
 }

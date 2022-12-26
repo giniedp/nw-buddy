@@ -1,0 +1,81 @@
+<ng-container *ngrxLet="vm$ as vm; suspenseTpl: tplLoading">
+  <ng-container *ngIf="vm.record; let data">
+    <ion-header class="bg-base-300">
+      <div class="form-control p-1">
+        <div class="input-group overflow-x-auto">
+          <a class="btn btn-ghost btn-square inline-flex" (click)="goBack()">
+            <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
+          </a>
+          <input
+            type="text"
+            placeholder=""
+            class="input input-bordered w-full min-w-[200px]"
+            maxlength="100"
+            [ngModel]="vm.name"
+            (ngModelChange)="updateName($event)"
+            [ngModelOptions]="{ updateOn: 'blur' }"
+          />
+          <button nwbScreenshotBtn class="btn btn-ghost btn-square" [tooltip]="'Screenshot'" [color]="'info'"></button>
+          <button
+            class="btn btn-ghost btn-square"
+            (click)="onShareClicked()"
+            [tooltip]="'Create share URL'"
+            [color]="'info'"
+          >
+            <nwb-icon [icon]="iconShare" class="w-4 h-4"></nwb-icon>
+          </button>
+
+          <button
+            class="btn btn-ghost btn-square"
+            (click)="onCompactClicked()"
+            [tooltip]="'Toggle compact mode'"
+            [color]="'info'"
+            [class.text-primary]="compact"
+          >
+            <nwb-icon [icon]="iconCompact" class="w-4 h-4"></nwb-icon>
+          </button>
+          <button
+            class="btn btn-ghost btn-square"
+            (click)="onCloneClicked()"
+            [tooltip]="'Create a copy'"
+            [color]="'info'"
+          >
+            <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
+          </button>
+          <button class="btn btn-ghost btn-square" (click)="onDeleteClicked()" [tooltip]="'Delete'" [color]="'error'">
+            <nwb-icon [icon]="iconDelete" class="w-4 h-4"></nwb-icon>
+          </button>
+        </div>
+      </div>
+    </ion-header>
+    <div class="layout-content">
+      <nwb-gearset-detail [gearset]="data" [compact]="compact"></nwb-gearset-detail>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!vm.record">
+    <div class="alert alert-error shadow-lg">
+      <div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="stroke-current flex-shrink-0 h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+          />
+        </svg>
+        <span>Gearset not found</span>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>
+
+<ng-template #tplLoading>
+  <div class="flex items-center justify-center py-20">
+    <button class="btn loading">loading...</button>
+  </div>
+</ng-template>

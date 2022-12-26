@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ComponentStore } from '@ngrx/component-store'
-import { filter, from, map, Observable, switchMap, tap } from 'rxjs'
+import { filter, from, map, of, switchMap, tap } from 'rxjs'
 import { AttributeRef } from '~/nw/attributes'
 
 import { GearsetCreateMode, GearsetRecord, GearsetsDB } from './gearsets.db'
-import { ImagesDB } from './images.db'
+import { ImageRecord, ImagesDB } from './images.db'
 import { ItemInstance } from './item-instances.db'
 import { SkillBuild } from './skill-builds.db'
 
@@ -24,12 +24,13 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
   public readonly skills$ = this.select(({ gearset }) => gearset?.skills)
   public readonly skillsPrimary$ = this.skills$.pipe(map((it) => it?.['primary']))
   public readonly skillsSecondary$ = this.skills$.pipe(map((it) => it?.['secondary']))
+  public readonly isPersistable$ = this.select(({ gearset }) => !!gearset?.id)
   public readonly isLinkMode$ = this.select(({ gearset }) => gearset?.createMode !== 'copy')
   public readonly isCopyMode$ = this.select(({ gearset }) => gearset?.createMode === 'copy')
   public readonly isLoading$ = this.select(({ isLoading }) => isLoading)
   public readonly imageUrl$ = this.select(({ gearset }) => gearset?.imageId)
     .pipe(filter((it) => !!it))
-    .pipe(switchMap((id) => this.imagesDb.live((it) => it.get(id))))
+    .pipe(switchMap((id) => this.imagesDb.live((it) => it.get(id).catch(() => null as ImageRecord))))
     .pipe(filter((it) => !!it?.data))
     .pipe(
       map((it) => {
@@ -56,29 +57,6 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
       gearset: gearset,
       isLoading: false,
     }
-  })
-
-  /**
-   * Loads set by id into form
-   */
-  public readonly loadById = this.effect((value$: Observable<string>) => {
-    return value$.pipe(
-      switchMap((id: string) => {
-        return this.db.observeByid(id).pipe(
-          tap({
-            next: (gearset) => this.load(gearset),
-            error: (e) => console.error(e),
-          })
-        )
-      })
-    )
-  })
-
-  /**
-   *
-   */
-  public readonly update = this.effect<GearsetRecord>((value$) => {
-    return value$.pipe(switchMap((record) => this.writeRecord(record)))
   })
 
   /**
@@ -152,7 +130,7 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
   /**
    * Updates a skill set
    */
-  public readonly updateSkill = this.effect<{ slot: string, skill: string | SkillBuild }>((value$) => {
+  public readonly updateSkill = this.effect<{ slot: string; skill: string | SkillBuild }>((value$) => {
     return value$.pipe(
       switchMap(({ slot, skill }) => {
         const gearset = this.get().gearset
@@ -206,7 +184,8 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
   })
 
   private writeRecord(record: GearsetRecord) {
-    return from(this.db.update(record.id, record)).pipe(
+    const record$ = record.id ? from(this.db.update(record.id, record)) : of(record)
+    return record$.pipe(
       tap({
         next: (value) => this.load(value),
         error: (e) => console.error(e),

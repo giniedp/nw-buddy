@@ -67,14 +67,11 @@ export class GearsetSkillComponent {
     return this.gearset$.value
   }
 
-  // @Output()
-  // public itemRemove = new EventEmitter<void>()
-
-  // @Output()
-  // public itemUnlink = new EventEmitter<ItemInstance>()
-
   @Input()
   public compact: boolean
+
+  @Input()
+  public disabled: boolean
 
   protected iconMenu = svgEllipsisVertical
   protected iconRemove = svgTrashCan

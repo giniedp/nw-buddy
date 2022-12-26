@@ -75,7 +75,7 @@ export class TooltipDirective implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.zone.runOutsideAngular(() => {
       const open$ = merge(
-        ...['mouseenter', 'focus'].map((it) =>
+        ...['mouseenter'].map((it) =>
           fromEvent(this.elRef.nativeElement, it, {
             passive: true,
           })
@@ -83,7 +83,7 @@ export class TooltipDirective implements OnInit, OnDestroy {
       ).pipe(map(() => true))
 
       const close$ = merge(
-        ...['touchend', 'touchcancel', 'mouseleave'].map((it) =>
+        ...['touchend', 'touchcancel', 'mouseleave', 'blur'].map((it) =>
           fromEvent(this.elRef.nativeElement, it, {
             passive: true,
           })

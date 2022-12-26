@@ -67,13 +67,9 @@ export class GearsetFormComponent {
     private injector: Injector,
     private pref: PreferencesService
   ) {
-    //
-    const id = this.currentGearsetId.get()
-    if (id) {
-      this.store.loadById(id)
-    } else {
-      this.store.load(null)
-    }
+    const gearId$ = this.currentGearsetId.observe()
+    const gearset$ = this.gearDb.observeByid(gearId$)
+    this.store.load(gearset$)
   }
 
   protected createSet() {
@@ -98,7 +94,6 @@ export class GearsetFormComponent {
         })
       )
       .subscribe((newSet) => {
-        this.store.loadById(newSet.id)
         this.currentGearsetId.set(newSet.id)
       })
   }
@@ -109,13 +104,9 @@ export class GearsetFormComponent {
   }
 
   protected loadSet() {
-    this.store.loadById(
-      this.pickGearsetId().pipe(
-        tap((it) => {
-          this.currentGearsetId.set(it)
-        })
-      )
-    )
+    this.pickGearsetId().subscribe((id) => {
+      this.currentGearsetId.set(id)
+    })
   }
 
   private pickGearsetId() {

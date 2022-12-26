@@ -3,6 +3,7 @@ import { ComponentStore } from '@ngrx/component-store'
 import { Ability } from '@nw-data/types'
 import { combineLatest, defer, distinctUntilChanged, filter, of, Subject, switchMap, tap } from 'rxjs'
 import { NwDbService } from '~/nw/nw-db.service'
+import { tapDebug } from '~/utils'
 
 import { SkillBuildRecord, SkillBuildsDB } from './skill-builds.db'
 
@@ -66,7 +67,7 @@ export class SkillBuildsStore extends ComponentStore<SkillBuildsState> {
       switchMap(async ({ record }) => {
         await this.db
           .create(record)
-          .then((created) => this.rowCreated.next(this.buildRow(this.get().abilities, created)))
+          .then((created) => this.notifyCreated(created))
           .catch(console.error)
       })
     )
@@ -93,6 +94,10 @@ export class SkillBuildsStore extends ComponentStore<SkillBuildsState> {
       })
     )
   })
+
+  public notifyCreated(record: SkillBuildRecord) {
+    this.rowCreated.next(this.buildRow(this.get().abilities, record))
+  }
 
   public buildRow(abilities: Map<string, Ability>, record: SkillBuildRecord): SkillBuildRow {
 

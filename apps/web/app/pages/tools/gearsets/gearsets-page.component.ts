@@ -19,7 +19,7 @@ import { GearsetsTableAdapter } from './gearsets-table.adapter'
 @Component({
   standalone: true,
   selector: 'nwb-gearsets-page',
-  templateUrl: './gearsets.component.html',
+  templateUrl: './gearsets-page.component.html',
   imports: [
     CommonModule,
     RouterModule,
@@ -36,7 +36,7 @@ import { GearsetsTableAdapter } from './gearsets-table.adapter'
     class: 'layout-col',
   },
 })
-export class GearsetsComponent implements OnInit {
+export class GearsetsPageComponent implements OnInit {
   protected iconCreate = svgPlus
 
   public constructor(

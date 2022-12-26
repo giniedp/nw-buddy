@@ -85,43 +85,6 @@ export class SkillBuildsTableAdapter extends DataTableAdapter<SkillBuildRow> {
           })
           //valueGetter: this.valueGetter(({ data }) => data.record.),
         }),
-        this.config?.noActions
-          ? null
-          : this.colDef({
-              colId: 'actions',
-              headerValueGetter: () => 'Actions',
-              sortable: false,
-              filter: false,
-              resizable: false,
-              width: 120,
-              cellRenderer: this.cellRenderer(({ data }) => {
-                return this.el('div.btn-group.content-center', {}, [
-                  this.el('button.btn.btn-ghost', {
-                    html: `<span class="w-4 h-4">${svgTrashCan}</span>`,
-                    ev: {
-                      onclick: (e) => {
-                        e.stopImmediatePropagation()
-                        this.zone.run(() => {
-                          ConfirmDialogComponent.open(this.dialog, {
-                            data: {
-                              title: 'Delete Gearset',
-                              body: 'Are you sure you want to delete this gearset?',
-                              positive: 'Delete',
-                              negative: 'Cancel',
-                            },
-                          })
-                            .closed.pipe(take(1))
-                            .pipe(filter((it) => !!it))
-                            .subscribe(() => {
-                              this.store.destroyRecord({ recordId: data.record.id })
-                            })
-                        })
-                      },
-                    },
-                  }),
-                ])
-              }),
-            }),
       ].filter((it) => !!it),
     })
   )

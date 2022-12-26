@@ -51,3 +51,5 @@ export const svgCompress = require('!!raw-loader!./compress.svg').default
 export const svgShareNodes = require('!!raw-loader!./share-nodes.svg').default
 export const svgCircleExclamation = require('!!raw-loader!./circle-exclamation.svg').default
 export const svgCircleCheck = require('!!raw-loader!./circle-check.svg').default
+export const svgCircleNotch = require('!!raw-loader!./circle-notch.svg').default
+export const svgArrowRightArrowLeft = require('!!raw-loader!./arrow-right-arrow-left.svg').default

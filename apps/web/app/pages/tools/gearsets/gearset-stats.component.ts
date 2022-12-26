@@ -2,7 +2,7 @@ import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { LayoutModule } from '@angular/cdk/layout'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule, DecimalPipe, PercentPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import {
   Ability,
   Affixstats,
@@ -88,6 +88,9 @@ export interface StatEntry {
   },
 })
 export class GearsetStatsComponent {
+  @Input()
+  public disabled: boolean
+
   protected slots$ = this.resolveSlots().pipe(shareReplayRefCount(1))
   protected slotsArmor$ = this.slots$.pipe(mapFilter((it) => !!it.armor))
   protected slotsWeapon$ = this.slots$.pipe(mapFilter((it) => !!it.weapon))
@@ -180,7 +183,9 @@ export class GearsetStatsComponent {
     .pipe(shareReplay(1))
 
   protected image$ = this.gearset.imageUrl$.pipe(shareReplay(1))
+  protected isPersistable$ = this.gearset.isPersistable$
   protected hasImage$ = this.image$.pipe(map((it) => !!it))
+
   protected iconMenu = svgEllipsisVertical
 
   public constructor(
@@ -582,6 +587,9 @@ export class GearsetStatsComponent {
   }
 
   protected async editAttributes() {
+    if (this.disabled) {
+      return
+    }
     const base = await firstValueFrom(this.attrsBase$)
     const assigned = await firstValueFrom(this.attrsAssigned$)
     const buffs = await firstValueFrom(this.attrsBuff$)

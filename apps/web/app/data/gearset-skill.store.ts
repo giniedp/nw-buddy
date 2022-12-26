@@ -81,7 +81,8 @@ export class GearsetSkillStore extends ComponentStore<GearsetSkillState> {
   })
 
   private writeRecord(record: GearsetRecord) {
-    return from(this.gearDb.update(record.id, record)).pipe(
+    const record$ = record.id ? from(this.gearDb.update(record.id, record)) : of(record)
+    return record$.pipe(
       tap({
         next: (value) => this.useSlot({ gearset: value, slot: this.get().slot }),
         error: (e) => console.error(e),

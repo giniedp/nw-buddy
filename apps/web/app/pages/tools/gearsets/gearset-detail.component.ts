@@ -1,18 +1,13 @@
 import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { Component, TrackByFunction } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { ActivatedRoute, Router, RouterModule } from '@angular/router'
-import { IonicModule } from '@ionic/angular'
-import { filter, firstValueFrom, switchMap } from 'rxjs'
-import { GearsetsDB, GearsetStore, ItemInstance, ItemInstancesStore } from '~/data'
+import { filter } from 'rxjs'
+import { GearsetRecord, GearsetStore, ItemInstance, ItemInstancesStore } from '~/data'
 import { EquipSlot, EQUIP_SLOTS } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
-import { svgCamera, svgChevronLeft, svgPaste, svgTrashCan } from '~/ui/icons/svg'
-import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/layout'
-import { TooltipModule } from '~/ui/tooltip'
-import { observeRouteParam } from '~/utils'
+import { ConfirmDialogComponent } from '~/ui/layout'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { GearsetSkillComponent } from './gearset-skill.component'
 import { GearsetSlotComponent } from './gearset-slot.component'
@@ -20,8 +15,11 @@ import { GearsetStatsComponent } from './gearset-stats.component'
 
 @Component({
   standalone: true,
-  selector: 'nwb-gearset',
-  templateUrl: './gearset.component.html',
+  selector: 'nwb-gearset-detail',
+  templateUrl: './gearset-detail.component.html',
+  styleUrls: ['./gearset-detail.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  exportAs: 'gearsetDetail',
   imports: [
     CommonModule,
     DialogModule,
@@ -30,13 +28,9 @@ import { GearsetStatsComponent } from './gearset-stats.component'
     GearsetSlotComponent,
     GearsetStatsComponent,
     IconsModule,
-    RouterModule,
     ScreenshotModule,
-    TooltipModule,
-    IonicModule
   ],
   providers: [GearsetStore, ItemInstancesStore],
-  styleUrls: ['./gearset.component.scss'],
   host: {
     class: 'layout-col flex-none',
   },
@@ -55,10 +49,20 @@ import { GearsetStatsComponent } from './gearset-stats.component'
     ]),
   ],
 })
-export class GearsetComponent {
-  protected id$ = observeRouteParam(this.route, 'id')
+export class GearsetDetailComponent {
 
-  protected data$ = this.store.gearset$
+  @Input()
+  public set gearset(value: GearsetRecord) {
+    this.store.load(value)
+  }
+
+  @Input()
+  public compact: boolean
+
+  @Input()
+  public disabled: boolean
+
+  protected gearset$ = this.store.gearset$
   protected name$ = this.store.gearsetName$
   protected isLoading$ = this.store.isLoading$
 
@@ -66,23 +70,14 @@ export class GearsetComponent {
   protected buffSlots = EQUIP_SLOTS.filter((it) => it.id.startsWith('buff'))
   protected quickSlots = EQUIP_SLOTS.filter((it) => it.id.startsWith('quick'))
   protected ammoSlots = EQUIP_SLOTS.filter((it) => it.itemType === 'Ammo')
-  protected compactMode = false
-  protected iconCamera = svgCamera
-  protected iconDelete = svgTrashCan
-  protected iconCopy = svgPaste
-  protected iconBack = svgChevronLeft
-  // protected iconCompact = svgex
-  protected trackByIndex: TrackByFunction<any> = (i) => i
+
+  protected trackByIndex = (i: number) => i
 
   public constructor(
-    private router: Router,
-    private route: ActivatedRoute,
     private store: GearsetStore,
-    private gearDb: GearsetsDB,
     private itemsStore: ItemInstancesStore,
     private dialog: Dialog
   ) {
-    store.loadById(this.id$)
     itemsStore.loadAll()
   }
 
@@ -90,50 +85,8 @@ export class GearsetComponent {
     this.store.updateName({ name: value })
   }
 
-  protected onCompactClicked() {
-    this.compactMode = !this.compactMode
-  }
-
-  protected async onCloneClicked() {
-    const oldSet = await firstValueFrom(this.store.gearset$)
-    PromptDialogComponent.open(this.dialog, {
-      data: {
-        title: 'Create copy',
-        body: 'Give this set a new name',
-        input: `${oldSet.name} (Copy)`,
-        positive: 'Create',
-        negative: 'Cancel',
-      },
-    })
-      .closed.pipe(filter((it) => !!it))
-      .pipe(
-        switchMap((newName) => {
-          return this.gearDb.create({
-            ...oldSet,
-            id: null,
-            name: newName,
-          })
-        })
-      )
-      .subscribe((newSet) => {
-        this.router.navigate(['..', newSet.id], { relativeTo: this.route })
-      })
-  }
-
-  protected async onDeleteClicked() {
-    ConfirmDialogComponent.open(this.dialog, {
-      data: {
-        title: 'Delete Gearset',
-        body: 'Are you sure you want to delete this gearset?',
-        positive: 'Delete',
-        negative: 'Cancel',
-      },
-    })
-      .closed.pipe(filter((it) => !!it))
-      .subscribe(() => {
-        this.store.destroySet()
-        this.router.navigate(['..'], { relativeTo: this.route })
-      })
+  public toggleCompactMode() {
+    this.compact = !this.compact
   }
 
   protected onItemRemove(slot: EquipSlot) {
@@ -174,7 +127,4 @@ export class GearsetComponent {
       })
   }
 
-  protected goBack() {
-    history.back()
-  }
 }

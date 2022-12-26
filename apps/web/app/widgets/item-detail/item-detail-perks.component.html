@@ -1,17 +1,10 @@
 <div
-  class="
-    flex flex-row
-    gap-2
-    relative
-    rounded-md
-    outline outline-2 outline-offset-0 outline-transparent
-    transition-all
-  "
+  class="flex flex-row gap-2 relative rounded-md outline outline-2 outline-offset-0 outline-transparent transition-all"
   *ngFor="let item of items$ | async; let isLast = last; trackBy: trackByIndex"
   [class.hover:outline-primary-focus]="item.editable"
   [class.hover:outline-offset-4]="item.editable"
   [class.hover:cursor-pointer]="item.editable"
-  (click)="editPerkClicked(item.detail)"
+  (click)="editPerkClicked(item)"
 >
   <ng-container *ngIf="item.perk">
     <nwb-item-perk [icon]="item.detail.icon" class="text-sky-600">
@@ -22,7 +15,10 @@
     </nwb-item-perk>
   </ng-container>
   <ng-container *ngIf="!item.perk">
-    <nwb-item-perk [icon]="'assets/icons/crafting_perkbackground.png'" [iconText]="item.detail.bucket?.PerkChance | percent">
+    <nwb-item-perk
+      [icon]="'assets/icons/crafting_perkbackground.png'"
+      [iconText]="item.detail.bucket?.PerkChance | percent"
+    >
       <div class="text-sky-600">Random Perk</div>
     </nwb-item-perk>
   </ng-container>

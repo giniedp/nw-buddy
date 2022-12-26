@@ -2,15 +2,15 @@ import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { ActivatedRoute, RouterModule } from '@angular/router'
-import { asyncScheduler, combineLatest, map, subscribeOn, switchMap } from 'rxjs'
-import { SkillBuildRecord, SkillBuildsStore } from '~/data'
+import { ActivatedRoute, Router, RouterModule } from '@angular/router'
+import { asyncScheduler, combineLatest, filter, map, subscribeOn, switchMap } from 'rxjs'
+import { SkillBuildRecord, SkillBuildsDB, SkillBuildsStore } from '~/data'
 import { NwModule } from '~/nw'
 import { AttributeRef } from '~/nw/attributes'
 import { ShareDialogComponent, Web3Service } from '~/pages/web3'
 import { IconsModule } from '~/ui/icons'
-import { svgBars, svgChevronLeft, svgRotate, svgShareNodes, svgSliders } from '~/ui/icons/svg'
-import { LayoutModule } from '~/ui/layout'
+import { svgArrowRightArrowLeft, svgBars, svgChevronLeft, svgClipboard, svgRotate, svgShareNodes, svgSliders, svgTrashCan } from '~/ui/icons/svg'
+import { ConfirmDialogComponent, LayoutModule, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { observeRouteParam } from '~/utils'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
@@ -32,7 +32,7 @@ import { SkillBuilderComponent, SkillBuildValue } from '~/widgets/skill-builder'
     ScreenshotModule,
     TooltipModule,
     LayoutModule,
-    AttributesEditorModule
+    AttributesEditorModule,
   ],
   host: {
     class: 'hidden xl:flex xl:flex-1 flex-col',
@@ -53,12 +53,20 @@ export class SkillBuildsDetailComponent {
 
   protected attrs$ = this.item$.pipe(map((it) => it?.record?.attrs))
   protected iconBack = svgChevronLeft
-  protected iconReset = svgRotate
+  protected iconReset = svgArrowRightArrowLeft
   protected iconMenu = svgBars
   protected iconAttrs = svgSliders
   protected iconShare = svgShareNodes
+  protected iconCopy = svgClipboard
+  protected iconDelete = svgTrashCan
 
-  public constructor(private store: SkillBuildsStore, private route: ActivatedRoute, private dialog: Dialog) {
+  public constructor(
+    private store: SkillBuildsStore,
+    private skillDb: SkillBuildsDB,
+    private route: ActivatedRoute,
+    private router: Router,
+    private dialog: Dialog
+  ) {
     //
   }
 
@@ -82,11 +90,20 @@ export class SkillBuildsDetailComponent {
     })
   }
 
-  protected addAttributes(record: SkillBuildRecord) {
+  protected updateAttributes(record: SkillBuildRecord, attrs: Record<AttributeRef, number>) {
     this.store.updateRecord({
       record: {
         ...record,
-        attrs: record.attrs || {
+        attrs: attrs,
+      },
+    })
+  }
+
+  protected toggleAttributes(record: SkillBuildRecord) {
+    this.store.updateRecord({
+      record: {
+        ...record,
+        attrs: record.attrs ? null : {
           con: 0,
           dex: 0,
           foc: 0,
@@ -97,32 +114,69 @@ export class SkillBuildsDetailComponent {
     })
   }
 
-  protected updateAttributes(record: SkillBuildRecord, attrs: Record<AttributeRef, number>) {
-    this.store.updateRecord({
-      record: {
-        ...record,
-        attrs: attrs,
-      },
-    })
-  }
-
-  protected removeAttributes(record: SkillBuildRecord) {
-    this.store.updateRecord({
-      record: {
-        ...record,
-        attrs: null,
-      },
-    })
-  }
-
-  protected shareItem(record: SkillBuildRecord) {
+  protected onShareClicked(record: SkillBuildRecord) {
     ShareDialogComponent.open(this.dialog, {
       data: {
-
-        ref: record.id,
-        type: 'skill-build',
-        data: record,
-      }
+        buildUrl: (cid) => {
+          return (
+            location.origin +
+            this.router
+              .createUrlTree(['..', 'share', cid], {
+                relativeTo: this.route,
+              })
+              .toString()
+          )
+        },
+        data: {
+          ref: record.id,
+          type: 'skill-build',
+          data: record,
+        },
+      },
     })
+  }
+
+  protected async onCloneClicked(record: SkillBuildRecord) {
+    PromptDialogComponent.open(this.dialog, {
+      data: {
+        title: 'Create copy',
+        body: 'New skill-tree name',
+        input: `${record.name} (Copy)`,
+        positive: 'Create',
+        negative: 'Cancel',
+      },
+    })
+      .closed.pipe(filter((it) => !!it))
+      .pipe(
+        switchMap((name) => {
+          return this.skillDb.create({
+            ...record,
+            id: null,
+            name: name,
+          })
+        })
+      )
+      .subscribe((result) => {
+        this.store.notifyCreated(result)
+        this.router.navigate(['..', result.id], { relativeTo: this.route })
+      })
+  }
+
+  protected onDeleteClicked(record: SkillBuildRecord) {
+    ConfirmDialogComponent.open(this.dialog, {
+      data: {
+        title: 'Delete Skill Tree',
+        body: 'Are you sure you want to delete this skill tree?',
+        positive: 'Delete',
+        negative: 'Cancel',
+      },
+    })
+      .closed.pipe(filter((it) => !!it))
+      .subscribe(() => {
+        this.store.destroyRecord({ recordId: record.id })
+        this.router.navigate(['..'], {
+          relativeTo: this.route,
+        })
+      })
   }
 }

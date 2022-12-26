@@ -62,28 +62,6 @@ export class SkillBuildsComponent {
         },
       })
     })
-
-    // PromptDialogComponent.open(this.dialog, {
-    //   data: {
-    //     title: 'Create new skill tree',
-    //     body: 'Give this set a name',
-    //     input: `New Skill Tree`,
-    //     positive: 'Create',
-    //     negative: 'Cancel',
-    //   },
-    // })
-    //   .closed.pipe(filter((it) => !!it))
-    //   .subscribe((newName) => {
-    //     this.store.createRecord({
-    //       record: {
-    //         id: null,
-    //         name: newName,
-    //         tree1: null,
-    //         tree2: null,
-    //         weapon: 'sword',
-    //       },
-    //     })
-    //   })
   }
 
   protected deleteItem(item: SkillBuildRow) {
