@@ -144,14 +144,11 @@ export class GearsetsDetailPageComponent {
           data: record,
         },
         buildUrl: (cid) => {
-          return (
-            location.origin +
-            this.router
-              .createUrlTree(['..', 'share', cid], {
-                relativeTo: this.route,
-              })
-              .toString()
-          )
+          return this.router
+            .createUrlTree(['..', 'share', cid], {
+              relativeTo: this.route,
+            })
+            .toString()
         },
       },
     })

@@ -79,10 +79,6 @@ export class Web3Service {
     return true
   }
 
-  public buildInternalLink(cid: string) {
-    return `${location.origin}/ipfs/${cid}`
-  }
-
   public buildIpfsLink(cid: string, fileName?: string) {
     const url = `https://${cid}.ipfs.${IPFS_GATEWAY}`
     if (!fileName) {

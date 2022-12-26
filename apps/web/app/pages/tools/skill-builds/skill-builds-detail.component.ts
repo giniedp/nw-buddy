@@ -9,7 +9,16 @@ import { NwModule } from '~/nw'
 import { AttributeRef } from '~/nw/attributes'
 import { ShareDialogComponent, Web3Service } from '~/pages/web3'
 import { IconsModule } from '~/ui/icons'
-import { svgArrowRightArrowLeft, svgBars, svgChevronLeft, svgClipboard, svgRotate, svgShareNodes, svgSliders, svgTrashCan } from '~/ui/icons/svg'
+import {
+  svgArrowRightArrowLeft,
+  svgBars,
+  svgChevronLeft,
+  svgClipboard,
+  svgRotate,
+  svgShareNodes,
+  svgSliders,
+  svgTrashCan,
+} from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { observeRouteParam } from '~/utils'
@@ -103,13 +112,15 @@ export class SkillBuildsDetailComponent {
     this.store.updateRecord({
       record: {
         ...record,
-        attrs: record.attrs ? null : {
-          con: 0,
-          dex: 0,
-          foc: 0,
-          int: 0,
-          str: 0,
-        },
+        attrs: record.attrs
+          ? null
+          : {
+              con: 0,
+              dex: 0,
+              foc: 0,
+              int: 0,
+              str: 0,
+            },
       },
     })
   }
@@ -118,14 +129,11 @@ export class SkillBuildsDetailComponent {
     ShareDialogComponent.open(this.dialog, {
       data: {
         buildUrl: (cid) => {
-          return (
-            location.origin +
-            this.router
-              .createUrlTree(['..', 'share', cid], {
-                relativeTo: this.route,
-              })
-              .toString()
-          )
+          return this.router
+            .createUrlTree(['..', 'share', cid], {
+              relativeTo: this.route,
+            })
+            .toString()
         },
         data: {
           ref: record.id,

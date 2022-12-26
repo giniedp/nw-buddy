@@ -1,6 +1,7 @@
 import { Dialog, DialogConfig, DialogRef, DIALOG_DATA } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject } from '@angular/core'
+import { environment } from 'apps/web/environments/environment'
 import { from, map } from 'rxjs'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -31,7 +32,7 @@ export class ShareDialogComponent {
   protected state$ = deferState(() => {
     return from(this.web3.shareObject(this.data.data)).pipe(map((it) => {
       return {
-        shareUrl: this.data.buildUrl ? this.data.buildUrl(it.cid) : this.web3.buildInternalLink(it.cid),
+        shareUrl: this.buildShareUrl(it.cid),
         ipfsUrl: this.web3.buildIpfsLink(it.cid)
       }
     }))
@@ -67,5 +68,13 @@ export class ShareDialogComponent {
 
   protected close() {
     this.dialog.close()
+  }
+
+  protected buildShareUrl(cid: string) {
+    const path = this.data.buildUrl(cid)
+    if (environment.production) {
+      return `https://www.nw-buddy.de` + path
+    }
+    return location.origin + path
   }
 }
