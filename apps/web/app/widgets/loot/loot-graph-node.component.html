@@ -1,0 +1,105 @@
+<div *ngIf="expandable" class="border border-base-100 rounded-l-md class.bg-base-200">
+  <div class="px-2 py-1 flex flex-row items-center cursor-pointer gap-x-1 bg-base-100 shadow-accent border-l-4" [class.border-l-transparent]="!highlight" [class.border-l-accent]="highlight" (click)="toggle()">
+    <span *ngIf="rollThreshold" class="badge badge-sm badge-primary">
+      >= {{ rollThreshold }} <ng-container *ngIf="chanceRel"> ({{ chanceRel | percent: '0.0-6' }}) </ng-container>
+    </span>
+    <span *ngIf="tagValue" class="badge badge-sm badge-secondary"> >= {{ tagValue }} </span>
+    <span *ngIf="itemQuantity"> {{ itemQuantity }} &times; </span>
+    <span> {{ displayName }} </span>
+    <span class="flex-1"></span>
+
+    <div class="text-xs flex flex-row items-center gap-1">
+      <span class="min-w-[40px]"> {{ typeName }} </span>
+      <span> | </span>
+      <ng-container *ngIf="showChance">
+        <span class="min-w-[40px] inline-flex flex-col text-right">
+          <span> {{ chanceAbs | percent: '0.0-6' }} </span>
+        </span>
+        <span> | </span>
+      </ng-container>
+      <span class="min-w-[40px] inline-flex flex-col  text-right">
+        <span class="text-success" *ngIf="unlockedItemCount"> {{ unlockedItemCount }} </span>
+        <span> {{ totalItemCount }} </span>
+      </span>
+    </div>
+    <nwb-icon
+      [icon]="iconExpand"
+      class="transition-transform w-4 h-4"
+      [class.rotate-90]="expand"
+      [class.-rotate-90]="!expand"
+      [class.text-error]="!unlocked"
+      [class.text-success]="unlocked"
+    ></nwb-icon>
+  </div>
+  <div class="p-3 pr-0 mr-[-1px] flex flex-col gap-2" *ngIf="expand">
+    <div class="flex flex-row flex-wrap gap-1" *ngIf="table">
+      <span *ngIf="table['AND/OR']" class="whitespace-nowrap badge badge-sm badge-info">
+        {{ table['AND/OR'] }}
+      </span>
+      <span *ngIf="table.MaxRoll" class="whitespace-nowrap badge badge-sm badge-primary">
+        MaxRoll: {{ table.MaxRoll }}
+      </span>
+      <!-- <span *ngIf="table.GSBonus" class="whitespace-nowrap badge badge-sm badge-accent">
+        GSBonus: {{ table.GSBonus }}
+      </span>
+      <span *ngIf="table.UseLevelGS" class="whitespace-nowrap badge badge-sm badge-accent">
+        UseLevelGS: {{ table.UseLevelGS }}
+      </span>
+      <span *ngIf="table.HWMMult" class="whitespace-nowrap badge badge-sm badge-accent">
+        HWMMult: {{ table.HWMMult }}
+      </span>
+      <span *ngIf="table.LuckSafe" class="whitespace-nowrap badge badge-sm badge-primary">
+        LuckSafe: {{ table.LuckSafe }}
+      </span> -->
+      <span *ngFor="let item of table.Conditions" class="whitespace-nowrap badge badge-sm badge-secondary">
+        {{ item }}
+      </span>
+    </div>
+    <ng-container *ngTemplateOutlet="tplChildren"></ng-container>
+  </div>
+</div>
+
+<ng-container *ngIf="!expandable">
+  <ng-container *ngTemplateOutlet="tplChildren"></ng-container>
+</ng-container>
+
+<ng-container *ngIf="itemId">
+  <nwb-item-detail [entityId]="itemId" class="max-w-md rounded-md overflow-hidden border-2" [class.border-transparent]="!highlight" [class.border-accent]="highlight">
+    <nwb-item-detail-header class="h-full">
+      <div class="content flex flex-row flex-wrap gap-1">
+        <span *ngIf="rollThreshold" class="whitespace-nowrap badge badge-sm badge-primary">
+          >= {{ rollThreshold }}
+        </span>
+        <span *ngIf="tagValue" class="whitespace-nowrap badge badge-sm badge-secondary"> >= {{ tagValue }} </span>
+        <span class="badge badge-sm badge-primary whitespace-nowrap" *ngIf="itemQuantity"
+          >{{ itemQuantity }} &times;</span
+        >
+        <ng-container *ngIf="itemTags?.length">
+          <span
+            *ngFor="let it of itemTags; trackBy: trackByIndex"
+            class="badge badge-sm badge-secondary whitespace-nowrap"
+          >
+            {{ it }}
+          </span>
+        </ng-container>
+      </div>
+    </nwb-item-detail-header>
+  </nwb-item-detail>
+</ng-container>
+
+<ng-template #tplChildren>
+  <ng-container *ngIf="childGrid && children?.length">
+    <div class="grid gap-2 max-h-96 overflow-y-auto mr-2" *ngIf="children?.length">
+      <ng-container *ngFor="let node of children; trackBy: trackByIndex">
+        <nwb-loot-graph-node [node]="node" [showLocked]="showLocked" [showChance]="showChance"></nwb-loot-graph-node>
+      </ng-container>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!childGrid && children?.length">
+    <div class="flex flex-col gap-2">
+      <ng-container *ngFor="let node of children; trackBy: trackByIndex">
+        <nwb-loot-graph-node [node]="node" [showLocked]="showLocked" [showChance]="showChance"></nwb-loot-graph-node>
+      </ng-container>
+    </div>
+  </ng-container>
+</ng-template>

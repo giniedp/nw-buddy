@@ -210,7 +210,7 @@ export class NwDbService {
 
   public pois = list(() =>
     this.data
-      .apiMethodsByPrefix('pointofinterestdefinitionsPoidefinitions', 'pointofinterestdefinitionsPoidefinitions0202')
+      .apiMethodsByPrefix('pointofinterestdefinitions', 'pointofinterestdefinitionsPoidefinitions0202')
       .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
   )
   public poisMap = index(() => this.pois, 'TerritoryID')

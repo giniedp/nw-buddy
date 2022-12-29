@@ -76,7 +76,6 @@ export class DungeonDetailStore extends ComponentStore<DungeonDetailState> {
         return result
       })
     )
-    // .pipe(tapDebug('creatures', (list) => list.map((it) => [it.VitalsID,  it.LootTags])))
     .pipe(shareReplayRefCount(1))
 
   public readonly bosses$ = combineLatest({
@@ -130,142 +129,175 @@ export class DungeonDetailStore extends ComponentStore<DungeonDetailState> {
     .pipe(map((it) => uniq(it).filter((it) => !!it)))
     .pipe(shareReplayRefCount(1))
 
-  public readonly lootNormalMode$ = combineLatest({
+  public readonly lootTagsNormalMode$ = combineLatest({
     dungeon: this.dungeon$,
     creatureTags: this.creatureLootTags$,
     lootTable: this.db.lootTable('CreatureLootMaster'),
   })
-  .pipe(filter((it) => !!it.dungeon))
-  .pipe(
-    switchMap(({ dungeon, creatureTags, lootTable }) => {
-      const dungeonTags = dungeon.LootTags || []
-      // exclude dungeon tags from other dungeons
-      const tagsToExclude = DUNGEON_LOOT_TAGS.filter((it) => !dungeonTags.includes(it))
-      const tags = uniq([
-        // required to access global loot table
-        'GlobalMod',
-        ...creatureTags,
-        ...dungeonTags,
-      ]).filter((it) => !!it && !tagsToExclude.includes(it))
+    .pipe(filter((it) => !!it.dungeon))
+    .pipe(
+      map(({ dungeon, creatureTags, lootTable }) => {
+        const dungeonTags = dungeon.LootTags || []
+        // exclude dungeon tags from other dungeons
+        const tagsToExclude = DUNGEON_LOOT_TAGS.filter((it) => !dungeonTags.includes(it))
+        const tags = uniq([
+          // required to access global loot table
+          'GlobalMod',
+          ...creatureTags,
+          ...dungeonTags,
+        ]).filter((it) => !!it && !tagsToExclude.includes(it))
 
-      // console.log({
-      //   bossTags,
-      //   creatureTags,
-      //   lootTags,
-      //   tagsToExclude,
-      //   tags
-      // })
+        // console.log({
+        //   bossTags,
+        //   creatureTags,
+        //   lootTags,
+        //   tagsToExclude,
+        //   tags
+        // })
+        return {
+          tags: [...tags],
+          values: {
+            MinContLevel: dungeon.ContainerLevel,
+            EnemyLevel: dungeon.RequiredLevel,
+            Level: NW_MAX_CHARACTER_LEVEL,
+          },
+          table: lootTable,
+          tableId: lootTable?.LootTableID
+        }
+      })
+    )
+    .pipe(shareReplayRefCount(1))
+
+  public readonly lootNormalMode$ = this.lootTagsNormalMode$.pipe(
+    switchMap(({ tags, values, table }) => {
       const ctx = new LootContext({
-        tags: [...tags],
-        values: {
-          MinContLevel: dungeon.ContainerLevel,
-          EnemyLevel: dungeon.RequiredLevel,
-          Level: NW_MAX_CHARACTER_LEVEL
-        },
+        tags: tags,
+        values: values,
       })
       // removes all the junk
       ctx.ignoreTablesAndBuckets = ['CreatureLootCommon', 'GlobalNamedList']
-      return this.loot.resolveItemNodes(lootTable, ctx)
+      return this.loot.resolveLootItems(table, ctx)
     })
   )
 
-
-  public readonly lootMutatedMode = combineLatest({
+  public readonly lootTagsMutatedMode$ = combineLatest({
     dungeon: this.dungeon$,
     creatureTags: this.creatureLootTags$,
     lootTable: this.db.lootTable('CreatureLootMaster_MutatedContainer'),
   })
-  .pipe(filter((it) => !!it.dungeon))
-  .pipe(
-    switchMap(({ dungeon, creatureTags, lootTable }) => {
-      const dungeonTags = dungeon.LootTags || []
-      const dungeonOverrideTags = dungeon.MutLootTagsOverride || dungeonTags
-      const regionTag = DUNGEON_LOOT_TAGS.find((it) => dungeonTags.includes(it))
-      const regionExcludeTags = DUNGEON_LOOT_TAGS.filter((it) => !dungeonTags.includes(it))
+    .pipe(filter((it) => !!it.dungeon))
+    .pipe(
+      map(({ dungeon, creatureTags, lootTable }) => {
+        const dungeonTags = dungeon.LootTags || []
+        const dungeonOverrideTags = dungeon.MutLootTagsOverride || dungeonTags
+        const regionTag = DUNGEON_LOOT_TAGS.find((it) => dungeonTags.includes(it))
+        const regionExcludeTags = DUNGEON_LOOT_TAGS.filter((it) => !dungeonTags.includes(it))
 
-      const tags = uniq([
-        // required to access global loot table
-        'GlobalMod',
-        regionTag,
-        ...creatureTags,
-        ...dungeonOverrideTags,
-      ]).filter((it) => !!it && !regionExcludeTags.includes(it))
+        const tags = uniq([
+          // required to access global loot table
+          'GlobalMod',
+          regionTag,
+          ...creatureTags,
+          ...dungeonOverrideTags,
+        ]).filter((it) => !!it && !regionExcludeTags.includes(it))
 
-      // console.log({
-      //   dungeon,
-      //   dungeonTags,
-      //   dungeonOverrideTags,
-      //   regionTag,
-      //   regionExcludeTags,
-      //   tags
-      // })
+        // console.log({
+        //   dungeon,
+        //   dungeonTags,
+        //   dungeonOverrideTags,
+        //   regionTag,
+        //   regionExcludeTags,
+        //   tags
+        // })
+        return {
+          tags: [...tags],
+          values: {
+            MinContLevel: dungeon.MutMinContLvllLootTagIdOverride || dungeon.ContainerLevel,
+            EnemyLevel: dungeon.RequiredLevel,
+            Level: NW_MAX_CHARACTER_LEVEL,
+          },
+          table: lootTable,
+          tableId: lootTable?.LootTableID
+        }
+      })
+    )
+
+  public readonly lootMutatedMode = this.lootTagsMutatedMode$.pipe(
+    switchMap(({ tags, values, table }) => {
       const ctx = new LootContext({
-        tags: [...tags],
-        values: {
-          MinContLevel: dungeon.MutMinContLvllLootTagIdOverride || dungeon.ContainerLevel,
-          EnemyLevel: dungeon.RequiredLevel,
-          Level: NW_MAX_CHARACTER_LEVEL
-        },
+        tags: tags,
+        values: values,
       })
       // removes all the junk
       ctx.ignoreTablesAndBuckets = ['CreatureLootCommon', 'GlobalNamedList']
-      return this.loot.resolveItemNodes(lootTable, ctx)
+      return this.loot.resolveLootItems(table, ctx)
     })
   )
 
-  public readonly lootDifficulty$ = combineLatest({
+  public readonly lootTagsDifficulty$ = combineLatest({
     dungeon: this.dungeon$,
     difficulty: this.difficulty$,
     creatureTags: this.creatureLootTags$,
     lootTable: this.db.lootTable('CreatureLootMaster_MutatedContainer'),
   })
-  .pipe(filter((it) => !!it.dungeon && !!it.difficulty))
-  .pipe(
-    switchMap(({ dungeon, difficulty, creatureTags, lootTable }) => {
+    .pipe(filter((it) => !!it.dungeon && !!it.difficulty))
+    .pipe(
+      map(({ dungeon, difficulty, creatureTags, lootTable }) => {
+        const mutationTags = difficulty.InjectedLootTags
+        const dungeonTags = dungeon.LootTags || []
+        const dungeonOverrideTags = dungeon.MutLootTagsOverride || dungeonTags
+        const regionTag = DUNGEON_LOOT_TAGS.find((it) => dungeonTags.includes(it))
+        const regionExcludeTags = DUNGEON_LOOT_TAGS.filter((it) => !dungeonTags.includes(it))
 
-      const mutationTags = difficulty.InjectedLootTags
-      const dungeonTags = dungeon.LootTags || []
-      const dungeonOverrideTags = dungeon.MutLootTagsOverride || dungeonTags
-      const regionTag = DUNGEON_LOOT_TAGS.find((it) => dungeonTags.includes(it))
-      const regionExcludeTags = DUNGEON_LOOT_TAGS.filter((it) => !dungeonTags.includes(it))
+        const tags = uniq([
+          // required to access global loot table
+          'GlobalMod',
+          regionTag,
+          ...creatureTags,
+          ...dungeonOverrideTags,
+          ...mutationTags,
+        ]).filter((it) => !!it && !regionExcludeTags.includes(it))
 
-      const tags = uniq([
-        // required to access global loot table
-        'GlobalMod',
-        regionTag,
-        ...creatureTags,
-        ...dungeonOverrideTags,
-        ...mutationTags
-      ]).filter((it) => !!it && !regionExcludeTags.includes(it))
-
-      // console.log({
-      //   dungeon,
-      //   dungeonTags,
-      //   dungeonOverrideTags,
-      //   regionTag,
-      //   regionExcludeTags,
-      //   mutationTags,
-      //   tags
-      // })
-      const ctx = new LootContext({
-        tags: [...tags],
-        values: {
-          MinContLevel: dungeon.MutMinContLvllLootTagIdOverride || dungeon.ContainerLevel,
-          EnemyLevel: dungeon.RequiredLevel,
-          Level: NW_MAX_CHARACTER_LEVEL
-        },
+        // console.log({
+        //   dungeon,
+        //   dungeonTags,
+        //   dungeonOverrideTags,
+        //   regionTag,
+        //   regionExcludeTags,
+        //   mutationTags,
+        //   tags
+        // })
+        return {
+          tags: [...tags],
+          values: {
+            MinContLevel: dungeon.MutMinContLvllLootTagIdOverride || dungeon.ContainerLevel,
+            EnemyLevel: dungeon.RequiredLevel,
+            Level: NW_MAX_CHARACTER_LEVEL,
+          },
+          table: lootTable,
+          tableId: lootTable?.LootTableID
+        }
       })
-      // removes all the junk
-      ctx.ignoreTablesAndBuckets = ['CreatureLootCommon', 'GlobalNamedList']
-      ctx.bucketTags = MUTATION_DIFFICULTY_LOOT_TAGS
-      return this.loot.resolveItemNodes(lootTable, ctx)
-    })
-  )
+    )
+
+  public readonly lootDifficulty$ = this.lootTagsDifficulty$
+    .pipe(
+      switchMap(({ tags, values, table }) => {
+        const ctx = new LootContext({
+          tags: tags,
+          values: values,
+        })
+        // removes all the junk
+        ctx.ignoreTablesAndBuckets = ['CreatureLootCommon', 'GlobalNamedList']
+        ctx.bucketTags = MUTATION_DIFFICULTY_LOOT_TAGS
+        return this.loot.resolveLootItems(table, ctx)
+      })
+    )
 
   public constructor(private db: NwDbService, private loot: NwLootService) {
     super({
       dungeon: null,
-      difficulty: null
+      difficulty: null,
     })
   }
 

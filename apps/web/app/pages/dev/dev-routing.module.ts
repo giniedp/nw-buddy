@@ -32,6 +32,10 @@ const routes: Routes = [
         path: 'loot',
         component: DevLootComponent
       },
+      {
+        path: 'loot/:id',
+        component: DevLootComponent
+      },
     ]
   },
 

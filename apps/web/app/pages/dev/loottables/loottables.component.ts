@@ -1,18 +1,22 @@
 import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { ActivatedRoute } from '@angular/router'
 import { defer, map } from 'rxjs'
 import { NwDbService } from '~/nw'
+import { observeRouteParam } from '~/utils'
 import { LootModule } from '~/widgets/loot'
 
 @Component({
   standalone: true,
   templateUrl: './loottables.component.html',
-  imports: [CommonModule, LootModule],
+  imports: [CommonModule, LootModule, FormsModule],
   host: {
-    class: 'layout-content  p-3',
+    class: 'layout-col  p-3',
   },
 })
 export class DevLootComponent {
+  public id$ = observeRouteParam(this.route, 'id')
   // protected tables = defer(() => this.db.lootTables)
   // protected tags = defer(() => this.tables).pipe(
   //   map((tables) => {
@@ -36,5 +40,9 @@ export class DevLootComponent {
   //   })
   // )
 
-  public constructor(private db: NwDbService) {}
+  protected showLocked = false
+
+  public constructor(private db: NwDbService, private route: ActivatedRoute) {
+    //
+  }
 }

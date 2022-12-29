@@ -26,8 +26,12 @@ export interface RemapRule {
 
 export type RemapMatcher = string | string[] | RegExp | ((property: string) => boolean)
 
+export function pathToDatatables(inputDir: string) {
+  return path.join(inputDir, 'sharedassets', 'springboardentitites', 'datatables')
+}
+
 export async function loadDatatables({ inputDir, patterns, remap }: LoadDatatablesOptions) {
-  const input = path.join(inputDir, 'sharedassets', 'springboardentitites', 'datatables')
+  const input = pathToDatatables(inputDir)
   patterns = patterns || [path.join('**', '*.json')]
   patterns = patterns.map((it) => path.join(input, it))
 

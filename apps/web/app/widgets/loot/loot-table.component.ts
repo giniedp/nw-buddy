@@ -8,27 +8,28 @@ import {
   OnInit
 } from '@angular/core'
 import { GridOptions } from 'ag-grid-community'
-import { sortBy, uniqBy } from 'lodash'
-import { BehaviorSubject, combineLatest, defer, map, Observable, of, startWith, switchMap } from 'rxjs'
+import { BehaviorSubject, combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
 
+import { CommonModule } from '@angular/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService } from '~/nw'
+import { LootContext, NwLootService } from '~/nw/loot'
 import {
   getItemIconPath,
   getItemId,
   getItemRarity,
   getItemRarityLabel,
   getItemTierAsRoman,
-  LootTableEntry,
-  LootTableItem
+  isItemArmor,
+  isItemNamed,
+  isItemWeapon,
+  isMasterItem
 } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { shareReplayRefCount } from '~/utils'
-import { LootContext, NwLootbucketService } from '~/nw/loot'
-import { CommonModule } from '@angular/common'
 
 type Item = ItemDefinitionMaster | Housingitems
 @Component({
@@ -54,44 +55,26 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
 
   @Input()
   public set tags(value: string[]) {
-    this.tags$.next(value || [])
+    this.tags$.next(value)
   }
 
   @Input()
-  public set enemyLevel(value: number) {
-    this.enemyLevel$.next(value || null)
+  public set tagValues(value: Record<string, string | number>) {
+    this.tagValues$.next(value)
   }
 
-  @Input()
-  public set playerLevel(value: number) {
-    this.playerLevel$.next(value || null)
-  }
-
-  public table$ = defer(() => this.tableId$)
-    .pipe(switchMap((id) => this.db.lootTable(id)))
-    .pipe(shareReplayRefCount(1))
+  public table$ = defer(() => this.db.lootTable(this.tableId$))
 
   public context$ = defer(() => {
     return combineLatest({
       tags: this.tags$,
-      enemyLevel: this.enemyLevel$,
-      playerLevel: this.playerLevel$,
+      values: this.tagValues$,
     })
   }).pipe(
-    map(({ tags, enemyLevel, playerLevel }) => {
-      return LootContext.create({
-        tags: [
-          'GlobalMod',          // unknown purpose
-          // 'MinContLevel',    // any zone
-          // 'MinPOIContLevel', // any zone
-          ...tags,
-        ],
-        values: {
-          MinContLevel: enemyLevel,
-          MinPOIContLevel: enemyLevel,
-          EnemyLevel: enemyLevel,
-          Level: playerLevel,
-        },
+    map(({ tags, values }) => {
+      return new LootContext({
+        tags: tags,
+        values: values,
       })
     })
   )
@@ -102,18 +85,19 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
       table: this.table$,
     })
   })
-    .pipe(switchMap(({ table, context }) => this.fetchTableItems(table, context)))
+    .pipe(switchMap(({ table, context }) => this.loot.resolveLootItems(table, context)))
+    .pipe(map((items) => this.filterAndSort(items)))
     .pipe(shareReplayRefCount(1))
 
   private tableId$ = new BehaviorSubject<string>(null)
   private tags$ = new BehaviorSubject<string[]>([])
-  private enemyLevel$ = new BehaviorSubject<number>(0)
-  private playerLevel$ = new BehaviorSubject<number>(60)
+  private tagValues$ = new BehaviorSubject<Record<string, string|number>>({})
 
   constructor(
     private cdRef: ChangeDetectorRef,
     private db: NwDbService,
-    private lbs: NwLootbucketService,
+    private loot: NwLootService,
+
     private i18n: TranslateService,
     public search: QuicksearchService,
     private info: NwLinkService
@@ -135,43 +119,6 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
 
   public entityCategory(item: Item): string {
     throw null
-  }
-
-  private fetchTable(tableId: string) {
-    return this.db.lootTable(tableId)
-  }
-
-  private fetchTableItems(table: LootTableEntry, context: LootContext): Observable<Item[]> {
-    if (!table) {
-      return of([])
-    }
-    const items = context.accessLoottable(table)
-    return combineLatest(items.map((it) => this.fetchItems(it, context)))
-      .pipe(map((it) => it.flat(1)))
-      .pipe(map((it) => uniqBy(it, (el) => getItemId(el))))
-      .pipe(map((list) => sortBy(list, (it) => getItemRarity(it)).reverse()))
-      .pipe(startWith([]))
-  }
-
-  private fetchItems(item: LootTableItem, context: LootContext): Observable<Item[]> {
-    if (item.ItemID) {
-      return combineLatest({
-        items: this.db.itemsMap,
-        housings: this.db.housingItemsMap,
-      })
-        .pipe(map(({ items, housings }) => items.get(item.ItemID) || housings.get(item.ItemID)))
-        .pipe(map((it) => (it ? [it] : [])))
-    }
-    if (item.LootBucketID) {
-      return this.lbs
-        .bucket(item.LootBucketID)
-        .filter((entry) => context.accessLootbucket(entry))
-        .items()
-    }
-    if (item.LootTableID) {
-      return this.fetchTable(item.LootTableID).pipe(switchMap((table) => this.fetchTableItems(table, context)))
-    }
-    return of<Item[]>([])
   }
 
   public options = defer(() =>
@@ -218,4 +165,29 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
       ],
     }
     ))
+
+
+  private filterAndSort(items: Array<ItemDefinitionMaster | Housingitems>) {
+    return items
+      .sort((nodeA, nodeB) => {
+        const a = nodeA
+        const b = nodeB
+        const isGearA = isMasterItem(a) && (isItemArmor(a) || isItemWeapon(a))
+        const isGearB = isMasterItem(b) && (isItemArmor(b) || isItemWeapon(b))
+        if (isGearA !== isGearB) {
+          return isGearA ? -1 : 1
+        }
+        const isNamedA = isMasterItem(a) && isItemNamed(a)
+        const isNamedB = isMasterItem(b) && isItemNamed(b)
+        if (isNamedA !== isNamedB) {
+          return isNamedA ? -1 : 1
+        }
+        const rarrityA = getItemRarity(a)
+        const rarrityB = getItemRarity(b)
+        if (rarrityA !== rarrityB) {
+          return rarrityA >= rarrityB ? -1 : 1
+        }
+        return getItemId(a).localeCompare(getItemId(b))
+      })
+  }
 }

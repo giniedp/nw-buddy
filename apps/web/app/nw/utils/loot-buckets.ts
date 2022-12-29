@@ -10,7 +10,7 @@ export function convertLootbuckets(data: Lootbuckets[]) {
   return result
 }
 
-export type LootBucketEntry = {
+export type LootBucketRow = {
   Column: number
   Item: string
   LootBucket: string
@@ -24,7 +24,7 @@ export type LootBucketTag = {
   Value?: null | [number] | [number, number]
 }
 
-function convertRow(data: Lootbuckets, firstRow: Lootbuckets): LootBucketEntry[] {
+function convertRow(data: Lootbuckets, firstRow: Lootbuckets): LootBucketRow[] {
   const keys = new Set<string>()
   const ids = new Set<number>()
   for (const key of Object.keys(data)) {
@@ -36,7 +36,7 @@ function convertRow(data: Lootbuckets, firstRow: Lootbuckets): LootBucketEntry[]
   }
   return Array.from(ids)
     .sort()
-    .map((id): LootBucketEntry => {
+    .map((id): LootBucketRow => {
       return {
         Column: id,
         Item: null as string,

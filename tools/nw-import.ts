@@ -1,12 +1,13 @@
 import * as path from 'path'
 import { program } from 'commander'
-import { processArrayWithProgress, writeJSONFile } from './utils'
+import { glob, processArrayWithProgress, readJSONFile, writeJSONFile } from './utils'
 import { loadDatatables, splitToArrayRule } from './importer/loadDatatables'
 import { importLocales } from './importer/importLocales'
 import { importImages } from './importer/importImages'
 import { generateTypes } from './importer/generateTypes'
-import { checkExpressions } from './importer/checkExpressions'
+import { extractExpressions } from './importer/extractExpressions'
 import { NW_USE_PTR, web, nwData } from '../env'
+import { extractLootTags } from './importer/extractLootTags'
 
 program
   .option('-i, --input <path>', 'input directory')
@@ -192,7 +193,6 @@ program
             }),
           ],
         },
-
       ],
     })
 
@@ -371,10 +371,10 @@ program
         'ui_quickslot1',
         'ui_quickslot2',
         'ui_quickslot3',
-        'ui_quickslot4'
+        'ui_quickslot4',
       ],
     }).then((files) => {
-      checkExpressions({
+      extractExpressions({
         locales: files,
         output: './tmp/expressions.json',
       })
@@ -404,5 +404,8 @@ program
 
     console.log('generate types')
     await generateTypes(typesDir, tables)
+
+    console.log('collect loot tags')
+    await extractLootTags(inputDir, 'tmp')
   })
   .parse(process.argv)

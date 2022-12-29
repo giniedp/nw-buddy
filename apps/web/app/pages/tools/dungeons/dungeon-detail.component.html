@@ -1,4 +1,3 @@
-
 <ul
   class="
     menu
@@ -115,24 +114,51 @@
 
 <ng-template #tplDungeonLoot>
   <div class="grid layout-gap">
-    <nwb-item-detail *ngFor="let node of dungeonLoot$ | async; trackBy: trackByIndex" [entity]="node.item" [cdkContextMenuTriggerFor]="tplExplainMenu" (cdkContextMenuOpened)="explainItem = node">
-      <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true" class="rounded-md overflow-clip"></nwb-item-detail-header>
+    <nwb-item-detail
+      *ngFor="let item of dungeonLoot$ | async; trackBy: trackByIndex"
+      [entity]="item"
+      [cdkContextMenuTriggerFor]="tplExplainMenu"
+      (cdkContextMenuOpened)="explainItemDrop(item, 'normal')"
+    >
+      <nwb-item-detail-header
+        [enableInfoLink]="true"
+        [enableTracker]="true"
+        class="rounded-md overflow-clip"
+      ></nwb-item-detail-header>
     </nwb-item-detail>
   </div>
 </ng-template>
 
 <ng-template #tplDungeonMutatedLoot>
   <div class="grid layout-gap">
-    <nwb-item-detail *ngFor="let node of dungeonMutatedLoot$ | async; trackBy: trackByIndex" [entity]="node.item" [cdkContextMenuTriggerFor]="tplExplainMenu" (cdkContextMenuOpened)="explainItem = node">
-      <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true" class="rounded-md overflow-clip"></nwb-item-detail-header>
+    <nwb-item-detail
+      *ngFor="let item of dungeonMutatedLoot$ | async; trackBy: trackByIndex"
+      [entity]="item"
+      [cdkContextMenuTriggerFor]="tplExplainMenu"
+      (cdkContextMenuOpened)="explainItemDrop(item, 'mutated')"
+    >
+      <nwb-item-detail-header
+        [enableInfoLink]="true"
+        [enableTracker]="true"
+        class="rounded-md overflow-clip"
+      ></nwb-item-detail-header>
     </nwb-item-detail>
   </div>
 </ng-template>
 
 <ng-template #tplDungeonDifficultyLoot>
   <div class="grid layout-gap">
-    <nwb-item-detail *ngFor="let node of dungeonDifficultyLoot$ | async; trackBy: trackByIndex" [entity]="node.item" [cdkContextMenuTriggerFor]="tplExplainMenu" (cdkContextMenuOpened)="explainItem = node">
-      <nwb-item-detail-header [enableInfoLink]="true" [enableTracker]="true" class="rounded-md overflow-clip"></nwb-item-detail-header>
+    <nwb-item-detail
+      *ngFor="let item of dungeonDifficultyLoot$ | async; trackBy: trackByIndex"
+      [entity]="item"
+      [cdkContextMenuTriggerFor]="tplExplainMenu"
+      (cdkContextMenuOpened)="explainItemDrop(item, 'difficulty')"
+    >
+      <nwb-item-detail-header
+        [enableInfoLink]="true"
+        [enableTracker]="true"
+        class="rounded-md overflow-clip"
+      ></nwb-item-detail-header>
     </nwb-item-detail>
   </div>
 </ng-template>
@@ -148,24 +174,20 @@
 </ng-template>
 
 <ng-template #tplExplain>
-  <ng-container *ngIf="explainItem">
-    <nwb-loot-table-list [highlight]="explainItem"></nwb-loot-table-list>
+  <ng-container *ngIf="explainVm$ | async; let vm">
+    <nwb-loot-graph [tags]="vm.tags" [tagValues]="vm.values" [tableId]="vm.tableId" [highlight]="vm.itemId" ></nwb-loot-graph>
   </ng-container>
   <div class="flex-none modal-action flex-row justify-end layout-pad mt-0">
     <div class="btn-group">
-      <label class="btn btn-primary" (click)="closeDialog()">Close</label>
+      <button class="btn btn-primary" (click)="closeDialog()">Close</button>
     </div>
   </div>
-
 </ng-template>
-
 
 <ng-template #tplExplainMenu>
   <ul class="menu menu-compact bg-base-100 rounded-md w-40" cdkMenu>
     <li>
-      <button (click)="openExplainDialog()" cdkMenuItem>
-        Explain Drop
-      </button>
+      <button (click)="openExplainDialog()" cdkMenuItem>Explain Drop</button>
     </li>
   </ul>
 </ng-template>

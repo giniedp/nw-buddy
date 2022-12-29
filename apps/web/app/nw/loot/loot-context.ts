@@ -1,5 +1,5 @@
 import { CaseInsensitiveMap, CaseInsensitiveSet } from '~/utils'
-import { LootBucketEntry, LootTableEntry, LootTableItem } from '../utils'
+import { LootBucketRow, LootTableEntry, LootTableRow } from '../utils'
 
 export type LootBucketConditionNames =
   | 'Level'
@@ -29,10 +29,7 @@ export type LootBucketConditionNames =
   | 'HWMLootToken'
   | 'HWMLootVoidGauntlet'
 
-export type LootTableConditionNames =
-  | 'Level'
-  | 'EnemyLevel'
-  | 'MinPOIContLevel' // zone
+export type LootTableConditionNames = 'Level' | 'EnemyLevel' | 'MinPOIContLevel' // zone
 
 export type LootTableTags =
   | 'GlobalMod'
@@ -70,7 +67,6 @@ export type LootTableTags =
   | 'GypsumYellow'
 
 export class LootContext {
-
   /**
    * Tags in this context
    */
@@ -91,16 +87,13 @@ export class LootContext {
    */
   public bucketTags: string[]
 
-  public constructor(options: {
-    tags: string[]
-    values: Record<string, number | string>
-  }) {
+  public constructor(options: { tags: string[]; values: Record<string, number | string> }) {
     this.tags = new CaseInsensitiveSet(options.tags || [])
     this.values = new CaseInsensitiveMap(Object.entries(options.values || {}))
   }
 
   public static create(options: {
-    tags: string[],
+    tags: string[]
     values: Partial<Record<LootBucketConditionNames | LootTableConditionNames, number | string>>
   }) {
     return new LootContext(options)
@@ -118,14 +111,42 @@ export class LootContext {
       return [...table.Items]
     }
     return table.Items.filter((item) => {
-      return tags.every((tag) => testTableCondition(tag, this, item))
+      return tags.every((tag) => testTableRowCondition(tag, this, item))
     })
+  }
+
+  /**
+   * Checks whether this context can access the given loot table
+   */
+  public accessTable(table: LootTableEntry): boolean {
+    if (this.isIgnoredId(table.LootTableID)) {
+      return false
+    }
+    const tags = table.Conditions
+    if (!tags?.length) {
+      return true
+    }
+    return tags.every((tag) => testTableCondition(tag, this))
+  }
+
+  /**
+   * Checks whether this context can access the given loot table row
+   */
+  public accessTableRow(table: LootTableEntry, row: LootTableRow): boolean {
+    if (this.isIgnoredId(table.LootTableID)) {
+      return false
+    }
+    const tags = table.Conditions
+    if (!tags?.length) {
+      return true
+    }
+    return tags.every((tag) => testTableRowCondition(tag, this, row))
   }
 
   /**
    * Checks whether this context can access the given lootbucket
    */
-  public accessLootbucket(entry: LootBucketEntry): boolean {
+  public accessBucketRow(entry: LootBucketRow): boolean {
     if (this.isIgnoredId(entry.LootBucket) || this.isExcludedEntry(entry)) {
       return false
     }
@@ -151,7 +172,7 @@ export class LootContext {
     return this.ignoreTablesAndBuckets?.includes(tableOrBucketId)
   }
 
-  private isExcludedEntry(entry: LootBucketEntry) {
+  private isExcludedEntry(entry: LootBucketRow) {
     if (!this.bucketTags) {
       return false
     }
@@ -159,7 +180,14 @@ export class LootContext {
   }
 }
 
-function testTableCondition(condition: string, context: LootContext, item: LootTableItem) {
+function testTableCondition(condition: string, context: LootContext) {
+  if (!condition) {
+    return true
+  }
+  return context.tags.has(condition) || context.values.has(condition)
+}
+
+function testTableRowCondition(condition: string, context: LootContext, item: LootTableRow) {
   if (!condition) {
     return true
   }
@@ -169,7 +197,7 @@ function testTableCondition(condition: string, context: LootContext, item: LootT
   return context.tags.has(condition)
 }
 
-function testBucketCondition(condition: string, context: LootContext, item: LootBucketEntry) {
+function testBucketCondition(condition: string, context: LootContext, item: LootBucketRow) {
   if (!condition) {
     return true
   }

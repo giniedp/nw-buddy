@@ -1,15 +1,12 @@
 import { NgModule } from '@angular/core'
-import { CommonModule } from '@angular/common'
+import { LootContextEditorComponent } from './loot-context-editor.component'
+import { LootGraphComponent } from './loot-graph.component'
 import { LootTableComponent } from './loot-table.component'
-import { DataTableModule } from '~/ui/data-table'
-import { QuicksearchModule } from '~/ui/quicksearch'
-import { LootTableEntryComponent } from './loot-table-entry.component'
-import { LootTableListComponent } from './loot-table-list.component'
 
 const COMPONENTS = [
-  LootTableEntryComponent,
-  LootTableListComponent,
-  LootTableComponent
+  LootTableComponent,
+  LootGraphComponent,
+  LootContextEditorComponent
 ]
 
 @NgModule({

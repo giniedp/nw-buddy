@@ -1,6 +1,6 @@
 import { writeJSONFile } from "../utils"
 
-export async function checkExpressions({
+export async function extractExpressions({
   locales,
   output,
 }: {
@@ -11,7 +11,7 @@ export async function checkExpressions({
   const resources = new Set<string>()
   locales.forEach((file) => {
     Object.values(file).forEach((text) => {
-      extractExpressions(text).forEach((exp) => {
+      extract(text).forEach((exp) => {
         expressions.add(exp)
         extractVariables(exp).forEach((variable) => {
           const split = variable.split('.')
@@ -30,7 +30,7 @@ export async function checkExpressions({
   }, output)
 }
 
-function extractExpressions(text: string) {
+function extract(text: string) {
   let outside = true
   const result: string[] = []
   let start = 0

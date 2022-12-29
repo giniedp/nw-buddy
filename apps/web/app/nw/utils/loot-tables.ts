@@ -1,5 +1,4 @@
 import { Loottable } from '@nw-data/types'
-import { uniq } from 'lodash'
 
 export interface LootTableEntry {
   'AND/OR'?: string
@@ -13,10 +12,10 @@ export interface LootTableEntry {
   PerkBucketOverrides2?: string
   PerkOverrides3?: string
   UseLevelGS?: string
-  Items: LootTableItem[]
+  Items: LootTableRow[]
 }
 
-export interface LootTableItem {
+export interface LootTableRow {
   ItemID?: string
   LootBucketID?: string
   LootTableID?: string
@@ -35,7 +34,7 @@ export function convertLoottables(data: Loottable[]) {
         ...it,
         Conditions: it.Conditions?.split(','),
         MaxRoll: probs.MaxRoll,
-        Items: extractItemKeys(it).map((key): LootTableItem => {
+        Items: extractItemKeys(it).map((key): LootTableRow => {
           const id = String(it[key] || '')
           const bucketID = id.startsWith('[LBID]') ? id.replace('[LBID]', '') : null
           const tableID = id.startsWith('[LTID]') ? id.replace('[LTID]', '') : null

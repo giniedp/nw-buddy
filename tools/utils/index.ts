@@ -1,5 +1,4 @@
-export * from './glob'
-export * from './copy'
+export * from './file-utils'
 export * from './spawn'
 export * from './progress'
 export * from './generateDataFunctions'

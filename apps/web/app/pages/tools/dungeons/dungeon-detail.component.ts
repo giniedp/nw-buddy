@@ -7,14 +7,14 @@ import {
   OnInit,
   TemplateRef,
   TrackByFunction,
-  ViewChild
+  ViewChild,
 } from '@angular/core'
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty } from '@nw-data/types'
-import { combineLatest, defer, map, Observable, of, switchMap, takeUntil } from 'rxjs'
+import { combineLatest, defer, map, Observable, of, ReplaySubject, switchMap, takeUntil } from 'rxjs'
 import { NwDbService, NwModule, NwService } from '~/nw'
-import { LootItemWithNodes, LootItemNode } from '~/nw/loot'
+
 import {
   getItemIconPath,
   getItemId,
@@ -22,7 +22,7 @@ import {
   isItemArmor,
   isItemNamed,
   isItemWeapon,
-  isMasterItem
+  isMasterItem,
 } from '~/nw/utils'
 import { DifficultyRank, DungeonPreferencesService } from '~/preferences'
 import { LayoutModule } from '~/ui/layout'
@@ -86,8 +86,36 @@ export class DungeonDetailComponent implements OnInit {
   public dungeonLoot$ = this.store.lootNormalMode$.pipe(map((it) => this.filterAndSort(it)))
   public dungeonMutatedLoot$ = this.store.lootMutatedMode.pipe(map((it) => this.filterAndSort(it)))
   public dungeonDifficultyLoot$ = this.store.lootDifficulty$.pipe(map((it) => this.filterAndSort(it)))
+
+  public dungeonLootTags$ = this.store.lootTagsNormalMode$
+  public dungeonMutatedLootTags$ = this.store.lootTagsMutatedMode$
+  public dungeonDifficultyLootTags$ = this.store.lootTagsDifficulty$
+
   public expeditionItems$ = this.store.possibleItemDrops$
-  public explainItem: LootItemWithNodes
+  public explainItem$ = new ReplaySubject<ItemDefinitionMaster | Housingitems>(1)
+  public explainMode$ = new ReplaySubject<'normal' | 'mutated' | 'difficulty'>(1)
+  public explainVm$ = combineLatest({
+    item: this.explainItem$,
+    context: this.explainMode$.pipe(
+      switchMap((mode) => {
+        if (mode === 'difficulty') {
+          return this.store.lootTagsDifficulty$
+        }
+        if (mode === 'mutated') {
+          return this.store.lootTagsMutatedMode$
+        }
+        return this.store.lootTagsNormalMode$
+      })
+    ),
+  }).pipe(
+    map(({ item, context }) => {
+      return {
+        ...context,
+        item,
+        itemId: getItemId(item)
+      }
+    })
+  )
 
   public difficultiesRank$ = defer(() =>
     combineLatest({
@@ -228,7 +256,6 @@ export class DungeonDetailComponent implements OnInit {
   public constructor(
     private nw: NwService,
     private db: NwDbService,
-    // private ds: DungeonsService,
     private route: ActivatedRoute,
     private destroy: DestroyService,
     private cdRef: ChangeDetectorRef,
@@ -371,8 +398,12 @@ export class DungeonDetailComponent implements OnInit {
     }
   }
 
-  public openExplainDialog() {
+  public explainItemDrop(item: ItemDefinitionMaster | Housingitems, mode: 'normal' | 'mutated' | 'difficulty') {
+    this.explainItem$.next(item)
+    this.explainMode$.next(mode)
+  }
 
+  public openExplainDialog() {
     this.dialog.open(this.tplExplain, {
       maxWidth: 1600,
       maxHeight: 1200,
@@ -384,12 +415,12 @@ export class DungeonDetailComponent implements OnInit {
     this.dialog.closeAll()
   }
 
-  private filterAndSort(items: LootItemWithNodes[]) {
+  private filterAndSort(items: Array<ItemDefinitionMaster | Housingitems>) {
     return items
-      .filter((it) => getItemRarity(it.item) >= 1)
+      .filter((it) => getItemRarity(it) >= 1)
       .sort((nodeA, nodeB) => {
-        const a = nodeA.item
-        const b = nodeB.item
+        const a = nodeA
+        const b = nodeB
         const isGearA = isMasterItem(a) && (isItemArmor(a) || isItemWeapon(a))
         const isGearB = isMasterItem(b) && (isItemArmor(b) || isItemWeapon(b))
         if (isGearA !== isGearB) {

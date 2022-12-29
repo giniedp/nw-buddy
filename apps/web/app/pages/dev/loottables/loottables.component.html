@@ -1,2 +1,21 @@
 <!-- <nwb-loot-table-entry [tableId]="'CreatureLootMaster_MutatedContainer'" [expand]="true" class="flex-1"></nwb-loot-table-entry> -->
-<nwb-loot-table-list class="flex-1 flex flex-col gap-2"></nwb-loot-table-list>
+<!-- <nwb-loot-table-list class="flex-1 flex flex-col gap-2" [tableId]="id$ | async"></nwb-loot-table-list> -->
+<div class="layout-row gap-2">
+  <div class="flex-none">
+    <nwb-loot-context-editor #contextEditor></nwb-loot-context-editor>
+    <div class="form-control w-full max-w-xs">
+      <label class="label cursor-pointer">
+        <span class="label-text">Show locked</span>
+        <input type="checkbox" class="toggle" [(ngModel)]="showLocked" />
+      </label>
+    </div>
+  </div>
+  <nwb-loot-graph
+    class="layout-content"
+    [tableId]="id$ | async"
+    [tags]="contextEditor.contextTags | async"
+    [tagValues]="contextEditor.contextTagValues | async"
+    [dropChance]="contextEditor.vitalDropChance | async"
+    [showLocked]="showLocked"
+  ></nwb-loot-graph>
+</div>

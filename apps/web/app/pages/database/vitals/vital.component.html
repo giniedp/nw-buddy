@@ -7,30 +7,33 @@
       <nwb-vital-detail [vital]="vital"></nwb-vital-detail>
       <div class="layout-col" *ngIf="tabId$ | async; let tab">
         <div class="tabs flex-none justify-center">
-          <a class="tab tab-bordered flex-1" [class.tab-active]="tab === 'loot-items'" (click)="openTab('loot-items')"
-            >Items</a
-          >
-          <a class="tab tab-bordered flex-1" [class.tab-active]="tab === 'loot-table'" (click)="openTab('loot-table')"
-            >Table</a
-          >
+          <a class="tab tab-bordered flex-1" [class.tab-active]="tab === 'loot-items'" (click)="openTab('loot-items')">
+            Items
+          </a>
+          <a class="tab tab-bordered flex-1" [class.tab-active]="tab === 'loot-table'" (click)="openTab('loot-table')">
+            Table
+          </a>
           <a
             class="tab tab-bordered flex-1"
             [class.tab-active]="tab === 'damage-table'"
             (click)="openTab('damage-table')"
-            >Attacks</a
           >
+            Attacks
+          </a>
         </div>
-        <nwb-loot-table
-          [tableId]="vital.LootTableId"
-          [tags]="lootTags$ | async"
-          [enemyLevel]="vital.Level"
-          class="flex-1"
-          *ngIf="tab === 'loot-items'"
-        ></nwb-loot-table>
-        <div class="layout-content" *ngIf="tab === 'loot-table'">
-          <nwb-loot-table-entry [tableId]="lootTableId$ | async" [expand]="true"></nwb-loot-table-entry>
-        </div>
-        <nwb-vital-damage-table [vitalId]="vitalId$ | async" *ngIf="tab === 'damage-table'"></nwb-vital-damage-table>
+        <ng-container *ngIf="loot$ | async; let loot">
+          <nwb-loot-table
+            [tags]="loot.tags"
+            [tagValues]="loot.values"
+            [tableId]="loot.tableId"
+            class="flex-1"
+            *ngIf="tab === 'loot-items'"
+          ></nwb-loot-table>
+          <div class="layout-content" *ngIf="tab === 'loot-table'">
+            <nwb-loot-graph [tags]="loot.tags" [tagValues]="loot.values" [tableId]="loot.tableId"></nwb-loot-graph>
+          </div>
+          <nwb-vital-damage-table [vitalId]="vitalId$ | async" *ngIf="tab === 'damage-table'"></nwb-vital-damage-table>
+        </ng-container>
       </div>
     </ng-container>
   </div>
