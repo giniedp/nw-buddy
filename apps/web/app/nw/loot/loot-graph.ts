@@ -1,3 +1,4 @@
+import { sortBy } from 'lodash'
 import { CaseInsensitiveSet, eqCaseInsensitive } from '~/utils'
 import { LootBucketRow, LootTableEntry, LootTableRow } from '../utils'
 import { LootContext } from './loot-context'
@@ -16,6 +17,7 @@ export interface LootNodeBase<T> {
   ref: string
   data: T
   row?: LootTableRow
+  prob: number
   type: string
 }
 
@@ -81,6 +83,7 @@ function buildTableNode(value: LootTableEntry, parent: LootNode, row?: LootTable
     type: 'table',
     data: value,
     row: row,
+    prob: getProb(row),
     parent: parent,
     ref: value.LootTableID,
     children: [],
@@ -95,9 +98,10 @@ function buildTableItemNode(value: LootTableRow, parent: LootNode): LootTableIte
   const node: LootTableItemNode = {
     type: 'table-item',
     row: value,
+    prob: getProb(value),
     data: value.ItemID,
     parent: parent,
-    ref: value.ItemID || value.LootBucketID || value.LootTableID,
+    ref: value.ItemID,
     children: [],
   }
   if (parent) {
@@ -111,6 +115,7 @@ function buildBucketNode(value: LootBucketRow, parent: LootNode, row?: LootTable
     type: 'bucket',
     data: value.LootBucket,
     row: row,
+    prob: getProb(row),
     parent: parent,
     ref: value.LootBucket,
     children: [],
@@ -126,6 +131,7 @@ function buildBucketRowNode(value: LootBucketRow, parent: LootNode): LootBucketR
     type: 'bucket-row',
     data: value,
     parent: parent,
+    prob: null,
     ref: value.Item,
     children: [],
   }
@@ -246,21 +252,36 @@ function updateChance(node: LootNode, dropChance = 1) {
   node.chanceAbsolute = dropChance
 
   const table = getTable(node.parent)
-  if (table) {
+  if (!table) {
+    node.chanceRelative = 1
+  } else {
     const maxroll = table.MaxRoll
-    const unlockedSiblings = node.parent.children?.reduce((c, node) => (node.unlocked ? c + 1 : c), 0) || 0
-    if (!unlockedSiblings || !node.unlocked) {
+    const siblings = node.parent.children.filter((it) => it.unlocked && it.unlockedItemcount)
+    if (!siblings.length || !node.unlocked) {
       node.chanceRelative = 0
+    } else if (table['AND/OR'] === 'OR') {
+      node.chanceRelative = 1
+      if (maxroll && node.prob >= 0) {
+        const sorted = sortBy(siblings.filter((it) => it.prob >= 0), (it) => it.prob)
+        const left = node.prob
+        const right = sorted.find((it) => it.prob > node.prob)?.prob ?? maxroll
+        const count = sorted.filter((it) => it.prob === node.prob).length
+        node.chanceRelative = ((right - left) / maxroll) / count
+        // console.log(node.row.LootTableID, {
+        //   maxroll,
+        //   left,
+        //   right,
+        //   count,
+        //   chance: node.chanceRelative,
+        //   sorted
+        // })
+      }
     } else {
-      node.chanceRelative = table['AND/OR'] === 'OR' ? 1 / unlockedSiblings : 1
-
-      if (maxroll && node.row && Number(node.row.Prob)) {
-        const prob = Number(node.row.Prob)
-        node.chanceRelative *= 1 - prob / maxroll
+      node.chanceRelative = 1
+      if (maxroll && node.prob >= 0) {
+        node.chanceRelative *= 1 - node.prob / maxroll
       }
     }
-  } else {
-    node.chanceRelative = 1
   }
 
   node.chanceAbsolute *= node.chanceRelative
@@ -286,6 +307,13 @@ function updateHighlight(node: LootNode, itemId: string) {
   for (const leaf of leafs) {
     walkUp(leaf, (it) => it.highlight = true)
   }
+}
+
+function getProb(row: LootTableRow) {
+  if (row?.Prob != null) {
+    return Number(row.Prob)
+  }
+  return null
 }
 
 function getTable(node: LootNode) {

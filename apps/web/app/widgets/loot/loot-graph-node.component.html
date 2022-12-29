@@ -1,11 +1,18 @@
 <div *ngIf="expandable" class="border border-base-100 rounded-l-md class.bg-base-200">
-  <div class="px-2 py-1 flex flex-row items-center cursor-pointer gap-x-1 bg-base-100 shadow-accent border-l-4" [class.border-l-transparent]="!highlight" [class.border-l-accent]="highlight" (click)="toggle()">
-    <span *ngIf="rollThreshold" class="badge badge-sm badge-primary">
-      >= {{ rollThreshold }} <ng-container *ngIf="chanceRel"> ({{ chanceRel | percent: '0.0-6' }}) </ng-container>
-    </span>
-    <span *ngIf="tagValue" class="badge badge-sm badge-secondary"> >= {{ tagValue }} </span>
-    <span *ngIf="itemQuantity"> {{ itemQuantity }} &times; </span>
-    <span> {{ displayName }} </span>
+  <div
+    class="px-2 py-1 flex flex-row items-center cursor-pointer gap-x-1 bg-base-100 shadow-accent border-l-4"
+    [class.border-l-transparent]="!highlight"
+    [class.border-l-accent]="highlight"
+    (click)="toggle()"
+  >
+    <div class="flex flex-row flex-wrap items-center gap-x-1">
+      <span *ngIf="rollThreshold" class="badge badge-sm badge-primary">
+        >= {{ rollThreshold }} <ng-container *ngIf="chanceRel"> ({{ chanceRel | percent: '0.0-6' }}) </ng-container>
+      </span>
+      <span *ngIf="tagValue" class="badge badge-sm badge-secondary whitespace-nowrap"> >= {{ tagValue }} </span>
+      <span *ngIf="itemQuantity && itemQuantity != '1'" class="whitespace-nowrap"> {{ itemQuantity }} &times; </span>
+      <span class="whitespace-nowrap"> {{ displayName }} </span>
+    </div>
     <span class="flex-1"></span>
 
     <div class="text-xs flex flex-row items-center gap-1">
@@ -17,7 +24,7 @@
         </span>
         <span> | </span>
       </ng-container>
-      <span class="min-w-[40px] inline-flex flex-col  text-right">
+      <span class="min-w-[40px] inline-flex flex-col text-right">
         <span class="text-success" *ngIf="unlockedItemCount"> {{ unlockedItemCount }} </span>
         <span> {{ totalItemCount }} </span>
       </span>
@@ -64,16 +71,21 @@
 </ng-container>
 
 <ng-container *ngIf="itemId">
-  <nwb-item-detail [entityId]="itemId" class="max-w-md rounded-md overflow-hidden border-2" [class.border-transparent]="!highlight" [class.border-accent]="highlight">
+  <nwb-item-detail
+    [entityId]="itemId"
+    class="max-w-md rounded-md overflow-hidden border-2"
+    [class.border-transparent]="!highlight"
+    [class.border-accent]="highlight"
+  >
     <nwb-item-detail-header class="h-full">
       <div class="content flex flex-row flex-wrap gap-1">
         <span *ngIf="rollThreshold" class="whitespace-nowrap badge badge-sm badge-primary">
           >= {{ rollThreshold }}
         </span>
         <span *ngIf="tagValue" class="whitespace-nowrap badge badge-sm badge-secondary"> >= {{ tagValue }} </span>
-        <span class="badge badge-sm badge-primary whitespace-nowrap" *ngIf="itemQuantity"
-          >{{ itemQuantity }} &times;</span
-        >
+        <span class="badge badge-sm badge-primary whitespace-nowrap" *ngIf="itemQuantity">
+          {{ itemQuantity }} &times;
+        </span>
         <ng-container *ngIf="itemTags?.length">
           <span
             *ngFor="let it of itemTags; trackBy: trackByIndex"
