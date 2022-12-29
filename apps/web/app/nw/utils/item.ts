@@ -217,17 +217,17 @@ export function getItemIconPath(item: ItemDefinitionMaster | Housingitems, femal
   if (!item) {
     return null
   }
-  if (isMasterItem(item)) {
-    if (female && item.ArmorAppearanceF) {
-      return item.ArmorAppearanceF
-    }
-    if (item.ArmorAppearanceM) {
-      return item.ArmorAppearanceM
-    }
-    if (item.WeaponAppearanceOverride) {
-      return item.WeaponAppearanceOverride
-    }
-  }
+  // if (isMasterItem(item)) {
+  //   if (female && item.ArmorAppearanceF) {
+  //     return item.ArmorAppearanceF
+  //   }
+  //   if (item.ArmorAppearanceM) {
+  //     return item.ArmorAppearanceM
+  //   }
+  //   if (item.WeaponAppearanceOverride) {
+  //     return item.WeaponAppearanceOverride
+  //   }
+  // }
   return item.IconPath
 }
 

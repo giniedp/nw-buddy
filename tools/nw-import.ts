@@ -54,6 +54,8 @@ program
         '*_itemdefinitions_weapons',
         '*_itemdefinitions_armor',
         '*_itemdefinitions_runes',
+        '*_itemappearancedefinitions',
+        '*_itemdefinitions_weaponappearances',
         '*_lootbuckets',
         '*_lootlimits',
         '*_loottables*',
@@ -194,6 +196,27 @@ program
           ],
         },
       ],
+      rewrite: [
+        {
+          file: /_itemdefinitions_master_/,
+          rules: [
+            (obj, { getTables }) => {
+              if (obj.IconPath) {
+                return
+              }
+              if (obj.ArmorAppearanceF) {
+                obj.IconPath = getTables(/_itemappearancedefinitions/).find((it) => it.ItemID === obj.ArmorIconF)?.IconPath
+              }
+              if (obj.ArmorAppearanceM) {
+                obj.IconPath = getTables(/_itemappearancedefinitions/).find((it) => it.ItemID === obj.ArmorAppearanceM)?.IconPath
+              }
+              if (obj.WeaponAppearanceOverride) {
+                obj.IconPath = getTables(/_weaponappearances/).find((it) => it.WeaponAppearanceID === obj.WeaponAppearanceOverride)?.IconPath
+              }
+            },
+          ],
+        }
+      ]
     })
 
     console.log('importing locales')
@@ -380,16 +403,12 @@ program
       })
     })
     console.log('importing images')
+
     await importImages({
       input: inputDir,
       output: distDir,
       tables,
       ignoreKeys: ['HiResIconPath'],
-      rewrite: {
-        ArmorAppearanceF: (key, value, obj) => `lyshineui/images/icons/items/${obj.ItemType}/${value}`,
-        ArmorAppearanceM: (key, value, obj) => `lyshineui/images/icons/items/${obj.ItemType}/${value}`,
-        WeaponAppearanceOverride: (key, value, obj) => `lyshineui/images/icons/items/${obj.ItemType}/${value}`,
-      },
       rewritePath: (value) => {
         return path.join(publicDir, value).replace(/\\/g, '/')
       },

@@ -1,7 +1,7 @@
 import * as path from 'path'
 import * as fs from 'fs'
 import { mkdir, processArrayWithProgress, renameExtname, spawn } from '../utils'
-import { DatatableSource, walkStringProperties } from './loadDatatables'
+import { DataTableSource, walkStringProperties } from './loadDatatables'
 
 export type ReqriteEntryFn = (key: string, value: string, obj: any) => string | null
 export async function importImages({
@@ -14,7 +14,7 @@ export async function importImages({
 }: {
   input: string
   output: string
-  tables: DatatableSource[]
+  tables: DataTableSource[]
   ignoreKeys: string[]
   rewrite?: Record<string, ReqriteEntryFn>
   rewritePath?: (value: string) => string
@@ -48,7 +48,7 @@ export async function importImages({
 }
 
 function scanImages(
-  tables: DatatableSource[],
+  tables: DataTableSource[],
   options?: {
     ignoreKeys: string[];
     rewrite?: Record<string, ReqriteEntryFn>

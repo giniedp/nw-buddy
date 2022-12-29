@@ -2,7 +2,7 @@ import * as path from 'path'
 import { glob, processArrayWithProgress, writeJSONFile } from '../utils'
 import { readFile } from 'fs/promises'
 
-import { DatatableSource, walkStringProperties } from './loadDatatables'
+import { DataTableSource, walkStringProperties } from './loadDatatables'
 
 export async function importLocales({
   input,
@@ -12,7 +12,7 @@ export async function importLocales({
 }: {
   input: string
   output: string
-  tables: Array<DatatableSource>,
+  tables: Array<DataTableSource>,
   preserveKeys?: Array<string | RegExp>
 }) {
   const keys = extractKeys(tables)
@@ -29,7 +29,7 @@ export async function importLocales({
   return locales
 }
 
-function extractKeys(tables: DatatableSource[]) {
+function extractKeys(tables: DataTableSource[]) {
   const result = new Set<string>()
   walkStringProperties(tables, (key, value, obj) => {
     if (value?.startsWith('@')) {

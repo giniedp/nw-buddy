@@ -1,9 +1,9 @@
 import * as path from 'path'
 import * as fs from 'fs'
 import { generateDataFunctions, processArrayWithProgress, tsFromJson } from '../utils'
-import { DatatableSource } from './loadDatatables'
+import { DataTableSource } from './loadDatatables'
 
-export async function generateTypes(output: string, tables: DatatableSource[], format: 'json' | 'csv' = 'json') {
+export async function generateTypes(output: string, tables: DataTableSource[], format: 'json' | 'csv' = 'json') {
 
   const samples = new Map<string, any[]>()
   const files = new Map<string, any[]>()
