@@ -12,19 +12,19 @@ import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/layout'
 import { deferState, observeRouteParam } from '~/utils'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { SkillBuilderComponent } from '~/widgets/skill-builder'
-import { Web3Service } from './web3.service'
+import { ShareService } from './share.service'
 
 @Component({
   standalone: true,
-  selector: 'nwb-web3',
-  templateUrl: './web3.component.html',
+  selector: 'nwb-share-page',
+  templateUrl: './share.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, FormsModule, SkillBuilderComponent, IconsModule, AttributesEditorModule],
   host: {
     class: 'layout-content',
   },
 })
-export class Web3Component {
+export class ShareComponent {
 
   protected iconError = svgCircleExclamation
   protected iconInfo = svgCircleExclamation
@@ -34,7 +34,7 @@ export class Web3Component {
   observeRouteParam(this.route, 'cid').pipe(switchMap((info) => this.web3.readObject(info)))
   )
 
-  public constructor(private route: ActivatedRoute, private router: Router, private web3: Web3Service, private dialog: Dialog, private skillsDb: SkillBuildsDB) {
+  public constructor(private route: ActivatedRoute, private router: Router, private web3: ShareService, private dialog: Dialog, private skillsDb: SkillBuildsDB) {
     //
   }
 

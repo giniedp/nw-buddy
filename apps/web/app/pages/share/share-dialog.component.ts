@@ -7,7 +7,7 @@ import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleCheck, svgCircleExclamation, svgCircleNotch, svgCopy, svgShareNodes } from '~/ui/icons/svg'
 import { deferState } from '~/utils'
-import { ShareObject, Web3Service } from './web3.service'
+import { ShareObject, ShareService } from './share.service'
 
 export interface ShareOptions {
   data: ShareObject<any>
@@ -33,7 +33,7 @@ export class ShareDialogComponent {
     return from(this.web3.shareObject(this.data.data)).pipe(map((it) => {
       return {
         shareUrl: this.buildShareUrl(it.cid),
-        ipfsUrl: this.web3.buildIpfsLink(it.cid)
+        ipfsUrl: this.web3.buildIpfsUrl(it.cid)
       }
     }))
   })
@@ -49,7 +49,7 @@ export class ShareDialogComponent {
     @Inject(DIALOG_DATA)
     private data: ShareOptions,
     private dialog: DialogRef,
-    private web3: Web3Service,
+    private web3: ShareService,
     private cdRef: ChangeDetectorRef
   ) {
     //

@@ -90,6 +90,7 @@
     "@storybook/builder-webpack5": "6.5.12",
     "@storybook/manager-webpack5": "6.5.12",
     "@tailwindcss/typography": "0.5.7",
+    "@thirdweb-dev/storage": "1.0.6",
     "@types/cli-progress": "3.11.0",
     "@types/compression": "1.7.2",
     "@types/date-fns": "2.6.0",

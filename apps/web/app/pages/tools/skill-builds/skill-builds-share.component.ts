@@ -7,7 +7,7 @@ import { LetModule } from '@ngrx/component'
 import { filter, map, switchMap } from 'rxjs'
 import { SkillBuildRecord, SkillBuildsDB, SkillBuildsStore } from '~/data'
 import { NwModule } from '~/nw'
-import { Web3Service } from '~/pages/web3'
+import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
 import { PromptDialogComponent } from '~/ui/layout'
@@ -45,7 +45,7 @@ export class SkillBuildsShareComponent {
   public constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private web3: Web3Service,
+    private web3: ShareService,
     private dialog: Dialog,
     private skillsDb: SkillBuildsDB,
     private store: SkillBuildsStore,

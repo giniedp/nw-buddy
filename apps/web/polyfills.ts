@@ -47,7 +47,7 @@
  */
 import 'zone.js';  // Included with Angular CLI.
 
-
+globalThis.global = globalThis
 /***************************************************************************************************
  * APPLICATION IMPORTS
  */

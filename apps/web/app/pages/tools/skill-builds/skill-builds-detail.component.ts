@@ -7,7 +7,7 @@ import { asyncScheduler, combineLatest, filter, map, subscribeOn, switchMap } fr
 import { SkillBuildRecord, SkillBuildsDB, SkillBuildsStore } from '~/data'
 import { NwModule } from '~/nw'
 import { AttributeRef } from '~/nw/attributes'
-import { ShareDialogComponent, Web3Service } from '~/pages/web3'
+import { ShareDialogComponent, ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
 import {
   svgArrowRightArrowLeft,

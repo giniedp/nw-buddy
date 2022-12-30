@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
-import { Web3Component } from './web3.component'
+import { ShareComponent } from './share.component'
 
 
 export const routes: Routes = [
   {
     path: ':cid',
-    component: Web3Component,
+    component: ShareComponent,
   },
 ]
 
@@ -14,6 +14,6 @@ export const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [],
 })
-export class Web3Module {
+export class ShareModule {
   //
 }
