@@ -8,7 +8,7 @@ import {
   Perkbuckets,
   Perks,
 } from '@nw-data/types'
-import { NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE } from './constants'
+import { NW_MAX_GEAR_SCORE, NW_MAX_GEAR_SCORE_UPGRADABLE, NW_MIN_GEAR_SCORE } from './constants'
 
 export function isMasterItem(item: ItemDefinitionMaster | Housingitems): item is ItemDefinitionMaster {
   return item && 'ItemID' in item
@@ -43,13 +43,25 @@ export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPer
   }
 
   let rarity = 0
+  let maxRarity = 4
   if (isMasterItem(item)) {
     if (!itemPerkIds) {
       itemPerkIds = [item.Perk1, item.Perk2, item.Perk3, item.Perk4, item.Perk5]
     }
-    rarity += itemPerkIds.filter((it) => it && !it?.startsWith('PerkID_Stat_')).length
+    rarity = itemPerkIds.filter((it) => it && !it?.startsWith('PerkID_Stat_')).length
+    const maxScore = getItemMaxGearScore(item, false)
+    if (maxScore) {
+      maxRarity = maxRarityFromScore(maxScore)
+    }
   }
-  return Math.min(rarity, 4)
+  return Math.min(rarity, maxRarity)
+}
+
+function maxRarityFromScore(score: number) {
+  if (score >= NW_MAX_GEAR_SCORE_UPGRADABLE) {
+    return 4
+  }
+  return 3
 }
 
 export function getItemRarityLabel(item: ItemDefinitionMaster | Housingitems | number | string) {
