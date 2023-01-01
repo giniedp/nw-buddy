@@ -1,6 +1,6 @@
 {
   "name": "nw-buddy",
-  "version": "1.8.0-0",
+  "version": "1.8.0-1",
   "description": "New World Buddy",
   "keywords": [],
   "main": "dist/electron/main.js",
@@ -27,7 +27,7 @@
     "storybook": "ng run nw-buddy:storybook",
     "storybook:build": "ng run nw-buddy:build-storybook",
     "electron:tsc": "tsc -p apps/electron/tsconfig.json",
-    "electron:serve": "wait-on tcp:4200 && yarn electron:tsc && electron . --serve",
+    "electron:serve": "yarn electron:tsc && electron . --serve",
     "electron:builder": "electron-builder build --publish=never --config=electron-config.js",
     "nw-import": "ts-node ./tools/nw-import.ts",
     "nw-extract": "ts-node ./tools/nw-extract.ts",

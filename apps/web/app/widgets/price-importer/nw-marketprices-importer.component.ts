@@ -7,6 +7,7 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { environment } from 'apps/web/environments/environment'
 import { BehaviorSubject, catchError, combineLatest, defer, map, of, take, takeUntil, tap } from 'rxjs'
+import { ElectronService } from '~/electron'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService, NwService } from '~/nw'
 import { getItemIconPath, getItemId, getItemRarity, isItemNamed, isMasterItem } from '~/nw/utils'
@@ -80,7 +81,7 @@ export class NwPricesImporterComponent {
   }
 
   protected get isElectron() {
-    return environment.environment === 'ELECTRON'
+    return this.electron.isElectron
   }
 
   public constructor(
@@ -90,6 +91,7 @@ export class NwPricesImporterComponent {
     private cdRef: ChangeDetectorRef,
     private destroy: DestroyService,
     private dialog: Dialog,
+    private electron: ElectronService,
     info: NwLinkService,
     nw: NwService,
     i18n: TranslateService,

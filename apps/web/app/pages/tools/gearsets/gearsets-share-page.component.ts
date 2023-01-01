@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router'
 import { LetModule } from '@ngrx/component'
 import { filter, map, switchMap } from 'rxjs'
 import { GearsetRecord, GearsetsDB } from '~/data'
+import { ElectronService } from '~/electron'
 import { NwModule } from '~/nw'
 import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
@@ -36,6 +37,12 @@ export class GearsetsSharePageComponent {
     })
   )
 
+  protected get appLink() {
+    if (this.electron.isElectron) {
+      return null
+    }
+    return `nw-buddy://${this.router.url}`
+  }
   protected iconInfo = svgCircleExclamation
   protected iconError = svgCircleExclamation
   protected iconLoading = svgCircleNotch
@@ -45,7 +52,8 @@ export class GearsetsSharePageComponent {
     private router: Router,
     private web3: ShareService,
     private dialog: Dialog,
-    private gearsetDb: GearsetsDB
+    private gearsetDb: GearsetsDB,
+    private electron: ElectronService
   ) {
     //
   }

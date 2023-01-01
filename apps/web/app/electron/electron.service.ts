@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core'
+import { Router } from '@angular/router'
 
 import type { ipcRenderer } from 'electron'
 import { Subject } from 'rxjs'
@@ -11,11 +12,14 @@ export class ElectronService {
 
   public windowChange = new Subject()
 
-  constructor() {
+  public constructor(private router: Router) {
     if (this.isElectron) {
       this.ipcRenderer = window.require('electron').ipcRenderer
       this.ipcRenderer.addListener('window-change', () => {
         this.windowChange.next(null)
+      })
+      this.ipcRenderer.addListener('open-url', (e, url: string) => {
+        this.onDeeplinkReceived(url)
       })
     }
   }
@@ -38,5 +42,12 @@ export class ElectronService {
   }
   public isWindowMaximized(): Promise<boolean> {
     return this.ipcRenderer?.invoke('is-window-maximized')
+  }
+
+  protected onDeeplinkReceived(link: string) {
+    if (!link.startsWith('nw-buddy://')) {
+      return
+    }
+    this.router.navigateByUrl(link.replace('nw-buddy://', '/'))
   }
 }

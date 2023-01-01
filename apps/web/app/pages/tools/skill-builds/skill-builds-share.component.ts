@@ -2,10 +2,12 @@ import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { DomSanitizer } from '@angular/platform-browser'
 import { ActivatedRoute, Router } from '@angular/router'
 import { LetModule } from '@ngrx/component'
 import { filter, map, switchMap } from 'rxjs'
 import { SkillBuildRecord, SkillBuildsDB, SkillBuildsStore } from '~/data'
+import { ElectronService } from '~/electron'
 import { NwModule } from '~/nw'
 import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
@@ -41,6 +43,12 @@ export class SkillBuildsShareComponent {
   protected iconInfo = svgCircleExclamation
   protected iconError = svgCircleExclamation
   protected iconLoading = svgCircleNotch
+  protected get appLink() {
+    if (this.electron.isElectron) {
+      return null
+    }
+    return this.sanitizer.bypassSecurityTrustUrl(`nw-buddy://${this.router.url}`)
+  }
 
   public constructor(
     private route: ActivatedRoute,
@@ -49,6 +57,8 @@ export class SkillBuildsShareComponent {
     private dialog: Dialog,
     private skillsDb: SkillBuildsDB,
     private store: SkillBuildsStore,
+    private sanitizer: DomSanitizer,
+    private electron: ElectronService
   ) {
     //
   }
