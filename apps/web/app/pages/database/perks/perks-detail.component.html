@@ -1,6 +1,6 @@
 <nwb-detail-drawer class="hidden lg:block lg:w-96">
   <div *nwbDetailDraweContent class="layout-col bg-base-200 layout-pad">
-    <div [nwbPerkDetail]="itemId | async" (perk$)="onEntity($event)" #detail="perkDetail" class="flex flex-col layout-gap">
+    <div [nwbPerkDetail]="itemId | async" (nwbPerkChange)="onEntity($event)" #detail="perkDetail" class="flex flex-col layout-gap">
       <nwb-property-grid
         [rows]="detail.properties$ | async"
         [numberFormat]="'0.0-4'"

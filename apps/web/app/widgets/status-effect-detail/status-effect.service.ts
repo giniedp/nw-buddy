@@ -7,14 +7,7 @@ import { shareReplayRefCount } from '~/utils'
 @Injectable()
 export class StatusEffectDetailService {
   public readonly effectId$ = new ReplaySubject<string>(1)
-  @Output()
-  public readonly effect$ = combineLatest({
-    id: this.effectId$,
-    statusEffects: this.db.statusEffectsMap,
-  })
-    .pipe(map(({ id, statusEffects }) => statusEffects.get(id)))
-    .pipe(shareReplayRefCount(1))
-
+  public readonly effect$ = this.db.statusEffect(this.effectId$).pipe(shareReplayRefCount(1))
   public readonly icon$ = this.effect$.pipe(map((it) => it?.PlaceholderIcon))
   public readonly name$ = this.effect$.pipe(map((it) => it?.DisplayName))
   public readonly description$ = this.effect$.pipe(map((it) => it?.Description))

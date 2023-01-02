@@ -1,4 +1,4 @@
-import { Directive, forwardRef, Input } from '@angular/core'
+import { Directive, forwardRef, Input, Output } from '@angular/core'
 import { NwDbService } from '~/nw'
 import { StatusEffectDetailService } from './status-effect.service'
 
@@ -14,10 +14,13 @@ import { StatusEffectDetailService } from './status-effect.service'
   ],
 })
 export class StatusEffectDetailDirective extends StatusEffectDetailService {
-  @Input('nwbStatusEffectDetail')
-  public set abilityId(value: string) {
+  @Input()
+  public set nwbStatusEffectDetail(value: string) {
     this.effectId$.next(value)
   }
+
+  @Output()
+  public nwbStatusEffectChange = this.effect$
 
   public constructor(db: NwDbService) {
     super(db)

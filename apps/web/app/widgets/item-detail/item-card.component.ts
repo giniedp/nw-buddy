@@ -73,6 +73,15 @@ export class ItemCardComponent extends ItemDetailService {
   @Output()
   public gsEdit = this.gsEdit$
 
+  @Output()
+  public itemChange = this.item$
+
+  @Output()
+  public entityChange = this.entity$
+
+  @Output()
+  public housingItemChange = this.housingItem$
+
   @Input()
   public set perkOverride(value: Record<string, string>) {
     this.perkOverride$.next(value)

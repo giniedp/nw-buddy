@@ -1,4 +1,4 @@
-import { Directive, forwardRef, Input } from '@angular/core'
+import { Directive, forwardRef, Input, Output } from '@angular/core'
 import { NwDbService } from '~/nw'
 import { AbilityDetailService } from './ability-detail.service'
 
@@ -14,10 +14,13 @@ import { AbilityDetailService } from './ability-detail.service'
   ],
 })
 export class AbilityDetailDirective extends AbilityDetailService {
-  @Input('nwbAbilityDetail')
-  public set abilityId(value: string) {
+  @Input()
+  public set nwbAbilityDetail(value: string) {
     this.abilityId$.next(value)
   }
+
+  @Output()
+  public nwbAbilityChange = this.ability$
 
   public constructor(db: NwDbService) {
     super(db)
