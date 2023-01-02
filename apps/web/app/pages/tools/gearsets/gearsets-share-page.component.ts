@@ -1,6 +1,7 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { DomSanitizer } from '@angular/platform-browser'
 import { ActivatedRoute, Router } from '@angular/router'
 import { LetModule } from '@ngrx/component'
 import { filter, map, switchMap } from 'rxjs'
@@ -41,7 +42,7 @@ export class GearsetsSharePageComponent {
     if (this.electron.isElectron) {
       return null
     }
-    return `nw-buddy://${this.router.url}`
+    return this.sanitizer.bypassSecurityTrustUrl(`nw-buddy://${this.router.url}`)
   }
   protected iconInfo = svgCircleExclamation
   protected iconError = svgCircleExclamation
@@ -53,7 +54,8 @@ export class GearsetsSharePageComponent {
     private web3: ShareService,
     private dialog: Dialog,
     private gearsetDb: GearsetsDB,
-    private electron: ElectronService
+    private electron: ElectronService,
+    private sanitizer: DomSanitizer
   ) {
     //
   }

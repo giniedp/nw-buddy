@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable, NgZone } from '@angular/core'
 import { Router } from '@angular/router'
 
 import type { ipcRenderer } from 'electron'
@@ -12,7 +12,7 @@ export class ElectronService {
 
   public windowChange = new Subject()
 
-  public constructor(private router: Router) {
+  public constructor(private router: Router, private zone: NgZone) {
     if (this.isElectron) {
       this.ipcRenderer = window.require('electron').ipcRenderer
       this.ipcRenderer.addListener('window-change', () => {
@@ -45,9 +45,11 @@ export class ElectronService {
   }
 
   protected onDeeplinkReceived(link: string) {
-    if (!link.startsWith('nw-buddy://')) {
-      return
-    }
-    this.router.navigateByUrl(link.replace('nw-buddy://', '/'))
+    this.zone.run(() => {
+      if (!link.startsWith('nw-buddy://')) {
+        return
+      }
+      this.router.navigateByUrl(link.replace('nw-buddy://', '/'))
+    })
   }
 }
