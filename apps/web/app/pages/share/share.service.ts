@@ -44,7 +44,7 @@ export class ShareService {
   public async readObject(cid: string) {
     const fileUri = `ipfs://${cid}/${ENTRY_FILE_NAME}`
     const storage = new ThirdwebStorage()
-    const object = await storage.download(fileUri).then((res) => res.json())
+    const object = await storage.download(fileUri).then((res) => res?.json())
     if (!this.validateObject(object)) {
       return null
     }

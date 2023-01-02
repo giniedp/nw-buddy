@@ -4,6 +4,7 @@
       [entityId]="itemId$ | async"
       [enableInfoLink]="true"
       [nwbScreenshotFrame]="card.name$ | async | nwText"
+      (entity$)="onEntity($event)"
       #card="card"
       class="layout-col"
     >

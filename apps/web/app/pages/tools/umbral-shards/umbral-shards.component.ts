@@ -3,6 +3,7 @@ import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NwModule } from '~/nw';
 import { LayoutModule } from '~/ui/layout';
+import { HtmlHeadService } from '~/utils';
 import { UmbralshardsModule } from '~/widgets/umbralshards';
 
 @Component({
@@ -19,4 +20,10 @@ export class UmbralShardsComponent {
 
   public tab = 0
 
+  public constructor(head: HtmlHeadService) {
+    head.updateMetadata({
+      title: 'Gear Score Calculator',
+      description: 'Calculates your total gear score and the most effective upgrade path'
+    })
+  }
 }

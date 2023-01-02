@@ -6,7 +6,7 @@ import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { getIngretientsFromRecipe, getItemIdFromRecipe } from '~/nw/utils'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { ContentVisibilityDirective } from '~/utils'
+import { ContentVisibilityDirective, HtmlHeadService } from '~/utils'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
@@ -75,7 +75,10 @@ export class GemsOverviewComponent {
     })
   )
 
-  public constructor(private db: NwDbService) {
-    //
+  public constructor(private db: NwDbService, head: HtmlHeadService) {
+    head.updateMetadata({
+      title: 'Gems Overview',
+      description: 'Overview of all gems and their effect in New World',
+    })
   }
 }

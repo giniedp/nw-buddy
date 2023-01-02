@@ -4,6 +4,7 @@ import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
+import { HtmlHeadService } from '~/utils'
 
 @Component({
   standalone: true,
@@ -15,7 +16,10 @@ import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
   },
 })
 export class PerksTableComponent {
-  public constructor(public search: QuicksearchService) {
-    //
+  public constructor(public search: QuicksearchService, head: HtmlHeadService) {
+    head.updateMetadata({
+      url: head.currentUrl,
+      title: 'Perks DB'
+    })
   }
 }

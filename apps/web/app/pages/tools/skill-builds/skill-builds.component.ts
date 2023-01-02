@@ -13,6 +13,7 @@ import { ConfirmDialogComponent } from '~/ui/layout'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
+import { HtmlHeadService } from '~/utils'
 import { SkillWeaponDialogComponent } from '~/widgets/skill-builder/skill-weapon-dialog.component'
 import { SkillBuildsTableAdapter } from './skill-builds-table.adapter'
 
@@ -40,7 +41,12 @@ import { SkillBuildsTableAdapter } from './skill-builds-table.adapter'
 export class SkillBuildsComponent {
   protected iconCreate = svgPlus
 
-  public constructor(private store: SkillBuildsStore, protected search: QuicksearchService, private dialog: Dialog) {}
+  public constructor(private store: SkillBuildsStore, protected search: QuicksearchService, private dialog: Dialog, head: HtmlHeadService) {
+    head.updateMetadata({
+      title: 'Skill Builder',
+      description: 'A Skill Buider tool for New World. Build your skill tree and share with your mates.',
+    })
+  }
 
   protected async createItem() {
     SkillWeaponDialogComponent.open(this.dialog, {

@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
 import { sortBy } from 'lodash'
+import { HtmlHeadService } from '~/utils'
 
 export const LINKS = [
   {
@@ -79,4 +80,10 @@ export const LINKS = [
 })
 export class LinksComponent {
   protected links = sortBy(LINKS, (it) => it.name || it.url)
+  public constructor(head: HtmlHeadService) {
+    head.updateMetadata({
+      title: 'Useful links for New World',
+      description: 'Collection of useful links to websites and tools for New World',
+    })
+  }
 }

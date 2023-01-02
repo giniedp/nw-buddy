@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, EventEmitter, Injectable } from '@angular/core'
+import { ChangeDetectorRef, EventEmitter, Injectable, Output } from '@angular/core'
 import { ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
 import { sortBy } from 'lodash'
 import { BehaviorSubject, combineLatest, defer, map, ReplaySubject, switchMap } from 'rxjs'
@@ -52,8 +52,11 @@ export class ItemDetailService {
   public readonly perkEditable$ = new BehaviorSubject<boolean>(false)
   public readonly perkEdit$ = new EventEmitter<PerkDetail>()
 
+  @Output()
   public readonly item$ = this.db.item(this.entityId$).pipe(shareReplayRefCount(1))
+  @Output()
   public readonly housingItem$ = this.db.housingItem(this.entityId$).pipe(shareReplayRefCount(1))
+  @Output()
   public readonly entity$ = combineLatest([this.item$, this.housingItem$])
     .pipe(map(([item, housing]) => item || housing))
     .pipe(shareReplayRefCount(1))

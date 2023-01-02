@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable, Output } from '@angular/core'
 import { Ability } from '@nw-data/types'
 import { combineLatest, map, ReplaySubject } from 'rxjs'
 import { NwDbService } from '~/nw'
@@ -7,6 +7,7 @@ import { shareReplayRefCount } from '~/utils'
 @Injectable()
 export class AbilityDetailService {
   public readonly abilityId$ = new ReplaySubject<string>(1)
+  @Output()
   public readonly ability$ = combineLatest({
     id: this.abilityId$,
     abilitiesMap: this.db.abilitiesMap,

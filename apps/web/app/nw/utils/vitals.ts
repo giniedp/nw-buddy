@@ -97,7 +97,7 @@ export function getVitalsCategories(vital: Vitals, categories: Map<string, Vital
   return vital.VitalsCategories.map((it) => {
       const category = categories.get(it)
       if (!category) {
-        console.warn(`category not found`, it)
+        // console.warn(`category not found`, it)
       }
       return category
     })

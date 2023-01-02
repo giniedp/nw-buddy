@@ -8,7 +8,7 @@ import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { getIngretientsFromRecipe, getItemId, getRecipeForItem } from '~/nw/utils'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { ContentVisibilityDirective } from '~/utils'
+import { ContentVisibilityDirective, HtmlHeadService } from '~/utils'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
@@ -83,7 +83,10 @@ export class TrophiesOverviewComponent {
 
   protected trackByIndex: TrackByFunction<any> = (i) => i
 
-  public constructor(private db: NwDbService) {
-    //
+  public constructor(private db: NwDbService, head: HtmlHeadService) {
+    head.updateMetadata({
+      title: 'Trophies',
+      description: 'Overview of all trophies in new World',
+    })
   }
 }

@@ -21,7 +21,7 @@ import {
 } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { observeRouteParam } from '~/utils'
+import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { SkillBuilderComponent, SkillBuildValue } from '~/widgets/skill-builder'
@@ -74,10 +74,15 @@ export class SkillBuildsDetailComponent {
     private skillDb: SkillBuildsDB,
     private route: ActivatedRoute,
     private router: Router,
-    private dialog: Dialog
-  ) {
-    //
-  }
+    private dialog: Dialog,
+    head: HtmlHeadService) {
+      head.updateMetadata({
+        title: 'Skill Build',
+        description: 'A custom skill build',
+        noIndex: true,
+        noFollow: true,
+      })
+    }
 
   protected updateModel(record: SkillBuildRecord, data: SkillBuildValue) {
     this.store.updateRecord({

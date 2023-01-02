@@ -5,6 +5,7 @@
       [enableInfoLink]="true"
       [enableTracker]="true"
       [nwbScreenshotFrame]="card.name$ | async | nwText"
+      (entity$)="onEntity($event)"
       #card="card"
       class="flex-1"
     ></nwb-item-card>

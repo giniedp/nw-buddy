@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable, Output } from '@angular/core'
 import { Statuseffect } from '@nw-data/types'
 import { combineLatest, map, ReplaySubject } from 'rxjs'
 import { NwDbService } from '~/nw'
@@ -7,6 +7,7 @@ import { shareReplayRefCount } from '~/utils'
 @Injectable()
 export class StatusEffectDetailService {
   public readonly effectId$ = new ReplaySubject<string>(1)
+  @Output()
   public readonly effect$ = combineLatest({
     id: this.effectId$,
     statusEffects: this.db.statusEffectsMap,

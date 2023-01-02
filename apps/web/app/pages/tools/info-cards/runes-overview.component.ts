@@ -6,6 +6,7 @@ import { groupBy } from 'lodash'
 import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { getIngretientsFromRecipe, getItemId, getItemIdFromRecipe } from '~/nw/utils'
+import { HtmlHeadService } from '~/utils'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
@@ -84,7 +85,10 @@ export class RunesOverviewComponent {
 
   protected trackByIndex: TrackByFunction<any> = (i) => i
 
-  public constructor(private db: NwDbService) {
-    //
+  public constructor(private db: NwDbService, head: HtmlHeadService) {
+    head.updateMetadata({
+      title: 'Heart Runes',
+      description: 'Overview of all heart runes in New World.',
+    })
   }
 }

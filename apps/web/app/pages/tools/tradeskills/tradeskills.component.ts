@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnIni
 import { RouterModule } from '@angular/router'
 import { Subject } from 'rxjs'
 import { NwService } from '~/nw'
+import { HtmlHeadService } from '~/utils'
 import { TradeskillsModule } from '~/widgets/tradeskills'
 
 @Component({
@@ -28,7 +29,14 @@ export class TradeskillsComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject()
 
-  public constructor(private nw: NwService, private cdRef: ChangeDetectorRef) {}
+  public constructor(private nw: NwService, private cdRef: ChangeDetectorRef, head: HtmlHeadService) {
+    head.updateMetadata({
+      title: 'Trade Skills',
+      description: 'Trade skill progression settings',
+      noFollow: true,
+      noIndex: true
+    })
+  }
 
   public skillsByCategory(name: string) {
     return this.nw.tradeskills.skillsByCategory(name)

@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, TrackByFunction, ViewChild } from '@angular/core'
 import { defer, map } from 'rxjs'
-import { shareReplayRefCount } from '~/utils'
+import { HtmlHeadService, shareReplayRefCount } from '~/utils'
 import { DataTableComponent, DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { Armorset } from './types'
@@ -38,7 +38,12 @@ export class ArmorsetsTableComponent implements OnInit {
     .pipe(map((it) => it?.items))
     .pipe(shareReplayRefCount(1))
 
-  public constructor(public search: QuicksearchService) {}
+  public constructor(public search: QuicksearchService, head: HtmlHeadService) {
+    head.updateMetadata({
+      title: 'Armor Sets',
+      description: 'Overview of all available Armor Sets'
+    })
+  }
 
   public ngOnInit(): void {}
 }

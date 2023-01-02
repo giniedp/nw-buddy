@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
+import { HtmlHeadService } from '~/utils'
 import { TerritoryModule } from '~/widgets/territory'
 
 @Component({
@@ -17,5 +18,12 @@ import { TerritoryModule } from '~/widgets/territory'
   },
 })
 export class TerritoriesComponent {
-  //
+  public constructor(head: HtmlHeadService) {
+    head.updateMetadata({
+      title: 'Territories',
+      description: 'Overview of all Territories in New World',
+      noFollow: true,
+      noIndex: true
+    })
+  }
 }

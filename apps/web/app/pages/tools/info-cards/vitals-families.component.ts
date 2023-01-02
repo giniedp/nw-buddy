@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core'
+import { HtmlHeadService } from '~/utils'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { VitalsFamiliesModule } from '~/widgets/vitals-families'
 
@@ -13,4 +14,11 @@ import { VitalsFamiliesModule } from '~/widgets/vitals-families'
     class: 'layout-content layout-pad',
   },
 })
-export class VitalsFamiliesComponent {}
+export class VitalsFamiliesComponent {
+  public constructor(head: HtmlHeadService) {
+    head.updateMetadata({
+      title: 'Creature families',
+      description: 'Overview of all creature families in New World and Expeditions.',
+    })
+  }
+}

@@ -3,13 +3,14 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { Damagetable, Vitals } from '@nw-data/types'
 import { uniq } from 'lodash'
-import { combineLatest, defer, map, Observable, of, shareReplay, switchMap } from 'rxjs'
+import { combineLatest, defer, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs'
+import { TranslateService } from '~/i18n'
 
 import { NwDbService, NwModule } from '~/nw'
-import { getVitalDungeon } from '~/nw/utils'
+import { getVitalDungeon, getVitalFamilyInfo } from '~/nw/utils'
 import { NW_MAX_CHARACTER_LEVEL } from '~/nw/utils/constants'
 import { LayoutModule } from '~/ui/layout'
-import { CaseInsensitiveMap, observeQueryParam, observeRouteParam, shareReplayRefCount, tapDebug } from '~/utils'
+import { CaseInsensitiveMap, HtmlHeadService, observeQueryParam, observeRouteParam, shareReplayRefCount, tapDebug } from '~/utils'
 import { LootModule } from '~/widgets/loot'
 import { VitalsFamiliesModule } from '~/widgets/vitals-families'
 
@@ -31,7 +32,7 @@ export class VitalComponent {
     map((it: DetailTabId): DetailTabId => it || 'loot-items')
   )
 
-  protected vital$ = this.db.vital(this.vitalId$).pipe(shareReplayRefCount(1))
+  protected vital$ = this.db.vital(this.vitalId$).pipe(tap((it) => this.onEntity(it))).pipe(shareReplayRefCount(1))
 
   protected loot$ = combineLatest({
     vital: this.vital$,
@@ -89,7 +90,7 @@ export class VitalComponent {
     })
   )
 
-  public constructor(private route: ActivatedRoute, private router: Router, private db: NwDbService) {
+  public constructor(private route: ActivatedRoute, private router: Router, private db: NwDbService, private i18n: TranslateService, private head: HtmlHeadService) {
     //
   }
 
@@ -100,6 +101,23 @@ export class VitalComponent {
       },
       queryParamsHandling: 'merge',
       relativeTo: this.route,
+    })
+  }
+
+
+  protected async onEntity(entity: Vitals) {
+    if (!entity) {
+      return
+    }
+    const info = getVitalFamilyInfo(entity)
+    this.head.updateMetadata({
+      title: [this.i18n.get(entity.DisplayName), 'Creature'].join(' - '),
+      description: [
+        this.i18n.get(info?.Name),
+        `Level: ${entity.Level}`
+      ].join(' - '),
+      url: this.head.currentUrl,
+      image: info?.Icon
     })
   }
 }

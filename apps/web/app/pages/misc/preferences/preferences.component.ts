@@ -6,6 +6,7 @@ import { saveAs } from 'file-saver'
 import { DbService } from '~/data/db.service'
 import { AppPreferencesService, ItemPreferencesService, PreferencesService } from '~/preferences'
 import { ConfirmDialogComponent, LayoutModule } from '~/ui/layout'
+import { HtmlHeadService } from '~/utils'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 
 @Component({
@@ -47,11 +48,13 @@ export class PreferencesComponent implements OnInit {
     public preferences: PreferencesService,
     public appDb: DbService,
     private itemPref: ItemPreferencesService,
-    private dialog: Dialog
-  ) {
-    //
-  }
-
+    private dialog: Dialog,
+    head: HtmlHeadService) {
+      head.updateMetadata({
+        title: 'Preferences',
+        description: 'Personal preferences to adjust your New World Buddy experience'
+      })
+    }
   public ngOnInit(): void {}
 
   public async exportPreferences() {

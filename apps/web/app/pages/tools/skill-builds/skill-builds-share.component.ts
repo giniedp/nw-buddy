@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ActivatedRoute, Router } from '@angular/router'
 import { LetModule } from '@ngrx/component'
-import { filter, map, switchMap } from 'rxjs'
+import { filter, map, of, switchMap, throwError } from 'rxjs'
 import { SkillBuildRecord, SkillBuildsDB, SkillBuildsStore } from '~/data'
 import { ElectronService } from '~/electron'
 import { NwModule } from '~/nw'
@@ -13,7 +13,7 @@ import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
 import { PromptDialogComponent } from '~/ui/layout'
-import { observeRouteParam } from '~/utils'
+import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { SkillBuilderComponent } from '~/widgets/skill-builder'
 
@@ -30,13 +30,13 @@ import { SkillBuilderComponent } from '~/widgets/skill-builder'
 export class SkillBuildsShareComponent {
   protected cid$ = observeRouteParam(this.route, 'cid')
   protected record$ = this.cid$.pipe(switchMap((cid) => this.web3.readObject(cid))).pipe(
-    map((it): SkillBuildRecord => {
-      if (it.type === 'skill-build') {
+    switchMap((it) => {
+      if (it?.type === 'skill-build' && it.data) {
         const record: SkillBuildRecord = it.data
         delete record.id
-        return record
+        return of(record)
       }
-      return null
+      return throwError(() => new Error(`invalid data`))
     })
   )
 
@@ -58,9 +58,13 @@ export class SkillBuildsShareComponent {
     private skillsDb: SkillBuildsDB,
     private store: SkillBuildsStore,
     private sanitizer: DomSanitizer,
-    private electron: ElectronService
+    private electron: ElectronService,
+    head: HtmlHeadService
   ) {
-    //
+    head.updateMetadata({
+      title: 'Shared Skill Build',
+      description: 'A shared skill build that can be imported into your own collection',
+    })
   }
 
   protected onimportClicked(record: SkillBuildRecord) {

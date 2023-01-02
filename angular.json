@@ -35,6 +35,8 @@
             "assets": [
               "apps/web/_routes.json",
               "apps/web/favicon.ico",
+              "apps/web/robots.txt",
+              "apps/web/sitemap.txt",
               "apps/web/assets",
               {
                 "glob": "**/*",
@@ -90,6 +92,8 @@
               "assets": [
                 "apps/web/_routes.json",
                 "apps/web/favicon.ico",
+                "apps/web/robots.txt",
+                "apps/web/sitemap.txt",
                 "apps/web/assets"
               ],
               "optimization": true,

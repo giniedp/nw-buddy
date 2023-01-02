@@ -13,6 +13,7 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty } from '@nw-data/types'
 import { combineLatest, defer, map, Observable, of, ReplaySubject, switchMap, takeUntil } from 'rxjs'
+import { TranslateService } from '~/i18n'
 import { NwDbService, NwModule, NwService } from '~/nw'
 
 import {
@@ -26,7 +27,7 @@ import {
 } from '~/nw/utils'
 import { DifficultyRank, DungeonPreferencesService } from '~/preferences'
 import { LayoutModule } from '~/ui/layout'
-import { DestroyService, observeRouteParam, shareReplayRefCount } from '~/utils'
+import { DestroyService, HtmlHeadService, observeRouteParam, shareReplayRefCount } from '~/utils'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { LootModule } from '~/widgets/loot'
 import { VitalsFamiliesModule } from '~/widgets/vitals-families'
@@ -262,9 +263,11 @@ export class DungeonDetailComponent implements OnInit {
     private domSanitizer: DomSanitizer,
     private store: DungeonDetailStore,
     private preferences: DungeonPreferencesService,
-    private dialog: Dialog
+    private dialog: Dialog,
+    private i18n: TranslateService,
+    private head: HtmlHeadService
   ) {
-    //
+
   }
 
   public ngOnInit(): void {
@@ -326,6 +329,12 @@ export class DungeonDetailComponent implements OnInit {
             tpl: this.tplDungeonMap,
           })
         }
+
+        this.head.updateMetadata({
+          title: this.i18n.get(dungeon.DisplayName),
+          description: this.i18n.get(dungeon.Description),
+          image: dungeon.BackgroundImagePath
+        })
         this.cdRef.detectChanges()
       })
 

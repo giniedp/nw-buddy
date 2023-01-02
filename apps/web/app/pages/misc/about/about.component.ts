@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { environment } from 'apps/web/environments/environment'
 import { TooltipModule } from '~/ui/tooltip'
+import { HtmlHeadService } from '~/utils'
 
 @Component({
   standalone: true,
@@ -26,7 +27,11 @@ export class AboutComponent implements OnInit {
     return environment.version.split('-')[0]
   }
 
-  constructor() {}
+  public constructor(head: HtmlHeadService) {
+    head.updateMetadata({
+      title: 'About New World Buddy',
+    })
+  }
 
   ngOnInit(): void {}
 }

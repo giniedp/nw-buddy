@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable, Output } from '@angular/core'
 import { Perks } from '@nw-data/types'
 import { combineLatest, map, ReplaySubject, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
@@ -8,6 +8,7 @@ import { shareReplayRefCount } from '~/utils'
 @Injectable()
 export class PerkDetailService {
   public readonly perkId$ = new ReplaySubject<string>(1)
+  @Output()
   public readonly perk$ = this.db.perk(this.perkId$).pipe(shareReplayRefCount(1))
 
   public readonly icon$ = this.perk$.pipe(map((it) => it?.IconPath))

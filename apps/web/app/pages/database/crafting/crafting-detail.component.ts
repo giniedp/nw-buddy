@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { map } from 'rxjs'
+import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { map, tap } from 'rxjs'
+import { TranslateService } from '~/i18n'
 import { NwDbService, NwModule } from '~/nw'
-import { getItemIdFromRecipe } from '~/nw/utils'
+import { getItemIconPath, getItemIdFromRecipe } from '~/nw/utils'
 import { LayoutModule } from '~/ui/layout'
-import { observeRouteParam } from '~/utils'
+import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { CraftingCalculatorModule } from '~/widgets/crafting-calculator'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -25,7 +27,19 @@ export class CraftingDetailComponent {
   protected recipe$ = this.db.recipe(this.id$)
   protected itemId$ = this.recipe$.pipe(map((it) => getItemIdFromRecipe(it)))
 
-  public constructor(private route: ActivatedRoute, private db: NwDbService) {
+  public constructor(private route: ActivatedRoute, private db: NwDbService, private i18n: TranslateService, private head: HtmlHeadService) {
     //
+  }
+
+  protected onEntity(entity: ItemDefinitionMaster | Housingitems) {
+    if (!entity) {
+      return
+    }
+    this.head.updateMetadata({
+      title: [this.i18n.get(entity.Name), 'Recipe'].join(' - '),
+      description: this.i18n.get(entity.Description),
+      url: this.head.currentUrl,
+      image: `${this.head.origin}/${getItemIconPath(entity)}`
+    })
   }
 }

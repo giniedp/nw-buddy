@@ -3,6 +3,7 @@
     *nwbDetailDraweContent
     class="layout-col bg-base-200 layout-pad"
     [nwbStatusEffectDetail]="itemId | async"
+    (effect$)="onEntity($event)"
     #detail="effectDetail"
   >
     <nwb-property-grid
