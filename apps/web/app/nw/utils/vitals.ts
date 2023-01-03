@@ -180,14 +180,23 @@ const MAP_DUNGEON_TO_VITALS_LOOT_TAGS: Record<string, string[]> = {
   DungeonCutlassKeys00: ['DryadSiren'],
   QuestApophis: ['Apophis']
 }
-export function getVitalDungeon(vital: Vitals, dungeons: Gamemodes[]) {
+export function getVitalDungeons(vital: Vitals, dungeons: Gamemodes[], mutated?: boolean): Gamemodes[] {
+  const result: Gamemodes[] = []
   const vitalDungeonId = getVitalDungeonId(vital.VitalsID)
   if (vitalDungeonId) {
-    return dungeons.find((it) => it.GameModeId === vitalDungeonId)
+    const found = dungeons.find((it) => it.GameModeId === vitalDungeonId)
+    result.push(found)
+    return result
   }
   if (!vital.LootTags?.length) {
-    return null
+    return result
   }
+
+  if (mutated && vital.VitalsID === 'Withered_Brute_Named_08') {
+    const found = dungeons.find((it) => it.GameModeId === 'DungeonShatteredObelisk')
+    result.push(found)
+  }
+
   for (const dungeon of dungeons) {
     if (!dungeon.IsDungeon) {
       continue
@@ -195,7 +204,8 @@ export function getVitalDungeon(vital: Vitals, dungeons: Gamemodes[]) {
     // vital references dungeon via LootTags
     const dungeonTag = dungeon.GameModeId.replace(/^Dungeon/, '')
     if (vital.LootTags.some((tag) => tag === dungeonTag)) {
-      return dungeon
+      result.push(dungeon)
+      return result
     }
     if (vital.CreatureType === 'DungeonBoss') {
       // special case for
@@ -207,9 +217,14 @@ export function getVitalDungeon(vital: Vitals, dungeons: Gamemodes[]) {
         //   vital,
         //   dungeon
         // })
-        return dungeon
+        result.push(dungeon)
+        return result
       }
     }
   }
-  return null
+  return result
+}
+
+export function getVitalDungeon(vital: Vitals, dungeons: Gamemodes[]) {
+  return getVitalDungeons(vital, dungeons)?.[0]
 }

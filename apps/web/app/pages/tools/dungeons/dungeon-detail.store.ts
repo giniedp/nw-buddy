@@ -5,7 +5,7 @@ import { uniq } from 'lodash'
 import { combineLatest, filter, map, of, shareReplay, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { LootContext, NwLootService } from '~/nw/loot'
-import { getVitalDungeon } from '~/nw/utils'
+import { getVitalDungeons } from '~/nw/utils'
 import { NW_MAX_CHARACTER_LEVEL } from '~/nw/utils/constants'
 import { mapProp, shareReplayRefCount, tapDebug } from '~/utils'
 
@@ -66,12 +66,16 @@ export class DungeonDetailStore extends ComponentStore<DungeonDetailState> {
   public readonly creatures$ = combineLatest({
     dungeonId: this.dungeonId$,
     dungeons: this.db.gameModes,
+    difficulty: this.difficulty$,
     vitals: this.db.vitals,
   })
     .pipe(
-      map(({ vitals, dungeons, dungeonId }): Vitals[] => {
+      map(({ vitals, dungeons, dungeonId, difficulty }): Vitals[] => {
         const result = vitals.filter((it) => {
-          return getVitalDungeon(it, dungeons)?.GameModeId === dungeonId
+          if (difficulty != null && dungeonId === 'DungeonShatteredObelisk' && it.VitalsID === 'Withered_Brute_Named_08') {
+            return true
+          }
+          return getVitalDungeons(it, dungeons, !!difficulty).some((dg) => dg.GameModeId === dungeonId)
         })
         return result
       })
@@ -81,14 +85,15 @@ export class DungeonDetailStore extends ComponentStore<DungeonDetailState> {
   public readonly bosses$ = combineLatest({
     dungeonId: this.dungeonId$,
     dungeons: this.db.gameModes,
+    difficulty: this.difficulty$,
     vitals: this.db.vitalsByCreatureType,
   })
     .pipe(
-      map(({ vitals, dungeons, dungeonId }): Vitals[] => {
+      map(({ vitals, dungeons, dungeonId, difficulty }): Vitals[] => {
         const miniBosses = vitals.get('DungeonMiniBoss') || []
         const bosses = vitals.get('DungeonBoss') || []
         const result = [...miniBosses, ...bosses].filter((it) => {
-          return getVitalDungeon(it, dungeons)?.GameModeId === dungeonId
+          return getVitalDungeons(it, dungeons, !!difficulty).some((dg) => dg.GameModeId === dungeonId)
         })
         return result
       })
