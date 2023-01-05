@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Inject, Injectable, Optional } from '@angular/core'
 import { Housingitems } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, map, Observable, of, shareReplay } from 'rxjs'
@@ -13,16 +13,22 @@ import {
   getUIHousingCategoryLabel,
 } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
+import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize } from '~/utils'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
 
 @Injectable()
+export class HousingTableAdapterConfig extends DataTableAdapterOptions<Housingitems> {
+  hideUserData?: boolean
+}
+
+@Injectable()
 export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
-  public static provider() {
+  public static provider(config?: HousingTableAdapterConfig) {
     return dataTableProvider({
       adapter: HousingTableAdapter,
+      options: config,
     })
   }
 
@@ -96,6 +102,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
         }),
         this.colDef({
           colId: 'userBookmark',
+          hide: this.config?.hideUserData,
           headerValueGetter: () => 'Bookmark',
           width: 100,
           cellClass: 'cursor-pointer',
@@ -109,6 +116,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
         }),
         this.colDef({
           colId: 'userStockValue',
+          hide: this.config?.hideUserData,
           headerValueGetter: () => 'In Stock',
           headerTooltip: 'Number of items currently owned',
           valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.stock),
@@ -123,6 +131,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
         }),
         this.colDef({
           colId: 'userPrice',
+          hide: this.config?.hideUserData,
           headerValueGetter: () => 'Price',
           headerTooltip: 'Current price in Trading post',
           cellClass: 'text-right',
@@ -182,7 +191,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
   )
 
   public entities: Observable<Housingitems[]> = defer(() => {
-    return this.nw.db.housingItems.pipe(map((items) => items.filter((it) => !it.ExcludeFromGame)))
+    return (this.config?.source || this.nw.db.housingItems).pipe(map((items) => items.filter((it) => !it.ExcludeFromGame)))
   }).pipe(
     shareReplay({
       refCount: true,
@@ -190,7 +199,14 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
     })
   )
 
-  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwLinkService) {
+  public constructor(
+    private nw: NwService,
+    private i18n: TranslateService,
+    private info: NwLinkService,
+    @Inject(DataTableAdapterOptions)
+    @Optional()
+    private config: HousingTableAdapterConfig
+  ) {
     super()
   }
 }

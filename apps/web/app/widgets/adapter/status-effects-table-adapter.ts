@@ -78,6 +78,11 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
           }),
         }),
         this.colDef({
+          colId: 'baseDuration',
+          headerValueGetter: () => 'Duration',
+          field: this.fieldName('BaseDuration'),
+        }),
+        this.colDef({
           colId: 'effectCategories',
           headerValueGetter: () => 'Effect Categories',
           field: this.fieldName('EffectCategories'),

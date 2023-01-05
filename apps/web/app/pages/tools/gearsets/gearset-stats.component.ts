@@ -2,19 +2,22 @@ import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { LayoutModule } from '@angular/cdk/layout'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule, DecimalPipe, PercentPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Directive, Input } from '@angular/core'
 import {
   Ability,
   Affixstats,
   Damagetypes,
+  Housingitems,
+  Itemappearancedefinitions,
   ItemDefinitionMaster,
   ItemdefinitionsArmor,
   ItemdefinitionsConsumables,
+  ItemdefinitionsWeaponappearances,
   ItemdefinitionsWeapons,
   Perks,
   Statuseffect,
 } from '@nw-data/types'
-import { sum, sumBy } from 'lodash'
+import { groupBy, sum, sumBy } from 'lodash'
 import {
   combineLatest,
   defer,
@@ -36,10 +39,12 @@ import {
   getAffixMODs,
   getArmorRatingElemental,
   getArmorRatingPhysical,
+  getItemId,
   getItemMaxGearScore,
   getItemPerkBucketKeys,
   getItemPerkKeys,
   getPerkMultiplier,
+  getStatusEffectDMGs,
   patchPrecision,
   stripAbilityProperties,
   stripAffixProperties,
@@ -53,8 +58,22 @@ import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
 import { mapFilter, shareReplayRefCount, tapDebug } from '~/utils'
 import { AttributeEditorDialogComponent } from '~/widgets/attributes-editor'
+import { GearsetStatsGridComponent, StatEntry } from './gearset-stats-grid.component'
+import { ExplainItem, ExplainTooltip } from './gearset-stats-tip.component'
 
-interface PerkInfo {
+interface SlotDetails {
+  id: string
+  instance: ItemInstance
+  gearScore: number
+  item: ItemDefinitionMaster
+  housing: Housingitems
+  armor: ItemdefinitionsArmor
+  weapon: ItemdefinitionsWeapons
+  consumable: ItemdefinitionsConsumables
+  perks: Perks[]
+}
+
+interface SlotPerkDetails {
   perk: Perks
   count: number
   scale: number
@@ -67,12 +86,12 @@ interface PerkInfo {
   isShield: boolean
 }
 
-export interface StatEntry {
-  key: string
-  label: string[] | string
-  value: number
-  percent: number
-  icon?: string
+interface SlotEqupmentDetails {
+  count: number
+  item: ItemDefinitionMaster | Housingitems
+  effect: Partial<Statuseffect>
+  isConsumable: boolean
+  isTrophy: boolean
 }
 
 @Component({
@@ -81,7 +100,17 @@ export interface StatEntry {
   templateUrl: './gearset-stats.component.html',
   styleUrls: ['./gearset-stats.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, PropertyGridModule, DialogModule, IconsModule, TooltipModule, CdkMenuModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    PropertyGridModule,
+    DialogModule,
+    IconsModule,
+    TooltipModule,
+    CdkMenuModule,
+    ExplainTooltip,
+    GearsetStatsGridComponent,
+  ],
   providers: [PercentPipe, DecimalPipe],
   host: {
     class: 'block flex flex-col layout-pad layout-gap relative justify-end',
@@ -105,52 +134,27 @@ export class GearsetStatsComponent {
   protected physicalRating$ = defer(() => this.resolvePhysicalRating()).pipe(shareReplayRefCount(1))
   protected health$ = defer(() => this.resolveHealth())
 
-  protected perkInfos$ = this.resolvePerkInfos().pipe(shareReplayRefCount(1))
+  protected perksDetails$ = this.resolveSlotPerksDetails().pipe(shareReplayRefCount(1))
+  protected equipDetails$ = this.resolveSlotEquipDetails().pipe(shareReplayRefCount(1))
+
   protected gearScore$ = this.slots$.pipe(map((slots) => this.sumGearScore(slots)))
   protected weight$ = this.slots$.pipe(map((slots) => this.sumWeight(slots)))
-  protected elementalAbs$ = combineLatest({ perks: this.perkInfos$, types: this.db.damagetypesMap })
-    .pipe(
-      map(({ perks, types }) => {
-        return this.sumAbsorbtions(perks, types, 'Elemental')
-      })
-    )
+  protected elementalAbs$ = combineLatest({ perks: this.perksDetails$, types: this.db.damagetypesMap })
+    .pipe(map(({ perks, types }) => this.sumAbsorbtions(perks, types, 'Elemental')))
     .pipe(shareReplayRefCount(1))
-  protected physicalAbs$ = combineLatest({ perks: this.perkInfos$, types: this.db.damagetypesMap })
-    .pipe(
-      map(({ perks, types }) => {
-        return this.sumAbsorbtions(perks, types, 'Physical')
-      })
-    )
+  protected physicalAbs$ = combineLatest({ perks: this.perksDetails$, types: this.db.damagetypesMap })
+    .pipe(map(({ perks, types }) => this.sumAbsorbtions(perks, types, 'Physical')))
     .pipe(shareReplayRefCount(1))
-  protected otherAbs$ = combineLatest({ perks: this.perkInfos$, types: this.db.damagetypesMap })
-    .pipe(
-      map(({ perks, types }) => {
-        return this.sumAbsorbtions(perks, types, null)
-      })
-    )
+  protected otherAbs$ = combineLatest({ perks: this.perksDetails$, types: this.db.damagetypesMap })
+    .pipe(map(({ perks, types }) => this.sumAbsorbtions(perks, types, null)))
     .pipe(shareReplayRefCount(1))
-  protected dmg$ = combineLatest({ perks: this.perkInfos$, types: this.db.damagetypesMap })
-    .pipe(
-      map(({ perks, types }) => {
-        return this.sumDamages(perks, types)
-      })
-    )
+  protected dmg$ = combineLatest({ perks: this.perksDetails$, equips: this.equipDetails$ })
+    .pipe(map(({ perks, equips }) => this.sumEmpower(perks, equips)))
     .pipe(shareReplayRefCount(1))
-  protected consumables$ = defer(() => this.slots$).pipe(
-    map((it) => it.filter((e) => e.consumable).map((it) => it.consumable))
-  )
+  protected consumables$ = this.equipDetails$.pipe(map((list) => list.filter((it) => it.isConsumable)))
   protected attrsAssigned$ = this.gearset.gearsetAttrs$
-  protected attrsBase$ = defer(() => this.perkInfos$).pipe(map((it) => this.sumMods(it)))
-  protected attrsBuff$ = defer(() =>
-    combineLatest({
-      consumables: this.consumables$,
-      effects: this.db.statusEffectsMap,
-    })
-  ).pipe(
-    map(({ consumables, effects }) => {
-      return this.sumModBuffs(consumables, effects)
-    })
-  )
+  protected attrsBase$ = defer(() => this.perksDetails$).pipe(map((it) => this.sumMods(it)))
+  protected attrsBuff$ = this.consumables$.pipe(map((consumables) => this.sumModBuffs(consumables)))
 
   protected attrs$ = combineLatest({
     base: this.attrsBase$,
@@ -177,7 +181,7 @@ export class GearsetStatsComponent {
 
   protected attrsAbilities$ = defer(() => this.resolveAttributeAbilities()).pipe(shareReplay(1))
   protected skillAbilities$ = defer(() => this.resolveSkillAbilities()).pipe(shareReplay(1))
-  protected armorAbilities$ = defer(() => this.perkInfos$)
+  protected armorAbilities$ = defer(() => this.perksDetails$)
     .pipe(map((it) => it?.map((e) => e.abilities)))
     .pipe(map((it) => it?.flat(1)))
     .pipe(shareReplay(1))
@@ -206,7 +210,7 @@ export class GearsetStatsComponent {
     return this.weaponTypes.wardTypeIcon(type) || this.weaponTypes.damageTypeIcon(type)
   }
 
-  protected getPerkMultiplier(info: PerkInfo) {
+  protected getPerkMultiplier(info: SlotPerkDetails) {
     if (info.maybeStackable) {
       return info.count * info.scale
     }
@@ -216,42 +220,46 @@ export class GearsetStatsComponent {
   private resolveSlots() {
     return this.gearset.gearsetSlots$.pipe(
       switchMap((slots) => {
-        const slots$ = Object.entries(slots || {}).map(([id, slot]) => {
-          return this.resolveSlotInstance(slot).pipe(switchMap((instance) => this.resolveSlot(id, instance)))
+        const slots$ = Object.entries(slots || {}).map(([slotId, instanceOrId]) => {
+          return this.resolveItemInstance(instanceOrId).pipe(
+            switchMap((instance) => this.resolveSlotInfos(slotId, instance))
+          )
         })
         return combineLatest(slots$)
       })
     )
-    //.pipe(tap(console.log))
   }
 
-  private resolveSlotInstance(slot: string | ItemInstance) {
-    if (typeof slot === 'string') {
-      return this.items.live((t) => t.get(slot))
+  private resolveItemInstance(idOrInstance: string | ItemInstance) {
+    if (typeof idOrInstance === 'string') {
+      return this.items.live((t) => t.get(idOrInstance))
     }
-    return of(slot)
+    return of(idOrInstance)
   }
 
-  private resolveSlot(id: string, instance: ItemInstance) {
+  private resolveSlotInfos(slotId: string, instance: ItemInstance) {
     return combineLatest({
       items: this.db.itemsMap,
+      housings: this.db.housingItemsMap,
       perks: this.db.perksMap,
       armors: this.db.armorsMap,
       weapons: this.db.weaponsMap,
       consumables: this.db.consumablesMap,
     }).pipe(
-      switchMap(({ items, perks, armors, weapons, consumables }) => {
+      switchMap(({ items, housings, perks, armors, weapons, consumables }) => {
         const item = items.get(instance?.itemId)
-        return this.resolveSlotPerks(instance, item, perks).pipe(
-          map((perks) => {
+        const housing = housings.get(instance?.itemId)
+        return this.resolveItemPerks(instance, item, perks).pipe(
+          map((perks): SlotDetails => {
             return {
-              id: id,
+              id: slotId,
               instance: instance,
               gearScore: instance?.gearScore ?? getItemMaxGearScore(item),
               item: item,
+              housing: housing,
               armor: armors.get(item?.ItemStatsRef),
               weapon: weapons.get(item?.ItemStatsRef),
-              consumable: consumables.get(item?.ItemID),
+              consumable: consumables.get(item?.ItemID || housing?.HouseItemID),
               perks: perks,
             }
           })
@@ -260,7 +268,7 @@ export class GearsetStatsComponent {
     )
   }
 
-  private resolveSlotPerks(instance: ItemInstance, item: ItemDefinitionMaster, perks: Map<string, Perks>) {
+  private resolveItemPerks(instance: ItemInstance, item: ItemDefinitionMaster, perks: Map<string, Perks>) {
     if (!item || !instance) {
       return of<Perks[]>([])
     }
@@ -273,14 +281,15 @@ export class GearsetStatsComponent {
     return of([...fixedPerks, ...addedPerks])
   }
 
-  private resolvePerkInfos() {
+  private resolveSlotPerksDetails() {
     return combineLatest({
       slots: this.slots$,
       affixMap: this.db.affixstatsMap,
       abilityMap: this.db.abilitiesMap,
+      effectsMap: this.db.statusEffectsMap,
     }).pipe(
-      map(({ slots, affixMap, abilityMap }) => {
-        const infos: Record<string, PerkInfo> = {}
+      map(({ slots, affixMap, abilityMap, effectsMap }) => {
+        const infos: Record<string, SlotPerkDetails> = {}
         for (const slot of slots) {
           for (const perk of slot.perks) {
             if (infos[perk.PerkID]) {
@@ -307,6 +316,39 @@ export class GearsetStatsComponent {
                 perk?.ItemClass?.includes('RoundShield') ||
                 perk?.ItemClass?.includes('KiteShield') ||
                 perk?.ItemClass?.includes('TowerShield'),
+            }
+          }
+        }
+        return Object.values(infos)
+      })
+    )
+  }
+
+  private resolveSlotEquipDetails() {
+    return combineLatest({
+      slots: this.slots$,
+      effectsMap: this.db.statusEffectsMap,
+    }).pipe(
+      map(({ slots, effectsMap }) => {
+        const infos: Record<string, SlotEqupmentDetails> = {}
+        for (const slot of slots) {
+          const itemId = getItemId(slot.item || slot.housing)
+          const effectIds = slot.consumable?.AddStatusEffects || slot.housing?.HousingStatusEffect
+          if ((!slot.housing && !slot.consumable) || !effectIds) {
+            continue
+          }
+
+          for (const effectId of effectIds.split('+')) {
+            if (infos[itemId]) {
+              infos[itemId].count += 1
+              continue
+            }
+            infos[itemId] = {
+              count: 1,
+              item: slot.item || slot.housing,
+              effect: effectsMap.get(effectId),
+              isConsumable: !!slot.consumable,
+              isTrophy: !!slot.housing,
             }
           }
         }
@@ -359,31 +401,33 @@ export class GearsetStatsComponent {
           label?: string
           text?: string
           value: number
-        }> =[]
+        }> = []
 
         const modAttrs = sum(attrsAbilities.map((it) => patchPrecision(it.PhysicalArmor))) || 0
         const modSkills = sum(skillAbilities.map((it) => patchPrecision(it.PhysicalArmor))) || 0
         const baseRating = baseArmor + baseWeapon
         summary.push({
           label: 'Base',
-          value: baseRating
+          value: baseRating,
         })
         if (modAttrs) {
           summary.push({
             label: 'Attributes Bonus',
-            value: modAttrs * baseArmor
+            value: modAttrs * baseArmor,
           })
         }
         if (modSkills) {
           summary.push({
             label: 'Skills Bonus',
-            value: modSkills * baseArmor
+            value: modSkills * baseArmor,
           })
         }
         const total = sum(summary.map((it) => it.value)) || 0
         const totalForHealth = baseRating * (1 + modAttrs + modSkills)
         return {
-          total, summary, totalForHealth
+          total,
+          summary,
+          totalForHealth,
         }
       })
     )
@@ -395,36 +439,36 @@ export class GearsetStatsComponent {
       baseWeapon: this.baseElementalRatingWeapon$,
       attrsAbilities: this.attrsAbilities$.pipe(mapFilter((it) => !!it?.ElementalArmor)),
       skillAbilities: this.skillAbilities$.pipe(mapFilter((it) => !!it?.ElementalArmor)),
-    })
-    .pipe(
+    }).pipe(
       map(({ baseArmor, baseWeapon, attrsAbilities, skillAbilities }) => {
         const summary: Array<{
           icon?: string
           label?: string
           text?: string
           value: number
-        }> =[]
+        }> = []
         const modAttrs = sum(attrsAbilities.map((it) => patchPrecision(it.ElementalArmor))) || 0
         const modSkills = sum(skillAbilities.map((it) => patchPrecision(it.ElementalArmor))) || 0
         summary.push({
           label: 'Base',
-          value: baseArmor + baseWeapon
+          value: baseArmor + baseWeapon,
         })
         if (modAttrs) {
           summary.push({
             label: 'Attributes Bonus',
-            value: modAttrs * baseArmor
+            value: modAttrs * baseArmor,
           })
         }
         if (modSkills) {
           summary.push({
             label: 'Skills Bonus',
-            value: modSkills * baseArmor
+            value: modSkills * baseArmor,
           })
         }
         const total = sum(summary.map((it) => it.value)) || 0
         return {
-          total, summary
+          total,
+          summary,
         }
       })
     )
@@ -439,7 +483,7 @@ export class GearsetStatsComponent {
       fromLevel: this.attributes.healthContributionFromLevel(level$),
       fromConst: this.attributes.healthContributionFromConstitution(constitution$),
       attrAbilities: this.attrsAbilities$.pipe(mapFilter((it) => !!it?.PhysicalArmorMaxHealthMod)),
-      perks: this.perkInfos$,
+      perks: this.perksDetails$,
       physicalRating: this.physicalRating$.pipe(map((it) => it.totalForHealth)),
     }).pipe(
       map(({ fromLevel, fromConst, physicalRating, attrAbilities, perks }) => {
@@ -449,15 +493,15 @@ export class GearsetStatsComponent {
           label?: string
           text?: string
           value: number
-        }> =[]
+        }> = []
 
         summary.push({
           label: 'Character Level',
-          value: fromLevel
+          value: fromLevel,
         })
         summary.push({
           label: 'Constitution',
-          value: fromConst
+          value: fromConst,
         })
 
         for (const ability of attrAbilities) {
@@ -465,7 +509,7 @@ export class GearsetStatsComponent {
           summary.push({
             label: `Physical Armor`,
             text: ability.Description,
-            value: physicalContribution * physicalRating
+            value: physicalContribution * physicalRating,
           })
         }
 
@@ -478,7 +522,7 @@ export class GearsetStatsComponent {
             icon: perk.perk.IconPath,
             label: perk.perk.DisplayName,
             // text: perk.perk.Description,
-            value: perk.scale * patchPrecision(ability.MaxHealth) * baseHealth
+            value: perk.scale * patchPrecision(ability.MaxHealth) * baseHealth,
           })
         }
         const total = sum(summary.map((it) => it.value)) || 0
@@ -486,7 +530,7 @@ export class GearsetStatsComponent {
         return {
           total: total,
           summary: summary,
-          haleAndHeartyBonus: baseHealth * 0.1
+          haleAndHeartyBonus: baseHealth * 0.1,
         }
       })
     )
@@ -512,40 +556,73 @@ export class GearsetStatsComponent {
   private sumGearScore(slots: Array<{ id: string; gearScore: number }>) {
     return totalGearScore(slots.map((it) => ({ id: it.id as any, gearScore: it.gearScore })))
   }
-  private sumAbsorbtions(infos: Array<PerkInfo>, types: Map<string, Damagetypes>, category: string) {
+  private sumAbsorbtions(details: SlotPerkDetails[], types: Map<string, Damagetypes>, category: string) {
     const stats: Record<string, StatEntry> = {}
-    for (const perk of infos) {
-      if (perk.isArmor || perk.isJewelery || perk.isShield) {
-        for (const mod of getAffixABSs(perk.affix, perk.scale)) {
+    for (const detail of details) {
+      if (detail.isArmor || detail.isJewelery || detail.isShield) {
+        for (const mod of getAffixABSs(detail.affix, detail.scale)) {
           const type = types.get(mod.type)
           if ((!category && !type) || type?.Category === category) {
-            stats[mod.key] = stats[mod.key] || { key: mod.key, label: mod.label, value: 0, percent: 0 }
-            stats[mod.key].percent += Number(mod.value) * perk.count
+            stats[mod.key] = stats[mod.key] || { key: mod.key, label: mod.label, value: 0, percent: 0, explain: [] }
+            stats[mod.key].percent += Number(mod.value) * detail.count
             stats[mod.key].icon = this.damageIcon(mod.type)
+            stats[mod.key].explain.push({
+              label: detail.perk.DisplayName,
+              icon: detail.perk.IconPath,
+              count: detail.count,
+              percent: Number(mod.value),
+              value: null,
+            })
           }
         }
       }
     }
-    return Object.values(stats)
+    const entries = Object.values(stats)
+    const groups = Object.values(groupBy(entries, (entry) => entry.percent))
+    return groups
   }
-  private sumDamages(infos: Array<PerkInfo>, types: Map<string, Damagetypes>) {
+
+  private sumEmpower(perkDetails: SlotPerkDetails[], equipDetails: SlotEqupmentDetails[]) {
     const stats: Record<string, StatEntry> = {}
-    for (const perk of infos) {
-      if (perk.isArmor || perk.isJewelery || perk.isShield) {
-        for (const mod of getAffixDMGs(perk.affix, perk.scale)) {
-          stats[mod.key] = stats[mod.key] || { key: mod.key, label: mod.label, value: 0, percent: 0 }
-          stats[mod.key].percent += Number(mod.value) * perk.count
+    for (const detail of perkDetails) {
+      if (detail.isArmor || detail.isJewelery || detail.isShield) {
+        for (const mod of getAffixDMGs(detail.affix, detail.scale)) {
+          stats[mod.key] = stats[mod.key] || { key: mod.key, label: mod.label, value: 0, percent: 0, explain: [] }
+          stats[mod.key].percent += Number(mod.value) * detail.count
           stats[mod.key].icon = this.damageIcon(mod.key.replace('DMG', ''))
+          stats[mod.key].explain.push({
+            label: detail.perk.DisplayName,
+            icon: detail.perk.IconPath,
+            count: detail.count,
+            percent: Number(mod.value),
+            value: null,
+          })
         }
       }
     }
-    return Object.values(stats)
+    for (const detail of equipDetails) {
+      const count = detail.isTrophy ? detail.count : 1
+      for (const mod of getStatusEffectDMGs(detail.effect, 1)) {
+        stats[mod.key] = stats[mod.key] || { key: mod.key, label: mod.label, value: 0, percent: 0, explain: [] }
+        stats[mod.key].percent += Number(mod.value) * count
+        stats[mod.key].icon = this.damageIcon(mod.key.replace('DMG', ''))
+        stats[mod.key].explain.push({
+          label: detail.item.Name,
+          icon: detail.item.IconPath,
+          count: count,
+          percent: Number(mod.value),
+          value: null,
+        })
+      }
+    }
+    const entries = Object.values(stats)
+    const groups = Object.values(groupBy(entries, (entry) => entry.percent))
+    return groups
   }
 
-  private sumModBuffs(items: ItemdefinitionsConsumables[], effects: Map<string, Statuseffect>) {
-    const item = items
-      .map((it) => it.AddStatusEffects?.split('+').map((e) => effects.get(e)))
-      .flat(1)
+  private sumModBuffs(details: SlotEqupmentDetails[]) {
+    const item = details
+      .map((it) => it.effect)
       .filter((it) => !!it)
       .filter((it) => it.EffectCategories?.includes('Attributes'))?.[0]
     const mods: Record<AttributeRef, number> = {
@@ -558,7 +635,7 @@ export class GearsetStatsComponent {
     return mods
   }
 
-  private sumMods(infos: Array<PerkInfo>) {
+  private sumMods(details: SlotPerkDetails[]) {
     const mapping: Record<string, AttributeRef> = {
       MODConstitution: 'con',
       MODDexterity: 'dex',
@@ -573,11 +650,11 @@ export class GearsetStatsComponent {
       int: 5,
       str: 5,
     }
-    for (const perk of infos) {
-      for (const mod of getAffixMODs(perk.affix, perk.scale)) {
+    for (const detail of details) {
+      for (const mod of getAffixMODs(detail.affix, detail.scale)) {
         const key = mapping[mod.key]
         if (key in mods) {
-          mods[key] = mods[key] + Number(mod.value) * perk.count
+          mods[key] = mods[key] + Number(mod.value) * detail.count
         } else {
           console.warn('unknown mod', mod.key)
         }

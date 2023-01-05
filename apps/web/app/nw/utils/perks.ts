@@ -1,4 +1,5 @@
 import { Ability, Affixstats, ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
+import { getAffixMODs } from './affix'
 import { patchPrecision } from './precision'
 
 const PERK_SORT_WEIGHT = {
@@ -47,100 +48,4 @@ export function getPerksGemABSs(perk: Pick<Perks, 'ScalingPerGearScore'>, affix:
 export function getPerkMultiplier(perk: Pick<Perks, 'ScalingPerGearScore'> , gearScore: number) {
   const scale = patchPrecision(perk.ScalingPerGearScore)
   return Math.max(0, gearScore - 100) * scale + 1
-}
-
-export function getAffixMODs(affix: Partial<Affixstats>, scale: number) {
-  return getAffixProperties(affix)
-    .filter((it) => it.key.startsWith('MOD'))
-    .map(({ key, value }) => {
-      const label = key.replace('MOD', '').toLowerCase()
-      const valNum = Number(value)
-      return {
-        key: key,
-        label: `ui_${label}`,
-        labelShort: `ui_${label}_short`,
-        value: Number.isFinite(valNum) ? Math.floor(valNum * scale) : value,
-      }
-    })
-}
-
-export function getAffixABSs(affix: Partial<Affixstats>, scale: number) {
-  return getAffixProperties(affix)
-    .filter((it) => it.key.startsWith('ABS'))
-    .map(({ key, value }) => {
-      const name = key.replace('ABS', '')
-      let label: string
-      let type: string
-      if (name.match(/^vitalscategory/i)) {
-        type = name.replace(/^vitalscategory\s+/i, '')
-        label = `VC_${type}`
-      } else {
-        type = name
-        label = `${name}_DamageName`
-      }
-      const valNum = Number(value)
-      return {
-        key: key,
-        type: type,
-        label: [label, 'ui_resistance'],
-        value: Number.isFinite(valNum) ? valNum * scale : value,
-      }
-    })
-}
-
-
-export function getAffixDMGs(affix: Partial<Affixstats>, scale: number) {
-  return getAffixProperties(affix)
-    .filter((it) => it.key.startsWith('DMG'))
-    .map(({ key, value }) => {
-      const name = key.replace('DMG', '').toLowerCase()
-      let label: string
-      if (name.match(/^vitalscategory/i)) {
-        label = `VC_${name.replace('vitalscategory ', '')}`
-      } else {
-        label = `${name}_DamageName`
-      }
-      const valNum = Number(value)
-      return {
-        key: key,
-        label: [label],
-        value: Number.isFinite(valNum) ? valNum * scale : value,
-      }
-    })
-}
-export function getAffixProperties(affix: Partial<Affixstats>): Array<{ key: string; value: number | string }> {
-  return Object.entries((affix || {}) as Affixstats)
-    .filter(([key]) => key !== 'StatusID')
-    .map(([key, value]) => {
-      if (typeof value === 'string') {
-        if (value.includes('=')) {
-          const [a, b] = value.split('=')
-          key = `${key} ${a}`
-          value = Number(b)
-        }
-      }
-      return {
-        key,
-        value,
-      }
-    })
-    .filter((it) => !!it.value)
-}
-
-export function stripAffixProperties(item: Affixstats): Partial<Affixstats> {
-  return Object.entries(item || {})
-    .filter(([key, value]) => key !== 'StatusID' && key !== '$source' && !!value)
-    .reduce((it, [key, value]) => {
-      it[key] = value
-      return it
-    }, {})
-}
-
-export function stripAbilityProperties(item: Ability): Partial<Ability> {
-  return Object.entries(item || {})
-    .filter(([key, value]) => key !== 'AbilityID' && key !== '$source' && !!value)
-    .reduce((it, [key, value]) => {
-      it[key] = value
-      return it
-    }, {})
 }

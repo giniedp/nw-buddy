@@ -243,12 +243,6 @@ export abstract class NwDataLoader {
   public charactertablesAnubianguardianDatatablesDamagetableGoliathhorusboss() {
     return this.load<Damagetable[]>('charactertables/anubianguardian_datatables/javelindata_damagetable_goliathhorusboss.json')
   }
-  public charactertablesAnubianscarabDatatablesDamagetableAnubianlotusscarab() {
-    return this.load<Damagetable[]>('charactertables/anubianscarab_datatables/javelindata_damagetable_anubianlotusscarab.json')
-  }
-  public charactertablesAnubianscarabDatatablesDamagetableAnubianscarab() {
-    return this.load<Damagetable[]>('charactertables/anubianscarab_datatables/javelindata_damagetable_anubianscarab.json')
-  }
   public charactertablesArmoredDragonDamagetableArmoreddragon() {
     return this.load<Damagetable[]>('charactertables/armored_dragon/javelindata_damagetable_armoreddragon.json')
   }
@@ -270,6 +264,12 @@ export abstract class NwDataLoader {
   public charactertablesBearDatatablesDamagetableBearThorpeMinion() {
     return this.load<Damagetable[]>('charactertables/bear_datatables/javelindata_damagetable_bear_thorpe_minion.json')
   }
+  public charactertablesAnubianscarabDatatablesDamagetableAnubianlotusscarab() {
+    return this.load<Damagetable[]>('charactertables/anubianscarab_datatables/javelindata_damagetable_anubianlotusscarab.json')
+  }
+  public charactertablesAnubianscarabDatatablesDamagetableAnubianscarab() {
+    return this.load<Damagetable[]>('charactertables/anubianscarab_datatables/javelindata_damagetable_anubianscarab.json')
+  }
   public charactertablesBisonDatatablesDamagetableBison() {
     return this.load<Damagetable[]>('charactertables/bison_datatables/javelindata_damagetable_bison.json')
   }
@@ -279,14 +279,14 @@ export abstract class NwDataLoader {
   public charactertablesBogmonsterDatatablesDamagetableBogmonster() {
     return this.load<Damagetable[]>('charactertables/bogmonster_datatables/javelindata_damagetable_bogmonster.json')
   }
-  public charactertablesBossDatatablesDamagetableBoss() {
-    return this.load<Damagetable[]>('charactertables/boss_datatables/javelindata_damagetable_boss.json')
-  }
   public charactertablesBomberDatatablesDamagetableBloatedCorpse() {
     return this.load<Damagetable[]>('charactertables/bomber_datatables/javelindata_damagetable_bloated_corpse.json')
   }
   public charactertablesBomberDatatablesDamagetableInvasionBomber() {
     return this.load<Damagetable[]>('charactertables/bomber_datatables/javelindata_damagetable_invasion_bomber.json')
+  }
+  public charactertablesBossDatatablesDamagetableBoss() {
+    return this.load<Damagetable[]>('charactertables/boss_datatables/javelindata_damagetable_boss.json')
   }
   public charactertablesBrokenDatatablesDamagetableBrokenvillager2haxe() {
     return this.load<Damagetable[]>('charactertables/broken_datatables/javelindata_damagetable_brokenvillager_2haxe.json')
@@ -414,6 +414,9 @@ export abstract class NwDataLoader {
   public charactertablesEmpressDatatablesDamagetablePedestal() {
     return this.load<Damagetable[]>('charactertables/empress_datatables/javelindata_damagetable_pedestal.json')
   }
+  public charactertablesGruntDatatablesDamagetableGrunt() {
+    return this.load<Damagetable[]>('charactertables/grunt_datatables/javelindata_damagetable_grunt.json')
+  }
   public charactertablesGhostDatatablesDamagetableGhost() {
     return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_ghost.json')
   }
@@ -434,9 +437,6 @@ export abstract class NwDataLoader {
   }
   public charactertablesGhostDatatablesDamagetableOrGhostBoss() {
     return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_or_ghost_boss.json')
-  }
-  public charactertablesGruntDatatablesDamagetableGrunt() {
-    return this.load<Damagetable[]>('charactertables/grunt_datatables/javelindata_damagetable_grunt.json')
   }
   public charactertablesHumanDatatablesDamagetableHumanBow() {
     return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_bow.json')

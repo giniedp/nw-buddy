@@ -56,13 +56,13 @@
       class="relative flex=1"
       [entityId]="vm.instance.itemId"
       [gsOverride]="gearScore || vm.instance.gearScore"
-      [gsEditable]="!disabled && !vm.isConsumable"
+      [gsEditable]="!disabled && !vm.isEqupment"
       (gsEdit)="openGsEditor($event)"
       [perkOverride]="vm.instance.perks"
       [perkEditable]="!disabled"
       (perkEdit)="pickPerk(vm, $event.key)"
-      [disableStats]="vm.isConsumable"
-      [disableInfo]="vm.isConsumable || compact"
+      [disableStats]="vm.isEqupment"
+      [disableInfo]="vm.isEqupment || compact"
       [disableDescription]="compact"
       [square]="square"
     >
@@ -114,7 +114,7 @@
         Equip item
       </button>
     </li>
-    <li *ngIf="!vm.isConsumable">
+    <li *ngIf="!vm.isEqupment">
       <button (click)="linkItem(vm)" cdkMenuItem>
         <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
         Link from inventory
@@ -123,7 +123,7 @@
 
     <ng-container *ngIf="vm.item">
       <span class="divider my-0"></span>
-      <li *ngIf="vm.canRemove && !vm.canBreak && !vm.isConsumable">
+      <li *ngIf="vm.canRemove && !vm.canBreak && !vm.isEqupment">
         <button (click)="instantiate()" cdkMenuItem>
           <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
           Make link

@@ -25,3 +25,11 @@ export function getWeaponTagLabel(value: string) {
   return WEAPON_TAG_NAME[value]
 }
 
+export function stripAbilityProperties(item: Ability): Partial<Ability> {
+  return Object.entries(item || {})
+    .filter(([key, value]) => key !== 'AbilityID' && key !== '$source' && !!value)
+    .reduce((it, [key, value]) => {
+      it[key] = value
+      return it
+    }, {})
+}

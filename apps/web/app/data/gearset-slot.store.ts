@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { ItemDefinitionMaster, Perks } from '@nw-data/types'
+import { Housingitems, ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { combineLatest, from, map, of, switchMap, tap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import {
@@ -11,13 +11,14 @@ import {
   getItemTierAsRoman,
   getItemTypeName,
   isItemNamed,
+  isMasterItem,
 } from '~/nw/utils'
 import { GearsetRecord, GearsetsDB } from './gearsets.db'
 import { ItemInstance, ItemInstancesDB } from './item-instances.db'
 
 export interface GearsetSlotState {
   gearset: GearsetRecord
-  item: ItemDefinitionMaster
+  item: ItemDefinitionMaster | Housingitems
   instanceId: string
   instance: ItemInstance
   slot: EquipSlot
@@ -27,18 +28,27 @@ function isConsumable(slot: EquipSlot) {
   return slot?.itemType === 'Consumable'
 }
 
+function isTrophy(slot: EquipSlot) {
+  return slot?.itemType === 'Trophies'
+}
+
+function isAmmo(slot: EquipSlot) {
+  return slot?.itemType === 'Ammo'
+}
+
+
 @Injectable()
 export class GearsetSlotStore extends ComponentStore<GearsetSlotState> {
   public readonly item$ = this.select(({ item }) => item)
   public readonly itemName$ = this.select(({ item }) => item?.Name)
   public readonly typeName$ = this.select(({ item }) => getItemTypeName(item))
   public readonly tierLabel$ = this.select(({ item }) => getItemTierAsRoman(item?.Tier))
-  public readonly isNamed$ = this.select(({ item }) => isItemNamed(item))
-  public readonly isConsumable$ = this.select(({ slot }) => isConsumable(slot))
+  public readonly isNamed$ = this.select(({ item }) => isMasterItem(item) && isItemNamed(item))
+  public readonly isEqupment$ = this.select(({ slot }) => isConsumable(slot) || isTrophy(slot) || isAmmo(slot))
   public readonly instanceId$ = this.select(({ instanceId }) => instanceId)
   public readonly instance$ = this.select(({ instance }) => instance)
   public readonly rarity$ = this.select(({ item, instance }) => {
-    if (!item) {
+    if (!item || !isMasterItem(item)) {
       return 0
     }
     const perks = getItemPerkInfos(item, instance?.perks)
@@ -63,12 +73,15 @@ export class GearsetSlotStore extends ComponentStore<GearsetSlotState> {
     return combineLatest({
       value: value$,
       items: this.nwdb.itemsMap,
+      housings: this.nwdb.housingItemsMap,
     }).pipe(
-      switchMap(({ items, value: { gearset, slot } }) => {
+      switchMap(({ items, housings, value: { gearset, slot } }) => {
         const slotItem = gearset?.slots?.[slot?.id]
         const instanceId = typeof slotItem === 'string' ? slotItem : null
         const instance = typeof slotItem !== 'string' ? slotItem : null
         const query$ = instanceId ? this.itemDb.live((t) => t.get(instanceId)) : of(instance)
+        const item = items.get(instance?.itemId)
+        const housingItem = housings.get(instance?.itemId)
         return query$
           .pipe(
             map((instance) => {
@@ -77,7 +90,7 @@ export class GearsetSlotStore extends ComponentStore<GearsetSlotState> {
                 slot,
                 instanceId,
                 instance,
-                item: items.get(instance?.itemId),
+                item: item || housingItem,
               }
             })
           )

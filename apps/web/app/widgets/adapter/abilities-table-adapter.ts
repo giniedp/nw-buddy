@@ -9,7 +9,7 @@ import { NwWeaponType, NwWeaponTypesService } from '~/nw/weapon-types'
 import { getWeaponTagLabel } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
-import { shareReplayRefCount } from '~/utils'
+import { humanize, shareReplayRefCount } from '~/utils'
 import { NwExpressionService } from '~/nw/expression'
 
 export type AbilityTableItem = Ability & {
@@ -123,6 +123,30 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
           headerValueGetter: () => 'UI Category',
           field: this.fieldName('UICategory'),
           filter: SelectboxFilter,
+        }),
+        this.colDef({
+          colId: 'afterAction',
+          headerValueGetter: () => 'After Action',
+          field: this.fieldName('AfterAction'),
+          filter: SelectboxFilter,
+        }),
+        this.colDef({
+          colId: 'onAction',
+          headerValueGetter: () => 'On Action',
+          valueGetter: this.valueGetter(({ data }) => {
+            const result = Object.keys(data)
+              .filter((it) => it.startsWith('On') && !!data[it])
+              .map((it) => humanize(it).split(' '))
+              .map((it) => it[0] === 'On' ? it.slice(1).join('') : null)
+              .filter((it) => !!it)
+            return result.length ? result : null
+          }),
+          cellRenderer: this.cellRendererTags(humanize),
+          filter: SelectboxFilter,
+          filterParams: SelectboxFilter.params({
+            showCondition: true,
+            showSearch: true
+          })
         }),
       ],
     })

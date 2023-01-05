@@ -14,13 +14,43 @@ import {
   isPerkGem,
 } from '~/nw/utils'
 import { DataTablePickerDialog } from '~/ui/data-table'
-import { ItemsTableAdapter, PerksTableAdapter } from '~/widgets/adapter'
+import { HousingTableAdapter, ItemsTableAdapter, PerksTableAdapter } from '~/widgets/adapter'
 import { PlayerItemsTableAdapter } from './inventory-table.adapter'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryPickerService {
   public constructor(private db: NwDbService, private dialog: Dialog, private injector: Injector) {
     //
+  }
+
+  public pickHousingItem({
+    title,
+    itemId,
+    multiple,
+    category,
+  }: {
+    title?: string
+    itemId?: string[]
+    multiple?: boolean
+    category?: string
+  }) {
+    return this.db.housingItemsMap.pipe(
+      switchMap((items) => {
+        return (
+          this.openHousingItemsPicker({ selection: itemId, title, multiple, category })
+            .closed.pipe(take(1))
+            // cancelled selection
+            .pipe(filter((it) => it !== undefined))
+            // unchanged selection
+            .pipe(filter((it) => !isEqual(it, itemId)))
+            .pipe(
+              map((it: string[]) => {
+                return it.map((id) => items.get(id))
+              })
+            )
+        )
+      })
+    )
   }
 
   public pickItem({
@@ -161,6 +191,48 @@ export class InventoryPickerService {
       multiselect: !!multiple,
       adapter: ItemsTableAdapter.provider({
         source: this.db.items.pipe(map((items) => items.filter((it) => it.ItemClass?.some((e) => types.has(e))))),
+        hideUserData: true,
+      }),
+      config: {
+        maxWidth: 1400,
+        maxHeight: 1200,
+        panelClass: ['w-full', 'h-full', 'p-4'],
+        injector: this.injector,
+      },
+    })
+  }
+
+  protected openHousingItemsPicker({
+    title,
+    selection,
+    multiple,
+    category,
+  }: {
+    title?: string
+    selection?: string[]
+    multiple?: boolean
+    category?: string
+  }) {
+    let types: Set<string>
+    if (category) {
+      types = new Set([category])
+    } else {
+      types = null
+    }
+    console.log('openHousingItemsPicker', {title, selection, multiple, category})
+    return DataTablePickerDialog.open(this.dialog, {
+      title: title || 'Pick item',
+      selection: selection,
+      multiselect: !!multiple,
+      adapter: HousingTableAdapter.provider({
+        source: this.db.housingItems.pipe(
+          map((items) => {
+            if (!types) {
+              return items
+            }
+            return items.filter((it) => types.has(it.UIHousingCategory))
+          })
+        ),
         hideUserData: true,
       }),
       config: {

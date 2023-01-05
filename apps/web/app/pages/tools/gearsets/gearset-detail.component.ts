@@ -66,10 +66,11 @@ export class GearsetDetailComponent {
   protected name$ = this.store.gearsetName$
   protected isLoading$ = this.store.isLoading$
 
-  protected slots = EQUIP_SLOTS.filter((it) => it.itemType !== 'Consumable' && it.itemType !== 'Ammo')
+  protected slots = EQUIP_SLOTS.filter((it) => it.itemType !== 'Consumable' && it.itemType !== 'Ammo' && it.itemType !== 'Trophies')
   protected buffSlots = EQUIP_SLOTS.filter((it) => it.id.startsWith('buff'))
   protected quickSlots = EQUIP_SLOTS.filter((it) => it.id.startsWith('quick'))
   protected ammoSlots = EQUIP_SLOTS.filter((it) => it.itemType === 'Ammo')
+  protected trophiesSlots = EQUIP_SLOTS.filter((it) => it.itemType === 'Trophies')
 
   protected trackByIndex = (i: number) => i
 

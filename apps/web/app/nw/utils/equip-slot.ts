@@ -19,15 +19,35 @@ export type EquipSlotId =
   | 'buff2'
   | 'buff3'
   | 'buff4'
+  | 'trophy1'
+  | 'trophy2'
+  | 'trophy3'
   | 'arrow'
   | 'cartridge'
+
 export interface EquipSlot {
   id: EquipSlotId
   icon: string
   iconSlot: string
   name: string
-  itemType: string
+  itemType: EquipSlotItemType
 }
+
+export type EquipSlotItemType =
+  | 'EquippableHead'
+  | 'EquippableChest'
+  | 'EquippableHands'
+  | 'EquippableLegs'
+  | 'EquippableFeet'
+  | 'EquippableAmulet'
+  | 'EquippableRing'
+  | 'EquippableToken'
+  | 'Weapon'
+  | 'Shield'
+  | 'HeartGem'
+  | 'Consumable'
+  | 'Ammo'
+  | 'Trophies'
 
 export const EQUIP_SLOTS: Array<EquipSlot> = [
   {
@@ -186,6 +206,28 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
     iconSlot: 'assets/icons/slots/iconcartridges.png',
     name: '',
     itemType: 'Ammo',
+  },
+
+  {
+    id: 'trophy1',
+    icon: 'assets/icons/slots/icon_housing_category_trophies.png',
+    iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
+    name: 'ui_housing_trophy_buff',
+    itemType: 'Trophies',
+  },
+  {
+    id: 'trophy2',
+    icon: 'assets/icons/slots/icon_housing_category_trophies.png',
+    iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
+    name: 'ui_housing_trophy_buff',
+    itemType: 'Trophies',
+  },
+  {
+    id: 'trophy3',
+    icon: 'assets/icons/slots/icon_housing_category_trophies.png',
+    iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
+    name: 'ui_housing_trophy_buff',
+    itemType: 'Trophies',
   },
 ]
 

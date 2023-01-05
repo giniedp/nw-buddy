@@ -204,14 +204,17 @@ program
               if (obj.IconPath) {
                 return
               }
-              if (obj.ArmorAppearanceF) {
-                obj.IconPath = getTables(/_itemappearancedefinitions/).find((it) => it.ItemID === obj.ArmorIconF)?.IconPath
-              }
               if (obj.ArmorAppearanceM) {
                 obj.IconPath = getTables(/_itemappearancedefinitions/).find((it) => it.ItemID === obj.ArmorAppearanceM)?.IconPath
+                obj.IconPath = obj.IconPath || `lyshineui/images/icons/items/${obj.ItemType}/${obj.ArmorIconM}`
+              }
+              if (obj.ArmorAppearanceF) {
+                obj.IconPath = getTables(/_itemappearancedefinitions/).find((it) => it.ItemID === obj.ArmorIconF)?.IconPath
+                obj.IconPath = obj.IconPath || `lyshineui/images/icons/items/${obj.ItemType}/${obj.ArmorIconF}`
               }
               if (obj.WeaponAppearanceOverride) {
                 obj.IconPath = getTables(/_weaponappearances/).find((it) => it.WeaponAppearanceID === obj.WeaponAppearanceOverride)?.IconPath
+                obj.IconPath = obj.IconPath || `lyshineui/images/icons/items/${obj.ItemType}/${obj.WeaponAppearanceOverride}`
               }
             },
           ],

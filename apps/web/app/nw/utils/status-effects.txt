@@ -1,0 +1,318 @@
+// Attribute bonus
+MODConstitution?:                            number;
+MODDexterity?:                               number;
+MODFocus?:                                   number;
+MODIntelligence?:                            number;
+MODStrength?:                                number;
+
+// Absorption
+ABSAcid?:                                    number;
+ABSArcane:                                   number;
+ABSCorruption:                               number;
+ABSFire:                                     number;
+ABSIce:                                      number;
+ABSLightning:                                number;
+ABSNature:                                   number;
+ABSSiege:                                    number;
+ABSSlash:                                    number;
+ABSStandard:                                 number;
+ABSStrike:                                   number;
+ABSThrust:                                   number;
+ABSVitalsCategory?:                          number | string;
+
+// Empower
+DMGArcane?:                                  number;
+DMGCorruption?:                              number;
+DMGFire?:                                    number;
+DMGIce?:                                     number;
+DMGLightning?:                               number;
+DMGNature?:                                  number;
+DMGSiege?:                                   number;
+DMGSlash?:                                   number;
+DMGStandard?:                                number;
+DMGStrike?:                                  number;
+DMGThrust?:                                  number;
+DMGVitalsCategory_Tooltip?:                  number;
+DMGVitalsCategory?:                          number | string;
+
+// Weakness
+WKNArcane?:                                  number;
+WKNCorruption?:                              number;
+WKNFire?:                                    number;
+WKNIce?:                                     number;
+WKNLightning?:                               number;
+WKNNature?:                                  number;
+WKNSiege?:                                   number;
+WKNSlash?:                                   number;
+WKNStandard?:                                number;
+WKNStrike?:                                  number;
+WKNThrust?:                                  number;
+
+// Effect resistance
+RESBleed?:                                   number;
+RESBlight?:                                  number;
+RESCurse?:                                   number;
+RESDisease?:                                 number;
+RESFrostbite?:                               number;
+RESPoison?:                                  number;
+
+// Gathering bonus
+EFFHarvesting?:                              number;
+EFFLogging?:                                 number;
+EFFMining?:                                  number;
+EFFSkinning?:                                number;
+
+// ?
+ABABleed?:                                   number;
+ABABlight?:                                  number;
+ABACurse?:                                   number;
+ABADisease?:                                 number;
+ABAFrostbite?:                               number;
+ABAPoison?:                                  number;
+
+// ?
+BLAArcane?:                                  number;
+BLACorruption?:                              number;
+BLAFire?:                                    number;
+BLAIce?:                                     number;
+BLALightning?:                               number;
+BLASiege?:                                   number;
+BLASlash?:                                   number;
+BLAStandard?:                                number;
+BLAStrike?:                                  number;
+BLAThrust?:                                  number;
+
+// ?
+AFABleed?:                                   number;
+AFABlight?:                                  number;
+AFACurse?:                                   number;
+AFADisease?:                                 number;
+AFAFrostbite?:                               number;
+AFAPoison?:                                  number;
+
+
+EXPFishing?:                                 number;
+EXPHarvesting?:                              number;
+EXPLeatherworking?:                          number;
+EXPLogging?:                                 number;
+EXPMining?:                                  number;
+EXPSkinning?:                                number;
+EXPSmelting?:                                number;
+EXPStonecutting?:                            number;
+EXPWeaving?:                                 number;
+EXPWoodworking?:                             number | string;
+
+MULTFishing?:                                number;
+MULTHarvesting?:                             number;
+MULTLogging?:                                number;
+MULTMining?:                                 number;
+MULTSkinning?:                               number;
+
+ROLCooking?:                                 number;
+ROLFishing?:                                 number;
+ROLHarvesting?:                              number;
+ROLLeatherworking?:                          number;
+ROLLogging?:                                 number;
+ROLMining?:                                  number;
+ROLSkinning?:                                number;
+ROLSmelting?:                                number;
+ROLStonecutting?:                            number;
+ROLWeaving?:                                 number;
+ROLWoodworking?:                             number;
+
+// Crafting Food
+MaxGSArcana?:                                number;
+MaxGSArmoring?:                              number;
+MaxGSEngineering?:                           number;
+MaxGSJewelcrafting?:                         number;
+MaxGSWeaponsmithing?:                        number;
+MGSArcana?:                                  number;
+MGSArmoring?:                                number;
+MGSEngineering?:                             number;
+MGSJewelcrafting?:                           number;
+MGSWeaponsmithing?:                          number;
+
+
+HitCondition?:                               string;
+OnDeathStatusEffect?:                        string;
+OnEndStatusEffect?:                          string;
+OnHitAffixes?:                               string;
+OnStackStatusEffect?:                        string;
+OnTickStatusEffect?:                         string;
+AddOnStackSize?:                             number;
+AddOnStackSizeComparison?:                   string;
+RemoveOnDeath?:                              number | string;
+RemoveOnDeathsDoor?:                         number | string;
+RemoveOnGameModeExit?:                       number | string;
+RemoveOnRespawn?:                            number;
+RemoveEffectModsOnInactive?:                 boolean;
+RemoveStatusEffectCategories?:               string;
+RemoveStatusEffects?:                        string;
+RemoveUnappliedStacks?:                      boolean | string;
+
+
+StackMax:                                    number;
+StatusID:                                    string;
+BaseDuration:                                number; // duration in seconds
+TickRate:                                    number; // afflict every X seconds (e.g. DOT tick)
+EquipAbility?:                               string;
+DisplayName?:                                string;
+Description?:                                string;
+
+// root
+NoDodge:                                     number; // e.g. when stting in turret
+NoHealthRegen?:                              number;
+NoNav:                                       number;
+NoRun:                                       number;
+NoSprint:                                    number;
+// Stun
+Stunned:                                     number;
+// Tags using Tools & Knifes
+LootTags?:                                   string;
+
+
+
+
+AzothMod?:                                   number;
+CoreTempMod?:                                number;
+FactionReputationMod?:                       number;
+FactionTokensMod?:                           number;
+GlobalRollMod?:                              number;
+MaxHealthMod?:                               number;
+MoveSpeedMod?:                               number;
+NonConsumableHealMod?:                       number;
+SprintSpeedMod?:                             number;
+TempMod?:                                    number;
+TerritoryStandingMod?:                       number;
+
+
+
+Afflictions?:                                string;
+AllowSelfOnlyAsSourceForAbilities?:          boolean;
+ApplicationCooldown?:                        number;
+BlockMultipleEffectsFromSameSource?:         boolean;
+CastSpell?:                                  string;
+CritChanceModifier?:                         number;
+DamageSkipsDeathsDoor?:                      boolean;
+DamageType?:                                 string;
+DelayInitialTick?:                           boolean | number | string;
+DisableAllNonAttributePerks?:                boolean;
+DisableAllNonAttributePerksExceptionLabels?: string;
+DisableCastSpellDurability?:                 boolean;
+DisableSupportContributionRewards?:          boolean;
+DisableTelemetry?:                           boolean | string;
+
+DontApplyOnEndEffectOnRemove?:               boolean;
+DontApplyOnEndEffectOnTimeOutDeath?:         boolean;
+DontReplaceStack?:                           boolean;
+
+Drink?:                                      number;
+DrinkBurn?:                                  number;
+Food?:                                       number;
+FoodBurn?:                                   number;
+
+DurationMax:                                 number;
+DynamicModelScaleFactor?:                    number;
+DynamicModelScaleRampTimeSecs?:              number;
+EffectCategories?:                           string[];
+EffectDurationMods?:                         string;
+EffectPotencyMods?:                          string;
+
+Encumbrance?:                                number;
+
+
+FishingLineStrength?:                        number;
+FishSizeRollModifier?:                       number;
+
+ForceReplicateToRemotes?:                    boolean;
+FromAlchemy?:                                number;
+FromSpell?:                                  number;
+FxScriptOff?:                                string;
+FxScriptOn?:                                 string;
+GameEventId?:                                string;
+GrantSanctuary?:                             number;
+HealMod:                                     number;
+HealRewardGameEventId?:                      string;
+HealRewardThreshold?:                        number;
+HealScalingValueMultiplier?:                 number | string;
+Health?:                                     number;
+HealthMin?:                                  number;
+HealthModifierBasePercent?:                  number;
+HealthModifierDamageBased?:                  number;
+HealthModifierPercent?:                      number;
+HealthRate?:                                 number;
+HealThreatMultiplier?:                       number;
+HideHudDurationNumbers?:                     boolean;
+HidesOtherStatusEffectIcons?:                boolean;
+
+IgnoreDiminishingReturns?:                   boolean | string;
+IgnoreFxScriptWhenPotencyIsZero?:            boolean;
+IgnoreInvulnerable?:                         boolean;
+InheritDuration?:                            boolean | number | string;
+InheritTotalDuration?:                       boolean | string;
+INSLogging?:                                 number;
+INSMining?:                                  number;
+IsClientPredicted?:                          boolean | number | string;
+IsNegative?:                                 boolean | string;
+IsTrueDamage?:                               boolean;
+ItemClassWeightMods?:                        string;
+ItemLootVolumeMods?:                         string;
+KeepOnTickEffectOnEnd?:                      boolean;
+
+Mana?:                                       number;
+ManaModifierDamageBased?:                    number;
+ManaRate?:                                   number;
+
+Notes?:                                      string;
+Notification?:                               string;
+
+OverrideOtherNameplateText?:                 boolean;
+PlaceholderIcon?:                            string;
+PotencyMax?:                                 number;
+PotencyPerLevel?:                            number;
+PreventPassiveAbilitiesOnEquip?:             boolean;
+RankSorting?:                                number;
+ReapplyAfterPersistenceReload?:              boolean;
+RefreshDuration?:                            boolean | string;
+
+RequireReaction?:                            boolean;
+RespecAttributes?:                           number;
+RespecTradeskills?:                          number;
+ScaleAmountOverTime?:                        number;
+ScaleAmountOverTimeMax?:                     number;
+ShouldRefreshFxScript?:                      number;
+ShowInNameplates?:                           boolean | string;
+ShowInUITray?:                               boolean | string;
+ShowTextInDamageNumbers:                     boolean;
+ShowTextInNameplates?:                       boolean | string;
+ShowUiDamageNumbersOnHeal?:                  boolean;
+Silenced:                                    number;
+SlotToFillWeaponDamageInfo?:                 string;
+SourceRuneChargeOnApply?:                    number;
+SourceRuneChargeOnHealthChangeOnly?:         boolean;
+SourceRuneChargeOnTick?:                     number;
+
+
+StackDuration?:                              boolean | number | string;
+
+Stamina?:                                    number;
+StaminaDamageModifier?:                      number;
+StaminaRate:                                 number;
+StopOnHitCount?:                             number;
+
+TargetOwnsSpell?:                            boolean;
+
+TickCondition?:                              string;
+
+UiNameplatePriority:                         number;
+UIPriority:                                  number;
+UseHealScalingValue?:                        boolean;
+UseLightweightReplication?:                  boolean;
+UseSourceWeaponForAbilityEffect?:            boolean;
+UseSourceWeaponForSpell?:                    boolean;
+WeaponEffectType?:                           string;
+WeaponMasteryCategoryId?:                    number | string;
+WindowHeader?:                               string;
+XPIncreases?:                                number | string;
+XPIncreasesTooltip?:                         number;
+"NotCombatAction "?:                         boolean;

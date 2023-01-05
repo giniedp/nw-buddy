@@ -58,6 +58,25 @@
               ></nwb-gearset-slot>
             </div>
           </div>
+          <div>
+            <h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
+              <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
+              <span class="relative top-1">Trophies</span>
+            </h3>
+            <div class="flex flex-row gap-1 justify-center">
+              <nwb-gearset-slot
+                *ngFor="let slot of trophiesSlots; trackBy: trackByIndex"
+                [slot]="slot"
+                [gearset]="data"
+                [compact]="compact"
+                [disabled]="disabled"
+                [square]="true"
+                (itemRemove)="onItemRemove(slot)"
+                (itemUnlink)="onItemUnlink(slot, $event)"
+                (itemInstantiate)="onItemInstantiate(slot, $event)"
+              ></nwb-gearset-slot>
+            </div>
+          </div>
         </nwb-gearset-stats>
       </div>
       <div class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad">

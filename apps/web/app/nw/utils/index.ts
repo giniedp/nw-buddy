@@ -1,3 +1,4 @@
+export * from './affix'
 export * from './abilities'
 export * from './crafting'
 export * from './equip-slot'
@@ -11,4 +12,4 @@ export * from './precision'
 export * from './territories'
 export * from './tier-to-roman'
 export * from './vitals'
-
+export * from './status-effects'

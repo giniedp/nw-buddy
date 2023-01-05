@@ -24,7 +24,7 @@ import { EquipSlot, getItemId, getItemMaxGearScore } from '~/nw/utils'
 import { deferStateFlat, shareReplayRefCount } from '~/utils'
 import { ItemDetailComponent } from '~/widgets/item-detail/item-detail.component'
 import { InventoryPickerService } from '../inventory/inventory-picker.service'
-import { ItemDefinitionMaster } from '@nw-data/types'
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { svgEllipsisVertical, svgLink16p, svgLinkSlash16p, svgPlus, svgRotate, svgTrashCan } from '~/ui/icons/svg'
 import { IconsModule } from '~/ui/icons'
 import { TooltipModule } from '~/ui/tooltip'
@@ -38,9 +38,9 @@ export interface GearsetSlotVM {
   instance?: ItemInstance
   canRemove?: boolean
   canBreak?: boolean
-  isConsumable?: boolean
+  isEqupment?: boolean
   isRune?: boolean
-  item?: ItemDefinitionMaster
+  item?: ItemDefinitionMaster | Housingitems
 }
 
 @Component({
@@ -58,7 +58,7 @@ export interface GearsetSlotVM {
     IconsModule,
     LayoutModule,
     TooltipModule,
-    ItemFrameModule
+    ItemFrameModule,
   ],
   providers: [GearsetSlotStore],
   host: {
@@ -115,7 +115,7 @@ export class GearsetSlotComponent {
       gearset: this.gearset$,
       instanceId: this.store.instanceId$,
       instance: this.store.instance$,
-      isConsumable: this.store.isConsumable$,
+      isEqupment: this.store.isEqupment$,
       canRemove: this.store.canRemove$,
       canBreak: this.store.canBreak$,
       item: this.store.item$,
@@ -155,24 +155,44 @@ export class GearsetSlotComponent {
     )
   }
 
-  protected async pickItem({ instance }: GearsetSlotVM) {
-    this.picker
-      .pickItem({
-        title: 'Choose item for slot',
-        itemId: instance ? [instance.itemId] : [],
-        multiple: false,
-        category: this.slot.itemType,
-      })
-      .pipe(take(1))
-      .subscribe(([item]) => {
-        this.store.updateSlot({
-          instance: {
-            itemId: getItemId(item),
-            gearScore: getItemMaxGearScore(item),
-            perks: {},
-          },
+  protected async pickItem({ slot, instance }: GearsetSlotVM) {
+    if (slot.itemType === 'Trophies') {
+      this.picker
+        .pickHousingItem({
+          title: 'Choose item for slot',
+          itemId: instance ? [instance.itemId] : [],
+          multiple: false,
+          category: this.slot.itemType,
         })
-      })
+        .pipe(take(1))
+        .subscribe(([item]) => {
+          this.store.updateSlot({
+            instance: {
+              itemId: getItemId(item),
+              gearScore: null,
+              perks: {},
+            },
+          })
+        })
+    } else {
+      this.picker
+        .pickItem({
+          title: 'Choose item for slot',
+          itemId: instance ? [instance.itemId] : [],
+          multiple: false,
+          category: this.slot.itemType,
+        })
+        .pipe(take(1))
+        .subscribe(([item]) => {
+          this.store.updateSlot({
+            instance: {
+              itemId: getItemId(item),
+              gearScore: getItemMaxGearScore(item),
+              perks: {},
+            },
+          })
+        })
+    }
   }
 
   protected openGsEditor(event: MouseEvent) {
@@ -192,7 +212,6 @@ export class GearsetSlotComponent {
   }
 
   protected async linkItem(it: GearsetSlotVM) {
-
     this.picker
       .pickInstance({
         title: 'Pick item',
@@ -204,7 +223,7 @@ export class GearsetSlotComponent {
       .pipe(take(1))
       .subscribe((it) => {
         this.store.updateSlot({
-          instanceId: it[0]
+          instanceId: it[0],
         })
       })
   }
