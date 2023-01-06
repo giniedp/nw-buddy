@@ -21,43 +21,81 @@ const CREATURE_TYPE_MARKER = {
   'Solo-': 'assets/icons/marker/marker_ai_level_bg_solominus.png',
 }
 
-const VITAL_FAMILIES: Record<string, { Icon: string, Img: string, Name: string }> = {
+export interface VitalFamilyInfo {
+  ID: string
+  Icon: string
+  IconBane: string
+  IconWard: string
+  Img: string
+  Name: string
+}
+const VITAL_FAMILIES = {
   wildlife: {
+    ID: 'Wildlife',
     Icon: 'assets/icons/families/bestialbane1.png',
+    IconBane: 'assets/icons/families/bestialbane1.png',
+    IconWard: 'assets/icons/families/bestialward1.png',
     Img: 'assets/images/missionimage_wolf.png',
     Name: 'VC_Beast',
-  },
+  } as VitalFamilyInfo,
   ancientguardian: {
+    ID: 'Ancient',
     Icon: 'assets/icons/families/ancientbane1.png',
+    IconBane: 'assets/icons/families/ancientbane1.png',
+    IconWard: 'assets/icons/families/ancientward1.png',
     Img: 'assets/images/missionimage_ancient1.png',
     Name: 'VC_Ancient',
-  },
+  } as VitalFamilyInfo,
   corrupted: {
+    ID: 'Corrupted',
     Icon: 'assets/icons/families/corruptedbane1.png',
+    IconBane: 'assets/icons/families/corruptedbane1.png',
+    IconWard: 'assets/icons/families/corruptedward1.png',
     Img: 'assets/images/missionimage_corrupted2.png',
     Name: 'VC_Corrupted',
-  },
+  } as VitalFamilyInfo,
   angryearth: {
+    ID: 'AngryEarth',
     Icon: 'assets/icons/families/angryearthbane1.png',
+    IconBane: 'assets/icons/families/angryearthbane1.png',
+    IconWard: 'assets/icons/families/angryearthward.png',
     Img: 'assets/images/missionimage_angryearth1.png',
     Name: 'VC_Angryearth',
-  },
+  } as VitalFamilyInfo,
   lost: {
+    ID: 'Lost',
     Icon: 'assets/icons/families/lostbane1.png',
+    IconBane: 'assets/icons/families/lostbane1.png',
+    IconWard: 'assets/icons/families/lostward1.png',
     Img: 'assets/images/missionimage_undead1.png',
     Name: 'VC_Lost',
-  },
+  } as VitalFamilyInfo,
   fae: {
+    ID: 'Fae',
     Icon: 'assets/icons/families/marker_icondeathdoor.png',
+    IconBane: null,
+    IconWard: null,
     Img: '',
     Name: 'Fae',
-  },
+  } as VitalFamilyInfo,
   unknown: {
+    ID: null,
     Icon: 'assets/icons/families/marker_icondeathdoor.png',
+    IconBane: null,
+    IconWard: null,
     Img: '',
     Name: '',
-  },
+  } as VitalFamilyInfo,
 }
+
+const VITAL_CATEGORIES = {
+  lost: VITAL_FAMILIES.lost,
+  beast: VITAL_FAMILIES.wildlife,
+  ancient: VITAL_FAMILIES.ancientguardian,
+  corrupted: VITAL_FAMILIES.corrupted,
+  angryearth: VITAL_FAMILIES.angryearth,
+} as const
+const VITAL_CATEGORIES_KEYS = Object.keys(VITAL_CATEGORIES)
 
 const ICON_STRONG_ATTACK = 'assets/icons/strongattack.png'
 const ICON_WEAK_ATTACK = 'assets/icons/weakattack.png'
@@ -109,8 +147,21 @@ export function isVitalNamed(vital: Vitals) {
   return NAMED_FAIMILY_TYPES.includes(vital.CreatureType)
 }
 
-export function getVitalFamilyInfo(vital: Vitals) {
-  return VITAL_FAMILIES[vital?.Family?.toLowerCase()] || VITAL_FAMILIES['unknown']
+export function getVitalFamilyInfo(vital: Vitals): VitalFamilyInfo{
+  return VITAL_FAMILIES[vital?.Family?.toLowerCase()] || VITAL_FAMILIES.unknown
+}
+
+export function getVitalCategoryInfo(vital: Vitals): VitalFamilyInfo {
+  const key = vital?.VitalsCategories?.find(isVitalCombatCategory)
+  if (key) {
+    return VITAL_CATEGORIES[key.toLowerCase()]
+  }
+  return VITAL_FAMILIES.unknown
+}
+
+export function isVitalCombatCategory(value: string) {
+  value = value.toLowerCase()
+  return VITAL_CATEGORIES_KEYS.some((it) => it === value)
 }
 
 export function getVitalDamageEffectiveness(vital: Vitals, damageType: VitalDamageType) {

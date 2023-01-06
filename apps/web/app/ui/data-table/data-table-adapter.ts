@@ -108,15 +108,16 @@ export abstract class DataTableAdapter<T> {
     return params
   }
 
-  public cellRendererTags(format?: (value: any) => string) {
+  public cellRendererTags(format?: (value: any) => string, getClass?: (value: any) => string) {
     return this.cellRenderer(({ value }) => {
       return this.createElement({
         tag: 'div',
         classList: ['flex', 'flex-row', 'flex-wrap', 'gap-1', 'items-center'],
         children: value?.map((it: string) => {
+          const className = getClass?.(it) || 'badge-secondary'
           return {
             tag: 'span',
-            classList: ['badge', 'badge-sm', 'badge-secondary', 'bg-secondary', 'bg-opacity-50', 'px-1'],
+            classList: ['badge', 'badge-sm', 'bg-opacity-50', 'px-1', className],
             text: format ? format(it) : it,
           }
         }),

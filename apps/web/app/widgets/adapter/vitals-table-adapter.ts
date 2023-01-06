@@ -6,12 +6,16 @@ import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService } from '~/nw'
 import {
   getVitalAliasName,
+  getVitalCategoryInfo,
   getVitalDamageEffectivenessPercent,
   getVitalDungeon,
+  getVitalDungeons,
   getVitalFamilyInfo,
   getVitalsCategories,
   getVitalTypeMarker,
+  isVitalCombatCategory,
   isVitalNamed,
+  VitalFamilyInfo,
 } from '~/nw/utils'
 import { NwVitalsService } from '~/nw/vitals'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
@@ -19,8 +23,10 @@ import { CellRendererService, DataTableAdapter, dataTableProvider } from '~/ui/d
 import { humanize, shareReplayRefCount } from '~/utils'
 
 export interface Entity extends Vitals {
-  $dungeon: Gamemodes
+  $dungeons: Gamemodes[]
   $categories: Vitalscategories[]
+  $familyInfo: VitalFamilyInfo
+  $combatInfo: VitalFamilyInfo | null
 }
 
 @Injectable()
@@ -56,7 +62,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
             return this.createLinkWithIcon({
               href: this.info.link('vitals', data.VitalsID),
               target: '_blank',
-              icon: getVitalFamilyInfo(data)?.Icon,
+              icon: getVitalCategoryInfo(data)?.Icon,
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
           }),
@@ -68,21 +74,22 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           valueGetter: this.valueGetter(({ data }) => {
             const name = this.i18n.get(data.DisplayName)
             const alias = this.i18n.get(getVitalAliasName(data.$categories))
-            return {
-              name: name,
-              alias: alias && name !== alias ? alias : null,
+            if (alias && name !== alias) {
+              return [name, alias]
             }
+            return [name]
           }),
           cellRenderer: this.cellRenderer(({ value }) => {
-            if (!value.alias) {
-              return value.name
+            const [name, alias] = value
+            if (!alias) {
+              return name
             }
             return `
-              <span>${value.alias}</span><br>
-              <span class="italic opacity-50">${value.name}</span>
+              <span>${alias}</span><br>
+              <span class="italic opacity-50">${name}</span>
             `
           }),
-          getQuickFilterText: ({ value }) => [value.name, value.alias].filter((it) => !!it).join(' '),
+          getQuickFilterText: ({ value }) => value.join(' '),
         }),
         this.colDef({
           colId: 'level',
@@ -104,6 +111,32 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           colId: 'family',
           headerValueGetter: () => 'Family',
           field: this.fieldName('Family'),
+          valueGetter: this.valueGetter(({ data: { $familyInfo, Family, $combatInfo } }) => {
+            if ($combatInfo) {
+              return [$familyInfo.ID, $combatInfo.ID]
+            }
+            return [$familyInfo.ID]
+          }),
+          valueFormatter: this.valueFormatter(({ data: { $familyInfo, Family, $combatInfo } }) => {
+            return this.i18n.get($familyInfo.Name) || Family || ''
+          }),
+          cellRenderer: this.cellRenderer(({ data: { $familyInfo, Family, $combatInfo }}) => {
+            const familyName = this.i18n.get($familyInfo.Name) || Family || ''
+            const combatName = $combatInfo ? this.i18n.get($combatInfo.Name) || '' : ''
+            if (familyName && combatName) {
+              return `
+                <span class="line-through">${familyName}</span><br>
+                <span class="italic opacity-75 text-xs text-primary">${combatName}</span>
+              `
+            }
+            if ($combatInfo && !combatName) {
+              return `
+                <span class="line-through">${familyName}</span><br>
+                <span class="italic opacity-75 text-xs text-primary">is not affected by any ward, bane or trophy</span>
+              `
+            }
+            return `<span>${familyName}</span>`
+          }),
           width: 125,
           getQuickFilterText: ({ value }) => value,
           filter: SelectboxFilter,
@@ -112,6 +145,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           colId: 'creatureType',
           headerValueGetter: () => 'Creature Type',
           width: 150,
+          hide: true,
           field: this.fieldName('CreatureType'),
           valueFormatter: ({ value }) => humanize(value),
           getQuickFilterText: ({ value }) => value,
@@ -123,10 +157,16 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           width: 200,
           hide: true,
           valueGetter: this.valueGetter(({ data }) => {
-            return data.$categories.map((it) => (it.DisplayName ? this.i18n.get(it.DisplayName) : ''))
+            return data.VitalsCategories || null
           }),
-          cellRenderer: this.cellRendererTags(humanize),
+          cellRenderer: this.cellRendererTags(humanize, (value) => {
+            return isVitalCombatCategory(value) ? 'badge-error' : 'badge-secondary'
+          }),
           filter: SelectboxFilter,
+          filterParams: SelectboxFilter.params({
+            showSearch: true,
+            showCondition: true,
+          }),
         }),
         this.colDef({
           colId: 'lootDropChance',
@@ -150,7 +190,9 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           hide: true,
           headerValueGetter: () => 'Loot Tags',
           field: this.fieldName('LootTags'),
-          cellRenderer: this.cellRendererTags(humanize),
+          cellRenderer: this.cellRendererTags(humanize, (value) => {
+            return isVitalCombatCategory(value) ? 'badge-error' : 'badge-secondary'
+          }),
           filter: SelectboxFilter,
           filterParams: SelectboxFilter.params({
             showSearch: true,
@@ -160,8 +202,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
         this.colDef({
           colId: 'expedition',
           headerValueGetter: () => 'Expedition',
-          valueGetter: this.valueGetter(({ data }) => data?.$dungeon?.DisplayName),
-          valueFormatter: ({ value }) => this.i18n.get(value),
+          valueGetter: this.valueGetter(({ data }) => data?.$dungeons?.map((it) => this.i18n.get(it.DisplayName))),
           filter: SelectboxFilter,
         }),
         this.colDef({
@@ -276,11 +317,15 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
   )
     .pipe(
       map(({ vitals, dungeons, categories }) => {
-        return vitals.map((vital) => {
+        return vitals.map((vital): Entity => {
+          const familyInfo = getVitalFamilyInfo(vital)
+          const combatInfo = getVitalCategoryInfo(vital)
           return {
             ...vital,
-            $dungeon: getVitalDungeon(vital, dungeons),
+            $dungeons: getVitalDungeons(vital, dungeons, true),
             $categories: getVitalsCategories(vital, categories),
+            $familyInfo: getVitalFamilyInfo(vital),
+            $combatInfo: familyInfo.ID !== combatInfo.ID ? combatInfo : null,
           }
         })
       })

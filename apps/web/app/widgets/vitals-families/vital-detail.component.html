@@ -19,7 +19,6 @@
           <span>{{ info.Name | nwText }}</span>
           <img [nwImage]="info.Icon" class="w-6 h-6" />
         </a>
-        <span class="badge badge-sm badge-primary absolute top-2 right-2" *ngIf="isNamed$ | async">Named</span>
       </ng-container>
       <ng-container *ngIf="!vital.VitalsID && familyInfo$ | async; let info">
         <span>{{ info.Name | nwText }}</span>

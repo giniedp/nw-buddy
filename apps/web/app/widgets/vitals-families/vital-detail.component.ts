@@ -3,37 +3,10 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { Gamemodes, Vitals } from '@nw-data/types'
 import { combineLatest, defer, map, of, ReplaySubject, switchMap } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
-import { getVitalDamageEffectiveness, getVitalFamilyInfo, isVitalNamed } from '~/nw/utils'
+import { getVitalCategoryInfo, getVitalDamageEffectiveness, getVitalFamilyInfo, isVitalNamed } from '~/nw/utils'
 import { NwVitalsService } from '~/nw/vitals'
 import { NwWeaponTypesService } from '~/nw/weapon-types'
 import { DestroyService, shareReplayRefCount } from '~/utils'
-
-const FAMILY_META = {
-  wildlife: {
-    Icon: 'assets/images/missionimage_wolf.png',
-    Name: 'VC_Beast',
-  },
-  ancientguardian: {
-    Icon: 'assets/images/missionimage_ancient1.png',
-    Name: 'VC_Ancient',
-  },
-  corrupted: {
-    Icon: 'assets/images/missionimage_corrupted2.png',
-    Name: 'VC_Corrupted',
-  },
-  angryearth: {
-    Icon: 'assets/images/missionimage_angryearth1.png',
-    Name: 'VC_Angryearth',
-  },
-  lost: {
-    Icon: 'assets/images/missionimage_undead1.png',
-    Name: 'VC_Lost',
-  },
-  fae: {
-    Icon: '',
-    Name: 'Fae',
-  },
-}
 
 @Component({
   standalone: true,
@@ -69,7 +42,7 @@ export class VitalDetailComponent {
 
   protected readonly isNamed$ = this.vital$.pipe(map((it) => isVitalNamed(it)))
   protected readonly marker$ = this.vital$.pipe(map((vital) => this.vitals.vitalMarkerIcon(vital)))
-  protected readonly familyInfo$ = this.vital$.pipe(map((it) => getVitalFamilyInfo(it)))
+  protected readonly familyInfo$ = this.vital$.pipe(map((it) => this.isGroup ? getVitalFamilyInfo(it) : getVitalCategoryInfo(it)))
 
   protected readonly stats$ = defer(() => {
     return combineLatest({
