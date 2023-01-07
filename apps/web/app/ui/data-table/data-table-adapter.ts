@@ -177,6 +177,7 @@ export abstract class DataTableAdapter<T> {
         el.href = href
         el.target = target
       }
+      el.classList.add('flex')
       el.append(
         this.createIcon((pic, img) => {
           pic.classList.add('inline-block', 'w-12', 'h-12')

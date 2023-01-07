@@ -1,5 +1,5 @@
 import { Story } from '@storybook/angular'
-import { NW_WEAPON_TYPES } from '~/nw/nw-weapon-types'
+import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
 import { AppTestingModule } from '~/test'
 import { createStory } from '~/test/story-utils'
 import { SkillTreeComponent } from './skill-tree.component'

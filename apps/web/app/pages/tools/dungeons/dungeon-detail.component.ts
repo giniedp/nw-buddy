@@ -30,7 +30,7 @@ import { LayoutModule } from '~/ui/layout'
 import { DestroyService, HtmlHeadService, observeRouteParam, shareReplayRefCount } from '~/utils'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { LootModule } from '~/widgets/loot'
-import { VitalsFamiliesModule } from '~/widgets/vitals-families'
+import { VitalsDetailModule } from '~/widgets/vitals-detail'
 import { DungeonDetailStore } from './dungeon-detail.store'
 
 const DIFFICULTY_TIER_NAME = {
@@ -63,7 +63,7 @@ export interface Tab {
   templateUrl: './dungeon-detail.component.html',
   styleUrls: ['./dungeon-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, ItemDetailModule, VitalsFamiliesModule, LootModule, LayoutModule],
+  imports: [CommonModule, RouterModule, NwModule, ItemDetailModule, VitalsDetailModule, LootModule, LayoutModule],
   providers: [DestroyService, DungeonDetailStore],
   host: {
     class: 'layout-col xl:flex-row',

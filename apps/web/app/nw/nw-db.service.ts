@@ -196,6 +196,14 @@ export class NwDbService {
   public vitalsCategory = lookup(() => this.vitalsCategoriesMap)
   public vitalsCategoriesMapByGroup = indexGroup(() => this.vitalsCategories, 'GroupVitalsCategoryId')
 
+  public vitalsModifiers = list(() => [this.data.vitalsmodifierdata()])
+  public vitalsModifiersMap = index(() => this.vitalsModifiers, 'CategoryId')
+  public vitalsModifier = lookup(() => this.vitalsModifiersMap)
+
+  public vitalsLevels = list(() => [this.data.vitalsleveldata()])
+  public vitalsLevelsMap = index(() => this.vitalsLevels, 'Level')
+  public vitalsLevel = lookup(() => this.vitalsLevelsMap)
+
   public damagetypes = list(() => this.data.damagetypes())
   public damagetypesMap = index(() => this.damagetypes, 'TypeID')
   public damagetype = lookup(() => this.damagetypesMap)

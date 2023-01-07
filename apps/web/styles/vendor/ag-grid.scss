@@ -1,5 +1,5 @@
-@import '~ag-grid-community/src/styles/ag-grid.scss';
-@import '~ag-grid-community/src/styles/ag-theme-alpine-dark/sass/ag-theme-alpine-dark-mixin';
+@import 'ag-grid-community/src/styles/ag-grid.scss';
+@import 'ag-grid-community/src/styles/ag-theme-alpine-dark/sass/ag-theme-alpine-dark-mixin';
 
 .ag-grid {
   @include ag-theme-alpine-dark(
@@ -15,4 +15,7 @@
       range-selection-border-color: transparent,
     )
   );
+  .ag-cell {
+    line-height: initial !important;
+  }
 }

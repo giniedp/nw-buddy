@@ -113,7 +113,7 @@ export type VitalDamageType =
   | 'Strike'
   | 'Thrust'
 
-export function getVitalTypeMarker(vitalOrcreatureType: string | Vitals) {
+export function getVitalTypeMarker(vitalOrcreatureType: string | Vitals): string {
   if (typeof vitalOrcreatureType !== 'string') {
     vitalOrcreatureType = vitalOrcreatureType?.CreatureType
   }

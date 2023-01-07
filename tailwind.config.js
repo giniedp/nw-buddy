@@ -1,4 +1,5 @@
 const defaultTheme = require('tailwindcss/defaultTheme')
+const plugin = require('tailwindcss/plugin')
 
 module.exports = {
   content: ['./apps/web/**/*.{html,js,ts}'],
@@ -65,7 +66,12 @@ module.exports = {
       nimbus: ['"Nimbus"', ...defaultTheme.fontFamily.sans],
     },
   },
-  plugins: [require('@tailwindcss/typography'), require('daisyui'), require('./apps/web/styles/components/nw-item')],
+  plugins: [
+    require('@tailwindcss/typography'),
+    require('daisyui'),
+    require('./apps/web/styles/components/nw-item'),
+    require('./apps/web/styles/components/utilities'),
+  ],
   daisyui: {
     themes: [
       {

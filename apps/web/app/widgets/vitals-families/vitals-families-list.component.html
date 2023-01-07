@@ -1,3 +1,0 @@
-<div class="grid" [@listAnimation]="entities.length" *ngIf="entities$ | async; let entities">
-  <nwb-vital-detail *ngFor="let it of entities" [vital]="it.vital" [isGroup]="true" [dungeons]="it.dungeons" ></nwb-vital-detail>
-</div>

@@ -8,14 +8,34 @@ import { getVitalDungeon } from '~/nw/utils'
 import { mapFilter } from '~/utils'
 import { mergeVitals } from './utils'
 import { VitalDetailComponent } from './vital-detail.component'
+import { VitalFamilyDetailComponent } from './vital-family-detail.component'
 
 const REJECT = ['undefined', 'human']
 @Component({
   standalone: true,
   selector: 'nwb-vitals-families-list',
-  templateUrl: './vitals-families-list.component.html',
-  styleUrls: ['./vitals-families-list.component.scss'],
-  imports: [CommonModule, VitalDetailComponent],
+  template: `
+    <div class="grid" [@listAnimation]="entities.length" *ngIf="entities$ | async; let entities">
+      <nwb-vital-family-detail
+        *ngFor="let it of entities"
+        [vital]="it.vital"
+        [dungeons]="it.dungeons"
+      ></nwb-vital-family-detail>
+    </div>
+  `,
+  styles: [
+    `
+      :host {
+        .grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
+          column-gap: 1rem;
+          row-gap: 1rem;
+        }
+      }
+    `,
+  ],
+  imports: [CommonModule, VitalFamilyDetailComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   animations: [
     trigger('listAnimation', [
@@ -44,7 +64,9 @@ export class VitalsFamiliesListComponent {
         const dngGrouped = groupBy(dungeons, (it) => it.GameModeId)
         return {
           vital: mergeVitals(family, vitals),
-          dungeons: Object.values(dngGrouped).filter((list) => list.length > 2).map(((list) => list[0])),
+          dungeons: Object.values(dngGrouped)
+            .filter((list) => list.length > 2)
+            .map((list) => list[0]),
         }
       })
     })

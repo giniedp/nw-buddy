@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Directive, forwardRef, Input } from '@angular/core'
 import { NwDbService } from '~/nw'
+import { ModelViewerService } from '../model-viewer'
 import { ItemDetailService } from './item-detail.service'
 
 @Directive({
@@ -18,7 +19,7 @@ export class ItemDetailDirective extends ItemDetailService {
     this.entityId$.next(value)
   }
 
-  public constructor(db: NwDbService, cdRef: ChangeDetectorRef) {
-    super(db, cdRef)
+  public constructor(db: NwDbService, models: ModelViewerService, cdRef: ChangeDetectorRef) {
+    super(db, models, cdRef)
   }
 }

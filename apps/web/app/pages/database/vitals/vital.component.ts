@@ -12,7 +12,7 @@ import { NW_MAX_CHARACTER_LEVEL } from '~/nw/utils/constants'
 import { LayoutModule } from '~/ui/layout'
 import { CaseInsensitiveMap, HtmlHeadService, observeQueryParam, observeRouteParam, shareReplayRefCount, tapDebug } from '~/utils'
 import { LootModule } from '~/widgets/loot'
-import { VitalsFamiliesModule } from '~/widgets/vitals-families'
+import { VitalsDetailModule } from '~/widgets/vitals-detail'
 
 export type DetailTabId = 'loot-items' | 'loot-table' | 'damage-table'
 
@@ -21,7 +21,7 @@ export type DetailTabId = 'loot-items' | 'loot-table' | 'damage-table'
   templateUrl: './vital.component.html',
   styleUrls: ['./vital.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, VitalsFamiliesModule, LootModule, LayoutModule],
+  imports: [CommonModule, RouterModule, NwModule, VitalsDetailModule, LootModule, LayoutModule],
   host: {
     class: 'flex-none flex flex-col',
   },

@@ -4,6 +4,7 @@ export interface NwTradeSkillInfo {
   ID: string
   Category: string
   Icon: string
+  CraftBonus?: boolean
 }
 
 export const NW_TRADESKILLS_INFOS = [
