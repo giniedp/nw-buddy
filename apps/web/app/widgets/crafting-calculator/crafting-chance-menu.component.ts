@@ -7,10 +7,10 @@ import { NwModule } from '~/nw'
 import { NwTradeskillService } from '~/nw/tradeskill'
 import { EquipSlotId, EQUIP_SLOTS } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
-import { CaseInsensitiveSet } from '~/utils'
+import { CaseInsensitiveSet, mapFilter } from '~/utils'
 
 const ARMOR_SLOT_IDS: EquipSlotId[] = ['head', 'chest', 'hands', 'legs', 'feet']
-
+const SKILLS_WITH_BONUS = ['Arcana', 'Cooking', 'Smelting', 'Woodworking', 'Leatherworking', 'Weaving', 'Stonecutting']
 @Component({
   standalone: true,
   selector: 'nwb-crafting-chance-menu',
@@ -27,7 +27,7 @@ export class CraftingChanceMenuComponent implements OnInit, OnDestroy {
 
   protected trackBy = (i: number) => i
   protected slots = ARMOR_SLOT_IDS.map((id) => EQUIP_SLOTS.find((it) => it.id === id))
-  protected skills$ = this.skills.skillsByCategory('Refining')
+  protected skills$ = this.skills.skills.pipe(mapFilter((it) => SKILLS_WITH_BONUS.includes(it.ID)))
   protected flBonus$ = this.char.craftingFlBonus$
 
   protected rows$ = this.skills$.pipe(
