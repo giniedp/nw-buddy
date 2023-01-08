@@ -7,7 +7,7 @@ import {
   OnChanges,
   OnDestroy,
   OnInit,
-  ViewChild
+  ViewChild,
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Crafting } from '@nw-data/types'
@@ -40,7 +40,7 @@ import { CraftingSummaryComponent } from './crafting-summary.component'
     CraftingStepComponent,
     TooltipModule,
     LayoutModule,
-    CraftingChanceMenuComponent
+    CraftingChanceMenuComponent,
   ],
   providers: [CraftingCalculatorService],
   host: {
@@ -82,7 +82,7 @@ export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges
       .pipe(distinctUntilChanged())
       .pipe(
         tap((id) => {
-          this.step = this.loadState(id)
+          this.step = this.loadStep(id)
           this.cdRef.markForCheck()
         })
       )
@@ -117,13 +117,15 @@ export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges
     this.cdRef.markForCheck()
   }
 
-  private loadState(id: string) {
+  private loadStep(recipeId: string): CraftingStep {
+    const ingredientId = getItemIdFromRecipe(this.recipe)
+    const key = this.buildStateKey(ingredientId, recipeId)
     return (
-      this.service.getFromCache(id) ||
+      this.service.getFromCache(key) ||
       this.service.solve({
-        recipeId: id,
+        recipeId: recipeId,
         ingredient: {
-          id: getItemIdFromRecipe(this.recipe),
+          id: ingredientId,
           quantity: 1,
           type: 'Item',
         },
@@ -133,6 +135,10 @@ export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges
   }
 
   private saveState(step: CraftingStep) {
-    this.service.putToCache(step.ingredient.id, step)
+    const key = this.buildStateKey(step.ingredient.id, step.recipeId)
+    this.service.putToCache(key, step)
+  }
+  private buildStateKey(ingredientId: string, recipeId: string) {
+    return [ingredientId, recipeId].filter((it) => !!it).join('-')
   }
 }
