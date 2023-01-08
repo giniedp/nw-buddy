@@ -21,7 +21,7 @@ import { ItemDetailModule } from '~/widgets/item-detail'
 
 import { GearsetRecord, GearsetSlotStore, ItemInstance, ItemInstancesStore } from '~/data'
 import { EquipSlot, getItemId, getItemMaxGearScore } from '~/nw/utils'
-import { deferStateFlat, shareReplayRefCount } from '~/utils'
+import { deferStateFlat, shareReplayRefCount, tapDebug } from '~/utils'
 import { ItemDetailComponent } from '~/widgets/item-detail/item-detail.component'
 import { InventoryPickerService } from '../inventory/inventory-picker.service'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'

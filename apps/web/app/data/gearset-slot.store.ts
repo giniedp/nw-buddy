@@ -80,11 +80,12 @@ export class GearsetSlotStore extends ComponentStore<GearsetSlotState> {
         const instanceId = typeof slotItem === 'string' ? slotItem : null
         const instance = typeof slotItem !== 'string' ? slotItem : null
         const query$ = instanceId ? this.itemDb.live((t) => t.get(instanceId)) : of(instance)
-        const item = items.get(instance?.itemId)
-        const housingItem = housings.get(instance?.itemId)
+
         return query$
           .pipe(
             map((instance) => {
+              const item = items.get(instance?.itemId)
+              const housingItem = housings.get(instance?.itemId)
               return {
                 gearset,
                 slot,
