@@ -121,6 +121,7 @@ export class CraftingCalculatorComponent implements OnInit, OnDestroy, OnChanges
     return (
       this.service.getFromCache(id) ||
       this.service.solve({
+        recipeId: id,
         ingredient: {
           id: getItemIdFromRecipe(this.recipe),
           quantity: 1,

@@ -14,6 +14,7 @@ export interface RecipeState {
 }
 
 export interface CraftingStep {
+  recipeId?: string
   ingredient: Ingredient
   selection?: string
   options?: string[]
@@ -45,6 +46,7 @@ export class CraftingCalculatorService implements OnDestroy {
   private destroy$ = new Subject<void>()
   private items: ItemDefinitionMaster[]
   private recipes: Crafting[]
+  private recipesMap: Map<string, Crafting>
   private cache = new Map<string, CraftingStep>()
 
   public constructor(private craftPref: CraftingPreferencesService, private char: CharacterStore, db: NwDbService) {
@@ -53,14 +55,16 @@ export class CraftingCalculatorService implements OnDestroy {
       itemsMap: db.itemsMap,
       housingMap: db.housingItemsMap,
       recipes: db.recipes,
+      recipesMap: db.recipesMap,
       categoriesMap: db.recipeCategoriesMap,
     })
       .pipe(takeUntil(this.destroy$))
-      .subscribe(({ items, itemsMap, housingMap, recipes, categoriesMap }) => {
+      .subscribe(({ items, itemsMap, housingMap, recipes, recipesMap, categoriesMap }) => {
         this.items = items
         this.itemsMap = itemsMap
         this.housingMap = housingMap
         this.recipes = recipes
+        this.recipesMap = recipesMap
         this.categoriesMap = categoriesMap
         this.ready$.next()
       })
@@ -95,6 +99,16 @@ export class CraftingCalculatorService implements OnDestroy {
     )
   }
 
+  public findRecipeIngrediends(recipeId: string) {
+    const recipe = this.recipesMap.get(recipeId)
+    return getIngretientsFromRecipe(recipe).map(
+      (it): Ingredient => ({
+        id: it.ingredient,
+        type: it.type || 'Item', // TODO: data needs to be checked for consistency
+        quantity: it.quantity,
+      })
+    )
+  }
   public findItemsOrSelectedItems(steps: CraftingStep[]) {
     return steps
       .map((it) => {
@@ -118,6 +132,7 @@ export class CraftingCalculatorService implements OnDestroy {
         {
           ingredient: ingredient,
           expand: step.expand,
+          recipeId: step.recipeId
         },
         ingredient.id
       )
@@ -141,7 +156,8 @@ export class CraftingCalculatorService implements OnDestroy {
   }
 
   public updateSteps(step: CraftingStep, selection: string): CraftingStep {
-    step.steps = this.findRecipeIngrediendsForItem(selection).map((ingredient) => {
+    const ingredients = step.recipeId ? this.findRecipeIngrediends(step.recipeId) : this.findRecipeIngrediendsForItem(selection)
+    step.steps = ingredients.map((ingredient) => {
       const state = step.steps?.find((it) => it.ingredient.id === ingredient.id) || {}
       return this.solve({
         ...state,
