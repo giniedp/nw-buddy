@@ -1,6 +1,6 @@
 <div class="grid grid-cols-2">
   <div class="stats stats-vertical rounded-md rounded-r-none">
-    <div class="stat flex flex-row items-center layout-gap py-2" *ngFor="let row of data1; trackBy: trackById">
+    <label class="stat flex flex-row items-center layout-gap py-2" *ngFor="let row of data1; trackBy: trackById">
       <div class="text-secondary flex-none">
         <img [attr.src]="row.icon" class="w-12 h-12 opacity-50" />
       </div>
@@ -14,35 +14,41 @@
             class="input input-ghost text-2xl font-bold appearance-none w-20"
             [ngModel]="row.score || 0"
             (ngModelChange)="writeValue(row.id, $event)"
+            onfocus="this.select()"
           />
         </div>
         <div class="stat-title" [nwText]="row.name"></div>
-        <div class="stat-desc transition-opacity opacity-100" [class.opacity-0]="!row.shards">{{ row.shards | number }} shards to next level</div>
+        <div class="stat-desc transition-opacity opacity-100" [class.opacity-0]="!row.shards">
+          {{ row.shards | number }} shards to next level
+        </div>
       </div>
-    </div>
+    </label>
   </div>
 
   <div class="stats stats-vertical rounded-md rounded-l-none">
-    <div class="stat flex flex-row items-center layout-gap py-2" *ngFor="let row of data2; trackBy: trackById">
+    <label class="stat flex flex-row items-center layout-gap py-2" *ngFor="let row of data2; trackBy: trackById">
       <div class="flex-1 text-right">
         <div class="stat-value">
           <input
-          type="number"
-          placeholder="600"
-          type="number"
-          min="0"
-          class="input input-ghost text-2xl font-bold appearance-none w-20 text-right"
-          [ngModel]="row.score || 0"
-          (ngModelChange)="writeValue(row.id, $event)"
+            type="number"
+            placeholder="600"
+            type="number"
+            min="0"
+            class="input input-ghost text-2xl font-bold appearance-none w-20 text-right"
+            [ngModel]="row.score || 0"
+            (ngModelChange)="writeValue(row.id, $event)"
+            onfocus="this.select()"
           />
         </div>
         <div class="stat-title" [nwText]="row.name"></div>
-        <div class="stat-desc transition-opacity opacity-100" [class.opacity-0]="!row.shards">{{ row.shards | number }} shards to next level</div>
+        <div class="stat-desc transition-opacity opacity-100" [class.opacity-0]="!row.shards">
+          {{ row.shards | number }} shards to next level
+        </div>
       </div>
       <div class="stat-figure text-secondary flex-none">
         <img [attr.src]="row.icon" class="w-12 h-12 opacity-50" />
       </div>
-    </div>
+    </label>
   </div>
 
   <span class="stat place-items-center col-span-2" *ngIf="upgradeNext">

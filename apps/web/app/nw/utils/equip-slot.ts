@@ -231,34 +231,32 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
   },
 ]
 
-export const NW_GS_WEIGHTS: Partial<Record<EquipSlotId, number>>  = {
-  head: 42,
-  chest: 73,
-  hands: 31,
-  legs: 42,
-  feet: 21,
-  weapon1: 135,
-  weapon2: 135,
-  amulet: 40,
-  ring: 40,
-  earring: 40,
+export const NW_GS_WEIGHTS: Partial<Record<EquipSlotId, number>> = {
+  head: 0.35 * 0.2,
+  chest: 0.35 * 0.35,
+  hands: 0.35 * 0.15,
+  legs: 0.35 * 0.2,
+  feet: 0.35 * 0.1,
+  weapon1: 0.45 * 0.5,
+  weapon2: 0.45 * 0.5,
+  amulet: 0.2 / 3,
+  ring: 0.2 / 3,
+  earring: 0.2 / 3,
 }
 
 export function gearScoreRelevantSlots(): Array<EquipSlot & { weight: number }> {
-  const total = Object.values(NW_GS_WEIGHTS).reduce((a, b) => a + b, 0)
   return EQUIP_SLOTS.map((slot) => {
     return {
       ...slot,
-      weight: (NW_GS_WEIGHTS[slot.id] || 0) / total
+      weight: NW_GS_WEIGHTS[slot.id] || 0,
     }
   }).filter((it) => !!it.weight)
 }
 
 export function totalGearScore(equip: Array<{ id: EquipSlotId; gearScore: number }>) {
-  const total = Object.values(NW_GS_WEIGHTS).reduce((a, b) => a + b, 0)
   let result = 0
   for (const slot of equip) {
-    result += (slot.gearScore * (NW_GS_WEIGHTS[slot.id] || 0)) / total
+    result += slot.gearScore * (NW_GS_WEIGHTS[slot.id] || 0)
   }
   return result
 }

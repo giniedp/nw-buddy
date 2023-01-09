@@ -1,12 +1,32 @@
 <div class="flex-1 layout-content layout-pad">
-  <div class="alert alert-warning mb-4">
+  <div class="alert mb-4">
     <div>
-      <div>Gearscore may not match the GS in game since real weighting values are not known.</div>
+      <div class="prose-sm">
+        <h3>Umbral Shard and Gear Score Calculator</h3>
+        <p>
+          Fill in the score of your gear and get the final gear score and an optimized upgrade path calculated.
+          <ng-container *ngIf="!showGsInfo">
+            <br />
+            Got a different result as in game? <a class="link-primary cursor-pointer" (click)="showGsInfo = true">click here</a>
+          </ng-container>
+        </p>
+        <p *ngIf="showGsInfo">
+          Some combinations might yield a different result as the ingame GS value. But don't worry, it's just the visual
+          representation of the value in the game that has some quirks. For example with all items at GS 621 the game
+          shows a final GS of 620. This is assumed to be because of how the engine handles floating point numbers
+          internally and where some precision gets lost, so the resulting value is calulated close to 621 but not quite.
+          And for representation it is rounded down, hence 620.
+        </p>
+      </div>
     </div>
   </div>
   <nwb-umbral-calculator class="pb-28"></nwb-umbral-calculator>
 </div>
-<nwb-detail-drawer class="hidden 3xl:block 3xl:flex-1 3xl:flex-col layout-pad-y layout-pad-r" [breakOn]="'3xl'" [breakpoints]="[0.15, 0.25, 0.5, 1.0]">
+<nwb-detail-drawer
+  class="hidden 3xl:block 3xl:flex-1 3xl:flex-col layout-pad-y layout-pad-r"
+  [breakOn]="'3xl'"
+  [breakpoints]="[0.15, 0.25, 0.5, 1.0]"
+>
   <div *nwbDetailDraweContent class="layout-col">
     <div class="flex-none tabs tabs-boxed">
       <a class="tab" [class.tab-active]="tab == 0" (click)="tab = 0">Upgrade path</a>

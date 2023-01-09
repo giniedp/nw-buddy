@@ -20,9 +20,10 @@ export class UmbralShardsComponent {
 
   public tab = 0
 
+  protected showGsInfo = false
   public constructor(head: HtmlHeadService) {
     head.updateMetadata({
-      title: 'Gear Score Calculator',
+      title: 'Umbral Shard & Gear Score Calculator',
       description: 'Calculates your total gear score and the most effective upgrade path'
     })
   }
