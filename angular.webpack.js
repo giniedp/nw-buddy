@@ -2,6 +2,7 @@
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 const webpack = require('webpack')
 const env = require('./env')
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 
 /**
  * Custom angular webpack configuration
@@ -32,12 +33,25 @@ module.exports = (config, options) => {
     __NW_USE_PTR__: JSON.stringify(USE_PTR),
     __NW_DATA_URL__: JSON.stringify(DATA_URL),
   }
+  config.module.rules.push(
+    {
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader'],
+    },
+    {
+      test: /\.ttf$/,
+      use: ['file-loader'],
+    }
+  )
   config.plugins = [
     ...config.plugins,
     new NodePolyfillPlugin({
       excludeAliases: ['console'],
     }),
     new webpack.DefinePlugin(definitions),
+    new MonacoWebpackPlugin({
+      languages: ['json']
+    }),
   ]
   return config
 }

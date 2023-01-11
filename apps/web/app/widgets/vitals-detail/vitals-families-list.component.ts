@@ -25,13 +25,11 @@ const REJECT = ['undefined', 'human']
   `,
   styles: [
     `
-      :host {
-        .grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
-          column-gap: 1rem;
-          row-gap: 1rem;
-        }
+      :host .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
+        column-gap: 1rem;
+        row-gap: 1rem;
       }
     `,
   ],

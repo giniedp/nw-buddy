@@ -54,3 +54,4 @@ export const svgSliders = require('!!raw-loader!./sliders.svg').default
 export const svgSquareArrowUpRight = require('!!raw-loader!./square-arrow-up-right.svg').default
 export const svgTrashCan = require('!!raw-loader!./trash-can.svg').default
 export const svgXmark = require('!!raw-loader!./xmark.svg').default
+export const svgCode = require('!!raw-loader!./code.svg').default

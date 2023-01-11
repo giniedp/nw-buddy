@@ -1,3 +1,4 @@
+import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { Column, ColumnState } from 'ag-grid-community'
@@ -5,7 +6,8 @@ import { AgGridCommon } from 'ag-grid-community/dist/lib/interfaces/iCommon'
 import { BehaviorSubject, defer, filter, firstValueFrom, map, switchMap } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
 import { IconsModule } from '../icons'
-import { svgArrowsLeftRight, svgDockLeft, svgDockRight, svgEraser, svgEye, svgEyeSlash, svgFileCsv, svgFilter } from '../icons/svg'
+import { svgArrowsLeftRight, svgCode, svgDockLeft, svgDockRight, svgEraser, svgEye, svgEyeSlash, svgFileCsv, svgFilter } from '../icons/svg'
+import { EditorDialogComponent } from '../layout'
 import { DataTableAdapter } from './data-table-adapter'
 
 @Component({
@@ -13,7 +15,7 @@ import { DataTableAdapter } from './data-table-adapter'
   selector: 'nwb-data-table-panel',
   templateUrl: './data-table-panel.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, IconsModule],
+  imports: [CommonModule, IconsModule, DialogModule],
   host: {
     class: 'w-80 flex flex-col gap-1 bg-base-100 rounded-b-md p-2',
   },
@@ -49,8 +51,9 @@ export class DataTablePanelComponent {
   protected svgArrowsLeftRight = svgArrowsLeftRight
   protected svgEraser = svgEraser
   protected svgFilter = svgFilter
+  protected svgCode = svgCode
 
-  public constructor(private adapter: DataTableAdapter<any>) {
+  public constructor(private adapter: DataTableAdapter<any>, private dialog: Dialog) {
     //
   }
 
@@ -111,6 +114,23 @@ export class DataTablePanelComponent {
       return it
     })
     this.submitState(state)
+  }
+
+  protected async openCode() {
+    const grid = await firstValueFrom(this.adapter.grid)
+    const rows = []
+    grid.api.forEachNode((row) => {
+      rows.push(row.data)
+    })
+    EditorDialogComponent.open(this.dialog, {
+      data: {
+        title: '',
+        value: JSON.stringify(rows, null, 2),
+        readonly: true,
+        language: 'json',
+        positive: 'Close'
+      }
+    })
   }
 
   private async submitState(state: ColumnState[]) {
