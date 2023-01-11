@@ -2,7 +2,7 @@
 <div class="nw-item-header-fg" *ngIf="named"></div>
 <a
   [rarity]="rarity"
-  [nwbItemIcon]="entity"
+  [nwbItemIcon]="iconOverride || entity"
   [nwLink]="enableInfoLink ? entityId : null"
   [nwLinkResource]="'item'"
   class="w-[76px] h-[76px]"
@@ -12,7 +12,7 @@
 </a>
 <nwb-item-header-content
   class="z-10"
-  [name]="name | nwText"
+  [name]="name | nwText | nwTextBreak:' - '"
   [rarity]="rarity"
   [rarityName]="rarityName | nwText"
   [typeName]="typeName | nwText"

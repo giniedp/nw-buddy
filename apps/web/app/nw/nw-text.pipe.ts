@@ -62,8 +62,7 @@ export class NwTextPipe implements PipeTransform, OnDestroy {
   pure: true,
 })
 export class NwTextBreakPipe implements PipeTransform {
-  public transform(value: string) {
-    return value?.replace(/\\n/gi, '<br>')
+  public transform(value: string, separator = '<br>') {
+    return value?.replace(/\\n/gi, separator)
   }
-
 }

@@ -36,6 +36,10 @@ export const MAIN_MENU = [
       { label: 'Runes', path: '/info-cards/runes' },
       { label: 'Vitals', path: '/info-cards/vitals' },
       { label: 'Gems', path: '/info-cards/gems' },
+
+      { label: 'Cooking Recipes', path: '/info-cards/cooking-recipes', divider: true },
+      { label: 'Schematics', path: '/info-cards/schematics' },
+      { label: 'Music Sheets', path: '/info-cards/music-sheets' },
     ]
   },
   {

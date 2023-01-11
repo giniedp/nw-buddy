@@ -27,7 +27,6 @@ type RecipeWithItem = Crafting & {
   standalone: true,
   selector: 'nwb-gems-overview',
   templateUrl: './gems-overview.component.html',
-  styleUrls: ['./gems-overview.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ItemDetailModule, ScreenshotModule, ContentVisibilityDirective, ItemFrameModule],
   host: {

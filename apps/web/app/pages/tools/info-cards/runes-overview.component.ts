@@ -29,7 +29,35 @@ function isRunestone(it: Crafting) {
 @Component({
   standalone: true,
   selector: 'nwb-runes-overview',
-  templateUrl: './runes-overview.component.html',
+  template: `
+    <div class="min-w-[1600px] max-w-[2000px] mx-auto mb-20">
+      <div
+        *ngIf="rows$ | async; let rows"
+        [@listAnimation]="rows.length"
+        [nwbScreenshotFrame]="'Runes'"
+        class="grid grid-cols-5 layout-gap"
+      >
+        <ng-container *ngFor="let row of rows; trackBy: trackByIndex">
+          <ng-container *ngFor="let item of row; trackBy: trackByIndex">
+            <nwb-item-card [entityId]="item.$itemId" [enableTracker]="true" [disableInfo]="true" class="content-auto">
+              <nwb-item-divider class="mx-4"></nwb-item-divider>
+              <div class="flex flex-col gap-1 p-4">
+                <div
+                  *ngFor="let ingr of item.$ingredients; trackBy: trackByIndex"
+                  class="flex flex-row gap-1 justify-start items-center"
+                >
+                  <picture [nwIcon]="ingr.item" class="w-8 h-8 nw-icon flex-none"></picture>
+                  <span>{{ ingr.quantity }}</span>
+                  <span>&times;</span>
+                  <span [nwText]="ingr.item.Name"></span>
+                </div>
+              </div>
+            </nwb-item-card>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ItemDetailModule, ScreenshotModule],
   host: {
@@ -46,7 +74,7 @@ function isRunestone(it: Crafting) {
       state('true', style({ opacity: 1 })),
       transition('* => true', [animate('0.3s')]),
     ]),
-  ]
+  ],
 })
 export class RunesOverviewComponent {
   protected recipes = defer(() => this.db.recipes).pipe(map((it) => it.filter(isRunestone)))
@@ -68,9 +96,9 @@ export class RunesOverviewComponent {
           $ingredients: getIngretientsFromRecipe(recipe).map((it) => {
             return {
               quantity: it.quantity,
-              item: items.get(it.ingredient) || housing.get(it.ingredient)
+              item: items.get(it.ingredient) || housing.get(it.ingredient),
             }
-          })
+          }),
         }
       })
     })

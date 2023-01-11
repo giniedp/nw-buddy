@@ -36,6 +36,9 @@ export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
   @Input()
   public disableContent: boolean
 
+  @Input()
+  public iconOverride: ItemDefinitionMaster | Housingitems
+
   protected name: string
   protected named: boolean
   protected rarity: number

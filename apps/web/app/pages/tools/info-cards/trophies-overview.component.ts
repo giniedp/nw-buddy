@@ -23,9 +23,44 @@ function isTrophyItem(item: Housingitems) {
 @Component({
   standalone: true,
   selector: 'nwb-trophies-overview',
-  templateUrl: './trophies-overview.component.html',
+  template: `
+    <div class="min-w-[1100px] max-w-[1500px] mx-auto mb-20 content-auto" *ngIf="rows$ | async; let rows">
+      <div class="grid grid-cols-3 layout-gap" [nwbScreenshotFrame]="'Trophies'" [@listAnimation]="rows.length">
+        <ng-container *ngFor="let row of rows; trackBy: trackByIndex">
+          <nwb-item-card
+            [disableInfo]="true"
+            [entityId]="item.itemId"
+            [enableTracker]="true"
+            *ngFor="let item of row; trackBy: trackByIndex"
+            nwbContentVisibility
+          >
+            <nwb-item-divider class="mx-4"></nwb-item-divider>
+            <div class="flex flex-col gap-1 p-4">
+              <div
+                *ngFor="let ingr of item.ingredients; trackBy: trackByIndex"
+                class="flex flex-row gap-1 justify-start items-center"
+              >
+                <picture [nwIcon]="ingr.item" class="w-8 h-8 nw-icon flex-none"></picture>
+                <span>{{ ingr.quantity }}</span>
+                <span>&times;</span>
+                <span [nwText]="ingr.item.Name"></span>
+              </div>
+            </div>
+          </nwb-item-card>
+        </ng-container>
+      </div>
+    </div>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemDetailModule, ScreenshotModule, ContentVisibilityDirective, ItemFrameModule, IonicModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    ItemDetailModule,
+    ScreenshotModule,
+    ContentVisibilityDirective,
+    ItemFrameModule,
+    IonicModule,
+  ],
   host: {
     class: 'layout-content layout-pad',
   },

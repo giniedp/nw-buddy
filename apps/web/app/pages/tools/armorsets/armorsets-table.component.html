@@ -8,7 +8,7 @@
 ></nwb-data-table>
 
 <div class="flex-none layout-content xl:max-w-[350px] 4xl:max-w-[30%]" *ngIf="selectedItems | async; let items">
-  <div class="grid grid-cols-fill layout-gap p-3" nwbScreenshotFrame="Armor-Set">
+  <div class="grid grid-cols-fill-sm layout-gap p-3" nwbScreenshotFrame="Armor-Set">
     <nwb-item-card
       *ngFor="let item of items; trackBy: trackByIndex"
       [entityId]="item.ItemID"

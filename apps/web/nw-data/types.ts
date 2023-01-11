@@ -410,7 +410,6 @@ export interface ItemDefinitionMaster {
     DestroyOnBreak?:                 number;
     Durability?:                     number;
     DurabilityDmgOnDeath?:           number;
-    EventId?:                        string;
     ForceRarity?:                    number;
     GearScoreOverride?:              number;
     HeartgemRuneTooltipTitle?:       string;
@@ -708,7 +707,6 @@ export interface Gatherables {
     BaseGatherTime:                  number;
     ConsumedStatusEffect?:           string;
     DepletedGatherableID:            number;
-    DisplayDescription?:             string;
     DisplayName?:                    string;
     FinalLootTable?:                 string;
     GameEventID?:                    string;
@@ -723,7 +721,6 @@ export interface Gatherables {
     IsLootContainer:                 boolean;
     ItemRestrictionId?:              string;
     ItemRestrictionQuantity?:        string;
-    LandmarkIconPath?:               string;
     MaxRespawnRate:                  number;
     MinRespawnRate:                  number;
     NumRequiredToGather:             number;
@@ -734,7 +731,6 @@ export interface Gatherables {
     RequiredWhisperId?:              string;
     ResetGatherTimeOnEndInteraction: boolean;
     Restriction:                     string;
-    TooltipImage?:                   string;
     Tradeskill:                      string;
     WaitForImpact:                   boolean;
 }

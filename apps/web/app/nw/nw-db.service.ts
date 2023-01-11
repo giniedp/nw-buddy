@@ -61,10 +61,12 @@ export class NwDbService {
   )
   public itemsMap = index(() => this.items, 'ItemID')
   public item = lookup(() => this.itemsMap)
+  public itemsBySalvageAchievement = indexGroup(() => this.items, 'SalvageAchievement')
 
   public housingItems = list(() => [this.data.housingitems()])
   public housingItemsMap = index(() => this.housingItems, 'HouseItemID')
   public housingItem = lookup(() => this.housingItemsMap)
+
 
   public itemOrHousingItem = (id: string | Observable<string>) =>
     combineLatest({

@@ -7,7 +7,12 @@ import { VitalsDetailModule } from '~/widgets/vitals-detail'
 @Component({
   standalone: true,
   selector: 'nwb-vitals-families',
-  templateUrl: './vitals-families.component.html',
+  template: `
+    <div [nwbScreenshotFrame]="'Vitals-Families'" class="mb-20 content-auto">
+      <nwb-vitals-families-list></nwb-vitals-families-list>
+      <nwb-vitals-dungeon-bosses></nwb-vitals-dungeon-bosses>
+    </div>
+  `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, VitalsDetailModule, ScreenshotModule],
   host: {
