@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { NwModule } from '~/nw';
 import { LayoutModule } from '~/ui/layout';
@@ -24,7 +24,7 @@ export class UmbralShardsComponent {
   public constructor(head: HtmlHeadService) {
     head.updateMetadata({
       title: 'Umbral Shard & Gear Score Calculator',
-      description: 'Calculates your total gear score and the most effective upgrade path'
+      description: 'Calculates total gear score and the most effective umbral shard upgrade path'
     })
   }
 }

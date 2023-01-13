@@ -1,16 +1,21 @@
-<div class="layout-content p-3 pb-20" *ngIf="items$ | async; let items">
-  <div class="grid grid-cols-fill gap-4">
-    <div *ngFor="let item of items; trackBy: trackByFn" class="cell min-h-[150px]" [nwbItemMarker]="item.ItemID" #itemMarker="itemMarker">
-      <div *nwbDidIntersect class="bg-black rounded-md h-full">
-        <nwb-item-card
-          [entityId]="item.ItemID"
-          class="flip-card-back"
-          [enableInfoLink]="true"
-          [enableTracker]="true"
-          [disableInfo]="true"
-          [class.opacity-40]="!(itemMarker.value$ | async)"
-        ></nwb-item-card>
-      </div>
+<div class="layout-content p-3 pb-20" [nwbInfniteScroll]="items$ | async" #scroll="infiniteScroll">
+  <div class="grid grid-cols-fill gap-4" [@list]="scroll.count$ | async">
+    <div
+      *ngFor="let item of scroll.data$ | async; trackBy: trackByFn"
+      class="cell min-h-[150px]"
+      [nwbItemMarker]="item.ItemID"
+      #itemMarker="itemMarker"
+      [@fade]="true"
+    >
+      <nwb-item-card
+        [entityId]="item.ItemID"
+        class="flip-card-back bg-black rounded-md h-full transition-opacity"
+        [enableInfoLink]="true"
+        [enableTracker]="true"
+        [disableInfo]="true"
+        [class.opacity-40]="!(itemMarker.value$ | async)"
+      ></nwb-item-card>
     </div>
+    <button class="btn loading" *ngIf="scroll.canLoad$ | async" nwbInfiniteScrollTrigger>loading</button>
   </div>
 </div>

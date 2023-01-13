@@ -1,8 +1,6 @@
 <div class="flex flex-row justify-center p-2">
   <div class="tabs flex-nowrap overflow-x-auto">
-    <a class="tab tab-bordered" [class.tab-active]="!(filter$ | async)" (click)="patchState({ filter: null })">
-      All
-    </a>
+    <a class="tab tab-bordered" [class.tab-active]="!(filter$ | async)" (click)="patchState({ filter: null })"> All </a>
     <ng-container *ngFor="let filter of filterOptions$ | async">
       <button
         class="tab tab-bordered"
@@ -14,49 +12,73 @@
     </ng-container>
   </div>
 </div>
-<div class="layout-content p-3 pb-20" *ngIf="items$ | async; let items">
-  <div class="grid grid-cols-fill gap-4">
+<div
+  class="layout-content p-3 pb-20"
+  [nwbInfniteScroll]="items$ | async"
+  [nwbInfniteScrollPerPage]="25"
+  #scroll="infiniteScroll"
+>
+  <div class="grid grid-cols-fill gap-4" [@list]="scroll.count$ | async">
     <div
-      *ngFor="let item of items"
+      *ngFor="let item of scroll.data$ | async"
       class="cell min-h-[200px] flip-card relative"
       [class.flip-active]="item.flipped"
       [nwbItemMarker]="item.recipeItem.ItemID"
       #itemMarker="itemMarker"
+      [@fade]="true"
     >
-      <div *nwbDidIntersect class="flip-card-content bg-black rounded-md h-full">
+      <div class="flip-card-content bg-black rounded-md h-full">
         <nwb-item-detail [entity]="item.recipeItem" class="flip-card-front">
           <nwb-item-detail-header
             [enableTracker]="true"
             [enableInfoLink]="true"
             [class.opacity-40]="!(itemMarker.value$ | async)"
+            class="transition-opacity"
           ></nwb-item-detail-header>
           <div class="flex flex-col gap-2 p-4">
             <nwb-item-detail-description></nwb-item-detail-description>
             <nwb-item-divider></nwb-item-divider>
             <div class="flex flex-col gap-1">
-              <div *ngFor="let ingr of item.ingredients" class="flex flex-row gap-1 justify-start items-center">
+              <a
+                *ngFor="let ingr of item.ingredients"
+                [nwLink]="ingr.itemId"
+                [nwLinkResource]="'item'"
+                class="flex flex-row gap-1 justify-start items-center"
+              >
                 <picture [nwIcon]="ingr.item" class="w-8 h-8 nw-icon flex-none"></picture>
                 <span>{{ ingr.quantity }}</span>
                 <span>&times;</span>
                 <span [nwText]="ingr.item?.Name"></span>
-              </div>
+              </a>
             </div>
           </div>
         </nwb-item-detail>
         <nwb-item-card
           [entityId]="item.itemId"
-          class="flip-card-back"
+          class="flip-card-back transition-opacity"
           [enableInfoLink]="true"
           [disableInfo]="true"
           [class.opacity-40]="!(itemMarker.value$ | async)"
         ></nwb-item-card>
       </div>
       <button
-        class="flip-card-btn btn btn-ghost btn-circle absolute bottom-1 right-1"
+        class="
+          flip-card-btn
+          btn btn-ghost btn-circle
+          absolute
+          bottom-1
+          right-1
+          opacity-50
+          scale-100
+          transition-all
+          hover:opacity-75
+          hover:scale-110
+        "
         (click)="item.flipped = !item.flipped"
       >
         <nwb-icon [icon]="iconFlip" class="w-4 h-4"></nwb-icon>
       </button>
     </div>
+    <button class="btn loading" *ngIf="scroll.canLoad$ | async" nwbInfiniteScrollTrigger>loading</button>
   </div>
 </div>

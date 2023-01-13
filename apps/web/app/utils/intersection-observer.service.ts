@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core'
-import { Observable, of, shareReplay, Subject, switchMap, tap } from 'rxjs'
+import { BehaviorSubject, Observable, Subject, switchMap, tap } from 'rxjs'
+import { shareReplayRefCount } from './share-replay-refcount'
 
 @Injectable({ providedIn: 'root' })
 export class IntersectionObserverService {
@@ -13,14 +14,14 @@ export class IntersectionObserverService {
       for (const entry of it) {
         this.subjects.get(entry.target)?.next(entry)
       }
-    }, {})
+    })
   }
 
   public observe(el: HTMLElement) {
     if (!this.observers.has(el)) {
       this.observers.set(
         el,
-        of(null)
+        new BehaviorSubject(el)
           .pipe(
             tap({
               subscribe: () => {
@@ -34,12 +35,7 @@ export class IntersectionObserverService {
             })
           )
           .pipe(switchMap(() => this.subjects.get(el)))
-          .pipe(
-            shareReplay({
-              refCount: true,
-              bufferSize: 1,
-            })
-          )
+          .pipe(shareReplayRefCount(1))
       )
     }
     return this.observers.get(el)

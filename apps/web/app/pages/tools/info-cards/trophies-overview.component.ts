@@ -1,4 +1,4 @@
-import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
+import { animate, animateChild, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
 import { IonicModule } from '@ionic/angular'
@@ -23,34 +23,7 @@ function isTrophyItem(item: Housingitems) {
 @Component({
   standalone: true,
   selector: 'nwb-trophies-overview',
-  template: `
-    <div class="min-w-[1100px] max-w-[1500px] mx-auto mb-20 content-auto" *ngIf="rows$ | async; let rows">
-      <div class="grid grid-cols-3 layout-gap" [nwbScreenshotFrame]="'Trophies'" [@listAnimation]="rows.length">
-        <ng-container *ngFor="let row of rows; trackBy: trackByIndex">
-          <nwb-item-card
-            [disableInfo]="true"
-            [entityId]="item.itemId"
-            [enableTracker]="true"
-            *ngFor="let item of row; trackBy: trackByIndex"
-            nwbContentVisibility
-          >
-            <nwb-item-divider class="mx-4"></nwb-item-divider>
-            <div class="flex flex-col gap-1 p-4">
-              <div
-                *ngFor="let ingr of item.ingredients; trackBy: trackByIndex"
-                class="flex flex-row gap-1 justify-start items-center"
-              >
-                <picture [nwIcon]="ingr.item" class="w-8 h-8 nw-icon flex-none"></picture>
-                <span>{{ ingr.quantity }}</span>
-                <span>&times;</span>
-                <span [nwText]="ingr.item.Name"></span>
-              </div>
-            </div>
-          </nwb-item-card>
-        </ng-container>
-      </div>
-    </div>
-  `,
+  templateUrl: './trophies-overview.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -65,15 +38,18 @@ function isTrophyItem(item: Housingitems) {
     class: 'layout-content layout-pad',
   },
   animations: [
-    trigger('listAnimation', [
-      transition('void => *', [
-        query(':enter', [style({ opacity: 0 }), stagger(50, [animate('0.3s', style({ opacity: 1 }))])]),
+    trigger('list', [
+      transition('* => *', [
+        query(':enter', stagger(25, animateChild()), {
+          optional: true,
+        }),
       ]),
     ]),
-    trigger('apperAnimation', [
-      state('*', style({ opacity: 0 })),
-      state('true', style({ opacity: 1 })),
-      transition('* => true', [animate('0.3s')]),
+    trigger('fade', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-1rem)' }),
+        animate('0.3s ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+      ]),
     ]),
   ],
 })

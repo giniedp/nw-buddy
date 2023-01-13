@@ -1,3 +1,4 @@
+import { animate, animateChild, query, stagger, style, transition, trigger } from '@angular/animations'
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import {
@@ -27,6 +28,7 @@ import {
 } from '~/nw/utils'
 import { DifficultyRank, DungeonPreferencesService } from '~/preferences'
 import { LayoutModule } from '~/ui/layout'
+import { PaginationModule } from '~/ui/pagination'
 import { DestroyService, HtmlHeadService, observeRouteParam, shareReplayRefCount } from '~/utils'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { LootModule } from '~/widgets/loot'
@@ -63,11 +65,26 @@ export interface Tab {
   templateUrl: './dungeon-detail.component.html',
   styleUrls: ['./dungeon-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, ItemDetailModule, VitalsDetailModule, LootModule, LayoutModule],
+  imports: [CommonModule, RouterModule, NwModule, ItemDetailModule, VitalsDetailModule, LootModule, LayoutModule, PaginationModule],
   providers: [DestroyService, DungeonDetailStore],
   host: {
     class: 'layout-col xl:flex-row',
   },
+  animations: [
+    trigger('list', [
+      transition('* => *', [
+        query(':enter', stagger(5, animateChild()), {
+          optional: true,
+        }),
+      ]),
+    ]),
+    trigger('fade', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('0.150s ease-out', style({ opacity: 1 })),
+      ]),
+    ]),
+  ],
 })
 export class DungeonDetailComponent implements OnInit {
   public trackById: TrackByFunction<ItemDefinitionMaster | Housingitems> = (i, item) => getItemId(item)

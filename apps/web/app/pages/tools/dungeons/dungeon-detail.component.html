@@ -37,7 +37,7 @@
   <picture class="absolute top-0 left-0 right-0 bottom-0 pointer-events-none">
     <img [nwImage]="backgroundImage" class="block w-full h-full object-cover blur-sm" />
   </picture>
-  <div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col px-4 overflow-auto">
+  <div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col px-4 overflow-auto pb-20">
     <div class="prose-base mt-8 flex-none">
       <h1 class="mb-0 font-bold">
         <span [nwText]="title"></span>
@@ -113,9 +113,10 @@
 </div>
 
 <ng-template #tplDungeonLoot>
-  <div class="grid layout-gap">
+  <div class="grid layout-gap" [nwbInfniteScroll]="dungeonLoot$ | async" #scroll="infiniteScroll" [@list]="scroll.count$ | async">
     <nwb-item-detail
-      *ngFor="let item of dungeonLoot$ | async; trackBy: trackByIndex"
+      *ngFor="let item of scroll.data$ | async; trackBy: trackByIndex"
+      [@fade]="true"
       [entity]="item"
       [cdkContextMenuTriggerFor]="tplExplainMenu"
       (cdkContextMenuOpened)="explainItemDrop(item, 'normal')"
@@ -126,13 +127,15 @@
         class="rounded-md overflow-clip"
       ></nwb-item-detail-header>
     </nwb-item-detail>
+    <button class="btn loading" *ngIf="scroll.canLoad$ | async" nwbInfiniteScrollTrigger>loading</button>
   </div>
 </ng-template>
 
 <ng-template #tplDungeonMutatedLoot>
-  <div class="grid layout-gap">
+  <div class="grid layout-gap" [nwbInfniteScroll]="dungeonMutatedLoot$ | async" #scroll="infiniteScroll" [@list]="scroll.count$ | async">
     <nwb-item-detail
-      *ngFor="let item of dungeonMutatedLoot$ | async; trackBy: trackByIndex"
+      *ngFor="let item of scroll.data$ | async; trackBy: trackByIndex"
+      [@fade]="true"
       [entity]="item"
       [cdkContextMenuTriggerFor]="tplExplainMenu"
       (cdkContextMenuOpened)="explainItemDrop(item, 'mutated')"
@@ -143,13 +146,15 @@
         class="rounded-md overflow-clip"
       ></nwb-item-detail-header>
     </nwb-item-detail>
+    <button class="btn loading" *ngIf="scroll.canLoad$ | async" nwbInfiniteScrollTrigger>loading</button>
   </div>
 </ng-template>
 
 <ng-template #tplDungeonDifficultyLoot>
-  <div class="grid layout-gap">
+  <div class="grid layout-gap" [nwbInfniteScroll]="dungeonDifficultyLoot$ | async" #scroll="infiniteScroll" [@list]="scroll.count$ | async">
     <nwb-item-detail
-      *ngFor="let item of dungeonDifficultyLoot$ | async; trackBy: trackByIndex"
+      *ngFor="let item of scroll.data$ | async; trackBy: trackByIndex"
+      [@fade]="true"
       [entity]="item"
       [cdkContextMenuTriggerFor]="tplExplainMenu"
       (cdkContextMenuOpened)="explainItemDrop(item, 'difficulty')"
@@ -160,6 +165,7 @@
         class="rounded-md overflow-clip"
       ></nwb-item-detail-header>
     </nwb-item-detail>
+    <button class="btn loading" *ngIf="scroll.canLoad$ | async" nwbInfiniteScrollTrigger>loading</button>
   </div>
 </ng-template>
 
@@ -175,7 +181,12 @@
 
 <ng-template #tplExplain>
   <ng-container *ngIf="explainVm$ | async; let vm">
-    <nwb-loot-graph [tags]="vm.tags" [tagValues]="vm.values" [tableId]="vm.tableId" [highlight]="vm.itemId" ></nwb-loot-graph>
+    <nwb-loot-graph
+      [tags]="vm.tags"
+      [tagValues]="vm.values"
+      [tableId]="vm.tableId"
+      [highlight]="vm.itemId"
+    ></nwb-loot-graph>
   </ng-container>
   <div class="flex-none modal-action flex-row justify-end layout-pad mt-0">
     <div class="btn-group">

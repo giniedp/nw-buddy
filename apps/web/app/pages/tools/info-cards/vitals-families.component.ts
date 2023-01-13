@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { HtmlHeadService } from '~/utils'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { VitalsDetailModule } from '~/widgets/vitals-detail'
@@ -8,7 +8,7 @@ import { VitalsDetailModule } from '~/widgets/vitals-detail'
   standalone: true,
   selector: 'nwb-vitals-families',
   template: `
-    <div [nwbScreenshotFrame]="'Vitals-Families'" class="mb-20 content-auto">
+    <div [nwbScreenshotFrame]="'Vitals-Families'" class="mb-20">
       <nwb-vitals-families-list></nwb-vitals-families-list>
       <nwb-vitals-dungeon-bosses></nwb-vitals-dungeon-bosses>
     </div>

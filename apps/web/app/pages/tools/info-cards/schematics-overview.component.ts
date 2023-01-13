@@ -1,4 +1,4 @@
-import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
+import { animate, animateChild, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
@@ -7,10 +7,11 @@ import { uniq } from 'lodash'
 import { combineLatest, debounceTime, defer, map, startWith } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwModule } from '~/nw'
-import { getIngretientsFromRecipe, getItemIdFromRecipe } from '~/nw/utils'
+import { getIngretientsFromRecipe, getItemId, getItemIdFromRecipe } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { svgRepeat, svgRotate } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
+import { PaginationModule } from '~/ui/pagination'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { ContentVisibilityDirective, HtmlHeadService, shareReplayRefCount, tapDebug } from '~/utils'
 import { IntersectionObserverModule } from '~/utils/intersection-observer'
@@ -26,6 +27,7 @@ interface RecipeItem {
   ingredients: Array<{
     quantity: number
     item: ItemDefinitionMaster | Housingitems
+    itemId: string
   }>
   flipped?: boolean
 }
@@ -50,10 +52,26 @@ function isSchematic(item: ItemDefinitionMaster) {
     ItemFrameModule,
     IconsModule,
     QuicksearchModule,
+    PaginationModule,
   ],
   host: {
     class: 'layout-col',
   },
+  animations: [
+    trigger('list', [
+      transition('* => *', [
+        query(':enter', stagger(25, animateChild()), {
+          optional: true,
+        }),
+      ]),
+    ]),
+    trigger('fade', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-1rem)' }),
+        animate('0.3s ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+      ]),
+    ]),
+  ],
 })
 export class SchematicsOverviewComponent extends ComponentStore<State> {
   protected iconFlip = svgRepeat
@@ -138,9 +156,11 @@ export class SchematicsOverviewComponent extends ComponentStore<State> {
               recipeItem: recipeItem,
               recipe: recipe,
               ingredients: getIngretientsFromRecipe(recipe).map((it) => {
+                const item = items.get(it.ingredient) || housingItems.get(it.ingredient)
                 return {
                   quantity: it.quantity,
                   item: items.get(it.ingredient) || housingItems.get(it.ingredient),
+                  itemId: getItemId(item)
                 }
               }),
             }

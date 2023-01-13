@@ -1,4 +1,4 @@
-import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
+import { animate, animateChild, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
 import { Crafting, ItemDefinitionMaster } from '@nw-data/types'
@@ -9,6 +9,7 @@ import { getIngretientsFromRecipe, getItemIdFromRecipe } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { svgRepeat } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
+import { PaginationModule } from '~/ui/pagination'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { ContentVisibilityDirective, HtmlHeadService, tapDebug } from '~/utils'
 import { IntersectionObserverModule } from '~/utils/intersection-observer'
@@ -48,10 +49,26 @@ function isRecipe(item: ItemDefinitionMaster) {
     ItemTrackerModule,
     ItemFrameModule,
     IconsModule,
+    PaginationModule
   ],
   host: {
     class: 'layout-col',
   },
+  animations: [
+    trigger('list', [
+      transition('* => *', [
+        query(':enter', stagger(25, animateChild()), {
+          optional: true,
+        }),
+      ]),
+    ]),
+    trigger('fade', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-1rem)' }),
+        animate('0.3s ease-out', style({ opacity: 1, transform: 'translateY(0)' })),
+      ]),
+    ]),
+  ],
 })
 export class RecipesOverviewComponent {
   protected iconFlip = svgRepeat
