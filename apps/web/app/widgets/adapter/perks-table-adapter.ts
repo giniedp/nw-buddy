@@ -83,24 +83,24 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
               children: [
                 value.name
                   ? {
-                      tag: 'span',
-                      classList: [],
-                      text: value.name as string,
-                    }
+                    tag: 'span',
+                    classList: [],
+                    text: value.name as string,
+                  }
                   : null,
                 value.prefix
                   ? {
-                      tag: 'span',
-                      classList: ['italic', 'text-accent'],
-                      text: `${value.prefix} …`,
-                    }
+                    tag: 'span',
+                    classList: ['italic', 'text-accent'],
+                    text: `${value.prefix} …`,
+                  }
                   : null,
                 value.suffix
                   ? {
-                      tag: 'span',
-                      classList: ['italic', 'text-accent'],
-                      text: `… ${value.suffix}`,
-                    }
+                    tag: 'span',
+                    classList: ['italic', 'text-accent'],
+                    text: `… ${value.suffix}`,
+                  }
                   : null,
               ],
             })
@@ -252,16 +252,14 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
   public entities: Observable<Perks[]> = defer(() =>
     combineLatest({
       perks: this.config?.source || this.nw.db.perks,
-      abilities: this.nw.db.abilitiesMap,
       affixstats: this.nw.db.affixstatsMap,
     })
   )
     .pipe(
-      map(({ perks, abilities, affixstats }) => {
+      map(({ perks, affixstats }) => {
         return perks.map((it) => {
           return {
             ...it,
-            //$ability: abilities.get(it.EquipAbility),
             $affix: affixstats.get(it.Affix),
           }
         })

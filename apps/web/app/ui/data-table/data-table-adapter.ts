@@ -7,12 +7,23 @@ import {
   ValueFormatterFunc,
   ValueFormatterParams,
   ValueGetterFunc,
-  ValueGetterParams,
+  ValueGetterParams
 } from 'ag-grid-community'
 import { AgGridCommon } from 'ag-grid-community/dist/lib/interfaces/iCommon'
-import { BehaviorSubject, defer, firstValueFrom, map, Observable, ReplaySubject, Subject } from 'rxjs'
+import {
+  BehaviorSubject,
+  defer,
+  firstValueFrom,
+  map,
+  Observable,
+  of,
+  ReplaySubject,
+  startWith,
+  Subject,
+  switchMap
+} from 'rxjs'
 import { createEl, CreateElAttrs, createElement, CreateElementOptions, shareReplayRefCount, TagName } from '~/utils'
-import { AsyncCellRenderer, AsyncCellRendererParams } from '../ag-grid'
+import { AsyncCellRenderer, AsyncCellRendererParams, fromGridEvent, GridEvents } from '../ag-grid'
 
 export interface DataTableCategory {
   label: string
@@ -45,16 +56,16 @@ export function dataTableProvider<T>(options: {
 }): Array<StaticProvider | ClassProvider> {
   const result: Array<StaticProvider | ClassProvider> = []
   result.push({
-    provide: options.adapter,
+    provide: options.adapter
   })
   result.push({
     provide: DataTableAdapter,
-    useExisting: options.adapter,
+    useExisting: options.adapter
   })
   if (options.options) {
     result.push({
       provide: DataTableAdapterOptions,
-      useValue: options.options,
+      useValue: options.options
     })
   }
   return result
@@ -63,11 +74,13 @@ export function dataTableProvider<T>(options: {
 export abstract class DataTableAdapter<T> {
 
   public moneyFormatter = Intl.NumberFormat(navigator.language, {
-    minimumFractionDigits: 2,
+    minimumFractionDigits: 2
   })
 
   public abstract entityID(item: T): string | number
+
   public abstract entityCategory(item: T): string | DataTableCategory | Array<string | DataTableCategory>
+
   public abstract options: Observable<GridOptions>
   public abstract entities: Observable<T[]>
   public readonly categories: Observable<DataTableCategory[]> = defer(() => this.entities)
@@ -77,33 +90,49 @@ export abstract class DataTableAdapter<T> {
   public readonly category = new BehaviorSubject<string>(null)
   public readonly select = new Subject<string[]>()
   public readonly grid = defer(() => this.grid$)
+
   public get persistStateId(): string {
     return null
   }
 
   private grid$ = new ReplaySubject<AgGridCommon<any>>(1)
+
   public setGrid(grid: AgGridCommon<any>) {
     this.grid$.next(grid)
   }
 
+  public isAnyFilterPresent$ = this.grid$.pipe(switchMap((grid) => {
+    const resolve = () => grid.api.isAnyFilterPresent()
+    return !grid?.api ? of(false) : fromGridEvent(grid.api, GridEvents.EVENT_FILTER_CHANGED)
+      .pipe(map(resolve))
+      .pipe(startWith(resolve()))
+  }))
+    .pipe(shareReplayRefCount(1))
+
   public fieldName(k: keyof T) {
     return String(k)
   }
+
   public valueGetter(fn: keyof T | ((params: ValueGetterParams<T>) => any)): string | ValueGetterFunc {
     return fn as any
   }
+
   public valueFormatter<V>(fn: keyof T | ((params: ValueFormatterParams<T, V>) => any)): string | ValueFormatterFunc {
     return fn as any
   }
+
   public colDef(data: ColDef & Required<Pick<ColDef, 'colId' | 'headerValueGetter'>>): ColDef {
     return data
   }
+
   public cellRenderer(fn: ICellRendererFunc<T>) {
     return fn
   }
+
   public cellRendererAsync(): Type<AsyncCellRenderer<T>> {
     return AsyncCellRenderer
   }
+
   public cellRendererAsyncParams<R>(params: AsyncCellRendererParams<T, R>) {
     return params
   }
@@ -118,9 +147,9 @@ export abstract class DataTableAdapter<T> {
           return {
             tag: 'span',
             classList: ['badge', 'badge-sm', 'bg-opacity-50', 'px-1', className],
-            text: format ? format(it) : it,
+            text: format ? format(it) : it
           }
-        }),
+        })
       })
     })
   }
@@ -158,13 +187,13 @@ export abstract class DataTableAdapter<T> {
   }
 
   public createLinkWithIcon({
-    href,
-    target,
-    icon,
-    iconClass,
-    rarity,
-    named
-  }: {
+                              href,
+                              target,
+                              icon,
+                              iconClass,
+                              rarity,
+                              named
+                            }: {
     href: string
     target: string
     icon: string
@@ -222,6 +251,7 @@ export abstract class DataTableAdapter<T> {
     }
     return el
   }
+
   public el<T extends keyof HTMLElementTagNameMap>(
     tagName: TagName<T>, attr: CreateElAttrs<T>, children?: Array<HTMLElement>
   ) {
@@ -234,13 +264,13 @@ export abstract class DataTableAdapter<T> {
 
   protected async txInsert(items: T[]): Promise<RowDataTransaction> {
     return {
-      add: items,
+      add: items
     }
   }
 
   protected async txUpdate(items: T[]): Promise<RowDataTransaction> {
     return {
-      update: items,
+      update: items
     }
   }
 
@@ -253,14 +283,14 @@ export abstract class DataTableAdapter<T> {
       }
     })
     return {
-      remove: nodes,
+      remove: nodes
     }
   }
 
   protected async removeSelected() {
     const grid = await firstValueFrom(this.grid$)
     grid.api.applyTransactionAsync({
-      remove: grid.api.getSelectedRows(),
+      remove: grid.api.getSelectedRows()
     })
   }
 }
@@ -277,7 +307,7 @@ function convertCategory(catSet: string | DataTableCategory | Array<string | Dat
       return {
         value: it,
         label: it,
-        icon: null,
+        icon: null
       }
     }
     return it

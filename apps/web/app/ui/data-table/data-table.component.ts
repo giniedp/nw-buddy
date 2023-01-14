@@ -221,7 +221,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       .pipe(switchMap(() => this.filter$))
       .pipe(takeUntil(this.destroy.$))
       .subscribe((filter) => {
-        this.applyfilterState(filter)
+        this.applyFilterState(filter)
       })
 
     // save column state whenever a column has changed
@@ -416,13 +416,12 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   private loadFilterState() {
-    this.applyfilterState
     const key = this.persistKey
     const data = this.filterStorage.get(key)?.filter
-    this.applyfilterState(data)
+    this.applyFilterState(data)
   }
 
-  private applyfilterState(filter: any) {
+  private applyFilterState(filter: any) {
     const api = this.gridApi
     if (filter && api) {
       api.setFilterModel(filter)

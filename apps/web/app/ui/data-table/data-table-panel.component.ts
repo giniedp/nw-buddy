@@ -9,20 +9,22 @@ import { IconsModule } from '../icons'
 import { svgArrowsLeftRight, svgCode, svgDockLeft, svgDockRight, svgEraser, svgEye, svgEyeSlash, svgFileCsv, svgFilter } from '../icons/svg'
 import { EditorDialogComponent } from '../layout'
 import { DataTableAdapter } from './data-table-adapter'
+import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
   standalone: true,
   selector: 'nwb-data-table-panel',
   templateUrl: './data-table-panel.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, IconsModule, DialogModule],
+  imports: [CommonModule, IconsModule, DialogModule, TooltipModule],
   host: {
-    class: 'w-80 flex flex-col gap-1 bg-base-100 rounded-b-md p-2',
+    class: 'w-80 flex flex-col gap-1 bg-base-100 rounded-b-md',
   },
 })
 export class DataTablePanelComponent {
   protected grid = this.adapter.grid
-  protected columns = defer(() => this.grid)
+  protected isFilterActive = this.adapter.isAnyFilterPresent$
+  protected columns = this.grid
     .pipe(filter((it) => !!it?.columnApi))
     .pipe(
       switchMap((grid) => {
