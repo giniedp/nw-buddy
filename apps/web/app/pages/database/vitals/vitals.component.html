@@ -8,7 +8,7 @@
     <nwb-nav-toolbar [menu]="tplMenu" [buttons]="tplButtons" class="flex-1">
       <ng-template #tplMenu>
         <li *ngFor="let item of header.categories | async" [routerLinkActive]="'bordered'">
-          <a [routerLink]="item.route"> {{ item.label }}</a>
+          <a rel="nofollow" [routerLink]="item.route"> {{ item.label }}</a>
         </li>
       </ng-template>
       <ng-template #tplButtons>
