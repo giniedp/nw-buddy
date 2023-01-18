@@ -1,1 +1,33 @@
-<ng-content></ng-content>
+<nwb-item-header class="gap-2">
+  <a [nwbItemIcon]="icon$ | async" [nwLink]="perkId$ | async" [nwLinkResource]="'ability'" class="w-[76px] h-[76px]">
+  </a>
+  <nwb-item-header-content
+    class="z-10"
+    [name]="name$ | async | nwText | nwTextBreak: ' - '"
+    [sourceName]="'perk'"
+    [typeName]="type$ | async"
+  ></nwb-item-header-content>
+</nwb-item-header>
+<div class="p-3 flex flex-col gap-2">
+  <ng-container *ngIf="description$ | async | nwText | nwTextBreak; let description">
+    <div [innerHTML]="description"></div>
+    <nwb-item-divider></nwb-item-divider>
+  </ng-container>
+
+  <ng-container *ngIf="showProperties">
+    <nwb-property-grid
+      class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
+      [item]="properties$ | async"
+      [valueFormatter]="formatValue"
+    ></nwb-property-grid>
+
+    <ng-container *ngIf="affix$ | async; let affix">
+      <nwb-item-divider></nwb-item-divider>
+      <nwb-property-grid
+        class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
+        [item]="affix"
+      ></nwb-property-grid>
+    </ng-container>
+  </ng-container>
+  <ng-content></ng-content>
+</div>

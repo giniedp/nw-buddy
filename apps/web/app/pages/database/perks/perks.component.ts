@@ -7,11 +7,11 @@ import { IonicModule } from '@ionic/angular'
 import { firstValueFrom } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { NwModule } from '~/nw'
+import { NwExpressionContextService } from '~/nw/expression'
 import { DataTableModule } from '~/ui/data-table'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule } from '~/ui/quicksearch'
 import { PerksTableAdapter } from '~/widgets/adapter'
-import { ExprContextService } from '~/widgets/adapter/exp-context.service'
 
 @Component({
   standalone: true,
@@ -32,11 +32,11 @@ import { ExprContextService } from '~/widgets/adapter/exp-context.service'
   host: {
     class: 'layout-col',
   },
-  providers: [PerksTableAdapter.provider(), ExprContextService],
+  providers: [PerksTableAdapter.provider(), NwExpressionContextService],
 })
 export class PerksComponent {
   protected isToolOpen = false
-  public constructor(public ctx: ExprContextService, char: CharacterStore) {
+  public constructor(public ctx: NwExpressionContextService, char: CharacterStore) {
     firstValueFrom(char.level$).then((value) => {
       ctx.level = value
     })

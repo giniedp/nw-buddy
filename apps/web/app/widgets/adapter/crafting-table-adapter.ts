@@ -15,6 +15,7 @@ import {
   getItemRarity,
   getTradeSkillLabel,
 } from '~/nw/utils'
+import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { shareReplayRefCount } from '~/utils'
@@ -70,7 +71,7 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
             return this.createLinkWithIcon({
               target: '_blank',
               href: this.info.link('item', getItemId(item)),
-              icon: getItemIconPath(item),
+              icon: getItemIconPath(item) || NW_FALLBACK_ICON,
               rarity: getItemRarity(item),
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })

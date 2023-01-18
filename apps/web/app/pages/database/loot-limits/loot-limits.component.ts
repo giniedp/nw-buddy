@@ -3,11 +3,11 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
+import { NwExpressionContextService } from '~/nw/expression'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule } from '~/ui/quicksearch'
 import { LootLimitsTableAdapter } from '~/widgets/adapter'
-import { ExprContextService } from '~/widgets/adapter/exp-context.service'
 
 @Component({
   standalone: true,
@@ -18,8 +18,8 @@ import { ExprContextService } from '~/widgets/adapter/exp-context.service'
   host: {
     class: 'layout-col bg-base-300 rounded-md overflow-clip',
   },
-  providers: [LootLimitsTableAdapter.provider(), ExprContextService],
+  providers: [LootLimitsTableAdapter.provider(), NwExpressionContextService],
 })
 export class LootLimitsComponent {
-  public constructor(public ctx: ExprContextService) {}
+  public constructor(public ctx: NwExpressionContextService) {}
 }

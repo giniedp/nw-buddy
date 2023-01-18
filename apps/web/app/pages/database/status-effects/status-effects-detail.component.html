@@ -1,16 +1,11 @@
 <nwb-detail-drawer class="hidden lg:block lg:w-96">
   <div
     *nwbDetailDraweContent
-    class="layout-col bg-base-200 layout-pad"
+    class="layout-content bg-black"
     [nwbStatusEffectDetail]="itemId | async"
     (nwbStatusEffectChange)="onEntity($event)"
     #detail="effectDetail"
   >
-    <nwb-property-grid
-      [rows]="detail.properties$ | async"
-      [numberFormat]="'0.0-4'"
-      class="gap-x-1 font-mono w-full bg-base-100 rounded-md p-3 overflow-auto"
-    >
-    </nwb-property-grid>
+    <nwb-status-effect-detail [effectId]="itemId | async" [showProperties]="true"> </nwb-status-effect-detail>
   </div>
 </nwb-detail-drawer>

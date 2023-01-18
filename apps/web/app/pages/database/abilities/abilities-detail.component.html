@@ -1,16 +1,11 @@
-<nwb-detail-drawer class="hidden lg:block lg:w-full lg:max-w-sm xl:lg:max-w-md 2xl:lg:max-w-lg">
+<nwb-detail-drawer class="hidden lg:block lg:w-96 2xl:w-[500px]" [breakpoints]="[0.15, 0.25, 0.5, 1]">
   <div
-    class="layout-col bg-base-200 layout-pad"
     *nwbDetailDraweContent
+    class="layout-content bg-black"
     [nwbAbilityDetail]="itemId | async"
     (nwbAbilityChange)="onEntity($event)"
     #detail="abilityDetail"
   >
-    <nwb-property-grid
-      class="gap-x-1 font-mono w-full bg-base-100 rounded-md p-3 overflow-auto"
-      [rows]="detail.properties$ | async"
-      [numberFormat]="'0.0-4'"
-    >
-    </nwb-property-grid>
+    <nwb-ability-detail [abilityId]="itemId | async" [showProperties]="true"> </nwb-ability-detail>
   </div>
 </nwb-detail-drawer>

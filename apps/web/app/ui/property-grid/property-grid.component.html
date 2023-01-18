@@ -1,5 +1,32 @@
-<ng-container *ngFor="let row of rows">
-  <span>{{ formatKey(row.key) }}</span>
-  <span>{{ formatValue(row.value, row.key) }}</span>
+<ng-container *ngFor="let entry of entries$ | async; trackBy: trackBy">
+  <span>
+    <ng-container [ngTemplateOutlet]="tplCells" [ngTemplateOutletContext]="formatKey(entry)"></ng-container>
+  </span>
+  <span>
+    <ng-container [ngTemplateOutlet]="tplCells" [ngTemplateOutletContext]="formatValue(entry)"></ng-container>
+  </span>
 </ng-container>
+
+<ng-template nwbPropertyGridCell let-cells #tplCells>
+  <ng-container *ngFor="let cell of cells; trackBy: trackBy">
+    <a *ngIf="cell.externLink" [href]="cell.externLink" target="_blank" class="link link-primary">
+      {{ cell.value }}
+    </a>
+    <a *ngIf="cell.routerLink" [routerLink]="cell.routerLink" class="link link-primary">
+      {{ cell.value }}
+    </a>
+    <span
+      *ngIf="!cell.routerLink && !cell.externLink"
+      [class.text-primary]="cell.primary"
+      [class.text-secondary]="cell.secondary"
+      [class.text-info]="cell.info"
+      [class.text-accent]="cell.accent"
+      [class.font-bold]="cell.bold"
+      [class.font-italic]="cell.italic"
+    >
+      {{ cell.value }}
+    </span>
+  </ng-container>
+</ng-template>
+
 <ng-content></ng-content>

@@ -15,6 +15,7 @@ import {
   getItemTradingGroupLabel,
   getItemTypeLabel, getTradingCategoryLabel, isItemNamed
 } from '~/nw/utils'
+import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
 import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
@@ -77,7 +78,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
             return this.createLinkWithIcon({
               href: this.info.link('item', data.ItemID),
               target: '_blank',
-              icon: getItemIconPath(data),
+              icon: getItemIconPath(data) || NW_FALLBACK_ICON,
               rarity: getItemRarity(data),
               named: isItemNamed(data),
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']

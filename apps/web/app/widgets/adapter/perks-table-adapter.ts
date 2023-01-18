@@ -1,14 +1,14 @@
 import { Injectable, Optional } from '@angular/core'
 import { Ability, Perks } from '@nw-data/types'
-import { GridOptions } from 'ag-grid-community'
+import { ColDef, GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwLinkService, NwService } from '~/nw'
+import { NwExpressionContextService } from '~/nw/expression'
 import { getPerksInherentMODs, hasPerkInherentAffix, isPerkGenerated, isPerkInherent } from '~/nw/utils'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
-import { ExprContextService } from './exp-context.service'
 
 @Injectable()
 export class PerksTableAdapter extends DataTableAdapter<Perks> {
@@ -151,7 +151,7 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
           }),
         }),
         this.colDef({
-          colId: 'type',
+          colId: 'perkType',
           headerValueGetter: () => 'Type',
           field: this.fieldName('PerkType'),
           width: 120,
@@ -246,7 +246,9 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
           }),
         }),
       ],
-    })
+    }).pipe(map((options) => {
+      return appendFields(options, Array.from(Object.entries(FIELDS)))
+    }))
   )
 
   public entities: Observable<Perks[]> = defer(() =>
@@ -272,9 +274,63 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
     private i18n: TranslateService,
     @Optional()
     private config: DataTableAdapterOptions<Perks>,
-    private ctx: ExprContextService,
+    private ctx: NwExpressionContextService,
     private info: NwLinkService
   ) {
     super()
   }
+}
+
+
+function appendFields(options: GridOptions, fields: string[][]) {
+  for (const [field, type] of fields) {
+    const exists = options.columnDefs.find((col: ColDef) => col.colId?.toLowerCase() == field.toLowerCase())
+    if (exists) {
+      continue
+    }
+    const colDef: ColDef = {
+      colId: field,
+      headerValueGetter: () => humanize(field),
+      field: field,
+      hide: true,
+    }
+    colDef.filter = SelectboxFilter
+    colDef.filterParams = SelectboxFilter.params({
+      showCondition: true,
+      showSearch: true,
+    })
+    if (type.includes('number')) {
+      colDef.filter = 'agNumberColumnFilter'
+      colDef.filterParams = null
+    }
+    options.columnDefs.push(colDef)
+  }
+  return options
+}
+
+const FIELDS: Record<keyof Perks, string> = {
+  Affix: 'string',
+  AppliedPrefix: 'string',
+  AppliedSuffix: 'string',
+  Category: 'string',
+  Channel: 'number',
+  ConditionEvent: 'string',
+  DayPhases: 'string',
+  DeprecatedPerkId: 'string',
+  Description: 'string',
+  DisplayName: 'string',
+  EquipAbility: 'string[]',
+  ExcludeFromTradingPost: 'string',
+  ExcludeItemClass: 'string[]',
+  ExclusiveLabels: 'string[]',
+  FishingWaterType: 'string',
+  GroupName: 'string',
+  IconPath: 'string',
+  ItemClass: 'string[]',
+  ItemClassGSBonus: 'string',
+  PerkID: 'string',
+  PerkType: 'string',
+  ScalingPerGearScore: 'number',
+  Tier: 'number',
+  WeaponTag: 'string',
 }

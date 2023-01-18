@@ -1,10 +1,19 @@
 import { Injectable } from "@angular/core";
 import { BehaviorSubject, combineLatest, defer } from "rxjs";
 
+export interface NwExpressionContext {
+  text: string
+  itemId?: string
+  charLevel: number
+  gearScore: number
+  ConsumablePotency?: number
+  perkMultiplier?: number
+}
+
 @Injectable({
   providedIn: 'root'
 })
-export class ExprContextService {
+export class NwExpressionContextService {
 
   public get level() {
     return this.level$.value

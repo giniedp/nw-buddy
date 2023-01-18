@@ -12,6 +12,7 @@ import {
   getItemTierAsRoman,
   getUIHousingCategoryLabel,
 } from '~/nw/utils'
+import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize } from '~/utils'
@@ -65,7 +66,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
               target: '_blank',
               href: this.info.link('item', getItemId(data)),
               rarity: getItemRarity(data),
-              icon: getItemIconPath(data),
+              icon: getItemIconPath(data) || NW_FALLBACK_ICON,
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
           }),

@@ -6,6 +6,7 @@ import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService } from '~/nw'
 import { getItemIconPath, getItemId, getItemRarity } from '~/nw/utils'
+import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { shareReplayRefCount } from '~/utils'
 
@@ -50,7 +51,7 @@ export class LootLimitsTableAdapter extends DataTableAdapter<TableItem> {
             return this.createLinkWithIcon({
               href: this.info.link('item', getItemId(data.$item)),
               target: '_blank',
-              icon: getItemIconPath(data.$item),
+              icon: getItemIconPath(data.$item) || NW_FALLBACK_ICON,
               rarity: getItemRarity(data.$item),
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })

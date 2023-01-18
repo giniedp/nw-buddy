@@ -14,12 +14,12 @@ import { StatusEffectDetailModule } from '~/widgets/status-effect-detail'
 
 @Component({
   standalone: true,
-  selector: 'nwb-status-effects-detail',
+  selector: 'nwb-status-effects-detail-page',
   templateUrl: './status-effects-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, RouterModule, StatusEffectDetailModule, PropertyGridModule, LayoutModule],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'flex-none flex flex-col layout-pad',
   },
 })
 export class AbilitiesDetailComponent {

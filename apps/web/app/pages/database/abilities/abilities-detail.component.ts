@@ -15,18 +15,31 @@ import { AbilityDetailModule } from '~/widgets/ability-detail'
 
 @Component({
   standalone: true,
-  selector: 'nwb-abilities-detail',
+  selector: 'nwb-abilities-detail-page',
   templateUrl: './abilities-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, RouterModule, AbilityDetailModule, PropertyGridModule, LayoutModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    RouterModule,
+    AbilityDetailModule,
+    PropertyGridModule,
+    LayoutModule,
+    AbilityDetailModule,
+  ],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'flex-none flex flex-col layout-pad',
   },
 })
 export class AbilitiesDetailComponent {
   public itemId = observeRouteParam(this.route, 'id')
 
-  public constructor(private route: ActivatedRoute, private i18n: TranslateService, private expr: NwExpressionService, private head: HtmlHeadService) {
+  public constructor(
+    private route: ActivatedRoute,
+    private i18n: TranslateService,
+    private expr: NwExpressionService,
+    private head: HtmlHeadService
+  ) {
     //
   }
 
@@ -34,17 +47,19 @@ export class AbilitiesDetailComponent {
     if (!entity) {
       return
     }
-    const description = await firstValueFrom(this.expr.solve({
-      charLevel: NW_MAX_CHARACTER_LEVEL,
-      gearScore: NW_MAX_GEAR_SCORE_BASE,
-      text: this.i18n.get(entity.Description),
-      itemId: entity.AbilityID
-    }))
+    const description = await firstValueFrom(
+      this.expr.solve({
+        charLevel: NW_MAX_CHARACTER_LEVEL,
+        gearScore: NW_MAX_GEAR_SCORE_BASE,
+        text: this.i18n.get(entity.Description),
+        itemId: entity.AbilityID,
+      })
+    )
     this.head.updateMetadata({
       title: [this.i18n.get(entity.DisplayName), 'Ability'].join(' - '),
       description: description,
       url: this.head.currentUrl,
-      image: entity.Icon
+      image: entity.Icon,
     })
   }
 }

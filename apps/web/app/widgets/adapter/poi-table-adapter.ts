@@ -4,6 +4,7 @@ import { GridOptions } from 'ag-grid-community'
 import { defer, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwLinkService, NwService } from '~/nw'
+import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
 import { SelectboxFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
@@ -40,7 +41,7 @@ export class PoiTableAdapter extends DataTableAdapter<PoiDefinition> {
             return this.createLinkWithIcon({
               target: '_blank',
               href: this.info.link('poi', String(data.TerritoryID)),
-              icon: data.MapIcon || data.CompassIcon || data.TooltipBackground,
+              icon: data.MapIcon || data.CompassIcon || data.TooltipBackground || NW_FALLBACK_ICON,
               iconClass: ['scale-125', 'transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
           }),

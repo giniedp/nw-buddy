@@ -21,7 +21,7 @@ export class NwTextPipe implements PipeTransform, OnDestroy {
   public constructor(
     private i18n: TranslateService,
     private expr: NwExpressionService,
-    private cdRef: ChangeDetectorRef
+    private cdRef: ChangeDetectorRef,
   ) {}
 
   public transform(key: string | string[], options: NwTextPipeOptions = null) {

@@ -2,15 +2,9 @@ import { Injectable } from '@angular/core'
 import { catchError, map, Observable, of, throwError } from 'rxjs'
 import { NwDbService } from '../nw-db.service'
 import { getPerkMultiplier, parseNwExpression } from '../utils'
+import { NwExpressionContext } from './nw-expression-context.service'
 
-export interface NwExpressionContext {
-  text: string
-  itemId?: string
-  charLevel: number
-  gearScore: number
-  ConsumablePotency?: number
-  perkMultiplier?: number
-}
+
 
 type Expressionresource =
   | 'AffixStatDataTable'

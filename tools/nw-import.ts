@@ -8,6 +8,7 @@ import { generateTypes } from './importer/generateTypes'
 import { extractExpressions } from './importer/extractExpressions'
 import { NW_USE_PTR, web, nwData } from '../env'
 import { extractLootTags } from './importer/extractLootTags'
+import { extractAbilities } from './importer/extractAbilities'
 
 program
   .option('-i, --input <path>', 'input directory')
@@ -427,5 +428,8 @@ program
 
     console.log('collect loot tags')
     await extractLootTags(inputDir, 'tmp')
+
+    console.log('collect abilities')
+    extractAbilities(inputDir, 'tmp')
   })
   .parse(process.argv)
