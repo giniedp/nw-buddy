@@ -1,11 +1,21 @@
 <nwb-detail-drawer class="hidden lg:block lg:w-96 2xl:w-[500px]" [breakpoints]="[0.15, 0.25, 0.5, 1]">
   <div
     *nwbDetailDraweContent
-    class="layout-content bg-black"
+    class="layout-content bg-base-200 p-2"
     [nwbAbilityDetail]="itemId | async"
     (nwbAbilityChange)="onEntity($event)"
     #detail="abilityDetail"
   >
-    <nwb-ability-detail [abilityId]="itemId | async" [showProperties]="true"> </nwb-ability-detail>
+    <div class="flex flex-col gap-2">
+      <nwb-ability-detail [abilityId]="itemId | async" [showProperties]="true" class="bg-black"> </nwb-ability-detail>
+
+      <ng-container *ngFor="let effectId of detail.refEffects$ | async">
+        <nwb-status-effect-detail
+          [effectId]="effectId"
+          [showProperties]="true"
+          class="bg-black"
+        ></nwb-status-effect-detail>
+      </ng-container>
+    </div>
   </div>
 </nwb-detail-drawer>

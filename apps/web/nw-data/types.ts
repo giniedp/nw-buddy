@@ -3985,7 +3985,7 @@ export interface Ability {
     AbilityCooldownComparisonType?:                 string;
     AbilityID:                                      string;
     AbilityIdToCheckForTrackedHits?:                string;
-    AbilityList?:                                   string;
+    AbilityList?:                                   string[];
     AbilityOnCooldownOptions?:                      string;
     AbilityTrigger?:                                string;
     ActivationCooldown?:                            number;
@@ -3993,7 +3993,7 @@ export interface Ability {
     AllowSelfDamageForHitEvents?:                   boolean;
     ArmorPenetration?:                              number;
     AttachedTargetSpellIds?:                        string;
-    AttackType?:                                    string;
+    AttackType?:                                    string[];
     AttackerVitalsCategory?:                        string;
     Azoth?:                                         number;
     BaseDamage?:                                    number;
@@ -4015,7 +4015,7 @@ export interface Ability {
     DamageCategory?:                                string;
     DamageIsMelee?:                                 boolean;
     DamageIsRanged?:                                boolean;
-    DamageTableRow?:                                string;
+    DamageTableRow?:                                string[];
     DamageTableRowOverride?:                        string;
     DamageTableStatusEffectOverride?:               string;
     DamageTypes?:                                   string;
@@ -4065,7 +4065,7 @@ export interface Ability {
     LoadedAmmoCount?:                               number;
     LoadedAmmoCountComparisonType?:                 string;
     Mana?:                                          number;
-    ManaCostList?:                                  string;
+    ManaCostList?:                                  string[];
     ManaCostMult?:                                  number;
     MaxConsecutiveHits?:                            number;
     MaxHealth?:                                     number;
@@ -4142,7 +4142,7 @@ export interface Ability {
     RemoteDamageTableRow?:                          string;
     RemoveStatusEffects?:                           string;
     RemoveTargetStatusEffectCats?:                  string;
-    RemoveTargetStatusEffectsList?:                 string;
+    RemoveTargetStatusEffectsList?:                 string[];
     RepairDustYieldMod?:                            number;
     RequireReaction?:                               boolean | string;
     RequiredAbilityId?:                             string;
@@ -4161,11 +4161,11 @@ export interface Ability {
     StaggerDamageReduction?:                        number;
     Stamina?:                                       number;
     StaminaCostFlatMod?:                            number;
-    StaminaCostList?:                               string;
+    StaminaCostList?:                               string[];
     StatusEffect?:                                  string;
     StatusEffectBeingApplied?:                      string;
     StatusEffectCategories?:                        string;
-    StatusEffectCategoriesList?:                    string;
+    StatusEffectCategoriesList?:                    string[];
     StatusEffectCategoryToTransfer?:                string;
     StatusEffectComparison?:                        string;
     StatusEffectDamageTableIdForRowOverride?:       string;
@@ -4175,7 +4175,7 @@ export interface Ability {
     StatusEffectDurationMult?:                      number;
     StatusEffectDurationReduction?:                 number;
     StatusEffectStackSize?:                         number;
-    StatusEffectsList?:                             string;
+    StatusEffectsList?:                             string[];
     TargetCollisionFilters?:                        string;
     TargetComparisonType?:                          string;
     TargetHasGritActive?:                           boolean;
@@ -4185,7 +4185,7 @@ export interface Ability {
     TargetStatusEffectCategory?:                    string;
     TargetStatusEffectComparison?:                  string;
     TargetStatusEffectDurationCats?:                string;
-    TargetStatusEffectDurationList?:                string;
+    TargetStatusEffectDurationList?:                string[];
     TargetStatusEffectDurationMod?:                 number;
     TargetStatusEffectDurationMult?:                number;
     TargetStatusEffectStackSize?:                   number;

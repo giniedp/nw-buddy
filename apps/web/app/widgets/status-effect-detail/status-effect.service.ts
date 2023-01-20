@@ -1,6 +1,7 @@
-import { Injectable, Output } from '@angular/core'
+import { Injectable } from '@angular/core'
 import { Statuseffect } from '@nw-data/types'
-import { combineLatest, map, ReplaySubject } from 'rxjs'
+import { uniq } from 'lodash'
+import { map, ReplaySubject } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
 import { humanize, shareReplayRefCount } from '~/utils'
@@ -15,6 +16,24 @@ export class StatusEffectDetailService {
   public readonly source$ = this.effect$.pipe(map((it) => it?.['$source']))
   public readonly description$ = this.effect$.pipe(map((it) => it?.Description))
   public readonly properties$ = this.effect$.pipe(map((it) => this.getProperties(it))).pipe(shareReplayRefCount(1))
+
+  public readonly refEffects$ = this.effect$.pipe(map((it) => {
+    return uniq([
+      it?.OnDeathStatusEffect,
+      it?.OnEndStatusEffect,
+      it?.OnStackStatusEffect,
+      it?.OnTickStatusEffect,
+    ])
+    .filter((e) => !!e)
+    .filter((e) => e !== it.StatusID)
+  }))
+
+  public readonly refAbilities$ = this.effect$.pipe(map((it) => {
+    return uniq([
+      it?.EquipAbility,
+    ])
+    .filter((e) => !!e)
+  }))
 
   public constructor(private db: NwDbService) {
     //

@@ -45,8 +45,24 @@ export class PerkDetailComponent extends PerkDetailService {
           routerLink: ['/perks/table', value]
         }]
       }
+      case 'Affix': {
+        return [{
+          value: String(value),
+          primary: true,
+          italic: true
+        }]
+      }
+      case 'ItemClass': {
+        return createTags(value as Perks['ItemClass'])
+      }
+      case 'ExcludeItemClass': {
+        return createTags(value as Perks['ExcludeItemClass'])
+      }
+      case 'ExclusiveLabels': {
+        return createTags(value as Perks['ExclusiveLabels'])
+      }
       case 'EquipAbility': {
-        return value.map((it: string) => {
+        return (value as Perks['EquipAbility']).map((it) => {
           return {
             value: it,
             accent: true,
@@ -64,5 +80,14 @@ export class PerkDetailComponent extends PerkDetailService {
       }
     }
   }
+}
+
+function createTags(value: string[]): PropertyGridCell[] {
+  return value.map((it) => {
+    return {
+      value: it,
+      secondary: true
+    }
+  })
 }
 

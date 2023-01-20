@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
 import { Ability } from '@nw-data/types'
+import { uniq } from 'lodash'
+import { map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
@@ -37,29 +39,38 @@ export class AbilityDetailComponent extends AbilityDetailService {
     super(db)
   }
 
-  public formatValue = (value: any, key: keyof Ability): PropertyGridCell[] =>  {
+  public formatValue = (value: any, key: keyof Ability): PropertyGridCell | PropertyGridCell[] =>  {
     switch (key) {
+      case 'TargetStatusEffectDurationList':
+        return statusEffectCells(value as Ability['TargetStatusEffectDurationList'])
+      case 'RemoveTargetStatusEffectsList':
+          return statusEffectCells(value as Ability['RemoveTargetStatusEffectsList'])
+      case 'StatusEffectsList':
+        return statusEffectCells(value as Ability['StatusEffectsList'])
       case 'StatusEffect':
       case 'TargetStatusEffect':
       case 'OtherApplyStatusEffect':
       case 'SelfApplyStatusEffect':
+      case 'DontHaveStatusEffect':
+      case 'StatusEffectBeingApplied':
       case 'OnEquipStatusEffect': {
-        return [{
-          value: String(value),
-          accent: true,
-          routerLink: ['/status-effects/table', value]
-        }]
+        return statusEffectCells(value)
       }
       case 'AbilityID':
       case 'RequiredEquippedAbilityId':
       case 'RequiredAbilityId': {
-        return [{
-          value: String(value),
-          accent: true,
-          routerLink: ['/abilities/table', value]
-        }]
+        return abilitiesCells(value)
+      }
+      case 'AbilityList': {
+        return abilitiesCells(value as Ability['AbilityList'])
       }
       default: {
+        if (Array.isArray(value)) {
+          return value.map((it) => ({
+            value: String(it),
+            secondary: true,
+          }))
+        }
         return [{
           value: String(value),
           accent: typeof value === 'number',
@@ -70,3 +81,26 @@ export class AbilityDetailComponent extends AbilityDetailService {
     }
   }
 }
+
+function statusEffectCells(list: string | string[]): PropertyGridCell[] {
+  list = typeof list === 'string' ? [list] : list
+  return list?.map((it) => {
+    return {
+      value: String(it),
+      accent: true,
+      routerLink: ['/status-effects/table', it]
+    }
+  })
+}
+
+function abilitiesCells(list: string | string[]): PropertyGridCell[] {
+  list = typeof list === 'string' ? [list] : list
+  return list?.map((it) => {
+    return {
+      value: String(it),
+      accent: true,
+      routerLink: ['/abilities/table', it]
+    }
+  })
+}
+

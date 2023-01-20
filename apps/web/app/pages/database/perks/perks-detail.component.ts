@@ -28,7 +28,7 @@ import { PerkDetailModule } from '~/widgets/perk-detail'
     AbilityDetailModule,
   ],
   host: {
-    class: 'flex-none flex flex-col layout-pad',
+    class: 'flex-none flex flex-col',
   },
 })
 export class PerksDetailComponent {

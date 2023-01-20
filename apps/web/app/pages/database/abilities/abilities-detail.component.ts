@@ -12,6 +12,7 @@ import { LayoutModule } from '~/ui/layout'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { AbilityDetailModule } from '~/widgets/ability-detail'
+import { StatusEffectDetailModule } from '~/widgets/status-effect-detail'
 
 @Component({
   standalone: true,
@@ -26,9 +27,10 @@ import { AbilityDetailModule } from '~/widgets/ability-detail'
     PropertyGridModule,
     LayoutModule,
     AbilityDetailModule,
+    StatusEffectDetailModule
   ],
   host: {
-    class: 'flex-none flex flex-col layout-pad',
+    class: 'flex-none flex flex-col',
   },
 })
 export class AbilitiesDetailComponent {

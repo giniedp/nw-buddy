@@ -10,6 +10,7 @@ import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '~/nw/utils/const
 import { LayoutModule } from '~/ui/layout'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
+import { AbilityDetailModule } from '~/widgets/ability-detail'
 import { StatusEffectDetailModule } from '~/widgets/status-effect-detail'
 
 @Component({
@@ -17,9 +18,9 @@ import { StatusEffectDetailModule } from '~/widgets/status-effect-detail'
   selector: 'nwb-status-effects-detail-page',
   templateUrl: './status-effects-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, RouterModule, StatusEffectDetailModule, PropertyGridModule, LayoutModule],
+  imports: [CommonModule, NwModule, RouterModule, StatusEffectDetailModule, AbilityDetailModule, PropertyGridModule, LayoutModule],
   host: {
-    class: 'flex-none flex flex-col layout-pad',
+    class: 'flex-none flex flex-col',
   },
 })
 export class AbilitiesDetailComponent {

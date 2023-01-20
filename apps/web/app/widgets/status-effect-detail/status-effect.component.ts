@@ -57,6 +57,12 @@ export class StatusEffectDetailComponent extends StatusEffectDetailService {
         }]
       }
       default: {
+        if (Array.isArray(value)) {
+          return value.map((it) => ({
+            value: String(it),
+            secondary: true,
+          }))
+        }
         return [{
           value: String(value),
           accent: typeof value === 'number',

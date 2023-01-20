@@ -161,10 +161,20 @@ program
           ],
         },
         {
-          file: /javelindata_weaponabilities\.json/,
+          file: /javelindata_ability_\w+\.json/,
           rules: [
             splitToArrayRule({
-              properties: ['AttackType'],
+              properties: [
+                'AbilityList',
+                'AttackType',
+                'DamageTableRow',
+                'ManaCostList',
+                'RemoveTargetStatusEffectsList',
+                'StaminaCostList',
+                'StatusEffectCategoriesList',
+                'StatusEffectsList',
+                'TargetStatusEffectDurationList',
+              ],
               separator: ',',
             }),
           ],
@@ -206,19 +216,26 @@ program
                 return
               }
               if (obj.ArmorAppearanceM) {
-                obj.IconPath = getTables(/_itemappearancedefinitions/).find((it) => it.ItemID === obj.ArmorAppearanceM)?.IconPath
+                obj.IconPath = getTables(/_itemappearancedefinitions/).find(
+                  (it) => it.ItemID === obj.ArmorAppearanceM
+                )?.IconPath
                 obj.IconPath = obj.IconPath || `lyshineui/images/icons/items/${obj.ItemType}/${obj.ArmorIconM}`
               } else if (obj.ArmorAppearanceF) {
-                obj.IconPath = getTables(/_itemappearancedefinitions/).find((it) => it.ItemID === obj.ArmorIconF)?.IconPath
+                obj.IconPath = getTables(/_itemappearancedefinitions/).find(
+                  (it) => it.ItemID === obj.ArmorIconF
+                )?.IconPath
                 obj.IconPath = obj.IconPath || `lyshineui/images/icons/items/${obj.ItemType}/${obj.ArmorIconF}`
               } else if (obj.WeaponAppearanceOverride) {
-                obj.IconPath = getTables(/_weaponappearances/).find((it) => it.WeaponAppearanceID === obj.WeaponAppearanceOverride)?.IconPath
-                obj.IconPath = obj.IconPath || `lyshineui/images/icons/items/${obj.ItemType}/${obj.WeaponAppearanceOverride}`
+                obj.IconPath = getTables(/_weaponappearances/).find(
+                  (it) => it.WeaponAppearanceID === obj.WeaponAppearanceOverride
+                )?.IconPath
+                obj.IconPath =
+                  obj.IconPath || `lyshineui/images/icons/items/${obj.ItemType}/${obj.WeaponAppearanceOverride}`
               }
             },
           ],
-        }
-      ]
+        },
+      ],
     })
 
     console.log('importing locales')

@@ -1,5 +1,6 @@
 import { Injectable, Output } from '@angular/core'
 import { Ability } from '@nw-data/types'
+import { uniq } from 'lodash'
 import { combineLatest, map, ReplaySubject } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
@@ -26,7 +27,32 @@ export class AbilityDetailService {
   public readonly description$ = this.ability$.pipe(map((it) => it?.Description))
   public readonly properties$ = this.ability$.pipe(map((it) => this.getProperties(it))).pipe(shareReplayRefCount(1))
 
-  public constructor(private db: NwDbService) {
+  public readonly refEffects$ = this.ability$.pipe(
+    map((it) => {
+      return uniq([
+        it?.SelfApplyStatusEffect,
+        it?.StatusEffect,
+        it?.TargetStatusEffect,
+        it?.OtherApplyStatusEffect,
+        it?.DontHaveStatusEffect,
+        it?.StatusEffectBeingApplied,
+        it?.OnEquipStatusEffect,
+        ...(it?.TargetStatusEffectDurationList || []),
+        ...(it?.RemoveTargetStatusEffectsList || []),
+        ...(it?.StatusEffectsList || []),
+      ]).filter((it) => !!it)
+    })
+  )
+
+  public readonly refAbilities$ = this.ability$.pipe(
+    map((it) => {
+      return uniq([it?.RequiredEquippedAbilityId, it?.RequiredAbilityId, it?.AbilityList])
+        .filter((e) => !!e)
+        .filter((e) => e !== it.AbilityID)
+    })
+  )
+
+  public constructor(protected db: NwDbService) {
     //
   }
 

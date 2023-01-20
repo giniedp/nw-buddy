@@ -9,14 +9,15 @@
   <nwb-item-header-content
     class="z-10"
     [name]="nameForDisplay$ | async | nwText | nwTextBreak:' - '"
-    [sourceName]="uiCategory$ | async"
+    [sourceName]="'Ability'"
     [typeName]="weaponOrSource$ | async"
+    [rarityName]="uiCategory$ | async"
 
   ></nwb-item-header-content>
 </nwb-item-header>
 <div class="p-3 flex flex-col gap-2">
   <ng-container *ngIf="description$ | async | nwText | nwTextBreak; let description">
-    <div [innerHTML]="description"></div>
+    <div [innerHTML]="description" class="text-nw-description italic"></div>
     <nwb-item-divider></nwb-item-divider>
   </ng-container>
 
