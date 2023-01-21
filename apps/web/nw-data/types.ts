@@ -3992,7 +3992,7 @@ export interface Ability {
     AfterAction?:                                   string;
     AllowSelfDamageForHitEvents?:                   boolean;
     ArmorPenetration?:                              number;
-    AttachedTargetSpellIds?:                        string;
+    AttachedTargetSpellIds?:                        string[];
     AttackType?:                                    string[];
     AttackerVitalsCategory?:                        string;
     Azoth?:                                         number;
@@ -4151,7 +4151,7 @@ export interface Ability {
     ResetConsumableCooldowns?:                      string;
     ResetCooldownTimers?:                           string;
     ResetTrackedOnSuccess?:                         boolean;
-    SelfApplyStatusEffect?:                         string;
+    SelfApplyStatusEffect?:                         string[];
     SelfApplyStatusEffectDurations?:                number;
     SetHealthOnFatalDamageTaken?:                   number;
     SetMannequinTag?:                               string;

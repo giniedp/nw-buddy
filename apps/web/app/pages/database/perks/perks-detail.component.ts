@@ -12,6 +12,8 @@ import { PropertyGridModule } from '~/ui/property-grid'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { AbilityDetailModule } from '~/widgets/ability-detail'
 import { PerkDetailModule } from '~/widgets/perk-detail'
+import { ScreenshotModule } from '~/widgets/screenshot'
+import { StatusEffectDetailModule } from '~/widgets/status-effect-detail'
 
 @Component({
   standalone: true,
@@ -19,13 +21,15 @@ import { PerkDetailModule } from '~/widgets/perk-detail'
   templateUrl: './perks-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    AbilityDetailModule,
+    StatusEffectDetailModule,
     CommonModule,
+    LayoutModule,
     NwModule,
-    RouterModule,
     PerkDetailModule,
     PropertyGridModule,
-    LayoutModule,
-    AbilityDetailModule,
+    RouterModule,
+    ScreenshotModule,
   ],
   host: {
     class: 'flex-none flex flex-col',

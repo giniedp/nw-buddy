@@ -12,6 +12,7 @@ import { DataTableModule } from '~/ui/data-table'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule } from '~/ui/quicksearch'
 import { PerksTableAdapter } from '~/widgets/adapter'
+import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   standalone: true,
@@ -20,14 +21,15 @@ import { PerksTableAdapter } from '~/widgets/adapter'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    RouterModule,
-    FormsModule,
-    OverlayModule,
-    NwModule,
-    QuicksearchModule,
     DataTableModule,
-    NavToolbarModule,
+    FormsModule,
     IonicModule,
+    NavToolbarModule,
+    NwModule,
+    OverlayModule,
+    QuicksearchModule,
+    RouterModule,
+    ScreenshotModule,
   ],
   host: {
     class: 'layout-col',

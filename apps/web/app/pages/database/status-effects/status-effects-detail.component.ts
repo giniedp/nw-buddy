@@ -11,6 +11,7 @@ import { LayoutModule } from '~/ui/layout'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { AbilityDetailModule } from '~/widgets/ability-detail'
+import { ScreenshotModule } from '~/widgets/screenshot'
 import { StatusEffectDetailModule } from '~/widgets/status-effect-detail'
 
 @Component({
@@ -18,7 +19,16 @@ import { StatusEffectDetailModule } from '~/widgets/status-effect-detail'
   selector: 'nwb-status-effects-detail-page',
   templateUrl: './status-effects-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, RouterModule, StatusEffectDetailModule, AbilityDetailModule, PropertyGridModule, LayoutModule],
+  imports: [
+    AbilityDetailModule,
+    CommonModule,
+    LayoutModule,
+    NwModule,
+    PropertyGridModule,
+    RouterModule,
+    ScreenshotModule,
+    StatusEffectDetailModule,
+  ],
   host: {
     class: 'flex-none flex flex-col',
   },
@@ -26,7 +36,12 @@ import { StatusEffectDetailModule } from '~/widgets/status-effect-detail'
 export class AbilitiesDetailComponent {
   public itemId = observeRouteParam(this.route, 'id')
 
-  public constructor(private route: ActivatedRoute, private i18n: TranslateService, private expr: NwExpressionService, private head: HtmlHeadService) {
+  public constructor(
+    private route: ActivatedRoute,
+    private i18n: TranslateService,
+    private expr: NwExpressionService,
+    private head: HtmlHeadService
+  ) {
     //
   }
 
@@ -34,17 +49,19 @@ export class AbilitiesDetailComponent {
     if (!entity) {
       return
     }
-    const description = await firstValueFrom(this.expr.solve({
-      charLevel: NW_MAX_CHARACTER_LEVEL,
-      gearScore: NW_MAX_GEAR_SCORE_BASE,
-      text: this.i18n.get(entity.Description),
-      itemId: entity.StatusID
-    }))
+    const description = await firstValueFrom(
+      this.expr.solve({
+        charLevel: NW_MAX_CHARACTER_LEVEL,
+        gearScore: NW_MAX_GEAR_SCORE_BASE,
+        text: this.i18n.get(entity.Description),
+        itemId: entity.StatusID,
+      })
+    )
     this.head.updateMetadata({
       title: [this.i18n.get(entity.DisplayName), 'Status Effect'].join(' - '),
       description: description,
       url: this.head.currentUrl,
-      image: entity.PlaceholderIcon || entity['IconPath']
+      image: entity.PlaceholderIcon || entity['IconPath'],
     })
   }
 }

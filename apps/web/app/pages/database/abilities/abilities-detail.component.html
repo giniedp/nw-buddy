@@ -1,20 +1,31 @@
 <nwb-detail-drawer class="hidden lg:block lg:w-96 2xl:w-[500px]" [breakpoints]="[0.15, 0.25, 0.5, 1]">
   <div
     *nwbDetailDraweContent
-    class="layout-content bg-base-200 p-2"
+    class="layout-content p-2"
     [nwbAbilityDetail]="itemId | async"
     (nwbAbilityChange)="onEntity($event)"
     #detail="abilityDetail"
   >
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2 bg-base-200" [nwbScreenshotFrame]="itemId | async">
       <nwb-ability-detail [abilityId]="itemId | async" [showProperties]="true" class="bg-black"> </nwb-ability-detail>
 
-      <ng-container *ngFor="let effectId of detail.refEffects$ | async">
+      <ng-container *ngFor="let effectId of detail.refEffects$ | async; let isFirst = first">
+        <h3 *ngIf="isFirst" class="prose">Referenced Status Effects:</h3>
         <nwb-status-effect-detail
           [effectId]="effectId"
           [showProperties]="true"
           class="bg-black"
         ></nwb-status-effect-detail>
+      </ng-container>
+
+      <ng-container *ngFor="let spellId of detail.refSpells$ | async; let isFirst = first">
+        <h3 *ngIf="isFirst" class="prose">Referenced Spells:</h3>
+        <nwb-spell-detail [spellId]="spellId" class="bg-black"></nwb-spell-detail>
+      </ng-container>
+
+      <ng-container *ngFor="let perkId of perkIds$ | async; let isFirst = first">
+        <h3 *ngIf="isFirst" class="prose">Referenced by Perks:</h3>
+        <nwb-perk-detail [perkId]="perkId" [showProperties]="true" class="bg-black"> </nwb-perk-detail>
       </ng-container>
     </div>
   </div>

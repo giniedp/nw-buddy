@@ -30,19 +30,27 @@ export class AbilityDetailService {
   public readonly refEffects$ = this.ability$.pipe(
     map((it) => {
       return uniq([
-        it?.SelfApplyStatusEffect,
         it?.StatusEffect,
         it?.TargetStatusEffect,
         it?.OtherApplyStatusEffect,
         it?.DontHaveStatusEffect,
         it?.StatusEffectBeingApplied,
         it?.OnEquipStatusEffect,
+        it?.DamageTableStatusEffectOverride,
         ...(it?.TargetStatusEffectDurationList || []),
         ...(it?.RemoveTargetStatusEffectsList || []),
         ...(it?.StatusEffectsList || []),
-      ]).filter((it) => !!it)
+        ...(it?.SelfApplyStatusEffect || []),
+      ]).filter((it) => !!it && it !== 'All')
     })
   )
+
+  public readonly refSpells$ = this.ability$.pipe(map((it) => {
+    return uniq([
+      it?.CastSpell,
+      ...(it?.AttachedTargetSpellIds || [])
+    ]).filter((it) => !!it && it !== 'All')
+  }))
 
   public readonly refAbilities$ = this.ability$.pipe(
     map((it) => {

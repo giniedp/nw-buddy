@@ -180,7 +180,7 @@ export class NwExpressionService {
       case 'SpellDataTable_Runes':
       case 'SpellDataTable_VoidGauntlet':
       case 'SpellDataTable_WarHammer': {
-        return this.db.spellTableMap
+        return this.db.spellsMap
       }
       case 'BlunderbussAbilityTable':
       case 'BowAbilityTable':

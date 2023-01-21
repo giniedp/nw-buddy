@@ -1,3 +1,4 @@
+```ts
 ABABleed:                   number;
 ABACurse:                   number;
 ABADisease:                 number;
@@ -90,3 +91,4 @@ StatusID:                   string;
 UseCountMultiplier:         number;
 WeaponEffectType?:          string;
 WeightMultiplier:           number;
+```

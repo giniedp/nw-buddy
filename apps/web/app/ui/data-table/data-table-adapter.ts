@@ -1,6 +1,7 @@
 import { ClassProvider, ExistingProvider, Injectable, StaticProvider, Type } from '@angular/core'
 import {
   ColDef,
+  ColGroupDef,
   GridOptions,
   ICellRendererFunc,
   RowDataTransaction,
@@ -122,6 +123,10 @@ export abstract class DataTableAdapter<T> {
   }
 
   public colDef(data: ColDef & Required<Pick<ColDef, 'colId' | 'headerValueGetter'>>): ColDef {
+    return data
+  }
+
+  public colGroupDef(data: ColGroupDef & Required<Pick<ColGroupDef, 'children' | 'headerName'>>): ColDef {
     return data
   }
 

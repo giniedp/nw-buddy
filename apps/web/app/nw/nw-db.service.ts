@@ -1,18 +1,36 @@
 import { Injectable } from '@angular/core'
 import { groupBy } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, shareReplay } from 'rxjs'
-import { CaseInsensitiveMap } from '../utils'
+import { CaseInsensitiveMap, CaseInsensitiveSet } from '../utils'
 import { NwDataService } from './nw-data.service'
 import { queryGemPerksWithAffix, queryMutatorDifficultiesWithRewards } from './nw-db-views'
 import { convertLootbuckets, convertLoottables } from './utils'
 
-export function toMap<T, K extends keyof T>(list: T[], id: K): Map<T[K], T> {
+export function createIndex<T, K extends keyof T>(list: T[], id: K): Map<T[K], T> {
   const result = new CaseInsensitiveMap<T[K], T>()
   for (const item of list) {
     result.set(item[id], item)
   }
   return result
 }
+
+export function createIndexGroup<T, K extends keyof T>(list: T[], id: K): Map<string, T[]> {
+  return dictToMap(groupBy(list, (i) => i[id]))
+}
+
+export function createIndexGroupSet<T>(list: T[], getKeys: (it: T) => string[]): Map<string, Set<T>> {
+  const result = new CaseInsensitiveMap<string, Set<T>>()
+  for (const item of list) {
+    const keys = getKeys(item) || []
+    for (const key of keys) {
+      const list = result.get(key) || new CaseInsensitiveSet()
+      list.add(item)
+      result.set(key, list)
+    }
+  }
+  return result
+}
+export type IndexKey<T> = T extends Array<any> ? never: T
 
 function annotate<T>(key: string, value: string) {
   return map((items: T[]) => {
@@ -25,7 +43,7 @@ export function dictToMap<V>(record: Record<string, V>): Map<string, V> {
   return new CaseInsensitiveMap<string, V>(Object.entries(record))
 }
 
-function list<T>(source: () => Observable<T[]> | Array<Observable<T[]>>) {
+function table<T>(source: () => Observable<T[]> | Array<Observable<T[]>>) {
   return defer(() => {
     const src = source()
     return combineLatest(Array.isArray(src) ? src : [src])
@@ -33,14 +51,19 @@ function list<T>(source: () => Observable<T[]> | Array<Observable<T[]>>) {
     .pipe(map((it) => it.flat(1)))
     .pipe(shareReplay(1))
 }
-function index<T, K extends keyof T>(getList: () => Observable<T[]>, key: K) {
-  return defer(() => getList())
-    .pipe(map((items) => toMap(items, key)))
+function indexBy<T, K extends keyof T>(source: () => Observable<T[]>, key: K) {
+  return defer(() => source())
+    .pipe(map((items) => createIndex(items, key)))
     .pipe(shareReplay(1))
 }
-function indexGroup<T, K extends keyof T>(getList: () => Observable<T[]>, key: K) {
-  return defer(() => getList())
-    .pipe(map((it) => dictToMap(groupBy(it, (i) => i[key]))))
+function indexGroupSetBy<T>(source: () => Observable<T[]>, fn: (it: T) => string[]) {
+  return defer(() => source())
+    .pipe(map((items) => createIndexGroupSet(items, fn)))
+    .pipe(shareReplay(1))
+}
+function indexGroupBy<T, K extends keyof T>(source: () => Observable<T[]>, key: K) {
+  return defer(() => source())
+    .pipe(map((items) => createIndexGroup(items, key)))
     .pipe(shareReplay(1))
 }
 function lookup<K, T>(getMap: () => Observable<Map<K, T>>) {
@@ -54,17 +77,17 @@ function lookup<K, T>(getMap: () => Observable<Map<K, T>>) {
 
 @Injectable({ providedIn: 'root' })
 export class NwDbService {
-  public items = list(() =>
+  public items = table(() =>
     this.data
       .apiMethodsByPrefix('itemdefinitionsMaster', 'itemdefinitionsMasterCommon')
       .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
   )
-  public itemsMap = index(() => this.items, 'ItemID')
+  public itemsMap = indexBy(() => this.items, 'ItemID')
   public item = lookup(() => this.itemsMap)
-  public itemsBySalvageAchievement = indexGroup(() => this.items, 'SalvageAchievement')
+  public itemsBySalvageAchievement = indexGroupBy(() => this.items, 'SalvageAchievement')
 
-  public housingItems = list(() => [this.data.housingitems()])
-  public housingItemsMap = index(() => this.housingItems, 'HouseItemID')
+  public housingItems = table(() => [this.data.housingitems()])
+  public housingItemsMap = indexBy(() => this.housingItems, 'HouseItemID')
   public housingItem = lookup(() => this.housingItemsMap)
 
 
@@ -74,179 +97,182 @@ export class NwDbService {
       housing: this.housingItem(id),
     }).pipe(map(({ item, housing }) => item || housing))
 
-  public abilities = list(() =>
+  public abilities = table(() =>
     this.data
       .apiMethodsByPrefix('weaponabilitiesAbility', 'weaponabilitiesAbilityAi')
       .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
   )
-  public abilitiesMap = index(() => this.abilities, 'AbilityID')
+  public abilitiesMap = indexBy(() => this.abilities, 'AbilityID')
   public ability = lookup(() => this.abilitiesMap)
 
-  public statusEffects = list(() =>
+  public statusEffects = table(() =>
     this.data
       .apiMethodsByPrefix('statuseffects', 'statuseffectsAi')
       .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
   )
-  public statusEffectsMap = index(() => this.statusEffects, 'StatusID')
+  public statusEffectsMap = indexBy(() => this.statusEffects, 'StatusID')
   public statusEffect = lookup(() => this.statusEffectsMap)
 
-  public damageTable0 = list(() => [this.data.damagetable()])
+  public damageTable0 = table(() => [this.data.damagetable()])
 
-  public damageTables = list(() =>
+  public damageTables = table(() =>
     this.data
       .apiMethodsByPrefix('damagetable', 'damagetable')
       .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
   )
-  public damageTableMap = index(() => this.damageTables, 'DamageID')
+  public damageTableMap = indexBy(() => this.damageTables, 'DamageID')
   public damageTable = lookup(() => this.damageTableMap)
 
-  public armors = list(() => [this.data.itemdefinitionsArmor()])
-  public armorsMap = index(() => this.armors, 'WeaponID')
+  public armors = table(() => [this.data.itemdefinitionsArmor()])
+  public armorsMap = indexBy(() => this.armors, 'WeaponID')
   public armor = lookup(() => this.armorsMap)
 
-  public weapons = list(() => [this.data.itemdefinitionsWeapons()])
-  public weaponsMap = index(() => this.weapons, 'WeaponID')
+  public weapons = table(() => [this.data.itemdefinitionsWeapons()])
+  public weaponsMap = indexBy(() => this.weapons, 'WeaponID')
   public weapon = lookup(() => this.weaponsMap)
 
-  public consumables = list(() => [this.data.itemdefinitionsConsumables()])
-  public consumablesMap = index(() => this.consumables, 'ConsumableID')
+  public consumables = table(() => [this.data.itemdefinitionsConsumables()])
+  public consumablesMap = indexBy(() => this.consumables, 'ConsumableID')
   public consumable = lookup(() => this.consumablesMap)
 
-  public runes = list(() => [this.data.itemdefinitionsRunes()])
-  public runesMap = index(() => this.runes, 'WeaponID')
+  public runes = table(() => [this.data.itemdefinitionsRunes()])
+  public runesMap = indexBy(() => this.runes, 'WeaponID')
   public rune = lookup(() => this.runesMap)
 
-  public spellTable = list(() =>
+  public spells = table(() =>
     this.data
       .apiMethodsByPrefix('spelltable', 'spelltable')
       .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
   )
-  public spellTableMap = index(() => this.spellTable, 'SpellID')
+  public spellsMap = indexBy(() => this.spells, 'SpellID')
+  public spell = lookup(() => this.spellsMap)
 
-  public gameModes = list(() => [this.data.gamemodes()])
-  public gameModesMap = index(() => this.gameModes, 'GameModeId')
+  public gameModes = table(() => [this.data.gamemodes()])
+  public gameModesMap = indexBy(() => this.gameModes, 'GameModeId')
   public gameMode = lookup(() => this.gameModesMap)
 
-  public perks = list(() => [this.data.perks()])
-  public perksMap = index(() => this.perks, 'PerkID')
+  public perks = table(() => [this.data.perks()])
+  public perksMap = indexBy(() => this.perks, 'PerkID')
   public perk = lookup(() => this.perksMap)
+  public perksByEquipAbilityMap = indexGroupSetBy(() => this.perks, (it) => it.EquipAbility)
+  public perksByEquipAbility = lookup(() => this.perksByEquipAbilityMap)
 
-  public perkBuckets = list(() => [this.data.perkbuckets()])
-  public perkBucketsMap = index(() => this.perkBuckets, 'PerkBucketID')
+  public perkBuckets = table(() => [this.data.perkbuckets()])
+  public perkBucketsMap = indexBy(() => this.perkBuckets, 'PerkBucketID')
   public perkBucket = lookup(() => this.perkBucketsMap)
 
-  public recipes = list(() => [this.data.crafting()])
-  public recipesMap = index(() => this.recipes, 'RecipeID')
-  public recipesMapByItemId = index(() => this.recipes, 'ItemID')
+  public recipes = table(() => [this.data.crafting()])
+  public recipesMap = indexBy(() => this.recipes, 'RecipeID')
+  public recipesMapByItemId = indexBy(() => this.recipes, 'ItemID')
   public recipe = lookup(() => this.recipesMap)
 
-  public recipeCategories = list(() => [this.data.craftingcategories()])
-  public recipeCategoriesMap = index(() => this.recipeCategories, 'CategoryID')
+  public recipeCategories = table(() => [this.data.craftingcategories()])
+  public recipeCategoriesMap = indexBy(() => this.recipeCategories, 'CategoryID')
   public recipeCategory = lookup(() => this.recipeCategoriesMap)
 
-  public affixDefinitions = list(() => [this.data.affixdefinitions()])
-  public affixDefinitionsMap = index(() => this.affixDefinitions, 'AffixID')
+  public affixDefinitions = table(() => [this.data.affixdefinitions()])
+  public affixDefinitionsMap = indexBy(() => this.affixDefinitions, 'AffixID')
   public affixDefinition = lookup(() => this.affixDefinitionsMap)
 
-  public affixStats = list(() => [this.data.affixstats()])
-  public affixStatsMap = index(() => this.affixStats, 'StatusID')
+  public affixStats = table(() => [this.data.affixstats()])
+  public affixStatsMap = indexBy(() => this.affixStats, 'StatusID')
   public affixStat = lookup(() => this.affixStatsMap)
 
-  public afflictions = list(() => [this.data.afflictions()])
-  public afflictionsMap = index(() => this.afflictions, 'AfflictionID')
+  public afflictions = table(() => [this.data.afflictions()])
+  public afflictionsMap = indexBy(() => this.afflictions, 'AfflictionID')
   public affliction = lookup(() => this.afflictionsMap)
 
-  public manacosts = list(() => [this.data.manacostsPlayer()])
-  public manacostsMap = index(() => this.manacosts, 'ID')
+  public manacosts = table(() => [this.data.manacostsPlayer()])
+  public manacostsMap = indexBy(() => this.manacosts, 'ID')
 
-  public staminacostsPlayer = list(() => [this.data.staminacostsPlayer()])
-  public staminacostsPlayerMap = index(() => this.staminacostsPlayer, 'CostID')
+  public staminacostsPlayer = table(() => [this.data.staminacostsPlayer()])
+  public staminacostsPlayerMap = indexBy(() => this.staminacostsPlayer, 'CostID')
 
-  public arenas = list(() => [this.data.arenasArenadefinitions()])
-  public arenasMap = index(() => this.arenas, 'TerritoryID')
+  public arenas = table(() => [this.data.arenasArenadefinitions()])
+  public arenasMap = indexBy(() => this.arenas, 'TerritoryID')
   public arena = lookup(() => this.arenasMap)
 
-  public itemsConsumables = list(() => [this.data.itemdefinitionsConsumables()])
-  public itemsConsumablesMap = index(() => this.itemsConsumables, 'ConsumableID')
+  public itemsConsumables = table(() => [this.data.itemdefinitionsConsumables()])
+  public itemsConsumablesMap = indexBy(() => this.itemsConsumables, 'ConsumableID')
 
-  public gameEvents = list(() => [this.data.gameevents()])
-  public gameEventsMap = index(() => this.gameEvents, 'EventID')
+  public gameEvents = table(() => [this.data.gameevents()])
+  public gameEventsMap = indexBy(() => this.gameEvents, 'EventID')
   public gameEvent = lookup(() => this.gameEventsMap)
 
-  public categoriesProgression = list(() => [this.data.categoricalprogression()])
-  public categoriesProgressionMap = index(() => this.categoriesProgression, 'CategoricalProgressionId')
+  public categoriesProgression = table(() => [this.data.categoricalprogression()])
+  public categoriesProgressionMap = indexBy(() => this.categoriesProgression, 'CategoricalProgressionId')
 
-  public metaAchievements = list(() => [this.data.metaachievements()])
-  public metaAchievementsMap = index(() => this.metaAchievements, 'MetaAchievementId')
+  public metaAchievements = table(() => [this.data.metaachievements()])
+  public metaAchievementsMap = indexBy(() => this.metaAchievements, 'MetaAchievementId')
 
-  public tradeskillPostcap = list(() => [this.data.tradeskillpostcap()])
+  public tradeskillPostcap = table(() => [this.data.tradeskillpostcap()])
 
-  public vitals = list(() => [this.data.vitals()])
-  public vitalsMap = index(() => this.vitals, 'VitalsID')
+  public vitals = table(() => [this.data.vitals()])
+  public vitalsMap = indexBy(() => this.vitals, 'VitalsID')
   public vital = lookup(() => this.vitalsMap)
 
-  public vitalsByFamily = indexGroup(() => this.vitals, 'Family')
+  public vitalsByFamily = indexGroupBy(() => this.vitals, 'Family')
   public vitalsOfFamily = lookup(() => this.vitalsByFamily)
 
-  public vitalsByCreatureType = indexGroup(() => this.vitals, 'CreatureType')
+  public vitalsByCreatureType = indexGroupBy(() => this.vitals, 'CreatureType')
   public vitalsOfCreatureType = lookup(() => this.vitalsByCreatureType)
 
-  public vitalsFamilies = list(() => this.vitalsByFamily.pipe(map((it) => Array.from(it.keys()))))
+  public vitalsFamilies = table(() => this.vitalsByFamily.pipe(map((it) => Array.from(it.keys()))))
 
-  public vitalsCategories = list(() => [this.data.vitalscategories()])
-  public vitalsCategoriesMap = index(() => this.vitalsCategories, 'VitalsCategoryID')
+  public vitalsCategories = table(() => [this.data.vitalscategories()])
+  public vitalsCategoriesMap = indexBy(() => this.vitalsCategories, 'VitalsCategoryID')
   public vitalsCategory = lookup(() => this.vitalsCategoriesMap)
-  public vitalsCategoriesMapByGroup = indexGroup(() => this.vitalsCategories, 'GroupVitalsCategoryId')
+  public vitalsCategoriesMapByGroup = indexGroupBy(() => this.vitalsCategories, 'GroupVitalsCategoryId')
 
-  public vitalsModifiers = list(() => [this.data.vitalsmodifierdata()])
-  public vitalsModifiersMap = index(() => this.vitalsModifiers, 'CategoryId')
+  public vitalsModifiers = table(() => [this.data.vitalsmodifierdata()])
+  public vitalsModifiersMap = indexBy(() => this.vitalsModifiers, 'CategoryId')
   public vitalsModifier = lookup(() => this.vitalsModifiersMap)
 
-  public vitalsLevels = list(() => [this.data.vitalsleveldata()])
-  public vitalsLevelsMap = index(() => this.vitalsLevels, 'Level')
+  public vitalsLevels = table(() => [this.data.vitalsleveldata()])
+  public vitalsLevelsMap = indexBy(() => this.vitalsLevels, 'Level')
   public vitalsLevel = lookup(() => this.vitalsLevelsMap)
 
-  public damagetypes = list(() => this.data.damagetypes())
-  public damagetypesMap = index(() => this.damagetypes, 'TypeID')
+  public damagetypes = table(() => this.data.damagetypes())
+  public damagetypesMap = indexBy(() => this.damagetypes, 'TypeID')
   public damagetype = lookup(() => this.damagetypesMap)
 
-  public affixstats = list(() => this.data.affixstats())
-  public affixstatsMap = index(() => this.affixstats, 'StatusID')
+  public affixstats = table(() => this.data.affixstats())
+  public affixstatsMap = indexBy(() => this.affixstats, 'StatusID')
   public affixstat = lookup(() => this.affixstatsMap)
 
-  public territories = list(() => this.data.territorydefinitions())
-  public territoriesMap = index(() => this.territories, 'TerritoryID')
+  public territories = table(() => this.data.territorydefinitions())
+  public territoriesMap = indexBy(() => this.territories, 'TerritoryID')
   public territory = lookup(() => this.territoriesMap)
 
-  public pois = list(() =>
+  public pois = table(() =>
     this.data
       .apiMethodsByPrefix('pointofinterestdefinitions', 'pointofinterestdefinitionsPoidefinitions0202')
       .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
   )
-  public poisMap = index(() => this.pois, 'TerritoryID')
+  public poisMap = indexBy(() => this.pois, 'TerritoryID')
   public poi = lookup(() => this.poisMap)
 
-  public milestoneRewards = list(() => this.data.milestonerewards())
-  public mutatorDifficulties = list(() => this.data.gamemodemutatorsMutationdifficulty())
-  public viewGemPerksWithAffix = list(() => queryGemPerksWithAffix(this))
-  public viewMutatorDifficultiesWithRewards = list(() => queryMutatorDifficultiesWithRewards(this))
+  public milestoneRewards = table(() => this.data.milestonerewards())
+  public mutatorDifficulties = table(() => this.data.gamemodemutatorsMutationdifficulty())
+  public viewGemPerksWithAffix = table(() => queryGemPerksWithAffix(this))
+  public viewMutatorDifficultiesWithRewards = table(() => queryMutatorDifficultiesWithRewards(this))
 
-  public lootTables = list(() =>
+  public lootTables = table(() =>
     this.data.apiMethodsByPrefix('loottables', 'loottables').map((it) =>
       this.data[it.name]()
         .pipe(map(convertLoottables))
         .pipe(annotate('$source', it.suffix || '_'))
     )
   )
-  public lootTablesMap = index(() => this.lootTables, 'LootTableID')
+  public lootTablesMap = indexBy(() => this.lootTables, 'LootTableID')
   public lootTable = lookup(() => this.lootTablesMap)
 
-  public lootBuckets = list(() => this.data.lootbuckets().pipe(map(convertLootbuckets)))
-  public lootBucketsMap = indexGroup(() => this.lootBuckets, 'LootBucket')
+  public lootBuckets = table(() => this.data.lootbuckets().pipe(map(convertLootbuckets)))
+  public lootBucketsMap = indexGroupBy(() => this.lootBuckets, 'LootBucket')
   public lootBucket = lookup(() => this.lootBucketsMap)
 
-  public lootLimits = list(() => [this.data.lootlimits()])
-  public lootLimitsMap = index(() => this.lootLimits, 'LootLimitID')
+  public lootLimits = table(() => [this.data.lootlimits()])
+  public lootLimitsMap = indexBy(() => this.lootLimits, 'LootLimitID')
 
   public xpAmounts = this.data.xpamountsbylevel().pipe(shareReplay(1))
   public weaponMastery = this.data.weaponmastery().pipe(shareReplay(1))

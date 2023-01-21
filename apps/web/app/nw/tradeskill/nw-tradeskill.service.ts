@@ -3,7 +3,7 @@ import { Tradeskillpostcap } from '@nw-data/types'
 import { uniq } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, shareReplay, switchMap } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
-import { NwDbService, toMap } from '../nw-db.service'
+import { NwDbService, createIndex } from '../nw-db.service'
 import { NW_TRADESKILLS_INFOS_MAP } from './nw-tradeskill'
 
 export interface NwTradeskillInfo {
@@ -55,7 +55,7 @@ export class NwTradeskillService {
     )
 
   public skillsMap = defer(() => this.skills)
-    .pipe(map((it) => toMap(it, 'ID')))
+    .pipe(map((it) => createIndex(it, 'ID')))
     .pipe(shareReplayRefCount(1))
 
   public categories = defer(() => this.skills)

@@ -166,13 +166,17 @@ program
             splitToArrayRule({
               properties: [
                 'AbilityList',
+                'AttachedTargetSpellIds',
                 'AttackType',
                 'DamageTableRow',
                 'ManaCostList',
+                'RemoteDamageTableRow',
                 'RemoveTargetStatusEffectsList',
+                'SelfApplyStatusEffect',
                 'StaminaCostList',
                 'StatusEffectCategoriesList',
                 'StatusEffectsList',
+                'TargetStatusEffectCategory',
                 'TargetStatusEffectDurationList',
               ],
               separator: ',',

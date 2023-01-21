@@ -17,3 +17,7 @@ body {
 router-outlet {
   display: none;
 }
+
+.screenshot-capture * {
+  overflow: hidden;
+}

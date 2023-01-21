@@ -1,72 +1,42 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
-import { Ability } from '@nw-data/types'
-import { uniq } from 'lodash'
-import { map } from 'rxjs'
+import { Spelltable } from '@nw-data/types'
 import { NwDbService, NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { PropertyGridCell } from '~/ui/property-grid/property-grid-cell.directive'
-import { AbilityDetailService } from './ability-detail.service'
+import { SpellDetailService } from './spell-detail.service'
 
 @Component({
   standalone: true,
-  selector: 'nwb-ability-detail',
-  templateUrl: './ability-detail.component.html',
+  selector: 'nwb-spell-detail',
+  templateUrl: './spell-detail.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule],
   providers: [
     {
-      provide: AbilityDetailService,
-      useExisting: forwardRef(() => AbilityDetailComponent),
+      provide: SpellDetailService,
+      useExisting: forwardRef(() => SpellDetailComponent),
     },
   ],
   host: {
     class: 'block rounded-md overflow-clip',
   },
 })
-export class AbilityDetailComponent extends AbilityDetailService {
+export class SpellDetailComponent extends SpellDetailService {
   @Input()
-  public set abilityId(value: string) {
-    this.abilityId$.next(value)
+  public set spellId(value: string) {
+    this.spellId$.next(value)
   }
-
-  @Input()
-  public showProperties: boolean
 
   public constructor(db: NwDbService) {
     super(db)
   }
 
-  public formatValue = (value: any, key: keyof Ability): PropertyGridCell | PropertyGridCell[] =>  {
+  public formatValue = (value: any, key: keyof Spelltable): PropertyGridCell | PropertyGridCell[] =>  {
     switch (key) {
-      case 'TargetStatusEffectDurationList':
-        return statusEffectCells(value as Ability['TargetStatusEffectDurationList'])
-      case 'RemoveTargetStatusEffectsList':
-          return statusEffectCells(value as Ability['RemoveTargetStatusEffectsList'])
-      case 'StatusEffectsList':
-        return statusEffectCells(value as Ability['StatusEffectsList'])
-      case 'SelfApplyStatusEffect':
-        return statusEffectCells(value as Ability['SelfApplyStatusEffect'])
-      case 'DamageTableStatusEffectOverride':
-      case 'DontHaveStatusEffect':
-      case 'OnEquipStatusEffect':
-      case 'OtherApplyStatusEffect':
-      case 'StatusEffect':
-      case 'StatusEffectBeingApplied':
-      case 'TargetStatusEffect': {
-        return statusEffectCells(value)
-      }
-      case 'CooldownId':
-      case 'AbilityID':
-      case 'RequiredEquippedAbilityId':
-      case 'RequiredAbilityId': {
-        return abilitiesCells(value)
-      }
-      case 'AbilityList': {
-        return abilitiesCells(value as Ability['AbilityList'])
-      }
+
       default: {
         if (Array.isArray(value)) {
           return value.map((it) => ({

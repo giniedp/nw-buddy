@@ -17,13 +17,13 @@ export class PerkDetailService {
   public readonly type$ = this.perk$.pipe(map((it) => it?.PerkType))
   public readonly description$ = this.perk$.pipe(map((it) => it?.Description))
   public readonly properties$ = this.perk$.pipe(map((it) => this.getProperties(it))).pipe(shareReplayRefCount(1))
-  public readonly affix$ = this.perk$
-    .pipe(switchMap((it) => this.db.affixstat(it.Affix)))
-    .pipe(map((it) => (it ? this.getAffixProperties(it) : null)))
-  public readonly abilityIds$ = this.perk$.pipe(map((it) => it?.EquipAbility?.length ? it?.EquipAbility : null))
-  // public readonly ability$ = this.perk$
-  //   .pipe(switchMap((it) => this.db.affixstat(it.Affix)))
-  //   .pipe(map((it) => (it ? this.getAffixProperties(it) : null)))
+
+  public readonly affix$ = this.perk$.pipe(switchMap((it) => this.db.affixstat(it?.Affix))).pipe(shareReplayRefCount(1))
+  public readonly affixProps$ = this.affix$.pipe(map((it) => (it ? this.getAffixProperties(it) : null)))
+
+  public readonly refEffects$ = this.affix$.pipe(map((it) => (it?.StatusEffect ? [it.StatusEffect] : null)))
+  public readonly refAbilities$ = this.perk$.pipe(map((it) => (it?.EquipAbility?.length ? it?.EquipAbility : null)))
+
   public readonly abilities$ = combineLatest({
     perk: this.perk$,
     abilities: this.db.abilitiesMap,
