@@ -181,7 +181,8 @@ export class CraftingCalculatorService implements OnDestroy {
     const flBonus = await firstValueFrom(this.char.craftingFlBonus$)
 
     const flBonusChance = flBonus ? 0.1 : 0 // 10% first light bonus
-    const gearBonus = skillSet.length * 0.02 // 2% per gear item
+    const gearScale = recipe.Tradeskill === 'Cooking' ? 0.04 : 0.02 // 2% per gear item
+    const gearBonus = skillSet.length * gearScale
     return calculateBonusItemChance({
       item: item,
       ingredients: this.findItemsOrSelectedItems(step.steps),
