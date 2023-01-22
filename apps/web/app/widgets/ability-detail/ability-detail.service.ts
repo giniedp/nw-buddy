@@ -45,16 +45,15 @@ export class AbilityDetailService {
     })
   )
 
-  public readonly refSpells$ = this.ability$.pipe(map((it) => {
-    return uniq([
-      it?.CastSpell,
-      ...(it?.AttachedTargetSpellIds || [])
-    ]).filter((it) => !!it && it !== 'All')
-  }))
+  public readonly refSpells$ = this.ability$.pipe(
+    map((it) => {
+      return uniq([it?.CastSpell, ...(it?.AttachedTargetSpellIds || [])]).filter((it) => !!it && it !== 'All')
+    })
+  )
 
   public readonly refAbilities$ = this.ability$.pipe(
     map((it) => {
-      return uniq([it?.RequiredEquippedAbilityId, it?.RequiredAbilityId, it?.AbilityList])
+      return uniq([it?.RequiredEquippedAbilityId, it?.RequiredAbilityId, ...(it?.AbilityList || [])])
         .filter((e) => !!e)
         .filter((e) => e !== it.AbilityID)
     })

@@ -30,7 +30,7 @@ export class StatusEffectDetailComponent extends StatusEffectDetailService {
   }
 
   @Input()
-  public showProperties: boolean
+  public disableProperties: boolean
 
   public constructor(db: NwDbService) {
     super(db)
