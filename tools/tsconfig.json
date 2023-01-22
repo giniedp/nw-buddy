@@ -3,7 +3,7 @@
     "outDir": "./dist",
     "moduleResolution": "node",
     "module": "CommonJS",
-    "target": "ES5",
+    "target": "ES6",
     "allowSyntheticDefaultImports": true,
     "allowJs": true
   }

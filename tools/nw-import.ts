@@ -187,9 +187,13 @@ program
           file: /javelindata_statuseffects_.*\.json|javelindata_statuseffects\.json/,
           rules: [
             splitToArrayRule({
-              properties: ['EffectCategories'],
+              properties: ['EffectCategories', 'RemoveStatusEffectCategories'],
               separator: '+',
             }),
+            splitToArrayRule({
+              properties: ['RemoveStatusEffects'],
+              separator: ','
+            })
           ],
         },
         {

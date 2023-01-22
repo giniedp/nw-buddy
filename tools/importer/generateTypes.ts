@@ -4,7 +4,6 @@ import { generateDataFunctions, processArrayWithProgress, tsFromJson } from '../
 import { DataTableSource } from './loadDatatables'
 
 export async function generateTypes(output: string, tables: DataTableSource[], format: 'json' | 'csv' = 'json') {
-
   const samples = new Map<string, any[]>()
   const files = new Map<string, any[]>()
   for (const { file, relative, data } of tables) {
@@ -48,10 +47,7 @@ export async function generateTypes(output: string, tables: DataTableSource[], f
   })
 
   await fs.promises.writeFile(path.join(output, 'types.ts'), Buffer.from(typesCode.join('\n'), 'utf-8'))
-  await fs.promises.writeFile(
-    path.join(output, 'datatables.ts'),
-    Buffer.from(generateDataFunctions(files), 'utf-8')
-  )
+  await fs.promises.writeFile(path.join(output, 'datatables.ts'), Buffer.from(generateDataFunctions(files), 'utf-8'))
 }
 
 const PATH_TO_TYPE_RULES = [
@@ -141,9 +137,36 @@ function pathToTypeName(filePath: string) {
 }
 
 const ENUMS = {
-  // Vitals: ['Family', 'CreatureType'],
+  Vitals: ['Family'],
   // ItemDefinitionMaster: ['ItemType'],
   // Damagetypes: ['TypeID', 'Category']
+  Perks: [
+    'PerkType',
+    'ItemClass',
+    'WeaponTag',
+    'ConditionEvent',
+    'DayPhases'
+  ],
+  Ability: [
+    'AbilityCooldownComparisonType',
+    'DistComparisonType',
+    'LoadedAmmoCountComparisonType',
+    'MyComparisonType',
+    'MyManaComparisonType',
+    'MyStaminaComparisonType',
+    'NumAroundComparisonType',
+    'NumberOfHitsComparisonType',
+    'TargetComparisonType',
+    'WeaponTag',
+    'UICategory',
+    'AttackerVitalsCategory',
+    'TargetVitalsCategory',
+    'AbilityOnCooldownOptions',
+    'AttackType',
+    'CDRImmediatelyOptions',
+    'EquipLoadCategory',
+    'GatheringTradeskill'
+  ],
 }
 function enumFieldsForType(type: string): string[] {
   // console.log('enumFieldsForType', type)

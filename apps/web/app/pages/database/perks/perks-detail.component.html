@@ -1,7 +1,7 @@
 <nwb-detail-drawer class="hidden lg:block lg:w-96 2xl:w-[500px]" [breakpoints]="[0.15, 0.25, 0.5, 1]">
   <div
     *nwbDetailDraweContent
-    class="layout-content p-2"
+    class="layout-content p-2 bg-base-200"
     [nwbPerkDetail]="itemId | async"
     (nwbPerkChange)="onEntity($event)"
     #detail="perkDetail"

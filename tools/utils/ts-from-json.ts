@@ -1,7 +1,44 @@
-import { InputData, jsonInputForTargetLanguage, quicktype } from 'quicktype-core'
+import {
+  jsonInputForTargetLanguage,
+  JSONSchemaInput,
+  JSONSchemaStore,
+  TypeScriptTargetLanguage,
+  TypeScriptRenderer,
+  RenderContext,
+  getOptionValues,
+  tsFlowOptions,
+  EnumType,
+  Name,
+  TargetLanguage,
+  SerializedRenderResult,
+  InputData,
+  quicktype,
+} from 'quicktype-core'
+import { utf16StringEscape } from 'quicktype-core/dist/support/Strings'
+
+export class CustomTsTargetLanguage extends TypeScriptTargetLanguage {
+  public constructor() {
+    super()
+  }
+  protected makeRenderer(context: RenderContext, options: { [name: string]: any }): CustomTsRenderer {
+    return new CustomTsRenderer(this, context, getOptionValues(tsFlowOptions, options))
+  }
+}
+
+export class CustomTsRenderer extends TypeScriptRenderer {
+  protected emitEnum(e: EnumType, enumName: Name): void {
+    this.emitDescription(this.descriptionForType(e))
+    this.emitLine(['export type ', enumName, ' = '])
+    this.forEachEnumCase(e, 'none', (name, jsonName, position) => {
+      const suffix = position === 'last' || position === 'only' ? ';' : ' | '
+      this.indent(() => this.emitLine(`"${utf16StringEscape(jsonName)}"`, suffix))
+    })
+  }
+}
 
 export async function tsFromJson(typeName: string, samples: string[]) {
-  const jsonInput = jsonInputForTargetLanguage('typescript')
+  const lang = new CustomTsTargetLanguage()
+  const jsonInput = jsonInputForTargetLanguage(lang)
   await jsonInput.addSource({
     name: typeName,
     samples: samples,
@@ -12,8 +49,8 @@ export async function tsFromJson(typeName: string, samples: string[]) {
 
   return await quicktype({
     inputData,
-    lang: 'typescript',
-    inferEnums: false,
+    lang: lang,
+    inferEnums: true,
     inferBooleanStrings: false,
     inferDateTimes: false,
     inferIntegerStrings: false,

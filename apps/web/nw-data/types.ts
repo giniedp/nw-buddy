@@ -2829,8 +2829,8 @@ export interface Perks {
     AppliedSuffix?:          string;
     Category?:               string;
     Channel:                 number;
-    ConditionEvent:          string;
-    DayPhases?:              string;
+    ConditionEvent:          ConditionEvent;
+    DayPhases?:              DayPhases;
     DeprecatedPerkId?:       string;
     Description:             string;
     DisplayName:             string;
@@ -2841,14 +2841,74 @@ export interface Perks {
     FishingWaterType?:       string;
     GroupName?:              string;
     IconPath:                string;
-    ItemClass:               string[];
+    ItemClass:               ItemClass[];
     ItemClassGSBonus?:       string;
     PerkID:                  string;
-    PerkType:                string;
+    PerkType:                PerkType;
     ScalingPerGearScore:     number;
     Tier:                    number;
     WeaponTag?:              string;
 }
+
+export type ConditionEvent = 
+    "OnActive" | 
+    "OnEquip" | 
+    "OnUnsheathed";
+
+export type DayPhases = 
+    "Day" | 
+    "Night";
+
+export type ItemClass = 
+    "Armor" | 
+    "Bag" | 
+    "Blunderbuss" | 
+    "Bow" | 
+    "EquippableAmulet" | 
+    "EquippableChest" | 
+    "EquippableFeet" | 
+    "EquippableHands" | 
+    "EquippableHead" | 
+    "EquippableLegs" | 
+    "EquippableMainHand" | 
+    "EquippableRing" | 
+    "EquippableToken" | 
+    "EquippableTool" | 
+    "EquippableTwoHand" | 
+    "FireStaff" | 
+    "FishingPole" | 
+    "GreatSword" | 
+    "Hatchet" | 
+    "Heartgem" | 
+    "IceMagic" | 
+    "InstrumentDrums" | 
+    "InstrumentFlute" | 
+    "InstrumentGuitar" | 
+    "InstrumentMandolin" | 
+    "InstrumentUprightBass" | 
+    "KiteShield" | 
+    "LifeStaff" | 
+    "LoggingAxe" | 
+    "Melee" | 
+    "Musket" | 
+    "PickAxe" | 
+    "Ranged" | 
+    "Rapier" | 
+    "RoundShield" | 
+    "Shield" | 
+    "Sickle" | 
+    "SkinningKnife" | 
+    "Spear" | 
+    "Sword" | 
+    "2hAxe" | 
+    "2HHammer" | 
+    "TowerShield" | 
+    "VoidGauntlet";
+
+export type PerkType = 
+    "Gem" | 
+    "Generated" | 
+    "Inherent";
 export interface Statuseffect {
     ABABleed?:                                   number;
     ABABlight?:                                  number;
@@ -3057,8 +3117,8 @@ export interface Statuseffect {
     RemoveOnDeathsDoor?:                         number | string;
     RemoveOnGameModeExit?:                       number | string;
     RemoveOnRespawn?:                            number;
-    RemoveStatusEffectCategories?:               string;
-    RemoveStatusEffects?:                        string;
+    RemoveStatusEffectCategories?:               string[];
+    RemoveStatusEffects?:                        string[];
     RemoveUnappliedStacks?:                      boolean | string;
     RequireReaction?:                            boolean;
     RespecAttributes?:                           number;
@@ -3674,7 +3734,7 @@ export interface Vitals {
     DrinkUpperThreshold:                      number;
     ElementalArmorRatingOverride?:            string;
     ElementalMitigation:                      number;
-    Family?:                                  string;
+    Family?:                                  Family;
     FoodBaseMax:                              number;
     FoodBaseTickRate:                         number;
     FoodFullyDepletedDelay:                   number;
@@ -3756,6 +3816,14 @@ export interface Vitals {
     WarAssistEventId?:                        string;
     WarKillEventId?:                          string;
 }
+
+export type Family = 
+    "AncientGuardian" | 
+    "AngryEarth" | 
+    "Corrupted" | 
+    "Human" | 
+    "Lost" | 
+    "Wildlife";
 export interface Vitalscategories {
     DisplayName?:               string;
     FemaleMtlOverride?:         string;
@@ -3982,25 +4050,25 @@ export interface PoiDefinition {
     VitalsCategory?:            string[];
 }
 export interface Ability {
-    AbilityCooldownComparisonType?:                 string;
+    AbilityCooldownComparisonType?:                 ComparisonType;
     AbilityID:                                      string;
     AbilityIdToCheckForTrackedHits?:                string;
     AbilityList?:                                   string[];
-    AbilityOnCooldownOptions?:                      string;
+    AbilityOnCooldownOptions?:                      Options;
     AbilityTrigger?:                                string;
     ActivationCooldown?:                            number;
     AfterAction?:                                   string;
     AllowSelfDamageForHitEvents?:                   boolean;
     ArmorPenetration?:                              number;
     AttachedTargetSpellIds?:                        string[];
-    AttackType?:                                    string[];
-    AttackerVitalsCategory?:                        string;
+    AttackType?:                                    AttackType[];
+    AttackerVitalsCategory?:                        VitalsCategory;
     Azoth?:                                         number;
     BaseDamage?:                                    number;
     BaseDamageReduction?:                           number;
     BlockDamage?:                                   number;
     BlockDamageReduction?:                          number;
-    CDRImmediatelyOptions?:                         string;
+    CDRImmediatelyOptions?:                         Options;
     CanBeUnapplied?:                                boolean;
     CanBlockRangedOverride?:                        boolean;
     CastSpell?:                                     string;
@@ -4024,7 +4092,7 @@ export interface Ability {
     DisableCastSpellDurability?:                    boolean;
     DisableConsecutivePotency?:                     boolean;
     DisplayName?:                                   string;
-    DistComparisonType?:                            string;
+    DistComparisonType?:                            ComparisonType;
     DistFromDefender?:                              number;
     DmgPctToHealth?:                                number;
     DoNotUnequipSelfAppliedSE?:                     boolean;
@@ -4063,7 +4131,7 @@ export interface Ability {
     Knockback?:                                     number;
     LinearlyScaleToDistance?:                       number;
     LoadedAmmoCount?:                               number;
-    LoadedAmmoCountComparisonType?:                 string;
+    LoadedAmmoCountComparisonType?:                 ComparisonType;
     Mana?:                                          number;
     ManaCostList?:                                  string[];
     ManaCostMult?:                                  number;
@@ -4074,14 +4142,14 @@ export interface Ability {
     MaxNumAroundMe?:                                number;
     MaxTrackedHitCounts?:                           number;
     ModifySelfApplyStatusEffectDuration?:           number;
-    MyComparisonType?:                              string;
+    MyComparisonType?:                              ComparisonType;
     MyHealthPercent?:                               number;
-    MyManaComparisonType?:                          string;
+    MyManaComparisonType?:                          ComparisonType;
     MyManaPercent?:                                 number;
     MyMarker?:                                      string;
-    MyStaminaComparisonType?:                       string;
+    MyStaminaComparisonType?:                       ComparisonType;
     MyStaminaPercent?:                              number;
-    NumAroundComparisonType?:                       string;
+    NumAroundComparisonType?:                       ComparisonType;
     NumAroundMe?:                                   number;
     NumConsecutiveHits?:                            number;
     NumFreeCooldownsPerUse?:                        number;
@@ -4090,7 +4158,7 @@ export interface Ability {
     NumStatusEffectsToTransfer?:                    number;
     NumSuccessfulHits?:                             number;
     NumTargetStatusEffectsToRemove?:                number;
-    NumberOfHitsComparisonType?:                    string;
+    NumberOfHitsComparisonType?:                    NumberOfHitsComparisonType;
     NumberOfTrackedHits?:                           number;
     OnAttachedSpellTargetDied?:                     boolean;
     OnBlockBreak:                                   boolean;
@@ -4139,7 +4207,7 @@ export interface Ability {
     RangedAttackNameOverride?:                      string;
     RefundAmmoPercentChance?:                       number;
     RefundConsumablePercentChance?:                 number;
-    RemoteDamageTableRow?:                          string;
+    RemoteDamageTableRow?:                          string[];
     RemoveStatusEffects?:                           string;
     RemoveTargetStatusEffectCats?:                  string;
     RemoveTargetStatusEffectsList?:                 string[];
@@ -4177,29 +4245,81 @@ export interface Ability {
     StatusEffectStackSize?:                         number;
     StatusEffectsList?:                             string[];
     TargetCollisionFilters?:                        string;
-    TargetComparisonType?:                          string;
+    TargetComparisonType?:                          ComparisonType;
     TargetHasGritActive?:                           boolean;
     TargetHealthPercent?:                           number;
     TargetMarker?:                                  string;
     TargetStatusEffect?:                            string;
-    TargetStatusEffectCategory?:                    string;
+    TargetStatusEffectCategory?:                    string[];
     TargetStatusEffectComparison?:                  string;
     TargetStatusEffectDurationCats?:                string;
     TargetStatusEffectDurationList?:                string[];
     TargetStatusEffectDurationMod?:                 number;
     TargetStatusEffectDurationMult?:                number;
     TargetStatusEffectStackSize?:                   number;
-    TargetVitalsCategory?:                          string;
+    TargetVitalsCategory?:                          VitalsCategory;
     ThreatDamage?:                                  number;
     ToolDurabilityLossMod?:                         number;
     TrackHitCount?:                                 boolean;
     TreeColumnPosition?:                            number;
     TreeId?:                                        number;
     TreeRowPosition?:                               number;
-    UICategory?:                                    string;
+    UICategory?:                                    UICategory;
     UISpellForManaCheck?:                           string;
     UnlockDefault?:                                 boolean;
     UseMinAttackInfoForSelfAppliedSE?:              boolean;
     WeaponAccuracy?:                                number;
-    WeaponTag?:                                     string;
+    WeaponTag?:                                     WeaponTag;
 }
+
+export type ComparisonType = 
+    "Equal" | 
+    "GreaterThan" | 
+    "GreaterThanOrEqual" | 
+    "LessThan" | 
+    "LessThanOrEqual";
+
+export type Options = 
+    "AbilitySpecific" | 
+    "ActiveWeapon" | 
+    "AllExcept";
+
+export type AttackType = 
+    "Ability" | 
+    "Heavy" | 
+    "Light" | 
+    "Magic";
+
+export type VitalsCategory = 
+    "Player";
+
+export type NumberOfHitsComparisonType = 
+    "Equal" | 
+    "GreaterThanOrEqual" | 
+    "LessThanOrEqual" | 
+    "LessthanOrEqual&#160;";
+
+export type UICategory = 
+    "Buff" | 
+    "Debuff" | 
+    "Heal" | 
+    "Magic Damage" | 
+    "Melee Damage" | 
+    "Passive" | 
+    "Ranged Damage";
+
+export type WeaponTag = 
+    "Axe" | 
+    "Blunderbuss" | 
+    "Bow" | 
+    "Fire" | 
+    "GreatAxe" | 
+    "Greatsword" | 
+    "Heal" | 
+    "Ice" | 
+    "Rapier" | 
+    "Rifle" | 
+    "Spear" | 
+    "Sword" | 
+    "VoidGauntlet" | 
+    "Warhammer";

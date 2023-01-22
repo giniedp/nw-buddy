@@ -1,7 +1,7 @@
 <nwb-detail-drawer class="hidden lg:block lg:w-96 2xl:w-[500px]" [breakpoints]="[0.15, 0.25, 0.5, 1]">
   <div
     *nwbDetailDraweContent
-    class="layout-content p-2"
+    class="layout-content p-2 bg-base-200"
     [nwbStatusEffectDetail]="itemId | async"
     (nwbStatusEffectChange)="onEntity($event)"
     #detail="effectDetail"
@@ -9,6 +9,11 @@
     <div class="flex flex-col gap-2 bg-base-200" [nwbScreenshotFrame]="itemId | async">
       <nwb-status-effect-detail [effectId]="itemId | async" [showProperties]="true" class="bg-black">
       </nwb-status-effect-detail>
+
+      <ng-container *ngFor="let effectId of detail.refEffects$ | async; let isFirst = first">
+        <h3 *ngIf="isFirst" class="prose">Referenced Status Effects:</h3>
+        <nwb-status-effect-detail [effectId]="effectId" [showProperties]="true" class="bg-black"></nwb-status-effect-detail>
+      </ng-container>
 
       <ng-container *ngFor="let abilityId of detail.refAbilities$ | async; let isFirst = first">
         <h3 *ngIf="isFirst" class="prose">Referenced Abilities:</h3>

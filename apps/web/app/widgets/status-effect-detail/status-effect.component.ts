@@ -43,11 +43,10 @@ export class StatusEffectDetailComponent extends StatusEffectDetailService {
       case 'OnEndStatusEffect':
       case 'OnStackStatusEffect':
       case 'OnTickStatusEffect': {
-        return [{
-          value: String(value),
-          accent: true,
-          routerLink: ['/status-effects/table', value]
-        }]
+        return statusEffectCells(value)
+      }
+      case 'RemoveStatusEffects': {
+        return statusEffectCells(value)
       }
       case 'EquipAbility': {
         return [{
@@ -72,4 +71,16 @@ export class StatusEffectDetailComponent extends StatusEffectDetailService {
       }
     }
   }
+}
+
+function statusEffectCells(list: string | string[]): PropertyGridCell[] {
+  list = typeof list === 'string' ? [list] : list
+  return list?.map((it) => {
+    const isLink = it !== 'All'
+    return {
+      value: String(it),
+      accent: isLink,
+      routerLink: isLink ? ['/status-effects/table', it] : null
+    }
+  })
 }

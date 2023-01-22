@@ -23,8 +23,9 @@ export class StatusEffectDetailService {
       it?.OnEndStatusEffect,
       it?.OnStackStatusEffect,
       it?.OnTickStatusEffect,
+      ...(it?.RemoveStatusEffects || [])
     ])
-    .filter((e) => !!e)
+    .filter((e) => !!e && e !== 'Debuff')
     .filter((e) => e !== it.StatusID)
   }))
 

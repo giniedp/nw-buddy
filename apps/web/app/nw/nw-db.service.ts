@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core'
+import { Vitals } from '@nw-data/types'
 import { groupBy } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, shareReplay } from 'rxjs'
 import { CaseInsensitiveMap, CaseInsensitiveSet } from '../utils'
@@ -217,7 +218,7 @@ export class NwDbService {
   public vitalsByCreatureType = indexGroupBy(() => this.vitals, 'CreatureType')
   public vitalsOfCreatureType = lookup(() => this.vitalsByCreatureType)
 
-  public vitalsFamilies = table(() => this.vitalsByFamily.pipe(map((it) => Array.from(it.keys()))))
+  public vitalsFamilies = table(() => this.vitalsByFamily.pipe(map((it) => Array.from(it.keys()) as Array<Vitals['Family']>)))
 
   public vitalsCategories = table(() => [this.data.vitalscategories()])
   public vitalsCategoriesMap = indexBy(() => this.vitalsCategories, 'VitalsCategoryID')

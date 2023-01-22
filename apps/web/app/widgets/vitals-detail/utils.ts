@@ -1,8 +1,8 @@
-import { Vitals } from '@nw-data/types'
+import { Family, Vitals } from '@nw-data/types'
 import { map } from 'rxjs'
 import { NwDbService } from '~/nw'
 
-export function vitalForFamily(family: string, db: NwDbService) {
+export function vitalForFamily(family: Family, db: NwDbService) {
   return db.vitalsByFamily
     .pipe(map((it) => it.get(family)))
     .pipe(
@@ -43,7 +43,7 @@ export function vitalForFamily(family: string, db: NwDbService) {
 }
 
 
-export function mergeVitals(family: string, vitals: Vitals[]): Partial<Vitals> {
+export function mergeVitals(family: Family, vitals: Vitals[]): Partial<Vitals> {
   return {
     Family: family,
     ...mostCommonProps(vitals, [

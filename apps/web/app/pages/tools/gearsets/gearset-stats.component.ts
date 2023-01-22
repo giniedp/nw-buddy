@@ -9,6 +9,7 @@ import {
   Damagetypes,
   Housingitems,
   Itemappearancedefinitions,
+  ItemClass,
   ItemDefinitionMaster,
   ItemdefinitionsArmor,
   ItemdefinitionsConsumables,
