@@ -1,4 +1,4 @@
-import { IDoesFilterPassParams, IFilterComp, IFilterParams, RowNode, stringToArray } from 'ag-grid-community'
+import { IDoesFilterPassParams, IFilterComp, IFilterParams, RowNode } from 'ag-grid-community'
 import m from 'mithril'
 import { humanize } from '~/utils'
 
@@ -54,6 +54,7 @@ export class SelectboxFilter implements IFilterComp {
       view: () => {
         const allOptions = this.options.map((option) => {
           return {
+            id: option.id,
             icon: option.icon,
             label: option.label,
             active: this.state.has(option.id),
@@ -61,8 +62,18 @@ export class SelectboxFilter implements IFilterComp {
           }
         })
         const activeOptions = allOptions.filter((it) => it.active)
+        const searchLowerCase = this.searchQuery?.toLowerCase()
         const filteredOptions = allOptions.filter((it) => {
-          return !this.searchQuery || it.label.toLocaleLowerCase().includes(this.searchQuery.toLocaleLowerCase())
+          if (!this.searchQuery) {
+            return true
+          }
+          if (it.label.toLocaleLowerCase().includes(searchLowerCase)) {
+            return true
+          }
+          if (it.id.toLocaleLowerCase().includes(searchLowerCase)) {
+            return true
+          }
+          return false
         })
         const inactiveOptions = filteredOptions.filter((it) => !it.active)
         const splitOptions = allOptions.length > 15

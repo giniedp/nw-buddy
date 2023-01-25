@@ -347,7 +347,6 @@
   ModifySelfApplyStatusEffectDuration?:           number;
   
   RemoteDamageTableRow?:                          string;
-  
 
   ResetTrackedOnSuccess?:                         boolean;
 

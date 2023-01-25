@@ -11,6 +11,7 @@ import { LayoutModule } from '~/ui/layout'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { AbilityDetailModule } from '~/widgets/ability-detail'
+import { PerkDetailModule } from '~/widgets/perk-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { StatusEffectDetailModule } from '~/widgets/status-effect-detail'
 
@@ -28,6 +29,7 @@ import { StatusEffectDetailModule } from '~/widgets/status-effect-detail'
     RouterModule,
     ScreenshotModule,
     StatusEffectDetailModule,
+    PerkDetailModule,
   ],
   host: {
     class: 'flex-none flex flex-col',

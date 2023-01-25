@@ -9,12 +9,24 @@ export function mapPropTruthy<T, K extends keyof T>(prop: K) {
   return map<T, boolean>((it) => !!it?.[prop])
 }
 
+export function mapPropFalsey<T, K extends keyof T>(prop: K) {
+  return map<T, boolean>((it) => !it?.[prop])
+}
+
+export function mapPropEq<T, K extends keyof T>(prop: K, equals: any) {
+  return map<T, boolean>((it) => it?.[prop] === equals)
+}
+
 export function mapFilter<T>(predicate: (value: T, index: number, array: T[]) => boolean) {
   return map<T[], T[]>((list) => list?.filter(predicate))
 }
 
 export function mapFind<T>(predicate: (value: T, index: number, array: T[]) => boolean) {
   return map<T[], T>((list) => list?.find(predicate))
+}
+
+export function mapList<T, R>(predicate: (value: T, index: number, array: T[]) => R) {
+  return map<T[], R[]>((list) => list?.map(predicate))
 }
 
 export function mapGroupBy<T>(predicate: (value: T) => string) {

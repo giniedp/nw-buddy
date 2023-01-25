@@ -2,7 +2,7 @@
   class="input input-sm w-full focus:outline-none focus:border focus:border-primary-focus"
   #input
   type="text"
-  placeholder="Search"
+  [placeholder]="placeholder"
   [(ngModel)]="value"
   autofocus
   [disabled]="!(active | async)"

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ElementRef, ViewChild } from '@angular/core'
+import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ElementRef, ViewChild, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms';
 import { defer, Subject, takeUntil } from 'rxjs';
 import { Hotkeys } from '~/utils';
@@ -33,6 +33,9 @@ export class QuicksearchInputComponent implements OnInit, OnDestroy {
 
   @ViewChild('input')
   public input: ElementRef<HTMLInputElement>
+
+  @Input()
+  public placeholder: string = 'Search'
 
   protected svgSearch = svgMagnifyingGlass
   protected svgXmark = svgXmark

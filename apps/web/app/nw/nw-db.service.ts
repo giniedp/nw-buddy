@@ -19,10 +19,16 @@ export function createIndexGroup<T, K extends keyof T>(list: T[], id: K): Map<st
   return dictToMap(groupBy(list, (i) => i[id]))
 }
 
-export function createIndexGroupSet<T>(list: T[], getKeys: (it: T) => string[]): Map<string, Set<T>> {
+function makeArray<T>(it: T | T[]): T[] {
+  if (Array.isArray(it)) {
+    return it
+  }
+  return [it]
+}
+export function createIndexGroupSet<T>(list: T[], getKeys: (it: T) => string[] | string): Map<string, Set<T>> {
   const result = new CaseInsensitiveMap<string, Set<T>>()
   for (const item of list) {
-    const keys = getKeys(item) || []
+    const keys = makeArray(getKeys(item) || [])
     for (const key of keys) {
       const list = result.get(key) || new CaseInsensitiveSet()
       list.add(item)
@@ -57,7 +63,7 @@ function indexBy<T, K extends keyof T>(source: () => Observable<T[]>, key: K) {
     .pipe(map((items) => createIndex(items, key)))
     .pipe(shareReplay(1))
 }
-function indexGroupSetBy<T>(source: () => Observable<T[]>, fn: (it: T) => string[]) {
+function indexGroupSetBy<T>(source: () => Observable<T[]>, fn: (it: T) => string[] | string) {
   return defer(() => source())
     .pipe(map((items) => createIndexGroupSet(items, fn)))
     .pipe(shareReplay(1))
@@ -105,6 +111,10 @@ export class NwDbService {
   )
   public abilitiesMap = indexBy(() => this.abilities, 'AbilityID')
   public ability = lookup(() => this.abilitiesMap)
+  public abilitiesByStatusEffectMap = indexGroupSetBy(() => this.abilities, (it) => it.StatusEffect)
+  public abilitiesByStatusEffect = lookup(() => this.abilitiesByStatusEffectMap)
+  public abilitiesBySelfApplyStatusEffectMap = indexGroupSetBy(() => this.abilities, (it) => it.SelfApplyStatusEffect)
+  public abilitiesBySelfApplyStatusEffect = lookup(() => this.abilitiesBySelfApplyStatusEffectMap)
 
   public statusEffects = table(() =>
     this.data
@@ -113,6 +123,24 @@ export class NwDbService {
   )
   public statusEffectsMap = indexBy(() => this.statusEffects, 'StatusID')
   public statusEffect = lookup(() => this.statusEffectsMap)
+
+  public perks = table(() => [this.data.perks()])
+  public perksMap = indexBy(() => this.perks, 'PerkID')
+  public perk = lookup(() => this.perksMap)
+  public perksByEquipAbilityMap = indexGroupSetBy(() => this.perks, (it) => it.EquipAbility)
+  public perksByEquipAbility = lookup(() => this.perksByEquipAbilityMap)
+  public perksByAffixMap = indexGroupSetBy(() => this.perks, (it) => it.Affix)
+  public perksByAffix = lookup(() => this.perksByAffixMap)
+
+  public perkBuckets = table(() => [this.data.perkbuckets()])
+  public perkBucketsMap = indexBy(() => this.perkBuckets, 'PerkBucketID')
+  public perkBucket = lookup(() => this.perkBucketsMap)
+
+  public affixStats = table(() => [this.data.affixstats()])
+  public affixStatsMap = indexBy(() => this.affixStats, 'StatusID')
+  public affixStat = lookup(() => this.affixStatsMap)
+  public affixByStatusEffectMap = indexGroupSetBy(() => this.affixStats, (it) => it.StatusEffect)
+  public affixByStatusEffect = lookup(() => this.affixByStatusEffectMap)
 
   public damageTable0 = table(() => [this.data.damagetable()])
 
@@ -152,16 +180,6 @@ export class NwDbService {
   public gameModesMap = indexBy(() => this.gameModes, 'GameModeId')
   public gameMode = lookup(() => this.gameModesMap)
 
-  public perks = table(() => [this.data.perks()])
-  public perksMap = indexBy(() => this.perks, 'PerkID')
-  public perk = lookup(() => this.perksMap)
-  public perksByEquipAbilityMap = indexGroupSetBy(() => this.perks, (it) => it.EquipAbility)
-  public perksByEquipAbility = lookup(() => this.perksByEquipAbilityMap)
-
-  public perkBuckets = table(() => [this.data.perkbuckets()])
-  public perkBucketsMap = indexBy(() => this.perkBuckets, 'PerkBucketID')
-  public perkBucket = lookup(() => this.perkBucketsMap)
-
   public recipes = table(() => [this.data.crafting()])
   public recipesMap = indexBy(() => this.recipes, 'RecipeID')
   public recipesMapByItemId = indexBy(() => this.recipes, 'ItemID')
@@ -175,9 +193,6 @@ export class NwDbService {
   public affixDefinitionsMap = indexBy(() => this.affixDefinitions, 'AffixID')
   public affixDefinition = lookup(() => this.affixDefinitionsMap)
 
-  public affixStats = table(() => [this.data.affixstats()])
-  public affixStatsMap = indexBy(() => this.affixStats, 'StatusID')
-  public affixStat = lookup(() => this.affixStatsMap)
 
   public afflictions = table(() => [this.data.afflictions()])
   public afflictionsMap = indexBy(() => this.afflictions, 'AfflictionID')

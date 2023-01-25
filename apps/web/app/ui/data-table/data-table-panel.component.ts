@@ -3,20 +3,32 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { Column, ColumnState } from 'ag-grid-community'
 import { AgGridCommon } from 'ag-grid-community/dist/lib/interfaces/iCommon'
-import { BehaviorSubject, defer, filter, firstValueFrom, map, switchMap } from 'rxjs'
+import { BehaviorSubject, combineLatest, defer, filter, firstValueFrom, map, switchMap } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
 import { IconsModule } from '../icons'
-import { svgArrowsLeftRight, svgCode, svgDockLeft, svgDockRight, svgEraser, svgEye, svgEyeSlash, svgFileCsv, svgFilter } from '../icons/svg'
+import {
+  svgArrowsLeftRight,
+  svgCode,
+  svgDockLeft,
+  svgDockRight,
+  svgEraser,
+  svgEye,
+  svgEyeSlash,
+  svgFileCsv,
+  svgFilter,
+} from '../icons/svg'
 import { EditorDialogComponent } from '../layout'
 import { DataTableAdapter } from './data-table-adapter'
 import { TooltipModule } from '~/ui/tooltip'
+import { QuicksearchModule, QuicksearchService } from '../quicksearch'
 
 @Component({
   standalone: true,
   selector: 'nwb-data-table-panel',
   templateUrl: './data-table-panel.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, IconsModule, DialogModule, TooltipModule],
+  imports: [CommonModule, IconsModule, DialogModule, TooltipModule, QuicksearchModule],
+  providers: [QuicksearchService],
   host: {
     class: 'w-80 flex flex-col gap-1 bg-base-100 rounded-b-md',
   },
@@ -43,6 +55,20 @@ export class DataTablePanelComponent {
     )
     .pipe(shareReplayRefCount(1))
 
+  protected displayCols = combineLatest({
+    search: this.qs.query,
+    cols: this.columns,
+  }).pipe(
+    map(({ search, cols }) => {
+      if (!search) {
+        return cols
+      }
+      search = search.toLowerCase()
+      return cols.filter((it) => {
+        return it.colId?.toLowerCase()?.includes(search) || it.name?.toLowerCase()?.includes(search)
+      })
+    })
+  )
   private colState = new BehaviorSubject<ColumnState[]>([])
 
   protected svgEye = svgEye
@@ -55,7 +81,7 @@ export class DataTablePanelComponent {
   protected svgFilter = svgFilter
   protected svgCode = svgCode
 
-  public constructor(private adapter: DataTableAdapter<any>, private dialog: Dialog) {
+  public constructor(private adapter: DataTableAdapter<any>, private dialog: Dialog, private qs: QuicksearchService) {
     //
   }
 
@@ -130,8 +156,8 @@ export class DataTablePanelComponent {
         value: JSON.stringify(rows, null, 2),
         readonly: true,
         language: 'json',
-        positive: 'Close'
-      }
+        positive: 'Close',
+      },
     })
   }
 

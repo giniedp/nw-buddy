@@ -7,8 +7,7 @@
     #detail="effectDetail"
   >
     <div class="flex flex-col gap-2 bg-base-200" [nwbScreenshotFrame]="itemId | async">
-      <nwb-status-effect-detail [effectId]="itemId | async" class="bg-black">
-      </nwb-status-effect-detail>
+      <nwb-status-effect-detail [effectId]="itemId | async" class="bg-black"> </nwb-status-effect-detail>
 
       <ng-container *ngFor="let effectId of detail.refEffects$ | async; let isFirst = first">
         <h3 *ngIf="isFirst" class="prose">Referenced Status Effects:</h3>
@@ -18,6 +17,16 @@
       <ng-container *ngFor="let abilityId of detail.refAbilities$ | async; let isFirst = first">
         <h3 *ngIf="isFirst" class="prose">Referenced Abilities:</h3>
         <nwb-ability-detail [abilityId]="abilityId" class="bg-black"></nwb-ability-detail>
+      </ng-container>
+
+      <ng-container *ngFor="let abilityId of detail.foreignAbilities$ | async; let isFirst = first">
+        <h3 *ngIf="isFirst" class="prose">Referenced By Abilities:</h3>
+        <nwb-ability-detail [abilityId]="abilityId" class="bg-black"></nwb-ability-detail>
+      </ng-container>
+
+      <ng-container *ngFor="let perkId of detail.foreignPerks$ | async; let isFirst = first">
+        <h3 *ngIf="isFirst" class="prose">Referenced By Perks:</h3>
+        <nwb-perk-detail [perkId]="perkId" class="bg-black"></nwb-perk-detail>
       </ng-container>
     </div>
   </div>

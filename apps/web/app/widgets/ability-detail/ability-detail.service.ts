@@ -1,10 +1,10 @@
 import { Injectable, Output } from '@angular/core'
 import { Ability } from '@nw-data/types'
-import { uniq } from 'lodash'
+import { flatten, uniq } from 'lodash'
 import { combineLatest, map, ReplaySubject } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
-import { humanize, shareReplayRefCount } from '~/utils'
+import { humanize, mapFilter, rejectKeys, shareReplayRefCount } from '~/utils'
 
 @Injectable()
 export class AbilityDetailService {
@@ -25,35 +25,39 @@ export class AbilityDetailService {
   public readonly weaponOrSource$ = this.ability$.pipe(map((it) => it?.WeaponTag || it?.['$source']))
   public readonly uiCategory$ = this.ability$.pipe(map((it) => it?.UICategory))
   public readonly description$ = this.ability$.pipe(map((it) => it?.Description))
-  public readonly properties$ = this.ability$.pipe(map((it) => this.getProperties(it))).pipe(shareReplayRefCount(1))
+  public readonly properties$ = this.ability$.pipe(map(reduceProps)).pipe(shareReplayRefCount(1))
 
   public readonly refEffects$ = this.ability$.pipe(
     map((it) => {
-      return uniq([
-        it?.StatusEffect,
-        it?.TargetStatusEffect,
-        it?.OtherApplyStatusEffect,
-        it?.DontHaveStatusEffect,
-        it?.StatusEffectBeingApplied,
-        it?.OnEquipStatusEffect,
-        it?.DamageTableStatusEffectOverride,
-        ...(it?.TargetStatusEffectDurationList || []),
-        ...(it?.RemoveTargetStatusEffectsList || []),
-        ...(it?.StatusEffectsList || []),
-        ...(it?.SelfApplyStatusEffect || []),
-      ]).filter((it) => !!it && it !== 'All')
-    })
+      return uniq(
+        flatten([
+          it?.StatusEffect,
+          it?.TargetStatusEffect,
+          it?.OtherApplyStatusEffect,
+          it?.DontHaveStatusEffect,
+          it?.StatusEffectBeingApplied,
+          it?.OnEquipStatusEffect,
+          it?.DamageTableStatusEffectOverride,
+          it?.TargetStatusEffectDurationList,
+          it?.RemoveTargetStatusEffectsList,
+          it?.StatusEffectsList,
+          it?.SelfApplyStatusEffect,
+        ])
+      )
+    }),
+    mapFilter((it) => !!it && it !== 'All')
   )
 
   public readonly refSpells$ = this.ability$.pipe(
     map((it) => {
-      return uniq([it?.CastSpell, ...(it?.AttachedTargetSpellIds || [])]).filter((it) => !!it && it !== 'All')
-    })
+      return uniq(flatten([it?.CastSpell, it?.AttachedTargetSpellIds]))
+    }),
+    mapFilter((it) => !!it && it !== 'All')
   )
 
   public readonly refAbilities$ = this.ability$.pipe(
     map((it) => {
-      return uniq([it?.RequiredEquippedAbilityId, it?.RequiredAbilityId, ...(it?.AbilityList || [])])
+      return uniq(flatten([it?.RequiredEquippedAbilityId, it?.RequiredAbilityId, it?.AbilityList]))
         .filter((e) => !!e)
         .filter((e) => e !== it.AbilityID)
     })
@@ -63,20 +67,16 @@ export class AbilityDetailService {
     //
   }
 
-  public update(entityId: string) {
-    this.abilityId$.next(entityId)
-  }
-
-  public getProperties(ability: Ability, exclude?: Array<keyof Ability | '$source'>) {
-    if (!ability) {
-      return []
+  public load(idOrItem: string | Ability) {
+    if (typeof idOrItem === 'string') {
+      this.abilityId$.next(idOrItem)
+    } else {
+      this.abilityId$.next(idOrItem?.AbilityID)
     }
-    exclude = exclude || ['$source', 'Icon', 'DisplayName', 'Description', 'Sound']
-    return Object.entries(ability)
-      .filter(([key, value]) => !!value && !exclude.includes(key as any))
-      .reduce((res, [key, value]) => {
-        res[key] = value
-        return res
-      }, {} as Partial<Ability>)
   }
+}
+
+function reduceProps(item: Ability) {
+  const reject = ['$source', 'Icon', 'DisplayName', 'Description', 'Sound']
+  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }
