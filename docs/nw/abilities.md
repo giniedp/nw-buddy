@@ -1,5 +1,6 @@
     
-# Descriptive
+# Abilities
+
 ```ts
   AbilityID:                                      string;
   DisplayName?:                                   string;
@@ -11,16 +12,16 @@
   HoldConditionButtonIcon?:                       string;
 ```
 
-# Skill Tree
+## Skill Tree
 ```ts
-  TreeColumnPosition?:                            number;
-  TreeId?:                                        number;
-  TreeRowPosition?:                               number;
-  RequiredAbilityId?:                             string;
+  TreeId?:                                        number; // either 0 or 1 (left tree / right tree)
+  TreeColumnPosition?:                            number; // x position in grid
+  TreeRowPosition?:                               number; // y position in grid
+  RequiredAbilityId?:                             string; // dependency, must be enabled
   UnlockDefault?:                                 boolean; // Greatsword permanent abilities
 ```
 
-# Filter
+## Filter
 ```ts
   ExcludeFromGameModes?:                          string; // OutpostRush
   IgnoreDisabledAttackTypes?:                     string; // Heartgem
@@ -36,7 +37,7 @@
   DistFromDefender?:                              number;
 ```
 
-# Trigger
+## Trigger
 
 ```ts
   OnAttachedSpellTargetDied?:                     boolean;
@@ -89,7 +90,7 @@
   CheckStatusEffectsOnTargetOwned?:               boolean;
 ```
 
-# Conditions
+## Conditions
 ```ts
   // health check
   MyHealthPercent?:                               number; // 100
@@ -160,14 +161,14 @@
   
 ```
 
-# Hit Counter
+## Hit Counter
 ```ts
   TrackHitCount?:                                 boolean;
   NumberOfTrackedHits?:                           number;
   NumberOfHitsComparisonType?:                    string;
 ```
 
-# Scale or Multiply Effect
+## Scale or Multiply Effect
 ```ts
   LinearlyScaleToDistance?:                       number;
   MaxNumAroundMe?:                                number; // multiplies with BaseDamage
@@ -180,7 +181,7 @@
   PerStatusEffectOnSelfMax?:                      number;
 ```
 
-# Effects
+## Effects
 ```ts
   ThreatDamage?:                                  number; // increase thread damage
   ArmorPenetration?:                              number; // increase armor penetration dealt (on target)
@@ -293,12 +294,12 @@
   ResetCooldownTimers?:                           string;
 ```
 
-# Unused 
+## Unused 
 ```
   AbilityIdToCheckForTrackedHits?:                string;
 ```
 
-# Other
+## Other
 ```ts
   ActivationCooldown?:                            number; // Cooldown in seconds
   DoNotUnequipSelfAppliedSE?:                     boolean;
@@ -319,7 +320,7 @@
 
 ```
 
-# Unknown
+## Unknown
 ```ts
   RequireReaction?:                               boolean | string;
   NumSuccessfulHits?:                             number;
@@ -338,6 +339,8 @@
   StatusEffectDurationReduction?:                 number;
 ```
 
+## TODO
+```ts
   Duration?:                                      number;
   DisableApplyPerStatusEffectStack?:              boolean;
   DisableCastSpellDurability?:                    boolean;
@@ -351,3 +354,4 @@
   ResetTrackedOnSuccess?:                         boolean;
 
   SetHealthOnFatalDamageTaken?:                   number;
+```
