@@ -1,4 +1,5 @@
-# Descriptive
+# Status Effects
+
 ```ts
 StatusID:                                    string;
 EffectCategories?:                           string[];
@@ -8,7 +9,7 @@ Description?:                                string;;
 PlaceholderIcon?:                            string;
 ```
 
-# Ignorable
+## Ignorable
 ```ts
 UiNameplatePriority:                         number;
 UIPriority:                                  number;
@@ -28,7 +29,7 @@ DisableSupportContributionRewards?:          boolean;
 DisableTelemetry?:                           boolean | string;
 ```
 
-# Attribute bonus
+## Attribute bonus
 ```ts
 MODConstitution?:                            number;
 MODDexterity?:                               number;
@@ -37,7 +38,7 @@ MODIntelligence?:                            number;
 MODStrength?:                                number;
 ```
 
-# Absorption
+## Absorption
 ```ts
 ABSAcid?:                                    number;
 ABSArcane:                                   number;
@@ -54,7 +55,7 @@ ABSThrust:                                   number;
 ABSVitalsCategory?:                          number | string;
 ```
 
-# Damage (empower)
+## Damage
 ```ts
 DMGArcane?:                                  number;
 DMGCorruption?:                              number;
@@ -71,7 +72,7 @@ DMGVitalsCategory_Tooltip?:                  number;
 DMGVitalsCategory?:                          number | string;
 ```
 
-# Weakness
+## Weakness
 ```ts
 WKNArcane?:                                  number;
 WKNCorruption?:                              number;
@@ -86,7 +87,7 @@ WKNStrike?:                                  number;
 WKNThrust?:                                  number;
 ```
 
-# Effect resistance
+## Effect resistance
 ```ts
 RESBleed?:                                   number;
 RESBlight?:                                  number;
@@ -95,7 +96,7 @@ RESDisease?:                                 number;
 RESFrostbite?:                               number;
 RESPoison?:                                  number;
 ```
-# Gathering bonus
+## Gathering bonus
 ```ts
 EFFHarvesting?:                              number;
 EFFLogging?:                                 number;
@@ -137,7 +138,7 @@ AFAFrostbite?:                               number;
 AFAPoison?:                                  number;
 ```
 
-# Experience Boost 
+## Experience Boost 
 ```ts
 EXPFishing?:                                 number;
 EXPHarvesting?:                              number;
@@ -151,7 +152,7 @@ EXPWeaving?:                                 number;
 EXPWoodworking?:                             number | string;
 ```
 
-# Gathering Yield
+## Gathering Yield
 ```ts
 MULTFishing?:                                number;
 MULTHarvesting?:                             number;
@@ -160,7 +161,7 @@ MULTMining?:                                 number;
 MULTSkinning?:                               number;
 ```
 
-# Luck rol
+## Luck rol
 ```ts
 ROLCooking?:                                 number;
 ROLFishing?:                                 number;
@@ -175,7 +176,7 @@ ROLWeaving?:                                 number;
 ROLWoodworking?:                             number;
 ```
 
-# Max Gearscore Craft
+## Max Gearscore Craft
 ```ts
 MaxGSArcana?:                                number;
 MaxGSArmoring?:                              number;
@@ -184,7 +185,7 @@ MaxGSJewelcrafting?:                         number;
 MaxGSWeaponsmithing?:                        number;
 ```
 
-# Min Gearscore Craft
+## Min Gearscore Craft
 ```ts
 MGSArcana?:                                  number;
 MGSArmoring?:                                number;
@@ -193,13 +194,13 @@ MGSJewelcrafting?:                           number;
 MGSWeaponsmithing?:                          number;
 ```
 
-# Group XP contribution (music)
+## Group XP contribution (music)
 ```ts
 XPIncreases?:                                number | string;
 XPIncreasesTooltip?:                         number;
 ```
 
-# Remove Effect Trigger
+## Remove Effect Trigger
 ```ts
 RemoveOnDeath?:                              number | string; // on finish?
 RemoveOnDeathsDoor?:                         number | string; // on death but reviveable?
@@ -207,7 +208,7 @@ RemoveOnGameModeExit?:                       number | string; // on exit expedit
 RemoveOnRespawn?:                            number;
 ```
 
-# Mods
+## Mods
 ```ts
 AzothMod?:                                   number; // When gain Azoth, gain % more (scaling)
 CoreTempMod?:                                number; // something unused
@@ -224,9 +225,9 @@ EffectDurationMods?:                         string; // e.g. Slow=-1.0+Root=-1.0
 EffectPotencyMods?:                          string; // e.g. Slow=-1.0+Root=-1.0+UnclampedSlow=-1.0
 ```
 
-# Conditions
+## Conditions
 ```ts
-HitCondition?:                               string; // OnHit OnHitTaken
+HitCondition?:                               string; // removes this effect: OnHit OnHitTaken
 OnDeathStatusEffect?:                        string; // applied status effect on death
 OnEndStatusEffect?:                          string; // applied status effect on effect end
 OnHitAffixes?:                               string; // applied status effect on hit something
@@ -237,7 +238,7 @@ AddOnStackSize?:                             number; // when this stack size
 AddOnStackSizeComparison?:                   string; // fullfills this comparison
 ```
 
-# Effects
+## Effects
 ```ts
 Encumbrance?:                                number; // increases encumbrance limit
 EquipAbility?:                               string; // effect equips this ability
@@ -274,6 +275,8 @@ StaminaRate:                                 number; // add to stamina restaurat
 
 ```
 
+## TODO
+```ts
 RemoveEffectModsOnInactive?:                 boolean; // 
 RemoveStatusEffectCategories?:               string;
 RemoveStatusEffects?:                        string;
@@ -373,3 +376,4 @@ WeaponMasteryCategoryId?:                    number | string;
 WindowHeader?:                               string;
 
 "NotCombatAction "?:                         boolean;
+```

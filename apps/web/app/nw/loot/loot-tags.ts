@@ -1,9 +1,9 @@
-import { map, of } from "rxjs"
+import { Gamemodes, Mutationdifficulty, PoiDefinition, Territorydefinitions } from "@nw-data/types"
+import { map, Observable, of } from "rxjs"
 import { mapFilter } from "~/utils"
-import { NwDbService } from "../nw-db.service"
 
-export function territoriesTags(db: NwDbService) {
-  return db.territories.pipe(mapFilter((it) => !!it.LootTags && !!it.NameLocalizationKey)).pipe(
+export function territoriesTags(source$: Observable<Territorydefinitions[]>) {
+  return source$.pipe(mapFilter((it) => !!it.LootTags && !!it.NameLocalizationKey)).pipe(
     map((list) => {
       return [
         ...list.map((it) => {
@@ -19,8 +19,8 @@ export function territoriesTags(db: NwDbService) {
   )
 }
 
-export function poiTags(db: NwDbService) {
-  return db.pois.pipe(mapFilter((it) => !!it.LootTags && !!it.NameLocalizationKey)).pipe(
+export function poiTags(source$: Observable<PoiDefinition[]>) {
+  return source$.pipe(mapFilter((it) => !!it.LootTags && !!it.NameLocalizationKey)).pipe(
     map((list) => {
       return [
         ...list.map((it) => {
@@ -36,8 +36,8 @@ export function poiTags(db: NwDbService) {
   )
 }
 
-export function gameModesTags(db: NwDbService, mutated?: boolean) {
-  return db.gameModes.pipe(mapFilter((it) => !!it.LootTags && !!it.DisplayName)).pipe(
+export function gameModesTags(source$: Observable<Gamemodes[]>, mutated?: boolean) {
+  return source$.pipe(mapFilter((it) => !!it.LootTags && !!it.DisplayName)).pipe(
     map((list) => {
       return [
         ...list.map((it) => {
@@ -53,8 +53,8 @@ export function gameModesTags(db: NwDbService, mutated?: boolean) {
   )
 }
 
-export function mutaDifficultyTags(db: NwDbService) {
-  return db.mutatorDifficulties.pipe(
+export function mutaDifficultyTags(source$: Observable<Mutationdifficulty[]>) {
+  return source$.pipe(
     map((list) => {
       return [
         ...list.map((it) => {
@@ -70,7 +70,7 @@ export function mutaDifficultyTags(db: NwDbService) {
   )
 }
 
-export function mutaElementalTags(db: NwDbService) {
+export function mutaElementalTags() {
   return of(['Fire', 'Ice', 'Nature', 'Void']).pipe(
     map((list) => {
       return list.map((it) => {

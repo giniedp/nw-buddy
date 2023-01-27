@@ -20,6 +20,7 @@ export const ROUTES: Routes = [
   { path: 'items', loadChildren: () => import('./pages/database/items').then((m) => m.ItemsModule) },
   { path: 'perks', loadChildren: () => import('./pages/database/perks').then((m) => m.PerksModule) },
   { path: 'poi', loadChildren: () => import('./pages/database/poi').then((m) => m.PoiModule) },
+  { path: 'loot', loadChildren: () => import('./pages/database/loot').then((m) => m.LootModule) },
   {
     path: 'status-effects',
     loadChildren: () => import('./pages/database/status-effects').then((m) => m.StatusEffectsModule),

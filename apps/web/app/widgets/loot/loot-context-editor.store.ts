@@ -44,7 +44,9 @@ export class LootContextEditorStore extends ComponentStore<LootContextEditorStat
   public readonly isMutable$ = this.select(
     ({ gameModeId, gameModeOptions }) => gameModeOptions?.find((it) => it.targetId === gameModeId)?.target?.IsMutable
   )
-  public readonly isMutation$ = this.isMutable$.pipe(switchMap((isMutable) => this.select(({ isMutation}) => !!isMutable && !!isMutation)))
+  public readonly isMutation$ = this.isMutable$.pipe(
+    switchMap((isMutable) => this.select(({ isMutation }) => !!isMutable && !!isMutation))
+  )
   public readonly playerLevel$ = this.select(({ playerLevel }) => playerLevel)
   public readonly contentLevel$ = this.select(({ contentLevel }) => contentLevel)
   public readonly vital$ = this.select(({ vitalId }) => vitalId).pipe(
@@ -124,7 +126,7 @@ export class LootContextEditorStore extends ComponentStore<LootContextEditorStat
         ...(data.mutaElement?.tags || []),
         ...(data.vital?.LootTags || []),
       ]
-      const values: Record<string, string| number> = {}
+      const values: Record<string, string | number> = {}
       if (data.playerLevel != null) {
         values['Level'] = data.playerLevel
       }
@@ -143,18 +145,18 @@ export class LootContextEditorStore extends ComponentStore<LootContextEditorStat
 
   public constructor(private db: NwDbService) {
     super({
-      playerLevel: NW_MAX_CHARACTER_LEVEL
+      playerLevel: NW_MAX_CHARACTER_LEVEL,
     })
   }
 
   public readonly load = this.effect<void>(() => {
     return combineLatest({
-      poi: poiTags(this.db),
-      territories: territoriesTags(this.db),
-      gameModes: gameModesTags(this.db, false),
-      gameModesMuta: gameModesTags(this.db, true),
-      mutaElements: mutaElementalTags(this.db),
-      mutaDifficulties: mutaDifficultyTags(this.db),
+      poi: poiTags(this.db.pois),
+      territories: territoriesTags(this.db.territories),
+      gameModes: gameModesTags(this.db.gameModes, false),
+      gameModesMuta: gameModesTags(this.db.gameModes, true),
+      mutaElements: mutaElementalTags(),
+      mutaDifficulties: mutaDifficultyTags(this.db.mutatorDifficulties),
     }).pipe(
       map((data) => {
         this.patchState({
