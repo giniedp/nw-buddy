@@ -12,7 +12,14 @@ export interface SelectboxFilterParams {
   showCondition?: boolean
   showSearch?: boolean
   conditionAND?: boolean
+  conditionNOT?: boolean
   optionsGetter?: (node: RowNode) => SelectFilterOption[]
+}
+
+export interface SelectboxFilterModel {
+  and?: boolean
+  not?: boolean
+  checked: string[]
 }
 
 export class SelectboxFilter implements IFilterComp {
@@ -25,6 +32,7 @@ export class SelectboxFilter implements IFilterComp {
   private optionsGetter: (row: RowNode) => SelectFilterOption[]
 
   private conditionAND: boolean
+  private conditionNOT: boolean
   private searchQuery: string
   private showCondition: boolean
   private showSearch: boolean
@@ -33,6 +41,7 @@ export class SelectboxFilter implements IFilterComp {
 
   public init(params: IFilterParams & SelectboxFilterParams) {
     this.conditionAND = params.conditionAND
+    this.conditionNOT = params.conditionNOT
     this.showCondition = params.showCondition
     this.showSearch = params.showSearch
     this.optionsGetter = params.optionsGetter || ((node) => this.extractOptionsFromNode(node))
@@ -88,25 +97,28 @@ export class SelectboxFilter implements IFilterComp {
               },
             }),
           this.showCondition &&
-            m(ConditionControl, {
-              checked: this.conditionAND,
-              onchange: () => {
-                this.conditionAND = !this.conditionAND
-                this.onFilterChanged()
-              },
-            }),
+            m('div', [
+              m(ConditionControl, {
+                checked: this.conditionAND,
+                onchange: () => {
+                  this.conditionAND = !this.conditionAND
+                  this.onFilterChanged()
+                },
+              }),
+              m(NegateControl, {
+                checked: this.conditionNOT,
+                onchange: () => {
+                  this.conditionNOT = !this.conditionNOT
+                  this.onFilterChanged()
+                },
+              }),
+            ]),
           !!list1?.length && [
             m(SelectControls, {
               overflow: false,
               options: list1,
+              onClear: () => this.clearFilter()
             }),
-            m(
-              'button.btn.btn-outline.btn-xs',
-              {
-                onclick: () => this.clearFilter(),
-              },
-              'clear'
-            )
           ],
           m(SelectControls, {
             overflow: true,
@@ -135,6 +147,9 @@ export class SelectboxFilter implements IFilterComp {
         pass = pass || toCheck.includes(key)
       }
     })
+    if (this.conditionNOT) {
+      pass = !pass
+    }
     return !!pass
   }
 
@@ -142,15 +157,24 @@ export class SelectboxFilter implements IFilterComp {
     return Array.from(this.state.values()).some((it) => !!it)
   }
 
-  public getModel() {
+  public getModel(): SelectboxFilterModel {
     const result = Array.from(this.state.values())
-    return result.length ? result : null
+    if (!result.length) {
+      return null
+    }
+    return {
+      and: this.conditionAND,
+      not: this.conditionNOT,
+      checked: result,
+    }
   }
 
-  public setModel(state: Array<string>) {
-    state = state || []
-    state = state.filter((it) => typeof it === 'string' || typeof it === 'boolean' || typeof it === 'number')
-    this.state = new Set(state)
+  public setModel(state: SelectboxFilterModel) {
+    let checked = state?.checked || []
+    checked = checked.filter((it) => typeof it === 'string' || typeof it === 'boolean' || typeof it === 'number')
+    this.state = new Set(checked)
+    this.conditionAND = !!state?.and
+    this.conditionNOT = !!state?.not
   }
 
   public onNewRowsLoaded() {
@@ -242,6 +266,27 @@ export class SelectboxFilter implements IFilterComp {
   }
 }
 
+interface NegateControlAttrs {
+  checked: boolean
+  onchange: Function
+}
+const NegateControl: m.Component<NegateControlAttrs> = {
+  view: ({ attrs: { checked, onchange } }) => [
+    m('div.form-control.mt-1', [
+      m('div.btn-group', [
+        m(
+          'button.btn.btn-xs.flex-1',
+          {
+            class: checked ? 'btn-active' : '',
+            onclick: onchange,
+          },
+          'Negate'
+        ),
+      ]),
+    ]),
+  ],
+}
+
 interface ConditionControlAttrs {
   checked: boolean
   onchange: Function
@@ -256,7 +301,7 @@ const ConditionControl: m.Component<ConditionControlAttrs> = {
             class: !checked ? 'btn-active' : '',
             onclick: onchange,
           },
-          'Any'
+          'OR'
         ),
         m(
           'button.btn.btn-xs.flex-1',
@@ -264,7 +309,7 @@ const ConditionControl: m.Component<ConditionControlAttrs> = {
             class: checked ? 'btn-active' : '',
             onclick: onchange,
           },
-          'All'
+          'AND'
         ),
       ]),
     ]),
@@ -308,31 +353,50 @@ const SearchControl: m.Component<SearchControlAttrs> = {
 interface SelectControlAttrs {
   overflow: boolean
   options: Array<{ label: string; icon?: string; active: boolean; click: Function }>
+  onClear?: () => void
 }
 const SelectControls: m.Component<SelectControlAttrs, any> = {
-  view: ({ attrs: { overflow, options } }) => [
-    m(
-      `ul.menu.menu-compact.rounded-md.flex-nowrap.flex-1${overflow ? '.overflow-y-auto' : ''}`,
-      options?.map((option) => {
-        return m('li', [
+  view: ({ attrs: { overflow, options, onClear } }) => {
+    if (!options?.length) {
+      return null
+    }
+    return [
+      m(`ul.menu.menu-compact.rounded-md.flex-nowrap.flex-1${overflow ? '.overflow-y-auto' : ''}`, [
+        m.fragment(
+          {},
+          options.map((option) => {
+            return m('li', [
+              m(
+                'a',
+                {
+                  class: option.active ? 'active' : '',
+                  onclick: option.click,
+                },
+                [
+                  option.icon &&
+                    m('img.w-6.h-6', {
+                      src: option.icon,
+                    }),
+                  option.label || '-- empty --',
+                ]
+              ),
+            ])
+          })
+        ),
+        !onClear ? null : m('li.btn.btn-ghost.btn-sm.btn-outline.btn-primary.p-0', [
           m(
-            'a',
+            'a.block.w-full.text-center',
             {
-              class: option.active ? 'active' : '',
-              onclick: option.click,
+              onclick: onClear,
             },
             [
-              option.icon &&
-                m('img.w-6.h-6', {
-                  src: option.icon,
-                }),
-              option.label || '-- empty --',
+              'CLEAR',
             ]
           ),
         ])
-      })
-    ),
-  ],
+      ]),
+    ]
+  },
 }
 
 function valueToId(value: string | null) {
