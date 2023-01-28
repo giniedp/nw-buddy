@@ -325,6 +325,10 @@ export class GearsetStatsComponent {
     )
   }
 
+  private toArray<T>(value: T | T[]): T[] {
+    return Array.isArray(value) ? value : value ? [value] : []
+  }
+
   private resolveSlotEquipDetails() {
     return combineLatest({
       slots: this.slots$,
@@ -334,12 +338,12 @@ export class GearsetStatsComponent {
         const infos: Record<string, SlotEqupmentDetails> = {}
         for (const slot of slots) {
           const itemId = getItemId(slot.item || slot.housing)
-          const effectIds = slot.consumable?.AddStatusEffects || slot.housing?.HousingStatusEffect
-          if ((!slot.housing && !slot.consumable) || !effectIds) {
+          const effectIds: string[] = this.toArray(slot.consumable?.AddStatusEffects || slot.housing?.HousingStatusEffect)
+          if ((!slot.housing && !slot.consumable) || !effectIds.length) {
             continue
           }
 
-          for (const effectId of effectIds.split('+')) {
+          for (const effectId of effectIds) {
             if (infos[itemId]) {
               infos[itemId].count += 1
               continue

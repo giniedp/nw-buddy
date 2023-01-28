@@ -806,7 +806,7 @@ export interface Housetypes {
     "Territory Standing Required Level":              number;
 }
 export interface ItemdefinitionsConsumables {
-    AddStatusEffects?:             string;
+    AddStatusEffects?:             string[];
     ConsumableID:                  string;
     CooldownDuration:              number;
     CooldownId?:                   string;
@@ -822,8 +822,8 @@ export interface ItemdefinitionsConsumables {
     MinPotencyModifier:            number;
     OnUseAffliction?:              string;
     PotencyScaleFactor:            number;
-    RemoveStatusEffectCategories?: string;
-    RemoveStatusEffects?:          string;
+    RemoveStatusEffectCategories?: string[];
+    RemoveStatusEffects?:          string[];
     StatusEffectMod:               number;
     UseCount:                      number;
 }

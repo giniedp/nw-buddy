@@ -135,6 +135,15 @@ program
           ],
         },
         {
+          file: /_itemdefinitions_consumables.json/,
+          rules: [
+            splitToArrayRule({
+              properties: ['AddStatusEffects', 'RemoveStatusEffectCategories', 'RemoveStatusEffects'],
+              separator: '+',
+            }),
+          ],
+        },
+        {
           file: /_itemdefinitions_master_/,
           rules: [
             splitToArrayRule({
