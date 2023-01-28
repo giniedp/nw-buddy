@@ -1,11 +1,8 @@
 # Affix Properties
 
-Affix are applied from perks.
 Both `Affix` and `StatusEffect` use `StatusID` as identifier and have some properties in common so probably have the same data structure and meaning but are maintained in different files.
 
-If a perk has `ScalingPerGearScore` property then the perk multiplier for numeric values is applied
-
-$perkMultiplier = 1 + (gearScore - 100) * ScalingPerGearScore$
+If a perk has `ScalingPerGearScore` then the perk multiplier is used to scale whatever effect value
 
 ## Identity
 
@@ -66,7 +63,7 @@ DMGVitalsCategory?:         string;
 ```
 
 ## Effect Resistance
-Simply adds to resistance stat. For Blight Curse Poision this is the value
+Simply adds to resistance stat. For `Blight`, `Curse`, `Poision` this is the value
 that ticks down when standing in blighted/corrupted/poisoned area
 
 ```ts
@@ -75,7 +72,7 @@ RESCurse:                   number;
 RESPoison:                  number;
 ```
 
-Adds to affliction reduction stat. For Blight Curse Poision this slows
+Adds to affliction reduction stat. For `Blight`, `Curse`, `Poision` this slows
 down the tick timer (or increases the amount that is restored per tick)
 
 ```ts
@@ -154,6 +151,7 @@ UseCountMultiplier:         number; // AffixTypeLevel
 WeightMultiplier:           number;
 ```
 only found on `AffixTypeLevel2Shield`, `AffixTypeLevel3Shield`, `AffixTypeLevel4Shield`, `AffixTypeLevel5Shield`
+but also exists on all wepondefinitions.
 ```ts
 ABABleed:                   number;
 ABACurse:                   number;

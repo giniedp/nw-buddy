@@ -81,3 +81,16 @@ classDiagram
       _spelltable_*.json
     }
 ```
+
+# Notes
+
+```
+WeaponDamage 
+  * (1 + BaseDamage - BaseDamageReduction) 
+  * DmgCoef 
+  * (DMG + MAX((CritDamageMultiplier + HeadshotDamage + HitFromBehindDamage + CritDamage -CritDamageReduction),0)) 
+  * (1 + DamageModifier(Ammo)) 
+  * (1 - ABS) 
+  * (1 - (ArmorMitigation * (1 - ArmorPenetration))) 
+  * (1 + WKN)
+```

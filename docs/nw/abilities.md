@@ -129,8 +129,12 @@ DamageCategory?:                                string;
 DamageIsMelee?:                                 boolean;
 DamageIsRanged?:                                boolean;
 
-InAction?:                                      string;
-InActionTime?:                                  number;
+// animation
+InAction?:                                      string; // animation action name
+InActionTime?:                                  number; // animation time
+// animation marker
+TargetMarker?:                                  string; // IsKnockedDown
+MyMarker?:                                      string; // BlockEarly
 
 // grit check
 HasGritActive?:                                 boolean;
@@ -145,9 +149,6 @@ TargetStatusEffect?:                            string;
 TargetStatusEffectCategory?:                    string;
 TargetStatusEffectComparison?:                  string; // Equal, Notequal, GreaterThanEqual
 TargetStatusEffectStackSize?:                   number;
-// marker conditions
-TargetMarker?:                                  string; // IsKnockedDown
-MyMarker?:                                      string; // BlockEarly
 
 // consecutive hits
 NumConsecutiveHits?:                            number;
@@ -187,7 +188,7 @@ PerStatusEffectOnSelfMax?:                      number;
 
 ## Effects
 ```ts
-ThreatDamage?:                                  number; // increase thread damage
+ThreatDamage?:                                  number; // increase threat damage
 ArmorPenetration?:                              number; // increase armor penetration dealt (on target)
 HitFromBehindArmorPenetration?:                 number; // increase armor penetration dealt (on target, from behind)
 HitFromBehindDamage?:                           number; // increase dealt base damage when from behind
@@ -323,6 +324,7 @@ UseMinAttackInfoForSelfAppliedSE?:              boolean; // (mutation curse)
 
 EnableHoldConditionIfTrackedSpellExistsOfType?: string; // IcePylon
 MaxHitCountMultiplier?:                         number; //
+RequireReaction?:                               boolean | string; // checks against a DamageTableRow NoReaction
 ```
 
 ## Unused 
@@ -333,7 +335,6 @@ NumStatusEffectStacksToRemove?:                 number; // always empty or 0
 
 ## Unknown / Unsure
 ```ts
-RequireReaction?:                               boolean | string;
 NumSuccessfulHits?:                             number;
 PowerLevelOverride?:                            number; // only on Impactful Strikes
 RangedAttackName?:                              string;
