@@ -96,7 +96,8 @@ export class NwDbService {
   public housingItems = table(() => [this.data.housingitems()])
   public housingItemsMap = indexBy(() => this.housingItems, 'HouseItemID')
   public housingItem = lookup(() => this.housingItemsMap)
-
+  public housingItemsByStatusEffectMap = indexGroupSetBy(() => this.housingItems, (it) => it.HousingStatusEffect)
+  public housingItemsByStatusEffect = lookup(() => this.housingItemsByStatusEffectMap)
 
   public itemOrHousingItem = (id: string | Observable<string>) =>
     combineLatest({
@@ -163,6 +164,8 @@ export class NwDbService {
   public consumables = table(() => [this.data.itemdefinitionsConsumables()])
   public consumablesMap = indexBy(() => this.consumables, 'ConsumableID')
   public consumable = lookup(() => this.consumablesMap)
+  public consumablesByAddStatusEffectsMap = indexGroupSetBy(() => this.consumables, (it) => it.AddStatusEffects)
+  public consumablesByAddStatusEffects = lookup(() => this.consumablesByAddStatusEffectsMap)
 
   public runes = table(() => [this.data.itemdefinitionsRunes()])
   public runesMap = indexBy(() => this.runes, 'WeaponID')

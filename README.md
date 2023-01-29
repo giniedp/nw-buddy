@@ -1,4 +1,4 @@
-![New World Buddy](./docs/nw-buddy-1.png)
+![New World Buddy](./docs/screenshots/nw-buddy-1.png)
 
 # New World Buddy
 

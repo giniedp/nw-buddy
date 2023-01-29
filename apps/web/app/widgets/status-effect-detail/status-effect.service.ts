@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core'
-import { Perks, Statuseffect } from '@nw-data/types'
+import { Affixstats, Perks, Statuseffect } from '@nw-data/types'
 import { flatten, uniq } from 'lodash'
 import { combineLatest, map, of, ReplaySubject, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
+import { getItemId } from '~/nw/utils'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
 import { humanize, mapList, rejectKeys, shareReplayRefCount } from '~/utils'
 
@@ -16,6 +17,8 @@ export class StatusEffectDetailService {
   public readonly source$ = this.effect$.pipe(map((it) => it?.['$source']))
   public readonly description$ = this.effect$.pipe(map((it) => it?.Description))
   public readonly properties$ = this.effect$.pipe(map(reduceProps)).pipe(shareReplayRefCount(1))
+  public readonly affix$ = this.effect$.pipe(switchMap((it) => this.db.affixstat(it?.OnHitAffixes))).pipe(shareReplayRefCount(1))
+  public readonly affixProps$ = this.affix$.pipe(map(reduceAffixProps))
 
   public readonly refEffects$ = this.effect$.pipe(
     map((it) => {
@@ -70,6 +73,11 @@ export class StatusEffectDetailService {
     .pipe(mapList((it) => it.PerkID))
     .pipe(map(uniq))
 
+  public readonly foreignItems$ = combineLatest([
+    this.db.housingItemsByStatusEffect(this.effectId$).pipe(map((it) => Array.from(it?.values() || []))).pipe(mapList(getItemId)),
+    this.db.consumablesByAddStatusEffects(this.effectId$).pipe(map((it) => Array.from(it?.values() || []))).pipe(mapList((it) => it.ConsumableID)),
+  ]).pipe(map((list) => list.flat()))
+
   public constructor(private db: NwDbService) {
     //
   }
@@ -85,5 +93,10 @@ export class StatusEffectDetailService {
 
 function reduceProps(item: Statuseffect) {
   const reject = ['$source', 'PlaceholderIcon']
+  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
+}
+
+function reduceAffixProps(item: Affixstats) {
+  const reject = ['$source']
   return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }

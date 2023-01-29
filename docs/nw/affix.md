@@ -1,16 +1,13 @@
 # Affix Properties
 
-Affix are applied from perks.
 Both `Affix` and `StatusEffect` use `StatusID` as identifier and have some properties in common so probably have the same data structure and meaning but are maintained in different files.
 
-If a perk has `ScalingPerGearScore` property then the perk multiplier for numeric values is applied
-
-$perkMultiplier = 1 + (gearScore - 100) * ScalingPerGearScore$
+If a perk has `ScalingPerGearScore` then the perk multiplier is used to scale whatever effect value
 
 ## Identity
 
 ```ts
-StatusID:                   string; // ID of this affix
+StatusID:                   string;
 ```
 
 ## Delegate
@@ -65,8 +62,8 @@ DMGThrust:                  number;
 DMGVitalsCategory?:         string;
 ```
 
-## Resistance
-Simply adds to resistance stat. For Blight Curse Poision this is the value
+## Effect Resistance
+Simply adds to resistance stat. For `Blight`, `Curse`, `Poision` this is the value
 that ticks down when standing in blighted/corrupted/poisoned area
 
 ```ts
@@ -75,7 +72,7 @@ RESCurse:                   number;
 RESPoison:                  number;
 ```
 
-Adds to affliction reduction stat. For Blight Curse Poision this slows
+Adds to affliction reduction stat. For `Blight`, `Curse`, `Poision` this slows
 down the tick timer (or increases the amount that is restored per tick)
 
 ```ts
@@ -89,30 +86,6 @@ From testing
 - 4 x 625GS items: 120 ticks down in 150 seconds
 - regardless of resistance, restoring the value is always same speed (1 per second)
 
-## ?
-not used by any perk
-```ts
-ABABleed:                   number;
-ABACurse:                   number;
-ABADisease:                 number;
-ABAFrostbite:               number;
-ABAPoison:                  number;
-```
-
-## ?
-not used by any perk
-```ts
-BLAArcane:                  number;
-BLACorruption:              number;
-BLAFire:                    number;
-BLALightning:               number;
-BLASiege:                   number;
-BLASlash:                   number;
-BLAStandard:                number;
-BLAStrike:                  number;
-BLAThrust:                  number;
-```
-
 ## Music progression
 ```ts
 MP_FinalNotePerfectXPBonus: number;
@@ -124,12 +97,16 @@ MP_SoloXPBonus:             number;
 ```
 
 ## Damage Conversion
-How much damage is converted to specific damage type (gems only)
+How much damage is converted to specific damage type
+- Perks -> only gems
+- AI -> mutation effect to split damage from mobs
+- AI also uses `IsAdditiveDamage` to make it additive instead of split damage
 
 ```ts
-DamagePercentage:           number;
 DamageType?:                string;
+DamagePercentage:           number;
 WeaponEffectType?:          string;
+IsAdditiveDamage:           boolean;
 ```
 
 If `PreferHigherScaling` is true, use given scaling for conversion if the output is higher
@@ -161,16 +138,34 @@ MaxStaminaMod:              number; // add % to max stamina (hearty)
 ```
 
 ## ?
-not used by any perk
+Maybe stats from the early days of the game
 ```ts
-AdditionalDamage?:          string;
-AppendToTooltip?:           string;
+AdditionalDamage?:          string; // found only on 1 affix: affixDyrnwyn
+AppendToTooltip?:           string; // some developer hint text
 AttributeModifiers?:        string; // e.g. Constitution=5
 BaseDamageModifier:         number;
-BaseDamageType?:            string;
-IsAdditiveDamage:           boolean;
-FastTravelEncumbranceMod:   number;
-StaminaDamageModifier:      number;
-UseCountMultiplier:         number;
+BaseDamageType?:            string; // found only on 3 affix
+FastTravelEncumbranceMod:   number; // found only on 3 affix: Nomadic1 Nomadic2 Nomadic3
+StaminaDamageModifier:      number; // found only on 3 affix: Unstoppable1 Unstoppable2 Unstoppable3
+UseCountMultiplier:         number; // AffixTypeLevel
 WeightMultiplier:           number;
+```
+only found on `AffixTypeLevel2Shield`, `AffixTypeLevel3Shield`, `AffixTypeLevel4Shield`, `AffixTypeLevel5Shield`
+but also exists on all wepondefinitions.
+```ts
+ABABleed:                   number;
+ABACurse:                   number;
+ABADisease:                 number;
+ABAFrostbite:               number;
+ABAPoison:                  number;
+
+BLAArcane:                  number;
+BLACorruption:              number;
+BLAFire:                    number;
+BLALightning:               number;
+BLASiege:                   number;
+BLASlash:                   number;
+BLAStandard:                number;
+BLAStrike:                  number;
+BLAThrust:                  number;
 ```
