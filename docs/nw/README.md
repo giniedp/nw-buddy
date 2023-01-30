@@ -14,6 +14,8 @@ classDiagram
 
     Affix --> "0..1" StatusEffect
 
+    Attribute --> Ability
+
     Ability --> "0..N" StatusEffect
     Ability --> "0..1" Spell
     Ability --> "0..N" Ability
@@ -24,6 +26,10 @@ classDiagram
     class Item {
       source: _itemdefinitions_master_*.json
       ItemID
+    }
+
+    class Attribute {
+      EquipAbilities[]
     }
 
     class ConsumableItem {
@@ -82,15 +88,60 @@ classDiagram
     }
 ```
 
-# Notes
+# Player HP
+
+$BaseHP + LevelHP + ConstHP$
+
+where 
+- `BaseHP` = $778$ from `vitals.json` (VitalsID=Player)
+- `LevelHP` = $1.5 * (Level - 1)^2$
+- `ConstHP` = lookup by level from `javelindata_attributeconstitution.json`
+
+See [Spreadsheet](https://docs.google.com/spreadsheets/d/1z914znwnL403tup6MApU9mnyWuycOhoPp0NNWQJODUg) for used data.
+
+## Display Bug
+There is a display bug in the game where for example HP shows 6000 in HP Bar but 5999 in stats screen (TAB). This is because the actual value in that case is 5999.5 and is rounded for HP Bar (giving 6000) but floored for display in stats screen (giving 5999). This happens for every even number of Player Level.
+
+
+# Gear Score Contribution
+
+- Head: `0.35 * 0.2`
+- Chest: `0.35 * 0.35`
+- Hands: `0.35 * 0.15`
+- Legs: `0.35 * 0.2`
+- Feet: `0.35 * 0.1`
+- Weapon1: `0.45 / 2`
+- Weapon2: `0.45 / 2`
+- Amulet: `0.2 / 3`
+- Ring: `0.2 / 3`
+- Earring: `0.2 / 3`
+
+The equpment is (most likely) divided into three groups
+
+- Group 1: Armor contribute `35%`
+- Group 2: Weapons contribute `45%`
+- Group 3: Jevelery contribute `20%`
+
+If a slot is not unlocked yet, the whole group still contributes the same percentage to the gear score.
+For example during early leveling phase only the amulet slot is unlocked but ring and earring slots are locked. For a level 1 Character the total contribution of the amulet is `20%` since it is the only slot of that group. For a level 60 Character it is `20% / 3 = 6.67%` since all 3 slots are unlockt and the weight is distributed evenly.
+
+See [Spreadsheet](https://docs.google.com/spreadsheets/d/1BhdV-SLdAvRd01pP3TD8VvzEuUfZMckJyRJUcKZEWsw) for used data.
+
+# Damage
+
+this is work in progress
 
 ```
 WeaponDamage 
   * (1 + BaseDamage - BaseDamageReduction) 
   * DmgCoef 
-  * (DMG + MAX((CritDamageMultiplier + HeadshotDamage + HitFromBehindDamage + CritDamage -CritDamageReduction),0)) 
+  * (DMG + MAX((CritDamageMultiplier + HeadshotDamage + HitFromBehindDamage + CritDamage - CritDamageReduction),0)) 
   * (1 + DamageModifier(Ammo)) 
   * (1 - ABS) 
   * (1 - (ArmorMitigation * (1 - ArmorPenetration))) 
   * (1 + WKN)
 ```
+
+Links
+- [MixedNuts Calculator](https://docs.google.com/spreadsheets/d/1-i_rew1iy8_hGdtxngRBOdwbQlwXrNNM0hDBj3T9Rsk)
+- [https://newworld.fandom.com/wiki/Damage#Weapon_Damage](https://newworld.fandom.com/wiki/Damage#Weapon_Damage)

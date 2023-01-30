@@ -189,11 +189,11 @@ PerStatusEffectOnSelfMax?:                      number;
 ## Effects
 ```ts
 ThreatDamage?:                                  number; // increase threat damage
+
+// armor penetration
 ArmorPenetration?:                              number; // increase armor penetration dealt (on target)
 HitFromBehindArmorPenetration?:                 number; // increase armor penetration dealt (on target, from behind)
-HitFromBehindDamage?:                           number; // increase dealt base damage when from behind
 HeadshotArmorPenetration?:                      number; // increase armor penetration dealt (on target, on headshot)
-HeadshotDamage?:                                number; // increase dealt base damage on headshot
 // stamina
 BlockDamage?:                                   number; // increase dealt stamina damage (on target)
 BlockDamageReduction?:                          number; // decrease taken stamina damage (on self)
@@ -204,6 +204,8 @@ BaseDamageReduction?:                           number; // decrease taken base d
 // crit
 CritDamage?:                                    number; // increase dealt crit damage
 CritDamageReduction?:                           number; // decrease taken crit damage
+HeadshotDamage?:                                number; // increase dealt crit damage on headshot
+HitFromBehindDamage?:                           number; // increase dealt crit damage when from behind
 // stagger
 StaggerDamage?:                                 number; // increase dealt stagger damage (150str bonus)
 StaggerDamageReduction?:                        number; // decrease taken stagger damage (only AI abilities)
