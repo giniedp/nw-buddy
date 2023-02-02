@@ -5,16 +5,20 @@ import { combineLatest, map, Observable, of, ReplaySubject, switchMap } from 'rx
 import { NwDbService, NwModule } from '~/nw'
 import { getWeaponTagLabel } from '~/nw/utils'
 import { NwWeaponTypesService } from '~/nw/weapon-types'
-import { CaseInsensitiveMap, humanize } from '~/utils'
+import { CaseInsensitiveMap, humanize, rejectKeys } from '~/utils'
 import { diceCoefficient } from 'dice-coefficient'
 import { sortBy } from 'lodash'
+import { TooltipModule } from '~/ui/tooltip'
+import { PropertyGridModule } from '~/ui/property-grid'
+import { IconsModule } from '~/ui/icons'
+import { svgInfo } from '~/ui/icons/svg'
 
 @Component({
   standalone: true,
   selector: 'nwb-vital-damage-table',
   templateUrl: './vital-damage-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule],
+  imports: [CommonModule, NwModule, TooltipModule, PropertyGridModule, IconsModule],
   host: {
     class: 'layout-content',
   },
@@ -24,6 +28,8 @@ export class VitalDamageTableComponent {
   public set vitalId(id: string) {
     this.vitalId$.next(id)
   }
+
+  protected iconInfo = svgInfo
 
   private vitalId$ = new ReplaySubject<string>(1)
   private damageTableFns = this.getDamageTableFns()
@@ -42,8 +48,10 @@ export class VitalDamageTableComponent {
               DamageTypeIcon: this.dmg.damageTypeIcon(row.DamageType),
               WeaponCategory: getWeaponTagLabel(row.WeaponCategory) || row.WeaponCategory,
               AttackType: row.AttackType,
+              DmgCoef: row.DmgCoef,
+              Props: rejectKeys(row, (it) => !row[it])
             }
-          }),
+          }).sort((a, b) => b.DmgCoef - a.DmgCoef),
         }
       })
     )

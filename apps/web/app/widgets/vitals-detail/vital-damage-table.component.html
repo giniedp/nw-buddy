@@ -20,6 +20,7 @@
     <div class="stat-desc flex flex-row gap-1 opacity-100">
       <span>{{ row.WeaponCategory | nwText }}</span>
       <span>{{ row.AttackType }}</span>
+      <span class="text-primary">(DMG Coef: {{ row.DmgCoef | percent }})</span>
     </div>
   </div>
 </ng-container>
