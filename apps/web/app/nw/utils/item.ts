@@ -8,7 +8,9 @@ import {
   Perkbuckets,
   Perks,
 } from '@nw-data/types'
+import type { AttributeRef } from '../attributes/nw-attributes'
 import { NW_MAX_GEAR_SCORE, NW_MAX_GEAR_SCORE_UPGRADABLE, NW_MIN_GEAR_SCORE } from './constants'
+import { damageForTooltip } from './damage'
 
 export function isMasterItem(item: ItemDefinitionMaster | Housingitems): item is ItemDefinitionMaster {
   return item && 'ItemID' in item
@@ -18,15 +20,31 @@ export function isHousingItem(item: ItemDefinitionMaster | Housingitems): item i
   return item && 'HouseItemID' in item
 }
 
-export function isItemArmor(item: ItemDefinitionMaster) {
-  return item?.ItemType === 'Armor'
+export function isItemArmor(item: ItemDefinitionMaster | null) {
+  return item?.ItemClass?.includes('Armor')
 }
 
-export function isItemWeapon(item: ItemDefinitionMaster) {
-  return item?.ItemType === 'Weapon'
+export function isItemJewelery(item: ItemDefinitionMaster | null) {
+  return item?.ItemClass?.includes('Jewelery')
 }
 
-export function isItemNamed(item: ItemDefinitionMaster) {
+export function isItemWeapon(item: ItemDefinitionMaster | null) {
+  return item?.ItemClass?.includes('Weapon')
+}
+
+export function isItemShield(item: ItemDefinitionMaster | null) {
+  return item?.ItemClass?.includes('EquppableOffHand')
+}
+
+export function isItemTool(item: ItemDefinitionMaster | null) {
+  return item?.ItemClass?.includes('EquppableTool')
+}
+
+export function isItemConsumable(item: ItemDefinitionMaster | null) {
+  return item?.ItemClass?.includes('Consumable')
+}
+
+export function isItemNamed(item: ItemDefinitionMaster | null) {
   return item?.ItemClass?.includes('Named')
 }
 
@@ -49,6 +67,9 @@ export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPer
       itemPerkIds = [item.Perk1, item.Perk2, item.Perk3, item.Perk4, item.Perk5]
     }
     rarity = itemPerkIds.filter((it) => it && !it?.startsWith('PerkID_Stat_')).length
+    if (!rarity && itemPerkIds.some((it) => it?.startsWith('PerkID_Stat_'))) {
+      rarity = 1
+    }
     const maxScore = getItemMaxGearScore(item, false)
     if (maxScore) {
       maxRarity = maxRarityFromScore(maxScore)
@@ -82,7 +103,7 @@ export function getItemPerkIds(item: ItemDefinitionMaster) {
 }
 
 export function getItemPerkIdsWithOverride(item: ItemDefinitionMaster, overrides: Record<string, string>) {
-  const perks = (getItemPerkKeys(item) || []).map((key) => overrides[key] || item[key])
+  const perks = (getItemPerkKeys(item) || []).map((key) => overrides[key] || item[key] as string)
   const randoms = (getItemPerkBucketKeys(item) || []).map((key) => overrides[key])
   return [...perks, ...randoms].filter((it) => !!it)
 }
@@ -289,15 +310,41 @@ export interface ItemStat {
   value: string | number
 }
 
-export function getItemStatsWeapon(item: ItemDefinitionMaster, stats: ItemdefinitionsWeapons | ItemdefinitionsRunes, score: number) {
+export function getItemStatsWeapon({
+  item,
+  stats,
+  gearScore,
+  playerLevel,
+  attrValueSums,
+}: {
+  item: ItemDefinitionMaster
+  stats: ItemdefinitionsWeapons | ItemdefinitionsRunes
+  gearScore: number
+  playerLevel: number
+  attrValueSums?: Record<AttributeRef, number>
+}) {
   const result: ItemStat[] = []
-  if (stats?.BaseDamage != null) {
+  if (!attrValueSums || !playerLevel) {
+    if (stats?.BaseDamage) {
+      result.push({
+        item,
+        label: 'ui_tooltip_basedamage',
+        value: stats.BaseDamage,
+      })
+    }
+  } else if (stats?.BaseDamage) {
     result.push({
       item,
-      label: 'ui_tooltip_basedamage',
-      value: stats.BaseDamage,
+      label: 'ui_tooltip_damage',
+      value: damageForTooltip({
+        playerLevel,
+        attrSums: attrValueSums,
+        gearScore: gearScore,
+        weapon: stats as ItemdefinitionsWeapons,
+      }),
     })
   }
+
   if (stats?.CritChance != null) {
     result.push({
       item,
@@ -331,7 +378,7 @@ export function getItemStatsWeapon(item: ItemDefinitionMaster, stats: Itemdefini
       result.push({
         item,
         label: 'ui_elemental',
-        value: getArmorRatingElemental(stats, score).toFixed(1),
+        value: getArmorRatingElemental(stats, gearScore).toFixed(1),
       })
     }
   }
@@ -340,7 +387,7 @@ export function getItemStatsWeapon(item: ItemDefinitionMaster, stats: Itemdefini
       result.push({
         item,
         label: 'ui_physical',
-        value: getArmorRatingPhysical(stats, score).toFixed(1),
+        value: getArmorRatingPhysical(stats, gearScore).toFixed(1),
       })
     }
   }

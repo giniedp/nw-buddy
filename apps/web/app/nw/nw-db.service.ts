@@ -2,10 +2,12 @@ import { Injectable } from '@angular/core'
 import { Vitals } from '@nw-data/types'
 import { groupBy } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, shareReplay } from 'rxjs'
-import { CaseInsensitiveMap, CaseInsensitiveSet } from '../utils'
+import { CaseInsensitiveMap, CaseInsensitiveSet } from '~/utils'
 import { NwDataService } from './nw-data.service'
 import { queryGemPerksWithAffix, queryMutatorDifficultiesWithRewards } from './nw-db-views'
-import { convertLootbuckets, convertLoottables } from './utils'
+import { convertLootbuckets } from './utils/loot-buckets'
+import { convertLoottables } from './utils/loot-tables'
+
 
 export function createIndex<T, K extends keyof T>(list: T[], id: K): Map<T[K], T> {
   const result = new CaseInsensitiveMap<T[K], T>()
@@ -160,6 +162,10 @@ export class NwDbService {
   public weapons = table(() => [this.data.itemdefinitionsWeapons()])
   public weaponsMap = indexBy(() => this.weapons, 'WeaponID')
   public weapon = lookup(() => this.weaponsMap)
+
+  public ammos = table(() => [this.data.itemdefinitionsAmmo()])
+  public ammosMap = indexBy(() => this.ammos, 'AmmoID')
+  public ammo = lookup(() => this.ammosMap)
 
   public consumables = table(() => [this.data.itemdefinitionsConsumables()])
   public consumablesMap = indexBy(() => this.consumables, 'ConsumableID')

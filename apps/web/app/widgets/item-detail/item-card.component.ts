@@ -15,11 +15,13 @@ import {
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { BehaviorSubject, combineLatest, map, of, ReplaySubject, Subject, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { getItemId } from '~/nw/utils'
+import { AttributeRef } from '~/nw/attributes'
+import { getItemId, getWeaponTagFromWeapon, isItemWeapon } from '~/nw/utils'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemDividerComponent } from '~/ui/item-frame/item-divider.component'
 import { ModelViewerService } from '../model-viewer/model-viewer.service'
 import { ItemDetailDescriptionComponent } from './item-detail-description.component'
+import { ItemDetailGsDamage } from './item-detail-gs-damage.component'
 import { ItemDetailHeaderComponent } from './item-detail-header.component'
 import { ItemDetailInfoComponent } from './item-detail-info.component'
 import { ItemDetailPerksComponent } from './item-detail-perks.component'
@@ -60,6 +62,16 @@ export class ItemCardComponent extends ItemDetailService {
   @Input()
   public set entity(value: ItemDefinitionMaster | Housingitems) {
     this.entityId$.next(getItemId(value))
+  }
+
+  @Input()
+  public set playerLevel(value: number) {
+    this.playerLevel$.next(value)
+  }
+
+  @Input()
+  public set attrValueSums(value: Record<AttributeRef, number>) {
+    this.attrValueSums$.next(value)
   }
 
   @Input()
@@ -132,14 +144,18 @@ export class ItemCardComponent extends ItemDetailService {
     vmStats: this.disableStats$.pipe(switchMap((it) => (it ? of(null) : this.vmStats$))),
     vmInfo: this.disableInfo$.pipe(switchMap((it) => (it ? of(null) : this.vmInfo$))),
     vmPerks: this.disablePerks$.pipe(switchMap((it) => (it ? of(null) : this.vmPerks$))),
+    vmWeapon: this.weaponStats$,
   }).pipe(
-    map(({ vmDescription, vmStats, vmInfo, vmPerks }) => {
+    map(({ vmDescription, vmStats, vmInfo, vmPerks, vmWeapon }) => {
       let list: Array<Type<any>> = []
       if (vmDescription?.runeImage) {
         appendSection(list, ItemDetailDescriptionComponent)
       }
       if (vmStats && (vmStats.gsLabel || vmStats.stats?.length)) {
         appendSection(list, ItemDetailStatsComponent)
+        if (vmWeapon && getWeaponTagFromWeapon(vmWeapon)) {
+          appendSection(list, ItemDetailGsDamage)
+        }
       }
       if (vmPerks?.length) {
         appendSection(list, ItemDetailPerksComponent)

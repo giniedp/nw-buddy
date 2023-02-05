@@ -3,6 +3,8 @@ import { ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
 import { sortBy } from 'lodash'
 import { BehaviorSubject, combineLatest, defer, map, ReplaySubject, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
+import { AttributeRef } from '~/nw/attributes/nw-attributes'
+//import type { AttributeRef } from '~/nw/attributes'
 import {
   getItemGearScoreLabel,
   getItemIconPath,
@@ -51,6 +53,8 @@ export class ItemDetailService {
   public readonly perkOverride$ = new BehaviorSubject<Record<string, string>>(null)
   public readonly perkEditable$ = new BehaviorSubject<boolean>(false)
   public readonly perkEdit$ = new EventEmitter<PerkDetail>()
+  public readonly attrValueSums$ = new BehaviorSubject<Record<AttributeRef, number>>(null)
+  public readonly playerLevel$ = new BehaviorSubject<number>(null)
 
   public readonly item$ = this.db.item(this.entityId$).pipe(shareReplayRefCount(1))
   public readonly housingItem$ = this.db.housingItem(this.entityId$).pipe(shareReplayRefCount(1))
@@ -140,14 +144,37 @@ export class ItemDetailService {
     gs: this.itemGS$,
     gsEditable: this.gsEditable$,
     gsLabel: this.itemGSLabel$,
+    attrValueSums: this.attrValueSums$,
+    playerLevel: this.playerLevel$,
   }).pipe(
-    map(({ item, weapon, rune, armor, gs, gsEditable, gsLabel }) => {
-      return {
-        gsLabel: gsLabel,
-        gsEditable: gsEditable,
-        stats: [...getItemStatsWeapon(item, weapon || rune, gs), ...getItemStatsArmor(item, armor, gs)],
+    map(
+      ({
+        item,
+        weapon,
+        rune,
+        armor,
+        gs,
+        gsEditable,
+        gsLabel,
+        attrValueSums,
+        playerLevel,
+      }) => {
+        return {
+          gsLabel: gsLabel,
+          gsEditable: gsEditable,
+          stats: [
+            ...getItemStatsWeapon({
+              item: item,
+              stats: weapon || rune,
+              gearScore: gs,
+              attrValueSums: attrValueSums,
+              playerLevel: playerLevel,
+            }),
+            ...getItemStatsArmor(item, armor, gs),
+          ],
+        }
       }
-    })
+    )
   )
 
   public readonly vmPerks$ = combineLatest({

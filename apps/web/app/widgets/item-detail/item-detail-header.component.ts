@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { combineLatest, Subject, takeUntil } from 'rxjs'
 import { NwModule } from '~/nw'
-import { getItemTierAsRoman, isItemArmor, isItemWeapon, isMasterItem } from '~/nw/utils'
+import { getItemTierAsRoman, isItemArmor, isItemJewelery, isItemWeapon, isMasterItem } from '~/nw/utils'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemTrackerModule } from '../item-tracker'
 import { ItemDetailService } from './item-detail.service'
@@ -49,7 +49,7 @@ export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
   protected entityId: string
   protected isLoading = true
   protected get enableGsTracker(): boolean {
-    return this.enableTracker && isMasterItem(this.entity) && (isItemWeapon(this.entity) || isItemArmor(this.entity))
+    return this.enableTracker && isMasterItem(this.entity) && (isItemWeapon(this.entity) || isItemArmor(this.entity) || isItemJewelery(this.entity))
   }
   protected get tierLabel() {
     return getItemTierAsRoman(this.entity?.Tier)

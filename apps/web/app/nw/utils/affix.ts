@@ -1,4 +1,8 @@
-import { Affixstats } from "@nw-data/types"
+import type { Affixstats } from "@nw-data/types"
+
+export function isAffixSplitDamage(affix: Affixstats): boolean {
+  return !!affix?.DamagePercentage && !!affix?.DamageType
+}
 
 export function getAffixMODs(affix: Partial<Affixstats>, scale: number) {
   return getAffixProperties(affix)

@@ -22,6 +22,7 @@ import {
   getItemId,
   getItemRarity,
   isItemArmor,
+  isItemJewelery,
   isItemNamed,
   isItemWeapon,
   isMasterItem,
@@ -447,8 +448,8 @@ export class DungeonDetailComponent implements OnInit {
       .sort((nodeA, nodeB) => {
         const a = nodeA
         const b = nodeB
-        const isGearA = isMasterItem(a) && (isItemArmor(a) || isItemWeapon(a))
-        const isGearB = isMasterItem(b) && (isItemArmor(b) || isItemWeapon(b))
+        const isGearA = isMasterItem(a) && (isItemArmor(a) || isItemJewelery(a) || isItemWeapon(a))
+        const isGearB = isMasterItem(b) && (isItemArmor(b) || isItemJewelery(b) || isItemWeapon(b))
         if (isGearA !== isGearB) {
           return isGearA ? -1 : 1
         }

@@ -54,6 +54,7 @@ program
         '*_itemdefinitions_resources',
         '*_itemdefinitions_weapons',
         '*_itemdefinitions_armor',
+        '*_itemdefinitions_ammo',
         '*_itemdefinitions_runes',
         '*_itemappearancedefinitions',
         '*_itemdefinitions_weaponappearances',

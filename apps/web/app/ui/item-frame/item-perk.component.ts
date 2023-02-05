@@ -8,7 +8,7 @@ import { NwModule } from '~/nw'
   template: `
     <span class="w-8 h-8 flex items-center justify-center relative flex-none">
       <img [src]="icon" class="w-8 h-8 object-contain absolute top-0 left-0"/>
-      <span class="text-2xs relative">{{ iconText }}</span>
+      <span class="text-2xs relative text-xs">{{ iconText }}</span>
     </span>
     <div class="self-center">
       <ng-content></ng-content>

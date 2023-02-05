@@ -9,6 +9,7 @@ import {
 } from '@angular/core'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { getItemIconPath, getItemRarity } from './utils'
+import { NW_FALLBACK_ICON } from './utils/constants'
 
 @Component({
   standalone: true,
@@ -103,7 +104,7 @@ export class NwImageComponent {
     } else if (typeof value === 'string') {
       this.updateSrc(value)
     } else {
-      this.updateSrc(getItemIconPath(value))
+      this.updateSrc(getItemIconPath(value) || NW_FALLBACK_ICON)
     }
     this.cdRef.markForCheck()
   }

@@ -950,6 +950,14 @@ export interface ItemdefinitionsArmor {
     WeightClass?:                 string;
     WeightOverride:               number;
 }
+export interface ItemdefinitionsAmmo {
+    AmmoID:                string;
+    AmmoPrefabPath:        string;
+    AmmoType:              string;
+    AmmoWhizByTrigger:     string;
+    DamageModifier:        number;
+    StaggerDamageModifier: number;
+}
 export interface ItemdefinitionsRunes {
     ABABleed:                    number;
     ABACurse:                    number;

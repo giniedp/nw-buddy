@@ -9,6 +9,7 @@ import {
   collectPerkbucketPerkIds,
   EQUIP_SLOTS,
   isItemArmor,
+  isItemJewelery,
   isItemWeapon,
   isPerkApplicableToItem,
   isPerkGem,
@@ -267,7 +268,7 @@ export class InventoryPickerService {
     }).pipe(
       map(({ perks, buckets }) => {
         const isWeapon = isItemWeapon(item)
-        const isArmor = isItemArmor(item)
+        const isArmor = isItemArmor(item) || isItemJewelery(item)
 
         const bucket = 'PerkBucketID' in perkOrBucket ? perkOrBucket : null
         const bucketIsGem = isPerkGem(bucket)
