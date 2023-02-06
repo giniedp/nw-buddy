@@ -1,6 +1,7 @@
 import * as path from 'path'
+import * as fs from 'fs'
 import { program } from 'commander'
-import { glob, processArrayWithProgress, readJSONFile, writeJSONFile } from './utils'
+import { glob, processArrayWithProgress, readJSONFile, renameExtname, writeJSONFile } from './utils'
 import { loadDatatables, splitToArrayRule } from './importer/loadDatatables'
 import { importLocales } from './importer/importLocales'
 import { importImages } from './importer/importImages'
@@ -58,6 +59,7 @@ program
         '*_itemdefinitions_runes',
         '*_itemappearancedefinitions',
         '*_itemdefinitions_weaponappearances',
+        '*_itemdefinitions_instrumentsappearances',
         '*_lootbuckets',
         '*_lootlimits',
         '*_loottables*',
@@ -202,8 +204,8 @@ program
             }),
             splitToArrayRule({
               properties: ['RemoveStatusEffects'],
-              separator: ','
-            })
+              separator: ',',
+            }),
           ],
         },
         {
@@ -230,26 +232,41 @@ program
           file: /_itemdefinitions_master_/,
           rules: [
             (obj, { getTables }) => {
-              if (obj.IconPath) {
-                return
+              function findIcon(id: string) {
+                return (
+                  getTables(/_itemappearancedefinitions/).find((it) => id === it.ItemID)?.IconPath ||
+                  getTables(/_itemdefinitions_weaponappearances/).find((it) => id === it.WeaponAppearanceID)?.IconPath ||
+                  getTables(/_itemdefinitions_instrumentsappearances/).find((it) => id === it.WeaponAppearanceID)?.IconPath
+                )
               }
-              if (obj.ArmorAppearanceM) {
-                obj.IconPath = getTables(/_itemappearancedefinitions/).find(
-                  (it) => it.ItemID === obj.ArmorAppearanceM
-                )?.IconPath
-                obj.IconPath = obj.IconPath || `lyshineui/images/icons/items/${obj.ItemType}/${obj.ArmorIconM}`
-              } else if (obj.ArmorAppearanceF) {
-                obj.IconPath = getTables(/_itemappearancedefinitions/).find(
-                  (it) => it.ItemID === obj.ArmorIconF
-                )?.IconPath
-                obj.IconPath = obj.IconPath || `lyshineui/images/icons/items/${obj.ItemType}/${obj.ArmorIconF}`
-              } else if (obj.WeaponAppearanceOverride) {
-                obj.IconPath = getTables(/_weaponappearances/).find(
-                  (it) => it.WeaponAppearanceID === obj.WeaponAppearanceOverride
-                )?.IconPath
-                obj.IconPath =
-                  obj.IconPath || `lyshineui/images/icons/items/${obj.ItemType}/${obj.WeaponAppearanceOverride}`
+              let candidates = [
+                obj.IconPath,
+                obj.ArmorIconM ? findIcon(obj.ArmorIconM) : null,
+                obj.ArmorIconF ? findIcon(obj.ArmorIconF) : null,
+                obj.WeaponAppearanceOverride ? findIcon(obj.WeaponAppearanceOverride) : null,
+              ]
+              if (obj.ItemType && obj.ArmorAppearanceM) {
+                candidates.push(`lyshineui/images/icons/items/${obj.ItemType}/${obj.ArmorAppearanceM}.png`)
               }
+              if (obj.ItemType && obj.ArmorAppearanceF) {
+                candidates.push(`lyshineui/images/icons/items/${obj.ItemType}/${obj.ArmorAppearanceF}.png`)
+              }
+              if (obj.ItemType && obj.WeaponAppearanceOverride) {
+                candidates.push(`lyshineui/images/icons/items/${obj.ItemType}/${obj.WeaponAppearanceOverride}.png`)
+              }
+
+              for (const icon of candidates) {
+                if (icon && fs.existsSync(path.join(inputDir, renameExtname(icon, '.png')))) {
+                  obj.IconPath = renameExtname(icon, '.png')
+                  return
+                }
+              }
+              obj.IconPath = null
+              // console.log(
+              //   'icon missing',
+              //   obj.ItemID,
+              //   candidates.filter((it) => !!it)
+              // )
             },
           ],
         },

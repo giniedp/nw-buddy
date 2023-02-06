@@ -418,7 +418,7 @@ export interface ItemDefinitionMaster {
     HideFromRewardOpenPopup?:        number;
     HideInLootTicker?:               number;
     HousingTags?:                    string;
-    IconPath?:                       string;
+    IconPath:                        null | string;
     IgnoreHWMScaling?:               number;
     IgnoreNameChanges?:              number;
     IgnoreParentColumns_DVT?:        string;
@@ -1098,6 +1098,31 @@ export interface ItemdefinitionsWeaponappearances {
     SkinOverride2?:               string;
     "Weapon Material name Info"?: string;
     WeaponAppearanceID:           string;
+}
+export interface ItemdefinitionsInstrumentsappearances {
+    "Art ID Names":              string;
+    EmissiveColor?:              string;
+    EmissiveIntensity:           number;
+    HiResIconPath?:              string;
+    IconCaptureGroup?:           string;
+    IconPath?:                   string;
+    MaskAGloss:                  number;
+    MaskAGlossShift:             number;
+    MaskASpec:                   number;
+    MaskASpecColor:              string;
+    MaskB:                       number;
+    MaskBColor:                  string;
+    MaskBOverride:               number;
+    MaskG:                       number;
+    MaskGColor:                  string;
+    MaskGOverride:               number;
+    MaskR:                       number;
+    MaskRColor:                  string;
+    MaskROverride:               number;
+    MeshOverride?:               string;
+    SoundTableID:                string;
+    "Weapon Material name Info": string;
+    WeaponAppearanceID:          string;
 }
 export interface Lootbuckets {
     Item1?:          string;
