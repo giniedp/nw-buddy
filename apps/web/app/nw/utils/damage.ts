@@ -24,8 +24,8 @@ export function damageFactorForAttrs({
 }) {
   const str = attrSums.str * (weapon?.ScalingStrength || 0)
   const dex = attrSums.dex * (weapon?.ScalingDexterity || 0)
-  const int = attrSums.dex * (weapon?.ScalingIntelligence || 0)
-  const foc = attrSums.dex * (weapon?.ScalingFocus || 0)
+  const int = attrSums.int * (weapon?.ScalingIntelligence || 0)
+  const foc = attrSums.foc * (weapon?.ScalingFocus || 0)
   return str + dex + int + foc
 }
 

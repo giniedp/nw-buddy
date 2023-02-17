@@ -33,11 +33,11 @@
   </table>
   <div class="text-sm flex flex-col text-center">
     <div *ngIf="hasUncapped">
-      <span class="text-success">Uncapped values</span> are summed beyond {{ category | nwText }} cap of 50%
+      <span class="text-success">Uncapped values</span> are summed beyond 50% {{ category | nwText }} cap
     </div>
     <div *ngIf="hasCapped">
-      <span class="text-primary" *ngIf="hasCapped">Capped values</span> are summed only up to
-      {{ category | nwText }} cap of 50%
+      <span class="text-primary" *ngIf="hasCapped">Capped values</span> are summed only up to 50%
+      {{ category | nwText }} cap
     </div>
     <div *ngIf="sumValue != value">
       Overshoot by <span class="text-error">{{ sumValue - value | percent: '0.0-3' }}</span>
