@@ -1,0 +1,40 @@
+<h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
+  <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
+  <span class="relative top-1">Fortify & Ward</span>
+</h3>
+<div class="grid grid-cols-dl gap-x-1">
+  <ng-container *ngIf="vm$ | async; let vm">
+    <ng-container *ngFor="let group of vm.DamageTypes; trackBy: trackBy">
+      <span class="font-bold"> {{ group.value | percent: '0.1-1' }} </span>
+      <div class="flex flex-row gap-[1px]">
+        <span
+          *ngFor="let entry of group.entries; trackBy: trackBy"
+          [tooltip]="tplTip"
+          [class.bg-error]="entry.capped"
+          class="rounded-sm"
+        >
+          <img [nwImage]="entry.icon" class="w-6 h-6" />
+          <ng-template #tplTip>
+            <nwb-modifier-cap-tip [data]="entry" [title]="entry.category" [category]="'Fortify'"></nwb-modifier-cap-tip>
+          </ng-template>
+        </span>
+      </div>
+    </ng-container>
+    <ng-container *ngFor="let group of vm.VitalsTypes; trackBy: trackBy">
+      <span class="font-bold"> {{ group.value | percent: '0.1-1' }} </span>
+      <div class="flex flex-row gap-[1px]">
+        <span
+          *ngFor="let entry of group.entries; trackBy: trackBy"
+          [tooltip]="tplTip"
+          [class.bg-error]="entry.capped"
+          class="rounded-sm"
+        >
+          <img [nwImage]="entry.icon" class="w-6 h-6" />
+          <ng-template #tplTip>
+            <nwb-modifier-tip [data]="entry" [title]="entry.category" [category]="'Ward'"></nwb-modifier-tip>
+          </ng-template>
+        </span>
+      </div>
+    </ng-container>
+  </ng-container>
+</div>

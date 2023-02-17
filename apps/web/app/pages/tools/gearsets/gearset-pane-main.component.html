@@ -1,0 +1,63 @@
+<div class="relative grid grid-cols-1 md:grid-cols-2 layout-gap">
+  <div class="flex-1 flex flex-col layout-gap col-start-1 col-span-1 row-span-2">
+    <label class="flex relative">
+      <input
+        type="file"
+        class="hidden"
+        accept=".jpg,.webp,.png"
+        (change)="uploadFile($event)"
+        *ngIf="isPersistable$ | async"
+      />
+      <picture
+        class="
+          w-full
+          aspect-[3/4]
+          relative
+          rounded-md
+          transition-all
+          outline outline-transparent outline-2 outline-offset-0
+          hover:outline-offset-4
+          shadow-md
+        "
+        [class.cursor-pointer]="isPersistable$ | async"
+        [class.hover:outline-primary]="isPersistable$ | async"
+      >
+        <ng-container *ngIf="image$ | async; let img; else: tplNoImage">
+          <img [src]="img" class="absolute top-0 left-0 w-full h-full object-cover rounded-md" />
+        </ng-container>
+        <ng-template #tplNoImage>
+          <img [src]="'assets/landing.webp'" class="absolute top-0 left-0 w-full h-full object-cover rounded-md" />
+        </ng-template>
+        <img [src]="'assets/landing-animation.webp'" class="absolute bottom-0 left-0 w-full" />
+
+        <div
+          class="absolute bottom-0 left-0 bg-opacity-50 p-2 flex flex-row items-center rounded-bl-md rounded-tr-md"
+          [class.bg-black]="hasImage$ | async"
+        >
+          <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-14 h-14" />
+          <div class="text-6xl font-caslon relative top-1">{{ gearScore$ | async | number: '0.0-0' }}</div>
+        </div>
+      </picture>
+      <nwb-icon
+        *ngIf="isPersistable$ | async"
+        [icon]="iconMenu"
+        class="w-4 h-4 absolute top-1 right-1 screenshot-hidden pointer-events-none"
+      ></nwb-icon>
+    </label>
+  </div>
+
+  <nwb-attributes-stats
+    class="
+      rounded-md
+      transition-all
+      outline outline-transparent outline-2 outline-offset-0
+      hover:outline-offset-4
+      relative
+    "
+    [class.cursor-pointer]="!disabled"
+    [class.hover:outline-primary]="!disabled"
+    (click)="editAttributes()"
+  ></nwb-attributes-stats>
+  <nwb-vitality-stats></nwb-vitality-stats>
+  <ng-content></ng-content>
+</div>

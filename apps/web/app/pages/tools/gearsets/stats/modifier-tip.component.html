@@ -1,0 +1,36 @@
+<h3 class="uppercase relative text-center font-caslon text-nw-description px-2">
+  <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
+  <span class="relative top-1">{{ category | nwText }}</span>
+</h3>
+<div class="px-2 py-1">
+  <table>
+    <tr *ngFor="let row of data.source; first as isFirst; trackBy: trackBy">
+      <td class="mx-1">
+
+        <nwb-modifier-source-label [data]="row.source"></nwb-modifier-source-label>
+      </td>
+      <td class="font-mono font-thin">
+        <ng-container *ngIf="!isFirst"> {{ operator }} </ng-container>
+      </td>
+      <td class="font-mono font-thin text-right">
+        <ng-container *ngIf="percent">
+          {{ row.value * row.scale | percent: format }}
+        </ng-container>
+        <ng-container *ngIf="!percent">
+          {{ row.value * row.scale | number: format }}
+        </ng-container>
+      </td>
+    </tr>
+    <tr *ngIf="data.source?.length > 1">
+      <td></td>
+      <td colspan="2" class="font-mono font-thin text-right border-double border-t-4">
+        <ng-container *ngIf="percent">
+          {{ data.value | percent: format }}
+        </ng-container>
+        <ng-container *ngIf="!percent">
+          {{ data.value | number: format }}
+        </ng-container>
+      </td>
+    </tr>
+  </table>
+</div>

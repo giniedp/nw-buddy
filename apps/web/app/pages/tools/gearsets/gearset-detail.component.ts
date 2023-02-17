@@ -1,56 +1,67 @@
-import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
+import { animate, animateChild, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { filter } from 'rxjs'
-import { GearsetRecord, GearsetStore, ItemInstance, ItemInstancesStore } from '~/data'
-import { EquipSlot, EQUIP_SLOTS } from '~/nw/utils'
+import { combineLatest, filter, map, of, switchMap } from 'rxjs'
+import {
+  CharacterStore,
+  GearsetRecord,
+  GearsetStore,
+  ItemInstance,
+  ItemInstancesDB,
+  ItemInstancesStore,
+  SkillBuild,
+  SkillBuildsDB,
+} from '~/data'
+import { EquippedItem, Mannequin, MannequinState } from '~/nw/mannequin'
+import { EquipSlot, EquipSlotId, EQUIP_SLOTS } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { ConfirmDialogComponent } from '~/ui/layout'
 import { ScreenshotModule } from '~/widgets/screenshot'
-import { GearsetSkillComponent } from './gearset-skill.component'
-import { GearsetSlotComponent } from './gearset-slot.component'
-import { GearsetStatsComponent } from './gearset-stats.component'
+import { GearsetPaneMainComponent } from './gearset-pane-main.component'
+import { GearsetPaneSkillComponent } from './gearset-pane-skill.component'
+import { GearsetPaneSlotComponent } from './gearset-pane-slot.component'
+import { GearsetPaneStatsComponent } from './gearset-pane-stats.component'
 
 @Component({
   standalone: true,
   selector: 'nwb-gearset-detail',
   templateUrl: './gearset-detail.component.html',
-  styleUrls: ['./gearset-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   exportAs: 'gearsetDetail',
   imports: [
     CommonModule,
     DialogModule,
     FormsModule,
-    GearsetSkillComponent,
-    GearsetSlotComponent,
-    GearsetStatsComponent,
+    GearsetPaneMainComponent,
+    GearsetPaneSkillComponent,
+    GearsetPaneSlotComponent,
+    GearsetPaneStatsComponent,
     IconsModule,
     ScreenshotModule,
   ],
-  providers: [GearsetStore, ItemInstancesStore],
+  providers: [GearsetStore, ItemInstancesStore, Mannequin],
   host: {
     class: 'layout-col flex-none',
   },
   animations: [
-    trigger('listAnimation', [
-      transition('void => *', [
-        query(':enter', [style({ opacity: 0 }), stagger(50, [animate('0.3s', style({ opacity: 1 }))])], {
+    trigger('list', [
+      transition('* => *', [
+        query(':enter', stagger(25, animateChild()), {
           optional: true,
         }),
       ]),
     ]),
-    trigger('apperAnimation', [
-      state('*', style({ opacity: 0 })),
-      state('true', style({ opacity: 1 })),
-      transition('* => true', [animate('0.3s')]),
+    trigger('fade', [
+      transition('* => *', [
+        style({ opacity: 0 }),
+        animate('0.3s ease-out', style({ opacity: 1 })),
+      ]),
     ]),
   ],
 })
 export class GearsetDetailComponent {
-
   @Input()
   public set gearset(value: GearsetRecord) {
     this.store.load(value)
@@ -66,20 +77,51 @@ export class GearsetDetailComponent {
   protected name$ = this.store.gearsetName$
   protected isLoading$ = this.store.isLoading$
 
-  protected slots = EQUIP_SLOTS.filter((it) => it.itemType !== 'Consumable' && it.itemType !== 'Ammo' && it.itemType !== 'Trophies')
-  protected buffSlots = EQUIP_SLOTS.filter((it) => it.id.startsWith('buff'))
-  protected quickSlots = EQUIP_SLOTS.filter((it) => it.id.startsWith('quick'))
+  protected slots = EQUIP_SLOTS.filter(
+    (it) => it.itemType !== 'Consumable' && it.itemType !== 'Ammo' && it.itemType !== 'Trophies'
+  )
   protected ammoSlots = EQUIP_SLOTS.filter((it) => it.itemType === 'Ammo')
-  protected trophiesSlots = EQUIP_SLOTS.filter((it) => it.itemType === 'Trophies')
+  protected buffSlots = EQUIP_SLOTS.filter((it) => it.id.startsWith('buff'))
+
+  protected vmQuickSlots$ = combineLatest({
+    slots: of(EQUIP_SLOTS.filter((it) => it.id.startsWith('quick'))),
+    gearset: this.gearset$
+  }).pipe(map(({ slots, gearset }) => {
+    slots = [...slots]
+    slots.length = Math.max(...slots.map((it, index) => gearset.slots[it.id] ? index + 1 : 0)) + 1
+    slots.length = Math.min(slots.length, 4)
+    return {
+      slots,
+      empty: slots.every((slot) => !gearset.slots[slot.id])
+    }
+  }))
+
+  protected vmTrophies$ = combineLatest({
+    slots: of(EQUIP_SLOTS.filter((it) => it.itemType === 'Trophies')) ,
+    gearset: this.gearset$
+  }).pipe(map(({ slots, gearset }) => {
+    slots = [...slots]
+    slots.length = Math.max(...slots.map((it, index) => gearset.slots[it.id] ? index + 1 : 0)) + 1
+    slots.length = Math.min(slots.length, 15)
+    return {
+      slots,
+      empty: slots.every((slot) => !gearset.slots[slot.id])
+    }
+  }))
 
   protected trackByIndex = (i: number) => i
 
   public constructor(
     private store: GearsetStore,
     private itemsStore: ItemInstancesStore,
-    private dialog: Dialog
+    private dialog: Dialog,
+    private mannequin: Mannequin,
+    private character: CharacterStore,
+    private items: ItemInstancesDB,
+    private skillBuilds: SkillBuildsDB
   ) {
     itemsStore.loadAll()
+
   }
 
   protected updateName(value: string) {
@@ -90,8 +132,8 @@ export class GearsetDetailComponent {
     this.compact = !this.compact
   }
 
-  protected onItemRemove(slot: EquipSlot) {
-    this.store.updateSlot({ slot: slot.id, value: null })
+  protected onItemRemove(slot: EquipSlotId) {
+    this.store.updateSlot({ slot: slot, value: null })
   }
 
   protected async onItemUnlink(slot: EquipSlot, record: ItemInstance) {
@@ -128,4 +170,54 @@ export class GearsetDetailComponent {
       })
   }
 
+  public ngOnInit(): void {
+    const src = combineLatest({
+      equippedItems: this.store.gearsetSlots$.pipe(switchMap((slots) => this.resolveSlots(slots))),
+      level: this.character.level$,
+      assignedAttributes: this.store.gearsetAttrs$,
+      equippedSkills1: this.store.skillsPrimary$.pipe(switchMap((it) => this.resolveSkillBuild(it))),
+      equippedSkills2: this.store.skillsSecondary$.pipe(switchMap((it) => this.resolveSkillBuild(it))),
+    }).pipe(
+      map((it): MannequinState => {
+        return {
+          equippedItems: it.equippedItems,
+          assignedAttributes: it.assignedAttributes,
+          equppedSkills1: it.equippedSkills1,
+          equppedSkills2: it.equippedSkills2,
+          level: it.level,
+        }
+      })
+    )
+    this.mannequin.patchState(src)
+  }
+
+  private resolveSlots(slots: Record<string, string | ItemInstance>) {
+    const slots$ = Object.entries(slots || {}).map(([slotId, instanceOrId]) => {
+      return this.resolveItemInstance(instanceOrId).pipe(
+        map((instance): EquippedItem => {
+          return {
+            itemId: instance.itemId,
+            perks: instance.perks,
+            slot: slotId as EquipSlotId,
+            gearScore: instance.gearScore,
+          }
+        })
+      )
+    })
+    return combineLatest(slots$)
+  }
+
+  private resolveItemInstance(idOrInstance: string | ItemInstance) {
+    if (typeof idOrInstance === 'string') {
+      return this.items.live((t) => t.get(idOrInstance))
+    }
+    return of(idOrInstance)
+  }
+
+  private resolveSkillBuild(idOrInstance: string | SkillBuild) {
+    if (typeof idOrInstance === 'string') {
+      return this.skillBuilds.live((t) => t.get(idOrInstance))
+    }
+    return of(idOrInstance)
+  }
 }

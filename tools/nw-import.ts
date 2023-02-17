@@ -180,6 +180,7 @@ program
                 'AbilityList',
                 'AttachedTargetSpellIds',
                 'AttackType',
+                'DamageTypes',
                 'DamageTableRow',
                 'ManaCostList',
                 'RemoteDamageTableRow',
@@ -193,6 +194,10 @@ program
               ],
               separator: ',',
             }),
+            {
+              match: ['Icon'],
+              remap: (value: string) => value === 'bowAbility5_mod2' ? null : value,
+            }
           ],
         },
         {

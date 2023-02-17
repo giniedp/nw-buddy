@@ -602,6 +602,7 @@ export interface GameEvent {
     GearScoreRange:                number;
     ItemReward?:                   string;
     ItemRewardQty:                 number;
+    LeaderboardValue:              number;
     Level:                         number;
     LootLimitId?:                  string;
     LootLimitReachedGameEventId?:  string;
@@ -2552,6 +2553,7 @@ export interface Metaachievements {
     GameModeId?:                       string;
     GameModeResult?:                   string;
     "Hidden Text"?:                    string;
+    HideFromUI:                        boolean;
     Icon:                              string;
     InGroup?:                          string;
     IsPvp?:                            string;
@@ -4119,7 +4121,7 @@ export interface Ability {
     DamageTableRow?:                                string[];
     DamageTableRowOverride?:                        string;
     DamageTableStatusEffectOverride?:               string;
-    DamageTypes?:                                   string;
+    DamageTypes?:                                   string[];
     Description?:                                   string;
     DisableApplyPerStatusEffectStack?:              boolean;
     DisableCastSpellDurability?:                    boolean;
@@ -4149,7 +4151,7 @@ export interface Ability {
     HitFromBehindArmorPenetration?:                 number;
     HitFromBehindDamage?:                           number;
     HoldConditionButtonIcon?:                       string;
-    Icon?:                                          string;
+    Icon?:                                          null | string;
     IgnoreDisabledAttackTypes?:                     string;
     IgnoreResetConsecutiveOnDeath?:                 boolean;
     InAction?:                                      string;

@@ -3,6 +3,7 @@ import { DomSanitizer } from '@angular/platform-browser'
 import { ComponentStore } from '@ngrx/component-store'
 import { filter, from, map, of, switchMap, tap } from 'rxjs'
 import { AttributeRef } from '~/nw/attributes'
+import { tapDebug } from '~/utils'
 
 import { GearsetCreateMode, GearsetRecord, GearsetsDB } from './gearsets.db'
 import { ImageRecord, ImagesDB } from './images.db'
@@ -31,7 +32,7 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
   public readonly imageUrl$ = this.select(({ gearset }) => gearset?.imageId)
     .pipe(filter((it) => !!it))
     .pipe(switchMap((id) => this.imagesDb.live((it) => it.get(id).catch(() => null as ImageRecord))))
-    .pipe(filter((it) => !!it?.data))
+    .pipe(filter((it) => it?.data instanceof ArrayBuffer))
     .pipe(
       map((it) => {
         const blob = new Blob([it.data], { type: it.type })

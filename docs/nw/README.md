@@ -4,7 +4,7 @@
 classDiagram
 
     Item -- ConsumableItem
-    
+
     ConsumableItem --> "1..N" StatusEffect
 
     HousingItem --> StatusEffect
@@ -92,17 +92,56 @@ classDiagram
 
 $BaseHP + LevelHP + ConstHP$
 
-where 
+where
+
 - `BaseHP` = $778$ from `vitals.json` (VitalsID=Player)
 - `LevelHP` = $1.5 * (Level - 1)^2$
 - `ConstHP` = lookup by level from `javelindata_attributeconstitution.json`
 
 See [Spreadsheet](https://docs.google.com/spreadsheets/d/1z914znwnL403tup6MApU9mnyWuycOhoPp0NNWQJODUg) for used data.
 
+## Health modifiers
+
+### `MaxHealthMod` from Hale and Hearty
+
+add `MaxHealthMod * (BaseHP + LevelHP)`
+
+### `MaxHealth` from amulet perk
+
+add `MaxHealth * (BaseHP + LevelHP + ConstHP)`
+
+### `PhysicalArmorMaxHealthMod` from 100 const bonus
+
+add `PhysicalArmorMaxHealthMod * physicalRating * (1 + physicalBonus)`
+
+where
+- `physicalRating` sum of physical rating from equpped armor and weapon
+- `physicalBonus` sum of all actve `PhysicalArmor` modifiers (sturdy shield, 200 const)
+
 ## Display Bug
-There is a display bug in the game where for example HP shows 6000 in HP Bar but 5999 in stats screen (TAB). This is because the actual value in that case is 5999.5 and is rounded for HP Bar (giving 6000) but floored for display in stats screen (giving 5999). This happens for every even number of Player Level.
 
+There is a display bug in the game where for example HP shows 6000 in HP Bar but 5999 in stats screen. This is because the actual value in that case is 5999.5 and is rounded for HP Bar (giving 6000) but floored for display in stats screen (giving 5999). This happens for every even number of Player Level.
 
+## Pseudo Code
+```js
+  const healthFromLevel = 778 + 1.5 * Math.pow(state.level - 1, 2)
+  const healthFromConst = lookupConstAttrHealth()
+
+  let result = healthFromLevel + healthFromConst
+
+  for (const mod of eachModifier('MaxHealth')) {
+    result += mod * (healthFromLevel + healthFromConst)
+  }
+  for (const mod of eachModifier('MaxHealthMod')) {
+    result += mod * healthFromLevel
+  }
+
+  const physicalRating = getPhysicalRating()
+  const physicalBonus = modifierSum('PhysicalArmor')
+  for (const mod of eachModifier('PhysicalArmorMaxHealthMod')) {
+    result += mod * physicalRating * (1 + physicalBonus)
+  }
+```
 # Gear Score Contribution
 
 - Head: `0.35 * 0.2`
@@ -132,16 +171,30 @@ See [Spreadsheet](https://docs.google.com/spreadsheets/d/1BhdV-SLdAvRd01pP3TD8Vv
 this is work in progress
 
 ```
-WeaponDamage 
-  * (1 + BaseDamage - BaseDamageReduction) 
-  * DmgCoef 
-  * (DMG + MAX((CritDamageMultiplier + HeadshotDamage + HitFromBehindDamage + CritDamage - CritDamageReduction),0)) 
-  * (1 + DamageModifier(Ammo)) 
-  * (1 - ABS) 
-  * (1 - (ArmorMitigation * (1 - ArmorPenetration))) 
+WeaponDamage
+  * DmgCoef
+  * (1 + BaseMod)
+  * (1 + AmmoMod)
+  * (DMG + max(0, CritMod))
+  * (1 - ABS)
   * (1 + WKN)
+  * (1 - (ArmorMitigation * (1 - ArmorPenetration)))
+```
+
+- `DmgCoef` is the `DmgCoef` from used attack (see damagetable.json)
+- `AmmoMod` is the `DamageModifier` from used ammo (see itemdefinitions_ammo.json)
+- `BaseMod` is `sum(BaseDamage) - sum(target.BaseDamageReduction)` (from active abilities etc.)
+- `CritMod` is
+```
+sum(CritDamageMultiplier) + 
+sum(HeadshotDamage) + 
+sum(HitFromBehindDamage) + 
+sum(CritDamage) - sum(target.CritDamageReduction)
 ```
 
 Links
+
 - [MixedNuts Calculator](https://docs.google.com/spreadsheets/d/1-i_rew1iy8_hGdtxngRBOdwbQlwXrNNM0hDBj3T9Rsk)
+- [https://forums.newworld.com/t/damage-formula-calculator/614310](https://forums.newworld.com/t/damage-formula-calculator/614310)
+- [https://docs.google.com/spreadsheets/d/19cXQkjmbAugcRr5Grxepm8qqSWlzX0MUKX-LRGCJIq0/edit#gid=517372654](https://docs.google.com/spreadsheets/d/19cXQkjmbAugcRr5Grxepm8qqSWlzX0MUKX-LRGCJIq0/edit#gid=517372654)
 - [https://newworld.fandom.com/wiki/Damage#Weapon_Damage](https://newworld.fandom.com/wiki/Damage#Weapon_Damage)

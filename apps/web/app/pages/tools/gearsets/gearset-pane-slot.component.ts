@@ -20,7 +20,7 @@ import { DataTableModule } from '~/ui/data-table'
 import { ItemDetailModule } from '~/widgets/item-detail'
 
 import { GearsetRecord, GearsetSlotStore, ItemInstance, ItemInstancesStore } from '~/data'
-import { EquipSlot, getItemId, getItemMaxGearScore } from '~/nw/utils'
+import { EquipSlot, EquipSlotId, EQUIP_SLOTS, getItemId, getItemMaxGearScore } from '~/nw/utils'
 import { deferStateFlat, shareReplayRefCount, tapDebug } from '~/utils'
 import { ItemDetailComponent } from '~/widgets/item-detail/item-detail.component'
 import { InventoryPickerService } from '../inventory/inventory-picker.service'
@@ -45,8 +45,8 @@ export interface GearsetSlotVM {
 
 @Component({
   standalone: true,
-  selector: 'nwb-gearset-slot',
-  templateUrl: './gearset-slot.component.html',
+  selector: 'nwb-gearset-pane-slot',
+  templateUrl: './gearset-pane-slot.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -65,13 +65,18 @@ export interface GearsetSlotVM {
     class: 'block bg-black rounded-md flex flex-col overflow-hidden',
   },
 })
-export class GearsetSlotComponent {
+export class GearsetPaneSlotComponent {
   @Input()
   public set slot(value: EquipSlot) {
     this.slot$.next(value)
   }
   public get slot() {
     return this.slot$.value
+  }
+
+  @Input()
+  public set slotId(value: EquipSlotId) {
+    this.slot$.next(EQUIP_SLOTS.find((it) => it.id === value))
   }
 
   @Input()

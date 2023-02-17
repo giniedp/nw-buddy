@@ -29,8 +29,8 @@ export interface GearsetSkillVM {
 
 @Component({
   standalone: true,
-  selector: 'nwb-gearset-skill',
-  templateUrl: './gearset-skill.component.html',
+  selector: 'nwb-gearset-pane-skill',
+  templateUrl: './gearset-pane-skill.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -50,7 +50,7 @@ export interface GearsetSkillVM {
     class: 'block flex flex-col',
   },
 })
-export class GearsetSkillComponent {
+export class GearsetPaneSkillComponent {
   @Input()
   public set slot(value: GearsetSkillSlot) {
     this.slot$.next(value)

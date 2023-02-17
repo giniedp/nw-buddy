@@ -4,110 +4,119 @@
     [nwbScreenshotFrame]="name$ | async"
     [nwbScreenshotWidth]="2200"
   >
-    <div class="flex-1 grid layout-gap" [@listAnimation]="slots?.length">
-      <div class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative">
+    <div class="flex-1 grid grid-cols-fill-sm layout-gap" [@list]="slots?.length">
+      <div [@fade]="true" class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative">
         <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-        <nwb-gearset-stats class="relative" [class.text-xs]="compact" [disabled]="disabled">
+        <nwb-gearset-pane-main class="relative" [class.text-xs]="compact" [disabled]="disabled">
           <div>
             <h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
               <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
               <span class="relative top-1">Buffs & Ammo</span>
             </h3>
-            <div class="flex flex-row gap-1 justify-center">
-              <nwb-gearset-slot
-                *ngFor="let slot of buffSlots; trackBy: trackByIndex"
-                [slot]="slot"
-                [gearset]="data"
-                [compact]="compact"
-                [disabled]="disabled"
-                [square]="true"
-                (itemRemove)="onItemRemove(slot)"
-                (itemUnlink)="onItemUnlink(slot, $event)"
-                (itemInstantiate)="onItemInstantiate(slot, $event)"
-              ></nwb-gearset-slot>
+            <div class="flex items-center justify-center">
+              <div class="inline-grid grid-cols-4 gap-1 mx-auto">
+                <nwb-gearset-pane-slot
+                  *ngFor="let slot of buffSlots; trackBy: trackByIndex"
+                  [slot]="slot"
+                  [gearset]="data"
+                  [compact]="compact"
+                  [disabled]="disabled"
+                  [square]="true"
+                  (itemRemove)="onItemRemove(slot.id)"
+                  (itemUnlink)="onItemUnlink(slot, $event)"
+                  (itemInstantiate)="onItemInstantiate(slot, $event)"
+                ></nwb-gearset-pane-slot>
 
-              <nwb-gearset-slot
-                *ngFor="let slot of ammoSlots; trackBy: trackByIndex"
-                [slot]="slot"
-                [gearset]="data"
-                [compact]="compact"
-                [disabled]="disabled"
-                [square]="true"
-                (itemRemove)="onItemRemove(slot)"
-                (itemUnlink)="onItemUnlink(slot, $event)"
-                (itemInstantiate)="onItemInstantiate(slot, $event)"
-              ></nwb-gearset-slot>
+                <nwb-gearset-pane-slot
+                *ngFor="let slot of ammoSlots; trackBy: trackByIndex; let first = first"
+                  [class.col-start-2]="first"
+                  [slot]="slot"
+                  [gearset]="data"
+                  [compact]="compact"
+                  [disabled]="disabled"
+                  [square]="true"
+                  (itemRemove)="onItemRemove(slot.id)"
+                  (itemUnlink)="onItemUnlink(slot, $event)"
+                  (itemInstantiate)="onItemInstantiate(slot, $event)"
+                ></nwb-gearset-pane-slot>
+              </div>
             </div>
           </div>
-          <div>
+          <div *ngIf="vmQuickSlots$ | async; let vm" [class.screenshot-hidden]="vm.empty">
             <h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
               <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
               <span class="relative top-1">Consumables</span>
             </h3>
-            <div class="flex flex-row gap-1 justify-center">
-              <nwb-gearset-slot
-                *ngFor="let slot of quickSlots; trackBy: trackByIndex"
-                [slot]="slot"
-                [gearset]="data"
-                [compact]="compact"
-                [disabled]="disabled"
-                [square]="true"
-                (itemRemove)="onItemRemove(slot)"
-                (itemUnlink)="onItemUnlink(slot, $event)"
-                (itemInstantiate)="onItemInstantiate(slot, $event)"
-              ></nwb-gearset-slot>
+            <div class="flex items-center justify-center">
+              <div class="inline-grid grid-cols-5 gap-1">
+                <nwb-gearset-pane-slot
+                  *ngFor="let slot of vm.slots; trackBy: trackByIndex"
+                  [slot]="slot"
+                  [gearset]="data"
+                  [compact]="compact"
+                  [disabled]="disabled"
+                  [square]="true"
+                  (itemRemove)="onItemRemove(slot.id)"
+                ></nwb-gearset-pane-slot>
+              </div>
             </div>
           </div>
-          <div>
+          <div *ngIf="vmTrophies$ | async; let vm" [class.screenshot-hidden]="vm.empty">
             <h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
               <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
               <span class="relative top-1">Trophies</span>
             </h3>
-            <div class="flex flex-row gap-1 justify-center">
-              <nwb-gearset-slot
-                *ngFor="let slot of trophiesSlots; trackBy: trackByIndex"
-                [slot]="slot"
-                [gearset]="data"
-                [compact]="compact"
-                [disabled]="disabled"
-                [square]="true"
-                (itemRemove)="onItemRemove(slot)"
-                (itemUnlink)="onItemUnlink(slot, $event)"
-                (itemInstantiate)="onItemInstantiate(slot, $event)"
-              ></nwb-gearset-slot>
+            <div class="flex items-center justify-center">
+              <div class="inline-grid grid-cols-5 gap-1">
+                <nwb-gearset-pane-slot
+                  *ngFor="let slot of vm.slots; trackBy: trackByIndex"
+                  [slot]="slot"
+                  [gearset]="data"
+                  [compact]="compact"
+                  [disabled]="disabled"
+                  [square]="true"
+                  (itemRemove)="onItemRemove(slot.id)"
+                ></nwb-gearset-pane-slot>
+              </div>
             </div>
           </div>
-        </nwb-gearset-stats>
+        </nwb-gearset-pane-main>
       </div>
-      <div class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad">
+      <div [@fade]="true" class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad">
         <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-        <nwb-gearset-skill
+        <nwb-gearset-pane-stats class="relative"></nwb-gearset-pane-stats>
+      </div>
+
+      <div [@fade]="true" class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad">
+        <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
+        <nwb-gearset-pane-skill
           class="relative"
           [slot]="'primary'"
           [gearset]="data"
           [disabled]="disabled"
-        ></nwb-gearset-skill>
+        ></nwb-gearset-pane-skill>
       </div>
-      <div class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad">
+      <div [@fade]="true" class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad">
         <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-        <nwb-gearset-skill
+        <nwb-gearset-pane-skill
           class="relative"
           [slot]="'secondary'"
           [gearset]="data"
           [disabled]="disabled"
-        ></nwb-gearset-skill>
+        ></nwb-gearset-pane-skill>
       </div>
 
-      <nwb-gearset-slot
+      <nwb-gearset-pane-slot
+        [@fade]="true"
         *ngFor="let slot of slots; trackBy: trackByIndex"
         [slot]="slot"
         [gearset]="data"
         [compact]="compact"
         [disabled]="disabled"
-        (itemRemove)="onItemRemove(slot)"
+        (itemRemove)="onItemRemove(slot.id)"
         (itemUnlink)="onItemUnlink(slot, $event)"
         (itemInstantiate)="onItemInstantiate(slot, $event)"
-      ></nwb-gearset-slot>
+      ></nwb-gearset-pane-slot>
     </div>
   </div>
 </ng-container>

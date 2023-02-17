@@ -2,7 +2,7 @@ import { ItemdefinitionsRunes, ItemdefinitionsWeapons, WeaponTag } from '@nw-dat
 import type { AttributeRef } from '../attributes/nw-attributes'
 
 export function damageFactorForLevel(level: number) {
-  return 1 + 0.025 * (level - 1)
+  return 0.025 * (level - 1)
 }
 
 export function damageFactorForGS(gearScore: number) {
@@ -22,10 +22,10 @@ export function damageFactorForAttrs({
   weapon: ItemdefinitionsWeapons | ItemdefinitionsRunes
   attrSums: Record<AttributeRef, number>
 }) {
-  const str = attrSums.str * (weapon.ScalingStrength || 0)
-  const dex = attrSums.dex * (weapon.ScalingDexterity || 0)
-  const int = attrSums.dex * (weapon.ScalingIntelligence || 0)
-  const foc = attrSums.dex * (weapon.ScalingFocus || 0)
+  const str = attrSums.str * (weapon?.ScalingStrength || 0)
+  const dex = attrSums.dex * (weapon?.ScalingDexterity || 0)
+  const int = attrSums.dex * (weapon?.ScalingIntelligence || 0)
+  const foc = attrSums.dex * (weapon?.ScalingFocus || 0)
   return str + dex + int + foc
 }
 
@@ -53,12 +53,13 @@ export function damageForTooltip({
   return (
     weapon.BaseDamage *
     damageCoefForWeaponTag(getWeaponTagFromWeapon(weapon)) *
-    damageFactorForLevel(playerLevel) *
     damageFactorForGS(gearScore) *
-    damageFactorForAttrs({
-      weapon: weapon,
-      attrSums: attrSums,
-    })
+    (1 +
+      damageFactorForLevel(playerLevel) +
+      damageFactorForAttrs({
+        weapon: weapon,
+        attrSums: attrSums,
+      }))
   )
 }
 
@@ -92,7 +93,7 @@ export function getWeaponTagFromWeapon(item: ItemdefinitionsWeapons | null): Wea
 const WEAPON_TAG_TO_AMMO_TYPE: Partial<Record<WeaponTag, string>> = {
   Bow: 'Arrow',
   Blunderbuss: 'Shot',
-  Rifle: 'Shot'
+  Rifle: 'Shot',
 }
 
 export function getAmmoTypeFromWeaponTag(weaponTag: WeaponTag) {

@@ -6,6 +6,7 @@ import {
   Attributefocus,
   Attributeintelligence,
   Attributestrength,
+  Damagetable,
   Housingitems,
   ItemDefinitionMaster,
   ItemdefinitionsAmmo,
@@ -30,7 +31,7 @@ export interface MannequinState {
    * All items being equpped on the player
    * including consumed buff food and placed trophies
    */
-  equippedItems?: EquppedItem[]
+  equippedItems?: EquippedItem[]
   /**
    * Assigned attribute points
    */
@@ -55,6 +56,20 @@ export interface MannequinState {
    * Whether the active weapon is unsheathed
    */
   weaponUnsheathed?: boolean
+  /**
+   * The selected Attack
+   */
+  selectedAttack?: string
+
+  isInCombat?: boolean
+  isPvP?: string
+  distFromDefender?: number
+  myHealthPercent?: number
+  myManaPercent?: number
+  myStaminaPercent?: number
+  numAroundMe?: number
+  numHits?: number
+  targetHealthPercent?: number
 }
 
 export interface DbSlice {
@@ -65,6 +80,7 @@ export interface DbSlice {
   armors: Map<string, ItemdefinitionsArmor>
   ammos: Map<string, ItemdefinitionsAmmo>
   consumables: Map<string, ItemdefinitionsConsumables>
+  damagaTable: Damagetable[]
   perks: Map<string, Perks>
   effects: Map<string, Statuseffect>
   abilities: Map<string, Ability>
@@ -76,7 +92,7 @@ export interface DbSlice {
   attrCon: Attributeconstitution[]
 }
 
-export interface EquppedItem {
+export interface EquippedItem {
   slot: EquipSlotId
   itemId: string
   gearScore?: number
@@ -111,14 +127,18 @@ export interface ActiveAttribute {
   bonus: number
   assigned: number
   total: number
+  health?: number
   scale: number
   abilities: string[]
 }
 
-export interface AplicableAbility {
-  item: ItemDefinitionMaster
-  weapon: ItemdefinitionsWeapons
+export interface ActiveAbility {
+  // scale: number
   ability: Ability
+  selfEffects: Statuseffect[]
+  weapon?: ActiveWeapon
+  perk?: ActivePerk
+  attribute?: boolean
 }
 
 export interface ActivePerk {
@@ -130,6 +150,18 @@ export interface ActivePerk {
   armor: ItemdefinitionsArmor | null
   rune: ItemdefinitionsRunes | null
   affix: Affixstats | null
+}
+export interface ActiveConsumable {
+  item: ItemDefinitionMaster
+  consumable: ItemdefinitionsConsumables
+}
+
+export interface ActiveMods {
+  attributes: ActiveAttributes
+  perks: ActivePerk[]
+  effects: ActiveEffect[]
+  abilities: ActiveAbility[]
+  consumables: ActiveConsumable[]
 }
 
 export interface ActiveEffect {
@@ -146,12 +178,16 @@ export interface ActiveEffect {
    */
   consumable?: ItemdefinitionsConsumables
   /**
+   * Perk from which the status effect has been activated
+   */
+  perk?: ActivePerk
+  /**
    * Ability from which the status effect has been activated
    */
   ability?: Ability
 }
 
-export interface ActiveMods {
+export interface AttributeModsSource {
   perks: ActivePerk[]
   effects: ActiveEffect[]
 }

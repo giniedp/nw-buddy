@@ -35,7 +35,7 @@
     ],
     "paths": {
       "~/*": ["apps/web/app/*"],
-      "@nw-data/*": ["apps/web/nw-data/*"],
+      "@nw-data/*": ["apps/web/nw-data/*"]
     }
   },
   "exclude": [

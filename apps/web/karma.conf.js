@@ -7,9 +7,10 @@ module.exports = function (config) {
     frameworks: ['jasmine', '@angular-devkit/build-angular'],
     plugins: [
       require('karma-jasmine'),
-      require('karma-electron'),
+      require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage-istanbul-reporter'),
+      require('karma-mocha-reporter'),
       require('@angular-devkit/build-angular/plugins/karma')
     ],
     client:{
@@ -20,26 +21,19 @@ module.exports = function (config) {
       reports: [ 'html', 'lcovonly' ],
       fixWebpackSourcePaths: true
     },
-    reporters: ['progress', 'kjhtml'],
+    jasmineHtmlReporter: {
+      supressAll: true // removes the dublicated traces
+    },
+    proxies: {
+      '/datatables/': '../dist/nw-data/live/datatables/'
+    },
+    reporters: ['mocha'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    browsers: ['AngularElectron'],
-    customLaunchers: {
-      AngularElectron: {
-        base: 'Electron',
-        flags: [
-          '--remote-debugging-port=9222'
-        ],
-        browserWindowOptions: {
-          webPreferences: {
-            nodeIntegration: true,
-            nodeIntegrationInSubFrames: true,
-            allowRunningInsecureContent: true,
-            contextIsolation: false
-          }
-        }
-      }
-    }
+    autoWatch: true,
+    browsers: ['ChromeHeadless'],
+    singleRun: false,
+    restartOnFileChange: true
   });
 };

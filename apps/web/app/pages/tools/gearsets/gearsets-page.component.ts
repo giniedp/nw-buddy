@@ -13,7 +13,6 @@ import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/layout'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { GearsetMigrationService } from './gearset-migration.srvice'
 import { GearsetsTableAdapter } from './gearsets-table.adapter'
 
 @Component({
@@ -43,11 +42,9 @@ export class GearsetsPageComponent implements OnInit {
     private store: GearsetsStore,
     protected search: QuicksearchService,
     private dialog: Dialog,
-    private migration: GearsetMigrationService
   ) {}
 
   public async ngOnInit() {
-    await this.migration.run()
     this.store.loadAll()
   }
 

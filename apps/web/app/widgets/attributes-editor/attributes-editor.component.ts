@@ -170,7 +170,6 @@ export class AttributesEditorComponent implements OnInit {
       const ids = levels.find((it) => it.Level === points)?.EquipAbilities || []
       return ids.map((id) => {
         const ability = abilities.get(id)
-        console.log(ability)
         return {
           Name: ability.DisplayName,
           Description: ability.Description,

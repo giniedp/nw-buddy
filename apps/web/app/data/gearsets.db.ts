@@ -18,13 +18,17 @@ export interface GearsetRecord {
    */
   name: string
   /**
-   * The mode how new items should be stored in this set
+   * User description about the set
    */
-  createMode?: GearsetCreateMode
+  description?: string
   /**
    * User defined tags
    */
   tags?: string[]
+  /**
+   * The mode how new items should be stored in this set
+   */
+  createMode?: GearsetCreateMode
   /**
    * Item slots for this gear
    */

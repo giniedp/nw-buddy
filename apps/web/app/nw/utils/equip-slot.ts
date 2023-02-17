@@ -22,6 +22,18 @@ export type EquipSlotId =
   | 'trophy1'
   | 'trophy2'
   | 'trophy3'
+  | 'trophy4'
+  | 'trophy5'
+  | 'trophy6'
+  | 'trophy7'
+  | 'trophy8'
+  | 'trophy9'
+  | 'trophy10'
+  | 'trophy11'
+  | 'trophy12'
+  | 'trophy13'
+  | 'trophy14'
+  | 'trophy15'
   | 'arrow'
   | 'cartridge'
 
@@ -224,6 +236,92 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
   },
   {
     id: 'trophy3',
+    icon: 'assets/icons/slots/icon_housing_category_trophies.png',
+    iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
+    name: 'ui_housing_trophy_buff',
+    itemType: 'Trophies',
+  },
+  {
+    id: 'trophy4',
+    icon: 'assets/icons/slots/icon_housing_category_trophies.png',
+    iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
+    name: 'ui_housing_trophy_buff',
+    itemType: 'Trophies',
+  },
+  {
+    id: 'trophy5',
+    icon: 'assets/icons/slots/icon_housing_category_trophies.png',
+    iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
+    name: 'ui_housing_trophy_buff',
+    itemType: 'Trophies',
+  },
+
+  {
+    id: 'trophy6',
+    icon: 'assets/icons/slots/icon_housing_category_trophies.png',
+    iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
+    name: 'ui_housing_trophy_buff',
+    itemType: 'Trophies',
+  },
+  {
+    id: 'trophy7',
+    icon: 'assets/icons/slots/icon_housing_category_trophies.png',
+    iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
+    name: 'ui_housing_trophy_buff',
+    itemType: 'Trophies',
+  },
+  {
+    id: 'trophy8',
+    icon: 'assets/icons/slots/icon_housing_category_trophies.png',
+    iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
+    name: 'ui_housing_trophy_buff',
+    itemType: 'Trophies',
+  },
+  {
+    id: 'trophy9',
+    icon: 'assets/icons/slots/icon_housing_category_trophies.png',
+    iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
+    name: 'ui_housing_trophy_buff',
+    itemType: 'Trophies',
+  },
+  {
+    id: 'trophy10',
+    icon: 'assets/icons/slots/icon_housing_category_trophies.png',
+    iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
+    name: 'ui_housing_trophy_buff',
+    itemType: 'Trophies',
+  },
+
+  {
+    id: 'trophy11',
+    icon: 'assets/icons/slots/icon_housing_category_trophies.png',
+    iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
+    name: 'ui_housing_trophy_buff',
+    itemType: 'Trophies',
+  },
+  {
+    id: 'trophy12',
+    icon: 'assets/icons/slots/icon_housing_category_trophies.png',
+    iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
+    name: 'ui_housing_trophy_buff',
+    itemType: 'Trophies',
+  },
+  {
+    id: 'trophy13',
+    icon: 'assets/icons/slots/icon_housing_category_trophies.png',
+    iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
+    name: 'ui_housing_trophy_buff',
+    itemType: 'Trophies',
+  },
+  {
+    id: 'trophy14',
+    icon: 'assets/icons/slots/icon_housing_category_trophies.png',
+    iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
+    name: 'ui_housing_trophy_buff',
+    itemType: 'Trophies',
+  },
+  {
+    id: 'trophy15',
     icon: 'assets/icons/slots/icon_housing_category_trophies.png',
     iconSlot: 'assets/icons/slots/icon_housing_category_trophies.png',
     name: 'ui_housing_trophy_buff',

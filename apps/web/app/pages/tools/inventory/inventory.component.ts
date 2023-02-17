@@ -13,7 +13,6 @@ import { NavToolbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { ScreenshotModule } from '~/widgets/screenshot'
-import { GearsetMigrationService } from '../gearsets/gearset-migration.srvice'
 import { GearsetFormComponent } from './gearset-form.component'
 import { InventoryPickerService } from './inventory-picker.service'
 import { PlayerItemsTableAdapter } from './inventory-table.adapter'
@@ -50,13 +49,11 @@ export class PlayerItemsPageComponent implements OnInit {
     private items: ItemInstancesStore,
     private picker: InventoryPickerService,
     private adapter: DataTableAdapter<ItemInstanceRow>,
-    private migration: GearsetMigrationService
   ) {
     //
   }
 
   public async ngOnInit() {
-    await this.migration.run()
     this.items.loadAll()
     this.sets.loadAll()
   }

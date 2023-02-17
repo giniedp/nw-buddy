@@ -1,5 +1,17 @@
 import { Statuseffect } from "@nw-data/types"
 
+export function statusEffectHasCategory(effect: Statuseffect, category: string)  {
+  return effect?.EffectCategories?.includes(category)
+}
+
+export function statusEffectHasEmpowerCap(effect: Statuseffect) {
+  return statusEffectHasCategory(effect, 'Empower') || statusEffectHasCategory(effect, 'Weaken')
+}
+
+export function statusEffectHasFortifyCap(effect: Statuseffect) {
+  return statusEffectHasCategory(effect, 'Fortify') || statusEffectHasCategory(effect, 'Rend')
+}
+
 export function getStatusEffectDMGs(affix: Partial<Statuseffect>, scale: number) {
   return getStatusEffectProperties(affix)
     .filter((it) => it.key.startsWith('DMG'))

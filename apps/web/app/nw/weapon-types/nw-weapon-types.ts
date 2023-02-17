@@ -12,6 +12,7 @@ export interface NwWeaponType {
   IconPath: string
   IconPathSmall: string
   DamageType: string
+  DamageTablePrefix: string
 }
 
 export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
@@ -28,6 +29,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_onehanded_weapons',
     IconPath: 'assets/icons/weapons/1hsword.png',
     IconPathSmall: 'assets/icons/weapons/1hswordsmall.png',
+    DamageTablePrefix: '1H_Sword'
   },
   {
     UIName: 'ui_rapier',
@@ -41,6 +43,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_onehanded_weapons',
     IconPath: 'assets/icons/weapons/1hrapier.png',
     IconPathSmall: 'assets/icons/weapons/1hrapiersmall.png',
+    DamageTablePrefix: '1H_Rapier'
   },
   {
     UIName: 'ui_hatchet',
@@ -54,6 +57,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_onehanded_weapons',
     IconPath: 'assets/icons/weapons/1hhatchet.png',
     IconPathSmall: 'assets/icons/weapons/1hhatchetsmall.png',
+    DamageTablePrefix: 'Hatchet_'
   },
   // TWO HANDED
   {
@@ -68,6 +72,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_twohanded_weapons',
     IconPath: 'assets/icons/weapons/speara.png',
     IconPathSmall: 'assets/icons/weapons/spearasmall.png',
+    DamageTablePrefix: '2H_Spear_',
   },
   {
     UIName: 'ui_greataxe',
@@ -81,6 +86,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_twohanded_weapons',
     IconPath: 'assets/icons/weapons/2hgreataxe.png',
     IconPathSmall: 'assets/icons/weapons/2hgreataxesmall.png',
+    DamageTablePrefix: 'GreatAxe_'
   },
   {
     UIName: 'ui_warhammer',
@@ -94,6 +100,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_twohanded_weapons',
     IconPath: 'assets/icons/weapons/2hdemohammer.png',
     IconPathSmall: 'assets/icons/weapons/2hdemohammersmall.png',
+    DamageTablePrefix: 'Warhammer_'
   },
   {
     UIName: 'ui_greatsword',
@@ -107,6 +114,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_twohanded_weapons',
     IconPath: 'assets/icons/weapons/2hgreatsword.png',
     IconPathSmall: 'assets/icons/weapons/2hgreatswordsmall.png',
+    DamageTablePrefix: 'GreatSword_'
   },
 
   // RANGED
@@ -122,6 +130,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_ranged_weapons',
     IconPath: 'assets/icons/weapons/2hmusketa.png',
     IconPathSmall: 'assets/icons/weapons/2hmusketasmall.png',
+    DamageTablePrefix: 'Musket_'
   },
   {
     UIName: 'ui_bow',
@@ -135,6 +144,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_ranged_weapons',
     IconPath: 'assets/icons/weapons/bowb.png',
     IconPathSmall: 'assets/icons/weapons/bowbsmall.png',
+    DamageTablePrefix: 'Bow'
   },
   {
     UIName: 'ui_blunderbuss',
@@ -148,6 +158,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_ranged_weapons',
     IconPath: 'assets/icons/weapons/blunderbuss.png',
     IconPathSmall: 'assets/icons/weapons/blunderbusssmall.png',
+    DamageTablePrefix: 'Blunderbuss_'
   },
 
   // MAGIC
@@ -163,6 +174,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_magic_skills',
     IconPath: 'assets/icons/weapons/stafffire.png',
     IconPathSmall: 'assets/icons/weapons/stafffiresmall.png',
+    DamageTablePrefix: 'Firestaff_'
   },
   {
     UIName: 'ui_lifestaff',
@@ -176,6 +188,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_magic_skills',
     IconPath: 'assets/icons/weapons/stafflife.png',
     IconPathSmall: 'assets/icons/weapons/stafflifesmall.png',
+    DamageTablePrefix: 'LifeStaff_'
   },
   {
     UIName: 'ui_icemagic',
@@ -189,6 +202,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_magic_skills',
     IconPath: 'assets/icons/weapons/icegauntlet.png',
     IconPathSmall: 'assets/icons/weapons/icegauntletsmall.png',
+    DamageTablePrefix: 'IceMagic_'
   },
   {
     UIName: 'ui_voidmagic',
@@ -202,6 +216,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_magic_skills',
     IconPath: 'assets/icons/weapons/voidgauntlet.png',
     IconPathSmall: 'assets/icons/weapons/voidgauntletsmall.png',
+    DamageTablePrefix: 'VoidGauntlet_'
   },
 ]
 
@@ -222,6 +237,12 @@ export const NW_DAMAGE_TYPE_ICONS = new CaseInsensitiveMap(
     Strike: 'assets/icons/tooltip/icon_tooltip_strike_opaque.png',
     Thrust: 'assets/icons/tooltip/icon_tooltip_thrust_opaque.png',
     unknown: 'assets/icons/tooltip/icon_unknown.png',
+
+    Ancient: 'assets/icons/families/ancientbane1.png',
+    Corrupted: 'assets/icons/families/corruptedbane1.png',
+    AngryEarth: 'assets/icons/families/angryearthbane1.png',
+    Lost: 'assets/icons/families/lostbane1.png',
+    Beast: 'assets/icons/families/bestialbane1.png',
   })
 )
 
@@ -234,3 +255,7 @@ export const NW_WARD_TYPE_ICONS = new CaseInsensitiveMap(
     Bestial: 'assets/icons/families/bestialward1.png',
   })
 )
+
+export function damageTypeIcon(type: string) {
+  return NW_DAMAGE_TYPE_ICONS.get(type) || NW_DAMAGE_TYPE_ICONS.get('unknown')
+}
