@@ -86,12 +86,13 @@ export class GearsetDetailComponent {
     gearset: this.gearset$,
   }).pipe(
     map(({ slots, gearset }) => {
+      const gsSlots = gearset?.slots || []
       slots = [...slots]
-      slots.length = Math.max(...slots.map((it, index) => (gearset.slots[it.id] ? index + 1 : 0))) + 1
+      slots.length = Math.max(...slots.map((it, index) => (gsSlots[it.id] ? index + 1 : 0))) + 1
       slots.length = Math.min(slots.length, 4)
       return {
         slots,
-        empty: slots.every((slot) => !gearset.slots[slot.id]),
+        empty: slots.every((slot) => !gsSlots[slot.id]),
       }
     })
   )
@@ -101,12 +102,13 @@ export class GearsetDetailComponent {
     gearset: this.gearset$,
   }).pipe(
     map(({ slots, gearset }) => {
+      const gsSlots = gearset?.slots || []
       slots = [...slots]
-      slots.length = Math.max(...slots.map((it, index) => (gearset.slots[it.id] ? index + 1 : 0))) + 1
+      slots.length = Math.max(...slots.map((it, index) => (gsSlots[it.id] ? index + 1 : 0))) + 1
       slots.length = Math.min(slots.length, 15)
       return {
         slots,
-        empty: slots.every((slot) => !gearset.slots[slot.id]),
+        empty: slots.every((slot) => !gsSlots[slot.id]),
       }
     })
   )
