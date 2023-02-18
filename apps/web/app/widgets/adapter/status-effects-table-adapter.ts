@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Inject, Injectable, Optional } from '@angular/core'
 import { Perks, Statuseffect } from '@nw-data/types'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { sortBy } from 'lodash'
@@ -7,14 +7,20 @@ import { TranslateService } from '~/i18n'
 import { NwLinkService, NwService } from '~/nw'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
 import { SelectboxFilter } from '~/ui/ag-grid'
-import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
+import { DataTableAdapter, DataTableAdapterOptions, dataTableProvider } from '~/ui/data-table'
 import { CaseInsensitiveMap, humanize, shareReplayRefCount } from '~/utils'
 
 @Injectable()
+export class StatusEffectsTableAdapterConfig extends DataTableAdapterOptions<Statuseffect> {
+  //
+}
+
+@Injectable()
 export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
-  public static provider() {
+  public static provider(config?: StatusEffectsTableAdapterConfig) {
     return dataTableProvider({
       adapter: StatusEffectsTableAdapter,
+      options: config,
     })
   }
 
@@ -24,6 +30,10 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
 
   public entityCategory(item: Statuseffect): string {
     return item['$source']
+  }
+
+  public override get persistStateId(): string {
+    return this.config?.persistStateId
   }
 
   public options = defer(() =>
@@ -111,13 +121,20 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
   )
 
   public entities: Observable<Statuseffect[]> = defer(() => {
-    return this.nw.db.statusEffects
+    return this.config?.source || this.nw.db.statusEffects
   })
     .pipe(map((list) => sortBy(list, (it) => it.StatusID)))
     .pipe(map((list) => sortBy(list, (it) => (it.Description ? -1 : 1))))
     .pipe(shareReplayRefCount(1))
 
-  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwLinkService) {
+  public constructor(
+    private nw: NwService,
+    private i18n: TranslateService,
+    private info: NwLinkService,
+    @Inject(DataTableAdapterOptions)
+    @Optional()
+    private config: StatusEffectsTableAdapterConfig
+  ) {
     super()
   }
 }
@@ -318,7 +335,7 @@ const EFFECT_FIELDS: Record<keyof Statuseffect, string> = {
   NoRun: 'number',
   NoSprint: 'number',
   NonConsumableHealMod: 'number',
-  "NotCombatAction ": 'string',
+  'NotCombatAction ': 'string',
   Notes: 'string',
   Notification: 'string',
   OnDeathStatusEffect: 'string',

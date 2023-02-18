@@ -28,7 +28,7 @@
                 ></nwb-gearset-pane-slot>
 
                 <nwb-gearset-pane-slot
-                *ngFor="let slot of ammoSlots; trackBy: trackByIndex; let first = first"
+                  *ngFor="let slot of ammoSlots; trackBy: trackByIndex; let first = first"
                   [class.col-start-2]="first"
                   [slot]="slot"
                   [gearset]="data"
@@ -80,14 +80,38 @@
               </div>
             </div>
           </div>
+          <div>
+            <h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
+              <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
+              <span class="relative top-1">Town Buffs</span>
+            </h3>
+            <div class="flex items-center justify-center">
+              <div class="inline-grid grid-cols-5 gap-1">
+                <nwb-gearset-pane-effect
+                  *ngFor="let id of vmTownBuffs$ | async; trackBy: trackByIndex"
+                  [effectId]="id"
+                  [max]="1"
+                  [disabled]="disabled"
+                  (effectChange)="onEffectChange($event)"
+                >
+                </nwb-gearset-pane-effect>
+              </div>
+            </div>
+          </div>
         </nwb-gearset-pane-main>
       </div>
-      <div [@fade]="true" class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad">
+      <div
+        [@fade]="true"
+        class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad"
+      >
         <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
         <nwb-gearset-pane-stats class="relative"></nwb-gearset-pane-stats>
       </div>
 
-      <div [@fade]="true" class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad">
+      <div
+        [@fade]="true"
+        class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad"
+      >
         <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
         <nwb-gearset-pane-skill
           class="relative"
@@ -96,7 +120,10 @@
           [disabled]="disabled"
         ></nwb-gearset-pane-skill>
       </div>
-      <div [@fade]="true" class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad">
+      <div
+        [@fade]="true"
+        class="col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad"
+      >
         <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
         <nwb-gearset-pane-skill
           class="relative"

@@ -237,6 +237,8 @@ export function selectActveEffects(db: DbSlice, perks: ActivePerk[], state: Mann
     selectHousingEffects(db, state),
     //
     selectPerkEffects(db, perks),
+    // enforced effects like town buffs
+    selectEnforcedEffects(db, state)
   ]
     .flat()
     .filter((it) => !!it)
@@ -303,6 +305,20 @@ export function selectPerkEffects({ affixes, effects }: DbSlice, perks: ActivePe
     })
     .flat()
     .filter((it) => !!it?.effect)
+}
+
+
+export function selectEnforcedEffects({ effects }: DbSlice, { enforcedEffects }: MannequinState) {
+  enforcedEffects = enforcedEffects || []
+  return enforcedEffects.map(({ id, stack }) => {
+    return new Array(stack).fill(null).map((): ActiveEffect => {
+      return {
+        effect: effects.get(id)
+      }
+    })
+  })
+  .flat()
+  .filter((it) => !!it.effect)
 }
 
 function isWeaponActive(weapon: 'primary' | 'secondary', slot: EquipSlotId) {

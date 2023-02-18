@@ -22,6 +22,8 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
   public readonly gearsetSlots$ = this.select(({ gearset }) => gearset?.slots)
   public readonly gearsetName$ = this.select(({ gearset }) => gearset?.name)
   public readonly gearsetAttrs$ = this.select(({ gearset }) => gearset?.attrs)
+  public readonly gearsetEnforcedEffects$ = this.select(({ gearset }) => gearset?.enforceEffects)
+  public readonly gearsetEnforcedAbilities$ = this.select(({ gearset }) => gearset?.enforceAbilities)
   public readonly skills$ = this.select(({ gearset }) => gearset?.skills)
   public readonly skillsPrimary$ = this.skills$.pipe(map((it) => it?.['primary']))
   public readonly skillsSecondary$ = this.skills$.pipe(map((it) => it?.['secondary']))
@@ -93,6 +95,30 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
         return this.writeRecord({
           ...gearset,
           slots: slots,
+        })
+      })
+    )
+  })
+
+  /**
+   * Updates enforced status effects
+   */
+  public readonly updateStatusEffect = this.effect<Array<{ id: string; stack: number }>>((value$) => {
+    return value$.pipe(
+      switchMap((list) => {
+        const gearset = this.get().gearset
+        const effects = [...(Array.isArray(gearset.enforceEffects) ? gearset.enforceEffects : [])]
+        list.forEach(({ id, stack }) => {
+          const index = effects.findIndex((it) => it.id === id)
+          if (index >= 0) {
+            effects[index] = { id, stack }
+          } else {
+            effects.push({ id, stack })
+          }
+        })
+        return this.writeRecord({
+          ...gearset,
+          enforceEffects: effects.filter((it) => it.stack > 0),
         })
       })
     )

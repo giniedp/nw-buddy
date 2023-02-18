@@ -23,10 +23,10 @@
       <nwb-item-icon [nwbItemIcon]="vm.slot.icon" [solid]="false" [rarity]="0" class="z-10 w-12 h-12"></nwb-item-icon>
       <button
         *ngIf="!disabled"
-        class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-start justify-end"
-        [cdkMenuTriggerFor]="menu"
+        class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-center justify-center"
+        (click)="pickItem(vm)"
       >
-        <nwb-icon [icon]="iconMenu" class="w-4 h-4 mt-2"></nwb-icon>
+        <nwb-icon [icon]="iconPlus" class="w-4 h-4 mt-2"></nwb-icon>
       </button>
     </nwb-item-header>
   </ng-container>
@@ -105,43 +105,60 @@
       </ng-template>
     </nwb-item-card>
   </ng-container>
-</ng-container>
 
-<ng-template #menu>
-  <ul class="menu menu-compact bg-base-100 rounded-md shadow" cdkMenu *ngIf="vm$ | async; let vm">
-    <li>
-      <button (click)="pickItem(vm)" cdkMenuItem>
-        <nwb-icon [icon]="iconPlus" class="w-4 h-4"></nwb-icon>
-        Equip item
-      </button>
-    </li>
-    <li *ngIf="!vm.isEqupment">
-      <button (click)="linkItem(vm)" cdkMenuItem>
-        <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
-        Link from inventory
-      </button>
-    </li>
-
-    <ng-container *ngIf="vm.item">
-      <span class="divider my-0"></span>
-      <li *ngIf="vm.canRemove && !vm.canBreak && !vm.isEqupment">
-        <button (click)="instantiate()" cdkMenuItem>
+  <ng-template #menu>
+    <ul class="menu menu-compact bg-base-100 rounded-md shadow" cdkMenu>
+      <li>
+        <a (click)="pickItem(vm)" cdkMenuItem>
+          <nwb-icon [icon]="iconPlus" class="w-4 h-4"></nwb-icon>
+          <div class="flex flex-col leading-none">
+            <span>New item</span>
+            <span class="text-xs opacity-75">Create a new item from scratch.</span>
+          </div>
+        </a>
+      </li>
+      <li *ngIf="!vm.isEqupment">
+        <a (click)="linkItem(vm)" cdkMenuItem>
           <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
-          Make link
-        </button>
+          <div class="flex flex-col leading-none">
+            <span>Link item</span>
+            <span class="text-xs opacity-75">
+              Select an item from your inventory and link it to this slot.
+            </span>
+          </div>
+        </a>
       </li>
-      <li *ngIf="vm.canBreak">
-        <button (click)="breakLink()" cdkMenuItem>
-          <nwb-icon [icon]="iconLinkBreak" class="w-4 h-4"></nwb-icon>
-          Break link
-        </button>
-      </li>
-      <li *ngIf="vm.canRemove">
-        <button (click)="remove()" cdkMenuItem>
-          <nwb-icon [icon]="iconRemove" class="w-4 h-4"></nwb-icon>
-          Remove item
-        </button>
-      </li>
-    </ng-container>
-  </ul>
-</ng-template>
+
+      <ng-container *ngIf="vm.item">
+        <span class="divider my-0 py-0"></span>
+        <li *ngIf="vm.canRemove && !vm.canBreak && !vm.isEqupment">
+          <a (click)="instantiate()" cdkMenuItem>
+            <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
+            <div class="flex flex-col leading-none">
+              <span>Make link</span>
+              <span class="text-xs opacity-75">Copy this item to your inventory and link it to this slot.</span>
+            </div>
+          </a>
+        </li>
+        <li *ngIf="vm.canBreak">
+          <a (click)="breakLink()" cdkMenuItem>
+            <nwb-icon [icon]="iconLinkBreak" class="w-4 h-4"></nwb-icon>
+            <div class="flex flex-col leading-none">
+              <span>Break link</span>
+              <span class="text-xs opacity-75">Make a copy of this item and break the link.</span>
+            </div>
+          </a>
+        </li>
+        <li *ngIf="vm.canRemove">
+          <a (click)="remove()" cdkMenuItem>
+            <nwb-icon [icon]="iconRemove" class="w-4 h-4"></nwb-icon>
+            <div class="flex flex-col leading-none">
+              <span>Unequip item</span>
+              <span class="text-xs opacity-75">Linked items remain in inventory. Non-linked items are lost.</span>
+            </div>
+          </a>
+        </li>
+      </ng-container>
+    </ul>
+  </ng-template>
+</ng-container>

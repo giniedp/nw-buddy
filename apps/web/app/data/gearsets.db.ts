@@ -45,6 +45,14 @@ export interface GearsetRecord {
    * Profile image id
    */
   imageId?: string
+  /**
+   * Status effects enforced on this build
+   */
+  enforceEffects?: Array<{ id: string, stack: number }>
+  /**
+   * Abilities enforced on this build
+   */
+  enforceAbilities?: Array<{ id: string, stack: number }>
 }
 
 export const DBT_GEARSETS = 'gearsets'

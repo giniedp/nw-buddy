@@ -1,6 +1,6 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { Injectable, Injector } from '@angular/core'
-import { ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
+import { ItemDefinitionMaster, Perkbuckets, Perks, Statuseffect } from '@nw-data/types'
 import { isEqual } from 'lodash'
 import { combineLatest, filter, map, Observable, switchMap, take } from 'rxjs'
 import { ItemInstance, ItemInstancesStore } from '~/data'
@@ -15,7 +15,7 @@ import {
   isPerkGem,
 } from '~/nw/utils'
 import { DataTablePickerDialog } from '~/ui/data-table'
-import { HousingTableAdapter, ItemsTableAdapter, PerksTableAdapter } from '~/widgets/adapter'
+import { HousingTableAdapter, ItemsTableAdapter, PerksTableAdapter, StatusEffectsTableAdapter } from '~/widgets/adapter'
 import { PlayerItemsTableAdapter } from './inventory-table.adapter'
 
 @Injectable({ providedIn: 'root' })
@@ -131,6 +131,36 @@ export class InventoryPickerService {
     )
   }
 
+  public pickEffect({
+    title,
+    selection,
+    multiple,
+    predicate,
+  }: {
+    title?: string
+    selection?: string[]
+    multiple?: boolean
+    predicate?: (item: Statuseffect) => boolean
+  }) {
+    return this.db.statusEffectsMap.pipe(
+      switchMap((items) => {
+        return (
+          this.openEffectsPicker({ selection, title, multiple, predicate })
+            .closed.pipe(take(1))
+            // cancelled selection
+            .pipe(filter((it) => it !== undefined))
+            // unchanged selection
+            .pipe(filter((it) => !isEqual(it, selection)))
+            .pipe(
+              map((it: string[]) => {
+                return it.map((id) => items.get(id))
+              })
+            )
+        )
+      })
+    )
+  }
+
   protected openInstancePicker({
     title,
     selection,
@@ -220,7 +250,7 @@ export class InventoryPickerService {
     } else {
       types = null
     }
-    console.log('openHousingItemsPicker', {title, selection, multiple, category})
+    console.log('openHousingItemsPicker', { title, selection, multiple, category })
     return DataTablePickerDialog.open(this.dialog, {
       title: title || 'Pick item',
       selection: selection,
@@ -307,5 +337,34 @@ export class InventoryPickerService {
         })
       })
     )
+  }
+
+  protected openEffectsPicker({
+    title,
+    selection,
+    multiple,
+    predicate,
+  }: {
+    title?: string
+    selection?: string[]
+    multiple?: boolean
+    predicate?: (item: Statuseffect) => boolean
+  }) {
+    let types: Set<string>
+
+    return DataTablePickerDialog.open(this.dialog, {
+      title: title || 'Pick effect',
+      selection: selection,
+      multiselect: !!multiple,
+      adapter: StatusEffectsTableAdapter.provider({
+        source: this.db.statusEffects.pipe(map((items) => items.filter(predicate || (() => true)))),
+      }),
+      config: {
+        maxWidth: 1400,
+        maxHeight: 1200,
+        panelClass: ['w-full', 'h-full', 'p-4'],
+        injector: this.injector,
+      },
+    })
   }
 }

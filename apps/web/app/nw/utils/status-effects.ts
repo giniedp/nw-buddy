@@ -1,5 +1,28 @@
 import { Statuseffect } from "@nw-data/types"
 
+const TOWN_BUFF_IDS = [
+  'ArcaneBlessingLSB',
+  'HaleandHeartyLSB',
+  'StalwartLSB',
+
+  'LumberJackSpiritLSB',
+  'FarmersHarvestLSB',
+  'MinersResolveLSB',
+  'HuntersBountyLSB',
+
+  'BlacksmithTemperamentLSB',
+  'EngineersPatienceLSB',
+  'OutfittersInspirationLSB',
+  'ChefsPassionLSB',
+  'ArcaneWisdomLSB',
+
+  //'FishermandFortuneLSB',
+]
+
+export function getStatusEffectTownBuffIds() {
+  return [...TOWN_BUFF_IDS]
+}
+
 export function statusEffectHasCategory(effect: Statuseffect, category: string)  {
   return effect?.EffectCategories?.includes(category)
 }

@@ -3,6 +3,7 @@ import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { Statuseffect } from '@nw-data/types'
 import { combineLatest, filter, map, of, switchMap } from 'rxjs'
 import {
   CharacterStore,
@@ -15,10 +16,11 @@ import {
   SkillBuildsDB,
 } from '~/data'
 import { EquippedItem, Mannequin, MannequinState } from '~/nw/mannequin'
-import { EquipSlot, EquipSlotId, EQUIP_SLOTS } from '~/nw/utils'
+import { EquipSlot, EquipSlotId, EQUIP_SLOTS, getStatusEffectTownBuffIds } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { ConfirmDialogComponent } from '~/ui/layout'
 import { ScreenshotModule } from '~/widgets/screenshot'
+import { GearsetPaneEffectComponent } from './gearset-pane-effect.component'
 import { GearsetPaneMainComponent } from './gearset-pane-main.component'
 import { GearsetPaneSkillComponent } from './gearset-pane-skill.component'
 import { GearsetPaneSlotComponent } from './gearset-pane-slot.component'
@@ -38,6 +40,7 @@ import { GearsetPaneStatsComponent } from './gearset-pane-stats.component'
     GearsetPaneSkillComponent,
     GearsetPaneSlotComponent,
     GearsetPaneStatsComponent,
+    GearsetPaneEffectComponent,
     IconsModule,
     ScreenshotModule,
   ],
@@ -53,12 +56,7 @@ import { GearsetPaneStatsComponent } from './gearset-pane-stats.component'
         }),
       ]),
     ]),
-    trigger('fade', [
-      transition('* => *', [
-        style({ opacity: 0 }),
-        animate('0.3s ease-out', style({ opacity: 1 })),
-      ]),
-    ]),
+    trigger('fade', [transition('* => *', [style({ opacity: 0 }), animate('0.3s ease-out', style({ opacity: 1 }))])]),
   ],
 })
 export class GearsetDetailComponent {
@@ -85,29 +83,44 @@ export class GearsetDetailComponent {
 
   protected vmQuickSlots$ = combineLatest({
     slots: of(EQUIP_SLOTS.filter((it) => it.id.startsWith('quick'))),
-    gearset: this.gearset$
-  }).pipe(map(({ slots, gearset }) => {
-    slots = [...slots]
-    slots.length = Math.max(...slots.map((it, index) => gearset.slots[it.id] ? index + 1 : 0)) + 1
-    slots.length = Math.min(slots.length, 4)
-    return {
-      slots,
-      empty: slots.every((slot) => !gearset.slots[slot.id])
-    }
-  }))
+    gearset: this.gearset$,
+  }).pipe(
+    map(({ slots, gearset }) => {
+      slots = [...slots]
+      slots.length = Math.max(...slots.map((it, index) => (gearset.slots[it.id] ? index + 1 : 0))) + 1
+      slots.length = Math.min(slots.length, 4)
+      return {
+        slots,
+        empty: slots.every((slot) => !gearset.slots[slot.id]),
+      }
+    })
+  )
 
   protected vmTrophies$ = combineLatest({
-    slots: of(EQUIP_SLOTS.filter((it) => it.itemType === 'Trophies')) ,
-    gearset: this.gearset$
-  }).pipe(map(({ slots, gearset }) => {
-    slots = [...slots]
-    slots.length = Math.max(...slots.map((it, index) => gearset.slots[it.id] ? index + 1 : 0)) + 1
-    slots.length = Math.min(slots.length, 15)
-    return {
-      slots,
-      empty: slots.every((slot) => !gearset.slots[slot.id])
-    }
-  }))
+    slots: of(EQUIP_SLOTS.filter((it) => it.itemType === 'Trophies')),
+    gearset: this.gearset$,
+  }).pipe(
+    map(({ slots, gearset }) => {
+      slots = [...slots]
+      slots.length = Math.max(...slots.map((it, index) => (gearset.slots[it.id] ? index + 1 : 0))) + 1
+      slots.length = Math.min(slots.length, 15)
+      return {
+        slots,
+        empty: slots.every((slot) => !gearset.slots[slot.id]),
+      }
+    })
+  )
+
+  protected vmTownBuffs$ = this.gearset$.pipe(
+    map((it) => {
+      const townEffects = getStatusEffectTownBuffIds()
+      const effects = (it.enforceEffects || [])
+        .filter((it) => townEffects.some((id) => it.id === id))
+        .map((it) => it.id)
+      effects.length = Math.min(effects.length + 1, 9)
+      return effects
+    })
+  )
 
   protected trackByIndex = (i: number) => i
 
@@ -121,7 +134,6 @@ export class GearsetDetailComponent {
     private skillBuilds: SkillBuildsDB
   ) {
     itemsStore.loadAll()
-
   }
 
   protected updateName(value: string) {
@@ -177,6 +189,8 @@ export class GearsetDetailComponent {
       assignedAttributes: this.store.gearsetAttrs$,
       equippedSkills1: this.store.skillsPrimary$.pipe(switchMap((it) => this.resolveSkillBuild(it))),
       equippedSkills2: this.store.skillsSecondary$.pipe(switchMap((it) => this.resolveSkillBuild(it))),
+      enforcedEffects: this.store.gearsetEnforcedEffects$,
+      enforcedAbilities: this.store.gearsetEnforcedAbilities$,
     }).pipe(
       map((it): MannequinState => {
         return {
@@ -185,6 +199,8 @@ export class GearsetDetailComponent {
           equppedSkills1: it.equippedSkills1,
           equppedSkills2: it.equippedSkills2,
           level: it.level,
+          enforcedEffects: it.enforcedEffects,
+          enforcedAbilities: it.enforcedAbilities,
         }
       })
     )
@@ -219,5 +235,9 @@ export class GearsetDetailComponent {
       return this.skillBuilds.live((t) => t.get(idOrInstance))
     }
     return of(idOrInstance)
+  }
+
+  protected onEffectChange(data: Array<{ id: string; stack: number }>) {
+    this.store.updateStatusEffect(data)
   }
 }

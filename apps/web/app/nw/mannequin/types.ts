@@ -37,6 +37,14 @@ export interface MannequinState {
    */
   assignedAttributes?: Record<AttributeRef, number>
   /**
+   * Enforced status effects
+   */
+  enforcedEffects?: Array<{ id: string, stack: number }>
+  /**
+   * Enforced abilities
+   */
+  enforcedAbilities?: Array<{ id: string, stack: number }>
+  /**
    * Skill tree for the equpped weapon
    */
   equppedSkills1?: EquppedSkills
