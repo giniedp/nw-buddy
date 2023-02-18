@@ -32,7 +32,7 @@ export function selectMaxHealth(db: DbSlice, mods: ActiveMods, state: MannequinS
 
   for (const { value, scale, source } of eachModifier<number>('MaxHealthMod', mods)) {
     modifierAdd(result, {
-      value: value * healthFromLevel,
+      value: value * (healthFromLevel + healthFromConst),
       scale: scale,
       source: source,
     })
