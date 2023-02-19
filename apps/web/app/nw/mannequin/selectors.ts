@@ -4,7 +4,7 @@ import { eqCaseInsensitive } from '~/utils'
 import { AttributeRef } from '../attributes/nw-attributes'
 import { NW_MIN_GEAR_SCORE } from '../utils/constants'
 import { getAmmoTypeFromWeaponTag, getWeaponTagFromWeapon } from '../utils/damage'
-import { EquipSlotId, totalGearScore } from '../utils/equip-slot'
+import { EquipSlotId, getAverageGearScore } from '../utils/equip-slot'
 
 import {
   getArmorRatingElemental,
@@ -441,8 +441,8 @@ export function selectAttributes(db: DbSlice, mods: AttributeModsSource, state: 
   }
 }
 
-export function selectGearScore(items: EquippedItem[]) {
-  return totalGearScore(items.map((it) => ({ id: it.slot, gearScore: it.gearScore })))
+export function selectGearScore(items: EquippedItem[], level: number) {
+  return getAverageGearScore(items.map((it) => ({ id: it.slot, gearScore: it.gearScore })), level)
 }
 
 const REJECT_ABILITIES_WITH_PROPS: Array<keyof Ability> = [

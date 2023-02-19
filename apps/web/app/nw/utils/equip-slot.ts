@@ -1,3 +1,5 @@
+import { NW_MAX_CHARACTER_LEVEL } from "./constants"
+
 export type EquipSlotId =
   | 'head'
   | 'chest'
@@ -329,7 +331,45 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
   },
 ]
 
-export const NW_GS_WEIGHTS: Partial<Record<EquipSlotId, number>> = {
+interface GearScoreGroup {
+  weight: number
+  slots: GearScoreSlot[]
+}
+interface GearScoreSlot {
+  id: EquipSlotId
+  weight?: number
+  unlockLevel?: number
+}
+
+const GS_GROUPS: GearScoreGroup[] = [
+  {
+    weight: 0.35,
+    slots: [
+      { id: 'head', weight: 0.2 },
+      { id: 'chest', weight: 0.35 },
+      { id: 'hands', weight: 0.15 },
+      { id: 'legs', weight: 0.2 },
+      { id: 'feet', weight: 0.1 },
+    ]
+  },
+  {
+    weight: 0.45,
+    slots: [
+      { id: 'weapon1', unlockLevel: 0 },
+      { id: 'weapon2', unlockLevel: 5 }
+    ]
+  },
+  {
+    weight: 0.2,
+    slots: [
+      { id: 'amulet', unlockLevel: 0 },
+      { id: 'ring', unlockLevel: 20 },
+      { id: 'earring', unlockLevel: 40 }
+    ]
+  }
+]
+
+const NW_GS_WEIGHTS: Partial<Record<EquipSlotId, number>> = {
   head: 0.35 * 0.2,
   chest: 0.35 * 0.35,
   hands: 0.35 * 0.15,
@@ -351,10 +391,26 @@ export function gearScoreRelevantSlots(): Array<EquipSlot & { weight: number }> 
   }).filter((it) => !!it.weight)
 }
 
-export function totalGearScore(equip: Array<{ id: EquipSlotId; gearScore: number }>) {
+export function getAverageGearScore(equip: Array<{ id: EquipSlotId; gearScore: number }>, playerLevel = NW_MAX_CHARACTER_LEVEL) {
   let result = 0
-  for (const slot of equip) {
-    result += slot.gearScore * (NW_GS_WEIGHTS[slot.id] || 0)
+  for (let { slots, weight } of GS_GROUPS) {
+    const hasLockSlots = slots.some((it) => it.unlockLevel)
+    if (hasLockSlots) {
+      slots = slots.filter((it) => !it.unlockLevel || playerLevel >= it.unlockLevel)
+      weight = weight / slots.length
+      console.log({ weight, count: slots.length})
+    }
+    for (const slot of slots) {
+      const found = equip.find((it) => it.id === slot.id)
+      if (!found) {
+        continue
+      }
+      if (slot.weight) {
+        result += found.gearScore * weight * slot.weight
+      } else {
+        result += found.gearScore * weight
+      }
+    }
   }
   return result
 }
