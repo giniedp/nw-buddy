@@ -398,7 +398,6 @@ export function getAverageGearScore(equip: Array<{ id: EquipSlotId; gearScore: n
     if (hasLockSlots) {
       slots = slots.filter((it) => !it.unlockLevel || playerLevel >= it.unlockLevel)
       weight = weight / slots.length
-      console.log({ weight, count: slots.length})
     }
     for (const slot of slots) {
       const found = equip.find((it) => it.id === slot.id)

@@ -119,7 +119,7 @@ export function* eachModifier<T extends number | string>(
     }
     yield { value, scale, source }
   }
-  for (const { ability, perk } of eachAbility(mods)) {
+  for (const { ability, perk, scale } of eachAbility(mods)) {
     if (!ability) {
       continue
     }
@@ -130,6 +130,9 @@ export function* eachModifier<T extends number | string>(
     }
     if (perk) {
       upscale *= getPerkMultiplier(perk.perk, perk.gearScore)
+    }
+    if (scale) {
+      upscale *= scale
     }
     const source: Required<ModifierSource> = {
       icon: null,
@@ -142,7 +145,7 @@ export function* eachModifier<T extends number | string>(
     }
     yield { value, scale: upscale, source }
   }
-  for (const { ability, perk, selfEffects } of eachAbility(mods)) {
+  for (const { ability, perk, selfEffects, scale } of eachAbility(mods)) {
     if (!ability || !selfEffects?.length) {
       continue
     }
@@ -154,6 +157,9 @@ export function* eachModifier<T extends number | string>(
       }
       if (perk) {
         upscale *= getPerkMultiplier(perk.perk, perk.gearScore)
+      }
+      if (scale) {
+        upscale *= scale
       }
       const source: Required<ModifierSource> = {
         icon: null,

@@ -100,3 +100,7 @@ export function selectMaxStamina(mods: ActiveMods) {
   }
   return result
 }
+
+export function selectLeeching(mods: ActiveMods) {
+  return modifierSum('DmgPctToHealth', mods)
+}

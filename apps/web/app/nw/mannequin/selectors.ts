@@ -187,7 +187,7 @@ export function selectPerkAbilities({ abilities, effects }: DbSlice, perks: Acti
           ability: ability,
           selfEffects: ability?.SelfApplyStatusEffect?.map((id) => effects.get(id)),
           perk: activePerk,
-          // scale: getAbilityScale(ability, state),
+          scale: getAbilityScale(ability, state),
         }
       })
     })
@@ -210,7 +210,7 @@ export function selectActiveAbilities(
         ability: it,
         selfEffects: it?.SelfApplyStatusEffect?.map((id) => db.effects.get(id)),
         attribute: true,
-        // scale: getAbilityScale(it, state),
+        scale: getAbilityScale(it, state),
       }
     }),
     //
@@ -219,7 +219,7 @@ export function selectActiveAbilities(
         ability: it,
         selfEffects: it?.SelfApplyStatusEffect?.map((id) => db.effects.get(id)),
         weapon: weapon,
-        // scale: getAbilityScale(it, state),
+        scale: getAbilityScale(it, state),
       }
     }),
     //
@@ -495,7 +495,7 @@ const REJECT_ABILITIES_WITH_PROPS: Array<keyof Ability> = [
   'AbilityCooldownComparisonType',
   'RequiredEquippedAbilityId',
   'DontHaveStatusEffect',
-  'DamageTableRow',
+  // 'DamageTableRow',
   'DamageTableRowOverride',
   // 'DamageCategory',
   // 'DamageIsMelee',
@@ -512,9 +512,9 @@ const REJECT_ABILITIES_WITH_PROPS: Array<keyof Ability> = [
   'TargetStatusEffectCategory',
   'TargetStatusEffectComparison',
   'TargetStatusEffectStackSize',
-  'NumConsecutiveHits',
-  'MaxConsecutiveHits',
-  'ResetConsecutiveOnSuccess',
+  // 'NumConsecutiveHits',
+  // 'MaxConsecutiveHits',
+  // 'ResetConsecutiveOnSuccess',
   'IgnoreResetConsecutiveOnDeath',
   'LoadedAmmoCount',
   'LoadedAmmoCountComparisonType',
@@ -548,6 +548,7 @@ function isActiveAbility(ability: Ability, attack: Damagetable, state: Mannequin
       return false
     }
   }
+
   if (ability.DamageIsMelee) {
     if (!ability.OnHit) {
       return false
@@ -564,6 +565,14 @@ function isActiveAbility(ability: Ability, attack: Damagetable, state: Mannequin
       return false
     }
   }
+  if (ability.DamageTableRow?.length) {
+    if (!ability.DamageTableRow.includes(attack.DamageID)) {
+      return false
+    }
+    if (!ability.OnHit) {
+      return false
+    }
+  }
 
   // TODO: filter by equip load: Fast, Medium
   // TODO: filter by health percent
@@ -573,9 +582,19 @@ function isActiveAbility(ability: Ability, attack: Damagetable, state: Mannequin
   // TODO: filter by target.mana percent
   // TODO: filter by target.stamina percent
 
-  // if (ability.NumAroundMe && !checkBumAroundMe(ability, state)) {
-  //   return false
-  // }
+  if (ability.NumAroundMe > 0) {
+    if (!checkBumAroundMe(ability, state)) {
+      return false
+    }
+    //
+  }
+
+  if (ability.NumConsecutiveHits > 0) {
+    if (!checkNumConsecutiveHits(ability, state)) {
+      return false
+    }
+    //
+  }
 
   if (REJECT_ABILITIES_WITH_PROPS.some((key) => !!ability[key])) {
     return false
@@ -583,31 +602,40 @@ function isActiveAbility(ability: Ability, attack: Damagetable, state: Mannequin
   return true
 }
 
-// function checkBumAroundMe(ability: Ability, state: MannequinState) {
-//   const actual = state.numAroundMe
-//   const limit = ability.NumAroundMe
-//   switch (ability.NumAroundComparisonType) {
-//     case 'Equal':
-//       return actual === limit
-//     case 'GreaterThan':
-//       return actual > limit
-//     case 'GreaterThanOrEqual':
-//       return actual >= limit
-//     case 'LessThan':
-//       return actual < limit
-//     case 'LessThanOrEqual':
-//       return actual <= limit
-//   }
-//   return false
-// }
+function checkBumAroundMe(ability: Ability, state: MannequinState) {
+  const actual = state.numAroundMe
+  const limit = ability.NumAroundMe
+  switch (ability.NumAroundComparisonType) {
+    case 'Equal':
+      return actual === limit
+    case 'GreaterThan':
+      return actual > limit
+    case 'GreaterThanOrEqual':
+      return actual >= limit
+    case 'LessThan':
+      return actual < limit
+    case 'LessThanOrEqual':
+      return actual <= limit
+  }
+  return false
+}
 
-// function getAbilityScale(ability: Ability, state: MannequinState) {
-//   let scale = 1
-//   if (ability.NumAroundMe && ability.MaxNumAroundMe) {
-//     return Math.max(1, Math.min(state.numAroundMe, ability.MaxNumAroundMe))
-//   }
-//   if (ability.NumConsecutiveHits && ability.MaxConsecutiveHits) {
-//     return Math.max(1, Math.min(state.numHits, ability.MaxConsecutiveHits))
-//   }
-//   return scale
-// }
+function checkNumConsecutiveHits(ability: Ability, state: MannequinState) {
+  const actual = state.numHits
+  const limit = ability.NumConsecutiveHits
+  if (actual >= limit) {
+    return true
+  }
+  return false
+}
+
+function getAbilityScale(ability: Ability, state: MannequinState) {
+  let scale = 1
+  if (ability.NumAroundMe && ability.MaxNumAroundMe) {
+    return Math.max(1, Math.min(state.numAroundMe, ability.MaxNumAroundMe))
+  }
+  if (ability.AbilityID === 'Ultimate_Greataxe_Mauler') {
+    return Math.max(1, Math.min(state.numHits, 10)) // TODO: read from effect
+  }
+  return scale
+}

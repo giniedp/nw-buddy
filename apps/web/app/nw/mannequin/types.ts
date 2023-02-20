@@ -141,7 +141,7 @@ export interface ActiveAttribute {
 }
 
 export interface ActiveAbility {
-  // scale: number
+  scale: number
   ability: Ability
   selfEffects: Statuseffect[]
   weapon?: ActiveWeapon
