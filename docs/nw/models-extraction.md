@@ -5,13 +5,13 @@
 - Preprocess all textures
 
 For each [Material, Model] pair do
+
 - Convert model to Collada (`cgf-converter.exe`)
 - Convert model to gltf (`COLLADA2GLTF.exe`)
 - Postprocess the GLTF model
   - fix some issues with bones
   - precompute normals
   - bake material colors (may be done in shader)
-
 
 # Collect models
 
@@ -41,7 +41,7 @@ interface WeaponAppearanceOverride {
   /**
    * If ends with .cdf
    *   path to model and material files are within that .cdf file. see CDF File structure
-   * 
+   *
    * If ends with .cgf
    *   this is the model file
    *   path to material should be inside that file. see CGF File structure
@@ -55,7 +55,7 @@ interface WeaponAppearanceOverride {
 interface ItemAppearanceDefinition {
   ItemID: string
   /**
-   * Path to model file 
+   * Path to model file
    */
   Skin1: string
   /**
@@ -68,6 +68,7 @@ interface ItemAppearanceDefinition {
 # Collect Material Textures
 
 Example of a material file
+
 ```xml
 <Material MtlFlags="524544" vertModifType="0">
  <SubMaterials>
@@ -109,12 +110,12 @@ Some dds images are split into multiple files and have the ending
 If you are interested in PNG, you only need the header file and the largest mipmap
 
 ```js
-  const first = await fs.promises.readFile(headerFile)
-  const second = await fs.promises.readFile(mipFile)
-  // hack into DDS header. Set only one mipmap and cutoff header
-  first[0x1c] = 0 // set mip count
-  const header = first.slice(0, 0x94)
-  return Buffer.concat([header, second])
+const first = await fs.promises.readFile(headerFile)
+const second = await fs.promises.readFile(mipFile)
+// hack into DDS header. Set only one mipmap and cutoff header
+first[0x1c] = 0 // set mip count
+const header = first.slice(0, 0x94)
+return Buffer.concat([header, second])
 ```
 
 then use `texconv.exe` to convert to png. If that fails (usually textures including `_ddna` in the path), convert again but with `rgba` format
@@ -126,15 +127,54 @@ use https://github.com/Markemp/Cryengine-Converter to convert the models to coll
 We already have pairs of Model/Material. But the tool does not have a material option and sometimes fails to detect the material file.
 For that i have a pending patch that i wanted to submit as pull request but have not done yet. Can provide the binary though.
 
+when model is converted, the `.dae` file includes all materials and paths to all its textures.
+Absolute texture paths look like this
+
+```xml
+<init_from>/C:/path/to/texture</init_from>
+```
+
+the leading `/` is actually specified as a valid URI but `collada2gltf` converter does not recognize those. replace all absolute paths with relative
+
+```ts
+return text.replace(/<init_from>\/([^<]*\.png)<\/init_from>/gm, (match, texturePath) => {
+  const relativePath = path.relative(path.dirname(cgfFile), texturePath)
+  return `<init_from>${relativePath}<\/init_from>`
+})
+```
+
 # Convert to GLTF
 
 https://github.com/KhronosGroup/COLLADA2GLTF
 
+nothing special here, just pipe through
+
 # Postprocess GLTF Model
 
-TODO:
+Originally i did this step by loading the gltf model into a babylon.js scene and exported it again with some custom export code
+
+- http://babylonjs.com/
+- https://doc.babylonjs.com/setup/support/serverSide
+
+Works but is a bit slow. Maybe better use this project instead
+
+- https://gltf-transform.donmccurdy.com/
+
+Remove the bones from the model, since we dont work with animations (the `COLLADA2GLTF` converter somehow screw up the bones anyways...)
+
+Also remove vertex color. Not sure what they are used for but some standard shaders may use them wrongly. So we get rid of them.
+
+Precompute vertex normals. Some models have vertex normals in them but they are all `0,0,0`. Not sure if that is a side effect of previous conversions.
+
+Decide whether to embedded textures inside the gltf.json as base64 encoded files or reference them.
+Embedding is easier to work with later, though model files are larger then.
+
 
 ## Bake materials
+
+This step depends on the rendering system that will later render the model. A lot could be done in the shader but would require a custom shader implementation.
+
+So to make the model work in any 3D rendering plugin with its default shaders we actually need to tint some textures based on parameters like color mask textures and color mask values from the Appearance definitions (many items in the game share the same model but just have some coloring variations)
 
 TODO:
 
@@ -156,4 +196,3 @@ The attachments of type `CA_SKIN` point to the skin file via `Binding` attribute
 # CGF File structure
 
 Binary file. contains geometry and material file name. TODO:
-
