@@ -118,14 +118,19 @@ const header = first.slice(0, 0x94)
 return Buffer.concat([header, second])
 ```
 
-then use `texconv.exe` to convert to png. If that fails (usually textures including `_ddna` in the path), convert again but with `rgba` format
+then use `texconv.exe` to convert to png. If that fails, convert again but with `rgba` format
+
+Normal maps (`Bumpmap` or files with `_ddna`) need to be converted with following flags
+- `-inverty`
+- `-reconstructz`
+- `-f rgba`
 
 # Convert to Collada
 
 use https://github.com/Markemp/Cryengine-Converter to convert the models to collada format.
 
 We already have pairs of Model/Material. But the tool does not have a material option and sometimes fails to detect the material file.
-For that i have a pending patch that i wanted to submit as pull request but have not done yet. Can provide the binary though.
+For that i have a pending patch that i wanted to submit as pull request but have not yet done so. Can provide the binary though.
 
 when model is converted, the `.dae` file includes all materials and paths to all its textures.
 Absolute texture paths look like this
@@ -151,7 +156,7 @@ nothing special here, just pipe through
 
 # Postprocess GLTF Model
 
-Originally i did this step by loading the gltf model into a babylon.js scene and exported it again with some custom export code
+Originally I did this step by loading the GLTF model into a Babylon.js scene and exporting it again with some custom export code.
 
 - http://babylonjs.com/
 - https://doc.babylonjs.com/setup/support/serverSide
@@ -160,21 +165,21 @@ Works but is a bit slow. Maybe better use this project instead
 
 - https://gltf-transform.donmccurdy.com/
 
-Remove the bones from the model, since we dont work with animations (the `COLLADA2GLTF` converter somehow screw up the bones anyways...)
+Remove the bones from the model, since we are not working with animation (the `COLLADA2GLTF` converter somehow messes up the bones anyway...).
 
-Also remove vertex color. Not sure what they are used for but some standard shaders may use them wrongly. So we get rid of them.
+Also remove the vertex color. Not sure what they are used for, but some standard shaders may use them incorrectly. So we get rid of them.
 
-Precompute vertex normals. Some models have vertex normals in them but they are all `0,0,0`. Not sure if that is a side effect of previous conversions.
+Precompute vertex normals. Some models have vertex normals, but they are all `0,0,0`. Not sure if this is a side effect of previous conversions.
 
-Decide whether to embedded textures inside the gltf.json as base64 encoded files or reference them.
-Embedding is easier to work with later, though model files are larger then.
+Decide if you want to embed textures as base64 encoded files in gltf.json or reference them.
+Embedding is easier to work with later, although the model files will be larger.
 
 
 ## Bake materials
 
-This step depends on the rendering system that will later render the model. A lot could be done in the shader but would require a custom shader implementation.
+This step depends on the rendering system that will render the model later. A lot could be done in the shader, but it would require a custom shader implementation.
 
-So to make the model work in any 3D rendering plugin with its default shaders we actually need to tint some textures based on parameters like color mask textures and color mask values from the Appearance definitions (many items in the game share the same model but just have some coloring variations)
+So to make the model work in any 3D rendering plugin with its default shaders, we actually need to tint some textures based on parameters like color mask textures and color mask values from the appearance definitions (many items in the game have the same model, but just different coloring variations).
 
 TODO:
 
