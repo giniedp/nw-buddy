@@ -43,6 +43,13 @@ module.exports = (config, options) => {
       use: ['file-loader'],
     }
   )
+
+	// config.entry['editor.worker'] = 'monaco-editor/esm/vs/editor/editor.worker.js'
+	// config.entry['json.worker'] = 'monaco-editor/esm/vs/language/json/json.worker'
+	// config.entry['css.worker'] = 'monaco-editor/esm/vs/language/css/css.worker'
+	// config.entry['html.worker'] = 'monaco-editor/esm/vs/language/html/html.worker'
+	// config.entry['ts.worker'] = 'monaco-editor/esm/vs/language/typescript/ts.worker'
+
   config.plugins = [
     ...config.plugins,
     new NodePolyfillPlugin({
@@ -50,7 +57,7 @@ module.exports = (config, options) => {
     }),
     new webpack.DefinePlugin(definitions),
     new MonacoWebpackPlugin({
-      languages: ['json']
+      languages: ['json', 'typescript', 'javascript']
     }),
   ]
   return config

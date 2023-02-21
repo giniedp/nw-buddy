@@ -35,6 +35,18 @@
     </a>
   </li>
 
+  <li *ngIf="hasScriptFilterTemplate">
+    <a class="flex flex-row" (click)="openFilterCode()">
+      <div class="flex-none flex items-center justify-center p-2">
+        <nwb-icon [icon]="svgFileCode" class="w-5 h-5"></nwb-icon>
+      </div>
+      <div class="flex-1 normal-case">
+        <h3 class="font-bold">Custom Filter</h3>
+        <div class="text-xs">Opens an editor to script a custom filter function</div>
+      </div>
+    </a>
+  </li>
+
   <li>
     <a class="flex flex-row" (click)="openCode()">
       <div class="flex-none flex items-center justify-center p-2">

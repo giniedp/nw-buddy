@@ -9,7 +9,8 @@ import {
 } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import type * as monaco from 'monaco-editor'
-function loadLibrary() {
+
+async function loadLibrary() {
   return import('monaco-editor')
 }
 
@@ -21,20 +22,20 @@ function loadLibrary() {
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      multi:true,
-      useExisting: CodeEditorComponent
-    }
+      multi: true,
+      useExisting: CodeEditorComponent,
+    },
   ],
   host: {
-    class: 'block'
-  }
+    class: 'block',
+  },
 })
 export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDestroy {
   @Input()
   public language: string = 'typescript'
 
   @Input()
-  public readonly = false
+  public readonly: boolean = false
 
   protected onChange = (value: unknown) => {}
   protected onTouched = () => {}
@@ -53,7 +54,7 @@ export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDest
       value: this.value,
       language: this.language,
       readOnly: this.readonly,
-      theme: 'vs-dark'
+      theme: 'vs-dark',
     })
     this.editor.onDidBlurEditorWidget(() => {
       this.commitValue()
@@ -78,10 +79,10 @@ export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDest
     this.onTouched = fn
   }
   public setDisabledState(isDisabled: boolean): void {
-    this.readonly = !isDisabled
+    this.readonly = isDisabled
     if (this.editor) {
       this.editor.updateOptions({
-        readOnly: !isDisabled,
+        readOnly: isDisabled,
       })
     }
   }

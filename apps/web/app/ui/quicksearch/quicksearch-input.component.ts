@@ -51,12 +51,12 @@ export class QuicksearchInputComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     this.keys.addShortcut({
-      keys: '/'
+      keys: 'control./'
     }).pipe(takeUntil(this.destroy$)).subscribe(()  => {
       this.input.nativeElement.focus()
     })
     this.keys.addShortcut({
-      keys: ':'
+      keys: 'control.:'
     }).pipe(takeUntil(this.destroy$)).subscribe(()  => {
       this.input.nativeElement.focus()
     })

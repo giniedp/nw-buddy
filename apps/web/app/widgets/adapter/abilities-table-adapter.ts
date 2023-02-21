@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { Ability } from '@nw-data/types'
+import { Ability, Statuseffect } from '@nw-data/types'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { sortBy } from 'lodash'
 import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
@@ -12,10 +12,44 @@ import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/dat
 import { humanize, shareReplayRefCount } from '~/utils'
 import { NwExpressionService } from '~/nw/expression'
 import { NW_FALLBACK_ICON, NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE, NW_MAX_GEAR_SCORE_UPGRADABLE } from '~/nw/utils/constants'
+import { executeTypescript } from '~/ui/code-editor'
 
 export type AbilityTableItem = Ability & {
   $weaponType: NwWeaponType
+  $selfApplyStatusEffect: Statuseffect[]
+  $otherApplyStatusEffect: Statuseffect
 }
+
+const SCRIPT_FILTER_TEMPLATE = `
+/**
+ * This is a typescript function that you can use to implement a custom result filter.
+ *
+ * Do not change the function signature
+ */
+export default async function(list: AbilityItem[]) {
+  list = list.filter((item) => {
+    // custom code goes here
+    //
+    // e.g. all abilities that apply a status effect of a specific category
+    // return item.$otherApplyStatusEffect?.EffectCategories?.includes('CC')
+
+    return true
+  })
+
+  return list
+}
+
+//
+//
+//
+
+export type AbilityItem = Ability & {
+  $selfApplyStatusEffect: Statuseffect[]
+  $otherApplyStatusEffect: Statuseffect
+}
+
+${require('!!raw-loader!../../../nw-data/types.ts').default}
+`.trimStart()
 
 @Injectable()
 export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
@@ -24,6 +58,8 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
       adapter: AbilitiesTableAdapter,
     })
   }
+
+  public override scriptFilterTemplate: string = SCRIPT_FILTER_TEMPLATE
 
   public entityID(item: AbilityTableItem): string {
     return item.AbilityID
@@ -163,18 +199,27 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
   public entities: Observable<AbilityTableItem[]> = defer(() =>
     combineLatest({
       abilities: this.db.abilities,
+      effects: this.db.statusEffectsMap,
       weaponTypes: this.weaponTypes.byTag$,
+      script: this.scriptFilter$
     })
   )
     .pipe(
-      map(({ abilities, weaponTypes }) => {
-        return abilities
+      switchMap(async ({ abilities, effects, weaponTypes, script }) => {
+        const result = abilities
           .map((it): AbilityTableItem => {
             return {
               ...it,
               $weaponType: weaponTypes.get(it.WeaponTag),
+              $selfApplyStatusEffect: it.SelfApplyStatusEffect?.map((id) => effects.get(id)),
+              $otherApplyStatusEffect: effects.get(it.OtherApplyStatusEffect)
             }
           })
+
+        return this.filterWithScript(result, script).catch((err) => {
+          console.error(err)
+          return result
+        })
       })
     )
     .pipe(map((list) => sortBy(list, (it) => (!!it.WeaponTag && !!it.DisplayName && !!it.Description) ? -1 : 1)))
@@ -188,6 +233,14 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
     private info: NwLinkService
   ) {
     super()
+  }
+
+  private async filterWithScript(items: AbilityTableItem[], script: string): Promise<AbilityTableItem[]> {
+    if (!script) {
+      return items
+    }
+    const fn: Function = (await executeTypescript(script))['default']
+    return fn(items)
   }
 }
 

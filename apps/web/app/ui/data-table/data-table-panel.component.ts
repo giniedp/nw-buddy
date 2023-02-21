@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { Column, ColumnState } from 'ag-grid-community'
 import { AgGridCommon } from 'ag-grid-community/dist/lib/interfaces/iCommon'
-import { BehaviorSubject, combineLatest, defer, filter, firstValueFrom, map, switchMap } from 'rxjs'
+import { BehaviorSubject, combineLatest, defer, filter, firstValueFrom, map, switchMap, take } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
 import { IconsModule } from '../icons'
 import {
@@ -14,6 +14,7 @@ import {
   svgEraser,
   svgEye,
   svgEyeSlash,
+  svgFileCode,
   svgFileCsv,
   svgFilter,
 } from '../icons/svg'
@@ -21,6 +22,7 @@ import { EditorDialogComponent } from '../layout'
 import { DataTableAdapter } from './data-table-adapter'
 import { TooltipModule } from '~/ui/tooltip'
 import { QuicksearchModule, QuicksearchService } from '../quicksearch'
+import { executeTypescript, transpileTypescript } from '../code-editor'
 
 @Component({
   standalone: true,
@@ -71,6 +73,10 @@ export class DataTablePanelComponent {
   )
   private colState = new BehaviorSubject<ColumnState[]>([])
 
+  protected get hasScriptFilterTemplate() {
+    return this.adapter.scriptFilterTemplate
+  }
+
   protected svgEye = svgEye
   protected svgEyeSlash = svgEyeSlash
   protected svgDockLeft = svgDockLeft
@@ -80,6 +86,7 @@ export class DataTablePanelComponent {
   protected svgEraser = svgEraser
   protected svgFilter = svgFilter
   protected svgCode = svgCode
+  protected svgFileCode = svgFileCode
 
   public constructor(private adapter: DataTableAdapter<any>, private dialog: Dialog, private qs: QuicksearchService) {
     //
@@ -112,6 +119,7 @@ export class DataTablePanelComponent {
   protected async resetFilter() {
     const grid = await firstValueFrom(this.adapter.grid)
     grid?.api.setFilterModel({})
+    this.adapter.scriptFilter = null
   }
 
   protected toggleHide(id: string) {
@@ -159,6 +167,25 @@ export class DataTablePanelComponent {
         positive: 'Close',
       },
     })
+  }
+
+  protected async openFilterCode() {
+    EditorDialogComponent.open(this.dialog, {
+      disableClose: true,
+      data: {
+        title: 'Custom Filter Script',
+        value: this.adapter.scriptFilter || this.adapter.scriptFilterTemplate,
+        readonly: false,
+        language: 'typescript',
+        positive: 'Close',
+      },
+    }).closed
+      .pipe(take(1))
+      .pipe(filter((it) =>  !!it))
+      .subscribe((result) => {
+        this.adapter.scriptFilter = result
+        executeTypescript(result)
+      })
   }
 
   private async submitState(state: ColumnState[]) {
