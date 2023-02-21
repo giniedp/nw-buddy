@@ -61,7 +61,7 @@ export class Mannequin extends ComponentStore<MannequinState> {
   public readonly myStaminaPercent$ = this.select(({ myStaminaPercent }) => myStaminaPercent)
   public readonly numAroundMe$ = this.select(({ numAroundMe }) => numAroundMe)
   public readonly numHits$ = this.select(({ numHits }) => numHits)
-  public readonly gearScore$ = this.select(({ equippedItems }) => selectGearScore(equippedItems))
+  public readonly gearScore$ = this.select(({ equippedItems, level }) => selectGearScore(equippedItems, level))
   public readonly equippedItems$ = this.select(({ equippedItems }) => equippedItems)
 
   public readonly equippedArmor$ = this.select(this.db$, this.state$, selectEquppedArmor)

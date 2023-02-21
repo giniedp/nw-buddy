@@ -7,6 +7,9 @@ import { combineLatest, firstValueFrom, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { damageTypeIcon, NW_WEAPON_TYPES } from '~/nw/weapon-types'
+import { IconsModule } from '~/ui/icons'
+import { svgBurst, svgPeopleGroup } from '~/ui/icons/svg'
+import { TooltipModule } from '~/ui/tooltip'
 import { humanize, mapFilter, mapProp } from '~/utils'
 
 @Component({
@@ -14,7 +17,7 @@ import { humanize, mapFilter, mapProp } from '~/utils'
   selector: 'nwb-active-weapon',
   templateUrl: './active-weapon.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, CdkMenuModule, FormsModule],
+  imports: [CommonModule, NwModule, CdkMenuModule, FormsModule, IconsModule, TooltipModule],
   host: {
     class: 'layout-content',
   },
@@ -114,6 +117,8 @@ export class ActiveWeaponComponent {
     attackOptions: this.mannequin.activeWeaponAttacks$.pipe(mapFilter((it) => it.AttackType !== 'Ability')),
     attackSelection: this.mannequin.activeDamageTableRow$,
     attackName: this.mannequin.activeDamageTableRow$.pipe(map((it) => humanize(it?.DamageID))),
+    numAroundMe: this.mannequin.numAroundMe$,
+    numHits: this.mannequin.numHits$,
     DmgMain: combineLatest({
       base: this.dmgMain$,
       standard: this.dmgMain1$,
@@ -126,6 +131,9 @@ export class ActiveWeaponComponent {
     }).pipe(map((it) => it.base?.value ? it : null))
   })
 
+
+  protected iconGroup = svgPeopleGroup
+  protected iconBurst = svgBurst
 
   public constructor(private mannequin: Mannequin, private db: NwDbService) {
     //
@@ -149,6 +157,18 @@ export class ActiveWeaponComponent {
     const state = await firstValueFrom(this.mannequin.state$)
     this.mannequin.patchState({
       selectedAttack: row?.DamageID
+    })
+  }
+
+  protected async commitNumAroundMe(value: number) {
+    this.mannequin.patchState({
+      numAroundMe: value
+    })
+  }
+
+  protected async commitNumHits(value: number) {
+    this.mannequin.patchState({
+      numHits: value
     })
   }
 

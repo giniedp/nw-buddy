@@ -3,7 +3,7 @@ import { ComponentStore } from '@ngrx/component-store'
 import { ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
 import { combineLatest, defer, map, Subject, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw/nw-db.service'
-import { EquipSlot, EQUIP_SLOTS, getItemPerkInfos, getItemRarity, totalGearScore } from '~/nw/utils'
+import { EquipSlot, EQUIP_SLOTS, getItemPerkInfos, getItemRarity, getAverageGearScore } from '~/nw/utils'
 
 import { GearsetRecord, GearsetsDB } from './gearsets.db'
 import { ItemInstance, ItemInstancesDB } from './item-instances.db'
@@ -149,7 +149,7 @@ export class GearsetsStore extends ComponentStore<GearsetsState> {
         return m
       }, {}),
     }
-    result.gearScore = totalGearScore(Object.values(result.slots).map((it) => ({ id: it.slot.id, gearScore: it.instance?.gearScore || 0 })))
+    result.gearScore = getAverageGearScore(Object.values(result.slots).map((it) => ({ id: it.slot.id, gearScore: it.instance?.gearScore || 0 })))
     result.gearScore = Math.round(result.gearScore)
     return result
   }
