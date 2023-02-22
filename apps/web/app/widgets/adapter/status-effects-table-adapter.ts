@@ -166,6 +166,7 @@ function appendFields(options: GridOptions, fields: string[][]) {
 }
 
 const EFFECT_FIELDS: Record<keyof Statuseffect, string> = {
+  AllowAddIfDead: 'boolean',
   ABABleed: 'number',
   ABABlight: 'number',
   ABACurse: 'number',
