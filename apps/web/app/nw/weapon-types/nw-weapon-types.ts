@@ -243,6 +243,8 @@ export const NW_DAMAGE_TYPE_ICONS = new CaseInsensitiveMap(
     AngryEarth: 'assets/icons/families/angryearthbane1.png',
     Lost: 'assets/icons/families/lostbane1.png',
     Beast: 'assets/icons/families/bestialbane1.png',
+    Human: 'assets/icons/families/humanbane1.png',
+    Varangian: 'assets/icons/families/humanbane1.png',
   })
 )
 
@@ -253,6 +255,8 @@ export const NW_WARD_TYPE_ICONS = new CaseInsensitiveMap(
     AngryEarth: 'assets/icons/families/angryearthward1.png',
     Lost: 'assets/icons/families/lostward1.png',
     Bestial: 'assets/icons/families/bestialward1.png',
+    Human: 'assets/icons/families/humanward1.png',
+    Varangian: 'assets/icons/families/humanward1.png',
   })
 )
 

@@ -78,6 +78,22 @@ const VITAL_FAMILIES = {
     Img: '',
     Name: 'Fae',
   } as VitalFamilyInfo,
+  human: {
+    ID: 'Human',
+    Icon: 'assets/icons/families/humanbane1.png',
+    IconBane: 'assets/icons/families/humanbane1.png',
+    IconWard: 'assets/icons/families/humanward1.png',
+    Img: 'assets/images/missionimage_human2.png',
+    Name: 'VC_Human',
+  } as VitalFamilyInfo,
+  varangian: {
+    ID: 'Varangian',
+    Icon: 'assets/icons/families/humanbane1.png',
+    IconBane: 'assets/icons/families/humanbane1.png',
+    IconWard: 'assets/icons/families/humanward1.png',
+    Img: 'assets/images/missionimage_human2.png',
+    Name: 'VC_Human',
+  } as VitalFamilyInfo,
   unknown: {
     ID: null,
     Icon: 'assets/icons/families/marker_icondeathdoor.png',
@@ -94,6 +110,8 @@ const VITAL_CATEGORIES = {
   ancient: VITAL_FAMILIES.ancientguardian,
   corrupted: VITAL_FAMILIES.corrupted,
   angryearth: VITAL_FAMILIES.angryearth,
+  human: VITAL_FAMILIES.human,
+  varangian: VITAL_FAMILIES.varangian,
 } as const
 const VITAL_CATEGORIES_KEYS = Object.keys(VITAL_CATEGORIES)
 

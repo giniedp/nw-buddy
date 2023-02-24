@@ -106,6 +106,10 @@ function preprocessExpression(text: string) {
     //  Filled with dread for {[Type_StatusEffectData.Mut_Lig_Stacks_1_Effect.BaseDuration]} seconds. At {[Type_StatusEffectData.Mut_Voi_Stacks_1_Effect.AddOnStackSize]} stacks, causes a void burst to appear at your location.
     text = text.replace('Mut_Lig_Stacks', 'Mut_Voi_Stacks')
   }
+
+  if (text.includes('Type_StatusEffectDataAI_Evil_Knight_Fire_Champion_DangerTick')) {
+    text = text.replace('Type_StatusEffectDataAI_Evil_Knight_Fire_Champion_DangerTick', 'Type_StatusEffectData.AI_Evil_Knight_Fire_Champion_DangerTick')
+  }
   return text
 }
 
