@@ -72,7 +72,6 @@ import type {
   Weaponmastery,
   Xpamountsbylevel,
   Arenadefinitions,
-  StaminacostsAncientguardian,
   Cursemutations,
   Elementalmutationperks,
   Elementalmutations,
@@ -155,6 +154,9 @@ export abstract class NwDataLoader {
   public itemdefinitionsMasterQuest() {
     return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_quest.json')
   }
+  public itemdefinitionsMasterSeasons() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_seasons.json')
+  }
   public itemdefinitionsMasterSkins() {
     return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_skins.json')
   }
@@ -233,6 +235,12 @@ export abstract class NwDataLoader {
   public charactertablesAncientguardianDatatablesDamagetableAncientguardianheavyboss() {
     return this.load<Damagetable[]>('charactertables/ancientguardian_datatables/javelindata_damagetable_ancientguardianheavyboss.json')
   }
+  public charactertablesAnubianscarabDatatablesDamagetableAnubianlotusscarab() {
+    return this.load<Damagetable[]>('charactertables/anubianscarab_datatables/javelindata_damagetable_anubianlotusscarab.json')
+  }
+  public charactertablesAnubianscarabDatatablesDamagetableAnubianscarab() {
+    return this.load<Damagetable[]>('charactertables/anubianscarab_datatables/javelindata_damagetable_anubianscarab.json')
+  }
   public charactertablesAnubianguardianDatatablesDamagetableAnubianguardianBrute() {
     return this.load<Damagetable[]>('charactertables/anubianguardian_datatables/javelindata_damagetable_anubianguardian_brute.json')
   }
@@ -244,12 +252,6 @@ export abstract class NwDataLoader {
   }
   public charactertablesAnubianguardianDatatablesDamagetableGoliathhorusboss() {
     return this.load<Damagetable[]>('charactertables/anubianguardian_datatables/javelindata_damagetable_goliathhorusboss.json')
-  }
-  public charactertablesAnubianscarabDatatablesDamagetableAnubianlotusscarab() {
-    return this.load<Damagetable[]>('charactertables/anubianscarab_datatables/javelindata_damagetable_anubianlotusscarab.json')
-  }
-  public charactertablesAnubianscarabDatatablesDamagetableAnubianscarab() {
-    return this.load<Damagetable[]>('charactertables/anubianscarab_datatables/javelindata_damagetable_anubianscarab.json')
   }
   public charactertablesBearDatatablesDamagetableBear() {
     return this.load<Damagetable[]>('charactertables/bear_datatables/javelindata_damagetable_bear.json')
@@ -269,23 +271,20 @@ export abstract class NwDataLoader {
   public charactertablesBearDatatablesDamagetableBearThorpeMinion() {
     return this.load<Damagetable[]>('charactertables/bear_datatables/javelindata_damagetable_bear_thorpe_minion.json')
   }
+  public charactertablesBogmonsterDatatablesDamagetableBogmonster() {
+    return this.load<Damagetable[]>('charactertables/bogmonster_datatables/javelindata_damagetable_bogmonster.json')
+  }
   public charactertablesBisonDatatablesDamagetableBison() {
     return this.load<Damagetable[]>('charactertables/bison_datatables/javelindata_damagetable_bison.json')
   }
   public charactertablesBisonDatatablesDamagetableBisonStrange() {
     return this.load<Damagetable[]>('charactertables/bison_datatables/javelindata_damagetable_bison_strange.json')
   }
-  public charactertablesArmoredDragonDamagetableArmoreddragon() {
-    return this.load<Damagetable[]>('charactertables/armored_dragon/javelindata_damagetable_armoreddragon.json')
-  }
   public charactertablesBomberDatatablesDamagetableBloatedCorpse() {
     return this.load<Damagetable[]>('charactertables/bomber_datatables/javelindata_damagetable_bloated_corpse.json')
   }
   public charactertablesBomberDatatablesDamagetableInvasionBomber() {
     return this.load<Damagetable[]>('charactertables/bomber_datatables/javelindata_damagetable_invasion_bomber.json')
-  }
-  public charactertablesBogmonsterDatatablesDamagetableBogmonster() {
-    return this.load<Damagetable[]>('charactertables/bogmonster_datatables/javelindata_damagetable_bogmonster.json')
   }
   public charactertablesBossDatatablesDamagetableBoss() {
     return this.load<Damagetable[]>('charactertables/boss_datatables/javelindata_damagetable_boss.json')
@@ -326,14 +325,23 @@ export abstract class NwDataLoader {
   public charactertablesBrokenDatatablesDamagetableBrokenvillagerSickle() {
     return this.load<Damagetable[]>('charactertables/broken_datatables/javelindata_damagetable_brokenvillager_sickle.json')
   }
+  public charactertablesBrotherUmbertoDatatablesDamagetableBrotherUmberto() {
+    return this.load<Damagetable[]>('charactertables/brother_umberto_datatables/javelindata_damagetable_brother_umberto.json')
+  }
   public charactertablesBruteDatatablesDamagetableBrute() {
     return this.load<Damagetable[]>('charactertables/brute_datatables/javelindata_damagetable_brute.json')
   }
   public charactertablesBruteDatatablesDamagetableBruteYeti() {
     return this.load<Damagetable[]>('charactertables/brute_datatables/javelindata_damagetable_brute_yeti.json')
   }
+  public charactertablesBruteDatatablesDamagetableFulgoris() {
+    return this.load<Damagetable[]>('charactertables/brute_datatables/javelindata_damagetable_fulgoris.json')
+  }
   public charactertablesBruteDatatablesDamagetableSwampbeast() {
     return this.load<Damagetable[]>('charactertables/brute_datatables/javelindata_damagetable_swampbeast.json')
+  }
+  public charactertablesCommanderlothDatatablesDamagetableCommanderloth() {
+    return this.load<Damagetable[]>('charactertables/commanderloth_datatables/javelindata_damagetable_commanderloth.json')
   }
   public charactertablesCorruptionheavyDatatablesDamagetableCorruptionHeavy() {
     return this.load<Damagetable[]>('charactertables/corruptionheavy_datatables/javelindata_damagetable_corruption_heavy.json')
@@ -374,15 +382,6 @@ export abstract class NwDataLoader {
   public charactertablesDryadDatatablesDamagetableDryadSiren() {
     return this.load<Damagetable[]>('charactertables/dryad_datatables/javelindata_damagetable_dryad_siren.json')
   }
-  public charactertablesDunephantomDatatablesDamagetableDunephantomBerserker() {
-    return this.load<Damagetable[]>('charactertables/dunephantom_datatables/javelindata_damagetable_dunephantom_berserker.json')
-  }
-  public charactertablesDunephantomDatatablesDamagetableDunephantomHuntress() {
-    return this.load<Damagetable[]>('charactertables/dunephantom_datatables/javelindata_damagetable_dunephantom_huntress.json')
-  }
-  public charactertablesDunephantomDatatablesDamagetableDunephantomTank() {
-    return this.load<Damagetable[]>('charactertables/dunephantom_datatables/javelindata_damagetable_dunephantom_tank.json')
-  }
   public charactertablesDynastyDatatablesDamagetableDynastyMusketeer() {
     return this.load<Damagetable[]>('charactertables/dynasty_datatables/javelindata_damagetable_dynasty_musketeer.json')
   }
@@ -395,11 +394,14 @@ export abstract class NwDataLoader {
   public charactertablesDynastyDatatablesDamagetableDynastyWarrior() {
     return this.load<Damagetable[]>('charactertables/dynasty_datatables/javelindata_damagetable_dynasty_warrior.json')
   }
-  public charactertablesElkDatatablesDamagetableElkCorrupted() {
-    return this.load<Damagetable[]>('charactertables/elk_datatables/javelindata_damagetable_elk_corrupted.json')
+  public charactertablesDunephantomDatatablesDamagetableDunephantomBerserker() {
+    return this.load<Damagetable[]>('charactertables/dunephantom_datatables/javelindata_damagetable_dunephantom_berserker.json')
   }
-  public charactertablesElkDatatablesDamagetableElkSpringstag() {
-    return this.load<Damagetable[]>('charactertables/elk_datatables/javelindata_damagetable_elk_springstag.json')
+  public charactertablesDunephantomDatatablesDamagetableDunephantomHuntress() {
+    return this.load<Damagetable[]>('charactertables/dunephantom_datatables/javelindata_damagetable_dunephantom_huntress.json')
+  }
+  public charactertablesDunephantomDatatablesDamagetableDunephantomTank() {
+    return this.load<Damagetable[]>('charactertables/dunephantom_datatables/javelindata_damagetable_dunephantom_tank.json')
   }
   public charactertablesEliteaffixDatatablesDamagetableEliteAffix() {
     return this.load<Damagetable[]>('charactertables/eliteaffix_datatables/javelindata_damagetable_elite_affix.json')
@@ -412,6 +414,66 @@ export abstract class NwDataLoader {
   }
   public charactertablesEmpressDatatablesDamagetablePedestal() {
     return this.load<Damagetable[]>('charactertables/empress_datatables/javelindata_damagetable_pedestal.json')
+  }
+  public charactertablesElkDatatablesDamagetableElkCorrupted() {
+    return this.load<Damagetable[]>('charactertables/elk_datatables/javelindata_damagetable_elk_corrupted.json')
+  }
+  public charactertablesElkDatatablesDamagetableElkSpringstag() {
+    return this.load<Damagetable[]>('charactertables/elk_datatables/javelindata_damagetable_elk_springstag.json')
+  }
+  public charactertablesGhastlyDatatablesDamagetableGhastlyVillagerShovel() {
+    return this.load<Damagetable[]>('charactertables/ghastly_datatables/javelindata_damagetable_ghastly_villager_shovel.json')
+  }
+  public charactertablesGruntDatatablesDamagetableFlamegrunt() {
+    return this.load<Damagetable[]>('charactertables/grunt_datatables/javelindata_damagetable_flamegrunt.json')
+  }
+  public charactertablesGruntDatatablesDamagetableGrunt() {
+    return this.load<Damagetable[]>('charactertables/grunt_datatables/javelindata_damagetable_grunt.json')
+  }
+  public charactertablesHumanDatatablesDamagetableEvilKnightFlamekeeper() {
+    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_evil_knight_flamekeeper.json')
+  }
+  public charactertablesHumanDatatablesDamagetableEvilKnightGruntmaster() {
+    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_evil_knight_gruntmaster.json')
+  }
+  public charactertablesHumanDatatablesDamagetableHumanBlunderbuss() {
+    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_blunderbuss.json')
+  }
+  public charactertablesHumanDatatablesDamagetableHumanBow() {
+    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_bow.json')
+  }
+  public charactertablesHumanDatatablesDamagetableHumanFirechampion() {
+    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_firechampion.json')
+  }
+  public charactertablesHumanDatatablesDamagetableHumanGreataxe() {
+    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_greataxe.json')
+  }
+  public charactertablesHumanDatatablesDamagetableHumanHeavy() {
+    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_heavy.json')
+  }
+  public charactertablesHumanDatatablesDamagetableHumanLifestaff() {
+    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_lifestaff.json')
+  }
+  public charactertablesHumanDatatablesDamagetableHumanMace() {
+    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_mace.json')
+  }
+  public charactertablesHumanDatatablesDamagetableHumanRapier() {
+    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_rapier.json')
+  }
+  public charactertablesHumanDatatablesDamagetableHumanSpear() {
+    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_spear.json')
+  }
+  public charactertablesHumanDatatablesDamagetableHumanSpellcaster() {
+    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_spellcaster.json')
+  }
+  public charactertablesHumanDatatablesDamagetableHumanSword() {
+    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_sword.json')
+  }
+  public charactertablesHumanDatatablesDamagetableHumanVoidgauntlet() {
+    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_voidgauntlet.json')
+  }
+  public charactertablesHumanDatatablesDamagetableHumanWarhammer() {
+    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_warhammer.json')
   }
   public charactertablesGhostDatatablesDamagetableGhost() {
     return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_ghost.json')
@@ -434,33 +496,6 @@ export abstract class NwDataLoader {
   public charactertablesGhostDatatablesDamagetableOrGhostBoss() {
     return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_or_ghost_boss.json')
   }
-  public charactertablesGruntDatatablesDamagetableGrunt() {
-    return this.load<Damagetable[]>('charactertables/grunt_datatables/javelindata_damagetable_grunt.json')
-  }
-  public charactertablesHumanDatatablesDamagetableHumanBow() {
-    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_bow.json')
-  }
-  public charactertablesHumanDatatablesDamagetableHumanGreataxe() {
-    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_greataxe.json')
-  }
-  public charactertablesHumanDatatablesDamagetableHumanMace() {
-    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_mace.json')
-  }
-  public charactertablesHumanDatatablesDamagetableHumanRapier() {
-    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_rapier.json')
-  }
-  public charactertablesHumanDatatablesDamagetableHumanSpear() {
-    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_spear.json')
-  }
-  public charactertablesHumanDatatablesDamagetableHumanSpellcaster() {
-    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_spellcaster.json')
-  }
-  public charactertablesHumanDatatablesDamagetableHumanSword() {
-    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_sword.json')
-  }
-  public charactertablesHumanDatatablesDamagetableHumanWarhammer() {
-    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_warhammer.json')
-  }
   public charactertablesIcedryadDatatablesDamagetableIcedryadFiendShivers() {
     return this.load<Damagetable[]>('charactertables/icedryad_datatables/javelindata_damagetable_icedryad_fiend_shivers.json')
   }
@@ -473,12 +508,6 @@ export abstract class NwDataLoader {
   public charactertablesIcedryadDatatablesDamagetableIcedryadFrostgrip() {
     return this.load<Damagetable[]>('charactertables/icedryad_datatables/javelindata_damagetable_icedryad_frostgrip.json')
   }
-  public charactertablesInvasionDatatablesDamagetableInvasionPriest() {
-    return this.load<Damagetable[]>('charactertables/invasion_datatables/javelindata_damagetable_invasion_priest.json')
-  }
-  public charactertablesInvasionDatatablesDamagetableSprigganInvasion() {
-    return this.load<Damagetable[]>('charactertables/invasion_datatables/javelindata_damagetable_spriggan_invasion.json')
-  }
   public charactertablesIsabellaDatatablesDamagetableIsabellaDynastyshipyard() {
     return this.load<Damagetable[]>('charactertables/isabella_datatables/javelindata_damagetable_isabella_dynastyshipyard.json')
   }
@@ -487,6 +516,12 @@ export abstract class NwDataLoader {
   }
   public charactertablesIsabellaDatatablesDamagetableIsabellaLairPhase2() {
     return this.load<Damagetable[]>('charactertables/isabella_datatables/javelindata_damagetable_isabella_lair_phase2.json')
+  }
+  public charactertablesInvasionDatatablesDamagetableInvasionPriest() {
+    return this.load<Damagetable[]>('charactertables/invasion_datatables/javelindata_damagetable_invasion_priest.json')
+  }
+  public charactertablesInvasionDatatablesDamagetableSprigganInvasion() {
+    return this.load<Damagetable[]>('charactertables/invasion_datatables/javelindata_damagetable_spriggan_invasion.json')
   }
   public charactertablesLegionDatatablesDamagetableCorruptedlegionCyclops() {
     return this.load<Damagetable[]>('charactertables/legion_datatables/javelindata_damagetable_corruptedlegion_cyclops.json')
@@ -539,12 +574,6 @@ export abstract class NwDataLoader {
   public charactertablesLostsirenDatatablesDamagetableLostSiren() {
     return this.load<Damagetable[]>('charactertables/lostsiren_datatables/javelindata_damagetable_lost_siren.json')
   }
-  public charactertablesOgreDatatablesDamagetableCorruptedOgre() {
-    return this.load<Damagetable[]>('charactertables/ogre_datatables/javelindata_damagetable_corrupted_ogre.json')
-  }
-  public charactertablesOgreDatatablesDamagetableCorruptedOgreMinion() {
-    return this.load<Damagetable[]>('charactertables/ogre_datatables/javelindata_damagetable_corrupted_ogre_minion.json')
-  }
   public charactertablesNagaDatatablesDamagetableNaga() {
     return this.load<Damagetable[]>('charactertables/naga_datatables/javelindata_damagetable_naga.json')
   }
@@ -557,8 +586,17 @@ export abstract class NwDataLoader {
   public charactertablesNagaDatatablesDamagetableNagaCorrupted() {
     return this.load<Damagetable[]>('charactertables/naga_datatables/javelindata_damagetable_naga_corrupted.json')
   }
+  public charactertablesNagaDatatablesDamagetableNagaFire() {
+    return this.load<Damagetable[]>('charactertables/naga_datatables/javelindata_damagetable_naga_fire.json')
+  }
   public charactertablesNagaDatatablesDamagetableNagaWithered() {
     return this.load<Damagetable[]>('charactertables/naga_datatables/javelindata_damagetable_naga_withered.json')
+  }
+  public charactertablesOgreDatatablesDamagetableCorruptedOgre() {
+    return this.load<Damagetable[]>('charactertables/ogre_datatables/javelindata_damagetable_corrupted_ogre.json')
+  }
+  public charactertablesOgreDatatablesDamagetableCorruptedOgreMinion() {
+    return this.load<Damagetable[]>('charactertables/ogre_datatables/javelindata_damagetable_corrupted_ogre_minion.json')
   }
   public charactertablesQuestnpcDatatablesDamagetableImhotep() {
     return this.load<Damagetable[]>('charactertables/questnpc_datatables/javelindata_damagetable_imhotep.json')
@@ -608,15 +646,6 @@ export abstract class NwDataLoader {
   public charactertablesScorpionDatatablesDamagetableScorpionSulfur() {
     return this.load<Damagetable[]>('charactertables/scorpion_datatables/javelindata_damagetable_scorpion_sulfur.json')
   }
-  public charactertablesSpellbotDatatablesDamagetableSpellbot() {
-    return this.load<Damagetable[]>('charactertables/spellbot_datatables/javelindata_damagetable_spellbot.json')
-  }
-  public charactertablesSprigganDatatablesDamagetableSpriggan() {
-    return this.load<Damagetable[]>('charactertables/spriggan_datatables/javelindata_damagetable_spriggan.json')
-  }
-  public charactertablesSprigganDatatablesDamagetableSprigganCorrupted() {
-    return this.load<Damagetable[]>('charactertables/spriggan_datatables/javelindata_damagetable_spriggan_corrupted.json')
-  }
   public charactertablesSkeletonDatatablesDamagetableEzraforgemaster() {
     return this.load<Damagetable[]>('charactertables/skeleton_datatables/javelindata_damagetable_ezraforgemaster.json')
   }
@@ -638,8 +667,14 @@ export abstract class NwDataLoader {
   public charactertablesSkeletonDatatablesDamagetableSkeletonspear() {
     return this.load<Damagetable[]>('charactertables/skeleton_datatables/javelindata_damagetable_skeletonspear.json')
   }
-  public charactertablesSulfurelementalDamagetablesDamagetableSulfurelementalentity() {
-    return this.load<Damagetable[]>('charactertables/sulfurelemental_damagetables/javelindata_damagetable_sulfurelementalentity.json')
+  public charactertablesSpellbotDatatablesDamagetableSpellbot() {
+    return this.load<Damagetable[]>('charactertables/spellbot_datatables/javelindata_damagetable_spellbot.json')
+  }
+  public charactertablesSprigganDatatablesDamagetableSpriggan() {
+    return this.load<Damagetable[]>('charactertables/spriggan_datatables/javelindata_damagetable_spriggan.json')
+  }
+  public charactertablesSprigganDatatablesDamagetableSprigganCorrupted() {
+    return this.load<Damagetable[]>('charactertables/spriggan_datatables/javelindata_damagetable_spriggan_corrupted.json')
   }
   public charactertablesSulfurDragonDamagetableSulfurdragon() {
     return this.load<Damagetable[]>('charactertables/sulfur_dragon/javelindata_damagetable_sulfurdragon.json')
@@ -647,14 +682,17 @@ export abstract class NwDataLoader {
   public charactertablesSulfurDragonDamagetableSulfurlizard() {
     return this.load<Damagetable[]>('charactertables/sulfur_dragon/javelindata_damagetable_sulfurlizard.json')
   }
+  public charactertablesSulfurelementalDamagetablesDamagetableSulfurelementalentity() {
+    return this.load<Damagetable[]>('charactertables/sulfurelemental_damagetables/javelindata_damagetable_sulfurelementalentity.json')
+  }
+  public charactertablesTorsobossDatatablesDamagetableTorsoBoss() {
+    return this.load<Damagetable[]>('charactertables/torsoboss_datatables/javelindata_damagetable_torso_boss.json')
+  }
   public charactertablesSwarmerDatatablesDamagetableCorruptedswarmer() {
     return this.load<Damagetable[]>('charactertables/swarmer_datatables/javelindata_damagetable_corruptedswarmer.json')
   }
   public charactertablesSwarmerDatatablesDamagetableSkeletoncrawler() {
     return this.load<Damagetable[]>('charactertables/swarmer_datatables/javelindata_damagetable_skeletoncrawler.json')
-  }
-  public charactertablesTorsobossDatatablesDamagetableTorsoBoss() {
-    return this.load<Damagetable[]>('charactertables/torsoboss_datatables/javelindata_damagetable_torso_boss.json')
   }
   public charactertablesTurkeyDatatablesDamagetableTurkey() {
     return this.load<Damagetable[]>('charactertables/turkey_datatables/javelindata_damagetable_turkey.json')
@@ -697,9 +735,6 @@ export abstract class NwDataLoader {
   }
   public charactertablesUndeadDatatablesDamagetableUndeadShaman() {
     return this.load<Damagetable[]>('charactertables/undead_datatables/javelindata_damagetable_undead_shaman.json')
-  }
-  public charactertablesWispywaspswarmDatatablesDamagetableWispyWaspSwarm() {
-    return this.load<Damagetable[]>('charactertables/wispywaspswarm_datatables/javelindata_damagetable_wispy_wasp_swarm.json')
   }
   public charactertablesWitheredbeetleDatatablesDamagetableWitheredbeetle() {
     return this.load<Damagetable[]>('charactertables/witheredbeetle_datatables/javelindata_damagetable_witheredbeetle.json')
@@ -803,6 +838,9 @@ export abstract class NwDataLoader {
   public loottablesSalvage() {
     return this.load<Loottable[]>('javelindata_loottables_salvage.json')
   }
+  public loottablesSeasons() {
+    return this.load<Loottable[]>('javelindata_loottables_seasons.json')
+  }
   public manacostsPlayer() {
     return this.load<ManacostsPlayer[]>('javelindata_manacosts_player.json')
   }
@@ -835,6 +873,9 @@ export abstract class NwDataLoader {
   }
   public statuseffectsFirestaff() {
     return this.load<Statuseffect[]>('javelindata_statuseffects_firestaff.json')
+  }
+  public statuseffectsFlail() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_flail.json')
   }
   public statuseffectsGreataxe() {
     return this.load<Statuseffect[]>('javelindata_statuseffects_greataxe.json')
@@ -889,6 +930,9 @@ export abstract class NwDataLoader {
   }
   public spelltableFiremagic() {
     return this.load<Spelltable[]>('javelindata_spelltable_firemagic.json')
+  }
+  public spelltableFlail() {
+    return this.load<Spelltable[]>('javelindata_spelltable_flail.json')
   }
   public spelltableGlobal() {
     return this.load<Spelltable[]>('javelindata_spelltable_global.json')
@@ -1033,9 +1077,6 @@ export abstract class NwDataLoader {
   }
   public arenasArenadefinitions() {
     return this.load<Arenadefinitions[]>('arenas/javelindata_arenadefinitions.json')
-  }
-  public charactertablesAncientguardianDatatablesStaminacostsAncientguardian() {
-    return this.load<StaminacostsAncientguardian[]>('charactertables/ancientguardian_datatables/javelindata_staminacosts_ancientguardian.json')
   }
   public gamemodemutatorsCursemutations() {
     return this.load<Cursemutations[]>('gamemodemutators/javelindata_cursemutations.json')

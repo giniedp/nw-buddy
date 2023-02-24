@@ -448,7 +448,7 @@ export function selectGearScore(items: EquippedItem[], level: number) {
 const REJECT_ABILITIES_WITH_PROPS: Array<keyof Ability> = [
   // unsupported trigger
   'OnAttachedSpellTargetDied',
-  'AttachedTargetSpellIds',
+  // 'AttachedTargetSpellIds',
   'OnBlockBreak',
   'OnContributedKill',
   //'OnCrit',

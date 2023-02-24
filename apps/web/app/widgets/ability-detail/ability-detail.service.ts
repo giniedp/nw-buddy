@@ -50,7 +50,7 @@ export class AbilityDetailService {
 
   public readonly refSpells$ = this.ability$.pipe(
     map((it) => {
-      return uniq(flatten([it?.CastSpell, it?.AttachedTargetSpellIds]))
+      return uniq(flatten([it?.CastSpell]))
     }),
     mapFilter((it) => !!it && it !== 'All')
   )

@@ -217,7 +217,7 @@ export class DungeonDetailStore extends ComponentStore<DungeonDetailState> {
         return {
           tags: [...tags],
           values: {
-            MinContLevel: dungeon.MutMinContLvllLootTagIdOverride || dungeon.ContainerLevel,
+            MinContLevel: dungeon.ContainerLevel,
             EnemyLevel: dungeon.RequiredLevel,
             Level: NW_MAX_CHARACTER_LEVEL,
           },
@@ -275,7 +275,7 @@ export class DungeonDetailStore extends ComponentStore<DungeonDetailState> {
         return {
           tags: [...tags],
           values: {
-            MinContLevel: dungeon.MutMinContLvllLootTagIdOverride || dungeon.ContainerLevel,
+            MinContLevel: dungeon.ContainerLevel,
             EnemyLevel: dungeon.RequiredLevel,
             Level: NW_MAX_CHARACTER_LEVEL,
           },
