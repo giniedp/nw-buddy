@@ -2,12 +2,9 @@ import * as path from 'path'
 
 export function generateDataFunctions(input: Map<string, string[]>) {
 
-
-  const types = Array.from(input.keys())
-  const functionStatements: string[] = []
-
-  for (const typeName of types) {
-    for (const filePath of input.get(typeName)) {
+  const types = Array.from(input.keys()).sort((a, b) => a < b ? -1 : 1)
+  const functionStatements: string[] = types.map((typeName) => {
+    return input.get(typeName).map((filePath) => {
       const extName = path.extname(filePath)
       const dirName = path.dirname(filePath)
       const basename = path.basename(filePath, extName)
@@ -21,14 +18,19 @@ export function generateDataFunctions(input: Map<string, string[]>) {
         })
         .join('')
 
-      functionStatements.push([
-        `  public ${functionName}() {`,
-        `    return this.load<${typeName}[]>('${assetPath}${extName}')`,
-        '  }',
-      ].join('\n'))
-    }
-  }
-
+        return {
+          name: functionName,
+          code: [
+            `  public ${functionName}() {`,
+            `    return this.load<${typeName}[]>('${assetPath}${extName}')`,
+            '  }',
+          ].join('\n')
+        }
+    })
+  })
+  .flat()
+  .sort((a, b) => a.name < b.name ? -1 : 1)
+  .map(({ code }) => code)
 
   return [
     'import type {',

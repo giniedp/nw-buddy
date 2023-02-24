@@ -1,8 +1,10 @@
 import type {
+  Ability,
   Affixdefinitions,
   Affixstats,
   Afflictions,
   Areadefinitions,
+  Arenadefinitions,
   Attributeconstitution,
   Attributedexterity,
   Attributefocus,
@@ -10,36 +12,42 @@ import type {
   Attributestrength,
   Categoricalprogression,
   Crafting,
-  ItemDefinitionMaster,
   Craftingcategories,
+  Cursemutations,
   Damagetable,
   Damagetypes,
+  Elementalmutationperks,
+  Elementalmutations,
   GameEvent,
   Gamemodes,
   Gatherables,
-  VariationsLockedInteractGatherables,
-  Housingitems,
   Housetypes,
-  ItemdefinitionsConsumables,
-  ItemdefinitionsResources,
-  ItemdefinitionsWeapons,
-  ItemdefinitionsArmor,
-  ItemdefinitionsAmmo,
-  ItemdefinitionsRunes,
+  Housingitems,
+  ItemDefinitionMaster,
   Itemappearancedefinitions,
-  ItemdefinitionsWeaponappearances,
+  ItemdefinitionsAmmo,
+  ItemdefinitionsArmor,
+  ItemdefinitionsConsumables,
   ItemdefinitionsInstrumentsappearances,
+  ItemdefinitionsResources,
+  ItemdefinitionsRunes,
+  ItemdefinitionsWeaponappearances,
+  ItemdefinitionsWeapons,
   Lootbuckets,
   Lootlimits,
   Loottable,
   ManacostsPlayer,
   Metaachievements,
   Milestonerewards,
+  Mutationdifficulty,
+  Mutationrankdata,
   Perkbuckets,
   Perks,
-  Statuseffect,
+  PoiDefinition,
+  Promotionmutations,
   Spelltable,
   StaminacostsPlayer,
+  Statuseffect,
   Statuseffectcategories,
   TerritoryStanding,
   Territorydefinitions,
@@ -65,21 +73,13 @@ import type {
   Tradeskillweaving,
   Tradeskillwoodworking,
   Umbralgsupgrades,
+  VariationsLockedInteractGatherables,
   Vitals,
   Vitalscategories,
   Vitalsleveldata,
   Vitalsmodifierdata,
   Weaponmastery,
   Xpamountsbylevel,
-  Arenadefinitions,
-  Cursemutations,
-  Elementalmutationperks,
-  Elementalmutations,
-  Mutationdifficulty,
-  Mutationrankdata,
-  Promotionmutations,
-  PoiDefinition,
-  Ability,
 } from './types'
 import { Observable } from 'rxjs'
 
@@ -96,6 +96,9 @@ export abstract class NwDataLoader {
   }
   public areadefinitions() {
     return this.load<Areadefinitions[]>('javelindata_areadefinitions.json')
+  }
+  public arenasArenadefinitions() {
+    return this.load<Arenadefinitions[]>('arenas/javelindata_arenadefinitions.json')
   }
   public attributeconstitution() {
     return this.load<Attributeconstitution[]>('javelindata_attributeconstitution.json')
@@ -115,114 +118,6 @@ export abstract class NwDataLoader {
   public categoricalprogression() {
     return this.load<Categoricalprogression[]>('javelindata_categoricalprogression.json')
   }
-  public crafting() {
-    return this.load<Crafting[]>('javelindata_crafting.json')
-  }
-  public itemdefinitionsMasterCrafting() {
-    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_crafting.json')
-  }
-  public itemdefinitionsMasterAi() {
-    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_ai.json')
-  }
-  public itemdefinitionsMasterCommon() {
-    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_common.json')
-  }
-  public itemdefinitionsMasterFaction() {
-    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_faction.json')
-  }
-  public itemdefinitionsMasterLoot() {
-    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_loot.json')
-  }
-  public itemdefinitionsMasterMakegoods() {
-    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_makegoods.json')
-  }
-  public itemdefinitionsMasterNamed() {
-    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_named.json')
-  }
-  public itemdefinitionsMasterNamedDepricated() {
-    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_named_depricated.json')
-  }
-  public itemdefinitionsMasterOmega() {
-    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_omega.json')
-  }
-  public itemdefinitionsMasterPlaytest() {
-    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_playtest.json')
-  }
-  public itemdefinitionsMasterPvp() {
-    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_pvp.json')
-  }
-  public itemdefinitionsMasterQuest() {
-    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_quest.json')
-  }
-  public itemdefinitionsMasterSeasons() {
-    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_seasons.json')
-  }
-  public itemdefinitionsMasterSkins() {
-    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_skins.json')
-  }
-  public itemdefinitionsMasterStore() {
-    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_store.json')
-  }
-  public craftingcategories() {
-    return this.load<Craftingcategories[]>('javelindata_craftingcategories.json')
-  }
-  public damagetableAlligator() {
-    return this.load<Damagetable[]>('javelindata_damagetable_alligator.json')
-  }
-  public damagetableBoar() {
-    return this.load<Damagetable[]>('javelindata_damagetable_boar.json')
-  }
-  public damagetableBroken() {
-    return this.load<Damagetable[]>('javelindata_damagetable_broken.json')
-  }
-  public damagetableDamned() {
-    return this.load<Damagetable[]>('javelindata_damagetable_damned.json')
-  }
-  public damagetableDamnedCommander() {
-    return this.load<Damagetable[]>('javelindata_damagetable_damned_commander.json')
-  }
-  public damagetableDamnedCommanderFtue() {
-    return this.load<Damagetable[]>('javelindata_damagetable_damned_commander_ftue.json')
-  }
-  public damagetableDungeon() {
-    return this.load<Damagetable[]>('javelindata_damagetable_dungeon.json')
-  }
-  public damagetableElk() {
-    return this.load<Damagetable[]>('javelindata_damagetable_elk.json')
-  }
-  public damagetableGoat() {
-    return this.load<Damagetable[]>('javelindata_damagetable_goat.json')
-  }
-  public damagetableMutators() {
-    return this.load<Damagetable[]>('javelindata_damagetable_mutators.json')
-  }
-  public damagetablePerks() {
-    return this.load<Damagetable[]>('javelindata_damagetable_perks.json')
-  }
-  public damagetableSkeleton() {
-    return this.load<Damagetable[]>('javelindata_damagetable_skeleton.json')
-  }
-  public damagetableSpirit() {
-    return this.load<Damagetable[]>('javelindata_damagetable_spirit.json')
-  }
-  public damagetableStructures() {
-    return this.load<Damagetable[]>('javelindata_damagetable_structures.json')
-  }
-  public damagetableTendrilCorrupted() {
-    return this.load<Damagetable[]>('javelindata_damagetable_tendril_corrupted.json')
-  }
-  public damagetableUndead() {
-    return this.load<Damagetable[]>('javelindata_damagetable_undead.json')
-  }
-  public ftueDamagetableDamned() {
-    return this.load<Damagetable[]>('javelindata_ftue_damagetable_damned.json')
-  }
-  public ftueDamagetableUndeadGrenadier() {
-    return this.load<Damagetable[]>('javelindata_ftue_damagetable_undead_grenadier.json')
-  }
-  public damagetable() {
-    return this.load<Damagetable[]>('javelindata_damagetable.json')
-  }
   public charactertablesAlligatorDatatablesDamagetableAlligatoryoung() {
     return this.load<Damagetable[]>('charactertables/alligator_datatables/javelindata_damagetable_alligatoryoung.json')
   }
@@ -235,12 +130,6 @@ export abstract class NwDataLoader {
   public charactertablesAncientguardianDatatablesDamagetableAncientguardianheavyboss() {
     return this.load<Damagetable[]>('charactertables/ancientguardian_datatables/javelindata_damagetable_ancientguardianheavyboss.json')
   }
-  public charactertablesAnubianscarabDatatablesDamagetableAnubianlotusscarab() {
-    return this.load<Damagetable[]>('charactertables/anubianscarab_datatables/javelindata_damagetable_anubianlotusscarab.json')
-  }
-  public charactertablesAnubianscarabDatatablesDamagetableAnubianscarab() {
-    return this.load<Damagetable[]>('charactertables/anubianscarab_datatables/javelindata_damagetable_anubianscarab.json')
-  }
   public charactertablesAnubianguardianDatatablesDamagetableAnubianguardianBrute() {
     return this.load<Damagetable[]>('charactertables/anubianguardian_datatables/javelindata_damagetable_anubianguardian_brute.json')
   }
@@ -252,6 +141,12 @@ export abstract class NwDataLoader {
   }
   public charactertablesAnubianguardianDatatablesDamagetableGoliathhorusboss() {
     return this.load<Damagetable[]>('charactertables/anubianguardian_datatables/javelindata_damagetable_goliathhorusboss.json')
+  }
+  public charactertablesAnubianscarabDatatablesDamagetableAnubianlotusscarab() {
+    return this.load<Damagetable[]>('charactertables/anubianscarab_datatables/javelindata_damagetable_anubianlotusscarab.json')
+  }
+  public charactertablesAnubianscarabDatatablesDamagetableAnubianscarab() {
+    return this.load<Damagetable[]>('charactertables/anubianscarab_datatables/javelindata_damagetable_anubianscarab.json')
   }
   public charactertablesBearDatatablesDamagetableBear() {
     return this.load<Damagetable[]>('charactertables/bear_datatables/javelindata_damagetable_bear.json')
@@ -271,14 +166,14 @@ export abstract class NwDataLoader {
   public charactertablesBearDatatablesDamagetableBearThorpeMinion() {
     return this.load<Damagetable[]>('charactertables/bear_datatables/javelindata_damagetable_bear_thorpe_minion.json')
   }
-  public charactertablesBogmonsterDatatablesDamagetableBogmonster() {
-    return this.load<Damagetable[]>('charactertables/bogmonster_datatables/javelindata_damagetable_bogmonster.json')
-  }
   public charactertablesBisonDatatablesDamagetableBison() {
     return this.load<Damagetable[]>('charactertables/bison_datatables/javelindata_damagetable_bison.json')
   }
   public charactertablesBisonDatatablesDamagetableBisonStrange() {
     return this.load<Damagetable[]>('charactertables/bison_datatables/javelindata_damagetable_bison_strange.json')
+  }
+  public charactertablesBogmonsterDatatablesDamagetableBogmonster() {
+    return this.load<Damagetable[]>('charactertables/bogmonster_datatables/javelindata_damagetable_bogmonster.json')
   }
   public charactertablesBomberDatatablesDamagetableBloatedCorpse() {
     return this.load<Damagetable[]>('charactertables/bomber_datatables/javelindata_damagetable_bloated_corpse.json')
@@ -364,6 +259,9 @@ export abstract class NwDataLoader {
   public charactertablesDamnedDatatablesDamagetableOverseerzane() {
     return this.load<Damagetable[]>('charactertables/damned_datatables/javelindata_damagetable_overseerzane.json')
   }
+  public charactertablesDryadDatatablesDamagetableDryadSiren() {
+    return this.load<Damagetable[]>('charactertables/dryad_datatables/javelindata_damagetable_dryad_siren.json')
+  }
   public charactertablesDryadDatatablesDamagetableDryadarcher() {
     return this.load<Damagetable[]>('charactertables/dryad_datatables/javelindata_damagetable_dryadarcher.json')
   }
@@ -379,8 +277,14 @@ export abstract class NwDataLoader {
   public charactertablesDryadDatatablesDamagetableDryadtendril() {
     return this.load<Damagetable[]>('charactertables/dryad_datatables/javelindata_damagetable_dryadtendril.json')
   }
-  public charactertablesDryadDatatablesDamagetableDryadSiren() {
-    return this.load<Damagetable[]>('charactertables/dryad_datatables/javelindata_damagetable_dryad_siren.json')
+  public charactertablesDunephantomDatatablesDamagetableDunephantomBerserker() {
+    return this.load<Damagetable[]>('charactertables/dunephantom_datatables/javelindata_damagetable_dunephantom_berserker.json')
+  }
+  public charactertablesDunephantomDatatablesDamagetableDunephantomHuntress() {
+    return this.load<Damagetable[]>('charactertables/dunephantom_datatables/javelindata_damagetable_dunephantom_huntress.json')
+  }
+  public charactertablesDunephantomDatatablesDamagetableDunephantomTank() {
+    return this.load<Damagetable[]>('charactertables/dunephantom_datatables/javelindata_damagetable_dunephantom_tank.json')
   }
   public charactertablesDynastyDatatablesDamagetableDynastyMusketeer() {
     return this.load<Damagetable[]>('charactertables/dynasty_datatables/javelindata_damagetable_dynasty_musketeer.json')
@@ -394,17 +298,14 @@ export abstract class NwDataLoader {
   public charactertablesDynastyDatatablesDamagetableDynastyWarrior() {
     return this.load<Damagetable[]>('charactertables/dynasty_datatables/javelindata_damagetable_dynasty_warrior.json')
   }
-  public charactertablesDunephantomDatatablesDamagetableDunephantomBerserker() {
-    return this.load<Damagetable[]>('charactertables/dunephantom_datatables/javelindata_damagetable_dunephantom_berserker.json')
-  }
-  public charactertablesDunephantomDatatablesDamagetableDunephantomHuntress() {
-    return this.load<Damagetable[]>('charactertables/dunephantom_datatables/javelindata_damagetable_dunephantom_huntress.json')
-  }
-  public charactertablesDunephantomDatatablesDamagetableDunephantomTank() {
-    return this.load<Damagetable[]>('charactertables/dunephantom_datatables/javelindata_damagetable_dunephantom_tank.json')
-  }
   public charactertablesEliteaffixDatatablesDamagetableEliteAffix() {
     return this.load<Damagetable[]>('charactertables/eliteaffix_datatables/javelindata_damagetable_elite_affix.json')
+  }
+  public charactertablesElkDatatablesDamagetableElkCorrupted() {
+    return this.load<Damagetable[]>('charactertables/elk_datatables/javelindata_damagetable_elk_corrupted.json')
+  }
+  public charactertablesElkDatatablesDamagetableElkSpringstag() {
+    return this.load<Damagetable[]>('charactertables/elk_datatables/javelindata_damagetable_elk_springstag.json')
   }
   public charactertablesEmpressDatatablesDamagetableEmpress() {
     return this.load<Damagetable[]>('charactertables/empress_datatables/javelindata_damagetable_empress.json')
@@ -415,14 +316,29 @@ export abstract class NwDataLoader {
   public charactertablesEmpressDatatablesDamagetablePedestal() {
     return this.load<Damagetable[]>('charactertables/empress_datatables/javelindata_damagetable_pedestal.json')
   }
-  public charactertablesElkDatatablesDamagetableElkCorrupted() {
-    return this.load<Damagetable[]>('charactertables/elk_datatables/javelindata_damagetable_elk_corrupted.json')
-  }
-  public charactertablesElkDatatablesDamagetableElkSpringstag() {
-    return this.load<Damagetable[]>('charactertables/elk_datatables/javelindata_damagetable_elk_springstag.json')
-  }
   public charactertablesGhastlyDatatablesDamagetableGhastlyVillagerShovel() {
     return this.load<Damagetable[]>('charactertables/ghastly_datatables/javelindata_damagetable_ghastly_villager_shovel.json')
+  }
+  public charactertablesGhostDatatablesDamagetableGhost() {
+    return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_ghost.json')
+  }
+  public charactertablesGhostDatatablesDamagetableGhostCharred() {
+    return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_ghost_charred.json')
+  }
+  public charactertablesGhostDatatablesDamagetableGhostFrozen() {
+    return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_ghost_frozen.json')
+  }
+  public charactertablesGhostDatatablesDamagetableGhostPlagued() {
+    return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_ghost_plagued.json')
+  }
+  public charactertablesGhostDatatablesDamagetableGhostShackled() {
+    return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_ghost_shackled.json')
+  }
+  public charactertablesGhostDatatablesDamagetableGhostShipwrecked() {
+    return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_ghost_shipwrecked.json')
+  }
+  public charactertablesGhostDatatablesDamagetableOrGhostBoss() {
+    return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_or_ghost_boss.json')
   }
   public charactertablesGruntDatatablesDamagetableFlamegrunt() {
     return this.load<Damagetable[]>('charactertables/grunt_datatables/javelindata_damagetable_flamegrunt.json')
@@ -475,27 +391,6 @@ export abstract class NwDataLoader {
   public charactertablesHumanDatatablesDamagetableHumanWarhammer() {
     return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_warhammer.json')
   }
-  public charactertablesGhostDatatablesDamagetableGhost() {
-    return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_ghost.json')
-  }
-  public charactertablesGhostDatatablesDamagetableGhostCharred() {
-    return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_ghost_charred.json')
-  }
-  public charactertablesGhostDatatablesDamagetableGhostFrozen() {
-    return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_ghost_frozen.json')
-  }
-  public charactertablesGhostDatatablesDamagetableGhostPlagued() {
-    return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_ghost_plagued.json')
-  }
-  public charactertablesGhostDatatablesDamagetableGhostShackled() {
-    return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_ghost_shackled.json')
-  }
-  public charactertablesGhostDatatablesDamagetableGhostShipwrecked() {
-    return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_ghost_shipwrecked.json')
-  }
-  public charactertablesGhostDatatablesDamagetableOrGhostBoss() {
-    return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_or_ghost_boss.json')
-  }
   public charactertablesIcedryadDatatablesDamagetableIcedryadFiendShivers() {
     return this.load<Damagetable[]>('charactertables/icedryad_datatables/javelindata_damagetable_icedryad_fiend_shivers.json')
   }
@@ -508,6 +403,12 @@ export abstract class NwDataLoader {
   public charactertablesIcedryadDatatablesDamagetableIcedryadFrostgrip() {
     return this.load<Damagetable[]>('charactertables/icedryad_datatables/javelindata_damagetable_icedryad_frostgrip.json')
   }
+  public charactertablesInvasionDatatablesDamagetableInvasionPriest() {
+    return this.load<Damagetable[]>('charactertables/invasion_datatables/javelindata_damagetable_invasion_priest.json')
+  }
+  public charactertablesInvasionDatatablesDamagetableSprigganInvasion() {
+    return this.load<Damagetable[]>('charactertables/invasion_datatables/javelindata_damagetable_spriggan_invasion.json')
+  }
   public charactertablesIsabellaDatatablesDamagetableIsabellaDynastyshipyard() {
     return this.load<Damagetable[]>('charactertables/isabella_datatables/javelindata_damagetable_isabella_dynastyshipyard.json')
   }
@@ -516,12 +417,6 @@ export abstract class NwDataLoader {
   }
   public charactertablesIsabellaDatatablesDamagetableIsabellaLairPhase2() {
     return this.load<Damagetable[]>('charactertables/isabella_datatables/javelindata_damagetable_isabella_lair_phase2.json')
-  }
-  public charactertablesInvasionDatatablesDamagetableInvasionPriest() {
-    return this.load<Damagetable[]>('charactertables/invasion_datatables/javelindata_damagetable_invasion_priest.json')
-  }
-  public charactertablesInvasionDatatablesDamagetableSprigganInvasion() {
-    return this.load<Damagetable[]>('charactertables/invasion_datatables/javelindata_damagetable_spriggan_invasion.json')
   }
   public charactertablesLegionDatatablesDamagetableCorruptedlegionCyclops() {
     return this.load<Damagetable[]>('charactertables/legion_datatables/javelindata_damagetable_corruptedlegion_cyclops.json')
@@ -622,6 +517,9 @@ export abstract class NwDataLoader {
   public charactertablesRisenDatatablesDamagetableWitheredSwarmancer() {
     return this.load<Damagetable[]>('charactertables/risen_datatables/javelindata_damagetable_withered_swarmancer.json')
   }
+  public charactertablesSandElementalSoldierDamagetableSandElementalSoldier() {
+    return this.load<Damagetable[]>('charactertables/sand_elemental_soldier/javelindata_damagetable_sand_elemental_soldier.json')
+  }
   public charactertablesSandelementalDatatablesDamagetableSandelementalHeavy() {
     return this.load<Damagetable[]>('charactertables/sandelemental_datatables/javelindata_damagetable_sandelemental_heavy.json')
   }
@@ -630,9 +528,6 @@ export abstract class NwDataLoader {
   }
   public charactertablesSandelementalDatatablesDamagetableSandelementalShaman() {
     return this.load<Damagetable[]>('charactertables/sandelemental_datatables/javelindata_damagetable_sandelemental_shaman.json')
-  }
-  public charactertablesSandElementalSoldierDamagetableSandElementalSoldier() {
-    return this.load<Damagetable[]>('charactertables/sand_elemental_soldier/javelindata_damagetable_sand_elemental_soldier.json')
   }
   public charactertablesScorpionDatatablesDamagetableScorpion() {
     return this.load<Damagetable[]>('charactertables/scorpion_datatables/javelindata_damagetable_scorpion.json')
@@ -685,14 +580,14 @@ export abstract class NwDataLoader {
   public charactertablesSulfurelementalDamagetablesDamagetableSulfurelementalentity() {
     return this.load<Damagetable[]>('charactertables/sulfurelemental_damagetables/javelindata_damagetable_sulfurelementalentity.json')
   }
-  public charactertablesTorsobossDatatablesDamagetableTorsoBoss() {
-    return this.load<Damagetable[]>('charactertables/torsoboss_datatables/javelindata_damagetable_torso_boss.json')
-  }
   public charactertablesSwarmerDatatablesDamagetableCorruptedswarmer() {
     return this.load<Damagetable[]>('charactertables/swarmer_datatables/javelindata_damagetable_corruptedswarmer.json')
   }
   public charactertablesSwarmerDatatablesDamagetableSkeletoncrawler() {
     return this.load<Damagetable[]>('charactertables/swarmer_datatables/javelindata_damagetable_skeletoncrawler.json')
+  }
+  public charactertablesTorsobossDatatablesDamagetableTorsoBoss() {
+    return this.load<Damagetable[]>('charactertables/torsoboss_datatables/javelindata_damagetable_torso_boss.json')
   }
   public charactertablesTurkeyDatatablesDamagetableTurkey() {
     return this.load<Damagetable[]>('charactertables/turkey_datatables/javelindata_damagetable_turkey.json')
@@ -769,11 +664,92 @@ export abstract class NwDataLoader {
   public charactertablesWolfDatatablesNamedDamagetableWolfBarkimedes() {
     return this.load<Damagetable[]>('charactertables/wolf_datatables/named/javelindata_damagetable_wolf_barkimedes.json')
   }
+  public crafting() {
+    return this.load<Crafting[]>('javelindata_crafting.json')
+  }
+  public craftingcategories() {
+    return this.load<Craftingcategories[]>('javelindata_craftingcategories.json')
+  }
+  public damagetable() {
+    return this.load<Damagetable[]>('javelindata_damagetable.json')
+  }
+  public damagetableAlligator() {
+    return this.load<Damagetable[]>('javelindata_damagetable_alligator.json')
+  }
+  public damagetableBoar() {
+    return this.load<Damagetable[]>('javelindata_damagetable_boar.json')
+  }
+  public damagetableBroken() {
+    return this.load<Damagetable[]>('javelindata_damagetable_broken.json')
+  }
+  public damagetableDamned() {
+    return this.load<Damagetable[]>('javelindata_damagetable_damned.json')
+  }
+  public damagetableDamnedCommander() {
+    return this.load<Damagetable[]>('javelindata_damagetable_damned_commander.json')
+  }
+  public damagetableDamnedCommanderFtue() {
+    return this.load<Damagetable[]>('javelindata_damagetable_damned_commander_ftue.json')
+  }
+  public damagetableDungeon() {
+    return this.load<Damagetable[]>('javelindata_damagetable_dungeon.json')
+  }
+  public damagetableElk() {
+    return this.load<Damagetable[]>('javelindata_damagetable_elk.json')
+  }
+  public damagetableGoat() {
+    return this.load<Damagetable[]>('javelindata_damagetable_goat.json')
+  }
+  public damagetableMutators() {
+    return this.load<Damagetable[]>('javelindata_damagetable_mutators.json')
+  }
+  public damagetablePerks() {
+    return this.load<Damagetable[]>('javelindata_damagetable_perks.json')
+  }
+  public damagetableSkeleton() {
+    return this.load<Damagetable[]>('javelindata_damagetable_skeleton.json')
+  }
+  public damagetableSpirit() {
+    return this.load<Damagetable[]>('javelindata_damagetable_spirit.json')
+  }
+  public damagetableStructures() {
+    return this.load<Damagetable[]>('javelindata_damagetable_structures.json')
+  }
+  public damagetableTendrilCorrupted() {
+    return this.load<Damagetable[]>('javelindata_damagetable_tendril_corrupted.json')
+  }
+  public damagetableUndead() {
+    return this.load<Damagetable[]>('javelindata_damagetable_undead.json')
+  }
   public damagetypes() {
     return this.load<Damagetypes[]>('javelindata_damagetypes.json')
   }
+  public ftueDamagetableDamned() {
+    return this.load<Damagetable[]>('javelindata_ftue_damagetable_damned.json')
+  }
+  public ftueDamagetableUndeadGrenadier() {
+    return this.load<Damagetable[]>('javelindata_ftue_damagetable_undead_grenadier.json')
+  }
   public gameevents() {
     return this.load<GameEvent[]>('javelindata_gameevents.json')
+  }
+  public gamemodemutatorsCursemutations() {
+    return this.load<Cursemutations[]>('gamemodemutators/javelindata_cursemutations.json')
+  }
+  public gamemodemutatorsElementalmutationperks() {
+    return this.load<Elementalmutationperks[]>('gamemodemutators/javelindata_elementalmutationperks.json')
+  }
+  public gamemodemutatorsElementalmutations() {
+    return this.load<Elementalmutations[]>('gamemodemutators/javelindata_elementalmutations.json')
+  }
+  public gamemodemutatorsMutationdifficulty() {
+    return this.load<Mutationdifficulty[]>('gamemodemutators/javelindata_mutationdifficulty.json')
+  }
+  public gamemodemutatorsMutationrankdata() {
+    return this.load<Mutationrankdata[]>('gamemodemutators/javelindata_mutationrankdata.json')
+  }
+  public gamemodemutatorsPromotionmutations() {
+    return this.load<Promotionmutations[]>('gamemodemutators/javelindata_promotionmutations.json')
   }
   public gamemodes() {
     return this.load<Gamemodes[]>('javelindata_gamemodes.json')
@@ -781,41 +757,83 @@ export abstract class NwDataLoader {
   public gatherables() {
     return this.load<Gatherables[]>('javelindata_gatherables.json')
   }
-  public variationsLockedInteractGatherables() {
-    return this.load<VariationsLockedInteractGatherables[]>('javelindata_variations_locked_interact_gatherables.json')
+  public housetypes() {
+    return this.load<Housetypes[]>('javelindata_housetypes.json')
   }
   public housingitems() {
     return this.load<Housingitems[]>('javelindata_housingitems.json')
   }
-  public housetypes() {
-    return this.load<Housetypes[]>('javelindata_housetypes.json')
-  }
-  public itemdefinitionsConsumables() {
-    return this.load<ItemdefinitionsConsumables[]>('javelindata_itemdefinitions_consumables.json')
-  }
-  public itemdefinitionsResources() {
-    return this.load<ItemdefinitionsResources[]>('javelindata_itemdefinitions_resources.json')
-  }
-  public itemdefinitionsWeapons() {
-    return this.load<ItemdefinitionsWeapons[]>('javelindata_itemdefinitions_weapons.json')
-  }
-  public itemdefinitionsArmor() {
-    return this.load<ItemdefinitionsArmor[]>('javelindata_itemdefinitions_armor.json')
+  public itemappearancedefinitions() {
+    return this.load<Itemappearancedefinitions[]>('javelindata_itemappearancedefinitions.json')
   }
   public itemdefinitionsAmmo() {
     return this.load<ItemdefinitionsAmmo[]>('javelindata_itemdefinitions_ammo.json')
   }
+  public itemdefinitionsArmor() {
+    return this.load<ItemdefinitionsArmor[]>('javelindata_itemdefinitions_armor.json')
+  }
+  public itemdefinitionsConsumables() {
+    return this.load<ItemdefinitionsConsumables[]>('javelindata_itemdefinitions_consumables.json')
+  }
+  public itemdefinitionsInstrumentsappearances() {
+    return this.load<ItemdefinitionsInstrumentsappearances[]>('javelindata_itemdefinitions_instrumentsappearances.json')
+  }
+  public itemdefinitionsMasterAi() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_ai.json')
+  }
+  public itemdefinitionsMasterCommon() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_common.json')
+  }
+  public itemdefinitionsMasterCrafting() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_crafting.json')
+  }
+  public itemdefinitionsMasterFaction() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_faction.json')
+  }
+  public itemdefinitionsMasterLoot() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_loot.json')
+  }
+  public itemdefinitionsMasterMakegoods() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_makegoods.json')
+  }
+  public itemdefinitionsMasterNamed() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_named.json')
+  }
+  public itemdefinitionsMasterNamedDepricated() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_named_depricated.json')
+  }
+  public itemdefinitionsMasterOmega() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_omega.json')
+  }
+  public itemdefinitionsMasterPlaytest() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_playtest.json')
+  }
+  public itemdefinitionsMasterPvp() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_pvp.json')
+  }
+  public itemdefinitionsMasterQuest() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_quest.json')
+  }
+  public itemdefinitionsMasterSeasons() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_seasons.json')
+  }
+  public itemdefinitionsMasterSkins() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_skins.json')
+  }
+  public itemdefinitionsMasterStore() {
+    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_store.json')
+  }
+  public itemdefinitionsResources() {
+    return this.load<ItemdefinitionsResources[]>('javelindata_itemdefinitions_resources.json')
+  }
   public itemdefinitionsRunes() {
     return this.load<ItemdefinitionsRunes[]>('javelindata_itemdefinitions_runes.json')
-  }
-  public itemappearancedefinitions() {
-    return this.load<Itemappearancedefinitions[]>('javelindata_itemappearancedefinitions.json')
   }
   public itemdefinitionsWeaponappearances() {
     return this.load<ItemdefinitionsWeaponappearances[]>('javelindata_itemdefinitions_weaponappearances.json')
   }
-  public itemdefinitionsInstrumentsappearances() {
-    return this.load<ItemdefinitionsInstrumentsappearances[]>('javelindata_itemdefinitions_instrumentsappearances.json')
+  public itemdefinitionsWeapons() {
+    return this.load<ItemdefinitionsWeapons[]>('javelindata_itemdefinitions_weapons.json')
   }
   public lootbuckets() {
     return this.load<Lootbuckets[]>('javelindata_lootbuckets.json')
@@ -856,68 +874,71 @@ export abstract class NwDataLoader {
   public perks() {
     return this.load<Perks[]>('javelindata_perks.json')
   }
-  public statuseffectsPerks() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_perks.json')
+  public pointofinterestdefinitionsPoidefinitions0202() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_02_02.json')
   }
-  public statuseffectsAi() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_ai.json')
+  public pointofinterestdefinitionsPoidefinitions0203() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_02_03.json')
   }
-  public statuseffectsBlunderbuss() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_blunderbuss.json')
+  public pointofinterestdefinitionsPoidefinitions0204() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_02_04.json')
   }
-  public statuseffectsBow() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_bow.json')
+  public pointofinterestdefinitionsPoidefinitions0300() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_03_00.json')
   }
-  public statuseffectsCommon() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_common.json')
+  public pointofinterestdefinitionsPoidefinitions0301() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_03_01.json')
   }
-  public statuseffectsFirestaff() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_firestaff.json')
+  public pointofinterestdefinitionsPoidefinitions0302() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_03_02.json')
   }
-  public statuseffectsFlail() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_flail.json')
+  public pointofinterestdefinitionsPoidefinitions0303() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_03_03.json')
   }
-  public statuseffectsGreataxe() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_greataxe.json')
+  public pointofinterestdefinitionsPoidefinitions0304() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_03_04.json')
   }
-  public statuseffectsGreatsword() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_greatsword.json')
+  public pointofinterestdefinitionsPoidefinitions0400() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_04_00.json')
   }
-  public statuseffectsHatchet() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_hatchet.json')
+  public pointofinterestdefinitionsPoidefinitions0401() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_04_01.json')
   }
-  public statuseffectsIcemagic() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_icemagic.json')
+  public pointofinterestdefinitionsPoidefinitions0402() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_04_02.json')
   }
-  public statuseffectsItem() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_item.json')
+  public pointofinterestdefinitionsPoidefinitions0403() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_04_03.json')
   }
-  public statuseffectsLifestaff() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_lifestaff.json')
+  public pointofinterestdefinitionsPoidefinitions0404() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_04_04.json')
   }
-  public statuseffectsMusket() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_musket.json')
+  public pointofinterestdefinitionsPoidefinitions0501() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_05_01.json')
   }
-  public statuseffectsRapier() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_rapier.json')
+  public pointofinterestdefinitionsPoidefinitions0502() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_05_02.json')
   }
-  public statuseffectsRunes() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_runes.json')
+  public pointofinterestdefinitionsPoidefinitions0503() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_05_03.json')
   }
-  public statuseffectsSpear() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_spear.json')
+  public pointofinterestdefinitionsPoidefinitions0504() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_05_04.json')
   }
-  public statuseffectsSword() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_sword.json')
+  public pointofinterestdefinitionsPoidefinitions0602() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_06_02.json')
   }
-  public statuseffectsVoidgauntlet() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_voidgauntlet.json')
+  public pointofinterestdefinitionsPoidefinitions0603() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_06_03.json')
   }
-  public statuseffectsWarhammer() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_warhammer.json')
+  public pointofinterestdefinitionsPoidefinitions0604() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_06_04.json')
   }
-  public statuseffects() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects.json')
+  public pointofinterestdefinitionsPoidefinitionsDevworld() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_devworld.json')
+  }
+  public spelltable() {
+    return this.load<Spelltable[]>('javelindata_spelltable.json')
   }
   public spelltableAi() {
     return this.load<Spelltable[]>('javelindata_spelltable_ai.json')
@@ -976,14 +997,74 @@ export abstract class NwDataLoader {
   public spelltableWarhammer() {
     return this.load<Spelltable[]>('javelindata_spelltable_warhammer.json')
   }
-  public spelltable() {
-    return this.load<Spelltable[]>('javelindata_spelltable.json')
-  }
   public staminacostsPlayer() {
     return this.load<StaminacostsPlayer[]>('javelindata_staminacosts_player.json')
   }
   public statuseffectcategories() {
     return this.load<Statuseffectcategories[]>('javelindata_statuseffectcategories.json')
+  }
+  public statuseffects() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects.json')
+  }
+  public statuseffectsAi() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_ai.json')
+  }
+  public statuseffectsBlunderbuss() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_blunderbuss.json')
+  }
+  public statuseffectsBow() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_bow.json')
+  }
+  public statuseffectsCommon() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_common.json')
+  }
+  public statuseffectsFirestaff() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_firestaff.json')
+  }
+  public statuseffectsFlail() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_flail.json')
+  }
+  public statuseffectsGreataxe() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_greataxe.json')
+  }
+  public statuseffectsGreatsword() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_greatsword.json')
+  }
+  public statuseffectsHatchet() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_hatchet.json')
+  }
+  public statuseffectsIcemagic() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_icemagic.json')
+  }
+  public statuseffectsItem() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_item.json')
+  }
+  public statuseffectsLifestaff() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_lifestaff.json')
+  }
+  public statuseffectsMusket() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_musket.json')
+  }
+  public statuseffectsPerks() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_perks.json')
+  }
+  public statuseffectsRapier() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_rapier.json')
+  }
+  public statuseffectsRunes() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_runes.json')
+  }
+  public statuseffectsSpear() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_spear.json')
+  }
+  public statuseffectsSword() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_sword.json')
+  }
+  public statuseffectsVoidgauntlet() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_voidgauntlet.json')
+  }
+  public statuseffectsWarhammer() {
+    return this.load<Statuseffect[]>('javelindata_statuseffects_warhammer.json')
   }
   public territoryStanding() {
     return this.load<TerritoryStanding[]>('javelindata_territory_standing.json')
@@ -1057,6 +1138,9 @@ export abstract class NwDataLoader {
   public umbralgsupgrades() {
     return this.load<Umbralgsupgrades[]>('javelindata_umbralgsupgrades.json')
   }
+  public variationsLockedInteractGatherables() {
+    return this.load<VariationsLockedInteractGatherables[]>('javelindata_variations_locked_interact_gatherables.json')
+  }
   public vitals() {
     return this.load<Vitals[]>('javelindata_vitals.json')
   }
@@ -1068,96 +1152,6 @@ export abstract class NwDataLoader {
   }
   public vitalsmodifierdata() {
     return this.load<Vitalsmodifierdata[]>('javelindata_vitalsmodifierdata.json')
-  }
-  public weaponmastery() {
-    return this.load<Weaponmastery[]>('javelindata_weaponmastery.json')
-  }
-  public xpamountsbylevel() {
-    return this.load<Xpamountsbylevel[]>('javelindata_xpamountsbylevel.json')
-  }
-  public arenasArenadefinitions() {
-    return this.load<Arenadefinitions[]>('arenas/javelindata_arenadefinitions.json')
-  }
-  public gamemodemutatorsCursemutations() {
-    return this.load<Cursemutations[]>('gamemodemutators/javelindata_cursemutations.json')
-  }
-  public gamemodemutatorsElementalmutationperks() {
-    return this.load<Elementalmutationperks[]>('gamemodemutators/javelindata_elementalmutationperks.json')
-  }
-  public gamemodemutatorsElementalmutations() {
-    return this.load<Elementalmutations[]>('gamemodemutators/javelindata_elementalmutations.json')
-  }
-  public gamemodemutatorsMutationdifficulty() {
-    return this.load<Mutationdifficulty[]>('gamemodemutators/javelindata_mutationdifficulty.json')
-  }
-  public gamemodemutatorsMutationrankdata() {
-    return this.load<Mutationrankdata[]>('gamemodemutators/javelindata_mutationrankdata.json')
-  }
-  public gamemodemutatorsPromotionmutations() {
-    return this.load<Promotionmutations[]>('gamemodemutators/javelindata_promotionmutations.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0202() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_02_02.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0203() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_02_03.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0204() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_02_04.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0300() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_03_00.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0301() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_03_01.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0302() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_03_02.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0303() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_03_03.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0304() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_03_04.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0400() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_04_00.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0401() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_04_01.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0402() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_04_02.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0403() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_04_03.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0404() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_04_04.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0501() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_05_01.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0502() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_05_02.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0503() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_05_03.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0504() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_05_04.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0602() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_06_02.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0603() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_06_03.json')
-  }
-  public pointofinterestdefinitionsPoidefinitions0604() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_06_04.json')
-  }
-  public pointofinterestdefinitionsPoidefinitionsDevworld() {
-    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_devworld.json')
   }
   public weaponabilitiesAbilityAi() {
     return this.load<Ability[]>('weaponabilities/javelindata_ability_ai.json')
@@ -1215,5 +1209,11 @@ export abstract class NwDataLoader {
   }
   public weaponabilitiesAbilityWarhammer() {
     return this.load<Ability[]>('weaponabilities/javelindata_ability_warhammer.json')
+  }
+  public weaponmastery() {
+    return this.load<Weaponmastery[]>('javelindata_weaponmastery.json')
+  }
+  public xpamountsbylevel() {
+    return this.load<Xpamountsbylevel[]>('javelindata_xpamountsbylevel.json')
   }
 }
