@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { NwModule } from '~/nw'
-import { ItemDetailService } from './item-detail.service'
+import { ItemDetailStore } from './item-detail.service'
 
 @Component({
   standalone: true,
@@ -17,5 +17,5 @@ export class ItemDetailInfoComponent {
 
   protected vm$ = this.detail.vmInfo$
 
-  public constructor(private detail: ItemDetailService) {}
+  public constructor(private detail: ItemDetailStore) {}
 }

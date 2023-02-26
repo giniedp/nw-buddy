@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { firstValueFrom } from 'rxjs'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { ItemDetailService, PerkDetail } from './item-detail.service'
+import { ItemDetailStore, PerkDetail } from './item-detail.service'
 
 @Component({
   standalone: true,
@@ -19,12 +20,13 @@ export class ItemDetailPerksComponent {
 
   protected trackByIndex = (i: number) => i
 
-  public constructor(private detail: ItemDetailService) {
+  public constructor(private detail: ItemDetailStore) {
     //
   }
 
   protected async editPerkClicked({ detail, editable }: { detail: PerkDetail; editable: boolean }) {
-    if (this.detail.perkEditable$.value && editable) {
+    const isEditable = await firstValueFrom(this.detail.perkEditable$)
+    if (isEditable && editable) {
       this.detail.perkEdit$.emit(detail)
     }
   }

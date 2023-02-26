@@ -14,6 +14,31 @@
           View 3D Model
         </button>
       </div>
+
+      <div class="p-4 pt-0" *ngIf="card.salvageInfo$ | async; let salvage">
+        <button
+          class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50"
+          (click)="openRepairRecipe(tplSalvage)"
+        >
+          Show Salvage Loot Table
+        </button>
+
+        <ng-template #tplSalvage>
+          <div class="bg-base-200 flex flex-col rounded-md h-full">
+            <h3 class="bg-base-300 font-bold px-4 py-2">Salvage Loot Table</h3>
+            <nwb-loot-graph
+              class="flex-1 layout-content"
+              [tableId]="salvage.tableId"
+              [tags]="salvage.tags"
+              [tagValues]="salvage.tagValues"
+              [showLocked]="true"
+            ></nwb-loot-graph>
+            <div class="flex flex-row justify-end p-2">
+              <button class="btn btn-sm btn-primary" (click)="closeDialog()">Close</button>
+            </div>
+          </div>
+        </ng-template>
+      </div>
     </nwb-item-card>
   </div>
 </nwb-detail-drawer>

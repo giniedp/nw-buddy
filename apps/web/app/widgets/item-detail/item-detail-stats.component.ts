@@ -2,9 +2,10 @@ import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { firstValueFrom } from 'rxjs'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { ItemDetailService } from './item-detail.service'
+import { ItemDetailStore } from './item-detail.service'
 
 @Component({
   standalone: true,
@@ -22,12 +23,13 @@ export class ItemDetailStatsComponent {
   protected vm$ = this.detail.vmStats$
   protected trackByIndex: TrackByFunction<any> = (i) => i
 
-  public constructor(protected detail: ItemDetailService) {
+  public constructor(protected detail: ItemDetailStore) {
     //
   }
 
-  protected onGearScoreEdit(e: MouseEvent) {
-    if (this.detail.gsEditable$.value) {
+  protected async onGearScoreEdit(e: MouseEvent) {
+    const isEditable = await firstValueFrom(this.detail.gsEditable$)
+    if (isEditable) {
       this.detail.gsEdit$.emit(e)
     }
   }

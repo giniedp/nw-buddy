@@ -6,7 +6,7 @@ import { NwModule } from '~/nw'
 import { getItemTierAsRoman, isItemArmor, isItemJewelery, isItemWeapon, isMasterItem } from '~/nw/utils'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemTrackerModule } from '../item-tracker'
-import { ItemDetailService } from './item-detail.service'
+import { ItemDetailStore } from './item-detail.service'
 
 @Component({
   standalone: true,
@@ -57,7 +57,7 @@ export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>()
 
-  public constructor(protected detail: ItemDetailService, private cdRef: ChangeDetectorRef) {
+  public constructor(protected detail: ItemDetailStore, private cdRef: ChangeDetectorRef) {
     //
   }
 

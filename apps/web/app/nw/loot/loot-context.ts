@@ -4,7 +4,7 @@ import { LootBucketRow, LootTableEntry, LootTableRow } from '../utils'
 export type LootBucketConditionNames =
   | 'Level'
   | 'EnemyLevel'
-  | 'MinContLevel' // zone
+  | 'MinContLevel'
   // watermark
   | 'HWMBlunderbuss'
   | 'HWMLoot2HAxe'

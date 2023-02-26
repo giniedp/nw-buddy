@@ -7,7 +7,7 @@ import { damageCoefForWeaponTag, damageFactorForGS, getWeaponTagFromWeapon, isAf
 import { NwWeaponTypesService } from '~/nw/weapon-types'
 import { IconsModule } from '~/ui/icons'
 import { mapFilter, mapFind, mapList, switchMapCombineLatest, tapDebug } from '~/utils'
-import { ItemDetailService } from './item-detail.service'
+import { ItemDetailStore } from './item-detail.service'
 
 @Component({
   standalone: true,
@@ -74,7 +74,7 @@ export class ItemDetailGsDamage {
   )
 
   public constructor(
-    protected detail: ItemDetailService,
+    protected detail: ItemDetailStore,
     private weapons: NwWeaponTypesService,
     private db: NwDbService
   ) {

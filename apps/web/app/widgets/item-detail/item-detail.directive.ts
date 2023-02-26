@@ -1,22 +1,22 @@
 import { ChangeDetectorRef, Directive, forwardRef, Input } from '@angular/core'
 import { NwDbService } from '~/nw'
 import { ModelViewerService } from '../model-viewer'
-import { ItemDetailService } from './item-detail.service'
+import { ItemDetailStore } from './item-detail.service'
 
 @Directive({
   standalone: true,
   selector: '[nwbItemDetail]',
   providers: [
     {
-      provide: ItemDetailService,
+      provide: ItemDetailStore,
       useExisting: forwardRef(() => ItemDetailDirective),
     },
   ],
 })
-export class ItemDetailDirective extends ItemDetailService {
+export class ItemDetailDirective extends ItemDetailStore {
   @Input()
   public set nwbItemDetail(value: string) {
-    this.entityId$.next(value)
+    this.patchState({ entityId: value })
   }
 
   public constructor(db: NwDbService, models: ModelViewerService, cdRef: ChangeDetectorRef) {

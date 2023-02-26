@@ -4,7 +4,7 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { NwDbService } from '~/nw'
 import { getItemId } from '~/nw/utils'
 import { ModelViewerService } from '../model-viewer/model-viewer.service'
-import { ItemDetailService } from './item-detail.service'
+import { ItemDetailStore } from './item-detail.service'
 
 @Component({
   standalone: true,
@@ -18,20 +18,20 @@ import { ItemDetailService } from './item-detail.service'
   },
   providers: [
     {
-      provide: ItemDetailService,
+      provide: ItemDetailStore,
       useExisting: forwardRef(() => ItemDetailComponent),
     },
   ],
 })
-export class ItemDetailComponent extends ItemDetailService {
+export class ItemDetailComponent extends ItemDetailStore {
   @Input()
   public set entityId(value: string) {
-    this.entityId$.next(value)
+    this.patchState({ entityId: value })
   }
 
   @Input()
   public set entity(value: ItemDefinitionMaster | Housingitems) {
-    this.entityId$.next(getItemId(value))
+    this.patchState({ entityId: getItemId(value) })
   }
 
   public constructor(db: NwDbService, ms: ModelViewerService, cdRef: ChangeDetectorRef) {

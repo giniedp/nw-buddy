@@ -1,9 +1,11 @@
 import { ChangeDetectorRef, EventEmitter, Injectable, Output } from '@angular/core'
+import { ComponentStore } from '@ngrx/component-store'
 import { ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
 import { sortBy } from 'lodash'
 import { BehaviorSubject, combineLatest, defer, map, ReplaySubject, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { AttributeRef } from '~/nw/attributes/nw-attributes'
+import { LootContext } from '~/nw/loot'
 //import type { AttributeRef } from '~/nw/attributes'
 import {
   getItemGearScoreLabel,
@@ -44,70 +46,91 @@ export interface PerkDetail {
   text?: Array<{ label: string; description: string }>
 }
 
+export interface ItemDetailState {
+  entityId?: string
+  gsOverride?: number
+  gsEditable?: boolean
+  perkOverride?: Record<string, string>
+  perkEditable?: boolean
+  attrValueSums?: Record<AttributeRef, number>
+  playerLevel?: number
+}
+
 @Injectable()
-export class ItemDetailService {
-  public readonly entityId$ = new ReplaySubject<string>(1)
-  public readonly gsOverride$ = new BehaviorSubject<number>(null)
-  public readonly gsEditable$ = new BehaviorSubject<boolean>(false)
+export class ItemDetailStore extends ComponentStore<ItemDetailState> {
+  public readonly entityId$ = this.select(({ entityId }) => entityId)
+  public readonly gsOverride$ = this.select(({ gsOverride }) => gsOverride)
+  public readonly gsEditable$ = this.select(({ gsEditable }) => gsEditable)
+  public readonly perkOverride$ = this.select(({ perkOverride }) => perkOverride)
+  public readonly perkEditable$ = this.select(({ perkEditable }) => perkEditable)
+  public readonly attrValueSums$ = this.select(({ attrValueSums }) => attrValueSums)
+  public readonly playerLevel$ = this.select(({ playerLevel }) => playerLevel)
+
   public readonly gsEdit$ = new EventEmitter<MouseEvent>()
-  public readonly perkOverride$ = new BehaviorSubject<Record<string, string>>(null)
-  public readonly perkEditable$ = new BehaviorSubject<boolean>(false)
   public readonly perkEdit$ = new EventEmitter<PerkDetail>()
-  public readonly attrValueSums$ = new BehaviorSubject<Record<AttributeRef, number>>(null)
-  public readonly playerLevel$ = new BehaviorSubject<number>(null)
 
   public readonly item$ = this.db.item(this.entityId$).pipe(shareReplayRefCount(1))
   public readonly housingItem$ = this.db.housingItem(this.entityId$).pipe(shareReplayRefCount(1))
-  public readonly entity$ = combineLatest([this.item$, this.housingItem$])
-    .pipe(map(([item, housing]) => item || housing))
-    .pipe(shareReplayRefCount(1))
+  public readonly entity$ = this.select(this.item$, this.housingItem$, (item, housingItem) => item || housingItem)
 
-  public readonly itemGS$ = combineLatest([this.item$, this.gsOverride$])
-    .pipe(map(([item, gs]) => (hasItemGearScore(item) ? gs || getItemMaxGearScore(item, false) : null)))
-    .pipe(shareReplayRefCount(1))
-  public readonly itemGSLabel$ = combineLatest([this.item$, this.gsOverride$])
-    .pipe(map(([item, gs]) => (hasItemGearScore(item) ? gs || getItemGearScoreLabel(item) : null)))
-    .pipe(shareReplayRefCount(1))
+  public readonly itemGS$ = this.select(this.item$, this.gsOverride$, (item, gs) => {
+    return hasItemGearScore(item) ? gs || getItemMaxGearScore(item, false) : null
+  })
+  public readonly itemGSLabel$ = this.select(this.item$, this.gsOverride$, (item, gs) => {
+    return hasItemGearScore(item) ? gs || getItemGearScoreLabel(item) : null
+  })
 
   public readonly itemModels$ = this.entityId$.pipe(switchMap((id) => this.ms.getModelInfos(id)))
-  public readonly itemStatsRef$ = this.item$.pipe(map((it) => it?.ItemStatsRef))
-  public readonly name$ = this.entity$.pipe(map((it) => it?.Name))
-  public readonly source$ = this.entity$.pipe(map((it) => it?.['$source'] as string))
-  public readonly sourceLabel$ = this.source$.pipe(map(humanize))
-  public readonly description$ = this.entity$.pipe(map((it) => it?.Description))
-  public readonly icon$ = this.entity$.pipe(map((it) => getItemIconPath(it)))
-  public readonly rarity$ = this.entity$.pipe(map((it) => getItemRarity(it)))
-  public readonly rarityName$ = this.rarity$.pipe(map(getItemRarityLabel))
-  public readonly typeName$ = this.entity$.pipe(map(getItemTypeName))
-  public readonly tierLabel$ = this.entity$.pipe(map((it) => getItemTierAsRoman(it?.Tier, true)))
-  public readonly isDeprecated$ = this.source$.pipe(map((it) => /depricated/i.test(it || '')))
-  public readonly isNamed$ = this.item$.pipe(map((it) => it?.ItemClass?.includes('Named')))
-  public readonly isRune$ = this.item$.pipe(map((it) => !!it?.HeartgemTooltipBackgroundImage))
-  public readonly hasDescription$ = this.description$.pipe(map(isTruthy))
-  public readonly hasStats$ = this.itemStatsRef$.pipe(map(isTruthy))
+  public readonly itemStatsRef$ = this.select(this.item$, (it) => it?.ItemStatsRef)
+  public readonly name$ = this.select(this.entity$, (it) => it?.Name)
+  public readonly source$ = this.select(this.entity$, (it) => it?.['$source'] as string)
+  public readonly sourceLabel$ = this.select(this.source$, humanize)
+  public readonly description$ = this.select(this.entity$, (it) => it?.Description)
+  public readonly icon$ = this.select(this.entity$, getItemIconPath)
+  public readonly rarity$ = this.select(this.entity$, getItemRarity)
+  public readonly rarityName$ = this.select(this.rarity$, getItemRarityLabel)
+  public readonly typeName$ = this.select(this.entity$, getItemTypeName)
+  public readonly tierLabel$ = this.select(this.entity$, (it) => getItemTierAsRoman(it?.Tier, true))
+  public readonly isDeprecated$ = this.select(this.source$, (it) => /depricated/i.test(it || ''))
+  public readonly isNamed$ = this.select(this.item$, (it) => it?.ItemClass?.includes('Named'))
+  public readonly isRune$ = this.select(this.item$, (it) => !!it?.HeartgemTooltipBackgroundImage)
+  public readonly isBindOnEquip = this.select(this.item$, (it) => !!it?.BindOnEquip)
+  public readonly isBindOnPickup = this.select(this.entity$, (it) => !!it?.BindOnPickup)
+  public readonly canReplaceGem = this.select(this.item$, (it) => it && it.CanHavePerks && it.CanReplaceGem)
+  public readonly cantReplaceGem = this.select(this.item$, (it) => it && it.CanHavePerks && !it.CanReplaceGem)
+  public readonly hasDescription$ = this.select(this.description$, isTruthy)
+  public readonly hasStats$ = this.select(this.itemStatsRef$, isTruthy)
+  public readonly salvageInfo$ = this.select(this.item$, (item) => {
+    const recipe = item?.RepairRecipe
+    if (!recipe?.startsWith('[LTID]')) {
+      return null
+    }
+    return {
+      tableId: recipe.replace('[LTID]', ''),
+      tags: (item.SalvageLootTags || '').split(/[+,]/),
+      tagValues: {
+        'MinContLevel': item.ContainerLevel
+      }
+    }
+  })
   public readonly hasPerks = combineLatest({
     item: this.item$,
     buckets: this.db.perkBucketsMap,
   }).pipe(map(({ item, buckets }) => item && (item.CanHavePerks || buckets.get(item.ItemID))))
 
-  public readonly weaponStats$ = this.db.weapon(this.itemStatsRef$)
-  public readonly armorStats$ = this.db.armor(this.itemStatsRef$)
-  public readonly runeStats$ = this.db.rune(this.itemStatsRef$)
-  public readonly ingredientCategories$ = combineLatest({
-    categories: this.db.recipeCategoriesMap,
-    item: this.item$,
-  }).pipe(
-    map(({ categories, item }) =>
-      item?.IngredientCategories?.map((it) => {
-        return (
-          categories.get(it) || {
-            CategoryID: it,
-            DisplayText: it,
-          }
-        )
-      })
-    )
-  )
+  public readonly weaponStats$ = this.db.weapon(this.itemStatsRef$).pipe(shareReplayRefCount(1))
+  public readonly armorStats$ = this.db.armor(this.itemStatsRef$).pipe(shareReplayRefCount(1))
+  public readonly runeStats$ = this.db.rune(this.itemStatsRef$).pipe(shareReplayRefCount(1))
+  public readonly ingredientCategories$ = this.select(this.db.recipeCategoriesMap, this.item$, (db, item) => {
+    return item?.IngredientCategories?.map((it) => {
+      return (
+        db.get(it) || {
+          CategoryID: it,
+          DisplayText: it,
+        }
+      )
+    })
+  })
 
   public readonly perksDetails$ = defer(() => this.resolvePerkInfos()).pipe(shareReplayRefCount(1))
   public readonly finalRarity$ = defer(() => this.resolveFinalRarity())
@@ -120,11 +143,11 @@ export class ItemDetailService {
   }).pipe(shareReplayRefCount(1))
 
   public readonly vmInfo$ = combineLatest({
-    bindOnEquip: this.item$.pipe(mapPropTruthy('BindOnEquip')),
-    bindOnPickup: this.entity$.pipe(mapPropTruthy('BindOnPickup')),
+    bindOnEquip: this.isBindOnEquip,
+    bindOnPickup: this.isBindOnPickup,
     tier: this.tierLabel$,
-    canReplaceGem: this.item$.pipe(map((it) => it && it.CanHavePerks && it.CanReplaceGem)),
-    cantReplaceGem: this.item$.pipe(map((it) => it && it.CanHavePerks && !it.CanReplaceGem)),
+    canReplaceGem: this.canReplaceGem,
+    cantReplaceGem: this.cantReplaceGem,
     weight: combineLatest({
       weapon: this.weaponStats$,
       armor: this.armorStats$,
@@ -147,34 +170,22 @@ export class ItemDetailService {
     attrValueSums: this.attrValueSums$,
     playerLevel: this.playerLevel$,
   }).pipe(
-    map(
-      ({
-        item,
-        weapon,
-        rune,
-        armor,
-        gs,
-        gsEditable,
-        gsLabel,
-        attrValueSums,
-        playerLevel,
-      }) => {
-        return {
-          gsLabel: gsLabel,
-          gsEditable: gsEditable,
-          stats: [
-            ...getItemStatsWeapon({
-              item: item,
-              stats: weapon || rune,
-              gearScore: gs,
-              attrValueSums: attrValueSums,
-              playerLevel: playerLevel,
-            }),
-            ...getItemStatsArmor(item, armor, gs),
-          ],
-        }
+    map(({ item, weapon, rune, armor, gs, gsEditable, gsLabel, attrValueSums, playerLevel }) => {
+      return {
+        gsLabel: gsLabel,
+        gsEditable: gsEditable,
+        stats: [
+          ...getItemStatsWeapon({
+            item: item,
+            stats: weapon || rune,
+            gearScore: gs,
+            attrValueSums: attrValueSums,
+            playerLevel: playerLevel,
+          }),
+          ...getItemStatsArmor(item, armor, gs),
+        ],
       }
-    )
+    })
   )
 
   public readonly vmPerks$ = combineLatest({
@@ -195,11 +206,11 @@ export class ItemDetailService {
   )
 
   public constructor(protected db: NwDbService, private ms: ModelViewerService, protected cdRef: ChangeDetectorRef) {
-    //
+    super({})
   }
 
   public update(entityId: string) {
-    this.entityId$.next(entityId)
+    this.patchState({ entityId })
   }
 
   private resolveFinalRarity() {

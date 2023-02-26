@@ -26,7 +26,7 @@ import { ItemDetailHeaderComponent } from './item-detail-header.component'
 import { ItemDetailInfoComponent } from './item-detail-info.component'
 import { ItemDetailPerksComponent } from './item-detail-perks.component'
 import { ItemDetailStatsComponent } from './item-detail-stats.component'
-import { ItemDetailService } from './item-detail.service'
+import { ItemDetailStore } from './item-detail.service'
 
 @Component({
   standalone: true,
@@ -48,39 +48,39 @@ import { ItemDetailService } from './item-detail.service'
   },
   providers: [
     {
-      provide: ItemDetailService,
+      provide: ItemDetailStore,
       useExisting: forwardRef(() => ItemCardComponent),
     },
   ],
 })
-export class ItemCardComponent extends ItemDetailService {
+export class ItemCardComponent extends ItemDetailStore {
   @Input()
   public set entityId(value: string) {
-    this.entityId$.next(value)
+    this.patchState({ entityId: value })
   }
 
   @Input()
   public set entity(value: ItemDefinitionMaster | Housingitems) {
-    this.entityId$.next(getItemId(value))
+    this.patchState({ entityId: getItemId(value) })
   }
 
   @Input()
   public set playerLevel(value: number) {
-    this.playerLevel$.next(value)
+    this.patchState({ playerLevel: value })
   }
 
   @Input()
   public set attrValueSums(value: Record<AttributeRef, number>) {
-    this.attrValueSums$.next(value)
+    this.patchState({ attrValueSums: value })
   }
 
   @Input()
   public set gsOverride(value: number) {
-    this.gsOverride$.next(value)
+    this.patchState({ gsOverride: value })
   }
   @Input()
   public set gsEditable(value: boolean) {
-    this.gsEditable$.next(value)
+    this.patchState({ gsEditable: value })
   }
   @Output()
   public gsEdit = this.gsEdit$
@@ -96,11 +96,11 @@ export class ItemCardComponent extends ItemDetailService {
 
   @Input()
   public set perkOverride(value: Record<string, string>) {
-    this.perkOverride$.next(value)
+    this.patchState({ perkOverride: value })
   }
   @Input()
   public set perkEditable(value: boolean) {
-    this.perkEditable$.next(value)
+    this.patchState({ perkEditable: value })
   }
   @Output()
   public perkEdit = this.perkEdit$
