@@ -1,11 +1,9 @@
-import { ConnectedPosition, Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay'
-import { ComponentPortal, DomPortal, Portal, TemplatePortal } from '@angular/cdk/portal'
+import { Overlay, OverlayConfig, OverlayRef } from '@angular/cdk/overlay'
+import { ComponentPortal } from '@angular/cdk/portal'
 import {
-  ChangeDetectorRef,
   ComponentRef,
   Directive,
   ElementRef,
-  HostListener,
   Input,
   NgZone,
   OnDestroy,
@@ -25,6 +23,7 @@ export declare type TooltipDirection =
   | TooltipDirectionY
   | `${TooltipDirectionX}-${TooltipDirectionY}`
   | `${TooltipDirectionY}-${TooltipDirectionX}`
+  | 'auto'
 export declare type TooltipTriggerType = 'click' | 'hover'
 export declare type TooltipScrollStrategy = 'close' | 'reposition'
 
@@ -38,7 +37,7 @@ export class TooltipDirective implements OnInit, OnDestroy {
   public tooltip: string | TemplateRef<any> | Type<any>
 
   @Input('tooltipPlacement')
-  public placement: TooltipDirection = 'top'
+  public placement: TooltipDirection = 'auto'
 
   @Input('tooltipTrigger')
   public trigger: TooltipTriggerType = 'hover'
@@ -150,35 +149,35 @@ export class TooltipDirective implements OnInit, OnDestroy {
 
   private getPosition() {
     let strategy = this.overlay.position().flexibleConnectedTo(this.elRef)
-    const [x, y] = this.placement.split('-')
-    // const position: Partial<ConnectedPosition>  = {
 
-    // }
-
-    // if (!y) {
-
-    // } else {
-
-    // }
+    if (this.placement === 'top') {
+      strategy = strategy
+        .withPositions([{ originX: 'center', originY: 'top', overlayX: 'center', overlayY: 'bottom' }])
+        .withDefaultOffsetY(-this.offset)
+    }
     if (this.placement === 'right') {
       strategy = strategy
         .withPositions([{ originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center' }])
         .withDefaultOffsetX(this.offset)
+    }
+    if (this.placement === 'bottom') {
+      strategy = strategy
+        .withPositions([{ originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top' }])
+        .withDefaultOffsetY(this.offset)
     }
     if (this.placement === 'left') {
       strategy = strategy
         .withPositions([{ originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center' }])
         .withDefaultOffsetX(-this.offset)
     }
-    if (this.placement === 'top') {
-      strategy = strategy
-        .withPositions([{ originX: 'center', originY: 'top', overlayX: 'center', overlayY: 'bottom' }])
-        .withDefaultOffsetY(-this.offset)
-    }
-    if (this.placement === 'bottom') {
-      strategy = strategy
-        .withPositions([{ originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top' }])
-        .withDefaultOffsetY(this.offset)
+    if (this.placement === 'auto') {
+      strategy = strategy.withPositions([
+        { originX: 'center', originY: 'top', overlayX: 'center', overlayY: 'bottom' },
+        { originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center' },
+        { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top' },
+        { originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center' },
+      ])
+      .withPush(true)
     }
     return strategy
   }
