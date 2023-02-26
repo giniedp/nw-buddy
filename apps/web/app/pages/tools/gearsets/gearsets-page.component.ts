@@ -14,6 +14,7 @@ import { NavToolbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { GearsetsTableAdapter } from './gearsets-table.adapter'
+import { GearsetLoadoutListComponent } from './loadout'
 
 @Component({
   standalone: true,
@@ -28,7 +29,8 @@ import { GearsetsTableAdapter } from './gearsets-table.adapter'
     NavToolbarModule,
     IconsModule,
     TooltipModule,
-    IonicModule
+    IonicModule,
+    GearsetLoadoutListComponent
   ],
   providers: [GearsetsTableAdapter.provider(), QuicksearchService, GearsetsStore],
   host: {
@@ -61,26 +63,9 @@ export class GearsetsPageComponent implements OnInit {
       .closed.pipe(filter((it) => !!it))
       .subscribe((newName) => {
         this.store.createRecord({
-          record: {
-            id: null,
-            name: newName,
-          },
+          id: null,
+          name: newName,
         })
-      })
-  }
-
-  protected deleteItem(item: GearsetRow) {
-    ConfirmDialogComponent.open(this.dialog, {
-      data: {
-        title: 'Delete Gearset',
-        body: 'Are you sure you want to delete this gearset?',
-        positive: 'Delete',
-        negative: 'Cancel',
-      },
-    })
-      .closed.pipe(filter((it) => !!it))
-      .subscribe(() => {
-        this.store.destroyRecord({ recordId: item.record.id })
       })
   }
 }

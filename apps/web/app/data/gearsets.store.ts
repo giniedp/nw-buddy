@@ -91,16 +91,15 @@ export class GearsetsStore extends ComponentStore<GearsetsState> {
     }
   })
 
-  public readonly createRecord = this.effect<{ record: GearsetRecord }>((value$) => {
-    return value$.pipe(
-      switchMap(async ({ record }) => {
-        await this.setsDB
-          .create(record)
-          .then((created) => this.rowCreated.next(this.buildRow(created)))
-          .catch(console.error)
+  public async createRecord(record: GearsetRecord) {
+    return await this.setsDB
+      .create(record)
+      .then((created) => {
+        this.rowCreated.next(this.buildRow(created))
+        return created
       })
-    )
-  })
+      .catch(console.error)
+  }
 
   public readonly updateRecord = this.effect<{ record: GearsetRecord }>((value$) => {
     return value$.pipe(
@@ -149,7 +148,9 @@ export class GearsetsStore extends ComponentStore<GearsetsState> {
         return m
       }, {}),
     }
-    result.gearScore = getAverageGearScore(Object.values(result.slots).map((it) => ({ id: it.slot.id, gearScore: it.instance?.gearScore || 0 })))
+    result.gearScore = getAverageGearScore(
+      Object.values(result.slots).map((it) => ({ id: it.slot.id, gearScore: it.instance?.gearScore || 0 }))
+    )
     result.gearScore = Math.round(result.gearScore)
     return result
   }

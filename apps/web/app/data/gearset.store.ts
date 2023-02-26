@@ -3,14 +3,14 @@ import { DomSanitizer } from '@angular/platform-browser'
 import { ComponentStore } from '@ngrx/component-store'
 import { filter, from, map, of, switchMap, tap } from 'rxjs'
 import { AttributeRef } from '~/nw/attributes'
-import { tapDebug } from '~/utils'
 
 import { GearsetCreateMode, GearsetRecord, GearsetsDB } from './gearsets.db'
 import { ImageRecord, ImagesDB } from './images.db'
-import { ItemInstance } from './item-instances.db'
+import { ItemInstance, ItemInstancesDB } from './item-instances.db'
 import { SkillBuild } from './skill-builds.db'
 
 export interface GearsetStoreState {
+  level?: number
   gearset: GearsetRecord
   isLoading: boolean
 }
@@ -44,8 +44,14 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
       })
     )
 
-  public constructor(private db: GearsetsDB, private imagesDb: ImagesDB, private sanitizer: DomSanitizer) {
+  public constructor(
+    private db: GearsetsDB,
+    private imagesDb: ImagesDB,
+    private itemsDb: ItemInstancesDB,
+    private sanitizer: DomSanitizer
+  ) {
     super({
+      level: null,
       gearset: null,
       isLoading: true,
     })
@@ -60,6 +66,15 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
       gearset: gearset,
       isLoading: false,
     }
+  })
+
+  /**
+   * Loads a set by id
+   */
+  public readonly loadById = this.effect<string>((value$) => {
+    return value$
+      .pipe(switchMap((id) => this.db.observeByid(id)))
+      .pipe(tap((gearset: GearsetRecord) => this.load(gearset)))
   })
 
   /**

@@ -7,8 +7,17 @@
   autofocus
   [disabled]="!(active | async)"
 />
-<span class="absolute right-5 top-0" [class.hidden]="!!value">ctrl+</span>
-<button class="absolute right-0 btn btn-sm btn-ghost btn-square swap swap-rotate" (click)="value ? (value = '') : null" [disabled]="!(active | async)">
+<span
+  class="absolute right-5 top-0 hidden md:inline-block pointer-events-none"
+  [class.opacity-25]="!(active | async)"
+  [class.opacity-0]="!!value"
+  >ctrl+</span
+>
+<button
+  class="absolute right-0 btn btn-sm btn-ghost btn-square swap swap-rotate"
+  (click)="value ? (value = '') : null"
+  [disabled]="!(active | async)"
+>
   <input type="checkbox" [checked]="!!value" />
   <nwb-icon [icon]="svgXmark" class="swap-on w-4 h-4"></nwb-icon>
   <span class="swap-off w-4 h-4 hidden md:inline-block">/</span>

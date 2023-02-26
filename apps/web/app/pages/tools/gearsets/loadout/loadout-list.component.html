@@ -1,0 +1,9 @@
+<div class="grid grid-cols-fill-sm sm:grid-cols-fill-lg gap-6">
+  <nwb-gearset-loadout-item
+    *ngFor="let item of records$ | async"
+    [geasrsetId]="item.id"
+    (delete)="deleteItem(item)"
+  ></nwb-gearset-loadout-item>
+
+  <nwb-gearset-loadout-item (create)="createItem()"></nwb-gearset-loadout-item>
+</div>
