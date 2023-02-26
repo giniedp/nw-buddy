@@ -77,7 +77,7 @@
     [class.border-transparent]="!highlight"
     [class.border-accent]="highlight"
   >
-    <nwb-item-detail-header class="h-full">
+    <nwb-item-detail-header class="h-full" [enableInfoLink]="true">
       <div class="content flex flex-row flex-wrap gap-1">
         <span *ngIf="rollThreshold" class="whitespace-nowrap badge badge-sm badge-primary">
           >= {{ rollThreshold }}
