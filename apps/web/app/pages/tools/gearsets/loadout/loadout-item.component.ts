@@ -39,7 +39,7 @@ export class GearsetLoadoutItemComponent {
   private readonly gearscore$ = combineLatest({
     level: this.char.level$,
     slots: this.store.gearset$.pipe(switchMap((it) => this.selectGearscoreSlots(it))),
-  }).pipe(map(({ level, slots }) => Math.floor(getAverageGearScore(slots, level))))
+  }).pipe(map(({ level, slots }) => getAverageGearScore(slots, level)))
 
   public constructor(private char: CharacterStore, private itemsDb: ItemInstancesDB, private store: GearsetStore) {
     // store.gearsetSlots$
