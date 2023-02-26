@@ -89,6 +89,8 @@ export class NwDbService {
   public items = table(() =>
     this.data
       .apiMethodsByPrefix('itemdefinitionsMaster', 'itemdefinitionsMasterCommon')
+      .sort()
+      .reverse() // ajust to avoid AI category to show first... items have no icons
       .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
   )
   public itemsMap = indexBy(() => this.items, 'ItemID')
