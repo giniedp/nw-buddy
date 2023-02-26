@@ -1,17 +1,14 @@
-import { ChangeDetectorRef, EventEmitter, Injectable, Output } from '@angular/core'
+import { ChangeDetectorRef, EventEmitter, Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
 import { sortBy } from 'lodash'
-import { BehaviorSubject, combineLatest, defer, map, ReplaySubject, switchMap } from 'rxjs'
+import { combineLatest, defer, map, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { AttributeRef } from '~/nw/attributes/nw-attributes'
-import { LootContext } from '~/nw/loot'
-//import type { AttributeRef } from '~/nw/attributes'
 import {
   getItemGearScoreLabel,
   getItemIconPath,
   getItemMaxGearScore,
-  getItemMinGearScore,
   getItemPerkBucketKeys,
   getItemPerkKeys,
   getItemRarity,
@@ -26,7 +23,7 @@ import {
   hasItemGearScore,
   hasPerkInherentAffix,
 } from '~/nw/utils'
-import { deferStateFlat, humanize, mapProp, mapPropTruthy, shareReplayRefCount } from '~/utils'
+import { humanize, mapProp, shareReplayRefCount } from '~/utils'
 import { ModelViewerService } from '../model-viewer/model-viewer.service'
 
 function isTruthy(value: any) {
@@ -109,8 +106,10 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
       tableId: recipe.replace('[LTID]', ''),
       tags: (item.SalvageLootTags || '').split(/[+,]/),
       tagValues: {
-        'MinContLevel': item.ContainerLevel
-      }
+        MinContLevel: item.ContainerLevel,
+        SalvageItemRarity: getItemRarity(item),
+        SalvageItemTier: item.Tier,
+      },
     }
   })
   public readonly hasPerks = combineLatest({
