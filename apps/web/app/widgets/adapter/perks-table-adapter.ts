@@ -346,7 +346,7 @@ const FIELDS: Record<keyof Perks, string> = {
   IconPath:                  'string',
   ItemClass:                 'ItemClass[]',
   ItemClassGSBonus:         'string',
-  ItemPerkConflictsLocText: 'string',
+  //ItemPerkConflictsLocText: 'string',
   PerkID:                    'string',
   PerkType:                  'PerkType',
   ScalingPerGearScore:       'number',

@@ -271,6 +271,8 @@ function appendFields(options: GridOptions, fields: string[][]) {
 }
 
 const FIELDS: Record<keyof Ability, string> = {
+  AttachedTargetSpellIds: 'string[]',
+  PowerLevelOverride: 'number',
   AbilityCooldownComparisonType:                 'ComparisonType',
   AbilityID:                                     'string',
   AbilityIdToCheckForTrackedHits:                'string',

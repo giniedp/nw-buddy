@@ -128,7 +128,7 @@ const FIELDS: Record<keyof Spelltable, string> = {
   InnerRadius: 'number',
   IsUnaffiliated: 'boolean',
   Length: 'number',
-  MaintainDistanceFromGround: 'boolean',
+  //MaintainDistanceFromGround: 'boolean',
   ManaCost: 'string',
   MaxChainNum: 'number',
   MaxRadiusScaling: 'string',
@@ -176,7 +176,7 @@ const FIELDS: Record<keyof Spelltable, string> = {
   TrackNumInVolume: 'boolean',
   UseCameraTargetLock: 'boolean',
   UseChainCasterPaperdoll: 'boolean',
-  UseDirectTargetAsAttachOwner: 'boolean',
+  //UseDirectTargetAsAttachOwner: 'boolean',
   UseStatusEffectDuration: 'boolean',
   WeaponSlotOverride: 'string',
 }

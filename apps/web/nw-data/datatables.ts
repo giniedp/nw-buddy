@@ -46,6 +46,7 @@ import type {
   PoiDefinition,
   Promotionmutations,
   Spelltable,
+  StaminacostsAncientguardian,
   StaminacostsPlayer,
   Statuseffect,
   Statuseffectcategories,
@@ -130,6 +131,9 @@ export abstract class NwDataLoader {
   public charactertablesAncientguardianDatatablesDamagetableAncientguardianheavyboss() {
     return this.load<Damagetable[]>('charactertables/ancientguardian_datatables/javelindata_damagetable_ancientguardianheavyboss.json')
   }
+  public charactertablesAncientguardianDatatablesStaminacostsAncientguardian() {
+    return this.load<StaminacostsAncientguardian[]>('charactertables/ancientguardian_datatables/javelindata_staminacosts_ancientguardian.json')
+  }
   public charactertablesAnubianguardianDatatablesDamagetableAnubianguardianBrute() {
     return this.load<Damagetable[]>('charactertables/anubianguardian_datatables/javelindata_damagetable_anubianguardian_brute.json')
   }
@@ -147,6 +151,9 @@ export abstract class NwDataLoader {
   }
   public charactertablesAnubianscarabDatatablesDamagetableAnubianscarab() {
     return this.load<Damagetable[]>('charactertables/anubianscarab_datatables/javelindata_damagetable_anubianscarab.json')
+  }
+  public charactertablesArmoredDragonDamagetableArmoreddragon() {
+    return this.load<Damagetable[]>('charactertables/armored_dragon/javelindata_damagetable_armoreddragon.json')
   }
   public charactertablesBearDatatablesDamagetableBear() {
     return this.load<Damagetable[]>('charactertables/bear_datatables/javelindata_damagetable_bear.json')
@@ -220,23 +227,14 @@ export abstract class NwDataLoader {
   public charactertablesBrokenDatatablesDamagetableBrokenvillagerSickle() {
     return this.load<Damagetable[]>('charactertables/broken_datatables/javelindata_damagetable_brokenvillager_sickle.json')
   }
-  public charactertablesBrotherUmbertoDatatablesDamagetableBrotherUmberto() {
-    return this.load<Damagetable[]>('charactertables/brother_umberto_datatables/javelindata_damagetable_brother_umberto.json')
-  }
   public charactertablesBruteDatatablesDamagetableBrute() {
     return this.load<Damagetable[]>('charactertables/brute_datatables/javelindata_damagetable_brute.json')
   }
   public charactertablesBruteDatatablesDamagetableBruteYeti() {
     return this.load<Damagetable[]>('charactertables/brute_datatables/javelindata_damagetable_brute_yeti.json')
   }
-  public charactertablesBruteDatatablesDamagetableFulgoris() {
-    return this.load<Damagetable[]>('charactertables/brute_datatables/javelindata_damagetable_fulgoris.json')
-  }
   public charactertablesBruteDatatablesDamagetableSwampbeast() {
     return this.load<Damagetable[]>('charactertables/brute_datatables/javelindata_damagetable_swampbeast.json')
-  }
-  public charactertablesCommanderlothDatatablesDamagetableCommanderloth() {
-    return this.load<Damagetable[]>('charactertables/commanderloth_datatables/javelindata_damagetable_commanderloth.json')
   }
   public charactertablesCorruptionheavyDatatablesDamagetableCorruptionHeavy() {
     return this.load<Damagetable[]>('charactertables/corruptionheavy_datatables/javelindata_damagetable_corruption_heavy.json')
@@ -316,9 +314,6 @@ export abstract class NwDataLoader {
   public charactertablesEmpressDatatablesDamagetablePedestal() {
     return this.load<Damagetable[]>('charactertables/empress_datatables/javelindata_damagetable_pedestal.json')
   }
-  public charactertablesGhastlyDatatablesDamagetableGhastlyVillagerShovel() {
-    return this.load<Damagetable[]>('charactertables/ghastly_datatables/javelindata_damagetable_ghastly_villager_shovel.json')
-  }
   public charactertablesGhostDatatablesDamagetableGhost() {
     return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_ghost.json')
   }
@@ -340,35 +335,14 @@ export abstract class NwDataLoader {
   public charactertablesGhostDatatablesDamagetableOrGhostBoss() {
     return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_or_ghost_boss.json')
   }
-  public charactertablesGruntDatatablesDamagetableFlamegrunt() {
-    return this.load<Damagetable[]>('charactertables/grunt_datatables/javelindata_damagetable_flamegrunt.json')
-  }
   public charactertablesGruntDatatablesDamagetableGrunt() {
     return this.load<Damagetable[]>('charactertables/grunt_datatables/javelindata_damagetable_grunt.json')
-  }
-  public charactertablesHumanDatatablesDamagetableEvilKnightFlamekeeper() {
-    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_evil_knight_flamekeeper.json')
-  }
-  public charactertablesHumanDatatablesDamagetableEvilKnightGruntmaster() {
-    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_evil_knight_gruntmaster.json')
-  }
-  public charactertablesHumanDatatablesDamagetableHumanBlunderbuss() {
-    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_blunderbuss.json')
   }
   public charactertablesHumanDatatablesDamagetableHumanBow() {
     return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_bow.json')
   }
-  public charactertablesHumanDatatablesDamagetableHumanFirechampion() {
-    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_firechampion.json')
-  }
   public charactertablesHumanDatatablesDamagetableHumanGreataxe() {
     return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_greataxe.json')
-  }
-  public charactertablesHumanDatatablesDamagetableHumanHeavy() {
-    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_heavy.json')
-  }
-  public charactertablesHumanDatatablesDamagetableHumanLifestaff() {
-    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_lifestaff.json')
   }
   public charactertablesHumanDatatablesDamagetableHumanMace() {
     return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_mace.json')
@@ -384,9 +358,6 @@ export abstract class NwDataLoader {
   }
   public charactertablesHumanDatatablesDamagetableHumanSword() {
     return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_sword.json')
-  }
-  public charactertablesHumanDatatablesDamagetableHumanVoidgauntlet() {
-    return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_voidgauntlet.json')
   }
   public charactertablesHumanDatatablesDamagetableHumanWarhammer() {
     return this.load<Damagetable[]>('charactertables/human_datatables/javelindata_damagetable_human_warhammer.json')
@@ -480,9 +451,6 @@ export abstract class NwDataLoader {
   }
   public charactertablesNagaDatatablesDamagetableNagaCorrupted() {
     return this.load<Damagetable[]>('charactertables/naga_datatables/javelindata_damagetable_naga_corrupted.json')
-  }
-  public charactertablesNagaDatatablesDamagetableNagaFire() {
-    return this.load<Damagetable[]>('charactertables/naga_datatables/javelindata_damagetable_naga_fire.json')
   }
   public charactertablesNagaDatatablesDamagetableNagaWithered() {
     return this.load<Damagetable[]>('charactertables/naga_datatables/javelindata_damagetable_naga_withered.json')
@@ -630,6 +598,9 @@ export abstract class NwDataLoader {
   }
   public charactertablesUndeadDatatablesDamagetableUndeadShaman() {
     return this.load<Damagetable[]>('charactertables/undead_datatables/javelindata_damagetable_undead_shaman.json')
+  }
+  public charactertablesWispywaspswarmDatatablesDamagetableWispyWaspSwarm() {
+    return this.load<Damagetable[]>('charactertables/wispywaspswarm_datatables/javelindata_damagetable_wispy_wasp_swarm.json')
   }
   public charactertablesWitheredbeetleDatatablesDamagetableWitheredbeetle() {
     return this.load<Damagetable[]>('charactertables/witheredbeetle_datatables/javelindata_damagetable_witheredbeetle.json')
@@ -814,9 +785,6 @@ export abstract class NwDataLoader {
   public itemdefinitionsMasterQuest() {
     return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_quest.json')
   }
-  public itemdefinitionsMasterSeasons() {
-    return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_seasons.json')
-  }
   public itemdefinitionsMasterSkins() {
     return this.load<ItemDefinitionMaster[]>('javelindata_itemdefinitions_master_skins.json')
   }
@@ -855,9 +823,6 @@ export abstract class NwDataLoader {
   }
   public loottablesSalvage() {
     return this.load<Loottable[]>('javelindata_loottables_salvage.json')
-  }
-  public loottablesSeasons() {
-    return this.load<Loottable[]>('javelindata_loottables_seasons.json')
   }
   public manacostsPlayer() {
     return this.load<ManacostsPlayer[]>('javelindata_manacosts_player.json')
@@ -952,9 +917,6 @@ export abstract class NwDataLoader {
   public spelltableFiremagic() {
     return this.load<Spelltable[]>('javelindata_spelltable_firemagic.json')
   }
-  public spelltableFlail() {
-    return this.load<Spelltable[]>('javelindata_spelltable_flail.json')
-  }
   public spelltableGlobal() {
     return this.load<Spelltable[]>('javelindata_spelltable_global.json')
   }
@@ -1020,9 +982,6 @@ export abstract class NwDataLoader {
   }
   public statuseffectsFirestaff() {
     return this.load<Statuseffect[]>('javelindata_statuseffects_firestaff.json')
-  }
-  public statuseffectsFlail() {
-    return this.load<Statuseffect[]>('javelindata_statuseffects_flail.json')
   }
   public statuseffectsGreataxe() {
     return this.load<Statuseffect[]>('javelindata_statuseffects_greataxe.json')
