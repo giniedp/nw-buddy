@@ -21,7 +21,7 @@
     </button>
   </nwb-item-header>
 
-  <nwb-item-detail [entityId]="vm.itemId" class="p-1" class="flex flex-row gap-1" *ngIf="vm.itemId">
+  <nwb-item-detail [entityId]="vm.itemId" class="p-1" class="flex flex-row gap-1" *ngIf="vm.itemId" [tooltip]="tplTip">
     <nwb-item-header [rarity]="vm.rarity" class="relative font-nimbus gap-2">
       <nwb-item-icon [nwbItemIcon]="vm.item" [solid]="true" class="z-10 w-12 h-12"></nwb-item-icon>
       <button
@@ -44,4 +44,14 @@
       </button>
     </nwb-item-header>
   </nwb-item-detail>
+
+  <ng-template #tplTip>
+    <nwb-item-card
+      class="relative flex-1"
+      [entityId]="vm.itemId"
+      [gsOverride]="vm.instance?.gearScore"
+      [perkOverride]="vm.instance?.perks"
+    >
+    </nwb-item-card>
+  </ng-template>
 </ng-container>

@@ -2,10 +2,11 @@ import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { filter, switchMap } from 'rxjs'
+import { combineLatest, filter, map, switchMap } from 'rxjs'
 import { GearsetRecord, GearsetsStore } from '~/data'
 import { NwModule } from '~/nw'
 import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/layout'
+import { QuicksearchService } from '~/ui/quicksearch'
 import { GearsetLoadoutItemComponent } from './loadout-item.component'
 
 @Component({
@@ -21,13 +22,25 @@ import { GearsetLoadoutItemComponent } from './loadout-item.component'
   },
 })
 export class GearsetLoadoutListComponent {
-  protected readonly records$ = this.store.records$
+
+  protected readonly records$ = combineLatest({
+    records: this.store.records$,
+    search: this.search.query,
+  }).pipe(
+    map(({ records, search }) => {
+      if (!search || !records?.length) {
+        return records
+      }
+      return records.filter((it) => it.name.toLocaleLowerCase().includes(search.toLocaleLowerCase()))
+    })
+  )
 
   public constructor(
     private store: GearsetsStore,
     private router: Router,
     private route: ActivatedRoute,
-    private dialog: Dialog
+    private dialog: Dialog,
+    private search: QuicksearchService
   ) {
     store.loadAll()
   }

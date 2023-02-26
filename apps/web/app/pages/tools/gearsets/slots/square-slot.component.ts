@@ -8,6 +8,7 @@ import { NwModule } from '~/nw'
 import { EquipSlot, EquipSlotId, EQUIP_SLOTS, getItemId } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical, svgPlus } from '~/ui/icons/svg'
+import { TooltipModule } from '~/ui/tooltip'
 import { ItemDetailModule } from '~/widgets/item-detail'
 
 export interface GearsetSquareSlotState {
@@ -20,7 +21,7 @@ export interface GearsetSquareSlotState {
   selector: 'nwb-gearset-square-slot',
   templateUrl: './square-slot.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemDetailModule, IconsModule, CdkMenuModule],
+  imports: [CommonModule, NwModule, ItemDetailModule, IconsModule, CdkMenuModule, TooltipModule],
   providers: [GearsetSlotStore],
   host: {
     class: 'inline-block rounded-md overflow-clip',
@@ -51,6 +52,7 @@ export class GersetSquareSlotComponent extends ComponentStore<GearsetSquareSlotS
 
   protected vm$ = combineLatest({
     item: this.store.item$,
+    instance: this.store.instance$,
     rarity: this.store.rarity$,
     itemId: this.store.item$.pipe(map((it) => getItemId(it))),
     slot: this.state$.pipe(map((it) => it.slot))
