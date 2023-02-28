@@ -6,7 +6,7 @@ import { TranslateService } from '~/i18n'
 import { NwLinkService, NwService } from '~/nw'
 import { NwExpressionContextService } from '~/nw/expression'
 import { getPerksInherentMODs, hasPerkInherentAffix, isPerkGenerated, isPerkInherent } from '~/nw/utils'
-import { SelectboxFilter } from '~/ui/ag-grid'
+import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 
@@ -159,7 +159,7 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
               headerValueGetter: () => 'Type',
               field: this.fieldName('PerkType'),
               width: 120,
-              filter: SelectboxFilter,
+              filter: SelectFilter,
             }),
             {
               colId: 'itemClassGSBonus',
@@ -177,7 +177,7 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
                   minWidth: 90,
                   maxWidth: 90,
                   resizable: false,
-                  filter: SelectboxFilter,
+                  filter: SelectFilter,
                 }),
                 this.colDef({
                   colId: 'itemClassGSBonusGS',
@@ -202,11 +202,9 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
               wrapText: true,
               autoHeight: true,
               cellClass: ['multiline-cell', 'py-2'],
-              filter: SelectboxFilter,
+              filter: SelectFilter,
               cellRenderer: this.cellRendererTags(humanize),
-              filterParams: SelectboxFilter.params({
-                showCondition: true,
-                conditionAND: true,
+              filterParams: SelectFilter.params({
                 showSearch: true,
               }),
             }),
@@ -217,11 +215,9 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
               wrapText: true,
               autoHeight: true,
               cellClass: ['multiline-cell', 'py-2'],
-              filter: SelectboxFilter,
+              filter: SelectFilter,
               cellRenderer: this.cellRendererTags(humanize),
-              filterParams: SelectboxFilter.params({
-                showCondition: true,
-                conditionAND: true,
+              filterParams: SelectFilter.params({
                 showSearch: true,
               }),
             }),
@@ -232,18 +228,14 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
               wrapText: true,
               autoHeight: true,
               cellClass: ['multiline-cell', 'py-2'],
-              filter: SelectboxFilter,
+              filter: SelectFilter,
               cellRenderer: this.cellRendererTags(humanize),
-              filterParams: SelectboxFilter.params({
-                showCondition: true,
-                conditionAND: true,
-                showSearch: false,
-              }),
+              filterParams: SelectFilter.params({}),
             }),
             this.colDef({
               colId: 'isStackableAbility',
               headerValueGetter: () => 'Is Stackable Ability',
-              filter: SelectboxFilter,
+              filter: SelectFilter,
               valueGetter: this.valueGetter(({ data }) => {
                 const ability = data['$ability'] as Ability
                 return ability?.IsStackableAbility
@@ -313,9 +305,8 @@ function appendFields(columns: Array<ColDef>, fields: string[][], fieldPrefix: s
       },
       hide: true,
     }
-    colDef.filter = SelectboxFilter
-    colDef.filterParams = SelectboxFilter.params({
-      showCondition: true,
+    colDef.filter = SelectFilter
+    colDef.filterParams = SelectFilter.params({
       showSearch: true,
     })
     if (type.includes('number')) {

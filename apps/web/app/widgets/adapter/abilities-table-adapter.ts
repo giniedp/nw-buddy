@@ -7,7 +7,7 @@ import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService,  } from '~/nw'
 import { NwWeaponType, NwWeaponTypesService } from '~/nw/weapon-types'
 import { getWeaponTagLabel } from '~/nw/utils'
-import { SelectboxFilter } from '~/ui/ag-grid'
+import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 import { NwExpressionService } from '~/nw/expression'
@@ -147,32 +147,32 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
           headerValueGetter: () => 'Weapon Tag',
           field: this.fieldName('WeaponTag'),
           valueFormatter: ({ value }) => this.i18n.get(getWeaponTagLabel(value)),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
         }),
         this.colDef({
           colId: 'source',
           headerValueGetter: () => 'Source',
           valueGetter: this.valueGetter(({ data }) => data['$source']),
           hide: true,
-          filter: SelectboxFilter,
+          filter: SelectFilter,
         }),
         this.colDef({
           colId: 'attackType',
           headerValueGetter: () => 'Attack Type',
           field: this.fieldName('AttackType'),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
         }),
         this.colDef({
           colId: 'uiCategory',
           headerValueGetter: () => 'UI Category',
           field: this.fieldName('UICategory'),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
         }),
         this.colDef({
           colId: 'afterAction',
           headerValueGetter: () => 'After Action',
           field: this.fieldName('AfterAction'),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
         }),
         this.colDef({
           colId: 'onAction',
@@ -186,9 +186,8 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
             return result.length ? result : null
           }),
           cellRenderer: this.cellRendererTags(humanize),
-          filter: SelectboxFilter,
-          filterParams: SelectboxFilter.params({
-            showCondition: true,
+          filter: SelectFilter,
+          filterParams: SelectFilter.params({
             showSearch: true
           })
         }),
@@ -256,9 +255,8 @@ function appendFields(options: GridOptions, fields: string[][]) {
       field: field,
       hide: true,
     }
-    colDef.filter = SelectboxFilter
-    colDef.filterParams = SelectboxFilter.params({
-      showCondition: true,
+    colDef.filter = SelectFilter
+    colDef.filterParams = SelectFilter.params({
       showSearch: true,
     })
     if (type.includes('number')) {

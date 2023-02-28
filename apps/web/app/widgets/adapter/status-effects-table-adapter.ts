@@ -6,7 +6,7 @@ import { defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwLinkService, NwService } from '~/nw'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
-import { SelectboxFilter } from '~/ui/ag-grid'
+import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, dataTableProvider } from '~/ui/data-table'
 import { CaseInsensitiveMap, humanize, shareReplayRefCount } from '~/utils'
 
@@ -104,11 +104,9 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
           headerValueGetter: () => 'Effect Categories',
           field: this.fieldName('EffectCategories'),
           autoHeight: true,
-          filter: SelectboxFilter,
+          filter: SelectFilter,
           cellRenderer: this.cellRendererTags(humanize),
-          filterParams: SelectboxFilter.params({
-            showCondition: true,
-            conditionAND: true,
+          filterParams: SelectFilter.params({
             showSearch: true,
           }),
         }),
@@ -151,9 +149,8 @@ function appendFields(options: GridOptions, fields: string[][]) {
       field: field,
       hide: true,
     }
-    colDef.filter = SelectboxFilter
-    colDef.filterParams = SelectboxFilter.params({
-      showCondition: true,
+    colDef.filter = SelectFilter
+    colDef.filterParams = SelectFilter.params({
       showSearch: true,
     })
     if (type.includes('number')) {

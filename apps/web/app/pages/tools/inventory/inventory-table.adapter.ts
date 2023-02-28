@@ -7,7 +7,7 @@ import { ItemInstanceRow, ItemInstancesStore } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwLinkService } from '~/nw'
 import { EQUIP_SLOTS, getItemIconPath, getItemId, getItemRarityLabel, getItemTierAsRoman, isItemNamed } from '~/nw/utils'
-import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
+import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { svgTrashCan } from '~/ui/icons/svg'
 import { ConfirmDialogComponent } from '~/ui/layout'
@@ -117,10 +117,9 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
               })
             )
           }),
-          filter: SelectboxFilter,
-          filterParams: SelectboxFilter.params({
+          filter: SelectFilter,
+          filterParams: SelectFilter.params({
             showSearch: true,
-            showCondition: true,
             optionsGetter: (node) => {
               const perks = (node.data as ItemInstanceRow).perks || []
               return perks
@@ -140,7 +139,7 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
           headerValueGetter: () => 'Rarity',
           valueGetter: this.valueGetter(({ data }) => String(data.rarity)),
           valueFormatter: ({ value }) => this.i18n.get(getItemRarityLabel(value)),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
           width: 80,
           getQuickFilterText: ({ value }) => value,
         }),
@@ -149,7 +148,7 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
           headerValueGetter: () => 'Tier',
           width: 60,
           valueGetter: this.valueGetter(({ data }) => getItemTierAsRoman(data.item.Tier)),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
         }),
 
         this.colDef({
@@ -174,7 +173,7 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
           headerValueGetter: () => 'Item Type',
           valueGetter: this.valueGetter(({ data }) => data.item.ItemType),
           width: 100,
-          filter: SelectboxFilter,
+          filter: SelectFilter,
           getQuickFilterText: ({ value }) => value,
         }),
         this.colDef({
@@ -183,12 +182,8 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
           width: 250,
           valueGetter: this.valueGetter(({ data }) => data.item.ItemClass),
           cellRenderer: this.cellRendererTags(humanize),
-          filter: SelectboxFilter,
-          filterParams: SelectboxFilter.params({
-            showCondition: true,
-            conditionAND: false,
-            showSearch: true,
-          }),
+          filter: SelectFilter,
+          filterParams: SelectFilter.params({}),
         }),
         this.colDef({
           colId: 'actions',

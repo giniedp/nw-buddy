@@ -18,7 +18,7 @@ import {
   VitalFamilyInfo,
 } from '~/nw/utils'
 import { NwVitalsService } from '~/nw/vitals'
-import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
+import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
 import { CellRendererService, DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 
@@ -139,7 +139,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           }),
           width: 125,
           getQuickFilterText: ({ value }) => value,
-          filter: SelectboxFilter,
+          filter: SelectFilter,
         }),
         this.colDef({
           colId: 'creatureType',
@@ -149,7 +149,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           field: this.fieldName('CreatureType'),
           valueFormatter: ({ value }) => humanize(value),
           getQuickFilterText: ({ value }) => value,
-          filter: SelectboxFilter,
+          filter: SelectFilter,
         }),
         this.colDef({
           colId: 'categories',
@@ -162,10 +162,9 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           cellRenderer: this.cellRendererTags(humanize, (value) => {
             return isVitalCombatCategory(value) ? 'badge-error' : 'badge-secondary'
           }),
-          filter: SelectboxFilter,
-          filterParams: SelectboxFilter.params({
+          filter: SelectFilter,
+          filterParams: SelectFilter.params({
             showSearch: true,
-            showCondition: true,
           }),
         }),
         this.colDef({
@@ -183,7 +182,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           hide: true,
           headerValueGetter: () => 'Loot Table',
           field: this.fieldName('LootTableId'),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
         }),
         this.colDef({
           colId: 'lootTags',
@@ -193,17 +192,16 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           cellRenderer: this.cellRendererTags(humanize, (value) => {
             return isVitalCombatCategory(value) ? 'badge-error' : 'badge-secondary'
           }),
-          filter: SelectboxFilter,
-          filterParams: SelectboxFilter.params({
+          filter: SelectFilter,
+          filterParams: SelectFilter.params({
             showSearch: true,
-            showCondition: true,
           }),
         }),
         this.colDef({
           colId: 'expedition',
           headerValueGetter: () => 'Expedition',
           valueGetter: this.valueGetter(({ data }) => data?.$dungeons?.map((it) => this.i18n.get(it.DisplayName))),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
         }),
         this.colDef({
           colId: 'dmgEffectivenessSlash',

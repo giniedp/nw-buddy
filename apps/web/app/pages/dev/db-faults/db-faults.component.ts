@@ -6,7 +6,7 @@ import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService, NwModule } from '~/nw'
 import { getItemIconPath, getItemPerks, getItemRarity, isPerkGem, isPerkGenerated, isPerkInherent } from '~/nw/utils'
-import { SelectboxFilter } from '~/ui/ag-grid'
+import { SelectFilter } from '~/ui/ag-grid'
 import { CellRendererService, DataTableAdapter, DataTableCategory, DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { humanize } from '~/utils'
@@ -91,8 +91,8 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
           width: 250,
           valueGetter: this.valueGetter(({ data }) => data.item['$source']),
           getQuickFilterText: ({ value }) => value,
-          filter: SelectboxFilter,
-          filterParams: SelectboxFilter.params({
+          filter: SelectFilter,
+          filterParams: SelectFilter.params({
             showSearch: false,
           }),
         }),
@@ -115,8 +115,8 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
             return result
           }),
           getQuickFilterText: ({ value }) => value,
-          filter: SelectboxFilter,
-          filterParams: SelectboxFilter.params({
+          filter: SelectFilter,
+          filterParams: SelectFilter.params({
             showSearch: false,
           }),
         }),
@@ -126,10 +126,8 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
           width: 250,
           valueGetter: this.valueGetter(({ data }) => data.item.ItemClass),
           cellRenderer: this.r.tagListRenderer(humanize),
-          filter: SelectboxFilter,
-          filterParams: SelectboxFilter.params({
-            showCondition: true,
-            conditionAND: false,
+          filter: SelectFilter,
+          filterParams: SelectFilter.params({
             showSearch: true,
           }),
         }),

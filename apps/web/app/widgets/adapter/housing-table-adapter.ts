@@ -13,7 +13,7 @@ import {
   getUIHousingCategoryLabel,
 } from '~/nw/utils'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
-import { SelectboxFilter } from '~/ui/ag-grid'
+import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize } from '~/utils'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
@@ -89,7 +89,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
           headerValueGetter: () => 'Rarity',
           valueGetter: ({ data }) => String(getItemRarity(data)),
           valueFormatter: ({ value }) => this.i18n.get(getItemRarityLabel(value)),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
           width: 130,
           getQuickFilterText: ({ value }) => value,
         }),
@@ -98,7 +98,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
           headerValueGetter: () => 'Tier',
           width: 80,
           field: this.fieldName('Tier'),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
           valueGetter: ({ data }) => getItemTierAsRoman(data.Tier),
         }),
         this.colDef({
@@ -152,7 +152,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
           headerName: 'Placement',
           field: this.fieldName('HousingTag1 Placed'),
           valueFormatter: ({ value }) => humanize(value),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
           width: 150,
         }),
         this.colDef({
@@ -161,7 +161,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
           valueGetter: this.valueGetter(({ data }) => data.UIHousingCategory),
           valueFormatter: ({ value }) => this.i18n.get(getUIHousingCategoryLabel(value)),
           getQuickFilterText: ({ value }) => this.i18n.get(getUIHousingCategoryLabel(value)),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
           width: 150,
         }),
         this.colDef({
@@ -169,7 +169,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
           headerValueGetter: () => 'Obtain',
           field: this.fieldName('HowToOptain (Primarily)'),
           valueFormatter: ({ value }) => humanize(value),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
           width: 150,
         }),
         this.colDef({
@@ -181,10 +181,9 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
             return (data[colDef.field] || '').trim().split('+')
           },
           cellRenderer: this.cellRendererTags(humanize),
-          filter: SelectboxFilter,
-          filterParams: SelectboxFilter.params({
+          filter: SelectFilter,
+          filterParams: SelectFilter.params({
             showSearch: true,
-            showCondition: true,
           }),
         }),
       ],

@@ -5,7 +5,7 @@ import { defer, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwLinkService, NwService } from '~/nw'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
-import { SelectboxFilter } from '~/ui/ag-grid'
+import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 
@@ -77,10 +77,9 @@ export class PoiTableAdapter extends DataTableAdapter<PoiDefinition> {
           headerValueGetter: () => 'Loot Tags',
           field: this.fieldName('LootTags'),
           cellRenderer: this.cellRendererTags(humanize),
-          filter: SelectboxFilter,
-          filterParams: SelectboxFilter.params({
+          filter: SelectFilter,
+          filterParams: SelectFilter.params({
             showSearch: true,
-            showCondition: true,
           }),
         }),
         this.colDef({

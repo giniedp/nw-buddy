@@ -27,7 +27,7 @@ import {
   isItemWeapon,
   isMasterItem
 } from '~/nw/utils'
-import { SelectboxFilter } from '~/ui/ag-grid'
+import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { shareReplayRefCount } from '~/utils'
@@ -153,7 +153,7 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
           headerName: 'Rarity',
           valueGetter: ({ data }) => getItemRarity(data),
           valueFormatter: ({ value }) => this.i18n.get(getItemRarityLabel(value)),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
           width: 130,
           getQuickFilterText: ({ value }) => value,
         },
@@ -161,7 +161,7 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
           width: 80,
           field: this.fieldName('Tier'),
           valueGetter: ({ data }) => getItemTierAsRoman(data.Tier),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
         },
       ],
     }

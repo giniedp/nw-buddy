@@ -16,7 +16,7 @@ import {
   getTradeSkillLabel,
 } from '~/nw/utils'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
-import { RangeFilter, SelectboxFilter } from '~/ui/ag-grid'
+import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { shareReplayRefCount } from '~/utils'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
@@ -113,10 +113,9 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
               }),
             })
           }),
-          filter: SelectboxFilter,
-          filterParams: SelectboxFilter.params({
+          filter: SelectFilter,
+          filterParams: SelectFilter.params({
             showSearch: true,
-            showCondition: true,
             optionsGetter: (node) => {
               const items = (node.data as RecipeWithItem).$ingredients || []
               return items.map((item) => {
@@ -177,7 +176,7 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           width: 120,
           field: this.fieldName('Tradeskill'),
           valueFormatter: this.valueFormatter<string>(({ value }) => this.i18n.get(getTradeSkillLabel(value))),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
         }),
         this.colDef({
           colId: 'craftingCategory',
@@ -185,8 +184,8 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           width: 150,
           field: this.fieldName('CraftingCategory'),
           valueFormatter: this.valueFormatter<string>(({ value }) => this.i18n.get(getCraftingCategoryLabel(value))),
-          filter: SelectboxFilter,
-          filterParams: SelectboxFilter.params({
+          filter: SelectFilter,
+          filterParams: SelectFilter.params({
             showSearch: true,
           }),
         }),
@@ -196,8 +195,8 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           width: 150,
           field: this.fieldName('CraftingGroup'),
           valueFormatter: this.valueFormatter<string>(({ value }) => this.i18n.get(getCraftingGroupLabel(value))),
-          filter: SelectboxFilter,
-          filterParams: SelectboxFilter.params({
+          filter: SelectFilter,
+          filterParams: SelectFilter.params({
             showSearch: true,
           }),
         }),

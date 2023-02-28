@@ -6,7 +6,7 @@ import { combineLatest, defer, map, merge, Observable, of, takeUntil } from 'rxj
 import { TranslateService } from '~/i18n'
 import { IconComponent, NwLinkService, NwService } from '~/nw'
 import { getItemIconPath, getItemRarity, getItemTierAsRoman, isItemNamed } from '~/nw/utils'
-import { mithrilCell, SelectboxFilter } from '~/ui/ag-grid'
+import { mithrilCell, SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { LayoutService } from '~/ui/layout'
 import { shareReplayRefCount } from '~/utils'
@@ -52,13 +52,13 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
           headerName: 'Tier',
           width: 60,
           valueGetter: ({ data }) => getItemTierAsRoman(field(data, 'tier')),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
         },
         {
           headerName: 'Weight',
           width: 80,
           field: fieldName('weight'),
-          filter: SelectboxFilter,
+          filter: SelectFilter,
         },
         {
           headerName: 'Common Perks',
@@ -81,10 +81,9 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
               ])
             },
           }),
-          filter: SelectboxFilter,
-          filterParams: SelectboxFilter.params({
+          filter: SelectFilter,
+          filterParams: SelectFilter.params({
             showSearch: true,
-            showCondition: true,
             optionsGetter: (node) => {
               const perks = (node.data as Armorset).perks || []
               return perks.map((perk) => {

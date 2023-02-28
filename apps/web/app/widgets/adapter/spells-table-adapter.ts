@@ -3,7 +3,7 @@ import { Spelltable } from '@nw-data/types'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { defer, map, Observable, of } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { SelectboxFilter } from '~/ui/ag-grid'
+import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize } from '~/utils'
 
@@ -73,9 +73,8 @@ function appendFields(columns: Array<ColDef>, fields: string[][]) {
       valueGetter: ({ data }) => data[field],
       hide: true,
     }
-    colDef.filter = SelectboxFilter
-    colDef.filterParams = SelectboxFilter.params({
-      showCondition: true,
+    colDef.filter = SelectFilter
+    colDef.filterParams = SelectFilter.params({
       showSearch: true,
     })
     if (type.includes('number')) {
