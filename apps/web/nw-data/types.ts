@@ -3381,8 +3381,6 @@ export interface ValueLimits {
     DMGStandard?:                  number;
     DMGStrike?:                    number;
     DMGThrust?:                    number;
-    EffectDurationMods?:           number;
-    ElementalArmor?:               number;
     FactionReputationMod?:         number;
     FactionTokensMod?:             number;
     FishRarityRollModifier?:       number;
@@ -3391,9 +3389,7 @@ export interface ValueLimits {
     HealMod?:                      number;
     MaxHealth?:                    number;
     MoveSpeedMod?:                 number;
-    PhysicalArmor?:                number;
     SprintSpeedMod?:               number;
-    StaminaRate?:                  number;
     SummerFishRarityRollModifier?: number;
 }
 export interface TerritoryStanding {
