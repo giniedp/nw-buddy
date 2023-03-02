@@ -5,6 +5,7 @@ import { ReplaySubject } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { ModifierSource } from '~/nw/mannequin/modifier'
 import { getItemIconPath } from '~/nw/utils'
+import { humanize } from '~/utils'
 
 @Component({
   standalone: true,
@@ -47,9 +48,13 @@ export class ModifierSourceLabelComponent {
       }
     }
     if (data.ability) {
+      let label = data.ability.DisplayName || data.label || data.ability.AbilityID
+      if (data.ability.AbilityID.match(/_Bonus_\d+_\d$/)) {
+        label = humanize(data.ability.AbilityID.replace(/_\d$/, ''))
+      }
       return {
         icon: data.ability.Icon || data.icon,
-        label: data.ability.DisplayName || data.label || data.ability.AbilityID,
+        label: label,
       }
     }
     if (data.effect) {

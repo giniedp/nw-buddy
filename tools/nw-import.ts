@@ -187,6 +187,7 @@ program
                 'RemoveTargetStatusEffectsList',
                 'SelfApplyStatusEffect',
                 'StaminaCostList',
+                'StatusEffectCategories',
                 'StatusEffectCategoriesList',
                 'StatusEffectsList',
                 'TargetStatusEffectCategory',
@@ -198,6 +199,18 @@ program
               match: ['Icon'],
               remap: (value: string) => value === 'bowAbility5_mod2' ? null : value,
             }
+          ],
+        },
+        {
+          file: /javelindata_statuseffectcategories\.json/,
+          rules: [
+            {
+              match: 'ValueLimits',
+              remap: (value: string) => Object.fromEntries(value.split(',').map((it) => {
+                const [key, value] = it.split(':')
+                return [key, Number(value)]
+              }))
+            },
           ],
         },
         {

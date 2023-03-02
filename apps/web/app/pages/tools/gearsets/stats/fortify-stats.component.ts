@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ElementRef, Renderer2 } from '@angular/core'
 import { groupBy, sumBy } from 'lodash'
-import { map, tap } from 'rxjs'
+import { combineLatest, map, tap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { ModifierResult } from '~/nw/mannequin/modifier'
@@ -22,15 +22,20 @@ import { ModifierTipComponent } from './modifier-tip.component'
 })
 export class FortifyStatsComponent {
   protected trackBy = (i: number) => i
-  protected vm$ = this.mannequin.statAbs$.pipe(
-    map((data) => {
+  protected vm$ = combineLatest({
+    abs: this.mannequin.statAbs$,
+    armor: this.mannequin.statArmor$,
+  }).pipe(
+    map(({ abs, armor }) => {
       return {
-        DamageTypes: collect(data.DamageCategories),
-        VitalsTypes: collect(data.VitalsCategories)
+        DamageTypes: collect(abs.DamageCategories),
+        VitalsTypes: collect(abs.VitalsCategories),
+        Physical: armor.PhysicalArmor,
+        Elemental: armor.ElementalArmor
       }
     }),
     tap((it) => {
-      if (it.DamageTypes.length || it.VitalsTypes.length) {
+      if (it.DamageTypes.length || it.VitalsTypes.length || it.Physical.value || it.Elemental.value) {
         this.renderer.removeClass(this.elRef.nativeElement, 'hidden')
       } else {
         this.renderer.addClass(this.elRef.nativeElement, 'hidden')
