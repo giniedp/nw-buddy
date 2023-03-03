@@ -150,6 +150,30 @@
                   "with": "apps/web/environments/environment.electron.ts"
                 }
               ]
+            },
+            "overwolf": {
+              "outputPath": "dist/web-overwolf",
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
+              "outputHashing": "none",
+              "sourceMap": false,
+              "namedChunks": false,
+              "aot": true,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "fileReplacements": [
+                {
+                  "replace": "apps/web/environments/environment.ts",
+                  "with": "apps/web/environments/environment.electron.ts"
+                }
+              ]
             }
           }
         },
