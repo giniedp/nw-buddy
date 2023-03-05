@@ -22,6 +22,7 @@
     "build:web-cloud": "ng build --base-href / -c cloud && yarn nw-download -o dist/web-cloud/nw-data",
     "build:web-electron": "ng build --base-href ./ -c electron",
     "build:web-capacitor": "ng build --base-href ./ -c capacitor",
+    "build:web-overwolf": "ng build -c overwolf",
     "build:electron": "yarn electron:tsc && yarn build:web-electron && yarn electron:builder",
     "build:docker": "yarn build:web && yarn build:server && yarn docker:build",
     "storybook": "ng run nw-buddy:storybook",

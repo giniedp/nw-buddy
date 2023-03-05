@@ -22,8 +22,6 @@ const path = require('path')
 const config = {
   NW_GAME_LIVE: process.env.NW_GAME_LIVE,
   NW_GAME_PTR: process.env.NW_GAME_PTR,
-  NW_DATA_LIVE: process.env.NW_DATA_LIVE,
-  NW_DATA_PTR: process.env.NW_DATA_PTR,
   NW_CDN_PTR: process.env.NW_CDN_PTR,
   NW_CDN_LIVE: process.env.NW_CDN_LIVE,
   NW_USE_CDN: ['true', 'yes', '1'].includes(process.env.NW_USE_CDN),
@@ -115,8 +113,14 @@ const nwData = {
    * @param {boolean} isCdn
    * @returns {string}
    */
-  publicUrl: (isPtr, isCdn) => {
-    return isCdn ? nwData.cdnUrl(isPtr) : nwData.assetPath(isPtr)
+  publicUrl: (isPtr, isCdn, deployUrl) => {
+    if (isCdn) {
+      return nwData.cdnUrl(isPtr)
+    }
+    if (deployUrl) {
+      return deployUrl + nwData.assetPath(isPtr)
+    }
+    return nwData.assetPath(isPtr)
   },
 }
 

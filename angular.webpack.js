@@ -20,7 +20,7 @@ module.exports = (config, options) => {
 
   const VERSION = env.VERSION
   const USE_PTR = env.NW_USE_PTR
-  const DATA_URL = env.nwData.publicUrl(env.NW_USE_PTR, env.NW_USE_CDN)
+  const DATA_URL = env.nwData.publicUrl(env.NW_USE_PTR, env.NW_USE_CDN, config.output.publicPath)
   console.log('\n')
   console.log('[WEBPACK]', config.target)
   console.log('  version', VERSION)
@@ -32,6 +32,7 @@ module.exports = (config, options) => {
     __VERSION__: JSON.stringify(VERSION),
     __NW_USE_PTR__: JSON.stringify(USE_PTR),
     __NW_DATA_URL__: JSON.stringify(DATA_URL),
+    __NW_DEPLY_URL__: JSON.stringify(config.output.publicPath)
   }
   config.module.rules.push(
     {

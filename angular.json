@@ -152,7 +152,11 @@
               ]
             },
             "overwolf": {
-              "outputPath": "dist/web-overwolf",
+              "index": {
+                "input": "apps/web/index.html",
+                "output": "../index.html"
+              },
+              "outputPath": "dist/web-overwolf/nw-buddy",
               "optimization": {
                 "scripts": true,
                 "styles": {
@@ -168,6 +172,8 @@
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
+              "baseHref": "./",
+              "deployUrl": "nw-buddy/",
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",
