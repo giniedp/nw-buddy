@@ -117,10 +117,7 @@ const nwData = {
     if (isCdn) {
       return nwData.cdnUrl(isPtr)
     }
-    if (deployUrl) {
-      return deployUrl + nwData.assetPath(isPtr)
-    }
-    return nwData.assetPath(isPtr)
+    return (deployUrl || '') + nwData.assetPath(isPtr)
   },
 }
 

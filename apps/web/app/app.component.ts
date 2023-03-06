@@ -22,7 +22,7 @@ import { LayoutService } from './ui/layout'
 import { mapProp } from './utils'
 
 @Component({
-  selector: 'app-root',
+  selector: 'nw-buddy-app',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

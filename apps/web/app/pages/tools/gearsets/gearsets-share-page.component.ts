@@ -4,6 +4,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ActivatedRoute, Router } from '@angular/router'
 import { LetModule } from '@ngrx/component'
+import { environment } from 'apps/web/environments'
 import { filter, map, switchMap } from 'rxjs'
 import { GearsetRecord, GearsetsDB } from '~/data'
 import { ElectronService } from '~/electron'
@@ -39,7 +40,7 @@ export class GearsetsSharePageComponent {
   )
 
   protected get appLink() {
-    if (this.electron.isElectron) {
+    if (environment.standalone) {
       return null
     }
     return this.sanitizer.bypassSecurityTrustUrl(`nw-buddy://${this.router.url}`)

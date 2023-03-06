@@ -32,7 +32,7 @@ module.exports = (config, options) => {
     __VERSION__: JSON.stringify(VERSION),
     __NW_USE_PTR__: JSON.stringify(USE_PTR),
     __NW_DATA_URL__: JSON.stringify(DATA_URL),
-    __NW_DEPLY_URL__: JSON.stringify(config.output.publicPath)
+    __NW_DEPLOY_URL__: JSON.stringify(config.output.publicPath)
   }
   config.module.rules.push(
     {

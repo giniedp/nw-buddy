@@ -4,4 +4,5 @@ export const environment = {
   ...env,
   production: true,
   environment: 'CAPACITOR',
+  standalone: true
 }

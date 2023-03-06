@@ -153,7 +153,7 @@
             },
             "overwolf": {
               "index": {
-                "input": "apps/web/index.html",
+                "input": "apps/web/index.overwolf.html",
                 "output": "../index.html"
               },
               "outputPath": "dist/web-overwolf/nw-buddy",
@@ -177,7 +177,7 @@
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",
-                  "with": "apps/web/environments/environment.electron.ts"
+                  "with": "apps/web/environments/environment.overwolf.ts"
                 }
               ]
             }

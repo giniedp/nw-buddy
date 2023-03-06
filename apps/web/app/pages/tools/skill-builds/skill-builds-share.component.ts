@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ActivatedRoute, Router } from '@angular/router'
 import { LetModule } from '@ngrx/component'
+import { environment } from 'apps/web/environments'
 import { filter, map, of, switchMap, throwError } from 'rxjs'
 import { SkillBuildRecord, SkillBuildsDB, SkillBuildsStore } from '~/data'
 import { ElectronService } from '~/electron'
@@ -44,7 +45,7 @@ export class SkillBuildsShareComponent {
   protected iconError = svgCircleExclamation
   protected iconLoading = svgCircleNotch
   protected get appLink() {
-    if (this.electron.isElectron) {
+    if (environment.standalone) {
       return null
     }
     return this.sanitizer.bypassSecurityTrustUrl(`nw-buddy://${this.router.url}`)
