@@ -2,7 +2,7 @@
   <div class="stats stats-vertical rounded-md rounded-r-none">
     <label class="stat flex flex-row items-center layout-gap py-2" *ngFor="let row of data1; trackBy: trackById">
       <div class="text-secondary flex-none">
-        <img [attr.src]="row.icon" class="w-12 h-12 opacity-50" />
+        <img [nwImage]="row.icon" class="w-12 h-12 opacity-50" />
       </div>
       <div class="flex-1">
         <div class="stat-value">
@@ -46,7 +46,7 @@
         </div>
       </div>
       <div class="stat-figure text-secondary flex-none">
-        <img [attr.src]="row.icon" class="w-12 h-12 opacity-50" />
+        <img [nwImage]="row.icon" class="w-12 h-12 opacity-50" />
       </div>
     </label>
   </div>

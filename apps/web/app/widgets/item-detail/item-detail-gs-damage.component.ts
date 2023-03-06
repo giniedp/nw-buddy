@@ -14,7 +14,7 @@ import { ItemDetailStore } from './item-detail.service'
   selector: 'nwb-item-detail-gs-damage',
   template: `
     <div *ngFor="let item of vm$ | async; trackBy: trackBy" class="flex flex-row gap-1">
-      <img [src]="item.icon" class="w-5 h-5" />
+      <img [nwImage]="item.icon" class="w-5 h-5" />
       <span class="font-bold">{{ item.value | number: '0.0-0' }}</span>
       <span class="opacity-50">{{ item.label | nwText }}</span>
     </div>

@@ -23,7 +23,15 @@ import {
   Subject,
   switchMap,
 } from 'rxjs'
-import { createEl, CreateElAttrs, createElement, CreateElementOptions, shareReplayRefCount, TagName } from '~/utils'
+import {
+  assetUrl,
+  createEl,
+  CreateElAttrs,
+  createElement,
+  CreateElementOptions,
+  shareReplayRefCount,
+  TagName,
+} from '~/utils'
 import { AsyncCellRenderer, AsyncCellRendererParams, fromGridEvent, GridEvents } from '../ag-grid'
 
 export interface DataTableCategory {
@@ -244,7 +252,7 @@ export abstract class DataTableAdapter<T> {
             pic.classList.add(...iconClass)
           }
           if (icon) {
-            img.src = icon
+            img.src = assetUrl(icon)
           }
           img.loading = 'lazy'
         })

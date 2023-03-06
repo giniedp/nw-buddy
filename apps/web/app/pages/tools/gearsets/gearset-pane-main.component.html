@@ -26,9 +26,9 @@
           <img [src]="img" class="absolute top-0 left-0 w-full h-full object-cover rounded-md" />
         </ng-container>
         <ng-template #tplNoImage>
-          <img [src]="'assets/landing.webp'" class="absolute top-0 left-0 w-full h-full object-cover rounded-md" />
+          <img [nwImage]="'assets/landing.webp'" class="absolute top-0 left-0 w-full h-full object-cover rounded-md" />
         </ng-template>
-        <img [src]="'assets/landing-animation.webp'" class="absolute bottom-0 left-0 w-full" />
+        <img [nwImage]="'assets/landing-animation.webp'" class="absolute bottom-0 left-0 w-full" />
 
         <div
           class="absolute bottom-0 left-0 bg-opacity-50 p-2 flex flex-row items-center rounded-bl-md rounded-tr-md"

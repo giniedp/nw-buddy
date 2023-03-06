@@ -6,7 +6,7 @@ import { NwModule } from '~/nw'
   standalone: true,
   selector: 'nwb-item-stat',
   template: `
-    <img [src]="icon" *ngIf="icon" class="w-4 h-4" />
+    <img [nwImage]="icon" *ngIf="icon" class="w-4 h-4" />
     <span class="font-bold">{{ label }} </span>
     <span class="opacity-50"> <ng-content></ng-content></span>
   `,

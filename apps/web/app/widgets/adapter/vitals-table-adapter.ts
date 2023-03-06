@@ -20,7 +20,7 @@ import {
 import { NwVitalsService } from '~/nw/vitals'
 import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
 import { CellRendererService, DataTableAdapter, dataTableProvider } from '~/ui/data-table'
-import { humanize, shareReplayRefCount } from '~/utils'
+import { assetUrl, humanize, shareReplayRefCount } from '~/utils'
 
 export interface Entity extends Vitals {
   $dungeons: Gamemodes[]
@@ -101,7 +101,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           field: this.fieldName('Level'),
           cellClass: '',
           cellRenderer: this.cellRenderer(({ data, value }) => {
-            const icon = getVitalTypeMarker(data)
+            const icon = assetUrl(getVitalTypeMarker(data))
             const iconEl = icon && `<img src=${icon} class="block object-cover absolute left-0 top-0 h-full w-full" />`
             const spanEl = `<span class="absolute left-0 right-0 top-0 bottom-0 font-bold flex items-center justify-center">${value}</span>`
             return `${iconEl} ${spanEl}`
@@ -348,7 +348,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
       const text = `${value > 0 ? '+' : ''}${value}%`
       return `
       <div class="flex flex-row items-center justify-center relative">
-        <img class="w-8 h-8 mr-1" src="${icon}"/>
+        <img class="w-8 h-8 mr-1" src="${assetUrl(icon)}"/>
         <span class="font-bold">${text}</span>
       </div>
       `

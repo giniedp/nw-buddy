@@ -1,7 +1,7 @@
 import { DOCUMENT } from '@angular/common'
 import { Inject, Injectable } from '@angular/core'
 import { ICellRendererFunc } from 'ag-grid-community'
-import { createEl, CreateElAttrs, TagName } from '~/utils'
+import { assetUrl, createEl, CreateElAttrs, TagName } from '~/utils'
 
 @Injectable({ providedIn: 'root' })
 export class CellRendererService {
@@ -26,7 +26,7 @@ export class CellRendererService {
       this.element('img', {
         tap: (img) => {
           this.fadeImage(img)
-          img.src = attrs.src
+          img.src = assetUrl(attrs.src)
         },
       }),
     ])

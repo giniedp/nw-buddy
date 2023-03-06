@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { environment } from 'apps/web/environments/environment'
+import { NwModule } from '~/nw'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService } from '~/utils'
 
@@ -9,7 +10,7 @@ import { HtmlHeadService } from '~/utils'
   standalone: true,
   selector: 'nwb-about-page',
   templateUrl: './about.component.html',
-  imports: [CommonModule, TooltipModule, RouterModule],
+  imports: [CommonModule, TooltipModule, RouterModule, NwModule],
   host: {
     class: 'layout-col'
   }

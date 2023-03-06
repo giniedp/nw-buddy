@@ -1,7 +1,7 @@
 <div class="stats w-full flex flex-row"  *ngFor="let row of data$ | async; let i = index; trackBy: trackByIndex">
   <div class="stat flex-1">
     <div class="stat-figure text-primary hidden sm:block">
-      <img [attr.src]="row.item.icon" class="w-12 h-12 opacity-50" />
+      <img [nwImage]="row.item.icon" class="w-12 h-12 opacity-50" />
     </div>
     <div class="stat-title" [nwText]="row.item.name"></div>
     <div class="stat-value"> {{ row.item.score }} </div>

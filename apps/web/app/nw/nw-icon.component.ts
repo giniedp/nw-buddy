@@ -8,6 +8,7 @@ import {
   Input,
 } from '@angular/core'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { assetUrl } from '~/utils'
 import { env } from '../../environments/env'
 import { getItemIconPath, getItemRarity } from './utils'
 import { NW_FALLBACK_ICON } from './utils/constants'
@@ -77,9 +78,7 @@ export class NwIconComponent {
   }
 
   private updateSrc(value: string) {
-    if (value?.startsWith('assets/')) {
-      value = (env.deployUrl || '') + value
-    }
+    value = assetUrl(value)
     if (this.src !== value) {
       this.src = value
       this.isLoaded = false
@@ -141,9 +140,7 @@ export class NwImageComponent {
 
 
   private updateSrc(value: string) {
-    if (value?.startsWith('assets/')) {
-      value = (env.deployUrl || '') + value
-    }
+    value = assetUrl(value)
     if (this.src !== value) {
       this.src = value
       this.isLoaded = false

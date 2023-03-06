@@ -3,6 +3,7 @@ import { Component, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Territorydefinitions } from '@nw-data/types'
 import { BehaviorSubject, defer, switchMap } from 'rxjs'
+import { NwModule } from '~/nw'
 import { TerritoriesService } from '~/nw/territories'
 
 @Component({
@@ -10,7 +11,7 @@ import { TerritoriesService } from '~/nw/territories'
   standalone: true,
   templateUrl: './territory-standing.component.html',
   exportAs: 'nwbTerritoryStanding',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, NwModule],
   host: {
     class: 'inline-block w-16 h-16 relative',
   },

@@ -18,7 +18,7 @@ import {
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
 import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
-import { humanize, shareReplayRefCount } from '~/utils'
+import { assetUrl, humanize, shareReplayRefCount } from '~/utils'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
 
@@ -136,7 +136,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
                 ...buckets.map(() => {
                   return this.createIcon((pic, img) => {
                     img.classList.add('w-7', 'h-7', 'nw-icon')
-                    img.src = 'assets/icons/crafting_perkbackground.png'
+                    img.src = assetUrl('assets/icons/crafting_perkbackground.png')
                   })
                 })
               ]
