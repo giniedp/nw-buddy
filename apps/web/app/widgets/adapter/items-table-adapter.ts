@@ -7,6 +7,8 @@ import { NwLinkService, NwService } from '~/nw'
 import {
   getItemIconPath,
   getItemId,
+  getItemMaxGearScore,
+  getItemMinGearScore,
   getItemPerkBucketIds,
   getItemPerks,
   getItemRarity,
@@ -238,15 +240,20 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           headerValueGetter: () => 'Gear Score',
           width: 120,
           cellClass: 'text-right',
-          comparator: (a, b) => a[1] - b[1],
+          comparator: (a, b) => {
+            if (a[1] !== b[1]) {
+              return (a[1] || 0) - (b[1] || 0)
+            }
+            return (a[0] || 0) - (b[0] || 0)
+          } ,
           valueGetter: this.valueGetter(({ data }) => {
-            let min = data.GearScoreOverride || data.MinGearScore
-            let max = data.GearScoreOverride || data.MaxGearScore
+            let min = getItemMinGearScore(data, false)
+            let max = getItemMaxGearScore(data, false)
             return [min, max]
           }),
           valueFormatter: ({ value }) => {
             if (value[0] === value[1]) {
-              return String(value[0])
+              return String(value[0] ?? '')
             }
             return `${value[0]}-${value[1]}`
           },

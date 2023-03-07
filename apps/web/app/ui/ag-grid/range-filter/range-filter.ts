@@ -79,13 +79,13 @@ export class RangeFilter implements IFilterComp {
       min = Number(value.split('-')[0])
       max = Number(value.split('-')[1])
     }
-    if (this.state.max && max > this.state.max) {
+    if (this.state.max && min > this.state.max) {
       return false
     }
-    if (this.state.min && min < this.state.min) {
+    if (this.state.min && max < this.state.min) {
       return false
     }
-    return true
+    return min != null && max != null
   }
 
   public isFilterActive() {
