@@ -1,18 +1,8 @@
 import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { DOCUMENT } from '@angular/common'
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  HostBinding,
-  Inject,
-  OnDestroy,
-  OnInit
-} from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core'
 import { Subject, take, takeUntil } from 'rxjs'
-import { environment } from '../environments/environment'
 
-import { ElectronService } from './electron'
 import { TranslateService } from './i18n'
 
 import { LANG_OPTIONS, MAIN_MENU } from './menu'
@@ -20,6 +10,7 @@ import { AppPreferencesService } from './preferences'
 import { svgMap } from './ui/icons/svg'
 import { LayoutService } from './ui/layout'
 import { mapProp } from './utils'
+import { PlatformService } from './utils/platform.service'
 
 @Component({
   selector: 'nw-buddy-app',
@@ -43,18 +34,20 @@ import { mapProp } from './utils'
   ],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  @HostBinding('class.is-electron')
   public get isElectron() {
-    return this.electron.isElectron
+    return this.platform.isElectron
   }
 
-  @HostBinding('class.is-web')
   public get isWeb() {
-    return environment.environment === 'WEB' || environment.environment === 'DEV'
+    return this.platform.env.environment === 'WEB' || this.platform.env.environment === 'DEV'
   }
 
   public get isPtr() {
-    return environment.isPTR
+    return this.platform.env.isPTR
+  }
+
+  public get isOverwolf() {
+    return this.platform.isOverwolf
   }
 
   public get language() {
@@ -79,19 +72,14 @@ export class AppComponent implements OnInit, OnDestroy {
 
   constructor(
     private preferences: AppPreferencesService,
-    private electron: ElectronService,
+    private platform: PlatformService,
     private cdRef: ChangeDetectorRef,
     @Inject(DOCUMENT)
     private document: Document,
     private translate: TranslateService,
     private layout: LayoutService
   ) {
-    if (this.isWeb) {
-      document.body.classList.add('is-web')
-    }
-    if (this.isElectron) {
-      document.body.classList.add('is-electron')
-    }
+    //
   }
 
   public ngOnInit(): void {

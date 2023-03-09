@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router'
+import { landingRedirect } from './landing-redirect'
 import { LandingComponent } from './landing.component'
 import { PrivacyComponent } from './privacy.component'
 
@@ -7,6 +8,7 @@ export const ROUTES: Routes = [
     path: '',
     pathMatch: 'full',
     component: LandingComponent,
+    canActivate: [landingRedirect]
   },
   {
     path: 'privacy',
