@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { groupBy } from 'lodash'
 import m from 'mithril'
-import { combineLatest, defer, map, merge, Observable, of, takeUntil } from 'rxjs'
+import { combineLatest, defer, map, merge, Observable, of, skip, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { IconComponent, NwLinkService, NwService } from '~/nw'
 import { getItemIconPath, getItemRarity, getItemTierAsRoman, isItemNamed } from '~/nw/utils'
@@ -10,7 +10,7 @@ import { mithrilCell, SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { LayoutService } from '~/ui/layout'
 import { shareReplayRefCount } from '~/utils'
-import { ItemTrackerCell } from '~/widgets/item-tracker'
+import { ItemMarkerCell, ItemTrackerCell } from '~/widgets/item-tracker'
 import { Armorset } from './types'
 import { findSets } from './utils'
 
@@ -129,13 +129,14 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
               },
               cellRenderer: mithrilCell<Armorset>({
                 oncreate: ({ attrs: { data, destroy$, api, node } }) => {
-                  merge(...data.items.map((it) => this.nw.itemPref.observe(it.ItemID)))
+                  merge(...data.items.map((it) => this.nw.itemPref.observe(it.ItemID).pipe(skip(1))))
                     .pipe(takeUntil(destroy$))
                     .subscribe(() => {
                       api.refreshCells({ rowNodes: [node] })
                     })
                 },
                 view: ({ attrs: { value, data } }) => {
+
                   const item = data.items[i]
                   const name = data.itemNames[i]
                   const max = (item.GearScoreOverride || item.MaxGearScore) <= value
@@ -155,17 +156,27 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
                         },
                         name
                       ),
-                      m(ItemTrackerCell, {
-                        class: [
-                          'self-start',
-                          value && max ? 'text-success' : '',
-                          value && !max ? 'text-warning' : '',
-                        ].join(' '),
-                        itemId: item.ItemID,
-                        meta: this.nw.itemPref,
-                        mode: 'gs',
-                        emptyTip: '',
-                      }),
+                      m('div.flex.flex-row.gap-1', [
+                        m(ItemMarkerCell, {
+                          class: [
+                            value && max ? 'text-success' : '',
+                            value && !max ? 'text-warning' : '',
+                          ].join(' '),
+                          itemId: item.ItemID,
+                          meta: this.nw.itemPref,
+                          disabled: true
+                        }),
+                        m(ItemTrackerCell, {
+                          class: [
+                            value && max ? 'text-success' : '',
+                            value && !max ? 'text-warning' : '',
+                          ].join(' '),
+                          itemId: item.ItemID,
+                          meta: this.nw.itemPref,
+                          mode: 'gs',
+                          disabled: true
+                        })
+                      ])
                     ]
                   )
                 },

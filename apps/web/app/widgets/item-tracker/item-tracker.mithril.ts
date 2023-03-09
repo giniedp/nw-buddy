@@ -7,6 +7,7 @@ export interface ItemTrackerAtts {
   itemId: string
   meta: ItemPreferencesService
   mode: keyof ItemMeta
+  disabled?: boolean
   class?: string
   classEmpty?: string
   emptyText?: string
@@ -25,8 +26,8 @@ export const ItemTrackerCell: ClosureComponent<ItemTrackerAtts> = () => {
   let showInput: boolean
 
   let multiply = 1
-  let emptyText = "✏️"
-  let emptyTip = "Edit"
+  let emptyText = '✏️'
+  let emptyTip = 'Edit'
 
   return {
     onupdate: ({ attrs }) => {
@@ -50,25 +51,26 @@ export const ItemTrackerCell: ClosureComponent<ItemTrackerAtts> = () => {
     view: ({ attrs }) => {
       const isEmpty = !(trackedValue > 0)
       const tip = attrs.emptyTip ?? emptyTip
-      const result = attrs.formatter
-        ? attrs.formatter.format(trackedValue * multiply)
-        : trackedValue * multiply
+      const result = attrs.formatter ? attrs.formatter.format(trackedValue * multiply) : trackedValue * multiply
 
       if (!showInput) {
         return m(
-          'div.w-full.cursor-pointer.transition-opacity.hover:opacity-100',
+          'div.w-full.transition-opacity.hover:opacity-100',
           {
             class: [
               attrs.class,
               isEmpty && !!tip ? 'tooltip' : '',
               isEmpty && attrs.classEmpty ? attrs.classEmpty : '',
-              isEmpty && 'opacity-25'
+              isEmpty && 'opacity-25',
+              attrs.disabled ? '' : 'cursor-pointer',
             ].join(' '),
 
             ['data-tip']: tip,
-            onclick: () => (showInput = !showInput),
+            onclick: () => {
+              showInput = !attrs.disabled && !showInput
+            },
           },
-          isEmpty ? emptyText : result
+          isEmpty ? (attrs.disabled ? '' : emptyText) : result
         )
       }
       return m('input.input.input-ghost.input-xs.rounded-none.px-0.w-full', {
@@ -81,7 +83,7 @@ export const ItemTrackerCell: ClosureComponent<ItemTrackerAtts> = () => {
         },
         onchange: (e: InputEvent) => {
           attrs.meta.merge(trackedId, {
-            [attrs.mode]: cleanValue((e.target as HTMLInputElement).value)
+            [attrs.mode]: cleanValue((e.target as HTMLInputElement).value),
           })
           attrs.onchange?.()
         },

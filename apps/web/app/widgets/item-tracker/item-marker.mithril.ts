@@ -7,6 +7,7 @@ export interface ItemMarkerAtts {
   itemId: string
   meta: ItemPreferencesService
   class?: string
+  disabled?: boolean
 }
 
 export const ItemMarkerCell: ClosureComponent<ItemMarkerAtts> = () => {
@@ -22,12 +23,12 @@ export const ItemMarkerCell: ClosureComponent<ItemMarkerAtts> = () => {
   function toggle(index: number, pref: ItemPreferencesService) {
     let result = trackedValue
     if (checked(index)) {
-      result = result & (~value(index))
+      result = result & ~value(index)
     } else {
       result = result | value(index)
     }
     pref.merge(trackedId, {
-      mark: result
+      mark: result,
     })
   }
 
@@ -54,29 +55,29 @@ export const ItemMarkerCell: ClosureComponent<ItemMarkerAtts> = () => {
       destroy$.complete()
     },
     view: ({ attrs }) => {
-      return m('div.flex.flex-row.h-full.items-center', {}, [
-        m('div.w-4.h-4.cursor-pointer.mask.mask-star-2.transition-all.scale-100.hover:scale-125', {
-          class: [
-            'bg-orange-400',
-            checked(0) ? '' : 'opacity-25'
-          ].join(' '),
-          onclick: () => toggle(0, attrs.meta)
-        }),
-        m('div.w-4.h-4.cursor-pointer.mask.mask-star-2.transition-all.scale-100.hover:scale-125', {
-          class: [
-            'bg-yellow-400',
-            checked(1) ? '' : 'opacity-25'
-          ].join(' '),
-          onclick: () => toggle(1, attrs.meta)
-        }),
-        m('div.w-4.h-4.cursor-pointer.mask.mask-star-2.transition-all.scale-100.hover:scale-125', {
-          class: [
-            'bg-green-400',
-            checked(2) ? '' : 'opacity-25'
-          ].join(' '),
-          onclick: () => toggle(2, attrs.meta)
-        }),
-      ])
+      return m(
+        'div.flex.flex-row.h-full.items-center',
+        {},
+        ['bg-orange-400', 'bg-yellow-400', 'bg-green-400'].map((bgClass, i) => {
+          const isChecked = checked(i)
+          if (!isChecked && attrs.disabled) {
+            return null
+          }
+          return m('div.w-4.h-4.mask.mask-star-2.transition-all.scale-100', {
+            class: [
+              bgClass,
+              isChecked ? '' : 'opacity-25',
+              attrs.disabled ? '' : 'hover:scale-125',
+              attrs.disabled ? '' : 'cursor-pointer'
+            ].join(' '),
+            onclick: () => {
+              if (!attrs.disabled) {
+                toggle(0, attrs.meta)
+              }
+            },
+          })
+        })
+      )
     },
   }
 }
