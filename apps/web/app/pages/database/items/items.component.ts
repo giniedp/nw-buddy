@@ -7,7 +7,9 @@ import { DataTableModule } from '~/ui/data-table'
 import { LayoutModule } from '~/ui/layout'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
+import { TooltipModule } from '~/ui/tooltip'
 import { ItemsTableAdapter } from '~/widgets/adapter'
+import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
@@ -24,6 +26,8 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     NavToolbarModule,
     ScreenshotModule,
     IonicModule,
+    PriceImporterModule,
+    TooltipModule
   ],
   host: {
     class: 'layout-col',

@@ -112,13 +112,14 @@ export class CraftingCalculatorService implements OnDestroy {
   public findItemsOrSelectedItems(steps: CraftingStep[]) {
     return steps
       .map((it) => {
-        if (it.ingredient.type === 'Item') {
-          return it.ingredient.id
+        switch (it.ingredient?.type) {
+          case 'Item':
+            return it.ingredient.id
+          case 'Category_Only':
+            return it.selection
+          default:
+            return null
         }
-        if (it.ingredient.type === 'Category_Only') {
-          return it.selection
-        }
-        return null
       })
       .filter((it) => !!it)
       .map((it) => this.findItem(it))

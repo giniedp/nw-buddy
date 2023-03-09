@@ -83,12 +83,15 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           width: 250,
           headerName: 'Name',
           valueGetter: this.valueGetter(({ data }) => {
-            if (!data.$item) {
-              return this.i18n.get(data.RecipeNameOverride)
-            }
-            return this.i18n.get(data.$item?.Name)
+            return this.i18n.get(data.RecipeNameOverride || data.$item?.Name)
           }),
           getQuickFilterText: ({ value }) => value,
+        }),
+        this.colDef({
+          colId: 'itemId',
+          headerValueGetter: () => 'Item ID',
+          field: this.fieldName('ItemID'),
+          hide: true,
         }),
         this.colDef({
           colId: 'ingredients',
