@@ -38,7 +38,7 @@ export async function importImages({
     }
     const outDir = path.dirname(outFile)
     await mkdir(outDir, { recursive: true })
-    await spawn(`convert "${source}" -quality 85 "${outFile}"`, {
+    await spawn(`magick convert "${source}" -quality 85 "${outFile}"`, {
       shell: true,
       stdio: 'pipe',
       env: process.env,
