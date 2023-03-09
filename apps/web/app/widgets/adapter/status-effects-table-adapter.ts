@@ -173,7 +173,7 @@ function appendFields(options: GridOptions, fields: string[][]) {
 }
 
 const EFFECT_FIELDS: Record<keyof Statuseffect, string> = {
-
+  AntirequisiteEffectCategories: 'string',
   ABABleed: 'number',
   ABABlight: 'number',
   ABACurse: 'number',
