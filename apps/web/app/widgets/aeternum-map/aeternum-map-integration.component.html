@@ -1,0 +1,23 @@
+<nwb-aeternum-map *ngIf="mapActive" class="z-10" (close)="toggleMap()"></nwb-aeternum-map>
+<div
+  *ngIf="!mapActive"
+  class="
+    aspect-square
+    absolute
+    bottom-0
+    right-0
+    rounded-tl-full
+    border-primary
+    bg-secondary
+    w-14
+    cursor-pointer
+    opacity-50
+    hover:opacity-100
+    hover:w-16
+    transition-all
+  "
+  (click)="toggleMap()"
+  [tooltip]="'Show Aeternum Map'"
+>
+  <nwb-icon [icon]="mapIcon" class="w-6 h-6 absolute bottom-2 right-2"></nwb-icon>
+</div>

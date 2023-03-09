@@ -92,23 +92,11 @@ export class AppComponent implements OnInit, OnDestroy {
       .subscribe(() => {
         this.onLangLoaded()
       })
-    this.mapActive = this.preferences.mapActive.get()
-    this.mapCollapsed = this.preferences.mapCollapsed.get()
   }
 
   public ngOnDestroy(): void {
     this.destroy$.next()
     this.destroy$.complete()
-  }
-
-  protected toggleMap() {
-    this.mapActive = !this.mapActive
-    this.preferences.mapActive.set(this.mapActive)
-  }
-
-  protected toggleMapCollapes() {
-    this.mapCollapsed = !this.mapCollapsed
-    this.preferences.mapCollapsed.set(this.mapCollapsed)
   }
 
   private onLangLoaded() {

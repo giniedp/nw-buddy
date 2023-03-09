@@ -8,13 +8,15 @@ import {
   Renderer2,
   ElementRef,
   ChangeDetectorRef,
+  EventEmitter,
+  Output,
 } from '@angular/core'
 import { NavigationStart, Router } from '@angular/router'
 import { filter, map, Subject, takeUntil } from 'rxjs'
 import { NwModule } from '~/nw'
-import { IconsModule } from './ui/icons'
-import { svgArrowsLeftRight, svgCompress, svgExpand } from './ui/icons/svg'
-import { LayoutModule } from './ui/layout'
+import { IconsModule } from '~/ui/icons'
+import { svgArrowsLeftRight, svgCompress, svgExpand, svgXmark } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
 
 @Component({
   standalone: true,
@@ -26,6 +28,9 @@ import { LayoutModule } from './ui/layout'
       </button>
       <button class="btn btn-circle btn-primary btn-sm" (click)="toggleExpand()">
         <nwb-icon [icon]="isExpanded ? iconCollapse : iconExpand" class="w-4 h-4"></nwb-icon>
+      </button>
+      <button class="btn btn-circle btn-error btn-sm" (click)="close.emit()">
+        <nwb-icon [icon]="iconClose" class="w-4 h-4"></nwb-icon>
       </button>
     </div>
     <iframe src="https://aeternum-map.gg" class="flex-1"></iframe>
@@ -49,6 +54,10 @@ export class AeternumMapComponent implements OnInit, OnDestroy {
   protected iconExpand = svgExpand
   protected iconCollapse = svgCompress
   protected iconArrows = svgArrowsLeftRight
+  protected iconClose = svgXmark
+
+  @Output()
+  public close = new EventEmitter()
 
   private isFloating$ = this.bp.observe('(min-width: 3000px)').pipe(map((it) => !it.matches))
   private destroy$ = new Subject<void>()

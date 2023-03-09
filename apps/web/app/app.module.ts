@@ -10,8 +10,6 @@ import { ROUTES } from './app.routes'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { EffectsModule } from '@ngrx/effects'
 import { StoreModule } from '@ngrx/store'
-import { StoreDevtoolsModule } from '@ngrx/store-devtools'
-import { environment } from '../environments/environment'
 import { AppComponent } from './app.component'
 import { TranslateModule } from './i18n'
 import { NwDataInterceptor, NwDataService, NwModule } from './nw'
@@ -19,7 +17,8 @@ import { TitleBarComponent } from './title-bar.component'
 import { UpdateAlertModule } from './widgets/update-alert'
 import { LayoutModule } from './ui/layout'
 import { IconsModule } from './ui/icons'
-import { AeternumMapComponent } from './aeternum-map.component'
+import { TooltipModule } from './ui/tooltip'
+import { AeternumMapModule } from './widgets/aeternum-map'
 
 @NgModule({
   declarations: [AppComponent, TitleBarComponent],
@@ -45,12 +44,8 @@ import { AeternumMapComponent } from './aeternum-map.component'
         desktop: (win) => !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(win.navigator.userAgent)
       }
     }),
-    StoreDevtoolsModule.instrument({
-      maxAge: 25,
-      logOnly: environment.production,
-      autoPause: true, // Pauses recording actions and state changes when the extension window is not open
-    }),
-    AeternumMapComponent
+    AeternumMapModule,
+    TooltipModule
   ],
   providers: [NwDataInterceptor.provide()],
   bootstrap: [AppComponent],
