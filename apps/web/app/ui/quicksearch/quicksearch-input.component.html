@@ -7,12 +7,6 @@
   autofocus
   [disabled]="!(active | async)"
 />
-<span
-  class="absolute right-5 top-0 hidden md:inline-block pointer-events-none"
-  [class.opacity-25]="!(active | async)"
-  [class.opacity-0]="!!value"
-  >ctrl+</span
->
 <button
   class="absolute right-0 btn btn-sm btn-ghost btn-square swap swap-rotate"
   (click)="value ? (value = '') : null"
