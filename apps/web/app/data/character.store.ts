@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core'
+import { DomSanitizer } from '@angular/platform-browser'
 import { ComponentStore } from '@ngrx/component-store'
 import { from, map, switchMap, tap } from 'rxjs'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_TRADESKILL_LEVEL, NW_MAX_WEAPON_LEVEL } from '~/nw/utils/constants'
 import { CaseInsensitiveMap, CaseInsensitiveSet } from '~/utils'
 import { CharacterRecord, CharactersDB } from './characters.db'
+import { ImageRecord, ImagesDB } from './images.db'
 
 export interface CharacterStoreState {
   current: CharacterRecord
@@ -12,11 +14,20 @@ export interface CharacterStoreState {
 @Injectable({ providedIn: 'root' })
 export class CharacterStore extends ComponentStore<CharacterStoreState> {
   public readonly current$ = this.select(({ current }) => current)
+  public readonly name$ = this.select(({ current }) => current?.name)
+  public readonly serverName$ = this.select(({ current }) => current?.serverName)
+  public readonly companyName$ = this.select(({ current }) => current?.companyName)
+  public readonly faction$ = this.select(({ current }) => current?.faction)
   public readonly level$ = this.select(({ current }) => current?.level ?? NW_MAX_CHARACTER_LEVEL)
   public readonly tradeskills$ = this.select(({ current }) => current?.tradeskillLevels)
   public readonly tradeskillSets$ = this.select(({ current }) => current?.tradeskillSets)
   public readonly craftingFlBonus$ = this.select(({ current }) => current?.craftingFlBonus)
   public readonly weapons$ = this.select(({ current }) => current?.weaponLevels)
+  public readonly imageId$ = this.select(({ current }) => current?.imageId)
+  public readonly imageRecord$ = this.imageId$.pipe(
+    switchMap((id) => this.images.live((it) => it.get(id).catch(() => null as ImageRecord)))
+  )
+  public readonly imageUrl$ = this.select(this.imageRecord$, (record) => this.selectImageUrl(record))
 
   public selectTradeSkillLevel(skill: string) {
     return this.tradeskills$.pipe(
@@ -47,7 +58,7 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
     )
   }
 
-  public constructor(private db: CharactersDB) {
+  public constructor(private db: CharactersDB, private images: ImagesDB, private sanitizer: DomSanitizer) {
     super({
       current: null,
     })
@@ -82,7 +93,7 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
           ...current,
           tradeskillLevels: {
             ...current.tradeskillLevels,
-            [skill]: Math.min(Math.max(0, level), NW_MAX_TRADESKILL_LEVEL) ,
+            [skill]: Math.min(Math.max(0, level), NW_MAX_TRADESKILL_LEVEL),
           },
         })
       })
@@ -118,8 +129,8 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
           ...current,
           tradeskillSets: {
             ...(current.tradeskillSets || {}),
-            [skill]: Array.from(set.values())
-          }
+            [skill]: Array.from(set.values()),
+          },
         })
       })
     )
@@ -144,6 +155,16 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
         error: (e) => console.error(e),
       })
     )
+  }
+
+  private selectImageUrl(record: ImageRecord) {
+    if (!(record?.data instanceof ArrayBuffer)) {
+      return null
+    }
+    const blob = new Blob([record.data], { type: record.type })
+    const urlCreator = window.URL || window.webkitURL
+    const url = urlCreator.createObjectURL(blob)
+    return this.sanitizer.bypassSecurityTrustUrl(url)
   }
 }
 

@@ -10,6 +10,10 @@ export interface CharacterRecord {
    */
   id: string
   /**
+   * Image ID
+   */
+  imageId: string
+  /**
    * Name of the character
    */
   name: string
@@ -17,6 +21,18 @@ export interface CharacterRecord {
    * Character level
    */
   level: number
+  /**
+   * Server name
+   */
+  serverName: string
+  /**
+   * Company name
+   */
+  companyName: string
+  /**
+   * Faction
+   */
+  faction: 'covenant' | 'syndicate' | 'marauder'
   /**
    * Character weapon levels
    */
@@ -45,7 +61,7 @@ export class CharactersDB extends DBTable<CharacterRecord> {
 
   public async getCurrent() {
     return this.db.transaction('rw', this.table, async () => {
-      if (await this.table.count() == 0) {
+      if ((await this.table.count()) == 0) {
         return this.create({})
       }
       const keys = await this.table.toCollection().keys()

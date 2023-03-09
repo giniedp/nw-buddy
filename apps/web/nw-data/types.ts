@@ -444,6 +444,7 @@ export interface ItemDefinitionMaster {
     Name?:                           string;
     Nonremovable?:                   number;
     Notes?:                          string;
+    ObtainableReleaseVersion?:       string;
     ParentItemId_DVT?:               string;
     Perk1?:                          string;
     Perk2?:                          string;
@@ -4103,7 +4104,6 @@ export interface PoiDefinition {
     DevName?:                   string;
     DiscoveredAchievement?:     string;
     DiscoveryRadius:            number;
-    EventId?:                   string;
     GameMode?:                  string;
     GroupSize?:                 number | string;
     IsChartable:                boolean;
@@ -4118,7 +4118,6 @@ export interface PoiDefinition {
     POIObjectiveAchievementId?: string;
     POITag?:                    string;
     RecommendedLevel?:          number;
-    ReleaseVersion?:            string;
     TerritoryID:                number;
     TooltipBackground?:         string;
     UnchartedIcon?:             string;

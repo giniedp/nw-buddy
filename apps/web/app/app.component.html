@@ -31,7 +31,6 @@
                   </ng-container>
                 </ul>
               </ng-container>
-
             </div>
           </div>
         </ion-content>
@@ -45,7 +44,7 @@
             <div class="layout-col flex-1">
               <router-outlet></router-outlet>
             </div>
-            <nwb-aeternum-map *ngIf="mapActive" class="z-10"></nwb-aeternum-map>
+            <nwb-aeternum-map *ngIf="mapActive && !isOverwolf" class="z-10"></nwb-aeternum-map>
           </div>
         </ion-content>
       </ion-content>
@@ -67,8 +66,8 @@
       </ion-buttons>
       <div class="w-full flex flex-row items-center justify-center lg:justify-start">
         <a routerLink="/" class="flex flex-row items-center ">
-          <img [nwImage]="'assets/icons/favicon.png'" class="w-12 aspect-square" alt="logo" />
-          <span class="indicator">
+          <img [nwImage]="'assets/icons/favicon.png'" class="w-12 aspect-square" alt="logo" [class.hidden]="isOverwolf" />
+          <span class="indicator" [class.pl-4]="isOverwolf">
             <span class="indicator-item badge badge-sm badge-primary" *ngIf="isPtr">PTR</span>
             New World Buddy
           </span>
@@ -78,7 +77,7 @@
         <button class="btn btn-square btn-ghost" [cdkMenuTriggerFor]="tplLangMenu">
           {{ lang }}
         </button>
-        <button class="btn btn-square btn-ghost hidden xl:flex" [class.text-primary]="mapActive" (click)="toggleMap()">
+        <button class="btn btn-square btn-ghost hidden xl:flex" [class.text-primary]="mapActive" (click)="toggleMap()" *ngIf="!isOverwolf">
           <nwb-icon [icon]="mapIcon" class="w-6 h-6"></nwb-icon>
         </button>
       </ion-buttons>
