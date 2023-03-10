@@ -99,7 +99,7 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
                 'transition-all', 'translate-x-0', 'hover:translate-x-1',
                 'nw-icon', `bg-ability-${getAbilityCategoryTag(data)}`,
                 data?.IsActiveAbility ? 'rounded-sm' : 'rounded-full',
-                data?.WeaponTag ? 'border' : '',
+                data?.WeaponTag ? 'border' : null,
               ],
             })
           }),

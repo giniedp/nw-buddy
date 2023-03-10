@@ -228,6 +228,8 @@ export abstract class DataTableAdapter<T> {
     rarity?: number
     named?: boolean
   }) {
+    linkClass = linkClass?.filter((it) => !!it)
+    iconClass = iconClass?.filter((it) => !!it)
     return this.createElement('a', (el) => {
       if (href) {
         el.href = href
@@ -253,7 +255,7 @@ export abstract class DataTableAdapter<T> {
           if (named) {
             pic.classList.add(`named`)
           }
-          if (iconClass) {
+          if (iconClass?.length) {
             pic.classList.add(...iconClass)
           }
           if (icon) {
