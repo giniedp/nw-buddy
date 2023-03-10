@@ -1,5 +1,5 @@
 import { Inject, Injectable, Optional } from '@angular/core'
-import { Perks, Statuseffect } from '@nw-data/types'
+import { Statuseffect } from '@nw-data/types'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { sortBy } from 'lodash'
 import { defer, map, Observable, of } from 'rxjs'
@@ -8,7 +8,7 @@ import { NwLinkService, NwService } from '~/nw'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, dataTableProvider } from '~/ui/data-table'
-import { CaseInsensitiveMap, humanize, shareReplayRefCount } from '~/utils'
+import { humanize, shareReplayRefCount } from '~/utils'
 
 @Injectable()
 export class StatusEffectsTableAdapterConfig extends DataTableAdapterOptions<Statuseffect> {
@@ -55,7 +55,7 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
               href: this.info.link('status-effect', data.StatusID),
               target: '_blank',
               icon: data.PlaceholderIcon || data['IconPath'] || NW_FALLBACK_ICON,
-              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
+              iconClass: ['nw-status-bg', data.IsNegative ? 'negative' : null, 'p-1', 'transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
           }),
         }),

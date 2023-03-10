@@ -6,7 +6,7 @@ import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService,  } from '~/nw'
 import { NwWeaponType, NwWeaponTypesService } from '~/nw/weapon-types'
-import { getWeaponTagLabel } from '~/nw/utils'
+import { getAbilityCategoryTag, getWeaponTagLabel } from '~/nw/utils'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
@@ -94,7 +94,13 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
               href: this.info.link('ability', data.AbilityID),
               target: '_blank',
               icon: data.Icon || NW_FALLBACK_ICON,
-              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
+              iconClass: [
+                'aspect-square',
+                'transition-all', 'translate-x-0', 'hover:translate-x-1',
+                'nw-icon', `bg-ability-${getAbilityCategoryTag(data)}`,
+                data?.IsActiveAbility ? 'rounded-sm' : 'rounded-full',
+                data?.WeaponTag ? 'border' : '',
+              ],
             })
           }),
         }),
