@@ -15,6 +15,7 @@ import { AppPreferencesService, ItemPreferencesService, StorageProperty } from '
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
 import { DestroyService, shareReplayRefCount } from '~/utils'
 import { TrackingCell } from '../adapter/components'
+import { PlatformService } from '~/utils/platform.service'
 
 export interface ServerOption {
   name: string
@@ -30,15 +31,15 @@ export interface PriceItem {
 
 @Component({
   standalone: true,
-  selector: 'nw-marketprices-importer',
-  templateUrl: './nw-marketprices-importer.component.html',
+  selector: 'nwb-price-importer-nwmp',
+  templateUrl: './price-importer-nwmp.component.html',
   imports: [CommonModule, FormsModule, DataTableModule],
   providers: [DestroyService],
   host: {
     class: 'layout-col',
   },
 })
-export class NwPricesImporterComponent {
+export class PriceImporterNwmp {
   protected servers = defer(() => this.fetchServers())
     .pipe(
       catchError(() => {
@@ -81,7 +82,7 @@ export class NwPricesImporterComponent {
   }
 
   protected get isStandalone() {
-    return environment.standalone
+    return this.platform.env.standalone || this.platform.env.environment === 'DEV'
   }
 
   public constructor(
@@ -91,7 +92,7 @@ export class NwPricesImporterComponent {
     private cdRef: ChangeDetectorRef,
     private destroy: DestroyService,
     private dialog: Dialog,
-    private electron: ElectronService,
+    private platform: PlatformService,
     info: NwLinkService,
     nw: NwService,
     i18n: TranslateService,
