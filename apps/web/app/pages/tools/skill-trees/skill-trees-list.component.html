@@ -1,0 +1,4 @@
+<div class="grid grid-cols-fill-sm gap-2 p-2">
+  <nwb-skill-trees-list-item *ngFor="let item of items$ | async; trackBy: trackByIndex" [item]="item"></nwb-skill-trees-list-item>
+  <nwb-skill-trees-list-item (create)="onCreateClicked()"></nwb-skill-trees-list-item>
+</div>

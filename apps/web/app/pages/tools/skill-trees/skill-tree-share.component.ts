@@ -20,8 +20,8 @@ import { SkillBuilderComponent } from '~/widgets/skill-builder'
 
 @Component({
   standalone: true,
-  selector: 'nwb-skill-builds-share',
-  templateUrl: './skill-builds-share.component.html',
+  selector: 'nwb-skill-tree-share',
+  templateUrl: './skill-tree-share.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, FormsModule, IconsModule, LetModule, SkillBuilderComponent, AttributesEditorModule],
   host: {

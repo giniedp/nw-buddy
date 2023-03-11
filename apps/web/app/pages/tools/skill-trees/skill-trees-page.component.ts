@@ -16,11 +16,12 @@ import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService } from '~/utils'
 import { SkillWeaponDialogComponent } from '~/widgets/skill-builder/skill-weapon-dialog.component'
 import { SkillBuildsTableAdapter } from './skill-builds-table.adapter'
+import { SkillTreesListComponent } from './skill-trees-list.component'
 
 @Component({
   standalone: true,
-  selector: 'nwb-skill-builds',
-  templateUrl: './skill-builds.component.html',
+  selector: 'nwb-skill-trees-page',
+  templateUrl: './skill-trees-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -31,7 +32,8 @@ import { SkillBuildsTableAdapter } from './skill-builds-table.adapter'
     NavToolbarModule,
     IconsModule,
     TooltipModule,
-    IonicModule
+    IonicModule,
+    SkillTreesListComponent
   ],
   providers: [SkillBuildsTableAdapter.provider(), QuicksearchService, SkillBuildsStore],
   host: {
@@ -40,6 +42,8 @@ import { SkillBuildsTableAdapter } from './skill-builds-table.adapter'
 })
 export class SkillBuildsComponent {
   protected iconCreate = svgPlus
+
+  protected records$ = this.store.records$
 
   public constructor(private store: SkillBuildsStore, protected search: QuicksearchService, private dialog: Dialog, head: HtmlHeadService) {
     head.updateMetadata({

@@ -1,0 +1,20 @@
+<ion-header class="bg-base-300">
+  <div class="flex flex-col-reverse md:flex-row ">
+    <nwb-nav-toolbar [buttons]="tplButtons" class="flex-1">
+      <ng-template #tplButtons>
+        <li [tooltip]="'Create new skill tree'" [color]="'accent'">
+          <span (click)="createItem()">
+            <nwb-icon [icon]="iconCreate" class="w-4 h-4"></nwb-icon>
+          </span>
+        </li>
+      </ng-template>
+    </nwb-nav-toolbar>
+    <div class="flex-none p-2 w-full md:max-w-[300px]">
+      <nwb-quicksearch-input></nwb-quicksearch-input>
+    </div>
+  </div>
+</ion-header>
+<div class="layout-col xl:flex-row w-full">
+  <nwb-skill-trees-list></nwb-skill-trees-list>
+  <router-outlet></router-outlet>
+</div>

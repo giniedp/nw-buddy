@@ -40,7 +40,7 @@ export class SkillBuildsStore extends ComponentStore<SkillBuildsState> {
     super({
       isLoaded: false,
       records: null,
-      abilities: null
+      abilities: null,
     })
     this.loadAll()
   }
@@ -49,7 +49,7 @@ export class SkillBuildsStore extends ComponentStore<SkillBuildsState> {
     this.loadItems(
       combineLatest({
         records: this.db.observeAll(),
-        abilities: this.nwdb.abilitiesMap
+        abilities: this.nwdb.abilitiesMap,
       })
     )
   }
@@ -58,20 +58,19 @@ export class SkillBuildsStore extends ComponentStore<SkillBuildsState> {
     return {
       ...state,
       ...update,
-      isLoaded: true
+      isLoaded: true,
     }
   })
 
-  public readonly createRecord = this.effect<{ record: SkillBuildRecord }>((value$) => {
-    return value$.pipe(
-      switchMap(async ({ record }) => {
-        await this.db
-          .create(record)
-          .then((created) => this.notifyCreated(created))
-          .catch(console.error)
+  public async createRecord({ record }: { record: SkillBuildRecord }) {
+    return this.db
+      .create(record)
+      .then((created) => {
+        this.notifyCreated(created)
+        return created
       })
-    )
-  })
+      .catch(console.error)
+  }
 
   public readonly updateRecord = this.effect<{ record: SkillBuildRecord }>((value$) => {
     return value$.pipe(
@@ -100,20 +99,14 @@ export class SkillBuildsStore extends ComponentStore<SkillBuildsState> {
   }
 
   public buildRow(abilities: Map<string, Ability>, record: SkillBuildRecord): SkillBuildRow {
-
     if (!record) {
       return null
     }
-
-
     return {
       record: record,
-      abilities:  [
-        ...(record.tree1 || []),
-        ...(record.tree2 || []),
-      ]
-      .map((it) => abilities?.get(it))
-      .filter((it) => it?.IsActiveAbility)
+      abilities: [...(record.tree1 || []), ...(record.tree2 || [])]
+        .map((it) => abilities?.get(it))
+        .filter((it) => it?.IsActiveAbility),
     }
   }
 }
