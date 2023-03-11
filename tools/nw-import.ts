@@ -302,6 +302,7 @@ program
         'ui_dungeon_mutator_bronze',
         'ui_dungeon_mutator_silver',
         'ui_dungeon_mutator_gold',
+        /^attribution_.*/,
 
         'ui_physical',
         'ui_elemental',

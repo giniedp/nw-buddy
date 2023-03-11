@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
 import { IonicModule } from '@ionic/angular'
 import { Crafting, Housingitems } from '@nw-data/types'
-import { groupBy } from 'lodash'
+import { groupBy, sortBy } from 'lodash'
 import { combineLatest, defer, map } from 'rxjs'
+import { TranslateService } from '~/i18n'
 import { NwDbService, NwModule } from '~/nw'
 import { getIngretientsFromRecipe, getItemId, getRecipeForItem } from '~/nw/utils'
 import { ItemFrameModule } from '~/ui/item-frame'
+import { QuicksearchService } from '~/ui/quicksearch'
 import { ContentVisibilityDirective, HtmlHeadService } from '~/utils'
 import { ItemDetailModule } from '~/widgets/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -78,23 +80,31 @@ export class TrophiesOverviewComponent {
         return {
           itemId: getItemId(housing),
           item: housing,
+          name: this.tl8.get(housing.Name),
           recipe: recipe,
           ingredients: ingredients,
         }
       })
-    })
+    }),
+    map((list) => sortBy(list, (it) => it.itemId)),
+    map((list) => groupBy(list, (it) => it.itemId.replace(/_T\d$/, ''))),
+    map((list) => Object.values(list)),
+    map((list) => sortBy(list, (it) => it.length).reverse().flat())
   )
 
-  protected rows$ = defer(() => this.items$).pipe(
-    map((list) => {
-      const groups = groupBy(list, (it) => it.itemId.replace(/T[0-9][a-zA-Z]?$/i, ''))
-      return Array.from(Object.values(groups))
-    })
-  )
+  protected filteredItems$ = combineLatest({
+    items: this.items$,
+    query: this.search.query
+  }).pipe(map(({ items, query }) => {
+    if (!query) {
+      return items
+    }
+    return items.filter((it) => it.name?.toLowerCase().includes(query))
+  }))
 
   protected trackByIndex: TrackByFunction<any> = (i) => i
 
-  public constructor(private db: NwDbService, head: HtmlHeadService) {
+  public constructor(private db: NwDbService, private search: QuicksearchService, private tl8: TranslateService, head: HtmlHeadService) {
     head.updateMetadata({
       title: 'Trophies',
       description: 'Overview of all trophies in new World',

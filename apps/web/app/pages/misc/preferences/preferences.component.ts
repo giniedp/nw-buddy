@@ -2,6 +2,7 @@ import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { RouterModule } from '@angular/router'
 import { saveAs } from 'file-saver'
 import { DbService } from '~/data/db.service'
 import { AppPreferencesService, ItemPreferencesService, PreferencesService } from '~/preferences'
@@ -14,7 +15,7 @@ import { PriceImporterModule } from '~/widgets/price-importer/price-importer.mod
   selector: 'nwb-preferences-page',
   templateUrl: './preferences.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, PriceImporterModule, LayoutModule],
+  imports: [CommonModule, FormsModule, PriceImporterModule, LayoutModule, RouterModule],
   host: {
     class: 'layout-content layout-pad flex flex-col items-center'
   }
