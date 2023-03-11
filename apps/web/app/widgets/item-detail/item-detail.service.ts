@@ -23,7 +23,7 @@ import {
   hasItemGearScore,
   hasPerkInherentAffix,
 } from '~/nw/utils'
-import { humanize, mapProp, shareReplayRefCount } from '~/utils'
+import { humanize, mapProp, shareReplayRefCount, tapDebug } from '~/utils'
 import { ModelViewerService } from '../model-viewer/model-viewer.service'
 
 function isTruthy(value: any) {
@@ -132,6 +132,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   })
 
   public readonly perksDetails$ = defer(() => this.resolvePerkInfos()).pipe(shareReplayRefCount(1))
+  public readonly gemDetail$ = this.perksDetails$.pipe(map((list) => list?.find((it) => it.perk?.PerkType === 'Gem')))
   public readonly finalRarity$ = defer(() => this.resolveFinalRarity())
   public readonly finalRarityName$ = this.finalRarity$.pipe(map(getItemRarityLabel))
 
