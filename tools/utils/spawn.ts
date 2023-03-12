@@ -1,19 +1,11 @@
 import * as cp from 'child_process'
 
-export async function spawn(cmd: string, options?: cp.SpawnOptions) {
+export async function spawn(cmd: string, args?: string[], options?: cp.SpawnOptions) {
   return new Promise<void>((resolve, reject) => {
-    const p = cp.spawn(cmd, options)
-    const stderr = []
-    const stdout = []
-    p.stderr.on('data', (data) => {
-      stderr.push(data.toString())
-    })
-    p.stdout.on('data', (data) => {
-      stdout.push(data.toString())
-    })
-    p.on('close', (code, signal) => {
+    const p = cp.spawn(cmd, args, options)
+    p.on('close', (code) => {
       if (code) {
-        reject(stderr.length ? stderr.join('\n') : stdout.join('\n'))
+        reject(code)
       } else {
         resolve()
       }

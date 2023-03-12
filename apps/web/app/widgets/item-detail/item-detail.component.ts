@@ -33,7 +33,10 @@ export class ItemDetailComponent extends ItemDetailStore {
   public set entity(value: ItemDefinitionMaster | Housingitems) {
     this.patchState({ entityId: getItemId(value) })
   }
-
+  @Input()
+  public set perkOverride(value: Record<string, string>) {
+    this.patchState({ perkOverride: value })
+  }
   public constructor(db: NwDbService, ms: ModelViewerService, cdRef: ChangeDetectorRef) {
     super(db, ms, cdRef)
   }

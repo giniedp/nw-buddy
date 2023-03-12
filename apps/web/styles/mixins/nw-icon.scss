@@ -73,7 +73,9 @@ $nw-rarity-color: (
   position: relative;
   background-size: contain;
 
-  border: 1px solid transparent;
+  &:not(.border) {
+    border: 1px solid transparent;
+  }
   border-image-width: 2px;
   border-image-repeat: stretch;
   border-image-slice: 2;

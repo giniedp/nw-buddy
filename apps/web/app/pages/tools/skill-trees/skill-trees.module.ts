@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
-import { SkillBuildsDetailComponent } from './skill-builds-detail.component'
-import { SkillBuildsShareComponent } from './skill-builds-share.component'
-import { SkillBuildsComponent } from './skill-builds.component'
+import { SkillBuildsDetailComponent } from './skill-tree-detail.component'
+import { SkillBuildsShareComponent } from './skill-tree-share.component'
+import { SkillBuildsComponent } from './skill-trees-page.component'
 
 export const routes: Routes = [
   {
@@ -25,6 +25,6 @@ export const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [],
 })
-export class SkillBuildsModule {
+export class SkillTreesModule {
   //
 }

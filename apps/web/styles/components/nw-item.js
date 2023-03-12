@@ -142,5 +142,14 @@ module.exports = ({ addComponents }) => {
         '--rarity-bg-ani': "url('^assets/icons/item/named_bg_4.webp')",
       },
     },
+    '.nw-status-bg': {
+      maskImage: "url('^assets/icons/abilities/statuseffectbg.png')",
+      maskSize: 'contain',
+      maskRepeat: 'no-repeat',
+      backgroundColor: "rgba(0, 0, 0, 1)",
+      '&.negative': {
+        backgroundColor: "rgba(255, 0, 0, 1)",
+      },
+    },
   })
 }

@@ -214,6 +214,7 @@ export abstract class DataTableAdapter<T> {
   public createLinkWithIcon({
     href,
     target,
+    linkClass,
     icon,
     iconClass,
     rarity,
@@ -221,17 +222,23 @@ export abstract class DataTableAdapter<T> {
   }: {
     href: string
     target: string
+    linkClass?: string[]
     icon: string
     iconClass?: string[]
     rarity?: number
     named?: boolean
   }) {
+    linkClass = linkClass?.filter((it) => !!it)
+    iconClass = iconClass?.filter((it) => !!it)
     return this.createElement('a', (el) => {
       if (href) {
         el.href = href
         el.target = target
       }
       el.classList.add('flex')
+      if (linkClass?.length) {
+        el.classList.add(...linkClass)
+      }
       el.append(
         this.createIcon((pic, img) => {
           pic.classList.add('inline-block', 'w-12', 'h-12')
@@ -248,7 +255,7 @@ export abstract class DataTableAdapter<T> {
           if (named) {
             pic.classList.add(`named`)
           }
-          if (iconClass) {
+          if (iconClass?.length) {
             pic.classList.add(...iconClass)
           }
           if (icon) {

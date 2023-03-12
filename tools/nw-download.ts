@@ -2,7 +2,7 @@ import { program } from 'commander'
 import * as fs from 'fs'
 import * as http from 'https'
 import * as path from 'path'
-import * as unzipper from 'unzipper'
+import * as AdmZip from 'adm-zip'
 import { NW_USE_PTR, nwData } from '../env'
 
 program
@@ -56,11 +56,10 @@ function download(url: string, target: string) {
   })
 }
 
-function unzip(file: string, target: string) {
-  return new Promise((resolve, reject) => {
-    fs.createReadStream(file)
-      .pipe(unzipper.Extract({ path: target }))
-      .on('close', resolve)
-      .on('error', reject)
+async function unzip(file: string, target: string) {
+  return new Promise<void>((resolve, reject) => {
+    new AdmZip(file).extractAllToAsync(target, true, false, (err) => {
+      err ? reject(err) : resolve()
+    });
   })
 }

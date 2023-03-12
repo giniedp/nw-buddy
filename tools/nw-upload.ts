@@ -1,8 +1,6 @@
-import { PutObjectCommand, PutObjectCommandInput, S3 } from '@aws-sdk/client-s3'
-import { MultiBar, Presets } from 'cli-progress'
+import { PutObjectCommand, S3 } from '@aws-sdk/client-s3'
 import { program } from 'commander'
 import * as fs from 'fs'
-import * as mime from 'mime-types'
 import * as path from 'path'
 import {
   CDN_UPLOAD_ENDPOINT,
@@ -10,27 +8,28 @@ import {
   CDN_UPLOAD_SECRET,
   CDN_UPLOAD_SPACE,
   nwData,
-  NW_USE_PTR,
+  NW_USE_PTR
 } from '../env'
-import { glob } from './utils'
+import * as AdmZip from 'adm-zip'
 
 program
   .option('--ptr', 'PTR mode', NW_USE_PTR)
-  .command('bundle')
   .action(async () => {
     const options = program.opts<{ ptr: boolean }>()
+    const assetsDir = nwData.distDir(options.ptr)
+    const zipFile = assetsDir + '.zip'
+    console.log('[ZIP]', assetsDir, '->', zipFile)
+    await createBundle(assetsDir, zipFile)
     await uploadBundle(nwData.distDir(options.ptr) + '.zip')
   })
 
-program
-  .option('--ptr', 'PTR mode', NW_USE_PTR)
-  .command('all')
-  .action(async () => {
-    const options = program.opts<{ ptr: boolean }>()
-    await uploadAll(nwData.distDir(options.ptr)!)
-  })
-
 program.parse(process.argv)
+
+async function createBundle(dir: string, file: string) {
+  const zip = new AdmZip();
+  zip.addLocalFolder(dir, path.basename(dir))
+  zip.writeZip(file);
+}
 
 async function uploadBundle(file: string) {
   console.log('[UPLOAD]', file)
@@ -48,40 +47,6 @@ async function uploadBundle(file: string) {
       })
     )
   }
-}
-
-async function uploadAll(from: string) {
-  console.log('[UPLOAD]', from)
-  const client = createClient()
-  const files = await glob([path.join(from, '**', '*'), '!**/*.json'])
-  const bars = new MultiBar(
-    {
-      stopOnComplete: true,
-      clearOnComplete: false,
-      hideCursor: true,
-    },
-    Presets.shades_grey
-  )
-  const bar = bars.create(files.length, 0, {})
-  for (let i = 0; i < files.length; i++) {
-    const file = files[i]
-    const key = path.relative(nwData.dist(), file)
-    const params: PutObjectCommandInput = {
-      Bucket: CDN_UPLOAD_SPACE,
-      Key: key,
-      Body: fs.readFileSync(file),
-      ACL: 'public-read',
-      ContentType: mime.lookup(file) || 'application/octet-stream',
-    }
-    if (params.ContentType === 'application/gzip') {
-      params.Key = params.Key.replace(/\.gz$/, '')
-      params.ContentType = mime.lookup(params.Key) || 'application/octet-stream'
-      params.ContentEncoding = 'gzip'
-    }
-    bar.update(i)
-    await client.send(new PutObjectCommand(params))
-  }
-  bar.update(files.length, { filename: '' })
 }
 
 function createClient() {

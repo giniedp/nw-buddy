@@ -2,8 +2,10 @@ import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { NwModule } from '~/nw'
-import { NwPricesImporterComponent } from './nw-marketprices-importer.component'
+import { PriceImporterNwmp } from './price-importer-nwmp.component'
 import { PriceImporterJsonComponent } from './price-importer-json.component'
+import { IconsModule } from '~/ui/icons'
+import { svgXmark } from '~/ui/icons/svg'
 
 type ImporterType = 'json' | 'nwmp'
 
@@ -12,14 +14,15 @@ type ImporterType = 'json' | 'nwmp'
   selector: 'nwb-price-importer',
   templateUrl: './price-importer.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, DialogModule, PriceImporterJsonComponent, NwPricesImporterComponent],
+  imports: [CommonModule, NwModule, IconsModule, DialogModule, PriceImporterJsonComponent, PriceImporterNwmp],
   host: {
-    class: 'layout-col container bg-base-300 rounded-md relative',
+    class: 'layout-col bg-base-300 rounded-md relative',
   },
 })
 export class PriceImporterComponent {
 
-  protected importer: ImporterType = 'json'
+  protected iconClose = svgXmark
+  protected importer: ImporterType = 'nwmp'
   protected get isJson() {
     return this.importer === 'json'
   }

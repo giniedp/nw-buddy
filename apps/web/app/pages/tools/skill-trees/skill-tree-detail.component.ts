@@ -28,8 +28,8 @@ import { SkillBuilderComponent, SkillBuildValue } from '~/widgets/skill-builder'
 
 @Component({
   standalone: true,
-  selector: 'nwb-skill-builds-detail',
-  templateUrl: './skill-builds-detail.component.html',
+  selector: 'nwb-skill-tree-detail',
+  templateUrl: './skill-tree-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,

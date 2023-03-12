@@ -11,6 +11,7 @@ import { svgMap } from './ui/icons/svg'
 import { LayoutService } from './ui/layout'
 import { mapProp } from './utils'
 import { PlatformService } from './utils/platform.service'
+import { VersionService } from './widgets/update-alert'
 
 @Component({
   selector: 'nw-buddy-app',
@@ -69,6 +70,7 @@ export class AppComponent implements OnInit, OnDestroy {
   protected mapCollapsed = false
 
   private destroy$ = new Subject<void>()
+  protected versionChanged$ = this.version.versionChanged$
 
   constructor(
     private preferences: AppPreferencesService,
@@ -77,7 +79,8 @@ export class AppComponent implements OnInit, OnDestroy {
     @Inject(DOCUMENT)
     private document: Document,
     private translate: TranslateService,
-    private layout: LayoutService
+    private layout: LayoutService,
+    private version: VersionService
   ) {
     //
   }

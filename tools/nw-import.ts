@@ -1,11 +1,11 @@
 import * as path from 'path'
 import * as fs from 'fs'
 import { program } from 'commander'
-import { glob, processArrayWithProgress, readJSONFile, renameExtname, writeJSONFile } from './utils'
+import { glob, processArrayWithProgress, readJSONFile, replaceExtname, writeJSONFile } from './utils'
 import { loadDatatables, splitToArrayRule } from './importer/loadDatatables'
 import { importLocales } from './importer/importLocales'
 import { importImages } from './importer/importImages'
-import { generateTypes } from './importer/generateTypes'
+import { generateTypes } from './code-gen/code-generate'
 import { extractExpressions } from './importer/extractExpressions'
 import { NW_USE_PTR, web, nwData } from '../env'
 import { extractLootTags } from './importer/extractLootTags'
@@ -13,9 +13,10 @@ import { extractAbilities } from './importer/extractAbilities'
 
 program
   .option('-i, --input <path>', 'input directory')
+  .option('-u, --update', 'Update existing files from previous import')
   .option('--ptr', 'PTR mode', NW_USE_PTR)
   .action(async () => {
-    const options = program.opts<{ input: string; output: string; ptr: boolean }>()
+    const options = program.opts<{ input: string; output: string; ptr: boolean, update: boolean }>()
     const inputDir = options.input || nwData.tmpDir(options.ptr)!
     const distDir = nwData.distDir(options.ptr)!
     const publicDir = nwData.assetPath(options.ptr)
@@ -274,8 +275,8 @@ program
               }
 
               for (const icon of candidates) {
-                if (icon && fs.existsSync(path.join(inputDir, renameExtname(icon, '.png')))) {
-                  obj.IconPath = renameExtname(icon, '.png')
+                if (icon && fs.existsSync(path.join(inputDir, replaceExtname(icon, '.png')))) {
+                  obj.IconPath = replaceExtname(icon, '.png')
                   return
                 }
               }
@@ -315,6 +316,7 @@ program
         'ui_dungeon_mutator_bronze',
         'ui_dungeon_mutator_silver',
         'ui_dungeon_mutator_gold',
+        /^attribution_.*/,
 
         'ui_physical',
         'ui_elemental',
@@ -479,6 +481,7 @@ program
     await importImages({
       input: inputDir,
       output: distDir,
+      update: options.update,
       tables,
       ignoreKeys: ['HiResIconPath'],
       rewritePath: (value) => {
@@ -500,6 +503,6 @@ program
     await extractLootTags(inputDir, 'tmp')
 
     console.log('collect abilities')
-    extractAbilities(inputDir, 'tmp')
+    await extractAbilities(inputDir, 'tmp')
   })
   .parse(process.argv)

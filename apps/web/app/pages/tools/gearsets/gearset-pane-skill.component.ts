@@ -15,7 +15,7 @@ import { svgDiagramProject, svgEllipsisVertical, svgEraser, svgFolderOpen, svgLi
 import { deferStateFlat, shareReplayRefCount } from '~/utils'
 import { SkillTreeModule } from '~/widgets/skill-builder'
 import { TooltipModule } from '~/ui/tooltip'
-import { SkillBuildsTableAdapter } from '../skill-builds/skill-builds-table.adapter'
+import { SkillBuildsTableAdapter } from '../skill-trees/skill-builds-table.adapter'
 import { SkillWeaponDialogComponent } from '~/widgets/skill-builder/skill-weapon-dialog.component'
 import { LayoutModule } from '~/ui/layout'
 

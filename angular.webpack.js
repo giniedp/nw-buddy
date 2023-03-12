@@ -3,7 +3,7 @@ const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 const webpack = require('webpack')
 const env = require('./env')
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
-
+const EmitFilePlugin = require('emit-file-webpack-plugin');
 /**
  * Custom angular webpack configuration
  */
@@ -60,6 +60,35 @@ module.exports = (config, options) => {
     new MonacoWebpackPlugin({
       languages: ['json', 'typescript', 'javascript']
     }),
+    new EmitFilePlugin({
+      // OPTIONAL: defaults to the Webpack output path.
+      // Output path.
+      // Can be relative (to Webpack output path) or absolute.
+      path: `.`,
+
+      // REQUIRED.
+      // Name of the file to add to assets.
+      // If hash option is enabled add `[hash]` here to choose where to insert the compilation hash.
+      // See the hash option for more information.
+      filename: `version`,
+
+      // REQUIRED.
+      // File content. Can be either a string, a buffer, or a (asynchronous) function.
+      // If the resulting object is not a string or a buffer, it will be converted
+      // to string via `.toString` (if the function was overridden) or `JSON.stringify`.
+      content: VERSION,
+
+      // OPTIONAL: defaults to the webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL.
+      // Asset processing stage.
+      // https://webpack.js.org/api/compilation-hooks/#processassets
+      stage: webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
+
+      // OPTIONAL: defaults to false.
+      // Adds the compilation hash to the filename. You can either choose within the filename
+      // where the hash is inserted by adding `[hash]` i.e. `test.[hash].js` or the hash will be
+      // appended to the end of the file i.e. `test.js?hash`.
+      hash: false
+    })
   ]
   return config
 }

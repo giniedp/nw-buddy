@@ -1,4 +1,5 @@
 import { Injectable, Optional } from '@angular/core'
+import { COLS_AFFIXDEFINITIONS, COLS_AFFIXSTATS, COLS_PERKS } from '@nw-data/cols'
 import { Ability, Affixstats, Perks } from '@nw-data/types'
 import { ColDef, ColGroupDef, GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
@@ -250,8 +251,8 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
         })
       ],
     }).pipe(map((options) => {
-      appendFields((options.columnDefs[0] as ColGroupDef).children, Array.from(Object.entries(FIELDS)), '')
-      appendFields((options.columnDefs[1] as ColGroupDef).children, Array.from(Object.entries(AFFIX_FIELDS)), '$affix')
+      appendFields((options.columnDefs[0] as ColGroupDef).children, Array.from(Object.entries(COLS_PERKS)), '')
+      appendFields((options.columnDefs[1] as ColGroupDef).children, Array.from(Object.entries(COLS_AFFIXSTATS)), '$affix')
       return options
     }))
   )
@@ -315,122 +316,4 @@ function appendFields(columns: Array<ColDef>, fields: string[][], fieldPrefix: s
     }
     columns.push(colDef)
   }
-}
-
-const FIELDS: Record<keyof Perks, string> = {
-  Affix:                    'string',
-  AppliedPrefix:            'string',
-  AppliedSuffix:            'string',
-  Category:                 'string',
-  Channel:                   'number',
-  ConditionEvent:            'ConditionEvent',
-  DayPhases:                'DayPhases',
-  DeprecatedPerkId:         'string',
-  Description:               'string',
-  DisplayName:               'string',
-  EquipAbility:             'string[]',
-  ExcludeFromTradingPost:   'string',
-  ExcludeItemClass:         'string[]',
-  ExclusiveLabels:          'string[]',
-  FishingWaterType:         'string',
-  GroupName:                'string',
-  IconPath:                  'string',
-  ItemClass:                 'ItemClass[]',
-  ItemClassGSBonus:         'string',
-  ItemPerkConflictsLocText: 'string',
-  PerkID:                    'string',
-  PerkType:                  'PerkType',
-  ScalingPerGearScore:       'number',
-  Tier:                      'number',
-  WeaponTag:                'string',
-}
-
-
-const AFFIX_FIELDS: Record<keyof Affixstats, string> = {
-  ABABleed:                   'number',
-  ABACurse:                   'number',
-  ABADisease:                 'number',
-  ABAFrostbite:               'number',
-  ABAPoison:                  'number',
-  ABSArcane:                  'number',
-  ABSCorruption:              'number',
-  ABSFire:                    'number',
-  ABSIce:                     'number',
-  ABSLightning:               'number',
-  ABSNature:                  'number',
-  ABSSiege:                   'number',
-  ABSSlash:                   'number',
-  ABSStandard:                'number',
-  ABSStrike:                  'number',
-  ABSThrust:                  'number',
-  ABSVitalsCategory:         'string',
-  AFABlight:                  'number',
-  AFACurse:                   'number',
-  AFAPoison:                  'number',
-  AdditionalDamage:          'string',
-  AppendToTooltip:           'string',
-  AttributeModifiers:        'string',
-  BLAArcane:                  'number',
-  BLACorruption:              'number',
-  BLAFire:                    'number',
-  BLALightning:               'number',
-  BLASiege:                   'number',
-  BLASlash:                   'number',
-  BLAStandard:                'number',
-  BLAStrike:                  'number',
-  BLAThrust:                  'number',
-  BaseDamageModifier:         'number',
-  BaseDamageType:            'string',
-  DMGArcane:                  'number',
-  DMGCorruption:              'number',
-  DMGFire:                    'number',
-  DMGIce:                     'number',
-  DMGLightning:               'number',
-  DMGNature:                  'number',
-  DMGSlash:                   'number',
-  DMGStrike:                  'number',
-  DMGThrust:                  'number',
-  DMGVitalsCategory:         'string',
-  DamagePercentage:           'number',
-  DamageType:                'string',
-  DisableDurabilityLoss:      'boolean',
-  DurabilityMod:              'number',
-  Encumbrance:                'number',
-  FastTravelEncumbranceMod:   'number',
-  FishRarityRollModifier:     'number',
-  FishSizeRollModifier:       'number',
-  FishingLineStrength:        'number',
-  GatheringEfficiency:        'number',
-  IsAdditiveDamage:           'boolean',
-  MODConstitution:            'number',
-  MODDexterity:               'number',
-  MODFocus:                   'number',
-  MODIntelligence:            'number',
-  MODStrength:                'number',
-  MP_FinalNotePerfectXPBonus: 'number',
-  MP_GroupXPBonus:            'number',
-  MP_IgnoreMissedNotes:       'number',
-  MP_OpeningNotesPerfect:     'number',
-  MP_RakeReduction:           'number',
-  MP_SoloXPBonus:             'number',
-  ManaRate:                   'number',
-  MaxCastDistance:            'number',
-  MaxHealthMod:               'number',
-  MaxManaMod:                 'number',
-  MaxStaminaMod:              'number',
-  PreferHigherScaling:        'boolean',
-  RESBlight:                  'number',
-  RESCurse:                   'number',
-  RESPoison:                  'number',
-  ScalingDexterity:           'number',
-  ScalingFocus:               'number',
-  ScalingIntelligence:        'number',
-  ScalingStrength:            'number',
-  StaminaDamageModifier:      'number',
-  StaminaRate:                'number',
-  StatusEffect:              'string',
-  StatusID:                   'string',
-  UseCountMultiplier:         'number',
-  WeaponEffectType:          'string',
-  WeightMultiplier:           'number',
 }

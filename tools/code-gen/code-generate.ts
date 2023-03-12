@@ -1,7 +1,10 @@
 import * as path from 'path'
 import * as fs from 'fs'
-import { generateDataFunctions, processArrayWithProgress, tsFromJson } from '../utils'
-import { DataTableSource } from './loadDatatables'
+
+import { DataTableSource } from '../importer/loadDatatables'
+import { generateInterfaces } from './generate-interfaces'
+import { generateApiService } from './generate-api-service'
+import { generateTableColumns } from './generate-table-columns'
 
 export async function generateTypes(output: string, tables: DataTableSource[], format: 'json' | 'csv' = 'json') {
   const samples = new Map<string, any[]>()
@@ -16,38 +19,16 @@ export async function generateTypes(output: string, tables: DataTableSource[], f
     files.get(type).push(relative.replace(/\.json$/, `.${format}`))
   }
 
-  const typesCode: string[] = []
-
-  await processArrayWithProgress(Array.from(samples.entries()), async ([type, candidates]) => {
-    const enums = enumFieldsForType(type)
-    const samples: string[] = candidates.flat(1).map((it) => {
-      it = JSON.parse(JSON.stringify(it))
-      Object.keys(it).forEach((key) => {
-        if (enums.includes(key)) {
-          return
-        }
-        // map non enum strings to emtpy strings, so that enums are not generated
-        if (typeof it[key] === 'string') {
-          it[key] = ''
-        }
-        // map arrays of strings to `['']` so that enums are not generated
-        if (Array.isArray(it[key])) {
-          it[key] = ['']
-        }
-      })
-      return JSON.stringify(it)
-    })
-    const result = await tsFromJson(type, samples)
-    const tsCode = result.lines.join('\n').trim()
-    if (tsCode) {
-      typesCode.push(tsCode)
-    } else {
-      files.delete(type)
-    }
+  const tsColsInfos = generateTableColumns(samples)
+  const tsInterfaces = await generateInterfaces(samples, {
+    onEmptyType: (type) => files.delete(type),
+    enumProps: (type) => ENUMS[type] || []
   })
+  const tsApiServce = generateApiService(files)
 
-  await fs.promises.writeFile(path.join(output, 'types.ts'), Buffer.from(typesCode.join('\n'), 'utf-8'))
-  await fs.promises.writeFile(path.join(output, 'datatables.ts'), Buffer.from(generateDataFunctions(files), 'utf-8'))
+  await fs.promises.writeFile(path.join(output, 'types.ts'), Buffer.from(tsInterfaces, 'utf-8'))
+  await fs.promises.writeFile(path.join(output, 'datatables.ts'), Buffer.from(tsApiServce, 'utf-8'))
+  await fs.promises.writeFile(path.join(output, 'cols.ts'), Buffer.from(tsColsInfos, 'utf-8'))
 }
 
 const PATH_TO_TYPE_RULES = [

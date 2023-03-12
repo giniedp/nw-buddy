@@ -176,6 +176,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           valueFormatter: ({ value }) => getItemTierAsRoman(value),
           filter: SelectFilter,
         }),
+
         this.colDef({
           colId: 'userBookmark',
           headerValueGetter: () => 'Bookmark',
@@ -261,9 +262,18 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
         }),
         this.colDef({
           colId: 'source',
-          headerValueGetter: () => 'Item Source',
+          headerValueGetter: () => 'Source',
           field: '$source',
+          valueFormatter: ({ value }) => humanize(value),
           width: 125,
+          filter: SelectFilter,
+        }),
+        this.colDef({
+          colId: 'attributionId',
+          headerValueGetter: () => 'Event',
+          width: 180,
+          field: this.fieldName('AttributionId'),
+          valueFormatter: ({ value }) => humanize(value),
           filter: SelectFilter,
         }),
         this.colDef({
