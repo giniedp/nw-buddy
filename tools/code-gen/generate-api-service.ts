@@ -1,7 +1,6 @@
 import * as path from 'path'
 
-export function generateDataFunctions(input: Map<string, string[]>) {
-
+export function generateApiService(input: Map<string, string[]>) {
   const types = Array.from(input.keys()).sort((a, b) => a < b ? -1 : 1)
   const functionStatements: string[] = types.map((typeName) => {
     return input.get(typeName).map((filePath) => {
@@ -43,8 +42,4 @@ export function generateDataFunctions(input: Map<string, string[]>) {
     ...functionStatements,
     '}'
   ].join('\n')
-}
-
-export function generateLocaleFunctions() {
-
 }

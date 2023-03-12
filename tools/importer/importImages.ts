@@ -1,12 +1,13 @@
 import * as path from 'path'
 import * as fs from 'fs'
-import { mkdir, processArrayWithProgress, renameExtname, spawn } from '../utils'
+import { mkdir, processArrayWithProgress, replaceExtname, spawn } from '../utils'
 import { DataTableSource, walkStringProperties } from './loadDatatables'
 
 export type ReqriteEntryFn = (key: string, value: string, obj: any) => string | null
 export async function importImages({
   input,
   output,
+  update,
   tables,
   ignoreKeys,
   rewrite,
@@ -14,6 +15,7 @@ export async function importImages({
 }: {
   input: string
   output: string
+  update: boolean
   tables: DataTableSource[]
   ignoreKeys: string[]
   rewrite?: Record<string, ReqriteEntryFn>
@@ -24,25 +26,21 @@ export async function importImages({
     rewrite: rewrite,
     rewritePath: rewritePath,
   })
-  const missing = new Set<string>()
+
   await processArrayWithProgress(Array.from(images), async ([source, target]) => {
     source = path.join(input, source)
     if (!fs.existsSync(source)) {
-      missing.add(source)
       return
     }
-
     const outFile = path.join(output, target)
-    if (fs.existsSync(outFile)) {
+    if (!update && fs.existsSync(outFile)) {
       return
     }
     const outDir = path.dirname(outFile)
     await mkdir(outDir, { recursive: true })
-    await spawn(`convert "${source}" -quality 85 "${outFile}"`, {
+    await spawn(process.env.MAGICK_CONVERT_CMD || 'magick convert', [source, '-quality', '85', outFile], {
       shell: true,
-      stdio: 'pipe',
-      env: process.env,
-      cwd: process.cwd(),
+      stdio: 'inherit',
     }).catch(console.error)
   })
 }
@@ -50,7 +48,7 @@ export async function importImages({
 function scanImages(
   tables: DataTableSource[],
   options?: {
-    ignoreKeys: string[];
+    ignoreKeys: string[]
     rewrite?: Record<string, ReqriteEntryFn>
     rewritePath?: (value: string) => string
   }
@@ -63,8 +61,8 @@ function scanImages(
       return
     }
     const source = path.normalize(value.toLowerCase())
-    const sourcePNG = renameExtname(source, '.png').toLowerCase().replace(/\\/g, '/')
-    const targetWEBP = renameExtname(source, '.webp')
+    const sourcePNG = replaceExtname(source, '.png').toLowerCase().replace(/\\/g, '/')
+    const targetWEBP = replaceExtname(source, '.webp')
       .toLowerCase()
       .replace(/\\/g, '/')
       .replace(/^\/?lyshineui\/images/, '')
