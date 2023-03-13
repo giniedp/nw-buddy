@@ -1,4 +1,6 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
+import { CdkMenuModule } from '@angular/cdk/menu'
+import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { Component, TrackByFunction } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -6,15 +8,18 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { LetModule } from '@ngrx/component'
 import { combineLatest, filter, firstValueFrom, map, switchMap } from 'rxjs'
-import { GearsetsDB, ItemInstance, ItemInstancesDB } from '~/data'
+import { GearsetRecord, GearsetsDB, ItemInstance, ItemInstancesDB } from '~/data'
 import { ShareDialogComponent } from '~/pages/share'
+import { ChipsInputModule } from '~/ui/chips-input'
 import { IconsModule } from '~/ui/icons'
-import { svgCamera, svgChevronLeft, svgCompress, svgPaste, svgShareNodes, svgTrashCan } from '~/ui/icons/svg'
+import { svgCamera, svgChevronLeft, svgCompress, svgPaste, svgShareNodes, svgTags, svgTrashCan } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { observeRouteParam } from '~/utils'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { GearsetDetailComponent } from './gearset-detail.component'
+import { GEARSET_TAGS } from './tags'
+
 @Component({
   standalone: true,
   selector: 'nwb-gearsets-detail-page',
@@ -30,6 +35,8 @@ import { GearsetDetailComponent } from './gearset-detail.component'
     IonicModule,
     GearsetDetailComponent,
     LetModule,
+    ChipsInputModule,
+    OverlayModule
   ],
   host: {
     class: 'layout-col flex-none',
@@ -42,6 +49,7 @@ export class GearsetsDetailPageComponent {
   protected vm$ = combineLatest({
     record: this.record$,
     name: this.record$.pipe(map((it) => it.name)),
+    tags: this.record$.pipe(map((it) => it.tags || [])),
   })
 
   protected compact = false
@@ -51,7 +59,9 @@ export class GearsetsDetailPageComponent {
   protected iconBack = svgChevronLeft
   protected iconCompact = svgCompress
   protected iconShare = svgShareNodes
-
+  protected iconTags = svgTags
+  protected presetTags = GEARSET_TAGS.map((it) => it.value)
+  protected isTagEditorOpen = false
   protected trackByIndex: TrackByFunction<any> = (i) => i
 
   public constructor(
@@ -151,6 +161,14 @@ export class GearsetsDetailPageComponent {
             .toString()
         },
       },
+    })
+
+  }
+
+  protected updateTags(record: GearsetRecord, tags: string[]) {
+    this.gearDb.update(record.id, {
+      ...record,
+      tags: tags || []
     })
   }
 

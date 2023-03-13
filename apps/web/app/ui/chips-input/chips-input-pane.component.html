@@ -1,0 +1,13 @@
+<div class="grid grid-cols-3 gap-1">
+  <ng-container *ngFor="let tag of paneTags$ | async; trackBy: trackByIndex">
+    <button class="btn btn-sm btn-primary" [class.btn-outline]="!tag.checked" (click)="toggleTag(tag.value)">
+      {{ tag.value }}
+    </button>
+  </ng-container>
+  <nwb-chips-input
+    class="col-start-1 col-span-3"
+    [placeholder]="placeholder"
+    [ngModel]="inputTags$ | async"
+    (ngModelChange)="updateInputTags($event)"
+  ></nwb-chips-input>
+</div>

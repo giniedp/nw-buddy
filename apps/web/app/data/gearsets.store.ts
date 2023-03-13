@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
+import { uniq } from 'lodash'
 import { combineLatest, defer, map, Subject, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw/nw-db.service'
 import { EquipSlot, EQUIP_SLOTS, getItemPerkInfos, getItemRarity, getAverageGearScore } from '~/nw/utils'
+import { eqCaseInsensitive, tapDebug } from '~/utils'
 
 import { GearsetRecord, GearsetsDB } from './gearsets.db'
 import { ItemInstance, ItemInstancesDB } from './item-instances.db'
@@ -14,6 +16,7 @@ export interface GearsetsState {
   perks: Map<string, Perks>
   buckets: Map<string, Perkbuckets>
   instances: Map<string, ItemInstance>
+  selectedTags?: string[]
 }
 
 export interface GearsetRowSlot {
@@ -44,7 +47,17 @@ export interface GearsetRow {
 @Injectable()
 export class GearsetsStore extends ComponentStore<GearsetsState> {
   public readonly records$ = this.select(({ records }) => records)
+  public readonly recordsTags$ = this.select(this.records$, selectAllTags)
+
+  public readonly selectedTags$ = this.select(({ selectedTags }) => selectedTags || [])
+  public readonly selectedRecords$ = this.select(this.records$, this.selectedTags$, selectRecordsHavingTags)
+
   public readonly rows$ = this.select(({ records }) => records?.map((it) => this.buildRow(it)))
+  public readonly selectedRows$ = this.select(this.selectedRecords$, (records) =>
+    records?.map((it) => this.buildRow(it))
+  )
+
+  public readonly tags$ = this.select(this.recordsTags$, this.selectedTags$, selectTags)
 
   public rowCreated$ = defer(() => this.rowCreated)
   public rowUpdated$ = defer(() => this.rowUpdated)
@@ -56,11 +69,12 @@ export class GearsetsStore extends ComponentStore<GearsetsState> {
 
   public constructor(private setsDB: GearsetsDB, private itemsDB: ItemInstancesDB, private nwDB: NwDbService) {
     super({
-      records: null,
+      records: [],
       items: new Map(),
       perks: new Map(),
       buckets: new Map(),
       instances: new Map(),
+      selectedTags: [],
     })
   }
 
@@ -154,4 +168,45 @@ export class GearsetsStore extends ComponentStore<GearsetsState> {
     result.gearScore = Math.round(result.gearScore)
     return result
   }
+
+  public toggleTag(value: string) {
+    const tags = [...(this.get().selectedTags || [])]
+    const index = tags.findIndex((tag) => eqCaseInsensitive(tag, value))
+    if (index >= 0) {
+      tags.splice(index, 1)
+    } else {
+      tags.push(value)
+    }
+    this.patchState({ selectedTags: tags })
+  }
+}
+
+function selectAllTags(records: GearsetRecord[]) {
+  return uniq((records || []).map((it) => it.tags || []).flat())
+}
+
+function selectRecordsHavingTags(records: GearsetRecord[], selectedTags: string[]) {
+  console.log('selectRecordsHavingTags', records, selectedTags)
+  if (!selectedTags?.length) {
+    return records
+  }
+  return (
+    records?.filter(({ tags }) => {
+      if (!tags?.length) {
+        return false
+      }
+      return tags.some((tag) => {
+        return tag && selectedTags.some((it) => eqCaseInsensitive(tag, it))
+      })
+    }) || []
+  )
+}
+
+function selectTags(tags: string[], selectedTags: string[]) {
+  return (tags || []).sort().map((tag) => {
+    return {
+      tag: tag,
+      active: selectedTags?.some((it) => eqCaseInsensitive(it, tag)),
+    }
+  })
 }

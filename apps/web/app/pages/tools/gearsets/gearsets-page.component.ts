@@ -39,12 +39,15 @@ import { GearsetLoadoutListComponent } from './loadout'
 })
 export class GearsetsPageComponent implements OnInit {
   protected iconCreate = svgPlus
+  protected tags$ = this.store.tags$
 
   public constructor(
     private store: GearsetsStore,
     protected search: QuicksearchService,
     private dialog: Dialog,
-  ) {}
+  ) {
+    //
+  }
 
   public async ngOnInit() {
     this.store.loadAll()
@@ -67,5 +70,9 @@ export class GearsetsPageComponent implements OnInit {
           name: newName,
         })
       })
+  }
+
+  protected toggleTag(value: string) {
+    this.store.toggleTag(value)
   }
 }

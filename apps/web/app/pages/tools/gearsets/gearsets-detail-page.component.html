@@ -15,6 +15,35 @@
             (ngModelChange)="updateName($event)"
             [ngModelOptions]="{ updateOn: 'blur' }"
           />
+
+          <button
+            class="btn btn-ghost btn-square"
+            cdkOverlayOrigin
+            #overlay="cdkOverlayOrigin"
+            (click)="isTagEditorOpen = !isTagEditorOpen"
+            [tooltip]="'Edit Tags'"
+            [color]="'info'"
+          >
+            <nwb-icon [icon]="iconTags" class="w-4 h-4"></nwb-icon>
+          </button>
+          <ng-template
+            cdkConnectedOverlay
+            [cdkConnectedOverlayOrigin]="overlay"
+            [cdkConnectedOverlayOpen]="isTagEditorOpen"
+            [cdkConnectedOverlayHasBackdrop]="true"
+            (backdropClick)="isTagEditorOpen = false"
+            (detach)="isTagEditorOpen = false"
+          >
+            <div class="bg-base-200 rounded-md p-2">
+              <nwb-chips-input-pane
+                [tags]="presetTags"
+                [placeholder]="'custom tags'"
+                [ngModel]="vm.tags"
+                (ngModelChange)="updateTags(vm.record, $event)"
+              ></nwb-chips-input-pane>
+            </div>
+          </ng-template>
+
           <button nwbScreenshotBtn class="btn btn-ghost btn-square" [tooltip]="'Screenshot'" [color]="'info'"></button>
           <button
             class="btn btn-ghost btn-square"

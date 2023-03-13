@@ -62,3 +62,4 @@ export const svgSquareArrowUpRight = require('!!raw-loader!./square-arrow-up-rig
 export const svgTableCells = require('!!raw-loader!./table-cells.svg').default
 export const svgTrashCan = require('!!raw-loader!./trash-can.svg').default
 export const svgXmark = require('!!raw-loader!./xmark.svg').default
+export const svgTags = require('!!raw-loader!./tags.svg').default

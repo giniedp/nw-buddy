@@ -9,7 +9,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   host: {
-    class: 'flex flex-row flex-wrap gap-1',
+    class: 'flex flex-row items-center flex-wrap gap-1',
   },
   providers: [
     {
@@ -38,6 +38,7 @@ export class ChipsInputComponent implements ControlValueAccessor {
   protected touched = false
   protected disabled = false
   protected value: string[]
+  protected trackByIndex = (i: number) => i
 
   public constructor(private cdRef: ChangeDetectorRef) {
     //

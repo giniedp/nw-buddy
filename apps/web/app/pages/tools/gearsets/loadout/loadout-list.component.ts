@@ -16,7 +16,7 @@ import { GearsetLoadoutItemComponent } from './loadout-item.component'
   styleUrls: ['./loadout-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, GearsetLoadoutItemComponent, DialogModule],
-  providers: [GearsetsStore],
+  providers: [],
   host: {
     class: 'layout-content layout-pad',
   },
@@ -24,7 +24,7 @@ import { GearsetLoadoutItemComponent } from './loadout-item.component'
 export class GearsetLoadoutListComponent {
 
   protected readonly records$ = combineLatest({
-    records: this.store.records$,
+    records: this.store.selectedRecords$,
     search: this.search.query,
   }).pipe(
     map(({ records, search }) => {
