@@ -30,7 +30,7 @@
     "electron:tsc": "tsc -p apps/electron/tsconfig.json",
     "electron:serve": "yarn electron:tsc && electron . --serve",
     "electron:builder": "electron-builder build --publish=never --config=electron-config.js",
-    "nw-cdn": "env-cmd -f .env ts-node ./tools/nw-cdn.ts",
+    "nw-cdn": "ts-node ./tools/nw-cdn.ts",
     "nw-extract": "env-cmd -f .env ts-node ./tools/nw-extract.ts",
     "nw-convert": "env-cmd -f .env ts-node ./tools/nw-convert.ts",
     "nw-import": "env-cmd -f .env ts-node ./tools/nw-import.ts",
