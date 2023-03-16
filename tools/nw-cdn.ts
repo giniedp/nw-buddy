@@ -7,15 +7,15 @@ import * as path from 'path'
 import { CDN_UPLOAD_ENDPOINT, CDN_UPLOAD_KEY, CDN_UPLOAD_SECRET, CDN_UPLOAD_SPACE, nwData, NW_USE_PTR } from '../env'
 
 program
-  .command('download')
   .option('--ptr', 'PTR mode', NW_USE_PTR)
   .option('-o, --output <path>', 'output directory')
+  .command('download')
   .action(async () => {
     const options = program.opts<{ ptr: boolean; output: string }>()
     const input = nwData.cdnUrl(options.ptr) + '.zip'
     const outDir = options.output || nwData.dist()
     const zipFile = path.join(outDir, path.basename(input))
-
+    console.log(options)
     console.log('[DOWNLOAD]', input)
     console.log('       to:', zipFile)
 
@@ -41,8 +41,8 @@ program
   })
 
 program
-  .command('upload')
   .option('--ptr', 'PTR mode', NW_USE_PTR)
+  .command('upload')
   .action(async () => {
     const options = program.opts<{ ptr: boolean }>()
     const assetsDir = nwData.distDir(options.ptr)
