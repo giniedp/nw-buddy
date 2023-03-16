@@ -54,6 +54,7 @@ export async function loadDatatables({ inputDir, patterns, remap, rewrite }: Loa
   await processArrayWithProgress(Array.from(files), async (file) => {
     const content = await readFile(file, 'utf-8')
     const json = JSON.parse(content) as Array<any>
+    applyRemap(file, json, remap)
     result.push({
       file: file,
       relative: path.relative(input, file),
@@ -61,8 +62,10 @@ export async function loadDatatables({ inputDir, patterns, remap, rewrite }: Loa
     })
   })
   await processArrayWithProgress(result, async (table) => {
-    applyRemap(table.file, table.data, remap)
-    applyRewrite(table.file, table.data, rewrite, result)
+    return new Promise((resolve) => {
+      applyRewrite(table.file, table.data, rewrite, result)
+      setTimeout(resolve)
+    })
   })
 
   return result
