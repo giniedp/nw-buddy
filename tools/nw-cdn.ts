@@ -7,7 +7,7 @@ import * as path from 'path'
 import { CDN_UPLOAD_ENDPOINT, CDN_UPLOAD_KEY, CDN_UPLOAD_SECRET, CDN_UPLOAD_SPACE, nwData, NW_USE_PTR } from '../env'
 
 program
-  .command('upload')
+  .command('download')
   .option('--ptr', 'PTR mode', NW_USE_PTR)
   .option('-o, --output <path>', 'output directory')
   .action(async () => {
@@ -41,7 +41,7 @@ program
   })
 
 program
-  .command('download')
+  .command('upload')
   .option('--ptr', 'PTR mode', NW_USE_PTR)
   .action(async () => {
     const options = program.opts<{ ptr: boolean }>()
