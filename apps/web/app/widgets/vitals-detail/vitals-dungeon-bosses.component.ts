@@ -39,15 +39,16 @@ export class VitalsDungeonBossesListComponent {
   public entities = defer(() =>
     combineLatest({
       vitals: this.bosses$,
+      vitalsMeta: this.db.vitalsMetadataMap,
       dungeons: this.db.gameModes,
     })
   )
     .pipe(
-      map(({ vitals, dungeons }) => {
+      map(({ vitals, vitalsMeta, dungeons }) => {
         return vitals.map((vital) => {
           return {
             vital,
-            dungeon: getVitalDungeon(vital, dungeons),
+            dungeon: getVitalDungeon(vital, dungeons, vitalsMeta),
           }
         })
       })

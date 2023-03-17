@@ -1,4 +1,5 @@
-import { Gamemodes, Vitals, Vitalscategories } from "@nw-data/types"
+import { Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from "@nw-data/types"
+import { eqCaseInsensitive } from "~/utils"
 
 const NAMED_FAIMILY_TYPES = ['DungeonBoss', 'Dungeon+', 'DungeonMiniBoss', 'Elite+', 'EliteMiniBoss']
 const CREATURE_TYPE_MARKER = {
@@ -201,99 +202,78 @@ export function getVitalDamageEffectivenessIcon(vital: Vitals, damageType: Vital
   return null
 }
 
-export type DungeonTerritory =
-  | 'Windsward'
-  | 'Edengrove'
-  | 'Everfall'
-  | 'Restless'
-  | 'Reekwater'
-  | 'Ebonscale'
-  | 'ShatterMtn'
-  | 'Cutlass'
-  | 'BrimstoneSands'
+// export type DungeonTerritory =
+//   | 'Windsward'
+//   | 'Edengrove'
+//   | 'Everfall'
+//   | 'Restless'
+//   | 'Reekwater'
+//   | 'Ebonscale'
+//   | 'ShatterMtn'
+//   | 'Cutlass'
+//   | 'BrimstoneSands'
 
-export function getVitalDungeonTerritory(vitalId: string): DungeonTerritory {
-  return vitalId?.match(/_DG_([a-zA-Z]+)_/)?.[1] as DungeonTerritory
-}
-export function getVitalDungeonTag(vitalId: string) {
-  switch (getVitalDungeonTerritory(vitalId)) {
-    case 'Windsward':
-      return 'Amrine'
-    case 'Edengrove':
-      return 'Edengrove00'
-    case 'Everfall':
-      return 'ShatteredObelisk'
-    case 'Restless':
-      return 'RestlessShores01'
-    case 'Reekwater':
-      return 'Reekwater00'
-    case 'Ebonscale':
-      return 'Ebonscale00'
-    case 'ShatterMtn':
-      return 'ShatterMtn00'
-    case 'Cutlass':
-      return 'CutlassKeys00'
-    case 'BrimstoneSands':
-      return 'BrimstoneSands00'
-    default:
-      return null
-  }
-}
-export function getVitalDungeonId(vitalId: string): string {
-  const tag = getVitalDungeonTag(vitalId)
-  return tag ? `Dungeon${tag}` : null
-}
-const MAP_DUNGEON_TO_VITALS_LOOT_TAGS: Record<string, string[]> = {
-  DungeonAmrine: ['Nakashima', 'Simon'],
-  DungeonEbonscale00: ['Dynasty', 'IsabellaDynasty'],
-  DungeonCutlassKeys00: ['DryadSiren'],
-  QuestApophis: ['Apophis']
-}
-export function getVitalDungeons(vital: Vitals, dungeons: Gamemodes[], mutated?: boolean): Gamemodes[] {
-  const result: Gamemodes[] = []
-  const vitalDungeonId = getVitalDungeonId(vital.VitalsID)
-  if (vitalDungeonId) {
-    const found = dungeons.find((it) => it.GameModeId === vitalDungeonId)
-    result.push(found)
-    return result
-  }
-  if (!vital.LootTags?.length) {
-    return result
-  }
+// export function getVitalDungeonTerritory(vitalId: string): DungeonTerritory {
+//   return vitalId?.match(/_DG_([a-zA-Z]+)_/)?.[1] as DungeonTerritory
+// }
+// export function getVitalDungeonTag(vitalId: string) {
+//   switch (getVitalDungeonTerritory(vitalId)) {
+//     case 'Windsward':
+//       return 'Amrine'
+//     case 'Edengrove':
+//       return 'Edengrove00'
+//     case 'Everfall':
+//       return 'ShatteredObelisk'
+//     case 'Restless':
+//       return 'RestlessShores01'
+//     case 'Reekwater':
+//       return 'Reekwater00'
+//     case 'Ebonscale':
+//       return 'Ebonscale00'
+//     case 'ShatterMtn':
+//       return 'ShatterMtn00'
+//     case 'Cutlass':
+//       return 'CutlassKeys00'
+//     case 'BrimstoneSands':
+//       return 'BrimstoneSands00'
+//     default:
+//       return null
+//   }
+// }
+// export function getVitalDungeonId(vitalId: string): string {
+//   const tag = getVitalDungeonTag(vitalId)
+//   return tag ? `Dungeon${tag}` : null
+// }
+// const MAP_DUNGEON_TO_VITALS_LOOT_TAGS: Record<string, string[]> = {
+//   DungeonAmrine: ['Nakashima', 'Simon'],
+//   DungeonEbonscale00: ['Dynasty', 'IsabellaDynasty'],
+//   DungeonCutlassKeys00: ['DryadSiren'],
+//   QuestApophis: ['Apophis']
+// }
 
-  if (mutated && vital.VitalsID === 'Withered_Brute_Named_08') {
-    const found = dungeons.find((it) => it.GameModeId === 'DungeonShatteredObelisk')
-    result.push(found)
+export function getVitalDungeons(vital: Vitals, dungeons: Gamemodes[], vitalsMeta: Map<string, Vitalsmetadata>): Gamemodes[] {
+  const meta = vitalsMeta.get(vital.VitalsID)
+  if (!meta) {
+    return []
   }
-
-  for (const dungeon of dungeons) {
-    if (!dungeon.IsDungeon) {
-      continue
+  // "WorldBounds": "4480.0,4096.0,608.0,544.0"
+  return dungeons.filter((it) => {
+    if (!it.MapId || eqCaseInsensitive(it.MapId, 'newworld_vitaeeterna')) {
+      // dynasty dungeon is in the open world map
+      // all mobs have mapId set to 'newworld_vitaeeterna'
+      // we check for bounds
+      const [x, y, w, h] = (it.WorldBounds?.split(',') || []).map(Number)
+      return meta.spawns.some(({ position }) => {
+        if (!position.length) {
+          return false
+        }
+        return position[0] >= x && position[0] <= (x + w) && position[1] >= y && position[1] <= y + h
+      })
     }
-    // vital references dungeon via LootTags
-    const dungeonTag = dungeon.GameModeId.replace(/^Dungeon/, '')
-    if (vital.LootTags.some((tag) => tag === dungeonTag)) {
-      result.push(dungeon)
-      return result
-    }
-    if (vital.CreatureType === 'DungeonBoss') {
-      // special case for
-      // - Dynasty_Empress
-      const tags = MAP_DUNGEON_TO_VITALS_LOOT_TAGS[dungeon.GameModeId]
-      if (tags && vital.LootTags.some((tag) => tags.includes(tag))) {
-        // console.debug('special case', {
-        //   vitalDungeonId,
-        //   vital,
-        //   dungeon
-        // })
-        result.push(dungeon)
-        return result
-      }
-    }
-  }
-  return result
+    return meta.mapIDs?.some((mapId) => eqCaseInsensitive(mapId, it.MapId))
+  })
 }
 
-export function getVitalDungeon(vital: Vitals, dungeons: Gamemodes[]) {
-  return getVitalDungeons(vital, dungeons)?.[0]
+export function getVitalDungeon(vital: Vitals, dungeons: Gamemodes[], vitalsMeta: Map<string, Vitalsmetadata>) {
+  return getVitalDungeons(vital, dungeons, vitalsMeta)?.[0]
 }

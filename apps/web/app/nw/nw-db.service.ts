@@ -257,6 +257,9 @@ export class NwDbService {
 
   public tradeskillPostcap = table(() => [this.data.tradeskillpostcap()])
 
+  public vitalsMetadata = table(() => [this.data.vitalsmetadata()])
+  public vitalsMetadataMap = indexBy(() => this.vitalsMetadata, 'vitalsID')
+
   public vitals = table(() => [this.data.vitals()])
   public vitalsMap = indexBy(() => this.vitals, 'VitalsID')
   public vital = lookup(() => this.vitalsMap)

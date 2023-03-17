@@ -4515,6 +4515,12 @@ export const COLS_VITALSLEVELDATA = {
   "LootGSBonusChance": "number",
   "PhysicalArmorRating": "number",
 }
+export const COLS_VITALSMETADATA = {
+  "mapIDs": "[]",
+  "spawns": "[]",
+  "tables": "[]",
+  "vitalsID": "string",
+}
 export const COLS_VITALSMODIFIERDATA = {
   "CategoryDamageMod": "number",
   "CategoryDropChanceMod": "number",

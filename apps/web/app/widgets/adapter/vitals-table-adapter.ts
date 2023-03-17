@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { Gamemodes, Vitals, Vitalscategories } from '@nw-data/types'
+import { Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
@@ -8,7 +8,6 @@ import {
   getVitalAliasName,
   getVitalCategoryInfo,
   getVitalDamageEffectivenessPercent,
-  getVitalDungeon,
   getVitalDungeons,
   getVitalFamilyInfo,
   getVitalsCategories,
@@ -19,7 +18,7 @@ import {
 } from '~/nw/utils'
 import { NwVitalsService } from '~/nw/vitals'
 import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
-import { CellRendererService, DataTableAdapter, dataTableProvider } from '~/ui/data-table'
+import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { assetUrl, humanize, shareReplayRefCount } from '~/utils'
 
 export interface Entity extends Vitals {
@@ -27,6 +26,7 @@ export interface Entity extends Vitals {
   $categories: Vitalscategories[]
   $familyInfo: VitalFamilyInfo
   $combatInfo: VitalFamilyInfo | null
+  $metadata: Vitalsmetadata
 }
 
 @Injectable()
@@ -203,6 +203,18 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           valueGetter: this.valueGetter(({ data }) => data?.$dungeons?.map((it) => this.i18n.get(it.DisplayName))),
           filter: SelectFilter,
         }),
+        // this.colDef({
+        //   colId: '$mapIDs',
+        //   headerValueGetter: () => 'Map IDs',
+        //   valueGetter: this.valueGetter(({ data }) => data?.$metadata?.mapIDs),
+        //   filter: SelectFilter,
+        // }),
+        // this.colDef({
+        //   colId: '$tables',
+        //   headerValueGetter: () => 'Tables',
+        //   valueGetter: this.valueGetter(({ data }) => data?.$metadata?.tables),
+        //   filter: SelectFilter,
+        // }),
         this.colDef({
           colId: 'dmgEffectivenessSlash',
           headerValueGetter: () => 'Slash',
@@ -309,21 +321,23 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
   public entities: Observable<Entity[]> = defer(() =>
     combineLatest({
       vitals: this.db.vitals,
+      vitalsMeta: this.db.vitalsMetadataMap,
       dungeons: this.db.gameModes,
       categories: this.db.vitalsCategoriesMap,
     })
   )
     .pipe(
-      map(({ vitals, dungeons, categories }) => {
+      map(({ vitals, vitalsMeta, dungeons, categories }) => {
         return vitals.map((vital): Entity => {
           const familyInfo = getVitalFamilyInfo(vital)
           const combatInfo = getVitalCategoryInfo(vital)
           return {
             ...vital,
-            $dungeons: getVitalDungeons(vital, dungeons, true),
+            $dungeons: getVitalDungeons(vital, dungeons, vitalsMeta),
             $categories: getVitalsCategories(vital, categories),
             $familyInfo: getVitalFamilyInfo(vital),
             $combatInfo: familyInfo.ID !== combatInfo.ID ? combatInfo : null,
+            $metadata: vitalsMeta.get(vital.VitalsID)
           }
         })
       })

@@ -1,5 +1,5 @@
 import * as path from 'path'
-import { glob, processArrayWithProgress, writeJSONFile } from '../utils'
+import { glob, withProgressBar, writeJSONFile } from '../utils'
 import { readFile } from 'fs/promises'
 
 import { DataTableSource, walkStringProperties } from './loadDatatables'
@@ -45,7 +45,8 @@ async function loadLocales(input: string, keys: Set<string>, regs: RegExp[]) {
   const files = await glob(pattern)
   const result = new Map<string, Record<string, string>>()
 
-  await processArrayWithProgress(files, async (file) => {
+  await withProgressBar({ input: files }, async (file, _, log) => {
+    log(file)
     const content = await readFile(file, 'utf-8')
     const json = JSON.parse(content)
     const lang = path.basename(path.dirname(file))

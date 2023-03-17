@@ -77,6 +77,7 @@ import type {
   Vitals,
   Vitalscategories,
   Vitalsleveldata,
+  Vitalsmetadata,
   Vitalsmodifierdata,
   Weaponmastery,
   Xpamountsbylevel,
@@ -1146,6 +1147,9 @@ export abstract class NwDataLoader {
   }
   public vitalsleveldata() {
     return this.load<Vitalsleveldata[]>('javelindata_vitalsleveldata.json')
+  }
+  public vitalsmetadata() {
+    return this.load<Vitalsmetadata[]>('javelindata_vitalsmetadata.json')
   }
   public vitalsmodifierdata() {
     return this.load<Vitalsmodifierdata[]>('javelindata_vitalsmodifierdata.json')

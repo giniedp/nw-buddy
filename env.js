@@ -24,6 +24,8 @@ const config = {
   NW_GAME_PTR: process.env.NW_GAME_PTR,
   NW_CDN_PTR: process.env.NW_CDN_PTR,
   NW_CDN_LIVE: process.env.NW_CDN_LIVE,
+  NW_UNPACK_LIVE: process.env.NW_UNPACK_LIVE,
+  NW_UNPACK_PTR: process.env.NW_UNPACK_PTR,
   NW_USE_CDN: ['true', 'yes', '1'].includes(process.env.NW_USE_CDN),
   NW_USE_PTR: ['true', 'yes', '1'].includes(process.env.NW_USE_PTR ?? String(branchName === 'ptr')),
   CDN_UPLOAD_SPACE: process.env.CDN_UPLOAD_SPACE,
@@ -75,7 +77,15 @@ const nwData = {
     return get(isPtr ? 'NW_GAME_PTR' : 'NW_GAME_LIVE')
   },
   /**
-   * Live or PTR temporary directory where game assets are extracted to
+   * Live or PTR unpack directory where game assets are extracted to
+   * @param {boolean} isPtr
+   * @returns {string}
+   */
+  unpackDir: (isPtr) => {
+    return get(isPtr ? 'NW_UNPACK_PTR' : 'NW_UNPACK_LIVE')
+  },
+  /**
+   * Live or PTR temporary directory where game assets are converted to
    * @param {boolean} isPtr
    * @returns {string}
    */

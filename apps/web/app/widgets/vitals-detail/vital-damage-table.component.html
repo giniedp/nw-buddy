@@ -1,26 +1,38 @@
-<div class="p-2">
-  <div class="alert alert-info shadow-lg rounded-md">
+
+<ng-container *ngIf="tables$ | async; let tables">
+  <div *ngIf="!tables.length" class="alert shadow-lg my-2 bg-base-200">
     <div>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-      <span>This is experimental. Attack table may or may not belong to this creature.</span>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-error flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <div>
+        <h3 class="font-bold">No damage tables found</h3>
+        <div class="text-xs">This creature either has no damage tables or is not in game.</div>
+      </div>
     </div>
   </div>
-</div>
-
-<ng-container *ngIf="table$ | async; let table">
-  <div class="text-center text-primary font-bold text-lg">{{ table.name | nwHumanize }}</div>
-  <div class="stat place-items-center py-1 px-2" *ngFor="let row of table.rows">
-    <div class="stat-value text-lg text-secondary">
-      {{ row.Name }}
+  <div *ngIf="tables.length > 1" class="alert shadow-lg my-2 bg-base-200">
+    <div>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-warning flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <div>
+        <h3 class="font-bold">Multiple damage tables found</h3>
+        <div class="text-xs">The correct table can be deduced from the table name and creature name or ID.</div>
+      </div>
     </div>
-    <div class="stat-title flex flex-row">
-      <img [nwImage]="row.DamageTypeIcon" class="w-6 h-6 mr-1" />
-      <span [nwText]="row.DamageTypeName"></span>
-    </div>
-    <div class="stat-desc flex flex-row gap-1 opacity-100">
-      <span>{{ row.WeaponCategory | nwText }}</span>
-      <span>{{ row.AttackType }}</span>
-      <span class="text-primary">(DMG Coef: {{ row.DmgCoef | percent }})</span>
+  </div>
+  <div *ngFor="let table of tables" class="mb-8">
+    <div class="text-center text-primary capitalize font-bold text-2xl">{{ table.name | nwHumanize }}</div>
+    <div class="stat place-items-center py-1 px-2" *ngFor="let row of table.rows">
+      <div class="stat-value text-lg text-secondary">
+        {{ row.Name }}
+      </div>
+      <div class="stat-title flex flex-row">
+        <img [nwImage]="row.DamageTypeIcon" class="w-6 h-6 mr-1" />
+        <span [nwText]="row.DamageTypeName"></span>
+      </div>
+      <div class="stat-desc flex flex-row gap-1 opacity-100">
+        <span>{{ row.WeaponCategory | nwText }}</span>
+        <span>{{ row.AttackType }}</span>
+        <span class="text-primary">(DMG Coef: {{ row.DmgCoef | percent }})</span>
+      </div>
     </div>
   </div>
 </ng-container>

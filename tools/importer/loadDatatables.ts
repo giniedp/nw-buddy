@@ -1,5 +1,5 @@
 import * as path from 'path'
-import { glob, processArrayWithProgress } from '../utils'
+import { glob, withProgressBar } from '../utils'
 import { readFile } from 'fs/promises'
 
 export type DataTable = Array<Record<string, any>>
@@ -51,18 +51,25 @@ export async function loadDatatables({ inputDir, patterns, remap, rewrite }: Loa
     }
   }
   const result: Array<DataTableSource> = []
-  await processArrayWithProgress(Array.from(files), async (file) => {
+
+  await withProgressBar({ name: 'Load', input: Array.from(files) }, async (file, _, log) => {
+    log(file)
     const content = await readFile(file, 'utf-8')
     const json = JSON.parse(content) as Array<any>
+    applyRemap(file, json, remap)
     result.push({
       file: file,
       relative: path.relative(input, file),
       data: json,
     })
   })
-  await processArrayWithProgress(result, async (table) => {
-    applyRemap(table.file, table.data, remap)
-    applyRewrite(table.file, table.data, rewrite, result)
+
+  await withProgressBar({ name: 'Rewrite', input: result }, async (table, _, log) => {
+    return new Promise((resolve) => {
+      log(table.file)
+      applyRewrite(table.file, table.data, rewrite, result)
+      setTimeout(resolve)
+    })
   })
 
   return result
@@ -131,9 +138,12 @@ function applyRewrite(file: string, data: any[], fileRules: RewriteFile[], table
 }
 
 export function walkStringProperties(
-  tables: DataTableSource[],
+  tables: DataTableSource | DataTableSource[],
   fn: (key: string, value: string, obj: any, file: string) => void
 ) {
+  if (!Array.isArray(tables)) {
+    return walkStringProperties([tables], fn)
+  }
   for (let { file, data } of tables) {
     if (!data) {
       return true

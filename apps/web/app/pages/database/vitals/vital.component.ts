@@ -36,13 +36,14 @@ export class VitalComponent {
 
   protected loot$ = combineLatest({
     vital: this.vital$,
+    vitalsMeta: this.db.vitalsMetadataMap,
     dungeons: this.db.gameModes,
     difficulties: this.db.mutatorDifficulties,
     territories: this.db.territories,
   }).pipe(
-    map(({ vital, dungeons, territories, difficulties }) => {
+    map(({ vital, vitalsMeta, dungeons, territories, difficulties }) => {
       const enemyLevel = vital.Level
-      const dungeon = getVitalDungeon(vital, dungeons)
+      const dungeon = getVitalDungeon(vital, dungeons, vitalsMeta)
       const tags: string[] = [...(vital.LootTags || []), ...territories.map((it) => it.LootTags || []).flat(1)]
       if (dungeon) {
         tags.push(
@@ -71,13 +72,14 @@ export class VitalComponent {
   public lootTags$ = defer(() =>
     combineLatest({
       vital: this.vital$,
+      vitalsMeta: this.db.vitalsMetadataMap,
       dungeons: this.db.gameModes,
       difficulties: this.db.mutatorDifficulties,
       territories: this.db.territories,
     })
   ).pipe(
-    map(({ vital, dungeons, difficulties, territories }) => {
-      const dungeon = getVitalDungeon(vital, dungeons)
+    map(({ vital, vitalsMeta, dungeons, difficulties, territories }) => {
+      const dungeon = getVitalDungeon(vital, dungeons, vitalsMeta)
       const result: string[] = [...(vital.LootTags || []), ...territories.map((it) => it.LootTags || []).flat(1)]
       if (dungeon) {
         result.push(

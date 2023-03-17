@@ -68,14 +68,15 @@ export class DungeonDetailStore extends ComponentStore<DungeonDetailState> {
     dungeons: this.db.gameModes,
     difficulty: this.difficulty$,
     vitals: this.db.vitals,
+    vitalsMeta: this.db.vitalsMetadataMap,
   })
     .pipe(
-      map(({ vitals, dungeons, dungeonId, difficulty }): Vitals[] => {
+      map(({ vitals, vitalsMeta, dungeons, dungeonId, difficulty }): Vitals[] => {
         const result = vitals.filter((it) => {
           if (difficulty != null && dungeonId === 'DungeonShatteredObelisk' && it.VitalsID === 'Withered_Brute_Named_08') {
             return true
           }
-          return getVitalDungeons(it, dungeons, !!difficulty).some((dg) => dg.GameModeId === dungeonId)
+          return getVitalDungeons(it, dungeons, vitalsMeta).some((dg) => dg.GameModeId === dungeonId)
         })
         return result
       })
@@ -87,13 +88,14 @@ export class DungeonDetailStore extends ComponentStore<DungeonDetailState> {
     dungeons: this.db.gameModes,
     difficulty: this.difficulty$,
     vitals: this.db.vitalsByCreatureType,
+    vitalsMeta: this.db.vitalsMetadataMap,
   })
     .pipe(
-      map(({ vitals, dungeons, dungeonId, difficulty }): Vitals[] => {
+      map(({ vitals, vitalsMeta, dungeons, dungeonId, difficulty }): Vitals[] => {
         const miniBosses = vitals.get('DungeonMiniBoss') || []
         const bosses = vitals.get('DungeonBoss') || []
         const result = [...miniBosses, ...bosses].filter((it) => {
-          return getVitalDungeons(it, dungeons, !!difficulty).some((dg) => dg.GameModeId === dungeonId)
+          return getVitalDungeons(it, dungeons, vitalsMeta).some((dg) => dg.GameModeId === dungeonId)
         })
         return result
       })

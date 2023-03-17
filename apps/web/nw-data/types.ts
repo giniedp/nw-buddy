@@ -4242,6 +4242,18 @@ export type Family =
     "Human" | 
     "Lost" | 
     "Wildlife";
+export interface Vitalsmetadata {
+    mapIDs:   string[];
+    spawns:   Spawn[];
+    tables:   string[];
+    vitalsID: string;
+}
+
+export interface Spawn {
+    category?: null | string;
+    level:     number | null;
+    position:  number[];
+}
 export interface Vitalscategories {
     DisplayName?:               string;
     FemaleMtlOverride?:         string;
