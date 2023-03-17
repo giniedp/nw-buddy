@@ -10,9 +10,16 @@ export async function withProgressBar<T>(
   },
   process: (input: T, index: number, log: (message: string) => void) => Promise<void>
 ) {
+  name = name || ''
+  if (name) {
+    while (name.length < 10) {
+      name = ' ' + name
+    }
+    name = name.substring(0, 10)
+  }
   const bar = new Bar(
     {
-      format: `${name ? name + ' ' : ''}{bar} | {percentage}% | {duration_formatted} | {value}/{total} {log}`,
+      format: `${name}{bar} | {percentage}% | {duration_formatted} | {value}/{total} {log}`,
       clearOnComplete: false,
       hideCursor: true,
     },

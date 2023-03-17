@@ -38,7 +38,7 @@ program
       }>()
     options.update = !!options.update
     options.threads = options.threads ? options.threads : 10
-    const inputDir = options.input || nwData.unpackDir(options.ptr)!
+    const inputDir = path.join(process.cwd(), options.input || nwData.unpackDir(options.ptr)!)
     const outputDir = options.output || nwData.tmpDir(options.ptr)!
     console.log('[CONVERT]', inputDir)
     console.log('      to:', outputDir)
@@ -92,21 +92,21 @@ program
         conversions: [
           {
             format: 'png',
-            pattern: ['**/images/*.dds', '**/images/*.png'],
+            pattern: ['**/images/**/*.dds', '**/images/**/*.png'],
           },
         ],
       })
     }
 
-    if (hasFilter(Converter.slices, options.module)) {
-      console.log('Convert Slices')
-      await objectStreamConverter({
-        input: path.join(inputDir),
-        output: path.join(outputDir),
-        pretty: true,
-        threads: options.threads,
-      })
-    }
+    // if (hasFilter(Converter.slices, options.module)) {
+    //   console.log('Convert Slices')
+    //   await objectStreamConverter({
+    //     input: path.join(inputDir),
+    //     output: path.join(outputDir),
+    //     pretty: true,
+    //     threads: options.threads,
+    //   })
+    // }
   })
 
 program.parse()

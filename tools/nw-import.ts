@@ -54,8 +54,12 @@ program
       console.log('import vitals')
       const result = await findVitalsData({ inputDir })
       // write it into input directory, so table loader will pick it up
-      await writeJSONFile(result, path.join(inputDir, 'sharedassets', 'springboardentitites', 'datatables', 'javelindata_vitalsmetadata.json'))
-      await writeJSONFile(result, path.join('tmp', 'vitals.json'))
+      await writeJSONFile(result, path.join(inputDir, 'sharedassets', 'springboardentitites', 'datatables', 'javelindata_vitalsmetadata.json'), {
+        createDir: true
+      })
+      await writeJSONFile(result, path.join('tmp', 'vitals.json'), {
+        createDir: true
+      })
     }
 
     console.log('loading datatables')
