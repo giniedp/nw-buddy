@@ -41,10 +41,17 @@ export function replaceExtname(file: string, extname: string) {
   return path.join(dirName, baseName + extname)
 }
 
-export function glob(pattern: string | string[], options?: fastGlob.Options): Promise<string[]> {
+export async function glob(pattern: string | string[], options?: fastGlob.Options): Promise<string[]> {
   options = options || {}
   options.caseSensitiveMatch = options.caseSensitiveMatch ?? false
   pattern = Array.isArray(pattern) ? pattern : [pattern]
   pattern = pattern.map((it) => it.replace(/\\/gi, '/'))
-  return fastGlob(pattern, options)
+  const negative = pattern.filter((it) => it.startsWith('!')).map((it) => it.substring(1))
+  const positive = pattern.filter((it) => !it.startsWith('!'))
+  const result = await fastGlob(positive, options)
+  if (!negative.length) {
+    return result
+  }
+  const exclude = new Set(await fastGlob(negative, options))
+  return result.filter((it) => !exclude.has(it))
 }

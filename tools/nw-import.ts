@@ -10,7 +10,7 @@ import { importImages } from './importer/importImages'
 import { importLocales } from './importer/importLocales'
 import { loadDatatables, splitToArrayRule } from './importer/loadDatatables'
 import { findVitalsData } from './slice-parser/find-vitals-data'
-import { processArrayWithProgress, replaceExtname, writeJSONFile } from './utils'
+import { replaceExtname, withProgressBar, writeJSONFile } from './utils'
 
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
@@ -516,8 +516,9 @@ program
 
     if (hasFilter(Importer.tables, options.module)) {
       console.log('writing datatables')
-      await processArrayWithProgress(tables, async ({ relative, data }) => {
+      await withProgressBar({ input: tables }, async ({ relative, data }, _, log) => {
         const jsonPath = path.join(distDir, 'datatables', relative)
+        log(jsonPath)
         await writeJSONFile(data, jsonPath, {
           createDir: true,
         })

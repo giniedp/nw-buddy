@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { sortBy, uniqBy } from 'lodash'
-import { glob, processArrayWithProgress, readJSONFile, replaceExtname } from '../utils'
+import { groupBy, sortBy, uniqBy } from 'lodash'
+import { glob, readJSONFile, replaceExtname, withProgressBar } from '../utils'
 import { walkJsonObjects } from '../utils/walk-json-object'
 import { cached } from './cache'
 import { CRC_VITALS } from './crc-vitals'
@@ -26,10 +26,22 @@ export async function findVitalsData({ inputDir }: { inputDir: string }) {
   const vitals = new Map<string, VitalMetadata>()
   const files = await glob([
     `${inputDir}/**/*.dynamicslice.json`,
+    `!${inputDir}/lyshineui/**/*.dynamicslice.json`,
     `${inputDir}/sharedassets/coatlicue/**/regions/**/*.capitals.json`,
     `${inputDir}/sharedassets/coatlicue/**/regions/**/*.metadata.json`,
   ])
-  await processArrayWithProgress(files, async (file) => {
+
+  // console.log(
+  //   Object.fromEntries(
+  //     Object.entries(groupBy(files, (file) => path.relative(inputDir, file).split(/[/\\]/)[0])).map(([key, group]) => [
+  //       key,
+  //       group.length,
+  //     ])
+  //   )
+  // )
+
+  await withProgressBar({ input: files, name: 'Vitals' }, async (file, _, log) => {
+    log(path.relative(inputDir, file))
     const vitalVariants = await scanFile(inputDir, file)
     for (const vital of vitalVariants) {
       const vitalID = vital.vitalsID.toLowerCase()
