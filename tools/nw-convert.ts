@@ -2,7 +2,8 @@ import { program } from 'commander'
 import { convert } from 'nw-extract'
 import * as path from 'path'
 import { nwData, NW_USE_PTR } from '../env'
-import { objectStreamConverter } from './utils/object-stream-converter'
+import { objectStreamConverter } from './bin/object-stream-converter'
+import { cpus } from 'os'
 
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
@@ -37,8 +38,8 @@ program
         module: string[]
       }>()
     options.update = !!options.update
-    options.threads = options.threads ? options.threads : 10
-    const inputDir = path.join(process.cwd(), options.input || nwData.unpackDir(options.ptr)!)
+    options.threads = options.threads || cpus().length
+    const inputDir = options.input || nwData.unpackDir(options.ptr)!
     const outputDir = options.output || nwData.tmpDir(options.ptr)!
     console.log('[CONVERT]', inputDir)
     console.log('      to:', outputDir)
@@ -69,6 +70,7 @@ program
     if (hasFilter(Converter.locales, options.module)) {
       console.log('Convert Locales')
       await convert({
+        bin: 'tools/bin',
         inputDir: inputDir,
         outputDir: outputDir,
         update: !!options.update,
@@ -85,6 +87,7 @@ program
     if (hasFilter(Converter.images, options.module)) {
       console.log('Convert Images')
       await convert({
+        bin: 'tools/bin',
         inputDir: inputDir,
         outputDir: outputDir,
         update: !!options.update,
@@ -98,15 +101,16 @@ program
       })
     }
 
-    // if (hasFilter(Converter.slices, options.module)) {
-    //   console.log('Convert Slices')
-    //   await objectStreamConverter({
-    //     input: path.join(inputDir),
-    //     output: path.join(outputDir),
-    //     pretty: true,
-    //     threads: options.threads,
-    //   })
-    // }
+    if (hasFilter(Converter.slices, options.module)) {
+      console.log('Convert Slices')
+      await objectStreamConverter({
+        exe: 'tools/bin/object-stream-converter.exe',
+        input: path.join(inputDir),
+        output: path.join(outputDir),
+        pretty: true,
+        threads: Math.min(options.threads, 10),
+      })
+    }
   })
 
 program.parse()

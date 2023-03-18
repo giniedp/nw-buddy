@@ -3,58 +3,86 @@ import { MultiBar, Presets } from 'cli-progress'
 import { program } from 'commander'
 import { extract } from 'nw-extract'
 import { nwData, NW_USE_PTR } from '../env'
-import { pakExtractor } from './utils/pak-extractor'
+import { pakExtractor } from './bin/pak-extractor'
+import { quickbms } from './bin/quickbms'
+
+enum Unpacker {
+  quickbms = 'quickbms',
+  nwtools = 'nwtools',
+  nwextract = 'nwextract',
+}
 
 program
   .option('-g, --game <path>', 'game directory')
   .option('-o, --output <path>', 'output directory')
+  .option('-m, --module <module>', 'unpacker module to use', 'nwextract')
   .option('-t, --threads <threads>', 'Number of threads', Number)
   .option('--ptr', 'PTR mode', NW_USE_PTR)
-  .option('--full', 'Unpack full game using pak extractor')
   .action(async () => {
-    const options = program.opts<{ game: string; output: string; ptr: boolean; threads: number; full: boolean }>()
+    const options =
+      program.opts<{ game: string; output: string; ptr: boolean; threads: number; full: boolean; module: Unpacker }>()
     options.threads = options.threads ? options.threads : 10
 
     const inputDir = options.game || nwData.srcDir(options.ptr)!
     const outputDir = options.output || nwData.unpackDir(options.ptr)!
     console.log('[UNPACK]', inputDir)
     console.log('     to:', outputDir)
+    console.log('  using:', options.module?.length ? options.module : 'ALL')
 
-    if (options.full) {
-      await pakExtractor({
-        input: path.join(inputDir, 'assets') ,
-        output: outputDir,
-        fixLua: true,
-        decompressAzcs: true,
-        threads: options.threads,
-      })
-    } else {
-      await unpack({
-        input: inputDir,
-        output: outputDir,
-        filter: [
-          '!server/',
-          '!pregame/',
-          '**/*.loc.xml',
-          '**/images/**/*',
-          'coatgen/**/*',
-          'sharedassets/**/*.datasheet',
-          'sharedassets/coatlicue/**/*',
-          'slices/**/*',
-        ],
-      })
+    if (!Unpacker[options.module]) {
+      throw new Error(`Unknown unpacker: ${options.module}`)
+    }
+    switch (options.module) {
+      case Unpacker.nwextract: {
+        await unpack({
+          input: inputDir,
+          output: outputDir,
+          libDir: './tools/bin',
+          filter: [
+            '!server/**/*',
+            '!pregame/**/*',
+            '!objects/**/*',
+            '!sounds/**/*',
+            '!shaders/**/*',
+            '!textures/**/*',
+            '!**/*.wem', // audio
+            '!**/*.bnk', // video
+            '!**/*.bk2', // video
+          ],
+        })
+        break
+      }
+      case Unpacker.nwtools: {
+        await pakExtractor({
+          exe: './tools/bin/pak-extracter.exe',
+          input: path.join(inputDir, 'assets'),
+          output: outputDir,
+          fixLua: true,
+          decompressAzcs: true,
+          threads: options.threads,
+        })
+        break
+      }
+      case Unpacker.quickbms: {
+        await quickbms({
+          exe: './tools/bin/quickbms.exe',
+          script: './tools/bin/quickbms-nw.bms',
+          input: path.join(inputDir, 'assets'),
+          output: outputDir,
+        })
+      }
     }
   })
 
 program.parse()
 
-async function unpack(options: { input: string; output: string; filter: string[] }) {
+async function unpack(options: { input: string; output: string; filter: string[], libDir?: string }) {
   const bar = new MultiBar(
     {
       stopOnComplete: true,
       clearOnComplete: false,
       hideCursor: true,
-      format: '{bar} {percentage}% | {value}/{total} | {filename}',
+      format: '{bar} | {percentage}% | {duration_formatted} | {value}/{total} | {log}',
     },
     Presets.shades_grey
   )
@@ -65,12 +93,15 @@ async function unpack(options: { input: string; output: string; filter: string[]
     inputDir: options.input,
     outputDir: options.output,
     filter: options.filter,
+    libDir: options.libDir,
     onProgress: (p) => {
       b1.setTotal(p.mainTotal)
-      b1.update(p.mainDone, { filename: p.mainInfo })
+      b1.update(p.mainDone, { log: p.mainInfo })
       b2.setTotal(p.subTotal || 1)
-      b2.update(p.subDone, { filename: p.subInfo })
+      b2.update(p.subDone, { log: p.subInfo })
     },
   })
+  b1.update({ log: '' })
+  b2.update({ log: '' })
   bar.stop()
 }

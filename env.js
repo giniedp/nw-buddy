@@ -32,7 +32,7 @@ const config = {
   CDN_UPLOAD_KEY: process.env.CDN_UPLOAD_KEY,
   CDN_UPLOAD_SECRET: process.env.CDN_UPLOAD_SECRET,
   CDN_UPLOAD_ENDPOINT: process.env.CDN_UPLOAD_ENDPOINT,
-  VERSION: require('./package.json').version + (CF.pages ? `#${CF.commitHash}` : ''),
+  VERSION: path.resolve(process.cwd(), 'package.json').version + (CF.pages ? `#${CF.commitHash}` : ''),
 }
 
 function get(name) {
@@ -43,7 +43,7 @@ function get(name) {
   return result
 }
 
-const root = __dirname
+const root = process.cwd()
 const srcDir = (...paths) => path.join(root, 'apps', ...paths)
 const dstDir = (...paths) => path.join(root, 'dist', ...paths)
 const tmpDir = (...paths) => path.join(root, 'tmp', ...paths)
@@ -74,7 +74,7 @@ const nwData = {
    * @returns {string}
    */
   srcDir: (isPtr) => {
-    return get(isPtr ? 'NW_GAME_PTR' : 'NW_GAME_LIVE')
+    return path.resolve(root, get(isPtr ? 'NW_GAME_PTR' : 'NW_GAME_LIVE'))
   },
   /**
    * Live or PTR unpack directory where game assets are extracted to
@@ -82,7 +82,7 @@ const nwData = {
    * @returns {string}
    */
   unpackDir: (isPtr) => {
-    return get(isPtr ? 'NW_UNPACK_PTR' : 'NW_UNPACK_LIVE')
+    return path.resolve(root, get(isPtr ? 'NW_UNPACK_PTR' : 'NW_UNPACK_LIVE'))
   },
   /**
    * Live or PTR temporary directory where game assets are converted to

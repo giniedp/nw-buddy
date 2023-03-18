@@ -1,4 +1,6 @@
 export * from './file-utils'
+export * from './file-context'
 export * from './spawn'
 export * from './progress'
 export * from './ts-from-json'
+export * from './crc-32'

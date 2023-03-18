@@ -2,13 +2,13 @@
 
 # New World Buddy
 
-New World Buddy is a desktop application that is meant to be used along while playing "New World".
+New World Buddy is a desktop application designed to be used while playing New World.
 
 ## Features
 
-- Browse ingame items (links to nwdb.info)
-- Bookmark items (3 star system)
-- Calculate crafting shopping list, prices and rewarded xp
+- Browse ingame items (links to nwdb.info or nw-guide)
+- Tracking/Bookmarking system (Track your learned recipes or named items collections)
+- Crafting calculator and shopping list tool
 - Price importer
 - Expedition insights
 - Armorsets overview and tracker
@@ -26,32 +26,51 @@ New World Buddy is a desktop application that is meant to be used along while pl
 
 # Development
 
-This repository does not include the ingame data. Ingame data needs to be extracted from a local "New World" installation during development.
+This repository does not contain the ingame data. Ingame data must be extracted from a local New World installation during development.
 
-Besides that, the software is based on following technologies
+The software and development stack is based on the following technologies:
 
 - Yarn
 - Angular
 - Tailwind css (Daisy UI)
 - Electron
 
-For build commands please see package.json
+For build commands, see package.json
 
 ## Prerequirements
 
-1. Requirements of https://github.com/giniedp/nw-extract do apply.
-  - put the `oo2core_8_win64.dll` into project root folder
-  - download [texconv.exe](https://github.com/microsoft/DirectXTex/releases) and put it in project root
-2. install `yarn` (https://yarnpkg.com/) and run `yarn install`
-3. create a `.env` file and copy contents of `.env.example`. Adjust env variables as you need
-4. When working on PTR change the `NW_USE_PTR=true` in `.env`
-5. install [ImageMagick](https://imagemagick.org/), which is required to convert images
+1. Review the [tools/bin](tools/bin) directory. Those binaries are used during data import.
+2. Requirements of https://github.com/giniedp/nw-extract do apply.
+  - `oo2core_8_win64.dll` and `texconv.exe` are already in the tools/bin directory
+3. Install [ImageMagick](https://imagemagick.org/), which is required to convert images
+4. Install `yarn` (https://yarnpkg.com/) and run `yarn install`
+5. create a `.env` file and copy contents of `.env.example`. Adjust env variables as you need
+  - When working on PTR change the `NW_USE_PTR=true` in `.env` or switch to the `ptr` branch
 
-## Extracting and importing game data
+## Game Data Extraction
 
-Run `yarn nw-extract`. This will extract all necessary game data to `tmp/nw-data/live` (or `tmp/nw-data/ptr`)
+### Unpack (optional)
 
-Run `yarn nw-import`. This will import data from `tmp/nw-data/live` to `dist/nw-data/live` and convert images to `.webp`
+If you have already unpacked the game folder, adjust the `NW_UNPACK_LIVE` and/or `NW_UNPACK_PTR` env variables accordingly and skip the rest of this step.
+
+Run `yarn nw-extract`. This will extract all the necessary game data to whatever `NW_UNPACK_LIVE` and/or `NW_UNPACK_PTR` is set to.
+
+### Convert (mandatory)
+This will read files from the unpacked game data folder, convert them and place the results in `tmp/nw-data/live` (or `tmp/nw-data/ptr`). The conversion includes:
+
+- `.dds` -> `.png`
+- `.datasheet` -> `.json`
+- `.loc.xml` -> `.loc.json`
+- object stream conversion into `.json`
+
+### Import (mandatory)
+This will read files from the conversion folder and prepare them for runtime use, e.g.
+- convert `.png` -> `.webp`
+- generate code and types from datatables
+- exctract only neccassary localization strings
+- and more (check code)
+
+The results are written to `dist/nw-data/live` (or `dist/nw-data/ptr`)
 
 ## Running dev server
 

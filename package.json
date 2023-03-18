@@ -17,6 +17,8 @@
     "dev:electron": "yarn electron:serve",
     "dev:server": "ng run nw-buddy:serve-ssr",
     "dev:wrangler": "wrangler pages dev dist/web-cloud",
+    "dev:tools": "yarn build:tools -w",
+    "build:tools": "tsc -p ./tools/tsconfig.json",
     "build:web": "ng build --base-href / -c web",
     "build:server": "ng run nw-buddy:server:production",
     "build:web-cloud": "ng build --base-href / -c cloud && yarn nw-cdn download -o dist/web-cloud/nw-data",
@@ -31,9 +33,10 @@
     "electron:serve": "yarn electron:tsc && electron . --serve",
     "electron:builder": "electron-builder build --publish=never --config=electron-config.js",
     "nw-cdn": "ts-node ./tools/nw-cdn.ts",
-    "nw-extract": "env-cmd -f .env ts-node ./tools/nw-extract.ts",
-    "nw-convert": "env-cmd -f .env ts-node ./tools/nw-convert.ts",
-    "nw-import": "env-cmd -f .env ts-node ./tools/nw-import.ts",
+    "nw-extract": "yarn build:tools && env-cmd -f .env node ./dist/tools/nw-extract.js",
+    "nw-convert": "yarn build:tools && env-cmd -f .env node ./dist/tools/nw-convert.js",
+    "nw-import": "yarn build:tools && env-cmd -f .env node ./dist/tools/nw-import.js",
+    "nw-data-update": "yarn nw-extract && yarn nw-convert -u && yarn nw-import -u",
     "cap:sync": "npx cap sync",
     "cap:android:open": "npx cap open android",
     "cap:android:run": "npx cap run android",
@@ -101,6 +104,7 @@
     "@types/file-saver": "2.0.5",
     "@types/jasmine": "4.3.1",
     "@types/jasminewd2": "2.0.10",
+    "@types/js-crc": "0.2.0",
     "@types/lodash": "4.14.191",
     "@types/mime-types": "2.1.1",
     "@types/mithril": "2.0.12",
@@ -108,6 +112,7 @@
     "@types/node": "16.11.7",
     "@types/papaparse": "5.3.7",
     "@types/unzipper": "0.10.5",
+    "@types/workerpool": "6.4.0",
     "@typescript-eslint/eslint-plugin": "5.53.0",
     "@typescript-eslint/parser": "5.53.0",
     "adm-zip": "0.5.10",
@@ -119,6 +124,7 @@
     "comlink": "4.4.1",
     "commander": "9.5.0",
     "compression": "1.7.4",
+    "crc-32": "1.2.2",
     "daisyui": "2.51.3",
     "date-fns": "2.29.3",
     "dexie": "3.2.3",
@@ -143,6 +149,7 @@
     "ipfs-core-types": "0.13.0",
     "jasmine-core": "4.5.0",
     "jasmine-spec-reporter": "7.0.0",
+    "js-crc": "0.2.0",
     "karma": "6.4.1",
     "karma-chrome-launcher": "3.1.1",
     "karma-coverage-istanbul-reporter": "3.0.3",
@@ -172,13 +179,14 @@
     "string-similarity": "4.0.4",
     "tailwindcss": "3.2.7",
     "ts-node": "10.9.1",
-    "tslib": "^2.5.0",
+    "tslib": "2.5.0",
     "typescript": "~4.9.5",
     "w3name": "1.0.8",
     "wait-on": "7.0.1",
     "web3.storage": "4.4.0",
     "webdriver-manager": "12.1.9",
     "wrangler": "2.6.2",
+    "zod": "3.21.4",
     "zone.js": "~0.12.0"
   },
   "engines": {
@@ -188,6 +196,6 @@
     "chrome 91"
   ],
   "optionalDependencies": {
-    "nw-extract": "1.2.0"
+    "nw-extract": "1.2.1"
   }
 }

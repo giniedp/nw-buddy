@@ -52,7 +52,3 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
-
-*.dll
-*.exe
-tools/COLLADA2GLTF

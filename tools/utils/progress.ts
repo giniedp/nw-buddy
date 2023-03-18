@@ -1,37 +1,135 @@
-import { MultiBar, Bar, Presets } from 'cli-progress'
+import { pool } from 'workerpool'
+import { Bar, Presets } from 'cli-progress'
+
+function makeBarName(name: string, limit: number = 10) {
+  name = name || ''
+  if (name) {
+    while (name.length < limit) {
+      name = ' ' + name
+    }
+    name = name.substring(0, limit) + ' '
+  }
+  return name
+}
 
 export async function withProgressBar<T>(
   {
-    name,
-    input,
+    barName,
+    tasks,
   }: {
-    name?: string
-    input: T[]
+    barName?: string
+    tasks: T[]
   },
-  process: (input: T, index: number, log: (message: string) => void) => Promise<void>
+  task: (input: T, index: number, log: (message: string) => void) => Promise<void>
 ) {
-  name = name || ''
-  if (name) {
-    while (name.length < 10) {
-      name = ' ' + name
-    }
-    name = name.substring(0, 10)
-  }
   const bar = new Bar(
     {
-      format: `${name}{bar} | {percentage}% | {duration_formatted} | {value}/{total} {log}`,
+      format: `${makeBarName(barName, 10)}{bar} | {percentage}% | {duration_formatted} | {value}/{total} {log}`,
       clearOnComplete: false,
       hideCursor: true,
     },
     Presets.shades_grey
   )
-  bar.start(input.length, 0, { log: '' })
+  bar.start(tasks.length, 0, { log: '' })
   function log(log: string) {
     bar.update({ log })
   }
-  for (let i = 0; i < input.length; i++) {
-    await process(input[i], i, log).catch(console.error)
+  for (let i = 0; i < tasks.length; i++) {
+    await task(tasks[i], i, log).catch(console.error)
     bar.update(i + 1)
   }
+  log('')
   bar.stop()
+}
+
+export async function withProgressPool<T>(
+  {
+    barName,
+    queue,
+    workerScript,
+    workerLimit,
+    workerType,
+  }: {
+    barName: string
+    queue: TaskQueue,
+    workerScript: string
+    workerLimit?: number
+    workerType?: 'auto' | 'thread' | 'process'
+  }
+) {
+  const tasks = queue.queue
+  const taskName = queue.taskName
+  const onTaskFinish = queue.onTaskFinish
+
+  if (!tasks?.length) {
+    return
+  }
+
+  const limit = tasks.length
+  let count = 0
+
+  const bar = new Bar(
+    {
+      format: `${makeBarName(barName, 10)}{bar} | {percentage}% | {duration_formatted} | {value}/{total} {log}`,
+      clearOnComplete: false,
+      hideCursor: true,
+    },
+    Presets.shades_grey
+  )
+  const runner = pool(workerScript, {
+    maxWorkers: workerLimit,
+    workerType: workerType,
+  })
+
+  bar.start(tasks.length, 0, { log: '' })
+  return new Promise<void>((resolve) => {
+    for (const args of tasks) {
+      runner
+        .exec(taskName, [args])
+        .then(onTaskFinish || (() => null))
+        .catch((err) => {
+          console.error('\n')
+          console.error(err)
+        })
+        .then(() => {
+          count += 1
+          bar.increment()
+          if (count >= limit) {
+            bar.stop()
+            runner.terminate()
+            resolve()
+          }
+        })
+    }
+  })
+}
+
+export type TaskRegistry = Record<string, (...args: any[]) => any>
+export type TaskName<R extends TaskRegistry> = keyof R
+export type TaskInput<R extends TaskRegistry, N extends TaskName<R>> = Parameters<R[N]>[0]
+export type TaskOutput<R extends TaskRegistry, N extends TaskName<R>> = ReturnType<R[N]> extends Promise<infer R>
+  ? R
+  : R[N]
+
+export interface TaskQueue {
+  taskName: string,
+  queue: Array<any>,
+  onTaskFinish?: (arg: any) => Promise<any>,
+}
+
+export function assmebleWorkerTasks<R extends TaskRegistry, N extends TaskName<R>>({
+  taskName,
+  tasks,
+  onTaskFinish,
+}: {
+  registry: R
+  taskName: N
+  tasks: Array<TaskInput<R, N>>
+  onTaskFinish?: (res: TaskOutput<R, N>) => Promise<any>
+}): TaskQueue {
+  return {
+    taskName: taskName as string,
+    queue: tasks,
+    onTaskFinish,
+  }
 }
