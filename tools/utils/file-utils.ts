@@ -1,6 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import * as fastGlob from 'fast-glob'
+import { ZodSchema } from 'zod'
 
 
 export async function mkdir(dirPath: string, options?: fs.MakeDirectoryOptions) {
@@ -14,9 +15,13 @@ export async function copyFile(input: string, output: string, options?: { create
   return fs.promises.copyFile(input, output)
 }
 
-export async function readJSONFile<T>(input: string) {
+export async function readJSONFile<T>(input: string, schema?: ZodSchema<T>) {
   const data = await fs.promises.readFile(input, { encoding: 'utf-8' })
-  return JSON.parse(data) as T
+  const json = JSON.parse(data)
+  if (schema) {
+    return schema.parse(json)
+  }
+  return json as T
 }
 
 

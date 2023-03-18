@@ -181,7 +181,7 @@ export const COLS_ABILITY = {
   "StaminaCostList": "[]",
   "StatusEffect": "string",
   "StatusEffectBeingApplied": "string",
-  "StatusEffectCategories": "string",
+  "StatusEffectCategories": "[]",
   "StatusEffectCategoriesList": "[]",
   "StatusEffectCategoryToTransfer": "string",
   "StatusEffectComparison": "string",
@@ -3651,7 +3651,7 @@ export const COLS_STATUSEFFECTCATEGORIES = {
   "PotencyModMax": "number",
   "PotencyModMin": "number",
   "StatusEffectCategoryID": "string",
-  "ValueLimits": "string",
+  "ValueLimits": "object",
 }
 export const COLS_TERRITORYSTANDING = {
   "AvailableProgressionPoint1": "string",

@@ -3354,7 +3354,43 @@ export interface Statuseffectcategories {
     PotencyModMax:          number;
     PotencyModMin:          number;
     StatusEffectCategoryID: string;
-    ValueLimits?:           string;
+    ValueLimits?:           ValueLimits;
+}
+
+export interface ValueLimits {
+    ABSArcane?:                    number;
+    ABSCorruption?:                number;
+    ABSFire?:                      number;
+    ABSIce?:                       number;
+    ABSLightning?:                 number;
+    ABSNature?:                    number;
+    ABSSiege?:                     number;
+    ABSSlash?:                     number;
+    ABSStandard?:                  number;
+    ABSStrike?:                    number;
+    ABSThrust?:                    number;
+    AzothMod?:                     number;
+    DMGArcane?:                    number;
+    DMGCorruption?:                number;
+    DMGFire?:                      number;
+    DMGIce?:                       number;
+    DMGLightning?:                 number;
+    DMGNature?:                    number;
+    DMGSiege?:                     number;
+    DMGSlash?:                     number;
+    DMGStandard?:                  number;
+    DMGStrike?:                    number;
+    DMGThrust?:                    number;
+    FactionReputationMod?:         number;
+    FactionTokensMod?:             number;
+    FishRarityRollModifier?:       number;
+    FishSizeRollModifier?:         number;
+    FishingLineStrength?:          number;
+    HealMod?:                      number;
+    MaxHealth?:                    number;
+    MoveSpeedMod?:                 number;
+    SprintSpeedMod?:               number;
+    SummerFishRarityRollModifier?: number;
 }
 export interface TerritoryStanding {
     AvailableProgressionPoint1?: string;
@@ -4318,7 +4354,7 @@ export interface Ability {
     StaminaCostList?:                               string[];
     StatusEffect?:                                  string;
     StatusEffectBeingApplied?:                      string;
-    StatusEffectCategories?:                        string;
+    StatusEffectCategories?:                        string[];
     StatusEffectCategoriesList?:                    string[];
     StatusEffectCategoryToTransfer?:                string;
     StatusEffectComparison?:                        string;

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 import { EmptyComponent } from '~/widgets/empty'
+import { LootLimitDetailComponent } from './loot-limit-detail.component'
 
 import { LootLimitsTableComponent } from './loot-limits-table.component'
 import { LootLimitsComponent } from './loot-limits.component'
@@ -21,7 +22,7 @@ const routes: Routes = [
         children: [
           {
             path: ':id',
-            component: EmptyComponent,
+            component: LootLimitDetailComponent,
           },
         ],
       },

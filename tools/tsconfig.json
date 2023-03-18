@@ -1,10 +1,20 @@
 {
   "compilerOptions": {
-    "outDir": "./dist",
+    "outDir": "../dist",
+    "rootDir": "../",
+    "baseUrl": "../",
     "moduleResolution": "node",
     "module": "CommonJS",
     "target": "ES6",
     "allowSyntheticDefaultImports": true,
-    "allowJs": true
-  }
+    "allowJs": true,
+    "importHelpers": true,
+    "skipLibCheck": true
+  },
+  "buildOptions": {
+    "incremental": true,
+  },
+  "include": [
+    "**/*.ts"
+  ],
 }

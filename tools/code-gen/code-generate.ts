@@ -1,7 +1,7 @@
 import * as path from 'path'
 import * as fs from 'fs'
 
-import { DataTableSource } from '../importer/loadDatatables'
+import { DataTableSource } from '../importer/tables'
 import { generateInterfaces } from './generate-interfaces'
 import { generateApiService } from './generate-api-service'
 import { generateTableColumns } from './generate-table-columns'
