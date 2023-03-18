@@ -1,6 +1,6 @@
 import * as path from 'path'
 import * as fs from 'fs'
-import { mkdir, processArrayWithProgress, replaceExtname, spawn } from '../utils'
+import { mkdir, replaceExtname, spawn, withProgressBar } from '../utils'
 import { DataTableSource, walkStringProperties } from './loadDatatables'
 
 export type ReqriteEntryFn = (key: string, value: string, obj: any) => string | null
@@ -21,13 +21,20 @@ export async function importImages({
   rewrite?: Record<string, ReqriteEntryFn>
   rewritePath?: (value: string) => string
 }) {
-  const images = scanImages(tables, {
-    ignoreKeys: ignoreKeys,
-    rewrite: rewrite,
-    rewritePath: rewritePath,
+  const images = new Map<string, string>()
+
+  await withProgressBar({ name: 'Scan', input: tables }, async (table, _, log) => {
+    log(table.relative)
+    scanImages(tables, {
+      ignoreKeys: ignoreKeys,
+      rewrite: rewrite,
+      rewritePath: rewritePath,
+      images: images
+    })
   })
 
-  await processArrayWithProgress(Array.from(images), async ([source, target]) => {
+  await withProgressBar({ name: 'Convert', input: Array.from(images) }, async ([source, target], _, log) => {
+    log(`${source} -> ${target}`)
     source = path.join(input, source)
     if (!fs.existsSync(source)) {
       return
@@ -41,19 +48,20 @@ export async function importImages({
     await spawn(process.env.MAGICK_CONVERT_CMD || 'magick convert', [source, '-quality', '85', outFile], {
       shell: true,
       stdio: 'inherit',
-    }).catch(console.error)
+    })
   })
 }
 
 function scanImages(
-  tables: DataTableSource[],
+  tables: DataTableSource | DataTableSource[],
   options?: {
     ignoreKeys: string[]
     rewrite?: Record<string, ReqriteEntryFn>
     rewritePath?: (value: string) => string
+    images?: Map<string, string>
   }
 ) {
-  const images = new Map<string, string>()
+  const images = options.images || new Map<string, string>()
   const ignore = new Set<string>(options?.ignoreKeys || [])
   walkStringProperties(tables, (key, value, obj) => {
     value = options?.rewrite?.[key]?.(key, value, obj) ?? value

@@ -1,18 +1,30 @@
-import { MultiBar, Presets } from 'cli-progress'
+import { MultiBar, Bar, Presets } from 'cli-progress'
 
-export async function processArrayWithProgress<T>(input: T[], process: (input: T, index: number) => Promise<void>) {
-  const bar = new MultiBar(
+export async function withProgressBar<T>(
+  {
+    name,
+    input,
+  }: {
+    name?: string
+    input: T[]
+  },
+  process: (input: T, index: number, log: (message: string) => void) => Promise<void>
+) {
+  const bar = new Bar(
     {
+      format: `${name ? name + ' ' : ''}{bar} | {percentage}% | {duration_formatted} | {value}/{total} {log}`,
       clearOnComplete: false,
       hideCursor: true,
     },
     Presets.shades_grey
   )
-  const b1 = bar.create(0, 0)
-  b1.setTotal(input.length)
+  bar.start(input.length, 0, { log: '' })
+  function log(log: string) {
+    bar.update({ log })
+  }
   for (let i = 0; i < input.length; i++) {
-    await process(input[i], i).catch(console.error)
-    b1.update(i + 1)
+    await process(input[i], i, log).catch(console.error)
+    bar.update(i + 1)
   }
   bar.stop()
 }

@@ -119,6 +119,7 @@ function pathToTypeName(filePath: string) {
 
 const ENUMS = {
   Vitals: ['Family'],
+  Vitalsmetadata: ['spawns'],
   // ItemDefinitionMaster: ['ItemClass'],
   // Damagetypes: ['TypeID', 'Category']
   Perks: [

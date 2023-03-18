@@ -54,11 +54,12 @@ export class VitalsFamiliesListComponent {
     byFamily: this.db.vitalsByFamily,
     families: this.families$,
     gameModes: this.db.gameModes,
+    vitalsMeta: this.db.vitalsMetadataMap,
   }).pipe(
-    map(({ families, byFamily, gameModes }) => {
+    map(({ families, byFamily, gameModes, vitalsMeta }) => {
       return families.map((family) => {
         const vitals = byFamily.get(family)
-        const dungeons = vitals.map((it) => getVitalDungeon(it, gameModes)).filter((it) => !!it)
+        const dungeons = vitals.map((it) => getVitalDungeon(it, gameModes, vitalsMeta)).filter((it) => !!it)
         const dngGrouped = groupBy(dungeons, (it) => it.GameModeId)
         return {
           vital: mergeVitals(family, vitals),

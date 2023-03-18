@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core'
 import { Vitals } from '@nw-data/types'
-import { combineLatest, defer, map, Observable } from 'rxjs'
-import { eqCaseInsensitive } from '~/utils'
+import { defer } from 'rxjs'
 import { NwDbService } from '../nw-db.service'
-import { getVitalDungeon, getVitalDungeons, getVitalFamilyInfo, getVitalTypeMarker } from '../utils/vitals'
+import { getVitalFamilyInfo, getVitalTypeMarker } from '../utils/vitals'
 
 @Injectable({ providedIn: 'root' })
 export class NwVitalsService {
@@ -21,17 +20,5 @@ export class NwVitalsService {
 
   public vitalFamilyIcon(vital: Vitals) {
     return getVitalFamilyInfo(vital)?.Icon
-  }
-
-  public byExpedition(gameModeId: Observable<string>) {
-    return combineLatest({
-      vitals: this.all$,
-      dungeons: this.db.gameModes,
-      dungeonId: gameModeId,
-    }).pipe(
-      map(({ vitals, dungeons, dungeonId }) => {
-        return vitals.filter((it) => getVitalDungeons(it, dungeons).some((dg) => eqCaseInsensitive(dg.GameModeId, dungeonId)))
-      })
-    )
   }
 }
