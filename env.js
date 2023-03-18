@@ -32,7 +32,7 @@ const config = {
   CDN_UPLOAD_KEY: process.env.CDN_UPLOAD_KEY,
   CDN_UPLOAD_SECRET: process.env.CDN_UPLOAD_SECRET,
   CDN_UPLOAD_ENDPOINT: process.env.CDN_UPLOAD_ENDPOINT,
-  VERSION: path.resolve(process.cwd(), 'package.json').version + (CF.pages ? `#${CF.commitHash}` : ''),
+  VERSION: require(path.resolve(process.cwd(), 'package.json')).version + (CF.pages ? `#${CF.commitHash}` : ''),
 }
 
 function get(name) {
