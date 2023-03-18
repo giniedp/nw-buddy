@@ -11,6 +11,8 @@
     </li>
   </ul>
 </ion-header>
-<ion-content>
-  <router-outlet></router-outlet>
+<ion-content [scrollY]="false">
+  <div class="h-full layout-content">
+    <router-outlet></router-outlet>
+  </div>
 </ion-content>

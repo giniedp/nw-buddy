@@ -8,6 +8,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, Input } from '@angular/
     ::ng-deep svg {
       max-height: 100%;
       max-width: 100%;
+      width: inherit;
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
