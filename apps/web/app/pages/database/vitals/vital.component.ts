@@ -1,17 +1,18 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
-import { Damagetable, Vitals } from '@nw-data/types'
+import { Vitals } from '@nw-data/types'
 import { uniq } from 'lodash'
-import { combineLatest, defer, map, Observable, of, shareReplay, switchMap, tap } from 'rxjs'
+import { combineLatest, defer, map, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 
 import { NwDbService, NwModule } from '~/nw'
 import { getVitalDungeon, getVitalFamilyInfo } from '~/nw/utils'
 import { NW_MAX_CHARACTER_LEVEL } from '~/nw/utils/constants'
 import { LayoutModule } from '~/ui/layout'
-import { CaseInsensitiveMap, HtmlHeadService, observeQueryParam, observeRouteParam, shareReplayRefCount, tapDebug } from '~/utils'
+import { HtmlHeadService, observeQueryParam, observeRouteParam, shareReplayRefCount } from '~/utils'
 import { LootModule } from '~/widgets/loot'
+import { ScreenshotModule } from '~/widgets/screenshot'
 import { VitalsDetailModule } from '~/widgets/vitals-detail'
 
 export type DetailTabId = 'loot-items' | 'loot-table' | 'damage-table'
@@ -21,7 +22,7 @@ export type DetailTabId = 'loot-items' | 'loot-table' | 'damage-table'
   templateUrl: './vital.component.html',
   styleUrls: ['./vital.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, VitalsDetailModule, LootModule, LayoutModule],
+  imports: [CommonModule, RouterModule, NwModule, VitalsDetailModule, LootModule, LayoutModule, ScreenshotModule],
   host: {
     class: 'flex-none flex flex-col',
   },
@@ -32,7 +33,10 @@ export class VitalComponent {
     map((it: DetailTabId): DetailTabId => it || 'loot-items')
   )
 
-  protected vital$ = this.db.vital(this.vitalId$).pipe(tap((it) => this.onEntity(it))).pipe(shareReplayRefCount(1))
+  protected vital$ = this.db
+    .vital(this.vitalId$)
+    .pipe(tap((it) => this.onEntity(it)))
+    .pipe(shareReplayRefCount(1))
 
   protected loot$ = combineLatest({
     vital: this.vital$,
@@ -65,7 +69,7 @@ export class VitalComponent {
           EnemyLevel: enemyLevel,
           Level: NW_MAX_CHARACTER_LEVEL,
         },
-        tableId: vital.LootTableId
+        tableId: vital.LootTableId,
       }
     })
   )
@@ -92,7 +96,13 @@ export class VitalComponent {
     })
   )
 
-  public constructor(private route: ActivatedRoute, private router: Router, private db: NwDbService, private i18n: TranslateService, private head: HtmlHeadService) {
+  public constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private db: NwDbService,
+    private i18n: TranslateService,
+    private head: HtmlHeadService
+  ) {
     //
   }
 
@@ -106,7 +116,6 @@ export class VitalComponent {
     })
   }
 
-
   protected async onEntity(entity: Vitals) {
     if (!entity) {
       return
@@ -114,12 +123,9 @@ export class VitalComponent {
     const info = getVitalFamilyInfo(entity)
     this.head.updateMetadata({
       title: [this.i18n.get(entity.DisplayName), 'Creature'].join(' - '),
-      description: [
-        this.i18n.get(info?.Name),
-        `Level: ${entity.Level}`
-      ].join(' - '),
+      description: [this.i18n.get(info?.Name), `Level: ${entity.Level}`].join(' - '),
       url: this.head.currentUrl,
-      image: info?.Icon
+      image: info?.Icon,
     })
   }
 }

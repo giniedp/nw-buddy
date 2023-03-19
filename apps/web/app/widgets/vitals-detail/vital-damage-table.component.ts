@@ -11,13 +11,14 @@ import { svgInfo } from '~/ui/icons/svg'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
 import { humanize, rejectKeys, shareReplayRefCount } from '~/utils'
+import { ScreenshotModule } from '../screenshot'
 
 @Component({
   standalone: true,
   selector: 'nwb-vital-damage-table',
   templateUrl: './vital-damage-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, TooltipModule, PropertyGridModule, IconsModule],
+  imports: [CommonModule, NwModule, TooltipModule, PropertyGridModule, IconsModule, ScreenshotModule],
   host: {
     class: 'layout-content',
   },
@@ -33,7 +34,7 @@ export class VitalDamageTableComponent extends ComponentStore<{ vitalId: string 
   protected vitalId$ = this.select(({ vitalId }) => vitalId)
   protected vital$ = this.db.vital(this.vitalId$)
   protected tableFiles$ = this.select(this.vital$, this.db.vitalsMetadataMap, (vital, meta) => {
-    let tables = (meta.get(vital.VitalsID)?.tables || [])
+    let tables = meta.get(vital.VitalsID)?.tables || []
     // TODO: fix this in the pipeline
     if (vital.VitalsID === 'Isabella_DG_ShatterMtn_Phase2_00') {
       tables = tables.filter((it) => it.toLowerCase().includes('phase2'))
@@ -48,7 +49,7 @@ export class VitalDamageTableComponent extends ComponentStore<{ vitalId: string 
     .pipe(
       switchMap((files) => {
         if (!files?.length) {
-          return of<Array<{ name: string, rows: Damagetable[]}>>([])
+          return of<Array<{ name: string; rows: Damagetable[] }>>([])
         }
         return combineLatest(
           files.map((it) => {

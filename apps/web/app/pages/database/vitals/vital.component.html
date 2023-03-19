@@ -4,7 +4,7 @@
 >
   <div *nwbDetailDraweContent class="layout-col layout-gap bg-base-200 layout-pad">
     <ng-container *ngIf="vital$ | async; let vital">
-      <nwb-vital-detail [vital]="vital"></nwb-vital-detail>
+      <nwb-vital-detail [vital]="vital" [nwbScreenshotFrame]="vital.DisplayName | nwText"></nwb-vital-detail>
       <div class="layout-col" *ngIf="tabId$ | async; let tab">
         <div class="tabs flex-none justify-center">
           <a class="tab tab-bordered flex-1" [class.tab-active]="tab === 'loot-items'" (click)="openTab('loot-items')">
@@ -32,7 +32,10 @@
           <div class="layout-content" *ngIf="tab === 'loot-table'">
             <nwb-loot-graph [tags]="loot.tags" [tagValues]="loot.values" [tableId]="loot.tableId"></nwb-loot-graph>
           </div>
-          <nwb-vital-damage-table [vitalId]="vitalId$ | async" *ngIf="tab === 'damage-table'"></nwb-vital-damage-table>
+          <nwb-vital-damage-table
+            *ngIf="tab === 'damage-table'"
+            [vitalId]="vitalId$ | async"
+          ></nwb-vital-damage-table>
         </ng-container>
       </div>
     </ng-container>
