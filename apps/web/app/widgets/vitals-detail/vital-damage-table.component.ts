@@ -33,7 +33,15 @@ export class VitalDamageTableComponent extends ComponentStore<{ vitalId: string 
   protected vitalId$ = this.select(({ vitalId }) => vitalId)
   protected vital$ = this.db.vital(this.vitalId$)
   protected tableFiles$ = this.select(this.vital$, this.db.vitalsMetadataMap, (vital, meta) => {
-    return meta.get(vital.VitalsID)?.tables || []
+    let tables = (meta.get(vital.VitalsID)?.tables || [])
+    // TODO: fix this in the pipeline
+    if (vital.VitalsID === 'Isabella_DG_ShatterMtn_Phase2_00') {
+      tables = tables.filter((it) => it.toLowerCase().includes('phase2'))
+    }
+    if (vital.VitalsID === 'Dryad_Siren') {
+      tables = tables.filter((it) => it.toLowerCase().includes('dryad_siren'))
+    }
+    return tables
   })
 
   protected tables$ = this.tableFiles$

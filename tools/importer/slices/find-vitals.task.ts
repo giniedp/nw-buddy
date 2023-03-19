@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { readJSONFile, replaceExtname, crc32 } from '../../utils'
+import { readJSONFile, replaceExtname } from '../../utils'
 import { walkJsonObjects } from '../../utils/walk-json-object'
 import { cached } from './cache'
 

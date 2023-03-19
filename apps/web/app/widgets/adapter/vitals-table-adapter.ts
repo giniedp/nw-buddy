@@ -199,22 +199,10 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
         }),
         this.colDef({
           colId: 'expedition',
-          headerValueGetter: () => 'Expedition',
+          headerValueGetter: () => 'Occurance in',
           valueGetter: this.valueGetter(({ data }) => data?.$dungeons?.map((it) => this.i18n.get(it.DisplayName))),
           filter: SelectFilter,
         }),
-        // this.colDef({
-        //   colId: '$mapIDs',
-        //   headerValueGetter: () => 'Map IDs',
-        //   valueGetter: this.valueGetter(({ data }) => data?.$metadata?.mapIDs),
-        //   filter: SelectFilter,
-        // }),
-        // this.colDef({
-        //   colId: '$tables',
-        //   headerValueGetter: () => 'Tables',
-        //   valueGetter: this.valueGetter(({ data }) => data?.$metadata?.tables),
-        //   filter: SelectFilter,
-        // }),
         this.colDef({
           colId: 'dmgEffectivenessSlash',
           headerValueGetter: () => 'Slash',

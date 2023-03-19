@@ -27,6 +27,7 @@ FxScriptOff?:                                string; // deactivates a script
 FxScriptOn?:                                 string; // activates a script
 DisableSupportContributionRewards?:          boolean;
 DisableTelemetry?:                           boolean | string;
+IsNegative?:                                 boolean | string; // adds red background to icon
 ```
 
 ## Attribute bonus
@@ -333,7 +334,6 @@ IgnoreInvulnerable?:                         boolean;
 INSLogging?:                                 number;
 INSMining?:                                  number;
 IsClientPredicted?:                          boolean | number | string;
-IsNegative?:                                 boolean | string;
 IsTrueDamage?:                               boolean;
 ItemClassWeightMods?:                        string;
 ItemLootVolumeMods?:                         string;

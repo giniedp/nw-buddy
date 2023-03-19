@@ -1,6 +1,6 @@
-import * as env from '../../../env'
 import { sortBy, uniqBy } from 'lodash'
 import * as path from 'path'
+import * as env from '../../../env'
 import { assmebleWorkerTasks, crc32, glob, readJSONFile, withProgressPool, writeJSONFile } from '../../utils'
 import { pathToDatatables } from '../tables'
 import { VitalsCategoriesTableSchema, VitalsTableSchema } from '../tables/schemas'
@@ -10,10 +10,10 @@ import { WORKER_TASKS } from './worker.tasks'
 interface VitalMetadata {
   tables: Set<string>
   mapIDs: Set<string>
-  spawns: Array<{ level: number; category: string; position: number[] }>
+  spawns: Array<{ level: number; category: string; position: number[]; damagetable: string }>
 }
 
-export async function importVitals({ inputDir, threads }: { inputDir: string, threads: number }) {
+export async function importVitals({ inputDir, threads }: { inputDir: string; threads: number }) {
   const vitalsTableFile = path.join(pathToDatatables(inputDir), 'javelindata_vitals.json')
   const crcVitalIDs = await readJSONFile(vitalsTableFile, VitalsTableSchema)
     .then((list) => list.map((it) => it.VitalsID))
@@ -52,7 +52,6 @@ export async function importVitals({ inputDir, threads }: { inputDir: string, th
           file,
           crcVitalsFile,
           crcVitalsCategoriesFile,
-
         }
       }),
       onTaskFinish: async (result) => {
@@ -62,10 +61,11 @@ export async function importVitals({ inputDir, threads }: { inputDir: string, th
             vitals.set(vitalID, { tables: new Set(), mapIDs: new Set(), spawns: [] })
           }
           const bucket = vitals.get(vitalID)
-          if (vital.damageTable) {
-            bucket.tables.add(
-              vital.damageTable.toLowerCase().replace('sharedassets/springboardentitites/datatables/', '')
-            )
+          const damagetable = vital.damageTable
+            ?.toLowerCase()
+            .replace('sharedassets/springboardentitites/datatables/', '')
+          if (damagetable) {
+            bucket.tables.add(damagetable)
           }
           if (vital.mapID) {
             bucket.mapIDs.add(vital.mapID)
@@ -75,6 +75,7 @@ export async function importVitals({ inputDir, threads }: { inputDir: string, th
               category: vital.categoryID,
               level: vital.level,
               position: vital.position,
+              damagetable: damagetable,
             })
           }
         }
@@ -87,11 +88,12 @@ export async function importVitals({ inputDir, threads }: { inputDir: string, th
       vitalsID: id,
       tables: Array.from(tables.values()).sort(),
       mapIDs: Array.from(mapIDs.values()).sort(),
-      spawns: uniqBy(spawns || [], ({ category, level, position }) => {
+      spawns: uniqBy(spawns || [], ({ category, level, position, damagetable }) => {
         return JSON.stringify({
           category: (category || '').toLowerCase(),
           level,
           position: (position || []).map((it) => Math.floor(it)),
+          damagetable,
         })
       }),
     }
