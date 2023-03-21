@@ -1,6 +1,7 @@
 import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { DOCUMENT } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core'
+import { Router } from '@angular/router'
 import { Subject, take, takeUntil } from 'rxjs'
 
 import { TranslateService } from './i18n'
@@ -33,6 +34,9 @@ import { VersionService } from './widgets/update-alert'
       transition(':enter', [style({ opacity: 0 }), animate('1s 0.3s ease-out', style({ opacity: 1 }))]),
     ]),
   ],
+  host: {
+    '[class.is-embed]': 'isEmbed'
+  }
 })
 export class AppComponent implements OnInit, OnDestroy {
   public get isElectron() {
@@ -60,6 +64,9 @@ export class AppComponent implements OnInit, OnDestroy {
   public get lang() {
     return LANG_OPTIONS.find((it) => it.value === this.language)?.label
   }
+  public get isEmbed() {
+    return this.router.url.split('/').some((it) => it === 'embed')
+  }
 
   protected mainMenu = MAIN_MENU
   protected langOptions = LANG_OPTIONS
@@ -80,7 +87,8 @@ export class AppComponent implements OnInit, OnDestroy {
     private document: Document,
     private translate: TranslateService,
     private layout: LayoutService,
-    private version: VersionService
+    private version: VersionService,
+    private router: Router
   ) {
     //
   }

@@ -1,5 +1,10 @@
 module.exports = ({ addComponents }) => {
   addComponents({
+    '.is-embed': {
+      '.embed-hidden': {
+        display: 'none !important;'
+      }
+    },
     '.nw-panel-bg': {
       background: "url('^assets/bg-panel.jpg') black",
     },

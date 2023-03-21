@@ -1,0 +1,37 @@
+<ng-container *ngrxLet="record$ as record; error as err; suspenseTpl: tplLoading">
+  <ng-container *ngIf="record">
+    <div class="layout-content">
+      <nwb-skill-builder [ngModel]="record" [disabled]="true"></nwb-skill-builder>
+      <div *ngIf="record.attrs; let attrs" class="layout-pad">
+        <nwb-attributes-editor [freeMode]="true" [assigned]="attrs"></nwb-attributes-editor>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="err">
+    <ng-container [ngTemplateOutlet]="tplError"></ng-container>
+  </ng-container>
+</ng-container>
+
+<ng-template #tplLoading>
+  <div class="alert bg-base-200 shadow-lg max-w-sm mx-auto my-3">
+    <div>
+      <nwb-icon [icon]="iconLoading" class="w-6 h-6 animate-spin"></nwb-icon>
+      <div class="flex-1">
+        <h3 class="font-bold">Loading</h3>
+        <div class="text-xs">Fetching data from ipfs network...</div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #tplError>
+  <div class="alert bg-base-200 shadow-lg max-w-sm mx-auto my-3">
+    <div>
+      <nwb-icon [icon]="iconError" class="w-6 h-6 text-error"></nwb-icon>
+      <div class="flex-1">
+        <h3 class="font-bold">Error!</h3>
+        <div class="text-xs">Data is unavailable</div>
+      </div>
+    </div>
+  </div>
+</ng-template>

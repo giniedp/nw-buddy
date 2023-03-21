@@ -7,7 +7,7 @@
 
   <ion-content [scrollY]="false">
     <ion-split-pane when="xl" contentId="main-content">
-      <ion-menu menuId="main-menu" contentId="main-content" class="xl:w-60" nwbMenu>
+      <ion-menu menuId="main-menu" contentId="main-content" class="xl:w-60 embed-hidden" nwbMenu>
         <ion-content [scrollY]="false" [scrollX]="false">
           <div class="h-full w-full layout-content bg-base-300">
             <div class="layout-col layout-gap">
@@ -45,7 +45,7 @@
               <router-outlet></router-outlet>
             </div>
             <ng-container *ngIf="!isOverwolf">
-              <nwb-aeternum-map-integration></nwb-aeternum-map-integration>
+              <nwb-aeternum-map-integration class="embed-hidden"></nwb-aeternum-map-integration>
             </ng-container>
           </div>
         </ion-content>
@@ -55,7 +55,7 @@
 </ion-app>
 
 <ng-template #tplHeader>
-  <ion-header>
+  <ion-header class="embed-hidden">
     <ion-toolbar class="bg-black">
       <ion-buttons slot="start">
         <ion-menu-toggle menu="main-menu">
