@@ -3,7 +3,7 @@ import * as path from 'path'
 import * as env from '../../../env'
 import { assmebleWorkerTasks, crc32, glob, readJSONFile, withProgressPool, writeJSONFile } from '../../utils'
 import { pathToDatatables } from '../tables'
-import { VitalsCategoriesTableSchema, VitalsTableSchema } from '../tables/schemas'
+import { GatherablesTableSchema, VitalsCategoriesTableSchema, VitalsTableSchema } from '../tables/schemas'
 
 import { WORKER_TASKS } from './worker.tasks'
 
@@ -13,7 +13,11 @@ interface VitalMetadata {
   spawns: Array<{ level: number; category: string; position: number[]; damagetable: string }>
 }
 
-export async function importVitals({ inputDir, threads }: { inputDir: string; threads: number }) {
+interface GatherableMetadata {
+  mapIDs: Set<string>
+  spawns: Array<{ position: number[], lootTable: string }>
+}
+export async function importSlices({ inputDir, threads }: { inputDir: string; threads: number }) {
   const vitalsTableFile = path.join(pathToDatatables(inputDir), 'javelindata_vitals.json')
   const crcVitalIDs = await readJSONFile(vitalsTableFile, VitalsTableSchema)
     .then((list) => list.map((it) => it.VitalsID))
@@ -30,7 +34,17 @@ export async function importVitals({ inputDir, threads }: { inputDir: string; th
   const crcVitalsCategoriesFile = env.nwData.tmp('..', 'crcVitalsCategories.json')
   await writeJSONFile(crcVitalCategories, crcVitalsCategoriesFile)
 
+  const gatherablesTableFile = path.join(pathToDatatables(inputDir), 'javelindata_gatherables.json')
+  const crcGatherables = await readJSONFile(gatherablesTableFile, GatherablesTableSchema)
+    .then((list) => list.map((it) => it.GatherableID))
+    .then((list) => list.map((it) => it.toLowerCase()).map((value) => [crc32(value), value] as const))
+    .then((list) => Object.fromEntries(list))
+  const crcGatherablesFile = env.nwData.tmp('..', 'crcGatherables.json')
+  await writeJSONFile(crcGatherables, crcGatherablesFile)
+
   const vitals = new Map<string, VitalMetadata>()
+  const gatherables = new Map<string, GatherableMetadata>()
+
   const files = await glob([
     `${inputDir}/**/*.dynamicslice.json`,
     `!${inputDir}/lyshineui/**/*.dynamicslice.json`,
@@ -45,17 +59,18 @@ export async function importVitals({ inputDir, threads }: { inputDir: string; th
     workerType: 'thread',
     queue: assmebleWorkerTasks({
       registry: WORKER_TASKS,
-      taskName: 'scanForVitals',
+      taskName: 'scanSlices',
       tasks: files.map((file) => {
         return {
           inputDir,
           file,
           crcVitalsFile,
           crcVitalsCategoriesFile,
+          crcGatherablesFile
         }
       }),
       onTaskFinish: async (result) => {
-        for (const vital of result) {
+        for (const vital of result.vitals || []) {
           const vitalID = vital.vitalsID.toLowerCase()
           if (!vitals.has(vitalID)) {
             vitals.set(vitalID, { tables: new Set(), mapIDs: new Set(), spawns: [] })
@@ -79,11 +94,27 @@ export async function importVitals({ inputDir, threads }: { inputDir: string; th
             })
           }
         }
+        for (const gatherable of result.gatherables || []) {
+          const gatherableID = gatherable.gatherableID
+          if (!gatherables.has(gatherableID)) {
+            gatherables.set(gatherableID, { mapIDs: new Set(), spawns: [] })
+          }
+          const bucket = gatherables.get(gatherableID)
+          if (gatherable.mapID) {
+            bucket.mapIDs.add(gatherable.mapID)
+          }
+          if (gatherable.position) {
+            bucket.spawns.push({
+              position: gatherable.position,
+              lootTable: gatherable.lootTable
+            })
+          }
+        }
       },
     }),
   })
 
-  const result = Array.from(vitals.entries()).map(([id, { tables, spawns, mapIDs }]) => {
+  const resultVitals = Array.from(vitals.entries()).map(([id, { tables, spawns, mapIDs }]) => {
     return {
       vitalsID: id,
       tables: Array.from(tables.values()).sort(),
@@ -92,11 +123,27 @@ export async function importVitals({ inputDir, threads }: { inputDir: string; th
         return JSON.stringify({
           category: (category || '').toLowerCase(),
           level,
-          position: (position || []).map((it) => Math.floor(it)),
+          position: (position || []).map((it) => Number(it.toFixed(3))),
           damagetable,
         })
       }),
     }
   })
-  return sortBy(result, (it) => it.vitalsID)
+  const resultGatherables = Array.from(gatherables.entries()).map(([id, { spawns, mapIDs }]) => {
+    return {
+      gatherableID: id,
+      mapIDs: Array.from(mapIDs.values()).sort(),
+      spawns: uniqBy(spawns || [], ({ position, lootTable }) => {
+        return JSON.stringify({
+          position: (position || []).map((it) => Number(it.toFixed(3))),
+          loot: lootTable
+        })
+      }),
+    }
+  })
+  return {
+    vitals: sortBy(resultVitals, (it) => it.vitalsID),
+    gatherables: sortBy(resultGatherables, (it) => it.gatherableID)
+  }
+  return
 }

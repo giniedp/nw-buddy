@@ -13,7 +13,7 @@ import {
   TABLE_REMAP_RULES,
 } from './importer/tables'
 import { importLocales, LOCALE_KEYS_TO_KEEP } from './importer/locales'
-import { importVitals } from './importer/slices/import-vitals'
+import { importSlices } from './importer/slices/import-slices'
 import { withProgressBar, writeJSONFile } from './utils'
 import { cpus } from 'os'
 function collect(value: string, previous: string[]) {
@@ -67,16 +67,24 @@ program
 
     if (hasFilter(Importer.vitals, options.module)) {
       console.log('Slices')
-      await importVitals({
+      await importSlices({
         inputDir,
         threads,
-      }).then((result) => {
+      }).then(({ gatherables, vitals }) => {
         return Promise.all([
           // write it into input directory, so table loader will pick it up
-          writeJSONFile(result, path.join(pathToDatatables(inputDir), 'javelindata_vitalsmetadata.json'), {
+          writeJSONFile(vitals, path.join(pathToDatatables(inputDir), 'javelindata_vitalsmetadata.json'), {
             createDir: true,
           }),
-          writeJSONFile(result, path.join('tmp', 'vitals.json'), {
+          writeJSONFile(vitals, path.join('tmp', 'vitals.json'), {
+            createDir: true,
+          }),
+
+          // write it into input directory, so table loader will pick it up
+          writeJSONFile(gatherables, path.join(pathToDatatables(inputDir), 'javelindata_gatherablesmetadata.json'), {
+            createDir: true,
+          }),
+          writeJSONFile(gatherables, path.join('tmp', 'gatherables.json'), {
             createDir: true,
           }),
         ])

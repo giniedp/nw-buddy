@@ -1,4 +1,3 @@
-
 export interface CapitalsDocument {
   Capitals: Array<{
     id: string
@@ -68,14 +67,8 @@ export interface RegionMetadataAsset {
   __type: 'RegionMetadataAsset'
   aispawnlocations: Array<{
     __type: 'AISpawnLocation'
-    vitalsid: {
-      __type: 'Crc32'
-      value: number
-    }
-    vitalscategoryid: {
-      __type: 'Crc32'
-      value: number
-    }
+    vitalsid: CrcValue
+    vitalscategoryid: CrcValue
     vitalslevel: number
     worldposition: [number, number, number]
     spawnedbycoatlicue: boolean
@@ -83,6 +76,23 @@ export interface RegionMetadataAsset {
     isoverride: boolean
     isencounter: boolean
   }>
+  gatherablelocations: [
+    {
+      __type: 'GatherableRegionEntry'
+      gatherableid: CrcValue
+      loottableid: 'Damned_Melee'
+      worldposition: [number, number, number]
+      spawnedbycoatlicue: true
+      hasvariant: false
+      isvariantoverride: false
+      instancedloottype: 6
+      isencounter: false
+    }
+  ]
+}
+export interface CrcValue {
+  __type: 'Crc32'
+  value: number
 }
 
 export interface SpawnDefinition {
@@ -91,7 +101,7 @@ export interface SpawnDefinition {
   m_aliasasset: Asset
 }
 export interface Asset {
-  __type: "Asset",
+  __type: 'Asset'
   hint?: string
 }
 

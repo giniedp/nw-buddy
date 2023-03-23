@@ -4,87 +4,7 @@ import { readJSONFile, replaceExtname } from '../../utils'
 import { walkJsonObjects } from '../../utils/walk-json-object'
 import { cached } from './cache'
 
-import {
-  ActionListComponent,
-  Asset,
-  CapitalsDocument,
-  EntityWithSpawner,
-  RegionMetadataAsset,
-  SpawnDefinition,
-  VitalsComponent,
-} from './types'
-
-function loadCrcFile(file: string) {
-  const result = require(file)
-  if (typeof result !== 'object') {
-    throw new Error('invalid file')
-  }
-  return result as Record<number | string, string>
-}
-
-export async function findVitals({
-  inputDir,
-  file,
-  crcVitalsFile,
-  crcVitalsCategoriesFile,
-}: {
-  inputDir: string
-  file: string
-  crcVitalsFile: string
-  crcVitalsCategoriesFile: string
-}): Promise<VitalVariant[]> {
-  if (file.endsWith('.dynamicslice.json')) {
-    return findVitalsAndVariants(inputDir, null, file)
-  }
-  if (file.endsWith('.capitals.json')) {
-    const mapId = file.match(/coatlicue\/(.+)\/regions\//)[1]
-    const data = await readJSONFile<CapitalsDocument>(file)
-    const result: VitalVariant[] = []
-    for (const capital of data?.Capitals || []) {
-      const vitals = await findVitalsAndVariants(inputDir, capital.sliceName).catch((err): VitalVariant[] => {
-        console.error(err)
-        return []
-      })
-      for (const vital of vitals || []) {
-        result.push({
-          ...vital,
-          position: capital.worldPosition
-            ? [capital.worldPosition.x, capital.worldPosition.y, capital.worldPosition.z]
-            : null,
-          mapID: mapId,
-        })
-      }
-    }
-    return result
-  }
-  if (file.endsWith('.metadata.json')) {
-    const mapId = file.match(/coatlicue\/(.+)\/regions\//)[1]
-    const result: VitalVariant[] = []
-    walkJsonObjects(await readJSONFile(file), (obj: RegionMetadataAsset) => {
-      if (obj.__type !== 'RegionMetadataAsset') {
-        return false
-      }
-      if (!Array.isArray(obj.aispawnlocations)) {
-        return false
-      }
-      for (const location of obj.aispawnlocations) {
-        const vitalId = loadCrcFile(crcVitalsFile)[location.vitalsid?.value]
-        if (!vitalId) {
-          continue
-        }
-        result.push({
-          vitalsID: vitalId,
-          categoryID: loadCrcFile(crcVitalsCategoriesFile)[location.vitalscategoryid?.value],
-          level: location.vitalslevel,
-          damageTable: null,
-          position: location.worldposition,
-          mapID: mapId,
-        })
-      }
-    })
-    return result
-  }
-}
+import { ActionListComponent, Asset, EntityWithSpawner, SpawnDefinition, VitalsComponent } from './types'
 
 export interface VitalVariant {
   vitalsID: string
@@ -94,7 +14,7 @@ export interface VitalVariant {
   position?: number[]
   mapID?: string
 }
-async function findVitalsAndVariants(inputDir: string, sliceName: string, file?: string): Promise<VitalVariant[]> {
+export async function scanForVitals(inputDir: string, sliceName: string, file?: string): Promise<VitalVariant[]> {
   const result: VitalVariant[] = []
   if (!sliceName && !file) {
     return result

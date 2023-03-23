@@ -1,6 +1,6 @@
-import { findVitals } from './find-vitals.task'
+import { scanSlices } from './scan-slices.task'
 export const WORKER_TASKS = {
-  scanForVitals: findVitals
+  scanSlices
 } as const
 
 export type Tasks = typeof WORKER_TASKS
