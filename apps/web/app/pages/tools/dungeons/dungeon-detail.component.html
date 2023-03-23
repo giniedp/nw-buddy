@@ -17,7 +17,7 @@
     <span>Normal</span>
   </li>
   <li [class.bordered]="!difficultyLevel">
-    <a rel="nofollow" [routerLink]="['.', {}]" >
+    <a rel="nofollow" [routerLink]="['.', {}]">
       <span>Regular</span>
     </a>
   </li>
@@ -79,7 +79,17 @@
             <div class="stat-title">
               <span [nwText]="row.RankName"></span>
             </div>
-            <div class="stat-value cursor-pointer" [class.text-primary]="row.Completed" (click)="row.toggle()">
+            <div
+              class="
+                stat-value
+                cursor-pointer
+                transition-all rounded-md outline outline-4 outline-transparent
+                focus:outline-primary
+                hover:outline-primary
+              "
+              [class.text-primary]="row.Completed"
+              (click)="row.toggle()"
+            >
               {{ row.Quantity }}
             </div>
             <div class="stat-desc">
@@ -114,7 +124,12 @@
 </div>
 
 <ng-template #tplDungeonLoot>
-  <div class="grid layout-gap" [nwbInfniteScroll]="dungeonLoot$ | async" #scroll="infiniteScroll" [@list]="scroll.count$ | async">
+  <div
+    class="grid layout-gap"
+    [nwbInfniteScroll]="dungeonLoot$ | async"
+    #scroll="infiniteScroll"
+    [@list]="scroll.count$ | async"
+  >
     <nwb-item-detail
       *ngFor="let item of scroll.data$ | async; trackBy: trackByIndex"
       [@fade]="true"
@@ -133,7 +148,12 @@
 </ng-template>
 
 <ng-template #tplDungeonMutatedLoot>
-  <div class="grid layout-gap" [nwbInfniteScroll]="dungeonMutatedLoot$ | async" #scroll="infiniteScroll" [@list]="scroll.count$ | async">
+  <div
+    class="grid layout-gap"
+    [nwbInfniteScroll]="dungeonMutatedLoot$ | async"
+    #scroll="infiniteScroll"
+    [@list]="scroll.count$ | async"
+  >
     <nwb-item-detail
       *ngFor="let item of scroll.data$ | async; trackBy: trackByIndex"
       [@fade]="true"
@@ -152,7 +172,12 @@
 </ng-template>
 
 <ng-template #tplDungeonDifficultyLoot>
-  <div class="grid layout-gap" [nwbInfniteScroll]="dungeonDifficultyLoot$ | async" #scroll="infiniteScroll" [@list]="scroll.count$ | async">
+  <div
+    class="grid layout-gap"
+    [nwbInfniteScroll]="dungeonDifficultyLoot$ | async"
+    #scroll="infiniteScroll"
+    [@list]="scroll.count$ | async"
+  >
     <nwb-item-detail
       *ngFor="let item of scroll.data$ | async; trackBy: trackByIndex"
       [@fade]="true"
