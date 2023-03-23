@@ -29,7 +29,12 @@ export class PreferencesComponent implements OnInit {
     this.app.tooltipProvider.set(value as any)
   }
 
-
+  protected get collapseMenu() {
+    return this.app.collapseMenuMode.get() == 'always'
+  }
+  protected set collapseMenu(value: boolean) {
+    this.app.collapseMenuMode.set(value ? 'always' : 'auto')
+  }
   protected get web3token() {
     return this.app.web3token.get()
   }

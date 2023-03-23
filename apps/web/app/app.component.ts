@@ -2,7 +2,7 @@ import { animate, query, stagger, state, style, transition, trigger } from '@ang
 import { DOCUMENT } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
-import { Subject, take, takeUntil } from 'rxjs'
+import { map, of, Subject, switchMap, take, takeUntil } from 'rxjs'
 
 import { TranslateService } from './i18n'
 
@@ -35,8 +35,8 @@ import { VersionService } from './widgets/update-alert'
     ]),
   ],
   host: {
-    '[class.is-embed]': 'isEmbed'
-  }
+    '[class.is-embed]': 'isEmbed',
+  },
 })
 export class AppComponent implements OnInit, OnDestroy {
   public get isElectron() {
@@ -71,7 +71,20 @@ export class AppComponent implements OnInit, OnDestroy {
   protected mainMenu = MAIN_MENU
   protected langOptions = LANG_OPTIONS
   protected langLoaded = false
-  protected isDesktop$ = this.layout.breakpoint.observe('(min-width: 1200px)').pipe(mapProp('matches'))
+
+  protected unfoldMenuWhen$ = this.preferences.collapseMenuMode
+    .observe()
+    .pipe(map((it) => (it === 'always' ? false : '(min-width: 1200px)')))
+
+  protected unfoldMenu$ = this.unfoldMenuWhen$.pipe(
+    switchMap((query) => {
+      if (typeof query === 'string') {
+        return this.layout.breakpoint.observe(query).pipe(mapProp('matches'))
+      }
+      return of(false)
+    })
+  )
+
   protected mapIcon = svgMap
   protected mapActive = false
   protected mapCollapsed = false
