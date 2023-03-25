@@ -1,4 +1,4 @@
-import { DialogModule } from '@angular/cdk/dialog'
+import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import {
@@ -13,7 +13,7 @@ import {
   ViewChildren,
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { BehaviorSubject, combineLatest, firstValueFrom, map, take, tap } from 'rxjs'
+import { BehaviorSubject, combineLatest, filter, firstValueFrom, map, take, tap } from 'rxjs'
 
 import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
@@ -25,11 +25,20 @@ import { deferStateFlat, shareReplayRefCount, tapDebug } from '~/utils'
 import { ItemDetailComponent } from '~/widgets/item-detail/item-detail.component'
 import { InventoryPickerService } from '../inventory/inventory-picker.service'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
-import { svgEllipsisVertical, svgLink16p, svgLinkSlash16p, svgPlus, svgRotate, svgTrashCan } from '~/ui/icons/svg'
+import {
+  svgEllipsisVertical,
+  svgImage,
+  svgLink16p,
+  svgLinkSlash16p,
+  svgPlus,
+  svgRotate,
+  svgTrashCan,
+} from '~/ui/icons/svg'
 import { IconsModule } from '~/ui/icons'
 import { TooltipModule } from '~/ui/tooltip'
 import { LayoutModule } from '~/ui/layout'
 import { ItemFrameModule } from '~/ui/item-frame'
+import { GearImporterDialogComponent } from '../inventory/gear-importer-dialog.component'
 
 export interface GearsetSlotVM {
   slot?: EquipSlot
@@ -38,6 +47,7 @@ export interface GearsetSlotVM {
   instance?: ItemInstance
   canRemove?: boolean
   canBreak?: boolean
+  canUseImporter?: boolean
   isEqupment?: boolean
   isRune?: boolean
   item?: ItemDefinitionMaster | Housingitems
@@ -113,6 +123,7 @@ export class GearsetPaneSlotComponent {
   protected iconPlus = svgPlus
   protected iconChange = svgRotate
   protected iconMenu = svgEllipsisVertical
+  protected iconImage = svgImage
 
   protected vm$ = deferStateFlat<GearsetSlotVM>(() =>
     combineLatest({
@@ -123,6 +134,24 @@ export class GearsetPaneSlotComponent {
       isEqupment: this.store.isEqupment$,
       canRemove: this.store.canRemove$,
       canBreak: this.store.canBreak$,
+      canUseImporter: this.store.slot$.pipe(
+        map((slot) => {
+          const ids: EquipSlotId[] = [
+            'head',
+            'chest',
+            'hands',
+            'legs',
+            'feet',
+            'amulet',
+            'ring',
+            'earring',
+            'weapon1',
+            'weapon2',
+            'weapon3',
+          ]
+          return ids.includes(slot?.id)
+        })
+      ),
       item: this.store.item$,
       isRune: this.slot$.pipe(map((it) => it.id === 'heartgem')),
     })
@@ -146,7 +175,8 @@ export class GearsetPaneSlotComponent {
     private itemsStore: ItemInstancesStore,
     private picker: InventoryPickerService,
     private renderer: Renderer2,
-    private elRef: ElementRef<HTMLElement>
+    private elRef: ElementRef<HTMLElement>,
+    private dialog: Dialog
   ) {
     //
   }
@@ -198,6 +228,18 @@ export class GearsetPaneSlotComponent {
           })
         })
     }
+  }
+
+  protected async itemFromImage({ slot, instance }: GearsetSlotVM) {
+    GearImporterDialogComponent.open(this.dialog, {
+      data: slot.id,
+    })
+      .closed.pipe(filter((it) => !!it))
+      .subscribe((instance) => {
+        this.store.updateSlot({
+          instance: instance,
+        })
+      })
   }
 
   protected openGsEditor(event: MouseEvent) {

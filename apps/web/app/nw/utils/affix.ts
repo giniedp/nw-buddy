@@ -7,14 +7,15 @@ export function isAffixSplitDamage(affix: Affixstats): boolean {
 export function getAffixMODs(affix: Partial<Affixstats>, scale: number) {
   return getAffixProperties(affix)
     .filter((it) => it.key.startsWith('MOD'))
+    .map(({ key, value }) => ({ key, value: Number(value)}))
+    .sort((a, b) => b.value - a.value)
     .map(({ key, value }) => {
       const label = key.replace('MOD', '').toLowerCase()
-      const valNum = Number(value)
       return {
         key: key,
         label: `ui_${label}`,
         labelShort: `ui_${label}_short`,
-        value: Number.isFinite(valNum) ? Math.floor(valNum * scale) : value,
+        value: Math.floor(value * scale),
       }
     })
 }

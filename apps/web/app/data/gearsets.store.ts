@@ -186,7 +186,6 @@ function selectAllTags(records: GearsetRecord[]) {
 }
 
 function selectRecordsHavingTags(records: GearsetRecord[], selectedTags: string[]) {
-  console.log('selectRecordsHavingTags', records, selectedTags)
   if (!selectedTags?.length) {
     return records
   }

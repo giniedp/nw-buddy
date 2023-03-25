@@ -153,25 +153,35 @@ export class GearsetSlotStore extends ComponentStore<GearsetSlotState> {
         const { gearset, slot, instance, instanceId } = this.get()
         if (instanceId) {
           return this.itemDb.read(instanceId).then((record) => {
+            const perks = {
+              ...(record.perks || {}),
+            }
+            if (perk) {
+              perks[key] = perk.PerkID
+            } else {
+              delete perks[key]
+            }
             return this.itemDb.update(instanceId, {
-              perks: {
-                ...(record.perks || {}),
-                [key]: perk.PerkID,
-              },
+              perks: perks,
             })
           })
         }
 
+        const perks = {
+          ...(instance.perks || {}),
+        }
+        if (perk) {
+          perks[key] = perk.PerkID
+        } else {
+          delete perks[key]
+        }
         return this.writeRecord({
           ...gearset,
           slots: {
             ...(gearset.slots || {}),
             [slot.id]: {
               ...instance,
-              perks: {
-                ...(instance.perks || {}),
-                [key]: perk.PerkID,
-              },
+              perks: perks,
             },
           },
         })

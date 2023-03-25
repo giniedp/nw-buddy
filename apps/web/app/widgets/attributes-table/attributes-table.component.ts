@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core'
-import { combineLatest, defer, map, of } from 'rxjs'
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
+import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { getAffixMODs, getPerksInherentMODs, getPerkbucketPerks } from '~/nw/utils'
+import { getPerkbucketPerks } from '~/nw/utils'
 
 const ATTRIBUTES = [
   { attribute: 'AttributeStr', name: 'Strength' },

@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { NwModule } from '~/nw'
+import { createWorker } from 'tesseract.js'
+import { defer, fromEvent, map } from 'rxjs'
+import { shareReplayRefCount } from '~/utils'
 
 @Component({
   standalone: true,

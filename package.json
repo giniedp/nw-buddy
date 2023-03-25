@@ -178,6 +178,7 @@
     "shelljs": "0.8.5",
     "string-similarity": "4.0.4",
     "tailwindcss": "3.2.7",
+    "tesseract.js": "4.0.2",
     "ts-node": "10.9.1",
     "tslib": "2.5.0",
     "typescript": "~4.9.5",

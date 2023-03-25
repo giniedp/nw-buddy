@@ -1,11 +1,23 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit, ChangeDetectionStrategy, OnDestroy, ElementRef, ViewChild, Input } from '@angular/core'
-import { FormsModule } from '@angular/forms';
-import { defer, Subject, takeUntil } from 'rxjs';
-import { Hotkeys } from '~/utils';
-import { IconsModule } from '../icons';
-import { svgMagnifyingGlass, svgXmark } from '../icons/svg';
-import { QuicksearchService } from './quicksearch.service';
+import { CommonModule } from '@angular/common'
+import {
+  Component,
+  OnInit,
+  ChangeDetectionStrategy,
+  OnDestroy,
+  ElementRef,
+  ViewChild,
+  Input,
+  HostListener,
+  ChangeDetectorRef,
+} from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { defer, Subject, takeUntil } from 'rxjs'
+import { Hotkeys } from '~/utils'
+import { imageFileFromPaste } from '~/utils/image-file-from-paste'
+import { useTesseract } from '~/utils/use-tesseract'
+import { IconsModule } from '../icons'
+import { svgMagnifyingGlass, svgXmark } from '../icons/svg'
+import { QuicksearchService } from './quicksearch.service'
 
 @Component({
   standalone: true,
@@ -20,7 +32,6 @@ import { QuicksearchService } from './quicksearch.service';
   },
 })
 export class QuicksearchInputComponent implements OnInit, OnDestroy {
-
   public get value() {
     return this.search.value
   }
@@ -45,25 +56,45 @@ export class QuicksearchInputComponent implements OnInit, OnDestroy {
   }
 
   private destroy$ = new Subject()
-  public constructor(private search: QuicksearchService, private keys: Hotkeys) {
+  public constructor(private search: QuicksearchService, private keys: Hotkeys, private cdRef: ChangeDetectorRef) {
     //
   }
 
   public ngOnInit(): void {
-    this.keys.addShortcut({
-      keys: '/'
-    }).pipe(takeUntil(this.destroy$)).subscribe(()  => {
-      this.input.nativeElement.focus()
-    })
-    this.keys.addShortcut({
-      keys: ':'
-    }).pipe(takeUntil(this.destroy$)).subscribe(()  => {
-      this.input.nativeElement.focus()
-    })
+    this.keys
+      .addShortcut({
+        keys: '/',
+      })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.input.nativeElement.focus()
+      })
+    this.keys
+      .addShortcut({
+        keys: ':',
+      })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.input.nativeElement.focus()
+      })
   }
 
   public ngOnDestroy(): void {
     this.destroy$.next(null)
     this.destroy$.complete()
+  }
+
+  @HostListener('paste', ['$event'])
+  protected async onPaste(e: ClipboardEvent) {
+    const file = imageFileFromPaste(e)
+    if (!file) {
+      return
+    }
+    const tesseract = await useTesseract()
+    const url = URL.createObjectURL(file)
+    const result = await tesseract.recognize(url)
+    console.debug(result)
+    this.value = result.data.text.split('\n')[0]
+    this.cdRef.markForCheck()
   }
 }

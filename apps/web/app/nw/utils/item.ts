@@ -48,6 +48,10 @@ export function isItemNamed(item: ItemDefinitionMaster | null) {
   return item?.ItemClass?.includes('Named')
 }
 
+export function isItemSwordOrShield(item: ItemDefinitionMaster | null) {
+  return item?.ItemClass?.includes('Sword') || item?.ItemClass?.includes('Shield')
+}
+
 export function hasItemIngredientCategory(item: ItemDefinitionMaster, categoryId: string) {
   return item.IngredientCategories?.some((it) => it.toLocaleLowerCase() === String(categoryId).toLocaleLowerCase())
 }

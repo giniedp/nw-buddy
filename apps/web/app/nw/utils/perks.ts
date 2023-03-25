@@ -5,10 +5,10 @@ import { patchPrecision } from './precision'
 const PERK_SORT_WEIGHT = {
   Inherent: 0,
   Gem: 1,
-  Generated: 2
+  Generated: 2,
 }
 
-export function isPerkInherent(perk:  Perks | Perkbuckets) {
+export function isPerkInherent(perk: Perks | Perkbuckets) {
   return perk?.PerkType === 'Inherent'
 }
 
@@ -24,7 +24,7 @@ export function getPerkTypeWeight(type: string) {
   return PERK_SORT_WEIGHT[type] ?? 3
 }
 
-export function isPerkApplicableToItem(perk: Perks, item: ItemDefinitionMaster) {
+export function isPerkApplicableToItem(perk: Pick<Perks, 'ItemClass'>, item: Pick<ItemDefinitionMaster, 'ItemClass'>) {
   if (!perk || !item || !perk.ItemClass || !item.ItemClass) {
     return false
   }
@@ -41,11 +41,7 @@ export function getPerksInherentMODs(perk: Pick<Perks, 'ScalingPerGearScore'>, a
   return getAffixMODs(affix, getPerkMultiplier(perk, gearScore))
 }
 
-export function getPerksGemABSs(perk: Pick<Perks, 'ScalingPerGearScore'>, affix: Affixstats, gearScore: number) {
-  return getAffixMODs(affix, getPerkMultiplier(perk, gearScore))
-}
-
-export function getPerkMultiplier(perk: Pick<Perks, 'ScalingPerGearScore'> , gearScore: number) {
+export function getPerkMultiplier(perk: Pick<Perks, 'ScalingPerGearScore'>, gearScore: number) {
   const scale = patchPrecision(perk.ScalingPerGearScore)
   return Math.max(0, gearScore - 100) * scale + 1
 }
