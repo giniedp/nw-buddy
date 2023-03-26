@@ -21,7 +21,7 @@ import {
   selectWeaponAbilities,
   selectDamageTableRow,
 } from './selectors'
-import { selectElementalRating, selectPhysicalRating } from './stats/armoring'
+import { selectElementalRating, selectModsArmor, selectPhysicalRating } from './stats/armoring'
 import { selectWeaponDamage, selectDamageMods } from './stats/mods-damage'
 import { selectModsEFF, selectModsMULT } from './stats/mods-eff'
 import { selectModsEXP } from './stats/mods-exp'
@@ -45,6 +45,7 @@ export class Mannequin extends ComponentStore<MannequinState> {
     consumables: this.db.consumablesMap,
     perks: this.db.perksMap,
     effects: this.db.statusEffectsMap,
+    effectCategories: this.db.statusEffectCategoriesMap,
     abilities: this.db.abilitiesMap,
     affixes: this.db.affixStatsMap,
     attrStr: this.db.attrStr,
@@ -141,6 +142,7 @@ export class Mannequin extends ComponentStore<MannequinState> {
   public readonly statDmg$ = this.select(this.activeMods$, this.state$, selectModsDMG)
 
   public readonly statAbs$ = this.select(this.activeMods$, this.state$, selectModsABS)
+  public readonly statArmor$ = this.select(this.db$, this.activeMods$, this.state$, selectModsArmor)
 
   public readonly statRol$ = this.select(this.activeMods$, this.state$, selectModsROL)
 

@@ -1,6 +1,8 @@
+import { statusEffectHasArmorFortifyCap } from '~/nw/utils'
 import { getArmorRatingElemental, getArmorRatingPhysical } from '~/nw/utils/item'
 import { eachModifier, modifierAdd, modifierResult } from '../modifier'
 import { ActiveMods, DbSlice, MannequinState } from '../types'
+import { categorySum } from './category-sum'
 
 export function selectPhysicalRatingBase(
   { items, weapons, armors }: DbSlice,
@@ -24,20 +26,37 @@ export function selectPhysicalRatingBase(
   }
 }
 
+export function selectModsArmor(db: DbSlice, mods: ActiveMods, state: MannequinState) {
+  return {
+    PhysicalArmor: selectPhysicalArmor(db, mods, state),
+    ElementalArmor: selectElementalArmor(db, mods, state),
+  }
+}
+
+export function selectPhysicalArmor(db: DbSlice, mods: ActiveMods, state: MannequinState) {
+  return categorySum(db.effectCategories, 'PhysicalArmor', mods)
+}
+
+export function selectElementalArmor(db: DbSlice, mods: ActiveMods, state: MannequinState) {
+  return categorySum(db.effectCategories, 'ElementalArmor', mods)
+}
+
 export function selectPhysicalRating(db: DbSlice, mods: ActiveMods, state: MannequinState) {
   const result = modifierResult()
   const base = selectPhysicalRatingBase(db, mods, state)
   modifierAdd(result, {
     scale: 1,
     value: base.value,
-    source: { label: 'Base' }
+    source: { label: 'Base' },
   })
   for (const { value, scale, source } of eachModifier<number>('PhysicalArmor', mods)) {
-    modifierAdd(result, {
-      scale: scale,
-      value: base.armorRating * value,
-      source: source
-    })
+    if (!statusEffectHasArmorFortifyCap(source.effect)) {
+      modifierAdd(result, {
+        scale: scale,
+        value: base.armorRating * value,
+        source: source,
+      })
+    }
   }
   return result
 }
@@ -70,15 +89,16 @@ export function selectElementalRating(db: DbSlice, mods: ActiveMods, state: Mann
   modifierAdd(result, {
     scale: 1,
     value: base.value,
-    source: { label: 'Base' }
+    source: { label: 'Base' },
   })
   for (const { value, scale, source } of eachModifier<number>('ElementalArmor', mods)) {
-    modifierAdd(result, {
-      scale: scale,
-      value: base.armorRating * value,
-      source: source
-    })
+    if (!statusEffectHasArmorFortifyCap(source.effect)) {
+      modifierAdd(result, {
+        scale: scale,
+        value: base.armorRating * value,
+        source: source,
+      })
+    }
   }
   return result
-
 }

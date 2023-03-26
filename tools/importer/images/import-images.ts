@@ -1,10 +1,14 @@
 import * as path from 'path'
+<<<<<<< HEAD
 import {
   assmebleWorkerTasks,
   replaceExtname,
   withProgressBar,
   withProgressPool as withProgressWorker,
 } from '../../utils'
+=======
+import { assmebleWorkerTasks, replaceExtname, withProgressBar, withProgressPool as withProgressWorker } from '../../utils'
+>>>>>>> ptr
 
 import { walkJsonStrings } from '../../utils/walk-json-object'
 import { WORKER_TASKS } from './worker.tasks'
@@ -26,7 +30,11 @@ export async function importImages({
   tables: Object[]
   ignoreKeys: string[]
   rewrite?: Record<string, RewriteImageEntryFn>
+<<<<<<< HEAD
   rewritePath?: (value: string) => string
+=======
+  rewritePath?: (value: string) => string,
+>>>>>>> ptr
   threads: number
 }) {
   const images = new Map<string, string>()

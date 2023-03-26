@@ -32,6 +32,9 @@ export class ModifierCapTipComponent {
   @Input()
   public category: string
 
+  @Input()
+  public limit: number
+
   protected trackBy = (i: number) => i
 
   protected value: number

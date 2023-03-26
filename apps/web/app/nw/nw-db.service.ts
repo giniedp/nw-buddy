@@ -8,7 +8,6 @@ import { queryGemPerksWithAffix, queryMutatorDifficultiesWithRewards } from './n
 import { convertLootbuckets } from './utils/loot-buckets'
 import { convertLoottables } from './utils/loot-tables'
 
-
 export function createIndex<T, K extends keyof T>(list: T[], id: K): Map<T[K], T> {
   const result = new CaseInsensitiveMap<T[K], T>()
   for (const item of list) {
@@ -39,7 +38,7 @@ export function createIndexGroupSet<T>(list: T[], getKeys: (it: T) => string[] |
   }
   return result
 }
-export type IndexKey<T> = T extends Array<any> ? never: T
+export type IndexKey<T> = T extends Array<any> ? never : T
 
 function annotate<T>(key: string, value: string) {
   return map((items: T[]) => {
@@ -100,7 +99,10 @@ export class NwDbService {
   public housingItems = table(() => [this.data.housingitems()])
   public housingItemsMap = indexBy(() => this.housingItems, 'HouseItemID')
   public housingItem = lookup(() => this.housingItemsMap)
-  public housingItemsByStatusEffectMap = indexGroupSetBy(() => this.housingItems, (it) => it.HousingStatusEffect)
+  public housingItemsByStatusEffectMap = indexGroupSetBy(
+    () => this.housingItems,
+    (it) => it.HousingStatusEffect
+  )
   public housingItemsByStatusEffect = lookup(() => this.housingItemsByStatusEffectMap)
 
   public itemOrHousingItem = (id: string | Observable<string>) =>
@@ -116,9 +118,15 @@ export class NwDbService {
   )
   public abilitiesMap = indexBy(() => this.abilities, 'AbilityID')
   public ability = lookup(() => this.abilitiesMap)
-  public abilitiesByStatusEffectMap = indexGroupSetBy(() => this.abilities, (it) => it.StatusEffect)
+  public abilitiesByStatusEffectMap = indexGroupSetBy(
+    () => this.abilities,
+    (it) => it.StatusEffect
+  )
   public abilitiesByStatusEffect = lookup(() => this.abilitiesByStatusEffectMap)
-  public abilitiesBySelfApplyStatusEffectMap = indexGroupSetBy(() => this.abilities, (it) => it.SelfApplyStatusEffect)
+  public abilitiesBySelfApplyStatusEffectMap = indexGroupSetBy(
+    () => this.abilities,
+    (it) => it.SelfApplyStatusEffect
+  )
   public abilitiesBySelfApplyStatusEffect = lookup(() => this.abilitiesBySelfApplyStatusEffectMap)
 
   public statusEffects = table(() =>
@@ -129,12 +137,22 @@ export class NwDbService {
   public statusEffectsMap = indexBy(() => this.statusEffects, 'StatusID')
   public statusEffect = lookup(() => this.statusEffectsMap)
 
+  public statusEffectCategories = table(() => this.data.statuseffectcategories())
+  public statusEffectCategoriesMap = indexBy(() => this.statusEffectCategories, 'StatusEffectCategoryID')
+  public statusEffectCategory = lookup(() => this.statusEffectCategoriesMap)
+
   public perks = table(() => [this.data.perks()])
   public perksMap = indexBy(() => this.perks, 'PerkID')
   public perk = lookup(() => this.perksMap)
-  public perksByEquipAbilityMap = indexGroupSetBy(() => this.perks, (it) => it.EquipAbility)
+  public perksByEquipAbilityMap = indexGroupSetBy(
+    () => this.perks,
+    (it) => it.EquipAbility
+  )
   public perksByEquipAbility = lookup(() => this.perksByEquipAbilityMap)
-  public perksByAffixMap = indexGroupSetBy(() => this.perks, (it) => it.Affix)
+  public perksByAffixMap = indexGroupSetBy(
+    () => this.perks,
+    (it) => it.Affix
+  )
   public perksByAffix = lookup(() => this.perksByAffixMap)
 
   public perkBuckets = table(() => [this.data.perkbuckets()])
@@ -144,7 +162,10 @@ export class NwDbService {
   public affixStats = table(() => [this.data.affixstats()])
   public affixStatsMap = indexBy(() => this.affixStats, 'StatusID')
   public affixStat = lookup(() => this.affixStatsMap)
-  public affixByStatusEffectMap = indexGroupSetBy(() => this.affixStats, (it) => it.StatusEffect)
+  public affixByStatusEffectMap = indexGroupSetBy(
+    () => this.affixStats,
+    (it) => it.StatusEffect
+  )
   public affixByStatusEffect = lookup(() => this.affixByStatusEffectMap)
 
   public damageTable0 = table(() => [this.data.damagetable()])
@@ -172,7 +193,10 @@ export class NwDbService {
   public consumables = table(() => [this.data.itemdefinitionsConsumables()])
   public consumablesMap = indexBy(() => this.consumables, 'ConsumableID')
   public consumable = lookup(() => this.consumablesMap)
-  public consumablesByAddStatusEffectsMap = indexGroupSetBy(() => this.consumables, (it) => it.AddStatusEffects)
+  public consumablesByAddStatusEffectsMap = indexGroupSetBy(
+    () => this.consumables,
+    (it) => it.AddStatusEffects
+  )
   public consumablesByAddStatusEffects = lookup(() => this.consumablesByAddStatusEffectsMap)
 
   public runes = table(() => [this.data.itemdefinitionsRunes()])
@@ -203,7 +227,6 @@ export class NwDbService {
   public affixDefinitions = table(() => [this.data.affixdefinitions()])
   public affixDefinitionsMap = indexBy(() => this.affixDefinitions, 'AffixID')
   public affixDefinition = lookup(() => this.affixDefinitionsMap)
-
 
   public afflictions = table(() => [this.data.afflictions()])
   public afflictionsMap = indexBy(() => this.afflictions, 'AfflictionID')
@@ -247,7 +270,9 @@ export class NwDbService {
   public vitalsByCreatureType = indexGroupBy(() => this.vitals, 'CreatureType')
   public vitalsOfCreatureType = lookup(() => this.vitalsByCreatureType)
 
-  public vitalsFamilies = table(() => this.vitalsByFamily.pipe(map((it) => Array.from(it.keys()) as Array<Vitals['Family']>)))
+  public vitalsFamilies = table(() =>
+    this.vitalsByFamily.pipe(map((it) => Array.from(it.keys()) as Array<Vitals['Family']>))
+  )
 
   public vitalsCategories = table(() => [this.data.vitalscategories()])
   public vitalsCategoriesMap = indexBy(() => this.vitalsCategories, 'VitalsCategoryID')

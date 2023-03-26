@@ -16,6 +16,7 @@ import {
   ItemdefinitionsWeapons,
   Perks,
   Statuseffect,
+  Statuseffectcategories,
   WeaponTag,
 } from '@nw-data/types'
 import { Observable } from 'rxjs'
@@ -91,6 +92,7 @@ export interface DbSlice {
   damagaTable: Damagetable[]
   perks: Map<string, Perks>
   effects: Map<string, Statuseffect>
+  effectCategories: Map<string, Statuseffectcategories>
   abilities: Map<string, Ability>
   affixes: Map<string, Affixstats>
   attrStr: Attributestrength[]

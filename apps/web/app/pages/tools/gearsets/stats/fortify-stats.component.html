@@ -15,7 +15,7 @@
         >
           <img [nwImage]="entry.icon" class="w-6 h-6" />
           <ng-template #tplTip>
-            <nwb-modifier-cap-tip [data]="entry" [title]="entry.category" [category]="'Fortify'"></nwb-modifier-cap-tip>
+            <nwb-modifier-cap-tip [data]="entry" [title]="entry.category" [category]="'Fortify'" [limit]="0.5"></nwb-modifier-cap-tip>
           </ng-template>
         </span>
       </div>
@@ -32,6 +32,34 @@
           <img [nwImage]="entry.icon" class="w-6 h-6" />
           <ng-template #tplTip>
             <nwb-modifier-tip [data]="entry" [title]="entry.category" [category]="'Ward'"></nwb-modifier-tip>
+          </ng-template>
+        </span>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="vm.Physical.value && vm.Physical; let entry">
+      <span class="font-bold"> {{ entry.value | percent: '0.1-1' }} </span>
+      <div class="flex flex-row gap-[1px]">
+        <span
+          [tooltip]="tplTip"
+          class="rounded-sm"
+        >
+          Physical Armor
+          <ng-template #tplTip>
+            <nwb-modifier-cap-tip [data]="entry" [title]="'Physical'" [category]="'Armor Fortify'"></nwb-modifier-cap-tip>
+          </ng-template>
+        </span>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="vm.Elemental.value && vm.Elemental; let entry">
+      <span class="font-bold"> {{ entry.value | percent: '0.1-1' }} </span>
+      <div class="flex flex-row gap-[1px]">
+        <span
+          [tooltip]="tplTip"
+          class="rounded-sm"
+        >
+          Elemental Armor
+          <ng-template #tplTip>
+            <nwb-modifier-cap-tip [data]="entry" [title]="'Elemental'" [category]="'Armor Fortify'"></nwb-modifier-cap-tip>
           </ng-template>
         </span>
       </div>

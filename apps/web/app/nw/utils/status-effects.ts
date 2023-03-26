@@ -35,6 +35,10 @@ export function statusEffectHasFortifyCap(effect: Statuseffect) {
   return statusEffectHasCategory(effect, 'Fortify') || statusEffectHasCategory(effect, 'Rend')
 }
 
+export function statusEffectHasArmorFortifyCap(effect: Statuseffect) {
+  return statusEffectHasCategory(effect, 'ArmorFortify') || statusEffectHasCategory(effect, 'ArmorRend')
+}
+
 export function getStatusEffectDMGs(affix: Partial<Statuseffect>, scale: number) {
   return getStatusEffectProperties(affix)
     .filter((it) => it.key.startsWith('DMG'))

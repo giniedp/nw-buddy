@@ -67,6 +67,16 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
           field: this.fieldName('StatusID'),
         }),
         this.colDef({
+          colId: 'source',
+          headerValueGetter: () => 'Source',
+          hide: true,
+          field: this.fieldName('$source' as any),
+          filter: SelectFilter,
+          filterParams: SelectFilter.params({
+            showSearch: true,
+          }),
+        }),
+        this.colDef({
           colId: 'name',
           headerValueGetter: () => 'Name',
           headerName: 'Name',
