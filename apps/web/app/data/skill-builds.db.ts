@@ -29,6 +29,14 @@ export interface SkillBuildRecord extends SkillBuild {
    */
   name: string
   /**
+   * The ipns private key
+   */
+  ipnsKey?: string
+  /**
+   * The ipns public name
+   */
+  ipnsName?: string
+  /**
    * Assigned attribute points
    */
   attrs?: Record<AttributeRef, number>

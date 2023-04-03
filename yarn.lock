@@ -8879,10 +8879,10 @@ dev-ip@^1.0.1:
   resolved "https://registry.yarnpkg.com/dev-ip/-/dev-ip-1.0.1.tgz#a76a3ed1855be7a012bb8ac16cb80f3c00dc28f0"
   integrity sha512-LmVkry/oDShEgSZPNgqCIp2/TlqtExeGmymru3uCELnfyjY11IzpAproLYs+1X88fXO6DBoYP3ul2Xo2yz2j6A==
 
-dexie-export-import@1.0.3:
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/dexie-export-import/-/dexie-export-import-1.0.3.tgz#e93926a0a3939c68f5e2b80b48517ea4c6d88fde"
-  integrity sha512-oun27bUUEaeOfSZ8Cv3Nvj5s0LeANYBYQ7ROpF/3Zg1X/IALUnrX0hk5ZUMlYC3s99kFHimXX57ac5AlOdMzWw==
+dexie-export-import@4.0.7:
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/dexie-export-import/-/dexie-export-import-4.0.7.tgz#585b5f39bcbaedd3100667f454c8951470a35a3c"
+  integrity sha512-h22soiockhhWch6edw8XL/JNfn7akPLuLf6kPQdR4uneG/P0XQus4I8wpjV86dck61oEYKPHm36jyft/zVK0jQ==
 
 dexie@3.2.3:
   version "3.2.3"
@@ -18009,6 +18009,11 @@ sshpk@^1.7.0:
     safer-buffer "^2.0.2"
     tweetnacl "~0.14.0"
 
+ssr-window@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/ssr-window/-/ssr-window-4.0.2.tgz#dc6b3ee37be86ac0e3ddc60030f7b3bc9b8553be"
+  integrity sha512-ISv/Ch+ig7SOtw7G2+qkwfVASzazUnvlDTwypdLoPoySv+6MqlOV10VwPSE6EWkGjhW50lUmghPmpYZXMu/+AQ==
+
 ssri@^10.0.0:
   version "10.0.1"
   resolved "https://registry.yarnpkg.com/ssri/-/ssri-10.0.1.tgz#c61f85894bbc6929fc3746f05e31cf5b44c030d5"
@@ -18457,6 +18462,13 @@ supports-preserve-symlinks-flag@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/supports-preserve-symlinks-flag/-/supports-preserve-symlinks-flag-1.0.0.tgz#6eda4bd344a3c94aea376d4cc31bc77311039e09"
   integrity sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==
+
+swiper@9.2.0:
+  version "9.2.0"
+  resolved "https://registry.yarnpkg.com/swiper/-/swiper-9.2.0.tgz#40e950b1c0d516403b3bf7083560ebac22a6f325"
+  integrity sha512-lWK9toYumUQss+YuTL+Mt0+8twiMJEyzioER4bbS4rrGHlkeLrDM8uhtAmnpdijELrNscuNUujDgKoMQZfQGlQ==
+  dependencies:
+    ssr-window "^4.0.2"
 
 symbol-observable@1.0.1:
   version "1.0.1"

@@ -2,7 +2,7 @@ import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule, DecimalPipe, PercentPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
-import { filter, firstValueFrom, map, shareReplay } from 'rxjs'
+import { filter, firstValueFrom, map, shareReplay, take } from 'rxjs'
 import { CharacterStore, GearsetStore } from '~/data'
 import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
@@ -14,6 +14,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { AttributeEditorDialogComponent } from '~/widgets/attributes-editor'
 import { AttributesStatsComponent } from './stats/attributes-stats.component'
 import { VitalityStatsComponent } from './stats/vitality-stats.component'
+import { AvatarDialogComponent } from './avatar-dialog.component'
 
 @Component({
   standalone: true,
@@ -68,9 +69,6 @@ export class GearsetPaneMainComponent {
 
     const level = await firstValueFrom(this.characterLevel$)
     AttributeEditorDialogComponent.open(this.dialog, {
-      maxWidth: 800,
-      maxHeight: 400,
-      panelClass: ['w-full', 'h-full', 'layout-pad', 'self-end', 'sm:self-center', 'shadow'],
       data: {
         level: level,
         assigned: {
@@ -102,26 +100,17 @@ export class GearsetPaneMainComponent {
       })
   }
 
-  protected async uploadFile(e: Event) {
-    const file = (e.target as HTMLInputElement)?.files?.[0]
-    if (file.size > 1024 * 1024) {
-      this.showFileTooLargeError()
-      return
-    }
-    this.gearset.updateImage({ file: file })
+  protected async changeAvatar() {
+    const gearset = await firstValueFrom(this.gearset.gearset$)
+    AvatarDialogComponent.open(this.dialog, {
+      data: {
+        imageId: gearset?.imageId
+      }
+    }).closed.pipe(take(1))
+      .pipe(filter((it) => !!it))
+      .subscribe(({ imageId }) => {
+        this.gearset.updateImageId({ imageId })
+      })
   }
 
-  protected showFileTooLargeError() {
-    ConfirmDialogComponent.open(this.dialog, {
-      data: {
-        title: 'File too large',
-        body: `
-        Maximum file size is 1MB. Reduce image resolution or use an
-        <a href="https://www.google.com/search?q=online+image+optimizer" target="_blank" tabindex="-1" class="link">image optimizer</a>
-        `,
-        html: true,
-        positive: 'OK',
-      },
-    })
-  }
 }

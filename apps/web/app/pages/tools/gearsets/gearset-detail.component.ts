@@ -1,7 +1,7 @@
 import { animate, animateChild, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { AfterContentInit, ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Statuseffect } from '@nw-data/types'
 import { combineLatest, filter, map, of, switchMap } from 'rxjs'
@@ -25,11 +25,15 @@ import { GearsetPaneMainComponent } from './gearset-pane-main.component'
 import { GearsetPaneSkillComponent } from './gearset-pane-skill.component'
 import { GearsetPaneSlotComponent } from './gearset-pane-slot.component'
 import { GearsetPaneStatsComponent } from './gearset-pane-stats.component'
+import { SwiperOptions } from 'swiper'
+import { SwiperDirective } from '~/utils/swiper.directive'
+import { svgChevronLeft } from '~/ui/icons/svg'
 
 @Component({
   standalone: true,
   selector: 'nwb-gearset-detail',
   templateUrl: './gearset-detail.component.html',
+  styleUrls: ['./gearset-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   exportAs: 'gearsetDetail',
   imports: [
@@ -43,6 +47,7 @@ import { GearsetPaneStatsComponent } from './gearset-pane-stats.component'
     GearsetPaneEffectComponent,
     IconsModule,
     ScreenshotModule,
+    SwiperDirective,
   ],
   providers: [GearsetStore, ItemInstancesStore, Mannequin],
   host: {
@@ -71,9 +76,20 @@ export class GearsetDetailComponent {
   @Input()
   public disabled: boolean
 
+  @Input()
+  public swiper: boolean
+
+  protected swiperOptions: SwiperOptions = {
+    slidesPerView: 'auto',
+    centeredSlides: true,
+    spaceBetween: 16,
+    //cssMode: true,
+  }
+
   protected gearset$ = this.store.gearset$
   protected name$ = this.store.gearsetName$
   protected isLoading$ = this.store.isLoading$
+  protected iconChevronLeft = svgChevronLeft
 
   protected slots = EQUIP_SLOTS.filter(
     (it) => it.itemType !== 'Consumable' && it.itemType !== 'Ammo' && it.itemType !== 'Trophies'

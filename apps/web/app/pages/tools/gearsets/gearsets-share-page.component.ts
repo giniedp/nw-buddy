@@ -13,31 +13,39 @@ import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
 import { PromptDialogComponent } from '~/ui/layout'
-import { observeRouteParam } from '~/utils'
 import { GearsetDetailComponent } from './gearset-detail.component'
+import { EmbedHeightDirective } from '~/utils/embed-height.directive'
 
 @Component({
   standalone: true,
   selector: 'nwb-gearsets-share-page',
   templateUrl: './gearsets-share-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, GearsetDetailComponent, LetModule, IconsModule],
+  imports: [CommonModule, NwModule, GearsetDetailComponent, LetModule, IconsModule, EmbedHeightDirective],
   host: {
     class: 'layout-col flex-none',
   },
 })
 export class GearsetsSharePageComponent {
-  protected cid$ = observeRouteParam(this.route, 'cid')
-  protected record$ = this.cid$.pipe(switchMap((cid) => this.web3.readObject(cid))).pipe(
-    map((it): GearsetRecord => {
-      if (it.type === 'gearset') {
-        const record: GearsetRecord = it.data
-        delete record.id
-        return record
-      }
-      return null
-    })
-  )
+  protected record$ = this.route.paramMap
+    .pipe(
+      switchMap((it) => {
+        if (it.has('cid')) {
+          return this.web3.downloadbyCid(it.get('cid'))
+        }
+        return this.web3.downloadByName(it.get('name'))
+      })
+    )
+    .pipe(
+      map((it): GearsetRecord => {
+        if (it.type === 'gearset') {
+          const record: GearsetRecord = it.data
+          delete record.id
+          return record
+        }
+        return null
+      })
+    )
 
   protected get appLink() {
     if (environment.standalone) {
@@ -45,6 +53,10 @@ export class GearsetsSharePageComponent {
     }
     return this.sanitizer.bypassSecurityTrustUrl(`nw-buddy://${this.router.url}`)
   }
+  protected get isEmbed() {
+    return this.router.url.includes('embed')
+  }
+
   protected iconInfo = svgCircleExclamation
   protected iconError = svgCircleExclamation
   protected iconLoading = svgCircleNotch
@@ -83,7 +95,7 @@ export class GearsetsSharePageComponent {
       .subscribe((record) => {
         this.router.navigate(['../..', record.id], {
           replaceUrl: true,
-          relativeTo: this.route
+          relativeTo: this.route,
         })
       })
   }

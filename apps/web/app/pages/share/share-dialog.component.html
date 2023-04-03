@@ -1,57 +1,138 @@
-<div class="text-xl flex flex-row items-center gap-2 bg-base-300 p-3">
-  <nwb-icon [icon]="iconShare" class="w-4 h-4"></nwb-icon> Share content
-</div>
-
-<div *ngIf="state$ | async; let state">
-  <ng-container *ngIf="state.loading">
-    <div class="alert bg-transparent">
-      <div class="overflow-hidden w-full">
-        <nwb-icon [icon]="iconSpinner" class="w-6 h-6 text-primary animate-spin"></nwb-icon>
-        <div class="prose w-full">
-          <h3 class="font-bold">Uploading!</h3>
-          <div class="text-xs">Share URL is being generated</div>
-        </div>
-      </div>
-    </div>
-  </ng-container>
-  <ng-container *ngIf="state.error">
-    <div class="alert bg-transparent">
-      <div class="overflow-hidden w-full">
-        <nwb-icon [icon]="iconError" class="w-6 h-6 text-error"></nwb-icon>
-        <div class="prose w-full">
-          <h3 class="font-bold">Error!</h3>
-          <div class="text-xs">Failed to upload content</div>
-        </div>
-      </div>
-    </div>
-  </ng-container>
-  <ng-container *ngIf="state.value; let value">
-    <div class="alert bg-transparent">
-      <div class="overflow-hidden w-full">
-        <div class="prose w-full">
-          <p class="overflow-hidden text-ellipsis">
-            Your share URL is: <a class="link" [href]="value.shareUrl" target="_blank">{{ value.shareUrl }}</a>
-          </p>
-          <p class="text-xs">
-            The data has been uploaded to the IPFS network and is publicly available for everyone. As long a a copy
-            exists on the network the link above should work.
-            <br>For more info about IPFS <a href="https://ipfs.tech/#how" target="_blank">click here</a>.
-            <br>To see the actual data on the network <a [href]="value.ipfsUrl" target="_blank">click here</a>.
-          </p>
-        </div>
-      </div>
-    </div>
-  </ng-container>
-</div>
-
-<div class="flex justify-end gap-1 layout-pad">
-  <div class="btn-group" *ngIf="(state$ | async).value?.shareUrl; let url">
-    <button class="btn gap-2" [class.btn-success]="copied" (click)="copy(url)">
-      Copy URL
-      <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1"></nwb-icon>
-    </button>
+<ng-container *ngIf="vm$ | async; let vm">
+  <div class="text-xl flex flex-row items-center gap-2 bg-base-300 p-3">
+    <nwb-icon
+      [icon]="vm.active ? iconSpinner : iconShare"
+      class="w-4 h-4"
+      [class.text-primary]="vm.active"
+      [class.animate-spin]="vm.active"
+    ></nwb-icon>
+    Share content
   </div>
-  <div class="btn-group">
-    <button class="btn btn-primary" (click)="close()">Close</button>
+  <div class="p-4 prose layout-content ">
+    <div *ngIf="!vm.shared">
+      <p>
+        Your data will be uploaded to the IPFS network and is publicly available to anyone. As long as there is a copy
+        on the network, the generated share link will work.
+        <br />
+        <a href="https://ipfs.tech/#how" target="_blank" class="link link-primary">Read more info about IPFS</a>.
+      </p>
+
+      <ng-container *ngIf="vm.web3Token">
+        <p>
+          In order to keep your shared data on the ipfs network and to prevent it from expiring, check the following
+          option
+        </p>
+        <div class="form-control">
+          <label class="label cursor-pointer">
+            <span class="label-text flex flex-row"> Upload to Web3 Storage </span>
+            <input
+              type="checkbox"
+              class="toggle toggle-accent"
+              [ngModel]="vm.web3Enabled"
+              (ngModelChange)="patchState({ web3Enabled: $event })"
+            />
+          </label>
+        </div>
+      </ng-container>
+
+      <p *ngIf="!vm.web3Token">
+        In order to keep your shared data on the ipfs network and to prevent it from expiring, you may want to upload
+        the data to your Web3 Storage account.
+        <a [routerLink]="'/preferences'" class="link link-primary">See preferences</a>
+      </p>
+
+      <p>
+        If your content changes, the share URL changes as well. If you want to create a permanent URL, check the
+        following option.
+      </p>
+
+      <div class="form-control ">
+        <label class="label cursor-pointer">
+          <span class="label-text flex flex-row"> Create Permalink </span>
+          <input
+            type="checkbox"
+            class="toggle toggle-accent"
+            [ngModel]="vm.ipnsEnabled"
+            (ngModelChange)="patchState({ ipnsEnabled: $event })"
+          />
+        </label>
+      </div>
+
+    </div>
+
+    <ng-container *ngIf="vm.shared && vm.error">
+      <div class="alert alert-error">
+        <div class="overflow-hidden w-full">
+          <nwb-icon [icon]="iconError" class="w-6 h-6"></nwb-icon>
+          <div class="w-full">
+            <div class="text-xs">Something went wrong.</div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="vm.shared && !vm.error">
+      <div class="alert alert-success">
+        <div class="overflow-hidden w-full">
+          <nwb-icon [icon]="iconSuccess" class="w-6 h-6"></nwb-icon>
+          <div class="w-full">
+            <div class="text-xs">Content has been successfully shared.</div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="vm.shareUrl; let value">
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Share URL</span>
+        </label>
+        <label class="input-group">
+          <input type="text" class="input input-bordered w-full" [ngModel]="value" />
+          <button class="btn gap-2" [class.btn-success]="copied === value" (click)="copy(value)">
+            <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1"></nwb-icon>
+          </button>
+        </label>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="vm.embedUrl; let value">
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Embed URL</span>
+        </label>
+        <label class="input-group">
+          <input type="text" class="input input-bordered w-full" [ngModel]="value" />
+          <button class="btn gap-2" [class.btn-success]="copied === value" (click)="copy(value)">
+            <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1"></nwb-icon>
+          </button>
+        </label>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="vm.embedSnippet; let value">
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Embed Snippet</span>
+        </label>
+        <label class="input-group input-group-vertical">
+          <textarea class="textarea textarea-bordered textarea-md w-full" rows="4" [ngModel]="value"></textarea>
+          <button class="btn gap-2" [class.btn-success]="copied === value" (click)="copy(value)">
+            <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1"></nwb-icon> Copy embed snippet
+          </button>
+        </label>
+      </div>
+    </ng-container>
   </div>
-</div>
+
+  <div class="flex justify-end gap-1 layout-pad bg-base-300">
+    <div class="btn-group">
+      <button class="btn" (click)="close()">Close</button>
+    </div>
+    <div class="btn-group" *ngIf="!vm.shared">
+      <button class="btn btn-primary" [class.loading]="vm.active" (click)="share()" [disabled]="vm.active">
+        Share
+      </button>
+    </div>
+  </div>
+</ng-container>

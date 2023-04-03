@@ -1,12 +1,12 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ActivatedRoute, Router } from '@angular/router'
 import { LetModule } from '@ngrx/component'
 import { environment } from 'apps/web/environments'
-import { filter, map, of, switchMap, throwError } from 'rxjs'
+import { filter, of, switchMap, throwError } from 'rxjs'
 import { SkillBuildRecord, SkillBuildsDB, SkillBuildsStore } from '~/data'
 import { ElectronService } from '~/electron'
 import { NwModule } from '~/nw'
@@ -14,7 +14,7 @@ import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
 import { PromptDialogComponent } from '~/ui/layout'
-import { HtmlHeadService, observeRouteParam } from '~/utils'
+import { HtmlHeadService } from '~/utils'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { SkillBuilderComponent } from '~/widgets/skill-builder'
 
@@ -29,17 +29,25 @@ import { SkillBuilderComponent } from '~/widgets/skill-builder'
   },
 })
 export class SkillBuildsShareComponent {
-  protected cid$ = observeRouteParam(this.route, 'cid')
-  protected record$ = this.cid$.pipe(switchMap((cid) => this.web3.readObject(cid))).pipe(
-    switchMap((it) => {
-      if (it?.type === 'skill-build' && it.data) {
-        const record: SkillBuildRecord = it.data
-        delete record.id
-        return of(record)
-      }
-      return throwError(() => new Error(`invalid data`))
-    })
-  )
+  protected record$ = this.route.paramMap
+    .pipe(
+      switchMap((it) => {
+        if (it.has('cid')) {
+          return this.web3.downloadbyCid(it.get('cid'))
+        }
+        return this.web3.downloadByName(it.get('name'))
+      })
+    )
+    .pipe(
+      switchMap((it) => {
+        if (it?.type === 'skill-build' && it.data) {
+          const record: SkillBuildRecord = it.data
+          delete record.id
+          return of(record)
+        }
+        return throwError(() => new Error(`invalid data`))
+      })
+    )
 
   protected iconInfo = svgCircleExclamation
   protected iconError = svgCircleExclamation

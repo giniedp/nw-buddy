@@ -1,0 +1,60 @@
+<ng-container *ngIf="vm$ | async; let vm">
+  <h3 class="font-bold text-lg bg-black p-3">Avatar image</h3>
+  <div class="layout-content p-4">
+    <div *ngIf="vm.previewUrl; let url" class="relative text-center flex flex-col">
+      <img [src]="url" class="w-full rounded-md" />
+      <ng-container *ngIf="vm.file; let file">
+        <span>{{ file.name }}</span>
+        <span [class.text-error]="vm.fileTooLarge" [class.text-success]="!vm.fileTooLarge">
+          Size: {{ file.size / 1024 / 1024 | number }} MiB
+          <span class="text-primary text-xs" *ngIf="vm.fileTooLarge">
+            (Max: {{ vm.maxFileSizeInMb | number }} MiB)
+          </span>
+        </span>
+
+      </ng-container>
+    </div>
+    <ng-container *ngIf="!vm.previewUrl">
+      <div
+        class="
+          border border-dashed border-primary
+          rounded-md
+          aspect-square
+          flex flex-col
+          items-center
+          justify-center
+          gap-1
+        "
+      >
+        <ng-container *ngIf="!vm.file">
+          <span>Drag & Drop image file</span>
+          <span>OR</span>
+          <span>Paste from clipboard</span>
+          <span>OR</span>
+          <button class="btn btn-primary" (click)="pickFile()">Browse File</button>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+  <div class="flex justify-end gap-1 layout-pad">
+    <button type="button" class="btn btn-ghost" (click)="cancel()">Cancel</button>
+    <div class="btn-group">
+      <button
+        type="button"
+        class="btn btn-primary btn-outline"
+        (click)="removeImage()"
+        [disabled]="!vm.imageId && !vm.file"
+      >
+        <nwb-icon [icon]="iconDelete" class="w-5 h-5"></nwb-icon>
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary"
+        (click)="commit(vm.file)"
+        [disabled]="vm.fileTooLarge || (!vm.imageId && !vm.file)"
+      >
+        OK
+      </button>
+    </div>
+  </div>
+</ng-container>

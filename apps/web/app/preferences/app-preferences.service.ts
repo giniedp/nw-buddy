@@ -5,6 +5,7 @@ import { StorageProperty } from './storage'
 @Injectable({ providedIn: 'root' })
 export class AppPreferencesService {
 
+  public readonly projectName: StorageProperty<string>
   public readonly language: StorageProperty<string>
   public readonly theme: StorageProperty<string>
   public readonly tooltipProvider: StorageProperty<'nwdb' | 'nwguide'>
@@ -17,6 +18,7 @@ export class AppPreferencesService {
 
   public constructor(preferences: PreferencesService) {
     const storage = preferences.storage.storageObject('app')
+    this.projectName = storage.storageProperty('projectName', 'nw-buddy')
     this.language = storage.storageProperty('language', 'en-us')
     this.theme = storage.storageProperty('theme', 'helloween')
     this.nwmpServer = storage.storageProperty('nwmpServer', null)

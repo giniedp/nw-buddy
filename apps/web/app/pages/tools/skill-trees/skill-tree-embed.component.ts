@@ -9,7 +9,8 @@ import { NwModule } from '~/nw'
 import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
-import { HtmlHeadService, observeRouteParam } from '~/utils'
+import { HtmlHeadService } from '~/utils'
+import { EmbedHeightDirective } from '~/utils/embed-height.directive'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { SkillBuilderComponent } from '~/widgets/skill-builder'
 
@@ -18,23 +19,32 @@ import { SkillBuilderComponent } from '~/widgets/skill-builder'
   selector: 'nwb-skill-tree-embed',
   templateUrl: './skill-tree-embed.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, IconsModule, LetModule, SkillBuilderComponent, AttributesEditorModule],
+  imports: [CommonModule, NwModule, FormsModule, IconsModule, LetModule, SkillBuilderComponent, AttributesEditorModule, EmbedHeightDirective],
+  hostDirectives: [EmbedHeightDirective],
   host: {
-    class: 'layout-content bg-base-300',
+    class: 'layout-col bg-base-300',
   },
 })
 export class SkillBuildsEmbedComponent {
-  protected cid$ = observeRouteParam(this.route, 'cid')
-  protected record$ = this.cid$.pipe(switchMap((cid) => this.web3.readObject(cid))).pipe(
-    switchMap((it) => {
-      if (it?.type === 'skill-build' && it.data) {
-        const record: SkillBuildRecord = it.data
-        delete record.id
-        return of(record)
-      }
-      return throwError(() => new Error(`invalid data`))
-    })
-  )
+  protected record$ = this.route.paramMap
+    .pipe(
+      switchMap((it) => {
+        if (it.has('cid')) {
+          return this.web3.downloadbyCid(it.get('cid'))
+        }
+        return this.web3.downloadByName(it.get('name'))
+      })
+    )
+    .pipe(
+      switchMap((it) => {
+        if (it?.type === 'skill-build' && it.data) {
+          const record: SkillBuildRecord = it.data
+          delete record.id
+          return of(record)
+        }
+        return throwError(() => new Error(`invalid data`))
+      })
+    )
 
   protected iconInfo = svgCircleExclamation
   protected iconError = svgCircleExclamation

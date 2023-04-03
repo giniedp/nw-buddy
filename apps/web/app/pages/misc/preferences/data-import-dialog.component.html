@@ -1,0 +1,75 @@
+<ng-container *ngIf="vm$ | async; let vm">
+  <div class="text-xl flex flex-row items-center gap-2 bg-base-300 p-3">
+    <nwb-icon
+      class="w-4 h-4"
+      [icon]="vm.active ? iconSpinner : iconImport"
+      [class.text-primary]="vm.active"
+      [class.animate-spin]="vm.active"
+    ></nwb-icon>
+    Import data
+  </div>
+
+  <div class="flex-1 layout-content prose p-4">
+    <div
+      *ngIf="!vm.complete"
+      class="
+        border
+        rounded-md
+        border-dashed
+        aspect-square
+        flex flex-col
+        items-center
+        justify-center
+        gap-1
+      "
+      [class.border-primary]="!vm.file"
+      [class.border-transparent]="!!vm.file"
+    >
+      <ng-container *ngIf="vm.file; let file">
+        <span>{{ file.name }}</span>
+        <span>Modified at: {{ file.lastModified | date }}</span>
+        <span>Size: {{ file.size / 1024 / 1024 | number }} MiB</span>
+      </ng-container>
+
+      <ng-container *ngIf="!vm.file">
+        <span>Drag & Drop to import file</span>
+        <span>OR</span>
+        <button class="btn btn-primary" (click)="pickFile()">Browse File</button>
+      </ng-container>
+    </div>
+
+    <ng-container *ngIf="vm.complete && vm.error">
+      <div class="alert alert-error">
+        <div class="overflow-hidden w-full">
+          <nwb-icon [icon]="iconError" class="w-6 h-6"></nwb-icon>
+          <div class="w-full">
+            <div class="text-xs">Something went wrong.</div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="vm.complete && !vm.error">
+      <div class="alert alert-success">
+        <div class="overflow-hidden w-full">
+          <nwb-icon [icon]="iconSuccess" class="w-6 h-6"></nwb-icon>
+          <div class="w-full">
+            <div class="text-xs">Import complete.</div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+
+  <div class="flex justify-end gap-1 layout-pad">
+    <div class="btn-group">
+      <button class="btn btn-ghost" (click)="close()">Close</button>
+    </div>
+    <div class="btn-group" *ngIf="!vm.complete">
+      <button class="btn btn-primary" [class.loading]="vm.active" (click)="import()" [disabled]="vm.active || !vm.file">
+        Import
+      </button>
+    </div>
+  </div>
+</ng-container>

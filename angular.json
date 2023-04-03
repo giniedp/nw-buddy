@@ -37,6 +37,7 @@
               "apps/web/favicon.ico",
               "apps/web/robots.txt",
               "apps/web/sitemap.txt",
+              "apps/web/embed.js",
               "apps/web/assets",
               {
                 "glob": "**/*",

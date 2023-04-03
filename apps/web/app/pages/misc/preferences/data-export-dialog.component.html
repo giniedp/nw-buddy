@@ -1,0 +1,63 @@
+<ng-container *ngIf="vm$ | async; let vm">
+  <div class="text-xl flex flex-row items-center gap-2 bg-base-300 p-3">
+    <nwb-icon
+      class="w-4 h-4"
+      [icon]="vm.active ? iconSpinner : iconExport"
+      [class.text-primary]="vm.active"
+      [class.animate-spin]="vm.active"
+    ></nwb-icon>
+    Export data
+  </div>
+
+  <div class="flex-1 layout-content prose p-4">
+    <ng-container *ngIf="!vm.complete">
+      <div class="btn-group flex">
+        <button class="flex-1 btn" [class.btn-active]="!vm.publicExport" (click)="patchState({ publicExport: false })">Private Backup</button>
+        <button class="flex-1 btn" [class.btn-active]="vm.publicExport" (click)="patchState({ publicExport: true })">
+          Public Export
+        </button>
+      </div>
+      <p *ngIf="!vm.publicExport">
+        Creates a full backup, including all preferences and data tables. If you want to share the export with someone
+        please select the "Public" export method.
+      </p>
+      <p *ngIf="vm.publicExport">
+        Use this export option if you intend to share the data with someone. Sensitive settings such as API keys and
+        permalink private keys are excluded from export.
+      </p>
+    </ng-container>
+
+    <ng-container *ngIf="vm.complete && vm.error">
+      <div class="alert alert-error">
+        <div class="overflow-hidden w-full">
+          <nwb-icon [icon]="iconError" class="w-6 h-6"></nwb-icon>
+          <div class="w-full">
+            <div class="text-xs">Something went wrong.</div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="vm.complete && !vm.error">
+      <div class="alert alert-success">
+        <div class="overflow-hidden w-full">
+          <nwb-icon [icon]="iconSuccess" class="w-6 h-6"></nwb-icon>
+          <div class="w-full">
+            <div class="text-xs">Export complete.</div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+
+  <div class="flex justify-end gap-1 layout-pad">
+    <div class="btn-group">
+      <button class="btn btn-ghost" (click)="close()">Close</button>
+    </div>
+    <div class="btn-group" *ngIf="!vm.complete">
+      <button class="btn btn-primary" [class.loading]="vm.active" (click)="export()" [disabled]="vm.active">
+        Export
+      </button>
+    </div>
+  </div>
+</ng-container>

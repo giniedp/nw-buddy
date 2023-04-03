@@ -18,6 +18,14 @@ export interface GearsetRecord {
    */
   name: string
   /**
+   * The ipns private key
+   */
+  ipnsKey?: string
+  /**
+   * The ipns public name
+   */
+  ipnsName?: string
+  /**
    * User description about the set
    */
   description?: string

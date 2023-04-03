@@ -1,18 +1,32 @@
 <div class="w-80 bg-base-300 rounded-md p-4 mb-20">
   <div class="alert shadow-lg">
     <div>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        ></path>
+      </svg>
       <div>
         <h3 class="font-bold">Data Storage!</h3>
         <div class="text-xs mb-1">
-          Your data is stored <span class="text-primary">locally in the browser</span>.
-          Data is lost when the browser cache is cleared.
+          Your data is stored <span class="text-primary">locally in the browser</span>. Data is lost when the browser
+          cache is cleared.
         </div>
-        <div class="text-xs">
-          Please use the functions below to export and backup your data.
-        </div>
+        <div class="text-xs">Please use the functions below to export and backup your data.</div>
       </div>
     </div>
+  </div>
+
+  <div class="form-control w-full mt-4">
+    <input type="text" class="input input-bordered" [(ngModel)]="projectName" />
+     <label class="label">
+      <span class="label-text-alt">
+        Project name, used as file name for export
+      </span>
+    </label>
   </div>
 
   <div class="form-control w-full">
@@ -37,24 +51,33 @@
   </div>
 
   <div class="form-control w-full">
-    <nwb-price-importer-button  class="btn w-full mt-4" [icon]="false"> Import Prices </nwb-price-importer-button>
+    <nwb-price-importer-button class="btn w-full mt-4" [icon]="false"> Import Prices </nwb-price-importer-button>
     <label class="label">
       <span class="label-text-alt">Import prices from file or a website</span>
     </label>
   </div>
 
+
   <div class="divider"></div>
   <div class="alert shadow-lg">
     <div>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6">
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        ></path>
+      </svg>
       <div>
         <h3 class="font-bold">Item Tooltips!</h3>
         <div class="text-xs mb-1">
-          Select the preferred website from which you want item tooltips to be displayed.
-          Items will link to this website.
+          Select the preferred website from which you want item tooltips to be displayed. Items will link to this
+          website.
         </div>
         <div class="text-xs">
-          <a [routerLink]="'/about'" class="link link-primary">Contact us</a> if you would like to have your web page and tooltips configurable here.
+          <a [routerLink]="'/about'" class="link link-primary">Contact us</a> if you would like to have your web page
+          and tooltips configurable here.
         </div>
       </div>
     </div>
@@ -63,48 +86,67 @@
   <div class="form-control w-full">
     <label class="label cursor-pointer">
       <span class="label-text">Use NWDB Tooltips</span>
-      <input type="radio" name="tooltipProvider" class="radio checked:bg-primary" [value]="'nwdb'" [(ngModel)]="tooltipProvider" />
+      <input
+        type="radio"
+        name="tooltipProvider"
+        class="radio checked:bg-primary"
+        [value]="'nwdb'"
+        [(ngModel)]="tooltipProvider"
+      />
     </label>
   </div>
   <div class="form-control w-full">
     <label class="label cursor-pointer">
       <span class="label-text">Use NW Guide Tooltips</span>
-      <input type="radio" name="tooltipProvider" class="radio checked:bg-primary" [value]="'nwguide'" [(ngModel)]="tooltipProvider" />
+      <input
+        type="radio"
+        name="tooltipProvider"
+        class="radio checked:bg-primary"
+        [value]="'nwguide'"
+        [(ngModel)]="tooltipProvider"
+      />
+    </label>
+  </div>
+
+  <div class="divider"></div>
+  <ng-template #tipWeb3token>
+    <div class="alert rounded-md">
+      <div>
+        <span>
+          <nwb-icon [icon]="iconInfo" class="w-5 h-5 text-info"></nwb-icon>
+        </span>
+        <div>
+          <h3 class="font-bold">Link Sharing</h3>
+          <div class="text-xs mb-1">
+            When sharing links, data is stored online for an indefinite period of time. This means that shared links may
+            stop work at some point. Provide a Web 3 API token to store shared data in your account instead.
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+  <div class="form-control w-full">
+    <label class="label cursor-pointer">
+      <span class="label-text">Web 3 Token</span>
+    </label>
+    <label class="input-group">
+      <input type="text" class="input input-bordered" [(ngModel)]="web3token" />
+      <span [tooltip]="tipWeb3token">
+        <nwb-icon [icon]="iconInfo" class="w-5 h-5 text-info"></nwb-icon>
+      </span>
+    </label>
+    <label class="label">
+      <span class="label-text-alt">
+        Your <a href="https://web3.storage/" target="_blank" class="link">web3.storage</a> api token.
+      </span>
     </label>
   </div>
 
   <div class="divider"></div>
   <div class="form-control w-full">
     <label class="cursor-pointer label">
-      <span class="label-text">Collapse Menu Permanently</span>
+      <span class="label-text">Collapse sidebar permanently</span>
       <input type="checkbox" class="toggle toggle-primary" [(ngModel)]="collapseMenu" />
     </label>
   </div>
-
-  <!-- <div class="form-control w-full">
-    <label class="label cursor-pointer">
-      <span class="label-text">Web 3 Token</span>
-    </label>
-    <input type="text" class="input input-bordered" [(ngModel)]="web3token" />
-
-    <label class="label">
-      <span class="label-text-alt">
-        Your <a href="https://web3.storage/" target="_blank" class="link">web3.storage</a> api token.
-        Is used to store your data and enables sharing functionality.
-      </span>
-    </label>
-  </div>
-  <div class="form-control w-full">
-    <label class="label cursor-pointer">
-      <span class="label-text">Web 3 Gateway</span>
-    </label>
-    <input type="text" class="input input-bordered" [(ngModel)]="web3gateway" placeholder="dweb.link" />
-    <label class="label">
-      <span class="label-text-alt">
-        One of the <a href="https://ipfs.github.io/public-gateway-checker/" target="_blank" class="link">public gateway names</a>.
-        Is used to download data from shared links. Leave it blank to use default gateway (dweb.link).
-      </span>
-    </label>
-  </div> -->
 </div>
-

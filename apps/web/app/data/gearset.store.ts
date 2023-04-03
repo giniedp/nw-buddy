@@ -31,18 +31,9 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
   public readonly isLinkMode$ = this.select(({ gearset }) => gearset?.createMode !== 'copy')
   public readonly isCopyMode$ = this.select(({ gearset }) => gearset?.createMode === 'copy')
   public readonly isLoading$ = this.select(({ isLoading }) => isLoading)
-  public readonly imageUrl$ = this.select(({ gearset }) => gearset?.imageId)
-    .pipe(filter((it) => !!it))
-    .pipe(switchMap((id) => this.imagesDb.live((it) => it.get(id).catch(() => null as ImageRecord))))
-    .pipe(filter((it) => it?.data instanceof ArrayBuffer))
-    .pipe(
-      map((it) => {
-        const blob = new Blob([it.data], { type: it.type })
-        const urlCreator = window.URL || window.webkitURL
-        const url = urlCreator.createObjectURL(blob)
-        return this.sanitizer.bypassSecurityTrustUrl(url)
-      })
-    )
+  public readonly imageUrl$ = this.select(({ gearset }) => gearset?.imageId).pipe(
+    switchMap((id) => this.imagesDb.imageUrl(id))
+  )
 
   public constructor(
     private db: GearsetsDB,
@@ -187,6 +178,18 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
         return this.writeRecord({
           ...gearset,
           skills: skills,
+        })
+      })
+    )
+  })
+
+  public readonly updateImageId = this.effect<{ imageId: string }>((value$) => {
+    return value$.pipe(
+      switchMap(async ({ imageId }) => {
+        const gearset = this.get().gearset
+        return this.writeRecord({
+          ...gearset,
+          imageId: imageId,
         })
       })
     )

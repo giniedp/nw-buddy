@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
+import { environment } from 'apps/web/environments'
 import { asyncScheduler, combineLatest, filter, map, subscribeOn, switchMap } from 'rxjs'
 import { SkillBuildRecord, SkillBuildsDB, SkillBuildsStore } from '~/data'
 import { NwModule } from '~/nw'
@@ -75,14 +76,15 @@ export class SkillBuildsDetailComponent {
     private route: ActivatedRoute,
     private router: Router,
     private dialog: Dialog,
-    head: HtmlHeadService) {
-      head.updateMetadata({
-        title: 'Skill Build',
-        description: 'A custom skill build',
-        noIndex: true,
-        noFollow: true,
-      })
-    }
+    head: HtmlHeadService
+  ) {
+    head.updateMetadata({
+      title: 'Skill Build',
+      description: 'A custom skill build',
+      noIndex: true,
+      noFollow: true,
+    })
+  }
 
   protected updateModel(record: SkillBuildRecord, data: SkillBuildValue) {
     this.store.updateRecord({
@@ -131,19 +133,63 @@ export class SkillBuildsDetailComponent {
   }
 
   protected onShareClicked(record: SkillBuildRecord) {
+    record = { ...record }
+    const ipnsKey = record.ipnsKey
+    const ipnsName = record.ipnsName
+    delete record.ipnsKey
+    delete record.ipnsName
     ShareDialogComponent.open(this.dialog, {
       data: {
-        buildUrl: (cid) => {
+        ipnsKey: ipnsKey,
+        ipnsName: ipnsName,
+        content: {
+          ref: record.id,
+          type: 'skill-build',
+          data: record,
+        },
+        buildEmbedSnippet: (url: string) => {
+          if (!url) {
+            return null
+          }
+          const host = environment.standalone ? "https://www.nw-buddy.de" : location.origin
+          return [
+            `<script src="${host}/embed.js"></script>`,
+            `<object data="${url}" style="width: 100%"></object>`
+          ].join('\n')
+        },
+        buildEmbedUrl: (cid, name) => {
+          if (!cid && !name) {
+            return null
+          }
+          const command = name ? ['../embed/ipns', name] : ['../embed/ipfs', cid]
           return this.router
-            .createUrlTree(['..', 'share', cid], {
+            .createUrlTree(command, {
               relativeTo: this.route,
             })
             .toString()
         },
-        data: {
-          ref: record.id,
-          type: 'skill-build',
-          data: record,
+        buildShareUrl: (cid, name) => {
+          if (!cid && !name) {
+            return null
+          }
+          const command = name ? ['../share/ipns', name] : ['../share/ipfs', cid]
+          return this.router
+            .createUrlTree(command, {
+              relativeTo: this.route,
+            })
+            .toString()
+        },
+        published: (res) => {
+          if (!res.ipnsKey) {
+            return
+          }
+          this.store.updateRecord({
+            record: {
+              ...record,
+              ipnsKey: res.ipnsKey,
+              ipnsName: res.ipnsName,
+            },
+          })
         },
       },
     })

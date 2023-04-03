@@ -7,7 +7,7 @@
     <p>{{ body }}</p>
   </ng-container>
 </div>
-<div class="modal-action flex-row-reverse justify-start layout-pad">
+<div class="modal-action flex-row-reverse justify-start layout-pad gap-1">
   <button class="btn btn-primary" (click)="confirm()">{{ positive }}</button>
   <button class="btn btn-ghost" (click)="close()" *ngIf="neutral">{{ neutral }}</button>
   <button class="btn btn-ghost" (click)="deny()" *ngIf="negative">{{ negative }}</button>

@@ -66,7 +66,7 @@ export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
       name: this.detail.name$,
       isNamed: this.detail.isNamed$,
       rarity: this.detail.finalRarity$,
-      rarityName: this.detail.rarityName$,
+      rarityName: this.detail.finalRarityName$,
       typeName: this.detail.typeName$,
       sourceLabel: this.detail.sourceLabel$,
       entity: this.detail.entity$,

@@ -63,3 +63,5 @@ export const svgTableCells = require('!!raw-loader!./table-cells.svg').default
 export const svgTrashCan = require('!!raw-loader!./trash-can.svg').default
 export const svgXmark = require('!!raw-loader!./xmark.svg').default
 export const svgTags = require('!!raw-loader!./tags.svg').default
+export const svgFileImport = require('!!raw-loader!./file-import.svg').default
+export const svgFileExport = require('!!raw-loader!./file-export.svg').default

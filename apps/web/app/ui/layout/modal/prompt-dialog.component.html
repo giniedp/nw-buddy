@@ -9,7 +9,7 @@
 
   <input [(ngModel)]="value" type="text" [placeholder]="placeholder" class="input input-bordered w-full max-w-xs mt-3">
 </div>
-<div class="modal-action flex-row-reverse justify-start layout-pad">
+<div class="modal-action flex-row-reverse justify-start layout-pad gap-1">
   <button class="btn btn-primary" (click)="submit()">{{ positive }}</button>
   <button class="btn btn-ghost" (click)="close()" *ngIf="neutral">{{ neutral }}</button>
   <button class="btn btn-ghost" (click)="abort()">{{ negative }}</button>

@@ -31,7 +31,7 @@ export class ShareComponent {
   protected iconShare = svgShareNodes
 
   protected state$ = deferState(() =>
-  observeRouteParam(this.route, 'cid').pipe(switchMap((info) => this.web3.readObject(info)))
+  observeRouteParam(this.route, 'cid').pipe(switchMap((info) => this.web3.downloadbyCid(info)))
   )
 
   public constructor(private route: ActivatedRoute, private router: Router, private web3: ShareService, private dialog: Dialog, private skillsDb: SkillBuildsDB) {

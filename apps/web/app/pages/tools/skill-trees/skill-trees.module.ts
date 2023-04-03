@@ -7,6 +7,14 @@ import { SkillBuildsComponent } from './skill-trees-page.component'
 
 export const routes: Routes = [
   {
+    path: 'embed/ipns/:name',
+    component: SkillBuildsEmbedComponent,
+  },
+  {
+    path: 'embed/ipfs/:cid',
+    component: SkillBuildsEmbedComponent,
+  },
+  {
     path: 'embed/:cid',
     component: SkillBuildsEmbedComponent,
   },
@@ -14,6 +22,14 @@ export const routes: Routes = [
     path: '',
     component: SkillBuildsComponent,
     children: [
+      {
+        path: 'share/ipns/:name',
+        component: SkillBuildsShareComponent,
+      },
+      {
+        path: 'share/ipfs/:cid',
+        component: SkillBuildsShareComponent,
+      },
       {
         path: 'share/:cid',
         component: SkillBuildsShareComponent,

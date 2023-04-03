@@ -50,6 +50,7 @@ module.exports = (config, options) => {
 	// config.entry['css.worker'] = 'monaco-editor/esm/vs/language/css/css.worker'
 	// config.entry['html.worker'] = 'monaco-editor/esm/vs/language/html/html.worker'
 	// config.entry['ts.worker'] = 'monaco-editor/esm/vs/language/typescript/ts.worker'
+  //config.entry['embed'] = 'monaco-editor/esm/vs/language/typescript/ts.worker'
 
   config.plugins = [
     ...config.plugins,
@@ -90,5 +91,8 @@ module.exports = (config, options) => {
       hash: false
     })
   ]
+
+  console.log(config.entry)
+  console.log(config.output)
   return config
 }

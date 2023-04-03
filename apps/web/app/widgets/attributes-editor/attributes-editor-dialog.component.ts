@@ -19,7 +19,7 @@ export interface AttributeEditorDialogData {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, AttributesEditorComponent],
   host: {
-    class: 'flex flex-col h-full bg-base-100 rounded-md overflow-hidden',
+    class: 'flex flex-col h-full bg-base-100 border border-base-100 rounded-md overflow-hidden',
   },
 })
 export class AttributeEditorDialogComponent {
@@ -27,6 +27,7 @@ export class AttributeEditorDialogComponent {
     return dialog.open<Record<AttributeRef, number>, AttributeEditorDialogData, AttributeEditorDialogComponent>(
       AttributeEditorDialogComponent,
       {
+        panelClass: ['max-h-screen', 'w-screen', 'max-w-2xl', 'layout-pad', 'shadow', 'self-end', 'sm:self-center'],
         ...config,
       }
     )
