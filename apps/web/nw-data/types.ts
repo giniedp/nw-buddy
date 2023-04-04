@@ -465,7 +465,6 @@ export interface ItemDefinitionMaster {
     RepairRecipe?:                   string;
     RequiredLevel?:                  number;
     SalvageAchievement?:             string;
-    SalvageEntitlementId?:           string;
     SalvageGameEventID?:             string;
     SalvageLootTags?:                string;
     SalvageResources?:               number;
@@ -4341,6 +4340,11 @@ export interface Arenadefinitions {
     RecommendedLevel:      number;
     TerritoryID:           number;
     TooltipBackground?:    string;
+}
+export interface StaminacostsAgIceSpearman {
+    Category?:   string;
+    CostID:      string;
+    StaminaCost: number;
 }
 export interface Cursemutations {
     CurseMajor:        string;

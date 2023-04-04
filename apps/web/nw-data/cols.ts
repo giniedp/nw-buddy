@@ -1068,7 +1068,6 @@ export const COLS_ITEMDEFINITIONMASTER = {
   "RepairRecipe": "string",
   "RequiredLevel": "number",
   "SalvageAchievement": "string",
-  "SalvageEntitlementId": "string",
   "SalvageGameEventID": "string",
   "SalvageLootTags": "string",
   "SalvageResources": "number",
@@ -3649,6 +3648,11 @@ export const COLS_SPELLTABLE = {
   "UseDirectTargetAsAttachOwner": "boolean",
   "UseStatusEffectDuration": "boolean",
   "WeaponSlotOverride": "string",
+}
+export const COLS_STAMINACOSTSAGICESPEARMAN = {
+  "Category": "string",
+  "CostID": "string",
+  "StaminaCost": "number",
 }
 export const COLS_STAMINACOSTSPLAYER = {
   "Category": "string",

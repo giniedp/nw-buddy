@@ -139,7 +139,7 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
 
                       let gs = ctx.gs
                       if (data.ItemClassGSBonus && ctx.gsBonus) {
-                        gs += Number(data.ItemClassGSBonus.split(':')[1]) || 0
+                        gs += Number(data.ItemClassGSBonus.split(',')[0].split(':')[1]) || 0
                       }
                       return this.nw.expression.solve({
                         text: text,

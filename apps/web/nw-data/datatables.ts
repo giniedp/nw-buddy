@@ -46,6 +46,7 @@ import type {
   PoiDefinition,
   Promotionmutations,
   Spelltable,
+  StaminacostsAgIceSpearman,
   StaminacostsPlayer,
   Statuseffect,
   Statuseffectcategories,
@@ -130,6 +131,9 @@ export abstract class NwDataLoader {
   }
   public charactertablesAncientguardianDatatablesDamagetableAncientguardianheavyboss() {
     return this.load<Damagetable[]>('charactertables/ancientguardian_datatables/javelindata_damagetable_ancientguardianheavyboss.json')
+  }
+  public charactertablesAncientguardianDatatablesStaminacostsAgIceSpearman() {
+    return this.load<StaminacostsAgIceSpearman[]>('charactertables/ancientguardian_datatables/javelindata_staminacosts_ag_ice_spearman.json')
   }
   public charactertablesAnubianguardianDatatablesDamagetableAnubianguardianBrute() {
     return this.load<Damagetable[]>('charactertables/anubianguardian_datatables/javelindata_damagetable_anubianguardian_brute.json')
