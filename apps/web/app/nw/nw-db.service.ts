@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { Vitals } from '@nw-data/types'
-import { groupBy } from 'lodash'
+import { groupBy, sortBy } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, shareReplay } from 'rxjs'
 import { CaseInsensitiveMap, CaseInsensitiveSet } from '~/utils'
 import { NwDataService } from './nw-data.service'
@@ -85,13 +85,12 @@ function lookup<K, T>(getMap: () => Observable<Map<K, T>>) {
 
 @Injectable({ providedIn: 'root' })
 export class NwDbService {
-  public items = table(() =>
-    this.data
-      .apiMethodsByPrefix('itemdefinitionsMaster', 'itemdefinitionsMasterCommon')
-      .sort()
-      .reverse() // ajust to avoid AI category to show first... items have no icons
-      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
-  )
+  public items = table(() => {
+    const backsort = ['Ai', 'Playtest', 'Omega']
+    let methods = this.data.apiMethodsByPrefix('itemdefinitionsMaster', 'itemdefinitionsMasterCommon')
+    methods = sortBy(methods, (it) => backsort.includes(it.suffix) ? `x${it.suffix}` : it.suffix)
+    return methods.map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+  })
   public itemsMap = indexBy(() => this.items, 'ItemID')
   public item = lookup(() => this.itemsMap)
   public itemsBySalvageAchievement = indexGroupBy(() => this.items, 'SalvageAchievement')
