@@ -12,8 +12,8 @@
     "url": "https://github.com/giniedp/nw-buddy.git"
   },
   "scripts": {
-    "dev": "npm-run-all -p dev:electron dev:web",
-    "dev:web": "ng serve --host 0.0.0.0 --disable-host-check -c dev -o",
+    "dev": "env-cmd -f .env npm-run-all -p dev:electron dev:web",
+    "dev:web": "env-cmd -f .env ng serve --host 0.0.0.0 --disable-host-check -c dev -o",
     "dev:electron": "yarn electron:serve",
     "dev:server": "ng run nw-buddy:serve-ssr",
     "dev:wrangler": "wrangler pages dev dist/web-cloud",
