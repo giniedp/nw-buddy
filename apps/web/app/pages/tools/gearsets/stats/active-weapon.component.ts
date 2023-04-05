@@ -23,91 +23,97 @@ import { humanize, mapFilter, mapProp } from '~/utils'
   },
 })
 export class ActiveWeaponComponent {
-
-  protected dmgMain$ = this.mannequin.statDamageBase$.pipe(map((it) => {
-    if (!it.BaseDamage?.value) {
-      return null
-    }
-    return {
-      ...it.BaseDamage,
-      label: 'Damage',
-      icon: damageTypeIcon(it.BaseDamageType)
-    }
-  }))
+  protected dmgMain$ = this.mannequin.statDamageBase$.pipe(
+    map((it) => {
+      if (!it.BaseDamage?.value) {
+        return null
+      }
+      return {
+        ...it.BaseDamage,
+        label: 'Damage',
+        icon: damageTypeIcon(it.BaseDamageType),
+      }
+    })
+  )
 
   protected dmgMain1$ = combineLatest({
     dmgBase: this.mannequin.statDamageBase$,
     dmgMods: this.mannequin.statDamageMods$,
     dmgEmpower: this.mannequin.statDmg$,
-  }).pipe(map(({ dmgBase, dmgMods, dmgEmpower }) => {
+  }).pipe(
+    map(({ dmgBase, dmgMods, dmgEmpower }) => {
+      const weaponDamage = dmgBase.BaseDamage.value
+      const dmgCoef = dmgBase.DamageCoef?.value ?? 1
+      const ammoCoef = dmgBase.DamageCoefAmmo?.value ?? 1
+      const dmgMod = 1 + dmgBase.BaseDamageMod.value
+      const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.BaseDamageType as 'Arcane']?.value ?? 0)
 
-    const weaponDamage = dmgBase.BaseDamage.value
-    const dmgCoef = dmgBase.DamageCoef?.value ?? 1
-    const ammoCoef = dmgBase.DamageCoefAmmo?.value ?? 1
-    const dmgMod = 1 + dmgBase.BaseDamageMod.value
-    const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.BaseDamageType as 'Arcane']?.value ?? 0)
-
-    return weaponDamage * dmgCoef * ammoCoef * dmgMod * (empower)
-  }))
+      return weaponDamage * dmgCoef * ammoCoef * dmgMod * empower
+    })
+  )
 
   protected dmgMain2$ = combineLatest({
     dmgBase: this.mannequin.statDamageBase$,
     dmgMods: this.mannequin.statDamageMods$,
     dmgEmpower: this.mannequin.statDmg$,
-  }).pipe(map(({ dmgBase, dmgMods, dmgEmpower }) => {
+  }).pipe(
+    map(({ dmgBase, dmgMods, dmgEmpower }) => {
+      const weaponDamage = dmgBase.BaseDamage.value
+      const dmgCoef = dmgBase.DamageCoef?.value ?? 1
+      const ammoCoef = dmgBase.DamageCoefAmmo?.value ?? 1
+      const dmgMod = 1 + dmgBase.BaseDamageMod.value
+      const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.BaseDamageType as 'Arcane']?.value ?? 0)
+      const critMod = Math.max(dmgMods.Crit?.value || 0)
 
-    const weaponDamage = dmgBase.BaseDamage.value
-    const dmgCoef = dmgBase.DamageCoef?.value ?? 1
-    const ammoCoef = dmgBase.DamageCoefAmmo?.value ?? 1
-    const dmgMod = 1 + dmgBase.BaseDamageMod.value
-    const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.BaseDamageType as 'Arcane']?.value ?? 0)
-    const critMod = dmgMods.Crit?.value || 0
+      return weaponDamage * dmgCoef * ammoCoef * (dmgMod + critMod) * empower
+    })
+  )
 
-    return weaponDamage * dmgCoef * ammoCoef * dmgMod * (empower + Math.max(0, critMod))
-  }))
-
-  protected dmgConverted$ = this.mannequin.statDamageBase$.pipe(map((it) => {
-    if (!it.ConvertedDamage?.value) {
-      return null
-    }
-    return {
-      ...it.ConvertedDamage,
-      label: 'Converted',
-      icon: damageTypeIcon(it.ConvertedDamageType)
-    }
-  }))
-
+  protected dmgConverted$ = this.mannequin.statDamageBase$.pipe(
+    map((it) => {
+      if (!it.ConvertedDamage?.value) {
+        return null
+      }
+      return {
+        ...it.ConvertedDamage,
+        label: 'Converted',
+        icon: damageTypeIcon(it.ConvertedDamageType),
+      }
+    })
+  )
 
   protected dmgConverted1$ = combineLatest({
     dmgBase: this.mannequin.statDamageBase$,
     dmgMods: this.mannequin.statDamageMods$,
     dmgEmpower: this.mannequin.statDmg$,
-  }).pipe(map(({ dmgBase, dmgMods, dmgEmpower }) => {
+  }).pipe(
+    map(({ dmgBase, dmgMods, dmgEmpower }) => {
+      const weaponDamage = dmgBase.ConvertedDamage.value
+      const dmgCoef = dmgBase.DamageCoef?.value ?? 1
+      const ammoCoef = dmgBase.DamageCoefAmmo?.value ?? 1
+      const dmgMod = 1 + dmgBase.BaseDamageMod.value
+      const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.ConvertedDamageType as 'Arcane']?.value ?? 0)
 
-    const weaponDamage = dmgBase.ConvertedDamage.value
-    const dmgCoef = dmgBase.DamageCoef?.value ?? 1
-    const ammoCoef = dmgBase.DamageCoefAmmo?.value ?? 1
-    const dmgMod = 1 + dmgBase.BaseDamageMod.value
-    const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.ConvertedDamageType as 'Arcane']?.value ?? 0)
-
-    return weaponDamage * dmgCoef * ammoCoef * dmgMod * (empower)
-  }))
+      return weaponDamage * dmgCoef * ammoCoef * dmgMod * empower
+    })
+  )
 
   protected dmgConverted2$ = combineLatest({
     dmgBase: this.mannequin.statDamageBase$,
     dmgMods: this.mannequin.statDamageMods$,
     dmgEmpower: this.mannequin.statDmg$,
-  }).pipe(map(({ dmgBase, dmgMods, dmgEmpower }) => {
+  }).pipe(
+    map(({ dmgBase, dmgMods, dmgEmpower }) => {
+      const weaponDamage = dmgBase.ConvertedDamage.value
+      const dmgCoef = dmgBase.DamageCoef?.value ?? 1
+      const ammoCoef = dmgBase.DamageCoefAmmo?.value ?? 1
+      const dmgMod = 1 + dmgBase.BaseDamageMod.value
+      const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.ConvertedDamageType as 'Arcane']?.value ?? 0)
+      const critMod = Math.max(0, dmgMods.Crit?.value || 0)
 
-    const weaponDamage = dmgBase.ConvertedDamage.value
-    const dmgCoef = dmgBase.DamageCoef?.value ?? 1
-    const ammoCoef = dmgBase.DamageCoefAmmo?.value ?? 1
-    const dmgMod = 1 + dmgBase.BaseDamageMod.value
-    const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.ConvertedDamageType as 'Arcane']?.value ?? 0)
-    const critMod = dmgMods.Crit?.value || 0
-
-    return weaponDamage * dmgCoef * ammoCoef * dmgMod * (empower + Math.max(0, critMod))
-  }))
+      return weaponDamage * dmgCoef * ammoCoef * (dmgMod + critMod) * empower
+    })
+  )
 
   protected vm$ = combineLatest({
     weapon: this.mannequin.activeWeapon$,
@@ -123,14 +129,13 @@ export class ActiveWeaponComponent {
       base: this.dmgMain$,
       standard: this.dmgMain1$,
       crit: this.dmgMain2$,
-    }).pipe(map((it) => it.base?.value ? it : null)),
+    }).pipe(map((it) => (it.base?.value ? it : null))),
     DmgConverted: combineLatest({
       base: this.dmgConverted$,
       standard: this.dmgConverted1$,
       crit: this.dmgConverted2$,
-    }).pipe(map((it) => it.base?.value ? it : null))
+    }).pipe(map((it) => (it.base?.value ? it : null))),
   })
-
 
   protected iconGroup = svgPeopleGroup
   protected iconBurst = svgBurst
@@ -142,33 +147,33 @@ export class ActiveWeaponComponent {
   protected async toggleWeapon() {
     const state = await firstValueFrom(this.mannequin.state$)
     this.mannequin.patchState({
-      weaponActive: state.weaponActive === 'secondary' ? 'primary' : 'secondary'
+      weaponActive: state.weaponActive === 'secondary' ? 'primary' : 'secondary',
     })
   }
 
   protected async toggleSheathed() {
     const state = await firstValueFrom(this.mannequin.state$)
     this.mannequin.patchState({
-      weaponUnsheathed: !state.weaponUnsheathed
+      weaponUnsheathed: !state.weaponUnsheathed,
     })
   }
 
   protected async commitAttack(row: Damagetable) {
     const state = await firstValueFrom(this.mannequin.state$)
     this.mannequin.patchState({
-      selectedAttack: row?.DamageID
+      selectedAttack: row?.DamageID,
     })
   }
 
   protected async commitNumAroundMe(value: number) {
     this.mannequin.patchState({
-      numAroundMe: value
+      numAroundMe: value,
     })
   }
 
   protected async commitNumHits(value: number) {
     this.mannequin.patchState({
-      numHits: value
+      numHits: value,
     })
   }
 
