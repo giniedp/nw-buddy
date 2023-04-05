@@ -2,15 +2,24 @@ import { ItemdefinitionsRunes, ItemdefinitionsWeapons, WeaponTag } from '@nw-dat
 import type { AttributeRef } from '../attributes/nw-attributes'
 
 export function damageFactorForLevel(level: number) {
-  return 0.025 * (level - 1)
+  // taken from 'playerbaseattributes.pbadb'
+  const levelScaling = 0.025 //  PlayerBaseAttributes['player attribute data']['level damage multiplier']
+  return levelScaling * (level - 1)
 }
 
 export function damageFactorForGS(gearScore: number) {
-  const powerLow = Math.floor((Math.min(500, Math.max(gearScore, 100)) - 100) / 5)
-  const powerHigh = Math.floor((Math.max(gearScore, 500) - 500) / 5)
+  // taken from 'playerbaseattributes.pbadb'
+  const gsMin = 100 // PBA['player attribute data']['min possible weapon gear score']
+  const gsMax = 500 // PBA['player attribute data']['diminishing gear score threshold']
+  const gsRounding = 5 // PBA['player attribute data']['gear score rounding interval']
+  const baseDamageCompund = 0.0112 // PBA['player attribute data']['base damage compound increase']
+  const compoundDiminishingMulti = 0.6667 // PBA['player attribute data']['compound increase diminishing multiplier']
 
-  const factorLow = Math.pow(1 + 0.0112, powerLow)
-  const factorHigh = Math.pow(1 + 0.6667 * 0.0112, powerHigh)
+  const powerLow = Math.floor((Math.min(gsMax, Math.max(gearScore, gsMin)) - gsMin) / gsRounding)
+  const powerHigh = Math.floor((Math.max(gearScore, gsMax) - gsMax) / gsRounding)
+
+  const factorLow = Math.pow(1 + baseDamageCompund, powerLow)
+  const factorHigh = Math.pow(1 + baseDamageCompund * compoundDiminishingMulti, powerHigh)
 
   return factorLow * factorHigh
 }

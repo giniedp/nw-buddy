@@ -7,6 +7,7 @@ import { NwDbService } from '~/nw'
 import { AttributeRef } from '~/nw/attributes/nw-attributes'
 import {
   getItemGearScoreLabel,
+  getItemGsBonus,
   getItemIconPath,
   getItemMaxGearScore,
   getItemPerkBucketKeys,
@@ -198,7 +199,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
         return {
           detail: detail,
           perk: detail?.perk,
-          gs,
+          gs: gs + getItemGsBonus(detail?.perk, detail?.item),
           editable: editable && detail?.editable,
         }
       })

@@ -17,7 +17,7 @@ import {
   selectEquppedWeapons,
   selectGearScore,
   selectPlacedHousings,
-  selectTotalWeight,
+  selectEquipLoad,
   selectWeaponAbilities,
   selectDamageTableRow,
 } from './selectors'
@@ -71,7 +71,7 @@ export class Mannequin extends ComponentStore<MannequinState> {
   public readonly equippedTools$ = this.select(this.db$, this.state$, selectEquppedTools)
   public readonly equippedTrophies$ = this.select(this.db$, this.state$, selectPlacedHousings)
 
-  public readonly totalWeight$ = this.select(this.db$, this.state$, selectTotalWeight)
+  public readonly equipLoad$ = this.select(this.db$, this.state$, selectEquipLoad)
   public readonly activeConsumables$ = this.select(this.db$, this.state$, selectActiveConsumables)
   public readonly consumableEffects$ = this.select(this.db$, this.state$, selectConsumableEffects)
 
@@ -133,6 +133,7 @@ export class Mannequin extends ComponentStore<MannequinState> {
     this.activeMods$,
     this.activeWeapon$,
     this.activeDamageTableRow$,
+    this.equipLoad$,
     this.state$,
     selectWeaponDamage
   )

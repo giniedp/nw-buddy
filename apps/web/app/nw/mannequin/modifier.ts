@@ -1,7 +1,7 @@
 import { Ability, Affixstats, Housingitems, ItemDefinitionMaster, Perks, Statuseffect } from '@nw-data/types'
 import { sumBy } from 'lodash'
 import { EquipSlotId } from '../utils/equip-slot'
-import { getPerkMultiplier } from '../utils/perks'
+import { getItemGsBonus, getPerkMultiplier } from '../utils/perks'
 import { ActiveMods } from './types'
 
 export interface ModifierSource {
@@ -106,7 +106,8 @@ export function* eachModifier<T extends number | string>(
     }
 
     if (perk) {
-      scale = getPerkMultiplier(perk, gearScore)
+
+      scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
     }
     const source: Required<ModifierSource> = {
       icon: null,

@@ -1,6 +1,7 @@
 import { Ability, Affixstats, ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
 import { getAffixMODs } from './affix'
 import { patchPrecision } from './precision'
+import { eqCaseInsensitive } from '~/utils'
 
 const PERK_SORT_WEIGHT = {
   Inherent: 0,
@@ -44,4 +45,18 @@ export function getPerksInherentMODs(perk: Pick<Perks, 'ScalingPerGearScore'>, a
 export function getPerkMultiplier(perk: Pick<Perks, 'ScalingPerGearScore'>, gearScore: number) {
   const scale = patchPrecision(perk.ScalingPerGearScore)
   return Math.max(0, gearScore - 100) * scale + 1
+}
+
+export function getItemGsBonus(perk: Perks, item: ItemDefinitionMaster) {
+  if (!perk || !item || !perk.ItemClassGSBonus?.length) {
+    return 0
+  }
+  for (const spec of perk.ItemClassGSBonus.split(',')) {
+    const [itemClass, bonus] = spec.split(':')
+
+    if (item.ItemClass?.some((it) => eqCaseInsensitive(it, itemClass))) {
+      return Number(bonus)
+    }
+  }
+  return 0
 }

@@ -4,7 +4,7 @@ import { groupBy, sum } from 'lodash'
 import { combineLatest, map, tap } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
-import { getPerkMultiplier } from '~/nw/utils'
+import { getItemGsBonus, getPerkMultiplier } from '~/nw/utils'
 import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
@@ -43,7 +43,9 @@ export class StackedPerksComponent {
       return Array.from(Object.values(groupBy(data, (it) => it.perk.PerkID)))
         .map((group) => {
           const perk = group[0].perk
-          const multiplier = group.map(({ gearScore, perk }) => getPerkMultiplier(perk, gearScore))
+          const multiplier = group.map(({ gearScore, perk, item }) => {
+            return getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
+          })
           return {
             id: perk.PerkID,
             icon: perk.IconPath,

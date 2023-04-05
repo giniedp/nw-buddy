@@ -3,16 +3,17 @@ import { getItemIconPath } from '~/nw/utils'
 import { damageFactorForAttrs, damageFactorForGS, damageFactorForLevel } from '~/nw/utils/damage'
 import { getDamageTypesOfCategory } from '~/nw/utils/damage-type'
 import { eachModifier, modifierAdd, ModifierKey, modifierResult, modifierSum } from '../modifier'
-import { ActiveMods, ActiveWeapon, MannequinState } from '../types'
+import { ActiveMods, ActiveWeapon, DbSlice, MannequinState } from '../types'
+import { selectEquipLoad } from '../selectors'
 
 export function selectWeaponDamage(
   mods: ActiveMods,
   { weapon, ammo, gearScore }: ActiveWeapon,
   attack: Damagetable,
+  equipLoad: number,
   state: MannequinState
 ) {
   const split = mods.perks.find((it) => it.affix?.DamagePercentage)
-
   const scale = 1 - (split?.affix?.DamagePercentage || 0)
   const base = (weapon?.BaseDamage || 0) * damageFactorForGS(gearScore)
   const scaleLevel = damageFactorForLevel(state.level)
@@ -76,26 +77,39 @@ export function selectWeaponDamage(
       })
     }
   }
+  const baseDamageMod = sumCategory('BaseDamage', mods, attack.DamageType)
+  const convertDamageMod = sumCategory('BaseDamage', mods, split?.affix?.DamageType)
+  const healMod = sumCategory('HealScalingValueMultiplier', mods, attack.DamageType)
+  if (equipLoad < 13) {
+    modifierAdd(baseDamageMod, { value: 0.2, scale: 1, source: { label: 'Light Equip Load' } })
+    modifierAdd(healMod, { value: 0.3, scale: 1, source: { label: 'Light Equip Load' } })
+  } else if (equipLoad < 23) {
+    modifierAdd(baseDamageMod, { value: 0.1, scale: 1, source: { label: 'Medium Equip Load' } })
+  } else {
+    modifierAdd(healMod, { value: -0.3, scale: 1, source: { label: 'Heavy Equip Load' } })
+  }
 
   return {
     BaseDamage: mainDamage,
     BaseDamageType: attack.DamageType,
-    BaseDamageMod: sumCategory('BaseDamage', mods, attack.DamageType),
+    BaseDamageMod: baseDamageMod,
     ConvertedDamage: convertDamage,
     ConvertedDamageType: split?.affix?.DamageType,
-    ConvertedDamageMod: sumCategory('BaseDamage', mods, split?.affix?.DamageType),
-    HealMod: sumCategory('HealScalingValueMultiplier', mods, attack.DamageType),
+    ConvertedDamageMod: convertDamageMod,
+    HealMod: healMod,
 
     DamageCoef: modifierResult({
       value: attack.DmgCoef,
       scale: 1,
-      source: { label: 'Attack Stat' }
+      source: { label: 'Attack Stat' },
     }),
-    DamageCoefAmmo: ammo ? modifierResult({
-      value: ammo.DamageModifier,
-      scale: 1,
-      source: { label: 'Ammo Stat' }
-    }) : null
+    DamageCoefAmmo: ammo
+      ? modifierResult({
+          value: ammo.DamageModifier,
+          scale: 1,
+          source: { label: 'Ammo Stat' },
+        })
+      : null,
   }
 }
 

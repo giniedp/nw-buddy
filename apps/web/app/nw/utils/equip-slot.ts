@@ -343,7 +343,7 @@ interface GearScoreSlot {
 
 const GS_GROUPS: GearScoreGroup[] = [
   {
-    weight: 0.35,
+    weight: 0.45,
     slots: [
       { id: 'head', weight: 0.2 },
       { id: 'chest', weight: 0.35 },
@@ -353,7 +353,7 @@ const GS_GROUPS: GearScoreGroup[] = [
     ]
   },
   {
-    weight: 0.45,
+    weight: 0.35,
     slots: [
       { id: 'weapon1', unlockLevel: 0 },
       { id: 'weapon2', unlockLevel: 5 }
@@ -370,13 +370,13 @@ const GS_GROUPS: GearScoreGroup[] = [
 ]
 
 const NW_GS_WEIGHTS: Partial<Record<EquipSlotId, number>> = {
-  head: 0.35 * 0.2,
-  chest: 0.35 * 0.35,
-  hands: 0.35 * 0.15,
-  legs: 0.35 * 0.2,
-  feet: 0.35 * 0.1,
-  weapon1: 0.45 * 0.5,
-  weapon2: 0.45 * 0.5,
+  head: 0.45 * 0.2,
+  chest: 0.45 * 0.35,
+  hands: 0.45 * 0.15,
+  legs: 0.45 * 0.2,
+  feet: 0.45 * 0.1,
+  weapon1: 0.35 * 0.5,
+  weapon2: 0.35 * 0.5,
   amulet: 0.2 / 3,
   ring: 0.2 / 3,
   earring: 0.2 / 3,

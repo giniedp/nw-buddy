@@ -17,7 +17,7 @@ import {
   isItemTool,
   isItemWeapon,
 } from '../utils/item'
-import { getPerkMultiplier } from '../utils/perks'
+import { getItemGsBonus, getPerkMultiplier } from '../utils/perks'
 import { NW_WEAPON_TYPES } from '../weapon-types/nw-weapon-types'
 import {
   ActiveAttribute,
@@ -78,16 +78,16 @@ export function selectDamageTableRow(rows: Damagetable[], state: MannequinState)
   return rows?.find((it) => it.DamageID === state.selectedAttack) || rows?.[0]
 }
 
-export function selectTotalWeight({ items, weapons, armors }: DbSlice, { equippedItems }: MannequinState) {
+export function selectEquipLoad({ items, weapons, armors }: DbSlice, { equippedItems }: MannequinState) {
   const weights = equippedItems
     .map((it) => items.get(it.itemId))
-    .filter((it) => it && (isItemArmor(it) || isItemJewelery(it) || isItemWeapon(it) || isItemShield(it)))
+    .filter((it) => it && (isItemArmor(it) || isItemJewelery(it) || isItemShield(it)))
     .map((it) => {
       const weapon = weapons.get(it.ItemStatsRef)
       const armor = armors.get(it.ItemStatsRef)
       return weapon?.WeightOverride || armor?.WeightOverride || it.Weight || 0
     })
-  return sum(weights)
+  return sum(weights) / 10
 }
 
 export function selectEquppedArmor({ items }: DbSlice, { equippedItems }: MannequinState) {
@@ -367,11 +367,11 @@ export function selectEquppedAttributes(
     str: minBy(attrStr, (it) => it.Level).Level,
   }
 
-  for (const { perk, gearScore, affix } of perks) {
+  for (const { perk, gearScore, affix, item } of perks) {
     if (!affix || !perk.ScalingPerGearScore) {
       continue
     }
-    const scale = getPerkMultiplier(perk, gearScore)
+    const scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
     result.con += Math.floor((affix.MODConstitution || 0) * scale)
     result.dex += Math.floor((affix.MODDexterity || 0) * scale)
     result.foc += Math.floor((affix.MODFocus || 0) * scale)
