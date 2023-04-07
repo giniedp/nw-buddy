@@ -10,7 +10,7 @@ import {
   TrackByFunction,
   ViewChild,
 } from '@angular/core'
-import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser'
+import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty } from '@nw-data/types'
 import { combineLatest, defer, map, Observable, of, ReplaySubject, switchMap, takeUntil } from 'rxjs'
@@ -35,6 +35,9 @@ import { ItemDetailModule } from '~/widgets/item-detail'
 import { LootModule } from '~/widgets/loot'
 import { VitalsDetailModule } from '~/widgets/vitals-detail'
 import { DungeonDetailStore } from './dungeon-detail.store'
+import { PlatformService } from '~/utils/platform.service'
+import { IconsModule } from '~/ui/icons'
+import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 
 const DIFFICULTY_TIER_NAME = {
   1: 'Normal',
@@ -44,21 +47,28 @@ const DIFFICULTY_TIER_NAME = {
 }
 const MAP_EMBED_URLS = {
   DungeonAmrine: 'https://aeternum-map.gg/Amrine%20Excavation?embed=true',
-  DungeonShatteredObelisk: 'https://aeternum-map.gg/Starstone%20Barrows?embed=true',
-  DungeonRestlessShores01: 'https://aeternum-map.gg/The%20Depths?embed=true',
+  DungeonBrimstoneSands00: 'https://aeternum-map.gg/The%20Ennead?embed=true',
+  DungeonCutlassKeys00: 'https://aeternum-map.gg/Barnacles%20&%20Black%20Powder?embed=true',
   DungeonEbonscale00: 'https://aeternum-map.gg/?bounds=4480,4096,5088,4640&embed=true',
   DungeonEdengrove00: 'https://aeternum-map.gg/Garden%20of%20Genesis?embed=true',
+  DungeonGreatCleave01: 'https://aeternum-map.gg/Empyrean%20Forge?embed=true',
   DungeonReekwater00: 'https://aeternum-map.gg/Lazarus%20Instrumentality?embed=true',
-  DungeonCutlassKeys00: 'https://aeternum-map.gg/Barnacles%20&%20Black%20Powder?embed=true',
-  DungeonBrimstoneSands00: 'https://aeternum-map.gg/The%20Ennead?embed=true',
+  DungeonRestlessShores01: 'https://aeternum-map.gg/The%20Depths?embed=true',
+  DungeonShatteredObelisk: 'https://aeternum-map.gg/Starstone%20Barrows?embed=true',
   DungeonShatterMtn00: "https://aeternum-map.gg/Tempest's%20Heart?embed=true",
   QuestApophis: null,
 }
 
+function withoutEmbedAttr(url: string) {
+  const result = new URL(url)
+  result.searchParams.delete('embed')
+  return result.toString()
+}
 export interface Tab {
   id: string
   label: string
   tpl: TemplateRef<unknown>
+  externUrl?: SafeUrl
 }
 @Component({
   standalone: true,
@@ -66,7 +76,17 @@ export interface Tab {
   templateUrl: './dungeon-detail.component.html',
   styleUrls: ['./dungeon-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, ItemDetailModule, VitalsDetailModule, LootModule, LayoutModule, PaginationModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    NwModule,
+    ItemDetailModule,
+    VitalsDetailModule,
+    LootModule,
+    LayoutModule,
+    PaginationModule,
+    IconsModule,
+  ],
   providers: [DestroyService, DungeonDetailStore],
   host: {
     class: 'layout-col xl:flex-row',
@@ -79,12 +99,7 @@ export interface Tab {
         }),
       ]),
     ]),
-    trigger('fade', [
-      transition(':enter', [
-        style({ opacity: 0 }),
-        animate('0.150s ease-out', style({ opacity: 1 })),
-      ]),
-    ]),
+    trigger('fade', [transition(':enter', [style({ opacity: 0 }), animate('0.150s ease-out', style({ opacity: 1 }))])]),
   ],
 })
 export class DungeonDetailComponent implements OnInit {
@@ -97,7 +112,7 @@ export class DungeonDetailComponent implements OnInit {
     map((it) => Number(it) || undefined)
   )
   public tabParam$ = defer(() => observeRouteParam(this.route, 'tab'))
-
+  public iconExtern = svgSquareArrowUpRight
   public dungeon$ = this.store.dungeon$
   public bosses$ = this.store.bosses$
   public difficulties$ = this.store.difficulties$
@@ -131,7 +146,7 @@ export class DungeonDetailComponent implements OnInit {
       return {
         ...context,
         item,
-        itemId: getItemId(item)
+        itemId: getItemId(item),
       }
     })
   )
@@ -283,10 +298,9 @@ export class DungeonDetailComponent implements OnInit {
     private preferences: DungeonPreferencesService,
     private dialog: Dialog,
     private i18n: TranslateService,
-    private head: HtmlHeadService
-  ) {
-
-  }
+    private head: HtmlHeadService,
+    private platform: PlatformService
+  ) {}
 
   public ngOnInit(): void {
     const dungeon$ = this.db.gameMode(this.dungeonId$)
@@ -341,17 +355,21 @@ export class DungeonDetailComponent implements OnInit {
         const mapUrl = MAP_EMBED_URLS[dungeon.GameModeId]
         this.mapEmbed = mapUrl ? this.domSanitizer.bypassSecurityTrustResourceUrl(mapUrl) : null
         if (this.mapEmbed) {
-          this.tabs.push({
+          const tab: Tab = {
             id: 'map',
             label: 'Map',
             tpl: this.tplDungeonMap,
-          })
+          }
+          if (this.platform.isOverwolf) {
+            tab.externUrl = this.domSanitizer.bypassSecurityTrustResourceUrl(withoutEmbedAttr(mapUrl))
+          }
+          this.tabs.push(tab)
         }
 
         this.head.updateMetadata({
           title: this.i18n.get(dungeon.DisplayName),
           description: this.i18n.get(dungeon.Description),
-          image: dungeon.BackgroundImagePath
+          image: dungeon.BackgroundImagePath,
         })
         this.cdRef.detectChanges()
       })

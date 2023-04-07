@@ -102,13 +102,25 @@
 
     <div class="tabs mt-4 flex-none">
       <ng-container *ngFor="let item of tabs; trackBy: trackByTabId">
+
         <a
+          *ngIf="!item.externUrl"
           class="tab tab-bordered"
           [class.tab-active]="item.id === tab"
           [routerLink]="['.', { mutation: difficultyLevel, tab: item.id }]"
           rel="nofollow"
         >
           {{ item.label }}
+        </a>
+        <a
+          *ngIf="item.externUrl"
+          class="tab tab-bordered"
+          [class.tab-active]="item.id === tab"
+          [href]="item.externUrl"
+          target="_blank"
+        >
+        {{ item.label }}
+        <nwb-icon [icon]="iconExtern" class="ms-1 w-4 h-4"></nwb-icon>
         </a>
       </ng-container>
     </div>
