@@ -4,10 +4,11 @@ import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/co
 import { ComponentStore } from '@ngrx/component-store'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { uniq } from 'lodash'
-import { combineLatest, debounceTime, defer, map, startWith } from 'rxjs'
+import { combineLatest, debounceTime, defer, map, startWith, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwModule } from '~/nw'
 import { getIngretientsFromRecipe, getItemId, getItemIdFromRecipe } from '~/nw/utils'
+import { ItemPreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
 import { svgRepeat, svgRotate } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -78,17 +79,36 @@ export class SchematicsOverviewComponent extends ComponentStore<State> {
   protected trackByIndex: TrackByFunction<any> = (i) => i
   protected source$ = this.source().pipe(shareReplayRefCount(1))
   protected filter$ = this.select(({ filter }) => filter)
-
-  protected items$ = combineLatest({
+  protected filteredSource$ = combineLatest({
     items: this.source$,
     filter: this.filter$,
-    search: this.search.query.pipe(debounceTime(300), startWith('')),
-    locale: this.i18n.locale.value$,
   }).pipe(
-    map(({ items, search, filter }) => {
+    map(({ items, filter }) => {
       if (filter) {
         items = items.filter((it) => it.recipe.Tradeskill === filter)
       }
+      return items
+    })
+  )
+  protected stats$ = this.filteredSource$.pipe(switchMap((list) => {
+    return combineLatest(list.map((it) => this.itemPref.observe(it.recipeItem.ItemID)))
+  }))
+  .pipe(map((list) => {
+    const total = list.length
+    const learned = list.filter((it) => !!it.meta?.mark).length
+    return {
+      total: total,
+      learned: learned,
+      percent: learned / total
+    }
+  }))
+
+  protected items$ = combineLatest({
+    items: this.filteredSource$,
+    search: this.search.query.pipe(debounceTime(300), startWith('')),
+    locale: this.i18n.locale.value$,
+  }).pipe(
+    map(({ items, search }) => {
       if (!search) {
         return items
       }
@@ -114,6 +134,7 @@ export class SchematicsOverviewComponent extends ComponentStore<State> {
     private db: NwDbService,
     private search: QuicksearchService,
     private i18n: TranslateService,
+    private itemPref: ItemPreferencesService,
     head: HtmlHeadService
   ) {
     super({
@@ -160,7 +181,7 @@ export class SchematicsOverviewComponent extends ComponentStore<State> {
                 return {
                   quantity: it.quantity,
                   item: items.get(it.ingredient) || housingItems.get(it.ingredient),
-                  itemId: getItemId(item)
+                  itemId: getItemId(item),
                 }
               }),
             }

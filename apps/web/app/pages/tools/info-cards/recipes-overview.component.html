@@ -1,3 +1,17 @@
+
+<div class="stats shadow self-center mt-4" *ngIf="stats$ | async; let stat">
+  <div class="stat place-items-center">
+    <div class="stat-title">Learned Recipes</div>
+    <div class="stat-value text-primary">{{stat.learned}} / {{ stat.total}}</div>
+    <div class="stat-desc text-opacity-50 italic">
+      Any
+      <span class="inline-block w-3 h-3 mask mask-star-2 bg-orange-400"></span>
+      <span class="inline-block w-3 h-3 mask mask-star-2 bg-yellow-400"></span>
+      <span class="inline-block w-3 h-3 mask mask-star-2 bg-green-400"></span>
+      marks the recipe as "learned"
+    </div>
+  </div>
+</div>
 <div class="layout-content p-3 pb-20" [nwbInfniteScroll]="items$ | async" #scroll="infiniteScroll">
   <div class="grid grid-cols-fill gap-4" [@list]="scroll.count$ | async">
     <div

@@ -18,6 +18,21 @@
   [nwbInfniteScrollPerPage]="25"
   #scroll="infiniteScroll"
 >
+  <div class="flex justify-center">
+    <div class="stats shadow self-center mb-4" *ngIf="stats$ | async; let stat">
+      <div class="stat place-items-center">
+        <div class="stat-title">Learned Schematics</div>
+        <div class="stat-value text-primary">{{ stat.learned }} / {{ stat.total }}</div>
+        <div class="stat-desc text-opacity-50 italic">
+          Any
+          <span class="inline-block w-3 h-3 mask mask-star-2 bg-orange-400"></span>
+          <span class="inline-block w-3 h-3 mask mask-star-2 bg-yellow-400"></span>
+          <span class="inline-block w-3 h-3 mask mask-star-2 bg-green-400"></span>
+          marks the schematic as "learned"
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="grid grid-cols-fill gap-4" [@list]="scroll.count$ | async">
     <div
       *ngFor="let item of scroll.data$ | async"

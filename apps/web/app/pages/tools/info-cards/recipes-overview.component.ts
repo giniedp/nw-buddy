@@ -2,10 +2,11 @@ import { animate, animateChild, query, stagger, state, style, transition, trigge
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
 import { Crafting, ItemDefinitionMaster } from '@nw-data/types'
-import { combineLatest, debounceTime, defer, map, startWith } from 'rxjs'
+import { combineLatest, debounceTime, defer, map, startWith, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwModule } from '~/nw'
 import { getIngretientsFromRecipe, getItemIdFromRecipe } from '~/nw/utils'
+import { ItemPreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
 import { svgRepeat } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -126,6 +127,18 @@ export class RecipesOverviewComponent {
       })
     })
   )
+  protected stats$ = this.source$.pipe(switchMap((list) => {
+    return combineLatest(list.map((it) => this.itemPref.observe(it.recipeItem.ItemID)))
+  }))
+  .pipe(map((list) => {
+    const total = list.length
+    const learned = list.filter((it) => !!it.meta?.mark).length
+    return {
+      total: total,
+      learned: learned,
+      percent: learned / total
+    }
+  }))
 
   protected trackByIndex: TrackByFunction<any> = (i) => i
 
@@ -133,6 +146,7 @@ export class RecipesOverviewComponent {
     private db: NwDbService,
     private search: QuicksearchService,
     private i18n: TranslateService,
+    private itemPref: ItemPreferencesService,
     head: HtmlHeadService
   ) {
     head.updateMetadata({

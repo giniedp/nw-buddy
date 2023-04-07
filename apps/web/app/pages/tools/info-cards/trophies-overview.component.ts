@@ -89,7 +89,8 @@ export class TrophiesOverviewComponent {
     map((list) => sortBy(list, (it) => it.itemId)),
     map((list) => groupBy(list, (it) => it.itemId.replace(/_T\d$/, ''))),
     map((list) => Object.values(list)),
-    map((list) => sortBy(list, (it) => it.length).reverse().flat())
+    map((list) => sortBy(list, (it) => it.length).reverse().flat()),
+    map((list) => list.filter((it) => !it.itemId.endsWith('_T0')))
   )
 
   protected filteredItems$ = combineLatest({
