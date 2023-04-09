@@ -10,7 +10,7 @@ import { mergeVitals } from './utils'
 import { VitalDetailComponent } from './vital-detail.component'
 import { VitalFamilyDetailComponent } from './vital-family-detail.component'
 
-const REJECT = ['undefined', 'human']
+const REJECT = ['undefined']
 @Component({
   standalone: true,
   selector: 'nwb-vitals-families-list',
