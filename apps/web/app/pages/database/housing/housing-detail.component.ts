@@ -12,7 +12,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   standalone: true,
-  selector: 'nwb-housing-detail',
+  selector: 'nwb-housing-detail-page',
   templateUrl: './housing-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, NwModule, ItemDetailModule, ScreenshotModule, LayoutModule],

@@ -16,6 +16,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   standalone: true,
+  selector: 'nwb-item-page',
   templateUrl: './item.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, NwModule, ItemDetailModule, ScreenshotModule, LayoutModule, LootModule],

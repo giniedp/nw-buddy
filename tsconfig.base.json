@@ -35,6 +35,7 @@
     ],
     "paths": {
       "~/*": ["apps/web/app/*"],
+      "@cypress/*": ["apps/cypress/support/*"],
       "@nw-data/*": ["apps/web/nw-data/*"]
     }
   },

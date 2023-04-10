@@ -14,7 +14,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   standalone: true,
-  selector: 'nwb-crafting-detail',
+  selector: 'nwb-crafting-detail-page',
   templateUrl: './crafting-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, NwModule, ItemDetailModule, CraftingCalculatorModule, ScreenshotModule, LayoutModule],

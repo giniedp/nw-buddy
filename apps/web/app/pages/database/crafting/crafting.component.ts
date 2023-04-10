@@ -13,7 +13,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   standalone: true,
-  selector: 'nwb-crafting',
+  selector: 'nwb-crafting-page',
   templateUrl: './crafting.component.html',
   imports: [
     CommonModule,
