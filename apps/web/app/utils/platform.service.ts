@@ -1,8 +1,9 @@
 import { Platform as AngularPlatform } from '@angular/cdk/platform'
 import { Platform as IonicPlatform } from '@ionic/angular'
-import { Injectable } from '@angular/core'
+import { Inject, Injectable } from '@angular/core'
 import { environment } from '../../environments'
 import { ElectronService } from '~/electron'
+import { DOCUMENT } from '@angular/common'
 
 @Injectable({ providedIn: 'root' })
 export class PlatformService {
@@ -77,10 +78,19 @@ export class PlatformService {
     return this.electron.isElectron
   }
 
+  /**
+   * Whether the website is embedded in an iframe
+   */
+  public get isIframe() {
+    return this.doc.defaultView.self !== this.doc.defaultView.top
+  }
+
   public constructor(
     private angularPlatform: AngularPlatform,
     private ionicPlatform: IonicPlatform,
-    private electron: ElectronService
+    private electron: ElectronService,
+    @Inject(DOCUMENT)
+    private doc: Document
   ) {
     //
   }

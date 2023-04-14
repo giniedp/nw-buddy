@@ -10,6 +10,7 @@ import { NwModule } from '~/nw'
 import { AppPreferencesService, PreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleCheck, svgCircleExclamation, svgCircleNotch, svgFileExport, svgInfoCircle } from '~/ui/icons/svg'
+import { PlatformService } from '~/utils/platform.service'
 import { recursivelyEncodeArrayBuffers } from './buffer-encoding'
 
 export interface DataExportDialogState {
@@ -48,7 +49,8 @@ export class DataExportDialogComponent extends ComponentStore<DataExportDialogSt
     private db: DbService,
     private appPreferences: AppPreferencesService,
     private preferences: PreferencesService,
-    private dialog: DialogRef
+    private dialog: DialogRef,
+    private platform: PlatformService
   ) {
     super({})
   }
@@ -72,7 +74,7 @@ export class DataExportDialogComponent extends ComponentStore<DataExportDialogSt
         this.patchState({
           active: false,
           complete: true,
-          error: true
+          error: true,
         })
       })
   }
@@ -87,34 +89,35 @@ export class DataExportDialogComponent extends ComponentStore<DataExportDialogSt
     const db = await this.db.export()
     data['db:nw-buddy'] = db
 
+    await recursivelyEncodeArrayBuffers(data)
     if (publicExport) {
       removeSensitiveKeys(data)
-      await recursivelyEncodeArrayBuffers(data)
     }
-    await downloadJson(data, fileName)
-
+    await downloadJson({
+      data,
+      fileName,
+      usePicker: !(this.platform.isElectron || this.platform.isIframe),
+    })
   }
 }
 
-async function downloadJson(data: any, filename: string) {
+async function downloadJson({ data, fileName, usePicker }: { data: any; fileName: string; usePicker: boolean }) {
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'text/json' })
-  if (window['showSaveFilePicker']) {
-    await window['showSaveFilePicker']({
-      suggestedName: filename,
-      types: [
-        {
-          description: 'NW Buddy File',
-          accept: { 'text/json': ['.json'] },
-        },
-      ],
-    })
-      .then((it: any) => it.createWritable())
-      .then(async (it: any) => {
-        await it.write(blob)
-        await it.close()
-      })
-  } else {
-    saveAs(blob, filename)
+  const showSaveFilePicker = window['showSaveFilePicker']
+  if (!usePicker || !showSaveFilePicker) {
+    return saveAs(blob, fileName)
+  }
+  const handle = await showSaveFilePicker({
+    suggestedName: fileName,
+    types: [
+      {
+        description: 'NW Buddy File',
+        accept: { 'text/json': ['.json'] },
+      },
+    ],
+  })
+  if (await verifyPermission(handle)) {
+    await writeFile(handle, blob)
   }
 }
 
@@ -138,4 +141,25 @@ function removeSensitiveKeys(data: any) {
       removeSensitiveKeys(data[key])
     }
   }
+}
+
+async function writeFile(fileHandle, contents: Blob) {
+  const writable = await fileHandle.createWritable()
+  await writable.write(contents)
+  await writable.close()
+}
+async function verifyPermission(fileHandle) {
+  const options = {
+    mode: 'readwrite',
+  }
+  // Check if permission was already granted. If so, return true.
+  if ((await fileHandle.queryPermission(options)) === 'granted') {
+    return true
+  }
+  // Request permission. If the user grants permission, return true.
+  if ((await fileHandle.requestPermission(options)) === 'granted') {
+    return true
+  }
+  // The user didn't grant permission, so return false.
+  return false
 }

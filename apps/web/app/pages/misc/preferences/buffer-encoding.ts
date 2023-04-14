@@ -30,7 +30,7 @@ export async function recursivelyEncodeArrayBuffers(data: any) {
   for (const key in data) {
     if (isEncodableBuffer(data[key])) {
       data[key] = await encodeBuffer(data[key])
-      // console.log('encoded', data)
+      // console.debug('encoded', data)
     } else {
       await recursivelyEncodeArrayBuffers(data[key])
     }
@@ -50,7 +50,7 @@ export async function recursivelyDecodeArrayBuffers(data: any) {
   for (const key in data) {
     if (isDecodableBuffer(data[key])) {
       data[key] = await decodeBuffer(data[key])
-      // console.log('decoded', data)
+      // console.debug('decoded', data)
     } else {
       await recursivelyDecodeArrayBuffers(data[key])
     }
