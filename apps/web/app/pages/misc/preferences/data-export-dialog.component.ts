@@ -1,4 +1,4 @@
-import { Dialog, DialogConfig, DialogRef } from '@angular/cdk/dialog'
+import { Dialog, DialogConfig, DialogModule, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -12,6 +12,8 @@ import { IconsModule } from '~/ui/icons'
 import { svgCircleCheck, svgCircleExclamation, svgCircleNotch, svgFileExport, svgInfoCircle } from '~/ui/icons/svg'
 import { PlatformService } from '~/utils/platform.service'
 import { recursivelyEncodeArrayBuffers } from './buffer-encoding'
+import { EditorDialogComponent } from '~/ui/layout/modal'
+import { CodeEditorModule } from '~/ui/code-editor'
 
 export interface DataExportDialogState {
   active?: boolean
@@ -26,7 +28,7 @@ export interface DataExportDialogState {
   selector: 'nwb-data-export-dialog',
   templateUrl: './data-export-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, IconsModule, FormsModule],
+  imports: [CommonModule, NwModule, IconsModule, FormsModule, CodeEditorModule, DialogModule],
   host: {
     class: 'flex flex-col bg-base-100 border border-base-100 rounded-md overflow-hidden h-full w-full',
   },
@@ -49,14 +51,15 @@ export class DataExportDialogComponent extends ComponentStore<DataExportDialogSt
     private db: DbService,
     private appPreferences: AppPreferencesService,
     private preferences: PreferencesService,
-    private dialog: DialogRef,
+    private dialogRef: DialogRef,
+    private dialog: Dialog,
     private platform: PlatformService
   ) {
     super({})
   }
 
   protected close() {
-    this.dialog.close()
+    this.dialogRef.close()
   }
 
   public async export() {
@@ -77,6 +80,28 @@ export class DataExportDialogComponent extends ComponentStore<DataExportDialogSt
           error: true,
         })
       })
+  }
+
+  public async openIneditor() {
+    const publicExport = this.get(({ publicExport }) => publicExport)
+    const data = this.preferences.export()
+    const db = await this.db.export()
+    data['db:nw-buddy'] = db
+
+    await recursivelyEncodeArrayBuffers(data)
+    if (publicExport) {
+      removeSensitiveKeys(data)
+    }
+
+    EditorDialogComponent.open(this.dialog, {
+      data: {
+        title: '',
+        value: JSON.stringify(data, null, 2),
+        readonly: true,
+        language: 'json',
+        positive: 'Close',
+      },
+    })
   }
 
   protected async performExport() {
