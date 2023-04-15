@@ -1,4 +1,6 @@
 import { defineConfig } from "cypress";
+import webpack from 'webpack'
+import env from './env'
 
 export default defineConfig({
   projectId: "aa2aza",
@@ -20,12 +22,20 @@ export default defineConfig({
   },
 
   component: {
-    supportFolder: 'apps/cypress/support',
     supportFile: "apps/cypress/support/component.ts",
+    indexHtmlFile: "apps/cypress/support/component-index.html",
     devServer: {
       framework: "angular",
       bundler: "webpack",
+      webpackConfig: {
+        plugins: [ new webpack.DefinePlugin({
+          __VERSION__: JSON.stringify(env.VERSION),
+          __NW_USE_PTR__: JSON.stringify(env.NW_USE_PTR),
+          __NW_DATA_URL__: JSON.stringify(""),
+          __NW_DEPLOY_URL__: JSON.stringify("")
+        })]
+      }
     },
-    specPattern: "**/*.cy.ts",
+    specPattern: "apps/web/**/*.cy.ts",
   },
 });

@@ -1,7 +1,46 @@
 {
-  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
   "compilerOptions": {
-    "sourceMap": false,
-    "types": ["cypress", "node"]
+    "rootDir": ".",
+    "baseUrl": ".",
+    "outDir": "./dist/out-tsc",
+    "allowSyntheticDefaultImports": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "forceConsistentCasingInFileNames": true,
+    "importHelpers": true,
+    "module": "ES2022",
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "strict": false,
+    "target": "ES2022",
+    "useDefineForClassFields": false,
+    "lib": [
+      "es2018",
+      "dom"
+    ],
+    "emitDecoratorMetadata": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "allowJs": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ],
+    "paths": {
+      "~/*": ["apps/web/app/*"],
+      "@cypress/*": ["apps/cypress/support/*"],
+      "@nw-data/*": ["apps/web/nw-data/*"]
+    }
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "fullTemplateTypeCheck": true,
+    "strictInjectionParameters": true
   }
 }

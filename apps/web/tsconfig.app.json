@@ -12,7 +12,6 @@
     "**/*.d.ts"
   ],
   "exclude": [
-    "**/*.cy.ts",
     "**/*.spec.ts",
     "**/*.stories.ts"
   ]
