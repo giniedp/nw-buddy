@@ -4,7 +4,8 @@
     "outDir": "../../dist/out-tsc/spec",
     "types": [
       "jasmine",
-      "node"
+      "node",
+      "cypress"
     ]
   },
   "files": [

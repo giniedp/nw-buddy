@@ -1,12 +1,12 @@
 import { Injectable, Optional } from '@angular/core'
-import { COLS_AFFIXDEFINITIONS, COLS_AFFIXSTATS, COLS_PERKS } from '@nw-data/cols'
-import { Ability, Affixstats, Perks } from '@nw-data/types'
+import { COLS_AFFIXSTATS, COLS_PERKS } from '@nw-data/cols'
+import { Ability, Perks } from '@nw-data/types'
 import { ColDef, ColGroupDef, GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwLinkService, NwService } from '~/nw'
 import { NwExpressionContextService } from '~/nw/expression'
-import { getPerksInherentMODs, hasPerkInherentAffix, isPerkGenerated, isPerkInherent } from '~/nw/utils'
+import { getPerkItemClassGsBonus, getPerksInherentMODs, hasPerkInherentAffix, isPerkGenerated, isPerkInherent } from '~/nw/utils'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
@@ -172,8 +172,13 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
                   colId: 'itemClassGSBonusClass',
                   headerValueGetter: () => 'Class',
                   valueGetter: this.valueGetter(({ data }) => {
-                    return data.ItemClassGSBonus?.split(':')[0]
+                    return getPerkItemClassGsBonus(data).map(({ itemClass }) => itemClass)
                   }),
+                  cellRenderer: ({ value }) => `
+                    <span class="flex flex-col">
+                     ${value?.map((it: string) => `<span>${it}</span>`)?.join('')}
+                    </span>
+                  `,
                   width: 90,
                   minWidth: 90,
                   maxWidth: 90,
@@ -185,13 +190,17 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
                   headerValueGetter: () => 'GS',
                   headerName: 'GS',
                   valueGetter: this.valueGetter(({ data }) => {
-                    return data.ItemClassGSBonus?.split(':')[1]
+                    return getPerkItemClassGsBonus(data).map(({ bonus }) => bonus)
                   }),
-                  width: 50,
-                  minWidth: 50,
-                  maxWidth: 50,
+                  cellRenderer: ({ value }) => `
+                    <span class="flex flex-col">
+                      ${value?.map((it: string) => `<span>${it}</span>`)?.join('')}
+                    </span>
+                  `,
+                  width: 75,
+                  minWidth: 75,
+                  maxWidth: 75,
                   resizable: false,
-
                 }),
               ],
             },

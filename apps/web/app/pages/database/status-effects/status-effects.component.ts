@@ -11,7 +11,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   standalone: true,
-  selector: 'nwb-status-effects',
+  selector: 'nwb-status-effects-page',
   templateUrl: './status-effects.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [

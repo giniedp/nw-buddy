@@ -92,7 +92,5 @@ module.exports = (config, options) => {
     })
   ]
 
-  console.log(config.entry)
-  console.log(config.output)
   return config
 }

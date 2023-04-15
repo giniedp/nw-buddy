@@ -47,16 +47,17 @@ export function getPerkMultiplier(perk: Pick<Perks, 'ScalingPerGearScore'>, gear
   return Math.max(0, gearScore - 100) * scale + 1
 }
 
-export function getItemGsBonus(perk: Perks, item: ItemDefinitionMaster) {
-  if (!perk || !item || !perk.ItemClassGSBonus?.length) {
-    return 0
+export function getPerkItemClassGsBonus(perk: Perks) {
+  if (!perk || !perk.ItemClassGSBonus?.length) {
+    return []
   }
-  for (const spec of perk.ItemClassGSBonus.split(',')) {
+  return perk.ItemClassGSBonus.split(',').map((spec) => {
     const [itemClass, bonus] = spec.split(':')
-
-    if (item.ItemClass?.some((it) => eqCaseInsensitive(it, itemClass))) {
-      return Number(bonus)
-    }
-  }
-  return 0
+    return { itemClass, bonus: Number(bonus) }
+  })
+}
+export function getItemGsBonus(perk: Perks, item: ItemDefinitionMaster) {
+  return getPerkItemClassGsBonus(perk).find(({ itemClass }) => {
+    return item.ItemClass?.some((it) => eqCaseInsensitive(it, itemClass))
+  })?.bonus || 0
 }
