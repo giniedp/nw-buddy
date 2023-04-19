@@ -120,6 +120,7 @@
             [ngModel]="gearScore || vm.instance.gearScore"
             (ngModelChange)="updateGearScore($event)"
             (blur)="commitGearScore(vm)"
+            (wheel)="stepGearScore($event)"
             class="range range-sm range-primary"
           />
         </div>

@@ -279,6 +279,15 @@ export class GearsetPaneSlotComponent {
     this.gearScore = value
   }
 
+  protected stepGearScore(event: WheelEvent) {
+    if (event.deltaY < 0) {
+      this.gearScore += 1
+    }
+    if (event.deltaY > 0) {
+      this.gearScore -= 1
+    }
+  }
+
   protected commitGearScore({}: GearsetSlotVM) {
     this.store.updateGearScore({ gearScore: this.gearScore })
   }

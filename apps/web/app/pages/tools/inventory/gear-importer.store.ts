@@ -21,6 +21,7 @@ import {
   isPerkGem,
   isPerkGenerated,
   isPerkInherent,
+  getItemMaxGearScore,
 } from '~/nw/utils'
 import { NW_MAX_GEAR_SCORE } from '~/nw/utils/constants'
 import { eqCaseInsensitive } from '~/utils'
@@ -238,7 +239,7 @@ function createResult(item: Item, perks: Perk[]) {
   perks = perks.filter((it) => !!it)
   const result: ItemInstance = {
     itemId: item.item.ItemID,
-    gearScore: null,
+    gearScore: getItemMaxGearScore(item.item),
     perks: {},
   }
 

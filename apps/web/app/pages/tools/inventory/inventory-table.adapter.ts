@@ -231,7 +231,7 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
     .pipe(take(1))
 
   public override categories: Observable<DataTableCategory[]> = defer(() => {
-    const result = EQUIP_SLOTS.map(
+    const result = EQUIP_SLOTS.filter((it) => it.itemType !== 'Trophies') .map(
       (it): DataTableCategory => ({
         icon: it.iconSlot || it.icon,
         value: it.itemType,
