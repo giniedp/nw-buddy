@@ -46,7 +46,12 @@ export function selectWeaponDamage(
   if (split) {
     const scale = split.affix.DamagePercentage
     const scaleSplit = damageFactorForAttrs({
-      weapon: weapon,
+      weapon: {
+        ScalingDexterity: split.affix.ScalingDexterity ? 1 : 0,
+        ScalingStrength: split.affix.ScalingStrength ? 1 : 0,
+        ScalingIntelligence: split.affix.ScalingIntelligence ? 1 : 0,
+        ScalingFocus: split.affix.ScalingFocus ? 1 : 0,
+      },
       attrSums: {
         str: mods.attributes.str.scale * split.affix.ScalingStrength,
         dex: mods.attributes.dex.scale * split.affix.ScalingDexterity,

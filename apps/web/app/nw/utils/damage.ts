@@ -28,7 +28,7 @@ export function damageFactorForAttrs({
   weapon,
   attrSums,
 }: {
-  weapon: ItemdefinitionsWeapons | ItemdefinitionsRunes
+  weapon: Pick<ItemdefinitionsWeapons | ItemdefinitionsRunes, 'ScalingDexterity' | 'ScalingFocus' | 'ScalingIntelligence' | 'ScalingStrength'>
   attrSums: Record<AttributeRef, number>
 }) {
   const str = attrSums.str * (weapon?.ScalingStrength || 0)
