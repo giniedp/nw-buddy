@@ -22,11 +22,11 @@ import { LayoutModule } from '~/ui/layout'
   standalone: true,
   selector: 'nwb-aeternum-map',
   template: `
-    <div *ngIf="isFloating" class="mb-1 flex flex-row gap-1 justify-center absolute top-0 w-full h-0 overflow-visible">
-      <button class="btn btn-circle btn-primary btn-sm" (click)="togglePosition()" *ngIf="!isExpanded">
+    <div class="mb-1 flex flex-row gap-1 justify-center sticky top-0 w-full h-0 overflow-visible">
+      <button class="btn btn-circle btn-primary btn-sm" (click)="togglePosition()" *ngIf="!isExpanded && isFloating">
         <nwb-icon [icon]="iconArrows" class="w-4 h-4"></nwb-icon>
       </button>
-      <button class="btn btn-circle btn-primary btn-sm" (click)="toggleExpand()">
+      <button class="btn btn-circle btn-primary btn-sm" (click)="toggleExpand()" *ngIf="isFloating">
         <nwb-icon [icon]="isExpanded ? iconCollapse : iconExpand" class="w-4 h-4"></nwb-icon>
       </button>
       <button class="btn btn-circle btn-error btn-sm" (click)="close.emit()">
