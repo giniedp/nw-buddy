@@ -6,9 +6,10 @@ import { UmbralCalculatorComponent } from './umbral-calculator.component'
 import { FormsModule } from '@angular/forms'
 import { NwModule } from '~/nw'
 import { UmbralCalculatorStepsComponent } from './umbral-calculator-steps.component'
+import { IconsModule } from '~/ui/icons'
 
 @NgModule({
-  imports: [CommonModule, AgGridModule, FormsModule, NwModule],
+  imports: [CommonModule, AgGridModule, FormsModule, IconsModule, NwModule],
   declarations: [UmbralTableComponent, UmbralCalculatorComponent, UmbralCalculatorStepsComponent],
   exports: [UmbralTableComponent, UmbralCalculatorComponent, UmbralCalculatorStepsComponent],
 })

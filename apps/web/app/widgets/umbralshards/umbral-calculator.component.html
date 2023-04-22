@@ -1,6 +1,6 @@
-<div class="grid grid-cols-2">
+<div class="grid grid-cols-2" *ngIf="vm$ | async; let vm">
   <div class="stats stats-vertical rounded-md rounded-r-none">
-    <label class="stat flex flex-row items-center layout-gap py-2" *ngFor="let row of data1; trackBy: trackById">
+    <label class="stat flex flex-row items-center layout-gap py-2" *ngFor="let row of vm.items1; trackBy: trackByIndex">
       <div class="text-secondary flex-none">
         <img [nwImage]="row.icon" class="w-12 h-12 opacity-50" />
       </div>
@@ -11,22 +11,30 @@
             placeholder="600"
             type="number"
             min="0"
-            class="input input-ghost text-2xl font-bold appearance-none w-20"
+            class="input input-ghost text-2xl font-bold appearance-none w-12 p-0"
+            [class.pr-0]="!!row.scoreTarget"
             [ngModel]="row.score || 0"
             (ngModelChange)="writeValue(row.id, $event)"
             onfocus="this.select()"
           />
+          <span *ngIf="row.scoreDelta" class="text-2xl font-bold text-primary">+{{ row.scoreDelta }}</span>
         </div>
         <div class="stat-title" [nwText]="row.name"></div>
-        <div class="stat-desc transition-opacity opacity-100" [class.opacity-0]="!row.shards">
-          {{ row.shards | number }} shards to next level
+        <div class="stat-desc transition-opacity opacity-100 flex flex-row items-center h-5" >
+          <ng-container *ngIf="!row.scoreTarget">
+            {{ row.shards | number }} <img [nwImage]="vm.shardIcon" class="inline w-5 h-5" /> to {{ row.score + 1 }}
+          </ng-container>
+          <ng-container *ngIf="row.scoreTarget">
+            <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-5 h-5 opacity-50" />
+            <span [class.text-primary]="row.scoreDelta"> {{ row.scoreTarget | number }} </span>
+          </ng-container>
         </div>
       </div>
     </label>
   </div>
 
   <div class="stats stats-vertical rounded-md rounded-l-none">
-    <label class="stat flex flex-row items-center layout-gap py-2" *ngFor="let row of data2; trackBy: trackById">
+    <label class="stat flex flex-row items-center layout-gap py-2" *ngFor="let row of vm.items2; trackBy: trackByIndex">
       <div class="flex-1 text-right">
         <div class="stat-value">
           <input
@@ -34,31 +42,51 @@
             placeholder="600"
             type="number"
             min="0"
-            class="input input-ghost text-2xl font-bold appearance-none w-20 text-right"
+            class="input input-ghost text-2xl font-bold appearance-none w-12 p-0 text-right"
+            [class.pr-0]="!!row.scoreTarget"
             [ngModel]="row.score || 0"
             (ngModelChange)="writeValue(row.id, $event)"
             onfocus="this.select()"
           />
+          <span *ngIf="row.scoreDelta" class="text-2xl font-bold text-primary">+{{ row.scoreDelta }}</span>
         </div>
         <div class="stat-title" [nwText]="row.name"></div>
-        <div class="stat-desc transition-opacity opacity-100" [class.opacity-0]="!row.shards">
-          {{ row.shards | number }} shards to next level
+        <div class="stat-desc transition-opacity opacity-100 flex flex-row items-center h-5 justify-end" >
+          <ng-container *ngIf="!row.scoreTarget">
+            {{ row.shards | number }} <img [nwImage]="vm.shardIcon" class="inline w-5 h-5" /> to {{ row.score + 1 }}
+          </ng-container>
+          <ng-container *ngIf="row.scoreTarget">
+            <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-5 h-5" />
+            <span [class.text-primary]="row.scoreDelta"> {{ row.scoreTarget | number }} </span>
+          </ng-container>
         </div>
       </div>
       <div class="stat-figure text-secondary flex-none">
-        <img [nwImage]="row.icon" class="w-12 h-12 opacity-50" />
+        <img [nwImage]="row.icon" class="w-12 h-12" />
       </div>
     </label>
   </div>
 
-  <span class="stat place-items-center col-span-2" *ngIf="upgradeNext">
-    <div class="stat-title">Total GS</div>
-    <div class="stat-value text-success">
-      <span>{{ totalGS | number: '1.0-2' }}</span>
+  <span class="stat place-items-center col-span-2" *ngIf="vm.upgradeNext">
+
+    <div class="stat-value flex flex-row items-center gap-1 font-caslon">
+      <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-8 h-8" />
+      <span> {{ vm.gsTotal | number : '1.0-2' }}</span>
+      <ng-container *ngIf="vm.gsTarget">
+        <span class="text-primary"> + </span>
+        <span  class="text-primary">{{ vm.gsTarget - vm.gsTotal | number : '1.0-2' }}</span>
+      </ng-container>
     </div>
-    <div class="stat-desc" *ngIf="upgradeNext?.length">
+    <div class="stat-desc text-nw-description font-nimbus"  *ngIf="vm.upgradeNext?.length && !vm.gsTarget">
       Upgrade next:
-      <span *ngFor="let row of upgradeNext" [nwText]="row.name" class="mr-1"></span>
+      <span *ngFor="let row of vm.upgradeNext" [nwText]="row.name" class="mr-1"></span>
+    </div>
+    <div class="stat-desc flex flex-row items-center gap-1" *ngIf="vm.gsTarget">
+      <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-5 h-5" />
+      <span class="text-primary"> {{ vm.gsTarget | number : '1.0-2' }} </span>
+      <img [nwImage]="vm.shardIcon" class="inline w-5 h-5" />
+      <span class="text-primary"> {{ vm.costTarget }} </span>
+
     </div>
   </span>
 </div>

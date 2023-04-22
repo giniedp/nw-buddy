@@ -16,6 +16,9 @@ function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: key
   templateUrl: './umbral-table.component.html',
   styleUrls: ['./umbral-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'layout-content'
+  }
 })
 export class UmbralTableComponent {
   @Input()

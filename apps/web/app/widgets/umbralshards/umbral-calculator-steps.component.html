@@ -1,21 +1,31 @@
-<div class="stats w-full flex flex-row"  *ngFor="let row of data$ | async; let i = index; trackBy: trackByIndex">
-  <div class="stat flex-1">
-    <div class="stat-figure text-primary hidden sm:block">
-      <img [nwImage]="row.item.icon" class="w-12 h-12 opacity-50" />
-    </div>
-    <div class="stat-title" [nwText]="row.item.name"></div>
-    <div class="stat-value"> {{ row.item.score }} </div>
-  </div>
-  <div class="stat flex-1">
+<table class="table table-compact w-full" (mouseleave)="setMarker(null)" *ngIf="vm$ | async; let vm">
+  <thead class="sticky top-0 z-20">
+    <tr>
+      <th>Upgrade</th>
+      <th>Target GS</th>
+      <th>
+        <div class="flex flex-row items-center">
+          <img [nwImage]="vm.shardIcon" class="inline-block w-5 h-5" /> Costs
+        </div>
 
-    <div class="stat-title">Shards</div>
-    <div class="stat-value">{{ row.shardsTotal }}</div>
-  </div>
-  <div class="stat flex-1">
-    <div class="stat-title">Final Gearscore</div>
-    <div class="stat-value  text-success">{{ row.score | number:'1.2-2' }}</div>
-    <div class="stat-actions">
-      <button class="btn btn-xs btn-success" (click)="upgrade(row)">Upgrade</button>
-    </div>
-  </div>
-</div>
+      </th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody >
+    <tr
+      *ngFor="let row of vm.steps; let i = index; trackBy: trackByIndex"
+      tabindex="1"
+      (mouseenter)="setMarker(row)"
+      (click)="setMarker(row)"
+      [class.opacity-25]="vm.marker && vm.marker.shardsTotal < row.shardsTotal"
+    >
+      <th>
+        <span [nwText]="row.item.name"></span> to <span>{{ row.item.score }}</span>
+      </th>
+      <td>{{ row.score | number : '1.2-2' }}</td>
+      <td>{{ row.shardsTotal }}</td>
+      <td><button class="btn btn-xs btn-success" (click)="upgrade(row)">Upgrade</button></td>
+    </tr>
+  </tbody>
+</table>

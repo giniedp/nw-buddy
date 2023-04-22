@@ -7,7 +7,8 @@
           Fill in the score of your gear and get the final gear score and an optimized upgrade path calculated.
           <ng-container *ngIf="!showGsInfo">
             <br />
-            Got a different result as in game? <a class="link-primary cursor-pointer" (click)="showGsInfo = true">click here</a>
+            Got a different result as in game?
+            <a class="link-primary cursor-pointer" (click)="showGsInfo = true">click here</a>
           </ng-container>
         </p>
         <p *ngIf="showGsInfo">
@@ -33,11 +34,9 @@
       <a class="tab" [class.tab-active]="tab == 1" (click)="tab = 1">Table 590-600</a>
       <a class="tab" [class.tab-active]="tab == 2" (click)="tab = 2">Table 600-625</a>
     </div>
-    <div class="layout-content h-full bg-base-100">
+    <div class="layout-col bg-base-100">
       <ng-container *ngIf="tab == 0">
-        <div class="p-4">
-          <nwb-umbral-calculator-steps></nwb-umbral-calculator-steps>
-        </div>
+        <nwb-umbral-calculator-steps></nwb-umbral-calculator-steps>
       </ng-container>
       <ng-container *ngIf="tab == 1">
         <nwb-umbral-table [gsMax]="599"></nwb-umbral-table>

@@ -1,9 +1,9 @@
 import {
   ChangeDetectionStrategy, ChangeDetectorRef, Component, OnChanges, OnDestroy, OnInit, TrackByFunction
 } from '@angular/core'
-import { Subject, takeUntil } from 'rxjs'
+import { Subject, combineLatest, map, takeUntil } from 'rxjs'
 import { UmbralCalculatorService } from './umbral-calculator.service'
-import { ItemState } from './utils'
+import { CollectionState, ItemState, UpgradeStep } from './utils'
 
 @Component({
   selector: 'nwb-umbral-calculator',
@@ -11,42 +11,60 @@ import { ItemState } from './utils'
   styleUrls: ['./umbral-calculator.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class UmbralCalculatorComponent implements OnInit, OnChanges, OnDestroy {
-  public trackById: TrackByFunction<ItemState> = (i, row) => {
-    return row.id
-  }
+export class UmbralCalculatorComponent {
+  public trackByIndex = (i: number) => i
 
-  protected data1: ItemState[] = []
-  protected data2: ItemState[] = []
-  protected upgradeNext: ItemState[]
-  protected totalGS: number = null
-
-  private destroy$ = new Subject()
+  protected vm$ = combineLatest({
+    state: this.service.state,
+    marker: this.service.marker,
+    shardIcon: this.service.shardIcon
+  }).pipe(map(({ state, marker, shardIcon }) => {
+    return {
+      ...selectVm(state, marker),
+      shardIcon
+    }
+  }))
 
   public constructor(private service: UmbralCalculatorService, private cdRef: ChangeDetectorRef) {
 
   }
 
-  public ngOnInit(): void {
-    this.service.state
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((state) => {
-        this.totalGS = state.score
-        this.data1 = state.items.slice(0, 5)
-        this.data2 = state.items.slice(5, 10)
-        this.upgradeNext = state.items.filter((it) => it.upgrade)
-        this.cdRef.markForCheck()
-      })
-  }
-
-  public ngOnChanges(): void {}
-
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
-  }
-
   public writeValue(id: string, value: number) {
     this.service.writeScore(id, value)
   }
+}
+
+function selectVm(state: CollectionState, marker: UpgradeStep) {
+  const items1 = state.items.slice(0, 5).map((it) => {
+    const scoreTarget = getMaxGsFromUpgrade(marker, it)
+    return {
+      ...it,
+      scoreTarget: scoreTarget,
+      scoreDelta: Math.max(0, scoreTarget - it.score)
+    }
+  })
+  const items2 = state.items.slice(5, 10).map((it) => {
+    const scoreTarget = getMaxGsFromUpgrade(marker, it)
+    return {
+      ...it,
+      scoreTarget: scoreTarget,
+      scoreDelta: Math.max(0, scoreTarget - it.score)
+    }
+  })
+  return {
+    upgradeNext: state.items.filter((it) => it.upgrade),
+    gsTotal: state.score,
+    gsTarget: marker ? marker.score : null,
+    costTarget: marker ? marker.shardsTotal : null,
+    items1: items1,
+    items2: items2
+  }
+}
+
+function getMaxGsFromUpgrade(step: UpgradeStep, item: ItemState) {
+  if (!step) {
+    return null
+  }
+  const items = step.state.items.filter((it) => it.id === item.id)
+  return items[items.length - 1]?.score
 }
