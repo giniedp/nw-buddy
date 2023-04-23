@@ -1,19 +1,24 @@
 import { ItemdefinitionsRunes, ItemdefinitionsWeapons, WeaponTag } from '@nw-data/types'
 import type { AttributeRef } from '../attributes/nw-attributes'
+import {
+  NW_BASE_DAMAGE_COMPOUND_INCREASE,
+  NW_BASE_DAMAGE_GEAR_SCORE_INTERVAL,
+  NW_COMPOUND_INCREASE_DIMINISHING_MULTIPLIER,
+  NW_DIMINISHING_GEAR_SCORE_THRESHOLD,
+  NW_LEVEL_DAMAGE_MULTIPLIER,
+  NW_MIN_POSSIBLE_WEAPON_GEAR_SCORE,
+} from './constants'
 
 export function damageFactorForLevel(level: number) {
-  // taken from 'playerbaseattributes.pbadb'
-  const levelScaling = 0.025 //  PlayerBaseAttributes['player attribute data']['level damage multiplier']
-  return levelScaling * (level - 1)
+  return NW_LEVEL_DAMAGE_MULTIPLIER * (level - 1)
 }
 
 export function damageFactorForGS(gearScore: number) {
-  // taken from 'playerbaseattributes.pbadb'
-  const gsMin = 100 // PBA['player attribute data']['min possible weapon gear score']
-  const gsMax = 500 // PBA['player attribute data']['diminishing gear score threshold']
-  const gsRounding = 5 // PBA['player attribute data']['gear score rounding interval']
-  const baseDamageCompund = 0.0112 // PBA['player attribute data']['base damage compound increase']
-  const compoundDiminishingMulti = 0.6667 // PBA['player attribute data']['compound increase diminishing multiplier']
+  const gsMin = NW_MIN_POSSIBLE_WEAPON_GEAR_SCORE
+  const gsMax = NW_DIMINISHING_GEAR_SCORE_THRESHOLD
+  const gsRounding = NW_BASE_DAMAGE_GEAR_SCORE_INTERVAL
+  const baseDamageCompund = NW_BASE_DAMAGE_COMPOUND_INCREASE
+  const compoundDiminishingMulti = NW_COMPOUND_INCREASE_DIMINISHING_MULTIPLIER
 
   const powerLow = Math.floor((Math.min(gsMax, Math.max(gearScore, gsMin)) - gsMin) / gsRounding)
   const powerHigh = Math.floor((Math.max(gearScore, gsMax) - gsMax) / gsRounding)
@@ -28,13 +33,13 @@ export function damageFactorForAttrs({
   weapon,
   attrSums,
 }: {
-  weapon: Pick<ItemdefinitionsWeapons | ItemdefinitionsRunes, 'ScalingDexterity' | 'ScalingFocus' | 'ScalingIntelligence' | 'ScalingStrength'>
+  weapon: Pick<ItemdefinitionsWeapons, 'ScalingDexterity' | 'ScalingFocus' | 'ScalingIntelligence' | 'ScalingStrength'>
   attrSums: Record<AttributeRef, number>
 }) {
-  const str = attrSums.str * (weapon?.ScalingStrength || 0)
-  const dex = attrSums.dex * (weapon?.ScalingDexterity || 0)
-  const int = attrSums.int * (weapon?.ScalingIntelligence || 0)
-  const foc = attrSums.foc * (weapon?.ScalingFocus || 0)
+  const str = (attrSums.str || 0) * (weapon?.ScalingStrength || 0)
+  const dex = (attrSums.dex || 0) * (weapon?.ScalingDexterity || 0)
+  const int = (attrSums.int || 0) * (weapon?.ScalingIntelligence || 0)
+  const foc = (attrSums.foc || 0) * (weapon?.ScalingFocus || 0)
   return str + dex + int + foc
 }
 
