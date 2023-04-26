@@ -636,6 +636,9 @@ export abstract class NwDataLoader {
   public charactertablesUndeadDatatablesDamagetableUndeadShaman() {
     return this.load<Damagetable[]>('charactertables/undead_datatables/javelindata_damagetable_undead_shaman.json')
   }
+  public charactertablesWispywaspswarmDatatablesDamagetableWispyWaspSwarm() {
+    return this.load<Damagetable[]>('charactertables/wispywaspswarm_datatables/javelindata_damagetable_wispy_wasp_swarm.json')
+  }
   public charactertablesWitheredbeetleDatatablesDamagetableWitheredbeetle() {
     return this.load<Damagetable[]>('charactertables/witheredbeetle_datatables/javelindata_damagetable_witheredbeetle.json')
   }

@@ -413,6 +413,7 @@ export interface ItemDefinitionMaster {
     DestroyOnBreak:                  number;
     Durability?:                     number;
     DurabilityDmgOnDeath?:           number;
+    EventId?:                        string;
     ExclusivelyForWarCampTier?:      number;
     ForceRarity?:                    number;
     GearScoreOverride?:              number;
@@ -720,6 +721,7 @@ export interface Gatherables {
     BaseGatherTime:                  number;
     ConsumedStatusEffect?:           string;
     DepletedGatherableID:            number;
+    DisplayDescription?:             string;
     DisplayName?:                    string;
     FinalLootTable?:                 string;
     GameEventID?:                    string;
@@ -734,6 +736,7 @@ export interface Gatherables {
     IsLootContainer:                 boolean;
     ItemRestrictionId?:              string;
     ItemRestrictionQuantity?:        string;
+    LandmarkIconPath?:               string;
     MaxRespawnRate:                  number;
     MinRespawnRate:                  number;
     NumRequiredToGather:             number;
@@ -744,6 +747,7 @@ export interface Gatherables {
     RequiredWhisperId?:              string;
     ResetGatherTimeOnEndInteraction: boolean;
     Restriction:                     string;
+    TooltipImage?:                   string;
     Tradeskill:                      string;
     WaitForImpact:                   boolean;
 }
@@ -1244,8 +1248,6 @@ export interface Lootbuckets {
     Item171?:              string;
     Item172?:              string;
     Item173?:              string;
-    Item174?:              string;
-    Item175?:              string;
     Item176?:              string;
     Item177?:              string;
     Item178?:              string;
@@ -1282,7 +1284,6 @@ export interface Lootbuckets {
     Item205?:              string;
     Item206?:              string;
     Item207?:              string;
-    Item208?:              string;
     Item209?:              string;
     Item21?:               string;
     Item210?:              string;
@@ -1387,9 +1388,11 @@ export interface Lootbuckets {
     Item300?:              string;
     Item301?:              string;
     Item302?:              string;
+    Item303?:              string;
     Item304?:              string;
     Item305?:              string;
-    Item308?:              string;
+    Item306?:              string;
+    Item307?:              string;
     Item309?:              string;
     Item31?:               string;
     Item310?:              string;
@@ -1426,6 +1429,7 @@ export interface Lootbuckets {
     Item34?:               string;
     Item340?:              string;
     Item344?:              string;
+    Item345?:              string;
     Item35?:               string;
     Item36?:               string;
     Item37?:               string;
@@ -1580,8 +1584,6 @@ export interface Lootbuckets {
     LootBucket171?:        string;
     LootBucket172?:        string;
     LootBucket173?:        string;
-    LootBucket174?:        string;
-    LootBucket175?:        string;
     LootBucket176?:        string;
     LootBucket177?:        string;
     LootBucket178?:        string;
@@ -1618,7 +1620,6 @@ export interface Lootbuckets {
     LootBucket205?:        string;
     LootBucket206?:        string;
     LootBucket207?:        string;
-    LootBucket208?:        string;
     LootBucket209?:        string;
     LootBucket21?:         string;
     LootBucket210?:        string;
@@ -1723,9 +1724,11 @@ export interface Lootbuckets {
     LootBucket300?:        string;
     LootBucket301?:        string;
     LootBucket302?:        string;
+    LootBucket303?:        string;
     LootBucket304?:        string;
     LootBucket305?:        string;
-    LootBucket308?:        string;
+    LootBucket306?:        string;
+    LootBucket307?:        string;
     LootBucket309?:        string;
     LootBucket31?:         string;
     LootBucket310?:        string;
@@ -1762,6 +1765,7 @@ export interface Lootbuckets {
     LootBucket34?:         string;
     LootBucket340?:        string;
     LootBucket344?:        string;
+    LootBucket345?:        string;
     LootBucket35?:         string;
     LootBucket36?:         string;
     LootBucket37?:         string;
@@ -1916,8 +1920,6 @@ export interface Lootbuckets {
     MatchOne171?:          string;
     MatchOne172?:          string;
     MatchOne173?:          string;
-    MatchOne174?:          string;
-    MatchOne175?:          string;
     MatchOne176?:          string;
     MatchOne177?:          string;
     MatchOne178?:          string;
@@ -1954,7 +1956,6 @@ export interface Lootbuckets {
     MatchOne205?:          string;
     MatchOne206?:          string;
     MatchOne207?:          string;
-    MatchOne208?:          string;
     MatchOne209?:          string;
     MatchOne21?:           string;
     MatchOne210?:          string;
@@ -2059,9 +2060,11 @@ export interface Lootbuckets {
     MatchOne300:           boolean;
     MatchOne301?:          string;
     MatchOne302?:          string;
+    MatchOne303?:          string;
     MatchOne304?:          string;
     MatchOne305?:          string;
-    MatchOne308?:          string;
+    MatchOne306?:          string;
+    MatchOne307?:          string;
     MatchOne309?:          string;
     MatchOne31?:           string;
     MatchOne310?:          string;
@@ -2395,8 +2398,11 @@ export interface Lootbuckets {
     Quantity300:           number;
     Quantity301:           number;
     Quantity302:           number;
+    Quantity303:           number;
     Quantity304:           number;
     Quantity305:           number;
+    Quantity306:           number;
+    Quantity307:           number;
     Quantity308:           number;
     Quantity309:           number;
     Quantity31:            number;
@@ -2435,6 +2441,7 @@ export interface Lootbuckets {
     Quantity34:            number;
     Quantity340:           number;
     Quantity344:           number;
+    Quantity345:           number;
     Quantity35:            number;
     Quantity36:            number;
     Quantity37:            number;
@@ -2587,8 +2594,6 @@ export interface Lootbuckets {
     Tags170?:              string[];
     Tags172?:              string[];
     Tags173?:              string[];
-    Tags174?:              string[];
-    Tags175?:              string[];
     Tags176?:              string[];
     Tags177?:              string[];
     Tags178?:              string[];
@@ -2625,7 +2630,6 @@ export interface Lootbuckets {
     Tags205?:              string[];
     Tags206?:              string[];
     Tags207?:              string[];
-    Tags208?:              string[];
     Tags209?:              string[];
     Tags21?:               string[];
     Tags210?:              string[];
@@ -2695,7 +2699,7 @@ export interface Lootbuckets {
     Tags298?:              string[];
     Tags3?:                string[];
     Tags30?:               string[];
-    Tags308?:              string[];
+    Tags303?:              string[];
     Tags31?:               string[];
     Tags310?:              string[];
     Tags314?:              string[];
