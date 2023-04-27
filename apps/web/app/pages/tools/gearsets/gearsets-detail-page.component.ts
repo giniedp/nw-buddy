@@ -105,6 +105,8 @@ export class GearsetsDetailPageComponent {
           return this.gearDb.create({
             ...record,
             id: null,
+            ipnsKey: null,
+            ipnsName: null,
             name: newName,
           })
         })
