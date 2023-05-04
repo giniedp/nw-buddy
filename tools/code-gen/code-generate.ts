@@ -121,7 +121,7 @@ const ENUMS = {
   Vitals: ['Family'],
   Vitalsmetadata: ['spawns'],
   // ItemDefinitionMaster: ['ItemClass'],
-  // Damagetypes: ['TypeID', 'Category']
+  // Damagetypes: ['TypeID', 'Category'],
   Perks: [
     'PerkType',
     'ItemClass',
@@ -149,8 +149,4 @@ const ENUMS = {
     'EquipLoadCategory',
     'GatheringTradeskill'
   ],
-}
-function enumFieldsForType(type: string): string[] {
-  // console.log('enumFieldsForType', type)
-  return ENUMS[type] || []
 }

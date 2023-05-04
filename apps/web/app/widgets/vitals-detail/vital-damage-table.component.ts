@@ -5,7 +5,7 @@ import { Damagetable } from '@nw-data/types'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { getWeaponTagLabel } from '~/nw/utils'
-import { NwWeaponTypesService } from '~/nw/weapon-types'
+import { NwWeaponTypesService, damageTypeIcon } from '~/nw/weapon-types'
 import { IconsModule } from '~/ui/icons'
 import { svgInfo } from '~/ui/icons/svg'
 import { PropertyGridModule } from '~/ui/property-grid'
@@ -75,7 +75,7 @@ export class VitalDamageTableComponent extends ComponentStore<{ vitalId: string 
                 return {
                   Name: humanize(row.DamageID.replace(/^Attack/, '')),
                   DamageTypeName: row.DamageType ? `${row.DamageType}_DamageName` : '',
-                  DamageTypeIcon: this.dmg.damageTypeIcon(row.DamageType),
+                  DamageTypeIcon: damageTypeIcon(row.DamageType),
                   WeaponCategory: getWeaponTagLabel(row.WeaponCategory) || row.WeaponCategory,
                   AttackType: row.AttackType,
                   DmgCoef: row.DmgCoef,

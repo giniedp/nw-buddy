@@ -21,7 +21,7 @@
 
       <ng-container *ngFor="let itemId of detail.foreignItems$ | async; let isFirst = first">
         <h3 *ngIf="isFirst" class="prose">Referenced By Items:</h3>
-        <nwb-item-card [entityId]="itemId" [disableInfo]="true" class="bg-black"></nwb-item-card>
+        <nwb-item-card [entityId]="itemId" [disableInfo]="true" [enableLink]="true" class="bg-black"></nwb-item-card>
       </ng-container>
 
       <ng-container *ngFor="let abilityId of detail.foreignAbilities$ | async; let isFirst = first">

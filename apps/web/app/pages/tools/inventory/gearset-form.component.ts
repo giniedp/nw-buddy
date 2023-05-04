@@ -13,7 +13,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft, svgFolderOpen, svgLink, svgPaste, svgPlus, svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { ItemDetailModule } from '~/widgets/item-detail'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { GearsetsTableAdapter } from '../gearsets/gearsets-table.adapter'
 import { GearsetFormCellComponent } from './gearset-form-cell.component'
 

@@ -33,6 +33,7 @@ export class DataTableRouterDirective implements OnInit, OnDestroy {
         this.router.navigate([target || '.'], {
           relativeTo: this.route,
           queryParamsHandling: 'preserve',
+          preserveFragment: true
         })
       })
 

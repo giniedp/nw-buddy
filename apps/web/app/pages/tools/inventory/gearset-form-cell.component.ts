@@ -20,7 +20,7 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { LayoutModule } from '~/ui/layout'
 import { humanize } from '~/utils'
 import { DnDService } from '~/utils/dnd.service'
-import { ItemDetailModule } from '~/widgets/item-detail'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
 
 
 @Component({

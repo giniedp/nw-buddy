@@ -1,8 +1,9 @@
-<div class="grid grid-cols-fill-sm sm:grid-cols-fill-lg gap-6">
+<div class="grid grid-cols-fill-sm sm:grid-cols-fill-lg gap-6" *ngIf="records$ | async; let list" [@list]="list?.length">
   <nwb-gearset-loadout-item
-    *ngFor="let item of records$ | async"
+    *ngFor="let item of list; trackBy: trackByIndex"
     [geasrsetId]="item.id"
     (delete)="deleteItem(item)"
+    [@fade]="true"
   ></nwb-gearset-loadout-item>
 
   <nwb-gearset-loadout-item (create)="createItem()"></nwb-gearset-loadout-item>

@@ -1,13 +1,16 @@
-<nwb-detail-drawer class="hidden lg:block lg:w-96 layout-pad">
-  <div *nwbDetailDraweContent class="layout-col">
+<nwb-detail-drawer class="hidden lg:block lg:w-[420px] " [breakpoints]="[0.15, 0.25, 0.5, 1]">
+  <div *nwbDetailDraweContent class="layout-content bg-base-200 layout-pad">
     <nwb-item-card
-      [entityId]="itemId | async"
+      [entityId]="itemId$ | async"
       [enableInfoLink]="true"
       [enableTracker]="true"
+      [enableLink]="true"
       [nwbScreenshotFrame]="card.name$ | async | nwText"
       (housingItemChange)="onEntity($event)"
       #card="card"
       class="flex-1"
     ></nwb-item-card>
+
+    <nwb-housing-page-tabs [itemId]="itemId$ | async"></nwb-housing-page-tabs>
   </div>
 </nwb-detail-drawer>

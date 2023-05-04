@@ -8,7 +8,7 @@ import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { LayoutModule } from '~/ui/layout'
 import { observeRouteParam } from '~/utils'
-import { ItemDetailModule } from '~/widgets/item-detail'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { InventoryPickerService } from './inventory-picker.service'
 

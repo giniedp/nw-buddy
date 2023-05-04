@@ -4,7 +4,7 @@ import { Perks, Vitals } from '@nw-data/types'
 import { combineLatest, defer, map, ReplaySubject } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { getVitalDamageEffectiveness } from '~/nw/utils'
-import { NwWeaponTypesService } from '~/nw/weapon-types'
+import { NwWeaponTypesService, damageTypeIcon } from '~/nw/weapon-types'
 
 @Component({
   standalone: true,
@@ -62,7 +62,7 @@ export class VitalDetailWeaknessComponent {
             Name: dmgType.DisplayName,
             Type: dmgType.TypeID,
             Category: dmgType.Category,
-            Icon: this.wpn.damageTypeIcon(dmgType.TypeID),
+            Icon: damageTypeIcon(dmgType.TypeID),
             Value: getVitalDamageEffectiveness(vital, dmgType.TypeID as any),
             Perk: gems
               .filter(({ stat, perk }) => perk.Tier === 4 && stat.DamageType === dmgType.TypeID)

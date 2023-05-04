@@ -11,7 +11,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft } from '~/ui/icons/svg'
 import { imageFileFromPaste, imageFromDropEvent } from '~/utils/image-file-from-paste'
 import { useTesseract } from '~/utils/use-tesseract'
-import { ItemDetailModule } from '~/widgets/item-detail'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { GearImporterStore } from './gear-importer.store'
 
 export interface GearImporterDialogState {

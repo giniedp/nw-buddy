@@ -6,20 +6,23 @@
 <div class="bg-base-100 rounded-md mx-[1px] rounded-tl-none" *ngIf="resourceTab">
   <table class="table table-compact w-full">
     <tbody>
-      <tr
-        *ngFor="let row of resourceTable$ | async; trackBy: trackByIndex"
-        [class.opacity-75]="row.ignored"
-        class="hover"
-        (click)="toggleIgnore(row)"
-        (dblclick)="enableStocked(row)"
-      >
+      <tr *ngFor="let row of resourceTable$ | async; trackBy: trackByIndex" [class.opacity-75]="row.ignored">
         <td width="0" class="p-1 flex items-center">
-          <picture [nwIcon]="row.item" class="w-10 h-10 mr-2" [class.grayscale]="row.ignored"></picture>
+          <picture
+            [nwIcon]="row.item"
+            class="w-10 h-10 mr-2 hover:cursor-pointer"
+            [class.grayscale]="row.ignored"
+            (click)="toggleIgnore(row)"
+          ></picture>
           <div [class.text-accent]="row.stocked">
-            <span>
+            <span
+              (click)="toggleStock(row)"
+              class="inline-block outline outline-2 outline-transparent outline-offset-2 rounded-sm hover:outline-primary hover:cursor-pointer"
+            >
               {{ row.quantity | number }}
             </span>
-            <ng-container *ngIf="row.stocked">
+            <div *ngIf="row.stocked" class="inline-flex">
+              (
               <span> - </span>
               <nwb-stock-tracker
                 [itemId]="row.itemId"
@@ -27,25 +30,39 @@
                 class="tooltip-right tooltip-accent whitespace-nowrap text-accent"
                 #stockTracker
               ></nwb-stock-tracker>
-            </ng-container>
+              )
+            </div>
             <span> × </span>
-            <span [nwText]="row.item.Name" [class.line-through]="row.ignored"></span>
+            <a
+              [nwText]="row.item.Name"
+              [routerLink]="row.link"
+              [class.line-through]="row.ignored"
+              class="hover:underline"
+            ></a>
           </div>
         </td>
         <td class="w-0 text-right whitespace-nowrap" [class.line-through]="row.ignored">
+          <nwb-price-tracker
+            [itemId]="row.itemId"
+            [emptyTip]="'Edit item price'"
+            [format]="'1.2-2'"
+            class="ml-2 tooltip-left tooltip-info text-primary whitespace-nowrap"
+          ></nwb-price-tracker>
+        </td>
+        <td class="w-0 text-right whitespace-nowrap" [class.line-through]="row.ignored">
           <ng-container *ngIf="row.finalPrice">
-            {{ row.finalPrice | number:'1.2-2'}}
+            {{ row.finalPrice | number : '1.2-2' }}
           </ng-container>
-
         </td>
       </tr>
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="2">
+        <td colspan="2"></td>
+        <td>
           <div class="flex gap-1 justify-end">
-            <span>{{ resourcePrice$ | async | number: '1.2-2' }}</span>
-            <img [nwImage]="'assets/icons/icon_crown.png'" class="inline-block">
+            <img [nwImage]="'assets/icons/icon_crown.png'" class="inline-block w-5 h-5" />
+            <span>{{ resourcePrice$ | async | number : '1.2-2' }}</span>
           </div>
         </td>
       </tr>

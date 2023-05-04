@@ -8,7 +8,7 @@ import { getIngretientsFromRecipe, getItemIdFromRecipe } from '~/nw/utils'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PaginationModule } from '~/ui/pagination'
 import { ContentVisibilityDirective, HtmlHeadService } from '~/utils'
-import { ItemDetailModule } from '~/widgets/item-detail'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 function isGemItem(item: Crafting) {

@@ -52,8 +52,16 @@ export function isItemSwordOrShield(item: ItemDefinitionMaster | null) {
   return item?.ItemClass?.includes('Sword') || item?.ItemClass?.includes('Shield')
 }
 
+export function isItemHeargem(item: ItemDefinitionMaster | null) {
+  return item?.ItemClass?.includes('HeartGem')
+}
+
+export function isPerkItemIngredient(item: ItemDefinitionMaster | null) {
+  return hasItemIngredientCategory(item, 'Perkitem')
+}
+
 export function hasItemIngredientCategory(item: ItemDefinitionMaster, categoryId: string) {
-  return item.IngredientCategories?.some((it) => it.toLocaleLowerCase() === String(categoryId).toLocaleLowerCase())
+  return item?.IngredientCategories?.some((it) => it.toLocaleLowerCase() === String(categoryId).toLocaleLowerCase())
 }
 
 export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPerkIds?: string[]) {
@@ -107,7 +115,7 @@ export function getItemPerkIds(item: ItemDefinitionMaster) {
 }
 
 export function getItemPerkIdsWithOverride(item: ItemDefinitionMaster, overrides: Record<string, string>) {
-  const perks = (getItemPerkKeys(item) || []).map((key) => overrides[key] || item[key] as string)
+  const perks = (getItemPerkKeys(item) || []).map((key) => overrides[key] || (item[key] as string))
   const randoms = (getItemPerkBucketKeys(item) || []).map((key) => overrides[key])
   return [...perks, ...randoms].filter((it) => !!it)
 }
@@ -213,20 +221,19 @@ export function getItemId(item: ItemDefinitionMaster | Housingitems) {
   return null
 }
 
-export function getItemIdFromRecipe(item: Crafting) {
+export function getItemIdFromRecipe(item: Crafting): string {
   if (!item) {
     return null
-  }
-  if (item.ItemID) {
-    return item.ItemID
   }
   if (item[`ProceduralTierID${item.BaseTier}`]) {
     return item[`ProceduralTierID${item.BaseTier}`]
   }
+  if (item.ItemID) {
+    return item.ItemID
+  }
   return (
     item &&
-    (item.ItemID ||
-      item.ProceduralTierID5 ||
+    (item.ProceduralTierID5 ||
       item.ProceduralTierID4 ||
       item.ProceduralTierID3 ||
       item.ProceduralTierID2 ||

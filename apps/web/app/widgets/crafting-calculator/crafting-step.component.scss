@@ -28,7 +28,9 @@
     nwb-crafting-step-toggle {
       display: inline-flex;
     }
-
+    .price-tracking {
+      display: none;
+    }
     .steps-container, .options-container {
       border-left: 2px solid currentColor;
       margin-left: 15px;

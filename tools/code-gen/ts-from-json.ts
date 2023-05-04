@@ -12,16 +12,16 @@ import {
 } from 'quicktype-core'
 import { utf16StringEscape } from 'quicktype-core/dist/support/Strings'
 
-export class CustomTsTargetLanguage extends TypeScriptTargetLanguage {
+export class NewWorldTargetLanguage extends TypeScriptTargetLanguage {
   public constructor() {
     super()
   }
-  protected makeRenderer(context: RenderContext, options: { [name: string]: any }): CustomTsRenderer {
-    return new CustomTsRenderer(this, context, getOptionValues(tsFlowOptions, options))
+  protected makeRenderer(context: RenderContext, options: { [name: string]: any }): NewWorldTypeScriptRenderer {
+    return new NewWorldTypeScriptRenderer(this, context, getOptionValues(tsFlowOptions, options))
   }
 }
 
-export class CustomTsRenderer extends TypeScriptRenderer {
+export class NewWorldTypeScriptRenderer extends TypeScriptRenderer {
   protected emitEnum(e: EnumType, enumName: Name): void {
     this.emitDescription(this.descriptionForType(e))
     this.emitLine(['export type ', enumName, ' = '])
@@ -33,7 +33,7 @@ export class CustomTsRenderer extends TypeScriptRenderer {
 }
 
 export async function tsFromJson(typeName: string, samples: string[]) {
-  const lang = new CustomTsTargetLanguage()
+  const lang = new NewWorldTargetLanguage()
   const jsonInput = jsonInputForTargetLanguage(lang)
   await jsonInput.addSource({
     name: typeName,

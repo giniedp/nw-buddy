@@ -4,6 +4,7 @@
       [entityId]="itemId$ | async"
       [enableInfoLink]="true"
       [enableTracker]="true"
+      [enableLink]="true"
       [nwbScreenshotFrame]="card.name$ | async | nwText"
       (itemChange)="onEntity($event)"
       #card="card"

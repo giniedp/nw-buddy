@@ -6,7 +6,7 @@ import { combineLatest, take, tap } from 'rxjs'
 
 import { NwDbService, NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
-import { ItemDetailModule } from '~/widgets/item-detail'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
 
 import { ComponentStore } from '@ngrx/component-store'
 import { GearsetSlotStore } from '~/data'
@@ -18,7 +18,7 @@ import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { shareReplayRefCount } from '~/utils'
 import { InventoryPickerService } from '../inventory/inventory-picker.service'
-import { StatusEffectDetailModule } from '~/widgets/status-effect-detail'
+import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
 import { Statuseffect } from '@nw-data/types'
 

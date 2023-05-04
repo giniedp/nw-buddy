@@ -31,7 +31,7 @@ export default defineConfig({
         plugins: [ new webpack.DefinePlugin({
           __VERSION__: JSON.stringify(env.VERSION),
           __NW_USE_PTR__: JSON.stringify(env.NW_USE_PTR),
-          __NW_DATA_URL__: JSON.stringify(""),
+          __NW_DATA_URL__: JSON.stringify(env.nwData.assetPath(env.NW_USE_PTR)),
           __NW_DEPLOY_URL__: JSON.stringify("")
         })]
       }

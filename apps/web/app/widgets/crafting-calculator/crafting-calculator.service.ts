@@ -93,7 +93,7 @@ export class CraftingCalculatorService implements OnDestroy {
     return getIngretientsFromRecipe(recipe).map(
       (it): Ingredient => ({
         id: it.ingredient,
-        type: it.type || 'Item', // TODO: data needs to be checked for consistency
+        type: it.type as any || 'Item', // TODO: data needs to be checked for consistency
         quantity: it.quantity,
       })
     )
@@ -104,7 +104,7 @@ export class CraftingCalculatorService implements OnDestroy {
     return getIngretientsFromRecipe(recipe).map(
       (it): Ingredient => ({
         id: it.ingredient,
-        type: it.type || 'Item', // TODO: data needs to be checked for consistency
+        type: it.type as any || 'Item', // TODO: data needs to be checked for consistency
         quantity: it.quantity,
       })
     )

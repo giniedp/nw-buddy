@@ -11,7 +11,7 @@ import { getIngretientsFromRecipe, getItemId, getRecipeForItem } from '~/nw/util
 import { ItemFrameModule } from '~/ui/item-frame'
 import { QuicksearchService } from '~/ui/quicksearch'
 import { ContentVisibilityDirective, HtmlHeadService } from '~/utils'
-import { ItemDetailModule } from '~/widgets/item-detail'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 function isTrophy(item: Crafting) {

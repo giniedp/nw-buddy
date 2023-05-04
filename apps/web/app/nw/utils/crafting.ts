@@ -90,9 +90,9 @@ export function getIngretientsFromRecipe(recipe: CraftingIngredients) {
     .filter((it) => it.match(/^Ingredient\d+$/))
     .map((_, i) => {
       return {
-        ingredient: recipe[`Ingredient${i + 1}`],
-        quantity: recipe[`Qty${i + 1}`],
-        type: recipe[`Type${i + 1}`],
+        ingredient: recipe[`Ingredient${i + 1}`] as string,
+        quantity: recipe[`Qty${i + 1}`] as number,
+        type: recipe[`Type${i + 1}`] as string,
       }
     })
 }

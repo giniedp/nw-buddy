@@ -8,6 +8,8 @@ import { NwModule } from '~/nw'
 import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/layout'
 import { QuicksearchService } from '~/ui/quicksearch'
 import { GearsetLoadoutItemComponent } from './loadout-item.component'
+import { animate, animateChild, query, stagger, style, transition, trigger } from '@angular/animations'
+import { sortBy } from 'lodash'
 
 @Component({
   standalone: true,
@@ -20,9 +22,20 @@ import { GearsetLoadoutItemComponent } from './loadout-item.component'
   host: {
     class: 'layout-content layout-pad',
   },
+  animations: [
+    trigger('list', [
+      transition('* => *', [
+        query(':enter', stagger(25, animateChild()), {
+          optional: true,
+        }),
+      ]),
+    ]),
+    trigger('fade', [transition('* => *', [style({ opacity: 0 }), animate('0.3s ease-out', style({ opacity: 1 }))])]),
+  ],
 })
 export class GearsetLoadoutListComponent {
 
+  protected trackByIndex = (i: number) => i
   protected readonly records$ = combineLatest({
     records: this.store.selectedRecords$,
     search: this.search.query,
@@ -32,7 +45,8 @@ export class GearsetLoadoutListComponent {
         return records
       }
       return records.filter((it) => it.name.toLocaleLowerCase().includes(search.toLocaleLowerCase()))
-    })
+    }),
+    map((list) => sortBy(list, (it) => it.name) )
   )
 
   public constructor(

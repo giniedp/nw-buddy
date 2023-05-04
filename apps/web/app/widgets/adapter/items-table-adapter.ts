@@ -1,6 +1,6 @@
 import { Inject, Injectable, Optional } from '@angular/core'
 import { ItemDefinitionMaster, Perks } from '@nw-data/types'
-import { GridOptions } from 'ag-grid-community'
+import { ColDef, GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwLinkService, NwService } from '~/nw'
@@ -23,6 +23,7 @@ import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTable
 import { assetUrl, humanize, shareReplayRefCount } from '~/utils'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
+import { COLS_ITEMDEFINITIONMASTER } from '@nw-data/cols'
 
 export type ItemsTableItem = ItemDefinitionMaster & {
   $perks: Perks[]
@@ -327,7 +328,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
         }),
       ],
     }
-  ))
+  )).pipe(map((options) => appendFields(options, Array.from(Object.entries(COLS_ITEMDEFINITIONMASTER)))))
 
   public entities: Observable<ItemsTableItem[]> = defer(() => {
     return combineLatest({
@@ -357,4 +358,31 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
   ) {
     super()
   }
+}
+
+
+
+function appendFields(options: GridOptions, fields: string[][]) {
+  for (const [field, type] of fields) {
+    const exists = options.columnDefs.find((col: ColDef) => col.colId?.toLowerCase() == field.toLowerCase())
+    if (exists) {
+      continue
+    }
+    const colDef: ColDef = {
+      colId: field,
+      headerValueGetter: () => humanize(field),
+      field: field,
+      hide: true,
+    }
+    colDef.filter = SelectFilter
+    colDef.filterParams = SelectFilter.params({
+      showSearch: true,
+    })
+    if (type.includes('number')) {
+      colDef.filter = 'agNumberColumnFilter'
+      colDef.filterParams = null
+    }
+    options.columnDefs.push(colDef)
+  }
+  return options
 }

@@ -16,7 +16,7 @@ import { PaginationModule } from '~/ui/pagination'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { ContentVisibilityDirective, HtmlHeadService, shareReplayRefCount, tapDebug } from '~/utils'
 import { IntersectionObserverModule } from '~/utils/intersection-observer'
-import { ItemDetailModule } from '~/widgets/item-detail'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ItemTrackerModule } from '~/widgets/item-tracker'
 import { ScreenshotModule } from '~/widgets/screenshot'
 

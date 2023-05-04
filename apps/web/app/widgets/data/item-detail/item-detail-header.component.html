@@ -1,0 +1,42 @@
+<div class="nw-item-header-bg"></div>
+<div class="nw-item-header-fg" *ngIf="named"></div>
+<a
+  [rarity]="rarity"
+  [nwbItemIcon]="iconOverride || entity"
+  [nwLink]="enableInfoLink ? entityId : null"
+  [nwLinkResource]="'item'"
+  class="aspect-square inline-block"
+  [class.w-12]="size === 'sm'"
+  [class.h-12]="size === 'sm'"
+  [class.w-[76px]]="size === 'md'"
+  [class.h-[76px]]="size === 'md'"
+  [class.w-20]="size === 'lg'"
+  [class.h-20]="size === 'lg'"
+>
+  <span class="italic font-caslon">{{ tierLabel }}</span>
+  <ng-content select=".icon-overlay"></ng-content>
+</a>
+<a
+  class="z-10"
+  nwbItemHeaderContent
+  [name]="name | nwText | nwTextBreak:' - '"
+  [nameLink]="enableLink ? entityLink : null"
+  [rarity]="rarity"
+  [rarityName]="rarityName | nwText"
+  [typeName]="typeName | nwText"
+  [sourceName]="size === 'sm' ? null : sourceLabel"
+  [skeleton]="isLoading"
+  *ngIf="!disableContent"
+>
+  <div class="header flex flex-col justify-end" *ngIf="enableTracker">
+    <nwb-item-marker [itemId]="entityId" class="text-right"></nwb-item-marker>
+    <nwb-gs-tracker
+      *ngIf="enableGsTracker"
+      [itemId]="entityId"
+      class="text-right mt-1 tooltip-left"
+      [emptyTip]="'Track Gear Score'"
+    ></nwb-gs-tracker>
+  </div>
+  <ng-content select=".content"></ng-content>
+</a>
+<ng-content></ng-content>

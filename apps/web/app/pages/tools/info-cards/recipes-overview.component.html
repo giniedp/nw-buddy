@@ -27,6 +27,7 @@
           <nwb-item-detail-header
             [enableTracker]="true"
             [enableInfoLink]="true"
+            [enableLink]="true"
             [class.opacity-40]="!(itemMarker.value$ | async)"
             class="transition-opacity"
           ></nwb-item-detail-header>
@@ -52,6 +53,7 @@
           [entityId]="item.itemId"
           class="flip-card-back transition-opacity"
           [enableInfoLink]="true"
+          [enableLink]="true"
           [disableInfo]="true"
           [class.opacity-40]="!(itemMarker.value$ | async)"
         ></nwb-item-card>

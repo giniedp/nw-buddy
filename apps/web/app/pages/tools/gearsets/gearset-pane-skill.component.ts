@@ -7,7 +7,7 @@ import { BehaviorSubject, combineLatest, filter, switchMap, tap } from 'rxjs'
 
 import { NwModule } from '~/nw'
 import { DataTableModule, DataTablePickerDialog } from '~/ui/data-table'
-import { ItemDetailModule } from '~/widgets/item-detail'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
 
 import { GearsetRecord, GearsetSkillSlot, GearsetSkillStore, SkillBuild, SkillBuildsDB, SkillBuildsStore } from '~/data'
 import { IconsModule } from '~/ui/icons'

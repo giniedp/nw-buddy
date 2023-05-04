@@ -7,7 +7,7 @@ import { Armorset } from './types'
 import { CommonModule } from '@angular/common'
 import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
-import { ItemDetailModule } from '~/widgets/item-detail'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({

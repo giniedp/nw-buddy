@@ -10,10 +10,10 @@ import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '~/nw/utils/const
 import { LayoutModule } from '~/ui/layout'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
-import { AbilityDetailModule } from '~/widgets/ability-detail'
-import { PerkDetailModule } from '~/widgets/perk-detail'
+import { AbilityDetailModule } from '~/widgets/data/ability-detail'
+import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
-import { StatusEffectDetailModule } from '~/widgets/status-effect-detail'
+import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 
 @Component({
   standalone: true,

@@ -7,6 +7,8 @@ import { NwDataService } from './nw-data.service'
 import { queryGemPerksWithAffix, queryMutatorDifficultiesWithRewards } from './nw-db-views'
 import { convertLootbuckets } from './utils/loot-buckets'
 import { convertLoottables } from './utils/loot-tables'
+import { getItemIdFromRecipe } from './utils/item'
+import { getIngretientsFromRecipe } from './utils/crafting'
 
 export function createIndex<T, K extends keyof T>(list: T[], id: K): Map<T[K], T> {
   const result = new CaseInsensitiveMap<T[K], T>()
@@ -79,7 +81,7 @@ function lookup<K, T>(getMap: () => Observable<Map<K, T>>) {
     return combineLatest({
       data: defer(() => getMap()),
       id: isObservable(id) ? id : of(id),
-    }).pipe(map(({ data, id }) => data.get(id)))
+    }).pipe(map(({ data, id }) => (id != null ? data.get(id) : null)))
   }
 }
 
@@ -88,7 +90,7 @@ export class NwDbService {
   public items = table(() => {
     const backsort = ['Ai', 'Playtest', 'Omega']
     let methods = this.data.apiMethodsByPrefix('itemdefinitionsMaster', 'itemdefinitionsMasterCommon')
-    methods = sortBy(methods, (it) => backsort.includes(it.suffix) ? `x${it.suffix}` : it.suffix)
+    methods = sortBy(methods, (it) => (backsort.includes(it.suffix) ? `x${it.suffix}` : it.suffix))
     return methods.map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
   })
   public itemsMap = indexBy(() => this.items, 'ItemID')
@@ -216,12 +218,30 @@ export class NwDbService {
 
   public recipes = table(() => [this.data.crafting()])
   public recipesMap = indexBy(() => this.recipes, 'RecipeID')
-  public recipesMapByItemId = indexBy(() => this.recipes, 'ItemID')
+  public recipesMapByItemId = indexGroupSetBy(
+    () => this.recipes,
+    (it) => getItemIdFromRecipe(it)
+  )
+  public recipesMapByRequiredAchievementId = indexBy(() => this.recipes, 'RequiredAchievementID')
+  public recipesMapByIngredients = indexGroupSetBy(
+    () => this.recipes,
+    (it) =>
+      getIngretientsFromRecipe(it)
+        .map((it) => it.ingredient)
+        .filter((it) => !!it)
+  )
   public recipe = lookup(() => this.recipesMap)
+  public recipeByAchievementId = lookup(() => this.recipesMapByRequiredAchievementId)
+  public recipesByIngredientId = lookup(() => this.recipesMapByIngredients)
+  public recipesByItemId = lookup(() => this.recipesMapByItemId)
 
   public recipeCategories = table(() => [this.data.craftingcategories()])
   public recipeCategoriesMap = indexBy(() => this.recipeCategories, 'CategoryID')
   public recipeCategory = lookup(() => this.recipeCategoriesMap)
+
+  public resources = table(() => [this.data.itemdefinitionsResources()])
+  public resourcesMap = indexBy(() => this.resources, 'ResourceID')
+  public resource = lookup(() => this.resourcesMap)
 
   public affixDefinitions = table(() => [this.data.affixdefinitions()])
   public affixDefinitionsMap = indexBy(() => this.affixDefinitions, 'AffixID')

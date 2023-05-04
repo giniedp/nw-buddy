@@ -6,7 +6,7 @@ import { LootTableEntry } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgCircleExclamation, svgLock, svgLockOpen } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
-import { ItemDetailModule } from '../item-detail'
+import { ItemDetailModule } from '../data/item-detail'
 
 @Component({
   standalone: true,

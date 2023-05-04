@@ -17,12 +17,12 @@ import { BehaviorSubject, combineLatest, filter, firstValueFrom, map, take, tap 
 
 import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
-import { ItemDetailModule } from '~/widgets/item-detail'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
 
 import { GearsetRecord, GearsetSlotStore, ItemInstance, ItemInstancesStore } from '~/data'
 import { EquipSlot, EquipSlotId, EQUIP_SLOTS, getItemId, getItemMaxGearScore } from '~/nw/utils'
 import { deferStateFlat, shareReplayRefCount, tapDebug } from '~/utils'
-import { ItemDetailComponent } from '~/widgets/item-detail/item-detail.component'
+import { ItemDetailComponent } from '~/widgets/data/item-detail/item-detail.component'
 import { InventoryPickerService } from '../inventory/inventory-picker.service'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import {

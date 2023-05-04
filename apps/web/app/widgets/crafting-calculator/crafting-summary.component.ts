@@ -7,12 +7,13 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { combineLatest, debounceTime, defer, map, ReplaySubject, startWith, switchMap } from 'rxjs'
 import { NwModule, NwService } from '~/nw'
 import { NwTradeskillService } from '~/nw/tradeskill'
-import { calculateCraftingReward, getItemId } from '~/nw/utils'
+import { calculateCraftingReward, getItemId, isHousingItem } from '~/nw/utils'
 import { DestroyService, shareReplayRefCount } from '~/utils'
 import { ItemTrackerModule } from '../item-tracker'
 import { TradeskillsModule } from '../tradeskills'
 import { CraftingCalculatorService } from './crafting-calculator.service'
 import { CraftingStepComponent } from './crafting-step.component'
+import { RouterModule } from '@angular/router'
 
 export interface SkillRow {
   id: string
@@ -31,6 +32,7 @@ export interface ResourceRow {
   finalPrice: number
   ignored?: boolean
   stocked?: boolean
+  link?: string | any[]
 }
 
 export const enum RowMode {
@@ -45,7 +47,7 @@ export const enum RowMode {
   templateUrl: './crafting-summary.component.html',
   styleUrls: ['./crafting-summary.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemTrackerModule, TradeskillsModule],
+  imports: [CommonModule, NwModule, RouterModule, ItemTrackerModule, TradeskillsModule],
   providers: [DestroyService],
 })
 export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
@@ -106,8 +108,12 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
     this.rowMode$.next(this.rowMode)
   }
 
-  public enableStocked(row: ResourceRow) {
-    this.rowMode.set(row.itemId, RowMode.Stock)
+  public toggleStock(row: ResourceRow) {
+    if(this.getRowMode(row.itemId) === RowMode.Stock) {
+      this.rowMode.set(row.itemId, RowMode.None)
+    } else {
+      this.rowMode.set(row.itemId, RowMode.Stock)
+    }
     this.rowMode$.next(this.rowMode)
   }
 
@@ -141,7 +147,8 @@ export class CraftingSummaryComponent implements OnInit, OnChanges, OnDestroy {
           inStock: 0,
           itemPrice: 0,
           finalPrice: 0,
-          finalQuantity: 0
+          finalQuantity: 0,
+          link: ['/', isHousingItem(node.item) ? 'housing' : 'items', 'table', node.itemId]
         })
       }
       const data = table.get(key)

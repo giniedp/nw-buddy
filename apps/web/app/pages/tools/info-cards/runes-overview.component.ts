@@ -7,7 +7,7 @@ import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { getIngretientsFromRecipe, getItemId, getItemIdFromRecipe } from '~/nw/utils'
 import { HtmlHeadService } from '~/utils'
-import { ItemDetailModule } from '~/widgets/item-detail'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 type RecipeWithItem = Crafting & {

@@ -28,14 +28,16 @@
     </span>
     <span class="ml-2"> &times; </span>
     <span class="ml-2 overflow-ellipsis overflow-hidden whitespace-nowrap" [nwText]="item.Name"></span>
-    <span class="ml-2"> &times; </span>
-    <nwb-price-tracker
-        [itemId]="itemId"
-        [emptyTip]="'Edit item price'"
-        [format]="'1.2-2'"
-        class="ml-2 tooltip-left tooltip-info text-primary whitespace-nowrap"
-        #itemTracker
-      ></nwb-price-tracker>
+    <div class="price-tracking">
+      <span class="ml-2"> &times; </span>
+      <nwb-price-tracker
+          [itemId]="itemId"
+          [emptyTip]="'Edit item price'"
+          [format]="'1.2-2'"
+          class="ml-2 tooltip-left tooltip-info text-primary whitespace-nowrap"
+          #itemTracker
+        ></nwb-price-tracker>
+    </div>
   </div>
   <span class="flex-1"></span>
 

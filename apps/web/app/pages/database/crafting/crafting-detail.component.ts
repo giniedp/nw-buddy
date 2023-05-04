@@ -9,7 +9,7 @@ import { getItemIconPath, getItemIdFromRecipe } from '~/nw/utils'
 import { LayoutModule } from '~/ui/layout'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { CraftingCalculatorModule } from '~/widgets/crafting-calculator'
-import { ItemDetailModule } from '~/widgets/item-detail'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({

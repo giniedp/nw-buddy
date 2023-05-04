@@ -9,7 +9,7 @@ import { EquipSlot, EquipSlotId, EQUIP_SLOTS, getItemId } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical, svgPlus } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
-import { ItemDetailModule } from '~/widgets/item-detail'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
 
 export interface GearsetSquareSlotState {
   slot: EquipSlot

@@ -1,15 +1,6 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  ElementRef,
-  HostBinding,
-  HostListener,
-  Input,
-} from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, HostListener, Input } from '@angular/core'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { assetUrl } from '~/utils'
-import { env } from '../../environments/env'
 import { getItemIconPath, getItemRarity } from './utils'
 import { NW_FALLBACK_ICON } from './utils/constants'
 
@@ -99,7 +90,6 @@ const transparentPixel =
   },
 })
 export class NwImageComponent {
-
   @Input()
   public set nwImage(value: string | ItemDefinitionMaster | Housingitems) {
     if (!value) {
@@ -137,7 +127,6 @@ export class NwImageComponent {
     this.isLoaded = true
     this.cdRef.markForCheck()
   }
-
 
   private updateSrc(value: string) {
     value = assetUrl(value)
