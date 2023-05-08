@@ -24,11 +24,18 @@ declare global {
   namespace Cypress {
     interface Chainable {
       mount: typeof mount
+      getRef: typeof cy.get
+      getLike: typeof cy.get
     }
   }
 }
 
 Cypress.Commands.add('mount', mount)
-
+Cypress.Commands.add('getRef', (selector, ...args) => {
+  return cy.get(`[data-cy="${selector}"]`, ...args)
+})
+Cypress.Commands.add('getLike', (selector, ...args) => {
+  return cy.get(`[data-cy*="${selector}"]`, ...args)
+})
 // Example use:
 // cy.mount(MyComponent)

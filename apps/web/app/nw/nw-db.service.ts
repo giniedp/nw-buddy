@@ -96,6 +96,8 @@ export class NwDbService {
   public itemsMap = indexBy(() => this.items, 'ItemID')
   public item = lookup(() => this.itemsMap)
   public itemsBySalvageAchievement = indexGroupBy(() => this.items, 'SalvageAchievement')
+  public itemsByIngredientCategoryMap = indexGroupSetBy(() => this.items, (it) => it.IngredientCategories)
+  public itemsByIngredientCategory = lookup(() => this.itemsByIngredientCategoryMap)
 
   public housingItems = table(() => [this.data.housingitems()])
   public housingItemsMap = indexBy(() => this.housingItems, 'HouseItemID')

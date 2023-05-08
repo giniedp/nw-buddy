@@ -1,0 +1,65 @@
+<table class="table table-compact w-full">
+  <tbody>
+    <ng-container *ngFor="let row of rows$ | async; trackBy: trackByIndex">
+      <tr [nwbItemDetail]="row.itemId" #detail="itemDetail" [class.opacity-75]="row.ignored">
+        <td width="0" class="p-1 flex items-center">
+          <picture
+            [nwIcon]="detail.icon$ | async"
+            class="w-10 h-10 mr-2 hover:cursor-pointer"
+            [class.grayscale]="row.ignored"
+            (click)="toggleIgnore(row)"
+          ></picture>
+          <div [class.text-accent]="row.stocked">
+            <span
+              (click)="toggleStock(row)"
+              class="inline-block outline outline-2 outline-transparent outline-offset-2 rounded-sm hover:outline-primary hover:cursor-pointer"
+            >
+              {{ row.amount | number }}
+            </span>
+            <div *ngIf="row.stocked" class="inline-flex">
+              (
+              <span> - </span>
+              <nwb-stock-tracker
+                [itemId]="row.itemId"
+                [emptyTip]="'Edit stock value'"
+                class="tooltip-right tooltip-accent whitespace-nowrap text-accent"
+                #stockTracker
+              ></nwb-stock-tracker>
+              )
+            </div>
+            <span> × </span>
+            <a [nwText]="detail.name$ | async" [routerLink]="row.link" [class.line-through]="row.ignored" class="hover:underline"></a>
+          </div>
+        </td>
+        <td
+          class="w-0 text-right whitespace-nowrap cursor-pointer"
+          [class.line-through]="row.ignored"
+          (click)="tracker.openInput($event)"
+        >
+          <div class="flex flex-col items-end text-xs">
+            <nwb-price-tracker
+              [itemId]="row.itemId"
+              [emptyTip]="'Edit item price'"
+              [format]="'1.2-2'"
+              class="ml-2 tooltip-left tooltip-info text-primary whitespace-nowrap"
+              #tracker
+            ></nwb-price-tracker>
+            <span *ngIf="row.price && !tracker.showInput">
+              {{ row.price | number : '1.2-2' }}
+            </span>
+          </div>
+        </td>
+      </tr>
+    </ng-container>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td colspan="2">
+        <div class="flex gap-1 justify-end">
+          <img [nwImage]="'assets/icons/icon_crown.png'" class="inline-block w-5 h-5" />
+          <span>{{ value$ | async | number : '1.2-2' }}</span>
+        </div>
+      </td>
+    </tr>
+  </tfoot>
+</table>

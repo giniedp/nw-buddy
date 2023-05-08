@@ -129,6 +129,7 @@
     "compression": "1.7.4",
     "concurrently": "8.0.1",
     "crc-32": "1.2.2",
+    "css-loader": "6.7.3",
     "cypress": "12.11.0",
     "daisyui": "2.51.6",
     "date-fns": "2.29.3",

@@ -1,0 +1,11 @@
+<ng-container *ngIf="vm$ | async; let vm">
+
+  <div class="tabs">
+    <a class="tab tab-lifted flex-1" [class.tab-active]="vm.isTabResources" (click)="patchState({ tab: 'resources' })">Resources</a>
+    <a class="tab tab-lifted flex-1" [class.tab-active]="vm.isTabSkills" (click)="patchState({ tab: 'skills' })">Skills</a>
+  </div>
+  <div class="bg-base-100 rounded-b-lg border border-base-300 border-t-0">
+    <tab-resources [tree]="vm.tree" *ngIf="vm.isTabResources"></tab-resources>
+    <tab-tradeskills [tree]="vm.tree" *ngIf="vm.isTabSkills"></tab-tradeskills>
+  </div>
+</ng-container>

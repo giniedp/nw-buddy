@@ -1,5 +1,5 @@
 <span class="w-5 h-5 flex justify-center items-center bg-base-100" *ngIf="!disabled">
-  <ng-container *ngIf="open; then iconMinus; else iconPlus"></ng-container>
+  <ng-container *ngIf="value; then iconMinus; else iconPlus"></ng-container>
 </span>
 
 <ng-template #iconPlus>

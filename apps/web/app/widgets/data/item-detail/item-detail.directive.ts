@@ -6,6 +6,7 @@ import { ItemDetailStore } from './item-detail.store'
 @Directive({
   standalone: true,
   selector: '[nwbItemDetail]',
+  exportAs: 'itemDetail',
   providers: [
     {
       provide: ItemDetailStore,
