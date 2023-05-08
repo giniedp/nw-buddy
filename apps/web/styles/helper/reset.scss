@@ -1,9 +1,11 @@
-
 html,
 body {
   @apply bg-black text-slate-50;
   font-weight: 500;
-  width: 100%;
+}
+
+html:not(.cypress),
+body:not(.cypress) {
   position: fixed;
   top: 0;
   left: 0;

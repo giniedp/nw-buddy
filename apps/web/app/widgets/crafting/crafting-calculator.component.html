@@ -1,0 +1,66 @@
+<ng-container *ngIf="vm$ | async; let vm">
+  <div class="flex flex-row items-center bg-base-300">
+    <div class="form-control">
+      <label class="input-group flex-w">
+        <span class="font-bold">Amount</span>
+        <input
+          data-cy="amount"
+          type="number"
+          min="1"
+          [ngModel]="vm.amount"
+          (ngModelChange)="amount = $event"
+          class="input input-bordered input-sm pr-0 w-20"
+        />
+      </label>
+    </div>
+    <div class="flex-1"></div>
+    <ul class="menu menu-horizontal">
+      <li
+        [tooltip]="'Edit Bonus Chance'"
+        (click)="isToolOpen = !isToolOpen"
+        cdkOverlayOrigin
+        #chancesOverlay="cdkOverlayOrigin"
+      >
+        <a>
+          <nwb-icon [icon]="iconOptions" class="w-4 h-4"></nwb-icon>
+        </a>
+      </li>
+      <li
+        [tooltip]="'Toggle net/gross mode'"
+        (click)="toggleQuantityMode()"
+        [class.text-primary]="vm.amountMode === 'gross'"
+      >
+        <a>
+          <nwb-icon [icon]="iconMode" class="w-4 h-4"></nwb-icon>
+        </a>
+      </li>
+      <li [tooltip]="'Open price importer'">
+        <nwb-price-importer-button></nwb-price-importer-button>
+      </li>
+    </ul>
+  </div>
+  <div data-cy="body" class="p-4 pt-0" *ngIf="vm.recipe">
+    <nwb-crafting-step [step]="vm.tree" [amount]="vm.amount" [amountMode]="vm.amountMode"></nwb-crafting-step>
+    <a [nwGamingToolsLink]="vm.recipe" class="btn btn-block btn-ghost gap-2">
+      <img [nwImage]="'assets/gaming-tools-logo.svg'" class="w-14" width="1020" height="600" />
+      Calculator
+    </a>
+    <nwb-crafting-summary
+      [step]="vm.tree"
+      [amount]="vm.amount"
+      [amountMode]="vm.amountMode"
+      class="mt-2"
+    ></nwb-crafting-summary>
+  </div>
+
+  <ng-template
+    cdkConnectedOverlay
+    [cdkConnectedOverlayOrigin]="chancesOverlay"
+    [cdkConnectedOverlayOpen]="isToolOpen"
+    [cdkConnectedOverlayHasBackdrop]="true"
+    (backdropClick)="isToolOpen = false"
+    (detach)="isToolOpen = false"
+  >
+    <nwb-crafting-chance-menu></nwb-crafting-chance-menu>
+  </ng-template>
+</ng-container>

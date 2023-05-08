@@ -1,7 +1,7 @@
 :host {
   display: block;
   position: relative;
-
+  line-height: 1;
   .main-row {
     height: 42px;
   }
@@ -28,20 +28,12 @@
     nwb-crafting-step-toggle {
       display: inline-flex;
     }
-    .price-tracking {
-      display: none;
-    }
     .steps-container, .options-container {
       border-left: 2px solid currentColor;
       margin-left: 15px;
       nwb-crafting-step {
         margin-left: 15px;
       }
-    }
-    .options-container {
-      border-left: 2px solid currentColor;
-      margin-left: 15px;
-      padding-left: 12px;
     }
   }
 

@@ -5,7 +5,7 @@ import { combineLatest, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { PaginationModule } from '~/ui/pagination'
 import { shareReplayRefCount } from '~/utils'
-import { CraftingCalculatorModule } from '~/widgets/crafting-calculator'
+import { CraftingCalculatorComponent } from '~/widgets/crafting'
 import { ItemDetailModule, ItemDetailStore } from '~/widgets/data/item-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
@@ -28,7 +28,7 @@ export interface Tab {
     ItemDetailModule,
     StatusEffectDetailModule,
     PerkDetailModule,
-    CraftingCalculatorModule,
+    CraftingCalculatorComponent,
     PaginationModule,
   ],
   host: {

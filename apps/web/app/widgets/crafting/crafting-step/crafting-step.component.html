@@ -1,0 +1,94 @@
+<ng-container *ngIf="vm$ | async; let vm">
+  <div class="flex flex-row items-center gap-1 main-row" data-cy="step" *ngIf="vm.item; let item">
+    <nwb-crafting-step-toggle
+      class="w-8 h-full flex-none"
+      [ngModel]="vm.expand"
+      (ngModelChange)="setExpand($event)"
+      [disabled]="!vm.hasChildren"
+    ></nwb-crafting-step-toggle>
+
+    <picture
+      [nwIcon]="item"
+      class="w-8 h-8 nw-icon flex-none"
+      [class.cursor-pointer]="!!vm.category"
+      [class.cursor-default]="!vm.category"
+      [cdkMenuTriggerFor]="vm.category ? tplOptions : null"
+    ></picture>
+
+    <div class="flex flex-col items-center justify-center" [tooltip]="vm.amount.bonus ? bonusTip : null">
+      <span data-cy="amount">
+        {{ vm.amount.net }}
+      </span>
+      <span data-cy="bonusPercent" *ngIf="vm.amount.bonus" class="text-xs text-success">
+        +{{ vm.amount.bonusPercent | percent }}
+      </span>
+      <ng-template #bonusTip>
+        <div class="p-2">
+          {{ vm.amount.net }} + <span class="text-success">{{ vm.amount.bonus }}</span> =
+          {{ vm.amount.net + vm.amount.bonus }}
+        </div>
+      </ng-template>
+    </div>
+    &times;
+    <span
+      data-cy="name"
+      class="overflow-ellipsis overflow-hidden whitespace-nowrap"
+      *ngIf="item.Name | nwText; let name"
+      [title]="name"
+    >
+      {{ name }}
+    </span>
+
+    <span class="flex-1"></span>
+
+    <label class="flex flex-col items-end text-sm" (click)="itemTracker.openInput($event)">
+      <nwb-price-tracker
+        [itemId]="vm.itemId"
+        [emptyTip]="'Edit item price'"
+        [format]="'1.2-2'"
+        class="ml-2 tooltip-left tooltip-info text-primary whitespace-nowrap text-xs"
+        #itemTracker
+      ></nwb-price-tracker>
+      <ng-container *ngIf="itemTracker.value; let price">
+        <ng-container *ngIf="!vm.amountIsGross">
+          <span [class.text-xs]="!!vm.amount.bonus">
+            {{ vm.amount.net * price | number : '1.2-2' }}
+          </span>
+          <span *ngIf="vm.amount.bonus" class="text-success text-xs">
+            + {{ vm.amount.bonus * price | number : '1.2-2' }}
+          </span>
+        </ng-container>
+        <span *ngIf="vm.amountIsGross" [class.text-success]="!!vm.amount.bonus">
+          {{ vm.amount.gross * price | number : '1.2-2' }}
+        </span>
+      </ng-container>
+    </label>
+  </div>
+
+  <div *ngIf="vm.expand && vm.hasChildren" class="steps-container" data-cy="step children">
+    <nwb-crafting-step
+      *ngFor="let step of vm.children; trackBy: trackByIndex"
+      [step]="step"
+      [amount]="vm.amount.net * step.ingredient.quantity"
+      [amountMode]="vm.amountMode"
+    ></nwb-crafting-step>
+  </div>
+
+  <ng-template #tplOptions>
+    <ul class="menu menu-compact bg-base-300 rounded-md shadow-md" cdkMenu>
+      <li
+        *ngFor="let item of vm.options"
+        [nwbItemDetail]="item"
+        #itemDetail="itemDetail"
+        [class.text-primary]="vm.itemId === item"
+        cdkMenuItem
+        (cdkMenuItemTriggered)="setSelection(item)"
+      >
+        <a>
+          <picture [nwIcon]="itemDetail.entity$ | async" class="w-7 h-7 flex-none"></picture>
+          {{ itemDetail.name$ | async | nwText }}
+        </a>
+      </li>
+    </ul>
+  </ng-template>
+</ng-container>
