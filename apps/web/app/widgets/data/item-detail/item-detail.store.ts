@@ -7,8 +7,7 @@ import {
   ItemDefinitionMaster,
   ItemdefinitionsConsumables,
   ItemdefinitionsResources,
-  Perkbuckets,
-  Perks,
+  Perks
 } from '@nw-data/types'
 import { sortBy } from 'lodash'
 import { combineLatest, map, switchMap } from 'rxjs'
@@ -20,6 +19,7 @@ import {
   getItemIconPath,
   getItemIdFromRecipe,
   getItemMaxGearScore,
+  getItemPerkBucketIds,
   getItemPerkBucketKeys,
   getItemPerkKeys,
   getItemRarity,
@@ -29,18 +29,17 @@ import {
   getItemTierAsRoman,
   getItemTypeName,
   getPerkTypeWeight,
-  getPerkbucketPerkIds,
-  getPerkbucketPerks,
   getPerksInherentMODs,
   hasItemGearScore,
   hasPerkInherentAffix,
   isItemHeargem,
   isItemNamed,
   isPerkGem,
-  isPerkItemIngredient,
+  isPerkItemIngredient
 } from '~/nw/utils'
 import { NW_MAX_GEAR_SCORE_BASE } from '~/nw/utils/constants'
-import { humanize, mapProp, shareReplayRefCount, tapDebug } from '~/utils'
+import { PerkBucket, getPerkBucketPerkIDs, getPerkBucketPerks } from '~/nw/utils/perk-buckets'
+import { humanize, mapProp, shareReplayRefCount } from '~/utils'
 import { ModelViewerService } from '../../model-viewer/model-viewer.service'
 
 export interface PerkDetail {
@@ -48,7 +47,7 @@ export interface PerkDetail {
   itemGS: number
   key: string
   editable?: boolean
-  bucket?: Perkbuckets
+  bucket?: PerkBucket
   perk?: Perks
   icon?: string
   text?: Array<{ label: string | string[]; description: string | string[] }>
@@ -82,6 +81,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public readonly consumable$ = this.select(this.db.consumable(this.entityId$), (it) => it)
   public readonly resource$ = this.select(this.db.resource(this.entityId$), (it) => it)
   public readonly resourcePerkIds$ = this.select(this.db.perkBucketsMap, this.resource$, selectResourcePerkIds)
+  public readonly perkBucketIds$ = this.select(this.item$, (item) => getItemPerkBucketIds(item))
   public readonly entity$ = this.select(this.item$, this.housingItem$, (item, housingItem) => item || housingItem)
   public readonly salvageAchievementId$ = this.select(this.item$, (it) => it?.SalvageAchievement)
   public readonly salvageAchievementRecipe$ = this.select(
@@ -94,23 +94,27 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
     if (!it) {
       return null
     }
-    return Array.from(it.values()).map((recipe) => {
-      return {
-        recipe,
-        itemId: getItemIdFromRecipe(recipe),
-      }
-    }).filter((it) => !!it.itemId)
+    return Array.from(it.values())
+      .map((recipe) => {
+        return {
+          recipe,
+          itemId: getItemIdFromRecipe(recipe),
+        }
+      })
+      .filter((it) => !!it.itemId)
   })
   public readonly recipes$ = this.select(this.db.recipesByItemId(this.entityId$), (it) => {
     if (!it) {
       return null
     }
-    return Array.from(it.values()).map((recipe) => {
-      return {
-        recipe,
-        itemId: getItemIdFromRecipe(recipe),
-      }
-    }).filter((it) => !!it.itemId)
+    return Array.from(it.values())
+      .map((recipe) => {
+        return {
+          recipe,
+          itemId: getItemIdFromRecipe(recipe),
+        }
+      })
+      .filter((it) => !!it.itemId)
   })
 
   public readonly perksDetails$ = this.select(
@@ -288,12 +292,12 @@ function selectPerkDetails({
   item: ItemDefinitionMaster
   itemGS: number
   perks: Map<string, Perks>
-  buckets: Map<string, Perkbuckets>
+  buckets: Map<string, PerkBucket>
   perkOverride: Record<string, string>
 }): PerkDetail[] {
   const bucket = buckets.get(item?.ItemID)
   if (isPerkItemIngredient(item) && bucket) {
-    return getPerkbucketPerks(bucket, perks)?.map((perk, i) => {
+    return getPerkBucketPerks(bucket, perks)?.map((perk, i) => {
       return {
         item: item,
         itemGS: itemGS || NW_MAX_GEAR_SCORE_BASE,
@@ -328,7 +332,7 @@ function selectPerkBucketDetails({
   item: ItemDefinitionMaster
   itemGS: number
   perks: Map<string, Perks>
-  buckets: Map<string, Perkbuckets>
+  buckets: Map<string, PerkBucket>
   perkOverride: Record<string, string>
 }): PerkDetail[] {
   const result = getItemPerkBucketKeys(item).map((key) => ({
@@ -346,7 +350,7 @@ function selectPerkInfos(data: {
   item: ItemDefinitionMaster
   itemGS: number
   perks: Map<string, Perks>
-  buckets: Map<string, Perkbuckets>
+  buckets: Map<string, PerkBucket>
   affixstats: Map<string, Affixstats>
   perkOverride: Record<string, string>
 }) {
@@ -416,10 +420,10 @@ function selectStatusEffectIds(consumable: ItemdefinitionsConsumables, housing: 
   return [...(consumable?.AddStatusEffects || []), housing?.HousingStatusEffect].filter((it) => !!it)
 }
 
-function selectResourcePerkIds(buckets: Map<string, Perkbuckets>, resource: ItemdefinitionsResources) {
+function selectResourcePerkIds(buckets: Map<string, PerkBucket>, resource: ItemdefinitionsResources) {
   if (!resource) {
     return null
   }
   const bucket = buckets.get(resource.PerkBucket)
-  return getPerkbucketPerkIds(bucket)
+  return getPerkBucketPerkIDs(bucket)
 }

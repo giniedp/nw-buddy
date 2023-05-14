@@ -1,0 +1,12 @@
+<ng-container *ngIf="vm$ | async; let vm">
+  <div class="tabs tabs-boxed flex-nowrap gap-1 bg-transparent p-2">
+    <ng-container *ngFor="let tab of vm.tabs">
+      <a class="tab tab-xs p-1 h-auto" [class.tab-active]="tab.id === vm.tab.id" (click)="patchState({ tabId: tab.id })">
+        {{ tab.label }}
+        <span class="badge badge-xs rounded-md ml-1">{{ tab.chance | percent }}</span>
+
+      </a>
+    </ng-container>
+  </div>
+  <nwb-perk-bucket-detail [perkBucketId]="vm.tab?.bucketId" [itemId]="vm.itemId" class="px-4 pb-4"></nwb-perk-bucket-detail>
+</ng-container>

@@ -7,12 +7,13 @@ import { PaginationModule } from '~/ui/pagination'
 import { shareReplayRefCount } from '~/utils'
 import { CraftingCalculatorComponent } from '~/widgets/crafting'
 import { ItemDetailModule, ItemDetailStore } from '~/widgets/data/item-detail'
+import { PerkBucketDetailModule } from '~/widgets/data/perk-bucket-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { ModelViewerService } from '~/widgets/model-viewer'
 
 export interface Tab {
-  id: 'effects' | 'perks' | 'unlocks' | 'craftable' | 'recipes'
+  id: 'effects' | 'perks' | 'unlocks' | 'craftable' | 'recipes' | 'perks'
   label: string
 }
 
@@ -30,9 +31,10 @@ export interface Tab {
     PerkDetailModule,
     CraftingCalculatorComponent,
     PaginationModule,
+    PerkBucketDetailModule
   ],
   host: {
-    class: 'layout-content',
+    class: 'block',
   },
 })
 export class ItemTabsComponent extends ItemDetailStore {
@@ -43,10 +45,12 @@ export class ItemTabsComponent extends ItemDetailStore {
 
   protected trackByIndex = (i: number) => i
   protected vm$ = combineLatest({
+    entityId: this.select((it) => it.entityId),
     grantsEffects: this.statusEffectsIds$,
     resourcePerks: this.resourcePerkIds$,
     unlocksRecipe: this.salvageAchievementRecipe$,
     craftableRecipes: this.craftableRecipes$,
+    perkBucketIds: this.perkBucketIds$,
     recipes: this.recipes$,
     fragment: this.route.fragment,
   })
@@ -84,6 +88,12 @@ export class ItemTabsComponent extends ItemDetailStore {
           tabs.push({
             id: 'craftable',
             label: 'Used to craft' + (count > 10 ?  ` (${count})` : ''),
+          })
+        }
+        if (data.perkBucketIds?.length) {
+          tabs.push({
+            id: 'perks',
+            label: `Perk Buckets`,
           })
         }
 

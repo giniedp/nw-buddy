@@ -5,8 +5,7 @@ import {
   ItemdefinitionsArmor,
   ItemdefinitionsRunes,
   ItemdefinitionsWeapons,
-  Perkbuckets,
-  Perks,
+  Perks
 } from '@nw-data/types'
 import type { AttributeRef } from '../attributes/nw-attributes'
 import { NW_MAX_GEAR_SCORE, NW_MAX_GEAR_SCORE_UPGRADABLE, NW_MIN_GEAR_SCORE } from './constants'
@@ -155,10 +154,6 @@ export function getItemPerkBucketKeys(item: ItemDefinitionMaster) {
 
 export function getItemPerkBucketIds(item: ItemDefinitionMaster) {
   return [item.PerkBucket1, item.PerkBucket2, item.PerkBucket3, item.PerkBucket4, item.PerkBucket5].filter((it) => !!it)
-}
-
-export function getItemPerkBucket(item: ItemDefinitionMaster, buckets: Map<string, Perkbuckets>) {
-  return item && getItemPerkBucketIds(item).map((it) => buckets.get(it))
 }
 
 export function getItemMaxGearScore(item: ItemDefinitionMaster, fallback = true) {

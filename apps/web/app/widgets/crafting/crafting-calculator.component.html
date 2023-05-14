@@ -41,16 +41,16 @@
   </div>
   <div data-cy="body" class="p-4 pt-0" *ngIf="vm.recipe">
     <nwb-crafting-step [step]="vm.tree" [amount]="vm.amount" [amountMode]="vm.amountMode"></nwb-crafting-step>
-    <a [nwGamingToolsLink]="vm.recipe" class="btn btn-block btn-ghost gap-2">
-      <img [nwImage]="'assets/gaming-tools-logo.svg'" class="w-14" width="1020" height="600" />
-      Calculator
-    </a>
     <nwb-crafting-summary
       [step]="vm.tree"
       [amount]="vm.amount"
       [amountMode]="vm.amountMode"
       class="mt-2"
     ></nwb-crafting-summary>
+    <a [nwGamingToolsLink]="vm.recipe" class="btn btn-block btn-ghost gap-2">
+      <img [nwImage]="'assets/gaming-tools-logo.svg'" class="w-14" width="1020" height="600" />
+      Calculator
+    </a>
   </div>
 
   <ng-template

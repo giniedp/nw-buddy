@@ -9,6 +9,7 @@ import { convertLootbuckets } from './utils/loot-buckets'
 import { convertLoottables } from './utils/loot-tables'
 import { getItemIdFromRecipe } from './utils/item'
 import { getIngretientsFromRecipe } from './utils/crafting'
+import { convertPerkBuckets } from './utils/perk-buckets'
 
 export function createIndex<T, K extends keyof T>(list: T[], id: K): Map<T[K], T> {
   const result = new CaseInsensitiveMap<T[K], T>()
@@ -158,7 +159,7 @@ export class NwDbService {
   )
   public perksByAffix = lookup(() => this.perksByAffixMap)
 
-  public perkBuckets = table(() => [this.data.perkbuckets()])
+  public perkBuckets = table(() => [this.data.perkbuckets().pipe(map(convertPerkBuckets))])
   public perkBucketsMap = indexBy(() => this.perkBuckets, 'PerkBucketID')
   public perkBucket = lookup(() => this.perkBucketsMap)
 

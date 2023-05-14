@@ -1,7 +1,7 @@
-import { Ability, Affixstats, ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
+import { Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/types'
+import { eqCaseInsensitive } from '~/utils'
 import { getAffixMODs } from './affix'
 import { patchPrecision } from './precision'
-import { eqCaseInsensitive } from '~/utils'
 
 const PERK_SORT_WEIGHT = {
   Inherent: 0,
@@ -9,15 +9,15 @@ const PERK_SORT_WEIGHT = {
   Generated: 2,
 }
 
-export function isPerkInherent(perk: Perks | Perkbuckets) {
+export function isPerkInherent(perk: Pick<Perks, 'PerkType'>) {
   return perk?.PerkType === 'Inherent'
 }
 
-export function isPerkGem(perk: Perks | Perkbuckets) {
+export function isPerkGem(perk: Pick<Perks, 'PerkType'>) {
   return perk?.PerkType === 'Gem'
 }
 
-export function isPerkGenerated(perk: Perks | Perkbuckets) {
+export function isPerkGenerated(perk: Pick<Perks, 'PerkType'>) {
   return perk?.PerkType === 'Generated'
 }
 

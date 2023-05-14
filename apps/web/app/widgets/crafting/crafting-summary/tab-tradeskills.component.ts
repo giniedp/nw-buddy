@@ -11,6 +11,7 @@ import { CraftingStepWithAmount, SkillRow, SummaryRow } from './types'
 import { combineLatest, map, of, shareReplay, switchMap } from 'rxjs'
 import { CraftingCalculatorService } from '../crafting-calculator.service'
 import { Crafting, GameEvent } from '@nw-data/types'
+import { calculateCraftingReward } from '~/nw/utils'
 
 @Component({
   standalone: true,
@@ -92,7 +93,8 @@ function aggregateSkills(rows: Array<{ recipe: Crafting; event: GameEvent; amoun
         xp: 0,
       })
     }
-    result.get(skill.ID).xp += row.amount * row.event?.CategoricalProgressionReward || 0
+
+    result.get(skill.ID).xp += calculateCraftingReward(row.recipe, row.event) * row.amount || 0
   }
   return Array.from(result.values())
 }

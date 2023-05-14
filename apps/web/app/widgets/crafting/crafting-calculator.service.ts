@@ -5,12 +5,11 @@ import { CharacterStore } from '~/data'
 import { NwDbService } from '~/nw'
 import { calculateBonusItemChance, getIngretientsFromRecipe, getItemIdFromRecipe, getRecipeForItem } from '~/nw/utils'
 import { eqCaseInsensitive, shareReplayRefCount } from '~/utils'
-import { AmountMode, AmountDetail, CraftingStep, Ingredient } from './types'
-import { NwTradeskillService } from '~/nw/tradeskill'
+import { AmountDetail, AmountMode, CraftingStep, Ingredient } from './types'
 
 @Injectable({ providedIn: 'root' })
 export class CraftingCalculatorService {
-  public constructor(private db: NwDbService, private char: CharacterStore, private tradeskills: NwTradeskillService) {
+  public constructor(private db: NwDbService, private char: CharacterStore) {
     //
   }
 
@@ -186,13 +185,8 @@ export class CraftingCalculatorService {
     return this.db.gameEvent(recipe?.GameEventID)
   }
 
-  private clampSelection({ ingredient, options, selection }: CraftingStep) {
-    const preference = selection // TODO: this.craftPref.categories.get(ingredient.id)
-    const result =
-      options.find((it) => eqCaseInsensitive(it, selection)) ||
-      options.find((it) => eqCaseInsensitive(it, preference)) ||
-      options[0]
-    return result
+  private clampSelection({ options, selection }: CraftingStep) {
+    return options.find((it) => eqCaseInsensitive(it, selection)) || options[0]
   }
 
   public getCraftBonus(step: CraftingStep): Observable<number> {

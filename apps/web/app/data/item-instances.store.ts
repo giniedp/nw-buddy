@@ -1,18 +1,19 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
+import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { sortBy } from 'lodash'
-import { combineLatest, defer, Subject, switchMap } from 'rxjs'
+import { Subject, combineLatest, defer, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw/nw-db.service'
 
 import { getItemPerkInfos, getItemRarity, getPerkTypeWeight } from '~/nw/utils'
+import { PerkBucket } from '~/nw/utils/perk-buckets'
 import { ItemInstanceRecord, ItemInstancesDB } from './item-instances.db'
 
 export interface ItemInstancesState {
   records: ItemInstanceRecord[]
   items: Map<string, ItemDefinitionMaster>
   perks: Map<string, Perks>
-  buckets: Map<string, Perkbuckets>
+  buckets: Map<string, PerkBucket>
 }
 
 export interface ItemInstanceRow {
@@ -27,7 +28,7 @@ export interface ItemInstanceRow {
   /**
    * The game perks referenced by the record
    */
-  perks?: Array<{ key: string; perk?: Perks; bucket?: Perkbuckets }>
+  perks?: Array<{ key: string; perk?: Perks; bucket?: PerkBucket }>
   /**
    * The items current rarity
    */

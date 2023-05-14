@@ -3055,6 +3055,13 @@
   dependencies:
     "@hapi/hoek" "^9.0.0"
 
+"@hirez_io/auto-spies-core@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@hirez_io/auto-spies-core/-/auto-spies-core-2.0.0.tgz#effbee2bfdfeb6ccc8fc38a8f000f3eae08132e5"
+  integrity sha512-UDS7KzYStKwfQmNdibQqqY514p6cEIlBexMnR73VNhG6csYADKj7IcZe9pfHhyynALqyz8TB0Grfa5mTVJGBDQ==
+  dependencies:
+    javascript-stringify "2.1.0"
+
 "@hirez_io/observer-spy@2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@hirez_io/observer-spy/-/observer-spy-2.2.0.tgz#3b1df531ba333a9a6cbbec0333d3fbdc4c68cc3c"
@@ -12766,6 +12773,13 @@ jake@^10.8.5:
     filelist "^1.0.1"
     minimatch "^3.0.4"
 
+jasmine-auto-spies@7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/jasmine-auto-spies/-/jasmine-auto-spies-7.0.0.tgz#2a67ef83038fdd706b81b64ddc707ad5dcd9890f"
+  integrity sha512-65eNjEbj5oVNMwMmrQuBv12yLh2GxHa4//CoPFs/oVftlSre+5aNp0ev/guVqZMBySSeUC/RWVldPojv03cfFw==
+  dependencies:
+    "@hirez_io/auto-spies-core" "2.0.0"
+
 jasmine-core@4.6.0, jasmine-core@^4.1.0:
   version "4.6.0"
   resolved "https://registry.yarnpkg.com/jasmine-core/-/jasmine-core-4.6.0.tgz#6884fc3d5b66bf293e422751eed6d6da217c38f5"
@@ -12777,6 +12791,11 @@ jasmine-spec-reporter@7.0.0:
   integrity sha512-OtC7JRasiTcjsaCBPtMO0Tl8glCejM4J4/dNuOJdA8lBjz4PmWjYQ6pzb0uzpBNAWJMDudYuj9OdXJWqM2QTJg==
   dependencies:
     colors "1.4.0"
+
+javascript-stringify@2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/javascript-stringify/-/javascript-stringify-2.1.0.tgz#27c76539be14d8bd128219a2d731b09337904e79"
+  integrity sha512-JVAfqNPTvNq3sB/VHQJAFxN/sPgKnsKrCwyRt15zwNCdrMMJDdcEOdubuy+DuJYYdm0ox1J4uzEuYKkN+9yhVg==
 
 jest-worker@^27.4.5:
   version "27.5.1"

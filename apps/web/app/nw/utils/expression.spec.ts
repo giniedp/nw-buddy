@@ -1,3 +1,5 @@
+/// <reference types="@types/jasmine" />
+
 import { firstValueFrom, of } from "rxjs"
 import { NwExpSolveFn, parseNwExpression } from "./expressions"
 

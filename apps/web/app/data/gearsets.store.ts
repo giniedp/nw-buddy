@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { ItemDefinitionMaster, Perkbuckets, Perks } from '@nw-data/types'
+import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { uniq } from 'lodash'
-import { combineLatest, defer, map, Subject, switchMap } from 'rxjs'
+import { Subject, combineLatest, defer, map, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw/nw-db.service'
-import { EquipSlot, EQUIP_SLOTS, getItemPerkInfos, getItemRarity, getAverageGearScore } from '~/nw/utils'
-import { eqCaseInsensitive, tapDebug } from '~/utils'
+import { EQUIP_SLOTS, EquipSlot, getAverageGearScore, getItemPerkInfos, getItemRarity } from '~/nw/utils'
+import { eqCaseInsensitive } from '~/utils'
 
+import { PerkBucket } from '~/nw/utils/perk-buckets'
 import { GearsetRecord, GearsetsDB } from './gearsets.db'
 import { ItemInstance, ItemInstancesDB } from './item-instances.db'
 
@@ -14,7 +15,7 @@ export interface GearsetsState {
   records: GearsetRecord[]
   items: Map<string, ItemDefinitionMaster>
   perks: Map<string, Perks>
-  buckets: Map<string, Perkbuckets>
+  buckets: Map<string, PerkBucket>
   instances: Map<string, ItemInstance>
   selectedTags?: string[]
 }

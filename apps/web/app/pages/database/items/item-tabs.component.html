@@ -1,7 +1,7 @@
 <ng-container *ngIf="vm$ | async; let vm">
-  <div class="tabs">
+  <div class="tabs ">
     <a
-      class="tab"
+      class="tab tab-bordered"
       [class.tab-active]="vm.tabId === tab.id"
       [routerLink]="[]"
       [fragment]="tab.id"
@@ -31,7 +31,11 @@
   </ng-container>
 
   <ng-container *ngIf="vm.tabId === 'recipes'">
-    <nwb-crafting-calculator *ngFor="let item of vm.recipes" [recipe]="item.recipe"></nwb-crafting-calculator>
+    <nwb-crafting-calculator *ngFor="let item of vm.recipes" [recipe]="item.recipe" class="bg-base-300 rounded-b-md"></nwb-crafting-calculator>
+  </ng-container>
+
+  <ng-container *ngIf="vm.tabId === 'perks'">
+    <nwb-perk-bucket-detail-tabs [perkBucketIds]="vm.perkBucketIds" [itemId]="vm.entityId" class="bg-base-300 rounded-b-md"></nwb-perk-bucket-detail-tabs>
   </ng-container>
 
   <ng-container *ngIf="vm.tabId === 'craftable'">

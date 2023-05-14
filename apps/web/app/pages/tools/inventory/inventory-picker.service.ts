@@ -1,19 +1,19 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { Injectable, Injector } from '@angular/core'
-import { ItemDefinitionMaster, Perkbuckets, Perks, Statuseffect } from '@nw-data/types'
+import { ItemDefinitionMaster, Perks, Statuseffect } from '@nw-data/types'
 import { isEqual } from 'lodash'
-import { combineLatest, filter, map, Observable, switchMap, take } from 'rxjs'
+import { Observable, combineLatest, filter, map, switchMap, take } from 'rxjs'
 import { ItemInstance, ItemInstancesStore } from '~/data'
 import { NwDbService } from '~/nw'
 import {
-  collectPerkbucketPerkIds,
   EQUIP_SLOTS,
   isItemArmor,
   isItemJewelery,
   isItemWeapon,
   isPerkApplicableToItem,
-  isPerkGem,
+  isPerkGem
 } from '~/nw/utils'
+import { PerkBucket, getPerkBucketPerkIDs } from '~/nw/utils/perk-buckets'
 import { DataTablePickerDialog } from '~/ui/data-table'
 import { HousingTableAdapter, ItemsTableAdapter, PerksTableAdapter, StatusEffectsTableAdapter } from '~/widgets/adapter'
 import { PlayerItemsTableAdapter } from './inventory-table.adapter'
@@ -275,7 +275,7 @@ export class InventoryPickerService {
     })
   }
 
-  private openPerksPicker(item: ItemDefinitionMaster, perkOrBucket: Perks | Perkbuckets) {
+  private openPerksPicker(item: ItemDefinitionMaster, perkOrBucket: Perks | PerkBucket) {
     return DataTablePickerDialog.open(this.dialog, {
       title: 'Choose Perk',
       selection: ('PerkID' in perkOrBucket ? perkOrBucket : null)?.PerkID,
@@ -291,7 +291,7 @@ export class InventoryPickerService {
     })
   }
 
-  public getAplicablePerks(item: ItemDefinitionMaster, perkOrBucket: Perks | Perkbuckets) {
+  public getAplicablePerks(item: ItemDefinitionMaster, perkOrBucket: Perks | PerkBucket) {
     return combineLatest({
       perks: this.db.perks,
       buckets: this.db.perkBucketsMap,
@@ -304,7 +304,7 @@ export class InventoryPickerService {
         const bucketIsGem = isPerkGem(bucket)
         const perk = 'PerkID' in perkOrBucket ? perkOrBucket : null
         const perkIsGem = isPerkGem(perk)
-        const perkIds = collectPerkbucketPerkIds(bucket, buckets)
+        const perkIds = getPerkBucketPerkIDs(bucket)
 
         return perks.filter((it) => {
           let isApplicable = isPerkApplicableToItem(it, item)
@@ -318,7 +318,7 @@ export class InventoryPickerService {
             return false
           }
 
-          if (perkIds.has(it.PerkID)) {
+          if (perkIds.includes(it.PerkID)) {
             return true
           }
           if (bucketIsGem) {

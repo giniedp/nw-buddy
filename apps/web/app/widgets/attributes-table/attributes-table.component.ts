@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
 import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { getPerkbucketPerks } from '~/nw/utils'
+import { getPerkBucketPerks } from '~/nw/utils/perk-buckets'
 
 const ATTRIBUTES = [
   { attribute: 'AttributeStr', name: 'Strength' },
@@ -42,7 +42,7 @@ export class AttributesTableComponent implements OnInit {
             // primary,
             // secondary: hasSecondary ? secondary : null,
             item,
-            suffix: getPerkbucketPerks(buckets.get(item.ItemID), perks).find((it) => it.AppliedSuffix)?.AppliedSuffix
+            suffix: getPerkBucketPerks(buckets.get(item.ItemID), perks).find((it) => it.AppliedSuffix)?.AppliedSuffix
           }
         })
       })
