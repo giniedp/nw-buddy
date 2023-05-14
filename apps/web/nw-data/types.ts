@@ -1081,6 +1081,7 @@ export interface Itemappearancedefinitions {
     MaskRDyeOverride:          number;
     MaskROverride:             number;
     Material1?:                string;
+    Name?:                     string;
     RDyeSlotDisabled?:         string;
     "Right/Off"?:              string;
     RightHandOnlySkin?:        string;
@@ -1117,6 +1118,7 @@ export interface ItemdefinitionsWeaponappearances {
     MaskROverride:                number;
     MaterialOverride1?:           string;
     MeshOverride?:                string;
+    Name?:                        string;
     RDyeSlotDisabled?:            string;
     SkinOverride1?:               string;
     SkinOverride2?:               string;
