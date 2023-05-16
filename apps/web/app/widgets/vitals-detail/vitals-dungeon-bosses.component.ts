@@ -6,6 +6,7 @@ import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { getVitalDungeon } from '~/nw/utils'
 import { VitalDetailComponent } from './vital-detail.component'
+import { RouterModule } from '@angular/router'
 
 @Component({
   standalone: true,
@@ -13,7 +14,7 @@ import { VitalDetailComponent } from './vital-detail.component'
   templateUrl: './vitals-dungeon-bosses.component.html',
   styleUrls: ['./vitals-dungeon-bosses.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, VitalDetailComponent],
+  imports: [CommonModule, NwModule, VitalDetailComponent, RouterModule],
   animations: [
     trigger('listAnimation', [
       transition('void => *', [

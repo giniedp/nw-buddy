@@ -1,9 +1,9 @@
 
 <div *ngFor="let row of entities | async" class="mt-5">
-  <div class="flex flex-row items-center">
-    <img [nwImage]="row.dungeon?.IconPath" class="w-20" />
-    <span class="text-3xl">{{ row.dungeon?.DisplayName | nwText }}</span>
-  </div>
+  <a class="flex flex-row items-center hover:underline" *ngIf="row.dungeon; let dungeon" [routerLink]="['/dungeons', dungeon.GameModeId]">
+    <img [nwImage]="dungeon.IconPath" class="w-20" />
+    <span class="text-3xl">{{ dungeon.DisplayName | nwText }}</span>
+  </a>
   <div class="grid" [@listAnimation]="row.vitals.length">
     <nwb-vital-detail *ngFor="let vital of row.vitals" [vital]="vital" ></nwb-vital-detail>
   </div>

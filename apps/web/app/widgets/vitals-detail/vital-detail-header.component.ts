@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { RouterModule } from '@angular/router'
 import { Vitals } from '@nw-data/types'
 import { NwModule } from '~/nw'
 import { getVitalCategoryInfo, getVitalFamilyInfo, getVitalTypeMarker, VitalFamilyInfo } from '~/nw/utils'
@@ -12,27 +13,29 @@ import { humanize } from '~/utils'
   standalone: true,
   selector: 'nwb-vital-detail-header',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, IconsModule, TooltipModule],
+  imports: [CommonModule, NwModule, IconsModule, RouterModule, TooltipModule],
   host: {
     class: 'relative bg-base-300 flex flex-col items-center justify-center p-2',
   },
   template: `
-    <a *ngIf="familyIcon; let icon" [tooltip]="familyTip" class="absolute left-1">
-      <img [nwImage]="icon" class="w-12 h-12" />
-    </a>
-
-    <div class="flex flex-row items-center gap-1">
-      <span>{{ vital.DisplayName | nwText }}</span>
-    </div>
     <a
-      class="relative flex items-center justify-center -mt-4"
+      *ngIf="familyIcon; let icon"
+      [tooltip]="familyTip"
+      class="absolute left-1"
       [nwLink]="vital.VitalsID"
       [nwLinkResource]="'vitals'"
       target="_blank"
     >
+      <img [nwImage]="icon" class="w-12 h-12" />
+    </a>
+
+    <a class="flex flex-row items-center gap-1 hover:underline"  [routerLink]="['/vitals/table', vital.VitalsID]">
+      <span>{{ vital.DisplayName | nwText }}</span>
+    </a>
+    <div class="relative flex items-center justify-center -mt-4 pointer-events-none">
       <img [nwImage]="typeMarker" class="h-10 w-36 object-cover" />
       <span *ngIf="vital.Level" class="absolute top-2 mx-auto"> {{ vital.Level }}</span>
-    </a>
+    </div>
   `,
 })
 export class VitalDetailHeaderComponent {
