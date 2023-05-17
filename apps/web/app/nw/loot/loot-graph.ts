@@ -205,12 +205,12 @@ function updateAccess(node: LootNode, context: LootContext) {
   let unlocked = !node.parent || node.parent.unlocked
   if (node.row) {
     const parent = node.parent as LootTableNode
-    unlocked = unlocked && context.accessTableRow(parent.data, node.row)
+    unlocked = unlocked && (context == null || context.accessTableRow(parent.data, node.row))
   }
   if (node.type === 'table') {
-    node.unlocked = unlocked && context.accessTable(node.data)
+    node.unlocked = unlocked && (context == null || context.accessTable(node.data))
   } else if (node.type === 'bucket-row') {
-    node.unlocked = unlocked && context.accessBucketRow(node.data)
+    node.unlocked = unlocked && (context == null || context.accessBucketRow(node.data))
   } else {
     node.unlocked = unlocked
   }
@@ -273,6 +273,7 @@ function updateChance(node: LootNode, dropChance = 1) {
         //   right,
         //   count,
         //   chance: node.chanceRelative,
+        //   prob: node.prob,
         //   sorted
         // })
       }

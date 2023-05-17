@@ -1,17 +1,18 @@
 import { Loottable } from '@nw-data/types'
 
+// type WithoutPrefix<T> =
 export interface LootTableEntry {
-  'AND/OR'?: string
-  Conditions?: string[]
-  GSBonus?: number
-  HWMMult?: number
-  LootTableID: string
-  LuckSafe?: string
-  MaxRoll: number
-  PerkBucketOverrides1?: string
-  PerkBucketOverrides2?: string
-  PerkOverrides3?: string
-  UseLevelGS?: string
+  "AND/OR"?:               string;
+  ConditionOverridesRoll?: number | string;
+  Conditions?:             string[];
+  GSBonus?:                number;
+  HWMMult?:                number;
+  LootTableID:             string;
+  MaxRoll:                 number;
+  PerkBucketOverrides2?:   string;
+  RollBonusSetting?:       string;
+  TriggerLimitOnVisit?:    string;
+  UseLevelGS?:             string;
   Items: LootTableRow[]
 }
 
@@ -30,6 +31,7 @@ export function convertLoottables(data: Loottable[]) {
     .map((it): LootTableEntry => {
       const qty = findById(data, `${it.LootTableID}_Qty`)
       const probs = findById(data, `${it.LootTableID}_Probs`)
+
       return {
         ...it,
         Conditions: it.Conditions?.split(','),
@@ -50,8 +52,6 @@ export function convertLoottables(data: Loottable[]) {
         }),
       }
     })
-  // const conditions = uniq(result.map((it) => it.Conditions).flat(1).filter((it) => !!it))
-  // console.log('LootTableConditions', conditions)
   return result
 }
 

@@ -7,7 +7,7 @@
   >
     <div class="flex flex-row flex-wrap items-center gap-x-1">
       <span *ngIf="rollThreshold" class="badge badge-sm badge-primary">
-        >= {{ rollThreshold }} <ng-container *ngIf="chanceRel"> ({{ chanceRel | percent: '0.0-6' }}) </ng-container>
+        >= {{ rollThreshold }} <ng-container *ngIf="chanceRel"> ({{ chanceRel | percent : '0.0-6' }}) </ng-container>
       </span>
       <span *ngIf="tagValue" class="badge badge-sm badge-secondary whitespace-nowrap"> >= {{ tagValue }} </span>
       <span *ngIf="itemQuantity && itemQuantity != '1'" class="whitespace-nowrap"> {{ itemQuantity }} &times; </span>
@@ -16,16 +16,18 @@
     <span class="flex-1"></span>
 
     <div class="text-xs flex flex-row items-center gap-1">
-      <span class="min-w-[40px]"> {{ typeName }} </span>
+      <span class="min-w-[40px]" [class.text-secondary]="typeName == 'bucket'"> {{ typeName }} </span>
       <span> | </span>
       <ng-container *ngIf="showChance">
         <span class="min-w-[40px] inline-flex flex-col text-right">
-          <span> {{ chanceAbs | percent: '0.0-6' }} </span>
+          <span> {{ chanceAbs | percent : '0.0-6' }} </span>
         </span>
         <span> | </span>
       </ng-container>
       <span class="min-w-[40px] inline-flex flex-col text-right">
-        <span class="text-success" *ngIf="unlockedItemCount"> {{ unlockedItemCount }} </span>
+        <span class="text-success" *ngIf="unlockedItemCount && !showLocked">
+          {{ unlockedItemCount }}
+        </span>
         <span> {{ totalItemCount }} </span>
       </span>
     </div>
@@ -34,8 +36,8 @@
       class="transition-transform w-4 h-4"
       [class.rotate-90]="expand"
       [class.-rotate-90]="!expand"
-      [class.text-error]="!unlocked"
-      [class.text-success]="unlocked"
+      [class.text-error]="!unlocked && !showLocked"
+      [class.text-success]="unlocked || showLocked"
     ></nwb-icon>
   </div>
   <div class="p-3 pr-0 mr-[-1px] flex flex-col gap-2" *ngIf="expand">
@@ -54,10 +56,10 @@
       </span>
       <span *ngIf="table.HWMMult" class="whitespace-nowrap badge badge-sm badge-accent">
         HWMMult: {{ table.HWMMult }}
-      </span>
-      <span *ngIf="table.LuckSafe" class="whitespace-nowrap badge badge-sm badge-primary">
-        LuckSafe: {{ table.LuckSafe }}
       </span> -->
+      <span *ngIf="table.RollBonusSetting" class="whitespace-nowrap badge badge-sm badge-accent">
+        {{ table.RollBonusSetting }}
+      </span>
       <span *ngFor="let item of table.Conditions" class="whitespace-nowrap badge badge-sm badge-secondary">
         {{ item }}
       </span>
@@ -76,8 +78,9 @@
     class="max-w-md rounded-md overflow-hidden border-2"
     [class.border-transparent]="!highlight"
     [class.border-accent]="highlight"
+    #detail="detail"
   >
-    <nwb-item-detail-header class="h-full" [enableInfoLink]="true">
+    <nwb-item-detail-header class="h-full" [enableLink]="true" [enableInfoLink]="true">
       <div class="content flex flex-row flex-wrap gap-1">
         <span *ngIf="rollThreshold" class="whitespace-nowrap badge badge-sm badge-primary">
           >= {{ rollThreshold }}
@@ -88,10 +91,10 @@
         </span>
         <ng-container *ngIf="itemTags?.length">
           <span
-            *ngFor="let it of itemTags; trackBy: trackByIndex"
+            *ngFor="let tag of itemTags; trackBy: trackByIndex"
             class="badge badge-sm badge-secondary whitespace-nowrap"
           >
-            {{ it }}
+            {{ tag }}
           </span>
         </ng-container>
       </div>
@@ -101,10 +104,16 @@
 
 <ng-template #tplChildren>
   <ng-container *ngIf="childGrid && children?.length">
-    <div class="grid gap-2 max-h-96 overflow-y-auto mr-2" *ngIf="children?.length">
-      <ng-container *ngFor="let node of children; trackBy: trackByIndex">
+    <div
+      class="grid gap-2 min-h-12 max-h-96 overflow-y-auto mr-2"
+      [nwbInfniteScroll]="children"
+      [nwbInfniteScrollPerPage]="10"
+      #scroll="infiniteScroll"
+    >
+      <ng-container *ngFor="let node of scroll.data$ | async; trackBy: trackByIndex">
         <nwb-loot-graph-node [node]="node" [showLocked]="showLocked" [showChance]="showChance"></nwb-loot-graph-node>
       </ng-container>
+      <button class="btn loading" *ngIf="scroll.canLoad$ | async" nwbInfiniteScrollTrigger>loading</button>
     </div>
   </ng-container>
   <ng-container *ngIf="!childGrid && children?.length">

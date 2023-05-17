@@ -32,6 +32,7 @@ import {
   getPerksInherentMODs,
   hasItemGearScore,
   hasPerkInherentAffix,
+  isHousingItem,
   isItemHeargem,
   isItemNamed,
   isPerkGem,

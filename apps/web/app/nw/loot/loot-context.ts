@@ -192,7 +192,7 @@ function testTableRowCondition(condition: string, context: LootContext, item: Lo
     return true
   }
   if (context.values.has(condition)) {
-    return context.values.get(condition) >= Number(item.Prob)
+    return Number(context.values.get(condition)) >= Number(item.Prob)
   }
   return context.tags.has(condition)
 }

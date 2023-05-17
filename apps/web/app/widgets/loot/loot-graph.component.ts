@@ -40,6 +40,9 @@ export class LootGraphComponent {
   public showChance = false
 
   @Input()
+  public showStats = false
+
+  @Input()
   public set dropChance(value: number) {
     this.dropChance$.next(value)
   }
@@ -63,7 +66,7 @@ export class LootGraphComponent {
   }).pipe(map(({ graph, context, dropChance, highlight }) => {
     return updateLootGraph({
       graph,
-      context,
+      context: this.showLocked ? null : context,
       dropChance,
       highlight
     })

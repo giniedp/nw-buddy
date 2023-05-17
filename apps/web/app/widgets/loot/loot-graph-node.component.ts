@@ -7,6 +7,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgCircleExclamation, svgLock, svgLockOpen } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { ItemDetailModule } from '../data/item-detail'
+import { PaginationModule } from '~/ui/pagination'
 
 @Component({
   standalone: true,
@@ -14,7 +15,7 @@ import { ItemDetailModule } from '../data/item-detail'
   templateUrl: './loot-graph-node.component.html',
   styleUrls: ['./loot-graph-node.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, IconsModule, ItemDetailModule, TooltipModule],
+  imports: [CommonModule, NwModule, IconsModule, ItemDetailModule, TooltipModule, PaginationModule],
   host: {
     class: 'contents',
   },
@@ -155,4 +156,5 @@ export class LootGraphNodeComponent implements OnChanges {
       return it.Name
     })
   }
+
 }

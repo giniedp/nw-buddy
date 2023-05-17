@@ -1,6 +1,6 @@
 import { Directive, Input } from '@angular/core'
 import { BehaviorSubject, combineLatest, defer, map, ReplaySubject, switchMap } from 'rxjs'
-import { shareReplayRefCount } from '~/utils'
+import { shareReplayRefCount, tapDebug } from '~/utils'
 import { Pagination } from './pagination'
 
 @Directive({
