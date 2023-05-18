@@ -1,4 +1,4 @@
-import { splitToArrayRule } from "./import-datatables"
+import { splitToArrayRule } from './import-datatables'
 
 export const TABLE_REMAP_RULES = [
   {
@@ -42,6 +42,15 @@ export const TABLE_REMAP_RULES = [
     rules: [
       splitToArrayRule({
         properties: /Tags\d+/,
+        separator: ',',
+      }),
+    ],
+  },
+  {
+    file: /javelindata_loottables.*.json/,
+    rules: [
+      splitToArrayRule({
+        properties: ['Conditions'],
         separator: ',',
       }),
     ],

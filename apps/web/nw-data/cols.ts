@@ -3065,7 +3065,7 @@ export const COLS_LOOTLIMITS = {
 export const COLS_LOOTTABLE = {
   "AND/OR": "string",
   "ConditionOverridesRoll": "number",
-  "Conditions": "string",
+  "Conditions": "[]",
   "GSBonus": "number",
   "GearScoreRange1": "string",
   "GearScoreRange10": "string",

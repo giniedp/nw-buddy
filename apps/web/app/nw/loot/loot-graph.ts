@@ -1,6 +1,6 @@
 import { sortBy } from 'lodash'
 import { CaseInsensitiveSet, eqCaseInsensitive } from '~/utils'
-import { LootBucketRow, LootTableEntry, LootTableRow } from '../utils'
+import { LootBucketRow, LootTable, LootTableRow } from '../utils'
 import { LootContext } from './loot-context'
 
 export type LootNode = LootBucketNode | LootBucketRowNode | LootTableNode | LootTableItemNode // | LootTableRowNode
@@ -21,7 +21,7 @@ export interface LootNodeBase<T> {
   type: string
 }
 
-export interface LootTableNode extends LootNodeBase<LootTableEntry> {
+export interface LootTableNode extends LootNodeBase<LootTable> {
   type: 'table'
 }
 
@@ -46,13 +46,13 @@ export function buildLootGraph({
   tables,
   buckets,
 }: {
-  entry: LootTableEntry
-  tables: Map<string, LootTableEntry>
+  entry: LootTable
+  tables: Map<string, LootTable>
   buckets: Map<string, LootBucketRow[]>
 }): LootNode {
   return resolve(entry)
 
-  function resolve(table: LootTableEntry, parent?: LootNode, row?: LootTableRow) {
+  function resolve(table: LootTable, parent?: LootNode, row?: LootTableRow) {
     if (!table) {
       return null
     }
@@ -78,7 +78,7 @@ export function buildLootGraph({
   }
 }
 
-function buildTableNode(value: LootTableEntry, parent: LootNode, row?: LootTableRow): LootTableNode {
+function buildTableNode(value: LootTable, parent: LootNode, row?: LootTableRow): LootTableNode {
   const node: LootTableNode = {
     type: 'table',
     data: value,

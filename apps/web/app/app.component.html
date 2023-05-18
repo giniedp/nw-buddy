@@ -25,6 +25,8 @@
                     <li *ngIf="item.divider"></li>
                     <li routerLinkActive="bordered">
                       <a #link [routerLink]="item.path" nwbMenuClose>
+
+                        <img [nwImage]="item.icon" class="w-5 h-5" *ngIf="item.icon">
                         {{ item.label }}
                       </a>
                     </li>

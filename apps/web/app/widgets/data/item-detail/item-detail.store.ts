@@ -32,7 +32,6 @@ import {
   getPerksInherentMODs,
   hasItemGearScore,
   hasPerkInherentAffix,
-  isHousingItem,
   isItemHeargem,
   isItemNamed,
   isPerkGem,
@@ -154,7 +153,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public readonly isBindOnPickup$ = this.select(this.entity$, (it) => !!it?.BindOnPickup)
   public readonly canReplaceGem$ = this.select(this.item$, (it) => it && it.CanHavePerks && it.CanReplaceGem)
   public readonly cantReplaceGem$ = this.select(this.item$, (it) => it && it.CanHavePerks && !it.CanReplaceGem)
-  public readonly salvageInfo$ = this.select(this.item$, selectSalvageInfo)
+  public readonly salvageInfo$ = this.select(this.entity$, selectSalvageInfo)
 
   public readonly ingredientCategories$ = this.select(this.db.recipeCategoriesMap, this.item$, selectCraftingCategories)
   public readonly statusEffectsIds$ = this.select(this.consumable$, this.housingItem$, selectStatusEffectIds)
@@ -267,16 +266,16 @@ function selectFinalRarity({
   return getItemRarity(item, perkIds)
 }
 
-function selectSalvageInfo(item: ItemDefinitionMaster) {
+function selectSalvageInfo(item: ItemDefinitionMaster | Housingitems) {
   const recipe = item?.RepairRecipe
   if (!recipe?.startsWith('[LTID]')) {
     return null
   }
   return {
     tableId: recipe.replace('[LTID]', ''),
-    tags: (item.SalvageLootTags || '').split(/[+,]/),
+    tags: ((item as ItemDefinitionMaster)?.SalvageLootTags || '').split(/[+,]/),
     tagValues: {
-      MinContLevel: item.ContainerLevel,
+      MinContLevel: (item as ItemDefinitionMaster)?.ContainerLevel,
       SalvageItemRarity: getItemRarity(item),
       SalvageItemTier: item.Tier,
     },

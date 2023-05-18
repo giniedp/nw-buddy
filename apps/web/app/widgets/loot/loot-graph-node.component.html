@@ -11,7 +11,11 @@
       </span>
       <span *ngIf="tagValue" class="badge badge-sm badge-secondary whitespace-nowrap"> >= {{ tagValue }} </span>
       <span *ngIf="itemQuantity && itemQuantity != '1'" class="whitespace-nowrap"> {{ itemQuantity }} &times; </span>
-      <span class="whitespace-nowrap"> {{ displayName }} </span>
+      <a class="whitespace-nowrap inline-flex items-center" [class.hover:underline]="showLink" [routerLink]="link">
+        <nwb-icon [icon]="linkIcon" class="w-4 h-4 mr-1" *ngIf="showLink"></nwb-icon>
+        <span>{{ displayName }}</span>
+
+      </a>
     </div>
     <span class="flex-1"></span>
 

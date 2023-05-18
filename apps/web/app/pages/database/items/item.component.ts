@@ -17,6 +17,8 @@ import { ModelViewerComponent } from '~/widgets/model-viewer'
 import { ItemModelInfo } from '~/widgets/model-viewer/model-viewer.service'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ItemTabsComponent } from './item-tabs.component'
+import { svgLink, svgSquareArrowUpRight } from '~/ui/icons/svg'
+import { IconsModule } from '~/ui/icons'
 
 @Component({
   standalone: true,
@@ -34,6 +36,7 @@ import { ItemTabsComponent } from './item-tabs.component'
     LayoutModule,
     LootModule,
     ItemTabsComponent,
+    IconsModule,
   ],
   providers: [DestroyService],
   host: {
@@ -43,6 +46,7 @@ import { ItemTabsComponent } from './item-tabs.component'
 export class ItemComponent {
   protected itemId$ = observeRouteParam(this.route, 'id')
 
+  protected iconLink = svgSquareArrowUpRight
   public constructor(
     private route: ActivatedRoute,
     private dialog: Dialog,

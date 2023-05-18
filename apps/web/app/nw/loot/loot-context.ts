@@ -1,5 +1,5 @@
 import { CaseInsensitiveMap, CaseInsensitiveSet } from '~/utils'
-import { LootBucketRow, LootTableEntry, LootTableRow } from '../utils'
+import { LootBucketRow, LootTable, LootTableRow } from '../utils'
 
 export type LootBucketConditionNames =
   | 'Level'
@@ -102,7 +102,7 @@ export class LootContext {
   /**
    * Resolves accessible items from given loottable
    */
-  public accessLoottable(table: LootTableEntry) {
+  public accessLoottable(table: LootTable) {
     if (this.isIgnoredId(table.LootTableID)) {
       return []
     }
@@ -118,7 +118,7 @@ export class LootContext {
   /**
    * Checks whether this context can access the given loot table
    */
-  public accessTable(table: LootTableEntry): boolean {
+  public accessTable(table: LootTable): boolean {
     if (this.isIgnoredId(table.LootTableID)) {
       return false
     }
@@ -132,7 +132,7 @@ export class LootContext {
   /**
    * Checks whether this context can access the given loot table row
    */
-  public accessTableRow(table: LootTableEntry, row: LootTableRow): boolean {
+  public accessTableRow(table: LootTable, row: LootTableRow): boolean {
     if (this.isIgnoredId(table.LootTableID)) {
       return false
     }

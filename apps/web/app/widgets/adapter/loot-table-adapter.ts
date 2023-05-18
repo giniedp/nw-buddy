@@ -2,12 +2,12 @@ import { Injectable } from '@angular/core'
 import { GridOptions } from 'ag-grid-community'
 import { Observable, defer, map, of } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { LootTableEntry } from '~/nw/utils'
+import { LootTable } from '~/nw/utils'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 
-export type TableEntry = LootTableEntry & {
+export type TableEntry = LootTable & {
   $parents: string[]
 }
 @Injectable()
@@ -52,6 +52,27 @@ export class LootTableAdapter extends DataTableAdapter<TableEntry> {
           getQuickFilterText: ({ value }) => value,
         }),
         this.colDef({
+          colId: 'source',
+          headerValueGetter: () => 'Source',
+          width: 200,
+          valueGetter: this.valueGetter(({ data }) => {
+            return data['$source']
+          }),
+          getQuickFilterText: ({ value }) => value,
+          filter: SelectFilter,
+        }),
+        this.colDef({
+          colId: 'conditions',
+          headerValueGetter: () => 'Conditions',
+          width: 200,
+          valueGetter: this.valueGetter(({ data }) => {
+            return data.Conditions
+          }),
+          getQuickFilterText: ({ value }) => value,
+          filter: SelectFilter,
+          cellRenderer: this.cellRendererTags(humanize),
+        }),
+        this.colDef({
           colId: 'maxRoll',
           headerValueGetter: () => 'Max Roll',
           field: this.fieldName('MaxRoll'),
@@ -61,14 +82,20 @@ export class LootTableAdapter extends DataTableAdapter<TableEntry> {
           colId: 'parents',
           headerValueGetter: () => 'Parents',
           field: this.fieldName('$parents'),
-          width: 130,
+          width: 600,
           filter: SelectFilter,
+          cellRenderer: this.cellRendererTags(humanize),
+          wrapText: true,
+          autoHeight: true,
+          cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
         }),
       ],
     })
   )
 
-  public entities: Observable<TableEntry[]> = defer(() => this.db.lootTables).pipe(map(selectTables)).pipe(shareReplayRefCount(1))
+  public entities: Observable<TableEntry[]> = defer(() => this.db.lootTables)
+    .pipe(map(selectTables))
+    .pipe(shareReplayRefCount(1))
 
   public constructor(private db: NwDbService) {
     super()
@@ -79,7 +106,7 @@ function selectTables(tables: TableEntry[]) {
   const entries = tables.map((it): TableEntry => {
     return {
       ...it,
-      $parents: null
+      $parents: null,
     }
   })
   const entryMap = new Map(entries.map((it) => [it.LootTableID, it]))

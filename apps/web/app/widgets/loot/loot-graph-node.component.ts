@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges } from '@angular/core'
 import { NwModule } from '~/nw'
 import { LootBucketNode, LootBucketRowNode, LootNode, LootTableItemNode, LootTableNode } from '~/nw/loot/loot-graph'
-import { LootTableEntry } from '~/nw/utils'
+import { LootTable } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
-import { svgAngleLeft, svgCircleExclamation, svgLock, svgLockOpen } from '~/ui/icons/svg'
+import { svgAngleLeft, svgCircleExclamation, svgLink, svgLock, svgLockOpen } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { ItemDetailModule } from '../data/item-detail'
 import { PaginationModule } from '~/ui/pagination'
+import { RouterModule } from '@angular/router'
 
 @Component({
   standalone: true,
@@ -15,7 +16,7 @@ import { PaginationModule } from '~/ui/pagination'
   templateUrl: './loot-graph-node.component.html',
   styleUrls: ['./loot-graph-node.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, IconsModule, ItemDetailModule, TooltipModule, PaginationModule],
+  imports: [CommonModule, NwModule, IconsModule, ItemDetailModule, TooltipModule, RouterModule, PaginationModule],
   host: {
     class: 'contents',
   },
@@ -33,10 +34,13 @@ export class LootGraphNodeComponent implements OnChanges {
   @Input()
   public expand: boolean
 
+  @Input()
+  public showLink: boolean
+
   protected displayName: string
   protected typeName: string
   protected itemIds: string[]
-  protected table: LootTableEntry
+  protected table: LootTable
   protected children: LootNode[]
   protected itemId: string
   protected itemQuantity: string
@@ -63,7 +67,8 @@ export class LootGraphNodeComponent implements OnChanges {
   protected iconinfo = svgCircleExclamation
   protected iconLock = svgLock
   protected iconLockOpen = svgLockOpen
-
+  protected link: any[] = null
+  protected linkIcon = svgLink
   public constructor(private cdRef: ChangeDetectorRef) {
     //
   }
@@ -78,6 +83,7 @@ export class LootGraphNodeComponent implements OnChanges {
   }
 
   private updateFromNode(node: LootNode) {
+    this.link = null
     this.unlocked = node?.unlocked
     this.unlockedItemCount = node?.unlockedItemcount
     this.totalItemCount = node?.totalItemCount
@@ -120,6 +126,7 @@ export class LootGraphNodeComponent implements OnChanges {
   }
 
   private updateFromTableNode(node: LootTableNode) {
+    this.link = this.showLink ? ['/loot', node.data.LootTableID] : null
     this.table = node.data
     this.expandable = true
     this.typeName = 'table'

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { Component, ChangeDetectionStrategy, TemplateRef } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { Housingitems } from '@nw-data/types'
 import { TranslateService } from '~/i18n'
@@ -11,6 +11,10 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { HousingTabsComponent } from './housing-detail-tabs.component'
+import { IconsModule } from '~/ui/icons'
+import { LootModule } from '~/widgets/loot'
+import { svgSquareArrowUpRight } from '~/ui/icons/svg'
+import { Dialog } from '@angular/cdk/dialog'
 
 @Component({
   standalone: true,
@@ -26,14 +30,22 @@ import { HousingTabsComponent } from './housing-detail-tabs.component'
     ScreenshotModule,
     LayoutModule,
     HousingTabsComponent,
+    IconsModule,
+    LootModule,
   ],
   host: {
     class: 'flex-none flex flex-col',
   },
 })
 export class HousingDetailComponent {
-  public itemId$ = observeRouteParam(this.route, 'id')
-  public constructor(private route: ActivatedRoute, private i18n: TranslateService, private head: HtmlHeadService) {
+  protected itemId$ = observeRouteParam(this.route, 'id')
+  protected iconLink = svgSquareArrowUpRight
+  public constructor(
+    private route: ActivatedRoute,
+    private i18n: TranslateService,
+    private dialog: Dialog,
+    private head: HtmlHeadService
+  ) {
     //
   }
 
@@ -47,5 +59,15 @@ export class HousingDetailComponent {
       url: this.head.currentUrl,
       image: `${this.head.origin}/${getItemIconPath(entity)}`,
     })
+  }
+
+  protected openRepairRecipe(tpl: TemplateRef<any>) {
+    this.dialog.open(tpl, {
+      panelClass: ['w-full', 'h-full', 'max-w-4xl', 'layout-pad', 'shadow'],
+    })
+  }
+
+  protected closeDialog() {
+    this.dialog.closeAll()
   }
 }

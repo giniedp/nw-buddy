@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core'
+import { COLS_VITALS } from '@nw-data/cols'
 import { Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/types'
-import { GridOptions } from 'ag-grid-community'
+import { ColDef, GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService } from '~/nw'
@@ -304,7 +305,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
         }),
       ],
     })
-  )
+  ).pipe(map((options) => appendFields(options, Array.from(Object.entries(COLS_VITALS)))))
 
   public entities: Observable<Entity[]> = defer(() =>
     combineLatest({
@@ -356,4 +357,31 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
       `
     })
   }
+}
+
+
+
+function appendFields(options: GridOptions, fields: string[][]) {
+  for (const [field, type] of fields) {
+    const exists = options.columnDefs.find((col: ColDef) => col.colId?.toLowerCase() == field.toLowerCase())
+    if (exists) {
+      continue
+    }
+    const colDef: ColDef = {
+      colId: field,
+      headerValueGetter: () => humanize(field),
+      field: field,
+      hide: true,
+    }
+    colDef.filter = SelectFilter
+    colDef.filterParams = SelectFilter.params({
+      showSearch: true,
+    })
+    if (type.includes('number')) {
+      colDef.filter = 'agNumberColumnFilter'
+      colDef.filterParams = null
+    }
+    options.columnDefs.push(colDef)
+  }
+  return options
 }

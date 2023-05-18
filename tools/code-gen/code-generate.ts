@@ -122,6 +122,7 @@ const ENUMS = {
   Vitalsmetadata: ['spawns'],
   // ItemDefinitionMaster: ['ItemClass'],
   // Damagetypes: ['TypeID', 'Category'],
+  // Loottable: ['Conditions'],
   Perks: [
     'PerkType',
     'ItemClass',

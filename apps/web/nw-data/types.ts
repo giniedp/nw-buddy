@@ -2800,7 +2800,7 @@ export interface Lootlimits {
 export interface Loottable {
     "AND/OR"?:               string;
     ConditionOverridesRoll?: number | string;
-    Conditions?:             string;
+    Conditions?:             string[];
     GSBonus?:                number;
     GearScoreRange1?:        string;
     GearScoreRange10?:       string;
