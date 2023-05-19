@@ -8,7 +8,6 @@ import { DestroyService } from '~/utils'
 import { VitalDetailHeaderComponent } from './vital-detail-header.component'
 import { VitalDetailInfosComponent } from './vital-detail-infos.component'
 import { VitalDetailWeaknessComponent } from './vital-detail-weakness.component'
-import { VitalDetailService } from './vital-detail.service'
 
 @Component({
   standalone: true,
@@ -21,7 +20,7 @@ import { VitalDetailService } from './vital-detail.service'
     VitalDetailHeaderComponent,
     VitalDetailInfosComponent,
   ],
-  providers: [DestroyService, VitalDetailService],
+  providers: [DestroyService],
   host: {
     class: 'block backdrop-blur-sm bg-white/10 rounded-md overflow-clip',
   },

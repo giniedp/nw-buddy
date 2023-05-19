@@ -212,7 +212,7 @@
 
 <ng-template #tplDungeonBosses>
   <div class="grid layout-gap">
-    <nwb-vital-detail *ngFor="let item of bosses$ | async; trackBy: trackByIndex" [vital]="item"></nwb-vital-detail>
+    <nwb-vital-detail *ngFor="let item of bosses$ | async; trackBy: trackByIndex" [vital]="item" [enableSections]="true"></nwb-vital-detail>
   </div>
 </ng-template>
 

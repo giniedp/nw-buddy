@@ -1,14 +1,21 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ComponentStore } from '@ngrx/component-store'
 import { Gamemodes, Vitals } from '@nw-data/types'
 import { combineLatest } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
 import { DestroyService } from '~/utils'
+import { VitalDamageTableComponent } from './vital-damage-table.component'
 import { VitalDetailHeaderComponent } from './vital-detail-header.component'
 import { VitalDetailInfosComponent } from './vital-detail-infos.component'
 import { VitalDetailWeaknessComponent } from './vital-detail-weakness.component'
-import { VitalDetailService } from './vital-detail.service'
+import { VitalDetailStore } from './vital-detail.store'
 
+export type VitalSection = 'weakness' | 'damage'
+export interface VitalTab {
+  id: VitalSection
+  label: string
+}
 @Component({
   standalone: true,
   selector: 'nwb-vital-detail',
@@ -19,23 +26,47 @@ import { VitalDetailService } from './vital-detail.service'
     VitalDetailWeaknessComponent,
     VitalDetailHeaderComponent,
     VitalDetailInfosComponent,
+    VitalDamageTableComponent,
   ],
-  providers: [DestroyService, VitalDetailService],
+  providers: [DestroyService, VitalDetailStore],
   host: {
     class: 'block backdrop-blur-sm bg-white/10 rounded-md overflow-clip',
   },
   template: `
     <ng-container *ngIf="vm$ | async; let vm">
       <nwb-vital-detail-header [vital]="vm.vital"></nwb-vital-detail-header>
-      <!-- <nwb-vital-detail-infos [vital]="vm.vital" [level]="vm.level" [modifier]="vm.modifier"></nwb-vital-detail-infos> -->
-      <nwb-vital-detail-weakness [vital]="vm.vital" class="w-full bg-transparent"></nwb-vital-detail-weakness>
+      <div class="tabs tabs-boxed rounded-none justify-center bg-base-300" *ngIf="vm.tabs?.length > 1">
+        <ng-container *ngFor="let tab of vm.tabs">
+          <a class="tab tab-sm" [class.tab-active]="tab.id === vm.selectedTab" (click)="openSection(tab.id)">
+            {{ tab.label }}
+          </a>
+        </ng-container>
+      </div>
+
+      <nwb-vital-detail-weakness
+        *ngIf="vm.isSectionWeakness"
+        [vital]="vm.vital"
+        class="w-full bg-transparent"
+      ></nwb-vital-detail-weakness>
+
+      <nwb-vital-damage-table [vitalId]="vm.id" *ngIf="vm.isSectionDamage"></nwb-vital-damage-table>
     </ng-container>
   `,
 })
-export class VitalDetailComponent {
+export class VitalDetailComponent extends ComponentStore<{ enableSections: boolean; section: VitalSection }> {
   @Input()
   public set vital(value: Partial<Vitals>) {
-    this.service.update(value.VitalsID)
+    this.store.patchState({ vitalId: value.VitalsID })
+  }
+
+  @Input()
+  public set vitalId(value: string) {
+    this.store.patchState({ vitalId: value })
+  }
+
+  @Input()
+  public set enableSections(value: boolean) {
+    this.patchState({ enableSections: value })
   }
 
   @Input()
@@ -44,27 +75,47 @@ export class VitalDetailComponent {
   @Input()
   public dungeons: Gamemodes[]
 
+  protected sectionsEnabled$ = this.select(({ enableSections }) => enableSections)
+  protected tabs$ = this.select(this.sectionsEnabled$, this.store.hasDamageTable$, selectTabs)
+
   protected vm$ = combineLatest({
-    vital: this.service.vital$,
-    level: this.service.level$,
-    modifier: this.service.modifier$,
+    id: this.store.vitalId$,
+    vital: this.store.vital$,
+    level: this.store.level$,
+    isSectionWeakness: this.select(({ section }) => section === 'weakness'),
+    isSectionDamage: this.select(({ section }) => section === 'damage'),
+    tabs: this.tabs$,
+    selectedTab: this.select(({ section }) => section),
   })
 
-  // protected readonly vital$ = new ReplaySubject<Vitals>(1)
-  // protected readonly categories$ = combineLatest({
-  //   ids: this.vital$.pipe(map((it) => it?.VitalsCategories || [])),
-  //   categories: this.db.vitalsCategoriesMap,
-  // })
-  //   .pipe(map(({ ids, categories }) => ids.map((it) => categories.get(it)).filter((it) => !!it)))
-  //   .pipe(shareReplayRefCount(1))
-
-  // protected readonly isNamed$ = this.vital$.pipe(map((it) => isVitalNamed(it)))
-  // protected readonly marker$ = this.vital$.pipe(map((vital) => this.vitals.vitalMarkerIcon(vital)))
-  // protected readonly familyInfo$ = this.vital$.pipe(
-  //   map((it) => (this.isGroup ? getVitalFamilyInfo(it) : getVitalCategoryInfo(it)))
-  // )
-
-  public constructor(private db: NwDbService, private service: VitalDetailService) {
-    //
+  public constructor(private store: VitalDetailStore) {
+    super({
+      enableSections: false,
+      section: 'weakness',
+    })
   }
+
+  protected openSection(section: VitalSection) {
+    this.patchState({
+      section: section,
+    })
+  }
+}
+
+function selectTabs(sectionsEnabled: boolean, hasDamageTable: boolean) {
+  const tabs: VitalTab[] = []
+  if (!sectionsEnabled) {
+    return tabs
+  }
+  tabs.push({
+    id: 'weakness',
+    label: 'Weakness',
+  })
+  if (hasDamageTable) {
+    tabs.push({
+      id: 'damage',
+      label: 'Damage',
+    })
+  }
+  return tabs
 }
