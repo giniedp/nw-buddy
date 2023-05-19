@@ -80,6 +80,8 @@ export class LootGraphNodeComponent implements OnChanges {
 
   protected toggle() {
     this.expand = !this.expand
+    this.updateFromNode(this.node)
+    this.cdRef.markForCheck()
   }
 
   private updateFromNode(node: LootNode) {
