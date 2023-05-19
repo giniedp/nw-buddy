@@ -35,9 +35,9 @@ export interface VitalTab {
   template: `
     <ng-container *ngIf="vm$ | async; let vm">
       <nwb-vital-detail-header [vital]="vm.vital"></nwb-vital-detail-header>
-      <div class="tabs tabs-boxed rounded-none justify-center bg-base-300" *ngIf="vm.tabs?.length > 1">
+      <div class="tabs rounded-none justify-center bg-base-300" *ngIf="vm.tabs?.length > 1">
         <ng-container *ngFor="let tab of vm.tabs">
-          <a class="tab tab-sm" [class.tab-active]="tab.id === vm.selectedTab" (click)="openSection(tab.id)">
+          <a class="tab tab-bordered tab-sm" [class.tab-active]="tab.id === vm.selectedTab" (click)="openSection(tab.id)">
             {{ tab.label }}
           </a>
         </ng-container>

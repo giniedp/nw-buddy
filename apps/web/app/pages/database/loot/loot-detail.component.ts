@@ -3,6 +3,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
 import { NwModule } from '~/nw'
+import { LayoutModule } from '~/ui/layout'
 import { observeRouteParam } from '~/utils'
 import { LootModule } from '~/widgets/loot'
 
@@ -11,9 +12,9 @@ import { LootModule } from '~/widgets/loot'
   selector: 'nwb-loot-detail-page',
   templateUrl: './loot-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, LootModule, FormsModule],
+  imports: [CommonModule, NwModule, LootModule, FormsModule, LayoutModule],
   host: {
-    class: 'layout-content layout-pad',
+    class: 'flex-1 flex flex-col',
   },
 })
 export class LootDetailPageComponent {
