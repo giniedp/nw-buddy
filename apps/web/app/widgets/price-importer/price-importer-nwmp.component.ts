@@ -5,17 +5,15 @@ import { ChangeDetectorRef, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { environment } from '../../../environments'
 import { BehaviorSubject, catchError, combineLatest, defer, map, of, take, takeUntil, tap } from 'rxjs'
-import { ElectronService } from '~/electron'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwLinkService, NwService } from '~/nw'
+import { NwDbService, NwLinkService } from '~/nw'
 import { getItemIconPath, getItemId, getItemRarity, isItemNamed, isMasterItem } from '~/nw/utils'
 import { AppPreferencesService, ItemPreferencesService, StorageProperty } from '~/preferences'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
 import { DestroyService, shareReplayRefCount } from '~/utils'
-import { TrackingCell } from '../adapter/components'
 import { PlatformService } from '~/utils/platform.service'
+import { TrackingCell } from '../adapter/components'
 
 export interface ServerOption {
   name: string
@@ -94,11 +92,10 @@ export class PriceImporterNwmp {
     private dialog: Dialog,
     private platform: PlatformService,
     info: NwLinkService,
-    nw: NwService,
     i18n: TranslateService,
     app: AppPreferencesService
   ) {
-    this.adapter = new PricesTableAdapter(nw, i18n, info)
+    this.adapter = new PricesTableAdapter(pref, i18n, info)
     this.nwmpServer = app.nwmpServer
     this.serverId = this.nwmpServer.get()
   }
@@ -238,11 +235,11 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
           headerName: 'Old Price',
           headerTooltip: 'Current price in Trading post',
           cellClass: 'text-right',
-          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(getItemId(data.item))?.price),
+          valueGetter: this.valueGetter(({ data }) => this.itemPref.get(getItemId(data.item))?.price),
           cellRenderer: TrackingCell,
           cellRendererParams: TrackingCell.params({
             getId: (value: PriceItem) => getItemId(value.item),
-            pref: this.nw.itemPref,
+            pref: this.itemPref,
             mode: 'price',
             formatter: this.moneyFormatter,
           }),
@@ -273,7 +270,11 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
 
   public entities = new BehaviorSubject<PriceItem[]>(null)
 
-  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwLinkService) {
+  public constructor(
+    private itemPref: ItemPreferencesService,
+    private i18n: TranslateService,
+    private info: NwLinkService
+  ) {
     super()
   }
 }

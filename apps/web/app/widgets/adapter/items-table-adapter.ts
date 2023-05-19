@@ -1,9 +1,10 @@
 import { Inject, Injectable, Optional } from '@angular/core'
+import { COLS_ITEMDEFINITIONMASTER } from '@nw-data/cols'
 import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { ColDef, GridOptions } from 'ag-grid-community'
-import { combineLatest, defer, map, Observable, of } from 'rxjs'
+import { Observable, combineLatest, defer, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwLinkService, NwService } from '~/nw'
+import { NwDbService, NwLinkService } from '~/nw'
 import {
   getItemIconPath,
   getItemId,
@@ -13,17 +14,20 @@ import {
   getItemPerks,
   getItemRarity,
   getItemRarityLabel,
-  getItemTierAsRoman, getItemTradingFamilyLabel,
+  getItemTierAsRoman,
+  getItemTradingFamilyLabel,
   getItemTradingGroupLabel,
-  getItemTypeLabel, getTradingCategoryLabel, isItemNamed
+  getItemTypeLabel,
+  getTradingCategoryLabel,
+  isItemNamed,
 } from '~/nw/utils'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
+import { ItemPreferencesService } from '~/preferences'
 import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { assetUrl, humanize, shareReplayRefCount } from '~/utils'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
-import { COLS_ITEMDEFINITIONMASTER } from '@nw-data/cols'
 
 export type ItemsTableItem = ItemDefinitionMaster & {
   $perks: Perks[]
@@ -40,7 +44,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
   public static provider(config?: ItemsTableAdapterConfig) {
     return dataTableProvider({
       adapter: ItemsTableAdapter,
-      options: config
+      options: config,
     })
   }
 
@@ -55,7 +59,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
     return {
       value: item.ItemType,
       label: this.i18n.get(getItemTypeLabel(item.ItemType)),
-      icon: ''
+      icon: '',
     }
   }
 
@@ -84,9 +88,9 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
               icon: getItemIconPath(data) || NW_FALLBACK_ICON,
               rarity: getItemRarity(data),
               named: isItemNamed(data),
-              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+              iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
-          })
+          }),
         }),
         this.colDef({
           colId: 'name',
@@ -122,48 +126,50 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
               tag: 'div',
               classList: ['flex', 'flex-row', 'items-center', 'h-full'],
               children: [
-                ...perks.map((perk) => this.createElement({
-                  tag: 'a',
-                  classList: ['block', 'w-7', 'h-7'],
-                  tap: (a) => {
-                    a.target = '_blank'
-                    a.href = this.info.link('perk', perk?.PerkID)
-                  },
-                  children: [
-                    this.createIcon((pic, img) => {
-                      img.classList.add('w-7', 'h-7', 'nw-icon')
-                      img.src = perk?.IconPath
-                    })
-                  ]
-                })),
+                ...perks.map((perk) =>
+                  this.createElement({
+                    tag: 'a',
+                    classList: ['block', 'w-7', 'h-7'],
+                    tap: (a) => {
+                      a.target = '_blank'
+                      a.href = this.info.link('perk', perk?.PerkID)
+                    },
+                    children: [
+                      this.createIcon((pic, img) => {
+                        img.classList.add('w-7', 'h-7', 'nw-icon')
+                        img.src = perk?.IconPath
+                      }),
+                    ],
+                  })
+                ),
                 ...buckets.map(() => {
                   return this.createIcon((pic, img) => {
                     img.classList.add('w-7', 'h-7', 'nw-icon')
                     img.src = assetUrl('assets/icons/crafting_perkbackground.png')
                   })
-                })
-              ]
+                }),
+              ],
             })
           }),
           filter: SelectFilter,
           filterParams: SelectFilter.params({
             showSearch: true,
             optionsGetter: (node) => {
-              const perks = (node.data as ItemsTableItem ).$perks || []
+              const perks = (node.data as ItemsTableItem).$perks || []
               return perks.map((perk) => {
                 return {
                   id: perk.PerkID,
                   label: this.i18n.get(perk.DisplayName || perk.AppliedSuffix || perk.AppliedPrefix),
-                  icon: perk.IconPath
+                  icon: perk.IconPath,
                 }
               })
-            }
-          })
+            },
+          }),
         }),
         this.colDef({
           colId: 'rarity',
           headerValueGetter: () => 'Rarity',
-          valueGetter: this.valueGetter(({ data }) => getItemRarity(data)) ,
+          valueGetter: this.valueGetter(({ data }) => getItemRarity(data)),
           valueFormatter: ({ value }) => this.i18n.get(getItemRarityLabel(value)),
           getQuickFilterText: ({ value }) => this.i18n.get(getItemRarityLabel(value)),
           filter: SelectFilter,
@@ -173,7 +179,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           colId: 'tier',
           headerValueGetter: () => 'Tier',
           width: 80,
-          valueGetter: this.valueGetter(({ data }) => data.Tier || null) ,
+          valueGetter: this.valueGetter(({ data }) => data.Tier || null),
           valueFormatter: ({ value }) => getItemTierAsRoman(value),
           filter: SelectFilter,
         }),
@@ -185,58 +191,60 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           width: 100,
           cellClass: 'cursor-pointer',
           filter: ItemTrackerFilter,
-          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.mark || 0),
+          valueGetter: this.valueGetter(({ data }) => this.itemPref.get(data.ItemID)?.mark || 0),
           cellRenderer: BookmarkCell,
           cellRendererParams: BookmarkCell.params({
             getId: (value: ItemsTableItem) => getItemId(value),
-            pref: this.nw.itemPref
+            pref: this.itemPref,
           }),
         }),
-        ...(this.config?.hideUserData ? [] : [
-          this.colDef({
-            colId: 'userStockCount',
-            headerValueGetter: () => 'In Stock',
-            suppressMenu: false,
-            headerTooltip: 'Number of items currently owned',
-            valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.stock),
-            cellRenderer: TrackingCell,
-            cellRendererParams: TrackingCell.params({
-              getId: (value: ItemsTableItem) => getItemId(value),
-              pref: this.nw.itemPref,
-              mode: 'stock',
-              class: 'text-right',
-            }),
-            width: 90,
-          }),
-          this.colDef({
-            colId: 'userOwnedWithGS',
-            headerValueGetter: () => 'Owned GS',
-            headerTooltip: 'Item owned with this gear score',
-            valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.gs),
-            cellRenderer: TrackingCell,
-            cellRendererParams: TrackingCell.params({
-              getId: (value: ItemsTableItem) => getItemId(value),
-              pref: this.nw.itemPref,
-              mode: 'gs',
-            }),
-            width: 100,
-          }),
-          this.colDef({
-            colId: 'userPrice',
-            headerValueGetter: () => 'Price',
-            headerTooltip: 'Current price in Trading post',
-            cellClass: 'text-right',
-            valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.ItemID)?.price),
-            cellRenderer: TrackingCell,
-            cellRendererParams: TrackingCell.params({
-              getId: (value: ItemsTableItem) => getItemId(value),
-              pref: this.nw.itemPref,
-              mode: 'price',
-              formatter: this.moneyFormatter,
-            }),
-            width: 100,
-          }),
-        ]),
+        ...(this.config?.hideUserData
+          ? []
+          : [
+              this.colDef({
+                colId: 'userStockCount',
+                headerValueGetter: () => 'In Stock',
+                suppressMenu: false,
+                headerTooltip: 'Number of items currently owned',
+                valueGetter: this.valueGetter(({ data }) => this.itemPref.get(data.ItemID)?.stock),
+                cellRenderer: TrackingCell,
+                cellRendererParams: TrackingCell.params({
+                  getId: (value: ItemsTableItem) => getItemId(value),
+                  pref: this.itemPref,
+                  mode: 'stock',
+                  class: 'text-right',
+                }),
+                width: 90,
+              }),
+              this.colDef({
+                colId: 'userOwnedWithGS',
+                headerValueGetter: () => 'Owned GS',
+                headerTooltip: 'Item owned with this gear score',
+                valueGetter: this.valueGetter(({ data }) => this.itemPref.get(data.ItemID)?.gs),
+                cellRenderer: TrackingCell,
+                cellRendererParams: TrackingCell.params({
+                  getId: (value: ItemsTableItem) => getItemId(value),
+                  pref: this.itemPref,
+                  mode: 'gs',
+                }),
+                width: 100,
+              }),
+              this.colDef({
+                colId: 'userPrice',
+                headerValueGetter: () => 'Price',
+                headerTooltip: 'Current price in Trading post',
+                cellClass: 'text-right',
+                valueGetter: this.valueGetter(({ data }) => this.itemPref.get(data.ItemID)?.price),
+                cellRenderer: TrackingCell,
+                cellRendererParams: TrackingCell.params({
+                  getId: (value: ItemsTableItem) => getItemId(value),
+                  pref: this.itemPref,
+                  mode: 'price',
+                  formatter: this.moneyFormatter,
+                }),
+                width: 100,
+              }),
+            ]),
         this.colDef({
           colId: 'gearScore',
           headerValueGetter: () => 'Gear Score',
@@ -247,7 +255,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
               return (a[1] || 0) - (b[1] || 0)
             }
             return (a[0] || 0) - (b[0] || 0)
-          } ,
+          },
           valueGetter: this.valueGetter(({ data }) => {
             let min = getItemMinGearScore(data, false)
             let max = getItemMaxGearScore(data, false)
@@ -259,7 +267,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
             }
             return `${value[0]}-${value[1]}`
           },
-          filter: RangeFilter
+          filter: RangeFilter,
         }),
         this.colDef({
           colId: 'source',
@@ -280,7 +288,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
         this.colDef({
           colId: 'itemType',
           headerValueGetter: () => 'Item Type',
-          valueGetter: this.valueGetter(({ data}) => data.ItemType ),
+          valueGetter: this.valueGetter(({ data }) => data.ItemType),
           valueFormatter: ({ value }) => this.i18n.get(getItemTypeLabel(value)),
           getQuickFilterText: ({ value }) => this.i18n.get(getItemTypeLabel(value)),
           width: 125,
@@ -294,62 +302,62 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           cellRenderer: this.cellRendererTags(humanize),
           filter: SelectFilter,
           filterParams: SelectFilter.params({
-            showSearch: true
-          })
+            showSearch: true,
+          }),
         }),
         this.colDef({
           colId: 'tradingGroup',
           headerValueGetter: () => 'Trading Group',
-          valueGetter: this.valueGetter(({ data}) => data.TradingGroup ),
+          valueGetter: this.valueGetter(({ data }) => data.TradingGroup),
           valueFormatter: this.valueFormatter<string>(({ value }) => this.i18n.get(getItemTradingGroupLabel(value))),
           filter: SelectFilter,
           filterParams: SelectFilter.params({
-            showSearch: true
-          })
+            showSearch: true,
+          }),
         }),
         this.colDef({
           colId: 'tradingFamily',
           headerValueGetter: () => 'Trading Family',
           width: 125,
-          valueGetter: this.valueGetter(({ data}) => data.TradingFamily ),
+          valueGetter: this.valueGetter(({ data }) => data.TradingFamily),
           valueFormatter: this.valueFormatter<string>(({ value }) => this.i18n.get(getItemTradingFamilyLabel(value))),
           filter: SelectFilter,
           filterParams: SelectFilter.params({
-            showSearch: true
-          })
+            showSearch: true,
+          }),
         }),
         this.colDef({
           colId: 'tradingCategory',
           headerValueGetter: () => 'Trading Category',
           width: 125,
-          valueGetter: this.valueGetter(({ data}) => data.TradingCategory),
+          valueGetter: this.valueGetter(({ data }) => data.TradingCategory),
           valueFormatter: this.valueFormatter<string>(({ value }) => this.i18n.get(getTradingCategoryLabel(value))),
           filter: SelectFilter,
         }),
       ],
-    }
-  )).pipe(map((options) => appendFields(options, Array.from(Object.entries(COLS_ITEMDEFINITIONMASTER)))))
+    })
+  ).pipe(map((options) => appendFields(options, Array.from(Object.entries(COLS_ITEMDEFINITIONMASTER)))))
 
   public entities: Observable<ItemsTableItem[]> = defer(() => {
     return combineLatest({
-      items: this.config?.source || this.nw.db.items,
-      perks: this.nw.db.perksMap,
-    })
-    .pipe(map(({ items, perks }) => {
-      return items.map((it): ItemsTableItem => {
-        return {
-          ...it,
-          $perks: getItemPerks(it, perks),
-          $perkBuckets: getItemPerkBucketIds(it)
-        }
+      items: this.config?.source || this.db.items,
+      perks: this.db.perksMap,
+    }).pipe(
+      map(({ items, perks }) => {
+        return items.map((it): ItemsTableItem => {
+          return {
+            ...it,
+            $perks: getItemPerks(it, perks),
+            $perkBuckets: getItemPerkBucketIds(it),
+          }
+        })
       })
-      }))
-  }).pipe(
-    shareReplayRefCount(1)
-  )
+    )
+  }).pipe(shareReplayRefCount(1))
 
   public constructor(
-    private nw: NwService,
+    private db: NwDbService,
+    private itemPref: ItemPreferencesService,
     private i18n: TranslateService,
     @Inject(DataTableAdapterOptions)
     @Optional()
@@ -359,8 +367,6 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
     super()
   }
 }
-
-
 
 function appendFields(options: GridOptions, fields: string[][]) {
   for (const [field, type] of fields) {

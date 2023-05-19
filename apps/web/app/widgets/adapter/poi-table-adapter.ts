@@ -3,7 +3,7 @@ import { PoiDefinition } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { defer, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwLinkService, NwService } from '~/nw'
+import { NwDbService, NwLinkService } from '~/nw'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
@@ -99,10 +99,10 @@ export class PoiTableAdapter extends DataTableAdapter<PoiDefinition> {
   )
 
   public entities: Observable<PoiDefinition[]> = defer(() => {
-    return this.nw.db.pois
+    return this.db.pois
   }).pipe(shareReplayRefCount(1))
 
-  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwLinkService) {
+  public constructor(private db: NwDbService, private i18n: TranslateService, private info: NwLinkService) {
     super()
   }
 }

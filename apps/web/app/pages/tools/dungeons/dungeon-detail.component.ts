@@ -13,9 +13,9 @@ import {
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty } from '@nw-data/types'
-import { combineLatest, defer, map, Observable, of, ReplaySubject, switchMap, takeUntil } from 'rxjs'
+import { ReplaySubject, combineLatest, defer, map, of, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwModule, NwService } from '~/nw'
+import { NwDbService, NwModule } from '~/nw'
 
 import {
   getItemIconPath,
@@ -28,16 +28,16 @@ import {
   isMasterItem,
 } from '~/nw/utils'
 import { DifficultyRank, DungeonPreferencesService } from '~/preferences'
+import { IconsModule } from '~/ui/icons'
+import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { PaginationModule } from '~/ui/pagination'
 import { DestroyService, HtmlHeadService, observeRouteParam, shareReplayRefCount } from '~/utils'
+import { PlatformService } from '~/utils/platform.service'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { LootModule } from '~/widgets/loot'
 import { VitalsDetailModule } from '~/widgets/vitals-detail'
 import { DungeonDetailStore } from './dungeon-detail.store'
-import { PlatformService } from '~/utils/platform.service'
-import { IconsModule } from '~/ui/icons'
-import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 
 const DIFFICULTY_TIER_NAME = {
   1: 'Normal',
@@ -175,9 +175,9 @@ export class DungeonDetailComponent implements OnInit {
     combineLatest({
       rank: this.difficultyRank$,
       difficulty: this.difficulty$,
-      events: this.nw.db.gameEventsMap,
-      items: this.nw.db.itemsMap,
-      loot: this.nw.db.lootTablesMap,
+      events: this.db.gameEventsMap,
+      items: this.db.itemsMap,
+      loot: this.db.lootTablesMap,
     })
   ).pipe(
     map(({ rank, difficulty, events, items, loot }) => {
@@ -288,7 +288,6 @@ export class DungeonDetailComponent implements OnInit {
   public tabs: Array<Tab>
 
   public constructor(
-    private nw: NwService,
     private db: NwDbService,
     private route: ActivatedRoute,
     private destroy: DestroyService,

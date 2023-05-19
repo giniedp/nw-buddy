@@ -3,9 +3,10 @@ import { COLS_STATUSEFFECT } from '@nw-data/cols'
 import { Statuseffect } from '@nw-data/types'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { sortBy } from 'lodash'
-import { defer, map, Observable, of } from 'rxjs'
+import { Observable, defer, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwLinkService, NwService } from '~/nw'
+import { NwDbService, NwLinkService } from '~/nw'
+import { NwExpressionService } from '~/nw/expression'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, dataTableProvider } from '~/ui/data-table'
@@ -56,7 +57,14 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
               href: this.info.link('status-effect', data.StatusID),
               target: '_blank',
               icon: data.PlaceholderIcon || data['IconPath'] || NW_FALLBACK_ICON,
-              iconClass: ['nw-status-bg', data.IsNegative ? 'negative' : null, 'p-1', 'transition-all', 'translate-x-0', 'hover:translate-x-1'],
+              iconClass: [
+                'nw-status-bg',
+                data.IsNegative ? 'negative' : null,
+                'p-1',
+                'transition-all',
+                'translate-x-0',
+                'hover:translate-x-1',
+              ],
             })
           }),
         }),
@@ -94,7 +102,7 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
           cellRenderer: this.cellRendererAsync(),
           cellRendererParams: this.cellRendererAsyncParams<string>({
             source: ({ data, value }) =>
-              this.nw.expression.solve({
+              this.expression.solve({
                 text: value,
                 charLevel: 60,
                 itemId: data.Description,
@@ -130,14 +138,15 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
   )
 
   public entities: Observable<Statuseffect[]> = defer(() => {
-    return this.config?.source || this.nw.db.statusEffects
+    return this.config?.source || this.db.statusEffects
   })
     .pipe(map((list) => sortBy(list, (it) => it.StatusID)))
     .pipe(map((list) => sortBy(list, (it) => (it.Description ? -1 : 1))))
     .pipe(shareReplayRefCount(1))
 
   public constructor(
-    private nw: NwService,
+    private db: NwDbService,
+    private expression: NwExpressionService,
     private i18n: TranslateService,
     private info: NwLinkService,
     @Inject(DataTableAdapterOptions)

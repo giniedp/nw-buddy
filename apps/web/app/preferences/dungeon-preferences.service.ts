@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { distinctUntilChanged, map, tap } from 'rxjs'
+import { map } from 'rxjs'
 import { PreferencesService } from './preferences.service'
 import { StorageNode } from './storage'
 
@@ -26,17 +26,16 @@ export class DungeonPreferencesService {
   }
 
   public observeRank(id: string, difficulty: string | number) {
-    return this.observe(id)
-      .pipe(map((it) => it?.ranks?.[difficulty]))
+    return this.observe(id).pipe(map((it) => it?.ranks?.[difficulty]))
   }
 
   public updateRank(id: string, difficulty: string | number, rank: DifficultyRank) {
     const data = {
-      ...(this.storage.get(id) || {})
+      ...(this.storage.get(id) || {}),
     }
     data.ranks = {
       ...(data.ranks || {}),
-      [difficulty]: rank
+      [difficulty]: rank,
     }
     this.storage.set(id, data)
   }

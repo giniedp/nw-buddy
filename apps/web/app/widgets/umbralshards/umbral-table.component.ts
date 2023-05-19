@@ -1,6 +1,6 @@
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { BehaviorSubject, combineLatest, defer, map } from 'rxjs'
-import { NwDbService, NwService } from '~/nw'
+import { NwDbService } from '~/nw'
 import { shareReplayRefCount } from '~/utils'
 
 function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: keyof T) {
@@ -17,8 +17,8 @@ function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: key
   styleUrls: ['./umbral-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'layout-content'
-  }
+    class: 'layout-content',
+  },
 })
 export class UmbralTableComponent {
   @Input()

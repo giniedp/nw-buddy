@@ -1,11 +1,15 @@
 import { ItemDefinitionMaster, Perks } from '@nw-data/types'
 import { groupBy, sortBy } from 'lodash'
 import { TranslateService } from '~/i18n'
-import { NwService } from '~/nw'
 import { getItemRarity } from '~/nw/utils'
 import { Armorset, ArmorsetGroup } from './types'
 
-export function findSets(items: ItemDefinitionMaster[], source: string, perksMap: Map<string, Perks>, i18n: TranslateService): ArmorsetGroup[] {
+export function findSets(
+  items: ItemDefinitionMaster[],
+  source: string,
+  perksMap: Map<string, Perks>,
+  i18n: TranslateService
+): ArmorsetGroup[] {
   const groups1 = groupBy(items, (item) => {
     const family = getFamilyName(item)
     const weight = getItemClass(item)
@@ -21,12 +25,14 @@ export function findSets(items: ItemDefinitionMaster[], source: string, perksMap
     }
 
     const sharedPerks = getPerkInfos(items)
-      .samePerks
-      .map((it) => perksMap.get(it))
+      .samePerks.map((it) => perksMap.get(it))
       .filter((it) => it.PerkType !== 'Gem' && it.PerkType !== 'Inherent')
     const naming = buildSetName(items, i18n)
 
-    const groupKey = sharedPerks.map((it) => it.PerkID).sort().join('-')
+    const groupKey = sharedPerks
+      .map((it) => it.PerkID)
+      .sort()
+      .join('-')
     sets[groupKey] = sets[groupKey] || []
     sets[groupKey].push({
       key: getFamilyName(items[0]),
@@ -36,7 +42,7 @@ export function findSets(items: ItemDefinitionMaster[], source: string, perksMap
       weight: getItemClass(items[0]),
       perks: sharedPerks,
       items: items,
-      itemNames: naming.names
+      itemNames: naming.names,
     })
   })
   return Object.entries(sets).map(([key, itemSets]) => {
@@ -132,21 +138,22 @@ export function buildSetName(items: ItemDefinitionMaster[], i18n: TranslateServi
   })
   if (data[0].prefix && data[0].suffix) {
     return {
-      name: [data[0].prefix, '…', data[0].suffix].map((it) => it.trim()).filter((it) => !!it).join(' '),
+      name: [data[0].prefix, '…', data[0].suffix]
+        .map((it) => it.trim())
+        .filter((it) => !!it)
+        .join(' '),
       names: data.map((it) => {
-        return [
-          it.prefix.trim() ? '…' : '',
-          it.midname.trim(),
-          it.suffix.trim() ? '…' : '',
-        ].filter((it) => !!it).join(' ')
-      })
+        return [it.prefix.trim() ? '…' : '', it.midname.trim(), it.suffix.trim() ? '…' : '']
+          .filter((it) => !!it)
+          .join(' ')
+      }),
     }
   }
 
   const common = names.reduce((res, name) => longestCommonSubstring(res, name), names[0])
   return {
     name: common,
-    names: names.map((it) => it.replace(common, '…'))
+    names: names.map((it) => it.replace(common, '…')),
   }
 }
 

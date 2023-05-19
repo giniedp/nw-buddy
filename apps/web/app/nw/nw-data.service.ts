@@ -3,7 +3,6 @@ import {
 } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { NwDataLoader } from '@nw-data/datatables'
-import { environment } from 'apps/web/environments/environment'
 import { Observable, shareReplay } from 'rxjs'
 
 export type LocaleData = Record<string, { value: string }>
@@ -15,8 +14,6 @@ export class NwDataService extends NwDataLoader {
   public get apiMethods(): Array<keyof NwDataLoader> {
     return Object.getOwnPropertyNames(NwDataLoader.prototype) as Array<keyof NwDataLoader>
   }
-
-  public storagePath: string = environment.nwDataUrl.replace(/\/+$/, '')
 
   public constructor(private http: HttpClient) {
     super()

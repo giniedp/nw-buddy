@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { Subject } from 'rxjs'
-import { NwService } from '~/nw'
+import { NwTradeskillService } from '~/nw/tradeskill'
 import { HtmlHeadService } from '~/utils'
 import { TradeskillsModule } from '~/widgets/tradeskills'
 
@@ -13,40 +12,31 @@ import { TradeskillsModule } from '~/widgets/tradeskills'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, TradeskillsModule],
   host: {
-    class: 'layout-col layout-pad'
-  }
+    class: 'layout-col layout-pad',
+  },
 })
-export class TradeskillsComponent implements OnInit, OnDestroy {
+export class TradeskillsComponent {
   public get skills() {
-    return this.nw.tradeskills.skills
+    return this.service.skills
   }
 
   public get categories() {
-    return this.nw.tradeskills.categories
+    return this.service.categories
   }
 
   public selected: string
 
-  private destroy$ = new Subject()
-
-  public constructor(private nw: NwService, private cdRef: ChangeDetectorRef, head: HtmlHeadService) {
+  public constructor(private service: NwTradeskillService, head: HtmlHeadService) {
     head.updateMetadata({
       title: 'Trade Skills',
       description: 'Trade skill progression settings',
       noFollow: true,
-      noIndex: true
+      noIndex: true,
     })
   }
 
   public skillsByCategory(name: string) {
-    return this.nw.tradeskills.skillsByCategory(name)
-  }
-
-  public ngOnInit(): void {}
-
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
+    return this.service.skillsByCategory(name)
   }
 
   public isActive(category: string, index: number) {

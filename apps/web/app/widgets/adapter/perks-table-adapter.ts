@@ -2,11 +2,17 @@ import { Injectable, Optional } from '@angular/core'
 import { COLS_AFFIXSTATS, COLS_PERKS } from '@nw-data/cols'
 import { Ability, Perks } from '@nw-data/types'
 import { ColDef, ColGroupDef, GridOptions } from 'ag-grid-community'
-import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
+import { Observable, combineLatest, defer, map, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwLinkService, NwService } from '~/nw'
-import { NwExpressionContextService } from '~/nw/expression'
-import { getPerkItemClassGsBonus, getPerksInherentMODs, hasPerkInherentAffix, isPerkGenerated, isPerkInherent } from '~/nw/utils'
+import { NwDbService, NwLinkService } from '~/nw'
+import { NwExpressionContextService, NwExpressionService } from '~/nw/expression'
+import {
+  getPerkItemClassGsBonus,
+  getPerksInherentMODs,
+  hasPerkInherentAffix,
+  isPerkGenerated,
+  isPerkInherent,
+} from '~/nw/utils'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
@@ -16,7 +22,7 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
   public static provider(config?: DataTableAdapterOptions<Perks>) {
     return dataTableProvider({
       adapter: PerksTableAdapter,
-      options: config
+      options: config,
     })
   }
 
@@ -28,9 +34,8 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
     return {
       icon: null,
       label: isPerkInherent(item) ? 'Attributes' : isPerkGenerated(item) ? 'Perks' : item.PerkType,
-      value: item.PerkType
+      value: item.PerkType,
     }
-
   }
   public override get persistStateId(): string {
     return this.config?.persistStateId
@@ -58,7 +63,7 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
                   target: '_blank',
                   href: this.info.link('perk', String(data.PerkID)),
                   icon: data.IconPath,
-                  iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1']
+                  iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
                 })
               }),
             }),
@@ -88,24 +93,24 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
                   children: [
                     value.name
                       ? {
-                        tag: 'span',
-                        classList: [],
-                        text: value.name as string,
-                      }
+                          tag: 'span',
+                          classList: [],
+                          text: value.name as string,
+                        }
                       : null,
                     value.prefix
                       ? {
-                        tag: 'span',
-                        classList: ['italic', 'text-accent'],
-                        text: `${value.prefix} …`,
-                      }
+                          tag: 'span',
+                          classList: ['italic', 'text-accent'],
+                          text: `${value.prefix} …`,
+                        }
                       : null,
                     value.suffix
                       ? {
-                        tag: 'span',
-                        classList: ['italic', 'text-accent'],
-                        text: `… ${value.suffix}`,
-                      }
+                          tag: 'span',
+                          classList: ['italic', 'text-accent'],
+                          text: `… ${value.suffix}`,
+                        }
                       : null,
                   ],
                 })
@@ -126,7 +131,7 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
                   return combineLatest({
                     ctx: this.ctx.value,
                     text: this.i18n.observe(data.Description),
-                    stats: this.nw.db.affixStatsMap,
+                    stats: this.db.affixStatsMap,
                   }).pipe(
                     switchMap(({ ctx, text, stats }) => {
                       if (hasPerkInherentAffix(data)) {
@@ -141,7 +146,7 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
                       if (data.ItemClassGSBonus && ctx.gsBonus) {
                         gs += Number(data.ItemClassGSBonus.split(',')[0].split(':')[1]) || 0
                       }
-                      return this.nw.expression.solve({
+                      return this.expression.solve({
                         text: text,
                         charLevel: ctx.level,
                         gearScore: gs,
@@ -251,25 +256,31 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
                 return ability?.IsStackableAbility
               }),
             }),
-          ]
+          ],
         }),
         this.colGroupDef({
           headerName: 'Affix',
           marryChildren: true,
-          children: []
-        })
+          children: [],
+        }),
       ],
-    }).pipe(map((options) => {
-      appendFields((options.columnDefs[0] as ColGroupDef).children, Array.from(Object.entries(COLS_PERKS)), '')
-      appendFields((options.columnDefs[1] as ColGroupDef).children, Array.from(Object.entries(COLS_AFFIXSTATS)), '$affix')
-      return options
-    }))
+    }).pipe(
+      map((options) => {
+        appendFields((options.columnDefs[0] as ColGroupDef).children, Array.from(Object.entries(COLS_PERKS)), '')
+        appendFields(
+          (options.columnDefs[1] as ColGroupDef).children,
+          Array.from(Object.entries(COLS_AFFIXSTATS)),
+          '$affix'
+        )
+        return options
+      })
+    )
   )
 
   public entities: Observable<Perks[]> = defer(() =>
     combineLatest({
-      perks: this.config?.source || this.nw.db.perks,
-      affixstats: this.nw.db.affixstatsMap,
+      perks: this.config?.source || this.db.perks,
+      affixstats: this.db.affixstatsMap,
     })
   )
     .pipe(
@@ -285,7 +296,8 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
     .pipe(shareReplayRefCount(1))
 
   public constructor(
-    private nw: NwService,
+    private db: NwDbService,
+    private expression: NwExpressionService,
     private i18n: TranslateService,
     @Optional()
     private config: DataTableAdapterOptions<Perks>,
@@ -295,7 +307,6 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
     super()
   }
 }
-
 
 function appendFields(columns: Array<ColDef>, fields: string[][], fieldPrefix: string) {
   for (const [field, type] of fields) {

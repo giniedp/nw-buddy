@@ -1,10 +1,7 @@
 import { Injectable } from '@angular/core'
-import { Housingitems } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { defer, map, Observable, of, shareReplay } from 'rxjs'
-import { GearsetsDB, GearsetRecord } from '~/data'
-import { TranslateService } from '~/i18n'
-import { NwService } from '~/nw'
+import { defer, Observable, of } from 'rxjs'
+import { GearsetRecord, GearsetsDB } from '~/data'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { shareReplayRefCount } from '~/utils'
 

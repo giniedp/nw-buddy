@@ -1,5 +1,4 @@
 export * from './abilities-table-adapter'
-export * from './adapter.service'
 export * from './crafting-table-adapter'
 export * from './housing-table-adapter'
 export * from './items-table-adapter'

@@ -7,7 +7,7 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { BehaviorSubject, combineLatest, defer, map, of, switchMap, take, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwLinkService, NwModule, NwService } from '~/nw'
+import { NwDbService, NwLinkService, NwModule } from '~/nw'
 import { getItemIconPath, getItemId, getItemRarity, isItemNamed, isMasterItem } from '~/nw/utils'
 import { ItemPreferencesService } from '~/preferences'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
@@ -87,11 +87,10 @@ export class PriceImporterJsonComponent {
     private dialog: Dialog,
     private http: HttpClient,
     private cdRef: ChangeDetectorRef,
-    nw: NwService,
     i18n: TranslateService,
     info: NwLinkService
   ) {
-    this.adapter = new PricesTableAdapter(nw, i18n, info)
+    this.adapter = new PricesTableAdapter(pref, i18n, info)
   }
 
   protected useFile(e: Event) {
@@ -287,11 +286,11 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
             headerName: 'Old Price',
             headerTooltip: 'Current price in Trading post',
             cellClass: 'text-right',
-            valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(getItemId(data.item))?.price),
+            valueGetter: this.valueGetter(({ data }) => this.itemPref.get(getItemId(data.item))?.price),
             cellRenderer: TrackingCell,
             cellRendererParams: TrackingCell.params({
               getId: (value: PriceItem) => getItemId(value.item),
-              pref: this.nw.itemPref,
+              pref: this.itemPref,
               mode: 'price',
               formatter: this.moneyFormatter,
             }),
@@ -321,7 +320,11 @@ export class PricesTableAdapter extends DataTableAdapter<PriceItem> {
 
   public entities = new BehaviorSubject<PriceItem[]>(null)
 
-  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwLinkService) {
+  public constructor(
+    private itemPref: ItemPreferencesService,
+    private i18n: TranslateService,
+    private info: NwLinkService
+  ) {
     super()
   }
 }

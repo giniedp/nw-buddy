@@ -1,6 +1,6 @@
-import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { defer, map } from 'rxjs'
-import { NwService } from '~/nw'
+import { NwDbService } from '~/nw'
 import { DestroyService } from '~/utils'
 
 export interface StandingRow {
@@ -27,7 +27,7 @@ function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: key
   providers: [DestroyService],
 })
 export class StandingTableComponent {
-  public data = defer(() => this.nw.db.data.territoryStanding()).pipe(
+  public data = defer(() => this.db.data.territoryStanding()).pipe(
     map((data) => {
       return data.map((node, i): StandingRow => {
         return {
@@ -41,8 +41,7 @@ export class StandingTableComponent {
     })
   )
 
-  public constructor(private nw: NwService) {
+  public constructor(private db: NwDbService) {
     //
   }
-
 }

@@ -2,11 +2,12 @@ import { Injectable } from '@angular/core'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { groupBy } from 'lodash'
 import m from 'mithril'
-import { combineLatest, defer, map, merge, Observable, of, skip, takeUntil } from 'rxjs'
+import { Observable, combineLatest, defer, map, merge, of, skip, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { IconComponent, NwLinkService, NwService } from '~/nw'
+import { IconComponent, NwDbService, NwLinkService } from '~/nw'
 import { getItemIconPath, getItemRarity, getItemTierAsRoman, isItemNamed } from '~/nw/utils'
-import { mithrilCell, SelectFilter } from '~/ui/ag-grid'
+import { ItemPreferencesService } from '~/preferences'
+import { SelectFilter, mithrilCell } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { LayoutService } from '~/ui/layout'
 import { shareReplayRefCount } from '~/utils'
@@ -125,18 +126,17 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
               },
               valueGetter: ({ data }) => {
                 const item = (data as Armorset).items[i]
-                return this.nw.itemPref.get(item.ItemID)?.gs
+                return this.itemPref.get(item.ItemID)?.gs
               },
               cellRenderer: mithrilCell<Armorset>({
                 oncreate: ({ attrs: { data, destroy$, api, node } }) => {
-                  merge(...data.items.map((it) => this.nw.itemPref.observe(it.ItemID).pipe(skip(1))))
+                  merge(...data.items.map((it) => this.itemPref.observe(it.ItemID).pipe(skip(1))))
                     .pipe(takeUntil(destroy$))
                     .subscribe(() => {
                       api.refreshCells({ rowNodes: [node] })
                     })
                 },
                 view: ({ attrs: { value, data } }) => {
-
                   const item = data.items[i]
                   const name = data.itemNames[i]
                   const max = (item.GearScoreOverride || item.MaxGearScore) <= value
@@ -158,25 +158,19 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
                       ),
                       m('div.flex.flex-row.gap-1', [
                         m(ItemMarkerCell, {
-                          class: [
-                            value && max ? 'text-success' : '',
-                            value && !max ? 'text-warning' : '',
-                          ].join(' '),
+                          class: [value && max ? 'text-success' : '', value && !max ? 'text-warning' : ''].join(' '),
                           itemId: item.ItemID,
-                          meta: this.nw.itemPref,
-                          disabled: true
+                          meta: this.itemPref,
+                          disabled: true,
                         }),
                         m(ItemTrackerCell, {
-                          class: [
-                            value && max ? 'text-success' : '',
-                            value && !max ? 'text-warning' : '',
-                          ].join(' '),
+                          class: [value && max ? 'text-success' : '', value && !max ? 'text-warning' : ''].join(' '),
                           itemId: item.ItemID,
-                          meta: this.nw.itemPref,
+                          meta: this.itemPref,
                           mode: 'gs',
-                          disabled: true
-                        })
-                      ])
+                          disabled: true,
+                        }),
+                      ]),
                     ]
                   )
                 },
@@ -190,8 +184,8 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
 
   public entities: Observable<Armorset[]> = defer(() => {
     return combineLatest({
-      items: this.nw.db.items,
-      perks: this.nw.db.perksMap,
+      items: this.db.items,
+      perks: this.db.perksMap,
     }).pipe(
       map(({ items, perks }) => {
         const MIN_RARITY = 2
@@ -211,7 +205,8 @@ export class ArmorsetsAdapterService extends DataTableAdapter<Armorset> {
   }).pipe(shareReplayRefCount(1))
 
   public constructor(
-    private nw: NwService,
+    private db: NwDbService,
+    private itemPref: ItemPreferencesService,
     private i18n: TranslateService,
     private layout: LayoutService,
     private info: NwLinkService

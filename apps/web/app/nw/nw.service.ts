@@ -1,21 +1,4 @@
-import { Injectable } from '@angular/core'
-
-import { ItemPreferencesService } from '../preferences'
-import { NwDbService } from './nw-db.service'
-import { NwExpressionService } from './expression'
-import { NwTradeskillService } from './tradeskill'
 import m from 'mithril'
-
-@Injectable({ providedIn: 'root' })
-export class NwService {
-  public constructor(
-    public readonly db: NwDbService,
-    public readonly expression: NwExpressionService,
-    public readonly itemPref: ItemPreferencesService,
-    public readonly tradeskills: NwTradeskillService
-  ) {}
-
-}
 
 export interface IconComponentAttrs {
   src: string

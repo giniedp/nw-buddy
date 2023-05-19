@@ -1,12 +1,9 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { Gamemodes, Vitals } from '@nw-data/types'
-import { combineLatest, defer, map, of, ReplaySubject, switchMap } from 'rxjs'
+import { combineLatest } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
-import { getVitalCategoryInfo, getVitalDamageEffectiveness, getVitalFamilyInfo, isVitalNamed } from '~/nw/utils'
-import { NwVitalsService } from '~/nw/vitals'
-import { NwWeaponTypesService } from '~/nw/weapon-types'
-import { DestroyService, shareReplayRefCount } from '~/utils'
+import { DestroyService } from '~/utils'
 import { VitalDetailHeaderComponent } from './vital-detail-header.component'
 import { VitalDetailInfosComponent } from './vital-detail-infos.component'
 import { VitalDetailWeaknessComponent } from './vital-detail-weakness.component'
@@ -50,7 +47,7 @@ export class VitalDetailComponent {
   protected vm$ = combineLatest({
     vital: this.service.vital$,
     level: this.service.level$,
-    modifier: this.service.modifier$
+    modifier: this.service.modifier$,
   })
 
   // protected readonly vital$ = new ReplaySubject<Vitals>(1)
@@ -67,7 +64,7 @@ export class VitalDetailComponent {
   //   map((it) => (this.isGroup ? getVitalFamilyInfo(it) : getVitalCategoryInfo(it)))
   // )
 
-  public constructor(private db: NwDbService, private vitals: NwVitalsService, private service: VitalDetailService) {
+  public constructor(private db: NwDbService, private service: VitalDetailService) {
     //
   }
 }

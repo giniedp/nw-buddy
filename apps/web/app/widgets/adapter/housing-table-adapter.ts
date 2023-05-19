@@ -1,9 +1,9 @@
 import { Inject, Injectable, Optional } from '@angular/core'
 import { Housingitems } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
-import { defer, map, Observable, of, shareReplay } from 'rxjs'
+import { Observable, defer, map, of, shareReplay } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwLinkService, NwService } from '~/nw'
+import { NwDbService, NwLinkService } from '~/nw'
 import {
   getItemIconPath,
   getItemId,
@@ -13,6 +13,7 @@ import {
   getUIHousingCategoryLabel,
 } from '~/nw/utils'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
+import { ItemPreferencesService } from '~/preferences'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize } from '~/utils'
@@ -108,11 +109,11 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
           width: 100,
           cellClass: 'cursor-pointer',
           filter: ItemTrackerFilter,
-          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.mark || 0),
+          valueGetter: this.valueGetter(({ data }) => this.itemPref.get(data.HouseItemID)?.mark || 0),
           cellRenderer: BookmarkCell,
           cellRendererParams: BookmarkCell.params({
             getId: (value: Housingitems) => getItemId(value),
-            pref: this.nw.itemPref,
+            pref: this.itemPref,
           }),
         }),
         this.colDef({
@@ -120,11 +121,11 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
           hide: this.config?.hideUserData,
           headerValueGetter: () => 'In Stock',
           headerTooltip: 'Number of items currently owned',
-          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.stock),
+          valueGetter: this.valueGetter(({ data }) => this.itemPref.get(data.HouseItemID)?.stock),
           cellRenderer: TrackingCell,
           cellRendererParams: TrackingCell.params({
             getId: (value: Housingitems) => getItemId(value),
-            pref: this.nw.itemPref,
+            pref: this.itemPref,
             mode: 'stock',
             class: 'text-right',
           }),
@@ -136,11 +137,11 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
           headerValueGetter: () => 'Price',
           headerTooltip: 'Current price in Trading post',
           cellClass: 'text-right',
-          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(data.HouseItemID)?.price),
+          valueGetter: this.valueGetter(({ data }) => this.itemPref.get(data.HouseItemID)?.price),
           cellRenderer: TrackingCell,
           cellRendererParams: TrackingCell.params({
             getId: (value: Housingitems) => getItemId(value),
-            pref: this.nw.itemPref,
+            pref: this.itemPref,
             mode: 'price',
             formatter: this.moneyFormatter,
           }),
@@ -191,7 +192,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
   )
 
   public entities: Observable<Housingitems[]> = defer(() => {
-    return (this.config?.source || this.nw.db.housingItems).pipe(map((items) => items.filter((it) => !it.ExcludeFromGame)))
+    return (this.config?.source || this.db.housingItems).pipe(map((items) => items.filter((it) => !it.ExcludeFromGame)))
   }).pipe(
     shareReplay({
       refCount: true,
@@ -200,7 +201,8 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
   )
 
   public constructor(
-    private nw: NwService,
+    private db: NwDbService,
+    private itemPref: ItemPreferencesService,
     private i18n: TranslateService,
     private info: NwLinkService,
     @Inject(DataTableAdapterOptions)

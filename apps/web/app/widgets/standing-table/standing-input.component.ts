@@ -1,6 +1,6 @@
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { BehaviorSubject, combineLatest, defer, map, of, switchMap } from 'rxjs'
-import { NwService } from '~/nw'
+import { NwDbService } from '~/nw'
 import { territoryImage } from '~/nw/utils'
 import { TerritoriesPreferencesService } from '~/preferences/territories-preferences.service'
 import { shareReplayRefCount } from '~/utils'
@@ -11,8 +11,8 @@ import { shareReplayRefCount } from '~/utils'
   styleUrls: ['./standing-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'block relative'
-  }
+    class: 'block relative',
+  },
 })
 export class StandingInputComponent {
   @Input()
@@ -23,30 +23,34 @@ export class StandingInputComponent {
     return this.territoryId$.value
   }
 
-  public territory$ = defer(() => combineLatest({
-    id: this.territoryId$,
-    territories: this.nw.db.territoriesMap
-  }))
+  public territory$ = defer(() =>
+    combineLatest({
+      id: this.territoryId$,
+      territories: this.db.territoriesMap,
+    })
+  )
     .pipe(map(({ id, territories }) => territories.get(id)))
     .pipe(shareReplayRefCount(1))
 
-  public territoryName$ = defer(() => this.territory$)
-    .pipe(map((it) => it?.NameLocalizationKey))
+  public territoryName$ = defer(() => this.territory$).pipe(map((it) => it?.NameLocalizationKey))
 
-  public territoryImage$ = defer(() => this.territory$)
-    .pipe(map((it) => territoryImage(it, 'territory')))
+  public territoryImage$ = defer(() => this.territory$).pipe(map((it) => territoryImage(it, 'territory')))
 
   public standingLevel$ = defer(() => this.territoryId$)
-    .pipe(switchMap((id) => !id ? of(0) : this.pref.observe(id).pipe(map((it) => it?.standing || 0))))
+    .pipe(switchMap((id) => (!id ? of(0) : this.pref.observe(id).pipe(map((it) => it?.standing || 0)))))
     .pipe(shareReplayRefCount(1))
 
-  public standingTitle$ = defer(() => combineLatest({
-    level: this.standingLevel$,
-    table: this.nw.db.data.territoryStanding()
-  }))
-    .pipe(map(({level, table}) => {
-      return table.filter((it) => !!it.DisplayName && (it.Rank <= level)).reverse()[0]?.DisplayName
-    }))
+  public standingTitle$ = defer(() =>
+    combineLatest({
+      level: this.standingLevel$,
+      table: this.db.data.territoryStanding(),
+    })
+  )
+    .pipe(
+      map(({ level, table }) => {
+        return table.filter((it) => !!it.DisplayName && it.Rank <= level).reverse()[0]?.DisplayName
+      })
+    )
     .pipe(shareReplayRefCount(1))
 
   public get standingLevel() {
@@ -55,15 +59,14 @@ export class StandingInputComponent {
   public set standingLevel(value: number) {
     if (this.territoryId) {
       this.pref.merge(this.territoryId, {
-        standing: Number(value) || 0
+        standing: Number(value) || 0,
       })
     }
   }
 
   private territoryId$ = new BehaviorSubject<number>(null)
 
-  public constructor(private nw: NwService, private pref: TerritoriesPreferencesService) {
+  public constructor(private db: NwDbService, private pref: TerritoriesPreferencesService) {
     //
   }
-
 }

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { Subject } from 'rxjs'
-import { NwService } from '~/nw'
+import { NwTradeskillService } from '~/nw/tradeskill'
 import { TradeskillsModule } from '~/widgets/tradeskills'
 
 @Component({
@@ -18,23 +18,23 @@ import { TradeskillsModule } from '~/widgets/tradeskills'
 })
 export class TradeskillsComponent implements OnInit, OnDestroy {
   public get skills() {
-    return this.nw.tradeskills.skills
+    return this.service.skills
   }
 
   public get categories() {
-    return this.nw.tradeskills.categories
+    return this.service.categories
   }
 
   public selected: string
 
   private destroy$ = new Subject()
 
-  public constructor(private nw: NwService) {
+  public constructor(private service: NwTradeskillService) {
     //
   }
 
   public skillsByCategory(name: string) {
-    return this.nw.tradeskills.skillsByCategory(name)
+    return this.service.skillsByCategory(name)
   }
 
   public ngOnInit(): void {}

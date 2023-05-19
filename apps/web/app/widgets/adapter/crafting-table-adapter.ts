@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
 import { GridOptions } from 'ag-grid-community'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
-import { combineLatest, defer, map, Observable, of } from 'rxjs'
+import { Observable, combineLatest, defer, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwLinkService, NwService } from '~/nw'
+import { NwDbService, NwLinkService } from '~/nw'
 import {
   getCraftingCategoryLabel,
   getCraftingGroupLabel,
@@ -16,6 +16,7 @@ import {
   getTradeSkillLabel,
 } from '~/nw/utils'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
+import { ItemPreferencesService } from '~/preferences'
 import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { shareReplayRefCount } from '~/utils'
@@ -137,22 +138,22 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           width: 100,
           cellClass: 'cursor-pointer',
           filter: ItemTrackerFilter,
-          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(getItemId(data.$item))?.mark || 0),
+          valueGetter: this.valueGetter(({ data }) => this.itemPref.get(getItemId(data.$item))?.mark || 0),
           cellRenderer: BookmarkCell,
           cellRendererParams: BookmarkCell.params({
             getId: (data: RecipeWithItem) => getItemId(data.$item),
-            pref: this.nw.itemPref,
+            pref: this.itemPref,
           }),
         }),
         this.colDef({
           colId: 'userStock',
           headerValueGetter: () => 'In Stock',
           headerTooltip: 'Number of items currently owned',
-          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(getItemId(data.$item))?.stock),
+          valueGetter: this.valueGetter(({ data }) => this.itemPref.get(getItemId(data.$item))?.stock),
           cellRenderer: TrackingCell,
           cellRendererParams: TrackingCell.params({
             getId: (data: RecipeWithItem) => getItemId(data.$item),
-            pref: this.nw.itemPref,
+            pref: this.itemPref,
             mode: 'stock',
             class: 'text-right',
           }),
@@ -163,11 +164,11 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           headerValueGetter: () => 'Price',
           headerTooltip: 'Current price in Trading post',
           cellClass: 'text-right',
-          valueGetter: this.valueGetter(({ data }) => this.nw.itemPref.get(getItemId(data.$item))?.price),
+          valueGetter: this.valueGetter(({ data }) => this.itemPref.get(getItemId(data.$item))?.price),
           cellRenderer: TrackingCell,
           cellRendererParams: TrackingCell.params({
             getId: (data: RecipeWithItem) => getItemId(data.$item),
-            pref: this.nw.itemPref,
+            pref: this.itemPref,
             mode: 'price',
             formatter: this.moneyFormatter,
           }),
@@ -258,9 +259,9 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
 
   public entities: Observable<RecipeWithItem[]> = defer(() => {
     return combineLatest({
-      items: this.nw.db.itemsMap,
-      housing: this.nw.db.housingItemsMap,
-      recipes: this.nw.db.recipes,
+      items: this.db.itemsMap,
+      housing: this.db.housingItemsMap,
+      recipes: this.db.recipes,
     }).pipe(
       map(({ items, housing, recipes }) => {
         recipes = recipes.filter((it) => !!it.Tradeskill)
@@ -278,7 +279,12 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
     )
   }).pipe(shareReplayRefCount(1))
 
-  public constructor(private nw: NwService, private i18n: TranslateService, private info: NwLinkService) {
+  public constructor(
+    private db: NwDbService,
+    private itemPref: ItemPreferencesService,
+    private i18n: TranslateService,
+    private info: NwLinkService
+  ) {
     super()
   }
 }

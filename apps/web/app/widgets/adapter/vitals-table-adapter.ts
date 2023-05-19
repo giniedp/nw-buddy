@@ -2,22 +2,20 @@ import { Injectable } from '@angular/core'
 import { COLS_VITALS } from '@nw-data/cols'
 import { Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/types'
 import { ColDef, GridOptions } from 'ag-grid-community'
-import { combineLatest, defer, map, Observable, of } from 'rxjs'
+import { Observable, combineLatest, defer, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService } from '~/nw'
 import {
+  VitalFamilyInfo,
   getVitalAliasName,
   getVitalCategoryInfo,
   getVitalDamageEffectivenessPercent,
   getVitalDungeons,
   getVitalFamilyInfo,
-  getVitalsCategories,
   getVitalTypeMarker,
-  isVitalCombatCategory,
-  isVitalNamed,
-  VitalFamilyInfo,
+  getVitalsCategories,
+  isVitalCombatCategory
 } from '~/nw/utils'
-import { NwVitalsService } from '~/nw/vitals'
 import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { assetUrl, humanize, shareReplayRefCount } from '~/utils'
@@ -121,7 +119,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           valueFormatter: this.valueFormatter(({ data: { $familyInfo, Family, $combatInfo } }) => {
             return this.i18n.get($familyInfo.Name) || Family || ''
           }),
-          cellRenderer: this.cellRenderer(({ data: { $familyInfo, Family, $combatInfo }}) => {
+          cellRenderer: this.cellRenderer(({ data: { $familyInfo, Family, $combatInfo } }) => {
             const familyName = this.i18n.get($familyInfo.Name) || Family || ''
             const combatName = $combatInfo ? this.i18n.get($combatInfo.Name) || '' : ''
             if (familyName && combatName) {
@@ -326,19 +324,14 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
             $categories: getVitalsCategories(vital, categories),
             $familyInfo: getVitalFamilyInfo(vital),
             $combatInfo: familyInfo.ID !== combatInfo.ID ? combatInfo : null,
-            $metadata: vitalsMeta.get(vital.VitalsID)
+            $metadata: vitalsMeta.get(vital.VitalsID),
           }
         })
       })
     )
     .pipe(shareReplayRefCount(1))
 
-  public constructor(
-    private db: NwDbService,
-    private i18n: TranslateService,
-    private vitals: NwVitalsService,
-    private info: NwLinkService
-  ) {
+  public constructor(private db: NwDbService, private i18n: TranslateService, private info: NwLinkService) {
     super()
   }
 
@@ -347,7 +340,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
       if (!value) {
         return null
       }
-      const icon = value < 0 ? this.vitals.iconWeakattack : this.vitals.iconStronattack
+      const icon = value < 0 ? 'assets/icons/weakattack.png' : 'assets/icons/strongattack.png'
       const text = `${value > 0 ? '+' : ''}${value}%`
       return `
       <div class="flex flex-row items-center justify-center relative">
@@ -358,8 +351,6 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
     })
   }
 }
-
-
 
 function appendFields(options: GridOptions, fields: string[][]) {
   for (const [field, type] of fields) {
