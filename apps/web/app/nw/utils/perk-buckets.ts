@@ -79,6 +79,9 @@ export function isPerkEntry(it: PerkEntry | BucketEntry): it is PerkEntry {
 }
 
 export function getPerkBucketPerkIDs(bucket: PerkBucket, result: string[] = []): string[] {
+  if (!bucket) {
+    return result
+  }
   for (const it of bucket.Entries) {
     if (isPerkEntry(it)) {
       result.push(it.PerkID)
