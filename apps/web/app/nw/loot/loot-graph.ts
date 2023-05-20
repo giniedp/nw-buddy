@@ -57,7 +57,7 @@ export function buildLootGraph({
       return null
     }
     parent = buildTableNode(table, parent, row)
-    table.Items.forEach((row) => {
+    for (const row of table.Items) {
       if (row.ItemID) {
         buildTableItemNode(row, parent)
       }
@@ -73,7 +73,7 @@ export function buildLootGraph({
       if (row.LootTableID) {
         resolve(tables.get(row.LootTableID), parent, row)
       }
-    })
+    }
     return parent
   }
 }

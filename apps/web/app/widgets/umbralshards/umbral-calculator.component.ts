@@ -1,7 +1,5 @@
-import {
-  ChangeDetectionStrategy, ChangeDetectorRef, Component, OnChanges, OnDestroy, OnInit, TrackByFunction
-} from '@angular/core'
-import { Subject, combineLatest, map, takeUntil } from 'rxjs'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core'
+import { combineLatest, map } from 'rxjs'
 import { UmbralCalculatorService } from './umbral-calculator.service'
 import { CollectionState, ItemState, UpgradeStep } from './utils'
 
@@ -15,19 +13,19 @@ export class UmbralCalculatorComponent {
   public trackByIndex = (i: number) => i
 
   protected vm$ = combineLatest({
-    state: this.service.state,
+    state: this.service.collection,
     marker: this.service.marker,
-    shardIcon: this.service.shardIcon
-  }).pipe(map(({ state, marker, shardIcon }) => {
-    return {
-      ...selectVm(state, marker),
-      shardIcon
-    }
-  }))
+    shardIcon: this.service.shardIcon,
+  }).pipe(
+    map(({ state, marker, shardIcon }) => {
+      return {
+        ...selectVm(state, marker),
+        shardIcon,
+      }
+    })
+  )
 
-  public constructor(private service: UmbralCalculatorService, private cdRef: ChangeDetectorRef) {
-
-  }
+  public constructor(private service: UmbralCalculatorService, private cdRef: ChangeDetectorRef) {}
 
   public writeValue(id: string, value: number) {
     this.service.writeScore(id, value)
@@ -40,7 +38,7 @@ function selectVm(state: CollectionState, marker: UpgradeStep) {
     return {
       ...it,
       scoreTarget: scoreTarget,
-      scoreDelta: Math.max(0, scoreTarget - it.score)
+      scoreDelta: Math.max(0, scoreTarget - it.score),
     }
   })
   const items2 = state.items.slice(5, 10).map((it) => {
@@ -48,7 +46,7 @@ function selectVm(state: CollectionState, marker: UpgradeStep) {
     return {
       ...it,
       scoreTarget: scoreTarget,
-      scoreDelta: Math.max(0, scoreTarget - it.score)
+      scoreDelta: Math.max(0, scoreTarget - it.score),
     }
   })
   return {
@@ -57,7 +55,7 @@ function selectVm(state: CollectionState, marker: UpgradeStep) {
     gsTarget: marker ? marker.score : null,
     costTarget: marker ? marker.shardsTotal : null,
     items1: items1,
-    items2: items2
+    items2: items2,
   }
 }
 

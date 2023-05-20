@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core'
 import { Attributeconstitution } from '@nw-data/types'
-import { combineLatest, map, Observable, of } from 'rxjs'
-import { mapGroupBy, shareReplayRefCount, tapDebug } from '~/utils'
-import { AttributeRef, NW_ATTRIBUTE_TYPES } from './nw-attributes'
+import { map, of } from 'rxjs'
+import { shareReplayRefCount } from '~/utils'
 import { NwDbService } from '../nw-db.service'
+import { AttributeRef, NW_ATTRIBUTE_TYPES } from './nw-attributes'
 
 @Injectable({ providedIn: 'root' })
 export class NwAttributesService {
@@ -43,36 +43,6 @@ export class NwAttributesService {
         })
       )
       .pipe(shareReplayRefCount(1))
-  }
-
-  public unlockedAbilities(ref: AttributeRef, level: number) {
-    return combineLatest({
-      abilities: this.db.abilitiesMap,
-      levels: this.abilitiesLevels(ref),
-    }).pipe(
-      map(({ abilities, levels }) => {
-        return levels
-          .filter((it) => level >= it.Level)
-          .map((it) => it.EquipAbilities.map((id) => abilities.get(id)))
-          .flat(1)
-      })
-    )
-  }
-
-  public healthContributionFromLevel(level: Observable<number>) {
-    // HINT: 778 base value is from vitals.json "VitalsID": "Player"
-    return level.pipe(map((level) => 778 + 1.5 * Math.pow(level - 1, 2)))
-  }
-
-  public healthContributionFromConstitution(constitution: Observable<number>) {
-    return combineLatest({
-      table: this.db.attrCon.pipe(mapGroupBy((it) => String(it.Level))),
-      con: constitution,
-    }).pipe(
-      map(({ table, con }) => {
-        return table[con]?.[0]?.Health
-      })
-    )
   }
 }
 

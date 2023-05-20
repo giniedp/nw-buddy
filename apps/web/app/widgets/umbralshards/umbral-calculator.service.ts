@@ -17,9 +17,9 @@ export class UmbralCalculatorService extends ComponentStore<UmbralCalculatorStat
   public shardItem = this.select(this.db.item('UmbralShardT1'), (item) => item)
   public shardIcon = this.select(this.shardItem, (item) => getItemIconPath(item))
   public upgrades = this.select(this.db.data.umbralgsupgrades(), (items) => items)
-  public state = this.select(defer(() => this.getSource()) , this.upgrades, updateState)
-  public steps = this.select(this.state.pipe(debounceTime(500)), this.upgrades, calculateSteps)
-  public marker = this.select((state) => state.marker)
+  public collection = this.select(defer(() => this.getSource()) , this.upgrades, updateState)
+  public steps = this.select(this.collection.pipe(debounceTime(500)), this.upgrades, calculateSteps)
+  public marker = this.select(({ marker }) => marker)
 
   private storage: StorageNode
 
