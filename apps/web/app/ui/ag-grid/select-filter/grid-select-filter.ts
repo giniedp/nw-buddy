@@ -80,6 +80,9 @@ export class SelectFilter implements IFilterComp {
   }
 
   public getModel(): SelectFilterGroup<string> {
+    if (!this.filterState?.children?.length) {
+      return null
+    }
     return JSON.parse(JSON.stringify(this.filterState))
   }
 

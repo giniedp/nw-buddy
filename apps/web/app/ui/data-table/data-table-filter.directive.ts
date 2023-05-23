@@ -1,88 +1,91 @@
-import { Directive, Input } from '@angular/core'
-import { ActivatedRoute, Router } from '@angular/router'
+import { Directive, Input, OnDestroy } from '@angular/core'
+import { Router } from '@angular/router'
 import { isEqual } from 'lodash'
-import { asyncScheduler, BehaviorSubject, combineLatest, defer, map, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs'
-import { DataTableAdapter } from './data-table-adapter'
+import { Subject, combineLatest, debounce, debounceTime, merge, of, switchMap, takeUntil } from 'rxjs'
 import { DataTableComponent } from './data-table.component'
-
 @Directive({
   standalone: true,
   selector: 'nwb-data-table[filterQueryParam]',
 })
-export class FilterRouteParamDirective {
+export class FilterRouteParamDirective implements OnDestroy {
   @Input()
-  public set filterQueryParam(value: string) {
-    this.param$.next(value)
+  public filterQueryParam: string
+
+  private destroy$ = new Subject<void>()
+
+  public constructor(private router: Router, private table: DataTableComponent<unknown>) {
+    //
   }
 
-  protected filter$ = defer(() => {
-    return combineLatest({
-      queryParam: this.param$,
-      queryMap: this.route.queryParamMap,
-    })
-  })
-    .pipe(map(({ queryMap, queryParam }) => queryMap.get(queryParam)))
-    .pipe(
-      map((data) => {
-        try {
-          return JSON.parse(atob(data))
-        } catch {
-          return null
-        }
-      })
-    )
-
-  private param$ = new BehaviorSubject(null)
-  private destroy$ = new Subject()
-
-  public constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private adapter: DataTableAdapter<unknown>,
-    private table: DataTableComponent<unknown>
-  ) {}
-
   public ngOnInit(): void {
-    this.adapter.grid
-      .pipe(switchMap(() => this.filter$.pipe(take(1))))
-      .pipe(tap((state) => {
-        this.table.filter = state
-      }))
-      .pipe(switchMap(() => this.table.filterSaved))
+    this.table.adapter.grid
       .pipe(
-        map((data) => {
-          if (isEqual(data, []) || isEqual(data, {})) {
-            return null
+        debounceTime(0), // HINT: needed or getFilterModel() may return empty data sometimes, FIXME: find out why
+        switchMap((grid) => {
+          const filter = getQueryParam(this.router, this.filterQueryParam) || grid.api.getFilterModel()
+          if (filter) {
+            setTimeout(() => {
+              this.table.filter = filter
+            })
           }
-          try {
-            return btoa(JSON.stringify(data))
-          } catch {
-            return null
-          }
-        })
-      )
-      .pipe(
-        switchMap((data) => {
+
           return combineLatest({
-            filter: of(data),
-            query: this.param$,
+            data: this.table.gridData,
+            filter: merge(of(filter), this.table.filterSaved)
           })
         })
       )
       .pipe(takeUntil(this.destroy$))
-      .subscribe(({ filter, query }) => {
-        this.router.navigate(['./'], {
-          queryParams: {
-            [query]: filter,
-          },
-          queryParamsHandling: 'merge',
-          relativeTo: this.route,
-        })
+      .subscribe(({ filter }) => {
+        setQueryParam(this.router, this.filterQueryParam, filter)
       })
   }
 
   public ngOnDestroy(): void {
-    this.destroy$.next(null)
+    this.destroy$.next()
     this.destroy$.complete()
+  }
+}
+
+function getQueryParam(router: Router, param: string) {
+  const value = router.parseUrl(router.url).queryParamMap.get(param)
+  return decodeFilterData(value)
+}
+
+function setQueryParam(router: Router, param: string, data: any) {
+  if (!param) {
+    return
+  }
+  const value = encodeFilterData(data)
+  const params = router.parseUrl(router.url).queryParams || {}
+  if (!value) {
+    delete params[param]
+  } else {
+    params[param] = value
+  }
+  router.navigate([], {
+    queryParams: params,
+  })
+}
+
+function encodeFilterData(data: any): string {
+  if (isEqual(data, []) || isEqual(data, {})) {
+    return null
+  }
+  try {
+    return btoa(JSON.stringify(data))
+  } catch {
+    return null
+  }
+}
+
+function decodeFilterData(data: string): any {
+  if (!data) {
+    return null
+  }
+  try {
+    return JSON.parse(atob(data))
+  } catch {
+    return null
   }
 }

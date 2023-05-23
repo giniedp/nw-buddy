@@ -70,6 +70,9 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   public filterSaved = new EventEmitter<any>()
 
   @Output()
+  public filterApplied = new EventEmitter<any>()
+
+  @Output()
   public rowDoubleClick = new EventEmitter<any>()
 
   private gridApi: GridApi
@@ -189,6 +192,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       return items.filter((it) => intersectsCategory(adapter.entityCategory(it), category))
     })
   )
+  .pipe(shareReplayRefCount(1))
 
   private gridStorage: StorageNode<{ columns?: any; filter?: any }>
   private filterStorage: StorageNode<{ filter?: any }>
@@ -425,6 +429,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     const api = this.gridApi
     if (filter && api) {
       api.setFilterModel(filter)
+      this.filterApplied.next(filter)
     }
   }
 }

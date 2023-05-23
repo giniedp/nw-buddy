@@ -154,7 +154,6 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           colId: 'categories',
           headerValueGetter: () => 'Categories',
           width: 200,
-          hide: true,
           valueGetter: this.valueGetter(({ data }) => {
             return data.VitalsCategories || null
           }),
