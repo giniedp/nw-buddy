@@ -22,7 +22,7 @@ import { SkillTreesListItemComponent } from './skill-trees-list-item.component'
 export class SkillTreesListComponent {
   protected items$ = combineLatest({
     records: this.store.records$,
-    search: this.search.query.pipe(map((it) => it.toLocaleLowerCase())),
+    search: this.search.query$.pipe(map((it) => it.toLocaleLowerCase())),
   }).pipe(
     map(({ records, search }) => {
       if (!search) {

@@ -5,6 +5,6 @@
 </div>
 <nwb-data-table
   [adapter]="adapter"
-  [quickFilter]="search.query | async"
+  [quickFilter]="search.query$ | async"
   class="flex-1"
 ></nwb-data-table>

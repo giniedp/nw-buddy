@@ -27,7 +27,12 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   host: {
     class: 'layout-col',
   },
-  providers: [AbilitiesTableAdapter.provider(), QuicksearchService],
+  providers: [
+    AbilitiesTableAdapter.provider(),
+    QuicksearchService.provider({
+      queryParam: 'search',
+    }),
+  ],
 })
 export class AbilitiesComponent {
   //

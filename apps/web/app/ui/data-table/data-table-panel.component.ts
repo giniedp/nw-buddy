@@ -58,7 +58,7 @@ export class DataTablePanelComponent {
     .pipe(shareReplayRefCount(1))
 
   protected displayCols = combineLatest({
-    search: this.qs.query,
+    search: this.qs.query$,
     cols: this.columns,
   }).pipe(
     map(({ search, cols }) => {

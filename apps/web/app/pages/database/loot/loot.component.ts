@@ -6,7 +6,7 @@ import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
-import { QuicksearchModule } from '~/ui/quicksearch'
+import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { LootTableAdapter } from '~/widgets/adapter'
 import { LootModule } from '~/widgets/loot'
@@ -28,7 +28,12 @@ import { LootModule } from '~/widgets/loot'
     RouterModule,
     TooltipModule,
   ],
-  providers: [LootTableAdapter.provider()],
+  providers: [
+    LootTableAdapter.provider(),
+    QuicksearchService.provider({
+      queryParam: 'search',
+    }),
+  ],
   host: {
     class: 'layout-col',
   },

@@ -38,7 +38,7 @@ export class GearsetLoadoutListComponent {
   protected trackByIndex = (i: number) => i
   protected readonly records$ = combineLatest({
     records: this.store.selectedRecords$,
-    search: this.search.query,
+    search: this.search.query$,
   }).pipe(
     map(({ records, search }) => {
       if (!search || !records?.length) {

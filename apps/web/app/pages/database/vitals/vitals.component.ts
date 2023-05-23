@@ -27,6 +27,11 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   host: {
     class: 'layout-col',
   },
-  providers: [VitalsTableAdapter.provider(), QuicksearchService],
+  providers: [
+    VitalsTableAdapter.provider(),
+    QuicksearchService.provider({
+      queryParam: 'search',
+    }),
+  ],
 })
 export class VitalsComponent {}

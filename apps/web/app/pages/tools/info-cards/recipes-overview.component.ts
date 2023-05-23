@@ -109,7 +109,7 @@ export class RecipesOverviewComponent {
   )
   protected items$ = combineLatest({
     items: this.source$,
-    search: this.search.query.pipe(debounceTime(300), startWith('')),
+    search: this.search.query$.pipe(debounceTime(300), startWith('')),
     locale: this.i18n.locale.value$,
   }).pipe(
     map(({ items, search }) => {

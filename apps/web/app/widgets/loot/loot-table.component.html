@@ -1,7 +1,7 @@
 <nwb-data-table
   #table
   class="flex-1 rounded-md overflow-clip"
-  [quickFilter]="search.query | async"
+  [quickFilter]="search.query$ | async"
 >
 <div class="table-header bg-base-300 px-4 py-2 flex flex-row items-center layout-gap">
   <span class="whitespace-nowrap">Loot ({{ (entities | async)?.length || 0 }})</span>

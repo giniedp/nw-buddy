@@ -31,7 +31,12 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   host: {
     class: 'layout-col',
   },
-  providers: [HousingTableAdapter.provider(), QuicksearchService],
+  providers: [
+    HousingTableAdapter.provider(),
+    QuicksearchService.provider({
+      queryParam: 'search',
+    }),
+  ],
 })
 export class HousingComponent {
   //

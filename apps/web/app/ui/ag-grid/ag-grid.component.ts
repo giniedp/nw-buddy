@@ -10,7 +10,7 @@ import {
   Output,
 } from '@angular/core'
 import { Grid, GridOptions, GridReadyEvent } from 'ag-grid-community'
-import { debounceTime, distinctUntilChanged, filter, ReplaySubject, skipWhile, Subject, takeUntil } from 'rxjs'
+import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, ReplaySubject, skipWhile, Subject, takeUntil } from 'rxjs'
 
 @Component({
   selector: 'nwb-ag-grid',
@@ -45,7 +45,7 @@ export class AgGridComponent<T = any> implements OnInit, OnDestroy {
   private data$ = new ReplaySubject<T[]>(1)
   private options$ = new ReplaySubject<GridOptions>(1)
   private destroy$ = new Subject<void>()
-  private filter$ = new Subject<string>()
+  private filter$ = new BehaviorSubject<string>(null)
   private dispose$ = new Subject<void>()
 
   public constructor(private elRef: ElementRef<HTMLElement>, private zone: NgZone) {

@@ -4,7 +4,6 @@ import { RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
-import { LayoutModule } from '~/ui/layout'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
@@ -27,11 +26,16 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     ScreenshotModule,
     IonicModule,
     PriceImporterModule,
-    TooltipModule
+    TooltipModule,
   ],
   host: {
     class: 'layout-col',
   },
-  providers: [ItemsTableAdapter.provider(), QuicksearchService],
+  providers: [
+    ItemsTableAdapter.provider(),
+    QuicksearchService.provider({
+      queryParam: 'search',
+    }),
+  ],
 })
 export class ItemsComponent {}

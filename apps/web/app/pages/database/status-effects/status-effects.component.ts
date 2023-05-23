@@ -27,7 +27,12 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   host: {
     class: 'layout-col',
   },
-  providers: [StatusEffectsTableAdapter.provider(), QuicksearchService],
+  providers: [
+    StatusEffectsTableAdapter.provider(),
+    QuicksearchService.provider({
+      queryParam: 'search',
+    }),
+  ],
 })
 export class StatusEffectsComponent {
   //

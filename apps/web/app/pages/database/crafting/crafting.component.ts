@@ -25,12 +25,17 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     ScreenshotModule,
     IonicModule,
     PriceImporterModule,
-    TooltipModule
+    TooltipModule,
   ],
   host: {
     class: 'layout-col',
   },
-  providers: [CraftingTableAdapter.provider(), QuicksearchService],
+  providers: [
+    CraftingTableAdapter.provider(),
+    QuicksearchService.provider({
+      queryParam: 'search',
+    }),
+  ],
 })
 export class CraftingComponent {
   //

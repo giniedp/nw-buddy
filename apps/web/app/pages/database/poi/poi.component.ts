@@ -6,7 +6,7 @@ import { NwModule } from '~/nw'
 import { NwExpressionContextService } from '~/nw/expression'
 import { DataTableModule } from '~/ui/data-table'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
-import { QuicksearchModule } from '~/ui/quicksearch'
+import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { PoiTableAdapter } from '~/widgets/adapter'
 
 @Component({
@@ -20,12 +20,12 @@ import { PoiTableAdapter } from '~/widgets/adapter'
   },
   providers: [
     PoiTableAdapter.provider(),
-    NwExpressionContextService
-  ]
+    QuicksearchService.provider({
+      queryParam: 'search',
+    }),
+    NwExpressionContextService,
+  ],
 })
 export class PoiComponent {
-
-  public constructor(public ctx: NwExpressionContextService) {
-
-  }
+  public constructor(public ctx: NwExpressionContextService) {}
 }

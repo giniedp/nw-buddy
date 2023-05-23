@@ -95,7 +95,7 @@ export class TrophiesOverviewComponent {
 
   protected filteredItems$ = combineLatest({
     items: this.items$,
-    query: this.search.query
+    query: this.search.query$
   }).pipe(map(({ items, query }) => {
     if (!query) {
       return items

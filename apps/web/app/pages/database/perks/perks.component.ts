@@ -10,7 +10,7 @@ import { NwModule } from '~/nw'
 import { NwExpressionContextService } from '~/nw/expression'
 import { DataTableModule } from '~/ui/data-table'
 import { NavToolbarModule } from '~/ui/nav-toolbar'
-import { QuicksearchModule } from '~/ui/quicksearch'
+import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { PerksTableAdapter } from '~/widgets/adapter'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
@@ -34,7 +34,13 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   host: {
     class: 'layout-col',
   },
-  providers: [PerksTableAdapter.provider(), NwExpressionContextService],
+  providers: [
+    PerksTableAdapter.provider(),
+    QuicksearchService.provider({
+      queryParam: 'search',
+    }),
+    NwExpressionContextService,
+  ],
 })
 export class PerksComponent {
   protected isToolOpen = false

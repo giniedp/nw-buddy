@@ -49,7 +49,7 @@ export class TerritoriesListComponent {
 
   private territoryWithinfo(it: Territorydefinitions) {
     return combineLatest({
-      search: this.search.query,
+      search: this.search.query$,
       pref: this.service.getPreferences(it.TerritoryID)
     })
     .pipe(map(({ search, pref }) => {

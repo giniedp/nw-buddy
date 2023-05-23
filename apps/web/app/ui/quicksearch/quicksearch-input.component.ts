@@ -1,17 +1,17 @@
 import { CommonModule } from '@angular/common'
 import {
-  Component,
-  OnInit,
   ChangeDetectionStrategy,
-  OnDestroy,
-  ElementRef,
-  ViewChild,
-  Input,
-  HostListener,
   ChangeDetectorRef,
+  Component,
+  ElementRef,
+  HostListener,
+  Input,
+  OnDestroy,
+  OnInit,
+  ViewChild,
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { defer, Subject, takeUntil } from 'rxjs'
+import { Subject, combineLatest, takeUntil } from 'rxjs'
 import { Hotkeys } from '~/utils'
 import { imageFileFromPaste } from '~/utils/image-file-from-paste'
 import { useTesseract } from '~/utils/use-tesseract'
@@ -32,16 +32,6 @@ import { QuicksearchService } from './quicksearch.service'
   },
 })
 export class QuicksearchInputComponent implements OnInit, OnDestroy {
-  public get value() {
-    return this.search.value
-  }
-
-  public set value(v: string) {
-    this.search.value = v
-  }
-
-  public readonly value$ = defer(() => this.search.query)
-
   @ViewChild('input')
   public input: ElementRef<HTMLInputElement>
 
@@ -50,10 +40,10 @@ export class QuicksearchInputComponent implements OnInit, OnDestroy {
 
   protected svgSearch = svgMagnifyingGlass
   protected svgXmark = svgXmark
-
-  protected get active() {
-    return this.search.active
-  }
+  protected vm$ = combineLatest({
+    active: this.search.active$,
+    value: this.search.query$,
+  })
 
   private destroy$ = new Subject()
   public constructor(private search: QuicksearchService, private keys: Hotkeys, private cdRef: ChangeDetectorRef) {
@@ -93,8 +83,11 @@ export class QuicksearchInputComponent implements OnInit, OnDestroy {
     const tesseract = await useTesseract()
     const url = URL.createObjectURL(file)
     const result = await tesseract.recognize(url)
-    console.debug(result)
-    this.value = result.data.text.split('\n')[0]
-    this.cdRef.markForCheck()
+    const value = result.data.text.split('\n')[0]
+    this.submit(value)
+  }
+
+  protected submit(value: string) {
+    this.search.patchState({ value: value })
   }
 }

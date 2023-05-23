@@ -3,7 +3,7 @@
   [persistStateId]="'inventory-table'"
   [categoryRouteParam]
   [detailRoutParam]="'id'"
-  [quickFilter]="search.query | async"
+  [quickFilter]="search.query$ | async"
 ></nwb-data-table>
 
 <div class="gearset layout-col">
