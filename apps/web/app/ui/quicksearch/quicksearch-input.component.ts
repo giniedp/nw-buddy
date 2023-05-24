@@ -38,6 +38,8 @@ export class QuicksearchInputComponent implements OnInit, OnDestroy {
   @Input()
   public placeholder: string = 'Search'
 
+  public readonly value$ = this.search.query$
+
   protected svgSearch = svgMagnifyingGlass
   protected svgXmark = svgXmark
   protected vm$ = combineLatest({
