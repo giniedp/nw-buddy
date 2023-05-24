@@ -1,0 +1,10 @@
+<nwb-data-table
+  #table
+  [persistStateId]="'game-events-table'"
+  [detailRoutParam]="'id'"
+  [filterQueryParam]="'filter'"
+  [quickFilter]="search.query$ | async"
+  class="h-full flex-1"
+></nwb-data-table>
+
+<router-outlet></router-outlet>

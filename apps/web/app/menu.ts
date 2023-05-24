@@ -26,6 +26,7 @@ export const MAIN_MENU: MenuGroup[] = [
       { label: 'Vitals', path: '/vitals', icon: 'assets/icons/menu/vitals.png' },
       { label: 'Loot Limits', path: '/loot-limits',  icon: 'assets/icons/menu/icon_filter_chrono.png' },
       { label: 'Loot Tables', path: '/loot', icon: 'assets/icons/menu/loot.png' },
+      { label: 'Game Events', path: '/game-events' },
     ]
   },
   {
