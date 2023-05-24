@@ -38,6 +38,9 @@ program
     if (fs.existsSync(trash)) {
       fs.rmSync(trash, { recursive: true })
     }
+    if (fs.existsSync(zipFile)) {
+      fs.rmSync(zipFile)
+    }
   })
 
 program
