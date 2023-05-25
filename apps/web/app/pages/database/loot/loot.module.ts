@@ -11,13 +11,25 @@ const routes: Routes = [
     children: [
       {
         path: '',
+        pathMatch: 'full',
+        redirectTo: 'table',
+      },
+      {
+        path: 'table',
         component: LootTablePageComponent,
         children: [{
           path: ':id',
           component: LootDetailPageComponent
         }]
       },
-
+      {
+        path: ':category',
+        component: LootTablePageComponent,
+        children: [{
+          path: ':id',
+          component: LootDetailPageComponent
+        }]
+      },
     ]
   },
 ]

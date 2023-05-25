@@ -32,7 +32,7 @@ export class GameEventsTableAdapter extends DataTableAdapter<GameEvent> {
     }
     return {
       value: item.GameEventType,
-      label: item.GameEventType,
+      label: humanize(item.GameEventType),
       icon: '',
     }
   }
@@ -190,7 +190,8 @@ export class GameEventsTableAdapter extends DataTableAdapter<GameEvent> {
 
   public entities: Observable<GameEvent[]> = defer(() => {
     return this.config?.source || this.db.gameEvents
-  }).pipe(shareReplayRefCount(1))
+  })
+  .pipe(shareReplayRefCount(1))
 
   public constructor(
     private db: NwDbService,

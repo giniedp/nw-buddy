@@ -49,7 +49,7 @@ export class GameEventDetailComponent extends GameEventDetailStore {
           return [{
             value: value,
             accent: true,
-            routerLink: ['/loot', id.replace('[LTID]', '')]
+            routerLink: ['/loot/table', id.replace('[LTID]', '')]
           }]
         }
         if (id.includes('HousingItem')) {

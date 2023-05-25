@@ -128,7 +128,7 @@ export class LootGraphNodeComponent implements OnChanges {
   }
 
   private updateFromTableNode(node: LootTableNode) {
-    this.link = this.showLink ? ['/loot', node.data.LootTableID] : null
+    this.link = this.showLink ? ['/loot/table', node.data.LootTableID] : null
     this.table = node.data
     this.expandable = true
     this.typeName = 'table'

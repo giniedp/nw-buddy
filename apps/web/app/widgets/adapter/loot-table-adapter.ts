@@ -4,7 +4,7 @@ import { Observable, defer, map, of } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { LootTable } from '~/nw/utils'
 import { SelectFilter } from '~/ui/ag-grid'
-import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
+import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
 
 export type TableEntry = LootTable & {
@@ -22,8 +22,19 @@ export class LootTableAdapter extends DataTableAdapter<TableEntry> {
     return item.LootTableID
   }
 
-  public entityCategory(item: TableEntry): string {
-    return null
+  public entityCategory(item: TableEntry): DataTableCategory {
+    if (!item.$parents?.length) {
+      return {
+        icon: null,
+        label: 'Roots',
+        value: 'roots',
+      }
+    }
+    return {
+      icon: null,
+      label: 'Children',
+      value: 'children',
+    }
   }
 
   public options = defer(() =>
