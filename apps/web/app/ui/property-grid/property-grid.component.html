@@ -12,7 +12,7 @@
     <a *ngIf="cell.externLink" [href]="cell.externLink" target="_blank" class="link link-primary">
       {{ cell.value }}
     </a>
-    <a *ngIf="cell.routerLink" [routerLink]="cell.routerLink" class="link link-primary">
+    <a *ngIf="cell.routerLink" [routerLink]="cell.routerLink" [queryParams]="cell.queryParams" class="link link-primary">
       {{ cell.value }}
     </a>
     <span

@@ -168,12 +168,27 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
           headerValueGetter: () => 'Attack Type',
           field: this.fieldName('AttackType'),
           filter: SelectFilter,
+          cellRenderer: this.cellRendererTags(humanize),
         }),
         this.colDef({
           colId: 'uiCategory',
           headerValueGetter: () => 'UI Category',
           field: this.fieldName('UICategory'),
           filter: SelectFilter,
+        }),
+        this.colDef({
+          colId: 'damageTableRow',
+          headerValueGetter: () => 'Damage Table Row',
+          field: this.fieldName('DamageTableRow'),
+          filter: SelectFilter,
+          cellRenderer: this.cellRendererTags(humanize),
+        }),
+        this.colDef({
+          colId: 'damageTableRowOverride',
+          headerValueGetter: () => 'Damage Table Row Override',
+          field: this.fieldName('DamageTableRowOverride'),
+          filter: SelectFilter,
+          cellRenderer: this.cellRendererTags(humanize),
         }),
         this.colDef({
           colId: 'afterAction',

@@ -16,6 +16,7 @@ import { importLocales, LOCALE_KEYS_TO_KEEP } from './importer/locales'
 import { importSlices } from './importer/slices/import-slices'
 import { withProgressBar, writeJSONFile } from './utils'
 import { cpus } from 'os'
+import { checkDamageTables } from './importer/echeckDamageTables'
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
 }
@@ -144,6 +145,9 @@ program
 
       // console.log('collect abilities')
       // await extractAbilities(inputDir, 'tmp')
+
+      // console.log('check damage tables')
+      // checkDamageTables(tables)
     }
 
     if (hasFilter(Importer.types, options.module)) {

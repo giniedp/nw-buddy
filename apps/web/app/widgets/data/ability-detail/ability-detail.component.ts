@@ -65,6 +65,13 @@ export class AbilityDetailComponent extends AbilityDetailStore {
       case 'AbilityList': {
         return abilitiesCells(value as Ability['AbilityList'])
       }
+      case 'DamageTableRow':
+      case 'DamageTableRowOverride': {
+        return damageCells(value as Ability['DamageTableRow'])
+      }
+      case 'AttackType': {
+        return damageCells(value as Ability['AttackType'])
+      }
       default: {
         if (Array.isArray(value)) {
           return value.map((it) => ({
@@ -104,6 +111,18 @@ function abilitiesCells(list: string | string[]): PropertyGridCell[] {
       value: String(it),
       accent: true,
       routerLink: ['/abilities/table', it],
+    }
+  })
+}
+
+function damageCells(list: string | string[]): PropertyGridCell[] {
+  list = typeof list === 'string' ? [list] : list
+  return list?.map((it) => {
+    return {
+      value: String(it),
+      accent: true,
+      routerLink: ['/damage/table'],
+      queryParams: { search: it }
     }
   })
 }

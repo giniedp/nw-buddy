@@ -11,4 +11,4 @@ export * from './poi-table-adapter'
 export * from './spells-table-adapter'
 export * from './status-effects-table-adapter'
 export * from './vitals-table-adapter'
-
+export * from './damage-table-adapter'

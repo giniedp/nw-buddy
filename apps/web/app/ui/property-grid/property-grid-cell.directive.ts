@@ -3,6 +3,7 @@ import { Directive, TemplateRef } from '@angular/core'
 export interface PropertyGridCell {
   value: string
   routerLink?: string | any[]
+  queryParams?: Record<string, any>
   externLink?: string
   primary?: boolean
   secondary?: boolean

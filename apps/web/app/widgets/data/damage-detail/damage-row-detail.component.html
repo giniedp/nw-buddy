@@ -1,0 +1,8 @@
+<div class="p-3 flex flex-col gap-2">
+  <nwb-property-grid
+    class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
+    [item]="properties$ | async"
+    [valueFormatter]="formatValue"
+    ></nwb-property-grid>
+  <ng-content></ng-content>
+</div>

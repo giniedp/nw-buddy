@@ -20,7 +20,8 @@ export const MAIN_MENU: MenuGroup[] = [
 
       { label: 'Perks', path: '/perks', icon: 'assets/icons/menu/perks.png', divider: true },
       { label: 'Abilities', path: '/abilities', icon: 'assets/icons/menu/abilities.png' },
-      { label: 'Statuseffects', path: '/status-effects', icon: 'assets/icons/menu/statuseffects.png' },
+      { label: 'Status Effects', path: '/status-effects', icon: 'assets/icons/menu/statuseffects.png' },
+      { label: 'Damage Rows', path: '/damage', icon: null },
 
       { label: 'Points Of Interest', path: '/poi', icon: 'assets/icons/menu/fasttraveliconinactive.png', divider: true },
       { label: 'Vitals', path: '/vitals', icon: 'assets/icons/menu/vitals.png' },
