@@ -6,7 +6,7 @@ import { map, of, Subject, switchMap, take, takeUntil } from 'rxjs'
 
 import { TranslateService } from './i18n'
 
-import { LANG_OPTIONS, MAIN_MENU } from './menu'
+import { LANG_OPTIONS } from './app-menu'
 import { AppPreferencesService } from './preferences'
 import { svgMap } from './ui/icons/svg'
 import { LayoutService } from './ui/layout'
@@ -68,7 +68,6 @@ export class AppComponent implements OnInit, OnDestroy {
     return this.router.url.split('/').some((it) => it === 'embed')
   }
 
-  protected mainMenu = MAIN_MENU
   protected langOptions = LANG_OPTIONS
   protected langLoaded = false
 

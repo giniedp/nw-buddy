@@ -16,23 +16,7 @@
                   <nwb-update-alert-button></nwb-update-alert-button>
                 </li>
               </ul>
-              <ng-container *ngFor="let group of mainMenu">
-                <ul class="menu menu-compact flex-none m-0">
-                  <li class="menu-title uppercase mt-2" *ngIf="group.category">
-                    <span>{{ group.category }}</span>
-                  </li>
-                  <ng-container *ngFor="let item of group.items">
-                    <li *ngIf="item.divider"></li>
-                    <li routerLinkActive="bordered">
-                      <a #link [routerLink]="item.path" nwbMenuClose>
-
-                        <img [nwImage]="item.icon" class="w-5 h-5" *ngIf="item.icon">
-                        {{ item.label }}
-                      </a>
-                    </li>
-                  </ng-container>
-                </ul>
-              </ng-container>
+              <app-menu></app-menu>
             </div>
           </div>
         </ion-content>

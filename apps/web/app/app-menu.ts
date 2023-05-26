@@ -1,16 +1,16 @@
-export interface MenuEntry {
+export interface AppMenuEntry {
   label: string
   path: string
   icon?: string
   divider?: boolean
 }
 
-export interface MenuGroup {
+export interface AppMenuGroup {
   category: string
-  items: MenuEntry[]
+  items: AppMenuEntry[]
 }
 
-export const MAIN_MENU: MenuGroup[] = [
+export const APP_MENU: AppMenuGroup[] = [
   {
     category: 'Database',
     items: [
@@ -21,13 +21,13 @@ export const MAIN_MENU: MenuGroup[] = [
       { label: 'Perks', path: '/perks', icon: 'assets/icons/menu/perks.png', divider: true },
       { label: 'Abilities', path: '/abilities', icon: 'assets/icons/menu/abilities.png' },
       { label: 'Status Effects', path: '/status-effects', icon: 'assets/icons/menu/statuseffects.png' },
-      { label: 'Damage Rows', path: '/damage', icon: null },
+      { label: 'Damage Rows', path: '/damage', icon: 'assets/icons/menu/damage.png' },
 
       { label: 'Points Of Interest', path: '/poi', icon: 'assets/icons/menu/fasttraveliconinactive.png', divider: true },
       { label: 'Vitals', path: '/vitals', icon: 'assets/icons/menu/vitals.png' },
       { label: 'Loot Limits', path: '/loot-limits',  icon: 'assets/icons/menu/icon_filter_chrono.png' },
       { label: 'Loot Tables', path: '/loot', icon: 'assets/icons/menu/loot.png' },
-      { label: 'Game Events', path: '/game-events' },
+      { label: 'Game Events', path: '/game-events', icon: 'assets/icons/menu/events.png' },
     ]
   },
   {

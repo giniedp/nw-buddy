@@ -19,6 +19,7 @@ import { LayoutModule } from './ui/layout'
 import { IconsModule } from './ui/icons'
 import { TooltipModule } from './ui/tooltip'
 import { AeternumMapModule } from './widgets/aeternum-map'
+import { AppMenuComponent } from './app-menu.component'
 
 @NgModule({
   declarations: [AppComponent, TitleBarComponent],
@@ -45,7 +46,8 @@ import { AeternumMapModule } from './widgets/aeternum-map'
       }
     }),
     AeternumMapModule,
-    TooltipModule
+    TooltipModule,
+    AppMenuComponent
   ],
   providers: [NwDataInterceptor.provide()],
   bootstrap: [AppComponent],

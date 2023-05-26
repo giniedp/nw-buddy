@@ -1,0 +1,34 @@
+<ng-container *ngIf="vm$ | async; let vm">
+  <ng-container *ngFor="let group of vm.menu; index as index">
+    <ul class="menu menu-compact flex-none flex-nowrap m-0" [@list]="group.category ? vm.active == index : null">
+      <li
+        class="menu-title uppercase mt-2 cursor-pointer transition-opacity hover:text-primary hover:opacity-100"
+        *ngIf="group.category"
+        (click)="patchState({ active: index })"
+      >
+        <span class="flex flex-row justify-between">
+          {{ group.category }}
+          <nwb-icon
+            [icon]="chevronIcon"
+            class="w-4 h-4 transition-transform"
+            [class.-rotate-180]="vm.active != index"
+            [class.-rotate-90]="vm.active == index"
+          ></nwb-icon>
+        </span>
+      </li>
+      <ng-container *ngFor="let item of group.items">
+        <li [@item]="!group.category || index == vm.active" *ngIf="item.divider"></li>
+        <li
+          [@item]="!group.category || index == vm.active"
+          [routerLinkActive]="['bordered', 'text-primary']"
+          (isActiveChange)="$event ? onGroupActive(index) : null"
+        >
+          <a [routerLink]="item.path" nwbMenuClose>
+            <img [nwImage]="item.icon" class="w-5 h-5" *ngIf="item.icon" />
+            {{ item.label }}
+          </a>
+        </li>
+      </ng-container>
+    </ul>
+  </ng-container>
+</ng-container>
