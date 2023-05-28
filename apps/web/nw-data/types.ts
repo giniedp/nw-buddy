@@ -4515,7 +4515,7 @@ export interface Ability {
     DamageIsMelee?:                                 boolean;
     DamageIsRanged?:                                boolean;
     DamageTableRow?:                                string[];
-    DamageTableRowOverride?:                        string;
+    DamageTableRowOverride?:                        string[];
     DamageTableStatusEffectOverride?:               string;
     DamageTypes?:                                   string[];
     Description?:                                   string;

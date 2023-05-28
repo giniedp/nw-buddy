@@ -100,6 +100,7 @@ export const TABLE_REMAP_RULES = [
           'AttackType',
           'DamageTypes',
           'DamageTableRow',
+          'DamageTableRowOverride',
           'ManaCostList',
           'RemoteDamageTableRow',
           'RemoveTargetStatusEffectsList',

@@ -32,7 +32,7 @@ export const COLS_ABILITY = {
   "DamageIsMelee": "boolean",
   "DamageIsRanged": "boolean",
   "DamageTableRow": "[]",
-  "DamageTableRowOverride": "string",
+  "DamageTableRowOverride": "[]",
   "DamageTableStatusEffectOverride": "string",
   "DamageTypes": "[]",
   "Description": "string",
