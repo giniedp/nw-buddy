@@ -191,6 +191,13 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
           cellRenderer: this.cellRendererTags(humanize),
         }),
         this.colDef({
+          colId: 'remoteDamageTableRow',
+          headerValueGetter: () => 'Remote Damage TableRow',
+          field: this.fieldName('RemoteDamageTableRow'),
+          filter: SelectFilter,
+          cellRenderer: this.cellRendererTags(humanize),
+        }),
+        this.colDef({
           colId: 'afterAction',
           headerValueGetter: () => 'After Action',
           field: this.fieldName('AfterAction'),

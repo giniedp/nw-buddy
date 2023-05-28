@@ -66,7 +66,8 @@ export class AbilityDetailComponent extends AbilityDetailStore {
         return abilitiesCells(value as Ability['AbilityList'])
       }
       case 'DamageTableRow':
-      case 'DamageTableRowOverride': {
+      case 'DamageTableRowOverride':
+      case 'RemoteDamageTableRow': {
         return damageCells(value as Ability['DamageTableRow'])
       }
       case 'AttackType': {
@@ -122,7 +123,7 @@ function damageCells(list: string | string[]): PropertyGridCell[] {
       value: String(it),
       accent: true,
       routerLink: ['/damage/table'],
-      queryParams: { search: it }
+      queryParams: { search: it },
     }
   })
 }
