@@ -9,9 +9,10 @@ export class DamageRowDetailStore extends ComponentStore<{ rowId: string }> {
   public readonly rowId$ = this.select(({ rowId }) => rowId)
 
   @Output()
-  public readonly gameEvent$ = this.select(this.db.damageTable(this.rowId$), (it) => it)
+  public readonly row$ = this.select(this.db.damageTable(this.rowId$), (it) => it)
 
-  public readonly properties$ = this.select(this.gameEvent$, selectProperties)
+  public readonly properties$ = this.select(this.row$, selectProperties)
+
 
   public constructor(protected db: NwDbService) {
     super({ rowId: null })
