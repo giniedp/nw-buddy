@@ -1,5 +1,5 @@
 import { ChangeDetectorRef, Directive, HostBinding, Input } from '@angular/core'
-import { Crafting } from '@nw-data/types'
+import { Crafting } from '@nw-data/generated'
 
 @Directive({
   standalone: true,

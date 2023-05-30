@@ -1,6 +1,6 @@
 import { Inject, Injectable, Optional } from '@angular/core'
-import { COLS_GAMEEVENT } from '@nw-data/cols'
-import { GameEvent } from '@nw-data/types'
+import { COLS_GAMEEVENT } from '@nw-data/generated'
+import { GameEvent } from '@nw-data/generated'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { Observable, defer, map, of } from 'rxjs'
 import { NwDbService } from '~/nw'

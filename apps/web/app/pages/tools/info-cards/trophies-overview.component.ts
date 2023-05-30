@@ -2,7 +2,7 @@ import { animate, animateChild, query, stagger, state, style, transition, trigge
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
 import { IonicModule } from '@ionic/angular'
-import { Crafting, Housingitems } from '@nw-data/types'
+import { Crafting, Housingitems } from '@nw-data/generated'
 import { groupBy, sortBy } from 'lodash'
 import { combineLatest, defer, map } from 'rxjs'
 import { TranslateService } from '~/i18n'

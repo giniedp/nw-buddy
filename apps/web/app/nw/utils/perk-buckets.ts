@@ -1,4 +1,4 @@
-import { ItemDefinitionMaster, PerkType, Perkbuckets, Perks } from '@nw-data/types'
+import { ItemDefinitionMaster, PerkType, Perkbuckets, Perks } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { isPerkApplicableToItem } from './perks'
 

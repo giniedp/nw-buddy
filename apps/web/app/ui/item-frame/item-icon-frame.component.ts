@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 
 @Component({

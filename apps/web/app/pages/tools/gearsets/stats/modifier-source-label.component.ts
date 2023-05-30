@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
-import { Perks } from '@nw-data/types'
+import { Perks } from '@nw-data/generated'
 import { ReplaySubject } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { ModifierSource } from '~/nw/mannequin/modifier'

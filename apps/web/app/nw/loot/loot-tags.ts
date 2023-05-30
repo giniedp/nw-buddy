@@ -1,4 +1,4 @@
-import { Gamemodes, Mutationdifficulty, PoiDefinition, Territorydefinitions } from "@nw-data/types"
+import { Gamemodes, Mutationdifficulty, PoiDefinition, Territorydefinitions } from "@nw-data/generated"
 import { map, Observable, of } from "rxjs"
 import { mapFilter } from "~/utils"
 

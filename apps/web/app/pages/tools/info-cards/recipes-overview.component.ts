@@ -1,7 +1,7 @@
 import { animate, animateChild, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
-import { Crafting, ItemDefinitionMaster } from '@nw-data/types'
+import { Crafting, ItemDefinitionMaster } from '@nw-data/generated'
 import { combineLatest, debounceTime, defer, map, startWith, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwModule } from '~/nw'

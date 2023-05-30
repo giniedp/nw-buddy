@@ -1,6 +1,6 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { Injectable, Injector } from '@angular/core'
-import { ItemDefinitionMaster, Perks, Statuseffect } from '@nw-data/types'
+import { ItemDefinitionMaster, Perks, Statuseffect } from '@nw-data/generated'
 import { isEqual } from 'lodash'
 import { Observable, combineLatest, filter, map, switchMap, take } from 'rxjs'
 import { ItemInstance, ItemInstancesStore } from '~/data'

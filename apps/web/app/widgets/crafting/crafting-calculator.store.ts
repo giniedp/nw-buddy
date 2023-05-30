@@ -4,7 +4,7 @@ import { EMPTY, combineLatest, map, switchMap, take, tap } from 'rxjs'
 import { CraftingCalculatorService } from './crafting-calculator.service'
 import { AmountMode, CraftingStep } from './types'
 import { PreferencesService, StorageScopeNode } from '~/preferences'
-import { Crafting } from '@nw-data/types'
+import { Crafting } from '@nw-data/generated'
 
 export interface CraftingCalculatorState {
   recipeId: string

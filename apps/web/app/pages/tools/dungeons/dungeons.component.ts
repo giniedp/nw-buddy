@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { Gamemodes } from '@nw-data/types'
+import { Gamemodes } from '@nw-data/generated'
 import { map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { NavToolbarModule } from '~/ui/nav-toolbar'

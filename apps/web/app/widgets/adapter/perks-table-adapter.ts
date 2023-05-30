@@ -1,6 +1,6 @@
 import { Injectable, Optional } from '@angular/core'
-import { COLS_AFFIXSTATS, COLS_PERKS } from '@nw-data/cols'
-import { Ability, Perks } from '@nw-data/types'
+import { COLS_AFFIXSTATS, COLS_PERKS } from '@nw-data/generated'
+import { Ability, Perks } from '@nw-data/generated'
 import { ColDef, ColGroupDef, GridOptions } from 'ag-grid-community'
 import { Observable, combineLatest, defer, map, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'

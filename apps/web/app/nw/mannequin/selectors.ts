@@ -1,4 +1,4 @@
-import { Ability, Damagetable, ItemdefinitionsAmmo } from '@nw-data/types'
+import { Ability, Damagetable, ItemdefinitionsAmmo } from '@nw-data/generated'
 import { groupBy, minBy, sum, sumBy } from 'lodash'
 import { eqCaseInsensitive } from '~/utils'
 import { AttributeRef } from '../attributes/nw-attributes'

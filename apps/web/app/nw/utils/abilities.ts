@@ -1,5 +1,5 @@
-import { AttackType, Statuseffect } from '@nw-data/types'
-import { Ability, Affixstats, Damagetable, Damagetypes } from '@nw-data/types'
+import { AttackType, Statuseffect } from '@nw-data/generated'
+import { Ability, Affixstats, Damagetable, Damagetypes } from '@nw-data/generated'
 
 const WEAPON_TAG_NAME = {
   Sword: 'ui_straightsword',

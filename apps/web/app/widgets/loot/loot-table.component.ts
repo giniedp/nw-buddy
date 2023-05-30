@@ -11,7 +11,7 @@ import { GridOptions } from 'ag-grid-community'
 import { BehaviorSubject, combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
 
 import { CommonModule } from '@angular/common'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService } from '~/nw'
 import { LootContext, NwLootService } from '~/nw/loot'

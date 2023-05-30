@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { PoiDefinition } from '@nw-data/types'
+import { PoiDefinition } from '@nw-data/generated'
 import { GridOptions } from 'ag-grid-community'
 import { defer, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'

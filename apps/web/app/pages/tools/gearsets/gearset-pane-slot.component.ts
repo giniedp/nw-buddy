@@ -24,7 +24,7 @@ import { EquipSlot, EquipSlotId, EQUIP_SLOTS, getItemId, getItemMaxGearScore } f
 import { deferStateFlat, shareReplayRefCount, tapDebug } from '~/utils'
 import { ItemDetailComponent } from '~/widgets/data/item-detail/item-detail.component'
 import { InventoryPickerService } from '../inventory/inventory-picker.service'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import {
   svgEllipsisVertical,
   svgImage,

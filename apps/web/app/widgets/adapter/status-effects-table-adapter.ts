@@ -1,6 +1,6 @@
 import { Inject, Injectable, Optional } from '@angular/core'
-import { COLS_STATUSEFFECT } from '@nw-data/cols'
-import { Statuseffect } from '@nw-data/types'
+import { COLS_STATUSEFFECT } from '@nw-data/generated'
+import { Statuseffect } from '@nw-data/generated'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { sortBy } from 'lodash'
 import { Observable, defer, map, of } from 'rxjs'

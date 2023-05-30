@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { Perks } from '@nw-data/types'
+import { Perks } from '@nw-data/generated'
 import { firstValueFrom, skip } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'

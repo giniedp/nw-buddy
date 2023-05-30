@@ -1,7 +1,7 @@
 import { program } from 'commander'
 import * as fs from 'fs'
 import * as path from 'path'
-import { nwData, NW_USE_PTR, web } from '../env'
+import { nwData, NW_USE_PTR } from '../env'
 import { generateTypes } from './code-gen/code-generate'
 import { extractExpressions } from './importer/extractExpressions'
 import { importImages } from './importer/images'
@@ -16,7 +16,6 @@ import { importLocales, LOCALE_KEYS_TO_KEEP } from './importer/locales'
 import { importSlices } from './importer/slices/import-slices'
 import { withProgressBar, writeJSONFile } from './utils'
 import { cpus } from 'os'
-import { checkDamageTables } from './importer/echeckDamageTables'
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
 }
@@ -52,7 +51,7 @@ program
     const inputDir = options.input || nwData.tmpDir(options.ptr)!
     const distDir = nwData.distDir(options.ptr)!
     const publicDir = nwData.assetPath(options.ptr)
-    const typesDir = web.src('nw-data')
+    const typesDir = path.join(nwData.cwd, 'libs', 'nw-data', 'generated')
     const threads = options.threads || cpus().length
 
     console.log('[IMPORT]', inputDir)

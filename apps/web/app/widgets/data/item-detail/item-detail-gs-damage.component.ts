@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
-import { Affixstats } from '@nw-data/types'
+import { Affixstats } from '@nw-data/generated'
 import { combineLatest, filter, map, of, switchMap } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { damageCoefForWeaponTag, damageFactorForGS, getWeaponTagFromWeapon, isAffixSplitDamage } from '~/nw/utils'

@@ -1,4 +1,4 @@
-import { Statuseffect } from '@nw-data/types'
+import { Statuseffect } from '@nw-data/generated'
 import { sumBy } from 'lodash'
 import { statusEffectHasEmpowerCap, statusEffectHasFortifyCap } from '~/nw/utils/status-effects'
 import { eachModifier, modifierAdd, ModifierKey, modifierResult, ModifierResult, ModifierValue } from '../modifier'

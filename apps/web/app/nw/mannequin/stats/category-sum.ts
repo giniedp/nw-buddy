@@ -1,4 +1,4 @@
-import { Statuseffectcategories } from "@nw-data/types"
+import { Statuseffectcategories } from "@nw-data/generated"
 import { sumBy } from "lodash"
 import { eachModifier, ModifierKey, ModifierResult, ModifierValue } from "../modifier"
 import { ActiveMods } from "../types"

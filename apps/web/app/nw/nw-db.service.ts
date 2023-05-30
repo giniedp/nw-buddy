@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { Vitals } from '@nw-data/types'
+import { Vitals } from '@nw-data/generated'
 import { groupBy, sortBy } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, shareReplay } from 'rxjs'
 import { CaseInsensitiveMap, CaseInsensitiveSet } from '~/utils'

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { Territorydefinitions } from '@nw-data/types'
+import { Territorydefinitions } from '@nw-data/generated'
 import { BehaviorSubject, combineLatest, defer, map, startWith } from 'rxjs'
 import { NwModule } from '~/nw'
 import { TerritoriesService } from '~/nw/territories'

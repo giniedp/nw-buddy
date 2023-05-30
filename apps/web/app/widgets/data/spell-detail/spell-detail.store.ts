@@ -1,6 +1,6 @@
 import { Injectable, Output } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Spelltable } from '@nw-data/types'
+import { Spelltable } from '@nw-data/generated'
 import { NwDbService } from '~/nw'
 import { rejectKeys } from '~/utils'
 

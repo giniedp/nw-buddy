@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Gamemodes, Mutationdifficulty, Vitals } from '@nw-data/types'
+import { Gamemodes, Mutationdifficulty, Vitals } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest, filter, map, of, shareReplay, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'

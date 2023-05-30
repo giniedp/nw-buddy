@@ -1,4 +1,4 @@
-import { Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from "@nw-data/types"
+import { Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from "@nw-data/generated"
 import { eqCaseInsensitive } from "~/utils"
 
 const NAMED_FAIMILY_TYPES = ['DungeonBoss', 'Dungeon+', 'DungeonMiniBoss', 'Elite+', 'EliteMiniBoss']

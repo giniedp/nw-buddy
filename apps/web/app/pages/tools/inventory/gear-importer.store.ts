@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/types'
+import { Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { diceCoefficient } from 'dice-coefficient'
 import { sortBy, sum } from 'lodash'
 import { of } from 'rxjs'

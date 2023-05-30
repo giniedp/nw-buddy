@@ -1,4 +1,4 @@
-import { ItemdefinitionsRunes, ItemdefinitionsWeapons, WeaponTag } from '@nw-data/types'
+import { ItemdefinitionsRunes, ItemdefinitionsWeapons, WeaponTag } from '@nw-data/generated'
 import type { AttributeRef } from '../attributes/nw-attributes'
 import {
   NW_BASE_DAMAGE_COMPOUND_INCREASE,

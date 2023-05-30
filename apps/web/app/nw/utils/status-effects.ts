@@ -1,4 +1,4 @@
-import { Statuseffect } from "@nw-data/types"
+import { Statuseffect } from "@nw-data/generated"
 
 const TOWN_BUFF_IDS = [
   'ArcaneBlessingLSB',

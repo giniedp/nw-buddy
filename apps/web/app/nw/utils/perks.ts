@@ -1,4 +1,4 @@
-import { Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/types'
+import { Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { eqCaseInsensitive } from '~/utils'
 import { getAffixMODs } from './affix'
 import { patchPrecision } from './precision'

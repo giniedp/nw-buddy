@@ -1,4 +1,4 @@
-import { ItemDefinitionMaster, Perks } from '@nw-data/types'
+import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { groupBy, sortBy } from 'lodash'
 import { TranslateService } from '~/i18n'
 import { getItemRarity } from '~/nw/utils'

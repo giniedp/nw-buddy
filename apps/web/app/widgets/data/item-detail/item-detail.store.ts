@@ -8,7 +8,7 @@ import {
   ItemdefinitionsConsumables,
   ItemdefinitionsResources,
   Perks
-} from '@nw-data/types'
+} from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { combineLatest, map, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'

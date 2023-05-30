@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { Statuseffect } from '@nw-data/types'
+import { Statuseffect } from '@nw-data/generated'
 import { firstValueFrom } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'

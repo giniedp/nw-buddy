@@ -1,5 +1,5 @@
 /// <reference lib="webworker" />
-import { ItemDefinitionMaster, Perks } from '@nw-data/types'
+import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { expose } from 'comlink'
 import { getItemPerkBucketIds, getItemPerks } from '~/nw/utils/item'
 import { CaseInsensitiveMap } from '~/utils/caseinsensitive-map'

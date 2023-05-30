@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Gamemodes, Mutationdifficulty } from '@nw-data/types'
+import { Gamemodes, Mutationdifficulty } from '@nw-data/generated'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { gameModesTags, mutaDifficultyTags, mutaElementalTags, poiTags, territoriesTags } from '~/nw/loot/loot-tags'

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { Housingitems, ItemDefinitionMaster, Lootlimits } from '@nw-data/types'
+import { Housingitems, ItemDefinitionMaster, Lootlimits } from '@nw-data/generated'
 import { GridOptions } from 'ag-grid-community'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { combineLatest, defer, map, Observable, of } from 'rxjs'

@@ -1,4 +1,4 @@
-import { Ability, Affixstats, Housingitems, ItemDefinitionMaster, Perks, Statuseffect } from '@nw-data/types'
+import { Ability, Affixstats, Housingitems, ItemDefinitionMaster, Perks, Statuseffect } from '@nw-data/generated'
 import { sumBy } from 'lodash'
 import { EquipSlotId } from '../utils/equip-slot'
 import { getItemGsBonus, getPerkMultiplier } from '../utils/perks'

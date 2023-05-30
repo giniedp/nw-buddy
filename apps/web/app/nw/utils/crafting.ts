@@ -1,4 +1,4 @@
-import { Crafting, GameEvent, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { Crafting, GameEvent, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { NW_MAX_TRADESKILL_LEVEL } from './constants'
 
 export type CraftingIngredients = Pick<

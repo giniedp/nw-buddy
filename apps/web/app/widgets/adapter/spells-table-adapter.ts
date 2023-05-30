@@ -1,6 +1,6 @@
 import { Injectable, Optional } from '@angular/core'
-import { COLS_SPELLTABLE } from '@nw-data/cols'
-import { Spelltable } from '@nw-data/types'
+import { COLS_SPELLTABLE } from '@nw-data/generated'
+import { Spelltable } from '@nw-data/generated'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { defer, map, Observable, of } from 'rxjs'
 import { NwDbService } from '~/nw'

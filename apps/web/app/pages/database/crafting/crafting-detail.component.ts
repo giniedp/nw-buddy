@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { map, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwModule } from '~/nw'

@@ -4,7 +4,7 @@ import { ComponentStore } from '@ngrx/component-store'
 import { combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { PerkBucketDetailPerksComponent } from './perk-bucket-detail.component'
-import { PerkType } from '@nw-data/types'
+import { PerkType } from '@nw-data/generated'
 
 export interface Tab {
   id: string

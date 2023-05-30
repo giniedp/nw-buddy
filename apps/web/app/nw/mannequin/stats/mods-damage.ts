@@ -1,4 +1,4 @@
-import { Damagetable } from '@nw-data/types'
+import { Damagetable } from '@nw-data/generated'
 import { getItemIconPath } from '~/nw/utils'
 import { damageFactorForAttrs, damageFactorForGS, damageFactorForLevel } from '~/nw/utils/damage'
 import { getDamageTypesOfCategory } from '~/nw/utils/damage-type'

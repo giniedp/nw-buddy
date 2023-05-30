@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Damagetable, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/types'
+import { Damagetable, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/generated'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { shareReplayRefCount } from '~/utils'

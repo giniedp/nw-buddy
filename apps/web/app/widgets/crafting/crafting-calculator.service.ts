@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { NwDbService } from '~/nw'

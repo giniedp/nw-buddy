@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Housingitems, ItemDefinitionMaster, Perks } from '@nw-data/types'
+import { Housingitems, ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { combineLatest, from, map, of, switchMap, tap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import {

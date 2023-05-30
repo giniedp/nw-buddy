@@ -10,7 +10,7 @@ import { TradeskillsModule } from '~/widgets/tradeskills'
 import { CraftingStepWithAmount, SkillRow, SummaryRow } from './types'
 import { combineLatest, map, of, shareReplay, switchMap } from 'rxjs'
 import { CraftingCalculatorService } from '../crafting-calculator.service'
-import { Crafting, GameEvent } from '@nw-data/types'
+import { Crafting, GameEvent } from '@nw-data/generated'
 import { calculateCraftingReward } from '~/nw/utils'
 
 @Component({

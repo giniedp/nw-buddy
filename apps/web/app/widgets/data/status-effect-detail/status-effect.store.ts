@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Affixstats, Perks, Statuseffect } from '@nw-data/types'
+import { Affixstats, Perks, Statuseffect } from '@nw-data/generated'
 import { flatten, uniq } from 'lodash'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'

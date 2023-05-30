@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Input, Output, Type } from '@angular/core'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { BehaviorSubject, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { AttributeRef } from '~/nw/attributes'

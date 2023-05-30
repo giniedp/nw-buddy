@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { combineLatest, Subject, takeUntil } from 'rxjs'
 import { NwModule } from '~/nw'
 import { getItemTierAsRoman, isHousingItem, isItemArmor, isItemJewelery, isItemWeapon, isMasterItem } from '~/nw/utils'

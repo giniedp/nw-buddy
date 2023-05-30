@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { ItemDefinitionMaster, Perks } from '@nw-data/types'
+import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { Subject, combineLatest, defer, map, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw/nw-db.service'

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
-import { Perks, Vitals } from '@nw-data/types'
+import { Perks, Vitals } from '@nw-data/generated'
 import { combineLatest, defer, map, ReplaySubject } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { getVitalDamageEffectiveness } from '~/nw/utils'

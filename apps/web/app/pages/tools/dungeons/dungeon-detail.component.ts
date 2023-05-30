@@ -12,7 +12,7 @@ import {
 } from '@angular/core'
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty } from '@nw-data/types'
+import { Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty } from '@nw-data/generated'
 import { ReplaySubject, combineLatest, defer, map, of, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwModule } from '~/nw'

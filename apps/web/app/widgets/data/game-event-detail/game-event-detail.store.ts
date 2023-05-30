@@ -1,6 +1,6 @@
 import { Injectable, Output } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { GameEvent } from '@nw-data/types'
+import { GameEvent } from '@nw-data/generated'
 import { NwDbService } from '~/nw'
 import { rejectKeys } from '~/utils'
 

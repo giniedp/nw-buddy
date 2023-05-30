@@ -1,5 +1,5 @@
 import { Directive, Input } from '@angular/core'
-import { Territorydefinitions } from '@nw-data/types'
+import { Territorydefinitions } from '@nw-data/generated'
 import { defer } from 'lodash'
 import { territoryImage } from '~/nw/utils'
 import { TerritoriesPreferencesService } from '~/preferences/territories-preferences.service'

@@ -2,7 +2,7 @@ import { animate, animateChild, query, stagger, state, style, transition, trigge
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest, debounceTime, defer, map, startWith, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'

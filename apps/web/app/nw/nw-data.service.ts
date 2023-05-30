@@ -2,7 +2,7 @@ import {
   HttpClient
 } from '@angular/common/http'
 import { Injectable } from '@angular/core'
-import { NwDataLoader } from '@nw-data/datatables'
+import { NwDataLoader } from '@nw-data/generated'
 import { Observable, shareReplay } from 'rxjs'
 
 export type LocaleData = Record<string, { value: string }>

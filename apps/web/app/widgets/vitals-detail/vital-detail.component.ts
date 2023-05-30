@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Gamemodes, Vitals } from '@nw-data/types'
+import { Gamemodes, Vitals } from '@nw-data/generated'
 import { combineLatest } from 'rxjs'
 import { NwModule } from '~/nw'
 import { DestroyService } from '~/utils'

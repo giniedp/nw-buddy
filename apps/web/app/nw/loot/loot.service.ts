@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { combineLatest, map, Observable } from 'rxjs'
 import { NwDbService } from '../nw-db.service'
 import { LootTable } from '../utils'

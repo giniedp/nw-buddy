@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Ability } from '@nw-data/types'
+import { Ability } from '@nw-data/generated'
 import { combineLatest, defer, distinctUntilChanged, filter, of, Subject, switchMap, tap } from 'rxjs'
 import { NwDbService } from '~/nw/nw-db.service'
 import { tapDebug } from '~/utils'

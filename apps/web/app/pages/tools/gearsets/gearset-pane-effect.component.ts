@@ -20,7 +20,7 @@ import { shareReplayRefCount } from '~/utils'
 import { InventoryPickerService } from '../inventory/inventory-picker.service'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
-import { Statuseffect } from '@nw-data/types'
+import { Statuseffect } from '@nw-data/generated'
 
 export interface EffectSlotState {
   effectId: string

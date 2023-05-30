@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { Tradeskillpostcap } from '@nw-data/types'
+import { Tradeskillpostcap } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, shareReplay, switchMap } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'

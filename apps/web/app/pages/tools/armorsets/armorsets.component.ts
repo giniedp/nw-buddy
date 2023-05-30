@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, TrackByFunction } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { ItemDefinitionMaster } from '@nw-data/types'
+import { ItemDefinitionMaster } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
 import { NavToolbarModule } from '~/ui/nav-toolbar'

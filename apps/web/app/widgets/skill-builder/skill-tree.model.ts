@@ -1,4 +1,4 @@
-import { Ability } from '@nw-data/types'
+import { Ability } from '@nw-data/generated'
 import { getAbilityCategoryTag } from '~/nw/utils'
 import { CaseInsensitiveSet } from '~/utils'
 

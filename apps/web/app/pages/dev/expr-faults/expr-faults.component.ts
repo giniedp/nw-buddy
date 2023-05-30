@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { Perks } from '@nw-data/types'
+import { Perks } from '@nw-data/generated'
 import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of, switchMap, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'

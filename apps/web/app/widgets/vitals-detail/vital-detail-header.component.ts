@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { Vitals } from '@nw-data/types'
+import { Vitals } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { getVitalCategoryInfo, getVitalFamilyInfo, getVitalTypeMarker, VitalFamilyInfo } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'

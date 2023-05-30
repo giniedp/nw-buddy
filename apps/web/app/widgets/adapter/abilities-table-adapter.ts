@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { Ability, Statuseffect } from '@nw-data/types'
+import { Ability, Statuseffect } from '@nw-data/generated'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { sortBy } from 'lodash'
 import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
@@ -13,7 +13,7 @@ import { humanize, shareReplayRefCount } from '~/utils'
 import { NwExpressionService } from '~/nw/expression'
 import { NW_FALLBACK_ICON, NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE, NW_MAX_GEAR_SCORE_UPGRADABLE } from '~/nw/utils/constants'
 import { executeTypescript } from '~/ui/code-editor'
-import { COLS_ABILITY } from '@nw-data/cols'
+import { COLS_ABILITY } from '@nw-data/generated'
 
 export type AbilityTableItem = Ability & {
   $weaponType: NwWeaponType

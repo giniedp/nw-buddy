@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy, TemplateRef } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { Housingitems } from '@nw-data/types'
+import { Housingitems } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { getItemIconPath } from '~/nw/utils'

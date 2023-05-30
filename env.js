@@ -43,15 +43,8 @@ function get(name) {
   return result
 }
 
-const root = process.cwd()
-const srcDir = (...paths) => path.join(root, 'apps', ...paths)
-const dstDir = (...paths) => path.join(root, 'dist', ...paths)
-const tmpDir = (...paths) => path.join(root, 'tmp', ...paths)
-const web = {
-  src: (...paths) => srcDir('web', ...paths),
-  dist: (...paths) => dstDir('web', ...paths),
-}
 const nwData = {
+  cwd: process.cwd(),
   /**
    * Temporary directory where game assets are extracted to
    * @param {string[]} paths

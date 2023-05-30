@@ -1,4 +1,4 @@
-import { Umbralgsupgrades } from "@nw-data/types"
+import { Umbralgsupgrades } from "@nw-data/generated"
 import { EQUIP_SLOTS, gearScoreRelevantSlots } from "~/nw/utils"
 
 export interface CollectionState {

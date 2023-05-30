@@ -1,6 +1,6 @@
 import { Injectable, Output } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Affixstats, Perks } from '@nw-data/types'
+import { Affixstats, Perks } from '@nw-data/generated'
 import { map } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { NW_FALLBACK_ICON } from '~/nw/utils/constants'

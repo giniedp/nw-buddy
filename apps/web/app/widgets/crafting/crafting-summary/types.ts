@@ -1,4 +1,4 @@
-import { Crafting, GameEvent, Housingitems, ItemDefinitionMaster } from "@nw-data/types"
+import { Crafting, GameEvent, Housingitems, ItemDefinitionMaster } from "@nw-data/generated"
 import { CraftingStep } from "../types"
 
 export interface CraftingStepWithAmount extends CraftingStep {

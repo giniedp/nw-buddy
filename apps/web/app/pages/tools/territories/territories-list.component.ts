@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TrackByFunction } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { Territorydefinitions } from '@nw-data/types'
+import { Territorydefinitions } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { combineLatest, defer, map, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'

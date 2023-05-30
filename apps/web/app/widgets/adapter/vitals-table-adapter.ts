@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
-import { COLS_VITALS } from '@nw-data/cols'
-import { Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/types'
+import { COLS_VITALS } from '@nw-data/generated'
+import { Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/generated'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { Observable, combineLatest, defer, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'

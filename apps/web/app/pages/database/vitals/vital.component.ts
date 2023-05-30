@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
-import { Vitals } from '@nw-data/types'
+import { Vitals } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest, defer, map, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'

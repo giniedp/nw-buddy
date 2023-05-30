@@ -1,6 +1,6 @@
 import { Inject, Injectable, Optional } from '@angular/core'
-import { COLS_ITEMDEFINITIONMASTER } from '@nw-data/cols'
-import { ItemDefinitionMaster, Perks } from '@nw-data/types'
+import { COLS_ITEMDEFINITIONMASTER } from '@nw-data/generated'
+import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { Observable, combineLatest, defer, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'

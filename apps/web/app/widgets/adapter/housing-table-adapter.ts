@@ -1,5 +1,5 @@
 import { Inject, Injectable, Optional } from '@angular/core'
-import { Housingitems } from '@nw-data/types'
+import { Housingitems } from '@nw-data/generated'
 import { GridOptions } from 'ag-grid-community'
 import { Observable, defer, map, of, shareReplay } from 'rxjs'
 import { TranslateService } from '~/i18n'

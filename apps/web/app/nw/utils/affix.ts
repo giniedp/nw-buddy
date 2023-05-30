@@ -1,4 +1,4 @@
-import type { Affixstats } from "@nw-data/types"
+import type { Affixstats } from "@nw-data/generated"
 
 export function isAffixSplitDamage(affix: Affixstats): boolean {
   return !!affix?.DamagePercentage && !!affix?.DamageType

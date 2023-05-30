@@ -3,7 +3,7 @@ import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { AfterContentInit, ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { Statuseffect } from '@nw-data/types'
+import { Statuseffect } from '@nw-data/generated'
 import { combineLatest, filter, map, of, switchMap } from 'rxjs'
 import {
   CharacterStore,

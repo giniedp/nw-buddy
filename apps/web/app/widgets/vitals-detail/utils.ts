@@ -1,4 +1,4 @@
-import { Family, Vitals } from '@nw-data/types'
+import { Family, Vitals } from '@nw-data/generated'
 import { map } from 'rxjs'
 import { NwDbService } from '~/nw'
 

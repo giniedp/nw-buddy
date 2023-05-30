@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { Attributeconstitution } from '@nw-data/types'
+import { Attributeconstitution } from '@nw-data/generated'
 import { map, of } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
 import { NwDbService } from '../nw-db.service'

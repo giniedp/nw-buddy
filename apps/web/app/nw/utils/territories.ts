@@ -1,4 +1,4 @@
-import { Territorydefinitions } from "@nw-data/types"
+import { Territorydefinitions } from "@nw-data/generated"
 
 export function territoryImage(territory: Territorydefinitions, type: 'territory' | 'settlement' | 'fort') {
   let id: string | number = territory?.TerritoryID

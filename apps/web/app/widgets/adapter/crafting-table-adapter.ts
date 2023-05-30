@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/types'
+import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { GridOptions } from 'ag-grid-community'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { Observable, combineLatest, defer, map, of } from 'rxjs'

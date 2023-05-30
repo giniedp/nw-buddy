@@ -1,4 +1,4 @@
-import { Lootbuckets } from '@nw-data/types'
+import { Lootbuckets } from '@nw-data/generated'
 import { CaseInsensitiveMap } from '~/utils'
 
 export function convertLootbuckets(data: Lootbuckets[]) {

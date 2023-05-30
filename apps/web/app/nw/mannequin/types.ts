@@ -18,7 +18,7 @@ import {
   Statuseffect,
   Statuseffectcategories,
   WeaponTag,
-} from '@nw-data/types'
+} from '@nw-data/generated'
 import { Observable } from 'rxjs'
 import { AttributeRef } from '../attributes/nw-attributes'
 import { EquipSlotId } from '../utils/equip-slot'

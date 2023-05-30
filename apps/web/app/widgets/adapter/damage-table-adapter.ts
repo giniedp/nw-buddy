@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
-import { COLS_DAMAGETABLE } from '@nw-data/cols'
-import { Damagetable } from '@nw-data/types'
+import { COLS_DAMAGETABLE } from '@nw-data/generated'
+import { Damagetable } from '@nw-data/generated'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { Observable, defer, map, of } from 'rxjs'
 import { NwDbService } from '~/nw'

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
-import { Vitals, Vitalsleveldata, Vitalsmodifierdata } from '@nw-data/types'
+import { Vitals, Vitalsleveldata, Vitalsmodifierdata } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { PropertyGridModule } from '~/ui/property-grid'
 
