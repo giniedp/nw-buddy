@@ -46,7 +46,6 @@ import type {
   PoiDefinition,
   Promotionmutations,
   Spelltable,
-  StaminacostsAgIceSpearman,
   StaminacostsPlayer,
   Statuseffect,
   Statuseffectcategories,
@@ -131,9 +130,6 @@ export abstract class NwDataLoader {
   }
   public charactertablesAncientguardianDatatablesDamagetableAncientguardianheavyboss() {
     return this.load<Damagetable[]>('charactertables/ancientguardian_datatables/javelindata_damagetable_ancientguardianheavyboss.json')
-  }
-  public charactertablesAncientguardianDatatablesStaminacostsAgIceSpearman() {
-    return this.load<StaminacostsAgIceSpearman[]>('charactertables/ancientguardian_datatables/javelindata_staminacosts_ag_ice_spearman.json')
   }
   public charactertablesAnubianguardianDatatablesDamagetableAnubianguardianBrute() {
     return this.load<Damagetable[]>('charactertables/anubianguardian_datatables/javelindata_damagetable_anubianguardian_brute.json')
@@ -242,6 +238,12 @@ export abstract class NwDataLoader {
   }
   public charactertablesCommanderlothDatatablesDamagetableCommanderloth() {
     return this.load<Damagetable[]>('charactertables/commanderloth_datatables/javelindata_damagetable_commanderloth.json')
+  }
+  public charactertablesCorruptedleviathanDatatablesDamagetableCorruptedLeviathan() {
+    return this.load<Damagetable[]>('charactertables/corruptedleviathan_datatables/javelindata_damagetable_corrupted_leviathan.json')
+  }
+  public charactertablesCorruptedleviathanDatatablesDamagetableTendrilLeviathan() {
+    return this.load<Damagetable[]>('charactertables/corruptedleviathan_datatables/javelindata_damagetable_tendril_leviathan.json')
   }
   public charactertablesCorruptionheavyDatatablesDamagetableCorruptionHeavy() {
     return this.load<Damagetable[]>('charactertables/corruptionheavy_datatables/javelindata_damagetable_corruption_heavy.json')
@@ -546,6 +548,15 @@ export abstract class NwDataLoader {
   public charactertablesScorpionDatatablesDamagetableScorpionSulfur() {
     return this.load<Damagetable[]>('charactertables/scorpion_datatables/javelindata_damagetable_scorpion_sulfur.json')
   }
+  public charactertablesSeasonsDatatablesSeason02DamagetableHerikai() {
+    return this.load<Damagetable[]>('charactertables/seasons_datatables/season_02/javelindata_damagetable_herikai.json')
+  }
+  public charactertablesSeasonsDatatablesSeason02DamagetableMalek() {
+    return this.load<Damagetable[]>('charactertables/seasons_datatables/season_02/javelindata_damagetable_malek.json')
+  }
+  public charactertablesSeasonsDatatablesSeason02DamagetableMalekBloodofthesands() {
+    return this.load<Damagetable[]>('charactertables/seasons_datatables/season_02/javelindata_damagetable_malek_bloodofthesands.json')
+  }
   public charactertablesSkeletonDatatablesDamagetableEzraforgemaster() {
     return this.load<Damagetable[]>('charactertables/skeleton_datatables/javelindata_damagetable_ezraforgemaster.json')
   }
@@ -635,9 +646,6 @@ export abstract class NwDataLoader {
   }
   public charactertablesUndeadDatatablesDamagetableUndeadShaman() {
     return this.load<Damagetable[]>('charactertables/undead_datatables/javelindata_damagetable_undead_shaman.json')
-  }
-  public charactertablesWispywaspswarmDatatablesDamagetableWispyWaspSwarm() {
-    return this.load<Damagetable[]>('charactertables/wispywaspswarm_datatables/javelindata_damagetable_wispy_wasp_swarm.json')
   }
   public charactertablesWitheredbeetleDatatablesDamagetableWitheredbeetle() {
     return this.load<Damagetable[]>('charactertables/witheredbeetle_datatables/javelindata_damagetable_witheredbeetle.json')
@@ -858,9 +866,6 @@ export abstract class NwDataLoader {
   public loottablesPlaytest() {
     return this.load<Loottable[]>('javelindata_loottables_playtest.json')
   }
-  public loottablesPvpRewardsTrack() {
-    return this.load<Loottable[]>('javelindata_loottables_pvp_rewards_track.json')
-  }
   public loottablesSalvage() {
     return this.load<Loottable[]>('javelindata_loottables_salvage.json')
   }
@@ -881,6 +886,12 @@ export abstract class NwDataLoader {
   }
   public perks() {
     return this.load<Perks[]>('javelindata_perks.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0102() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_01_02.json')
+  }
+  public pointofinterestdefinitionsPoidefinitions0103() {
+    return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_01_03.json')
   }
   public pointofinterestdefinitionsPoidefinitions0202() {
     return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_02_02.json')
