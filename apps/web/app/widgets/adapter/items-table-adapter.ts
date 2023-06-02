@@ -1,11 +1,6 @@
 import { Inject, Injectable, Optional } from '@angular/core'
-import { COLS_ITEMDEFINITIONMASTER } from '@nw-data/generated'
-import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
-import { ColDef, GridOptions } from 'ag-grid-community'
-import { Observable, combineLatest, defer, map, of } from 'rxjs'
-import { TranslateService } from '~/i18n'
-import { NwDbService, NwLinkService } from '~/nw'
 import {
+  NW_FALLBACK_ICON,
   getItemIconPath,
   getItemId,
   getItemMaxGearScore,
@@ -20,8 +15,12 @@ import {
   getItemTypeLabel,
   getTradingCategoryLabel,
   isItemNamed,
-} from '~/nw/utils'
-import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
+} from '@nw-data/common'
+import { COLS_ITEMDEFINITIONMASTER, ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { ColDef, GridOptions } from 'ag-grid-community'
+import { Observable, combineLatest, defer, map, of } from 'rxjs'
+import { TranslateService } from '~/i18n'
+import { NwDbService, NwLinkService } from '~/nw'
 import { ItemPreferencesService } from '~/preferences'
 import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'

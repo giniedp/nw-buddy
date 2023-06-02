@@ -1,13 +1,20 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core'
+import { RouterModule } from '@angular/router'
+import {
+  getItemTierAsRoman,
+  isHousingItem,
+  isItemArmor,
+  isItemJewelery,
+  isItemWeapon,
+  isMasterItem,
+} from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
-import { combineLatest, Subject, takeUntil } from 'rxjs'
+import { Subject, combineLatest, takeUntil } from 'rxjs'
 import { NwModule } from '~/nw'
-import { getItemTierAsRoman, isHousingItem, isItemArmor, isItemJewelery, isItemWeapon, isMasterItem } from '~/nw/utils'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemTrackerModule } from '../../item-tracker'
 import { ItemDetailStore } from './item-detail.store'
-import { RouterModule } from '@angular/router'
 
 @Component({
   standalone: true,
@@ -43,9 +50,8 @@ export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
   @Input()
   public iconOverride: ItemDefinitionMaster | Housingitems
 
-
   @Input()
-  public size: 'sm' | 'md' | 'lg'  = 'md'
+  public size: 'sm' | 'md' | 'lg' = 'md'
 
   protected name: string[]
 
@@ -59,7 +65,11 @@ export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
   protected entityLink: string | any[]
   protected isLoading = true
   protected get enableGsTracker(): boolean {
-    return this.enableTracker && isMasterItem(this.entity) && (isItemWeapon(this.entity) || isItemArmor(this.entity) || isItemJewelery(this.entity))
+    return (
+      this.enableTracker &&
+      isMasterItem(this.entity) &&
+      (isItemWeapon(this.entity) || isItemArmor(this.entity) || isItemJewelery(this.entity))
+    )
   }
   protected get tierLabel() {
     return getItemTierAsRoman(this.entity?.Tier)

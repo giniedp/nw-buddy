@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
+import { getItemIconPath } from '@nw-data/common'
 import { combineLatest, debounceTime, defer, map } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { PreferencesService, StorageNode } from '~/preferences'
 import { CollectionState, UpgradeStep, calculateSteps, createState, updateState } from './utils'
-import { getItemIconPath } from '~/nw/utils'
 
 export interface UmbralCalculatorState {
   marker?: UpgradeStep
@@ -17,7 +17,11 @@ export class UmbralCalculatorService extends ComponentStore<UmbralCalculatorStat
   public shardItem = this.select(this.db.item('UmbralShardT1'), (item) => item)
   public shardIcon = this.select(this.shardItem, (item) => getItemIconPath(item))
   public upgrades = this.select(this.db.data.umbralgsupgrades(), (items) => items)
-  public collection = this.select(defer(() => this.getSource()) , this.upgrades, updateState)
+  public collection = this.select(
+    defer(() => this.getSource()),
+    this.upgrades,
+    updateState
+  )
   public steps = this.select(this.collection.pipe(debounceTime(500)), this.upgrades, calculateSteps)
   public marker = this.select(({ marker }) => marker)
 
@@ -33,7 +37,7 @@ export class UmbralCalculatorService extends ComponentStore<UmbralCalculatorStat
   }
 
   public setMarker(marker: UpgradeStep) {
-    this.patchState({ marker: marker})
+    this.patchState({ marker: marker })
   }
 
   private getSource() {

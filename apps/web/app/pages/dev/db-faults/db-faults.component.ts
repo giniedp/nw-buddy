@@ -1,11 +1,18 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
+import {
+  getItemIconPath,
+  getItemPerks,
+  getItemRarity,
+  isPerkGem,
+  isPerkGenerated,
+  isPerkInherent,
+} from '@nw-data/common'
 import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { GridOptions } from 'ag-grid-community'
-import { combineLatest, defer, map, Observable, of } from 'rxjs'
+import { Observable, combineLatest, defer, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService, NwModule } from '~/nw'
-import { getItemIconPath, getItemPerks, getItemRarity, isPerkGem, isPerkGenerated, isPerkInherent } from '~/nw/utils'
 import { SelectFilter } from '~/ui/ag-grid'
 import { CellRendererService, DataTableAdapter, DataTableCategory, DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'

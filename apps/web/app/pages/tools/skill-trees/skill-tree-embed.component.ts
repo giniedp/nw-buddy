@@ -10,7 +10,7 @@ import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
 import { HtmlHeadService } from '~/utils'
-import { EmbedHeightDirective } from '~/utils/embed-height.directive'
+import { EmbedHeightDirective } from '~/utils/directives/embed-height.directive'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { SkillBuilderComponent } from '~/widgets/skill-builder'
 

@@ -5,8 +5,7 @@ import { uniq } from 'lodash'
 import { combineLatest, filter, map, of, shareReplay, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { LootContext, NwLootService } from '~/nw/loot'
-import { getVitalDungeons } from '~/nw/utils'
-import { NW_MAX_CHARACTER_LEVEL } from '~/nw/utils/constants'
+import { NW_MAX_CHARACTER_LEVEL, getVitalDungeons } from '@nw-data/common'
 import { mapProp, shareReplayRefCount, tapDebug } from '~/utils'
 
 export interface DungeonDetailState {
@@ -73,7 +72,11 @@ export class DungeonDetailStore extends ComponentStore<DungeonDetailState> {
     .pipe(
       map(({ vitals, vitalsMeta, dungeons, dungeonId, difficulty }): Vitals[] => {
         const result = vitals.filter((it) => {
-          if (difficulty != null && dungeonId === 'DungeonShatteredObelisk' && it.VitalsID === 'Withered_Brute_Named_08') {
+          if (
+            difficulty != null &&
+            dungeonId === 'DungeonShatteredObelisk' &&
+            it.VitalsID === 'Withered_Brute_Named_08'
+          ) {
             return true
           }
           return getVitalDungeons(it, dungeons, vitalsMeta).some((dg) => dg.GameModeId === dungeonId)
@@ -169,7 +172,7 @@ export class DungeonDetailStore extends ComponentStore<DungeonDetailState> {
             Level: NW_MAX_CHARACTER_LEVEL,
           },
           table: lootTable,
-          tableId: lootTable?.LootTableID
+          tableId: lootTable?.LootTableID,
         }
       })
     )
@@ -224,7 +227,7 @@ export class DungeonDetailStore extends ComponentStore<DungeonDetailState> {
             Level: NW_MAX_CHARACTER_LEVEL,
           },
           table: lootTable,
-          tableId: lootTable?.LootTableID
+          tableId: lootTable?.LootTableID,
         }
       })
     )
@@ -282,24 +285,23 @@ export class DungeonDetailStore extends ComponentStore<DungeonDetailState> {
             Level: NW_MAX_CHARACTER_LEVEL,
           },
           table: lootTable,
-          tableId: lootTable?.LootTableID
+          tableId: lootTable?.LootTableID,
         }
       })
     )
 
-  public readonly lootDifficulty$ = this.lootTagsDifficulty$
-    .pipe(
-      switchMap(({ tags, values, table }) => {
-        const ctx = new LootContext({
-          tags: tags,
-          values: values,
-        })
-        // removes all the junk
-        ctx.ignoreTablesAndBuckets = ['CreatureLootCommon', 'GlobalNamedList']
-        ctx.bucketTags = MUTATION_DIFFICULTY_LOOT_TAGS
-        return this.loot.resolveLootItems(table, ctx)
+  public readonly lootDifficulty$ = this.lootTagsDifficulty$.pipe(
+    switchMap(({ tags, values, table }) => {
+      const ctx = new LootContext({
+        tags: tags,
+        values: values,
       })
-    )
+      // removes all the junk
+      ctx.ignoreTablesAndBuckets = ['CreatureLootCommon', 'GlobalNamedList']
+      ctx.bucketTags = MUTATION_DIFFICULTY_LOOT_TAGS
+      return this.loot.resolveLootItems(table, ctx)
+    })
+  )
 
   public constructor(private db: NwDbService, private loot: NwLootService) {
     super({

@@ -2,11 +2,10 @@ import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { sortBy } from 'lodash'
-import { Subject, combineLatest, defer, switchMap } from 'rxjs'
+import { combineLatest, defer, Subject, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw/nw-db.service'
 
-import { getItemPerkInfos, getItemRarity, getPerkTypeWeight } from '~/nw/utils'
-import { PerkBucket } from '~/nw/utils/perk-buckets'
+import { getItemPerkInfos, getItemRarity, getPerkTypeWeight, PerkBucket } from '@nw-data/common'
 import { ItemInstanceRecord, ItemInstancesDB } from './item-instances.db'
 
 export interface ItemInstancesState {
@@ -53,12 +52,14 @@ export class ItemInstancesStore extends ComponentStore<ItemInstancesState> {
   }
 
   public loadAll() {
-    this.loadItems(combineLatest({
-      records: this.db.observeAll(),
-      items: this.nwdb.itemsMap,
-      perks: this.nwdb.perksMap,
-      buckets: this.nwdb.perkBucketsMap,
-    }))
+    this.loadItems(
+      combineLatest({
+        records: this.db.observeAll(),
+        items: this.nwdb.itemsMap,
+        perks: this.nwdb.perksMap,
+        buckets: this.nwdb.perkBucketsMap,
+      })
+    )
   }
 
   public readonly loadItems = this.updater((state, update: ItemInstancesState) => {

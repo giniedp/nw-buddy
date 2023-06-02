@@ -1,7 +1,7 @@
 import { Directive, Input } from '@angular/core'
+import { territoryImage } from '@nw-data/common'
 import { Territorydefinitions } from '@nw-data/generated'
 import { defer } from 'lodash'
-import { territoryImage } from '~/nw/utils'
 import { TerritoriesPreferencesService } from '~/preferences/territories-preferences.service'
 
 @Directive({
@@ -24,12 +24,7 @@ export class TerritoryDirective {
     return territoryImage(this.nwbTerritory, 'fort')
   }
 
-  public data$ = defer(() => {
+  public data$ = defer(() => {})
 
-  })
-
-
-  public constructor(private pref: TerritoriesPreferencesService) {
-
-  }
+  public constructor(private pref: TerritoriesPreferencesService) {}
 }

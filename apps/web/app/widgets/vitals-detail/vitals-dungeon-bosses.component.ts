@@ -1,12 +1,12 @@
 import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { RouterModule } from '@angular/router'
+import { getVitalDungeon } from '@nw-data/common'
 import { groupBy } from 'lodash'
 import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
-import { getVitalDungeon } from '~/nw/utils'
 import { VitalDetailComponent } from './vital-detail.component'
-import { RouterModule } from '@angular/router'
 
 @Component({
   standalone: true,
@@ -30,12 +30,14 @@ import { RouterModule } from '@angular/router'
 })
 export class VitalsDungeonBossesListComponent {
   protected vitals$ = this.db.vitalsByCreatureType
-  protected bosses$ = this.vitals$.pipe(map((vitals) => {
-    const miniBosses = vitals.get('DungeonMiniBoss') || []
-    const bosses = vitals.get('DungeonBoss') || []
-    const result = [...miniBosses, ...bosses]
-    return result
-  }))
+  protected bosses$ = this.vitals$.pipe(
+    map((vitals) => {
+      const miniBosses = vitals.get('DungeonMiniBoss') || []
+      const bosses = vitals.get('DungeonBoss') || []
+      const result = [...miniBosses, ...bosses]
+      return result
+    })
+  )
 
   public entities = defer(() =>
     combineLatest({
@@ -57,14 +59,15 @@ export class VitalsDungeonBossesListComponent {
     .pipe(
       map((it) => groupBy(it, (e) => e.dungeon?.GameModeId)),
       map((it) =>
-        Object.entries(it).map(([_, list]) => {
-          return {
-            dungeon: list[0].dungeon,
-            vitals: list.map((it) => it.vital),
-          }
-        }).filter((it) => !!it.dungeon)
-      ),
-
+        Object.entries(it)
+          .map(([_, list]) => {
+            return {
+              dungeon: list[0].dungeon,
+              vitals: list.map((it) => it.vital),
+            }
+          })
+          .filter((it) => !!it.dungeon)
+      )
     )
 
   public constructor(private db: NwDbService) {

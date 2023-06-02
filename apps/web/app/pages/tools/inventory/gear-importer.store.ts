@@ -1,15 +1,10 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/generated'
-import { diceCoefficient } from 'dice-coefficient'
-import { sortBy, sum } from 'lodash'
-import { of } from 'rxjs'
-import { ItemInstance } from '~/data'
-import { TranslateService } from '~/i18n'
-import { NwDbService } from '~/nw'
 import {
-  EquipSlotId,
   EQUIP_SLOTS,
+  EquipSlotId,
+  NW_MAX_GEAR_SCORE,
+  getItemMaxGearScore,
   getItemPerkInfos,
   getPerkMultiplier,
   getPerksInherentMODs,
@@ -21,9 +16,14 @@ import {
   isPerkGem,
   isPerkGenerated,
   isPerkInherent,
-  getItemMaxGearScore,
-} from '~/nw/utils'
-import { NW_MAX_GEAR_SCORE } from '~/nw/utils/constants'
+} from '@nw-data/common'
+import { Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { diceCoefficient } from 'dice-coefficient'
+import { sortBy, sum } from 'lodash'
+import { of } from 'rxjs'
+import { ItemInstance } from '~/data'
+import { TranslateService } from '~/i18n'
+import { NwDbService } from '~/nw'
 import { eqCaseInsensitive } from '~/utils'
 
 export interface GearImporterState {

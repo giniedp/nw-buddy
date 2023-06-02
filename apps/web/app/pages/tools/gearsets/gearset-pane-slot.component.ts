@@ -13,14 +13,14 @@ import {
   ViewChildren,
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { BehaviorSubject, combineLatest, filter, firstValueFrom, map, take, tap } from 'rxjs'
+import { BehaviorSubject, combineLatest, defer, filter, firstValueFrom, map, take, tap } from 'rxjs'
 
 import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
 import { GearsetRecord, GearsetSlotStore, ItemInstance, ItemInstancesStore } from '~/data'
-import { EquipSlot, EquipSlotId, EQUIP_SLOTS, getItemId, getItemMaxGearScore } from '~/nw/utils'
+import { EquipSlot, EquipSlotId, EQUIP_SLOTS, getItemId, getItemMaxGearScore } from '@nw-data/common'
 import { deferStateFlat, shareReplayRefCount, tapDebug } from '~/utils'
 import { ItemDetailComponent } from '~/widgets/data/item-detail/item-detail.component'
 import { InventoryPickerService } from '../inventory/inventory-picker.service'
@@ -125,39 +125,37 @@ export class GearsetPaneSlotComponent {
   protected iconMenu = svgEllipsisVertical
   protected iconImage = svgImage
 
-  protected vm$ = deferStateFlat<GearsetSlotVM>(() =>
-    combineLatest({
-      slot: this.slot$,
-      gearset: this.gearset$,
-      instanceId: this.store.instanceId$,
-      instance: this.store.instance$,
-      isEqupment: this.store.isEqupment$,
-      canRemove: this.store.canRemove$,
-      canBreak: this.store.canBreak$,
-      canUseImporter: this.store.slot$.pipe(
-        map((slot) => {
-          const ids: EquipSlotId[] = [
-            'head',
-            'chest',
-            'hands',
-            'legs',
-            'feet',
-            'amulet',
-            'ring',
-            'earring',
-            'weapon1',
-            'weapon2',
-            'weapon3',
-          ]
-          return ids.includes(slot?.id)
-        })
-      ),
-      item: this.store.item$,
-      isRune: this.slot$.pipe(map((it) => it.id === 'heartgem')),
-    })
-  )
+  protected vm$ = defer(() => combineLatest({
+    slot: this.slot$,
+    gearset: this.gearset$,
+    instanceId: this.store.instanceId$,
+    instance: this.store.instance$,
+    isEqupment: this.store.isEqupment$,
+    canRemove: this.store.canRemove$,
+    canBreak: this.store.canBreak$,
+    canUseImporter: this.store.slot$.pipe(
+      map((slot) => {
+        const ids: EquipSlotId[] = [
+          'head',
+          'chest',
+          'hands',
+          'legs',
+          'feet',
+          'amulet',
+          'ring',
+          'earring',
+          'weapon1',
+          'weapon2',
+          'weapon3',
+        ]
+        return ids.includes(slot?.id)
+      })
+    ),
+    item: this.store.item$,
+    isRune: this.slot$.pipe(map((it) => it.id === 'heartgem')),
+  }))
     .pipe(
-      tap((it) => {
+      tap((it: GearsetSlotVM) => {
         this.updateClass('screenshot-hidden', !it?.item)
         this.updateClass('hidden', !it?.item && this.disabled)
       })

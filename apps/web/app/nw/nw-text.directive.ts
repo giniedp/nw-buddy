@@ -10,7 +10,7 @@ import {
 import { TranslateService } from '~/i18n'
 
 import { NwExpressionService } from './expression'
-import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from './utils/constants'
+import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
 
 interface TextContext {
   text: string

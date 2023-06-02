@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router'
 import { combineLatest, defer, map, of, switchMap } from 'rxjs'
 import { CharacterStore, GearsetRecord, GearsetStore, ItemInstance, ItemInstanceRecord, ItemInstancesDB } from '~/data'
 import { NwModule } from '~/nw'
-import { gearScoreRelevantSlots, getAverageGearScore } from '~/nw/utils'
+import { gearScoreRelevantSlots, getAverageGearScore } from '@nw-data/common'
 import { GersetSquareSlotComponent } from '../slots'
 
 @Component({

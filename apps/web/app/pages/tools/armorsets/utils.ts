@@ -1,7 +1,7 @@
 import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { groupBy, sortBy } from 'lodash'
 import { TranslateService } from '~/i18n'
-import { getItemRarity } from '~/nw/utils'
+import { getItemRarity } from '@nw-data/common'
 import { Armorset, ArmorsetGroup } from './types'
 
 export function findSets(

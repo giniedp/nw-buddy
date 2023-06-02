@@ -1,7 +1,6 @@
-import { Statuseffect } from '@nw-data/generated'
+import { statusEffectHasFortifyCap } from '@nw-data/common'
 import { sumBy } from 'lodash'
-import { statusEffectHasEmpowerCap, statusEffectHasFortifyCap } from '~/nw/utils/status-effects'
-import { eachModifier, modifierAdd, ModifierKey, modifierResult, ModifierResult, ModifierValue } from '../modifier'
+import { ModifierKey, ModifierResult, ModifierValue, eachModifier, modifierAdd, modifierResult } from '../modifier'
 import { ActiveMods } from '../types'
 
 const min = Math.min

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { BehaviorSubject, Observable, Subject, switchMap, tap } from 'rxjs'
-import { shareReplayRefCount } from './share-replay-refcount'
+import { shareReplayRefCount } from '../share-replay-refcount'
 
 @Injectable({ providedIn: 'root' })
 export class IntersectionObserverService {

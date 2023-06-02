@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
+import { getPerkBucketPerks } from '@nw-data/common'
 import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { getPerkBucketPerks } from '~/nw/utils/perk-buckets'
 
 const ATTRIBUTES = [
   { attribute: 'AttributeStr', name: 'Strength' },
@@ -19,11 +19,13 @@ const ATTRIBUTES = [
 })
 export class AttributesTableComponent implements OnInit {
   public attributes = ATTRIBUTES
-  public table = defer(() => combineLatest({
-    items: this.items,
-    buckets: this.db.perkBucketsMap,
-    perks: this.db.perksMap
-  })).pipe(
+  public table = defer(() =>
+    combineLatest({
+      items: this.items,
+      buckets: this.db.perkBucketsMap,
+      perks: this.db.perksMap,
+    })
+  ).pipe(
     map(({ items, buckets, perks }) => {
       return ATTRIBUTES.map((primary) => {
         return ATTRIBUTES.map((secondary) => {
@@ -42,19 +44,20 @@ export class AttributesTableComponent implements OnInit {
             // primary,
             // secondary: hasSecondary ? secondary : null,
             item,
-            suffix: getPerkBucketPerks(buckets.get(item.ItemID), perks).find((it) => it.AppliedSuffix)?.AppliedSuffix
+            suffix: getPerkBucketPerks(buckets.get(item.ItemID), perks).find((it) => it.AppliedSuffix)?.AppliedSuffix,
           }
         })
       })
     })
   )
 
-  private items = defer(() => this.db.items)
-    .pipe(map((list) => {
+  private items = defer(() => this.db.items).pipe(
+    map((list) => {
       return list
         .filter((it) => it.IngredientCategories?.length > 1)
         .filter((it) => it.IngredientCategories.includes('PerkItem'))
-    }))
+    })
+  )
 
   private perks = defer(() => this.db.perks).pipe(
     map((list) => {

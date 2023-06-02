@@ -1,9 +1,8 @@
 import { Inject, Injectable, LOCALE_ID, StaticProvider } from '@angular/core'
-import { BehaviorSubject, defer, distinctUntilChanged } from 'rxjs'
-import { shareReplayRefCount } from '../utils'
+import { ComponentStore } from '@ngrx/component-store'
 
 @Injectable({ providedIn: 'root' })
-export class LocaleService {
+export class LocaleService extends ComponentStore<{ locale: string }> {
   public static withLocale(value: string): StaticProvider[] {
     return [
       {
@@ -17,22 +16,20 @@ export class LocaleService {
   }
 
   public get value(): string {
-    return this.subject$.value
+    return this.get(({ locale }) => locale)
   }
 
-  public readonly value$ = defer(() => this.subject$).pipe(distinctUntilChanged()).pipe(shareReplayRefCount(1))
-
-  private subject$: BehaviorSubject<string>
+  public readonly value$ = this.select(({ locale }) => locale)
 
   public constructor(
     @Inject(LOCALE_ID)
     defaultLocale: string
   ) {
-    this.subject$ = new BehaviorSubject(normalizeLocale(defaultLocale))
+    super({ locale: normalizeLocale(defaultLocale) })
   }
 
   public use(language: string) {
-    this.subject$.next(normalizeLocale(language))
+    this.patchState({ locale: normalizeLocale(language) })
   }
 }
 

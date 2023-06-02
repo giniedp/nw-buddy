@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Renderer2 } from '@angular/core'
 import { combineLatest, tap } from 'rxjs'
 import { NwModule } from '~/nw'
-import { PlatformService } from '~/utils/platform.service'
+import { PlatformService } from '~/utils/services/platform.service'
 import { VersionService } from './version.service'
 
 @Component({

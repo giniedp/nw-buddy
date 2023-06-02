@@ -1,14 +1,19 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { Inject, Injectable, NgZone, Optional } from '@angular/core'
+import { getAbilityCategoryTag } from '@nw-data/common'
 import { GridOptions, RowDataTransaction } from 'ag-grid-community'
-import { debounceTime, defer, filter, merge, Observable, of, Subject, switchMap, take, takeUntil } from 'rxjs'
+import { Observable, Subject, debounceTime, defer, filter, merge, of, switchMap, take, takeUntil } from 'rxjs'
 import { SkillBuildRow, SkillBuildsStore } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwLinkService } from '~/nw'
-import { getAbilityCategoryTag } from '~/nw/utils'
-import { CellRendererService, DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
-import { svgTrashCan } from '~/ui/icons/svg'
-import { ConfirmDialogComponent, LayoutService } from '~/ui/layout'
+import {
+  CellRendererService,
+  DataTableAdapter,
+  DataTableAdapterOptions,
+  DataTableCategory,
+  dataTableProvider,
+} from '~/ui/data-table'
+import { LayoutService } from '~/ui/layout'
 import { humanize } from '~/utils'
 
 export interface SkillBuildsTableAdapterOptions extends DataTableAdapterOptions<SkillBuildRow> {
@@ -17,7 +22,6 @@ export interface SkillBuildsTableAdapterOptions extends DataTableAdapterOptions<
 
 @Injectable()
 export class SkillBuildsTableAdapter extends DataTableAdapter<SkillBuildRow> {
-
   public static provider(options?: SkillBuildsTableAdapterOptions) {
     return dataTableProvider({
       adapter: SkillBuildsTableAdapter,
@@ -67,22 +71,26 @@ export class SkillBuildsTableAdapter extends DataTableAdapter<SkillBuildRow> {
           filter: true,
           width: 250,
           cellRenderer: this.cellRenderer(({ data }) => {
-
-            return this.r.element('div.flex.flex-row.gap-1', {}, data.abilities?.map((it) => {
-
-              return this.r.link({
-                class: 'border border-1 transition-all translate-x-0 hover:translate-x-1',
-                href: this.info.link('ability', it.AbilityID),
-                target: '_blank'
-              }, [
-                this.r.icon({
-                  class: ['nw-icon', `bg-ability-${getAbilityCategoryTag(it)}`],
-                  src: it.Icon
-                })
-              ])
-            }))
-
-          })
+            return this.r.element(
+              'div.flex.flex-row.gap-1',
+              {},
+              data.abilities?.map((it) => {
+                return this.r.link(
+                  {
+                    class: 'border border-1 transition-all translate-x-0 hover:translate-x-1',
+                    href: this.info.link('ability', it.AbilityID),
+                    target: '_blank',
+                  },
+                  [
+                    this.r.icon({
+                      class: ['nw-icon', `bg-ability-${getAbilityCategoryTag(it)}`],
+                      src: it.Icon,
+                    }),
+                  ]
+                )
+              })
+            )
+          }),
           //valueGetter: this.valueGetter(({ data }) => data.record.),
         }),
       ].filter((it) => !!it),

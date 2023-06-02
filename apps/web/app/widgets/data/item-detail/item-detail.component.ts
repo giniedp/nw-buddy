@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Input } from '@angular/core'
+import { getItemId } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { NwDbService } from '~/nw'
-import { getItemId } from '~/nw/utils'
 import { ModelViewerService } from '../../model-viewer/model-viewer.service'
 import { ItemDetailStore } from './item-detail.store'
 

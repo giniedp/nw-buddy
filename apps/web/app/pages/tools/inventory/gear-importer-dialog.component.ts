@@ -1,12 +1,12 @@
 import { A11yModule } from '@angular/cdk/a11y'
-import { Dialog, DialogConfig, DialogRef, DIALOG_DATA } from '@angular/cdk/dialog'
+import { DIALOG_DATA, Dialog, DialogConfig, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, HostListener, Inject, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { EquipSlotId } from '@nw-data/common'
 import { catchError, combineLatest, firstValueFrom, fromEvent, map, of, switchMap, takeUntil } from 'rxjs'
 import { ItemInstance } from '~/data'
 import { NwModule } from '~/nw'
-import { EquipSlotId } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft } from '~/ui/icons/svg'
 import { imageFileFromPaste, imageFromDropEvent } from '~/utils/image-file-from-paste'
@@ -139,13 +139,15 @@ export class GearImporterDialogComponent implements OnInit {
             filter: null,
           })
           const tesseract = await useTesseract()
-          return tesseract.recognize(image)
-            .then((res) => {
-              const lines = res.data.lines.map((line) => {
-                return line.words.filter((it) => it.confidence >= 10).map((it) => it.text.trim()).join(' ')
-              })
-              return lines
+          return tesseract.recognize(image).then((res) => {
+            const lines = res.data.lines.map((line) => {
+              return line.words
+                .filter((it) => it.confidence >= 10)
+                .map((it) => it.text.trim())
+                .join(' ')
             })
+            return lines
+          })
         }),
         catchError(() => of(null))
       )
@@ -154,7 +156,7 @@ export class GearImporterDialogComponent implements OnInit {
         this.store.patchState({
           recognition: res,
           selection: 0,
-          filter: null
+          filter: null,
         })
       })
   }

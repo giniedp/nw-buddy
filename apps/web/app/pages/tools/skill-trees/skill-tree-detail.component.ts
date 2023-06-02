@@ -3,29 +3,28 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
+import { AttributeRef } from '@nw-data/common'
 import { environment } from 'apps/web/environments'
 import { asyncScheduler, combineLatest, filter, map, subscribeOn, switchMap } from 'rxjs'
 import { SkillBuildRecord, SkillBuildsDB, SkillBuildsStore } from '~/data'
 import { NwModule } from '~/nw'
-import { AttributeRef } from '~/nw/attributes'
-import { ShareDialogComponent, ShareService } from '~/pages/share'
+import { ShareDialogComponent } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
 import {
   svgArrowRightArrowLeft,
   svgBars,
   svgChevronLeft,
   svgClipboard,
-  svgRotate,
   svgShareNodes,
   svgSliders,
-  svgTrashCan,
+  svgTrashCan
 } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { ScreenshotModule } from '~/widgets/screenshot'
-import { SkillBuilderComponent, SkillBuildValue } from '~/widgets/skill-builder'
+import { SkillBuildValue, SkillBuilderComponent } from '~/widgets/skill-builder'
 
 @Component({
   standalone: true,

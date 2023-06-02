@@ -1,10 +1,14 @@
+import {
+  damageFactorForAttrs,
+  damageFactorForGS,
+  damageFactorForLevel,
+  getDamageTypesOfCategory,
+  getItemIconPath,
+} from '@nw-data/common'
 import { Damagetable } from '@nw-data/generated'
-import { getItemIconPath } from '~/nw/utils'
-import { damageFactorForAttrs, damageFactorForGS, damageFactorForLevel } from '~/nw/utils/damage'
-import { getDamageTypesOfCategory } from '~/nw/utils/damage-type'
+
 import { eachModifier, modifierAdd, ModifierKey, modifierResult, modifierSum } from '../modifier'
-import { ActiveMods, ActiveWeapon, DbSlice, MannequinState } from '../types'
-import { selectEquipLoad } from '../selectors'
+import { ActiveMods, ActiveWeapon, MannequinState } from '../types'
 
 export function selectWeaponDamage(
   mods: ActiveMods,

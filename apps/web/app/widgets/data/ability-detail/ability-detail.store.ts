@@ -1,9 +1,9 @@
 import { Injectable, Output } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
+import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { Ability } from '@nw-data/generated'
 import { flatten, uniq } from 'lodash'
 import { NwDbService } from '~/nw'
-import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
 import { humanize, rejectKeys } from '~/utils'
 
 @Injectable()

@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges } from '@angular/core'
+import { RouterModule } from '@angular/router'
+import { LootTable } from '@nw-data/common'
 import { NwModule } from '~/nw'
 import { LootBucketNode, LootBucketRowNode, LootNode, LootTableItemNode, LootTableNode } from '~/nw/loot/loot-graph'
-import { LootTable } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgCircleExclamation, svgLink, svgLock, svgLockOpen } from '~/ui/icons/svg'
+import { PaginationModule } from '~/ui/pagination'
 import { TooltipModule } from '~/ui/tooltip'
 import { ItemDetailModule } from '../data/item-detail'
-import { PaginationModule } from '~/ui/pagination'
-import { RouterModule } from '@angular/router'
 
 @Component({
   standalone: true,
@@ -165,5 +165,4 @@ export class LootGraphNodeComponent implements OnChanges {
       return it.Name
     })
   }
-
 }

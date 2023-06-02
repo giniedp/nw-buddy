@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
-import { Affixstats } from '@nw-data/generated'
-import { combineLatest, filter, map, of, switchMap } from 'rxjs'
+import { damageCoefForWeaponTag, damageFactorForGS, getWeaponTagFromWeapon, isAffixSplitDamage } from '@nw-data/common'
+import { combineLatest, map, switchMap } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
-import { damageCoefForWeaponTag, damageFactorForGS, getWeaponTagFromWeapon, isAffixSplitDamage } from '~/nw/utils'
 import { NwWeaponTypesService, damageTypeIcon } from '~/nw/weapon-types'
 import { IconsModule } from '~/ui/icons'
-import { mapFilter, mapFind, mapList, switchMapCombineLatest, tapDebug } from '~/utils'
+import { mapFilter, mapFind, mapList, switchMapCombineLatest } from '~/utils'
 import { ItemDetailStore } from './item-detail.store'
 
 @Component({
@@ -15,7 +14,7 @@ import { ItemDetailStore } from './item-detail.store'
   template: `
     <div *ngFor="let item of vm$ | async; trackBy: trackBy" class="flex flex-row gap-1">
       <img [nwImage]="item.icon" class="w-5 h-5" />
-      <span class="font-bold">{{ item.value | number: '0.0-0' }}</span>
+      <span class="font-bold">{{ item.value | number : '0.0-0' }}</span>
       <span class="opacity-50">{{ item.label | nwText }}</span>
     </div>
   `,

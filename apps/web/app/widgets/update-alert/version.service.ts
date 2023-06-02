@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { catchError, combineLatest, defer, exhaustMap, map, of, timer } from 'rxjs'
 import { deployUrl, shareReplayRefCount } from '~/utils'
-import { PlatformService } from '~/utils/platform.service'
+import { PlatformService } from '~/utils/services/platform.service'
 
 @Injectable({ providedIn: 'root' })
 export class VersionService {

@@ -1,15 +1,15 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, OnInit, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { AttributeRef, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 import { isEqual } from 'lodash'
 import { BehaviorSubject, combineLatest, distinctUntilChanged, map, of, switchMap } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
-import { NwAttributesService, AttributeRef } from '~/nw/attributes'
-import { NW_MAX_CHARACTER_LEVEL } from '~/nw/utils/constants'
+import { NwAttributesService } from '~/nw/attributes'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgAnglesLeft } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
-import { AttributesStore, AttributeState } from './attributes.store'
+import { AttributeState, AttributesStore } from './attributes.store'
 
 @Component({
   standalone: true,
@@ -97,11 +97,7 @@ export class AttributesEditorComponent implements OnInit {
     str: 0,
   })
 
-  public constructor(
-    private store: AttributesStore,
-    private attrs: NwAttributesService,
-    private db: NwDbService,
-  ) {
+  public constructor(private store: AttributesStore, private attrs: NwAttributesService, private db: NwDbService) {
     //
   }
 
@@ -150,12 +146,12 @@ export class AttributesEditorComponent implements OnInit {
     const value = (e.target as HTMLInputElement).valueAsNumber
     const newValue = Math.min(Math.max(value || 0, state.inputMin), state.inputMax)
     if (!Number.isFinite(value) || value !== newValue) {
-      (e.target as HTMLInputElement).value = newValue as any
+      ;(e.target as HTMLInputElement).value = newValue as any
     }
   }
 
   protected attributeFocus(e: Event) {
-    (e.target as HTMLInputElement).select()
+    ;(e.target as HTMLInputElement).select()
   }
 
   protected stateVlaue(stat: AttributeState) {
@@ -165,18 +161,19 @@ export class AttributesEditorComponent implements OnInit {
   protected getAbilities(state: AttributeState, points: number) {
     return combineLatest({
       abilities: this.db.abilitiesMap,
-      levels: this.attrs.abilitiesLevels(state.ref)
-    }).pipe(map(({ abilities, levels }) => {
-      const ids = levels.find((it) => it.Level === points)?.EquipAbilities || []
-      return ids.map((id) => {
-        const ability = abilities.get(id)
-        return {
-          Name: ability.DisplayName,
-          Description: ability.Description,
-          Icon: ability.Icon
-        }
+      levels: this.attrs.abilitiesLevels(state.ref),
+    }).pipe(
+      map(({ abilities, levels }) => {
+        const ids = levels.find((it) => it.Level === points)?.EquipAbilities || []
+        return ids.map((id) => {
+          const ability = abilities.get(id)
+          return {
+            Name: ability.DisplayName,
+            Description: ability.Description,
+            Icon: ability.Icon,
+          }
+        })
       })
-    }))
+    )
   }
-
 }

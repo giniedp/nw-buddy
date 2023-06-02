@@ -1,5 +1,5 @@
 import { Loottable } from '@nw-data/generated'
-import { OmitByPrefix } from '~/utils'
+import { OmitByPrefix } from './utils/ts-types'
 
 export type LootTableBase = OmitByPrefix<Loottable, 'Item' | 'GearScoreRange'>
 export interface LootTable extends LootTableBase {

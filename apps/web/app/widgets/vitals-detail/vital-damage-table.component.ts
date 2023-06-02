@@ -1,17 +1,17 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { getWeaponTagLabel } from '@nw-data/common'
 import { map } from 'rxjs'
 import { NwModule } from '~/nw'
-import { getWeaponTagLabel } from '~/nw/utils'
 import { damageTypeIcon } from '~/nw/weapon-types'
 import { IconsModule } from '~/ui/icons'
 import { svgInfo } from '~/ui/icons/svg'
+import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
 import { humanize, rejectKeys, shareReplayRefCount } from '~/utils'
 import { ScreenshotModule } from '../screenshot'
 import { VitalDetailStore } from './vital-detail.store'
-import { ItemFrameModule } from '~/ui/item-frame'
 
 @Component({
   standalone: true,

@@ -12,7 +12,7 @@ import {
   getItemTypeName,
   isItemNamed,
   isMasterItem,
-} from '~/nw/utils'
+} from '@nw-data/common'
 import { GearsetRecord, GearsetsDB } from './gearsets.db'
 import { ItemInstance, ItemInstancesDB } from './item-instances.db'
 

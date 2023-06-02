@@ -1,6 +1,6 @@
-import { Gamemodes, Mutationdifficulty, PoiDefinition, Territorydefinitions } from "@nw-data/generated"
-import { map, Observable, of } from "rxjs"
-import { mapFilter } from "~/utils"
+import { Gamemodes, Mutationdifficulty, PoiDefinition, Territorydefinitions } from '@nw-data/generated'
+import { Observable, map, of } from 'rxjs'
+import { mapFilter } from '~/utils'
 
 export function territoriesTags(source$: Observable<Territorydefinitions[]>) {
   return source$.pipe(mapFilter((it) => !!it.LootTags && !!it.NameLocalizationKey)).pipe(

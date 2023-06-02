@@ -5,7 +5,7 @@ import { GridOptions } from 'ag-grid-community'
 import { combineLatest, defer, map, Observable, of, switchMap, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService, NwModule } from '~/nw'
-import { NwExpEval, NwExpJoin, parseNwExpression } from '~/nw/utils'
+import { NwExpEval, NwExpJoin, parseNwExpression } from '@nw-data/common'
 import { DataTableAdapter, DataTableCategory, DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 

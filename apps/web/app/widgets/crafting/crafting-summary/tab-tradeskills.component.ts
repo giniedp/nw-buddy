@@ -5,13 +5,13 @@ import { DestroyService, shareReplayRefCount } from '~/utils'
 
 import { RouterModule } from '@angular/router'
 import { ComponentStore } from '@ngrx/component-store'
+import { calculateCraftingReward } from '@nw-data/common'
+import { Crafting, GameEvent } from '@nw-data/generated'
+import { combineLatest, of, switchMap } from 'rxjs'
 import { NW_TRADESKILLS_INFOS_MAP } from '~/nw/tradeskill'
 import { TradeskillsModule } from '~/widgets/tradeskills'
-import { CraftingStepWithAmount, SkillRow, SummaryRow } from './types'
-import { combineLatest, map, of, shareReplay, switchMap } from 'rxjs'
 import { CraftingCalculatorService } from '../crafting-calculator.service'
-import { Crafting, GameEvent } from '@nw-data/generated'
-import { calculateCraftingReward } from '~/nw/utils'
+import { CraftingStepWithAmount, SkillRow, SummaryRow } from './types'
 
 @Component({
   standalone: true,

@@ -1,36 +1,32 @@
+import { AttributeRef, EquipSlotId, getAmmoTypeFromWeaponTag, getAverageGearScore, getWeaponTagFromWeapon } from '@nw-data/common'
 import { Ability, Damagetable, ItemdefinitionsAmmo } from '@nw-data/generated'
-import { groupBy, minBy, sum, sumBy } from 'lodash'
+import { minBy, sum } from 'lodash'
 import { eqCaseInsensitive } from '~/utils'
-import { AttributeRef } from '../attributes/nw-attributes'
-import { NW_MIN_GEAR_SCORE } from '../utils/constants'
-import { getAmmoTypeFromWeaponTag, getWeaponTagFromWeapon } from '../utils/damage'
-import { EquipSlotId, getAverageGearScore } from '../utils/equip-slot'
 
 import {
-  getArmorRatingElemental,
-  getArmorRatingPhysical,
+  getItemGsBonus,
   getItemPerkIdsWithOverride,
+  getPerkMultiplier,
   isItemArmor,
   isItemConsumable,
   isItemJewelery,
   isItemShield,
   isItemTool,
   isItemWeapon,
-} from '../utils/item'
-import { getItemGsBonus, getPerkMultiplier } from '../utils/perks'
+} from '@nw-data/common'
 import { NW_WEAPON_TYPES } from '../weapon-types/nw-weapon-types'
 import {
+  ActiveAbility,
   ActiveAttribute,
   ActiveAttributes,
-  ActiveWeapon,
-  ActiveAbility,
+  ActiveConsumable,
   ActiveEffect,
-  AttributeModsSource,
   ActivePerk,
+  ActiveWeapon,
+  AttributeModsSource,
   DbSlice,
   EquippedItem,
   MannequinState,
-  ActiveConsumable,
 } from './types'
 
 export function selectLevel({ level }: MannequinState) {
@@ -58,7 +54,7 @@ export function selectActiveWeapon(
     item: item,
     weapon: weapon,
     weaponTag: getWeaponTagFromWeapon(weapon),
-    gearScore: equpped?.gearScore,// || 0,
+    gearScore: equpped?.gearScore, // || 0,
     slot: equpped?.slot,
     unsheathed: weaponUnsheathed,
     ammo: eqCaseInsensitive(ammo?.AmmoType, ammoType) ? ammo : null,
@@ -238,7 +234,7 @@ export function selectActveEffects(db: DbSlice, perks: ActivePerk[], state: Mann
     //
     selectPerkEffects(db, perks),
     // enforced effects like town buffs
-    selectEnforcedEffects(db, state)
+    selectEnforcedEffects(db, state),
   ]
     .flat()
     .filter((it) => !!it)
@@ -307,18 +303,18 @@ export function selectPerkEffects({ affixes, effects }: DbSlice, perks: ActivePe
     .filter((it) => !!it?.effect)
 }
 
-
 export function selectEnforcedEffects({ effects }: DbSlice, { enforcedEffects }: MannequinState) {
   enforcedEffects = enforcedEffects || []
-  return enforcedEffects.map(({ id, stack }) => {
-    return new Array(stack).fill(null).map((): ActiveEffect => {
-      return {
-        effect: effects.get(id)
-      }
+  return enforcedEffects
+    .map(({ id, stack }) => {
+      return new Array(stack).fill(null).map((): ActiveEffect => {
+        return {
+          effect: effects.get(id),
+        }
+      })
     })
-  })
-  .flat()
-  .filter((it) => !!it.effect)
+    .flat()
+    .filter((it) => !!it.effect)
 }
 
 function isWeaponActive(weapon: 'primary' | 'secondary', slot: EquipSlotId) {
@@ -442,7 +438,10 @@ export function selectAttributes(db: DbSlice, mods: AttributeModsSource, state: 
 }
 
 export function selectGearScore(items: EquippedItem[], level: number) {
-  return getAverageGearScore(items.map((it) => ({ id: it.slot, gearScore: it.gearScore })), level)
+  return getAverageGearScore(
+    items.map((it) => ({ id: it.slot, gearScore: it.gearScore })),
+    level
+  )
 }
 
 const REJECT_ABILITIES_WITH_PROPS: Array<keyof Ability> = [

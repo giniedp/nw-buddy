@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, HostListener, Input } from '@angular/core'
+import { NW_FALLBACK_ICON, getItemIconPath, getItemRarity } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { assetUrl } from '~/utils'
-import { getItemIconPath, getItemRarity } from './utils'
-import { NW_FALLBACK_ICON } from './utils/constants'
 
 @Component({
   standalone: true,

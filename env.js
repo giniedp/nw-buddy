@@ -43,8 +43,13 @@ function get(name) {
   return result
 }
 
+const root = process.cwd()
+const srcDir = (...paths) => path.join(root, 'apps', ...paths)
+const dstDir = (...paths) => path.join(root, 'dist', ...paths)
+const tmpDir = (...paths) => path.join(root, 'tmp', ...paths)
+
 const nwData = {
-  cwd: process.cwd(),
+  cwd: root,
   /**
    * Temporary directory where game assets are extracted to
    * @param {string[]} paths
@@ -126,6 +131,5 @@ const nwData = {
 
 module.exports = {
   ...config,
-  web,
   nwData,
 }

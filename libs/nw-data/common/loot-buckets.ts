@@ -1,13 +1,11 @@
 import { Lootbuckets } from '@nw-data/generated'
-import { CaseInsensitiveMap } from '~/utils'
+import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
+import { flatten } from 'lodash'
 
-export function convertLootbuckets(data: Lootbuckets[]) {
+export function convertLootbuckets(data: Lootbuckets[]): LootBucketRow[] {
   const firstRow = data.find((it) => it.RowPlaceholders === 'FIRSTROW')
-  const result = data
-    .map((row) => convertRow(row, firstRow))
-    .flat(1)
-    .filter((it) => !!it.Item)
-  return result
+  const result = data.map((row) => convertRow(row, firstRow))
+  return flatten(result).filter((it) => !!it.Item)
 }
 
 export type LootBucketRow = {
@@ -49,9 +47,9 @@ function convertRow(data: Lootbuckets, firstRow: Lootbuckets): LootBucketRow[] {
     .map((result) => {
       for (const key of keys) {
         const value = data[`${key}${result.Column}`]
-        switch(key) {
+        switch (key) {
           case 'Tags': {
-            const tags = (value as string[] || []).map(lootBucketTag)
+            const tags = ((value as string[]) || []).map(lootBucketTag)
             for (const tag of tags) {
               if (tag) {
                 result.Tags.set(tag.Name, tag)

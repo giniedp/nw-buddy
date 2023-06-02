@@ -10,7 +10,7 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
 
 import { ComponentStore } from '@ngrx/component-store'
 import { GearsetSlotStore } from '~/data'
-import { getItemId, getStatusEffectTownBuffIds } from '~/nw/utils'
+import { getItemId, getStatusEffectTownBuffIds } from '@nw-data/common'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical, svgLink16p, svgLinkSlash16p, svgPlus, svgRotate, svgTrashCan } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -19,7 +19,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { shareReplayRefCount } from '~/utils'
 import { InventoryPickerService } from '../inventory/inventory-picker.service'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
-import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
+import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { Statuseffect } from '@nw-data/generated'
 
 export interface EffectSlotState {

@@ -1,8 +1,8 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, TrackByFunction } from '@angular/core'
-import { combineLatest, defer, map } from 'rxjs'
-import { getItemIconPath } from '~/nw/utils'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core'
+import { getItemIconPath } from '@nw-data/common'
+import { combineLatest, map } from 'rxjs'
 import { UmbralCalculatorService } from './umbral-calculator.service'
-import { ItemState, UpgradeStep } from './utils'
+import { UpgradeStep } from './utils'
 
 @Component({
   selector: 'nwb-umbral-calculator-steps',
@@ -20,7 +20,7 @@ export class UmbralCalculatorStepsComponent {
   protected vm$ = combineLatest({
     steps: this.service.steps,
     marker: this.service.marker,
-    shardIcon: this.service.shardIcon
+    shardIcon: this.service.shardIcon,
   })
 
   public constructor(private service: UmbralCalculatorService, private cdRef: ChangeDetectorRef) {}

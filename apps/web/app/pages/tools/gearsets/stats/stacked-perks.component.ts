@@ -4,7 +4,7 @@ import { groupBy, sum } from 'lodash'
 import { combineLatest, map, tap } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
-import { getItemGsBonus, getPerkMultiplier } from '~/nw/utils'
+import { getItemGsBonus, getPerkMultiplier } from '@nw-data/common'
 import { TooltipModule } from '~/ui/tooltip'
 
 @Component({

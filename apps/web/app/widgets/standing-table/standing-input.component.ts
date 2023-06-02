@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { territoryImage } from '@nw-data/common'
 import { BehaviorSubject, combineLatest, defer, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { territoryImage } from '~/nw/utils'
 import { TerritoriesPreferencesService } from '~/preferences/territories-preferences.service'
 import { shareReplayRefCount } from '~/utils'
 

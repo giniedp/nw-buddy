@@ -1,5 +1,4 @@
 import { Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from "@nw-data/generated"
-import { eqCaseInsensitive } from "~/utils"
 
 const NAMED_FAIMILY_TYPES = ['DungeonBoss', 'Dungeon+', 'DungeonMiniBoss', 'Elite+', 'EliteMiniBoss']
 const CREATURE_TYPE_MARKER = {
@@ -276,4 +275,8 @@ export function getVitalDungeons(vital: Vitals, dungeons: Gamemodes[], vitalsMet
 
 export function getVitalDungeon(vital: Vitals, dungeons: Gamemodes[], vitalsMeta: Map<string, Vitalsmetadata>) {
   return getVitalDungeons(vital, dungeons, vitalsMeta)?.[0]
+}
+
+function eqCaseInsensitive(a: string, b: string) {
+  return a?.toLowerCase() === b?.toLowerCase()
 }

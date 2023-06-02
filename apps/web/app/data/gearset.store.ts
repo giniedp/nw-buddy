@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ComponentStore } from '@ngrx/component-store'
-import { filter, from, map, of, switchMap, tap } from 'rxjs'
-import { AttributeRef } from '~/nw/attributes'
+import { AttributeRef } from '@nw-data/common'
+import { from, map, of, switchMap, tap } from 'rxjs'
 
 import { GearsetCreateMode, GearsetRecord, GearsetsDB } from './gearsets.db'
-import { ImageRecord, ImagesDB } from './images.db'
+import { ImagesDB } from './images.db'
 import { ItemInstance, ItemInstancesDB } from './item-instances.db'
 import { SkillBuild } from './skill-builds.db'
 

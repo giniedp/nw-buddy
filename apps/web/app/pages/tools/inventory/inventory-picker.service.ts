@@ -1,19 +1,20 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { Injectable, Injector } from '@angular/core'
+import {
+  EQUIP_SLOTS,
+  PerkBucket,
+  getPerkBucketPerkIDs,
+  isItemArmor,
+  isItemJewelery,
+  isItemWeapon,
+  isPerkApplicableToItem,
+  isPerkGem,
+} from '@nw-data/common'
 import { ItemDefinitionMaster, Perks, Statuseffect } from '@nw-data/generated'
 import { isEqual } from 'lodash'
 import { Observable, combineLatest, filter, map, switchMap, take } from 'rxjs'
 import { ItemInstance, ItemInstancesStore } from '~/data'
 import { NwDbService } from '~/nw'
-import {
-  EQUIP_SLOTS,
-  isItemArmor,
-  isItemJewelery,
-  isItemWeapon,
-  isPerkApplicableToItem,
-  isPerkGem
-} from '~/nw/utils'
-import { PerkBucket, getPerkBucketPerkIDs } from '~/nw/utils/perk-buckets'
 import { DataTablePickerDialog } from '~/ui/data-table'
 import { HousingTableAdapter, ItemsTableAdapter, PerksTableAdapter, StatusEffectsTableAdapter } from '~/widgets/adapter'
 import { PlayerItemsTableAdapter } from './inventory-table.adapter'

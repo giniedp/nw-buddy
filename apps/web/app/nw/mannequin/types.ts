@@ -1,3 +1,4 @@
+import { AttributeRef, EquipSlotId } from '@nw-data/common'
 import {
   Ability,
   Affixstats,
@@ -20,8 +21,6 @@ import {
   WeaponTag,
 } from '@nw-data/generated'
 import { Observable } from 'rxjs'
-import { AttributeRef } from '../attributes/nw-attributes'
-import { EquipSlotId } from '../utils/equip-slot'
 
 export interface MannequinState {
   /**
@@ -40,11 +39,11 @@ export interface MannequinState {
   /**
    * Enforced status effects
    */
-  enforcedEffects?: Array<{ id: string, stack: number }>
+  enforcedEffects?: Array<{ id: string; stack: number }>
   /**
    * Enforced abilities
    */
-  enforcedAbilities?: Array<{ id: string, stack: number }>
+  enforcedAbilities?: Array<{ id: string; stack: number }>
   /**
    * Skill tree for the equpped weapon
    */

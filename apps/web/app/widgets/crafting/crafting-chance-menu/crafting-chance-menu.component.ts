@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, EventEmitter, Output, OnInit, OnDestroy } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { combineLatest, debounce, debounceTime, map, Subject, switchMap, takeUntil } from 'rxjs'
+import { EQUIP_SLOTS, EquipSlotId } from '@nw-data/common'
+import { Subject, combineLatest, debounceTime, map, switchMap, takeUntil } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { NwModule } from '~/nw'
 import { NwTradeskillService } from '~/nw/tradeskill'
-import { EquipSlotId, EQUIP_SLOTS } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { CaseInsensitiveSet, mapFilter } from '~/utils'
 
@@ -58,10 +58,7 @@ export class CraftingChanceMenuComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.char.current$
-      .pipe(debounceTime(100))
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(this.stateChange)
+    this.char.current$.pipe(debounceTime(100)).pipe(takeUntil(this.destroy$)).subscribe(this.stateChange)
   }
 
   public ngOnDestroy(): void {

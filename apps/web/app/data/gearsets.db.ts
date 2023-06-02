@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@angular/core'
+import { AttributeRef } from '@nw-data/common'
 import { Dexie } from 'dexie'
-import { AttributeRef } from '~/nw/attributes'
 
 import { APP_DB } from './db'
 import { DBTable } from './db-table'

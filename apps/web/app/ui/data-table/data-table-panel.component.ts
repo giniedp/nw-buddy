@@ -73,10 +73,6 @@ export class DataTablePanelComponent {
   )
   private colState = new BehaviorSubject<ColumnState[]>([])
 
-  protected get hasScriptFilterTemplate() {
-    return this.adapter.scriptFilterTemplate
-  }
-
   protected svgEye = svgEye
   protected svgEyeSlash = svgEyeSlash
   protected svgDockLeft = svgDockLeft

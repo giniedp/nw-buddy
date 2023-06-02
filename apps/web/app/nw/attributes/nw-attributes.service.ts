@@ -3,7 +3,7 @@ import { Attributeconstitution } from '@nw-data/generated'
 import { map, of } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
 import { NwDbService } from '../nw-db.service'
-import { AttributeRef, NW_ATTRIBUTE_TYPES } from './nw-attributes'
+import { AttributeRef, NW_ATTRIBUTE_TYPES } from '@nw-data/common'
 
 @Injectable({ providedIn: 'root' })
 export class NwAttributesService {

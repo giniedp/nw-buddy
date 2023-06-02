@@ -1,5 +1,5 @@
 import { ItemdefinitionsRunes, ItemdefinitionsWeapons, WeaponTag } from '@nw-data/generated'
-import type { AttributeRef } from '../attributes/nw-attributes'
+import type { AttributeRef } from './attributes'
 import {
   NW_BASE_DAMAGE_COMPOUND_INCREASE,
   NW_BASE_DAMAGE_GEAR_SCORE_INTERVAL,

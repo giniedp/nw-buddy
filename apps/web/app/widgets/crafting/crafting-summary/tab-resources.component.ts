@@ -6,13 +6,13 @@ import { DestroyService } from '~/utils'
 
 import { RouterModule } from '@angular/router'
 import { ComponentStore } from '@ngrx/component-store'
+import { isHousingItem } from '@nw-data/common'
 import { sumBy } from 'lodash'
 import { ItemPreferencesService } from '~/preferences'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ItemTrackerModule } from '~/widgets/item-tracker'
 import { CraftingCalculatorService } from '../crafting-calculator.service'
 import { CraftingStepWithAmount, ResourceRow, ResourceRowMode, SummaryRow } from './types'
-import { isHousingItem } from '~/nw/utils'
 
 @Component({
   standalone: true,
@@ -89,7 +89,7 @@ export class TabResourcesComponent extends ComponentStore<{
           amountNeeded: amount,
           amountOwned: meta?.stock || 0,
           price: 0,
-          link: [isHousingItem(item) ? 'items' : 'housing', 'table', itemId]
+          link: [isHousingItem(item) ? 'items' : 'housing', 'table', itemId],
         }
         switch (mode || ResourceRowMode.None) {
           case ResourceRowMode.Ignore: {

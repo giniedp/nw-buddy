@@ -5,7 +5,7 @@ import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated
 import { groupBy } from 'lodash'
 import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
-import { getIngretientsFromRecipe, getItemId, getItemIdFromRecipe } from '~/nw/utils'
+import { getIngretientsFromRecipe, getItemId, getItemIdFromRecipe } from '@nw-data/common'
 import { HtmlHeadService } from '~/utils'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'

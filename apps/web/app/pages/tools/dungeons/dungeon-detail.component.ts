@@ -26,14 +26,14 @@ import {
   isItemNamed,
   isItemWeapon,
   isMasterItem,
-} from '~/nw/utils'
+} from '@nw-data/common'
 import { DifficultyRank, DungeonPreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { PaginationModule } from '~/ui/pagination'
 import { DestroyService, HtmlHeadService, observeRouteParam, shareReplayRefCount } from '~/utils'
-import { PlatformService } from '~/utils/platform.service'
+import { PlatformService } from '~/utils/services/platform.service'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { LootModule } from '~/widgets/loot'
 import { VitalsDetailModule } from '~/widgets/vitals-detail'

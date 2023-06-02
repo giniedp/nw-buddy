@@ -16,7 +16,7 @@ import {
   SkillBuildsDB,
 } from '~/data'
 import { EquippedItem, Mannequin, MannequinState } from '~/nw/mannequin'
-import { EquipSlot, EquipSlotId, EQUIP_SLOTS, getStatusEffectTownBuffIds } from '~/nw/utils'
+import { EquipSlot, EquipSlotId, EQUIP_SLOTS, getStatusEffectTownBuffIds } from '@nw-data/common'
 import { IconsModule } from '~/ui/icons'
 import { ConfirmDialogComponent } from '~/ui/layout'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -26,7 +26,7 @@ import { GearsetPaneSkillComponent } from './gearset-pane-skill.component'
 import { GearsetPaneSlotComponent } from './gearset-pane-slot.component'
 import { GearsetPaneStatsComponent } from './gearset-pane-stats.component'
 import { SwiperOptions } from 'swiper'
-import { SwiperDirective } from '~/utils/swiper.directive'
+import { SwiperDirective } from '~/utils/directives/swiper.directive'
 import { svgChevronLeft } from '~/ui/icons/svg'
 
 @Component({

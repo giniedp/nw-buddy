@@ -1,4 +1,3 @@
-import { eqCaseInsensitive } from "~/utils"
 
 const DAMAGE_TYPES = [
   {
@@ -94,4 +93,8 @@ export function isDamageTypeOfCategory(type: string, category: string) {
     }
   }
   return false
+}
+
+function eqCaseInsensitive(a: string, b: string) {
+  return a?.toLowerCase() === b?.toLowerCase()
 }

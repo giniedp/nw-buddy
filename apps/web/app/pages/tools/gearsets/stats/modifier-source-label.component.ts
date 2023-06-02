@@ -1,10 +1,8 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
-import { Perks } from '@nw-data/generated'
-import { ReplaySubject } from 'rxjs'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { getItemIconPath } from '@nw-data/common'
 import { NwDbService, NwModule } from '~/nw'
 import { ModifierSource } from '~/nw/mannequin/modifier'
-import { getItemIconPath } from '~/nw/utils'
 import { humanize } from '~/utils'
 
 @Component({

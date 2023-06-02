@@ -3,7 +3,7 @@ import { isEqual } from 'lodash'
 
 import { Subject } from 'rxjs'
 import { distinctUntilChanged, filter, map, takeUntil } from 'rxjs/operators'
-import { ResizeObserverService } from './resize-observer'
+import { ResizeObserverService } from '../services/resize-observer.service'
 
 @Directive({
   standalone: true,
@@ -16,7 +16,7 @@ export class ContentVisibilityDirective implements OnDestroy {
     private elRef: ElementRef<HTMLElement>,
     private renderer: Renderer2,
     private resize: ResizeObserverService,
-    private zone: NgZone
+    zone: NgZone
   ) {
     zone.runOutsideAngular(() => {
       this.renderer.setStyle(this.elRef.nativeElement, 'contentVisibility', 'auto')

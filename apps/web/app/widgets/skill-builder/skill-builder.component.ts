@@ -1,24 +1,13 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
+import { NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
 import { isEqual } from 'lodash'
-import {
-  asyncScheduler,
-  BehaviorSubject,
-  combineLatest,
-  defer,
-  filter,
-  map,
-  of,
-  ReplaySubject,
-  subscribeOn,
-  switchMap,
-} from 'rxjs'
+import { BehaviorSubject, asyncScheduler, combineLatest, defer, filter, map, of, subscribeOn, switchMap } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { NwModule } from '~/nw'
 import { NwWeaponType, NwWeaponTypesService } from '~/nw/weapon-types'
-import { NW_MAX_WEAPON_LEVEL } from '~/nw/utils/constants'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { mapDistinct } from '~/utils'
@@ -94,22 +83,24 @@ export class SkillBuilderComponent implements ControlValueAccessor {
     points: this.weaponPoints$,
     spent1: this.tree1Spent$,
     spent2: this.tree2Spent$,
-  }).pipe(map(({ points, spent1, spent2 }) => {
-    const available = points - spent1 - spent2
-    if (available >= 0) {
+  }).pipe(
+    map(({ points, spent1, spent2 }) => {
+      const available = points - spent1 - spent2
+      if (available >= 0) {
+        return {
+          available: available,
+          points1: points - spent2,
+          points2: points - spent1,
+        }
+      }
+      const points1 = Math.min(Math.max(spent1, points - spent2), points)
       return {
         available: available,
-        points1: points - spent2,
-        points2: points - spent1,
+        points1: points1,
+        points2: points - points1,
       }
-    }
-    const points1 = Math.min(Math.max(spent1, points - spent2), points)
-    return {
-      available: available,
-      points1: points1,
-      points2: points - points1,
-    }
-  }))
+    })
+  )
 
   protected vm$ = defer(() =>
     combineLatest({
@@ -122,7 +113,7 @@ export class SkillBuilderComponent implements ControlValueAccessor {
       weaponPoints: this.weaponPoints$,
       pointsAvailable: this.points$.pipe(mapDistinct(({ available }) => available)),
       pointsTree1: this.points$.pipe(mapDistinct(({ points1 }) => points1)),
-      pointsTree2: this.points$.pipe(mapDistinct(({ points2 }) => points2))
+      pointsTree2: this.points$.pipe(mapDistinct(({ points2 }) => points2)),
     })
   ).pipe(subscribeOn(asyncScheduler))
 
@@ -200,16 +191,15 @@ export class SkillBuilderComponent implements ControlValueAccessor {
       width: '100vw',
       maxWidth: 400,
       height: '100vh',
-      maxHeight: 600
+      maxHeight: 600,
     })
-    .closed
-    .pipe(filter((it) => it != null))
-    .subscribe((value) => {
-      this.commit({
-        weapon: value,
-        tree1: [],
-        tree2: [],
+      .closed.pipe(filter((it) => it != null))
+      .subscribe((value) => {
+        this.commit({
+          weapon: value,
+          tree1: [],
+          tree2: [],
+        })
       })
-    })
   }
 }

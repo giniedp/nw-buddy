@@ -1,14 +1,12 @@
 import { Injectable } from '@angular/core'
+import { territoryImage } from '@nw-data/common'
 import { combineLatest, isObservable, map, Observable, of, switchMap } from 'rxjs'
 import { TerritoriesPreferencesService } from '~/preferences/territories-preferences.service'
 import { shareReplayRefCount } from '~/utils'
 import { NwDbService } from '../nw-db.service'
-import { territoryImage } from '../utils'
-
 
 @Injectable({ providedIn: 'root' })
 export class TerritoriesService {
-
   public constructor(private db: NwDbService, private pref: TerritoriesPreferencesService) {
     //
   }
@@ -33,18 +31,19 @@ export class TerritoriesService {
     return combineLatest({
       id: idStream(id),
       list: this.db.territoriesMap,
-    })
-    .pipe(map(({ id, list }) => list.get(id)))
+    }).pipe(map(({ id, list }) => list.get(id)))
   }
 
   public getStandingTitle(id: number | Observable<number>) {
     return combineLatest({
       level: this.getStanding(id),
-      table: this.db.data.territoryStanding()
+      table: this.db.data.territoryStanding(),
     })
-      .pipe(map(({ level, table }) => {
-        return table.filter((it) => !!it.DisplayName && (it.Rank <= level)).reverse()[0]?.DisplayName
-      }))
+      .pipe(
+        map(({ level, table }) => {
+          return table.filter((it) => !!it.DisplayName && it.Rank <= level).reverse()[0]?.DisplayName
+        })
+      )
       .pipe(shareReplayRefCount(1))
   }
 

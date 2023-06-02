@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
+import { NW_FALLBACK_ICON, getItemId } from '@nw-data/common'
 import { Affixstats, Perks, Statuseffect } from '@nw-data/generated'
 import { flatten, uniq } from 'lodash'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { getItemId } from '~/nw/utils'
-import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
 import { humanize, mapList, rejectKeys } from '~/utils'
 
 @Injectable()

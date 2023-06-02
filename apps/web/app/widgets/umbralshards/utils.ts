@@ -1,5 +1,5 @@
-import { Umbralgsupgrades } from "@nw-data/generated"
-import { EQUIP_SLOTS, gearScoreRelevantSlots } from "~/nw/utils"
+import { gearScoreRelevantSlots } from '@nw-data/common'
+import { Umbralgsupgrades } from '@nw-data/generated'
 
 export interface CollectionState {
   items: ItemState[]
@@ -38,10 +38,10 @@ export function createState(): CollectionState {
         shards: 0,
         contribution: 0,
         next: false,
-        weight: it.weight
+        weight: it.weight,
       }
     }),
-    score: 0
+    score: 0,
   }
   return result
 }
@@ -75,7 +75,7 @@ export function calculateSteps(state: CollectionState, upgrades: Umbralgsupgrade
   state = updateState(copyState(state), upgrades)
   const steps: CollectionState[] = []
   const maxLevel = Math.max(...upgrades.map((it) => it.Level))
-  while (state.score <= (maxLevel + 1)) {
+  while (state.score <= maxLevel + 1) {
     steps.push(state)
 
     state = copyState(state)
@@ -88,25 +88,26 @@ export function calculateSteps(state: CollectionState, upgrades: Umbralgsupgrade
   }
 
   let shardsTotal = 0
-  return steps.map((step): UpgradeStep => {
-    const index = step.items.findIndex((it) => it.upgrade)
-    const upgraded = copyState(step)
-    let shards = 0
-    if (index >= 0) {
-      upgraded.items[index].score += 1
-      updateState(upgraded, upgrades)
-      shards = step.items[index].shards
-      shardsTotal += shards
-    }
+  return steps
+    .map((step): UpgradeStep => {
+      const index = step.items.findIndex((it) => it.upgrade)
+      const upgraded = copyState(step)
+      let shards = 0
+      if (index >= 0) {
+        upgraded.items[index].score += 1
+        updateState(upgraded, upgrades)
+        shards = step.items[index].shards
+        shardsTotal += shards
+      }
 
-    return {
-      state: upgraded,
-      item: upgraded.items[index],
-      score: upgraded.score,
-      scoreDelta: upgraded.score - step.score,
-      shards: shards,
-      shardsTotal: shardsTotal
-    }
-  })
-  .filter((it) => !!it.item)
+      return {
+        state: upgraded,
+        item: upgraded.items[index],
+        score: upgraded.score,
+        scoreDelta: upgraded.score - step.score,
+        shards: shards,
+        shardsTotal: shardsTotal,
+      }
+    })
+    .filter((it) => !!it.item)
 }

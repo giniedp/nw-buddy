@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { catchError, map, Observable, of, throwError } from 'rxjs'
 import { NwDbService } from '../nw-db.service'
-import { getPerkMultiplier, parseNwExpression } from '../utils'
+import { getPerkMultiplier, parseNwExpression } from '@nw-data/common'
 import { NwExpressionContext } from './nw-expression-context.service'
 
 type Expressionresource =

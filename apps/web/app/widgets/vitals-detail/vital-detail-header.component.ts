@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { RouterModule } from '@angular/router'
+import { VitalFamilyInfo, getVitalCategoryInfo, getVitalFamilyInfo, getVitalTypeMarker } from '@nw-data/common'
 import { Vitals } from '@nw-data/generated'
 import { NwModule } from '~/nw'
-import { getVitalCategoryInfo, getVitalFamilyInfo, getVitalTypeMarker, VitalFamilyInfo } from '~/nw/utils'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
@@ -29,7 +29,7 @@ import { humanize } from '~/utils'
       <img [nwImage]="icon" class="w-12 h-12" />
     </a>
 
-    <a class="flex flex-row items-center gap-1 hover:underline"  [routerLink]="['/vitals/table', vital.VitalsID]">
+    <a class="flex flex-row items-center gap-1 hover:underline" [routerLink]="['/vitals/table', vital.VitalsID]">
       <span>{{ vital.DisplayName | nwText }}</span>
     </a>
     <div class="relative flex items-center justify-center -mt-4 pointer-events-none">

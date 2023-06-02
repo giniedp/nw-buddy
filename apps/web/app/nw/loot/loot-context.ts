@@ -1,5 +1,5 @@
+import { LootBucketRow, LootTable, LootTableRow } from '@nw-data/common'
 import { CaseInsensitiveMap, CaseInsensitiveSet } from '~/utils'
-import { LootBucketRow, LootTable, LootTableRow } from '../utils'
 
 export type LootBucketConditionNames =
   | 'Level'

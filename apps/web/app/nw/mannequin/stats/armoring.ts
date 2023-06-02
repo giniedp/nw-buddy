@@ -1,5 +1,4 @@
-import { statusEffectHasArmorFortifyCap } from '~/nw/utils'
-import { getArmorRatingElemental, getArmorRatingPhysical } from '~/nw/utils/item'
+import { statusEffectHasArmorFortifyCap, getArmorRatingElemental, getArmorRatingPhysical } from '@nw-data/common'
 import { eachModifier, modifierAdd, modifierResult } from '../modifier'
 import { ActiveMods, DbSlice, MannequinState } from '../types'
 import { categorySum } from './category-sum'

@@ -1,8 +1,8 @@
-import { Dialog, DialogConfig, DialogRef, DIALOG_DATA } from '@angular/cdk/dialog'
+import { DIALOG_DATA, Dialog, DialogConfig, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, Inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core'
+import { AttributeRef } from '@nw-data/common'
 import { NwModule } from '~/nw'
-import { AttributeRef } from '~/nw/attributes'
 import { AttributesEditorComponent } from './attributes-editor.component'
 
 export interface AttributeEditorDialogData {

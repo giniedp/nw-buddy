@@ -1,5 +1,5 @@
+import { getAbilityCategoryTag } from '@nw-data/common'
 import { Ability } from '@nw-data/generated'
-import { getAbilityCategoryTag } from '~/nw/utils'
 import { CaseInsensitiveSet } from '~/utils'
 
 export type SkillTreeGrid = SkillTreeCell[][]
@@ -177,7 +177,9 @@ export function updateGrid(grid: SkillTreeGrid, points: number, selection: Reado
 }
 
 export function getGridSelection(grid: SkillTreeGrid) {
-  return gridMap(grid, (cell) => (cell.value && cell.unlocked && cell.checked ? cell.value : null)).flat(1).filter((it) => !!it)
+  return gridMap(grid, (cell) => (cell.value && cell.unlocked && cell.checked ? cell.value : null))
+    .flat(1)
+    .filter((it) => !!it)
 }
 
 function compare(a: string, b: string) {
@@ -247,13 +249,18 @@ function updateConnections(grid: SkillTreeGrid) {
       const end = findCell(grid, cell.parentId)
       connect(grid, cell, end, {
         invalid: cell.invalid,
-        unlocked: cell.unlocked
+        unlocked: cell.unlocked,
       })
     })
   })
 }
 
-function connect(grid: SkillTreeGrid, start: SkillTreeCell, end: SkillTreeCell, propagate: { unlocked: boolean, invalid: boolean }) {
+function connect(
+  grid: SkillTreeGrid,
+  start: SkillTreeCell,
+  end: SkillTreeCell,
+  propagate: { unlocked: boolean; invalid: boolean }
+) {
   if (!start || !end) {
     return
   }

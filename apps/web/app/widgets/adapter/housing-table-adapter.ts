@@ -1,18 +1,18 @@
 import { Inject, Injectable, Optional } from '@angular/core'
-import { Housingitems } from '@nw-data/generated'
-import { GridOptions } from 'ag-grid-community'
-import { Observable, defer, map, of, shareReplay } from 'rxjs'
-import { TranslateService } from '~/i18n'
-import { NwDbService, NwLinkService } from '~/nw'
 import {
+  NW_FALLBACK_ICON,
   getItemIconPath,
   getItemId,
   getItemRarity,
   getItemRarityLabel,
   getItemTierAsRoman,
   getUIHousingCategoryLabel,
-} from '~/nw/utils'
-import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
+} from '@nw-data/common'
+import { Housingitems } from '@nw-data/generated'
+import { GridOptions } from 'ag-grid-community'
+import { Observable, defer, map, of, shareReplay } from 'rxjs'
+import { TranslateService } from '~/i18n'
+import { NwDbService, NwLinkService } from '~/nw'
 import { ItemPreferencesService } from '~/preferences'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'

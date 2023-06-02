@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ActivatedRoute, Router } from '@angular/router'
-import { LetModule } from '@ngrx/component'
+import { LetDirective } from '@ngrx/component'
 import { environment } from 'apps/web/environments'
 import { filter, map, switchMap } from 'rxjs'
 import { GearsetRecord, GearsetsDB } from '~/data'
@@ -14,14 +14,14 @@ import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
 import { PromptDialogComponent } from '~/ui/layout'
 import { GearsetDetailComponent } from './gearset-detail.component'
-import { EmbedHeightDirective } from '~/utils/embed-height.directive'
+import { EmbedHeightDirective } from '~/utils/directives/embed-height.directive'
 
 @Component({
   standalone: true,
   selector: 'nwb-gearsets-share-page',
   templateUrl: './gearsets-share-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, GearsetDetailComponent, LetModule, IconsModule, EmbedHeightDirective],
+  imports: [CommonModule, NwModule, GearsetDetailComponent, LetDirective, IconsModule, EmbedHeightDirective],
   host: {
     class: 'layout-col flex-none',
   },

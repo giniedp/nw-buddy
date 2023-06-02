@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
+import { AttributeRef, NW_ATTRIBUTE_TYPES, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 import { combineLatest, Observable, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { AttributeRef, NW_ATTRIBUTE_TYPES } from '~/nw/attributes'
-import { NW_MAX_CHARACTER_LEVEL } from '~/nw/utils/constants'
 
 export interface AttributesState {
   level: number
@@ -36,8 +35,8 @@ export class AttributesStore extends ComponentStore<AttributesState> {
   public readonly pointsAvailable$ = this.select(({ points, assigned }) => points - sum(Object.values(assigned)))
   public readonly stats$ = this.select(({ points, base, assigned, buffs }) => {
     return NW_ATTRIBUTE_TYPES.map(({ ref, shortName, description }): AttributeState => {
-      const ba = (base?.[ref] || 0)
-      const bu = (buffs?.[ref] || 0)
+      const ba = base?.[ref] || 0
+      const bu = buffs?.[ref] || 0
       const as = assigned?.[ref] || 0
       return {
         ref: ref,
@@ -60,7 +59,7 @@ export class AttributesStore extends ComponentStore<AttributesState> {
       points: 0,
       base: empty(),
       assigned: empty(),
-      buffs: empty()
+      buffs: empty(),
     })
   }
 
@@ -140,7 +139,7 @@ function empty() {
 function sum(values: number[]) {
   let result = 0
   for (const value of values) {
-    result += (value || 0)
+    result += value || 0
   }
   return result
 }

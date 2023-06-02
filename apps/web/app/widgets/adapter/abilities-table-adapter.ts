@@ -1,56 +1,29 @@
 import { Injectable } from '@angular/core'
-import { Ability, Statuseffect } from '@nw-data/generated'
+import {
+  NW_FALLBACK_ICON,
+  NW_MAX_CHARACTER_LEVEL,
+  NW_MAX_GEAR_SCORE_BASE,
+  getAbilityCategoryTag,
+  getWeaponTagLabel,
+} from '@nw-data/common'
+import { Ability, COLS_ABILITY, Statuseffect } from '@nw-data/generated'
 import { ColDef, GridOptions } from 'ag-grid-community'
 import { sortBy } from 'lodash'
-import { combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
+import { Observable, combineLatest, defer, map, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwLinkService,  } from '~/nw'
+import { NwDbService, NwLinkService } from '~/nw'
+import { NwExpressionService } from '~/nw/expression'
 import { NwWeaponType, NwWeaponTypesService } from '~/nw/weapon-types'
-import { getAbilityCategoryTag, getWeaponTagLabel } from '~/nw/utils'
 import { SelectFilter } from '~/ui/ag-grid'
+import { executeTypescript } from '~/ui/code-editor'
 import { DataTableAdapter, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
-import { NwExpressionService } from '~/nw/expression'
-import { NW_FALLBACK_ICON, NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE, NW_MAX_GEAR_SCORE_UPGRADABLE } from '~/nw/utils/constants'
-import { executeTypescript } from '~/ui/code-editor'
-import { COLS_ABILITY } from '@nw-data/generated'
 
 export type AbilityTableItem = Ability & {
   $weaponType: NwWeaponType
   $selfApplyStatusEffect: Statuseffect[]
   $otherApplyStatusEffect: Statuseffect
 }
-
-const SCRIPT_FILTER_TEMPLATE = `
-/**
- * This is a typescript function that you can use to implement a custom result filter.
- *
- * Do not change the function signature
- */
-export default async function(list: AbilityItem[]) {
-  list = list.filter((item) => {
-    // custom code goes here
-    //
-    // e.g. all abilities that apply a status effect of a specific category
-    // return item.$otherApplyStatusEffect?.EffectCategories?.includes('CC')
-
-    return true
-  })
-
-  return list
-}
-
-//
-//
-//
-
-export type AbilityItem = Ability & {
-  $selfApplyStatusEffect: Statuseffect[]
-  $otherApplyStatusEffect: Statuseffect
-}
-
-${require('!!raw-loader!../../../nw-data/types.ts').default}
-`.trimStart()
 
 @Injectable()
 export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
@@ -59,8 +32,6 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
       adapter: AbilitiesTableAdapter,
     })
   }
-
-  public override scriptFilterTemplate: string = SCRIPT_FILTER_TEMPLATE
 
   public entityID(item: AbilityTableItem): string {
     return item.AbilityID
@@ -97,8 +68,11 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
               icon: data.Icon || NW_FALLBACK_ICON,
               iconClass: [
                 'aspect-square',
-                'transition-all', 'translate-x-0', 'hover:translate-x-1',
-                'nw-icon', `bg-ability-${getAbilityCategoryTag(data)}`,
+                'transition-all',
+                'translate-x-0',
+                'hover:translate-x-1',
+                'nw-icon',
+                `bg-ability-${getAbilityCategoryTag(data)}`,
                 data?.IsActiveAbility ? 'rounded-sm' : 'rounded-full',
                 data?.WeaponTag ? 'border' : null,
               ],
@@ -210,15 +184,15 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
             const result = Object.keys(data)
               .filter((it) => it.startsWith('On') && !!data[it])
               .map((it) => humanize(it).split(' '))
-              .map((it) => it[0] === 'On' ? it.slice(1).join('') : null)
+              .map((it) => (it[0] === 'On' ? it.slice(1).join('') : null))
               .filter((it) => !!it)
             return result.length ? result : null
           }),
           cellRenderer: this.cellRendererTags(humanize),
           filter: SelectFilter,
           filterParams: SelectFilter.params({
-            showSearch: true
-          })
+            showSearch: true,
+          }),
         }),
       ],
     }).pipe(map((options) => appendFields(options, Array.from(Object.entries(COLS_ABILITY)))))
@@ -229,20 +203,19 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
       abilities: this.db.abilities,
       effects: this.db.statusEffectsMap,
       weaponTypes: this.weaponTypes.byTag$,
-      script: this.scriptFilter$
+      script: this.scriptFilter$,
     })
   )
     .pipe(
       switchMap(async ({ abilities, effects, weaponTypes, script }) => {
-        const result = abilities
-          .map((it): AbilityTableItem => {
-            return {
-              ...it,
-              $weaponType: weaponTypes.get(it.WeaponTag),
-              $selfApplyStatusEffect: it.SelfApplyStatusEffect?.map((id) => effects.get(id)),
-              $otherApplyStatusEffect: effects.get(it.OtherApplyStatusEffect)
-            }
-          })
+        const result = abilities.map((it): AbilityTableItem => {
+          return {
+            ...it,
+            $weaponType: weaponTypes.get(it.WeaponTag),
+            $selfApplyStatusEffect: it.SelfApplyStatusEffect?.map((id) => effects.get(id)),
+            $otherApplyStatusEffect: effects.get(it.OtherApplyStatusEffect),
+          }
+        })
 
         return this.filterWithScript(result, script).catch((err) => {
           console.error(err)
@@ -250,7 +223,7 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
         })
       })
     )
-    .pipe(map((list) => sortBy(list, (it) => (!!it.WeaponTag && !!it.DisplayName && !!it.Description) ? -1 : 1)))
+    .pipe(map((list) => sortBy(list, (it) => (!!it.WeaponTag && !!it.DisplayName && !!it.Description ? -1 : 1))))
     .pipe(shareReplayRefCount(1))
 
   public constructor(

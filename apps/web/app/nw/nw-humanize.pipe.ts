@@ -1,8 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core'
 import { humanize } from '~/utils'
-import { NwExpressionContext } from './expression'
-
-export type NwTextPipeOptions = Partial<NwExpressionContext>
 
 @Pipe({
   standalone: true,

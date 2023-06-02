@@ -11,7 +11,7 @@ import { AppPreferencesService } from './preferences'
 import { svgMap } from './ui/icons/svg'
 import { LayoutService } from './ui/layout'
 import { mapProp } from './utils'
-import { PlatformService } from './utils/platform.service'
+import { PlatformService } from './utils/services/platform.service'
 import { VersionService } from './widgets/update-alert'
 
 @Component({

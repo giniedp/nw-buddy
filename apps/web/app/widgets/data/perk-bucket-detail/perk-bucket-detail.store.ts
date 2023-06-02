@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
+import { PerkBucket, resolvePerkBucketPerksForItem } from '@nw-data/common'
 import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
-import { sortBy } from 'lodash'
 import { combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { PerkBucket, getPerkBucketPerkIDs, resolvePerkBucketPerksForItem } from '~/nw/utils/perk-buckets'
-import { shareReplayRefCount, tapDebug } from '~/utils'
+import { shareReplayRefCount } from '~/utils'
 
 export interface PerkBucketDetailState {
   itemId: string

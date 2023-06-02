@@ -1,13 +1,19 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
+import {
+  EQUIP_SLOTS,
+  EquipSlot,
+  PerkBucket,
+  getAverageGearScore,
+  getItemPerkInfos,
+  getItemRarity,
+} from '@nw-data/common'
 import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { Subject, combineLatest, defer, map, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw/nw-db.service'
-import { EQUIP_SLOTS, EquipSlot, getAverageGearScore, getItemPerkInfos, getItemRarity } from '~/nw/utils'
 import { eqCaseInsensitive } from '~/utils'
 
-import { PerkBucket } from '~/nw/utils/perk-buckets'
 import { GearsetRecord, GearsetsDB } from './gearsets.db'
 import { ItemInstance, ItemInstancesDB } from './item-instances.db'
 

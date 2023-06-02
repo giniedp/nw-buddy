@@ -7,7 +7,7 @@ import {
   ItemdefinitionsWeapons,
   Perks
 } from '@nw-data/generated'
-import type { AttributeRef } from '../attributes/nw-attributes'
+import type { AttributeRef } from './attributes'
 import { NW_MAX_GEAR_SCORE, NW_MAX_GEAR_SCORE_UPGRADABLE, NW_MIN_GEAR_SCORE } from './constants'
 import { damageForTooltip } from './damage'
 

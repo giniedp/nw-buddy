@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { territoryHasFort } from '@nw-data/common'
 import { Territorydefinitions } from '@nw-data/generated'
 import { BehaviorSubject, combineLatest, defer, map, startWith } from 'rxjs'
 import { NwModule } from '~/nw'
 import { TerritoriesService } from '~/nw/territories'
-import { territoryHasFort } from '~/nw/utils'
 import { ChipsInputModule } from '~/ui/chips-input'
 import { shareReplayRefCount } from '~/utils'
 import { TerritoryStandingComponent } from './territory-standing.component'
@@ -33,24 +33,27 @@ export class TerritoryCardCoponent {
     return this.territoryId$.value
   }
 
-  protected vm$ = defer(() => combineLatest({
-    id: this.territoryId$,
-    territory: this.territory$,
-    standing: this.service.getStanding(this.territoryId$),
-    standingTitle: this.service.getStandingTitle(this.territoryId$),
-    notes: this.service.getNotes(this.territoryId$),
-    tags: this.service.getTags(this.territoryId$),
-    name: this.territory$.pipe(map((it) => it?.NameLocalizationKey)),
-    background: this.territory$.pipe(map((it) => this.service.image(it, 'territory'))),
-    hasFort: this.territory$.pipe(map((it) => territoryHasFort(it))),
-    level: this.territory$.pipe(map((it) => {
-      if (it.RecommendedLevel || it.MaximumLevel) {
-        return [it.RecommendedLevel, it.MaximumLevel].join(' - ')
-      }
-      return null
-    }))
-  }))
-  .pipe(startWith(null))
+  protected vm$ = defer(() =>
+    combineLatest({
+      id: this.territoryId$,
+      territory: this.territory$,
+      standing: this.service.getStanding(this.territoryId$),
+      standingTitle: this.service.getStandingTitle(this.territoryId$),
+      notes: this.service.getNotes(this.territoryId$),
+      tags: this.service.getTags(this.territoryId$),
+      name: this.territory$.pipe(map((it) => it?.NameLocalizationKey)),
+      background: this.territory$.pipe(map((it) => this.service.image(it, 'territory'))),
+      hasFort: this.territory$.pipe(map((it) => territoryHasFort(it))),
+      level: this.territory$.pipe(
+        map((it) => {
+          if (it.RecommendedLevel || it.MaximumLevel) {
+            return [it.RecommendedLevel, it.MaximumLevel].join(' - ')
+          }
+          return null
+        })
+      ),
+    })
+  ).pipe(startWith(null))
 
   protected territoryId$ = new BehaviorSubject<number>(null)
   protected territory$ = defer(() => this.service.getTerritory(this.territoryId$)).pipe(shareReplayRefCount(1))

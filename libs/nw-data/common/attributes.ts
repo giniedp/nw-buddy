@@ -6,6 +6,7 @@ export interface AttributeType {
   shortName: string
   description: string
 }
+
 export const NW_ATTRIBUTE_TYPES: AttributeType[] = [
   {
     ref: 'str',

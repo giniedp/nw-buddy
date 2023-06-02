@@ -1,9 +1,14 @@
 import { Injectable } from '@angular/core'
+import {
+  calculateBonusItemChance,
+  getIngretientsFromRecipe,
+  getItemIdFromRecipe,
+  getRecipeForItem,
+} from '@nw-data/common'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { NwDbService } from '~/nw'
-import { calculateBonusItemChance, getIngretientsFromRecipe, getItemIdFromRecipe, getRecipeForItem } from '~/nw/utils'
 import { eqCaseInsensitive, shareReplayRefCount } from '~/utils'
 import { AmountDetail, AmountMode, CraftingStep, Ingredient } from './types'
 

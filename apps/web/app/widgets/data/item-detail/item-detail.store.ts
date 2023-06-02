@@ -1,19 +1,9 @@
 import { ChangeDetectorRef, EventEmitter, Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import {
-  Affixstats,
-  Craftingcategories,
-  Housingitems,
-  ItemDefinitionMaster,
-  ItemdefinitionsConsumables,
-  ItemdefinitionsResources,
-  Perks
-} from '@nw-data/generated'
-import { sortBy } from 'lodash'
-import { combineLatest, map, switchMap } from 'rxjs'
-import { NwDbService } from '~/nw'
-import { AttributeRef } from '~/nw/attributes/nw-attributes'
-import {
+  AttributeRef,
+  NW_MAX_GEAR_SCORE_BASE,
+  PerkBucket,
   getItemGearScoreLabel,
   getItemGsBonus,
   getItemIconPath,
@@ -28,6 +18,8 @@ import {
   getItemStatsWeapon,
   getItemTierAsRoman,
   getItemTypeName,
+  getPerkBucketPerkIDs,
+  getPerkBucketPerks,
   getPerkTypeWeight,
   getPerksInherentMODs,
   hasItemGearScore,
@@ -35,10 +27,20 @@ import {
   isItemHeargem,
   isItemNamed,
   isPerkGem,
-  isPerkItemIngredient
-} from '~/nw/utils'
-import { NW_MAX_GEAR_SCORE_BASE } from '~/nw/utils/constants'
-import { PerkBucket, getPerkBucketPerkIDs, getPerkBucketPerks } from '~/nw/utils/perk-buckets'
+  isPerkItemIngredient,
+} from '@nw-data/common'
+import {
+  Affixstats,
+  Craftingcategories,
+  Housingitems,
+  ItemDefinitionMaster,
+  ItemdefinitionsConsumables,
+  ItemdefinitionsResources,
+  Perks,
+} from '@nw-data/generated'
+import { sortBy } from 'lodash'
+import { combineLatest, map, switchMap } from 'rxjs'
+import { NwDbService } from '~/nw'
 import { humanize, mapProp, shareReplayRefCount } from '~/utils'
 import { ModelViewerService } from '../../model-viewer/model-viewer.service'
 

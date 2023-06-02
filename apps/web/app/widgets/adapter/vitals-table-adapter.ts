@@ -1,10 +1,4 @@
 import { Injectable } from '@angular/core'
-import { COLS_VITALS } from '@nw-data/generated'
-import { Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/generated'
-import { ColDef, GridOptions } from 'ag-grid-community'
-import { Observable, combineLatest, defer, map, of } from 'rxjs'
-import { TranslateService } from '~/i18n'
-import { NwDbService, NwLinkService } from '~/nw'
 import {
   VitalFamilyInfo,
   getVitalAliasName,
@@ -14,8 +8,13 @@ import {
   getVitalFamilyInfo,
   getVitalTypeMarker,
   getVitalsCategories,
-  isVitalCombatCategory
-} from '~/nw/utils'
+  isVitalCombatCategory,
+} from '@nw-data/common'
+import { COLS_VITALS, Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/generated'
+import { ColDef, GridOptions } from 'ag-grid-community'
+import { Observable, combineLatest, defer, map, of } from 'rxjs'
+import { TranslateService } from '~/i18n'
+import { NwDbService, NwLinkService } from '~/nw'
 import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'
 import { assetUrl, humanize, shareReplayRefCount } from '~/utils'

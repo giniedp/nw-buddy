@@ -1,18 +1,17 @@
 import { Injectable, Optional } from '@angular/core'
-import { COLS_AFFIXSTATS, COLS_PERKS } from '@nw-data/generated'
-import { Ability, Perks } from '@nw-data/generated'
-import { ColDef, ColGroupDef, GridOptions } from 'ag-grid-community'
-import { Observable, combineLatest, defer, map, of, switchMap } from 'rxjs'
-import { TranslateService } from '~/i18n'
-import { NwDbService, NwLinkService } from '~/nw'
-import { NwExpressionContextService, NwExpressionService } from '~/nw/expression'
 import {
   getPerkItemClassGsBonus,
   getPerksInherentMODs,
   hasPerkInherentAffix,
   isPerkGenerated,
   isPerkInherent,
-} from '~/nw/utils'
+} from '@nw-data/common'
+import { Ability, COLS_AFFIXSTATS, COLS_PERKS, Perks } from '@nw-data/generated'
+import { ColDef, ColGroupDef, GridOptions } from 'ag-grid-community'
+import { Observable, combineLatest, defer, map, of, switchMap } from 'rxjs'
+import { TranslateService } from '~/i18n'
+import { NwDbService, NwLinkService } from '~/nw'
+import { NwExpressionContextService, NwExpressionService } from '~/nw/expression'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'

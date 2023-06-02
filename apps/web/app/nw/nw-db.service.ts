@@ -1,15 +1,17 @@
 import { Injectable } from '@angular/core'
+import {
+  convertLootbuckets,
+  convertLoottables,
+  convertPerkBuckets,
+  getIngretientsFromRecipe,
+  getItemIdFromRecipe,
+} from '@nw-data/common'
 import { Vitals } from '@nw-data/generated'
 import { groupBy, sortBy } from 'lodash'
-import { combineLatest, defer, isObservable, map, Observable, of, shareReplay } from 'rxjs'
+import { Observable, combineLatest, defer, isObservable, map, of, shareReplay } from 'rxjs'
 import { CaseInsensitiveMap, CaseInsensitiveSet } from '~/utils'
 import { NwDataService } from './nw-data.service'
 import { queryGemPerksWithAffix, queryMutatorDifficultiesWithRewards } from './nw-db-views'
-import { convertLootbuckets } from './utils/loot-buckets'
-import { convertLoottables } from './utils/loot-tables'
-import { getItemIdFromRecipe } from './utils/item'
-import { getIngretientsFromRecipe } from './utils/crafting'
-import { convertPerkBuckets } from './utils/perk-buckets'
 
 export function createIndex<T, K extends keyof T>(list: T[], id: K): Map<T[K], T> {
   const result = new CaseInsensitiveMap<T[K], T>()
@@ -97,7 +99,10 @@ export class NwDbService {
   public itemsMap = indexBy(() => this.items, 'ItemID')
   public item = lookup(() => this.itemsMap)
   public itemsBySalvageAchievement = indexGroupBy(() => this.items, 'SalvageAchievement')
-  public itemsByIngredientCategoryMap = indexGroupSetBy(() => this.items, (it) => it.IngredientCategories)
+  public itemsByIngredientCategoryMap = indexGroupSetBy(
+    () => this.items,
+    (it) => it.IngredientCategories
+  )
   public itemsByIngredientCategory = lookup(() => this.itemsByIngredientCategoryMap)
 
   public housingItems = table(() => [this.data.housingitems()])

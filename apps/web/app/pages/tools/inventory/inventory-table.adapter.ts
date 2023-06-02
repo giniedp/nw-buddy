@@ -6,13 +6,13 @@ import { debounceTime, defer, EMPTY, filter, merge, Observable, of, Subject, swi
 import { ItemInstanceRow, ItemInstancesStore } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwLinkService } from '~/nw'
-import { EQUIP_SLOTS, getItemIconPath, getItemId, getItemRarityLabel, getItemTierAsRoman, isItemNamed } from '~/nw/utils'
+import { EQUIP_SLOTS, getItemIconPath, getItemId, getItemRarityLabel, getItemTierAsRoman, isItemNamed } from '@nw-data/common'
 import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { svgTrashCan } from '~/ui/icons/svg'
 import { ConfirmDialogComponent } from '~/ui/layout'
 import { humanize } from '~/utils'
-import { DnDService } from '~/utils/dnd.service'
+import { DnDService } from '~/utils/services/dnd.service'
 
 @Injectable()
 export class InventoryTableAdapterConfig extends DataTableAdapterOptions<ItemInstanceRow> {}

@@ -1,7 +1,7 @@
 import { Directive, ElementRef, Inject, OnDestroy, OnInit } from '@angular/core'
 import { Subject, takeUntil } from 'rxjs'
-import { ResizeObserverService } from './resize-observer'
 import { DOCUMENT } from '@angular/common'
+import { ResizeObserverService } from '../services/resize-observer.service'
 
 @Directive({
   standalone: true,

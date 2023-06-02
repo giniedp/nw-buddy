@@ -1,13 +1,12 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, Input, EventEmitter, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { ComponentStore } from '@ngrx/component-store'
+import { NW_FALLBACK_ICON, getAbilityCategoryTag } from '@nw-data/common'
 import { Ability } from '@nw-data/generated'
 import { combineLatest } from 'rxjs'
 import { SkillBuildRecord } from '~/data'
 import { NwDbService, NwModule } from '~/nw'
-import { getAbilityCategoryTag } from '~/nw/utils/abilities'
-import { NW_FALLBACK_ICON } from '~/nw/utils/constants'
 import { IconsModule } from '~/ui/icons'
 import { svgTrashCan } from '~/ui/icons/svg'
 
@@ -26,7 +25,6 @@ export interface SkillTreesListItemState {
   },
 })
 export class SkillTreesListItemComponent extends ComponentStore<SkillTreesListItemState> {
-
   @Input()
   public set item(value: SkillBuildRecord) {
     this.patchState({ item: value })
@@ -42,7 +40,7 @@ export class SkillTreesListItemComponent extends ComponentStore<SkillTreesListIt
 
   protected vm$ = combineLatest({
     item: this.item$,
-    abilities: this.abilities$
+    abilities: this.abilities$,
   })
 
   public constructor(private db: NwDbService) {
@@ -55,12 +53,9 @@ export class SkillTreesListItemComponent extends ComponentStore<SkillTreesListIt
 }
 
 function selectAbilities(item: SkillBuildRecord, abilities: Map<string, Ability>) {
-  const result = [
-    ...(item?.tree1 || []),
-    ...(item?.tree2 || []),
-  ]
-  .map((it) => abilities?.get(it))
-  .filter((it) => it?.IsActiveAbility)
+  const result = [...(item?.tree1 || []), ...(item?.tree2 || [])]
+    .map((it) => abilities?.get(it))
+    .filter((it) => it?.IsActiveAbility)
 
   while (result.length < 3) {
     result.push(null)
@@ -69,8 +64,7 @@ function selectAbilities(item: SkillBuildRecord, abilities: Map<string, Ability>
     return {
       id: ability?.AbilityID,
       category: ability ? getAbilityCategoryTag(ability) : 'none',
-      icon: ability?.Icon || NW_FALLBACK_ICON
+      icon: ability?.Icon || NW_FALLBACK_ICON,
     }
   })
-
 }

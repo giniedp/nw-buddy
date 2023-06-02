@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
+import { NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 import { Gamemodes, Mutationdifficulty } from '@nw-data/generated'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { gameModesTags, mutaDifficultyTags, mutaElementalTags, poiTags, territoriesTags } from '~/nw/loot/loot-tags'
-import { NW_MAX_CHARACTER_LEVEL } from '~/nw/utils/constants'
 
 export interface LootTagOption<T = unknown> {
   label: string

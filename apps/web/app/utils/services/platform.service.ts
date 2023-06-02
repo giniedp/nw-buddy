@@ -1,7 +1,7 @@
 import { Platform as AngularPlatform } from '@angular/cdk/platform'
 import { Platform as IonicPlatform } from '@ionic/angular'
 import { Inject, Injectable } from '@angular/core'
-import { environment } from '../../environments'
+import { environment } from '../../../environments'
 import { ElectronService } from '~/electron'
 import { DOCUMENT } from '@angular/common'
 

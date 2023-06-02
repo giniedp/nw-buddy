@@ -5,16 +5,12 @@ import {
   forwardRef,
   Input,
   OnChanges,
-  OnInit
+  OnInit,
 } from '@angular/core'
 import { GridOptions } from 'ag-grid-community'
 import { BehaviorSubject, combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
 
 import { CommonModule } from '@angular/common'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
-import { TranslateService } from '~/i18n'
-import { NwDbService, NwLinkService } from '~/nw'
-import { LootContext, NwLootService } from '~/nw/loot'
 import {
   getItemIconPath,
   getItemId,
@@ -25,8 +21,12 @@ import {
   isItemJewelery,
   isItemNamed,
   isItemWeapon,
-  isMasterItem
-} from '~/nw/utils'
+  isMasterItem,
+} from '@nw-data/common'
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { TranslateService } from '~/i18n'
+import { NwDbService, NwLinkService } from '~/nw'
+import { LootContext, NwLootService } from '~/nw/loot'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
@@ -92,7 +92,7 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
 
   private tableId$ = new BehaviorSubject<string>(null)
   private tags$ = new BehaviorSubject<string[]>([])
-  private tagValues$ = new BehaviorSubject<Record<string, string|number>>({})
+  private tagValues$ = new BehaviorSubject<Record<string, string | number>>({})
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -136,7 +136,7 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
               target: '_blank',
               href: this.info.link('item', getItemId(data)),
               icon: getItemIconPath(data),
-              rarity: getItemRarity(data)
+              rarity: getItemRarity(data),
             })
           }),
         },
@@ -164,31 +164,29 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
           filter: SelectFilter,
         },
       ],
-    }
-    ))
-
+    })
+  )
 
   private filterAndSort(items: Array<ItemDefinitionMaster | Housingitems>) {
-    return items
-      .sort((nodeA, nodeB) => {
-        const a = nodeA
-        const b = nodeB
-        const isGearA = isMasterItem(a) && (isItemArmor(a) || isItemJewelery(a) || isItemWeapon(a))
-        const isGearB = isMasterItem(b) && (isItemArmor(b) || isItemJewelery(b) || isItemWeapon(b))
-        if (isGearA !== isGearB) {
-          return isGearA ? -1 : 1
-        }
-        const isNamedA = isMasterItem(a) && isItemNamed(a)
-        const isNamedB = isMasterItem(b) && isItemNamed(b)
-        if (isNamedA !== isNamedB) {
-          return isNamedA ? -1 : 1
-        }
-        const rarrityA = getItemRarity(a)
-        const rarrityB = getItemRarity(b)
-        if (rarrityA !== rarrityB) {
-          return rarrityA >= rarrityB ? -1 : 1
-        }
-        return getItemId(a).localeCompare(getItemId(b))
-      })
+    return items.sort((nodeA, nodeB) => {
+      const a = nodeA
+      const b = nodeB
+      const isGearA = isMasterItem(a) && (isItemArmor(a) || isItemJewelery(a) || isItemWeapon(a))
+      const isGearB = isMasterItem(b) && (isItemArmor(b) || isItemJewelery(b) || isItemWeapon(b))
+      if (isGearA !== isGearB) {
+        return isGearA ? -1 : 1
+      }
+      const isNamedA = isMasterItem(a) && isItemNamed(a)
+      const isNamedB = isMasterItem(b) && isItemNamed(b)
+      if (isNamedA !== isNamedB) {
+        return isNamedA ? -1 : 1
+      }
+      const rarrityA = getItemRarity(a)
+      const rarrityB = getItemRarity(b)
+      if (rarrityA !== rarrityB) {
+        return rarrityA >= rarrityB ? -1 : 1
+      }
+      return getItemId(a).localeCompare(getItemId(b))
+    })
   }
 }

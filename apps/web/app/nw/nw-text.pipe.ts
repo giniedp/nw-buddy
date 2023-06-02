@@ -1,9 +1,9 @@
 import { ChangeDetectorRef, OnDestroy, Pipe, PipeTransform } from '@angular/core'
+import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
 import { isEqual } from 'lodash'
 import { Subject, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwExpressionContext, NwExpressionService } from './expression'
-import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from './utils/constants'
 
 export type NwTextPipeOptions = Partial<NwExpressionContext> & Record<string, string | number>
 
@@ -21,7 +21,7 @@ export class NwTextPipe implements PipeTransform, OnDestroy {
   public constructor(
     private i18n: TranslateService,
     private expr: NwExpressionService,
-    private cdRef: ChangeDetectorRef,
+    private cdRef: ChangeDetectorRef
   ) {}
 
   public transform(key: string | string[], options: NwTextPipeOptions = null) {

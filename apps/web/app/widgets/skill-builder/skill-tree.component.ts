@@ -1,17 +1,19 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
+import { NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
 import { isEqual } from 'lodash'
 import {
   BehaviorSubject,
+  ReplaySubject,
   combineLatest,
   defer,
-  distinctUntilChanged, map,
-  ReplaySubject, switchMap,
-  takeUntil
+  distinctUntilChanged,
+  map,
+  switchMap,
+  takeUntil,
 } from 'rxjs'
 import { NwModule } from '~/nw'
-import { NW_MAX_WEAPON_LEVEL } from '~/nw/utils/constants'
 import { NwWeaponTypesService } from '~/nw/weapon-types'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'

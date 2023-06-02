@@ -5,7 +5,7 @@ import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated
 import { map, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwModule } from '~/nw'
-import { getItemIconPath, getItemIdFromRecipe } from '~/nw/utils'
+import { getItemIconPath, getItemIdFromRecipe } from '@nw-data/common'
 import { LayoutModule } from '~/ui/layout'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { CraftingCalculatorComponent } from '~/widgets/crafting'

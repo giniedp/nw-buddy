@@ -1,13 +1,12 @@
 import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { groupBy, uniqBy } from 'lodash'
+import { getVitalDungeon } from '@nw-data/common'
+import { groupBy } from 'lodash'
 import { combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { getVitalDungeon } from '~/nw/utils'
 import { mapFilter } from '~/utils'
 import { mergeVitals } from './utils'
-import { VitalDetailComponent } from './vital-detail.component'
 import { VitalFamilyDetailComponent } from './vital-family-detail.component'
 
 const REJECT = ['undefined']

@@ -1,6 +1,6 @@
+import { LootBucketRow, LootTable, LootTableRow } from '@nw-data/common'
 import { sortBy } from 'lodash'
 import { CaseInsensitiveSet, eqCaseInsensitive } from '~/utils'
-import { LootBucketRow, LootTable, LootTableRow } from '../utils'
 import { LootContext } from './loot-context'
 
 export type LootNode = LootBucketNode | LootBucketRowNode | LootTableNode | LootTableItemNode // | LootTableRowNode
@@ -141,7 +141,17 @@ function buildBucketRowNode(value: LootBucketRow, parent: LootNode): LootBucketR
   return node
 }
 
-export function updateLootGraph({ graph, context, dropChance, highlight }: { graph: LootNode, context: LootContext, dropChance?: number, highlight?: string }) {
+export function updateLootGraph({
+  graph,
+  context,
+  dropChance,
+  highlight,
+}: {
+  graph: LootNode
+  context: LootContext
+  dropChance?: number
+  highlight?: string
+}) {
   graph = cloneGraph(graph)
   updateAccess(graph, context)
   updateCount(graph)
@@ -194,10 +204,11 @@ function cloneGraph(node: LootNode) {
   node = {
     ...node,
   }
-  node.children = node.children?.map((child) => {
-    child.parent = node
-    return cloneGraph(child)
-  }) || []
+  node.children =
+    node.children?.map((child) => {
+      child.parent = node
+      return cloneGraph(child)
+    }) || []
   return node
 }
 
@@ -262,11 +273,14 @@ function updateChance(node: LootNode, dropChance = 1) {
     } else if (table['AND/OR'] === 'OR') {
       node.chanceRelative = 1
       if (maxroll && node.prob >= 0) {
-        const sorted = sortBy(siblings.filter((it) => it.prob >= 0), (it) => it.prob)
+        const sorted = sortBy(
+          siblings.filter((it) => it.prob >= 0),
+          (it) => it.prob
+        )
         const left = node.prob
         const right = sorted.find((it) => it.prob > node.prob)?.prob ?? maxroll
         const count = sorted.filter((it) => it.prob === node.prob).length
-        node.chanceRelative = ((right - left) / maxroll) / count
+        node.chanceRelative = (right - left) / maxroll / count
         // console.log(node.row.LootTableID, {
         //   maxroll,
         //   left,
@@ -306,7 +320,7 @@ function updateHighlight(node: LootNode, itemId: string) {
     }
   })
   for (const leaf of leafs) {
-    walkUp(leaf, (it) => it.highlight = true)
+    walkUp(leaf, (it) => (it.highlight = true))
   }
 }
 

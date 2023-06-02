@@ -1,5 +1,4 @@
 import { Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/generated'
-import { eqCaseInsensitive } from '~/utils'
 import { getAffixMODs } from './affix'
 import { patchPrecision } from './precision'
 
@@ -58,6 +57,10 @@ export function getPerkItemClassGsBonus(perk: Perks) {
 }
 export function getItemGsBonus(perk: Perks, item: ItemDefinitionMaster) {
   return getPerkItemClassGsBonus(perk).find(({ itemClass }) => {
-    return item.ItemClass?.some((it) => eqCaseInsensitive(it, itemClass))
+    return item.ItemClass?.some((it) => eqIgnoreCase(it, itemClass))
   })?.bonus || 0
+}
+
+function eqIgnoreCase(a: string, b: string) {
+  return a?.toLowerCase() === b?.toLowerCase()
 }
