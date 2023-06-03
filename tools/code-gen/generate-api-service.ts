@@ -10,7 +10,7 @@ export function generateApiService(input: Map<string, string[]>) {
 
       const assetPath = path.join(dirName, basename).replace(/[\\/]+/g, '/')
       const functionName = assetPath
-        .split(/[_/.]/)
+        .split(/[_/.\-]/)
         .filter((it) => it && it !== 'javelindata')
         .map((it, i) => {
           return i === 0 ? it : (it[0].toLocaleUpperCase() + it.substring(1))

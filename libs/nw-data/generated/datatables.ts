@@ -23,7 +23,9 @@ import type {
   Gatherables,
   Housetypes,
   Housingitems,
+  HousingitemsMtx,
   ItemDefinitionMaster,
+  ItemDefinitionMtx,
   Itemappearancedefinitions,
   ItemdefinitionsAmmo,
   ItemdefinitionsArmor,
@@ -880,6 +882,36 @@ export abstract class NwDataLoader {
   }
   public milestonerewards() {
     return this.load<Milestonerewards[]>('javelindata_milestonerewards.json')
+  }
+  public mtxHousingitemsMtx() {
+    return this.load<HousingitemsMtx[]>('mtx/javelindata_housingitems_mtx.json')
+  }
+  public mtxItemdefinitionsMtx202301() {
+    return this.load<ItemDefinitionMtx[]>('mtx/javelindata_itemdefinitions_mtx_2023-01.json')
+  }
+  public mtxItemdefinitionsMtx202302() {
+    return this.load<ItemDefinitionMtx[]>('mtx/javelindata_itemdefinitions_mtx_2023-02.json')
+  }
+  public mtxItemdefinitionsMtx202303() {
+    return this.load<ItemDefinitionMtx[]>('mtx/javelindata_itemdefinitions_mtx_2023-03.json')
+  }
+  public mtxItemdefinitionsMtx202304() {
+    return this.load<ItemDefinitionMtx[]>('mtx/javelindata_itemdefinitions_mtx_2023-04.json')
+  }
+  public mtxItemdefinitionsMtx202305() {
+    return this.load<ItemDefinitionMtx[]>('mtx/javelindata_itemdefinitions_mtx_2023-05.json')
+  }
+  public mtxItemdefinitionsMtx202306() {
+    return this.load<ItemDefinitionMtx[]>('mtx/javelindata_itemdefinitions_mtx_2023-06.json')
+  }
+  public mtxItemdefinitionsMtx202307() {
+    return this.load<ItemDefinitionMtx[]>('mtx/javelindata_itemdefinitions_mtx_2023-07.json')
+  }
+  public mtxItemdefinitionsMtx202310() {
+    return this.load<ItemDefinitionMtx[]>('mtx/javelindata_itemdefinitions_mtx_2023-10.json')
+  }
+  public mtxLoottablesMtx() {
+    return this.load<Loottable[]>('mtx/javelindata_loottables_mtx.json')
   }
   public perkbuckets() {
     return this.load<Perkbuckets[]>('javelindata_perkbuckets.json')

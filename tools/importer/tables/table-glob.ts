@@ -60,4 +60,5 @@ export const TABLE_GLOB_PATTERNS = [
   'gamemodemutators/*',
   'pointofinterestdefinitions/*',
   'weaponabilities/*',
+  'mtx/*',
 ].map((it) => it + '.json')

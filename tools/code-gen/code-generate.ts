@@ -53,6 +53,10 @@ const PATH_TO_TYPE_RULES = [
     name: 'ItemDefinitionMaster',
   },
   {
+    test: /_itemdefinitions_mtx/,
+    name: 'ItemDefinitionMtx',
+  },
+  {
     test: /_npcs[._]/,
     name: 'Npc',
   },

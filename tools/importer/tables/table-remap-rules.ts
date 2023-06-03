@@ -65,7 +65,7 @@ export const TABLE_REMAP_RULES = [
     ],
   },
   {
-    file: /_itemdefinitions_master_/,
+    file: /_itemdefinitions_(master_|mtx_)/,
     rules: [
       splitToArrayRule({
         properties: ['ItemClass'],

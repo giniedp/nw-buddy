@@ -5,7 +5,7 @@ import { RewriteFile } from './import-datatables'
 
 export function rewriteImagePathRule(inputDir: string): RewriteFile {
   return {
-    file: /_itemdefinitions_master_/,
+    file: /_itemdefinitions(_master|_mtx)_/,
     rules: [
       (obj, { getTables }) => {
         function findIcon(id: string) {
@@ -38,11 +38,13 @@ export function rewriteImagePathRule(inputDir: string): RewriteFile {
           }
         }
         obj.IconPath = null
-        // console.log(
-        //   'icon missing',
-        //   obj.ItemID,
-        //   candidates.filter((it) => !!it)
-        // )
+        if (obj.ItemID.includes('Deluxe')) {
+          console.log(
+            'icon missing',
+            obj.ItemID,
+            candidates.filter((it) => !!it)
+          )
+        }
       },
     ],
   }

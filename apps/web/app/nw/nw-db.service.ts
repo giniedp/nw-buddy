@@ -6,7 +6,7 @@ import {
   getIngretientsFromRecipe,
   getItemIdFromRecipe,
 } from '@nw-data/common'
-import { Vitals } from '@nw-data/generated'
+import { Housingitems, Vitals } from '@nw-data/generated'
 import { groupBy, sortBy } from 'lodash'
 import { Observable, combineLatest, defer, isObservable, map, of, shareReplay } from 'rxjs'
 import { CaseInsensitiveMap, CaseInsensitiveSet } from '~/utils'
@@ -92,7 +92,10 @@ function lookup<K, T>(getMap: () => Observable<Map<K, T>>) {
 export class NwDbService {
   public items = table(() => {
     const backsort = ['Ai', 'Playtest', 'Omega']
-    let methods = this.data.apiMethodsByPrefix('itemdefinitionsMaster', 'itemdefinitionsMasterCommon')
+    let methods = [
+      ...this.data.apiMethodsByPrefix('itemdefinitionsMaster', 'itemdefinitionsMasterCommon'),
+      ...this.data.apiMethodsByPrefix('mtxItemdefinitionsMtx', 'itemdefinitionsMasterCommon')
+    ]
     methods = sortBy(methods, (it) => (backsort.includes(it.suffix) ? `x${it.suffix}` : it.suffix))
     return methods.map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
   })
@@ -105,7 +108,10 @@ export class NwDbService {
   )
   public itemsByIngredientCategory = lookup(() => this.itemsByIngredientCategoryMap)
 
-  public housingItems = table(() => [this.data.housingitems()])
+  public housingItems = table(() => [
+    this.data.housingitems(),
+    this.data.mtxHousingitemsMtx() as any as Observable<Housingitems[]>,
+  ])
   public housingItemsMap = indexBy(() => this.housingItems, 'HouseItemID')
   public housingItem = lookup(() => this.housingItemsMap)
   public housingItemsByStatusEffectMap = indexGroupSetBy(
