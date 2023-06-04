@@ -94,7 +94,7 @@ export class NwDbService {
     const backsort = ['Ai', 'Playtest', 'Omega']
     let methods = [
       ...this.data.apiMethodsByPrefix('itemdefinitionsMaster', 'itemdefinitionsMasterCommon'),
-      ...this.data.apiMethodsByPrefix('mtxItemdefinitionsMtx', 'itemdefinitionsMasterCommon')
+      ...this.data.apiMethodsByPrefix('mtxItemdefinitionsMtx', 'itemdefinitionsMasterCommon'),
     ]
     methods = sortBy(methods, (it) => (backsort.includes(it.suffix) ? `x${it.suffix}` : it.suffix))
     return methods.map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
@@ -229,6 +229,18 @@ export class NwDbService {
   public gameModes = table(() => [this.data.gamemodes()])
   public gameModesMap = indexBy(() => this.gameModes, 'GameModeId')
   public gameMode = lookup(() => this.gameModesMap)
+
+  public quests = table(() =>
+    this.data
+      .apiMethodsByPrefix('quests', 'quests01Starterbeach01Objectives')
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+  )
+  public questsMap = indexBy(() => this.quests, 'ObjectiveID')
+  public quest = lookup(() => this.questsMap)
+  public questsByAchievementId = indexGroupSetBy(
+    () => this.quests,
+    (it) => it.AchievementId
+  )
 
   public recipes = table(() => [this.data.crafting()])
   public recipesMap = indexBy(() => this.recipes, 'RecipeID')

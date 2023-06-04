@@ -1,4 +1,4 @@
-export type NwLinkResource = 'item' | 'recipe' | 'ability' | 'perk' | 'vitals' | 'status-effect' | 'poi'
+export type NwLinkResource = 'item' | 'recipe' | 'ability' | 'perk' | 'vitals' | 'status-effect' | 'poi' | 'quest'
 
 export interface NwLinkOptions {
   ptr: boolean,
@@ -14,7 +14,8 @@ const NWDB_TYPE_MAP: Partial<Record<NwLinkResource, string>>  = {
   perk: 'perk',
   vitals: 'creature',
   'status-effect': 'status-effect',
-  poi: 'zone'
+  poi: 'zone',
+  quest: 'quest'
 }
 
 export function nwdbLinkUrl(options: NwLinkOptions) {

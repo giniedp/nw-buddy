@@ -43,6 +43,7 @@ import type {
   Milestonerewards,
   Mutationdifficulty,
   Mutationrankdata,
+  Objective,
   Perkbuckets,
   Perks,
   PoiDefinition,
@@ -987,6 +988,192 @@ export abstract class NwDataLoader {
   }
   public pointofinterestdefinitionsPoidefinitionsDevworld() {
     return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_devworld.json')
+  }
+  public questgameevents01Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_01_gameevents.json')
+  }
+  public questgameevents02Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_02_gameevents.json')
+  }
+  public questgameevents02aGameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_02a_gameevents.json')
+  }
+  public questgameevents03Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_03_gameevents.json')
+  }
+  public questgameevents04Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_04_gameevents.json')
+  }
+  public questgameevents04aGameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_04a_gameevents.json')
+  }
+  public questgameevents05Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_05_gameevents.json')
+  }
+  public questgameevents06Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_06_gameevents.json')
+  }
+  public questgameevents06aGameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_06a_gameevents.json')
+  }
+  public questgameevents07Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_07_gameevents.json')
+  }
+  public questgameevents08Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_08_gameevents.json')
+  }
+  public questgameevents09Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_09_gameevents.json')
+  }
+  public questgameevents10Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_10_gameevents.json')
+  }
+  public questgameevents11Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_11_gameevents.json')
+  }
+  public questgameevents12Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_12_gameevents.json')
+  }
+  public questgameevents12aGameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_12a_gameevents.json')
+  }
+  public questgameevents13Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_13_gameevents.json')
+  }
+  public questgameevents13aGameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_13a_gameevents.json')
+  }
+  public questgameevents14Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_14_gameevents.json')
+  }
+  public questgameevents15Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_15_gameevents.json')
+  }
+  public questgameevents16Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_16_gameevents.json')
+  }
+  public questgameevents74Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_74_gameevents.json')
+  }
+  public questgameevents75Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_75_gameevents.json')
+  }
+  public questgameevents92Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_92_gameevents.json')
+  }
+  public questgameevents95Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_95_gameevents.json')
+  }
+  public questgameevents95aGameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_95a_gameevents.json')
+  }
+  public questgameevents98Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_98_gameevents.json')
+  }
+  public questgameevents99Gameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_99_gameevents.json')
+  }
+  public questgameevents99aGameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_99a_gameevents.json')
+  }
+  public questgameevents99bGameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_99b_gameevents.json')
+  }
+  public questgameevents99cGameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_99c_gameevents.json')
+  }
+  public questgameeventsVoicedloreGameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_voicedlore_gameevents.json')
+  }
+  public quests01Starterbeach01Objectives() {
+    return this.load<Objective[]>('quests/01_starterbeach/javelindata_01_objectives.json')
+  }
+  public quests02Brightwood02Objectives() {
+    return this.load<Objective[]>('quests/02_brightwood/javelindata_02_objectives.json')
+  }
+  public quests02aBrightwood02aObjectives() {
+    return this.load<Objective[]>('quests/02a_brightwood/javelindata_02a_objectives.json')
+  }
+  public quests03Greatcleave03Objectives() {
+    return this.load<Objective[]>('quests/03_greatcleave/javelindata_03_objectives.json')
+  }
+  public quests04aEverfall04aObjectives() {
+    return this.load<Objective[]>('quests/04a_everfall/javelindata_04a_objectives.json')
+  }
+  public quests05Reekwater05Objectives() {
+    return this.load<Objective[]>('quests/05_reekwater/javelindata_05_objectives.json')
+  }
+  public quests06Windsward06Objectives() {
+    return this.load<Objective[]>('quests/06_windsward/javelindata_06_objectives.json')
+  }
+  public quests06aWindsward06aObjectives() {
+    return this.load<Objective[]>('quests/06a_windsward/javelindata_06a_objectives.json')
+  }
+  public quests07Shatteredmoutain07Objectives() {
+    return this.load<Objective[]>('quests/07_shatteredmoutain/javelindata_07_objectives.json')
+  }
+  public quests08Queensport08Objectives() {
+    return this.load<Objective[]>('quests/08_queensport/javelindata_08_objectives.json')
+  }
+  public quests09Firstlight09Objectives() {
+    return this.load<Objective[]>('quests/09_firstlight/javelindata_09_objectives.json')
+  }
+  public quests10Cutlasskeys10Objectives() {
+    return this.load<Objective[]>('quests/10_cutlasskeys/javelindata_10_objectives.json')
+  }
+  public quests11Mourningdale11Objectives() {
+    return this.load<Objective[]>('quests/11_mourningdale/javelindata_11_objectives.json')
+  }
+  public quests12Monarchsbluffs12Objectives() {
+    return this.load<Objective[]>('quests/12_monarchsbluffs/javelindata_12_objectives.json')
+  }
+  public quests12aMonarchsbluffs12aObjectives() {
+    return this.load<Objective[]>('quests/12a_monarchsbluffs/javelindata_12a_objectives.json')
+  }
+  public quests13Weaversfen13Objectives() {
+    return this.load<Objective[]>('quests/13_weaversfen/javelindata_13_objectives.json')
+  }
+  public quests13aWeaversfen13aObjectives() {
+    return this.load<Objective[]>('quests/13a_weaversfen/javelindata_13a_objectives.json')
+  }
+  public quests14Edengrove14Objectives() {
+    return this.load<Objective[]>('quests/14_edengrove/javelindata_14_objectives.json')
+  }
+  public quests15Restlessshore15Objectives() {
+    return this.load<Objective[]>('quests/15_restlessshore/javelindata_15_objectives.json')
+  }
+  public quests16Brimstonesands16Objectives() {
+    return this.load<Objective[]>('quests/16_brimstonesands/javelindata_16_objectives.json')
+  }
+  public quests74DevworldRed74Objectives() {
+    return this.load<Objective[]>('quests/74_devworld_red/javelindata_74_objectives.json')
+  }
+  public quests75DevworldBlue75Objectives() {
+    return this.load<Objective[]>('quests/75_devworld_blue/javelindata_75_objectives.json')
+  }
+  public quests92Weaponsandarmor92Objectives() {
+    return this.load<Objective[]>('quests/92_weaponsandarmor/javelindata_92_objectives.json')
+  }
+  public quests95Seasons95Objectives() {
+    return this.load<Objective[]>('quests/95_seasons/javelindata_95_objectives.json')
+  }
+  public quests95aSeasonsS0295aObjectives() {
+    return this.load<Objective[]>('quests/95a_seasons_s02/javelindata_95a_objectives.json')
+  }
+  public quests98Factions98Objectives() {
+    return this.load<Objective[]>('quests/98_factions/javelindata_98_objectives.json')
+  }
+  public quests99Msq99Objectives() {
+    return this.load<Objective[]>('quests/99_msq/javelindata_99_objectives.json')
+  }
+  public quests99aMsq99aObjectives() {
+    return this.load<Objective[]>('quests/99a_msq/javelindata_99a_objectives.json')
+  }
+  public quests99bMsqBrightwood99bObjectives() {
+    return this.load<Objective[]>('quests/99b_msq_brightwood/javelindata_99b_objectives.json')
+  }
+  public quests99cMsqWeaversfen99cObjectives() {
+    return this.load<Objective[]>('quests/99c_msq_weaversfen/javelindata_99c_objectives.json')
   }
   public spelltable() {
     return this.load<Spelltable[]>('javelindata_spelltable.json')

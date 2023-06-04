@@ -61,4 +61,6 @@ export const TABLE_GLOB_PATTERNS = [
   'pointofinterestdefinitions/*',
   'weaponabilities/*',
   'mtx/*',
+  'quests/**/*_objectives',
+  'questgameevents/*',
 ].map((it) => it + '.json')

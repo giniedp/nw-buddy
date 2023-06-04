@@ -9,18 +9,12 @@
       <ng-template #tplMenu>
         <li *ngFor="let item of header.categories | async" [routerLinkActive]="'bordered'">
           <a rel="nofollow" [routerLink]="item.route">
-
+            <img [nwImage]="item.icon" class="w-5 h-5" *ngIf="item.icon" />
             {{ item.label }}
           </a>
         </li>
       </ng-template>
       <ng-template #tplButtons>
-        <li>
-          <nwb-screenshot-button></nwb-screenshot-button>
-        </li>
-        <li [tooltip]="'Open price importer'">
-          <nwb-price-importer-button></nwb-price-importer-button>
-        </li>
         <li>
           <nwb-data-table-panel-button></nwb-data-table-panel-button>
         </li>

@@ -1,0 +1,13 @@
+<nwb-detail-drawer class="hidden lg:block lg:w-[420px]" [breakpoints]="[0.15, 0.25, 0.5, 1]">
+  <div *nwbDetailDraweContent class="layout-content bg-base-200 layout-pad">
+    <nwb-quest-detail
+      [questId]="itemId$ | async"
+      [nwbScreenshotFrame]=""
+      (itemChange)="onEntity($event)"
+      class="flex-1"
+    >
+
+    </nwb-quest-detail>
+
+  </div>
+</nwb-detail-drawer>

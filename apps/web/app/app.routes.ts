@@ -22,6 +22,7 @@ export const ROUTES: Routes = [
   { path: 'items', loadChildren: () => import('./pages/database/items').then((m) => m.ItemsModule) },
   { path: 'perks', loadChildren: () => import('./pages/database/perks').then((m) => m.PerksModule) },
   { path: 'poi', loadChildren: () => import('./pages/database/poi').then((m) => m.PoiModule) },
+  { path: 'quests', loadChildren: () => import('./pages/database/quests').then((m) => m.QuestsModule) },
   { path: 'loot', loadChildren: () => import('./pages/database/loot').then((m) => m.LootModule) },
   { path: 'damage', loadChildren: () => import('./pages/database/damage').then((m) => m.DamageModule) },
   { path: 'game-events', loadChildren: () => import('./pages/database/game-events').then((m) => m.GameEventsModule) },

@@ -1,0 +1,20 @@
+<nwb-item-header class="gap-2">
+  <a [nwbItemIcon]="icon$ | async" [nwLink]="questId$ | async" [nwLinkResource]="'quest'" class="w-[76px] h-[76px]">
+  </a>
+  <nwb-item-header-content
+    class="z-10"
+    [name]="title$ | async | nwText | nwTextBreak: ' - '"
+    [sourceName]="'quest'"
+    [typeName]="type$ | async | nwHumanize"
+    [rarityName]="(levelLabel$ | async)"
+  ></nwb-item-header-content>
+</nwb-item-header>
+<div class="p-4 flex flex-col gap-2">
+  <div *ngIf="description$ | async; let text" class=" text-nw-description italic" [innerHTML]="text | nwText | nwTextBreak"></div>
+  <div class="chat chat-start" *ngIf="prompt$ | async; let text ">
+    <div class="chat-bubble" [nwText]="text"></div>
+  </div>
+  <div class="chat chat-end" *ngIf="response$ | async; let text ">
+    <div class="chat-bubble" [nwText]="text"></div>
+  </div>
+</div>
