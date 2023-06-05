@@ -20594,9 +20594,9 @@ yauzl@^2.10.0:
     buffer-crc32 "~0.2.3"
     fd-slicer "~1.1.0"
 
-"yauzl@git+https://github.com/Kattoor/yauzl.git":
+"yauzl@https://github.com/Kattoor/yauzl.git":
   version "2.10.0"
-  resolved "git+https://github.com/Kattoor/yauzl.git#4b139d66373f796fb4c44081a92d73b98fb3e011"
+  resolved "https://github.com/Kattoor/yauzl.git#4b139d66373f796fb4c44081a92d73b98fb3e011"
   dependencies:
     buffer-crc32 "~0.2.3"
     fd-slicer "~1.1.0"

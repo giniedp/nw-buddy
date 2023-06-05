@@ -69,7 +69,6 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   protected langOptions = LANG_OPTIONS
-  protected langLoaded = false
 
   protected unfoldMenuWhen$ = this.preferences.collapseMenuMode
     .observe()
@@ -90,6 +89,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
   private destroy$ = new Subject<void>()
   protected versionChanged$ = this.version.versionChanged$
+  protected langLoaded = false
 
   constructor(
     private preferences: AppPreferencesService,
@@ -106,11 +106,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.preferences.language.observe().subscribe((locale) => {
-      this.translate.use(locale)
-    })
-    this.translate.locale.value$
-      .pipe(take(1))
+    this.preferences.language.observe()
+      .pipe(switchMap((locale) => this.translate.use(locale)))
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.onLangLoaded()
@@ -126,12 +123,15 @@ export class AppComponent implements OnInit, OnDestroy {
     // 1s delay 0.3s animation
     this.langLoaded = true
     this.cdRef.markForCheck()
-    setTimeout(() => this.removeLoader(), 150)
+    this.removeLoader()
   }
 
   private removeLoader() {
     const el = this.document.querySelector('[data-loader]')
-    el.classList.add('opacity-0')
-    setTimeout(() => el.remove(), 300)
+    if (el) {
+      el.classList.remove('opacity-100')
+      el.classList.add('opacity-0')
+      setTimeout(() => el.remove(), 300)
+    }
   }
 }

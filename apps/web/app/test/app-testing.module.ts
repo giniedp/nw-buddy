@@ -20,6 +20,6 @@ import { NwDataInterceptor, NwDataService } from '~/nw'
 })
 export class AppTestingModule {
   public constructor(i18n: TranslateService) {
-    i18n.use(i18n.locale.value)
+    i18n.use(i18n.locale.value).subscribe()
   }
 }

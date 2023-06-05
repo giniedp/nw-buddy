@@ -7,7 +7,7 @@ import {
   map,
   Observable,
   of, startWith,
-  Subject, take
+  Subject, take, tap
 } from 'rxjs'
 import { LocaleService } from './locale.service'
 import { TranslateLoader } from './translate-loader'
@@ -64,10 +64,12 @@ export class TranslateService implements OnDestroy {
   }
 
   public use(locale: string) {
-    this.loadTranslations(locale).pipe(take(1)).subscribe((data) => {
-      this.merge(locale, data)
-      this.locale.use(locale)
-    })
+    return this.loadTranslations(locale)
+      .pipe(take(1))
+      .pipe(tap((data) => {
+        this.merge(locale, data)
+        this.locale.use(locale)
+      }))
   }
 
   public merge(locale: string, data: Record<string, string>) {

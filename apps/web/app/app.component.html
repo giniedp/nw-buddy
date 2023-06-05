@@ -27,7 +27,7 @@
         </ng-container>
         <ion-content [scrollY]="false" class="bg-base-200">
           <div class="h-full layout-row">
-            <div class="layout-col flex-1">
+            <div class="layout-col flex-1" *ngIf="langLoaded">
               <router-outlet></router-outlet>
             </div>
             <ng-container *ngIf="!isOverwolf">
