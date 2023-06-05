@@ -19,12 +19,12 @@
 <a
   class="z-10"
   nwbItemHeaderContent
-  [name]="name | nwText | nwTextBreak:' - '"
-  [nameLink]="enableLink ? entityLink : null"
+  [title]="name | nwText | nwTextBreak:' - '"
+  [titleLink]="enableLink ? entityLink : null"
   [rarity]="rarity"
-  [rarityName]="rarityName | nwText"
-  [typeName]="typeName | nwText"
-  [sourceName]="size === 'sm' ? null : sourceLabel"
+  [subCategory]="rarityName | nwText"
+  [subTitle]="typeName | nwText"
+  [category]="size === 'sm' ? null : sourceLabel"
   [skeleton]="isLoading"
   *ngIf="!disableContent"
 >
