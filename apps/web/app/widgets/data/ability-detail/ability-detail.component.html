@@ -8,10 +8,10 @@
   </a>
   <nwb-item-header-content
     class="z-10"
-    [name]="nameForDisplay$ | async | nwText | nwTextBreak:' - '"
-    [sourceName]="'Ability'"
-    [typeName]="weaponOrSource$ | async"
-    [rarityName]="uiCategory$ | async"
+    [title]="nameForDisplay$ | async | nwText | nwTextBreak:' - '"
+    [subTitle]="weaponOrSource$ | async"
+    [category]="'Ability'"
+    [subCategory]="uiCategory$ | async"
 
   ></nwb-item-header-content>
 </nwb-item-header>

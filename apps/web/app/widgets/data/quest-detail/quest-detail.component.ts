@@ -3,13 +3,15 @@ import { Component, forwardRef, Input, Output } from '@angular/core'
 import { NwDbService, NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { QuestDetailStore } from './quest-detail.store'
+import { QuestDetailFollowUpComponent } from './quest-detail-follow-up.component'
+import { RouterModule } from '@angular/router'
 
 @Component({
   standalone: true,
   selector: 'nwb-quest-detail',
   templateUrl: './quest-detail.component.html',
   exportAs: 'questDetail',
-  imports: [CommonModule, NwModule, ItemFrameModule],
+  imports: [CommonModule, NwModule, RouterModule, ItemFrameModule, QuestDetailFollowUpComponent],
   providers: [
     {
       provide: QuestDetailStore,

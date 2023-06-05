@@ -3,10 +3,10 @@
   </a>
   <nwb-item-header-content
     class="z-10"
-    [name]="title$ | async | nwText | nwTextBreak: ' - '"
-    [sourceName]="'quest'"
-    [typeName]="type$ | async | nwHumanize"
-    [rarityName]="(levelLabel$ | async)"
+    [title]="title$ | async | nwText | nwTextBreak: ' - '"
+    [subTitle]="type$ | async | nwHumanize"
+    [category]="'quest'"
+    [subCategory]="(levelLabel$ | async)"
   ></nwb-item-header-content>
 </nwb-item-header>
 <div class="p-4 flex flex-col gap-2">
@@ -16,5 +16,20 @@
   </div>
   <div class="chat chat-end" *ngIf="response$ | async; let text ">
     <div class="chat-bubble" [nwText]="text"></div>
+  </div>
+  <div *ngIf="previousQuests$ | async; let prev" class="flex flex-col gap-1">
+    <h3 class="font-bold text-lg"> Previous Quests:</h3>
+    <div class="flex flex-row items-center gap-1" *ngFor="let quest of prev">
+      <a [nwLink]="quest.id" [nwLinkResource]="'quest'" class="flex-none">
+        <img [nwImage]="quest.icon" class="w-5 h-5" />
+      </a>
+      <a class="flex-1 link-hover" [routerLink]="['/quests/table', quest.id]">
+        <span>{{ quest.title | nwText }}</span>
+      </a>
+    </div>
+  </div>
+  <div *ngIf="followup$ | async; let followup" class="flex flex-col gap-1">
+    <h3 class="font-bold"> Follow Up Quests:</h3>
+    <nwb-quest-detail-follow-up *ngFor="let row of followup" [data]="row"></nwb-quest-detail-follow-up>
   </div>
 </div>

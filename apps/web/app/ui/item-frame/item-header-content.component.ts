@@ -17,19 +17,19 @@ export class ItemHeaderContentComponent {
   public rarity: number
 
   @Input()
-  public rarityName: string
+  public title: string
 
   @Input()
-  public typeName: string
+  public titleLink: string | any[]
 
   @Input()
-  public sourceName: string
+  public subTitle: string
 
   @Input()
-  public name: string
+  public category: string
 
   @Input()
-  public nameLink: string | any[]
+  public subCategory: string
 
   @Input()
   public skeleton: boolean

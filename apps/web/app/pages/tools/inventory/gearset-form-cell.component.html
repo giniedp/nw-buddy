@@ -25,11 +25,11 @@
 
     <nwb-item-header-content
       class="z-10 h-full hidden 4xl:flex"
-      [name]="vm.name | nwText"
       [rarity]="vm.rarity"
-      [rarityName]="vm.rarityName | nwText"
-      [typeName]="vm.typeName | nwText"
-      [sourceName]="vm.sourceLabel"
+      [title]="vm.name | nwText"
+      [subTitle]="vm.typeName | nwText"
+      [category]="vm.sourceLabel"
+      [subCategory]="vm.rarityName | nwText"
     >
       <span class="header flex gap-1">
         <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-4 h-4" /> {{ vm.gearScore }}</span>
@@ -43,7 +43,7 @@
     <a class="relative flex z-10 4xl:w-20 4xl:h-20">
       <picture [nwIcon]="slot.icon" [nwRarity]="0" class="w-full h-full"></picture>
     </a>
-    <nwb-item-header-content class="z-10 h-full hidden 4xl:flex" [rarity]="0" [typeName]="slot.itemType | nwText">
+    <nwb-item-header-content class="z-10 h-full hidden 4xl:flex" [rarity]="0" [subTitle]="slot.itemType | nwText">
       <span class="title" [nwText]="slot.name"></span>
     </nwb-item-header-content>
   </div>

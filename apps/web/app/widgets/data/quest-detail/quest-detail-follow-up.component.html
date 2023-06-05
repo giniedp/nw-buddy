@@ -1,0 +1,19 @@
+<div class="flex flex-row items-center gap-1">
+  <a [nwLink]="quest.ObjectiveID" [nwLinkResource]="'quest'" class="flex-none">
+    <img [nwImage]="icon" class="w-5 h-5" />
+  </a>
+  <a class="flex-1 link-hover" [routerLink]="['/quests/table', questId]">
+    <span>{{ title | nwText }}</span>
+  </a>
+  <button *ngIf="hasFollowUp" class="btn btn-sm btn-square btn-ghost flex-none" (click)="expand = !expand">
+    <nwb-icon
+      [icon]="iconArrow"
+      class="w-4 h-4 transition-transform"
+      [class.rotate-90]="expand"
+      [class.-rotate-90]="!expand"
+    ></nwb-icon>
+  </button>
+</div>
+<div *ngIf="hasFollowUp && expand" class="flex flex-col gap-1 pl-3">
+  <nwb-quest-detail-follow-up *ngFor="let row of next" [data]="row"></nwb-quest-detail-follow-up>
+</div>

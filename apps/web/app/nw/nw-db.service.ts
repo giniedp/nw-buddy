@@ -5,6 +5,7 @@ import {
   convertPerkBuckets,
   getIngretientsFromRecipe,
   getItemIdFromRecipe,
+  getQuestRequiredAchuevmentIds,
 } from '@nw-data/common'
 import { Housingitems, Vitals } from '@nw-data/generated'
 import { groupBy, sortBy } from 'lodash'
@@ -240,6 +241,10 @@ export class NwDbService {
   public questsByAchievementId = indexGroupSetBy(
     () => this.quests,
     (it) => it.AchievementId
+  )
+  public questsByRequiredAchievementId = indexGroupSetBy(
+    () => this.quests,
+    (it) => getQuestRequiredAchuevmentIds(it)
   )
 
   public recipes = table(() => [this.data.crafting()])
