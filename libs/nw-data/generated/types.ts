@@ -659,6 +659,7 @@ export interface Gamemodes {
     CombineTeamGroups:                       boolean;
     ContainerGS:                             number;
     ContainerLevel:                          number;
+    DailyLootLimitId?:                       string;
     Description?:                            string;
     DifficultyProgressionId?:                string;
     DisableDeathsDoor:                       boolean;
@@ -751,6 +752,7 @@ export interface Gamemodes {
     WarBoardAttackerTeamIdx:                 number;
     WarBoardDefenderTeamIdx:                 number;
     WarBoardStatDefinitions?:                string;
+    WeeklyLootLimitId?:                      string;
     WorldBounds?:                            string;
 }
 export interface Gatherables {
@@ -759,7 +761,6 @@ export interface Gatherables {
     BaseGatherTime:                  number;
     ConsumedStatusEffect?:           string;
     DepletedGatherableID:            number;
-    DisplayDescription?:             string;
     DisplayName?:                    string;
     FinalLootTable?:                 string;
     GameEventID?:                    string;
@@ -768,28 +769,24 @@ export interface Gatherables {
     GatheringFragment?:              string;
     GatheringType:                   string;
     IconTypeUnlock?:                 string;
+    IdleFragment?:                   string;
     IgnoreAllObstructions:           boolean;
     IsDynamicPoiTarget:              boolean;
     IsLandmark:                      boolean;
     IsLootContainer:                 boolean;
     ItemRestrictionId?:              string;
     ItemRestrictionQuantity?:        string;
-    LandmarkIconPath?:               string;
     MaxRespawnRate:                  number;
     MinRespawnRate:                  number;
     NumRequiredToGather:             number;
     ObstructBuildables:              boolean;
     RequireControllingFaction:       boolean;
-    RequiredSongId?:                 string;
     RequiredStatusEffect?:           string;
     RequiredTradeskillLevel:         number;
     RequiredWhisperId?:              string;
     ResetGatherTimeOnEndInteraction: boolean;
     Restriction:                     string;
-    SongRewardId?:                   string;
-    TooltipImage?:                   string;
     Tradeskill:                      string;
-    UsableEmoteTags?:                string;
     WaitForImpact:                   boolean;
 }
 export interface VariationsLockedInteractGatherables {
@@ -1489,8 +1486,10 @@ export interface Lootbuckets {
     Item355?:              string;
     Item356?:              string;
     Item357?:              string;
+    Item358?:              string;
+    Item359?:              string;
     Item36?:               string;
-    Item361?:              string;
+    Item360?:              string;
     Item362?:              string;
     Item363?:              string;
     Item364?:              string;
@@ -1843,7 +1842,9 @@ export interface Lootbuckets {
     LootBucket355?:        string;
     LootBucket356?:        string;
     LootBucket357?:        string;
-    LootBucket361?:        string;
+    LootBucket358?:        string;
+    LootBucket359?:        string;
+    LootBucket360?:        string;
     LootBucket362?:        string;
     LootBucket363?:        string;
     LootBucket364?:        string;
@@ -2205,8 +2206,10 @@ export interface Lootbuckets {
     MatchOne355:           boolean;
     MatchOne356:           boolean;
     MatchOne357:           boolean;
+    MatchOne358?:          string;
+    MatchOne359?:          string;
     MatchOne36?:           string;
-    MatchOne361?:          string;
+    MatchOne360?:          string;
     MatchOne362?:          string;
     MatchOne363?:          string;
     MatchOne364?:          string;
@@ -2580,8 +2583,10 @@ export interface Lootbuckets {
     Quantity355:           number;
     Quantity356:           number;
     Quantity357:           number;
+    Quantity358:           number;
+    Quantity359:           number;
     Quantity36:            number;
-    Quantity361:           number;
+    Quantity360:           number;
     Quantity362?:          string;
     Quantity363:           number;
     Quantity364:           number;
@@ -4538,6 +4543,48 @@ export interface Arenadefinitions {
     RecommendedLevel:      number;
     TerritoryID:           number;
     TooltipBackground?:    string;
+}
+export interface SandelementalHeavySandworm {
+    AddDmg:                  number;
+    AttackType?:             string;
+    BlockAbsorptionModifier: number;
+    BlockHitStun:            number;
+    BlockImpactDecayRate:    number;
+    BlockImpactDistanceX:    number;
+    BlockImpactDistanceY:    number;
+    BlockImpactDistanceZ:    number;
+    BlockPowerLevel:         number;
+    BlockStaminaDmgMod:      number;
+    CanCrit:                 boolean;
+    CritHitStun:             number;
+    CritImpactDecayRate:     number;
+    CritImpactDistanceX:     number;
+    CritImpactDistanceY:     number;
+    CritImpactDistanceZ:     number;
+    CritPowerLevel:          number;
+    CritTargetCameraShakeID: string;
+    DamageID:                string;
+    DamageType:              string;
+    DeflectDamageID?:        string;
+    DmgCoef:                 number;
+    DmgCoefHead:             number;
+    HitBlockedRuneCharge:    number;
+    HitRuneCharge:           number;
+    HitStun:                 number;
+    IgnoreInvulnerable:      number;
+    ImpactDecayRate:         number;
+    ImpactDistanceX:         number;
+    ImpactDistanceY:         number;
+    ImpactDistanceZ:         number;
+    ImpactRating:            number;
+    NoReaction:              number;
+    PowerLevel:              number;
+    StaggerDmgModifier:      number;
+    StaggerResistModifier:   number;
+    StunBreakoutIncrement:   number;
+    SurfaceImpactEffect:     string;
+    TargetCameraShakeID:     string;
+    WeaponCategory:          string;
 }
 export interface Cursemutations {
     CurseMajor:        string;

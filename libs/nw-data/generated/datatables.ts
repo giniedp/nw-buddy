@@ -48,6 +48,7 @@ import type {
   Perks,
   PoiDefinition,
   Promotionmutations,
+  SandelementalHeavySandworm,
   Spelltable,
   StaminacostsPlayer,
   Statuseffect,
@@ -539,6 +540,12 @@ export abstract class NwDataLoader {
   public charactertablesSandelementalDatatablesDamagetableSandelementalShaman() {
     return this.load<Damagetable[]>('charactertables/sandelemental_datatables/javelindata_damagetable_sandelemental_shaman.json')
   }
+  public charactertablesSandelementalDatatablesSandelementalHeavySandworm() {
+    return this.load<SandelementalHeavySandworm[]>('charactertables/sandelemental_datatables/sandelemental_heavy_sandworm.json')
+  }
+  public charactertablesSandwormDatatablesDamagetableSandworm() {
+    return this.load<Damagetable[]>('charactertables/sandworm_datatables/javelindata_damagetable_sandworm.json')
+  }
   public charactertablesScorpionDatatablesDamagetableScorpion() {
     return this.load<Damagetable[]>('charactertables/scorpion_datatables/javelindata_damagetable_scorpion.json')
   }
@@ -548,8 +555,14 @@ export abstract class NwDataLoader {
   public charactertablesScorpionDatatablesDamagetableScorpionSlinger() {
     return this.load<Damagetable[]>('charactertables/scorpion_datatables/javelindata_damagetable_scorpion_slinger.json')
   }
+  public charactertablesScorpionDatatablesDamagetableScorpionSlingerSandworm() {
+    return this.load<Damagetable[]>('charactertables/scorpion_datatables/javelindata_damagetable_scorpion_slinger_sandworm.json')
+  }
   public charactertablesScorpionDatatablesDamagetableScorpionSulfur() {
     return this.load<Damagetable[]>('charactertables/scorpion_datatables/javelindata_damagetable_scorpion_sulfur.json')
+  }
+  public charactertablesSeasonsDatatablesSeason02DamagetableBabysandworm() {
+    return this.load<Damagetable[]>('charactertables/seasons_datatables/season_02/javelindata_damagetable_babysandworm.json')
   }
   public charactertablesSeasonsDatatablesSeason02DamagetableHerikai() {
     return this.load<Damagetable[]>('charactertables/seasons_datatables/season_02/javelindata_damagetable_herikai.json')
