@@ -5,13 +5,23 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { QuestDetailStore } from './quest-detail.store'
 import { QuestDetailFollowUpComponent } from './quest-detail-follow-up.component'
 import { RouterModule } from '@angular/router'
+import { GameEventDetailDirective } from '../game-event-detail/game-event-detail.directive'
+import { GameEventDetailRewardsComponent } from '../game-event-detail/game-event-detail-rewards.component'
 
 @Component({
   standalone: true,
   selector: 'nwb-quest-detail',
   templateUrl: './quest-detail.component.html',
   exportAs: 'questDetail',
-  imports: [CommonModule, NwModule, RouterModule, ItemFrameModule, QuestDetailFollowUpComponent],
+  imports: [
+    CommonModule,
+    NwModule,
+    RouterModule,
+    ItemFrameModule,
+    QuestDetailFollowUpComponent,
+    GameEventDetailDirective,
+    GameEventDetailRewardsComponent,
+  ],
   providers: [
     {
       provide: QuestDetailStore,
@@ -20,7 +30,7 @@ import { RouterModule } from '@angular/router'
   ],
   host: {
     class: 'block bg-black rounded-md overflow-clip font-nimbus',
-  }
+  },
 })
 export class QuestDetailComponent extends QuestDetailStore {
   @Input()

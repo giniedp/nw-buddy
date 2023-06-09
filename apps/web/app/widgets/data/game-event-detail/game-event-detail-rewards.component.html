@@ -1,0 +1,11 @@
+<div *ngFor="let item of rewards" class="flex flex-row gap-1 items-center font-bold" >
+  <picture [nwIcon]="item.icon" [nwRarity]="item.rarity" class="w-8 h-8"></picture>
+  <a *ngIf="item.link" [routerLink]="item.link" class="link-hover">
+    <span *ngIf="item.quantity > 1"> {{ item.quantity }} </span>
+    <span> {{ item.label | nwText }} </span>
+  </a>
+  <ng-container *ngIf="!item.link">
+    <span *ngIf="item.quantity > 1"> {{ item.quantity }} </span>
+    <span> {{ item.label | nwText }} </span>
+  </ng-container>
+</div>

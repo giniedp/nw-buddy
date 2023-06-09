@@ -9,6 +9,7 @@ const QUEST_TYPE_ICONS = new CaseInsensitiveMap<string, string>(
     FactionStory_Marauders: 'assets/icons/quests/icon_factionstory_marauders_quest.png',
     FactionStory_Syndicate: 'assets/icons/quests/icon_factionstory_syndicate_quest.png',
     SkillProgression: 'assets/icons/quests/icon_objectiveprogression_quest.png',
+    EpicEquipment: 'assets/icons/quests/icon_objectiveprogression_quest.png',
     SeasonQuest: 'assets/icons/quests/icon_objectiveseasons_quest.png',
     Mission: 'assets/icons/quests/icon_objective_townproject.png',
     default: 'assets/icons/quests/icon_objective_quest.png',

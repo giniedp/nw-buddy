@@ -4,8 +4,8 @@ import { GameEventDetailStore } from './game-event-detail.store'
 
 @Directive({
   standalone: true,
-  selector: '[nwbSpellDetail]',
-  exportAs: 'abilityDetail',
+  selector: '[nwbGameEventDetail]',
+  exportAs: 'eventDetail',
   providers: [
     {
       provide: GameEventDetailStore,

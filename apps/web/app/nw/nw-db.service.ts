@@ -295,7 +295,14 @@ export class NwDbService {
   public itemsConsumables = table(() => [this.data.itemdefinitionsConsumables()])
   public itemsConsumablesMap = indexBy(() => this.itemsConsumables, 'ConsumableID')
 
-  public gameEvents = table(() => [this.data.gameevents()])
+  public gameEvents = table(() => {
+    return [
+      this.data.gameevents(),
+      this.data
+        .apiMethodsByPrefix('questgameevents', 'gameevents')
+        .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_'))),
+    ].flat()
+  })
   public gameEventsMap = indexBy(() => this.gameEvents, 'EventID')
   public gameEvent = lookup(() => this.gameEventsMap)
 

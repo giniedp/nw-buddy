@@ -47,7 +47,7 @@ export class QuestsTableAdapter extends DataTableAdapter<Objective> {
               href: this.info.link('quest', String(data.ObjectiveID)),
               icon: getQuestTypeIcon(data.Type) || NW_FALLBACK_ICON,
               iconClass: ['scale-125', 'transition-all', 'translate-x-0', 'hover:translate-x-1'],
-
+              small: true
             })
           }),
         }),
@@ -133,7 +133,8 @@ export class QuestsTableAdapter extends DataTableAdapter<Objective> {
           colId: 'requiredLevel',
           headerValueGetter: () => 'Required Level',
           field: this.fieldName('RequiredLevel'),
-          filter: 'agNumberColumnFilter'
+          filter: 'agNumberColumnFilter',
+          hide: true,
         }),
         this.colDef({
           colId: 'achievementId',

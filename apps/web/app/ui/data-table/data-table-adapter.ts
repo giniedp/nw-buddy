@@ -219,6 +219,7 @@ export abstract class DataTableAdapter<T> {
     iconClass,
     rarity,
     named,
+    small
   }: {
     href: string
     target: string
@@ -227,6 +228,7 @@ export abstract class DataTableAdapter<T> {
     iconClass?: string[]
     rarity?: number
     named?: boolean
+    small?: boolean
   }) {
     linkClass = linkClass?.filter((it) => !!it)
     iconClass = iconClass?.filter((it) => !!it)
@@ -241,7 +243,7 @@ export abstract class DataTableAdapter<T> {
       }
       el.append(
         this.createIcon((pic, img) => {
-          pic.classList.add('inline-block', 'w-12', 'h-12')
+          pic.classList.add('inline-block', small ? 'w-8' : 'w-12', small ? 'h-8' : 'h-12')
           if (rarity != null) {
             pic.classList.add(`nw-item-rarity-${rarity}`, 'nw-item-icon-frame', 'nw-item-icon-bg')
             if (rarity) {
