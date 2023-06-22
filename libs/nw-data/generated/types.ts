@@ -432,7 +432,7 @@ export interface ItemDefinitionMaster {
     HideInLootTicker?:               number;
     HousingTags?:                    string;
     IconPath:                        null | string;
-    IgnoreHWMScaling?:               number;
+    IgnoreHWMScaling?:               number | string;
     IgnoreNameChanges?:              number;
     IgnoreParentColumns_DVT?:        string;
     IngredientBonusPrimary?:         number;
@@ -673,6 +673,8 @@ export interface Gamemodes {
     GameModeId:                              string;
     GearScoreOverrideValueMax:               number;
     GearScoreOverrideValueMin:               number;
+    GearScoreRecommendedValueMax:            number;
+    GearScoreRecommendedValueMin:            number;
     HideCompass:                             boolean;
     HidePoiName:                             boolean;
     IconPath?:                               string;
@@ -3510,6 +3512,7 @@ export interface Statuseffect {
     CastSpell?:                                  string;
     CoreTempMod?:                                number;
     CritChanceModifier?:                         number;
+    DMGAcid?:                                    number;
     DMGArcane?:                                  number;
     DMGCorruption?:                              number;
     DMGFire?:                                    number;
@@ -4312,6 +4315,7 @@ export interface Vitals {
     DEFStandard:                              number;
     DEFStrike:                                number;
     DEFThrust:                                number;
+    DMGAcid:                                  number;
     DMGArcane:                                number;
     DMGCorruption:                            number;
     DMGFire:                                  number;

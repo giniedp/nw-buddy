@@ -15,7 +15,7 @@ enum Unpacker {
 program
   .option('-g, --game <path>', 'game directory')
   .option('-o, --output <path>', 'output directory')
-  .option('-m, --module <module>', 'unpacker module to use', 'nwextract')
+  .option('-m, --module <module>', 'unpacker module to use', 'nwtools')
   .option('-t, --threads <threads>', 'Number of threads', Number)
   .option('--ptr', 'PTR mode', NW_USE_PTR)
   .action(async () => {
