@@ -722,6 +722,7 @@ export interface Gamemodes {
     QuitButtonTextId?:                       string;
     RaidInviteDelaySec:                      number;
     RaidInviteDurationSec:                   number;
+    ReplicateParticipantCharacterIds:        boolean;
     RequiredLevel:                           number;
     RequirementText?:                        string;
     RequiresGameModeGDEException:            string;
@@ -3568,7 +3569,6 @@ export interface Statuseffect {
     FactionReputationMod?:                       number;
     FactionTokensMod?:                           number;
     FishSizeRollModifier?:                       number;
-    FishingLineStrength?:                        number;
     Food?:                                       number;
     FoodBurn?:                                   number;
     ForceReplicateToRemotes?:                    boolean;
