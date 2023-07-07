@@ -238,6 +238,9 @@ export class GearsetDetailComponent {
         })
       )
     })
+    if (slots$.length === 0) {
+      return of([])
+    }
     return combineLatest(slots$)
   }
 

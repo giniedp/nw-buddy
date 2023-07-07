@@ -3,8 +3,8 @@ import { ActiveMods, DbSlice, MannequinState } from '../types'
 import { selectPhysicalRatingBase } from './armoring'
 
 export function selectMaxHealth(db: DbSlice, mods: ActiveMods, state: MannequinState) {
-  // HINT: 778 base value is from vitals.json "VitalsID": "Player"
-  const healthFromLevel = 778 + 1.5 * Math.pow(state.level - 1, 2)
+  // HINT: 856 base value is from vitals.json "VitalsID": "Player"
+  const healthFromLevel = 856 + 1.65 * Math.pow(state.level - 1, 2)
   const healthFromConst = mods.attributes.con.health
 
   const result: ModifierResult = {
