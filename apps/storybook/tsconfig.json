@@ -1,5 +1,8 @@
 {
+  "compilerOptions": {
+    "skipLibCheck": true
+  },
   "extends": "../../tsconfig.json",
   "exclude": ["../web/test.ts", "../web/**/*.spec.ts"],
-  "include": ["../web/**/*"]
+  "include": ["../web/**/*", "./*"]
 }

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input } from '@angular/core'
-import { Meta, moduleMetadata, Story } from '@storybook/angular'
+import { Component, importProvidersFrom } from '@angular/core'
+import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
 import { AppTestingModule } from '~/test'
 import { AttributesEditorModule } from './attributes-editor.module'
 
@@ -15,19 +15,18 @@ class StoryComponent {
 
 }
 
-const StoryMeta: Meta = {
+const meta: Meta = {
   title: 'Attributes Editor',
   component: StoryComponent,
   decorators: [
+    applicationConfig({
+      providers: [importProvidersFrom(AppTestingModule)]
+    }),
     moduleMetadata({
-      imports: [AppTestingModule, AttributesEditorModule],
+      imports: [AttributesEditorModule],
     }),
   ],
 }
 
-export default StoryMeta
-export const AttributesEditor: Story = () => ({
-  props: {
-
-  },
-})
+export default meta
+export const AttributesEditor: StoryObj = {}

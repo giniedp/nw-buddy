@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input } from '@angular/core'
-import { Meta, moduleMetadata, Story } from '@storybook/angular'
+import { Component, Input, importProvidersFrom } from '@angular/core'
+import { applicationConfig, Meta, moduleMetadata, Story, StoryObj } from '@storybook/angular'
 import { AppTestingModule } from '~/test'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemDetailModule } from './item-detail.module'
@@ -27,19 +27,18 @@ class StoryComponent {
   itemId: string
 }
 
-const StoryMeta: Meta = {
+const meta: Meta = {
   title: 'Item Detail',
   component: StoryComponent,
   decorators: [
+    applicationConfig({
+      providers: [importProvidersFrom(AppTestingModule)]
+    }),
     moduleMetadata({
-      imports: [AppTestingModule, ItemDetailModule, ItemFrameModule],
+      imports: [ItemDetailModule, ItemFrameModule],
     }),
   ],
 }
 
-export default StoryMeta
-export const ItemDetail: Story = () => ({
-  props: {
-    itemId: '1hLongsword_PromiseofPowerT5',
-  },
-})
+export default meta
+export const ItemDetail: StoryObj = {}

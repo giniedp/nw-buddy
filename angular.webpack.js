@@ -8,7 +8,7 @@ const EmitFilePlugin = require('emit-file-webpack-plugin');
  * Custom angular webpack configuration
  */
 module.exports = (config, options) => {
-  if (options.fileReplacements) {
+  if (options && options.fileReplacements) {
     for (let replacement of options.fileReplacements) {
       let parts = replacement.with.split('.')
       if (parts.includes('electron')) {
