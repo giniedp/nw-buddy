@@ -120,11 +120,11 @@ where
 
 ## Display Bug
 
-There is a display bug in the game where for example HP shows 6000 in HP Bar but 5999 in stats screen. This is because the actual value in that case is 5999.5 and is rounded for HP Bar (giving 6000) but floored for display in stats screen (giving 5999). This happens for every even number of Player Level.
+There is a display bug in the game where for example HP shows 6600 in HP Bar but 6599 in stats screen. This is because the actual value in that case is 5999.7 and is rounded for HP Bar (giving 6600) but floored for display in stats screen (giving 6599). This happens for every even number of Player Level.
 
 ## Pseudo Code
 ```js
-  const healthFromLevel = 778 + 1.5 * Math.pow(state.level - 1, 2)
+  const healthFromLevel = 856 + 1.65 * Math.pow(state.level - 1, 2)
   const healthFromConst = lookupConstAttrHealth()
 
   let result = healthFromLevel + healthFromConst
