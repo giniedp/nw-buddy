@@ -764,6 +764,7 @@ export interface Gatherables {
     BaseGatherTime:                  number;
     ConsumedStatusEffect?:           string;
     DepletedGatherableID:            number;
+    DisplayDescription?:             string;
     DisplayName?:                    string;
     FinalLootTable?:                 string;
     GameEventID?:                    string;
@@ -779,17 +780,22 @@ export interface Gatherables {
     IsLootContainer:                 boolean;
     ItemRestrictionId?:              string;
     ItemRestrictionQuantity?:        string;
+    LandmarkIconPath?:               string;
     MaxRespawnRate:                  number;
     MinRespawnRate:                  number;
     NumRequiredToGather:             number;
     ObstructBuildables:              boolean;
     RequireControllingFaction:       boolean;
+    RequiredSongId?:                 string;
     RequiredStatusEffect?:           string;
     RequiredTradeskillLevel:         number;
     RequiredWhisperId?:              string;
     ResetGatherTimeOnEndInteraction: boolean;
     Restriction:                     string;
+    SongRewardId?:                   string;
+    TooltipImage?:                   string;
     Tradeskill:                      string;
+    UsableEmoteTags?:                string;
     WaitForImpact:                   boolean;
 }
 export interface VariationsLockedInteractGatherables {
@@ -1493,6 +1499,7 @@ export interface Lootbuckets {
     Item359?:              string;
     Item36?:               string;
     Item360?:              string;
+    Item361?:              string;
     Item362?:              string;
     Item363?:              string;
     Item364?:              string;
@@ -1848,6 +1855,7 @@ export interface Lootbuckets {
     LootBucket358?:        string;
     LootBucket359?:        string;
     LootBucket360?:        string;
+    LootBucket361?:        string;
     LootBucket362?:        string;
     LootBucket363?:        string;
     LootBucket364?:        string;
@@ -2213,6 +2221,7 @@ export interface Lootbuckets {
     MatchOne359?:          string;
     MatchOne36?:           string;
     MatchOne360?:          string;
+    MatchOne361?:          string;
     MatchOne362?:          string;
     MatchOne363?:          string;
     MatchOne364?:          string;
@@ -2590,6 +2599,7 @@ export interface Lootbuckets {
     Quantity359:           number;
     Quantity36:            number;
     Quantity360:           number;
+    Quantity361:           number;
     Quantity362?:          string;
     Quantity363:           number;
     Quantity364:           number;
