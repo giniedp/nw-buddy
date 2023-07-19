@@ -370,11 +370,15 @@ export class NwDbService {
   public viewMutatorDifficultiesWithRewards = table(() => queryMutatorDifficultiesWithRewards(this))
 
   public lootTables = table(() =>
-    this.data.apiMethodsByPrefix('loottables', 'loottables').map((it) =>
-      this.data[it.name]()
-        .pipe(map(convertLoottables))
-        .pipe(annotate('$source', it.suffix || '_'))
-    )
+    this.data
+      .matchingApiMethods<'loottables'>((it) => {
+        return it.split(/([A-Z][a-z]+)/g).some((token) => {
+          return token.toLowerCase() === 'loottables'
+        })
+      })
+      .map((it) => {
+        return this.data[it]().pipe(map(convertLoottables)).pipe(annotate('$source', it))
+      })
   )
   public lootTablesMap = indexBy(() => this.lootTables, 'LootTableID')
   public lootTable = lookup(() => this.lootTablesMap)

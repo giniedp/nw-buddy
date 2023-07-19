@@ -33,6 +33,12 @@ export class NwDataService extends NwDataLoader {
     return this.http.get<Record<string, string>>(url)
   }
 
+  public matchingApiMethods<T extends keyof NwDataService>(match: (method: string) => boolean) {
+    return this.apiMethods
+      .filter(match)
+      .map((name) => name as T)
+  }
+
   public apiMethodsByPrefix<T extends keyof NwDataService>(prefix: string, asKey: T) {
     return this.apiMethods
       .filter((it) => it.startsWith(prefix))
