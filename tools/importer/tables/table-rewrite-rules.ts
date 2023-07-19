@@ -17,8 +17,8 @@ export function rewriteImagePathRule(inputDir: string): RewriteFile {
         }
         let candidates = [
           obj.IconPath,
-          obj.ArmorIconM ? findIcon(obj.ArmorIconM) : null,
-          obj.ArmorIconF ? findIcon(obj.ArmorIconF) : null,
+          obj.ArmorAppearanceM ? findIcon(obj.ArmorAppearanceM) : null,
+          obj.ArmorAppearanceF ? findIcon(obj.ArmorAppearanceF) : null,
           obj.WeaponAppearanceOverride ? findIcon(obj.WeaponAppearanceOverride) : null,
         ]
         if (obj.ItemType && obj.ArmorAppearanceM) {
@@ -38,13 +38,7 @@ export function rewriteImagePathRule(inputDir: string): RewriteFile {
           }
         }
         obj.IconPath = null
-        if (obj.ItemID.includes('Deluxe')) {
-          console.log(
-            'icon missing',
-            obj.ItemID,
-            candidates.filter((it) => !!it)
-          )
-        }
+
       },
     ],
   }
