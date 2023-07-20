@@ -110,6 +110,10 @@ function preprocessExpression(text: string) {
   if (text.includes('Type_StatusEffectDataAI_Evil_Knight_Fire_Champion_DangerTick')) {
     text = text.replace('Type_StatusEffectDataAI_Evil_Knight_Fire_Champion_DangerTick', 'Type_StatusEffectData.AI_Evil_Knight_Fire_Champion_DangerTick')
   }
+  if (text.includes('{[{[Type_StatusEffectData.Sandworm_Storm_Chaser_Debuff.BaseDuration]}]}')) {
+    text = text.replace('{[{[Type_StatusEffectData.Sandworm_Storm_Chaser_Debuff.BaseDuration]}]}', '{[Type_StatusEffectData.Sandworm_Storm_Chaser_Debuff.BaseDuration]}')
+  }
+
   return text
 }
 
