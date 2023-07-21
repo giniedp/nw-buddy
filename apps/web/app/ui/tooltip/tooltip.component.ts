@@ -1,6 +1,6 @@
 import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
-import { Component, HostBinding, Input, TemplateRef, Type } from '@angular/core'
+import { Component, HostBinding, Injector, Input, TemplateRef, Type } from '@angular/core'
 
 @Component({
   standalone: true,
@@ -8,8 +8,8 @@ import { Component, HostBinding, Input, TemplateRef, Type } from '@angular/core'
   styleUrls: ['./tooltip.component.scss'],
   template: `
     <ng-container *ngIf="text">{{ text }}</ng-container>
-    <ng-container *ngComponentOutlet="component"></ng-container>
-    <ng-container *ngTemplateOutlet="tpl"></ng-container>
+    <ng-template [ngComponentOutlet]="component" [ngComponentOutletInjector]="injector"]></ng-template>
+    <ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="context" [ngTemplateOutletInjector]="injector"]></ng-template>
   `,
   imports: [CommonModule],
   host: {
@@ -32,6 +32,12 @@ export class TooltipComponent {
   @Input()
   @HostBinding('class')
   public color: '' | 'primary' | 'secondary' | 'accent' | 'info' | 'success' | 'warning' | 'error'
+
+  @Input()
+  public context: any
+
+  @Input()
+  public injector: Injector
 
   @Input()
   public set content(value: string | TemplateRef<any> | Type<any>) {

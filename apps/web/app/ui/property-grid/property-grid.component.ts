@@ -4,6 +4,8 @@ import { RouterModule } from '@angular/router'
 import { map, ReplaySubject } from 'rxjs'
 import { humanize } from '~/utils'
 import { PropertyGridCell, PropertyGridCellContext, PropertyGridCellDirective } from './property-grid-cell.directive'
+import { TooltipModule } from '../tooltip'
+import { PropertyGridValueDirective } from './property-grid-value.directive'
 
 export interface PropertyGridEntry {
   key: string
@@ -16,7 +18,7 @@ export interface PropertyGridEntry {
   selector: 'nwb-property-grid',
   templateUrl: './property-grid.component.html',
   styleUrls: ['./property-grid.component.scss'],
-  imports: [CommonModule, RouterModule, PropertyGridCellDirective],
+  imports: [CommonModule, RouterModule, TooltipModule, PropertyGridCellDirective, PropertyGridValueDirective],
   providers: [DecimalPipe],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
@@ -117,8 +119,6 @@ export class PropertyGridComponent<T = any> {
   protected toContext(cells: PropertyGridCell[]): PropertyGridCellContext {
     return {
       $implicit: cells,
-      cell: cells[0],
-      cells: cells
     }
   }
 }

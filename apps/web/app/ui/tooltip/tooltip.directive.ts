@@ -36,6 +36,9 @@ export class TooltipDirective implements OnInit, OnDestroy {
   @Input('tooltip')
   public tooltip: string | TemplateRef<any> | Type<any>
 
+  @Input('tooltipContext')
+  public tooltipContext: any
+
   @Input('tooltipPlacement')
   public placement: TooltipDirection = 'auto'
 
@@ -117,6 +120,7 @@ export class TooltipDirective implements OnInit, OnDestroy {
     this.portal = this.portal || new ComponentPortal(TooltipComponent, this.vcRef)
     this.portalRef = this.overlayRef.attach(this.portal)
     this.portalRef.instance.content = this.tooltip
+    this.portalRef.instance.context = this.tooltipContext
     this.portalRef.instance.color = this.color as any
     this.portalRef.changeDetectorRef.markForCheck()
   }

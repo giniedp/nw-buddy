@@ -7,26 +7,56 @@
   </span>
 </ng-container>
 
-<ng-template nwbPropertyGridCell let-cells #tplCells>
+<ng-template [nwbGridCell] let-cells #tplCells>
   <ng-container *ngFor="let cell of cells; trackBy: trackBy">
-    <a *ngIf="cell.externLink" [href]="cell.externLink" target="_blank" class="link link-primary">
-      {{ cell.value }}
-    </a>
-    <a *ngIf="cell.routerLink" [routerLink]="cell.routerLink" [queryParams]="cell.queryParams" class="link link-primary">
-      {{ cell.value }}
-    </a>
-    <span
-      *ngIf="!cell.routerLink && !cell.externLink"
-      [class.text-primary]="cell.primary"
-      [class.text-secondary]="cell.secondary"
-      [class.text-info]="cell.info"
-      [class.text-accent]="cell.accent"
-      [class.font-bold]="cell.bold"
-      [class.italic]="cell.italic"
-    >
-      {{ cell.value }}
-    </span>
+    <ng-container
+      [ngTemplateOutlet]="cell.template || tplValue"
+      [ngTemplateOutletContext]="{ $implicit: cell }"
+    ></ng-container>
   </ng-container>
+</ng-template>
+
+<ng-template [nwbGridValue] let-cell #tplValue>
+  <a
+    *ngIf="cell.externLink"
+    [href]="cell.externLink"
+    target="_blank"
+    class="link link-primary"
+    [tooltip]="cell.tooltip"
+    [tooltipContext]="{ $implicit: cell }"
+    [class.font-bold]="cell.bold"
+    [class.italic]="cell.italic"
+    [class.block]="cell.block"
+  >
+    {{ cell.value }}
+  </a>
+  <a
+    *ngIf="cell.routerLink"
+    [routerLink]="cell.routerLink"
+    [queryParams]="cell.queryParams"
+    class="link link-primary"
+    [tooltip]="cell.tooltip"
+    [tooltipContext]="{ $implicit: cell }"
+    [class.font-bold]="cell.bold"
+    [class.italic]="cell.italic"
+    [class.block]="cell.block"
+  >
+    {{ cell.value }}
+  </a>
+  <span
+    *ngIf="!cell.routerLink && !cell.externLink"
+    [class.text-primary]="cell.primary"
+    [class.text-secondary]="cell.secondary"
+    [class.text-info]="cell.info"
+    [class.text-accent]="cell.accent"
+    [tooltip]="cell.tooltip"
+    [tooltipContext]="{ $implicit: cell }"
+    [class.font-bold]="cell.bold"
+    [class.italic]="cell.italic"
+    [class.block]="cell.block"
+  >
+    {{ cell.value }}
+  </span>
 </ng-template>
 
 <ng-content></ng-content>

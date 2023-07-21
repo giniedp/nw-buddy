@@ -2,6 +2,8 @@ import { Directive, TemplateRef } from '@angular/core'
 
 export interface PropertyGridCell {
   value: string
+  template?: TemplateRef<PropertyGridCell>
+  tooltip?: TemplateRef<PropertyGridCell>
   routerLink?: string | any[]
   queryParams?: Record<string, any>
   externLink?: string
@@ -11,17 +13,17 @@ export interface PropertyGridCell {
   accent?: boolean
   bold?: boolean
   italic?: boolean
+  block?: boolean
 }
 
 export interface PropertyGridCellContext {
   $implicit: PropertyGridCell[]
-  cell: PropertyGridCell
-  cells: PropertyGridCell[]
 }
 
 @Directive({
   standalone: true,
-  selector: '[nwbPropertyGridCell]',
+  selector: '[nwbGridCell]',
+  exportAs: 'gridCell'
 })
 export class PropertyGridCellDirective {
 

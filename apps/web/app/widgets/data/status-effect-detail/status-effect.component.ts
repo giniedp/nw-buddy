@@ -1,10 +1,14 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, forwardRef, Input, TemplateRef, ViewChild } from '@angular/core'
 import { Statuseffect } from '@nw-data/generated'
 import { NwDbService, NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
 import { StatusEffectDetailStore } from './status-effect.store'
+import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
+import { TooltipModule } from '~/ui/tooltip'
+import { IconsModule } from '~/ui/icons'
+import { svgInfoCircle } from '~/ui/icons/svg'
 
 @Component({
   standalone: true,
@@ -12,7 +16,7 @@ import { StatusEffectDetailStore } from './status-effect.store'
   templateUrl: './status-effect.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule],
+  imports: [CommonModule, NwModule, IconsModule, ItemFrameModule, PropertyGridModule, TooltipModule, StatusEffectCategoryDetailModule],
   providers: [
     {
       provide: StatusEffectDetailStore,
@@ -32,6 +36,10 @@ export class StatusEffectDetailComponent extends StatusEffectDetailStore {
   @Input()
   public disableProperties: boolean
 
+  @ViewChild('tplCategory', { static: true })
+  protected tplCategory: TemplateRef<any>
+
+  protected iconInfo = svgInfoCircle
   public constructor(db: NwDbService) {
     super(db)
   }
@@ -59,7 +67,7 @@ export class StatusEffectDetailComponent extends StatusEffectDetailStore {
         if (Array.isArray(value)) {
           return value.map((it) => ({
             value: String(it),
-            secondary: true,
+            template: this.tplCategory,
           }))
         }
         return [{

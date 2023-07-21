@@ -3,7 +3,7 @@
   </a>
   <nwb-item-header-content
     class="z-10"
-    [title]="nameForDisplay$ | async | nwText | nwTextBreak: ' - '"
+    [title]="nameForDisplay$ | async | nwText | nwTextBreak : ' - '"
     [subTitle]="source$ | async"
     [category]="'Status Effect'"
   ></nwb-item-header-content>
@@ -30,3 +30,21 @@
   </ng-container>
   <ng-content></ng-content>
 </div>
+
+<ng-template [nwbGridValue] let-cell #tplCategory>
+  <span
+    class="text-secondary"
+    [tooltip]="tplCategoryTip"
+    [nwbStatusEffectCategoryDetail]="cell.value"
+    #detail="effectCategoryDetail"
+  >
+    <span *ngIf="detail.limits$ | async" class="text-primary text-md">·</span>{{ cell.value }}
+    <ng-template #tplCategoryTip>
+      <ng-container *ngIf="detail.limits$ | async; let limits">
+        <div class="p-1 px-2 bg-base-300 uppercase text-sm rounded-t-sm">Value Limits</div>
+        <nwb-property-grid [item]="limits" class="py-1 px-2 gap-1 bg-base-100 text-xs font-mono rounded-b-sm">
+        </nwb-property-grid>
+      </ng-container>
+    </ng-template>
+  </span>
+</ng-template>
