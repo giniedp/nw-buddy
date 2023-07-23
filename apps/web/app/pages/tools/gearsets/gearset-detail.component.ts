@@ -25,9 +25,9 @@ import { GearsetPaneMainComponent } from './gearset-pane-main.component'
 import { GearsetPaneSkillComponent } from './gearset-pane-skill.component'
 import { GearsetPaneSlotComponent } from './gearset-pane-slot.component'
 import { GearsetPaneStatsComponent } from './gearset-pane-stats.component'
-import { SwiperOptions } from 'swiper'
 import { SwiperDirective } from '~/utils/directives/swiper.directive'
 import { svgChevronLeft } from '~/ui/icons/svg'
+import { SwiperOptions } from 'swiper/types/swiper-options'
 
 @Component({
   standalone: true,

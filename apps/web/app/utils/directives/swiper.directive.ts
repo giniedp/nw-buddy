@@ -1,6 +1,7 @@
 import { Directive, ElementRef, Input, OnDestroy, OnInit } from '@angular/core'
 import { ReplaySubject, Subject, takeUntil } from 'rxjs'
-import Swiper, { SwiperOptions } from 'swiper'
+import Swiper from 'swiper'
+import { SwiperOptions } from 'swiper/types/swiper-options'
 
 @Directive({
   standalone: true,
