@@ -28,6 +28,7 @@ const config = {
   NW_UNPACK_PTR: process.env.NW_UNPACK_PTR,
   NW_USE_CDN: ['true', 'yes', '1'].includes(process.env.NW_USE_CDN),
   NW_USE_PTR: ['true', 'yes', '1'].includes(process.env.NW_USE_PTR ?? String(branchName === 'ptr')),
+  BRANCH_NAME: branchName,
   CDN_UPLOAD_SPACE: process.env.CDN_UPLOAD_SPACE,
   CDN_UPLOAD_KEY: process.env.CDN_UPLOAD_KEY,
   CDN_UPLOAD_SECRET: process.env.CDN_UPLOAD_SECRET,
