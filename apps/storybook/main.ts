@@ -9,13 +9,15 @@ const config: StorybookConfig = {
       to: '/assets',
     },
     {
-      from: '../../dist/nw-data',
-      to: '/nw-data',
+      from: '../../dist/nw-data/live',
+      to: '/nw-data/live',
     },
   ],
   framework: {
     name: '@storybook/angular',
-    options: {},
+    options: {
+
+    },
   },
   addons: [
     '@storybook/addon-controls',

@@ -265,7 +265,10 @@
             "configDir": "apps/storybook",
             "browserTarget": "nw-buddy:build",
             "compodoc": false,
-            "styles": ["apps/web/styles/main.scss"]
+            "styles": ["apps/web/styles/main.scss"],
+            "outputDir": "dist/web-storybook",
+            "quiet": true,
+            "enableProdMode": false
           }
         },
         "server": {
