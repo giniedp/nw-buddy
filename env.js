@@ -10,14 +10,9 @@ function cmd(cmd) {
 }
 
 // https://developers.cloudflare.com/pages/platform/build-configuration/#environment-variables
-const CF = {
-  pages: process.env.CF_PAGES,
-  commitHash: process.env.CF_PAGES_COMMIT_SHA,
-  branchName: process.env.CF_PAGES_BRANCH,
-  pagessUrl: process.env.CF_PAGES_URL,
-}
 
-const branchName = CF.branchName || cmd('git branch --show-current')
+const branchName = process.env.CF_PAGES_BRANCH || process.env.GITHUB_REF_NAME || cmd('git branch --show-current')
+const commitHash = process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA
 const path = require('path')
 const config = {
   NW_GAME_LIVE: process.env.NW_GAME_LIVE,
@@ -33,7 +28,7 @@ const config = {
   CDN_UPLOAD_KEY: process.env.CDN_UPLOAD_KEY,
   CDN_UPLOAD_SECRET: process.env.CDN_UPLOAD_SECRET,
   CDN_UPLOAD_ENDPOINT: process.env.CDN_UPLOAD_ENDPOINT,
-  VERSION: require(path.resolve(process.cwd(), 'package.json')).version + (CF.pages ? `#${CF.commitHash}` : ''),
+  VERSION: require(path.resolve(process.cwd(), 'package.json')).version + (commitHash ? `#${commitHash}` : ''),
 }
 
 function get(name) {

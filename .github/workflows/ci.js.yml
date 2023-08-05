@@ -6,6 +6,9 @@ on:
   push:
     branches:
       - "main"
+env:
+  NW_CDN_LIVE: ${{ vars.NW_CDN_LIVE }}
+  NW_CDN_PTR: ${{ vars.NW_CDN_PTR }}
 
 jobs:
   prepare:
