@@ -20,7 +20,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          cache: 'yarn'
       - name: Install dependencies 📦
         run: yarn install --frozen-lockfile
       - name: Download nw-data 📥
@@ -31,5 +30,6 @@ jobs:
     needs: prepare
 
     steps:
+      - uses: actions/checkout@v3
       - name: Build Storybook
         run: yarn storybook:build
