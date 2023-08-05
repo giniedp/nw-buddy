@@ -18,7 +18,7 @@
     "dev:server": "ng run nw-buddy:serve-ssr",
     "dev:wrangler": "wrangler pages dev dist/web-cloud",
     "dev:tools": "yarn build:tools -w",
-    "build:cloudflare": "yarn nw-cdn download && yarn nw-build -o dist/public",
+    "build:cloudflare": "yarn nw-build -o dist/public && yarn nw-cdn download -o dist/public/nw-data",
     "build:electron": "yarn electron:tsc && yarn build:web-electron && yarn electron:builder",
     "build:docker": "yarn build:web && yarn build:server && yarn docker:build",
     "build:tools": "tsc -p ./tools/tsconfig.json",
