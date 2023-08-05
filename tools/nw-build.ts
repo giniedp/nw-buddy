@@ -1,6 +1,6 @@
 import { program } from 'commander'
 import { BRANCH_NAME, NW_USE_PTR } from '../env'
-import { spawn } from './utils'
+import { spawn } from './utils/spawn'
 
 program
   .requiredOption('-o, --output <path>', 'output directory')
