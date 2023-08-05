@@ -4,12 +4,13 @@ import { AppTestingModule } from '~/test'
 import { storyControls } from '~/test/story-utils'
 import { TradeskillLevelInputComponent } from './tradeskill-level-input.component'
 import { TradeskillLevelInputModule } from './tradeskill-level-input.module'
+import { NW_TRADESKILLS_INFOS } from '~/nw/tradeskill'
 
 
-type StoryArgs = Pick<TradeskillLevelInputComponent, 'icon' | 'label' | 'maxLevel'>
+type StoryArgs = Pick<TradeskillLevelInputComponent, 'icon' | 'label' | 'maxLevel' | 'minWidth'>
 
 export default {
-  title: 'UI / Tradeskill Level Input',
+  title: 'UI / Forms / nwb-tradeskill-level-input',
   component: TradeskillLevelInputComponent,
   tags: ['autodocs'],
   decorators: [
@@ -23,9 +24,20 @@ export default {
   ],
   ...storyControls<StoryArgs>((b) => {
     b.text('label', {
-      defaultValue: 'Tradeskill Level',
+      defaultValue: 'Label Text',
     })
     b.number('maxLevel', {
+      defaultValue: 200,
+    })
+    b.select('icon', {
+      options: NW_TRADESKILLS_INFOS.map((it) => {
+        return {
+          value: it.Icon,
+          label: it.ID,
+        }
+      })
+    })
+    b.number('minWidth', {
       defaultValue: 200,
     })
   }),

@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, ViewChild, ElementRef, HostBinding, HostListener } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  HostBinding,
+  HostListener,
+  Input,
+  ViewChild,
+} from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 
 @Component({
@@ -15,12 +23,15 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
-      multi:true,
-      useExisting: LevelInputComponent
-    }
-  ]
+      multi: true,
+      useExisting: LevelInputComponent,
+    },
+  ],
 })
 export class LevelInputComponent implements ControlValueAccessor {
+  @Input()
+  @HostBinding('style.width.px')
+  public width: number = null
 
   @ViewChild('input')
   protected input: ElementRef<HTMLInputElement>
@@ -65,4 +76,3 @@ export class LevelInputComponent implements ControlValueAccessor {
     this.input.nativeElement.select()
   }
 }
-

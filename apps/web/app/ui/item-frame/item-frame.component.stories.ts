@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input, importProvidersFrom } from '@angular/core'
-import { applicationConfig, Meta, moduleMetadata, Story, StoryObj } from '@storybook/angular'
+import { Component, importProvidersFrom } from '@angular/core'
+import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
 import { AppTestingModule } from '~/test'
 import { ItemFrameModule } from './item-frame.module'
 
 @Component({
+  standalone: true,
   imports: [CommonModule, ItemFrameModule],
   template: `
     <nwb-item-frame class="font-nimbus">
@@ -38,11 +39,12 @@ import { ItemFrameModule } from './item-frame.module'
     </nwb-item-frame>
   `,
 })
-class StoryComponent {}
+export class StoryComponent {}
 
-const StoryMeta: Meta = {
-  title: 'UI / Item Frame',
+export default {
+  title: 'UI / nwb-item-frame',
   component: StoryComponent,
+  excludeStories: ['StoryComponent'],
   decorators: [
     applicationConfig({
       providers: [importProvidersFrom(AppTestingModule)]
@@ -51,7 +53,6 @@ const StoryMeta: Meta = {
       imports: [ItemFrameModule],
     }),
   ],
-}
+} satisfies Meta
 
-export default StoryMeta
-export const ItemFrame: StoryObj = {}
+export const Example: StoryObj = {}

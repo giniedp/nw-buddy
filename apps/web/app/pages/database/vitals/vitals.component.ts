@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
-import { NavToolbarModule } from '~/ui/nav-toolbar'
+import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { VitalsTableAdapter } from '~/widgets/adapter'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -20,7 +20,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     NwModule,
     DataTableModule,
     QuicksearchModule,
-    NavToolbarModule,
+    NavbarModule,
     IonicModule,
     ScreenshotModule,
   ],

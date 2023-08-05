@@ -3,16 +3,37 @@ import {
   Component,
   ElementRef,
   EventEmitter,
+  HostBinding,
   Input,
   NgZone,
   OnDestroy,
   OnInit,
   Output,
 } from '@angular/core'
+import { ComponentStore } from '@ngrx/component-store'
 import { Grid, GridOptions, GridReadyEvent } from 'ag-grid-community'
-import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, ReplaySubject, skipWhile, Subject, takeUntil } from 'rxjs'
+import {
+  BehaviorSubject,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  merge,
+  ReplaySubject,
+  skipWhile,
+  Subject,
+  take,
+  takeUntil,
+  tap,
+} from 'rxjs'
+
+export interface AgGridState<T> {
+  data: T[]
+  options: GridOptions<T>
+  filter: string
+}
 
 @Component({
+  standalone: true,
   selector: 'nwb-ag-grid',
   template: '',
   styleUrls: ['./ag-grid.component.scss'],
@@ -21,50 +42,53 @@ import { BehaviorSubject, debounceTime, distinctUntilChanged, filter, ReplaySubj
     class: 'ag-grid select-text',
   },
 })
-export class AgGridComponent<T = any> implements OnInit, OnDestroy {
+export class AgGridComponent<T = any> extends ComponentStore<AgGridState<T>> implements OnInit, OnDestroy {
   @Input()
   public set data(value: T[]) {
-    this.data$.next(value)
+    this.patchState({ data: value })
   }
 
   @Input()
   public set options(value: GridOptions<T>) {
-    this.options$.next(value)
+    this.patchState({ options: value })
   }
 
   @Input()
   public set quickFilter(value: string) {
-    this.filter$.next(value)
+    this.patchState({ filter: value })
   }
+
+  @Input()
+  @HostBinding('style.min-height.px')
+  public minHeight: number = null
 
   @Output()
   public gridReady = new EventEmitter<GridReadyEvent>()
 
-  public grid: Grid
-
-  private data$ = new ReplaySubject<T[]>(1)
-  private options$ = new ReplaySubject<GridOptions>(1)
-  private destroy$ = new Subject<void>()
-  private filter$ = new BehaviorSubject<string>(null)
+  protected readonly data$ = this.select((it) => it.data)
+  protected readonly options$ = this.select((it) => it.options)
+  protected readonly filter$ = this.select((it) => it.filter)
   private dispose$ = new Subject<void>()
 
   public constructor(private elRef: ElementRef<HTMLElement>, private zone: NgZone) {
-    //
+    super({ data: null, options: null, filter: null })
   }
 
   public ngOnInit(): void {
     this.zone.runOutsideAngular(() => {
-      this.options$.pipe(takeUntil(this.destroy$)).subscribe((options) => {
-        this.disposeGrid()
-        this.createGrid(options)
-      })
+      this.options$
+        .pipe(
+          tap({
+            finalize: () => this.disposeGrid(),
+            next: (options) => {
+              this.disposeGrid()
+              this.createGrid(options)
+            },
+          })
+        )
+        .pipe(takeUntil(this.destroy$))
+        .subscribe()
     })
-  }
-
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
-    this.disposeGrid()
   }
 
   private onGridReady(e: GridReadyEvent, options: GridOptions) {
@@ -72,32 +96,31 @@ export class AgGridComponent<T = any> implements OnInit, OnDestroy {
       this.gridReady.emit(e)
       options?.onGridReady?.(e)
     })
-    const cancel$ = this.dispose$
     this.data$
-      .pipe(takeUntil(cancel$))
       .pipe(skipWhile((it) => it == null))
       .pipe(filter((it) => it != null))
+      .pipe(takeUntil(merge(this.destroy$, this.dispose$)))
       .subscribe((data) => e.api.setRowData(data))
     this.filter$
       .pipe(debounceTime(500))
       .pipe(distinctUntilChanged())
-      .pipe(takeUntil(cancel$))
+      .pipe(takeUntil(merge(this.destroy$, this.dispose$)))
       .subscribe((value) => {
         e.api.setQuickFilter(value)
       })
   }
 
   private createGrid(options: GridOptions) {
-    this.grid = new Grid(this.elRef.nativeElement, {
+    const grid = new Grid(this.elRef.nativeElement, {
       ...(options || {}),
       onGridReady: (e) => this.onGridReady(e, options),
+    })
+    this.dispose$.pipe(take(1)).subscribe(() => {
+      grid.destroy()
     })
   }
 
   private disposeGrid() {
     this.dispose$.next()
-    const grid = this.grid
-    this.grid = null
-    grid?.destroy()
   }
 }

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { NavToolbarModule } from '../nav-toolbar'
+import { NavbarModule } from '../nav-toolbar'
 import { DataTableCategoriesDirective } from './data-table-categories.directive'
 
 @Component({
@@ -10,7 +10,7 @@ import { DataTableCategoriesDirective } from './data-table-categories.directive'
   selector: 'nwb-data-table-header',
   templateUrl: './data-table-header.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NavToolbarModule],
+  imports: [CommonModule, RouterModule, NavbarModule],
   host: {
     class: 'flex flex-row overflow-hidden',
   },

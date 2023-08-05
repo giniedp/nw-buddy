@@ -10,7 +10,7 @@ import { DataTableModule } from '~/ui/data-table'
 import { IconsModule } from '~/ui/icons'
 import { svgPlus } from '~/ui/icons/svg'
 import { ConfirmDialogComponent } from '~/ui/layout'
-import { NavToolbarModule } from '~/ui/nav-toolbar'
+import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService } from '~/utils'
@@ -29,7 +29,7 @@ import { SkillTreesListComponent } from './skill-trees-list.component'
     NwModule,
     DataTableModule,
     QuicksearchModule,
-    NavToolbarModule,
+    NavbarModule,
     IconsModule,
     TooltipModule,
     IonicModule,

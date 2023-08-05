@@ -1,6 +1,6 @@
 <ion-header class="bg-base-300">
   <div class="flex flex-col-reverse md:flex-row">
-    <nwb-nav-toolbar class="flex-1" [menu]="tplMenu" [buttons]="tplButtons">
+    <nwb-navbar class="flex-1" [menu]="tplMenu" [buttons]="tplButtons">
       <ng-template #tplMenu>
         <li [routerLinkActive]="'bordered'">
           <a [routerLink]="'trophies'"> Trophies </a>
@@ -29,7 +29,7 @@
           <nwb-screenshot-button class="tooltip-left"></nwb-screenshot-button>
         </li>
       </ng-template>
-    </nwb-nav-toolbar>
+    </nwb-navbar>
     <div class="flex-none p-2 w-full md:max-w-[300px]">
       <nwb-quicksearch-input #search></nwb-quicksearch-input>
     </div>

@@ -5,7 +5,7 @@
     [childRouteIndex]="'table'"
     #header="tableHeader"
   >
-    <nwb-nav-toolbar [menu]="tplMenu" [buttons]="tplButtons" class="flex-1">
+    <nwb-navbar [menu]="tplMenu" [buttons]="tplButtons" class="flex-1">
       <ng-template #tplMenu>
         <li *ngFor="let item of header.categories | async" [routerLinkActive]="'bordered'">
           <a rel="nofollow" [routerLink]="item.route">
@@ -19,7 +19,7 @@
           <nwb-data-table-panel-button></nwb-data-table-panel-button>
         </li>
       </ng-template>
-    </nwb-nav-toolbar>
+    </nwb-navbar>
     <div class="flex-none p-2 w-full md:max-w-[300px]">
       <nwb-quicksearch-input #search></nwb-quicksearch-input>
     </div>

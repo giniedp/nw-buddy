@@ -5,11 +5,8 @@ module.exports = ({ addComponents }) => {
         display: 'none !important;'
       }
     },
-    '.nw-panel-bg': {
-      background: "url('^assets/bg-panel.jpg') black",
-    },
     '.nw-bg-pane': {
-      background: "url('^assets/bg-pane.png') black",
+      background: "url('^assets/bg-pane.jpg') black",
     },
     '.nw-bg-title': {
       background: "url('^assets/bg-title.png')",

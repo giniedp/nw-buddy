@@ -33,29 +33,29 @@ export declare type TooltipScrollStrategy = 'close' | 'reposition'
   exportAs: 'tooltip',
 })
 export class TooltipDirective implements OnInit, OnDestroy {
-  @Input('tooltip')
+  @Input()
   public tooltip: string | TemplateRef<any> | Type<any>
 
-  @Input('tooltipContext')
+  @Input()
   public tooltipContext: any
 
-  @Input('tooltipPlacement')
-  public placement: TooltipDirection = 'auto'
+  @Input()
+  public tooltipPlacement: TooltipDirection = 'auto'
 
-  @Input('tooltipTrigger')
-  public trigger: TooltipTriggerType = 'hover'
+  @Input()
+  public tooltipTrigger: TooltipTriggerType = 'hover'
 
-  @Input('color')
+  @Input()
   public color: string = null
 
-  @Input('tooltipScrollStrategy')
-  public scrollStrategy: TooltipScrollStrategy = 'reposition'
+  @Input()
+  public tooltipScrollStrategy: TooltipScrollStrategy = 'reposition'
 
-  @Input('tooltipDelay')
-  public delay: number = 150
+  @Input()
+  public tooltipDelay: number = 150
 
-  @Input('tooltipOffset')
-  public offset: number = 4
+  @Input()
+  public tooltipOffset: number = 4
 
   private destroy$ = new Subject<void>()
 
@@ -95,7 +95,7 @@ export class TooltipDirective implements OnInit, OnDestroy {
       open$
         .pipe(
           switchMap(() => {
-            return merge(close$, of(true).pipe(delay(this.delay)).pipe(takeUntil(close$)))
+            return merge(close$, of(true).pipe(delay(this.tooltipDelay)).pipe(takeUntil(close$)))
           })
         )
         .pipe(distinctUntilChanged())
@@ -142,7 +142,7 @@ export class TooltipDirective implements OnInit, OnDestroy {
   private createOverlay(): OverlayRef {
     const overlayState = new OverlayConfig()
     overlayState.positionStrategy = this.getPosition()
-    if (this.scrollStrategy === 'reposition') {
+    if (this.tooltipScrollStrategy === 'reposition') {
       overlayState.scrollStrategy = this.overlay.scrollStrategies.reposition()
     } else {
       overlayState.scrollStrategy = this.overlay.scrollStrategies.close()
@@ -154,27 +154,27 @@ export class TooltipDirective implements OnInit, OnDestroy {
   private getPosition() {
     let strategy = this.overlay.position().flexibleConnectedTo(this.elRef)
 
-    if (this.placement === 'top') {
+    if (this.tooltipPlacement === 'top') {
       strategy = strategy
         .withPositions([{ originX: 'center', originY: 'top', overlayX: 'center', overlayY: 'bottom' }])
-        .withDefaultOffsetY(-this.offset)
+        .withDefaultOffsetY(-this.tooltipOffset)
     }
-    if (this.placement === 'right') {
+    if (this.tooltipPlacement === 'right') {
       strategy = strategy
         .withPositions([{ originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center' }])
-        .withDefaultOffsetX(this.offset)
+        .withDefaultOffsetX(this.tooltipOffset)
     }
-    if (this.placement === 'bottom') {
+    if (this.tooltipPlacement === 'bottom') {
       strategy = strategy
         .withPositions([{ originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top' }])
-        .withDefaultOffsetY(this.offset)
+        .withDefaultOffsetY(this.tooltipOffset)
     }
-    if (this.placement === 'left') {
+    if (this.tooltipPlacement === 'left') {
       strategy = strategy
         .withPositions([{ originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center' }])
-        .withDefaultOffsetX(-this.offset)
+        .withDefaultOffsetX(-this.tooltipOffset)
     }
-    if (this.placement === 'auto') {
+    if (this.tooltipPlacement === 'auto') {
       strategy = strategy.withPositions([
         { originX: 'center', originY: 'top', overlayX: 'center', overlayY: 'bottom' },
         { originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center' },

@@ -9,7 +9,7 @@ import { EQUIP_SLOTS, getItemId, getItemMaxGearScore } from '@nw-data/common'
 import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
 import { IconsModule } from '~/ui/icons'
 import { svgImage, svgPlus, svgTrashCan } from '~/ui/icons/svg'
-import { NavToolbarModule } from '~/ui/nav-toolbar'
+import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -31,7 +31,7 @@ import { observeRouteParam } from '~/utils'
     RouterModule,
     QuicksearchModule,
     DataTableModule,
-    NavToolbarModule,
+    NavbarModule,
     ScreenshotModule,
     IconsModule,
     GearsetFormComponent,

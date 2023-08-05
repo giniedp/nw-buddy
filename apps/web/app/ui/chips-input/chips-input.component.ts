@@ -45,7 +45,9 @@ export class ChipsInputComponent implements ControlValueAccessor {
   }
 
   public writeValue(value: any): void {
+    console.log('writeValue', value)
     this.value = Array.isArray(value) ? value : null
+    this.cdRef.markForCheck()
   }
 
   public registerOnChange(fn: any): void {

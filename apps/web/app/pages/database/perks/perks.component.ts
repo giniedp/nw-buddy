@@ -9,7 +9,7 @@ import { CharacterStore } from '~/data'
 import { NwModule } from '~/nw'
 import { NwExpressionContextService } from '~/nw/expression'
 import { DataTableModule } from '~/ui/data-table'
-import { NavToolbarModule } from '~/ui/nav-toolbar'
+import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { PerksTableAdapter } from '~/widgets/adapter'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -24,7 +24,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     DataTableModule,
     FormsModule,
     IonicModule,
-    NavToolbarModule,
+    NavbarModule,
     NwModule,
     OverlayModule,
     QuicksearchModule,

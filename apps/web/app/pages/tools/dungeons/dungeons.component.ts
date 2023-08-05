@@ -4,7 +4,7 @@ import { RouterModule } from '@angular/router'
 import { Gamemodes } from '@nw-data/generated'
 import { map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
-import { NavToolbarModule } from '~/ui/nav-toolbar'
+import { NavbarModule } from '~/ui/nav-toolbar'
 import { shareReplayRefCount } from '~/utils'
 
 @Component({
@@ -13,7 +13,7 @@ import { shareReplayRefCount } from '~/utils'
   templateUrl: './dungeons.component.html',
   styleUrls: ['./dungeons.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, NavToolbarModule],
+  imports: [CommonModule, RouterModule, NwModule, NavbarModule],
   host: {
     class: 'layout-col bg-base-300 rounded-md overflow-clip',
   },

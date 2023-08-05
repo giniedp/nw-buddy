@@ -5,7 +5,7 @@ import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
 import { NwExpressionContextService } from '~/nw/expression'
 import { DataTableModule } from '~/ui/data-table'
-import { NavToolbarModule } from '~/ui/nav-toolbar'
+import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { GameEventsTableAdapter } from '~/widgets/adapter'
 
@@ -14,7 +14,7 @@ import { GameEventsTableAdapter } from '~/widgets/adapter'
   selector: 'nwb-game-events-page',
   templateUrl: './game-events.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, QuicksearchModule, DataTableModule, NavToolbarModule, IonicModule],
+  imports: [CommonModule, RouterModule, NwModule, QuicksearchModule, DataTableModule, NavbarModule, IonicModule],
   host: {
     class: 'layout-col',
   },

@@ -1,1 +1,1 @@
-export * from './nav-toolbar.module'
+export * from './navbar.module'

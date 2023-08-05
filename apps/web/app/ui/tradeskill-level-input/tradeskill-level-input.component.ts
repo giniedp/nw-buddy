@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, HostBinding, HostListener, Input, ViewChild } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { NwModule } from '~/nw'
 
@@ -31,6 +31,10 @@ export class TradeskillLevelInputComponent implements ControlValueAccessor {
 
   @Input()
   public maxLevel: number
+
+  @Input()
+  @HostBinding('style.minWidth.px')
+  public minWidth: number
 
   @ViewChild('input')
   protected input: ElementRef<HTMLInputElement>

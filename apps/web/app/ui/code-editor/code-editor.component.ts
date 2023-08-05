@@ -3,6 +3,7 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  HostBinding,
   Input,
   OnDestroy,
   OnInit,
@@ -36,6 +37,10 @@ export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDest
 
   @Input()
   public readonly: boolean = false
+
+  @Input()
+  @HostBinding('style.min-height.px')
+  public minHeight: number = null
 
   protected onChange = (value: unknown) => {}
   protected onTouched = () => {}

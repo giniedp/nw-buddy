@@ -1,4 +1,4 @@
-<nwb-nav-toolbar class="bg-base-300 rounded-t-md" [menu]="tplMenu">
+<nwb-navbar class="bg-base-300 rounded-t-md" [menu]="tplMenu">
   <ng-template #tplMenu>
     <li *ngFor="let item of dungeons$ | async" [routerLinkActive]="'bordered'">
       <a [routerLink]="item.GameModeId">
@@ -7,5 +7,5 @@
       </a>
     </li>
   </ng-template>
-</nwb-nav-toolbar>
+</nwb-navbar>
 <router-outlet></router-outlet>

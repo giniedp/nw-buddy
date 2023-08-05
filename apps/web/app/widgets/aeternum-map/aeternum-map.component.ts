@@ -10,6 +10,8 @@ import {
   ChangeDetectorRef,
   EventEmitter,
   Output,
+  Input,
+  HostBinding,
 } from '@angular/core'
 import { NavigationStart, Router } from '@angular/router'
 import { filter, map, Subject, takeUntil } from 'rxjs'
@@ -58,6 +60,10 @@ export class AeternumMapComponent implements OnInit, OnDestroy {
 
   @Output()
   public close = new EventEmitter()
+
+  @Input()
+  @HostBinding('style.min-height.px')
+  public minHeight: number
 
   private isFloating$ = this.bp.observe('(min-width: 3000px)').pipe(map((it) => !it.matches))
   private destroy$ = new Subject<void>()

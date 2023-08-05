@@ -5,22 +5,27 @@ import { AppTestingModule } from '~/test'
 
 import { SkillBuilderComponent } from './skill-builder.component'
 import { importProvidersFrom } from '@angular/core'
-
-
-type StoryArgs = Pick<SkillBuilderComponent, 'weaponTag'>
+import { SkillTreeModule } from './skill-builder.module'
+import { storyControls } from '~/test/story-utils'
 
 export default {
-  title: 'Skill Builder',
+  title: 'Widgets / nwb-skill-builder',
   component: SkillBuilderComponent,
+  tags: ['autodocs'],
   decorators: [
     applicationConfig({
       providers: [importProvidersFrom(AppTestingModule)]
     }),
     moduleMetadata({
-
-      imports: [AppTestingModule]
+      imports: [SkillTreeModule]
     })
-  ]
-} satisfies Meta
+  ],
+  ...storyControls<SkillBuilderComponent>((arg) => {
+    arg.select('weaponTag', {
+      options: NW_WEAPON_TYPES.map((it) => it.WeaponTag)
+    })
+    arg.boolean('disabled')
+  }),
+} satisfies Meta<SkillBuilderComponent>
 
-export const SkillBuilder: StoryObj = {}
+export const Example: StoryObj = {}

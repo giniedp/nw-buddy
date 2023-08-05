@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input } from '@angular/core'
 
 @Component({
   standalone: true,
@@ -19,14 +19,16 @@ import { ChangeDetectionStrategy, Component, ElementRef, Input } from '@angular/
 export class SvgIconComponent {
   @Input()
   public set icon(value: string) {
-    this.updateIcon(value)
+    this.elRef.nativeElement.innerHTML = value
   }
+
+  @HostBinding('style.width.px')
+  public width: number = null
+
+  @HostBinding('style.height.px')
+  public height: number = null
 
   public constructor(private elRef: ElementRef<HTMLElement>) {
     //
-  }
-
-  private updateIcon(data: string) {
-    this.elRef.nativeElement.innerHTML = data
   }
 }

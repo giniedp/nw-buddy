@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
-import { NavToolbarModule } from '~/ui/nav-toolbar'
+import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { LootTableAdapter } from '~/widgets/adapter'
@@ -22,7 +22,7 @@ import { LootModule } from '~/widgets/loot'
     FormsModule,
     IonicModule,
     LootModule,
-    NavToolbarModule,
+    NavbarModule,
     NwModule,
     QuicksearchModule,
     RouterModule,

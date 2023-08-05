@@ -4,13 +4,13 @@ import {
   ElementRef,
   Injectable,
   Input,
-  OnDestroy,
   OnInit,
   Optional,
   ViewChild,
 } from '@angular/core'
+import { ComponentStore } from '@ngrx/component-store'
 import { Chart, ChartConfiguration, registerables } from 'chart.js'
-import { Observable, ReplaySubject, Subject, takeUntil } from 'rxjs'
+import { Observable, map, takeUntil, tap } from 'rxjs'
 
 Chart.register(...registerables)
 
@@ -26,40 +26,45 @@ export abstract class ChartSource {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `<canvas #canvas></canvas>`,
   host: {
-    class: 'block'
+    class: 'block',
   },
 })
-export class ChartComponent implements OnInit, OnDestroy {
+export class ChartComponent extends ComponentStore<{ config: ChartConfiguration}> implements OnInit {
   @Input()
   public set config(value: ChartConfiguration) {
-    this.config$.next(value)
+    this.patchState({ config: value})
   }
 
   @ViewChild('canvas', { static: true, read: ElementRef })
   public canvas: ElementRef<HTMLCanvasElement>
 
-  private config$ = new ReplaySubject<ChartConfiguration>(1)
-  private destroy$ = new Subject()
   private chart: Chart
 
   public constructor(
     @Optional()
     private source: ChartSource
-  ) {}
-  public ngOnInit(): void {
-    if (this.source) {
-      this.source.config.pipe(takeUntil(this.destroy$)).subscribe(this.config$)
-    }
-    this.config$.pipe(takeUntil(this.destroy$)).subscribe((config) => {
-      this.destroyChart()
-      this.createChart(config)
-    })
+  ) {
+    super({ config: null })
   }
 
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
-    this.destroyChart()
+  public ngOnInit(): void {
+    if (this.source) {
+      this.patchState(this.source.config.pipe(map((config) => ({ config }))))
+    }
+    this.state$
+      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        tap({
+          next: ({config}) => {
+            this.destroyChart()
+            if (config) {
+              this.createChart(config)
+            }
+          },
+          finalize: () => this.destroyChart(),
+        })
+      )
+      .subscribe()
   }
 
   private destroyChart() {
@@ -69,5 +74,6 @@ export class ChartComponent implements OnInit, OnDestroy {
 
   private createChart(config: ChartConfiguration) {
     this.chart = new Chart(this.canvas.nativeElement.getContext('2d'), config)
+    this.chart.update()
   }
 }

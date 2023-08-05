@@ -19,7 +19,7 @@ export class Hotkeys {
     //
   }
 
-  addShortcut(options: Partial<Options>) {
+  observe(options: Partial<Options>) {
     const keys = options.keys
     const element = options.element || this.document as any
     const event = `keydown.${keys}`

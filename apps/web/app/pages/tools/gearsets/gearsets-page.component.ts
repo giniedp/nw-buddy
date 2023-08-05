@@ -10,7 +10,7 @@ import { DataTableModule } from '~/ui/data-table'
 import { IconsModule } from '~/ui/icons'
 import { svgPlus } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/layout'
-import { NavToolbarModule } from '~/ui/nav-toolbar'
+import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { GearsetsTableAdapter } from './gearsets-table.adapter'
@@ -26,7 +26,7 @@ import { GearsetLoadoutListComponent } from './loadout'
     NwModule,
     DataTableModule,
     QuicksearchModule,
-    NavToolbarModule,
+    NavbarModule,
     IconsModule,
     TooltipModule,
     IonicModule,

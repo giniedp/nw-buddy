@@ -1,4 +1,4 @@
-<nwb-nav-toolbar [menu]="tplMenu" class="flex-none">
+<nwb-navbar [menu]="tplMenu" class="flex-none">
   <ng-template #tplMenu>
     <li [routerLinkActive]="'db-faults'" >
       <a [routerLink]="'db-faults'">Item Perks Faults</a>
@@ -10,6 +10,6 @@
       <a [routerLink]="'tesseract'">Tesseract</a>
     </li>
   </ng-template>
-</nwb-nav-toolbar>
+</nwb-navbar>
 
 <router-outlet></router-outlet>

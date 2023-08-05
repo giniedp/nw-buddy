@@ -10,8 +10,9 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
-import { Subject, combineLatest, takeUntil } from 'rxjs'
+import { Subject, combineLatest, merge, takeUntil } from 'rxjs'
 import { Hotkeys } from '~/utils'
 import { imageFileFromPaste } from '~/utils/image-file-from-paste'
 import { useTesseract } from '~/utils/use-tesseract'
@@ -31,7 +32,7 @@ import { QuicksearchService } from './quicksearch.service'
     class: 'relative',
   },
 })
-export class QuicksearchInputComponent implements OnInit, OnDestroy {
+export class QuicksearchInputComponent {
   @ViewChild('input')
   public input: ElementRef<HTMLInputElement>
 
@@ -47,33 +48,15 @@ export class QuicksearchInputComponent implements OnInit, OnDestroy {
     value: this.search.query$,
   })
 
-  private destroy$ = new Subject()
-  public constructor(private search: QuicksearchService, private keys: Hotkeys, private cdRef: ChangeDetectorRef) {
-    //
-  }
-
-  public ngOnInit(): void {
-    this.keys
-      .addShortcut({
-        keys: '/',
-      })
-      .pipe(takeUntil(this.destroy$))
+  public constructor(private search: QuicksearchService, private keys: Hotkeys) {
+    merge(
+      this.keys.observe({ keys: '/' }),
+      this.keys.observe({ keys: ':' }),
+    )
+      .pipe(takeUntilDestroyed())
       .subscribe(() => {
         this.input.nativeElement.focus()
       })
-    this.keys
-      .addShortcut({
-        keys: ':',
-      })
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(() => {
-        this.input.nativeElement.focus()
-      })
-  }
-
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
   }
 
   @HostListener('paste', ['$event'])

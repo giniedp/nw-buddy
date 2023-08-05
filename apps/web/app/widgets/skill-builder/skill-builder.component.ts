@@ -20,8 +20,6 @@ export interface SkillBuildValue {
   tree2: string[]
 }
 
-const TOTAL_POINTS = 19
-
 @Component({
   standalone: true,
   selector: 'nwb-skill-builder',

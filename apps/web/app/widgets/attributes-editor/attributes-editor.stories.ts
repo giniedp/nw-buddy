@@ -1,32 +1,31 @@
-import { CommonModule } from '@angular/common'
-import { Component, importProvidersFrom } from '@angular/core'
+import { importProvidersFrom } from '@angular/core'
 import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
 import { AppTestingModule } from '~/test'
+import { AttributesEditorComponent } from './attributes-editor.component'
 import { AttributesEditorModule } from './attributes-editor.module'
+import { storyControls } from '~/test/story-utils'
+import { NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 
-
-@Component({
-  imports: [CommonModule, AttributesEditorModule],
-  template: `
-    <nwb-attributes-editor></nwb-attributes-editor>
-  `,
-})
-class StoryComponent {
-
-}
-
-const meta: Meta = {
-  title: 'Attributes Editor',
-  component: StoryComponent,
+export default {
+  title: 'Widgets / nwb-attributes-editor',
+  component: AttributesEditorComponent,
+  tags: ['autodocs'],
   decorators: [
     applicationConfig({
-      providers: [importProvidersFrom(AppTestingModule)]
+      providers: [importProvidersFrom(AppTestingModule)],
     }),
     moduleMetadata({
       imports: [AttributesEditorModule],
     }),
   ],
-}
+  ...storyControls<AttributesEditorComponent>((arg) => {
+    arg.number('level', {
+      min: 1,
+      max: NW_MAX_CHARACTER_LEVEL,
+      defaultValue: NW_MAX_CHARACTER_LEVEL,
+    })
+    arg.boolean('freeMode')
+  })
+} satisfies Meta<AttributesEditorComponent>
 
-export default meta
-export const AttributesEditor: StoryObj = {}
+export const Example: StoryObj<AttributesEditorComponent> = {}
