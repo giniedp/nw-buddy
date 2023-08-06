@@ -9,6 +9,8 @@ workflows:
             branches:
               only:
                 - main
+          context:
+            - nw-buddy-cf
       # - website:
       #     filters:
       #       branches:
