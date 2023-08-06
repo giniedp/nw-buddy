@@ -4,18 +4,18 @@ orbs:
 workflows:
   ci:
     jobs:
-      - build_storybook:
+      - storybook:
           filters:
             branches:
               only:
                 - main
-      - build_website:
-          filters:
-            branches:
-              only:
-                - main
+      # - website:
+      #     filters:
+      #       branches:
+      #         only:
+      #           - main
 jobs:
-  build_website:
+  website:
     machine:
       image: ubuntu-2204:2023.07.2
     resource_class: large
@@ -35,10 +35,11 @@ jobs:
       - run:
           name: Build Website
           command: yarn build:web
-      - persist_to_workspace:
-          root: ~/project
-          paths: dist/web
-  build_storybook:
+      - run:
+          name: Deliver
+          command: yarn wrangler whoami
+
+  storybook:
     machine:
       image: ubuntu-2204:2023.07.2
     resource_class: large
@@ -50,14 +51,14 @@ jobs:
           install-yarn: true
           node-version: '18'
       - run:
-          command: yarn install
           name: Install packages
+          command: yarn install
       - run:
-          command: yarn nw-cdn download
           name: Download nw-data
+          command: yarn nw-cdn download
       - run:
-          command: yarn storybook:build
           name: Build Storybook
-      - persist_to_workspace:
-          root: ~/project
-          paths: dist/web-storybook
+          command: yarn storybook:build
+      - run:
+          name: Deliver
+          command: yarn wrangler whoami
