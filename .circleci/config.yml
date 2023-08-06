@@ -11,6 +11,7 @@ workflows:
             branches:
               only:
                 - main
+                - stage
 jobs:
   build_test_deploy:
     machine:
