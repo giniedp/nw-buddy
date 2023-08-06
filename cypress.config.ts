@@ -23,8 +23,15 @@ export default defineConfig({
   },
 
   component: {
+    supportFolder: 'apps/cypress/support',
     supportFile: 'apps/cypress/support/component.ts',
-    indexHtmlFile: 'apps/cypress/support/component-index.html',
+    indexHtmlFile: 'apps/cypress/support/component.html',
+    specPattern: '**/*.cy.ts',
+    setupNodeEvents(on, config) {
+      // require('@cypress/code-coverage/task')(on, config)
+      // return config
+      // implement node event listeners here
+    },
     devServer: {
       framework: 'angular',
       bundler: 'webpack',
@@ -54,6 +61,5 @@ export default defineConfig({
         ],
       },
     },
-    specPattern: 'apps/web/**/*.cy.ts',
   },
 })

@@ -5,13 +5,16 @@
   "keywords": [],
   "main": "dist/electron/main.js",
   "private": true,
-  "author": "Ginie",
+  "author": {
+    "name": "Ginie"
+  },
   "homepage": "https://giniedp.github.io/nw-buddy",
   "repository": {
     "type": "git",
-    "url": "https://github.com/giniedp/nw-buddy.git"
+    "url": "git+https://github.com/giniedp/nw-buddy.git"
   },
   "scripts": {
+    "lint": "ng lint",
     "dev": "env-cmd -f .env npm-run-all -p dev:electron dev:web",
     "dev:web": "env-cmd -f .env ng serve --host 0.0.0.0 --disable-host-check -c dev -o",
     "dev:electron": "yarn electron:serve",
@@ -19,12 +22,15 @@
     "dev:wrangler": "wrangler pages dev dist/web-cloud",
     "dev:tools": "yarn build:tools -w",
     "dev:storybook": "ng run nw-buddy:storybook",
+    "test:storybook": "concurrently -n SERVER,STORY -c red,green -k -s first \"yarn storybook:serve --silent\" \"wait-on http://127.0.0.1:5200 && yarn storybook:test\"",
+    "test:unit": "ng test --watch=false",
+    "test:unit:watch": "ng test",
     "build:cloudflare": "yarn nw-build -o dist/public && yarn nw-cdn download -o dist/public/nw-data",
     "build:electron": "yarn electron:tsc && yarn build:web-electron && yarn electron:builder",
     "build:docker": "yarn build:web && yarn build:server && yarn docker:build",
     "build:tools": "tsc -p ./tools/tsconfig.json",
     "build:server": "ng run nw-buddy:server:production",
-    "build:storybook": "ng run nw-buddy:build-storybook",
+    "build:storybook": "yarn storybook:build",
     "build:web": "ng build --base-href / -c web",
     "build:web-electron": "ng build --base-href ./ -c electron",
     "build:web-capacitor": "ng build --base-href ./ -c capacitor",
@@ -44,13 +50,15 @@
     "docker:stop": "docker-compose -f ./docker-compose.yml -p nw-buddy stop",
     "docker:start": "docker-compose -f ./docker-compose.yml -p nw-buddy up -d",
     "docker:restart": "yarn docker:stop && yarn docker:start",
-    "e2e:test": "concurrently -n NG,CY -c red,green,blue -k -s first 'yarn dev:web' 'wait-on http-get://localhost:4200 && cypress run' ",
-    "e2e:dev": " concurrently -n NG,CY -c red,green,blue -k -s first 'yarn dev:web' 'wait-on http-get://localhost:4200 && cypress open'",
+    "e2e:test": "concurrently -n NG,CY -c red,green,blue -k -s first 'yarn dev:web' 'wait-on tcp:4200 && cypress run' ",
+    "e2e:dev": " concurrently -n NG,CY -c red,green,blue -k -s first 'yarn dev:web' 'wait-on tcp:4200 && cypress open'",
     "cy:open": "cypress open",
     "release": "yarn nw-cdn upload && git push",
-    "test": "ng test --watch=false",
-    "test:watch": "ng test",
-    "lint": "ng lint"
+    "storybook:dev": "ng run nw-buddy:storybook",
+    "storybook:build": "ng run nw-buddy:build-storybook",
+    "storybook:serve": "npx http-server dist/web-storybook --port 5200",
+    "storybook:test": "yarn test-storybook -c apps/storybook --url http://127.0.0.1:5200",
+    "chromatic": "npx chromatic --storybook-build-dir dist/web-storybook"
   },
   "devDependencies": {
     "@angular-builders/custom-webpack": "16.0.0",
@@ -130,6 +138,7 @@
     "autoprefixer": "10.4.14",
     "babylonjs-viewer": "6.15.0",
     "chart.js": "4.3.3",
+    "chromatic": "6.20.0",
     "cli-progress": "3.12.0",
     "comlink": "4.4.1",
     "commander": "11.0.0",
@@ -159,6 +168,7 @@
     "file-saver": "2.0.5",
     "gzipper": "7.2.0",
     "html-to-image": "1.11.11",
+    "http-server": "14.1.1",
     "ipfs-core-types": "0.14.1",
     "jasmine-auto-spies": "8.0.0",
     "jasmine-core": "5.1.0",
@@ -217,5 +227,13 @@
   ],
   "optionalDependencies": {
     "nw-extract": "1.2.1"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/giniedp/nw-buddy/issues"
+  },
+  "readme": "ERROR: No README data found!",
+  "dependencies": {
+    "nw-extract": "1.2.1"
+  },
+  "_id": "nw-buddy@2.0.2-0"
 }

@@ -62,5 +62,11 @@ jobs:
           name: Build Storybook
           command: yarn build:storybook
       - run:
+          name: Test Stroybook
+          command: yarn test:storybook
+      - run:
+          name: Test Unit
+          command: yarn test:unit
+      - run:
           name: Deliver
           command: yarn wrangler pages deploy dist/web-storybook --project-name=nw-buddy --branch=$CIRCLE_BRANCH

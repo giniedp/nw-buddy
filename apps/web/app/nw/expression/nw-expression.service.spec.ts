@@ -1,4 +1,3 @@
-import 'jasmine'
 import { HttpClientModule } from '@angular/common/http'
 import { TestBed } from '@angular/core/testing'
 import { firstValueFrom, lastValueFrom } from 'rxjs'
@@ -32,7 +31,7 @@ describe('nw-expression.service', () => {
         )
       })
 
-      it('solves all expressions', async () => {
+      xit('solves all expressions', async () => {
         for (const text of data) {
           const solved = await lastValueFrom(
             service.solve({

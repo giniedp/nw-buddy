@@ -3,7 +3,6 @@ import type { StorybookConfig } from '@storybook/angular'
 const config: StorybookConfig = {
   stories: ['../web/**/*.stories.[tj]s'],
   staticDirs: [
-    './assets',
     {
       from: '../web/assets',
       to: '/assets',

@@ -41,7 +41,10 @@
               "apps/web/assets",
               {
                 "glob": "**/*",
-                "ignore": ["*.gz", "*.zip"],
+                "ignore": [
+                  "*.gz",
+                  "*.zip"
+                ],
                 "input": "dist/nw-data",
                 "output": "/nw-data/"
               }
@@ -211,7 +214,7 @@
           "builder": "@angular-builders/custom-webpack:karma",
           "options": {
             "main": "apps/web/test.ts",
-            "polyfills": "apps/web/polyfills-test.ts",
+            "polyfills": "apps/web/polyfills.ts",
             "tsConfig": "apps/web/tsconfig.spec.json",
             "webWorkerTsConfig": "apps/web/tsconfig.worker.json",
             "karmaConfig": "apps/web/karma.conf.js",
@@ -229,7 +232,10 @@
               "apps/web/assets",
               {
                 "glob": "**/*",
-                "ignore": ["*.gz", "*.zip"],
+                "ignore": [
+                  "*.gz",
+                  "*.zip"
+                ],
                 "input": "dist/nw-data",
                 "output": "/nw-data/"
               }
@@ -256,7 +262,9 @@
             "browserTarget": "nw-buddy:build",
             "port": 5200,
             "compodoc": false,
-            "styles": ["apps/web/styles/main.scss"]
+            "styles": [
+              "apps/web/styles/main.scss"
+            ]
           }
         },
         "build-storybook": {
@@ -265,7 +273,9 @@
             "configDir": "apps/storybook",
             "browserTarget": "nw-buddy:build",
             "compodoc": false,
-            "styles": ["apps/web/styles/main.scss"],
+            "styles": [
+              "apps/web/styles/main.scss"
+            ],
             "outputDir": "dist/web-storybook",
             "quiet": true,
             "enableProdMode": false

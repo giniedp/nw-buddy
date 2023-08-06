@@ -8,7 +8,7 @@ describe('AgGridComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ AgGridComponent ]
+      imports: [ AgGridComponent ]
     })
     .compileComponents();
   });
