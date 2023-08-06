@@ -10,8 +10,8 @@ jobs:
           install-yarn: true
           node-version: '18'
       - run:
-          command: pwd
-          name: Show current directory
+          command: yarn install
+          name: Install packages
       - run:
           command: yarn nw-cdn download
           name: Download nw-data
