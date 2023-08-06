@@ -16,12 +16,9 @@ jobs:
       - run:
           command: yarn install
           name: Install packages
-      # - run:
-      #     command: yarn nw-cdn download
-      #     name: Download nw-data
       - run:
-          command: mkdir -p dist/nw-data/live
-          name: Create empty nw-data folder
+          command: yarn nw-cdn download
+          name: Download nw-data
       - run:
           command: yarn storybook:build
           name: Build Storybook
