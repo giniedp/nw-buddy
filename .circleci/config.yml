@@ -5,7 +5,6 @@ jobs:
   build_and_test:
     machine:
       image: ubuntu-2004:202010-0
-    executor: node/default
     environment:
       NODE_OPTIONS: --max_old_space_size=6144
     steps:
