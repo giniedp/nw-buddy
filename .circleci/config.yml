@@ -60,7 +60,7 @@ jobs:
           command: yarn nw-cdn download
       - run:
           name: Build Storybook
-          command: yarn storybook:build
+          command: yarn build:storybook
       - run:
           name: Deliver
           command: yarn wrangler pages deploy dist/web-storybook --project-name=nw-buddy --branch=$CIRCLE_BRANCH
