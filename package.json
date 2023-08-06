@@ -25,7 +25,7 @@
     "test:storybook": "concurrently -n SERVER,STORY -c red,green -k -s first \"yarn storybook:serve --silent\" \"wait-on http://127.0.0.1:5200 && yarn storybook:test\"",
     "test:unit": "ng test --watch=false",
     "test:unit:watch": "ng test",
-    "build:cloudflare": "yarn nw-build -o dist/public && yarn nw-cdn download -o dist/public/nw-data",
+    "build:cloudflare": "yarn nw-cdn download && yarn build:web",
     "build:electron": "yarn electron:tsc && yarn build:web-electron && yarn electron:builder",
     "build:docker": "yarn build:web && yarn build:server && yarn docker:build",
     "build:tools": "tsc -p ./tools/tsconfig.json",

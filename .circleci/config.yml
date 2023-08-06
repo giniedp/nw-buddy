@@ -4,44 +4,15 @@ orbs:
 workflows:
   ci:
     jobs:
-      - storybook:
+      - build_test_deploy:
           context:
             - nw-buddy-cf
           filters:
             branches:
               only:
                 - main
-      # - website:
-      #     filters:
-      #       branches:
-      #         only:
-      #           - main
 jobs:
-  website:
-    machine:
-      image: ubuntu-2204:2023.07.2
-    resource_class: large
-    environment:
-      NODE_OPTIONS: --max_old_space_size=6144
-    steps:
-      - checkout
-      - node/install:
-          install-yarn: true
-          node-version: '18'
-      - run:
-          name: Install packages
-          command: yarn install
-      - run:
-          name: Download nw-data
-          command: yarn nw-cdn download
-      - run:
-          name: Build Website
-          command: yarn build:web
-      - run:
-          name: Deliver
-          command: yarn wrangler whoami
-
-  storybook:
+  build_test_deploy:
     machine:
       image: ubuntu-2204:2023.07.2
     resource_class: large
@@ -68,5 +39,11 @@ jobs:
           name: Test Unit
           command: yarn test:unit
       - run:
-          name: Deliver
-          command: yarn wrangler pages deploy dist/web-storybook --project-name=nw-buddy --branch=$CIRCLE_BRANCH
+          name: Build Website
+          command: yarn build:web
+      - run:
+          name: Deliver Storybook
+          command: yarn wrangler pages deploy dist/web-storybook --project-name=nw-buddy --branch=storybook-${CIRCLE_BRANCH}
+      - run:
+          name: Deliver Website
+          command: yarn wrangler pages deploy dist/web --project-name=nw-buddy --branch=${CIRCLE_BRANCH}
