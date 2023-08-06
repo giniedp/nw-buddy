@@ -4,7 +4,8 @@ orbs:
 jobs:
   build_and_test:
     machine:
-      image: ubuntu-2004:202010-0
+      image: ubuntu-2204:2023.07.2
+    resource_class: large
     environment:
       NODE_OPTIONS: --max_old_space_size=6144
     steps:
