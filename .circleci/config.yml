@@ -1,8 +1,44 @@
 version: 2.1
 orbs:
   node: circleci/node@5.1.0
+workflows:
+  ci:
+    jobs:
+      - build_storybook:
+          filters:
+            branches:
+              only:
+                - main
+      - build_website:
+          filters:
+            branches:
+              only:
+                - main
 jobs:
-  build_and_test:
+  build_website:
+    machine:
+      image: ubuntu-2204:2023.07.2
+    resource_class: large
+    environment:
+      NODE_OPTIONS: --max_old_space_size=6144
+    steps:
+      - checkout
+      - node/install:
+          install-yarn: true
+          node-version: '18'
+      - run:
+          name: Install packages
+          command: yarn install
+      - run:
+          name: Download nw-data
+          command: yarn nw-cdn download
+      - run:
+          name: Build Website
+          command: yarn build:web
+      - persist_to_workspace:
+          root: ~/project
+          paths: dist/web
+  build_storybook:
     machine:
       image: ubuntu-2204:2023.07.2
     resource_class: large
@@ -22,11 +58,6 @@ jobs:
       - run:
           command: yarn storybook:build
           name: Build Storybook
-      # - persist_to_workspace:
-      #     root: ~/project
-      #     paths: .
-
-workflows:
-  test_my_app:
-    jobs:
-      - build_and_test
+      - persist_to_workspace:
+          root: ~/project
+          paths: dist/web-storybook
