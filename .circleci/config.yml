@@ -1,0 +1,23 @@
+version: 2.1
+orbs:
+  node: circleci/node@5.1.0
+jobs:
+  build_and_test:
+    executor: node/default
+    steps:
+      - checkout
+      - node/install:
+          install-yarn: true
+          node-version: '18'
+      - run:
+          command: pwd
+          name: Show current directory
+      - run:
+          command: yarn nw-cdn download
+          name: Download nw-data
+      - run:
+          command: yarn storybook:build
+          name: Build Storybook
+      # - persist_to_workspace:
+      #     root: ~/project
+      #     paths: .
