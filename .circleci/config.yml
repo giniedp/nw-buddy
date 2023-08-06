@@ -5,12 +5,12 @@ workflows:
   ci:
     jobs:
       - storybook:
+          context:
+            - nw-buddy-cf
           filters:
             branches:
               only:
                 - main
-          context:
-            - nw-buddy-cf
       # - website:
       #     filters:
       #       branches:
@@ -63,4 +63,4 @@ jobs:
           command: yarn storybook:build
       - run:
           name: Deliver
-          command: yarn wrangler whoami
+          command: yarn wrangler pages deploy dist/web-storybook --project-name=nw-buddy --branch=$CIRCLE_BRANCH

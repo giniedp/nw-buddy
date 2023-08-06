@@ -9,10 +9,15 @@ function cmd(cmd) {
   return result.stdout.toString('utf8').replace(/^\s+|\s+$/g, '')
 }
 
-// https://developers.cloudflare.com/pages/platform/build-configuration/#environment-variables
-
-const branchName = process.env.CF_PAGES_BRANCH || process.env.GITHUB_REF_NAME || cmd('git branch --show-current')
-const commitHash = process.env.CF_PAGES_COMMIT_SHA || process.env.GITHUB_SHA
+const branchName =
+  process.env.CF_PAGES_BRANCH || // Cloudflare Pages
+  process.env.GITHUB_REF_NAME || // Github Actions
+  process.env.CIRCLE_BRANCH || // CircleCI
+  cmd('git branch --show-current')
+const commitHash =
+  process.env.CF_PAGES_COMMIT_SHA || // Cloudflare Pages
+  process.env.GITHUB_SHA || // Github Actions
+  process.env.CIRCLE_SHA1 // CircleCI
 const path = require('path')
 const config = {
   NW_GAME_LIVE: process.env.NW_GAME_LIVE,
