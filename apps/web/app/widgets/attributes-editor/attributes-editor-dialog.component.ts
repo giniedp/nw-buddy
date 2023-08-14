@@ -27,7 +27,7 @@ export class AttributeEditorDialogComponent {
     return dialog.open<Record<AttributeRef, number>, AttributeEditorDialogData, AttributeEditorDialogComponent>(
       AttributeEditorDialogComponent,
       {
-        panelClass: ['max-h-screen', 'w-screen', 'max-w-2xl', 'layout-pad', 'shadow', 'self-end', 'sm:self-center'],
+        panelClass: ['max-h-screen', 'w-screen', 'max-w-2xl', 'm-2', 'shadow', 'self-end', 'sm:self-center'],
         ...config,
       }
     )

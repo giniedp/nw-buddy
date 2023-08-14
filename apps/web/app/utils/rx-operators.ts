@@ -1,5 +1,20 @@
+import { ValueEqualityFn } from '@angular/core'
 import { groupBy, isEqual } from 'lodash'
-import { combineLatest, distinctUntilChanged, map, Observable, of, pipe, switchMap, tap } from 'rxjs'
+import {
+  combineLatest,
+  distinctUntilChanged,
+  isObservable,
+  map,
+  Observable,
+  ObservableInput,
+  ObservedValueOf,
+  of,
+  pipe,
+  shareReplay,
+  switchMap,
+  tap,
+} from 'rxjs'
+import { debounceSync } from './rx-operators/debounce-sync'
 
 export function mapProp<T, K extends keyof T>(prop: K) {
   return map<T, T[K]>((it) => it?.[prop])
@@ -66,4 +81,40 @@ export function tapDebug<T>(tag: string, transform?: (it: T) => any) {
       console.log(`%c[${tag}]: Complete`, 'background: #00BCD4; color: #fff; padding: 2px; font-size: 10px;')
     },
   })
+}
+
+export interface SelectStreamConfig<T = unknown> {
+  debounce?: boolean
+  equal?: ValueEqualityFn<T>
+}
+
+export function selectStream<T>(
+  source: Observable<T>
+): Observable<T>
+export function selectStream<T extends Record<string, ObservableInput<any>>, R>(
+  source: T,
+  projector: (s: { [K in keyof T]: ObservedValueOf<T[K]> }) => R,
+  config?: SelectStreamConfig<R>
+): Observable<R>
+export function selectStream<T, R>(
+  source: Observable<T>,
+  projector: (s: T) => R,
+  config?: SelectStreamConfig<R>
+): Observable<R>
+export function selectStream(
+  source: Observable<any>,
+  projector?: (s: any) => any,
+  config?: SelectStreamConfig<any>
+): Observable<any> {
+  source = isObservable(source) ? source : combineLatest(source as any)
+  return source
+    .pipe(config?.debounce ? debounceSync() : map((it) => it))
+    .pipe(map(projector || ((it) => it)))
+    .pipe(distinctUntilChanged(config?.equal))
+    .pipe(
+      shareReplay({
+        refCount: true,
+        bufferSize: 1,
+      })
+    )
 }

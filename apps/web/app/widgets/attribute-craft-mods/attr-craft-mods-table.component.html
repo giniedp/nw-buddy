@@ -1,0 +1,28 @@
+<table class="table table-compact">
+<thead>
+    <tr>
+      <th></th>
+      <th *ngFor="let attr of attributes$ | async" class="text-center">{{ attr.shortName | nwText }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let row of table$ | async; let i = index">
+      <th class="bg-base-200">{{ row[0].secondaryAttribute | nwText }}</th>
+      <td *ngFor="let cell of row" [class.bg-base-200]="cell.isPure" [class.bg-base-100]="!cell.isPure">
+        <div class="flex gap-2">
+          <a [nwLink]="cell.item?.ItemID" [nwLinkResource]="'item'" target="_blank" class="w-14 h-14">
+            <picture [nwIcon]="cell.item" class="nw-icon w-14 h-14"></picture>
+          </a>
+          <div class="flex flex-col justify-between flex-1 whitespace-nowrap leading-tight">
+            <span>{{ cell.name | nwText }}</span>
+            <span class="text-nw-description italic">{{ cell.suffix | nwText }}</span>
+            <div class="flex gap-1">
+              <span class="badge badge-primary badge-xs">{{ cell.primaryAttribute | nwText }} </span>
+              <span class="badge badge-secondary badge-xs" *ngIf="!cell.isPure">{{ cell.secondaryAttribute | nwText }}</span>
+            </div>
+          </div>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
