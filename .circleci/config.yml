@@ -12,6 +12,7 @@ workflows:
               only:
                 - main
                 - stage
+                - live
 jobs:
   build_test_deploy:
     machine:
