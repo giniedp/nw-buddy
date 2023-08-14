@@ -81,7 +81,7 @@ export class ShareService {
 
   public async downloadbyCid(cid: string) {
     const fileUri = `ipfs://${cid}/${ENTRY_FILE_NAME}`
-    const storage = new ThirdwebStorage()
+    const storage = this.getStorage()
     const object = await storage.download(fileUri).then((res) => res?.json())
     if (!validateSharedObject(object)) {
       return null
@@ -106,7 +106,7 @@ export class ShareService {
   }
 
   protected async uploadToIpfs(content: UploadContent<any>): Promise<ShareInfo> {
-    const storage = new ThirdwebStorage()
+    const storage = this.getStorage()
     const file = createJsonFile(ENTRY_FILE_NAME, content)
     const [cid, name] = await storage.upload(file).then((uri) => uri.replace(/^ipfs:\/\//, '').split('/'))
     return {
@@ -126,6 +126,10 @@ export class ShareService {
       cid: cid,
       file: fileName,
     }
+  }
+
+  protected getStorage() {
+    return new ThirdwebStorage({ clientId: '84f9106337126bda075938273ddc972e' })
   }
 }
 
