@@ -110,7 +110,7 @@ export const CATEGORIES: TransmogCategory[] = [
       'AzothStaff' as any,
       'InstrumentFlute',
       'InstrumentGuitar',
-      'InstrumentGuitar',
+      'InstrumentMandolin',
       'InstrumentUprightBass',
       'InstrumentDrums',
     ],
