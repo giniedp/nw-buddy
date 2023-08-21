@@ -65,6 +65,33 @@ export const TABLE_REMAP_RULES = [
     ],
   },
   {
+    file: /_itemappearancedefinitions.json/,
+    rules: [
+      splitToArrayRule({
+        properties: ['ItemClass'],
+        separator: '+',
+      }),
+    ],
+  },
+  {
+    file: /_itemdefinitions_weaponappearances.json/,
+    rules: [
+      splitToArrayRule({
+        properties: ['ItemClass'],
+        separator: '+',
+      }),
+    ],
+  },
+  {
+    file: /_itemdefinitions_instrumentsappearances.json/,
+    rules: [
+      splitToArrayRule({
+        properties: ['ItemClass'],
+        separator: '+',
+      }),
+    ],
+  },
+  {
     file: /_itemdefinitions_(master_|mtx_)/,
     rules: [
       splitToArrayRule({

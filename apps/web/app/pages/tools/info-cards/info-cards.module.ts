@@ -9,6 +9,8 @@ import { RunesOverviewComponent } from './runes-overview.component'
 import { SchematicsOverviewComponent } from './schematics-overview.component'
 import { TrophiesOverviewComponent } from './trophies-overview.component'
 import { VitalsFamiliesComponent } from './vitals-families.component'
+import { TransmogComponent } from '../transmog/transmog.component'
+import { TransmogModule } from '../transmog/transmog.module'
 
 const routes: Routes = [
   {
@@ -46,8 +48,8 @@ const routes: Routes = [
       },
       {
         path: 'music-sheets',
-        component: MusicSheetsOverviewComponent
-      }
+        component: MusicSheetsOverviewComponent,
+      },
     ],
   },
 ]

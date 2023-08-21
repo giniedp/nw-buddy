@@ -7,7 +7,7 @@ import { LayoutService } from './layout.service'
 
 @Directive({
   standalone: true,
-  selector: '[nwbDetailDraweContent]'
+  selector: '[nwbDetailDrawerContent]'
 })
 export class DetailDrawerContent {
   public constructor(public readonly tpl: TemplateRef<any>) {

@@ -85,7 +85,7 @@ const transparentPixel =
   template: ``,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'fase',
+    class: 'fade',
   },
 })
 export class NwImageComponent {

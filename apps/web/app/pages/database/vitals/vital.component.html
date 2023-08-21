@@ -2,7 +2,7 @@
   class="hidden lg:block lg:w-[400px] 3xl:w-[500px] 4xl:w-[600px] h-full"
   [breakpoints]="[0.25, 0.5, 1]"
 >
-  <div *nwbDetailDraweContent class="layout-col layout-gap bg-base-200 layout-pad">
+  <div *nwbDetailDrawerContent class="layout-col layout-gap bg-base-200 layout-pad">
     <ng-container *ngIf="vital$ | async; let vital">
       <nwb-vital-detail [vital]="vital" [nwbScreenshotFrame]="vital.DisplayName | nwText"></nwb-vital-detail>
       <div class="layout-col" *ngIf="tabId$ | async; let tab">

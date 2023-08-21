@@ -1,0 +1,18 @@
+<nwb-detail-drawer class="hidden lg:block lg:w-[420px]" [breakpoints]="[0.15, 0.25, 0.5, 1]">
+  <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
+    <div class="flex flex-col gap-1" *ngIf="appearance$ | async; let transmogItem">
+      <nwb-item-header class="gap-2">
+        <nwb-item-icon [solid]="false" [rarity]="0" [nwbItemIcon]="transmogItem.appearance.IconPath" class="w-20">
+        </nwb-item-icon>
+        <nwb-item-header-content [title]="transmogItem.appearance.Name | nwText"></nwb-item-header-content>
+      </nwb-item-header>
+
+      <ng-container *ngIf="transmogItem.items?.length">
+        <h3>Items with appearance ({{ transmogItem.items.length}})</h3>
+        <nwb-item-detail [entity]="item" *ngFor="let item of transmogItem.items">
+          <nwb-item-detail-header [enableLink]="true" [enableInfoLink]="true" [enableTracker]="true"></nwb-item-detail-header>
+        </nwb-item-detail>
+      </ng-container>
+    </div>
+  </div>
+</nwb-detail-drawer>

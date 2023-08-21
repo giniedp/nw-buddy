@@ -764,7 +764,6 @@ export interface Gatherables {
     BaseGatherTime:                  number;
     ConsumedStatusEffect?:           string;
     DepletedGatherableID:            number;
-    DisplayDescription?:             string;
     DisplayName?:                    string;
     FinalLootTable?:                 string;
     GameEventID?:                    string;
@@ -780,7 +779,6 @@ export interface Gatherables {
     IsLootContainer:                 boolean;
     ItemRestrictionId?:              string;
     ItemRestrictionQuantity?:        string;
-    LandmarkIconPath?:               string;
     MaxRespawnRate:                  number;
     MinRespawnRate:                  number;
     NumRequiredToGather:             number;
@@ -793,9 +791,7 @@ export interface Gatherables {
     ResetGatherTimeOnEndInteraction: boolean;
     Restriction:                     string;
     SongRewardId?:                   string;
-    TooltipImage?:                   string;
     Tradeskill:                      string;
-    UsableEmoteTags?:                string;
     WaitForImpact:                   boolean;
 }
 export interface VariationsLockedInteractGatherables {
@@ -1105,7 +1101,7 @@ export interface Itemappearancedefinitions {
     IconPath?:                 string;
     IsSkin1:                   number;
     IsSkin2:                   number;
-    ItemClass?:                string;
+    ItemClass?:                string[];
     ItemID:                    string;
     "Left/On"?:                string;
     LeftHandOnlySkin?:         string;
@@ -1155,7 +1151,7 @@ export interface ItemdefinitionsWeaponappearances {
     HiResIconPath?:               string;
     IconCaptureGroup?:            string;
     IconPath?:                    string;
-    ItemClass?:                   string;
+    ItemClass?:                   string[];
     MaskAGloss:                   number;
     MaskAGlossShift:              number;
     MaskASpec:                    number;
@@ -1189,7 +1185,7 @@ export interface ItemdefinitionsInstrumentsappearances {
     HiResIconPath?:              string;
     IconCaptureGroup?:           string;
     IconPath?:                   string;
-    ItemClass?:                  string;
+    ItemClass?:                  string[];
     MaskAGloss:                  number;
     MaskAGlossShift:             number;
     MaskASpec:                   number;
@@ -1546,6 +1542,9 @@ export interface Lootbuckets {
     Item400?:              string;
     Item401?:              string;
     Item41?:               string;
+    Item413?:              string;
+    Item414?:              string;
+    Item415?:              string;
     Item42?:               string;
     Item43?:               string;
     Item44?:               string;
@@ -1897,6 +1896,9 @@ export interface Lootbuckets {
     LootBucket4?:          string;
     LootBucket400?:        string;
     LootBucket401?:        string;
+    LootBucket413?:        string;
+    LootBucket414?:        string;
+    LootBucket415?:        string;
     LootBucket48?:         string;
     LootBucket49?:         string;
     LootBucket5?:          string;
@@ -2267,6 +2269,9 @@ export interface Lootbuckets {
     MatchOne400?:          string;
     MatchOne401:           boolean;
     MatchOne41?:           string;
+    MatchOne413:           boolean;
+    MatchOne414:           boolean;
+    MatchOne415?:          string;
     MatchOne42?:           string;
     MatchOne43?:           string;
     MatchOne44?:           string;
@@ -2646,6 +2651,9 @@ export interface Lootbuckets {
     Quantity400:           number;
     Quantity401:           number;
     Quantity41:            number;
+    Quantity413:           number;
+    Quantity414:           number;
+    Quantity415:           number;
     Quantity42:            number;
     Quantity43:            number;
     Quantity44:            number;
@@ -2914,6 +2922,9 @@ export interface Lootbuckets {
     Tags40?:               string[];
     Tags400?:              string[];
     Tags41?:               string[];
+    Tags413?:              string[];
+    Tags414?:              string[];
+    Tags415?:              string[];
     Tags42?:               string[];
     Tags43?:               string[];
     Tags44?:               string[];

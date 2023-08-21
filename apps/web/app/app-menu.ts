@@ -51,6 +51,7 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Expeditions', path: '/dungeons', icon: 'assets/icons/menu/expeditions.png' },
       { label: 'Armorsets', path: '/armorsets', icon: 'assets/icons/menu/armorsets.png'  },
       { label: 'Umbral Shards', path: '/umbral-shards', icon: 'assets/icons/menu/umbral.png' },
+      { label: 'Transmog', path: '/transmog', icon: 'assets/icons/menu/transmogtoken.webp' },
 
       { label: 'Trophies', path: '/info-cards/trophies', divider: true, icon: 'assets/icons/slots/icon_housing_category_trophies.png' },
       { label: 'Runes', path: '/info-cards/runes', icon: 'assets/icons/slots/iconrune.png' },

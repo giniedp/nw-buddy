@@ -108,7 +108,10 @@ export class NwDbService {
     (it) => it.IngredientCategories
   )
   public itemsByIngredientCategory = lookup(() => this.itemsByIngredientCategoryMap)
-
+  public itemsByAppearanceId = indexGroupSetBy(
+    () => this.items,
+    (it) => [it.ArmorAppearanceM, it.ArmorAppearanceF, it.WeaponAppearanceOverride]
+  )
   public housingItems = table(() => [
     this.data.housingitems(),
     this.data.mtxHousingitemsMtx() as any as Observable<Housingitems[]>,
@@ -398,6 +401,16 @@ export class NwDbService {
   public attrDex = this.data.attributedexterity().pipe(shareReplay(1))
   public attrFoc = this.data.attributefocus().pipe(shareReplay(1))
   public attrInt = this.data.attributeintelligence().pipe(shareReplay(1))
+
+
+  public itemAppearances = table(() => this.data.itemappearancedefinitions())
+  public itemAppearancesMap = indexBy(() => this.itemAppearances, 'ItemID')
+
+  public weaponAppearances = table(() => this.data.itemdefinitionsWeaponappearances())
+  public weaponAppearancesMap = indexBy(() => this.weaponAppearances, 'WeaponAppearanceID')
+
+  public instrumentAppearances = table(() => this.data.itemdefinitionsInstrumentsappearances())
+  public instrumentAppearancesMap = indexBy(() => this.instrumentAppearances, 'WeaponAppearanceID')
 
   public constructor(public readonly data: NwDataService) {
     //

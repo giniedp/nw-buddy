@@ -48,6 +48,7 @@ export const LOCALE_KEYS_TO_KEEP = [
   /^ui_.*_mastery$/,
   /^ui_.*_tree1$/,
   /^ui_.*_tree2$/,
+  /^categorydata_.*/,
   'ui_sword',
   'ui_shield',
   'ui_blood',

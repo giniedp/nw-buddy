@@ -921,6 +921,9 @@ export abstract class NwDataLoader {
   public mtxItemdefinitionsMtx202307() {
     return this.load<ItemDefinitionMtx[]>('mtx/javelindata_itemdefinitions_mtx_2023-07.json')
   }
+  public mtxItemdefinitionsMtx202308() {
+    return this.load<ItemDefinitionMtx[]>('mtx/javelindata_itemdefinitions_mtx_2023-08.json')
+  }
   public mtxItemdefinitionsMtx202310() {
     return this.load<ItemDefinitionMtx[]>('mtx/javelindata_itemdefinitions_mtx_2023-10.json')
   }
