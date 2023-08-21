@@ -3,6 +3,7 @@ export const svgAnglesLeft = require('!!raw-loader!./angles-left.svg').default
 export const svgArrowRightArrowLeft = require('!!raw-loader!./arrow-right-arrow-left.svg').default
 export const svgArrowsLeftRight = require('!!raw-loader!./arrows-left-right.svg').default
 export const svgBars = require('!!raw-loader!./bars.svg').default
+export const svgBrush = require('!!raw-loader!./brush.svg').default
 export const svgBurst = require('!!raw-loader!./burst.svg').default
 export const svgCalculator = require('!!raw-loader!./calculator.svg').default
 export const svgCamera = require('!!raw-loader!./camera.svg').default

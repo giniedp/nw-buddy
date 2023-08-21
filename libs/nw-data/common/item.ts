@@ -19,39 +19,39 @@ export function isHousingItem(item: ItemDefinitionMaster | Housingitems): item i
   return item && 'HouseItemID' in item
 }
 
-export function isItemArmor(item: ItemDefinitionMaster | null) {
+export function isItemArmor(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('Armor')
 }
 
-export function isItemJewelery(item: ItemDefinitionMaster | null) {
+export function isItemJewelery(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('Jewelery')
 }
 
-export function isItemWeapon(item: ItemDefinitionMaster | null) {
+export function isItemWeapon(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('Weapon')
 }
 
-export function isItemShield(item: ItemDefinitionMaster | null) {
+export function isItemShield(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('EquppableOffHand')
 }
 
-export function isItemTool(item: ItemDefinitionMaster | null) {
+export function isItemTool(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('EquppableTool')
 }
 
-export function isItemConsumable(item: ItemDefinitionMaster | null) {
+export function isItemConsumable(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('Consumable')
 }
 
-export function isItemNamed(item: ItemDefinitionMaster | null) {
+export function isItemNamed(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('Named')
 }
 
-export function isItemSwordOrShield(item: ItemDefinitionMaster | null) {
+export function isItemSwordOrShield(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('Sword') || item?.ItemClass?.includes('Shield')
 }
 
-export function isItemHeargem(item: ItemDefinitionMaster | null) {
+export function isItemHeargem(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('HeartGem')
 }
 

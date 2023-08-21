@@ -11,13 +11,14 @@ import { Itemappearancedefinitions, ItemdefinitionsWeaponappearances } from '@nw
 import { NwModule } from '~/nw'
 import { QuicksearchService } from '~/ui/quicksearch'
 import { combineLatest, debounceTime, map, startWith } from 'rxjs'
+import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
   standalone: true,
   templateUrl: './transmog.component.html',
   styleUrls: ['./transmog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, RouterModule, PaginationModule, ItemFrameModule, IconsModule],
+  imports: [CommonModule, NwModule, RouterModule, PaginationModule, ItemFrameModule, IconsModule, TooltipModule],
   host: {
     class: 'layout-row',
   },

@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
+import { isItemArmor, isItemShield } from '@nw-data/common'
 import {
   ItemClass,
   ItemDefinitionMaster,
@@ -27,7 +28,19 @@ export interface TransmogItem {
   isStore: boolean
   isSkin: boolean
   name: string
+  description: string
   gender: 'male' | 'female'
+  dyeSlots: DyeSlot[]
+}
+
+export interface DyeSlot {
+  channel: string
+  name: string
+  color: string
+  dyeEnabled: boolean
+  dye: string
+  dyeOverride: string
+  mask: string
 }
 
 export interface TransmogCategory {
@@ -36,6 +49,7 @@ export interface TransmogCategory {
   itemClass: ItemClass[]
   subcategories: ItemClass[]
 }
+const DYE_CATEGOREIS = ['EquippableOffHand', 'EquippableHead', 'EquippableChest', 'EquippableHands', 'EquippableLegs', 'EquippableFeet']
 export const CATEGORIES: TransmogCategory[] = [
   {
     id: '1handed',
@@ -199,8 +213,8 @@ function selectAppearances({
       const sources = Array.from(itemsMap.get(appearanceId)?.values() || [])
       const isUnique = sources.length === 1
       // TODO:
-      const isStore = isUnique && (eqCaseInsensitive(sources[0]['$source'], 'store'))
-      const isSkin = isUnique && (sources[0].ItemID.includes('Skin_'))
+      const isStore = isUnique && eqCaseInsensitive(sources[0]['$source'], 'store')
+      const isSkin = isUnique && sources[0].ItemID.includes('Skin_')
       return {
         id: appearanceId,
         appearance: appearance,
@@ -209,10 +223,12 @@ function selectAppearances({
         isStore: isStore,
         isSkin: isSkin,
         name: tl8.get(appearance.Name),
+        description: tl8.get(appearance.Description),
         gender: (appearance as Itemappearancedefinitions).Gender?.toLowerCase() as any,
+        dyeSlots: selectDyeSlots(appearance),
       }
     })
-    .filter((it) => it.items.length > 0)
+    //.filter((it) => it.items.length > 0)
   return result
 }
 
@@ -224,4 +240,55 @@ function matchTransmogCateogry(category: TransmogCategory, appearance: { ItemCla
 
 function getAppearanceId(item: NwApearance) {
   return (item as Itemappearancedefinitions)?.ItemID || (item as ItemdefinitionsWeaponappearances)?.WeaponAppearanceID
+}
+
+function selectDyeSlots(item: NwApearance): DyeSlot[] {
+
+  const dyeEnabled = DYE_CATEGOREIS.some((it) => item.ItemClass?.some((it2) => eqCaseInsensitive(it, it2)))
+
+  return [
+    {
+      channel: 'R',
+      name: 'Primary',
+      color: item.MaskRColor,
+      dyeEnabled: dyeEnabled && !coarseBoolean((item as Itemappearancedefinitions).RDyeSlotDisabled ?? '0'),
+      dye: String((item as Itemappearancedefinitions).MaskRDye),
+      dyeOverride: String((item as Itemappearancedefinitions).MaskRDyeOverride),
+      mask: String((item as Itemappearancedefinitions).MaskR),
+    },
+    {
+      channel: 'G',
+      name: 'Secondary',
+      color: item.MaskGColor,
+      dyeEnabled: dyeEnabled && !coarseBoolean((item as Itemappearancedefinitions).GDyeSlotDisabled ?? '0'),
+      dye: String((item as Itemappearancedefinitions).MaskGDye),
+      dyeOverride: String((item as Itemappearancedefinitions).MaskGDyeOverride),
+      mask: String((item as Itemappearancedefinitions).MaskG),
+    },
+    {
+      channel: 'B',
+      name: 'Accent',
+      color: item.MaskBColor,
+      dyeEnabled: dyeEnabled && !coarseBoolean((item as Itemappearancedefinitions).BDyeSlotDisabled ?? '0'),
+      dye: String((item as Itemappearancedefinitions).MaskBDye),
+      dyeOverride: String((item as Itemappearancedefinitions).MaskBDyeOverride),
+      mask: String((item as Itemappearancedefinitions).MaskB),
+    },
+    {
+      channel: 'A',
+      name: 'Tint',
+      color: item.MaskASpecColor,
+      dyeEnabled: dyeEnabled && !coarseBoolean((item as Itemappearancedefinitions).ADyeSlotDisabled ?? '0'),
+      dye: String((item as Itemappearancedefinitions).MaskASpecDye),
+      dyeOverride: String(null),
+      mask: String((item as Itemappearancedefinitions).MaskASpec),
+    },
+  ]
+}
+
+function coarseBoolean(value: string): boolean {
+  if (value == null) {
+    return null
+  }
+  return value === '1'
 }
