@@ -5,12 +5,23 @@ import { BehaviorSubject, combineLatest, map, merge, of, startWith, switchMap } 
 import { BreakpointName, BREAKPOINTS } from './breakpoints'
 import { LayoutService } from './layout.service'
 
+export class DetailDrawerContext {
+  public $implicit = this
+  public isModal = false
+  public constructor(isModal: boolean) {
+    this.isModal = isModal
+  }
+}
+
 @Directive({
   standalone: true,
   selector: '[nwbDetailDrawerContent]'
 })
 export class DetailDrawerContent {
-  public constructor(public readonly tpl: TemplateRef<any>) {
+  public static ngTemplateContextGuard<T>(dir: DetailDrawerContent, ctx: unknown): ctx is DetailDrawerContext {
+    return true
+  }
+  public constructor(public readonly tpl: TemplateRef<DetailDrawerContext>) {
 
   }
 }
@@ -52,6 +63,9 @@ export class DetailDrawerComponent {
 
   @ContentChild(TemplateRef)
   protected contentTemplate: TemplateRef<any>
+
+  protected contextModal = new DetailDrawerContext(true)
+  protected contextDefault = new DetailDrawerContext(false)
 
   protected get template() {
     return this.content?.tpl || this.contentTemplate

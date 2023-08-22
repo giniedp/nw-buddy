@@ -1,6 +1,5 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { isItemArmor, isItemShield } from '@nw-data/common'
 import {
   ItemClass,
   ItemDefinitionMaster,
@@ -38,10 +37,10 @@ export interface DyeSlot {
   channel: string
   name: string
   color: string
+  colorStrength: number
   dyeEnabled: boolean
-  dye: string
-  dyeOverride: string
-  mask: string
+  dyeStrength: number
+  dyeOverride: number // TODO: research, how does that apply?
 }
 
 export interface TransmogCategory {
@@ -268,37 +267,37 @@ function selectDyeSlots(item: NwApearance): DyeSlot[] {
       channel: 'R',
       name: 'Primary',
       color: item.MaskRColor,
+      colorStrength: (item as Itemappearancedefinitions).MaskR,
       dyeEnabled: dyeEnabled && !coarseBoolean((item as Itemappearancedefinitions).RDyeSlotDisabled ?? '0'),
-      dye: String((item as Itemappearancedefinitions).MaskRDye),
-      dyeOverride: String((item as Itemappearancedefinitions).MaskRDyeOverride),
-      mask: String((item as Itemappearancedefinitions).MaskR),
+      dyeStrength: (item as Itemappearancedefinitions).MaskRDye,
+      dyeOverride: (item as Itemappearancedefinitions).MaskRDyeOverride,
     },
     {
       channel: 'G',
       name: 'Secondary',
       color: item.MaskGColor,
+      colorStrength: (item as Itemappearancedefinitions).MaskG,
       dyeEnabled: dyeEnabled && !coarseBoolean((item as Itemappearancedefinitions).GDyeSlotDisabled ?? '0'),
-      dye: String((item as Itemappearancedefinitions).MaskGDye),
-      dyeOverride: String((item as Itemappearancedefinitions).MaskGDyeOverride),
-      mask: String((item as Itemappearancedefinitions).MaskG),
+      dyeStrength: (item as Itemappearancedefinitions).MaskGDye,
+      dyeOverride: (item as Itemappearancedefinitions).MaskGDyeOverride,
     },
     {
       channel: 'B',
       name: 'Accent',
       color: item.MaskBColor,
+      colorStrength: (item as Itemappearancedefinitions).MaskB,
       dyeEnabled: dyeEnabled && !coarseBoolean((item as Itemappearancedefinitions).BDyeSlotDisabled ?? '0'),
-      dye: String((item as Itemappearancedefinitions).MaskBDye),
-      dyeOverride: String((item as Itemappearancedefinitions).MaskBDyeOverride),
-      mask: String((item as Itemappearancedefinitions).MaskB),
+      dyeStrength: (item as Itemappearancedefinitions).MaskBDye,
+      dyeOverride: (item as Itemappearancedefinitions).MaskBDyeOverride,
     },
     {
       channel: 'A',
       name: 'Tint',
       color: item.MaskASpecColor,
+      colorStrength: (item as Itemappearancedefinitions).MaskASpec,
       dyeEnabled: dyeEnabled && !coarseBoolean((item as Itemappearancedefinitions).ADyeSlotDisabled ?? '0'),
-      dye: String((item as Itemappearancedefinitions).MaskASpecDye),
-      dyeOverride: String(null),
-      mask: String((item as Itemappearancedefinitions).MaskASpec),
+      dyeStrength: (item as Itemappearancedefinitions).MaskASpecDye,
+      dyeOverride: null,
     },
   ]
 }

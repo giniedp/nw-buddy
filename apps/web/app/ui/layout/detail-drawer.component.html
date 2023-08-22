@@ -9,8 +9,8 @@
 >
   <ng-template>
     <ion-content [scrollY]="false">
-      <div class="h-full layout-col" >
-        <ng-container *ngTemplateOutlet="template"></ng-container>
+      <div class="h-full layout-col">
+        <ng-container *ngTemplateOutlet="template; context: contextModal"></ng-container>
       </div>
     </ion-content>
   </ng-template>
@@ -18,6 +18,6 @@
 
 <ng-container *ngIf="isLarge$ | async">
   <div class="h-full layout-col">
-      <ng-container *ngTemplateOutlet="template"></ng-container>
+    <ng-container *ngTemplateOutlet="template; context: contextDefault"></ng-container>
   </div>
 </ng-container>
