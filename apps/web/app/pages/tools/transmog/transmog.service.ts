@@ -16,6 +16,7 @@ import { eqCaseInsensitive, selectStream } from '~/utils'
 
 export interface TransmogServiceState {
   genderFilter: 'male' | 'female'
+  groupByModel: boolean
 }
 
 export type TransmogAppearance = Pick<Itemappearancedefinitions, 'Name' | 'IconPath' | 'ItemClass'>
@@ -49,7 +50,14 @@ export interface TransmogCategory {
   itemClass: ItemClass[]
   subcategories: ItemClass[]
 }
-const DYE_CATEGOREIS = ['EquippableOffHand', 'EquippableHead', 'EquippableChest', 'EquippableHands', 'EquippableLegs', 'EquippableFeet']
+const DYE_CATEGOREIS = [
+  'EquippableOffHand',
+  'EquippableHead',
+  'EquippableChest',
+  'EquippableHands',
+  'EquippableLegs',
+  'EquippableFeet',
+]
 export const CATEGORIES: TransmogCategory[] = [
   {
     id: '1handed',
@@ -155,6 +163,7 @@ export class TransmogService extends ComponentStore<TransmogServiceState> {
   public constructor() {
     super({
       genderFilter: 'male',
+      groupByModel: false,
     })
   }
 
@@ -186,6 +195,17 @@ export class TransmogService extends ComponentStore<TransmogServiceState> {
       id: appearanceId$,
     }).pipe(map(({ appearances, id }) => appearances.find((it) => eqCaseInsensitive(it.id, id))))
   }
+
+  public byModel(item$: Observable<TransmogItem>) {
+    return combineLatest({
+      appearances: this.appearances$,
+      item: item$,
+    }).pipe(
+      map(({ appearances, item }) => {
+        return appearances.filter((it) => hasSameModel(it.appearance, item.appearance))
+      })
+    )
+  }
 }
 
 export type NwApearance =
@@ -207,28 +227,26 @@ function selectAppearances({
   instrumentAppearances: ItemdefinitionsInstrumentsappearances[]
 }): TransmogItem[] {
   const appearances = [...itemAppearances, ...weaponAppearances, ...instrumentAppearances]
-  const result = appearances
-    .map((appearance): TransmogItem => {
-      const appearanceId = getAppearanceId(appearance)
-      const sources = Array.from(itemsMap.get(appearanceId)?.values() || [])
-      const isUnique = sources.length === 1
-      // TODO:
-      const isStore = isUnique && eqCaseInsensitive(sources[0]['$source'], 'store')
-      const isSkin = isUnique && sources[0].ItemID.includes('Skin_')
-      return {
-        id: appearanceId,
-        appearance: appearance,
-        items: sources,
-        isUnique: isUnique,
-        isStore: isStore,
-        isSkin: isSkin,
-        name: tl8.get(appearance.Name),
-        description: tl8.get(appearance.Description),
-        gender: (appearance as Itemappearancedefinitions).Gender?.toLowerCase() as any,
-        dyeSlots: selectDyeSlots(appearance),
-      }
-    })
-    //.filter((it) => it.items.length > 0)
+  const result = appearances.map((appearance): TransmogItem => {
+    const appearanceId = getAppearanceId(appearance)
+    const sources = Array.from(itemsMap.get(appearanceId)?.values() || [])
+    const isUnique = sources.length === 1
+    // TODO:
+    const isStore = isUnique && eqCaseInsensitive(sources[0]['$source'], 'store')
+    const isSkin = isUnique && sources[0].ItemID.includes('Skin_')
+    return {
+      id: appearanceId,
+      appearance: appearance,
+      items: sources,
+      isUnique: isUnique,
+      isStore: isStore,
+      isSkin: isSkin,
+      name: tl8.get(appearance.Name),
+      description: tl8.get(appearance.Description),
+      gender: (appearance as Itemappearancedefinitions).Gender?.toLowerCase() as any,
+      dyeSlots: selectDyeSlots(appearance),
+    }
+  })
   return result
 }
 
@@ -238,12 +256,11 @@ function matchTransmogCateogry(category: TransmogCategory, appearance: { ItemCla
   })
 }
 
-function getAppearanceId(item: NwApearance) {
+export function getAppearanceId(item: NwApearance | TransmogAppearance) {
   return (item as Itemappearancedefinitions)?.ItemID || (item as ItemdefinitionsWeaponappearances)?.WeaponAppearanceID
 }
 
 function selectDyeSlots(item: NwApearance): DyeSlot[] {
-
   const dyeEnabled = DYE_CATEGOREIS.some((it) => item.ItemClass?.some((it2) => eqCaseInsensitive(it, it2)))
 
   return [
@@ -291,4 +308,19 @@ function coarseBoolean(value: string): boolean {
     return null
   }
   return value === '1'
+}
+
+function hasSameModel(a: NwApearance | TransmogAppearance, b: NwApearance | TransmogAppearance): boolean {
+  const skinA =
+    (a as Itemappearancedefinitions).Skin1 ||
+    (a as Itemappearancedefinitions).Skin2 ||
+    (a as ItemdefinitionsInstrumentsappearances).MeshOverride
+  const skinB =
+    (b as Itemappearancedefinitions).Skin1 ||
+    (b as Itemappearancedefinitions).Skin2 ||
+    (b as ItemdefinitionsInstrumentsappearances).MeshOverride
+  if (!skinA || !skinB) {
+    return false
+  }
+  return eqCaseInsensitive(String(skinA), String(skinB))
 }
