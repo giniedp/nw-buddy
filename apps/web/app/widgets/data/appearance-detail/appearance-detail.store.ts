@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable, Output } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import {
@@ -18,6 +18,7 @@ export class AppearanceDetailStore extends ComponentStore<{ appearanceId: string
   public readonly weaponAppearance$ = this.db.weaponAppearance(this.appearanceId$)
   public readonly instrumentAppearance$ = this.db.instrumentAppearance(this.appearanceId$)
 
+  @Output()
   public readonly appearance$ = this.select(
     combineLatest({
       item: this.itemAppearance$,

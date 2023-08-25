@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { CommonModule } from '@angular/common'
-import { observeRouteParam } from '~/utils'
+import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { PaginationModule } from '~/ui/pagination'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { IconsModule } from '~/ui/icons'
@@ -73,7 +73,14 @@ export class TransmogComponent {
 
   protected trackByIndex = (index: number) => index
 
-  public constructor() {}
+  public constructor(head: HtmlHeadService) {
+    head.updateMetadata({
+      title: 'Transmog',
+      description: 'New World transmog database',
+      noFollow: true,
+      noIndex: true,
+    })
+  }
 
   protected getAppearanceId(item: TransmogAppearance) {
     return (item as Itemappearancedefinitions)?.ItemID || (item as ItemdefinitionsWeaponappearances)?.WeaponAppearanceID

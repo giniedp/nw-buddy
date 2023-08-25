@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, forwardRef, Input, Output } from '@angular/core'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
@@ -48,6 +48,9 @@ export class AppearanceDetailComponent extends AppearanceDetailStore {
 
   @Input()
   public disableProperties: boolean
+
+  @Output()
+  public appearanceChange$ = this.appearance$
 
   protected iconDye = svgBrush
   protected vm$ = this.select(
