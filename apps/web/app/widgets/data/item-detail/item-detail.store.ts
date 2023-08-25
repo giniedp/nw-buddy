@@ -156,7 +156,10 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public readonly canReplaceGem$ = this.select(this.item$, (it) => it && it.CanHavePerks && it.CanReplaceGem)
   public readonly cantReplaceGem$ = this.select(this.item$, (it) => it && it.CanHavePerks && !it.CanReplaceGem)
   public readonly salvageInfo$ = this.select(this.entity$, selectSalvageInfo)
-
+  public readonly appearanceM$ = this.select(this.db.itemAppearance(this.item$.pipe(mapProp('ArmorAppearanceM'))), (it) => it)
+  public readonly appearanceF$ = this.select(this.db.itemAppearance(this.item$.pipe(mapProp('ArmorAppearanceF'))), (it) => it)
+  public readonly weaponAppearance$ = this.select(this.db.weaponAppearance(this.item$.pipe(mapProp('WeaponAppearanceOverride'))), (it) => it)
+  public readonly instrumentAppearance$ = this.select(this.db.instrumentAppearance(this.item$.pipe(mapProp('WeaponAppearanceOverride'))), (it) => it)
   public readonly ingredientCategories$ = this.select(this.db.recipeCategoriesMap, this.item$, selectCraftingCategories)
   public readonly statusEffectsIds$ = this.select(this.consumable$, this.housingItem$, selectStatusEffectIds)
   public readonly gemDetail$ = this.select(this.perksDetails$, (list) => list?.find((it) => isPerkGem(it.perk)))

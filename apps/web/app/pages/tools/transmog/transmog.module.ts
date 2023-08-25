@@ -2,8 +2,8 @@ import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 import { TransmogComponent } from './transmog.component'
 import { TransmogOverviewComponent } from './transmog-overview.component'
-import { CATEGORIES } from './transmog.service'
 import { TransmogItemComponent } from './transmog-item.component'
+import { CATEGORIES } from '~/widgets/data/appearance-detail'
 
 const ROUTES: Routes = [
   {

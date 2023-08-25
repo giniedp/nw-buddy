@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core'
 import { NwModule } from '~/nw'
-import { TransmogService } from './transmog.service'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { RouterModule } from '@angular/router'
 import { defer } from 'rxjs'
 import { LayoutModule } from '~/ui/layout'
 import { QuicksearchModule } from '~/ui/quicksearch'
 import { FormsModule } from '@angular/forms'
+import { TransmogService } from '~/widgets/data/appearance-detail'
 
 @Component({
   standalone: true,

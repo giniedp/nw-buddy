@@ -19,8 +19,9 @@
               [class.badge-secondary]="item.items.length > 0"
               [class.badge-error]="!item.items.length"
               *ngIf="!item.isUnique"
-              >{{ item.items.length }}</span
             >
+              {{ item.items.length }}
+            </span>
           </div>
         </picture>
         <!-- <div class="flex flex-row gap-1 mt-1">

@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, Input, TemplateRef, ViewChild } from '@angular/core'
+import { Component, ChangeDetectionStrategy, ChangeDetectorRef, Input, TemplateRef, ViewChild, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { combineLatest, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { PaginationModule } from '~/ui/pagination'
-import { shareReplayRefCount } from '~/utils'
+import { eqCaseInsensitive, shareReplayRefCount } from '~/utils'
 import { CraftingCalculatorComponent } from '~/widgets/crafting'
+import { AppearanceDetailModule } from '~/widgets/data/appearance-detail'
 import { ItemDetailModule, ItemDetailStore } from '~/widgets/data/item-detail'
 import { PerkBucketDetailModule } from '~/widgets/data/perk-bucket-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
@@ -13,7 +14,7 @@ import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { ModelViewerService } from '~/widgets/model-viewer'
 
 export interface Tab {
-  id: 'effects' | 'perks' | 'unlocks' | 'craftable' | 'recipes' | 'perks'
+  id: 'effects' | 'perks' | 'unlocks' | 'craftable' | 'recipes' | 'perks' | 'transmog'
   label: string
 }
 
@@ -31,7 +32,8 @@ export interface Tab {
     PerkDetailModule,
     CraftingCalculatorComponent,
     PaginationModule,
-    PerkBucketDetailModule
+    PerkBucketDetailModule,
+    AppearanceDetailModule,
   ],
   host: {
     class: 'block',
@@ -44,6 +46,15 @@ export class ItemTabsComponent extends ItemDetailStore {
   }
 
   protected trackByIndex = (i: number) => i
+  protected appearance$ = combineLatest({
+    armorM: this.appearanceM$,
+    armorF: this.appearanceF$,
+    weapon: this.weaponAppearance$,
+    instrument: this.instrumentAppearance$,
+  }).pipe(map(({ armorM, armorF, weapon, instrument }) => {
+    return armorM || armorF || weapon || instrument
+  }))
+
   protected vm$ = combineLatest({
     entityId: this.select((it) => it.entityId),
     grantsEffects: this.statusEffectsIds$,
@@ -52,7 +63,8 @@ export class ItemTabsComponent extends ItemDetailStore {
     craftableRecipes: this.craftableRecipes$,
     perkBucketIds: this.perkBucketIds$,
     recipes: this.recipes$,
-    fragment: this.route.fragment,
+    fragment: inject(ActivatedRoute).fragment,
+    appearance: this.appearance$,
   })
     .pipe(
       map((data) => {
@@ -96,7 +108,12 @@ export class ItemTabsComponent extends ItemDetailStore {
             label: `Perk Buckets`,
           })
         }
-
+        if (data.appearance) {
+          tabs.push({
+            id: 'transmog',
+            label: `Transmog`,
+          })
+        }
         const tabIds = tabs.map((it) => it.id)
         return {
           ...data,
@@ -107,7 +124,7 @@ export class ItemTabsComponent extends ItemDetailStore {
     )
     .pipe(shareReplayRefCount(1))
 
-  public constructor(db: NwDbService, ms: ModelViewerService, cdref: ChangeDetectorRef, private route: ActivatedRoute) {
+  public constructor(db: NwDbService, ms: ModelViewerService, cdref: ChangeDetectorRef) {
     super(db, ms, cdref)
   }
 }

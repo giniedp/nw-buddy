@@ -38,6 +38,12 @@
     <nwb-perk-bucket-detail-tabs [perkBucketIds]="vm.perkBucketIds" [itemId]="vm.entityId" class="bg-base-300 rounded-b-md"></nwb-perk-bucket-detail-tabs>
   </ng-container>
 
+  <ng-container *ngIf="vm.tabId === 'transmog'">
+    <div class="flex flex-col gap-2">
+      <nwb-appearance-detail [appearance]="vm.appearance"></nwb-appearance-detail>
+    </div>
+  </ng-container>
+
   <ng-container *ngIf="vm.tabId === 'craftable'">
     <div
       class="flex flex-col gap-2"

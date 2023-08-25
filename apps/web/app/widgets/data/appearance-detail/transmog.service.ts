@@ -11,7 +11,7 @@ import { sortBy } from 'lodash'
 import { Observable, combineLatest, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService } from '~/nw'
-import { eqCaseInsensitive, selectStream } from '~/utils'
+import { CaseInsensitiveMap, eqCaseInsensitive, selectStream } from '~/utils'
 
 export interface TransmogServiceState {
   genderFilter: 'male' | 'female'
@@ -195,13 +195,13 @@ export class TransmogService extends ComponentStore<TransmogServiceState> {
     }).pipe(map(({ appearances, id }) => appearances.find((it) => eqCaseInsensitive(it.id, id))))
   }
 
-  public byModel(item$: Observable<TransmogItem>) {
+  public byModel(appearance$: Observable<NwApearance>) {
     return combineLatest({
       appearances: this.appearances$,
-      item: item$,
+      appearance: appearance$,
     }).pipe(
-      map(({ appearances, item }) => {
-        return appearances.filter((it) => hasSameModel(it.appearance, item.appearance))
+      map(({ appearances, appearance }) => {
+        return appearances.filter((it) => hasSameModel(it.appearance, appearance))
       })
     )
   }
@@ -249,7 +249,7 @@ function selectAppearances({
   return result
 }
 
-function matchTransmogCateogry(category: TransmogCategory, appearance: { ItemClass?: string[] }) {
+export function matchTransmogCateogry(category: TransmogCategory, appearance: { ItemClass?: string[] }) {
   return category.itemClass.every((itemClass) => {
     return appearance.ItemClass?.some((itemClass2) => eqCaseInsensitive(itemClass, itemClass2))
   })
@@ -259,7 +259,10 @@ export function getAppearanceId(item: NwApearance | TransmogAppearance) {
   return (item as Itemappearancedefinitions)?.ItemID || (item as ItemdefinitionsWeaponappearances)?.WeaponAppearanceID
 }
 
-function selectDyeSlots(item: NwApearance): DyeSlot[] {
+export function selectDyeSlots(item: NwApearance): DyeSlot[] {
+  if (!item) {
+    return null
+  }
   const dyeEnabled = DYE_CATEGOREIS.some((it) => item.ItemClass?.some((it2) => eqCaseInsensitive(it, it2)))
 
   return [

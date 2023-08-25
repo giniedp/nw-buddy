@@ -405,12 +405,15 @@ export class NwDbService {
 
   public itemAppearances = table(() => this.data.itemappearancedefinitions())
   public itemAppearancesMap = indexBy(() => this.itemAppearances, 'ItemID')
+  public itemAppearance = lookup(() => this.itemAppearancesMap)
 
   public weaponAppearances = table(() => this.data.itemdefinitionsWeaponappearances())
   public weaponAppearancesMap = indexBy(() => this.weaponAppearances, 'WeaponAppearanceID')
+  public weaponAppearance = lookup(() => this.weaponAppearancesMap)
 
   public instrumentAppearances = table(() => this.data.itemdefinitionsInstrumentsappearances())
   public instrumentAppearancesMap = indexBy(() => this.instrumentAppearances, 'WeaponAppearanceID')
+  public instrumentAppearance = lookup(() => this.instrumentAppearancesMap)
 
   public constructor(public readonly data: NwDataService) {
     //

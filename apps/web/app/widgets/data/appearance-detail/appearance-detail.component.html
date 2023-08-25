@@ -1,0 +1,104 @@
+<div class="bg-black rounded-sm overflow-hidden" *ngIf="vm$ | async; let vm">
+  <nwb-item-header class="gap-2">
+    <a [routerLink]="vm.link">
+      <nwb-item-icon [solid]="false" [rarity]="0" [nwbItemIcon]="vm.icon" class="w-20"> </nwb-item-icon>
+    </a>
+    <nwb-item-header-content
+      [title]="vm.name | nwText"
+      [titleLink]="vm.link"
+      [category]="'Transmog Appearance'"
+      [subCategory]="'Common'"
+      [subTitle]="vm.category.name | nwText"
+    >
+    </nwb-item-header-content>
+  </nwb-item-header>
+  <div class="p-3 text-lg leading-snug flex flex-col gap-2">
+    <p class="text-nw-description italic" *ngIf="vm.description; let text">{{ text | nwText }}</p>
+    <ng-container *ngIf="transmog$ | async; let transmog">
+      <div *ngIf="transmog.dyeSlots; let slots" class="flex flex-col text-sm">
+        <h3 class="font-bold">Color palette / Dye slots:</h3>
+        <div class="flex flex-row items-center gap-2" *ngFor="let slot of slots">
+          <span>{{ slot.name }}</span>
+          <span class="flex-1"></span>
+          <span class="inline-block border border-base-100 rounded-sm w-4 h-4">
+            <span
+              class="inline-block rounded-sm w-full h-full"
+              [style.background-color]="slot.color"
+              [style.opacity]="slot.colorStrength"
+              [tooltip]="tplColor"
+            >
+              <ng-template #tplColor>
+                <div class="p-1 text-xs border border-transparent rounded-sm flex flex-row gap-1 items-center">
+                  <span class="inline-block w-4 h-4 rounded-sm" [style.background-color]="slot.color"></span>
+                  <span>Tint color {{ slot.colorStrength | percent : '1.0-0' }} strength</span>
+                </div>
+              </ng-template>
+            </span>
+          </span>
+          <nwb-icon
+            [icon]="iconDye"
+            [class.text-success]="slot.dyeEnabled"
+            [class.text-error]="!slot.dyeEnabled"
+            [style.opacity]="slot.dyeEnabled ? slot.dyeStrength : 1"
+            class="w-4 h-4"
+            [tooltip]="tplDye"
+          >
+            <ng-template #tplDye>
+              <div class="p-1 text-xs border border-transparent rounded-sm">
+                <div *ngIf="!slot.dyeEnabled" class="text-error">Dye slot disabled</div>
+                <div *ngIf="slot.dyeEnabled">
+                  <span class="text-success">Dye slot enabled, </span>
+                  <span>{{ slot.dyeStrength | percent : '1.0-0' }} strength</span>
+                </div>
+              </div>
+            </ng-template>
+          </nwb-icon>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+<ng-container *ngIf="transmog$ | async; let transmogItem">
+  <h3 class="px-1 py-1">Items with appearance ({{ transmogItem.items.length }})</h3>
+  <ng-container *ngIf="transmogItem.items?.length">
+    <nwb-item-detail [entity]="item" *ngFor="let item of transmogItem.items">
+      <nwb-item-detail-header
+        [enableLink]="true"
+        [enableInfoLink]="true"
+        [enableTracker]="true"
+      ></nwb-item-detail-header>
+    </nwb-item-detail>
+  </ng-container>
+</ng-container>
+
+<ng-container *ngIf="similarAppearances$ | async; let siblings">
+  <h3 class="px-1 py-1">Similar appearances ({{ siblings.length }})</h3>
+  <div *ngIf="siblings?.length" class="flex flex-col gap-1">
+    <nwb-item-header class="gap-2 rounded" *ngFor="let sibling of siblings">
+      <a [routerLink]="['/transmog', sibling.category.id, sibling.transmog.id]">
+        <nwb-item-icon [solid]="false" [rarity]="0" [nwbItemIcon]="sibling.transmog.appearance.IconPath" class="w-20">
+        </nwb-item-icon>
+      </a>
+      <nwb-item-header-content
+        [title]="sibling.transmog.appearance.Name | nwText"
+        [titleLink]="['/transmog', sibling.category.id, sibling.transmog.id]"
+      >
+        <div>
+          <div class="text-xs">Transmog Appearance</div>
+          <div class="flex flex-row items-center gap-1">
+            <ng-container *ngFor="let slot of sibling.transmog.dyeSlots || []">
+              <span
+                class="inline-block w-4 h-4 rounded-sm"
+                [style.background-color]="slot.color"
+                [style.opacity]="slot.colorStrength"
+              ></span>
+            </ng-container>
+            <span class="flex-1"></span>
+            <span class="text-sm">Common</span>
+          </div>
+        </div>
+      </nwb-item-header-content>
+    </nwb-item-header>
+  </div>
+</ng-container>

@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
-import { TransmogAppearance, TransmogService } from './transmog.service'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { CommonModule } from '@angular/common'
 import { observeRouteParam } from '~/utils'
@@ -12,6 +11,7 @@ import { NwModule } from '~/nw'
 import { QuicksearchService } from '~/ui/quicksearch'
 import { combineLatest, debounceTime, map, startWith } from 'rxjs'
 import { TooltipModule } from '~/ui/tooltip'
+import { TransmogAppearance, TransmogService } from '~/widgets/data/appearance-detail'
 
 @Component({
   standalone: true,
