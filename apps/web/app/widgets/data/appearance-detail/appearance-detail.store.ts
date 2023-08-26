@@ -1,17 +1,28 @@
 import { Injectable, Output } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { NW_FALLBACK_ICON } from '@nw-data/common'
 import {
+  NW_FALLBACK_ICON,
+  getItemId,
+  getItemRarity,
+  isItemArmor,
+  isItemJewelery,
+  isItemNamed,
+  isItemWeapon,
+  isMasterItem,
+} from '@nw-data/common'
+import {
+  ItemDefinitionMaster,
   Itemappearancedefinitions,
   ItemdefinitionsInstrumentsappearances,
   ItemdefinitionsWeaponappearances,
 } from '@nw-data/generated'
 import { combineLatest } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { TransmogService, getAppearanceId, matchTransmogCateogry } from './transmog.service'
+import { TransmogItem, TransmogService, getAppearanceId, matchTransmogCateogry } from './transmog.service'
+import { eqCaseInsensitive } from '~/utils'
 
 @Injectable()
-export class AppearanceDetailStore extends ComponentStore<{ appearanceId: string }> {
+export class AppearanceDetailStore extends ComponentStore<{ appearanceId: string; parentItemId: string }> {
   public readonly appearanceId$ = this.select(({ appearanceId }) => appearanceId)
 
   public readonly itemAppearance$ = this.db.itemAppearance(this.appearanceId$)
@@ -51,19 +62,28 @@ export class AppearanceDetailStore extends ComponentStore<{ appearanceId: string
       similar: this.service.byModel(this.appearance$),
     }),
     ({ appearance, categories, similar }) => {
-      return similar.filter(
-        (it) => it.appearance?.ItemClass?.length > 0 && getAppearanceId(it.appearance) !== getAppearanceId(appearance)
-      ).map((it) => {
-        return {
-          category: categories.find((it) => matchTransmogCateogry(it, appearance)),
-          transmog: it,
-        }
-      })
+      return similar
+        .filter(
+          (it) => it.appearance?.ItemClass?.length > 0 && getAppearanceId(it.appearance) !== getAppearanceId(appearance)
+        )
+        .map((it) => {
+          return {
+            category: categories.find((it) => matchTransmogCateogry(it, appearance)),
+            transmog: it,
+          }
+        })
     }
+  )
+  public readonly similarItems$ = this.select(
+    combineLatest({
+      transmog: this.transmog$,
+      parentId: this.select(({ parentItemId }) => parentItemId),
+    }),
+    selectItems
   )
 
   public constructor(protected db: NwDbService, private service: TransmogService) {
-    super({ appearanceId: null })
+    super({ appearanceId: null, parentItemId: null })
   }
 
   public load(
@@ -79,4 +99,35 @@ export class AppearanceDetailStore extends ComponentStore<{ appearanceId: string
       this.patchState({ appearanceId: getAppearanceId(idOrItem) })
     }
   }
+}
+
+function selectItems({ transmog, parentId }: { transmog: TransmogItem; parentId: string }) {
+  let items = transmog?.items || []
+  if (parentId) {
+    items = items.filter((it) => !eqCaseInsensitive(getItemId(it), parentId))
+  } else {
+    items = [...items]
+  }
+  return items.sort(itemsComparator)
+}
+
+function itemsComparator(nodeA: ItemDefinitionMaster, nodeB: ItemDefinitionMaster) {
+  const a = nodeA
+  const b = nodeB
+  const isGearA = isMasterItem(a) && (isItemArmor(a) || isItemJewelery(a) || isItemWeapon(a))
+  const isGearB = isMasterItem(b) && (isItemArmor(b) || isItemJewelery(b) || isItemWeapon(b))
+  if (isGearA !== isGearB) {
+    return isGearA ? -1 : 1
+  }
+  const isNamedA = isMasterItem(a) && isItemNamed(a)
+  const isNamedB = isMasterItem(b) && isItemNamed(b)
+  if (isNamedA !== isNamedB) {
+    return isNamedA ? -1 : 1
+  }
+  const rarrityA = getItemRarity(a)
+  const rarrityB = getItemRarity(b)
+  if (rarrityA !== rarrityB) {
+    return rarrityA >= rarrityB ? -1 : 1
+  }
+  return getItemId(a).localeCompare(getItemId(b))
 }

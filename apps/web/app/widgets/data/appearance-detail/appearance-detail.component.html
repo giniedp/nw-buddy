@@ -1,7 +1,8 @@
-<div class="bg-black rounded-sm overflow-hidden" *ngIf="vm$ | async; let vm">
+<div class="bg-black rounded-sm overflow-hidden font-nimbus" *ngIf="vm$ | async; let vm">
   <nwb-item-header class="gap-2">
-    <a [routerLink]="vm.link">
+    <a [routerLink]="vm.link" class="relative">
       <nwb-item-icon [solid]="false" [rarity]="0" [nwbItemIcon]="vm.icon" class="w-20"> </nwb-item-icon>
+      <img nwImage="assets/icons/menu/transmogtoken.webp" class="w-4 h-4 absolute right-1 bottom-1"/>
     </a>
     <nwb-item-header-content
       [title]="vm.name | nwText"
@@ -12,12 +13,12 @@
     >
     </nwb-item-header-content>
   </nwb-item-header>
-  <div class="p-3 text-lg leading-snug flex flex-col gap-2">
+  <div class="p-3 leading-snug flex flex-col gap-2">
     <p class="text-nw-description italic" *ngIf="vm.description; let text">{{ text | nwText }}</p>
     <ng-container *ngIf="transmog$ | async; let transmog">
       <div *ngIf="transmog.dyeSlots; let slots" class="flex flex-col text-sm">
         <h3 class="font-bold">Color palette / Dye slots:</h3>
-        <div class="flex flex-row items-center gap-2" *ngFor="let slot of slots">
+        <div class="flex flex-row items-center gap-2" *ngFor="let slot of slots; trackBy: trackByIndex">
           <span>{{ slot.name }}</span>
           <span class="flex-1"></span>
           <span class="inline-block border border-base-100 rounded-sm w-4 h-4">
@@ -59,46 +60,60 @@
   </div>
 </div>
 
-<ng-container *ngIf="transmog$ | async; let transmogItem">
-  <h3 class="px-1 py-1">Items with appearance ({{ transmogItem.items.length }})</h3>
-  <ng-container *ngIf="transmogItem.items?.length">
-    <nwb-item-detail [entity]="item" *ngFor="let item of transmogItem.items">
-      <nwb-item-detail-header
-        [enableLink]="true"
-        [enableInfoLink]="true"
-        [enableTracker]="true"
-      ></nwb-item-detail-header>
-    </nwb-item-detail>
-  </ng-container>
+<ng-container *ngIf="similarItemsVm$ | async; let vm">
+  <div>
+    <h3 class="px-1 py-1">Items with appearance ({{ vm.count }})</h3>
+    <div class="tabs tabs-boxed flex-nowrap gap-1 bg-transparent p-2" *ngIf="vm.tabs.length > 1">
+      <ng-container *ngFor="let tab of vm.tabs; trackBy: trackByIndex">
+        <a class="tab tab-xs p-1 h-auto" [class.tab-active]="tab.active" (click)="similarItemsTab$.next(tab.name)">
+          {{ tab.name }}
+          <span class="badge badge-xs rounded-md ml-1">{{ tab.items.length }}</span>
+        </a>
+      </ng-container>
+    </div>
+    <div class="flex flex-col gap-1">
+
+      <nwb-item-detail [entity]="item" *ngFor="let item of vm.items; trackBy: trackByIndex">
+        <nwb-item-detail-header
+          [enableLink]="true"
+          [enableInfoLink]="true"
+          [enableTracker]="true"
+        ></nwb-item-detail-header>
+      </nwb-item-detail>
+    </div>
+  </div>
 </ng-container>
 
 <ng-container *ngIf="similarAppearances$ | async; let siblings">
-  <h3 class="px-1 py-1">Similar appearances ({{ siblings.length }})</h3>
-  <div *ngIf="siblings?.length" class="flex flex-col gap-1">
-    <nwb-item-header class="gap-2 rounded" *ngFor="let sibling of siblings">
-      <a [routerLink]="['/transmog', sibling.category.id, sibling.transmog.id]">
-        <nwb-item-icon [solid]="false" [rarity]="0" [nwbItemIcon]="sibling.transmog.appearance.IconPath" class="w-20">
-        </nwb-item-icon>
-      </a>
-      <nwb-item-header-content
-        [title]="sibling.transmog.appearance.Name | nwText"
-        [titleLink]="['/transmog', sibling.category.id, sibling.transmog.id]"
-      >
-        <div>
-          <div class="text-xs">Transmog Appearance</div>
-          <div class="flex flex-row items-center gap-1">
-            <ng-container *ngFor="let slot of sibling.transmog.dyeSlots || []">
-              <span
-                class="inline-block w-4 h-4 rounded-sm"
-                [style.background-color]="slot.color"
-                [style.opacity]="slot.colorStrength"
-              ></span>
-            </ng-container>
-            <span class="flex-1"></span>
-            <span class="text-sm">Common</span>
+  <ng-container *ngIf="siblings.length">
+    <h3 class="px-1 py-1">Similar appearances ({{ siblings.length }})</h3>
+    <div *ngIf="siblings?.length" class="flex flex-col gap-1">
+      <nwb-item-header class="gap-2 rounded" *ngFor="let sibling of siblings; trackBy: trackByIndex">
+        <a [routerLink]="['/transmog', sibling.category.id, sibling.transmog.id]" class="relative">
+          <nwb-item-icon [solid]="false" [rarity]="0" [nwbItemIcon]="sibling.transmog.appearance.IconPath" class="w-20">
+          </nwb-item-icon>
+          <img nwImage="assets/icons/menu/transmogtoken.webp" class="w-4 h-4 absolute right-1 bottom-1"/>
+        </a>
+        <nwb-item-header-content
+          [title]="sibling.transmog.appearance.Name | nwText"
+          [titleLink]="['/transmog', sibling.category.id, sibling.transmog.id]"
+        >
+          <div>
+            <div class="text-xs">Transmog Appearance</div>
+            <div class="flex flex-row items-center gap-1">
+              <ng-container *ngFor="let slot of sibling.transmog.dyeSlots || []; trackBy: trackByIndex">
+                <span
+                  class="inline-block w-4 h-4 rounded-sm"
+                  [style.background-color]="slot.color"
+                  [style.opacity]="slot.colorStrength"
+                ></span>
+              </ng-container>
+              <span class="flex-1"></span>
+              <span class="text-sm">Common</span>
+            </div>
           </div>
-        </div>
-      </nwb-item-header-content>
-    </nwb-item-header>
-  </div>
+        </nwb-item-header-content>
+      </nwb-item-header>
+    </div>
+  </ng-container>
 </ng-container>

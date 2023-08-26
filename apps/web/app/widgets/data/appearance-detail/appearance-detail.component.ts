@@ -4,7 +4,7 @@ import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { AppearanceDetailStore } from './appearance-detail.store'
-import { combineLatest } from 'rxjs'
+import { BehaviorSubject, combineLatest } from 'rxjs'
 import { RouterModule } from '@angular/router'
 import { ItemDetailModule } from '../item-detail'
 import { IconsModule } from '~/ui/icons'
@@ -15,6 +15,8 @@ import {
   ItemdefinitionsInstrumentsappearances,
   ItemdefinitionsWeaponappearances,
 } from '@nw-data/generated'
+import { groupBy } from 'lodash'
+import { eqCaseInsensitive } from '~/utils'
 
 @Component({
   standalone: true,
@@ -37,6 +39,11 @@ export class AppearanceDetailComponent extends AppearanceDetailStore {
   @Input()
   public set appearanceId(value: string) {
     this.patchState({ appearanceId: value })
+  }
+
+  @Input()
+  public set parentItemId(value: string) {
+    this.patchState({ parentItemId: value })
   }
 
   @Input()
@@ -72,4 +79,31 @@ export class AppearanceDetailComponent extends AppearanceDetailStore {
       }
     }
   )
+
+  protected trackByIndex = (index: number) => index
+  protected similarItemsTab$ = new BehaviorSubject<string>(null)
+  protected similarItemsVm$ = this.select(combineLatest({
+    tabId: this.similarItemsTab$,
+    items: this.similarItems$
+  }), ({ tabId, items }) => {
+    if (!items?.length) {
+      return null
+    }
+    const groups = groupBy(items, (it) => it['$source'])
+    const tabs = Object.entries(groups).map(([name, group]) => {
+      return {
+        name,
+        items: group,
+        active: false
+      }
+    })
+
+    const tab = tabs.find((it) => eqCaseInsensitive(it.name, tabId)) || tabs[0]
+    tab.active = true
+    return {
+      count: items.length,
+      tabs: tabs,
+      items: tab?.items,
+    }
+  })
 }

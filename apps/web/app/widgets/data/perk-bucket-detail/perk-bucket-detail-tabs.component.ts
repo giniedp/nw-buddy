@@ -19,8 +19,8 @@ export interface Tab {
   templateUrl: './perk-bucket-detail-tabs.component.html',
   imports: [CommonModule, PerkBucketDetailPerksComponent],
   host: {
-    class: 'block'
-  }
+    class: 'block',
+  },
 })
 export class PerkBucketDetailTabsComponent extends ComponentStore<{
   perkBucketIds: string[]
@@ -40,7 +40,7 @@ export class PerkBucketDetailTabsComponent extends ComponentStore<{
   protected buckets$ = combineLatest({
     buckets: this.db.perkBucketsMap,
     ids: this.ids$,
-  }).pipe(map(({ ids, buckets }) => ids.map((id) => buckets.get(id))))
+  }).pipe(map(({ ids, buckets }) => ids.map((id) => buckets.get(id)).filter((it) => !!it)))
 
   protected tabs$ = this.select(this.buckets$, (buckets) => {
     return buckets.map((it, index): Tab => {
@@ -48,20 +48,20 @@ export class PerkBucketDetailTabsComponent extends ComponentStore<{
         id: String(index),
         bucketId: it.PerkBucketID,
         label: getPerkTypeLabel(it.PerkType),
-        chance: it.PerkChance
+        chance: it.PerkChance,
       }
     })
   })
 
   protected tab$ = combineLatest({
     tabId: this.select((it) => it.tabId),
-    tabs: this.tabs$
+    tabs: this.tabs$,
   }).pipe(map(({ tabId, tabs }) => tabs.find((it) => it.id === tabId) || tabs[0]))
 
   protected vm$ = combineLatest({
     itemId: this.select((it) => it.itemId),
     tab: this.tab$,
-    tabs: this.tabs$
+    tabs: this.tabs$,
   })
 
   public constructor(private db: NwDbService) {
@@ -74,7 +74,7 @@ export class PerkBucketDetailTabsComponent extends ComponentStore<{
 }
 
 function getPerkTypeLabel(type: PerkType) {
-  if (type ==='Generated') {
+  if (type === 'Generated') {
     return 'Perk'
   }
   if (type === 'Inherent') {

@@ -40,7 +40,7 @@
 
   <ng-container *ngIf="vm.tabId === 'transmog'">
     <div class="flex flex-col gap-2">
-      <nwb-appearance-detail [appearance]="vm.appearance"></nwb-appearance-detail>
+      <nwb-appearance-detail [appearance]="vm.appearance" [parentItemId]="vm.entityId"></nwb-appearance-detail>
     </div>
   </ng-container>
 
