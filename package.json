@@ -140,6 +140,7 @@
     "adm-zip": "0.5.10",
     "ag-grid-community": "28.2.1",
     "autoprefixer": "10.4.14",
+    "babylonjs": "6.18.0",
     "babylonjs-viewer": "6.15.0",
     "chart.js": "4.3.3",
     "chromatic": "6.20.0",

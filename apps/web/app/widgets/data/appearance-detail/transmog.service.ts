@@ -251,7 +251,7 @@ function selectAppearances({
 
 export function matchTransmogCateogry(category: TransmogCategory, appearance: { ItemClass?: string[] }) {
   return category.itemClass.every((itemClass) => {
-    return appearance.ItemClass?.some((itemClass2) => eqCaseInsensitive(itemClass, itemClass2))
+    return appearance?.ItemClass?.some((itemClass2) => eqCaseInsensitive(itemClass, itemClass2))
   })
 }
 

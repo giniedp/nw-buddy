@@ -8437,6 +8437,11 @@ babylonjs-viewer@6.15.0:
   dependencies:
     babylonjs-gltf2interface "^6.15.0"
 
+babylonjs@6.18.0:
+  version "6.18.0"
+  resolved "https://registry.yarnpkg.com/babylonjs/-/babylonjs-6.18.0.tgz#628615127df0925b40ae25d80a820ed0962341e3"
+  integrity sha512-gr5bZstwimAFpUxfJ9q+CmdnJ64zK02hpDCBKFtZ0eODtDW7kcszTC/lCRnAoppaI1GbxO9vqK+kUDVbP95TsQ==
+
 balanced-match@^1.0.0:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.2.tgz#e83e3a7e3f300b34cb9d87f615fa0cbf357690ee"

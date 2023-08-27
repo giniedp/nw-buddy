@@ -14,9 +14,7 @@ export interface ItemModelInfo {
   itemId: string
   label: string
   url: string
-  isMale?: boolean
-  isFemale?: boolean
-  isMesh?: boolean
+  itemClass: string[]
 }
 
 export interface StatRow {
@@ -90,8 +88,9 @@ function selectItemModels(item: Itemappearancedefinitions, tags: string[] = []):
     }
     result.push({
       itemId: item.ItemID,
-      url: `/models/itemappearances/${item.ItemID.toLowerCase()}-${key.toLowerCase()}.gltf`,
+      url: `/models/itemappearances/${item.ItemID}-${key}.gltf`.toLowerCase(),
       label: uniq([...tags, item.Gender, key].filter((it) => !!it)).join(' '),
+      itemClass: [...item.ItemClass || []],
     })
   }
   return result
@@ -112,11 +111,9 @@ function selectWeaponModels(item: ItemdefinitionsWeaponappearances, tags: string
     if (item[key]) {
       result.push({
         itemId: item.WeaponAppearanceID,
-        isMale: false,
-        isFemale: false,
-        isMesh: false,
-        url: `/models/weaponappearances/${item.WeaponAppearanceID.toLowerCase()}-${key.toLowerCase()}.gltf`,
+        url: `/models/weaponappearances/${item.WeaponAppearanceID}-${key}.gltf`.toLowerCase(),
         label: uniq([...tags, key]).join(' '),
+        itemClass: [...item.ItemClass || []],
       })
     }
   }
@@ -133,11 +130,9 @@ function selectInstrumentModels(item: ItemdefinitionsInstrumentsappearances, tag
     if (item[key]) {
       result.push({
         itemId: item.WeaponAppearanceID,
-        isMale: false,
-        isFemale: false,
-        isMesh: false,
-        url: `/models/instrumentappearances/${item.WeaponAppearanceID.toLowerCase()}-${key.toLowerCase()}.gltf`,
+        url: `/models/instrumentappearances/${item.WeaponAppearanceID}-${key}.gltf`.toLowerCase(),
         label: uniq([...tags, key]).join(' '),
+        itemClass: [...item.ItemClass || []],
       })
     }
   }
