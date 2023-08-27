@@ -7,15 +7,19 @@ import {
   Component,
   ElementRef,
   Inject,
+  Input,
   NgZone,
   NO_ERRORS_SCHEMA,
   OnDestroy,
   OnInit,
+  Optional,
+  Output,
 } from '@angular/core'
 import { NwModule } from '~/nw'
 import { ItemModelInfo } from './model-viewer.service'
 import { IconsModule } from '~/ui/icons'
-import { svgXmark } from '~/ui/icons/svg'
+import { svgExpand, svgXmark } from '~/ui/icons/svg'
+import { Subject } from 'rxjs'
 
 async function loadBabylon() {
   return import('babylonjs-viewer')
@@ -36,30 +40,47 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
     return dialog.open(ModelViewerComponent, options)
   }
 
+  @Input()
+  public set models(value: ItemModelInfo[]) {
+    this.data = value || []
+    this.buttons = []
+    if (this.data.length > 1) {
+      this.buttons = this.data.map((it, i) => {
+        return {
+          index: i,
+          label: it.label,
+        }
+      })
+    }
+
+    this.show(this.index)
+  }
+
+  @Output()
+  public readonly close = new Subject<void>()
+
   protected index: number = 0
   protected buttons: Array<{ index: number, label: string }> = []
   protected isLoaded = false
+  protected isModal = false
 
   protected iconClose = svgXmark
+  protected iconFullscreen = svgExpand
 
   private viewer: AbstractViewer
+
   public constructor(
+    @Optional()
     private ref: DialogRef,
     @Inject(DIALOG_DATA)
+    @Optional()
     private data: ItemModelInfo[],
     private elRef: ElementRef<HTMLElement>,
     private cdRef: ChangeDetectorRef,
     private zone: NgZone
   ) {
-    this.data.forEach((it, i) => {
-      this.buttons.push({
-        index: i,
-        label: it.isFemale ? 'Female' : it.isMale ? 'Male' : 'Model'
-      })
-    })
-    if (this.buttons.length === 1) {
-      this.buttons.length = 0
-    }
+    this.isModal = !!ref
+    this.models = data
   }
 
   public async ngOnInit() {
@@ -69,6 +90,12 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
         model: {
           rotationOffsetAngle: 0,
           url: this.data[0]?.url,
+        },
+        engine: {
+          antialiasing: true
+        },
+        camera: {
+          fov: 1
         },
         templates: {
           navBar: {
@@ -91,11 +118,22 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
   }
 
   protected show(index: number) {
-    this.index = index
-    this.viewer.loadModel(this.data[index]?.url)
+    this.index = Math.max(Math.min(index, this.data.length - 1), 0)
+    if (this.viewer) {
+      this.viewer.loadModel(this.data[index]?.url)
+    }
   }
 
-  protected close() {
-    this.ref.close()
+  protected toggleFullscreen () {
+    if (document.fullscreenElement) {
+      document.exitFullscreen()
+    } else {
+      this.elRef.nativeElement.requestFullscreen()
+    }
+  }
+
+  protected onClose() {
+    this.ref?.close()
+    this.close.next()
   }
 }

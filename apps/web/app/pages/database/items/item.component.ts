@@ -13,7 +13,7 @@ import { ItemDetailComponent } from '~/widgets/data/item-detail/item-detail.comp
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { LootModule } from '~/widgets/loot'
-import { ModelViewerComponent } from '~/widgets/model-viewer'
+import { ModelViewerComponent, ModelViewerModule } from '~/widgets/model-viewer'
 import { ItemModelInfo } from '~/widgets/model-viewer/model-viewer.service'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ItemTabsComponent } from './item-tabs.component'
@@ -37,6 +37,7 @@ import { IconsModule } from '~/ui/icons'
     LootModule,
     ItemTabsComponent,
     IconsModule,
+    ModelViewerModule
   ],
   providers: [DestroyService],
   host: {
@@ -47,6 +48,7 @@ export class ItemComponent {
   protected itemId$ = observeRouteParam(this.route, 'id')
 
   protected iconLink = svgSquareArrowUpRight
+  protected modelOpened = false
   public constructor(
     private route: ActivatedRoute,
     private dialog: Dialog,

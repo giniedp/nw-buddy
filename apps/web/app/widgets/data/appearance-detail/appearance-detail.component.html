@@ -57,6 +57,19 @@
         </div>
       </div>
     </ng-container>
+    <ng-container *ngIf="models$ | async; let models">
+      <ng-container *ngIf="!modelViewerOpened">
+        <button class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50" (click)="modelViewerOpened = true">
+          View 3D Model
+        </button>
+      </ng-container>
+      <ng-container *ngIf="modelViewerOpened">
+        <nwb-model-viewer [models]="models" class="w-full rounded-md aspect-square" (close)="modelViewerOpened = false"></nwb-model-viewer>
+        <button class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50" (click)="modelViewerOpened = false">
+          Close
+        </button>
+      </ng-container>
+    </ng-container>
   </div>
 </div>
 

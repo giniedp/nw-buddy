@@ -86,6 +86,7 @@
     "@angular/platform-server": "16.1.8",
     "@angular/router": "16.1.8",
     "@aws-sdk/client-s3": "3.385.0",
+    "@aws-sdk/lib-storage": "3.400.0",
     "@capacitor/android": "4.8.0",
     "@capacitor/cli": "4.8.0",
     "@capacitor/core": "4.8.0",

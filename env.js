@@ -26,6 +26,7 @@ const config = {
   NW_CDN_LIVE: process.env.NW_CDN_LIVE,
   NW_UNPACK_LIVE: process.env.NW_UNPACK_LIVE,
   NW_UNPACK_PTR: process.env.NW_UNPACK_PTR,
+  NW_MODELS_DIR: process.env.NW_MODELS_DIR,
   NW_USE_CDN: ['true', 'yes', '1'].includes(process.env.NW_USE_CDN),
   NW_USE_PTR: ['true', 'yes', '1'].includes(process.env.NW_USE_PTR ?? String(branchName === 'ptr')),
   BRANCH_NAME: branchName,
@@ -98,6 +99,9 @@ const nwData = {
    */
   distDir: (isPtr) => {
     return nwData.dist(isPtr ? 'ptr' : 'live')
+  },
+  modelsDir: () => {
+    return get('NW_MODELS_DIR')
   },
   /**
    * Live or PTR directory relative from outside the dist directory.

@@ -10,11 +10,6 @@
       #card="card"
       class="flex-1"
     >
-      <div class="p-4 pt-0" *ngIf="card.itemModels$ | async; let models">
-        <button class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50" (click)="openViewer(models)">
-          View 3D Model
-        </button>
-      </div>
 
       <div class="pb-4 px-4 btn-group" *ngIf="card.salvageInfo$ | async; let salvage">
         <button

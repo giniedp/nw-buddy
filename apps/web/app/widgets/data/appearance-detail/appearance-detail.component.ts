@@ -17,6 +17,7 @@ import {
 } from '@nw-data/generated'
 import { groupBy } from 'lodash'
 import { eqCaseInsensitive } from '~/utils'
+import { ModelViewerModule } from '~/widgets/model-viewer'
 
 @Component({
   standalone: true,
@@ -24,7 +25,16 @@ import { eqCaseInsensitive } from '~/utils'
   templateUrl: './appearance-detail.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, RouterModule, ItemDetailModule, IconsModule, TooltipModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    ItemFrameModule,
+    RouterModule,
+    ItemDetailModule,
+    IconsModule,
+    TooltipModule,
+    ModelViewerModule,
+  ],
   providers: [
     {
       provide: AppearanceDetailStore,
@@ -59,6 +69,7 @@ export class AppearanceDetailComponent extends AppearanceDetailStore {
   @Output()
   public appearanceChange$ = this.appearance$
 
+  protected modelViewerOpened = false
   protected iconDye = svgBrush
   protected vm$ = this.select(
     combineLatest({
@@ -82,28 +93,31 @@ export class AppearanceDetailComponent extends AppearanceDetailStore {
 
   protected trackByIndex = (index: number) => index
   protected similarItemsTab$ = new BehaviorSubject<string>(null)
-  protected similarItemsVm$ = this.select(combineLatest({
-    tabId: this.similarItemsTab$,
-    items: this.similarItems$
-  }), ({ tabId, items }) => {
-    if (!items?.length) {
-      return null
-    }
-    const groups = groupBy(items, (it) => it['$source'])
-    const tabs = Object.entries(groups).map(([name, group]) => {
-      return {
-        name,
-        items: group,
-        active: false
+  protected similarItemsVm$ = this.select(
+    combineLatest({
+      tabId: this.similarItemsTab$,
+      items: this.similarItems$,
+    }),
+    ({ tabId, items }) => {
+      if (!items?.length) {
+        return null
       }
-    })
+      const groups = groupBy(items, (it) => it['$source'])
+      const tabs = Object.entries(groups).map(([name, group]) => {
+        return {
+          name,
+          items: group,
+          active: false,
+        }
+      })
 
-    const tab = tabs.find((it) => eqCaseInsensitive(it.name, tabId)) || tabs[0]
-    tab.active = true
-    return {
-      count: items.length,
-      tabs: tabs,
-      items: tab?.items,
+      const tab = tabs.find((it) => eqCaseInsensitive(it.name, tabId)) || tabs[0]
+      tab.active = true
+      return {
+        count: items.length,
+        tabs: tabs,
+        items: tab?.items,
+      }
     }
-  })
+  )
 }

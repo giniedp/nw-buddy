@@ -1,4 +1,4 @@
-import { Injectable, Output } from '@angular/core'
+import { Injectable, Output, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import {
   NW_FALLBACK_ICON,
@@ -20,6 +20,7 @@ import { combineLatest } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { TransmogItem, TransmogService, getAppearanceId, matchTransmogCateogry } from './transmog.service'
 import { eqCaseInsensitive } from '~/utils'
+import { ModelViewerService } from '~/widgets/model-viewer'
 
 @Injectable()
 export class AppearanceDetailStore extends ComponentStore<{ appearanceId: string; parentItemId: string }> {
@@ -39,6 +40,7 @@ export class AppearanceDetailStore extends ComponentStore<{ appearanceId: string
     (it) => it.item || it.weapon || it.instrument
   )
 
+  public readonly models$ = this.select(inject(ModelViewerService).byAppearanceId(this.appearanceId$), (it) => it)
   public readonly icon$ = this.select(this.appearance$, (it) => it?.IconPath || NW_FALLBACK_ICON)
   public readonly name$ = this.select(this.appearance$, (it) => it?.Name)
   public readonly description$ = this.select(this.appearance$, (it) => it?.Description)

@@ -1,10 +1,15 @@
-<button class="btn btn-ghost btn-circle absolute top-2 right-2 z-10" (click)="close()">
-  <nwb-icon [icon]="iconClose" class="w-4 h-4"></nwb-icon>
-</button>
-<div class="btn-group absolute bottom-2 right-2 z-10" *ngIf="isLoaded">
+<div class="flex flex-col gap-1 absolute top-2 right-2 z-[100]">
+  <button class="btn btn-circle btn-sm bg-opacity-50" (click)="toggleFullscreen()" *ngIf="!isModal">
+    <nwb-icon [icon]="iconFullscreen" class="w-4 h-4"></nwb-icon>
+  </button>
+  <button class="btn btn-circle btn-sm bg-opacity-50" (click)="onClose()" *ngIf="isModal">
+    <nwb-icon [icon]="iconClose" class="w-4 h-4"></nwb-icon>
+  </button>
+</div>
+<div class="flex flex-col gap-1 absolute bottom-2 right-2 z-10" *ngIf="isLoaded">
   <button
     *ngFor="let item of buttons"
-    class="btn btn-ghost"
+    class="btn btn-ghost btn-sm"
     [class.text-primary]="item.index === index"
     style="text-shadow: 1px 1px 2px black"
     (click)="show(item.index)"

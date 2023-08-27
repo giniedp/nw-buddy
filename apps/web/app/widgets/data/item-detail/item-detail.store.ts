@@ -131,7 +131,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
     selectPerkInfos
   )
 
-  public readonly itemModels$ = this.entityId$.pipe(switchMap((id) => this.ms.getModelInfos(id)))
+  public readonly itemModels$ = this.ms.byItemId(this.entityId$)
   public readonly itemStatsRef$ = this.select(this.item$, (it) => it?.ItemStatsRef)
   public readonly weaponStats$ = this.select(this.db.weapon(this.itemStatsRef$), (it) => it)
   public readonly armorStats$ = this.select(this.db.armor(this.itemStatsRef$), (it) => it)
