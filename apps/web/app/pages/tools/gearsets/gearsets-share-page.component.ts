@@ -93,7 +93,7 @@ export class GearsetsSharePageComponent {
         })
       )
       .subscribe((record) => {
-        this.router.navigate(['../..', record.id], {
+        this.router.navigate(['/gearsets', record.id], {
           replaceUrl: true,
           relativeTo: this.route,
         })

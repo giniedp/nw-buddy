@@ -25,16 +25,21 @@ import { ShareService } from './share.service'
   },
 })
 export class ShareComponent {
-
   protected iconError = svgCircleExclamation
   protected iconInfo = svgCircleExclamation
   protected iconShare = svgShareNodes
 
   protected state$ = deferState(() =>
-  observeRouteParam(this.route, 'cid').pipe(switchMap((info) => this.web3.downloadbyCid(info)))
+    observeRouteParam(this.route, 'cid').pipe(switchMap((info) => this.web3.downloadbyCid(info)))
   )
 
-  public constructor(private route: ActivatedRoute, private router: Router, private web3: ShareService, private dialog: Dialog, private skillsDb: SkillBuildsDB) {
+  public constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private web3: ShareService,
+    private dialog: Dialog,
+    private skillsDb: SkillBuildsDB
+  ) {
     //
   }
 
@@ -45,32 +50,33 @@ export class ShareComponent {
         body: 'Choose a name for this build',
         input: value.name,
         positive: 'OK',
-        negative: 'Cancel'
-      }
-    })
-    .closed
-    .pipe(filter((it) => it != null))
-    .pipe(switchMap((name) => {
-      const record = {
-        ...value,
-        id: null,
-        name: name
-      }
-      return this.skillsDb.create(record)
-    }))
-    .subscribe({
-      next: (record) => {
-        this.router.navigate(['skill-trees', record.id])
+        negative: 'Cancel',
       },
-      error: () => {
-        ConfirmDialogComponent.open(this.dialog, {
-          data: {
-            title: 'Error',
-            body: 'Failed to import',
-            positive: 'Close'
-          }
-        })
-      }
     })
+      .closed.pipe(filter((it) => it != null))
+      .pipe(
+        switchMap((name) => {
+          const record = {
+            ...value,
+            id: null,
+            name: name,
+          }
+          return this.skillsDb.create(record)
+        })
+      )
+      .subscribe({
+        next: (record) => {
+          this.router.navigate(['skill-trees', record.id])
+        },
+        error: () => {
+          ConfirmDialogComponent.open(this.dialog, {
+            data: {
+              title: 'Error',
+              body: 'Failed to import',
+              positive: 'Close',
+            },
+          })
+        },
+      })
   }
 }
