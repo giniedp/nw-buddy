@@ -1139,15 +1139,14 @@ export interface Itemappearancedefinitions {
     Skin2?:                    string;
 }
 export interface ItemdefinitionsWeaponappearances {
-  WeaponAppearanceID:           string;
-  Appearance?:                  string;
-  FemaleAppearance?:            string;
-  ADyeSlotDisabled?:            string;
+    ADyeSlotDisabled?:            string;
+    Appearance?:                  string;
     "Art ID Names"?:              string;
     BDyeSlotDisabled?:            string;
     Description?:                 string;
     EmissiveColor?:               string;
     EmissiveIntensity:            number;
+    FemaleAppearance?:            string;
     GDyeSlotDisabled?:            string;
     HiResIconPath?:               string;
     IconCaptureGroup?:            string;
@@ -1176,6 +1175,7 @@ export interface ItemdefinitionsWeaponappearances {
     SkinOverride2?:               string;
     SkinOverride4:                number;
     "Weapon Material name Info"?: string;
+    WeaponAppearanceID:           string;
 }
 export interface ItemdefinitionsInstrumentsappearances {
     "Art ID Names":              string;
@@ -3426,64 +3426,64 @@ export interface Perks {
     WeaponTag?:                string;
 }
 
-export type ConditionEvent =
-    "OnActive" |
-    "OnEquip" |
+export type ConditionEvent = 
+    "OnActive" | 
+    "OnEquip" | 
     "OnUnsheathed";
 
-export type DayPhases =
-    "Day" |
+export type DayPhases = 
+    "Day" | 
     "Night";
 
-export type ItemClass =
-    "Armor" |
-    "Bag" |
-    "Blunderbuss" |
-    "Bow" |
-    "EquippableAmulet" |
-    "EquippableChest" |
-    "EquippableFeet" |
-    "EquippableHands" |
-    "EquippableHead" |
-    "EquippableLegs" |
-    "EquippableMainHand" |
-    "EquippableRing" |
-    "EquippableToken" |
-    "EquippableTool" |
-    "EquippableTwoHand" |
-    "FireStaff" |
-    "FishingPole" |
-    "GreatSword" |
-    "Hatchet" |
-    "Heartgem" |
-    "IceMagic" |
-    "InstrumentDrums" |
-    "InstrumentFlute" |
-    "InstrumentGuitar" |
-    "InstrumentMandolin" |
-    "InstrumentUprightBass" |
-    "KiteShield" |
-    "LifeStaff" |
-    "LoggingAxe" |
-    "Melee" |
-    "Musket" |
-    "PickAxe" |
-    "Ranged" |
-    "Rapier" |
-    "RoundShield" |
-    "Shield" |
-    "Sickle" |
-    "SkinningKnife" |
-    "Spear" |
-    "Sword" |
-    "2hAxe" |
-    "2HHammer" |
-    "TowerShield" |
+export type ItemClass = 
+    "Armor" | 
+    "Bag" | 
+    "Blunderbuss" | 
+    "Bow" | 
+    "EquippableAmulet" | 
+    "EquippableChest" | 
+    "EquippableFeet" | 
+    "EquippableHands" | 
+    "EquippableHead" | 
+    "EquippableLegs" | 
+    "EquippableMainHand" | 
+    "EquippableRing" | 
+    "EquippableToken" | 
+    "EquippableTool" | 
+    "EquippableTwoHand" | 
+    "FireStaff" | 
+    "FishingPole" | 
+    "GreatSword" | 
+    "Hatchet" | 
+    "Heartgem" | 
+    "IceMagic" | 
+    "InstrumentDrums" | 
+    "InstrumentFlute" | 
+    "InstrumentGuitar" | 
+    "InstrumentMandolin" | 
+    "InstrumentUprightBass" | 
+    "KiteShield" | 
+    "LifeStaff" | 
+    "LoggingAxe" | 
+    "Melee" | 
+    "Musket" | 
+    "PickAxe" | 
+    "Ranged" | 
+    "Rapier" | 
+    "RoundShield" | 
+    "Shield" | 
+    "Sickle" | 
+    "SkinningKnife" | 
+    "Spear" | 
+    "Sword" | 
+    "2hAxe" | 
+    "2HHammer" | 
+    "TowerShield" | 
     "VoidGauntlet";
 
-export type PerkType =
-    "Gem" |
-    "Generated" |
+export type PerkType = 
+    "Gem" | 
+    "Generated" | 
     "Inherent";
 export interface Statuseffect {
     ABABleed?:                                   number;
@@ -4449,12 +4449,12 @@ export interface Vitals {
     WarKillEventId?:                          string;
 }
 
-export type Family =
-    "AncientGuardian" |
-    "AngryEarth" |
-    "Corrupted" |
-    "Human" |
-    "Lost" |
+export type Family = 
+    "AncientGuardian" | 
+    "AngryEarth" | 
+    "Corrupted" | 
+    "Human" | 
+    "Lost" | 
     "Wildlife";
 export interface Vitalsmetadata {
     mapIDs:   string[];
@@ -4954,56 +4954,56 @@ export interface Ability {
     WeaponTag?:                                     WeaponTag;
 }
 
-export type ComparisonType =
-    "Equal" |
-    "GreaterThan" |
-    "GreaterThanOrEqual" |
-    "LessThan" |
+export type ComparisonType = 
+    "Equal" | 
+    "GreaterThan" | 
+    "GreaterThanOrEqual" | 
+    "LessThan" | 
     "LessThanOrEqual";
 
-export type Options =
-    "AbilitySpecific" |
-    "ActiveWeapon" |
+export type Options = 
+    "AbilitySpecific" | 
+    "ActiveWeapon" | 
     "AllExcept";
 
-export type AttackType =
-    "Ability" |
-    "Heavy" |
-    "Light" |
+export type AttackType = 
+    "Ability" | 
+    "Heavy" | 
+    "Light" | 
     "Magic";
 
-export type VitalsCategory =
+export type VitalsCategory = 
     "Player";
 
-export type NumberOfHitsComparisonType =
-    "Equal" |
-    "GreaterThanOrEqual" |
-    "LessThanOrEqual" |
+export type NumberOfHitsComparisonType = 
+    "Equal" | 
+    "GreaterThanOrEqual" | 
+    "LessThanOrEqual" | 
     "LessthanOrEqual&#160;";
 
-export type UICategory =
-    "Buff" |
-    "Debuff" |
-    "Heal" |
-    "Magic Damage" |
-    "Melee Damage" |
-    "Passive" |
+export type UICategory = 
+    "Buff" | 
+    "Debuff" | 
+    "Heal" | 
+    "Magic Damage" | 
+    "Melee Damage" | 
+    "Passive" | 
     "Ranged Damage";
 
-export type WeaponTag =
-    "Axe" |
-    "Blunderbuss" |
-    "Bow" |
-    "Fire" |
-    "GreatAxe" |
-    "Greatsword" |
-    "Heal" |
-    "Ice" |
-    "Rapier" |
-    "Rifle" |
-    "Spear" |
-    "Sword" |
-    "VoidGauntlet" |
+export type WeaponTag = 
+    "Axe" | 
+    "Blunderbuss" | 
+    "Bow" | 
+    "Fire" | 
+    "GreatAxe" | 
+    "Greatsword" | 
+    "Heal" | 
+    "Ice" | 
+    "Rapier" | 
+    "Rifle" | 
+    "Spear" | 
+    "Sword" | 
+    "VoidGauntlet" | 
     "Warhammer";
 export interface HousingitemsMtx {
     AudioCreated:                string;

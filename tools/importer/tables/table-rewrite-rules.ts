@@ -16,9 +16,9 @@ export function rewriteImagePathRule(inputDir: string): RewriteFile {
           )
         }
         let candidates = [
-          obj.IconPath,
           obj.ArmorAppearanceM ? findIcon(obj.ArmorAppearanceM) : null,
           obj.ArmorAppearanceF ? findIcon(obj.ArmorAppearanceF) : null,
+          obj.IconPath,
           obj.WeaponAppearanceOverride ? findIcon(obj.WeaponAppearanceOverride) : null,
         ]
         if (obj.ItemType && obj.ArmorAppearanceM) {
