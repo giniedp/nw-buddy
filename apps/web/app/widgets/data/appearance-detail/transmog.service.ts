@@ -31,6 +31,7 @@ export interface TransmogItem {
   description: string
   gender: 'male' | 'female'
   dyeSlots: DyeSlot[]
+  modelId: number
 }
 
 export interface DyeSlot {
@@ -57,6 +58,8 @@ const DYE_CATEGOREIS = [
   'EquippableLegs',
   'EquippableFeet',
 ]
+const MODEL_IDS = new CaseInsensitiveMap<string, number>()
+
 export const CATEGORIES: TransmogCategory[] = [
   {
     id: '1handed',
@@ -181,7 +184,9 @@ export class TransmogService extends ComponentStore<TransmogServiceState> {
           })
           return {
             category: subcategory,
-            items: sortBy(subItems, (it) => it.name),
+            items: sortBy(subItems, (it) => {
+              return [getModelFilePath(it.appearance).toLowerCase(), it.name].join('-')
+            }),
           }
         })
       })
@@ -233,6 +238,15 @@ function selectAppearances({
     // TODO:
     const isStore = isUnique && eqCaseInsensitive(sources[0]['$source'], 'store')
     const isSkin = isUnique && sources[0].ItemID.includes('Skin_')
+    const modelPath = getModelFilePath(appearance)
+    let modelId: number
+    if (MODEL_IDS.has(modelPath)) {
+      modelId = MODEL_IDS.get(modelPath)
+    } else {
+      modelId = MODEL_IDS.size + 1
+      MODEL_IDS.set(modelPath, modelId)
+    }
+
     return {
       id: appearanceId,
       appearance: appearance,
@@ -244,6 +258,7 @@ function selectAppearances({
       description: tl8.get(appearance.Description),
       gender: (appearance as Itemappearancedefinitions).Gender?.toLowerCase() as any,
       dyeSlots: selectDyeSlots(appearance),
+      modelId: modelId
     }
   })
   return result
@@ -313,16 +328,21 @@ function coarseBoolean(value: string): boolean {
 }
 
 function hasSameModel(a: NwApearance | TransmogAppearance, b: NwApearance | TransmogAppearance): boolean {
-  const skinA =
-    (a as Itemappearancedefinitions).Skin1 ||
-    (a as Itemappearancedefinitions).Skin2 ||
-    (a as ItemdefinitionsInstrumentsappearances).MeshOverride
-  const skinB =
-    (b as Itemappearancedefinitions).Skin1 ||
-    (b as Itemappearancedefinitions).Skin2 ||
-    (b as ItemdefinitionsInstrumentsappearances).MeshOverride
-  if (!skinA || !skinB) {
-    return false
+  return eqCaseInsensitive(String(getModelFilePath(a)), String(getModelFilePath(b)))
+}
+
+function getModelFilePath(it: NwApearance | TransmogAppearance) {
+  if (!it) {
+    return ''
   }
-  return eqCaseInsensitive(String(skinA), String(skinB))
+  return String(
+    (it as Itemappearancedefinitions).Skin1 ||
+    (it as Itemappearancedefinitions).Skin2 ||
+    (it as ItemdefinitionsWeaponappearances).SkinOverride1 ||
+    (it as ItemdefinitionsWeaponappearances).SkinOverride2 ||
+    (it as ItemdefinitionsWeaponappearances).SkinOverride4 ||
+    (it as ItemdefinitionsWeaponappearances).MeshOverride ||
+    (it as ItemdefinitionsInstrumentsappearances).MeshOverride ||
+    ''
+  )
 }

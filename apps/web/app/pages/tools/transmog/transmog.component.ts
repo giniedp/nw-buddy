@@ -11,7 +11,8 @@ import { NwModule } from '~/nw'
 import { QuicksearchService } from '~/ui/quicksearch'
 import { combineLatest, debounceTime, map, startWith } from 'rxjs'
 import { TooltipModule } from '~/ui/tooltip'
-import { TransmogAppearance, TransmogService } from '~/widgets/data/appearance-detail'
+import { TransmogAppearance, TransmogItem, TransmogService } from '~/widgets/data/appearance-detail'
+import { ComponentStore } from '@ngrx/component-store'
 
 @Component({
   standalone: true,
@@ -38,7 +39,9 @@ import { TransmogAppearance, TransmogService } from '~/widgets/data/appearance-d
     ]),
   ],
 })
-export class TransmogComponent {
+export class TransmogComponent extends ComponentStore<{ hoverItem: TransmogItem }>  {
+  protected readonly hoverId$ = this.selectSignal(({ hoverItem }) => hoverItem?.modelId)
+
   private readonly service = inject(TransmogService)
   private readonly search = inject(QuicksearchService)
   private readonly categoryId$ = observeRouteParam(inject(ActivatedRoute), 'category')
@@ -74,6 +77,7 @@ export class TransmogComponent {
   protected trackByIndex = (index: number) => index
 
   public constructor(head: HtmlHeadService) {
+    super({ hoverItem: null })
     head.updateMetadata({
       title: 'Transmog',
       description: 'New World transmog database',
@@ -84,5 +88,19 @@ export class TransmogComponent {
 
   protected getAppearanceId(item: TransmogAppearance) {
     return (item as Itemappearancedefinitions)?.ItemID || (item as ItemdefinitionsWeaponappearances)?.WeaponAppearanceID
+  }
+
+  protected onMouseOver(item: TransmogItem) {
+    this.patchState({ hoverItem: item })
+  }
+
+  protected onMouseLeave(item: TransmogItem) {
+    if(this.get(({ hoverItem } ) => hoverItem) === item) {
+      this.patchState({ hoverItem: null })
+    }
+  }
+
+  protected onClick(item: TransmogItem) {
+    console.log(item)
   }
 }
