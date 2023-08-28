@@ -97,7 +97,7 @@ export class SkillBuildsShareComponent {
       )
       .subscribe((record) => {
         this.store.notifyCreated(record)
-        this.router.navigate(['../..', record.id], {
+        this.router.navigate(['/skill-trees', record.id], {
           replaceUrl: true,
           relativeTo: this.route,
         })
