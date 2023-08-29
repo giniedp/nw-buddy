@@ -6,6 +6,7 @@
     <div class="grid gap-2">
       <a
         *ngFor="let item of section.items; trackBy: trackByIndex"
+        [nwbTransmogTile]="item"
         [routerLink]="item.id"
         [routerLinkActive]="'border-primary'"
         class="bg-base-300 rounded-md p-2 border border-base-100 hover:border-primary relative transition-all"
@@ -14,22 +15,7 @@
         [class.bg-opacity-100]="!hoverId$() || (hoverId$() !== item.modelId)"
         (mouseover)="onMouseOver(item)"
         (mouseleave)="onMouseLeave(item)"
-      >
-        <picture class="block w-full aspect-square relative">
-          <img class="w-full h-full object-cover" [nwImage]="item.appearance?.IconPath" />
-          <div class="absolute bottom-1 right-1 flex flex-row gap-1">
-            <span class="badge badge-primary badge-sm" *ngIf="item.isStore || item.isSkin">Skin</span>
-            <span
-              class="badge badge-sm"
-              [class.badge-secondary]="item.items.length > 0"
-              [class.badge-error]="!item.items.length"
-              *ngIf="!item.isUnique"
-            >
-              {{ item.items.length }}
-            </span>
-          </div>
-        </picture>
-      </a>
+      ></a>
     </div>
   </div>
 </div>

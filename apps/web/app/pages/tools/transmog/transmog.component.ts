@@ -13,13 +13,23 @@ import { combineLatest, debounceTime, map, startWith } from 'rxjs'
 import { TooltipModule } from '~/ui/tooltip'
 import { TransmogAppearance, TransmogItem, TransmogService } from '~/widgets/data/appearance-detail'
 import { ComponentStore } from '@ngrx/component-store'
+import { TransmogTileComponent } from './transmog-tile.component'
 
 @Component({
   standalone: true,
   templateUrl: './transmog.component.html',
   styleUrls: ['./transmog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, RouterModule, PaginationModule, ItemFrameModule, IconsModule, TooltipModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    RouterModule,
+    PaginationModule,
+    ItemFrameModule,
+    IconsModule,
+    TooltipModule,
+    TransmogTileComponent,
+  ],
   host: {
     class: 'layout-row',
   },
@@ -39,7 +49,7 @@ import { ComponentStore } from '@ngrx/component-store'
     ]),
   ],
 })
-export class TransmogComponent extends ComponentStore<{ hoverItem: TransmogItem }>  {
+export class TransmogComponent extends ComponentStore<{ hoverItem: TransmogItem }> {
   protected readonly hoverId$ = this.selectSignal(({ hoverItem }) => hoverItem?.modelId)
 
   private readonly service = inject(TransmogService)
@@ -95,7 +105,7 @@ export class TransmogComponent extends ComponentStore<{ hoverItem: TransmogItem 
   }
 
   protected onMouseLeave(item: TransmogItem) {
-    if(this.get(({ hoverItem } ) => hoverItem) === item) {
+    if (this.get(({ hoverItem }) => hoverItem) === item) {
       this.patchState({ hoverItem: null })
     }
   }
