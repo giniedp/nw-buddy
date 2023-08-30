@@ -185,7 +185,8 @@ export class TransmogService extends ComponentStore<TransmogServiceState> {
           return {
             category: subcategory,
             items: sortBy(subItems, (it) => {
-              return [getModelFilePath(it.appearance).toLowerCase(), it.name].join('-')
+              // return [getModelFilePath(it.appearance).toLowerCase(), it.name].join('-')
+              return it.name
             }),
           }
         })
