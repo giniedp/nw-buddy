@@ -729,7 +729,7 @@ export const COLS_DAMAGETABLE = {
   "TauntThreatBoostPercentage": "number",
   "ThirstDmg": "number",
   "ThreatMultiplier": "number",
-  "Unblockable": "number",
+  "Unblockable": "boolean",
   "UseAttackerPosForReaction": "boolean",
   "WeaponCategory": "string",
   "stunBreakoutIncrementer": "number",
