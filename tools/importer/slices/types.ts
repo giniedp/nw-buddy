@@ -105,6 +105,13 @@ export interface Asset {
   hint?: string
 }
 
+export interface MeshComponent {
+  __type: 'MeshComponent'
+}
+export interface SkinnedMeshComponent {
+  __type: 'SkinnedMeshComponent'
+}
+
 export function isVitalsComponent(it: any): it is VitalsComponent {
   return (it as VitalsComponent)?.__type === 'VitalsComponent'
 }

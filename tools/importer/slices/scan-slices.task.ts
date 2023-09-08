@@ -2,9 +2,7 @@ import { readJSONFile } from '../../utils'
 import { walkJsonObjects } from '../../utils/walk-json-object'
 import { scanForVitals, VitalVariant } from './scan-for-vitals'
 
-import {
-  CapitalsDocument, RegionMetadataAsset
-} from './types'
+import { CapitalsDocument, RegionMetadataAsset } from './types'
 
 function loadCrcFile(file: string) {
   const result = require(file)
@@ -21,7 +19,7 @@ export interface ScanResult {
 
 export interface GatherableVariant {
   gatherableID: string
-  position: [number, number, number],
+  position: [number, number, number]
   lootTable: string
   mapID: string
 }
@@ -31,7 +29,7 @@ export async function scanSlices({
   file,
   crcVitalsFile,
   crcVitalsCategoriesFile,
-  crcGatherablesFile
+  crcGatherablesFile,
 }: {
   inputDir: string
   file: string
@@ -41,7 +39,7 @@ export async function scanSlices({
 }): Promise<ScanResult> {
   if (file.endsWith('.dynamicslice.json')) {
     return {
-      vitals: await scanForVitals(inputDir, null, file)
+      vitals: await scanForVitals(inputDir, null, file),
     }
   }
   if (file.endsWith('.capitals.json')) {
@@ -64,7 +62,7 @@ export async function scanSlices({
       }
     }
     return {
-      vitals: result
+      vitals: result,
     }
   }
   if (file.endsWith('.metadata.json')) {
@@ -87,6 +85,7 @@ export async function scanSlices({
           damageTable: null,
           position: location.worldposition,
           mapID: mapId,
+          modelSlice: null,
         })
       }
       for (const location of obj.gatherablelocations || []) {
@@ -104,7 +103,7 @@ export async function scanSlices({
     })
     return {
       vitals: result,
-      gatherables: gatherables
+      gatherables: gatherables,
     }
   }
 }

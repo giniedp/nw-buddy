@@ -729,7 +729,7 @@ export const COLS_DAMAGETABLE = {
   "TauntThreatBoostPercentage": "number",
   "ThirstDmg": "number",
   "ThreatMultiplier": "number",
-  "Unblockable": "boolean",
+  "Unblockable": "number",
   "UseAttackerPosForReaction": "boolean",
   "WeaponCategory": "string",
   "stunBreakoutIncrementer": "number",
@@ -4898,6 +4898,7 @@ export const COLS_VITALSLEVELDATA = {
 }
 export const COLS_VITALSMETADATA = {
   "mapIDs": "[]",
+  "models": "[]",
   "spawns": "[]",
   "tables": "[]",
   "vitalsID": "string",

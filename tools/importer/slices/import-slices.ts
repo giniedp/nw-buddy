@@ -9,13 +9,14 @@ import { WORKER_TASKS } from './worker.tasks'
 
 interface VitalMetadata {
   tables: Set<string>
+  models: Set<string>
   mapIDs: Set<string>
   spawns: Array<{ level: number; category: string; position: number[]; damagetable: string }>
 }
 
 interface GatherableMetadata {
   mapIDs: Set<string>
-  spawns: Array<{ position: number[], lootTable: string }>
+  spawns: Array<{ position: number[]; lootTable: string }>
 }
 export async function importSlices({ inputDir, threads }: { inputDir: string; threads: number }) {
   const vitalsTableFile = path.join(pathToDatatables(inputDir), 'javelindata_vitals.json')
@@ -66,14 +67,14 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
           file,
           crcVitalsFile,
           crcVitalsCategoriesFile,
-          crcGatherablesFile
+          crcGatherablesFile,
         }
       }),
       onTaskFinish: async (result) => {
         for (const vital of result.vitals || []) {
           const vitalID = vital.vitalsID.toLowerCase()
           if (!vitals.has(vitalID)) {
-            vitals.set(vitalID, { tables: new Set(), mapIDs: new Set(), spawns: [] })
+            vitals.set(vitalID, { tables: new Set(), models: new Set(), mapIDs: new Set(), spawns: [] })
           }
           const bucket = vitals.get(vitalID)
           const damagetable = vital.damageTable
@@ -84,6 +85,9 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
           }
           if (vital.mapID) {
             bucket.mapIDs.add(vital.mapID)
+          }
+          if (vital.modelSlice) {
+            bucket.models.add(vital.modelSlice)
           }
           if (vital.position) {
             bucket.spawns.push({
@@ -106,7 +110,7 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
           if (gatherable.position) {
             bucket.spawns.push({
               position: gatherable.position,
-              lootTable: gatherable.lootTable
+              lootTable: gatherable.lootTable,
             })
           }
         }
@@ -114,11 +118,12 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
     }),
   })
 
-  const resultVitals = Array.from(vitals.entries()).map(([id, { tables, spawns, mapIDs }]) => {
+  const resultVitals = Array.from(vitals.entries()).map(([id, { tables, spawns, mapIDs, models }]) => {
     return {
       vitalsID: id,
       tables: Array.from(tables.values()).sort(),
       mapIDs: Array.from(mapIDs.values()).sort(),
+      models: Array.from(models.values()).sort(),
       spawns: uniqBy(spawns || [], ({ category, level, position, damagetable }) => {
         return JSON.stringify({
           category: (category || '').toLowerCase(),
@@ -136,14 +141,14 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
       spawns: uniqBy(spawns || [], ({ position, lootTable }) => {
         return JSON.stringify({
           position: (position || []).map((it) => Number(it.toFixed(3))),
-          loot: lootTable
+          loot: lootTable,
         })
       }),
     }
   })
   return {
     vitals: sortBy(resultVitals, (it) => it.vitalsID),
-    gatherables: sortBy(resultGatherables, (it) => it.gatherableID)
+    gatherables: sortBy(resultGatherables, (it) => it.gatherableID),
   }
   return
 }

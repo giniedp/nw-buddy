@@ -4,13 +4,22 @@ import { readJSONFile, replaceExtname } from '../../utils'
 import { walkJsonObjects } from '../../utils/walk-json-object'
 import { cached } from './cache'
 
-import { ActionListComponent, Asset, EntityWithSpawner, SpawnDefinition, VitalsComponent } from './types'
+import {
+  ActionListComponent,
+  Asset,
+  EntityWithSpawner,
+  MeshComponent,
+  SkinnedMeshComponent,
+  SpawnDefinition,
+  VitalsComponent,
+} from './types'
 
 export interface VitalVariant {
   vitalsID: string
   categoryID: string
   level: number
   damageTable: string
+  modelSlice: string
   position?: number[]
   mapID?: string
 }
@@ -28,6 +37,7 @@ export async function scanForVitals(inputDir: string, sliceName: string, file?: 
       vitalsID: table.vitalsID,
       categoryID: null,
       damageTable: table.damageTable,
+      modelSlice: table.modelSlice,
     })
   }
 
@@ -42,6 +52,7 @@ export async function scanForVitals(inputDir: string, sliceName: string, file?: 
       categoryID: item.categoryID,
       level: item.level,
       damageTable: table?.damageTable,
+      modelSlice: table?.modelSlice,
     })
   }
 
@@ -56,6 +67,7 @@ export async function scanForVitals(inputDir: string, sliceName: string, file?: 
       categoryID: null,
       level: null,
       damageTable: table.damageTable,
+      modelSlice: table.modelSlice,
     })
   }
   return result.filter((it) => !!it.vitalsID)
@@ -171,17 +183,30 @@ async function findDamageTable(rootDir: string, sliceName: string, file?: string
   return cached(`findDamageTable ${file}`, async () => {
     let vitalsID: string = null
     let damageTable: string = null
-    walkJsonObjects(await readJSONFile(file), (obj: VitalsComponent | ActionListComponent) => {
-      if (obj.__type === 'VitalsComponent') {
-        vitalsID = vitalsID || obj.m_rowreference
+    let modelSlice: string = null
+
+    walkJsonObjects(
+      await readJSONFile(file),
+      (obj: VitalsComponent | ActionListComponent | MeshComponent | SkinnedMeshComponent) => {
+        if (obj.__type === 'VitalsComponent') {
+          vitalsID = vitalsID || obj.m_rowreference
+        }
+        if (obj.__type === 'ActionListComponent') {
+          damageTable = damageTable || obj.m_damagetable?.asset?.baseclass1?.assetpath
+        }
+        if (obj.__type === 'SkinnedMeshComponent' || obj.__type === 'MeshComponent') {
+          modelSlice = path
+            .relative(rootDir, file)
+            .replace(/\\/gi, '/')
+            .replace(/\.json$/, '.glb')
+            .toLowerCase()
+        }
       }
-      if (obj.__type === 'ActionListComponent') {
-        damageTable = damageTable || obj.m_damagetable?.asset?.baseclass1?.assetpath
-      }
-    })
+    )
     return {
       vitalsID,
       damageTable,
+      modelSlice,
     }
   })
 }

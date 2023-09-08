@@ -4458,6 +4458,7 @@ export type Family =
     "Wildlife";
 export interface Vitalsmetadata {
     mapIDs:   string[];
+    models:   string[];
     spawns:   Spawn[];
     tables:   string[];
     vitalsID: string;
