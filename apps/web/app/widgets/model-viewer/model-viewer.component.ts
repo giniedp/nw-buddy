@@ -83,6 +83,7 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
 
   protected isSuported$ = this.store.isSupported$
   protected isLoading$ = this.store.isLoading$
+  protected isEmpty$ = this.store.isEmpty$
   protected hasLoaded$ = this.store.hasLoaded$
   protected hasError$ = this.store.hasError$
   protected canClose$ = this.store.canClose$

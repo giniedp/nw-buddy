@@ -22,6 +22,7 @@ export interface ModelViewerState {
 export class ModelViewerStore extends ComponentStore<ModelViewerState> {
   public readonly isSupported$ = this.selectSignal(({ isSupported }) => isSupported)
   public readonly isLoading$ = this.selectSignal(({ isLoading }) => isLoading)
+  public readonly isEmpty$ = this.selectSignal(({ models }) => !models?.length)
   public readonly hasLoaded$ = this.selectSignal(({ hasLoaded }) => hasLoaded)
   public readonly hasError$ = this.selectSignal(({ hasError }) => hasError)
   public readonly canClose$ = this.selectSignal(({ canClose }) => canClose)
