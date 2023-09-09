@@ -1,18 +1,8 @@
 <div class="relative grid grid-cols-1 md:grid-cols-2 layout-gap">
-  <div class="flex-1 flex flex-col layout-gap col-start-1 col-span-1 row-span-2">
-    <label class="flex relative" >
+  <div class="flex-1 flex flex-col layout-gap col-start-1 col-span-1 row-span-3">
+    <label class="flex relative">
       <picture
-        class="
-          w-full
-          aspect-[3/4]
-          relative
-          rounded-md
-          transition-all
-          outline outline-transparent outline-2 outline-offset-0
-          hover:outline-offset-4
-          shadow-md
-
-        "
+        class="w-full aspect-[3/4] relative rounded-md transition-all outline outline-transparent outline-2 outline-offset-0 hover:outline-offset-4 shadow-md"
         (click)="changeAvatar()"
         [class.pointer-events-none]="!(isPersistable$ | async)"
         [class.cursor-pointer]="isPersistable$ | async"
@@ -31,7 +21,7 @@
           [class.bg-black]="hasImage$ | async"
         >
           <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-14 h-14" />
-          <div class="text-6xl font-caslon relative top-1">{{ gearScore$ | async | number: '0.0-0' }}</div>
+          <div class="text-6xl font-caslon relative top-1">{{ gearScore$ | async | number : '0.0-0' }}</div>
         </div>
       </picture>
       <nwb-icon
@@ -43,17 +33,12 @@
   </div>
 
   <nwb-attributes-stats
-    class="
-      rounded-md
-      transition-all
-      outline outline-transparent outline-2 outline-offset-0
-      hover:outline-offset-4
-      relative
-    "
+    class="rounded-md transition-all outline outline-transparent outline-2 outline-offset-0 hover:outline-offset-4 relative"
     [class.cursor-pointer]="!disabled"
     [class.hover:outline-primary]="!disabled"
     (click)="editAttributes()"
   ></nwb-attributes-stats>
+  <nwb-equip-load-stats></nwb-equip-load-stats>
   <nwb-vitality-stats></nwb-vitality-stats>
   <ng-content></ng-content>
 </div>

@@ -15,6 +15,7 @@ import { AttributeEditorDialogComponent } from '~/widgets/attributes-editor'
 import { AttributesStatsComponent } from './stats/attributes-stats.component'
 import { VitalityStatsComponent } from './stats/vitality-stats.component'
 import { AvatarDialogComponent } from './avatar-dialog.component'
+import { EquipLoadStatsComponent } from './stats/equip-load-stats.component'
 
 @Component({
   standalone: true,
@@ -31,6 +32,7 @@ import { AvatarDialogComponent } from './avatar-dialog.component'
     CdkMenuModule,
     VitalityStatsComponent,
     AttributesStatsComponent,
+    EquipLoadStatsComponent,
   ],
   providers: [PercentPipe, DecimalPipe],
   host: {
@@ -104,13 +106,13 @@ export class GearsetPaneMainComponent {
     const gearset = await firstValueFrom(this.gearset.gearset$)
     AvatarDialogComponent.open(this.dialog, {
       data: {
-        imageId: gearset?.imageId
-      }
-    }).closed.pipe(take(1))
+        imageId: gearset?.imageId,
+      },
+    })
+      .closed.pipe(take(1))
       .pipe(filter((it) => !!it))
       .subscribe(({ imageId }) => {
         this.gearset.updateImageId({ imageId })
       })
   }
-
 }

@@ -5,7 +5,7 @@ import {
   ItemdefinitionsArmor,
   ItemdefinitionsRunes,
   ItemdefinitionsWeapons,
-  Perks
+  Perks,
 } from '@nw-data/generated'
 import type { AttributeRef } from './attributes'
 import { NW_MAX_GEAR_SCORE, NW_MAX_GEAR_SCORE_UPGRADABLE, NW_MIN_GEAR_SCORE } from './constants'
@@ -284,8 +284,8 @@ export function getArmorRatingPhysical(item: ItemdefinitionsArmor | Itemdefiniti
   return Math.pow(gearScore, 1.2) * item.PhysicalArmorSetScaleFactor * item.ArmorRatingScaleFactor
 }
 
-export function getWeightLabel(weight: number) {
-  let label = 'light'
+export function getWeightLabel(weight: number): 'light' | 'medium' | 'heavy' {
+  let label: 'light' | 'medium' | 'heavy' = 'light'
   if (weight >= 13) {
     label = 'medium'
   }
