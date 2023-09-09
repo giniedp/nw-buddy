@@ -6,7 +6,15 @@ import { debounceTime, defer, EMPTY, filter, merge, Observable, of, Subject, swi
 import { ItemInstanceRow, ItemInstancesStore } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwLinkService } from '~/nw'
-import { EQUIP_SLOTS, getItemIconPath, getItemId, getItemRarityLabel, getItemTierAsRoman, isItemNamed } from '@nw-data/common'
+import {
+  EQUIP_SLOTS,
+  getAffixMODs,
+  getItemIconPath,
+  getItemId,
+  getItemRarityLabel,
+  getItemTierAsRoman,
+  isItemNamed,
+} from '@nw-data/common'
 import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { svgTrashCan } from '~/ui/icons/svg'
@@ -169,6 +177,22 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
           filter: RangeFilter,
         }),
         this.colDef({
+          colId: 'attributeMods',
+          headerValueGetter: () => 'Attr. Mods',
+          width: 100,
+          valueGetter: this.valueGetter(({ data }) => {
+            return data.perks
+              ?.map((it) => it?.affix)
+              .filter((it) => !!it)
+              .map((it) => getAffixMODs(it, 0))
+              .flat(1)
+              .map((it) => this.i18n.get(it.labelShort))
+          }),
+          cellRenderer: this.cellRendererTags(humanize),
+          filter: SelectFilter,
+          filterParams: SelectFilter.params({}),
+        }),
+        this.colDef({
           colId: 'itemType',
           headerValueGetter: () => 'Item Type',
           valueGetter: this.valueGetter(({ data }) => data.item.ItemType),
@@ -231,7 +255,7 @@ export class PlayerItemsTableAdapter extends DataTableAdapter<ItemInstanceRow> i
     .pipe(take(1))
 
   public override categories: Observable<DataTableCategory[]> = defer(() => {
-    const result = EQUIP_SLOTS.filter((it) => it.itemType !== 'Trophies') .map(
+    const result = EQUIP_SLOTS.filter((it) => it.itemType !== 'Trophies').map(
       (it): DataTableCategory => ({
         icon: it.iconSlot || it.icon,
         value: it.itemType,

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { combineLatest, defer, Subject, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw/nw-db.service'
@@ -12,6 +12,7 @@ export interface ItemInstancesState {
   records: ItemInstanceRecord[]
   items: Map<string, ItemDefinitionMaster>
   perks: Map<string, Perks>
+  affixes: Map<string, Affixstats>
   buckets: Map<string, PerkBucket>
 }
 
@@ -27,7 +28,7 @@ export interface ItemInstanceRow {
   /**
    * The game perks referenced by the record
    */
-  perks?: Array<{ key: string; perk?: Perks; bucket?: PerkBucket }>
+  perks?: Array<{ key: string; perk?: Perks; affix?: Affixstats; bucket?: PerkBucket }>
   /**
    * The items current rarity
    */
@@ -48,7 +49,7 @@ export class ItemInstancesStore extends ComponentStore<ItemInstancesState> {
   private rowDestroyed = new Subject<string>()
 
   public constructor(public readonly db: ItemInstancesDB, private nwdb: NwDbService) {
-    super({ records: null, items: null, perks: null, buckets: null })
+    super({ records: null, items: null, perks: null, affixes: null, buckets: null })
   }
 
   public loadAll() {
@@ -57,6 +58,7 @@ export class ItemInstancesStore extends ComponentStore<ItemInstancesState> {
         records: this.db.observeAll(),
         items: this.nwdb.itemsMap,
         perks: this.nwdb.perksMap,
+        affixes: this.nwdb.affixStatsMap,
         buckets: this.nwdb.perkBucketsMap,
       })
     )
@@ -106,15 +108,17 @@ export class ItemInstancesStore extends ComponentStore<ItemInstancesState> {
     if (!record) {
       return null
     }
-    const { items, perks, buckets } = this.get()
+    const { items, perks, buckets, affixes } = this.get()
     const item = items.get(record.itemId)
     const perkInfos = getItemPerkInfos(item, record.perks)
     const itemPerks = perkInfos.map((it) => {
       const perk = perks.get(it.perkId)
+      const affix = affixes.get(perk?.Affix)
       const bucket = buckets.get(it.bucketId)
       return {
         key: it.key,
         perk: perk,
+        affix: affix,
         bucket: bucket,
         type: (perk || bucket)?.PerkType,
       }
