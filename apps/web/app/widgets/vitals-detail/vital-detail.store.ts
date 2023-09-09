@@ -4,6 +4,7 @@ import { Damagetable, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { shareReplayRefCount } from '~/utils'
+import { ItemModelInfo, ModelViewerService } from '../model-viewer'
 
 export interface State {
   vitalId: string
@@ -21,6 +22,7 @@ export class VitalDetailStore extends ComponentStore<State> {
   public readonly vital$ = this.select(this.db.vital(this.vitalId$), (it) => it)
   public readonly level$ = this.select(this.vital$, (it) => it?.Level)
   public readonly metadata$ = this.select(this.vitalId$, this.db.vitalsMetadataMap, (id, data) => data.get(id))
+  public readonly modelFiles$ = this.select(this.vs.byVitalsId(this.vitalId$), (it) => it)
 
   public readonly categories$ = this.select(this.vital$, this.db.vitalsCategoriesMap, selectCategories)
   public readonly damageTableNames$ = this.select(this.vitalId$, this.metadata$, selectDamageTableNames)
@@ -29,7 +31,7 @@ export class VitalDetailStore extends ComponentStore<State> {
     .pipe(shareReplayRefCount(1))
 
   public readonly hasDamageTable$ = this.select(this.damageTableNames$, (it) => !!it?.length)
-  public constructor(private db: NwDbService) {
+  public constructor(private db: NwDbService, private vs: ModelViewerService) {
     super({
       vitalId: null,
     })

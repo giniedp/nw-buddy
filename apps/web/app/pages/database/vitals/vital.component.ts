@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { NW_MAX_CHARACTER_LEVEL, getVitalDungeon, getVitalFamilyInfo } from '@nw-data/common'
 import { Vitals } from '@nw-data/generated'
@@ -9,25 +9,36 @@ import { TranslateService } from '~/i18n'
 
 import { NwDbService, NwModule } from '~/nw'
 import { LayoutModule } from '~/ui/layout'
-import { HtmlHeadService, observeQueryParam, observeRouteParam, shareReplayRefCount } from '~/utils'
+import { HtmlHeadService, observeQueryParam, observeRouteParam, selectStream, shareReplayRefCount } from '~/utils'
 import { LootModule } from '~/widgets/loot'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { VitalsDetailModule } from '~/widgets/vitals-detail'
+import { ModelViewerModule, ModelViewerService } from '../../../widgets/model-viewer'
 
-export type DetailTabId = 'loot-items' | 'loot-table' | 'damage-table'
+export type DetailTabId = 'loot-items' | 'loot-table' | 'damage-table' | '3d-model'
 
 @Component({
   standalone: true,
   templateUrl: './vital.component.html',
   styleUrls: ['./vital.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, VitalsDetailModule, LootModule, LayoutModule, ScreenshotModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    NwModule,
+    VitalsDetailModule,
+    LootModule,
+    LayoutModule,
+    ScreenshotModule,
+    ModelViewerModule,
+  ],
   host: {
     class: 'flex-none flex flex-col',
   },
 })
 export class VitalComponent {
   protected vitalId$ = observeRouteParam(this.route, 'id')
+  protected modelFiles$ = selectStream(inject(ModelViewerService).byVitalsId(this.vitalId$))
   protected tabId$ = observeQueryParam(this.route, 'tab').pipe(
     map((it: DetailTabId): DetailTabId => it || 'loot-items')
   )

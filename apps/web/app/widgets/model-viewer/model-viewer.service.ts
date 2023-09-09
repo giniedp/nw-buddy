@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import {
   Itemappearancedefinitions,
@@ -6,9 +5,8 @@ import {
   ItemdefinitionsWeaponappearances,
 } from '@nw-data/generated'
 import { uniq } from 'lodash'
-import { Observable, combineLatest, defer, map, of, shareReplay, switchMap } from 'rxjs'
+import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { CaseInsensitiveMap, eqCaseInsensitive } from '~/utils'
 
 export interface ItemModelInfo {
   itemId: string
@@ -25,24 +23,61 @@ export interface StatRow {
   tags: string[]
 }
 
+const NW_CDN_HOST = 'https://cdn.nw-buddy.de'
+//const NW_CDN_HOST = 'http://localhost:9000/'
+
 @Injectable({ providedIn: 'root' })
 export class ModelViewerService {
-
   public constructor(private db: NwDbService) {
     //
   }
 
   public byItemId(itemId$: Observable<string>) {
+    return combineLatest({
+      master: this.byMasterItemId(itemId$),
+      housing: this.byHousingItemid(itemId$),
+    }).pipe(
+      map(({ housing, master }) => {
+        if (housing) {
+          return [housing]
+        }
+        if (master?.length) {
+          return master
+        }
+        return null
+      })
+    )
+  }
+
+  public byMasterItemId(itemId$: Observable<string>) {
     return this.db.item(itemId$).pipe(
       switchMap((item) => {
         return combineLatest([
-          this.byAppearanceId(of(item.ArmorAppearanceM)),
-          this.byAppearanceId(of(item.ArmorAppearanceF)),
-          this.byAppearanceId(of(item.WeaponAppearanceOverride)),
+          this.byAppearanceId(of(item?.ArmorAppearanceM)),
+          this.byAppearanceId(of(item?.ArmorAppearanceF)),
+          this.byAppearanceId(of(item?.WeaponAppearanceOverride)),
         ])
       }),
       map(([armorM, armorF, weapon]) => {
         return [...armorM, ...armorF, ...weapon]
+      })
+    )
+  }
+
+  public byHousingItemid(itemId$: Observable<string>) {
+    return of(null)
+    return this.db.housingItem(itemId$).pipe(
+      map((item): ItemModelInfo => {
+        if (!item?.PrefabPath) {
+          return null
+        }
+
+        return {
+          itemClass: [item['HousingTag1 Placed']].filter((it) => !!it),
+          itemId: item.HouseItemID,
+          label: item.Name,
+          url: new URL('housingitems/' + item.PrefabPath + '.dynamicslice.glb', NW_CDN_HOST).toString().toLowerCase(),
+        }
       })
     )
   }
@@ -68,7 +103,26 @@ export class ModelViewerService {
         return list.map((it) => {
           return {
             ...it,
-            url: new URL(it.url, 'https://cdn.nw-buddy.de').toString(),
+            url: new URL(it.url, NW_CDN_HOST).toString(),
+          }
+        })
+      })
+    )
+  }
+
+  public byVitalsId(vitalsId$: Observable<string>) {
+    return this.db.vitalsMeta(vitalsId$).pipe(
+      map((meta) => {
+        const files = meta?.models?.filter((it) => it.startsWith('slices/characters/'))
+        if (!files?.length) {
+          return null
+        }
+        return files.map((file, i): ItemModelInfo => {
+          return {
+            label: `Model ${i + 1}`,
+            url: new URL(file, 'http://localhost:9000/').toString(),
+            itemClass: [],
+            itemId: meta.vitalsID,
           }
         })
       })
@@ -90,7 +144,7 @@ function selectItemModels(item: Itemappearancedefinitions, tags: string[] = []):
       itemId: item.ItemID,
       url: `/models/itemappearances/${item.ItemID}-${key}.gltf`.toLowerCase(),
       label: uniq([...tags, item.Gender, key].filter((it) => !!it)).join(' '),
-      itemClass: [...item.ItemClass || []],
+      itemClass: [...(item.ItemClass || [])],
     })
   }
   return result
@@ -113,7 +167,7 @@ function selectWeaponModels(item: ItemdefinitionsWeaponappearances, tags: string
         itemId: item.WeaponAppearanceID,
         url: `/models/weaponappearances/${item.WeaponAppearanceID}-${key}.gltf`.toLowerCase(),
         label: uniq([...tags, key]).join(' '),
-        itemClass: [...item.ItemClass || []],
+        itemClass: [...(item.ItemClass || [])],
       })
     }
   }
@@ -132,7 +186,7 @@ function selectInstrumentModels(item: ItemdefinitionsInstrumentsappearances, tag
         itemId: item.WeaponAppearanceID,
         url: `/models/instrumentappearances/${item.WeaponAppearanceID}-${key}.gltf`.toLowerCase(),
         label: uniq([...tags, key]).join(' '),
-        itemClass: [...item.ItemClass || []],
+        itemClass: [...(item.ItemClass || [])],
       })
     }
   }

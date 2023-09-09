@@ -5,6 +5,7 @@ import { Gamemodes, Vitals } from '@nw-data/generated'
 import { combineLatest } from 'rxjs'
 import { NwModule } from '~/nw'
 import { DestroyService } from '~/utils'
+import { ModelViewerService } from '../model-viewer'
 import { VitalDamageTableComponent } from './vital-damage-table.component'
 import { VitalDetailHeaderComponent } from './vital-detail-header.component'
 import { VitalDetailInfosComponent } from './vital-detail-infos.component'
@@ -37,7 +38,11 @@ export interface VitalTab {
       <nwb-vital-detail-header [vital]="vm.vital"></nwb-vital-detail-header>
       <div class="tabs rounded-none justify-center bg-base-300" *ngIf="vm.tabs?.length > 1">
         <ng-container *ngFor="let tab of vm.tabs">
-          <a class="tab tab-bordered tab-sm" [class.tab-active]="tab.id === vm.selectedTab" (click)="openSection(tab.id)">
+          <a
+            class="tab tab-bordered tab-sm"
+            [class.tab-active]="tab.id === vm.selectedTab"
+            (click)="openSection(tab.id)"
+          >
             {{ tab.label }}
           </a>
         </ng-container>
@@ -53,7 +58,11 @@ export interface VitalTab {
     </ng-container>
   `,
 })
-export class VitalDetailComponent extends ComponentStore<{ enableSections: boolean; section: VitalSection }> {
+export class VitalDetailComponent extends ComponentStore<{
+  enableSections: boolean
+  enableViewer: boolean
+  section: VitalSection
+}> {
   @Input()
   public set vital(value: Partial<Vitals>) {
     this.store.patchState({ vitalId: value.VitalsID })
@@ -88,9 +97,10 @@ export class VitalDetailComponent extends ComponentStore<{ enableSections: boole
     selectedTab: this.select(({ section }) => section),
   })
 
-  public constructor(private store: VitalDetailStore) {
+  public constructor(private store: VitalDetailStore, private viewerService: ModelViewerService) {
     super({
       enableSections: false,
+      enableViewer: false,
       section: 'weakness',
     })
   }

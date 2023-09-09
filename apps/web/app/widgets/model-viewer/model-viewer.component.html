@@ -2,7 +2,7 @@
   <button class="btn btn-circle btn-sm bg-opacity-50" (click)="toggleFullscreen()" *ngIf="!isModal$()">
     <nwb-icon [icon]="iconFullscreen" class="w-4 h-4"></nwb-icon>
   </button>
-  <button class="btn btn-circle btn-sm bg-opacity-50" (click)="onClose()" *ngIf="isModal$()">
+  <button class="btn btn-circle btn-sm bg-opacity-50" (click)="closeDialog()" *ngIf="isModal$()">
     <nwb-icon [icon]="iconClose" class="w-4 h-4"></nwb-icon>
   </button>
 </div>

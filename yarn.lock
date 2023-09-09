@@ -8425,22 +8425,22 @@ babel-preset-jest@^28.1.3:
     babel-plugin-jest-hoist "^28.1.3"
     babel-preset-current-node-syntax "^1.0.0"
 
-babylonjs-gltf2interface@^6.15.0:
-  version "6.15.0"
-  resolved "https://registry.yarnpkg.com/babylonjs-gltf2interface/-/babylonjs-gltf2interface-6.15.0.tgz#8c2b75fbb1033e4816730f9efb8cd89a92021f99"
-  integrity sha512-vLY4UvaH+g2AZDNfgIaEH5Naw3kriiv2ckM9OPMzJTAACK52X4v4oL1z3iRDntQrBC1IV4Jfns2YFyowVqloGw==
+babylonjs-gltf2interface@^6.20.1:
+  version "6.20.1"
+  resolved "https://registry.yarnpkg.com/babylonjs-gltf2interface/-/babylonjs-gltf2interface-6.20.1.tgz#6c8c94ee62199ab4ecb397c1a944039b1fc9face"
+  integrity sha512-2JXpjXyj+lu8HuCCLqjmjqP3lx8eRU5iQW4uR9yzu79tHez2JAVGAO14KOaAXDqquEqsoh+O+XY7AjmMarapVA==
 
-babylonjs-viewer@6.15.0:
-  version "6.15.0"
-  resolved "https://registry.yarnpkg.com/babylonjs-viewer/-/babylonjs-viewer-6.15.0.tgz#9650cf3e70a25d9fa25989ebc9b424f19a17ce1c"
-  integrity sha512-YSMzC1PSd1T/zWG9DSTDynd8QpZ6bPJFYr7a/bTS1q3YMLll811723SVltsFZSCjuX5rKWLP/3tWWK8pgDhLeA==
+babylonjs-viewer@6.20.1:
+  version "6.20.1"
+  resolved "https://registry.yarnpkg.com/babylonjs-viewer/-/babylonjs-viewer-6.20.1.tgz#75a1f8c97cc2bc1549e80a72f0be20b8dc59f5d4"
+  integrity sha512-SONuDDgu1iTBQZWWsM3uwrHHReE282uy4vmwcO7A/FYWl8hzr33iUWUWS8SgFF9rUpkFoqaAioz2IBzMGJVlWw==
   dependencies:
-    babylonjs-gltf2interface "^6.15.0"
+    babylonjs-gltf2interface "^6.20.1"
 
-babylonjs@6.18.0:
-  version "6.18.0"
-  resolved "https://registry.yarnpkg.com/babylonjs/-/babylonjs-6.18.0.tgz#628615127df0925b40ae25d80a820ed0962341e3"
-  integrity sha512-gr5bZstwimAFpUxfJ9q+CmdnJ64zK02hpDCBKFtZ0eODtDW7kcszTC/lCRnAoppaI1GbxO9vqK+kUDVbP95TsQ==
+babylonjs@6.20.1:
+  version "6.20.1"
+  resolved "https://registry.yarnpkg.com/babylonjs/-/babylonjs-6.20.1.tgz#ced82197d994ba33a242ffb1b9b9c53e9a4bb7d5"
+  integrity sha512-mTZziDP2+W1RxE4uSoOwfZ6hUMQJm6XXboXf+E4XxVF5tvPOkvnbBxdjjMadK9vJ/rx1whTbQMAls4wlhDWSCQ==
 
 balanced-match@^1.0.0:
   version "1.0.2"

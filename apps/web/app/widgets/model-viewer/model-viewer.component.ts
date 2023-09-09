@@ -1,32 +1,27 @@
-import type from 'babylonjs'
-import type { AbstractViewer } from 'babylonjs-viewer'
-import { Dialog, DialogConfig, DialogModule, DialogRef, DIALOG_DATA } from '@angular/cdk/dialog'
+import { DIALOG_DATA, Dialog, DialogConfig, DialogModule, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ElementRef,
   Inject,
   Input,
-  NgZone,
   NO_ERRORS_SCHEMA,
+  NgZone,
   OnDestroy,
   OnInit,
   Optional,
   Output,
 } from '@angular/core'
+import { ComponentStore } from '@ngrx/component-store'
+import type { AbstractViewer, DefaultViewer } from 'babylonjs-viewer'
+import { Subject, takeUntil } from 'rxjs'
 import { NwModule } from '~/nw'
-import { ItemModelInfo } from './model-viewer.service'
 import { IconsModule } from '~/ui/icons'
 import { svgExpand, svgXmark } from '~/ui/icons/svg'
-import { Subject, takeUntil } from 'rxjs'
-import { ComponentStore } from '@ngrx/component-store'
 import { eqCaseInsensitive } from '~/utils'
-
-async function loadBabylon() {
-  return import('babylonjs-viewer')
-}
+import { ItemModelInfo } from './model-viewer.service'
+import { createViewer, loadBabylon } from './viewer'
 
 export interface ModelViewerState {
   models: ItemModelInfo[]
@@ -40,10 +35,11 @@ export interface ModelViewerState {
   standalone: true,
   selector: 'nwb-model-viewer',
   templateUrl: './model-viewer.component.html',
+  styleUrls: ['./model-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, DialogModule, IconsModule],
   host: {
-    class: 'layout-col bg-base-300 relative',
+    class: 'layout-col bg-base-300 relative z-0',
   },
   schemas: [NO_ERRORS_SCHEMA],
 })
@@ -57,11 +53,16 @@ export class ModelViewerComponent extends ComponentStore<ModelViewerState> imple
     this.patchState({ models: value })
   }
 
+  @Input()
+  public hideFloor: boolean = false
+
   @Output()
   public readonly close = new Subject<void>()
 
   protected readonly models$ = this.select((it) => it.models)
-  protected readonly model$ = this.select(({ models, index }) => models[index] || models[0])
+  protected readonly model$ = this.select(({ models, index }) => {
+    return models?.[index] || models?.[0]
+  })
   protected readonly buttons$ = this.selectSignal(({ models, index }) => {
     if (!models || models.length <= 1) {
       return []
@@ -70,7 +71,7 @@ export class ModelViewerComponent extends ComponentStore<ModelViewerState> imple
       return {
         index: i,
         label: it.label,
-        active: i === index
+        active: i === index,
       }
     })
   })
@@ -80,7 +81,7 @@ export class ModelViewerComponent extends ComponentStore<ModelViewerState> imple
   protected iconClose = svgXmark
   protected iconFullscreen = svgExpand
 
-  private viewer: AbstractViewer
+  private viewer: DefaultViewer
 
   public constructor(
     @Optional()
@@ -122,76 +123,67 @@ export class ModelViewerComponent extends ComponentStore<ModelViewerState> imple
     }
   }
 
-  protected onClose() {
+  protected closeDialog() {
     this.ref?.close()
     this.close.next()
   }
 
   private async showModel(data: ItemModelInfo) {
-    if (!data) {
+    const viewer = await this.getViewer()
+    if (!viewer) {
       return
     }
-    const { DefaultViewer, BABYLON } = await loadBabylon()
-    const { Quaternion, Matrix } = BABYLON
+    if (!data?.url) {
+      viewer.sceneManager.clearScene(true, false)
+      return
+    }
+    await viewer.hideOverlayScreen()
+    const rotation = await getRotation(data)
+    viewer.sceneManager.clearScene(true, false)
 
-    let rotation = Quaternion.Identity()
-    if (isOneHanded(data)) {
-      rotation = Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(-Math.PI / 2, Math.PI / 4, 0))
-    }
-    if (isTwoHanded(data)) {
-      if (isGreatSword(data)) {
-        rotation = Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(-Math.PI / 2, -(3 / 4) * Math.PI, 0))
-      } else if (isIceMagic(data) || isVoidGauntlet(data)) {
-        //
-      } else {
-        rotation = Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(-Math.PI / 2, Math.PI / 4, 0))
-      }
-    }
-    if (isShield(data)) {
-      rotation = Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(Math.PI / 2, -Math.PI / 2, 0))
-    }
-    if (isTool(data) && !isInstrumentDrums(data)) {
-      if (isInstrument(data)) {
-        rotation = Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(0, 0, Math.PI / 4))
-      } else {
-        rotation = Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(-Math.PI / 2, Math.PI / 4, 0))
-      }
-    }
-
-    if (!this.viewer) {
-      this.viewer = new DefaultViewer(this.elRef.nativeElement, {
-        model: {
-          url: data.url,
-          rotationOffsetAngle: 0,
-          rotation: { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w },
-          entryAnimation: null,
-        },
-        engine: {
-          antialiasing: true,
-          hdEnabled: true,
-          adaptiveQuality: true,
-        },
-        //skybox: false,
-        ground: false,
-        templates: {
-          navBar: {
-            html: '<div></div>',
-          },
-        } as any,
-      })
-      this.viewer.onModelLoadedObservable.add((model) => {
-        this.zone.run(() => {
-          this.patchState({ isLoaded: true })
-        })
-      })
-    } else {
-      this.viewer.loadModel({
+    viewer
+      .loadModel({
         url: data.url,
         rotationOffsetAngle: 0,
         rotation: { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w },
         entryAnimation: null,
       })
+      .catch(() => {
+        this.disposeViewer()
+        this.getViewer()
+      })
+  }
+
+  private async getViewer() {
+    if (this.viewer) {
+      return this.viewer
     }
+    this.viewer = await createViewer({
+      element: this.elRef.nativeElement,
+      zone: this.zone,
+      hideFloor: this.hideFloor,
+      // onEngineInit: (viewer) => {
+      //   //
+      // },
+      // onModelLoaded: () => {
+      //   console.log('onModelLoaded')
+      // },
+      // onModelError: (err) => {
+      //   console.log('onModelError', err)
+      // },
+      // onModelProgress: (progress) => {
+      //   console.log('onModelProgress', progress)
+      // },
+    }).catch(() => {
+      return null
+    })
+    return this.viewer
+  }
+
+  private disposeViewer() {
+    this.viewer.containerElement
+    this.viewer?.dispose()
+    this.viewer = null
   }
 }
 
@@ -234,6 +226,20 @@ function isTool(data: ItemModelInfo) {
   return hasItemClass(data, 'EquippableTool')
 }
 
+function isOnWall(data: ItemModelInfo) {
+  return hasItemClass(data, 'OnWall')
+}
+
+function isOnCeiling(data: ItemModelInfo) {
+  return hasItemClass(data, 'OnCeiling')
+}
+
+function isOnFloor(data: ItemModelInfo) {
+  return hasItemClass(data, 'OnFloor')
+}
+function isOnFurniture(data: ItemModelInfo) {
+  return hasItemClass(data, 'OnFurniture')
+}
 function isInstrument(data: ItemModelInfo) {
   return (
     hasItemClass(data, 'InstrumentFlute') ||
@@ -250,4 +256,45 @@ function isInstrumentDrums(data: ItemModelInfo) {
 
 function hasItemClass(data: ItemModelInfo, name: string) {
   return !!data.itemClass?.some((it) => eqCaseInsensitive(it, name))
+}
+
+async function getRotation(data: ItemModelInfo) {
+  const { BABYLON } = await loadBabylon()
+  const { Quaternion, Matrix } = BABYLON
+
+  console.log(data)
+  if (isOnWall(data)) {
+    return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(0, Math.PI / 2, 0))
+  }
+  if (isOnCeiling(data)) {
+    return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(0, Math.PI, 0))
+  }
+  if (isOnFloor(data) || isOnFurniture(data)) {
+    return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(Math.PI, 0, 0))
+  }
+  if (isOneHanded(data)) {
+    return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(-Math.PI / 2, Math.PI / 4, 0))
+  }
+
+  if (isTwoHanded(data)) {
+    if (isGreatSword(data)) {
+      return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(-Math.PI / 2, -(3 / 4) * Math.PI, 0))
+    } else if (isIceMagic(data) || isVoidGauntlet(data)) {
+      //
+    } else {
+      return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(-Math.PI / 2, Math.PI / 4, 0))
+    }
+  }
+
+  if (isShield(data)) {
+    return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(Math.PI / 2, -Math.PI / 2, 0))
+  }
+  if (isTool(data) && !isInstrumentDrums(data)) {
+    if (isInstrument(data)) {
+      return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(0, 0, Math.PI / 4))
+    }
+    return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(-Math.PI / 2, Math.PI / 4, 0))
+  }
+
+  return Quaternion.Identity()
 }

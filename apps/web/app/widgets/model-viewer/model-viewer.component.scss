@@ -1,0 +1,39 @@
+:host {
+  ::ng-deep {
+    loading-screen {
+      position: absolute;
+      left: 0;
+      z-index: 100;
+      opacity: 1;
+      pointer-events: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 1s ease;
+    }
+    .spin-cw {
+      animation: spin-cw 3s linear infinite;
+    }
+    .spin-ccw {
+      animation: spin-ccw 4s linear infinite;
+    }
+
+    @keyframes spin-cw {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    @keyframes spin-ccw {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(-360deg);
+      }
+    }
+  }
+}

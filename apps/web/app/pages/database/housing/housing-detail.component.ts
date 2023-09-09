@@ -15,6 +15,7 @@ import { IconsModule } from '~/ui/icons'
 import { LootModule } from '~/widgets/loot'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { Dialog } from '@angular/cdk/dialog'
+import { ModelViewerModule } from '../../../widgets/model-viewer'
 
 @Component({
   standalone: true,
@@ -32,6 +33,7 @@ import { Dialog } from '@angular/cdk/dialog'
     HousingTabsComponent,
     IconsModule,
     LootModule,
+    ModelViewerModule,
   ],
   host: {
     class: 'flex-none flex flex-col',
@@ -40,6 +42,7 @@ import { Dialog } from '@angular/cdk/dialog'
 export class HousingDetailComponent {
   protected itemId$ = observeRouteParam(this.route, 'id')
   protected iconLink = svgSquareArrowUpRight
+  protected viewerActive = false
   public constructor(
     private route: ActivatedRoute,
     private i18n: TranslateService,

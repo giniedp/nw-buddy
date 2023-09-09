@@ -319,6 +319,7 @@ export class NwDbService {
 
   public vitalsMetadata = table(() => [this.data.vitalsmetadata()])
   public vitalsMetadataMap = indexBy(() => this.vitalsMetadata, 'vitalsID')
+  public vitalsMeta = lookup(() => this.vitalsMetadataMap)
 
   public vitals = table(() => [this.data.vitals()])
   public vitalsMap = indexBy(() => this.vitals, 'VitalsID')
@@ -401,7 +402,6 @@ export class NwDbService {
   public attrDex = this.data.attributedexterity().pipe(shareReplay(1))
   public attrFoc = this.data.attributefocus().pipe(shareReplay(1))
   public attrInt = this.data.attributeintelligence().pipe(shareReplay(1))
-
 
   public itemAppearances = table(() => this.data.itemappearancedefinitions())
   public itemAppearancesMap = indexBy(() => this.itemAppearances, 'ItemID')
