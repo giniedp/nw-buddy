@@ -1,6 +1,6 @@
 {
   "name": "nw-buddy",
-  "version": "2.0.4-2",
+  "version": "2.0.4-3",
   "description": "New World Buddy",
   "keywords": [],
   "main": "dist/electron/main.js",
@@ -141,6 +141,8 @@
     "ag-grid-community": "28.2.1",
     "autoprefixer": "10.4.14",
     "babylonjs": "6.20.1",
+    "babylonjs-loaders": "6.20.1",
+    "babylonjs-serializers": "6.20.1",
     "babylonjs-viewer": "6.20.1",
     "chart.js": "4.3.3",
     "chromatic": "6.20.0",

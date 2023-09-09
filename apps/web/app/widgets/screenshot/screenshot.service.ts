@@ -1,7 +1,9 @@
+import { Dialog } from '@angular/cdk/dialog'
 import { ElementRef, Injectable } from '@angular/core'
 import { saveAs } from 'file-saver'
 import { toBlob } from 'html-to-image'
-import { BehaviorSubject, defer, map } from 'rxjs'
+import { BehaviorSubject } from 'rxjs'
+import { ScreenshotSaveDialogComponent } from './screenshot-save-dialog.component'
 
 export interface ScreenshotFrame {
   elementRef: ElementRef<HTMLElement>
@@ -11,7 +13,6 @@ export interface ScreenshotFrame {
 
 @Injectable({ providedIn: 'root' })
 export class ScreenshotService {
-
   public get frames() {
     return this.frames$.value || []
   }
@@ -20,6 +21,8 @@ export class ScreenshotService {
   }
 
   private frames$ = new BehaviorSubject<ScreenshotFrame[]>([])
+
+  public constructor(private dialog: Dialog) {}
 
   public register(frame: ScreenshotFrame) {
     if (this.frames.includes(frame)) {
@@ -63,8 +66,37 @@ export class ScreenshotService {
     ])
   }
 
-  public saveBlobToFile(blob: Blob, filename: string = 'Screenshot') {
-    saveAs(blob, `${filename}.png`)
+  public async saveBlobToFile(blob: Blob, filename: string = 'Screenshot.png') {
+    const showSaveFilePicker = window['showSaveFilePicker'] as any
+    if (!showSaveFilePicker) {
+      return saveAs(blob, filename)
+    }
+
+    const handle = await showSaveFilePicker({
+      suggestedName: filename,
+    })
+    if (await verifyPermission(handle)) {
+      await writeFile(handle, blob)
+    }
+  }
+
+  public saveBlobWithDialog(blob: Blob, filename: string = 'Screenshot') {
+    ScreenshotSaveDialogComponent.open(this.dialog, {
+      data: {
+        previewUrl: URL.createObjectURL(blob),
+        filename: filename + '.png',
+      },
+    }).closed.subscribe((result) => {
+      if (!result) {
+        return
+      }
+      if (result.action === 'download') {
+        this.saveBlobToFile(blob, result.filename)
+      }
+      if (result.action === 'clipboard') {
+        this.saveBlobToClipoard(blob)
+      }
+    })
   }
 
   private async capture(frame: ScreenshotFrame) {
@@ -90,4 +122,25 @@ export class ScreenshotService {
     await new Promise((resolve) => setTimeout(resolve))
     return result
   }
+}
+
+async function writeFile(fileHandle, contents: Blob) {
+  const writable = await fileHandle.createWritable()
+  await writable.write(contents)
+  await writable.close()
+}
+async function verifyPermission(fileHandle) {
+  const options = {
+    mode: 'readwrite',
+  }
+  // Check if permission was already granted. If so, return true.
+  if ((await fileHandle.queryPermission(options)) === 'granted') {
+    return true
+  }
+  // Request permission. If the user grants permission, return true.
+  if ((await fileHandle.requestPermission(options)) === 'granted') {
+    return true
+  }
+  // The user didn't grant permission, so return false.
+  return false
 }

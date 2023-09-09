@@ -20,9 +20,9 @@
           >
             Attacks
           </a>
-          <!-- <a class="tab tab-bordered flex-1" [class.tab-active]="tab === '3d-model'" (click)="openTab('3d-model')">
+          <a class="tab tab-bordered flex-1" [class.tab-active]="tab === '3d-model'" (click)="openTab('3d-model')">
             3D
-          </a> -->
+          </a>
         </div>
         <ng-container *ngIf="loot$ | async; let loot">
           <nwb-loot-table

@@ -12,14 +12,14 @@ import { ScreenshotFrame, ScreenshotService } from './screenshot.service'
   imports: [CommonModule, FormsModule, OverlayModule, DialogModule],
   host: {
     class: 'flex',
-  }
+  },
 })
 export class ScreenshotButtonComponent {
   @HostBinding('class.disabled')
   @HostBinding('class.opacity-25')
   @HostBinding('attr.disabled')
   public get disabled() {
-    return (this.isBusy || !this.frames.length) ? true : null
+    return this.isBusy || !this.frames.length ? true : null
   }
 
   protected get frames() {
@@ -28,15 +28,8 @@ export class ScreenshotButtonComponent {
 
   protected isOverlayOpen = false
   protected isBusy = false
-  protected dialogRef: DialogRef<'download' | 'clipboard'>
-  @ViewChild('saveDialog')
-  protected saveDialog: TemplateRef<any>
 
-  public constructor(
-    private service: ScreenshotService,
-    private dialog: Dialog,
-    private cdRef: ChangeDetectorRef
-  ) {
+  public constructor(private service: ScreenshotService, private cdRef: ChangeDetectorRef) {
     //
   }
 
@@ -59,7 +52,6 @@ export class ScreenshotButtonComponent {
     this.cdRef.markForCheck()
   }
 
-
   protected async grabScreenshot(frame: ScreenshotFrame) {
     this.isOverlayOpen = false
     if (!frame) {
@@ -69,17 +61,6 @@ export class ScreenshotButtonComponent {
     if (!blob) {
       return
     }
-    this.dialog.closeAll()
-    this.dialogRef = this.dialog.open(this.saveDialog, {
-      minWidth: '300px',
-    })
-    this.dialogRef.closed.subscribe((value) => {
-      if (value === 'download') {
-        this.service.saveBlobToFile(blob, frame.description)
-      }
-      if (value === 'clipboard') {
-        this.service.saveBlobToClipoard(blob)
-      }
-    })
+    this.service.saveBlobWithDialog(blob, frame.description)
   }
 }

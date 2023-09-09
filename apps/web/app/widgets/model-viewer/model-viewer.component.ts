@@ -12,23 +12,30 @@ import {
   OnInit,
   Optional,
   Output,
+  ViewChild,
 } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
-import type { AbstractViewer, DefaultViewer } from 'babylonjs-viewer'
-import { Subject, takeUntil } from 'rxjs'
+import { Itemappearancedefinitions } from '@nw-data/generated'
+import { Subject, catchError, firstValueFrom, from, of, switchMap, takeUntil, tap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgExpand, svgXmark } from '~/ui/icons/svg'
-import { eqCaseInsensitive } from '~/utils'
+import { svgCamera, svgCircleExclamation, svgExpand, svgXmark } from '~/ui/icons/svg'
+import { TranslateService } from '../../i18n'
+import { ScreenshotService } from '../screenshot'
 import { ItemModelInfo } from './model-viewer.service'
-import { createViewer, loadBabylon } from './viewer'
 
+import { animate, style, transition, trigger } from '@angular/animations'
+import { ViewerModel } from 'babylonjs-viewer'
+import { ModelViewerStore } from './model-viewer.store'
+import { getItemRotation } from './utils/get-item-rotation'
+import { supportsWebGL } from './utils/webgl-support'
+import type { DefaultViewer } from './viewer'
 export interface ModelViewerState {
   models: ItemModelInfo[]
   index: number
   isLoaded?: boolean
   isModal?: boolean
-  viewer?: AbstractViewer
+  viewer?: DefaultViewer
+  appearance: Itemappearancedefinitions
 }
 
 @Component({
@@ -38,19 +45,31 @@ export interface ModelViewerState {
   styleUrls: ['./model-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, DialogModule, IconsModule],
+  providers: [ModelViewerStore],
   host: {
     class: 'layout-col bg-base-300 relative z-0',
   },
   schemas: [NO_ERRORS_SCHEMA],
+  animations: [
+    trigger('fade', [
+      transition(':enter', [style({ opacity: 0 }), animate('0.150s ease-out', style({ opacity: 1 }))]),
+      transition(':leave', [style({ opacity: 1 }), animate('0.150s ease-out', style({ opacity: 0 }))]),
+    ]),
+  ],
 })
-export class ModelViewerComponent extends ComponentStore<ModelViewerState> implements OnInit, OnDestroy {
+export class ModelViewerComponent implements OnInit, OnDestroy {
   public static open(dialog: Dialog, options: DialogConfig<ItemModelInfo[]>) {
     return dialog.open(ModelViewerComponent, options)
   }
 
   @Input()
   public set models(value: ItemModelInfo[]) {
-    this.patchState({ models: value })
+    this.store.patchState({ models: value })
+  }
+
+  @Input()
+  public set canClose(value: boolean) {
+    this.store.patchState({ canClose: value })
   }
 
   @Input()
@@ -59,27 +78,20 @@ export class ModelViewerComponent extends ComponentStore<ModelViewerState> imple
   @Output()
   public readonly close = new Subject<void>()
 
-  protected readonly models$ = this.select((it) => it.models)
-  protected readonly model$ = this.select(({ models, index }) => {
-    return models?.[index] || models?.[0]
-  })
-  protected readonly buttons$ = this.selectSignal(({ models, index }) => {
-    if (!models || models.length <= 1) {
-      return []
-    }
-    return models.map((it, i) => {
-      return {
-        index: i,
-        label: it.label,
-        active: i === index,
-      }
-    })
-  })
-  protected readonly isLoaded$ = this.selectSignal((it) => it.isLoaded)
-  protected readonly isModal$ = this.selectSignal((it) => it.isModal)
+  @ViewChild('viewerHost', { static: true })
+  protected viewerHost: ElementRef<HTMLElement>
+
+  protected isSuported$ = this.store.isSupported$
+  protected isLoading$ = this.store.isLoading$
+  protected hasLoaded$ = this.store.hasLoaded$
+  protected hasError$ = this.store.hasError$
+  protected canClose$ = this.store.canClose$
+  protected buttons$ = this.store.buttons$
 
   protected iconClose = svgXmark
   protected iconFullscreen = svgExpand
+  protected iconCamera = svgCamera
+  protected iconError = svgCircleExclamation
 
   private viewer: DefaultViewer
 
@@ -90,29 +102,46 @@ export class ModelViewerComponent extends ComponentStore<ModelViewerState> imple
     @Optional()
     data: ItemModelInfo[],
     private elRef: ElementRef<HTMLElement>,
-    private zone: NgZone
+    private zone: NgZone,
+    private screenshots: ScreenshotService,
+    private i18n: TranslateService,
+    private store: ModelViewerStore
   ) {
-    super({
-      models: data || [],
-      index: 0,
-      isModal: !!ref,
+    this.store.patchState({
+      canClose: !!ref,
+      isSupported: supportsWebGL(),
     })
   }
 
   public async ngOnInit() {
-    this.model$.pipe(takeUntil(this.destroy$)).subscribe((data) => {
-      this.showModel(data)
-    })
+    this.store.model$
+      .pipe(
+        switchMap((data) => {
+          this.disposeViewer()
+          this.store.patchState({ isLoading: true, hasError: false })
+          return from(this.showModel(data)).pipe(
+            tap(() => {
+              this.store.patchState({ isLoading: false, hasError: false, hasLoaded: true })
+            }),
+            catchError(() => {
+              this.store.patchState({ isLoading: false, hasError: true, hasLoaded: true })
+              this.disposeViewer()
+              return of(null)
+            })
+          )
+        })
+      )
+      .pipe(takeUntil(this.store.destroy$))
+      .subscribe()
   }
 
-  public override ngOnDestroy(): void {
-    super.ngOnDestroy()
+  public ngOnDestroy(): void {
     this.viewer?.dispose()
     this.viewer = null
   }
 
   protected show(index: number) {
-    this.patchState({ index: index })
+    this.store.patchState({ index: index })
   }
 
   protected toggleFullscreen() {
@@ -123,178 +152,97 @@ export class ModelViewerComponent extends ComponentStore<ModelViewerState> imple
     }
   }
 
+  protected exitFullscreen() {
+    if (document.fullscreenElement) {
+      document.exitFullscreen()
+    }
+  }
+
   protected closeDialog() {
     this.ref?.close()
     this.close.next()
   }
 
   private async showModel(data: ItemModelInfo) {
+    if (!data?.url) {
+      return null
+    }
     const viewer = await this.getViewer()
     if (!viewer) {
-      return
+      return null
     }
-    if (!data?.url) {
-      viewer.sceneManager.clearScene(true, false)
-      return
-    }
-    await viewer.hideOverlayScreen()
-    const rotation = await getRotation(data)
+
+    const rotation = await getItemRotation(data?.itemClass)
     viewer.sceneManager.clearScene(true, false)
 
-    viewer
-      .loadModel({
-        url: data.url,
-        rotationOffsetAngle: 0,
-        rotation: { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w },
-        entryAnimation: null,
-      })
-      .catch(() => {
-        this.disposeViewer()
-        this.getViewer()
-      })
+    return viewer.loadModel({
+      url: data.url,
+      rotationOffsetAngle: 0,
+      rotation: { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w },
+      entryAnimation: null,
+    })
   }
 
   private async getViewer() {
     if (this.viewer) {
       return this.viewer
     }
+    if (!this.store.isSupported$()) {
+      return null
+    }
+
+    const { createViewer } = await import('./viewer')
     this.viewer = await createViewer({
-      element: this.elRef.nativeElement,
+      element: this.viewerHost.nativeElement,
       zone: this.zone,
       hideFloor: this.hideFloor,
-      // onEngineInit: (viewer) => {
-      //   //
-      // },
-      // onModelLoaded: () => {
-      //   console.log('onModelLoaded')
-      // },
-      // onModelError: (err) => {
-      //   console.log('onModelError', err)
-      // },
-      // onModelProgress: (progress) => {
-      //   console.log('onModelProgress', progress)
-      // },
-    }).catch(() => {
-      return null
+      onModelLoaded: (model) => {
+        // console.log('modelLoaded', model)
+      },
+      onModelError: (err) => {
+        // console.log('modelError', err)
+      },
     })
+      .then((viewer) => {
+        // console.log('viewerLoaded', viewer)
+        return viewer
+      })
+      .catch((err) => {
+        // console.log('viewerError', err)
+        return null
+      })
     return this.viewer
   }
 
   private disposeViewer() {
-    this.viewer.containerElement
     this.viewer?.dispose()
     this.viewer = null
-  }
-}
-
-function isOneHanded(data: ItemModelInfo) {
-  return hasItemClass(data, 'EquippableMainHand')
-}
-
-function isTwoHanded(data: ItemModelInfo) {
-  return hasItemClass(data, 'EquippableTwoHand')
-}
-
-function isMelee(data: ItemModelInfo) {
-  return hasItemClass(data, 'Melee')
-}
-
-function isRanged(data: ItemModelInfo) {
-  return hasItemClass(data, 'Melee')
-}
-
-function isGreatSword(data: ItemModelInfo) {
-  return hasItemClass(data, 'GreatSword')
-}
-function isIceMagic(data: ItemModelInfo) {
-  return hasItemClass(data, 'IceMagic')
-}
-
-function isVoidGauntlet(data: ItemModelInfo) {
-  return hasItemClass(data, 'VoidGauntlet')
-}
-
-function isMagic(data: ItemModelInfo) {
-  return hasItemClass(data, 'Magic')
-}
-
-function isShield(data: ItemModelInfo) {
-  return hasItemClass(data, 'EquippableOffHand')
-}
-
-function isTool(data: ItemModelInfo) {
-  return hasItemClass(data, 'EquippableTool')
-}
-
-function isOnWall(data: ItemModelInfo) {
-  return hasItemClass(data, 'OnWall')
-}
-
-function isOnCeiling(data: ItemModelInfo) {
-  return hasItemClass(data, 'OnCeiling')
-}
-
-function isOnFloor(data: ItemModelInfo) {
-  return hasItemClass(data, 'OnFloor')
-}
-function isOnFurniture(data: ItemModelInfo) {
-  return hasItemClass(data, 'OnFurniture')
-}
-function isInstrument(data: ItemModelInfo) {
-  return (
-    hasItemClass(data, 'InstrumentFlute') ||
-    hasItemClass(data, 'InstrumentGuitar') ||
-    hasItemClass(data, 'InstrumentMandolin') ||
-    hasItemClass(data, 'InstrumentUprightBass') ||
-    hasItemClass(data, 'InstrumentDrums')
-  )
-}
-
-function isInstrumentDrums(data: ItemModelInfo) {
-  return hasItemClass(data, 'InstrumentDrums')
-}
-
-function hasItemClass(data: ItemModelInfo, name: string) {
-  return !!data.itemClass?.some((it) => eqCaseInsensitive(it, name))
-}
-
-async function getRotation(data: ItemModelInfo) {
-  const { BABYLON } = await loadBabylon()
-  const { Quaternion, Matrix } = BABYLON
-
-  console.log(data)
-  if (isOnWall(data)) {
-    return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(0, Math.PI / 2, 0))
-  }
-  if (isOnCeiling(data)) {
-    return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(0, Math.PI, 0))
-  }
-  if (isOnFloor(data) || isOnFurniture(data)) {
-    return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(Math.PI, 0, 0))
-  }
-  if (isOneHanded(data)) {
-    return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(-Math.PI / 2, Math.PI / 4, 0))
+    this.viewerHost.nativeElement.innerHTML = ''
   }
 
-  if (isTwoHanded(data)) {
-    if (isGreatSword(data)) {
-      return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(-Math.PI / 2, -(3 / 4) * Math.PI, 0))
-    } else if (isIceMagic(data) || isVoidGauntlet(data)) {
-      //
-    } else {
-      return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(-Math.PI / 2, Math.PI / 4, 0))
-    }
+  protected toggleDebug() {
+    this.viewer.sceneManager.scene.debugLayer.show({})
   }
 
-  if (isShield(data)) {
-    return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(Math.PI / 2, -Math.PI / 2, 0))
-  }
-  if (isTool(data) && !isInstrumentDrums(data)) {
-    if (isInstrument(data)) {
-      return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(0, 0, Math.PI / 4))
-    }
-    return Quaternion.FromRotationMatrix(Matrix.RotationYawPitchRoll(-Math.PI / 2, Math.PI / 4, 0))
+  protected async capturePhoto() {
+    const model = await firstValueFrom(this.store.model$)
+    const name = await this.i18n.getAsync(model.name)
+    const data = await this.viewer.takeScreenshot()
+    this.exitFullscreen()
+    const blob = await fetch(data).then((res) => res.blob())
+    this.screenshots.saveBlobWithDialog(blob, name)
   }
 
-  return Quaternion.Identity()
+  private async detectDyeFeature(model: ViewerModel) {
+    const { getAppearance } = await import('./viewer')
+    const appearance = model.meshes.map((mesh) => getAppearance(mesh.material)).find((it) => !!it)
+    console.log('appearance', appearance)
+    this.store.patchState({
+      appearance: appearance,
+    })
+  }
+
+  private updateDye() {
+    //const appearance = this.get(({ appearance }) => appearance)
+  }
 }

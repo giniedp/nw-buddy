@@ -3,7 +3,7 @@ const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 const webpack = require('webpack')
 const env = require('./env')
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
-const EmitFilePlugin = require('emit-file-webpack-plugin');
+const EmitFilePlugin = require('emit-file-webpack-plugin')
 /**
  * Custom angular webpack configuration
  */
@@ -32,7 +32,8 @@ module.exports = (config, options) => {
     __VERSION__: JSON.stringify(VERSION),
     __NW_USE_PTR__: JSON.stringify(USE_PTR),
     __NW_DATA_URL__: JSON.stringify(DATA_URL),
-    __NW_DEPLOY_URL__: JSON.stringify(config.output.publicPath)
+    __NW_DEPLOY_URL__: JSON.stringify(config.output.publicPath),
+    __NW_MODELS_URL__: JSON.stringify('https://cdn.nw-buddy.de/models'), // TODO: use env
   }
   config.module.rules.push(
     {
@@ -45,11 +46,11 @@ module.exports = (config, options) => {
     }
   )
 
-	// config.entry['editor.worker'] = 'monaco-editor/esm/vs/editor/editor.worker.js'
-	// config.entry['json.worker'] = 'monaco-editor/esm/vs/language/json/json.worker'
-	// config.entry['css.worker'] = 'monaco-editor/esm/vs/language/css/css.worker'
-	// config.entry['html.worker'] = 'monaco-editor/esm/vs/language/html/html.worker'
-	// config.entry['ts.worker'] = 'monaco-editor/esm/vs/language/typescript/ts.worker'
+  // config.entry['editor.worker'] = 'monaco-editor/esm/vs/editor/editor.worker.js'
+  // config.entry['json.worker'] = 'monaco-editor/esm/vs/language/json/json.worker'
+  // config.entry['css.worker'] = 'monaco-editor/esm/vs/language/css/css.worker'
+  // config.entry['html.worker'] = 'monaco-editor/esm/vs/language/html/html.worker'
+  // config.entry['ts.worker'] = 'monaco-editor/esm/vs/language/typescript/ts.worker'
   //config.entry['embed'] = 'monaco-editor/esm/vs/language/typescript/ts.worker'
 
   config.plugins = [
@@ -59,7 +60,7 @@ module.exports = (config, options) => {
     }),
     new webpack.DefinePlugin(definitions),
     new MonacoWebpackPlugin({
-      languages: ['json', 'typescript', 'javascript']
+      languages: ['json', 'typescript', 'javascript'],
     }),
     new EmitFilePlugin({
       // OPTIONAL: defaults to the Webpack output path.
@@ -88,8 +89,8 @@ module.exports = (config, options) => {
       // Adds the compilation hash to the filename. You can either choose within the filename
       // where the hash is inserted by adding `[hash]` i.e. `test.[hash].js` or the hash will be
       // appended to the end of the file i.e. `test.js?hash`.
-      hash: false
-    })
+      hash: false,
+    }),
   ]
 
   return config

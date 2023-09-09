@@ -1,11 +1,12 @@
-import { NgModule } from "@angular/core"
-import { RouterModule, Routes } from "@angular/router"
-import { DbFaultsComponent } from "./db-faults"
-import { DevComponent } from "./dev.component"
-import { ExprFaultsComponent } from "./expr-faults"
-import { DevLootComponent } from "./loottables"
-import { DevTesseractComponent } from "./tesseract"
-import { DevThemeComponent } from "./theme/dev-theme.component"
+import { NgModule } from '@angular/core'
+import { RouterModule, Routes } from '@angular/router'
+import { DbFaultsComponent } from './db-faults'
+import { DevComponent } from './dev.component'
+import { ExprFaultsComponent } from './expr-faults'
+import { DevLootComponent } from './loottables'
+import { DevTesseractComponent } from './tesseract'
+import { DevThemeComponent } from './theme/dev-theme.component'
+import { PlatformComponent } from './platform/platform.component'
 
 const routes: Routes = [
   {
@@ -15,41 +16,42 @@ const routes: Routes = [
       {
         path: '',
         redirectTo: 'db-faults',
-        pathMatch: 'full'
+        pathMatch: 'full',
+      },
+      {
+        path: 'platform',
+        component: PlatformComponent,
       },
       {
         path: 'db-faults',
-        component: DbFaultsComponent
+        component: DbFaultsComponent,
       },
       {
         path: 'expr-faults',
-        component: ExprFaultsComponent
+        component: ExprFaultsComponent,
       },
       {
         path: 'theme',
-        component: DevThemeComponent
+        component: DevThemeComponent,
       },
       {
         path: 'tesseract',
-        component: DevTesseractComponent
+        component: DevTesseractComponent,
       },
       {
         path: 'loot',
-        component: DevLootComponent
+        component: DevLootComponent,
       },
       {
         path: 'loot/:id',
-        component: DevLootComponent
+        component: DevLootComponent,
       },
-    ]
+    ],
   },
-
 ]
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class DevRoutingModule {
-
-}
+export class DevRoutingModule {}

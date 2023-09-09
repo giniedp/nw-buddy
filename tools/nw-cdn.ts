@@ -93,10 +93,11 @@ program.command('upload-models').action(async () => {
   const stats = JSON.parse(fs.readFileSync(statsFile, 'utf-8')) as any[]
   const files = stats
     .map((it: any) => {
+      const extname = path.extname(it.outFile)
       return {
         file: path.join(modelsDir, it.outDir, it.outFile),
         key: path.join('models', it.outDir, it.outFile),
-        contentType: 'model/gltf+json',
+        contentType: extname == '.gltf' ? 'model/gltf+json' : 'model/gltf-binary',
         md5: true,
       }
     })

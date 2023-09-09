@@ -60,6 +60,8 @@ export class PreferencesComponent implements OnInit {
     this.app.projectName.set(value as any)
   }
 
+  protected isDev = false
+  protected isDevCount = 0
   protected iconInfo = svgInfoCircle
   public constructor(
     public app: AppPreferencesService,
@@ -93,19 +95,17 @@ export class PreferencesComponent implements OnInit {
         positive: 'Clear',
       },
     })
-    .closed
-    .pipe(take(1))
-    .pipe(filter((it) => !!it))
-    .subscribe(() => {
-      this.itemPref.clearPrices()
-      ConfirmDialogComponent.open(this.dialog, {
-        data: {
-          title: 'Clear prices',
-          body: 'Prices cleared.',
-          positive: 'Close',
-        },
+      .closed.pipe(take(1))
+      .pipe(filter((it) => !!it))
+      .subscribe(() => {
+        this.itemPref.clearPrices()
+        ConfirmDialogComponent.open(this.dialog, {
+          data: {
+            title: 'Clear prices',
+            body: 'Prices cleared.',
+            positive: 'Close',
+          },
+        })
       })
-    })
-
   }
 }
