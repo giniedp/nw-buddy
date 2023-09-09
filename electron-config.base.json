@@ -5,7 +5,8 @@
   },
   "compression": "maximum",
   "files": [
-    "dist/**/*",
+    "dist/electron/**/*",
+    "dist/web-electron/**/*",
     "!dist/nw-data",
     "!dist/server",
     "!dist/web",
@@ -18,28 +19,20 @@
     "!*.gz",
     "!*.zip"
   ],
-  "extraResources": [
-
-  ],
+  "extraResources": [],
   "win": {
     "icon": "dist/web-electron/assets/icons",
-    "target": [
-      "portable"
-    ]
+    "target": ["portable"]
   },
   "portable": {
     "splashImage": "dist/web-electron/assets/icons/electron.bmp"
   },
   "mac": {
     "icon": "dist/web-electron/assets/icons",
-    "target": [
-      "dmg"
-    ]
+    "target": ["dmg"]
   },
   "linux": {
     "icon": "dist/web-electron/assets/icons",
-    "target": [
-      "AppImage"
-    ]
+    "target": ["AppImage"]
   }
 }
