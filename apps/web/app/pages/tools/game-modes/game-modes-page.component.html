@@ -12,6 +12,7 @@
   <div class="grid grid-cols-fill gap-3 p-3 overflow-auto">
     <a
       [routerLink]="[item.GameModeId]"
+      [queryParamsHandling]="'preserve'"
       *ngFor="let item of modes$ | async"
       class="card bg-base-100 shadow-xl relative aspect-video overflow-clip"
     >
@@ -37,7 +38,7 @@
         </a>
       </li>
       <li *ngFor="let item of modes$ | async" [routerLinkActive]="'bordered'">
-        <a [routerLink]="[item.GameModeId]">
+        <a [routerLink]="[item.GameModeId]" [queryParamsHandling]="item.IsMutable ? 'preserve' : null">
           <picture [nwIcon]="item.IconPath" class="w-6 h-6 scale-150"></picture>
           <span [nwText]="item.DisplayName"></span>
         </a>

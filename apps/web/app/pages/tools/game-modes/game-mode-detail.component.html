@@ -6,7 +6,7 @@
     <span>Normal</span>
   </li>
   <li [class.bordered]="!difficultyLevel">
-    <a rel="nofollow" [routerLink]="['.', {}]">
+    <a rel="nofollow" [routerLink]="['.']" [queryParams]="{}">
       <span>Regular</span>
     </a>
   </li>
@@ -15,7 +15,7 @@
   </li>
   <ng-container *ngIf="difficulties$ | async; let items">
     <li *ngFor="let item of items" [class.bordered]="item.MutationDifficulty == difficultyLevel">
-      <a rel="nofollow" [routerLink]="['.', { mutation: item.MutationDifficulty, tab: tab }]">
+      <a rel="nofollow" [routerLink]="['.']" [queryParams]="{ mutation: item.MutationDifficulty, tab: tab }">
         <img [nwImage]="difficultyRankIcon(dungeon, item) | async" class="w-8 h-8" />
         {{ item.MutationDifficulty }} ({{ difficultyTier(item) }})
       </a>
@@ -92,7 +92,8 @@
           *ngIf="!item.externUrl"
           class="tab tab-bordered"
           [class.tab-active]="item.id === tab"
-          [routerLink]="['.', { mutation: difficultyLevel, tab: item.id }]"
+          [routerLink]="['.']"
+          [queryParams]="{ mutation: difficultyLevel, tab: item.id }"
           rel="nofollow"
         >
           {{ item.label }}

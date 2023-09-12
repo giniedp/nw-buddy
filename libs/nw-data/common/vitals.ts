@@ -1,4 +1,4 @@
-import { Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from "@nw-data/generated"
+import { Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/generated'
 
 const NAMED_FAIMILY_TYPES = ['DungeonBoss', 'Dungeon+', 'DungeonMiniBoss', 'Elite+', 'EliteMiniBoss']
 const CREATURE_TYPE_MARKER = {
@@ -145,27 +145,24 @@ export function getVitalAliasName(categories: Vitalscategories[]) {
   return null
 }
 
-
 export function getVitalsCategories(vital: Vitals, categories: Map<string, Vitalscategories>) {
   if (!vital?.VitalsCategories?.length) {
     return []
   }
   return vital.VitalsCategories.map((it) => {
-      const category = categories.get(it)
-      if (!category) {
-        // console.warn(`category not found`, it)
-      }
-      return category
-    })
-    .filter((it) => !!it)
+    const category = categories.get(it)
+    if (!category) {
+      // console.warn(`category not found`, it)
+    }
+    return category
+  }).filter((it) => !!it)
 }
-
 
 export function isVitalNamed(vital: Vitals) {
   return NAMED_FAIMILY_TYPES.includes(vital.CreatureType)
 }
 
-export function getVitalFamilyInfo(vital: Vitals): VitalFamilyInfo{
+export function getVitalFamilyInfo(vital: Vitals): VitalFamilyInfo {
   return VITAL_FAMILIES[vital?.Family?.toLowerCase()] || VITAL_FAMILIES.unknown
 }
 
@@ -183,7 +180,7 @@ export function isVitalCombatCategory(value: string) {
 }
 
 export function getVitalDamageEffectiveness(vital: Vitals, damageType: VitalDamageType) {
-  return (vital[`WKN${damageType}`] - vital[`ABS${damageType}`]) || 0
+  return vital[`WKN${damageType}`] - vital[`ABS${damageType}`] || 0
 }
 
 export function getVitalDamageEffectivenessPercent(vital: Vitals, damageType: VitalDamageType) {
@@ -250,7 +247,11 @@ export function getVitalDamageEffectivenessIcon(vital: Vitals, damageType: Vital
 //   QuestApophis: ['Apophis']
 // }
 
-export function getVitalDungeons(vital: Vitals, dungeons: Gamemodes[], vitalsMeta: Map<string, Vitalsmetadata>): Gamemodes[] {
+export function getVitalDungeons(
+  vital: Vitals,
+  dungeons: Gamemodes[],
+  vitalsMeta: Map<string, Vitalsmetadata>
+): Gamemodes[] {
   const meta = vitalsMeta.get(vital.VitalsID)
   if (!meta) {
     return []
@@ -266,7 +267,7 @@ export function getVitalDungeons(vital: Vitals, dungeons: Gamemodes[], vitalsMet
         if (!position.length) {
           return false
         }
-        return position[0] >= x && position[0] <= (x + w) && position[1] >= y && position[1] <= y + h
+        return position[0] >= x && position[0] <= x + w && position[1] >= y && position[1] <= y + h
       })
     }
     return meta.mapIDs?.some((mapId) => eqCaseInsensitive(mapId, it.MapId))

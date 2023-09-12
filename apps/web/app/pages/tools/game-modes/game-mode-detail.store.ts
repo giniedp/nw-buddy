@@ -39,6 +39,7 @@ const DUNGEON_LOOT_TAGS = [
   'ShatterMtn00',
   'CutlassKeys00',
   'BrimstoneSands00',
+  'EXPFirstLight01',
 ]
 
 @Injectable()

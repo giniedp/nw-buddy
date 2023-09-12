@@ -32,7 +32,14 @@ import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { PaginationModule } from '~/ui/pagination'
-import { DestroyService, HtmlHeadService, observeRouteParam, shareReplayRefCount } from '~/utils'
+import {
+  DestroyService,
+  HtmlHeadService,
+  observeQueryParam,
+  observeRouteParam,
+  selectStream,
+  shareReplayRefCount,
+} from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { LootModule } from '~/widgets/loot'
@@ -107,11 +114,12 @@ export class GameModeDetailComponent implements OnInit {
   public trackByIndex = (i: number) => i
   public trackByTabId: TrackByFunction<Tab> = (i, item) => item.id
 
-  public dungeonId$ = defer(() => observeRouteParam(this.route, 'id'))
-  public mutationParam$ = defer(() => observeRouteParam(this.route, 'mutation')).pipe(
-    map((it) => Number(it) || undefined)
-  )
-  public tabParam$ = defer(() => observeRouteParam(this.route, 'tab'))
+  protected dungeonId$ = selectStream(observeRouteParam(this.route, 'id'))
+  protected mutationParam$ = selectStream(observeQueryParam(this.route, 'mutation'), (it) => Number(it) || null)
+  protected tabParam$ = selectStream(observeQueryParam(this.route, 'tab'))
+
+  protected gameMode$ = selectStream(this.db.gameMode(this.dungeonId$))
+
   public iconExtern = svgSquareArrowUpRight
   public dungeon$ = this.store.dungeon$
   public bosses$ = this.store.bosses$
@@ -310,11 +318,15 @@ export class GameModeDetailComponent implements OnInit {
   public ngOnInit(): void {
     const dungeon$ = this.db.gameMode(this.dungeonId$)
     const difficulty$ = combineLatest({
+      dungeon: dungeon$,
       difficulty: this.mutationParam$,
       difficulties: this.db.mutatorDifficulties,
     }).pipe(
-      map(({ difficulties, difficulty }) => {
-        return difficulties?.find((it) => it.MutationDifficulty === Number(difficulty))
+      map(({ dungeon, difficulties, difficulty }) => {
+        if (dungeon.IsMutable) {
+          return difficulties?.find((it) => it.MutationDifficulty === Number(difficulty))
+        }
+        return null
       })
     )
     const input$ = combineLatest({
@@ -356,7 +368,7 @@ export class GameModeDetailComponent implements OnInit {
           label: 'Bosses',
           tpl: this.tplDungeonBosses,
         })
-        //console.log(dungeon.GameModeId)
+
         const mapUrl = MAP_EMBED_URLS[dungeon.GameModeId]
         this.mapEmbed = mapUrl ? this.domSanitizer.bypassSecurityTrustResourceUrl(mapUrl) : null
         if (this.mapEmbed) {
