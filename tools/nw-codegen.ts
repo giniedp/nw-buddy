@@ -6,8 +6,11 @@ import {
   isAIVariantProviderComponentServerFacet,
   isAZ__Entity,
 } from './importer/slices/types/dynamicslice'
-import { glob, readJSONFile } from './utils/file-utils'
+import { glob, readJSONFile, writeFile } from './utils/file-utils'
 import { walkJsonObjects } from './utils/walk-json-object'
+import { tsFromSliceFiles } from './code-gen/ts-from-slice-files'
+import { tsFromJson } from './utils/ts-from-json'
+import * as fs from 'fs'
 
 program
   .option('--ptr', 'PTR mode', NW_USE_PTR)
@@ -18,44 +21,61 @@ program
     const inputDir = nwData.tmpDir(options.ptr)!
 
     const FILES = [
-      {
-        name: 'aliasasset',
-        match: path.join(inputDir, '**', `*.aliasasset.json`),
-      },
-      {
-        name: 'metadata',
-        match: path.join(inputDir, '**', `*.metadata.json`),
-      },
-      {
-        name: 'slicedata',
-        match: path.join(inputDir, '**', `*.slicedata.json`),
-      },
-      {
-        name: 'dynamicslice',
-        match: path.join(inputDir, '**', `*.dynamicslice.json`),
-      },
-      {
-        name: 'slice-meta',
-        match: path.join(inputDir, '**', `*.slice.meta.json`),
-      },
-      {
-        name: 'dynamicuicanvas',
-        match: path.join(inputDir, '**', `*.dynamicuicanvas.json`),
-      },
-      {
-        name: 'timeline',
-        match: path.join(inputDir, '**', `*.timeline.json`),
-      },
+      // {
+      //   name: 'aliasasset',
+      //   match: path.join(inputDir, '**', `*.aliasasset.json`),
+      // },
+      // {
+      //   name: 'metadata',
+      //   match: path.join(inputDir, '**', `*.metadata.json`),
+      // },
+      // {
+      //   name: 'slicedata',
+      //   match: path.join(inputDir, '**', `*.slicedata.json`),
+      // },
+      // {
+      //   name: 'dynamicslice',
+      //   match: path.join(inputDir, '**', `*.dynamicslice.json`),
+      // },
+      // {
+      //   name: 'slice-meta',
+      //   match: path.join(inputDir, '**', `*.slice.meta.json`),
+      // },
+      // {
+      //   name: 'dynamicuicanvas',
+      //   match: path.join(inputDir, '**', `*.dynamicuicanvas.json`),
+      // },
+      // {
+      //   name: 'timeline',
+      //   match: path.join(inputDir, '**', `*.timeline.json`),
+      // },
     ]
 
-    // for (const { name, match } of FILES) {
-    //   const files = await glob(match)
-    //   console.log(files.length, match)
-    //   const code = await tsFromSliceFiles(files)
-    //   await writeFile(`./tmp/types-${name}.ts`, code, {
-    //     createDir: true,
-    //   })
+    //  for (const { name, match } of FILES) {
+    //    const files = await glob(match)
+    //    console.log(files.length, match)
+    //    readFile(file, { encoding: 'utf8' })
+    //    const code = await tsFromJson(files)
+    //    await writeFile(code, `./tmp/types-${name}.ts`, {
+    //      createDir: true,
+    //    })
     // }
+
+    // {
+    //   name: 'capitals',
+    //   match: path.join(inputDir, '**', `*.capitals.json`),
+    // },
+    for (const { name, match } of FILES) {
+      const files = await glob(match)
+      const samples: string[] = []
+      for (const file of files) {
+        samples.push(await fs.promises.readFile(file, { encoding: 'utf8' }))
+      }
+      const code = await tsFromJson('Capital', samples)
+      await writeFile(code.lines.join('\n'), `./tmp/types-${name}.ts`, {
+        createDir: true,
+      })
+    }
 
     // const files = await glob(path.join(inputDir, '**', `*.dynamicslice.json`))
 

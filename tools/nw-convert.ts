@@ -4,6 +4,7 @@ import * as path from 'path'
 import { nwData, NW_USE_PTR } from '../env'
 import { objectStreamConverter } from './bin/object-stream-converter'
 import { cpus } from 'os'
+import { glob, copyFile } from './utils/file-utils'
 
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
@@ -28,15 +29,14 @@ program
   .option('-m, --module <module>', 'Specific converter module to run', collect, [])
   .option('--ptr', 'PTR mode', NW_USE_PTR)
   .action(async () => {
-    const options =
-      program.opts<{
-        input: string
-        output: string
-        ptr: boolean
-        update: boolean
-        threads: number
-        module: string[]
-      }>()
+    const options = program.opts<{
+      input: string
+      output: string
+      ptr: boolean
+      update: boolean
+      threads: number
+      module: string[]
+    }>()
     options.update = !!options.update
     options.threads = options.threads || cpus().length
     const inputDir = options.input || nwData.unpackDir(options.ptr)!
@@ -109,6 +109,16 @@ program
         output: path.join(outputDir),
         pretty: true,
         threads: Math.min(options.threads, 10),
+      })
+    }
+
+    console.log('Copy JSON files')
+    const files = await glob([path.join(inputDir, '**', '*.json')])
+    for (const file of files) {
+      const relPath = path.relative(inputDir, file)
+      const outPath = path.join(outputDir, relPath)
+      await copyFile(file, outPath, {
+        createDir: true,
       })
     }
   })

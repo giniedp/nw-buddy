@@ -1,6 +1,7 @@
 import { readJSONFile } from '../../utils'
 import { walkJsonObjects } from '../../utils/walk-json-object'
 import { scanForVitals, VitalVariant } from './scan-for-vitals'
+import { Capital } from './types/capitals'
 import { isRegionMetadataAsset } from './types/metadata'
 
 function loadCrcFile(file: string) {
@@ -41,30 +42,29 @@ export async function scanSlices({
       vitals: await scanForVitals(inputDir, null, file),
     }
   }
-  // if (file.endsWith('.capitals.json')) {
-  //   console.log(file)
-  //   const mapId = file.match(/coatlicue\/(.+)\/regions\//)[1]
-  //   const data = await readJSONFile<CapitalsDocument>(file)
-  //   const result: VitalVariant[] = []
-  //   for (const capital of data?.Capitals || []) {
-  //     const vitals = await scanForVitals(inputDir, capital.sliceName).catch((err): VitalVariant[] => {
-  //       console.error(err)
-  //       return []
-  //     })
-  //     for (const vital of vitals || []) {
-  //       result.push({
-  //         ...vital,
-  //         position: capital.worldPosition
-  //           ? [capital.worldPosition.x, capital.worldPosition.y, capital.worldPosition.z]
-  //           : null,
-  //         mapID: mapId,
-  //       })
-  //     }
-  //   }
-  //   return {
-  //     vitals: result,
-  //   }
-  // }
+  if (file.endsWith('.capitals.json')) {
+    const mapId = file.match(/coatlicue\/(.+)\/regions\//)[1]
+    const data = await readJSONFile<Capital>(file)
+    const result: VitalVariant[] = []
+    for (const capital of data?.Capitals || []) {
+      const vitals = await scanForVitals(inputDir, capital.sliceName).catch((err): VitalVariant[] => {
+        console.error(err)
+        return []
+      })
+      for (const vital of vitals || []) {
+        result.push({
+          ...vital,
+          position: capital.worldPosition
+            ? [capital.worldPosition.x, capital.worldPosition.y, capital.worldPosition.z]
+            : null,
+          mapID: mapId,
+        })
+      }
+    }
+    return {
+      vitals: result,
+    }
+  }
   if (file.endsWith('.metadata.json')) {
     const mapId = file.match(/coatlicue\/(.+)\/regions\//)[1]
     const result: VitalVariant[] = []
