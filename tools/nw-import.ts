@@ -1,5 +1,4 @@
 import { program } from 'commander'
-import * as fs from 'fs'
 import * as path from 'path'
 import { nwData, NW_USE_PTR } from '../env'
 import { generateTypes } from './code-gen/code-generate'
@@ -39,15 +38,14 @@ program
   .option('-t, --threads <threads>', 'Number of worker threads', Number)
   .option('--ptr', 'PTR mode', NW_USE_PTR)
   .action(async () => {
-    const options =
-      program.opts<{
-        input: string
-        output: string
-        ptr: boolean
-        update: boolean
-        module: string[]
-        threads: number
-      }>()
+    const options = program.opts<{
+      input: string
+      output: string
+      ptr: boolean
+      update: boolean
+      module: string[]
+      threads: number
+    }>()
     const inputDir = options.input || nwData.tmpDir(options.ptr)!
     const distDir = nwData.distDir(options.ptr)!
     const publicDir = nwData.assetPath(options.ptr)
@@ -62,7 +60,7 @@ program
     console.log(' threads:', threads)
 
     if (options.module.some((it) => !Importer[it])) {
-      throw new Error(`Unknown importer module: ${it}`)
+      throw new Error(`Unknown importer module: ${options.module}`)
     }
 
     if (hasFilter(Importer.vitals, options.module)) {

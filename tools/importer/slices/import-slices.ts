@@ -48,7 +48,7 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
 
   const files = await glob([
     `${inputDir}/**/*.dynamicslice.json`,
-    `!${inputDir}/lyshineui/**/*.dynamicslice.json`,
+    `!${inputDir}/lyshineui/**/*`,
     `${inputDir}/sharedassets/coatlicue/**/regions/**/*.capitals.json`,
     `${inputDir}/sharedassets/coatlicue/**/regions/**/*.metadata.json`,
   ])

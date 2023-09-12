@@ -3,16 +3,18 @@ import * as path from 'path'
 import { readJSONFile, replaceExtname } from '../../utils'
 import { walkJsonObjects } from '../../utils/walk-json-object'
 import { cached } from './cache'
-
 import {
-  ActionListComponent,
-  Asset,
-  EntityWithSpawner,
-  MeshComponent,
-  SkinnedMeshComponent,
-  SpawnDefinition,
-  VitalsComponent,
-} from './types'
+  isAIVariantProviderComponent,
+  isAIVariantProviderComponentServerFacet,
+  isAZ__Entity,
+  isActionListComponent,
+  isAsset,
+  isMeshComponent,
+  isPointSpawnerComponent,
+  isSkinnedMeshComponent,
+  isSpawnDefinition,
+  isVitalsComponent,
+} from './types/dynamicslice'
 
 export interface VitalVariant {
   vitalsID: string
@@ -88,8 +90,8 @@ async function findVariantSpawner(rootDir: string, sliceName: string, file?: str
 
   return cached(`findVariantSpawner ${file}`, async () => {
     const result: VariantSpawner[] = []
-    walkJsonObjects(await readJSONFile(file), (entity: EntityWithSpawner) => {
-      if (entity.__type !== 'AZ::Entity') {
+    walkJsonObjects(await readJSONFile(file), (entity) => {
+      if (!isAZ__Entity(entity)) {
         return
       }
       let vitalsID: string = null
@@ -98,14 +100,14 @@ async function findVariantSpawner(rootDir: string, sliceName: string, file?: str
       let sliceName: string = null
       let aliasName: string = null
       for (const component of entity.components) {
-        if (component.__type === 'AIVariantProviderComponent') {
-          if (component.baseclass1?.m_serverfacetptr) {
+        if (isAIVariantProviderComponent(component)) {
+          if (isAIVariantProviderComponentServerFacet(component.baseclass1?.m_serverfacetptr)) {
             vitalsID = vitalsID || component.baseclass1.m_serverfacetptr.m_vitalstablerowid
             categoryID = categoryID || component.baseclass1.m_serverfacetptr.m_vitalscategorytablerowid
             level = level || component.baseclass1.m_serverfacetptr.m_vitalslevel
           }
         }
-        if (component.__type === 'PointSpawnerComponent') {
+        if (isPointSpawnerComponent(component)) {
           sliceName = sliceName || component.baseclass1.m_sliceasset?.hint
           aliasName = aliasName || component.baseclass1.m_aliasasset?.hint
         }
@@ -141,8 +143,8 @@ async function findSpawnDefinitions(rootDir: string, sliceName: string, file?: s
   }
   return cached(`findSpawnDefinitions ${file}`, async () => {
     const result: SpawnDefinitionResult[] = []
-    walkJsonObjects(await readJSONFile(file), (obj: SpawnDefinition) => {
-      if (obj.__type !== 'SpawnDefinition') {
+    walkJsonObjects(await readJSONFile(file), (obj) => {
+      if (!isSpawnDefinition(obj)) {
         return false
       }
       result.push({
@@ -166,8 +168,8 @@ async function findAliasedFile(rootDir: string, aliasName: string, file?: string
   file = file || path.join(rootDir, aliasName + '.json')
   return cached(`findAliasedFile ${file}`, async () => {
     let result: string = null
-    walkJsonObjects(await readJSONFile(file), (obj: Asset) => {
-      if (obj.__type === 'Asset' && obj.hint) {
+    walkJsonObjects(await readJSONFile(file), (obj) => {
+      if (isAsset(obj) && obj.hint) {
         result = obj.hint
       }
     })
@@ -185,24 +187,21 @@ async function findDamageTable(rootDir: string, sliceName: string, file?: string
     let damageTable: string = null
     let modelSlice: string = null
 
-    walkJsonObjects(
-      await readJSONFile(file),
-      (obj: VitalsComponent | ActionListComponent | MeshComponent | SkinnedMeshComponent) => {
-        if (obj.__type === 'VitalsComponent') {
-          vitalsID = vitalsID || obj.m_rowreference
-        }
-        if (obj.__type === 'ActionListComponent') {
-          damageTable = damageTable || obj.m_damagetable?.asset?.baseclass1?.assetpath
-        }
-        if (obj.__type === 'SkinnedMeshComponent' || obj.__type === 'MeshComponent') {
-          modelSlice = path
-            .relative(rootDir, file)
-            .replace(/\\/gi, '/')
-            .replace(/\.json$/, '.glb')
-            .toLowerCase()
-        }
+    walkJsonObjects(await readJSONFile(file), (obj: unknown) => {
+      if (isVitalsComponent(obj)) {
+        vitalsID = vitalsID || obj.m_rowreference
       }
-    )
+      if (isActionListComponent(obj)) {
+        damageTable = damageTable || obj.m_damagetable?.asset?.baseclass1?.assetpath
+      }
+      if (isSkinnedMeshComponent(obj) || isMeshComponent(obj)) {
+        modelSlice = path
+          .relative(rootDir, file)
+          .replace(/\\/gi, '/')
+          .replace(/\.json$/, '.glb')
+          .toLowerCase()
+      }
+    })
     return {
       vitalsID,
       damageTable,

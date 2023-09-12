@@ -43,6 +43,7 @@
     "nw-extract": "yarn build:tools && env-cmd -f .env node ./dist/tools/nw-extract.js",
     "nw-convert": "yarn build:tools && env-cmd -f .env node ./dist/tools/nw-convert.js",
     "nw-import": "yarn build:tools && env-cmd -f .env node ./dist/tools/nw-import.js",
+    "nw-codegen": "yarn build:tools && env-cmd -f .env node ./dist/tools/nw-codegen.js",
     "nw-data-update": "yarn nw-extract && yarn nw-convert -u && yarn nw-import -u",
     "cap:sync": "npx cap sync",
     "cap:android:open": "npx cap open android",
