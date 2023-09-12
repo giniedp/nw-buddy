@@ -13,6 +13,7 @@ workflows:
                 - main
                 - stage
                 - live
+                - ptr
 jobs:
   build_test_deploy:
     machine:
