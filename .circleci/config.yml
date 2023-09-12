@@ -63,6 +63,7 @@ jobs:
     resource_class: large
     environment:
       NODE_OPTIONS: --max_old_space_size=6144
+      NW_USE_PTR: true
     steps:
       - checkout
       - node/install:
@@ -76,7 +77,7 @@ jobs:
           command: yarn nw-cdn download --ptr
       - run:
           name: Build Website
-          command: yarn build:web --ptr
+          command: yarn build:web
       - run:
           name: Deliver Website
           command: yarn wrangler pages deploy dist/web --project-name=nw-buddy --branch=${CIRCLE_BRANCH}
