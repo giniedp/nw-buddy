@@ -8,7 +8,7 @@ import * as fs from 'fs'
 import * as http from 'https'
 import * as path from 'path'
 import { CDN_UPLOAD_ENDPOINT, CDN_UPLOAD_KEY, CDN_UPLOAD_SECRET, CDN_UPLOAD_SPACE, NW_USE_PTR, nwData } from '../env'
-import { glob } from './utils'
+import { glob } from './utils/file-utils'
 
 const config = {
   bucket: CDN_UPLOAD_SPACE,
