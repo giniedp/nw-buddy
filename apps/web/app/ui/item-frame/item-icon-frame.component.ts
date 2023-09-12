@@ -9,7 +9,7 @@ import { NwModule } from '~/nw'
   template: `
     <div class="nw-item-icon-border"></div>
     <picture class="aspect-square" *ngIf="icon">
-      <img [nwImage]="icon" class="w-full h-full object-contain"/>
+      <img [nwImage]="icon" class="w-full h-full object-contain" />
     </picture>
     <ng-content></ng-content>
   `,
@@ -17,18 +17,21 @@ import { NwModule } from '~/nw'
   imports: [CommonModule, NwModule],
   host: {
     class: 'block nw-item-icon-frame aspect-square relative',
-    '[class.nw-item-rarity-1]': 'rarity === 1',
-    '[class.nw-item-rarity-2]': 'rarity === 2',
-    '[class.nw-item-rarity-3]': 'rarity === 3',
-    '[class.nw-item-rarity-4]': 'rarity === 4',
+    '[class.nw-item-rarity-1]': '!artifact && rarity === 1',
+    '[class.nw-item-rarity-2]': '!artifact && rarity === 2',
+    '[class.nw-item-rarity-3]': '!artifact && rarity === 3',
+    '[class.nw-item-rarity-4]': '!artifact && rarity === 4',
+    '[class.nw-item-rarity-artifact]': '!!artifact',
     '[class.nw-item-icon-bg]': 'solid',
-    '[class.nw-item-icon-mask]': '!solid'
+    '[class.nw-item-icon-mask]': '!solid',
   },
 })
 export class ItemIconFrameComponent {
-
   @Input()
   public rarity: number
+
+  @Input()
+  public artifact: boolean
 
   @Input()
   public solid: boolean

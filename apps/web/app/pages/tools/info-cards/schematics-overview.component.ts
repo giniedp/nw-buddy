@@ -14,7 +14,7 @@ import { svgRepeat, svgRotate } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PaginationModule } from '~/ui/pagination'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
-import { ContentVisibilityDirective, HtmlHeadService, shareReplayRefCount, tapDebug } from '~/utils'
+import { ContentVisibilityDirective, HtmlHeadService, shareReplayRefCount } from '~/utils'
 import { IntersectionObserverModule } from '~/utils/intersection-observer'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ItemTrackerModule } from '~/widgets/item-tracker'
@@ -90,18 +90,23 @@ export class SchematicsOverviewComponent extends ComponentStore<State> {
       return items
     })
   )
-  protected stats$ = this.filteredSource$.pipe(switchMap((list) => {
-    return combineLatest(list.map((it) => this.itemPref.observe(it.recipeItem.ItemID)))
-  }))
-  .pipe(map((list) => {
-    const total = list.length
-    const learned = list.filter((it) => !!it.meta?.mark).length
-    return {
-      total: total,
-      learned: learned,
-      percent: learned / total
-    }
-  }))
+  protected stats$ = this.filteredSource$
+    .pipe(
+      switchMap((list) => {
+        return combineLatest(list.map((it) => this.itemPref.observe(it.recipeItem.ItemID)))
+      })
+    )
+    .pipe(
+      map((list) => {
+        const total = list.length
+        const learned = list.filter((it) => !!it.meta?.mark).length
+        return {
+          total: total,
+          learned: learned,
+          percent: learned / total,
+        }
+      })
+    )
 
   protected items$ = combineLatest({
     items: this.filteredSource$,

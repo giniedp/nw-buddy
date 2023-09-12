@@ -14,6 +14,7 @@ import { AmountDetail, AmountMode, CraftingStep, Ingredient } from './types'
 
 @Injectable({ providedIn: 'root' })
 export class CraftingCalculatorService {
+  private lookup: Map<string, { recipeId: string; steps: CraftingStep[] }> = new Map()
   public constructor(private db: NwDbService, private char: CharacterStore) {
     //
   }
@@ -22,20 +23,24 @@ export class CraftingCalculatorService {
     if (!recipe) {
       return of(null)
     }
-    return this.solveTree({
-      recipeId: recipe.RecipeID,
-      expand: true,
-      ingredient: {
-        id: getItemIdFromRecipe(recipe),
-        quantity: 1,
-        type: 'Item',
+    const ingredientId = getItemIdFromRecipe(recipe)
+    return this.solveTree(
+      {
+        recipeId: recipe.RecipeID,
+        expand: true,
+        ingredient: {
+          id: ingredientId,
+          quantity: 1,
+          type: 'Item',
+        },
       },
-    })
+      []
+    )
   }
 
-  public solveTree(step: CraftingStep): Observable<CraftingStep> {
+  public solveTree(step: CraftingStep, loopDetect: string[] = []): Observable<CraftingStep> {
     if (step.ingredient.type === 'Item') {
-      return this.solveSteps(step)
+      return this.solveSteps(step, [...loopDetect])
     }
     if (step.ingredient.type === 'Category_Only') {
       return this.findItemIdsForCraftingCategory(step.ingredient.id)
@@ -53,7 +58,7 @@ export class CraftingCalculatorService {
         )
         .pipe<CraftingStep>(
           switchMap((step) => {
-            return this.solveSteps(step)
+            return this.solveSteps(step, [...loopDetect])
           })
         )
     }
@@ -62,7 +67,28 @@ export class CraftingCalculatorService {
     })
   }
 
-  public solveSteps(step: CraftingStep): Observable<CraftingStep> {
+  public solveSteps(step: CraftingStep, loopDetect: string[]): Observable<CraftingStep> {
+    const key = `${step.recipeId}-${step.ingredient?.id}-${step.ingredient?.type}`
+    if (loopDetect.includes(key)) {
+      console.warn('Loop Detected', step)
+      return of({
+        ...step,
+        steps: null,
+        recipeId: null,
+      })
+      // TODO:
+      //throw new Error(`Loop Detected ${key}`)
+    }
+    loopDetect.push(key)
+    if (this.lookup.has(key)) {
+      const cached = this.lookup.get(key)
+      return of({
+        ...step,
+        steps: JSON.parse(JSON.stringify(cached.steps)),
+        recipeId: cached.recipeId,
+      })
+    }
+
     const source$ = this.fetchIngredientsForStep(step).pipe(shareReplayRefCount(1))
     const recipeId$ = source$.pipe(map((it) => it.recipeId))
     const ingredients$ = source$.pipe(map((it) => it.ingredients))
@@ -73,12 +99,15 @@ export class CraftingCalculatorService {
         }
         return combineLatest(
           ingredients.map((ingredient) => {
-            const state = step.steps?.find((it) => it.ingredient.id === ingredient.id) || {}
-            return this.solveTree({
-              ...state,
-              recipeId: null,
-              ingredient: ingredient,
-            })
+            const state = step.steps?.find((it) => it.ingredient.id === ingredient.id)
+            return this.solveTree(
+              {
+                ...(state || {}),
+                recipeId: null,
+                ingredient: ingredient,
+              },
+              [...loopDetect]
+            )
           })
         )
       })
@@ -89,6 +118,10 @@ export class CraftingCalculatorService {
       steps: steps$,
     }).pipe(
       map(({ recipeId, steps }) => {
+        this.lookup.set(key, {
+          steps: steps,
+          recipeId: recipeId,
+        })
         return {
           ...step,
           steps: steps,
@@ -117,7 +150,7 @@ export class CraftingCalculatorService {
   }
 
   public fetchRecipeForItem(item: ItemDefinitionMaster | Housingitems) {
-    return this.db.recipes.pipe(map((recipes) => getRecipeForItem(item, recipes)))
+    return this.db.recipesMapByItemId.pipe(map((recipes) => getRecipeForItem(item, recipes)))
   }
 
   public fetchIngredientsForStep(step: CraftingStep) {
@@ -200,7 +233,7 @@ export class CraftingCalculatorService {
     }
     return combineLatest({
       item: this.fetchItem(step.ingredient.id),
-      recipes: this.db.recipes,
+      recipes: this.db.recipesMapByItemId,
     }).pipe(
       switchMap(({ item, recipes }) => {
         const recipe = getRecipeForItem(item, recipes)

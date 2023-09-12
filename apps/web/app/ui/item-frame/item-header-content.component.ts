@@ -17,6 +17,9 @@ export class ItemHeaderContentComponent {
   public rarity: number
 
   @Input()
+  public artifact: boolean
+
+  @Input()
   public title: string
 
   @Input()

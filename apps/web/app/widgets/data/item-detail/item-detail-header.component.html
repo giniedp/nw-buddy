@@ -1,5 +1,5 @@
 <div class="nw-item-header-bg"></div>
-<div class="nw-item-header-fg" *ngIf="named"></div>
+<div class="nw-item-header-fg" *ngIf="named || artifact"></div>
 <a
   [rarity]="rarity"
   [nwbItemIcon]="iconOverride || entity"
@@ -19,9 +19,10 @@
 <a
   class="z-10"
   nwbItemHeaderContent
-  [title]="name | nwText | nwTextBreak:' - '"
+  [title]="name | nwText | nwTextBreak : ' - '"
   [titleLink]="enableLink ? entityLink : null"
   [rarity]="rarity"
+  [artifact]="artifact"
   [subCategory]="rarityName | nwText"
   [subTitle]="typeName | nwText"
   [category]="size === 'sm' ? null : sourceLabel"

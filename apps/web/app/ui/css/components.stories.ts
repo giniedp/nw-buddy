@@ -64,6 +64,9 @@ export const NwItemIconFrame: StoryObj = {
         <div class="nw-item-icon-frame nw-item-icon-bg nw-item-rarity-4 w-12 aspect-square">
           <div class="nw-item-icon-border "></div>
         </div>
+        <div class="nw-item-icon-frame nw-item-icon-bg nw-item-rarity-artifact w-12 aspect-square">
+          <div class="nw-item-icon-border "></div>
+        </div>
       `,
     }
   },

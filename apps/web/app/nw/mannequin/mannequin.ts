@@ -31,7 +31,6 @@ import { selectModsDMG } from './stats/mods-dmg'
 import { ActiveMods, AttributeModsSource, DbSlice, MannequinState, SelectorOf } from './types'
 import { selectModsROL } from './stats/mods-rol'
 import { selectModsCraftingGS } from './stats/mods-gs-crafting'
-import { tapDebug } from '~/utils'
 
 @Injectable()
 export class Mannequin extends ComponentStore<MannequinState> {

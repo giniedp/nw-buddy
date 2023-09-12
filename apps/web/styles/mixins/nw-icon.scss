@@ -67,6 +67,7 @@ $nw-rarity-color: (
   '2': rgb(0, 203, 233),
   '3': rgb(255, 22, 247),
   '4': rgb(247, 162, 45),
+  'artifact': rgb(251, 124, 89),
 );
 
 @mixin bgRarity($bg, $fg) {

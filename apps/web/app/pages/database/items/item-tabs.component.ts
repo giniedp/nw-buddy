@@ -1,7 +1,15 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef, Input, TemplateRef, ViewChild, inject } from '@angular/core'
+import {
+  Component,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Input,
+  TemplateRef,
+  ViewChild,
+  inject,
+} from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { combineLatest, map } from 'rxjs'
+import { combineLatest, map, of } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { PaginationModule } from '~/ui/pagination'
 import { eqCaseInsensitive, shareReplayRefCount } from '~/utils'
@@ -51,9 +59,11 @@ export class ItemTabsComponent extends ItemDetailStore {
     armorF: this.appearanceF$,
     weapon: this.weaponAppearance$,
     instrument: this.instrumentAppearance$,
-  }).pipe(map(({ armorM, armorF, weapon, instrument }) => {
-    return armorM || armorF || weapon || instrument
-  }))
+  }).pipe(
+    map(({ armorM, armorF, weapon, instrument }) => {
+      return armorM || armorF || weapon || instrument
+    })
+  )
 
   protected vm$ = combineLatest({
     entityId: this.select((it) => it.entityId),
@@ -99,7 +109,7 @@ export class ItemTabsComponent extends ItemDetailStore {
           const count = data.craftableRecipes.length
           tabs.push({
             id: 'craftable',
-            label: 'Used to craft' + (count > 10 ?  ` (${count})` : ''),
+            label: 'Used to craft' + (count > 10 ? ` (${count})` : ''),
           })
         }
         if (data.perkBucketIds?.length) {

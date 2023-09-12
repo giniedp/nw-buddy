@@ -24,6 +24,7 @@ import {
   getPerksInherentMODs,
   hasItemGearScore,
   hasPerkInherentAffix,
+  isItemArtifact,
   isItemHeargem,
   isItemNamed,
   isPerkGem,
@@ -52,7 +53,11 @@ export interface PerkDetail {
   bucket?: PerkBucket
   perk?: Perks
   icon?: string
-  text?: Array<{ label: string | string[]; description: string | string[] }>
+  text?: Array<{
+    label: string | string[]
+    description: string | string[]
+    context: Record<string, any>
+  }>
 }
 
 export interface ItemDetailState {
@@ -150,16 +155,29 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public readonly tierLabel$ = this.select(this.entity$, (it) => getItemTierAsRoman(it?.Tier, true))
   public readonly isDeprecated$ = this.select(this.source$, (it) => /depricated/i.test(it || ''))
   public readonly isNamed$ = this.select(this.item$, isItemNamed)
+  public readonly isArtifact$ = this.select(this.item$, isItemArtifact)
   public readonly isRune$ = this.select(this.item$, isItemHeargem)
   public readonly isBindOnEquip$ = this.select(this.item$, (it) => !!it?.BindOnEquip)
   public readonly isBindOnPickup$ = this.select(this.entity$, (it) => !!it?.BindOnPickup)
   public readonly canReplaceGem$ = this.select(this.item$, (it) => it && it.CanHavePerks && it.CanReplaceGem)
   public readonly cantReplaceGem$ = this.select(this.item$, (it) => it && it.CanHavePerks && !it.CanReplaceGem)
   public readonly salvageInfo$ = this.select(this.entity$, selectSalvageInfo)
-  public readonly appearanceM$ = this.select(this.db.itemAppearance(this.item$.pipe(mapProp('ArmorAppearanceM'))), (it) => it)
-  public readonly appearanceF$ = this.select(this.db.itemAppearance(this.item$.pipe(mapProp('ArmorAppearanceF'))), (it) => it)
-  public readonly weaponAppearance$ = this.select(this.db.weaponAppearance(this.item$.pipe(mapProp('WeaponAppearanceOverride'))), (it) => it)
-  public readonly instrumentAppearance$ = this.select(this.db.instrumentAppearance(this.item$.pipe(mapProp('WeaponAppearanceOverride'))), (it) => it)
+  public readonly appearanceM$ = this.select(
+    this.db.itemAppearance(this.item$.pipe(mapProp('ArmorAppearanceM'))),
+    (it) => it
+  )
+  public readonly appearanceF$ = this.select(
+    this.db.itemAppearance(this.item$.pipe(mapProp('ArmorAppearanceF'))),
+    (it) => it
+  )
+  public readonly weaponAppearance$ = this.select(
+    this.db.weaponAppearance(this.item$.pipe(mapProp('WeaponAppearanceOverride'))),
+    (it) => it
+  )
+  public readonly instrumentAppearance$ = this.select(
+    this.db.instrumentAppearance(this.item$.pipe(mapProp('WeaponAppearanceOverride'))),
+    (it) => it
+  )
   public readonly ingredientCategories$ = this.select(this.db.recipeCategoriesMap, this.item$, selectCraftingCategories)
   public readonly statusEffectsIds$ = this.select(this.consumable$, this.housingItem$, selectStatusEffectIds)
   public readonly gemDetail$ = this.select(this.perksDetails$, (list) => list?.find((it) => isPerkGem(it.perk)))
@@ -361,36 +379,81 @@ function selectPerkInfos(data: {
 }) {
   const perks = selectPerkDetails(data) || []
   const buckets = selectPerkBucketDetails(data) || []
-  const result = sortBy([...perks, ...buckets], (it) => getPerkTypeWeight((it.perk || it.bucket)?.PerkType))
-
-  for (const detail of result) {
+  const resolved = sortBy([...perks, ...buckets], (it) => getPerkTypeWeight((it.perk || it.bucket)?.PerkType))
+  const result: PerkDetail[] = []
+  for (const detail of resolved) {
     const perk = detail.perk
     detail.text = []
     detail.icon = perk?.IconPath
     if (!perk) {
+      result.push(detail)
       continue
     }
+
     if (isPerkItemIngredient(detail.item)) {
+      result.push(detail)
       getPerksInherentMODs(perk, data.affixstats.get(perk.Affix), detail.itemGS)?.forEach((mod) => {
         detail.text.push({
-          label: perk.DisplayName || perk.AppliedPrefix || perk.AppliedSuffix,
+          label: perk.DisplayName || perk.SecondaryEffectDisplayName || perk.AppliedPrefix || perk.AppliedSuffix,
           description: [String(mod.value), mod.label],
+          context: {},
         })
       })
-    } else if (hasPerkInherentAffix(perk)) {
-      getPerksInherentMODs(perk, data.affixstats.get(perk.Affix), detail.itemGS)?.forEach((mod) => {
-        detail.text.push({
-          label: String(mod.value),
-          description: mod.label,
-        })
-      })
-    } else {
-      detail.text.push({
-        label: perk.DisplayName || perk.AppliedPrefix || perk.AppliedSuffix,
-        description: perk.Description,
-      })
+      continue
     }
+
+    if (hasPerkInherentAffix(perk)) {
+      const stat = data.affixstats.get(perk.Affix)
+      const mods = getPerksInherentMODs(perk, stat, detail.itemGS)
+      if (mods?.length) {
+        result.push(detail)
+        mods.forEach((mod) => {
+          detail.text.push({
+            label: String(mod.value),
+            description: mod.label,
+            context: {},
+          })
+        })
+      }
+
+      if (stat?.AttributePlacingMods) {
+        result.push({
+          ...detail,
+          text: [
+            {
+              label: '',
+              description: perk.StatDisplayText,
+              context: Object.fromEntries(
+                stat.AttributePlacingMods.split(',').map((it, i) => ['amount' + (i + 1), it])
+              ),
+            },
+          ],
+        })
+      }
+
+      if (perk.SecondaryEffectDisplayName) {
+        result.push({
+          ...detail,
+          text: [
+            {
+              label: perk.SecondaryEffectDisplayName,
+              description: perk.Description,
+              context: {},
+            },
+          ],
+        })
+      }
+      continue
+    }
+
+    result.push(detail)
+    detail.text.push({
+      label: perk.DisplayName || perk.SecondaryEffectDisplayName || perk.AppliedPrefix || perk.AppliedSuffix,
+      description: perk.Description,
+      context: {},
+    })
   }
+  console.log(result)
   return result
 }
 

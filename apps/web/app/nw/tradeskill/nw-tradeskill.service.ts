@@ -31,20 +31,25 @@ export class NwTradeskillService {
   })
     .pipe(
       map(({ postcap, categories }) => {
-        return categories
-          .filter((it) => !!it.PostSkillCapSkill)
-          .map((it): NwTradeskillInfo => {
-            const info = NW_TRADESKILLS_INFOS_MAP.get(it.CategoricalProgressionId)
-            return {
-              ID: info.ID,
-              Category: info.Category,
-              Icon: info.Icon,
-              Name: it.DisplayName,
-              MaxLevel: it.MaxLevel,
-              Postcap: postcap.find((cap) => cap.TradeSkillType === it.PostSkillCapSkill),
-            }
-          })
-          .filter((it) => !!it.Postcap)
+        return (
+          categories
+            //.filter((it) => !!it.PostSkillCapSkill)
+            .map((it): NwTradeskillInfo => {
+              const info = NW_TRADESKILLS_INFOS_MAP.get(it.CategoricalProgressionId)
+              if (!info) {
+                return null
+              }
+              return {
+                ID: info.ID,
+                Category: info.Category,
+                Icon: info.Icon,
+                Name: it.DisplayName,
+                MaxLevel: it.Expansion01MaxLevel || it.MaxLevel,
+                Postcap: postcap.find((cap) => cap.TradeSkillType === it.PostSkillCapSkill),
+              }
+            })
+            .filter((it) => !!it)
+        )
       })
     )
     .pipe(

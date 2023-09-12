@@ -286,7 +286,7 @@ export class NwDbService {
   public affliction = lookup(() => this.afflictionsMap)
 
   public manacosts = table(() => [this.data.manacostsPlayer()])
-  public manacostsMap = indexBy(() => this.manacosts, 'ID')
+  public manacostsMap = indexBy(() => this.manacosts, 'CostID')
 
   public staminacostsPlayer = table(() => [this.data.staminacostsPlayer()])
   public staminacostsPlayerMap = indexBy(() => this.staminacostsPlayer, 'CostID')
@@ -324,6 +324,10 @@ export class NwDbService {
   public vitals = table(() => [this.data.vitals()])
   public vitalsMap = indexBy(() => this.vitals, 'VitalsID')
   public vital = lookup(() => this.vitalsMap)
+
+  public vitalsPlayer = table(() => [this.data.vitalsPlayer()])
+  public vitalsPlayerMap = indexBy(() => this.vitals, 'VitalsID')
+  public vitalPlayer = lookup(() => this.vitalsPlayerMap)
 
   public vitalsByFamily = indexGroupBy(() => this.vitals, 'Family')
   public vitalsOfFamily = lookup(() => this.vitalsByFamily)

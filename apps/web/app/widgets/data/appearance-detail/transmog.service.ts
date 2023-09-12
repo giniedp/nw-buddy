@@ -259,7 +259,7 @@ function selectAppearances({
       description: tl8.get(appearance.Description),
       gender: (appearance as Itemappearancedefinitions).Gender?.toLowerCase() as any,
       dyeSlots: selectDyeSlots(appearance),
-      modelId: modelId
+      modelId: modelId,
     }
   })
   return result
@@ -338,12 +338,11 @@ function getModelFilePath(it: NwApearance | TransmogAppearance) {
   }
   return String(
     (it as Itemappearancedefinitions).Skin1 ||
-    (it as Itemappearancedefinitions).Skin2 ||
-    (it as ItemdefinitionsWeaponappearances).SkinOverride1 ||
-    (it as ItemdefinitionsWeaponappearances).SkinOverride2 ||
-    (it as ItemdefinitionsWeaponappearances).SkinOverride4 ||
-    (it as ItemdefinitionsWeaponappearances).MeshOverride ||
-    (it as ItemdefinitionsInstrumentsappearances).MeshOverride ||
-    ''
+      (it as Itemappearancedefinitions).Skin2 ||
+      (it as ItemdefinitionsWeaponappearances).SkinOverride1 ||
+      (it as ItemdefinitionsWeaponappearances).SkinOverride2 ||
+      (it as ItemdefinitionsWeaponappearances).MeshOverride ||
+      (it as ItemdefinitionsInstrumentsappearances).MeshOverride ||
+      ''
   )
 }

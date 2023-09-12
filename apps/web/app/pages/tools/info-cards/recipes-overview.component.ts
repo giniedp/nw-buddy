@@ -12,7 +12,7 @@ import { svgRepeat } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PaginationModule } from '~/ui/pagination'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
-import { ContentVisibilityDirective, HtmlHeadService, tapDebug } from '~/utils'
+import { ContentVisibilityDirective, HtmlHeadService } from '~/utils'
 import { IntersectionObserverModule } from '~/utils/intersection-observer'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ItemTrackerModule } from '~/widgets/item-tracker'
@@ -50,7 +50,7 @@ function isRecipe(item: ItemDefinitionMaster) {
     ItemTrackerModule,
     ItemFrameModule,
     IconsModule,
-    PaginationModule
+    PaginationModule,
   ],
   host: {
     class: 'layout-col',
@@ -127,18 +127,23 @@ export class RecipesOverviewComponent {
       })
     })
   )
-  protected stats$ = this.source$.pipe(switchMap((list) => {
-    return combineLatest(list.map((it) => this.itemPref.observe(it.recipeItem.ItemID)))
-  }))
-  .pipe(map((list) => {
-    const total = list.length
-    const learned = list.filter((it) => !!it.meta?.mark).length
-    return {
-      total: total,
-      learned: learned,
-      percent: learned / total
-    }
-  }))
+  protected stats$ = this.source$
+    .pipe(
+      switchMap((list) => {
+        return combineLatest(list.map((it) => this.itemPref.observe(it.recipeItem.ItemID)))
+      })
+    )
+    .pipe(
+      map((list) => {
+        const total = list.length
+        const learned = list.filter((it) => !!it.meta?.mark).length
+        return {
+          total: total,
+          learned: learned,
+          percent: learned / total,
+        }
+      })
+    )
 
   protected trackByIndex: TrackByFunction<any> = (i) => i
 

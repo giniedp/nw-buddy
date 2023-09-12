@@ -10,6 +10,7 @@ import {
 import type { AttributeRef } from './attributes'
 import { NW_MAX_GEAR_SCORE, NW_MAX_GEAR_SCORE_UPGRADABLE, NW_MIN_GEAR_SCORE } from './constants'
 import { damageForTooltip } from './damage'
+import { Observable, map, of } from 'rxjs'
 
 export function isMasterItem(item: ItemDefinitionMaster | Housingitems): item is ItemDefinitionMaster {
   return item && 'ItemID' in item
@@ -45,6 +46,10 @@ export function isItemConsumable(item: Pick<ItemDefinitionMaster, 'ItemClass'> |
 
 export function isItemNamed(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('Named')
+}
+
+export function isItemArtifact(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
+  return item?.ItemClass?.includes('Artifact')
 }
 
 export function isItemSwordOrShield(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
@@ -236,20 +241,27 @@ export function getItemIdFromRecipe(item: Crafting): string {
   )
 }
 
-export function getRecipeForItem(item: ItemDefinitionMaster | Housingitems, recipes: Crafting[]) {
+export function getRecipeForItem(item: ItemDefinitionMaster | Housingitems, recipes: Map<string, Set<Crafting>>) {
   const id = getItemId(item)
   if (!id) {
     return null
   }
-  return recipes.find((recipe) => {
+  return Array.from(recipes.get(id) || []).find((recipe) => {
     if (recipe.CraftingCategory === 'MaterialConversion' || !recipe.OutputQty) {
       return false
     }
-    if (recipe.IsProcedural) {
-      return recipe[`ProceduralTierID${recipe.BaseTier}`] === id
-    }
-    return recipe.RecipeID === item.CraftingRecipe || recipe.ItemID === id
+    return true
   })
+  // TODO: review
+  // return recipes.find((recipe) => {
+  //   if (recipe.CraftingCategory === 'MaterialConversion' || !recipe.OutputQty) {
+  //     return false
+  //   }
+  //   if (recipe.IsProcedural) {
+  //     return recipe[`ProceduralTierID${recipe.BaseTier}`] === id
+  //   }
+  //   return recipe.RecipeID === item.CraftingRecipe || recipe.ItemID === id
+  // })
 }
 
 export function getItemIconPath(item: ItemDefinitionMaster | Housingitems, female: boolean = false) {

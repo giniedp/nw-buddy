@@ -74,11 +74,11 @@ export class CraftingCalculatorStore extends ComponentStore<CraftingCalculatorSt
   }
 
   private initializeState(recipe: Crafting) {
-    const cache = this.cache?.get<CraftingCalculatorState>(recipe?.RecipeID)
-    if (cache) {
-      this.patchState(cache)
-      return EMPTY
-    }
+    // const cache = this.cache?.get<CraftingCalculatorState>(recipe?.RecipeID)
+    // if (cache) {
+    //   this.patchState(cache)
+    //   return EMPTY
+    // }
     return this.service.solveRecipe(recipe).pipe(
       map((step) => {
         this.patchState({

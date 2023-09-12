@@ -68,17 +68,23 @@ export function switchMapCombineLatest<T, R>(project: (list: T) => Observable<R>
   })
 }
 
-export function tapDebug<T>(tag: string, transform?: (it: T) => any) {
+export function tapDebug<T>(tag: string, options?: { disabled?: boolean; transform?: (value: T) => any }) {
   return tap<T>({
     next(value) {
-      const data = transform ? transform(value) : value
-      console.log(`%c[${tag}: Next]`, 'background: #009688; color: #fff; padding: 2px; font-size: 10px;', data)
+      if (!options?.disabled) {
+        const data = options?.transform ? options.transform(value) : value
+        console.log(`%c[${tag}: Next]`, 'background: #009688; color: #fff; padding: 2px; font-size: 10px;', data)
+      }
     },
     error(error) {
-      console.log(`%[${tag}: Error]`, 'background: #E91E63; color: #fff; padding: 2px; font-size: 10px;', error)
+      if (!options?.disabled) {
+        console.log(`%[${tag}: Error]`, 'background: #E91E63; color: #fff; padding: 2px; font-size: 10px;', error)
+      }
     },
     complete() {
-      console.log(`%c[${tag}]: Complete`, 'background: #00BCD4; color: #fff; padding: 2px; font-size: 10px;')
+      if (!options?.disabled) {
+        console.log(`%c[${tag}]: Complete`, 'background: #00BCD4; color: #fff; padding: 2px; font-size: 10px;')
+      }
     },
   })
 }
@@ -88,9 +94,7 @@ export interface SelectStreamConfig<T = unknown> {
   equal?: ValueEqualityFn<T>
 }
 
-export function selectStream<T>(
-  source: Observable<T>
-): Observable<T>
+export function selectStream<T>(source: Observable<T>): Observable<T>
 export function selectStream<T extends Record<string, ObservableInput<any>>, R>(
   source: T,
   projector: (s: { [K in keyof T]: ObservedValueOf<T[K]> }) => R,

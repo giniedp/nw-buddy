@@ -1,13 +1,14 @@
+import { S3, _Object } from '@aws-sdk/client-s3'
 import { Upload } from '@aws-sdk/lib-storage'
-import { PutObjectCommand, S3 } from '@aws-sdk/client-s3'
 import * as AdmZip from 'adm-zip'
+import { MultiBar, Presets } from 'cli-progress'
 import { program } from 'commander'
+import { createHash } from 'crypto'
 import * as fs from 'fs'
 import * as http from 'https'
 import * as path from 'path'
-import { CDN_UPLOAD_ENDPOINT, CDN_UPLOAD_KEY, CDN_UPLOAD_SECRET, CDN_UPLOAD_SPACE, nwData, NW_USE_PTR } from '../env'
-import { MultiBar, Presets } from 'cli-progress'
-import { createHash } from 'crypto'
+import { CDN_UPLOAD_ENDPOINT, CDN_UPLOAD_KEY, CDN_UPLOAD_SECRET, CDN_UPLOAD_SPACE, NW_USE_PTR, nwData } from '../env'
+import { glob } from './utils'
 
 const config = {
   bucket: CDN_UPLOAD_SPACE,
@@ -86,25 +87,42 @@ program
     ])
   })
 
-program.command('upload-models').action(async () => {
-  const modelsDir = nwData.modelsDir()
-  const statsFile = path.join(modelsDir, 'stats.json')
-  console.log('[UPLOAD]', statsFile)
-  const stats = JSON.parse(fs.readFileSync(statsFile, 'utf-8')) as any[]
-  const files = stats
-    .map((it: any) => {
-      const extname = path.extname(it.outFile)
-      return {
-        file: path.join(modelsDir, it.outDir, it.outFile),
-        key: path.join('models', it.outDir, it.outFile),
-        contentType: extname == '.gltf' ? 'model/gltf+json' : 'model/gltf-binary',
-        md5: true,
-      }
-    })
-    .filter((it) => fs.existsSync(it.file))
+program
+  .option('-f, --force', 'Uploads all files, instead of only new')
+  .command('upload-models')
+  .action(async () => {
+    const options = program.opts<{ force: boolean }>()
+    const modelsDir = nwData.modelsDir()
+    const client = createClient()
 
-  await uploadFiles(createClient(), files)
-})
+    function normalizeKey(key: string) {
+      return key.replace(/\\/g, '/').toLowerCase()
+    }
+
+    const glbObjects = await Promise.resolve(options)
+      .then((it) => {
+        return it.force ? [] : listObjects(client)
+      })
+      .then((list) => list.filter((it) => it.Key.endsWith('.glb')))
+      .then((list) => list.map((it) => normalizeKey(it.Key)))
+      .then((list) => new Set(list))
+    const glbFiles = await glob(path.join(modelsDir, '**/*.glb')).then((list) => {
+      return list.map((file) => {
+        const extname = path.extname(file).toLowerCase()
+        return {
+          file: file,
+          key: normalizeKey(path.join('models', path.relative(modelsDir, file))),
+          contentType: extname == '.gltf' ? 'model/gltf+json' : 'model/gltf-binary',
+          md5: true,
+        }
+      })
+    })
+    const toUpload = glbFiles.filter((it) => {
+      return !glbObjects.has(it.key)
+    })
+    console.log('found', glbFiles.length, '.glb files', 'to upload', toUpload.length)
+    // await uploadFiles(createClient(), toUpload)
+  })
 
 program.parse(process.argv)
 
@@ -187,6 +205,22 @@ async function uploadFiles(
   }
 
   multibar.stop()
+}
+
+async function listObjects(client: S3 = createClient()) {
+  console.log('listing objects...')
+  const files: Array<_Object> = []
+  let marker: string | undefined = undefined
+  do {
+    const data = await client.listObjects({
+      Bucket: config.bucket,
+      MaxKeys: 1000,
+      Marker: marker,
+    })
+    files.push(...data.Contents)
+    marker = data.NextMarker
+  } while (marker)
+  return files
 }
 
 function createClient() {

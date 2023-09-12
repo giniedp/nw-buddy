@@ -2,15 +2,15 @@ module.exports = ({ addComponents }) => {
   addComponents({
     '.is-embed': {
       '.embed-hidden': {
-        display: 'none !important;'
-      }
+        display: 'none !important;',
+      },
     },
     '.nw-bg-pane': {
       background: "url('^assets/bg-pane.jpg') black",
     },
     '.nw-bg-title': {
       background: "url('^assets/bg-title.png')",
-      backgroundRepeat: 'no-repeat'
+      backgroundRepeat: 'no-repeat',
     },
     '.nw-bg-crafting-rune': {
       background: "url('^assets/loaders/crafting_rune_clockwise.png')",
@@ -144,13 +144,21 @@ module.exports = ({ addComponents }) => {
         '--rarity-bg-ani': "url('^assets/icons/item/named_bg_4.webp')",
       },
     },
+    '.nw-item-rarity-artifact': {
+      '--rarity-c0': '#fb7c59',
+      '--rarity-c1': '#991d14',
+      '--rarity-c3': '#991d14',
+      '--rarity-bg': "url('^assets/icons/item/itemraritybgsquareartifact.png')",
+      '--rarity-bg-head': "url('^assets/icons/item/tooltip_header_bg_artifact.png')",
+      '--rarity-bg-ani': "url('^assets/icons/item/artifact_bg.webp')",
+    },
     '.nw-status-bg': {
       maskImage: "url('^assets/icons/abilities/statuseffectbg.png')",
       maskSize: 'contain',
       maskRepeat: 'no-repeat',
-      backgroundColor: "rgba(0, 0, 0, 1)",
+      backgroundColor: 'rgba(0, 0, 0, 1)',
       '&.negative': {
-        backgroundColor: "rgba(255, 0, 0, 1)",
+        backgroundColor: 'rgba(255, 0, 0, 1)',
       },
     },
   })

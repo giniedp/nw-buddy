@@ -1,4 +1,3 @@
-
 .text-rarity-0 {
   color: map-get($nw-rarity-color, '0');
 }
@@ -14,4 +13,6 @@
 .text-rarity-4 {
   color: map-get($nw-rarity-color, '4');
 }
-
+.text-rarity-artifact {
+  color: map-get($nw-rarity-color, 'artifact');
+}

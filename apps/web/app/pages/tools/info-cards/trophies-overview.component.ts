@@ -57,11 +57,10 @@ function isTrophyItem(item: Housingitems) {
 })
 export class TrophiesOverviewComponent {
   protected housings$ = defer(() => this.db.housingItems).pipe(map((it) => it.filter(isTrophyItem)))
-  protected recipes$ = defer(() => this.db.recipes).pipe(map((it) => it.filter(isTrophy)))
 
   protected items$ = defer(() =>
     combineLatest({
-      recipes: this.recipes$,
+      recipes: this.db.recipesMapByItemId,
       housings: this.housings$,
       items: this.db.itemsMap,
       housingItems: this.db.housingItemsMap,
@@ -89,23 +88,34 @@ export class TrophiesOverviewComponent {
     map((list) => sortBy(list, (it) => it.itemId)),
     map((list) => groupBy(list, (it) => it.itemId.replace(/_T\d$/, ''))),
     map((list) => Object.values(list)),
-    map((list) => sortBy(list, (it) => it.length).reverse().flat()),
+    map((list) =>
+      sortBy(list, (it) => it.length)
+        .reverse()
+        .flat()
+    ),
     map((list) => list.filter((it) => !it.itemId.endsWith('_T0')))
   )
 
   protected filteredItems$ = combineLatest({
     items: this.items$,
-    query: this.search.query$
-  }).pipe(map(({ items, query }) => {
-    if (!query) {
-      return items
-    }
-    return items.filter((it) => it.name?.toLowerCase().includes(query))
-  }))
+    query: this.search.query$,
+  }).pipe(
+    map(({ items, query }) => {
+      if (!query) {
+        return items
+      }
+      return items.filter((it) => it.name?.toLowerCase().includes(query))
+    })
+  )
 
   protected trackByIndex: TrackByFunction<any> = (i) => i
 
-  public constructor(private db: NwDbService, private search: QuicksearchService, private tl8: TranslateService, head: HtmlHeadService) {
+  public constructor(
+    private db: NwDbService,
+    private search: QuicksearchService,
+    private tl8: TranslateService,
+    head: HtmlHeadService
+  ) {
     head.updateMetadata({
       title: 'Trophies',
       description: 'Overview of all trophies in new World',

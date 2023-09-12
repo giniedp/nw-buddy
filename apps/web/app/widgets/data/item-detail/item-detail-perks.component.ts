@@ -30,4 +30,8 @@ export class ItemDetailPerksComponent {
       this.store.perkEdit$.emit(detail)
     }
   }
+
+  protected buildTextContext(perkId: string, gs: number, context: Record<string, any>) {
+    return { itemId: perkId, gearScore: gs, ...(context || {}) }
+  }
 }

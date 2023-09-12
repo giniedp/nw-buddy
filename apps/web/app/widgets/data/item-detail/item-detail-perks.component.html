@@ -10,7 +10,7 @@
     <nwb-item-perk [icon]="item.detail.icon" class="text-sky-600">
       <div *ngFor="let row of item.detail.text; trackBy: trackByIndex">
         <b> {{ row.label | nwText }} </b>
-        <span> {{ row.description | nwText: { itemId: item.perk.PerkID, gearScore: item.gs } }} </span>
+        <span [innerHTML]="row.description | nwText : buildTextContext(item.perk.PerkID, item.gs, row.context)"> </span>
       </div>
     </nwb-item-perk>
   </ng-container>

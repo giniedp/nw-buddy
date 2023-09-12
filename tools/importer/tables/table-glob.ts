@@ -49,6 +49,7 @@ export const TABLE_GLOB_PATTERNS = [
   '*_tradeskill*',
   '*_umbralgsupgrades',
   '*_vitals',
+  '*_vitals_player',
   '*_vitalsmetadata',
   '*_vitalscategories',
   '*_vitalsleveldata',

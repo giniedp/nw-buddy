@@ -30,17 +30,20 @@
       <div class="tracker absolute left-0 w-full flex flex-row overflow-hidden">
         <span class="flex-none bg-attr-base rounded-l-md" [style.width.%]="(stat.base / stat.sliderEnd) * 100"></span>
         <span class="flex-none bg-attr-buff rounded-r-md" [style.width.%]="(stat.buffs / stat.sliderEnd) * 100"></span>
-        <span class="flex-none bg-attr-assign rounded-r-md" [style.width.%]="(stat.assigned / stat.sliderEnd) * 100"></span>
+        <span
+          class="flex-none bg-attr-assign rounded-r-md"
+          [style.width.%]="(stat.assigned / stat.sliderEnd) * 100"
+        ></span>
       </div>
       <div class="flex-1 flex flex-row justify-between items-center relative mr-[-10px]">
-        <ng-container *ngFor="let step of [50, 100, 150, 200, 250, 300]; trackBy: trackById">
+        <ng-container *ngFor="let step of [50, 100, 150, 200, 250, 300, 350]; trackBy: trackById">
           <div class="segment relative flex-1 h-5 cursor-pointer" (click)="attributeToggle(stat, step)">
             <span
-              class="badge absolute right-0 "
+              class="badge absolute right-0"
               [class.bg-zinc-800]="stat.total < step"
               [class.bg-attr-base]="stat.base >= step"
-              [class.bg-attr-buff]="stat.base < step && (stat.base + stat.buffs) >= step"
-              [class.bg-attr-assign]="(stat.base + stat.buffs) < step && stat.total >= step"
+              [class.bg-attr-buff]="stat.base < step && stat.base + stat.buffs >= step"
+              [class.bg-attr-assign]="stat.base + stat.buffs < step && stat.total >= step"
               [tooltip]="tip"
             >
             </span>

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { Statuseffectcategories } from '@nw-data/generated'
 import { NwDbService } from '~/nw'
-import { rejectKeys, tapDebug } from '~/utils'
+import { rejectKeys } from '~/utils'
 
 @Injectable()
 export class StatusEffectCategoryDetailStore extends ComponentStore<{ categoryId: string }> {

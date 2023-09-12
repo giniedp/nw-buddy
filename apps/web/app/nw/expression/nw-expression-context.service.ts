@@ -1,5 +1,6 @@
-import { Injectable } from "@angular/core";
-import { BehaviorSubject, combineLatest, defer } from "rxjs";
+import { Injectable } from '@angular/core'
+import { NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
+import { BehaviorSubject, combineLatest, defer } from 'rxjs'
 
 export interface NwExpressionContext {
   text: string
@@ -11,10 +12,9 @@ export interface NwExpressionContext {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class NwExpressionContextService {
-
   public get level() {
     return this.level$.value
   }
@@ -36,13 +36,15 @@ export class NwExpressionContextService {
     this.gsBonus$.next(value)
   }
 
-  public value = defer(() => combineLatest({
-    level: this.level$,
-    gs: this.gs$,
-    gsBonus: this.gsBonus$
-  }))
+  public value = defer(() =>
+    combineLatest({
+      level: this.level$,
+      gs: this.gs$,
+      gsBonus: this.gsBonus$,
+    })
+  )
 
-  private level$ = new BehaviorSubject(60)
-  private gs$ = new BehaviorSubject(600)
+  private level$ = new BehaviorSubject(NW_MAX_CHARACTER_LEVEL)
+  private gs$ = new BehaviorSubject(650)
   private gsBonus$ = new BehaviorSubject(false)
 }

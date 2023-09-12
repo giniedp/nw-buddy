@@ -4,7 +4,7 @@ import { BehaviorSubject, combineLatest, map, ReplaySubject, switchMap } from 'r
 import { NwDbService, NwModule } from '~/nw'
 import { LootContext } from '~/nw/loot'
 import { buildLootGraph, extractLootTagsFromGraph, updateLootGraph } from '~/nw/loot/loot-graph'
-import { shareReplayRefCount, tapDebug } from '~/utils'
+import { shareReplayRefCount } from '~/utils'
 import { LootGraphNodeComponent } from './loot-graph-node.component'
 
 @Component({
@@ -62,20 +62,25 @@ export class LootGraphComponent {
     graph: this.observeGraph(),
     context: this.observeContext(),
     dropChance: this.dropChance$,
-    highlight: this.highlight$
-  }).pipe(map(({ graph, context, dropChance, highlight }) => {
-    return updateLootGraph({
-      graph,
-      context: this.showLocked ? null : context,
-      dropChance,
-      highlight
-    })
-  }))
-  .pipe(shareReplayRefCount(1))
+    highlight: this.highlight$,
+  })
+    .pipe(
+      map(({ graph, context, dropChance, highlight }) => {
+        return updateLootGraph({
+          graph,
+          context: this.showLocked ? null : context,
+          dropChance,
+          highlight,
+        })
+      })
+    )
+    .pipe(shareReplayRefCount(1))
 
-  protected knownTags$ = this.graph$.pipe(map((graph) => {
-    return extractLootTagsFromGraph(graph)
-  }))
+  protected knownTags$ = this.graph$.pipe(
+    map((graph) => {
+      return extractLootTagsFromGraph(graph)
+    })
+  )
 
   public constructor(private db: NwDbService) {
     //
@@ -100,12 +105,14 @@ export class LootGraphComponent {
   private observeContext() {
     return combineLatest({
       tags: this.tags$,
-      values: this.tagValues$
-    }).pipe(map(({ tags, values }) => {
-      return LootContext.create({
-        tags: tags,
-        values: values
+      values: this.tagValues$,
+    }).pipe(
+      map(({ tags, values }) => {
+        return LootContext.create({
+          tags: tags,
+          values: values,
+        })
       })
-    }))
+    )
   }
 }

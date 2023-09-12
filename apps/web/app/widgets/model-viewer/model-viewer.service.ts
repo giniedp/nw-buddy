@@ -152,12 +152,7 @@ export class ModelViewerService {
     if (!item) {
       return result
     }
-    const keys: Array<keyof ItemdefinitionsWeaponappearances> = [
-      'SkinOverride1',
-      'SkinOverride2',
-      'SkinOverride4',
-      'MeshOverride',
-    ]
+    const keys: Array<keyof ItemdefinitionsWeaponappearances> = ['SkinOverride1', 'SkinOverride2', 'MeshOverride']
     for (const key of keys) {
       if (item[key]) {
         result.push({

@@ -6,7 +6,7 @@ import { combineLatest, filter, map, of, shareReplay, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { LootContext, NwLootService } from '~/nw/loot'
 import { NW_MAX_CHARACTER_LEVEL, getVitalDungeons } from '@nw-data/common'
-import { mapProp, shareReplayRefCount, tapDebug } from '~/utils'
+import { mapProp, shareReplayRefCount } from '~/utils'
 
 export interface DungeonDetailState {
   dungeon: Gamemodes

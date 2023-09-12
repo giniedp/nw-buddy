@@ -13,15 +13,15 @@ import { Component, ChangeDetectionStrategy, Input, HostBinding } from '@angular
   imports: [CommonModule],
   host: {
     class: 'nw-item-header flex flex-row p-1',
-    '[class.nw-item-rarity-0]': '!rarity',
-    '[class.nw-item-rarity-1]': 'rarity === 1',
-    '[class.nw-item-rarity-2]': 'rarity === 2',
-    '[class.nw-item-rarity-3]': 'rarity === 3',
-    '[class.nw-item-rarity-4]': 'rarity === 4'
+    '[class.nw-item-rarity-0]': '!artifact && !rarity',
+    '[class.nw-item-rarity-1]': '!artifact && rarity === 1',
+    '[class.nw-item-rarity-2]': '!artifact && rarity === 2',
+    '[class.nw-item-rarity-3]': '!artifact && rarity === 3',
+    '[class.nw-item-rarity-4]': '!artifact && rarity === 4',
+    '[class.nw-item-rarity-artifact]': '!!artifact',
   },
 })
 export class ItemHeaderComponent {
-
   @Input()
   public rarity: number
 
@@ -29,6 +29,9 @@ export class ItemHeaderComponent {
   @HostBinding('class.named')
   public named: boolean
 
+  @Input()
+  @HostBinding('class.artifact')
+  public artifact: boolean
 
   public constructor() {
     //

@@ -74,7 +74,7 @@ export class CraftingSummaryComponent extends ComponentStore<{
         switchMap((amount) => {
           const children$ = current.step?.steps?.map((it) =>
             this.treeWithAmounts({
-              amount: amount.net * it.ingredient.quantity,
+              amount: amount.net * (it.ingredient?.quantity || 1),
               amountMode: current.amountMode,
               step: it,
             })

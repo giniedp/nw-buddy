@@ -75,15 +75,17 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
               valueGetter: this.valueGetter(({ data }) => {
                 return {
                   name: data.DisplayName && this.i18n.get(data.DisplayName),
+                  secondary: data.SecondaryEffectDisplayName && this.i18n.get(data.SecondaryEffectDisplayName),
                   suffix: data.AppliedSuffix && this.i18n.get(data.AppliedSuffix),
                   prefix: data.AppliedPrefix && this.i18n.get(data.AppliedPrefix),
                 }
               }),
               filterValueGetter: ({ data }) => {
                 const name = data.DisplayName && this.i18n.get(data.DisplayName)
+                const secondary = data.SecondaryEffectDisplayName && this.i18n.get(data.SecondaryEffectDisplayName)
                 const suffix = data.AppliedSuffix && this.i18n.get(data.AppliedSuffix)
                 const prefix = data.AppliedPrefix && this.i18n.get(data.AppliedPrefix)
-                return [name || '', suffix || '', prefix || ''].join(' ')
+                return [name || '', secondary || '', suffix || '', prefix || ''].join(' ')
               },
               cellRenderer: this.cellRenderer(({ value }) => {
                 return this.createElement({
@@ -95,6 +97,13 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
                           tag: 'span',
                           classList: [],
                           text: value.name as string,
+                        }
+                      : null,
+                    value.secondary
+                      ? {
+                          tag: 'span',
+                          classList: [],
+                          text: value.secondary as string,
                         }
                       : null,
                     value.prefix
@@ -127,9 +136,10 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
               cellRenderer: this.cellRendererAsync(),
               cellRendererParams: this.cellRendererAsyncParams<string>({
                 source: ({ data }) => {
+                  // const stat = data.StatDisplayText && this.i18n.get(data.StatDisplayText)
                   return combineLatest({
                     ctx: this.ctx.value,
-                    text: this.i18n.observe(data.Description),
+                    text: this.i18n.observe([data.Description, data.StatDisplayText]),
                     stats: this.db.affixStatsMap,
                   }).pipe(
                     switchMap(({ ctx, text, stats }) => {

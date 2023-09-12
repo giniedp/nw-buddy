@@ -16,13 +16,9 @@ import { TradeskillsModule } from '~/widgets/tradeskills'
   },
 })
 export class TradeskillsComponent {
-  public get skills() {
-    return this.service.skills
-  }
+  public skills = this.service.skills
 
-  public get categories() {
-    return this.service.categories
-  }
+  public categories = this.service.categories
 
   public selected: string
 

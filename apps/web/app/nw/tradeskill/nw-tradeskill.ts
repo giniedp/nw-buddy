@@ -1,4 +1,4 @@
-import { CaseInsensitiveMap } from "~/utils"
+import { CaseInsensitiveMap } from '~/utils'
 
 export interface NwTradeSkillInfo {
   ID: string
@@ -97,6 +97,11 @@ export const NW_TRADESKILLS_INFOS = [
     ID: 'Musician',
     Category: 'Casual',
     Icon: 'assets/icons/tradeskills/music.png',
+  },
+  {
+    ID: 'Riding',
+    Category: 'Casual',
+    Icon: '', // TODO: add icon here
   },
 ]
 export const NW_TRADESKILLS_INFOS_MAP = new CaseInsensitiveMap(NW_TRADESKILLS_INFOS.map((it) => [it.ID, it]))

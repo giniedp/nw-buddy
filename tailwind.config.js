@@ -38,6 +38,7 @@ module.exports = {
           2: '#00cbe9',
           3: '#ff16f7',
           4: '#f7a22d',
+          artifact: '#991d14',
         },
         syndicate: {
           light: '#8732d3',

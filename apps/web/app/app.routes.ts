@@ -8,7 +8,7 @@ export const ROUTES: Routes = [
     path: '',
     pathMatch: 'full',
     component: LandingComponent,
-    canActivate: [landingRedirect]
+    canActivate: [landingRedirect],
   },
   {
     path: 'privacy',
@@ -43,10 +43,6 @@ export const ROUTES: Routes = [
   { path: 'level-xp', loadChildren: () => import('./pages/tools/level-xp').then((m) => m.LevelXpModule) },
   { path: 'territories', loadChildren: () => import('./pages/tools/territories').then((m) => m.TerritoriesModule) },
   { path: 'leveling', loadChildren: () => import('./pages/tools/leveling').then((m) => m.LevelingModule) },
-  {
-    path: 'umbral-shards',
-    loadChildren: () => import('./pages/tools/umbral-shards').then((m) => m.UmbralShardsModule),
-  },
 
   { path: 'dev', loadChildren: () => import('./pages/dev/dev.module').then((m) => m.DevModule) },
   { path: 'links', loadChildren: () => import('./pages/misc/links').then((m) => m.LinksModule) },

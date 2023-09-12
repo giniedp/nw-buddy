@@ -219,7 +219,8 @@ export abstract class DataTableAdapter<T> {
     iconClass,
     rarity,
     named,
-    small
+    artifact,
+    small,
   }: {
     href: string
     target: string
@@ -228,6 +229,7 @@ export abstract class DataTableAdapter<T> {
     iconClass?: string[]
     rarity?: number
     named?: boolean
+    artifact?: boolean
     small?: boolean
   }) {
     linkClass = linkClass?.filter((it) => !!it)
@@ -245,7 +247,11 @@ export abstract class DataTableAdapter<T> {
         this.createIcon((pic, img) => {
           pic.classList.add('inline-block', small ? 'w-8' : 'w-12', small ? 'h-8' : 'h-12')
           if (rarity != null) {
-            pic.classList.add(`nw-item-rarity-${rarity}`, 'nw-item-icon-frame', 'nw-item-icon-bg')
+            pic.classList.add(
+              `nw-item-rarity-${artifact ? 'artifact' : rarity}`,
+              'nw-item-icon-frame',
+              'nw-item-icon-bg'
+            )
             if (rarity) {
               pic.prepend(
                 this.createElement('span', (el) => {

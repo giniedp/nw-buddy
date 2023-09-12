@@ -27,11 +27,13 @@ import { ItemDetailStore } from './item-detail.store'
     class: 'nw-item-header flex flex-row p-1 gap-2',
     '[class.bg-base-300]': 'isLoading',
     '[class.named]': 'named',
-    '[class.nw-item-rarity-0]': '!isLoading && !rarity',
-    '[class.nw-item-rarity-1]': 'rarity === 1',
-    '[class.nw-item-rarity-2]': 'rarity === 2',
-    '[class.nw-item-rarity-3]': 'rarity === 3',
-    '[class.nw-item-rarity-4]': 'rarity === 4',
+    '[class.artifact]': 'artifact',
+    '[class.nw-item-rarity-0]': '!artifact && !isLoading && !rarity',
+    '[class.nw-item-rarity-1]': '!artifact && rarity === 1',
+    '[class.nw-item-rarity-2]': '!artifact && rarity === 2',
+    '[class.nw-item-rarity-3]': '!artifact && rarity === 3',
+    '[class.nw-item-rarity-4]': '!artifact && rarity === 4',
+    '[class.nw-item-rarity-artifact]': '!!artifact',
   },
 })
 export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
@@ -56,6 +58,7 @@ export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
   protected name: string[]
 
   protected named: boolean
+  protected artifact: boolean
   protected rarity: number
   protected rarityName: string
   protected typeName: string
@@ -87,6 +90,7 @@ export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
       namePrefix: this.detail.namePrefix$,
       nameSuffix: this.detail.nameSuffix$,
       isNamed: this.detail.isNamed$,
+      isArtifact: this.detail.isArtifact$,
       rarity: this.detail.finalRarity$,
       rarityName: this.detail.finalRarityName$,
       typeName: this.detail.typeName$,
@@ -98,6 +102,7 @@ export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
       .subscribe((it) => {
         this.name = [it.namePrefix, it.name, it.nameSuffix].filter((it) => !!it)
         this.named = it.isNamed
+        this.artifact = it.isArtifact
         this.rarity = it.rarity
         this.rarityName = it.rarityName
         this.typeName = it.typeName

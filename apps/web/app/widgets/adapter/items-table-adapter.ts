@@ -14,6 +14,7 @@ import {
   getItemTradingGroupLabel,
   getItemTypeLabel,
   getTradingCategoryLabel,
+  isItemArtifact,
   isItemNamed,
 } from '@nw-data/common'
 import { COLS_ITEMDEFINITIONMASTER, ItemDefinitionMaster, Perks } from '@nw-data/generated'
@@ -87,6 +88,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
               icon: getItemIconPath(data) || NW_FALLBACK_ICON,
               rarity: getItemRarity(data),
               named: isItemNamed(data),
+              artifact: isItemArtifact(data),
               iconClass: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
             })
           }),

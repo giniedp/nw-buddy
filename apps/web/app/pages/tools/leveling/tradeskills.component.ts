@@ -17,14 +17,9 @@ import { TradeskillsModule } from '~/widgets/tradeskills'
   },
 })
 export class TradeskillsComponent implements OnInit, OnDestroy {
-  public get skills() {
-    return this.service.skills
-  }
+  public skills = this.service.skills
 
-  public get categories() {
-    return this.service.categories
-  }
-
+  public categories = this.service.categories
   public selected: string
 
   private destroy$ = new Subject()

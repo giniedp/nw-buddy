@@ -19,7 +19,6 @@ import { UploadContent, ShareService } from './share.service'
 import { AppPreferencesService } from '~/preferences'
 import { RouterModule } from '@angular/router'
 import { combineLatest, map } from 'rxjs'
-import { tapDebug } from '~/utils'
 
 export interface ShareOptions {
   /**

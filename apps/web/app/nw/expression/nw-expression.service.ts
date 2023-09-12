@@ -5,14 +5,25 @@ import { getPerkMultiplier, parseNwExpression } from '@nw-data/common'
 import { NwExpressionContext } from './nw-expression-context.service'
 
 type Expressionresource =
+  // | 'AffixStatDataTable'
+  // | 'Afflictions'
+  // | 'Vitals'
+  // //
+  // | 'Type_Ability'
+  // | 'Type_StatusEffect'
+  // | 'StatusEffect'
+  // | 'StatusEffects'
+
   | 'AffixStatDataTable'
   | 'Afflictions'
+  | 'ArtifactsAbilityTable' //
   | 'AttributeThresholdAbilityTable'
   | 'BlunderbussAbilityTable'
   | 'BowAbilityTable'
   | 'ConsumableItemDefinitions'
   | 'DamageTable'
   | 'FireMagicAbilityTable'
+  | 'FlailAbilityTable' //
   | 'GlobalAbilityTable'
   | 'GreatAxeAbilityTable'
   | 'GreatswordAbilityTable'
@@ -23,10 +34,12 @@ type Expressionresource =
   | 'LootLimits'
   | 'ManaCosts_Player'
   | 'MusketAbilityTable'
+  | 'PerksAbilityTable' //
   | 'RapierAbilityTable'
   | 'SpearAbilityTable'
   | 'SpellDataTable_Bow'
   | 'SpellDataTable_FireMagic'
+  | 'SpellDataTable_Flail' //
   | 'SpellDataTable_Global'
   | 'SpellDataTable_GreatAxe'
   | 'SpellDataTable_Greatsword'
@@ -42,19 +55,14 @@ type Expressionresource =
   | 'SwordAbilityTable'
   | 'Type_AbilityData'
   | 'Type_StatusEffectData'
-  | 'Vitals'
+  | 'Type_StatusEffectDataAI_Evil_Knight_Fire_Champion_DangerTick' //+
+  | 'Vitals_Player' //
   | 'VoidGauntletAbilityTable'
   | 'WarHammerAbilityTable'
   //
-  | 'Type_Ability'
-  | 'Type_StatusEffect'
-  | 'StatusEffect'
-  | 'StatusEffects'
-  | 'ConsumablePotency'
-  | 'perkMultiplier'
-  // unknwon
-  //| 'Potency'
-
+  | 'ConsumablePotency' //-
+  | 'perkMultiplier' //-
+  | 'Potency' //- unknown
 @Injectable({ providedIn: 'root' })
 export class NwExpressionService {
   public constructor(private db: NwDbService) {}
@@ -67,6 +75,19 @@ export class NwExpressionService {
     return this.parse(context.text)
       .eval((key) => this.lookup(key, context))
       .pipe(map((value) => String(value)))
+      .pipe(
+        map((value) => {
+          return value
+            .replace(/\{(amount\d+)\}/gi, (match, key) => {
+              console.log(match, key)
+              return `<b>${context[key] || ''}</b>`
+            })
+            .replace(/\{(attribute\d+)\}/gi, (match, key) => {
+              console.log(match, key)
+              return context[key] || '[TODO]'
+            })
+        })
+      )
       .pipe(
         catchError((err) => {
           console.error(err)
@@ -155,8 +176,7 @@ export class NwExpressionService {
     switch (resource) {
       case 'AttributeThresholdAbilityTable':
         return this.db.abilitiesMap
-      case 'Type_StatusEffectData':
-      case 'Type_StatusEffect': {
+      case 'Type_StatusEffectData': {
         return this.db.statusEffectsMap
       }
       case 'DamageTable': {
@@ -189,9 +209,11 @@ export class NwExpressionService {
       case 'SpellDataTable_Musket':
       case 'SpellDataTable_Runes':
       case 'SpellDataTable_VoidGauntlet':
-      case 'SpellDataTable_WarHammer': {
+      case 'SpellDataTable_WarHammer':
+      case 'SpellDataTable_Flail': {
         return this.db.spellsMap
       }
+      case 'ArtifactsAbilityTable':
       case 'BlunderbussAbilityTable':
       case 'BowAbilityTable':
       case 'FireMagicAbilityTable':
@@ -205,16 +227,12 @@ export class NwExpressionService {
       case 'RapierAbilityTable':
       case 'SpearAbilityTable':
       case 'SwordAbilityTable':
-      case 'Type_Ability':
+      case 'FlailAbilityTable':
+      case 'PerksAbilityTable':
       case 'Type_AbilityData':
       case 'VoidGauntletAbilityTable':
       case 'WarHammerAbilityTable': {
         return this.db.abilitiesMap
-      }
-      case 'StatusEffect':
-      case 'StatusEffects':
-      case 'Type_StatusEffectData': {
-        return this.db.statusEffectsMap
       }
       case 'LootLimits': {
         return this.db.lootLimitsMap
@@ -222,8 +240,8 @@ export class NwExpressionService {
       case 'HouseItems': {
         return this.db.housingItemsMap
       }
-      case 'Vitals': {
-        return this.db.vitalsMap
+      case 'Vitals_Player': {
+        return this.db.vitalsPlayerMap
       }
     }
     return throwError(() => new Error(`unknown resource '${resource}' in expression '${expression}'`))

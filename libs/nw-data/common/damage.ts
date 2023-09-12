@@ -98,6 +98,7 @@ const WEAPON_EFFECT_TO_TAG: Record<string, WeaponTag> = {
   Sword: 'Sword',
   VoidGauntlet: 'VoidGauntlet',
   Warhammer: 'Warhammer',
+  Flail: 'Flail',
 }
 
 export function getWeaponTagFromWeapon(item: ItemdefinitionsWeapons | null): WeaponTag | null {

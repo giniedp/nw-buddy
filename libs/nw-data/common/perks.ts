@@ -42,7 +42,22 @@ export function getPerksInherentMODs(perk: Pick<Perks, 'ScalingPerGearScore'>, a
 }
 
 export function getPerkMultiplier(perk: Pick<Perks, 'ScalingPerGearScore'>, gearScore: number) {
-  const scale = patchPrecision(perk.ScalingPerGearScore)
+  let scale: number = 1
+  if (typeof perk.ScalingPerGearScore === 'number') {
+    scale = perk.ScalingPerGearScore
+  } else if (typeof perk.ScalingPerGearScore === 'string') {
+    const tokens = perk.ScalingPerGearScore.split(',')
+    for (const token of tokens) {
+      if (token.includes(':')) {
+        const [gs, value] = token.split(':')
+        if (gearScore >= Number(gs)) {
+          scale = Number(value)
+        }
+      } else {
+        scale = Number(token)
+      }
+    }
+  }
   return Math.max(0, gearScore - 100) * scale + 1
 }
 
@@ -56,9 +71,11 @@ export function getPerkItemClassGsBonus(perk: Perks) {
   })
 }
 export function getItemGsBonus(perk: Perks, item: ItemDefinitionMaster) {
-  return getPerkItemClassGsBonus(perk).find(({ itemClass }) => {
-    return item.ItemClass?.some((it) => eqIgnoreCase(it, itemClass))
-  })?.bonus || 0
+  return (
+    getPerkItemClassGsBonus(perk).find(({ itemClass }) => {
+      return item.ItemClass?.some((it) => eqIgnoreCase(it, itemClass))
+    })?.bonus || 0
+  )
 }
 
 function eqIgnoreCase(a: string, b: string) {
