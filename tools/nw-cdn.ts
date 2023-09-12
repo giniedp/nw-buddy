@@ -121,7 +121,7 @@ program
       return !glbObjects.has(it.key)
     })
     console.log('found', glbFiles.length, '.glb files', 'to upload', toUpload.length)
-    // await uploadFiles(createClient(), toUpload)
+    await uploadFiles(createClient(), toUpload)
   })
 
 program.parse(process.argv)
