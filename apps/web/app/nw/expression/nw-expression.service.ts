@@ -78,13 +78,11 @@ export class NwExpressionService {
       .pipe(
         map((value) => {
           return value
-            .replace(/\{(amount\d+)\}/gi, (match, key) => {
-              console.log(match, key)
+            .replace(/\{(amount\d+)\}/gi, (_, key) => {
               return `<b>${context[key] || ''}</b>`
             })
-            .replace(/\{(attribute\d+)\}/gi, (match, key) => {
-              console.log(match, key)
-              return context[key] || '[TODO]'
+            .replace(/\{(attribute\d+)\}/gi, (_, key) => {
+              return context[key] || '…'
             })
         })
       )

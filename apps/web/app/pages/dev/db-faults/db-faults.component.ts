@@ -131,7 +131,7 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
           colId: 'itemClass',
           headerValueGetter: () => 'Item Class',
           width: 250,
-          valueGetter: this.valueGetter(({ data }) => data.item.ItemClass),
+          valueGetter: this.valueGetter(({ data }) => data.item?.ItemClass),
           cellRenderer: this.r.tagListRenderer(humanize),
           filter: SelectFilter,
           filterParams: SelectFilter.params({
@@ -196,8 +196,8 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
               ok: true,
             }
             node.perks.push(data)
-            const a = (item.ItemClass || []).map((it) => it.toLowerCase())
-            const b = (perk.ItemClass || []).map((it) => it.toLowerCase())
+            const a = (item?.ItemClass || []).map((it) => it.toLowerCase())
+            const b = (perk?.ItemClass || []).map((it) => it.toLowerCase())
             if (a.length && b.length && !a.some((it) => b.includes(it))) {
               isFault = true
               data.ok = false
