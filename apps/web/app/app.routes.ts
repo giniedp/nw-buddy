@@ -34,7 +34,8 @@ export const ROUTES: Routes = [
   { path: 'loot-limits', loadChildren: () => import('./pages/database/loot-limits').then((m) => m.LootLimitsModule) },
 
   { path: 'armorsets', loadChildren: () => import('./pages/tools/armorsets').then((m) => m.ArmorsetsModule) },
-  { path: 'dungeons', loadChildren: () => import('./pages/tools/dungeons').then((m) => m.DungeonsModule) },
+  { path: 'dungeons', redirectTo: 'game-modes' },
+  { path: 'game-modes', loadChildren: () => import('./pages/tools/game-modes').then((m) => m.GameModesModule) },
   { path: 'inventory', loadChildren: () => import('./pages/tools/inventory').then((m) => m.InventoryModule) },
   { path: 'gearsets', loadChildren: () => import('./pages/tools/gearsets').then((m) => m.GearsetsModule) },
   { path: 'skill-trees', loadChildren: () => import('./pages/tools/skill-trees').then((m) => m.SkillTreesModule) },

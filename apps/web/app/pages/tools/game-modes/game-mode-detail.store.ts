@@ -8,7 +8,7 @@ import { LootContext, NwLootService } from '~/nw/loot'
 import { NW_MAX_CHARACTER_LEVEL, getVitalDungeons } from '@nw-data/common'
 import { mapProp, shareReplayRefCount } from '~/utils'
 
-export interface DungeonDetailState {
+export interface GameModeDetailState {
   dungeon: Gamemodes
   difficulty: Mutationdifficulty
 }
@@ -42,7 +42,7 @@ const DUNGEON_LOOT_TAGS = [
 ]
 
 @Injectable()
-export class DungeonDetailStore extends ComponentStore<DungeonDetailState> {
+export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
   public readonly dungeon$ = this.select(({ dungeon }) => dungeon).pipe(filter((it) => !!it))
   public readonly dungeonId$ = this.select(({ dungeon }) => dungeon?.GameModeId)
   public readonly difficulty$ = this.select(({ difficulty }) => difficulty)
@@ -310,7 +310,7 @@ export class DungeonDetailStore extends ComponentStore<DungeonDetailState> {
     })
   }
 
-  public update = this.updater((state: DungeonDetailState, update: Partial<DungeonDetailState>) => {
+  public update = this.updater((state: GameModeDetailState, update: Partial<GameModeDetailState>) => {
     return {
       ...state,
       ...update,

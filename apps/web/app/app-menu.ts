@@ -53,7 +53,7 @@ export const APP_MENU: AppMenuGroup[] = [
     category: 'tools',
     items: [
       { label: 'Territories', path: '/territories', icon: 'assets/icons/menu/territories.png' },
-      { label: 'Expeditions', path: '/dungeons', icon: 'assets/icons/menu/expeditions.png' },
+      { label: 'Game Modes', path: '/game-modes', icon: 'assets/icons/menu/expeditions.png' },
       { label: 'Armorsets', path: '/armorsets', icon: 'assets/icons/menu/armorsets.png' },
       { label: 'Transmog', path: '/transmog', icon: 'assets/icons/menu/transmogtoken.webp' },
 

@@ -37,7 +37,7 @@ import { PlatformService } from '~/utils/services/platform.service'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { LootModule } from '~/widgets/loot'
 import { VitalsDetailModule } from '~/widgets/vitals-detail'
-import { DungeonDetailStore } from './dungeon-detail.store'
+import { GameModeDetailStore } from './game-mode-detail.store'
 
 const DIFFICULTY_TIER_NAME = {
   1: 'Normal',
@@ -72,9 +72,9 @@ export interface Tab {
 }
 @Component({
   standalone: true,
-  selector: 'nwb-dungeon-detail',
-  templateUrl: './dungeon-detail.component.html',
-  styleUrls: ['./dungeon-detail.component.scss'],
+  selector: 'nwb-game-mode-detail',
+  templateUrl: './game-mode-detail.component.html',
+  styleUrls: ['./game-mode-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -87,7 +87,7 @@ export interface Tab {
     PaginationModule,
     IconsModule,
   ],
-  providers: [DestroyService, DungeonDetailStore],
+  providers: [DestroyService, GameModeDetailStore],
   host: {
     class: 'layout-col xl:flex-row',
   },
@@ -102,7 +102,7 @@ export interface Tab {
     trigger('fade', [transition(':enter', [style({ opacity: 0 }), animate('0.150s ease-out', style({ opacity: 1 }))])]),
   ],
 })
-export class DungeonDetailComponent implements OnInit {
+export class GameModeDetailComponent implements OnInit {
   public trackById: TrackByFunction<ItemDefinitionMaster | Housingitems> = (i, item) => getItemId(item)
   public trackByIndex = (i: number) => i
   public trackByTabId: TrackByFunction<Tab> = (i, item) => item.id
@@ -269,6 +269,9 @@ export class DungeonDetailComponent implements OnInit {
   public get requiredLevel() {
     return this.dungeon?.RequiredLevel
   }
+  public get recommendedLevel() {
+    return this.dungeon?.RecommendedLevel
+  }
   public get requiredGearScore() {
     return this.difficulty?.RecommendedGearScore
   }
@@ -277,6 +280,9 @@ export class DungeonDetailComponent implements OnInit {
   }
   public get groupSize() {
     return this.dungeon?.MinGroupSize
+  }
+  public get teamCapacity() {
+    return this.dungeon?.TeamCapacity
   }
   public get isMutable() {
     return this.dungeon?.IsMutable
@@ -293,7 +299,7 @@ export class DungeonDetailComponent implements OnInit {
     private destroy: DestroyService,
     private cdRef: ChangeDetectorRef,
     private domSanitizer: DomSanitizer,
-    private store: DungeonDetailStore,
+    private store: GameModeDetailStore,
     private preferences: DungeonPreferencesService,
     private dialog: Dialog,
     private i18n: TranslateService,

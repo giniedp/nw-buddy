@@ -1,16 +1,5 @@
 <ul
-  class="
-    menu
-    bg-base-200
-    flex-none
-    menu-horizontal menu-compact
-    overflow-auto
-    scrollbar-hide
-    w-full
-    flex-nowrap
-    xl:menu-vertical xl:menu-normal
-    xl:w-56
-  "
+  class="menu bg-base-200 flex-none menu-horizontal menu-compact overflow-auto scrollbar-hide w-full flex-nowrap xl:menu-vertical xl:menu-normal xl:w-56"
   *ngIf="isMutable"
 >
   <li class="menu-title mt-4 hidden xl:block">
@@ -43,50 +32,47 @@
         <span [nwText]="title"></span>
         <span *ngIf="difficultyLevel">, Difficulty {{ difficultyLevel }}</span>
       </h1>
-      <p>
-        <span [nwText]="description" class="text-primary italic"></span>
-        <br />
-        <span *ngIf="!requiredGearScore">
+      <div>
+        <div [nwText]="description" class="text-primary italic"></div>
+        <div *ngIf="recommendedLevel && !requiredLevel">
           <span>Recommended Level: </span>
+          <span class="font-semibold text-accent">{{ recommendedLevel }}</span>
+        </div>
+        <div *ngIf="requiredLevel">
+          <span>Required Level: </span>
           <span class="font-semibold text-accent">{{ requiredLevel }}</span>
-        </span>
-        <span *ngIf="requiredGearScore">
+        </div>
+        <div *ngIf="requiredGearScore">
           <span>Recommended Gear Score: </span>
           <span class="font-semibold text-accent">{{ requiredGearScore }}</span>
-        </span>
-        <br />
-        <span>
+        </div>
+        <div *ngIf="groupSize">
           <span>Minimum players: </span>
           <span class="font-semibold text-accent">{{ groupSize }}</span>
-        </span>
-        <br />
-        <span>
+        </div>
+        <div *ngIf="requirementText">
           <span class="text-primary">In order to complete this Expedition, your group must have at least </span>
           <span [nwText]="requirementText"></span>
-        </span>
-      </p>
-      <div class="flex flex-row flex-wrap layout-gap mt-12">
-        <div>
-          <h2 class="font-bold mt-0">Expedition Items</h2>
-          <div class="flex flex-row gap-2">
-            <a [nwLink]="itemId(item)" [nwLinkResource]="'item'" *ngFor="let item of expeditionItems$ | async">
-              <picture [nwIcon]="item" class="w-16 h-16"></picture>
-            </a>
-          </div>
         </div>
+      </div>
+      <div class="flex flex-row flex-wrap layout-gap mt-12">
+        <ng-container *ngIf="expeditionItems$ | async; let items">
+          <div *ngIf="items?.length">
+            <h2 class="font-bold mt-0">Expedition Items</h2>
+            <div class="flex flex-row gap-2">
+              <a [nwLink]="itemId(item)" [nwLinkResource]="'item'" *ngFor="let item of items">
+                <picture [nwIcon]="item" class="w-16 h-16"></picture>
+              </a>
+            </div>
+          </div>
+        </ng-container>
         <div class="stats bg-opacity-0 self-end" *ngIf="difficulty">
           <div class="stat place-items-center py-0" *ngFor="let row of difficyltyRewards$ | async">
             <div class="stat-title">
               <span [nwText]="row.RankName"></span>
             </div>
             <div
-              class="
-                stat-value
-                cursor-pointer
-                transition-all rounded-md outline outline-4 outline-transparent
-                focus:outline-primary
-                hover:outline-primary
-              "
+              class="stat-value cursor-pointer transition-all rounded-md outline outline-4 outline-transparent focus:outline-primary hover:outline-primary"
               [class.text-primary]="row.Completed"
               (click)="row.toggle()"
             >
@@ -102,7 +88,6 @@
 
     <div class="tabs mt-4 flex-none">
       <ng-container *ngFor="let item of tabs; trackBy: trackByTabId">
-
         <a
           *ngIf="!item.externUrl"
           class="tab tab-bordered"
@@ -119,8 +104,8 @@
           [href]="item.externUrl"
           target="_blank"
         >
-        {{ item.label }}
-        <nwb-icon [icon]="iconExtern" class="ms-1 w-4 h-4"></nwb-icon>
+          {{ item.label }}
+          <nwb-icon [icon]="iconExtern" class="ms-1 w-4 h-4"></nwb-icon>
         </a>
       </ng-container>
     </div>
@@ -212,7 +197,11 @@
 
 <ng-template #tplDungeonBosses>
   <div class="grid layout-gap">
-    <nwb-vital-detail *ngFor="let item of bosses$ | async; trackBy: trackByIndex" [vital]="item" [enableSections]="true"></nwb-vital-detail>
+    <nwb-vital-detail
+      *ngFor="let item of bosses$ | async; trackBy: trackByIndex"
+      [vital]="item"
+      [enableSections]="true"
+    ></nwb-vital-detail>
   </div>
 </ng-template>
 

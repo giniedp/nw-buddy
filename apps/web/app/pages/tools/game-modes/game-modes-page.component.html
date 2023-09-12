@@ -1,0 +1,50 @@
+<ng-template #tplIndex>
+  <nwb-navbar class="bg-base-300 rounded-t-md" [menu]="tplMenu">
+    <ng-template #tplMenu>
+      <li *ngFor="let item of categories$ | async" [routerLinkActive]="'bordered'">
+        <a [routerLink]="['..', item]">
+          <span class="uppercase">{{ item }}</span>
+        </a>
+      </li>
+    </ng-template>
+  </nwb-navbar>
+
+  <div class="grid grid-cols-fill gap-3 p-3 overflow-auto">
+    <a
+      [routerLink]="[item.GameModeId]"
+      *ngFor="let item of modes$ | async"
+      class="card bg-base-100 shadow-xl relative aspect-video overflow-clip"
+    >
+      <picture class="absolute top-0 left-0 w-full h-full block">
+        <img [nwImage]="item.BackgroundImagePath" />
+      </picture>
+      <div class="card-body z-10 bg-gradient-to-b from-transparent to-black flex flex-col justify-end">
+        <h2 class="card-title">
+          <img *ngIf="item.IconPath" [nwImage]="item.IconPath" class="w-6 h-6 scale-150" />
+          <span [nwText]="item.DisplayName"></span>
+        </h2>
+      </div>
+    </a>
+  </div>
+</ng-template>
+
+<ng-template #tplModes>
+  <nwb-navbar class="bg-base-300 rounded-t-md">
+    <ng-container *nwbNavbarMenu="let ctx">
+      <li *ngIf="ctx.isHorizontal">
+        <a [routerLink]="'.'" class="btn-square">
+          <nwb-icon [icon]="iconBack" class="w-6 h-6"></nwb-icon>
+        </a>
+      </li>
+      <li *ngFor="let item of modes$ | async" [routerLinkActive]="'bordered'">
+        <a [routerLink]="[item.GameModeId]">
+          <picture [nwIcon]="item.IconPath" class="w-6 h-6 scale-150"></picture>
+          <span [nwText]="item.DisplayName"></span>
+        </a>
+      </li>
+    </ng-container>
+  </nwb-navbar>
+</ng-template>
+
+<ng-container *ngIf="outlet.isActivated; then tplModes; else tplIndex"></ng-container>
+<router-outlet></router-outlet>

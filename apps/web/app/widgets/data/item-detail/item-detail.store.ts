@@ -453,7 +453,6 @@ function selectPerkInfos(data: {
       context: {},
     })
   }
-  console.log(result)
   return result
 }
 
