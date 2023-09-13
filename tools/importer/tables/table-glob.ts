@@ -49,6 +49,7 @@ export const TABLE_GLOB_PATTERNS = [
   '*_tradeskill*',
   '*_umbralgsupgrades',
   '*_vitals',
+  'vitalstables/*_vitals_*',
   '*_vitals_player',
   '*_vitalsmetadata',
   '*_vitalscategories',
@@ -64,4 +65,6 @@ export const TABLE_GLOB_PATTERNS = [
   'mtx/*',
   'quests/**/*_objectives',
   'questgameevents/*',
+  'mounts/*_mounts',
+  'costumechanges/*_costumechanges',
 ].map((it) => it + '.json')

@@ -1,0 +1,12 @@
+<div class="layout-content p-3 pb-20">
+  <div class="grid grid-cols-fill-sm gap-2">
+    <a
+      *ngFor="let item of data$ | async; trackBy: trackByIndex"
+      [nwbMountTile]="item"
+      [routerLink]="item.MountId"
+      [routerLinkActive]="'border-primary'"
+      class="bg-base-300 rounded-md border border-base-100 hover:border-primary relative transition-all"
+    ></a>
+  </div>
+</div>
+<router-outlet></router-outlet>

@@ -11,7 +11,7 @@ export const TABLE_REMAP_RULES = [
     ],
   },
   {
-    file: /javelindata_vitals\.json/,
+    file: /javelindata_vitals.*\.json/,
     rules: [
       splitToArrayRule({
         properties: ['VitalsCategories', 'LootTags'],

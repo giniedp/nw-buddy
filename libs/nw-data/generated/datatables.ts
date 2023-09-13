@@ -11,6 +11,7 @@ import type {
   Attributeintelligence,
   Attributestrength,
   Categoricalprogression,
+  Costumechanges,
   Crafting,
   Craftingcategories,
   Cursemutations,
@@ -41,6 +42,7 @@ import type {
   ManacostsPlayer,
   Metaachievements,
   Milestonerewards,
+  Mounts,
   Mutationdifficulty,
   Mutationrankdata,
   Objective,
@@ -79,6 +81,7 @@ import type {
   Tradeskillwoodworking,
   VariationsLockedInteractGatherables,
   Vitals,
+  VitalsFirstlight,
   VitalsPlayer,
   Vitalscategories,
   Vitalsleveldata,
@@ -757,6 +760,9 @@ export abstract class NwDataLoader {
   public charactertablesWolfDatatablesNamedDamagetableWolfBarkimedes() {
     return this.load<Damagetable[]>('charactertables/wolf_datatables/named/javelindata_damagetable_wolf_barkimedes.json')
   }
+  public costumechangesCostumechanges() {
+    return this.load<Costumechanges[]>('costumechanges/javelindata_costumechanges.json')
+  }
   public crafting() {
     return this.load<Crafting[]>('javelindata_crafting.json')
   }
@@ -963,6 +969,9 @@ export abstract class NwDataLoader {
   }
   public milestonerewards() {
     return this.load<Milestonerewards[]>('javelindata_milestonerewards.json')
+  }
+  public mountsMounts() {
+    return this.load<Mounts[]>('mounts/javelindata_mounts.json')
   }
   public mtxHousingitemsMtx() {
     return this.load<HousingitemsMtx[]>('mtx/javelindata_housingitems_mtx.json')
@@ -1509,6 +1518,9 @@ export abstract class NwDataLoader {
   }
   public vitalsmodifierdata() {
     return this.load<Vitalsmodifierdata[]>('javelindata_vitalsmodifierdata.json')
+  }
+  public vitalstablesVitalsFirstlight() {
+    return this.load<VitalsFirstlight[]>('vitalstables/javelindata_vitals_firstlight.json')
   }
   public weaponabilitiesAbilityAi() {
     return this.load<Ability[]>('weaponabilities/javelindata_ability_ai.json')

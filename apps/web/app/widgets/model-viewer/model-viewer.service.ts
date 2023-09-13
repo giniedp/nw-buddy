@@ -126,6 +126,25 @@ export class ModelViewerService {
     )
   }
 
+  public byMountId(mountId$: Observable<string>) {
+    return this.db.mount(mountId$).pipe(
+      map((mount) => {
+        if (!mount?.Mesh) {
+          return null
+        }
+        return [
+          {
+            name: mount.DisplayName,
+            label: `Model`,
+            url: `${this.cdnHost || ''}/mounts/${mount.MountId}-Mesh.glb`.toLowerCase(),
+            itemClass: [],
+            itemId: mount.MountId,
+          },
+        ]
+      })
+    )
+  }
+
   private selectItemModels(item: Itemappearancedefinitions, tags: string[] = []): ItemModelInfo[] {
     const result: ItemModelInfo[] = []
     if (!item) {

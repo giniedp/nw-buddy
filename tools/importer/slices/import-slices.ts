@@ -19,13 +19,24 @@ interface GatherableMetadata {
   spawns: Array<{ position: number[]; lootTable: string }>
 }
 export async function importSlices({ inputDir, threads }: { inputDir: string; threads: number }) {
-  const vitalsTableFile = path.join(pathToDatatables(inputDir), 'javelindata_vitals.json')
-  const crcVitalIDs = await readJSONFile(vitalsTableFile, VitalsTableSchema)
-    .then((list) => list.map((it) => it.VitalsID))
-    .then((list) => list.map((it) => it.toLowerCase()).map((value) => [crc32(value), value] as const))
-    .then((list) => Object.fromEntries(list))
   const crcVitalsFile = env.nwData.tmp('..', 'crcVitals.json')
-  await writeJSONFile(crcVitalIDs, crcVitalsFile)
+  await glob([
+    path.join(pathToDatatables(inputDir), 'javelindata_vitals.json'),
+    path.join(pathToDatatables(inputDir), 'vitalstables', '*_vitals_*.json'),
+  ]).then(async (files) => {
+    let result: Record<string, string> = {}
+    for (const file of files) {
+      const crcVitalIDs = await readJSONFile(file, VitalsTableSchema)
+        .then((list) => list.map((it) => it.VitalsID))
+        .then((list) => list.map((it) => it.toLowerCase()).map((value) => [crc32(value), value] as const))
+        .then((list) => Object.fromEntries(list))
+      result = {
+        ...result,
+        ...crcVitalIDs,
+      }
+    }
+    await writeJSONFile(result, crcVitalsFile)
+  })
 
   const categoriesTableFile = path.join(pathToDatatables(inputDir), 'javelindata_vitalscategories.json')
   const crcVitalCategories = await readJSONFile(categoriesTableFile, VitalsCategoriesTableSchema)

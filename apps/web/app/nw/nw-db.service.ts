@@ -197,6 +197,10 @@ export class NwDbService {
   public damageTableMap = indexBy(() => this.damageTables, 'DamageID')
   public damageTable = lookup(() => this.damageTableMap)
 
+  public mounts = table(() => [this.data.mountsMounts()])
+  public mountsMap = indexBy(() => this.mounts, 'MountId')
+  public mount = lookup(() => this.mountsMap)
+
   public armors = table(() => [this.data.itemdefinitionsArmor()])
   public armorsMap = indexBy(() => this.armors, 'WeaponID')
   public armor = lookup(() => this.armorsMap)
@@ -321,7 +325,10 @@ export class NwDbService {
   public vitalsMetadataMap = indexBy(() => this.vitalsMetadata, 'vitalsID')
   public vitalsMeta = lookup(() => this.vitalsMetadataMap)
 
-  public vitals = table(() => [this.data.vitals()])
+  public vitals = table(() => [
+    this.data.vitals(),
+    this.data.vitalstablesVitalsFirstlight() as unknown as Observable<Vitals[]>,
+  ])
   public vitalsMap = indexBy(() => this.vitals, 'VitalsID')
   public vital = lookup(() => this.vitalsMap)
 

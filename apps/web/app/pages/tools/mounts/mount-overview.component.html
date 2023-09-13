@@ -1,0 +1,25 @@
+<ion-header>
+  <div class="flex flex-col-reverse md:flex-row">
+    <nwb-navbar [menu]="tplMenu" [buttons]="tplButtons" class="flex-1">
+      <ng-template #tplMenu>
+        <li *ngFor="let item of categories$ | async" [routerLinkActive]="'bordered'">
+          <a rel="nofollow" [routerLink]="item">
+            <span class="uppercase">{{ item | nwText }}</span>
+          </a>
+        </li>
+      </ng-template>
+      <ng-template #tplButtons> </ng-template>
+    </nwb-navbar>
+    <!-- <div class="flex-none p-2 w-full md:max-w-[300px] flex flex-row gap-1 justify-center">
+      <select [ngModel]="genderFilter$ | async" (ngModelChange)="setGenderFilter($event)" class="select max-w-xs select-sm">
+        <option disabled selected>Gender</option>
+        <option value="">All</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+      </select>
+      <nwb-quicksearch-input #search></nwb-quicksearch-input>
+    </div> -->
+  </div>
+</ion-header>
+
+<router-outlet #outlet></router-outlet>
