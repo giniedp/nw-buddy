@@ -18,7 +18,6 @@ import { TransmogTileComponent } from './transmog-tile.component'
 @Component({
   standalone: true,
   templateUrl: './transmog.component.html',
-  styleUrls: ['./transmog.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,

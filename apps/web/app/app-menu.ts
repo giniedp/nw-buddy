@@ -56,7 +56,7 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Game Modes', path: '/game-modes', icon: 'assets/icons/menu/expeditions.png' },
       { label: 'Armorsets', path: '/armorsets', icon: 'assets/icons/menu/armorsets.png' },
       { label: 'Transmog', path: '/transmog', icon: 'assets/icons/menu/transmogtoken.webp' },
-      { label: 'Mounts', path: '/mounts', icon: '' },
+      { label: 'Mounts', path: '/mounts', icon: 'assets/icons/menu/reward_type_mount.png' },
 
       {
         label: 'Trophies',

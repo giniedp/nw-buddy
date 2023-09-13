@@ -18,6 +18,7 @@ module.exports = {
     },
     extend: {
       gridTemplateColumns: {
+        'fill-3xs': 'repeat(auto-fill, minmax(8rem, 1fr))',
         'fill-2xs': 'repeat(auto-fill, minmax(10rem, 1fr))',
         'fill-xs': 'repeat(auto-fill, minmax(15rem, 1fr))',
         'fill-sm': 'repeat(auto-fill, minmax(20rem, 1fr))',

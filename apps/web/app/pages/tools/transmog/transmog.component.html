@@ -1,18 +1,18 @@
-<div class="layout-content p-3 pb-20">
-  <div *ngFor="let section of data$ | async">
-    <h3 class="text-xl uppercase relative font-caslon text-nw-description mt-4 mb-2 px-2">
+<div class="layout-content flex flex-col gap-6 p-3">
+  <div *ngFor="let section of data$ | async" class="w-full max-w-screen-3xl mx-auto">
+    <h3 class="text-3xl uppercase relative font-caslon text-nw-description py-2">
       {{ section.category | nwHumanize }} ({{ section.items.length }})
     </h3>
-    <div class="grid gap-2">
+    <div class="grid grid-cols-fill-3xs gap-4">
       <a
         *ngFor="let item of section.items; trackBy: trackByIndex"
         [nwbTransmogTile]="item"
         [routerLink]="item.id"
         [routerLinkActive]="'border-primary'"
-        class="bg-base-300 rounded-md p-2 border border-base-100 hover:border-primary relative transition-all"
-        [class.bg-primary]="hoverId$() && (hoverId$() === item.modelId)"
-        [class.bg-opacity-10]="hoverId$() && (hoverId$() === item.modelId)"
-        [class.bg-opacity-100]="!hoverId$() || (hoverId$() !== item.modelId)"
+        class="bg-base-300 rounded-md border border-base-100 hover:border-primary relative transition-all"
+        [class.bg-primary]="hoverId$() && hoverId$() === item.modelId"
+        [class.bg-opacity-10]="hoverId$() && hoverId$() === item.modelId"
+        [class.bg-opacity-100]="!hoverId$() || hoverId$() !== item.modelId"
         (mouseover)="onMouseOver(item)"
         (mouseleave)="onMouseLeave(item)"
       ></a>

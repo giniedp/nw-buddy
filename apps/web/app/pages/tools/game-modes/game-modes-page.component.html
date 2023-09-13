@@ -9,23 +9,25 @@
     </ng-template>
   </nwb-navbar>
 
-  <div class="grid grid-cols-fill gap-3 p-3 overflow-auto">
-    <a
-      [routerLink]="[item.GameModeId]"
-      [queryParamsHandling]="'preserve'"
-      *ngFor="let item of modes$ | async"
-      class="card bg-base-100 shadow-xl relative aspect-video overflow-clip"
-    >
-      <picture class="absolute top-0 left-0 w-full h-full block">
-        <img [nwImage]="item.BackgroundImagePath" />
-      </picture>
-      <div class="card-body z-10 bg-gradient-to-b from-transparent to-black flex flex-col justify-end">
-        <h2 class="card-title">
+  <div class="layout-content p-3">
+    <div class="w-full max-w-screen-3xl mx-auto grid grid-cols-fill gap-4">
+      <a
+        [routerLink]="[item.GameModeId]"
+        [queryParamsHandling]="'preserve'"
+        *ngFor="let item of modes$ | async"
+        class="bg-base-300 aspect-video rounded-md border border-base-100 hover:border-primary relative overflow-clip"
+      >
+        <picture class="block w-full h-full">
+          <img [nwImage]="item.BackgroundImagePath" class="w-full h-full object-cover" />
+        </picture>
+        <h3
+          class="absolute bottom-0 left-0 right-0 p-2 z-10 bg-black bg-opacity-50 flex flex-row gap-2 items-center text-2xl"
+        >
           <img *ngIf="item.IconPath" [nwImage]="item.IconPath" class="w-6 h-6 scale-150" />
           <span [nwText]="item.DisplayName"></span>
-        </h2>
-      </div>
-    </a>
+        </h3>
+      </a>
+    </div>
   </div>
 </ng-template>
 

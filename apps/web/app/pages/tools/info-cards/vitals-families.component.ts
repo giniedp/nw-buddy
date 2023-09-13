@@ -8,7 +8,7 @@ import { VitalsDetailModule } from '~/widgets/vitals-detail'
   standalone: true,
   selector: 'nwb-vitals-families',
   template: `
-    <div [nwbScreenshotFrame]="'Vitals-Families'" class="mb-20">
+    <div [nwbScreenshotFrame]="'Vitals-Families'" class="max-w-screen-3xl mx-auto">
       <nwb-vitals-families-list></nwb-vitals-families-list>
       <nwb-vitals-dungeon-bosses></nwb-vitals-dungeon-bosses>
     </div>

@@ -1,5 +1,9 @@
 <div class="layout-content p-3 pb-20" [nwbInfniteScroll]="items$ | async" #scroll="infiniteScroll">
-  <div class="grid grid-cols-fill gap-4" [nwbScreenshotFrame]="'Gemstones'" [@list]="scroll.count$ | async">
+  <div
+    class="grid grid-cols-fill-sm gap-4 max-w-screen-3xl mx-auto"
+    [nwbScreenshotFrame]="'Gemstones'"
+    [@list]="scroll.count$ | async"
+  >
     <ng-container *ngIf="scroll.data$ | async; let items">
       <nwb-item-card
         *ngFor="let item of items"

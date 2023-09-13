@@ -8,7 +8,7 @@ import { IconsModule } from '~/ui/icons'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PaginationModule } from '~/ui/pagination'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, eqCaseInsensitive, observeRouteParam } from '~/utils'
+import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
 import { TransmogItem } from '~/widgets/data/appearance-detail'
 import { MountTileComponent } from './mount-tile.component'
 
@@ -33,7 +33,7 @@ import { MountTileComponent } from './mount-tile.component'
   animations: [
     trigger('list', [
       transition('* => *', [
-        query(':enter', stagger(1, animateChild()), {
+        query(':enter', stagger(5, animateChild()), {
           optional: true,
         }),
       ]),
@@ -49,17 +49,19 @@ import { MountTileComponent } from './mount-tile.component'
 export class MountComponent {
   private readonly mounts$ = inject(NwDbService).mounts.pipe(map((list) => list.filter((it) => !!it.DisplayName)))
   private readonly categoryId$ = observeRouteParam(inject(ActivatedRoute), 'category')
-  protected readonly data$ = combineLatest({
-    mounts: this.mounts$,
-    category: this.categoryId$,
-  }).pipe(
-    map(({ mounts, category }) => {
+  protected readonly data$ = selectStream(
+    {
+      mounts: this.mounts$,
+      category: this.categoryId$,
+    },
+    ({ mounts, category }) => {
       if (!category || eqCaseInsensitive(category, 'all')) {
         return mounts
       }
       return mounts.filter((it) => eqCaseInsensitive(it.MountType, category))
-    })
+    }
   )
+  protected readonly count$ = selectStream(this.data$, (it) => it?.length)
 
   protected trackByIndex = (index: number) => index
 
