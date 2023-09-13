@@ -1,11 +1,7 @@
 <nwb-detail-drawer class="hidden lg:block lg:w-[420px]" [breakpoints]="[0.15, 0.25, 0.5, 1]">
   <div *nwbDetailDrawerContent="let isModal = isModal" class="layout-col bg-base-200">
     <div class="layout-content layout-pad" [class.mt-2]="isModal">
-      <nwb-mount-detail
-        [mountId]="mountId$ | async"
-        (appearanceChange$)="onEntity($event)"
-        class="bg-black"
-      ></nwb-mount-detail>
+      <nwb-mount-detail [mountId]="mountId$ | async" class="bg-black"></nwb-mount-detail>
     </div>
   </div>
 </nwb-detail-drawer>
