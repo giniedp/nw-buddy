@@ -63,31 +63,31 @@ program
       throw new Error(`Unknown importer module: ${options.module}`)
     }
 
-    // if (hasFilter(Importer.vitals, options.module)) {
-    //   console.log('Slices')
-    //   await importSlices({
-    //     inputDir,
-    //     threads,
-    //   }).then(({ gatherables, vitals }) => {
-    //     return Promise.all([
-    //       // write it into input directory, so table loader will pick it up
-    //       writeJSONFile(vitals, path.join(pathToDatatables(inputDir), 'javelindata_vitalsmetadata.json'), {
-    //         createDir: true,
-    //       }),
-    //       writeJSONFile(vitals, path.join('tmp', 'vitals.json'), {
-    //         createDir: true,
-    //       }),
+    if (hasFilter(Importer.vitals, options.module)) {
+      console.log('Slices')
+      await importSlices({
+        inputDir,
+        threads,
+      }).then(({ gatherables, vitals }) => {
+        return Promise.all([
+          // write it into input directory, so table loader will pick it up
+          writeJSONFile(vitals, path.join(pathToDatatables(inputDir), 'javelindata_vitalsmetadata.json'), {
+            createDir: true,
+          }),
+          writeJSONFile(vitals, path.join('tmp', 'vitals.json'), {
+            createDir: true,
+          }),
 
-    //       // write it into input directory, so table loader will pick it up
-    //       writeJSONFile(gatherables, path.join(pathToDatatables(inputDir), 'javelindata_gatherablesmetadata.json'), {
-    //         createDir: true,
-    //       }),
-    //       writeJSONFile(gatherables, path.join('tmp', 'gatherables.json'), {
-    //         createDir: true,
-    //       }),
-    //     ])
-    //   })
-    // }
+          // write it into input directory, so table loader will pick it up
+          writeJSONFile(gatherables, path.join(pathToDatatables(inputDir), 'javelindata_gatherablesmetadata.json'), {
+            createDir: true,
+          }),
+          writeJSONFile(gatherables, path.join('tmp', 'gatherables.json'), {
+            createDir: true,
+          }),
+        ])
+      })
+    }
 
     console.log('Tables')
     const tables = await importDatatables({
@@ -119,7 +119,15 @@ program
         output: distDir,
         update: options.update,
         tables: tables.map(({ data }) => data),
-        ignoreKeys: ['HiResIconPath'],
+        shouldIgnore: (key, img, obj) => {
+          if (key !== 'HiResIconPath') {
+            return false
+          }
+          if ('MountId' in obj) {
+            return false
+          }
+          return true
+        },
         threads: threads,
         rewritePath: (value) => {
           return path.join(publicDir, value).replace(/\\/g, '/')

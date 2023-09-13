@@ -4,18 +4,18 @@
   <nwb-item-header-content
     class="z-10"
     [title]="name$ | async | nwText | nwTextBreak : ' - '"
-    [category]="'mount'"
-    [subTitle]="type$ | async"
+    [category]="source$ | async"
+    [subTitle]="type$ | async | nwHumanize"
   ></nwb-item-header-content>
 </nwb-item-header>
 <div class="p-3 flex flex-col gap-2">
   <ng-container *ngIf="description$ | async | nwText : { itemId: mountId$ | async } | nwTextBreak; let description">
     <div [innerHTML]="description" class="text-nw-description italic"></div>
-    <ng-container *ngIf="note$ | async | nwText : { itemId: mountId$ | async } | nwTextBreak; let description">
-      <div [innerHTML]="description" class="text-nw-description italic"></div>
-    </ng-container>
     <nwb-item-divider></nwb-item-divider>
   </ng-container>
+
+  <!-- <nwb-item-stat [label]="'Note'" *ngIf="note$ | async; let text">{{ text | nwText }}</nwb-item-stat> -->
+  <nwb-item-stat [label]="'Unlocked at'" *ngIf="unlockMethod$ | async; let text">{{ text | nwText }}</nwb-item-stat>
 
   <ng-container *ngIf="models$ | async; let models">
     <ng-container *ngIf="!modelViewerOpened">

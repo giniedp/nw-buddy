@@ -15,7 +15,9 @@ export class MountDetailStore extends ComponentStore<{ mountId: string }> {
   public readonly icon$ = this.select(this.mount$, (it) => it?.IconPath || NW_FALLBACK_ICON)
   public readonly name$ = this.select(this.mount$, (it) => it?.DisplayName)
   public readonly type$ = this.select(this.mount$, (it) => it?.MountType)
+  public readonly source$ = this.select(this.mount$, (it) => it?.SourceType)
   public readonly description$ = this.select(this.mount$, (it) => it?.Description)
+  public readonly unlockMethod$ = this.select(this.mount$, (it) => it?.UnlockMethod)
   public readonly note$ = this.select(this.mount$, (it) => it?.NOTES)
   public readonly models$ = this.select(inject(ModelViewerService).byMountId(this.mountId$), (it) => it)
 

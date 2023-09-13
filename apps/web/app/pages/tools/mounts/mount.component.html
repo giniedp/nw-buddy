@@ -1,5 +1,5 @@
-<div class="layout-content p-3 pb-20">
-  <div class="grid grid-cols-fill-sm gap-2">
+<div class="layout-content p-3">
+  <div class="grid grid-cols-fill-sm gap-2 max-w-screen-3xl mx-auto">
     <a
       *ngFor="let item of data$ | async; trackBy: trackByIndex"
       [nwbMountTile]="item"

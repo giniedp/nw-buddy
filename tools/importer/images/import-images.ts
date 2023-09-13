@@ -15,7 +15,7 @@ export async function importImages({
   output,
   update,
   tables,
-  ignoreKeys,
+  shouldIgnore,
   rewrite,
   rewritePath,
   threads,
@@ -24,7 +24,7 @@ export async function importImages({
   output: string
   update: boolean
   tables: Object[]
-  ignoreKeys: string[]
+  shouldIgnore?: (key: string, imgPath: string, obj: Object) => boolean
   rewrite?: Record<string, RewriteImageEntryFn>
   rewritePath?: (value: string) => string
   threads: number
@@ -34,7 +34,7 @@ export async function importImages({
   await withProgressBar({ barName: 'Scan', tasks: tables }, async (table, _, log) => {
     // log(table.relative)
     scanImages([table], {
-      ignoreKeys: ignoreKeys,
+      shouldIgnore: shouldIgnore,
       rewrite: rewrite,
       rewritePath: rewritePath,
       images: images,
@@ -63,31 +63,26 @@ export async function importImages({
 function scanImages(
   tables: Object | Object[],
   options?: {
-    ignoreKeys: string[]
+    shouldIgnore?: (key: string, imgPath: string, obj: Object) => boolean
     rewrite?: Record<string, RewriteImageEntryFn>
     rewritePath?: (value: string) => string
     images?: Map<string, string>
   }
 ) {
   const images = options.images || new Map<string, string>()
-  const ignore = new Set<string>(options?.ignoreKeys || [])
+  const shouldIgnore = options?.shouldIgnore
   walkJsonStrings(tables, (key, value, obj) => {
     value = options?.rewrite?.[key]?.(key, value, obj) ?? value
-    if (!value.match(/^lyshineui/gi) || ignore.has(key)) {
+    if (!value.match(/^lyshineui/gi) || shouldIgnore(key, value, obj)) {
       return
     }
     const source = path.normalize(value.toLowerCase())
-    const sourcePNG =
-      replaceExtname(source, '.png')
-        .toLowerCase()
-        .replace(/\\/g, '/')
-        // removes space before extension
-        //   - "lyshineui/images/icons/items/weapon/1hthrowingaxelostt2 .png"
-        .replace(/\s+\.png$/, '.png')
-
-        if (sourcePNG.includes(' ')) {
-          console.error(new Error(`XXX "${sourcePNG}"`))
-        }
+    const sourcePNG = replaceExtname(source, '.png')
+      .toLowerCase()
+      .replace(/\\/g, '/')
+      // removes space before extension
+      //   - "lyshineui/images/icons/items/weapon/1hthrowingaxelostt2 .png"
+      .replace(/\s+\.png$/, '.png')
     const targetWEBP = replaceExtname(source, '.webp')
       .toLowerCase()
       .replace(/\\/g, '/')

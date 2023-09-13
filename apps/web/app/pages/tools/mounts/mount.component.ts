@@ -47,7 +47,7 @@ import { MountTileComponent } from './mount-tile.component'
   ],
 })
 export class MountComponent {
-  private readonly mounts$ = inject(NwDbService).mounts
+  private readonly mounts$ = inject(NwDbService).mounts.pipe(map((list) => list.filter((it) => !!it.DisplayName)))
   private readonly categoryId$ = observeRouteParam(inject(ActivatedRoute), 'category')
   protected readonly data$ = combineLatest({
     mounts: this.mounts$,

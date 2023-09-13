@@ -9,8 +9,11 @@ import { NwModule } from '~/nw'
   selector: 'nwb-mount-tile,a[nwbMountTile]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <picture class="block w-full aspect-[5/4] relative">
+    <picture class="block w-full aspect-video relative">
       <img class="w-full h-full object-cover" [nwImage]="icon" />
+      <h3 class="absolute bottom left-0 right-0 bottom-0 bg-black bg-opacity-50 px-3 py-2 text-lg font-bold">
+        {{ title | nwText }}
+      </h3>
     </picture>
   `,
   imports: [CommonModule, NwModule],
@@ -26,10 +29,12 @@ export class MountTileComponent {
 
   @Input()
   public set item(value: Mounts) {
-    this.icon = value?.MTXIconPath || value?.IconPath || NW_FALLBACK_ICON
+    this.icon = value?.HiResIconPath || NW_FALLBACK_ICON
+    this.title = value?.DisplayName
   }
 
   protected icon: string
+  protected title: string
 
   public constructor() {
     //

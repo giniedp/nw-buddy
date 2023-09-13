@@ -18,9 +18,12 @@ module.exports = {
     },
     extend: {
       gridTemplateColumns: {
+        'fill-2xs': 'repeat(auto-fill, minmax(10rem, 1fr))',
+        'fill-xs': 'repeat(auto-fill, minmax(15rem, 1fr))',
         'fill-sm': 'repeat(auto-fill, minmax(20rem, 1fr))',
         fill: 'repeat(auto-fill, minmax(25rem, 1fr))',
         'fill-lg': 'repeat(auto-fill, minmax(30rem, 1fr))',
+        'fill-2lg': 'repeat(auto-fill, minmax(35rem, 1fr))',
         dl: 'max-content auto',
         dl2: 'repeat(2, max-content) auto',
         dl3: 'repeat(3, max-content) auto',
