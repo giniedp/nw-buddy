@@ -1,4 +1,4 @@
-import { DIALOG_DATA, Dialog, DialogConfig, DialogModule, DialogRef } from '@angular/cdk/dialog'
+import { CdkDialogContainer, DIALOG_DATA, Dialog, DialogConfig, DialogModule, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -13,10 +13,11 @@ import {
   Optional,
   Output,
   ViewChild,
+  forwardRef,
 } from '@angular/core'
-import { Itemappearancedefinitions } from '@nw-data/generated'
-import { Subject, catchError, firstValueFrom, from, of, switchMap, takeUntil, tap } from 'rxjs'
-import { NwModule } from '~/nw'
+import { Itemappearancedefinitions, Mounts } from '@nw-data/generated'
+import { Subject, catchError, firstValueFrom, from, map, of, switchMap, takeUntil, tap } from 'rxjs'
+import { NwDbService, NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgCamera, svgCircleExclamation, svgExpand, svgXmark } from '~/ui/icons/svg'
 import { TranslateService } from '../../i18n'
@@ -29,6 +30,8 @@ import { ModelViewerStore } from './model-viewer.store'
 import { getItemRotation } from './utils/get-item-rotation'
 import { supportsWebGL } from './utils/webgl-support'
 import type { DefaultViewer } from './viewer'
+import { DyePanelComponent } from './dye-panel.component'
+
 export interface ModelViewerState {
   models: ItemModelInfo[]
   index: number
@@ -44,7 +47,7 @@ export interface ModelViewerState {
   templateUrl: './model-viewer.component.html',
   styleUrls: ['./model-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, DialogModule, IconsModule],
+  imports: [CommonModule, NwModule, DialogModule, IconsModule, DyePanelComponent],
   providers: [ModelViewerStore],
   host: {
     class: 'layout-col bg-base-300 relative z-0',
@@ -73,6 +76,11 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
   }
 
   @Input()
+  public set enableDye(value: boolean) {
+    this.store.patchState({ enableDye: value })
+  }
+
+  @Input()
   public hideFloor: boolean = false
 
   @Output()
@@ -87,6 +95,7 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
   protected hasLoaded$ = this.store.hasLoaded$
   protected hasError$ = this.store.hasError$
   protected canClose$ = this.store.canClose$
+  protected canDye$ = this.store.canDye$
   protected buttons$ = this.store.buttons$
 
   protected iconClose = svgXmark
@@ -95,6 +104,7 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
   protected iconError = svgCircleExclamation
 
   private viewer: DefaultViewer
+  private model: ViewerModel
 
   public constructor(
     @Optional()
@@ -106,7 +116,8 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
     private zone: NgZone,
     private screenshots: ScreenshotService,
     private i18n: TranslateService,
-    private store: ModelViewerStore
+    protected store: ModelViewerStore,
+    private db: NwDbService
   ) {
     this.store.patchState({
       canClose: !!ref,
@@ -134,6 +145,12 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
       )
       .pipe(takeUntil(this.store.destroy$))
       .subscribe()
+
+    this.store.state$.pipe(takeUntil(this.store.destroy$)).subscribe(() => {
+      if (this.model) {
+        this.updateDye(this.model)
+      }
+    })
   }
 
   public ngOnDestroy(): void {
@@ -176,12 +193,17 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
     const rotation = await getItemRotation(data?.itemClass)
     viewer.sceneManager.clearScene(true, false)
 
-    return viewer.loadModel({
-      url: data.url,
-      rotationOffsetAngle: 0,
-      rotation: { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w },
-      entryAnimation: null,
-    })
+    return viewer
+      .loadModel({
+        url: data.url,
+        rotationOffsetAngle: 0,
+        rotation: { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w },
+        entryAnimation: null,
+      })
+      .then((model) => {
+        this.model = model
+        this.detectDyeFeature(model)
+      })
   }
 
   private async getViewer() {
@@ -192,7 +214,8 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
       return null
     }
 
-    const { createViewer } = await import('./viewer')
+    const { createViewer, registerDyePlugin } = await import('./viewer')
+    registerDyePlugin()
     this.viewer = await createViewer({
       element: this.viewerHost.nativeElement,
       zone: this.zone,
@@ -218,6 +241,7 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
   private disposeViewer() {
     this.viewer?.dispose()
     this.viewer = null
+    this.model = null
     this.viewerHost.nativeElement.innerHTML = ''
   }
 
@@ -237,13 +261,47 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
   private async detectDyeFeature(model: ViewerModel) {
     const { getAppearance } = await import('./viewer')
     const appearance = model.meshes.map((mesh) => getAppearance(mesh.material)).find((it) => !!it)
-    console.log('appearance', appearance)
+    if (!appearance) {
+      this.store.patchState({
+        appearance: null,
+        dyeColors: null,
+      })
+      return
+    }
+    const itemType = (appearance as Mounts).MountId ? 'MountDye' : 'Dye'
+    const items = await firstValueFrom(this.db.itemsByItemTypeMap)
+      .then((it) => it.get(itemType))
+      .then((it) => Array.from(it?.values() || []))
+      .then((list) => list.map((it) => Number(it.ItemID.match(/\d+/)[0])))
+    const colors = await firstValueFrom(this.db.dyeColors).then((list) => {
+      return list.filter((it) => items.includes(it.Index))
+    })
     this.store.patchState({
+      enableDye: !!appearance,
       appearance: appearance,
+      dyeColors: colors,
+      dyeR: null,
+      dyeG: null,
+      dyeB: null,
+      dyeA: null,
     })
   }
 
-  private updateDye() {
-    //const appearance = this.get(({ appearance }) => appearance)
+  private async updateDye(model: ViewerModel) {
+    const { updateDyeChannel } = await import('./viewer')
+    updateDyeChannel({
+      model: model,
+      scene: this.viewer.sceneManager.scene,
+      maskR: this.store.dyeR$()?.ColorAmount,
+      maskG: this.store.dyeG$()?.ColorAmount,
+      maskB: this.store.dyeB$()?.ColorAmount,
+      maskA: this.store.dyeA$()?.SpecAmount,
+      dyeR: this.store.dyeR$()?.Color,
+      dyeG: this.store.dyeG$()?.Color,
+      dyeB: this.store.dyeB$()?.Color,
+      dyeA: this.store.dyeA$()?.SpecColor,
+      debugMask: this.store.dyeDebug$(),
+      dyeEnabled: this.store.canDye$(),
+    })
   }
 }

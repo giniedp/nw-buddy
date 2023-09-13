@@ -1,7 +1,6 @@
 import { NgZone } from '@angular/core'
 import 'babylonjs'
 import { DefaultViewer, ViewerModel } from 'babylonjs-viewer'
-import { assetUrl } from '~/utils/asset-url'
 
 export async function createViewer(options: {
   element: HTMLElement

@@ -57,6 +57,7 @@ export const TABLE_GLOB_PATTERNS = [
   '*_vitalsmodifierdata',
   '*_weaponmastery',
   '*_xpamountsbylevel',
+  '*_dyecolors',
   'arenas/*',
   'charactertables/**/*',
   'gamemodemutators/*',

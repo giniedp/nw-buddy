@@ -1,14 +1,17 @@
 import 'babylonjs'
 import { BABYLON, ViewerModel } from 'babylonjs-viewer'
-import { DyeLoaderExtension, getMaskTexture } from './dye-loader-extension'
+import { getMaskTexture } from './dye-loader-extension'
+import { Scene } from 'babylonjs'
 
 const NAME = 'DyeMaterialPlugin'
 
-BABYLON.RegisterMaterialPlugin(NAME, (material) => {
-  const instance = new DyeMaterialPlugin(material)
-  DyeMaterialPlugin.setPlugin(material, instance)
-  return instance
-})
+export function registerDyePlugin() {
+  BABYLON.RegisterMaterialPlugin(NAME, (material) => {
+    const instance = new DyeMaterialPlugin(material)
+    DyeMaterialPlugin.setPlugin(material, instance)
+    return instance
+  })
+}
 
 export class DyeMaterialPlugin extends BABYLON.MaterialPluginBase {
   public static getPlugin(material: BABYLON.Material | null): DyeMaterialPlugin | null {
@@ -155,6 +158,7 @@ export class DyeMaterialPlugin extends BABYLON.MaterialPluginBase {
 
 export function updateDyeChannel(options: {
   model: ViewerModel
+  scene: Scene
   maskR: number
   maskG: number
   maskB: number
@@ -166,8 +170,8 @@ export function updateDyeChannel(options: {
   debugMask: boolean
   dyeEnabled: boolean
 }) {
-  options.model.meshes.forEach((mesh) => {
-    const dye = DyeMaterialPlugin.getPlugin(mesh.material)
+  options.scene.materials.forEach((material) => {
+    const dye = DyeMaterialPlugin.getPlugin(material)
     if (!dye) {
       return
     }

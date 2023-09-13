@@ -112,6 +112,11 @@ export class NwDbService {
     () => this.items,
     (it) => [it.ArmorAppearanceM, it.ArmorAppearanceF, it.WeaponAppearanceOverride]
   )
+  public itemsByItemTypeMap = indexGroupSetBy(
+    () => this.items,
+    (it) => it.ItemType
+  )
+
   public housingItems = table(() => [
     this.data.housingitems(),
     this.data.mtxHousingitemsMtx() as any as Observable<Housingitems[]>,
@@ -425,6 +430,10 @@ export class NwDbService {
   public instrumentAppearances = table(() => this.data.itemdefinitionsInstrumentsappearances())
   public instrumentAppearancesMap = indexBy(() => this.instrumentAppearances, 'WeaponAppearanceID')
   public instrumentAppearance = lookup(() => this.instrumentAppearancesMap)
+
+  public dyeColors = table(() => this.data.dyecolors())
+  public dyeColorsMap = indexBy(() => this.dyeColors, 'Index')
+  public dyeColor = lookup(() => this.dyeColorsMap)
 
   public constructor(public readonly data: NwDataService) {
     //

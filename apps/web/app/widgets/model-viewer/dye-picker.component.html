@@ -1,0 +1,41 @@
+<div class="text-xl text-center bg-base-300 px-2 py-3">Pick a Dye</div>
+
+<div class="flex flex-row flex-wrap gap-4 p-2 overflow-auto">
+  <button class="btn btn-square" (click)="commit(null)" [tooltip]="'Clear'"></button>
+  <button
+    *ngFor="let color of colors"
+    [tooltip]="tplTip"
+    class="btn btn-square"
+    [style.background-color]="color.Color"
+    (click)="commit(color)"
+  >
+    <ng-template #tplTip>
+      <div class="bg-base-100 rounded-md p-2 m-1 flex flex-col gap-1">
+        <h4 class="font-bold">{{ color.Name }} - {{ color.Category }}</h4>
+        <div class="flex flex-row gap-1">
+          <span
+            class="inline-block w-4 h-4 rounded-sm"
+            [style.background-color]="color.Color"
+            [style.opacity]="color.ColorAmount"
+          ></span>
+          <span>Color</span>
+        </div>
+        <div class="flex flex-row gap-1">
+          <span
+            class="inline-block w-4 h-4 rounded-sm"
+            [style.background-color]="color.SpecColor"
+            [style.opacity]="color.SpecAmount"
+          ></span>
+          <span>Tint</span>
+        </div>
+        <div class="grid grid-cols-2"></div>
+      </div>
+    </ng-template>
+  </button>
+</div>
+
+<div class="flex justify-end gap-1 layout-pad">
+  <div class="btn-group">
+    <label class="btn btn-ghost" (click)="cancel()">Close</label>
+  </div>
+</div>

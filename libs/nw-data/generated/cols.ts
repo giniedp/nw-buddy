@@ -773,6 +773,18 @@ export const COLS_DAMAGETYPES = {
   "TypeID": "string",
   "UseAllDamageModifiers": "string",
 }
+export const COLS_DYECOLORS = {
+  "Category": "string",
+  "Color": "string",
+  "ColorAmount": "number",
+  "ColorOverride": "number",
+  "Index": "number",
+  "IsEntitlement": "number",
+  "MaskGlossShift": "number",
+  "Name": "string",
+  "SpecAmount": "number",
+  "SpecColor": "string",
+}
 export const COLS_ELEMENTALMUTATIONPERKS = {
   "Description": "string",
   "ElementalMutationTypeId": "string",

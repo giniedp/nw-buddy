@@ -4912,6 +4912,18 @@ export interface Xpamountsbylevel {
     XPAlarmThreshold2:           number;
     XPToLevel:                   number;
 }
+export interface Dyecolors {
+    Category:       string;
+    Color:          string;
+    ColorAmount:    number;
+    ColorOverride:  number;
+    Index:          number;
+    IsEntitlement:  number;
+    MaskGlossShift: number;
+    Name:           string;
+    SpecAmount:     number;
+    SpecColor:      string;
+}
 export interface Arenadefinitions {
     AudioGroup:            string;
     AudioState:            string;

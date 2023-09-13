@@ -1,0 +1,35 @@
+<button
+  class="btn btn-sm btn-square"
+  [tooltip]="'Primary'"
+  [style.background-color]="dyeR?.Color"
+  [disabled]="!!dyeRDisabled"
+  (click)="pickR()"
+></button>
+<button
+  class="btn btn-sm btn-square"
+  [tooltip]="'Secondary'"
+  [style.background-color]="dyeG?.Color"
+  [disabled]="!!dyeGDisabled"
+  (click)="pickG()"
+></button>
+<button
+  class="btn btn-sm btn-square"
+  [tooltip]="'Accent'"
+  [style.background-color]="dyeB?.Color"
+  [disabled]="!!dyeBDisabled"
+  (click)="pickB()"
+></button>
+<button
+  class="btn btn-sm btn-square"
+  [tooltip]="'Tint'"
+  [style.background-color]="dyeA?.Color"
+  [disabled]="!!dyeADisabled"
+  (click)="pickA()"
+></button>
+<button
+  [tooltip]="debug ? 'Hide Mask Layers' : 'Show Mask Layers'"
+  class="btn btn-sm btn-square"
+  [class.btn-outline]="!debug"
+  [class.btn-primary]="debug"
+  (click)="toggleDebug()"
+></button>

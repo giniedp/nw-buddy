@@ -17,6 +17,7 @@ import type {
   Cursemutations,
   Damagetable,
   Damagetypes,
+  Dyecolors,
   Elementalmutationperks,
   Elementalmutations,
   GameEvent,
@@ -822,6 +823,9 @@ export abstract class NwDataLoader {
   }
   public damagetypes() {
     return this.load<Damagetypes[]>('javelindata_damagetypes.json')
+  }
+  public dyecolors() {
+    return this.load<Dyecolors[]>('javelindata_dyecolors.json')
   }
   public ftueDamagetableDamned() {
     return this.load<Damagetable[]>('javelindata_ftue_damagetable_damned.json')
