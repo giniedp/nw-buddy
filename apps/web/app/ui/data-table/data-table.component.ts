@@ -90,6 +90,7 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
           ...options,
           suppressColumnMoveAnimation: true,
           rowHeight: options.rowHeight ?? 56,
+          headerHeight: options.headerHeight ?? 32,
           rowSelection: this.multiSelect ? 'multiple' : options.rowSelection || 'single',
           suppressMenuHide: true,
           overlayLoadingTemplate:
