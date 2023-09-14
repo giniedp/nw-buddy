@@ -169,7 +169,7 @@ export function getItemPerkInfos(
 }
 
 export function getItemPerks(item: ItemDefinitionMaster, perks: Map<string, Perks>) {
-  return item && getItemPerkIds(item).map((it) => perks.get(it))
+  return item && getItemPerkIds(item).map((it) => perks.get(it)).filter((it) => it != null)
 }
 
 const PERK_BUCKET_KEYS: Array<keyof ItemDefinitionMaster> = [
@@ -294,17 +294,6 @@ export function getItemIconPath(item: ItemDefinitionMaster | Housingitems, femal
   if (!item) {
     return null
   }
-  // if (isMasterItem(item)) {
-  //   if (female && item.ArmorAppearanceF) {
-  //     return item.ArmorAppearanceF
-  //   }
-  //   if (item.ArmorAppearanceM) {
-  //     return item.ArmorAppearanceM
-  //   }
-  //   if (item.WeaponAppearanceOverride) {
-  //     return item.WeaponAppearanceOverride
-  //   }
-  // }
   return item.IconPath
 }
 
