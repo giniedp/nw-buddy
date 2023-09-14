@@ -42,23 +42,40 @@ export function getPerksInherentMODs(perk: Pick<Perks, 'ScalingPerGearScore'>, a
 }
 
 export function getPerkMultiplier(perk: Pick<Perks, 'ScalingPerGearScore'>, gearScore: number) {
-  let scale: number = 1
-  if (typeof perk.ScalingPerGearScore === 'number') {
-    scale = perk.ScalingPerGearScore
-  } else if (typeof perk.ScalingPerGearScore === 'string') {
-    const tokens = perk.ScalingPerGearScore.split(',')
-    for (const token of tokens) {
-      if (token.includes(':')) {
-        const [gs, value] = token.split(':')
-        if (gearScore >= Number(gs)) {
-          scale = Number(value)
-        }
-      } else {
-        scale = Number(token)
-      }
-    }
+  if (!perk.ScalingPerGearScore) {
+    return 1
   }
-  return Math.max(0, gearScore - 100) * scale + 1
+
+  if (Number.isFinite(Number(perk.ScalingPerGearScore)) ) {
+    return Math.max(0, gearScore - 100) * Number(perk.ScalingPerGearScore) + 1
+  }
+
+  if (typeof perk.ScalingPerGearScore === 'string') {
+    let result = 0
+    const ranges = parseScalingRanges(perk.ScalingPerGearScore)
+    ranges.forEach(({ gs, value}, i) => {
+      if (gs > gearScore) {
+        return
+      }
+      const next = ranges[i + 1]
+      const min = gs
+      const max = Math.min(gearScore, next ? next.gs : gearScore)
+      result += Math.max(0, max - min) * value
+    })
+    return result + 1
+  }
+  return 1
+}
+
+function parseScalingRanges(value: string) {
+  // sample: "0.00125,625:0.0095"
+  return value.split(',') .map((it, i) => {
+    if (it.includes(':')) {
+      const [gs, value] = it.split(':')
+      return { gs: Number(gs), value: Number(value) }
+    }
+    return { gs: 100, value: Number(it) }
+  })
 }
 
 export function getPerkItemClassGsBonus(perk: Perks) {

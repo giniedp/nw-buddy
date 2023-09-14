@@ -20,6 +20,7 @@ import {
   getItemTypeName,
   getPerkBucketPerkIDs,
   getPerkBucketPerks,
+  getPerkMultiplier,
   getPerkTypeWeight,
   getPerksInherentMODs,
   hasItemGearScore,
@@ -417,6 +418,7 @@ function selectPerkInfos(data: {
       }
 
       if (stat?.AttributePlacingMods) {
+        const scale = getPerkMultiplier(perk, detail.itemGS)
         result.push({
           ...detail,
           text: [
@@ -424,7 +426,7 @@ function selectPerkInfos(data: {
               label: '',
               description: perk.StatDisplayText,
               context: Object.fromEntries(
-                stat.AttributePlacingMods.split(',').map((it, i) => ['amount' + (i + 1), it])
+                stat.AttributePlacingMods.split(',').map((it, i) => ['amount' + (i + 1), Math.floor(Number(it) * scale) ])
               ),
             },
           ],
