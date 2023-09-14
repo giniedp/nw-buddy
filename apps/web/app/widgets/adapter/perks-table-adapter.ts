@@ -7,7 +7,7 @@ import {
   isPerkInherent,
 } from '@nw-data/common'
 import { Ability, COLS_AFFIXSTATS, COLS_PERKS, Perks } from '@nw-data/generated'
-import { ColDef, ColGroupDef, GridOptions } from 'ag-grid-community'
+import { ColDef, ColGroupDef, GridOptions } from '@ag-grid-community/core'
 import { Observable, combineLatest, defer, map, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService } from '~/nw'

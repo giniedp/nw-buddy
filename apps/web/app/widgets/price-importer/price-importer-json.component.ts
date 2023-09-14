@@ -5,7 +5,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/
 import { FormsModule } from '@angular/forms'
 import { getItemIconPath, getItemId, getItemRarity, isItemNamed, isMasterItem } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
-import { GridOptions } from 'ag-grid-community'
+import { GridOptions } from '@ag-grid-community/core'
 import { BehaviorSubject, combineLatest, defer, map, of, switchMap, take, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService, NwModule } from '~/nw'

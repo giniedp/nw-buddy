@@ -11,7 +11,7 @@ import {
   isVitalCombatCategory,
 } from '@nw-data/common'
 import { COLS_VITALS, Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/generated'
-import { ColDef, GridOptions } from 'ag-grid-community'
+import { ColDef, GridOptions } from '@ag-grid-community/core'
 import { Observable, combineLatest, defer, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService } from '~/nw'
@@ -30,16 +30,16 @@ export interface Entity extends Vitals {
 @Injectable()
 export class VitalsTableAdapter extends DataTableAdapter<Entity> {
   public static provider() {
-    return dataTableProvider({
+    return dataTableProvider<Entity>({
       adapter: VitalsTableAdapter,
     })
   }
 
-  public entityID(item: Vitals): string {
+  public entityID(item: Entity): string {
     return item.VitalsID
   }
 
-  public entityCategory(item: Vitals): string {
+  public entityCategory(item: Entity): string {
     return item.Family
   }
 

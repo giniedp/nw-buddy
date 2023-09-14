@@ -1,4 +1,4 @@
-import { IDoesFilterPassParams, IFilterComp, IFilterParams, RowNode } from 'ag-grid-community'
+import { IDoesFilterPassParams, IFilterComp, IFilterParams, IRowNode, RowNode } from '@ag-grid-community/core'
 import m from 'mithril'
 import { humanize } from '~/utils'
 import { evaluateFilter, SelectFilterGroup } from './filter'
@@ -13,7 +13,7 @@ export interface SelectFilterOption {
 export interface SelectFilterParams {
   showSearch?: boolean
   conditionAND?: boolean
-  optionsGetter?: (node: RowNode) => SelectFilterOption[]
+  optionsGetter?: (node: IRowNode) => SelectFilterOption[]
 }
 
 export class SelectFilter implements IFilterComp {
@@ -129,7 +129,7 @@ export class SelectFilter implements IFilterComp {
     this.filterOptions = Array.from(values.values()).sort((a, b) => String(a.label).localeCompare(String(b.label)))
   }
 
-  protected extractOptionsFromNode(node: RowNode): SelectFilterOption[] {
+  protected extractOptionsFromNode(node: IRowNode): SelectFilterOption[] {
     const value = this.getValue(node, node.data)
     if (Array.isArray(value)) {
       return value.map((it) => {
@@ -146,7 +146,7 @@ export class SelectFilter implements IFilterComp {
       },
     ]
   }
-  protected getValue(node: RowNode, data: any) {
+  protected getValue(node: IRowNode, data: any) {
     const result = this.params.valueGetter({
       api: this.params.api,
       colDef: this.params.colDef,
@@ -160,7 +160,7 @@ export class SelectFilter implements IFilterComp {
     return result ?? null
   }
 
-  private getLabel(node: RowNode, data: any, value: any) {
+  private getLabel(node: IRowNode, data: any, value: any) {
     const formatter = this.params.colDef.valueFormatter
     if (typeof formatter === 'function') {
       return formatter({

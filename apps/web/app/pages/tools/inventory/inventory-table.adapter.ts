@@ -1,6 +1,6 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { Inject, Injectable, NgZone, OnDestroy, Optional } from '@angular/core'
-import { GridOptions, RowDataTransaction } from 'ag-grid-community'
+import { GridOptions, RowDataTransaction } from '@ag-grid-community/core'
 import { uniqBy } from 'lodash'
 import { debounceTime, defer, EMPTY, filter, merge, Observable, of, Subject, switchMap, take, takeUntil } from 'rxjs'
 import { ItemInstanceRow, ItemInstancesStore } from '~/data'

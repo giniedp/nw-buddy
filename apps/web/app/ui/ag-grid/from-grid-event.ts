@@ -1,4 +1,4 @@
-import { GridApi } from 'ag-grid-community'
+import { GridApi } from '@ag-grid-community/core'
 import { Observable, tap } from 'rxjs'
 
 export function fromGridEvent<T = unknown>(api: GridApi, event: string) {

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { COLS_DAMAGETABLE, Damagetable } from '@nw-data/generated'
-import { ColDef, GridOptions } from 'ag-grid-community'
+import { ColDef, GridOptions } from '@ag-grid-community/core'
 import { Observable, defer, map, of } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { damageTypeIcon } from '~/nw/weapon-types'

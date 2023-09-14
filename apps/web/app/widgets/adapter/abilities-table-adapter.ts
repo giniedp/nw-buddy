@@ -7,7 +7,7 @@ import {
   getWeaponTagLabel,
 } from '@nw-data/common'
 import { Ability, COLS_ABILITY, Statuseffect } from '@nw-data/generated'
-import { ColDef, GridOptions } from 'ag-grid-community'
+import { ColDef, GridOptions } from '@ag-grid-community/core'
 import { sortBy } from 'lodash'
 import { Observable, combineLatest, defer, map, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, ViewChild } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
-import { Optional } from 'ag-grid-community'
+import { Optional } from '@ag-grid-community/core'
 import { NwModule } from '~/nw'
 import { DataTableAdapter } from './data-table-adapter'
 import { DataTableComponent } from './data-table.component'

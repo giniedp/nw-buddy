@@ -1,7 +1,7 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { Inject, Injectable, NgZone, Optional } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
-import { GridOptions, RowDataTransaction } from 'ag-grid-community'
+import { GridOptions, RowDataTransaction } from '@ag-grid-community/core'
 import { debounceTime, defer, filter, merge, Observable, of, Subject, switchMap, take, takeUntil } from 'rxjs'
 import { GearsetRow, GearsetsStore } from '~/data'
 import { TranslateService } from '~/i18n'

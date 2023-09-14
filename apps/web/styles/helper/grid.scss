@@ -1,8 +1,8 @@
-
-.ag-cell  {
-  display:  flex;
+.ag-cell {
+  display: flex;
   flex-direction: column;
   justify-content: center;
+  line-height: initial !important;
 }
 .multiline-cell {
   line-height: 1.2 !important;

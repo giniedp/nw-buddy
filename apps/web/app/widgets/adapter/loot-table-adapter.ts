@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { LootTable } from '@nw-data/common'
-import { GridOptions } from 'ag-grid-community'
+import { GridOptions } from '@ag-grid-community/core'
 import { Observable, defer, map, of } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { SelectFilter } from '~/ui/ag-grid'

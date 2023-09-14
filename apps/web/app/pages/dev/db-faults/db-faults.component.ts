@@ -9,7 +9,7 @@ import {
   isPerkInherent,
 } from '@nw-data/common'
 import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
-import { GridOptions } from 'ag-grid-community'
+import { GridOptions } from '@ag-grid-community/core'
 import { Observable, combineLatest, defer, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService, NwModule } from '~/nw'

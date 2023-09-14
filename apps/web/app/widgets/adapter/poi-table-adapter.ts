@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { PoiDefinition } from '@nw-data/generated'
-import { GridOptions } from 'ag-grid-community'
+import { GridOptions } from '@ag-grid-community/core'
 import { defer, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService } from '~/nw'

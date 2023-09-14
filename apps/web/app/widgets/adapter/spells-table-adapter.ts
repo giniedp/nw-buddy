@@ -1,7 +1,7 @@
 import { Injectable, Optional } from '@angular/core'
 import { COLS_SPELLTABLE } from '@nw-data/generated'
 import { Spelltable } from '@nw-data/generated'
-import { ColDef, GridOptions } from 'ag-grid-community'
+import { ColDef, GridOptions } from '@ag-grid-community/core'
 import { defer, map, Observable, of } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { SelectFilter } from '~/ui/ag-grid'
@@ -13,7 +13,7 @@ export class SpellsTableAdapter extends DataTableAdapter<Spelltable> {
   public static provider(config?: DataTableAdapterOptions<Spelltable>) {
     return dataTableProvider({
       adapter: SpellsTableAdapter,
-      options: config
+      options: config,
     })
   }
 
@@ -25,9 +25,8 @@ export class SpellsTableAdapter extends DataTableAdapter<Spelltable> {
     return {
       icon: null,
       label: item['$source'],
-      value: item['$source']
+      value: item['$source'],
     }
-
   }
   public override get persistStateId(): string {
     return this.config?.persistStateId
@@ -45,22 +44,23 @@ export class SpellsTableAdapter extends DataTableAdapter<Spelltable> {
         }),
       ],
     })
-  ).pipe(map((options) => {
-    appendFields(options.columnDefs, Array.from(Object.entries(COLS_SPELLTABLE)))
-    return options
-  }))
+  ).pipe(
+    map((options) => {
+      appendFields(options.columnDefs, Array.from(Object.entries(COLS_SPELLTABLE)))
+      return options
+    })
+  )
 
   public entities: Observable<Spelltable[]> = defer(() => this.db.spells)
 
   public constructor(
     private db: NwDbService,
     @Optional()
-    private config: DataTableAdapterOptions<Spelltable>,
+    private config: DataTableAdapterOptions<Spelltable>
   ) {
     super()
   }
 }
-
 
 function appendFields(columns: Array<ColDef>, fields: string[][]) {
   for (const [field, type] of fields) {

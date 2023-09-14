@@ -7,7 +7,7 @@ import {
   OnChanges,
   OnInit,
 } from '@angular/core'
-import { GridOptions } from 'ag-grid-community'
+import { GridOptions } from '@ag-grid-community/core'
 import { BehaviorSubject, combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
 
 import { CommonModule } from '@angular/common'

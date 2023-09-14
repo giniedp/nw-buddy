@@ -11,7 +11,7 @@ import {
   getTradeSkillLabel,
 } from '@nw-data/common'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
-import { GridOptions } from 'ag-grid-community'
+import { GridOptions } from '@ag-grid-community/core'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { Observable, combineLatest, defer, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'

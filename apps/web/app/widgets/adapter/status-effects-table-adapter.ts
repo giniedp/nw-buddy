@@ -1,7 +1,7 @@
 import { Inject, Injectable, Optional } from '@angular/core'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { COLS_STATUSEFFECT, Statuseffect } from '@nw-data/generated'
-import { ColDef, GridOptions } from 'ag-grid-community'
+import { ColDef, GridOptions } from '@ag-grid-community/core'
 import { sortBy } from 'lodash'
 import { Observable, defer, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'

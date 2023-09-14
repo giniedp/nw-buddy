@@ -1,3 +1,7 @@
+import { ClientSideRowModelModule } from '@ag-grid-community/client-side-row-model'
+import { Grid, GridOptions, GridReadyEvent, ModuleRegistry } from '@ag-grid-community/core'
+import { CsvExportModule } from '@ag-grid-community/csv-export'
+import { InfiniteRowModelModule } from '@ag-grid-community/infinite-row-model'
 import {
   ChangeDetectionStrategy,
   Component,
@@ -9,23 +13,12 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  ViewChild,
 } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Grid, GridOptions, GridReadyEvent } from 'ag-grid-community'
-import {
-  BehaviorSubject,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  merge,
-  ReplaySubject,
-  skipWhile,
-  Subject,
-  take,
-  takeUntil,
-  tap,
-} from 'rxjs'
+import { Subject, debounceTime, distinctUntilChanged, filter, merge, skipWhile, take, takeUntil, tap } from 'rxjs'
 
+ModuleRegistry.registerModules([ClientSideRowModelModule, InfiniteRowModelModule, CsvExportModule])
 export interface AgGridState<T> {
   data: T[]
   options: GridOptions<T>
@@ -35,11 +28,10 @@ export interface AgGridState<T> {
 @Component({
   standalone: true,
   selector: 'nwb-ag-grid',
-  template: '',
-  styleUrls: ['./ag-grid.component.scss'],
+  template: ` <div class="ag-grid ag-theme-alpine-dark select-text flex-1 w-full h-full" #container></div> `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'ag-grid select-text',
+    class: 'flex-1 flex flex-col',
   },
 })
 export class AgGridComponent<T = any> extends ComponentStore<AgGridState<T>> implements OnInit, OnDestroy {
@@ -64,6 +56,9 @@ export class AgGridComponent<T = any> extends ComponentStore<AgGridState<T>> imp
 
   @Output()
   public gridReady = new EventEmitter<GridReadyEvent>()
+
+  @ViewChild('container', { static: true, read: ElementRef })
+  protected container: ElementRef<HTMLElement>
 
   protected readonly data$ = this.select((it) => it.data)
   protected readonly options$ = this.select((it) => it.options)
@@ -111,7 +106,7 @@ export class AgGridComponent<T = any> extends ComponentStore<AgGridState<T>> imp
   }
 
   private createGrid(options: GridOptions) {
-    const grid = new Grid(this.elRef.nativeElement, {
+    const grid = new Grid(this.container.nativeElement, {
       ...(options || {}),
       onGridReady: (e) => this.onGridReady(e, options),
     })

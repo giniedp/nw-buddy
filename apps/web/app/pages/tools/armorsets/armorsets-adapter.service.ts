@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { ColDef, GridOptions } from 'ag-grid-community'
+import { ColDef, GridOptions } from '@ag-grid-community/core'
 import { groupBy } from 'lodash'
 import m from 'mithril'
 import { Observable, combineLatest, defer, map, merge, of, skip, takeUntil } from 'rxjs'

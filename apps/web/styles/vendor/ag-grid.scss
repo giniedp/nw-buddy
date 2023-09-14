@@ -1,21 +1,13 @@
-@import 'ag-grid-community/src/styles/ag-grid.scss';
-@import 'ag-grid-community/src/styles/ag-theme-alpine-dark/sass/ag-theme-alpine-dark-mixin';
-
-.ag-grid {
-  @include ag-theme-alpine-dark(
-    (
-      borders: false,
-      cell-horizontal-padding: 8px,
-      background-color: #1a1a1a,
-      header-background-color: #1a1a1a,
-      odd-row-background-color: #181818,
-      control-panel-background-color: #181818,
-      input-focus-box-shadow: none,
-      card-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5),
-      range-selection-border-color: transparent,
-    )
-  );
-  .ag-cell {
-    line-height: initial !important;
-  }
-}
+@use '@ag-grid-community/styles' as ag;
+@include ag.grid-styles(
+  (
+    theme: alpine-dark,
+    borders: false,
+    cell-horizontal-padding: 8px,
+    background-color: #1a1a1a,
+    header-background-color: #1a1a1a,
+    odd-row-background-color: #181818,
+    control-panel-background-color: #181818,
+    card-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5),
+  )
+);

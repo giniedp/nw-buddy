@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core'
-import { GridOptions } from 'ag-grid-community'
+import { GridOptions } from '@ag-grid-community/core'
 import { defer, Observable, of } from 'rxjs'
 import { GearsetRecord, GearsetsDB } from '~/data'
 import { DataTableAdapter, dataTableProvider } from '~/ui/data-table'

@@ -1,20 +1,20 @@
-import { IDoesFilterPassParams, IFilterComp, IFilterParams, RowNode } from 'ag-grid-community'
+import { IDoesFilterPassParams, IFilterComp, IFilterParams, IRowNode, RowNode } from '@ag-grid-community/core'
 
 export class ItemTrackerFilter implements IFilterComp {
   private el: HTMLElement
   private options = [
     {
       value: Math.pow(2, 0),
-      color: 'bg-orange-400'
+      color: 'bg-orange-400',
     },
     {
       value: Math.pow(2, 1),
-      color: 'bg-yellow-400'
+      color: 'bg-yellow-400',
     },
     {
       value: Math.pow(2, 2),
-      color: 'bg-green-400'
-    }
+      color: 'bg-green-400',
+    },
   ]
   private state: Set<number> = new Set()
   private params: IFilterParams
@@ -22,7 +22,7 @@ export class ItemTrackerFilter implements IFilterComp {
   public init(params: IFilterParams) {
     this.params = params
     this.el = document.createElement('ul')
-    this.el.classList.add('menu','menu-compact', 'rounded-md', 'w-12', 'bg-base-300')
+    this.el.classList.add('menu', 'menu-compact', 'rounded-md', 'w-12', 'bg-base-300')
     this.renderFilter()
   }
 
@@ -32,9 +32,12 @@ export class ItemTrackerFilter implements IFilterComp {
 
   public doesFilterPass(params: IDoesFilterPassParams) {
     const value = this.getValue(params.node, params.data)
-    return value && this.options.some((opt) => {
-      return this.state.has(value & opt.value)
-    })
+    return (
+      value &&
+      this.options.some((opt) => {
+        return this.state.has(value & opt.value)
+      })
+    )
   }
 
   public isFilterActive() {
@@ -70,7 +73,7 @@ export class ItemTrackerFilter implements IFilterComp {
       this.el.append(li)
       const a = document.createElement('a')
       li.append(a)
-      a.classList.add('w-6','h-6','mask','mask-star-2', 'opacity-25', 'hover:opacity-50', it.color)
+      a.classList.add('w-6', 'h-6', 'mask', 'mask-star-2', 'opacity-25', 'hover:opacity-50', it.color)
       a.setAttribute('data-value', `${it.value}`)
       a.addEventListener('click', () => this.toggleFilter(it.value))
     })
@@ -97,7 +100,7 @@ export class ItemTrackerFilter implements IFilterComp {
     })
   }
 
-  protected getValue(node: RowNode, data: any) {
+  protected getValue(node: IRowNode, data: any) {
     return this.params.valueGetter({
       api: this.params.api,
       colDef: this.params.colDef,
@@ -106,7 +109,7 @@ export class ItemTrackerFilter implements IFilterComp {
       context: this.params.context,
       data: data,
       getValue: (field) => node.data[field],
-      node: node
+      node: node,
     })
   }
 }

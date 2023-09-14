@@ -1,4 +1,4 @@
-import { AgPromise, ICellRendererComp, ICellRendererParams } from 'ag-grid-community'
+import { AgPromise, ICellRendererComp, ICellRendererParams } from '@ag-grid-community/core'
 import { map, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
 import { ItemPreferencesService } from '~/preferences'
 import { createElement } from '~/utils'
@@ -53,7 +53,7 @@ export class BookmarkCell<T> implements ICellRendererComp<T> {
             'scale-100',
             'hover:scale-125',
             'opacity-25',
-            item.color
+            item.color,
           ],
           tap: (el) => {
             el.onclick = (e) => {
@@ -62,7 +62,6 @@ export class BookmarkCell<T> implements ICellRendererComp<T> {
             }
             item.el = el
           },
-
         }
       }),
     })

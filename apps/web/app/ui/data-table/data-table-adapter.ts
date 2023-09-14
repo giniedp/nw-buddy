@@ -9,8 +9,8 @@ import {
   ValueFormatterParams,
   ValueGetterFunc,
   ValueGetterParams,
-} from 'ag-grid-community'
-import { AgGridCommon } from 'ag-grid-community/dist/lib/interfaces/iCommon'
+} from '@ag-grid-community/core'
+//import { AgGridCommon } from 'ag-grid-community/dist/lib/interfaces/iCommon'
 import {
   BehaviorSubject,
   defer,
@@ -33,6 +33,7 @@ import {
   TagName,
 } from '~/utils'
 import { AsyncCellRenderer, AsyncCellRendererParams, fromGridEvent, GridEvents } from '../ag-grid'
+import type { AgGridCommon } from '@ag-grid-community/core/dist/esm/es6/interfaces/iCommon'
 
 export interface DataTableCategory {
   label: string
@@ -112,10 +113,10 @@ export abstract class DataTableAdapter<T> {
     this.scriptFilter$.next(value)
   }
 
-  private grid$ = new ReplaySubject<AgGridCommon<any>>(1)
+  private grid$ = new ReplaySubject<AgGridCommon<T, unknown>>(1)
   protected scriptFilter$ = new BehaviorSubject<string>(null)
 
-  public setGrid(grid: AgGridCommon<any>) {
+  public setGrid(grid: AgGridCommon<T, unknown>) {
     this.grid$.next(grid)
   }
 

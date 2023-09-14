@@ -13,7 +13,7 @@ import {
   ViewChild,
 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { Optional } from 'ag-grid-community'
+import { Optional } from '@ag-grid-community/core'
 import { NwModule } from '~/nw'
 import { IconsModule } from '../icons'
 import { svgChevronLeft } from '../icons/svg'
@@ -47,7 +47,6 @@ export interface DataTablePickerDialogOptions<T> {
    */
   config: DialogConfig<string[]>
 }
-
 
 @Component({
   standalone: true,
@@ -104,7 +103,7 @@ export class DataTablePickerDialog implements AfterViewInit {
     @Optional()
     adapter: DataTableAdapter<unknown>,
     @Inject(DIALOG_DATA)
-    options: DataTablePickerDialogOptions<any>,
+    options: DataTablePickerDialogOptions<any>
   ) {
     this.adapter = adapter
     this.title = options.title

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { NW_FALLBACK_ICON, getQuestTypeIcon } from '@nw-data/common'
 import { COLS_OBJECTIVE, Objective } from '@nw-data/generated'
-import { ColDef, GridOptions } from 'ag-grid-community'
+import { ColDef, GridOptions } from '@ag-grid-community/core'
 import { defer, map, Observable, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService } from '~/nw'
@@ -47,7 +47,7 @@ export class QuestsTableAdapter extends DataTableAdapter<Objective> {
               href: this.info.link('quest', String(data.ObjectiveID)),
               icon: getQuestTypeIcon(data.Type) || NW_FALLBACK_ICON,
               iconClass: ['scale-125', 'transition-all', 'translate-x-0', 'hover:translate-x-1'],
-              small: true
+              small: true,
             })
           }),
         }),
@@ -127,7 +127,7 @@ export class QuestsTableAdapter extends DataTableAdapter<Objective> {
           colId: 'difficultyLevel',
           headerValueGetter: () => 'Difficulty Level',
           field: this.fieldName('DifficultyLevel'),
-          filter: 'agNumberColumnFilter'
+          filter: 'agNumberColumnFilter',
         }),
         this.colDef({
           colId: 'requiredLevel',
@@ -150,10 +150,12 @@ export class QuestsTableAdapter extends DataTableAdapter<Objective> {
         }),
       ],
     })
-  ).pipe(map((options) => {
-    appendFields(options.columnDefs, Array.from(Object.entries(COLS_OBJECTIVE)))
-    return options
-  }))
+  ).pipe(
+    map((options) => {
+      appendFields(options.columnDefs, Array.from(Object.entries(COLS_OBJECTIVE)))
+      return options
+    })
+  )
 
   public entities: Observable<Objective[]> = defer(() => {
     return this.db.quests

@@ -1,6 +1,6 @@
 import { DOCUMENT } from '@angular/common'
 import { Inject, Injectable } from '@angular/core'
-import { ICellRendererFunc } from 'ag-grid-community'
+import { ICellRendererFunc } from '@ag-grid-community/core'
 import { assetUrl, createEl, CreateElAttrs, TagName } from '~/utils'
 
 @Injectable({ providedIn: 'root' })

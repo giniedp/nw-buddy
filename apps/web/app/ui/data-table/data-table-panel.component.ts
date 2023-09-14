@@ -1,8 +1,8 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { Column, ColumnState } from 'ag-grid-community'
-import { AgGridCommon } from 'ag-grid-community/dist/lib/interfaces/iCommon'
+import { Column, ColumnState } from '@ag-grid-community/core'
+
 import { BehaviorSubject, combineLatest, defer, filter, firstValueFrom, map, switchMap, take } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
 import { IconsModule } from '../icons'
@@ -23,6 +23,7 @@ import { DataTableAdapter } from './data-table-adapter'
 import { TooltipModule } from '~/ui/tooltip'
 import { QuicksearchModule, QuicksearchService } from '../quicksearch'
 import { executeTypescript, transpileTypescript } from '../code-editor'
+import type { AgGridCommon } from '@ag-grid-community/core/dist/esm/es6/interfaces/iCommon'
 
 @Component({
   standalone: true,
@@ -175,9 +176,9 @@ export class DataTablePanelComponent {
         language: 'typescript',
         positive: 'Close',
       },
-    }).closed
-      .pipe(take(1))
-      .pipe(filter((it) =>  !!it))
+    })
+      .closed.pipe(take(1))
+      .pipe(filter((it) => !!it))
       .subscribe((result) => {
         this.adapter.scriptFilter = result
         executeTypescript(result)
@@ -192,7 +193,7 @@ export class DataTablePanelComponent {
     this.colState.next(grid.columnApi.getColumnState())
   }
 
-  private getHeaderName(grid: AgGridCommon<any>, col: Column) {
+  private getHeaderName(grid: AgGridCommon<any, unknown>, col: Column) {
     const def = col.getColDef()
     if (def.headerName) {
       return def.headerName

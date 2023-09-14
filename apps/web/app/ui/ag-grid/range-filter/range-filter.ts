@@ -1,4 +1,4 @@
-import { IDoesFilterPassParams, IFilterComp, IFilterParams, RowNode } from 'ag-grid-community'
+import { IDoesFilterPassParams, IFilterComp, IFilterParams, IRowNode, RowNode } from '@ag-grid-community/core'
 import m from 'mithril'
 
 export interface RangeFilterParams {
@@ -14,7 +14,7 @@ export class RangeFilter implements IFilterComp {
   private el: HTMLElement
   private state = {
     min: null as number,
-    max: null as number
+    max: null as number,
   }
   private params: IFilterParams
 
@@ -42,8 +42,8 @@ export class RangeFilter implements IFilterComp {
               oninput: (e: InputEvent) => {
                 this.state.min = (e.target as HTMLInputElement).valueAsNumber
                 this.params.filterChangedCallback()
-              }
-            })
+              },
+            }),
           ]),
           m('div.form-control', [
             m('input.input.input-bordered.input-sm', {
@@ -53,9 +53,9 @@ export class RangeFilter implements IFilterComp {
               oninput: (e: InputEvent) => {
                 this.state.max = (e.target as HTMLInputElement).valueAsNumber
                 this.params.filterChangedCallback()
-              }
-            })
-          ])
+              },
+            }),
+          ]),
         ])
       },
     })
@@ -94,14 +94,14 @@ export class RangeFilter implements IFilterComp {
 
   public getModel() {
     return {
-      ...this.state
+      ...this.state,
     }
   }
 
-  public setModel(state: { min: number, max: number }) {
+  public setModel(state: { min: number; max: number }) {
     this.state = {
       min: state?.min,
-      max: state?.max
+      max: state?.max,
     }
   }
 
@@ -115,7 +115,7 @@ export class RangeFilter implements IFilterComp {
     this.el = null
   }
 
-  protected getValue(node: RowNode, data: any) {
+  protected getValue(node: IRowNode, data: any) {
     return this.params.valueGetter({
       api: this.params.api,
       colDef: this.params.colDef,

@@ -18,7 +18,7 @@ import {
   isItemNamed,
 } from '@nw-data/common'
 import { COLS_ITEMDEFINITIONMASTER, ItemDefinitionMaster, Perks } from '@nw-data/generated'
-import { ColDef, GridOptions } from 'ag-grid-community'
+import { ColDef, GridOptions } from '@ag-grid-community/core'
 import { Observable, combineLatest, defer, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService } from '~/nw'
@@ -30,12 +30,12 @@ import { ItemTrackerFilter } from '~/widgets/item-tracker'
 import { BookmarkCell, TrackingCell } from './components'
 
 export type ItemsTableItem = ItemDefinitionMaster & {
-  $perks: Perks[]
-  $perkBuckets: string[]
+  $perks?: Perks[]
+  $perkBuckets?: string[]
 }
 
 @Injectable()
-export class ItemsTableAdapterConfig extends DataTableAdapterOptions<ItemDefinitionMaster> {
+export class ItemsTableAdapterConfig extends DataTableAdapterOptions<ItemsTableItem> {
   hideUserData?: boolean
 }
 
@@ -69,6 +69,8 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
 
   public options = defer(() =>
     of<GridOptions>({
+      enableCellTextSelection: true,
+      //suppressCellFocus: true,
       rowSelection: 'single',
       rowBuffer: 0,
 

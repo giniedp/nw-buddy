@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { NW_FALLBACK_ICON, getItemIconPath, getItemId, getItemRarity } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster, Lootlimits } from '@nw-data/generated'
-import { GridOptions } from 'ag-grid-community'
+import { GridOptions } from '@ag-grid-community/core'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { Observable, combineLatest, defer, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'

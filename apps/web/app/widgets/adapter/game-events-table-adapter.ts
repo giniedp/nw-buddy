@@ -1,7 +1,7 @@
 import { Inject, Injectable, Optional } from '@angular/core'
 import { COLS_GAMEEVENT } from '@nw-data/generated'
 import { GameEvent } from '@nw-data/generated'
-import { ColDef, GridOptions } from 'ag-grid-community'
+import { ColDef, GridOptions } from '@ag-grid-community/core'
 import { Observable, defer, map, of } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { SelectFilter } from '~/ui/ag-grid'
@@ -190,8 +190,7 @@ export class GameEventsTableAdapter extends DataTableAdapter<GameEvent> {
 
   public entities: Observable<GameEvent[]> = defer(() => {
     return this.config?.source || this.db.gameEvents
-  })
-  .pipe(shareReplayRefCount(1))
+  }).pipe(shareReplayRefCount(1))
 
   public constructor(
     private db: NwDbService,

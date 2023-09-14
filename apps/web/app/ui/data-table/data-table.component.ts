@@ -12,7 +12,7 @@ import {
   Optional,
   Output,
 } from '@angular/core'
-import { ColumnApi, ColumnState, Events, GridApi, GridOptions, GridReadyEvent } from 'ag-grid-community'
+import { ColumnApi, ColumnState, Events, GridApi, GridOptions, GridReadyEvent } from '@ag-grid-community/core'
 import { isEqual } from 'lodash'
 import {
   asyncScheduler,
@@ -184,15 +184,16 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
       items: this.items$,
       category: this.category$,
     })
-  ).pipe(
-    map(({ adapter, items, category }) => {
-      if (!category) {
-        return items
-      }
-      return items.filter((it) => intersectsCategory(adapter.entityCategory(it), category))
-    })
   )
-  .pipe(shareReplayRefCount(1))
+    .pipe(
+      map(({ adapter, items, category }) => {
+        if (!category) {
+          return items
+        }
+        return items.filter((it) => intersectsCategory(adapter.entityCategory(it), category))
+      })
+    )
+    .pipe(shareReplayRefCount(1))
 
   private gridStorage: StorageNode<{ columns?: any; filter?: any }>
   private filterStorage: StorageNode<{ filter?: any }>
@@ -351,9 +352,9 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     }
     api.forEachNode((it) => {
       if (toSelect && toSelect.includes(this.adapter.entityID(it.data))) {
-        it.setSelected(true, false, true)
+        it.setSelected(true, false, 'api')
       } else if (it.isSelected()) {
-        it.setSelected(false, false, true)
+        it.setSelected(false, false, 'api')
       }
     })
     if (options?.ensureVisible) {
@@ -433,7 +434,6 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
     }
   }
 }
-
 
 function intersectsCategory(catSet: string | DataTableCategory | Array<string | DataTableCategory>, category: string) {
   if (Array.isArray(catSet)) {

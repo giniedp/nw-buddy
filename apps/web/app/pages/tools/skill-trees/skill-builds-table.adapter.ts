@@ -1,7 +1,7 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { Inject, Injectable, NgZone, Optional } from '@angular/core'
 import { getAbilityCategoryTag } from '@nw-data/common'
-import { GridOptions, RowDataTransaction } from 'ag-grid-community'
+import { GridOptions, RowDataTransaction } from '@ag-grid-community/core'
 import { Observable, Subject, debounceTime, defer, filter, merge, of, switchMap, take, takeUntil } from 'rxjs'
 import { SkillBuildRow, SkillBuildsStore } from '~/data'
 import { TranslateService } from '~/i18n'

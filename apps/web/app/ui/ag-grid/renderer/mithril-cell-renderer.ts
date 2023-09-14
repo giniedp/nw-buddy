@@ -1,4 +1,4 @@
-import { ICellRendererParams } from 'ag-grid-community'
+import { ICellRendererParams } from '@ag-grid-community/core'
 import m from 'mithril'
 import { Observable, Subject } from 'rxjs'
 
@@ -15,10 +15,11 @@ export function mithrilCell<T, S = any>(comp: m.Component<MithrilCellAttrs<T>, S
       this.params = params
       this.el = params.eParentOfValue
       m.mount(this.el, {
-        view: () => m(comp, {
-          ...this.params,
-          destroy$: this.destroy$
-        })
+        view: () =>
+          m(comp, {
+            ...this.params,
+            destroy$: this.destroy$,
+          }),
       })
     }
     public refresh(params: ICellRendererParams) {

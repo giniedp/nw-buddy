@@ -1,4 +1,4 @@
-import { AgPromise, ICellRendererComp, ICellRendererParams } from 'ag-grid-community'
+import { AgPromise, ICellRendererComp, ICellRendererParams } from '@ag-grid-community/core'
 import { map, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
 import { ItemMeta, ItemPreferencesService } from '~/preferences'
 import { createElement } from '~/utils'
@@ -49,7 +49,7 @@ export class TrackingCell<T> implements ICellRendererComp<T> {
     this.params = params
     this.el = createElement(document, {
       tag: 'div',
-      classList: ['text-right']
+      classList: ['text-right'],
     })
     this.view = createCell(document)
     this.view.onclick = () => this.editOpen()
@@ -58,7 +58,7 @@ export class TrackingCell<T> implements ICellRendererComp<T> {
         this.trackedValue = value
         this.write()
       },
-      close: () => this.editClose()
+      close: () => this.editClose(),
     })
 
     this.item$.next(params.data)
