@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { TooltipModule } from '~/ui/tooltip'
-import { shareReplayRefCount } from '~/utils'
+import { selectStream, shareReplayRefCount, tapDebug } from '~/utils'
 import { AmountMode, CraftingStep } from '../types'
 
 @Component({
@@ -46,18 +46,22 @@ export class CraftingStepComponent {
     this.store.patchState({ amountMode: value })
   }
 
-  protected vm$ = combineLatest({
+
+  protected vm$ = selectStream({
     expand: this.store.expand$,
     amountMode: this.store.amountMode$,
     amountIsGross: this.store.amountIsGross$,
     amount: this.store.amount$,
     item: this.store.item$,
+    currency: this.store.currency$,
     itemId: this.store.itemId$,
     category: this.store.category$,
     options: this.store.options$,
     children: this.store.children$,
     hasChildren: this.store.children$.pipe(map((it) => !!it?.length))
-  }).pipe(shareReplayRefCount(1))
+  }, (it) => it, {
+    debounce: true
+  })
 
   public trackByIndex = (i: number) => i
 

@@ -68,6 +68,7 @@ export class AttributesEditorComponent implements OnInit {
   public assignedChanged = this.store.assigned$.pipe(distinctUntilChanged((a, b) => isEqual(a, b)))
 
   protected stats$ = this.store.stats$
+  protected steps$ = this.store.steps$
   protected pointsSpent$ = this.store.pointsSpent$
   protected pointsAvailable$ = this.store.pointsAvailable$
   protected arrowLeft = svgAngleLeft
@@ -104,7 +105,7 @@ export class AttributesEditorComponent implements OnInit {
   public ngOnInit() {
     const src = combineLatest({
       level: this.level$,
-      points: this.freeMode$.pipe(map((it) => (it ? 270 : 0))),
+      points: this.freeMode$.pipe(map((it) => (it ? 270 : 0))), // TODO: calculate points
       base: this.freeMode$.pipe(
         switchMap((it) => {
           if (!it) {
@@ -125,7 +126,6 @@ export class AttributesEditorComponent implements OnInit {
     })
     this.store.loadLazy(src)
   }
-
   protected updateAttribute(state: AttributeState, points: number) {
     this.store.update({ attribute: state.ref, value: points })
   }

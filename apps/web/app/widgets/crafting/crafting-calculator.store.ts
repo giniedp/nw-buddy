@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { EMPTY, combineLatest, map, switchMap, take, tap } from 'rxjs'
+import { Crafting } from '@nw-data/generated'
+import { EMPTY, map, switchMap, take, tap } from 'rxjs'
+import { PreferencesService, StorageScopeNode } from '~/preferences'
 import { CraftingCalculatorService } from './crafting-calculator.service'
 import { AmountMode, CraftingStep } from './types'
-import { PreferencesService, StorageScopeNode } from '~/preferences'
-import { Crafting } from '@nw-data/generated'
 
 export interface CraftingCalculatorState {
   recipeId: string
@@ -74,11 +74,11 @@ export class CraftingCalculatorStore extends ComponentStore<CraftingCalculatorSt
   }
 
   private initializeState(recipe: Crafting) {
-    // const cache = this.cache?.get<CraftingCalculatorState>(recipe?.RecipeID)
-    // if (cache) {
-    //   this.patchState(cache)
-    //   return EMPTY
-    // }
+    const cache = this.cache?.get<CraftingCalculatorState>(recipe?.RecipeID)
+    if (cache) {
+      this.patchState(cache)
+      return EMPTY
+    }
     return this.service.solveRecipe(recipe).pipe(
       map((step) => {
         this.patchState({

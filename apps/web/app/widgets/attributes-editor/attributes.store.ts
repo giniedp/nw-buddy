@@ -4,6 +4,11 @@ import { AttributeRef, NW_ATTRIBUTE_TYPES, NW_MAX_CHARACTER_LEVEL } from '@nw-da
 import { combineLatest, Observable, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 
+const ATTRIBUTE_STEPS = [
+  25, 50, 100, 150, 200, 250, 300, 350
+]
+const ATTRIBUTE_MAX = 350
+
 export interface AttributesState {
   level: number
   points: number
@@ -32,6 +37,15 @@ export class AttributesStore extends ComponentStore<AttributesState> {
   public readonly base$ = this.select(({ base }) => base)
   public readonly buffs$ = this.select(({ buffs }) => buffs)
   public readonly assigned$ = this.select(({ assigned }) => assigned)
+  public readonly steps$ = this.select(of(ATTRIBUTE_STEPS), (list) => {
+    return list.map((step, i) => {
+      return {
+        value: step,
+        weight: (step - (list[i - 1] || 0)) / 50,
+      }
+    })
+  })
+
   public readonly pointsAvailable$ = this.select(({ points, assigned }) => points - sum(Object.values(assigned)))
   public readonly stats$ = this.select(({ points, base, assigned, buffs }) => {
     return NW_ATTRIBUTE_TYPES.map(({ ref, shortName, description }): AttributeState => {
@@ -48,7 +62,7 @@ export class AttributesStore extends ComponentStore<AttributesState> {
         total: ba + bu + as,
         inputMin: ba + bu,
         inputMax: ba + bu + as + Math.max(0, points - sum(Object.values(assigned))),
-        sliderEnd: 300,
+        sliderEnd: ATTRIBUTE_MAX,
       }
     })
   })

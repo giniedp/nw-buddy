@@ -36,20 +36,20 @@
         ></span>
       </div>
       <div class="flex-1 flex flex-row justify-between items-center relative mr-[-10px]">
-        <ng-container *ngFor="let step of [50, 100, 150, 200, 250, 300, 350]; trackBy: trackById">
-          <div class="segment relative flex-1 h-5 cursor-pointer" (click)="attributeToggle(stat, step)">
+        <ng-container *ngFor="let step of steps$ | async; trackBy: trackById">
+          <div class="segment relative h-5 cursor-pointer" [style.flex]="step.weight" (click)="attributeToggle(stat, step.value)">
             <span
               class="badge absolute right-0"
-              [class.bg-zinc-800]="stat.total < step"
-              [class.bg-attr-base]="stat.base >= step"
-              [class.bg-attr-buff]="stat.base < step && stat.base + stat.buffs >= step"
-              [class.bg-attr-assign]="stat.base + stat.buffs < step && stat.total >= step"
+              [class.bg-zinc-800]="stat.total < step.value"
+              [class.bg-attr-base]="stat.base >= step.value"
+              [class.bg-attr-buff]="stat.base < step.value && stat.base + stat.buffs >= step.value"
+              [class.bg-attr-assign]="stat.base + stat.buffs < step.value && stat.total >= step.value"
               [tooltip]="tip"
             >
             </span>
             <ng-template #tip>
-              <div *ngIf="getAbilities(stat, step) | async; let list" class="py-2 px-3">
-                <div *ngFor="let item of list" [class.text-success]="stat.total >= step">
+              <div *ngIf="getAbilities(stat, step.value) | async; let list" class="py-2 px-3">
+                <div *ngFor="let item of list" [class.text-success]="stat.total >= step.value">
                   <span [innerHTML]="item.Description | nwText | nwTextBreak"></span>
                 </div>
               </div>

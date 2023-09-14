@@ -15,6 +15,7 @@ export interface CraftingStepState {
 @Injectable()
 export class CraftingStepStore extends ComponentStore<CraftingStepState> {
   public readonly step$ = this.select(({ step }) => step)
+  public readonly isCurreny$ = this.select(({ step }) => step.ingredient?.type === 'Currency')
   public readonly children$ = this.select(({ step }) => step?.steps)
   public readonly expand$ = this.select(({ step }) => step?.expand)
   public readonly showOptions$ = this.select(({ showOptions }) => showOptions)
@@ -41,6 +42,15 @@ export class CraftingStepStore extends ComponentStore<CraftingStepState> {
   private readonly stepIds$ = this.select(this.step$, selectStepIds)
   public readonly itemId$ = this.select(this.stepIds$, (it) => it.itemId)
   public readonly item$ = this.select(this.service.fetchItem(this.itemId$), (it) => it)
+  public readonly currency$ = this.select(this.step$, (it) => {
+    if (it?.ingredient?.type === 'Currency') {
+      return {
+        label: `ui_${it.ingredient.id}`,
+        quantity: it.ingredient.quantity
+      }
+    }
+    return null
+  })
   public readonly categoryId$ = this.select(this.stepIds$, (it) => it.categoryId)
   public readonly category$ = this.select(this.service.fetchCategory(this.categoryId$), (it) => it)
   public readonly options$ = this.select(this.stepIds$, (it) => it.optionIds)

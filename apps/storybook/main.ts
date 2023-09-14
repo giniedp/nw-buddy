@@ -11,6 +11,10 @@ const config: StorybookConfig = {
       from: '../../dist/nw-data/live',
       to: '/nw-data/live',
     },
+    {
+      from: '../../dist/nw-data/ptr',
+      to: '/nw-data/ptr',
+    },
   ],
   framework: {
     name: '@storybook/angular',

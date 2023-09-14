@@ -6,7 +6,7 @@
     class="flex flex-row flex-nowrap gap-1 py-1"
   >
     <picture
-      [nwIcon]="detail.icon$ | async"
+      [nwIcon]="row.currencyId ? 'assets/icons/rewards/azoth.png' : (detail.icon$ | async)"
       class="w-10 h-10 hover:cursor-pointer"
       [class.grayscale]="row.ignored"
       (click)="toggleIgnore(row)"
@@ -31,7 +31,7 @@
       </div>
       <span> × </span>
       <a
-        [nwText]="detail.name$ | async"
+        [nwText]="row.currencyId ? 'Azoth' : (detail.name$ | async)"
         [routerLink]="row.link"
         [class.line-through]="row.ignored"
         class="hover:underline overflow-hidden text-ellipsis"

@@ -17,14 +17,13 @@ import {
   NW_ROLL_PERK_ON_UPGRADE_TIER,
 } from './constants'
 import { damageForTooltip } from './damage'
-import { Observable, map, of } from 'rxjs'
 
 export function isMasterItem(item: unknown): item is ItemDefinitionMaster {
-  return typeof item === 'object' && 'ItemID' in item
+  return item != null && typeof item === 'object' && 'ItemID' in item
 }
 
 export function isHousingItem(item: unknown): item is Housingitems {
-  return typeof item === 'object' && 'HouseItemID' in item
+  return item != null && typeof item === 'object' && 'HouseItemID' in item
 }
 
 export function isItemArmor(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {

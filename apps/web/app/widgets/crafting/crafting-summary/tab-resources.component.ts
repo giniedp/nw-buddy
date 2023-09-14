@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
-import { combineLatest, map, switchMap } from 'rxjs'
+import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { DestroyService } from '~/utils'
 
@@ -75,21 +75,22 @@ export class TabResourcesComponent extends ComponentStore<{
     return this.summary$.pipe(switchMap((rows) => combineLatest(rows.map((row) => this.resolveRow(row)))))
   }
 
-  private resolveRow({ itemId, amount }: SummaryRow) {
+  private resolveRow({ itemId, currencyId, amount }: SummaryRow) {
     return combineLatest({
-      item: this.service.fetchItem(itemId),
+      item: currencyId ? of(null) : this.service.fetchItem(itemId),
       mode: this.rowModes$.pipe(map((modes) => modes[itemId])),
       meta: this.itemPref.observe(itemId).pipe(map((it) => it.meta)),
     }).pipe(
       map(({ item, mode, meta }): ResourceRow => {
         const row: ResourceRow = {
           itemId,
+          currencyId,
           itemPrice: meta?.price || 0,
           amount,
           amountNeeded: amount,
           amountOwned: meta?.stock || 0,
           price: 0,
-          link: [isHousingItem(item) ? 'items' : 'housing', 'table', itemId],
+          link: currencyId ? [isHousingItem(item) ? 'items' : 'housing', 'table', itemId] : null,
         }
         switch (mode || ResourceRowMode.None) {
           case ResourceRowMode.Ignore: {
@@ -123,15 +124,17 @@ export class TabResourcesComponent extends ComponentStore<{
 function aggregate(step: CraftingStepWithAmount) {
   const result = new Map<string, SummaryRow>()
   collectLeafNodes(step, (node) => {
-    const itemId = node.ingredient?.type === 'Item' ? node.ingredient.id : node.selection
-    if (!result.has(itemId)) {
-      result.set(itemId, {
+    const leafId = selectLeafId(node)
+    const isCurrency = node.ingredient?.type === 'Currency'
+    if (!result.has(leafId)) {
+      result.set(leafId, {
         recipeId: node.recipeId,
-        itemId: itemId,
+        itemId: isCurrency ? null : leafId,
+        currencyId: isCurrency ? leafId : null,
         amount: 0,
       })
     }
-    result.get(itemId).amount += node.amount
+    result.get(leafId).amount += node.amount
   })
   return Array.from(result.values())
 }
@@ -141,5 +144,18 @@ function collectLeafNodes(step: CraftingStepWithAmount, fn: (step: CraftingStepW
     step.steps?.forEach((it) => collectLeafNodes(it, fn))
   } else if (step) {
     fn(step)
+  }
+}
+
+function selectLeafId(node: CraftingStepWithAmount) {
+  switch (node.ingredient?.type) {
+    case 'Item':
+      return node.ingredient.id
+    case 'Category_Only':
+      return node.selection
+    case 'Currency':
+      return node.ingredient.id
+    default:
+      return null
   }
 }

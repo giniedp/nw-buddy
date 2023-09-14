@@ -1,4 +1,25 @@
 <ng-container *ngIf="vm$ | async; let vm">
+  <div class="flex flex-row items-center gap-1 main-row" data-cy="step" *ngIf="vm.currency; let item">
+    <nwb-crafting-step-toggle
+    class="w-8 h-full flex-none"
+    [ngModel]="vm.expand"
+    [disabled]="true"
+  ></nwb-crafting-step-toggle>
+    <picture
+      [nwIcon]="'assets/icons/rewards/azoth.png'"
+      class="w-8 h-8 nw-icon flex-none cursor-default"
+    ></picture>
+    <div class="flex flex-col items-center justify-center">
+      <span>
+        {{ item.quantity }}
+      </span>
+    </div>
+    &times;
+    <span>
+      {{ item.label | nwText }}
+    </span>
+
+  </div>
   <div class="flex flex-row items-center gap-1 main-row" data-cy="step" *ngIf="vm.item; let item">
     <nwb-crafting-step-toggle
       class="w-8 h-full flex-none"
@@ -69,7 +90,7 @@
     <nwb-crafting-step
       *ngFor="let step of vm.children; trackBy: trackByIndex"
       [step]="step"
-      [amount]="vm.amount.net * step.ingredient.quantity"
+      [amount]="vm.amount.net * (step.ingredient?.quantity || 1)"
       [amountMode]="vm.amountMode"
     ></nwb-crafting-step>
   </div>

@@ -14,7 +14,6 @@ import { AmountDetail, AmountMode, CraftingStep, Ingredient } from './types'
 
 @Injectable({ providedIn: 'root' })
 export class CraftingCalculatorService {
-  private lookup: Map<string, { recipeId: string; steps: CraftingStep[] }> = new Map()
   public constructor(private db: NwDbService, private char: CharacterStore) {
     //
   }
@@ -62,8 +61,10 @@ export class CraftingCalculatorService {
           })
         )
     }
-    return of({
-      ingredient: null,
+    console.log(step.ingredient)
+    return of<CraftingStep>({
+      ingredient: step.ingredient,
+
     })
   }
 
@@ -76,18 +77,8 @@ export class CraftingCalculatorService {
         steps: null,
         recipeId: null,
       })
-      // TODO:
-      //throw new Error(`Loop Detected ${key}`)
     }
     loopDetect.push(key)
-    if (this.lookup.has(key)) {
-      const cached = this.lookup.get(key)
-      return of({
-        ...step,
-        steps: JSON.parse(JSON.stringify(cached.steps)),
-        recipeId: cached.recipeId,
-      })
-    }
 
     const source$ = this.fetchIngredientsForStep(step).pipe(shareReplayRefCount(1))
     const recipeId$ = source$.pipe(map((it) => it.recipeId))
@@ -99,7 +90,7 @@ export class CraftingCalculatorService {
         }
         return combineLatest(
           ingredients.map((ingredient) => {
-            const state = step.steps?.find((it) => it.ingredient.id === ingredient.id)
+            const state = step.steps?.find((it) => it.ingredient?.id === ingredient.id)
             return this.solveTree(
               {
                 ...(state || {}),
@@ -118,10 +109,6 @@ export class CraftingCalculatorService {
       steps: steps$,
     }).pipe(
       map(({ recipeId, steps }) => {
-        this.lookup.set(key, {
-          steps: steps,
-          recipeId: recipeId,
-        })
         return {
           ...step,
           steps: steps,
