@@ -8,16 +8,23 @@ import {
   Perks,
 } from '@nw-data/generated'
 import type { AttributeRef } from './attributes'
-import { NW_MAX_GEAR_SCORE, NW_MAX_GEAR_SCORE_UPGRADABLE, NW_MIN_GEAR_SCORE } from './constants'
+import {
+  NW_ITEM_RARITY_DATA,
+  NW_MAX_GEAR_SCORE,
+  NW_MAX_GEAR_SCORE_UPGRADABLE,
+  NW_MIN_GEAR_SCORE,
+  NW_ROLL_PERK_ON_UPGRADE_PERK_COUNT,
+  NW_ROLL_PERK_ON_UPGRADE_TIER,
+} from './constants'
 import { damageForTooltip } from './damage'
 import { Observable, map, of } from 'rxjs'
 
-export function isMasterItem(item: ItemDefinitionMaster | Housingitems): item is ItemDefinitionMaster {
-  return item && 'ItemID' in item
+export function isMasterItem(item: unknown): item is ItemDefinitionMaster {
+  return typeof item === 'object' && 'ItemID' in item
 }
 
-export function isHousingItem(item: ItemDefinitionMaster | Housingitems): item is Housingitems {
-  return item && 'HouseItemID' in item
+export function isHousingItem(item: unknown): item is Housingitems {
+  return typeof item === 'object' && 'HouseItemID' in item
 }
 
 export function isItemArmor(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
@@ -75,30 +82,36 @@ export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPer
   if (item.ForceRarity) {
     return item.ForceRarity
   }
+  if (!isMasterItem(item)) {
+    return 0
+  }
+  if (!itemPerkIds) {
+    itemPerkIds = getItemPerkIds(item)
+  }
 
   let rarity = 0
-  let maxRarity = 4
-  if (isMasterItem(item)) {
-    if (!itemPerkIds) {
-      itemPerkIds = [item.Perk1, item.Perk2, item.Perk3, item.Perk4, item.Perk5]
-    }
-    rarity = itemPerkIds.filter((it) => it && !it?.startsWith('PerkID_Stat_')).length
-    if (!rarity && itemPerkIds.some((it) => it?.startsWith('PerkID_Stat_'))) {
-      rarity = 1
-    }
-    const maxScore = getItemMaxGearScore(item, false)
-    if (maxScore) {
-      maxRarity = maxRarityFromScore(maxScore)
+  let maxRarity = NW_ITEM_RARITY_DATA.length - 1
+  let perkCount = itemPerkIds.length
+  if (!isItemUpgradable(item)) {
+    perkCount = Math.min(perkCount, NW_ROLL_PERK_ON_UPGRADE_PERK_COUNT)
+  }
+  for (let i = 0; i < NW_ITEM_RARITY_DATA.length; i++) {
+    if (perkCount <= NW_ITEM_RARITY_DATA[i].maxPerkCount) {
+      rarity = i
+      break
     }
   }
   return Math.min(rarity, maxRarity)
 }
 
-function maxRarityFromScore(score: number) {
-  if (score >= NW_MAX_GEAR_SCORE_UPGRADABLE) {
-    return 4
+function isItemUpgradable(item: ItemDefinitionMaster) {
+  if (item.Tier <  NW_ROLL_PERK_ON_UPGRADE_TIER) {
+    return false
   }
-  return 3
+  if (getItemMaxGearScore(item, false) < NW_MAX_GEAR_SCORE_UPGRADABLE) {
+    return false
+  }
+  return true
 }
 
 export function getItemRarityLabel(item: ItemDefinitionMaster | Housingitems | number | string) {
@@ -110,8 +123,15 @@ export function getItemRarityLabel(item: ItemDefinitionMaster | Housingitems | n
   return `RarityLevel${item}_DisplayName`
 }
 
-export function getItemPerkKeys(item: ItemDefinitionMaster) {
-  return ['Perk1', 'Perk2', 'Perk3', 'Perk4', 'Perk5'].filter((it) => item && it in item)
+const PERK_KEYS: Array<keyof ItemDefinitionMaster> = [
+  'Perk1',
+  'Perk2',
+  'Perk3',
+  'Perk4',
+  'Perk5',
+]
+export function getItemPerkKeys(item: ItemDefinitionMaster): string[] {
+  return PERK_KEYS.filter((it) => item && it in item)
 }
 
 export function getItemPerkIds(item: ItemDefinitionMaster) {
@@ -153,8 +173,15 @@ export function getItemPerks(item: ItemDefinitionMaster, perks: Map<string, Perk
   return item && getItemPerkIds(item).map((it) => perks.get(it))
 }
 
-export function getItemPerkBucketKeys(item: ItemDefinitionMaster) {
-  return ['PerkBucket1', 'PerkBucket2', 'PerkBucket3', 'PerkBucket4', 'PerkBucket5'].filter((it) => item && it in item)
+const PERK_BUCKET_KEYS: Array<keyof ItemDefinitionMaster> = [
+  'PerkBucket1',
+  'PerkBucket2',
+  'PerkBucket3',
+  'PerkBucket4',
+  'PerkBucket5',
+]
+export function getItemPerkBucketKeys(item: ItemDefinitionMaster): string[] {
+  return PERK_BUCKET_KEYS.filter((it) => item && it in item)
 }
 
 export function getItemPerkBucketIds(item: ItemDefinitionMaster) {

@@ -7,8 +7,7 @@ export const NW_MAX_TRADESKILL_LEVEL = 250
 export const NW_MAX_WEAPON_LEVEL = 20
 export const NW_FALLBACK_ICON = 'assets/icons/iconmodedefault.png'
 
-// from playerbaseattributes.pdadb
-
+// tmp\nw-data\ptr\sharedassets\genericassets\playerbaseattributes.pbadb.json
 export const NW_MIN_ARMOR_MITIGATION = 0
 export const NW_MAX_ARMOR_MITIGATION = 2
 export const NW_PHYSICAL_ARMOR_SCALE_FACTOR = 1850
@@ -47,37 +46,113 @@ export const NW_ITEM_RARITY_DATA = Object.freeze([
     maxPerkCount: 5,
   },
 ])
-export const NW_PERK_GENERASTION_DATA = Object.freeze([
+export const NW_CRAFTING_RESULT_LOOT_BUCKET = "FixedCraftingResults"
+export const NW_ROLL_PERK_ON_UPGRADE_GS = 600
+export const NW_ROLL_PERK_ON_UPGRADE_TIER = 5
+export const NW_ROLL_PERK_ON_UPGRADE_PERK_COUNT = 4
+export const NW_PERK_GENERATION_DATA = Object.freeze([
   {
     maxPerkChannel: 2,
     gemSlotProbability: 0,
     attributePerkProbability: 0,
-    generalGearScorePerkCount: [170, 170, 1000],
-    craftingGearScorePerkCount: [170, 170, 1000],
+    generalGearScorePerkCount: [[{ v1: 170, v2: 700 }], [{ v1: 170, v2: 700 }], [{ v1: 170, v2: 700 }]],
+    craftingGearScorePerkCount: [[{ v1: 170, v2: 700 }], [{ v1: 170, v2: 700 }], [{ v1: 170, v2: 700 }]],
     attributePerkBucket: 'CraftingAttributeBucketT2',
   },
   {
     maxPerkChannel: 2,
     gemSlotProbability: 0,
     attributePerkProbability: 0,
-    generalGearScorePerkCount: [270, 270, 325, 1000],
-    craftingGearScorePerkCount: [270, 270, 325, 1000],
+    generalGearScorePerkCount: [
+      [{ v1: 325, v2: 700 }],
+      [{ v1: 325, v2: 700 }],
+      [{ v1: 325, v2: 700 }],
+      [{ v1: 325, v2: 700 }],
+    ],
+    craftingGearScorePerkCount: [
+      [{ v1: 325, v2: 700 }],
+      [{ v1: 325, v2: 700 }],
+      [{ v1: 325, v2: 700 }],
+      [{ v1: 325, v2: 700 }],
+    ],
     attributePerkBucket: 'CraftingAttributeBucketT3',
   },
   {
     maxPerkChannel: 3,
     gemSlotProbability: 0,
     attributePerkProbability: 0,
-    generalGearScorePerkCount: [370, 370, 370, 450, 1000],
-    craftingGearScorePerkCount: [370, 370, 370, 450, 1000],
+    generalGearScorePerkCount: [
+      [{ v1: 450, v2: 700 }],
+      [{ v1: 450, v2: 700 }],
+      [{ v1: 450, v2: 700 }],
+      [{ v1: 450, v2: 700 }],
+      [{ v1: 450, v2: 700 }],
+    ],
+    craftingGearScorePerkCount: [
+      [{ v1: 450, v2: 700 }],
+      [{ v1: 450, v2: 700 }],
+      [{ v1: 450, v2: 700 }],
+      [{ v1: 450, v2: 700 }],
+      [{ v1: 450, v2: 700 }],
+    ],
     attributePerkBucket: 'CraftingAttributeBucketT4',
   },
   {
     maxPerkChannel: 4,
     gemSlotProbability: 0,
     attributePerkProbability: 0,
-    generalGearScorePerkCount: [470, 470, 470, 470, 600, 1000],
-    craftingGearScorePerkCount: [470, 470, 470, 470, 600, 1000],
+    generalGearScorePerkCount: [
+      [
+        { v1: 600, v2: 625 },
+        { v1: 675, v2: 700 },
+      ],
+      [
+        { v1: 600, v2: 625 },
+        { v1: 675, v2: 700 },
+      ],
+      [
+        { v1: 600, v2: 625 },
+        { v1: 675, v2: 700 },
+      ],
+      [
+        { v1: 600, v2: 625 },
+        { v1: 675, v2: 700 },
+      ],
+      [
+        { v1: 600, v2: 625 },
+        { v1: 675, v2: 700 },
+      ],
+      [
+        { v1: 600, v2: 625 },
+        { v1: 675, v2: 700 },
+      ],
+    ],
+    craftingGearScorePerkCount: [
+      [
+        { v1: 600, v2: 625 },
+        { v1: 675, v2: 700 },
+      ],
+      [
+        { v1: 600, v2: 625 },
+        { v1: 675, v2: 700 },
+      ],
+      [
+        { v1: 600, v2: 625 },
+        { v1: 675, v2: 700 },
+      ],
+      [
+        { v1: 600, v2: 625 },
+        { v1: 675, v2: 700 },
+      ],
+      [
+        { v1: 600, v2: 625 },
+        { v1: 675, v2: 700 },
+      ],
+      [
+        { v1: 600, v2: 625 },
+        { v1: 675, v2: 700 },
+      ],
+    ],
     attributePerkBucket: 'CraftingAttributeBucketT5',
   },
 ])
