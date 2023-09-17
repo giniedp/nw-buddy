@@ -27,7 +27,7 @@ import { CraftingGridSource } from './crafting-grid-source'
           <button [nwbGridPanelButton]="grid.ready$ | async" class="btn btn-square btn-ghost"></button>
         </li>
       </ul>
-      <div class="flex-none p-2 w-full md:max-w-[300px]">
+      <div class="flex-none p-2 w-full md:max-w-[256px]">
         <nwb-quicksearch-input
           [nwbGridQuickfilter]="grid.ready$ | async"
           [placeholder]="'Quickfilter'"

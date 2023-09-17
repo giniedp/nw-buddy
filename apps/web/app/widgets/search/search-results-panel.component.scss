@@ -1,0 +1,29 @@
+:host {
+  display: block;
+  height: calc(min(80vh, 400px));
+
+  .spin-cw {
+    animation: spin-cw 3s linear infinite;
+  }
+  .spin-ccw {
+    animation: spin-ccw 4s linear infinite;
+  }
+
+  @keyframes spin-cw {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes spin-ccw {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(-360deg);
+    }
+  }
+}

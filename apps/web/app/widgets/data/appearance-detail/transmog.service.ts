@@ -177,6 +177,9 @@ export class TransmogService extends ComponentStore<TransmogServiceState> {
     }).pipe(
       map(({ appearances, categories, categoryId }) => {
         const category = categories.find((it) => eqCaseInsensitive(it.id, categoryId))
+        if (!category) {
+          return []
+        }
         const items = appearances.filter((it) => matchTransmogCateogry(category, it.appearance))
         return category.subcategories.map((subcategory) => {
           const subItems = items.filter((it) => {
@@ -266,9 +269,11 @@ function selectAppearances({
 }
 
 export function matchTransmogCateogry(category: TransmogCategory, appearance: { ItemClass?: string[] }) {
-  return category.itemClass.every((itemClass) => {
-    return appearance?.ItemClass?.some((itemClass2) => eqCaseInsensitive(itemClass, itemClass2))
-  })
+  return (
+    category?.itemClass.every((itemClass) => {
+      return appearance?.ItemClass?.some((itemClass2) => eqCaseInsensitive(itemClass, itemClass2))
+    }) || false
+  )
 }
 
 export function getAppearanceId(item: NwApearance | TransmogAppearance) {

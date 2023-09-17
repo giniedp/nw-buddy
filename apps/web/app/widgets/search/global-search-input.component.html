@@ -1,0 +1,38 @@
+<input
+  class="input input-sm w-full focus:outline-none focus:border focus:border-primary-focus"
+  [class.text-primary]="!!value$()"
+  #input
+  type="text"
+  [placeholder]="placeholder"
+  [ngModel]="value$()"
+  (ngModelChange)="submit($event)"
+  autofocus
+/>
+<span class="pointer-events-none block absolute" style="top: 3px; right: 22px" [@fade]="true" *ngIf="!value$()">
+  ctrl +
+</span>
+<button
+  class="absolute right-0 btn btn-sm btn-ghost btn-square swap swap-rotate"
+  [class.text-primary]="!!value$()"
+  (click)="value$() ? submit('') : null"
+>
+  <input type="checkbox" [checked]="!!value$()" />
+  <nwb-icon [icon]="svgXmark" class="swap-on w-4 h-4"></nwb-icon>
+  <span class="swap-off w-4 h-4 hidden md:inline-block">/</span>
+  <nwb-icon [icon]="svgSearch" class="swap-off w-4 h-4 md:hidden"></nwb-icon>
+</button>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="cdkOrigin"
+  [cdkConnectedOverlayOpen]="isPanelOpen$()"
+  [cdkConnectedOverlayHasBackdrop]="false"
+  [cdkConnectedOverlayPositions]="[{ originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 5 }]"
+  (overlayOutsideClick)="closePanel()"
+  (backdropClick)="closePanel()"
+  (detach)="closePanel()"
+>
+  <div class="w-[332px] bg-base-200 rounded-md">
+    <nwb-search-results-panel [isLoading]="isLoading$()" [data]="results$()"></nwb-search-results-panel>
+  </div>
+</ng-template>

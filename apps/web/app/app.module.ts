@@ -21,6 +21,7 @@ import { LayoutModule } from './ui/layout'
 import { TooltipModule } from './ui/tooltip'
 import { AeternumMapModule } from './widgets/aeternum-map'
 import { UpdateAlertModule } from './widgets/update-alert'
+import { GlobalSearchInputComponent } from './widgets/search'
 
 @NgModule({
   declarations: [AppComponent, TitleBarComponent],
@@ -50,6 +51,7 @@ import { UpdateAlertModule } from './widgets/update-alert'
     AeternumMapModule,
     TooltipModule,
     AppMenuComponent,
+    GlobalSearchInputComponent,
   ],
   providers: [NwDataInterceptor.provide(), { provide: OverlayContainer, useClass: FullscreenOverlayContainer }],
   bootstrap: [AppComponent],

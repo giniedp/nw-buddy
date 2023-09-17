@@ -1,0 +1,34 @@
+<div
+  class="bg-base-200 absolute top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center z-50 pointer-events-none"
+  *ngIf="isLoading"
+  @fade
+>
+  <picture class="block aspect-square w-3/5 relative">
+    <img
+      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full spin-cw"
+      [nwImage]="'assets/loaders/crafting_rune_clockwise.png'"
+    />
+    <img
+      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full spin-ccw"
+      [nwImage]="'assets/loaders/crafting_rune_counter_clockwise.png'"
+    />
+  </picture>
+</div>
+<cdk-virtual-scroll-viewport [itemSize]="56" class="w-full h-full">
+  <a *cdkVirtualFor="let item of data" class="block w-80 p-1" [routerLink]="getRoute(item)">
+    <nwb-item-header
+      [rarity]="item.rarity"
+      class="relative font-nimbus gap-2 w-full shadow-sm whitespace-nowrap overflow-hidden overflow-ellipsis"
+    >
+      <nwb-item-icon
+        [nwbItemIcon]="item.icon || defaultIcon"
+        [solid]="false"
+        [rarity]="item.rarity"
+        class="z-10 w-10 h-10"
+      ></nwb-item-icon>
+      <nwb-item-header-content class="z-10" [rarity]="item.rarity" [category]="item.type">
+        <span class="title block overflow-hidden text-ellipsis">{{ item.text }}</span>
+      </nwb-item-header-content>
+    </nwb-item-header>
+  </a>
+</cdk-virtual-scroll-viewport>

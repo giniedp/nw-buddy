@@ -15,6 +15,7 @@ import { importLocales, LOCALE_KEYS_TO_KEEP } from './importer/locales'
 import { importSlices } from './importer/slices/import-slices'
 import { withProgressBar, writeJSONFile } from './utils'
 import { cpus } from 'os'
+import { generateSearch } from './importer/search'
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
 }
@@ -29,6 +30,7 @@ enum Importer {
   locales = 'locales',
   images = 'images',
   vitals = 'vitals',
+  search = 'search',
 }
 
 program
@@ -158,6 +160,15 @@ program
     if (hasFilter(Importer.types, options.module)) {
       console.log('generate types')
       await generateTypes(typesDir, tables)
+    }
+
+    if (hasFilter(Importer.search, options.module)) {
+      console.log('generate search')
+      await generateSearch({
+        localesDir: path.join(distDir, 'localization'),
+        tablesDir: path.join(distDir, 'datatables'),
+        outDir: path.join(distDir, 'search'),
+      })
     }
   })
   .parse(process.argv)

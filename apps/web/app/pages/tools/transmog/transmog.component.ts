@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, NgZone, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { CommonModule } from '@angular/common'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
@@ -85,7 +85,7 @@ export class TransmogComponent extends ComponentStore<{ hoverItem: TransmogItem 
 
   protected trackByIndex = (index: number) => index
 
-  public constructor(head: HtmlHeadService) {
+  public constructor(head: HtmlHeadService, private zone: NgZone) {
     super({ hoverItem: null })
     head.updateMetadata({
       title: 'Transmog',
@@ -100,13 +100,11 @@ export class TransmogComponent extends ComponentStore<{ hoverItem: TransmogItem 
   }
 
   protected onMouseOver(item: TransmogItem) {
-    this.patchState({ hoverItem: item })
+    // this.patchState({ hoverItem: item })
   }
 
   protected onMouseLeave(item: TransmogItem) {
-    if (this.get(({ hoverItem }) => hoverItem) === item) {
-      this.patchState({ hoverItem: null })
-    }
+    // this.patchState({ hoverItem: null })
   }
 
   protected onClick(item: TransmogItem) {
