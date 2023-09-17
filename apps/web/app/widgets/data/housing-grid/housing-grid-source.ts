@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { getItemIconPath, getUIHousingCategoryLabel } from '@nw-data/common'
+import { getUIHousingCategoryLabel } from '@nw-data/common'
 import { COLS_HOUSINGITEMS, COLS_HOUSINGITEMSMTX } from '@nw-data/generated'
 import { map } from 'rxjs'
 import { TranslateService } from '~/i18n'
@@ -34,7 +34,7 @@ export class HousingGridSource extends DataGridSource<HousingGridRecord> {
   private utils: DataGridUtils<HousingGridRecord> = inject(DataGridUtils)
 
   public override entityID(item: HousingGridRecord): string {
-    return getItemIconPath(item)
+    return item.HouseItemID
   }
 
   public override entityCategories(item: HousingGridRecord): DataGridCategory[] {
