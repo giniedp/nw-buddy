@@ -7,6 +7,7 @@ import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { eqCaseInsensitive } from '~/utils'
 import { DataGridCategory } from '../types'
+import { svgChevronLeft } from '~/ui/icons/svg'
 
 @Component({
   standalone: true,
@@ -15,7 +16,7 @@ import { DataGridCategory } from '../types'
   imports: [CommonModule, OverlayModule, IconsModule, NwModule, RouterModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'inline-flex flex-col flex-nowrap gap-1 items-start justify-center',
+    class: 'inline-flex flex-row gap-2 items-center py-1',
   },
   hostDirectives: [CdkOverlayOrigin],
 })
@@ -79,11 +80,13 @@ export class DataGridCategoryMenuComponent extends ComponentStore<{
   }
 
   protected isPanelOpen = false
+  protected iconChevron = svgChevronLeft
 
   protected readonly counter$ = this.select(({ rowCounter, rowCounterEnabled }) => {
     return rowCounterEnabled ? { value: rowCounter || 0 } : null
   })
   protected readonly categories$ = this.select(celectCategories)
+  protected readonly hasCategories$ = this.select(this.categories$, (it) => it.length > 0)
   protected readonly activeCateogry$ = this.select(this.categories$, (it) => {
     return it.find((it) => it.active)
   })

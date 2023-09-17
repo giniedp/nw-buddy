@@ -52,7 +52,7 @@ export class ItemGridSource extends DataGridSource<ItemGridRecord> {
     return [
       {
         id: item.ItemType,
-        label: this.i18n.get(getItemTypeLabel(item.ItemType)),
+        label: this.i18n.get(getItemTypeLabel(item.ItemType)) || item.ItemType,
         icon: '',
       },
     ]

@@ -287,8 +287,8 @@ export function itemColItemType(util: ItemGridUtils) {
     colId: 'itemType',
     headerValueGetter: () => 'Item Type',
     valueGetter: util.valueGetter(({ data }) => data.ItemType),
-    valueFormatter: ({ value }) => util.i18n.get(getItemTypeLabel(value)),
-    getQuickFilterText: ({ value }) => util.i18n.get(getItemTypeLabel(value)),
+    valueFormatter: ({ value }) => util.i18n.get(getItemTypeLabel(value) || humanize(value)),
+    getQuickFilterText: ({ value }) => util.i18n.get(getItemTypeLabel(value) || humanize(value)),
     width: 125,
     filter: SelectFilter,
   })

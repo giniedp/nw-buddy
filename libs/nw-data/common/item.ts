@@ -104,7 +104,7 @@ export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPer
 }
 
 function isItemUpgradable(item: ItemDefinitionMaster) {
-  if (item.Tier <  NW_ROLL_PERK_ON_UPGRADE_TIER) {
+  if (item.Tier < NW_ROLL_PERK_ON_UPGRADE_TIER) {
     return false
   }
   if (getItemMaxGearScore(item, false) < NW_MAX_GEAR_SCORE_UPGRADABLE) {
@@ -122,13 +122,7 @@ export function getItemRarityLabel(item: ItemDefinitionMaster | Housingitems | n
   return `RarityLevel${item}_DisplayName`
 }
 
-const PERK_KEYS: Array<keyof ItemDefinitionMaster> = [
-  'Perk1',
-  'Perk2',
-  'Perk3',
-  'Perk4',
-  'Perk5',
-]
+const PERK_KEYS: Array<keyof ItemDefinitionMaster> = ['Perk1', 'Perk2', 'Perk3', 'Perk4', 'Perk5']
 export function getItemPerkKeys(item: ItemDefinitionMaster): string[] {
   return PERK_KEYS.filter((it) => item && it in item)
 }
@@ -169,7 +163,12 @@ export function getItemPerkInfos(
 }
 
 export function getItemPerks(item: ItemDefinitionMaster, perks: Map<string, Perks>) {
-  return item && getItemPerkIds(item).map((it) => perks.get(it)).filter((it) => it != null)
+  return (
+    item &&
+    getItemPerkIds(item)
+      .map((it) => perks.get(it))
+      .filter((it) => it != null)
+  )
 }
 
 const PERK_BUCKET_KEYS: Array<keyof ItemDefinitionMaster> = [
@@ -221,6 +220,7 @@ const ITEM_TYPE_LABELS = {
   Lore: 'inv_loreitems',
   Resource: 'inv_resources',
   ThrowableItem: 'ThrowableItem',
+  MountDye: 'MountDye',
 }
 
 export function getItemTypeLabel(type: string) {
