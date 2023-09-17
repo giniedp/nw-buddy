@@ -373,7 +373,7 @@ function selectPerkBucketDetails({
   return result
 }
 
-function selectPerkInfos(data: {
+export function selectPerkInfos(data: {
   item: ItemDefinitionMaster
   itemGS: number
   perks: Map<string, Perks>
@@ -402,7 +402,7 @@ function selectPerkInfos(data: {
       getPerksInherentMODs(perk, data.affixstats.get(perk.Affix), detail.itemGS)?.forEach((mod) => {
         detail.text.push({
           label: perk.DisplayName || perk.SecondaryEffectDisplayName || perk.AppliedPrefix || perk.AppliedSuffix,
-          description: [String(mod.value), mod.label],
+          description: [String(Math.floor(mod.value)), mod.label],
           context: {},
         })
       })
@@ -416,7 +416,7 @@ function selectPerkInfos(data: {
         result.push(detail)
         mods.forEach((mod) => {
           detail.text.push({
-            label: String(mod.value),
+            label: String(Math.floor(mod.value)),
             description: mod.label,
             context: {},
           })

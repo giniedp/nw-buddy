@@ -49,7 +49,10 @@ const OptionListItem: m.Component<
         },
         m('i.aspect-square.w-4.h-4', [m.trust(item.negate ? svgNotEqual : svgEquals)])
       ),
-      m('span.leading-none.py-0.flex-1.rounded-none', [item.icon && m('img.w-6.h-6', { src: item.icon }), item.label || '-- empty --']),
+      m('span.leading-none.py-0.flex-1.rounded-none', [
+        item.icon && m('img.w-6.h-6', { src: item.icon }),
+        m.trust(item.label || '-- empty --'),
+      ]),
       m(
         'button.btn.btn-sm',
         {

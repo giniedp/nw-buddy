@@ -107,7 +107,7 @@ function selectInherentPerks(perks: Perks[], affixMap: Map<string, Affixstats>, 
         mods: getPerksInherentMODs(perk, affixMap.get(perk.Affix), getPerkMultiplier(perk, NW_MAX_GEAR_SCORE))
           .map((it) => ({
             label: tl8.get(it.label),
-            value: it.value,
+            value: Math.floor(it.value),
           }))
           .sort((a, b) => b.value - a.value),
       })

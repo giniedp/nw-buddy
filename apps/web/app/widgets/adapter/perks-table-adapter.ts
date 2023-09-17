@@ -146,7 +146,7 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
                       if (hasPerkInherentAffix(data)) {
                         const affix = stats.get(data.Affix)
                         const result = getPerksInherentMODs(data, affix, ctx.gs)
-                          .map((it) => `+${it.value} <b>${this.i18n.get(it.label)}</b>`)
+                          .map((it) => `+${Math.floor(it.value)} <b>${this.i18n.get(it.label)}</b>`)
                           .join('<br>')
                         return of(result)
                       }

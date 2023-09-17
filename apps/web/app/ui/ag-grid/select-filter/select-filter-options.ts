@@ -32,7 +32,7 @@ export const SelectFilterOptions: m.Component<SelectFilterListAttrs, any> = {
                   m('img.w-6.h-6', {
                     src: option.icon,
                   }),
-                option.label || '-- empty --',
+                m.trust(option.label || '-- empty --'),
               ]
             ),
           ])

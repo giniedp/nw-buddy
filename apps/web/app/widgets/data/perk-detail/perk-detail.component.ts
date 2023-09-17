@@ -32,25 +32,30 @@ export class PerkDetailComponent extends PerkDetailStore {
   @Input()
   public disableProperties: boolean
 
+  protected trackByIndex = (i: number) => i
   public constructor(db: NwDbService) {
     super(db)
   }
 
-  public formatValue = (value: any, key: keyof Perks): PropertyGridCell[] =>  {
+  public formatValue = (value: any, key: keyof Perks): PropertyGridCell[] => {
     switch (key) {
       case 'PerkID': {
-        return [{
-          value: String(value),
-          accent: true,
-          routerLink: ['/perks/table', value]
-        }]
+        return [
+          {
+            value: String(value),
+            accent: true,
+            routerLink: ['/perks/table', value],
+          },
+        ]
       }
       case 'Affix': {
-        return [{
-          value: String(value),
-          primary: true,
-          italic: true
-        }]
+        return [
+          {
+            value: String(value),
+            primary: true,
+            italic: true,
+          },
+        ]
       }
       case 'ItemClass': {
         return createTags(value as Perks['ItemClass'])
@@ -66,17 +71,19 @@ export class PerkDetailComponent extends PerkDetailStore {
           return {
             value: it,
             accent: true,
-            routerLink: ['/abilities/table', it]
+            routerLink: ['/abilities/table', it],
           }
         })
       }
       default: {
-        return [{
-          value: String(value),
-          accent: typeof value === 'number',
-          info: typeof value === 'boolean',
-          bold: typeof value === 'boolean'
-        }]
+        return [
+          {
+            value: String(value),
+            accent: typeof value === 'number',
+            info: typeof value === 'boolean',
+            bold: typeof value === 'boolean',
+          },
+        ]
       }
     }
   }
@@ -86,8 +93,7 @@ function createTags(value: string[]): PropertyGridCell[] {
   return value.map((it) => {
     return {
       value: it,
-      secondary: true
+      secondary: true,
     }
   })
 }
-

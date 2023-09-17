@@ -23,28 +23,28 @@ export class NwExpressionContextService {
   }
 
   public get gs() {
-    return this.gs$.value
+    return this.gearScore$.value
   }
   public set gs(value: number) {
-    this.gs$.next(value)
+    this.gearScore$.next(value)
   }
 
   public get gsBonus() {
-    return this.gsBonus$.value
+    return this.gearScoreBonus$.value
   }
   public set gsBonus(value: boolean) {
-    this.gsBonus$.next(value)
+    this.gearScoreBonus$.next(value)
   }
 
   public value = defer(() =>
     combineLatest({
       level: this.level$,
-      gs: this.gs$,
-      gsBonus: this.gsBonus$,
+      gs: this.gearScore$,
+      gsBonus: this.gearScoreBonus$,
     })
   )
 
   private level$ = new BehaviorSubject(NW_MAX_CHARACTER_LEVEL)
-  private gs$ = new BehaviorSubject(650)
-  private gsBonus$ = new BehaviorSubject(false)
+  private gearScore$ = new BehaviorSubject(650)
+  private gearScoreBonus$ = new BehaviorSubject(false)
 }

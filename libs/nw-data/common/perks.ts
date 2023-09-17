@@ -1,6 +1,5 @@
 import { Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { getAffixMODs } from './affix'
-import { patchPrecision } from './precision'
 
 const PERK_SORT_WEIGHT = {
   Inherent: 0,
@@ -37,6 +36,94 @@ export function hasPerkInherentAffix(perk: Perks): boolean {
   return isPerkInherent(perk) && !!perk?.Affix
 }
 
+export interface PerkExplanation {
+  perkId: string
+  icon?: string
+  label: string
+  colon?: boolean
+  description: string
+  stackLimit?: number
+  context: any
+}
+
+export function explainPerk(options: { perk: Perks; affix: Affixstats; gearScore: number }): PerkExplanation[] {
+  const { perk, affix, gearScore } = options
+  const result: PerkExplanation[] = []
+
+  if (isPerkInherent(perk) && affix) {
+    result.push(...explainPerkAttributeMods(options))
+  }
+
+  if (perk.DisplayName || perk.SecondaryEffectDisplayName || perk.Description) {
+    // common perk case e.g.
+    // Health: +2.2% max health.
+    result.push({
+      perkId: perk.PerkID,
+      icon: perk.IconPath,
+      label: perk.DisplayName || perk.SecondaryEffectDisplayName || '',
+      colon: true,
+      description: perk.Description,
+      context: {
+        itemId: perk.PerkID,
+        gearScore: gearScore,
+      },
+    })
+  }
+
+  return result
+}
+
+export function explainPerkAttributeMods(options: {
+  perk: Perks
+  affix: Affixstats
+  gearScore: number
+}): PerkExplanation[] {
+  const { perk, affix, gearScore } = options
+  const result: PerkExplanation[] = []
+  if (!isPerkInherent(perk) || !affix) {
+    return result
+  }
+
+  // perk with attribute mods e.g. MODStrength, MODDexterity etc.
+  // +25 Strength
+  const mods = getPerksInherentMODs(perk, affix, gearScore)
+  mods?.forEach((mod) => {
+    result.push({
+      perkId: perk.PerkID,
+      icon: perk.IconPath,
+      label: `${mod.value > 0 ? '+' : ''}${Math.floor(mod.value)}`,
+      description: mod.label,
+      context: {
+        itemId: perk.PerkID,
+        gearScore: gearScore,
+      },
+    })
+  })
+
+  // perk with mods to highest attribute
+  // +25 Magnify (highest attribute: Focus)
+  if (affix.AttributePlacingMods) {
+    const scale = getPerkMultiplier(perk, gearScore)
+    const part: PerkExplanation = {
+      perkId: perk.PerkID,
+      icon: perk.IconPath,
+      label: '',
+      // whole string is in the StatDisplayText
+      // +{amount1} Magnify</font> (highest attribute: {attribute1})
+      description: perk.StatDisplayText,
+      context: {
+        itemId: perk.PerkID,
+        gearScore: gearScore,
+      },
+    }
+    affix.AttributePlacingMods.split(',').forEach((it, i) => {
+      part.context[`amount${i + 1}`] = Math.floor(Number(it) * scale)
+    })
+    result.push(part)
+  }
+  return result
+}
+
 export function getPerksInherentMODs(perk: Pick<Perks, 'ScalingPerGearScore'>, affix: Affixstats, gearScore: number) {
   return getAffixMODs(affix, getPerkMultiplier(perk, gearScore))
 }
@@ -46,14 +133,14 @@ export function getPerkMultiplier(perk: Pick<Perks, 'ScalingPerGearScore'>, gear
     return 1
   }
 
-  if (Number.isFinite(Number(perk.ScalingPerGearScore)) ) {
+  if (Number.isFinite(Number(perk.ScalingPerGearScore))) {
     return Math.max(0, gearScore - 100) * Number(perk.ScalingPerGearScore) + 1
   }
 
   if (typeof perk.ScalingPerGearScore === 'string') {
     let result = 0
     const ranges = parseScalingRanges(perk.ScalingPerGearScore)
-    ranges.forEach(({ gs, value}, i) => {
+    ranges.forEach(({ gs, value }, i) => {
       if (gs > gearScore) {
         return
       }
@@ -69,7 +156,7 @@ export function getPerkMultiplier(perk: Pick<Perks, 'ScalingPerGearScore'>, gear
 
 function parseScalingRanges(value: string) {
   // sample: "0.00125,625:0.0095"
-  return value.split(',') .map((it, i) => {
+  return value.split(',').map((it, i) => {
     if (it.includes(':')) {
       const [gs, value] = it.split(':')
       return { gs: Number(gs), value: Number(value) }

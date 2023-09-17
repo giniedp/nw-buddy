@@ -1,6 +1,6 @@
-import { getPerkItemClassGsBonus, getPerkMultiplier, getPerksInherentMODs, hasPerkInherentAffix } from '@nw-data/common'
+import { explainPerk, explainPerkAttributeMods, getPerkItemClassGsBonus } from '@nw-data/common'
 import { Ability, Perks } from '@nw-data/generated'
-import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
+import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwExpressionContextService } from '~/nw/expression'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataGridUtils } from '~/ui/data-grid'
@@ -86,64 +86,37 @@ export function perkColDescription(util: PerkGridUtils, ctx: NwExpressionContext
       source: ({ data }) => {
         return combineLatest({
           ctx: ctx.value,
-          text: util.i18n.observe([data.Description, data.StatDisplayText]),
           stats: util.db.affixStatsMap,
         }).pipe(
-          switchMap(({ ctx, text, stats }) => {
-            if (!hasPerkInherentAffix(data)) {
-              let gs = ctx.gs
-              if (data.ItemClassGSBonus && ctx.gsBonus) {
-                gs += Number(data.ItemClassGSBonus.split(',')[0].split(':')[1]) || 0
-              }
-
-              return util.expr.solve({
-                text: text,
-                charLevel: ctx.level,
-                gearScore: gs,
-                itemId: data.PerkID,
-              })
+          switchMap(({ ctx, stats }) => {
+            const context = {
+              itemId: data.PerkID,
+              gearScore: ctx.gs,
+              charLevel: ctx.level,
             }
-
-            const affix = stats.get(data.Affix)
-            const mods = getPerksInherentMODs(data, affix, ctx.gs)
+            if (data.ItemClassGSBonus && ctx.gsBonus) {
+              context.gearScore += Number(data.ItemClassGSBonus.split(',')[0].split(':')[1]) || 0
+            }
             const result: Array<Observable<string>> = []
-            if (mods?.length) {
-              const text = getPerksInherentMODs(data, affix, ctx.gs)
-                .map((it) => `+${it.value} <b>${util.i18n.get(it.label)}</b>`)
-                .join('<br>')
-              return of(text)
-            }
-
-            if (affix?.AttributePlacingMods) {
-              const scale = getPerkMultiplier(data, ctx.gs)
+            const mods = explainPerkAttributeMods({
+              perk: data,
+              affix: stats.get(data.Affix),
+              gearScore: context.gearScore,
+            })
+            for (const mod of mods) {
               result.push(
                 util.expr.solve({
-                  text: util.i18n.get(data.StatDisplayText),
-                  charLevel: ctx.level,
-                  gearScore: ctx.gs,
-                  itemId: data.PerkID,
-                  ...Object.fromEntries(
-                    affix.AttributePlacingMods.split(',').map((it, i) => [
-                      'amount' + (i + 1),
-                      Math.floor(Number(it) * scale),
-                    ])
-                  ),
+                  text: `${util.i18n.get(mod.label || '')} ${util.i18n.get(mod.description || '')}`,
+                  ...context,
                 })
               )
             }
-            if (data.SecondaryEffectDisplayName) {
-              result.push(
-                util.expr.solve({
-                  text: util.i18n.get(data.Description),
-                  charLevel: ctx.level,
-                  gearScore: ctx.gs,
-                  itemId: data.PerkID,
-                })
-              )
-            }
-            if (!result) {
-              return of('')
-            }
+            result.push(
+              util.expr.solve({
+                text: util.i18n.get(data.Description || data.StatDisplayText),
+                ...context,
+              })
+            )
             return combineLatest(result).pipe(map((it) => it.join('<br>')))
           })
         )

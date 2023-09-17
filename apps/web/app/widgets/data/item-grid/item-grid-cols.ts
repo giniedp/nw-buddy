@@ -43,7 +43,7 @@ export function itemColIcon(util: ItemGridUtils) {
       return util.elA(
         {
           attrs: {
-            href: util.nwLink.link('item', getItemIconPath(data)),
+            href: util.nwLink.link('item', getItemId(data)),
             target: '_blank',
           },
         },
@@ -128,9 +128,12 @@ export function itemColPerks(
       optionsGetter: ({ data }) => {
         const perks: Perks[] = data.$perks || []
         return perks.map((perk) => {
+          const text = util.i18n.get(
+            perk.DisplayName || perk.SecondaryEffectDisplayName || perk.AppliedSuffix || perk.AppliedPrefix
+          )
           return {
             id: perk.PerkID,
-            label: util.i18n.get(perk.DisplayName || perk.AppliedSuffix || perk.AppliedPrefix),
+            label: text,
             icon: perk.IconPath,
           }
         })

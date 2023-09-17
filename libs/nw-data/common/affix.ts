@@ -1,13 +1,13 @@
-import type { Affixstats } from "@nw-data/generated"
+import type { Affixstats } from '@nw-data/generated'
 
 export function isAffixSplitDamage(affix: Affixstats): boolean {
   return !!affix?.DamagePercentage && !!affix?.DamageType
 }
 
-export function getAffixMODs(affix: Partial<Affixstats>, scale: number) {
+export function getAffixMODs(affix: Partial<Affixstats>, scale: number = 1) {
   return getAffixProperties(affix)
     .filter((it) => it.key.startsWith('MOD'))
-    .map(({ key, value }) => ({ key, value: Number(value)}))
+    .map(({ key, value }) => ({ key, value: Number(value) }))
     .sort((a, b) => b.value - a.value)
     .map(({ key, value }) => {
       const label = key.replace('MOD', '').toLowerCase()
@@ -15,7 +15,7 @@ export function getAffixMODs(affix: Partial<Affixstats>, scale: number) {
         key: key,
         label: `ui_${label}`,
         labelShort: `ui_${label}_short`,
-        value: Math.floor(value * scale),
+        value: value * scale,
       }
     })
 }
@@ -43,7 +43,6 @@ export function getAffixABSs(affix: Partial<Affixstats>, scale: number) {
       }
     })
 }
-
 
 export function getAffixDMGs(affix: Partial<Affixstats>, scale: number) {
   return getAffixProperties(affix)
