@@ -1,2 +1,2 @@
-export * from './damage.module'
-export * from './damage.component'
+export * from './damage-page.module'
+export * from './damage-page.component'

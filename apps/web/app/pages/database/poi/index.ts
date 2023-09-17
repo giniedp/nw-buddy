@@ -1,1 +1,1 @@
-export * from './poi.module'
+export * from './poi-page.module'

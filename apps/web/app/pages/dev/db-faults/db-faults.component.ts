@@ -14,9 +14,10 @@ import { Observable, combineLatest, defer, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService, NwModule } from '~/nw'
 import { SelectFilter } from '~/ui/ag-grid'
-import { CellRendererService, DataTableAdapter, DataTableCategory, DataTableModule } from '~/ui/data-table'
+import { DataTableAdapter, DataTableCategory, DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { humanize } from '~/utils'
+import { DataGridUtils } from '~/ui/data-grid'
 
 export interface FaultRow {
   item: ItemDefinitionMaster
@@ -64,16 +65,18 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
           pinned: true,
           width: 62,
           cellRenderer: this.cellRenderer(({ data }) => {
-            return this.r.link(
+            return this.r.elA(
               {
-                href: this.info.link('item', data.item.ItemID),
-                target: '_blank',
+                attrs: {
+                  href: this.info.link('item', data.item.ItemID),
+                  target: '_blank',
+                },
               },
               [
-                this.r.icon({
+                this.r.elImg({
                   src: getItemIconPath(data.item),
                   class: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
-                  rarity: getItemRarity(data.item),
+                  //rarity: getItemRarity(data.item),
                 }),
               ]
             )
@@ -132,7 +135,9 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
           headerValueGetter: () => 'Item Class',
           width: 250,
           valueGetter: this.valueGetter(({ data }) => data.item?.ItemClass),
-          cellRenderer: this.r.tagListRenderer(humanize),
+          cellRenderer: this.r.tagsRenderer({
+            transform: humanize,
+          }),
           filter: SelectFilter,
           filterParams: SelectFilter.params({
             showSearch: true,
@@ -154,7 +159,9 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
               }
               return ''
             },
-            cellRenderer: this.r.tagListRenderer(humanize),
+            cellRenderer: this.r.tagsRenderer({
+              transform: humanize,
+            }),
           })
         ),
       ],
@@ -168,7 +175,7 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
     private nwDb: NwDbService,
     private i18n: TranslateService,
     protected search: QuicksearchService,
-    private r: CellRendererService,
+    private r: DataGridUtils,
     private info: NwLinkService
   ) {
     super()

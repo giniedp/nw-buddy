@@ -1,1 +1,1 @@
-export * from './perks.module'
+export * from './perks-page.module'

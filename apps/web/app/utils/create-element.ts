@@ -1,3 +1,4 @@
+import { twMerge } from 'tailwind-merge'
 export interface CreateElementOptions<T extends keyof HTMLElementTagNameMap> {
   tag: T
   classList?: string[]
@@ -8,7 +9,10 @@ export interface CreateElementOptions<T extends keyof HTMLElementTagNameMap> {
   children?: Array<HTMLElement | CreateElementOptions<keyof HTMLElementTagNameMap>>
 }
 
-export function createElement<T extends keyof HTMLElementTagNameMap>(document: Document, input: CreateElementOptions<T>) {
+export function createElement<T extends keyof HTMLElementTagNameMap>(
+  document: Document,
+  input: CreateElementOptions<T>
+) {
   const el = document.createElement(input.tag)
   if (input.classList) {
     el.classList.add(...input.classList)
@@ -39,22 +43,31 @@ export function createElement<T extends keyof HTMLElementTagNameMap>(document: D
   return el
 }
 
-export type TagName<T extends keyof HTMLElementTagNameMap> = T | `${T}.${string}`
-export interface CreateElAttrs<T extends keyof HTMLElementTagNameMap> {
-  class?: string[]
+export type ElementTag = keyof HTMLElementTagNameMap
+export type TagName<T extends ElementTag> = T | `${T}.${string}`
+export interface ElementProps<T extends ElementTag = 'div'> {
+  class?: string | string[]
   html?: string
   text?: string
   attrs?: Record<string, string>
   ev?: Partial<GlobalEventHandlers>
   tap?: (el: HTMLElementTagNameMap[T]) => void
 }
-export function createEl<T extends keyof HTMLElementTagNameMap>(document: Document, tagName: TagName<T>, attr: CreateElAttrs<T>, children?: Array<HTMLElement>) {
+export type ElementChildren = HTMLElement | Array<HTMLElement>
+
+export function createEl<T extends ElementTag>(
+  document: Document,
+  tagName: TagName<T>,
+  attr: ElementProps<T>,
+  children?: ElementChildren
+) {
   const tokens = tagName.split('.')
   const tag = tokens.shift() as T
   const el = document.createElement(tag)
-  el.classList.add(...tokens)
   if (attr.class) {
-    el.classList.add(...attr.class)
+    el.setAttribute('class', twMerge(tokens, attr.class))
+  } else {
+    el.setAttribute('class', twMerge(tokens))
   }
   if (attr.html) {
     el.innerHTML = attr.html
@@ -72,10 +85,12 @@ export function createEl<T extends keyof HTMLElementTagNameMap>(document: Docume
       el.setAttribute(key, attr.attrs[key])
     }
   }
-  if (children) {
+  if (Array.isArray(children)) {
     for (const child of children) {
       el.append(child)
     }
+  } else if (children) {
+    el.append(children)
   }
   if (attr.tap) {
     attr.tap(el)

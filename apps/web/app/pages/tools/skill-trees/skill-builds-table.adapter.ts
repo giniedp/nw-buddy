@@ -6,15 +6,10 @@ import { Observable, Subject, debounceTime, defer, filter, merge, of, switchMap,
 import { SkillBuildRow, SkillBuildsStore } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwLinkService } from '~/nw'
-import {
-  CellRendererService,
-  DataTableAdapter,
-  DataTableAdapterOptions,
-  DataTableCategory,
-  dataTableProvider,
-} from '~/ui/data-table'
+import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { LayoutService } from '~/ui/layout'
 import { humanize } from '~/utils'
+import { DataGridUtils } from '~/ui/data-grid'
 
 export interface SkillBuildsTableAdapterOptions extends DataTableAdapterOptions<SkillBuildRow> {
   noActions: boolean
@@ -71,18 +66,20 @@ export class SkillBuildsTableAdapter extends DataTableAdapter<SkillBuildRow> {
           filter: true,
           width: 250,
           cellRenderer: this.cellRenderer(({ data }) => {
-            return this.r.element(
+            return this.r.el(
               'div.flex.flex-row.gap-1',
               {},
               data.abilities?.map((it) => {
-                return this.r.link(
+                return this.r.elA(
                   {
-                    class: 'border border-1 transition-all translate-x-0 hover:translate-x-1',
-                    href: this.info.link('ability', it.AbilityID),
-                    target: '_blank',
+                    class: ['border', 'border-1', 'transition-all', 'translate-x-0', 'hover:translate-x-1'],
+                    attrs: {
+                      href: this.info.link('ability', it.AbilityID),
+                      target: '_blank',
+                    },
                   },
                   [
-                    this.r.icon({
+                    this.r.elImg({
                       class: ['nw-icon', `bg-ability-${getAbilityCategoryTag(it)}`],
                       src: it.Icon,
                     }),
@@ -119,7 +116,7 @@ export class SkillBuildsTableAdapter extends DataTableAdapter<SkillBuildRow> {
     private dialog: Dialog,
     private i18n: TranslateService,
     private zone: NgZone,
-    private r: CellRendererService,
+    private r: DataGridUtils,
     private layout: LayoutService,
     private info: NwLinkService
   ) {

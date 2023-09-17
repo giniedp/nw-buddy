@@ -1,2 +1,2 @@
-export * from './loot.module'
-export * from './loot.component'
+export * from './loot-page.module'
+export * from './loot-page.component'

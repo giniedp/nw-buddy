@@ -321,13 +321,9 @@ export class DataTableComponent<T> implements OnInit, OnChanges, OnDestroy {
   }
 
   private mergeEvents(events: string[]) {
-    return this.gridReady$.pipe(
-      switchMap(({ api }) => {
-        return merge(
-          ...events.map((event) => {
-            return fromGridEvent(api, event)
-          })
-        )
+    return merge(
+      ...events.map((event) => {
+        return fromGridEvent(this.gridReady$, event)
       })
     )
   }

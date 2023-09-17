@@ -1,4 +1,3 @@
-import { ClassProvider, ExistingProvider, Injectable, StaticProvider, Type } from '@angular/core'
 import {
   ColDef,
   ColGroupDef,
@@ -10,7 +9,9 @@ import {
   ValueGetterFunc,
   ValueGetterParams,
 } from '@ag-grid-community/core'
-//import { AgGridCommon } from 'ag-grid-community/dist/lib/interfaces/iCommon'
+import { ClassProvider, Injectable, StaticProvider, Type } from '@angular/core'
+
+import type { AgGridCommon } from '@ag-grid-community/core/dist/esm/es6/interfaces/iCommon'
 import {
   BehaviorSubject,
   defer,
@@ -26,14 +27,14 @@ import {
 import {
   assetUrl,
   createEl,
-  CreateElAttrs,
   createElement,
   CreateElementOptions,
+  ElementProps,
   shareReplayRefCount,
   TagName,
 } from '~/utils'
-import { AsyncCellRenderer, AsyncCellRendererParams, fromGridEvent, GridEvents } from '../ag-grid'
-import type { AgGridCommon } from '@ag-grid-community/core/dist/esm/es6/interfaces/iCommon'
+import { AsyncCellRenderer, AsyncCellRendererParams, fromGridEvent } from '../ag-grid'
+import { merge } from 'lodash'
 
 export interface DataTableCategory {
   label: string
@@ -126,7 +127,7 @@ export abstract class DataTableAdapter<T> {
         const resolve = () => grid.api.isAnyFilterPresent()
         return !grid?.api
           ? of(false)
-          : fromGridEvent(grid.api, GridEvents.EVENT_FILTER_CHANGED).pipe(map(resolve)).pipe(startWith(resolve()))
+          : fromGridEvent(grid, 'filterChanged').pipe(map(resolve)).pipe(startWith(resolve()))
       })
     )
     .pipe(shareReplayRefCount(1))
@@ -297,7 +298,7 @@ export abstract class DataTableAdapter<T> {
 
   public el<T extends keyof HTMLElementTagNameMap>(
     tagName: TagName<T>,
-    attr: CreateElAttrs<T>,
+    attr: ElementProps<T>,
     children?: Array<HTMLElement>
   ) {
     return createEl(document, tagName, attr, children)

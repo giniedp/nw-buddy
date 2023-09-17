@@ -1,1 +1,1 @@
-export * from './game-events.module'
+export * from './game-events-page.module'

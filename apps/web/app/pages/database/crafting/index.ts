@@ -1,1 +1,1 @@
-export * from './crafting.module'
+export * from './crafting-page.module'

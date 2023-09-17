@@ -14,7 +14,8 @@ import {
   switchMap,
   tap,
 } from 'rxjs'
-import { debounceSync } from './rx-operators/debounce-sync'
+import { debounceSync } from './debounce-sync'
+export * from './debounce-sync'
 
 export function mapProp<T, K extends keyof T>(prop: K) {
   return map<T, T[K]>((it) => it?.[prop])
@@ -89,31 +90,35 @@ export function tapDebug<T>(tag: string, options?: { disabled?: boolean; transfo
   })
 }
 
-export interface SelectStreamConfig<T = unknown> {
+export interface SelectConfig<T = unknown> {
   debounce?: boolean
   equal?: ValueEqualityFn<T>
 }
 
+export function selectStream<T extends Record<string, ObservableInput<any>>>(source: T): Observable<T>
 export function selectStream<T>(source: Observable<T>): Observable<T>
 export function selectStream<T extends Record<string, ObservableInput<any>>, R>(
   source: T,
-  projector: (s: { [K in keyof T]: ObservedValueOf<T[K]> }) => R,
-  config?: SelectStreamConfig<R>
+  project?: (input: { [K in keyof T]: ObservedValueOf<T[K]> }) => R,
+  config?: SelectConfig<R>
 ): Observable<R>
 export function selectStream<T, R>(
-  source: Observable<T>,
-  projector: (s: T) => R,
-  config?: SelectStreamConfig<R>
+  stream$: Observable<T>,
+  project?: (input: T) => R,
+  config?: SelectConfig<R>
 ): Observable<R>
 export function selectStream(
-  source: Observable<any>,
-  projector?: (s: any) => any,
-  config?: SelectStreamConfig<any>
+  stream$: Observable<any>,
+  project?: (input: any) => any,
+  config?: SelectConfig<any>
 ): Observable<any> {
-  source = isObservable(source) ? source : combineLatest(source as any)
-  return source
-    .pipe(config?.debounce ? debounceSync() : map((it) => it))
-    .pipe(map(projector || ((it) => it)))
+  if (!isObservable(stream$)) {
+    stream$ = combineLatest(stream$ as any)
+  }
+
+  return stream$
+    .pipe(config?.debounce ? debounceSync() : (it) => it)
+    .pipe(map(project || ((it) => it)))
     .pipe(distinctUntilChanged(config?.equal))
     .pipe(
       shareReplay({

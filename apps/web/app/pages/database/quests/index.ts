@@ -1,1 +1,1 @@
-export * from './quests.module'
+export * from './quests-page.module'

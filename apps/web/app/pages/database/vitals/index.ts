@@ -1,1 +1,1 @@
-export * from './vitals.module'
+export * from './vitals-page.module'

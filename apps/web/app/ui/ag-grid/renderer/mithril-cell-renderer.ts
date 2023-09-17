@@ -9,21 +9,21 @@ export interface MithrilCellAttrs<T> extends ICellRendererParams {
 export function mithrilCell<T, S = any>(comp: m.Component<MithrilCellAttrs<T>, S>) {
   return class MithrilCellComponent {
     private el: HTMLElement
-    private params: ICellRendererParams
+    private params$: ICellRendererParams
     private destroy$ = new Subject()
     public init(params: ICellRendererParams) {
-      this.params = params
+      this.params$ = params
       this.el = params.eParentOfValue
       m.mount(this.el, {
         view: () =>
           m(comp, {
-            ...this.params,
+            ...this.params$,
             destroy$: this.destroy$,
           }),
       })
     }
     public refresh(params: ICellRendererParams) {
-      this.params = params
+      this.params$ = params
       m.redraw()
     }
     public getGui() {

@@ -1,7 +1,7 @@
 import { Directive, Input, OnDestroy } from '@angular/core'
 import { Router } from '@angular/router'
 import { isEqual } from 'lodash'
-import { Subject, combineLatest, debounce, debounceTime, merge, of, switchMap, takeUntil } from 'rxjs'
+import { Subject, combineLatest, debounceTime, merge, of, switchMap, takeUntil } from 'rxjs'
 import { DataTableComponent } from './data-table.component'
 @Directive({
   standalone: true,
@@ -31,7 +31,7 @@ export class FilterRouteParamDirective implements OnDestroy {
 
           return combineLatest({
             data: this.table.gridData,
-            filter: merge(of(filter), this.table.filterSaved)
+            filter: merge(of(filter), this.table.filterSaved),
           })
         })
       )

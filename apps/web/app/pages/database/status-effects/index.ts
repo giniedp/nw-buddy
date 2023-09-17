@@ -1,1 +1,1 @@
-export * from './status-effects.module'
+export * from './status-effects-page.module'

@@ -1,0 +1,129 @@
+import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay'
+import { CommonModule } from '@angular/common'
+import { ChangeDetectionStrategy, Component, HostListener, Input } from '@angular/core'
+import { RouterModule } from '@angular/router'
+import { ComponentStore } from '@ngrx/component-store'
+import { NwModule } from '~/nw'
+import { IconsModule } from '~/ui/icons'
+import { eqCaseInsensitive } from '~/utils'
+import { DataGridCategory } from '../types'
+
+@Component({
+  standalone: true,
+  selector: 'nwb-data-grid-category-menu,button[nwbGridCateogryMenu]',
+  templateUrl: './data-grid-category-menu.component.html',
+  imports: [CommonModule, OverlayModule, IconsModule, NwModule, RouterModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    class: 'inline-flex flex-col flex-nowrap gap-1 items-start justify-center',
+  },
+  hostDirectives: [CdkOverlayOrigin],
+})
+export class DataGridCategoryMenuComponent extends ComponentStore<{
+  categories: DataGridCategory[]
+  category: string | number | null
+  rowCounter?: number
+  rowCounterEnabled?: boolean
+  routePrefix?: string
+  defaultTitle?: string
+  defaultIcon?: string
+  defaultRoute?: string
+}> {
+  @Input()
+  public set nwbGridCateogryMenu(value: DataGridCategory[]) {
+    this.categories = value
+  }
+
+  @Input()
+  public set categories(value: DataGridCategory[]) {
+    this.patchState({
+      categories: value,
+    })
+  }
+
+  @Input()
+  public set category(value: string | number | null) {
+    this.patchState({
+      category: value,
+    })
+  }
+
+  @Input()
+  public set rowCounter(value: number) {
+    this.patchState({
+      rowCounter: value,
+      rowCounterEnabled: true,
+    })
+  }
+
+  @Input()
+  public set routePrefix(value: string) {
+    this.patchState({
+      routePrefix: value,
+    })
+  }
+
+  @Input({ required: true })
+  public set defaultTitle(value: string) {
+    this.patchState({ defaultTitle: value })
+  }
+
+  @Input()
+  public set defaultIcon(value: string) {
+    this.patchState({ defaultIcon: value })
+  }
+
+  @Input({ required: true })
+  public set defaultRoute(value: string) {
+    this.patchState({ defaultRoute: value })
+  }
+
+  protected isPanelOpen = false
+
+  protected readonly counter$ = this.select(({ rowCounter, rowCounterEnabled }) => {
+    return rowCounterEnabled ? { value: rowCounter || 0 } : null
+  })
+  protected readonly categories$ = this.select(celectCategories)
+  protected readonly activeCateogry$ = this.select(this.categories$, (it) => {
+    return it.find((it) => it.active)
+  })
+  protected readonly defaultCategory$ = this.select(({ defaultTitle, defaultRoute, defaultIcon, routePrefix }) => {
+    return {
+      id: defaultRoute,
+      route: [routePrefix || './', defaultRoute.toLowerCase()],
+      label: defaultTitle,
+      icon: defaultIcon,
+    }
+  })
+
+  public constructor(protected cdkOrigin: CdkOverlayOrigin) {
+    super({
+      categories: [],
+      category: null,
+    })
+  }
+
+  @HostListener('click')
+  public open() {
+    this.isPanelOpen = true
+  }
+}
+
+function celectCategories({
+  categories,
+  category,
+  routePrefix,
+}: {
+  categories: DataGridCategory[]
+  category: string | number | null
+  routePrefix?: string
+}) {
+  categories = categories || []
+  return categories.map((it) => {
+    return {
+      ...it,
+      route: [routePrefix || './', it.id.toLowerCase()],
+      active: eqCaseInsensitive(String(it.id), String(category)),
+    }
+  })
+}

@@ -1,1 +1,1 @@
-export * from './housing.module'
+export * from './housing-page.module'
