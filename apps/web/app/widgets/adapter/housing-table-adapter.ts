@@ -96,11 +96,10 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
         }),
         this.colDef({
           colId: 'tier',
-          headerValueGetter: () => 'Tier',
           width: 80,
-          field: this.fieldName('Tier'),
-          filter: SelectFilter,
+          headerValueGetter: () => 'Tier',
           valueGetter: ({ data }) => getItemTierAsRoman(data.Tier),
+          filter: SelectFilter,
         }),
         this.colDef({
           colId: 'userBookmark',
@@ -151,7 +150,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
           colId: 'housingTag1Placed',
           headerValueGetter: () => 'Placement',
           headerName: 'Placement',
-          field: this.fieldName('HousingTag1 Placed'),
+          valueGetter: this.valueGetter(({ data }) => data['HousingTag1 Placed']),
           valueFormatter: ({ value }) => humanize(value),
           filter: SelectFilter,
           width: 150,
@@ -168,7 +167,7 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
         this.colDef({
           colId: 'howToObtain',
           headerValueGetter: () => 'Obtain',
-          field: this.fieldName('HowToOptain (Primarily)'),
+          valueGetter: this.valueGetter(({ data }) => data['HowToOptain (Primarily)']),
           valueFormatter: ({ value }) => humanize(value),
           filter: SelectFilter,
           width: 150,
@@ -177,10 +176,9 @@ export class HousingTableAdapter extends DataTableAdapter<Housingitems> {
           colId: 'housingTags',
           headerValueGetter: () => 'Housing Tags',
           width: 250,
-          field: this.fieldName('HousingTags'),
-          valueGetter: ({ data, colDef }) => {
-            return (data[colDef.field] || '').trim().split('+')
-          },
+          valueGetter: this.valueGetter(({ data }) => {
+            return (data.HousingTags || '').trim().split('+')
+          }),
           cellRenderer: this.cellRendererTags(humanize),
           filter: SelectFilter,
           filterParams: SelectFilter.params({

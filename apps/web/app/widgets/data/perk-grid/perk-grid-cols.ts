@@ -1,6 +1,6 @@
-import { getPerkItemClassGsBonus, getPerksInherentMODs, hasPerkInherentAffix } from '@nw-data/common'
+import { getPerkItemClassGsBonus, getPerkMultiplier, getPerksInherentMODs, hasPerkInherentAffix } from '@nw-data/common'
 import { Ability, Perks } from '@nw-data/generated'
-import { combineLatest, of, switchMap } from 'rxjs'
+import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwExpressionContextService } from '~/nw/expression'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataGridUtils } from '~/ui/data-grid'
@@ -29,14 +29,10 @@ export function perkColIcon(util: PerkGridUtils) {
         {
           attrs: { target: '_blank', href: util.nwLink.link('perk', String(data.PerkID)) },
         },
-        util.elPicture(
-          {
-            class: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
-          },
-          util.elImg({
-            src: data.IconPath,
-          })
-        )
+        util.elItemIcon({
+          class: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
+          icon: data.IconPath,
+        })
       )
     }),
   })
@@ -94,23 +90,61 @@ export function perkColDescription(util: PerkGridUtils, ctx: NwExpressionContext
           stats: util.db.affixStatsMap,
         }).pipe(
           switchMap(({ ctx, text, stats }) => {
-            if (hasPerkInherentAffix(data)) {
-              const affix = stats.get(data.Affix)
-              const result = getPerksInherentMODs(data, affix, ctx.gs)
+            if (!hasPerkInherentAffix(data)) {
+              let gs = ctx.gs
+              if (data.ItemClassGSBonus && ctx.gsBonus) {
+                gs += Number(data.ItemClassGSBonus.split(',')[0].split(':')[1]) || 0
+              }
+
+              return util.expr.solve({
+                text: text,
+                charLevel: ctx.level,
+                gearScore: gs,
+                itemId: data.PerkID,
+              })
+            }
+
+            const affix = stats.get(data.Affix)
+            const mods = getPerksInherentMODs(data, affix, ctx.gs)
+            const result: Array<Observable<string>> = []
+            if (mods?.length) {
+              const text = getPerksInherentMODs(data, affix, ctx.gs)
                 .map((it) => `+${it.value} <b>${util.i18n.get(it.label)}</b>`)
                 .join('<br>')
-              return of(result)
+              return of(text)
             }
-            let gs = ctx.gs
-            if (data.ItemClassGSBonus && ctx.gsBonus) {
-              gs += Number(data.ItemClassGSBonus.split(',')[0].split(':')[1]) || 0
+
+            if (affix?.AttributePlacingMods) {
+              const scale = getPerkMultiplier(data, ctx.gs)
+              result.push(
+                util.expr.solve({
+                  text: util.i18n.get(data.StatDisplayText),
+                  charLevel: ctx.level,
+                  gearScore: ctx.gs,
+                  itemId: data.PerkID,
+                  ...Object.fromEntries(
+                    affix.AttributePlacingMods.split(',').map((it, i) => [
+                      'amount' + (i + 1),
+                      Math.floor(Number(it) * scale),
+                    ])
+                  ),
+                })
+              )
             }
-            return util.expr.solve({
-              text: text,
-              charLevel: ctx.level,
-              gearScore: gs,
-              itemId: data.PerkID,
-            })
+            if (data.SecondaryEffectDisplayName) {
+              result.push(
+                util.expr.solve({
+                  text: util.i18n.get(data.Description),
+                  charLevel: ctx.level,
+                  gearScore: ctx.gs,
+                  itemId: data.PerkID,
+                })
+              )
+            }
+            if (!result) {
+              return of('')
+            }
+            return combineLatest(result).pipe(map((it) => it.join('<br>')))
           })
         )
       },
@@ -124,7 +158,7 @@ export function perkColPerkType(util: PerkGridUtils) {
   return util.colDef({
     colId: 'perkType',
     headerValueGetter: () => 'Type',
-    field: util.fieldName('PerkType'),
+    valueGetter: util.fieldGetter('PerkType'),
     width: 120,
     filter: SelectFilter,
   })
@@ -179,7 +213,7 @@ export function perkColItemClass(util: PerkGridUtils) {
     colId: 'itemClass',
     headerValueGetter: () => 'Item Class',
     width: 500,
-    field: util.fieldName('ItemClass'),
+    valueGetter: util.fieldGetter('ItemClass'),
     wrapText: true,
     autoHeight: true,
     cellClass: ['multiline-cell', 'py-2'],
@@ -194,7 +228,7 @@ export function perkColExclusiveLabels(util: PerkGridUtils) {
   return util.colDef({
     colId: 'exclusiveLabels',
     headerValueGetter: () => 'Exclusive Labels',
-    field: util.fieldName('ExclusiveLabels'),
+    valueGetter: util.fieldGetter('ExclusiveLabels'),
     wrapText: true,
     autoHeight: true,
     cellClass: ['multiline-cell', 'py-2'],
@@ -209,7 +243,7 @@ export function perkColExcludeItemClass(util: PerkGridUtils) {
   return util.colDef({
     colId: 'excludeItemClass',
     headerValueGetter: () => 'Exclude Item Class',
-    field: util.fieldName('ExcludeItemClass'),
+    valueGetter: util.fieldGetter('ExcludeItemClass'),
     wrapText: true,
     autoHeight: true,
     cellClass: ['multiline-cell', 'py-2'],

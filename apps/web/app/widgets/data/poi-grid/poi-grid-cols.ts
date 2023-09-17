@@ -65,7 +65,7 @@ export function poiColGroupSize(util: PoiGridUtils) {
   return util.colDef({
     colId: 'groupSize',
     headerValueGetter: () => 'groupSize',
-    field: util.fieldName('GroupSize'),
+    valueGetter: util.fieldGetter('GroupSize'),
     hide: true,
   })
 }
@@ -73,7 +73,7 @@ export function poiColLootTags(util: PoiGridUtils) {
   return util.colDef({
     colId: 'lootTags',
     headerValueGetter: () => 'Loot Tags',
-    field: util.fieldName('LootTags'),
+    valueGetter: util.fieldGetter('LootTags'),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     filter: SelectFilter,
     filterParams: SelectFilter.params({
@@ -85,7 +85,7 @@ export function poiColLevelRange(util: PoiGridUtils) {
   return util.colDef({
     colId: 'levelRange',
     headerValueGetter: () => 'Level Range',
-    field: util.fieldName('LevelRange'),
+    valueGetter: util.fieldGetter('LevelRange'),
     hide: false,
   })
 }
@@ -93,7 +93,7 @@ export function poiColVitalsCategory(util: PoiGridUtils) {
   return util.colDef({
     colId: 'vitalsCategory',
     headerValueGetter: () => 'Vitals Category',
-    field: util.fieldName('VitalsCategory'),
+    valueGetter: util.fieldGetter('VitalsCategory'),
     hide: false,
   })
 }

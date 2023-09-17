@@ -172,7 +172,7 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
             this.colDef({
               colId: 'perkType',
               headerValueGetter: () => 'Type',
-              field: this.fieldName('PerkType'),
+              valueGetter: this.valueGetter(({ data }) => data.PerkType),
               width: 120,
               filter: SelectFilter,
             }),
@@ -222,10 +222,10 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
               colId: 'itemClass',
               headerValueGetter: () => 'Item Class',
               width: 500,
-              field: this.fieldName('ItemClass'),
               wrapText: true,
               autoHeight: true,
               cellClass: ['multiline-cell', 'py-2'],
+              valueGetter: this.valueGetter(({ data }) => data.ItemClass),
               filter: SelectFilter,
               cellRenderer: this.cellRendererTags(humanize),
               filterParams: SelectFilter.params({
@@ -235,11 +235,11 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
             this.colDef({
               colId: 'exclusiveLabels',
               headerValueGetter: () => 'Exclusive Labels',
-              field: this.fieldName('ExclusiveLabels'),
               wrapText: true,
               autoHeight: true,
               cellClass: ['multiline-cell', 'py-2'],
               filter: SelectFilter,
+              valueGetter: this.valueGetter(({ data }) => data.ExclusiveLabels),
               cellRenderer: this.cellRendererTags(humanize),
               filterParams: SelectFilter.params({
                 showSearch: true,
@@ -248,11 +248,11 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
             this.colDef({
               colId: 'excludeItemClass',
               headerValueGetter: () => 'Exclude Item Class',
-              field: this.fieldName('ExcludeItemClass'),
               wrapText: true,
               autoHeight: true,
               cellClass: ['multiline-cell', 'py-2'],
               filter: SelectFilter,
+              valueGetter: this.valueGetter(({ data }) => data.ExcludeItemClass),
               cellRenderer: this.cellRendererTags(humanize),
               filterParams: SelectFilter.params({}),
             }),

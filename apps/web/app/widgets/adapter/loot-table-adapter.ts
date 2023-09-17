@@ -76,9 +76,7 @@ export class LootTableAdapter extends DataTableAdapter<TableEntry> {
           colId: 'conditions',
           headerValueGetter: () => 'Conditions',
           width: 200,
-          valueGetter: this.valueGetter(({ data }) => {
-            return data.Conditions
-          }),
+          valueGetter: this.valueGetter(({ data }) => data.Conditions),
           getQuickFilterText: ({ value }) => value,
           filter: SelectFilter,
           cellRenderer: this.cellRendererTags(humanize),
@@ -92,7 +90,7 @@ export class LootTableAdapter extends DataTableAdapter<TableEntry> {
         this.colDef({
           colId: 'parents',
           headerValueGetter: () => 'Parents',
-          field: this.fieldName('$parents'),
+          valueGetter: this.valueGetter(({ data }) => data.$parents),
           width: 600,
           filter: SelectFilter,
           cellRenderer: this.cellRendererTags(humanize),

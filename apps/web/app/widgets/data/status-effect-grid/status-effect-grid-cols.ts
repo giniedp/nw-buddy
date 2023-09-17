@@ -36,17 +36,17 @@ export function statusEffectColIcon(util: StatusEffectGridUtils) {
 export function statusEffectColStatusID(util: StatusEffectGridUtils) {
   return util.colDef({
     colId: 'statusID',
-    headerValueGetter: () => 'Status ID',
     hide: true,
-    field: util.fieldName('StatusID'),
+    headerValueGetter: () => 'Status ID',
+    valueGetter: util.fieldGetter('StatusID'),
   })
 }
 export function statusEffectColSource(util: StatusEffectGridUtils) {
   return util.colDef({
     colId: 'source',
-    headerValueGetter: () => 'Source',
     hide: true,
-    field: util.fieldName('$source' as any),
+    headerValueGetter: () => 'Source',
+    valueGetter: util.fieldGetter('$source' as any),
     filter: SelectFilter,
     filterParams: SelectFilter.params({
       showSearch: true,
@@ -96,11 +96,11 @@ export function statusEffectColBaseDuration(util: StatusEffectGridUtils) {
 export function statusEffectColEffectCategories(util: StatusEffectGridUtils) {
   return util.colDef({
     colId: 'effectCategories',
-    headerValueGetter: () => 'Effect Categories',
-    field: util.fieldName('EffectCategories'),
     autoHeight: true,
-    filter: SelectFilter,
+    headerValueGetter: () => 'Effect Categories',
+    valueGetter: util.fieldGetter('EffectCategories'),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
+    filter: SelectFilter,
     filterParams: SelectFilter.params({
       showSearch: true,
     }),

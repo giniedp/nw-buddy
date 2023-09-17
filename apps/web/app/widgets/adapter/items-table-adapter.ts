@@ -284,7 +284,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           colId: 'attributionId',
           headerValueGetter: () => 'Event',
           width: 180,
-          field: this.fieldName('AttributionId'),
+          valueGetter: this.valueGetter(({ data }) => data.AttributionId),
           valueFormatter: ({ value }) => humanize(value),
           filter: SelectFilter,
         }),
@@ -301,7 +301,7 @@ export class ItemsTableAdapter extends DataTableAdapter<ItemsTableItem> {
           colId: 'itemClass',
           headerValueGetter: () => 'Item Class',
           width: 250,
-          field: this.fieldName('ItemClass'),
+          valueGetter: this.valueGetter(({ data }) => data.ItemClass),
           cellRenderer: this.cellRendererTags(humanize),
           filter: SelectFilter,
           filterParams: SelectFilter.params({

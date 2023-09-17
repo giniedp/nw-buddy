@@ -58,6 +58,7 @@ export class GameEventsTableAdapter extends DataTableAdapter<GameEvent> {
           colId: 'gameEventType',
           headerValueGetter: () => 'Event Type',
           field: this.fieldName('GameEventType'),
+          valueGetter: this.valueGetter(({ data }) => data.GameEventType),
           filter: SelectFilter,
         }),
         this.colDef({

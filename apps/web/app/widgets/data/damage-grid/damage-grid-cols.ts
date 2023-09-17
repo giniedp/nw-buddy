@@ -18,7 +18,7 @@ export function damageColIcon(util: DamageGridUtils) {
     width: 62,
     cellRenderer: util.cellRenderer(({ data }) => {
       return util.elImg({
-        class: ['w-6', 'h-6'],
+        class: ['w-8', 'h-8'],
         src: damageTypeIcon(data.DamageType) || NW_FALLBACK_ICON,
       })
     }),
@@ -41,7 +41,7 @@ export function damageColDamageType(util: DamageGridUtils) {
   return util.colDef({
     colId: 'damageType',
     headerValueGetter: () => 'DamageType',
-    field: util.fieldName('DamageType'),
+    valueGetter: util.valueGetter(({ data }) => data.DamageType),
     width: 200,
     filter: SelectFilter,
   })
@@ -51,7 +51,7 @@ export function damageColAttackType(util: DamageGridUtils) {
   return util.colDef({
     colId: 'attackType',
     headerValueGetter: () => 'AttackType',
-    field: util.fieldName('AttackType'),
+    valueGetter: util.valueGetter(({ data }) => data.AttackType),
     width: 200,
     filter: SelectFilter,
   })
@@ -112,7 +112,7 @@ export function damageColAffixes(util: DamageGridUtils) {
   return util.colDef({
     colId: 'affixes',
     headerValueGetter: () => 'Affixes',
-    field: util.fieldName('Affixes'),
+    valueGetter: util.valueGetter(({ data }) => data.Affixes),
     width: 200,
     filter: SelectFilter,
   })
@@ -122,7 +122,7 @@ export function damageColAffliction(util: DamageGridUtils) {
   return util.colDef({
     colId: 'affliction',
     headerValueGetter: () => 'Affliction',
-    field: util.fieldName('Affliction'),
+    valueGetter: util.fieldGetter('Affliction'),
     width: 200,
     filter: SelectFilter,
   })

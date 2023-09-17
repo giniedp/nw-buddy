@@ -4,11 +4,9 @@ import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
 import { DataGridModule, DataGridSource } from '~/ui/data-grid'
-import { DataTableModule } from '~/ui/data-table'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { StatusEffectsTableAdapter } from '~/widgets/adapter'
 import { StatusEffectGridSource } from '~/widgets/data/status-effect-grid/status-effect-grid-source'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
@@ -19,7 +17,6 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    DataTableModule,
     IonicModule,
     NavbarModule,
     NwModule,

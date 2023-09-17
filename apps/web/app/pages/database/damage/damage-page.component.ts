@@ -5,12 +5,10 @@ import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
 import { DataGridModule, DataGridSource } from '~/ui/data-grid'
-import { DataTableModule } from '~/ui/data-table'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { DamageTableAdapter } from '~/widgets/adapter/damage-table-adapter'
 import { DamageGridSource } from '~/widgets/data/damage-grid'
 import { LootModule } from '~/widgets/loot'
 
@@ -21,7 +19,6 @@ import { LootModule } from '~/widgets/loot'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    DataTableModule,
     FormsModule,
     IonicModule,
     LootModule,

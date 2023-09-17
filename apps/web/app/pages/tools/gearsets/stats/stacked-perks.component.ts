@@ -25,7 +25,7 @@ export class StackedPerksComponent {
     abilities: this.db.abilitiesMap,
   }).pipe(
     map(({ perks, effects, abilities }) => {
-      return perks.filter(({ perk, affix }) => {
+      const activePerks = perks.filter(({ perk, affix }) => {
         if (!perk.ScalingPerGearScore) {
           return false
         }
@@ -38,24 +38,34 @@ export class StackedPerksComponent {
         }
         return false
       })
-    }),
-    map((data) => {
-      return Array.from(Object.values(groupBy(data, (it) => it.perk.PerkID)))
-        .map((group) => {
-          const perk = group[0].perk
-          const multiplier = group.map(({ gearScore, perk, item }) => {
-            return getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
-          })
-          return {
-            id: perk.PerkID,
-            icon: perk.IconPath,
-            count: group.length,
-            multiplier: sum(multiplier),
-            description: perk.Description,
-            name: perk.DisplayName,
+      return Array.from(Object.values(groupBy(activePerks, (it) => it.perk.PerkID))).map((group) => {
+        const { perk, gearScore, item } = group[0]
+        const scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
+        const stackTotal = group.length
+        let stackLimit: number = null
+        perk.EquipAbility?.forEach((it) => {
+          const stackMax = abilities.get(it)?.IsStackableMax
+          if (stackMax) {
+            if (stackLimit === null) {
+              stackLimit = stackMax
+            } else {
+              stackLimit = Math.min(stackLimit, stackMax)
+            }
           }
         })
-        //.filter((it) => it.count > 1)
+        const stackCount = stackLimit ? Math.min(stackTotal, stackLimit) : stackTotal
+        return {
+          id: perk.PerkID,
+          icon: perk.IconPath,
+          total: group.length,
+          stackTotal,
+          stackLimit,
+          stackCount,
+          multiplier: stackCount * scale,
+          description: perk.Description,
+          name: perk.DisplayName,
+        }
+      })
     }),
     tap((it) => {
       if (it?.length) {

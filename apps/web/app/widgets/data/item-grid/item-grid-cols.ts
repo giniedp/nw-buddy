@@ -11,12 +11,14 @@ import {
   getItemTradingGroupLabel,
   getItemTypeLabel,
   getTradingCategoryLabel,
+  isItemArtifact,
+  isItemNamed,
+  isMasterItem,
 } from '@nw-data/common'
 import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { ItemPreferencesService } from '~/preferences'
 import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
 import { DataGridUtils } from '~/ui/data-grid'
-import { getIconFrameClass } from '~/ui/item-frame'
 import { assetUrl, humanize } from '~/utils'
 import { BookmarkCell, TrackingCell } from '~/widgets/adapter/components'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
@@ -36,25 +38,22 @@ export function itemColIcon(util: ItemGridUtils) {
     filter: false,
     pinned: true,
     width: 62,
+    cellClass: ['overflow-visible'],
     cellRenderer: util.cellRenderer(({ data }) => {
       return util.elA(
         {
           attrs: {
-            href: util.nwLink.link('item', data.ItemID),
+            href: util.nwLink.link('item', getItemIconPath(data)),
             target: '_blank',
           },
         },
-        util.elPicture(
-          {
-            class: [...getIconFrameClass(data, true), 'transition-all translate-x-0 hover:translate-x-1'],
-          },
-          [
-            util.el('span', { class: 'nw-item-icon-border' }),
-            util.elImg({
-              src: getItemIconPath(data) || NW_FALLBACK_ICON,
-            }),
-          ]
-        )
+        util.elItemIcon({
+          class: ['transition-all translate-x-0 hover:translate-x-1'],
+          icon: getItemIconPath(data) || NW_FALLBACK_ICON,
+          isArtifact: isMasterItem(data) && isItemArtifact(data),
+          isNamed: isMasterItem(data) && isItemNamed(data),
+          rarity: getItemRarity(data),
+        })
       )
     }),
   })
@@ -109,12 +108,10 @@ export function itemColPerks(
                 href: util.nwLink.link('perk', perk?.PerkID),
               },
             },
-            [
-              util.elImg({
-                class: ['w-7', 'h-7', 'nw-icon'],
-                src: perk?.IconPath,
-              }),
-            ]
+            util.elImg({
+              class: ['w-7', 'h-7', 'nw-icon'],
+              src: perk?.IconPath,
+            })
           )
         ),
         ...buckets.map(() => {
@@ -264,7 +261,7 @@ export function itemColSource(util: ItemGridUtils) {
   return util.colDef({
     colId: 'source',
     headerValueGetter: () => 'Source',
-    field: '$source',
+    valueGetter: util.fieldGetter('$source' as any),
     valueFormatter: ({ value }) => humanize(value),
     width: 125,
     filter: SelectFilter,
@@ -276,7 +273,7 @@ export function itemColEvent(util: ItemGridUtils) {
     colId: 'attributionId',
     headerValueGetter: () => 'Event',
     width: 180,
-    field: util.fieldName('AttributionId'),
+    valueGetter: util.fieldGetter('AttributionId'),
     valueFormatter: ({ value }) => humanize(value),
     filter: SelectFilter,
   })
@@ -299,8 +296,8 @@ export function itemColItemClass(util: ItemGridUtils) {
     colId: 'itemClass',
     headerValueGetter: () => 'Item Class',
     width: 250,
-    field: util.fieldName('ItemClass'),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
+    valueGetter: util.valueGetter(({ data }) => data.ItemClass),
     filter: SelectFilter,
     filterParams: SelectFilter.params({
       showSearch: true,

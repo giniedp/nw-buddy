@@ -10,10 +10,17 @@
     </a>
     <div class="text-sky-600 flex-1">
       <b [nwText]="info.name"></b>
-      <b class="text-primary"> &times; {{ info.count }} </b>
+      <b class="text-primary"> &times; {{ info.stackCount }} </b>
       <span>
-        {{ info.description | nwText: { perkMultiplier: info.multiplier } }}
+        {{ info.description | nwText : { perkMultiplier: info.multiplier } }}
       </span>
+      <ng-container *ngIf="info.stackLimit">
+        <span [class.text-warning]="info.stackTotal > info.stackLimit">
+          Perk Stacks:
+          <span class="whitespace-nowrap"> {{ info.stackTotal }} / {{ info.stackLimit }} </span>
+          <ng-container *ngIf="info.stackTotal > info.stackLimit"> (over max) </ng-container>
+        </span>
+      </ng-container>
     </div>
   </div>
 </div>

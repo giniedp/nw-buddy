@@ -110,7 +110,7 @@ export function abilityColUiCategory(util: AbilityGridUtils) {
   return util.colDef({
     colId: 'uiCategory',
     headerValueGetter: () => 'UI Category',
-    field: util.fieldName('UICategory'),
+    valueGetter: util.valueGetter(({ data }) => data.UICategory),
     filter: SelectFilter,
   })
 }
@@ -119,7 +119,7 @@ export function abilityColWeaponTag(util: AbilityGridUtils) {
   return util.colDef({
     colId: 'weaponTag',
     headerValueGetter: () => 'Weapon Tag',
-    field: util.fieldName('WeaponTag'),
+    valueGetter: util.valueGetter(({ data }) => data.WeaponTag),
     valueFormatter: ({ value }) => util.i18n.get(getWeaponTagLabel(value)),
     filter: SelectFilter,
   })
@@ -139,7 +139,7 @@ export function abilityColAttackType(util: AbilityGridUtils) {
   return util.colDef({
     colId: 'attackType',
     headerValueGetter: () => 'Attack Type',
-    field: util.fieldName('AttackType'),
+    valueGetter: util.valueGetter(({ data }) => data.AttackType),
     filter: SelectFilter,
     cellRenderer: util.tagsRenderer({ transform: humanize }),
   })
@@ -149,7 +149,7 @@ export function abilityColDamageTable(util: AbilityGridUtils) {
   return util.colDef({
     colId: 'damageTableRow',
     headerValueGetter: () => 'Damage Table Row',
-    field: util.fieldName('DamageTableRow'),
+    valueGetter: util.valueGetter(({ data }) => data.DamageTableRow),
     filter: SelectFilter,
     cellRenderer: util.tagsRenderer({ transform: humanize }),
   })
@@ -159,7 +159,7 @@ export function abilityColDamageTableOverride(util: AbilityGridUtils) {
   return util.colDef({
     colId: 'damageTableRowOverride',
     headerValueGetter: () => 'Damage Table Row Override',
-    field: util.fieldName('DamageTableRowOverride'),
+    valueGetter: util.valueGetter(({ data }) => data.DamageTableRowOverride),
     filter: SelectFilter,
     cellRenderer: util.tagsRenderer({ transform: humanize }),
   })
@@ -169,7 +169,7 @@ export function abilityColRemoteDamageTable(util: AbilityGridUtils) {
   return util.colDef({
     colId: 'remoteDamageTableRow',
     headerValueGetter: () => 'Remote Damage TableRow',
-    field: util.fieldName('RemoteDamageTableRow'),
+    valueGetter: util.valueGetter(({ data }) => data.RemoteDamageTableRow),
     filter: SelectFilter,
     cellRenderer: util.tagsRenderer({ transform: humanize }),
   })
@@ -179,7 +179,7 @@ export function abilityColAfterAction(util: AbilityGridUtils) {
   return util.colDef({
     colId: 'afterAction',
     headerValueGetter: () => 'After Action',
-    field: util.fieldName('AfterAction'),
+    valueGetter: util.valueGetter(({ data }) => data.AfterAction),
     filter: SelectFilter,
   })
 }

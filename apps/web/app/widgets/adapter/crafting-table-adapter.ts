@@ -178,7 +178,7 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           colId: 'tradeskill',
           headerValueGetter: () => 'Tradeskill',
           width: 120,
-          field: this.fieldName('Tradeskill'),
+          valueGetter: this.valueGetter(({ data }) => data.Tradeskill),
           valueFormatter: this.valueFormatter<string>(({ value }) => this.i18n.get(getTradeSkillLabel(value))),
           filter: SelectFilter,
         }),
@@ -186,7 +186,7 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           colId: 'craftingCategory',
           headerValueGetter: () => 'Crafting Category',
           width: 150,
-          field: this.fieldName('CraftingCategory'),
+          valueGetter: this.valueGetter(({ data }) => data.CraftingCategory),
           valueFormatter: this.valueFormatter<string>(({ value }) => this.i18n.get(getCraftingCategoryLabel(value))),
           filter: SelectFilter,
           filterParams: SelectFilter.params({
@@ -197,7 +197,7 @@ export class CraftingTableAdapter extends DataTableAdapter<RecipeWithItem> {
           colId: 'craftingGroup',
           headerValueGetter: () => 'Crafting Group',
           width: 150,
-          field: this.fieldName('CraftingGroup'),
+          valueGetter: this.valueGetter(({ data }) => data.CraftingGroup),
           valueFormatter: this.valueFormatter<string>(({ value }) => this.i18n.get(getCraftingGroupLabel(value))),
           filter: SelectFilter,
           filterParams: SelectFilter.params({

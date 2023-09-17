@@ -87,7 +87,9 @@ export function createEl<T extends ElementTag>(
   }
   if (Array.isArray(children)) {
     for (const child of children) {
-      el.append(child)
+      if (child) {
+        el.append(child)
+      }
     }
   } else if (children) {
     el.append(children)

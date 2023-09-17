@@ -77,7 +77,7 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
           colId: 'source',
           headerValueGetter: () => 'Source',
           hide: true,
-          field: this.fieldName('$source' as any),
+          valueGetter: this.valueGetter(({ data }) => data['$source']),
           filter: SelectFilter,
           filterParams: SelectFilter.params({
             showSearch: true,
@@ -120,10 +120,10 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
         this.colDef({
           colId: 'effectCategories',
           headerValueGetter: () => 'Effect Categories',
-          field: this.fieldName('EffectCategories'),
           autoHeight: true,
-          filter: SelectFilter,
+          valueGetter: this.valueGetter(({ data }) => data.EffectCategories),
           cellRenderer: this.cellRendererTags(humanize),
+          filter: SelectFilter,
           filterParams: SelectFilter.params({
             showSearch: true,
           }),

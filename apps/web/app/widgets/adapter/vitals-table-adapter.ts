@@ -108,7 +108,6 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
         this.colDef({
           colId: 'family',
           headerValueGetter: () => 'Family',
-          field: this.fieldName('Family'),
           valueGetter: this.valueGetter(({ data: { $familyInfo, Family, $combatInfo } }) => {
             if ($combatInfo) {
               return [$familyInfo.ID, $combatInfo.ID]
@@ -144,7 +143,7 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           headerValueGetter: () => 'Creature Type',
           width: 150,
           hide: true,
-          field: this.fieldName('CreatureType'),
+          valueGetter: this.valueGetter(({ data }) => data.CreatureType),
           valueFormatter: ({ value }) => humanize(value),
           getQuickFilterText: ({ value }) => value,
           filter: SelectFilter,
@@ -178,14 +177,14 @@ export class VitalsTableAdapter extends DataTableAdapter<Entity> {
           colId: 'lootTableId',
           hide: true,
           headerValueGetter: () => 'Loot Table',
-          field: this.fieldName('LootTableId'),
+          valueGetter: this.valueGetter(({ data }) => data.LootTableId),
           filter: SelectFilter,
         }),
         this.colDef({
           colId: 'lootTags',
           hide: true,
           headerValueGetter: () => 'Loot Tags',
-          field: this.fieldName('LootTags'),
+          valueGetter: this.valueGetter(({ data }) => data.LootTags),
           cellRenderer: this.cellRendererTags(humanize, (value) => {
             return isVitalCombatCategory(value) ? 'badge-error' : 'badge-secondary'
           }),

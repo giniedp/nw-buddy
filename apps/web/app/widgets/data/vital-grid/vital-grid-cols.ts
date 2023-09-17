@@ -108,7 +108,6 @@ export function vitalColFamily(util: VitalGridUtils) {
   return util.colDef({
     colId: 'family',
     headerValueGetter: () => 'Family',
-    field: util.fieldName('Family'),
     valueGetter: util.valueGetter(({ data: { $familyInfo, Family, $combatInfo } }) => {
       if ($combatInfo) {
         return [$familyInfo.ID, $combatInfo.ID]
@@ -143,10 +142,10 @@ export function vitalColFamily(util: VitalGridUtils) {
 export function vitalColCreatureType(util: VitalGridUtils) {
   return util.colDef({
     colId: 'creatureType',
-    headerValueGetter: () => 'Creature Type',
     width: 150,
     hide: true,
-    field: util.fieldName('CreatureType'),
+    headerValueGetter: () => 'Creature Type',
+    valueGetter: util.fieldGetter('CreatureType'),
     valueFormatter: ({ value }) => humanize(value),
     getQuickFilterText: ({ value }) => value,
     filter: SelectFilter,
@@ -176,7 +175,6 @@ export function vitalColLootDropChance(util: VitalGridUtils) {
   return util.colDef({
     colId: 'lootDropChance',
     headerValueGetter: () => 'Loot Drop Chance',
-    field: util.fieldName('LootDropChance'),
     cellClass: 'text-right',
     width: 150,
     filter: RangeFilter,
@@ -189,7 +187,7 @@ export function vitalColLootTableId(util: VitalGridUtils) {
     colId: 'lootTableId',
     hide: true,
     headerValueGetter: () => 'Loot Table',
-    field: util.fieldName('LootTableId'),
+    valueGetter: util.fieldGetter('LootTableId'),
     filter: SelectFilter,
   })
 }
@@ -198,7 +196,7 @@ export function vitalColLootTags(util: VitalGridUtils) {
     colId: 'lootTags',
     hide: true,
     headerValueGetter: () => 'Loot Tags',
-    field: util.fieldName('LootTags'),
+    valueGetter: util.fieldGetter('LootTags'),
     cellRenderer: util.tagsRenderer({
       transform: humanize,
       getClass: (value) => {

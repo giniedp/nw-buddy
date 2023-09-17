@@ -12,3 +12,9 @@
     row-border-color: #222222,
   )
 );
+
+.overflow-visible {
+  .ag-cell-value {
+    overflow: visible !important;
+  }
+}

@@ -67,13 +67,13 @@ export function lootTableColMaxRoll(util: LootTableGridUtils) {
 export function lootTableColParents(util: LootTableGridUtils) {
   return util.colDef({
     colId: 'parents',
-    headerValueGetter: () => 'Parents',
-    field: util.fieldName('$parents'),
     width: 600,
-    filter: SelectFilter,
-    cellRenderer: util.tagsRenderer({ transform: humanize }),
     wrapText: true,
     autoHeight: true,
     cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
+    headerValueGetter: () => 'Parents',
+    valueGetter: util.fieldGetter('$parents'),
+    cellRenderer: util.tagsRenderer({ transform: humanize }),
+    filter: SelectFilter,
   })
 }

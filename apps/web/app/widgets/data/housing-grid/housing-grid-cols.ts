@@ -6,6 +6,9 @@ import {
   getItemRarityLabel,
   getItemTierAsRoman,
   getUIHousingCategoryLabel,
+  isItemArtifact,
+  isItemNamed,
+  isMasterItem,
 } from '@nw-data/common'
 import { Housingitems } from '@nw-data/generated'
 import { SelectFilter } from '~/ui/ag-grid'
@@ -27,6 +30,7 @@ export function housingColIcon(util: HousingGridUtils) {
     filter: false,
     pinned: true,
     width: 62,
+    cellClass: ['overflow-visible'],
     cellRenderer: util.cellRenderer(({ data }) => {
       return util.elA(
         {
@@ -35,17 +39,11 @@ export function housingColIcon(util: HousingGridUtils) {
             target: '_blank',
           },
         },
-        util.elPicture(
-          {
-            class: [...getIconFrameClass(data, true), 'transition-all translate-x-0 hover:translate-x-1'],
-          },
-          [
-            util.el('span', { class: 'nw-item-icon-border' }),
-            util.elImg({
-              src: getItemIconPath(data) || NW_FALLBACK_ICON,
-            }),
-          ]
-        )
+        util.elItemIcon({
+          class: ['transition-all translate-x-0 hover:translate-x-1'],
+          icon: getItemIconPath(data) || NW_FALLBACK_ICON,
+          rarity: getItemRarity(data),
+        })
       )
     }),
   })
@@ -87,7 +85,6 @@ export function housingColTier(util: HousingGridUtils) {
     colId: 'tier',
     headerValueGetter: () => 'Tier',
     width: 80,
-    field: util.fieldName('Tier'),
     filter: SelectFilter,
     valueGetter: ({ data }) => getItemTierAsRoman(data.Tier),
   })
@@ -149,7 +146,7 @@ export function housingColHousingTag1Placed(util: HousingGridUtils) {
     colId: 'housingTag1Placed',
     headerValueGetter: () => 'Placement',
     headerName: 'Placement',
-    field: util.fieldName('HousingTag1 Placed'),
+    valueGetter: util.fieldGetter('HousingTag1 Placed'),
     valueFormatter: ({ value }) => humanize(value),
     filter: SelectFilter,
     width: 150,
@@ -172,7 +169,7 @@ export function housingColHowToObtain(util: HousingGridUtils) {
   return util.colDef({
     colId: 'howToObtain',
     headerValueGetter: () => 'Obtain',
-    field: util.fieldName('HowToOptain (Primarily)'),
+    valueGetter: util.fieldGetter('HowToOptain (Primarily)'),
     valueFormatter: ({ value }) => humanize(value),
     filter: SelectFilter,
     width: 150,
@@ -184,10 +181,9 @@ export function housingColHousingTags(util: HousingGridUtils) {
     colId: 'housingTags',
     headerValueGetter: () => 'Housing Tags',
     width: 250,
-    field: util.fieldName('HousingTags'),
-    valueGetter: ({ data, colDef }) => {
-      return (data[colDef.field] || '').trim().split('+')
-    },
+    valueGetter: util.valueGetter(({ data }) => {
+      return (data.HousingTags || '').trim().split('+')
+    }),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     filter: SelectFilter,
     filterParams: SelectFilter.params({

@@ -7,8 +7,12 @@ import {
   getCraftingGroupLabel,
   getItemIconPath,
   getItemId,
+  getItemRarity,
   getTradeSkillLabel,
   getWeaponTagLabel,
+  isItemArtifact,
+  isItemNamed,
+  isMasterItem,
 } from '@nw-data/common'
 import { Ability, Crafting, Housingitems, ItemDefinitionMaster, Statuseffect } from '@nw-data/generated'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
@@ -36,6 +40,7 @@ export function craftingColIcon(util: CraftingGridUtils) {
     filter: false,
     pinned: true,
     width: 62,
+    cellClass: ['overflow-visible'],
     cellRenderer: util.cellRenderer(({ data }) => {
       const item = data?.$item
       if (!item) {
@@ -48,17 +53,13 @@ export function craftingColIcon(util: CraftingGridUtils) {
             target: '_blank',
           },
         },
-        util.elPicture(
-          {
-            class: [...getIconFrameClass(item, true), 'transition-all translate-x-0 hover:translate-x-1'],
-          },
-          [
-            util.el('span', { class: 'nw-item-icon-border' }),
-            util.elImg({
-              src: getItemIconPath(item) || NW_FALLBACK_ICON,
-            }),
-          ]
-        )
+        util.elItemIcon({
+          class: ['transition-all translate-x-0 hover:translate-x-1'],
+          icon: getItemIconPath(item) || NW_FALLBACK_ICON,
+          isArtifact: isMasterItem(item) && isItemArtifact(item),
+          isNamed: isMasterItem(item) && isItemNamed(item),
+          rarity: getItemRarity(item),
+        })
       )
     }),
   })
@@ -94,7 +95,6 @@ export function craftingColIngredients(util: CraftingGridUtils) {
     sortable: false,
     headerName: 'Ingredients',
     valueGetter: util.valueGetter(({ data }) => data.$ingredients?.map(getItemId)),
-    field: util.fieldName('$ingredients'),
     cellRenderer: util.cellRenderer(({ data }) => {
       const items = data.$ingredients || []
       return util.el(
@@ -105,17 +105,10 @@ export function craftingColIngredients(util: CraftingGridUtils) {
             {
               attrs: { target: '_blank', href: util.nwLink.link('item', getItemId(item)) },
             },
-            util.elPicture(
-              {
-                class: [...getIconFrameClass(item, true), 'transition-all scale-90 hover:scale-110'],
-              },
-              [
-                util.el('span', { class: 'nw-item-icon-border' }),
-                util.elImg({
-                  src: getItemIconPath(item) || NW_FALLBACK_ICON,
-                }),
-              ]
-            )
+            util.elItemIcon({
+              class: ['transition-all scale-90 hover:scale-110'],
+              icon: getItemIconPath(item) || NW_FALLBACK_ICON,
+            })
           )
         })
       )
@@ -192,7 +185,7 @@ export function craftingColTradeskill(util: CraftingGridUtils) {
     colId: 'tradeskill',
     headerValueGetter: () => 'Tradeskill',
     width: 120,
-    field: util.fieldName('Tradeskill'),
+    valueGetter: util.valueGetter(({ data }) => data.Tradeskill),
     valueFormatter: util.valueFormatter<string>(({ value }) => util.i18n.get(getTradeSkillLabel(value))),
     filter: SelectFilter,
   })
@@ -202,7 +195,7 @@ export function craftingColCategory(util: CraftingGridUtils) {
     colId: 'craftingCategory',
     headerValueGetter: () => 'Crafting Category',
     width: 150,
-    field: util.fieldName('CraftingCategory'),
+    valueGetter: util.valueGetter(({ data }) => data.CraftingCategory),
     valueFormatter: util.valueFormatter<string>(({ value }) => util.i18n.get(getCraftingCategoryLabel(value))),
     filter: SelectFilter,
     filterParams: SelectFilter.params({
@@ -215,7 +208,7 @@ export function craftingColGroup(util: CraftingGridUtils) {
     colId: 'craftingGroup',
     headerValueGetter: () => 'Crafting Group',
     width: 150,
-    field: util.fieldName('CraftingGroup'),
+    valueGetter: util.valueGetter(({ data }) => data.CraftingGroup),
     valueFormatter: util.valueFormatter<string>(({ value }) => util.i18n.get(getCraftingGroupLabel(value))),
     filter: SelectFilter,
     filterParams: SelectFilter.params({

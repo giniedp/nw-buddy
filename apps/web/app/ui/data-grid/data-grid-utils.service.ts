@@ -2,7 +2,6 @@ import {
   ColDef,
   ColGroupDef,
   ICellRendererFunc,
-  ITooltipParams,
   ValueFormatterFunc,
   ValueFormatterParams,
   ValueGetterFunc,
@@ -13,10 +12,11 @@ import { Injectable, SecurityContext, Type, inject } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService } from '~/nw'
+import { NwExpressionService } from '~/nw/expression'
+import { ItemPreferencesService } from '~/preferences'
 import { ElementChildren, ElementProps, TagName, createEl } from '~/utils'
 import { AsyncCellRenderer, AsyncCellRendererParams } from '../ag-grid'
-import { NwExpressionService } from '~/nw/expression'
-import { ItemPreferencesService, PreferencesService } from '~/preferences'
+import { getIconFrameClass } from '../item-frame'
 import { colDefPrecision } from './utils'
 
 @Injectable({ providedIn: 'root' })
@@ -35,6 +35,10 @@ export class DataGridUtils<T = any> {
 
   public fieldName(k: keyof T) {
     return String(k)
+  }
+
+  public fieldGetter(k: keyof T): string | ValueGetterFunc {
+    return this.valueGetter(({ data }) => data[k])
   }
 
   public valueGetter(fn: keyof T | ((params: ValueGetterParams<T>) => any)): string | ValueGetterFunc {
@@ -113,6 +117,35 @@ export class DataGridUtils<T = any> {
       img.classList.remove('error')
     })
     return img
+  }
+
+  public elItemIcon(
+    props: ElementProps<'picture'> & {
+      icon: string
+      rarity?: number
+      isNamed?: boolean
+      isArtifact?: boolean
+    }
+  ) {
+    return this.elPicture(
+      {
+        class: [
+          ...getIconFrameClass({
+            rarity: props.rarity,
+            isNamed: props.isNamed,
+            isArtifact: props.isArtifact,
+            solid: true,
+          }),
+          ...(props.class || []),
+        ],
+      },
+      [
+        props.rarity ? this.el('span', { class: 'nw-item-icon-border' }) : null,
+        this.elImg({
+          src: props.icon,
+        }),
+      ]
+    )
   }
 
   public tagsEl(tags: Array<ElementProps<'span'>>, attr: ElementProps = {}) {

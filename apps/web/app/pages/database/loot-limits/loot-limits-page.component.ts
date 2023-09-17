@@ -5,11 +5,9 @@ import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
 import { NwExpressionContextService } from '~/nw/expression'
 import { DataGridModule, DataGridSource } from '~/ui/data-grid'
-import { DataTableModule } from '~/ui/data-table'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { LootLimitsTableAdapter } from '~/widgets/adapter'
 import { LootLimitGridSource } from '~/widgets/data/loot-limit-grid/loot-limit-grid-source'
 
 @Component({

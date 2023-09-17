@@ -49,25 +49,23 @@ export class DamageTableAdapter extends DataTableAdapter<Damagetable> {
         }),
         this.colDef({
           colId: 'id',
-          headerValueGetter: () => 'ID',
           width: 200,
-          valueGetter: this.valueGetter(({ data }) => {
-            return data.DamageID
-          }),
+          headerValueGetter: () => 'ID',
+          valueGetter: this.valueGetter(({ data }) => data.DamageID),
           getQuickFilterText: ({ value }) => value,
         }),
         this.colDef({
           colId: 'damageType',
-          headerValueGetter: () => 'DamageType',
-          field: this.fieldName('DamageType'),
           width: 200,
+          headerValueGetter: () => 'DamageType',
+          valueGetter: this.valueGetter(({ data }) => data.DamageType),
           filter: SelectFilter,
         }),
         this.colDef({
           colId: 'attackType',
-          headerValueGetter: () => 'AttackType',
-          field: this.fieldName('AttackType'),
           width: 200,
+          headerValueGetter: () => 'AttackType',
+          valueGetter: this.valueGetter(({ data }) => data.AttackType),
           filter: SelectFilter,
         }),
 
@@ -104,16 +102,16 @@ export class DamageTableAdapter extends DataTableAdapter<Damagetable> {
 
         this.colDef({
           colId: 'affixes',
-          headerValueGetter: () => 'Affixes',
-          field: this.fieldName('Affixes'),
           width: 200,
+          headerValueGetter: () => 'Affixes',
+          valueGetter: this.valueGetter(({ data }) => data.Affixes),
           filter: SelectFilter,
         }),
         this.colDef({
           colId: 'affliction',
-          headerValueGetter: () => 'Affliction',
-          field: this.fieldName('Affliction'),
           width: 200,
+          headerValueGetter: () => 'Affliction',
+          valueGetter: this.valueGetter(({ data }) => data.Affliction),
           filter: SelectFilter,
         }),
       ],

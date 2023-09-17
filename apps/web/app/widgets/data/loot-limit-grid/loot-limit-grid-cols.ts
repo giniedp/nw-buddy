@@ -1,8 +1,15 @@
-import { NW_FALLBACK_ICON, getItemIconPath, getItemId } from '@nw-data/common'
+import {
+  NW_FALLBACK_ICON,
+  getItemIconPath,
+  getItemId,
+  getItemRarity,
+  isItemArtifact,
+  isItemNamed,
+  isMasterItem,
+} from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster, Lootlimits } from '@nw-data/generated'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { DataGridUtils } from '~/ui/data-grid'
-import { getIconFrameClass } from '~/ui/item-frame'
 
 export type LootLimitGridUtils = DataGridUtils<LootLimitGridRecord>
 export type LootLimitGridRecord = Lootlimits & {
@@ -18,10 +25,8 @@ export function lootLimitColIcon(util: LootLimitGridUtils) {
     filter: false,
     pinned: true,
     width: 62,
+    cellClass: ['overflow-visible'],
     cellRenderer: util.cellRenderer(({ data }) => {
-      if (!data.$item) {
-        return null
-      }
       return util.elA(
         {
           attrs: {
@@ -29,17 +34,13 @@ export function lootLimitColIcon(util: LootLimitGridUtils) {
             target: '_blank',
           },
         },
-        util.elPicture(
-          {
-            class: [...getIconFrameClass(data.$item, true), 'transition-all translate-x-0 hover:translate-x-1'],
-          },
-          [
-            util.el('span', { class: 'nw-item-icon-border' }),
-            util.elImg({
-              src: getItemIconPath(data.$item) || NW_FALLBACK_ICON,
-            }),
-          ]
-        )
+        util.elItemIcon({
+          class: ['transition-all translate-x-0 hover:translate-x-1'],
+          icon: getItemIconPath(data.$item) || NW_FALLBACK_ICON,
+          isArtifact: isMasterItem(data.$item) && isItemArtifact(data.$item),
+          isNamed: isMasterItem(data.$item) && isItemNamed(data.$item),
+          rarity: getItemRarity(data.$item),
+        })
       )
     }),
   })

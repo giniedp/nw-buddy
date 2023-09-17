@@ -75,9 +75,9 @@ export class PoiTableAdapter extends DataTableAdapter<PoiDefinition> {
         this.colDef({
           colId: 'lootTags',
           headerValueGetter: () => 'Loot Tags',
-          field: this.fieldName('LootTags'),
           cellRenderer: this.cellRendererTags(humanize),
           filter: SelectFilter,
+          valueGetter: this.valueGetter(({ data }) => data.LootTags),
           filterParams: SelectFilter.params({
             showSearch: true,
           }),

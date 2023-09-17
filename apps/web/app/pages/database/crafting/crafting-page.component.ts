@@ -4,12 +4,10 @@ import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
 import { DataGridModule, DataGridSource } from '~/ui/data-grid'
-import { DataTableModule } from '~/ui/data-table'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { CraftingTableAdapter } from '~/widgets/adapter'
 import { CraftingGridSource } from '~/widgets/data/crafting-grid'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -23,7 +21,6 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     RouterModule,
     NwModule,
     QuicksearchModule,
-    DataTableModule,
     NavbarModule,
     ScreenshotModule,
     IonicModule,
