@@ -32,6 +32,7 @@ import {
   isPerkItemIngredient,
 } from '@nw-data/common'
 import {
+  Ability,
   Affixstats,
   Craftingcategories,
   Housingitems,
@@ -57,6 +58,7 @@ export interface PerkDetail {
   text?: Array<{
     label: string | string[]
     description: string | string[]
+    suffix?: string
     context: Record<string, any>
   }>
 }
@@ -132,6 +134,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
       perks: this.db.perksMap,
       buckets: this.db.perkBucketsMap,
       affixstats: this.db.affixstatsMap,
+      abilities: this.db.abilitiesMap,
       perkOverride: this.perkOverride$,
     }),
     selectPerkInfos
@@ -376,6 +379,7 @@ function selectPerkInfos(data: {
   perks: Map<string, Perks>
   buckets: Map<string, PerkBucket>
   affixstats: Map<string, Affixstats>
+  abilities: Map<string, Ability>
   perkOverride: Record<string, string>
 }) {
   const perks = selectPerkDetails(data) || []
@@ -390,7 +394,9 @@ function selectPerkInfos(data: {
       result.push(detail)
       continue
     }
-
+    const abilities = perk.EquipAbility?.map((it) => data.abilities.get(it)) || []
+    const stacks = abilities.map((it) => it?.IsStackableMax).filter((it) => !!it)
+    const stackMax = stacks?.length ? Math.min(...stacks) : null
     if (isPerkItemIngredient(detail.item)) {
       result.push(detail)
       getPerksInherentMODs(perk, data.affixstats.get(perk.Affix), detail.itemGS)?.forEach((mod) => {
@@ -426,7 +432,10 @@ function selectPerkInfos(data: {
               label: '',
               description: perk.StatDisplayText,
               context: Object.fromEntries(
-                stat.AttributePlacingMods.split(',').map((it, i) => ['amount' + (i + 1), Math.floor(Number(it) * scale) ])
+                stat.AttributePlacingMods.split(',').map((it, i) => [
+                  'amount' + (i + 1),
+                  Math.floor(Number(it) * scale),
+                ])
               ),
             },
           ],
@@ -454,6 +463,14 @@ function selectPerkInfos(data: {
       description: perk.Description,
       context: {},
     })
+    if (stackMax > 1) {
+      detail.text.push({
+        label: '',
+        description: ``,
+        suffix: `max stack: ${stackMax}`,
+        context: {},
+      })
+    }
   }
   return result
 }

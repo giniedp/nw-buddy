@@ -9,8 +9,15 @@
   <ng-container *ngIf="item.perk">
     <nwb-item-perk [icon]="item.detail.icon" class="text-sky-600">
       <div *ngFor="let row of item.detail.text; trackBy: trackByIndex">
-        <b> {{ row.label | nwText }} </b>
-        <span [innerHTML]="row.description | nwText : buildTextContext(item.perk.PerkID, item.gs, row.context)"> </span>
+        <b *ngIf="row.label; let text"> {{ text | nwText }} </b>
+        <span
+          *ngIf="row.description; let text"
+          [innerHTML]="text | nwText : buildTextContext(item.perk.PerkID, item.gs, row.context)"
+        >
+        </span>
+        <span *ngIf="row.suffix; let text">
+          {{ text }}
+        </span>
       </div>
     </nwb-item-perk>
   </ng-container>

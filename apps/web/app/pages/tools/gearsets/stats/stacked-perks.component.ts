@@ -38,34 +38,36 @@ export class StackedPerksComponent {
         }
         return false
       })
-      return Array.from(Object.values(groupBy(activePerks, (it) => it.perk.PerkID))).map((group) => {
-        const { perk, gearScore, item } = group[0]
-        const scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
-        const stackTotal = group.length
-        let stackLimit: number = null
-        perk.EquipAbility?.forEach((it) => {
-          const stackMax = abilities.get(it)?.IsStackableMax
-          if (stackMax) {
-            if (stackLimit === null) {
-              stackLimit = stackMax
-            } else {
-              stackLimit = Math.min(stackLimit, stackMax)
+      return Array.from(Object.values(groupBy(activePerks, (it) => it.perk.PerkID)))
+        .map((group) => {
+          const { perk, gearScore, item } = group[0]
+          const scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
+          const stackTotal = group.length
+          let stackLimit: number = null
+          perk.EquipAbility?.forEach((it) => {
+            const stackMax = abilities.get(it)?.IsStackableMax
+            if (stackMax) {
+              if (stackLimit === null) {
+                stackLimit = stackMax
+              } else {
+                stackLimit = Math.min(stackLimit, stackMax)
+              }
             }
+          })
+          const stackCount = stackLimit ? Math.min(stackTotal, stackLimit) : stackTotal
+          return {
+            id: perk.PerkID,
+            icon: perk.IconPath,
+            total: group.length,
+            stackTotal,
+            stackLimit,
+            stackCount,
+            multiplier: stackCount * scale,
+            description: perk.Description,
+            name: perk.DisplayName,
           }
         })
-        const stackCount = stackLimit ? Math.min(stackTotal, stackLimit) : stackTotal
-        return {
-          id: perk.PerkID,
-          icon: perk.IconPath,
-          total: group.length,
-          stackTotal,
-          stackLimit,
-          stackCount,
-          multiplier: stackCount * scale,
-          description: perk.Description,
-          name: perk.DisplayName,
-        }
-      })
+        .filter((it) => it.stackLimit == null || it.stackLimit > 1)
     }),
     tap((it) => {
       if (it?.length) {
