@@ -49,6 +49,9 @@ export class TooltipDirective implements OnInit, OnDestroy {
   public color: string = null
 
   @Input()
+  public tooltipClass: string | string[] = null
+
+  @Input()
   public tooltipScrollStrategy: TooltipScrollStrategy = 'reposition'
 
   @Input()
@@ -119,10 +122,13 @@ export class TooltipDirective implements OnInit, OnDestroy {
     this.overlayRef = this.overlayRef || this.createOverlay()
     this.portal = this.portal || new ComponentPortal(TooltipComponent, this.vcRef)
     this.portalRef = this.overlayRef.attach(this.portal)
+    if (this.tooltipClass || this.color) {
+      this.portalRef.instance.ngClass = this.tooltipClass || this.color
+    }
     this.portalRef.instance.content = this.tooltip
     this.portalRef.instance.context = this.tooltipContext
-    this.portalRef.instance.color = this.color as any
     this.portalRef.changeDetectorRef.markForCheck()
+    this.portalRef.changeDetectorRef.detectChanges()
   }
 
   private close(): void {
@@ -175,13 +181,14 @@ export class TooltipDirective implements OnInit, OnDestroy {
         .withDefaultOffsetX(-this.tooltipOffset)
     }
     if (this.tooltipPlacement === 'auto') {
-      strategy = strategy.withPositions([
-        { originX: 'center', originY: 'top', overlayX: 'center', overlayY: 'bottom' },
-        { originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center' },
-        { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top' },
-        { originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center' },
-      ])
-      .withPush(true)
+      strategy = strategy
+        .withPositions([
+          { originX: 'center', originY: 'top', overlayX: 'center', overlayY: 'bottom' },
+          { originX: 'end', originY: 'center', overlayX: 'start', overlayY: 'center' },
+          { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top' },
+          { originX: 'start', originY: 'center', overlayX: 'end', overlayY: 'center' },
+        ])
+        .withPush(true)
     }
     return strategy
   }

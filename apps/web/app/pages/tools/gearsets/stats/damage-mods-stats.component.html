@@ -5,9 +5,9 @@
 <div class="grid grid-cols-dl gap-x-1 font-nimbus">
   <ng-container *ngFor="let entry of vm$ | async; trackBy: trackBy">
     <span class="text-right font-bold">
-      {{ entry.value | percent: '0.1-1' }}
+      {{ entry.value | percent : '0.1-1' }}
     </span>
-    <div class="flex flex-row" [tooltip]="tplTip">
+    <div class="flex flex-row" [tooltip]="tplTip" [tooltipClass]="'p-0'">
       <img [nwImage]="entry.icon" *ngIf="entry.icon" class="'w-5 h-5" />
       <span class="opacity-50">
         {{ entry.label }}

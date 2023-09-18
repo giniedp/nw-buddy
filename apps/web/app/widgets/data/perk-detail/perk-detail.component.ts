@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { Perks } from '@nw-data/generated'
 import { NwDbService, NwModule } from '~/nw'
+import { GsInputComponent } from '~/ui/gs-input'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
+import { TooltipModule } from '~/ui/tooltip'
 import { PerkDetailStore } from './perk-detail.store'
-import { NwExpressionContextService } from '~/nw/expression'
 
 @Component({
   standalone: true,
@@ -13,13 +15,12 @@ import { NwExpressionContextService } from '~/nw/expression'
   templateUrl: './perk-detail.component.html',
   exportAs: 'perkDetail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule],
+  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, GsInputComponent, FormsModule, TooltipModule],
   providers: [
     {
       provide: PerkDetailStore,
       useExisting: forwardRef(() => PerkDetailComponent),
     },
-    NwExpressionContextService,
   ],
   host: {
     class: 'block rounded-md overflow-clip',
@@ -37,6 +38,12 @@ export class PerkDetailComponent extends PerkDetailStore {
   protected trackByIndex = (i: number) => i
   public constructor(db: NwDbService) {
     super(db)
+  }
+
+  protected setGearScore(value: number) {
+    this.context.patchState({
+      gearScore: value,
+    })
   }
 
   public formatValue = (value: any, key: keyof Perks): PropertyGridCell[] => {

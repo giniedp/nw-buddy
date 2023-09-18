@@ -5,27 +5,34 @@
 <div class="grid grid-cols-dl gap-x-1">
   <ng-container *ngIf="vm$ | async; let vm">
     <ng-container *ngFor="let group of vm.DamageTypes; trackBy: trackBy">
-      <span class="font-bold"> {{ group.value | percent: '0.1-1' }} </span>
+      <span class="font-bold"> {{ group.value | percent : '0.1-1' }} </span>
       <div class="flex flex-row gap-[1px]">
         <span
           *ngFor="let entry of group.entries; trackBy: trackBy"
           [tooltip]="tplTip"
+          [tooltipClass]="'p-0'"
           [class.bg-error]="entry.capped"
           class="rounded-sm"
         >
           <img [nwImage]="entry.icon" class="w-6 h-6" />
           <ng-template #tplTip>
-            <nwb-modifier-cap-tip [data]="entry" [title]="entry.category" [category]="'Empower'" [limit]="0.5" ></nwb-modifier-cap-tip>
+            <nwb-modifier-cap-tip
+              [data]="entry"
+              [title]="entry.category"
+              [category]="'Empower'"
+              [limit]="0.5"
+            ></nwb-modifier-cap-tip>
           </ng-template>
         </span>
       </div>
     </ng-container>
     <ng-container *ngFor="let group of vm.VitalsTypes; trackBy: trackBy">
-      <span class="font-bold"> {{ group.value | percent: '0.1-1' }} </span>
+      <span class="font-bold"> {{ group.value | percent : '0.1-1' }} </span>
       <div class="flex flex-row gap-[1px]">
         <span
           *ngFor="let entry of group.entries; trackBy: trackBy"
           [tooltip]="tplTip"
+          [tooltipClass]="'p-0'"
           [class.bg-error]="entry.capped"
           class="rounded-sm"
         >

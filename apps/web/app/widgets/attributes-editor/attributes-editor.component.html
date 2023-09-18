@@ -49,6 +49,7 @@
               [class.bg-attr-buff]="stat.base < step.value && stat.base + stat.buffs >= step.value"
               [class.bg-attr-assign]="stat.base + stat.buffs < step.value && stat.total >= step.value"
               [tooltip]="tip"
+              [tooltipClass]="'p-0'"
             >
             </span>
             <ng-template #tip>

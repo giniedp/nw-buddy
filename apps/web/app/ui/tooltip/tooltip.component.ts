@@ -1,6 +1,21 @@
 import { animate, style, transition, trigger } from '@angular/animations'
-import { CommonModule } from '@angular/common'
+import { CommonModule, NgClass } from '@angular/common'
 import { Component, HostBinding, Injector, Input, TemplateRef, Type } from '@angular/core'
+import { twMerge } from 'tailwind-merge'
+
+const DEFAULT_CLASS = [
+  'block',
+  'rounded-md',
+  'text-sm',
+  'px-2',
+  'py-1',
+  'm-1',
+  'shadow-md',
+  'bg-black',
+  'bg-opacity-90',
+  'shadow-md',
+  'overflow-clip',
+]
 
 @Component({
   standalone: true,
@@ -8,15 +23,16 @@ import { Component, HostBinding, Injector, Input, TemplateRef, Type } from '@ang
   styleUrls: ['./tooltip.component.scss'],
   template: `
     <ng-container *ngIf="text">{{ text }}</ng-container>
-    <ng-template [ngComponentOutlet]="component" [ngComponentOutletInjector]="injector"]></ng-template>
-    <ng-template [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="context" [ngTemplateOutletInjector]="injector"]></ng-template>
+    <ng-template [ngComponentOutlet]="component" [ngComponentOutletInjector]="injector" ]></ng-template>
+    <ng-template
+      [ngTemplateOutlet]="tpl"
+      [ngTemplateOutletContext]="context"
+      [ngTemplateOutletInjector]="injector"
+      ]
+    ></ng-template>
   `,
   imports: [CommonModule],
-  host: {
-    class: 'rounded-md fs-sm',
-    '[class.px-2]': '!!text',
-    '[class.py-1]': '!!text',
-  },
+  hostDirectives: [NgClass],
   animations: [
     trigger('animate', [
       transition(':enter', [style({ opacity: 0 }), animate('100ms', style({ opacity: 1 }))]),
@@ -25,13 +41,11 @@ import { Component, HostBinding, Injector, Input, TemplateRef, Type } from '@ang
   ],
 })
 export class TooltipComponent {
-
   @HostBinding('@animate')
   protected animate: void
 
   @Input()
-  @HostBinding('class')
-  public color: '' | 'primary' | 'secondary' | 'accent' | 'info' | 'success' | 'warning' | 'error'
+  public ngClass: string | string[]
 
   @Input()
   public context: any
@@ -51,9 +65,14 @@ export class TooltipComponent {
     } else {
       this.component = value
     }
+    this.hostClass.ngClass = twMerge(DEFAULT_CLASS, this.ngClass)
   }
 
   protected text: string
   protected tpl: TemplateRef<any>
   protected component: Type<any>
+
+  public constructor(private hostClass: NgClass) {
+    //
+  }
 }

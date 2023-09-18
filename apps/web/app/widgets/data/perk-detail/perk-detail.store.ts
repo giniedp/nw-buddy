@@ -9,7 +9,7 @@ import { rejectKeys } from '~/utils'
 
 @Injectable()
 export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
-  protected readonly contextService = inject(NwExpressionContextService)
+  protected readonly context = inject(NwExpressionContextService)
 
   public readonly perkId$ = this.select(({ perkId }) => perkId)
 
@@ -19,7 +19,7 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
   public readonly textContext$ = this.select(
     combineLatest({
       perk: this.perk$,
-      context: this.contextService.state$,
+      context: this.context.state$,
     }),
     ({ perk, context }) => {
       const result = {

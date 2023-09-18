@@ -3,18 +3,23 @@
   <span class="relative top-1">Vitality</span>
 </h3>
 <div class="grid grid-cols-dl gap-x-1 font-nimbus items-baseline" *ngIf="vm$ | async; let vm">
-  <span class="text-right font-bold">{{ vm.health.value | number: '0.0-0' }} </span>
-  <div [tooltip]="tplHealth">
+  <span class="text-right font-bold">{{ vm.health.value | number : '0.0-0' }} </span>
+  <div [tooltip]="tplHealth" [tooltipClass]="'p-0'">
     <span class="opacity-50">
       {{ 'ui_health' | nwText }}
     </span>
     <ng-template #tplHealth>
-      <nwb-modifier-tip [data]="vm.health" [category]="'ui_health'" [percent]="false" [format]="'0.1-1'"></nwb-modifier-tip>
+      <nwb-modifier-tip
+        [data]="vm.health"
+        [category]="'ui_health'"
+        [percent]="false"
+        [format]="'0.1-1'"
+      ></nwb-modifier-tip>
     </ng-template>
   </div>
 
-  <span class="text-right font-bold">{{ vm.mana.value | number: '0.0-0' }} </span>
-  <div [tooltip]="tplMana">
+  <span class="text-right font-bold">{{ vm.mana.value | number : '0.0-0' }} </span>
+  <div [tooltip]="tplMana" [tooltipClass]="'p-0'">
     <span class="opacity-50">
       {{ 'ui_mana' | nwText }}
     </span>
@@ -23,33 +28,48 @@
     </ng-template>
   </div>
 
-  <span class="text-right font-bold">{{ vm.stamina.value | number: '0.0-0' }} </span>
-  <div [tooltip]="tplStamina">
+  <span class="text-right font-bold">{{ vm.stamina.value | number : '0.0-0' }} </span>
+  <div [tooltip]="tplStamina" [tooltipClass]="'p-0'">
     <span class="opacity-50">
       {{ 'ui_stamina' | nwText }}
     </span>
     <ng-template #tplStamina>
-      <nwb-modifier-tip [data]="vm.stamina" [category]="'ui_stamina'" [percent]="false" [format]="'0.0-0'"></nwb-modifier-tip>
+      <nwb-modifier-tip
+        [data]="vm.stamina"
+        [category]="'ui_stamina'"
+        [percent]="false"
+        [format]="'0.0-0'"
+      ></nwb-modifier-tip>
     </ng-template>
   </div>
 
-  <span class="text-right font-bold">{{ vm.physicalRating.value | number: '0.0-0' }} </span>
-  <div [tooltip]="tplPhysical">
+  <span class="text-right font-bold">{{ vm.physicalRating.value | number : '0.0-0' }} </span>
+  <div [tooltip]="tplPhysical" [tooltipClass]="'p-0'">
     <span class="opacity-50">
       {{ 'ui_physical' | nwText }}
     </span>
     <ng-template #tplPhysical>
-      <nwb-modifier-tip [data]="vm.physicalRating" [category]="'ui_physical'" [percent]="false" [format]="'0.1-1'"></nwb-modifier-tip>
+      <nwb-modifier-tip
+        [data]="vm.physicalRating"
+        [category]="'ui_physical'"
+        [percent]="false"
+        [format]="'0.1-1'"
+      ></nwb-modifier-tip>
     </ng-template>
   </div>
 
-  <span class="text-right font-bold">{{ vm.elementalRating.value | number: '0.0-0' }} </span>
-  <div [tooltip]="tplElemental">
+  <span class="text-right font-bold">{{ vm.elementalRating.value | number : '0.0-0' }} </span>
+  <div [tooltip]="tplElemental" [tooltipClass]="'p-0'">
     <span class="opacity-50">
       {{ 'ui_elemental' | nwText }}
     </span>
     <ng-template #tplElemental>
-      <nwb-modifier-tip [data]="vm.elementalRating" [category]="'ui_elemental'" [percent]="false" [format]="'0.1-1'"></nwb-modifier-tip>
+      <nwb-modifier-tip
+        [data]="vm.elementalRating"
+        [category]="'ui_elemental'"
+        [percent]="false"
+        [format]="'0.1-1'"
+      ></nwb-modifier-tip>
     </ng-template>
   </div>
 </div>

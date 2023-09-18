@@ -1,7 +1,7 @@
 export const NW_MIN_GEAR_SCORE = 100
 export const NW_MAX_GEAR_SCORE_UPGRADABLE = 590
 export const NW_MAX_GEAR_SCORE_BASE = 600
-export const NW_MAX_GEAR_SCORE = 625
+export const NW_MAX_GEAR_SCORE = 700
 export const NW_MAX_CHARACTER_LEVEL = 65
 export const NW_MAX_TRADESKILL_LEVEL = 250
 export const NW_MAX_WEAPON_LEVEL = 20
@@ -46,7 +46,7 @@ export const NW_ITEM_RARITY_DATA = Object.freeze([
     maxPerkCount: 5,
   },
 ])
-export const NW_CRAFTING_RESULT_LOOT_BUCKET = "FixedCraftingResults"
+export const NW_CRAFTING_RESULT_LOOT_BUCKET = 'FixedCraftingResults'
 export const NW_ROLL_PERK_ON_UPGRADE_GS = 600
 export const NW_ROLL_PERK_ON_UPGRADE_TIER = 5
 export const NW_ROLL_PERK_ON_UPGRADE_PERK_COUNT = 4

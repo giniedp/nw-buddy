@@ -34,19 +34,18 @@
         (keydown.space)="toggle(cell)"
         (keydown.enter)="toggle(cell)"
         [tooltip]="tip"
+        [tooltipClass]="'p-0 bg-opacity-100'"
       >
         <ng-template #tip>
-          <div class="rounded-md overflow-hidden bg-base-200">
-            <div class="text-lg font-bold px-3 py-2 flex flex-row items-center bg-base-300 gap-3">
-              <img class="aspect-square w-6" [nwImage]="ability.Icon" />
-              <span>
-                {{ ability.DisplayName | nwText }}
-              </span>
-            </div>
-            <div [nwHtml]="ability.Description | nwText | nwTextBreak" class="p-3"></div>
-            <div *ngIf="cell.tooltip" class="p-3 text-warning rounded-md">
-              {{ cell.tooltip | nwText }}
-            </div>
+          <div class="text-lg font-bold px-3 py-2 flex flex-row items-center bg-base-300 gap-3">
+            <img class="aspect-square w-6" [nwImage]="ability.Icon" />
+            <span>
+              {{ ability.DisplayName | nwText }}
+            </span>
+          </div>
+          <div [nwHtml]="ability.Description | nwText | nwTextBreak" class="p-3"></div>
+          <div *ngIf="cell.tooltip" class="p-3 text-warning rounded-md">
+            {{ cell.tooltip | nwText }}
           </div>
         </ng-template>
         <picture

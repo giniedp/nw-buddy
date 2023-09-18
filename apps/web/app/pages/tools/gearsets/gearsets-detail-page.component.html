@@ -22,7 +22,7 @@
             #overlay="cdkOverlayOrigin"
             (click)="isTagEditorOpen = !isTagEditorOpen"
             [tooltip]="'Edit Tags'"
-            [color]="'info'"
+            [tooltipClass]="'bg-info'"
           >
             <nwb-icon [icon]="iconTags" class="w-4 h-4"></nwb-icon>
           </button>
@@ -44,12 +44,17 @@
             </div>
           </ng-template>
 
-          <button nwbScreenshotBtn class="btn btn-ghost btn-square" [tooltip]="'Screenshot'" [color]="'info'"></button>
+          <button
+            nwbScreenshotBtn
+            class="btn btn-ghost btn-square"
+            [tooltip]="'Screenshot'"
+            [tooltipClass]="'bg-info'"
+          ></button>
           <button
             class="btn btn-ghost btn-square"
             (click)="onShareClicked()"
             [tooltip]="'Create share URL'"
-            [color]="'info'"
+            [tooltipClass]="'bg-info'"
           >
             <nwb-icon [icon]="iconShare" class="w-4 h-4"></nwb-icon>
           </button>
@@ -58,7 +63,7 @@
             class="btn btn-ghost btn-square"
             (click)="onCompactClicked()"
             [tooltip]="'Toggle compact mode'"
-            [color]="'info'"
+            [tooltipClass]="'bg-info'"
             [class.text-primary]="compact"
           >
             <nwb-icon [icon]="iconCompact" class="w-4 h-4"></nwb-icon>
@@ -67,11 +72,16 @@
             class="btn btn-ghost btn-square"
             (click)="onCloneClicked()"
             [tooltip]="'Create a copy'"
-            [color]="'info'"
+            [tooltipClass]="'bg-info'"
           >
             <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
           </button>
-          <button class="btn btn-ghost btn-square" (click)="onDeleteClicked()" [tooltip]="'Delete'" [color]="'error'">
+          <button
+            class="btn btn-ghost btn-square"
+            (click)="onDeleteClicked()"
+            [tooltip]="'Delete'"
+            [tooltipClass]="'bg-error'"
+          >
             <nwb-icon [icon]="iconDelete" class="w-4 h-4"></nwb-icon>
           </button>
         </div>
