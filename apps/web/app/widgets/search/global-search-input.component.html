@@ -6,6 +6,7 @@
   [placeholder]="placeholder"
   [ngModel]="value$()"
   (ngModelChange)="submit($event)"
+  (focus)="onFocus()"
   autofocus
 />
 <span class="pointer-events-none block absolute" style="top: 3px; right: 22px" [@fade]="true" *ngIf="!value$()">
@@ -28,11 +29,14 @@
   [cdkConnectedOverlayOpen]="isPanelOpen$()"
   [cdkConnectedOverlayHasBackdrop]="false"
   [cdkConnectedOverlayPositions]="[{ originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 5 }]"
-  (overlayOutsideClick)="closePanel()"
+  (overlayOutsideClick)="onOutsideClick($event)"
   (backdropClick)="closePanel()"
   (detach)="closePanel()"
 >
-  <div class="w-[332px] bg-base-200 rounded-md">
-    <nwb-search-results-panel [isLoading]="isLoading$()" [data]="results$()"></nwb-search-results-panel>
-  </div>
+  <nwb-search-results-panel
+    class="w-[334px] bg-base-300 rounded-lg overflow-clip border-[1px] border-base-100 shadow-md"
+    [isLoading]="isLoading$()"
+    [data]="results$()"
+    (recordSelected)="closePanel()"
+  ></nwb-search-results-panel>
 </ng-template>

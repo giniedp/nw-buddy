@@ -1,5 +1,5 @@
 <div
-  class="bg-base-200 absolute top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center z-50 pointer-events-none"
+  class="bg-base-300 absolute rounded-lg top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center z-50 pointer-events-none"
   *ngIf="isLoading"
   @fade
 >
@@ -15,10 +15,15 @@
   </picture>
 </div>
 <cdk-virtual-scroll-viewport [itemSize]="56" class="w-full h-full">
-  <a *cdkVirtualFor="let item of data" class="block w-80 p-1" [routerLink]="getRoute(item)">
+  <a
+    *cdkVirtualFor="let item of data"
+    class="block w-80 p-1"
+    [routerLink]="getRoute(item)"
+    (click)="recordSelected.emit(item)"
+  >
     <nwb-item-header
       [rarity]="item.rarity"
-      class="relative font-nimbus gap-2 w-full shadow-sm whitespace-nowrap overflow-hidden overflow-ellipsis"
+      class="relative font-nimbus gap-2 w-full shadow-sm rounded whitespace-nowrap overflow-hidden overflow-ellipsis"
     >
       <nwb-item-icon
         [nwbItemIcon]="item.icon || defaultIcon"

@@ -1,3 +1,4 @@
+import { animate, style, transition, trigger } from '@angular/animations'
 import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import {
@@ -22,7 +23,6 @@ import { useTesseract } from '~/utils/use-tesseract'
 import { SEARCH_QUERY_TASKS } from './search-query-tasks'
 import type { SearchQueryTasks, SearchRecord } from './search-query.worker'
 import { SearchResultsPanelComponent } from './search-results-panel.component'
-import { animate, style, transition, trigger } from '@angular/animations'
 
 @Component({
   standalone: true,
@@ -55,6 +55,7 @@ export class GlobalSearchInputComponent
   public readonly value$ = this.selectSignal(({ query }) => query)
   public readonly isPanelOpen$ = this.selectSignal(({ isPanelOpen }) => isPanelOpen)
   public readonly isLoading$ = this.selectSignal(({ isLoading }) => isLoading)
+  public readonly hasResults$ = this.selectSignal(({ results }) => results?.length > 0)
   public readonly results$ = this.selectSignal(({ results }) => results)
 
   protected svgSearch = svgMagnifyingGlass
@@ -65,7 +66,8 @@ export class GlobalSearchInputComponent
     @Inject(SEARCH_QUERY_TASKS)
     private api: SearchQueryTasks,
     private locale: LocaleService,
-    protected cdkOrigin: CdkOverlayOrigin
+    protected cdkOrigin: CdkOverlayOrigin,
+    private elRef: ElementRef<HTMLElement>
   ) {
     super({ query: '', isPanelOpen: true, isLoading: false, results: [] })
   }
@@ -104,6 +106,7 @@ export class GlobalSearchInputComponent
   }
 
   protected submit(value: string) {
+    console.log('submit')
     this.patchState({ query: value })
   }
 
@@ -115,10 +118,24 @@ export class GlobalSearchInputComponent
   }
 
   protected closePanel() {
-    this.patchState({ isPanelOpen: false })
+    if (this.isPanelOpen$()) {
+      this.patchState({ isPanelOpen: false })
+    }
   }
 
   protected openPanel() {
     this.patchState({ isPanelOpen: true })
+  }
+
+  protected async onFocus() {
+    if (this.hasResults$()) {
+      this.openPanel()
+    }
+  }
+
+  protected onOutsideClick(e: Event) {
+    if (document.activeElement !== this.input.nativeElement) {
+      this.closePanel()
+    }
   }
 }

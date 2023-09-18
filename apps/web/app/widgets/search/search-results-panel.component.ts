@@ -1,6 +1,6 @@
 import { ScrollingModule } from '@angular/cdk/scrolling'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { NwModule } from '~/nw'
@@ -16,7 +16,7 @@ import { animate, style, transition, trigger } from '@angular/animations'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ScrollingModule, ItemFrameModule, RouterModule],
   host: {
-    class: 'layout-content',
+    class: 'layout-content overflow-clip',
   },
   animations: [
     trigger('fade', [
@@ -31,6 +31,9 @@ export class SearchResultsPanelComponent {
 
   @Input()
   public data: Array<SearchRecord>
+
+  @Output()
+  public recordSelected = new EventEmitter<SearchRecord>()
 
   protected defaultIcon = NW_FALLBACK_ICON
   public constructor() {
