@@ -1,8 +1,11 @@
-import { NgModule } from '@angular/core'
-import { RouterModule, Routes } from '@angular/router'
+import { NgModule, inject } from '@angular/core'
+import { ActivatedRouteSnapshot, Router, RouterModule, Routes } from '@angular/router'
 import { MountComponent } from './mount.component'
 import { MountOverviewComponent } from './mount-overview.component'
 import { MountItemComponent } from './mount-item.component'
+import { NwDbService } from '~/nw'
+import { firstValueFrom } from 'rxjs'
+import { eqCaseInsensitive } from '~/utils'
 
 const ROUTES: Routes = [
   {
@@ -17,6 +20,7 @@ const ROUTES: Routes = [
       {
         path: ':category',
         component: MountComponent,
+        canActivate: [redirectToCategory],
         children: [
           {
             path: ':id',
@@ -32,3 +36,26 @@ const ROUTES: Routes = [
   imports: [RouterModule.forChild(ROUTES)],
 })
 export class MountModule {}
+
+async function redirectToCategory(snap: ActivatedRouteSnapshot) {
+  const db = inject(NwDbService)
+  const router = inject(Router)
+
+  const category = snap.paramMap.get('category')
+  const id = snap.firstChild?.paramMap.get('id')
+  if (!id || !category) {
+    return true
+  }
+
+  const item = await firstValueFrom(db.mount(id))
+  if (!item) {
+    return true
+  }
+
+  if (eqCaseInsensitive(item.MountType, category)) {
+    return true
+  }
+
+  router.navigate(['mounts', item.MountType, item.MountId])
+  return false
+}
