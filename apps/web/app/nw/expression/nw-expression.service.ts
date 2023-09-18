@@ -1,68 +1,12 @@
 import { Injectable } from '@angular/core'
-import { catchError, map, Observable, of, throwError } from 'rxjs'
-import { NwDbService } from '../nw-db.service'
 import { getPerkMultiplier, parseNwExpression } from '@nw-data/common'
+import { Observable, catchError, map, of, throwError } from 'rxjs'
+import { eqCaseInsensitive } from '~/utils'
+import { NwDbService } from '../nw-db.service'
 import { NwExpressionContext } from './nw-expression-context.service'
+import { resourceLookup } from './resource-lookup'
+import { ExpressionConstant } from './types'
 
-type Expressionresource =
-  // | 'AffixStatDataTable'
-  // | 'Afflictions'
-  // | 'Vitals'
-  // //
-  // | 'Type_Ability'
-  // | 'Type_StatusEffect'
-  // | 'StatusEffect'
-  // | 'StatusEffects'
-
-  | 'AffixStatDataTable'
-  | 'Afflictions'
-  | 'ArtifactsAbilityTable' //
-  | 'AttributeThresholdAbilityTable'
-  | 'BlunderbussAbilityTable'
-  | 'BowAbilityTable'
-  | 'ConsumableItemDefinitions'
-  | 'DamageTable'
-  | 'FireMagicAbilityTable'
-  | 'FlailAbilityTable' //
-  | 'GlobalAbilityTable'
-  | 'GreatAxeAbilityTable'
-  | 'GreatswordAbilityTable'
-  | 'HatchetAbilityTable'
-  | 'HouseItems'
-  | 'IceMagicAbilityTable'
-  | 'LifeMagicAbilityTable'
-  | 'LootLimits'
-  | 'ManaCosts_Player'
-  | 'MusketAbilityTable'
-  | 'PerksAbilityTable' //
-  | 'RapierAbilityTable'
-  | 'SpearAbilityTable'
-  | 'SpellDataTable_Bow'
-  | 'SpellDataTable_FireMagic'
-  | 'SpellDataTable_Flail' //
-  | 'SpellDataTable_Global'
-  | 'SpellDataTable_GreatAxe'
-  | 'SpellDataTable_Greatsword'
-  | 'SpellDataTable_Hatchet'
-  | 'SpellDataTable_IceMagic'
-  | 'SpellDataTable_LifeMagic'
-  | 'SpellDataTable_Musket'
-  | 'SpellDataTable_Runes'
-  | 'SpellDataTable_Sword'
-  | 'SpellDataTable_VoidGauntlet'
-  | 'SpellDataTable_WarHammer'
-  | 'StaminaCosts_Player'
-  | 'SwordAbilityTable'
-  | 'Type_AbilityData'
-  | 'Type_StatusEffectData'
-  | 'Type_StatusEffectDataAI_Evil_Knight_Fire_Champion_DangerTick' //+
-  | 'Vitals_Player' //
-  | 'VoidGauntletAbilityTable'
-  | 'WarHammerAbilityTable'
-  //
-  | 'ConsumablePotency' //-
-  | 'perkMultiplier' //-
-  | 'Potency' //- unknown
 @Injectable({ providedIn: 'root' })
 export class NwExpressionService {
   public constructor(private db: NwDbService) {}
@@ -73,19 +17,8 @@ export class NwExpressionService {
 
   public solve(context: NwExpressionContext & { text: string }) {
     return this.parse(context.text)
-      .eval((key) => this.lookup(key, context))
+      .eval((key) => this.evaluate(key, context))
       .pipe(map((value) => String(value)))
-      .pipe(
-        map((value) => {
-          return value
-            .replace(/\{(amount\d+)\}/gi, (_, key) => {
-              return `<b>${context[key] || ''}</b>`
-            })
-            .replace(/\{(attribute\d+)\}/gi, (_, key) => {
-              return context[key] || '…'
-            })
-        })
-      )
       .pipe(
         catchError((err) => {
           console.error(err)
@@ -94,51 +27,67 @@ export class NwExpressionService {
       )
   }
 
-  private lookup(token: string, context: NwExpressionContext & { text: string }): Observable<string | number> {
-    if (token.includes('.')) {
-      const [resource, id, attr] = token.split('.')
-      return this.solveResource(resource as any, token)
-        .pipe(
-          map((data) => {
-            if (!data) {
-              throw new Error(`Unknown resource "${resource}" (for token "${token}" in text "${context.text}")`)
-            }
-            let object: any
-            if (data.has(id)) {
-              object = data.get(id)
-            } else if (data.has(Number(id))) {
-              object = data.get(Number(id))
-            }
-            if (!object) {
-              throw new Error(`Object for ID "${id}" not found (for token "${token}" in text "${context.text}")`)
-            }
-            if (attr in object) {
-              return object[attr]
-            }
-            for (const key of Object.keys(object)) {
-              if (key.toLocaleLowerCase() === attr.toLocaleLowerCase()) {
-                return object[key]
-              }
-            }
-            throw new Error(`Object has no attribute "${attr}" (for token "${token}" in text "${context.text}")`)
-          })
-        )
-        .pipe(
-          map((it) => {
-            if (attr.endsWith('VitalsCategory') && String(it).includes('=')) {
-              return String(it).split('=')[1]
-            } else {
-              return it
-            }
-          })
-        )
-    }
+  private evaluate(token: string, context: NwExpressionContext & { text: string }): Observable<string | number> {
     if (token in context && context[token] != null) {
       return of(context[token])
     }
 
+    if (token.includes('.')) {
+      return this.evaluateResource(token, context)
+    }
+
+    return this.evaluateConstant(token as any, context)
+  }
+
+  private evaluateResource(
+    token: string,
+    context: NwExpressionContext & { text: string }
+  ): Observable<string | number> {
+    const [resource, id, attr] = token.split('.')
+    return resourceLookup(resource as any, this.db)
+      .pipe(
+        map((data) => {
+          if (!data) {
+            throw new Error(`Unknown resource "${resource}" (for token "${token}" in text "${context.text}")`)
+          }
+          let object: any
+          if (data.has(id)) {
+            object = data.get(id)
+          } else if (data.has(Number(id))) {
+            object = data.get(Number(id))
+          }
+          if (!object) {
+            throw new Error(`Object for ID "${id}" not found (for token "${token}" in text "${context.text}")`)
+          }
+          if (attr in object) {
+            return object[attr]
+          }
+          for (const key of Object.keys(object)) {
+            if (eqCaseInsensitive(key, attr)) {
+              return object[key]
+            }
+          }
+          throw new Error(`Object has no attribute "${attr}" (for token "${token}" in text "${context.text}")`)
+        })
+      )
+      .pipe(
+        map((it) => {
+          if (String(it).includes('=')) {
+            const [_, value] = String(it).split('=')
+            console.debug(`[expr] found key=value pair in "${it}", use "${value}"`)
+            return value
+          }
+          return it
+        })
+      )
+  }
+
+  private evaluateConstant(
+    token: ExpressionConstant,
+    context: NwExpressionContext & { text: string }
+  ): Observable<string | number> {
     switch (token) {
-      case 'ConsumablePotency': {
+      case ExpressionConstant.ConsumablePotency: {
         return this.db.statusEffectsMap.pipe(
           map((it) => {
             if (it.has(context.itemId)) {
@@ -151,7 +100,7 @@ export class NwExpressionService {
           })
         )
       }
-      case 'perkMultiplier':
+      case ExpressionConstant.perkMultiplier:
         return this.db.perksMap.pipe(
           map((it) => {
             if (it.has(context.itemId)) {
@@ -162,84 +111,8 @@ export class NwExpressionService {
             )
           })
         )
-      default: {
-        return throwError(() => new Error(`unresolved token: "${token}" in text "${context.text}"`))
-      }
     }
-  }
 
-  private solveResource(resource: Expressionresource, expression: string): Observable<Map<string | number, unknown>> {
-    switch (resource) {
-      case 'AttributeThresholdAbilityTable':
-        return this.db.abilitiesMap
-      case 'Type_StatusEffectData': {
-        return this.db.statusEffectsMap
-      }
-      case 'DamageTable': {
-        return this.db.damageTableMap
-      }
-      case 'ConsumableItemDefinitions': {
-        return this.db.itemsConsumablesMap
-      }
-      case 'AffixStatDataTable': {
-        return this.db.affixStatsMap
-      }
-      case 'Afflictions': {
-        return this.db.afflictionsMap
-      }
-      case 'ManaCosts_Player': {
-        return this.db.manacostsMap
-      }
-      case 'StaminaCosts_Player': {
-        return this.db.staminacostsPlayerMap
-      }
-      case 'SpellDataTable_Bow':
-      case 'SpellDataTable_FireMagic':
-      case 'SpellDataTable_Global':
-      case 'SpellDataTable_GreatAxe':
-      case 'SpellDataTable_Greatsword':
-      case 'SpellDataTable_Sword':
-      case 'SpellDataTable_Hatchet':
-      case 'SpellDataTable_IceMagic':
-      case 'SpellDataTable_LifeMagic':
-      case 'SpellDataTable_Musket':
-      case 'SpellDataTable_Runes':
-      case 'SpellDataTable_VoidGauntlet':
-      case 'SpellDataTable_WarHammer':
-      case 'SpellDataTable_Flail': {
-        return this.db.spellsMap
-      }
-      case 'ArtifactsAbilityTable':
-      case 'BlunderbussAbilityTable':
-      case 'BowAbilityTable':
-      case 'FireMagicAbilityTable':
-      case 'GlobalAbilityTable':
-      case 'GreatAxeAbilityTable':
-      case 'GreatswordAbilityTable':
-      case 'HatchetAbilityTable':
-      case 'IceMagicAbilityTable':
-      case 'LifeMagicAbilityTable':
-      case 'MusketAbilityTable':
-      case 'RapierAbilityTable':
-      case 'SpearAbilityTable':
-      case 'SwordAbilityTable':
-      case 'FlailAbilityTable':
-      case 'PerksAbilityTable':
-      case 'Type_AbilityData':
-      case 'VoidGauntletAbilityTable':
-      case 'WarHammerAbilityTable': {
-        return this.db.abilitiesMap
-      }
-      case 'LootLimits': {
-        return this.db.lootLimitsMap
-      }
-      case 'HouseItems': {
-        return this.db.housingItemsMap
-      }
-      case 'Vitals_Player': {
-        return this.db.vitalsPlayerMap
-      }
-    }
-    return throwError(() => new Error(`unknown resource '${resource}' in expression '${expression}'`))
+    return throwError(() => new Error(`unresolved token: "${token}" in text "${context.text}"`))
   }
 }
