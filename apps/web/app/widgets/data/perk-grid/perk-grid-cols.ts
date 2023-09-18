@@ -90,17 +90,16 @@ export function perkColDescription(util: PerkGridUtils, ctx: NwExpressionContext
     cellRendererParams: util.cellRendererAsyncParams<string>({
       source: ({ data }) => {
         return combineLatest({
-          ctx: ctx.value,
+          ctx: ctx.state$,
           stats: util.db.affixStatsMap,
         }).pipe(
           switchMap(({ ctx, stats }) => {
             const context = {
               itemId: data.PerkID,
-              gearScore: ctx.gs,
-              charLevel: ctx.level,
+              gearScore: ctx.gearScore,
+              charLevel: ctx.charLevel,
             }
-
-            if (ctx.gsBonus) {
+            if (ctx.gearScoreBonus) {
               const gsBonus = getPerkItemClassGSBonus(data)
               context.gearScore += gsBonus?.value || 0
             }

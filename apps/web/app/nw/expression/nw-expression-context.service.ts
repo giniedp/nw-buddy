@@ -1,7 +1,6 @@
 import { Injectable, Optional, SkipSelf } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE } from '@nw-data/common'
-import { BehaviorSubject, combineLatest, defer } from 'rxjs'
 
 export interface NwExpressionContext {
   itemId?: string
@@ -14,55 +13,26 @@ export interface NwExpressionContext {
   attribute3?: string
   attribute4?: string
   attribute5?: string
+  gearScoreBonus?: boolean
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class NwExpressionContextService extends ComponentStore<NwExpressionContext> {
-  public get level() {
-    return this.level$.value
-  }
-  public set level(value: number) {
-    this.level$.next(value)
-  }
+  public charLevel$ = this.selectSignal(({ charLevel }) => charLevel)
+  public gearScore$ = this.selectSignal(({ gearScore }) => gearScore)
+  public gearScoreBonus$ = this.selectSignal(({ gearScoreBonus }) => gearScoreBonus)
 
-  public get gs() {
-    return this.gearScore$.value
-  }
-  public set gs(value: number) {
-    this.gearScore$.next(value)
-  }
-
-  public get gsBonus() {
-    return this.gearScoreBonus$.value
-  }
-  public set gsBonus(value: boolean) {
-    this.gearScoreBonus$.next(value)
-  }
-
-  public value = defer(() =>
-    combineLatest({
-      level: this.level$,
-      gs: this.gearScore$,
-      gsBonus: this.gearScoreBonus$,
-    })
-  )
-
-  private level$ = new BehaviorSubject(NW_MAX_CHARACTER_LEVEL)
-  private gearScore$ = new BehaviorSubject(650)
-  private gearScoreBonus$ = new BehaviorSubject(false)
   public constructor(
     @Optional()
     @SkipSelf()
     parent: NwExpressionContextService
   ) {
     super({
-      charLevel: parent?.get(({ charLevel }) => charLevel) ?? NW_MAX_CHARACTER_LEVEL,
-      gearScore: parent?.get(({ gearScore }) => gearScore) ?? NW_MAX_GEAR_SCORE,
-      itemId: parent?.get(({ itemId }) => itemId) ?? null,
-      perkMultiplier: parent?.get(({ perkMultiplier }) => perkMultiplier) ?? null,
-      ConsumablePotency: parent?.get(({ ConsumablePotency }) => ConsumablePotency) ?? null,
+      charLevel: NW_MAX_CHARACTER_LEVEL,
+      gearScore: NW_MAX_GEAR_SCORE,
+      ...parent?.get((it) => JSON.parse(JSON.stringify(it)) || {}),
     })
   }
 }

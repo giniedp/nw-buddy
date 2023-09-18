@@ -7,74 +7,74 @@ export function resourceLookup(
   db: NwDbService
 ): Observable<Map<string | number, unknown>> {
   switch (resource) {
-    case ExpressionResource.AttributeThresholdAbilityTable: {
+    case 'AttributeThresholdAbilityTable': {
       return db.abilitiesMap
     }
-    case ExpressionResource.Type_StatusEffectData: {
+    case 'Type_StatusEffectData': {
       return db.statusEffectsMap
     }
-    case ExpressionResource.DamageTable: {
+    case 'DamageTable': {
       return db.damageTableMap
     }
-    case ExpressionResource.ConsumableItemDefinitions: {
+    case 'ConsumableItemDefinitions': {
       return db.itemsConsumablesMap
     }
-    case ExpressionResource.AffixStatDataTable: {
+    case 'AffixStatDataTable': {
       return db.affixStatsMap
     }
-    case ExpressionResource.Afflictions: {
+    case 'Afflictions': {
       return db.afflictionsMap
     }
-    case ExpressionResource.ManaCosts_Player: {
+    case 'ManaCosts_Player': {
       return db.manacostsMap
     }
-    case ExpressionResource.StaminaCosts_Player: {
+    case 'StaminaCosts_Player': {
       return db.staminacostsPlayerMap
     }
-    case ExpressionResource.SpellDataTable_Bow:
-    case ExpressionResource.SpellDataTable_FireMagic:
-    case ExpressionResource.SpellDataTable_Global:
-    case ExpressionResource.SpellDataTable_GreatAxe:
-    case ExpressionResource.SpellDataTable_Greatsword:
-    case ExpressionResource.SpellDataTable_Sword:
-    case ExpressionResource.SpellDataTable_Hatchet:
-    case ExpressionResource.SpellDataTable_IceMagic:
-    case ExpressionResource.SpellDataTable_LifeMagic:
-    case ExpressionResource.SpellDataTable_Musket:
-    case ExpressionResource.SpellDataTable_Runes:
-    case ExpressionResource.SpellDataTable_VoidGauntlet:
-    case ExpressionResource.SpellDataTable_WarHammer:
-    case ExpressionResource.SpellDataTable_Flail: {
+    case 'SpellDataTable_Bow':
+    case 'SpellDataTable_FireMagic':
+    case 'SpellDataTable_Global':
+    case 'SpellDataTable_GreatAxe':
+    case 'SpellDataTable_Greatsword':
+    case 'SpellDataTable_Sword':
+    case 'SpellDataTable_Hatchet':
+    case 'SpellDataTable_IceMagic':
+    case 'SpellDataTable_LifeMagic':
+    case 'SpellDataTable_Musket':
+    case 'SpellDataTable_Runes':
+    case 'SpellDataTable_VoidGauntlet':
+    case 'SpellDataTable_WarHammer':
+    case 'SpellDataTable_Flail': {
       return db.spellsMap
     }
-    case ExpressionResource.ArtifactsAbilityTable:
-    case ExpressionResource.BlunderbussAbilityTable:
-    case ExpressionResource.BowAbilityTable:
-    case ExpressionResource.FireMagicAbilityTable:
-    case ExpressionResource.GlobalAbilityTable:
-    case ExpressionResource.GreatAxeAbilityTable:
-    case ExpressionResource.GreatswordAbilityTable:
-    case ExpressionResource.HatchetAbilityTable:
-    case ExpressionResource.IceMagicAbilityTable:
-    case ExpressionResource.LifeMagicAbilityTable:
-    case ExpressionResource.MusketAbilityTable:
-    case ExpressionResource.RapierAbilityTable:
-    case ExpressionResource.SpearAbilityTable:
-    case ExpressionResource.SwordAbilityTable:
-    case ExpressionResource.FlailAbilityTable:
-    case ExpressionResource.PerksAbilityTable:
-    case ExpressionResource.Type_AbilityData:
-    case ExpressionResource.VoidGauntletAbilityTable:
-    case ExpressionResource.WarHammerAbilityTable: {
+    case 'ArtifactsAbilityTable':
+    case 'BlunderbussAbilityTable':
+    case 'BowAbilityTable':
+    case 'FireMagicAbilityTable':
+    case 'GlobalAbilityTable':
+    case 'GreatAxeAbilityTable':
+    case 'GreatswordAbilityTable':
+    case 'HatchetAbilityTable':
+    case 'IceMagicAbilityTable':
+    case 'LifeMagicAbilityTable':
+    case 'MusketAbilityTable':
+    case 'RapierAbilityTable':
+    case 'SpearAbilityTable':
+    case 'SwordAbilityTable':
+    case 'FlailAbilityTable':
+    case 'PerksAbilityTable':
+    case 'Type_AbilityData':
+    case 'VoidGauntletAbilityTable':
+    case 'WarHammerAbilityTable': {
       return db.abilitiesMap
     }
-    case ExpressionResource.LootLimits: {
+    case 'LootLimits': {
       return db.lootLimitsMap
     }
-    case ExpressionResource.HouseItems: {
+    case 'HouseItems': {
       return db.housingItemsMap
     }
-    case ExpressionResource.Vitals_Player: {
+    case 'Vitals_Player': {
       return db.vitalsPlayerMap
     }
   }

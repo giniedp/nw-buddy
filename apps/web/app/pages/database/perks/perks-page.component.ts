@@ -68,7 +68,7 @@ export class PerksPageComponent {
       title: 'New World - Perks DB',
     })
     firstValueFrom(char.level$).then((value) => {
-      ctx.level = value
+      ctx.patchState({ charLevel: value })
     })
   }
 }

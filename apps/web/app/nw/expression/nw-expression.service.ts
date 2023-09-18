@@ -87,7 +87,7 @@ export class NwExpressionService {
     context: NwExpressionContext & { text: string }
   ): Observable<string | number> {
     switch (token) {
-      case ExpressionConstant.ConsumablePotency: {
+      case 'ConsumablePotency': {
         return this.db.statusEffectsMap.pipe(
           map((it) => {
             if (it.has(context.itemId)) {
@@ -100,7 +100,7 @@ export class NwExpressionService {
           })
         )
       }
-      case ExpressionConstant.perkMultiplier:
+      case 'perkMultiplier':
         return this.db.perksMap.pipe(
           map((it) => {
             if (it.has(context.itemId)) {

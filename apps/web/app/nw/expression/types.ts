@@ -1,52 +1,47 @@
-export const enum ExpressionConstant {
-  ConsumablePotency,
-  Potency,
-  perkMultiplier,
-}
+export type ExpressionConstant = 'ConsumablePotency' | 'Potency' | 'perkMultiplier'
 
-export const enum ExpressionResource {
-  AffixStatDataTable,
-  Afflictions,
-  ArtifactsAbilityTable,
-  AttributeThresholdAbilityTable,
-  BlunderbussAbilityTable,
-  BowAbilityTable,
-  ConsumableItemDefinitions,
-  DamageTable,
-  FireMagicAbilityTable,
-  FlailAbilityTable,
-  GlobalAbilityTable,
-  GreatAxeAbilityTable,
-  GreatswordAbilityTable,
-  HatchetAbilityTable,
-  HouseItems,
-  IceMagicAbilityTable,
-  LifeMagicAbilityTable,
-  LootLimits,
-  ManaCosts_Player,
-  MusketAbilityTable,
-  PerksAbilityTable,
-  RapierAbilityTable,
-  SpearAbilityTable,
-  SpellDataTable_Bow,
-  SpellDataTable_FireMagic,
-  SpellDataTable_Flail,
-  SpellDataTable_Global,
-  SpellDataTable_GreatAxe,
-  SpellDataTable_Greatsword,
-  SpellDataTable_Hatchet,
-  SpellDataTable_IceMagic,
-  SpellDataTable_LifeMagic,
-  SpellDataTable_Musket,
-  SpellDataTable_Runes,
-  SpellDataTable_Sword,
-  SpellDataTable_VoidGauntlet,
-  SpellDataTable_WarHammer,
-  StaminaCosts_Player,
-  SwordAbilityTable,
-  Type_AbilityData,
-  Type_StatusEffectData,
-  Vitals_Player,
-  VoidGauntletAbilityTable,
-  WarHammerAbilityTable,
-}
+export type ExpressionResource =
+  | 'AffixStatDataTable'
+  | 'Afflictions'
+  | 'ArtifactsAbilityTable'
+  | 'AttributeThresholdAbilityTable'
+  | 'BlunderbussAbilityTable'
+  | 'BowAbilityTable'
+  | 'ConsumableItemDefinitions'
+  | 'DamageTable'
+  | 'FireMagicAbilityTable'
+  | 'FlailAbilityTable'
+  | 'GlobalAbilityTable'
+  | 'GreatAxeAbilityTable'
+  | 'GreatswordAbilityTable'
+  | 'HatchetAbilityTable'
+  | 'HouseItems'
+  | 'IceMagicAbilityTable'
+  | 'LifeMagicAbilityTable'
+  | 'LootLimits'
+  | 'ManaCosts_Player'
+  | 'MusketAbilityTable'
+  | 'PerksAbilityTable'
+  | 'RapierAbilityTable'
+  | 'SpearAbilityTable'
+  | 'SpellDataTable_Bow'
+  | 'SpellDataTable_FireMagic'
+  | 'SpellDataTable_Flail'
+  | 'SpellDataTable_Global'
+  | 'SpellDataTable_GreatAxe'
+  | 'SpellDataTable_Greatsword'
+  | 'SpellDataTable_Hatchet'
+  | 'SpellDataTable_IceMagic'
+  | 'SpellDataTable_LifeMagic'
+  | 'SpellDataTable_Musket'
+  | 'SpellDataTable_Runes'
+  | 'SpellDataTable_Sword'
+  | 'SpellDataTable_VoidGauntlet'
+  | 'SpellDataTable_WarHammer'
+  | 'StaminaCosts_Player'
+  | 'SwordAbilityTable'
+  | 'Type_AbilityData'
+  | 'Type_StatusEffectData'
+  | 'Vitals_Player'
+  | 'VoidGauntletAbilityTable'
+  | 'WarHammerAbilityTable'

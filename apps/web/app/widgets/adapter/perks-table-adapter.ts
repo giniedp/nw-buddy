@@ -1,5 +1,6 @@
 import { Injectable, Optional } from '@angular/core'
 import {
+  getPerkItemClassGSBonus,
   getPerkItemClassGsBonus,
   getPerksInherentMODs,
   hasPerkInherentAffix,
@@ -138,28 +139,31 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
                 source: ({ data }) => {
                   // const stat = data.StatDisplayText && this.i18n.get(data.StatDisplayText)
                   return combineLatest({
-                    ctx: this.ctx.value,
+                    ctx: this.ctx.state$,
                     text: this.i18n.observe([data.Description, data.StatDisplayText]),
                     stats: this.db.affixStatsMap,
                   }).pipe(
                     switchMap(({ ctx, text, stats }) => {
                       if (hasPerkInherentAffix(data)) {
                         const affix = stats.get(data.Affix)
-                        const result = getPerksInherentMODs(data, affix, ctx.gs)
+                        const result = getPerksInherentMODs(data, affix, ctx.gearScore)
                           .map((it) => `+${Math.floor(it.value)} <b>${this.i18n.get(it.label)}</b>`)
                           .join('<br>')
                         return of(result)
                       }
 
-                      let gs = ctx.gs
-                      if (data.ItemClassGSBonus && ctx.gsBonus) {
-                        gs += Number(data.ItemClassGSBonus.split(',')[0].split(':')[1]) || 0
+                      const context = {
+                        itemId: data.PerkID,
+                        gearScore: ctx.gearScore,
+                        charLevel: ctx.charLevel,
+                      }
+                      if (ctx.gearScoreBonus) {
+                        const gsBonus = getPerkItemClassGSBonus(data)
+                        context.gearScore += gsBonus?.value || 0
                       }
                       return this.expression.solve({
+                        ...context,
                         text: text,
-                        charLevel: ctx.level,
-                        gearScore: gs,
-                        itemId: data.PerkID,
                       })
                     })
                   )

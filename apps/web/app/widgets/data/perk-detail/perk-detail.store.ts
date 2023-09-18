@@ -19,15 +19,15 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
   public readonly textContext$ = this.select(
     combineLatest({
       perk: this.perk$,
-      context: this.contextService.value,
+      context: this.contextService.state$,
     }),
     ({ perk, context }) => {
       const result = {
         itemId: perk?.PerkID,
-        gearScore: context.gs,
-        level: context.level,
+        gearScore: context.gearScore,
+        charLevel: context.charLevel,
       }
-      if (context.gsBonus) {
+      if (context.gearScoreBonus) {
         const gsBonus = getPerkItemClassGSBonus(perk)
         result.gearScore += gsBonus?.value || 0
       }
