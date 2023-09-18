@@ -5,6 +5,7 @@ import { NwDbService, NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
 import { PerkDetailStore } from './perk-detail.store'
+import { NwExpressionContextService } from '~/nw/expression'
 
 @Component({
   standalone: true,
@@ -18,6 +19,7 @@ import { PerkDetailStore } from './perk-detail.store'
       provide: PerkDetailStore,
       useExisting: forwardRef(() => PerkDetailComponent),
     },
+    NwExpressionContextService,
   ],
   host: {
     class: 'block rounded-md overflow-clip',

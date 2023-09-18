@@ -5,7 +5,7 @@ import { ColDef, GridOptions } from '@ag-grid-community/core'
 import { sortBy } from 'lodash'
 import { Observable, defer, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwLinkService } from '~/nw'
+import { NwDbService, NwLinkService, sanitizeHtml } from '~/nw'
 import { NwExpressionService } from '~/nw/expression'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, dataTableProvider } from '~/ui/data-table'
@@ -108,7 +108,7 @@ export class StatusEffectsTableAdapter extends DataTableAdapter<Statuseffect> {
                 gearScore: 600,
               }),
             update: (el, text) => {
-              el.innerHTML = this.makeLineBreaks(text)
+              el.innerHTML = sanitizeHtml(this.makeLineBreaks(text))
             },
           }),
         }),

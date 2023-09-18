@@ -71,7 +71,7 @@ export class NwExpressionService {
     return parseNwExpression(expression)
   }
 
-  public solve(context: NwExpressionContext) {
+  public solve(context: NwExpressionContext & { text: string }) {
     return this.parse(context.text)
       .eval((key) => this.lookup(key, context))
       .pipe(map((value) => String(value)))
@@ -94,7 +94,7 @@ export class NwExpressionService {
       )
   }
 
-  private lookup(token: string, context: NwExpressionContext): Observable<string | number> {
+  private lookup(token: string, context: NwExpressionContext & { text: string }): Observable<string | number> {
     if (token.includes('.')) {
       const [resource, id, attr] = token.split('.')
       return this.solveResource(resource as any, token)
@@ -133,11 +133,12 @@ export class NwExpressionService {
           })
         )
     }
+    if (token in context && context[token] != null) {
+      return of(context[token])
+    }
+
     switch (token) {
       case 'ConsumablePotency': {
-        if (context.ConsumablePotency != null) {
-          return of(context.ConsumablePotency)
-        }
         return this.db.statusEffectsMap.pipe(
           map((it) => {
             if (it.has(context.itemId)) {
@@ -151,9 +152,6 @@ export class NwExpressionService {
         )
       }
       case 'perkMultiplier':
-        if (context.perkMultiplier != null) {
-          return of(context.perkMultiplier)
-        }
         return this.db.perksMap.pipe(
           map((it) => {
             if (it.has(context.itemId)) {
@@ -165,7 +163,7 @@ export class NwExpressionService {
           })
         )
       default: {
-        return throwError(() => new Error(`unknown lookup token: "${token}" in text "${context.text}"`))
+        return throwError(() => new Error(`unresolved token: "${token}" in text "${context.text}"`))
       }
     }
   }

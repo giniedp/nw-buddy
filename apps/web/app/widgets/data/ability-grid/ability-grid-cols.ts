@@ -7,6 +7,7 @@ import {
 } from '@nw-data/common'
 import { Ability, Statuseffect } from '@nw-data/generated'
 import { map, switchMap } from 'rxjs'
+import { sanitizeHtml } from '~/nw'
 import { NwWeaponType } from '~/nw/weapon-types'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataGridUtils } from '~/ui/data-grid'
@@ -85,7 +86,7 @@ export function abilityColDescription(util: AbilityGridUtils) {
     cellRenderer: util.cellRendererAsync(),
     cellRendererParams: util.cellRendererAsyncParams<string>({
       update: (el, text) => {
-        el.innerHTML = text
+        el.innerHTML = sanitizeHtml(text)
       },
       source: ({ data, value }) => {
         return util.i18n

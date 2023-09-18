@@ -1,5 +1,6 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { Statuseffect } from '@nw-data/generated'
+import { sanitizeHtml } from '~/nw'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataGridUtils } from '~/ui/data-grid'
 import { humanize } from '~/utils'
@@ -81,7 +82,7 @@ export function statusEffectColDescription(util: StatusEffectGridUtils) {
           gearScore: 600,
         }),
       update: (el, text) => {
-        el.innerHTML = util.lineBreaksToHtml(text)
+        el.innerHTML = sanitizeHtml(util.lineBreaksToHtml(text))
       },
     }),
   })

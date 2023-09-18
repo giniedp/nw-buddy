@@ -6,11 +6,11 @@ export async function importLocales({
   input,
   output,
   tables,
-  preserveKeys
+  preserveKeys,
 }: {
   input: string
   output: string
-  tables: Array<Object>,
+  tables: Array<Object>
   preserveKeys?: Array<string | RegExp>
 }) {
   const keys = extractKeys(tables)
@@ -31,7 +31,7 @@ function extractKeys(tables: Object[]) {
   const result = new Set<string>()
   walkJsonStrings(tables, (key, value, obj) => {
     if (value?.startsWith('@')) {
-      obj[key] = value.substring(1)   // keep original case in object
+      obj[key] = value.substring(1) // keep original case in object
       result.add(normalizeKey(value)) // use lower case for dictionary
     }
   })
@@ -63,7 +63,7 @@ async function writeLocales(output: string, locales: Map<string, Record<string, 
   const tasks = Array.from(locales.entries()).map(([locale, data]) => {
     return {
       file: path.join(output, `${locale}.json`),
-      data: data
+      data: data,
     }
   })
   await withProgressBar({ barName: 'Write', tasks: tasks }, async ({ file, data }) => {

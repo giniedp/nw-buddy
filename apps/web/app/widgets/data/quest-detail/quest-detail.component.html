@@ -13,7 +13,7 @@
   <div
     *ngIf="description$ | async; let text"
     class="text-nw-description italic"
-    [innerHTML]="text | nwText | nwTextBreak"
+    [nwHtml]="text | nwText | nwTextBreak"
   ></div>
   <div class="chat chat-start" *ngIf="prompt$ | async; let text">
     <div class="chat-bubble" [nwText]="text"></div>

@@ -1,7 +1,6 @@
 <div class="skill-tree-title text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
   <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
   <span class="relative top-1">{{ title$ | async | nwText }} - {{ value?.length || 0 }}</span>
-
 </div>
 <div class="skill-tree-content grid p-3 relative" [class]="colsClass | async">
   <ng-container *ngFor="let row of rows$ | async; trackBy: trackByIndex">
@@ -35,7 +34,7 @@
         (keydown.space)="toggle(cell)"
         (keydown.enter)="toggle(cell)"
         [tooltip]="tip"
-        >
+      >
         <ng-template #tip>
           <div class="rounded-md overflow-hidden bg-base-200">
             <div class="text-lg font-bold px-3 py-2 flex flex-row items-center bg-base-300 gap-3">
@@ -44,7 +43,7 @@
                 {{ ability.DisplayName | nwText }}
               </span>
             </div>
-            <div [innerHTML]="ability.Description | nwText | nwTextBreak" class="p-3"></div>
+            <div [nwHtml]="ability.Description | nwText | nwTextBreak" class="p-3"></div>
             <div *ngIf="cell.tooltip" class="p-3 text-warning rounded-md">
               {{ cell.tooltip | nwText }}
             </div>

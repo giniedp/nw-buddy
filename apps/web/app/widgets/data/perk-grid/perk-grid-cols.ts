@@ -1,4 +1,9 @@
-import { explainPerk, explainPerkAttributeMods, getPerkItemClassGsBonus } from '@nw-data/common'
+import {
+  explainPerk,
+  explainPerkAttributeMods,
+  getPerkItemClassGSBonus,
+  getPerkItemClassGsBonus,
+} from '@nw-data/common'
 import { Ability, Perks } from '@nw-data/generated'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwExpressionContextService } from '~/nw/expression'
@@ -94,9 +99,12 @@ export function perkColDescription(util: PerkGridUtils, ctx: NwExpressionContext
               gearScore: ctx.gs,
               charLevel: ctx.level,
             }
-            if (data.ItemClassGSBonus && ctx.gsBonus) {
-              context.gearScore += Number(data.ItemClassGSBonus.split(',')[0].split(':')[1]) || 0
+
+            if (ctx.gsBonus) {
+              const gsBonus = getPerkItemClassGSBonus(data)
+              context.gearScore += gsBonus?.value || 0
             }
+
             const result: Array<Observable<string>> = []
             const mods = explainPerkAttributeMods({
               perk: data,
@@ -106,8 +114,11 @@ export function perkColDescription(util: PerkGridUtils, ctx: NwExpressionContext
             for (const mod of mods) {
               result.push(
                 util.expr.solve({
+                  attribute1: '…',
+                  attribute2: '…',
                   text: `${util.i18n.get(mod.label || '')} ${util.i18n.get(mod.description || '')}`,
                   ...context,
+                  ...(mod.context || {}),
                 })
               )
             }

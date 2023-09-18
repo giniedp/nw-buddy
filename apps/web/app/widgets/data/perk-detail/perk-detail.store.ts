@@ -1,6 +1,6 @@
 import { Injectable, Output, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { NW_FALLBACK_ICON, explainPerkAttributeMods } from '@nw-data/common'
+import { NW_FALLBACK_ICON, explainPerkAttributeMods, getPerkItemClassGSBonus } from '@nw-data/common'
 import { Affixstats, Perks } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
@@ -27,12 +27,16 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
         gearScore: context.gs,
         level: context.level,
       }
-      if (perk && perk.ItemClassGSBonus && context.gsBonus) {
-        result.gearScore += Number(perk.ItemClassGSBonus.split(',')[0].split(':')[1]) || 0
+      if (context.gsBonus) {
+        const gsBonus = getPerkItemClassGSBonus(perk)
+        result.gearScore += gsBonus?.value || 0
       }
       return result
     }
   )
+
+  public readonly scalesWithGearScore$ = this.select(this.perk$, (it) => !!it.ScalingPerGearScore)
+  public readonly itemClassGsBonus$ = this.select(this.perk$, (it) => getPerkItemClassGSBonus(it))
 
   public readonly icon$ = this.select(this.perk$, (it) => it?.IconPath || NW_FALLBACK_ICON)
   public readonly type$ = this.select(this.perk$, (it) => it?.PerkType)

@@ -19,6 +19,7 @@ export async function importImages({
   rewrite,
   rewritePath,
   threads,
+  staticImages,
 }: {
   input: string
   output: string
@@ -28,15 +29,20 @@ export async function importImages({
   rewrite?: Record<string, RewriteImageEntryFn>
   rewritePath?: (value: string) => string
   threads: number
+  staticImages: string[]
 }) {
   const images = new Map<string, string>()
 
   await withProgressBar({ barName: 'Scan', tasks: tables }, async (table, _, log) => {
     // log(table.relative)
-    scanImages([table], {
+    scanTablesForImages([table], {
       shouldIgnore: shouldIgnore,
       rewrite: rewrite,
       rewritePath: rewritePath,
+      images: images,
+    })
+    addStaticImages(staticImages, {
+      shouldIgnore: shouldIgnore,
       images: images,
     })
   })
@@ -60,7 +66,28 @@ export async function importImages({
   })
 }
 
-function scanImages(
+function addStaticImages(
+  files: string[],
+  options?: {
+    shouldIgnore?: (key: string, imgPath: string, obj: Object) => boolean
+    images?: Map<string, string>
+  }
+) {
+  const images = options.images || new Map<string, string>()
+  for (let value of files) {
+    if (!value.match(/^lyshineui/gi)) {
+      return
+    }
+    if (!path.extname(value)) {
+      value += '.png'
+    }
+    const { source, target } = selectImage(value)
+    images.set(source, target)
+  }
+  return images
+}
+
+function scanTablesForImages(
   tables: Object | Object[],
   options?: {
     shouldIgnore?: (key: string, imgPath: string, obj: Object) => boolean
@@ -76,20 +103,28 @@ function scanImages(
     if (!value.match(/^lyshineui/gi) || shouldIgnore(key, value, obj)) {
       return
     }
-    const source = path.normalize(value.toLowerCase())
-    const sourcePNG = replaceExtname(source, '.png')
-      .toLowerCase()
-      .replace(/\\/g, '/')
-      // removes space before extension
-      //   - "lyshineui/images/icons/items/weapon/1hthrowingaxelostt2 .png"
-      .replace(/\s+\.png$/, '.png')
-    const targetWEBP = replaceExtname(source, '.webp')
-      .toLowerCase()
-      .replace(/\\/g, '/')
-      .replace(/^\/?lyshineui\/images/, '')
-      .replace(/\s+\.webp$/, '.webp')
-    obj[key] = options?.rewritePath ? options?.rewritePath(targetWEBP) : targetWEBP
-    images.set(sourcePNG, targetWEBP)
+    const { source, target } = selectImage(value)
+    obj[key] = options?.rewritePath ? options?.rewritePath(target) : target
+    images.set(source, target)
   })
   return images
+}
+
+function selectImage(image: string) {
+  const source = path.normalize(image.toLowerCase())
+  const sourcePNG = replaceExtname(source, '.png')
+    .toLowerCase()
+    .replace(/\\/g, '/')
+    // removes space before extension
+    //   - "lyshineui/images/icons/items/weapon/1hthrowingaxelostt2 .png"
+    .replace(/\s+\.png$/, '.png')
+  const targetWEBP = replaceExtname(source, '.webp')
+    .toLowerCase()
+    .replace(/\\/g, '/')
+    .replace(/^\/?lyshineui\/images/, '')
+    .replace(/\s+\.webp$/, '.webp')
+  return {
+    source: sourcePNG,
+    target: targetWEBP,
+  }
 }

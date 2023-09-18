@@ -11,7 +11,7 @@ import { ColDef, GridOptions } from '@ag-grid-community/core'
 import { sortBy } from 'lodash'
 import { Observable, combineLatest, defer, map, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwLinkService } from '~/nw'
+import { NwDbService, NwLinkService, sanitizeHtml } from '~/nw'
 import { NwExpressionService } from '~/nw/expression'
 import { NwWeaponType, NwWeaponTypesService } from '~/nw/weapon-types'
 import { SelectFilter } from '~/ui/ag-grid'
@@ -104,7 +104,7 @@ export class AbilitiesTableAdapter extends DataTableAdapter<AbilityTableItem> {
           cellRenderer: this.cellRendererAsync(),
           cellRendererParams: this.cellRendererAsyncParams<string>({
             update: (el, text) => {
-              el.innerHTML = text
+              el.innerHTML = sanitizeHtml(text)
             },
             source: ({ data, value }) => {
               return this.i18n

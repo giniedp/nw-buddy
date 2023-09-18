@@ -18,7 +18,7 @@
   </ng-container>
 
   <ng-container *ngIf="description$ | async | nwText : (textContext$ | async) | nwTextBreak; let description">
-    <div [innerHTML]="description" class="text-nw-description italic"></div>
+    <div [nwHtml]="description" class="text-nw-description italic"></div>
     <nwb-item-divider></nwb-item-divider>
   </ng-container>
 

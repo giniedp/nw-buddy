@@ -73,6 +73,26 @@ export function explainPerk(options: { perk: Perks; affix: Affixstats; gearScore
   return result
 }
 
+export interface ItemClassGSBonus {
+  itemClass: string
+  value: number
+}
+
+export function getPerkItemClassGSBonus(perk: Pick<Perks, 'ItemClassGSBonus'>): ItemClassGSBonus {
+  if (!perk?.ItemClassGSBonus) {
+    return null
+  }
+  const match = perk.ItemClassGSBonus.match(/(\w+):(\d+)/)
+  if (!match) {
+    console.warn('unknown ItemClassGSBonus format', perk.ItemClassGSBonus)
+    return null
+  }
+  return {
+    itemClass: match[1],
+    value: Number(match[2]),
+  }
+}
+
 export function explainPerkAttributeMods(options: {
   perk: Perks
   affix: Affixstats

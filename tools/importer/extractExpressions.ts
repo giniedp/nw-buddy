@@ -1,56 +1,143 @@
-import { writeJSONFile } from "../utils"
+import * as path from 'path'
+import { glob, readJSONFile, writeJSONFile } from '../utils'
 
-export async function extractExpressions({
-  locales,
-  output,
-}: {
-  locales: Map<string, Record<string, string>>
-  output: string
-}) {
+export async function extractExpressions({ input, output }: { input: string; output: string }) {
   const expressions = new Set<string>()
   const resources = new Set<string>()
-  locales.forEach((file) => {
-    Object.values(file).forEach((text) => {
-      extract(text).forEach((exp) => {
-        expressions.add(exp)
-        extractVariables(exp).forEach((variable) => {
-          const split = variable.split('.')
-          if (!split[0]) {
-            console.log(exp, variable)
-          }
-          resources.add(split[0])
-        })
-      })
-    })
-  })
+  const constants = new Set<string>()
+  const variables = new Set<string>()
+  const html = new Set<string>()
+  const images = new Set<string>()
 
-  await writeJSONFile({
-    expressions: Array.from(expressions.values()).sort(),
-    resources: Array.from(resources.values()).sort(),
-  }, output)
+  const files = await glob(path.join(input, '**/*.json'))
+  for (const file of files) {
+    const dict = await readJSONFile<Record<string, string>>(file)
+    for (const text of Object.values(dict)) {
+      for (const match of text.matchAll(/<img src="([^"]+)"/g)) {
+        images.add(match[1])
+      }
+
+      for (const it of scanForExpressions(text)) {
+        expressions.add(it)
+        for (const literal of scanForLookupKeys(it)) {
+          const dotIndex = literal.indexOf('.')
+          if (dotIndex > 0) {
+            resources.add(literal.substring(0, dotIndex))
+          } else {
+            constants.add(literal)
+          }
+        }
+      }
+      for (const it of scanForVariables(text)) {
+        variables.add(it)
+      }
+      for (const it of scanForHtml(text)) {
+        html.add(it)
+      }
+    }
+  }
+
+  await writeJSONFile(
+    {
+      images: Array.from(images.values()).sort(),
+      resources: Array.from(resources.values()).sort(),
+      constants: Array.from(constants.values()).sort(),
+      variables: Array.from(variables.values()).sort(),
+      html: Array.from(html.values()).sort(),
+      expressions: Array.from(expressions.values()).sort(),
+    },
+    output
+  )
 }
 
-function extract(text: string) {
+/**
+ * Detects pairs of {[ and ]} in the text and returns the content between them.
+ */
+function scanForExpressions(text: string) {
   let outside = true
   const result: string[] = []
   let start = 0
   for (let i = 0; i < text.length; i++) {
-    if (outside && text[i] === '{' && text[i+1] === '[') {
+    if (outside && exprBegin(text, i)) {
+      i += 2
       start = i
+      if (exprEnd(text, i)) {
+        // rare case: {[{[ expression content ]}]}
+        i += 2
+        start = i
+      }
       outside = !outside
     }
-    if (!outside && text[i] === ']' && text[i+1] === '}') {
-      result.push(text.substring(start + 2, i))
+    if (!outside && exprEnd(text, i)) {
+      result.push(text.substring(start, i))
       outside = !outside
     }
   }
   return result
 }
+function exprBegin(text: string, i: number) {
+  return text[i] === '{' && text[i + 1] === '['
+}
+function exprEnd(text: string, i: number) {
+  return text[i] === ']' && text[i + 1] === '}'
+}
 
-function extractVariables(exp: string) {
+/**
+ * Detects all words that start with a letter and contain only letters, numbers and dots.
+ */
+function scanForLookupKeys(exp: string) {
   const match = exp.match(/[a-zA-Z]\w+(\.\w+)*/gi)
   if (!match) {
     return []
   }
   return match.map((exp) => exp)
+}
+
+/**
+ * Detects pairs of { and } in the text and returns the content between them.
+ * Skips all pairs that contain a [ and ].
+ */
+function scanForVariables(text: string) {
+  let outside = true
+  const result: string[] = []
+  let start = 0
+  for (let i = 0; i < text.length; i++) {
+    if (outside && varBegin(text, i)) {
+      i += 1
+      start = i
+      if (varBegin(text, i)) {
+        i += 1
+        start = i
+      }
+      outside = !outside
+    }
+    if (!outside && text[i] === '}') {
+      result.push(text.substring(start, i))
+      outside = !outside
+    }
+  }
+  return result
+}
+function varBegin(text: string, i: number) {
+  return text[i] === '{' && !exprBegin(text, i)
+}
+
+/**
+ * Detects pairs of < and > in the text and returns the content between them.
+ */
+function scanForHtml(text: string) {
+  let outside = true
+  const result: string[] = []
+  let start = 0
+  for (let i = 0; i < text.length; i++) {
+    if (outside && text[i] === '<') {
+      start = i
+      outside = !outside
+    }
+    if (!outside && text[i] === '>') {
+      result.push(text.substring(start, i + 1))
+      outside = !outside
+    }
+  }
+  return result
 }

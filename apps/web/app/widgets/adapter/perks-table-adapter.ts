@@ -10,7 +10,7 @@ import { Ability, COLS_AFFIXSTATS, COLS_PERKS, Perks } from '@nw-data/generated'
 import { ColDef, ColGroupDef, GridOptions } from '@ag-grid-community/core'
 import { Observable, combineLatest, defer, map, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwLinkService } from '~/nw'
+import { NwDbService, NwLinkService, sanitizeHtml } from '~/nw'
 import { NwExpressionContextService, NwExpressionService } from '~/nw/expression'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
@@ -165,7 +165,7 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
                   )
                 },
                 update: (el, text) => {
-                  el.innerHTML = this.makeLineBreaks(text)
+                  el.innerHTML = sanitizeHtml(this.makeLineBreaks(text))
                 },
               }),
             }),

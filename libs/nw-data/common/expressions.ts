@@ -9,21 +9,28 @@ export function parseNwExpression(text: string, skipPreprocess = false): NwExp {
   const expr: NwExp[] = []
   let start = 0
   for (let i = 0; i < text.length; i++) {
-    if (outside && text[i] === '{' && text[i + 1] === '[') {
+    if (outside && exprBegin(text, i)) {
       const value = text.substring(start, i)
-      start = i
+      start = i + 2
       outside = !outside
-      expr.push(new NwExpValue(value))
+      expr.push(parseText(value))
     }
-    if (!outside && text[i] === '}' && text[i - 1] === ']') {
-      const value = text.substring(start + 2, i - 1)
-      start = i + 1
+    if (!outside && exprEnd(text, i)) {
+      const value = text.substring(start, i)
+      start = i + 2
       outside = !outside
       expr.push(new NwExpEval(parseExpression(value)))
     }
   }
-  expr.push(new NwExpValue(text.substring(start, text.length)))
+  expr.push(parseText(text.substring(start, text.length)))
   return new NwExpJoin(expr, '')
+}
+
+function exprBegin(text: string, i: number) {
+  return text[i] === '{' && text[i + 1] === '['
+}
+function exprEnd(text: string, i: number) {
+  return text[i] === ']' && text[i + 1] === '}'
 }
 
 function parseExpression(text: string): NwExp {
@@ -80,6 +87,28 @@ function parseExpression(text: string): NwExp {
   return new NwExpJoin(expr, '')
 }
 
+function parseText(text: string): NwExp {
+  let start = 0
+  let outside = true
+  const expr: NwExp[] = []
+  for (let i = 0; i < text.length; i++) {
+    if (outside && text[i] === '{') {
+      const value = text.substring(start, i)
+      start = i + 1
+      outside = !outside
+      expr.push(new NwExpValue(value))
+    }
+    if (!outside && text[i] === '}') {
+      const value = text.substring(start, i)
+      start = i + 1
+      outside = !outside
+      expr.push(new NwExpLookup(value))
+    }
+  }
+  expr.push(new NwExpValue(text.substring(start, text.length)))
+  return new NwExpJoin(expr, '')
+}
+
 function preprocessExpression(text: string) {
   text = text
     // ensure operators and operands have a space separator
@@ -92,26 +121,31 @@ function preprocessExpression(text: string) {
     // .join(' - ')
     // .split('/')
     // .join(' / ')
-    // patch bug in expressions, where multiply operator is missing
+    // patch bug in expressions, where multiply operator is missing: 100 { => 100 * {
     .replace(/100\s*\{/, '100 * {')
-    // patch bug in expressions, where multiply operator is missing
+    // patch bug in expressions with random square bracket: * 100] * => * 100 *
     .replace(/ \* 100] \* /, ' * 100 * ')
-    // patch bad expressions
+    // patch bad expression (TODO: does no longer exist?)
     .replace('Type_StatusEffectData.Type_StatusEffectData.', 'Type_StatusEffectData.')
+    // patch bad expression with missing dot
+    .replace(
+      'Type_StatusEffectDataAI_Evil_Knight_Fire_Champion_DangerTick',
+      'Type_StatusEffectData.AI_Evil_Knight_Fire_Champion_DangerTick'
+    )
+    // collapse {[{[ ]}]} to {[ ]}
+    .replace(/(\{\[)+/g, '{[')
+    .replace(/(\]\})+/, ']}')
+    // collapse {{ }} to {}
+    .replace(/\{+/g, '{')
+    .replace(/\}+/, '}')
     // collapse spaces
     .replace(/\s+/g, ' ')
 
   if (text.includes('Mut_Voi_Stacks') && text.includes('Mut_Lig_Stacks')) {
     // example:
     //  Filled with dread for {[Type_StatusEffectData.Mut_Lig_Stacks_1_Effect.BaseDuration]} seconds. At {[Type_StatusEffectData.Mut_Voi_Stacks_1_Effect.AddOnStackSize]} stacks, causes a void burst to appear at your location.
+    //  (TODO: does no longer exist?)
     text = text.replace('Mut_Lig_Stacks', 'Mut_Voi_Stacks')
-  }
-
-  if (text.includes('Type_StatusEffectDataAI_Evil_Knight_Fire_Champion_DangerTick')) {
-    text = text.replace('Type_StatusEffectDataAI_Evil_Knight_Fire_Champion_DangerTick', 'Type_StatusEffectData.AI_Evil_Knight_Fire_Champion_DangerTick')
-  }
-  if (text.includes('{[{[Type_StatusEffectData.Sandworm_Storm_Chaser_Debuff.BaseDuration]}]}')) {
-    text = text.replace('{[{[Type_StatusEffectData.Sandworm_Storm_Chaser_Debuff.BaseDuration]}]}', '{[Type_StatusEffectData.Sandworm_Storm_Chaser_Debuff.BaseDuration]}')
   }
 
   return text
@@ -170,7 +204,12 @@ export class NwExpLookup implements NwExp {
     //
   }
   public eval(solve: NwExpSolveFn) {
-    return solve(this.value)
+    return solve(this.value?.trim()).pipe(
+      catchError((e) => {
+        console.error(e)
+        return '⚠'
+      })
+    )
   }
   public print() {
     return String(this.value)

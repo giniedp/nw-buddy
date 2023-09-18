@@ -7,30 +7,22 @@ import { NwIconComponent, NwImageComponent } from './nw-icon.component'
 import { NwLinkDirective } from './nw-link.directive'
 import { NwTextDirective } from './nw-text.directive'
 import { NwTextBreakPipe, NwTextPipe } from './nw-text.pipe'
+import { NwHtmlDirective } from './nw-html.directive'
 
+const COMPONENTS = [
+  GamingtoolsLinkDirective,
+  NwHtmlDirective,
+  NwHumanizePipe,
+  NwIconComponent,
+  NwImageComponent,
+  NwLinkDirective,
+  NwTextBreakPipe,
+  NwTextDirective,
+  NwTextPipe,
+]
 @NgModule({
-  imports: [
-    CommonModule,
-    FormsModule,
-    GamingtoolsLinkDirective,
-    NwIconComponent,
-    NwImageComponent,
-    NwLinkDirective,
-    NwTextDirective,
-    NwTextPipe,
-    NwTextBreakPipe,
-    NwHumanizePipe,
-  ],
-  exports: [
-    NwTextDirective,
-    NwIconComponent,
-    NwImageComponent,
-    NwLinkDirective,
-    NwTextPipe,
-    NwTextBreakPipe,
-    NwHumanizePipe,
-    GamingtoolsLinkDirective,
-  ],
+  imports: [CommonModule, FormsModule, ...COMPONENTS],
+  exports: [...COMPONENTS],
 })
 export class NwModule {
   //
