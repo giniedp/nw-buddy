@@ -1,7 +1,7 @@
 <ng-container *ngIf="!skeleton; else tplSkeleton">
   <div class="flex flex-row justify-between leading-4">
     <a
-      class="font-bold text-rarity-{{ artifact ? 'artifact' : rarity }} mt-[2px] flex-1 overflow-hidden"
+      class="font-bold text-rarity-{{ artifact ? 'artifact' : rarity }} mt-[2px] flex-1 overflow-hidden text-ellipsis"
       [routerLink]="titleLink"
       [class.hover:underline]="!!titleLink"
     >

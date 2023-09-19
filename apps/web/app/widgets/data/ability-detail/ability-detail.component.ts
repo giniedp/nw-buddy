@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common'
+import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
 import { Ability } from '@nw-data/generated'
 import { NwDbService, NwModule } from '~/nw'
@@ -13,8 +13,9 @@ import { AbilityDetailStore } from './ability-detail.store'
   templateUrl: './ability-detail.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule],
+  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, DecimalPipe],
   providers: [
+    DecimalPipe,
     {
       provide: AbilityDetailStore,
       useExisting: forwardRef(() => AbilityDetailComponent),
@@ -33,7 +34,7 @@ export class AbilityDetailComponent extends AbilityDetailStore {
   @Input()
   public disableProperties: boolean
 
-  public constructor(db: NwDbService) {
+  public constructor(db: NwDbService, private decimals: DecimalPipe) {
     super(db)
   }
 
@@ -79,6 +80,14 @@ export class AbilityDetailComponent extends AbilityDetailStore {
             value: String(it),
             secondary: true,
           }))
+        }
+        if (typeof value === 'number') {
+          return [
+            {
+              value: this.decimals.transform(value, '0.0-7'),
+              accent: true,
+            },
+          ]
         }
         return [
           {

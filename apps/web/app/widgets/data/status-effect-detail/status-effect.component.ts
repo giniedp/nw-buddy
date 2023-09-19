@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common'
+import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, forwardRef, Input, TemplateRef, ViewChild } from '@angular/core'
 import { Statuseffect } from '@nw-data/generated'
 import { NwDbService, NwModule } from '~/nw'
@@ -16,8 +16,17 @@ import { svgInfoCircle } from '~/ui/icons/svg'
   templateUrl: './status-effect.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, IconsModule, ItemFrameModule, PropertyGridModule, TooltipModule, StatusEffectCategoryDetailModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    IconsModule,
+    ItemFrameModule,
+    PropertyGridModule,
+    TooltipModule,
+    StatusEffectCategoryDetailModule,
+  ],
   providers: [
+    DecimalPipe,
     {
       provide: StatusEffectDetailStore,
       useExisting: forwardRef(() => StatusEffectDetailComponent),
@@ -40,11 +49,11 @@ export class StatusEffectDetailComponent extends StatusEffectDetailStore {
   protected tplCategory: TemplateRef<any>
 
   protected iconInfo = svgInfoCircle
-  public constructor(db: NwDbService) {
+  public constructor(db: NwDbService, private decimals: DecimalPipe) {
     super(db)
   }
 
-  public formatValue = (value: any, key: keyof Statuseffect): PropertyGridCell[] =>  {
+  public formatValue = (value: any, key: keyof Statuseffect): PropertyGridCell[] => {
     switch (key) {
       case 'StatusID':
       case 'OnDeathStatusEffect':
@@ -57,11 +66,13 @@ export class StatusEffectDetailComponent extends StatusEffectDetailStore {
         return statusEffectCells(value)
       }
       case 'EquipAbility': {
-        return [{
-          value: String(value),
-          accent: true,
-          routerLink: ['/abilities/table', value]
-        }]
+        return [
+          {
+            value: String(value),
+            accent: true,
+            routerLink: ['/abilities/table', value],
+          },
+        ]
       }
       default: {
         if (Array.isArray(value)) {
@@ -70,12 +81,22 @@ export class StatusEffectDetailComponent extends StatusEffectDetailStore {
             template: this.tplCategory,
           }))
         }
-        return [{
-          value: String(value),
-          accent: typeof value === 'number',
-          info: typeof value === 'boolean',
-          bold: typeof value === 'boolean'
-        }]
+        if (typeof value === 'number') {
+          return [
+            {
+              value: this.decimals.transform(value, '0.0-7'),
+              accent: true,
+            },
+          ]
+        }
+        return [
+          {
+            value: String(value),
+            accent: typeof value === 'number',
+            info: typeof value === 'boolean',
+            bold: typeof value === 'boolean',
+          },
+        ]
       }
     }
   }
@@ -88,7 +109,7 @@ function statusEffectCells(list: string | string[]): PropertyGridCell[] {
     return {
       value: String(it),
       accent: isLink,
-      routerLink: isLink ? ['/status-effects/table', it] : null
+      routerLink: isLink ? ['/status-effects/table', it] : null,
     }
   })
 }

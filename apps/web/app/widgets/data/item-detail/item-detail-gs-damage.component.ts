@@ -28,7 +28,7 @@ export class ItemDetailGsDamage {
   protected weaponTag$ = this.detail.weaponStats$.pipe(map((it) => getWeaponTagFromWeapon(it)))
   protected weaponType$ = this.weaponTag$.pipe(switchMap((tag) => this.weapons.forWeaponTag(tag)))
   protected damageType$ = this.weaponType$.pipe(map((it) => it?.DamageType))
-  protected splitDamage$ = this.detail.perksDetails$.pipe(
+  protected splitDamage$ = this.detail.perkSlots$.pipe(
     switchMapCombineLatest((it) => this.db.affixstat(it?.perk?.Affix)),
     mapFilter((it) => !!it),
     mapFind(isAffixSplitDamage)

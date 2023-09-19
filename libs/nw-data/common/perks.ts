@@ -1,4 +1,4 @@
-import { Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { Ability, Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { getAffixMODs } from './affix'
 
 const PERK_SORT_WEIGHT = {
@@ -36,43 +36,6 @@ export function hasPerkInherentAffix(perk: Perks): boolean {
   return isPerkInherent(perk) && !!perk?.Affix
 }
 
-export interface PerkExplanation {
-  perkId: string
-  icon?: string
-  label: string
-  colon?: boolean
-  description: string
-  stackLimit?: number
-  context: any
-}
-
-export function explainPerk(options: { perk: Perks; affix: Affixstats; gearScore: number }): PerkExplanation[] {
-  const { perk, affix, gearScore } = options
-  const result: PerkExplanation[] = []
-
-  if (isPerkInherent(perk) && affix) {
-    result.push(...explainPerkAttributeMods(options))
-  }
-
-  if (perk.DisplayName || perk.SecondaryEffectDisplayName || perk.Description) {
-    // common perk case e.g.
-    // Health: +2.2% max health.
-    result.push({
-      perkId: perk.PerkID,
-      icon: perk.IconPath,
-      label: perk.DisplayName || perk.SecondaryEffectDisplayName || '',
-      colon: true,
-      description: perk.Description,
-      context: {
-        itemId: perk.PerkID,
-        gearScore: gearScore,
-      },
-    })
-  }
-
-  return result
-}
-
 export interface ItemClassGSBonus {
   itemClass: string
   value: number
@@ -93,11 +56,58 @@ export function getPerkItemClassGSBonus(perk: Pick<Perks, 'ItemClassGSBonus'>): 
   }
 }
 
-export function explainPerkAttributeMods(options: {
+export interface PerkExplanation {
+  perkId: string
+  icon?: string
+  label: string
+  colon?: boolean
+  description: string
+  stackLimit?: number
+  context: any
+}
+
+export function explainPerk(options: {
   perk: Perks
   affix: Affixstats
+  abilities?: Ability[]
   gearScore: number
+  forceDescription?: boolean
 }): PerkExplanation[] {
+  const { perk, affix, gearScore } = options
+  const result: PerkExplanation[] = []
+
+  if (!perk) {
+    return result
+  }
+
+  if (isPerkInherent(perk) && affix) {
+    result.push(...explainPerkMods(options))
+  }
+
+  const needsIcon = !!perk.SecondaryEffectDisplayName || !result.length
+  const needsDescription = !result.length || options.forceDescription
+  const stackLimit = options.abilities?.find((it) => it.IsStackableAbility && it.IsStackableMax)?.IsStackableMax
+  if ((needsDescription && perk.DisplayName) || perk.SecondaryEffectDisplayName) {
+    // common perk case e.g.
+    // Health: +2.2% max health.
+    result.push({
+      perkId: perk.PerkID,
+      icon: needsIcon ? perk.IconPath : null,
+      label: perk.DisplayName || perk.SecondaryEffectDisplayName,
+      colon: true,
+      description: perk.Description,
+      stackLimit: stackLimit,
+      context: {
+        itemId: perk.PerkID,
+        gearScore: gearScore,
+      },
+    })
+  }
+
+  return result
+}
+
+export function explainPerkMods(options: { perk: Perks; affix: Affixstats; gearScore: number }): PerkExplanation[] {
   const { perk, affix, gearScore } = options
   const result: PerkExplanation[] = []
   if (!isPerkInherent(perk) || !affix) {
@@ -107,7 +117,7 @@ export function explainPerkAttributeMods(options: {
   // perk with attribute mods e.g. MODStrength, MODDexterity etc.
   // +25 Strength
   const mods = getPerksInherentMODs(perk, affix, gearScore)
-  mods?.forEach((mod) => {
+  mods?.forEach((mod, i) => {
     result.push({
       perkId: perk.PerkID,
       icon: perk.IconPath,
@@ -159,29 +169,29 @@ export function getPerkMultiplier(perk: Pick<Perks, 'ScalingPerGearScore'>, gear
 
   if (typeof perk.ScalingPerGearScore === 'string') {
     let result = 0
-    const ranges = parseScalingRanges(perk.ScalingPerGearScore)
-    ranges.forEach(({ gs, value }, i) => {
-      if (gs > gearScore) {
+    const ranges = parseScalingPerGearScore(perk.ScalingPerGearScore)
+    ranges.forEach(({ score, scaling }, i) => {
+      if (score > gearScore) {
         return
       }
       const next = ranges[i + 1]
-      const min = gs
-      const max = Math.min(gearScore, next ? next.gs : gearScore)
-      result += Math.max(0, max - min) * value
+      const min = score
+      const max = Math.min(gearScore, next ? next.score : gearScore)
+      result += Math.max(0, max - min) * scaling
     })
     return result + 1
   }
   return 1
 }
 
-function parseScalingRanges(value: string) {
+export function parseScalingPerGearScore(value: string) {
   // sample: "0.00125,625:0.0095"
   return value.split(',').map((it, i) => {
     if (it.includes(':')) {
-      const [gs, value] = it.split(':')
-      return { gs: Number(gs), value: Number(value) }
+      const [score, scaling] = it.split(':')
+      return { score: Number(score), scaling: Number(scaling) }
     }
-    return { gs: 100, value: Number(it) }
+    return { score: 100, scaling: Number(it) }
   })
 }
 

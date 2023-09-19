@@ -38,13 +38,17 @@ export class PropertyGridComponent<T = any> {
   public entriesExtractor: (value: T) => PropertyGridEntry[]
 
   @Input()
-  public valueFormatter: (value: any, key?: keyof T, type?: PropertyGridEntry['valueType']) => string | PropertyGridCell | PropertyGridCell[]
+  public valueFormatter: (
+    value: any,
+    key?: keyof T,
+    type?: PropertyGridEntry['valueType']
+  ) => string | PropertyGridCell | PropertyGridCell[]
 
   @Input()
   public keyFormatter: (key: keyof T) => string | PropertyGridCell
 
   @Input()
-  public numberFormat: string
+  public numberFormat: string = '0.0-7'
 
   protected item$ = new ReplaySubject<any>(1)
   protected entries$ = this.item$.pipe(map((item) => this.extractEntries(item)))
@@ -70,21 +74,21 @@ export class PropertyGridComponent<T = any> {
     })
   }
 
-  protected formatValue({ key, value, valueType}: PropertyGridEntry): PropertyGridCellContext {
+  protected formatValue({ key, value, valueType }: PropertyGridEntry): PropertyGridCellContext {
     let cell: string | PropertyGridCell | PropertyGridCell[]
     if (this.valueFormatter) {
       cell = this.valueFormatter(value, key as keyof T, valueType)
     } else if (this.numberFormat && typeof value === 'number') {
       cell = {
         value: this.decimals.transform(value, this.numberFormat),
-        accent: true
+        accent: true,
       }
     } else {
       cell = {
         value: String(value),
         accent: valueType === 'bigint' || valueType === 'number',
         info: valueType === 'boolean',
-        bold: valueType === 'boolean'
+        bold: valueType === 'boolean',
       }
     }
 

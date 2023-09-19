@@ -1,6 +1,6 @@
 import { Injectable, Output, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { NW_FALLBACK_ICON, explainPerkAttributeMods, getPerkItemClassGSBonus } from '@nw-data/common'
+import { NW_FALLBACK_ICON, explainPerkMods, getPerkItemClassGSBonus } from '@nw-data/common'
 import { Affixstats, Perks } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
@@ -56,7 +56,7 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
       context: this.textContext$,
     }),
     ({ perk, affix, abilities, context }) => {
-      const mods = explainPerkAttributeMods({ perk, affix, gearScore: context.gearScore })
+      const mods = explainPerkMods({ perk, affix, gearScore: context.gearScore })
       if (!mods?.length) {
         return null
       }

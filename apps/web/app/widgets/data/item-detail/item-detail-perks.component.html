@@ -1,32 +1,30 @@
 <div
-  class="flex flex-row gap-2 relative rounded-md outline outline-2 outline-offset-0 outline-transparent transition-all"
+  class="flex flex-col relative rounded-md outline outline-2 outline-offset-0 outline-transparent transition-all"
   *ngFor="let item of items$ | async; let isLast = last; trackBy: trackByIndex"
-  [class.hover:outline-primary-focus]="item.editable"
-  [class.hover:outline-offset-4]="item.editable"
-  [class.hover:cursor-pointer]="item.editable"
+  [class.hover:outline-primary-focus]="isSlotEditable(item)"
+  [class.hover:outline-offset-4]="isSlotEditable(item)"
+  [class.hover:cursor-pointer]="isSlotEditable(item)"
   (click)="editPerkClicked(item)"
 >
-  <ng-container *ngIf="item.perk">
-    <nwb-item-perk [icon]="item.detail.icon" class="text-sky-600">
-      <div *ngFor="let row of item.detail.text; trackBy: trackByIndex">
-        <b *ngIf="row.label; let text"> {{ text | nwText }} </b>
-        <span
-          *ngIf="row.description; let text"
-          [innerHTML]="text | nwText : buildTextContext(item.perk.PerkID, item.gs, row.context)"
-        >
-        </span>
-        <span *ngIf="row.suffix; let text">
-          {{ text }}
-        </span>
-      </div>
+  <ng-container *ngFor="let row of item.explain; trackBy: trackByIndex">
+    <nwb-item-perk
+      [icon]="row.icon"
+      [explanation]="row"
+      [linkPerkId]="isSlotEditable(item) ? null : item.perkId"
+    ></nwb-item-perk>
+  </ng-container>
+  <ng-container *ngIf="!item.perk && item.bucket">
+    <nwb-item-perk [icon]="'assets/icons/crafting_perkbackground.png'" [iconText]="item.bucket.PerkChance | percent">
+      Random Perk
     </nwb-item-perk>
   </ng-container>
-  <ng-container *ngIf="!item.perk">
+  <ng-container *ngIf="!item.perk && !item.bucket">
     <nwb-item-perk
+      [linkPerkId]="editable$() ? null : item.perkId"
       [icon]="'assets/icons/crafting_perkbackground.png'"
-      [iconText]="item.detail.bucket?.PerkChance | percent"
+      [iconText]="'?'"
     >
-      <div class="text-sky-600">Random Perk</div>
+      – Missing –
     </nwb-item-perk>
   </ng-container>
 </div>

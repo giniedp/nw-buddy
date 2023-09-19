@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common'
+import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
 import { GameEvent } from '@nw-data/generated'
 import { NwDbService, NwModule } from '~/nw'
@@ -12,8 +12,9 @@ import { GameEventDetailStore } from './game-event-detail.store'
   templateUrl: './game-event-detail.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule],
+  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, DecimalPipe],
   providers: [
+    DecimalPipe,
     {
       provide: GameEventDetailStore,
       useExisting: forwardRef(() => GameEventDetailComponent),
@@ -29,7 +30,7 @@ export class GameEventDetailComponent extends GameEventDetailStore {
     this.patchState({ eventId: value })
   }
 
-  public constructor(db: NwDbService) {
+  public constructor(db: NwDbService, private decimals: DecimalPipe) {
     super(db)
   }
 
@@ -37,33 +38,41 @@ export class GameEventDetailComponent extends GameEventDetailStore {
     switch (key) {
       case 'LootLimitReachedGameEventId':
       case 'LootLimitId': {
-        return [{
-          value: String(value),
-          accent: true,
-          routerLink: ['/loot-limits/table', value]
-        }]
+        return [
+          {
+            value: String(value),
+            accent: true,
+            routerLink: ['/loot-limits/table', value],
+          },
+        ]
       }
       case 'ItemReward': {
         const id = String(value)
         if (id.startsWith('[LTID]')) {
-          return [{
-            value: value,
-            accent: true,
-            routerLink: ['/loot/table', id.replace('[LTID]', '')]
-          }]
+          return [
+            {
+              value: value,
+              accent: true,
+              routerLink: ['/loot/table', id.replace('[LTID]', '')],
+            },
+          ]
         }
         if (id.includes('HousingItem')) {
-          return [{
+          return [
+            {
+              value: value,
+              accent: true,
+              routerLink: ['/housing/table', value],
+            },
+          ]
+        }
+        return [
+          {
             value: value,
             accent: true,
-            routerLink: ['/housing/table', value]
-          }]
-        }
-        return [{
-          value: value,
-          accent: true,
-          routerLink: ['/items/table', value]
-        }]
+            routerLink: ['/items/table', value],
+          },
+        ]
       }
       default: {
         if (Array.isArray(value)) {
@@ -71,6 +80,14 @@ export class GameEventDetailComponent extends GameEventDetailStore {
             value: String(it),
             secondary: true,
           }))
+        }
+        if (typeof value === 'number') {
+          return [
+            {
+              value: this.decimals.transform(value, '0.0-7'),
+              accent: true,
+            },
+          ]
         }
         return [
           {

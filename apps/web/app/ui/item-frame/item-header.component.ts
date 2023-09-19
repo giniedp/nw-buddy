@@ -12,7 +12,7 @@ import { Component, ChangeDetectionStrategy, Input, HostBinding } from '@angular
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   host: {
-    class: 'nw-item-header flex flex-row p-1',
+    class: 'nw-item-header flex flex-row p-1 text-shadow-sm shadow-black',
     '[class.nw-item-rarity-0]': '!artifact && !rarity',
     '[class.nw-item-rarity-1]': '!artifact && rarity === 1',
     '[class.nw-item-rarity-2]': '!artifact && rarity === 2',

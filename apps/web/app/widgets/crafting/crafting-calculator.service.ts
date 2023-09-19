@@ -61,10 +61,8 @@ export class CraftingCalculatorService {
           })
         )
     }
-    console.log(step.ingredient)
     return of<CraftingStep>({
       ingredient: step.ingredient,
-
     })
   }
 

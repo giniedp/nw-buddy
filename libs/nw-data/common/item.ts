@@ -84,6 +84,7 @@ export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPer
   if (!isMasterItem(item)) {
     return 0
   }
+
   if (!itemPerkIds) {
     itemPerkIds = getItemPerkIds(item)
   }
@@ -91,6 +92,9 @@ export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPer
   let rarity = 0
   let maxRarity = NW_ITEM_RARITY_DATA.length - 1
   let perkCount = itemPerkIds.length
+  if (isItemArtifact(item)) {
+    return maxRarity // TODO: review if we can resolve artifact rarity from perk config
+  }
   if (!isItemUpgradable(item)) {
     perkCount = Math.min(perkCount, NW_ROLL_PERK_ON_UPGRADE_PERK_COUNT)
   }
@@ -120,15 +124,6 @@ export function getItemRarityLabel(item: ItemDefinitionMaster | Housingitems | n
     item = getItemRarity(item)
   }
   return `RarityLevel${item}_DisplayName`
-}
-
-const PERK_KEYS: Array<keyof ItemDefinitionMaster> = ['Perk1', 'Perk2', 'Perk3', 'Perk4', 'Perk5']
-export function getItemPerkKeys(item: ItemDefinitionMaster): string[] {
-  return PERK_KEYS.filter((it) => item && it in item)
-}
-
-export function getItemPerkIds(item: ItemDefinitionMaster) {
-  return item && [item.Perk1, item.Perk2, item.Perk3, item.Perk4, item.Perk5].filter((it) => !!it)
 }
 
 export function getItemPerkIdsWithOverride(item: ItemDefinitionMaster, overrides: Record<string, string>) {
@@ -171,19 +166,62 @@ export function getItemPerks(item: ItemDefinitionMaster, perks: Map<string, Perk
   )
 }
 
-const PERK_BUCKET_KEYS: Array<keyof ItemDefinitionMaster> = [
-  'PerkBucket1',
-  'PerkBucket2',
-  'PerkBucket3',
-  'PerkBucket4',
-  'PerkBucket5',
-]
+const PERK_KEYS = ['Perk1', 'Perk2', 'Perk3', 'Perk4', 'Perk5'] as const
+export function getItemPerkKeys(item: ItemDefinitionMaster): string[] {
+  return PERK_KEYS.filter((it) => item && it in item)
+}
+
+export function getItemPerkIds(item: ItemDefinitionMaster) {
+  const result = []
+  for (const key of PERK_KEYS) {
+    if (item && item[key]) {
+      result.push(item[key])
+    }
+  }
+  return result
+}
+
+const PERK_SLOT_KEYS = ['PerkSlot1', 'PerkSlot2', 'PerkSlot3', 'PerkSlot4', 'PerkSlot5'] as const
+const PERK_BUCKET_KEYS = ['PerkBucket1', 'PerkBucket2', 'PerkBucket3', 'PerkBucket4', 'PerkBucket5'] as const
+
 export function getItemPerkBucketKeys(item: ItemDefinitionMaster): string[] {
   return PERK_BUCKET_KEYS.filter((it) => item && it in item)
 }
-
 export function getItemPerkBucketIds(item: ItemDefinitionMaster) {
   return [item.PerkBucket1, item.PerkBucket2, item.PerkBucket3, item.PerkBucket4, item.PerkBucket5].filter((it) => !!it)
+}
+
+export interface ItemPerkSlot {
+  slotKey: string
+  slotId: string
+  perkKey: string
+  perkId?: string
+  bucketKey: string
+  bucketId?: string
+}
+
+export function getItemPerkSlots(item: ItemDefinitionMaster) {
+  if (!item) {
+    return []
+  }
+  const result: ItemPerkSlot[] = []
+  for (let i = 0; i < PERK_SLOT_KEYS.length; i++) {
+    const slotKey = PERK_SLOT_KEYS[i]
+    const perkKey = PERK_KEYS[i]
+    const bucketKey = PERK_BUCKET_KEYS[i]
+    if (!(slotKey in item) && !(perkKey in item) && !(bucketKey in item)) {
+      continue
+    }
+    result.push({
+      slotKey: slotKey,
+      slotId: item[slotKey],
+      perkKey: perkKey,
+      perkId: item[perkKey],
+      bucketKey: bucketKey,
+      bucketId: item[bucketKey],
+    })
+  }
+  return result
 }
 
 export function getItemMaxGearScore(item: ItemDefinitionMaster, fallback = true) {

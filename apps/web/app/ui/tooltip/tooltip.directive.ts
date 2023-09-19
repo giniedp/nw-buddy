@@ -116,7 +116,7 @@ export class TooltipDirective implements OnInit, OnDestroy {
   }
 
   protected open(): void {
-    if (this.overlayRef?.hasAttached()) {
+    if (!this.tooltip || this.overlayRef?.hasAttached()) {
       return
     }
     this.overlayRef = this.overlayRef || this.createOverlay()

@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { firstValueFrom } from 'rxjs'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { ItemDetailStore, PerkDetail } from './item-detail.store'
+import { ItemDetailStore, PerkSlot } from './item-detail.store'
 
 @Component({
   standalone: true,
@@ -16,7 +16,8 @@ import { ItemDetailStore, PerkDetail } from './item-detail.store'
   },
 })
 export class ItemDetailPerksComponent {
-  protected items$ = this.store.vmPerks$
+  protected items$ = this.store.perkSlots$
+  protected editable$ = toSignal(this.store.perkEditable$)
 
   protected trackByIndex = (i: number) => i
 
@@ -24,11 +25,14 @@ export class ItemDetailPerksComponent {
     //
   }
 
-  protected async editPerkClicked({ detail, editable }: { detail: PerkDetail; editable: boolean }) {
-    const isEditable = await firstValueFrom(this.store.perkEditable$)
-    if (isEditable && editable) {
-      this.store.perkEdit$.emit(detail)
+  protected async editPerkClicked(slot: PerkSlot) {
+    if (this.isSlotEditable(slot)) {
+      this.store.perkEdit$.emit(slot)
     }
+  }
+
+  protected isSlotEditable(slot: PerkSlot) {
+    return this.editable$() && !!slot?.editable
   }
 
   protected buildTextContext(perkId: string, gs: number, context: Record<string, any>) {

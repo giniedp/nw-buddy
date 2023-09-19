@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common'
+import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
 import { Statuseffectcategories } from '@nw-data/generated'
 import { NwDbService, NwModule } from '~/nw'
@@ -12,8 +12,9 @@ import { StatusEffectCategoryDetailStore } from './status-effect-category.store'
   templateUrl: './status-effect-category.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule],
+  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, DecimalPipe],
   providers: [
+    DecimalPipe,
     {
       provide: StatusEffectCategoryDetailStore,
       useExisting: forwardRef(() => StatusEffectCategoryDetailComponent),
@@ -32,11 +33,11 @@ export class StatusEffectCategoryDetailComponent extends StatusEffectCategoryDet
   @Input()
   public disableProperties: boolean
 
-  public constructor(db: NwDbService) {
+  public constructor(db: NwDbService, private decimals: DecimalPipe) {
     super(db)
   }
 
-  public formatValue = (value: any, key: keyof Statuseffectcategories): PropertyGridCell[] =>  {
+  public formatValue = (value: any, key: keyof Statuseffectcategories): PropertyGridCell[] => {
     switch (key) {
       case 'StatusEffectCategoryID': {
         return statusEffectCells(value)
@@ -48,20 +49,31 @@ export class StatusEffectCategoryDetailComponent extends StatusEffectCategoryDet
             secondary: true,
           }))
         }
+
         if (typeof value === 'object') {
           return Object.keys(value).map((key): PropertyGridCell => {
             return {
               value: `${key}: ${String(value[key])}`,
-              block: true
+              block: true,
             }
           })
         }
-        return [{
-          value: String(value),
-          accent: typeof value === 'number',
-          info: typeof value === 'boolean',
-          bold: typeof value === 'boolean'
-        }]
+        if (typeof value === 'number') {
+          return [
+            {
+              value: this.decimals.transform(value, '0.0-7'),
+              accent: true,
+            },
+          ]
+        }
+        return [
+          {
+            value: String(value),
+            accent: typeof value === 'number',
+            info: typeof value === 'boolean',
+            bold: typeof value === 'boolean',
+          },
+        ]
       }
     }
   }
@@ -74,7 +86,7 @@ function statusEffectCells(list: string | string[]): PropertyGridCell[] {
     return {
       value: String(it),
       accent: isLink,
-      routerLink: isLink ? ['/status-effect-categories/table', it] : null
+      routerLink: isLink ? ['/status-effect-categories/table', it] : null,
     }
   })
 }

@@ -1,10 +1,11 @@
 <div class="nw-item-header-bg"></div>
 <div class="nw-item-header-fg" *ngIf="named || artifact"></div>
 <a
-  [rarity]="rarity"
   [nwbItemIcon]="iconOverride || entity"
   [nwLink]="enableInfoLink ? entityId : null"
   [nwLinkResource]="'item'"
+  [rarity]="rarity"
+  [artifact]="artifact"
   class="aspect-square inline-block"
   [class.w-12]="size === 'sm'"
   [class.h-12]="size === 'sm'"

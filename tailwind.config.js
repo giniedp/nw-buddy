@@ -17,6 +17,11 @@ module.exports = {
       '6xl': '3000px',
     },
     extend: {
+      textShadow: {
+        sm: '1px 1px 2px var(--tw-shadow-color)',
+        DEFAULT: '2px 2px 4px var(--tw-shadow-color)',
+        lg: '3px 8px 16px var(--tw-shadow-color)',
+      },
       gridTemplateColumns: {
         'fill-3xs': 'repeat(auto-fill, minmax(8rem, 1fr))',
         'fill-2xs': 'repeat(auto-fill, minmax(10rem, 1fr))',
@@ -78,6 +83,16 @@ module.exports = {
     require('daisyui'),
     require('./apps/web/styles/components/nw-item'),
     require('./apps/web/styles/components/utilities'),
+    plugin(function ({ matchUtilities, theme }) {
+      matchUtilities(
+        {
+          'text-shadow': (value) => ({
+            textShadow: value,
+          }),
+        },
+        { values: theme('textShadow') }
+      )
+    }),
   ],
   daisyui: {
     themes: [

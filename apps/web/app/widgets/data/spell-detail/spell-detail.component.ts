@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common'
+import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
 import { Spelltable } from '@nw-data/generated'
 import { NwDbService, NwModule } from '~/nw'
@@ -12,8 +12,9 @@ import { SpellDetailStore } from './spell-detail.store'
   templateUrl: './spell-detail.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule],
+  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, DecimalPipe],
   providers: [
+    DecimalPipe,
     {
       provide: SpellDetailStore,
       useExisting: forwardRef(() => SpellDetailComponent),
@@ -29,13 +30,12 @@ export class SpellDetailComponent extends SpellDetailStore {
     this.patchState({ spellId: value })
   }
 
-  public constructor(db: NwDbService) {
+  public constructor(db: NwDbService, private decimals: DecimalPipe) {
     super(db)
   }
 
-  public formatValue = (value: any, key: keyof Spelltable): PropertyGridCell | PropertyGridCell[] =>  {
+  public formatValue = (value: any, key: keyof Spelltable): PropertyGridCell | PropertyGridCell[] => {
     switch (key) {
-
       default: {
         if (Array.isArray(value)) {
           return value.map((it) => ({
@@ -43,12 +43,22 @@ export class SpellDetailComponent extends SpellDetailStore {
             secondary: true,
           }))
         }
-        return [{
-          value: String(value),
-          accent: typeof value === 'number',
-          info: typeof value === 'boolean',
-          bold: typeof value === 'boolean'
-        }]
+        if (typeof value === 'number') {
+          return [
+            {
+              value: this.decimals.transform(value, '0.0-7'),
+              accent: true,
+            },
+          ]
+        }
+        return [
+          {
+            value: String(value),
+            accent: typeof value === 'number',
+            info: typeof value === 'boolean',
+            bold: typeof value === 'boolean',
+          },
+        ]
       }
     }
   }
@@ -61,7 +71,7 @@ function statusEffectCells(list: string | string[]): PropertyGridCell[] {
     return {
       value: String(it),
       accent: isLink,
-      routerLink: isLink ? ['/status-effects/table', it] : null
+      routerLink: isLink ? ['/status-effects/table', it] : null,
     }
   })
 }
@@ -72,8 +82,7 @@ function abilitiesCells(list: string | string[]): PropertyGridCell[] {
     return {
       value: String(it),
       accent: true,
-      routerLink: ['/abilities/table', it]
+      routerLink: ['/abilities/table', it],
     }
   })
 }
-

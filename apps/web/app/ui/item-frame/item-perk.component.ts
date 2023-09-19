@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { RouterModule } from '@angular/router'
 import { PerkExplanation } from '@nw-data/common'
 import { NwModule } from '~/nw'
 
@@ -7,11 +8,15 @@ import { NwModule } from '~/nw'
   standalone: true,
   selector: 'nwb-item-perk',
   template: `
-    <span class="w-8 h-8 flex items-center justify-center relative flex-none">
-      <img [nwImage]="icon" class="w-8 h-8 object-contain absolute top-0 left-0" />
+    <a
+      class="w-6 h-6 flex items-center justify-center relative flex-none"
+      [nwLink]="linkPerkId"
+      [nwLinkResource]="'perk'"
+    >
+      <img [nwImage]="icon" class="w-6 h-6 object-contain absolute top-0 left-0" />
       <span class="text-2xs relative text-xs">{{ iconText }}</span>
-    </span>
-    <div class="self-center">
+    </a>
+    <a class="self-center text-sky-600" [routerLink]="linkPerkId ? ['/perks', 'table', linkPerkId] : null">
       <div *ngIf="explanation; let part">
         <b *ngIf="part.label; let text"> {{ text | nwText }}{{ part.colon ? ':' : '' }} </b>
         <span *ngIf="part.description; let text" [innerHTML]="text | nwText : part.context"> </span>
@@ -19,14 +24,13 @@ import { NwModule } from '~/nw'
           {{ text }}
         </span> -->
       </div>
-
       <ng-content></ng-content>
-    </div>
+    </a>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule],
+  imports: [CommonModule, NwModule, RouterModule],
   host: {
-    class: 'flex flex-row gap-1 leading-tight',
+    class: 'flex flex-row gap-2 leading-tight',
   },
 })
 export class ItemPerkComponent {
@@ -35,6 +39,9 @@ export class ItemPerkComponent {
 
   @Input()
   public iconText: string
+
+  @Input()
+  public linkPerkId: string
 
   @Input()
   public explanation: PerkExplanation

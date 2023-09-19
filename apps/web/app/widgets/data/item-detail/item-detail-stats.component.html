@@ -1,17 +1,10 @@
 <ng-container *ngIf="vm$ | async; let vm">
-  <div *ngIf="vm.gsLabel; let gs" class="flex flex-row">
-    <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-12 h-12 relative top-[2px]" />
+  <div *ngIf="vm.gsLabel; let gs" class="flex flex-row gap-1">
+    <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-10 h-10 relative top-[2px]" />
     <nwb-item-gs
       [value]="gs"
       cdkOverlayOrigin
-      class="
-        text-6xl
-        rounded-md
-        outline outline-2 outline-offset-0 outline-transparent
-        transition-all
-        leading-none
-        relative
-      "
+      class="text-5xl rounded-md outline outline-2 outline-offset-0 outline-transparent transition-all leading-none relative"
       [class.hover:outline-primary]="vm.gsEditable"
       [class.hover:outline-offset-4]="vm.gsEditable"
       [class.cursor-pointer]="vm.gsEditable"

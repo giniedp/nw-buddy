@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common'
+import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
 import { Damagetable } from '@nw-data/generated'
 import { NwDbService, NwModule } from '~/nw'
@@ -12,8 +12,9 @@ import { DamageRowDetailStore } from './damage-row-detail.store'
   templateUrl: './damage-row-detail.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule],
+  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, DecimalPipe],
   providers: [
+    DecimalPipe,
     {
       provide: DamageRowDetailStore,
       useExisting: forwardRef(() => DamageRowDetailComponent),
@@ -29,7 +30,7 @@ export class DamageRowDetailComponent extends DamageRowDetailStore {
     this.patchState({ rowId: value })
   }
 
-  public constructor(db: NwDbService) {
+  public constructor(db: NwDbService, private decimals: DecimalPipe) {
     super(db)
   }
 
@@ -41,6 +42,14 @@ export class DamageRowDetailComponent extends DamageRowDetailStore {
             value: String(it),
             secondary: true,
           }))
+        }
+        if (typeof value === 'number') {
+          return [
+            {
+              value: this.decimals.transform(value, '0.0-7'),
+              accent: true,
+            },
+          ]
         }
         return [
           {

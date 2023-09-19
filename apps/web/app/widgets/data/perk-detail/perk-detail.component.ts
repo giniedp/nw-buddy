@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common'
+import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Perks } from '@nw-data/generated'
@@ -8,6 +8,7 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
 import { PerkDetailStore } from './perk-detail.store'
+import { parseScalingPerGearScore } from '@nw-data/common'
 
 @Component({
   standalone: true,
@@ -17,6 +18,7 @@ import { PerkDetailStore } from './perk-detail.store'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, GsInputComponent, FormsModule, TooltipModule],
   providers: [
+    DecimalPipe,
     {
       provide: PerkDetailStore,
       useExisting: forwardRef(() => PerkDetailComponent),
@@ -36,7 +38,7 @@ export class PerkDetailComponent extends PerkDetailStore {
   public disableProperties: boolean
 
   protected trackByIndex = (i: number) => i
-  public constructor(db: NwDbService) {
+  public constructor(db: NwDbService, protected decimals: DecimalPipe) {
     super(db)
   }
 
@@ -84,7 +86,31 @@ export class PerkDetailComponent extends PerkDetailStore {
           }
         })
       }
+      case 'ScalingPerGearScore': {
+        return [
+          {
+            accent: true,
+            value: parseScalingPerGearScore(value)
+              .map(({ score, scaling }, i) => {
+                if (i === 0) {
+                  return this.decimals.transform(scaling, '0.0-7')
+                }
+                return [this.decimals.transform(score, '0.0-7'), this.decimals.transform(scaling, '0.0-7')].join(':')
+              })
+              .join(', '),
+          },
+        ]
+        return value
+      }
       default: {
+        if (typeof value === 'number') {
+          return [
+            {
+              value: this.decimals.transform(value, '0.0-7'),
+              accent: true,
+            },
+          ]
+        }
         return [
           {
             value: String(value),

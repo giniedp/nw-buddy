@@ -4,14 +4,15 @@ import {
   AttributeRef,
   NW_MAX_GEAR_SCORE_BASE,
   PerkBucket,
+  PerkExplanation,
+  explainPerk,
   getItemGearScoreLabel,
   getItemGsBonus,
   getItemIconPath,
   getItemIdFromRecipe,
   getItemMaxGearScore,
   getItemPerkBucketIds,
-  getItemPerkBucketKeys,
-  getItemPerkKeys,
+  getItemPerkSlots,
   getItemRarity,
   getItemRarityLabel,
   getItemStatsArmor,
@@ -20,11 +21,7 @@ import {
   getItemTypeName,
   getPerkBucketPerkIDs,
   getPerkBucketPerks,
-  getPerkMultiplier,
-  getPerkTypeWeight,
-  getPerksInherentMODs,
   hasItemGearScore,
-  hasPerkInherentAffix,
   isItemArtifact,
   isItemHeargem,
   isItemNamed,
@@ -41,26 +38,19 @@ import {
   ItemdefinitionsResources,
   Perks,
 } from '@nw-data/generated'
-import { sortBy } from 'lodash'
-import { combineLatest, map, switchMap } from 'rxjs'
+import { combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { humanize, mapProp, shareReplayRefCount } from '~/utils'
+import { humanize, mapProp, selectStream, shareReplayRefCount } from '~/utils'
 import { ModelViewerService } from '../../model-viewer/model-viewer.service'
 
-export interface PerkDetail {
-  item: ItemDefinitionMaster
-  itemGS: number
+export interface PerkSlot {
   key: string
-  editable?: boolean
-  bucket?: PerkBucket
+  perkId?: string
   perk?: Perks
-  icon?: string
-  text?: Array<{
-    label: string | string[]
-    description: string | string[]
-    suffix?: string
-    context: Record<string, any>
-  }>
+  bucketId?: string
+  bucket?: PerkBucket
+  editable?: boolean
+  explain: PerkExplanation[]
 }
 
 export interface ItemDetailState {
@@ -84,7 +74,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public readonly playerLevel$ = this.select(({ playerLevel }) => playerLevel)
 
   public readonly gsEdit$ = new EventEmitter<MouseEvent>()
-  public readonly perkEdit$ = new EventEmitter<PerkDetail>()
+  public readonly perkEdit$ = new EventEmitter<PerkSlot>()
 
   public readonly item$ = this.select(this.db.item(this.entityId$), (it) => it)
   public readonly housingItem$ = this.select(this.db.housingItem(this.entityId$), (it) => it)
@@ -127,17 +117,27 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
       .filter((it) => !!it.itemId)
   })
 
-  public readonly perksDetails$ = this.select(
-    combineLatest({
+  public readonly perkSlots$ = selectStream(
+    {
       item: this.item$,
       itemGS: this.itemGS$,
       perks: this.db.perksMap,
       buckets: this.db.perkBucketsMap,
-      affixstats: this.db.affixstatsMap,
+      affixes: this.db.affixstatsMap,
       abilities: this.db.abilitiesMap,
       perkOverride: this.perkOverride$,
-    }),
-    selectPerkInfos
+    },
+    (it) => {
+      return selectPerkSlots({
+        item: it.item,
+        itemGS: it.itemGS,
+        perks: it.perks,
+        buckets: it.buckets,
+        affixes: it.affixes,
+        abilities: it.abilities,
+        perkOverride: it.perkOverride,
+      })
+    }
   )
 
   public readonly itemModels$ = this.ms.byItemId(this.entityId$)
@@ -147,8 +147,8 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public readonly runeStats$ = this.select(this.db.rune(this.itemStatsRef$), (it) => it)
 
   public readonly name$ = this.select(this.entity$, (it) => it?.Name)
-  public readonly namePrefix$ = this.select(this.item$, this.perksDetails$, selectNamePerfix)
-  public readonly nameSuffix$ = this.select(this.item$, this.perksDetails$, selectNameSuffix)
+  public readonly namePrefix$ = this.select(this.item$, this.perkSlots$, selectNamePerfix)
+  public readonly nameSuffix$ = this.select(this.item$, this.perkSlots$, selectNameSuffix)
   public readonly source$ = this.select(this.entity$, (it) => it?.['$source'] as string)
   public readonly sourceLabel$ = this.select(this.source$, humanize)
   public readonly description$ = this.select(this.entity$, selectDescription)
@@ -184,11 +184,11 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   )
   public readonly ingredientCategories$ = this.select(this.db.recipeCategoriesMap, this.item$, selectCraftingCategories)
   public readonly statusEffectsIds$ = this.select(this.consumable$, this.housingItem$, selectStatusEffectIds)
-  public readonly gemDetail$ = this.select(this.perksDetails$, (list) => list?.find((it) => isPerkGem(it.perk)))
+  public readonly gemDetail$ = this.select(this.perkSlots$, (list) => list?.find((it) => isPerkGem(it.perk)))
   public readonly finalRarity$ = this.select(
     combineLatest({
       item: this.entity$,
-      perkDetails: this.perksDetails$,
+      perkDetails: this.perkSlots$,
       perkOverride: this.perkOverride$,
     }),
     selectFinalRarity
@@ -241,21 +241,23 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
     })
   )
 
-  public readonly vmPerks$ = combineLatest({
-    gs: this.itemGS$,
-    editable: this.perkEditable$,
-    details: this.perksDetails$,
-  }).pipe(
-    map(({ gs, editable, details }) => {
+  public readonly vmPerks$ = selectStream(
+    {
+      item: this.item$,
+      gearScore: this.itemGS$,
+      editable: this.perkEditable$,
+      details: this.perkSlots$,
+    },
+    ({ item, gearScore, editable, details }) => {
       return details.map((detail) => {
         return {
           detail: detail,
           perk: detail?.perk,
-          gs: gs + getItemGsBonus(detail?.perk, detail?.item),
+          gs: gearScore + getItemGsBonus(detail?.perk, item),
           editable: editable && detail?.editable,
         }
       })
-    })
+    }
   )
 
   public constructor(protected db: NwDbService, private ms: ModelViewerService, protected cdRef: ChangeDetectorRef) {
@@ -280,7 +282,7 @@ function selectFinalRarity({
   perkOverride,
 }: {
   item: ItemDefinitionMaster
-  perkDetails: PerkDetail[]
+  perkDetails: PerkSlot[]
   perkOverride: Record<string, string>
 }) {
   if (!perkOverride) {
@@ -309,177 +311,76 @@ function selectSalvageInfo(item: ItemDefinitionMaster | Housingitems) {
   }
 }
 
-function selectPerkDetails({
+function selectPerkSlots({
   item,
   itemGS,
   perks,
   buckets,
+  affixes,
+  abilities,
   perkOverride,
 }: {
   item: ItemDefinitionMaster
   itemGS: number
   perks: Map<string, Perks>
   buckets: Map<string, PerkBucket>
-  perkOverride: Record<string, string>
-}): PerkDetail[] {
-  const bucket = buckets.get(item?.ItemID)
-  if (isPerkItemIngredient(item) && bucket) {
-    return getPerkBucketPerks(bucket, perks)?.map((perk, i) => {
-      return {
-        item: item,
-        itemGS: itemGS || NW_MAX_GEAR_SCORE_BASE,
-        editable: false,
-        perk: perk,
-        key: `${bucket.PerkBucketID}-${i}`,
-      }
-    })
-  }
-
-  return getItemPerkKeys(item).map((key) => {
-    const perkId = item[key]
-    const overrideId = perkOverride?.[key]
-    const perk = perks.get(overrideId || perkId)
-    return {
-      item: item,
-      itemGS: itemGS,
-      key: key,
-      perk: perk,
-      editable: item.CanReplaceGem && isPerkGem(perk),
-    }
-  })
-}
-
-function selectPerkBucketDetails({
-  item,
-  itemGS,
-  perks,
-  buckets,
-  perkOverride,
-}: {
-  item: ItemDefinitionMaster
-  itemGS: number
-  perks: Map<string, Perks>
-  buckets: Map<string, PerkBucket>
-  perkOverride: Record<string, string>
-}): PerkDetail[] {
-  const result = getItemPerkBucketKeys(item).map((key) => ({
-    item: item,
-    itemGS: itemGS,
-    key: key,
-    perk: perks.get(perkOverride?.[key]),
-    bucket: buckets.get(item[key]),
-    editable: true,
-  }))
-  return result
-}
-
-export function selectPerkInfos(data: {
-  item: ItemDefinitionMaster
-  itemGS: number
-  perks: Map<string, Perks>
-  buckets: Map<string, PerkBucket>
-  affixstats: Map<string, Affixstats>
+  affixes: Map<string, Affixstats>
   abilities: Map<string, Ability>
   perkOverride: Record<string, string>
-}) {
-  const perks = selectPerkDetails(data) || []
-  const buckets = selectPerkBucketDetails(data) || []
-  const resolved = sortBy([...perks, ...buckets], (it) => getPerkTypeWeight((it.perk || it.bucket)?.PerkType))
-  const result: PerkDetail[] = []
-  for (const detail of resolved) {
-    const perk = detail.perk
-    detail.text = []
-    detail.icon = perk?.IconPath
-    if (!perk) {
-      result.push(detail)
-      continue
+}): PerkSlot[] {
+  if (isPerkItemIngredient(item)) {
+    // case for perk carft mods
+    const bucket = buckets.get(item?.ItemID)
+    if (!bucket) {
+      return []
     }
-    const abilities = perk.EquipAbility?.map((it) => data.abilities.get(it)) || []
-    const stacks = abilities.map((it) => it?.IsStackableMax).filter((it) => !!it)
-    const stackMax = stacks?.length ? Math.min(...stacks) : null
-    if (isPerkItemIngredient(detail.item)) {
-      result.push(detail)
-      getPerksInherentMODs(perk, data.affixstats.get(perk.Affix), detail.itemGS)?.forEach((mod) => {
-        detail.text.push({
-          label: perk.DisplayName || perk.SecondaryEffectDisplayName || perk.AppliedPrefix || perk.AppliedSuffix,
-          description: [String(Math.floor(mod.value)), mod.label],
-          context: {},
-        })
-      })
-      continue
-    }
-
-    if (hasPerkInherentAffix(perk)) {
-      const stat = data.affixstats.get(perk.Affix)
-      const mods = getPerksInherentMODs(perk, stat, detail.itemGS)
-      if (mods?.length) {
-        result.push(detail)
-        mods.forEach((mod) => {
-          detail.text.push({
-            label: String(Math.floor(mod.value)),
-            description: mod.label,
-            context: {},
-          })
-        })
+    return getPerkBucketPerks(bucket, perks)?.map((perk, i): PerkSlot => {
+      return {
+        key: `${bucket.PerkBucketID}-${i}`,
+        editable: false,
+        perkId: perk?.PerkID,
+        perk: perk,
+        explain: explainPerk({
+          perk: perk,
+          affix: affixes.get(perk?.Affix),
+          gearScore: itemGS || NW_MAX_GEAR_SCORE_BASE,
+          forceDescription: true,
+        }),
       }
-
-      if (stat?.AttributePlacingMods) {
-        const scale = getPerkMultiplier(perk, detail.itemGS)
-        result.push({
-          ...detail,
-          text: [
-            {
-              label: '',
-              description: perk.StatDisplayText,
-              context: Object.fromEntries(
-                stat.AttributePlacingMods.split(',').map((it, i) => [
-                  'amount' + (i + 1),
-                  Math.floor(Number(it) * scale),
-                ])
-              ),
-            },
-          ],
-        })
-      }
-
-      if (perk.SecondaryEffectDisplayName) {
-        result.push({
-          ...detail,
-          text: [
-            {
-              label: perk.SecondaryEffectDisplayName,
-              description: perk.Description,
-              context: {},
-            },
-          ],
-        })
-      }
-      continue
-    }
-
-    result.push(detail)
-    detail.text.push({
-      label: perk.DisplayName || perk.SecondaryEffectDisplayName || perk.AppliedPrefix || perk.AppliedSuffix,
-      description: perk.Description,
-      context: {},
     })
-    if (stackMax > 1) {
-      detail.text.push({
-        label: '',
-        description: ``,
-        suffix: `max stack: ${stackMax}`,
-        context: {},
-      })
-    }
+  }
+
+  const slots = getItemPerkSlots(item)
+  const result: PerkSlot[] = []
+  for (const slot of slots) {
+    const key = slot.perkId ? slot.perkKey : slot.bucketKey
+    const perkId = slot.perkId
+    const perkIdOverride = perkOverride?.[key]
+    const perk = perks.get(perkIdOverride || perkId)
+    const bucket = buckets.get(slot.bucketId)
+    result.push({
+      key: key,
+      perkId: perkIdOverride || perkId,
+      perk: perk,
+      bucketId: slot.bucketId,
+      bucket: bucket,
+      editable: !!bucket || (item.CanReplaceGem && isPerkGem(perk)),
+      explain: explainPerk({
+        perk: perk,
+        affix: affixes.get(perk?.Affix),
+        abilities: perk?.EquipAbility?.map((it) => abilities.get(it)),
+        gearScore: itemGS + (getItemGsBonus(perk, item) || 0),
+      }),
+    })
   }
   return result
 }
 
-function selectNamePerfix(item: ItemDefinitionMaster, perks: PerkDetail[]) {
+function selectNamePerfix(item: ItemDefinitionMaster, perks: PerkSlot[]) {
   return !item?.IgnoreNameChanges ? perks?.find((it) => it?.perk?.AppliedPrefix)?.perk?.AppliedPrefix : null
 }
 
-function selectNameSuffix(item: ItemDefinitionMaster, perks: PerkDetail[]) {
+function selectNameSuffix(item: ItemDefinitionMaster, perks: PerkSlot[]) {
   return !item?.IgnoreNameChanges ? perks?.find((it) => it?.perk?.AppliedSuffix)?.perk?.AppliedSuffix : null
 }
 

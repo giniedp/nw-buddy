@@ -15,6 +15,7 @@ import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemTrackerModule } from '../../item-tracker'
 import { ItemDetailStore } from './item-detail.store'
+import { tapDebug } from '~/utils'
 
 @Component({
   standalone: true,
@@ -24,7 +25,7 @@ import { ItemDetailStore } from './item-detail.store'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, RouterModule, ItemTrackerModule, ItemFrameModule],
   host: {
-    class: 'nw-item-header flex flex-row p-1 gap-2',
+    class: 'nw-item-header relative flex flex-row p-1 gap-2 text-shadow-sm shadow-black',
     '[class.bg-base-300]': 'isLoading',
     '[class.named]': 'named',
     '[class.artifact]': 'artifact',

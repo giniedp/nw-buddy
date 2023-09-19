@@ -1,9 +1,4 @@
-import {
-  explainPerk,
-  explainPerkAttributeMods,
-  getPerkItemClassGSBonus,
-  getPerkItemClassGsBonus,
-} from '@nw-data/common'
+import { explainPerk, explainPerkMods, getPerkItemClassGSBonus, getPerkItemClassGsBonus } from '@nw-data/common'
 import { Ability, Perks } from '@nw-data/generated'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwExpressionContextService } from '~/nw/expression'
@@ -105,7 +100,7 @@ export function perkColDescription(util: PerkGridUtils, ctx: NwExpressionContext
             }
 
             const result: Array<Observable<string>> = []
-            const mods = explainPerkAttributeMods({
+            const mods = explainPerkMods({
               perk: data,
               affix: stats.get(data.Affix),
               gearScore: context.gearScore,
