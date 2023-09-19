@@ -4,13 +4,15 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemDetailStore, PerkSlot } from './item-detail.store'
+import { IconsModule } from '~/ui/icons'
+import { svgEllipsisVertical, svgPen } from '~/ui/icons/svg'
 
 @Component({
   standalone: true,
   selector: 'nwb-item-detail-perks',
   templateUrl: './item-detail-perks.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule],
+  imports: [CommonModule, NwModule, ItemFrameModule, IconsModule],
   host: {
     class: 'flex flex-col gap-1',
   },
@@ -20,7 +22,7 @@ export class ItemDetailPerksComponent {
   protected editable$ = toSignal(this.store.perkEditable$)
 
   protected trackByIndex = (i: number) => i
-
+  protected editIcon = svgEllipsisVertical
   public constructor(private store: ItemDetailStore) {
     //
   }

@@ -85,23 +85,20 @@
         cdkConnectedOverlay
         [cdkConnectedOverlayOrigin]="gsTarget"
         [cdkConnectedOverlayOpen]="!!gsTarget"
-        [cdkConnectedOverlayHasBackdrop]="true"
+        [cdkConnectedOverlayHasBackdrop]="false"
+        [cdkConnectedOverlayPanelClass]="['w-80', 'p-2', 'rounded-md', 'bg-base-300', 'bg-opacity-75']"
+        (overlayOutsideClick)="closeGsEditor()"
         (backdropClick)="closeGsEditor()"
         (detach)="closeGsEditor()"
       >
-        <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
-          <input
-            type="range"
-            min="100"
-            max="700"
-            step="1"
-            [ngModel]="gearScore || vm.instance.gearScore"
-            (ngModelChange)="updateGearScore($event)"
-            (blur)="commitGearScore(vm)"
-            (wheel)="stepGearScore($event)"
-            class="range range-sm range-primary"
-          />
-        </div>
+        <nwb-gs-slider
+          [bars]="true"
+          [values]="true"
+          [ngModel]="gearScore || vm.instance.gearScore"
+          (ngModelChange)="updateGearScore($event)"
+          (wheel)="stepGearScore($event)"
+          class="w-full"
+        ></nwb-gs-slider>
       </ng-template>
     </nwb-item-card>
   </ng-container>

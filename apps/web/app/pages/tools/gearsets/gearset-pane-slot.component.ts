@@ -1,5 +1,5 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
-import { OverlayModule } from '@angular/cdk/overlay'
+import { Overlay, OverlayModule, RepositionScrollStrategy } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -39,6 +39,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { LayoutModule } from '~/ui/layout'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { GearImporterDialogComponent } from '../inventory/gear-importer-dialog.component'
+import { GsSliderComponent } from '~/ui/gs-input'
 
 export interface GearsetSlotVM {
   slot?: EquipSlot
@@ -69,6 +70,7 @@ export interface GearsetSlotVM {
     LayoutModule,
     TooltipModule,
     ItemFrameModule,
+    GsSliderComponent,
   ],
   providers: [GearsetSlotStore],
   host: {
@@ -124,7 +126,9 @@ export class GearsetPaneSlotComponent {
   protected iconChange = svgRotate
   protected iconMenu = svgEllipsisVertical
   protected iconImage = svgImage
-
+  protected gsScrollStrat = this.overlay.scrollStrategies.close({
+    threshold: 10,
+  })
   protected vm$ = defer(() =>
     combineLatest({
       slot: this.slot$,
@@ -176,7 +180,8 @@ export class GearsetPaneSlotComponent {
     private picker: InventoryPickerService,
     private renderer: Renderer2,
     private elRef: ElementRef<HTMLElement>,
-    private dialog: Dialog
+    private dialog: Dialog,
+    private overlay: Overlay
   ) {
     //
   }

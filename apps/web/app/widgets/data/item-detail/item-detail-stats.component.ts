@@ -6,6 +6,9 @@ import { firstValueFrom } from 'rxjs'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemDetailStore } from './item-detail.store'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { IconsModule } from '~/ui/icons'
+import { svgEllipsisVertical } from '~/ui/icons/svg'
 
 @Component({
   standalone: true,
@@ -13,24 +16,24 @@ import { ItemDetailStore } from './item-detail.store'
   exportAs: 'itemDetailStats',
   templateUrl: 'item-detail-stats.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, OverlayModule, ItemFrameModule],
+  imports: [CommonModule, NwModule, FormsModule, OverlayModule, ItemFrameModule, IconsModule],
   host: {
-    class: 'block',
+    class: 'block relative',
   },
 })
 export class ItemDetailStatsComponent {
-
-  protected vm$ = this.detail.vmStats$
+  protected vm$ = this.store.vmStats$
   protected trackByIndex: TrackByFunction<any> = (i) => i
+  protected editable$ = toSignal(this.store.gsEditable$)
+  protected editIcon = svgEllipsisVertical
 
-  public constructor(protected detail: ItemDetailStore) {
+  public constructor(protected store: ItemDetailStore) {
     //
   }
 
-  protected async onGearScoreEdit(e: MouseEvent) {
-    const isEditable = await firstValueFrom(this.detail.gsEditable$)
-    if (isEditable) {
-      this.detail.gsEdit$.emit(e)
+  protected onGearScoreEdit(e: MouseEvent) {
+    if (this.editable$()) {
+      this.store.gsEdit$.emit(e)
     }
   }
 }

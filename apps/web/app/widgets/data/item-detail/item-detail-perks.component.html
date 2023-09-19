@@ -10,7 +10,7 @@
     <nwb-item-perk
       [icon]="row.icon"
       [explanation]="row"
-      [linkPerkId]="isSlotEditable(item) ? null : item.perkId"
+      [linkPerkId]="editable$() ? null : item.perkId"
     ></nwb-item-perk>
   </ng-container>
   <ng-container *ngIf="!item.perk && item.bucket">
@@ -26,5 +26,8 @@
     >
       – Missing –
     </nwb-item-perk>
+  </ng-container>
+  <ng-container *ngIf="isSlotEditable(item)">
+    <nwb-icon [icon]="editIcon" class="w-3 h-3 absolute top-1 -left-3 opacity-50 screenshot-hidden"></nwb-icon>
   </ng-container>
 </div>

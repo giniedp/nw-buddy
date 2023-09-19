@@ -1,19 +1,20 @@
 <ng-container *ngIf="vm$ | async; let vm">
-  <div *ngIf="vm.gsLabel; let gs" class="flex flex-row gap-1">
+  <div
+    *ngIf="vm.gsLabel; let gs"
+    class="flex flex-row gap-1 rounded-md outline outline-2 outline-offset-0 outline-transparent transition-all leading-none relative"
+    [class.hover:outline-primary]="editable$()"
+    [class.hover:outline-offset-4]="editable$()"
+    [class.cursor-pointer]="editable$()"
+    [class.select-none]="editable$()"
+    (click)="onGearScoreEdit($event)"
+  >
     <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-10 h-10 relative top-[2px]" />
-    <nwb-item-gs
-      [value]="gs"
-      cdkOverlayOrigin
-      class="text-5xl rounded-md outline outline-2 outline-offset-0 outline-transparent transition-all leading-none relative"
-      [class.hover:outline-primary]="vm.gsEditable"
-      [class.hover:outline-offset-4]="vm.gsEditable"
-      [class.cursor-pointer]="vm.gsEditable"
-      [class.select-none]="vm.gsEditable"
-      style="min-width: 3rem"
-      (click)="onGearScoreEdit($event)"
-    ></nwb-item-gs>
+    <nwb-item-gs [value]="gs" cdkOverlayOrigin class="text-5xl" style="min-width: 3rem"></nwb-item-gs>
   </div>
   <ng-container *ngFor="let row of vm.stats; trackBy: trackByIndex">
     <nwb-item-stat [label]="row.value">{{ row.label | nwText }}</nwb-item-stat>
+  </ng-container>
+  <ng-container *ngIf="editable$()">
+    <nwb-icon [icon]="editIcon" class="w-3 h-3 absolute top-4 -left-3 opacity-50 screenshot-hidden"></nwb-icon>
   </ng-container>
 </ng-container>
