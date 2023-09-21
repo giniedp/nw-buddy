@@ -1,16 +1,19 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
-import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
-import { DataGridModule, DataTableSource } from '~/ui/data-grid'
-import { NavbarModule } from '~/ui/nav-toolbar'
+import { DataGridModule } from '~/ui/data-grid'
+import { DataViewModule, DataViewService, provideDataView } from '~/ui/data-view'
+import { IconsModule } from '~/ui/icons'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
+import { VirtualGridModule } from '~/ui/virtual-grid'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { LootTableGridSource } from '~/widgets/data/loot-table-grid/loot-table-grid-source'
-import { LootModule } from '~/widgets/loot'
+import { ItemTableRecord } from '~/widgets/data/item-table'
+import { LootTableAdapter } from '~/widgets/data/loot-table-grid'
+import { QuestTableAdapter } from '~/widgets/data/quest-table'
+import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   standalone: true,
@@ -20,26 +23,27 @@ import { LootModule } from '~/widgets/loot'
   imports: [
     CommonModule,
     DataGridModule,
-    FormsModule,
+    DataViewModule,
     IonicModule,
-    LootModule,
-    NavbarModule,
     NwModule,
     QuicksearchModule,
     RouterModule,
+    ScreenshotModule,
     TooltipModule,
+    VirtualGridModule,
+    IconsModule,
   ],
+  host: {
+    class: 'layout-col',
+  },
   providers: [
-    DataTableSource.provide({
-      type: LootTableGridSource,
+    provideDataView({
+      adapter: LootTableAdapter,
     }),
     QuicksearchService.provider({
       queryParam: 'search',
     }),
   ],
-  host: {
-    class: 'layout-col',
-  },
 })
 export class LootPageComponent {
   protected title = 'Loot Tables'
@@ -52,7 +56,12 @@ export class LootPageComponent {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
 
-  public constructor(public search: QuicksearchService, head: HtmlHeadService) {
+  public constructor(
+    protected service: DataViewService<ItemTableRecord>,
+    protected search: QuicksearchService,
+    head: HtmlHeadService
+  ) {
+    service.patchState({ mode: 'grid' })
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - Loot Tables DB',

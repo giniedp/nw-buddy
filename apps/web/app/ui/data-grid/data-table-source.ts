@@ -24,7 +24,7 @@ export interface DataTableSourceProvideOptions<T> extends DataTableSourceOptions
   /**
    * The source component type
    */
-  type: Type<DataTableSource<T>>
+  type: Type<DataGridAdapter<T>>
 }
 
 export function provideTableSource<T>(
@@ -35,7 +35,7 @@ export function provideTableSource<T>(
       provide: options.type,
     },
     {
-      provide: DataTableSource,
+      provide: DataGridAdapter,
       useExisting: options.type,
     },
     {
@@ -46,7 +46,7 @@ export function provideTableSource<T>(
   return result
 }
 
-export abstract class DataTableSource<T> {
+export abstract class DataGridAdapter<T> {
   public static provide = provideTableSource
   public abstract entityID(item: T): string | number
   public abstract entityCategories(item: T): DataTableCategory[]

@@ -12,6 +12,8 @@ export function provideVirtualGridOptions<T>(options: VirtualGridOptions<T>): St
   ]
 }
 
+export type QuickFilterGetterFn<T> = (item: T, translate: (text: string) => string) => string
+
 export interface VirtualGridOptions<T> {
   /**
    * Fixed height of each row
@@ -37,4 +39,8 @@ export interface VirtualGridOptions<T> {
    * The render compoonent to use for empty cells
    */
   cellEmptyView?: Type<any>
+  /**
+   * The function to use to get the quickfilter tex for an item
+   */
+  getQuickFilterText?: QuickFilterGetterFn<T>
 }

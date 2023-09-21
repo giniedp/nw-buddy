@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { ItemDefinitionMaster } from '@nw-data/generated'
 import { NwModule } from '~/nw'
-import { DataGridModule, DataTableSource } from '~/ui/data-grid'
+import { DataGridModule, DataGridAdapter } from '~/ui/data-grid'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
@@ -33,7 +33,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     class: 'layout-col',
   },
   providers: [
-    DataTableSource.provide({
+    DataGridAdapter.provide({
       type: ArmorsetGridSource,
     }),
     QuicksearchService.provider({

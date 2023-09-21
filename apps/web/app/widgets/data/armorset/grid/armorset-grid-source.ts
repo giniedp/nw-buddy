@@ -4,7 +4,7 @@ import { getItemRarity } from '@nw-data/common'
 import { groupBy } from 'lodash'
 import { Observable, combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { DATA_TABLE_SOURCE_OPTIONS, DataTableSource, DataTableUtils } from '~/ui/data-grid'
+import { DATA_TABLE_SOURCE_OPTIONS, DataGridAdapter, DataTableUtils } from '~/ui/data-grid'
 import { DataTableCategory } from '~/ui/data-grid/types'
 import { findSets } from '../utils'
 import {
@@ -18,7 +18,7 @@ import {
 } from './armorset-grid-cols'
 
 @Injectable()
-export class ArmorsetGridSource extends DataTableSource<ArmorsetGridRecord> {
+export class ArmorsetGridSource extends DataGridAdapter<ArmorsetGridRecord> {
   private db = inject(NwDbService)
   private utils: DataTableUtils<ArmorsetGridRecord> = inject(DataTableUtils)
   private config = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })

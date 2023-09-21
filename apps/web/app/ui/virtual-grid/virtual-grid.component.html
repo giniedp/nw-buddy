@@ -1,0 +1,33 @@
+<ng-content select="header"></ng-content>
+<cdk-virtual-scroll-viewport [itemSize]="itemSize$()" class="overflow-hidden" #viewport>
+  <div
+    class="grid"
+    [ngClass]="gridClass"
+    [style.--nwb-vg-cols]="colCount$()"
+    [style.--nwb-vg-rows]="rowCount$()"
+    [style.--nwb-vg-height.px]="itemSize$()"
+  >
+    <ng-container *cdkVirtualFor="let row of rows$()">
+      <ng-container [ngTemplateOutlet]="customRow?.template || tplRow" [ngTemplateOutletContext]="row"></ng-container>
+    </ng-container>
+  </div>
+</cdk-virtual-scroll-viewport>
+<ng-content select="footer"></ng-content>
+
+<ng-template [nwbVirtualGridRow] let-row #tplRow>
+  <ng-container *ngFor="let cell of row; trackBy: trackBy">
+    <ng-container [ngTemplateOutlet]="customCell?.template || tplCell" [ngTemplateOutletContext]="cell"></ng-container>
+  </ng-container>
+</ng-template>
+
+<ng-template [nwbVirtualGridCell] let-data #tplCell>
+  <ng-container *ngIf="!data && componentEmpty">
+    <ng-container [ngComponentOutlet]="componentEmpty"></ng-container>
+  </ng-container>
+  <ng-container *ngIf="data || !componentEmpty">
+    <ng-container
+      [ngComponentOutlet]="component"
+      [ngComponentOutletInputs]="{ data: data, selected: isSelected(data) | async }"
+    ></ng-container>
+  </ng-container>
+</ng-template>

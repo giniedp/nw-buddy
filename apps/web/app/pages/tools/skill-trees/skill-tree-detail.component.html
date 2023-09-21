@@ -17,7 +17,7 @@
               [ngModelOptions]="{ updateOn: 'blur' }"
             />
             <button
-              nwbScreenshotBtn
+              [nwbScreenshotBtn]
               class="btn btn-ghost btn-square"
               [tooltip]="'Screenshot'"
               [color]="'info'"
@@ -43,7 +43,8 @@
               class="btn btn-ghost btn-square"
               (click)="toggleAttributes(item.record)"
               [class.text-primary]="!!(attrs$ | async)"
-              [tooltip]="'Toggle Attributes'" [color]="'info'"
+              [tooltip]="'Toggle Attributes'"
+              [color]="'info'"
             >
               <nwb-icon [icon]="iconAttrs" class="w-4 h-4"></nwb-icon>
             </button>
@@ -51,11 +52,17 @@
             <button
               class="btn btn-ghost btn-square"
               (click)="onCloneClicked(item.record)"
-              [tooltip]="'Create a copy'" [color]="'info'"
+              [tooltip]="'Create a copy'"
+              [color]="'info'"
             >
               <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
             </button>
-            <button class="btn btn-ghost btn-square" (click)="onDeleteClicked(item.record)" [tooltip]="'Delete'" [color]="'error'">
+            <button
+              class="btn btn-ghost btn-square"
+              (click)="onDeleteClicked(item.record)"
+              [tooltip]="'Delete'"
+              [color]="'error'"
+            >
               <nwb-icon [icon]="iconDelete" class="w-4 h-4"></nwb-icon>
             </button>
           </div>

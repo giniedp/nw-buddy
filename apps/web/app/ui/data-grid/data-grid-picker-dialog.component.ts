@@ -6,9 +6,10 @@ import { NwModule } from '~/nw'
 import { IconsModule } from '../icons'
 import { svgChevronLeft } from '../icons/svg'
 import { QuicksearchModule, QuicksearchService } from '../quicksearch'
-import { DataGridPanelButtonComponent, DataGridPanelComponent, DataGridQuickfilterDirective } from './components'
+import { DataGridPanelButtonComponent, DataGridPanelComponent } from './components'
 import { DataGridComponent } from './data-grid.component'
 import { DataTableSourceProvideOptions, provideTableSource } from './data-table-source'
+import { DataGridQuickfilterDirective } from './extensions'
 
 export interface DataGridPickerOptions<T> {
   /**

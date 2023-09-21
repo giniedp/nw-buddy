@@ -3,13 +3,15 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
-import { DataGridModule, DataTableSource } from '~/ui/data-grid'
-import { NavbarModule } from '~/ui/nav-toolbar'
+import { DataGridModule } from '~/ui/data-grid'
+import { DataViewModule, DataViewService, provideDataView } from '~/ui/data-view'
+import { IconsModule } from '~/ui/icons'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
+import { VirtualGridModule } from '~/ui/virtual-grid'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { HousingTableSource } from '~/widgets/data/housing-table'
-import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
+import { HousingTableAdapter } from '~/widgets/data/housing-table'
+import { ItemTableRecord } from '~/widgets/data/item-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
@@ -19,22 +21,23 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    RouterModule,
+    DataGridModule,
+    DataViewModule,
+    IonicModule,
     NwModule,
     QuicksearchModule,
-    NavbarModule,
+    RouterModule,
     ScreenshotModule,
-    IonicModule,
-    PriceImporterModule,
     TooltipModule,
-    DataGridModule,
+    VirtualGridModule,
+    IconsModule,
   ],
   host: {
     class: 'layout-col',
   },
   providers: [
-    DataTableSource.provide({
-      type: HousingTableSource,
+    provideDataView({
+      adapter: HousingTableAdapter,
     }),
     QuicksearchService.provider({
       queryParam: 'search',
@@ -52,7 +55,12 @@ export class HousingPageComponent {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
 
-  public constructor(public search: QuicksearchService, head: HtmlHeadService) {
+  public constructor(
+    protected service: DataViewService<ItemTableRecord>,
+    protected search: QuicksearchService,
+    head: HtmlHeadService
+  ) {
+    service.patchState({ mode: 'grid' })
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - Housing Items DB',

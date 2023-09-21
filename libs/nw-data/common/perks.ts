@@ -86,7 +86,7 @@ export function explainPerk(options: {
 
   const needsIcon = !!perk.SecondaryEffectDisplayName || !result.length
   const needsDescription = !result.length || options.forceDescription
-  const stackLimit = options.abilities?.find((it) => it.IsStackableAbility && it.IsStackableMax)?.IsStackableMax
+  const stackLimit = options.abilities?.find((it) => it?.IsStackableAbility && it?.IsStackableMax)?.IsStackableMax
   if ((needsDescription && perk.DisplayName) || perk.SecondaryEffectDisplayName) {
     // common perk case e.g.
     // Health: +2.2% max health.

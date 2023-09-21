@@ -3,12 +3,12 @@
     <ul class="menu menu-horizontal w-full flex-nowrap flex-1 overflow-x-auto scrollbar-hide">
       <li>
         <button
-          [nwbGridCateogryMenu]="grid.categories$ | async"
+          [nwbDataCateogryMenu]
           [category]="category$ | async"
+          [showCounter]="true"
           [defaultRoute]="defaultRoute"
           [defaultTitle]="title"
           [routePrefix]="'..'"
-          [rowCounter]="grid.rowCount$ | async"
           class="btn btn-ghost normal-case text-left"
         ></button>
       </li>
@@ -16,9 +16,17 @@
       <li>
         <nwb-screenshot-button></nwb-screenshot-button>
       </li>
-
-      <li>
-        <button [nwbGridPanelButton]="grid.ready$ | async" class="btn btn-square btn-ghost"></button>
+      <li *ngIf="service.canToggleMode">
+        <a (click)="service.toggleMode()" [tooltip]="'Show Table View'" [class.text-primary]="service.isGridActive$()">
+          <nwb-icon [icon]="iconList" class="swap-on w-4 h-4"></nwb-icon>
+        </a>
+        <a
+          (click)="service.toggleMode()"
+          [tooltip]="'Show Grid View'"
+          [class.text-primary]="service.isVirtGridActive$()"
+        >
+          <nwb-icon [icon]="iconGrid" class="swap-off w-4 h-4"></nwb-icon>
+        </a>
       </li>
       <li cdkOverlayOrigin #overlay="cdkOverlayOrigin" (click)="isToolOpen = !isToolOpen">
         <a>
@@ -30,6 +38,9 @@
           </svg>
         </a>
       </li>
+      <!-- <li *ngIf="!virtualModeActive">
+        <button [nwbGridPanelButton]="grid.ready$ | async" class="btn btn-square btn-ghost"></button>
+      </li> -->
       <ng-template
         cdkConnectedOverlay
         [cdkConnectedOverlayOrigin]="overlay"
@@ -76,20 +87,30 @@
     </ul>
 
     <div class="flex-none p-2 w-full md:max-w-[256px]">
-      <nwb-quicksearch-input
-        [nwbGridQuickfilter]="grid.ready$ | async"
-        [placeholder]="'Quickfilter'"
-      ></nwb-quicksearch-input>
+      <nwb-quicksearch-input [placeholder]="'Quickfilter'"></nwb-quicksearch-input>
     </div>
   </div>
 </ion-header>
 <div class="flex-1 flex flex-row overflow-hidden">
-  <nwb-data-grid
-    [category]="category$ | async"
-    [persistKey]="persistKey"
-    [filterParam]="filterParam"
-    [selectionParam]="selectionParam"
-    #grid
-  ></nwb-data-grid>
+  <ng-container *ngIf="service.isVirtGridActive$()">
+    <nwb-virtual-grid
+      [enableQuickfilter]="true"
+      [data]="service.categoryItems$ | async"
+      [options]="service.virtualOptions"
+      [identifyBy]="service.entityIdGetter"
+      [selectionRouteParam]="selectionParam"
+    ></nwb-virtual-grid>
+  </ng-container>
+  <ng-container *ngIf="service.isGridActive$()">
+    <nwb-data-grid
+      [enableQuickfilter]="true"
+      [data]="service.categoryItems$ | async"
+      [options]="service.gridOptions"
+      [identifyBy]="service.entityIdGetter"
+      [persistKey]="persistKey"
+      [filterQueryParam]="filterParam"
+      [selectionRouteParam]="selectionParam"
+    ></nwb-data-grid>
+  </ng-container>
   <router-outlet></router-outlet>
 </div>

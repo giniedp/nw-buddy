@@ -4,19 +4,19 @@ import { AppTestingModule } from '~/test'
 import { DataGridComponent } from './data-grid.component'
 import { of } from 'rxjs'
 import { CommonModule } from '@angular/common'
-import { DataTableSource } from './data-table-source'
+import { DataGridAdapter } from './data-table-source'
 
 @Component({
   standalone: true,
   selector: 'nwb-story',
   template: `
     <div class="flex flex-col h-[100vh] w-[100vw]">
-      <nwb-data-grid class="flex-1" [source]="this"></nwb-data-grid>
+      <nwb-data-grid class="flex-1"></nwb-data-grid>
     </div>
   `,
   imports: [CommonModule, DataGridComponent],
 })
-export class StoryComponent implements DataTableSource<{ id: string; name: string }> {
+export class StoryComponent implements DataGridAdapter<{ id: string; name: string }> {
   public entityID(it) {
     return it.id
   }

@@ -20,6 +20,7 @@ import { PerksTableAdapter, StatusEffectsTableAdapter } from '~/widgets/adapter'
 import { openHousingItemsPicker } from '~/widgets/data/housing-table'
 import { openItemsPicker } from '~/widgets/data/item-table'
 import { PlayerItemsTableAdapter } from './inventory-table.adapter'
+import { openPerksPicker } from '~/widgets/data/perk-table'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryPickerService {

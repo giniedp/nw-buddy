@@ -26,7 +26,7 @@ export class VirtualGridRowDirective<T> {
   }
 
   @Input()
-  public set nwbVirtualGridRow(data: NgIterable<T>) {
+  public set nwbVirtualGridRow(data: T[]) {
     this.store.patchState({ data: data })
   }
 

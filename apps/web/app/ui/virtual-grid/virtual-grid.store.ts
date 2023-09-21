@@ -1,12 +1,19 @@
-import { ElementRef, Injectable, NgIterable } from '@angular/core'
+import { Injectable, NgIterable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { selectStream, tapDebug } from '~/utils'
-import { ResizeObserverService } from '~/utils/services/resize-observer.service'
+import { TranslateService } from '~/i18n'
 import { VirtualGridCellContext } from './virtual-grid-cell.directive'
+import { QuickFilterGetterFn } from './virtual-grid-options'
 import { VirtualGridRowContext } from './virtual-grid-row.directive'
+import { isEqual } from 'lodash'
 
 export interface VirtualGridState<T> {
-  data: NgIterable<T>
+  data: T[]
+  selection?: Array<string | number>
+  identifyBy?: (it: T) => string | number
+  /**
+   * The quickfilter text
+   */
+  quickfilter?: string
   /**
    * The fixed item height
    */
@@ -27,21 +34,53 @@ export interface VirtualGridState<T> {
    *
    */
   ngClass: string | string[]
+  /**
+   *
+   */
+  quickfilterGetter?: QuickFilterGetterFn<T>
 }
 
 @Injectable()
 export class VirtualGridStore<T> extends ComponentStore<VirtualGridState<T>> {
+  public readonly identifyBy$ = this.selectSignal(({ identifyBy }) => identifyBy)
+  public readonly quickfilter$ = this.select(({ quickfilter }) => quickfilter)
   public readonly itemSize$ = this.select(({ itemHeight }) => itemHeight)
   public readonly ngClass$ = this.select(({ ngClass }) => ngClass)
+  public readonly quickfilterGetter$ = this.select(({ quickfilterGetter }) => quickfilterGetter)
   public readonly data$ = this.select(({ data }) => data || [])
+  public readonly selection$ = this.select<Array<string | number>>(
+    ({ selection }) => {
+      return selection || []
+    },
+    {
+      equal: isEqual,
+    }
+  )
+  public readonly selection = this.selectSignal(({ selection }) => selection || [])
+  public readonly filteredData$ = this.select(
+    this.data$,
+    this.quickfilter$,
+    this.quickfilterGetter$,
+    (list, query, getter) => {
+      if (!getter || !query || !list?.length) {
+        return list
+      }
+      const translate = (text: string) => this.tl8.get(text)
+      return list.filter((it) => {
+        const text = getter(it, translate) || ''
+        return text.toLowerCase().includes(query)
+      })
+    }
+  )
+
   public readonly colCount$ = this.select(this.state$, selectColumnCount)
-  public readonly rows$ = this.select(this.data$, this.colCount$, selectRows, {
+  public readonly rows$ = this.select(this.filteredData$, this.colCount$, selectRows, {
     debounce: true,
   })
   public readonly rowCount$ = this.select(this.rows$, (it) => it.length)
   protected trackBy = (i: number) => i
 
-  public constructor() {
+  public constructor(private tl8: TranslateService) {
     super({
       data: [],
       size: null,

@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input } from '@angular/core'
+import { Component, HostBinding, HostListener, Input } from '@angular/core'
+import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { Perks } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { NwTextContextService } from '~/nw/expression'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
-import { VirtualGridCellComponent, VirtualGridOptions } from '~/ui/virtual-grid'
+import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/virtual-grid'
 import { EmptyComponent } from '~/widgets/empty'
 
 @Component({
@@ -25,6 +26,8 @@ import { EmptyComponent } from '~/widgets/empty'
   imports: [CommonModule, ItemFrameModule, NwModule, TooltipModule],
   host: {
     class: 'block rounded-md overflow-clip m-1',
+    '[class.outline]': 'selected',
+    '[class.outline-primary]': 'selected',
   },
 })
 export class PerkGridCellComponent implements VirtualGridCellComponent<Perks> {
@@ -35,6 +38,9 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<Perks> {
       gridClass: ['-mx-1'],
       cellDataView: PerkGridCellComponent,
       cellEmptyView: EmptyComponent,
+      getQuickFilterText: (item, tl8) => {
+        return tl8(item?.DisplayName || item?.SecondaryEffectDisplayName || '')
+      },
     }
   }
 
@@ -44,7 +50,7 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<Perks> {
   @Input()
   public set data(value: Perks) {
     this.name = value?.DisplayName || value?.SecondaryEffectDisplayName
-    this.icon = value?.IconPath
+    this.icon = value?.IconPath || NW_FALLBACK_ICON
     this.description = value?.Description
     this.type = value?.PerkType
     this.perk = value
@@ -60,5 +66,12 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<Perks> {
     return this.context.forPerk(this.perk) as any
   }
 
-  public constructor(protected context: NwTextContextService) {}
+  public constructor(protected grid: VirtualGridComponent<Perks>, protected context: NwTextContextService) {
+    //
+  }
+
+  @HostListener('click', ['$event'])
+  public onClick(e: Event) {
+    this.grid.handleItemEvent(this.perk, e)
+  }
 }

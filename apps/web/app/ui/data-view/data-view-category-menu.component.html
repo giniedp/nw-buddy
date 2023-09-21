@@ -1,0 +1,43 @@
+<div class="flex flex-col flex-nowrap gap-1 items-start justify-center">
+  <span class="text-lg leading-none" *ngIf="defaultCategory$ | async; let cat">
+    <picture [nwIcon]="cat.icon" class="w-8 h-w-8" *ngIf="cat.icon"></picture>
+    {{ cat.label }}
+    <ng-container *ngIf="activeCateogry$ | async; let cat"> • {{ cat.label | nwText }} </ng-container>
+  </span>
+  <span *ngIf="counter$ | async; let counter" class="text-xs opacity-50 italic leading-none">
+    TotalRows: {{ counter.value }}
+  </span>
+</div>
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="cdkOrigin"
+  [cdkConnectedOverlayOpen]="isPanelOpen"
+  [cdkConnectedOverlayHasBackdrop]="true"
+  [cdkConnectedOverlayPositions]="[
+    { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetX: -3 }
+  ]"
+  (overlayOutsideClick)="isPanelOpen = false"
+  (backdropClick)="isPanelOpen = false"
+  (detach)="isPanelOpen = false"
+>
+  <div class="w-80 bg-base-200 rounded-b-md">
+    <ul class="menu menu-compact">
+      <li *ngIf="defaultCategory$ | async; let cat">
+        <a class="flex flex-row" [routerLink]="cat.route" (click)="isPanelOpen = false">
+          <picture [nwIcon]="cat.icon" class="w-8 h-w-8" *ngIf="cat.icon"></picture>
+          <div class="flex-1 normal-case">
+            <h3 class="font-bold">{{ cat.label | nwText }}</h3>
+          </div>
+        </a>
+      </li>
+      <li *ngFor="let cat of categories$ | async">
+        <a class="flex flex-row" [routerLink]="cat.route" (click)="isPanelOpen = false">
+          <picture [nwIcon]="cat.icon" class="w-8 h-w-8" *ngIf="cat.icon"></picture>
+          <div class="flex-1 normal-case">
+            <h3 class="font-bold">{{ cat.label | nwText }}</h3>
+          </div>
+        </a>
+      </li>
+    </ul>
+  </div>
+</ng-template>

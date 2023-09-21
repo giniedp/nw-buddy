@@ -1,2 +1,2 @@
 export * from './game-event-table-cols'
-export * from './game-event-table-source'
+export * from './game-event-table-adapter'

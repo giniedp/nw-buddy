@@ -25,7 +25,7 @@ export class VirtualGridCellDirective<T> {
   }
 
   @Input()
-  public set nwbVirtualGridCell(data: NgIterable<T>) {
+  public set nwbVirtualGridCell(data: T[]) {
     this.store.patchState({ data: data })
   }
 

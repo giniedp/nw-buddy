@@ -3,24 +3,41 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
-import { DataGridModule, DataTableSource } from '~/ui/data-grid'
-import { NavbarModule } from '~/ui/nav-toolbar'
+import { DataGridModule } from '~/ui/data-grid'
+import { DataViewModule, DataViewService, provideDataView } from '~/ui/data-view'
+import { IconsModule } from '~/ui/icons'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
+import { TooltipModule } from '~/ui/tooltip'
+import { VirtualGridModule } from '~/ui/virtual-grid'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { PoiTableSource } from '~/widgets/data/poi-table'
+import { ItemTableRecord } from '~/widgets/data/item-table'
+import { PoiTableAdapter } from '~/widgets/data/poi-table'
+import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   standalone: true,
   selector: 'nwb-poi-page',
   templateUrl: './poi-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, QuicksearchModule, NavbarModule, IonicModule, DataGridModule],
+  imports: [
+    CommonModule,
+    DataGridModule,
+    DataViewModule,
+    IonicModule,
+    NwModule,
+    QuicksearchModule,
+    RouterModule,
+    ScreenshotModule,
+    TooltipModule,
+    VirtualGridModule,
+    IconsModule,
+  ],
   host: {
     class: 'layout-col',
   },
   providers: [
-    DataTableSource.provide({
-      type: PoiTableSource,
+    provideDataView({
+      adapter: PoiTableAdapter,
     }),
     QuicksearchService.provider({
       queryParam: 'search',
@@ -37,9 +54,13 @@ export class PoiPageComponent {
   protected category$ = selectStream(this.categoryParam$, (it) => {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
-  protected isToolOpen = false
 
-  public constructor(public search: QuicksearchService, head: HtmlHeadService) {
+  public constructor(
+    protected service: DataViewService<ItemTableRecord>,
+    protected search: QuicksearchService,
+    head: HtmlHeadService
+  ) {
+    service.patchState({ mode: 'grid' })
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - Points Of Interes DB',

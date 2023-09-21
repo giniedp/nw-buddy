@@ -4,7 +4,7 @@ import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/an
 import { AppTestingModule } from '~/test'
 import { DataGridModule, provideTableSource } from '~/ui/data-grid'
 import { QuicksearchModule } from '~/ui/quicksearch'
-import { HousingTableSource } from './housing-table-source'
+import { HousingTableAdapter } from './housing-table-adapter'
 
 @Component({
   standalone: true,
@@ -28,18 +28,15 @@ import { HousingTableSource } from './housing-table-source'
         </li>
       </ul>
       <div class="flex-none p-2 w-full md:max-w-[256px]">
-        <nwb-quicksearch-input
-          [nwbGridQuickfilter]="grid.ready$ | async"
-          [placeholder]="'Quickfilter'"
-        ></nwb-quicksearch-input>
+        <nwb-quicksearch-input [placeholder]="'Quickfilter'"></nwb-quicksearch-input>
       </div>
-      <nwb-data-grid [filterParam]="'filter'" [persistKey]="'items-table'" #grid></nwb-data-grid>
+      <nwb-data-grid [filterQueryParam]="'filter'" [persistKey]="'items-table'" #grid></nwb-data-grid>
     </div>
   `,
   imports: [CommonModule, DataGridModule, QuicksearchModule],
   providers: [
     provideTableSource({
-      type: HousingTableSource,
+      type: HousingTableAdapter,
     }),
   ],
 })

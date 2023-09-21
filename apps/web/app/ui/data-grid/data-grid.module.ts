@@ -1,12 +1,19 @@
 import { NgModule } from '@angular/core'
+import { DataGridCategoryMenuComponent, DataGridPanelButtonComponent } from './components'
 import { DataGridComponent } from './data-grid.component'
-import { DataGridCategoryMenuComponent, DataGridPanelButtonComponent, DataGridQuickfilterDirective } from './components'
+import {
+  DataGridFilterQueryParamDirective,
+  DataGridQuickfilterDirective,
+  DataGridSelectionRouteParamDirective,
+} from './extensions'
 
 const COMPONENTS = [
   DataGridComponent,
   DataGridCategoryMenuComponent,
   DataGridPanelButtonComponent,
   DataGridQuickfilterDirective,
+  DataGridSelectionRouteParamDirective,
+  DataGridFilterQueryParamDirective,
 ]
 @NgModule({
   imports: [...COMPONENTS],

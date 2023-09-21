@@ -1,16 +1,18 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
-import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
-import { DataGridModule, DataTableSource } from '~/ui/data-grid'
-import { NavbarModule } from '~/ui/nav-toolbar'
+import { DataGridModule } from '~/ui/data-grid'
+import { DataViewModule, DataViewService, provideDataView } from '~/ui/data-view'
+import { IconsModule } from '~/ui/icons'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
+import { VirtualGridModule } from '~/ui/virtual-grid'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { DamageTableSource } from '~/widgets/data/damage-table'
-import { LootModule } from '~/widgets/loot'
+import { DamageTableAdapter } from '~/widgets/data/damage-table'
+import { ItemTableAdapter, ItemTableRecord } from '~/widgets/data/item-table'
+import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   standalone: true,
@@ -19,27 +21,28 @@ import { LootModule } from '~/widgets/loot'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    FormsModule,
+    DataGridModule,
+    DataViewModule,
     IonicModule,
-    LootModule,
-    NavbarModule,
     NwModule,
     QuicksearchModule,
     RouterModule,
+    ScreenshotModule,
     TooltipModule,
-    DataGridModule,
+    VirtualGridModule,
+    IconsModule,
   ],
+  host: {
+    class: 'layout-col',
+  },
   providers: [
-    DataTableSource.provide({
-      type: DamageTableSource,
+    provideDataView({
+      adapter: DamageTableAdapter,
     }),
     QuicksearchService.provider({
       queryParam: 'search',
     }),
   ],
-  host: {
-    class: 'layout-col',
-  },
 })
 export class DamagePageComponent {
   protected title = 'Damage Tables'
@@ -52,7 +55,12 @@ export class DamagePageComponent {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
 
-  public constructor(public search: QuicksearchService, head: HtmlHeadService) {
+  public constructor(
+    protected service: DataViewService<ItemTableRecord>,
+    protected search: QuicksearchService,
+    head: HtmlHeadService
+  ) {
+    service.patchState({ mode: 'grid' })
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - Damage Tables DB',

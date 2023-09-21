@@ -81,7 +81,7 @@ export function abilityColDescription(util: AbilityTableUtils) {
     width: 400,
     wrapText: true,
     autoHeight: true,
-    cellClass: ['multiline-cell', 'text-primary', 'italic'],
+    cellClass: ['multiline-cell', 'text-nw-description', 'italic'],
     filterValueGetter: ({ data }) => util.i18n.get(data.Description),
     cellRenderer: util.cellRendererAsync(),
     cellRendererParams: util.cellRendererAsyncParams<string>({

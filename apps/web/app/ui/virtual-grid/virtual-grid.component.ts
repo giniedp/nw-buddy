@@ -1,4 +1,4 @@
-import { CdkVirtualScrollableElement, ScrollingModule } from '@angular/cdk/scrolling'
+import { CdkVirtualScrollViewport, CdkVirtualScrollableElement, ScrollingModule } from '@angular/cdk/scrolling'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -7,10 +7,12 @@ import {
   ContentChild,
   ElementRef,
   Input,
+  Output,
   Type,
+  ViewChild,
 } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { combineLatest, map, takeUntil } from 'rxjs'
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
+import { combineLatest, filter, map, skip, takeUntil } from 'rxjs'
 import { NwModule } from '~/nw'
 import { ResizeObserverService } from '~/utils/services/resize-observer.service'
 import { VirtualGridCellComponent } from './virtual-grid-cell.component'
@@ -23,44 +25,7 @@ import { VirtualGridStore } from './virtual-grid.store'
   standalone: true,
   selector: 'nwb-virtual-grid',
   styleUrls: ['./virtual-grid.component.scss'],
-  template: `
-    <ng-content select="header"></ng-content>
-    <cdk-virtual-scroll-viewport [itemSize]="itemSize$()" class="overflow-hidden">
-      <div
-        class="grid"
-        [ngClass]="gridClass"
-        [style.--nwb-vg-cols]="colCount$()"
-        [style.--nwb-vg-rows]="rowCount$()"
-        [style.--nwb-vg-height.px]="itemSize$()"
-      >
-        <ng-container *cdkVirtualFor="let row of rows$()">
-          <ng-container
-            [ngTemplateOutlet]="customRow?.template || tplRow"
-            [ngTemplateOutletContext]="row"
-          ></ng-container>
-        </ng-container>
-      </div>
-    </cdk-virtual-scroll-viewport>
-    <ng-content select="footer"></ng-content>
-
-    <ng-template [nwbVirtualGridRow] let-row #tplRow>
-      <ng-container *ngFor="let cell of row; trackBy: trackBy">
-        <ng-container
-          [ngTemplateOutlet]="customCell?.template || tplCell"
-          [ngTemplateOutletContext]="cell"
-        ></ng-container>
-      </ng-container>
-    </ng-template>
-
-    <ng-template [nwbVirtualGridCell] let-data #tplCell>
-      <ng-container *ngIf="!data && componentEmpty">
-        <ng-container [ngComponentOutlet]="componentEmpty"></ng-container>
-      </ng-container>
-      <ng-container *ngIf="data || !componentEmpty">
-        <ng-container [ngComponentOutlet]="component" [ngComponentOutletInputs]="{ data: data }"></ng-container>
-      </ng-container>
-    </ng-template>
-  `,
+  templateUrl: './virtual-grid.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ScrollingModule, VirtualGridCellDirective, VirtualGridRowDirective],
   hostDirectives: [CdkVirtualScrollableElement],
@@ -80,6 +45,14 @@ export class VirtualGridComponent<T> {
       itemWidth: options.width,
       colCount: options.cols,
       ngClass: options.gridClass,
+      quickfilterGetter: options.getQuickFilterText,
+    })
+  }
+
+  @Input()
+  public set identifyBy(fn: (it: T) => string | number) {
+    this.store.patchState({
+      identifyBy: fn,
     })
   }
 
@@ -112,6 +85,13 @@ export class VirtualGridComponent<T> {
   }
 
   @Input()
+  public set selection(value: Array<string | number>) {
+    this.store.patchState({
+      selection: value,
+    })
+  }
+
+  @Input()
   public gridClass: string[]
 
   @Input()
@@ -126,6 +106,12 @@ export class VirtualGridComponent<T> {
   @ContentChild(VirtualGridCellDirective, { static: true })
   protected customCell: VirtualGridCellDirective<T>
 
+  @ViewChild('viewport')
+  protected viewport: CdkVirtualScrollViewport
+
+  @Output()
+  public selection$ = this.store.selection$.pipe(skip(1))
+
   protected rows$ = toSignal(this.store.rows$)
   protected colCount$ = toSignal(this.store.colCount$)
   protected rowCount$ = toSignal(this.store.rowCount$)
@@ -137,6 +123,7 @@ export class VirtualGridComponent<T> {
     elRef: ElementRef<HTMLElement>,
     resize: ResizeObserverService,
     cdRef: ChangeDetectorRef,
+
     protected store: VirtualGridStore<T>
   ) {
     const size$ = resize.observe(elRef.nativeElement).pipe(
@@ -148,5 +135,76 @@ export class VirtualGridComponent<T> {
     this.store.rows$.pipe(takeUntil(this.store.destroy$)).subscribe(() => {
       cdRef.detectChanges()
     })
+    combineLatest({
+      rows: this.store.rows$.pipe(filter((it) => !!it.length)),
+      selection: this.store.selection$.pipe(map((it) => it[0])),
+    })
+      .pipe(takeUntilDestroyed())
+      .subscribe(({ selection }) => this.scrollToItem(selection))
   }
+
+  public handleItemEvent(item: T, e: Event) {
+    if (!isSelectionEvent(e)) {
+      return
+    }
+    const identifyBy = this.store.identifyBy$()
+    if (!identifyBy) {
+      return
+    }
+    const itemId = identifyBy(item)
+    const selection = this.store.selection()
+    if (selection.includes(itemId)) {
+      this.store.patchState({ selection: [] })
+    } else {
+      this.store.patchState({ selection: [itemId] })
+    }
+  }
+
+  public isSelected = (it: T) => {
+    return this.store.selection$.pipe(
+      map((selection) => {
+        const identify = this.store.identifyBy$()
+        if (!identify) {
+          return false
+        }
+        const id = identify(it)
+        return selection?.includes(id)
+      })
+    )
+  }
+
+  public scrollToItem(id: string | number) {
+    if (id == null) {
+      return
+    }
+    const identify = this.store.identifyBy$()
+    const rows = this.rows$()
+    const index = rows.findIndex((row) => {
+      for (const it of row.$implicit) {
+        if (!!it.$implicit && String(identify(it.$implicit)) === String(id)) {
+          return true
+        }
+      }
+      return false
+    })
+    if (index < 0) {
+      return
+    }
+    const range = this.viewport.getRenderedRange()
+    if (index >= range.start && index < range.end) {
+      return
+    }
+    const centerIndex = Math.max(0, index - Math.floor((range.end - range.start) / 2))
+    this.viewport.scrollToIndex(centerIndex, 'instant')
+  }
+}
+
+function isSelectionEvent(e: Event) {
+  if (e.type === 'click') {
+    return true
+  }
+  if (e.type === 'keydown' && (e as KeyboardEvent).key === 'Space') {
+    return true
+  }
+  return false
 }

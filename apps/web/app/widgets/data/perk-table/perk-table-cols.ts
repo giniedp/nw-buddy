@@ -1,5 +1,5 @@
 import { explainPerk, explainPerkMods, getPerkItemClassGSBonus, getPerkItemClassGsBonus } from '@nw-data/common'
-import { Ability, Perks } from '@nw-data/generated'
+import { Ability, Affixstats, Perks } from '@nw-data/generated'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwTextContextService } from '~/nw/expression'
 import { SelectFilter } from '~/ui/ag-grid'
@@ -8,7 +8,8 @@ import { humanize } from '~/utils'
 
 export type PerkTableUtils = DataTableUtils<PerkTableRecord>
 export type PerkTableRecord = Perks & {
-  $ability: Ability
+  $ability?: Ability
+  $affix?: Affixstats
 }
 
 export function perkCol(util: PerkTableUtils) {
@@ -78,7 +79,7 @@ export function perkColDescription(util: PerkTableUtils, ctx: NwTextContextServi
     width: 500,
     wrapText: true,
     autoHeight: true,
-    cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
+    cellClass: ['multiline-cell', 'py-2'],
     filterValueGetter: ({ data }) => util.i18n.get(data.Description),
     valueGetter: ({ data }) => util.i18n.get(data.Description),
     cellRenderer: util.cellRendererAsync(),
@@ -107,20 +108,24 @@ export function perkColDescription(util: PerkTableUtils, ctx: NwTextContextServi
             })
             for (const mod of mods) {
               result.push(
-                util.expr.solve({
-                  attribute1: '…',
-                  attribute2: '…',
-                  text: `${util.i18n.get(mod.label || '')} ${util.i18n.get(mod.description || '')}`,
-                  ...context,
-                  ...(mod.context || {}),
-                })
+                util.expr
+                  .solve({
+                    attribute1: '…',
+                    attribute2: '…',
+                    text: `${util.i18n.get(mod.label || '')} ${util.i18n.get(mod.description || '')}`,
+                    ...context,
+                    ...(mod.context || {}),
+                  })
+                  .pipe(map((it) => `<span class="text-sky-600"> ${it} </span>`))
               )
             }
             result.push(
-              util.expr.solve({
-                text: util.i18n.get(data.Description || data.StatDisplayText),
-                ...context,
-              })
+              util.expr
+                .solve({
+                  text: util.i18n.get(data.Description || data.StatDisplayText),
+                  ...context,
+                })
+                .pipe(map((it) => `<span class="text-nw-description italic"> ${it} </span>`))
             )
             return combineLatest(result).pipe(map((it) => it.join('<br>')))
           })

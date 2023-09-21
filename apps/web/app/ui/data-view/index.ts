@@ -1,2 +1,7 @@
 export * from './data-view-adapter'
 export * from './data-view-category'
+export * from './data-view-category-menu.component'
+export * from './data-view.module'
+export * from './data-view.service'
+export * from './data-view-picker-dialog.component'
+export * from './provider'

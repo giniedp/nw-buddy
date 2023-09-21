@@ -1,24 +1,14 @@
 import { AgGridEvent, GridApi, GridOptions } from '@ag-grid-community/core'
-import {
-  ChangeDetectionStrategy,
-  Component,
-  EventEmitter,
-  Input,
-  NgZone,
-  OnInit,
-  Optional,
-  Output,
-} from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
 import { isEqual } from 'lodash'
 import {
-  NEVER,
-  Observable,
   asyncScheduler,
   combineLatest,
   debounceTime,
   defer,
   map,
   merge,
+  of,
   skip,
   subscribeOn,
   switchMap,
@@ -29,10 +19,7 @@ import { LocaleService } from '~/i18n'
 import { AgGridDirective } from '~/ui/ag-grid'
 import { debounceSync } from '~/utils/rx-operators'
 import { gridDisplayRowCount } from '../ag-grid/utils'
-import { DataGridFilterModelDirective } from './data-grid-filter-model.directive'
 import { DataGridPersistenceService } from './data-grid-persistence.service'
-import { DataTableRouterDirective } from './data-grid-route-param.directive'
-import { DataTableSource } from './data-table-source'
 import { DataGridStore } from './data-grid.store'
 
 export interface SelectionChangeEvent<T> {
@@ -48,35 +35,30 @@ export interface SelectionChangeEvent<T> {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [AgGridDirective],
   providers: [DataGridPersistenceService, DataGridStore],
-  hostDirectives: [AgGridDirective, DataGridFilterModelDirective, DataTableRouterDirective],
+  hostDirectives: [AgGridDirective],
   host: {
     class: 'flex-1 h-full w-full',
   },
 })
 export class DataGridComponent<T> implements OnInit {
   @Input()
-  public set category(value: string) {
-    this.store.patchState({ selectedCategory: value })
+  public set data(value: T[]) {
+    this.store.patchState({ gridData: value })
+  }
+
+  @Input()
+  public set options(value: GridOptions<T>) {
+    this.store.patchState({ gridOptions: value })
   }
 
   @Input()
   public set selection(value: Array<string | number>) {
-    this.store.patchState({ selectedItems: value })
+    this.store.patchState({ selection: value })
   }
 
   @Input()
-  public set source(value: DataTableSource<T>) {
-    this.store.patchState({ source: value })
-  }
-
-  @Input()
-  public set filterParam(value: string) {
-    this.store.patchState({ filterParam: value })
-  }
-
-  @Input()
-  public set selectionParam(value: string) {
-    this.store.patchState({ selectionParam: value })
+  public set identifyBy(value: (it: T) => string | number) {
+    this.store.patchState({ identifyBy: value })
   }
 
   @Input()
@@ -92,21 +74,18 @@ export class DataGridComponent<T> implements OnInit {
   public readonly ready$ = defer(() => this.grid.onReady)
 
   @Output()
-  public readonly selection$ = defer(() => this.store.selectedItemIds$)
-  public readonly categories$ = defer(() => this.store.categories$)
+  public readonly selection$ = defer(() => this.store.selection$)
+
+  public readonly categories$ = of(null as any) // TODO: remove
   public readonly rowCount$ = defer(() => gridDisplayRowCount(this.ready$))
 
   public constructor(
     private locale: LocaleService,
     private grid: AgGridDirective<T>,
     private persistence: DataGridPersistenceService,
-    private store: DataGridStore<T>,
-    @Optional()
-    source: DataTableSource<T>
+    private store: DataGridStore<T>
   ) {
-    if (source) {
-      this.source = source
-    }
+    //
   }
 
   public async ngOnInit() {
@@ -188,39 +167,33 @@ export class DataGridComponent<T> implements OnInit {
     // doubleClick$ = defer(() => this.grid.onEvent('rowDoubleClicked'))
 
     // pull selection from grid -> store
-    this.withSource((source) => {
-      return this.grid.onEvent('selectionChanged').pipe(
-        map(({ api }) => {
+    this.grid
+      .onEvent('selectionChanged')
+      .pipe(
+        tap(({ api }) => {
+          const identifyBy = this.store.identifyBy$()
           const rows = api.getSelectedRows()
-          const ids = rows.map((it) => source.entityID(it))
-          return {
+          const ids = identifyBy ? rows.map(identifyBy) : null
+          this.store.patchState({ selection: ids })
+          this.selectionChanged$.emit({
             rows,
             ids,
-          }
+          })
         })
       )
-    })
       .pipe(takeUntil(this.store.destroy$))
-      .subscribe(({ rows, ids }) => {
-        this.store.patchState({ selectedItems: ids })
-        this.selectionChanged$.emit({
-          rows,
-          ids,
-        })
-      })
+      .subscribe()
 
     // sync selection from store -> grid
     combineLatest({
-      source: this.store.source$,
-      selection: this.store.selectedItemIds$,
+      selection: this.store.selection$,
       change: merge(this.grid.onEvent('firstDataRendered'), this.grid.onEvent('rowDataChanged')),
       grid: this.ready$,
     })
       .pipe(subscribeOn(asyncScheduler))
       .pipe(takeUntil(this.store.destroy$))
-      .subscribe(({ source, selection, grid }) => {
+      .subscribe(({ selection, grid }) => {
         this.syncSelection({
-          source,
           toSelect: selection,
           ensureVisible: true,
           api: grid.api,
@@ -229,30 +202,24 @@ export class DataGridComponent<T> implements OnInit {
   }
 
   private syncSelection({
-    source,
     toSelect,
     api,
     ensureVisible,
   }: {
-    source: DataTableSource<T>
     toSelect: Array<string | number>
     api: GridApi
     ensureVisible?: boolean
   }) {
-    if (!api || !source) {
+    const identifyBy = this.store.identifyBy$()
+    if (!api || !identifyBy) {
       return
     }
 
-    if (
-      isEqual(
-        toSelect,
-        api.getSelectedRows().map((it) => source.entityID(it))
-      )
-    ) {
+    if (isEqual(toSelect, api.getSelectedRows().map(identifyBy))) {
       return
     }
     api.forEachNode((it) => {
-      if (toSelect && toSelect.includes(source.entityID(it.data))) {
+      if (toSelect && toSelect.includes(identifyBy(it.data))) {
         it.setSelected(true, false, 'api')
       } else if (it.isSelected()) {
         it.setSelected(false, false, 'api')
@@ -262,17 +229,6 @@ export class DataGridComponent<T> implements OnInit {
     if (ensureVisible && selectedNode) {
       api.ensureNodeVisible(selectedNode, 'middle')
     }
-  }
-
-  private withSource<O>(fn: (source: DataTableSource<T>) => Observable<O>) {
-    return this.store.source$.pipe(
-      switchMap((source) => {
-        if (!source) {
-          return NEVER
-        }
-        return fn(source)
-      })
-    )
   }
 }
 
