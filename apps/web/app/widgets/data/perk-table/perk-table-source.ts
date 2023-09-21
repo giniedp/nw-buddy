@@ -6,7 +6,7 @@ import { combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
 
 import { NwTextContextService } from '~/nw/expression'
-import { DATA_TABLE_SOURCE_OPTIONS, DataTableSource, DataTableUtils } from '~/ui/data-grid'
+import { DATA_TABLE_SOURCE_OPTIONS, DataTableSource, DataTableSourceOptions, DataTableUtils } from '~/ui/data-grid'
 import { DataTableCategory } from '~/ui/data-grid/types'
 import { addGenericColumns } from '~/ui/data-grid/utils'
 import {
@@ -26,7 +26,7 @@ export class PerkTableSource extends DataTableSource<PerkTableRecord> {
   private db = inject(NwDbService)
   private ctx = inject(NwTextContextService)
   private utils: DataTableUtils<PerkTableRecord> = inject(DataTableUtils)
-  private config = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
+  private config: DataTableSourceOptions<PerkTableRecord> = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
 
   public override entityID(item: PerkTableRecord): string {
     return item.PerkID
@@ -53,12 +53,14 @@ export class PerkTableSource extends DataTableSource<PerkTableRecord> {
     return combineLatest({
       perks: this.config?.source || this.db.perks,
       affixstats: this.db.affixstatsMap,
+      abilities: this.db.abilitiesMap,
     }).pipe(
-      map(({ perks, affixstats }) => {
+      map(({ perks, affixstats, abilities }) => {
         return perks.map((it) => {
           return {
             ...it,
             $affix: affixstats.get(it.Affix),
+            $ability: abilities.get(it.EquipAbility?.[0]),
           }
         })
       })
