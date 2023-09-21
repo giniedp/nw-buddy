@@ -7,12 +7,12 @@ import { IonicModule } from '@ionic/angular'
 import { firstValueFrom } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { NwModule } from '~/nw'
-import { NwExpressionContextService } from '~/nw/expression'
-import { DataGridModule, DataGridSource } from '~/ui/data-grid'
+import { NwTextContextService } from '~/nw/expression'
+import { DataGridModule, DataTableSource } from '~/ui/data-grid'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { PerkGridSource } from '~/widgets/data/perk-grid/perk-grid-source'
+import { PerkTableSource } from '~/widgets/data/perk-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
@@ -36,13 +36,13 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     class: 'layout-col',
   },
   providers: [
-    DataGridSource.provide({
-      source: PerkGridSource,
+    DataTableSource.provide({
+      type: PerkTableSource,
     }),
     QuicksearchService.provider({
       queryParam: 'search',
     }),
-    NwExpressionContextService,
+    NwTextContextService,
   ],
 })
 export class PerksPageComponent {
@@ -59,7 +59,7 @@ export class PerksPageComponent {
 
   public constructor(
     public search: QuicksearchService,
-    public ctx: NwExpressionContextService,
+    public ctx: NwTextContextService,
     head: HtmlHeadService,
     char: CharacterStore
   ) {

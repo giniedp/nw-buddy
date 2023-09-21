@@ -4,7 +4,7 @@ import { AppTestingModule } from '~/test'
 import { DataGridComponent } from './data-grid.component'
 import { of } from 'rxjs'
 import { CommonModule } from '@angular/common'
-import { DataGridSource } from './data-grid-source'
+import { DataTableSource } from './data-table-source'
 
 @Component({
   standalone: true,
@@ -16,7 +16,7 @@ import { DataGridSource } from './data-grid-source'
   `,
   imports: [CommonModule, DataGridComponent],
 })
-export class StoryComponent implements DataGridSource<{ id: string; name: string }> {
+export class StoryComponent implements DataTableSource<{ id: string; name: string }> {
   public entityID(it) {
     return it.id
   }
@@ -34,7 +34,7 @@ export class StoryComponent implements DataGridSource<{ id: string; name: string
     )
   }
 
-  public buildOptions() {
+  public gridOptions() {
     return {
       columnDefs: [{ field: 'id' }, { field: 'name' }],
     }

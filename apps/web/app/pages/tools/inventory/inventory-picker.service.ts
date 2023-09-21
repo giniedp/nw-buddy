@@ -16,7 +16,9 @@ import { Observable, combineLatest, filter, map, switchMap, take } from 'rxjs'
 import { ItemInstance, ItemInstancesStore } from '~/data'
 import { NwDbService } from '~/nw'
 import { DataTablePickerDialog } from '~/ui/data-table'
-import { HousingTableAdapter, ItemsTableAdapter, PerksTableAdapter, StatusEffectsTableAdapter } from '~/widgets/adapter'
+import { PerksTableAdapter, StatusEffectsTableAdapter } from '~/widgets/adapter'
+import { openHousingItemsPicker } from '~/widgets/data/housing-table'
+import { openItemsPicker } from '~/widgets/data/item-table'
 import { PlayerItemsTableAdapter } from './inventory-table.adapter'
 
 @Injectable({ providedIn: 'root' })
@@ -39,7 +41,15 @@ export class InventoryPickerService {
     return this.db.housingItemsMap.pipe(
       switchMap((items) => {
         return (
-          this.openHousingItemsPicker({ selection: itemId, title, multiple, category })
+          openHousingItemsPicker({
+            db: this.db,
+            dialog: this.dialog,
+            injector: this.injector,
+            selection: itemId,
+            title,
+            multiple,
+            category,
+          })
             .closed.pipe(take(1))
             // cancelled selection
             .pipe(filter((it) => it !== undefined))
@@ -69,7 +79,15 @@ export class InventoryPickerService {
     return this.db.itemsMap.pipe(
       switchMap((items) => {
         return (
-          this.openItemsPicker({ selection: itemId, title, multiple, category })
+          openItemsPicker({
+            db: this.db,
+            dialog: this.dialog,
+            injector: this.injector,
+            selection: itemId,
+            title,
+            multiple,
+            category,
+          })
             .closed.pipe(take(1))
             // cancelled selection
             .pipe(filter((it) => it !== undefined))
@@ -199,83 +217,6 @@ export class InventoryPickerService {
     })
   }
 
-  protected openItemsPicker({
-    title,
-    selection,
-    multiple,
-    category,
-  }: {
-    title?: string
-    selection?: string[]
-    multiple?: boolean
-    category?: string
-  }) {
-    let types: Set<string>
-    if (category) {
-      types = new Set([category])
-    } else {
-      types = new Set<string>(EQUIP_SLOTS.map((it) => it.itemType))
-    }
-
-    return DataTablePickerDialog.open(this.dialog, {
-      title: title || 'Pick item',
-      selection: selection,
-      multiselect: !!multiple,
-      adapter: ItemsTableAdapter.provider({
-        source: this.db.items.pipe(map((items) => items.filter((it) => it.ItemClass?.some((e) => types.has(e))))),
-        hideUserData: true,
-      }),
-      config: {
-        maxWidth: 1400,
-        maxHeight: 1200,
-        panelClass: ['w-full', 'h-full', 'p-4'],
-        injector: this.injector,
-      },
-    })
-  }
-
-  protected openHousingItemsPicker({
-    title,
-    selection,
-    multiple,
-    category,
-  }: {
-    title?: string
-    selection?: string[]
-    multiple?: boolean
-    category?: string
-  }) {
-    let types: Set<string>
-    if (category) {
-      types = new Set([category])
-    } else {
-      types = null
-    }
-    console.log('openHousingItemsPicker', { title, selection, multiple, category })
-    return DataTablePickerDialog.open(this.dialog, {
-      title: title || 'Pick item',
-      selection: selection,
-      multiselect: !!multiple,
-      adapter: HousingTableAdapter.provider({
-        source: this.db.housingItems.pipe(
-          map((items) => {
-            if (!types) {
-              return items
-            }
-            return items.filter((it) => types.has(it.UIHousingCategory))
-          })
-        ),
-        hideUserData: true,
-      }),
-      config: {
-        maxWidth: 1400,
-        maxHeight: 1200,
-        panelClass: ['w-full', 'h-full', 'p-4'],
-        injector: this.injector,
-      },
-    })
-  }
-
   private openPerksPicker(item: ItemDefinitionMaster, perkOrBucket: Perks | PerkBucket) {
     return DataTablePickerDialog.open(this.dialog, {
       title: 'Choose Perk',
@@ -351,8 +292,6 @@ export class InventoryPickerService {
     multiple?: boolean
     predicate?: (item: Statuseffect) => boolean
   }) {
-    let types: Set<string>
-
     return DataTablePickerDialog.open(this.dialog, {
       title: title || 'Pick effect',
       selection: selection,

@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { RouterModule } from '@angular/router'
+import { getItemRarity, getItemRarityLabel, isItemArtifact, isMasterItem } from '@nw-data/common'
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 
 @Component({
   standalone: true,
@@ -36,4 +38,14 @@ export class ItemHeaderContentComponent {
 
   @Input()
   public skeleton: boolean
+
+  @Input()
+  public set item(value: ItemDefinitionMaster | Housingitems) {
+    this.rarity = getItemRarity(value)
+    this.artifact = isMasterItem(value) && isItemArtifact(value)
+    this.title = value?.Name
+    this.category = value?.['$source']
+    this.subTitle = value?.ItemType
+    this.subCategory = getItemRarityLabel(value)
+  }
 }

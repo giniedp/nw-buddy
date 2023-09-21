@@ -12,7 +12,7 @@ import { ColDef, ColGroupDef, GridOptions } from '@ag-grid-community/core'
 import { Observable, combineLatest, defer, map, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService, sanitizeHtml } from '~/nw'
-import { NwExpressionContextService, NwExpressionService } from '~/nw/expression'
+import { NwTextContextService, NwExpressionService } from '~/nw/expression'
 import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { humanize, shareReplayRefCount } from '~/utils'
@@ -314,7 +314,7 @@ export class PerksTableAdapter extends DataTableAdapter<Perks> {
     private i18n: TranslateService,
     @Optional()
     private config: DataTableAdapterOptions<Perks>,
-    private ctx: NwExpressionContextService,
+    private ctx: NwTextContextService,
     private info: NwLinkService
   ) {
     super()

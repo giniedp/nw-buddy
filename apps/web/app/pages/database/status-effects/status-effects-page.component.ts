@@ -3,11 +3,11 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
-import { DataGridModule, DataGridSource } from '~/ui/data-grid'
+import { DataGridModule, DataTableSource } from '~/ui/data-grid'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { StatusEffectGridSource } from '~/widgets/data/status-effect-grid/status-effect-grid-source'
+import { StatusEffectTableSource } from '~/widgets/data/status-effect-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
@@ -29,8 +29,8 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     class: 'layout-col',
   },
   providers: [
-    DataGridSource.provide({
-      source: StatusEffectGridSource,
+    DataTableSource.provide({
+      type: StatusEffectTableSource,
     }),
     QuicksearchService.provider({
       queryParam: 'search',

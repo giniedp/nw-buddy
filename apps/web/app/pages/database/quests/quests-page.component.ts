@@ -3,12 +3,12 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
-import { NwExpressionContextService } from '~/nw/expression'
-import { DataGridModule, DataGridSource } from '~/ui/data-grid'
+import { NwTextContextService } from '~/nw/expression'
+import { DataGridModule, DataTableSource } from '~/ui/data-grid'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { QuestGridSource } from '~/widgets/data/quest-grid/quest-grid-source'
+import { QuestTableSource } from '~/widgets/data/quest-table'
 
 @Component({
   standalone: true,
@@ -20,13 +20,13 @@ import { QuestGridSource } from '~/widgets/data/quest-grid/quest-grid-source'
     class: 'layout-col',
   },
   providers: [
-    DataGridSource.provide({
-      source: QuestGridSource,
+    DataTableSource.provide({
+      type: QuestTableSource,
     }),
     QuicksearchService.provider({
       queryParam: 'search',
     }),
-    NwExpressionContextService,
+    NwTextContextService,
   ],
 })
 export class QuestsPageComponent {

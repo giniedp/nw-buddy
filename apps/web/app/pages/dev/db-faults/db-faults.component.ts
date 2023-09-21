@@ -17,7 +17,7 @@ import { SelectFilter } from '~/ui/ag-grid'
 import { DataTableAdapter, DataTableCategory, DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { humanize } from '~/utils'
-import { DataGridUtils } from '~/ui/data-grid'
+import { DataTableUtils } from '~/ui/data-grid'
 
 export interface FaultRow {
   item: ItemDefinitionMaster
@@ -175,7 +175,7 @@ export class DbFaultsComponent extends DataTableAdapter<FaultRow> {
     private nwDb: NwDbService,
     private i18n: TranslateService,
     protected search: QuicksearchService,
-    private r: DataGridUtils,
+    private r: DataTableUtils,
     private info: NwLinkService
   ) {
     super()

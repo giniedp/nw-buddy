@@ -6,7 +6,7 @@ import { ComponentStore } from '@ngrx/component-store'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { eqCaseInsensitive } from '~/utils'
-import { DataGridCategory } from '../types'
+import { DataTableCategory } from '../types'
 import { svgChevronLeft } from '~/ui/icons/svg'
 
 @Component({
@@ -21,7 +21,7 @@ import { svgChevronLeft } from '~/ui/icons/svg'
   hostDirectives: [CdkOverlayOrigin],
 })
 export class DataGridCategoryMenuComponent extends ComponentStore<{
-  categories: DataGridCategory[]
+  categories: DataTableCategory[]
   category: string | number | null
   rowCounter?: number
   rowCounterEnabled?: boolean
@@ -31,12 +31,12 @@ export class DataGridCategoryMenuComponent extends ComponentStore<{
   defaultRoute?: string
 }> {
   @Input()
-  public set nwbGridCateogryMenu(value: DataGridCategory[]) {
+  public set nwbGridCateogryMenu(value: DataTableCategory[]) {
     this.categories = value
   }
 
   @Input()
-  public set categories(value: DataGridCategory[]) {
+  public set categories(value: DataTableCategory[]) {
     this.patchState({
       categories: value,
     })
@@ -117,7 +117,7 @@ function celectCategories({
   category,
   routePrefix,
 }: {
-  categories: DataGridCategory[]
+  categories: DataTableCategory[]
   category: string | number | null
   routePrefix?: string
 }) {

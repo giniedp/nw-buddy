@@ -1,0 +1,14 @@
+:host {
+  --nwb-vg-cols: 1;
+  --nwb-vg-rows: 1;
+  --nwb-vg-height: 50px;
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(var(--nwb-vg-cols), minmax(0, 1fr));
+    grid-template-rows: repeat(var(--nwb-vg-rows), var(--nwb-vg-height));
+  }
+  ::ng-deep .cdk-virtual-scroll-content-wrapper {
+    max-width: 100% !important;
+  }
+}

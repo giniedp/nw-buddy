@@ -3,12 +3,12 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
-import { DataGridModule, DataGridSource } from '~/ui/data-grid'
+import { DataGridModule, DataTableSource } from '~/ui/data-grid'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { HousingGridSource } from '~/widgets/data/housing-grid/housing-grid-source'
+import { HousingTableSource } from '~/widgets/data/housing-table'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
@@ -33,8 +33,8 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     class: 'layout-col',
   },
   providers: [
-    DataGridSource.provide({
-      source: HousingGridSource,
+    DataTableSource.provide({
+      type: HousingTableSource,
     }),
     QuicksearchService.provider({
       queryParam: 'search',

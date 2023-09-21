@@ -4,12 +4,12 @@ import { Component, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { filter } from 'rxjs'
-import { GearsetRow, GearsetsStore } from '~/data'
+import { GearsetsStore } from '~/data'
 import { NwModule } from '~/nw'
 import { DataTableModule } from '~/ui/data-table'
 import { IconsModule } from '~/ui/icons'
 import { svgPlus } from '~/ui/icons/svg'
-import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/layout'
+import { PromptDialogComponent } from '~/ui/layout'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
@@ -30,7 +30,7 @@ import { GearsetLoadoutListComponent } from './loadout'
     IconsModule,
     TooltipModule,
     IonicModule,
-    GearsetLoadoutListComponent
+    GearsetLoadoutListComponent,
   ],
   providers: [GearsetsTableAdapter.provider(), QuicksearchService, GearsetsStore],
   host: {
@@ -41,11 +41,7 @@ export class GearsetsPageComponent implements OnInit {
   protected iconCreate = svgPlus
   protected tags$ = this.store.tags$
 
-  public constructor(
-    private store: GearsetsStore,
-    protected search: QuicksearchService,
-    private dialog: Dialog,
-  ) {
+  public constructor(private store: GearsetsStore, protected search: QuicksearchService, private dialog: Dialog) {
     //
   }
 

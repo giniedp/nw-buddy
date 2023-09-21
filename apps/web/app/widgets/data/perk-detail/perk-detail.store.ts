@@ -4,12 +4,12 @@ import { NW_FALLBACK_ICON, explainPerkMods, getPerkItemClassGSBonus } from '@nw-
 import { Affixstats, Perks } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { NwExpressionContextService } from '~/nw/expression'
+import { NwTextContextService } from '~/nw/expression'
 import { rejectKeys } from '~/utils'
 
 @Injectable()
 export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
-  protected readonly context = inject(NwExpressionContextService)
+  protected readonly context = inject(NwTextContextService)
 
   public readonly perkId$ = this.select(({ perkId }) => perkId)
 

@@ -3,11 +3,11 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
-import { DataGridModule, DataGridSource } from '~/ui/data-grid'
+import { DataGridModule, DataTableSource } from '~/ui/data-grid'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { ItemGridSource } from '~/widgets/data/item-grid'
+import { ItemTableSource } from '~/widgets/data/item-table'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
@@ -31,8 +31,8 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     class: 'layout-col',
   },
   providers: [
-    DataGridSource.provide({
-      source: ItemGridSource,
+    DataTableSource.provide({
+      type: ItemTableSource,
     }),
     QuicksearchService.provider({
       queryParam: 'search',

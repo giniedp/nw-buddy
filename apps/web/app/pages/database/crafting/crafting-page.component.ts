@@ -3,12 +3,12 @@ import { Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
-import { DataGridModule, DataGridSource } from '~/ui/data-grid'
+import { DataGridModule, DataTableSource } from '~/ui/data-grid'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { CraftingGridSource } from '~/widgets/data/crafting-grid'
+import { CraftingTableSource } from '~/widgets/data/crafting-table'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
@@ -32,8 +32,8 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     class: 'layout-col',
   },
   providers: [
-    DataGridSource.provide({
-      source: CraftingGridSource,
+    DataTableSource.provide({
+      type: CraftingTableSource,
     }),
     QuicksearchService.provider({
       queryParam: 'search',

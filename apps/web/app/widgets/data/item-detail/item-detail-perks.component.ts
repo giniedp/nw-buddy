@@ -3,9 +3,10 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { ItemDetailStore, PerkSlot } from './item-detail.store'
+import { ItemDetailStore } from './item-detail.store'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical, svgPen } from '~/ui/icons/svg'
+import { PerkSlot } from './selectors'
 
 @Component({
   standalone: true,

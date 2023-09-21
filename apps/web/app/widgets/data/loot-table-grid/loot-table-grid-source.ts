@@ -3,9 +3,8 @@ import { Injectable, inject } from '@angular/core'
 import { COLS_LOOTTABLE } from '@nw-data/generated'
 import { map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { DataGridSource, DataGridUtils } from '~/ui/data-grid'
-import { DataGridSourceOptions } from '~/ui/data-grid/provider'
-import { DataGridCategory } from '~/ui/data-grid/types'
+import { DATA_TABLE_SOURCE_OPTIONS, DataTableSource, DataTableUtils } from '~/ui/data-grid'
+import { DataTableCategory } from '~/ui/data-grid/types'
 import { addGenericColumns } from '~/ui/data-grid/utils'
 import {
   LootTableGridRecord,
@@ -18,16 +17,16 @@ import {
 } from './loot-table-grid-cols'
 
 @Injectable()
-export class LootTableGridSource extends DataGridSource<LootTableGridRecord> {
+export class LootTableGridSource extends DataTableSource<LootTableGridRecord> {
   private db = inject(NwDbService)
-  private config = inject(DataGridSourceOptions, { optional: true })
-  private utils: DataGridUtils<LootTableGridRecord> = inject(DataGridUtils)
+  private config = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
+  private utils: DataTableUtils<LootTableGridRecord> = inject(DataTableUtils)
 
   public override entityID(item: LootTableGridRecord): string {
     return item.LootTableID
   }
 
-  public override entityCategories(item: LootTableGridRecord): DataGridCategory[] {
+  public override entityCategories(item: LootTableGridRecord): DataTableCategory[] {
     if (!item.$parents?.length) {
       return [
         {
@@ -46,9 +45,9 @@ export class LootTableGridSource extends DataGridSource<LootTableGridRecord> {
     ]
   }
 
-  public override buildOptions(): GridOptions<LootTableGridRecord> {
-    if (this.config?.buildOptions) {
-      return this.config.buildOptions(this.utils)
+  public override gridOptions(): GridOptions<LootTableGridRecord> {
+    if (this.config?.gridOptions) {
+      return this.config.gridOptions(this.utils)
     }
     return buildOptions(this.utils)
   }
@@ -81,7 +80,7 @@ function selectTables(tables: LootTableGridRecord[]) {
   return entries
 }
 
-function buildOptions(util: DataGridUtils<LootTableGridRecord>) {
+function buildOptions(util: DataTableUtils<LootTableGridRecord>) {
   const result: GridOptions<LootTableGridRecord> = {
     columnDefs: [
       lootTableColId(util),

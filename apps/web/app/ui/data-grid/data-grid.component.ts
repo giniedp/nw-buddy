@@ -32,7 +32,7 @@ import { gridDisplayRowCount } from '../ag-grid/utils'
 import { DataGridFilterModelDirective } from './data-grid-filter-model.directive'
 import { DataGridPersistenceService } from './data-grid-persistence.service'
 import { DataTableRouterDirective } from './data-grid-route-param.directive'
-import { DataGridSource } from './data-grid-source'
+import { DataTableSource } from './data-table-source'
 import { DataGridStore } from './data-grid.store'
 
 export interface SelectionChangeEvent<T> {
@@ -60,7 +60,12 @@ export class DataGridComponent<T> implements OnInit {
   }
 
   @Input()
-  public set source(value: DataGridSource<T>) {
+  public set selection(value: Array<string | number>) {
+    this.store.patchState({ selectedItems: value })
+  }
+
+  @Input()
+  public set source(value: DataTableSource<T>) {
     this.store.patchState({ source: value })
   }
 
@@ -86,18 +91,18 @@ export class DataGridComponent<T> implements OnInit {
   @Output()
   public readonly ready$ = defer(() => this.grid.onReady)
 
+  @Output()
   public readonly selection$ = defer(() => this.store.selectedItemIds$)
   public readonly categories$ = defer(() => this.store.categories$)
   public readonly rowCount$ = defer(() => gridDisplayRowCount(this.ready$))
 
   public constructor(
     private locale: LocaleService,
-    private zone: NgZone,
     private grid: AgGridDirective<T>,
     private persistence: DataGridPersistenceService,
     private store: DataGridStore<T>,
     @Optional()
-    source: DataGridSource<T>
+    source: DataTableSource<T>
   ) {
     if (source) {
       this.source = source
@@ -109,21 +114,6 @@ export class DataGridComponent<T> implements OnInit {
     this.attachPersistence()
     this.attachAutoRefresh()
     this.attachSelectionBinding()
-
-    // this.adapter.grid
-    //   .pipe(switchMap(() => this.filter$))
-    //   .pipe(takeUntil(this.store.destroy$))
-    //   .subscribe((filter) => {
-    //     this.applyFilterState(this.gridApi, filter)
-    //   })
-
-    // listen for transaction events and apply them to the grid
-    // this.adapter$
-    //   .pipe(switchMap((it) => it.transaction || NEVER))
-    //   .pipe(takeUntil(this.store.destroy$))
-    //   .subscribe((tx) => {
-    //     this.gridApi.applyTransactionAsync(tx)
-    //   })
   }
 
   private attachBootloader() {
@@ -244,7 +234,7 @@ export class DataGridComponent<T> implements OnInit {
     api,
     ensureVisible,
   }: {
-    source: DataGridSource<T>
+    source: DataTableSource<T>
     toSelect: Array<string | number>
     api: GridApi
     ensureVisible?: boolean
@@ -274,7 +264,7 @@ export class DataGridComponent<T> implements OnInit {
     }
   }
 
-  private withSource<O>(fn: (source: DataGridSource<T>) => Observable<O>) {
+  private withSource<O>(fn: (source: DataTableSource<T>) => Observable<O>) {
     return this.store.source$.pipe(
       switchMap((source) => {
         if (!source) {

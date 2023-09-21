@@ -1,9 +1,9 @@
 import { ChangeDetectorRef, OnDestroy, Pipe, PipeTransform } from '@angular/core'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
 import { isEqual } from 'lodash'
-import { Subject, switchMap, takeUntil } from 'rxjs'
+import { Subject, combineLatest, of, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwExpressionContext, NwExpressionService } from './expression'
+import { NwExpressionContext, NwTextContextService, NwExpressionService } from './expression'
 
 export type NwTextPipeOptions = Partial<NwExpressionContext> & Record<string, string | number>
 
@@ -21,6 +21,7 @@ export class NwTextPipe implements PipeTransform, OnDestroy {
   public constructor(
     private i18n: TranslateService,
     private expr: NwExpressionService,
+    private ctx: NwTextContextService,
     private cdRef: ChangeDetectorRef
   ) {}
 
@@ -31,15 +32,15 @@ export class NwTextPipe implements PipeTransform, OnDestroy {
     this.dispose$.next()
     this.key = key
     this.options = options
-    this.i18n
-      .observe(key)
+    combineLatest({
+      text: this.i18n.observe(key),
+      context: options ? of(options) : this.ctx.state$,
+    })
       .pipe(
-        switchMap((value) =>
+        switchMap(({ text, context }) =>
           this.expr.solve({
-            charLevel: NW_MAX_CHARACTER_LEVEL,
-            gearScore: NW_MAX_GEAR_SCORE_BASE,
-            ...(options || {}),
-            text: value,
+            ...(context as any),
+            text: text,
           })
         )
       )

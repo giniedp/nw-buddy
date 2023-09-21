@@ -3,11 +3,11 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
-import { DataGridModule, DataGridSource } from '~/ui/data-grid'
+import { DataGridModule, DataTableSource } from '~/ui/data-grid'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { PoiGridSource } from '~/widgets/data/poi-grid/poi-grid-source'
+import { PoiTableSource } from '~/widgets/data/poi-table'
 
 @Component({
   standalone: true,
@@ -19,8 +19,8 @@ import { PoiGridSource } from '~/widgets/data/poi-grid/poi-grid-source'
     class: 'layout-col',
   },
   providers: [
-    DataGridSource.provide({
-      source: PoiGridSource,
+    DataTableSource.provide({
+      type: PoiTableSource,
     }),
     QuicksearchService.provider({
       queryParam: 'search',

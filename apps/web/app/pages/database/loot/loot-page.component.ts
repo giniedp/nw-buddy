@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
-import { DataGridModule, DataGridSource } from '~/ui/data-grid'
+import { DataGridModule, DataTableSource } from '~/ui/data-grid'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
@@ -30,8 +30,8 @@ import { LootModule } from '~/widgets/loot'
     TooltipModule,
   ],
   providers: [
-    DataGridSource.provide({
-      source: LootTableGridSource,
+    DataTableSource.provide({
+      type: LootTableGridSource,
     }),
     QuicksearchService.provider({
       queryParam: 'search',

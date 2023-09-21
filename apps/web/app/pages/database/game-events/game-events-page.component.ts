@@ -3,12 +3,12 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
-import { NwExpressionContextService } from '~/nw/expression'
-import { DataGridModule, DataGridSource } from '~/ui/data-grid'
+import { NwTextContextService } from '~/nw/expression'
+import { DataGridModule, DataTableSource } from '~/ui/data-grid'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { GameEventGridSource } from '~/widgets/data/game-event-grid/game-event-grid-source'
+import { GameEventTableSource } from '~/widgets/data/game-event-table'
 
 @Component({
   standalone: true,
@@ -20,13 +20,13 @@ import { GameEventGridSource } from '~/widgets/data/game-event-grid/game-event-g
     class: 'layout-col',
   },
   providers: [
-    DataGridSource.provide({
-      source: GameEventGridSource,
+    DataTableSource.provide({
+      type: GameEventTableSource,
     }),
     QuicksearchService.provider({
       queryParam: 'search',
     }),
-    NwExpressionContextService,
+    NwTextContextService,
   ],
 })
 export class GameEventsPageComponent {

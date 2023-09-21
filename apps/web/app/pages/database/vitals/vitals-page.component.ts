@@ -3,11 +3,11 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
-import { DataGridModule, DataGridSource } from '~/ui/data-grid'
+import { DataGridModule, DataTableSource } from '~/ui/data-grid'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { VitalGridSource } from '~/widgets/data/vital-grid/vital-grid-source'
+import { VitalTableSource } from '~/widgets/data/vital-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
@@ -29,8 +29,8 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     class: 'layout-col',
   },
   providers: [
-    DataGridSource.provide({
-      source: VitalGridSource,
+    DataTableSource.provide({
+      type: VitalTableSource,
     }),
     QuicksearchService.provider({
       queryParam: 'search',

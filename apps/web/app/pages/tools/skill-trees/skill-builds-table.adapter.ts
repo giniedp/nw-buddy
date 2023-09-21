@@ -9,7 +9,7 @@ import { NwLinkService } from '~/nw'
 import { DataTableAdapter, DataTableAdapterOptions, DataTableCategory, dataTableProvider } from '~/ui/data-table'
 import { LayoutService } from '~/ui/layout'
 import { humanize } from '~/utils'
-import { DataGridUtils } from '~/ui/data-grid'
+import { DataTableUtils } from '~/ui/data-grid'
 
 export interface SkillBuildsTableAdapterOptions extends DataTableAdapterOptions<SkillBuildRow> {
   noActions: boolean
@@ -116,7 +116,7 @@ export class SkillBuildsTableAdapter extends DataTableAdapter<SkillBuildRow> {
     private dialog: Dialog,
     private i18n: TranslateService,
     private zone: NgZone,
-    private r: DataGridUtils,
+    private r: DataTableUtils,
     private layout: LayoutService,
     private info: NwLinkService
   ) {

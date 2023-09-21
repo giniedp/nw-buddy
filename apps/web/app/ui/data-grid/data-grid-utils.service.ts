@@ -20,7 +20,7 @@ import { getIconFrameClass } from '../item-frame'
 import { colDefPrecision } from './utils'
 
 @Injectable({ providedIn: 'root' })
-export class DataGridUtils<T = any> {
+export class DataTableUtils<T = any> {
   public readonly document: Document = inject(DOCUMENT)
   public readonly db = inject(NwDbService)
   public readonly sanitizer = inject(DomSanitizer)
@@ -37,8 +37,11 @@ export class DataGridUtils<T = any> {
     return String(k)
   }
 
-  public fieldGetter(k: keyof T): string | ValueGetterFunc {
-    return this.valueGetter(({ data }) => data[k])
+  public fieldGetter<K extends keyof T = keyof T>(
+    k: K,
+    transform: (it: T[K]) => any = (it) => it
+  ): string | ValueGetterFunc {
+    return this.valueGetter(({ data }) => transform(data[k]))
   }
 
   public valueGetter(fn: keyof T | ((params: ValueGetterParams<T>) => any)): string | ValueGetterFunc {

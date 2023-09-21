@@ -4,12 +4,12 @@ import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
-import { DataGridModule, DataGridSource } from '~/ui/data-grid'
+import { DataGridModule, DataTableSource } from '~/ui/data-grid'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { DamageGridSource } from '~/widgets/data/damage-grid'
+import { DamageTableSource } from '~/widgets/data/damage-table'
 import { LootModule } from '~/widgets/loot'
 
 @Component({
@@ -30,8 +30,8 @@ import { LootModule } from '~/widgets/loot'
     DataGridModule,
   ],
   providers: [
-    DataGridSource.provide({
-      source: DamageGridSource,
+    DataTableSource.provide({
+      type: DamageTableSource,
     }),
     QuicksearchService.provider({
       queryParam: 'search',

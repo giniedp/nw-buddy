@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, importProvidersFrom } from '@angular/core'
 import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
 import { AppTestingModule } from '~/test'
-import { DataGridModule, provideGrid } from '~/ui/data-grid'
+import { DataGridModule, provideTableSource } from '~/ui/data-grid'
 import { QuicksearchModule } from '~/ui/quicksearch'
 import { LootTableGridSource } from './loot-table-grid-source'
 
@@ -38,8 +38,8 @@ import { LootTableGridSource } from './loot-table-grid-source'
   `,
   imports: [CommonModule, DataGridModule, QuicksearchModule],
   providers: [
-    provideGrid({
-      source: LootTableGridSource,
+    provideTableSource({
+      type: LootTableGridSource,
     }),
   ],
 })

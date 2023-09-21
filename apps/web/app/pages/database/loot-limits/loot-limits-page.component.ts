@@ -3,12 +3,12 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { NwModule } from '~/nw'
-import { NwExpressionContextService } from '~/nw/expression'
-import { DataGridModule, DataGridSource } from '~/ui/data-grid'
+import { NwTextContextService } from '~/nw/expression'
+import { DataGridModule, DataTableSource } from '~/ui/data-grid'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { LootLimitGridSource } from '~/widgets/data/loot-limit-grid/loot-limit-grid-source'
+import { LootLimitTableSource } from '~/widgets/data/loot-limit-table'
 
 @Component({
   standalone: true,
@@ -20,13 +20,13 @@ import { LootLimitGridSource } from '~/widgets/data/loot-limit-grid/loot-limit-g
     class: 'layout-col bg-base-300 rounded-md overflow-clip',
   },
   providers: [
-    DataGridSource.provide({
-      source: LootLimitGridSource,
+    DataTableSource.provide({
+      type: LootLimitTableSource,
     }),
     QuicksearchService.provider({
       queryParam: 'search',
     }),
-    NwExpressionContextService,
+    NwTextContextService,
   ],
 })
 export class LootLimitsPageComponent {

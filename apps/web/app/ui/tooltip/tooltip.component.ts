@@ -1,7 +1,8 @@
 import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule, NgClass } from '@angular/common'
-import { Component, HostBinding, Injector, Input, TemplateRef, Type } from '@angular/core'
+import { Component, ElementRef, HostBinding, Injector, Input, TemplateRef, Type } from '@angular/core'
 import { twMerge } from 'tailwind-merge'
+import { sanitizeHtml } from '~/nw'
 
 const DEFAULT_CLASS = [
   'block',
@@ -28,7 +29,6 @@ const DEFAULT_CLASS = [
       [ngTemplateOutlet]="tpl"
       [ngTemplateOutletContext]="context"
       [ngTemplateOutletInjector]="injector"
-      ]
     ></ng-template>
   `,
   imports: [CommonModule],
@@ -59,7 +59,7 @@ export class TooltipComponent {
     this.tpl = null
     this.component = null
     if (typeof value === 'string') {
-      this.text = value
+      this.elRef.nativeElement.innerHTML = sanitizeHtml(value)
     } else if (value instanceof TemplateRef) {
       this.tpl = value
     } else {
@@ -72,7 +72,8 @@ export class TooltipComponent {
   protected tpl: TemplateRef<any>
   protected component: Type<any>
 
-  public constructor(private hostClass: NgClass) {
+  public constructor(private hostClass: NgClass, private elRef: ElementRef<HTMLElement>) {
     //
+    
   }
 }
