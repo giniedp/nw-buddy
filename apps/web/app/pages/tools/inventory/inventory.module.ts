@@ -1,54 +1,32 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
-import { PlayerItemsDetailComponent } from './inventory-detail.component'
+import { InventoryDetailComponent } from './inventory-detail.component'
 import { PlayerItemsTableComponentn } from './inventory-table.component'
-import { PlayerItemsPageComponent } from './inventory.component'
+import { InventoryPageComponent } from './inventory-page.component'
 
 const routes: Routes = [
   {
     path: '',
-    component: PlayerItemsPageComponent,
+    pathMatch: 'full',
+    redirectTo: 'table',
+  },
+  {
+    path: ':category',
+    component: InventoryPageComponent,
     children: [
       {
-        path: '',
-        pathMatch: 'full',
-        redirectTo: 'table',
+        path: ':set/:slot',
+        component: InventoryDetailComponent,
       },
       {
-        path: 'table',
-        component: PlayerItemsTableComponentn,
-        children: [
-          {
-            path: ':set/:slot',
-            component: PlayerItemsDetailComponent,
-          },
-          {
-            path: ':id',
-            component: PlayerItemsDetailComponent,
-          },
-        ],
-      },
-      {
-        path: ':category',
-        component: PlayerItemsTableComponentn,
-        children: [
-          {
-            path: ':set/:slot',
-            component: PlayerItemsDetailComponent,
-          },
-          {
-            path: ':id',
-            component: PlayerItemsDetailComponent,
-          },
-        ],
+        path: ':id',
+        component: InventoryDetailComponent,
       },
     ],
   },
 ]
 
 @NgModule({
-  imports: [
-    RouterModule.forChild(routes),
-  ],
+  imports: [RouterModule.forChild(routes)],
 })
 export class InventoryModule {}

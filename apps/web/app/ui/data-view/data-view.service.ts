@@ -9,7 +9,7 @@ export type DataViewMode = 'grid' | 'virtual'
 export interface DataViewServiceState<T> {
   items: T[]
   categories: DataViewCategory[]
-  category: string | number | null
+  category: string | null
   categoryItems: T[]
   mode: DataViewMode
 }

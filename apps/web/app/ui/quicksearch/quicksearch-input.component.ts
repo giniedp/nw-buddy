@@ -39,6 +39,12 @@ export class QuicksearchInputComponent {
   @Input()
   public placeholder: string = 'Search'
 
+  @Input()
+  public set autofocus(value: boolean) {
+    if (value) {
+      setTimeout(() => this.input.nativeElement.focus(), 100)
+    }
+  }
   public readonly value$ = this.search.query$
 
   protected svgSearch = svgMagnifyingGlass
@@ -49,10 +55,7 @@ export class QuicksearchInputComponent {
   })
 
   public constructor(private search: QuicksearchService, private keys: Hotkeys) {
-    merge(
-      this.keys.observe({ keys: '/' }),
-      this.keys.observe({ keys: ':' }),
-    )
+    merge(this.keys.observe({ keys: '/' }), this.keys.observe({ keys: ':' }))
       .pipe(takeUntilDestroyed())
       .subscribe(() => {
         this.input.nativeElement.focus()

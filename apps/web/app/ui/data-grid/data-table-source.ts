@@ -50,6 +50,11 @@ export abstract class DataGridAdapter<T> {
   public static provide = provideTableSource
   public abstract entityID(item: T): string | number
   public abstract entityCategories(item: T): DataTableCategory[]
+  public getCategories?: () => DataTableCategory[]
   public abstract gridOptions(): GridOptions
   public abstract connect(): Observable<T[]>
+
+  public onEntityCreate?: Observable<T>
+  public onEntityUpdate?: Observable<T>
+  public onEntityDestroy?: Observable<string>
 }

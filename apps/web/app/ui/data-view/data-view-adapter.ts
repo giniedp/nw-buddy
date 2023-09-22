@@ -30,7 +30,12 @@ export interface DataViewAdapterOptions<T> {
 export abstract class DataViewAdapter<T> {
   public abstract entityID(item: T): string | number
   public abstract entityCategories(item: T): DataViewCategory[]
+  public getCategories?: () => DataViewCategory[]
   public abstract connect(): Observable<T[]>
   public abstract gridOptions(): GridOptions<T>
   public abstract virtualOptions(): VirtualGridOptions<T>
+
+  public onEntityCreate?: Observable<T>
+  public onEntityUpdate?: Observable<T>
+  public onEntityDestroy?: Observable<string>
 }

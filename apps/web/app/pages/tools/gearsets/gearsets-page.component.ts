@@ -13,7 +13,6 @@ import { PromptDialogComponent } from '~/ui/layout'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { GearsetsTableAdapter } from './gearsets-table.adapter'
 import { GearsetLoadoutListComponent } from './loadout'
 
 @Component({
@@ -32,7 +31,7 @@ import { GearsetLoadoutListComponent } from './loadout'
     IonicModule,
     GearsetLoadoutListComponent,
   ],
-  providers: [GearsetsTableAdapter.provider(), QuicksearchService, GearsetsStore],
+  providers: [QuicksearchService, GearsetsStore],
   host: {
     class: 'layout-col',
   },

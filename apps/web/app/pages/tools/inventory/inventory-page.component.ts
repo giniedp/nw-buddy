@@ -1,49 +1,64 @@
+import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
+import { EQUIP_SLOTS, getItemId, getItemMaxGearScore } from '@nw-data/common'
 import { filter, firstValueFrom, take } from 'rxjs'
 import { GearsetsStore, ItemInstanceRow, ItemInstancesStore } from '~/data'
 import { NwModule } from '~/nw'
-import { EQUIP_SLOTS, getItemId, getItemMaxGearScore } from '@nw-data/common'
-import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
+import { DataGridModule } from '~/ui/data-grid'
+import { DataViewModule, DataViewService, provideDataView } from '~/ui/data-view'
 import { IconsModule } from '~/ui/icons'
 import { svgImage, svgPlus, svgTrashCan } from '~/ui/icons/svg'
-import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
+import { VirtualGridModule } from '~/ui/virtual-grid'
+import { observeRouteParam } from '~/utils'
+import { InventoryTableAdapter, InventoryTableRecord } from '~/widgets/data/inventory-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
+import { GearImporterDialogComponent } from './gear-importer-dialog.component'
 import { GearsetFormComponent } from './gearset-form.component'
 import { InventoryPickerService } from './inventory-picker.service'
-import { PlayerItemsTableAdapter } from './inventory-table.adapter'
-import { GearImporterDialogComponent } from './gear-importer-dialog.component'
-import { Dialog } from '@angular/cdk/dialog'
-import { observeRouteParam } from '~/utils'
 
 @Component({
   standalone: true,
   selector: 'nwb-inventory-page',
-  templateUrl: './inventory.component.html',
+  templateUrl: './inventory-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    NwModule,
-    RouterModule,
-    QuicksearchModule,
-    DataTableModule,
-    NavbarModule,
-    ScreenshotModule,
-    IconsModule,
+    DataGridModule,
+    DataViewModule,
     GearsetFormComponent,
+    IconsModule,
+    IonicModule,
+    NwModule,
+    QuicksearchModule,
+    RouterModule,
+    ScreenshotModule,
     TooltipModule,
-    IonicModule
+    VirtualGridModule,
   ],
   host: {
     class: 'layout-col',
   },
-  providers: [PlayerItemsTableAdapter.provider(), QuicksearchService, InventoryPickerService, ItemInstancesStore, GearsetsStore],
+  providers: [
+    provideDataView({
+      adapter: InventoryTableAdapter,
+    }),
+    QuicksearchService,
+    InventoryPickerService,
+    ItemInstancesStore,
+    GearsetsStore,
+  ],
 })
-export class PlayerItemsPageComponent implements OnInit {
+export class InventoryPageComponent implements OnInit {
+  protected title = 'Inventory Items'
+  protected defaultRoute = 'table'
+  protected selectionParam = 'id'
+  protected persistKey = 'inventory-table'
+
   protected svgPlus = svgPlus
   protected svgTrash = svgTrashCan
   protected svgImage = svgImage
@@ -53,9 +68,9 @@ export class PlayerItemsPageComponent implements OnInit {
     private sets: GearsetsStore,
     private items: ItemInstancesStore,
     private picker: InventoryPickerService,
-    private adapter: DataTableAdapter<ItemInstanceRow>,
     private dialog: Dialog,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    protected service: DataViewService<InventoryTableRecord>
   ) {
     //
   }
@@ -69,7 +84,7 @@ export class PlayerItemsPageComponent implements OnInit {
     this.picker
       .pickItem({
         multiple: true,
-        category: await firstValueFrom(this.adapter.category),
+        category: await firstValueFrom(this.service.category$),
       })
       .pipe(take(1))
       .subscribe((items) => {
@@ -110,7 +125,7 @@ export class PlayerItemsPageComponent implements OnInit {
         this.items.createRecord({
           record: {
             id: null,
-            ...instance
+            ...instance,
           },
         })
       })

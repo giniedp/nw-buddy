@@ -35,7 +35,6 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<Perks> {
     return {
       height: 90,
       width: 320,
-      gridClass: ['-mx-1'],
       cellDataView: PerkGridCellComponent,
       cellEmptyView: EmptyComponent,
       getQuickFilterText: (item, tl8) => {

@@ -3,18 +3,18 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
-import { combineLatest, filter, firstValueFrom, map, switchMap, take, tap } from 'rxjs'
-import { GearsetsDB, GearsetStore, ItemInstanceRecord } from '~/data'
+import { EQUIP_SLOTS, EquipSlot } from '@nw-data/common'
+import { combineLatest, filter, firstValueFrom, map, switchMap, take } from 'rxjs'
+import { GearsetStore, GearsetsDB, ItemInstanceRecord } from '~/data'
 import { NwModule } from '~/nw'
-import { EquipSlot, EQUIP_SLOTS } from '@nw-data/common'
 import { PreferencesService } from '~/preferences'
-import { DataTablePickerDialog } from '~/ui/data-table'
+import { DataViewPicker } from '~/ui/data-view'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft, svgFolderOpen, svgLink, svgPaste, svgPlus, svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
+import { GearsetTableAdapter } from '~/widgets/data/gearset-table'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
-import { GearsetsTableAdapter } from '../gearsets/gearsets-table.adapter'
 import { GearsetFormCellComponent } from './gearset-form-cell.component'
 
 @Component({
@@ -110,12 +110,11 @@ export class GearsetFormComponent {
   }
 
   private pickGearsetId() {
-    return DataTablePickerDialog.open(this.dialog, {
-      adapter: GearsetsTableAdapter.provider({
-        noActions: true,
-        persistStateId: 'gearsets-picker-table',
-      }),
+    return DataViewPicker.open(this.dialog, {
       title: 'Choose a set',
+      dataView: {
+        adapter: GearsetTableAdapter,
+      },
       config: {
         maxWidth: 1024,
         maxHeight: 1024,
@@ -123,7 +122,7 @@ export class GearsetFormComponent {
         injector: this.injector,
       },
     })
-      .closed.pipe(map((it) => it?.[0]))
+      .closed.pipe(map((it) => it?.[0] as string))
       .pipe(filter((it) => it != null))
       .pipe(take(1))
   }

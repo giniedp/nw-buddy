@@ -34,7 +34,7 @@ export class DataViewCategoryMenuComponent extends ComponentStore<DataViewCatego
   public nwbDataCateogryMenu: void
 
   @Input()
-  public set category(value: string | number | null) {
+  public set category(value: string | null) {
     this.service.patchState({ category: value })
   }
 

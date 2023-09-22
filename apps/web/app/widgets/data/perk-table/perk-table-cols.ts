@@ -12,10 +12,6 @@ export type PerkTableRecord = Perks & {
   $affix?: Affixstats
 }
 
-export function perkCol(util: PerkTableUtils) {
-  //
-}
-
 export function perkColIcon(util: PerkTableUtils) {
   return util.colDef({
     colId: 'icon',

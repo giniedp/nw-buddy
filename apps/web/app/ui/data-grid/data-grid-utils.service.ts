@@ -8,7 +8,7 @@ import {
   ValueGetterParams,
 } from '@ag-grid-community/core'
 import { DOCUMENT } from '@angular/common'
-import { Injectable, SecurityContext, Type, inject } from '@angular/core'
+import { Injectable, NgZone, SecurityContext, Type, inject } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService } from '~/nw'
@@ -18,6 +18,7 @@ import { ElementChildren, ElementProps, TagName, createEl } from '~/utils'
 import { AsyncCellRenderer, AsyncCellRendererParams } from '../ag-grid'
 import { getIconFrameClass } from '../item-frame'
 import { colDefPrecision } from './utils'
+import { Router } from '@angular/router'
 
 @Injectable({ providedIn: 'root' })
 export class DataTableUtils<T = any> {
@@ -28,6 +29,8 @@ export class DataTableUtils<T = any> {
   public readonly itemPref = inject(ItemPreferencesService)
   public readonly expr = inject(NwExpressionService)
   public readonly nwLink = inject(NwLinkService)
+  public readonly zone = inject(NgZone)
+  public readonly router = inject(Router)
 
   public readonly precision = {
     ...colDefPrecision,

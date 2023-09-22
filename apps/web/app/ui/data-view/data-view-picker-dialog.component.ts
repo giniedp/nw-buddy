@@ -75,8 +75,6 @@ export class DataViewPicker {
     })
   }
 
-  protected iconList = svgTableList
-  protected iconGrid = svgGrid
   protected iconBack = svgChevronLeft
   protected search: string
   protected selection: Array<string | number>

@@ -22,6 +22,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     CommonModule,
     DataGridModule,
     DataViewModule,
+    IconsModule,
     IonicModule,
     NwModule,
     QuicksearchModule,
@@ -29,7 +30,6 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     ScreenshotModule,
     TooltipModule,
     VirtualGridModule,
-    IconsModule,
   ],
   host: {
     class: 'layout-col',

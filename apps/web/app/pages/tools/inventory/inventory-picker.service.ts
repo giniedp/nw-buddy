@@ -16,11 +16,13 @@ import { Observable, combineLatest, filter, map, switchMap, take } from 'rxjs'
 import { ItemInstance, ItemInstancesStore } from '~/data'
 import { NwDbService } from '~/nw'
 import { DataTablePickerDialog } from '~/ui/data-table'
-import { PerksTableAdapter, StatusEffectsTableAdapter } from '~/widgets/adapter'
+import { DataViewPicker } from '~/ui/data-view'
 import { openHousingItemsPicker } from '~/widgets/data/housing-table'
 import { openItemsPicker } from '~/widgets/data/item-table'
+import { PerkTableAdapter } from '~/widgets/data/perk-table'
+import { StatusEffectTableAdapter } from '~/widgets/data/status-effect-table'
 import { PlayerItemsTableAdapter } from './inventory-table.adapter'
-import { openPerksPicker } from '~/widgets/data/perk-table'
+import { InventoryTableAdapter } from '~/widgets/data/inventory-table'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryPickerService {
@@ -201,14 +203,15 @@ export class InventoryPickerService {
       types = new Set<string>(EQUIP_SLOTS.map((it) => it.itemType))
     }
 
-    return DataTablePickerDialog.open(this.dialog, {
+    return DataViewPicker.open(this.dialog, {
       title: title || 'Pick from inventory',
       selection: selection,
-      multiselect: !!multiple,
-      adapter: PlayerItemsTableAdapter.provider({
+      // multiselect: !!multiple,
+      persistKey: 'inventory-picker-table',
+      dataView: {
+        adapter: InventoryTableAdapter,
         source: store.rows$.pipe(map((items) => items.filter((it) => it.item?.ItemClass?.some((e) => types.has(e))))),
-        persistStateId: 'inventory-picker-table',
-      }),
+      },
       config: {
         maxWidth: 1400,
         maxHeight: 1200,
@@ -219,12 +222,14 @@ export class InventoryPickerService {
   }
 
   private openPerksPicker(item: ItemDefinitionMaster, perkOrBucket: Perks | PerkBucket) {
-    return DataTablePickerDialog.open(this.dialog, {
+    return DataViewPicker.open(this.dialog, {
       title: 'Choose Perk',
-      selection: ('PerkID' in perkOrBucket ? perkOrBucket : null)?.PerkID,
-      adapter: PerksTableAdapter.provider({
+      selection: [('PerkID' in perkOrBucket ? perkOrBucket : null)?.PerkID].filter((it) => !!it),
+      displayMode: 'virtual',
+      dataView: {
+        adapter: PerkTableAdapter,
         source: this.getAplicablePerks(item, perkOrBucket),
-      }),
+      },
       config: {
         maxWidth: 1400,
         maxHeight: 1200,
@@ -293,13 +298,13 @@ export class InventoryPickerService {
     multiple?: boolean
     predicate?: (item: Statuseffect) => boolean
   }) {
-    return DataTablePickerDialog.open(this.dialog, {
+    return DataViewPicker.open(this.dialog, {
       title: title || 'Pick effect',
       selection: selection,
-      multiselect: !!multiple,
-      adapter: StatusEffectsTableAdapter.provider({
+      dataView: {
+        adapter: StatusEffectTableAdapter,
         source: this.db.statusEffects.pipe(map((items) => items.filter(predicate || (() => true)))),
-      }),
+      },
       config: {
         maxWidth: 1400,
         maxHeight: 1200,

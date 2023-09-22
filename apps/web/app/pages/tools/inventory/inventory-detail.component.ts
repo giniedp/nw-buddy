@@ -23,13 +23,22 @@ export interface ItemDetailVM {
   selector: 'nwb-inventory-detail',
   templateUrl: './inventory-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, FormsModule, NwModule, ItemDetailModule, ScreenshotModule, LayoutModule, ItemFrameModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    NwModule,
+    ItemDetailModule,
+    ScreenshotModule,
+    LayoutModule,
+    ItemFrameModule,
+  ],
   providers: [GearsetStore],
   host: {
     class: 'flex-none flex flex-col',
   },
 })
-export class PlayerItemsDetailComponent {
+export class InventoryDetailComponent {
   protected routeId$ = observeRouteParam(this.route, 'id')
   protected routeSlot$ = observeRouteParam(this.route, 'slot')
 

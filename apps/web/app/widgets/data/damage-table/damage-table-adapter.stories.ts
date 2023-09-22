@@ -28,7 +28,7 @@ import { DamageTableAdapter } from './damage-table-adapter'
         </li>
       </ul>
       <div class="flex-none p-2 w-full md:max-w-[256px]">
-        <nwb-quicksearch-input [placeholder]="'Quickfilter'"></nwb-quicksearch-input>
+        <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"></nwb-quicksearch-input>
       </div>
       <nwb-data-grid [filterQueryParam]="'filter'" [persistKey]="'items-table'" #grid></nwb-data-grid>
     </div>
