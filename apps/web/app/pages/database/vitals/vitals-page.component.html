@@ -13,12 +13,15 @@
         ></button>
       </li>
       <span class="flex-1"></span>
-      <!-- <li>
+      <li>
         <button [nwbScreenshotBtn]></button>
-      </li> -->
-      <!-- <li *ngIf="service.canToggleMode">
-        <a [nwbDataViewToggle]></a>
-      </li> -->
+      </li>
+      <li *ngIf="service.canToggleMode">
+        <button [nwbDataViewToggle]></button>
+      </li>
+      <li>
+        <button [nwbDataViewOptionsMenu] [disabled]="!service.isTableActive$()"></button>
+      </li>
     </ul>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
       <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"></nwb-quicksearch-input>
@@ -37,6 +40,7 @@
   </ng-container>
   <ng-container *ngIf="service.isTableActive$()">
     <nwb-table-grid
+      (ready$)="service.onTableReady($event)"
       [enableQuickfilter]="true"
       [data]="service.categoryItems$ | async"
       [options]="service.tableGridOptions"

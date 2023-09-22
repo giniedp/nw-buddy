@@ -13,14 +13,13 @@
   [cdkConnectedOverlayOrigin]="cdkOrigin"
   [cdkConnectedOverlayOpen]="isPanelOpen"
   [cdkConnectedOverlayHasBackdrop]="true"
-  [cdkConnectedOverlayPositions]="[
-    { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetX: -3 }
-  ]"
+  [cdkConnectedOverlayOffsetY]="5"
+  [cdkConnectedOverlayOffsetX]="-2"
   (overlayOutsideClick)="isPanelOpen = false"
   (backdropClick)="isPanelOpen = false"
   (detach)="isPanelOpen = false"
 >
-  <div class="w-80 bg-base-200 rounded-b-md">
+  <div class="w-80 max-h-[80vh] overflow-auto bg-base-200 border border-base-100 rounded-md shadow-lg">
     <ul class="menu menu-compact">
       <li *ngIf="defaultCategory$ | async; let cat">
         <a class="flex flex-row" [routerLink]="cat.route" (click)="isPanelOpen = false">

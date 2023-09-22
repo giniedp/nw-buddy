@@ -10,7 +10,7 @@
   (backdropClick)="isPanelOpen = false"
   (detach)="isPanelOpen = false"
 >
-  <div class="w-48 bg-base-200 rounded-md">
+  <div class="w-48 bg-base-200 border border-base-100 rounded-md shadow-lg">
     <ul class="menu menu-compact">
       <li [class.bordered]="this.service.isTableActive$()">
         <a (click)="activateTable()">
