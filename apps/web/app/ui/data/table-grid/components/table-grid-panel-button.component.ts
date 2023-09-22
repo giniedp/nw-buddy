@@ -1,7 +1,7 @@
 import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, HostListener, Input } from '@angular/core'
-import { DataGridPanelComponent } from './table-grid-panel.component'
+import { TableGridPanelComponent } from './table-grid-panel.component'
 
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ComponentStore } from '@ngrx/component-store'
@@ -15,7 +15,7 @@ import { svgFilter, svgTableCells } from '~/ui/icons/svg'
   selector: 'nwb-table-grid-panel-button,button[nwbGridPanelButton]]',
   templateUrl: './table-grid-panel-button.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, OverlayModule, IconsModule, DataGridPanelComponent],
+  imports: [CommonModule, OverlayModule, IconsModule, TableGridPanelComponent],
   hostDirectives: [CdkOverlayOrigin],
   host: {
     class: '',

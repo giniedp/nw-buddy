@@ -7,13 +7,12 @@
   </h3>
   <span class="flex-1"></span>
   <ng-container *ngIf="!displayMode && service.canToggleMode">
-    <button class="btn btn-square btn-ghost" [nwbDataViewToggle]="'grid'" [tooltip]="'Show Table View'"></button>
-    <button class="btn btn-square btn-ghost" [nwbDataViewToggle]="'virtual'" [tooltip]="'Show Grid View'"></button>
+    <button class="btn btn-square btn-ghost" [nwbDataViewToggle]></button>
   </ng-container>
   <nwb-quicksearch-input [autofocus]="true" class="w-full md:w-60"></nwb-quicksearch-input>
 </div>
 
-<ng-container *ngIf="service.isVirtGridActive$()">
+<ng-container *ngIf="service.isGridActive$()">
   <nwb-virtual-grid
     [enableQuickfilter]="true"
     [selection]="selection"
@@ -23,12 +22,12 @@
     (selection$)="onSelectionChange($event)"
   ></nwb-virtual-grid>
 </ng-container>
-<ng-container *ngIf="service.isGridActive$()">
+<ng-container *ngIf="service.isTableActive$()">
   <nwb-table-grid
     [enableQuickfilter]="true"
     [selection]="selection"
     [data]="service.categoryItems$ | async"
-    [options]="service.gridOptions"
+    [options]="service.tableGridOptions"
     [identifyBy]="service.entityIdGetter"
     [persistKey]="persistKey"
     (selectionChanged$)="onSelectionChange($event.ids)"

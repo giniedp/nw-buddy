@@ -1,12 +1,15 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Observable, map } from 'rxjs'
+import { Observable, map, of } from 'rxjs'
 import { eqCaseInsensitive } from '~/utils'
 import { DataViewAdapter } from './data-view-adapter'
 import { DataViewCategory } from './data-view-category'
+import { AgGrid, whenGridReady } from '../ag-grid'
+import { AgGridEvent } from '@ag-grid-community/core'
 
-export type DataViewMode = 'grid' | 'virtual'
+export type DataViewMode = 'grid' | 'table'
 export interface DataViewServiceState<T> {
+  agGrid?: AgGrid<T> | null
   items: T[]
   categories: DataViewCategory[]
   category: string | null
@@ -16,6 +19,7 @@ export interface DataViewServiceState<T> {
 
 @Injectable()
 export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> {
+  public readonly agGrid$ = this.select(({ agGrid }) => agGrid)
   public readonly items$ = this.select(({ items }) => items)
   public readonly categories$ = this.select(({ categories }) => categories)
   public readonly category$ = this.select(({ category }) => category)
@@ -23,20 +27,24 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
     return selectItemsByCategory(this.adapter, items, category)
   })
 
-  public readonly gridOptions = this.adapter.gridOptions()
+  public readonly tableGridOptions = this.adapter.gridOptions()
   public readonly virtualOptions = this.adapter.virtualOptions()
-  public readonly canToggleMode = !!this.gridOptions && !!this.virtualOptions
+  public readonly canToggleMode = !!this.tableGridOptions && !!this.virtualOptions
   public readonly mode$ = this.selectSignal(({ mode }) => {
-    if ((!mode || mode === 'grid') && !!this.gridOptions) {
-      return 'grid'
+    if ((!mode || mode === 'table') && !!this.tableGridOptions) {
+      return 'table'
     }
-    if ((!mode || mode === 'virtual') && !!this.gridOptions) {
-      return 'virtual'
+    if ((!mode || mode === 'grid') && !!this.tableGridOptions) {
+      return 'grid'
     }
     return null
   })
+  public readonly isTableActive$ = this.selectSignal(this.mode$, (mode) => mode === 'table')
   public readonly isGridActive$ = this.selectSignal(this.mode$, (mode) => mode === 'grid')
-  public readonly isVirtGridActive$ = this.selectSignal(this.mode$, (mode) => mode === 'virtual')
+
+  public readonly onTableReady = (it: AgGrid<T>) => {
+    return this.patchState({ agGrid: it })
+  }
 
   public readonly entityIdGetter = (it: T) => {
     return this.adapter.entityID(it)
@@ -48,7 +56,7 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
       categories: [],
       category: null,
       categoryItems: [],
-      mode: 'grid',
+      mode: 'table',
     })
 
     this.loadItems(adapter.connect())
@@ -75,7 +83,7 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
 
   public toggleMode() {
     if (this.canToggleMode) {
-      this.patchState({ mode: this.mode$() === 'grid' ? 'virtual' : 'grid' })
+      this.patchState({ mode: this.mode$() === 'table' ? 'grid' : 'table' })
     }
   }
 }

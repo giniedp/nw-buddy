@@ -60,7 +60,7 @@ export class PoiPageComponent {
     protected search: QuicksearchService,
     head: HtmlHeadService
   ) {
-    service.patchState({ mode: 'grid' })
+    service.patchState({ mode: 'table' })
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - Points Of Interes DB',

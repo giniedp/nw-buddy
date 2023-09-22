@@ -34,10 +34,10 @@ import { shareReplayRefCount } from '~/utils'
   imports: [CommonModule, IconsModule, DialogModule, TooltipModule, QuicksearchModule],
   providers: [QuicksearchService],
   host: {
-    class: 'w-80 flex flex-col gap-1 bg-base-100 rounded-b-md',
+    class: 'flex flex-col gap-1',
   },
 })
-export class DataGridPanelComponent extends ComponentStore<{
+export class TableGridPanelComponent extends ComponentStore<{
   grid: AgGrid
 }> {
   @Input()

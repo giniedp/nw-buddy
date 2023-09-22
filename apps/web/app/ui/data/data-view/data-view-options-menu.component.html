@@ -1,0 +1,23 @@
+<span class="indicator">
+  <nwb-icon [icon]="icon" class="w-4 h-4"> </nwb-icon>
+  <span class="indicator-item badge badge-xs badge-primary -top-1 scale-75" *ngIf="showIndicator$ | async"></span>
+</span>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="cdkOrigin"
+  [cdkConnectedOverlayOpen]="isPanelOpen"
+  [cdkConnectedOverlayHasBackdrop]="true"
+  [cdkConnectedOverlayOffsetY]="5"
+  (overlayOutsideClick)="isPanelOpen = false"
+  (backdropClick)="isPanelOpen = false"
+  (detach)="isPanelOpen = false"
+>
+  <div class="w-80 max-h-[80vh] overflow-auto bg-base-100 rounded-md">
+    <ng-container [ngTemplateOutlet]="nwbDataViewOptionsMenu"></ng-container>
+    <ng-container *ngIf="service.isTableActive$()">
+      <nwb-table-grid-panel [grid]="service.agGrid$ | async"></nwb-table-grid-panel>
+    </ng-container>
+    <ng-content></ng-content>
+  </div>
+</ng-template>

@@ -32,8 +32,7 @@
         <nwb-data-table-panel-button></nwb-data-table-panel-button>
       </li> -->
       <!-- <li *ngIf="service.canToggleMode">
-        <a [nwbDataViewToggle]="'grid'" [tooltip]="'Show Table View'"></a>
-        <a [nwbDataViewToggle]="'virtual'" [tooltip]="'Show Grid View'"></a>
+        <a [nwbDataViewToggle]></a>
       </li> -->
     </ul>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
@@ -42,7 +41,7 @@
   </div>
 </ion-header>
 <div class="flex-1 flex flex-row overflow-hidden content-container">
-  <ng-container *ngIf="service.isVirtGridActive$()">
+  <ng-container *ngIf="service.isGridActive$()">
     <nwb-virtual-grid
       [enableQuickfilter]="true"
       [data]="service.categoryItems$ | async"
@@ -51,11 +50,11 @@
       [selectionRouteParam]="selectionParam"
     ></nwb-virtual-grid>
   </ng-container>
-  <ng-container *ngIf="service.isGridActive$()">
+  <ng-container *ngIf="service.isTableActive$()">
     <nwb-table-grid
       [enableQuickfilter]="true"
       [data]="service.categoryItems$ | async"
-      [options]="service.gridOptions"
+      [options]="service.tableGridOptions"
       [identifyBy]="service.entityIdGetter"
       [persistKey]="persistKey"
       [selectionRouteParam]="selectionParam"

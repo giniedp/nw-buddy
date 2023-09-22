@@ -1,47 +1,45 @@
-import { Component, HostListener, Input } from '@angular/core'
+import { Component, HostListener, Input, computed } from '@angular/core'
 import { IconsModule } from '../../icons'
 import { svgGrid, svgTableList } from '../../icons/svg'
 import { DataViewMode, DataViewService } from './data-view.service'
+import { CommonModule } from '@angular/common'
+import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay'
 
 @Component({
   standalone: true,
   selector: 'nwb-data-view-toggle,[nwbDataViewToggle]',
-  template: ` <nwb-icon [icon]="icon" class="w-4 h-4"></nwb-icon> `,
-  imports: [IconsModule],
-  host: {
-    class: 'content',
-    '[class.text-primary]': 'isActive',
-  },
+  templateUrl: './data-view-toggle.component.html',
+  imports: [CommonModule, IconsModule, OverlayModule],
+  hostDirectives: [CdkOverlayOrigin],
 })
 export class DataViewToggleComponent {
   @Input()
-  public set nwbDataViewToggle(value: DataViewMode) {
-    this.mode = value
-  }
+  public nwbDataViewToggle: void
 
-  @Input()
-  public mode: DataViewMode
+  protected isPanelOpen = false
+  protected iconGrid = svgGrid
+  protected iconTable = svgTableList
 
-  protected get icon() {
-    return this.mode === 'grid' ? svgTableList : svgGrid
-  }
+  protected icon$ = computed(() => {
+    return this.service.isTableActive$() ? svgTableList : svgGrid
+  })
 
-  protected get isActive() {
-    if (this.mode === 'grid' && this.service.isGridActive$()) {
-      return true
-    }
-    if (this.mode === 'virtual' && this.service.isVirtGridActive$()) {
-      return true
-    }
-    return false
-  }
-
-  public constructor(protected service: DataViewService<unknown>) {
+  public constructor(protected cdkOrigin: CdkOverlayOrigin, protected service: DataViewService<unknown>) {
     //
   }
 
   @HostListener('click')
   public onClick() {
-    this.service.toggleMode()
+    this.isPanelOpen = true
+  }
+
+  protected activateGrid() {
+    this.isPanelOpen = false
+    this.service.patchState({ mode: 'grid' })
+  }
+
+  protected activateTable() {
+    this.isPanelOpen = false
+    this.service.patchState({ mode: 'table' })
   }
 }

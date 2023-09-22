@@ -50,7 +50,7 @@
 
 <div class="divider my-0"></div>
 <div class="px-2 py-1">
-  <nwb-quicksearch-input [placeholder]="'Search'"></nwb-quicksearch-input>
+  <nwb-quicksearch-input [placeholder]="'Search column name'" [bordered]="true"></nwb-quicksearch-input>
 </div>
 <div class="p-2">
   <div *ngFor="let it of displayCols$ | async" class="flex flex-row gap-2">

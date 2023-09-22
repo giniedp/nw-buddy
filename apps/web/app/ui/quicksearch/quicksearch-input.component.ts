@@ -40,6 +40,9 @@ export class QuicksearchInputComponent {
   public placeholder: string = 'Search'
 
   @Input()
+  public bordered: boolean = false
+
+  @Input()
   public set autofocus(value: boolean) {
     if (value) {
       setTimeout(() => this.input.nativeElement.focus(), 100)

@@ -4,17 +4,19 @@ import { ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input } fr
   standalone: true,
   selector: 'nwb-icon',
   template: '',
-  styles: [`
-    ::ng-deep svg {
-      max-height: 100%;
-      max-width: 100%;
-      width: inherit;
-    }
-  `],
+  styles: [
+    `
+      ::ng-deep svg {
+        max-height: 100%;
+        max-width: 100%;
+        width: inherit;
+      }
+    `,
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'inline-block flex items-center justify-center'
-  }
+    class: 'inline-block flex items-center justify-center',
+  },
 })
 export class SvgIconComponent {
   @Input()

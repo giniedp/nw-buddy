@@ -208,7 +208,7 @@ export class InventoryPickerService {
     return DataViewPicker.open(this.dialog, {
       title: 'Choose Perk',
       selection: [('PerkID' in perkOrBucket ? perkOrBucket : null)?.PerkID].filter((it) => !!it),
-      displayMode: 'virtual',
+      displayMode: 'grid',
       dataView: {
         adapter: PerkTableAdapter,
         source: this.getAplicablePerks(item, perkOrBucket),

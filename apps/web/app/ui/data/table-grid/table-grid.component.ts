@@ -1,5 +1,5 @@
 import { AgGridEvent, GridApi, GridOptions } from '@ag-grid-community/core'
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, NgZone, OnInit, Output } from '@angular/core'
 import { isEqual } from 'lodash'
 import {
   asyncScheduler,
@@ -21,6 +21,7 @@ import { debounceSync } from '~/utils/rx-operators'
 import { gridDisplayRowCount } from '~/ui/data/ag-grid/utils'
 import { TableGridPersistenceService } from './table-grid-persistence.service'
 import { TableGridStore } from './table-grid.store'
+import { runInZone } from '~/utils/run-in-zone'
 
 export interface SelectionChangeEvent<T> {
   rows: T[]
@@ -83,7 +84,8 @@ export class TableGridComponent<T> implements OnInit {
     private locale: LocaleService,
     private grid: AgGridDirective<T>,
     private persistence: TableGridPersistenceService,
-    private store: TableGridStore<T>
+    private store: TableGridStore<T>,
+    private zone: NgZone
   ) {
     //
   }
@@ -169,6 +171,7 @@ export class TableGridComponent<T> implements OnInit {
     // pull selection from grid -> store
     this.grid
       .onEvent('selectionChanged')
+      .pipe(runInZone(this.zone))
       .pipe(
         tap(({ api }) => {
           const identifyBy = this.store.identifyBy$()
@@ -191,6 +194,7 @@ export class TableGridComponent<T> implements OnInit {
       grid: this.ready$,
     })
       .pipe(subscribeOn(asyncScheduler))
+      .pipe(runInZone(this.zone))
       .pipe(takeUntil(this.store.destroy$))
       .subscribe(({ selection, grid }) => {
         this.syncSelection({
