@@ -252,6 +252,7 @@ export class GearsetPaneSlotComponent {
   }
   protected closeGsEditor() {
     this.gsTarget = null
+    this.commitGearScore()
   }
 
   protected pickPerk({ instance }: GearsetSlotVM, key: string) {
@@ -275,7 +276,7 @@ export class GearsetPaneSlotComponent {
       .pipe(take(1))
       .subscribe((it) => {
         this.store.updateSlot({
-          instanceId: it[0],
+          instanceId: it[0] as string,
         })
       })
   }
@@ -293,7 +294,7 @@ export class GearsetPaneSlotComponent {
     }
   }
 
-  protected commitGearScore({}: GearsetSlotVM) {
+  protected commitGearScore() {
     this.store.updateGearScore({ gearScore: this.gearScore })
   }
 
