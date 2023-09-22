@@ -1,9 +1,9 @@
 import { LootTable } from '@nw-data/common'
-import { SelectFilter } from '~/ui/ag-grid'
-import { DataTableUtils } from '~/ui/data-grid'
+import { SelectFilter } from '~/ui/data/ag-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
-export type LootTableGridUtils = DataTableUtils<LootTableGridRecord>
+export type LootTableGridUtils = TableGridUtils<LootTableGridRecord>
 export type LootTableGridRecord = LootTable & {
   $parents: string[]
 }

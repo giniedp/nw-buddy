@@ -2,7 +2,7 @@ import { Dialog } from '@angular/cdk/dialog'
 import { Injector } from '@angular/core'
 import { map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { DataViewPicker } from '~/ui/data-view/data-view-picker-dialog.component'
+import { DataViewPicker } from '~/ui/data/data-view'
 import { eqCaseInsensitive } from '~/utils'
 import { ItemTableAdapter, buildPickerItemGridOptions } from './item-table-adapter'
 import { ItemTableRecord } from './item-table-cols'
@@ -40,6 +40,7 @@ export function openItemsPicker(options: {
 }
 
 function filterByCategory(category: string) {
+  console.log('filterByCategory', category)
   if (!category) {
     return (items: ItemTableRecord[]) => items
   }

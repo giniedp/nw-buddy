@@ -1,0 +1,20 @@
+<div class="indicator">
+  <span class="indicator-item badge badge-xs badge-primary" *ngIf="isFilterActive$()"> </span>
+  <nwb-icon [icon]="svgTable" class="w-4 h-4"></nwb-icon>
+</div>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="cdkOrigin"
+  [cdkConnectedOverlayOpen]="isPanelOpen"
+  [cdkConnectedOverlayHasBackdrop]="true"
+  (overlayOutsideClick)="isPanelOpen = false"
+  (backdropClick)="isPanelOpen = false"
+  (detach)="isPanelOpen = false"
+>
+  <nwb-table-grid-panel
+    [grid]="grid$ | async"
+    (close)="isPanelOpen = false"
+    class="max-h-[80vh] overflow-auto"
+  ></nwb-table-grid-panel>
+</ng-template>

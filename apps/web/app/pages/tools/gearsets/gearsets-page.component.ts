@@ -6,7 +6,6 @@ import { IonicModule } from '@ionic/angular'
 import { filter } from 'rxjs'
 import { GearsetsStore } from '~/data'
 import { NwModule } from '~/nw'
-import { DataTableModule } from '~/ui/data-table'
 import { IconsModule } from '~/ui/icons'
 import { svgPlus } from '~/ui/icons/svg'
 import { PromptDialogComponent } from '~/ui/layout'
@@ -23,7 +22,6 @@ import { GearsetLoadoutListComponent } from './loadout'
     CommonModule,
     RouterModule,
     NwModule,
-    DataTableModule,
     QuicksearchModule,
     NavbarModule,
     IconsModule,

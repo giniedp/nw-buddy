@@ -2,11 +2,11 @@ import { GridOptions } from '@ag-grid-community/core'
 import { inject, Injectable } from '@angular/core'
 import { COLS_POIDEFINITION, PoiDefinition } from '@nw-data/generated'
 import { NwDbService } from '~/nw'
-import { DATA_TABLE_SOURCE_OPTIONS, DataGridAdapter, DataTableUtils } from '~/ui/data-grid'
-import { DataTableCategory } from '~/ui/data-grid/types'
-import { addGenericColumns } from '~/ui/data-grid/utils'
-import { DataViewAdapter } from '~/ui/data-view'
-import { VirtualGridOptions } from '~/ui/virtual-grid'
+import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
+import { DataTableCategory } from '~/ui/data/table-grid'
+import { addGenericColumns } from '~/ui/data/table-grid'
+import { DataViewAdapter } from '~/ui/data/data-view'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import {
   poiColDescription,
   poiColGroupSize,
@@ -19,10 +19,10 @@ import {
 } from './poi-table-cols'
 
 @Injectable()
-export class PoiTableAdapter implements DataViewAdapter<PoiTableRecord>, DataGridAdapter<PoiTableRecord> {
+export class PoiTableAdapter implements DataViewAdapter<PoiTableRecord>, TableGridAdapter<PoiTableRecord> {
   private db = inject(NwDbService)
-  private utils: DataTableUtils<PoiTableRecord> = inject(DataTableUtils)
-  private config = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
+  private utils: TableGridUtils<PoiTableRecord> = inject(TableGridUtils)
+  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
 
   public entityID(item: PoiTableRecord): string | number {
     return item.TerritoryID
@@ -46,7 +46,7 @@ export class PoiTableAdapter implements DataViewAdapter<PoiTableRecord>, DataGri
   }
 }
 
-function buildPoiTableOptions(util: DataTableUtils<PoiTableRecord>) {
+function buildPoiTableOptions(util: TableGridUtils<PoiTableRecord>) {
   const result: GridOptions<PoiTableRecord> = {
     columnDefs: [
       poiColIcon(util),

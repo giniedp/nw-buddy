@@ -1,13 +1,12 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { Observable, Subject, defer, filter, take } from 'rxjs'
+import { Observable, defer, filter, take } from 'rxjs'
 import { GearsetRow, GearsetsStore } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwDbService } from '~/nw'
-import { DATA_TABLE_SOURCE_OPTIONS, DataGridAdapter, DataTableUtils } from '~/ui/data-grid'
-import { DataTableAdapterOptions } from '~/ui/data-table'
-import { DataViewAdapter } from '~/ui/data-view'
-import { VirtualGridOptions } from '~/ui/virtual-grid'
+import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
+import { DataViewAdapter } from '~/ui/data/data-view'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { shareReplayRefCount } from '~/utils'
 import {
   GearsetTableRecord,
@@ -18,11 +17,11 @@ import {
 } from './gearset-table-cols'
 
 @Injectable()
-export class GearsetTableAdapter implements DataGridAdapter<GearsetTableRecord>, DataViewAdapter<GearsetTableRecord> {
+export class GearsetTableAdapter implements TableGridAdapter<GearsetTableRecord>, DataViewAdapter<GearsetTableRecord> {
   private db = inject(NwDbService)
   private i18n = inject(TranslateService)
-  private config = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
-  private utils: DataTableUtils<GearsetTableRecord> = inject(DataTableUtils)
+  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private utils: TableGridUtils<GearsetTableRecord> = inject(TableGridUtils)
   private store = inject(GearsetsStore)
 
   public entityID(item: GearsetRow): string {
@@ -62,7 +61,7 @@ export class GearsetTableAdapter implements DataGridAdapter<GearsetTableRecord>,
   // })
 }
 
-export function buildCommonGearsetGridOptions(util: DataTableUtils<GearsetTableRecord>) {
+export function buildCommonGearsetGridOptions(util: TableGridUtils<GearsetTableRecord>) {
   const result: GridOptions<GearsetTableRecord> = {
     getRowId: ({ data }) => (data as GearsetTableRecord).record.id,
     columnDefs: [

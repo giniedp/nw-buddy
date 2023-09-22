@@ -1,10 +1,10 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { PoiDefinition } from '@nw-data/generated'
-import { SelectFilter } from '~/ui/ag-grid'
-import { DataTableUtils } from '~/ui/data-grid'
+import { SelectFilter } from '~/ui/data/ag-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
-export type PoiTableUtils = DataTableUtils<PoiTableRecord>
+export type PoiTableUtils = TableGridUtils<PoiTableRecord>
 export type PoiTableRecord = PoiDefinition
 
 export function poiColIcon(util: PoiTableUtils) {

@@ -2,11 +2,11 @@ import { explainPerk, explainPerkMods, getPerkItemClassGSBonus, getPerkItemClass
 import { Ability, Affixstats, Perks } from '@nw-data/generated'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwTextContextService } from '~/nw/expression'
-import { SelectFilter } from '~/ui/ag-grid'
-import { DataTableUtils } from '~/ui/data-grid'
+import { SelectFilter } from '~/ui/data/ag-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
-export type PerkTableUtils = DataTableUtils<PerkTableRecord>
+export type PerkTableUtils = TableGridUtils<PerkTableRecord>
 export type PerkTableRecord = Perks & {
   $ability?: Ability
   $affix?: Affixstats

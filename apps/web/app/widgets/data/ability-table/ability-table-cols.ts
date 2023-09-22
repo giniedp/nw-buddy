@@ -9,11 +9,11 @@ import { Ability, Statuseffect } from '@nw-data/generated'
 import { map, switchMap } from 'rxjs'
 import { sanitizeHtml } from '~/nw'
 import { NwWeaponType } from '~/nw/weapon-types'
-import { SelectFilter } from '~/ui/ag-grid'
-import { DataTableUtils } from '~/ui/data-grid'
+import { SelectFilter } from '~/ui/data/ag-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
-export type AbilityTableUtils = DataTableUtils<AbilityTableRecord>
+export type AbilityTableUtils = TableGridUtils<AbilityTableRecord>
 export type AbilityTableRecord = Ability & {
   $weaponType: NwWeaponType
   $selfApplyStatusEffect: Statuseffect[]

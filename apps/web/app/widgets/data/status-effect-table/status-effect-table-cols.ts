@@ -1,11 +1,11 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { Statuseffect } from '@nw-data/generated'
 import { sanitizeHtml } from '~/nw'
-import { SelectFilter } from '~/ui/ag-grid'
-import { DataTableUtils } from '~/ui/data-grid'
+import { SelectFilter } from '~/ui/data/ag-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
-export type StatusEffectTableUtils = DataTableUtils<StatusEffectTableRecord>
+export type StatusEffectTableUtils = TableGridUtils<StatusEffectTableRecord>
 export type StatusEffectTableRecord = Statuseffect
 
 export function statusEffectColIcon(util: StatusEffectTableUtils) {

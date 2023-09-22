@@ -1,10 +1,10 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { Damagetable } from '@nw-data/generated'
 import { damageTypeIcon } from '~/nw/weapon-types'
-import { SelectFilter } from '~/ui/ag-grid'
-import { DataTableUtils } from '~/ui/data-grid'
+import { SelectFilter } from '~/ui/data/ag-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 
-export type DamageTableUtils = DataTableUtils<DamageTableRecord>
+export type DamageTableUtils = TableGridUtils<DamageTableRecord>
 export type DamageTableRecord = Damagetable
 
 export function damageColIcon(util: DamageTableUtils) {

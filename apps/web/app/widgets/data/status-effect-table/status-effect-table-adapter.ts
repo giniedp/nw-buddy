@@ -4,11 +4,11 @@ import { COLS_STATUSEFFECT, Statuseffect } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { DATA_TABLE_SOURCE_OPTIONS, DataGridAdapter, DataTableUtils } from '~/ui/data-grid'
-import { DataTableCategory } from '~/ui/data-grid/types'
-import { addGenericColumns } from '~/ui/data-grid/utils'
-import { DataViewAdapter } from '~/ui/data-view'
-import { VirtualGridOptions } from '~/ui/virtual-grid'
+import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
+import { DataTableCategory } from '~/ui/data/table-grid'
+import { addGenericColumns } from '~/ui/data/table-grid'
+import { DataViewAdapter } from '~/ui/data/data-view'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import {
   StatusEffectTableRecord,
   statusEffectColBaseDuration,
@@ -22,11 +22,11 @@ import {
 
 @Injectable()
 export class StatusEffectTableAdapter
-  implements DataViewAdapter<StatusEffectTableRecord>, DataGridAdapter<StatusEffectTableRecord>
+  implements DataViewAdapter<StatusEffectTableRecord>, TableGridAdapter<StatusEffectTableRecord>
 {
   private db = inject(NwDbService)
-  private utils: DataTableUtils<StatusEffectTableRecord> = inject(DataTableUtils)
-  private config = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
+  private utils: TableGridUtils<StatusEffectTableRecord> = inject(TableGridUtils)
+  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
 
   public entityID(item: Statuseffect): string {
     return item.StatusID
@@ -62,7 +62,7 @@ export class StatusEffectTableAdapter
   }
 }
 
-function buildStatusEffectTableOptions(util: DataTableUtils<StatusEffectTableRecord>) {
+function buildStatusEffectTableOptions(util: TableGridUtils<StatusEffectTableRecord>) {
   const result: GridOptions<StatusEffectTableRecord> = {
     columnDefs: [
       statusEffectColIcon(util),

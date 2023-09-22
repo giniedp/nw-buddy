@@ -3,7 +3,7 @@ import { Component, importProvidersFrom, inject } from '@angular/core'
 import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
 import { NwDbService } from '~/nw'
 import { AppTestingModule } from '~/test'
-import { VirtualGridComponent } from '~/ui/virtual-grid'
+import { VirtualGridComponent } from '~/ui/data/virtual-grid'
 import { VirtualGridCellDirective } from '~/ui/virtual-grid/virtual-grid-cell.directive'
 import { PerkGridCellComponent } from './perk-grid-cell.component'
 

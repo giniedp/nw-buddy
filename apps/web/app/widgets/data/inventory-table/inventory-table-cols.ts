@@ -10,13 +10,13 @@ import {
   isMasterItem,
 } from '@nw-data/common'
 import { ItemInstanceRow } from '~/data'
-import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
-import { DataTableUtils } from '~/ui/data-grid'
+import { RangeFilter, SelectFilter } from '~/ui/data/ag-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 import { svgTrashCan } from '~/ui/icons/svg'
 import { humanize } from '~/utils'
 import { DnDService } from '~/utils/services/dnd.service'
 
-export type InventoryTableUtils = DataTableUtils<InventoryTableRecord>
+export type InventoryTableUtils = TableGridUtils<InventoryTableRecord>
 export type InventoryTableRecord = ItemInstanceRow
 
 export function inventoryColIcon(util: InventoryTableUtils, dnd: DnDService) {
@@ -195,7 +195,12 @@ export function inventoryColItemClass(util: InventoryTableUtils) {
     filterParams: SelectFilter.params({}),
   })
 }
-export function inventoryColActions(util: InventoryTableUtils) {
+export function inventoryColActions(
+  util: InventoryTableUtils,
+  options: {
+    destroyAction: (e: Event, data: InventoryTableRecord) => void
+  }
+) {
   return util.colDef({
     colId: 'actions',
     headerValueGetter: () => 'Actions',
@@ -208,25 +213,7 @@ export function inventoryColActions(util: InventoryTableUtils) {
           'button.btn.btn-ghost',
           {
             ev: {
-              onclick: (e) => {
-                // TODO
-                // e.stopImmediatePropagation()
-                // util.zone.run(() => {
-                //   ConfirmDialogComponent.open(util.dialog, {
-                //     data: {
-                //       title: 'Delete Item',
-                //       body: 'Are you sure you want to delete this item? Gearsets linking to this item will loose the reference.',
-                //       positive: 'Delete',
-                //       negative: 'Cancel',
-                //     },
-                //   })
-                //     .closed.pipe(take(1))
-                //     .pipe(filter((it) => !!it))
-                //     .subscribe(() => {
-                //       util.store.destroyRecord({ recordId: data.record.id })
-                //     })
-                // })
-              },
+              onclick: (e) => options.destroyAction(e, data),
             },
           },
           [util.el('span.w-4.h-4', { html: svgTrashCan })]

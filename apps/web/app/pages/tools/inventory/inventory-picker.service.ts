@@ -15,14 +15,12 @@ import { isEqual } from 'lodash'
 import { Observable, combineLatest, filter, map, switchMap, take } from 'rxjs'
 import { ItemInstance, ItemInstancesStore } from '~/data'
 import { NwDbService } from '~/nw'
-import { DataTablePickerDialog } from '~/ui/data-table'
-import { DataViewPicker } from '~/ui/data-view'
+import { DataViewPicker } from '~/ui/data/data-view'
 import { openHousingItemsPicker } from '~/widgets/data/housing-table'
+import { InventoryTableAdapter } from '~/widgets/data/inventory-table'
 import { openItemsPicker } from '~/widgets/data/item-table'
 import { PerkTableAdapter } from '~/widgets/data/perk-table'
 import { StatusEffectTableAdapter } from '~/widgets/data/status-effect-table'
-import { PlayerItemsTableAdapter } from './inventory-table.adapter'
-import { InventoryTableAdapter } from '~/widgets/data/inventory-table'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryPickerService {
@@ -32,77 +30,67 @@ export class InventoryPickerService {
 
   public pickHousingItem({
     title,
-    itemId,
+    selection,
     multiple,
     category,
   }: {
     title?: string
-    itemId?: string[]
+    selection?: string[]
     multiple?: boolean
     category?: string
   }) {
-    return this.db.housingItemsMap.pipe(
-      switchMap((items) => {
-        return (
-          openHousingItemsPicker({
-            db: this.db,
-            dialog: this.dialog,
-            injector: this.injector,
-            selection: itemId,
-            title,
-            multiple,
-            category,
-          })
-            .closed.pipe(take(1))
-            // cancelled selection
-            .pipe(filter((it) => it !== undefined))
-            // unchanged selection
-            .pipe(filter((it) => !isEqual(it, itemId)))
-            .pipe(
-              map((it: string[]) => {
-                return it.map((id) => items.get(id))
-              })
-            )
-        )
+    return (
+      combineLatest({
+        data: this.db.housingItemsMap,
+        result: openHousingItemsPicker({
+          db: this.db,
+          dialog: this.dialog,
+          injector: this.injector,
+          selection: selection,
+          title,
+          multiple,
+          category,
+        }).closed,
       })
+        .pipe(take(1))
+        // cancelled selection
+        .pipe(filter(({ result }) => result !== undefined))
+        // unchanged selection
+        .pipe(filter(({ result }) => !isEqual(result, result)))
+        .pipe(map(({ data, result }) => result.map((id: string) => data.get(id))))
     )
   }
 
   public pickItem({
     title,
-    itemId,
+    selection,
     multiple,
     category,
   }: {
     title?: string
-    itemId?: string[]
+    selection?: string[]
     multiple?: boolean
     category?: string
   }) {
-    return this.db.itemsMap.pipe(
-      switchMap((items) => {
-        return (
-          openItemsPicker({
-            db: this.db,
-            dialog: this.dialog,
-            injector: this.injector,
-            selection: itemId,
-            title,
-            multiple,
-            category,
-          })
-            .closed.pipe(take(1))
-            // cancelled selection
-            .pipe(filter((it) => it !== undefined))
-            // unchanged selection
-            .pipe(filter((it) => !isEqual(it, itemId)))
-            .pipe(
-              map((it: string[]) => {
-                return it.map((id) => items.get(id))
-              })
-            )
-        )
+    return (
+      combineLatest({
+        data: this.db.itemsMap,
+        result: openItemsPicker({
+          db: this.db,
+          dialog: this.dialog,
+          injector: this.injector,
+          selection: selection,
+          title,
+          multiple,
+          category,
+        }).closed,
       })
+        .pipe(take(1))
+        // cancelled selection
+        .pipe(filter(({ result }) => result !== undefined))
+        // unchanged selection
+        .pipe(filter(({ result }) => !isEqual(result, selection)))
+        .pipe(map(({ data, result }) => result.map((id: string) => data.get(id))))
     )
   }
 
@@ -129,7 +117,7 @@ export class InventoryPickerService {
     )
   }
 
-  public choosePerk(record: ItemInstance, perkSlot: string): Observable<Perks> {
+  public pickPerkForItem(record: ItemInstance, perkSlot: string): Observable<Perks> {
     return combineLatest({
       items: this.db.itemsMap,
       perks: this.db.perksMap,
@@ -164,22 +152,17 @@ export class InventoryPickerService {
     multiple?: boolean
     predicate?: (item: Statuseffect) => boolean
   }) {
-    return this.db.statusEffectsMap.pipe(
-      switchMap((items) => {
-        return (
-          this.openEffectsPicker({ selection, title, multiple, predicate })
-            .closed.pipe(take(1))
-            // cancelled selection
-            .pipe(filter((it) => it !== undefined))
-            // unchanged selection
-            .pipe(filter((it) => !isEqual(it, selection)))
-            .pipe(
-              map((it: string[]) => {
-                return it.map((id) => items.get(id))
-              })
-            )
-        )
+    return (
+      combineLatest({
+        data: this.db.statusEffectsMap,
+        result: this.openEffectsPicker({ selection, title, multiple, predicate }).closed,
       })
+        .pipe(take(1))
+        // cancelled selection
+        .pipe(filter(({ result }) => result !== undefined))
+        // unchanged selection
+        .pipe(filter(({ result }) => !isEqual(result, selection)))
+        .pipe(map(({ data, result }) => result.map((id: string) => data.get(id))))
     )
   }
 

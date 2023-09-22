@@ -3,21 +3,30 @@ import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ElementRef, Injector, Input, Renderer2 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { BehaviorSubject, combineLatest, filter, switchMap, tap } from 'rxjs'
+import { BehaviorSubject, combineLatest, filter, map, switchMap, tap } from 'rxjs'
 
 import { NwModule } from '~/nw'
-import { DataTableModule, DataTablePickerDialog } from '~/ui/data-table'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
-import { GearsetRecord, GearsetSkillSlot, GearsetSkillStore, SkillBuild, SkillBuildsDB, SkillBuildsStore } from '~/data'
+import { GearsetRecord, GearsetSkillSlot, GearsetSkillStore, SkillBuild, SkillBuildsDB } from '~/data'
+import { DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
-import { svgDiagramProject, svgEllipsisVertical, svgEraser, svgFolderOpen, svgLink16p, svgLinkSlash16p, svgPlus, svgRotate, svgTrashCan } from '~/ui/icons/svg'
-import { deferStateFlat, shareReplayRefCount } from '~/utils'
-import { SkillTreeModule } from '~/widgets/skill-builder'
-import { TooltipModule } from '~/ui/tooltip'
-import { SkillBuildsTableAdapter } from '../skill-trees/skill-builds-table.adapter'
-import { SkillWeaponDialogComponent } from '~/widgets/skill-builder/skill-weapon-dialog.component'
+import {
+  svgDiagramProject,
+  svgEllipsisVertical,
+  svgFolderOpen,
+  svgLink16p,
+  svgLinkSlash16p,
+  svgPlus,
+  svgRotate,
+  svgTrashCan,
+} from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
+import { TooltipModule } from '~/ui/tooltip'
+import { deferStateFlat, shareReplayRefCount } from '~/utils'
+import { SkillsetTableAdapter } from '~/widgets/data/skillset-table'
+import { SkillTreeModule } from '~/widgets/skill-builder'
+import { SkillWeaponDialogComponent } from '~/widgets/skill-builder/skill-weapon-dialog.component'
 
 export interface GearsetSkillVM {
   slot?: GearsetSkillSlot
@@ -39,11 +48,10 @@ export interface GearsetSkillVM {
     FormsModule,
     OverlayModule,
     ItemDetailModule,
-    DataTableModule,
     IconsModule,
     LayoutModule,
     SkillTreeModule,
-    TooltipModule
+    TooltipModule,
   ],
   providers: [GearsetSkillStore],
   host: {
@@ -111,7 +119,7 @@ export class GearsetPaneSkillComponent {
     private renderer: Renderer2,
     private elRef: ElementRef<HTMLElement>,
     private dialog: Dialog,
-    private injector: Injector,
+    private injector: Injector
   ) {
     //
   }
@@ -146,50 +154,44 @@ export class GearsetPaneSkillComponent {
       height: '100vh',
       maxWidth: 400,
       maxHeight: 600,
-      data: null
+      data: null,
     })
-    .closed.pipe(filter((it) => !!it))
-    .subscribe((weapon) => {
-      this.store.updateSlot({
-        instance: {
-          weapon: weapon,
-          tree1: [],
-          tree2: [],
-        },
+      .closed.pipe(filter((it) => !!it))
+      .subscribe((weapon) => {
+        this.store.updateSlot({
+          instance: {
+            weapon: weapon,
+            tree1: [],
+            tree2: [],
+          },
+        })
       })
-    })
   }
 
   protected createExisting() {
-    DataTablePickerDialog.open(this.dialog, {
+    DataViewPicker.open(this.dialog, {
       title: 'Choose Skill Tree',
       selection: null,
-      adapter: SkillBuildsTableAdapter.provider({
-        noActions: true
-      }),
+      dataView: {
+        adapter: SkillsetTableAdapter,
+      },
       config: {
         maxWidth: 1400,
         maxHeight: 1200,
         panelClass: ['w-full', 'h-full', 'p-4'],
-        injector: Injector.create({
-          parent: this.injector,
-          providers: [{
-            provide: SkillBuildsStore
-          }]
-        }),
       },
     })
-    .closed
-    .pipe(filter((it) => it?.length > 0))
-    .pipe(switchMap((id) => this.skillsDB.read(id[0])))
-    .subscribe((value) => {
-      this.store.updateSlot({
-        instance: {
-          weapon: value.weapon,
-          tree1: value.tree1,
-          tree2: value.tree2,
-        },
+      .closed.pipe(map((it) => it?.[0]))
+      .pipe(filter((it) => !!it))
+      .pipe(switchMap((id: string) => this.skillsDB.read(id)))
+      .subscribe((value) => {
+        this.store.updateSlot({
+          instance: {
+            weapon: value.weapon,
+            tree1: value.tree1,
+            tree2: value.tree2,
+          },
+        })
       })
-    })
   }
 }

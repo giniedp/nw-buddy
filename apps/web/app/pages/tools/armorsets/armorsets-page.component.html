@@ -27,12 +27,12 @@
   </div>
 </ion-header>
 <div class="flex-1 flex flex-row overflow-hidden">
-  <nwb-data-grid
+  <nwb-table-grid
     [persistKey]="persistKey"
     [filterQueryParam]="filterParam"
     [selectionRouteParam]="selectionParam"
     #grid
-  ></nwb-data-grid>
+  ></nwb-table-grid>
 
   <div class="flex-none layout-content xl:max-w-[350px] 4xl:max-w-[30%]" *ngIf="grid.selection$ | async; let items">
     {{ grid.selection$ | async | json }}

@@ -118,7 +118,7 @@ export class InventoryDetailComponent {
 
   public pickPerk(vm: ItemDetailVM, key: string) {
     this.service
-      .choosePerk(vm.instance, key)
+      .pickPerkForItem(vm.instance, key)
       .pipe(take(1))
       .subscribe((value) => {
         if (vm.itemRow) {

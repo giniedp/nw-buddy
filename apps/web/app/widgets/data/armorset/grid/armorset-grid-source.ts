@@ -4,8 +4,8 @@ import { getItemRarity } from '@nw-data/common'
 import { groupBy } from 'lodash'
 import { Observable, combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { DATA_TABLE_SOURCE_OPTIONS, DataGridAdapter, DataTableUtils } from '~/ui/data-grid'
-import { DataTableCategory } from '~/ui/data-grid/types'
+import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
+import { DataTableCategory } from '~/ui/data/table-grid'
 import { findSets } from '../utils'
 import {
   ArmorsetGridRecord,
@@ -18,10 +18,10 @@ import {
 } from './armorset-grid-cols'
 
 @Injectable()
-export class ArmorsetGridSource extends DataGridAdapter<ArmorsetGridRecord> {
+export class ArmorsetGridSource extends TableGridAdapter<ArmorsetGridRecord> {
   private db = inject(NwDbService)
-  private utils: DataTableUtils<ArmorsetGridRecord> = inject(DataTableUtils)
-  private config = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
+  private utils: TableGridUtils<ArmorsetGridRecord> = inject(TableGridUtils)
+  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
 
   public override entityID(item: ArmorsetGridRecord): string {
     return item.key
@@ -65,7 +65,7 @@ export class ArmorsetGridSource extends DataGridAdapter<ArmorsetGridRecord> {
   }
 }
 
-function buildOptions(util: DataTableUtils<ArmorsetGridRecord>) {
+function buildOptions(util: TableGridUtils<ArmorsetGridRecord>) {
   const result: GridOptions<ArmorsetGridRecord> = {
     columnDefs: [
       armorsetColName(util),

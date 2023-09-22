@@ -1,11 +1,11 @@
 import { EQUIP_SLOTS, getItemIconPath, getWeightLabel, isItemArtifact, isItemNamed } from '@nw-data/common'
 import { filter, take } from 'rxjs'
 import { GearsetRow } from '~/data'
-import { DataTableUtils } from '~/ui/data-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 import { svgPen, svgTrashCan } from '~/ui/icons/svg'
 import { ConfirmDialogComponent } from '~/ui/layout'
 
-export type GearsetTableUtils = DataTableUtils<GearsetTableRecord>
+export type GearsetTableUtils = TableGridUtils<GearsetTableRecord>
 export type GearsetTableRecord = GearsetRow
 
 export function gearsetColName(util: GearsetTableUtils) {

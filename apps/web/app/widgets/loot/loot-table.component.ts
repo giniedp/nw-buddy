@@ -1,22 +1,10 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  forwardRef,
-  Input,
-  OnChanges,
-  OnInit,
-} from '@angular/core'
-import { GridOptions } from '@ag-grid-community/core'
-import { BehaviorSubject, combineLatest, defer, map, Observable, of, switchMap } from 'rxjs'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit } from '@angular/core'
+import { BehaviorSubject, Observable, combineLatest, defer, map, switchMap } from 'rxjs'
 
 import { CommonModule } from '@angular/common'
 import {
-  getItemIconPath,
   getItemId,
   getItemRarity,
-  getItemRarityLabel,
-  getItemTierAsRoman,
   isItemArmor,
   isItemJewelery,
   isItemNamed,
@@ -27,8 +15,6 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService } from '~/nw'
 import { LootContext, NwLootService } from '~/nw/loot'
-import { SelectFilter } from '~/ui/ag-grid'
-import { DataTableAdapter, DataTableModule } from '~/ui/data-table'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { shareReplayRefCount } from '~/utils'
 
@@ -39,16 +25,16 @@ type Item = ItemDefinitionMaster | Housingitems
   templateUrl: './loot-table.component.html',
   styleUrls: ['./loot-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, DataTableModule, QuicksearchModule],
+  imports: [CommonModule, QuicksearchModule],
   providers: [
-    {
-      provide: DataTableAdapter,
-      useExisting: forwardRef(() => LootTableComponent),
-    },
+    // {
+    //   provide: DataTableAdapter,
+    //   useExisting: forwardRef(() => LootTableComponent),
+    // },
     QuicksearchService,
   ],
 })
-export class LootTableComponent extends DataTableAdapter<Item> implements OnInit, OnChanges {
+export class LootTableComponent implements OnInit, OnChanges {
   @Input()
   public set tableId(value: string) {
     this.tableId$.next(value)
@@ -80,7 +66,7 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
     })
   )
 
-  public override entities: Observable<Item[]> = defer(() => {
+  public entities: Observable<Item[]> = defer(() => {
     return combineLatest({
       context: this.context$,
       table: this.table$,
@@ -102,9 +88,7 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
     private i18n: TranslateService,
     public search: QuicksearchService,
     private info: NwLinkService
-  ) {
-    super()
-  }
+  ) {}
 
   public ngOnInit(): void {
     //
@@ -122,50 +106,50 @@ export class LootTableComponent extends DataTableAdapter<Item> implements OnInit
     throw null
   }
 
-  public options = defer(() =>
-    of<GridOptions>({
-      rowSelection: 'single',
-      columnDefs: [
-        {
-          sortable: false,
-          filter: false,
-          width: 62,
-          pinned: true,
-          cellRenderer: this.cellRenderer(({ data }) => {
-            return this.createLinkWithIcon({
-              target: '_blank',
-              href: this.info.link('item', getItemId(data)),
-              icon: getItemIconPath(data),
-              rarity: getItemRarity(data),
-            })
-          }),
-        },
-        {
-          width: 250,
-          headerName: 'Name',
-          valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.Name)),
-          cellRenderer: this.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
-          cellClass: ['multiline-cell', 'py-2'],
-          autoHeight: true,
-          getQuickFilterText: ({ value }) => value,
-        },
-        {
-          headerName: 'Rarity',
-          valueGetter: ({ data }) => getItemRarity(data),
-          valueFormatter: ({ value }) => this.i18n.get(getItemRarityLabel(value)),
-          filter: SelectFilter,
-          width: 130,
-          getQuickFilterText: ({ value }) => value,
-        },
-        {
-          width: 80,
-          field: this.fieldName('Tier'),
-          valueGetter: ({ data }) => getItemTierAsRoman(data.Tier),
-          filter: SelectFilter,
-        },
-      ],
-    })
-  )
+  // public options = defer(() =>
+  //   of<GridOptions>({
+  //     rowSelection: 'single',
+  //     columnDefs: [
+  //       {
+  //         sortable: false,
+  //         filter: false,
+  //         width: 62,
+  //         pinned: true,
+  //         cellRenderer: this.cellRenderer(({ data }) => {
+  //           return this.createLinkWithIcon({
+  //             target: '_blank',
+  //             href: this.info.link('item', getItemId(data)),
+  //             icon: getItemIconPath(data),
+  //             rarity: getItemRarity(data),
+  //           })
+  //         }),
+  //       },
+  //       {
+  //         width: 250,
+  //         headerName: 'Name',
+  //         valueGetter: this.valueGetter(({ data }) => this.i18n.get(data.Name)),
+  //         cellRenderer: this.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
+  //         cellClass: ['multiline-cell', 'py-2'],
+  //         autoHeight: true,
+  //         getQuickFilterText: ({ value }) => value,
+  //       },
+  //       {
+  //         headerName: 'Rarity',
+  //         valueGetter: ({ data }) => getItemRarity(data),
+  //         valueFormatter: ({ value }) => this.i18n.get(getItemRarityLabel(value)),
+  //         filter: SelectFilter,
+  //         width: 130,
+  //         getQuickFilterText: ({ value }) => value,
+  //       },
+  //       {
+  //         width: 80,
+  //         field: this.fieldName('Tier'),
+  //         valueGetter: ({ data }) => getItemTierAsRoman(data.Tier),
+  //         filter: SelectFilter,
+  //       },
+  //     ],
+  //   })
+  // )
 
   private filterAndSort(items: Array<ItemDefinitionMaster | Housingitems>) {
     return items.sort((nodeA, nodeB) => {

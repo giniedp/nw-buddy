@@ -7,10 +7,10 @@ import { Observable, defer, filter, take } from 'rxjs'
 import { ItemInstanceRow, ItemInstancesStore } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwDbService } from '~/nw'
-import { augmentWithTransactions } from '~/ui/ag-grid'
-import { DATA_TABLE_SOURCE_OPTIONS, DataGridAdapter, DataTableCategory, DataTableUtils } from '~/ui/data-grid'
-import { DataViewAdapter, DataViewCategory } from '~/ui/data-view'
-import { VirtualGridOptions } from '~/ui/virtual-grid'
+import { augmentWithTransactions } from '~/ui/data/ag-grid'
+import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, DataTableCategory, TableGridUtils } from '~/ui/data/table-grid'
+import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { DnDService } from '~/utils/services/dnd.service'
 import {
   InventoryTableRecord,
@@ -25,15 +25,16 @@ import {
   inventoryColRarity,
   inventoryColTier,
 } from './inventory-table-cols'
+import { ConfirmDialogComponent } from '~/ui/layout'
 
 @Injectable()
 export class InventoryTableAdapter
-  implements DataGridAdapter<InventoryTableRecord>, DataViewAdapter<InventoryTableRecord>
+  implements TableGridAdapter<InventoryTableRecord>, DataViewAdapter<InventoryTableRecord>
 {
   private db = inject(NwDbService)
   private i18n = inject(TranslateService)
-  private config = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
-  private utils: DataTableUtils<InventoryTableRecord> = inject(DataTableUtils)
+  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private utils: TableGridUtils<InventoryTableRecord> = inject(TableGridUtils)
 
   public onEntityCreate: Observable<ItemInstanceRow> = this.store?.rowCreated$
   public onEntityUpdate: Observable<ItemInstanceRow> = this.store?.rowUpdated$
@@ -65,15 +66,22 @@ export class InventoryTableAdapter
     if (this.config?.gridOptions) {
       options = this.config.gridOptions(this.utils)
     } else {
-      options = buildCommonInventoryGridOptions(this.utils, this.dnd)
+      options = buildCommonInventoryGridOptions(this.utils, {
+        dnd: this.dnd,
+        dialog: this.dialog,
+        store: this.store,
+      })
     }
-    // if (this.store) {
-    //   augmentWithTransactions(options, {
-    //     onCreate: this.store.rowCreated$,
-    //     onDestroy: this.store.rowDestroyed$,
-    //     onUpdate: this.store.rowUpdated$,
-    //   })
-    // }
+    if (this.store) {
+      options.getRowId = ({ data }) => {
+        return this.entityID(data)
+      }
+      augmentWithTransactions(options, {
+        onCreate: this.store.rowCreated$,
+        onDestroy: this.store.rowDestroyed$,
+        onUpdate: this.store.rowUpdated$,
+      })
+    }
     return options
   }
 
@@ -117,10 +125,17 @@ export class InventoryTableAdapter
   }
 }
 
-export function buildCommonInventoryGridOptions(util: DataTableUtils<InventoryTableRecord>, dnd: DnDService) {
+export function buildCommonInventoryGridOptions(
+  util: TableGridUtils<InventoryTableRecord>,
+  options: {
+    dnd: DnDService
+    store: ItemInstancesStore
+    dialog: Dialog
+  }
+) {
   const result: GridOptions<InventoryTableRecord> = {
     columnDefs: [
-      inventoryColIcon(util, dnd),
+      inventoryColIcon(util, options.dnd),
       inventoryColName(util),
       inventoryColPerks(util),
       inventoryColRarity(util),
@@ -129,7 +144,26 @@ export function buildCommonInventoryGridOptions(util: DataTableUtils<InventoryTa
       inventoryColAttributeMods(util),
       inventoryColItemType(util),
       inventoryColItemClass(util),
-      inventoryColActions(util),
+      inventoryColActions(util, {
+        destroyAction: (e: Event, data: InventoryTableRecord) => {
+          e.stopImmediatePropagation()
+          util.zone.run(() => {
+            ConfirmDialogComponent.open(options.dialog, {
+              data: {
+                title: 'Delete Item',
+                body: 'Are you sure you want to delete this item? Gearsets linking to this item will loose the reference.',
+                positive: 'Delete',
+                negative: 'Cancel',
+              },
+            })
+              .closed.pipe(take(1))
+              .pipe(filter((it) => !!it))
+              .subscribe(() => {
+                options.store.destroyRecord({ recordId: data.record.id })
+              })
+          })
+        },
+      }),
     ],
   }
 

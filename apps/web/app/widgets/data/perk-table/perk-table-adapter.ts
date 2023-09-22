@@ -6,11 +6,16 @@ import { Observable, combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
 
 import { NwTextContextService } from '~/nw/expression'
-import { DATA_TABLE_SOURCE_OPTIONS, DataGridAdapter, DataTableSourceOptions, DataTableUtils } from '~/ui/data-grid'
-import { DataTableCategory } from '~/ui/data-grid/types'
-import { addGenericColumns } from '~/ui/data-grid/utils'
-import { DataViewAdapter } from '~/ui/data-view'
-import { VirtualGridOptions } from '~/ui/virtual-grid'
+import {
+  TABLE_GRID_ADAPTER_OPTIONS,
+  TableGridAdapter,
+  TableGridAdapterOptions,
+  TableGridUtils,
+} from '~/ui/data/table-grid'
+import { DataTableCategory } from '~/ui/data/table-grid'
+import { addGenericColumns } from '~/ui/data/table-grid'
+import { DataViewAdapter } from '~/ui/data/data-view'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { shareReplayRefCount } from '~/utils'
 import { PerkGridCellComponent } from './perk-grid-cell.component'
 import {
@@ -26,11 +31,11 @@ import {
 } from './perk-table-cols'
 
 @Injectable()
-export class PerkTableAdapter implements DataGridAdapter<PerkTableRecord>, DataViewAdapter<PerkTableRecord> {
+export class PerkTableAdapter implements TableGridAdapter<PerkTableRecord>, DataViewAdapter<PerkTableRecord> {
   private db = inject(NwDbService)
   private ctx = inject(NwTextContextService)
-  private utils: DataTableUtils<PerkTableRecord> = inject(DataTableUtils)
-  private config: DataTableSourceOptions<PerkTableRecord> = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
+  private utils: TableGridUtils<PerkTableRecord> = inject(TableGridUtils)
+  private config: TableGridAdapterOptions<PerkTableRecord> = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private source$: Observable<PerkTableRecord[]> = combineLatest({
     perks: this.config?.source || this.db.perks,
     affixstats: this.db.affixstatsMap,
@@ -79,7 +84,7 @@ export class PerkTableAdapter implements DataGridAdapter<PerkTableRecord>, DataV
   }
 }
 
-export function buildPerkTableOptions(util: DataTableUtils<PerkTableRecord>, ctx: NwTextContextService) {
+export function buildPerkTableOptions(util: TableGridUtils<PerkTableRecord>, ctx: NwTextContextService) {
   const result: GridOptions<PerkTableRecord> = {
     columnDefs: [
       perkColIcon(util),
@@ -102,7 +107,7 @@ export function buildPerkTableOptions(util: DataTableUtils<PerkTableRecord>, ctx
   return result
 }
 
-export function buildPerkTablePickerOptions(util: DataTableUtils<PerkTableRecord>, ctx: NwTextContextService) {
+export function buildPerkTablePickerOptions(util: TableGridUtils<PerkTableRecord>, ctx: NwTextContextService) {
   const result: GridOptions<PerkTableRecord> = {
     columnDefs: [
       perkColIcon(util),

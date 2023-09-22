@@ -7,12 +7,12 @@ import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { NwWeaponTypesService } from '~/nw/weapon-types'
 import {
-  DATA_TABLE_SOURCE_OPTIONS,
+  TABLE_GRID_ADAPTER_OPTIONS,
   DataTableCategory,
-  DataGridAdapter,
-  DataTableUtils,
+  TableGridAdapter,
+  TableGridUtils,
   addGenericColumns,
-} from '~/ui/data-grid'
+} from '~/ui/data/table-grid'
 
 import {
   AbilityTableRecord,
@@ -30,15 +30,15 @@ import {
   abilityColUiCategory,
   abilityColWeaponTag,
 } from './ability-table-cols'
-import { DataViewAdapter } from '~/ui/data-view'
-import { VirtualGridOptions } from '~/ui/virtual-grid'
+import { DataViewAdapter } from '~/ui/data/data-view'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 
 @Injectable()
-export class AbilityTableAdapter implements DataViewAdapter<AbilityTableRecord>, DataGridAdapter<AbilityTableRecord> {
+export class AbilityTableAdapter implements DataViewAdapter<AbilityTableRecord>, TableGridAdapter<AbilityTableRecord> {
   private db = inject(NwDbService)
-  private utils: DataTableUtils<AbilityTableRecord> = inject(DataTableUtils)
+  private utils: TableGridUtils<AbilityTableRecord> = inject(TableGridUtils)
   private weaponTypes: NwWeaponTypesService = inject(NwWeaponTypesService)
-  private config = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
+  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
 
   public entityID(item: AbilityTableRecord): string {
     return item.AbilityID
@@ -90,7 +90,7 @@ export class AbilityTableAdapter implements DataViewAdapter<AbilityTableRecord>,
   }
 }
 
-function buildOptions(util: DataTableUtils<AbilityTableRecord>) {
+function buildOptions(util: TableGridUtils<AbilityTableRecord>) {
   const result: GridOptions<AbilityTableRecord> = {
     columnDefs: [
       abilityColIcon(util),

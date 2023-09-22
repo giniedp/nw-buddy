@@ -18,6 +18,7 @@ const commitHash =
   process.env.CF_PAGES_COMMIT_SHA || // Cloudflare Pages
   process.env.GITHUB_SHA || // Github Actions
   process.env.CIRCLE_SHA1 // CircleCI
+const isPtr = branchName === 'ptr' || branchName.startsWith('ptr-')
 const path = require('path')
 const config = {
   NW_GAME_LIVE: process.env.NW_GAME_LIVE,
@@ -28,7 +29,7 @@ const config = {
   NW_UNPACK_PTR: process.env.NW_UNPACK_PTR,
   NW_MODELS_DIR: process.env.NW_MODELS_DIR,
   NW_USE_CDN: ['true', 'yes', '1'].includes(process.env.NW_USE_CDN),
-  NW_USE_PTR: ['true', 'yes', '1'].includes(process.env.NW_USE_PTR ?? String(branchName === 'ptr')),
+  NW_USE_PTR: ['true', 'yes', '1'].includes(process.env.NW_USE_PTR ?? String(isPtr)),
   BRANCH_NAME: branchName,
   CDN_UPLOAD_SPACE: process.env.CDN_UPLOAD_SPACE,
   CDN_UPLOAD_KEY: process.env.CDN_UPLOAD_KEY,

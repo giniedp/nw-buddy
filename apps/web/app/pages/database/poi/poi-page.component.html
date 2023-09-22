@@ -37,7 +37,7 @@
     ></nwb-virtual-grid>
   </ng-container>
   <ng-container *ngIf="service.isGridActive$()">
-    <nwb-data-grid
+    <nwb-table-grid
       [enableQuickfilter]="true"
       [data]="service.categoryItems$ | async"
       [options]="service.gridOptions"
@@ -45,7 +45,7 @@
       [persistKey]="persistKey"
       [filterQueryParam]="filterParam"
       [selectionRouteParam]="selectionParam"
-    ></nwb-data-grid>
+    ></nwb-table-grid>
   </ng-container>
   <router-outlet></router-outlet>
 </div>

@@ -3,9 +3,9 @@ import { Injectable, inject } from '@angular/core'
 import { COLS_LOOTLIMITS } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { DATA_TABLE_SOURCE_OPTIONS, DataGridAdapter, DataTableUtils } from '~/ui/data-grid'
-import { DataTableCategory } from '~/ui/data-grid/types'
-import { addGenericColumns } from '~/ui/data-grid/utils'
+import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
+import { DataTableCategory } from '~/ui/data/table-grid'
+import { addGenericColumns } from '~/ui/data/table-grid'
 import {
   LootLimitTableRecord,
   lootLimitColCountLimit,
@@ -14,16 +14,16 @@ import {
   lootLimitColName,
   lootLimitColTimeBetweenDrops,
 } from './loot-limit-table-cols'
-import { DataViewAdapter } from '~/ui/data-view'
-import { VirtualGridOptions } from '~/ui/virtual-grid'
+import { DataViewAdapter } from '~/ui/data/data-view'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 
 @Injectable()
 export class LootLimitTableAdapter
-  implements DataViewAdapter<LootLimitTableRecord>, DataGridAdapter<LootLimitTableRecord>
+  implements DataViewAdapter<LootLimitTableRecord>, TableGridAdapter<LootLimitTableRecord>
 {
   private db = inject(NwDbService)
-  private config = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
-  private utils: DataTableUtils<LootLimitTableRecord> = inject(DataTableUtils)
+  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private utils: TableGridUtils<LootLimitTableRecord> = inject(TableGridUtils)
 
   public entityID(item: LootLimitTableRecord): string {
     return item.LootLimitID
@@ -60,7 +60,7 @@ export class LootLimitTableAdapter
   }
 }
 
-function buildOptions(util: DataTableUtils<LootLimitTableRecord>) {
+function buildOptions(util: TableGridUtils<LootLimitTableRecord>) {
   const result: GridOptions<LootLimitTableRecord> = {
     columnDefs: [
       lootLimitColIcon(util),

@@ -3,9 +3,9 @@ import { Injectable, inject } from '@angular/core'
 import { COLS_LOOTTABLE } from '@nw-data/generated'
 import { map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { DATA_TABLE_SOURCE_OPTIONS, DataGridAdapter, DataTableUtils } from '~/ui/data-grid'
-import { DataTableCategory } from '~/ui/data-grid/types'
-import { addGenericColumns } from '~/ui/data-grid/utils'
+import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
+import { DataTableCategory } from '~/ui/data/table-grid'
+import { addGenericColumns } from '~/ui/data/table-grid'
 import {
   LootTableGridRecord,
   lootTableColConditions,
@@ -15,14 +15,14 @@ import {
   lootTableColParents,
   lootTableColSource,
 } from './loot-table-cols'
-import { DataViewAdapter } from '~/ui/data-view'
-import { VirtualGridOptions } from '~/ui/virtual-grid'
+import { DataViewAdapter } from '~/ui/data/data-view'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 
 @Injectable()
-export class LootTableAdapter implements DataViewAdapter<LootTableGridRecord>, DataGridAdapter<LootTableGridRecord> {
+export class LootTableAdapter implements DataViewAdapter<LootTableGridRecord>, TableGridAdapter<LootTableGridRecord> {
   private db = inject(NwDbService)
-  private config = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
-  private utils: DataTableUtils<LootTableGridRecord> = inject(DataTableUtils)
+  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private utils: TableGridUtils<LootTableGridRecord> = inject(TableGridUtils)
 
   public entityID(item: LootTableGridRecord): string {
     return item.LootTableID
@@ -84,7 +84,7 @@ function selectTables(tables: LootTableGridRecord[]) {
   return entries
 }
 
-function buildOptions(util: DataTableUtils<LootTableGridRecord>) {
+function buildOptions(util: TableGridUtils<LootTableGridRecord>) {
   const result: GridOptions<LootTableGridRecord> = {
     columnDefs: [
       lootTableColId(util),

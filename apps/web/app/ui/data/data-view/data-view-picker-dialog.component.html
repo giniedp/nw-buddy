@@ -1,0 +1,46 @@
+<div class="flex-none bg-black flex flex-row gap-1 flex-wrap items-center p-1">
+  <button class="btn btn-square btn-ghost" (click)="close()">
+    <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
+  </button>
+  <h3 class="font-bold text-lg">
+    {{ title }}
+  </h3>
+  <span class="flex-1"></span>
+  <ng-container *ngIf="!displayMode && service.canToggleMode">
+    <button class="btn btn-square btn-ghost" [nwbDataViewToggle]="'grid'" [tooltip]="'Show Table View'"></button>
+    <button class="btn btn-square btn-ghost" [nwbDataViewToggle]="'virtual'" [tooltip]="'Show Grid View'"></button>
+  </ng-container>
+  <nwb-quicksearch-input [autofocus]="true" class="w-full md:w-60"></nwb-quicksearch-input>
+</div>
+
+<ng-container *ngIf="service.isVirtGridActive$()">
+  <nwb-virtual-grid
+    [enableQuickfilter]="true"
+    [selection]="selection"
+    [data]="service.categoryItems$ | async"
+    [options]="service.virtualOptions"
+    [identifyBy]="service.entityIdGetter"
+    (selection$)="onSelectionChange($event)"
+  ></nwb-virtual-grid>
+</ng-container>
+<ng-container *ngIf="service.isGridActive$()">
+  <nwb-table-grid
+    [enableQuickfilter]="true"
+    [selection]="selection"
+    [data]="service.categoryItems$ | async"
+    [options]="service.gridOptions"
+    [identifyBy]="service.entityIdGetter"
+    [persistKey]="persistKey"
+    (selectionChanged$)="onSelectionChange($event.ids)"
+  ></nwb-table-grid>
+</ng-container>
+
+<div class="flex-none modal-action flex-row justify-end layout-pad mt-0">
+  <div class="btn-group">
+    <button type="button" class="btn btn-ghost" (click)="close()">Cancel</button>
+  </div>
+  <div class="btn-group">
+    <button type="button" class="btn btn-ghost" (click)="clear()">Clear selection</button>
+    <button type="button" class="btn btn-primary" (click)="commit()">OK</button>
+  </div>
+</div>

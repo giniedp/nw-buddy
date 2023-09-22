@@ -9,7 +9,7 @@ import {
   VirtualGridComponent,
   VirtualGridOptions,
   provideVirtualGridOptions,
-} from '~/ui/virtual-grid'
+} from '~/ui/data/virtual-grid'
 import { ItemDetailModule } from '../item-detail'
 import { EmptyComponent } from '~/widgets/empty'
 import { ItemTableRecord } from './item-table-cols'

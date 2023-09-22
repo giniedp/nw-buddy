@@ -6,14 +6,14 @@ import { map } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService } from '~/nw'
 import {
-  DATA_TABLE_SOURCE_OPTIONS,
-  DataGridAdapter,
+  TABLE_GRID_ADAPTER_OPTIONS,
+  TableGridAdapter,
   DataTableCategory,
-  DataTableUtils,
+  TableGridUtils,
   addGenericColumns,
-} from '~/ui/data-grid'
-import { DataViewAdapter } from '~/ui/data-view'
-import { VirtualGridOptions } from '~/ui/virtual-grid'
+} from '~/ui/data/table-grid'
+import { DataViewAdapter } from '~/ui/data/data-view'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import {
   HousingTableRecord,
   housingColHousingTag1Placed,
@@ -32,11 +32,11 @@ import {
 import { HousingCellComponent } from './housing-cell.component'
 
 @Injectable()
-export class HousingTableAdapter implements DataGridAdapter<HousingTableRecord>, DataViewAdapter<HousingTableRecord> {
+export class HousingTableAdapter implements TableGridAdapter<HousingTableRecord>, DataViewAdapter<HousingTableRecord> {
   private db = inject(NwDbService)
   private i18n = inject(TranslateService)
-  private config = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
-  private utils: DataTableUtils<HousingTableRecord> = inject(DataTableUtils)
+  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private utils: TableGridUtils<HousingTableRecord> = inject(TableGridUtils)
 
   public entityID(item: HousingTableRecord): string {
     return item.HouseItemID
@@ -70,7 +70,7 @@ export class HousingTableAdapter implements DataGridAdapter<HousingTableRecord>,
   }
 }
 
-export function buildCommonHousingGridOptions(util: DataTableUtils<HousingTableRecord>) {
+export function buildCommonHousingGridOptions(util: TableGridUtils<HousingTableRecord>) {
   const result: GridOptions<HousingTableRecord> = {
     columnDefs: [
       housingColIcon(util),
@@ -96,7 +96,7 @@ export function buildCommonHousingGridOptions(util: DataTableUtils<HousingTableR
   return result
 }
 
-export function buildPickerHousingGridOptions(utils: DataTableUtils<HousingTableRecord>) {
+export function buildPickerHousingGridOptions(utils: TableGridUtils<HousingTableRecord>) {
   const result: GridOptions<HousingTableRecord> = {
     columnDefs: [
       housingColID(utils),

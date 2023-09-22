@@ -16,13 +16,13 @@ import {
   isMasterItem,
 } from '@nw-data/common'
 import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
-import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
-import { DataTableUtils } from '~/ui/data-grid'
+import { RangeFilter, SelectFilter } from '~/ui/data/ag-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize } from '~/utils'
 import { BookmarkCell, TrackingCell } from '~/widgets/adapter/components'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 
-export type ItemTableUtils = DataTableUtils<ItemTableRecord>
+export type ItemTableUtils = TableGridUtils<ItemTableRecord>
 export type ItemTableRecord = ItemDefinitionMaster & {
   $perks?: Perks[]
   $perkBuckets?: string[]
@@ -83,7 +83,7 @@ export function itemColItemId(util: ItemTableUtils) {
 }
 
 export function itemColPerks(
-  util: DataTableUtils<ItemDefinitionMaster & { $perks?: Perks[]; $perkBuckets?: string[] }>
+  util: TableGridUtils<ItemDefinitionMaster & { $perks?: Perks[]; $perkBuckets?: string[] }>
 ) {
   return util.colDef({
     colId: 'perks',
@@ -164,7 +164,7 @@ export function itemColTier(util: ItemTableUtils) {
   })
 }
 
-export function itemColBookmark(util: DataTableUtils<ItemDefinitionMaster>) {
+export function itemColBookmark(util: TableGridUtils<ItemDefinitionMaster>) {
   return util.colDef({
     colId: 'userBookmark',
     headerValueGetter: () => 'Bookmark',
@@ -180,7 +180,7 @@ export function itemColBookmark(util: DataTableUtils<ItemDefinitionMaster>) {
   })
 }
 
-export function itemColStockCount(util: DataTableUtils<ItemDefinitionMaster>) {
+export function itemColStockCount(util: TableGridUtils<ItemDefinitionMaster>) {
   return util.colDef({
     colId: 'userStockCount',
     headerValueGetter: () => 'In Stock',
@@ -198,7 +198,7 @@ export function itemColStockCount(util: DataTableUtils<ItemDefinitionMaster>) {
   })
 }
 
-export function itemColOwnedWithGS(util: DataTableUtils<ItemDefinitionMaster>) {
+export function itemColOwnedWithGS(util: TableGridUtils<ItemDefinitionMaster>) {
   return util.colDef({
     colId: 'userOwnedWithGS',
     headerValueGetter: () => 'Owned GS',
@@ -213,7 +213,7 @@ export function itemColOwnedWithGS(util: DataTableUtils<ItemDefinitionMaster>) {
     width: 100,
   })
 }
-export function itemColPrice(util: DataTableUtils<ItemDefinitionMaster>) {
+export function itemColPrice(util: TableGridUtils<ItemDefinitionMaster>) {
   return util.colDef({
     colId: 'userPrice',
     headerValueGetter: () => 'Price',

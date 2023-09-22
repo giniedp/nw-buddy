@@ -1,12 +1,11 @@
-import { DataGridPicker } from '~/ui/data-grid'
-import { HousingTableAdapter, buildPickerHousingGridOptions } from './housing-table-adapter'
-import { map } from 'rxjs'
-import { NwDbService } from '~/nw'
-import { eqCaseInsensitive } from '~/utils'
-import { HousingTableRecord } from './housing-table-cols'
 import { Dialog } from '@angular/cdk/dialog'
 import { Injector } from '@angular/core'
-import { DataViewPicker } from '~/ui/data-view'
+import { map } from 'rxjs'
+import { NwDbService } from '~/nw'
+import { DataViewPicker } from '~/ui/data/data-view'
+import { eqCaseInsensitive } from '~/utils'
+import { HousingTableAdapter, buildPickerHousingGridOptions } from './housing-table-adapter'
+import { HousingTableRecord } from './housing-table-cols'
 
 export function openHousingItemsPicker(options: {
   db: NwDbService

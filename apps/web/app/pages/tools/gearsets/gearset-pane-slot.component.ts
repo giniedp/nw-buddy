@@ -1,5 +1,5 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
-import { Overlay, OverlayModule, RepositionScrollStrategy } from '@angular/cdk/overlay'
+import { Overlay } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -16,15 +16,13 @@ import { FormsModule } from '@angular/forms'
 import { BehaviorSubject, combineLatest, defer, filter, firstValueFrom, map, take, tap } from 'rxjs'
 
 import { NwModule } from '~/nw'
-import { DataTableModule } from '~/ui/data-table'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
-import { GearsetRecord, GearsetSlotStore, ItemInstance, ItemInstancesStore } from '~/data'
-import { EquipSlot, EquipSlotId, EQUIP_SLOTS, getItemId, getItemMaxGearScore } from '@nw-data/common'
-import { deferStateFlat, shareReplayRefCount } from '~/utils'
-import { ItemDetailComponent } from '~/widgets/data/item-detail/item-detail.component'
-import { InventoryPickerService } from '../inventory/inventory-picker.service'
+import { EQUIP_SLOTS, EquipSlot, EquipSlotId, getItemId, getItemMaxGearScore } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { GearsetRecord, GearsetSlotStore, ItemInstance, ItemInstancesStore } from '~/data'
+import { GsSliderComponent } from '~/ui/gs-input'
+import { IconsModule } from '~/ui/icons'
 import {
   svgEllipsisVertical,
   svgImage,
@@ -34,12 +32,13 @@ import {
   svgRotate,
   svgTrashCan,
 } from '~/ui/icons/svg'
-import { IconsModule } from '~/ui/icons'
-import { TooltipModule } from '~/ui/tooltip'
-import { LayoutModule } from '~/ui/layout'
 import { ItemFrameModule } from '~/ui/item-frame'
+import { LayoutModule } from '~/ui/layout'
+import { TooltipModule } from '~/ui/tooltip'
+import { shareReplayRefCount } from '~/utils'
+import { ItemDetailComponent } from '~/widgets/data/item-detail/item-detail.component'
 import { GearImporterDialogComponent } from '../inventory/gear-importer-dialog.component'
-import { GsSliderComponent } from '~/ui/gs-input'
+import { InventoryPickerService } from '../inventory/inventory-picker.service'
 
 export interface GearsetSlotVM {
   slot?: EquipSlot
@@ -65,7 +64,6 @@ export interface GearsetSlotVM {
     DialogModule,
     FormsModule,
     ItemDetailModule,
-    DataTableModule,
     IconsModule,
     LayoutModule,
     TooltipModule,
@@ -200,7 +198,7 @@ export class GearsetPaneSlotComponent {
       this.picker
         .pickHousingItem({
           title: 'Choose item for slot',
-          itemId: instance ? [instance.itemId] : [],
+          selection: instance ? [instance.itemId] : [],
           multiple: false,
           category: this.slot.itemType,
         })
@@ -218,7 +216,7 @@ export class GearsetPaneSlotComponent {
       this.picker
         .pickItem({
           title: 'Choose item for slot',
-          itemId: instance ? [instance.itemId] : [],
+          selection: instance ? [instance.itemId] : [],
           multiple: false,
           category: this.slot.itemType,
         })
@@ -257,7 +255,7 @@ export class GearsetPaneSlotComponent {
 
   protected pickPerk({ instance }: GearsetSlotVM, key: string) {
     this.picker
-      .choosePerk(instance, key)
+      .pickPerkForItem(instance, key)
       .pipe(take(1))
       .subscribe((perk) => {
         this.store.updatePerk({ perk, key })

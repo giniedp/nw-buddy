@@ -6,7 +6,7 @@ import { NwModule } from '~/nw'
 import { NwTextContextService } from '~/nw/expression'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
-import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/virtual-grid'
+import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { EmptyComponent } from '~/widgets/empty'
 
 @Component({

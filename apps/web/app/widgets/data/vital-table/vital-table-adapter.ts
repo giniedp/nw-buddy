@@ -4,11 +4,11 @@ import { getVitalCategoryInfo, getVitalDungeons, getVitalFamilyInfo, getVitalsCa
 import { COLS_VITALS } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { DATA_TABLE_SOURCE_OPTIONS, DataGridAdapter, DataTableUtils } from '~/ui/data-grid'
-import { DataTableCategory } from '~/ui/data-grid/types'
-import { addGenericColumns } from '~/ui/data-grid/utils'
-import { DataViewAdapter } from '~/ui/data-view'
-import { VirtualGridOptions } from '~/ui/virtual-grid'
+import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
+import { DataTableCategory } from '~/ui/data/table-grid'
+import { addGenericColumns } from '~/ui/data/table-grid'
+import { DataViewAdapter } from '~/ui/data/data-view'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import {
   VitalTableRecord,
   vitalColCategories,
@@ -33,10 +33,10 @@ import {
 } from './vital-table-cols'
 
 @Injectable()
-export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord>, DataGridAdapter<VitalTableRecord> {
+export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord>, TableGridAdapter<VitalTableRecord> {
   private db = inject(NwDbService)
-  private utils: DataTableUtils<VitalTableRecord> = inject(DataTableUtils)
-  private config = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
+  private utils: TableGridUtils<VitalTableRecord> = inject(TableGridUtils)
+  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
 
   public entityID(item: VitalTableRecord): string {
     return item.VitalsID
@@ -91,7 +91,7 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord>, Dat
   }
 }
 
-function buildVitalTableOptions(util: DataTableUtils<VitalTableRecord>) {
+function buildVitalTableOptions(util: TableGridUtils<VitalTableRecord>) {
   const result: GridOptions<VitalTableRecord> = {
     columnDefs: [
       vitalColIcon(util),

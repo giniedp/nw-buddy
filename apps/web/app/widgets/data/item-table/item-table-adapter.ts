@@ -5,10 +5,10 @@ import { COLS_ITEMDEFINITIONMASTER } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { NwDbService } from '~/nw'
 import { ItemPreferencesService } from '~/preferences'
-import { DATA_TABLE_SOURCE_OPTIONS, DataGridAdapter, DataTableUtils } from '~/ui/data-grid'
+import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
 
-import { DataTableCategory } from '~/ui/data-grid/types'
-import { addGenericColumns } from '~/ui/data-grid/utils'
+import { DataTableCategory } from '~/ui/data/table-grid'
+import { addGenericColumns } from '~/ui/data/table-grid'
 import { selectStream } from '~/utils'
 import {
   ItemTableRecord,
@@ -31,16 +31,16 @@ import {
   itemColTradingFamily,
   itemColTradingGroup,
 } from './item-table-cols'
-import { DataViewAdapter } from '~/ui/data-view'
-import { VirtualGridOptions } from '~/ui/virtual-grid'
+import { DataViewAdapter } from '~/ui/data/data-view'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { ItemCellComponent } from './item-cell.component'
 
 @Injectable()
-export class ItemTableAdapter implements DataGridAdapter<ItemTableRecord>, DataViewAdapter<ItemTableRecord> {
+export class ItemTableAdapter implements TableGridAdapter<ItemTableRecord>, DataViewAdapter<ItemTableRecord> {
   private db = inject(NwDbService)
   private i18n = inject(TranslateService)
-  private config = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
-  private utils: DataTableUtils<ItemTableRecord> = inject(DataTableUtils)
+  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private utils: TableGridUtils<ItemTableRecord> = inject(TableGridUtils)
 
   public entityID(item: ItemTableRecord): string {
     return item.ItemID
@@ -89,7 +89,7 @@ export class ItemTableAdapter implements DataGridAdapter<ItemTableRecord>, DataV
   }
 }
 
-export function buildCommonItemGridOptions(util: DataTableUtils<ItemTableRecord>) {
+export function buildCommonItemGridOptions(util: TableGridUtils<ItemTableRecord>) {
   const result: GridOptions<ItemTableRecord> = {
     columnDefs: [
       itemColIcon(util),
@@ -119,7 +119,7 @@ export function buildCommonItemGridOptions(util: DataTableUtils<ItemTableRecord>
   return result
 }
 
-export function buildPickerItemGridOptions(util: DataTableUtils<ItemTableRecord>) {
+export function buildPickerItemGridOptions(util: TableGridUtils<ItemTableRecord>) {
   const result: GridOptions<ItemTableRecord> = {
     columnDefs: [
       itemColIcon(util),

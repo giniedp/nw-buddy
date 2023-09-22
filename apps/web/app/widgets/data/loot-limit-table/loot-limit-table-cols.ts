@@ -9,9 +9,9 @@ import {
 } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster, Lootlimits } from '@nw-data/generated'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
-import { DataTableUtils } from '~/ui/data-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 
-export type LootLimitTableUtils = DataTableUtils<LootLimitTableRecord>
+export type LootLimitTableUtils = TableGridUtils<LootLimitTableRecord>
 export type LootLimitTableRecord = Lootlimits & {
   $item: ItemDefinitionMaster | Housingitems
 }

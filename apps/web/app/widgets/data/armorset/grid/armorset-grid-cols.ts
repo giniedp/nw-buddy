@@ -9,12 +9,12 @@ import {
 } from '@nw-data/common'
 import m from 'mithril'
 import { merge, skip, takeUntil } from 'rxjs'
-import { SelectFilter, mithrilCell } from '~/ui/ag-grid'
-import { DataTableUtils } from '~/ui/data-grid'
+import { SelectFilter, mithrilCell } from '~/ui/data/ag-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 import { ItemMarkerCell, ItemTrackerCell } from '~/widgets/item-tracker'
 import { Armorset } from '../types'
 
-export type ArmorsetGridUtils = DataTableUtils<ArmorsetGridRecord>
+export type ArmorsetGridUtils = TableGridUtils<ArmorsetGridRecord>
 export type ArmorsetGridRecord = Armorset
 
 export function armorsetColName(util: ArmorsetGridUtils) {

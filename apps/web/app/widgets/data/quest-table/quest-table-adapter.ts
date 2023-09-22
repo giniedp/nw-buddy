@@ -3,11 +3,11 @@ import { Injectable, inject } from '@angular/core'
 import { NW_FALLBACK_ICON, getQuestTypeIcon } from '@nw-data/common'
 import { COLS_OBJECTIVE, Objective } from '@nw-data/generated'
 import { NwDbService } from '~/nw'
-import { DATA_TABLE_SOURCE_OPTIONS, DataGridAdapter, DataTableUtils } from '~/ui/data-grid'
-import { DataTableCategory } from '~/ui/data-grid/types'
-import { addGenericColumns } from '~/ui/data-grid/utils'
-import { DataViewAdapter } from '~/ui/data-view'
-import { VirtualGridOptions } from '~/ui/virtual-grid'
+import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
+import { DataTableCategory } from '~/ui/data/table-grid'
+import { addGenericColumns } from '~/ui/data/table-grid'
+import { DataViewAdapter } from '~/ui/data/data-view'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { humanize } from '~/utils'
 import {
   QuestTableRecord,
@@ -27,10 +27,10 @@ import {
 } from './quest-table-cols'
 
 @Injectable()
-export class QuestTableAdapter implements DataViewAdapter<QuestTableRecord>, DataGridAdapter<QuestTableRecord> {
+export class QuestTableAdapter implements DataViewAdapter<QuestTableRecord>, TableGridAdapter<QuestTableRecord> {
   private db = inject(NwDbService)
-  private config = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
-  private utils: DataTableUtils<QuestTableRecord> = inject(DataTableUtils)
+  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private utils: TableGridUtils<QuestTableRecord> = inject(TableGridUtils)
 
   public entityID(item: Objective): string | number {
     return item.ObjectiveID
@@ -62,7 +62,7 @@ export class QuestTableAdapter implements DataViewAdapter<QuestTableRecord>, Dat
   }
 }
 
-function buildOptions(util: DataTableUtils<QuestTableRecord>) {
+function buildOptions(util: TableGridUtils<QuestTableRecord>) {
   const result: GridOptions<QuestTableRecord> = {
     columnDefs: [
       questColIcon(util),

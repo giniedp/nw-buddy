@@ -8,7 +8,7 @@ import { combineLatest, filter, firstValueFrom, map, switchMap, take } from 'rxj
 import { GearsetStore, GearsetsDB, ItemInstanceRecord } from '~/data'
 import { NwModule } from '~/nw'
 import { PreferencesService } from '~/preferences'
-import { DataViewPicker } from '~/ui/data-view'
+import { DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft, svgFolderOpen, svgLink, svgPaste, svgPlus, svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule, PromptDialogComponent } from '~/ui/layout'

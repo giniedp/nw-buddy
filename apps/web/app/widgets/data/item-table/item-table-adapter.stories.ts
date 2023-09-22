@@ -2,8 +2,8 @@ import { CommonModule } from '@angular/common'
 import { Component, importProvidersFrom } from '@angular/core'
 import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
 import { AppTestingModule } from '~/test'
-import { DataGridModule } from '~/ui/data-grid'
-import { provideTableSource } from '~/ui/data-grid'
+import { DataGridModule } from '~/ui/data/table-grid'
+import { provideTableGrid } from '~/ui/data/table-grid'
 import { QuicksearchModule } from '~/ui/quicksearch'
 import { ItemTableAdapter } from './item-table-adapter'
 
@@ -31,12 +31,12 @@ import { ItemTableAdapter } from './item-table-adapter'
       <div class="flex-none p-2 w-full md:max-w-[256px]">
         <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"></nwb-quicksearch-input>
       </div>
-      <nwb-data-grid [filterQueryParam]="'filter'" [persistKey]="'items-table'" #grid></nwb-data-grid>
+      <nwb-table-grid [filterQueryParam]="'filter'" [persistKey]="'items-table'" #grid></nwb-table-grid>
     </div>
   `,
   imports: [CommonModule, DataGridModule, QuicksearchModule],
   providers: [
-    provideTableSource({
+    provideTableGrid({
       type: ItemTableAdapter,
     }),
   ],
@@ -44,7 +44,7 @@ import { ItemTableAdapter } from './item-table-adapter'
 export class StoryComponent {}
 
 export default {
-  title: 'Widgets / nwb-data-grid / items',
+  title: 'Widgets / nwb-table-grid / items',
   component: StoryComponent,
   decorators: [
     applicationConfig({

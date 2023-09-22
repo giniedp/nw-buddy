@@ -4,11 +4,11 @@ import { COLS_GAMEEVENT, GameEvent } from '@nw-data/generated'
 import { NwDbService } from '~/nw'
 import { humanize } from '~/utils'
 
-import { DATA_TABLE_SOURCE_OPTIONS, DataGridAdapter, DataTableUtils } from '~/ui/data-grid'
-import { DataTableCategory } from '~/ui/data-grid/types'
-import { addGenericColumns } from '~/ui/data-grid/utils'
-import { DataViewAdapter } from '~/ui/data-view'
-import { VirtualGridOptions } from '~/ui/virtual-grid'
+import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
+import { DataTableCategory } from '~/ui/data/table-grid'
+import { addGenericColumns } from '~/ui/data/table-grid'
+import { DataViewAdapter } from '~/ui/data/data-view'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import {
   GameEventTableRecord,
   gameEventColAzothReward,
@@ -42,11 +42,11 @@ import {
 
 @Injectable()
 export class GameEventTableAdapter
-  implements DataViewAdapter<GameEventTableRecord>, DataGridAdapter<GameEventTableRecord>
+  implements DataViewAdapter<GameEventTableRecord>, TableGridAdapter<GameEventTableRecord>
 {
   private db = inject(NwDbService)
-  private config = inject(DATA_TABLE_SOURCE_OPTIONS, { optional: true })
-  private utils: DataTableUtils<GameEventTableRecord> = inject(DataTableUtils)
+  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private utils: TableGridUtils<GameEventTableRecord> = inject(TableGridUtils)
 
   public entityID(item: GameEventTableRecord): string {
     return item.EventID
@@ -81,7 +81,7 @@ export class GameEventTableAdapter
   }
 }
 
-function buildOptions(utils: DataTableUtils<GameEventTableRecord>) {
+function buildOptions(utils: TableGridUtils<GameEventTableRecord>) {
   const result: GridOptions<GameEventTableRecord> = {
     columnDefs: [
       gameEventColID(utils),
