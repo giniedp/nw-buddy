@@ -4,7 +4,7 @@ import { selectPhysicalRatingBase } from './armoring'
 
 export function selectMaxHealth(db: DbSlice, mods: ActiveMods, state: MannequinState) {
   // HINT: 856 base value is from vitals.json "VitalsID": "Player"
-  const healthFromLevel = 856 + 1.65 * Math.pow(state.level - 1, 2)
+  const healthFromLevel = 856 + 1.75 * Math.pow(state.level - 1, 2)
   const healthFromConst = mods.attributes.con.health
 
   const result: ModifierResult = {
@@ -66,7 +66,7 @@ export function selectMaxMana(mods: ActiveMods) {
     modifierAdd(result, {
       value: base * value,
       scale: scale,
-      source
+      source,
     })
   }
   // HINT: currently there are no perks giving MaxManaMod
@@ -74,7 +74,7 @@ export function selectMaxMana(mods: ActiveMods) {
     modifierAdd(result, {
       value: base * value,
       scale: scale,
-      source
+      source,
     })
   }
   return result
@@ -95,7 +95,7 @@ export function selectMaxStamina(mods: ActiveMods) {
     modifierAdd(result, {
       value: base * value,
       scale: scale,
-      source
+      source,
     })
   }
   return result
