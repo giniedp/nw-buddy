@@ -1,11 +1,11 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { ChangeDetectorRef, Component } from '@angular/core'
+import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { getItemId } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
-import { combineLatest, defer, of, switchMap, take, tap } from 'rxjs'
+import { Observable, combineLatest, defer, from, map, of, pipe, switchMap, take, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwLinkService } from '~/nw'
 import { ItemPreferencesService } from '~/preferences'
@@ -13,12 +13,24 @@ import { DataGridModule } from '~/ui/data/table-grid'
 import { DataViewModule, provideDataView } from '~/ui/data/data-view'
 import { JsonPriceTableAdapter } from './json-price-table-adapter'
 import { JsonPriceItem } from './types'
+import { ComponentStore } from '@ngrx/component-store'
+import { IconsModule } from '~/ui/icons'
+import { svgCircleNotch } from '~/ui/icons/svg'
 
+export interface JsonImporterState {
+  url?: string
+  file?: File
+  data?: Array<any>
+  rows?: JsonPriceItem[]
+  isLoading?: boolean
+  isComplete?: boolean
+  hasError?: boolean
+}
 @Component({
   standalone: true,
   selector: 'nwb-price-importer-json',
   templateUrl: './price-importer-json.component.html',
-  imports: [CommonModule, FormsModule, DataViewModule, DataGridModule],
+  imports: [CommonModule, FormsModule, DataViewModule, DataGridModule, IconsModule],
   providers: [
     provideDataView({
       adapter: JsonPriceTableAdapter,
@@ -28,129 +40,104 @@ import { JsonPriceItem } from './types'
     class: 'layout-col',
   },
 })
-export class JsonPriceImporterComponent {
-  protected url: string
-  protected file: File
+export class JsonPriceImporterComponent extends ComponentStore<JsonImporterState> {
+  @Output()
+  protected dataReceived = new EventEmitter<JsonPriceItem[]>()
 
-  protected error: Error
-  protected isLoading = false
-  protected isComplete = false
+  protected file$ = this.selectSignal(({ file }) => file)
+  protected url$ = this.selectSignal(({ url }) => url)
+  protected rows$ = this.selectSignal(({ rows }) => rows)
+  protected girdOptions = this.adapter.gridOptions()
 
-  protected rawData: Object
-  protected data: JsonPriceItem[]
-  protected keys: string[]
+  protected isLoading$ = this.selectSignal(({ isLoading }) => isLoading)
+  protected hasError$ = this.selectSignal(({ hasError }) => hasError)
+
+  protected showFileInput$ = this.selectSignal(({ data, rows }) => !data && !rows)
+  protected showConverter$ = this.selectSignal(({ data, rows }) => !!data && !rows)
+  protected showDataTable$ = this.selectSignal(({ rows }) => !!rows)
+
   protected keyId: string
   protected keyPrice: string
+  protected keys: string[]
   protected scale: number = 1
+  protected iconSpin = svgCircleNotch
 
-  protected get fileName() {
-    return this.file?.name
+  public constructor(private db: NwDbService, private http: HttpClient, private adapter: JsonPriceTableAdapter) {
+    super({})
   }
-
-  protected get showInput() {
-    return !this.rawData && !this.isComplete && !this.error
-  }
-
-  protected get showLoading() {
-    return this.isLoading
-  }
-
-  protected get showSuccess() {
-    return !this.isLoading && this.isComplete && !this.error
-  }
-
-  protected get showError() {
-    return !this.isLoading && this.isComplete && !!this.error
-  }
-
-  protected get canLoad() {
-    return !!this.file || !!this.url
-  }
-
-  protected get showEditor() {
-    return !this.isComplete && !!this.rawData && !this.data
-  }
-
-  protected get showPreview() {
-    return !this.isComplete && !!this.rawData && !!this.data
-  }
-
-  private items: Map<string, ItemDefinitionMaster>
-  private housing: Map<string, Housingitems>
-
-  public constructor(
-    private db: NwDbService,
-    private pref: ItemPreferencesService,
-    private dialog: Dialog,
-    private http: HttpClient,
-    private cdRef: ChangeDetectorRef,
-    private adapter: JsonPriceTableAdapter
-  ) {}
 
   protected useFile(e: Event) {
-    this.file = (e.target as HTMLInputElement)?.files?.[0]
-    this.url = null
+    this.patchState({
+      file: (e.target as HTMLInputElement)?.files?.[0],
+      url: null,
+    })
   }
 
   protected useUrl(e: Event) {
-    this.file = null
-    this.url = (e.target as HTMLInputElement)?.value
+    this.patchState({
+      file: null,
+      url: (e.target as HTMLInputElement)?.value,
+    })
   }
 
-  protected load() {
-    defer(() => {
-      if (this.file) {
-        return this.readFile(this.file)
-      }
-      if (this.url) {
-        return this.loadUrl(this.url)
-      }
-      return null
-    })
-      .pipe(
-        switchMap((data) =>
-          combineLatest({
-            items: this.items ? of(this.items) : this.db.itemsMap,
-            housing: this.housing ? of(this.housing) : this.db.housingItemsMap,
-            data: of(data),
-          })
-        )
-      )
-      .pipe(take(1))
+  protected loadFromFile(file: File) {
+    const source$ = defer(() => this.readFile(file))
+    this.load(source$)
+  }
+
+  protected loadFromUrl(url: string) {
+    const source$ = this.loadUrl(url)
+    this.load(source$)
+  }
+
+  protected load(source$: Observable<any>) {
+    source$
       .pipe(
         tap({
           subscribe: () => {
-            this.isLoading = true
-            this.rawData = null
-            this.cdRef.markForCheck()
+            this.patchState({
+              isLoading: true,
+              data: null,
+              rows: null,
+              hasError: false,
+            })
           },
-          error: () => {
-            this.isLoading = false
-            this.rawData = null
-            this.cdRef.markForCheck()
+        }),
+        map((data) => {
+          this.validateData(data)
+          return {
+            data,
+            ...this.extractKeys(data),
+          }
+        }),
+        tap({
+          next: () => {
+            this.patchState({
+              isLoading: false,
+              hasError: false,
+            })
           },
-          complete: () => {
-            this.isLoading = false
-            this.cdRef.markForCheck()
+          error: (e) => {
+            console.error(e)
+            this.patchState({
+              isLoading: false,
+              hasError: true,
+            })
           },
         })
       )
-      .subscribe(({ data, items, housing }) => {
-        this.cdRef.markForCheck()
-        this.isLoading = false
-        this.items = items
-        this.housing = housing
-        this.rawData = data
-        this.error = this.validateData(data)
-        const inspect = this.extractKeys(data)
-        this.keys = inspect.keys
-        this.keyId = inspect.keyId
-        this.keyPrice = inspect.keyPrice
+      .subscribe(({ data, keyId, keyPrice, keys }) => {
+        this.keyId = keyId
+        this.keyPrice = keyPrice
+        this.keys = keys
+        this.patchState({
+          data,
+        })
       })
   }
 
   private readFile(file: File) {
-    return new Promise<Object>((resolve, reject) => {
+    return new Promise<any>((resolve, reject) => {
       const reader = new FileReader()
       reader.onload = (e) => {
         try {
@@ -165,22 +152,21 @@ export class JsonPriceImporterComponent {
   }
 
   private loadUrl(url: string) {
-    return this.http.get(url, {
+    return this.http.get<any>(url, {
       responseType: 'json',
     })
   }
 
   private validateData(data: Object) {
     if (!data) {
-      return new Error('no data')
+      throw new Error('no data')
     }
     if (!Array.isArray(data)) {
-      return new Error('data must contains a JSON Array')
+      throw new Error('data must contain a JSON Array')
     }
     if (!data.length) {
-      return new Error('data is empty')
+      throw new Error('data is empty')
     }
-    return null
   }
 
   protected extractKeys(data: Object) {
@@ -202,36 +188,41 @@ export class JsonPriceImporterComponent {
   }
 
   protected extract() {
+    const data = this.get(({ data }) => data)
     const keyId = this.keyId
     const keyPrice = this.keyPrice
-    const scale = this.scale
     const keys = this.keys.filter((it) => it !== keyId && it !== keyPrice)
-    this.data = (this.rawData as Array<any>).map((it) => {
-      const itemId = it[keyId]
-      const item = this.items?.get(itemId) || this.housing?.get(itemId)
-      return {
-        id: itemId,
-        item: item,
-        price: Number(it[keyPrice]) * scale,
-        data: it,
-        keys: keys,
-      }
+    const scale = this.scale
+    combineLatest({
+      housing: this.db.housingItemsMap,
+      items: this.db.itemsMap,
     })
-    this.adapter.entities.next(this.data)
-  }
-
-  protected import() {
-    this.data.forEach((it) => {
-      if (it.item) {
-        this.pref.merge(getItemId(it.item), {
-          price: it.price,
+      .pipe(
+        map(({ housing, items }) => {
+          return data.map((it) => {
+            const itemId = it[keyId]
+            const item = items.get(itemId) || housing?.get(itemId)
+            return {
+              id: itemId,
+              item: item,
+              price: Number(it[keyPrice]) * scale,
+              data: it,
+              keys: keys,
+            }
+          })
         })
-      }
-    })
-    this.isComplete = true
-  }
-
-  protected close() {
-    this.dialog?.closeAll()
+      )
+      .pipe(take(1))
+      .subscribe({
+        next: (rows) => {
+          this.patchState({ rows, isComplete: true })
+          this.adapter.entities.next(rows)
+          this.dataReceived.emit(rows)
+        },
+        error: (err) => {
+          console.error(err)
+          this.patchState({ hasError: true, isComplete: true })
+        },
+      })
   }
 }

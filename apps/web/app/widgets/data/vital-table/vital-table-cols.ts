@@ -162,7 +162,7 @@ export function vitalColCategories(util: VitalTableUtils) {
     cellRenderer: util.tagsRenderer({
       transform: humanize,
       getClass: (value) => {
-        return isVitalCombatCategory(value) ? ['badge-error'] : ['badge-secondary']
+        return isVitalCombatCategory(value) ? ['badge-error', 'bg-error'] : []
       },
     }),
     filter: SelectFilter,
@@ -200,7 +200,7 @@ export function vitalColLootTags(util: VitalTableUtils) {
     cellRenderer: util.tagsRenderer({
       transform: humanize,
       getClass: (value) => {
-        return isVitalCombatCategory(value) ? ['badge-error'] : ['badge-secondary']
+        return isVitalCombatCategory(value) ? ['badge-error', 'bg-error'] : []
       },
     }),
     filter: SelectFilter,

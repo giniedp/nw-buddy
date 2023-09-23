@@ -20,7 +20,7 @@ import { AgGrid, AgGridEvents } from './types'
 
 @Directive({
   standalone: true,
-  selector: 'nwbGrid',
+  selector: '[nwbGrid]',
   host: {
     '[class.ag-grid]': 'true',
     '[class.ag-theme-alpine-dark]': 'true',

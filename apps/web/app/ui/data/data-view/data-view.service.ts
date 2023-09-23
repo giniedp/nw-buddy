@@ -52,10 +52,10 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
 
   public constructor(public readonly adapter: DataViewAdapter<T>) {
     super({
-      items: [],
-      categories: [],
+      items: null,
+      categories: null,
       category: null,
-      categoryItems: [],
+      categoryItems: null,
       mode: 'table',
     })
 

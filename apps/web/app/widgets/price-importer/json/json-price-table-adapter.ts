@@ -51,19 +51,20 @@ function buildGridOptions(util: TableGridUtils<JsonPriceItem>): GridOptions<Json
         width: 62,
         pinned: true,
         cellRenderer: util.cellRenderer(({ data }) => {
+          const item = data.item
           return util.elA(
             {
               attrs: {
-                href: util.nwLink.link('item', getItemId(data.item)),
+                href: util.nwLink.link('item', getItemId(item)),
                 target: '_blank',
               },
             },
             util.elItemIcon({
               class: ['transition-all translate-x-0 hover:translate-x-1'],
-              icon: getItemIconPath(data.item) || NW_FALLBACK_ICON,
-              isArtifact: isMasterItem(data.item) && isItemArtifact(data.item),
-              isNamed: isMasterItem(data.item) && isItemNamed(data.item),
-              rarity: getItemRarity(data.item),
+              icon: getItemIconPath(item) || NW_FALLBACK_ICON,
+              isArtifact: isMasterItem(item) && isItemArtifact(item),
+              isNamed: isMasterItem(item) && isItemNamed(item),
+              rarity: getItemRarity(item),
             })
           )
         }),
@@ -71,7 +72,7 @@ function buildGridOptions(util: TableGridUtils<JsonPriceItem>): GridOptions<Json
       {
         width: 250,
         headerName: 'Name',
-        valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.item.Name)),
+        valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.item?.Name)),
         cellRenderer: util.lineBreaksRenderer(),
         cellClass: ['multiline-cell'],
         autoHeight: true,

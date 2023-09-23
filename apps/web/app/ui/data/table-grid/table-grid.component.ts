@@ -1,7 +1,18 @@
 import { AgGridEvent, GridApi, GridOptions } from '@ag-grid-community/core'
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, NgZone, OnInit, Output } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  NgZone,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core'
 import { isEqual } from 'lodash'
 import {
+  ReplaySubject,
   asyncScheduler,
   combineLatest,
   debounceTime,
@@ -16,12 +27,14 @@ import {
   tap,
 } from 'rxjs'
 import { LocaleService } from '~/i18n'
-import { AgGridDirective } from '~/ui/data/ag-grid'
+import { AgGrid, AgGridDirective } from '~/ui/data/ag-grid'
 import { debounceSync } from '~/utils/rx-operators'
 import { gridDisplayRowCount } from '~/ui/data/ag-grid/utils'
 import { TableGridPersistenceService } from './table-grid-persistence.service'
 import { TableGridStore } from './table-grid.store'
 import { runInZone } from '~/utils/run-in-zone'
+import { animate, style, transition, trigger } from '@angular/animations'
+import { CommonModule } from '@angular/common'
 
 export interface SelectionChangeEvent<T> {
   rows: T[]
@@ -32,14 +45,18 @@ export interface SelectionChangeEvent<T> {
   standalone: true,
   selector: 'nwb-table-grid',
   exportAs: 'tableGrid',
-  template: ``,
+  templateUrl: './table-grid.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [AgGridDirective],
+  imports: [CommonModule, AgGridDirective],
   providers: [TableGridPersistenceService, TableGridStore],
-  hostDirectives: [AgGridDirective],
   host: {
     class: 'flex-1 h-full w-full',
   },
+  animations: [
+    trigger('fade', [
+      transition(':leave', [style({ opacity: 1 }), animate('0.150s 0.3s ease-out', style({ opacity: 0 }))]),
+    ]),
+  ],
 })
 export class TableGridComponent<T> implements OnInit {
   @Input()
@@ -72,25 +89,29 @@ export class TableGridComponent<T> implements OnInit {
   public readonly selectionChanged$ = new EventEmitter<SelectionChangeEvent<T>>()
 
   @Output()
-  public readonly ready$ = defer(() => this.grid.onReady)
+  public readonly ready$ = new ReplaySubject<AgGrid<T>>(1)
 
   @Output()
   public readonly selection$ = defer(() => this.store.selection$)
+
+  @ViewChild(AgGridDirective, { static: true })
+  public readonly grid: AgGridDirective<T>
 
   public readonly categories$ = of(null as any) // TODO: remove
   public readonly rowCount$ = defer(() => gridDisplayRowCount(this.ready$))
 
   public constructor(
     private locale: LocaleService,
-    private grid: AgGridDirective<T>,
+    //private grid: AgGridDirective<T>,
     private persistence: TableGridPersistenceService,
-    private store: TableGridStore<T>,
+    protected store: TableGridStore<T>,
     private zone: NgZone
   ) {
     //
   }
 
   public async ngOnInit() {
+    this.grid.onReady.pipe(takeUntil(this.store.destroy$)).subscribe(this.ready$)
     this.attachBootloader()
     this.attachPersistence()
     this.attachAutoRefresh()
@@ -99,7 +120,7 @@ export class TableGridComponent<T> implements OnInit {
 
   private attachBootloader() {
     this.ready$.pipe(takeUntil(this.store.destroy$)).subscribe((grid) => {
-      this.store.patchState({ grid: grid })
+      this.store.patchState({ grid: grid, hasLoaded: true })
     })
     // grid initialization
     combineLatest({

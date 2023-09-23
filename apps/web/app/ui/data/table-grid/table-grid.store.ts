@@ -13,6 +13,8 @@ export interface TableGridState<T> {
 
   multiSelect?: boolean
   filterModel?: any
+
+  hasLoaded?: boolean
 }
 
 @Injectable()
@@ -22,6 +24,7 @@ export class TableGridStore<T = unknown> extends ComponentStore<TableGridState<T
   public readonly gridOptions$ = this.select(({ gridOptions }) => gridOptions)
   public readonly selection$ = this.select(({ selection }) => selection, { equal: isEqual })
   public readonly identifyBy$ = this.selectSignal(({ identifyBy }) => identifyBy)
+  public readonly hasLoaded$ = this.select(({ hasLoaded }) => hasLoaded)
 
   public constructor() {
     super({})

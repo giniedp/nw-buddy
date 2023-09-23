@@ -12,6 +12,7 @@ import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
 import { ItemTableAdapter, ItemTableRecord } from '~/widgets/data/item-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
+import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 
 @Component({
   standalone: true,
@@ -30,6 +31,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     ScreenshotModule,
     TooltipModule,
     VirtualGridModule,
+    PriceImporterModule,
   ],
   host: {
     class: 'layout-col',

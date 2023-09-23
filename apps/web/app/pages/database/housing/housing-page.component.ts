@@ -13,6 +13,7 @@ import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } f
 import { HousingTableAdapter } from '~/widgets/data/housing-table'
 import { ItemTableRecord } from '~/widgets/data/item-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
+import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 
 @Component({
   standalone: true,
@@ -31,6 +32,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     TooltipModule,
     VirtualGridModule,
     IconsModule,
+    PriceImporterModule,
   ],
   host: {
     class: 'layout-col',

@@ -16,6 +16,9 @@
       <li>
         <button [nwbScreenshotBtn]></button>
       </li>
+      <li [tooltip]="'Open price importer'">
+        <nwb-price-importer-button></nwb-price-importer-button>
+      </li>
       <li *ngIf="service.canToggleMode">
         <button [nwbDataViewToggle]></button>
       </li>

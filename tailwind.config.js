@@ -17,6 +17,20 @@ module.exports = {
       '6xl': '3000px',
     },
     extend: {
+      animation: {
+        'spin-cw': 'spin-cw 3s linear infinite',
+        'spin-ccw': 'spin-ccw 3s linear infinite',
+      },
+      keyframes: {
+        'spin-cw': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(360deg)' },
+        },
+        'spin-ccw': {
+          '0%': { transform: 'rotate(0deg)' },
+          '100%': { transform: 'rotate(-360deg)' },
+        },
+      },
       textShadow: {
         sm: '1px 1px 2px var(--tw-shadow-color)',
         DEFAULT: '2px 2px 4px var(--tw-shadow-color)',

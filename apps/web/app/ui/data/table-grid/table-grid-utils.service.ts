@@ -19,6 +19,7 @@ import { AsyncCellRenderer, AsyncCellRendererParams } from '~/ui/data/ag-grid'
 import { getIconFrameClass } from '../../item-frame'
 import { colDefPrecision } from './utils'
 import { Router } from '@angular/router'
+import { twMerge } from 'tailwind-merge'
 
 @Injectable({ providedIn: 'root' })
 export class TableGridUtils<T = any> {
