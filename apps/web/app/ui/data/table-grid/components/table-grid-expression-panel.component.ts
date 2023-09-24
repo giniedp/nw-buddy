@@ -4,7 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { ComponentStore } from '@ngrx/component-store'
 import { isEqual } from 'lodash'
-import { Observable, asyncScheduler, debounceTime, filter, skip, startWith, subscribeOn, switchMap } from 'rxjs'
+import { Observable, asyncScheduler, debounceTime, skip, startWith, subscribeOn, switchMap } from 'rxjs'
 import {
   ExpressionGroup,
   ExpressionNode,
@@ -28,7 +28,6 @@ export class TableGridExpressionPanelComponent extends ComponentStore<{
   grid: AgGrid<any>
   knownFields: Array<{ id: string; label: string }>
   expression: ExpressionNode
-  active: boolean
 }> {
   @Input()
   public set grid(value: AgGrid) {
@@ -41,18 +40,6 @@ export class TableGridExpressionPanelComponent extends ComponentStore<{
     debounce: true,
     equal: isEqual,
   })
-  protected active$ = this.select(({ active }) => active)
-  protected model$ = this.select(
-    this.expression$,
-    this.active$,
-    (expression, active) => {
-      return { expression, active }
-    },
-    {
-      debounce: true,
-      equal: isEqual,
-    }
-  )
 
   @ViewChild(ExpressionTreeEditorComponent, { static: true })
   protected editor: ExpressionTreeEditorComponent
@@ -62,7 +49,6 @@ export class TableGridExpressionPanelComponent extends ComponentStore<{
       grid: null,
       knownFields: [],
       expression: null,
-      active: false,
     })
 
     this.grid$
@@ -73,12 +59,11 @@ export class TableGridExpressionPanelComponent extends ComponentStore<{
         const model = getColumnWithFilter(grid)?.filter?.getModel()
         this.patchState({
           knownFields: getKnownFields(grid),
-          expression: model?.expression,
-          active: model?.active,
+          expression: model,
         })
       })
 
-    this.model$
+    this.expression$
       .pipe(skip(1))
       .pipe(debounceTime(500))
       .pipe(takeUntilDestroyed())
@@ -87,15 +72,15 @@ export class TableGridExpressionPanelComponent extends ComponentStore<{
       })
   }
 
-  protected onExpressionChanged(model: { active: boolean; expression: ExpressionNode }) {
+  protected onExpressionChanged(model: ExpressionNode) {
     const grid = this.get(({ grid }) => grid)
     const filter = getColumnWithFilter(grid)?.filter
     if (!filter) {
       return
     }
-    const wasActive = filter.getModel()?.active
+    const wasActive = filter.isFilterActive()
     filter.setModel(model)
-    if (wasActive || model?.active) {
+    if (wasActive || filter.isFilterActive()) {
       grid.api.onFilterChanged('api')
     }
   }

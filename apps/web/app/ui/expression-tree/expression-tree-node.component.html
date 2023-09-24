@@ -1,4 +1,4 @@
-<div *ngIf="isGroup" class="flex flex-col" [class.opacity-50]="isIgnored">
+<div *ngIf="isGroup" class="flex flex-col" [class.opacity-50]="isIgnored && !isRoot">
   <div class="flex flex-row gap-1">
     <div class="btn-group">
       <button
@@ -26,9 +26,11 @@
     <button class="flex-none btn btn-sm btn-square btn-error" [tooltip]="'Delete this group'" *ngIf="!isRoot">
       <nwb-icon [icon]="iconDelete" class="w-4 h-4" (click)="deleteClicked()"></nwb-icon>
     </button>
-    <button class="flex-none btn btn-sm btn-square" [tooltip]="'Ignore this group'" *ngIf="!isRoot">
+    <button class="flex-none btn btn-sm btn-square" [tooltip]="'Ignore this group'">
       <nwb-icon
         [icon]="isIgnored ? iconFilterSlash : iconFilter"
+        [class.text-error]="isIgnored"
+        [class.opacity-50]="!isIgnored"
         class="w-4 h-4"
         (click)="isIgnored = !isIgnored"
       ></nwb-icon>
@@ -40,7 +42,7 @@
   </div>
 </div>
 
-<div *ngIf="isCondition" class="flex flex-row gap-1" [class.opacity-50]="isIgnored">
+<div *ngIf="isCondition" class="flex flex-row gap-1" [class.opacity-50]="isIgnored && !isRoot">
   <select [(ngModel)]="field" class="flex-none w-32 input input-sm input-bordered">
     <option *ngFor="let it of fieldOptions; trackBy: trackByIndex" [value]="it.id">{{ it.label }}</option>
   </select>
@@ -67,6 +69,8 @@
     <button class="flex-none btn btn-sm btn-square" [tooltip]="'Ignore this condition'">
       <nwb-icon
         [icon]="isIgnored ? iconFilterSlash : iconFilter"
+        [class.text-error]="isIgnored"
+        [class.opacity-50]="!isIgnored"
         class="w-4 h-4"
         (click)="isIgnored = !isIgnored"
       ></nwb-icon>

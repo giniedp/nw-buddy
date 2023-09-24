@@ -12,10 +12,7 @@ export class ExpressionFilter implements IFilterComp {
   private el: HTMLElement
 
   private params: IFilterParams & ExpressionFilterParams
-  private model: {
-    expression: ExpressionNode
-    active: boolean
-  }
+  private model: ExpressionNode
 
   public get knownFields() {
     return this.params?.fields
@@ -44,28 +41,28 @@ export class ExpressionFilter implements IFilterComp {
   }
 
   public doesFilterPass(params: IDoesFilterPassParams) {
-    return evaluateExpression(params.data, this.model.expression)
+    return evaluateExpression(params.data, this.model)
   }
 
   public isFilterActive() {
     if (!this.model) {
       return false
     }
-    if (!this.model.active) {
+    if (this.model.ignore) {
       return false
     }
-    if (!isGroup(this.model.expression)) {
+    if (!isGroup(this.model)) {
       return false
     }
-    return this.model.expression.children.length > 0
+    return this.model.children?.length > 0
   }
 
   public getModel() {
     return this.model
   }
 
-  public setModel(state: { active: boolean; expression: ExpressionNode }) {
-    this.model = state
+  public setModel(model: ExpressionNode) {
+    this.model = model
   }
 
   public destroy(): void {
