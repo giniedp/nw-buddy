@@ -41,7 +41,7 @@ export function craftingColIcon(util: CraftingTableUtils) {
       return util.elA(
         {
           attrs: {
-            href: util.nwLink.link('item', getItemId(item)),
+            href: util.tipLink('item', getItemId(item)),
             target: '_blank',
           },
         },
@@ -95,7 +95,7 @@ export function craftingColIngredients(util: CraftingTableUtils) {
         items.map((item) => {
           return util.elA(
             {
-              attrs: { target: '_blank', href: util.nwLink.link('item', getItemId(item)) },
+              attrs: { target: '_blank', href: util.tipLink('item', getItemId(item)) },
             },
             util.elItemIcon({
               class: ['transition-all scale-90 hover:scale-110'],

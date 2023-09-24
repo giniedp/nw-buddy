@@ -88,7 +88,7 @@ export function inventoryColPerks(util: InventoryTableUtils) {
             {
               attrs: {
                 target: '_blank',
-                href: util.nwLink.link('perk', perk.PerkID),
+                href: util.tipLink('perk', perk.PerkID),
               },
             },
             util.elImg({

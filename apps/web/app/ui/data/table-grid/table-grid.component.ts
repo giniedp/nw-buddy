@@ -28,7 +28,7 @@ import {
 } from 'rxjs'
 import { LocaleService } from '~/i18n'
 import { AgGrid, AgGridDirective } from '~/ui/data/ag-grid'
-import { debounceSync } from '~/utils/rx-operators'
+import { debounceSync, selectStream } from '~/utils/rx-operators'
 import { gridDisplayRowCount } from '~/ui/data/ag-grid/utils'
 import { TableGridPersistenceService } from './table-grid-persistence.service'
 import { TableGridStore } from './table-grid.store'
@@ -94,10 +94,15 @@ export class TableGridComponent<T> implements OnInit {
   @Output()
   public readonly selection$ = defer(() => this.store.selection$)
 
+  @Output()
+  public readonly selectedRows$ = selectStream(defer(() => this.selectionChanged$).pipe(map((it) => it.rows)))
+
+  @Output()
+  public readonly selectedRow$ = selectStream(defer(() => this.selectionChanged$).pipe(map((it) => it.rows?.[0])))
+
   @ViewChild(AgGridDirective, { static: true })
   public readonly grid: AgGridDirective<T>
 
-  public readonly categories$ = of(null as any) // TODO: remove
   public readonly rowCount$ = defer(() => gridDisplayRowCount(this.ready$))
 
   public constructor(

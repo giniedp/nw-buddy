@@ -28,7 +28,7 @@ export function perkColIcon(util: PerkTableUtils) {
     cellRenderer: util.cellRenderer(({ data }) => {
       return util.elA(
         {
-          attrs: { target: '_blank', href: util.nwLink.link('perk', String(data.PerkID)) },
+          attrs: { target: '_blank', href: util.tipLink('perk', String(data.PerkID)) },
         },
         util.elItemIcon({
           class: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],

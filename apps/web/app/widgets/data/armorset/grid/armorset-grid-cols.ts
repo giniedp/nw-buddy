@@ -61,7 +61,7 @@ export function armorsetColPerks(util: ArmorsetGridUtils) {
           return util.elA(
             {
               attrs: {
-                href: util.nwLink.link('perk', perk?.PerkID),
+                href: util.tipLink('perk', perk?.PerkID),
                 target: '_blank',
               },
             },
@@ -82,13 +82,13 @@ export function armorsetColItem(util: ArmorsetGridUtils, index: number) {
     colId: `item-${index}`,
     sortable: false,
     filter: false,
-    width: 62,
+    width: 70,
     cellRenderer: util.cellRenderer(({ data }) => {
       const item = data.items[index]
       return util.elA(
         {
           attrs: {
-            href: util.nwLink.link('item', getItemId(item)),
+            href: util.tipLink('item', getItemId(item)),
             target: '_blank',
           },
         },

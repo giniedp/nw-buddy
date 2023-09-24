@@ -62,7 +62,7 @@ function buildGridOptions(util: TableGridUtils<NwmpPriceItem>): GridOptions<Nwmp
           return util.elA(
             {
               attrs: {
-                href: util.nwLink.link('item', getItemId(item)),
+                href: util.tipLink('item', getItemId(item)),
                 target: '_blank',
               },
             },

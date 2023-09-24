@@ -62,7 +62,7 @@ export class DbFaultsTableAdapter implements DataViewAdapter<FaultRow> {
             return utils.elA(
               {
                 attrs: {
-                  href: utils.nwLink.link('item', data.item.ItemID),
+                  href: utils.tipLink('item', data.item.ItemID),
                   target: '_blank',
                 },
               },

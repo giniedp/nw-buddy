@@ -4,8 +4,11 @@ import { getItemRarity } from '@nw-data/common'
 import { groupBy } from 'lodash'
 import { Observable, combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
+import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
-import { DataTableCategory } from '~/ui/data/table-grid'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { shareReplayRefCount } from '~/utils'
+import { Armorset } from '../types'
 import { findSets } from '../utils'
 import {
   ArmorsetGridRecord,
@@ -18,16 +21,16 @@ import {
 } from './armorset-grid-cols'
 
 @Injectable()
-export class ArmorsetGridSource extends TableGridAdapter<ArmorsetGridRecord> {
+export class ArmorsetGridSource implements DataViewAdapter<ArmorsetGridRecord>, TableGridAdapter<ArmorsetGridRecord> {
   private db = inject(NwDbService)
   private utils: TableGridUtils<ArmorsetGridRecord> = inject(TableGridUtils)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
 
-  public override entityID(item: ArmorsetGridRecord): string {
+  public entityID(item: ArmorsetGridRecord): string {
     return item.key
   }
 
-  public override entityCategories(item: ArmorsetGridRecord): DataTableCategory[] {
+  public entityCategories(item: ArmorsetGridRecord): DataViewCategory[] {
     return [
       {
         id: item.source,
@@ -37,32 +40,39 @@ export class ArmorsetGridSource extends TableGridAdapter<ArmorsetGridRecord> {
     ]
   }
 
-  public override gridOptions(): GridOptions<ArmorsetGridRecord> {
+  public gridOptions(): GridOptions<ArmorsetGridRecord> {
     const build = this.config?.gridOptions || buildOptions
     return build(this.utils)
   }
 
-  public override connect(): Observable<ArmorsetGridRecord[]> {
-    return combineLatest({
-      items: this.db.items,
-      perks: this.db.perksMap,
-    }).pipe(
-      map(({ items, perks }) => {
-        const MIN_RARITY = 2
-        items = items.filter((it) => it.ItemType === 'Armor').filter((it) => getItemRarity(it) >= MIN_RARITY)
-        return Object.entries(groupBy(items, (it) => it['$source']))
-          .map(([key, items]) => ({
-            key: key,
-            sets: findSets(items, key, perks, this.utils.i18n),
-          }))
-          .filter((group) => group.sets.length > 0)
-          .map((it) => it.sets)
-          .flat(1)
-          .map((it) => it.sets)
-          .flat(1)
-      })
-    )
+  public virtualOptions(): VirtualGridOptions<Armorset> {
+    return null
   }
+
+  public connect(): Observable<ArmorsetGridRecord[]> {
+    return this.source$
+  }
+
+  private source$ = combineLatest({
+    items: this.db.items,
+    perks: this.db.perksMap,
+  }).pipe(
+    map(({ items, perks }) => {
+      const MIN_RARITY = 2
+      items = items.filter((it) => it.ItemType === 'Armor').filter((it) => getItemRarity(it) >= MIN_RARITY)
+      return Object.entries(groupBy(items, (it) => it['$source']))
+        .map(([key, items]) => ({
+          key: key,
+          sets: findSets(items, key, perks, this.utils.i18n),
+        }))
+        .filter((group) => group.sets.length > 0)
+        .map((it) => it.sets)
+        .flat(1)
+        .map((it) => it.sets)
+        .flat(1)
+    }),
+    shareReplayRefCount(1)
+  )
 }
 
 function buildOptions(util: TableGridUtils<ArmorsetGridRecord>) {

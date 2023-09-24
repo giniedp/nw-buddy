@@ -24,7 +24,7 @@ export function statusEffectColIcon(util: StatusEffectTableUtils) {
     cellRenderer: util.cellRenderer(({ data }) => {
       return util.elA(
         {
-          attrs: { target: '_blank', href: util.nwLink.link('perk', String(data.StatusID)) },
+          attrs: { target: '_blank', href: util.tipLink('perk', String(data.StatusID)) },
         },
         util.elPicture(
           {

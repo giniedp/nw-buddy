@@ -13,16 +13,6 @@ import { AbilityTableAdapter } from './ability-table-adapter'
   template: `
     <div class="flex flex-col h-[100dvh] w-full">
       <ul class="menu menu-horizontal w-full flex-nowrap flex-nonde overflow-x-auto scrollbar-hide">
-        <li>
-          <button
-            [nwbGridCateogryMenu]="grid.categories$ | async"
-            [defaultRoute]="'all'"
-            [defaultTitle]="'Items'"
-            [routePrefix]="'..'"
-            [rowCounter]="grid.rowCount$ | async"
-            class="btn btn-ghost normal-case text-left"
-          ></button>
-        </li>
         <span class="flex-1"></span>
         <li>
           <button [nwbGridPanelButton]="grid.ready$ | async" class="btn btn-square btn-ghost"></button>

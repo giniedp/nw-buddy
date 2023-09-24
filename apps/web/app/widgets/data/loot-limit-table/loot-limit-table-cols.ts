@@ -30,7 +30,7 @@ export function lootLimitColIcon(util: LootLimitTableUtils) {
       return util.elA(
         {
           attrs: {
-            href: util.nwLink.link('item', getItemId(data.$item)),
+            href: util.tipLink('item', getItemId(data.$item)),
             target: '_blank',
           },
         },

@@ -42,7 +42,7 @@ export function itemColIcon(util: ItemTableUtils) {
       return util.elA(
         {
           attrs: {
-            href: util.nwLink.link('item', getItemId(data)),
+            href: util.tipLink('item', getItemId(data)),
             target: '_blank',
           },
         },
@@ -104,7 +104,7 @@ export function itemColPerks(
               class: ['block', 'w-7', ' h-7'],
               attrs: {
                 target: '_blank',
-                href: util.nwLink.link('perk', perk?.PerkID),
+                href: util.tipLink('perk', perk?.PerkID),
               },
             },
             util.elImg({

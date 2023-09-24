@@ -3,12 +3,12 @@
     <ul class="menu menu-horizontal w-full flex-nowrap flex-1 overflow-x-auto scrollbar-hide">
       <li>
         <button
-          [nwbGridCateogryMenu]="grid.categories$ | async"
+          [nwbDataCateogryMenu]
           [category]="category$ | async"
+          [showCounter]="true"
           [defaultRoute]="defaultRoute"
           [defaultTitle]="title"
           [routePrefix]="'..'"
-          [rowCounter]="grid.rowCount$ | async"
           class="btn btn-ghost normal-case text-left"
         ></button>
       </li>
@@ -28,18 +28,25 @@
 </ion-header>
 <div class="flex-1 flex flex-row overflow-hidden">
   <nwb-table-grid
+    (ready$)="service.onTableReady($event)"
+    [enableQuickfilter]="true"
+    [data]="service.categoryItems$ | async"
+    [options]="service.tableGridOptions"
+    [identifyBy]="service.entityIdGetter"
     [persistKey]="persistKey"
     [filterQueryParam]="filterParam"
     [selectionRouteParam]="selectionParam"
     #grid
   ></nwb-table-grid>
 
-  <div class="flex-none layout-content xl:max-w-[350px] 4xl:max-w-[30%]" *ngIf="grid.selection$ | async; let items">
-    {{ grid.selection$ | async | json }}
+  <div
+    class="flex-none layout-content xl:max-w-[350px] 4xl:max-w-[30%]"
+    *ngIf="grid.selectedRow$ | async; let armorset"
+  >
     <div class="grid grid-cols-fill-sm layout-gap p-3" nwbScreenshotFrame="Armor-Set">
       <nwb-item-card
-        *ngFor="let item of items; trackBy: trackByIndex"
-        [entityId]="item"
+        *ngFor="let item of armorset?.items; trackBy: trackByIndex"
+        [entity]="item"
         [disableInfo]="true"
         [disableDescription]="true"
         [enableTracker]="true"

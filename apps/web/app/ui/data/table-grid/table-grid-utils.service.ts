@@ -11,7 +11,7 @@ import { DOCUMENT } from '@angular/common'
 import { Injectable, NgZone, SecurityContext, Type, inject } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwLinkService } from '~/nw'
+import { NwDbService, NwLinkResource, NwLinkService } from '~/nw'
 import { NwExpressionService } from '~/nw/expression'
 import { ItemPreferencesService } from '~/preferences'
 import { ElementChildren, ElementProps, TagName, createEl } from '~/utils'
@@ -19,7 +19,6 @@ import { AsyncCellRenderer, AsyncCellRendererParams } from '~/ui/data/ag-grid'
 import { getIconFrameClass } from '../../item-frame'
 import { colDefPrecision } from './utils'
 import { Router } from '@angular/router'
-import { twMerge } from 'tailwind-merge'
 
 @Injectable({ providedIn: 'root' })
 export class TableGridUtils<T = any> {
@@ -201,5 +200,9 @@ export class TableGridUtils<T = any> {
     return ({ value }) => {
       return value?.replace(/\\n/gi, '<br>')
     }
+  }
+
+  public tipLink(type: NwLinkResource, id: string) {
+    return this.nwLink.link(type, id)
   }
 }

@@ -47,7 +47,7 @@ export function skillsetColSkills(util: SkillsetTableUtils) {
             {
               class: ['border', 'border-1', 'transition-all', 'translate-x-0', 'hover:translate-x-1'],
               attrs: {
-                href: util.nwLink.link('ability', it.AbilityID),
+                href: util.tipLink('ability', it.AbilityID),
                 target: '_blank',
               },
             },

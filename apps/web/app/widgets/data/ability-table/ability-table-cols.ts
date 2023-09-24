@@ -37,7 +37,7 @@ export function abilityColIcon(util: AbilityTableUtils) {
       return util.elA(
         {
           attrs: {
-            href: util.nwLink.link('ability', data.AbilityID),
+            href: util.tipLink('ability', data.AbilityID),
             target: '_blank',
           },
         },

@@ -57,7 +57,7 @@ export class ExprFaultsAdapter implements DataViewAdapter<FaultRow> {
             return utils.elA(
               {
                 attrs: {
-                  href: utils.nwLink.link('perk', data.perk.PerkID),
+                  href: utils.tipLink('perk', data.perk.PerkID),
                   target: '_blank',
                 },
               },

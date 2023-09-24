@@ -35,7 +35,7 @@ export function housingColIcon(util: HousingTableUtils) {
       return util.elA(
         {
           attrs: {
-            href: util.nwLink.link('item', getItemId(data)),
+            href: util.tipLink('item', getItemId(data)),
             target: '_blank',
           },
         },

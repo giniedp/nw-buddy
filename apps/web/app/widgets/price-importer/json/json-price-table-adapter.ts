@@ -55,7 +55,7 @@ function buildGridOptions(util: TableGridUtils<JsonPriceItem>): GridOptions<Json
           return util.elA(
             {
               attrs: {
-                href: util.nwLink.link('item', getItemId(item)),
+                href: util.tipLink('item', getItemId(item)),
                 target: '_blank',
               },
             },

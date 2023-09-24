@@ -4,6 +4,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { ItemDefinitionMaster } from '@nw-data/generated'
 import { NwModule } from '~/nw'
+import { DataViewAdapter, DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
 import { DataGridModule, TableGridAdapter } from '~/ui/data/table-grid'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
@@ -26,6 +27,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     ScreenshotModule,
     IonicModule,
     TooltipModule,
+    DataViewModule,
     DataGridModule,
     ItemDetailModule,
   ],
@@ -33,8 +35,8 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     class: 'layout-col',
   },
   providers: [
-    TableGridAdapter.provide({
-      type: ArmorsetGridSource,
+    provideDataView({
+      adapter: ArmorsetGridSource,
     }),
     QuicksearchService.provider({
       queryParam: 'search',
@@ -53,7 +55,7 @@ export class ArmorsetsPageComponent {
   })
 
   public trackByIndex: TrackByFunction<any> = (i) => i
-  public constructor(head: HtmlHeadService) {
+  public constructor(head: HtmlHeadService, protected service: DataViewService<Armorset>) {
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - Armorsets DB',
