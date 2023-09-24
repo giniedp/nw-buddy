@@ -1,27 +1,72 @@
-<div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col items-center justify-center z-50 pointer-events-none">
+<div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col z-50 pointer-events-none">
   <div class="p-3" *ngIf="!isSuported$()">
-    <div class="alert shadow-lg">
-      <div class="overflow-hidden w-full">
-        <nwb-icon [icon]="iconError" class="w-4 h-4 text-error"></nwb-icon>
-        <span>WebGL is not supported by this browser.</span>
+    <div class="alert shadow-lg my-2 bg-base-100">
+      <div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          class="stroke-error flex-shrink-0 w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          ></path>
+        </svg>
+        <div>
+          <h3 class="font-bold">Error</h3>
+          <div class="text-xs">WebGL is not supported by this browser</div>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="p-3" *ngIf="hasError$()">
-    <div class="alert shadow-lg">
-      <div class="overflow-hidden w-full">
-        <nwb-icon [icon]="iconError" class="w-4 h-4 text-error"></nwb-icon>
-        <span>Failed to load model.</span>
+    <div class="alert shadow-lg my-2 bg-base-100">
+      <div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          class="stroke-error flex-shrink-0 w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          ></path>
+        </svg>
+        <div>
+          <h3 class="font-bold">Error</h3>
+          <div class="text-xs">Failed to load model</div>
+        </div>
       </div>
     </div>
   </div>
 
   <div class="p-3" *ngIf="isEmpty$()">
-    <div class="alert shadow-lg">
-      <div class="overflow-hidden w-full">
-        <nwb-icon [icon]="iconError" class="w-4 h-4 text-info"></nwb-icon>
-        <span>No model to show.</span>
+    <div class="alert shadow-lg my-2 bg-base-100">
+      <div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          class="stroke-error flex-shrink-0 w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          ></path>
+        </svg>
+        <div>
+          <h3 class="font-bold">Error</h3>
+          <div class="text-xs">No models found</div>
+        </div>
       </div>
     </div>
   </div>
@@ -32,13 +77,13 @@
   *ngIf="isLoading$()"
   @fade
 >
-  <picture class="block aspect-square w-3/5 relative">
+  <picture class="block aspect-square w-40 h-40 relative">
     <img
-      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full spin-cw"
+      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-cw"
       [nwImage]="'assets/loaders/crafting_rune_clockwise.png'"
     />
     <img
-      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full spin-ccw"
+      class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
       [nwImage]="'assets/loaders/crafting_rune_counter_clockwise.png'"
     />
   </picture>

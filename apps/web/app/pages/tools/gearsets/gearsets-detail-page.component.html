@@ -31,10 +31,11 @@
             [cdkConnectedOverlayOrigin]="overlay"
             [cdkConnectedOverlayOpen]="isTagEditorOpen"
             [cdkConnectedOverlayHasBackdrop]="true"
+            [cdkConnectedOverlayOffsetY]="5"
             (backdropClick)="isTagEditorOpen = false"
             (detach)="isTagEditorOpen = false"
           >
-            <div class="bg-base-200 rounded-md p-2">
+            <div class="p-2 bg-base-200 border border-base-100 rounded-md shadow-lg">
               <nwb-chips-input-pane
                 [tags]="presetTags"
                 [placeholder]="'custom tags'"
@@ -45,7 +46,7 @@
           </ng-template>
 
           <button
-            nwbScreenshotBtn
+            [nwbScreenshotBtn]
             class="btn btn-ghost btn-square"
             [tooltip]="'Screenshot'"
             [tooltipClass]="'bg-info'"

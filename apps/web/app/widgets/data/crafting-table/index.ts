@@ -1,2 +1,2 @@
-export * from './crafting-talbe-source'
-export * from './crafting-talbe-cols'
+export * from './crafting-table-adapter'
+export * from './crafting-table-cols'

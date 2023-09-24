@@ -1,3 +1,4 @@
-export * from './item-table-source'
+export * from './item-cell.component'
+export * from './item-picker'
+export * from './item-table-adapter'
 export * from './item-table-cols'
-export * from './item-table-picker'

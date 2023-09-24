@@ -1,0 +1,80 @@
+<ng-container *ngIf="hasError$(); then tplError; else tplFlow"></ng-container>
+
+<ng-template #tplFlow>
+  <ng-container *ngIf="showBootloader$(); then tplBootstrap"></ng-container>
+  <ng-container *ngIf="showServerInput$(); then tplServerInput"></ng-container>
+  <ng-container *ngIf="showDataTable$(); then tplDataTable"></ng-container>
+</ng-template>
+
+<ng-template #tplError>
+  <div class="p-3">
+    <div class="alert">
+      <div>
+        <svg fill="none" viewBox="0 0 24 24" class="stroke-error flex-shrink-0 w-6 h-6">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          ></path>
+        </svg>
+        <span>
+          An error occurred while retrieving data from
+          <a href="https://nwmarketprices.com/" tabindex="-1" target="_blank" class="link link-primary"
+            >https://nwmarketprices.com/</a
+          >. Please retry later or use the JSON importer.
+        </span>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #tplBootstrap>
+  <div class="flex-1 flex flex-row justify-center items-center p-4">
+    <picture class="block aspect-square w-40 h-40 relative">
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-cw"
+        src="assets/loaders/crafting_rune_clockwise.png"
+      />
+      <img
+        class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
+        src="assets/loaders/crafting_rune_counter_clockwise.png"
+      />
+    </picture>
+  </div>
+</ng-template>
+
+<ng-template #tplServerInput>
+  <div class="flex-1 p-4 flex flex-col justify-center items-center">
+    <div class="flex flex-col gap-2 w-full max-w-sm">
+      <h3 class="font-bold">Server</h3>
+      <div class="input-group w-full">
+        <select
+          class="select select-bordered flex-1"
+          [ngModel]="serverId$()"
+          (ngModelChange)="patchState({ serverId: $event })"
+        >
+          <option disabled [value]="''">Choose your server</option>
+          <ng-container *ngFor="let server of servers$()">
+            <option [value]="server.id">{{ server.name }}</option>
+          </ng-container>
+        </select>
+        <button class="btn btn-success" [disabled]="!serverId$() || isLoading$()" (click)="load(serverId$())">
+          <nwb-icon [icon]="iconSpin" class="w-4 h-4 animate-spin mr-2" *ngIf="isLoading$()"></nwb-icon>
+          <ng-container *ngIf="!isLoading$()"> Load </ng-container>
+        </button>
+      </div>
+      <div class="text-sm">
+        Price data is provided by the NWMP community. See
+        <a href="https://nwmarketprices.com/" tabindex="-1" target="_blank" class="link link-primary">
+          https://nwmarketprices.com/
+        </a>
+        for more information.
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #tplDataTable>
+  <nwb-table-grid class="flex-none h-screen max-h-[80vh]" [data]="data$()" [options]="girdOptions"></nwb-table-grid>
+</ng-template>

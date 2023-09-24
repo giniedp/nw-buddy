@@ -8,11 +8,11 @@ import {
 import { Ability, GameEvent, Statuseffect } from '@nw-data/generated'
 import { map, switchMap } from 'rxjs'
 import { NwWeaponType } from '~/nw/weapon-types'
-import { SelectFilter } from '~/ui/ag-grid'
-import { DataTableUtils } from '~/ui/data-grid'
+import { SelectFilter } from '~/ui/data/ag-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
-export type GameEventTableUtils = DataTableUtils<GameEventTableRecord>
+export type GameEventTableUtils = TableGridUtils<GameEventTableRecord>
 export type GameEventTableRecord = GameEvent
 
 export function gameEventColID(util: GameEventTableUtils) {

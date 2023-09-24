@@ -1,11 +1,11 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { Injector } from '@angular/core'
-import { NwDbService } from '~/nw'
-import { DataGridPicker } from '~/ui/data-grid'
-import { PerkTableSource, buildPerkTablePickerOptions } from './perk-table-source'
 import { Observable } from 'rxjs'
-import { PerkTableRecord } from './perk-table-cols'
+import { NwDbService } from '~/nw'
 import { NwTextContextService } from '~/nw/expression'
+import { DataViewPicker } from '~/ui/data/data-view'
+import { PerkTableAdapter, buildPerkTablePickerOptions } from './perk-table-adapter'
+import { PerkTableRecord } from './perk-table-cols'
 
 export function openPerksPicker(options: {
   db: NwDbService
@@ -17,12 +17,12 @@ export function openPerksPicker(options: {
   multiple?: boolean
   source: Observable<PerkTableRecord[]>
 }) {
-  return DataGridPicker.open(options.dialog, {
+  return DataViewPicker.open(options.dialog, {
     title: options.title || 'Pick perk',
     selection: options.selection,
     // persistKey: `picker:perks-grid:${options.category || 'default'}`,
-    grid: {
-      type: PerkTableSource,
+    dataView: {
+      adapter: PerkTableAdapter,
       source: options.source,
       gridOptions: (utils) => {
         return {

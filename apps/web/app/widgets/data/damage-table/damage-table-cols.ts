@@ -1,10 +1,11 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { Damagetable } from '@nw-data/generated'
+import { COLS_DAMAGETABLE, Damagetable } from '@nw-data/generated'
 import { damageTypeIcon } from '~/nw/weapon-types'
-import { SelectFilter } from '~/ui/ag-grid'
-import { DataTableUtils } from '~/ui/data-grid'
+import { SelectFilter } from '~/ui/data/ag-grid'
+import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
+import { TableGridUtils } from '~/ui/data/table-grid'
 
-export type DamageTableUtils = DataTableUtils<DamageTableRecord>
+export type DamageTableUtils = TableGridUtils<DamageTableRecord>
 export type DamageTableRecord = Damagetable
 
 export function damageColIcon(util: DamageTableUtils) {
@@ -13,7 +14,10 @@ export function damageColIcon(util: DamageTableUtils) {
     headerValueGetter: () => 'Icon',
     resizable: false,
     sortable: false,
-    filter: false,
+    filter: ExpressionFilter,
+    filterParams: ExpressionFilter.params({
+      fields: Object.keys(COLS_DAMAGETABLE),
+    }),
     pinned: true,
     width: 62,
     cellRenderer: util.cellRenderer(({ data }) => {

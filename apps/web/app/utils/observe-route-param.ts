@@ -1,7 +1,7 @@
 import { ActivatedRoute } from '@angular/router'
 import { isObservable, map, Observable, of, switchMap } from 'rxjs'
 
-export function observeRouteParam(route: ActivatedRoute, param: string | Observable<string>) {
+export function observeRouteParam<T>(route: ActivatedRoute, param: string | Observable<string>): Observable<string> {
   if (!isObservable(param)) {
     param = of(param)
   }

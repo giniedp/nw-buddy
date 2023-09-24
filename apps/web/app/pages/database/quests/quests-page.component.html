@@ -3,36 +3,52 @@
     <ul class="menu menu-horizontal w-full flex-nowrap flex-1 overflow-x-auto scrollbar-hide">
       <li>
         <button
-          [nwbGridCateogryMenu]="grid.categories$ | async"
+          [nwbDataCateogryMenu]
           [category]="category$ | async"
+          [showCounter]="true"
           [defaultRoute]="defaultRoute"
           [defaultTitle]="title"
           [routePrefix]="'..'"
-          [rowCounter]="grid.rowCount$ | async"
           class="btn btn-ghost normal-case text-left"
         ></button>
       </li>
       <span class="flex-1"></span>
       <li>
-        <button [nwbGridPanelButton]="grid.ready$ | async" class="btn btn-square btn-ghost"></button>
+        <button [nwbScreenshotBtn]></button>
+      </li>
+      <li *ngIf="service.canToggleMode$()">
+        <button [nwbDataViewToggle]></button>
+      </li>
+      <li>
+        <button [nwbDataViewOptionsMenu] [disabled]="!service.isTableActive$()"></button>
       </li>
     </ul>
-
     <div class="flex-none p-2 w-full md:max-w-[256px]">
-      <nwb-quicksearch-input
-        [nwbGridQuickfilter]="grid.ready$ | async"
-        [placeholder]="'Quickfilter'"
-      ></nwb-quicksearch-input>
+      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"></nwb-quicksearch-input>
     </div>
   </div>
 </ion-header>
 <div class="flex-1 flex flex-row overflow-hidden">
-  <nwb-data-grid
-    [category]="category$ | async"
-    [persistKey]="persistKey"
-    [filterParam]="filterParam"
-    [selectionParam]="selectionParam"
-    #grid
-  ></nwb-data-grid>
+  <ng-container *ngIf="service.isGridActive$()">
+    <nwb-virtual-grid
+      [enableQuickfilter]="true"
+      [data]="service.categoryItems$ | async"
+      [options]="service.virtualOptions"
+      [identifyBy]="service.entityIdGetter"
+      [selectionRouteParam]="selectionParam"
+    ></nwb-virtual-grid>
+  </ng-container>
+  <ng-container *ngIf="service.isTableActive$()">
+    <nwb-table-grid
+      (ready$)="service.onTableReady($event)"
+      [enableQuickfilter]="true"
+      [data]="service.categoryItems$ | async"
+      [options]="service.tableGridOptions"
+      [identifyBy]="service.entityIdGetter"
+      [persistKey]="persistKey"
+      [filterQueryParam]="filterParam"
+      [selectionRouteParam]="selectionParam"
+    ></nwb-table-grid>
+  </ng-container>
   <router-outlet></router-outlet>
 </div>

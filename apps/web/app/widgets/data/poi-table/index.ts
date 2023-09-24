@@ -1,2 +1,2 @@
 export * from './poi-table-cols'
-export * from './poi-table-source'
+export * from './poi-table-adapter'

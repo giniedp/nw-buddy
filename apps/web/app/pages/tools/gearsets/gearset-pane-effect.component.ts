@@ -5,22 +5,19 @@ import { FormsModule } from '@angular/forms'
 import { combineLatest, take, tap } from 'rxjs'
 
 import { NwDbService, NwModule } from '~/nw'
-import { DataTableModule } from '~/ui/data-table'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
 import { ComponentStore } from '@ngrx/component-store'
+import { NW_FALLBACK_ICON, getStatusEffectTownBuffIds } from '@nw-data/common'
 import { GearsetSlotStore } from '~/data'
-import { getItemId, getStatusEffectTownBuffIds } from '@nw-data/common'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical, svgLink16p, svgLinkSlash16p, svgPlus, svgRotate, svgTrashCan } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { shareReplayRefCount } from '~/utils'
-import { InventoryPickerService } from '../inventory/inventory-picker.service'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
-import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { Statuseffect } from '@nw-data/generated'
+import { InventoryPickerService } from '../inventory/inventory-picker.service'
 
 export interface EffectSlotState {
   effectId: string
@@ -40,7 +37,6 @@ export interface EffectSlotState {
     FormsModule,
     ItemDetailModule,
     StatusEffectDetailModule,
-    DataTableModule,
     IconsModule,
     LayoutModule,
     TooltipModule,
@@ -71,7 +67,7 @@ export class GearsetPaneEffectComponent extends ComponentStore<EffectSlotState> 
   public disabled: boolean
 
   @Output()
-  public effectChange = new EventEmitter<Array<{ id: string, stack: number }>>()
+  public effectChange = new EventEmitter<Array<{ id: string; stack: number }>>()
 
   protected readonly effectId$ = this.select(({ effectId }) => effectId)
   protected readonly effect$ = this.select(this.db.statusEffectsMap, this.effectId$, (effects, effectId) =>
@@ -132,12 +128,12 @@ export class GearsetPaneEffectComponent extends ComponentStore<EffectSlotState> 
         this.effectChange.emit([
           {
             id: effectId,
-            stack: 0
+            stack: 0,
           },
           {
             id: item.StatusID,
-            stack: 1
-          }
+            stack: 1,
+          },
         ])
       })
   }
@@ -146,8 +142,8 @@ export class GearsetPaneEffectComponent extends ComponentStore<EffectSlotState> 
     this.effectChange.emit([
       {
         id: this.get(({ effectId }) => effectId),
-        stack: 0
-      }
+        stack: 0,
+      },
     ])
   }
 

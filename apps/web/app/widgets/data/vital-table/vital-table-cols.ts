@@ -8,11 +8,11 @@ import {
   isVitalCombatCategory,
 } from '@nw-data/common'
 import { Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/generated'
-import { RangeFilter, SelectFilter } from '~/ui/ag-grid'
-import { DataTableUtils } from '~/ui/data-grid'
+import { RangeFilter, SelectFilter } from '~/ui/data/ag-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize } from '~/utils'
 
-export type VitalTableUtils = DataTableUtils<VitalTableRecord>
+export type VitalTableUtils = TableGridUtils<VitalTableRecord>
 export type VitalTableRecord = Vitals & {
   $dungeons: Gamemodes[]
   $categories: Vitalscategories[]
@@ -162,7 +162,7 @@ export function vitalColCategories(util: VitalTableUtils) {
     cellRenderer: util.tagsRenderer({
       transform: humanize,
       getClass: (value) => {
-        return isVitalCombatCategory(value) ? ['badge-error'] : ['badge-secondary']
+        return isVitalCombatCategory(value) ? ['badge-error', 'bg-error'] : []
       },
     }),
     filter: SelectFilter,
@@ -200,7 +200,7 @@ export function vitalColLootTags(util: VitalTableUtils) {
     cellRenderer: util.tagsRenderer({
       transform: humanize,
       getClass: (value) => {
-        return isVitalCombatCategory(value) ? ['badge-error'] : ['badge-secondary']
+        return isVitalCombatCategory(value) ? ['badge-error', 'bg-error'] : []
       },
     }),
     filter: SelectFilter,

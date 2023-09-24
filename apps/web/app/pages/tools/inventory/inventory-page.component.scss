@@ -1,0 +1,46 @@
+:host {
+  .content-container {
+    display: grid;
+    grid-template-areas: 'table';
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    .gearset {
+      display: none;
+    }
+
+    @media (min-width: 1400px) {
+      grid-template-areas:
+        'table gearset'
+        'table detail';
+      grid-template-columns: 1fr minmax(320px, 400px);
+      grid-template-rows: min-content 1fr;
+      .gearset {
+        display: flex;
+      }
+    }
+
+    @media (min-width: 2000px) {
+      grid-template-areas: 'table detail gearset';
+      grid-template-columns: 1fr minmax(320px, 400px) minmax(320px, 400px);
+      grid-template-rows: 1fr;
+    }
+    @media (min-width: 2400px) {
+      grid-template-areas: 'table detail gearset';
+      grid-template-columns: 1300px minmax(320px, 400px) 1fr;
+      grid-template-rows: 1fr;
+    }
+
+    nwb-virtual-grid,
+    nwb-table-grid {
+      grid-area: table;
+    }
+    .gearset {
+      grid-area: gearset;
+      overflow-y: auto;
+    }
+    .detail {
+      grid-area: detail;
+      overflow-y: auto;
+    }
+  }
+}

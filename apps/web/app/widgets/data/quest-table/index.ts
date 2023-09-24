@@ -1,2 +1,2 @@
 export * from './quest-table-cols'
-export * from './quest-table-source'
+export * from './quest-table-adapter'

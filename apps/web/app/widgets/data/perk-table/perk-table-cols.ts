@@ -1,18 +1,16 @@
 import { explainPerk, explainPerkMods, getPerkItemClassGSBonus, getPerkItemClassGsBonus } from '@nw-data/common'
-import { Ability, Perks } from '@nw-data/generated'
+import { Ability, Affixstats, COLS_PERKS, Perks } from '@nw-data/generated'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwTextContextService } from '~/nw/expression'
-import { SelectFilter } from '~/ui/ag-grid'
-import { DataTableUtils } from '~/ui/data-grid'
+import { SelectFilter } from '~/ui/data/ag-grid'
+import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
+import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
-export type PerkTableUtils = DataTableUtils<PerkTableRecord>
+export type PerkTableUtils = TableGridUtils<PerkTableRecord>
 export type PerkTableRecord = Perks & {
-  $ability: Ability
-}
-
-export function perkCol(util: PerkTableUtils) {
-  //
+  $ability?: Ability
+  $affix?: Affixstats
 }
 
 export function perkColIcon(util: PerkTableUtils) {
@@ -21,7 +19,10 @@ export function perkColIcon(util: PerkTableUtils) {
     headerValueGetter: () => 'Icon',
     resizable: false,
     sortable: false,
-    filter: false,
+    filter: ExpressionFilter,
+    filterParams: ExpressionFilter.params({
+      fields: Object.keys(COLS_PERKS),
+    }),
     pinned: true,
     width: 62,
     cellRenderer: util.cellRenderer(({ data }) => {
@@ -78,7 +79,7 @@ export function perkColDescription(util: PerkTableUtils, ctx: NwTextContextServi
     width: 500,
     wrapText: true,
     autoHeight: true,
-    cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
+    cellClass: ['multiline-cell', 'py-2'],
     filterValueGetter: ({ data }) => util.i18n.get(data.Description),
     valueGetter: ({ data }) => util.i18n.get(data.Description),
     cellRenderer: util.cellRendererAsync(),
@@ -107,20 +108,24 @@ export function perkColDescription(util: PerkTableUtils, ctx: NwTextContextServi
             })
             for (const mod of mods) {
               result.push(
-                util.expr.solve({
-                  attribute1: '…',
-                  attribute2: '…',
-                  text: `${util.i18n.get(mod.label || '')} ${util.i18n.get(mod.description || '')}`,
-                  ...context,
-                  ...(mod.context || {}),
-                })
+                util.expr
+                  .solve({
+                    attribute1: '…',
+                    attribute2: '…',
+                    text: `${util.i18n.get(mod.label || '')} ${util.i18n.get(mod.description || '')}`,
+                    ...context,
+                    ...(mod.context || {}),
+                  })
+                  .pipe(map((it) => `<span class="text-sky-600"> ${it} </span>`))
               )
             }
             result.push(
-              util.expr.solve({
-                text: util.i18n.get(data.Description || data.StatDisplayText),
-                ...context,
-              })
+              util.expr
+                .solve({
+                  text: util.i18n.get(data.Description || data.StatDisplayText),
+                  ...context,
+                })
+                .pipe(map((it) => `<span class="text-nw-description italic"> ${it} </span>`))
             )
             return combineLatest(result).pipe(map((it) => it.join('<br>')))
           })
@@ -136,6 +141,7 @@ export function perkColPerkType(util: PerkTableUtils) {
   return util.colDef({
     colId: 'perkType',
     headerValueGetter: () => 'Type',
+    field: util.fieldName('PerkType'),
     valueGetter: util.fieldGetter('PerkType'),
     width: 120,
     filter: SelectFilter,
@@ -191,6 +197,7 @@ export function perkColItemClass(util: PerkTableUtils) {
     colId: 'itemClass',
     headerValueGetter: () => 'Item Class',
     width: 500,
+    field: util.fieldName('ItemClass'),
     valueGetter: util.fieldGetter('ItemClass'),
     wrapText: true,
     autoHeight: true,
@@ -206,6 +213,7 @@ export function perkColExclusiveLabels(util: PerkTableUtils) {
   return util.colDef({
     colId: 'exclusiveLabels',
     headerValueGetter: () => 'Exclusive Labels',
+    field: util.fieldName('ExclusiveLabels'),
     valueGetter: util.fieldGetter('ExclusiveLabels'),
     wrapText: true,
     autoHeight: true,
@@ -221,6 +229,7 @@ export function perkColExcludeItemClass(util: PerkTableUtils) {
   return util.colDef({
     colId: 'excludeItemClass',
     headerValueGetter: () => 'Exclude Item Class',
+    field: util.fieldName('ExcludeItemClass'),
     valueGetter: util.fieldGetter('ExcludeItemClass'),
     wrapText: true,
     autoHeight: true,

@@ -6,14 +6,12 @@ import { IonicModule } from '@ionic/angular'
 import { filter } from 'rxjs'
 import { GearsetsStore } from '~/data'
 import { NwModule } from '~/nw'
-import { DataTableModule } from '~/ui/data-table'
 import { IconsModule } from '~/ui/icons'
 import { svgPlus } from '~/ui/icons/svg'
 import { PromptDialogComponent } from '~/ui/layout'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { GearsetsTableAdapter } from './gearsets-table.adapter'
 import { GearsetLoadoutListComponent } from './loadout'
 
 @Component({
@@ -24,7 +22,6 @@ import { GearsetLoadoutListComponent } from './loadout'
     CommonModule,
     RouterModule,
     NwModule,
-    DataTableModule,
     QuicksearchModule,
     NavbarModule,
     IconsModule,
@@ -32,7 +29,7 @@ import { GearsetLoadoutListComponent } from './loadout'
     IonicModule,
     GearsetLoadoutListComponent,
   ],
-  providers: [GearsetsTableAdapter.provider(), QuicksearchService, GearsetsStore],
+  providers: [QuicksearchService, GearsetsStore],
   host: {
     class: 'layout-col',
   },

@@ -34,8 +34,19 @@
     <nwb-item-divider></nwb-item-divider>
   </ng-container>
 
-  <ng-container *ngIf="description$ | async | nwText : (textContext$ | async) | nwTextBreak; let description">
-    <div [nwHtml]="description" class="text-nw-description italic"></div>
+  <ng-container *ngIf="description$ | async; let description">
+    <div
+      [nwHtml]="description | nwText : (textContext$ | async) | nwTextBreak"
+      class="text-nw-description italic"
+    ></div>
+
+    <div *ngIf="itemClassGsBonus$ | async; let bonus">
+      On {{ bonus.itemClass }}:
+      <div
+        [nwHtml]="description | nwText : (textContextClass$ | async) | nwTextBreak"
+        class="text-nw-description italic"
+      ></div>
+    </div>
     <nwb-item-divider></nwb-item-divider>
   </ng-container>
 

@@ -23,13 +23,22 @@ export interface ItemDetailVM {
   selector: 'nwb-inventory-detail',
   templateUrl: './inventory-detail.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, FormsModule, NwModule, ItemDetailModule, ScreenshotModule, LayoutModule, ItemFrameModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    NwModule,
+    ItemDetailModule,
+    ScreenshotModule,
+    LayoutModule,
+    ItemFrameModule,
+  ],
   providers: [GearsetStore],
   host: {
     class: 'flex-none flex flex-col',
   },
 })
-export class PlayerItemsDetailComponent {
+export class InventoryDetailComponent {
   protected routeId$ = observeRouteParam(this.route, 'id')
   protected routeSlot$ = observeRouteParam(this.route, 'slot')
 
@@ -109,7 +118,7 @@ export class PlayerItemsDetailComponent {
 
   public pickPerk(vm: ItemDetailVM, key: string) {
     this.service
-      .choosePerk(vm.instance, key)
+      .pickPerkForItem(vm.instance, key)
       .pipe(take(1))
       .subscribe((value) => {
         if (vm.itemRow) {

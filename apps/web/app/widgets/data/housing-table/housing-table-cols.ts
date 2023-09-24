@@ -11,14 +11,14 @@ import {
   isMasterItem,
 } from '@nw-data/common'
 import { Housingitems } from '@nw-data/generated'
-import { SelectFilter } from '~/ui/ag-grid'
-import { DataTableUtils } from '~/ui/data-grid'
+import { SelectFilter } from '~/ui/data/ag-grid'
+import { TableGridUtils } from '~/ui/data/table-grid'
 import { getIconFrameClass } from '~/ui/item-frame'
 import { humanize } from '~/utils'
 import { BookmarkCell, TrackingCell } from '~/widgets/adapter/components'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
 
-export type HousingTableUtils = DataTableUtils<HousingTableRecord>
+export type HousingTableUtils = TableGridUtils<HousingTableRecord>
 export type HousingTableRecord = Housingitems
 
 export function housingColIcon(util: HousingTableUtils) {

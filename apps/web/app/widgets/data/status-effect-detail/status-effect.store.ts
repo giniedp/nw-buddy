@@ -3,7 +3,7 @@ import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON, getItemId } from '@nw-data/common'
 import { Affixstats, Perks, Statuseffect } from '@nw-data/generated'
 import { flatten, uniq } from 'lodash'
-import { combineLatest, map, of, switchMap } from 'rxjs'
+import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { humanize, mapList, rejectKeys } from '~/utils'
 
@@ -42,21 +42,11 @@ export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }
     .pipe(mapList((it) => it.StatusID))
     .pipe(map(uniq))
 
-  public readonly foreignPerks$ = this.foreignAffixStats$
-    .pipe(
-      switchMap((affix) => {
-        if (!affix?.length) {
-          return of<Perks[][]>([])
-        }
-        return combineLatest(
-          affix.map((it) => {
-            return this.db.perksByAffix(it).pipe(map((set) => Array.from(set?.values() || [])))
-          })
-        )
-      })
-    )
-    .pipe(map(flatten))
-    .pipe(mapList((it) => it.PerkID))
+  public readonly foreignPerks$ = combineLatest({
+    abilities: this.foreignAbilities$.pipe(switchMap((it) => perksByAbilities(it, this.db))),
+    affixes: this.foreignAffixStats$.pipe(switchMap((it) => perksByAffix(it, this.db))),
+  })
+    .pipe(map(({ abilities, affixes }) => [...abilities, ...affixes]))
     .pipe(map(uniq))
 
   public readonly foreignItems$ = combineLatest([
@@ -105,4 +95,30 @@ function selectStatusEffectReferences(item: Statuseffect) {
   )
     .filter((e) => !!e && e !== 'Debuff')
     .filter((e) => e !== item.StatusID)
+}
+
+function perksByAffix(affix: string[], db: NwDbService): Observable<string[]> {
+  if (!affix?.length) {
+    return of<string[]>([])
+  }
+  return combineLatest(
+    affix.map((it) => {
+      return db.perksByAffix(it).pipe(map((set) => Array.from(set?.values() || [])))
+    })
+  )
+    .pipe(map(flatten))
+    .pipe(mapList((it) => it.PerkID))
+}
+
+function perksByAbilities(abilities: string[], db: NwDbService): Observable<string[]> {
+  if (!abilities?.length) {
+    return of<string[]>([])
+  }
+  return combineLatest(
+    abilities.map((it) => {
+      return db.perksByEquipAbility(it).pipe(map((set) => Array.from(set?.values() || [])))
+    })
+  )
+    .pipe(map(flatten))
+    .pipe(mapList((it) => it.PerkID))
 }

@@ -1,0 +1,116 @@
+<ion-header class="bg-base-300">
+  <div class="flex flex-col-reverse md:flex-row">
+    <ul class="menu menu-horizontal w-full flex-nowrap flex-1 overflow-x-auto scrollbar-hide">
+      <li [routerLinkActive]="'bordered'">
+        <a rel="nofollow" [routerLink]="['..', defaultRoute]">
+          <span>ALL</span>
+        </a>
+      </li>
+      <li *ngFor="let item of service.categories$ | async" [routerLinkActive]="'bordered'">
+        <a rel="nofollow" [routerLink]="['..', item.id]">
+          <img [nwImage]="item.icon" *ngIf="item.icon" class="w-6 h-6" />
+          <span *ngIf="!item.icon">{{ item.label }}</span>
+        </a>
+      </li>
+      <span class="flex-1"></span>
+      <li [tooltip]="'Create new item'" [color]="'accent'">
+        <span (click)="createItem()">
+          <nwb-icon [icon]="svgPlus" class="w-4 h-4"></nwb-icon>
+        </span>
+      </li>
+      <ng-container *ngIf="service.category$ | async; let category">
+        <li [tooltip]="'Scan new item'" [color]="'accent'" *ngIf="isScanSupported(category)">
+          <span (click)="scanItem(category)">
+            <nwb-icon [icon]="svgImage" class="w-4 h-4"></nwb-icon>
+          </span>
+        </li>
+      </ng-container>
+      <li>
+        <button [nwbScreenshotBtn]></button>
+      </li>
+      <!-- <li>
+        <nwb-data-table-panel-button></nwb-data-table-panel-button>
+      </li> -->
+      <!-- <li *ngIf="service.canToggleMode$()">
+        <a [nwbDataViewToggle]></a>
+      </li> -->
+    </ul>
+    <div class="flex-none p-2 w-full md:max-w-[256px]">
+      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"></nwb-quicksearch-input>
+    </div>
+  </div>
+</ion-header>
+<div class="flex-1 flex flex-row overflow-hidden content-container">
+  <ng-container *ngIf="service.isGridActive$()">
+    <nwb-virtual-grid
+      [enableQuickfilter]="true"
+      [data]="service.categoryItems$ | async"
+      [options]="service.virtualOptions"
+      [identifyBy]="service.entityIdGetter"
+      [selectionRouteParam]="selectionParam"
+    ></nwb-virtual-grid>
+  </ng-container>
+  <ng-container *ngIf="service.isTableActive$()">
+    <nwb-table-grid
+      [enableQuickfilter]="true"
+      [data]="service.categoryItems$ | async"
+      [options]="service.tableGridOptions"
+      [identifyBy]="service.entityIdGetter"
+      [persistKey]="persistKey"
+      [selectionRouteParam]="selectionParam"
+    ></nwb-table-grid>
+  </ng-container>
+  <!-- <router-outlet></router-outlet> -->
+  <div class="gearset layout-col">
+    <nwb-gearset-form></nwb-gearset-form>
+  </div>
+  <div class="layout-content layout-pad">
+    <router-outlet></router-outlet>
+  </div>
+</div>
+
+<!-- 
+<ion-header class="bg-base-300">
+  <nwb-data-table-header
+    class="flex flex-col-reverse md:flex-row"
+    categoryChildRoute
+    [childRouteIndex]="'table'"
+    #header="tableHeader"
+  >
+    <nwb-navbar [menu]="tplMenu" [buttons]="tplButtons" class="flex-1">
+      <ng-template #tplMenu>
+        <li *ngFor="let item of header.categories | async" [routerLinkActive]="'bordered'">
+          <a rel="nofollow" [routerLink]="item.route">
+            <img [nwImage]="item.icon" *ngIf="item.icon" class="w-6 h-6" />
+            <span *ngIf="!item.icon">{{ item.label }}</span>
+          </a>
+        </li>
+      </ng-template>
+      <ng-template #tplButtons>
+        <li [tooltip]="'Create new item'" [color]="'accent'">
+          <span (click)="createItem()">
+            <nwb-icon [icon]="svgPlus" class="w-4 h-4"></nwb-icon>
+          </span>
+        </li>
+        <ng-container *ngIf="header.category$ | async; let category">
+          <li [tooltip]="'Scan new item'" [color]="'accent'" *ngIf="isScanSupported(category)">
+            <span (click)="scanItem(category)">
+              <nwb-icon [icon]="svgImage" class="w-4 h-4"></nwb-icon>
+            </span>
+          </li>
+        </ng-container>
+        <li>
+          <nwb-data-table-panel-button></nwb-data-table-panel-button>
+        </li>
+      </ng-template>
+    </nwb-navbar>
+    <div class="flex-none p-2 w-full md:max-w-[256px]">
+      <nwb-quicksearch-input #search></nwb-quicksearch-input>
+    </div>
+  </nwb-data-table-header>
+</ion-header>
+<ion-content [scrollY]="false">
+  <div class="h-full layout-col">
+    <router-outlet></router-outlet>
+  </div>
+</ion-content> -->

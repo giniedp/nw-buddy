@@ -1,2 +1,2 @@
-export * from './vital-table-source'
+export * from './vital-table-adapter'
 export * from './vital-table-cols'

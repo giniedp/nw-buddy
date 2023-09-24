@@ -1,5 +1,5 @@
 <div *ngIf="tables$ | async; let tables" [nwbScreenshotFrame]="'DamageTable'">
-  <div *ngIf="!tables.length" class="alert shadow-lg my-2 bg-base-200">
+  <div *ngIf="!tables.length" class="alert shadow-lg my-2 bg-base-100">
     <div>
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -43,9 +43,9 @@
   </div>
   <div *ngFor="let table of tables" class="mb-8">
     <div class="text-center text-primary capitalize font-bold text-2xl">{{ table.name | nwHumanize }}</div>
-    <div *ngFor="let row of table.rows" class="flex flex-row items-start gap-1 py-1" >
+    <div *ngFor="let row of table.rows" class="flex flex-row items-start gap-1 py-1">
       <picture class="p-1">
-        <img [nwImage]="row.DamageTypeIcon" class="w-8 h-8 flex-none aspect-square">
+        <img [nwImage]="row.DamageTypeIcon" class="w-8 h-8 flex-none aspect-square" />
       </picture>
       <div class="flex flex-col leading-none">
         <div class="text-lg leading-tight font-bold">

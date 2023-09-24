@@ -1,7 +1,7 @@
 import { Dialog, DialogModule, DialogRef } from '@angular/cdk/dialog'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectorRef, Component, HostBinding, HostListener, TemplateRef, ViewChild } from '@angular/core'
+import { ChangeDetectorRef, Component, HostBinding, HostListener, Input, TemplateRef, ViewChild } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ScreenshotFrame, ScreenshotService } from './screenshot.service'
 
@@ -15,6 +15,9 @@ import { ScreenshotFrame, ScreenshotService } from './screenshot.service'
   },
 })
 export class ScreenshotButtonComponent {
+  @Input()
+  public nwbScreenshotBtn: void
+
   @HostBinding('class.disabled')
   @HostBinding('class.opacity-25')
   @HostBinding('attr.disabled')
