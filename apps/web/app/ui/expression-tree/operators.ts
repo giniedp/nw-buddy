@@ -1,3 +1,4 @@
+import { isFinite, isNumber } from 'lodash'
 import { eqCaseInsensitive } from '~/utils'
 
 export function isBlank(a: unknown, b: string): boolean {
@@ -7,6 +8,12 @@ export function isBlank(a: unknown, b: string): boolean {
 export function equals(a: unknown, b: string): boolean {
   if (typeof a === 'string') {
     return eqCaseInsensitive(a, b)
+  }
+  if (typeof a === 'number') {
+    return a === Number(b)
+  }
+  if (a == null && isFinite(Number(b))) {
+    return 0 === Number(b)
   }
   return a == b // HINT: == is intentional
 }
@@ -22,6 +29,9 @@ export function greaterThan(a: unknown, b: string): boolean {
   if (typeof a === 'number') {
     return a > Number(b)
   }
+  if (a == null && isFinite(Number(b))) {
+    return 0 > Number(b)
+  }
   return a > b
 }
 
@@ -31,6 +41,9 @@ export function greaterThanOrEquals(a: unknown, b: string): boolean {
   }
   if (typeof a === 'number') {
     return a >= Number(b)
+  }
+  if (a == null && isFinite(Number(b))) {
+    return 0 >= Number(b)
   }
   return a >= b
 }
@@ -42,6 +55,9 @@ export function lessThan(a: unknown, b: string): boolean {
   if (typeof a === 'number') {
     return a < Number(b)
   }
+  if (a == null && isFinite(Number(b))) {
+    return 0 < Number(b)
+  }
   return a < b
 }
 
@@ -51,6 +67,9 @@ export function lessThanOrEquals(a: unknown, b: string): boolean {
   }
   if (typeof a === 'number') {
     return a <= Number(b)
+  }
+  if (a == null && isFinite(Number(b))) {
+    return 0 <= Number(b)
   }
   return a <= b
 }
@@ -63,17 +82,17 @@ export function isIn(a: unknown, b: string): boolean {
 }
 
 export function contains(a: unknown, b: string): boolean {
+  if (a == null) {
+    return false
+  }
   if (Array.isArray(a)) {
-    return a.some((it) => eqCaseInsensitive(it, b))
+    return a.some((it) => eqCaseInsensitive(String(it), b))
   }
-  if (typeof a === 'string') {
-    return a.toLocaleLowerCase().includes(b)
-  }
-  return false
+  return String(a).toLocaleLowerCase().includes(b)
 }
 
 export function startsWith(a: unknown, b: string): boolean {
-  if (a == null || a == '') {
+  if (a == null) {
     return false
   }
   if (Array.isArray(a)) {
@@ -83,7 +102,7 @@ export function startsWith(a: unknown, b: string): boolean {
 }
 
 export function endsWith(a: unknown, b: string): boolean {
-  if (a == null || a == '') {
+  if (a == null) {
     return false
   }
   if (Array.isArray(a)) {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input, inject } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { IconsModule } from '../icons'
 import { svgFilter, svgFilterSlash, svgLayerPlus, svgPlus, svgTrashCan } from '../icons/svg'
@@ -13,8 +13,9 @@ import { ExpressionNode, isCondition, isGroup } from './types'
   templateUrl: './expression-tree-node.component.html',
   styleUrls: ['./expression-tree-node.component.scss'],
   imports: [CommonModule, FormsModule, IconsModule, TooltipModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExpressionTreeNodeComponent {
+export class ExpressionTreeNodeComponent implements OnChanges {
   private readonly store = inject(ExpressionTreeStore)
 
   protected iconDelete = svgTrashCan
@@ -107,4 +108,12 @@ export class ExpressionTreeNodeComponent {
     }
   }
   protected trackByIndex = (index: number) => index
+
+  public constructor(private cdRef: ChangeDetectorRef) {
+    //
+  }
+
+  public ngOnChanges(): void {
+    this.cdRef.markForCheck()
+  }
 }

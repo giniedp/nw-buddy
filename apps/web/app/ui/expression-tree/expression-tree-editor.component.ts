@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, Input, inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
-import { skip } from 'rxjs'
+import { distinctUntilChanged, skip } from 'rxjs'
 import { ExpressionTreeStore, createGroup } from './expression-tree-editor-store'
 import { ExpressionTreeNodeComponent } from './expression-tree-node.component'
 import { ExpressionGroup } from './types'
@@ -35,13 +35,14 @@ export class ExpressionTreeEditorComponent implements ControlValueAccessor {
   private value: ExpressionGroup
   public constructor() {
     this.store
-      .select(({ root }) => root)
+      .select(({ root }) => root, {
+        debounce: true,
+      })
       .pipe(skip(1))
       .pipe(takeUntilDestroyed())
       .subscribe((value) => {
-        if (!isEqual(value, this.value)) {
-          this.onChange(value)
-        }
+        this.value = value as ExpressionGroup
+        this.onChange(value)
       })
   }
 

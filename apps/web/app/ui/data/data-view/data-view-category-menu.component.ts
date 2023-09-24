@@ -9,6 +9,8 @@ import { svgChevronLeft } from '~/ui/icons/svg'
 import { eqCaseInsensitive, selectStream, tapDebug } from '~/utils'
 import { DataViewCategory } from './data-view-category'
 import { DataViewService } from './data-view.service'
+import { defer, map, of, switchMap } from 'rxjs'
+import { gridDisplayRowCount } from '../ag-grid/utils'
 
 export interface DataViewCategoryMenuState {
   showCounter?: boolean
@@ -70,11 +72,12 @@ export class DataViewCategoryMenuComponent extends ComponentStore<DataViewCatego
 
   protected readonly counter$ = selectStream(
     {
-      items: this.service.categoryItems$,
       enabled: this.select((it) => it.showCounter),
+      totalCount: defer(() => this.totalRowCount$),
+      displayedCount: defer(() => this.displayedRowCount$),
     },
-    ({ items, enabled }) => {
-      return enabled ? { value: items?.length || 0 } : null
+    ({ totalCount, displayedCount, enabled }) => {
+      return enabled ? { total: totalCount, displayed: displayedCount } : null
     }
   )
 
@@ -87,6 +90,10 @@ export class DataViewCategoryMenuComponent extends ComponentStore<DataViewCatego
     collectCategories
   )
 
+  protected totalRowCount$ = this.service.categoryItems$.pipe(map((list) => list?.length || 0))
+  protected displayedRowCount$ = this.service.agGrid$.pipe(
+    switchMap((grid) => (grid ? gridDisplayRowCount(of(grid)) : of(0)))
+  )
   protected readonly hasCategories$ = this.select(this.categories$, (it) => it.length > 0)
   protected readonly activeCateogry$ = this.select(this.categories$, (it) => it.find((it) => it.active))
   protected readonly defaultCategory$ = this.select(selectDefaultCategory)

@@ -47,9 +47,7 @@ export class ExpressionTreeStore extends ComponentStore<ExpressionTreeState> {
 
   public updateTree(modify: (step: ExpressionNode) => ExpressionNode) {
     this.patchState({
-      root: {
-        ...modifyTree(this.root$(), modify),
-      },
+      root: modifyTree(this.root$(), modify),
     })
   }
 
@@ -140,7 +138,9 @@ function modifyTree(node: ExpressionNode, modify: (step: ExpressionNode) => Expr
   if (isGroup(node) && node.children?.length) {
     ;(node as any).children = node.children.map((it) => modifyTree(it, modify)).filter((it) => !!it)
   }
-  return node
+  return {
+    ...node,
+  }
 }
 
 export function createGroup(options: Partial<ExpressionGroup> = {}): ExpressionGroup {

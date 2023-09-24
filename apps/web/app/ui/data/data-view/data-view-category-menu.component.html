@@ -5,7 +5,9 @@
     <ng-container *ngIf="activeCateogry$ | async; let cat"> • {{ cat.label | nwText }} </ng-container>
   </span>
   <span *ngIf="counter$ | async; let counter" class="text-xs opacity-50 italic leading-none">
-    Total: {{ counter.value }}
+    Rows:
+    <ng-container *ngIf="counter.displayed !== counter.total"> {{ counter.displayed }} / </ng-container>
+    {{ counter.total }}
   </span>
 </div>
 <ng-template

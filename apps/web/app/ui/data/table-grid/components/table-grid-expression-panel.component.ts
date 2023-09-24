@@ -36,9 +36,8 @@ export class TableGridExpressionPanelComponent extends ComponentStore<{
 
   private grid$ = this.select(({ grid }) => grid)
   protected knownFields$ = this.select(({ knownFields }) => knownFields)
-  protected expression$: Observable<ExpressionGroup> = this.select(({ expression }) => expression, {
+  protected expression$: Observable<ExpressionGroup> = this.select(({ expression }) => expression as any, {
     debounce: true,
-    equal: isEqual,
   })
 
   @ViewChild(ExpressionTreeEditorComponent, { static: true })
