@@ -13,7 +13,7 @@
         ></button>
       </li>
       <span class="flex-1"></span>
-      <li *ngIf="service.canToggleMode">
+      <li *ngIf="service.canToggleMode$()">
         <button [nwbDataViewToggle]></button>
       </li>
       <li class="hidden 2xl:flex">

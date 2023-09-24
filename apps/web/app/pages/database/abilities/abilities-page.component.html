@@ -16,7 +16,7 @@
       <li>
         <button [nwbScreenshotBtn]></button>
       </li>
-      <li *ngIf="service.canToggleMode">
+      <li *ngIf="service.canToggleMode$()">
         <button [nwbDataViewToggle]></button>
       </li>
       <li class="hidden 2xl:flex">

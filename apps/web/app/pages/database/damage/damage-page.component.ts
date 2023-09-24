@@ -63,7 +63,7 @@ export class DamagePageComponent {
     protected search: QuicksearchService,
     head: HtmlHeadService
   ) {
-    service.patchState({ mode: 'table' })
+    service.patchState({ mode: 'table', modes: ['table'] })
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - Damage Tables DB',

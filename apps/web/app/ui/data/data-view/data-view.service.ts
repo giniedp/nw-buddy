@@ -15,6 +15,7 @@ export interface DataViewServiceState<T> {
   category: string | null
   categoryItems: T[]
   mode: DataViewMode
+  modes: DataViewMode[]
 }
 
 @Injectable()
@@ -29,7 +30,11 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
 
   public readonly tableGridOptions = this.adapter.gridOptions()
   public readonly virtualOptions = this.adapter.virtualOptions()
-  public readonly canToggleMode = !!this.tableGridOptions && !!this.virtualOptions
+  public readonly canToggleMode$ = this.selectSignal(({ modes }) => {
+    const gridEnabled = modes.includes('grid') && !!this.tableGridOptions
+    const tableEnabled = modes.includes('grid') && !!this.virtualOptions
+    return gridEnabled && tableEnabled
+  })
   public readonly mode$ = this.selectSignal(({ mode }) => {
     if ((!mode || mode === 'table') && !!this.tableGridOptions) {
       return 'table'
@@ -57,6 +62,7 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
       category: null,
       categoryItems: null,
       mode: 'table',
+      modes: ['table', 'grid'],
     })
 
     this.loadItems(adapter.connect())
@@ -82,7 +88,7 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
   })
 
   public toggleMode() {
-    if (this.canToggleMode) {
+    if (this.canToggleMode$()) {
       this.patchState({ mode: this.mode$() === 'table' ? 'grid' : 'table' })
     }
   }

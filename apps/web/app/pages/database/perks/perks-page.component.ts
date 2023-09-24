@@ -79,6 +79,7 @@ export class PerksPageComponent {
     head: HtmlHeadService,
     char: CharacterStore
   ) {
+    service.patchState({ mode: 'table', modes: ['table'] })
     head.updateMetadata({
       url: head.currentUrl,
       title: 'New World - Perks DB',
