@@ -1,12 +1,11 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { AttributeRef, NW_ATTRIBUTE_TYPES, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
-import { combineLatest, Observable, of, switchMap } from 'rxjs'
+import { Observable, combineLatest, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 
-const ATTRIBUTE_STEPS = [
-  25, 50, 100, 150, 200, 250, 300, 350
-]
+// TODO: research if we can get these from playerattributes base file
+const ATTRIBUTE_STEPS = [25, 50, 100, 150, 200, 250, 300, 350]
 const ATTRIBUTE_MAX = 350
 
 export interface AttributesState {
@@ -15,6 +14,7 @@ export interface AttributesState {
   base: Record<AttributeRef, number>
   assigned: Record<AttributeRef, number>
   buffs: Record<AttributeRef, number>
+  magnify: number[]
 }
 
 export interface AttributeState {
@@ -24,6 +24,7 @@ export interface AttributeState {
   base: number
   assigned: number
   buffs: number
+  magnify: number
   total: number
   inputMin: number
   inputMax: number
@@ -47,8 +48,8 @@ export class AttributesStore extends ComponentStore<AttributesState> {
   })
 
   public readonly pointsAvailable$ = this.select(({ points, assigned }) => points - sum(Object.values(assigned)))
-  public readonly stats$ = this.select(({ points, base, assigned, buffs }) => {
-    return NW_ATTRIBUTE_TYPES.map(({ ref, shortName, description }): AttributeState => {
+  public readonly stats$ = this.select(({ points, base, assigned, buffs, magnify }) => {
+    const rows = NW_ATTRIBUTE_TYPES.map(({ ref, shortName, description }): AttributeState => {
       const ba = base?.[ref] || 0
       const bu = buffs?.[ref] || 0
       const as = assigned?.[ref] || 0
@@ -63,8 +64,22 @@ export class AttributesStore extends ComponentStore<AttributesState> {
         inputMin: ba + bu,
         inputMax: ba + bu + as + Math.max(0, points - sum(Object.values(assigned))),
         sliderEnd: ATTRIBUTE_MAX,
+        magnify: 0,
       }
     })
+
+    const defaultMagOrder = ['con', 'foc', 'str', 'dex', 'int']
+    const sorted = [...rows].sort((a, b) => {
+      if (b.total !== a.total) {
+        return b.total - a.total
+      }
+      return defaultMagOrder.indexOf(a.ref) - defaultMagOrder.indexOf(b.ref)
+    })
+    for (let i = 0; i < magnify.length; i++) {
+      sorted[i].magnify = (sorted[i].magnify || 0) + (magnify[i] || 0)
+      sorted[i].total += magnify[i] || 0
+    }
+    return rows
   })
 
   public constructor(private nwDb: NwDbService) {
@@ -74,57 +89,41 @@ export class AttributesStore extends ComponentStore<AttributesState> {
       base: empty(),
       assigned: empty(),
       buffs: empty(),
+      magnify: [],
     })
   }
 
-  public readonly load = this.updater(
-    (
-      state,
-      data: {
-        level: number
-        points: number
-        base?: Record<AttributeRef, number>
-        assigned?: Record<AttributeRef, number>
-        buffs?: Record<AttributeRef, number>
-      }
-    ) => {
-      return {
-        ...state,
-        base: data.base || state.base || empty(),
-        assigned: data.assigned || state.assigned || empty(),
-        buffs: data.buffs || state.buffs || empty(),
-        level: data.level,
-        points: data.points,
-      }
+  public readonly load = this.updater((state, data: Partial<AttributesState>) => {
+    return {
+      ...state,
+      base: data.base || state.base || empty(),
+      assigned: data.assigned || state.assigned || empty(),
+      buffs: data.buffs || state.buffs || empty(),
+      level: data.level,
+      points: data.points,
+      magnify: data.magnify || state.magnify || [],
     }
-  )
+  })
 
-  public readonly loadLazy = this.effect(
-    (
-      value$: Observable<{
-        level: number
-        points: number
-        base: Record<AttributeRef, number>
-        assigned: Record<AttributeRef, number>
-        buffs: Record<AttributeRef, number>
-      }>
-    ) => {
-      return combineLatest({
-        input: value$,
-        data: this.nwDb.xpAmounts,
-      }).pipe(
-        switchMap(({ input: { level, base, assigned, points, buffs }, data }) => {
-          data.forEach((it) => {
-            if (it['Level Number'] < level) {
-              points += it.AttributePoints
-            }
-          })
-          this.load({ level, points, base, assigned, buffs })
-          return of(level)
+  public readonly loadLazy = this.effect((value$: Observable<AttributesState>) => {
+    return combineLatest({
+      input: value$,
+      data: this.nwDb.xpAmounts,
+    }).pipe(
+      switchMap(({ input, data }) => {
+        input = {
+          ...input,
+        }
+        data.forEach((it) => {
+          if (it['Level Number'] < input.level) {
+            input.points += it.AttributePoints
+          }
         })
-      )
-    }
-  )
+        this.load(input)
+        return of(input.level)
+      })
+    )
+  })
 
   public readonly update = this.updater((state, data: { attribute: string; value: number }) => {
     const base = state.base[data.attribute] || 0

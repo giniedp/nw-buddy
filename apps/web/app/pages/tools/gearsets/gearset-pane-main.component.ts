@@ -68,8 +68,10 @@ export class GearsetPaneMainComponent {
       return
     }
     const attrs = await firstValueFrom(this.mannequin.activeAttributes$)
+    const magnify = await firstValueFrom(this.mannequin.activeMagnify$)
 
     const level = await firstValueFrom(this.characterLevel$)
+
     AttributeEditorDialogComponent.open(this.dialog, {
       data: {
         level: level,
@@ -94,6 +96,7 @@ export class GearsetPaneMainComponent {
           foc: attrs.foc.bonus,
           con: attrs.con.bonus,
         },
+        magnify: magnify,
       },
     })
       .closed.pipe(filter((it) => !!it))

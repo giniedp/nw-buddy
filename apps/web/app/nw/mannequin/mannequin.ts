@@ -20,6 +20,7 @@ import {
   selectEquipLoad,
   selectWeaponAbilities,
   selectDamageTableRow,
+  selectMagnify,
 } from './selectors'
 import { selectElementalRating, selectModsArmor, selectPhysicalRating } from './stats/armoring'
 import { selectWeaponDamage, selectDamageMods } from './stats/mods-damage'
@@ -89,6 +90,15 @@ export class Mannequin extends ComponentStore<MannequinState> {
     }),
     this.state$,
     selectAttributes
+  )
+  public readonly activeMagnify$ = this.select(
+    this.db$,
+    combineLatest<SelectorOf<AttributeModsSource>>({
+      perks: this.activePerks$,
+      effects: this.consumableEffects$,
+    }),
+    this.state$,
+    selectMagnify
   )
 
   public readonly activeAbilities$ = this.select(

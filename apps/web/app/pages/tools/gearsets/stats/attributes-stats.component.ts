@@ -4,19 +4,19 @@ import { map } from 'rxjs'
 import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { IconsModule } from '~/ui/icons'
+import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
   standalone: true,
   selector: 'nwb-attributes-stats',
   templateUrl: './attributes-stats.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, IconsModule],
+  imports: [CommonModule, NwModule, IconsModule, TooltipModule],
   host: {
     class: 'block',
   },
 })
 export class AttributesStatsComponent {
-
   protected trackBy = (i: number) => i
   protected readonly vm$ = this.mannequin.activeAttributes$.pipe(
     map((data) => {
@@ -27,6 +27,7 @@ export class AttributesStatsComponent {
           assigned: data.str.assigned,
           bonus: data.str.bonus,
           total: data.str.total,
+          magnify: data.str.magnify,
         },
         {
           label: 'ui_Dexterity_short',
@@ -34,6 +35,7 @@ export class AttributesStatsComponent {
           assigned: data.dex.assigned,
           bonus: data.dex.bonus,
           total: data.dex.total,
+          magnify: data.dex.magnify,
         },
         {
           label: 'ui_Intelligence_short',
@@ -41,6 +43,7 @@ export class AttributesStatsComponent {
           assigned: data.int.assigned,
           bonus: data.int.bonus,
           total: data.int.total,
+          magnify: data.int.magnify,
         },
         {
           label: 'ui_Focus_short',
@@ -48,6 +51,7 @@ export class AttributesStatsComponent {
           assigned: data.foc.assigned,
           bonus: data.foc.bonus,
           total: data.foc.total,
+          magnify: data.foc.magnify,
         },
         {
           label: 'ui_Constitution_short',
@@ -55,6 +59,7 @@ export class AttributesStatsComponent {
           assigned: data.con.assigned,
           bonus: data.con.bonus,
           total: data.con.total,
+          magnify: data.con.magnify,
         },
       ]
     })

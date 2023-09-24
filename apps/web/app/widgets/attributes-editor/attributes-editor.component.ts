@@ -64,6 +64,14 @@ export class AttributesEditorComponent implements OnInit {
     return this.buffs$.value
   }
 
+  @Input()
+  public set magnify(value: number[]) {
+    this.magnify$.next(value)
+  }
+  public get magnify() {
+    return this.magnify$.value
+  }
+
   @Output()
   public assignedChanged = this.store.assigned$.pipe(distinctUntilChanged((a, b) => isEqual(a, b)))
 
@@ -74,6 +82,7 @@ export class AttributesEditorComponent implements OnInit {
   protected arrowLeft = svgAngleLeft
   protected arrowsLeft = svgAnglesLeft
   protected trackById = (i: number) => i
+  private magnify$ = new BehaviorSubject<number[]>([])
   private freeMode$ = new BehaviorSubject<boolean>(false)
   private level$ = new BehaviorSubject<number>(NW_MAX_CHARACTER_LEVEL)
   private base$ = new BehaviorSubject<Record<AttributeRef, number>>({
@@ -123,6 +132,7 @@ export class AttributesEditorComponent implements OnInit {
       ),
       assigned: this.assigned$,
       buffs: this.buffs$,
+      magnify: this.magnify$,
     })
     this.store.loadLazy(src)
   }
@@ -131,7 +141,8 @@ export class AttributesEditorComponent implements OnInit {
   }
 
   protected attributeToggle(state: AttributeState, points: number) {
-    if (state.total === points) {
+    const total = state.total - state.magnify
+    if (total === points) {
       this.store.update({ attribute: state.ref, value: points - 50 })
     } else {
       this.store.update({ attribute: state.ref, value: points })
@@ -139,7 +150,7 @@ export class AttributesEditorComponent implements OnInit {
   }
 
   protected attributeInput(state: AttributeState, points: number) {
-    this.store.update({ attribute: state.ref, value: points })
+    this.store.update({ attribute: state.ref, value: points - state.magnify })
   }
 
   protected attributeBlur(state: AttributeState, e: Event) {
@@ -175,5 +186,25 @@ export class AttributesEditorComponent implements OnInit {
         })
       })
     )
+  }
+
+  protected getBulletColor(attr: AttributeState, step: number) {
+    const base = attr.base
+    const buffs = base + attr.buffs
+    const assigned = buffs + attr.assigned
+    const magnify = assigned + attr.magnify
+    if (base >= step) {
+      return 'base' as const
+    }
+    if (buffs >= step) {
+      return 'buff' as const
+    }
+    if (assigned >= step) {
+      return 'assign' as const
+    }
+    if (magnify >= step) {
+      return 'magnify' as const
+    }
+    return 'zink' as const
   }
 }

@@ -10,6 +10,7 @@ export interface AttributeEditorDialogData {
   base: Record<AttributeRef, number>
   assigned: Record<AttributeRef, number>
   buffs?: Record<AttributeRef, number>
+  magnify: number[]
 }
 
 @Component({

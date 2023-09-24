@@ -82,6 +82,7 @@ module.exports = {
           base: '#4CB1FC',
           buff: '#B150E6',
           assign: '#F5D15E',
+          magnify: '#991d14',
         },
       },
     },

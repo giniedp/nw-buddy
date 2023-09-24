@@ -1,4 +1,10 @@
-import { AttributeRef, EquipSlotId, getAmmoTypeFromWeaponTag, getAverageGearScore, getWeaponTagFromWeapon } from '@nw-data/common'
+import {
+  AttributeRef,
+  EquipSlotId,
+  getAmmoTypeFromWeaponTag,
+  getAverageGearScore,
+  getWeaponTagFromWeapon,
+} from '@nw-data/common'
 import { Ability, Damagetable, ItemdefinitionsAmmo } from '@nw-data/generated'
 import { minBy, sum } from 'lodash'
 import { eqCaseInsensitive } from '~/utils'
@@ -399,10 +405,30 @@ export function selectBonusAttributes(db: DbSlice, { effects }: AttributeModsSou
   return result
 }
 
+export function selectMagnify(db: DbSlice, { perks }: AttributeModsSource) {
+  const result: number[] = []
+  for (const { perk, gearScore, affix, item } of perks) {
+    if (!affix || !affix.AttributePlacingMods) {
+      continue
+    }
+    let scale = 1
+    if (perk.ScalingPerGearScore) {
+      scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
+    }
+    const mods = affix.AttributePlacingMods.split(',')
+    for (let i = 0; i < mods.length; i++) {
+      const value = Math.floor(Number(mods[i] || 0) * scale)
+      result[i] = (result[i] || 0) + value
+    }
+  }
+  return result
+}
+
 export function selectAttributes(db: DbSlice, mods: AttributeModsSource, state: MannequinState): ActiveAttributes {
   const attrsBase = selectEquppedAttributes(db, mods)
   const attrsBonus = selectBonusAttributes(db, mods)
   const attrsAssigned = state.assignedAttributes
+  const attrsMagnify = selectMagnify(db, mods)
   const levels = {
     con: db.attrCon,
     dex: db.attrDex,
@@ -420,6 +446,7 @@ export function selectAttributes(db: DbSlice, mods: AttributeModsSource, state: 
       bonus: bonus,
       assigned: assigned,
       total: value,
+      magnify: 0,
       health: levels[key].find((it) => it.Level === value)?.Health,
       scale: levels[key].find((it) => it.Level === value)?.ModifierValueSum,
       abilities: levels[key]
@@ -428,13 +455,25 @@ export function selectAttributes(db: DbSlice, mods: AttributeModsSource, state: 
         .flat(),
     }
   }
-  return {
+  const result: ActiveAttributes = {
     con: buildAttribute('con'),
     dex: buildAttribute('dex'),
     foc: buildAttribute('foc'),
     int: buildAttribute('int'),
     str: buildAttribute('str'),
   }
+  const defaultMagOrder = ['con', 'foc', 'str', 'dex', 'int']
+  const sorted = Object.entries(result).sort(([k1, a], [k2, b]) => {
+    if (b.total !== a.total) {
+      return b.total - a.total
+    }
+    return defaultMagOrder.indexOf(k1) - defaultMagOrder.indexOf(k2)
+  })
+  attrsMagnify.forEach((value, index) => {
+    sorted[index][1].magnify += value || 0
+    sorted[index][1].total += value || 0
+  })
+  return result
 }
 
 export function selectGearScore(items: EquippedItem[], level: number) {

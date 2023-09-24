@@ -5,13 +5,19 @@
   <ng-container *ngFor="let stat of stats$ | async; trackBy: trackById" class="flex flex-row">
     <label class="inline-flex items-center justify-center font-bold uppercase">{{ stat.name | nwText }}</label>
     <div class="flex flex-row gap-1 indicator">
-      <span class="indicator-item text-2xs pl-14 whitespace-nowrap" *ngIf="stat.assigned || stat.buffs">
+      <span
+        class="indicator-item indicator-top indicator-end text-xs whitespace-nowrap overflow-visible w-0"
+        *ngIf="stat.assigned || stat.buffs || stat.magnify"
+      >
         <span class="text-attr-base text-opacity-75">{{ stat.base }}</span>
         <ng-container *ngIf="stat.buffs">
           + <span class="text-attr-buff text-opacity-75">{{ stat.buffs }}</span>
         </ng-container>
         <ng-container *ngIf="stat.assigned">
           + <span class="text-attr-assign text-opacity-75">{{ stat.assigned }}</span>
+        </ng-container>
+        <ng-container *ngIf="stat.magnify">
+          + <span class="text-attr-magnify text-opacity-75">{{ stat.magnify }}</span>
         </ng-container>
       </span>
       <input
@@ -28,11 +34,27 @@
     </div>
     <div class="flex flex-row justify-between items-center relative">
       <div class="tracker absolute left-0 w-full flex flex-row overflow-hidden">
-        <span class="flex-none bg-attr-base rounded-l-md" [style.width.%]="(stat.base / stat.sliderEnd) * 100"></span>
-        <span class="flex-none bg-attr-buff rounded-r-md" [style.width.%]="(stat.buffs / stat.sliderEnd) * 100"></span>
         <span
-          class="flex-none bg-attr-assign rounded-r-md"
+          *ngIf="stat.base"
+          class="flex-none bg-attr-base rounded-l-md"
+          [style.width.%]="(stat.base / stat.sliderEnd) * 100"
+        ></span>
+        <span
+          *ngIf="stat.buffs"
+          class="flex-none bg-attr-buff"
+          [class.rounded-r-md]="!stat.assigned && !stat.magnify"
+          [style.width.%]="(stat.buffs / stat.sliderEnd) * 100"
+        ></span>
+        <span
+          *ngIf="stat.assigned"
+          [class.rounded-r-md]="!stat.magnify"
+          class="flex-none bg-attr-assign"
           [style.width.%]="(stat.assigned / stat.sliderEnd) * 100"
+        ></span>
+        <span
+          *ngIf="stat.magnify"
+          class="flex-none bg-attr-magnify rounded-r-md"
+          [style.width.%]="(stat.magnify / stat.sliderEnd) * 100"
         ></span>
       </div>
       <div class="flex-1 flex flex-row justify-between items-center relative mr-[-10px]">
@@ -43,11 +65,13 @@
             (click)="attributeToggle(stat, step.value)"
           >
             <span
+              *ngIf="getBulletColor(stat, step.value); let col"
               class="badge absolute right-0"
-              [class.bg-zinc-800]="stat.total < step.value"
-              [class.bg-attr-base]="stat.base >= step.value"
-              [class.bg-attr-buff]="stat.base < step.value && stat.base + stat.buffs >= step.value"
-              [class.bg-attr-assign]="stat.base + stat.buffs < step.value && stat.total >= step.value"
+              [class.bg-zinc-800]="col === 'zink'"
+              [class.bg-attr-base]="col === 'base'"
+              [class.bg-attr-buff]="col === 'buff'"
+              [class.bg-attr-assign]="col === 'assign'"
+              [class.bg-attr-magnify]="col === 'magnify'"
               [tooltip]="tip"
               [tooltipClass]="'p-0'"
             >

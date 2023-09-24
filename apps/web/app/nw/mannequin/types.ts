@@ -135,6 +135,7 @@ export interface ActiveAttribute {
   base: number
   bonus: number
   assigned: number
+  magnify: number
   total: number
   health?: number
   scale: number

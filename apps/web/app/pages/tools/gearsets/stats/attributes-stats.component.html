@@ -7,13 +7,17 @@
     <span class="w-16 text-right font-bold uppercase">{{ row.label | nwText }}</span>
     <span class="">
       {{ row.total }}
-      <ng-container *ngIf="row.assigned || row.bonus">
+      <ng-container *ngIf="row.assigned || row.bonus || row.magnify">
         (<span class="text-attr-base">{{ row.base }}</span>
         <ng-container *ngIf="row.bonus">
           + <span class="text-attr-buff">{{ row.bonus }}</span></ng-container
         >
         <ng-container *ngIf="row.assigned">
-          + <span class="text-attr-assign">{{ row.assigned }}</span></ng-container
+          +
+          <span class="text-attr-assign">{{ row.assigned }}</span></ng-container
+        >
+        <ng-container *ngIf="row.magnify">
+          + <span class="text-attr-magnify">{{ row.magnify }}</span></ng-container
         >)
       </ng-container>
     </span>
