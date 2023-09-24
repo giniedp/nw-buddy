@@ -5,7 +5,7 @@ import { NwDbService } from '~/nw'
 import { AppTestingModule } from '~/test'
 import { VirtualGridComponent } from '~/ui/data/virtual-grid'
 import { ItemCellComponent } from './item-cell.component'
-import { VirtualGridCellDirective } from '~/ui/virtual-grid/virtual-grid-cell.directive'
+import { VirtualGridCellDirective } from '~/ui/data/virtual-grid/virtual-grid-cell.directive'
 
 @Component({
   standalone: true,

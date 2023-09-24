@@ -13,6 +13,7 @@ import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } f
 import { AbilityTableAdapter } from '~/widgets/data/ability-table'
 import { ItemTableAdapter, ItemTableRecord } from '~/widgets/data/item-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
+import { svgFunction } from '~/ui/icons/svg'
 
 @Component({
   standalone: true,
@@ -54,6 +55,8 @@ export class AbilitiesPageComponent {
   protected category$ = selectStream(this.categoryParam$, (it) => {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
+  protected iconFunc = svgFunction
+  protected isFuncOpen = false
 
   public constructor(
     protected service: DataViewService<ItemTableRecord>,

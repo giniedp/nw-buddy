@@ -5,11 +5,12 @@ import {
   getAbilityCategoryTag,
   getWeaponTagLabel,
 } from '@nw-data/common'
-import { Ability, Statuseffect } from '@nw-data/generated'
+import { Ability, COLS_ABILITY, Statuseffect } from '@nw-data/generated'
 import { map, switchMap } from 'rxjs'
 import { sanitizeHtml } from '~/nw'
 import { NwWeaponType } from '~/nw/weapon-types'
 import { SelectFilter } from '~/ui/data/ag-grid'
+import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
@@ -26,8 +27,11 @@ export function abilityColIcon(util: AbilityTableUtils) {
     headerValueGetter: () => 'Icon',
     resizable: false,
     sortable: false,
-    filter: false,
     pinned: true,
+    filter: ExpressionFilter,
+    filterParams: ExpressionFilter.params({
+      fields: Object.keys(COLS_ABILITY),
+    }),
     width: 62,
     cellRenderer: util.cellRenderer(({ data }) => {
       return util.elA(

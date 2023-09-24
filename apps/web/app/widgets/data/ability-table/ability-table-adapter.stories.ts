@@ -3,8 +3,9 @@ import { Component, importProvidersFrom } from '@angular/core'
 import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
 import { AppTestingModule } from '~/test'
 import { DataGridModule, provideTableGrid } from '~/ui/data/table-grid'
-import { AbilityTableAdapter } from './ability-table-source'
+
 import { QuicksearchModule } from '~/ui/quicksearch'
+import { AbilityTableAdapter } from './ability-table-adapter'
 
 @Component({
   standalone: true,

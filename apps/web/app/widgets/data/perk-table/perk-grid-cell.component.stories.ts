@@ -4,8 +4,8 @@ import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/an
 import { NwDbService } from '~/nw'
 import { AppTestingModule } from '~/test'
 import { VirtualGridComponent } from '~/ui/data/virtual-grid'
-import { VirtualGridCellDirective } from '~/ui/virtual-grid/virtual-grid-cell.directive'
 import { PerkGridCellComponent } from './perk-grid-cell.component'
+import { VirtualGridCellDirective } from '~/ui/data/virtual-grid/virtual-grid-cell.directive'
 
 @Component({
   standalone: true,

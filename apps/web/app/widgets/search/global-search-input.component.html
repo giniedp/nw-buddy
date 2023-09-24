@@ -9,7 +9,12 @@
   (focus)="onFocus()"
   autofocus
 />
-<span class="pointer-events-none block absolute" style="top: 3px; right: 22px" [@fade]="true" *ngIf="!value$()">
+<span
+  class="pointer-events-none absolute hidden md:inline-block"
+  style="top: 3px; right: 22px"
+  [@fade]="true"
+  *ngIf="!value$()"
+>
   ctrl +
 </span>
 <button

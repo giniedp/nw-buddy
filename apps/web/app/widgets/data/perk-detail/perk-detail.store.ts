@@ -35,6 +35,23 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
     }
   )
 
+  public readonly textContextClass$ = this.select(
+    combineLatest({
+      perk: this.perk$,
+      context: this.context.state$,
+    }),
+    ({ perk, context }) => {
+      const result = {
+        itemId: perk?.PerkID,
+        gearScore: context.gearScore,
+        charLevel: context.charLevel,
+      }
+      const gsBonus = getPerkItemClassGSBonus(perk)
+      result.gearScore += gsBonus?.value || 0
+      return result
+    }
+  )
+
   public readonly scalesWithGearScore$ = this.select(this.perk$, (it) => !!it.ScalingPerGearScore)
   public readonly itemClassGsBonus$ = this.select(this.perk$, (it) => getPerkItemClassGSBonus(it))
 

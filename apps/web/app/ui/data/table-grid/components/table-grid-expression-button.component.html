@@ -1,0 +1,19 @@
+<div class="indicator">
+  <nwb-icon [icon]="icon" class="w-4 h-4"></nwb-icon>
+</div>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="cdkOrigin"
+  [cdkConnectedOverlayOpen]="isPanelOpen"
+  [cdkConnectedOverlayHasBackdrop]="true"
+  (overlayOutsideClick)="isPanelOpen = false"
+  (backdropClick)="isPanelOpen = false"
+  (detach)="isPanelOpen = false"
+  [cdkConnectedOverlayOffsetY]="5"
+  [cdkConnectedOverlayPositions]="[{ originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top' }]"
+>
+  <div class="w-[400px] max-h-[80vh] overflow-auto bg-base-200 border border-base-100 rounded-md shadow-lg">
+    <nwb-table-grid-expression-panel [grid]="grid$ | async"></nwb-table-grid-expression-panel>
+  </div>
+</ng-template>

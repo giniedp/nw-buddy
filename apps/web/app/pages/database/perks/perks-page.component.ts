@@ -12,7 +12,7 @@ import { DataGridModule } from '~/ui/data/table-grid'
 import { DataViewAdapter, DataViewModule, provideDataView } from '~/ui/data/data-view'
 import { DataViewService } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
-import { svgGrid, svgTableList } from '~/ui/icons/svg'
+import { svgFunction, svgGrid, svgTableList } from '~/ui/icons/svg'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
@@ -69,6 +69,8 @@ export class PerksPageComponent {
   protected isToolOpen = false
   protected iconList = svgTableList
   protected iconGrid = svgGrid
+  protected iconFunc = svgFunction
+  protected isFuncOpen = false
 
   public constructor(
     public search: QuicksearchService,

@@ -1,8 +1,9 @@
 import { explainPerk, explainPerkMods, getPerkItemClassGSBonus, getPerkItemClassGsBonus } from '@nw-data/common'
-import { Ability, Affixstats, Perks } from '@nw-data/generated'
+import { Ability, Affixstats, COLS_PERKS, Perks } from '@nw-data/generated'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwTextContextService } from '~/nw/expression'
 import { SelectFilter } from '~/ui/data/ag-grid'
+import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
@@ -18,7 +19,10 @@ export function perkColIcon(util: PerkTableUtils) {
     headerValueGetter: () => 'Icon',
     resizable: false,
     sortable: false,
-    filter: false,
+    filter: ExpressionFilter,
+    filterParams: ExpressionFilter.params({
+      fields: Object.keys(COLS_PERKS),
+    }),
     pinned: true,
     width: 62,
     cellRenderer: util.cellRenderer(({ data }) => {
@@ -137,6 +141,7 @@ export function perkColPerkType(util: PerkTableUtils) {
   return util.colDef({
     colId: 'perkType',
     headerValueGetter: () => 'Type',
+    field: util.fieldName('PerkType'),
     valueGetter: util.fieldGetter('PerkType'),
     width: 120,
     filter: SelectFilter,
@@ -192,6 +197,7 @@ export function perkColItemClass(util: PerkTableUtils) {
     colId: 'itemClass',
     headerValueGetter: () => 'Item Class',
     width: 500,
+    field: util.fieldName('ItemClass'),
     valueGetter: util.fieldGetter('ItemClass'),
     wrapText: true,
     autoHeight: true,
@@ -207,6 +213,7 @@ export function perkColExclusiveLabels(util: PerkTableUtils) {
   return util.colDef({
     colId: 'exclusiveLabels',
     headerValueGetter: () => 'Exclusive Labels',
+    field: util.fieldName('ExclusiveLabels'),
     valueGetter: util.fieldGetter('ExclusiveLabels'),
     wrapText: true,
     autoHeight: true,
@@ -222,6 +229,7 @@ export function perkColExcludeItemClass(util: PerkTableUtils) {
   return util.colDef({
     colId: 'excludeItemClass',
     headerValueGetter: () => 'Exclude Item Class',
+    field: util.fieldName('ExcludeItemClass'),
     valueGetter: util.fieldGetter('ExcludeItemClass'),
     wrapText: true,
     autoHeight: true,

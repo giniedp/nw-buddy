@@ -1,0 +1,35 @@
+<!-- <div class="alert shadow-lg">
+  <div>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6">
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      ></path>
+    </svg>
+    <div>
+      <h3 class="font-bold">Expreimental Filter!</h3>
+      <div class="text-xs mb-1">This is an experimental filter component.</div>
+      <div class="text-xs">Please use the functions below to export and backup your data.</div>
+    </div>
+  </div>
+</div> -->
+
+<nwb-expression-tree-editor
+  [ngModel]="expression$ | async"
+  (ngModelChange)="patchState({ expression: $event })"
+  [knownFields]="knownFields$ | async"
+></nwb-expression-tree-editor>
+<div class="form-control">
+  <label class="cursor-pointer label">
+    <span class="label-text flex-1">Filter is active</span>
+    <input
+      type="checkbox"
+      [ngModel]="active$ | async"
+      (ngModelChange)="patchState({ active: $event })"
+      class="toggle toggle-primary"
+      checked
+    />
+  </label>
+</div>

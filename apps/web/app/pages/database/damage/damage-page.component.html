@@ -16,6 +16,11 @@
       <li *ngIf="service.canToggleMode">
         <button [nwbDataViewToggle]></button>
       </li>
+      <li class="hidden 2xl:flex">
+        <button (click)="isFuncOpen = !isFuncOpen">
+          <nwb-icon [icon]="iconFunc"></nwb-icon>
+        </button>
+      </li>
       <li>
         <button [nwbDataViewOptionsMenu] [disabled]="!service.isTableActive$()"></button>
       </li>
@@ -47,5 +52,8 @@
       [selectionRouteParam]="selectionParam"
     ></nwb-table-grid>
   </ng-container>
+  <div class="w-[600px] hidden 2xl:block p-2 overflow-auto" *ngIf="isFuncOpen">
+    <nwb-table-grid-expression-panel [grid]="service.agGrid$ | async"></nwb-table-grid-expression-panel>
+  </div>
   <router-outlet></router-outlet>
 </div>

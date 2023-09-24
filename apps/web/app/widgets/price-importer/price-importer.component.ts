@@ -21,7 +21,7 @@ type ImporterType = 'json' | 'nwmp'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, IconsModule, DialogModule, JsonPriceImporterComponent, NwmpPriceImporterComponent],
   host: {
-    class: 'layout-col bg-base-300 rounded-md relative',
+    class: 'layout-col bg-base-300 border border-base-100 rounded-md relative',
   },
 })
 export class PriceImporterComponent extends ComponentStore<{

@@ -1,0 +1,75 @@
+<div *ngIf="isGroup" class="flex flex-col" [class.opacity-50]="isIgnored">
+  <div class="flex flex-row gap-1">
+    <div class="btn-group">
+      <button
+        class="btn btn-sm"
+        [class.btn-active]="isNegated"
+        [class.text-opacity-70]="!isNegated"
+        (click)="isNegated = !isNegated"
+      >
+        !
+      </button>
+      <ng-container *ngFor="let op of operatorOptions; trackBy: trackByIndex">
+        <button class="btn btn-sm" [class.btn-active]="operator === op.value" (click)="operator = op.value">
+          {{ op.label }}
+        </button>
+      </ng-container>
+    </div>
+    <span class="flex-1"></span>
+    <div class="group"></div>
+    <button class="flex-none btn btn-sm btn-square" [tooltip]="'Add condition group'">
+      <nwb-icon [icon]="iconAddGroup" class="w-4 h-4" (click)="addGroupClicked()"></nwb-icon>
+    </button>
+    <button class="flex-none btn btn-sm btn-square" [tooltip]="'Add condition'">
+      <nwb-icon [icon]="iconAdd" class="w-4 h-4" (click)="addFieldClicked()"></nwb-icon>
+    </button>
+    <button class="flex-none btn btn-sm btn-square btn-error" [tooltip]="'Delete this group'" *ngIf="!isRoot">
+      <nwb-icon [icon]="iconDelete" class="w-4 h-4" (click)="deleteClicked()"></nwb-icon>
+    </button>
+    <button class="flex-none btn btn-sm btn-square" [tooltip]="'Ignore this group'" *ngIf="!isRoot">
+      <nwb-icon
+        [icon]="isIgnored ? iconFilterSlash : iconFilter"
+        class="w-4 h-4"
+        (click)="isIgnored = !isIgnored"
+      ></nwb-icon>
+    </button>
+  </div>
+  <div *ngFor="let child of children; trackBy: trackByIndex; let last = last" class="flex flex-row">
+    <span class="branch flex-none" [class.branch-last]="last"></span>
+    <nwb-expression-tree-node [node]="child" class="flex-1 py-1"></nwb-expression-tree-node>
+  </div>
+</div>
+
+<div *ngIf="isCondition" class="flex flex-row gap-1" [class.opacity-50]="isIgnored">
+  <select [(ngModel)]="field" class="flex-none w-32 input input-sm input-bordered">
+    <option *ngFor="let it of fieldOptions; trackBy: trackByIndex" [value]="it.id">{{ it.label }}</option>
+  </select>
+  <div class="form-control">
+    <div class="input-group input-group-sm">
+      <button
+        class="btn btn-sm"
+        [class.btn-primary]="isNegated"
+        [class.text-opacity-70]="!isNegated"
+        (click)="isNegated = !isNegated"
+      >
+        !
+      </button>
+      <select [(ngModel)]="operator" class="flex-none w-24 input input-sm input-bordered">
+        <option *ngFor="let op of operatorOptions; trackBy: trackByIndex" [value]="op.value">{{ op.label }}</option>
+      </select>
+    </div>
+  </div>
+  <input [(ngModel)]="value" type="text" placeholder="Type here" class="flex-1 input input-sm input-bordered" />
+  <ng-container *ngIf="!isRoot">
+    <button class="flex-none btn btn-sm btn-square btn-error" [tooltip]="'Delete this condition'">
+      <nwb-icon [icon]="iconDelete" class="w-4 h-4" (click)="deleteClicked()"></nwb-icon>
+    </button>
+    <button class="flex-none btn btn-sm btn-square" [tooltip]="'Ignore this condition'">
+      <nwb-icon
+        [icon]="isIgnored ? iconFilterSlash : iconFilter"
+        class="w-4 h-4"
+        (click)="isIgnored = !isIgnored"
+      ></nwb-icon>
+    </button>
+  </ng-container>
+</div>

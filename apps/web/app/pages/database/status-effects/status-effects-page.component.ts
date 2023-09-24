@@ -13,6 +13,7 @@ import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } f
 import { ItemTableAdapter, ItemTableRecord } from '~/widgets/data/item-table'
 import { StatusEffectTableAdapter } from '~/widgets/data/status-effect-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
+import { svgFunction } from '~/ui/icons/svg'
 
 @Component({
   standalone: true,
@@ -54,6 +55,8 @@ export class StatusEffectsPageComponent {
   protected category$ = selectStream(this.categoryParam$, (it) => {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
+  protected iconFunc = svgFunction
+  protected isFuncOpen = false
 
   public constructor(
     protected service: DataViewService<ItemTableRecord>,

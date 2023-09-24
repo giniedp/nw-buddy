@@ -1,7 +1,8 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { Statuseffect } from '@nw-data/generated'
+import { COLS_STATUSEFFECT, Statuseffect } from '@nw-data/generated'
 import { sanitizeHtml } from '~/nw'
 import { SelectFilter } from '~/ui/data/ag-grid'
+import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
@@ -14,7 +15,10 @@ export function statusEffectColIcon(util: StatusEffectTableUtils) {
     headerValueGetter: () => 'Icon',
     resizable: false,
     sortable: false,
-    filter: false,
+    filter: ExpressionFilter,
+    filterParams: ExpressionFilter.params({
+      fields: Object.keys(COLS_STATUSEFFECT),
+    }),
     pinned: true,
     width: 62,
     cellRenderer: util.cellRenderer(({ data }) => {

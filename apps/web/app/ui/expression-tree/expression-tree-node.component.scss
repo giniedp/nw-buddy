@@ -1,0 +1,35 @@
+:host {
+  display: block;
+
+  .branch {
+    width: 32px;
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 50%;
+      height: 20px;
+      border-left: 1px solid #ccc;
+      border-bottom: 1px solid #ccc;
+    }
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 50%;
+      height: 100%;
+      border-left: 1px solid #ccc;
+    }
+  }
+  .branch.branch-last {
+    &::before {
+      border-bottom-left-radius: 4px;
+    }
+    &::after {
+      display: none;
+    }
+  }
+}

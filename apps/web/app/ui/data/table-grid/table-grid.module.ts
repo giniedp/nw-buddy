@@ -1,5 +1,10 @@
 import { NgModule } from '@angular/core'
-import { TableGridCategoryMenuComponent, DataGridPanelButtonComponent } from './components'
+import {
+  TableGridCategoryMenuComponent,
+  DataGridPanelButtonComponent,
+  TableGridExpressionPanelComponent,
+  TableGridExpressionButtonComponent,
+} from './components'
 import { TableGridComponent } from './table-grid.component'
 import {
   DataGridFilterQueryParamDirective,
@@ -14,6 +19,8 @@ const COMPONENTS = [
   DataGridQuickfilterDirective,
   DataGridSelectionRouteParamDirective,
   DataGridFilterQueryParamDirective,
+  TableGridExpressionPanelComponent,
+  TableGridExpressionButtonComponent,
 ]
 @NgModule({
   imports: [...COMPONENTS],
