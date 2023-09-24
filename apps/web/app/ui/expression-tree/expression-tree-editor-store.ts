@@ -99,11 +99,11 @@ export class ExpressionTreeStore extends ComponentStore<ExpressionTreeState> {
         return {
           ...step,
           children: [
-            ...step.children,
             createCondition({
               field: lastField || this.knowFields$()[0]?.id,
               operator: CONDITION_DEFAULT_OPERATOR,
             }),
+            ...step.children,
           ],
         }
       }
@@ -117,10 +117,10 @@ export class ExpressionTreeStore extends ComponentStore<ExpressionTreeState> {
         return {
           ...step,
           children: [
-            ...step.children,
             createGroup({
               operator: GROUP_DEFAULT_OPERATOR,
             }),
+            ...step.children,
           ],
         }
       }

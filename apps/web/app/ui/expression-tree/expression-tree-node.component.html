@@ -6,6 +6,7 @@
         [class.btn-active]="isNegated"
         [class.text-opacity-70]="!isNegated"
         (click)="isNegated = !isNegated"
+        [tooltip]="'Negate result'"
       >
         !
       </button>
@@ -43,7 +44,7 @@
 </div>
 
 <div *ngIf="isCondition" class="flex flex-row gap-1" [class.opacity-50]="isIgnored && !isRoot">
-  <select [(ngModel)]="field" class="flex-none w-32 input input-sm input-bordered">
+  <select [(ngModel)]="field" class="flex-none w-32 input input-sm px-1 input-bordered">
     <option *ngFor="let it of fieldOptions; trackBy: trackByIndex" [value]="it.id">{{ it.label }}</option>
   </select>
   <div class="form-control">
@@ -53,10 +54,11 @@
         [class.btn-primary]="isNegated"
         [class.text-opacity-70]="!isNegated"
         (click)="isNegated = !isNegated"
+        [tooltip]="'Negate result'"
       >
         !
       </button>
-      <select [(ngModel)]="operator" class="flex-none w-24 input input-sm input-bordered">
+      <select [(ngModel)]="operator" class="flex-none w-24 input input-sm px-1 input-bordered">
         <option *ngFor="let op of operatorOptions; trackBy: trackByIndex" [value]="op.value">{{ op.label }}</option>
       </select>
     </div>

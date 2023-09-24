@@ -1,3 +1,4 @@
+import { patchPrecision } from '@nw-data/common'
 import { EXPRESSION_OPERATORS } from './operators'
 import { ExpressionNode, isCondition, isGroup } from './types'
 
@@ -9,8 +10,8 @@ export function evaluateExpression(object: any, expression: ExpressionNode): boo
     return true
   }
   if (isCondition(expression)) {
-    const value1 = object[expression.field]
-    const value2 = expression.value
+    const value1 = fixValue(object[expression.field])
+    const value2 = expression.value || ''
     const operator = EXPRESSION_OPERATORS.find((it) => it.id === expression.operator)?.apply
     if (!operator) {
       return false
@@ -22,7 +23,7 @@ export function evaluateExpression(object: any, expression: ExpressionNode): boo
     return result
   }
   if (isGroup(expression)) {
-    const children = expression.children
+    const children = expression.children?.filter((it) => !it.ignore)
     if (!children || !Array.isArray(children) || !children.length) {
       return false
     }
@@ -38,4 +39,11 @@ export function evaluateExpression(object: any, expression: ExpressionNode): boo
     return result
   }
   return false
+}
+
+function fixValue(value: unknown) {
+  if (typeof value === 'number') {
+    return patchPrecision(value)
+  }
+  return value
 }
