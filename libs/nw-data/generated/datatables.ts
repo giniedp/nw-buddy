@@ -47,6 +47,7 @@ import type {
   Mutationdifficulty,
   Mutationrankdata,
   Objective,
+  Objectivetasks,
   Perkbuckets,
   Perks,
   PoiDefinition,
@@ -1015,6 +1016,12 @@ export abstract class NwDataLoader {
   }
   public mtxLoottablesMtx() {
     return this.load<Loottable[]>('mtx/javelindata_loottables_mtx.json')
+  }
+  public objectives() {
+    return this.load<Objective[]>('javelindata_objectives.json')
+  }
+  public objectivetasks() {
+    return this.load<Objectivetasks[]>('javelindata_objectivetasks.json')
   }
   public perkbuckets() {
     return this.load<Perkbuckets[]>('javelindata_perkbuckets.json')

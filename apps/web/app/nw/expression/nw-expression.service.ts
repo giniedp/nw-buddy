@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { getPerkMultiplier, parseNwExpression } from '@nw-data/common'
-import { Observable, catchError, map, of, throwError } from 'rxjs'
+import { Observable, catchError, isObservable, map, of, throwError } from 'rxjs'
 import { eqCaseInsensitive } from '~/utils'
 import { NwDbService } from '../nw-db.service'
 import { NwExpressionContext } from './nw-expression-context.service'
@@ -29,7 +29,8 @@ export class NwExpressionService {
 
   private evaluate(token: string, context: NwExpressionContext & { text: string }): Observable<string | number> {
     if (token in context && context[token] != null) {
-      return of(context[token])
+      const value = context[token]
+      return isObservable(value) ? value : of(value)
     }
 
     if (token.includes('.')) {

@@ -1,11 +1,12 @@
 import { ChangeDetectorRef, OnDestroy, Pipe, PipeTransform } from '@angular/core'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
 import { isEqual } from 'lodash'
-import { Subject, combineLatest, of, switchMap, takeUntil } from 'rxjs'
+import { Observable, Subject, combineLatest, of, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwExpressionContext, NwTextContextService, NwExpressionService } from './expression'
 
-export type NwTextPipeOptions = Partial<NwExpressionContext> & Record<string, string | number>
+export type NwTextPipeOptions = Partial<NwExpressionContext> &
+  Record<string, string | number | boolean | Observable<string | number | boolean>>
 
 @Pipe({
   standalone: true,

@@ -5472,6 +5472,7 @@ export interface Objective {
     Description?:                            string;
     DestinationCompletionAvailablePrompt?:   string;
     DestinationCompletionAvailableResponse?: string;
+    Difficulty?:                             string;
     DifficultyLevel?:                        number;
     ExclusiveTerritory?:                     number;
     FailureGameEventId?:                     string;
@@ -5503,6 +5504,37 @@ export interface Objective {
     Task:                                    string;
     Title?:                                  string;
     Type:                                    string;
+}
+export interface Objectivetasks {
+    ChestDropProbability:            number;
+    CraftingRecipeId?:               string;
+    Duration:                        number;
+    EnforceLocationRequirement:      boolean;
+    FailOnCondition:                 number;
+    GameModeID?:                     string;
+    InteractTag?:                    string;
+    IsHidden:                        number;
+    ItemDropProbability:             number;
+    ItemDropVC?:                     string;
+    ItemName?:                       string;
+    KillEnemyType?:                  string;
+    KillEnemyWeaponID?:              string;
+    POITag?:                         string;
+    PauseAndClearLootOnTaskComplete: boolean;
+    ResetOnCondition:                number;
+    StayActive:                      number;
+    SubTask1?:                       string;
+    SubTask2?:                       string;
+    SubTask3?:                       string;
+    SubTask4?:                       string;
+    TP_DescriptionTag?:              string;
+    TargetQty:                       number;
+    TaskID:                          string;
+    TerritoryID:                     number;
+    TriggerAnalyticsEvent:           boolean;
+    Type:                            string;
+    UIScreenTag?:                    string;
+    UseLargeItemDisplay:             number;
 }
 export interface Mounts {
     ADyeSlotDisabled:       number;

@@ -383,6 +383,10 @@ export class NwDbService {
   )
   public poisMap = indexBy(() => this.pois, 'TerritoryID')
   public poi = lookup(() => this.poisMap)
+  public poiByPoiTag = indexGroupSetBy(
+    () => this.pois,
+    (it) => it.POITag?.split(',')
+  )
 
   public milestoneRewards = table(() => this.data.milestonerewards())
   public mutatorDifficulties = table(() => this.data.gamemodemutatorsMutationdifficulty())
@@ -434,6 +438,14 @@ export class NwDbService {
   public dyeColors = table(() => this.data.dyecolors())
   public dyeColorsMap = indexBy(() => this.dyeColors, 'Index')
   public dyeColor = lookup(() => this.dyeColorsMap)
+
+  public objectives = table(() => [this.data.objectives()])
+  public objectivesMap = indexBy(() => this.objectives, 'ObjectiveID')
+  public objective = lookup(() => this.objectivesMap)
+
+  public objectiveTasks = table(() => [this.data.objectivetasks()])
+  public objectiveTasksMap = indexBy(() => this.objectiveTasks, 'TaskID')
+  public objectiveTask = lookup(() => this.objectiveTasksMap)
 
   public constructor(public readonly data: NwDataService) {
     //

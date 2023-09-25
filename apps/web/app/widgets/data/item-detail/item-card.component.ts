@@ -14,6 +14,7 @@ import { ItemDetailInfoComponent } from './item-detail-info.component'
 import { ItemDetailPerksComponent } from './item-detail-perks.component'
 import { ItemDetailStatsComponent } from './item-detail-stats.component'
 import { ItemDetailStore } from './item-detail.store'
+import { ItemDetailPerkTasksComponent } from './item-detail-perk-tasks.component'
 
 @Component({
   standalone: true,
@@ -102,6 +103,9 @@ export class ItemCardComponent extends ItemDetailStore {
   public enableLink: boolean
 
   @Input()
+  public enableTasks: boolean
+
+  @Input()
   public set disableStats(value: boolean) {
     this.disableStats$.next(value)
   }
@@ -134,9 +138,10 @@ export class ItemCardComponent extends ItemDetailStore {
     vmStats: this.disableStats$.pipe(switchMap((it) => (it ? of(null) : this.vmStats$))),
     vmInfo: this.disableInfo$.pipe(switchMap((it) => (it ? of(null) : this.vmInfo$))),
     vmPerks: this.disablePerks$.pipe(switchMap((it) => (it ? of(null) : this.vmPerks$))),
+    vmPerkTasks: this.artifactPerkTasks$,
     vmWeapon: this.weaponStats$,
   }).pipe(
-    map(({ vmDescription, vmStats, vmInfo, vmPerks, vmWeapon }) => {
+    map(({ vmDescription, vmStats, vmInfo, vmPerks, vmWeapon, vmPerkTasks }) => {
       let list: Array<Type<any>> = []
       if (vmDescription?.image) {
         appendSection(list, ItemDetailDescriptionComponent)
@@ -152,6 +157,9 @@ export class ItemCardComponent extends ItemDetailStore {
       }
       if (!vmDescription?.image && !!vmDescription?.description) {
         appendSection(list, ItemDetailDescriptionComponent)
+      }
+      if (this.enableTasks && vmPerkTasks) {
+        appendSection(list, ItemDetailPerkTasksComponent)
       }
       if (vmInfo) {
         appendSection(list, ItemDetailInfoComponent)

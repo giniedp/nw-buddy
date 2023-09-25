@@ -18,6 +18,7 @@ export class StoryComponent {
     AttributeEditorDialogComponent.open(this.dialog, {
       data: {
         level: NW_MAX_CHARACTER_LEVEL,
+        magnify: [],
         assigned: {
           con: 0,
           dex: 0,

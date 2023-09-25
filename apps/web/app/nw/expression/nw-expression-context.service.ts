@@ -1,22 +1,16 @@
 import { Injectable, Optional, SkipSelf } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE, getPerkItemClassGSBonus, getPerkMultiplier } from '@nw-data/common'
+import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE, getPerkMultiplier } from '@nw-data/common'
 import { Perks } from '@nw-data/generated'
-import { map } from 'rxjs'
+import { Observable } from 'rxjs'
+import { ExpressionVariable } from './types'
 
-export interface NwExpressionContext {
-  itemId?: string
+export type NwExpressionContext = {
   charLevel: number
   gearScore: number
-  ConsumablePotency?: number
-  perkMultiplier?: number
-  attribute1?: string
-  attribute2?: string
-  attribute3?: string
-  attribute4?: string
-  attribute5?: string
   gearScoreBonus?: boolean
-}
+  itemId?: string
+} & Partial<Record<ExpressionVariable, string | number | boolean | Observable<string | number | boolean>>>
 
 @Injectable({
   providedIn: 'root',
@@ -34,6 +28,8 @@ export class NwTextContextService extends ComponentStore<NwExpressionContext> {
     super({
       charLevel: NW_MAX_CHARACTER_LEVEL,
       gearScore: NW_MAX_GEAR_SCORE,
+      attribute1: '…',
+      attribute2: '…',
       ...parent?.get((it) => JSON.parse(JSON.stringify(it)) || {}),
     })
   }
@@ -44,8 +40,8 @@ export class NwTextContextService extends ComponentStore<NwExpressionContext> {
         ...state,
         itemId: perk?.PerkID,
         perkMultiplier: perk ? getPerkMultiplier(perk, state.gearScore) : 1,
-        attribute1: '...',
-        attribute2: '...'
+        attribute1: '…',
+        attribute2: '…',
       }
     })
   }

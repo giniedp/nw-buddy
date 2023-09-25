@@ -17,7 +17,7 @@ import {
   isItemNamed,
   isPerkGem,
 } from '@nw-data/common'
-import { combineLatest, map } from 'rxjs'
+import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { humanize, mapProp, selectStream, shareReplayRefCount } from '~/utils'
 import { ModelViewerService } from '../../model-viewer/model-viewer.service'
@@ -35,6 +35,7 @@ import {
   selectSalvageInfo,
   selectStatusEffectIds,
 } from './selectors'
+import { ItemDefinitionMaster } from '@nw-data/generated'
 
 export interface ItemDetailState {
   entityId?: string
@@ -245,6 +246,15 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
     }
   )
 
+  public readonly artifactPerkTasks$ = this.item$.pipe(
+    switchMap((it) => {
+      if (isItemArtifact(it)) {
+        return collectArtifactTasks(it, this.db)
+      }
+      return of(null)
+    })
+  )
+
   public constructor(protected db: NwDbService, private ms: ModelViewerService, protected cdRef: ChangeDetectorRef) {
     super({})
   }
@@ -252,4 +262,22 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public update(entityId: string) {
     this.patchState({ entityId })
   }
+}
+
+function collectArtifactTasks(item: ItemDefinitionMaster, db: NwDbService) {
+  return db.objectiveTasksMap.pipe(
+    map((tasks) => {
+      const task = tasks.get(`Task_ContainerPerks_${item.ItemID}`)
+      if (!task) {
+        return null
+      }
+      return {
+        task: task,
+        perk1: tasks.get(task.SubTask1),
+        perk2: tasks.get(task.SubTask2),
+        perk3: tasks.get(task.SubTask3),
+        perk4: tasks.get(task.SubTask4),
+      }
+    })
+  )
 }
