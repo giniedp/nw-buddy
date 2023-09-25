@@ -13,10 +13,17 @@ import { NwModule } from '~/nw'
       [nwLink]="linkPerkId"
       [nwLinkResource]="'perk'"
     >
-      <img [nwImage]="icon" class="w-6 h-6 object-contain absolute top-0 left-0" />
+      <img
+        [nwImage]="icon"
+        class="w-6 h-6 object-contain absolute top-0 left-0 transition-transform scale-100 hover:scale-125"
+      />
       <span class="text-2xs relative text-xs">{{ iconText }}</span>
     </a>
-    <a class="self-center text-sky-600" [routerLink]="linkPerkId ? ['/perks', 'table', linkPerkId] : null">
+    <a
+      class="self-center text-sky-600"
+      [routerLink]="linkPerkId ? ['/perks', 'table', linkPerkId] : null"
+      [class.link-hover]="!!linkPerkId"
+    >
       <div *ngIf="explanation; let part">
         <b *ngIf="part.label; let text"> {{ text | nwText }}{{ part.colon ? ':' : '' }} </b>
         <span *ngIf="part.description; let text" [innerHTML]="text | nwText : part.context"> </span>

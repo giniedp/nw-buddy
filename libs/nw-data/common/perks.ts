@@ -205,6 +205,9 @@ export function getPerkItemClassGsBonus(perk: Perks) {
   })
 }
 export function getItemGsBonus(perk: Perks, item: ItemDefinitionMaster) {
+  if (!item || !item.ItemClass) {
+    return 0
+  }
   return (
     getPerkItemClassGsBonus(perk).find(({ itemClass }) => {
       return item.ItemClass?.some((it) => eqIgnoreCase(it, itemClass))

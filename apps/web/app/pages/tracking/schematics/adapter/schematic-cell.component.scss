@@ -1,0 +1,44 @@
+:host {
+  .flip-card {
+    perspective: 1000px;
+  }
+  .flip-card.flipped .flip-card-content {
+    transform: rotateY(180deg);
+  }
+  .flip-card-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    transform-style: preserve-3d;
+    transition: transform 0.5s ease-in-out;
+    > * {
+      transform-style: preserve-3d;
+    }
+  }
+  .flip-card-front,
+  .flip-card-back {
+    grid-row-start: 1;
+    grid-column-start: 1;
+    backface-visibility: hidden;
+    width: 100%;
+  }
+  .flip-card-back {
+    transform: rotateY(180deg);
+  }
+
+  .flip-card:not(.flipped) .flip-card-back,
+  .flip-card.flipped .flip-card-front {
+    pointer-events: none;
+  }
+
+  nwb-item-detail-header,
+  nwb-item-card {
+    opacity: 0.5;
+  }
+  &:hover,
+  .is-collected {
+    nwb-item-detail-header,
+    nwb-item-card {
+      opacity: 1;
+    }
+  }
+}

@@ -1,0 +1,12 @@
+<nwb-item-card
+  [entityId]="item.ItemID"
+  class="w-full h-full bg-black rounded-md transition-opacity"
+  [enableInfoLink]="true"
+  [enableLink]="true"
+  [enableTracker]="true"
+  [disableInfo]="true"
+  [enableTasks]="true"
+  [nwbItemMarker]="item.ItemID"
+  #itemMarker="itemMarker"
+  [class.is-collected]="!!(itemMarker.value$ | async)"
+></nwb-item-card>

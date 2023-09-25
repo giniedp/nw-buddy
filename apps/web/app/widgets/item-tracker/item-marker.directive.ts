@@ -1,10 +1,11 @@
 import { Directive, Input } from '@angular/core'
-import { defer, map, ReplaySubject, switchMap } from 'rxjs'
+import { ReplaySubject, defer, map, switchMap } from 'rxjs'
 import { ItemPreferencesService } from '~/preferences'
+import { selectStream } from '~/utils'
 
 @Directive({
   selector: '[nwbItemMarker]',
-  exportAs: 'itemMarker'
+  exportAs: 'itemMarker',
 })
 export class ItemMarkerDirective {
   @Input()
@@ -12,13 +13,13 @@ export class ItemMarkerDirective {
     this.itemId$.next(value)
   }
 
-  public value$ = defer(() => this.itemId$)
-    .pipe(switchMap((id) => this.meta.observe(id)))
-    .pipe(map((data) => data.meta?.mark))
+  public value$ = selectStream(
+    defer(() => this.itemId$)
+      .pipe(switchMap((id) => this.meta.observe(id)))
+      .pipe(map((data) => data.meta?.mark))
+  )
 
   private itemId$ = new ReplaySubject<string>(1)
 
-  public constructor(private meta: ItemPreferencesService) {
-
-  }
+  public constructor(private meta: ItemPreferencesService) {}
 }

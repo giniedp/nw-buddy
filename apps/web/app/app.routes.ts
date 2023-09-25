@@ -57,5 +57,35 @@ export const ROUTES: Routes = [
   { path: 'about', loadChildren: () => import('./pages/misc/about').then((m) => m.AboutModule) },
   { path: 'preferences', loadChildren: () => import('./pages/misc/preferences').then((m) => m.PreferencesModule) },
 
+  {
+    path: 'tracking',
+    children: [
+      {
+        path: 'schematics',
+        loadChildren: () => import('./pages/tracking/schematics').then((m) => m.SchematicPageModule),
+      },
+      {
+        path: 'runes',
+        loadChildren: () => import('./pages/tracking/runes').then((m) => m.RunesPageModule),
+      },
+      {
+        path: 'trophies',
+        loadChildren: () => import('./pages/tracking/trophies').then((m) => m.TrophiesPageModule),
+      },
+      {
+        path: 'recipes',
+        loadChildren: () => import('./pages/tracking/recipes').then((m) => m.RecipesPageModule),
+      },
+      {
+        path: 'music-sheets',
+        loadChildren: () => import('./pages/tracking/music-sheets').then((m) => m.MusicPageModule),
+      },
+      {
+        path: 'artifacts',
+        loadChildren: () => import('./pages/tracking/artifacts').then((m) => m.ArtifactsPageModule),
+      },
+    ],
+  },
+
   { path: '**', loadChildren: () => import('./pages/misc/not-found').then((m) => m.NotFoundModule) },
 ]
