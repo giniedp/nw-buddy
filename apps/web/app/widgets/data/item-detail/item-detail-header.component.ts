@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import {
+  ItemRarity,
   getItemTierAsRoman,
   isHousingItem,
   isItemArmor,
@@ -15,7 +16,6 @@ import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemTrackerModule } from '../../item-tracker'
 import { ItemDetailStore } from './item-detail.store'
-import { tapDebug } from '~/utils'
 
 @Component({
   standalone: true,
@@ -27,14 +27,14 @@ import { tapDebug } from '~/utils'
   host: {
     class: 'nw-item-header relative flex flex-row p-1 gap-2 text-shadow-sm shadow-black',
     '[class.bg-base-300]': 'isLoading',
-    '[class.named]': 'named',
-    '[class.artifact]': 'artifact',
-    '[class.nw-item-rarity-0]': '!artifact && !isLoading && !rarity',
-    '[class.nw-item-rarity-1]': '!artifact && rarity === 1',
-    '[class.nw-item-rarity-2]': '!artifact && rarity === 2',
-    '[class.nw-item-rarity-3]': '!artifact && rarity === 3',
-    '[class.nw-item-rarity-4]': '!artifact && rarity === 4',
-    '[class.nw-item-rarity-artifact]': '!!artifact',
+    '[class.named]': 'isNamed',
+    '[class.artifact]': 'isArtifact',
+    '[class.nw-item-rarity-common]': '!isLoading && (rarity === "common")',
+    '[class.nw-item-rarity-uncommon]': 'rarity === "uncommon"',
+    '[class.nw-item-rarity-rare]': 'rarity === "rare"',
+    '[class.nw-item-rarity-epic]': 'rarity === "epic"',
+    '[class.nw-item-rarity-legendary]': 'rarity === "legendary"',
+    '[class.nw-item-rarity-artifact]': 'rarity === "artifact"',
   },
 })
 export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
@@ -58,9 +58,9 @@ export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
 
   protected name: string[]
 
-  protected named: boolean
-  protected artifact: boolean
-  protected rarity: number
+  protected isNamed: boolean
+  protected isArtifact: boolean
+  protected rarity: ItemRarity
   protected rarityName: string
   protected typeName: string
   protected sourceLabel: string
@@ -102,8 +102,8 @@ export class ItemDetailHeaderComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((it) => {
         this.name = [it.namePrefix, it.name, it.nameSuffix].filter((it) => !!it)
-        this.named = it.isNamed
-        this.artifact = it.isArtifact
+        this.isNamed = it.isNamed
+        this.isArtifact = it.isArtifact
         this.rarity = it.rarity
         this.rarityName = it.rarityName
         this.typeName = it.typeName

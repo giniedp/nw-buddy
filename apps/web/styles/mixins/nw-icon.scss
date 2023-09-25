@@ -81,27 +81,27 @@ $nw-rarity-color: (
   border-image-repeat: stretch;
   border-image-slice: 2;
 
-  &.bg-rarity-0 {
+  &.bg-rarity-common {
     border-image-source: map-get($bg, '0');
     background-image: map-get($fg, '0');
   }
 
-  &.bg-rarity-1 {
+  &.bg-rarity-uncommon {
     border-image-source: map-get($bg, '1');
     background-image: map-get($fg, '1');
   }
 
-  &.bg-rarity-2 {
+  &.bg-rarity-rare {
     border-image-source: map-get($bg, '2');
     background-image: map-get($fg, '2');
   }
 
-  &.bg-rarity-3 {
+  &.bg-rarity-epic {
     border-image-source: map-get($bg, '3');
     background-image: map-get($fg, '3');
   }
 
-  &.bg-rarity-4 {
+  &.bg-rarity-legendary {
     border-image-source: map-get($bg, '4');
     background-image: map-get($fg, '4');
   }

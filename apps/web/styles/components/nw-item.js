@@ -91,7 +91,7 @@ module.exports = ({ addComponents }) => {
       backgroundSize: '100% 100%',
       backgroundRepeat: 'no-repeat',
     },
-    '.nw-item-rarity-0': {
+    '.nw-item-rarity-common': {
       '--rarity-c0': '#c8c8c8',
       '--rarity-c1': '#a1a1a1',
       '--rarity-bg': "url('^assets/icons/item/itemraritybgsquare0.png')",
@@ -100,7 +100,7 @@ module.exports = ({ addComponents }) => {
         '--rarity-bg': "url('^assets/icons/item/itemraritybgsquarenamed0.png')",
       },
     },
-    '.nw-item-rarity-1': {
+    '.nw-item-rarity-uncommon': {
       '--rarity-c0': '#94ff8c',
       '--rarity-c1': '#1f8a1b',
       '--rarity-c3': '#1f8a1b',
@@ -111,7 +111,7 @@ module.exports = ({ addComponents }) => {
         '--rarity-bg-ani': "url('^assets/icons/item/named_bg_1.webp')",
       },
     },
-    '.nw-item-rarity-2': {
+    '.nw-item-rarity-rare': {
       '--rarity-c0': '#94d9f5',
       '--rarity-c1': '#1b6f8c',
       '--rarity-c3': '#1b6f8c',
@@ -122,7 +122,7 @@ module.exports = ({ addComponents }) => {
         '--rarity-bg-ani': "url('^assets/icons/item/named_bg_2.webp')",
       },
     },
-    '.nw-item-rarity-3': {
+    '.nw-item-rarity-epic': {
       '--rarity-c0': '#d7a3ca',
       '--rarity-c1': '#8b2490',
       '--rarity-c3': '#8b2490',
@@ -133,7 +133,7 @@ module.exports = ({ addComponents }) => {
         '--rarity-bg-ani': "url('^assets/icons/item/named_bg_3.webp')",
       },
     },
-    '.nw-item-rarity-4': {
+    '.nw-item-rarity-legendary': {
       '--rarity-c0': '#ffc67b',
       '--rarity-c1': '#8f5623',
       '--rarity-c3': '#8f5623',

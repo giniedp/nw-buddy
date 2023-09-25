@@ -1,16 +1,16 @@
-.text-rarity-0 {
+.text-rarity-common {
   color: map-get($nw-rarity-color, '0');
 }
-.text-rarity-1 {
+.text-rarity-uncommon {
   color: map-get($nw-rarity-color, '1');
 }
-.text-rarity-2 {
+.text-rarity-rare {
   color: map-get($nw-rarity-color, '2');
 }
-.text-rarity-3 {
+.text-rarity-epic {
   color: map-get($nw-rarity-color, '3');
 }
-.text-rarity-4 {
+.text-rarity-legendary {
   color: map-get($nw-rarity-color, '4');
 }
 .text-rarity-artifact {

@@ -1,7 +1,14 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { getItemRarity, getItemRarityLabel, isItemArtifact, isMasterItem } from '@nw-data/common'
+import {
+  ItemRarity,
+  getItemRarity,
+  getItemRarityLabel,
+  isItemArtifact,
+  isItemNamed,
+  isMasterItem,
+} from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 
 @Component({
@@ -16,10 +23,13 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 })
 export class ItemHeaderContentComponent {
   @Input()
-  public rarity: number
+  public isSkeleton: boolean
 
   @Input()
-  public artifact: boolean
+  public isNamed: boolean
+
+  @Input()
+  public rarity: ItemRarity
 
   @Input()
   public title: string
@@ -28,24 +38,21 @@ export class ItemHeaderContentComponent {
   public titleLink: string | any[]
 
   @Input()
-  public subTitle: string
+  public text1: string
 
   @Input()
-  public category: string
+  public text2: string
 
   @Input()
-  public subCategory: string
-
-  @Input()
-  public skeleton: boolean
+  public text3: string
 
   @Input()
   public set item(value: ItemDefinitionMaster | Housingitems) {
-    this.rarity = getItemRarity(value)
-    this.artifact = isMasterItem(value) && isItemArtifact(value)
     this.title = value?.Name
-    this.category = value?.['$source']
-    this.subTitle = value?.ItemType
-    this.subCategory = getItemRarityLabel(value)
+    this.text1 = getItemRarityLabel(value)
+    this.text2 = value?.ItemType
+    this.text3 = value?.['$source']
+    this.rarity = getItemRarity(value)
+    this.isNamed = isMasterItem(value) && isItemNamed(value)
   }
 }

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy, Input, HostBinding } from '@angular/core'
-import { getItemRarity, isItemArtifact, isItemNamed, isMasterItem } from '@nw-data/common'
+import { ItemRarity, getItemRarity, isItemArtifact, isItemNamed, isMasterItem } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 
 @Component({
@@ -8,38 +8,33 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
   selector: 'nwb-item-header',
   template: `
     <div class="nw-item-header-bg"></div>
-    <div class="nw-item-header-fg" *ngIf="named"></div>
+    <div class="nw-item-header-fg" *ngIf="isNamed"></div>
     <ng-content></ng-content>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   host: {
     class: 'nw-item-header flex flex-row p-1 text-shadow-sm shadow-black',
-    '[class.nw-item-rarity-0]': '!artifact && !rarity',
-    '[class.nw-item-rarity-1]': '!artifact && rarity === 1',
-    '[class.nw-item-rarity-2]': '!artifact && rarity === 2',
-    '[class.nw-item-rarity-3]': '!artifact && rarity === 3',
-    '[class.nw-item-rarity-4]': '!artifact && rarity === 4',
-    '[class.nw-item-rarity-artifact]': '!!artifact',
+    '[class.nw-item-rarity-common]': 'rarity === "common"',
+    '[class.nw-item-rarity-uncommon]': 'rarity === "uncommon"',
+    '[class.nw-item-rarity-rare]': 'rarity === "rare"',
+    '[class.nw-item-rarity-epic]': 'rarity === "epic"',
+    '[class.nw-item-rarity-legendary]': 'rarity === "legendary"',
+    '[class.nw-item-rarity-artifact]': 'rarity === "artifact"',
   },
 })
 export class ItemHeaderComponent {
   @Input()
-  public rarity: number
+  public rarity: ItemRarity
 
   @Input()
   @HostBinding('class.named')
-  public named: boolean
-
-  @Input()
-  @HostBinding('class.artifact')
-  public artifact: boolean
+  public isNamed: boolean
 
   @Input()
   public set item(value: ItemDefinitionMaster | Housingitems) {
     this.rarity = getItemRarity(value)
-    this.named = isMasterItem(value) && isItemNamed(value)
-    this.artifact = isMasterItem(value) && isItemArtifact(value)
+    this.isNamed = isMasterItem(value) && isItemNamed(value)
   }
 
   public constructor() {

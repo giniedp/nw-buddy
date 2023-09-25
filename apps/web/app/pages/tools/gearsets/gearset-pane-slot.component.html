@@ -1,12 +1,7 @@
 <ng-container *ngIf="vm$ | async; let vm">
   <ng-container *ngIf="!vm.instance">
-    <nwb-item-header [rarity]="0" class="relative font-nimbus gap-2" *ngIf="!square">
-      <nwb-item-icon
-        [nwbItemIcon]="vm.slot.icon"
-        [solid]="false"
-        [rarity]="0"
-        class="z-10 w-[76px] h-[76px]"
-      ></nwb-item-icon>
+    <nwb-item-header class="relative font-nimbus gap-2" *ngIf="!square">
+      <nwb-item-icon [nwbItemIcon]="vm.slot.icon" [solid]="false" class="z-10 w-[76px] h-[76px]"></nwb-item-icon>
       <nwb-item-header-content class="z-10">
         <span class="title" [nwHtml]="vm.slot.name | nwText"></span>
       </nwb-item-header-content>
@@ -19,8 +14,8 @@
       </button>
     </nwb-item-header>
 
-    <nwb-item-header [rarity]="0" class="relative font-nimbus gap-2" *ngIf="square">
-      <nwb-item-icon [nwbItemIcon]="vm.slot.icon" [solid]="false" [rarity]="0" class="z-10 w-12 h-12"></nwb-item-icon>
+    <nwb-item-header class="relative font-nimbus gap-2" *ngIf="square">
+      <nwb-item-icon [nwbItemIcon]="vm.slot.icon" [solid]="false" class="z-10 w-12 h-12"></nwb-item-icon>
       <button
         *ngIf="!disabled"
         class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-center justify-center"

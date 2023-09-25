@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { getItemRarity } from '@nw-data/common'
+import { getItemRarity, getItemRarityWeight } from '@nw-data/common'
 import { groupBy } from 'lodash'
 import { Observable, combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
@@ -59,7 +59,7 @@ export class ArmorsetGridSource implements DataViewAdapter<ArmorsetGridRecord>, 
   }).pipe(
     map(({ items, perks }) => {
       const MIN_RARITY = 2
-      items = items.filter((it) => it.ItemType === 'Armor').filter((it) => getItemRarity(it) >= MIN_RARITY)
+      items = items.filter((it) => it.ItemType === 'Armor').filter((it) => getItemRarityWeight(it) >= MIN_RARITY)
       return Object.entries(groupBy(items, (it) => it['$source']))
         .map(([key, items]) => ({
           key: key,

@@ -1,5 +1,4 @@
-import { getItemRarity, isItemArtifact, isItemNamed, isMasterItem } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { ItemRarity } from '@nw-data/common'
 
 export function getIconFrameClass({
   solid,
@@ -8,7 +7,7 @@ export function getIconFrameClass({
   isArtifact,
 }: {
   solid?: boolean
-  rarity?: number
+  rarity?: ItemRarity
   isNamed?: boolean
   isArtifact?: boolean
 }) {
@@ -23,7 +22,6 @@ export function getIconFrameClass({
   }
   if (isArtifact) {
     result.push('artifact')
-    result.push('nw-item-rarity-artifact')
   }
   return result
 }

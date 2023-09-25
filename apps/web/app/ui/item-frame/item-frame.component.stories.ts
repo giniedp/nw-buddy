@@ -9,7 +9,7 @@ import { ItemFrameModule } from './item-frame.module'
   imports: [CommonModule, ItemFrameModule],
   template: `
     <nwb-item-frame class="font-nimbus">
-      <nwb-item-header [rarity]="3" class="p-1 flex flex-row gap-3">
+      <nwb-item-header [rarity]="'epic'" class="p-1 flex flex-row gap-3">
         <nwb-item-icon [solid]="false" class="w-20"> </nwb-item-icon>
         <div class="flex flex-col justify-between">
           <div class="font-bold">Firevine Battlestaff</div>
@@ -47,7 +47,7 @@ export default {
   excludeStories: ['StoryComponent'],
   decorators: [
     applicationConfig({
-      providers: [importProvidersFrom(AppTestingModule)]
+      providers: [importProvidersFrom(AppTestingModule)],
     }),
     moduleMetadata({
       imports: [ItemFrameModule],

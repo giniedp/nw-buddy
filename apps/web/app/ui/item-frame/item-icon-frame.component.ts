@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
+import { ItemRarity } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 
@@ -17,21 +18,19 @@ import { NwModule } from '~/nw'
   imports: [CommonModule, NwModule],
   host: {
     class: 'block nw-item-icon-frame aspect-square relative',
-    '[class.nw-item-rarity-1]': '!artifact && rarity === 1',
-    '[class.nw-item-rarity-2]': '!artifact && rarity === 2',
-    '[class.nw-item-rarity-3]': '!artifact && rarity === 3',
-    '[class.nw-item-rarity-4]': '!artifact && rarity === 4',
-    '[class.nw-item-rarity-artifact]': '!!artifact',
+    '[class.nw-item-rarity-common]': 'rarity === "common"',
+    '[class.nw-item-rarity-uncommon]': 'rarity === "uncommon"',
+    '[class.nw-item-rarity-rare]': 'rarity === "rare"',
+    '[class.nw-item-rarity-epic]': 'rarity === "epic"',
+    '[class.nw-item-rarity-legendary]': 'rarity === "legendary"',
+    '[class.nw-item-rarity-artifact]': 'rarity === "artifact"',
     '[class.nw-item-icon-bg]': 'solid',
     '[class.nw-item-icon-mask]': '!solid',
   },
 })
 export class ItemIconFrameComponent {
   @Input()
-  public rarity: number
-
-  @Input()
-  public artifact: boolean
+  public rarity: ItemRarity
 
   @Input()
   public solid: boolean

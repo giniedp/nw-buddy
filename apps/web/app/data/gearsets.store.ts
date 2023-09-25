@@ -3,6 +3,7 @@ import { ComponentStore } from '@ngrx/component-store'
 import {
   EQUIP_SLOTS,
   EquipSlot,
+  ItemRarity,
   PerkBucket,
   getAverageGearScore,
   getItemPerkInfos,
@@ -30,7 +31,7 @@ export interface GearsetRowSlot {
   slot: EquipSlot
   instance: ItemInstance
   item: ItemDefinitionMaster
-  rarity: number
+  rarity: ItemRarity
 }
 export interface GearsetRow {
   /**

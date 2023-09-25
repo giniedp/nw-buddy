@@ -4,9 +4,9 @@
   <nwb-item-header-content
     class="z-10"
     [title]="title$ | async | nwText | nwTextBreak : ' - '"
-    [subTitle]="type$ | async | nwHumanize"
-    [category]="'quest'"
-    [subCategory]="levelLabel$ | async"
+    [text1]="type$ | async | nwHumanize"
+    [text2]="'quest'"
+    [text3]="levelLabel$ | async"
   ></nwb-item-header-content>
 </nwb-item-header>
 <div class="p-4 flex flex-col gap-2">

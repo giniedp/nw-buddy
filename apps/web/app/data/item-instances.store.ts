@@ -5,7 +5,7 @@ import { sortBy } from 'lodash'
 import { combineLatest, defer, Subject, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw/nw-db.service'
 
-import { getItemPerkInfos, getItemRarity, getPerkTypeWeight, PerkBucket } from '@nw-data/common'
+import { getItemPerkInfos, getItemRarity, getPerkTypeWeight, ItemRarity, PerkBucket } from '@nw-data/common'
 import { ItemInstanceRecord, ItemInstancesDB } from './item-instances.db'
 
 export interface ItemInstancesState {
@@ -32,7 +32,7 @@ export interface ItemInstanceRow {
   /**
    * The items current rarity
    */
-  rarity?: number
+  rarity?: ItemRarity
 }
 
 @Injectable()

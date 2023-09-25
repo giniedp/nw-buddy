@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 import { GemsOverviewComponent } from './gems-overview.component'
 
+import { ArtifactsOverviewComponent } from './artifacts-overview.component'
 import { InfoCardsComponent } from './info-cards.component'
 import { MusicSheetsOverviewComponent } from './music-sheets.component'
 import { RecipesOverviewComponent } from './recipes-overview.component'
@@ -9,8 +10,6 @@ import { RunesOverviewComponent } from './runes-overview.component'
 import { SchematicsOverviewComponent } from './schematics-overview.component'
 import { TrophiesOverviewComponent } from './trophies-overview.component'
 import { VitalsFamiliesComponent } from './vitals-families.component'
-import { TransmogComponent } from '../transmog/transmog.component'
-import { TransmogModule } from '../transmog/transmog.module'
 
 const routes: Routes = [
   {
@@ -45,6 +44,10 @@ const routes: Routes = [
       {
         path: 'schematics',
         component: SchematicsOverviewComponent,
+      },
+      {
+        path: 'artifacts',
+        component: ArtifactsOverviewComponent,
       },
       {
         path: 'music-sheets',

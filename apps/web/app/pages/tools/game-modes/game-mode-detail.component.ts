@@ -21,6 +21,7 @@ import {
   getItemIconPath,
   getItemId,
   getItemRarity,
+  getItemRarityWeight,
   isItemArmor,
   isItemJewelery,
   isItemNamed,
@@ -479,7 +480,7 @@ export class GameModeDetailComponent implements OnInit {
 
   private filterAndSort(items: Array<ItemDefinitionMaster | Housingitems>) {
     return items
-      .filter((it) => getItemRarity(it) >= 1)
+      .filter((it) => getItemRarity(it) != 'common')
       .sort((nodeA, nodeB) => {
         const a = nodeA
         const b = nodeB
@@ -493,8 +494,8 @@ export class GameModeDetailComponent implements OnInit {
         if (isNamedA !== isNamedB) {
           return isNamedA ? -1 : 1
         }
-        const rarrityA = getItemRarity(a)
-        const rarrityB = getItemRarity(b)
+        const rarrityA = getItemRarityWeight(a)
+        const rarrityB = getItemRarityWeight(b)
         if (rarrityA !== rarrityB) {
           return rarrityA >= rarrityB ? -1 : 1
         }

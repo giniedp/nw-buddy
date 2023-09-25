@@ -1,4 +1,5 @@
 /// <reference lib="webworker" />
+import { ItemRarity } from '@nw-data/common'
 import { environment } from 'apps/web/environments'
 import { expose } from 'comlink'
 
@@ -12,7 +13,7 @@ export interface SearchRecord {
   type: string
   icons: string
   tier: number
-  rarity: number
+  rarity: ItemRarity
 }
 export interface SearchQueryTasks {
   search: (args: { text: string; lang: string }) => Promise<SearchRecord[]>

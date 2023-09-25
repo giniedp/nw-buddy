@@ -1,15 +1,15 @@
 <div class="bg-black rounded-sm overflow-hidden font-nimbus" *ngIf="vm$ | async; let vm">
   <nwb-item-header class="gap-2">
     <a [routerLink]="vm.link" class="relative">
-      <nwb-item-icon [solid]="false" [rarity]="0" [nwbItemIcon]="vm.icon" class="w-20"> </nwb-item-icon>
-      <img nwImage="assets/icons/menu/transmogtoken.webp" class="w-4 h-4 absolute right-1 bottom-1"/>
+      <nwb-item-icon [solid]="false" [nwbItemIcon]="vm.icon" class="w-20"> </nwb-item-icon>
+      <img nwImage="assets/icons/menu/transmogtoken.webp" class="w-4 h-4 absolute right-1 bottom-1" />
     </a>
     <nwb-item-header-content
       [title]="vm.name | nwText"
       [titleLink]="vm.link"
-      [category]="'Transmog Appearance'"
-      [subCategory]="'Common'"
-      [subTitle]="vm.category.name | nwText"
+      [text1]="'Common'"
+      [text2]="'Transmog Appearance'"
+      [text3]="vm.category.name | nwText"
     >
     </nwb-item-header-content>
   </nwb-item-header>
@@ -59,13 +59,23 @@
     </ng-container>
     <ng-container *ngIf="models$ | async; let models">
       <ng-container *ngIf="!modelViewerOpened">
-        <button class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50" (click)="modelViewerOpened = true">
+        <button
+          class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50"
+          (click)="modelViewerOpened = true"
+        >
           View 3D Model
         </button>
       </ng-container>
       <ng-container *ngIf="modelViewerOpened">
-        <nwb-model-viewer [models]="models" class="w-full rounded-md aspect-square" (close)="modelViewerOpened = false"></nwb-model-viewer>
-        <button class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50" (click)="modelViewerOpened = false">
+        <nwb-model-viewer
+          [models]="models"
+          class="w-full rounded-md aspect-square"
+          (close)="modelViewerOpened = false"
+        ></nwb-model-viewer>
+        <button
+          class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50"
+          (click)="modelViewerOpened = false"
+        >
           Close
         </button>
       </ng-container>
@@ -85,7 +95,6 @@
       </ng-container>
     </div>
     <div class="flex flex-col gap-1">
-
       <nwb-item-detail [entity]="item" *ngFor="let item of vm.items; trackBy: trackByIndex">
         <nwb-item-detail-header
           [enableLink]="true"
@@ -103,9 +112,9 @@
     <div *ngIf="siblings?.length" class="flex flex-col gap-1">
       <nwb-item-header class="gap-2 rounded" *ngFor="let sibling of siblings; trackBy: trackByIndex">
         <a [routerLink]="['/transmog', sibling.category.id, sibling.transmog.id]" class="relative">
-          <nwb-item-icon [solid]="false" [rarity]="0" [nwbItemIcon]="sibling.transmog.appearance.IconPath" class="w-20">
+          <nwb-item-icon [solid]="false" [nwbItemIcon]="sibling.transmog.appearance.IconPath" class="w-20">
           </nwb-item-icon>
-          <img nwImage="assets/icons/menu/transmogtoken.webp" class="w-4 h-4 absolute right-1 bottom-1"/>
+          <img nwImage="assets/icons/menu/transmogtoken.webp" class="w-4 h-4 absolute right-1 bottom-1" />
         </a>
         <nwb-item-header-content
           [title]="sibling.transmog.appearance.Name | nwText"

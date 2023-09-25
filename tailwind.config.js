@@ -56,11 +56,11 @@ module.exports = {
           description: '#e1cb99',
         },
         rarity: {
-          0: '#c8c8c8',
-          1: '#07c02f',
-          2: '#00cbe9',
-          3: '#ff16f7',
-          4: '#f7a22d',
+          common: '#c8c8c8',
+          uncommon: '#07c02f',
+          rare: '#00cbe9',
+          epic: '#ff16f7',
+          legendary: '#f7a22d',
           artifact: '#991d14',
         },
         syndicate: {

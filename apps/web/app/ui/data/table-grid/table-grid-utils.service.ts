@@ -19,6 +19,7 @@ import { AsyncCellRenderer, AsyncCellRendererParams } from '~/ui/data/ag-grid'
 import { getIconFrameClass } from '../../item-frame'
 import { colDefPrecision } from './utils'
 import { Router } from '@angular/router'
+import { ItemRarity } from '@nw-data/common'
 
 @Injectable({ providedIn: 'root' })
 export class TableGridUtils<T = any> {
@@ -128,11 +129,12 @@ export class TableGridUtils<T = any> {
   public elItemIcon(
     props: ElementProps<'picture'> & {
       icon: string
-      rarity?: number
+      rarity?: ItemRarity
       isNamed?: boolean
       isArtifact?: boolean
     }
   ) {
+    const showBorder = props.rarity && props.rarity !== 'common'
     return this.elPicture(
       {
         class: [
@@ -146,7 +148,7 @@ export class TableGridUtils<T = any> {
         ],
       },
       [
-        props.rarity ? this.el('span', { class: 'nw-item-icon-border' }) : null,
+        showBorder ? this.el('span', { class: 'nw-item-icon-border' }) : null,
         this.elImg({
           src: props.icon,
         }),

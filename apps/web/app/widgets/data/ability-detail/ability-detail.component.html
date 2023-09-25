@@ -4,9 +4,9 @@
   <nwb-item-header-content
     class="z-10"
     [title]="nameForDisplay$ | async | nwText | nwTextBreak : ' - '"
-    [subTitle]="weaponOrSource$ | async"
-    [category]="'Ability'"
-    [subCategory]="uiCategory$ | async"
+    [text1]="'Ability'"
+    [text2]="weaponOrSource$ | async"
+    [text3]="uiCategory$ | async"
   ></nwb-item-header-content>
 </nwb-item-header>
 <div class="p-3 flex flex-col gap-2">

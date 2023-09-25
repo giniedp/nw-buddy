@@ -3,8 +3,8 @@
   <nwb-item-header-content
     class="z-10"
     [title]="name$ | async | nwText | nwTextBreak : ' - '"
-    [category]="'perk'"
-    [subTitle]="type$ | async"
+    [text1]="'perk'"
+    [text2]="type$ | async"
   >
     <div
       *ngIf="scalesWithGearScore$ | async"

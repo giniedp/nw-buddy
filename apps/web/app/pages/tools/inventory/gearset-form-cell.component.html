@@ -7,7 +7,7 @@
     class="w-full h-full gap-2 p-[2px] 4xl:p-1 cursor-pointer rounded-md overflow-clip"
     *ngIf="vm$ | async; let vm"
     [rarity]="vm.rarity"
-    [named]="vm.isNamed"
+    [isNamed]="vm.isNamed"
     [routerLink]="getLink()"
     [cdkContextMenuTriggerFor]="menu"
   >
@@ -16,7 +16,7 @@
     >
       <span class="nw-item-icon-border"></span>
 
-      <img [nwImage]="vm.item"/>
+      <img [nwImage]="vm.item" />
       <span class="z-10 absolute top-0 left-1 italic">{{ vm.tierLabel }}</span>
       <span *ngIf="vm.canBreak" class="z-10 absolute top-[2px] right-[2px] p-1 bg-black bg-opacity-75 rounded-bl-xl">
         <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
@@ -27,23 +27,23 @@
       class="z-10 h-full hidden 4xl:flex"
       [rarity]="vm.rarity"
       [title]="vm.name | nwText"
-      [subTitle]="vm.typeName | nwText"
-      [category]="vm.sourceLabel"
-      [subCategory]="vm.rarityName | nwText"
+      [text1]="vm.rarityName | nwText"
+      [text2]="vm.typeName | nwText"
+      [text3]="vm.sourceLabel"
     >
       <span class="header flex gap-1">
-        <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-4 h-4" /> {{ vm.gearScore }}</span>
+        <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-4 h-4" /> {{ vm.gearScore }}</span
+      >
     </nwb-item-header-content>
   </nwb-item-header>
-
 </ng-template>
 
 <ng-template #tplEmpty>
   <div class="detail-header bg-base-200 4xl:p-1 rounded-md overflow-clip" *ngIf="vm$ | async; let vm">
     <a class="relative flex z-10 4xl:w-20 4xl:h-20">
-      <picture [nwIcon]="slot.icon" [nwRarity]="0" class="w-full h-full"></picture>
+      <picture [nwIcon]="slot.icon" class="w-full h-full"></picture>
     </a>
-    <nwb-item-header-content class="z-10 h-full hidden 4xl:flex" [rarity]="0" [subTitle]="slot.itemType | nwText">
+    <nwb-item-header-content class="z-10 h-full hidden 4xl:flex" [text2]="slot.itemType | nwText">
       <span class="title" [nwText]="slot.name"></span>
     </nwb-item-header-content>
   </div>

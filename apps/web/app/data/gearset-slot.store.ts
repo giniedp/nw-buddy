@@ -5,11 +5,13 @@ import { combineLatest, from, map, of, switchMap, tap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import {
   EquipSlot,
+  ItemRarity,
   getItemMaxGearScore,
   getItemPerkInfos,
   getItemRarity,
   getItemTierAsRoman,
   getItemTypeName,
+  isItemArtifact,
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
@@ -36,7 +38,6 @@ function isAmmo(slot: EquipSlot) {
   return slot?.itemType === 'Ammo'
 }
 
-
 @Injectable()
 export class GearsetSlotStore extends ComponentStore<GearsetSlotState> {
   public readonly item$ = this.select(({ item }) => item)
@@ -44,12 +45,13 @@ export class GearsetSlotStore extends ComponentStore<GearsetSlotState> {
   public readonly typeName$ = this.select(({ item }) => getItemTypeName(item))
   public readonly tierLabel$ = this.select(({ item }) => getItemTierAsRoman(item?.Tier))
   public readonly isNamed$ = this.select(({ item }) => isMasterItem(item) && isItemNamed(item))
+  public readonly isArtifact$ = this.select(({ item }) => isMasterItem(item) && isItemArtifact(item))
   public readonly isEqupment$ = this.select(({ slot }) => isConsumable(slot) || isTrophy(slot) || isAmmo(slot))
   public readonly instanceId$ = this.select(({ instanceId }) => instanceId)
   public readonly instance$ = this.select(({ instance }) => instance)
-  public readonly rarity$ = this.select(({ item, instance }) => {
+  public readonly rarity$ = this.select(({ item, instance }): ItemRarity => {
     if (!item || !isMasterItem(item)) {
-      return 0
+      return 'common'
     }
     const perks = getItemPerkInfos(item, instance?.perks)
     const perkIds = perks.map((it) => it.perkId).filter((it) => !!it)

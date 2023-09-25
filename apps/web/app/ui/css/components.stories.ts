@@ -52,16 +52,16 @@ export const NwItemIconFrame: StoryObj = {
         <div class="nw-item-icon-frame nw-item-icon-bg w-12 aspect-square">
           <div class="nw-item-icon-border"></div>
         </div>
-        <div class="nw-item-icon-frame nw-item-icon-bg nw-item-rarity-1 w-12 aspect-square">
+        <div class="nw-item-icon-frame nw-item-icon-bg nw-item-rarity-uncommon w-12 aspect-square">
           <div class="nw-item-icon-border "></div>
         </div>
-        <div class="nw-item-icon-frame nw-item-icon-bg nw-item-rarity-2 w-12 aspect-square">
+        <div class="nw-item-icon-frame nw-item-icon-bg nw-item-rarity-rare w-12 aspect-square">
           <div class="nw-item-icon-border "></div>
         </div>
-        <div class="nw-item-icon-frame nw-item-icon-bg nw-item-rarity-3 w-12 aspect-square">
+        <div class="nw-item-icon-frame nw-item-icon-bg nw-item-rarity-epic w-12 aspect-square">
           <div class="nw-item-icon-border "></div>
         </div>
-        <div class="nw-item-icon-frame nw-item-icon-bg nw-item-rarity-4 w-12 aspect-square">
+        <div class="nw-item-icon-frame nw-item-icon-bg nw-item-rarity-legendary w-12 aspect-square">
           <div class="nw-item-icon-border "></div>
         </div>
         <div class="nw-item-icon-frame nw-item-icon-bg nw-item-rarity-artifact w-12 aspect-square">

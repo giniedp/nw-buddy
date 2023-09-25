@@ -18,8 +18,8 @@ import { EmptyComponent } from '~/widgets/empty'
       <nwb-item-header-content
         class="z-10"
         [title]="name | nwText | nwTextBreak : ' - '"
-        [category]="'perk'"
-        [subTitle]="type"
+        [text1]="'perk'"
+        [text2]="type"
       ></nwb-item-header-content>
     </nwb-item-header>
   `,

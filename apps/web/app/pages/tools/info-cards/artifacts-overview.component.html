@@ -1,0 +1,15 @@
+<div class="p-4" *ngIf="items$ | async; let items">
+  <div class="grid grid-cols-fill-sm gap-4" [nwbScreenshotFrame]="'Artifacts'" [@list]="items.length">
+    <nwb-item-card
+      [disableInfo]="false"
+      [entityId]="item.ItemID"
+      [enableTracker]="true"
+      [enableInfoLink]="true"
+      [enableLink]="true"
+      *ngFor="let item of items; trackBy: trackByIndex"
+      nwbContentVisibility
+      [@fade]="true"
+    >
+    </nwb-item-card>
+  </div>
+</div>

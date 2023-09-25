@@ -7,7 +7,7 @@ import {
   HostListener,
   Input,
   OnInit,
-  Output
+  Output,
 } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { BehaviorSubject, combineLatest, defer, firstValueFrom, map } from 'rxjs'
@@ -21,7 +21,6 @@ import { LayoutModule } from '~/ui/layout'
 import { humanize } from '~/utils'
 import { DnDService } from '~/utils/services/dnd.service'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
-
 
 @Component({
   standalone: true,
@@ -63,6 +62,7 @@ export class GearsetFormCellComponent implements OnInit {
       name: this.cellStore.itemName$,
       typeName: this.cellStore.typeName$,
       isNamed: this.cellStore.isNamed$,
+      isArtifact: this.cellStore.isArtifact$,
       gearScore: this.cellStore.instance$.pipe(map((it) => it?.gearScore)),
       rarity: this.cellStore.rarity$,
       rarityName: this.cellStore.rarity$.pipe(map(getItemRarityLabel)),
@@ -103,11 +103,7 @@ export class GearsetFormCellComponent implements OnInit {
   @Output()
   public itemDropped = new EventEmitter<ItemInstanceRecord>()
 
-  public constructor(
-    private cellStore: GearsetSlotStore,
-    private dnd: DnDService,
-    private cdRef: ChangeDetectorRef
-  ) {
+  public constructor(private cellStore: GearsetSlotStore, private dnd: DnDService, private cdRef: ChangeDetectorRef) {
     //
   }
 

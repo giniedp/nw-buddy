@@ -74,15 +74,37 @@ export function hasItemIngredientCategory(item: ItemDefinitionMaster, categoryId
   return item?.IngredientCategories?.some((it) => it.toLocaleLowerCase() === String(categoryId).toLocaleLowerCase())
 }
 
-export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPerkIds?: string[]) {
+export type ItemRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'artifact'
+const ITEM_RARITIES: ItemRarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary']
+const ITEM_RARITY_LABELS: Record<ItemRarity, string> = {
+  common: `RarityLevel0_DisplayName`,
+  uncommon: `RarityLevel1_DisplayName`,
+  rare: `RarityLevel2_DisplayName`,
+  epic: `RarityLevel3_DisplayName`,
+  legendary: `RarityLevel4_DisplayName`,
+  artifact: `ui_artifact`,
+}
+export function getItemRarityWeight(item: ItemDefinitionMaster | Housingitems | ItemRarity) {
+  let rarity: ItemRarity
+  if (typeof item !== 'string') {
+    rarity = getItemRarity(item)
+  } else {
+    rarity = item
+  }
+  return ITEM_RARITIES.indexOf(rarity) ?? ITEM_RARITIES.length
+}
+export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPerkIds?: string[]): ItemRarity {
   if (!item) {
-    return 0
+    return ITEM_RARITIES[0]
   }
   if (item.ForceRarity) {
-    return item.ForceRarity
+    return ITEM_RARITIES[item.ForceRarity]
   }
   if (!isMasterItem(item)) {
-    return 0
+    return ITEM_RARITIES[0]
+  }
+  if (isItemArtifact(item)) {
+    return 'artifact'
   }
 
   if (!itemPerkIds) {
@@ -92,9 +114,6 @@ export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPer
   let rarity = 0
   let maxRarity = NW_ITEM_RARITY_DATA.length - 1
   let perkCount = itemPerkIds.length
-  if (isItemArtifact(item)) {
-    return maxRarity // TODO: review if we can resolve artifact rarity from perk config
-  }
   if (!isItemUpgradable(item)) {
     perkCount = Math.min(perkCount, NW_ROLL_PERK_ON_UPGRADE_PERK_COUNT)
   }
@@ -104,7 +123,8 @@ export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPer
       break
     }
   }
-  return Math.min(rarity, maxRarity)
+  rarity = Math.min(rarity, maxRarity)
+  return ITEM_RARITIES[rarity]
 }
 
 function isItemUpgradable(item: ItemDefinitionMaster) {
@@ -117,13 +137,11 @@ function isItemUpgradable(item: ItemDefinitionMaster) {
   return true
 }
 
-export function getItemRarityLabel(item: ItemDefinitionMaster | Housingitems | number | string) {
-  if (typeof item === 'number' || typeof item === 'string') {
-    //
-  } else {
-    item = getItemRarity(item)
+export function getItemRarityLabel(item: ItemDefinitionMaster | Housingitems | ItemRarity): string {
+  if (typeof item === 'string') {
+    return ITEM_RARITY_LABELS[item]
   }
-  return `RarityLevel${item}_DisplayName`
+  return ITEM_RARITY_LABELS[getItemRarity(item)]
 }
 
 export function getItemPerkIdsWithOverride(item: ItemDefinitionMaster, overrides: Record<string, string>) {

@@ -1,11 +1,10 @@
 <div class="nw-item-header-bg"></div>
-<div class="nw-item-header-fg" *ngIf="named || artifact"></div>
+<div class="nw-item-header-fg" *ngIf="isNamed || isArtifact"></div>
 <a
   [nwbItemIcon]="iconOverride || entity"
   [nwLink]="enableInfoLink ? entityId : null"
   [nwLinkResource]="'item'"
   [rarity]="rarity"
-  [artifact]="artifact"
   class="aspect-square inline-block"
   [class.w-12]="size === 'sm'"
   [class.h-12]="size === 'sm'"
@@ -22,12 +21,12 @@
   nwbItemHeaderContent
   [title]="name | nwText | nwTextBreak : ' - '"
   [titleLink]="enableLink ? entityLink : null"
+  [text1]="rarityName | nwText"
+  [text2]="typeName | nwText"
+  [text3]="size === 'sm' ? null : sourceLabel"
   [rarity]="rarity"
-  [artifact]="artifact"
-  [subCategory]="rarityName | nwText"
-  [subTitle]="typeName | nwText"
-  [category]="size === 'sm' ? null : sourceLabel"
-  [skeleton]="isLoading"
+  [isNamed]="isNamed"
+  [isSkeleton]="isLoading"
   *ngIf="!disableContent"
 >
   <div class="header flex flex-col justify-end" *ngIf="enableTracker">

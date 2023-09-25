@@ -54,8 +54,10 @@ export class GersetSquareSlotComponent extends ComponentStore<GearsetSquareSlotS
     item: this.store.item$,
     instance: this.store.instance$,
     rarity: this.store.rarity$,
+    isNamed: this.store.isNamed$,
+    isArtifact: this.store.isArtifact$,
     itemId: this.store.item$.pipe(map((it) => getItemId(it))),
-    slot: this.state$.pipe(map((it) => it.slot))
+    slot: this.state$.pipe(map((it) => it.slot)),
   })
 
   public constructor(private store: GearsetSlotStore) {

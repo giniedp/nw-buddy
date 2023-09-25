@@ -176,7 +176,9 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
     }),
     selectFinalRarity
   )
-  public readonly finalRarityName$ = this.select(this.finalRarity$, getItemRarityLabel)
+  public readonly finalRarityName$ = this.select(this.isArtifact$, this.finalRarity$, (isArtifact, rarity) => {
+    return getItemRarityLabel(rarity)
+  })
 
   public readonly vmInfo$ = combineLatest({
     bindOnEquip: this.isBindOnEquip$,

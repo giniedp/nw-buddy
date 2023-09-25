@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, HostListener, Input } from '@angular/core'
-import { NW_FALLBACK_ICON, getItemIconPath, getItemRarity } from '@nw-data/common'
+import { ItemRarity, NW_FALLBACK_ICON, getItemIconPath, getItemRarity } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { assetUrl } from '~/utils'
 
@@ -38,14 +38,14 @@ export class NwIconComponent {
   }
 
   @Input()
-  public set nwRarity(value: number) {
+  public set nwRarity(value: ItemRarity) {
     this.rarityOverride = value
   }
 
   protected src: string
   protected isLoaded = false
-  private rarity: number
-  private rarityOverride: number
+  private rarity: ItemRarity
+  private rarityOverride: ItemRarity
 
   @HostBinding('class')
   protected get bgRarity() {
