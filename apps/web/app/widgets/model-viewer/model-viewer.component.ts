@@ -292,14 +292,10 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
     updateDyeChannel({
       model: model,
       scene: this.viewer.sceneManager.scene,
-      maskR: this.store.dyeR$()?.ColorAmount,
-      maskG: this.store.dyeG$()?.ColorAmount,
-      maskB: this.store.dyeB$()?.ColorAmount,
-      maskA: this.store.dyeA$()?.SpecAmount,
-      dyeR: this.store.dyeR$()?.Color,
-      dyeG: this.store.dyeG$()?.Color,
-      dyeB: this.store.dyeB$()?.Color,
-      dyeA: this.store.dyeA$()?.SpecColor,
+      dyeR: this.store.dyeR$(),
+      dyeG: this.store.dyeG$(),
+      dyeB: this.store.dyeB$(),
+      dyeA: this.store.dyeA$(),
       debugMask: this.store.dyeDebug$(),
       dyeEnabled: this.store.canDye$(),
     })

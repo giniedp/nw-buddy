@@ -2,6 +2,7 @@ import 'babylonjs'
 import { BABYLON, ViewerModel } from 'babylonjs-viewer'
 import { getMaskTexture } from './dye-loader-extension'
 import { Scene } from 'babylonjs'
+import { Dyecolors } from '@nw-data/generated'
 
 const NAME = 'DyeMaterialPlugin'
 
@@ -28,6 +29,7 @@ export class DyeMaterialPlugin extends BABYLON.MaterialPluginBase {
   public dyeColorG = new BABYLON.Color4(0.0, 0.0, 0.0, 0.0)
   public dyeColorB = new BABYLON.Color4(0.0, 0.0, 0.0, 0.0)
   public dyeColorA = new BABYLON.Color4(0.0, 0.0, 0.0, 0.0)
+  public dyeOverride = new BABYLON.Color4(0.0, 0.0, 0.0, 0.0)
   public get dyeMaskTexture() {
     return getMaskTexture(this._material)
   }
@@ -96,6 +98,7 @@ export class DyeMaterialPlugin extends BABYLON.MaterialPluginBase {
         { name: 'dyeColorG', size: 4, type: 'vec4' },
         { name: 'dyeColorB', size: 4, type: 'vec4' },
         { name: 'dyeColorA', size: 4, type: 'vec4' },
+        { name: 'dyeOverride', size: 4, type: 'vec4' },
       ],
       fragment: `
         #ifdef NW_DYE_ENABLED
@@ -103,6 +106,7 @@ export class DyeMaterialPlugin extends BABYLON.MaterialPluginBase {
           uniform vec4 dyeColorG;
           uniform vec4 dyeColorB;
           uniform vec4 dyeColorA;
+          uniform vec4 dyeOverride;
         #endif
         `,
     }
@@ -125,6 +129,7 @@ export class DyeMaterialPlugin extends BABYLON.MaterialPluginBase {
       uniformBuffer.updateColor4('dyeColorG', this.dyeColorG, this.dyeColorG.a)
       uniformBuffer.updateColor4('dyeColorB', this.dyeColorB, this.dyeColorB.a)
       uniformBuffer.updateColor4('dyeColorA', this.dyeColorA, this.dyeColorA.a)
+      uniformBuffer.updateColor4('dyeOverride', this.dyeOverride, this.dyeOverride.a)
       uniformBuffer.setTexture('dyeMask', this.dyeMaskTexture)
     }
   }
@@ -142,16 +147,42 @@ export class DyeMaterialPlugin extends BABYLON.MaterialPluginBase {
           vec4 maskTexture = texture2D(dyeMask, vAlbedoUV);  
 
           float luminance = dot(surfaceAlbedo.rgb, vec3(0.299, 0.587, 0.114));
-          surfaceAlbedo.rgb = mix(surfaceAlbedo.rgb, luminance * dyeColorR.rgb, maskTexture.r * dyeColorR.a);
-          surfaceAlbedo.rgb = mix(surfaceAlbedo.rgb, luminance * dyeColorG.rgb, maskTexture.g * dyeColorG.a);
-          surfaceAlbedo.rgb = mix(surfaceAlbedo.rgb, luminance * dyeColorB.rgb, maskTexture.b * dyeColorB.a);
-          surfaceAlbedo.rgb = mix(surfaceAlbedo.rgb, luminance * dyeColorA.rgb, maskTexture.a * dyeColorA.a);
+
+          vec3 surfaceDyeR = mix(luminance * dyeColorR.rgb, dyeColorR.rgb, dyeOverride.r);
+          vec3 surfaceDyeG = mix(luminance * dyeColorG.rgb, dyeColorG.rgb, dyeOverride.g);
+          vec3 surfaceDyeB = mix(luminance * dyeColorB.rgb, dyeColorB.rgb, dyeOverride.b);
+          vec3 surfaceDyeA = mix(luminance * dyeColorA.rgb, dyeColorA.rgb, dyeOverride.a);
+
+          surfaceAlbedo.rgb = mix(surfaceAlbedo.rgb, surfaceDyeR, maskTexture.r * dyeColorR.a);
+          surfaceAlbedo.rgb = mix(surfaceAlbedo.rgb, surfaceDyeG, maskTexture.g * dyeColorG.a);
+          surfaceAlbedo.rgb = mix(surfaceAlbedo.rgb, surfaceDyeB, maskTexture.b * dyeColorB.a);
+          surfaceAlbedo.rgb = mix(surfaceAlbedo.rgb, surfaceDyeA, maskTexture.a);
 
           #ifdef NW_DYE_DEBUG
+          //surfaceAlbedo.rgb = dyeColorA.rgb * maskTexture.a;
           surfaceAlbedo.rgb = mix(maskTexture.rgb, vec3(1.0, 0.0, 1.0), maskTexture.a);
           #endif
         #endif
       `,
+      // '!vec4\\ssurfaceMetallicOrReflectivityColorMap\\s\\=\\stexture\\(reflectivitySampler,\\svReflectivityUV\\+uvOffset\\);': `
+      //   vec4 surfaceMetallicOrReflectivityColorMap = texture(reflectivitySampler, vReflectivityUV + uvOffset);
+      //   #ifdef NW_DYE_ENABLED
+      //     vec3 dyeSpecColor = dyeColorA.rgb;
+      //     float dyeSpecAmount = texture2D(dyeMask, vReflectivityUV + uvOffset).a;
+      //     float dyeSpecShift = dyeOverride.a;
+      //     vec3 refColor = surfaceMetallicOrReflectivityColorMap.rgb;
+      //     float luminance = dot(refColor.rgb, vec3(0.299, 0.587, 0.114));
+
+      //     //dyeSpecColor = mix(luminance * dyeSpecColor, dyeSpecColor, dyeSpecShift);
+      //     //refColor.rgb = mix(refColor.rgb, dyeSpecColor.rgb, mask * dyeSpecAmount);
+
+      //     surfaceMetallicOrReflectivityColorMap.rgb = refColor.rgb;
+
+      //     #ifdef NW_DYE_DEBUG
+
+      //     #endif
+      //   #endif
+      // `,
     }
   }
 }
@@ -159,14 +190,10 @@ export class DyeMaterialPlugin extends BABYLON.MaterialPluginBase {
 export function updateDyeChannel(options: {
   model: ViewerModel
   scene: Scene
-  maskR: number
-  maskG: number
-  maskB: number
-  maskA: number
-  dyeR: string | null
-  dyeG: string | null
-  dyeB: string | null
-  dyeA: string | null
+  dyeR: Dyecolors | null
+  dyeG: Dyecolors | null
+  dyeB: Dyecolors | null
+  dyeA: Dyecolors | null
   debugMask: boolean
   dyeEnabled: boolean
 }) {
@@ -181,32 +208,34 @@ export function updateDyeChannel(options: {
     }
     dye.isEnabled = true
     dye.debugMask = options.debugMask
-    if (options.dyeR) {
-      const rgb = hexToRgb(options.dyeR)
-      dye.dyeColorR.set(rgb.r, rgb.g, rgb.b, options.maskR)
-    } else {
-      dye.dyeColorR.set(0, 0, 0, 0)
-    }
-    if (options.dyeG) {
-      const rgb = hexToRgb(options.dyeG)
-      dye.dyeColorG.set(rgb.r, rgb.g, rgb.b, options.maskG)
-    } else {
-      dye.dyeColorG.set(0, 0, 0, 0)
-    }
-    if (options.dyeB) {
-      const rgb = hexToRgb(options.dyeB)
-      dye.dyeColorB.set(rgb.r, rgb.g, rgb.b, options.maskB)
-    } else {
-      dye.dyeColorB.set(0, 0, 0, 0)
-    }
-    if (options.dyeA) {
-      const rgb = hexToRgb(options.dyeA)
-      dye.dyeColorA.set(rgb.r, rgb.g, rgb.b, options.maskA)
-    } else {
-      dye.dyeColorA.set(0, 0, 0, 0)
-    }
+    dye.dyeColorR.set(...dyeToRgba(options.dyeR))
+    dye.dyeColorG.set(...dyeToRgba(options.dyeG))
+    dye.dyeColorB.set(...dyeToRgba(options.dyeB))
+    dye.dyeColorA.set(...dyeSpecToRgba(options.dyeA))
+    dye.dyeOverride.set(
+      options.dyeR?.ColorOverride || 0,
+      options.dyeG?.ColorOverride || 0,
+      options.dyeB?.ColorOverride || 0,
+      (options.dyeA?.SpecAmount || 0) * (options.dyeA?.MaskGlossShift || 0)
+    )
     dye.updateReflectivity()
   })
+}
+
+function dyeToRgba(dye: Dyecolors): [number, number, number, number] {
+  if (!dye) {
+    return [0, 0, 0, 0]
+  }
+  const rgb = hexToRgb(dye.Color)
+  return [rgb.r, rgb.g, rgb.b, dye.ColorAmount]
+}
+
+function dyeSpecToRgba(dye: Dyecolors): [number, number, number, number] {
+  if (!dye) {
+    return [0, 0, 0, 0]
+  }
+  const rgb = hexToRgb(dye.SpecColor)
+  return [rgb.r, rgb.g, rgb.b, dye.SpecAmount]
 }
 
 function hexToRgb(hex: string) {
