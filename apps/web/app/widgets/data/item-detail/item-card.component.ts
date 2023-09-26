@@ -15,6 +15,7 @@ import { ItemDetailPerksComponent } from './item-detail-perks.component'
 import { ItemDetailStatsComponent } from './item-detail-stats.component'
 import { ItemDetailStore } from './item-detail.store'
 import { ItemDetailPerkTasksComponent } from './item-detail-perk-tasks.component'
+import { ItemDetailAttributionComponent } from './item-detail-attribution.component'
 
 @Component({
   standalone: true,
@@ -134,15 +135,21 @@ export class ItemCardComponent extends ItemDetailStore {
   protected disableDescription$ = new BehaviorSubject(false)
 
   protected components$ = combineLatest({
+    disableInfo: this.disableInfo$,
     vmDescription: this.disableDescription$.pipe(switchMap((it) => (it ? of(null) : this.description$))),
     vmStats: this.disableStats$.pipe(switchMap((it) => (it ? of(null) : this.vmStats$))),
     vmInfo: this.disableInfo$.pipe(switchMap((it) => (it ? of(null) : this.vmInfo$))),
     vmPerks: this.disablePerks$.pipe(switchMap((it) => (it ? of(null) : this.vmPerks$))),
     vmPerkTasks: this.artifactPerkTasks$,
     vmWeapon: this.weaponStats$,
+    attribution: this.attribution$,
+    expansion: this.expansion$,
   }).pipe(
-    map(({ vmDescription, vmStats, vmInfo, vmPerks, vmWeapon, vmPerkTasks }) => {
+    map(({ vmDescription, vmStats, vmInfo, vmPerks, vmWeapon, vmPerkTasks, disableInfo, attribution, expansion }) => {
       let list: Array<Type<any>> = []
+      if (!disableInfo && (attribution || expansion)) {
+        appendSection(list, ItemDetailAttributionComponent)
+      }
       if (vmDescription?.image) {
         appendSection(list, ItemDetailDescriptionComponent)
       }

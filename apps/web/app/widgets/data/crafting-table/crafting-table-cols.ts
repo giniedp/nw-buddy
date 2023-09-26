@@ -2,6 +2,7 @@ import {
   NW_FALLBACK_ICON,
   getCraftingCategoryLabel,
   getCraftingGroupLabel,
+  getItemExpansion,
   getItemIconPath,
   getItemId,
   getItemRarity,
@@ -121,6 +122,46 @@ export function craftingColIngredients(util: CraftingTableUtils) {
     }),
   })
 }
+
+export function craftingColExpansion(util: CraftingTableUtils) {
+  return util.colDef({
+    colId: 'requiredExpansion',
+    headerValueGetter: () => 'Expansion',
+    width: 180,
+    valueGetter: util.fieldGetter('RequiredExpansion'),
+    cellRenderer: util.cellRenderer(({ data }) => {
+      const expansion = getItemExpansion(data?.RequiredExpansion)
+
+      if (!expansion) {
+        return null
+      }
+      //return `"${data.RequiredExpansion}"`
+      return util.el('div.flex.flex-row.gap-1.items-center', {}, [
+        util.elImg({
+          class: ['w-6', 'h-6'],
+          src: expansion.icon,
+        }),
+        util.el('span', { text: util.i18n.get(expansion.label) }),
+      ])
+    }),
+    filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      optionsGetter: ({ data }) => {
+        const it = getItemExpansion(data?.RequiredExpansion)
+        return it
+          ? [
+              {
+                id: it.id,
+                label: util.i18n.get(it.label),
+                icon: it.icon,
+              },
+            ]
+          : []
+      },
+    }),
+  })
+}
+
 export function craftingColBookmark(util: CraftingTableUtils) {
   return util.colDef({
     colId: 'userBookmark',

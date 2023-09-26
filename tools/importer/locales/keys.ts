@@ -72,6 +72,8 @@ export const LOCALE_KEYS_TO_KEEP = [
   'ui_trophies',
   'ui_vegetation',
   'ui_greatsword',
+  /^attribution_.*/,
+  /^ui_expansion.*_title/,
 
   '1hSickle_GroupName',
   '1hSkinningKnife_GroupName',

@@ -17,6 +17,7 @@ import {
   NW_ROLL_PERK_ON_UPGRADE_TIER,
 } from './constants'
 import { damageForTooltip } from './damage'
+import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
 
 export function isMasterItem(item: unknown): item is ItemDefinitionMaster {
   return item != null && typeof item === 'object' && 'ItemID' in item
@@ -511,4 +512,47 @@ export function getItemStatsArmor(item: ItemDefinitionMaster, stats: Itemdefinit
 
 function toPercent(value: number) {
   return `${(value * 100).toFixed(1)}%`
+}
+
+const ATTRIBUTION_ICONS = new CaseInsensitiveMap(
+  Object.entries({
+    WinterConvergence: 'assets/icons/attribution/winter_convergence.png',
+    SummerMedleyfaire: 'assets/icons/attribution/summer_medleyfaire.png',
+    SpringtideBloom: 'assets/icons/attribution/springtide_bloom.png',
+    NightveilHallow: 'assets/icons/attribution/nightveil_hallow.png',
+    TurkeyTerror: 'assets/icons/attribution/turkey_terror.png',
+    RabbitSeason: 'assets/icons/attribution/rabbit_season.png',
+    Season: 'assets/icons/attribution/season.png',
+    Unknown: 'assets/icons/attribution/unknown.png',
+  })
+)
+
+export function getItemAttribution(item: ItemDefinitionMaster | Housingitems) {
+  if (!item?.AttributionId) {
+    return null
+  }
+  const [attribution, year] = item.AttributionId.split('_')
+  return {
+    id: item.AttributionId,
+    label: `attribution_${item.AttributionId}`,
+    icon: ATTRIBUTION_ICONS.get(attribution) || ATTRIBUTION_ICONS.get('Unknown'),
+    year: year,
+  }
+}
+
+const EXPANSION_ICONS = new CaseInsensitiveMap(
+  Object.entries({
+    Expansion2023: 'assets/icons/attribution/expansion2023.png',
+  })
+)
+
+export function getItemExpansion(expansionId: string) {
+  if (!expansionId) {
+    return null
+  }
+  return {
+    id: expansionId,
+    label: `ui_${expansionId}_title`,
+    icon: EXPANSION_ICONS.get(expansionId) || ATTRIBUTION_ICONS.get('Unknown'),
+  }
 }

@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getIngretientsFromRecipe, getItemIdFromRecipe, getTradeSkillLabel } from '@nw-data/common'
-import { COLS_ABILITY } from '@nw-data/generated'
+import { COLS_ABILITY, COLS_CRAFTING } from '@nw-data/generated'
 import { Observable, combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
 import {
@@ -17,6 +17,7 @@ import {
   craftingColCategory,
   craftingColCooldownCeconds,
   craftingColCooldownQuantity,
+  craftingColExpansion,
   craftingColGroup,
   craftingColID,
   craftingColIcon,
@@ -103,13 +104,14 @@ function buildOptions(util: TableGridUtils<CraftingTableRecord>) {
       craftingColCategory(util),
       craftingColGroup(util),
       craftingColRecipeLevel(util),
+      craftingColExpansion(util),
       craftingColItemChance(util),
       craftingColCooldownQuantity(util),
       craftingColCooldownCeconds(util),
     ],
   }
   addGenericColumns(result, {
-    props: COLS_ABILITY,
+    props: COLS_CRAFTING,
   })
   return result
 }

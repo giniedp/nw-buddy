@@ -14,6 +14,7 @@ import {
   ItemTableRecord,
   itemColBookmark,
   itemColEvent,
+  itemColExpansion,
   itemColGearScore,
   itemColIcon,
   itemColItemClass,
@@ -106,6 +107,7 @@ export function buildCommonItemGridOptions(util: TableGridUtils<ItemTableRecord>
       itemColGearScore(util),
       itemColSource(util),
       itemColEvent(util),
+      itemColExpansion(util),
       itemColItemType(util),
       itemColItemClass(util),
       itemColTradingGroup(util),
@@ -133,6 +135,7 @@ export function buildPickerItemGridOptions(util: TableGridUtils<ItemTableRecord>
       itemColGearScore(util),
       itemColSource(util),
       itemColEvent(util),
+      itemColExpansion(util),
       itemColItemType(util),
     ],
   }

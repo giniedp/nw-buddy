@@ -2,6 +2,8 @@ import { ChangeDetectorRef, EventEmitter, Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import {
   AttributeRef,
+  getItemAttribution,
+  getItemExpansion,
   getItemGsBonus,
   getItemIconPath,
   getItemIdFromRecipe,
@@ -68,10 +70,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public readonly perkBucketIds$ = this.select(this.item$, (item) => getItemPerkBucketIds(item))
   public readonly entity$ = this.select(this.item$, this.housingItem$, (item, housingItem) => item || housingItem)
   public readonly salvageAchievementId$ = this.select(this.item$, (it) => it?.SalvageAchievement)
-  public readonly salvageAchievementRecipe$ = this.select(
-    this.db.recipeByAchievementId(this.salvageAchievementId$),
-    (it) => it
-  )
+  public readonly salvageAchievementRecipe$ = selectStream(this.db.recipeByAchievementId(this.salvageAchievementId$))
   public readonly itemGS$ = this.select(this.item$, this.gsOverride$, selectItemGearscore)
   public readonly itemGSLabel$ = this.select(this.item$, this.gsOverride$, selectItemGearscoreLabel)
   public readonly craftableRecipes$ = this.select(this.db.recipesByIngredientId(this.entityId$), (it) => {
@@ -126,6 +125,9 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
 
   public readonly itemModels$ = this.ms.byItemId(this.entityId$)
   public readonly itemStatsRef$ = this.select(this.item$, (it) => it?.ItemStatsRef)
+  public readonly attribution$ = this.select(this.entity$, (it) => getItemAttribution(it))
+  public readonly expansion$ = this.select(this.item$, (it) => getItemExpansion(it?.RequiredExpansionId))
+
   public readonly weaponStats$ = this.select(this.db.weapon(this.itemStatsRef$), (it) => it)
   public readonly armorStats$ = this.select(this.db.armor(this.itemStatsRef$), (it) => it)
   public readonly runeStats$ = this.select(this.db.rune(this.itemStatsRef$), (it) => it)

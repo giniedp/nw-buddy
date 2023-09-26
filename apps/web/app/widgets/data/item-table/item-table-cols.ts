@@ -1,5 +1,7 @@
 import {
   NW_FALLBACK_ICON,
+  getItemAttribution,
+  getItemExpansion,
   getItemIconPath,
   getItemId,
   getItemMaxGearScore,
@@ -276,8 +278,71 @@ export function itemColEvent(util: ItemTableUtils) {
     headerValueGetter: () => 'Event',
     width: 180,
     valueGetter: util.fieldGetter('AttributionId'),
-    valueFormatter: ({ value }) => humanize(value),
+    cellRenderer: util.cellRenderer(({ data }) => {
+      const expansion = getItemAttribution(data)
+      if (!expansion) {
+        return null
+      }
+      return util.el('div.flex.flex-row.gap-1.items-center', {}, [
+        util.elImg({
+          class: ['w-6', 'h-6'],
+          src: expansion.icon,
+        }),
+        util.el('span', { text: util.i18n.get(expansion.label) }),
+      ])
+    }),
     filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      optionsGetter: ({ data }) => {
+        const it = getItemAttribution(data as ItemDefinitionMaster)
+        return it
+          ? [
+              {
+                id: it.id,
+                label: util.i18n.get(it.label),
+                icon: it.icon,
+              },
+            ]
+          : []
+      },
+    }),
+  })
+}
+
+export function itemColExpansion(util: ItemTableUtils) {
+  return util.colDef({
+    colId: 'requiredExpansion',
+    headerValueGetter: () => 'Expansion',
+    width: 180,
+    valueGetter: util.fieldGetter('RequiredExpansionId'),
+    cellRenderer: util.cellRenderer(({ data }) => {
+      const expansion = getItemExpansion(data?.RequiredExpansionId)
+      if (!expansion) {
+        return null
+      }
+      return util.el('div.flex.flex-row.gap-1.items-center', {}, [
+        util.elImg({
+          class: ['w-6', 'h-6'],
+          src: expansion.icon,
+        }),
+        util.el('span', { text: util.i18n.get(expansion.label) }),
+      ])
+    }),
+    filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      optionsGetter: ({ data }) => {
+        const it = getItemExpansion(data?.RequiredExpansionId)
+        return it
+          ? [
+              {
+                id: it.id,
+                label: util.i18n.get(it.label),
+                icon: it.icon,
+              },
+            ]
+          : []
+      },
+    }),
   })
 }
 
