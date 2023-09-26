@@ -25,7 +25,7 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 })
 export class ItemHeaderComponent {
   @Input()
-  public rarity: ItemRarity
+  public rarity: ItemRarity = 'common'
 
   @Input()
   @HostBinding('class.named')
