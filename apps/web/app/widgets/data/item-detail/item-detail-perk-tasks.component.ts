@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
-import { NwDbService, NwModule } from '~/nw'
+import { NwDbService, NwLinkService, NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -32,6 +32,7 @@ export interface PerkTask {
 export class ItemDetailPerkTasksComponent {
   private db = inject(NwDbService)
   private tl8 = inject(TranslateService)
+  private nwdb = inject(NwLinkService)
 
   protected tasks$ = selectStream(this.store.artifactPerkTasks$).pipe(
     map((tasks) => {
@@ -76,12 +77,23 @@ export class ItemDetailPerkTasksComponent {
   }
 
   private resolveTargetName(task: Objectivetasks) {
-    return this.db.vitalsCategory(task.KillEnemyType).pipe(
-      switchMap((vital) => {
-        if (!vital) {
+    return combineLatest({
+      category: this.db.vitalsCategory(task.KillEnemyType),
+      vital: this.db.vital(task.KillEnemyType),
+    }).pipe(
+      switchMap(({ category, vital }) => {
+        if (!category) {
           return of(task.KillEnemyType)
         }
-        return this.tl8.observe(vital.DisplayName)
+        return this.tl8.observe(category.DisplayName).pipe(
+          map((it) => {
+            if (vital) {
+              const link = this.nwdb.link('vitals', String(vital.VitalsID))
+              return `<a href="${link}" target="_blank" class="link">${it}</a>`
+            }
+            return it
+          })
+        )
       }),
       map((text) => {
         return task.TargetQty > 1 ? `${task.TargetQty} ${text} ` : text
@@ -102,7 +114,12 @@ export class ItemDetailPerkTasksComponent {
           if (!poi) {
             return of(task.POITag)
           }
-          return this.tl8.observe(poi.NameLocalizationKey)
+          return this.tl8.observe(poi.NameLocalizationKey).pipe(
+            map((it) => {
+              const link = this.nwdb.link('poi', String(poi.TerritoryID))
+              return `<a href="${link}" target="_blank" class="link">${it}</a>`
+            })
+          )
         })
       )
   }
@@ -113,7 +130,12 @@ export class ItemDetailPerkTasksComponent {
         if (!it) {
           return of(task.TerritoryID)
         }
-        return this.tl8.observe(it.NameLocalizationKey)
+        return this.tl8.observe(it.NameLocalizationKey).pipe(
+          map((it) => {
+            const link = this.nwdb.link('poi', String(task.TerritoryID))
+            return `<a href="${link}" target="_blank" class="link">${it}</a>`
+          })
+        )
       })
     )
   }
