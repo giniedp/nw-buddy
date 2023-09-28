@@ -1,18 +1,18 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Injector, Input, TemplateRef, ViewChild } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
 import { isEqual } from 'lodash'
 import { BehaviorSubject, asyncScheduler, combineLatest, defer, filter, map, of, subscribeOn, switchMap } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { NwModule } from '~/nw'
-import { NwWeaponType, NwWeaponTypesService } from '~/nw/weapon-types'
+import { NW_WEAPON_TYPES, NwWeaponType, NwWeaponTypesService } from '~/nw/weapon-types'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { mapDistinct } from '~/utils'
 import { SkillTreeComponent } from './skill-tree.component'
-import { SkillWeaponDialogComponent } from './skill-weapon-dialog.component'
+import { openWeaponTypePicker } from '../data/weapon-type'
 
 export interface SkillBuildValue {
   weapon: string
@@ -120,7 +120,12 @@ export class SkillBuilderComponent implements ControlValueAccessor {
   protected onChange = (value: SkillBuildValue) => {}
   protected onTouched = () => {}
 
-  public constructor(private types: NwWeaponTypesService, private char: CharacterStore, private dialog: Dialog) {
+  public constructor(
+    private types: NwWeaponTypesService,
+    private char: CharacterStore,
+    private dialog: Dialog,
+    private injector: Injector
+  ) {
     //
   }
 
@@ -184,17 +189,17 @@ export class SkillBuilderComponent implements ControlValueAccessor {
   }
 
   public switchWeapon() {
-    SkillWeaponDialogComponent.open(this.dialog, {
-      data: this.weaponTag,
-      width: '100vw',
-      maxWidth: 400,
-      height: '100vh',
-      maxHeight: 600,
+    openWeaponTypePicker({
+      dialog: this.dialog,
+      injector: this.injector,
     })
-      .closed.pipe(filter((it) => it != null))
-      .subscribe((value) => {
+      .closed.pipe(
+        filter((it) => !!it?.length),
+        map((it) => NW_WEAPON_TYPES.find((type) => type.WeaponTypeID === String(it[0])))
+      )
+      .subscribe((weapon) => {
         this.commit({
-          weapon: value,
+          weapon: weapon.WeaponTag,
           tree1: [],
           tree2: [],
         })

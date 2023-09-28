@@ -188,7 +188,10 @@
             <nwb-icon [icon]="iconRemove" class="w-4 h-4 text-error"></nwb-icon>
             <div class="flex flex-col leading-none">
               <span>Unequip item</span>
-              <span class="text-xs opacity-75">
+              <span class="text-xs opacity-75" *ngIf="vm.isEqupment">
+                <span>Remove this item from slot.</span>
+              </span>
+              <span class="text-xs opacity-75" *ngIf="!vm.isEqupment">
                 <span *ngIf="vm.canBreak">This item remains in the inventory.</span>
                 <span class="text-error" *ngIf="!vm.canBreak">
                   This item is not in your inventory and is lost when unequipped.

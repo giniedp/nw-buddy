@@ -19,6 +19,8 @@ import {
   statusEffectColSource,
   statusEffectColStatusID,
 } from './status-effect-table-cols'
+import { StatusEffectCellComponent } from './status-effect-cell.component'
+import { selectStream } from '~/utils'
 
 @Injectable()
 export class StatusEffectTableAdapter
@@ -42,7 +44,10 @@ export class StatusEffectTableAdapter
   }
 
   public virtualOptions(): VirtualGridOptions<Statuseffect> {
-    return null
+    if (this.config?.virtualOptions) {
+      return this.config.virtualOptions()
+    }
+    return StatusEffectCellComponent.buildGridOptions()
   }
 
   public gridOptions(): GridOptions<StatusEffectTableRecord> {
@@ -53,13 +58,21 @@ export class StatusEffectTableAdapter
   }
 
   public connect() {
-    return (
-      this.config?.source ||
-      this.db.statusEffects
-        .pipe(map((list) => sortBy(list, (it) => it.StatusID)))
-        .pipe(map((list) => sortBy(list, (it) => (it.Description ? -1 : 1))))
-    )
+    return this.source$
   }
+
+  protected source$ = selectStream(this.config?.source || this.db.statusEffects, (list) => {
+    if (this.config?.filter) {
+      list = list.filter(this.config.filter)
+    }
+    if (this.config?.sort) {
+      list = [...list].sort(this.config.sort)
+    } else {
+      list = sortBy(list, (it) => it.StatusID)
+      list = sortBy(list, (it) => (it.Description ? -1 : 1))
+    }
+    return list
+  })
 }
 
 function buildStatusEffectTableOptions(util: TableGridUtils<StatusEffectTableRecord>) {

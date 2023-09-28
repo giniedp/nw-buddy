@@ -1,8 +1,8 @@
 import { DIALOG_DATA, Dialog, DialogConfig, DialogModule, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Inject, inject } from '@angular/core'
 import { Dyecolors } from '@nw-data/generated'
-import { NwModule } from '~/nw'
+import { NwDbService, NwModule } from '~/nw'
 import { TooltipModule } from '~/ui/tooltip'
 
 export interface DyePickerDialogData {

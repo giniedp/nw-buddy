@@ -3,6 +3,7 @@ import { ClassProvider, InjectionToken, StaticProvider, Type } from '@angular/co
 import { Observable } from 'rxjs'
 import { TableGridUtils } from './table-grid-utils.service'
 import { DataTableCategory } from './types'
+import { VirtualGridOptions } from '../virtual-grid'
 
 export const TABLE_GRID_ADAPTER_OPTIONS = new InjectionToken<TableGridAdapterOptions<any>>('TABLE_GRID_ADAPTER_OPTIONS')
 
@@ -26,6 +27,10 @@ export interface TableGridAdapterOptions<T> {
    * Optional base grid configuration.
    */
   gridOptions?: (util: TableGridUtils) => GridOptions<T>
+  /**
+   * Optional virtual grid configuration.
+   */
+  virtualOptions: () => VirtualGridOptions<T>
 }
 
 export interface TableGridAdapterProvideOptions<T> extends TableGridAdapterOptions<T> {

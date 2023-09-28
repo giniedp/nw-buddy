@@ -51,7 +51,7 @@ import { observeRouteParam } from '~/utils'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { InventoryPickerService } from '../inventory/inventory-picker.service'
 import { SlotsPickerComponent } from './dialogs'
-import { GearsetDetailComponent } from './gearset-detail.component'
+import { GearsetDetailComponent } from './gearset.component'
 import { GEARSET_TAGS } from './tags'
 
 @Component({

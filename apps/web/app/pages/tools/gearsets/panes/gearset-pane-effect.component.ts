@@ -17,7 +17,7 @@ import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { shareReplayRefCount } from '~/utils'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
-import { InventoryPickerService } from '../inventory/inventory-picker.service'
+import { InventoryPickerService } from '../../inventory/inventory-picker.service'
 
 export interface EffectSlotState {
   effectId: string

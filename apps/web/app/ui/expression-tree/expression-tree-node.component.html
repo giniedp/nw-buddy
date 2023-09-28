@@ -18,10 +18,10 @@
     </div>
     <span class="flex-1"></span>
     <div class="group"></div>
-    <button class="flex-none btn btn-sm btn-square" [tooltip]="'Add condition group'">
+    <button class="flex-none btn btn-sm btn-square" [class.text-accent]="isRoot" [tooltip]="'Add condition group'">
       <nwb-icon [icon]="iconAddGroup" class="w-4 h-4" (click)="addGroupClicked()"></nwb-icon>
     </button>
-    <button class="flex-none btn btn-sm btn-square" [tooltip]="'Add condition'">
+    <button class="flex-none btn btn-sm btn-square" [class.text-accent]="isRoot" [tooltip]="'Add condition'">
       <nwb-icon [icon]="iconAdd" class="w-4 h-4" (click)="addFieldClicked()"></nwb-icon>
     </button>
     <button class="flex-none btn btn-sm btn-square btn-error" [tooltip]="'Delete this group'" *ngIf="!isRoot">

@@ -26,7 +26,8 @@ import { TooltipModule } from '~/ui/tooltip'
 import { deferStateFlat, shareReplayRefCount } from '~/utils'
 import { SkillsetTableAdapter } from '~/widgets/data/skillset-table'
 import { SkillTreeModule } from '~/widgets/skill-builder'
-import { SkillWeaponDialogComponent } from '~/widgets/skill-builder/skill-weapon-dialog.component'
+import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
+import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
 
 export interface GearsetSkillVM {
   slot?: GearsetSkillSlot
@@ -133,34 +134,23 @@ export class GearsetPaneSkillComponent {
     )
   }
 
-  protected async breakLink() {
-    // const instance = await firstValueFrom(this.store.instance$)
-    // this.itemUnlink.next(instance)
-  }
-
-  protected remove() {
-    this.store.updateSlot({ instance: null })
-  }
-
   protected updateSkill(value: SkillBuild) {
     this.store.updateSlot({ instance: value })
   }
 
-  protected loadSkill(slot: GearsetSkillSlot) {}
-
-  protected create() {
-    SkillWeaponDialogComponent.open(this.dialog, {
-      width: '100vw',
-      height: '100vh',
-      maxWidth: 400,
-      maxHeight: 600,
-      data: null,
+  protected createNew() {
+    openWeaponTypePicker({
+      dialog: this.dialog,
+      injector: this.injector,
     })
-      .closed.pipe(filter((it) => !!it))
+      .closed.pipe(
+        filter((it) => !!it?.length),
+        map((it) => NW_WEAPON_TYPES.find((type) => type.WeaponTypeID === String(it[0])))
+      )
       .subscribe((weapon) => {
         this.store.updateSlot({
           instance: {
-            weapon: weapon,
+            weapon: weapon.WeaponTag,
             tree1: [],
             tree2: [],
           },
@@ -168,7 +158,7 @@ export class GearsetPaneSkillComponent {
       })
   }
 
-  protected createExisting() {
+  protected openExisting() {
     DataViewPicker.open(this.dialog, {
       title: 'Choose Skill Tree',
       selection: null,
@@ -179,6 +169,7 @@ export class GearsetPaneSkillComponent {
         maxWidth: 1400,
         maxHeight: 1200,
         panelClass: ['w-full', 'h-full', 'p-4'],
+        injector: this.injector,
       },
     })
       .closed.pipe(map((it) => it?.[0]))

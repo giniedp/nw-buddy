@@ -15,8 +15,8 @@ import { DataViewMode } from './data-view.service'
   selector: 'nwb-story',
   template: `
     <button class="btn" (click)="pickItem()">Pick</button>
-    <button class="btn" (click)="pickItem('grid')">Pick (grid mode)</button>
-    <button class="btn" (click)="pickItem('virtual')">Pick (virtual mode)</button>
+    <button class="btn" (click)="pickItem('table')">Pick (grid mode)</button>
+    <button class="btn" (click)="pickItem('grid')">Pick (virtual mode)</button>
     <div>Picked Item: {{ result | json }}</div>
   `,
   imports: [CommonModule, NwModule, DataViewModule, DialogModule],
@@ -31,7 +31,7 @@ export class StoryComponent {
     DataViewPicker.open(this.dialog, {
       title: 'Pick Item',
       selection: this.result,
-      displayMode: mode,
+      displayMode: mode ? [mode] : null,
       dataView: {
         adapter: ItemTableAdapter,
       },

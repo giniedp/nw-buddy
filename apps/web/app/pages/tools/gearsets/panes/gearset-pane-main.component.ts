@@ -12,10 +12,10 @@ import { ConfirmDialogComponent } from '~/ui/layout'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
 import { AttributeEditorDialogComponent } from '~/widgets/attributes-editor'
-import { AttributesStatsComponent } from './stats/attributes-stats.component'
-import { VitalityStatsComponent } from './stats/vitality-stats.component'
+import { AttributesStatsComponent } from '../stats/attributes-stats.component'
+import { VitalityStatsComponent } from '../stats/vitality-stats.component'
 import { AvatarDialogComponent } from './avatar-dialog.component'
-import { EquipLoadStatsComponent } from './stats/equip-load-stats.component'
+import { EquipLoadStatsComponent } from '../stats/equip-load-stats.component'
 
 @Component({
   standalone: true,

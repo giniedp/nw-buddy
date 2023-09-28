@@ -29,7 +29,7 @@ export interface DataViewPickerOptions<T> {
   /**
    * The display mode to use. If null, the user can switch between grid and list
    */
-  displayMode?: DataViewMode | null
+  displayMode?: DataViewMode[]
   /**
    * Key to load and persist grid layout and filter settings
    */
@@ -83,7 +83,6 @@ export class DataViewPicker {
   protected selection: Array<string | number>
   protected title: string
   protected persistKey: string
-  protected displayMode: DataViewMode | null = null
   public constructor(
     private dialogRef: DialogRef<Array<string | number>>,
     private zone: NgZone,
@@ -92,9 +91,8 @@ export class DataViewPicker {
     options: DataViewPickerOptions<any>
   ) {
     this.title = options.title
-    this.displayMode = options.displayMode
-    if (this.displayMode) {
-      this.service.patchState({ mode: this.displayMode })
+    if (options.displayMode) {
+      this.service.setMode(options.displayMode)
     }
     if (options.selection) {
       this.selection = Array.isArray(options.selection) ? options.selection : [options.selection]

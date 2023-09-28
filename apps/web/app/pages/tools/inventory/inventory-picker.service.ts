@@ -191,7 +191,21 @@ export class InventoryPickerService {
     return (
       combineLatest({
         data: this.db.statusEffectsMap,
-        result: this.openEffectsPicker({ selection, title, multiple, predicate }).closed,
+        result: DataViewPicker.open(this.dialog, {
+          title: title || 'Pick effect',
+          selection: selection,
+          displayMode: ['grid'],
+          dataView: {
+            adapter: StatusEffectTableAdapter,
+            filter: predicate,
+          },
+          config: {
+            maxWidth: 1400,
+            maxHeight: 1200,
+            panelClass: ['w-full', 'h-full', 'p-4'],
+            injector: this.injector,
+          },
+        }).closed,
       })
         .pipe(take(1))
         // cancelled selection
@@ -244,7 +258,7 @@ export class InventoryPickerService {
     return DataViewPicker.open(this.dialog, {
       title: 'Choose Perk',
       selection: [('PerkID' in perkOrBucket ? perkOrBucket : null)?.PerkID].filter((it) => !!it),
-      displayMode: 'grid',
+      displayMode: ['grid'],
       dataView: {
         adapter: PerkTableAdapter,
         source: this.getAplicablePerks(item, perkOrBucket),
@@ -275,7 +289,7 @@ export class InventoryPickerService {
 
     return DataViewPicker.open(this.dialog, {
       title: 'Pick Gem',
-      displayMode: 'grid',
+      displayMode: ['grid'],
       dataView: {
         adapter: PerkTableAdapter,
         filter: (perk) => {
@@ -306,7 +320,7 @@ export class InventoryPickerService {
     console.log(items)
     return DataViewPicker.open(this.dialog, {
       title: 'Pick Attribute Mod',
-      displayMode: 'grid',
+      displayMode: ['grid'],
       dataView: {
         adapter: PerkTableAdapter,
         filter: (perk) => {
@@ -378,32 +392,5 @@ export class InventoryPickerService {
         })
       })
     )
-  }
-
-  protected openEffectsPicker({
-    title,
-    selection,
-    multiple,
-    predicate,
-  }: {
-    title?: string
-    selection?: string[]
-    multiple?: boolean
-    predicate?: (item: Statuseffect) => boolean
-  }) {
-    return DataViewPicker.open(this.dialog, {
-      title: title || 'Pick effect',
-      selection: selection,
-      dataView: {
-        adapter: StatusEffectTableAdapter,
-        source: this.db.statusEffects.pipe(map((items) => items.filter(predicate || (() => true)))),
-      },
-      config: {
-        maxWidth: 1400,
-        maxHeight: 1200,
-        panelClass: ['w-full', 'h-full', 'p-4'],
-        injector: this.injector,
-      },
-    })
   }
 }

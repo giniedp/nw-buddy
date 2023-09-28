@@ -13,7 +13,7 @@ import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
 import { PromptDialogComponent } from '~/ui/layout'
-import { GearsetDetailComponent } from './gearset-detail.component'
+import { GearsetDetailComponent } from './gearset.component'
 import { EmbedHeightDirective } from '~/utils/directives/embed-height.directive'
 
 @Component({

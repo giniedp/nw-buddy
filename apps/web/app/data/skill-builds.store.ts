@@ -21,7 +21,7 @@ export interface SkillBuildRow {
   abilities: Ability[]
 }
 
-@Injectable()
+@Injectable({ providedIn: 'root' })
 export class SkillBuildsStore extends ComponentStore<SkillBuildsState> {
   public readonly isLoaded$ = this.select(({ isLoaded }) => isLoaded)
   public readonly records$ = this.select(({ records }) => records)

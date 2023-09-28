@@ -30,11 +30,18 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
 
   public readonly tableGridOptions = this.adapter.gridOptions()
   public readonly virtualOptions = this.adapter.virtualOptions()
-  public readonly canToggleMode$ = this.selectSignal(({ modes }) => {
-    const gridEnabled = modes.includes('grid') && !!this.tableGridOptions
-    const tableEnabled = modes.includes('grid') && !!this.virtualOptions
-    return gridEnabled && tableEnabled
+
+  public readonly isTableSupported$ = this.selectSignal(({ modes }) => {
+    return modes.includes('table') && !!this.tableGridOptions
   })
+  public readonly isVirtualSupported = this.selectSignal(({ modes }) => {
+    return modes.includes('grid') && !!this.virtualOptions
+  })
+
+  public readonly canToggleMode$ = this.selectSignal(this.isTableSupported$, this.isVirtualSupported, (table, grid) => {
+    return table && grid
+  })
+
   public readonly mode$ = this.selectSignal(({ mode }) => {
     if ((!mode || mode === 'table') && !!this.tableGridOptions) {
       return 'table'
@@ -91,6 +98,14 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
       this.patchState({ mode: this.mode$() === 'table' ? 'grid' : 'table' })
     }
   }
+
+  public setMode = this.updater<DataViewMode[]>((state, mode) => {
+    return {
+      ...state,
+      modes: mode,
+      mode: mode[0],
+    }
+  })
 }
 
 function selectCategories<T>(adapter: DataViewAdapter<T>, items: T[]) {

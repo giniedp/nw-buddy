@@ -1,13 +1,14 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Injector } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { combineLatest, filter, map } from 'rxjs'
 import { SkillBuildsStore } from '~/data'
 import { NwModule } from '~/nw'
 import { QuicksearchService } from '~/ui/quicksearch'
-import { SkillWeaponDialogComponent } from '~/widgets/skill-builder/skill-weapon-dialog.component'
 import { SkillTreesListItemComponent } from './skill-trees-list-item.component'
+import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
+import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
 
 @Component({
   standalone: true,
@@ -46,20 +47,21 @@ export class SkillTreesListComponent {
     private dialog: Dialog,
     private router: Router,
     private route: ActivatedRoute,
-    private search: QuicksearchService
+    private search: QuicksearchService,
+    private injector: Injector
   ) {
     //
   }
 
   protected onCreateClicked() {
-    SkillWeaponDialogComponent.open(this.dialog, {
-      width: '100vw',
-      height: '100vh',
-      maxWidth: 400,
-      maxHeight: 600,
-      data: null,
+    openWeaponTypePicker({
+      dialog: this.dialog,
+      injector: this.injector,
     })
-      .closed.pipe(filter((it) => !!it))
+      .closed.pipe(
+        filter((it) => !!it?.length),
+        map((it) => NW_WEAPON_TYPES.find((type) => type.WeaponTypeID === String(it[0])))
+      )
       .subscribe(async (weapon) => {
         const record = await this.store.createRecord({
           record: {
@@ -67,7 +69,7 @@ export class SkillTreesListComponent {
             name: `New Skill Tree`,
             tree1: null,
             tree2: null,
-            weapon: weapon,
+            weapon: weapon.WeaponTag,
           },
         })
         if (record) {
@@ -77,5 +79,4 @@ export class SkillTreesListComponent {
         }
       })
   }
-
 }

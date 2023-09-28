@@ -54,7 +54,7 @@ export class PerkTableAdapter implements TableGridAdapter<PerkTableRecord>, Data
         perks = perks.filter(this.config.filter)
       }
       if (this.config?.sort) {
-        perks = perks.sort(this.config.sort)
+        perks = [...perks].sort(this.config.sort)
       }
       return perks
     }

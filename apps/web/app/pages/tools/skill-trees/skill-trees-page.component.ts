@@ -1,9 +1,9 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Injector } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
-import { filter } from 'rxjs'
+import { filter, map } from 'rxjs'
 import { SkillBuildRow, SkillBuildsStore } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -13,8 +13,9 @@ import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService } from '~/utils'
-import { SkillWeaponDialogComponent } from '~/widgets/skill-builder/skill-weapon-dialog.component'
 import { SkillTreesListComponent } from './skill-trees-list.component'
+import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
+import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
 
 @Component({
   standalone: true,
@@ -46,6 +47,7 @@ export class SkillBuildsComponent {
     private store: SkillBuildsStore,
     protected search: QuicksearchService,
     private dialog: Dialog,
+    private injector: Injector,
     head: HtmlHeadService
   ) {
     head.updateMetadata({
@@ -55,14 +57,14 @@ export class SkillBuildsComponent {
   }
 
   protected async createItem() {
-    SkillWeaponDialogComponent.open(this.dialog, {
-      width: '100vw',
-      height: '100vh',
-      maxWidth: 400,
-      maxHeight: 600,
-      data: null,
+    openWeaponTypePicker({
+      dialog: this.dialog,
+      injector: this.injector,
     })
-      .closed.pipe(filter((it) => !!it))
+      .closed.pipe(
+        filter((it) => !!it?.length),
+        map((it) => NW_WEAPON_TYPES.find((type) => type.WeaponTypeID === String(it[0])))
+      )
       .subscribe((weapon) => {
         this.store.createRecord({
           record: {
@@ -70,7 +72,7 @@ export class SkillBuildsComponent {
             name: `New Skill Tree`,
             tree1: null,
             tree2: null,
-            weapon: weapon,
+            weapon: weapon.WeaponTag,
           },
         })
       })

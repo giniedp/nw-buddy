@@ -20,20 +20,20 @@ import { EquipSlot, EquipSlotId, EQUIP_SLOTS, getStatusEffectTownBuffIds } from 
 import { IconsModule } from '~/ui/icons'
 import { ConfirmDialogComponent } from '~/ui/layout'
 import { ScreenshotModule } from '~/widgets/screenshot'
-import { GearsetPaneEffectComponent } from './gearset-pane-effect.component'
-import { GearsetPaneMainComponent } from './gearset-pane-main.component'
-import { GearsetPaneSkillComponent } from './gearset-pane-skill.component'
-import { GearsetPaneSlotComponent } from './gearset-pane-slot.component'
-import { GearsetPaneStatsComponent } from './gearset-pane-stats.component'
+import { GearsetPaneEffectComponent } from './panes/gearset-pane-effect.component'
+import { GearsetPaneMainComponent } from './panes/gearset-pane-main.component'
+import { GearsetPaneSkillComponent } from './panes/gearset-pane-skill.component'
+import { GearsetPaneSlotComponent } from './panes/gearset-pane-slot.component'
+import { GearsetPaneStatsComponent } from './panes/gearset-pane-stats.component'
 import { SwiperDirective } from '~/utils/directives/swiper.directive'
 import { svgChevronLeft } from '~/ui/icons/svg'
 import { SwiperOptions } from 'swiper/types/swiper-options'
 
 @Component({
   standalone: true,
-  selector: 'nwb-gearset-detail',
-  templateUrl: './gearset-detail.component.html',
-  styleUrls: ['./gearset-detail.component.scss'],
+  selector: 'nwb-gearset',
+  templateUrl: './gearset.component.html',
+  styleUrls: ['./gearset.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   exportAs: 'gearsetDetail',
   imports: [

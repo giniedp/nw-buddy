@@ -6,10 +6,12 @@
     {{ title }}
   </h3>
   <span class="flex-1"></span>
-  <ng-container *ngIf="!displayMode && service.canToggleMode$()">
+  <ng-container *ngIf="service.canToggleMode$()">
     <button class="btn btn-square btn-ghost" [nwbDataViewToggle]></button>
   </ng-container>
-  <button class="btn btn-square btn-ghost" [nwbDataViewOptionsMenu] [disabled]="!service.isTableActive$()"></button>
+  <ng-container *ngIf="service.isTableSupported$()">
+    <button class="btn btn-square btn-ghost" [nwbDataViewOptionsMenu] [disabled]="!service.isTableActive$()"></button>
+  </ng-container>
   <nwb-quicksearch-input [autofocus]="true" class="w-full md:w-60"></nwb-quicksearch-input>
 </div>
 

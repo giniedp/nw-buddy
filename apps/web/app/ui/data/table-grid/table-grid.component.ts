@@ -50,7 +50,7 @@ export interface SelectionChangeEvent<T> {
   imports: [CommonModule, AgGridDirective],
   providers: [TableGridPersistenceService, TableGridStore],
   host: {
-    class: 'flex-1 h-full w-full',
+    class: 'flex-1 h-full w-full relative',
   },
   animations: [
     trigger('fade', [

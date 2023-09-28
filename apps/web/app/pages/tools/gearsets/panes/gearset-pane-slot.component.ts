@@ -37,8 +37,8 @@ import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { shareReplayRefCount } from '~/utils'
 import { ItemDetailComponent } from '~/widgets/data/item-detail/item-detail.component'
-import { GearImporterDialogComponent } from '../inventory/gear-importer-dialog.component'
-import { InventoryPickerService } from '../inventory/inventory-picker.service'
+import { GearImporterDialogComponent } from '../../inventory/gear-importer-dialog.component'
+import { InventoryPickerService } from '../../inventory/inventory-picker.service'
 
 export interface GearsetSlotVM {
   slot?: EquipSlot
@@ -197,7 +197,7 @@ export class GearsetPaneSlotComponent {
     if (slot.itemType === 'Trophies') {
       this.picker
         .pickHousingItem({
-          title: 'Choose item for slot',
+          title: 'Select a trophy',
           selection: instance ? [instance.itemId] : [],
           category: this.slot.itemType,
         })
@@ -214,7 +214,7 @@ export class GearsetPaneSlotComponent {
     } else {
       this.picker
         .pickItem({
-          title: 'Choose item for slot',
+          title: 'Select an item',
           selection: instance ? [instance.itemId] : [],
           category: this.slot.itemType,
           noSkins: true,
