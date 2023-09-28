@@ -106,7 +106,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.preferences.language.observe()
+    this.preferences.language
+      .observe()
       .pipe(switchMap((locale) => this.translate.use(locale)))
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
@@ -120,18 +121,18 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   private onLangLoaded() {
-    // 1s delay 0.3s animation
     this.langLoaded = true
     this.cdRef.markForCheck()
     this.removeLoader()
   }
 
   private removeLoader() {
-    const el = this.document.querySelector('[data-loader]')
-    if (el) {
-      el.classList.remove('opacity-100')
-      el.classList.add('opacity-0')
-      setTimeout(() => el.remove(), 300)
-    }
+    this.document.querySelectorAll('[data-skeleton]').forEach((el) => {
+      setTimeout(() => {
+        el.classList.remove('opacity-100')
+        el.classList.add('opacity-0')
+        setTimeout(() => el.remove(), 300)
+      }, 500)
+    })
   }
 }

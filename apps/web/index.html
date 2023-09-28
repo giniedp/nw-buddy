@@ -20,21 +20,39 @@
     <meta name="google-site-verification" content="K149Y9uZBjHw3ZGTgxbEQ5EMYNixwLyWb60-lgwD3jY" />
   </head>
   <body class="dark font-sans" data-theme="nwbuddy">
-    <nw-buddy-app></nw-buddy-app>
+    <nw-buddy-app class="h-full z-[0]"></nw-buddy-app>
     <div
-      class="flex flex-row justify-center items-center h-screen w-screen absolute top-0 left-0 transition-all opacity-100 scale-100"
-      data-loader
+      class="flex flex-col h-full bg-base-200 absolute top-0 left-0 right-0 transition-all opacity-100 pointer-events-none z-[-1]"
+      data-skeleton
     >
-      <picture class="block aspect-square w-40 h-40 relative">
-        <img
-          class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-cw"
-          src="assets/loaders/crafting_rune_clockwise.png"
-        />
-        <img
-          class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
-          src="assets/loaders/crafting_rune_counter_clockwise.png"
-        />
-      </picture>
+      <div class="flex-none h-14 bg-black"></div>
+      <div class="flex flex-row flex-1">
+        <div class="hidden xl:flex flex-col flex-none w-[270px] bg-base-300"></div>
+        <div class="flex-1 relative"></div>
+      </div>
+    </div>
+    <div
+      class="flex flex-col h-full absolute top-0 left-0 right-0 transition-all opacity-100 pointer-events-none z-[1]"
+      data-skeleton
+    >
+      <div class="flex-none h-14"></div>
+      <div class="flex flex-row flex-1">
+        <div class="hidden xl:flex flex-col flex-none w-[270px]"></div>
+        <div class="flex-1 relative">
+          <div class="flex flex-row justify-center items-center h-full w-full absolute top-0 left-0 scale-100">
+            <picture class="block aspect-square w-40 h-40 relative">
+              <img
+                class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-cw"
+                src="assets/loaders/crafting_rune_clockwise.png"
+              />
+              <img
+                class="absolute object-contain top-0 left-0 right-0 bottom-0 w-full h-full animate-spin-ccw"
+                src="assets/loaders/crafting_rune_counter_clockwise.png"
+              />
+            </picture>
+          </div>
+        </div>
+      </div>
     </div>
   </body>
 </html>

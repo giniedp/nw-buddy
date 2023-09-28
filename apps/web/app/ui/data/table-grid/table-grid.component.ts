@@ -262,7 +262,8 @@ export class TableGridComponent<T> implements OnInit {
   }
 }
 
-const OVERLAY_LOADING = `<button class="btn btn-square btn-ghost loading"></button>`
+//const OVERLAY_LOADING = `<button class="btn btn-square btn-ghost loading"></button>`
+const OVERLAY_LOADING = `<div></div>`
 const OVERLAY_NO_ROWS = `
   <div class="alert shadow-lg max-w-[300px]">
     <div>
