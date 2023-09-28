@@ -9,12 +9,13 @@ import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { combineLatestOrEmpty } from '~/utils/combine-latest-or-empty'
 import { MusicRecord, RecipesTableAdapter } from './adapter'
+import { NwModule } from '~/nw'
 
 @Component({
   standalone: true,
   selector: 'nwb-music-page',
   templateUrl: './music-page.component.html',
-  imports: [CommonModule, RouterModule, DataViewModule, VirtualGridModule],
+  imports: [CommonModule, NwModule, RouterModule, DataViewModule, VirtualGridModule],
   providers: [
     provideDataView({
       adapter: RecipesTableAdapter,

@@ -9,6 +9,11 @@ const ROUTES: Routes = [
     component: SchematicsPageComponent,
     children: [
       {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'Weaponsmithing',
+      },
+      {
         path: ':category',
         component: SchematicsTrackingComponent,
       },
