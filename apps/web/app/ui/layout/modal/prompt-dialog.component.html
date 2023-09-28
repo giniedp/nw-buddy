@@ -7,7 +7,24 @@
     <p>{{ body }}</p>
   </ng-container>
 
-  <input [(ngModel)]="value" type="text" [placeholder]="placeholder" class="input input-bordered w-full max-w-xs mt-3">
+  <ng-container *ngIf="type === 'number'">
+    <input
+      [(ngModel)]="value"
+      [type]="type"
+      [min]="min"
+      [max]="max"
+      [placeholder]="placeholder"
+      class="input input-bordered w-full max-w-xs mt-3"
+    />
+  </ng-container>
+  <ng-container *ngIf="type !== 'number'">
+    <input
+      [(ngModel)]="value"
+      [type]="type || 'text'"
+      [placeholder]="placeholder"
+      class="input input-bordered w-full max-w-xs mt-3"
+    />
+  </ng-container>
 </div>
 <div class="modal-action flex-row-reverse justify-start layout-pad gap-1">
   <button class="btn btn-primary" (click)="submit()">{{ positive }}</button>

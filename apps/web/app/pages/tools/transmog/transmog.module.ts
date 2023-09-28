@@ -3,7 +3,7 @@ import { ActivatedRoute, ActivatedRouteSnapshot, Router, RouterModule, Routes } 
 import { combineLatest, firstValueFrom } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { eqCaseInsensitive } from '~/utils'
-import { CATEGORIES, matchTransmogCateogry } from '~/widgets/data/appearance-detail'
+import { TRANSMOG_CATEGORIES, matchTransmogCateogry } from '~/widgets/data/appearance-detail'
 import { TransmogItemComponent } from './transmog-item.component'
 import { TransmogOverviewComponent } from './transmog-overview.component'
 import { TransmogComponent } from './transmog.component'
@@ -16,7 +16,7 @@ const ROUTES: Routes = [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: CATEGORIES[0].id,
+        redirectTo: TRANSMOG_CATEGORIES[0].id,
       },
       {
         path: ':category',
@@ -43,12 +43,12 @@ async function redirectTocategory(snap: ActivatedRouteSnapshot) {
   const router = inject(Router)
 
   const category = snap.paramMap.get('category')
-  if (CATEGORIES.some((it) => eqCaseInsensitive(it.id, category))) {
+  if (TRANSMOG_CATEGORIES.some((it) => eqCaseInsensitive(it.id, category))) {
     return true
   }
   const id = snap.firstChild?.paramMap.get('id')
   if (!id) {
-    router.navigate(['transmog', CATEGORIES[0].id])
+    router.navigate(['transmog', TRANSMOG_CATEGORIES[0].id])
     return false
   }
 
@@ -57,13 +57,13 @@ async function redirectTocategory(snap: ActivatedRouteSnapshot) {
   )
   const item = items.find((it) => !!it)
   if (!item) {
-    router.navigate(['transmog', CATEGORIES[0].id])
+    router.navigate(['transmog', TRANSMOG_CATEGORIES[0].id])
     return false
   }
 
-  const cat = CATEGORIES.find((it) => matchTransmogCateogry(it, item))
+  const cat = TRANSMOG_CATEGORIES.find((it) => matchTransmogCateogry(it, item))
   if (!cat) {
-    router.navigate(['transmog', CATEGORIES[0].id])
+    router.navigate(['transmog', TRANSMOG_CATEGORIES[0].id])
     return false
   }
 

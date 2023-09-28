@@ -32,7 +32,7 @@ export function isItemArmor(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null
 }
 
 export function isItemJewelery(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
-  return item?.ItemClass?.includes('Jewelery')
+  return item?.ItemClass?.includes('Jewelry')
 }
 
 export function isItemWeapon(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
@@ -76,7 +76,7 @@ export function hasItemIngredientCategory(item: ItemDefinitionMaster, categoryId
 }
 
 export type ItemRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary' | 'artifact'
-const ITEM_RARITIES: ItemRarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary']
+const ITEM_RARITIES: ItemRarity[] = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'artifact']
 const ITEM_RARITY_LABELS: Record<ItemRarity, string> = {
   common: `RarityLevel0_DisplayName`,
   uncommon: `RarityLevel1_DisplayName`,
@@ -151,10 +151,13 @@ export function getItemPerkIdsWithOverride(item: ItemDefinitionMaster, overrides
   return [...perks, ...randoms].filter((it) => !!it)
 }
 
-export function getItemPerkInfos(
-  item: ItemDefinitionMaster,
-  overrides?: Record<string, string>
-): Array<{ key: string; perkId?: string; bucketId?: string }> {
+export interface ItemPerkInfo {
+  key: string
+  perkId?: string
+  bucketId?: string
+}
+
+export function getItemPerkInfos(item: ItemDefinitionMaster, overrides?: Record<string, string>): ItemPerkInfo[] {
   return [
     ...getItemPerkKeys(item)
       .map((key) => {

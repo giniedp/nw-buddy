@@ -60,7 +60,7 @@ const DYE_CATEGOREIS = [
 ]
 const MODEL_IDS = new CaseInsensitiveMap<string, number>()
 
-export const CATEGORIES: TransmogCategory[] = [
+export const TRANSMOG_CATEGORIES: TransmogCategory[] = [
   {
     id: '1handed',
     name: 'categorydata_1handed',
@@ -145,11 +145,11 @@ export class TransmogService extends ComponentStore<TransmogServiceState> {
   private readonly db = inject(NwDbService)
   private readonly tl8 = inject(TranslateService)
 
-  public readonly categories$ = of(CATEGORIES)
+  public readonly categories$ = of(TRANSMOG_CATEGORIES)
   public readonly appearances$ = selectStream(
     {
       locale: this.tl8.locale.value$,
-      categories: of(CATEGORIES),
+      categories: of(TRANSMOG_CATEGORIES),
       itemsMap: this.db.itemsByAppearanceId,
       itemAppearances: this.db.itemAppearances,
       weaponAppearances: this.db.weaponAppearances,

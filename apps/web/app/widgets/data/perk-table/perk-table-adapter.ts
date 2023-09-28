@@ -16,7 +16,7 @@ import { DataTableCategory } from '~/ui/data/table-grid'
 import { addGenericColumns } from '~/ui/data/table-grid'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { shareReplayRefCount } from '~/utils'
+import { selectStream, shareReplayRefCount } from '~/utils'
 import { PerkGridCellComponent } from './perk-grid-cell.component'
 import {
   PerkTableRecord,
@@ -36,24 +36,29 @@ export class PerkTableAdapter implements TableGridAdapter<PerkTableRecord>, Data
   private ctx = inject(NwTextContextService)
   private utils: TableGridUtils<PerkTableRecord> = inject(TableGridUtils)
   private config: TableGridAdapterOptions<PerkTableRecord> = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
-  private source$: Observable<PerkTableRecord[]> = combineLatest({
-    perks: this.config?.source || this.db.perks,
-    affixstats: this.db.affixstatsMap,
-    abilities: this.db.abilitiesMap,
-  })
-    .pipe(
-      map(({ perks, affixstats, abilities }) => {
-        return perks.map((it): PerkTableRecord => {
-          return {
-            ...it,
-            $affix: affixstats.get(it.Affix),
-            $ability: abilities.get(it.EquipAbility?.[0]),
-          }
-        })
+  private source$: Observable<PerkTableRecord[]> = selectStream(
+    {
+      perks: this.config?.source || this.db.perks,
+      affixstats: this.db.affixstatsMap,
+      abilities: this.db.abilitiesMap,
+    },
+    ({ perks, affixstats, abilities }) => {
+      perks = perks.map((it): PerkTableRecord => {
+        return {
+          ...it,
+          $affix: affixstats.get(it.Affix),
+          $ability: abilities.get(it.EquipAbility?.[0]),
+        }
       })
-    )
-    .pipe(shareReplayRefCount(1))
-
+      if (this.config?.filter) {
+        perks = perks.filter(this.config.filter)
+      }
+      if (this.config?.sort) {
+        perks = perks.sort(this.config.sort)
+      }
+      return perks
+    }
+  )
   public entityID(item: PerkTableRecord): string {
     return item.PerkID
   }

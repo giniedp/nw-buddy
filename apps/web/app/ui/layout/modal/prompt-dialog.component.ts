@@ -8,6 +8,9 @@ export interface PromptDialogOptions {
   body: string
   html?: boolean
   input?: string
+  type?: 'text' | 'number' | 'password'
+  min?: number
+  max?: number
   placeholder?: string
   positive: string
   negative: string
@@ -25,13 +28,16 @@ export interface PromptDialogOptions {
   },
 })
 export class PromptDialogComponent {
-  public static open(dialog: Dialog, config: DialogConfig<PromptDialogOptions, DialogRef<string | null, PromptDialogComponent>>) {
+  public static open(
+    dialog: Dialog,
+    config: DialogConfig<PromptDialogOptions, DialogRef<string | null, PromptDialogComponent>>
+  ) {
     return dialog.open(PromptDialogComponent, {
       maxWidth: 600,
       maxHeight: 800,
       minHeight: 320,
       minWidth: 300,
-      ...config
+      ...config,
     })
   }
 
@@ -61,6 +67,18 @@ export class PromptDialogComponent {
 
   protected get neutral() {
     return this.data.neutral
+  }
+
+  protected get type() {
+    return this.data.type
+  }
+
+  protected get min() {
+    return this.data.min
+  }
+
+  protected get max() {
+    return this.data.max
   }
 
   protected value: string

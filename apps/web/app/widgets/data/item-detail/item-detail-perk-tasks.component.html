@@ -1,6 +1,6 @@
 <ng-container *ngIf="tasks$ | async; let tasks">
   <div *ngFor="let task of tasks" class="flex flex-row gap-1">
-    <picture *ngIf="task.icon">
+    <picture *ngIf="task.icon" class="flex-none mt-1">
       <img [nwImage]="task.icon" class="w-5 h-5" />
     </picture>
     <div [nwHtml]="task.description | nwText : task.context"></div>

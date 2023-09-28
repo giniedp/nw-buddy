@@ -30,6 +30,7 @@ import {
   housingColUserStockValue,
 } from './housing-table-cols'
 import { HousingCellComponent } from './housing-cell.component'
+import { selectStream } from '~/utils'
 
 @Injectable()
 export class HousingTableAdapter implements TableGridAdapter<HousingTableRecord>, DataViewAdapter<HousingTableRecord> {
@@ -66,8 +67,26 @@ export class HousingTableAdapter implements TableGridAdapter<HousingTableRecord>
   }
 
   public connect() {
-    return (this.config?.source || this.db.housingItems).pipe(map((items) => items.filter((it) => !it.ExcludeFromGame)))
+    return this.source$
   }
+
+  private source$ = selectStream(this.config?.source || this.db.housingItems, (items) => {
+    const filter = this.config?.filter
+    items = items.filter((it) => {
+      if (it.ExcludeFromGame) {
+        return false
+      }
+      if (filter && !filter(it)) {
+        return false
+      }
+      return true
+    })
+    const sort = this.config?.sort
+    if (sort) {
+      items = [...items].sort(sort)
+    }
+    return items
+  })
 }
 
 export function buildCommonHousingGridOptions(util: TableGridUtils<HousingTableRecord>) {

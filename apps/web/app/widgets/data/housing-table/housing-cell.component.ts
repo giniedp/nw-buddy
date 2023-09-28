@@ -57,6 +57,8 @@ export class HousingCellComponent implements VirtualGridCellComponent<Housingite
   }
 
   @HostListener('click', ['$event'])
+  @HostListener('dblclick', ['$event'])
+  @HostListener('keydown', ['$event'])
   public onClick(e: Event) {
     this.grid.handleItemEvent(this.data, e)
   }

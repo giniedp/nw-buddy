@@ -1,4 +1,5 @@
-import { NW_MAX_CHARACTER_LEVEL } from "./constants"
+import { ItemClass } from '../generated/types'
+import { NW_MAX_CHARACTER_LEVEL } from './constants'
 
 export type EquipSlotId =
   | 'head'
@@ -62,6 +63,29 @@ export type EquipSlotItemType =
   | 'Consumable'
   | 'Ammo'
   | 'Trophies'
+
+const MAP_TO_ITEM_CLASS: Partial<Record<EquipSlotItemType, ItemClass>> = {
+  EquippableHead: 'EquippableHead',
+  EquippableChest: 'EquippableChest',
+  EquippableHands: 'EquippableHands',
+  EquippableLegs: 'EquippableLegs',
+  EquippableFeet: 'EquippableFeet',
+  EquippableAmulet: 'EquippableAmulet',
+  EquippableRing: 'EquippableRing',
+  EquippableToken: 'EquippableToken',
+  Weapon: 'EquippableMainHand',
+  Shield: 'Shield',
+  HeartGem: 'Heartgem',
+}
+
+export function getItemClassForSlot(slot: EquipSlot): ItemClass {
+  return MAP_TO_ITEM_CLASS[slot.itemType]
+}
+
+export function getEquipSlotForId(id: EquipSlotId): EquipSlot {
+  const found = EQUIP_SLOTS.find((it) => it.id === id)
+  return found ? { ...found } : null
+}
 
 export const EQUIP_SLOTS: Array<EquipSlot> = [
   {
@@ -350,23 +374,23 @@ const GS_GROUPS: GearScoreGroup[] = [
       { id: 'hands', weight: 0.15 },
       { id: 'legs', weight: 0.2 },
       { id: 'feet', weight: 0.1 },
-    ]
+    ],
   },
   {
     weight: 0.35,
     slots: [
       { id: 'weapon1', unlockLevel: 0 },
-      { id: 'weapon2', unlockLevel: 5 }
-    ]
+      { id: 'weapon2', unlockLevel: 5 },
+    ],
   },
   {
     weight: 0.2,
     slots: [
       { id: 'amulet', unlockLevel: 0 },
       { id: 'ring', unlockLevel: 20 },
-      { id: 'earring', unlockLevel: 40 }
-    ]
-  }
+      { id: 'earring', unlockLevel: 40 },
+    ],
+  },
 ]
 
 const NW_GS_WEIGHTS: Partial<Record<EquipSlotId, number>> = {
@@ -391,7 +415,10 @@ export function gearScoreRelevantSlots(): Array<EquipSlot & { weight: number }> 
   }).filter((it) => !!it.weight)
 }
 
-export function getAverageGearScore(equip: Array<{ id: EquipSlotId; gearScore: number }>, playerLevel = NW_MAX_CHARACTER_LEVEL) {
+export function getAverageGearScore(
+  equip: Array<{ id: EquipSlotId; gearScore: number }>,
+  playerLevel = NW_MAX_CHARACTER_LEVEL
+) {
   let result = 0
   for (let { slots, weight } of GS_GROUPS) {
     const hasLockSlots = slots.some((it) => it.unlockLevel)

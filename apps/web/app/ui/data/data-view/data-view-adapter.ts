@@ -23,6 +23,14 @@ export interface DataViewAdapterOptions<T> {
    */
   source?: Observable<T[]>
   /**
+   * Optional filter to apply to the source
+   */
+  filter?: (item: T) => boolean
+  /**
+   * Optional sort order comparator
+   */
+  sort?: (a: T, b: T) => number
+  /**
    * Builder ag-grid configuration
    */
   gridOptions?: (util: TableGridUtils) => GridOptions<T>

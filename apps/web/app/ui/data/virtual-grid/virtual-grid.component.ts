@@ -6,6 +6,7 @@ import {
   Component,
   ContentChild,
   ElementRef,
+  EventEmitter,
   Input,
   Output,
   Type,
@@ -100,6 +101,12 @@ export class VirtualGridComponent<T> {
   @Input()
   public component: Type<VirtualGridCellComponent<T>>
 
+  @Output()
+  public cellDoubleClicked = new EventEmitter<T>()
+
+  @Output()
+  public cellClicked = new EventEmitter<T>()
+
   @ContentChild(VirtualGridRowDirective, { static: true })
   protected customRow: VirtualGridRowDirective<T>
 
@@ -144,19 +151,46 @@ export class VirtualGridComponent<T> {
   }
 
   public handleItemEvent(item: T, e: Event) {
-    if (!isSelectionEvent(e)) {
-      return
-    }
     const identifyBy = this.store.identifyBy$()
-    if (!identifyBy) {
-      return
-    }
-    const itemId = identifyBy(item)
+
+    const itemId = identifyBy?.(item)
     const selection = this.store.selection()
-    if (selection.includes(itemId)) {
-      this.store.patchState({ selection: [] })
-    } else {
-      this.store.patchState({ selection: [itemId] })
+    const isSelected = selection.includes(itemId)
+    switch (e.type) {
+      case 'click': {
+        if (!isSelected) {
+          this.store.patchState({ selection: [itemId].filter((it) => it != null) })
+        } else if ((e as MouseEvent).shiftKey) {
+          this.store.patchState({ selection: [] })
+        }
+        this.cellClicked.emit(item)
+        break
+      }
+      case 'dblclick': {
+        if (!isSelected) {
+          this.store.patchState({ selection: [itemId].filter((it) => it != null) })
+        }
+        this.cellDoubleClicked.emit(item)
+        break
+      }
+      case 'keydown': {
+        if ((e as KeyboardEvent).code === 'Space') {
+          e.preventDefault()
+          if (selection.includes(itemId)) {
+            this.store.patchState({ selection: [] })
+          } else {
+            this.store.patchState({ selection: [itemId].filter((it) => it != null) })
+          }
+        }
+        if ((e as KeyboardEvent).code === 'Space') {
+          e.preventDefault()
+          if (selection.includes(itemId)) {
+            this.store.patchState({ selection: [] })
+          } else {
+            this.store.patchState({ selection: [itemId].filter((it) => it != null) })
+          }
+        }
+      }
     }
   }
 

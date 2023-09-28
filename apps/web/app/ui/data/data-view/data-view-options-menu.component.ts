@@ -3,9 +3,9 @@ import { CommonModule } from '@angular/common'
 import { Component, HostListener, Input, TemplateRef } from '@angular/core'
 import { IconsModule } from '../../icons'
 import { svgEllipsisVertical } from '../../icons/svg'
+import { gridHasAnyFilterPresent } from '../ag-grid/utils'
 import { TableGridPanelComponent } from '../table-grid'
 import { DataViewService } from './data-view.service'
-import { gridHasAnyFilterPresent } from '../ag-grid/utils'
 
 @Component({
   standalone: true,

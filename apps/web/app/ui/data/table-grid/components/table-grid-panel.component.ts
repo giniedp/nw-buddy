@@ -5,7 +5,7 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ComponentStore } from '@ngrx/component-store'
-import { BehaviorSubject, combineLatest, firstValueFrom, map, switchMap, tap } from 'rxjs'
+import { BehaviorSubject, combineLatest, filter, firstValueFrom, map, switchMap, tap } from 'rxjs'
 import { AgGrid } from '~/ui/data/ag-grid'
 import { gridHasAnyFilterPresent } from '~/ui/data/ag-grid/utils'
 import { IconsModule } from '~/ui/icons'
@@ -51,6 +51,7 @@ export class TableGridPanelComponent extends ComponentStore<{
     initialValue: false,
   })
   protected columns$ = this.grid$
+    .pipe(filter((it) => !!it))
     .pipe(
       tap(({ columnApi }) => this.colState.next(columnApi.getColumnState())),
       switchMap((grid) => {

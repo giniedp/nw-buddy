@@ -154,11 +154,16 @@ export class AttributesEditorComponent implements OnInit {
   }
 
   protected attributeBlur(state: AttributeState, e: Event) {
+    // const value = (e.target as HTMLInputElement).valueAsNumber
+    // const newValue = Math.min(Math.max(value || 0, state.inputMin), state.inputMax)
+    // if (!Number.isFinite(value) || value !== newValue) {
+    //   ;(e.target as HTMLInputElement).value = newValue as any
+    // }
+  }
+
+  protected attributeWheel(state: AttributeState, e: Event) {
     const value = (e.target as HTMLInputElement).valueAsNumber
-    const newValue = Math.min(Math.max(value || 0, state.inputMin), state.inputMax)
-    if (!Number.isFinite(value) || value !== newValue) {
-      ;(e.target as HTMLInputElement).value = newValue as any
-    }
+    this.attributeInput(state, value)
   }
 
   protected attributeFocus(e: Event) {

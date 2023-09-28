@@ -199,7 +199,6 @@ export class GearsetPaneSlotComponent {
         .pickHousingItem({
           title: 'Choose item for slot',
           selection: instance ? [instance.itemId] : [],
-          multiple: false,
           category: this.slot.itemType,
         })
         .pipe(take(1))
@@ -217,8 +216,8 @@ export class GearsetPaneSlotComponent {
         .pickItem({
           title: 'Choose item for slot',
           selection: instance ? [instance.itemId] : [],
-          multiple: false,
           category: this.slot.itemType,
+          noSkins: true,
         })
         .pipe(take(1))
         .subscribe(([item]) => {

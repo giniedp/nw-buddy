@@ -20,6 +20,7 @@ import {
   itemColItemClass,
   itemColItemId,
   itemColItemType,
+  itemColItemTypeName,
   itemColName,
   itemColOwnedWithGS,
   itemColPerks,
@@ -72,22 +73,33 @@ export class ItemTableAdapter implements TableGridAdapter<ItemTableRecord>, Data
   }
 
   public connect() {
-    return selectStream(
-      {
-        items: this.config?.source || this.db.items,
-        perks: this.db.perksMap,
-      },
-      ({ items, perks }) => {
-        return items.map((it): ItemTableRecord => {
-          return {
-            ...it,
-            $perks: getItemPerks(it, perks),
-            $perkBuckets: getItemPerkBucketIds(it),
-          }
-        })
-      }
-    )
+    return this.source$
   }
+
+  private source$ = selectStream(
+    {
+      items: this.config?.source || this.db.items,
+      perks: this.db.perksMap,
+    },
+    ({ items, perks }) => {
+      items = items.map((it): ItemTableRecord => {
+        return {
+          ...it,
+          $perks: getItemPerks(it, perks),
+          $perkBuckets: getItemPerkBucketIds(it),
+        }
+      })
+      const filter = this.config?.filter
+      if (filter) {
+        items = items.filter(filter)
+      }
+      const sort = this.config?.sort
+      if (sort) {
+        items = [...items].sort(sort)
+      }
+      return items
+    }
+  )
 }
 
 export function buildCommonItemGridOptions(util: TableGridUtils<ItemTableRecord>) {
@@ -100,6 +112,7 @@ export function buildCommonItemGridOptions(util: TableGridUtils<ItemTableRecord>
       itemColPerks(util),
       itemColRarity(util),
       itemColTier(util),
+      itemColItemTypeName(util),
       itemColBookmark(util),
       itemColStockCount(util),
       itemColOwnedWithGS(util),
@@ -131,6 +144,7 @@ export function buildPickerItemGridOptions(util: TableGridUtils<ItemTableRecord>
       itemColPerks(util),
       itemColRarity(util),
       itemColTier(util),
+      itemColItemTypeName(util),
       itemColBookmark(util),
       itemColGearScore(util),
       itemColSource(util),

@@ -30,6 +30,7 @@ import { ItemTableRecord } from './item-table-cols'
     class: 'block rounded-md overflow-clip m-1',
     '[class.outline]': 'selected',
     '[class.outline-primary]': 'selected',
+    '[tabindex]': '0',
   },
 })
 export class ItemCellComponent implements VirtualGridCellComponent<ItemDefinitionMaster> {
@@ -56,6 +57,8 @@ export class ItemCellComponent implements VirtualGridCellComponent<ItemDefinitio
   }
 
   @HostListener('click', ['$event'])
+  @HostListener('dblclick', ['$event'])
+  @HostListener('keydown', ['$event'])
   public onClick(e: Event) {
     this.grid.handleItemEvent(this.data, e)
   }

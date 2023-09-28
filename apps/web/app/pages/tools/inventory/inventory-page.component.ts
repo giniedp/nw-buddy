@@ -93,6 +93,7 @@ export class InventoryPageComponent implements OnInit {
       .pickItem({
         multiple: true,
         category: await firstValueFrom(this.service.category$),
+        noSkins: true,
       })
       .pipe(take(1))
       .subscribe((items) => {

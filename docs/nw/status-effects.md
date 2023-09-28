@@ -10,6 +10,7 @@ PlaceholderIcon?:                            string;
 ```
 
 ## Ignorable
+
 ```ts
 UiNameplatePriority:                         number;
 UIPriority:                                  number;
@@ -28,18 +29,22 @@ FxScriptOn?:                                 string; // activates a script
 DisableSupportContributionRewards?:          boolean;
 DisableTelemetry?:                           boolean | string;
 IsNegative?:                                 boolean | string; // adds red background to icon
+"CostumeChangeId": "string",
 ```
 
 ## Attribute bonus
+
 ```ts
 MODConstitution?:                            number;
 MODDexterity?:                               number;
 MODFocus?:                                   number;
 MODIntelligence?:                            number;
 MODStrength?:                                number;
+"AttributePlacingMods": "string",
 ```
 
 ## Absorption
+
 ```ts
 ABSAcid?:                                    number;
 ABSArcane:                                   number;
@@ -57,6 +62,7 @@ ABSVitalsCategory?:                          number | string;
 ```
 
 ## Damage
+
 ```ts
 DMGArcane?:                                  number;
 DMGCorruption?:                              number;
@@ -74,6 +80,7 @@ DMGVitalsCategory?:                          number | string;
 ```
 
 ## Weakness
+
 ```ts
 WKNArcane?:                                  number;
 WKNCorruption?:                              number;
@@ -89,6 +96,7 @@ WKNThrust?:                                  number;
 ```
 
 ## Effect resistance
+
 ```ts
 RESBleed?:                                   number;
 RESBlight?:                                  number;
@@ -96,8 +104,11 @@ RESCurse?:                                   number;
 RESDisease?:                                 number;
 RESFrostbite?:                               number;
 RESPoison?:                                  number;
+"RESSpores": "number",
 ```
+
 ## Gathering bonus
+
 ```ts
 EFFHarvesting?:                              number;
 EFFLogging?:                                 number;
@@ -106,6 +117,7 @@ EFFSkinning?:                                number;
 ```
 
 # ?
+
 ```ts
 ABABleed?:                                   number;
 ABABlight?:                                  number;
@@ -116,6 +128,7 @@ ABAPoison?:                                  number;
 ```
 
 # ?
+
 ```ts
 BLAArcane?:                                  number;
 BLACorruption?:                              number;
@@ -130,6 +143,7 @@ BLAThrust?:                                  number;
 ```
 
 # ?
+
 ```
 AFABleed?:                                   number;
 AFABlight?:                                  number;
@@ -137,9 +151,12 @@ AFACurse?:                                   number;
 AFADisease?:                                 number;
 AFAFrostbite?:                               number;
 AFAPoison?:                                  number;
+"AFASpores": "number",
+"AFAStunned": "number",
 ```
 
-## Experience Boost 
+## Experience Boost
+
 ```ts
 EXPFishing?:                                 number;
 EXPHarvesting?:                              number;
@@ -154,6 +171,7 @@ EXPWoodworking?:                             number | string;
 ```
 
 ## Gathering Yield
+
 ```ts
 MULTFishing?:                                number;
 MULTHarvesting?:                             number;
@@ -163,6 +181,7 @@ MULTSkinning?:                               number;
 ```
 
 ## Luck rol
+
 ```ts
 ROLCooking?:                                 number;
 ROLFishing?:                                 number;
@@ -178,6 +197,7 @@ ROLWoodworking?:                             number;
 ```
 
 ## Max Gearscore Craft
+
 ```ts
 MaxGSArcana?:                                number;
 MaxGSArmoring?:                              number;
@@ -187,6 +207,7 @@ MaxGSWeaponsmithing?:                        number;
 ```
 
 ## Min Gearscore Craft
+
 ```ts
 MGSArcana?:                                  number;
 MGSArmoring?:                                number;
@@ -196,12 +217,14 @@ MGSWeaponsmithing?:                          number;
 ```
 
 ## Group XP contribution (music)
+
 ```ts
 XPIncreases?:                                number | string;
 XPIncreasesTooltip?:                         number;
 ```
 
 ## Remove Effect Trigger
+
 ```ts
 RemoveOnDeath?:                              number | string; // on finish?
 RemoveOnDeathsDoor?:                         number | string; // on death but reviveable?
@@ -210,6 +233,7 @@ RemoveOnRespawn?:                            number;
 ```
 
 ## Mods
+
 ```ts
 AzothMod?:                                   number; // When gain Azoth, gain % more (scaling)
 CoreTempMod?:                                number; // something unused
@@ -218,7 +242,7 @@ FactionReputationMod?:                       number; // When gain Reputation, ga
 FactionTokensMod?:                           number; // When gain Tokens, gain % more (scaling, loyalty perk)
 GlobalRollMod?:                              number; // Adds to global luck (trophies, luck perk, perls)
 MaxHealthMod?:                               number; //increase max health by %
-MoveSpeedMod?:                               number; // increase movement speed by % 
+MoveSpeedMod?:                               number; // increase movement speed by %
 SprintSpeedMod?:                             number; // increase sprint speed by %
 NonConsumableHealMod?:                       number; // unused?
 TerritoryStandingMod?:                       number; // When gain Standing, gain % more (music buff)
@@ -227,6 +251,7 @@ EffectPotencyMods?:                          string; // e.g. Slow=-1.0+Root=-1.0
 ```
 
 ## Conditions
+
 ```ts
 HitCondition?:                               string; // removes this effect: OnHit OnHitTaken
 OnDeathStatusEffect?:                        string; // applied status effect on death
@@ -240,6 +265,7 @@ AddOnStackSizeComparison?:                   string; // fullfills this compariso
 ```
 
 ## Effects
+
 ```ts
 Encumbrance?:                                number; // increases encumbrance limit
 EquipAbility?:                               string; // effect equips this ability
@@ -277,8 +303,9 @@ StaminaRate:                                 number; // add to stamina restaurat
 ```
 
 ## TODO
+
 ```ts
-RemoveEffectModsOnInactive?:                 boolean; // 
+RemoveEffectModsOnInactive?:                 boolean; //
 RemoveStatusEffectCategories?:               string;
 RemoveStatusEffects?:                        string;
 RemoveUnappliedStacks?:                      boolean | string;
@@ -376,4 +403,25 @@ WeaponMasteryCategoryId?:                    number | string;
 WindowHeader?:                               string;
 
 "NotCombatAction "?:                         boolean;
+DamageSplitTaken?:                           number
+DamageSplitTakenBySource?:                   number
+DismissMount?:                               boolean
+DurationAttbScalingMaxValue?:                number
+ExpansionForDeathRecap?:                     string
+GameEventTypeTradeskillEXPMod?:              string
+HealthMinPercent?:                           number
+InitialStackSize?:                           boolean
+IsServerOnly?:                               boolean
+LinkedBeamName?:                             string
+LinkedBeamStackThreshold?:                   number
+LocTextTagForDeathRecap?:                    string
+ModDmgBasedMultValue_ForTooltip?:            number
+MountedOnly?:                                boolean
+ObjectiveLocTextTagForDeathRecap?:           string
+PotencyAttbScalingMaxValue?:                 number
+PreventMirrorBeams?:                         boolean
+RemoveWhenEnteringGameModeRequiringTeleport?:string
+ShowTextInRemoteDamageNumbers?:              boolean
+SourceAttributeBasedDurationScalings?:       string
+SourceAttributeBasedPotencyScalings?:        string
 ```

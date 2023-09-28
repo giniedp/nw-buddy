@@ -15,6 +15,10 @@ export function isPerkGem(perk: Pick<Perks, 'PerkType'>) {
   return perk?.PerkType === 'Gem'
 }
 
+export function isPerkEmptyGemSlot(perk: Perks) {
+  return eqIgnoreCase(perk?.PerkID, 'PerkID_Gem_EmptyGemSlot')
+}
+
 export function isPerkGenerated(perk: Pick<Perks, 'PerkType'>) {
   return perk?.PerkType === 'Generated'
 }

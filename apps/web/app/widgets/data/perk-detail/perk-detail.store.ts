@@ -1,8 +1,8 @@
 import { Injectable, Output, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { NW_FALLBACK_ICON, explainPerkMods, getPerkItemClassGSBonus } from '@nw-data/common'
+import { NW_FALLBACK_ICON, explainPerkMods, getAffixMODs, getPerkItemClassGSBonus } from '@nw-data/common'
 import { Affixstats, Perks } from '@nw-data/generated'
-import { combineLatest, map } from 'rxjs'
+import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { NwTextContextService } from '~/nw/expression'
 import { rejectKeys } from '~/utils'
@@ -60,6 +60,10 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
   public readonly name$ = this.select(this.perk$, (it) => it?.DisplayName || it?.SecondaryEffectDisplayName)
   public readonly description$ = this.select(this.perk$, (it) => it?.Description)
   public readonly properties$ = this.select(this.perk$, selectProperties)
+  public readonly modsInfo$ = this.select(
+    defer(() => this.affix$),
+    (it) => getAffixMODs(it)
+  )
 
   public readonly affixId$ = this.select(this.perk$, (it) => it?.Affix)
   public readonly affix$ = this.select(this.db.affixstat(this.affixId$), (it) => it)

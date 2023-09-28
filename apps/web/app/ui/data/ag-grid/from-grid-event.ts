@@ -29,7 +29,14 @@ export function fromGridEvent<T extends AgGridEvent = AgGridEvent>(
       return new Observable<T>((sub) => {
         const handler = (res: T) => sub.next(res)
         api.addEventListener(event as string, handler)
-        return () => api.removeEventListener(event as string, handler)
+        return () => {
+          try {
+            api.removeEventListener(event as string, handler)
+          } catch (err) {
+            // TODO: use destroy event to unsubscribe before grid is destroyed
+            console.error(err)
+          }
+        }
       })
     })
   )

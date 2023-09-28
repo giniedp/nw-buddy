@@ -98,6 +98,38 @@
     </nwb-item-card>
   </ng-container>
 
+  <div *ngIf="!vm.instance && !square" class="h-full p-4 opacity-50 hover:opacity-100 transition-opacity">
+    <ul class="menu menu-compact menu-vertical rounded-md">
+      <li>
+        <a (click)="pickItem(vm)">
+          <nwb-icon [icon]="iconPlus" class="w-4 h-4"></nwb-icon>
+          <div class="flex flex-col leading-none">
+            <span>New item</span>
+            <span class="text-xs opacity-75">Pick an item from DB and configure from scratch</span>
+          </div>
+        </a>
+      </li>
+      <li *ngIf="!vm.isEqupment">
+        <a (click)="linkItem(vm)">
+          <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
+          <div class="flex flex-col leading-none">
+            <span>Link item</span>
+            <span class="text-xs opacity-75">Pick an item your inventory and link it to this slot</span>
+          </div>
+        </a>
+      </li>
+      <li *ngIf="vm.canUseImporter">
+        <a (click)="itemFromImage(vm)">
+          <nwb-icon [icon]="iconImage" class="w-4 h-4"></nwb-icon>
+          <div class="flex flex-col leading-none">
+            <span>Scan item</span>
+            <span class="text-xs opacity-75">Create a new item from a screenshot</span>
+          </div>
+        </a>
+      </li>
+    </ul>
+  </div>
+
   <ng-template #menu>
     <ul
       class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg text-shadow-sm shadow-black"
@@ -168,4 +200,6 @@
       </ng-container>
     </ul>
   </ng-template>
+
+  <ng-template> </ng-template>
 </ng-container>

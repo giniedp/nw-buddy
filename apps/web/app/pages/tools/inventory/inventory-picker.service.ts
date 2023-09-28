@@ -2,20 +2,27 @@ import { Dialog } from '@angular/cdk/dialog'
 import { Injectable, Injector } from '@angular/core'
 import {
   EQUIP_SLOTS,
+  EquipSlot,
+  EquipSlotId,
+  EquipSlotItemType,
   PerkBucket,
+  getEquipSlotForId,
+  getItemClassForSlot,
   getPerkBucketPerkIDs,
   isItemArmor,
   isItemJewelery,
   isItemWeapon,
   isPerkApplicableToItem,
   isPerkGem,
+  isPerkInherent,
 } from '@nw-data/common'
-import { ItemDefinitionMaster, Perks, Statuseffect } from '@nw-data/generated'
+import { ItemClass, ItemDefinitionMaster, Perks, Statuseffect } from '@nw-data/generated'
 import { isEqual } from 'lodash'
-import { Observable, combineLatest, filter, map, switchMap, take } from 'rxjs'
+import { Observable, combineLatest, filter, map, of, switchMap, take } from 'rxjs'
 import { ItemInstance, ItemInstancesStore } from '~/data'
 import { NwDbService } from '~/nw'
 import { DataViewPicker } from '~/ui/data/data-view'
+import { matchMapTo, tapDebug } from '~/utils'
 import { openHousingItemsPicker } from '~/widgets/data/housing-table'
 import { InventoryTableAdapter } from '~/widgets/data/inventory-table'
 import { openItemsPicker } from '~/widgets/data/item-table'
@@ -56,7 +63,7 @@ export class InventoryPickerService {
         // cancelled selection
         .pipe(filter(({ result }) => result !== undefined))
         // unchanged selection
-        .pipe(filter(({ result }) => !isEqual(result, result)))
+        .pipe(filter(({ result }) => !isEqual(result, selection)))
         .pipe(map(({ data, result }) => result.map((id: string) => data.get(id))))
     )
   }
@@ -66,11 +73,13 @@ export class InventoryPickerService {
     selection,
     multiple,
     category,
+    noSkins,
   }: {
     title?: string
     selection?: string[]
     multiple?: boolean
     category?: string
+    noSkins?: boolean
   }) {
     return (
       combineLatest({
@@ -83,6 +92,7 @@ export class InventoryPickerService {
           title,
           multiple,
           category,
+          noSkins,
         }).closed,
       })
         .pipe(take(1))
@@ -90,6 +100,32 @@ export class InventoryPickerService {
         .pipe(filter(({ result }) => result !== undefined))
         // unchanged selection
         .pipe(filter(({ result }) => !isEqual(result, selection)))
+        .pipe(map(({ data, result }) => result.map((id: string) => data.get(id))))
+    )
+  }
+
+  public pickGemForSlot({ slots }: { slots: EquipSlotId[] }) {
+    return (
+      combineLatest({
+        data: this.db.perksMap,
+        result: this.openGemsPickerForSlot(slots).closed,
+      })
+        .pipe(take(1))
+        // cancelled selection
+        .pipe(filter(({ result }) => result !== undefined))
+        .pipe(map(({ data, result }) => result.map((id: string) => data.get(id))))
+    )
+  }
+
+  public pickAttributeForItems({ items }: { items: ItemDefinitionMaster[] }) {
+    return (
+      combineLatest({
+        data: this.db.perksMap,
+        result: this.openAttributePickerForItems(items).closed,
+      })
+        .pipe(take(1))
+        // cancelled selection
+        .pipe(filter(({ result }) => result !== undefined))
         .pipe(map(({ data, result }) => result.map((id: string) => data.get(id))))
     )
   }
@@ -222,12 +258,86 @@ export class InventoryPickerService {
     })
   }
 
+  private openGemsPickerForSlot(slots: EquipSlotId[]) {
+    const itemGroups = slots.map((slot) => {
+      return matchMapTo<EquipSlotItemType, ItemClass[]>(getEquipSlotForId(slot).itemType, {
+        EquippableChest: ['Armor', 'EquippableChest'],
+        EquippableFeet: ['Armor', 'EquippableFeet'],
+        EquippableHands: ['Armor', 'EquippableHands'],
+        EquippableHead: ['Armor', 'EquippableHead'],
+        EquippableLegs: ['Armor', 'EquippableLegs'],
+        EquippableAmulet: ['EquippableAmulet'],
+        EquippableRing: ['EquippableRing'],
+        EquippableToken: ['EquippableToken'],
+        Weapon: ['EquippableMainHand'],
+      })
+    })
+
+    return DataViewPicker.open(this.dialog, {
+      title: 'Pick Gem',
+      displayMode: 'grid',
+      dataView: {
+        adapter: PerkTableAdapter,
+        filter: (perk) => {
+          if (!itemGroups?.length) {
+            return false
+          }
+          if (!isPerkGem(perk)) {
+            return false
+          }
+          if (!perk.ItemClass?.length) {
+            return false
+          }
+          return itemGroups.every((group) => {
+            return !!group?.length && perk.ItemClass?.some((cls) => group.includes(cls))
+          })
+        },
+      },
+      config: {
+        maxWidth: 1400,
+        maxHeight: 1200,
+        panelClass: ['w-full', 'h-full', 'p-4'],
+        injector: this.injector,
+      },
+    })
+  }
+
+  private openAttributePickerForItems(items: ItemDefinitionMaster[]) {
+    console.log(items)
+    return DataViewPicker.open(this.dialog, {
+      title: 'Pick Attribute Mod',
+      displayMode: 'grid',
+      dataView: {
+        adapter: PerkTableAdapter,
+        filter: (perk) => {
+          if (!isPerkInherent(perk)) {
+            return false
+          }
+          return items.every((item) => {
+            let isApplicable = isPerkApplicableToItem(perk, item)
+            if (!isApplicable && isItemArmor(item)) {
+              isApplicable = perk.ItemClass?.includes('Armor')
+            }
+            if (!isApplicable && isItemWeapon(item)) {
+              isApplicable =
+                perk.ItemClass?.includes('EquippableMainHand') || perk.ItemClass?.includes('EquippableTwoHand')
+            }
+            return isApplicable
+          })
+        },
+      },
+      config: {
+        maxWidth: 1400,
+        maxHeight: 1200,
+        panelClass: ['w-full', 'h-full', 'p-4'],
+        injector: this.injector,
+      },
+    })
+  }
+
   public getAplicablePerks(item: ItemDefinitionMaster, perkOrBucket: Perks | PerkBucket) {
-    return combineLatest({
-      perks: this.db.perks,
-      buckets: this.db.perkBucketsMap,
-    }).pipe(
-      map(({ perks, buckets }) => {
+    return this.db.perks.pipe(
+      map((perks) => {
         const isWeapon = isItemWeapon(item)
         const isArmor = isItemArmor(item) || isItemJewelery(item)
 

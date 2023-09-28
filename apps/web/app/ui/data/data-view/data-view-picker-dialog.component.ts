@@ -12,6 +12,7 @@ import { DataViewProvideOptions, provideDataView } from '../data-view/provider'
 import { DataGridModule } from '../table-grid'
 import { VirtualGridModule } from '../virtual-grid'
 import { DataViewToggleComponent } from './data-view-toggle.component'
+import { DataViewOptionsMenuComponent } from './data-view-options-menu.component'
 
 export interface DataViewPickerOptions<T> {
   /**
@@ -58,6 +59,7 @@ export interface DataViewPickerOptions<T> {
     TooltipModule,
     VirtualGridModule,
     DataViewToggleComponent,
+    DataViewOptionsMenuComponent,
   ],
   providers: [QuicksearchService],
   host: {

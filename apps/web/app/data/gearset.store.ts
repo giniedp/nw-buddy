@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ComponentStore } from '@ngrx/component-store'
-import { AttributeRef } from '@nw-data/common'
-import { from, map, of, switchMap, tap } from 'rxjs'
+import { AttributeRef, ItemPerkInfo, PerkBucket, getItemPerkInfos } from '@nw-data/common'
+import { Observable, combineLatest, from, map, of, switchMap, tap } from 'rxjs'
 
+import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { NwDbService } from '~/nw'
+import { combineLatestOrEmpty } from '~/utils/combine-latest-or-empty'
 import { GearsetCreateMode, GearsetRecord, GearsetsDB } from './gearsets.db'
 import { ImagesDB } from './images.db'
 import { ItemInstance, ItemInstancesDB } from './item-instances.db'
@@ -38,7 +41,7 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
   public constructor(
     private db: GearsetsDB,
     private imagesDb: ImagesDB,
-    private itemsDb: ItemInstancesDB,
+    private itemDb: ItemInstancesDB,
     private sanitizer: DomSanitizer
   ) {
     super({
@@ -219,6 +222,30 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
     )
   })
 
+  public readonly updateSlots = this.effect<{
+    slots: Array<{ slot: string; gearScore?: number; perks?: Array<{ perkId: string; key: string }> }>
+  }>((value$) => {
+    return value$.pipe(
+      switchMap(({ slots }) => {
+        const gearset: Readonly<GearsetRecord> = this.get<Readonly<GearsetRecord>>(({ gearset }) => gearset)
+        const newRecord: GearsetRecord = cloneRecord(gearset)
+
+        for (const { slot, gearScore, perks } of slots) {
+          const { instance, instanceId } = decodeSlot(gearset.slots[slot])
+          if (instance) {
+            newRecord.slots[slot] = mergeItemInstance(instance, { gearScore, perks })
+          } else if (instanceId) {
+            this.itemDb.read(instanceId).then((record) => {
+              const toUpdate = mergeItemInstance(record, { gearScore, perks })
+              return this.itemDb.update(instanceId, toUpdate)
+            })
+          }
+        }
+        return this.writeRecord(newRecord)
+      })
+    )
+  })
+
   public readonly destroySet = this.effect((value$) => {
     return value$.pipe(
       switchMap(() => {
@@ -237,4 +264,94 @@ export class GearsetStore extends ComponentStore<GearsetStoreState> {
       })
     )
   }
+}
+
+function decodeSlot(slot: string | ItemInstance) {
+  const instanceId = typeof slot === 'string' ? slot : null
+  const instance = typeof slot !== 'string' ? slot : null
+  return {
+    instanceId,
+    instance,
+  }
+}
+
+export function resolveSlotItemInstance(
+  slot: string | ItemInstance,
+  itemDB: ItemInstancesDB
+): Observable<ItemInstance> {
+  const { instance, instanceId } = decodeSlot(slot)
+  return instanceId ? itemDB.live((t) => t.get(instanceId)) : of(instance)
+}
+
+export function resolveGearsetSlotInstances(record: GearsetRecord, itemDB: ItemInstancesDB) {
+  return combineLatestOrEmpty(
+    Object.entries(record.slots).map(([slot, instance]) => {
+      return combineLatest({
+        slot: of(slot),
+        instanceId: of(typeof instance === 'string' ? instance : null),
+        instance: resolveSlotItemInstance(instance, itemDB),
+      })
+    })
+  )
+}
+
+export interface ResolvedGersetSlotItem {
+  slot: string
+  instance: ItemInstance
+  item: ItemDefinitionMaster
+  perks: ResolvedItemPerkInfo[]
+}
+export interface ResolvedItemPerkInfo extends ItemPerkInfo {
+  bucket: PerkBucket
+  perk: Perks
+}
+export function resolveGearsetSlotItems(record: GearsetRecord, itemDB: ItemInstancesDB, db: NwDbService) {
+  return combineLatest({
+    slots: resolveGearsetSlotInstances(record, itemDB),
+    items: db.itemsMap,
+    perks: db.perksMap,
+    buckets: db.perkBucketsMap,
+  }).pipe(
+    map(({ slots, items, perks, buckets }): ResolvedGersetSlotItem[] => {
+      return slots.map(({ slot, instance }): ResolvedGersetSlotItem => {
+        const item = items.get(instance?.itemId)
+        return {
+          slot,
+          instance,
+          item,
+          perks: getItemPerkInfos(item, instance.perks).map((it): ResolvedItemPerkInfo => {
+            return {
+              ...it,
+              bucket: buckets.get(it.bucketId),
+              perk: perks.get(it.perkId),
+            }
+          }),
+        }
+      })
+    })
+  )
+}
+
+function mergeItemInstance(
+  record: ItemInstance,
+  next: { gearScore?: number; perks?: Array<{ perkId: string; key: string }> }
+) {
+  const toUpdate: ItemInstance = cloneRecord(record)
+  if (next?.gearScore) {
+    toUpdate.gearScore = next?.gearScore
+  }
+  if (next?.perks) {
+    for (const { key, perkId } of next.perks) {
+      if (perkId) {
+        toUpdate.perks[key] = perkId
+      } else {
+        delete toUpdate.perks[key]
+      }
+    }
+  }
+  return toUpdate
+}
+
+function cloneRecord<T>(item: T): T {
+  return JSON.parse(JSON.stringify(item))
 }

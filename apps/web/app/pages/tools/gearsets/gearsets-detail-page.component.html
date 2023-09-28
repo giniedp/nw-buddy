@@ -51,14 +51,6 @@
             [tooltip]="'Screenshot'"
             [tooltipClass]="'bg-info'"
           ></button>
-          <button
-            class="btn btn-ghost btn-square"
-            (click)="onShareClicked()"
-            [tooltip]="'Create share URL'"
-            [tooltipClass]="'bg-info'"
-          >
-            <nwb-icon [icon]="iconShare" class="w-4 h-4"></nwb-icon>
-          </button>
 
           <button
             class="btn btn-ghost btn-square"
@@ -69,22 +61,85 @@
           >
             <nwb-icon [icon]="iconCompact" class="w-4 h-4"></nwb-icon>
           </button>
-          <button
-            class="btn btn-ghost btn-square"
-            (click)="onCloneClicked()"
-            [tooltip]="'Create a copy'"
-            [tooltipClass]="'bg-info'"
-          >
-            <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
+
+          <button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
+            <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>
           </button>
-          <button
-            class="btn btn-ghost btn-square"
-            (click)="onDeleteClicked()"
-            [tooltip]="'Delete'"
-            [tooltipClass]="'bg-error'"
-          >
-            <nwb-icon [icon]="iconDelete" class="w-4 h-4"></nwb-icon>
-          </button>
+
+          <ng-template #menu>
+            <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
+              <li class="text-shadow-sm shadow-black">
+                <a cdkMenuItem (click)="onShareClicked()">
+                  <nwb-icon [icon]="iconShare" class="w-4 h-4"></nwb-icon>
+                  <div class="flex flex-col leading-none">
+                    <span>Share</span>
+                    <span class="text-xs opacity-75">Upload online and create a share URL</span>
+                  </div>
+                </a>
+              </li>
+              <li class="text-shadow-sm shadow-black">
+                <a (click)="onCloneClicked()" cdkMenuItem>
+                  <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
+                  <div class="flex flex-col leading-none">
+                    <span>Copy</span>
+                    <span class="text-xs opacity-75">Create a copy of this set</span>
+                  </div>
+                </a>
+              </li>
+
+              <li class="menu-title">
+                <span>Batch Edit</span>
+              </li>
+              <li class="text-shadow-sm shadow-black">
+                <a (click)="onBatchGearScoreClicked()" cdkMenuItem>
+                  <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-4 h-4" />
+                  <div class="flex flex-col leading-none">
+                    <span>Gear Score</span>
+                    <span class="text-xs opacity-75">Change gear score for multiple items</span>
+                  </div>
+                </a>
+              </li>
+              <li class="text-shadow-sm shadow-black">
+                <a (click)="onBatchGemClicked()" cdkMenuItem>
+                  <img [nwImage]="'assets/icons/menu/gems.png'" class="w-4 h-4" />
+                  <div class="flex flex-col leading-none">
+                    <span>Gems</span>
+                    <span class="text-xs opacity-75">Pick a gem and apply to multiple items</span>
+                  </div>
+                </a>
+              </li>
+              <li class="text-shadow-sm shadow-black">
+                <a (click)="onBatchAttributeClicked()" cdkMenuItem>
+                  <img [nwImage]="'assets/icons/icon_attribute_arrow.png'" class="w-4 h-4" />
+                  <div class="flex flex-col leading-none">
+                    <span>Attributes</span>
+                    <span class="text-xs opacity-75">Pick an attribute and apply to multiple items</span>
+                  </div>
+                </a>
+              </li>
+
+              <li class="text-shadow-sm shadow-black">
+                <a (click)="onBatchResetClicked()" cdkMenuItem>
+                  <nwb-icon [icon]="iconReset" class="w-4 h-4" />
+                  <div class="flex flex-col leading-none">
+                    <span>Reset Perks</span>
+                    <span class="text-xs opacity-75">Reset perks on multiple items</span>
+                  </div>
+                </a>
+              </li>
+
+              <li class="divider my-0"></li>
+              <li class="text-shadow-sm shadow-black">
+                <a (click)="onDeleteClicked()" cdkMenuItem>
+                  <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error"></nwb-icon>
+                  <div class="flex flex-col leading-none">
+                    <span>Delete</span>
+                    <span class="text-xs opacity-75">Delete this set</span>
+                  </div>
+                </a>
+              </li>
+            </ul>
+          </ng-template>
         </div>
       </div>
     </ion-header>

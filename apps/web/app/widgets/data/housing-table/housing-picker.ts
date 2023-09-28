@@ -16,13 +16,14 @@ export function openHousingItemsPicker(options: {
   multiple?: boolean
   category?: string
 }) {
-  return DataViewPicker.open(options.dialog, {
+  return DataViewPicker.open<HousingTableRecord>(options.dialog, {
     title: options.title || 'Pick item',
     selection: options.selection,
     persistKey: 'housing-grid-picker',
     dataView: {
       adapter: HousingTableAdapter,
-      source: options.db.housingItems.pipe(map(filterByCategory(options.category))),
+      filter: itemFilter(options.category),
+      sort: (a, b) => b.Tier - a.Tier,
       gridOptions: (utils) => {
         return {
           ...buildPickerHousingGridOptions(utils),
@@ -39,11 +40,12 @@ export function openHousingItemsPicker(options: {
   })
 }
 
-function filterByCategory(category: string) {
+function itemFilter(category: string) {
   if (!category) {
-    return (items: HousingTableRecord[]) => items
+    return () => true
   }
-  return (items: HousingTableRecord[]) => {
-    return items.filter((it) => eqCaseInsensitive(it.UIHousingCategory, category))
+
+  return (it: HousingTableRecord) => {
+    return eqCaseInsensitive(it.UIHousingCategory, category)
   }
 }

@@ -346,6 +346,18 @@ export function itemColExpansion(util: ItemTableUtils) {
   })
 }
 
+export function itemColItemTypeName(util: ItemTableUtils) {
+  return util.colDef({
+    colId: 'itemTypeDisplayName',
+    headerValueGetter: () => 'Item Type Name',
+    valueGetter: util.valueGetter(({ data }) => data.ItemTypeDisplayName),
+    valueFormatter: ({ value }) => util.i18n.get(value) || humanize(value),
+    getQuickFilterText: ({ value }) => util.i18n.get(value) || humanize(value),
+    width: 150,
+    filter: SelectFilter,
+  })
+}
+
 export function itemColItemType(util: ItemTableUtils) {
   return util.colDef({
     colId: 'itemType',

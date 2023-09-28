@@ -16,4 +16,4 @@ export * from './services/intersection-observer.service'
 export * from './services/link-tag.service'
 export * from './share-replay-refcount'
 export * from './ts-types'
-
+export * from './match-map-to'

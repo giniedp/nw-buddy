@@ -8,6 +8,7 @@ import { NwLinkDirective } from './nw-link.directive'
 import { NwTextDirective } from './nw-text.directive'
 import { NwTextBreakPipe, NwTextPipe } from './nw-text.pipe'
 import { NwHtmlDirective } from './nw-html.directive'
+import { NwNoHtmlPipe } from './no-html.pipe'
 
 const COMPONENTS = [
   GamingtoolsLinkDirective,
@@ -19,6 +20,7 @@ const COMPONENTS = [
   NwTextBreakPipe,
   NwTextDirective,
   NwTextPipe,
+  NwNoHtmlPipe,
 ]
 @NgModule({
   imports: [CommonModule, FormsModule, ...COMPONENTS],

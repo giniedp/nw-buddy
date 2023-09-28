@@ -1,0 +1,16 @@
+:host {
+  ::ng-deep {
+    nwb-item-detail-header {
+      opacity: 0.5;
+      transition: opacity 0.2s ease-in-out;
+    }
+  }
+  &:hover,
+  .is-collected {
+    ::ng-deep {
+      nwb-item-detail-header {
+        opacity: 1;
+      }
+    }
+  }
+}

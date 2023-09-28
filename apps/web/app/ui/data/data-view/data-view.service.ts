@@ -64,7 +64,6 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
       mode: 'table',
       modes: ['table', 'grid'],
     })
-
     this.loadItems(adapter.connect())
   }
 

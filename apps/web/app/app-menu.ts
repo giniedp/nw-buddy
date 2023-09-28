@@ -61,7 +61,7 @@ export const APP_MENU: AppMenuGroup[] = [
       {
         label: 'Artifacts',
         path: '/tracking/artifacts',
-        //icon: 'assets/icons/slots/artifacts.png',
+        icon: 'assets/icons/menu/artifacts.png',
       },
       {
         label: 'Cooking Recipes',

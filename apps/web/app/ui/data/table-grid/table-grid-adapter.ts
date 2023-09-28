@@ -15,6 +15,14 @@ export interface TableGridAdapterOptions<T> {
    */
   source?: Observable<T[]>
   /**
+   * Optional filter to apply to the source
+   */
+  filter?: (item: T) => boolean
+  /**
+   * Optional sort order comparator
+   */
+  sort?: (a: T, b: T) => number
+  /**
    * Optional base grid configuration.
    */
   gridOptions?: (util: TableGridUtils) => GridOptions<T>
