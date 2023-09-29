@@ -1,23 +1,19 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, forwardRef, Input, Output } from '@angular/core'
-import { NwModule } from '~/nw'
-import { ItemFrameModule } from '~/ui/item-frame'
-import { PropertyGridModule } from '~/ui/property-grid'
-import { AppearanceDetailStore } from './appearance-detail.store'
-import { BehaviorSubject, combineLatest } from 'rxjs'
 import { RouterModule } from '@angular/router'
-import { ItemDetailModule } from '../item-detail'
-import { IconsModule } from '~/ui/icons'
-import { TooltipModule } from '~/ui/tooltip'
-import { svgBrush } from '~/ui/icons/svg'
-import {
-  Itemappearancedefinitions,
-  ItemdefinitionsInstrumentsappearances,
-  ItemdefinitionsWeaponappearances,
-} from '@nw-data/generated'
 import { groupBy } from 'lodash'
+import { BehaviorSubject, combineLatest } from 'rxjs'
+import { NwModule } from '~/nw'
+import { IconsModule } from '~/ui/icons'
+import { svgBrush } from '~/ui/icons/svg'
+import { ItemFrameModule } from '~/ui/item-frame'
+import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive } from '~/utils'
 import { ModelViewerModule } from '~/widgets/model-viewer'
+import { ItemDetailModule } from '../item-detail'
+import { getAppearanceDyeChannels, TransmogAppearance, TransmogItem } from '../transmog/transmog-item'
+import { AppearanceDetailStore } from './appearance-detail.store'
+import { TRANSMOG_CATEGORIES } from '../transmog'
 
 @Component({
   standalone: true,
@@ -57,9 +53,7 @@ export class AppearanceDetailComponent extends AppearanceDetailStore {
   }
 
   @Input()
-  public set appearance(
-    value: Itemappearancedefinitions | ItemdefinitionsInstrumentsappearances | ItemdefinitionsWeaponappearances
-  ) {
+  public set appearance(value: TransmogAppearance) {
     this.load(value)
   }
 
@@ -73,7 +67,7 @@ export class AppearanceDetailComponent extends AppearanceDetailStore {
   protected iconDye = svgBrush
   protected vm$ = this.select(
     combineLatest({
-      id: this.appearanceId$,
+      id: this.appearanceNameIdOrAlike$,
       appearance: this.appearance$,
       icon: this.icon$,
       name: this.name$,
@@ -81,13 +75,13 @@ export class AppearanceDetailComponent extends AppearanceDetailStore {
       category: this.category$,
     }),
     (data) => {
-      if (!data.appearance || !data.category) {
-        return null
-      }
       return {
         ...data,
-        link: ['/transmog', data.category.id, data.id],
+        link: ['/transmog/table', data.id],
       }
+    },
+    {
+      debounce: true,
     }
   )
 
@@ -100,8 +94,13 @@ export class AppearanceDetailComponent extends AppearanceDetailStore {
     }),
     ({ tabId, items }) => {
       if (!items?.length) {
-        return null
+        return {
+          count: 0,
+          tabs: [],
+          items: [],
+        }
       }
+
       const groups = groupBy(items, (it) => it['$source'])
       const tabs = Object.entries(groups).map(([name, group]) => {
         return {
@@ -120,4 +119,12 @@ export class AppearanceDetailComponent extends AppearanceDetailStore {
       }
     }
   )
+
+  protected dyeSlots(transmog: TransmogItem) {
+    return getAppearanceDyeChannels(transmog.appearance)
+  }
+
+  protected categoryName(category: string) {
+    return TRANSMOG_CATEGORIES.find((it) => it.id === category)?.name
+  }
 }

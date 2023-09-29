@@ -92,7 +92,7 @@ export class DataViewCategoryMenuComponent extends ComponentStore<DataViewCatego
 
   protected totalRowCount$ = this.service.categoryItems$.pipe(map((list) => list?.length || 0))
   protected displayedRowCount$ = this.service.agGrid$.pipe(
-    switchMap((grid) => (grid ? gridDisplayRowCount(of(grid)) : of(0)))
+    switchMap((grid) => (grid ? gridDisplayRowCount(of(grid)) : of(null)))
   )
   protected readonly hasCategories$ = this.select(this.categories$, (it) => it.length > 0)
   protected readonly activeCateogry$ = this.select(this.categories$, (it) => it.find((it) => it.active))

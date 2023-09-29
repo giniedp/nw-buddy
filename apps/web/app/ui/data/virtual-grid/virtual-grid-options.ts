@@ -1,5 +1,7 @@
 import { InjectionToken, StaticProvider, TemplateRef, Type } from '@angular/core'
 import { VirtualGridCellComponent } from './virtual-grid-cell.component'
+import { VirtualGridSectionComponent } from './virtual-grid-section.component'
+import { VirtualGridSection } from './types'
 
 export const VIRTUAL_GRID_OPTIONS = new InjectionToken<VirtualGridOptions<any>>('VIRTUAL_GRID_OPTIONS')
 
@@ -40,7 +42,15 @@ export interface VirtualGridOptions<T> {
    */
   cellEmptyView?: Type<any>
   /**
+   * The render compoonent to use for a section row
+   */
+  sectionRowView?: Type<VirtualGridSectionComponent>
+  /**
    * The function to use to get the quickfilter tex for an item
    */
   getQuickFilterText?: QuickFilterGetterFn<T>
+  /**
+   * The function to use to get the section for an item
+   */
+  getSection?: (it: T) => string
 }

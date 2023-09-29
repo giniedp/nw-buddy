@@ -1,4 +1,4 @@
-import { Injectable, Output, inject } from '@angular/core'
+import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import {
   NW_FALLBACK_ICON,
@@ -16,66 +16,63 @@ import {
   ItemdefinitionsInstrumentsappearances,
   ItemdefinitionsWeaponappearances,
 } from '@nw-data/generated'
-import { combineLatest } from 'rxjs'
+import { combineLatest, defer } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { TransmogItem, TransmogService, getAppearanceId, matchTransmogCateogry } from './transmog.service'
-import { eqCaseInsensitive } from '~/utils'
+import { eqCaseInsensitive, selectStream } from '~/utils'
 import { ModelViewerService } from '~/widgets/model-viewer'
+import {
+  TransmogAppearance,
+  TransmogGender,
+  TransmogItem,
+  TransmogService,
+  getAppearanceCategory,
+  getAppearanceGender,
+  getAppearanceId,
+  isAppearanceOfGender,
+} from '../transmog'
 
 @Injectable()
-export class AppearanceDetailStore extends ComponentStore<{ appearanceId: string; parentItemId: string }> {
-  public readonly appearanceId$ = this.select(({ appearanceId }) => appearanceId)
+export class AppearanceDetailStore extends ComponentStore<{
+  appearanceId: string
+  parentItemId: string
+  vairant: TransmogGender
+}> {
+  public readonly appearanceNameIdOrAlike$ = this.select(({ appearanceId }) => appearanceId)
 
-  public readonly itemAppearance$ = this.db.itemAppearance(this.appearanceId$)
-  public readonly weaponAppearance$ = this.db.weaponAppearance(this.appearanceId$)
-  public readonly instrumentAppearance$ = this.db.instrumentAppearance(this.appearanceId$)
-
-  @Output()
-  public readonly appearance$ = this.select(
-    combineLatest({
-      item: this.itemAppearance$,
-      weapon: this.weaponAppearance$,
-      instrument: this.instrumentAppearance$,
-    }),
-    (it) => it.item || it.weapon || it.instrument
+  public readonly instrumentAppearance$ = this.db.instrumentAppearance(this.appearanceNameIdOrAlike$)
+  public readonly weaponAppearance$ = this.db.weaponAppearance(this.appearanceNameIdOrAlike$)
+  public readonly itemAppearance$ = selectStream(
+    {
+      appearance: this.db.itemAppearance(this.appearanceNameIdOrAlike$),
+      byName: this.db.itemAppearancesByName(this.appearanceNameIdOrAlike$),
+      variant: this.select(({ vairant }) => vairant),
+    },
+    ({ appearance, byName, variant }) => {
+      if (appearance) {
+        return appearance
+      }
+      if (byName) {
+        return byName.find((it) => isAppearanceOfGender(it, variant)) || byName[0]
+      }
+      return null
+    }
   )
-
+  public readonly appearance$ = this.select(
+    this.itemAppearance$,
+    this.weaponAppearance$,
+    this.instrumentAppearance$,
+    (a, b, c): TransmogAppearance => a || b || c
+  )
+  public readonly appearanceId$ = this.select(this.appearance$, getAppearanceId)
+  public readonly category$ = this.select(this.appearance$, getAppearanceCategory)
   public readonly models$ = this.select(inject(ModelViewerService).byAppearanceId(this.appearanceId$), (it) => it)
   public readonly icon$ = this.select(this.appearance$, (it) => it?.IconPath || NW_FALLBACK_ICON)
   public readonly name$ = this.select(this.appearance$, (it) => it?.Name)
   public readonly description$ = this.select(this.appearance$, (it) => it?.Description)
-  public readonly category$ = this.select(
-    combineLatest({
-      appearance: this.appearance$,
-      categories: this.service.categories$,
-    }),
-    ({ appearance, categories }) => {
-      if (!appearance) {
-        return null
-      }
-      return categories.find((it) => matchTransmogCateogry(it, appearance))
-    }
-  )
-  public readonly transmog$ = this.select(this.service.byAppearanceId(this.appearanceId$), (it) => it)
-  public readonly similarAppearances$ = this.select(
-    combineLatest({
-      appearance: this.appearance$,
-      categories: this.service.categories$,
-      similar: this.service.byModel(this.appearance$),
-    }),
-    ({ appearance, categories, similar }) => {
-      return similar
-        .filter(
-          (it) => it.appearance?.ItemClass?.length > 0 && getAppearanceId(it.appearance) !== getAppearanceId(appearance)
-        )
-        .map((it) => {
-          return {
-            category: categories.find((it) => matchTransmogCateogry(it, appearance)),
-            transmog: it,
-          }
-        })
-    }
-  )
+  public readonly transmog$ = this.select(this.service.byAppearance(this.appearance$), (it) => it)
+  public readonly similarTransmogs$ = this.select(this.service.withSameModelAs(this.appearance$, true), (list) => {
+    return list.filter((it) => it.appearance?.ItemClass?.length > 0)
+  })
   public readonly similarItems$ = this.select(
     combineLatest({
       transmog: this.transmog$,
@@ -85,7 +82,7 @@ export class AppearanceDetailStore extends ComponentStore<{ appearanceId: string
   )
 
   public constructor(protected db: NwDbService, private service: TransmogService) {
-    super({ appearanceId: null, parentItemId: null })
+    super({ appearanceId: null, parentItemId: null, vairant: null })
   }
 
   public load(

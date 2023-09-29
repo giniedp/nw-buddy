@@ -426,6 +426,8 @@ export class NwDbService {
   public itemAppearances = table(() => this.data.itemappearancedefinitions())
   public itemAppearancesMap = indexBy(() => this.itemAppearances, 'ItemID')
   public itemAppearance = lookup(() => this.itemAppearancesMap)
+  public itemAppearancesByNameMap = indexGroupBy(() => this.itemAppearances, 'AppearanceName')
+  public itemAppearancesByName = lookup(() => this.itemAppearancesByNameMap)
 
   public weaponAppearances = table(() => this.data.itemdefinitionsWeaponappearances())
   public weaponAppearancesMap = indexBy(() => this.weaponAppearances, 'WeaponAppearanceID')

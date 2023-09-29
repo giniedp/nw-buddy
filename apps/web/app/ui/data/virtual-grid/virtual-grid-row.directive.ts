@@ -1,9 +1,18 @@
 import { Directive, Input, NgIterable, TemplateRef } from '@angular/core'
 import { VirtualGridCellContext } from './virtual-grid-cell.directive'
 import { VirtualGridStore } from './virtual-grid.store'
+import { VirtualGridSectionContext } from './virtual-grid-section.directive'
 
 export interface VirtualGridRowContext<T> {
-  $implicit: NgIterable<VirtualGridCellContext<T>>
+  $implicit:
+    | {
+        type: 'section'
+        section: VirtualGridSectionContext
+      }
+    | {
+        type: 'items'
+        items: Array<VirtualGridCellContext<T>>
+      }
   index: number
   count: number
   first: boolean

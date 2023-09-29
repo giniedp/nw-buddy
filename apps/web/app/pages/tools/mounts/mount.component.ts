@@ -2,14 +2,13 @@ import { animate, animateChild, query, stagger, style, transition, trigger } fro
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { combineLatest, map } from 'rxjs'
+import { map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PaginationModule } from '~/ui/pagination'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { TransmogItem } from '~/widgets/data/appearance-detail'
 import { MountTileComponent } from './mount-tile.component'
 
 @Component({
@@ -72,9 +71,5 @@ export class MountComponent {
       noFollow: true,
       noIndex: true,
     })
-  }
-
-  protected onClick(item: TransmogItem) {
-    console.log(item)
   }
 }

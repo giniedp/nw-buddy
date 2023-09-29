@@ -10,7 +10,7 @@ import { NwModule } from '~/nw'
   template: `
     <div class="nw-item-icon-border"></div>
     <picture class="aspect-square" *ngIf="icon">
-      <img [nwImage]="icon" class="w-full h-full object-contain" />
+      <img [nwImage]="icon" class="w-full h-full" [class.object-contain]="!cover" [class.object-cover]="cover" />
     </picture>
     <ng-content></ng-content>
   `,
@@ -38,6 +38,8 @@ export class ItemIconFrameComponent {
   @Input('nwbItemIcon')
   public icon: string | ItemDefinitionMaster | Housingitems
 
+  @Input()
+  public cover: boolean
   public constructor() {
     //
   }

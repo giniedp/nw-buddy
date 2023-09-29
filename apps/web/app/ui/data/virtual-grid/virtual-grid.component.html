@@ -15,8 +15,24 @@
 <ng-content select="footer"></ng-content>
 
 <ng-template [nwbVirtualGridRow] let-row #tplRow>
-  <ng-container *ngFor="let cell of row; trackBy: trackBy">
-    <ng-container [ngTemplateOutlet]="customCell?.template || tplCell" [ngTemplateOutletContext]="cell"></ng-container>
+  <ng-container *ngIf="row.type === 'section' && row.section; let section">
+    <div *ngIf="sectionComponent" class="grid-section">
+      <ng-container
+        [ngComponentOutlet]="sectionComponent"
+        [ngComponentOutletInputs]="{ section: section.$implicit }"
+      ></ng-container>
+    </div>
+    <div *ngIf="customSection?.template" class="grid-section">
+      <ng-container [ngTemplateOutlet]="customSection.template" [ngTemplateOutletContext]="section"></ng-container>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="row.type === 'items'">
+    <ng-container *ngFor="let cell of row.items; trackBy: trackBy">
+      <ng-container
+        [ngTemplateOutlet]="customCell?.template || tplCell"
+        [ngTemplateOutletContext]="cell"
+      ></ng-container>
+    </ng-container>
   </ng-container>
 </ng-template>
 

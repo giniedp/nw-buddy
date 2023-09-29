@@ -1,7 +1,13 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { NwModule } from '~/nw'
-import { TransmogItem } from '~/widgets/data/appearance-detail'
+import {
+  TransmogItem,
+  getAppearanceDyeChannels,
+  isTransmogFromShop,
+  isTransmogSkin,
+  isTransmogUnique,
+} from '../transmog'
 
 @Component({
   standalone: true,
@@ -10,7 +16,7 @@ import { TransmogItem } from '~/widgets/data/appearance-detail'
   template: `
     <picture class="block w-full aspect-square relative">
       <img class="w-full h-full object-cover" [nwImage]="icon" />
-      <div class="absolute bottom-1 right-1 flex flex-row gap-1">
+      <div class="absolute bottom-1 right-1 left-1 flex flex-row justify-end gap-1">
         <span class="badge badge-primary badge-sm" *ngIf="isSkin">Skin</span>
         <span
           class="badge badge-sm"
@@ -45,21 +51,21 @@ export class TransmogTileComponent {
   @Input()
   public set item(value: TransmogItem) {
     this.icon = value.appearance?.IconPath ?? ''
-    this.isSkin = value.isStore || value.isSkin
-    this.isUnique = value.isUnique
+    this.isSkin = isTransmogSkin(value) || isTransmogFromShop(value)
+    this.isUnique = isTransmogUnique(value)
     this.itemCount = value.items.length
-    if (value.dyeSlots.some((it) => it.colorStrength)) {
-      this.colorPalette = value.dyeSlots.map((it) => {
+    this.colorPalette = []
+
+    const dyeChannels = getAppearanceDyeChannels(value.appearance)
+    if (dyeChannels.some((it) => it.colorStrength)) {
+      this.colorPalette = dyeChannels.map((it) => {
         return {
           color: it.color,
           opacity: it.colorStrength,
         }
       })
-    } else {
-      this.colorPalette = []
     }
   }
-
   protected icon: string
   protected isSkin: boolean
   protected isUnique: boolean

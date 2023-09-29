@@ -21,6 +21,9 @@ import { VirtualGridCellDirective } from './virtual-grid-cell.directive'
 import { VirtualGridOptions } from './virtual-grid-options'
 import { VirtualGridRowDirective } from './virtual-grid-row.directive'
 import { VirtualGridStore } from './virtual-grid.store'
+import { VirtualGridSectionDirective } from './virtual-grid-section.directive'
+import { VirtualGridSectionComponent } from './virtual-grid-section.component'
+import { VirtualGridSection } from './types'
 
 @Component({
   standalone: true,
@@ -28,7 +31,14 @@ import { VirtualGridStore } from './virtual-grid.store'
   styleUrls: ['./virtual-grid.component.scss'],
   templateUrl: './virtual-grid.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ScrollingModule, VirtualGridCellDirective, VirtualGridRowDirective],
+  imports: [
+    CommonModule,
+    NwModule,
+    ScrollingModule,
+    VirtualGridCellDirective,
+    VirtualGridRowDirective,
+    VirtualGridSectionDirective,
+  ],
   hostDirectives: [CdkVirtualScrollableElement],
   providers: [VirtualGridStore],
   host: {
@@ -38,15 +48,18 @@ import { VirtualGridStore } from './virtual-grid.store'
 export class VirtualGridComponent<T> {
   @Input()
   public set options(options: VirtualGridOptions<T>) {
-    this.gridClass = options.gridClass
-    this.component = options.cellDataView
-    this.componentEmpty = options.cellEmptyView
+    this.gridClass = options.gridClass ?? this.gridClass
+    this.component = options.cellDataView ?? this.component
+    this.componentEmpty = options.cellEmptyView ?? this.componentEmpty
+    this.sectionComponent = options.sectionRowView ?? this.sectionComponent
     this.store.patchState({
       itemHeight: options.height,
       itemWidth: options.width,
       colCount: options.cols,
       ngClass: options.gridClass,
+      getItemSection: options.getSection,
       quickfilterGetter: options.getQuickFilterText,
+      withSectionRows: !!options.sectionRowView,
     })
   }
 
@@ -91,6 +104,12 @@ export class VirtualGridComponent<T> {
       selection: value,
     })
   }
+  @Input()
+  public set sectionFn(value: (it: T) => string) {
+    this.store.patchState({
+      getItemSection: value,
+    })
+  }
 
   @Input()
   public gridClass: string[]
@@ -100,6 +119,9 @@ export class VirtualGridComponent<T> {
 
   @Input()
   public component: Type<VirtualGridCellComponent<T>>
+
+  @Input()
+  public sectionComponent: Type<VirtualGridSectionComponent>
 
   @Output()
   public cellDoubleClicked = new EventEmitter<T>()
@@ -112,6 +134,9 @@ export class VirtualGridComponent<T> {
 
   @ContentChild(VirtualGridCellDirective, { static: true })
   protected customCell: VirtualGridCellDirective<T>
+
+  @ContentChild(VirtualGridSectionDirective, { static: true })
+  protected customSection: VirtualGridSectionDirective
 
   @ViewChild('viewport')
   protected viewport: CdkVirtualScrollViewport
@@ -214,7 +239,10 @@ export class VirtualGridComponent<T> {
     const identify = this.store.identifyBy$()
     const rows = this.rows$()
     const index = rows.findIndex((row) => {
-      for (const it of row.$implicit) {
+      if (!(row.$implicit && 'items' in row.$implicit)) {
+        return false
+      }
+      for (const it of row.$implicit.items) {
         if (!!it.$implicit && String(identify(it.$implicit)) === String(id)) {
           return true
         }
@@ -231,14 +259,4 @@ export class VirtualGridComponent<T> {
     const centerIndex = Math.max(0, index - Math.floor((range.end - range.start) / 2))
     this.viewport.scrollToIndex(centerIndex, 'instant')
   }
-}
-
-function isSelectionEvent(e: Event) {
-  if (e.type === 'click') {
-    return true
-  }
-  if (e.type === 'keydown' && (e as KeyboardEvent).key === 'Space') {
-    return true
-  }
-  return false
 }

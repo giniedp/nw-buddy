@@ -46,7 +46,7 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
     if ((!mode || mode === 'table') && !!this.tableGridOptions) {
       return 'table'
     }
-    if ((!mode || mode === 'grid') && !!this.tableGridOptions) {
+    if ((!mode || mode === 'grid') && !!this.virtualOptions) {
       return 'grid'
     }
     return null

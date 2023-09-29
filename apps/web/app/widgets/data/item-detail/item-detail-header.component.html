@@ -2,6 +2,7 @@
 <div class="nw-item-header-fg" *ngIf="isNamed || isArtifact"></div>
 <a
   [nwbItemIcon]="iconOverride || entity"
+  [cover]="true"
   [nwLink]="enableInfoLink ? entityId : null"
   [nwLinkResource]="'item'"
   [rarity]="rarity"
