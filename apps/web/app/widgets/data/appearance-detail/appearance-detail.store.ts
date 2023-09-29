@@ -16,7 +16,7 @@ import {
   ItemdefinitionsInstrumentsappearances,
   ItemdefinitionsWeaponappearances,
 } from '@nw-data/generated'
-import { combineLatest, defer } from 'rxjs'
+import { Observable, combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { eqCaseInsensitive, selectStream } from '~/utils'
 import { ModelViewerService } from '~/widgets/model-viewer'
@@ -26,7 +26,6 @@ import {
   TransmogItem,
   TransmogService,
   getAppearanceCategory,
-  getAppearanceGender,
   getAppearanceId,
   isAppearanceOfGender,
 } from '../transmog'
@@ -48,13 +47,8 @@ export class AppearanceDetailStore extends ComponentStore<{
       variant: this.select(({ vairant }) => vairant),
     },
     ({ appearance, byName, variant }) => {
-      if (appearance) {
-        return appearance
-      }
-      if (byName) {
-        return byName.find((it) => isAppearanceOfGender(it, variant)) || byName[0]
-      }
-      return null
+      const found = byName?.find((it) => isAppearanceOfGender(it, variant))
+      return found || appearance
     }
   )
   public readonly appearance$ = this.select(
@@ -98,6 +92,10 @@ export class AppearanceDetailStore extends ComponentStore<{
       this.patchState({ appearanceId: getAppearanceId(idOrItem) })
     }
   }
+
+  public loadVariant = this.effect((variant$: Observable<TransmogGender>) => {
+    return variant$.pipe(map((it) => this.patchState({ vairant: it })))
+  })
 }
 
 function selectItems({ transmog, parentId }: { transmog: TransmogItem; parentId: string }) {

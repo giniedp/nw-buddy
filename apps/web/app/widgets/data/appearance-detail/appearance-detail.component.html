@@ -7,7 +7,7 @@
     <nwb-item-header-content
       [title]="vm.name | nwText"
       [titleLink]="vm.link"
-      [text1]="'Common'"
+      [text1]="vm.commonText"
       [text2]="'Transmog Appearance'"
       [text3]="vm.category.name | nwText"
     >
@@ -15,6 +15,7 @@
   </nwb-item-header>
   <div class="p-3 leading-snug flex flex-col gap-2">
     <p class="text-nw-description italic" *ngIf="vm.description; let text">{{ text | nwText }}</p>
+
     <ng-container *ngIf="transmog$ | async; let transmog">
       <div *ngIf="dyeSlots(transmog); let slots" class="flex flex-col text-sm">
         <h3 class="font-bold">Color palette / Dye slots:</h3>
@@ -79,6 +80,16 @@
           Close
         </button>
       </ng-container>
+    </ng-container>
+
+    <ng-container *ngIf="vm.other">
+      <a
+        class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50"
+        [routerLink]="['.']"
+        [queryParams]="{ gender: vm.other }"
+      >
+        Show {{ vm.other }} variant
+      </a>
     </ng-container>
   </div>
 </div>

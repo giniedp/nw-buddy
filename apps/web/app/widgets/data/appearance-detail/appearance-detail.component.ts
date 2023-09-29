@@ -1,17 +1,24 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, forwardRef, Input, Output } from '@angular/core'
-import { RouterModule } from '@angular/router'
+import { ChangeDetectionStrategy, Component, forwardRef, inject, Input, OnInit, Output } from '@angular/core'
+import { ActivatedRoute, RouterModule } from '@angular/router'
 import { groupBy } from 'lodash'
-import { BehaviorSubject, combineLatest } from 'rxjs'
+import { BehaviorSubject, combineLatest, map } from 'rxjs'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgBrush } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
-import { eqCaseInsensitive } from '~/utils'
+import { eqCaseInsensitive, humanize, observeQueryParam } from '~/utils'
 import { ModelViewerModule } from '~/widgets/model-viewer'
 import { ItemDetailModule } from '../item-detail'
-import { getAppearanceDyeChannels, TransmogAppearance, TransmogItem } from '../transmog/transmog-item'
+import {
+  getAppearanceDyeChannels,
+  getAppearanceGender,
+  getAppearanceIdName,
+  TransmogAppearance,
+  TransmogGender,
+  TransmogItem,
+} from '../transmog/transmog-item'
 import { AppearanceDetailStore } from './appearance-detail.store'
 import { TRANSMOG_CATEGORIES } from '../transmog'
 
@@ -41,7 +48,7 @@ import { TRANSMOG_CATEGORIES } from '../transmog'
     class: 'flex flex-col gap-1',
   },
 })
-export class AppearanceDetailComponent extends AppearanceDetailStore {
+export class AppearanceDetailComponent extends AppearanceDetailStore implements OnInit {
   @Input()
   public set appearanceId(value: string) {
     this.patchState({ appearanceId: value })
@@ -63,6 +70,7 @@ export class AppearanceDetailComponent extends AppearanceDetailStore {
   @Output()
   public appearanceChange$ = this.appearance$
 
+  protected gender$ = observeQueryParam(inject(ActivatedRoute), 'gender')
   protected modelViewerOpened = false
   protected iconDye = svgBrush
   protected vm$ = this.select(
@@ -73,11 +81,23 @@ export class AppearanceDetailComponent extends AppearanceDetailStore {
       name: this.name$,
       description: this.description$,
       category: this.category$,
+      transmog: this.transmog$,
     }),
     (data) => {
+      const gender = getAppearanceGender(data.appearance)
+      let commonText = `Common`
+      if (gender) {
+        commonText = gender === 'male' ? 'Male' : 'Female'
+      }
+
+      const other = gender === 'male' ? data.transmog.female : data.transmog.male
+
       return {
         ...data,
+        commonText,
         link: ['/transmog/table', data.id],
+        genderSwitch: !!(data.transmog.male || data.transmog.female),
+        other: gender ? getAppearanceGender(other.appearance) : null,
       }
     },
     {
@@ -126,5 +146,9 @@ export class AppearanceDetailComponent extends AppearanceDetailStore {
 
   protected categoryName(category: string) {
     return TRANSMOG_CATEGORIES.find((it) => it.id === category)?.name
+  }
+
+  public ngOnInit() {
+    this.loadVariant(this.gender$.pipe(map((it) => it as TransmogGender)))
   }
 }
