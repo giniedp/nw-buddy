@@ -194,7 +194,10 @@ async function findDamageTable(rootDir: string, sliceName: string, file?: string
       if (isActionListComponent(obj)) {
         damageTable = damageTable || obj.m_damagetable?.asset?.baseclass1?.assetpath
       }
-      if (isSkinnedMeshComponent(obj) || isMeshComponent(obj)) {
+      let hasModel = false
+      hasModel = hasModel || (isSkinnedMeshComponent(obj) && obj['skinned mesh render node']?.visible)
+      hasModel = hasModel || (isMeshComponent(obj) && obj['static mesh render node']?.visible)
+      if (hasModel) {
         modelSlice = path
           .relative(rootDir, file)
           .replace(/\\/gi, '/')
