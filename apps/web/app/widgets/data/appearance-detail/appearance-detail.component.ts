@@ -84,6 +84,9 @@ export class AppearanceDetailComponent extends AppearanceDetailStore implements 
       transmog: this.transmog$,
     }),
     (data) => {
+      if (!data.appearance) {
+        return null
+      }
       const gender = getAppearanceGender(data.appearance)
       let commonText = `Common`
       if (gender) {

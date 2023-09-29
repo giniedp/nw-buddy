@@ -47,8 +47,8 @@ export class AppearanceDetailStore extends ComponentStore<{
       variant: this.select(({ vairant }) => vairant),
     },
     ({ appearance, byName, variant }) => {
-      const found = byName.find((it) => isAppearanceOfGender(it, variant))
-      return found || appearance || byName[0]
+      const found = byName?.find((it) => isAppearanceOfGender(it, variant))
+      return found || appearance || byName?.[0]
     }
   )
   public readonly appearance$ = this.select(
