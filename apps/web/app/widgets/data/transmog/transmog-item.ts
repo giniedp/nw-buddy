@@ -31,14 +31,6 @@ export interface TransmogItem {
   male: TransmogItem
   female: TransmogItem
   items: ItemDefinitionMaster[]
-  // isUnique: boolean
-  // isStore: boolean
-  // isSkin: boolean
-  // name: string
-  // description: string
-  // gender: 'male' | 'female'
-  // dyeSlots: DyeSlot[]
-  // modelId: number
 }
 
 export function getAppearanceId(item: TransmogAppearance) {
@@ -108,7 +100,7 @@ export function isAppearanceOfGender(item: TransmogAppearance, gender: TransmogG
 
 export function getAppearanceGender(item: TransmogAppearance): TransmogGender
 export function getAppearanceGender(item: Itemappearancedefinitions): TransmogGender {
-  return item.Gender ? (item.Gender.toLowerCase() as TransmogGender) : null
+  return item?.Gender ? (item.Gender.toLowerCase() as TransmogGender) : null
 }
 
 export function getAppearanceDyeChannels(item: TransmogAppearance): DyeSlot[]

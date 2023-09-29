@@ -90,13 +90,13 @@ export class AppearanceDetailComponent extends AppearanceDetailStore implements 
         commonText = gender === 'male' ? 'Male' : 'Female'
       }
 
-      const other = gender === 'male' ? data.transmog.female : data.transmog.male
+      const transmog = data.transmog
+      const other = gender === 'male' ? transmog?.female : transmog?.male
 
       return {
         ...data,
         commonText,
         link: ['/transmog/table', data.id],
-        genderSwitch: !!(data.transmog.male || data.transmog.female),
         other: gender ? getAppearanceGender(other.appearance) : null,
       }
     },
