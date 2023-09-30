@@ -15,7 +15,7 @@ import {
   SkillBuild,
   SkillBuildsDB,
 } from '~/data'
-import { EquippedItem, Mannequin, MannequinState } from '~/nw/mannequin'
+import { ActiveAttribute, ActiveAttributes, EquippedItem, Mannequin, MannequinState } from '~/nw/mannequin'
 import { EquipSlot, EquipSlotId, EQUIP_SLOTS, getStatusEffectTownBuffIds } from '@nw-data/common'
 import { IconsModule } from '~/ui/icons'
 import { ConfirmDialogComponent } from '~/ui/layout'
@@ -28,6 +28,7 @@ import { GearsetPaneStatsComponent } from './panes/gearset-pane-stats.component'
 import { SwiperDirective } from '~/utils/directives/swiper.directive'
 import { svgChevronLeft } from '~/ui/icons/svg'
 import { SwiperOptions } from 'swiper/types/swiper-options'
+import { NwTextContextService } from '~/nw/expression'
 
 @Component({
   standalone: true,
@@ -49,7 +50,7 @@ import { SwiperOptions } from 'swiper/types/swiper-options'
     ScreenshotModule,
     SwiperDirective,
   ],
-  providers: [GearsetStore, ItemInstancesStore, Mannequin],
+  providers: [GearsetStore, ItemInstancesStore, Mannequin, NwTextContextService],
   host: {
     class: 'layout-col flex-none',
   },
@@ -149,9 +150,33 @@ export class GearsetDetailComponent {
     private mannequin: Mannequin,
     private character: CharacterStore,
     private items: ItemInstancesDB,
-    private skillBuilds: SkillBuildsDB
+    private skillBuilds: SkillBuildsDB,
+    private ctx: NwTextContextService
   ) {
     itemsStore.loadAll()
+    ctx.patchState({
+      attribute1: this.ctxAttribute(0),
+      attribute2: this.ctxAttribute(1),
+    })
+  }
+
+  private ctxAttribute(index: number) {
+    const order: Array<keyof ActiveAttributes> = ['con', 'foc', 'str', 'dex', 'int']
+    const getValue = (attr: ActiveAttribute) => attr.base + attr.bonus + attr.assigned
+
+    return this.mannequin.activeAttributes$.pipe(
+      map((attrs) => {
+        const sorted = order
+          .map((key) => {
+            return {
+              key,
+              value: getValue(attrs[key]),
+            }
+          })
+          .sort((a, b) => b.value - a.value)
+        return sorted[index].key
+      })
+    )
   }
 
   protected updateName(value: string) {

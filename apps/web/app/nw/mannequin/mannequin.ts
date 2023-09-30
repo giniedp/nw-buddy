@@ -32,6 +32,7 @@ import { selectModsDMG } from './stats/mods-dmg'
 import { ActiveMods, AttributeModsSource, DbSlice, MannequinState, SelectorOf } from './types'
 import { selectModsROL } from './stats/mods-rol'
 import { selectModsCraftingGS } from './stats/mods-gs-crafting'
+import { debounceSync, selectStream, shareReplayRefCount, tapDebug } from '~/utils'
 
 @Injectable()
 export class Mannequin extends ComponentStore<MannequinState> {
@@ -121,6 +122,8 @@ export class Mannequin extends ComponentStore<MannequinState> {
     perks: this.activePerks$,
     consumables: this.activeConsumables$,
   })
+    .pipe(debounceSync())
+    .pipe(shareReplayRefCount(1))
 
   public readonly statRatingElemental$ = this.select(this.db$, this.activeMods$, this.state$, selectElementalRating)
 

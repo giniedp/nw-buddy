@@ -35,7 +35,7 @@ export class NwTextPipe implements PipeTransform, OnDestroy {
     this.options = options
     combineLatest({
       text: this.i18n.observe(key),
-      context: options ? of(options) : this.ctx.state$,
+      context: this.ctx.derive(options || {}),
     })
       .pipe(
         switchMap(({ text, context }) =>
