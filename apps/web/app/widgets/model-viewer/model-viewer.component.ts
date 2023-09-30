@@ -21,7 +21,7 @@ import { NwDbService, NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgCamera, svgCircleExclamation, svgExpand, svgXmark } from '~/ui/icons/svg'
 import { TranslateService } from '../../i18n'
-import { ScreenshotService } from '../screenshot'
+import { ScreenshotModule, ScreenshotService } from '../screenshot'
 import { ItemModelInfo } from './model-viewer.service'
 
 import { animate, style, transition, trigger } from '@angular/animations'
@@ -47,10 +47,10 @@ export interface ModelViewerState {
   templateUrl: './model-viewer.component.html',
   styleUrls: ['./model-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, DialogModule, IconsModule, DyePanelComponent],
+  imports: [CommonModule, NwModule, DialogModule, IconsModule, ScreenshotModule, DyePanelComponent],
   providers: [ModelViewerStore],
   host: {
-    class: 'layout-col bg-base-300 relative z-0',
+    class: 'layout-col bg-gradient-to-b from-base-300 to-black relative z-0',
   },
   schemas: [NO_ERRORS_SCHEMA],
   animations: [

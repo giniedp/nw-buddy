@@ -30,7 +30,7 @@ export interface TableGridAdapterOptions<T> {
   /**
    * Optional virtual grid configuration.
    */
-  virtualOptions: () => VirtualGridOptions<T>
+  virtualOptions?: () => VirtualGridOptions<T>
 }
 
 export interface TableGridAdapterProvideOptions<T> extends TableGridAdapterOptions<T> {
