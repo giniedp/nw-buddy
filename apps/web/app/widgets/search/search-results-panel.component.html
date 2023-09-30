@@ -23,6 +23,7 @@
   >
     <nwb-item-header
       [rarity]="item.rarity"
+      [isNamed]="item.named"
       class="relative font-nimbus gap-2 w-full shadow-sm rounded whitespace-nowrap overflow-hidden overflow-ellipsis"
     >
       <nwb-item-icon
@@ -31,8 +32,17 @@
         [rarity]="item.rarity"
         class="z-10 w-10 h-10"
       ></nwb-item-icon>
-      <nwb-item-header-content class="z-10" [rarity]="item.rarity" [text2]="item.type">
+      <nwb-item-header-content class="z-10" [rarity]="item.rarity">
         <span class="title block overflow-hidden text-ellipsis">{{ item.text }}</span>
+        <div class="flex flex-row gap-1">
+          <span class="badge badge-sm badge-primary rounded-ms px-1 text-shadow-none">{{ item.type }}</span>
+          <span class="badge badge-sm badge-primary rounded-ms px-1 text-shadow-none" *ngIf="item.tier"
+            >T{{ item.tier }}</span
+          >
+          <span class="badge badge-sm badge-primary rounded-ms px-1 text-shadow-none" *ngIf="item.gs"
+            >GS: {{ item.gs }}</span
+          >
+        </div>
       </nwb-item-header-content>
     </nwb-item-header>
   </a>

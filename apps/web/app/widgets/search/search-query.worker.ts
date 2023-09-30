@@ -3,10 +3,6 @@ import { ItemRarity } from '@nw-data/common'
 import { environment } from 'apps/web/environments'
 import { expose } from 'comlink'
 
-interface SearchIndex {
-  headers: string[]
-  records: Array<Array<any>>
-}
 export interface SearchRecord {
   id: string
   text: string
@@ -23,17 +19,7 @@ const index: Record<string, Promise<any>> = {}
 
 function fetchIndex(lang: string): Promise<SearchRecord[]> {
   if (!index[lang]) {
-    index[lang] = fetch(`${environment.nwDataUrl}/search/${lang}.json`)
-      .then((res) => res.json())
-      .then((index: SearchIndex) => {
-        return index.records.map((record) => {
-          const item = {}
-          for (const i in index.headers) {
-            item[index.headers[i]] = record[i]
-          }
-          return item
-        })
-      })
+    index[lang] = fetch(`${environment.nwDataUrl}/search/${lang}.json`).then((res) => res.json())
   }
   return index[lang]
 }

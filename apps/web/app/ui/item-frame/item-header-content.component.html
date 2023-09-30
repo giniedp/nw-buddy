@@ -20,7 +20,9 @@
     </div>
     <div class="flex flex-row justify-between gap-2 whitespace-nowrap">
       <span class="flex-1 overflow-hidden overflow-ellipsis">
-        {{ text2 }} <ng-content selector=".sub-title"> </ng-content>
+        {{ text2 }}
+        <ng-content selector=".sub-title"> </ng-content>
+        <ng-content selector="[text2]"> </ng-content>
       </span>
       <span class="text-rarity-{{ rarity }} text-sm">{{ text3 }}</span>
     </div>

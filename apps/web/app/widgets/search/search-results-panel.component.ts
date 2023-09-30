@@ -56,7 +56,7 @@ export class SearchResultsPanelComponent {
     if (item.type === 'ability') {
       return ['/abilities/table', item.id]
     }
-    if (item.type === 'status-effect') {
+    if (item.type === 'statuseffect') {
       return ['/status-effects/table', item.id]
     }
     if (item.type === 'poi') {
@@ -76,5 +76,16 @@ export class SearchResultsPanelComponent {
     }
     console.warn('Unknown item type', item)
     return null
+  }
+
+  protected tags(item: any) {
+    const tags = []
+    if (item.tier) {
+      tags.push(`T${item.tier}`)
+    }
+    if (item.gs) {
+      tags.push(`GS${item.gs}`)
+    }
+    return tags.length ? tags.join(', ') : null
   }
 }

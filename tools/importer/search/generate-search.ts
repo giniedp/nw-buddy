@@ -1,6 +1,7 @@
 import * as path from 'path'
 import { glob, readJSONFile, writeFile } from '../../utils'
 
+const ITEM_RARITIES: string[] = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'artifact']
 type IndexTable = ReturnType<typeof indexTable>
 type IndexItem = {
   id: string
@@ -8,48 +9,27 @@ type IndexItem = {
   subType?: string
   text: string
   icon: string
-  rarity?: number
+  named?: boolean
+  rarity?: string
   tier?: number
-  gs?: number
+  gs?: string
 }
 function indexTable() {
-  const records: Array<Array<string | number>> = []
-  const headers: Array<keyof IndexItem> = ['id', 'type', 'subType', 'text', 'icon', 'rarity', 'tier', 'gs']
+  const records: IndexItem[] = []
   let added = 0
   let skipped = 0
   return {
-    add: (record: {
-      id: string
-      type: string
-      subType?: string
-      text: string
-      icon: string
-      rarity?: number
-      tier?: number
-      gs?: number
-    }) => {
+    add: (record: IndexItem) => {
       if (record.text && record.id) {
         added++
-        records.push([
-          record.id,
-          record.type,
-          record.subType || '',
-          record.text,
-          record.icon,
-          record.rarity,
-          record.tier,
-          record.gs,
-        ])
+        records.push(record)
       } else {
         skipped++
       }
     },
     getData: () => {
       console.log('Added', added, 'Skipped', skipped)
-      return {
-        headers: [...headers],
-        records: [...records],
-      }
+      return [...records]
     },
   }
 }
@@ -100,14 +80,17 @@ async function indexItems(dict: Record<string, string>, tablesDir: string, index
   for (const file of itemsTables) {
     const table = await readJSONFile<Array<ItemType>>(file)
     // console.log('Indexing', file, table.length)
+    const isNamed = file.endsWith('_named.json')
     for (const item of table) {
       index.add({
         id: item.ItemID,
         type: 'item',
         text: dict[item.Name?.toLowerCase()] || '',
         icon: item.IconPath,
+        named: isNamed,
         rarity: getItemRarity(item),
         tier: item.Tier,
+        gs: getItemGearScoreLabel(item),
       })
     }
   }
@@ -281,12 +264,13 @@ async function indexMounts(dict: Record<string, string>, tablesDir: string, inde
 
 async function indexAppearance(dict: Record<string, string>, tablesDir: string, index: IndexTable) {
   const itemsTables = await glob([path.join(tablesDir, '**', '*_itemappearancedefinitions.json')])
-  type ItemType = { ItemID: string; Name: string; IconPath: string }
+  type ItemType = { ItemID: string; Name: string; IconPath: string; ItemClass: string[] }
+
   for (const file of itemsTables) {
     const table = await readJSONFile<Array<ItemType>>(file)
     // console.log('Indexing', file, table.length)
     for (const item of table) {
-      if (item.Name) {
+      if (item.Name && item.ItemClass?.length > 0) {
         index.add({
           id: item.ItemID,
           type: 'appearance',
@@ -338,30 +322,46 @@ async function indexInstrumentAppearance(dict: Record<string, string>, tablesDir
   }
 }
 
-export function getItemRarity(item: any) {
+export function getItemRarity(item: any): string {
   if (!item) {
-    return 0
+    return ITEM_RARITIES[0]
   }
   if (item.ForceRarity) {
-    return item.ForceRarity
+    return ITEM_RARITIES[item.ForceRarity]
   }
   if (!item.ItemID) {
-    return 0
+    return ITEM_RARITIES[0]
   }
+  if (item.ItemClass?.includes('Artifact')) {
+    return 'artifact'
+  }
+
   const perkIds = [item.Perk1, item.Perk2, item.Perk3, item.Perk4, item.Perk5].filter((it) => !!it)
 
   let perkCount = perkIds.length
   if (perkCount <= 1) {
-    return 0
+    return ITEM_RARITIES[0]
   }
   if (perkCount === 2) {
-    return 1
+    return ITEM_RARITIES[1]
   }
   if (perkCount === 3) {
-    return 2
+    return ITEM_RARITIES[2]
   }
   if (perkCount === 4) {
-    return 3
+    return ITEM_RARITIES[3]
   }
-  return 4
+  return ITEM_RARITIES[4]
+}
+export function getItemGearScoreLabel(item: any) {
+  if (!item) {
+    return ''
+  }
+  if (item.GearScoreOverride) {
+    return String(item.GearScoreOverride)
+  }
+  if (item.MinGearScore && item.MaxGearScore) {
+    return `${item.MinGearScore}-${item.MaxGearScore}`
+  }
+  return String(item.MaxGearScore || item.MinGearScore || '')
 }
