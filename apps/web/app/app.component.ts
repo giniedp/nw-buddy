@@ -132,7 +132,7 @@ export class AppComponent implements OnInit, OnDestroy {
         el.classList.remove('opacity-100')
         el.classList.add('opacity-0')
         setTimeout(() => el.remove(), 300)
-      }, 500)
+      }, 750)
     })
   }
 }
