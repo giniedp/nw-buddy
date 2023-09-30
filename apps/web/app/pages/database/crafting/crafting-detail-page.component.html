@@ -1,5 +1,5 @@
-<nwb-detail-drawer class="hidden lg:block w-[100vw] max-w-md 3xl:max-w-xl 4xl:max-w-2xl" [breakpoints]="[0.25, 0.5, 0.75, 1.0]">
-  <div *nwbDetailDrawerContent class="layout-col bg-base-200 lg:p-3">
+<nwb-detail-drawer class="hidden lg:block w-[100vw] max-w-md 3xl:max-w-xl 4xl:max-w-2xl">
+  <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
     <nwb-item-card
       [entityId]="itemId$ | async"
       [enableInfoLink]="true"

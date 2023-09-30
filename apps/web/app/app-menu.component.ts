@@ -1,20 +1,21 @@
-import { CommonModule } from '@angular/common'
-import { AfterViewInit, Component, OnInit, QueryList, ViewChildren } from '@angular/core'
-import { ActivatedRoute, RouterLinkActive, RouterModule } from '@angular/router'
-import { NwModule } from './nw'
-import { APP_MENU, AppMenuGroup } from './app-menu'
-import { ComponentStore } from '@ngrx/component-store'
 import { animate, animateChild, group, query, stagger, state, style, transition, trigger } from '@angular/animations'
-import { svgChevronLeft } from './ui/icons/svg'
+import { CommonModule } from '@angular/common'
+import { Component, OnInit } from '@angular/core'
+import { RouterModule } from '@angular/router'
+import { ComponentStore } from '@ngrx/component-store'
+import { takeUntil } from 'rxjs'
+import { APP_MENU, AppMenuGroup } from './app-menu'
+import { NwModule } from './nw'
+import { AppPreferencesService } from './preferences'
 import { IconsModule } from './ui/icons'
-import { AppPreferencesService, PreferencesService, StorageObjectNode, StorageProperty } from './preferences'
-import { firstValueFrom, map, takeUntil, tap } from 'rxjs'
+import { svgChevronLeft } from './ui/icons/svg'
+import { MenuCloseDirective } from './ui/layout/menu.directive'
 
 @Component({
   standalone: true,
   selector: 'app-menu',
   templateUrl: './app-menu.component.html',
-  imports: [CommonModule, NwModule, IconsModule, RouterModule],
+  imports: [CommonModule, NwModule, IconsModule, RouterModule, MenuCloseDirective],
   animations: [
     trigger('list', [
       state(
@@ -81,9 +82,7 @@ export class AppMenuComponent
 
   protected readonly chevronIcon = svgChevronLeft
   protected trackByIndex = (i: number) => i
-  public constructor(
-    private preferences: AppPreferencesService
-  ) {
+  public constructor(private preferences: AppPreferencesService) {
     super({
       menu: APP_MENU,
       active: null,

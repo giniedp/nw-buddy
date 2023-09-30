@@ -1,9 +1,19 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ContentChild, Directive, Injector, Input, TemplateRef, ViewChild } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ContentChild,
+  Directive,
+  Injector,
+  Input,
+  TemplateRef,
+  ViewChild,
+} from '@angular/core'
 import { IonicModule, IonMenu, IonModal } from '@ionic/angular'
 import { BehaviorSubject, combineLatest, map, merge, of, startWith, switchMap } from 'rxjs'
 import { BreakpointName, BREAKPOINTS } from './breakpoints'
 import { LayoutService } from './layout.service'
+import { Platform } from '@angular/cdk/platform'
 
 export class DetailDrawerContext {
   public $implicit = this
@@ -15,15 +25,13 @@ export class DetailDrawerContext {
 
 @Directive({
   standalone: true,
-  selector: '[nwbDetailDrawerContent]'
+  selector: '[nwbDetailDrawerContent]',
 })
 export class DetailDrawerContent {
   public static ngTemplateContextGuard<T>(dir: DetailDrawerContent, ctx: unknown): ctx is DetailDrawerContext {
     return true
   }
-  public constructor(public readonly tpl: TemplateRef<DetailDrawerContext>) {
-
-  }
+  public constructor(public readonly tpl: TemplateRef<DetailDrawerContext>) {}
 }
 
 @Component({
@@ -37,7 +45,6 @@ export class DetailDrawerContent {
   },
 })
 export class DetailDrawerComponent {
-
   @Input()
   public set breakOn(value: BreakpointName) {
     this.breakpoint$.next(value)
@@ -78,11 +85,14 @@ export class DetailDrawerComponent {
   protected isSmall$ = this.isLarge$.pipe(map((it) => !it))
   protected shouldOpen$ = combineLatest({
     appMenuOpen: this.layout.appMenu$.pipe(switchMap((menu) => this.isMenuOpen(menu))),
-    isSmall: this.isSmall$
-  }).pipe(map(({ appMenuOpen, isSmall }) => !appMenuOpen && isSmall ))
+    isSmall: this.isSmall$,
+  }).pipe(map(({ appMenuOpen, isSmall }) => !appMenuOpen && isSmall))
 
-  public constructor(private layout: LayoutService, injector: Injector) {
+  public constructor(private layout: LayoutService, injector: Injector, platform: Platform) {
     this.injector = injector
+    if (platform.isBrowser) {
+      this.setInitialBreakpoints()
+    }
   }
 
   public ngOnDestroy(): void {
@@ -97,4 +107,13 @@ export class DetailDrawerComponent {
     const close$ = menu.ionWillClose.pipe(map(() => false))
     return merge(open$, close$).pipe(startWith(false))
   }
+
+  private setInitialBreakpoints() {
+    this.breakpoints = [px2vh(12), px2vh(92), 0.45, 1]
+    this.initialBreakpoint = this.breakpoints[1]
+  }
+}
+
+function px2vh(px: number) {
+  return px / window.innerHeight
 }
