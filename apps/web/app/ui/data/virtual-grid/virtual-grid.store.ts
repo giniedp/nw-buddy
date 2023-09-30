@@ -172,11 +172,14 @@ function selectRows<T>(sections: Array<SectionGroup<T>>, columns: number) {
 }
 
 function selectRawRows<T>(sections: Array<SectionGroup<T>>, columns: number) {
+  console.log('selectRawRows', sections)
   const rows: Array<{ section: string } | { items: T[] }> = []
   for (const section of sections) {
-    rows.push({
-      section: section.section,
-    })
+    if (section.section) {
+      rows.push({
+        section: section.section,
+      })
+    }
 
     let row: T[]
     let i = 0
@@ -206,7 +209,7 @@ function selectSections<T>(data: NgIterable<T>, sectionFn?: (it: T) => string): 
   const groups = groupBy(items, (it) => sectionFn(it))
 
   return Object.keys(groups).map((key) => ({
-    section: key,
+    section: key === 'null' ? null : key, // TODO: make clean
     items: groups[key],
   }))
 }
