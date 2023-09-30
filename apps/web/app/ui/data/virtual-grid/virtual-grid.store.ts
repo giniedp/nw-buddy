@@ -172,7 +172,6 @@ function selectRows<T>(sections: Array<SectionGroup<T>>, columns: number) {
 }
 
 function selectRawRows<T>(sections: Array<SectionGroup<T>>, columns: number) {
-  console.log('selectRawRows', sections)
   const rows: Array<{ section: string } | { items: T[] }> = []
   for (const section of sections) {
     if (section.section) {
