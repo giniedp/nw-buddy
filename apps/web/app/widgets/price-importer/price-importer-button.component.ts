@@ -8,7 +8,7 @@ import { IconsModule } from '~/ui/icons'
 
 @Component({
   standalone: true,
-  selector: 'nwb-price-importer-button',
+  selector: 'nwb-price-importer-button,[nwbPriceImporterButton]',
   templateUrl: './price-importer-button.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, DialogModule, IconsModule, PriceImporterComponent],
@@ -17,6 +17,8 @@ import { IconsModule } from '~/ui/icons'
   },
 })
 export class PriceImporterButtonComponent {
+  @Input()
+  public nwbPriceImporterButton: void
   @Input()
   public icon: string | false = svgSackDollar
 

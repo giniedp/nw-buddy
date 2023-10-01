@@ -27,7 +27,7 @@ export interface DataViewCategoryMenuState {
   imports: [CommonModule, OverlayModule, IconsModule, NwModule, RouterModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'inline-flex flex-row gap-2 items-center py-1',
+    class: 'inline-flex flex-row gap-3 items-center py-1',
   },
   hostDirectives: [CdkOverlayOrigin],
 })
