@@ -1,18 +1,10 @@
 import { CommonModule } from '@angular/common'
-import {
-  Component,
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Input,
-  TemplateRef,
-  ViewChild,
-  inject,
-} from '@angular/core'
+import { ChangeDetectorRef, Component, Input, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { combineLatest, map, of } from 'rxjs'
+import { combineLatest, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { PaginationModule } from '~/ui/pagination'
-import { eqCaseInsensitive, shareReplayRefCount } from '~/utils'
+import { observeQueryParam, shareReplayRefCount } from '~/utils'
 import { CraftingCalculatorComponent } from '~/widgets/crafting'
 import { AppearanceDetailModule } from '~/widgets/data/appearance-detail'
 import { ItemDetailModule, ItemDetailStore } from '~/widgets/data/item-detail'
@@ -73,7 +65,7 @@ export class ItemTabsComponent extends ItemDetailStore {
     craftableRecipes: this.craftableRecipes$,
     perkBucketIds: this.perkBucketIds$,
     recipes: this.recipes$,
-    fragment: inject(ActivatedRoute).fragment,
+    tabId: observeQueryParam(inject(ActivatedRoute), 'itemTab'),
     appearance: this.appearance$,
   })
     .pipe(
@@ -128,7 +120,7 @@ export class ItemTabsComponent extends ItemDetailStore {
         return {
           ...data,
           tabs,
-          tabId: tabIds.find((it) => it === data.fragment) || tabIds[0],
+          tabId: tabIds.find((it) => it === data.tabId) || tabIds[0],
         }
       })
     )

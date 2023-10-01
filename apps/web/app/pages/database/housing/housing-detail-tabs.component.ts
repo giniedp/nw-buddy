@@ -4,7 +4,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router'
 import { combineLatest, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { PaginationModule } from '~/ui/pagination'
-import { shareReplayRefCount } from '~/utils'
+import { observeQueryParam, shareReplayRefCount } from '~/utils'
 import { CraftingCalculatorComponent } from '~/widgets/crafting'
 import { ItemDetailModule, ItemDetailStore } from '~/widgets/data/item-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
@@ -48,7 +48,7 @@ export class HousingTabsComponent extends ItemDetailStore {
     unlocksRecipe: this.salvageAchievementRecipe$,
     craftableRecipes: this.craftableRecipes$,
     recipes: this.recipes$,
-    fragment: this.route.fragment,
+    tabId: observeQueryParam(this.route, 'itemTab'),
   })
     .pipe(
       map((data) => {
@@ -91,7 +91,7 @@ export class HousingTabsComponent extends ItemDetailStore {
         return {
           ...data,
           tabs,
-          tabId: tabIds.find((it) => it === data.fragment) || tabIds[0],
+          tabId: tabIds.find((it) => it === data.tabId) || tabIds[0],
         }
       })
     )

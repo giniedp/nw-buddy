@@ -87,6 +87,7 @@
         class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50"
         [routerLink]="['.']"
         [queryParams]="{ gender: vm.other }"
+        [queryParamsHandling]="'merge'"
       >
         Show {{ vm.other }} variant
       </a>

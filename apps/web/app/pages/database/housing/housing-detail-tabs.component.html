@@ -4,7 +4,8 @@
       class="tab"
       [class.tab-active]="vm.tabId === tab.id"
       [routerLink]="[]"
-      [fragment]="tab.id"
+      [queryParams]="{ itemTab: tab.id }"
+      [queryParamsHandling]="'merge'"
       *ngFor="let tab of vm.tabs"
       >{{ tab.label }}</a
     >
@@ -31,7 +32,11 @@
   </ng-container>
 
   <ng-container *ngIf="vm.tabId === 'recipes'">
-    <nwb-crafting-calculator *ngFor="let item of vm.recipes" [recipe]="item.recipe" class="bg-base-300 rounded-b-md"></nwb-crafting-calculator>
+    <nwb-crafting-calculator
+      *ngFor="let item of vm.recipes"
+      [recipe]="item.recipe"
+      class="bg-base-300 rounded-b-md"
+    ></nwb-crafting-calculator>
   </ng-container>
 
   <ng-container *ngIf="vm.tabId === 'craftable'">

@@ -4,7 +4,8 @@
       class="tab tab-bordered"
       [class.tab-active]="vm.tabId === tab.id"
       [routerLink]="[]"
-      [fragment]="tab.id"
+      [queryParams]="{ itemTab: tab.id }"
+      [queryParamsHandling]="'merge'"
       *ngFor="let tab of vm.tabs"
       >{{ tab.label }}</a
     >
