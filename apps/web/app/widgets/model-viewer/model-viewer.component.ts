@@ -19,7 +19,7 @@ import { Itemappearancedefinitions, Mounts } from '@nw-data/generated'
 import { Subject, catchError, firstValueFrom, from, map, of, switchMap, takeUntil, tap } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgCamera, svgCircleExclamation, svgExpand, svgXmark } from '~/ui/icons/svg'
+import { svgCamera, svgCircleExclamation, svgExpand, svgMoon, svgSun, svgXmark } from '~/ui/icons/svg'
 import { TranslateService } from '../../i18n'
 import { ScreenshotModule, ScreenshotService } from '../screenshot'
 import { ItemModelInfo } from './model-viewer.service'
@@ -29,7 +29,7 @@ import { ViewerModel } from 'babylonjs-viewer'
 import { ModelViewerStore } from './model-viewer.store'
 import { getItemRotation } from './utils/get-item-rotation'
 import { supportsWebGL } from './utils/webgl-support'
-import type { DefaultViewer } from './viewer'
+import { viewerUpdateMode, type DefaultViewer } from './viewer'
 import { DyePanelComponent } from './dye-panel.component'
 
 export interface ModelViewerState {
@@ -97,11 +97,14 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
   protected canClose$ = this.store.canClose$
   protected canDye$ = this.store.canDye$
   protected buttons$ = this.store.buttons$
+  protected mode$ = this.store.mode$
 
   protected iconClose = svgXmark
   protected iconFullscreen = svgExpand
   protected iconCamera = svgCamera
   protected iconError = svgCircleExclamation
+  protected iconSun = svgSun
+  protected iconMoon = svgMoon
 
   private viewer: DefaultViewer
   private model: ViewerModel
@@ -219,7 +222,7 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
     this.viewer = await createViewer({
       element: this.viewerHost.nativeElement,
       zone: this.zone,
-      hideFloor: this.hideFloor,
+      mode: this.mode$(),
       onModelLoaded: (model) => {
         // console.log('modelLoaded', model)
       },
@@ -256,6 +259,13 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
     this.exitFullscreen()
     const blob = await fetch(data).then((res) => res.blob())
     this.screenshots.saveBlobWithDialog(blob, name)
+  }
+
+  protected toggleMode() {
+    this.store.patchState({ mode: this.mode$() === 'dark' ? 'light' : 'dark' })
+    if (this.viewer) {
+      viewerUpdateMode(this.viewer, this.mode$())
+    }
   }
 
   private async detectDyeFeature(model: ViewerModel) {

@@ -23,7 +23,9 @@ export interface DyePickerDialogData {
 export class DyePickerComponent {
   public static open(dialog: Dialog, config: DialogConfig<DyePickerDialogData>) {
     return dialog.open<Dyecolors, DyePickerDialogData, DyePickerComponent>(DyePickerComponent, {
-      panelClass: ['max-h-screen', 'w-screen', 'max-w-2xl', 'm-2', 'shadow', 'self-end', 'sm:self-center'],
+      maxWidth: 600,
+      maxHeight: 600,
+      panelClass: ['w-full', 'layout-pad', 'self-end', 'sm:self-center', 'shadow'],
       ...config,
     })
   }

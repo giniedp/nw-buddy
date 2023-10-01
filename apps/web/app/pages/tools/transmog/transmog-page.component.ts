@@ -84,24 +84,5 @@ export class TransmogPageComponent extends ComponentStore<{ hoverItem: TransmogI
       noFollow: true,
       noIndex: true,
     })
-    viewService.categoryItems$.subscribe((list) => {
-      if (list) {
-        console.log(
-          uniq(
-            list.map((it) => {
-              const tokens = it.id.split('_')
-              let token = tokens[tokens.length - 1]
-              if (token.match(/T\d/)) {
-                token = tokens[tokens.length - 2]
-              }
-              if (token === 'alt1') {
-                token = tokens[tokens.length - 2]
-              }
-              return token
-            })
-          )
-        )
-      }
-    })
   }
 }

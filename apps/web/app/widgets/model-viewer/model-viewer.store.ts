@@ -19,10 +19,12 @@ export interface ModelViewerState {
   dyeB: Dyecolors
   dyeA: Dyecolors
   dyeDebug: boolean
+  mode: 'light' | 'dark'
 }
 
 @Injectable()
 export class ModelViewerStore extends ComponentStore<ModelViewerState> {
+  public readonly mode$ = this.selectSignal(({ mode }) => mode)
   public readonly isSupported$ = this.selectSignal(({ isSupported }) => isSupported)
   public readonly isLoading$ = this.selectSignal(({ isLoading }) => isLoading)
   public readonly isEmpty$ = this.selectSignal(({ models }) => !models?.length)
@@ -82,6 +84,7 @@ export class ModelViewerStore extends ComponentStore<ModelViewerState> {
       dyeA: null,
       dyeColors: [],
       dyeDebug: false,
+      mode: 'dark',
     })
   }
 }

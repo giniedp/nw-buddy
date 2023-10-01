@@ -5,7 +5,7 @@ import { DefaultViewer, ViewerModel } from 'babylonjs-viewer'
 export async function createViewer(options: {
   element: HTMLElement
   zone: NgZone
-  hideFloor?: boolean
+  mode?: 'dark' | 'light'
   onModelLoaded?: (model: ViewerModel) => void
   onModelError?: (err: any) => void
   onEngineInit?: (viewer: DefaultViewer) => void
@@ -27,8 +27,9 @@ export async function createViewer(options: {
           a: 0,
         },
       },
-      skybox: {},
-      ground: null,
+      ground: {
+        opacity: 0,
+      },
       templates: {
         navBar: null,
         loadingScreen: null,
@@ -36,22 +37,7 @@ export async function createViewer(options: {
     })
 
     viewer.onSceneInitObservable.add((scene) => {
-      const skyMat = viewer.sceneManager.environmentHelper.skyboxMaterial
-      const gndMat = viewer.sceneManager.environmentHelper.groundMaterial
-      // window['sky'] = skyMat
-      // window['gnd'] = gndMat
-      // window['scn'] = scene
-      window['viewer'] = viewer
-      if (skyMat) {
-        skyMat.alpha = 0
-      }
-      if (gndMat) {
-        gndMat.alpha = 0
-      }
-      viewer.sceneManager.bloomEnabled = false
-      scene.environmentIntensity = 1
-      viewer.sceneManager.defaultRenderingPipeline.imageProcessing.contrast = 2
-      //scene.lightsEnabled = false
+      viewerUpdateMode(viewer, options.mode || 'dark')
     })
     viewer.onModelLoadedObservable.add((model) => {
       zone.run(() => {
@@ -84,4 +70,40 @@ export async function createViewer(options: {
       })
     })
   })
+}
+
+export function viewerUpdateMode(viewer: DefaultViewer, mode: 'dark' | 'light') {
+  if (mode === 'light') {
+    viewerSetLightMode(viewer)
+  } else {
+    viewerSetDarkMode(viewer)
+  }
+}
+
+function viewerSetLightMode(viewer: DefaultViewer) {
+  const skyMat = viewer.sceneManager.environmentHelper.skyboxMaterial
+  const gndMat = viewer.sceneManager.environmentHelper.groundMaterial
+  if (skyMat) {
+    skyMat.alpha = 1
+  }
+  if (gndMat) {
+    gndMat.alpha = 0.4
+  }
+  viewer.sceneManager.bloomEnabled = true
+  viewer.sceneManager.scene.environmentIntensity = 1
+  viewer.sceneManager.defaultRenderingPipeline.imageProcessing.contrast = 1.5
+}
+
+function viewerSetDarkMode(viewer: DefaultViewer) {
+  const skyMat = viewer.sceneManager.environmentHelper.skyboxMaterial
+  const gndMat = viewer.sceneManager.environmentHelper.groundMaterial
+  if (skyMat) {
+    skyMat.alpha = 0
+  }
+  if (gndMat) {
+    gndMat.alpha = 0
+  }
+  viewer.sceneManager.bloomEnabled = false
+  viewer.sceneManager.scene.environmentIntensity = 1
+  viewer.sceneManager.defaultRenderingPipeline.imageProcessing.contrast = 2
 }

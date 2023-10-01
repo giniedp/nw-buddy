@@ -1,28 +1,28 @@
 <button
   class="btn btn-sm btn-square"
   [tooltip]="'Primary'"
-  [style.background-color]="dyeR?.Color"
+  [style.background-color]="debug ? '#FF0000' : dyeR?.Color"
   [disabled]="!!dyeRDisabled"
   (click)="pickR()"
 ></button>
 <button
   class="btn btn-sm btn-square"
   [tooltip]="'Secondary'"
-  [style.background-color]="dyeG?.Color"
+  [style.background-color]="debug ? '#00FF00' : dyeG?.Color"
   [disabled]="!!dyeGDisabled"
   (click)="pickG()"
 ></button>
 <button
   class="btn btn-sm btn-square"
   [tooltip]="'Accent'"
-  [style.background-color]="dyeB?.Color"
+  [style.background-color]="debug ? '#0000FF' : dyeB?.Color"
   [disabled]="!!dyeBDisabled"
   (click)="pickB()"
 ></button>
 <button
   class="btn btn-sm btn-square"
   [tooltip]="'Tint'"
-  [style.background-color]="dyeA?.Color"
+  [style.background-color]="debug ? '#FF00FF' : dyeA?.Color"
   [disabled]="!!dyeADisabled"
   (click)="pickA()"
 ></button>

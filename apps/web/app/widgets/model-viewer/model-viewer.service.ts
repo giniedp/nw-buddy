@@ -88,11 +88,11 @@ export class ModelViewerService {
       weapon: this.db.weaponAppearance(appearanceId$).pipe(map((it) => this.selectWeaponModels(it))),
       weaponMale: this.db.weaponAppearance(appearanceId$).pipe(
         switchMap((it) => this.db.itemAppearance(it?.Appearance)),
-        map((it) => this.selectItemModels(it, ['Male']))
+        map((it) => this.selectItemModels(it))
       ),
       weaponFemale: this.db.weaponAppearance(appearanceId$).pipe(
         switchMap((it) => this.db.itemAppearance(it?.FemaleAppearance)),
-        map((it) => this.selectItemModels(it, ['Female']))
+        map((it) => this.selectItemModels(it))
       ),
       instrument: this.db.instrumentAppearance(appearanceId$).pipe(map((it) => this.selectInstrumentModels(it))),
     }).pipe(
@@ -145,7 +145,7 @@ export class ModelViewerService {
     )
   }
 
-  private selectItemModels(item: Itemappearancedefinitions, tags: string[] = []): ItemModelInfo[] {
+  private selectItemModels(item: Itemappearancedefinitions): ItemModelInfo[] {
     const result: ItemModelInfo[] = []
     if (!item) {
       return result
@@ -165,26 +165,31 @@ export class ModelViewerService {
         name: item.Name,
         itemId: item.ItemID,
         url: `${this.cdnHost || ''}/itemappearances/${item.ItemID}-${key}.glb`.toLowerCase(),
-        label: labels[key] || uniq([...tags, key].filter((it) => !!it)).join(' '),
+        label: labels[key] || key,
         itemClass: [...(item.ItemClass || [])],
       })
     }
     return result
   }
 
-  private selectWeaponModels(item: ItemdefinitionsWeaponappearances, tags: string[] = []): ItemModelInfo[] {
+  private selectWeaponModels(item: ItemdefinitionsWeaponappearances): ItemModelInfo[] {
     const result: ItemModelInfo[] = []
     if (!item) {
       return result
     }
     const keys: Array<keyof ItemdefinitionsWeaponappearances> = ['SkinOverride1', 'SkinOverride2', 'MeshOverride']
+    const labels = {
+      SkinOverride1: 'Model 1',
+      SkinOverride2: 'Model 2',
+      MeshOverride: 'Model 3',
+    }
     for (const key of keys) {
       if (item[key]) {
         result.push({
           name: item.Name,
           itemId: item.WeaponAppearanceID,
           url: `${this.cdnHost || ''}/weaponappearances/${item.WeaponAppearanceID}-${key}.glb`.toLowerCase(),
-          label: uniq([...tags, key]).join(' '),
+          label: labels[key] || key,
           itemClass: [...(item.ItemClass || [])],
         })
       }
@@ -192,7 +197,7 @@ export class ModelViewerService {
     return result
   }
 
-  private selectInstrumentModels(item: ItemdefinitionsInstrumentsappearances, tags: string[] = []): ItemModelInfo[] {
+  private selectInstrumentModels(item: ItemdefinitionsInstrumentsappearances): ItemModelInfo[] {
     const result: ItemModelInfo[] = []
     if (!item) {
       return result
@@ -204,7 +209,7 @@ export class ModelViewerService {
           name: item.Name,
           itemId: item.WeaponAppearanceID,
           url: `${this.cdnHost || ''}/instrumentappearances/${item.WeaponAppearanceID}-${key}.glb`.toLowerCase(),
-          label: uniq([...tags, key]).join(' '),
+          label: key,
           itemClass: [...(item.ItemClass || [])],
         })
       }
