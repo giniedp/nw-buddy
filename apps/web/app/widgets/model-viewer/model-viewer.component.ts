@@ -108,6 +108,7 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
 
   private viewer: DefaultViewer
   private model: ViewerModel
+  protected trackByIndex = (i: number) => i
 
   public constructor(
     @Optional()
