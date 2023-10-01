@@ -38,6 +38,8 @@ module.exports = {
         lg: '3px 8px 16px var(--tw-shadow-color)',
       },
       gridTemplateColumns: {
+        'fill-5xs': 'repeat(auto-fill, minmax(4rem, 1fr))',
+        'fill-4xs': 'repeat(auto-fill, minmax(6rem, 1fr))',
         'fill-3xs': 'repeat(auto-fill, minmax(8rem, 1fr))',
         'fill-2xs': 'repeat(auto-fill, minmax(10rem, 1fr))',
         'fill-xs': 'repeat(auto-fill, minmax(15rem, 1fr))',

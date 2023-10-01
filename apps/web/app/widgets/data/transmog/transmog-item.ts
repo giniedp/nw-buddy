@@ -25,11 +25,13 @@ export interface DyeSlot {
 
 export interface TransmogItem {
   id: string
+  gearsetId: string
   category: string
   subcategory: string
   appearance: TransmogAppearance
   male: TransmogItem
   female: TransmogItem
+  set: TransmogItem[]
   items: ItemDefinitionMaster[]
 }
 

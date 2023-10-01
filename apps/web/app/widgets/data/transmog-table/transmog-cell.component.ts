@@ -38,11 +38,7 @@ export class TransmogCellComponent implements VirtualGridCellComponent<TransmogR
         return [it.category, it.subcategory].join('/')
       },
       getQuickFilterText: (item, tl8) => {
-        if (item.id === 'specialcorruptedVar1_chest') {
-          console.log(tl8)
-          console.log(tl8(item.appearance.Name))
-        }
-        return tl8(item.appearance.Name)
+        return [item.id, tl8(item.appearance.Name)].join(' ')
       },
     }
   }

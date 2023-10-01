@@ -16,6 +16,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
 import { TransmogRecord, TransmogTableAdapter } from '~/widgets/data/transmog-table'
 import { TransmogItem } from '~/widgets/data/transmog'
+import { uniq } from 'lodash'
 
 @Component({
   standalone: true,
@@ -75,12 +76,32 @@ export class TransmogPageComponent extends ComponentStore<{ hoverItem: TransmogI
 
   public constructor(head: HtmlHeadService, protected viewService: DataViewService<TransmogRecord>) {
     super({ hoverItem: null })
+
     viewService.patchState({ mode: 'grid', modes: ['grid'] })
     head.updateMetadata({
       title: 'Transmog',
       description: 'New World transmog database',
       noFollow: true,
       noIndex: true,
+    })
+    viewService.categoryItems$.subscribe((list) => {
+      if (list) {
+        console.log(
+          uniq(
+            list.map((it) => {
+              const tokens = it.id.split('_')
+              let token = tokens[tokens.length - 1]
+              if (token.match(/T\d/)) {
+                token = tokens[tokens.length - 2]
+              }
+              if (token === 'alt1') {
+                token = tokens[tokens.length - 2]
+              }
+              return token
+            })
+          )
+        )
+      }
     })
   }
 }

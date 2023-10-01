@@ -559,3 +559,88 @@ export function getItemExpansion(expansionId: string) {
     icon: EXPANSION_ICONS.get(expansionId) || ATTRIBUTION_ICONS.get('Unknown'),
   }
 }
+
+const ITEM_ID_SUFFIXES = [
+  //
+  'Heavy',
+  'Light',
+  'Medium',
+  '_',
+  //
+  'Head',
+  'Chestguard',
+  'Chest',
+  'Hands',
+  'Legs',
+  'Feet',
+  'Feets',
+  //
+  'Shirt',
+  'Hat',
+  'Pants',
+  'Shoes',
+  'Gloves',
+  //
+  'Coat',
+  'Hat',
+  'Pants',
+  'Boots',
+  'Gloves',
+  //
+  'Breastplate',
+  'Helm',
+  'Greaves',
+  'Boots',
+  'Gauntlets',
+  //
+  'Sabatons',
+  'Shoes',
+  'Thighguards',
+  'Handcovers',
+  'Cowl',
+  //
+  'Masque',
+]
+const ITEM_ID_SUFFIXES_PATTERN = `(${ITEM_ID_SUFFIXES.join('|')})`
+
+export function getItemGearsetID(item: Pick<ItemDefinitionMaster, 'ItemID'>) {
+  if (!item || !item.ItemID) {
+    return null
+  }
+  return item.ItemID.replace(new RegExp(ITEM_ID_SUFFIXES_PATTERN, 'gi'), '')
+}
+
+const APPEARANCE_ID_SUFFIXES = [
+  'head',
+  'hat',
+  'helm',
+
+  'chest',
+  'Shirt',
+  'Chest',
+
+  'hands',
+  'gloves',
+  'Gloves',
+  'forearms',
+  'Hands',
+
+  'legs',
+  'Pants',
+  'thighs',
+  'Legs',
+
+  'feet',
+  'Boots',
+  'Feet',
+  'calves',
+]
+
+const APPEARANCE_ID_SUFFIXES_PATTERN = `(${APPEARANCE_ID_SUFFIXES.join('|')})`
+
+export function getAppearanceGearsetId(appearanceID: string) {
+  if (!appearanceID) {
+    return null
+  }
+  return appearanceID.replace(new RegExp(APPEARANCE_ID_SUFFIXES_PATTERN, 'i'), '')
+}

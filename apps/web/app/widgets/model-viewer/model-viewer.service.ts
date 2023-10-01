@@ -150,7 +150,13 @@ export class ModelViewerService {
     if (!item) {
       return result
     }
-    const keys: Array<keyof Itemappearancedefinitions> = ['Skin1', 'Skin2']
+
+    const keys: Array<keyof Itemappearancedefinitions> = ['Skin1', 'Skin2', 'AppearanceCDF']
+    const labels = {
+      Skin1: 'Model 1',
+      Skin2: 'Model 2',
+      AppearanceCDF: 'Full Set',
+    }
     for (const key of keys) {
       if (!item[key]) {
         continue
@@ -159,7 +165,7 @@ export class ModelViewerService {
         name: item.Name,
         itemId: item.ItemID,
         url: `${this.cdnHost || ''}/itemappearances/${item.ItemID}-${key}.glb`.toLowerCase(),
-        label: uniq([...tags, item.Gender, key].filter((it) => !!it)).join(' '),
+        label: labels[key] || uniq([...tags, key].filter((it) => !!it)).join(' '),
         itemClass: [...(item.ItemClass || [])],
       })
     }

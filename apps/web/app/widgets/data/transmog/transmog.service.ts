@@ -18,6 +18,7 @@ import {
   getAppearanceIdName,
   haveAppearancesSameModelFile,
 } from './transmog-item'
+import { getAppearanceGearsetId, getItemGearsetID } from '@nw-data/common'
 
 @Injectable({ providedIn: 'root' })
 export class TransmogService {
@@ -80,7 +81,7 @@ function selectAppearances({
   categories: TransmogCategory[]
 }): TransmogItem[] {
   const appearances = [...itemAppearances, ...weaponAppearances, ...instrumentAppearances]
-  const result = new CaseInsensitiveMap<string, TransmogItem>()
+  const transmogMap = new CaseInsensitiveMap<string, TransmogItem>()
   for (const appearance of appearances) {
     const appearanceId = getAppearanceId(appearance)
     const { category, subcategory } = categorizeAppearance(appearance, categories)
@@ -89,26 +90,28 @@ function selectAppearances({
 
     const transmog: TransmogItem = {
       id: appearanceId,
+      gearsetId: getAppearanceGearsetId(appearanceId),
       appearance: appearance,
       male: null,
       female: null,
+      set: null,
       category: category,
       subcategory: subcategory,
       items: sources,
     }
     const appearanceName = (appearance as Itemappearancedefinitions).AppearanceName
     if (!appearanceName || !gender) {
-      result.set(transmog.id, transmog)
+      transmogMap.set(transmog.id, transmog)
       continue
     }
 
-    let parent: TransmogItem = result.get(appearanceName)
+    let parent: TransmogItem = transmogMap.get(appearanceName)
     if (!parent) {
       parent = {
         ...transmog,
         id: appearanceName,
       }
-      result.set(parent.id, parent)
+      transmogMap.set(parent.id, parent)
     }
     if (gender === 'male') {
       parent.male = transmog
@@ -117,5 +120,9 @@ function selectAppearances({
       parent.female = transmog
     }
   }
-  return Array.from(result.values())
+  const result = Array.from(transmogMap.values())
+  for (const transmog of result) {
+    transmog.set = result.filter((it) => it.gearsetId === transmog.gearsetId)
+  }
+  return result
 }

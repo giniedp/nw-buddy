@@ -94,6 +94,20 @@
   </div>
 </div>
 
+<ng-container *ngIf="itemset$ | async; let others">
+  <div>
+    <h3 class="px-1 py-1">Full Set</h3>
+    <nwb-item-header class="grid grid-cols-fill-5xs flex-wrap gap-1 rounded-md overflow-clip">
+      <div *ngFor="let item of others">
+        <a [routerLink]="['/transmog/table', item.id]" class="relative w-fill aspect-square block rounded-sm">
+          <nwb-item-icon [solid]="false" [nwbItemIcon]="item.appearance.IconPath" class="w-fill"> </nwb-item-icon>
+          <img nwImage="assets/icons/menu/transmogtoken.webp" class="w-4 h-4 absolute right-1 bottom-1" />
+        </a>
+      </div>
+    </nwb-item-header>
+  </div>
+</ng-container>
+
 <ng-container *ngIf="similarItemsVm$ | async; let vm">
   <div>
     <h3 class="px-1 py-1">Items with appearance ({{ vm.count }})</h3>

@@ -108,15 +108,23 @@ export class AppearanceDetailComponent extends AppearanceDetailStore implements 
     }
   )
 
+  protected itemset$ = this.select(this.transmog$, (it) => {
+    return it?.set?.length > 1 ? it.set : null
+  })
+
   protected trackByIndex = (index: number) => index
   protected similarItemsTab$ = new BehaviorSubject<string>(null)
   protected similarItemsVm$ = this.select(
     combineLatest({
       tabId: this.similarItemsTab$,
       items: this.similarItems$,
+      parentId: this.parentItemId$,
     }),
-    ({ tabId, items }) => {
+    ({ tabId, items, parentId }) => {
       if (!items?.length) {
+        if (parentId) {
+          return null
+        }
         return {
           count: 0,
           tabs: [],

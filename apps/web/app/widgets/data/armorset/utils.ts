@@ -1,7 +1,7 @@
 import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { groupBy, sortBy } from 'lodash'
 import { TranslateService } from '~/i18n'
-import { getItemRarity } from '@nw-data/common'
+import { getItemGearsetID, getItemRarity } from '@nw-data/common'
 import { Armorset, ArmorsetGroup } from './types'
 
 export function findSets(
@@ -11,7 +11,7 @@ export function findSets(
   i18n: TranslateService
 ): ArmorsetGroup[] {
   const groups1 = groupBy(items, (item) => {
-    const family = getFamilyName(item)
+    const family = getItemGearsetID(item)
     const weight = getItemClass(item)
     const rarity = getItemRarity(item)
     const tier = item.Tier
@@ -35,7 +35,7 @@ export function findSets(
       .join('-')
     sets[groupKey] = sets[groupKey] || []
     sets[groupKey].push({
-      key: getFamilyName(items[0]),
+      key: getGearsetFamilyName(items[0]),
       name: naming.name,
       source: source,
       tier: items[0].Tier,
@@ -99,7 +99,7 @@ const FAMILY_OGNORE_TOKENS = new RegExp(
   'gi'
 )
 
-export function getFamilyName(item: ItemDefinitionMaster) {
+export function getGearsetFamilyName(item: ItemDefinitionMaster) {
   return item.ItemID.replace(FAMILY_OGNORE_TOKENS, '')
 }
 

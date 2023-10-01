@@ -41,7 +41,7 @@ export async function createViewer(options: {
       // window['sky'] = skyMat
       // window['gnd'] = gndMat
       // window['scn'] = scene
-
+      window['viewer'] = viewer
       if (skyMat) {
         skyMat.alpha = 0
       }
@@ -50,6 +50,7 @@ export async function createViewer(options: {
       }
       viewer.sceneManager.bloomEnabled = false
       scene.environmentIntensity = 1
+      viewer.sceneManager.defaultRenderingPipeline.imageProcessing.contrast = 2
       //scene.lightsEnabled = false
     })
     viewer.onModelLoadedObservable.add((model) => {

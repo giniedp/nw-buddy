@@ -37,6 +37,7 @@ export class AppearanceDetailStore extends ComponentStore<{
   vairant: TransmogGender
 }> {
   public readonly appearanceNameIdOrAlike$ = this.select(({ appearanceId }) => appearanceId)
+  public readonly parentItemId$ = this.select(({ parentItemId }) => parentItemId)
 
   public readonly instrumentAppearance$ = this.db.instrumentAppearance(this.appearanceNameIdOrAlike$)
   public readonly weaponAppearance$ = this.db.weaponAppearance(this.appearanceNameIdOrAlike$)
@@ -70,7 +71,7 @@ export class AppearanceDetailStore extends ComponentStore<{
   public readonly similarItems$ = this.select(
     combineLatest({
       transmog: this.transmog$,
-      parentId: this.select(({ parentItemId }) => parentItemId),
+      parentId: this.parentItemId$,
     }),
     selectItems
   )
