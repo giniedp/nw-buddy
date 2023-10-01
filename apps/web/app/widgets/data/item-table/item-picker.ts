@@ -15,16 +15,16 @@ export function openItemsPicker(options: {
   title?: string
   selection?: string[]
   multiple?: boolean
-  category?: string
+  categories?: string[]
   noSkins?: boolean
 }) {
   return DataViewPicker.open(options.dialog, {
     title: options.title || 'Pick item',
     selection: options.selection,
-    persistKey: `picker:items-grid:${options.category || 'default'}`,
+    persistKey: `picker:items-grid:${options.categories?.join('-') || 'default'}`,
     dataView: {
       adapter: ItemTableAdapter,
-      filter: itemFilter(options.category, options.noSkins),
+      filter: itemFilter(options.categories, options.noSkins),
       sort: (a, b) => {
         let result = b.Tier - a.Tier
         if (!result) {
@@ -48,13 +48,13 @@ export function openItemsPicker(options: {
   })
 }
 
-function itemFilter(category: string, noSkins: boolean) {
-  if (!category && !noSkins) {
+function itemFilter(categories: string[], noSkins: boolean) {
+  if (!categories?.length) {
     return () => true
   }
 
   return (it: ItemTableRecord) => {
-    if (!it.ItemClass?.some((cls) => eqCaseInsensitive(cls, category))) {
+    if (!it.ItemClass?.some((cls) => categories.some((it) => eqCaseInsensitive(cls, it)))) {
       return false
     }
     if (noSkins && (it.ItemType === 'Armor' || it.ItemType === 'Weapons') && (!it.CanHavePerks || !it.ItemStatsRef)) {

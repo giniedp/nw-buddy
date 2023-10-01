@@ -15,6 +15,8 @@ import {
   gearsetColSlots,
   gearsetColWeight,
 } from './gearset-table-cols'
+import { GearsetLoadoutItemComponent } from './gearset-cell.component'
+import { augmentWithTransactions } from '~/ui/data/ag-grid'
 
 @Injectable()
 export class GearsetTableAdapter implements TableGridAdapter<GearsetTableRecord>, DataViewAdapter<GearsetTableRecord> {
@@ -29,18 +31,39 @@ export class GearsetTableAdapter implements TableGridAdapter<GearsetTableRecord>
   }
 
   public entityCategories(item: GearsetRow) {
-    return null
+    if (!item.record.tags?.length) {
+      return null
+    }
+    return item.record.tags.map((tag) => {
+      return {
+        id: tag,
+        label: tag,
+      }
+    })
   }
 
   public virtualOptions(): VirtualGridOptions<GearsetTableRecord> {
-    return null
+    return GearsetLoadoutItemComponent.buildGridOptions()
   }
 
   public gridOptions(): GridOptions<GearsetTableRecord> {
+    let options: GridOptions<GearsetTableRecord>
     if (this.config?.gridOptions) {
-      return this.config.gridOptions(this.utils)
+      options = this.config.gridOptions(this.utils)
+    } else {
+      options = buildCommonGearsetGridOptions(this.utils)
     }
-    return buildCommonGearsetGridOptions(this.utils)
+    if (this.store) {
+      options.getRowId = ({ data }) => {
+        return this.entityID(data)
+      }
+      augmentWithTransactions(options, {
+        onCreate: this.store.rowCreated$,
+        onDestroy: this.store.rowDestroyed$,
+        onUpdate: this.store.rowUpdated$,
+      })
+    }
+    return options
   }
 
   public connect() {
@@ -51,14 +74,6 @@ export class GearsetTableAdapter implements TableGridAdapter<GearsetTableRecord>
     .pipe(filter((it) => it != null))
     .pipe(take(1))
     .pipe(shareReplayRefCount(1))
-
-  // public override transaction: Observable<RowDataTransaction> = defer(() => {
-  //   return merge(
-  //     this.store.rowCreated$.pipe(switchMap((item) => this.txInsert([item]))),
-  //     this.store.rowUpdated$.pipe(switchMap((item) => this.txUpdate([item]))),
-  //     this.store.rowDestroyed$.pipe(switchMap((recordId) => this.txRemove([recordId])))
-  //   )
-  // })
 }
 
 export function buildCommonGearsetGridOptions(util: TableGridUtils<GearsetTableRecord>) {

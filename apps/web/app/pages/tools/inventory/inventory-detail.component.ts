@@ -35,7 +35,7 @@ export interface ItemDetailVM {
   ],
   providers: [GearsetStore],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class InventoryDetailComponent {

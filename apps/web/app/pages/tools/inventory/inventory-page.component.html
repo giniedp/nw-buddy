@@ -31,16 +31,16 @@
       <!-- <li>
         <nwb-data-table-panel-button></nwb-data-table-panel-button>
       </li> -->
-      <!-- <li *ngIf="service.canToggleMode$()">
-        <a [nwbDataViewToggle]></a>
-      </li> -->
+      <li *ngIf="service.canToggleMode$()">
+        <button [nwbDataViewToggle]></button>
+      </li>
     </ul>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
       <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"></nwb-quicksearch-input>
     </div>
   </div>
 </ion-header>
-<div class="flex-1 flex flex-row overflow-hidden content-container">
+<div class="flex-1 flex flex-row overflow-hidden">
   <ng-container *ngIf="service.isGridActive$()">
     <nwb-virtual-grid
       [enableQuickfilter]="true"
@@ -60,57 +60,11 @@
       [selectionRouteParam]="selectionParam"
     ></nwb-table-grid>
   </ng-container>
-  <!-- <router-outlet></router-outlet> -->
-  <div class="gearset layout-col">
-    <nwb-gearset-form></nwb-gearset-form>
-  </div>
-  <div class="layout-content layout-pad">
-    <router-outlet></router-outlet>
-  </div>
-</div>
 
-<!-- 
-<ion-header class="bg-base-300">
-  <nwb-data-table-header
-    class="flex flex-col-reverse md:flex-row"
-    categoryChildRoute
-    [childRouteIndex]="'table'"
-    #header="tableHeader"
-  >
-    <nwb-navbar [menu]="tplMenu" [buttons]="tplButtons" class="flex-1">
-      <ng-template #tplMenu>
-        <li *ngFor="let item of header.categories | async" [routerLinkActive]="'bordered'">
-          <a rel="nofollow" [routerLink]="item.route">
-            <img [nwImage]="item.icon" *ngIf="item.icon" class="w-6 h-6" />
-            <span *ngIf="!item.icon">{{ item.label }}</span>
-          </a>
-        </li>
-      </ng-template>
-      <ng-template #tplButtons>
-        <li [tooltip]="'Create new item'" [color]="'accent'">
-          <span (click)="createItem()">
-            <nwb-icon [icon]="svgPlus" class="w-4 h-4"></nwb-icon>
-          </span>
-        </li>
-        <ng-container *ngIf="header.category$ | async; let category">
-          <li [tooltip]="'Scan new item'" [color]="'accent'" *ngIf="isScanSupported(category)">
-            <span (click)="scanItem(category)">
-              <nwb-icon [icon]="svgImage" class="w-4 h-4"></nwb-icon>
-            </span>
-          </li>
-        </ng-container>
-        <li>
-          <nwb-data-table-panel-button></nwb-data-table-panel-button>
-        </li>
-      </ng-template>
-    </nwb-navbar>
-    <div class="flex-none p-2 w-full md:max-w-[256px]">
-      <nwb-quicksearch-input #search></nwb-quicksearch-input>
+  <nwb-detail-drawer class="hidden 2xl:block w-[490px]" [breakOn]="'2xl'">
+    <div *nwbDetailDrawerContent class="layout-content bg-base-200 p-2 flex flex-col gap-2">
+      <nwb-gearset-form class="hidden 2xl:grid"></nwb-gearset-form>
+      <router-outlet></router-outlet>
     </div>
-  </nwb-data-table-header>
-</ion-header>
-<ion-content [scrollY]="false">
-  <div class="h-full layout-col">
-    <router-outlet></router-outlet>
-  </div>
-</ion-content> -->
+  </nwb-detail-drawer>
+</div>

@@ -4,24 +4,35 @@ import { ChangeDetectionStrategy, Component, Injector } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { EQUIP_SLOTS, EquipSlot } from '@nw-data/common'
-import { combineLatest, filter, firstValueFrom, map, switchMap, take } from 'rxjs'
+import { combineLatest, filter, firstValueFrom, map, switchMap, take, takeUntil } from 'rxjs'
 import { GearsetStore, GearsetsDB, ItemInstanceRecord } from '~/data'
 import { NwModule } from '~/nw'
 import { PreferencesService } from '~/preferences'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
-import { svgChevronLeft, svgFolderOpen, svgLink, svgPaste, svgPlus, svgSquareArrowUpRight } from '~/ui/icons/svg'
+import {
+  svgChevronLeft,
+  svgEllipsisVertical,
+  svgFolderOpen,
+  svgLink,
+  svgPaste,
+  svgPlus,
+  svgSquareArrowUpRight,
+  svgTrashCan,
+  svgXmark,
+} from '~/ui/icons/svg'
 import { LayoutModule, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { GearsetTableAdapter } from '~/widgets/data/gearset-table'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
-import { GearsetFormCellComponent } from './gearset-form-cell.component'
+import { GearsetLoadoutItemComponent, LoadoutSlotEventHandler } from '~/widgets/data/gearset-detail'
+import { selectStream } from '~/utils'
+import { GearsetFormSlotHandler } from './gearset-form-slot-handler'
 
 @Component({
   standalone: true,
   selector: 'nwb-gearset-form',
   templateUrl: './gearset-form.component.html',
-  styleUrls: ['./gearset-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -29,15 +40,22 @@ import { GearsetFormCellComponent } from './gearset-form-cell.component'
     NwModule,
     DialogModule,
     LayoutModule,
-    GearsetFormCellComponent,
     IconsModule,
     ItemDetailModule,
     RouterModule,
     TooltipModule,
+    GearsetLoadoutItemComponent,
   ],
-  providers: [GearsetStore],
+  providers: [
+    GearsetStore,
+    GearsetFormSlotHandler,
+    {
+      provide: LoadoutSlotEventHandler,
+      useExisting: GearsetFormSlotHandler,
+    },
+  ],
   host: {
-    class: 'layout-col layout-gap bg-base-300 rounded-bl-md',
+    class: 'block',
   },
 })
 export class GearsetFormComponent {
@@ -54,22 +72,27 @@ export class GearsetFormComponent {
 
   protected iconOpen = svgFolderOpen
   protected iconCreate = svgPlus
+  protected iconDelete = svgTrashCan
+  protected iconClose = svgXmark
+  protected iconMenu = svgEllipsisVertical
   protected iconBack = svgChevronLeft
   protected iconLink = svgLink
   protected iconCopy = svgPaste
   protected iconNav = svgSquareArrowUpRight
-  private currentGearsetId = this.pref.session.storageProperty<string>('recent-gearset-id')
+  protected currentGearsetId = this.pref.session.storageProperty<string>('recent-gearset-id')
+  protected gearsetId$ = selectStream(this.currentGearsetId.observe())
+  protected gearset$ = selectStream(this.gearDb.observeByid(this.gearsetId$))
 
   public constructor(
     private store: GearsetStore,
     private gearDb: GearsetsDB,
     private dialog: Dialog,
     private injector: Injector,
-    private pref: PreferencesService
+    private pref: PreferencesService,
+    private slotEventHandler: GearsetFormSlotHandler
   ) {
-    const gearId$ = this.currentGearsetId.observe()
-    const gearset$ = this.gearDb.observeByid(gearId$)
-    this.store.load(gearset$)
+    this.store.load(this.gearset$)
+    slotEventHandler.itemDropped.subscribe((it) => this.onItemDropped(it.slot, it.item))
   }
 
   protected createSet() {

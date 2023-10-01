@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/cor
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonicModule } from '@ionic/angular'
 import { EQUIP_SLOTS, getItemId, getItemMaxGearScore } from '@nw-data/common'
-import { filter, firstValueFrom, take } from 'rxjs'
+import { filter, firstValueFrom, map, take } from 'rxjs'
 import { GearsetsStore, ItemInstanceRow, ItemInstancesStore } from '~/data'
 import { NwModule } from '~/nw'
 import { DataGridModule } from '~/ui/data/table-grid'
@@ -20,12 +20,12 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 import { GearImporterDialogComponent } from './gear-importer-dialog.component'
 import { GearsetFormComponent } from './gearset-form.component'
 import { InventoryPickerService } from './inventory-picker.service'
+import { LayoutModule } from '~/ui/layout'
 
 @Component({
   standalone: true,
   selector: 'nwb-inventory-page',
   templateUrl: './inventory-page.component.html',
-  styleUrls: ['./inventory-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -40,6 +40,7 @@ import { InventoryPickerService } from './inventory-picker.service'
     ScreenshotModule,
     TooltipModule,
     VirtualGridModule,
+    LayoutModule,
   ],
   host: {
     class: 'layout-col',
@@ -88,11 +89,14 @@ export class InventoryPageComponent implements OnInit {
 
   protected async createItem() {
     const category = await firstValueFrom(this.service.category$)
-    console.log(category)
+    let categories = await firstValueFrom(this.service.categories$.pipe(map((list) => list.map((it) => it.id))))
+    if (category) {
+      categories = [category]
+    }
     this.picker
       .pickItem({
         multiple: true,
-        category: await firstValueFrom(this.service.category$),
+        categories: categories,
         noSkins: true,
       })
       .pipe(take(1))

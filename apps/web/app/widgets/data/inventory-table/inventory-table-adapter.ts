@@ -26,6 +26,7 @@ import {
   inventoryColTier,
 } from './inventory-table-cols'
 import { ConfirmDialogComponent } from '~/ui/layout'
+import { InventoryCellComponent } from './inventory-cell.component'
 
 @Injectable()
 export class InventoryTableAdapter
@@ -57,8 +58,19 @@ export class InventoryTableAdapter
     })
   }
 
+  public getCategories() {
+    const result = EQUIP_SLOTS.filter((it) => it.itemType !== 'Trophies').map(
+      (it): DataViewCategory => ({
+        icon: it.iconSlot || it.icon,
+        id: it.itemType,
+        label: it.name,
+      })
+    )
+    return uniqBy(result, (it) => it.id)
+  }
+
   public virtualOptions(): VirtualGridOptions<InventoryTableRecord> {
-    return null
+    return InventoryCellComponent.buildGridOptions()
   }
 
   public gridOptions(): GridOptions<InventoryTableRecord> {
@@ -90,19 +102,8 @@ export class InventoryTableAdapter
   }
 
   private readonly source$: Observable<ItemInstanceRow[]> = defer(() => this.config?.source || this.store.rows$)
-    .pipe(filter((it) => it != null))
-    .pipe(take(1))
-
-  public getCategories() {
-    const result = EQUIP_SLOTS.filter((it) => it.itemType !== 'Trophies').map(
-      (it): DataViewCategory => ({
-        icon: it.iconSlot || it.icon,
-        id: it.itemType,
-        label: it.name,
-      })
-    )
-    return uniqBy(result, (it) => it.id)
-  }
+  //.pipe(filter((it) => it != null))
+  //.pipe(take(1))
 
   public constructor(
     @Optional()

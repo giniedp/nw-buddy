@@ -1,20 +1,23 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TemplateRef } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { combineLatest, defer, map, of, switchMap } from 'rxjs'
-import { CharacterStore, GearsetRecord, GearsetStore, ItemInstance, ItemInstanceRecord, ItemInstancesDB } from '~/data'
-import { NwModule } from '~/nw'
 import { gearScoreRelevantSlots, getAverageGearScore } from '@nw-data/common'
-import { GersetSquareSlotComponent } from '../slots'
+import { combineLatest, defer, map, of, switchMap } from 'rxjs'
+import { CharacterStore, GearsetRecord, GearsetStore, ItemInstance, ItemInstancesDB } from '~/data'
+import { NwModule } from '~/nw'
+import { GersetLoadoutSlotComponent } from './gearset-loadout-slot.component'
 
 @Component({
   standalone: true,
-  selector: 'nwb-gearset-loadout-item',
-  templateUrl: './loadout-item.component.html',
-  styleUrls: ['./loadout-item.component.scss'],
+  selector: 'nwb-gearset-loadout',
+  templateUrl: './gearset-loadout.component.html',
+  styleUrls: ['./gearset-loadout.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, GersetSquareSlotComponent, RouterModule],
+  imports: [CommonModule, NwModule, GersetLoadoutSlotComponent, RouterModule],
   providers: [GearsetStore],
+  host: {
+    class: 'grid gap-x-3 gap-y-2',
+  },
 })
 export class GearsetLoadoutItemComponent {
   @Input()
@@ -23,7 +26,13 @@ export class GearsetLoadoutItemComponent {
   }
 
   @Input()
-  public disableHead = false
+  public editable = false
+
+  @Input()
+  public slotMenuTemplate: TemplateRef<any>
+
+  @Input()
+  public buttonTemplate: TemplateRef<any>
 
   @Output()
   public delete = new EventEmitter<GearsetRecord>()
@@ -46,6 +55,14 @@ export class GearsetLoadoutItemComponent {
 
   public constructor(private char: CharacterStore, private itemsDb: ItemInstancesDB, private store: GearsetStore) {
     // store.gearsetSlots$
+  }
+
+  @Input()
+  public set data(value: GearsetRecord) {
+    this.store.patchState({
+      gearset: value,
+      isLoading: false,
+    })
   }
 
   protected createClicked() {

@@ -32,7 +32,7 @@ export function inventoryColIcon(util: InventoryTableUtils, dnd: DnDService) {
     maxWidth: 100,
     dndSource: true,
     dndSourceOnRowDrag: (params) => {
-      const data = params.rowNode.data as ItemInstanceRow
+      const data = params.rowNode.data as InventoryTableRecord
       const json = JSON.stringify(data)
       params.dragEvent.dataTransfer.setData('application/json', json)
       dnd.data = data

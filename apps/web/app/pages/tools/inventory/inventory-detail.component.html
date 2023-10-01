@@ -1,38 +1,34 @@
-<nwb-detail-drawer class="hidden 2xl:block" breakOn="2xl">
-  <div *nwbDetailDrawerContent class="layout-content bg-base-300 rounded-md">
-    <ng-container *ngIf="vm$ | async; let vm">
-      <nwb-item-card
-        *ngIf="vm.instance"
-        [entityId]="vm.instance.itemId"
-        [gsOverride]="overrideGearScore || vm.instance.gearScore"
-        [gsEditable]="true"
-        (gsEdit)="openGsEditor($event)"
-        [perkOverride]="vm.instance.perks"
-        [perkEditable]="true"
-        (perkEdit)="pickPerk(vm, $event.key)"
-      >
-        <ng-template
-          cdkConnectedOverlay
-          [cdkConnectedOverlayOrigin]="gsTarget"
-          [cdkConnectedOverlayOpen]="!!gsTarget"
-          [cdkConnectedOverlayHasBackdrop]="true"
-          (backdropClick)="closeGsEditor()"
-          (detach)="closeGsEditor()"
-        >
-          <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
-            <input
-              type="range"
-              min="100"
-              max="700"
-              step="1"
-              [ngModel]="vm.instance.gearScore"
-              (ngModelChange)="setGearScore(vm, $event)"
-              (blur)="commitGearScore(vm)"
-              class="range range-sm range-primary"
-            />
-          </div>
-        </ng-template>
-      </nwb-item-card>
-    </ng-container>
-  </div>
-</nwb-detail-drawer>
+<ng-container *ngIf="vm$ | async; let vm">
+  <nwb-item-card
+    *ngIf="vm.instance"
+    [entityId]="vm.instance.itemId"
+    [gsOverride]="overrideGearScore || vm.instance.gearScore"
+    [gsEditable]="true"
+    (gsEdit)="openGsEditor($event)"
+    [perkOverride]="vm.instance.perks"
+    [perkEditable]="true"
+    (perkEdit)="pickPerk(vm, $event.key)"
+  >
+    <ng-template
+      cdkConnectedOverlay
+      [cdkConnectedOverlayOrigin]="gsTarget"
+      [cdkConnectedOverlayOpen]="!!gsTarget"
+      [cdkConnectedOverlayHasBackdrop]="true"
+      (backdropClick)="closeGsEditor()"
+      (detach)="closeGsEditor()"
+    >
+      <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
+        <input
+          type="range"
+          min="100"
+          max="700"
+          step="1"
+          [ngModel]="vm.instance.gearScore"
+          (ngModelChange)="setGearScore(vm, $event)"
+          (blur)="commitGearScore(vm)"
+          class="range range-sm range-primary"
+        />
+      </div>
+    </ng-template>
+  </nwb-item-card>
+</ng-container>

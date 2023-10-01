@@ -62,6 +62,9 @@ export class DetailDrawerComponent {
   @Input()
   public injector: Injector
 
+  @Input()
+  public openAlways = false
+
   @ViewChild(IonModal)
   protected modal: IonModal
 

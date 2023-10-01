@@ -1,5 +1,5 @@
 <ion-modal
-  [isOpen]="shouldOpen$ | async"
+  [isOpen]="openAlways || (shouldOpen$ | async)"
   [initialBreakpoint]="initialBreakpoint"
   [breakpoints]="breakpoints"
   [backdropBreakpoint]="backdropBreakpoint"
@@ -16,7 +16,7 @@
   </ng-template>
 </ion-modal>
 
-<ng-container *ngIf="isLarge$ | async">
+<ng-container *ngIf="!openAlways && isLarge$ | async">
   <div class="h-full layout-col">
     <ng-container *ngTemplateOutlet="template; context: contextDefault"></ng-container>
   </div>

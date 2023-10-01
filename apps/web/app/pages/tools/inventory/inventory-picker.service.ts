@@ -72,13 +72,13 @@ export class InventoryPickerService {
     title,
     selection,
     multiple,
-    category,
+    categories,
     noSkins,
   }: {
     title?: string
     selection?: string[]
     multiple?: boolean
-    category?: string
+    categories?: string[]
     noSkins?: boolean
   }) {
     return (
@@ -89,9 +89,10 @@ export class InventoryPickerService {
           dialog: this.dialog,
           injector: this.injector,
           selection: selection,
+
           title,
           multiple,
-          category,
+          categories,
           noSkins,
         }).closed,
       })

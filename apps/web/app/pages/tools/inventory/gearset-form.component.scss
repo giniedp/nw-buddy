@@ -1,9 +1,0 @@
-:host {
-  .grid {
-    grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
-
-    @media (min-width: 2000px) {
-      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    }
-  }
-}

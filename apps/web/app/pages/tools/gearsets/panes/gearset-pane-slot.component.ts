@@ -216,7 +216,7 @@ export class GearsetPaneSlotComponent {
         .pickItem({
           title: 'Select an item',
           selection: instance ? [instance.itemId] : [],
-          category: this.slot.itemType,
+          categories: [this.slot.itemType],
           noSkins: true,
         })
         .pipe(take(1))
