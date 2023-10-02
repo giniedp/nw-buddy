@@ -12,6 +12,8 @@ const QUEST_TYPE_ICONS = new CaseInsensitiveMap<string, string>(
     EpicEquipment: 'assets/icons/quests/icon_objectiveprogression_quest.png',
     SeasonQuest: 'assets/icons/quests/icon_objectiveseasons_quest.png',
     Mission: 'assets/icons/quests/icon_objective_townproject.png',
+    MountUnlock: 'assets/icons/quests/icon_mountunlock_quest.png',
+    MountRace: 'assets/icons/quests/icon_mountrace_quest.png',
     default: 'assets/icons/quests/icon_objective_quest.png',
   })
 )
