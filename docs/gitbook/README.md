@@ -1,1 +1,6 @@
-# Gitbook Start
+---
+layout: landing
+---
+
+# New World Buddy Docs
+
