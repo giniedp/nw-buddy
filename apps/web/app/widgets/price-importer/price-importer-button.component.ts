@@ -30,7 +30,7 @@ export class PriceImporterButtonComponent {
   public openImporter() {
     this.dialog.open(PriceImporterComponent, {
       minHeight: 400,
-      maxHeight: '90vh',
+      maxHeight: '80vh',
       minWidth: 320,
       maxWidth: 800,
       panelClass: ['w-full', 'layout-pad', 'shadow'],
