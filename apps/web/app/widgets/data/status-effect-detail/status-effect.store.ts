@@ -5,13 +5,14 @@ import { Affixstats, Perks, Statuseffect } from '@nw-data/generated'
 import { flatten, uniq } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { humanize, mapList, rejectKeys } from '~/utils'
+import { humanize, mapList, rejectKeys, tapDebug } from '~/utils'
 
 @Injectable()
 export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }> {
   public readonly effectId$ = this.select(({ effectId }) => effectId)
   public readonly effect$ = this.select(this.db.statusEffect(this.effectId$), (it) => it)
 
+  public readonly isNegative$ = this.select(this.effect$, (it) => it?.IsNegative)
   public readonly icon$ = this.select(this.effect$, (it) => it?.PlaceholderIcon || NW_FALLBACK_ICON)
   public readonly name$ = this.select(this.effect$, (it) => it?.DisplayName)
   public readonly nameForDisplay$ = this.select(this.effect$, (it) => it?.DisplayName || humanize(it?.StatusID))
@@ -22,7 +23,7 @@ export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }
   public readonly affix$ = this.select(this.db.affixstat(this.onHitAffixId$), (it) => it)
   public readonly affixProps$ = this.select(this.affix$, selectAffixProperties)
 
-  public readonly refEffects$ = this.select(this.effect$, selectStatusEffectReferences)
+  public readonly refEffects$ = this.select(this.effect$, selectStatusEffectReferences).pipe(tapDebug('refEffects'))
 
   public readonly refAbilities$ = this.select(this.effect$, (it) => {
     return uniq(flatten([it?.EquipAbility])).filter((e) => !!e)
@@ -58,7 +59,9 @@ export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }
       .consumablesByAddStatusEffects(this.effectId$)
       .pipe(map((it) => Array.from(it?.values() || [])))
       .pipe(mapList((it) => it.ConsumableID)),
-  ]).pipe(map((list) => list.flat()))
+  ])
+    .pipe(map((list) => list.flat()))
+    .pipe(tapDebug('foreignItems'))
 
   public constructor(private db: NwDbService) {
     super({ effectId: null })

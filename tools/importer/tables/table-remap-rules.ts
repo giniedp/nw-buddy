@@ -171,7 +171,7 @@ export const TABLE_REMAP_RULES = [
       }),
       splitToArrayRule({
         properties: ['RemoveStatusEffects'],
-        separator: ',',
+        separator: /[,+]/,
       }),
     ],
   },
