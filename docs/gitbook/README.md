@@ -3,9 +3,9 @@ description: A brief overview of what buddy has to offer
 layout: editorial
 ---
 
-# NW Buddy Intro
+# Introduction
 
-
+<figure><img src=".gitbook/assets/landing.webp" alt="" width="375"><figcaption><p>Artwork by AGS New World</p></figcaption></figure>
 
 ## Explore
 

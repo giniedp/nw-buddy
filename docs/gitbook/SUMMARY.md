@@ -1,6 +1,6 @@
 # Table of contents
 
-* [NW Buddy Intro](README.md)
+* [Introduction](README.md)
 
 ## Tools
 
