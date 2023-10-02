@@ -9,7 +9,3 @@
 * [Gearbuilder](tools/gearbuilder.md)
 * [Inventory](tools/inventory.md)
 * [Crafting Calculator](tools/crafting-calculator.md)
-
-***
-
-* [Document Page](document-page.md)
