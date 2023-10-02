@@ -1,5 +1,11 @@
 <nwb-item-header class="gap-2">
-  <a [nwbItemIcon]="icon$ | async" [nwLink]="effectId$ | async" [nwLinkResource]="'ability'" class="w-[76px] h-[76px]">
+  <a
+    [nwbItemIcon]="icon$ | async"
+    [nwLink]="effectId$ | async"
+    [nwLinkResource]="'ability'"
+    class="w-[76px] h-[76px] nw-status-bg p-2"
+    [class.negative]="isNegative$ | async"
+  >
   </a>
   <nwb-item-header-content
     class="z-10"

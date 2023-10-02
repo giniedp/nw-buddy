@@ -28,7 +28,13 @@ export function statusEffectColIcon(util: StatusEffectTableUtils) {
         },
         util.elPicture(
           {
-            class: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
+            class: [
+              'transition-all',
+              'translate-x-0',
+              'hover:translate-x-1',
+              'nw-status-bg',
+              data.IsNegative ? 'negative' : null,
+            ],
           },
           util.elImg({
             src: data.PlaceholderIcon || data['IconPath'] || NW_FALLBACK_ICON,
