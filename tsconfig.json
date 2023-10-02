@@ -31,7 +31,8 @@
       "~/*": ["apps/web/app/*"],
       "@cypress/*": ["apps/cypress/support/*"],
       "@nw-data/generated": ["libs/nw-data/generated"],
-      "@nw-data/common": ["libs/nw-data/common"]
+      "@nw-data/common": ["libs/nw-data/common"],
+      "@nw-cms/*": ["tina/__generated__/*"]
     }
   },
   "angularCompilerOptions": {

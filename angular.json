@@ -47,6 +47,16 @@
                 ],
                 "input": "dist/nw-data",
                 "output": "/nw-data/"
+              },
+              {
+                "glob": "**/*",
+                "input": "docs/media",
+                "output": "/media/"
+              },
+              {
+                "glob": "**/*",
+                "input": "docs/pages",
+                "output": "/pages/"
               }
             ],
             "stylePreprocessorOptions": {

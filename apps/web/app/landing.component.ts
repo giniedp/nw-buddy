@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { NwModule } from '~/nw'
 import { environment } from '../environments/environment'
 import { TooltipModule } from './ui/tooltip'
@@ -16,9 +16,5 @@ import { TooltipModule } from './ui/tooltip'
   },
 })
 export class LandingComponent {
-
   protected isWeb = environment.environment === 'WEB'
-  public constructor() {
-    //
-  }
 }
