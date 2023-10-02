@@ -1,11 +1,14 @@
 # Table of contents
 
-* [New World Buddy Docs](README.md)
+* [NW Buddy Intro](README.md)
 
-## Group 1
+## Tools
 
-* [Page1](group-1/page1.md)
-* [Page2](group-1/page2.md)
+* [Database](tools/database.md)
+* [Tracking](tools/tracking.md)
+* [Gearbuilder](tools/gearbuilder.md)
+* [Inventory](tools/inventory.md)
+* [Crafting Calculator](tools/crafting-calculator.md)
 
 ***
 
