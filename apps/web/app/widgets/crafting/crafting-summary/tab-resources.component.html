@@ -1,61 +1,66 @@
-<ng-container *ngFor="let row of rows$ | async; trackBy: trackByIndex">
-  <div
-    [nwbItemDetail]="row.itemId"
-    #detail="itemDetail"
-    [class.opacity-75]="row.ignored"
-    class="flex flex-row flex-nowrap gap-1 py-1"
-  >
-    <picture
-      [nwIcon]="row.currencyId ? 'assets/icons/rewards/azoth.png' : (detail.icon$ | async)"
-      class="w-10 h-10 hover:cursor-pointer"
-      [class.grayscale]="row.ignored"
-      (click)="toggleIgnore(row)"
-    ></picture>
-    <div [class.text-accent]="row.stocked" class="flex-1 flex flex-row items-center gap-1 leading-tight">
-      <span
-        (click)="toggleStock(row)"
-        class="inline-block outline outline-2 outline-transparent outline-offset-2 rounded-sm hover:outline-primary hover:cursor-pointer"
-      >
-        {{ row.amount | number }}
-      </span>
-      <div *ngIf="row.stocked" class="inline-flex">
-        (
-        <span> - </span>
-        <nwb-stock-tracker
-          [itemId]="row.itemId"
-          [emptyTip]="'Edit stock value'"
-          class="tooltip-right tooltip-accent whitespace-nowrap text-accent"
-          #stockTracker
-        ></nwb-stock-tracker>
-        )
-      </div>
-      <span> × </span>
-      <a
-        [nwText]="row.currencyId ? 'Azoth' : (detail.name$ | async)"
-        [routerLink]="row.link"
-        [class.line-through]="row.ignored"
-        class="hover:underline overflow-hidden text-ellipsis"
-      ></a>
-    </div>
-
+<div class="flex flex-col gap-1 p-2">
+  <ng-container *ngFor="let row of rows$ | async; trackBy: trackByIndex">
     <div
-      class="flex flex-col items-end justify-around text-xs text-right whitespace-nowrap cursor-pointer pr-1"
-      [class.line-through]="row.ignored"
-      (click)="tracker.openInput($event)"
+      [nwbItemDetail]="row.itemId"
+      #detail="itemDetail"
+      [class.opacity-75]="row.ignored"
+      class="flex flex-row flex-nowrap gap-2"
     >
-      <nwb-price-tracker
-        [itemId]="row.itemId"
-        [emptyTip]="'Edit item price'"
-        [format]="'1.2-2'"
-        class="tooltip-left tooltip-info text-primary whitespace-nowrap"
-        #tracker
-      ></nwb-price-tracker>
-      <span *ngIf="row.price && !tracker.showInput">
-        {{ row.price | number : '1.2-2' }}
-      </span>
+      <picture
+        [nwIcon]="row.currencyId ? 'assets/icons/rewards/azoth.png' : (detail.entity$ | async)"
+        class="w-10 h-10 hover:cursor-pointer flex-none"
+        [tooltip]="!row.ignored ? 'Click to exclude from calculation' : 'Click to include in calculation'"
+        [class.grayscale]="row.ignored"
+        (click)="toggleIgnore(row)"
+      ></picture>
+
+      <div [class.text-accent]="row.stocked" class="flex-1 flex flex-row items-center gap-1 leading-tight">
+        <span
+          (click)="toggleStock(row)"
+          [tooltip]="'Click to subract items you have in stock'"
+          class="inline-block outline outline-2 outline-transparent outline-offset-2 rounded-sm hover:outline-primary hover:cursor-pointer"
+        >
+          {{ row.amount | number }}
+        </span>
+        <div *ngIf="row.stocked" class="inline-flex">
+          (
+          <span> - </span>
+          <nwb-stock-tracker
+            [itemId]="row.itemId"
+            [emptyTip]="'Edit stock value'"
+            class="tooltip-right tooltip-accent whitespace-nowrap text-accent"
+            #stockTracker
+          ></nwb-stock-tracker>
+          )
+        </div>
+        <span> × </span>
+        <a
+          [nwText]="row.currencyId ? 'Azoth' : (detail.name$ | async)"
+          [routerLink]="row.link"
+          [class.line-through]="row.ignored"
+          class="hover:underline overflow-hidden text-ellipsis"
+        ></a>
+      </div>
+
+      <div
+        class="flex flex-col items-end justify-around text-xs text-right whitespace-nowrap cursor-pointer pr-1"
+        [class.line-through]="row.ignored"
+        (click)="tracker.openInput($event)"
+      >
+        <nwb-price-tracker
+          [itemId]="row.itemId"
+          [emptyTip]="'Edit item price'"
+          [format]="'1.2-2'"
+          class="tooltip-left tooltip-info text-primary whitespace-nowrap"
+          #tracker
+        ></nwb-price-tracker>
+        <span *ngIf="row.price && !tracker.showInput">
+          {{ row.price | number : '1.2-2' }}
+        </span>
+      </div>
     </div>
-  </div>
-</ng-container>
+  </ng-container>
+</div>
 
 <div class="flex flex-row gap-1 items-center justify-end bg-base-200 p-1 rounded-b-md">
   <img [nwImage]="'assets/icons/icon_crown.png'" class="inline-block w-5 h-5" />

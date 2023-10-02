@@ -1,3 +1,4 @@
+import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { CraftingStep } from '../types'
 
 export interface CraftingStepWithAmount extends CraftingStep {
@@ -36,4 +37,13 @@ export interface SkillRow {
   name: string
   icon: string
   xp: number
+  steps: Array<{
+    recipe: Crafting
+    item: ItemDefinitionMaster | Housingitems
+    itemId: string
+    icon: string
+    label: string
+    xp: number
+    count: number
+  }>
 }

@@ -13,14 +13,18 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ItemTrackerModule } from '~/widgets/item-tracker'
 import { CraftingCalculatorService } from '../crafting-calculator.service'
 import { CraftingStepWithAmount, ResourceRow, ResourceRowMode, SummaryRow } from './types'
+import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
   standalone: true,
   selector: 'tab-resources',
   templateUrl: './tab-resources.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, RouterModule, ItemTrackerModule, ItemDetailModule],
+  imports: [CommonModule, NwModule, RouterModule, ItemTrackerModule, ItemDetailModule, TooltipModule],
   providers: [DestroyService],
+  host: {
+    class: 'block',
+  },
 })
 export class TabResourcesComponent extends ComponentStore<{
   tree: CraftingStepWithAmount

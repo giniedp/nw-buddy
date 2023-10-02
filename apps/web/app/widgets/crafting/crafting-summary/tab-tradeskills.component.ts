@@ -5,10 +5,12 @@ import { DestroyService, shareReplayRefCount } from '~/utils'
 
 import { RouterModule } from '@angular/router'
 import { ComponentStore } from '@ngrx/component-store'
-import { calculateCraftingReward } from '@nw-data/common'
-import { Crafting, GameEvent } from '@nw-data/generated'
-import { combineLatest, of, switchMap } from 'rxjs'
+import { calculateCraftingReward, getItemId } from '@nw-data/common'
+import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { groupBy, sumBy } from 'lodash'
+import { combineLatest, map, switchMap } from 'rxjs'
 import { NW_TRADESKILLS_INFOS_MAP } from '~/nw/tradeskill'
+import { TooltipModule } from '~/ui/tooltip'
 import { TradeskillsModule } from '~/widgets/tradeskills'
 import { CraftingCalculatorService } from '../crafting-calculator.service'
 import { CraftingStepWithAmount, SkillRow, SummaryRow } from './types'
@@ -18,8 +20,11 @@ import { CraftingStepWithAmount, SkillRow, SummaryRow } from './types'
   selector: 'tab-tradeskills',
   templateUrl: './tab-tradeskills.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, RouterModule, TradeskillsModule],
+  imports: [CommonModule, NwModule, RouterModule, TradeskillsModule, TooltipModule],
   providers: [DestroyService],
+  host: {
+    class: 'block',
+  },
 })
 export class TabTradeskillsComponent extends ComponentStore<{
   tree: CraftingStepWithAmount
@@ -50,8 +55,17 @@ export class TabTradeskillsComponent extends ComponentStore<{
     return combineLatest({
       recipe: recipe$,
       event: event$,
-      amount: of(row.amount),
-    })
+      item: this.service.fetchItem(row.itemId),
+    }).pipe(
+      map(({ recipe, event, item }) => {
+        return {
+          item: item,
+          recipe: recipe,
+          count: row.amount,
+          xp: event ? calculateCraftingReward(recipe, event) : 0,
+        }
+      })
+    )
   }
 }
 
@@ -62,7 +76,7 @@ function collectExpandedNodes(step: CraftingStepWithAmount, fn: (step: CraftingS
   }
 }
 
-function aggregate(step: CraftingStepWithAmount) {
+function aggregate(step: CraftingStepWithAmount): SummaryRow[] {
   const result = new Map<string, SummaryRow>()
   collectExpandedNodes(step, (node) => {
     const itemId = node.ingredient?.type === 'Item' ? node.ingredient.id : node.selection
@@ -78,10 +92,14 @@ function aggregate(step: CraftingStepWithAmount) {
   return Array.from(result.values())
 }
 
-function aggregateSkills(rows: Array<{ recipe: Crafting; event: GameEvent; amount: number }>) {
+function aggregateSkills(
+  rows: Array<{ recipe: Crafting; item: ItemDefinitionMaster | Housingitems; xp: number; count: number }>
+) {
   const result = new Map<string, SkillRow>()
-  for (const row of rows) {
-    const skill = NW_TRADESKILLS_INFOS_MAP.get(row.recipe?.Tradeskill)
+
+  const groups = groupBy(rows, (it) => it.recipe?.Tradeskill)
+  for (const [skillid, data] of Object.entries(groups)) {
+    const skill = NW_TRADESKILLS_INFOS_MAP.get(skillid)
     if (!skill) {
       continue
     }
@@ -91,10 +109,25 @@ function aggregateSkills(rows: Array<{ recipe: Crafting; event: GameEvent; amoun
         icon: skill.Icon,
         name: skill.ID,
         xp: 0,
+        steps: [],
       })
     }
 
-    result.get(skill.ID).xp += calculateCraftingReward(row.recipe, row.event) * row.amount || 0
+    const skillRow = result.get(skill.ID)
+
+    const recipeGroups = groupBy(data, (it) => it.recipe?.RecipeID)
+    for (const [recipeId, steps] of Object.entries(recipeGroups)) {
+      skillRow.xp += sumBy(steps, (it) => it.count * it.xp)
+      skillRow.steps.push({
+        count: sumBy(steps, (it) => it.count),
+        xp: steps[0].xp,
+        recipe: steps[0].recipe,
+        item: steps[0].item,
+        itemId: getItemId(steps[0].item),
+        icon: steps[0].item?.IconPath,
+        label: steps[0].item?.Name,
+      })
+    }
   }
   return Array.from(result.values())
 }
