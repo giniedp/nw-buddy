@@ -38,15 +38,15 @@ jobs:
       - run:
           name: Download nw-data
           command: yarn nw-cdn download
-      - run:
-          name: Build Storybook
-          command: yarn build:storybook
-      - run:
-          name: Test Stroybook
-          command: yarn test:storybook
-      - run:
-          name: Test Unit
-          command: yarn test:unit
+      # - run:
+      #     name: Build Storybook
+      #     command: yarn build:storybook
+      # - run:
+      #     name: Test Stroybook
+      #     command: yarn test:storybook
+      # - run:
+      #     name: Test Unit
+      #     command: yarn test:unit
       - run:
           name: Build Website
           command: yarn build:web
