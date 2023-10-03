@@ -33,6 +33,7 @@ export function abilityColIcon(util: AbilityTableUtils) {
       fields: Object.keys(COLS_ABILITY),
     }),
     width: 62,
+    cellClass: ['overflow-visible'],
     cellRenderer: util.cellRenderer(({ data }) => {
       return util.elA(
         {

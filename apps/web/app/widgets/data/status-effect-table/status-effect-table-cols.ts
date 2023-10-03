@@ -21,6 +21,7 @@ export function statusEffectColIcon(util: StatusEffectTableUtils) {
     }),
     pinned: true,
     width: 62,
+    cellClass: ['overflow-visible'],
     cellRenderer: util.cellRenderer(({ data }) => {
       return util.elA(
         {
