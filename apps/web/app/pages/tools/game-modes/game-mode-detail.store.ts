@@ -28,6 +28,8 @@ const MUTATION_DIFFICULTY_LOOT_TAGS = [
   'MutDiff10',
 ]
 
+const MUTATION_LOOT_TAGS = ['MutatorLoot_Fire', 'MutatorLoot_Ice', 'MutatorLoot_Nature', 'MutatorLoot_Void']
+
 // const MUTATION_LOOT_TAGS = [...MUTATION_DIFFICULTY_LOOT_TAGS, 'Restless01_Mut', 'Ebonscale00_Mut']
 
 const DUNGEON_LOOT_TAGS = [
@@ -180,22 +182,23 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         const dungeonOverrideTags = dungeon.MutLootTagsOverride || dungeonTags
         const regionTag = DUNGEON_LOOT_TAGS.find((it) => dungeonTags.includes(it))
         const regionExcludeTags = DUNGEON_LOOT_TAGS.filter((it) => !dungeonTags.includes(it))
-        console.log({ dungeon })
+        //console.log({ dungeon })
         const tags = uniq([
           // required to access global loot table
           'GlobalMod',
           regionTag,
           ...creatureTags,
           ...dungeonOverrideTags,
+          ...MUTATION_LOOT_TAGS,
         ]).filter((it) => !!it && !regionExcludeTags.includes(it))
 
-        console.log('container level', dungeon.ContainerLevel, dungeon.RequiredLevel, dungeon.RecommendedLevel)
+        //console.log('container level', dungeon.ContainerLevel, dungeon.RequiredLevel, dungeon.RecommendedLevel)
 
         return {
           tags: [...tags],
           values: {
             MinContLevel: Math.max(60, dungeon.ContainerLevel),
-            EnemyLevel: Math.max(60, dungeon.ContainerLevel),
+            EnemyLevel: Math.max(70, dungeon.ContainerLevel),
             Level: (playerLevel || NW_MAX_CHARACTER_LEVEL) - 1,
           },
           table: lootTable,
@@ -231,7 +234,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         const dungeonOverrideTags = dungeon.MutLootTagsOverride || dungeonTags
         const regionTag = DUNGEON_LOOT_TAGS.find((it) => dungeonTags.includes(it))
         const regionExcludeTags = DUNGEON_LOOT_TAGS.filter((it) => !dungeonTags.includes(it))
-        console.log('container level', dungeon.ContainerLevel)
+        //console.log('container level', dungeon.ContainerLevel)
         const tags = uniq([
           // required to access global loot table
           'GlobalMod',
@@ -239,13 +242,14 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
           ...creatureTags,
           ...dungeonOverrideTags,
           ...mutationTags,
+          ...MUTATION_LOOT_TAGS,
         ]).filter((it) => !!it && !regionExcludeTags.includes(it))
 
         return {
           tags: [...tags],
           values: {
             MinContLevel: Math.max(60, dungeon.ContainerLevel),
-            EnemyLevel: Math.max(60, dungeon.ContainerLevel),
+            EnemyLevel: Math.max(70, dungeon.ContainerLevel),
             Level: (playerLevel || NW_MAX_CHARACTER_LEVEL) - 1,
           },
           table: lootTable,
@@ -262,7 +266,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       })
       // removes all the junk
       ctx.ignoreTablesAndBuckets = ['CreatureLootCommon', 'GlobalNamedList']
-      ctx.bucketTags = MUTATION_DIFFICULTY_LOOT_TAGS
+      ctx.bucketTags = [...MUTATION_DIFFICULTY_LOOT_TAGS]
       return this.loot.resolveLootItems(table, ctx)
     })
   )

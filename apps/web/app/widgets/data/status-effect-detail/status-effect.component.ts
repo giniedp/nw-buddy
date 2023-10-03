@@ -9,6 +9,7 @@ import { StatusEffectCategoryDetailModule } from '../status-effect-category-deta
 import { TooltipModule } from '~/ui/tooltip'
 import { IconsModule } from '~/ui/icons'
 import { svgInfoCircle } from '~/ui/icons/svg'
+import { ModelViewerModule } from '~/widgets/model-viewer'
 
 @Component({
   standalone: true,
@@ -24,6 +25,7 @@ import { svgInfoCircle } from '~/ui/icons/svg'
     PropertyGridModule,
     TooltipModule,
     StatusEffectCategoryDetailModule,
+    ModelViewerModule,
   ],
   providers: [
     DecimalPipe,
@@ -48,6 +50,7 @@ export class StatusEffectDetailComponent extends StatusEffectDetailStore {
   @ViewChild('tplCategory', { static: true })
   protected tplCategory: TemplateRef<any>
 
+  protected viewerActive = false
   protected iconInfo = svgInfoCircle
   public constructor(db: NwDbService, private decimals: DecimalPipe) {
     super(db)

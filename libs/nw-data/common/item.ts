@@ -644,3 +644,10 @@ export function getAppearanceGearsetId(appearanceID: string) {
   }
   return appearanceID.replace(new RegExp(APPEARANCE_ID_SUFFIXES_PATTERN, 'i'), '')
 }
+
+export function getItemCostumeId(item: ItemDefinitionMaster) {
+  if (item?.ItemID?.startsWith('NG_')) {
+    return item.ItemID.replace('NG_', '')
+  }
+  return null
+}

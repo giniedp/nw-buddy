@@ -294,6 +294,10 @@ export class NwDbService {
   public afflictionsMap = indexBy(() => this.afflictions, 'AfflictionID')
   public affliction = lookup(() => this.afflictionsMap)
 
+  public costumes = table(() => [this.data.costumechangesCostumechanges()])
+  public costumesMap = indexBy(() => this.costumes, 'CostumeChangeId')
+  public costume = lookup(() => this.costumesMap)
+
   public manacosts = table(() => [this.data.manacostsPlayer()])
   public manacostsMap = indexBy(() => this.manacosts, 'CostID')
 
@@ -436,6 +440,10 @@ export class NwDbService {
   public instrumentAppearances = table(() => this.data.itemdefinitionsInstrumentsappearances())
   public instrumentAppearancesMap = indexBy(() => this.instrumentAppearances, 'WeaponAppearanceID')
   public instrumentAppearance = lookup(() => this.instrumentAppearancesMap)
+
+  public mountAttachmentsAppearances = table(() => this.data.itemdefinitionsWeaponappearancesMountattachments())
+  public mountAttachmentsAppearancesMap = indexBy(() => this.mountAttachmentsAppearances, 'WeaponAppearanceID')
+  public mountAttachmentsAppearance = lookup(() => this.mountAttachmentsAppearancesMap)
 
   public dyeColors = table(() => this.data.dyecolors())
   public dyeColorsMap = indexBy(() => this.dyeColors, 'Index')

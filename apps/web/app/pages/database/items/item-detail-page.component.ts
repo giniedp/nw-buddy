@@ -47,7 +47,7 @@ export class ItemDetailPageComponent {
   protected itemId$ = observeRouteParam(this.route, 'id')
 
   protected iconLink = svgSquareArrowUpRight
-  protected modelOpened = false
+  protected viewerActive = false
   public constructor(
     private route: ActivatedRoute,
     private dialog: Dialog,

@@ -3,6 +3,7 @@ import { ComponentStore } from '@ngrx/component-store'
 import {
   AttributeRef,
   getItemAttribution,
+  getItemCostumeId,
   getItemExpansion,
   getItemGsBonus,
   getItemIconPath,

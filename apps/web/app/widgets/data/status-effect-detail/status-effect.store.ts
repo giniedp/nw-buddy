@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON, getItemId } from '@nw-data/common'
 import { Affixstats, Perks, Statuseffect } from '@nw-data/generated'
@@ -6,6 +6,7 @@ import { flatten, uniq } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { humanize, mapList, rejectKeys, tapDebug } from '~/utils'
+import { ModelViewerService } from '~/widgets/model-viewer'
 
 @Injectable()
 export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }> {
@@ -62,6 +63,9 @@ export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }
   ])
     .pipe(map((list) => list.flat()))
     .pipe(tapDebug('foreignItems'))
+
+  public readonly costumeChangeId$ = this.select(this.effect$, (it) => it?.CostumeChangeId)
+  public readonly costumeModel$ = inject(ModelViewerService).byCostumeId(this.costumeChangeId$)
 
   public constructor(private db: NwDbService) {
     super({ effectId: null })

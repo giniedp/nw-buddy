@@ -34,6 +34,19 @@
       ></nwb-property-grid>
     </ng-container>
   </ng-container>
+
+  <div *ngIf="costumeModel$ | async; let models" class="flex flex-col gap-2">
+    <div *ngIf="viewerActive" class="aspect-square rounded-md overflow-clip">
+      <nwb-model-viewer [models]="models" [hideFloor]="true" class="w-full h-full"></nwb-model-viewer>
+    </div>
+    <button
+      class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50 w-full"
+      (click)="viewerActive = !viewerActive"
+    >
+      {{ viewerActive ? 'Close' : 'View 3D Model' }}
+    </button>
+  </div>
+
   <ng-content></ng-content>
 </div>
 
