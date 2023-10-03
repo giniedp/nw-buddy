@@ -128,6 +128,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
     .pipe(filter((it) => !!it.dungeon))
     .pipe(
       map(({ dungeon, creatureTags, lootTable, playerLevel }) => {
+        console.log(dungeon)
         const dungeonTags = dungeon.LootTags || []
         // exclude dungeon tags from other dungeons
         const tagsToExclude = DUNGEON_LOOT_TAGS.filter((it) => !dungeonTags.includes(it))
@@ -138,12 +139,14 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
           ...dungeonTags,
         ]).filter((it) => !!it && !tagsToExclude.includes(it))
 
+        const defaultPlayerLevel = dungeon.RequiredLevel || dungeon.RecommendedLevel || dungeon.ContainerLevel
+        console.log('container level', dungeon.RequiredLevel, dungeon.RecommendedLevel, dungeon.ContainerLevel)
         return {
           tags: [...tags],
           values: {
-            MinContLevel: dungeon.ContainerLevel - 1,
-            EnemyLevel: dungeon.ContainerLevel - 1,
-            Level: (playerLevel || dungeon.ContainerLevel) - 1,
+            MinContLevel: dungeon.ContainerLevel,
+            EnemyLevel: dungeon.ContainerLevel,
+            Level: (playerLevel || defaultPlayerLevel) - 1,
           },
           table: lootTable,
           tableId: lootTable?.LootTableID,
@@ -177,7 +180,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         const dungeonOverrideTags = dungeon.MutLootTagsOverride || dungeonTags
         const regionTag = DUNGEON_LOOT_TAGS.find((it) => dungeonTags.includes(it))
         const regionExcludeTags = DUNGEON_LOOT_TAGS.filter((it) => !dungeonTags.includes(it))
-
+        console.log({ dungeon })
         const tags = uniq([
           // required to access global loot table
           'GlobalMod',
@@ -186,11 +189,13 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
           ...dungeonOverrideTags,
         ]).filter((it) => !!it && !regionExcludeTags.includes(it))
 
+        console.log('container level', dungeon.ContainerLevel, dungeon.RequiredLevel, dungeon.RecommendedLevel)
+
         return {
           tags: [...tags],
           values: {
-            MinContLevel: dungeon.ContainerLevel - 1,
-            EnemyLevel: dungeon.ContainerLevel - 1,
+            MinContLevel: Math.max(60, dungeon.ContainerLevel),
+            EnemyLevel: Math.max(60, dungeon.ContainerLevel),
             Level: (playerLevel || NW_MAX_CHARACTER_LEVEL) - 1,
           },
           table: lootTable,
@@ -226,7 +231,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         const dungeonOverrideTags = dungeon.MutLootTagsOverride || dungeonTags
         const regionTag = DUNGEON_LOOT_TAGS.find((it) => dungeonTags.includes(it))
         const regionExcludeTags = DUNGEON_LOOT_TAGS.filter((it) => !dungeonTags.includes(it))
-
+        console.log('container level', dungeon.ContainerLevel)
         const tags = uniq([
           // required to access global loot table
           'GlobalMod',
@@ -239,8 +244,8 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         return {
           tags: [...tags],
           values: {
-            MinContLevel: dungeon.ContainerLevel - 1,
-            EnemyLevel: dungeon.ContainerLevel - 1,
+            MinContLevel: Math.max(60, dungeon.ContainerLevel),
+            EnemyLevel: Math.max(60, dungeon.ContainerLevel),
             Level: (playerLevel || NW_MAX_CHARACTER_LEVEL) - 1,
           },
           table: lootTable,
