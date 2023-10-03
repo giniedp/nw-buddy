@@ -108,14 +108,13 @@ export class ModelViewerService {
       vital: this.db.vital(vitalsId$),
     }).pipe(
       map(({ meta, vital }) => {
-        vital.DisplayName
         const files = meta?.models?.filter((it) => it.startsWith('slices/characters/'))
         if (!files?.length) {
           return null
         }
         return files.map((file, i): ItemModelInfo => {
           return {
-            name: vital.DisplayName,
+            name: vital?.DisplayName,
             label: `Model ${i + 1}`,
             url: `${this.cdnHost || ''}/${file}`.toLowerCase(),
             itemClass: [],

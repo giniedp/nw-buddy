@@ -2,17 +2,18 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { Gamemodes, Vitals } from '@nw-data/generated'
-import { combineLatest } from 'rxjs'
+import { combineLatest, map } from 'rxjs'
 import { NwModule } from '~/nw'
-import { DestroyService } from '~/utils'
-import { ModelViewerService } from '../model-viewer'
+import { DestroyService, selectStream } from '~/utils'
+import { ItemModelInfo, ModelViewerModule, ModelViewerService } from '../model-viewer'
 import { VitalDamageTableComponent } from './vital-damage-table.component'
 import { VitalDetailHeaderComponent } from './vital-detail-header.component'
 import { VitalDetailInfosComponent } from './vital-detail-infos.component'
 import { VitalDetailWeaknessComponent } from './vital-detail-weakness.component'
 import { VitalDetailStore } from './vital-detail.store'
+import { toSignal } from '@angular/core/rxjs-interop'
 
-export type VitalSection = 'weakness' | 'damage'
+export type VitalSection = 'weakness' | 'damage' | 'model'
 export interface VitalTab {
   id: VitalSection
   label: string
@@ -28,10 +29,14 @@ export interface VitalTab {
     VitalDetailHeaderComponent,
     VitalDetailInfosComponent,
     VitalDamageTableComponent,
+    ModelViewerModule,
   ],
   providers: [DestroyService, VitalDetailStore],
   host: {
-    class: 'block backdrop-blur-sm bg-white/10 rounded-md overflow-clip',
+    class: 'block  rounded-md overflow-clip',
+    '[class.bg-black]': '!isTransparent$()',
+    '[class.bg-white/10]': 'isTransparent$()',
+    '[class.backdrop-blur-sm]': 'isTransparent$()',
   },
   template: `
     <ng-container *ngIf="vm$ | async; let vm">
@@ -55,6 +60,8 @@ export interface VitalTab {
       ></nwb-vital-detail-weakness>
 
       <nwb-vital-damage-table [vitalId]="vm.id" *ngIf="vm.isSectionDamage"></nwb-vital-damage-table>
+
+      <nwb-model-viewer [models]="vm.models" *ngIf="vm.isSectionModel" class="aspect-square"></nwb-model-viewer>
     </ng-container>
   `,
 })
@@ -85,17 +92,32 @@ export class VitalDetailComponent extends ComponentStore<{
   public dungeons: Gamemodes[]
 
   protected sectionsEnabled$ = this.select(({ enableSections }) => enableSections)
-  protected tabs$ = this.select(this.sectionsEnabled$, this.store.hasDamageTable$, selectTabs)
+  protected tabs$ = this.select(this.sectionsEnabled$, this.store.hasDamageTable$, this.store.modelFiles$, selectTabs)
 
-  protected vm$ = combineLatest({
-    id: this.store.vitalId$,
-    vital: this.store.vital$,
-    level: this.store.level$,
-    isSectionWeakness: this.select(({ section }) => section === 'weakness'),
-    isSectionDamage: this.select(({ section }) => section === 'damage'),
-    tabs: this.tabs$,
-    selectedTab: this.select(({ section }) => section),
-  })
+  protected vm$ = selectStream(
+    {
+      id: this.store.vitalId$,
+      vital: this.store.vital$,
+      level: this.store.level$,
+
+      tabs: this.tabs$,
+      models: this.store.modelFiles$,
+      selectedTab: this.select(({ section }) => section),
+    },
+    (data) => {
+      if (data.selectedTab === 'model' && !data.models?.length) {
+        data.selectedTab = 'weakness'
+      }
+      return {
+        ...data,
+        isSectionWeakness: data.selectedTab === 'weakness',
+        isSectionDamage: data.selectedTab === 'damage',
+        isSectionModel: data.selectedTab === 'model',
+      }
+    }
+  )
+
+  protected isTransparent$ = toSignal(this.vm$.pipe(map((it) => !it.isSectionModel)))
 
   public constructor(private store: VitalDetailStore, private viewerService: ModelViewerService) {
     super({
@@ -112,7 +134,7 @@ export class VitalDetailComponent extends ComponentStore<{
   }
 }
 
-function selectTabs(sectionsEnabled: boolean, hasDamageTable: boolean) {
+function selectTabs(sectionsEnabled: boolean, hasDamageTable: boolean, modelFiles: ItemModelInfo[]) {
   const tabs: VitalTab[] = []
   if (!sectionsEnabled) {
     return tabs
@@ -125,6 +147,12 @@ function selectTabs(sectionsEnabled: boolean, hasDamageTable: boolean) {
     tabs.push({
       id: 'damage',
       label: 'Damage',
+    })
+  }
+  if (modelFiles?.length > 0) {
+    tabs.push({
+      id: 'model',
+      label: '3D Model',
     })
   }
   return tabs
