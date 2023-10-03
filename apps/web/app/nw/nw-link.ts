@@ -1,13 +1,13 @@
 export type NwLinkResource = 'item' | 'recipe' | 'ability' | 'perk' | 'vitals' | 'status-effect' | 'poi' | 'quest'
 
 export interface NwLinkOptions {
-  ptr: boolean,
-  lang: string,
-  type: NwLinkResource,
+  ptr: boolean
+  lang: string
+  type: NwLinkResource
   id: string
 }
 
-const NWDB_TYPE_MAP: Partial<Record<NwLinkResource, string>>  = {
+const NWDB_TYPE_MAP: Partial<Record<NwLinkResource, string>> = {
   item: 'item',
   recipe: 'recipe',
   ability: 'ability',
@@ -15,7 +15,7 @@ const NWDB_TYPE_MAP: Partial<Record<NwLinkResource, string>>  = {
   vitals: 'creature',
   'status-effect': 'status-effect',
   poi: 'zone',
-  quest: 'quest'
+  quest: 'quest',
 }
 
 export function nwdbLinkUrl(options: NwLinkOptions) {
@@ -36,7 +36,7 @@ export function nwdbLinkUrl(options: NwLinkOptions) {
     prefix = `ptr.`
   }
 
-  return `https://${prefix}nwdb.info/db/${type}/${encodeURIComponent(options.id.trim())}`
+  return `https://${prefix}nwdb.info/db/${type}/${encodeURIComponent(options.id.trim().toLowerCase())}`
 }
 
 function nwdbLinkLocale(lang: string) {
@@ -50,7 +50,7 @@ function nwdbLinkLocale(lang: string) {
   return lang
 }
 
-const NWGUIDE_TYPE_MAP: Partial<Record<NwLinkResource, string>>  = {
+const NWGUIDE_TYPE_MAP: Partial<Record<NwLinkResource, string>> = {
   item: 'item',
   recipe: 'recipe',
   ability: 'ability',
@@ -58,7 +58,6 @@ const NWGUIDE_TYPE_MAP: Partial<Record<NwLinkResource, string>>  = {
   vitals: 'mob',
   'status-effect': 'status-effect',
 }
-
 
 export function nwguideLinkUrl(options: NwLinkOptions) {
   if (!options.type || !options.id) {
