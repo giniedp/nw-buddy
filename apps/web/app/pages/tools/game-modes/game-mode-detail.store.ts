@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
+import { NW_MAX_CHARACTER_LEVEL, getVitalDungeons } from '@nw-data/common'
 import { Gamemodes, Mutationdifficulty, Vitals } from '@nw-data/generated'
 import { uniq } from 'lodash'
-import { combineLatest, filter, map, of, shareReplay, switchMap } from 'rxjs'
+import { combineLatest, filter, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { LootContext, NwLootService } from '~/nw/loot'
-import { NW_MAX_CHARACTER_LEVEL, getVitalDungeons } from '@nw-data/common'
-import { mapProp, selectStream, shareReplayRefCount, tapDebug } from '~/utils'
+import { selectStream, shareReplayRefCount } from '~/utils'
 
 export interface GameModeDetailState {
   playerLevel: number
@@ -138,14 +138,6 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
           ...dungeonTags,
         ]).filter((it) => !!it && !tagsToExclude.includes(it))
 
-        // console.log({
-        //   //bossTags,
-        //   creatureTags,
-        //   //lootTags,
-        //   tagsToExclude,
-        //   tags,
-        // })
-        console.log(dungeon)
         return {
           tags: [...tags],
           values: {
@@ -158,7 +150,6 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         }
       })
     )
-    .pipe(tapDebug('lootTagsNormalMode$'))
     .pipe(shareReplayRefCount(1))
 
   public readonly lootNormalMode$ = this.lootTagsNormalMode$.pipe(
@@ -195,14 +186,6 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
           ...dungeonOverrideTags,
         ]).filter((it) => !!it && !regionExcludeTags.includes(it))
 
-        // console.log({
-        //   dungeon,
-        //   dungeonTags,
-        //   dungeonOverrideTags,
-        //   regionTag,
-        //   regionExcludeTags,
-        //   tags
-        // })
         return {
           tags: [...tags],
           values: {
@@ -253,7 +236,6 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
           ...mutationTags,
         ]).filter((it) => !!it && !regionExcludeTags.includes(it))
 
-        console.log({ difficulty, dungeon })
         return {
           tags: [...tags],
           values: {
@@ -266,7 +248,6 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         }
       })
     )
-    .pipe(tapDebug('lootTagsDifficulty$'))
 
   public readonly lootDifficulty$ = this.lootTagsDifficulty$.pipe(
     switchMap(({ tags, values, table }) => {
