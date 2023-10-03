@@ -530,7 +530,7 @@ export interface Damagetable {
     BlockImpactDistanceY:         number;
     BlockImpactDistanceZ:         number;
     BlockPowerLevel:              number;
-    BlockStaminaDmgMod:           number;
+    BlockStaminaDmgMod:           number | string;
     BlockTargetCameraShakeID?:    string;
     CameraShakeID?:               string;
     CanBeBlocked?:                boolean;
@@ -789,6 +789,7 @@ export interface Gatherables {
     IdleFragment?:                   string;
     IgnoreAllObstructions:           boolean;
     IsDynamicPoiTarget:              boolean;
+    IsElite:                         boolean;
     IsLandmark:                      boolean;
     IsLootContainer:                 boolean;
     ItemRestrictionId?:              string;
@@ -1193,6 +1194,38 @@ export interface ItemdefinitionsWeaponappearances {
     "Weapon Material name Info"?: string;
     WeaponAppearanceID:           string;
 }
+export interface ItemdefinitionsWeaponappearancesMountattachments {
+    ADyeSlotDisabled:             number;
+    "Art ID Names"?:              string;
+    BDyeSlotDisabled:             number;
+    Description?:                 string;
+    EmissiveColor?:               string;
+    EmissiveIntensity:            number;
+    GDyeSlotDisabled:             number;
+    HiResIconPath?:               string;
+    IconCaptureGroup?:            string;
+    IconPath?:                    string;
+    ItemClass?:                   string;
+    MaskAGloss:                   number;
+    MaskAGlossShift:              number;
+    MaskASpec:                    number;
+    MaskASpecColor:               string;
+    MaskB:                        number;
+    MaskBColor:                   string;
+    MaskBOverride:                number;
+    MaskG:                        number;
+    MaskGColor:                   string;
+    MaskGOverride:                number;
+    MaskR:                        number;
+    MaskRColor:                   string;
+    MaskROverride:                number;
+    MeshOverride?:                string;
+    MountAttachmentAppearanceId?: string;
+    Name?:                        string;
+    RDyeSlotDisabled:             number;
+    "Weapon Material name Info"?: string;
+    WeaponAppearanceID:           string;
+}
 export interface ItemdefinitionsInstrumentsappearances {
     "Art ID Names":              string;
     Description?:                string;
@@ -1420,6 +1453,7 @@ export interface Lootbuckets {
     Item277?:              string;
     Item278?:              string;
     Item279?:              string;
+    Item28?:               string;
     Item280?:              string;
     Item281?:              string;
     Item282?:              string;
@@ -1795,6 +1829,7 @@ export interface Lootbuckets {
     LootBucket277?:        string;
     LootBucket278?:        string;
     LootBucket279?:        string;
+    LootBucket28?:         string;
     LootBucket280?:        string;
     LootBucket281?:        string;
     LootBucket282?:        string;
@@ -2937,6 +2972,7 @@ export interface Lootbuckets {
     Tags273?:              string[];
     Tags274?:              string[];
     Tags275?:              string[];
+    Tags28?:               string[];
     Tags298?:              string[];
     Tags3?:                string[];
     Tags30?:               string[];
@@ -3586,7 +3622,7 @@ export interface Statuseffect {
     AllowSelfOnlyAsSourceForAbilities?:           boolean;
     AntirequisiteEffectCategories?:               string;
     ApplicationCooldown?:                         number;
-    AttributePlacingMods?:                        string;
+    AttributePlacingMods?:                        number;
     AzothMod?:                                    number;
     BLAArcane?:                                   number;
     BLACorruption?:                               number;
@@ -3964,6 +4000,7 @@ export interface Statuseffectcategories {
 }
 
 export interface ValueLimits {
+    ABSAcid?:                      number;
     ABSArcane?:                    number;
     ABSCorruption?:                number;
     ABSFire?:                      number;
@@ -3976,6 +4013,7 @@ export interface ValueLimits {
     ABSStrike?:                    number;
     ABSThrust?:                    number;
     AzothMod?:                     number;
+    DMGAcid?:                      number;
     DMGArcane?:                    number;
     DMGCorruption?:                number;
     DMGFire?:                      number;
@@ -3998,6 +4036,7 @@ export interface ValueLimits {
     HealScalingValueMultiplier?:   number;
     MaxHealth?:                    number;
     MoveSpeedMod?:                 number;
+    NonConsumableHealMod?:         number;
     PhysicalArmor?:                number;
     SprintSpeedMod?:               number;
     StaminaRate?:                  number;
@@ -4532,7 +4571,6 @@ export interface Vitals {
     RESDisease:                               number;
     RESFrostbite:                             number;
     RESPoison:                                number;
-    ShouldTriggerPassivesOnDeath:             boolean;
     StaminaBaseMax:                           number;
     StaminaBaseTickRate:                      number;
     StaminaCostMitigation:                    number;
@@ -4841,6 +4879,7 @@ export interface Vitalscategories {
     VitalsCategoryID:           string;
 }
 export interface Vitalsleveldata {
+    AILootGSCeiling:      number;
     BaseDamage:           number;
     BaseMaxHealth:        number;
     ContainerLootGSFloor: number;
@@ -5009,6 +5048,7 @@ export interface Elementalmutations {
     Dungeon:                 string;
     "Dungeon+":              string;
     "Dungeon-":              string;
+    DungeonBoss?:            string;
     DungeonMiniBoss:         string;
     ElementalDifficultyTier: number;
     ElementalMutationId:     string;
@@ -5179,6 +5219,7 @@ export interface Ability {
     InSequence?:                                    string;
     InSequenceTime?:                                number;
     IsActiveAbility?:                               boolean;
+    IsConsumableIds?:                               string;
     IsGlobalAbility?:                               boolean;
     IsInCombatState?:                               boolean;
     IsNonCombatAbility?:                            boolean;
@@ -5507,7 +5548,6 @@ export interface Objective {
 }
 export interface Objectivetasks {
     ChestDropProbability:            number;
-    CraftingRecipeId?:               string;
     Duration:                        number;
     EnforceLocationRequirement:      boolean;
     FailOnCondition:                 number;

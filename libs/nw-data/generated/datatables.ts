@@ -36,6 +36,7 @@ import type {
   ItemdefinitionsResources,
   ItemdefinitionsRunes,
   ItemdefinitionsWeaponappearances,
+  ItemdefinitionsWeaponappearancesMountattachments,
   ItemdefinitionsWeapons,
   Lootbuckets,
   Lootlimits,
@@ -938,6 +939,9 @@ export abstract class NwDataLoader {
   }
   public itemdefinitionsWeaponappearances() {
     return this.load<ItemdefinitionsWeaponappearances[]>('javelindata_itemdefinitions_weaponappearances.json')
+  }
+  public itemdefinitionsWeaponappearancesMountattachments() {
+    return this.load<ItemdefinitionsWeaponappearancesMountattachments[]>('javelindata_itemdefinitions_weaponappearances_mountattachments.json')
   }
   public itemdefinitionsWeapons() {
     return this.load<ItemdefinitionsWeapons[]>('javelindata_itemdefinitions_weapons.json')

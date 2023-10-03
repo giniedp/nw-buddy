@@ -28,6 +28,7 @@ export const TABLE_GLOB_PATTERNS = [
   '*_itemdefinitions_runes',
   '*_itemappearancedefinitions',
   '*_itemdefinitions_weaponappearances',
+  '*_itemdefinitions_weaponappearances_mountattachments',
   '*_itemdefinitions_instrumentsappearances',
   '*_lootbuckets',
   '*_lootlimits',
