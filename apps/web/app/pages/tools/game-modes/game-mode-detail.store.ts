@@ -6,9 +6,10 @@ import { combineLatest, filter, map, of, shareReplay, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { LootContext, NwLootService } from '~/nw/loot'
 import { NW_MAX_CHARACTER_LEVEL, getVitalDungeons } from '@nw-data/common'
-import { mapProp, shareReplayRefCount } from '~/utils'
+import { mapProp, selectStream, shareReplayRefCount, tapDebug } from '~/utils'
 
 export interface GameModeDetailState {
+  playerLevel: number
   dungeon: Gamemodes
   difficulty: Mutationdifficulty
 }
@@ -47,107 +48,86 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
   public readonly dungeon$ = this.select(({ dungeon }) => dungeon).pipe(filter((it) => !!it))
   public readonly dungeonId$ = this.select(({ dungeon }) => dungeon?.GameModeId)
   public readonly difficulty$ = this.select(({ difficulty }) => difficulty)
+  public readonly playerLevel$ = this.select(({ dungeon, playerLevel }) => playerLevel)
 
-  public readonly isMutable$ = this.dungeon$.pipe(mapProp('IsMutable'))
+  public readonly isMutable$ = this.select(this.dungeon$, (it) => it?.IsMutable)
   public readonly difficulties$ = this.dungeon$.pipe(
     switchMap((it) => {
       return it?.IsMutable ? this.db.mutatorDifficulties : of<Mutationdifficulty[]>([])
     })
   )
-  public readonly possibleItemDropIds$ = this.select(({ dungeon }) => dungeon?.PossibleItemDropIds).pipe(
-    map((it) => it || [])
+  public readonly possibleItemDropIds$ = this.select(this.dungeon$, (it) => it?.PossibleItemDropIds || [])
+  public readonly possibleItemDrops$ = selectStream(
+    {
+      ids: this.possibleItemDropIds$,
+      items: this.db.itemsMap,
+      housing: this.db.housingItemsMap,
+    },
+    ({ ids, items, housing }) => ids.map((id) => items.get(id) || housing.get(id)).filter((it) => !!it),
+    {
+      debounce: true,
+    }
   )
-  public readonly possibleItemDrops$ = combineLatest({
-    ids: this.possibleItemDropIds$,
-    items: this.db.itemsMap,
-    housing: this.db.housingItemsMap,
-  }).pipe(map(({ ids, items, housing }) => ids.map((id) => items.get(id) || housing.get(id)).filter((it) => !!it)))
 
-  public readonly creatures$ = combineLatest({
-    dungeonId: this.dungeonId$,
-    dungeons: this.db.gameModes,
-    difficulty: this.difficulty$,
-    vitals: this.db.vitals,
-    vitalsMeta: this.db.vitalsMetadataMap,
-  })
-    .pipe(
-      map(({ vitals, vitalsMeta, dungeons, dungeonId, difficulty }): Vitals[] => {
-        const result = vitals.filter((it) => {
-          if (
-            difficulty != null &&
-            dungeonId === 'DungeonShatteredObelisk' &&
-            it.VitalsID === 'Withered_Brute_Named_08'
-          ) {
-            return true
-          }
-          return getVitalDungeons(it, dungeons, vitalsMeta).some((dg) => dg.GameModeId === dungeonId)
-        })
-        return result
+  public readonly creatures$ = selectStream(
+    {
+      dungeonId: this.dungeonId$,
+      dungeons: this.db.gameModes,
+      difficulty: this.difficulty$,
+      vitals: this.db.vitals,
+      vitalsMeta: this.db.vitalsMetadataMap,
+    },
+    ({ vitals, vitalsMeta, dungeons, dungeonId, difficulty }): Vitals[] => {
+      const result = vitals.filter((it) => {
+        if (
+          difficulty != null &&
+          dungeonId === 'DungeonShatteredObelisk' &&
+          it.VitalsID === 'Withered_Brute_Named_08'
+        ) {
+          return true
+        }
+        return getVitalDungeons(it, dungeons, vitalsMeta).some((dg) => dg.GameModeId === dungeonId)
       })
-    )
-    .pipe(shareReplayRefCount(1))
+      return result
+    },
+    {
+      debounce: true,
+    }
+  )
 
-  public readonly bosses$ = combineLatest({
-    dungeonId: this.dungeonId$,
-    dungeons: this.db.gameModes,
-    difficulty: this.difficulty$,
-    vitals: this.db.vitalsByCreatureType,
-    vitalsMeta: this.db.vitalsMetadataMap,
-  })
-    .pipe(
-      map(({ vitals, vitalsMeta, dungeons, dungeonId, difficulty }): Vitals[] => {
-        const miniBosses = vitals.get('DungeonMiniBoss') || []
-        const bosses = vitals.get('DungeonBoss') || []
-        const result = [...miniBosses, ...bosses].filter((it) => {
-          return getVitalDungeons(it, dungeons, vitalsMeta).some((dg) => dg.GameModeId === dungeonId)
-        })
-        return result
+  public readonly bosses$ = selectStream(
+    {
+      dungeonId: this.dungeonId$,
+      dungeons: this.db.gameModes,
+      vitals: this.db.vitalsByCreatureType,
+      vitalsMeta: this.db.vitalsMetadataMap,
+    },
+    ({ vitals, vitalsMeta, dungeons, dungeonId }): Vitals[] => {
+      const miniBosses = vitals.get('DungeonMiniBoss') || []
+      const bosses = vitals.get('DungeonBoss') || []
+      const result = [...miniBosses, ...bosses].filter((it) => {
+        return getVitalDungeons(it, dungeons, vitalsMeta).some((dg) => dg.GameModeId === dungeonId)
       })
-    )
-    .pipe(shareReplayRefCount(1))
+      return result
+    },
+    {
+      debounce: true,
+    }
+  )
 
-  public readonly creatureLootTableIds$ = this.creatures$
-    .pipe(map((it) => it.map((e) => e.LootTableId).flat(1)))
-    .pipe(map((it) => uniq(it).filter((it) => !!it)))
-    .pipe(shareReplayRefCount(1))
-
-  public readonly creatureLootTables$ = combineLatest({
-    ids: this.creatureLootTableIds$,
-    tables: this.db.lootTablesMap,
+  public readonly creatureLootTags$ = selectStream(this.creatures$, (list) => {
+    return uniq(list.map((e) => e.LootTags || []).flat(1)).filter((it) => !!it)
   })
-    .pipe(map(({ ids, tables }) => ids.map((id) => tables.get(id))))
-    .pipe(shareReplayRefCount(1))
-
-  public readonly creatureLootTags$ = this.creatures$
-    .pipe(map((it) => it.map((e) => e.LootTags || []).flat(1)))
-    .pipe(map((it) => uniq(it).filter((it) => !!it)))
-    .pipe(shareReplayRefCount(1))
-
-  public readonly bossesLootTableIds$ = this.creatures$
-    .pipe(map((it) => it.map((e) => e.LootTableId).flat(1)))
-    .pipe(map((it) => uniq(it).filter((it) => !!it)))
-    .pipe(shareReplayRefCount(1))
-
-  public readonly bossesLootTables$ = combineLatest({
-    ids: this.creatureLootTableIds$,
-    tables: this.db.lootTablesMap,
-  })
-    .pipe(map(({ ids, tables }) => ids.map((id) => tables.get(id))))
-    .pipe(shareReplayRefCount(1))
-
-  public readonly bossesLootTags$ = this.creatures$
-    .pipe(map((it) => it.map((e) => e.LootTags || []).flat(1)))
-    .pipe(map((it) => uniq(it).filter((it) => !!it)))
-    .pipe(shareReplayRefCount(1))
 
   public readonly lootTagsNormalMode$ = combineLatest({
     dungeon: this.dungeon$,
     creatureTags: this.creatureLootTags$,
     lootTable: this.db.lootTable('CreatureLootMaster'),
+    playerLevel: this.playerLevel$,
   })
     .pipe(filter((it) => !!it.dungeon))
     .pipe(
-      map(({ dungeon, creatureTags, lootTable }) => {
+      map(({ dungeon, creatureTags, lootTable, playerLevel }) => {
         const dungeonTags = dungeon.LootTags || []
         // exclude dungeon tags from other dungeons
         const tagsToExclude = DUNGEON_LOOT_TAGS.filter((it) => !dungeonTags.includes(it))
@@ -159,24 +139,26 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         ]).filter((it) => !!it && !tagsToExclude.includes(it))
 
         // console.log({
-        //   bossTags,
+        //   //bossTags,
         //   creatureTags,
-        //   lootTags,
+        //   //lootTags,
         //   tagsToExclude,
-        //   tags
+        //   tags,
         // })
+        console.log(dungeon)
         return {
           tags: [...tags],
           values: {
-            MinContLevel: dungeon.ContainerLevel,
-            EnemyLevel: dungeon.RequiredLevel,
-            Level: NW_MAX_CHARACTER_LEVEL,
+            MinContLevel: dungeon.ContainerLevel - 1,
+            EnemyLevel: dungeon.ContainerLevel - 1,
+            Level: (playerLevel || dungeon.ContainerLevel) - 1,
           },
           table: lootTable,
           tableId: lootTable?.LootTableID,
         }
       })
     )
+    .pipe(tapDebug('lootTagsNormalMode$'))
     .pipe(shareReplayRefCount(1))
 
   public readonly lootNormalMode$ = this.lootTagsNormalMode$.pipe(
@@ -195,10 +177,11 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
     dungeon: this.dungeon$,
     creatureTags: this.creatureLootTags$,
     lootTable: this.db.lootTable('CreatureLootMaster_MutatedContainer'),
+    playerLevel: this.playerLevel$,
   })
     .pipe(filter((it) => !!it.dungeon))
     .pipe(
-      map(({ dungeon, creatureTags, lootTable }) => {
+      map(({ dungeon, creatureTags, lootTable, playerLevel }) => {
         const dungeonTags = dungeon.LootTags || []
         const dungeonOverrideTags = dungeon.MutLootTagsOverride || dungeonTags
         const regionTag = DUNGEON_LOOT_TAGS.find((it) => dungeonTags.includes(it))
@@ -223,9 +206,9 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         return {
           tags: [...tags],
           values: {
-            MinContLevel: dungeon.ContainerLevel,
-            EnemyLevel: dungeon.RequiredLevel,
-            Level: NW_MAX_CHARACTER_LEVEL,
+            MinContLevel: dungeon.ContainerLevel - 1,
+            EnemyLevel: dungeon.ContainerLevel - 1,
+            Level: (playerLevel || NW_MAX_CHARACTER_LEVEL) - 1,
           },
           table: lootTable,
           tableId: lootTable?.LootTableID,
@@ -250,11 +233,12 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
     difficulty: this.difficulty$,
     creatureTags: this.creatureLootTags$,
     lootTable: this.db.lootTable('CreatureLootMaster_MutatedContainer'),
+    playerLevel: this.playerLevel$,
   })
     .pipe(filter((it) => !!it.dungeon && !!it.difficulty))
     .pipe(
-      map(({ dungeon, difficulty, creatureTags, lootTable }) => {
-        const mutationTags = difficulty.InjectedLootTags
+      map(({ dungeon, difficulty, creatureTags, lootTable, playerLevel }) => {
+        const mutationTags = [...difficulty.InjectedLootTags, ...difficulty.InjectedCreatureLoot]
         const dungeonTags = dungeon.LootTags || []
         const dungeonOverrideTags = dungeon.MutLootTagsOverride || dungeonTags
         const regionTag = DUNGEON_LOOT_TAGS.find((it) => dungeonTags.includes(it))
@@ -269,27 +253,20 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
           ...mutationTags,
         ]).filter((it) => !!it && !regionExcludeTags.includes(it))
 
-        // console.log({
-        //   dungeon,
-        //   dungeonTags,
-        //   dungeonOverrideTags,
-        //   regionTag,
-        //   regionExcludeTags,
-        //   mutationTags,
-        //   tags
-        // })
+        console.log({ difficulty, dungeon })
         return {
           tags: [...tags],
           values: {
-            MinContLevel: dungeon.ContainerLevel,
-            EnemyLevel: dungeon.RequiredLevel,
-            Level: NW_MAX_CHARACTER_LEVEL,
+            MinContLevel: dungeon.ContainerLevel - 1,
+            EnemyLevel: dungeon.ContainerLevel - 1,
+            Level: (playerLevel || NW_MAX_CHARACTER_LEVEL) - 1,
           },
           table: lootTable,
           tableId: lootTable?.LootTableID,
         }
       })
     )
+    .pipe(tapDebug('lootTagsDifficulty$'))
 
   public readonly lootDifficulty$ = this.lootTagsDifficulty$.pipe(
     switchMap(({ tags, values, table }) => {
@@ -306,6 +283,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
 
   public constructor(private db: NwDbService, private loot: NwLootService) {
     super({
+      playerLevel: null,
       dungeon: null,
       difficulty: null,
     })

@@ -13,11 +13,12 @@ import {
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty } from '@nw-data/generated'
-import { ReplaySubject, combineLatest, defer, map, of, switchMap, takeUntil } from 'rxjs'
+import { BehaviorSubject, ReplaySubject, combineLatest, debounceTime, defer, map, of, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwModule } from '~/nw'
 
 import {
+  NW_MAX_CHARACTER_LEVEL,
   getItemIconPath,
   getItemId,
   getItemRarity,
@@ -46,6 +47,7 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { LootModule } from '~/widgets/loot'
 import { VitalsDetailModule } from '~/widgets/vitals-detail'
 import { GameModeDetailStore } from './game-mode-detail.store'
+import { FormsModule } from '@angular/forms'
 
 const DIFFICULTY_TIER_NAME = {
   1: 'Normal',
@@ -86,14 +88,15 @@ export interface Tab {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    RouterModule,
-    NwModule,
-    ItemDetailModule,
-    VitalsDetailModule,
-    LootModule,
-    LayoutModule,
-    PaginationModule,
+    FormsModule,
     IconsModule,
+    ItemDetailModule,
+    LayoutModule,
+    LootModule,
+    NwModule,
+    PaginationModule,
+    RouterModule,
+    VitalsDetailModule,
   ],
   providers: [DestroyService, GameModeDetailStore],
   host: {
@@ -115,11 +118,12 @@ export class GameModeDetailComponent implements OnInit {
   public trackByIndex = (i: number) => i
   public trackByTabId: TrackByFunction<Tab> = (i, item) => item.id
 
-  protected dungeonId$ = selectStream(observeRouteParam(this.route, 'id'))
-  protected mutationParam$ = selectStream(observeQueryParam(this.route, 'mutation'), (it) => Number(it) || null)
-  protected tabParam$ = selectStream(observeQueryParam(this.route, 'tab'))
-
-  protected gameMode$ = selectStream(this.db.gameMode(this.dungeonId$))
+  protected paramGameMode$ = selectStream(observeRouteParam(this.route, 'id'))
+  protected paramDifficulty$ = selectStream(observeQueryParam(this.route, 'mutation'), (it) => Number(it) || null)
+  protected paramTab$ = selectStream(observeQueryParam(this.route, 'tab'))
+  protected paramPlayerLevel$ = selectStream(observeQueryParam(this.route, 'lvl'))
+  protected adjustLevel$ = new BehaviorSubject<boolean>(false)
+  protected adjustedLevel$ = new BehaviorSubject<number>(NW_MAX_CHARACTER_LEVEL)
 
   public iconExtern = svgSquareArrowUpRight
   public dungeon$ = this.store.dungeon$
@@ -317,10 +321,10 @@ export class GameModeDetailComponent implements OnInit {
   ) {}
 
   public ngOnInit(): void {
-    const dungeon$ = this.db.gameMode(this.dungeonId$)
+    const dungeon$ = this.db.gameMode(this.paramGameMode$)
     const difficulty$ = combineLatest({
       dungeon: dungeon$,
-      difficulty: this.mutationParam$,
+      difficulty: this.paramDifficulty$,
       difficulties: this.db.mutatorDifficulties,
     }).pipe(
       map(({ dungeon, difficulties, difficulty }) => {
@@ -330,7 +334,18 @@ export class GameModeDetailComponent implements OnInit {
         return null
       })
     )
+    const playerLevel$ = combineLatest({
+      enabled: this.adjustLevel$,
+      level: this.adjustedLevel$,
+      queryLevel: this.paramPlayerLevel$,
+    }).pipe(
+      debounceTime(300),
+      map(({ enabled, level, queryLevel }) => {
+        return (enabled ? level : Number(queryLevel)) || null
+      })
+    )
     const input$ = combineLatest({
+      playerLevel: playerLevel$,
       dungeon: dungeon$,
       difficulty: difficulty$,
     })
@@ -392,7 +407,7 @@ export class GameModeDetailComponent implements OnInit {
         this.cdRef.detectChanges()
       })
 
-    this.tabParam$.pipe(takeUntil(this.destroy.$)).subscribe((tab) => {
+    this.paramTab$.pipe(takeUntil(this.destroy.$)).subscribe((tab) => {
       this.tab = tab || ''
       this.cdRef.detectChanges()
     })

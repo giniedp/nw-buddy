@@ -15,7 +15,12 @@
   </li>
   <ng-container *ngIf="difficulties$ | async; let items">
     <li *ngFor="let item of items" [class.bordered]="item.MutationDifficulty == difficultyLevel">
-      <a rel="nofollow" [routerLink]="['.']" [queryParams]="{ mutation: item.MutationDifficulty, tab: tab }">
+      <a
+        rel="nofollow"
+        [routerLink]="['.']"
+        [queryParams]="{ mutation: item.MutationDifficulty }"
+        [queryParamsHandling]="'merge'"
+      >
         <img [nwImage]="difficultyRankIcon(dungeon, item) | async" class="w-8 h-8" />
         {{ item.MutationDifficulty }} ({{ difficultyTier(item) }})
       </a>
@@ -55,19 +60,24 @@
           <span [nwText]="requirementText"></span>
         </div>
       </div>
-      <div class="flex flex-row flex-wrap layout-gap mt-12">
+      <div class="flex flex-row flex-wrap layout-gap">
         <ng-container *ngIf="expeditionItems$ | async; let items">
-          <div *ngIf="items?.length">
-            <h2 class="font-bold mt-0">Expedition Items</h2>
+          <div *ngIf="items?.length" class="w-full max-w-md">
+            <h2 class="font-bold mb-4">Expedition Items</h2>
             <div class="flex flex-row gap-2">
-              <a [nwLink]="itemId(item)" [nwLinkResource]="'item'" *ngFor="let item of items">
-                <picture [nwIcon]="item" class="w-16 h-16"></picture>
+              <a
+                [nwLink]="itemId(item)"
+                [nwLinkResource]="'item'"
+                *ngFor="let item of items"
+                class="block w-full aspect-square"
+              >
+                <picture [nwIcon]="item" class="block w-full h-full my-0"></picture>
               </a>
             </div>
           </div>
         </ng-container>
-        <div class="stats bg-opacity-0 self-end" *ngIf="difficulty">
-          <div class="stat place-items-center py-0" *ngFor="let row of difficyltyRewards$ | async">
+        <div class="stats bg-opacity-0 self-end w-full max-w-md" *ngIf="difficulty">
+          <div class="stat place-items-center p-0" *ngFor="let row of difficyltyRewards$ | async">
             <div class="stat-title">
               <span [nwText]="row.RankName"></span>
             </div>
@@ -86,14 +96,41 @@
       </div>
     </div>
 
-    <div class="tabs mt-4 flex-none">
+    <div class="max-w-md mt-4">
+      <div class="form-control">
+        <label class="label cursor-pointer">
+          <span class="label-text">Show loot for your level</span>
+          <input
+            type="checkbox"
+            class="toggle"
+            [class.toggle-primary]="adjustLevel$ | async"
+            [ngModel]="adjustLevel$ | async"
+            (ngModelChange)="adjustLevel$.next($event)"
+          />
+        </label>
+      </div>
+      <div class="form-control w-full" *ngIf="adjustLevel$ | async">
+        <input
+          class="input input-bordered"
+          placeholder="60"
+          type="number"
+          [min]="1"
+          [max]="65"
+          [ngModel]="adjustedLevel$ | async"
+          (ngModelChange)="adjustedLevel$.next($event)"
+        />
+      </div>
+    </div>
+
+    <div class="tabs mt-4 justify-stretch flex-none">
       <ng-container *ngFor="let item of tabs; trackBy: trackByTabId">
         <a
           *ngIf="!item.externUrl"
           class="tab tab-bordered"
           [class.tab-active]="item.id === tab"
           [routerLink]="['.']"
-          [queryParams]="{ mutation: difficultyLevel, tab: item.id }"
+          [queryParams]="{ tab: item.id }"
+          [queryParamsHandling]="'merge'"
           rel="nofollow"
         >
           {{ item.label }}
