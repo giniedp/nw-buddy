@@ -194,12 +194,14 @@ function getAbilityParent(ability: Ability, abilities: Ability[]) {
   if (!ability) {
     return null
   }
-  if (ability.RequiredAbilityId) {
+  if (ability.RequiredAbilityId && ability.RequiredAbilityId !== 'Ability_Flail_Defense') {
     return ability.RequiredAbilityId
   }
+  // TODO: hackedy hack, fix this
   if (ability.AbilityID.startsWith('Upgrade_')) {
     const prefix = ability.AbilityID.replace('Upgrade_', 'Ability_')
       .replace(/_\d/, '')
+      .replace(/_Upgrade\d$/, '')
       .replace('Greatsword_Break', 'Greatsword_DefenseBreak')
     return abilities.find((it) => it.AbilityID.startsWith(prefix))?.AbilityID
   }
