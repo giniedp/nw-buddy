@@ -2,33 +2,45 @@ import * as path from 'path'
 import * as fs from 'fs'
 
 import { DataTableSource } from '../importer/tables'
-import { generateInterfaces } from './generate-interfaces'
 import { generateApiService } from './generate-api-service'
 import { generateTableColumns } from './generate-table-columns'
+import { generateTableTypes } from './generate-table-types'
+import { generateInterfaces } from './generate-interfaces'
 
 export async function generateTypes(output: string, tables: DataTableSource[], format: 'json' | 'csv' = 'json') {
-  const samples = new Map<string, any[]>()
+  const javelinSamples = new Map<string, any[]>()
+  const otherSamples = new Map<string, any[]>()
   const files = new Map<string, any[]>()
   for (const { file, relative, data } of tables) {
     const type = pathToTypeName(file)
-    if (!samples.has(type)) {
-      samples.set(type, [])
-      files.set(type, [])
+    const isJavelin = file.includes('javelindata_')
+    if (isJavelin) {
+      if (!javelinSamples.has(type)) {
+        javelinSamples.set(type, [])
+        files.set(type, [])
+      }
+      javelinSamples.get(type).push(data)
+    } else {
+      if (!otherSamples.has(type)) {
+        otherSamples.set(type, [])
+        files.set(type, [])
+      }
+      otherSamples.get(type).push(data)
     }
-    samples.get(type).push(data)
     files.get(type).push(relative.replace(/\.json$/, `.${format}`))
   }
 
-  const tsColsInfos = generateTableColumns(samples)
-  const tsInterfaces = await generateInterfaces(samples, {
+  const javelinCols = generateTableColumns(javelinSamples)
+  const javelinTypes = generateTableTypes(javelinSamples, {
     onEmptyType: (type) => files.delete(type),
-    enumProps: (type) => ENUMS[type] || []
+    enumProps: (type) => ENUMS[type],
   })
+  const otherTypes = await generateInterfaces(otherSamples)
   const tsApiServce = generateApiService(files)
-
-  await fs.promises.writeFile(path.join(output, 'types.ts'), Buffer.from(tsInterfaces, 'utf-8'))
+  const tsTypes = [javelinTypes, otherTypes].join('\n\n')
+  await fs.promises.writeFile(path.join(output, 'types.ts'), Buffer.from(tsTypes, 'utf-8'))
   await fs.promises.writeFile(path.join(output, 'datatables.ts'), Buffer.from(tsApiServce, 'utf-8'))
-  await fs.promises.writeFile(path.join(output, 'cols.ts'), Buffer.from(tsColsInfos, 'utf-8'))
+  await fs.promises.writeFile(path.join(output, 'cols.ts'), Buffer.from(javelinCols, 'utf-8'))
 }
 
 const PATH_TO_TYPE_RULES = [
@@ -57,6 +69,10 @@ const PATH_TO_TYPE_RULES = [
     name: 'ItemDefinitionMtx',
   },
   {
+    test: /(_housingitems)|(_housingitems_mtx)/,
+    name: 'Housingitems',
+  },
+  {
     test: /_npcs[._]/,
     name: 'Npc',
   },
@@ -71,10 +87,6 @@ const PATH_TO_TYPE_RULES = [
   {
     test: /_statuseffects[._]/,
     name: 'Statuseffect',
-  },
-  {
-    test: /_controbution[._]/,
-    name: 'Contribution',
   },
   {
     test: /_poidefinitions[._]/,
@@ -100,58 +112,95 @@ function pathToTypeName(filePath: string) {
     return found.name
   }
 
-  const exclude = ['javelindata']
-  const baseName = path.basename(filePath)
-
-  return baseName
+  const exclude = ['javelindata', 'generated']
+  return path
+    .basename(filePath)
     .split('.')[0]
     .split('_')
-    .filter((it) => {
-      if (exclude.includes(it) || it.match(/\d+/)) {
-        return false
-      }
-      return true
-    })
-    .map((it) => {
-      if (it === 'ai') {
-        return 'AI'
-      }
-      return it[0].toUpperCase() + it.substring(1)
-    })
+    .filter((it) => !exclude.includes(it) && !it.match(/\d+/))
+    .map((it) => it[0].toUpperCase() + it.substring(1))
     .join('')
 }
 
 const ENUMS = {
-  Vitals: ['Family'],
-  Vitalsmetadata: ['spawns'],
-  // ItemDefinitionMaster: ['ItemClass'],
-  // Damagetypes: ['TypeID', 'Category'],
+  Vitals: {
+    Family: 'VitalsFamily',
+    VitalsCategories: 'VitalsCategory',
+    CreatureType: 'CreatureType',
+    LootTags: 'LootTag',
+  },
+  Itemappearancedefinitions: {
+    ItemClass: 'ItemClass',
+  },
+  ItemdefinitionsInstrumentsappearances: {
+    ItemClass: 'ItemClass',
+  },
+  ItemdefinitionsWeaponappearances: {
+    ItemClass: 'ItemClass',
+  },
+  ItemdefinitionsWeaponappearancesMountattachments: {
+    ItemClass: 'ItemClass',
+  },
+  ItemDefinitionMaster: {
+    ItemClass: 'ItemClass',
+    ItemType: 'ItemType',
+    TradingGroup: 'TradingGroup',
+    TradingFamily: 'TradingFamily',
+    TradingCategory: 'TradingCategory',
+  },
+  Housingitems: {
+    Placement: 'ItemPlacement',
+    ItemType: 'ItemType',
+    HousingTags: 'HousingTag',
+    TradingGroup: 'TradingGroup',
+    TradingFamily: 'TradingFamily',
+    TradingCategory: 'TradingCategory',
+  },
+  Damagetypes: {
+    TypeID: 'DamageType',
+    Category: 'DamageCategory',
+  },
+  Damagetable: {
+    DamageType: 'DamageType',
+  },
   // Loottable: ['Conditions'],
-  Perks: [
-    'PerkType',
-    'ItemClass',
-    'WeaponTag',
-    'ConditionEvent',
-    'DayPhases'
-  ],
-  Ability: [
-    'AbilityCooldownComparisonType',
-    'DistComparisonType',
-    'LoadedAmmoCountComparisonType',
-    'MyComparisonType',
-    'MyManaComparisonType',
-    'MyStaminaComparisonType',
-    'NumAroundComparisonType',
-    'NumberOfHitsComparisonType',
-    'TargetComparisonType',
-    'WeaponTag',
-    'UICategory',
-    'AttackerVitalsCategory',
-    'TargetVitalsCategory',
-    'AbilityOnCooldownOptions',
-    'AttackType',
-    'CDRImmediatelyOptions',
-    'EquipLoadCategory',
-    'GatheringTradeskill'
-  ],
+  Perks: {
+    PerkType: 'PerkType',
+    ItemClass: 'ItemClass',
+    WeaponTag: 'WeaponTag',
+    ConditionEvent: 'PerkConditionEvent',
+    DayPhases: 'DayPhases',
+  },
+  Ability: {
+    AbilityCooldownComparisonType: 'ComparisonType',
+    DistComparisonType: 'ComparisonType',
+    LoadedAmmoCountComparisonType: 'ComparisonType',
+    MyComparisonType: 'ComparisonType',
+    MyManaComparisonType: 'ComparisonType',
+    MyStaminaComparisonType: 'ComparisonType',
+    NumAroundComparisonType: 'ComparisonType',
+    NumberOfHitsComparisonType: 'ComparisonType',
+    TargetComparisonType: 'ComparisonType',
+    WeaponTag: 'WeaponTag',
+    UICategory: 'UICategory',
+    AttackerVitalsCategory: 'VitalsCategory',
+    TargetVitalsCategory: 'VitalsCategory',
+    AbilityOnCooldownOptions: 'AbilityOnCooldownOptions',
+    AttackType: 'AttackType',
+    CDRImmediatelyOptions: 'CDRImmediatelyOptions',
+    EquipLoadCategory: 'EquipLoadCategory',
+    GatheringTradeskill: 'GatheringTradeskill',
+    StatusEffectCategories: 'StatusEffectCategory',
+    TargetStatusEffectCategory: 'StatusEffectCategory',
+    DamageTypes: 'DamageType',
+    DamageCategory: 'DamageCategory',
+  },
+  Statuseffect: {
+    EffectCategories: 'StatusEffectCategory',
+    HitCondition: 'HitCondition',
+    DamageType: 'DamageType',
+  },
+  Affixstats: {
+    DamageType: 'DamageType',
+  },
 }

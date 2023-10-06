@@ -1,5 +1,15 @@
 import { splitToArrayRule } from './import-datatables'
 
+const ITEM_CLASS_FIXES = {
+  '2hAxe': '2HAxe',
+  Greatsword: 'GreatSword',
+  Heartgem: 'HeartGem',
+  Pickaxe: 'PickAxe',
+  spear: 'Spear',
+  named: 'Named',
+  roundShied: 'RoundShield',
+}
+
 export const TABLE_REMAP_RULES = [
   {
     file: /javelindata_gamemodes\.json/,
@@ -70,24 +80,51 @@ export const TABLE_REMAP_RULES = [
       splitToArrayRule({
         properties: ['ItemClass'],
         separator: '+',
+        map: (value) => ITEM_CLASS_FIXES[value] || value,
       }),
     ],
   },
   {
-    file: /_itemdefinitions_weaponappearances.json/,
+    file: /_itemdefinitions_weaponappearances(_mountattachments)?.json/,
     rules: [
       splitToArrayRule({
         properties: ['ItemClass'],
         separator: '+',
+        map: (value) => ITEM_CLASS_FIXES[value] || value,
       }),
+      {
+        match: ['NumberOfHitsComparisonType'],
+        remap: (value: string) => {
+          if (value === 'LessthanOrEqual&#160;') {
+            return 'LessThanOrEqual'
+          }
+          return value
+        },
+      },
     ],
   },
+  {
+    file: /_ability_/,
+    rules: [
+      {
+        match: ['NumberOfHitsComparisonType'],
+        remap: (value: string) => {
+          if (value === 'LessthanOrEqual&#160;') {
+            return 'LessThanOrEqual'
+          }
+          return value
+        },
+      },
+    ],
+  },
+
   {
     file: /_itemdefinitions_instrumentsappearances.json/,
     rules: [
       splitToArrayRule({
         properties: ['ItemClass'],
         separator: '+',
+        map: (value) => ITEM_CLASS_FIXES[value] || value,
       }),
     ],
   },
@@ -97,6 +134,7 @@ export const TABLE_REMAP_RULES = [
       splitToArrayRule({
         properties: ['ItemClass'],
         separator: '+',
+        map: (value) => ITEM_CLASS_FIXES[value] || value,
       }),
       splitToArrayRule({
         properties: ['IngredientCategories'],
@@ -105,10 +143,24 @@ export const TABLE_REMAP_RULES = [
     ],
   },
   {
+    file: /_housingitems/,
+    rules: [
+      splitToArrayRule({
+        properties: ['HousingTags'],
+        separator: '+',
+      }),
+    ],
+  },
+  {
     file: /javelindata_perks\.json/,
     rules: [
       splitToArrayRule({
-        properties: ['ItemClass', 'ExclusiveLabels', 'ExcludeItemClass'],
+        properties: ['ItemClass'],
+        separator: '+',
+        map: (value) => ITEM_CLASS_FIXES[value] || value,
+      }),
+      splitToArrayRule({
+        properties: ['ExclusiveLabels', 'ExcludeItemClass'],
         separator: '+',
       }),
       splitToArrayRule({

@@ -182,7 +182,7 @@ export function housingColHousingTags(util: HousingTableUtils) {
     headerValueGetter: () => 'Housing Tags',
     width: 250,
     valueGetter: util.valueGetter(({ data }) => {
-      return (data.HousingTags || '').trim().split('+')
+      return data.HousingTags
     }),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     filter: SelectFilter,

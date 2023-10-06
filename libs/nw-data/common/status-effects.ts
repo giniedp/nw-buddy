@@ -1,4 +1,4 @@
-import { Statuseffect } from "@nw-data/generated"
+import { StatusEffectCategory, Statuseffect } from '@nw-data/generated'
 
 const TOWN_BUFF_IDS = [
   'ArcaneBlessingLSB',
@@ -23,7 +23,7 @@ export function getStatusEffectTownBuffIds() {
   return [...TOWN_BUFF_IDS]
 }
 
-export function statusEffectHasCategory(effect: Statuseffect, category: string)  {
+export function statusEffectHasCategory(effect: Statuseffect, category: StatusEffectCategory) {
   return effect?.EffectCategories?.includes(category)
 }
 
@@ -58,7 +58,9 @@ export function getStatusEffectDMGs(affix: Partial<Statuseffect>, scale: number)
       }
     })
 }
-export function getStatusEffectProperties(affix: Partial<Statuseffect>): Array<{ key: string; value: number | string }> {
+export function getStatusEffectProperties(
+  affix: Partial<Statuseffect>
+): Array<{ key: string; value: number | string }> {
   return Object.entries((affix || {}) as Statuseffect)
     .filter(([key]) => key !== 'StatusID')
     .map(([key, value]) => {

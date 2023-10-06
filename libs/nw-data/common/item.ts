@@ -40,11 +40,11 @@ export function isItemWeapon(item: Pick<ItemDefinitionMaster, 'ItemClass'> | nul
 }
 
 export function isItemShield(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
-  return item?.ItemClass?.includes('EquppableOffHand')
+  return item?.ItemClass?.includes('EquippableOffHand')
 }
 
 export function isItemTool(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
-  return item?.ItemClass?.includes('EquppableTool')
+  return item?.ItemClass?.includes('EquippableTool')
 }
 
 export function isItemConsumable(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {

@@ -3,7 +3,7 @@ import { Observable, map, of } from 'rxjs'
 import { mapFilter } from '~/utils'
 
 export function territoriesTags(source$: Observable<Territorydefinitions[]>) {
-  return source$.pipe(mapFilter((it) => !!it.LootTags && !!it.NameLocalizationKey)).pipe(
+  return source$.pipe(mapFilter((it) => !!it.LootTags?.length && !!it.NameLocalizationKey)).pipe(
     map((list) => {
       return [
         ...list.map((it) => {
@@ -20,7 +20,7 @@ export function territoriesTags(source$: Observable<Territorydefinitions[]>) {
 }
 
 export function poiTags(source$: Observable<PoiDefinition[]>) {
-  return source$.pipe(mapFilter((it) => !!it.LootTags && !!it.NameLocalizationKey)).pipe(
+  return source$.pipe(mapFilter((it) => !!it.LootTags?.length && !!it.NameLocalizationKey)).pipe(
     map((list) => {
       return [
         ...list.map((it) => {

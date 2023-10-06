@@ -49,19 +49,22 @@ export interface EquipSlot {
 }
 
 export type EquipSlotItemType =
-  | 'EquippableHead'
-  | 'EquippableChest'
-  | 'EquippableHands'
-  | 'EquippableLegs'
-  | 'EquippableFeet'
-  | 'EquippableAmulet'
-  | 'EquippableRing'
-  | 'EquippableToken'
-  | 'Weapon'
-  | 'Shield'
-  | 'HeartGem'
-  | 'Consumable'
-  | 'Ammo'
+  | Extract<
+      ItemClass,
+      | 'EquippableHead'
+      | 'EquippableChest'
+      | 'EquippableHands'
+      | 'EquippableLegs'
+      | 'EquippableFeet'
+      | 'EquippableAmulet'
+      | 'EquippableRing'
+      | 'EquippableToken'
+      | 'Weapon'
+      | 'Shield'
+      | 'HeartGem'
+      | 'Consumable'
+      | 'Ammo'
+    >
   | 'Trophies'
 
 const MAP_TO_ITEM_CLASS: Partial<Record<EquipSlotItemType, ItemClass>> = {
@@ -75,7 +78,7 @@ const MAP_TO_ITEM_CLASS: Partial<Record<EquipSlotItemType, ItemClass>> = {
   EquippableToken: 'EquippableToken',
   Weapon: 'EquippableMainHand',
   Shield: 'Shield',
-  HeartGem: 'Heartgem',
+  HeartGem: 'HeartGem',
 }
 
 export function getItemClassForSlot(slot: EquipSlot): ItemClass {

@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getUIHousingCategoryLabel } from '@nw-data/common'
-import { COLS_HOUSINGITEMS, COLS_HOUSINGITEMSMTX, Housingitems } from '@nw-data/generated'
+import { COLS_HOUSINGITEMS, Housingitems } from '@nw-data/generated'
 import { map } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService } from '~/nw'
@@ -109,9 +109,6 @@ export function buildCommonHousingGridOptions(util: TableGridUtils<HousingTableR
   addGenericColumns(result, {
     props: COLS_HOUSINGITEMS,
   })
-  addGenericColumns(result, {
-    props: COLS_HOUSINGITEMSMTX,
-  })
   return result
 }
 
@@ -128,9 +125,6 @@ export function buildPickerHousingGridOptions(utils: TableGridUtils<HousingTable
   }
   addGenericColumns(result, {
     props: COLS_HOUSINGITEMS,
-  })
-  addGenericColumns(result, {
-    props: COLS_HOUSINGITEMSMTX,
   })
   return result
 }

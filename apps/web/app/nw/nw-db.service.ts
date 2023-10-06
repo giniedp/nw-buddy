@@ -330,7 +330,7 @@ export class NwDbService {
 
   public tradeskillPostcap = table(() => [this.data.tradeskillpostcap()])
 
-  public vitalsMetadata = table(() => [this.data.vitalsmetadata()])
+  public vitalsMetadata = table(() => [this.data.generatedVitalsmetadata()])
   public vitalsMetadataMap = indexBy(() => this.vitalsMetadata, 'vitalsID')
   public vitalsMeta = lookup(() => this.vitalsMetadataMap)
 

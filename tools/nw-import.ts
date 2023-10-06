@@ -16,6 +16,7 @@ import { importSlices } from './importer/slices/import-slices'
 import { withProgressBar, writeJSONFile } from './utils'
 import { cpus } from 'os'
 import { generateSearch } from './importer/search'
+import { extractLootTags } from './importer/extractLootTags'
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
 }
@@ -30,7 +31,7 @@ enum Importer {
   locales = 'locales',
   images = 'images',
   vitals = 'vitals',
-  search = 'search',
+  index = 'index',
 }
 
 program
@@ -73,7 +74,7 @@ program
       }).then(({ gatherables, vitals }) => {
         return Promise.all([
           // write it into input directory, so table loader will pick it up
-          writeJSONFile(vitals, path.join(pathToDatatables(inputDir), 'javelindata_vitalsmetadata.json'), {
+          writeJSONFile(vitals, path.join(pathToDatatables(inputDir), 'generated_vitalsmetadata.json'), {
             createDir: true,
           }),
           writeJSONFile(vitals, path.join('tmp', 'vitals.json'), {
@@ -81,7 +82,7 @@ program
           }),
 
           // write it into input directory, so table loader will pick it up
-          writeJSONFile(gatherables, path.join(pathToDatatables(inputDir), 'javelindata_gatherablesmetadata.json'), {
+          writeJSONFile(gatherables, path.join(pathToDatatables(inputDir), 'generated_gatherablesmetadata.json'), {
             createDir: true,
           }),
           writeJSONFile(gatherables, path.join('tmp', 'gatherables.json'), {
@@ -222,9 +223,6 @@ program
         })
       })
 
-      // console.log('collect loot tags')
-      // await extractLootTags(inputDir, 'tmp')
-
       // console.log('collect abilities')
       // await extractAbilities(inputDir, 'tmp')
 
@@ -237,13 +235,19 @@ program
       await generateTypes(typesDir, tables)
     }
 
-    if (hasFilter(Importer.search, options.module)) {
+    if (hasFilter(Importer.index, options.module)) {
       console.log('generate search')
       await generateSearch({
         localesDir: path.join(distDir, 'localization'),
         tablesDir: path.join(distDir, 'datatables'),
         outDir: path.join(distDir, 'search'),
       })
+
+      // console.log('collect loot tags')
+      // await extractLootTags({
+      //   tablesDir: path.join(distDir, 'datatables'),
+      //   outFile: path.join('tmp', 'loot-tags.json'),
+      // })
     }
   })
   .parse(process.argv)

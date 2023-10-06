@@ -14,7 +14,7 @@ import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule],
   host: {
-    class: 'nw-item-header flex flex-row p-1 text-shadow-sm shadow-black',
+    class: 'nw-item-header flex text-shadow-sm shadow-black',
     '[class.nw-item-rarity-common]': 'rarity === "common"',
     '[class.nw-item-rarity-uncommon]': 'rarity === "uncommon"',
     '[class.nw-item-rarity-rare]': 'rarity === "rare"',
@@ -30,6 +30,23 @@ export class ItemHeaderComponent {
   @Input()
   @HostBinding('class.named')
   public isNamed: boolean
+
+  @Input()
+  @HostBinding('class.p-1')
+  public isPadded: boolean = true
+
+  @Input()
+  @HostBinding('class.flex-row')
+  public isRow: boolean = true
+
+  @Input()
+  @HostBinding('class.flex-col')
+  public set isColumn(value: boolean) {
+    this.isRow = !value
+  }
+  public get isColumn(): boolean {
+    return !this.isRow
+  }
 
   @Input()
   public set item(value: ItemDefinitionMaster | Housingitems) {

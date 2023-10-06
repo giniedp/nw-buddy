@@ -1,7 +1,7 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import { replaceExtname } from '../../utils'
-import { RewriteFile } from './import-datatables'
+import { RewriteFile, RewriteRule } from './import-datatables'
 
 export function rewriteImagePathRule(inputDir: string): RewriteFile {
   return {
@@ -38,7 +38,6 @@ export function rewriteImagePathRule(inputDir: string): RewriteFile {
           }
         }
         obj.IconPath = null
-
       },
     ],
   }

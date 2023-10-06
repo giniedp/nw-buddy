@@ -93,14 +93,14 @@ export function doesAbilityTriggerStatusEffect(
     if (ability.StatusEffect !== statusEffect.StatusID) {
       return false
     }
-    if (!ability.StatusEffectCategories.some((cat: string) => statusEffect.EffectCategories.includes(cat))) {
+    if (!ability.StatusEffectCategories.some((cat) => statusEffect.EffectCategories.includes(cat))) {
       return false
     }
   } else {
     if (ability.TargetStatusEffect !== statusEffect.StatusID) {
       return false
     }
-    if (!ability.TargetStatusEffectCategory.some((cat: string) => statusEffect.EffectCategories.includes(cat))) {
+    if (!ability.TargetStatusEffectCategory.some((cat) => statusEffect.EffectCategories.includes(cat))) {
       return false
     }
   }

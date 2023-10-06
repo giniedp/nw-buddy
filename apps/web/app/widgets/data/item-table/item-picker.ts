@@ -57,7 +57,7 @@ function itemFilter(categories: string[], noSkins: boolean) {
     if (!it.ItemClass?.some((cls) => categories.some((it) => eqCaseInsensitive(cls, it)))) {
       return false
     }
-    if (noSkins && (it.ItemType === 'Armor' || it.ItemType === 'Weapons') && (!it.CanHavePerks || !it.ItemStatsRef)) {
+    if (noSkins && (it.ItemType === 'Armor' || it.ItemType === 'Weapon') && (!it.CanHavePerks || !it.ItemStatsRef)) {
       return false
     }
     return true

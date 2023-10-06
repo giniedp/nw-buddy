@@ -3,6 +3,7 @@ import { ComponentStore } from '@ngrx/component-store'
 import {
   EQUIP_SLOTS,
   EquipSlotId,
+  EquipSlotItemType,
   NW_MAX_GEAR_SCORE,
   getItemMaxGearScore,
   getItemPerkInfos,
@@ -17,7 +18,7 @@ import {
   isPerkGenerated,
   isPerkInherent,
 } from '@nw-data/common'
-import { Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { Affixstats, ItemClass, ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { diceCoefficient } from 'dice-coefficient'
 import { sortBy, sum } from 'lodash'
 import { of } from 'rxjs'
@@ -84,9 +85,9 @@ export class GearImporterStore extends ComponentStore<GearImporterState> {
   }
 }
 
-function selectItems(items: ItemDefinitionMaster[], type: string, tl8: TranslateService) {
+function selectItems(items: ItemDefinitionMaster[], type: EquipSlotItemType, tl8: TranslateService) {
   return items
-    .filter((it) => it.ItemClass?.includes(type))
+    .filter((it) => it.ItemClass?.includes(type as ItemClass))
     .map((it): Item => {
       return {
         item: it,

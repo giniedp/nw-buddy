@@ -25,7 +25,6 @@ import type {
   Gatherables,
   Housetypes,
   Housingitems,
-  HousingitemsMtx,
   ItemDefinitionMaster,
   ItemDefinitionMtx,
   Itemappearancedefinitions,
@@ -862,6 +861,9 @@ export abstract class NwDataLoader {
   public gatherables() {
     return this.load<Gatherables[]>('javelindata_gatherables.json')
   }
+  public generatedVitalsmetadata() {
+    return this.load<Vitalsmetadata[]>('generated_vitalsmetadata.json')
+  }
   public housetypes() {
     return this.load<Housetypes[]>('javelindata_housetypes.json')
   }
@@ -983,7 +985,7 @@ export abstract class NwDataLoader {
     return this.load<Mounts[]>('mounts/javelindata_mounts.json')
   }
   public mtxHousingitemsMtx() {
-    return this.load<HousingitemsMtx[]>('mtx/javelindata_housingitems_mtx.json')
+    return this.load<Housingitems[]>('mtx/javelindata_housingitems_mtx.json')
   }
   public mtxItemdefinitionsMtx202301() {
     return this.load<ItemDefinitionMtx[]>('mtx/javelindata_itemdefinitions_mtx_2023-01.json')
@@ -1527,9 +1529,6 @@ export abstract class NwDataLoader {
   }
   public vitalsleveldata() {
     return this.load<Vitalsleveldata[]>('javelindata_vitalsleveldata.json')
-  }
-  public vitalsmetadata() {
-    return this.load<Vitalsmetadata[]>('javelindata_vitalsmetadata.json')
   }
   public vitalsmodifierdata() {
     return this.load<Vitalsmodifierdata[]>('javelindata_vitalsmodifierdata.json')

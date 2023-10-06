@@ -77,13 +77,17 @@ export async function importDatatables({ inputDir, patterns, remap, rewrite }: L
 export function splitToArrayRule({
   separator,
   properties,
+  map,
 }: {
   separator: string | RegExp
   properties: MatchRule
+  map?: (token: string) => string
 }): RemapRule {
   return {
     match: properties,
-    remap: (value: string) => value && value.split(separator),
+    remap: (value: string) => {
+      return value && value.split(separator).map(map || ((it) => it))
+    },
   }
 }
 

@@ -81,7 +81,3 @@ function sumVitalsCategory(mods: ActiveMods) {
   }
   return results
 }
-
-function hasCategory(effect: Statuseffect, category: string) {
-  return effect?.EffectCategories?.includes(category)
-}

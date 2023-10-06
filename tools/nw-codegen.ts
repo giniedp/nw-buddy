@@ -1,16 +1,8 @@
 import { program } from 'commander'
-import * as path from 'path'
-import { NW_USE_PTR, nwData } from '../env'
-import {
-  isAIVariantProviderComponent,
-  isAIVariantProviderComponentServerFacet,
-  isAZ__Entity,
-} from './importer/slices/types/dynamicslice'
-import { glob, readJSONFile, writeFile } from './utils/file-utils'
-import { walkJsonObjects } from './utils/walk-json-object'
-import { tsFromSliceFiles } from './code-gen/ts-from-slice-files'
-import { tsFromJson } from './utils/ts-from-json'
 import * as fs from 'fs'
+import { NW_USE_PTR, nwData } from '../env'
+import { glob, writeFile } from './utils/file-utils'
+import { tsFromJson } from './utils/ts-from-json'
 
 program
   .option('--ptr', 'PTR mode', NW_USE_PTR)
