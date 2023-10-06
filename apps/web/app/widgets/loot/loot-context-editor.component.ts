@@ -14,7 +14,7 @@ import { LootContextEditorStore } from './loot-context-editor.store'
   imports: [CommonModule, NwModule, FormsModule],
   providers: [LootContextEditorStore],
   host: {
-    class: 'layout-content',
+    class: 'block',
   },
 })
 export class LootContextEditorComponent {

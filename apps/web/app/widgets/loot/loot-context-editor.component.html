@@ -1,122 +1,124 @@
-<ng-container *ngIf="vm$ | async; let vm">
-  <div class="form-control w-full max-w-xs">
-    <label class="label">
-      <span class="label-text">Player Level</span>
-    </label>
-    <input
-      type="number"
-      class="input input-bordered w-full max-w-xs"
-      [ngModel]="vm.playerLevel"
-      [min]="0"
-      (ngModelChange)="store.patchState({ playerLevel: $event })"
-    />
-  </div>
-
-  <div class="form-control w-full max-w-xs">
-    <label class="label">
-      <span class="label-text">Content Level</span>
-    </label>
-    <input
-      type="number"
-      class="input input-bordered w-full max-w-xs"
-      [ngModel]="vm.contentLevel"
-      [min]="0"
-      (ngModelChange)="store.patchState({ contentLevel: $event })"
-    />
-  </div>
-
-  <div class="form-control w-full max-w-xs">
-    <label class="label">
-      <span class="label-text">Creature ID</span>
-    </label>
-    <input
-      type="string"
-      class="input input-bordered w-full max-w-xs"
-      [ngModel]="vm.vital?.VitalsID"
-      (ngModelChange)="store.patchState({ vitalId: $event })"
-    />
-  </div>
-
-  <ng-container *ngIf="vm.gameMode; let gameMode">
+<div class="grid grid-cols-fill-xs gap-2">
+  <ng-container *ngIf="vm$ | async; let vm">
     <div class="form-control w-full max-w-xs">
       <label class="label">
-        <span class="label-text">Game Mode</span>
+        <span class="label-text">Player Level</span>
       </label>
-      <select class="select select-bordered" [ngModel]="gameMode.selection" (ngModelChange)="setGameMode($event)">
-        <option disabled selected>Pick one</option>
-        <option *ngFor="let option of gameMode.options; trackBy: trackByIndex" [value]="option.targetId">
-          {{ option.label | nwText }}
-        </option>
-      </select>
+      <input
+        type="number"
+        class="input input-bordered w-full max-w-xs"
+        [ngModel]="vm.playerLevel"
+        [min]="0"
+        (ngModelChange)="store.patchState({ playerLevel: $event })"
+      />
     </div>
-    <div class="form-control w-full max-w-xs" *ngIf="vm.isMutable">
-      <label class="label cursor-pointer">
-        <span class="label-text">Mutation</span>
-        <input type="checkbox" class="toggle" [ngModel]="vm.isMutation" (ngModelChange)="setMutation($event)" />
-      </label>
-    </div>
-  </ng-container>
 
-  <ng-container *ngIf="vm.mutaDifficulty; let difficulty">
     <div class="form-control w-full max-w-xs">
       <label class="label">
-        <span class="label-text">Mutation Level</span>
+        <span class="label-text">Content Level</span>
       </label>
-      <select
-        class="select select-bordered"
-        [ngModel]="difficulty.selection"
-        (ngModelChange)="setMutaDifficulty($event)"
-      >
-        <option disabled selected>Pick one</option>
-        <option *ngFor="let option of difficulty.options; trackBy: trackByIndex" [value]="option.targetId">
-          {{ option.label | nwText }}
-        </option>
-      </select>
+      <input
+        type="number"
+        class="input input-bordered w-full max-w-xs"
+        [ngModel]="vm.contentLevel"
+        [min]="0"
+        (ngModelChange)="store.patchState({ contentLevel: $event })"
+      />
     </div>
-  </ng-container>
 
-  <ng-container *ngIf="vm.mutaElement; let element">
     <div class="form-control w-full max-w-xs">
       <label class="label">
-        <span class="label-text">Mutation Element</span>
+        <span class="label-text">Creature ID</span>
       </label>
-      <select class="select select-bordered" [ngModel]="element.selection" (ngModelChange)="setMutaElement($event)">
-        <option disabled selected>Pick one</option>
-        <option *ngFor="let option of element.options; trackBy: trackByIndex" [value]="option.targetId">
-          {{ option.label | nwText }}
-        </option>
-      </select>
+      <input
+        type="string"
+        class="input input-bordered w-full max-w-xs"
+        [ngModel]="vm.vital?.VitalsID"
+        (ngModelChange)="store.patchState({ vitalId: $event })"
+      />
     </div>
-  </ng-container>
 
-  <ng-container *ngIf="vm.territory; let territory">
-    <div class="form-control w-full max-w-xs">
-      <label class="label">
-        <span class="label-text">Territory</span>
-      </label>
-      <select class="select select-bordered" [ngModel]="territory.selection" (ngModelChange)="setTerritory($event)">
-        <option disabled selected>Pick one</option>
-        <option *ngFor="let option of territory.options; trackBy: trackByIndex" [value]="option.targetId">
-          {{ option.label | nwText }}
-        </option>
-      </select>
-    </div>
-  </ng-container>
+    <ng-container *ngIf="vm.territory; let territory">
+      <div class="form-control w-full max-w-xs">
+        <label class="label">
+          <span class="label-text">Territory</span>
+        </label>
+        <select class="select select-bordered" [ngModel]="territory.selection" (ngModelChange)="setTerritory($event)">
+          <option disabled selected>Pick one</option>
+          <option *ngFor="let option of territory.options; trackBy: trackByIndex" [value]="option.targetId">
+            {{ option.label | nwText }}
+          </option>
+        </select>
+      </div>
+    </ng-container>
 
-  <ng-container *ngIf="vm.poi; let poi">
-    <div class="form-control w-full max-w-xs">
-      <label class="label">
-        <span class="label-text">Point Of Interest</span>
-      </label>
-      <select class="select select-bordered" [ngModel]="poi.selection" (ngModelChange)="setPoi($event)">
-        <option disabled selected>Pick one</option>
-        <option *ngFor="let option of poi.options; trackBy: trackByIndex" [value]="option.targetId">
-          {{ option.label | nwText }}
-        </option>
-      </select>
-    </div>
+    <ng-container *ngIf="vm.poi; let poi">
+      <div class="form-control w-full max-w-xs">
+        <label class="label">
+          <span class="label-text">Point Of Interest</span>
+        </label>
+        <select class="select select-bordered" [ngModel]="poi.selection" (ngModelChange)="setPoi($event)">
+          <option disabled selected>Pick one</option>
+          <option *ngFor="let option of poi.options; trackBy: trackByIndex" [value]="option.targetId">
+            {{ option.label | nwText }}
+          </option>
+        </select>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="vm.gameMode; let gameMode">
+      <div class="form-control w-full max-w-xs">
+        <label class="label">
+          <span class="label-text">Game Mode</span>
+        </label>
+        <select class="select select-bordered" [ngModel]="gameMode.selection" (ngModelChange)="setGameMode($event)">
+          <option disabled selected>Pick one</option>
+          <option *ngFor="let option of gameMode.options; trackBy: trackByIndex" [value]="option.targetId">
+            {{ option.label | nwText }}
+          </option>
+        </select>
+      </div>
+      <div class="form-control w-full max-w-xs" *ngIf="vm.isMutable">
+        <label class="label cursor-pointer">
+          <span class="label-text">Mutation</span>
+          <input type="checkbox" class="toggle" [ngModel]="vm.isMutation" (ngModelChange)="setMutation($event)" />
+        </label>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="vm.mutaDifficulty; let difficulty">
+      <div class="form-control w-full max-w-xs">
+        <label class="label">
+          <span class="label-text">Mutation Level</span>
+        </label>
+        <select
+          class="select select-bordered"
+          [ngModel]="difficulty.selection"
+          (ngModelChange)="setMutaDifficulty($event)"
+        >
+          <option disabled selected>Pick one</option>
+          <option *ngFor="let option of difficulty.options; trackBy: trackByIndex" [value]="option.targetId">
+            {{ option.label | nwText }}
+          </option>
+        </select>
+      </div>
+    </ng-container>
+
+    <ng-container *ngIf="vm.mutaElement; let element">
+      <div class="form-control w-full max-w-xs">
+        <label class="label">
+          <span class="label-text">Mutation Element</span>
+        </label>
+        <select class="select select-bordered" [ngModel]="element.selection" (ngModelChange)="setMutaElement($event)">
+          <option disabled selected>Pick one</option>
+          <option *ngFor="let option of element.options; trackBy: trackByIndex" [value]="option.targetId">
+            {{ option.label | nwText }}
+          </option>
+        </select>
+      </div>
+    </ng-container>
   </ng-container>
-</ng-container>
+</div>
 
 <div class="form-control w-full max-w-xs">
   <label class="label">

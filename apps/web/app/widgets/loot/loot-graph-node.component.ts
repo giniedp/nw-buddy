@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core'
 import { RouterModule } from '@angular/router'
+import { ComponentStore } from '@ngrx/component-store'
 import { LootTable } from '@nw-data/common'
 import { NwModule } from '~/nw'
 import { LootBucketNode, LootBucketRowNode, LootNode, LootTableItemNode, LootTableNode } from '~/nw/loot/loot-graph'
@@ -9,6 +10,46 @@ import { svgAngleLeft, svgCircleExclamation, svgLink, svgLock, svgLockOpen } fro
 import { PaginationModule } from '~/ui/pagination'
 import { TooltipModule } from '~/ui/tooltip'
 import { ItemDetailModule } from '../data/item-detail'
+import { VirtualGridModule, VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { LootGraphGridCellComponent } from './loot-graph-grid-cell.component'
+
+export interface LootGraphNodeState<T = LootNode> {
+  node: T
+  showLocked: boolean
+  showChance: boolean
+  expand: boolean
+  showLink: boolean
+}
+
+export interface LootGraphNodeVM {
+  chanceAbs: number
+  chanceRel: number
+  childGrid: boolean
+  children: LootNode[]
+  displayName: string
+  expandable: boolean
+  highlight: boolean
+  itemId: string
+  itemIds: string[]
+  itemQuantity: string
+  itemTags: string[]
+  lootNode: LootNode
+  rollThreshold: string
+  table: LootTable
+  tagValue: string
+  totalItemCount: number
+  typeName: string
+  unlocked: boolean
+  unlockedItemCount: number
+  link?: any[]
+
+  showLocked: boolean
+  showChance: boolean
+  expand: boolean
+  showLink: boolean
+
+  gridOptions: VirtualGridOptions<LootNode>
+}
 
 @Component({
   standalone: true,
@@ -16,153 +57,162 @@ import { ItemDetailModule } from '../data/item-detail'
   templateUrl: './loot-graph-node.component.html',
   styleUrls: ['./loot-graph-node.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, IconsModule, ItemDetailModule, TooltipModule, RouterModule, PaginationModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    IconsModule,
+    ItemDetailModule,
+    TooltipModule,
+    RouterModule,
+    PaginationModule,
+    VirtualGridModule,
+  ],
   host: {
     class: 'contents',
   },
 })
-export class LootGraphNodeComponent implements OnChanges {
+export class LootGraphNodeComponent extends ComponentStore<LootGraphNodeState> {
   @Input()
-  public node: LootNode
-
-  @Input()
-  public showLocked: boolean
-
-  @Input()
-  public showChance: boolean
+  public set node(value: LootNode) {
+    this.patchState({ node: value })
+  }
 
   @Input()
-  public expand: boolean
+  public set showLocked(value: boolean) {
+    this.patchState({ showLocked: value })
+  }
 
   @Input()
-  public showLink: boolean
+  public set showChance(value: boolean) {
+    this.patchState({ showChance: value })
+  }
 
-  protected displayName: string
-  protected typeName: string
-  protected itemIds: string[]
-  protected table: LootTable
-  protected children: LootNode[]
-  protected itemId: string
-  protected itemQuantity: string
-  protected rollThreshold: string
-  protected tagValue: string
-  protected unlocked: boolean
-  protected unlockedItemCount: number
-  protected totalItemCount: number
-  protected highlight: boolean
+  @Input()
+  public set expand(value: boolean) {
+    this.patchState({ expand: value })
+  }
 
-  protected chanceRel: number
-  protected chanceAbs: number
+  @Input()
+  public set showLink(value: boolean) {
+    this.patchState({ showLink: value })
+  }
 
-  protected itemTags: string[]
-  protected childGrid = false
-
-  protected iconExpand = svgAngleLeft
-
-  protected expandable: boolean
-
-  protected lootNode: LootNode
+  protected vm$ = this.select(selectVM)
   protected trackByIndex = (i: number) => i
 
+  protected iconExpand = svgAngleLeft
   protected iconinfo = svgCircleExclamation
   protected iconLock = svgLock
   protected iconLockOpen = svgLockOpen
-  protected link: any[] = null
   protected linkIcon = svgLink
-  public constructor(private cdRef: ChangeDetectorRef) {
-    //
-  }
 
-  public ngOnChanges(): void {
-    this.updateFromNode(this.node)
-    this.cdRef.markForCheck()
+  public constructor() {
+    super({
+      node: null,
+      showLocked: false,
+      showChance: false,
+      expand: false,
+      showLink: false,
+    })
   }
 
   protected toggle() {
-    this.expand = !this.expand
-    this.updateFromNode(this.node)
-    this.cdRef.markForCheck()
-  }
-
-  private updateFromNode(node: LootNode) {
-    this.link = null
-    this.unlocked = node?.unlocked
-    this.unlockedItemCount = node?.unlockedItemcount
-    this.totalItemCount = node?.totalItemCount
-    this.chanceAbs = node?.chanceAbsolute
-    this.chanceRel = node?.chanceRelative
-    this.highlight = node?.highlight
-    if (this.expand == null) {
-      this.expand = this.highlight
-    }
-    this.lootNode = node
-    this.typeName = null
-    this.displayName = null
-    this.table = null
-    this.itemId = null
-    this.itemQuantity = null
-    this.itemTags = null
-    this.expandable = false
-    this.childGrid = false
-    this.children = node?.children
-    if (!this.showLocked) {
-      this.children = this.children?.filter((it) => !!it.unlocked && !!it.unlockedItemcount)
-    }
-
-    if (!node) {
-      return
-    }
-    this.updateFromTableRow(node)
-    if (node.type === 'table') {
-      this.updateFromTableNode(node)
-    }
-    if (node.type === 'table-item') {
-      this.updateFromTableItemNode(node)
-    }
-    if (node.type === 'bucket') {
-      this.updateFromBucketNode(node)
-    }
-    if (node.type === 'bucket-row') {
-      this.updateFromBucketRowNode(node)
-    }
-  }
-
-  private updateFromTableNode(node: LootTableNode) {
-    this.link = this.showLink ? ['/loot/table', node.data.LootTableID] : null
-    this.table = node.data
-    this.expandable = true
-    this.typeName = 'table'
-    this.displayName = node.ref
-  }
-  private updateFromTableRow(node: LootNode) {
-    const row = node.row
-    if (!row) {
-      return
-    }
-    const table = (node.parent as LootTableNode).data
-    this.itemQuantity = row.Qty
-    this.rollThreshold = table.MaxRoll > 0 ? row.Prob : null
-    this.tagValue = !table.MaxRoll && row.Prob != '0' ? row.Prob : null
-  }
-  private updateFromTableItemNode(node: LootTableItemNode) {
-    if (node.row.ItemID) {
-      this.itemId = node.row.ItemID
-    }
-  }
-  private updateFromBucketNode(node: LootBucketNode) {
-    this.expandable = true
-    this.childGrid = true
-    this.typeName = `bucket`
-    this.displayName = node.ref
-  }
-  private updateFromBucketRowNode(node: LootBucketRowNode) {
-    this.itemId = node.data.Item
-    this.itemQuantity = node.data.Quantity.join('-')
-    this.itemTags = Array.from(node.data.Tags.values()).map((it) => {
-      if (it.Value != null) {
-        return [it.Name, it.Value.join('-')].join(' ')
-      }
-      return it.Name
+    this.patchState({
+      expand: this.get(({ expand }) => !expand),
     })
   }
+}
+
+function selectVM(state: LootGraphNodeState) {
+  const node = state.node
+  const vm: LootGraphNodeVM = initVM(state)
+  if (!node) {
+    return vm
+  }
+  vmFromTableRow(vm, state as LootGraphNodeState<LootTableNode>)
+  if (node.type === 'table') {
+    vmFromTableNode(vm, state as LootGraphNodeState<LootTableNode>)
+  }
+  if (node.type === 'table-item') {
+    vmFromTableItemNode(vm, state as LootGraphNodeState<LootTableItemNode>)
+  }
+  if (node.type === 'bucket') {
+    vmFromBucketNode(vm, state as LootGraphNodeState<LootBucketNode>)
+  }
+  if (node.type === 'bucket-row') {
+    vmFromBucketRowNode(vm, state as LootGraphNodeState<LootBucketRowNode>)
+  }
+  return vm
+}
+
+function initVM(state: LootGraphNodeState): LootGraphNodeVM {
+  const { node, showLocked, expand } = state
+  return {
+    ...state,
+    unlocked: node?.unlocked,
+    unlockedItemCount: node?.unlockedItemcount,
+    totalItemCount: node?.totalItemCount,
+    chanceAbs: node?.chanceAbsolute,
+    chanceRel: node?.chanceRelative,
+    highlight: node?.highlight,
+    expand: expand ?? node?.highlight,
+    lootNode: node,
+    typeName: null,
+    displayName: null,
+    table: null,
+    itemId: null,
+    itemQuantity: null,
+    itemTags: null,
+    expandable: false,
+    childGrid: false,
+    children: showLocked ? node?.children : node?.children?.filter((it) => !!it.unlocked && !!it.unlockedItemcount),
+    itemIds: null,
+    tagValue: null,
+    rollThreshold: null,
+    gridOptions: null,
+  }
+}
+
+function vmFromTableNode(vm: LootGraphNodeVM, { showLink, node }: LootGraphNodeState<LootTableNode>) {
+  vm.link = showLink ? ['/loot/table', node.data.LootTableID] : null
+  vm.table = node.data
+  vm.expandable = true
+  vm.typeName = 'table'
+  vm.displayName = node.ref
+}
+
+function vmFromTableRow(vm: LootGraphNodeVM, { node }: LootGraphNodeState<LootTableNode>) {
+  const row = node.row
+  if (!row) {
+    return
+  }
+  const table = (node.parent as LootTableNode).data
+  vm.itemQuantity = row.Qty
+  vm.rollThreshold = table.MaxRoll > 0 ? row.Prob : null
+  vm.tagValue = !table.MaxRoll && row.Prob != '0' ? row.Prob : null
+}
+
+function vmFromTableItemNode(vm: LootGraphNodeVM, { node }: LootGraphNodeState<LootTableItemNode>) {
+  if (node.row.ItemID) {
+    vm.itemId = node.row.ItemID
+  }
+}
+
+function vmFromBucketNode(vm: LootGraphNodeVM, { node }: LootGraphNodeState<LootBucketNode>) {
+  vm.expandable = true
+  vm.childGrid = true
+  vm.typeName = `bucket`
+  vm.displayName = node.ref
+  vm.gridOptions = LootGraphGridCellComponent.buildGridOptions()
+}
+
+function vmFromBucketRowNode(vm: LootGraphNodeVM, { node }: LootGraphNodeState<LootBucketRowNode>) {
+  vm.itemId = node.data.Item
+  vm.itemQuantity = node.data.Quantity.join('-')
+  vm.itemTags = Array.from(node.data.Tags.values()).map((it) => {
+    if (it.Value != null) {
+      return [it.Name, it.Value.join('-')].join(' ')
+    }
+    return it.Name
+  })
 }
