@@ -8,12 +8,14 @@ export interface SelectFilterOption {
   id: string
   label: string
   icon?: string
+  order?: number
 }
 
 export interface SelectFilterParams {
   showSearch?: boolean
   conditionAND?: boolean
   optionsGetter?: (node: IRowNode) => SelectFilterOption[]
+  comaparator?: (a: SelectFilterOption, b: SelectFilterOption) => number
 }
 
 export class SelectFilter implements IFilterComp {
@@ -120,13 +122,16 @@ export class SelectFilter implements IFilterComp {
 
   protected extractOptions() {
     const getter = this.params.optionsGetter || ((node) => this.extractOptionsFromNode(node))
+    const comparator = this.params.comaparator
     const values = new Map<any, SelectFilterOption>()
     this.params.api.forEachLeafNode((node) => {
       getter(node).forEach((option) => {
         values.set(option.id, option)
       })
     })
-    this.filterOptions = Array.from(values.values()).sort((a, b) => String(a.label).localeCompare(String(b.label)))
+    this.filterOptions = Array.from(values.values()).sort((a, b) => {
+      return comparator ? comparator(a, b) : String(a.label).localeCompare(String(b.label))
+    })
   }
 
   protected extractOptionsFromNode(node: IRowNode): SelectFilterOption[] {

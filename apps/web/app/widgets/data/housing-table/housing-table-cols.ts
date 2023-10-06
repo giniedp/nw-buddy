@@ -1,9 +1,11 @@
 import {
+  ItemRarity,
   NW_FALLBACK_ICON,
   getItemIconPath,
   getItemId,
   getItemRarity,
   getItemRarityLabel,
+  getItemRarityWeight,
   getItemTierAsRoman,
   getUIHousingCategoryLabel,
   isItemArtifact,
@@ -75,8 +77,12 @@ export function housingColRarity(util: HousingTableUtils) {
     valueGetter: ({ data }) => String(getItemRarity(data)),
     valueFormatter: ({ value }) => util.i18n.get(getItemRarityLabel(value)),
     filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      comaparator: (a, b) => getItemRarityWeight(b.id as ItemRarity) - getItemRarityWeight(a.id as ItemRarity),
+    }),
     width: 130,
     getQuickFilterText: ({ value }) => value,
+    comparator: (a, b) => getItemRarityWeight(a) - getItemRarityWeight(b),
   })
 }
 

@@ -1,4 +1,5 @@
 import {
+  ItemRarity,
   NW_FALLBACK_ICON,
   getItemAttribution,
   getItemExpansion,
@@ -8,6 +9,7 @@ import {
   getItemMinGearScore,
   getItemRarity,
   getItemRarityLabel,
+  getItemRarityWeight,
   getItemTierAsRoman,
   getItemTradingFamilyLabel,
   getItemTradingGroupLabel,
@@ -151,6 +153,10 @@ export function itemColRarity(util: ItemTableUtils) {
     valueFormatter: ({ value }) => util.i18n.get(getItemRarityLabel(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getItemRarityLabel(value)),
     filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      comaparator: (a, b) => getItemRarityWeight(b.id as ItemRarity) - getItemRarityWeight(a.id as ItemRarity),
+    }),
+    comparator: (a, b) => getItemRarityWeight(a) - getItemRarityWeight(b),
     width: 130,
   })
 }
