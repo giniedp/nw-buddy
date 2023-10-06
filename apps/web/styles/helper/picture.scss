@@ -2,7 +2,6 @@ picture,
 img {
   &.fade {
     opacity: 0;
-    transition: 0.2s linear opacity;
   }
   &.show {
     opacity: 1;
