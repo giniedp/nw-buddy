@@ -1,6 +1,7 @@
 import {
   Crafting,
   Housingitems,
+  ItemClass,
   ItemDefinitionMaster,
   ItemdefinitionsArmor,
   ItemdefinitionsRunes,
@@ -18,6 +19,7 @@ import {
 } from './constants'
 import { damageForTooltip } from './damage'
 import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
+import { eqCaseInsensitive } from './utils/caseinsensitive-compare'
 
 export function isMasterItem(item: unknown): item is ItemDefinitionMaster {
   return item != null && typeof item === 'object' && 'ItemID' in item
@@ -69,6 +71,14 @@ export function isItemHeargem(item: Pick<ItemDefinitionMaster, 'ItemClass'> | nu
 
 export function isPerkItemIngredient(item: ItemDefinitionMaster | null) {
   return hasItemIngredientCategory(item, 'Perkitem')
+}
+
+export function isItemOfAnyClass(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null, classes: ItemClass[]) {
+  return classes.some((a) => item.ItemClass?.some((b) => eqCaseInsensitive(a, b)))
+}
+
+export function getFirstItemClassOf(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null, classes: ItemClass[]) {
+  return classes.find((a) => item.ItemClass?.some((b) => eqCaseInsensitive(a, b)))
 }
 
 export function hasItemIngredientCategory(item: ItemDefinitionMaster, categoryId: string) {
@@ -574,6 +584,7 @@ const ITEM_ID_SUFFIXES = [
   'Legs',
   'Feet',
   'Feets',
+  'Legguards',
   //
   'Shirt',
   'Hat',
@@ -607,7 +618,7 @@ export function getItemGearsetID(item: Pick<ItemDefinitionMaster, 'ItemID'>) {
   if (!item || !item.ItemID) {
     return null
   }
-  return item.ItemID.replace(new RegExp(ITEM_ID_SUFFIXES_PATTERN, 'gi'), '')
+  return item.ItemID.replace(new RegExp(ITEM_ID_SUFFIXES_PATTERN, 'i'), '')
 }
 
 const APPEARANCE_ID_SUFFIXES = [
@@ -650,4 +661,48 @@ export function getItemCostumeId(item: ItemDefinitionMaster) {
     return item.ItemID.replace('NG_', '')
   }
   return null
+}
+
+const ITEM_ID_TOKEN_LOAD = ['heavy', 'light', 'medium']
+const ITEM_ID_TOKEN_TIER = ['t1', 't2', 't3', 't4', 't5']
+const ITEM_ID_TOKEN_VERSION = ['v1', 'v2', 'v3', 'v4', 'v5', 'new', 'xpac']
+const ITEM_ID_TOKEN_HEAD = ['cowl', 'hat', 'head', 'helm', 'masque', 'mask', 'crown', 'tiara']
+const ITEM_ID_TOKEN_CHEST = ['breastplate', 'chestguard', 'chest', 'coat', 'shirt', 'robe']
+const ITEM_ID_TOKEN_HANDS = ['gauntlets', 'gloves', 'handcovers', 'hands']
+const ITEM_ID_TOKEN_LEGS = ['greaves', 'legguards', 'pants', 'thighguards', 'leggings']
+const ITEM_ID_TOKEN_FEET = ['boots', 'feets', 'feet', 'gloves', 'legs', 'sabatons', 'shoes']
+const ITEM_ID_TOKEN_TOKENS = [
+  ...ITEM_ID_TOKEN_LOAD,
+  ...ITEM_ID_TOKEN_TIER,
+  ...ITEM_ID_TOKEN_HEAD,
+  ...ITEM_ID_TOKEN_CHEST,
+  ...ITEM_ID_TOKEN_HANDS,
+  ...ITEM_ID_TOKEN_LEGS,
+  ...ITEM_ID_TOKEN_FEET,
+  ...ITEM_ID_TOKEN_VERSION,
+]
+
+export function tokenizeItemID(itemID: string) {
+  if (!itemID) {
+    return null
+  }
+  return itemID
+    .replace(/([^A-Z])([A-Z])/g, '$1 $2')
+    .replace(/(\d\d\d)/g, ' $1 ') // gear score
+    .toLowerCase()
+    .split(/[\s_]/)
+    .filter((it) => !!it)
+}
+
+export function getItemSetFamilyName(item: Pick<ItemDefinitionMaster, 'ItemID'>) {
+  const tokens = tokenizeItemID(item?.ItemID) || []
+  const familyTokens = tokens.filter((token) => !ITEM_ID_TOKEN_TOKENS.includes(token) && !token.match(/^\d\d\d$/))
+  return familyTokens.join(' ')
+}
+
+export function getItemVersionString(item: Pick<ItemDefinitionMaster, 'ItemID'>) {
+  const tokens = tokenizeItemID(item?.ItemID) || []
+  const version = tokens.filter((token) => ITEM_ID_TOKEN_VERSION.includes(token)).join(' ')
+  const gs = tokens.find((token) => token.match(/^\d\d\d$/))
+  return [version || '', gs ? `gs${gs}` : ''].filter((it) => !!it).join(' ')
 }

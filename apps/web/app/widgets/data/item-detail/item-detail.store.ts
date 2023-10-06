@@ -2,6 +2,7 @@ import { ChangeDetectorRef, EventEmitter, Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import {
   AttributeRef,
+  getFirstItemClassOf,
   getItemAttribution,
   getItemCostumeId,
   getItemExpansion,
@@ -11,13 +12,16 @@ import {
   getItemPerkBucketIds,
   getItemRarity,
   getItemRarityLabel,
+  getItemSetFamilyName,
   getItemStatsArmor,
   getItemStatsWeapon,
   getItemTierAsRoman,
   getItemTypeName,
+  getItemVersionString,
   isItemArtifact,
   isItemHeargem,
   isItemNamed,
+  isItemOfAnyClass,
   isPerkGem,
 } from '@nw-data/common'
 import { combineLatest, map, of, switchMap } from 'rxjs'
@@ -184,6 +188,9 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
     return getItemRarityLabel(rarity)
   })
 
+  public readonly itemSetName$ = this.select(this.item$, (it) => getItemSetFamilyName(it))
+  public readonly itemSet$ = this.select(this.item$, this.db.itemSet(this.itemSetName$), selectItemSet)
+
   public readonly vmInfo$ = combineLatest({
     bindOnEquip: this.isBindOnEquip$,
     bindOnPickup: this.isBindOnPickup$,
@@ -283,4 +290,50 @@ function collectArtifactTasks(item: ItemDefinitionMaster, db: NwDbService) {
       }
     })
   )
+}
+
+function selectItemSet(item: ItemDefinitionMaster, itemsSet: Set<ItemDefinitionMaster>) {
+  if (!item || !itemsSet) {
+    return null
+  }
+
+  const meta = getItemMeta(item)
+  const items = Array.from(itemsSet.values()).map(getItemMeta)
+  if (!meta.mainCategory) {
+    return null
+  }
+  const tierItems = items.filter(
+    (it) => it.mainCategory === meta.mainCategory && it.subCategory === meta.subCategory && it.version === meta.version
+  )
+  const variantItems = items.filter(
+    (it) => it.mainCategory === meta.mainCategory && it.subCategory === meta.subCategory && it.tier === meta.tier
+  )
+  const gearset = items.filter(
+    (it) => it.subCategory === meta.subCategory && it.version === meta.version && it.tier === meta.tier
+  )
+
+  if (gearset.length === 1 && tierItems.length === 1 && variantItems.length === 1) {
+    return null
+  }
+  return {
+    items: gearset.map((it) => it.item),
+    otherTiers: tierItems.map((it) => it.item),
+    otherVersions: variantItems.map((it) => it.item),
+  }
+}
+
+function getItemMeta(item: ItemDefinitionMaster) {
+  return {
+    item: item,
+    version: getItemVersionString(item),
+    tier: item.Tier,
+    subCategory: getFirstItemClassOf(item, ['Light', 'Medium', 'Heavy']),
+    mainCategory: getFirstItemClassOf(item, [
+      'EquippableChest',
+      'EquippableFeet',
+      'EquippableHands',
+      'EquippableHead',
+      'EquippableLegs',
+    ]),
+  }
 }

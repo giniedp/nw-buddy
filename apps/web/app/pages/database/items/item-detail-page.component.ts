@@ -2,7 +2,7 @@ import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TemplateRef } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { getItemIconPath } from '@nw-data/common'
+import { getItemIconPath, getItemRarity, getItemTierAsRoman, getItemVersionString, isItemNamed } from '@nw-data/common'
 import { ItemDefinitionMaster } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
@@ -18,6 +18,8 @@ import { ModelViewerComponent, ModelViewerModule } from '~/widgets/model-viewer'
 import { ItemModelInfo } from '~/widgets/model-viewer/model-viewer.service'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ItemTabsComponent } from './item-tabs.component'
+import { ItemFrameModule } from '~/ui/item-frame'
+import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
   standalone: true,
@@ -35,8 +37,10 @@ import { ItemTabsComponent } from './item-tabs.component'
     LayoutModule,
     LootModule,
     ItemTabsComponent,
+    ItemFrameModule,
     IconsModule,
     ModelViewerModule,
+    TooltipModule,
   ],
   providers: [DestroyService],
   host: {
@@ -84,5 +88,18 @@ export class ItemDetailPageComponent {
 
   protected closeDialog() {
     this.dialog.closeAll()
+  }
+
+  protected itemRarity(item: ItemDefinitionMaster) {
+    return getItemRarity(item)
+  }
+  protected itemNamed(item: ItemDefinitionMaster) {
+    return isItemNamed(item)
+  }
+  protected itemVersion(item: ItemDefinitionMaster) {
+    return getItemVersionString(item)
+  }
+  protected itemTier(item: ItemDefinitionMaster) {
+    return 'Tier ' + getItemTierAsRoman(item.Tier)
   }
 }

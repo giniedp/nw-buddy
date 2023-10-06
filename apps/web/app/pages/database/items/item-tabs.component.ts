@@ -14,7 +14,7 @@ import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { ModelViewerService } from '~/widgets/model-viewer'
 
 export interface Tab {
-  id: 'effects' | 'perks' | 'unlocks' | 'craftable' | 'recipes' | 'perks' | 'transmog'
+  id: 'effects' | 'perks' | 'unlocks' | 'craftable' | 'recipes' | 'perks' | 'transmog' | 'gearset'
   label: string
 }
 
@@ -116,6 +116,7 @@ export class ItemTabsComponent extends ItemDetailStore {
             label: `Transmog`,
           })
         }
+
         const tabIds = tabs.map((it) => it.id)
         return {
           ...data,

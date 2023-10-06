@@ -5,6 +5,7 @@ import {
   convertPerkBuckets,
   getIngretientsFromRecipe,
   getItemIdFromRecipe,
+  getItemSetFamilyName,
   getQuestRequiredAchuevmentIds,
 } from '@nw-data/common'
 import { Housingitems, Vitals } from '@nw-data/generated'
@@ -100,6 +101,7 @@ export class NwDbService {
     methods = sortBy(methods, (it) => (backsort.includes(it.suffix) ? `x${it.suffix}` : it.suffix))
     return methods.map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
   })
+
   public itemsMap = indexBy(() => this.items, 'ItemID')
   public item = lookup(() => this.itemsMap)
   public itemsBySalvageAchievement = indexGroupBy(() => this.items, 'SalvageAchievement')
@@ -116,6 +118,11 @@ export class NwDbService {
     () => this.items,
     (it) => it.ItemType
   )
+  public itemsBySetFamilyName = indexGroupSetBy(
+    () => this.items,
+    (it) => getItemSetFamilyName(it)
+  )
+  public itemSet = lookup(() => this.itemsBySetFamilyName)
 
   public housingItems = table(() => [
     this.data.housingitems(),

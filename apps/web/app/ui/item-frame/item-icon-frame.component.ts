@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
+import { Component, ChangeDetectionStrategy, Input, HostBinding } from '@angular/core'
 import { ItemRarity } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { NwModule } from '~/nw'
@@ -34,6 +34,10 @@ export class ItemIconFrameComponent {
 
   @Input()
   public solid: boolean
+
+  @Input()
+  @HostBinding('class.named')
+  public isNamed: boolean
 
   @Input('nwbItemIcon')
   public icon: string | ItemDefinitionMaster | Housingitems
