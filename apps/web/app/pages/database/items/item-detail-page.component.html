@@ -56,7 +56,7 @@
       <div class="pb-4 px-4 flex flex-col gap-2" *ngIf="card.itemSet$ | async; let gearset">
         <div *ngIf="gearset.items?.length > 1">
           <h3 class="text-center font-bold mb-1">Set Items</h3>
-          <div class="flex flex-row gap-3 justify-center">
+          <div class="flex flex-row flex-wrap gap-2 justify-center">
             <a
               [tooltip]="item.ItemTypeDisplayName | nwText"
               [tooltipClass]="'bg-base-200'"
@@ -73,9 +73,9 @@
             </a>
           </div>
         </div>
-        <div *ngIf="gearset.otherVersions.length > 1">
-          <h3 class="text-center font-bold mb-1">Variant Items</h3>
-          <div class="flex flex-row gap-3 justify-center">
+        <div *ngIf="gearset.variants?.length > 1">
+          <h3 class="text-center font-bold mb-1">Variants</h3>
+          <div class="flex flex-row flex-wrap gap-2 justify-center">
             <a
               [tooltip]="itemVersion(item)"
               [tooltipClass]="'bg-base-200'"
@@ -83,7 +83,7 @@
               [rarity]="itemRarity(item)"
               [isNamed]="itemNamed(item)"
               [solid]="true"
-              *ngFor="let item of gearset.otherVersions"
+              *ngFor="let item of gearset.variants"
               [routerLink]="['/items/table', item.ItemID]"
               [routerLinkActive]="['outline']"
               [queryParamsHandling]="'preserve'"
@@ -92,9 +92,9 @@
             </a>
           </div>
         </div>
-        <div *ngIf="gearset.otherTiers.length > 1">
-          <h3 class="text-center font-bold mb-1">Tier Items</h3>
-          <div class="flex flex-row gap-3 justify-center">
+        <div *ngIf="gearset.tiers?.length > 1">
+          <h3 class="text-center font-bold mb-1">Tier Variants</h3>
+          <div class="flex flex-row flex-wrap gap-2 justify-center">
             <a
               [tooltip]="itemTier(item)"
               [tooltipClass]="'bg-base-200'"
@@ -102,7 +102,7 @@
               [rarity]="itemRarity(item)"
               [isNamed]="itemNamed(item)"
               [solid]="true"
-              *ngFor="let item of gearset.otherTiers"
+              *ngFor="let item of gearset.tiers"
               [routerLink]="['/items/table', item.ItemID]"
               [routerLinkActive]="['outline']"
               [queryParamsHandling]="'preserve'"

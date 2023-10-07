@@ -2,7 +2,14 @@ import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TemplateRef } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { getItemIconPath, getItemRarity, getItemTierAsRoman, getItemVersionString, isItemNamed } from '@nw-data/common'
+import {
+  getItemIconPath,
+  getItemRarity,
+  getItemRarityLabel,
+  getItemTierAsRoman,
+  getItemVersionString,
+  isItemNamed,
+} from '@nw-data/common'
 import { ItemDefinitionMaster } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
@@ -92,6 +99,9 @@ export class ItemDetailPageComponent {
 
   protected itemRarity(item: ItemDefinitionMaster) {
     return getItemRarity(item)
+  }
+  protected itemRarityLabel(item: ItemDefinitionMaster) {
+    return getItemRarityLabel(getItemRarity(item))
   }
   protected itemNamed(item: ItemDefinitionMaster) {
     return isItemNamed(item)

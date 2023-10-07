@@ -20,6 +20,7 @@ import {
 import { damageForTooltip } from './damage'
 import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
 import { eqCaseInsensitive } from './utils/caseinsensitive-compare'
+import { flatten, groupBy } from 'lodash'
 
 export function isMasterItem(item: unknown): item is ItemDefinitionMaster {
   return item != null && typeof item === 'object' && 'ItemID' in item
@@ -664,13 +665,46 @@ export function getItemCostumeId(item: ItemDefinitionMaster) {
 }
 
 const ITEM_ID_TOKEN_LOAD = ['heavy', 'light', 'medium']
-const ITEM_ID_TOKEN_TIER = ['t1', 't2', 't3', 't4', 't5']
+const ITEM_ID_TOKEN_TIER = ['t1', 't2', 't3', 't4', 't5', 't51', 't52', 't53', 't54']
 const ITEM_ID_TOKEN_VERSION = ['v1', 'v2', 'v3', 'v4', 'v5', 'new', 'xpac']
+const ITEM_ID_TOKEN_TRASH = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 const ITEM_ID_TOKEN_HEAD = ['cowl', 'hat', 'head', 'helm', 'masque', 'mask', 'crown', 'tiara']
 const ITEM_ID_TOKEN_CHEST = ['breastplate', 'chestguard', 'chest', 'coat', 'shirt', 'robe']
 const ITEM_ID_TOKEN_HANDS = ['gauntlets', 'gloves', 'handcovers', 'hands']
 const ITEM_ID_TOKEN_LEGS = ['greaves', 'legguards', 'pants', 'thighguards', 'leggings']
 const ITEM_ID_TOKEN_FEET = ['boots', 'feets', 'feet', 'gloves', 'legs', 'sabatons', 'shoes']
+const ITEM_ID_TOKEN_JEWLERY = ['amulet', 'earring', 'ring']
+const ITEM_ID_TOKEN_ATTR = ['con', 'dex', 'str', 'foc', 'int']
+const ITEM_ID_TOKEN_WEAPON = [
+  '1h',
+  '2h',
+  'blunderbuss',
+  'bow',
+  'elementalgauntletice',
+  'elementalstafffire',
+  'firestaff',
+  'flail',
+  'gauntletice',
+  'gauntletvoid',
+  'greataxe',
+  'greatsword',
+  'hatchet',
+  'icegauntlet',
+  'kite',
+  'lifestaff',
+  'longsword',
+  'musket',
+  'rapier',
+  'round',
+  'shield',
+  'spear',
+  'stafffire',
+  'stafflife',
+  'sword',
+  'tower',
+  'voidgauntlet',
+  'warhammer',
+]
 const ITEM_ID_TOKEN_TOKENS = [
   ...ITEM_ID_TOKEN_LOAD,
   ...ITEM_ID_TOKEN_TIER,
@@ -680,29 +714,60 @@ const ITEM_ID_TOKEN_TOKENS = [
   ...ITEM_ID_TOKEN_LEGS,
   ...ITEM_ID_TOKEN_FEET,
   ...ITEM_ID_TOKEN_VERSION,
+  ...ITEM_ID_TOKEN_JEWLERY,
+  ...ITEM_ID_TOKEN_WEAPON,
+  ...ITEM_ID_TOKEN_TRASH,
+  //...ITEM_ID_TOKEN_ATTR,
 ]
 
-export function tokenizeItemID(itemID: string) {
+export function tokenizeItemID(itemID: string): string[] {
   if (!itemID) {
     return null
   }
-  return itemID
-    .replace(/([^A-Z])([A-Z])/g, '$1 $2')
-    .replace(/(\d\d\d)/g, ' $1 ') // gear score
-    .toLowerCase()
-    .split(/[\s_]/)
-    .filter((it) => !!it)
+  return (
+    itemID
+      .replace(/^1H/, '1h ')
+      .replace(/^2H/, '2h ')
+      .replace(/([^A-Z])([A-Z])/g, '$1 $2')
+      // separate gear score values
+      .replace(/(\d\d\d)/g, ' $1 ')
+      // separate trailing numbers (except tier and version)
+      .replace(/([^VT\d])(\d)/g, '$1 $2')
+      // collapse whitespaces
+      .replace(/_/g, ' ')
+      .replace(/\s+/g, ' ')
+      // join tokens that belong together
+      .replace(/(Elemental) (Gauntlet) (Ice)/g, '$1$2$3')
+      .replace(/(Elemental) (Staff) (Fire)/g, '$1$2$3')
+      .replace(/(Void|Ice|Gauntlet) (Gauntlet|Void|Ice)/g, '$1$2')
+      .replace(/(Fire|Life|Staff) (Fire|Life|Staff)/g, '$1$2')
+      .replace(/(Great) (Axe|Sword)/g, '$1$2')
+      .toLowerCase()
+      .split(/\s/)
+      .filter((it) => !!it)
+  )
 }
 
+export function checkItemSet(items: ItemDefinitionMaster[]) {
+  items = items.filter((it) => it.ItemType === 'Weapon')
+  const tokens = flatten(items.map((it) => tokenizeItemID(it.ItemID)))
+  const data = Array.from(Object.entries(groupBy(tokens, (it) => it)))
+    .map(([key, value]) => [key, value.length] as const)
+    .sort((a, b) => b[1] - a[1])
+  console.log(data)
+}
 export function getItemSetFamilyName(item: Pick<ItemDefinitionMaster, 'ItemID'>) {
   const tokens = tokenizeItemID(item?.ItemID) || []
-  const familyTokens = tokens.filter((token) => !ITEM_ID_TOKEN_TOKENS.includes(token) && !token.match(/^\d\d\d$/))
+  const familyTokens = tokens.filter(
+    (token) => !ITEM_ID_TOKEN_TOKENS.includes(token) && !token.match(/^\d\d\d$/) && !token.match(/^t\d+$/)
+  )
   return familyTokens.join(' ')
 }
 
 export function getItemVersionString(item: Pick<ItemDefinitionMaster, 'ItemID'>) {
   const tokens = tokenizeItemID(item?.ItemID) || []
   const version = tokens.filter((token) => ITEM_ID_TOKEN_VERSION.includes(token)).join(' ')
+  const tierVersion = tokens.filter((token) => ITEM_ID_TOKEN_TIER.includes(token)).find((it) => it.match(/^t\d\d+$/))
   const gs = tokens.find((token) => token.match(/^\d\d\d$/))
-  return [version || '', gs ? `gs${gs}` : ''].filter((it) => !!it).join(' ')
+  return [version || '', gs ? `gs${gs}` : '', tierVersion || ''].filter((it) => !!it).join(' ')
 }

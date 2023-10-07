@@ -42,7 +42,7 @@ import {
   selectSalvageInfo,
   selectStatusEffectIds,
 } from './selectors'
-import { ItemDefinitionMaster } from '@nw-data/generated'
+import { ItemClass, ItemDefinitionMaster } from '@nw-data/generated'
 
 export interface ItemDetailState {
   entityId?: string
@@ -291,49 +291,139 @@ function collectArtifactTasks(item: ItemDefinitionMaster, db: NwDbService) {
     })
   )
 }
+export interface ItemCollections {
+  items?: ItemDefinitionMaster[]
+  tiers?: ItemDefinitionMaster[]
+  variants?: ItemDefinitionMaster[]
+}
 
-function selectItemSet(item: ItemDefinitionMaster, itemsSet: Set<ItemDefinitionMaster>) {
+function selectItemSet(item: ItemDefinitionMaster, itemsSet: Set<ItemDefinitionMaster>): ItemCollections {
   if (!item || !itemsSet) {
     return null
   }
 
+  // console.log({
+  //   item,
+  //   itemsSet: Array.from(itemsSet?.values()),
+  // })
+
   const meta = getItemMeta(item)
-  const items = Array.from(itemsSet.values()).map(getItemMeta)
-  if (!meta.mainCategory) {
+  const items = Array.from(itemsSet.values())
+    .map(getItemMeta)
+    .filter((it) => !!it)
+
+  // console.log({ items })
+  if (!meta?.mainCategory) {
     return null
   }
-  const tierItems = items.filter(
-    (it) => it.mainCategory === meta.mainCategory && it.subCategory === meta.subCategory && it.version === meta.version
-  )
-  const variantItems = items.filter(
-    (it) => it.mainCategory === meta.mainCategory && it.subCategory === meta.subCategory && it.tier === meta.tier
-  )
-  const gearset = items.filter(
-    (it) => it.subCategory === meta.subCategory && it.version === meta.version && it.tier === meta.tier
-  )
 
-  if (gearset.length === 1 && tierItems.length === 1 && variantItems.length === 1) {
+  if (meta.mainCategory === 'Resource') {
+    return {
+      tiers: items.filter((it) => it.mainCategory === meta.mainCategory).map((it) => it.item),
+    }
+  }
+
+  const itemSet = items.filter((it) => {
+    return (
+      it.subCategory === meta.subCategory &&
+      it.version === meta.version &&
+      it.tier === meta.tier &&
+      it.rarity === meta.rarity
+    )
+  })
+  const tierVariants = items.filter((it) => {
+    return (
+      it.mainCategory === meta.mainCategory &&
+      it.subCategory === meta.subCategory &&
+      it.version === meta.version &&
+      it.rarity === meta.rarity
+    )
+  })
+  const variants = items.filter((it) => {
+    return it.mainCategory === meta.mainCategory && it.subCategory === meta.subCategory && it.tier === meta.tier
+  })
+
+  // console.log({ gearset, tierVariants, variants })
+  if (itemSet.length === 1 && tierVariants.length === 1 && variants.length === 1) {
     return null
   }
   return {
-    items: gearset.map((it) => it.item),
-    otherTiers: tierItems.map((it) => it.item),
-    otherVersions: variantItems.map((it) => it.item),
+    items: itemSet.map((it) => it.item),
+    tiers: tierVariants.map((it) => it.item),
+    variants: variants.map((it) => it.item),
   }
 }
 
 function getItemMeta(item: ItemDefinitionMaster) {
-  return {
-    item: item,
-    version: getItemVersionString(item),
-    tier: item.Tier,
-    subCategory: getFirstItemClassOf(item, ['Light', 'Medium', 'Heavy']),
-    mainCategory: getFirstItemClassOf(item, [
-      'EquippableChest',
-      'EquippableFeet',
-      'EquippableHands',
-      'EquippableHead',
-      'EquippableLegs',
-    ]),
+  const armorClass = getFirstItemClassOf(item, [
+    'EquippableChest',
+    'EquippableFeet',
+    'EquippableHands',
+    'EquippableHead',
+    'EquippableLegs',
+  ])
+  if (armorClass) {
+    return {
+      item: item,
+      version: getItemVersionString(item),
+      tier: item.Tier,
+      rarity: getItemRarity(item),
+      subCategory: getFirstItemClassOf(item, ['Light', 'Medium', 'Heavy']),
+      mainCategory: armorClass,
+    }
   }
+  const weaponClass = getFirstItemClassOf(item, ['EquippableMainHand', 'EquippableTwoHand', 'EquippableOffHand'])
+  if (weaponClass) {
+    return {
+      item: item,
+      version: getItemVersionString(item),
+      tier: item.Tier,
+      rarity: getItemRarity(item),
+      subCategory: 'weapon',
+      mainCategory: getFirstItemClassOf(item, [
+        '2HAxe',
+        '2HHammer',
+        'Axe',
+        'Blunderbuss',
+        'Bow',
+        'FireStaff',
+        'Flail',
+        'GreatSword',
+        'Hatchet',
+        'IceMagic',
+        'KiteShield',
+        'LifeStaff',
+        'Musket',
+        'Rapier',
+        'RoundShield',
+        'Spear',
+        'Sword',
+        'TowerShield',
+        'VoidGauntlet',
+      ]),
+    }
+  }
+  const jevleryClass = getFirstItemClassOf(item, ['EquippableAmulet', 'EquippableRing', 'EquippableToken'])
+  if (jevleryClass) {
+    return {
+      item: item,
+      version: getItemVersionString(item),
+      tier: item.Tier,
+      rarity: getItemRarity(item),
+      subCategory: 'jevlery',
+      mainCategory: jevleryClass,
+    }
+  }
+  const resourceClass = getFirstItemClassOf(item, ['Resource'])
+  if (resourceClass) {
+    return {
+      item: item,
+      version: getItemVersionString(item),
+      tier: item.Tier,
+      rarity: getItemRarity(item),
+      subCategory: resourceClass,
+      mainCategory: resourceClass,
+    }
+  }
+  return null
 }
