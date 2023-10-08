@@ -8,7 +8,10 @@
 
 ## Tools
 
-* [Database](tools/database.md)
+* [Database](tools/database/README.md)
+  * [Toolbar](tools/database/toolbar.md)
+  * [Data panel](tools/database/data-panel.md)
+  * [Detail view](tools/database/detail-view.md)
 * [Tracking](tools/tracking.md)
 * [Crafting Calculator](tools/crafting-calculator.md)
 * [Gearbuilder](tools/gearbuilder.md)
