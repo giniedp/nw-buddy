@@ -4,7 +4,7 @@ description: How to work with data tables
 
 # Database
 
-The largest section of the side menu is occupied by the database tables. Almost all of them share the same core concept and functionality.
+The largest section of the side menu is occupied by the database tables. Almost all of them share the same concept and functionality.
 
 <figure><img src="../.gitbook/assets/Screenshot 2023-10-02 at 15.01.14.png" alt=""><figcaption><p>Database sections</p></figcaption></figure>
 

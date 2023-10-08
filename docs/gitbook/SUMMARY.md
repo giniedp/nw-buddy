@@ -1,6 +1,7 @@
 # Table of contents
 
 * [Introduction](README.md)
+  * [Core concepts](introduction/core-concepts.md)
   * [Website](introduction/website.md)
   * [Standalone App](introduction/standalone-app.md)
   * [Open Source](introduction/open-source.md)

@@ -1,38 +1,30 @@
 # Crafting Calculator
 
-The crafting calculator appears in the detail view of items that actually can be crafted, or in the crafting table.
 
-<figure><img src="../.gitbook/assets/Screenshot 2023-10-02 at 16.56.22.png" alt=""><figcaption></figcaption></figure>
 
-### Basic Inputs
+<figure><img src="../.gitbook/assets/crafting-calculator-starmetal.gif" alt=""><figcaption></figcaption></figure>
 
-The obious value to enter is the amount of items to be crafted. Additionally it makes sense to import prices from a data source.&#x20;
+## Price Input
 
-<figure><img src="../.gitbook/assets/Screenshot 2023-10-02 at 16.57.15.png" alt=""><figcaption></figcaption></figure>
+Prices can be imported from [https://nwmarketprices.com/](https://nwmarketprices.com/) or from raw JSON files or manually adjusted in for each row.
 
-Prices can also be entered manually.
-
-<figure><img src="../.gitbook/assets/2023-10-02 19.16.16.gif" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/crafting-calculator-price-input.gif" alt=""><figcaption></figcaption></figure>
 
 ## Bonus Chance
 
-Some crafting steps give a chance for bonus items.
+In this example the craft bonus chance is 40%, meaning after 100 crafted items we may end up with roughly 140 total items.
 
-<figure><img src="../.gitbook/assets/Screenshot 2023-10-02 at 16.57.54.png" alt=""><figcaption><p>Bonus percent</p></figcaption></figure>
+With the "net/gross" mode button we can switch into the mode where bonus chance is used to reach the goal of 100 items without overshoot.
 
-Here the craft attempt can give up to +40% bonus items which translates to additional +340 coins in earnings when sold at desired price.
+<figure><img src="../.gitbook/assets/crafting-calculator-mode-toggle.gif" alt=""><figcaption><p>Bonus percent</p></figcaption></figure>
 
-If the bonus chance should count towards the specified output quantity, toggle the "net/gross" Button
 
-<figure><img src="../.gitbook/assets/Screenshot 2023-10-02 at 16.57.36.png" alt=""><figcaption></figcaption></figure>
-
-Now less items need to be crafted but with the bonus the desired amount can be reached.
-
-<figure><img src="../.gitbook/assets/Screenshot 2023-10-02 at 16.58.06.png" alt=""><figcaption></figcaption></figure>
 
 To increase the bonus chance, profession gear can be chosen from the settings menu
 
-<figure><img src="../.gitbook/assets/Screenshot 2023-10-02 at 16.59.38.png" alt=""><figcaption></figcaption></figure>
+<figure><img src="../.gitbook/assets/crafting-calculator-chance-gear.gif" alt=""><figcaption></figcaption></figure>
+
+
 
 ### Buy Order Tab
 
