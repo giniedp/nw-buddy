@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { AttributeRef, NW_ATTRIBUTE_TYPES, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
+import { AttributeRef, NW_ATTRIBUTE_TYPES, NW_MAX_CHARACTER_LEVEL, solveAttributePlacingMods } from '@nw-data/common'
 import { Observable, combineLatest, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 
@@ -50,35 +50,38 @@ export class AttributesStore extends ComponentStore<AttributesState> {
   public readonly pointsAvailable$ = this.select(({ points, assigned }) => points - sum(Object.values(assigned)))
   public readonly stats$ = this.select(({ points, base, assigned, buffs, magnify }) => {
     const rows = NW_ATTRIBUTE_TYPES.map(({ ref, shortName, description }): AttributeState => {
-      const ba = base?.[ref] || 0
-      const bu = buffs?.[ref] || 0
-      const as = assigned?.[ref] || 0
+      const vBase = base?.[ref] || 0
+      const vBuff = buffs?.[ref] || 0
+      const vAssign = assigned?.[ref] || 0
       return {
         ref: ref,
         name: shortName,
         description: description,
-        base: ba,
-        buffs: bu,
-        assigned: as,
-        total: ba + bu + as,
-        inputMin: ba + bu,
-        inputMax: ba + bu + as + Math.max(0, points - sum(Object.values(assigned))),
+        base: vBase,
+        buffs: vBuff,
+        assigned: vAssign,
+        total: vBase + vBuff + vAssign,
+        inputMin: vBase + vBuff,
+        inputMax: vBase + vBuff + vAssign + Math.max(0, points - sum(Object.values(assigned))),
         sliderEnd: ATTRIBUTE_MAX,
         magnify: 0,
       }
     })
 
-    const defaultMagOrder = ['con', 'foc', 'str', 'dex', 'int']
-    const sorted = [...rows].sort((a, b) => {
-      if (b.total !== a.total) {
-        return b.total - a.total
-      }
-      return defaultMagOrder.indexOf(a.ref) - defaultMagOrder.indexOf(b.ref)
+    const boost = solveAttributePlacingMods({
+      stats: rows.map((it) => {
+        return { key: it.ref, value: it.total }
+      }),
+      placingMods: magnify,
     })
-    for (let i = 0; i < magnify.length; i++) {
-      sorted[i].magnify = (sorted[i].magnify || 0) + (magnify[i] || 0)
-      sorted[i].total += magnify[i] || 0
-    }
+    boost.forEach(({ key, value }) => {
+      const row = rows.find((it) => it.ref === key)
+      if (row) {
+        row.magnify = value
+        row.total += value
+      }
+    })
+
     return rows
   })
 

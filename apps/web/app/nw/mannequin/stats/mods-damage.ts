@@ -17,7 +17,7 @@ export function selectWeaponDamage(
   equipLoad: number,
   state: MannequinState
 ) {
-  const split = mods.perks.find((it) => it.affix?.DamagePercentage)
+  const split = mods.perks.find((it) => it.affix?.DamagePercentage && it.weapon?.WeaponID === weapon?.WeaponID)
   const scale = 1 - (split?.affix?.DamagePercentage || 0)
   const base = (weapon?.BaseDamage || 0) * damageFactorForGS(gearScore)
   const scaleLevel = damageFactorForLevel(state.level)
@@ -51,17 +51,17 @@ export function selectWeaponDamage(
     const scale = split.affix.DamagePercentage
     const scaleSplit = damageFactorForAttrs({
       weapon: {
-        ScalingDexterity: split.affix.ScalingDexterity ? 1 : 0,
-        ScalingStrength: split.affix.ScalingStrength ? 1 : 0,
-        ScalingIntelligence: split.affix.ScalingIntelligence ? 1 : 0,
-        ScalingFocus: split.affix.ScalingFocus ? 1 : 0,
+        ScalingDexterity: split.affix.ScalingDexterity ?? 0,
+        ScalingStrength: split.affix.ScalingStrength ?? 0,
+        ScalingIntelligence: split.affix.ScalingIntelligence ?? 0,
+        ScalingFocus: split.affix.ScalingFocus ?? 0,
       },
       attrSums: {
-        str: mods.attributes.str.scale * split.affix.ScalingStrength,
-        dex: mods.attributes.dex.scale * split.affix.ScalingDexterity,
-        int: mods.attributes.int.scale * split.affix.ScalingIntelligence,
-        foc: mods.attributes.foc.scale * split.affix.ScalingFocus,
-        con: mods.attributes.con.scale,
+        str: mods.attributes.str.scale,
+        dex: mods.attributes.dex.scale,
+        int: mods.attributes.int.scale,
+        foc: mods.attributes.foc.scale,
+        con: 0,
       },
     })
 
@@ -72,7 +72,7 @@ export function selectWeaponDamage(
       source: { label: `Level (x${scaleLevel.toFixed(3)})` },
     })
 
-    if (scaleSplit > scaleAttrs) {
+    if (split.affix.PreferHigherScaling && scaleSplit > scaleAttrs) {
       modifierAdd(convertDamage, {
         value: base * scale,
         scale: scaleSplit,

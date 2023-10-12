@@ -4,6 +4,7 @@ import {
   getAmmoTypeFromWeaponTag,
   getAverageGearScore,
   getWeaponTagFromWeapon,
+  solveAttributePlacingMods,
 } from '@nw-data/common'
 import { Ability, Damagetable, ItemdefinitionsAmmo } from '@nw-data/generated'
 import { minBy, sum } from 'lodash'
@@ -335,16 +336,14 @@ function isWeaponActive(weapon: 'primary' | 'secondary', slot: EquipSlotId) {
 
 function isPerkActive({ slot, perk, affix, item }: ActivePerk, weapon: ActiveWeapon) {
   let condition = perk?.ConditionEvent
-  if (condition === 'OnEquip' && affix?.PreferHigherScaling) {
-    condition = 'OnActive'
-  }
   if (condition === 'OnEquip') {
     return true
   }
   if (!(isItemWeapon(item) || isItemShield(item))) {
     return true
   }
-  const isActiveWeapon = weapon.slot === slot || (slot === 'weapon3' && weapon.weaponTag === 'Sword')
+  const isActiveWeapon =
+    weapon.slot === slot || (slot === 'weapon3' && (weapon.weaponTag === 'Sword' || weapon.weaponTag === 'Flail'))
   if (!isActiveWeapon) {
     return false
   }
@@ -405,7 +404,7 @@ export function selectBonusAttributes(db: DbSlice, { effects }: AttributeModsSou
   return result
 }
 
-export function selectMagnify(db: DbSlice, { perks }: AttributeModsSource) {
+export function selectPlacingMods(db: DbSlice, { perks }: AttributeModsSource) {
   const result: number[] = []
   for (const { perk, gearScore, affix, item } of perks) {
     if (!affix || !affix.AttributePlacingMods) {
@@ -421,14 +420,15 @@ export function selectMagnify(db: DbSlice, { perks }: AttributeModsSource) {
       result[i] = (result[i] || 0) + value
     }
   }
-  return result
+  return result.map((it) => it || 0)
 }
 
 export function selectAttributes(db: DbSlice, mods: AttributeModsSource, state: MannequinState): ActiveAttributes {
+  console.log('selectMods', mods)
   const attrsBase = selectEquppedAttributes(db, mods)
   const attrsBonus = selectBonusAttributes(db, mods)
   const attrsAssigned = state.assignedAttributes
-  const attrsMagnify = selectMagnify(db, mods)
+  const attrsMagnify = selectPlacingMods(db, mods)
   const levels = {
     con: db.attrCon,
     dex: db.attrDex,
@@ -462,17 +462,14 @@ export function selectAttributes(db: DbSlice, mods: AttributeModsSource, state: 
     int: buildAttribute('int'),
     str: buildAttribute('str'),
   }
-  const defaultMagOrder = ['con', 'foc', 'str', 'dex', 'int']
-  const sorted = Object.entries(result).sort(([k1, a], [k2, b]) => {
-    if (b.total !== a.total) {
-      return b.total - a.total
-    }
-    return defaultMagOrder.indexOf(k1) - defaultMagOrder.indexOf(k2)
+  solveAttributePlacingMods({
+    stats: Object.entries(result).map(([key, stat]) => ({ key: key as AttributeRef, value: stat.total })),
+    placingMods: attrsMagnify,
+  }).forEach(({ key, value }) => {
+    result[key].magnify = value
+    result[key].total += value
   })
-  attrsMagnify.forEach((value, index) => {
-    sorted[index][1].magnify += value || 0
-    sorted[index][1].total += value || 0
-  })
+
   return result
 }
 

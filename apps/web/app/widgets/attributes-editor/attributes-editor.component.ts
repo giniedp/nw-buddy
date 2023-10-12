@@ -136,9 +136,6 @@ export class AttributesEditorComponent implements OnInit {
     })
     this.store.loadLazy(src)
   }
-  protected updateAttribute(state: AttributeState, points: number) {
-    this.store.update({ attribute: state.ref, value: points })
-  }
 
   protected attributeToggle(state: AttributeState, points: number) {
     const total = state.total - state.magnify
@@ -150,20 +147,15 @@ export class AttributesEditorComponent implements OnInit {
   }
 
   protected attributeInput(state: AttributeState, points: number) {
-    this.store.update({ attribute: state.ref, value: points - state.magnify })
-  }
-
-  protected attributeBlur(state: AttributeState, e: Event) {
-    // const value = (e.target as HTMLInputElement).valueAsNumber
-    // const newValue = Math.min(Math.max(value || 0, state.inputMin), state.inputMax)
-    // if (!Number.isFinite(value) || value !== newValue) {
-    //   ;(e.target as HTMLInputElement).value = newValue as any
-    // }
+    const value = state.base + state.buffs + points
+    this.store.update({ attribute: state.ref, value: value })
   }
 
   protected attributeWheel(state: AttributeState, e: Event) {
-    const value = (e.target as HTMLInputElement).valueAsNumber
-    this.attributeInput(state, value)
+    setTimeout(() => {
+      const value = (e.target as HTMLInputElement).valueAsNumber
+      this.attributeInput(state, value)
+    })
   }
 
   protected attributeFocus(e: Event) {

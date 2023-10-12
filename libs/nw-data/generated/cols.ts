@@ -1093,7 +1093,6 @@ export const COLS_ITEMDEFINITIONMASTER = {
   "BindOnPickup": "number",
   "CanHavePerks": "number",
   "CanReplaceGem": "number",
-  "CanRollPerkOnUpgrade": "number",
   "ConfirmBeforeUse": "number",
   "ConfirmDestroy": "number",
   "ConsumeOnUse": "number",

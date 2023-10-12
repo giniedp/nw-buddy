@@ -1119,7 +1119,6 @@ export interface ItemDefinitionMaster {
   BindOnPickup: number
   CanHavePerks: number
   CanReplaceGem: number
-  CanRollPerkOnUpgrade: number | string
   ConfirmBeforeUse: number
   ConfirmDestroy: number
   ConsumeOnUse: number
