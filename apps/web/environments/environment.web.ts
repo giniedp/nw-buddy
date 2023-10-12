@@ -1,4 +1,4 @@
-import { Environment, env, getEnvDataCdnUrl, getEnvModelsUrl } from './env'
+import { Environment, env, getEnvDataCdnUrl, getEnvDataDeployUrl, getEnvModelsUrl } from './env'
 
 export const environment: Environment = {
   ...env,
@@ -6,5 +6,6 @@ export const environment: Environment = {
   standalone: false,
   environment: 'WEB',
   modelsUrl: getEnvModelsUrl(env),
-  nwDataUrl: getEnvDataCdnUrl(env),
+  nwDataUrl: getEnvDataDeployUrl(env),
+  //nwDataUrl: getEnvDataCdnUrl(env),
 }
