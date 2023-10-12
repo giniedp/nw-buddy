@@ -38,13 +38,12 @@ jobs:
             - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
-          command: yarn install --immutable
+          command: yarn install --immutable --cache-folder ~/.yarn/cache
       - save_cache:
           name: Save Yarn Package Cache
           key: yarn-packages-{{ checksum "yarn.lock" }}
           paths:
-            - .yarn/cache
-            - .yarn/unplugged
+            - ~/.yarn/cache
       - run:
           name: Download nw-data
           command: yarn nw-cdn download
