@@ -32,18 +32,9 @@ jobs:
       - node/install:
           install-yarn: true
           node-version: '18'
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ checksum "yarn.lock" }}
       - run:
           name: Install Dependencies
-          command: yarn install --immutable --cache-folder .yarn/cache
-      - save_cache:
-          name: Save Yarn Package Cache
-          key: yarn-packages-{{ checksum "yarn.lock" }}
-          paths:
-            - .yarn/cache
+          command: yarn install --immutable
       - run:
           name: Download nw-data
           command: yarn nw-cdn download
