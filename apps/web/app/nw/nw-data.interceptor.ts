@@ -82,7 +82,7 @@ export class NwDataInterceptor implements HttpInterceptor {
     return data.map((item) => {
       Object.entries(item).forEach(([key, value]) => {
         if (typeof value === 'string' && value.startsWith('nw-data/')) {
-          item[key] = value.replace(/nw-data\/(live|ptr\/)?/, this.nwDataUrl + '/')
+          item[key] = value.replace(/nw-data\/((live|ptr)\/)?/, this.nwDataUrl + '/')
         }
       })
       return item
