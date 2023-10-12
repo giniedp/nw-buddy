@@ -1,24 +1,48 @@
 import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
-import { DOCUMENT } from '@angular/common'
+import { CommonModule, DOCUMENT } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core'
-import { Router } from '@angular/router'
-import { map, of, Subject, switchMap, take, takeUntil } from 'rxjs'
+import { Router, RouterModule } from '@angular/router'
+import { Subject, map, of, switchMap, takeUntil } from 'rxjs'
 
 import { TranslateService } from './i18n'
 
 import { LANG_OPTIONS } from './app-menu'
+import { AppMenuComponent } from './app-menu.component'
+import { NwModule } from './nw'
 import { AppPreferencesService } from './preferences'
+import { IconsModule } from './ui/icons'
 import { svgMap } from './ui/icons/svg'
-import { LayoutService } from './ui/layout'
+import { LayoutModule, LayoutService } from './ui/layout'
+import { TooltipModule } from './ui/tooltip'
 import { mapProp } from './utils'
 import { PlatformService } from './utils/services/platform.service'
-import { VersionService } from './widgets/update-alert'
+import { AeternumMapModule } from './widgets/aeternum-map'
+import { GlobalSearchInputComponent } from './widgets/search'
+import { UpdateAlertModule, VersionService } from './widgets/update-alert'
+import { TitleBarComponent } from './title-bar.component'
+import { FullscreenOverlayContainer, OverlayContainer } from '@angular/cdk/overlay'
+import { DialogModule } from '@angular/cdk/dialog'
 
 @Component({
+  standalone: true,
   selector: 'nw-buddy-app',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    AeternumMapModule,
+    AppMenuComponent,
+    CommonModule,
+    GlobalSearchInputComponent,
+    IconsModule,
+    LayoutModule,
+    NwModule,
+    RouterModule,
+    TitleBarComponent,
+    TooltipModule,
+    UpdateAlertModule,
+  ],
+  providers: [{ provide: OverlayContainer, useClass: FullscreenOverlayContainer }],
   animations: [
     trigger('listAnimation', [
       transition('void => *', [

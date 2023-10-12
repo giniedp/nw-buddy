@@ -1,13 +1,14 @@
 //Polyfill Node.js core modules in Webpack. This module is only needed for webpack 5+.
 const NodePolyfillPlugin = require('node-polyfill-webpack-plugin')
 const webpack = require('webpack')
-const env = require('./env')
+const { PACKAGE_VERSION, COMMIT_HASH, NW_USE_PTR, CDN_URL, environment } = require('./env')
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
 const EmitFilePlugin = require('emit-file-webpack-plugin')
 /**
  * Custom angular webpack configuration
  */
 module.exports = (config, options) => {
+  config.module.noParse = [require.resolve('typescript/lib/typescript.js')]
   if (options && options.fileReplacements) {
     for (let replacement of options.fileReplacements) {
       let parts = replacement.with.split('.')
@@ -18,22 +19,21 @@ module.exports = (config, options) => {
     }
   }
 
-  const VERSION = env.VERSION
-  const USE_PTR = env.NW_USE_PTR
-  const DATA_URL = env.nwData.publicUrl(env.NW_USE_PTR, env.NW_USE_CDN, config.output.publicPath)
+  const VERSION = PACKAGE_VERSION + '#' + COMMIT_HASH
   console.log('\n')
   console.log('[WEBPACK]', config.target)
   console.log('  version', VERSION)
-  console.log('    isPtr', !!USE_PTR)
-  console.log('   assets', DATA_URL)
+  console.log('    isPtr', !!NW_USE_PTR)
+  console.log('   assets', config.output.publicPath)
   console.log('\n')
 
   const definitions = {
-    __VERSION__: JSON.stringify(VERSION),
-    __NW_USE_PTR__: JSON.stringify(USE_PTR),
-    __NW_DATA_URL__: JSON.stringify(DATA_URL),
-    __NW_DEPLOY_URL__: JSON.stringify(config.output.publicPath),
-    __NW_MODELS_URL__: JSON.stringify('https://cdn.nw-buddy.de/models'), // TODO: use env
+    __NWB_VERSION__: JSON.stringify(VERSION),
+    __NWB_COMMIT__: JSON.stringify(COMMIT_HASH),
+    __NWB_USE_PTR__: JSON.stringify(NW_USE_PTR),
+    __NWB_DATA_PATH__: JSON.stringify(environment.dataDir(NW_USE_PTR)),
+    __NWB_CDN_URL__: JSON.stringify(CDN_URL),
+    __NWB_DEPLOY_URL__: JSON.stringify(config.output.publicPath || '/'),
   }
   config.module.rules.push(
     {
@@ -45,13 +45,6 @@ module.exports = (config, options) => {
       use: ['file-loader'],
     }
   )
-
-  // config.entry['editor.worker'] = 'monaco-editor/esm/vs/editor/editor.worker.js'
-  // config.entry['json.worker'] = 'monaco-editor/esm/vs/language/json/json.worker'
-  // config.entry['css.worker'] = 'monaco-editor/esm/vs/language/css/css.worker'
-  // config.entry['html.worker'] = 'monaco-editor/esm/vs/language/html/html.worker'
-  // config.entry['ts.worker'] = 'monaco-editor/esm/vs/language/typescript/ts.worker'
-  //config.entry['embed'] = 'monaco-editor/esm/vs/language/typescript/ts.worker'
 
   config.plugins = [
     ...config.plugins,

@@ -1,8 +1,10 @@
-import { env } from './env'
+import { Environment, env, getEnvDataDeployUrl, getEnvModelsUrl } from './env'
 
-export const environment = {
+export const environment: Environment = {
   ...env,
   production: true,
+  standalone: true,
   environment: 'ELECTRON',
-  standalone: true
+  modelsUrl: getEnvModelsUrl(env),
+  nwDataUrl: getEnvDataDeployUrl(env),
 }

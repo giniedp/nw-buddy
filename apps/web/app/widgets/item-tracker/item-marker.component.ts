@@ -1,17 +1,17 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, ChangeDetectorRef } from '@angular/core'
-import { distinctUntilChanged, ReplaySubject, switchMap, takeUntil } from 'rxjs';
-import { ItemPreferencesService } from '~/preferences';
-import { DestroyService } from '~/utils';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { ReplaySubject, distinctUntilChanged, switchMap } from 'rxjs'
+import { ItemPreferencesService } from '~/preferences'
 
 @Component({
   selector: 'nwb-item-marker',
   templateUrl: './item-marker.component.html',
   styleUrls: ['./item-marker.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [DestroyService],
+  providers: [],
   host: {
-    class: 'flex flex-row'
-  }
+    class: 'flex flex-row',
+  },
 })
 export class ItemMarkerComponent implements OnInit, OnChanges {
   @Input()
@@ -23,21 +23,19 @@ export class ItemMarkerComponent implements OnInit, OnChanges {
   private trackedId: string
   private trackedValue: number
 
-  public constructor(private destroy: DestroyService, private meta: ItemPreferencesService, private cdRef: ChangeDetectorRef) {
-
-  }
-
-  public ngOnInit(): void {
+  public constructor(private meta: ItemPreferencesService, private cdRef: ChangeDetectorRef) {
     this.itemId$
       .pipe(distinctUntilChanged())
       .pipe(switchMap((id) => this.meta.observe(id)))
-      .pipe(takeUntil(this.destroy.$))
+      .pipe(takeUntilDestroyed())
       .subscribe((data) => {
         this.trackedId = data.id
         this.trackedValue = this.cleanValue(data.meta?.mark)
         this.cdRef.markForCheck()
       })
   }
+
+  public ngOnInit(): void {}
 
   public ngOnChanges(): void {
     this.cdRef.markForCheck()
@@ -49,7 +47,7 @@ export class ItemMarkerComponent implements OnInit, OnChanges {
   public toggle(index: number) {
     let result = this.trackedValue
     if (this.checked(index)) {
-      result = result & (~this.value(index))
+      result = result & ~this.value(index)
     } else {
       result = result | this.value(index)
     }

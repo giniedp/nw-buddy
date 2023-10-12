@@ -1,17 +1,17 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ComponentStore } from '@ngrx/component-store'
 import { Gamemodes, Vitals } from '@nw-data/generated'
-import { combineLatest, map } from 'rxjs'
+import { map } from 'rxjs'
 import { NwModule } from '~/nw'
-import { DestroyService, selectStream } from '~/utils'
+import { selectStream } from '~/utils'
 import { ItemModelInfo, ModelViewerModule, ModelViewerService } from '../model-viewer'
 import { VitalDamageTableComponent } from './vital-damage-table.component'
 import { VitalDetailHeaderComponent } from './vital-detail-header.component'
 import { VitalDetailInfosComponent } from './vital-detail-infos.component'
 import { VitalDetailWeaknessComponent } from './vital-detail-weakness.component'
 import { VitalDetailStore } from './vital-detail.store'
-import { toSignal } from '@angular/core/rxjs-interop'
 
 export type VitalSection = 'weakness' | 'damage' | 'model'
 export interface VitalTab {
@@ -31,7 +31,7 @@ export interface VitalTab {
     VitalDamageTableComponent,
     ModelViewerModule,
   ],
-  providers: [DestroyService, VitalDetailStore],
+  providers: [VitalDetailStore],
   host: {
     class: 'block  rounded-md overflow-clip',
     '[class.bg-black]': '!isTransparent$()',

@@ -152,7 +152,7 @@ export class ShareDialogComponent extends ComponentStore<ShareDialogState> {
     if (!path) {
       return null
     }
-    if (environment.production) {
+    if (environment.standalone) {
       return `https://www.nw-buddy.de` + path
     }
     return location.origin + path

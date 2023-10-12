@@ -100,7 +100,7 @@ function scanTablesForImages(
   const shouldIgnore = options?.shouldIgnore
   walkJsonStrings(tables, (key, value, obj) => {
     value = options?.rewrite?.[key]?.(key, value, obj) ?? value
-    if (!value.match(/^lyshineui/gi) || shouldIgnore(key, value, obj)) {
+    if (!value.match(/^lyshineui/gi) || shouldIgnore?.(key, value, obj)) {
       return
     }
     const { source, target } = selectImage(value)

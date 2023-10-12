@@ -1,5 +1,6 @@
 import { Inject, Injectable, LOCALE_ID, StaticProvider } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
+import { normalizeLocale } from './utils'
 
 @Injectable({ providedIn: 'root' })
 export class LocaleService extends ComponentStore<{ locale: string }> {
@@ -31,8 +32,4 @@ export class LocaleService extends ComponentStore<{ locale: string }> {
   public use(language: string) {
     this.patchState({ locale: normalizeLocale(language) })
   }
-}
-
-function normalizeLocale(value: string) {
-  return String(value || '').toLocaleLowerCase()
 }

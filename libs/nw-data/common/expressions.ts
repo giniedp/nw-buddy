@@ -2,6 +2,7 @@ import { catchError, combineLatest, map, Observable, of, startWith } from 'rxjs'
 import { TextReader } from './text-reader'
 
 export function parseNwExpression(text: string, skipPreprocess = false): NwExp {
+  text = text || ''
   if (!skipPreprocess) {
     text = preprocessExpression(text)
   }

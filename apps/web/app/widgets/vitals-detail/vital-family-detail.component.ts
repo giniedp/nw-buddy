@@ -4,7 +4,6 @@ import { getVitalFamilyInfo } from '@nw-data/common'
 import { Gamemodes, Vitals } from '@nw-data/generated'
 import { ReplaySubject, map } from 'rxjs'
 import { NwModule } from '~/nw'
-import { DestroyService } from '~/utils'
 import { VitalDetailHeaderComponent } from './vital-detail-header.component'
 import { VitalDetailInfosComponent } from './vital-detail-infos.component'
 import { VitalDetailWeaknessComponent } from './vital-detail-weakness.component'
@@ -20,7 +19,7 @@ import { VitalDetailWeaknessComponent } from './vital-detail-weakness.component'
     VitalDetailHeaderComponent,
     VitalDetailInfosComponent,
   ],
-  providers: [DestroyService],
+  providers: [],
   host: {
     class: 'block backdrop-blur-sm bg-white/10 rounded-md overflow-clip',
   },

@@ -2,7 +2,7 @@ import * as path from 'path'
 import { MultiBar, Presets } from 'cli-progress'
 import { program } from 'commander'
 import { extract } from 'nw-extract'
-import { nwData, NW_USE_PTR } from '../env'
+import { environment, NW_USE_PTR } from '../env'
 import { pakExtractor } from './bin/pak-extractor'
 import { quickbms } from './bin/quickbms'
 
@@ -19,12 +19,18 @@ program
   .option('-t, --threads <threads>', 'Number of threads', Number)
   .option('--ptr', 'PTR mode', NW_USE_PTR)
   .action(async () => {
-    const options =
-      program.opts<{ game: string; output: string; ptr: boolean; threads: number; full: boolean; module: Unpacker }>()
+    const options = program.opts<{
+      game: string
+      output: string
+      ptr: boolean
+      threads: number
+      full: boolean
+      module: Unpacker
+    }>()
     options.threads = options.threads ? options.threads : 10
 
-    const inputDir = options.game || nwData.srcDir(options.ptr)!
-    const outputDir = options.output || nwData.unpackDir(options.ptr)!
+    const inputDir = options.game || environment.nwGameDir(options.ptr)!
+    const outputDir = options.output || environment.nwUnpackDir(options.ptr)!
     console.log('[UNPACK]', inputDir)
     console.log('     to:', outputDir)
     console.log('  using:', options.module?.length ? options.module : 'ALL')
@@ -76,7 +82,7 @@ program
 
 program.parse()
 
-async function unpack(options: { input: string; output: string; filter: string[], libDir?: string }) {
+async function unpack(options: { input: string; output: string; filter: string[]; libDir?: string }) {
   const bar = new MultiBar(
     {
       stopOnComplete: true,

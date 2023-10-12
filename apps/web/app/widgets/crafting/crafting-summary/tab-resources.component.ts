@@ -2,18 +2,17 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwModule } from '~/nw'
-import { DestroyService } from '~/utils'
 
 import { RouterModule } from '@angular/router'
 import { ComponentStore } from '@ngrx/component-store'
 import { isHousingItem } from '@nw-data/common'
 import { sumBy } from 'lodash'
 import { ItemPreferencesService } from '~/preferences'
+import { TooltipModule } from '~/ui/tooltip'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ItemTrackerModule } from '~/widgets/item-tracker'
 import { CraftingCalculatorService } from '../crafting-calculator.service'
 import { CraftingStepWithAmount, ResourceRow, ResourceRowMode, SummaryRow } from './types'
-import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
   standalone: true,
@@ -21,7 +20,7 @@ import { TooltipModule } from '~/ui/tooltip'
   templateUrl: './tab-resources.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, RouterModule, ItemTrackerModule, ItemDetailModule, TooltipModule],
-  providers: [DestroyService],
+  providers: [],
   host: {
     class: 'block',
   },

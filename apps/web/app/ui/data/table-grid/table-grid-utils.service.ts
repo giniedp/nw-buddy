@@ -83,8 +83,8 @@ export class TableGridUtils<T = any> {
     return value
   }
 
-  public tl8(token: string | string[], locale?: string) {
-    return this.i18n.get(token, locale)
+  public tl8(token: string | string[]) {
+    return this.i18n.get(token)
   }
 
   public el<T extends keyof HTMLElementTagNameMap>(

@@ -12,8 +12,8 @@ import { HtmlHeadService } from '~/utils'
   templateUrl: './about.component.html',
   imports: [CommonModule, TooltipModule, RouterModule, NwModule],
   host: {
-    class: 'layout-col'
-  }
+    class: 'layout-col',
+  },
 })
 export class AboutComponent implements OnInit {
   public get version() {
@@ -25,7 +25,7 @@ export class AboutComponent implements OnInit {
     if (environment.isPTR) {
       return `Public Test Realm ${version}`
     }
-    return environment.version.split('-')[0]
+    return version
   }
 
   public constructor(head: HtmlHeadService) {

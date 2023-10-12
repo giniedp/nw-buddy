@@ -34,14 +34,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { PaginationModule } from '~/ui/pagination'
-import {
-  DestroyService,
-  HtmlHeadService,
-  observeQueryParam,
-  observeRouteParam,
-  selectStream,
-  shareReplayRefCount,
-} from '~/utils'
+import { HtmlHeadService, observeQueryParam, observeRouteParam, selectStream, shareReplayRefCount } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { LootModule } from '~/widgets/loot'
@@ -98,7 +91,7 @@ export interface Tab {
     RouterModule,
     VitalsDetailModule,
   ],
-  providers: [DestroyService, GameModeDetailStore],
+  providers: [GameModeDetailStore],
   host: {
     class: 'layout-col xl:flex-row',
   },
@@ -309,7 +302,6 @@ export class GameModeDetailComponent implements OnInit {
   public constructor(
     private db: NwDbService,
     private route: ActivatedRoute,
-    private destroy: DestroyService,
     private cdRef: ChangeDetectorRef,
     private domSanitizer: DomSanitizer,
     private store: GameModeDetailStore,
@@ -355,7 +347,7 @@ export class GameModeDetailComponent implements OnInit {
       dungeon: this.dungeon$,
       difficulty: this.difficulty$,
     })
-      .pipe(takeUntil(this.destroy.$))
+      .pipe(takeUntil(this.store.destroy$))
       .subscribe(({ dungeon, difficulty }) => {
         this.dungeon = dungeon
         this.difficulty = difficulty
@@ -407,7 +399,7 @@ export class GameModeDetailComponent implements OnInit {
         this.cdRef.detectChanges()
       })
 
-    this.paramTab$.pipe(takeUntil(this.destroy.$)).subscribe((tab) => {
+    this.paramTab$.pipe(takeUntil(this.store.destroy$)).subscribe((tab) => {
       this.tab = tab || ''
       this.cdRef.detectChanges()
     })

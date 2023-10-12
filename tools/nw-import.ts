@@ -1,6 +1,6 @@
 import { program } from 'commander'
 import * as path from 'path'
-import { nwData, NW_USE_PTR } from '../env'
+import { environment, NW_USE_PTR } from '../env'
 import { generateTypes } from './code-gen/code-generate'
 import { extractExpressions } from './importer/extractExpressions'
 import { importImages } from './importer/images'
@@ -49,15 +49,13 @@ program
       module: string[]
       threads: number
     }>()
-    const inputDir = options.input || nwData.tmpDir(options.ptr)!
-    const distDir = nwData.distDir(options.ptr)!
-    const publicDir = nwData.assetPath(options.ptr)
-    const typesDir = path.join(nwData.cwd, 'libs', 'nw-data', 'generated')
+    const inputDir = options.input || environment.nwConvertDir(options.ptr)!
+    const distDir = environment.nwDataDir(options.ptr)!
+    const typesDir = environment.libsDir('nw-data', 'generated')
     const threads = options.threads || cpus().length
 
     console.log('[IMPORT]', inputDir)
     console.log('     to:', distDir)
-    console.log(' images:', publicDir)
     console.log('  types:', typesDir)
     console.log('modules:', options.module?.length ? options.module : 'ALL')
     console.log(' threads:', threads)
@@ -208,7 +206,7 @@ program
         },
         threads: threads,
         rewritePath: (value) => {
-          return path.join(publicDir, value).replace(/\\/g, '/')
+          return path.join('nw-data', value).replace(/\\/g, '/')
         },
       })
     }

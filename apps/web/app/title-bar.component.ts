@@ -1,32 +1,26 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core'
-import { startWith, switchMap, takeUntil } from 'rxjs'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { startWith, switchMap } from 'rxjs'
 import { ElectronService } from './electron'
-import { DestroyService } from './utils'
+import { CommonModule } from '@angular/common'
 
 @Component({
+  standalone: true,
   selector: 'nwb-title-bar',
   templateUrl: './title-bar.component.html',
   styleUrls: ['./title-bar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [DestroyService],
+  imports: [CommonModule],
 })
-export class TitleBarComponent implements OnInit {
+export class TitleBarComponent {
   public isMaximized: boolean
 
-  public constructor(
-    private electron: ElectronService,
-    private destroy: DestroyService,
-    private zone: NgZone,
-    private cdRef: ChangeDetectorRef
-  ) {
+  public constructor(private electron: ElectronService, private zone: NgZone, private cdRef: ChangeDetectorRef) {
     //
-  }
-
-  public ngOnInit(): void {
     this.electron.windowChange
       .pipe(startWith(null))
       .pipe(switchMap(() => this.electron.isWindowMaximized()))
-      .pipe(takeUntil(this.destroy.$))
+      .pipe(takeUntilDestroyed())
       .subscribe((value) => {
         this.zone.run(() => {
           this.isMaximized = value

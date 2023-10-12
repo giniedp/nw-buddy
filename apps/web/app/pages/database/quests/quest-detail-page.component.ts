@@ -9,7 +9,7 @@ import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
-import { DestroyService, HtmlHeadService, observeRouteParam } from '~/utils'
+import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { QuestDetailModule } from '~/widgets/data/quest-detail'
 import { LootModule } from '~/widgets/loot'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -29,7 +29,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     LootModule,
     IconsModule,
   ],
-  providers: [DestroyService],
+  providers: [],
   host: {
     class: 'flex-none flex flex-col',
   },

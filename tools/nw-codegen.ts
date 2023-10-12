@@ -1,6 +1,6 @@
 import { program } from 'commander'
 import * as fs from 'fs'
-import { NW_USE_PTR, nwData } from '../env'
+import { NW_USE_PTR, environment } from '../env'
 import { glob, writeFile } from './utils/file-utils'
 import { tsFromJson } from './utils/ts-from-json'
 
@@ -10,7 +10,7 @@ program
     const options = program.opts<{
       ptr: boolean
     }>()
-    const inputDir = nwData.tmpDir(options.ptr)!
+    const inputDir = environment.nwConvertDir(options.ptr)!
 
     const FILES = [
       // {

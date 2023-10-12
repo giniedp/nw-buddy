@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { DestroyService } from '~/utils'
 import { TerritoryModule } from '~/widgets/territory'
 
 @Component({
@@ -9,7 +8,7 @@ import { TerritoryModule } from '~/widgets/territory'
   templateUrl: './territories-governance.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, TerritoryModule],
-  providers: [DestroyService],
+  providers: [],
   host: {
     class: 'layout-content',
   },

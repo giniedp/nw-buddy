@@ -16,7 +16,7 @@ import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
-import { DestroyService, HtmlHeadService, observeRouteParam } from '~/utils'
+import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
@@ -49,7 +49,7 @@ import { TooltipModule } from '~/ui/tooltip'
     ModelViewerModule,
     TooltipModule,
   ],
-  providers: [DestroyService],
+  providers: [],
   host: {
     class: 'flex-none flex flex-col',
   },

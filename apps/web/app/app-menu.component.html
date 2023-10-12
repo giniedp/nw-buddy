@@ -29,6 +29,13 @@
           </a>
         </li>
       </ng-container>
+      <li
+        [@item]="group.active"
+        [routerLinkActive]="['bordered', 'text-primary']"
+        (isActiveChange)="$event ? onGroupActive(group.category) : null"
+      >
+        <a [routerLink]="[{ outlets: { version: '' } }]" nwbMenuClose> version </a>
+      </li>
     </ul>
   </ng-container>
 </ng-container>

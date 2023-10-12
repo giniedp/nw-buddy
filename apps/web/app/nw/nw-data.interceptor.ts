@@ -6,24 +6,45 @@ import {
   HttpResponse,
   HTTP_INTERCEPTORS,
 } from '@angular/common/http'
-import { Injectable } from '@angular/core'
+import { Injectable, inject } from '@angular/core'
+import { CanActivateFn } from '@angular/router'
+import { getEnvDataVersionPath } from 'apps/web/environments/env'
 import { environment } from 'apps/web/environments/environment'
 import { map, Observable } from 'rxjs'
+
+export function activateVersionGuard(param: string): CanActivateFn {
+  return (snapshot) => {
+    const version = snapshot.paramMap.get(param) || ''
+    console.log(version)
+    const interceptor = inject(NwDataInterceptor)
+    interceptor.setVersion(version)
+    return true
+  }
+}
 
 @Injectable({ providedIn: 'root' })
 export class NwDataInterceptor implements HttpInterceptor {
   public static provide() {
-    return {
-      provide: HTTP_INTERCEPTORS,
-      useClass: NwDataInterceptor,
-      multi: true,
-    }
+    return [
+      {
+        provide: NwDataInterceptor,
+        useClass: NwDataInterceptor,
+      },
+      {
+        provide: HTTP_INTERCEPTORS,
+        useExisting: NwDataInterceptor,
+        multi: true,
+      },
+    ]
   }
 
-  public storagePath: string = environment.nwDataUrl.replace(/\/+$/, '')
+  public static readonly activateVersionGuard = activateVersionGuard
 
-  private get needsTransform() {
-    return !this.storagePath.startsWith('nw-data')
+  public nwDataUrl: string = environment.nwDataUrl.replace(/\/+$/, '')
+
+  public setVersion(version: string) {
+    this.nwDataUrl = new URL(getEnvDataVersionPath(version), environment.cdnUrl).toString()
+    console.log(this.nwDataUrl)
   }
 
   public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -33,21 +54,18 @@ export class NwDataInterceptor implements HttpInterceptor {
     }
     if (req.url.startsWith('datatables/')) {
       // prepend the CDN url and transform image URLs
-      return next.handle(this.prependPath(req)).pipe(map((res) => this.transformResponse(res)))
+      return next.handle(this.prependPath(req)).pipe(map((res) => this.transformDatasheetResponse(res)))
     }
     return next.handle(req)
   }
 
   private prependPath(req: HttpRequest<any>) {
     return req.clone({
-      url: `${this.storagePath}/${req.url}`,
+      url: `${this.nwDataUrl}/${req.url}`,
     })
   }
 
-  private transformResponse(res: HttpEvent<any>) {
-    if (!this.needsTransform) {
-      return res
-    }
+  private transformDatasheetResponse(res: HttpEvent<any>) {
     if (!(res instanceof HttpResponse)) {
       return res
     }
@@ -64,7 +82,7 @@ export class NwDataInterceptor implements HttpInterceptor {
     return data.map((item) => {
       Object.entries(item).forEach(([key, value]) => {
         if (typeof value === 'string' && value.startsWith('nw-data/')) {
-          item[key] = value.replace(/nw-data\/(live|ptr)\//, this.storagePath + '/')
+          item[key] = value.replace(/nw-data\/(live|ptr\/)?/, this.nwDataUrl + '/')
         }
       })
       return item

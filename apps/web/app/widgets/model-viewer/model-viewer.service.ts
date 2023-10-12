@@ -28,7 +28,7 @@ export interface StatRow {
 
 @Injectable({ providedIn: 'root' })
 export class ModelViewerService {
-  private cdnHost = environment.nwModelsUrl
+  private cdnHost = environment.modelsUrl
 
   public constructor(private db: NwDbService) {
     //
@@ -72,7 +72,6 @@ export class ModelViewerService {
         if (!item?.PrefabPath) {
           return null
         }
-        console.log(this.cdnHost)
         return {
           name: item.Name,
           itemClass: [item['HousingTag1 Placed']].filter((it) => !!it),

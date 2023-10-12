@@ -1,19 +1,22 @@
-import { NgModule, ModuleWithProviders, Type, LOCALE_ID } from '@angular/core'
-import { TranslateLoader } from './translate-loader'
+import { ModuleWithProviders, NgModule } from '@angular/core'
+import { TranslateModule as NgxTranslate } from '@ngx-translate/core'
+import { TranslationLoader } from './translation-loader'
 
-@NgModule({})
+@NgModule({
+  imports: [NgxTranslate],
+  exports: [NgxTranslate],
+})
 export class TranslateModule {
-
-  public static forRoot(options?: {
-    loader?: Type<TranslateLoader>
-    locale?: string
-  }): ModuleWithProviders<TranslateModule> {
+  public static forRoot(): ModuleWithProviders<TranslateModule> {
     return {
       ngModule: TranslateModule,
       providers: [
-        options?.locale ? { provide: LOCALE_ID, useValue: options.locale } : null,
-        options?.loader ? TranslateLoader.provideClass(options.loader) : TranslateLoader,
-      ].filter((it) => !!it)
+        ...(NgxTranslate.forRoot({
+          defaultLanguage: 'en-us',
+          loader: TranslationLoader.provide(),
+          useDefaultLang: true,
+        }).providers || []),
+      ],
     }
   }
 }

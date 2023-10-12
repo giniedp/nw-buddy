@@ -2,20 +2,14 @@ import { Routes } from '@angular/router'
 import { landingRedirect } from './landing-redirect'
 import { LandingComponent } from './landing.component'
 import { PrivacyComponent } from './privacy.component'
+import { NwDataInterceptor, NwDataService } from './nw'
+import { HttpClient } from '@angular/common/http'
+import { EmptyComponent, LayoutColComponent } from './widgets/empty'
+import { ArchiveComponent } from './archive.component'
 
-export const ROUTES: Routes = [
-  {
-    path: '',
-    pathMatch: 'full',
-    component: LandingComponent,
-    canActivate: [landingRedirect],
-  },
-  {
-    path: 'privacy',
-    pathMatch: 'full',
-    component: PrivacyComponent,
-  },
+const routes: Routes = [
   { path: 'ipfs', loadChildren: () => import('./pages/share').then((m) => m.ShareModule) },
+
   { path: 'abilities', loadChildren: () => import('./pages/database/abilities').then((m) => m.AbilitiesPageModule) },
   { path: 'crafting', loadChildren: () => import('./pages/database/crafting').then((m) => m.CraftingPageModule) },
   { path: 'housing', loadChildren: () => import('./pages/database/housing').then((m) => m.HousingPageModule) },
@@ -86,6 +80,43 @@ export const ROUTES: Routes = [
       },
     ],
   },
+]
+
+export const ROUTES: Routes = [
+  {
+    path: '',
+    pathMatch: 'full',
+    component: LandingComponent,
+    canActivate: [landingRedirect],
+  },
+  {
+    path: 'privacy',
+    pathMatch: 'full',
+    component: PrivacyComponent,
+  },
+
+  {
+    path: '',
+    children: routes,
+  },
+  // {
+  //   path: 'archive',
+  //   component: ArchiveComponent,
+  //   children: [
+  //     {
+  //       path: '',
+  //       outlet: 'v',
+  //       component: LayoutColComponent,
+  //       children: [
+  //         {
+  //           path: ':version',
+  //           canActivate: [NwDataInterceptor.activateVersionGuard('version')],
+  //           children: routes,
+  //         },
+  //       ],
+  //     },
+  //   ],
+  // },
 
   { path: '**', loadChildren: () => import('./pages/misc/not-found').then((m) => m.NotFoundModule) },
 ]

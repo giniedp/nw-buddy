@@ -2,7 +2,6 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { defer, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
-import { DestroyService } from '~/utils'
 
 export interface StandingRow {
   Level: number
@@ -25,11 +24,11 @@ function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: key
   selector: 'nwb-territory-standing-table',
   templateUrl: './territory-standing-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [DestroyService],
+  providers: [],
   imports: [CommonModule, NwModule],
   host: {
-    class: 'blakc'
-  }
+    class: 'blakc',
+  },
 })
 export class TerritoryStandingTableComponent {
   public data = defer(() => this.db.data.territoryStanding()).pipe(
@@ -49,5 +48,4 @@ export class TerritoryStandingTableComponent {
   public constructor(private db: NwDbService) {
     //
   }
-
 }

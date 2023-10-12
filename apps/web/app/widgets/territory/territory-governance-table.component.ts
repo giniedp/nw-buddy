@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
-import { DestroyService, shareReplayRefCount } from '~/utils'
+import { shareReplayRefCount } from '~/utils'
 
 export interface StandingRow {
   Level: number
@@ -25,7 +25,7 @@ function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: key
   selector: 'nwb-territory-governance-table',
   templateUrl: './territory-governance-table.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [DestroyService],
+  providers: [],
   imports: [CommonModule, NwModule],
   host: {
     class: 'blakc',

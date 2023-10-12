@@ -19,26 +19,28 @@ const commitHash =
   process.env.GITHUB_SHA || // Github Actions
   process.env.CIRCLE_SHA1 // CircleCI
 const isPtr = branchName === 'ptr' || branchName.startsWith('ptr-')
+//const isCI = !!process.env.CI
 const path = require('path')
+const packageVersion = require(path.resolve(process.cwd(), 'package.json')).version
 const config = {
   NW_GAME_LIVE: process.env.NW_GAME_LIVE,
   NW_GAME_PTR: process.env.NW_GAME_PTR,
-  NW_CDN_PTR: process.env.NW_CDN_PTR,
-  NW_CDN_LIVE: process.env.NW_CDN_LIVE,
   NW_UNPACK_LIVE: process.env.NW_UNPACK_LIVE,
   NW_UNPACK_PTR: process.env.NW_UNPACK_PTR,
   NW_MODELS_DIR: process.env.NW_MODELS_DIR,
-  NW_USE_CDN: ['true', 'yes', '1'].includes(process.env.NW_USE_CDN),
+
   NW_USE_PTR: ['true', 'yes', '1'].includes(process.env.NW_USE_PTR ?? String(isPtr)),
   BRANCH_NAME: branchName,
+  CDN_URL: process.env.CDN_URL,
   CDN_UPLOAD_SPACE: process.env.CDN_UPLOAD_SPACE,
   CDN_UPLOAD_KEY: process.env.CDN_UPLOAD_KEY,
   CDN_UPLOAD_SECRET: process.env.CDN_UPLOAD_SECRET,
   CDN_UPLOAD_ENDPOINT: process.env.CDN_UPLOAD_ENDPOINT,
-  VERSION: require(path.resolve(process.cwd(), 'package.json')).version + (commitHash ? `#${commitHash}` : ''),
+  PACKAGE_VERSION: packageVersion,
+  COMMIT_HASH: commitHash,
 }
 
-function get(name) {
+function env(name) {
   const result = config[name]
   if (result == null) {
     throw new Error(`env variable '${name}' is not defined `)
@@ -46,96 +48,28 @@ function get(name) {
   return result
 }
 
-const root = process.cwd()
-const srcDir = (...paths) => path.join(root, 'apps', ...paths)
-const dstDir = (...paths) => path.join(root, 'dist', ...paths)
-const tmpDir = (...paths) => path.join(root, 'tmp', ...paths)
+const cwd = process.cwd()
+const appsDir = (...paths) => path.join(cwd, 'apps', ...paths)
+const distDir = (...paths) => path.join(cwd, 'dist', ...paths)
+const tmpDir = (...paths) => path.join(cwd, 'tmp', ...paths)
+const libsDir = (...paths) => path.join(cwd, 'libs', ...paths)
+const dataDir = (isPtr) => path.join('nw-data', isPtr ? 'ptr' : 'live')
 
-const nwData = {
-  cwd: root,
-  /**
-   * Temporary directory where game assets are extracted to
-   * @param {string[]} paths
-   * @returns {string}
-   */
-  tmp: (...paths) => {
-    return tmpDir('nw-data', ...paths)
-  },
-  /**
-   * Directory where game assets are imported to
-   * @param {string[]} paths
-   * @returns {string}
-   */
-  dist: (...paths) => {
-    return dstDir('nw-data', ...paths)
-  },
-  /**
-   * Live or PTR game client directory
-   * @param {boolean} isPtr
-   * @returns {string}
-   */
-  srcDir: (isPtr) => {
-    return path.resolve(root, get(isPtr ? 'NW_GAME_PTR' : 'NW_GAME_LIVE'))
-  },
-  /**
-   * Live or PTR unpack directory where game assets are extracted to
-   * @param {boolean} isPtr
-   * @returns {string}
-   */
-  unpackDir: (isPtr) => {
-    return path.resolve(root, get(isPtr ? 'NW_UNPACK_PTR' : 'NW_UNPACK_LIVE'))
-  },
-  /**
-   * Live or PTR temporary directory where game assets are converted to
-   * @param {boolean} isPtr
-   * @returns {string}
-   */
-  tmpDir: (isPtr) => {
-    return nwData.tmp(isPtr ? 'ptr' : 'live')
-  },
-  /**
-   * Live or PTR directory where game assets are imported to
-   * @param {boolean} isPtr
-   * @returns {string}
-   */
-  distDir: (isPtr) => {
-    return nwData.dist(isPtr ? 'ptr' : 'live')
-  },
-  modelsDir: () => {
-    return get('NW_MODELS_DIR')
-  },
-  /**
-   * Live or PTR directory relative from outside the dist directory.
-   * @param {boolean} isPtr
-   * @param {string[]} paths
-   * @returns {string}
-   */
-  assetPath: (isPtr, ...paths) => {
-    return path.relative(nwData.dist('..'), nwData.dist(isPtr ? 'ptr' : 'live'), ...paths)
-  },
-  /**
-   * Live or PTR CDN directory
-   * @param {boolean} isPtr
-   * @returns {string}
-   */
-  cdnUrl: (isPtr) => {
-    return get(isPtr ? 'NW_CDN_PTR' : 'NW_CDN_LIVE')
-  },
-  /**
-   * Base url from where the assets will be serverd. Is either the `assetPath` or `cdnUrl`.
-   * @param {boolean} isPtr
-   * @param {boolean} isCdn
-   * @returns {string}
-   */
-  publicUrl: (isPtr, isCdn, deployUrl) => {
-    if (isCdn) {
-      return nwData.cdnUrl(isPtr)
-    }
-    return (deployUrl || '') + nwData.assetPath(isPtr)
-  },
+const environment = {
+  cwd: cwd,
+  appsDir,
+  distDir,
+  libsDir,
+  tmpDir,
+  dataDir,
+  nwGameDir: (isPtr) => path.resolve(cwd, env(isPtr ? 'NW_GAME_PTR' : 'NW_GAME_LIVE')),
+  nwUnpackDir: (isPtr) => path.resolve(cwd, env(isPtr ? 'NW_UNPACK_PTR' : 'NW_UNPACK_LIVE')),
+  nwConvertDir: (isPtr) => tmpDir(dataDir(isPtr)),
+  nwDataDir: (isPtr) => distDir(dataDir(isPtr)),
+  nwModelsDir: () => env('NW_MODELS_DIR'),
 }
 
 module.exports = {
   ...config,
-  nwData,
+  environment,
 }

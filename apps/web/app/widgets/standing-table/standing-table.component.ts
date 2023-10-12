@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { defer, map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { DestroyService } from '~/utils'
 
 export interface StandingRow {
   Level: number
@@ -24,7 +23,7 @@ function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: key
   templateUrl: './standing-table.component.html',
   styleUrls: ['./standing-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [DestroyService],
+  providers: [],
 })
 export class StandingTableComponent {
   public data = defer(() => this.db.data.territoryStanding()).pipe(

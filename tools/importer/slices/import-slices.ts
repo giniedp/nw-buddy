@@ -1,6 +1,6 @@
 import { sortBy, uniqBy } from 'lodash'
 import * as path from 'path'
-import * as env from '../../../env'
+import { environment } from '../../../env'
 import { assmebleWorkerTasks, crc32, glob, readJSONFile, withProgressPool, writeJSONFile } from '../../utils'
 import { pathToDatatables } from '../tables'
 import { GatherablesTableSchema, VitalsCategoriesTableSchema, VitalsTableSchema } from '../tables/schemas'
@@ -19,7 +19,7 @@ interface GatherableMetadata {
   spawns: Array<{ position: number[]; lootTable: string }>
 }
 export async function importSlices({ inputDir, threads }: { inputDir: string; threads: number }) {
-  const crcVitalsFile = env.nwData.tmp('..', 'crcVitals.json')
+  const crcVitalsFile = environment.tmpDir('crcVitals.json')
   await glob([
     path.join(pathToDatatables(inputDir), 'javelindata_vitals.json'),
     path.join(pathToDatatables(inputDir), 'vitalstables', '*_vitals_*.json'),
@@ -43,7 +43,7 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
     .then((list) => list.map((it) => it.VitalsCategoryID))
     .then((list) => list.map((it) => it.toLowerCase()).map((value) => [crc32(value), value] as const))
     .then((list) => Object.fromEntries(list))
-  const crcVitalsCategoriesFile = env.nwData.tmp('..', 'crcVitalsCategories.json')
+  const crcVitalsCategoriesFile = environment.tmpDir('crcVitalsCategories.json')
   await writeJSONFile(crcVitalCategories, crcVitalsCategoriesFile)
 
   const gatherablesTableFile = path.join(pathToDatatables(inputDir), 'javelindata_gatherables.json')
@@ -51,7 +51,7 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
     .then((list) => list.map((it) => it.GatherableID))
     .then((list) => list.map((it) => it.toLowerCase()).map((value) => [crc32(value), value] as const))
     .then((list) => Object.fromEntries(list))
-  const crcGatherablesFile = env.nwData.tmp('..', 'crcGatherables.json')
+  const crcGatherablesFile = environment.tmpDir('crcGatherables.json')
   await writeJSONFile(crcGatherables, crcGatherablesFile)
 
   const vitals = new Map<string, VitalMetadata>()

@@ -1,5 +1,4 @@
 import { Directive, ElementRef, Input } from '@angular/core'
-import { environment } from 'apps/web/environments'
 import { sanitizeHtml } from './sanitize-html'
 
 @Directive({

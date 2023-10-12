@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { NwModule } from '~/nw'
-import { DestroyService, shareReplayRefCount } from '~/utils'
+import { shareReplayRefCount } from '~/utils'
 
 import { RouterModule } from '@angular/router'
 import { ComponentStore } from '@ngrx/component-store'
@@ -21,7 +21,7 @@ import { CraftingStepWithAmount, SkillRow, SummaryRow } from './types'
   templateUrl: './tab-tradeskills.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, RouterModule, TradeskillsModule, TooltipModule],
-  providers: [DestroyService],
+  providers: [],
   host: {
     class: 'block',
   },

@@ -7,26 +7,25 @@ import {
   HostListener,
   Input,
   OnChanges,
-  OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core'
-import { distinctUntilChanged, ReplaySubject, Subject, switchMap, takeUntil } from 'rxjs'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { ReplaySubject, distinctUntilChanged, switchMap } from 'rxjs'
 import { ItemMeta, ItemPreferencesService } from '~/preferences'
-import { DestroyService } from '~/utils'
 
 @Component({
   selector: 'nwb-gs-tracker,nwb-price-tracker,nwb-stock-tracker',
   exportAs: 'gsTracker',
   templateUrl: './item-tracker.component.html',
   styleUrls: ['./item-tracker.component.scss'],
-  providers: [DestroyService],
+  providers: [],
   host: {
     '[class.tooltip]': 'isEmpty && !!emptyTip',
     '[class.opacity-25]': 'isEmpty',
     '[class.hover:opacity-100]': 'isEmpty',
-    '[class.transition-opacity]': 'isEmpty'
-  }
+    '[class.transition-opacity]': 'isEmpty',
+  },
 })
 export class ItemTracker implements OnInit, OnChanges, AfterViewChecked {
   @Input()
@@ -41,11 +40,11 @@ export class ItemTracker implements OnInit, OnChanges, AfterViewChecked {
   public format: string
 
   @Input()
-  public emptyText = "✏️"
+  public emptyText = '✏️'
 
   @Input()
   @HostBinding('attr.data-tip')
-  public emptyTip = "Edit"
+  public emptyTip = 'Edit'
 
   public get isEmpty() {
     return !(this.value > 0)
@@ -68,21 +67,24 @@ export class ItemTracker implements OnInit, OnChanges, AfterViewChecked {
   private trackedValue: number
   private mode: keyof ItemMeta
 
-  public constructor(private destroy: DestroyService, private meta: ItemPreferencesService, private cdRef: ChangeDetectorRef, elRef: ElementRef<HTMLElement>) {
+  public constructor(
+    private meta: ItemPreferencesService,
+    private cdRef: ChangeDetectorRef,
+    elRef: ElementRef<HTMLElement>
+  ) {
     this.mode = elRef.nativeElement.tagName.toLowerCase().match(/nwb-(\w+)-tracker/)[1] as any
-  }
-
-  public ngOnInit(): void {
     this.itemId$
       .pipe(distinctUntilChanged())
       .pipe(switchMap((id) => this.meta.observe(id)))
-      .pipe(takeUntil(this.destroy.$))
+      .pipe(takeUntilDestroyed())
       .subscribe((data) => {
         this.trackedId = data.id
         this.trackedValue = this.cleanValue(data.meta?.[this.mode])
         this.cdRef.markForCheck()
       })
   }
+
+  public ngOnInit(): void {}
 
   public ngOnChanges(): void {
     this.cdRef.markForCheck()

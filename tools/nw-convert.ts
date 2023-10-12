@@ -1,10 +1,11 @@
 import { program } from 'commander'
 import { convert } from 'nw-extract'
 import * as path from 'path'
-import { nwData, NW_USE_PTR } from '../env'
+import { environment, NW_USE_PTR } from '../env'
 import { objectStreamConverter } from './bin/object-stream-converter'
 import { cpus } from 'os'
 import { glob, copyFile } from './utils/file-utils'
+import z from 'zod'
 
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
@@ -39,8 +40,8 @@ program
     }>()
     options.update = !!options.update
     options.threads = options.threads || cpus().length
-    const inputDir = options.input || nwData.unpackDir(options.ptr)!
-    const outputDir = options.output || nwData.tmpDir(options.ptr)!
+    const inputDir = options.input || environment.nwUnpackDir(options.ptr)!
+    const outputDir = options.output || environment.nwConvertDir(options.ptr)!
     console.log('[CONVERT]', inputDir)
     console.log('      to:', outputDir)
     console.log('  update:', options.update)

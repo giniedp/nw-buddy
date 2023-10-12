@@ -4,7 +4,7 @@ import compression from 'compression'
 import express from 'express'
 import { join } from 'path'
 
-import LRUCache from 'lru-cache'
+import { LRUCache } from 'lru-cache'
 export * from '../web/main.server'
 
 export interface AppOptions {

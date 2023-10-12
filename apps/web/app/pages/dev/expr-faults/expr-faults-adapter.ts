@@ -7,6 +7,7 @@ import { NwDbService } from '~/nw'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { selectStream } from '~/utils'
 
 export interface FaultRow {
   perk: Perks
@@ -107,18 +108,31 @@ export class ExprFaultsAdapter implements DataViewAdapter<FaultRow> {
 
   public entities: Observable<FaultRow[]> = defer(() => this.getFaultRows())
 
-  private getFaultRows() {
-    const loadLang$ = combineLatest(
+  private dict$ = selectStream(
+    combineLatest(
       KNOWN_LANG.map((it) => {
-        return this.utils.i18n.loader
-          .loadTranslations(it.value)
-          .pipe(tap((data) => this.utils.i18n.merge(it.value, data)))
-          .pipe(map(() => it))
+        return this.db.data.loadTranslations(it.value).pipe(
+          map((data) => {
+            return {
+              lang: it.value,
+              data,
+            }
+          })
+        )
+      })
+    ).pipe(
+      map((result) => {
+        const dict: Record<string, Record<string, string>> = {}
+        for (const { lang, data } of result) {
+          dict[lang] = data
+        }
+        return dict
       })
     )
-
+  )
+  private getFaultRows() {
     return combineLatest({
-      lang: loadLang$,
+      dict: this.dict$,
       perks: this.db.perks,
     }).pipe(
       switchMap(({ perks }) => combineLatest(this.mapPerks(perks))),
@@ -136,7 +150,7 @@ export class ExprFaultsAdapter implements DataViewAdapter<FaultRow> {
       const expressions = KNOWN_LANG.map((lang) =>
         combineLatest({
           lang: of(lang.value),
-          text: of(this.utils.i18n.get(perk.Description, lang.value)),
+          text: this.getText(perk.Description, lang.value),
           expr: this.extractEpxression(perk.Description, lang.value),
         })
       )
@@ -147,10 +161,17 @@ export class ExprFaultsAdapter implements DataViewAdapter<FaultRow> {
     })
   }
   private extractEpxression(key: string, lang: string) {
-    const text = this.utils.i18n.get(key, lang)
-    const root = parseNwExpression(text, true) as NwExpJoin
-    const children = root.children.filter((it) => it instanceof NwExpEval)
-    const splits = children.map((it) => it.print()).sort()
-    return of(splits.join(' '))
+    return this.getText(key, lang).pipe(
+      switchMap((text) => {
+        const root = parseNwExpression(text, true) as NwExpJoin
+        const children = root.children.filter((it) => it instanceof NwExpEval)
+        const splits = children.map((it) => it.print()).sort()
+        return of(splits.join(' '))
+      })
+    )
+  }
+
+  private getText(key: string, lang: string) {
+    return this.dict$.pipe(map((dict) => dict?.[lang]?.[key]))
   }
 }

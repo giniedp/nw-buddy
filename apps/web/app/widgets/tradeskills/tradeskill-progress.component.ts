@@ -1,25 +1,17 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnChanges,
-  OnDestroy,
-  OnInit,
-} from '@angular/core'
-import { BehaviorSubject, combineLatest, map, of, ReplaySubject, switchMap, takeUntil } from 'rxjs'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnChanges, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { BehaviorSubject, ReplaySubject, combineLatest, of, switchMap, takeUntil } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { NwTradeskillService } from '~/nw/tradeskill'
-import { DestroyService } from '~/utils'
 
 @Component({
   selector: 'nwb-tradeskill-progress',
   templateUrl: './tradeskill-progress.component.html',
   styleUrls: ['./tradeskill-progress.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [DestroyService],
+  providers: [],
 })
-export class NwTradeskillCircleComponent implements OnInit, OnChanges {
+export class NwTradeskillCircleComponent implements OnChanges {
   @Input()
   public set skillName(value: string) {
     this.skillName$.next(value)
@@ -51,13 +43,9 @@ export class NwTradeskillCircleComponent implements OnInit, OnChanges {
   public constructor(
     private skills: NwTradeskillService,
     private char: CharacterStore,
-    private destroy: DestroyService,
     private cdRef: ChangeDetectorRef
   ) {
     //
-  }
-
-  public ngOnInit(): void {
     combineLatest({
       skill: this.skill$,
       table: this.skillTable$,
@@ -71,7 +59,7 @@ export class NwTradeskillCircleComponent implements OnInit, OnChanges {
         })
       ),
     })
-      .pipe(takeUntil(this.destroy.$))
+      .pipe(takeUntilDestroyed())
       .subscribe(({ skill, table, points, level }) => {
         const progress = this.skills.calculateProgress(skill, table, level, points)
         this.levelStart = level

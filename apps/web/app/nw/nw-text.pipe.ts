@@ -1,7 +1,7 @@
-import { ChangeDetectorRef, OnDestroy, Pipe, PipeTransform } from '@angular/core'
+import { ChangeDetectorRef, NgZone, OnDestroy, Pipe, PipeTransform } from '@angular/core'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
 import { isEqual } from 'lodash'
-import { Observable, Subject, combineLatest, of, switchMap, takeUntil } from 'rxjs'
+import { Observable, Subject, combineLatest, distinctUntilChanged, of, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwExpressionContext, NwTextContextService, NwExpressionService } from './expression'
 
@@ -27,9 +27,17 @@ export class NwTextPipe implements PipeTransform, OnDestroy {
   ) {}
 
   public transform(key: string | string[], options: NwTextPipeOptions = null) {
-    if (isEqual(this.key, key) && isEqual(this.options, options)) {
-      return this.value
+    if (!isEqual(this.key, key) || !isEqual(this.options, options)) {
+      this.update(key, options)
     }
+    return this.value
+  }
+
+  public ngOnDestroy(): void {
+    this.dispose$.next()
+  }
+
+  private update(key: string | string[], options: NwTextPipeOptions = null) {
     this.dispose$.next()
     this.key = key
     this.options = options
@@ -43,18 +51,14 @@ export class NwTextPipe implements PipeTransform, OnDestroy {
             ...(context as any),
             text: text,
           })
-        )
+        ),
+        distinctUntilChanged(),
+        takeUntil(this.dispose$)
       )
-      .pipe(takeUntil(this.dispose$))
       .subscribe((value) => {
         this.value = value
         this.cdRef.markForCheck()
       })
-    return this.value
-  }
-
-  public ngOnDestroy(): void {
-    this.dispose$.next()
   }
 }
 
