@@ -201,7 +201,9 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
       weapon: this.weaponStats$,
       armor: this.armorStats$,
       item: this.item$,
-    }).pipe(map(({ weapon, armor, item }) => (weapon?.WeightOverride || armor?.WeightOverride || item?.Weight) / 10)),
+    }).pipe(
+      map(({ weapon, armor, item }) => Math.floor(weapon?.WeightOverride || armor?.WeightOverride || item?.Weight) / 10)
+    ),
     durability: this.item$.pipe(mapProp('Durability')),
     maxStackSize: this.entity$.pipe(mapProp('MaxStackSize')),
     requiredLevel: this.item$.pipe(mapProp('RequiredLevel')),

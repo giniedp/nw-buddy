@@ -24,6 +24,7 @@ import {
   getItemRarity,
   getItemRarityWeight,
   isItemArmor,
+  isItemArtifact,
   isItemJewelery,
   isItemNamed,
   isItemWeapon,
@@ -41,6 +42,7 @@ import { LootModule } from '~/widgets/loot'
 import { VitalsDetailModule } from '~/widgets/vitals-detail'
 import { GameModeDetailStore } from './game-mode-detail.store'
 import { FormsModule } from '@angular/forms'
+import { uniqBy } from 'lodash'
 
 const DIFFICULTY_TIER_NAME = {
   1: 'Normal',
@@ -486,7 +488,7 @@ export class GameModeDetailComponent implements OnInit {
   }
 
   private filterAndSort(items: Array<ItemDefinitionMaster | Housingitems>) {
-    return items
+    return uniqBy(items, (it) => getItemId(it))
       .filter((it) => getItemRarity(it) != 'common')
       .sort((nodeA, nodeB) => {
         const a = nodeA
@@ -496,8 +498,8 @@ export class GameModeDetailComponent implements OnInit {
         if (isGearA !== isGearB) {
           return isGearA ? -1 : 1
         }
-        const isNamedA = isMasterItem(a) && isItemNamed(a)
-        const isNamedB = isMasterItem(b) && isItemNamed(b)
+        const isNamedA = isMasterItem(a) && (isItemNamed(a) || isItemArtifact(a))
+        const isNamedB = isMasterItem(b) && (isItemNamed(b) || isItemArtifact(b))
         if (isNamedA !== isNamedB) {
           return isNamedA ? -1 : 1
         }

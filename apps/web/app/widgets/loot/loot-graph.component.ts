@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { combineLatest, map } from 'rxjs'
+import { combineLatest, of, switchMap } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { LootContext } from '~/nw/loot'
-import { buildLootGraph, extractLootTagsFromGraph, updateLootGraph } from '~/nw/loot/loot-graph'
-import { LootGraphNodeComponent } from './loot-graph-node.component'
+import { LootNode, buildLootGraph, updateLootGraph } from '~/nw/loot/loot-graph'
+import { selectStream } from '~/utils'
 import { LootContextEditorComponent } from './loot-context-editor.component'
+import { LootGraphNodeComponent } from './loot-graph-node.component'
 
 @Component({
   standalone: true,
@@ -19,7 +20,8 @@ import { LootContextEditorComponent } from './loot-context-editor.component'
     </div> -->
     <!-- <nwb-loot-context-editor></nwb-loot-context-editor> -->
     <nwb-loot-graph-node
-      [node]="graph$ | async"
+      *ngFor="let node of graph$ | async"
+      [node]="node"
       [showLocked]="showLocked"
       [expand]="true"
       [showChance]="showChance"
@@ -33,7 +35,7 @@ import { LootContextEditorComponent } from './loot-context-editor.component'
   },
 })
 export class LootGraphComponent extends ComponentStore<{
-  tableId: string
+  tableIds: string[]
   tags: string[]
   tagValues: Record<string, string | number>
   dropChance: number
@@ -52,8 +54,14 @@ export class LootGraphComponent extends ComponentStore<{
   public showStats = false
 
   @Input()
-  public set tableId(value: string) {
-    this.patchState({ tableId: value })
+  public set tableId(value: string | string[]) {
+    if (Array.isArray(value)) {
+      this.patchState({ tableIds: value })
+    } else if (typeof value === 'string') {
+      this.patchState({ tableIds: [value] })
+    } else {
+      this.patchState({ tableIds: [] })
+    }
   }
 
   @Input()
@@ -76,20 +84,13 @@ export class LootGraphComponent extends ComponentStore<{
     this.patchState({ highlight: value })
   }
 
-  protected tableId$ = this.select((s) => s.tableId)
+  protected tableIds$ = this.select((s) => s.tableIds)
   protected tags$ = this.select((s) => s.tags)
   protected tagValues$ = this.select((s) => s.tagValues)
   protected dropChance$ = this.select((s) => s.dropChance)
   protected highlight$ = this.select((s) => s.highlight)
-  protected fullGraph$ = this.select(
-    combineLatest({
-      entry: this.db.lootTable(this.tableId$),
-      tables: this.db.lootTablesMap,
-      buckets: this.db.lootBucketsMap,
-    }),
-    (params) => buildLootGraph(params),
-    { debounce: true }
-  )
+  protected fullGraph$ = this.select(this.tableIds$.pipe(switchMap((ids) => this.lootGraph(ids))), (it) => it)
+
   protected context$ = this.select(
     combineLatest({
       tags: this.tags$,
@@ -106,28 +107,48 @@ export class LootGraphComponent extends ComponentStore<{
       highlight: this.highlight$,
     }),
     ({ graph, context, dropChance, highlight }) => {
-      return updateLootGraph({
-        graph,
-        context: this.showLocked ? null : context,
-        dropChance,
-        highlight,
+      return graph.map((it) => {
+        return updateLootGraph({
+          graph: it,
+          context: this.showLocked ? null : context,
+          dropChance,
+          highlight,
+        })
       })
     },
     { debounce: true }
   )
 
-  protected knownTags$ = this.select(this.graph$, (graph) => {
-    return Array.from(extractLootTagsFromGraph(graph))
-  })
+  // protected knownTags$ = this.select(this.graph$, (graph) => {
+  //   return Array.from(extractLootTagsFromGraph(graph))
+  // })
   protected trackByIndex = (i: number) => i
 
   public constructor(private db: NwDbService) {
     super({
-      tableId: null,
+      tableIds: null,
       tags: [],
       tagValues: {},
       dropChance: 1,
       highlight: null,
     })
+  }
+
+  private lootGraph(tableIds: string[]) {
+    if (!tableIds || !tableIds.length) {
+      return of<LootNode[]>([])
+    }
+    return combineLatest(tableIds.map((tableId) => this.lootGraphForTable(tableId)))
+  }
+
+  private lootGraphForTable(tableId: string) {
+    return selectStream(
+      {
+        entry: this.db.lootTable(tableId),
+        tables: this.db.lootTablesMap,
+        buckets: this.db.lootBucketsMap,
+      },
+      (data) => buildLootGraph(data)
+    )
   }
 }

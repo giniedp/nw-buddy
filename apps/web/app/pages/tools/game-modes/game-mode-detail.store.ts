@@ -6,7 +6,7 @@ import { uniq } from 'lodash'
 import { combineLatest, filter, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { LootContext, NwLootService } from '~/nw/loot'
-import { selectStream, shareReplayRefCount } from '~/utils'
+import { selectStream, shareReplayRefCount, tapDebug } from '~/utils'
 
 export interface GameModeDetailState {
   playerLevel: number
@@ -124,13 +124,12 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
   public readonly lootTagsNormalMode$ = combineLatest({
     dungeon: this.dungeon$,
     creatureTags: this.creatureLootTags$,
-    lootTable: this.db.lootTable('CreatureLootMaster'),
+    tables: combineLatest([this.db.lootTable('CreatureLootMaster')]),
     playerLevel: this.playerLevel$,
   })
     .pipe(filter((it) => !!it.dungeon))
     .pipe(
-      map(({ dungeon, creatureTags, lootTable, playerLevel }) => {
-        console.log(dungeon)
+      map(({ dungeon, creatureTags, tables, playerLevel }) => {
         const dungeonTags = dungeon.LootTags || []
         // exclude dungeon tags from other dungeons
         const tagsToExclude = DUNGEON_LOOT_TAGS.filter((it) => !dungeonTags.includes(it))
@@ -142,7 +141,6 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         ]).filter((it) => !!it && !tagsToExclude.includes(it))
 
         const defaultPlayerLevel = dungeon.RequiredLevel || dungeon.RecommendedLevel || dungeon.ContainerLevel
-        console.log('container level', dungeon.RequiredLevel, dungeon.RecommendedLevel, dungeon.ContainerLevel)
         return {
           tags: [...tags],
           values: {
@@ -150,34 +148,37 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
             EnemyLevel: dungeon.ContainerLevel,
             Level: (playerLevel || defaultPlayerLevel) - 1,
           },
-          table: lootTable,
-          tableId: lootTable?.LootTableID,
+          tables,
+          tableIds: tables.map((it) => it.LootTableID),
         }
       })
     )
     .pipe(shareReplayRefCount(1))
 
   public readonly lootNormalMode$ = this.lootTagsNormalMode$.pipe(
-    switchMap(({ tags, values, table }) => {
+    switchMap(({ tags, values, tables }) => {
       const ctx = new LootContext({
         tags: tags,
         values: values,
       })
       // removes all the junk
       ctx.ignoreTablesAndBuckets = ['CreatureLootCommon', 'GlobalNamedList']
-      return this.loot.resolveLootItems(table, ctx)
+      return combineLatest(tables.map((table) => this.loot.resolveLootItems(table, ctx))).pipe(map((it) => it.flat()))
     })
   )
 
   public readonly lootTagsMutatedMode$ = combineLatest({
     dungeon: this.dungeon$,
     creatureTags: this.creatureLootTags$,
-    lootTable: this.db.lootTable('CreatureLootMaster_MutatedContainer'),
     playerLevel: this.playerLevel$,
+    lootTables: combineLatest([
+      this.db.lootTable('CreatureLootMaster_MutatedContainer'),
+      this.db.lootTable('CreatureLootMaster'),
+    ]),
   })
     .pipe(filter((it) => !!it.dungeon))
     .pipe(
-      map(({ dungeon, creatureTags, lootTable, playerLevel }) => {
+      map(({ dungeon, creatureTags, lootTables, playerLevel }) => {
         const dungeonTags = dungeon.LootTags || []
         const dungeonOverrideTags = dungeon.MutLootTagsOverride || dungeonTags
         const regionTag = DUNGEON_LOOT_TAGS.find((it) => dungeonTags.includes(it))
@@ -197,25 +198,25 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         return {
           tags: [...tags],
           values: {
-            MinContLevel: Math.max(60, dungeon.ContainerLevel),
+            MinContLevel: Math.max(70, dungeon.ContainerLevel),
             EnemyLevel: Math.max(70, dungeon.ContainerLevel),
             Level: (playerLevel || NW_MAX_CHARACTER_LEVEL) - 1,
           },
-          table: lootTable,
-          tableId: lootTable?.LootTableID,
+          tables: lootTables,
+          tableIds: lootTables.map((it) => it.LootTableID),
         }
       })
     )
 
   public readonly lootMutatedMode = this.lootTagsMutatedMode$.pipe(
-    switchMap(({ tags, values, table }) => {
+    switchMap(({ tags, values, tables }) => {
       const ctx = new LootContext({
         tags: tags,
         values: values,
       })
       // removes all the junk
       ctx.ignoreTablesAndBuckets = ['CreatureLootCommon', 'GlobalNamedList']
-      return this.loot.resolveLootItems(table, ctx)
+      return combineLatest(tables.map((table) => this.loot.resolveLootItems(table, ctx))).pipe(map((it) => it.flat()))
     })
   )
 
@@ -223,13 +224,21 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
     dungeon: this.dungeon$,
     difficulty: this.difficulty$,
     creatureTags: this.creatureLootTags$,
-    lootTable: this.db.lootTable('CreatureLootMaster_MutatedContainer'),
     playerLevel: this.playerLevel$,
+    lootTables: combineLatest([
+      this.db.lootTable('CreatureLootMaster_MutatedContainer'),
+      this.db.lootTable('CreatureLootMaster'),
+    ]),
   })
     .pipe(filter((it) => !!it.dungeon && !!it.difficulty))
     .pipe(
-      map(({ dungeon, difficulty, creatureTags, lootTable, playerLevel }) => {
-        const mutationTags = [...difficulty.InjectedLootTags, ...difficulty.InjectedCreatureLoot]
+      map(({ dungeon, difficulty, creatureTags, lootTables, playerLevel }) => {
+        // console.log({ dungeon, difficulty })
+        const mutationTags = [
+          ...difficulty.InjectedLootTags,
+          difficulty.InjectedCreatureLoot,
+          difficulty.InjectedContainerLoot,
+        ].filter((it) => !!it)
         const dungeonTags = dungeon.LootTags || []
         const dungeonOverrideTags = dungeon.MutLootTagsOverride || dungeonTags
         const regionTag = DUNGEON_LOOT_TAGS.find((it) => dungeonTags.includes(it))
@@ -248,18 +257,18 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         return {
           tags: [...tags],
           values: {
-            MinContLevel: Math.max(60, dungeon.ContainerLevel),
+            MinContLevel: Math.max(70, dungeon.ContainerLevel),
             EnemyLevel: Math.max(70, dungeon.ContainerLevel),
             Level: (playerLevel || NW_MAX_CHARACTER_LEVEL) - 1,
           },
-          table: lootTable,
-          tableId: lootTable?.LootTableID,
+          tables: lootTables,
+          tableIds: lootTables.map((it) => it.LootTableID),
         }
       })
     )
 
   public readonly lootDifficulty$ = this.lootTagsDifficulty$.pipe(
-    switchMap(({ tags, values, table }) => {
+    switchMap(({ tags, values, tables }) => {
       const ctx = new LootContext({
         tags: tags,
         values: values,
@@ -267,7 +276,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       // removes all the junk
       ctx.ignoreTablesAndBuckets = ['CreatureLootCommon', 'GlobalNamedList']
       ctx.bucketTags = [...MUTATION_DIFFICULTY_LOOT_TAGS]
-      return this.loot.resolveLootItems(table, ctx)
+      return combineLatest(tables.map((table) => this.loot.resolveLootItems(table, ctx))).pipe(map((it) => it.flat()))
     })
   )
 
