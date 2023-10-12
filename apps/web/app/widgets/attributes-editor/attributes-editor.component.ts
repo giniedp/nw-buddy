@@ -147,6 +147,9 @@ export class AttributesEditorComponent implements OnInit {
   }
 
   protected attributeInput(state: AttributeState, points: number) {
+    if (points > state.inputMax) {
+      points = state.inputMax
+    }
     const value = state.base + state.buffs + points
     this.store.update({ attribute: state.ref, value: value })
   }
@@ -156,6 +159,12 @@ export class AttributesEditorComponent implements OnInit {
       const value = (e.target as HTMLInputElement).valueAsNumber
       this.attributeInput(state, value)
     })
+  }
+
+  protected attributeBlur(state: AttributeState, e: Event) {
+    const value = Math.max(Math.min(state.assigned, state.inputMax), state.inputMin)
+    const input = e.target as HTMLInputElement
+    input.valueAsNumber = value
   }
 
   protected attributeFocus(e: Event) {

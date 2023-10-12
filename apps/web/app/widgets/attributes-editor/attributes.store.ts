@@ -61,8 +61,8 @@ export class AttributesStore extends ComponentStore<AttributesState> {
         buffs: vBuff,
         assigned: vAssign,
         total: vBase + vBuff + vAssign,
-        inputMin: vBase + vBuff,
-        inputMax: vBase + vBuff + vAssign + Math.max(0, points - sum(Object.values(assigned))),
+        inputMin: 0,
+        inputMax: vAssign + Math.max(0, points - sum(Object.values(assigned))),
         sliderEnd: ATTRIBUTE_MAX,
         magnify: 0,
       }

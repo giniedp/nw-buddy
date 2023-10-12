@@ -34,11 +34,12 @@
       <input
         type="number"
         class="flex-none input input-bordered input-sm w-16 px-1 text-right text-attr-assign"
-        [min]="0"
+        [min]="stat.inputMin"
+        [max]="stat.inputMax"
         [ngModel]="stat.assigned"
         (ngModelChange)="attributeInput(stat, $event)"
-        [ngModelOptions]="{ updateOn: 'blur' }"
         (focus)="attributeFocus($event)"
+        (blur)="attributeBlur(stat, $event)"
         (wheel)="($event)"
         (wheel)="attributeWheel(stat, $event)"
       />
