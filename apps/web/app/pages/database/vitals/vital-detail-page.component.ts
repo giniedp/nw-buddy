@@ -45,7 +45,7 @@ export class VitalDetailComponent {
   protected vitalId$ = observeRouteParam(this.route, 'id')
   protected modelFiles$ = selectStream(inject(ModelViewerService).byVitalsId(this.vitalId$))
   protected tabId$ = observeQueryParam(this.route, 'tab').pipe(
-    map((it: DetailTabId): DetailTabId => it || 'loot-items')
+    map((it: DetailTabId): DetailTabId => it || 'loot-table')
   )
 
   protected iconEdit = svgPen
