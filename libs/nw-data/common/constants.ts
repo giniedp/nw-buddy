@@ -6,6 +6,7 @@ export const NW_MAX_CHARACTER_LEVEL = 65
 export const NW_MAX_TRADESKILL_LEVEL = 250
 export const NW_MAX_WEAPON_LEVEL = 20
 export const NW_FALLBACK_ICON = 'assets/icons/iconmodedefault.png'
+export const NW_MAX_ENEMY_LEVEL = 70
 
 // tmp\nw-data\ptr\sharedassets\genericassets\playerbaseattributes.pbadb.json
 export const NW_MIN_ARMOR_MITIGATION = 0

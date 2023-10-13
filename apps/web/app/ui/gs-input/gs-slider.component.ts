@@ -70,6 +70,9 @@ export class GsSliderComponent implements ControlValueAccessor, OnChanges {
   public values: boolean
 
   @Input()
+  public barsStep: number = 100
+
+  @Input()
   public size: 'xs' | 'sm' | 'md' | 'lg' = 'md'
 
   @Input()
@@ -105,7 +108,7 @@ export class GsSliderComponent implements ControlValueAccessor, OnChanges {
   public ngOnChanges(): void {
     const min = this.min
     const max = this.max
-    const step = 100
+    const step = this.barsStep
     const bars: Bar[] = []
 
     for (let i = min; i < max; i += step) {

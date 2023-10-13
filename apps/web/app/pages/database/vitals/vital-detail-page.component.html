@@ -7,11 +7,8 @@
       <nwb-vital-detail [vital]="vital" [nwbScreenshotFrame]="vital.DisplayName | nwText"></nwb-vital-detail>
       <div class="layout-col" *ngIf="tabId$ | async; let tab">
         <div class="tabs flex-none justify-center">
-          <a class="tab tab-bordered flex-1" [class.tab-active]="tab === 'loot-items'" (click)="openTab('loot-items')">
-            Items
-          </a>
           <a class="tab tab-bordered flex-1" [class.tab-active]="tab === 'loot-table'" (click)="openTab('loot-table')">
-            Table
+            Loot Table
           </a>
           <a
             class="tab tab-bordered flex-1"
@@ -24,14 +21,7 @@
             3D
           </a>
         </div>
-        <ng-container *ngIf="loot$ | async; let loot">
-          <nwb-loot-table
-            [tags]="loot.tags"
-            [tagValues]="loot.values"
-            [tableId]="loot.tableId"
-            class="flex-1"
-            *ngIf="tab === 'loot-items'"
-          ></nwb-loot-table>
+        <ng-container *ngIf="vital$ | async; let vital">
           <div class="layout-content" *ngIf="tab === 'loot-table'">
             <div class="alert shadow-lg my-2 bg-base-100">
               <div>
@@ -49,14 +39,27 @@
                   ></path>
                 </svg>
                 <div>
-                  <h3 class="font-bold">Incomplete</h3>
+                  <h3 class="font-bold">Manual input required</h3>
                   <div class="text-xs">
-                    Zone specific loot is still missing here. Refer to NWDB drop tables for a complete overview.
+                    Buddy does not know which creatures spawn in which zone (yet). Adjust the loot context below, to
+                    feed the loot table resolver with POI and other loot tags.
                   </div>
                 </div>
               </div>
             </div>
-            <nwb-loot-graph [tags]="loot.tags" [tagValues]="loot.values" [tableId]="loot.tableId"></nwb-loot-graph>
+
+            <nwb-loot-context-editor
+              [size]="'sm'"
+              [vitalId]="vitalId$ | async"
+              #editor
+              class="p-1 mb-2"
+            ></nwb-loot-context-editor>
+
+            <nwb-loot-graph
+              [tags]="editor.contextTags | async"
+              [tagValues]="editor.contextTagValues | async"
+              [tableId]="lootTableId$ | async"
+            ></nwb-loot-graph>
           </div>
           <nwb-vital-damage-table *ngIf="tab === 'damage-table'" [vitalId]="vitalId$ | async"></nwb-vital-damage-table>
           <ng-container *ngIf="tab === '3d-model'">

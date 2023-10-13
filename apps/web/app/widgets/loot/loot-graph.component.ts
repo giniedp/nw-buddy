@@ -8,17 +8,12 @@ import { LootNode, buildLootGraph, updateLootGraph } from '~/nw/loot/loot-graph'
 import { selectStream } from '~/utils'
 import { LootContextEditorComponent } from './loot-context-editor.component'
 import { LootGraphNodeComponent } from './loot-graph-node.component'
+import { ta } from 'date-fns/locale'
 
 @Component({
   standalone: true,
   selector: 'nwb-loot-graph',
   template: `
-    <!-- <div class="flex flex-row flex-wrap gap-1">
-      <span *ngFor="let tag of knownTags$ | async; trackBy: trackByIndex" class="badge badge-sm badge-secondary">
-        {{ tag }}
-      </span>
-    </div> -->
-    <!-- <nwb-loot-context-editor></nwb-loot-context-editor> -->
     <nwb-loot-graph-node
       *ngFor="let node of graph$ | async"
       [node]="node"

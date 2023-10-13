@@ -1,14 +1,28 @@
-<div class="grid grid-cols-fill-xs gap-2">
+<div class="grid grid-cols-fill-2xs gap-2">
   <ng-container *ngIf="vm$ | async; let vm">
     <div class="form-control w-full max-w-xs">
       <label class="label">
         <span class="label-text">Player Level</span>
+        <span
+          class="label-text-alt transition-opacity opacity-10 hover:opacity-100 cursor-help"
+          [tooltip]="tipPlayerLevel"
+          [tooltipClass]="'w-40'"
+        >
+          <nwb-icon [icon]="iconInfo" class="w-4 h-4"></nwb-icon>
+        </span>
       </label>
+      <ng-template #tipPlayerLevel>
+        Accounts for player level or player level range condition tags, e.g.
+        <span class="badge badge-secondary badge-sm">Player {{ vm.playerLevel || 60 }}</span>
+      </ng-template>
       <input
         type="number"
         class="input input-bordered w-full max-w-xs"
+        [class.input-sm]="isSm"
+        [class.input-xs]="isXs"
         [ngModel]="vm.playerLevel"
         [min]="0"
+        [max]="65"
         (ngModelChange)="store.patchState({ playerLevel: $event })"
       />
     </div>
@@ -16,39 +30,132 @@
     <div class="form-control w-full max-w-xs">
       <label class="label">
         <span class="label-text">Content Level</span>
+        <span
+          class="label-text-alt transition-opacity opacity-10 hover:opacity-100 cursor-help"
+          [tooltip]="tipContLevel"
+          [tooltipClass]="'w-40'"
+        >
+          <nwb-icon [icon]="iconInfo" class="w-4 h-4"></nwb-icon>
+        </span>
       </label>
+      <ng-template #tipContLevel>
+        Accounts for content level condition tags, e.g.
+        <span class="badge badge-secondary badge-sm">MinContLevel {{ vm.minContLevel || 60 }}</span>
+      </ng-template>
       <input
         type="number"
         class="input input-bordered w-full max-w-xs"
-        [ngModel]="vm.contentLevel"
+        [class.input-sm]="isSm"
+        [class.input-xs]="isXs"
+        [ngModel]="vm.minContLevel"
         [min]="0"
-        (ngModelChange)="store.patchState({ contentLevel: $event })"
+        [max]="70"
+        (ngModelChange)="store.patchState({ minContLevel: $event })"
       />
     </div>
 
     <div class="form-control w-full max-w-xs">
       <label class="label">
-        <span class="label-text">Creature ID</span>
+        <span class="label-text">Creature</span>
+        <span
+          class="label-text-alt transition-opacity opacity-10 hover:opacity-100 cursor-help"
+          [tooltip]="tipCreature"
+          [tooltipClass]="'w-56'"
+        >
+          <nwb-icon [icon]="iconInfo" class="w-4 h-4"></nwb-icon>
+        </span>
       </label>
-      <input
-        type="string"
-        class="input input-bordered w-full max-w-xs"
-        [ngModel]="vm.vital?.VitalsID"
-        (ngModelChange)="store.patchState({ vitalId: $event })"
-      />
+      <ng-template #tipCreature>
+        The vital level accounts for enemy level condition tag, e.g.
+        <span class="badge badge-secondary badge-sm">EnemyLevel {{ vm.enemyLevel || 60 }}</span>
+        <br />
+        <br />
+        Selected creature adds loot tags to context
+        <br />
+        <ng-container *ngIf="vm.vital?.tags?.length">
+          <br />
+          Added Tags:
+          <span *ngFor="let tag of vm.vital.tags" class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
+        </ng-container>
+      </ng-template>
+      <div class="input-group">
+        <button
+          type="string"
+          class="input input-bordered flex flex-row gap-1 justify-start items-center w-full max-w-xs overflow-hidden px-1"
+          [class.input-sm]="isSm"
+          [class.input-xs]="isXs"
+          (click)="pickVital()"
+        >
+          <img *ngIf="vm.vital?.icon" [src]="vm.vital?.icon" class="w-6 h-6" />
+          <span class="whitespace-nowrap overflow-hidden text-ellipsis bg-transparent p-0">
+            {{ vm.vital?.name | nwText }}
+          </span>
+        </button>
+        <button
+          class="btn btn-square"
+          [class.btn-sm]="isSm"
+          [class.btn-xs]="isXs"
+          [tooltip]="'Creature Level'"
+          cdkOverlayOrigin
+          #cdkOrigin="cdkOverlayOrigin"
+          (click)="isEditingEnemyLevel = !isEditingEnemyLevel"
+        >
+          {{ vm.enemyLevel }}
+        </button>
+        <ng-template
+          cdkConnectedOverlay
+          [cdkConnectedOverlayOrigin]="cdkOrigin"
+          [cdkConnectedOverlayOpen]="isEditingEnemyLevel"
+          [cdkConnectedOverlayHasBackdrop]="false"
+          [cdkConnectedOverlayPanelClass]="['bg-base-100', 'bg-opacity-75', 'rounded-md', 'shadow-md', 'p-2']"
+          (overlayOutsideClick)="isEditingEnemyLevel = false"
+          (backdropClick)="isEditingEnemyLevel = false"
+          (detach)="isEditingEnemyLevel = false"
+        >
+          <nwb-gs-slider
+            [ngModel]="vm.enemyLevel"
+            (ngModelChange)="store.patchState({ enemyLevel: $event })"
+            [min]="0"
+            [max]="70"
+            [barsStep]="10"
+            [bars]="true"
+            [values]="true"
+            class="block w-96"
+          ></nwb-gs-slider>
+        </ng-template>
+      </div>
     </div>
 
     <ng-container *ngIf="vm.territory; let territory">
       <div class="form-control w-full max-w-xs">
         <label class="label">
           <span class="label-text">Territory</span>
+          <span
+            class="label-text-alt transition-opacity opacity-10 hover:opacity-100 cursor-help"
+            [tooltip]="tipTerritory"
+            [tooltipClass]="'w-56'"
+          >
+            <nwb-icon [icon]="iconInfo" class="w-4 h-4"></nwb-icon>
+          </span>
         </label>
-        <select class="select select-bordered" [ngModel]="territory.selection" (ngModelChange)="setTerritory($event)">
-          <option disabled selected>Pick one</option>
-          <option *ngFor="let option of territory.options; trackBy: trackByIndex" [value]="option.targetId">
-            {{ option.label | nwText }}
-          </option>
-        </select>
+        <ng-template #tipTerritory>
+          Selected territory updates the Content Level and adds loot tags to context
+          <br />
+          <ng-container *ngIf="territory?.tags?.length">
+            <br />
+            Added Tags:
+            <span *ngFor="let tag of territory.tags" class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
+          </ng-container>
+        </ng-template>
+        <button
+          type="string"
+          class="input input-bordered flex flex-row gap-1 justify-start items-center w-full max-w-xs overflow-hidden px-1"
+          [class.input-sm]="isSm"
+          [class.input-xs]="isXs"
+          (click)="pickTerritory()"
+        >
+          <span>{{ territory?.name | nwText }}</span>
+        </button>
       </div>
     </ng-container>
 
@@ -56,13 +163,73 @@
       <div class="form-control w-full max-w-xs">
         <label class="label">
           <span class="label-text">Point Of Interest</span>
+          <span
+            class="label-text-alt transition-opacity opacity-10 hover:opacity-100 cursor-help"
+            [tooltip]="tipPoi"
+            [tooltipClass]="'w-56'"
+          >
+            <nwb-icon [icon]="iconInfo" class="w-4 h-4"></nwb-icon>
+          </span>
         </label>
-        <select class="select select-bordered" [ngModel]="poi.selection" (ngModelChange)="setPoi($event)">
-          <option disabled selected>Pick one</option>
-          <option *ngFor="let option of poi.options; trackBy: trackByIndex" [value]="option.targetId">
-            {{ option.label | nwText }}
-          </option>
-        </select>
+        <ng-template #tipPoi>
+          Some POI have a level range. Used to account for minimum POI Content Level, e.g.
+          <span class="badge badge-secondary badge-sm">MinPOIContLevel {{ vm.minPoiLevel || 60 }}</span>
+          <br />
+          <br />
+          Selected POI adds loot tags to context, if it has any.
+          <br />
+          <ng-container *ngIf="poi?.tags?.length">
+            <br />
+            Added Tags:
+            <span *ngFor="let tag of poi.tags" class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
+          </ng-container>
+        </ng-template>
+        <div class="input-group">
+          <button
+            type="string"
+            class="input input-bordered flex flex-row gap-1 justify-start items-center w-full max-w-xs overflow-hidden px-1"
+            [class.input-sm]="isSm"
+            [class.input-xs]="isXs"
+            (click)="pickPoi()"
+          >
+            <img *ngIf="poi?.icon" [src]="poi?.icon" class="w-6 h-6" />
+            <span class="whitespace-nowrap overflow-hidden text-ellipsis bg-transparent p-0">
+              {{ poi.name | nwText }}
+            </span>
+          </button>
+          <button
+            class="btn btn-square"
+            [class.btn-sm]="isSm"
+            [class.btn-xs]="isXs"
+            [tooltip]="'Min POI Content Level'"
+            cdkOverlayOrigin
+            #cdkOrigin="cdkOverlayOrigin"
+            (click)="isEditingPoiLevel = !isEditingPoiLevel"
+          >
+            {{ vm.minPoiLevel }}
+          </button>
+          <ng-template
+            cdkConnectedOverlay
+            [cdkConnectedOverlayOrigin]="cdkOrigin"
+            [cdkConnectedOverlayOpen]="isEditingPoiLevel"
+            [cdkConnectedOverlayHasBackdrop]="false"
+            [cdkConnectedOverlayPanelClass]="['bg-base-100', 'bg-opacity-75', 'rounded-md', 'shadow-md', 'p-2']"
+            (overlayOutsideClick)="isEditingPoiLevel = false"
+            (backdropClick)="isEditingPoiLevel = false"
+            (detach)="isEditingPoiLevel = false"
+          >
+            <nwb-gs-slider
+              [ngModel]="vm.minPoiLevel"
+              (ngModelChange)="store.patchState({ minPoiLevel: $event || null })"
+              [min]="0"
+              [max]="70"
+              [barsStep]="10"
+              [bars]="true"
+              [values]="true"
+              class="block w-96"
+            ></nwb-gs-slider>
+          </ng-template>
+        </div>
       </div>
     </ng-container>
 
@@ -70,19 +237,49 @@
       <div class="form-control w-full max-w-xs">
         <label class="label">
           <span class="label-text">Game Mode</span>
+          <span
+            class="label-text-alt transition-opacity opacity-10 hover:opacity-100 cursor-help"
+            [tooltip]="tipGameMode"
+            [tooltipClass]="'w-56'"
+          >
+            <nwb-icon [icon]="iconInfo" class="w-4 h-4"></nwb-icon>
+          </span>
         </label>
-        <select class="select select-bordered" [ngModel]="gameMode.selection" (ngModelChange)="setGameMode($event)">
-          <option disabled selected>Pick one</option>
-          <option *ngFor="let option of gameMode.options; trackBy: trackByIndex" [value]="option.targetId">
-            {{ option.label | nwText }}
-          </option>
-        </select>
-      </div>
-      <div class="form-control w-full max-w-xs" *ngIf="vm.isMutable">
-        <label class="label cursor-pointer">
-          <span class="label-text">Mutation</span>
-          <input type="checkbox" class="toggle" [ngModel]="vm.isMutation" (ngModelChange)="setMutation($event)" />
-        </label>
+        <ng-template #tipGameMode>
+          Selected game mode updates the Content Level and adds loot tags to context.
+          <br />
+          <ng-container *ngIf="gameMode?.tags?.length">
+            <br />
+            Added Tags:
+            <span *ngFor="let tag of gameMode.tags" class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
+          </ng-container>
+        </ng-template>
+        <div class="input-group">
+          <button
+            type="button"
+            class="input input-bordered flex flex-row gap-1 justify-start items-center w-full max-w-xs overflow-hidden cursor-pointer px-1"
+            [class.input-sm]="isSm"
+            [class.input-xs]="isXs"
+            (click)="pickGameMode()"
+          >
+            <img *ngIf="gameMode?.icon" [src]="gameMode?.icon" class="w-6 h-6" />
+            <span class="whitespace-nowrap overflow-hidden text-ellipsis bg-transparent p-0">
+              {{ gameMode.name | nwText }}
+            </span>
+          </button>
+          <button
+            class="btn btn-square"
+            type="button"
+            [class.btn-sm]="isSm"
+            [class.btn-xs]="isXs"
+            [tooltip]="'Toggle Mutation'"
+            [disabled]="!vm.isMutable"
+            [class.btn-primary]="vm.isMutation"
+            (click)="setMutation(!vm.isMutation)"
+          >
+            <img [nwImage]="'assets/icons/menu/expeditions.png'" class="w-5 h-5" [class.opacity-50]="!vm.isMutable" />
+          </button>
+        </div>
       </div>
     </ng-container>
 
@@ -90,15 +287,33 @@
       <div class="form-control w-full max-w-xs">
         <label class="label">
           <span class="label-text">Mutation Level</span>
+          <span
+            class="label-text-alt transition-opacity opacity-10 hover:opacity-100 cursor-help"
+            [tooltip]="tipMutaLevel"
+            [tooltipClass]="'w-56'"
+          >
+            <nwb-icon [icon]="iconInfo" class="w-4 h-4"></nwb-icon>
+          </span>
         </label>
+        <ng-template #tipMutaLevel>
+          Selected mutation level adds loot tags to context.
+          <br />
+          <ng-container *ngIf="difficulty?.tags?.length">
+            <br />
+            Added Tags:
+            <span *ngFor="let tag of difficulty.tags" class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
+          </ng-container>
+        </ng-template>
         <select
           class="select select-bordered"
+          [class.select-sm]="isSm"
+          [class.select-xs]="isXs"
           [ngModel]="difficulty.selection"
           (ngModelChange)="setMutaDifficulty($event)"
         >
-          <option disabled selected>Pick one</option>
+          <option selected>-- none --</option>
           <option *ngFor="let option of difficulty.options; trackBy: trackByIndex" [value]="option.targetId">
-            {{ option.label | nwText }}
+            {{ option.label }}
           </option>
         </select>
       </div>
@@ -108,11 +323,33 @@
       <div class="form-control w-full max-w-xs">
         <label class="label">
           <span class="label-text">Mutation Element</span>
+          <span
+            class="label-text-alt transition-opacity opacity-10 hover:opacity-100 cursor-help"
+            [tooltip]="tipMutation"
+            [tooltipClass]="'w-56'"
+          >
+            <nwb-icon [icon]="iconInfo" class="w-4 h-4"></nwb-icon>
+          </span>
         </label>
-        <select class="select select-bordered" [ngModel]="element.selection" (ngModelChange)="setMutaElement($event)">
-          <option disabled selected>Pick one</option>
+        <ng-template #tipMutation>
+          Selected mutation adds loot tags to context.
+          <br />
+          <ng-container *ngIf="element?.tags?.length">
+            <br />
+            Added Tags:
+            <span *ngFor="let tag of element.tags" class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
+          </ng-container>
+        </ng-template>
+        <select
+          class="select select-bordered"
+          [class.select-sm]="isSm"
+          [class.select-xs]="isXs"
+          [ngModel]="element.selection"
+          (ngModelChange)="setMutaElement($event)"
+        >
+          <option selected>-- none --</option>
           <option *ngFor="let option of element.options; trackBy: trackByIndex" [value]="option.targetId">
-            {{ option.label | nwText }}
+            {{ option.label }}
           </option>
         </select>
       </div>

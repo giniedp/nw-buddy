@@ -1,7 +1,7 @@
 <ng-container *ngIf="vm$ | async; let vm">
   <div *ngIf="vm.expandable" class="border border-base-100 rounded-l-md class.bg-base-200">
     <div
-      class="px-2 py-1 flex flex-row items-center cursor-pointer gap-x-1 bg-base-100 shadow-accent border-l-4"
+      class="pl-2 py-1 flex flex-row items-center gap-x-1 bg-base-100 cursor-pointer shadow-accent border-l-4"
       [class.border-l-transparent]="!vm.highlight"
       [class.border-l-accent]="vm.highlight"
       (click)="toggle()"
@@ -17,8 +17,12 @@
         </span>
         <a
           class="whitespace-nowrap inline-flex items-center"
-          [class.hover:underline]="vm.showLink"
+          [class.btn]="vm.showLink"
+          [class.btn-sm]="vm.showLink"
+          [class.btn-ghost]="vm.showLink"
+          [class.-ml-1]="vm.showLink"
           [routerLink]="vm.link"
+          [tooltip]="vm.showLink ? 'Go to loot table' : ''"
         >
           <nwb-icon [icon]="linkIcon" class="w-4 h-4 mr-1" *ngIf="vm.showLink"></nwb-icon>
           <span>{{ vm.displayName }}</span>
@@ -27,19 +31,32 @@
       <span class="flex-1"></span>
 
       <div class="text-xs flex flex-row items-center gap-1">
-        <span class="min-w-[40px]" [class.text-secondary]="vm.typeName == 'bucket'"> {{ vm.typeName }} </span>
+        <span
+          class="min-w-[40px] cursor-help"
+          [tooltip]="vm.typeName === 'bucket' ? 'This is a loot bucket' : 'This is a loot table'"
+          [class.text-secondary]="vm.typeName == 'bucket'"
+        >
+          {{ vm.typeName }}
+        </span>
         <span> | </span>
         <ng-container *ngIf="vm.showChance">
-          <span class="min-w-[40px] inline-flex flex-col text-right">
+          <span class="min-w-[40px] cursor-help inline-flex flex-col text-right">
             <span> {{ vm.chanceAbs | percent : '0.0-6' }} </span>
           </span>
           <span> | </span>
         </ng-container>
-        <span class="min-w-[40px] inline-flex flex-col text-right">
+        <span class="min-w-[40px] cursor-help inline-flex flex-col text-right" [tooltip]="tplTip">
           <span class="text-success" *ngIf="vm.unlockedItemCount && !vm.showLocked">
             {{ vm.unlockedItemCount }}
           </span>
           <span> {{ vm.totalItemCount }} </span>
+          <ng-template #tplTip>
+            <div>{{ vm.totalItemCount }} items inside this table (tree)</div>
+            <ng-container>
+              <div class="text-success">{{ vm.unlockedItemCount }} items unlocked with current loot context</div>
+              <div class="text-error">{{ vm.totalItemCount - vm.unlockedItemCount }} items locked</div>
+            </ng-container>
+          </ng-template>
         </span>
       </div>
       <nwb-icon

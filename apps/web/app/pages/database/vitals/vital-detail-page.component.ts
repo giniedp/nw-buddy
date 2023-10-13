@@ -14,6 +14,9 @@ import { LootModule } from '~/widgets/loot'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { VitalsDetailModule } from '~/widgets/vitals-detail'
 import { ModelViewerModule, ModelViewerService } from '../../../widgets/model-viewer'
+import { TooltipModule } from '~/ui/tooltip'
+import { svgPen } from '~/ui/icons/svg'
+import { IconsModule } from '~/ui/icons'
 
 export type DetailTabId = 'loot-items' | 'loot-table' | 'damage-table' | '3d-model'
 
@@ -31,6 +34,8 @@ export type DetailTabId = 'loot-items' | 'loot-table' | 'damage-table' | '3d-mod
     LayoutModule,
     ScreenshotModule,
     ModelViewerModule,
+    TooltipModule,
+    IconsModule,
   ],
   host: {
     class: 'flex-none flex flex-col',
@@ -43,68 +48,14 @@ export class VitalDetailComponent {
     map((it: DetailTabId): DetailTabId => it || 'loot-items')
   )
 
-  protected vital$ = this.db
-    .vital(this.vitalId$)
-    .pipe(tap((it) => this.onEntity(it)))
-    .pipe(shareReplayRefCount(1))
+  protected iconEdit = svgPen
 
-  protected loot$ = combineLatest({
-    vital: this.vital$,
-    vitalsMeta: this.db.vitalsMetadataMap,
-    dungeons: this.db.gameModes,
-    difficulties: this.db.mutatorDifficulties,
-    territories: this.db.territories,
-  }).pipe(
-    map(({ vital, vitalsMeta, dungeons, territories, difficulties }) => {
-      const enemyLevel = vital.Level
-      const dungeon = getVitalDungeon(vital, dungeons, vitalsMeta)
-      const tags: string[] = [...(vital.LootTags || []), ...territories.map((it) => it.LootTags || []).flat(1)]
-      if (dungeon) {
-        tags.push(
-          ...(dungeon.LootTags || []),
-          ...(dungeon.MutLootTagsOverride || []),
-          ...difficulties.map((it) => it.InjectedLootTags).flat(1)
-        )
-      }
-      return {
-        tags: uniq([
-          'GlobalMod', // unknown purpose
-          // 'MinContLevel',    // any zone
-          // 'MinPOIContLevel', // any zone
-          ...tags,
-        ]),
-        values: {
-          MinContLevel: enemyLevel,
-          MinPOIContLevel: enemyLevel,
-          EnemyLevel: enemyLevel,
-          Level: NW_MAX_CHARACTER_LEVEL,
-        },
-        tableId: vital.LootTableId,
-      }
-    })
-  )
-  public lootTags$ = defer(() =>
-    combineLatest({
-      vital: this.vital$,
-      vitalsMeta: this.db.vitalsMetadataMap,
-      dungeons: this.db.gameModes,
-      difficulties: this.db.mutatorDifficulties,
-      territories: this.db.territories,
-    })
-  ).pipe(
-    map(({ vital, vitalsMeta, dungeons, difficulties, territories }) => {
-      const dungeon = getVitalDungeon(vital, dungeons, vitalsMeta)
-      const result: string[] = [...(vital.LootTags || []), ...territories.map((it) => it.LootTags || []).flat(1)]
-      if (dungeon) {
-        result.push(
-          ...(dungeon.LootTags || []),
-          ...(dungeon.MutLootTagsOverride || []),
-          ...difficulties.map((it) => it.InjectedLootTags).flat(1)
-        )
-      }
-      return uniq(result)
-    })
-  )
+  protected vital$ = selectStream(this.db.vital(this.vitalId$), (it) => {
+    this.onEntity(it)
+    return it
+  })
+
+  protected lootTableId$ = selectStream(this.vital$, (it) => it.LootTableId)
 
   public constructor(
     private route: ActivatedRoute,

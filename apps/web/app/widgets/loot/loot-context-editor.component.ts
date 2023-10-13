@@ -1,9 +1,22 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Injector, Input, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { combineLatest, map } from 'rxjs'
-import { NwModule } from '~/nw'
+import { combineLatest, filter, map } from 'rxjs'
+import { NwDbService, NwModule } from '~/nw'
 import { LootContextEditorStore } from './loot-context-editor.store'
+import { DataViewModule, DataViewPicker } from '~/ui/data/data-view'
+import { Dialog } from '@angular/cdk/dialog'
+import { VitalTableAdapter } from '../data/vital-table'
+import { PoiTableAdapter } from '../data/poi-table'
+import { GameModeTableAdapter } from '../data/game-mode-table'
+import { TerritoryTableAdapter } from '../data/territory-table'
+import { TooltipModule } from '~/ui/tooltip'
+import { tapDebug } from '~/utils'
+import { GsSliderComponent } from '~/ui/gs-input'
+import { OverlayModule } from '@angular/cdk/overlay'
+import { getVitalDungeons } from '@nw-data/common'
+import { svgInfo, svgInfoCircle } from '~/ui/icons/svg'
+import { IconsModule } from '~/ui/icons'
 
 @Component({
   standalone: true,
@@ -11,7 +24,16 @@ import { LootContextEditorStore } from './loot-context-editor.store'
   exportAs: 'contextEditor',
   templateUrl: './loot-context-editor.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    FormsModule,
+    DataViewModule,
+    TooltipModule,
+    GsSliderComponent,
+    OverlayModule,
+    IconsModule,
+  ],
   providers: [LootContextEditorStore],
   host: {
     class: 'block',
@@ -19,17 +41,20 @@ import { LootContextEditorStore } from './loot-context-editor.store'
 })
 export class LootContextEditorComponent {
   @Input()
+  public size: 'sm' | 'xs' | 'md' = 'md'
+
+  @Input()
   public set vitalId(value: string) {
     this.store.patchState({ vitalId: value })
   }
 
   @Input()
-  public set territoryId(value: string) {
+  public set territoryId(value: number) {
     this.store.patchState({ territoryId: value })
   }
 
   @Input()
-  public set poiId(value: string) {
+  public set poiId(value: number) {
     this.store.patchState({ poiId: value })
   }
 
@@ -52,39 +77,50 @@ export class LootContextEditorComponent {
   @Output()
   public contextTagValues = this.store.context$.pipe(map((it) => it.values))
 
-  @Output()
-  public vitalDropChance = this.store.vital$.pipe(
-    map((it) => {
-      if (!it) {
-        return 1
-      }
-      return (Number(it.LootDropChance) || 0) / 100
-    })
-  )
+  protected get isSm() {
+    return this.size === 'sm'
+  }
 
+  protected get isXs() {
+    return this.size === 'xs'
+  }
+  protected iconInfo = svgInfoCircle
+  protected isEditingEnemyLevel = false
+  protected isEditingPoiLevel = false
   protected trackByIndex = (i: number) => i
   protected vm$ = combineLatest({
+    enemyLevel: this.store.enemyLevel$,
+    playerLevel: this.store.playerLevel$,
+    minContLevel: this.store.minContLevel$,
+    minPoiLevel: this.store.minPoiLevel$,
+
     vital: this.store.vital$,
     territory: this.store.territory$,
     poi: this.store.poi$,
+
     gameMode: this.store.gameMode$,
     mutaDifficulty: this.store.mutaDifficulty$,
     mutaElement: this.store.mutaElement$,
     isMutation: this.store.isMutation$,
     isMutable: this.store.isMutable$,
-    playerLevel: this.store.playerLevel$,
-    contentLevel: this.store.contentLevel$,
   })
 
-  public constructor(protected store: LootContextEditorStore) {
-    //
+  public constructor(
+    protected store: LootContextEditorStore,
+    private dialog: Dialog,
+    private injector: Injector,
+    private db: NwDbService
+  ) {
+    this.store.loadEnemyLevelAndGameMode()
+    this.store.loadMinPoiLevel()
+    this.store.loadContentLevel()
   }
 
-  protected setTerritory(selection: string) {
+  protected setTerritory(selection: number) {
     this.store.patchState({ territoryId: selection })
   }
 
-  protected setPoi(selection: string) {
+  protected setPoi(selection: number) {
     this.store.patchState({ poiId: selection })
   }
 
@@ -102,5 +138,77 @@ export class LootContextEditorComponent {
 
   protected setMutation(selection: boolean) {
     this.store.patchState({ isMutation: selection })
+  }
+
+  public pickVital() {
+    DataViewPicker.open(this.dialog, {
+      title: 'Pick Vital',
+      dataView: { adapter: VitalTableAdapter },
+      config: {
+        maxWidth: 1024,
+        maxHeight: 1024,
+        panelClass: ['w-full', 'h-full', 'p-4'],
+        injector: this.injector,
+      },
+    })
+      .closed.pipe(filter((it) => it !== undefined))
+      .pipe(map((it) => it?.[0] as string))
+      .subscribe((it) => {
+        this.store.patchState({ vitalId: it })
+      })
+  }
+
+  public pickPoi() {
+    DataViewPicker.open(this.dialog, {
+      title: 'Pick POI',
+      dataView: { adapter: PoiTableAdapter },
+      config: {
+        maxWidth: 1024,
+        maxHeight: 1024,
+        panelClass: ['w-full', 'h-full', 'p-4'],
+        injector: this.injector,
+      },
+    })
+      .closed.pipe(filter((it) => it !== undefined))
+      .pipe(map((it) => it?.[0] as number))
+      .subscribe((it) => {
+        this.store.patchState({ poiId: it })
+      })
+  }
+
+  public pickGameMode() {
+    DataViewPicker.open(this.dialog, {
+      title: 'Pick Game Mode',
+      dataView: { adapter: GameModeTableAdapter },
+      config: {
+        maxWidth: 1024,
+        maxHeight: 1024,
+        panelClass: ['w-full', 'h-full', 'p-4'],
+        injector: this.injector,
+      },
+    })
+      .closed.pipe(filter((it) => it !== undefined))
+      .pipe(map((it) => it?.[0] as string))
+      .subscribe((it) => {
+        this.store.patchState({ gameModeId: it })
+      })
+  }
+
+  public pickTerritory() {
+    DataViewPicker.open(this.dialog, {
+      title: 'Pick Territory',
+      dataView: { adapter: TerritoryTableAdapter },
+      config: {
+        maxWidth: 1024,
+        maxHeight: 1024,
+        panelClass: ['w-full', 'h-full', 'p-4'],
+        injector: this.injector,
+      },
+    })
+      .closed.pipe(filter((it) => it !== undefined))
+      .pipe(map((it) => it?.[0] as number))
+      .subscribe((it) => {
+        this.store.patchState({ territoryId: it })
+      })
   }
 }
