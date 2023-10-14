@@ -5,43 +5,43 @@ describe('item', () => {
     const table = [
       {
         item: { ForceRarity: 0 },
-        expect: 0,
+        expect: 'common',
       },
       {
         item: { ItemID: '' },
-        expect: 0,
+        expect: 'common',
       },
       {
         item: { ItemID: '', Perk1: 'Perk1' },
-        expect: 1,
+        expect: 'uncommon' ,
       },
       {
         item: { ItemID: '', Perk1: 'Perk1', ForceRarity: 0 },
-        expect: 1,
+        expect: 'uncommon' ,
       },
       {
         item: { ItemID: '', Perk1: 'Perk1', Perk2: 'Perk2' },
-        expect: 1,
+        expect: 'uncommon' ,
       },
       {
         item: { ItemID: '', Perk1: 'Perk1', Perk2: 'Perk2', ForceRarity: 0 },
-        expect: 1,
+        expect: 'uncommon' ,
       },
       {
         item: { ItemID: '', Perk1: 'Perk1', Perk2: 'Perk2', ForceRarity: 1 },
-        expect: 1,
+        expect: 'uncommon' ,
       },
       {
         item: { ItemID: '', Perk1: 'Perk1', Perk2: 'Perk2', Perk3: 'Perk3' },
-        expect: 2,
+        expect: 'rare' ,
       },
       {
         item: { ItemID: '', Perk1: 'Perk1', Perk2: 'Perk2', Perk3: 'Perk3', Perk4: 'Perk4' },
-        expect: 3,
+        expect: 'epic' ,
       },
       {
         item: { ItemID: '', Perk1: 'Perk1', Perk2: 'Perk2', Perk3: 'Perk3', Perk4: 'Perk4', Perk5: 'Perk5' },
-        expect: 3,
+        expect: 'epic' ,
       },
       {
         item: {
@@ -54,7 +54,7 @@ describe('item', () => {
           Tier: 5,
           GearScoreOverride: 589,
         },
-        expect: 3,
+        expect: 'epic' ,
       },
       {
         item: {
@@ -67,7 +67,7 @@ describe('item', () => {
           Tier: 4,
           GearScoreOverride: 590,
         },
-        expect: 3,
+        expect: 'epic' ,
       },
       {
         item: {
@@ -80,7 +80,7 @@ describe('item', () => {
           Tier: 5,
           GearScoreOverride: 590,
         },
-        expect: 4,
+        expect: 'legendary' ,
       },
     ]
 
