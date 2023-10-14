@@ -52,6 +52,9 @@ export function solveAttributePlacingMods({
   stats: Array<{ key: AttributeRef; value: number }>
   placingMods: number[]
 }): Array<{ key: AttributeRef; value: number }> {
+  const result = stats.map((it) => {
+    return { key: it.key, value: 0 }
+  })
   // when stats are equal, this sort order applies
   const evaluateOrder: AttributeRef[] = ['con', 'foc', 'str', 'dex', 'int']
   stats = [...stats].sort((a, b) => {
@@ -59,10 +62,6 @@ export function solveAttributePlacingMods({
       return evaluateOrder.indexOf(a.key) - evaluateOrder.indexOf(b.key)
     }
     return b.value - a.value
-  })
-
-  const result = evaluateOrder.map((it) => {
-    return { key: it, value: 0 }
   })
 
   placingMods.forEach((value, index) => {
