@@ -9,7 +9,7 @@ import { StatusEffectCategoryDetailStore } from './status-effect-category.store'
 @Component({
   standalone: true,
   selector: 'nwb-status-effect-category-detail',
-  templateUrl: './status-effect-category.component.html',
+  templateUrl: './status-effect-category-detail.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, DecimalPipe],
@@ -30,11 +30,8 @@ export class StatusEffectCategoryDetailComponent extends StatusEffectCategoryDet
     this.patchState({ categoryId: value })
   }
 
-  @Input()
-  public disableProperties: boolean
-
-  public constructor(db: NwDbService, private decimals: DecimalPipe) {
-    super(db)
+  public constructor(private decimals: DecimalPipe) {
+    super()
   }
 
   public formatValue = (value: any, key: keyof Statuseffectcategories): PropertyGridCell[] => {

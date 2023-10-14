@@ -16,6 +16,7 @@ const DEFAULT_CLASS = [
   'bg-opacity-90',
   'shadow-md',
   'overflow-clip',
+  'max-w-sm'
 ]
 
 @Component({
@@ -74,6 +75,6 @@ export class TooltipComponent {
 
   public constructor(private hostClass: NgClass, private elRef: ElementRef<HTMLElement>) {
     //
-    
+
   }
 }

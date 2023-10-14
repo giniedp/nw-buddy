@@ -50,6 +50,9 @@ export class StatusEffectDetailComponent extends StatusEffectDetailStore {
   @ViewChild('tplCategory', { static: true })
   protected tplCategory: TemplateRef<any>
 
+  @ViewChild('tplCategoryInfo', { static: true })
+  protected tplCategoryInfo: TemplateRef<any>
+
   protected viewerActive = false
   protected iconInfo = svgInfoCircle
   public constructor(db: NwDbService, private decimals: DecimalPipe) {
@@ -77,18 +80,22 @@ export class StatusEffectDetailComponent extends StatusEffectDetailStore {
           },
         ]
       }
+      case 'EffectCategories' : {
+        return value.map((it) => ({
+          value: String(it),
+          template: this.tplCategory,
+        }))
+      }
       default: {
-        if (Array.isArray(value)) {
-          return value.map((it) => ({
-            value: String(it),
-            template: this.tplCategory,
-          }))
-        }
         if (typeof value === 'number') {
           return [
             {
               value: this.decimals.transform(value, '0.0-7'),
               accent: true,
+            },
+            {
+              template: this.tplCategoryInfo,
+              value: key,
             },
           ]
         }

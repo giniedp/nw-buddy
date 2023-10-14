@@ -1,14 +1,17 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, forwardRef } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { Perks } from '@nw-data/generated'
+import { parseScalingPerGearScore } from '@nw-data/common'
+import { Affixstats, Perks } from '@nw-data/generated'
 import { NwDbService, NwModule } from '~/nw'
 import { GsInputComponent } from '~/ui/gs-input'
+import { IconsModule } from '~/ui/icons'
+import { svgInfoCircle } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
+import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
 import { PerkDetailStore } from './perk-detail.store'
-import { parseScalingPerGearScore } from '@nw-data/common'
 
 @Component({
   standalone: true,
@@ -16,7 +19,17 @@ import { parseScalingPerGearScore } from '@nw-data/common'
   templateUrl: './perk-detail.component.html',
   exportAs: 'perkDetail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, GsInputComponent, FormsModule, TooltipModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    ItemFrameModule,
+    PropertyGridModule,
+    GsInputComponent,
+    FormsModule,
+    TooltipModule,
+    StatusEffectCategoryDetailModule,
+    IconsModule,
+  ],
   providers: [
     DecimalPipe,
     {
@@ -36,8 +49,10 @@ export class PerkDetailComponent extends PerkDetailStore {
 
   @Input()
   public disableProperties: boolean
-
+  protected iconInfo = svgInfoCircle
   protected trackByIndex = (i: number) => i
+  @ViewChild('tplCategoryInfo', { static: true })
+  protected tplCategoryInfo: TemplateRef<any>
   public constructor(db: NwDbService, protected decimals: DecimalPipe) {
     super(db)
   }
@@ -108,6 +123,33 @@ export class PerkDetailComponent extends PerkDetailStore {
             {
               value: this.decimals.transform(value, '0.0-7'),
               accent: true,
+            },
+          ]
+        }
+        return [
+          {
+            value: String(value),
+            accent: typeof value === 'number',
+            info: typeof value === 'boolean',
+            bold: typeof value === 'boolean',
+          },
+        ]
+      }
+    }
+  }
+
+  public formatAffixValue = (value: any, key: keyof Affixstats): PropertyGridCell[] => {
+    switch (key) {
+      default: {
+        if (typeof value === 'number') {
+          return [
+            {
+              value: this.decimals.transform(value, '0.0-7'),
+              accent: true,
+            },
+            {
+              template: this.tplCategoryInfo,
+              value: key,
             },
           ]
         }

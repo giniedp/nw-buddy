@@ -1,11 +1,12 @@
 import { Directive, forwardRef, Input, Output } from '@angular/core'
-import { NwDbService } from '~/nw'
+import { firstValueFrom, map } from 'rxjs'
 import { StatusEffectCategoryDetailStore } from './status-effect-category.store'
+import { extractLimits } from './utils'
 
 @Directive({
   standalone: true,
-  selector: '[nwbStatusEffectCategoryDetail]',
-  exportAs: 'effectCategoryDetail',
+  selector: '[nwbStatusEffectCategoryDetail],[nwbStatusEffectCategoryDetailByProp]',
+  exportAs: 'detail',
   providers: [
     {
       provide: StatusEffectCategoryDetailStore,
@@ -19,10 +20,22 @@ export class StatusEffectCategoryDetailDirective extends StatusEffectCategoryDet
     this.patchState({ categoryId: value })
   }
 
+  @Input()
+  public set nwbStatusEffectCategoryDetailByProp(value: string) {
+    this.loadByPropId(value)
+  }
+
   @Output()
   public nwbStatusEffectCategoryChange = this.category$
 
-  public constructor(db: NwDbService) {
-    super(db)
+  private async loadByPropId(id: string) {
+    const category = await firstValueFrom(
+      this.db.statusEffectCategories.pipe(
+        map((list) => {
+          return list.find((it) => !!extractLimits(it.ValueLimits)?.[id])
+        })
+      )
+    )
+    this.patchState({ categoryId: category?.StatusEffectCategoryID })
   }
 }
