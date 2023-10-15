@@ -1,8 +1,9 @@
-import { AgGridEvent, GridApi, GridOptions } from '@ag-grid-community/core'
+import { AgGridEvent, GridApi, GridOptions, RowClickedEvent } from '@ag-grid-community/core'
+import { animate, style, transition, trigger } from '@angular/animations'
+import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
   Component,
-  ElementRef,
   EventEmitter,
   Input,
   NgZone,
@@ -17,9 +18,9 @@ import {
   combineLatest,
   debounceTime,
   defer,
+  filter,
   map,
   merge,
-  of,
   skip,
   subscribeOn,
   switchMap,
@@ -28,13 +29,11 @@ import {
 } from 'rxjs'
 import { LocaleService } from '~/i18n'
 import { AgGrid, AgGridDirective } from '~/ui/data/ag-grid'
-import { debounceSync, selectStream } from '~/utils/rx-operators'
-import { gridDisplayRowCount } from '~/ui/data/ag-grid/utils'
+import { gridDisplayRowCount, gridGetPinnedTopData } from '~/ui/data/ag-grid/utils'
+import { runInZone } from '~/utils/run-in-zone'
+import { debounceSync, selectStream, tapDebug } from '~/utils/rx-operators'
 import { TableGridPersistenceService } from './table-grid-persistence.service'
 import { TableGridStore } from './table-grid.store'
-import { runInZone } from '~/utils/run-in-zone'
-import { animate, style, transition, trigger } from '@angular/animations'
-import { CommonModule } from '@angular/common'
 
 export interface SelectionChangeEvent<T> {
   rows: T[]
@@ -89,6 +88,9 @@ export class TableGridComponent<T> implements OnInit {
   public readonly selectionChanged$ = new EventEmitter<SelectionChangeEvent<T>>()
 
   @Output()
+  public readonly pinnedChanged$ = new EventEmitter<SelectionChangeEvent<T>>()
+
+  @Output()
   public readonly ready$ = new ReplaySubject<AgGrid<T>>(1)
 
   @Output()
@@ -99,6 +101,9 @@ export class TableGridComponent<T> implements OnInit {
 
   @Output()
   public readonly selectedRow$ = selectStream(defer(() => this.selectionChanged$).pipe(map((it) => it.rows?.[0])))
+
+  @Output()
+  public readonly pinnedRows$ = selectStream(defer(() => this.pinnedChanged$).pipe(map((it) => it.rows)))
 
   @ViewChild(AgGridDirective, { static: true })
   public readonly grid: AgGridDirective<T>
@@ -119,6 +124,7 @@ export class TableGridComponent<T> implements OnInit {
     this.grid.onReady.pipe(takeUntil(this.store.destroy$)).subscribe(this.ready$)
     this.attachBootloader()
     this.attachPersistence()
+    this.attachPinBinding()
     this.attachAutoRefresh()
     this.attachSelectionBinding()
   }
@@ -163,6 +169,21 @@ export class TableGridComponent<T> implements OnInit {
           this.persistence.loadFilterState(api, this.persistKey)
         })
       ),
+      // load pinned data state
+      merge(this.grid.onEvent('firstDataRendered'), this.grid.onEvent('rowDataChanged')).pipe(
+        tap(({ api }) => {
+          this.persistence.loadPinnedState(api, this.persistKey, this.store.identifyBy$())
+        })
+      ),
+      // save pinned data state
+      this.grid
+        .onEvent('pinnedRowDataChanged')
+        .pipe(debounceTime(500))
+        .pipe(
+          tap(({ api }) => {
+            this.persistence.savePinnedState(api, this.persistKey, this.store.identifyBy$())
+          })
+        ),
       // save column state whenever a column has changed
       merge(
         this.grid.onEvent('columnMoved'),
@@ -189,6 +210,35 @@ export class TableGridComponent<T> implements OnInit {
     )
       .pipe(takeUntil(this.store.destroy$))
       .subscribe()
+  }
+
+  private attachPinBinding() {
+    this.grid
+      .onEvent('pinnedRowDataChanged')
+      .pipe(runInZone(this.zone))
+      .pipe(
+        tap(({ api }) => {
+          const identifyBy = this.store.identifyBy$()
+          const rows = gridGetPinnedTopData(api)
+          const ids = identifyBy ? rows.map(identifyBy) : null
+          this.store.patchState({ pinned: ids })
+        })
+      )
+      .pipe(takeUntil(this.store.destroy$))
+      .subscribe()
+
+    this.grid
+      .onEvent('rowClicked')
+      .pipe(takeUntil(this.store.destroy$))
+      .pipe(filter((it: RowClickedEvent) => !!it.rowPinned))
+      .subscribe((e: RowClickedEvent) => {
+        e.api.forEachNode((it) => {
+          if (it.data === e.data) {
+            it.setSelected(true, true, 'api')
+            e.api.ensureNodeVisible(it, 'middle')
+          }
+        })
+      })
   }
 
   private attachSelectionBinding() {
@@ -259,6 +309,21 @@ export class TableGridComponent<T> implements OnInit {
     if (ensureVisible && selectedNode) {
       api.ensureNodeVisible(selectedNode, 'middle')
     }
+  }
+
+  private syncPinned({ toPin, api }: { toPin: Array<string | number>; api: GridApi }) {
+    const identifyBy = this.store.identifyBy$()
+    if (!api || !identifyBy) {
+      return
+    }
+
+    const dataToPin = []
+    api.forEachNode((it) => {
+      if (toPin && toPin.includes(identifyBy(it.data))) {
+        dataToPin.push(it.data)
+      }
+    })
+    api.setPinnedTopRowData(dataToPin)
   }
 }
 

@@ -74,3 +74,4 @@ export const svgTableList = require('!!raw-loader!./table-list.svg').default
 export const svgTags = require('!!raw-loader!./tags.svg').default
 export const svgTrashCan = require('!!raw-loader!./trash-can.svg').default
 export const svgXmark = require('!!raw-loader!./xmark.svg').default
+export const svgThumbtack = require('!!raw-loader!./thumbtack.svg').default

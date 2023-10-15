@@ -19,6 +19,9 @@
       <li [tooltip]="'Open price importer'">
         <button class="btn btn-square btn-ghost" [nwbPriceImporterButton]></button>
       </li>
+      <li>
+        <button class="btn btn-square btn-ghost" [nwbDataViewPin]></button>
+      </li>
       <li *ngIf="service.canToggleMode$()">
         <button class="btn btn-square btn-ghost" [nwbDataViewToggle]></button>
       </li>

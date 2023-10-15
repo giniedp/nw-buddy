@@ -13,6 +13,10 @@
   )
 );
 
+.ag-floating-top  {
+  @apply border-b border-solid border-primary;
+}
+
 .overflow-visible {
   .ag-cell-value {
     overflow: visible !important;

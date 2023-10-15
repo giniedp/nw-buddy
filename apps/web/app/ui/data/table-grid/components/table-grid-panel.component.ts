@@ -20,6 +20,7 @@ import {
   svgFileCode,
   svgFileCsv,
   svgFilter,
+  svgThumbtack,
 } from '~/ui/icons/svg'
 import { EditorDialogComponent } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
@@ -95,6 +96,7 @@ export class TableGridPanelComponent extends ComponentStore<{
   protected svgFilter = svgFilter
   protected svgCode = svgCode
   protected svgFileCode = svgFileCode
+  protected svgPin = svgThumbtack
 
   public constructor(private dialog: Dialog, private qs: QuicksearchService) {
     super({ grid: null })
@@ -127,6 +129,11 @@ export class TableGridPanelComponent extends ComponentStore<{
     const grid = await firstValueFrom(this.grid$)
     grid.api.setFilterModel({})
     grid.api.setQuickFilter('')
+  }
+
+  protected async clearPins() {
+    const grid = await firstValueFrom(this.grid$)
+    grid.api.setPinnedTopRowData()
   }
 
   protected toggleHide(id: string) {

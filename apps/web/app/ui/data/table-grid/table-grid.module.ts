@@ -1,16 +1,16 @@
 import { NgModule } from '@angular/core'
 import {
-  TableGridCategoryMenuComponent,
   DataGridPanelButtonComponent,
-  TableGridExpressionPanelComponent,
+  TableGridCategoryMenuComponent,
   TableGridExpressionButtonComponent,
+  TableGridExpressionPanelComponent,
 } from './components'
-import { TableGridComponent } from './table-grid.component'
 import {
   DataGridFilterQueryParamDirective,
   DataGridQuickfilterDirective,
   DataGridSelectionRouteParamDirective,
 } from './extensions'
+import { TableGridComponent } from './table-grid.component'
 
 const COMPONENTS = [
   TableGridComponent,
@@ -22,6 +22,7 @@ const COMPONENTS = [
   TableGridExpressionPanelComponent,
   TableGridExpressionButtonComponent,
 ]
+
 @NgModule({
   imports: [...COMPONENTS],
   exports: [...COMPONENTS],

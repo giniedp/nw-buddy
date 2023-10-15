@@ -10,6 +10,7 @@ export interface TableGridState<T> {
   gridData?: T[]
   gridOptions?: GridOptions<T>
   selection?: Array<string | number>
+  pinned?: Array<string | number>
 
   multiSelect?: boolean
   filterModel?: any
@@ -23,6 +24,7 @@ export class TableGridStore<T = unknown> extends ComponentStore<TableGridState<T
   public readonly gridData$ = this.select(({ gridData }) => gridData)
   public readonly gridOptions$ = this.select(({ gridOptions }) => gridOptions)
   public readonly selection$ = this.select(({ selection }) => selection, { equal: isEqual })
+  public readonly pinned$ = this.select(({ pinned }) => pinned, { equal: isEqual })
   public readonly identifyBy$ = this.selectSignal(({ identifyBy }) => identifyBy)
   public readonly hasLoaded$ = this.select(({ hasLoaded }) => hasLoaded)
 
