@@ -12,6 +12,8 @@
   * [Toolbar](tools/database/toolbar.md)
   * [Data panel](tools/database/data-panel.md)
   * [Detail view](tools/database/detail-view.md)
+* [Screenshot](tools/screenshot.md)
+* [Price importer](tools/price-importer.md)
 * [Tracking](tools/tracking.md)
 * [Crafting Calculator](tools/crafting-calculator.md)
 * [Gearbuilder](tools/gearbuilder.md)
