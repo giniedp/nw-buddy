@@ -19,13 +19,13 @@ layout:
 
 ## Explore
 
-Explore the new world database. Buddy extracts and presents many game datasheets as tables with all columns for you to show, hide, sort and filter. The aim is to make raw game data accessible.&#x20;
+Explore the new world database. Buddy extracts may game data sheets and presents them as browsable tables with all columns for you to show, hide, sort and filter. The aim is to make raw game data accessible.&#x20;
 
 ## Track & Progress
 
 We love to collect and buddy lets you to keep track of your ingame collectables. Character Level and Skill progression included.&#x20;
 
-As there is currently no official way to fetch game state from the game client, tracking inside buddy is completely separated from the game. <mark style="background-color:orange;">You have to track your stuff manually in buddy.</mark>
+_Tracking inside buddy is completely separated from the game. <mark style="background-color:orange;">You have to track your stuff manually in buddy.</mark> There is currently no official way to fetch game state from the game client._
 
 ## Create
 

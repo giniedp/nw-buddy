@@ -25,7 +25,7 @@ For example all icons in a table view show the nwdb tooltip and link to that ite
 
 <figure><img src="../.gitbook/assets/nwdb-link-from-table.png" alt=""><figcaption><p>Icon with nwdb tooltip that links to nwdb.info</p></figcaption></figure>
 
-Item headers have same concept for the item icon, while the title has the internal link.
+Item headers have same concept. The icon leads to nwdb, while the title has the internal link.
 
 <figure><img src="../.gitbook/assets/nwdb-link-from-detail.png" alt=""><figcaption><p>Icon with nwdb tooltip and title with internal link</p></figcaption></figure>
 

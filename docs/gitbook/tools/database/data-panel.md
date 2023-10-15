@@ -22,6 +22,16 @@ Use the dropdwon panel to enable ordisable available table columns
 
 <figure><img src="../../.gitbook/assets/table-column-enable.gif" alt=""><figcaption></figcaption></figure>
 
+## Reset column & filter state
+
+After a session, the table may end up with multiple filters set and columns reordered.
+
+To reset these, use the drop-down menu and reset either the filter or the column state, or both.
+
+<figure><img src="../../.gitbook/assets/table-column-reset.gif" alt=""><figcaption></figcaption></figure>
+
+The column state needs to be reset from time to time, as the state is persisted and restored across browsing sessions. When new columns are introduced, they may not appear until they are either manually enabled or the state is reset.
+
 ## Link to NWDB
 
 The icon column always links to NWDB when an nwdb tooltip is shown
