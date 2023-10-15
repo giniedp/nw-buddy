@@ -11,6 +11,7 @@ const routes: Routes = [
   { path: 'ipfs', loadChildren: () => import('./pages/share').then((m) => m.ShareModule) },
 
   { path: 'abilities', loadChildren: () => import('./pages/database/abilities').then((m) => m.AbilitiesPageModule) },
+  { path: 'gatherables', loadChildren: () => import('./pages/database/gatherables').then((m) => m.GatherablesPageModule) },
   { path: 'crafting', loadChildren: () => import('./pages/database/crafting').then((m) => m.CraftingPageModule) },
   { path: 'housing', loadChildren: () => import('./pages/database/housing').then((m) => m.HousingPageModule) },
   { path: 'items', loadChildren: () => import('./pages/database/items').then((m) => m.ItemsPageModule) },

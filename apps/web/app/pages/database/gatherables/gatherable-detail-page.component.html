@@ -1,0 +1,8 @@
+<nwb-detail-drawer class="hidden lg:block lg:w-[500px]">
+  <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
+    <nwb-gatherable-detail [gatherableId]="itemId$ | async" #detail class="bg-black mb-4"></nwb-gatherable-detail>
+    <ng-container *ngIf="detail.lootTableId$ | async; let tableId">
+      <nwb-loot-graph [tableId]="tableId" [showLocked]="true"></nwb-loot-graph>
+    </ng-container>
+  </div>
+</nwb-detail-drawer>

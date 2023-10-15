@@ -209,6 +209,10 @@ export class NwDbService {
   public damageTableMap = indexBy(() => this.damageTables, 'DamageID')
   public damageTable = lookup(() => this.damageTableMap)
 
+  public gatherables = table(() => [this.data.gatherables()])
+  public gatherablesMap = indexBy(() => this.gatherables, 'GatherableID')
+  public gatherable = lookup(() => this.gatherablesMap)
+
   public mounts = table(() => [this.data.mountsMounts()])
   public mountsMap = indexBy(() => this.mounts, 'MountId')
   public mount = lookup(() => this.mountsMap)

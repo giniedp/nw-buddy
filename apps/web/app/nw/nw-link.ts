@@ -8,6 +8,7 @@ export type NwLinkResource =
   | 'poi'
   | 'quest'
   | 'mount'
+  | 'gatherable'
 
 export interface NwLinkOptions {
   ptr: boolean
@@ -26,6 +27,7 @@ const NWDB_TYPE_MAP: Partial<Record<NwLinkResource, string>> = {
   poi: 'zone',
   quest: 'quest',
   mount: 'mount',
+  gatherable: 'gatherable',
 }
 
 export function nwdbLinkUrl(options: NwLinkOptions) {

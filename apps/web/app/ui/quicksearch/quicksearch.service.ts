@@ -71,6 +71,7 @@ export class QuicksearchService extends ComponentStore<QuicksearchState> {
     }
     this.router.navigate([], {
       queryParams: params,
+      replaceUrl: true,
     })
   }
 }
