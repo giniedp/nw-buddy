@@ -13,6 +13,7 @@ import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } f
 import { ItemTableRecord } from '~/widgets/data/item-table'
 import { LootTableAdapter } from '~/widgets/data/loot-table-grid'
 import { ScreenshotModule } from '~/widgets/screenshot'
+import { GameEventTableAdapter } from '~/widgets/data/game-event-table'
 
 @Component({
   standalone: true,
@@ -37,7 +38,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   },
   providers: [
     provideDataView({
-      adapter: LootTableAdapter,
+      adapter: GameEventTableAdapter,
     }),
     QuicksearchService.provider({
       queryParam: 'search',
