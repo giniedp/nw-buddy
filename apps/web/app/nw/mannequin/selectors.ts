@@ -81,14 +81,16 @@ export function selectDamageTableRow(rows: Damagetable[], state: MannequinState)
   return rows?.find((it) => it.DamageID === state.selectedAttack) || rows?.[0]
 }
 
-export function selectEquipLoad({ items, weapons, armors }: DbSlice, { equippedItems }: MannequinState) {
+export function selectEquipLoad({ items, weapons, armors }: DbSlice, { equippedItems }: MannequinState, perks: ActivePerk[]) {
   const weights = equippedItems
     .map((it) => items.get(it.itemId))
     .filter((it) => it && (isItemArmor(it) || isItemShield(it)))
     .map((it) => {
       const weapon = weapons.get(it.ItemStatsRef)
       const armor = armors.get(it.ItemStatsRef)
-      return (Math.floor(weapon?.WeightOverride || armor?.WeightOverride || it.Weight) || 0) / 10
+      const weight = (Math.floor(weapon?.WeightOverride || armor?.WeightOverride || it.Weight) || 0) / 10
+      const scale = 1 + (perks.find((perk) => perk.item === it)?.affix?.WeightMultiplier || 0)
+      return weight * scale
     })
   return sum(weights)
 }
