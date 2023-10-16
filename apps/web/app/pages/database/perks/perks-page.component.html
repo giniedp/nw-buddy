@@ -28,52 +28,7 @@
         </button>
       </li>
       <li>
-        <button
-          class="btn btn-square btn-ghost"
-          [nwbDataViewOptionsMenu]="tplContextPanel"
-          [persistKey]="persistKey"
-        ></button>
-        <ng-template #tplContextPanel>
-          <ul class="menu menu-compact">
-            <li class="menu-title">
-              <span>Perk Variables</span>
-            </li>
-            <div class="form-control w-full px-3 py-1">
-              <label class="label">
-                <span class="label-text">Char Level: {{ ctx.charLevel$() }}</span>
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="60"
-                [ngModel]="ctx.charLevel$()"
-                (ngModelChange)="ctx.patchState({ charLevel: $event })"
-                class="range range-xs"
-              />
-            </div>
-            <div class="form-control w-full px-3 py-1">
-              <label class="label">
-                <span class="label-text">Gear Score: {{ ctx.gearScore$() }}</span>
-              </label>
-              <input
-                type="range"
-                min="0"
-                max="700"
-                [ngModel]="ctx.gearScore$()"
-                (ngModelChange)="ctx.patchState({ gearScore: $event })"
-                class="range range-xs"
-              />
-            </div>
-            <!-- <div class="form-control w-full">
-              <label class="label cursor-pointer">
-                <span class="label-text">GS Bonus</span>
-                <input type="checkbox" checked="checked" [(ngModel)]="ctx.gsBonus" class="checkbox checkbox-xs" />
-              </label>
-            </div> -->
-          </ul>
-
-          <div class="divider"></div>
-        </ng-template>
+        <button class="btn btn-square btn-ghost" [nwbDataViewOptionsMenu] [persistKey]="persistKey"></button>
       </li>
     </ul>
 
