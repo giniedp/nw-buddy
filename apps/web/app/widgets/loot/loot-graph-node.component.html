@@ -76,20 +76,65 @@
         <span *ngIf="vm.table.MaxRoll" class="whitespace-nowrap badge badge-sm badge-primary">
           MaxRoll: {{ vm.table.MaxRoll }}
         </span>
-        <!-- <span *ngIf="table.GSBonus" class="whitespace-nowrap badge badge-sm badge-accent">
-          GSBonus: {{ table.GSBonus }}
-        </span>
-        <span *ngIf="table.UseLevelGS" class="whitespace-nowrap badge badge-sm badge-accent">
-          UseLevelGS: {{ table.UseLevelGS }}
-        </span>
-        <span *ngIf="table.HWMMult" class="whitespace-nowrap badge badge-sm badge-accent">
-          HWMMult: {{ table.HWMMult }}
-        </span> -->
         <span *ngIf="vm.table.RollBonusSetting" class="whitespace-nowrap badge badge-sm badge-accent">
           {{ vm.table.RollBonusSetting }}
         </span>
-        <span *ngFor="let item of vm.table.Conditions" class="whitespace-nowrap badge badge-sm badge-secondary">
+
+        <span
+          *ngFor="let item of vm.table.Conditions"
+          class="whitespace-nowrap badge badge-sm badge-secondary cursor-help"
+          [tooltip]="'Condition tag'"
+        >
           {{ item }}
+        </span>
+
+        <span
+          *ngIf="isTrue(vm.table.ConditionOverridesRoll)"
+          class="whitespace-nowrap badge badge-sm badge-secondary cursor-help opacity-50"
+          [tooltip]="'Condition Overrides Roll'"
+        >
+          COR
+        </span>
+        <span
+          *ngIf="isTrue(vm.table.LootBiasingEnabled)"
+          class="whitespace-nowrap badge badge-sm badge-accent cursor-help"
+          [tooltip]="'Loot Biasing Enabled'"
+        >
+          Bias
+        </span>
+        <span
+          *ngIf="vm.table.LootBiasingChanceOverride"
+          class="whitespace-nowrap badge badge-sm badge-accent cursor-help"
+          [tooltip]="'Loot Biasing Chance Override'"
+        >
+          Bias CO: {{ vm.table.LootBiasingChanceOverride }}
+        </span>
+        <span *ngIf="vm.table.GSBonus" class="whitespace-nowrap badge badge-sm badge-outline opacity-50">
+          GSBonus: {{ vm.table.GSBonus }}
+        </span>
+        <span *ngIf="isTrue(vm.table.UseLevelGS)" class="whitespace-nowrap badge badge-sm badge-outline opacity-50">
+          UseLvelGS
+        </span>
+        <span
+          *ngIf="isTrue(vm.table.TriggerLimitOnVisit)"
+          class="whitespace-nowrap badge badge-sm badge-outline opacity-50"
+        >
+          Trigger Limit
+        </span>
+        <span
+          *ngIf="vm.table.PerkBucketOverrides2"
+          class="whitespace-nowrap badge badge-sm badge-outline opacity-50 cursor-help"
+          [tooltip]="'Perk Bucket Override'"
+        >
+          PBO
+        </span>
+
+        <span class="flex-1"></span>
+        <span [tooltip]="tplProps" class="badge badge-sm badge-info cursor-help mr-1">
+          <nwb-icon [icon]="iconCode" class="w-4 h-4 self-end"></nwb-icon>
+          <ng-template #tplProps>
+            <nwb-property-grid [item]="getProps(vm.table)"></nwb-property-grid>
+          </ng-template>
         </span>
       </div>
       <ng-container *ngTemplateOutlet="tplChildren"></ng-container>

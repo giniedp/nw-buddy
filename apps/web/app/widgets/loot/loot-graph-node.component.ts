@@ -6,12 +6,14 @@ import { LootTable } from '@nw-data/common'
 import { NwModule } from '~/nw'
 import { LootBucketNode, LootBucketRowNode, LootNode, LootTableItemNode, LootTableNode } from '~/nw/loot/loot-graph'
 import { IconsModule } from '~/ui/icons'
-import { svgAngleLeft, svgCircleExclamation, svgLink, svgLock, svgLockOpen } from '~/ui/icons/svg'
+import { svgAngleLeft, svgCircleExclamation, svgCode, svgLink, svgLock, svgLockOpen } from '~/ui/icons/svg'
 import { PaginationModule } from '~/ui/pagination'
 import { TooltipModule } from '~/ui/tooltip'
 import { ItemDetailModule } from '../data/item-detail'
 import { VirtualGridModule, VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { LootGraphGridCellComponent } from './loot-graph-grid-cell.component'
+import { eqCaseInsensitive } from '~/utils'
+import { PropertyGridModule } from '~/ui/property-grid'
 
 export interface LootGraphNodeState<T = LootNode> {
   node: T
@@ -66,6 +68,7 @@ export interface LootGraphNodeVM {
     RouterModule,
     PaginationModule,
     VirtualGridModule,
+    PropertyGridModule,
   ],
   host: {
     class: 'contents',
@@ -105,6 +108,7 @@ export class LootGraphNodeComponent extends ComponentStore<LootGraphNodeState> {
   protected iconLock = svgLock
   protected iconLockOpen = svgLockOpen
   protected linkIcon = svgLink
+  protected iconCode = svgCode
 
   public constructor() {
     super({
@@ -120,6 +124,21 @@ export class LootGraphNodeComponent extends ComponentStore<LootGraphNodeState> {
     this.patchState({
       expand: this.get(({ expand }) => !expand),
     })
+  }
+
+  protected isTrue(value: boolean | number | string) {
+    if (typeof value === 'string' && (eqCaseInsensitive(value, 'TRUE') || value === '1')) {
+      return true
+    }
+    return !!value
+  }
+
+  protected getProps(value: LootTable) {
+    const result = {
+      ...value,
+    }
+    delete result.Items
+    return result
   }
 }
 
