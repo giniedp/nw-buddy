@@ -1,21 +1,16 @@
 import { ColumnApi, ColumnState, GridApi } from '@ag-grid-community/core'
-import { EventEmitter, Injectable } from '@angular/core'
+import { EventEmitter, Injectable, inject } from '@angular/core'
 import { PreferencesService, StorageNode } from '~/preferences'
-import { TableGridStore } from './table-grid.store'
-import { gridGetPinnedBottomData, gridGetPinnedTopData, gridGetPinnedTopRows } from '../ag-grid/utils'
+import { gridGetPinnedBottomData, gridGetPinnedTopData } from '../ag-grid/utils'
+import { TablePresetDB, TableStateDB, TableStateRecord } from '~/data/table-preset.db'
 
 @Injectable()
 export class TableGridPersistenceService {
-  private columnStorage: StorageNode<{ columns?: any; pinnedTop?: any; pinnedBottom?: any }>
-  private filterStorage: StorageNode<{ filter?: any }>
+  private storage = inject(TableStateDB)
+  private filterStorage: StorageNode<{ filter: unknown }> = inject(PreferencesService).session.storageScope('grid:')
 
   public onFilterApplied = new EventEmitter()
   public onFilterSaved = new EventEmitter()
-
-  public constructor(preferences: PreferencesService, protected store: TableGridStore<any>) {
-    this.columnStorage = preferences.storage.storageScope('grid:')
-    this.filterStorage = preferences.session.storageScope('grid:')
-  }
 
   public async resetColumnState(api: ColumnApi, key: string) {
     if (!api || !key) {
@@ -33,18 +28,20 @@ export class TableGridPersistenceService {
     this.writeColumnState(api, key, state)
   }
 
-  private writeColumnState(api: ColumnApi, key: string, state: ColumnState[]) {
+  private async writeColumnState(api: ColumnApi, key: string, state: ColumnState[]) {
     if (!key || !api) {
       return
     }
-    if (state?.length) {
-      this.columnStorage.set(key, {
-        ...(this.columnStorage.get(key) || {}),
-        columns: state,
+    const current = await this.storage.read(key).catch(() => null as TableStateRecord)
+    await this.storage
+      .createOrUpdate({
+        pinnedBottom: null,
+        pinnedTop: null,
+        ...(current || {}),
+        id: key,
+        columns: state?.length ? state : null,
       })
-    } else {
-      this.columnStorage.delete(key)
-    }
+      .catch(console.error)
   }
 
   public async saveFilterState(api: GridApi, key: string) {
@@ -58,12 +55,13 @@ export class TableGridPersistenceService {
     this.onFilterSaved.next(filterState)
   }
 
-  public loadColumnState(api: ColumnApi, key: string) {
+  public async loadColumnState(api: ColumnApi, key: string) {
     if (!key || !api) {
       return
     }
 
-    const data = this.columnStorage.get(key)?.columns
+    const current = await this.storage.read(key).catch(() => null as TableStateRecord)
+    const data = current?.columns
     if (data) {
       api.applyColumnState({ state: data, applyOrder: true })
     }
@@ -81,25 +79,29 @@ export class TableGridPersistenceService {
     }
   }
 
-  public loadPinnedState(api: GridApi, key: string, identify: (item: any) => string | number) {
+  public async loadPinnedState(api: GridApi, key: string, identify: (item: any) => string | number) {
     if (!key || !api || !identify) {
       return
     }
-    const state = this.columnStorage.get(key)
+    const state = await this.storage.read(key).catch(() => null as TableStateRecord)
     const pinnedTop = resolvePinnedData(api, state?.pinnedTop, identify) || []
     const pinnedBottom = resolvePinnedData(api, state?.pinnedBottom, identify) || []
     api.setPinnedTopRowData(pinnedTop)
     api.setPinnedBottomRowData(pinnedBottom)
   }
 
-  public savePinnedState(api: GridApi, key: string, identify: (item: any) => string | number) {
+  public async savePinnedState(api: GridApi, key: string, identify: (item: any) => string | number) {
     if (!key || !api || !identify) {
       return
     }
+
+    const state = await this.storage.read(key).catch(() => null as TableStateRecord)
     const pinnedTop = gridGetPinnedTopData(api)?.map(identify)
     const pinnedBottom = gridGetPinnedBottomData(api)?.map(identify)
-    this.columnStorage.set(key, {
-      ...(this.columnStorage.get(key) || {}),
+    this.storage.createOrUpdate({
+      columns: null,
+      ...(state || {}),
+      id: key,
       pinnedTop: pinnedTop,
       pinnedBottom: pinnedBottom,
     })

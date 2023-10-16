@@ -18,6 +18,9 @@ export class DataViewOptionsMenuComponent {
   @Input()
   public nwbDataViewOptionsMenu: TemplateRef<unknown>
 
+  @Input()
+  public persistKey: string
+
   protected isPanelOpen = false
   protected icon = svgEllipsisVertical
   protected showIndicator$ = gridHasAnyFilterPresent(this.service.agGrid$)

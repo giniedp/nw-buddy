@@ -5,9 +5,10 @@ import { DBT_GEARSETS } from './gearsets.db'
 import { DBT_IMAGES } from './images.db'
 import { DBT_ITEMS } from './item-instances.db'
 import { DBT_SKILL_BUILDS } from './skill-builds.db'
+import { DBT_TABLE_PRESETS, DBT_TABLE_STATES } from './table-preset.db'
 
 export const APP_DB_NAME = new InjectionToken<string>('APP_DB_NAME', {
-  factory: () => 'nw-buddy'
+  factory: () => 'nw-buddy',
 })
 
 export const APP_DB = new InjectionToken<Dexie>('APP_DB', {
@@ -16,7 +17,7 @@ export const APP_DB = new InjectionToken<Dexie>('APP_DB', {
     const db = new Dexie(inject(APP_DB_NAME))
     initDb(db)
     return db
-  }
+  },
 })
 
 function initDb(db: Dexie) {
@@ -32,5 +33,9 @@ function initDb(db: Dexie) {
   })
   db.version(4).stores({
     [DBT_SKILL_BUILDS]: 'id',
+  })
+  db.version(5).stores({
+    [DBT_TABLE_PRESETS]: 'id,key',
+    [DBT_TABLE_STATES]: 'id',
   })
 }

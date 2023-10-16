@@ -1,0 +1,27 @@
+<div class="flex-none bg-black flex flex-row gap-1 flex-wrap items-center p-1 h-12">
+  <h3 class="font-bold text-lg px-2">
+    {{ title }}
+  </h3>
+  <span class="flex-1"></span>
+</div>
+<div class="p-2 flex flex-col gap-1 overflow-auto">
+  <div
+    *ngFor="let item of store.entries$()"
+    class="flex flex-row items-center gap-1 overflow-hidden"
+    [class.text-primary]="item.id === store.selection$()"
+  >
+    <div
+      class="flex-1 text-lg px-2 whitespace-nowrap text-ellipsis overflow-hidden cursor-pointer link-hover"
+      (click)="selectEntry(item.id)"
+    >
+      {{ item.name || item.id }}
+    </div>
+  </div>
+</div>
+
+<div class="flex-none modal-action flex-row justify-end layout-pad mt-0 bg-base-200">
+  <div class="btn-group">
+    <button type="button" class="btn" (click)="close()">Cancel</button>
+    <button type="button" class="btn btn-primary" [disabled]="!store.selection$()" (click)="commit()">Load</button>
+  </div>
+</div>

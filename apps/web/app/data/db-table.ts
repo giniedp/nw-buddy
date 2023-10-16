@@ -46,9 +46,10 @@ export abstract class DBTable<T extends { id: string }> {
     return this.table.delete(id)
   }
 
-  public async createOrUpdate(record: Partial<T>) {
+  public async createOrUpdate(record: T) {
     if (record.id) {
-      return this.update(record.id, record)
+      await this.table.put(record, record.id)
+      return this.read(record.id)
     }
     return this.create(record)
   }

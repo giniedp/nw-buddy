@@ -7,7 +7,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { ComponentStore } from '@ngrx/component-store'
 import { BehaviorSubject, combineLatest, filter, firstValueFrom, map, switchMap, tap } from 'rxjs'
 import { AgGrid } from '~/ui/data/ag-grid'
-import { gridHasAnyFilterPresent } from '~/ui/data/ag-grid/utils'
+import { gridGetPinnedTopData, gridHasAnyFilterPresent } from '~/ui/data/ag-grid/utils'
 import { IconsModule } from '~/ui/icons'
 import {
   svgArrowsLeftRight,
@@ -20,12 +20,17 @@ import {
   svgFileCode,
   svgFileCsv,
   svgFilter,
+  svgFilterCircleXmark,
+  svgFloppyDisk,
+  svgFloppyDiskArrow,
   svgThumbtack,
 } from '~/ui/icons/svg'
 import { EditorDialogComponent } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { shareReplayRefCount } from '~/utils'
+import { SaveStateDialogComponent } from './save-state-dialog.component'
+import { LoadStateDialogComponent } from './load-state-dialog.component'
 
 @Component({
   standalone: true,
@@ -35,18 +40,28 @@ import { shareReplayRefCount } from '~/utils'
   imports: [CommonModule, IconsModule, DialogModule, TooltipModule, QuicksearchModule],
   providers: [QuicksearchService],
   host: {
-    class: 'flex flex-col gap-1',
+    class: 'flex flex-col gap-1 h-full overflow-hidden',
   },
 })
 export class TableGridPanelComponent extends ComponentStore<{
   grid: AgGrid
+  persistKey: string
 }> {
   @Input()
   public set grid(value: AgGrid) {
     this.patchState({ grid: value })
   }
 
+  @Input()
+  public set persistKey(value: string) {
+    this.patchState({ persistKey: value })
+  }
+
   private grid$ = this.select(({ grid }) => grid)
+  private persistKey$ = this.select(({ persistKey }) => persistKey)
+  protected sigGrid = toSignal(this.grid$)
+  protected sigPersistKey = toSignal(this.persistKey$)
+  protected showColumns = false
 
   protected isFilterActive$ = toSignal(gridHasAnyFilterPresent(this.grid$), {
     initialValue: false,
@@ -93,13 +108,14 @@ export class TableGridPanelComponent extends ComponentStore<{
   protected svgFileCsv = svgFileCsv
   protected svgArrowsLeftRight = svgArrowsLeftRight
   protected svgEraser = svgEraser
-  protected svgFilter = svgFilter
+  protected svgFilter = svgFilterCircleXmark
   protected svgCode = svgCode
   protected svgFileCode = svgFileCode
   protected svgPin = svgThumbtack
-
+  protected svgDisk = svgFloppyDisk
+  protected svgDiskArrow = svgFloppyDiskArrow
   public constructor(private dialog: Dialog, private qs: QuicksearchService) {
-    super({ grid: null })
+    super({ grid: null, persistKey: null })
   }
 
   protected async exportCsv() {
@@ -109,30 +125,30 @@ export class TableGridPanelComponent extends ComponentStore<{
     // saveAs(data)
   }
 
-  protected async sizeToFit() {
-    const grid = await firstValueFrom(this.grid$)
+  protected sizeToFit() {
+    const grid = this.sigGrid()
     grid?.columnApi.sizeColumnsToFit(900)
   }
 
-  protected async autosizeColumns() {
-    const grid = await firstValueFrom(this.grid$)
+  protected autosizeColumns() {
+    const grid = this.sigGrid()
     grid?.columnApi.autoSizeAllColumns()
   }
 
-  protected async resetColumns() {
-    const grid = await firstValueFrom(this.grid$)
+  protected resetColumns() {
+    const grid = this.sigGrid()
     grid?.columnApi.resetColumnState()
     this.colState.next(grid.columnApi.getColumnState())
   }
 
-  protected async resetFilter() {
-    const grid = await firstValueFrom(this.grid$)
+  protected resetFilter() {
+    const grid = this.sigGrid()
     grid.api.setFilterModel({})
     grid.api.setQuickFilter('')
   }
 
-  protected async clearPins() {
-    const grid = await firstValueFrom(this.grid$)
+  protected clearPins() {
+    const grid = this.sigGrid()
     grid.api.setPinnedTopRowData()
   }
 
@@ -166,8 +182,8 @@ export class TableGridPanelComponent extends ComponentStore<{
     this.submitState(state)
   }
 
-  protected async openCode() {
-    const grid = await firstValueFrom(this.grid$)
+  protected openCode() {
+    const grid = this.sigGrid()
     const rows = []
     grid.api.forEachNode((row) => {
       rows.push(row.data)
@@ -183,8 +199,39 @@ export class TableGridPanelComponent extends ComponentStore<{
     })
   }
 
-  private async submitState(state: ColumnState[]) {
-    const grid = await firstValueFrom(this.grid$)
+  protected saveState() {
+    const grid = this.sigGrid()
+    const key = this.sigPersistKey()
+    SaveStateDialogComponent.open(this.dialog, {
+      title: 'Save State',
+      config: {},
+      key: key,
+      data: {
+        columns: grid.columnApi.getColumnState(),
+        filter: grid.api.getFilterModel(),
+      },
+    })
+  }
+
+  protected loadState() {
+    LoadStateDialogComponent.open(this.dialog, {
+      title: 'Load State',
+      config: {},
+      key: this.get(({ persistKey }) => persistKey),
+    })
+      .closed.pipe(filter((it) => !!it))
+      .subscribe((state) => {
+        const grid = this.get(({ grid }) => grid)
+        grid.columnApi.applyColumnState({
+          state: state.columns,
+          applyOrder: true,
+        })
+        grid.api.setFilterModel(state.filter)
+      })
+  }
+
+  private submitState(state: ColumnState[]) {
+    const grid = this.sigGrid()
     grid.columnApi.applyColumnState({
       state: state,
     })

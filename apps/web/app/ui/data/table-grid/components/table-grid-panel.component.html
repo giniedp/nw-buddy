@@ -1,82 +1,109 @@
-<ul class="menu menu-compact">
-  <li>
-    <a class="flex flex-row" (click)="autosizeColumns()">
-      <div class="flex-none flex items-center justify-center p-2">
-        <nwb-icon [icon]="svgArrowsLeftRight" class="w-5 h-5"></nwb-icon>
-      </div>
-      <div class="flex-1 normal-case">
-        <h3 class="font-bold">Autosize columns</h3>
-        <div class="text-xs">Resize based on the visible cell content</div>
-      </div>
-    </a>
-  </li>
-
-  <li>
-    <a class="flex flex-row" (click)="resetColumns()">
-      <div class="flex-none flex items-center justify-center p-2">
-        <nwb-icon [icon]="svgEraser" class="w-5 h-5"></nwb-icon>
-      </div>
-      <div class="flex-1 normal-case">
-        <h3 class="font-bold">Reset columns</h3>
-        <div class="text-xs">Resets the columns to initial state (visibility, width, position)</div>
-      </div>
-    </a>
-  </li>
-
-  <li>
-    <a class="flex flex-row" (click)="resetFilter()" [class.text-primary]="isFilterActive$()">
-      <div class="flex-none flex items-center justify-center p-2">
-        <nwb-icon [icon]="svgFilter" class="w-5 h-5"></nwb-icon>
-      </div>
-      <div class="flex-1 normal-case">
-        <h3 class="font-bold">Clear filters</h3>
-        <div class="text-xs">Clears all active filters</div>
-      </div>
-    </a>
-  </li>
-
-  <li>
-    <a class="flex flex-row" (click)="clearPins()" [class.text-primary]="isFilterActive$()">
-      <div class="flex-none flex items-center justify-center p-2">
-        <nwb-icon [icon]="svgPin" class="w-5 h-5"></nwb-icon>
-      </div>
-      <div class="flex-1 normal-case">
-        <h3 class="font-bold">Clear pins</h3>
-        <div class="text-xs">Removes all pinned items</div>
-      </div>
-    </a>
-  </li>
-
-  <li>
-    <a class="flex flex-row" (click)="openCode()">
-      <div class="flex-none flex items-center justify-center p-2">
-        <nwb-icon [icon]="svgCode" class="w-5 h-5"></nwb-icon>
-      </div>
-      <div class="flex-1 normal-case">
-        <h3 class="font-bold">Raw data</h3>
-        <div class="text-xs">Opens an editor showing the raw JSON data</div>
-      </div>
-    </a>
-  </li>
-</ul>
-
-<div class="divider my-0"></div>
-<div class="px-2 py-1">
-  <nwb-quicksearch-input [placeholder]="'Search column name'" [bordered]="true"></nwb-quicksearch-input>
+<div class="flex-none tabs w-full">
+  <a class="tab tab-bordered flex-1" [class.tab-active]="!showColumns" (click)="showColumns = !showColumns">Actions</a>
+  <a class="tab tab-bordered flex-1" [class.tab-active]="showColumns" (click)="showColumns = !showColumns">Columns</a>
 </div>
-<div class="p-2">
-  <div *ngFor="let it of displayCols$ | async" class="flex flex-row gap-2">
-    <div class="btn-group">
-      <button class="btn btn-ghost btn-sm px-1" (click)="toggleHide(it.colId)">
-        <nwb-icon [icon]="it.hide ? svgEyeSlash : svgEye" class="w-4 h-4" [class.opacity-10]="it.hide"></nwb-icon>
-      </button>
-      <button class="btn btn-ghost btn-sm px-1" (click)="togglePinLeft(it.colId)">
-        <nwb-icon [icon]="svgDockLeft" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'left'"></nwb-icon>
-      </button>
-      <button class="btn btn-ghost btn-sm px-1" (click)="togglePinRight(it.colId)">
-        <nwb-icon [icon]="svgDockRight" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'right'"></nwb-icon>
-      </button>
+<div class="flex-1 overflow-auto h-full">
+  <ng-container *ngIf="!showColumns">
+    <ul class="menu menu-compact menu-vertical">
+      <li>
+        <a (click)="autosizeColumns()">
+          <span>
+            <nwb-icon [icon]="svgArrowsLeftRight" class="w-4 h-4"></nwb-icon>
+          </span>
+          <div class="flex flex-col leading-none">
+            <span>Autosize columns</span>
+            <span class="text-xs opacity-75">Resize based on the visible cell content</span>
+          </div>
+        </a>
+      </li>
+
+      <li>
+        <a (click)="resetColumns()">
+          <span>
+            <nwb-icon [icon]="svgEraser" class="w-4 h-4"></nwb-icon>
+          </span>
+          <div class="flex flex-col leading-none">
+            <span>Reset columns</span>
+            <span class="text-xs opacity-75">Resets the columns to initial state</span>
+          </div>
+        </a>
+      </li>
+
+      <li>
+        <a (click)="resetFilter()" [class.text-primary]="isFilterActive$()">
+          <nwb-icon [icon]="svgFilter" class="w-4 h-4"></nwb-icon>
+          <div class="flex flex-col leading-none">
+            <span>Clear filters</span>
+            <span class="text-xs opacity-75">Clears all active filters</span>
+          </div>
+        </a>
+      </li>
+
+      <li>
+        <a (click)="clearPins()">
+          <nwb-icon [icon]="svgPin" class="w-4 h-4"></nwb-icon>
+          <div class="flex flex-col leading-none">
+            <span>Clear pins</span>
+            <span class="text-xs opacity-75">Removes all pinned items</span>
+          </div>
+        </a>
+      </li>
+    </ul>
+    <ng-container *ngIf="sigPersistKey()">
+      <div class="divider divider-vertical h-[1px] my-0"></div>
+      <ul class="menu menu-compact menu-vertical">
+        <li>
+          <a (click)="saveState()">
+            <nwb-icon [icon]="svgDisk" class="w-4 h-4"></nwb-icon>
+            <div class="flex flex-col leading-none">
+              <span>Save State</span>
+              <span class="text-xs opacity-75">Saves the current column order and filter. Pins are ignored.</span>
+            </div>
+          </a>
+        </li>
+        <li>
+          <a (click)="loadState()">
+            <nwb-icon [icon]="svgDiskArrow" class="w-4 h-4"></nwb-icon>
+            <div class="flex flex-col leading-none">
+              <span>Load State</span>
+              <span class="text-xs opacity-75">Loads a previously saved state with column order and filters.</span>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </ng-container>
+    <div class="divider divider-vertical h-[1px] my-0"></div>
+    <ul class="menu menu-compact menu-vertical">
+      <li>
+        <a (click)="openCode()">
+          <nwb-icon [icon]="svgCode" class="w-4 h-4"></nwb-icon>
+          <div class="flex flex-col leading-none">
+            <span>Raw data</span>
+            <span class="text-xs opacity-75">Opens an editor showing the raw JSON data</span>
+          </div>
+        </a>
+      </li>
+    </ul>
+  </ng-container>
+  <ng-container *ngIf="showColumns">
+    <div class="px-2 py-1">
+      <nwb-quicksearch-input [placeholder]="'Search column name'" [bordered]="true"></nwb-quicksearch-input>
     </div>
-    <span class="whitespace-nowrap truncate" [class.opacity-10]="it.hide">{{ it.name || it.colId }}</span>
-  </div>
+    <div class="p-2">
+      <div *ngFor="let it of displayCols$ | async" class="flex flex-row gap-2">
+        <div class="btn-group">
+          <button class="btn btn-ghost btn-sm px-1" (click)="toggleHide(it.colId)">
+            <nwb-icon [icon]="it.hide ? svgEyeSlash : svgEye" class="w-4 h-4" [class.opacity-10]="it.hide"></nwb-icon>
+          </button>
+          <button class="btn btn-ghost btn-sm px-1" (click)="togglePinLeft(it.colId)">
+            <nwb-icon [icon]="svgDockLeft" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'left'"></nwb-icon>
+          </button>
+          <button class="btn btn-ghost btn-sm px-1" (click)="togglePinRight(it.colId)">
+            <nwb-icon [icon]="svgDockRight" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'right'"></nwb-icon>
+          </button>
+        </div>
+        <span class="whitespace-nowrap truncate" [class.opacity-10]="it.hide">{{ it.name || it.colId }}</span>
+      </div>
+    </div>
+  </ng-container>
 </div>

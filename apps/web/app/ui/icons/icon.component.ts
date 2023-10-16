@@ -15,7 +15,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, HostBinding, Input } fr
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'inline-block flex items-center justify-center',
+    class: 'inline-flex items-center justify-center',
   },
 })
 export class SvgIconComponent {

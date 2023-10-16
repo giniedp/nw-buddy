@@ -28,7 +28,11 @@
         </button>
       </li>
       <li>
-        <button class="btn btn-square btn-ghost" [nwbDataViewOptionsMenu]="tplContextPanel"></button>
+        <button
+          class="btn btn-square btn-ghost"
+          [nwbDataViewOptionsMenu]="tplContextPanel"
+          [persistKey]="persistKey"
+        ></button>
         <ng-template #tplContextPanel>
           <ul class="menu menu-compact">
             <li class="menu-title">

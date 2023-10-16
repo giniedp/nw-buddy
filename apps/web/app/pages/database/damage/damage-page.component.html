@@ -25,7 +25,12 @@
         </button>
       </li>
       <li>
-        <button class="btn btn-ghost" [nwbDataViewOptionsMenu] [disabled]="!service.isTableActive$()"></button>
+        <button
+          class="btn btn-ghost"
+          [nwbDataViewOptionsMenu]
+          [persistKey]="persistKey"
+          [disabled]="!service.isTableActive$()"
+        ></button>
       </li>
     </ul>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
