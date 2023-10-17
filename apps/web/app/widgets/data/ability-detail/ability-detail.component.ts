@@ -57,7 +57,6 @@ export class AbilityDetailComponent extends AbilityDetailStore {
       case 'TargetStatusEffect': {
         return statusEffectCells(value)
       }
-      case 'CooldownId':
       case 'AbilityID':
       case 'RequiredEquippedAbilityId':
       case 'RequiredAbilityId': {
