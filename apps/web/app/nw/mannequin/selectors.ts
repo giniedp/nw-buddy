@@ -371,10 +371,15 @@ export function selectEquppedAttributes(
   }
 
   for (const { perk, gearScore, affix, item } of perks) {
-    if (!affix || !perk.ScalingPerGearScore) {
+    if (!affix) {
       continue
     }
-    const scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
+
+    let scale = 1
+    if (perk.ScalingPerGearScore) {
+      scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
+    }
+
     result.con += Math.floor((affix.MODConstitution || 0) * scale)
     result.dex += Math.floor((affix.MODDexterity || 0) * scale)
     result.foc += Math.floor((affix.MODFocus || 0) * scale)
