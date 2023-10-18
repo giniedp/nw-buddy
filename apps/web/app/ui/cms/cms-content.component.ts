@@ -28,7 +28,6 @@ export class CmsContentComponent extends ComponentStore<{ contentPath: string }>
       return this.service.getContent(contentPath)
     }),
     pipe(map((it) => it.children)),
-    tapDebug('content$'),
     catchError((err) => {
       console.error(err)
       return of(null)

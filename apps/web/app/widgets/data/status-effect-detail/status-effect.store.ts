@@ -24,7 +24,7 @@ export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }
   public readonly affix$ = this.select(this.db.affixstat(this.onHitAffixId$), (it) => it)
   public readonly affixProps$ = this.select(this.affix$, selectAffixProperties)
 
-  public readonly refEffects$ = this.select(this.effect$, selectStatusEffectReferences).pipe(tapDebug('refEffects'))
+  public readonly refEffects$ = this.select(this.effect$, selectStatusEffectReferences)
 
   public readonly refAbilities$ = this.select(this.effect$, (it) => {
     return uniq(flatten([it?.EquipAbility])).filter((e) => !!e)
@@ -60,9 +60,7 @@ export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }
       .consumablesByAddStatusEffects(this.effectId$)
       .pipe(map((it) => Array.from(it?.values() || [])))
       .pipe(mapList((it) => it.ConsumableID)),
-  ])
-    .pipe(map((list) => list.flat()))
-    .pipe(tapDebug('foreignItems'))
+  ]).pipe(map((list) => list.flat()))
 
   public readonly costumeChangeId$ = this.select(this.effect$, (it) => it?.CostumeChangeId)
   public readonly costumeModel$ = inject(ModelViewerService).byCostumeId(this.costumeChangeId$)

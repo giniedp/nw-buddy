@@ -9,7 +9,7 @@
         <nwb-modifier-source-label [data]="row.source"></nwb-modifier-source-label>
       </td>
       <td class="font-mono font-thin">
-        <ng-container *ngIf="!isFirst"> {{ operator }} </ng-container>
+        <ng-container *ngIf="!isFirst"> {{ row.value * row.scale < 0 ? '' : '+' }} </ng-container>
       </td>
       <td class="font-mono font-thin text-right">
         <ng-container *ngIf="percent">
