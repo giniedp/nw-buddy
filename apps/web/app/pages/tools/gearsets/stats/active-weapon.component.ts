@@ -63,7 +63,7 @@ export class ActiveWeaponComponent {
       const ammoCoef = dmgBase.DamageCoefAmmo?.value ?? 1
       const dmgMod = 1 + dmgBase.BaseDamageMod.value
       const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.BaseDamageType as 'Arcane']?.value ?? 0)
-      const critMod = Math.max(dmgMods.Crit?.value || 0)
+      const critMod = Math.max(dmgMods.Crit?.value || 0, 0)
 
       return weaponDamage * dmgCoef * ammoCoef * (dmgMod + critMod) * empower
     })
