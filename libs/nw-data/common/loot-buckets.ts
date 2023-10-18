@@ -4,11 +4,12 @@ import { flatten } from 'lodash'
 
 export function convertLootbuckets(data: Lootbuckets[]): LootBucketRow[] {
   const firstRow = data.find((it) => it.RowPlaceholders === 'FIRSTROW')
-  const result = data.map((row) => convertRow(row, firstRow))
+  const result = data.map((row, i) => convertRow(row, firstRow, i))
   return flatten(result).filter((it) => !!it.Item)
 }
 
 export type LootBucketRow = {
+  Row: number
   Column: number
   Item: string
   LootBucket: string
@@ -22,7 +23,7 @@ export type LootBucketTag = {
   Value?: null | [number] | [number, number]
 }
 
-function convertRow(data: Lootbuckets, firstRow: Lootbuckets): LootBucketRow[] {
+function convertRow(data: Lootbuckets, firstRow: Lootbuckets, rowId): LootBucketRow[] {
   const keys = new Set<string>()
   const ids = new Set<number>()
   for (const key of Object.keys(data)) {
@@ -35,10 +36,12 @@ function convertRow(data: Lootbuckets, firstRow: Lootbuckets): LootBucketRow[] {
   return Array.from(ids)
     .sort()
     .map((id): LootBucketRow => {
+      const bucketNameKey = `LootBucket${id}`
       return {
         Column: id,
+        Row: rowId,
         Item: null as string,
-        LootBucket: firstRow[`LootBucket${id}`],
+        LootBucket: firstRow[bucketNameKey] || '',
         MatchOne: null,
         Quantity: null as number[],
         Tags: new CaseInsensitiveMap(),

@@ -36,6 +36,7 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Gatherables', path: '/gatherables', icon: 'assets/icons/menu/gatherable.png' },
       { label: 'Loot Limits', path: '/loot-limits', icon: 'assets/icons/menu/icon_filter_chrono.png', divider: true },
       { label: 'Loot Tables', path: '/loot', icon: 'assets/icons/menu/loot.png' },
+      { label: 'Loot Buckets', path: '/loot-buckets', icon: 'assets/icons/menu/loot.png' },
       { label: 'Game Events', path: '/game-events', icon: 'assets/icons/menu/events.png' },
 
       { label: 'Game Modes', path: '/game-modes', icon: 'assets/icons/menu/expeditions.png', divider: true },

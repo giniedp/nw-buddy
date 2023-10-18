@@ -52,6 +52,8 @@ import type {
   Perks,
   PoiDefinition,
   Promotionmutations,
+  PvpRewards,
+  PvpStore,
   SandelementalHeavySandworm,
   Spelltable,
   StaminacostsPlayer,
@@ -1115,6 +1117,15 @@ export abstract class NwDataLoader {
   }
   public pointofinterestdefinitionsPoidefinitionsDevworld() {
     return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_devworld.json')
+  }
+  public pvpRewardstrackLoottablesPvpRewardsTrack() {
+    return this.load<Loottable[]>('pvp_rewardstrack/javelindata_loottables_pvp_rewards_track.json')
+  }
+  public pvpRewardstrackPvpRewardsV2() {
+    return this.load<PvpRewards[]>('pvp_rewardstrack/javelindata_pvp_rewards_v2.json')
+  }
+  public pvpRewardstrackPvpStoreV2() {
+    return this.load<PvpStore[]>('pvp_rewardstrack/javelindata_pvp_store_v2.json')
   }
   public questgameevents01Gameevents() {
     return this.load<GameEvent[]>('questgameevents/javelindata_01_gameevents.json')

@@ -11,7 +11,10 @@ const routes: Routes = [
   { path: 'ipfs', loadChildren: () => import('./pages/share').then((m) => m.ShareModule) },
 
   { path: 'abilities', loadChildren: () => import('./pages/database/abilities').then((m) => m.AbilitiesPageModule) },
-  { path: 'gatherables', loadChildren: () => import('./pages/database/gatherables').then((m) => m.GatherablesPageModule) },
+  {
+    path: 'gatherables',
+    loadChildren: () => import('./pages/database/gatherables').then((m) => m.GatherablesPageModule),
+  },
   { path: 'crafting', loadChildren: () => import('./pages/database/crafting').then((m) => m.CraftingPageModule) },
   { path: 'housing', loadChildren: () => import('./pages/database/housing').then((m) => m.HousingPageModule) },
   { path: 'items', loadChildren: () => import('./pages/database/items').then((m) => m.ItemsPageModule) },
@@ -33,7 +36,10 @@ const routes: Routes = [
     path: 'loot-limits',
     loadChildren: () => import('./pages/database/loot-limits').then((m) => m.LootLimitsPageModule),
   },
-
+  {
+    path: 'loot-buckets',
+    loadChildren: () => import('./pages/database/loot-buckets').then((m) => m.LootBucketsPageModule),
+  },
   { path: 'armorsets', loadChildren: () => import('./pages/tools/armorsets').then((m) => m.ArmorsetsModule) },
   { path: 'dungeons', redirectTo: 'game-modes' },
   { path: 'game-modes', loadChildren: () => import('./pages/tools/game-modes').then((m) => m.GameModesModule) },

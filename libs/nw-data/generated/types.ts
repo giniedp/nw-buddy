@@ -4131,6 +4131,57 @@ export interface Promotionmutations {
   TextColor: string
 }
 
+export interface PvpRewards {
+  BuyCategoricalProgressionCost: number
+  CategoricalProgressionId: string
+  Description: string
+  Entitlement: string
+  GameEvent: string
+  HiResIconPath: string
+  IconPath: string
+  Item: string
+  Name: string
+  Quantity: number
+  RewardId: string
+  RollOnPresent: boolean
+}
+
+export interface PvpStore {
+  Bucket1: string
+  Bucket2: string
+  Bucket3: string
+  BudgetContribution1: number
+  BudgetContribution2: number
+  BudgetContribution3: number
+  Entitlement2: number
+  ExcludeTypeStage1: string
+  ExcludeTypeStage2: string
+  ExcludeTypeStage3: string
+  GameEvent1: string
+  GameEvent2: number
+  Item1: string
+  Item2: string
+  MatchOne1: boolean
+  MatchOne2: boolean
+  MatchOne3: boolean
+  RandomWeights1: number
+  RandomWeights2: number
+  RandomWeights3: number
+  RewardId1: string
+  RewardId2: string
+  RewardId3: string
+  RowPlaceholders: string
+  SelectOnceOnly1: boolean
+  SelectOnceOnly2: boolean
+  SelectOnceOnly3: boolean
+  Tag1: string
+  Tag2: string
+  Tag3: string
+  Type1: string
+  Type2: string
+  Type3: string
+}
+
 export interface Spelltable {
   AbilityId: string
   AmmoSlot: string

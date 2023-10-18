@@ -66,6 +66,7 @@ export const TABLE_GLOB_PATTERNS = [
   'weaponabilities/*',
   'mtx/*',
   'quests/**/*_objectives',
+  'pvp_rewardstrack/*',
   //'quests/**/*_objectivetasks',
   '*_objectives',
   '*_objectivetasks',
