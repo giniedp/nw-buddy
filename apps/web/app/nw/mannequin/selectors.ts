@@ -81,7 +81,11 @@ export function selectDamageTableRow(rows: Damagetable[], state: MannequinState)
   return rows?.find((it) => it.DamageID === state.selectedAttack) || rows?.[0]
 }
 
-export function selectEquipLoad({ items, weapons, armors }: DbSlice, { equippedItems }: MannequinState, perks: ActivePerk[]) {
+export function selectEquipLoad(
+  { items, weapons, armors }: DbSlice,
+  { equippedItems }: MannequinState,
+  perks: ActivePerk[]
+) {
   const weights = equippedItems
     .map((it) => items.get(it.itemId))
     .filter((it) => it && (isItemArmor(it) || isItemShield(it)))

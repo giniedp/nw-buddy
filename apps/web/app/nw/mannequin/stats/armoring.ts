@@ -33,11 +33,21 @@ export function selectModsArmor(db: DbSlice, mods: ActiveMods, state: MannequinS
 }
 
 export function selectPhysicalArmor(db: DbSlice, mods: ActiveMods, state: MannequinState) {
-  return categorySum(db.effectCategories, 'PhysicalArmor', mods)
+  return categorySum({
+    categories: db.effectCategories,
+    key: 'PhysicalArmor',
+    mods: mods,
+    base: 0,
+  })
 }
 
 export function selectElementalArmor(db: DbSlice, mods: ActiveMods, state: MannequinState) {
-  return categorySum(db.effectCategories, 'ElementalArmor', mods)
+  return categorySum({
+    categories: db.effectCategories,
+    key: 'ElementalArmor',
+    mods: mods,
+    base: 0,
+  })
 }
 
 export function selectPhysicalRating(db: DbSlice, mods: ActiveMods, state: MannequinState) {

@@ -11,7 +11,7 @@
     <ng-template #tplHealth>
       <nwb-modifier-tip
         [data]="vm.health"
-        [category]="'ui_health'"
+        [title]="'ui_health'"
         [percent]="false"
         [format]="'0.1-1'"
       ></nwb-modifier-tip>
@@ -24,7 +24,7 @@
       {{ 'ui_mana' | nwText }}
     </span>
     <ng-template #tplMana>
-      <nwb-modifier-tip [data]="vm.mana" [category]="'ui_mana'" [percent]="false" [format]="'0.0-0'"></nwb-modifier-tip>
+      <nwb-modifier-tip [data]="vm.mana" [title]="'ui_mana'" [percent]="false" [format]="'0.0-0'"></nwb-modifier-tip>
     </ng-template>
   </div>
 
@@ -36,7 +36,7 @@
     <ng-template #tplStamina>
       <nwb-modifier-tip
         [data]="vm.stamina"
-        [category]="'ui_stamina'"
+        [title]="'ui_stamina'"
         [percent]="false"
         [format]="'0.0-0'"
       ></nwb-modifier-tip>
@@ -51,7 +51,7 @@
     <ng-template #tplPhysical>
       <nwb-modifier-tip
         [data]="vm.physicalRating"
-        [category]="'ui_physical'"
+        [title]="'ui_physical'"
         [percent]="false"
         [format]="'0.1-1'"
       ></nwb-modifier-tip>
@@ -66,7 +66,7 @@
     <ng-template #tplElemental>
       <nwb-modifier-tip
         [data]="vm.elementalRating"
-        [category]="'ui_elemental'"
+        [title]="'ui_elemental'"
         [percent]="false"
         [format]="'0.1-1'"
       ></nwb-modifier-tip>

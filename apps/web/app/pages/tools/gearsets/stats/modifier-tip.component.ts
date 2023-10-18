@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
 import { NwModule } from '~/nw'
-import { ModifierResult } from '~/nw/mannequin/modifier'
+import { ModifierResult, ModifierValue } from '~/nw/mannequin/modifier'
 import { ModifierSourceLabelComponent } from './modifier-source-label.component'
 
 @Component({
@@ -19,7 +19,7 @@ export class ModifierTipComponent {
   public data: ModifierResult
 
   @Input()
-  public category: string
+  public title: string
 
   @Input()
   public format = '0.0-0'

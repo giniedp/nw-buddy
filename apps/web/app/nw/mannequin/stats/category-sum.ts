@@ -1,18 +1,47 @@
-import { Statuseffectcategories } from "@nw-data/generated"
-import { sumBy } from "lodash"
-import { eachModifier, ModifierKey, ModifierResult, ModifierValue } from "../modifier"
-import { ActiveMods } from "../types"
+import { Statuseffectcategories } from '@nw-data/generated'
+import { eachModifier, ModifierKey, ModifierResult, ModifierValue } from '../modifier'
+import { ActiveMods } from '../types'
+import { cappedValue } from './capped-value'
 
-export function categorySum(categories: Map<string, Statuseffectcategories>, key: ModifierKey<number>, mods: ActiveMods): ModifierResult {
-  const capped: Array<ModifierValue<number> & { capped: true, limit: number}> = []
+export function categorySum({
+  categories,
+  key,
+  mods,
+  base,
+}: {
+  categories: Map<string, Statuseffectcategories>
+  key: ModifierKey<number>
+  mods: ActiveMods
+  base: number
+}): ModifierResult {
+  const value = cappedValue()
+  const modifiers = Array.from(eachModifier<number>(key, mods)).map((mod) => {
+    const limit = getLimit(key, mod.source.effect?.EffectCategories, categories)
+    return {
+      mod,
+      category: limit?.category,
+      limit: limit?.limit,
+    }
+  })
+
+  for (const { mod, limit } of modifiers) {
+    if (!limit) {
+      value.add(mod.value * mod.scale)
+    }
+  }
+  for (const { mod, limit } of modifiers) {
+    if (limit) {
+      value.add(mod.value * mod.scale, limit - base)
+    }
+  }
+
+  const capped: Array<ModifierValue<number> & { category: string; limit: number; capped: boolean }> = []
   const uncapped: Array<ModifierValue<number> & { capped: false }> = []
-
-  for (const mod of eachModifier<number>(key, mods)) {
-    const limit = getCategoryLimit(key, mod.source.effect?.EffectCategories, categories)
+  for (const { mod, category, limit } of modifiers) {
     if (limit) {
       capped.push({
         ...mod,
-        ...{ capped: true, limit },
+        ...{ category, limit: limit - base, capped: true },
       })
     } else {
       uncapped.push({
@@ -22,38 +51,23 @@ export function categorySum(categories: Map<string, Statuseffectcategories>, key
     }
   }
 
-  const cappdSum = sumBy(capped, (it) => it.value * it.scale)
-  const uncappedSum = sumBy(uncapped, (it) => it.value * it.scale)
-  let total = uncappedSum
-  for (const mod of capped) {
-    if (mod.value < 0 && total > mod.limit) {
-      // assume negative value is associated with lower limit
-      total = Math.max(mod.limit, total + mod.value)
-    }
-    if (mod.value > 0 && total < mod.limit) {
-      // assume positive value is associated with upper limit
-      total = Math.min(mod.limit, total + mod.value)
-    }
-  }
-
   return {
-    value: total,
+    value: value.total,
     source: [...uncapped, ...capped],
-    ...{
-      valueCapped: cappdSum,
-      valueUncapped: uncappedSum,
-    }
   }
 }
 
-function getCategoryLimit(key: ModifierKey<number>, categoryIds: string[], categories: Map<string, Statuseffectcategories>) {
+function getLimit(key: ModifierKey<number>, categoryIds: string[], categories: Map<string, Statuseffectcategories>) {
   if (!categoryIds?.length) {
     return null
   }
   for (const id of categoryIds) {
     const limit = categories.get(id)?.ValueLimits?.[key]
     if (typeof limit === 'number') {
-      return limit
+      return {
+        category: id,
+        limit: limit,
+      }
     }
   }
   return null

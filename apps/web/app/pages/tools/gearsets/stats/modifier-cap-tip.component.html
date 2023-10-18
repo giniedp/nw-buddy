@@ -3,49 +3,46 @@
   <span class="relative top-1">{{ title | nwText }}</span>
 </h3>
 <div class="px-2 py-1">
-  <table class="mx-auto">
+  <table class="mx-auto table table-compact">
     <tr *ngFor="let row of source; first as isFirst; trackBy: trackBy">
-      <td class="mx-1">
-        <nwb-modifier-source-label [data]="row.source"></nwb-modifier-source-label>
+      <td class="p-1">
+        <div class="flex flex-row items-center">
+          <nwb-modifier-source-label [data]="row.source"></nwb-modifier-source-label>
+        </div>
       </td>
-      <td class="font-mono font-thin">
-        <ng-container *ngIf="!isFirst"> {{ row.value > 0 ? '+' : '' }} </ng-container>
+      <td class="p-1 font-mono font-thin">
+        <div class="flex flex-row items-center">
+          <ng-container *ngIf="!isFirst"> {{ row.value > 0 ? '+' : '' }} </ng-container>
+        </div>
       </td>
-      <td
-        class="font-mono font-thin text-right"
-        [class.text-primary]="row['capped']"
-        [class.text-success]="!row['capped']"
-      >
-        {{ row.value * row.scale | percent: '0.1-1' }}
+      <td class="p-1 font-mono font-thin text-right" [class.text-primary]="row['capped']">
+        <div class="flex flex-row items-center">
+          {{ row.value * row.scale | percent : '0.1-1' }}
+        </div>
+      </td>
+      <td class="p-1">
+        <div class="flex flex-row items-center" *ngIf="row['category']; let category">
+          <span class="badge badge-secondary badge-sm">
+            {{ category }} (cap @ {{ row['limit'] | percent : '0.1-1' }})
+          </span>
+        </div>
       </td>
     </tr>
     <tr *ngIf="showSum">
-      <td></td>
-      <td colspan="2" class="font-mono font-thin text-right border-double border-t-4">
+      <td class="p-1"></td>
+      <td colspan="2" class="p-1 font-mono font-thin text-right border-double border-t-4">
         <div class="flex flex-col">
-          <span [class.line-through]="sumValue != value" [class.opacity-50]="sumValue != value">{{
-            sumValue | percent: '0.1-1'
-          }}</span>
-          <span *ngIf="sumValue != value" class="text-danger">{{ value | percent: '0.1-1' }}</span>
+          <span [class.line-through]="isOvershoot" [class.opacity-50]="isOvershoot">
+            {{ sumValue | percent : '0.1-1' }}
+          </span>
+          <span *ngIf="isOvershoot" class="text-danger">{{ value | percent : '0.1-1' }}</span>
         </div>
       </td>
     </tr>
   </table>
   <div class="text-sm flex flex-col text-center">
-    <div *ngIf="hasUncapped">
-      <span class="text-success">Uncategorized</span> values
-      <span *ngIf="limit">
-        are summed beyond {{ limit | percent }} {{ category | nwText }} cap
-      </span>
-    </div>
-    <div *ngIf="hasCapped">
-      <span class="text-primary" *ngIf="hasCapped">Capped category</span> values
-      <span *ngIf="limit">
-        are summed only up to {{ limit | percent }} {{ category | nwText }} cap
-      </span>
-    </div>
-    <div *ngIf="sumValue != value">
-      Overshoot by <span class="text-error">{{ sumValue - value | percent: '0.0-3' }}</span>
+    <div *ngIf="isOvershoot">
+      Overshoot by <span class="text-error">{{ sumValue - value | percent : '0.0-3' }}</span>
     </div>
   </div>
 </div>

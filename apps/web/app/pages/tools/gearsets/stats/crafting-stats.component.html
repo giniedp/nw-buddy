@@ -10,13 +10,13 @@
     <div [class.opacity-20]="!row.min.value" [tooltip]="tplMin" [tooltipClass]="'p-0'">
       min GS <span class="font-bold">+{{ row.min.value | number : '0.0-0' }}</span>
       <ng-template #tplMin>
-        <nwb-modifier-tip [data]="row.min" [percent]="false" category="{{ row.category }} min GS"></nwb-modifier-tip>
+        <nwb-modifier-tip [data]="row.min" [percent]="false" title="{{ row.category }} min GS"></nwb-modifier-tip>
       </ng-template>
     </div>
     <div [class.opacity-20]="!row.max.value" [tooltip]="tplMax" [tooltipClass]="'p-0'">
       max GS <span class="font-bold">+{{ row.max.value | number : '0.0-0' }}</span>
       <ng-template #tplMax>
-        <nwb-modifier-tip [data]="row.max" [percent]="false" category="{{ row.category }} max GS"></nwb-modifier-tip>
+        <nwb-modifier-tip [data]="row.max" [percent]="false" title="{{ row.category }} max GS"></nwb-modifier-tip>
       </ng-template>
     </div>
   </ng-container>

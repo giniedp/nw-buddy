@@ -21,29 +21,21 @@ export class ModifierCapTipComponent {
     this.source = data.source || []
     this.value = data.value
     this.sumValue = sumBy(this.source, (it) => it.scale * it.value)
-    this.showSum = this.source.length > 0 || (this.value != this.sumValue)
+    this.showSum = this.source.length > 0 || this.value != this.sumValue
     this.hasCapped = this.source.some((it) => it['capped'])
     this.hasUncapped = this.source.some((it) => !it['capped'])
+    this.isOvershoot = this.value !== this.sumValue
   }
 
   @Input()
   public title: string
 
-  @Input()
-  public category: string
-
-  @Input()
-  public limit: number
-
   protected trackBy = (i: number) => i
-
   protected value: number
   protected sumValue: number
   protected source: ModifierValue<any>[]
   protected showSum: boolean
   protected hasUncapped: boolean
   protected hasCapped: boolean
-  public constructor() {
-    //
-  }
+  protected isOvershoot: boolean
 }

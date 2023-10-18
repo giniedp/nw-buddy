@@ -5,6 +5,7 @@ import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { IconsModule } from '~/ui/icons'
 import { TooltipModule } from '~/ui/tooltip'
+import { tapDebug } from '~/utils'
 
 @Component({
   standalone: true,
@@ -18,7 +19,7 @@ import { TooltipModule } from '~/ui/tooltip'
 })
 export class AttributesStatsComponent {
   protected trackBy = (i: number) => i
-  protected readonly vm$ = this.mannequin.activeAttributes$.pipe(
+  protected readonly vm$ = this.mannequin.activeAttributes$.pipe(tapDebug('attrs')).pipe(
     map((data) => {
       return [
         {

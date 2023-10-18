@@ -1,55 +1,43 @@
-import { Statuseffect } from '@nw-data/generated'
-import { sumBy } from 'lodash'
-import { statusEffectHasEmpowerCap } from '@nw-data/common'
-import { eachModifier, modifierAdd, ModifierKey, modifierResult, ModifierResult, ModifierValue } from '../modifier'
-import { ActiveMods } from '../types'
+import { Statuseffectcategories } from '@nw-data/generated'
+import { ModifierKey, ModifierResult, eachModifier, modifierAdd, modifierResult } from '../modifier'
+import { ActiveMods, DbSlice } from '../types'
+import { categorySum } from './category-sum'
 
-const min = Math.min
-const max = Math.max
-const clamp = (value: number, l: number, r: number) => min(max(value, l), r)
-
-export function selectModsDMG(mods: ActiveMods) {
+export function selectModsDMG({ effectCategories }: DbSlice, mods: ActiveMods) {
   return {
-    DamageCategories: {
-      Arcane: sumCategory('DMGArcane', mods),
-      Corruption: sumCategory('DMGCorruption', mods),
-      Fire: sumCategory('DMGFire', mods),
-      Ice: sumCategory('DMGIce', mods),
-      Lightning: sumCategory('DMGLightning', mods),
-      Nature: sumCategory('DMGNature', mods),
-      Siege: sumCategory('DMGSiege', mods),
-      Slash: sumCategory('DMGSlash', mods),
-      Standard: sumCategory('DMGStandard', mods),
-      Strike: sumCategory('DMGStrike', mods),
-      Thrust: sumCategory('DMGThrust', mods),
-    },
+    DamageCategories: sumDamageCategories(mods, effectCategories),
     VitalsCategories: sumVitalsCategory(mods),
   } as const
 }
 
-function sumCategory(key: ModifierKey<number>, mods: ActiveMods): ModifierResult {
-  const capped: ModifierValue<number>[] = []
-  const uncapped: ModifierValue<number>[] = []
-  for (const mod of eachModifier<number>(key, mods)) {
-    if (statusEffectHasEmpowerCap(mod.source.effect)) {
-      capped.push({
-        ...mod,
-        ...{ capped: true },
-      })
-    } else {
-      uncapped.push({
-        ...mod,
-        ...{ capped: false },
-      })
-    }
-  }
-  const cappdSum = sumBy(capped, (it) => it.value * it.scale)
-  const uncappedSum = sumBy(uncapped, (it) => it.value * it.scale)
-  const total = clamp(cappdSum + uncappedSum, min(-0.5, uncappedSum), max(0.5, uncappedSum))
+function sumDamageCategories(mods: ActiveMods, categories: Map<string, Statuseffectcategories>) {
   return {
-    value: total,
-    source: [...uncapped, ...capped],
+    Acid: sumCategory('DMGAcid', mods, categories),
+    Arcane: sumCategory('DMGArcane', mods, categories),
+    Corruption: sumCategory('DMGCorruption', mods, categories),
+    Fire: sumCategory('DMGFire', mods, categories),
+    Ice: sumCategory('DMGIce', mods, categories),
+    Lightning: sumCategory('DMGLightning', mods, categories),
+    Nature: sumCategory('DMGNature', mods, categories),
+    Siege: sumCategory('DMGSiege', mods, categories),
+    Slash: sumCategory('DMGSlash', mods, categories),
+    Standard: sumCategory('DMGStandard', mods, categories),
+    Strike: sumCategory('DMGStrike', mods, categories),
+    Thrust: sumCategory('DMGThrust', mods, categories),
   }
+}
+
+function sumCategory(
+  key: ModifierKey<number>,
+  mods: ActiveMods,
+  categories: Map<string, Statuseffectcategories>
+): ModifierResult {
+  return categorySum({
+    key: key,
+    mods: mods,
+    categories: categories,
+    base: 1,
+  })
 }
 
 function sumVitalsCategory(mods: ActiveMods) {

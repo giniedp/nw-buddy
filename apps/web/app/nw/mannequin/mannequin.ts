@@ -72,7 +72,6 @@ export class Mannequin extends ComponentStore<MannequinState> {
   public readonly equippedTools$ = this.select(this.db$, this.state$, selectEquppedTools)
   public readonly equippedTrophies$ = this.select(this.db$, this.state$, selectPlacedHousings)
 
-
   public readonly activeConsumables$ = this.select(this.db$, this.state$, selectActiveConsumables)
   public readonly consumableEffects$ = this.select(this.db$, this.state$, selectConsumableEffects)
 
@@ -153,9 +152,9 @@ export class Mannequin extends ComponentStore<MannequinState> {
 
   public readonly statDamageMods$ = this.select(this.activeMods$, this.activeWeapon$, this.state$, selectDamageMods)
 
-  public readonly statDmg$ = this.select(this.activeMods$, this.state$, selectModsDMG)
+  public readonly statDmg$ = this.select(this.db$, this.activeMods$, this.state$, selectModsDMG)
 
-  public readonly statAbs$ = this.select(this.activeMods$, this.state$, selectModsABS)
+  public readonly statAbs$ = this.select(this.db$, this.activeMods$, this.state$, selectModsABS)
   public readonly statArmor$ = this.select(this.db$, this.activeMods$, this.state$, selectModsArmor)
 
   public readonly statRol$ = this.select(this.activeMods$, this.state$, selectModsROL)
