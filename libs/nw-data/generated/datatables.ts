@@ -387,6 +387,18 @@ export abstract class NwDataLoader {
   public charactertablesGruntDatatablesDamagetableGrunt() {
     return this.load<Damagetable[]>('charactertables/grunt_datatables/javelindata_damagetable_grunt.json')
   }
+  public charactertablesHalloweenDatatablesDamagetableGourdspewer() {
+    return this.load<Damagetable[]>('charactertables/halloween_datatables/javelindata_damagetable_gourdspewer.json')
+  }
+  public charactertablesHalloweenDatatablesDamagetableHalloweenboss() {
+    return this.load<Damagetable[]>('charactertables/halloween_datatables/javelindata_damagetable_halloweenboss.json')
+  }
+  public charactertablesHalloweenDatatablesDamagetableHalloweenplaguer() {
+    return this.load<Damagetable[]>('charactertables/halloween_datatables/javelindata_damagetable_halloweenplaguer.json')
+  }
+  public charactertablesHalloweenDatatablesDamagetablePumpklin() {
+    return this.load<Damagetable[]>('charactertables/halloween_datatables/javelindata_damagetable_pumpklin.json')
+  }
   public charactertablesHercyneDatatablesDamagetableHercyneboar() {
     return this.load<Damagetable[]>('charactertables/hercyne_datatables/javelindata_damagetable_hercyneboar.json')
   }
