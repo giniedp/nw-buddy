@@ -118,21 +118,23 @@ export function explainPerkMods(options: { perk: Perks; affix: Affixstats; gearS
     return result
   }
 
-  // perk with attribute mods e.g. MODStrength, MODDexterity etc.
-  // +25 Strength
-  const mods = getPerksInherentMODs(perk, affix, gearScore)
-  mods?.forEach((mod, i) => {
-    result.push({
-      perkId: perk.PerkID,
-      icon: perk.IconPath,
-      label: `${mod.value > 0 ? '+' : ''}${Math.floor(mod.value)}`,
-      description: mod.label,
-      context: {
-        itemId: perk.PerkID,
-        gearScore: gearScore,
-      },
+  if (!affix.AttributePlacingMods) {
+    // perk with attribute mods e.g. MODStrength, MODDexterity etc.
+    // +25 Strength
+    const mods = getPerksInherentMODs(perk, affix, gearScore)
+    mods?.forEach((mod, i) => {
+      result.push({
+        perkId: perk.PerkID,
+        icon: perk.IconPath,
+        label: `${mod.value > 0 ? '+' : ''}${Math.floor(mod.value)}`,
+        description: mod.label,
+        context: {
+          itemId: perk.PerkID,
+          gearScore: gearScore,
+        },
+      })
     })
-  })
+  }
 
   // perk with mods to highest attribute
   // +25 Magnify (highest attribute: Focus)
