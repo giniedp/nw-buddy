@@ -1,3 +1,4 @@
+import { Signal } from '@angular/core'
 import {
   NW_FALLBACK_ICON,
   getCraftingCategoryLabel,
@@ -212,6 +213,7 @@ export function craftingColPrice(util: CraftingTableUtils) {
     width: 100,
   })
 }
+
 export function craftingColTradeskill(util: CraftingTableUtils) {
   //
   return util.colDef({
@@ -223,6 +225,27 @@ export function craftingColTradeskill(util: CraftingTableUtils) {
     filter: SelectFilter,
   })
 }
+
+export function craftingColCanCraft(util: CraftingTableUtils, skills: Signal<Record<string, number>>) {
+  return util.colDef({
+    colId: 'userCanCraft',
+    headerValueGetter: () => 'Can Craft',
+    width: 100,
+    cellClass: 'cursor-pointer',
+    filter: SelectFilter,
+    headerTooltip: 'Whether you can craft this item based on your current tradeskill level',
+    valueGetter: util.valueGetter(({ data }) => {
+      return skills()?.[data.Tradeskill] >= data.RecipeLevel
+    }),
+    cellRenderer: util.cellRenderer(({ value }) => {
+      return util.el('span.badge.badge-sm', {
+        class: value ? ['badge-success', 'badge-outline'] : 'badge-error',
+        text: value ? 'Yes' : 'No',
+      })
+    }),
+  })
+}
+
 export function craftingColCategory(util: CraftingTableUtils) {
   return util.colDef({
     colId: 'craftingCategory',

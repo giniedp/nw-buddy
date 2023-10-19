@@ -20,6 +20,7 @@ import { getIconFrameClass } from '../../item-frame'
 import { colDefPrecision } from './utils'
 import { Router } from '@angular/router'
 import { ItemRarity } from '@nw-data/common'
+import { NwTradeskillService } from '~/nw/tradeskill'
 
 @Injectable({ providedIn: 'root' })
 export class TableGridUtils<T = any> {

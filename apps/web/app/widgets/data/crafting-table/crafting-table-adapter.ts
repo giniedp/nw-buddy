@@ -1,5 +1,5 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { Injectable, inject } from '@angular/core'
+import { Injectable, Signal, inject } from '@angular/core'
 import { getIngretientsFromRecipe, getItemIdFromRecipe, getTradeSkillLabel } from '@nw-data/common'
 import { COLS_ABILITY, COLS_CRAFTING } from '@nw-data/generated'
 import { Observable, combineLatest, map } from 'rxjs'
@@ -14,6 +14,7 @@ import {
 import {
   CraftingTableRecord,
   craftingColBookmark,
+  craftingColCanCraft,
   craftingColCategory,
   craftingColCooldownCeconds,
   craftingColCooldownQuantity,
@@ -31,14 +32,18 @@ import {
 } from './crafting-table-cols'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { CharacterStore } from '~/data'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 @Injectable()
 export class CraftingTableAdapter
   implements DataViewAdapter<CraftingTableRecord>, TableGridAdapter<CraftingTableRecord>
 {
   private db = inject(NwDbService)
+  private character = inject(CharacterStore)
   private utils: TableGridUtils<CraftingTableRecord> = inject(TableGridUtils)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private skills = toSignal(this.character.tradeskills$, { initialValue: null })
 
   public entityID(item: CraftingTableRecord): string {
     return item.RecipeID
@@ -59,7 +64,7 @@ export class CraftingTableAdapter
 
   public gridOptions(): GridOptions<CraftingTableRecord> {
     const build = this.config?.gridOptions || buildOptions
-    return build(this.utils)
+    return build(this.utils, this.skills)
   }
 
   public virtualOptions(): VirtualGridOptions<CraftingTableRecord> {
@@ -90,7 +95,7 @@ export class CraftingTableAdapter
   }
 }
 
-function buildOptions(util: TableGridUtils<CraftingTableRecord>) {
+function buildOptions(util: TableGridUtils<CraftingTableRecord>, skills: Signal<Record<string, number>>) {
   const result: GridOptions<CraftingTableRecord> = {
     columnDefs: [
       craftingColIcon(util),
@@ -104,6 +109,7 @@ function buildOptions(util: TableGridUtils<CraftingTableRecord>) {
       craftingColCategory(util),
       craftingColGroup(util),
       craftingColRecipeLevel(util),
+      craftingColCanCraft(util, skills),
       craftingColExpansion(util),
       craftingColItemChance(util),
       craftingColCooldownQuantity(util),
