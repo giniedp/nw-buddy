@@ -3,6 +3,7 @@ import { Component, ChangeDetectionStrategy, Input } from '@angular/core'
 import { NwModule } from '~/nw'
 import { ModifierResult, ModifierValue } from '~/nw/mannequin/modifier'
 import { ModifierSourceLabelComponent } from './modifier-source-label.component'
+import { sumBy } from 'lodash'
 
 @Component({
   standalone: true,
@@ -16,23 +17,52 @@ import { ModifierSourceLabelComponent } from './modifier-source-label.component'
 })
 export class ModifierTipComponent {
   @Input()
-  public data: ModifierResult
+  public set data(data: ModifierResult) {
+    this.source = data.source || []
+    this.value = data.value
+    this.sumValue = sumBy(this.source, (it) => it.scale * it.value)
+    this.showSum = this.source.length > 1 || this.value != this.sumValue
+    this.hasCapped = this.source.some((it) => it['capped'])
+    this.hasUncapped = this.source.some((it) => !it['capped'])
+    this.isOvershoot = this.value !== this.sumValue
+    console.log({
+      data,
+      value: this.value,
+      sumValue: this.sumValue,
+      showSum: this.showSum,
+      hasCapped: this.hasCapped,
+      hasUncapped: this.hasUncapped,
+      isOvershoot: this.isOvershoot,
+    })
+  }
 
   @Input()
   public title: string
 
   @Input()
-  public format = '0.0-0'
-
-  @Input()
-  public operator = '+'
+  public format = '0.1-1'
 
   @Input()
   public percent = true
 
   protected trackBy = (i: number) => i
+  protected value: number
+  protected sumValue: number
+  protected source: ModifierValue<any>[]
+  protected showSum: boolean
+  protected hasUncapped: boolean
+  protected hasCapped: boolean
+  protected isOvershoot: boolean
 
   public constructor() {
     //
+  }
+
+  protected rowSign(it: ModifierValue<number>) {
+    return it.value * it.scale < 0 ? '-' : '+'
+  }
+
+  protected rowValue(it: ModifierValue<number>) {
+    return Math.abs(it.value * it.scale)
   }
 }

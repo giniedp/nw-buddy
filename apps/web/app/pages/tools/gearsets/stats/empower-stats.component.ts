@@ -7,7 +7,6 @@ import { Mannequin } from '~/nw/mannequin'
 import { ModifierResult } from '~/nw/mannequin/modifier'
 import { damageTypeIcon } from '~/nw/weapon-types'
 import { TooltipModule } from '~/ui/tooltip'
-import { ModifierCapTipComponent } from './modifier-cap-tip.component'
 import { ModifierTipComponent } from './modifier-tip.component'
 
 @Component({
@@ -15,7 +14,7 @@ import { ModifierTipComponent } from './modifier-tip.component'
   selector: 'nwb-empower-stats',
   templateUrl: './empower-stats.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, TooltipModule, ModifierCapTipComponent, ModifierTipComponent],
+  imports: [CommonModule, NwModule, TooltipModule, ModifierTipComponent],
   host: {
     class: 'block hidden',
   },
@@ -26,7 +25,7 @@ export class EmpowerStatsComponent {
     map((data) => {
       return {
         DamageTypes: collect(data.DamageCategories),
-        VitalsTypes: collect(data.VitalsCategories)
+        VitalsTypes: collect(data.VitalsCategories),
       }
     }),
     tap((it) => {

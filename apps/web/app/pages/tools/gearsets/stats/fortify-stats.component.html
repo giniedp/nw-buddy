@@ -16,7 +16,7 @@
         >
           <img [nwImage]="entry.icon" class="w-6 h-6" />
           <ng-template #tplTip>
-            <nwb-modifier-cap-tip [data]="entry" [title]="entry.category"></nwb-modifier-cap-tip>
+            <nwb-modifier-tip [data]="entry" [title]="entry.category"></nwb-modifier-tip>
           </ng-template>
         </span>
       </div>
@@ -44,7 +44,7 @@
         <span [tooltip]="tplTip" [tooltipClass]="'p-0'" class="rounded-sm">
           Physical Armor
           <ng-template #tplTip>
-            <nwb-modifier-cap-tip [data]="entry" [title]="'Physical'"></nwb-modifier-cap-tip>
+            <nwb-modifier-tip [data]="entry" [title]="'Physical'"></nwb-modifier-tip>
           </ng-template>
         </span>
       </div>
@@ -55,7 +55,7 @@
         <span [tooltip]="tplTip" [tooltipClass]="'p-0'" class="rounded-sm">
           Elemental Armor
           <ng-template #tplTip>
-            <nwb-modifier-cap-tip [data]="entry" [title]="'Elemental'"></nwb-modifier-cap-tip>
+            <nwb-modifier-tip [data]="entry" [title]="'Elemental'"></nwb-modifier-tip>
           </ng-template>
         </span>
       </div>

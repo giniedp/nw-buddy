@@ -7,7 +7,6 @@ import { Mannequin } from '~/nw/mannequin'
 import { ModifierResult } from '~/nw/mannequin/modifier'
 import { damageTypeIcon } from '~/nw/weapon-types'
 import { TooltipModule } from '~/ui/tooltip'
-import { ModifierCapTipComponent } from './modifier-cap-tip.component'
 import { ModifierTipComponent } from './modifier-tip.component'
 
 @Component({
@@ -15,7 +14,7 @@ import { ModifierTipComponent } from './modifier-tip.component'
   selector: 'nwb-fortify-stats',
   templateUrl: './fortify-stats.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, TooltipModule, ModifierCapTipComponent, ModifierTipComponent],
+  imports: [CommonModule, NwModule, TooltipModule, ModifierTipComponent],
   host: {
     class: 'block hidden',
   },
@@ -31,7 +30,7 @@ export class FortifyStatsComponent {
         DamageTypes: collect(abs.DamageCategories),
         VitalsTypes: collect(abs.VitalsCategories),
         Physical: armor.PhysicalArmor,
-        Elemental: armor.ElementalArmor
+        Elemental: armor.ElementalArmor,
       }
     }),
     tap((it) => {

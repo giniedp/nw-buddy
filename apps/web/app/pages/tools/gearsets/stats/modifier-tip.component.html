@@ -1,35 +1,68 @@
-<h3 class="uppercase relative text-center font-caslon text-nw-description px-2">
-  <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
-  <span class="relative top-1">{{ title | nwText }}</span>
+<h3 class="uppercase relative text-center font-caslon text-nw-description px-2 py-1 nw-bg-title bg-bottom">
+  <span>{{ title | nwText }}</span>
 </h3>
 <div class="px-2 py-1">
-  <table>
-    <tr *ngFor="let row of data.source; first as isFirst; trackBy: trackBy">
-      <td class="mx-1">
-        <nwb-modifier-source-label [data]="row.source"></nwb-modifier-source-label>
+  <table class="mx-auto table table-compact">
+    <tr *ngFor="let row of source; first as isFirst; trackBy: trackBy">
+      <td class="p-1">
+        <div class="flex flex-row items-center">
+          <nwb-modifier-source-label [data]="row.source"></nwb-modifier-source-label>
+        </div>
       </td>
-      <td class="font-mono font-thin">
-        <ng-container *ngIf="!isFirst"> {{ row.value * row.scale < 0 ? '' : '+' }} </ng-container>
+      <td class="p-1 font-mono font-thin">
+        <ng-container> {{ rowSign(row) }} </ng-container>
       </td>
-      <td class="font-mono font-thin text-right">
+      <td class="p-1 font-mono font-thin text-right" [class.text-primary]="row['capped']">
         <ng-container *ngIf="percent">
-          {{ row.value * row.scale | percent : format }}
+          {{ rowValue(row) | percent : format }}
         </ng-container>
         <ng-container *ngIf="!percent">
-          {{ row.value * row.scale | number : format }}
+          {{ rowValue(row) | number : format }}
         </ng-container>
+      </td>
+      <td class="p-1">
+        <div class="flex flex-row items-center" *ngIf="row['category']; let category">
+          <span class="badge badge-secondary badge-sm">
+            {{ category }} (cap @ {{ row['limit'] | percent : '0.1-1' }})
+          </span>
+        </div>
       </td>
     </tr>
-    <tr *ngIf="data.source?.length > 1">
-      <td></td>
-      <td colspan="2" class="font-mono font-thin text-right border-double border-t-4">
-        <ng-container *ngIf="percent">
-          {{ data.value | percent : format }}
-        </ng-container>
-        <ng-container *ngIf="!percent">
-          {{ data.value | number : format }}
-        </ng-container>
+    <tr *ngIf="showSum">
+      <td class="p-1"></td>
+      <td colspan="2" class="p-1 font-mono font-thin text-right border-double border-t-4">
+        <div class="flex flex-col">
+          <span [class.line-through]="isOvershoot" [class.opacity-50]="isOvershoot">
+            <ng-container *ngIf="percent">
+              {{ sumValue | percent : format }}
+            </ng-container>
+            <ng-container *ngIf="!percent">
+              {{ sumValue | number : format }}
+            </ng-container>
+          </span>
+          <span *ngIf="isOvershoot" class="text-danger">
+            <ng-container *ngIf="percent">
+              {{ value | percent : format }}
+            </ng-container>
+            <ng-container *ngIf="!percent">
+              {{ value | number : format }}
+            </ng-container>
+          </span>
+        </div>
       </td>
     </tr>
   </table>
+  <div class="text-sm flex flex-col text-center">
+    <div *ngIf="isOvershoot">
+      Overshoot by
+      <span class="text-error">
+        <ng-container *ngIf="percent">
+          {{ sumValue - value | percent : '0.0-3' }}
+        </ng-container>
+        <ng-container *ngIf="!percent">
+          {{ sumValue - value | number : '0.0-3' }}
+        </ng-container>
+      </span>
+    </div>
+  </div>
 </div>
