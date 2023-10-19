@@ -10,8 +10,10 @@ import {
   getItemRarity,
   getPerkBucketPerkIDs,
   getPerkBucketPerks,
+  getPerkTypeWeight,
   hasItemGearScore,
   isPerkGem,
+  isPerkInherent,
   isPerkItemIngredient,
 } from '@nw-data/common'
 import {
@@ -139,6 +141,9 @@ export function selectPerkSlots({
       }),
     })
   }
+  result.sort((a, b) => {
+    return getPerkTypeWeight(a.perk?.PerkType) - getPerkTypeWeight(b.perk?.PerkType)
+  })
   return result
 }
 
