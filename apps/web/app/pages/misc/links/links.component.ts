@@ -78,12 +78,6 @@ export const LINKS = [
     url: 'https://www.5con.club/',
     image: 'https://www.5con.club/5CC.png',
     describe: 'Con is just a substitute for skill.'
-  },
-  {
-    name: 'M11 PvE Builds',
-    url: 'https://pvebuilds.xyz/',
-    image: '',
-    describe: 'Everything you need to know about New World PvE.'
   }
 ]
 
