@@ -24,7 +24,7 @@ module.exports = (config, options) => {
   console.log('[WEBPACK]', config.target)
   console.log('  version', VERSION)
   console.log('    isPtr', !!NW_USE_PTR)
-  console.log('   assets', config.output.publicPath)
+  console.log('   assets', options.baseHref)
   console.log('\n')
 
   const definitions = {
@@ -33,7 +33,7 @@ module.exports = (config, options) => {
     __NWB_USE_PTR__: JSON.stringify(NW_USE_PTR),
     __NWB_DATA_PATH__: JSON.stringify(environment.dataDir(NW_USE_PTR)),
     __NWB_CDN_URL__: JSON.stringify(CDN_URL),
-    __NWB_DEPLOY_URL__: JSON.stringify(config.output.publicPath || '/'),
+    __NWB_DEPLOY_URL__: JSON.stringify(options.baseHref || '/'),
   }
   config.module.rules.push(
     {
