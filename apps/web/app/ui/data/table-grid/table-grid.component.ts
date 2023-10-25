@@ -229,8 +229,8 @@ export class TableGridComponent<T> implements OnInit {
 
     this.grid
       .onEvent('rowClicked')
-      .pipe(takeUntil(this.store.destroy$))
       .pipe(filter((it: RowClickedEvent) => !!it.rowPinned))
+      .pipe(takeUntil(this.store.destroy$))
       .subscribe((e: RowClickedEvent) => {
         e.api.forEachNode((it) => {
           if (it.data === e.data) {
@@ -242,7 +242,13 @@ export class TableGridComponent<T> implements OnInit {
   }
 
   private attachSelectionBinding() {
-    // doubleClick$ = defer(() => this.grid.onEvent('rowDoubleClicked'))
+    this.grid
+      .onEvent('rowDoubleClicked')
+      .pipe(filter((it: RowClickedEvent) => !it.rowPinned))
+      .pipe(takeUntil(this.store.destroy$))
+      .subscribe((e: RowClickedEvent) => {
+        this.rowDoubleClicked$.emit(e.data)
+      })
 
     // pull selection from grid -> store
     this.grid
