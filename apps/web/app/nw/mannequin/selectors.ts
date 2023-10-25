@@ -435,7 +435,6 @@ export function selectPlacingMods(db: DbSlice, { perks }: AttributeModsSource) {
 }
 
 export function selectAttributes(db: DbSlice, mods: AttributeModsSource, state: MannequinState): ActiveAttributes {
-  console.log('selectMods', mods)
   const attrsBase = selectEquppedAttributes(db, mods)
   const attrsBonus = selectBonusAttributes(db, mods)
   const attrsAssigned = state.assignedAttributes
