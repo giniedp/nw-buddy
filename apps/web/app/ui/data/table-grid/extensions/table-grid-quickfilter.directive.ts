@@ -1,7 +1,6 @@
 import { Directive, Input } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, filter, map, tap } from 'rxjs'
-import { fromGridEvent } from '~/ui/data/ag-grid'
+import { BehaviorSubject, combineLatest, debounceTime, filter, tap } from 'rxjs'
 import { QuicksearchService } from '~/ui/quicksearch'
 import { selectStream } from '~/utils'
 import { TableGridComponent } from '../table-grid.component'
@@ -30,13 +29,6 @@ export class DataGridQuickfilterDirective {
           grid.api.setQuickFilter(query || '')
         })
       )
-      .pipe(takeUntilDestroyed())
-      .subscribe()
-
-    fromGridEvent(grid.ready$, 'filterChanged')
-      .pipe(map(({ api }) => api.getQuickFilter()))
-      .pipe(distinctUntilChanged())
-      .pipe(tap((text) => search.patchState({ value: text })))
       .pipe(takeUntilDestroyed())
       .subscribe()
   }
