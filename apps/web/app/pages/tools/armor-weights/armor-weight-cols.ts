@@ -135,6 +135,7 @@ export function armorWeightColShield(util: ArmorWeightTableUtils) {
     colId: 'shield',
     headerValueGetter: () => 'Shield',
     valueGetter: util.valueGetter(({ data }) => data.items.find((it) => it?.slot?.id === 'weapon3')?.label),
+    valueFormatter: ({ value }) => humanize(value),
     tooltipValueGetter: util.tipValueGetter(({ data }) => data.items.find((it) => it?.slot?.id === 'weapon3')?.weight),
     getQuickFilterText: ({ value }) => value,
     filter: SelectFilter,
