@@ -40,7 +40,8 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Game Events', path: '/game-events', icon: 'assets/icons/menu/events.png' },
 
       { label: 'Game Modes', path: '/game-modes', icon: 'assets/icons/menu/expeditions.png', divider: true },
-      { label: 'Armorsets', path: '/armorsets', icon: 'assets/icons/menu/armorsets.png' },
+      { label: 'Armor Sets', path: '/armor-sets', icon: 'assets/icons/menu/armorsets.png' },
+      { label: 'Armor Weights', path: '/armor-weights', icon: 'assets/icons/menu/icon_weight.png' },
       { label: 'Transmog', path: '/transmog', icon: 'assets/icons/menu/transmogtoken.webp' },
       { label: 'Mounts', path: '/mounts', icon: 'assets/icons/menu/reward_type_mount.png' },
     ],
@@ -52,7 +53,6 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Levels', path: '/leveling', icon: 'assets/icons/menu/levels.png' },
       { label: 'Inventory', path: '/inventory', icon: 'assets/icons/menu/storage.png' },
       { label: 'Gear Sets', path: '/gearsets', icon: 'assets/icons/menu/gearsets.png' },
-      { label: 'Armor Weights', path: '/armor-weights', icon: 'assets/icons/menu/icon_weight.png' },
       { label: 'Skill Trees', path: '/skill-trees', icon: 'assets/icons/menu/skill-trees.png' },
       { label: 'Territories', path: '/territories', icon: 'assets/icons/menu/territories.png' },
     ],
