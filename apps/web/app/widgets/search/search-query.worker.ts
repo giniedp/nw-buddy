@@ -19,9 +19,28 @@ const index: Record<string, Promise<any>> = {}
 
 function fetchIndex(lang: string): Promise<SearchRecord[]> {
   if (!index[lang]) {
-    index[lang] = fetch(`${environment.nwDataUrl}/search/${lang}.json`).then((res) => res.json())
+    index[lang] = fetch(`${environment.nwDataUrl}/search/${lang}.json`)
+      .then((res) => res.json())
+      .then((data) => {
+        return transformImageUrls(data)
+      })
   }
   return index[lang]
+}
+
+function transformImageUrls(data: any) {
+  if (!Array.isArray(data)) {
+    return data
+  }
+  const nwDataUrl = environment.nwDataUrl.replace(/\/+$/, '')
+  return data.map((item) => {
+    Object.entries(item).forEach(([key, value]) => {
+      if (typeof value === 'string' && value.startsWith('nw-data/')) {
+        item[key] = value.replace(/nw-data\/((live|ptr)\/)?/, nwDataUrl + '/')
+      }
+    })
+    return item
+  })
 }
 
 const api: SearchQueryTasks = {
