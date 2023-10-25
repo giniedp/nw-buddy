@@ -41,6 +41,7 @@ const routes: Routes = [
     loadChildren: () => import('./pages/database/loot-buckets').then((m) => m.LootBucketsPageModule),
   },
   { path: 'armorsets', loadChildren: () => import('./pages/tools/armorsets').then((m) => m.ArmorsetsModule) },
+  { path: 'armor-weights', loadChildren: () => import('./pages/tools/armor-weights').then((m) => m.ArmorWeightsModule) },
   { path: 'dungeons', redirectTo: 'game-modes' },
   { path: 'game-modes', loadChildren: () => import('./pages/tools/game-modes').then((m) => m.GameModesModule) },
   { path: 'inventory', loadChildren: () => import('./pages/tools/inventory').then((m) => m.InventoryModule) },

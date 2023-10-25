@@ -2,6 +2,7 @@ import {
   ColDef,
   ColGroupDef,
   ICellRendererFunc,
+  ITooltipParams,
   ValueFormatterFunc,
   ValueFormatterParams,
   ValueGetterFunc,
@@ -54,6 +55,10 @@ export class TableGridUtils<T = any> {
   }
 
   public valueFormatter<V>(fn: keyof T | ((params: ValueFormatterParams<T, V>) => any)): string | ValueFormatterFunc {
+    return fn as any
+  }
+
+  public tipValueGetter(fn: keyof T | ((params: ITooltipParams<T>) => any)): string | any {
     return fn as any
   }
 

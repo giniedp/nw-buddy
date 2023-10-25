@@ -1,0 +1,33 @@
+<ion-header class="bg-base-300">
+  <div class="flex flex-col-reverse md:flex-row">
+    <ul class="flex flex-row flex-nowrap flex-1 w-full overflow-x-auto scrollbar-hide gap-1">
+      <li>
+        <button
+          [nwbDataCateogryMenu]
+          [category]="category$ | async"
+          [showCounter]="true"
+          [defaultRoute]="defaultRoute"
+          [defaultTitle]="title"
+          [routePrefix]="'..'"
+          class="btn btn-ghost normal-case text-left"
+        ></button>
+      </li>
+      <span class="flex-1"></span>
+    </ul>
+  </div>
+</ion-header>
+<div class="flex-1 flex flex-row overflow-hidden">
+  <nwb-table-grid
+    (ready$)="service.onTableReady($event)"
+    [enableQuickfilter]="true"
+    [data]="service.categoryItems$ | async"
+    [options]="service.tableGridOptions"
+    [identifyBy]="service.entityIdGetter"
+    [persistKey]="persistKey"
+    [filterQueryParam]="filterParam"
+    [selectionRouteParam]="selectionParam"
+    #grid
+  ></nwb-table-grid>
+
+  <!-- <router-outlet></router-outlet> -->
+</div>
