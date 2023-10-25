@@ -222,6 +222,7 @@ function selectSectionsFiltered<T>(
   if (!query || !getter) {
     return sections
   }
+  query = query.toLowerCase()
   const results: Array<SectionGroup<T>> = []
   for (const section of sections) {
     const items: T[] = []
