@@ -75,7 +75,7 @@ export function resourceLookup(
       return db.housingItemsMap
     }
     case 'Vitals_Player': {
-      return db.vitalsPlayerMap
+      return db.vitalsMap
     }
   }
   return of(null)

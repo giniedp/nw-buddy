@@ -348,6 +348,7 @@ export class NwDbService {
   public vitals = table(() => [
     this.data.vitals(),
     this.data.vitalstablesVitalsFirstlight() as unknown as Observable<Vitals[]>,
+    this.data.vitalsPlayer() as unknown as Observable<Vitals[]>,
   ])
   public vitalsMap = indexBy(() => this.vitals, 'VitalsID')
   public vital = lookup(() => this.vitalsMap)
