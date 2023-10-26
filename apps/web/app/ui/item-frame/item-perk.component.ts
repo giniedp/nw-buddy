@@ -26,7 +26,7 @@ import { NwModule } from '~/nw'
     >
       <div *ngIf="explanation; let part">
         <b *ngIf="part.label; let text"> {{ text | nwText }}{{ part.colon ? ':' : '' }} </b>
-        <span *ngIf="part.description; let text" [innerHTML]="text | nwText : part.context"> </span>
+        <span *ngIf="part.description; let text" [innerHTML]="text | nwText : part.context | nwTextBreak"> </span>
         <!-- <span *ngIf="row.suffix; let text">
           {{ text }}
         </span> -->

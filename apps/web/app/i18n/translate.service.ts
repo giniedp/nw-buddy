@@ -41,7 +41,7 @@ export class TranslateService {
 
   public get(key: string | string[]): string {
     if (!key || !key.length) {
-      return null
+      return ''
     }
     if (Array.isArray(key)) {
       return key.map((it) => this.getSync(it)).join(' ')
