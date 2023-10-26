@@ -18,6 +18,7 @@ describe('expression', () => {
     foo: 0,
     bar: 1,
     baz: 2,
+    seconds: 180
   }
   const table = [
     { input: 'Foo {[foo]} Baz', expected: 'Foo 0 Baz' },
@@ -33,6 +34,7 @@ describe('expression', () => {
     { input: '{foo} {[1 + {bar}]} {baz}', expected: '0 2 2' },
     { input: '1 + {foo} + 2 + {baz}', expected: '1 + 0 + 2 + 2' },
     { input: '1+{foo}+2+{baz}', expected: '1+0+2+2' },
+    { input: '{[(seconds)/60]}', expected: '3'}
   ]
   table.forEach(({ input, expected }) => {
     it(`parses expression ${input}`, async () => {

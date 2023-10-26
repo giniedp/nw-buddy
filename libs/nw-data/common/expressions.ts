@@ -47,14 +47,12 @@ function parseExpression(text: string): NwExp {
           const block = reader.nextBlock('{', '}')
           const node = parseExpression(block)
           expr.push(new NwExpParen('(', ')', node))
-          reader.next()
           break
         }
         case '(': {
           const block = reader.nextBlock('(', ')')
           const node = parseExpression(block)
           expr.push(new NwExpParen('(', ')', node))
-          reader.next()
           break
         }
         case '*':
