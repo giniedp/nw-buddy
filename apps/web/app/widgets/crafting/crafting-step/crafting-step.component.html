@@ -72,14 +72,14 @@
       ></nwb-price-tracker>
       <ng-container *ngIf="itemTracker.value; let price">
         <ng-container *ngIf="!vm.amountIsGross">
-          <span [class.text-xs]="!!vm.amount.bonus">
+          <span [class.text-xs]="!!vm.amount.bonus" class="whitespace-nowrap">
             {{ vm.amount.net * price | number : '1.2-2' }}
           </span>
-          <span *ngIf="vm.amount.bonus" class="text-success text-xs">
+          <span *ngIf="vm.amount.bonus" class="text-success text-xs whitespace-nowrap">
             + {{ vm.amount.bonus * price | number : '1.2-2' }}
           </span>
         </ng-container>
-        <span *ngIf="vm.amountIsGross" [class.text-success]="!!vm.amount.bonus">
+        <span *ngIf="vm.amountIsGross" [class.text-success]="!!vm.amount.bonus" class="whitespace-nowrap">
           {{ vm.amount.gross * price | number : '1.2-2' }}
         </span>
       </ng-container>
