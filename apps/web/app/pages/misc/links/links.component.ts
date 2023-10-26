@@ -24,12 +24,6 @@ export const LINKS = [
     url: 'https://gaming.tools/newworld',
   },
   {
-    name: 'New World Exchange',
-    image: 'https://webstatic.ams3.digitaloceanspaces.com/logo512.png',
-    description: "New World Exchange is a data analytics website for New World's trading data",
-    url: 'https://new-world.exchange',
-  },
-  {
     name: 'New World Market Prices',
     image: '',
     description: 'Pricing data sourced from our community of Market Watchers.',
