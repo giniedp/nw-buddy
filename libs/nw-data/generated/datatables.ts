@@ -11,6 +11,7 @@ import type {
   Attributeintelligence,
   Attributestrength,
   Categoricalprogression,
+  CooldownsPlayer,
   Costumechanges,
   Crafting,
   Craftingcategories,
@@ -54,6 +55,10 @@ import type {
   Promotionmutations,
   PvpRewards,
   PvpStore,
+  PvpbalanceArena,
+  PvpbalanceOpenworld,
+  PvpbalanceOutpostrush,
+  PvpbalanceWar,
   SandelementalHeavySandworm,
   Spelltable,
   StaminacostsPlayer,
@@ -776,6 +781,9 @@ export abstract class NwDataLoader {
   public charactertablesWolfDatatablesNamedDamagetableWolfBarkimedes() {
     return this.load<Damagetable[]>('charactertables/wolf_datatables/named/javelindata_damagetable_wolf_barkimedes.json')
   }
+  public cooldownsPlayer() {
+    return this.load<CooldownsPlayer[]>('javelindata_cooldowns_player.json')
+  }
   public costumechangesCostumechanges() {
     return this.load<Costumechanges[]>('costumechanges/javelindata_costumechanges.json')
   }
@@ -1126,6 +1134,18 @@ export abstract class NwDataLoader {
   }
   public pvpRewardstrackPvpStoreV2() {
     return this.load<PvpStore[]>('pvp_rewardstrack/javelindata_pvp_store_v2.json')
+  }
+  public pvpbalancetablesPvpbalanceArena() {
+    return this.load<PvpbalanceArena[]>('pvpbalancetables/javelindata_pvpbalance_arena.json')
+  }
+  public pvpbalancetablesPvpbalanceOpenworld() {
+    return this.load<PvpbalanceOpenworld[]>('pvpbalancetables/javelindata_pvpbalance_openworld.json')
+  }
+  public pvpbalancetablesPvpbalanceOutpostrush() {
+    return this.load<PvpbalanceOutpostrush[]>('pvpbalancetables/javelindata_pvpbalance_outpostrush.json')
+  }
+  public pvpbalancetablesPvpbalanceWar() {
+    return this.load<PvpbalanceWar[]>('pvpbalancetables/javelindata_pvpbalance_war.json')
   }
   public questgameevents01Gameevents() {
     return this.load<GameEvent[]>('questgameevents/javelindata_01_gameevents.json')

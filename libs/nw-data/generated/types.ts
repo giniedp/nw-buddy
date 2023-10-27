@@ -580,6 +580,13 @@ export interface Categoricalprogression {
   UsesGlobalProgressionMod: boolean
 }
 
+export interface CooldownsPlayer {
+  AbilityID: string
+  ID: number
+  Time: number
+  WeaponTag: string
+}
+
 export interface Costumechanges {
   CHEST_SLOT_Left: string
   CHEST_SLOT_Right: string
@@ -4180,6 +4187,36 @@ export interface PvpStore {
   Type1: string
   Type2: string
   Type3: string
+}
+
+export interface PvpbalanceArena {
+  BalanceCategory: string
+  BalanceTarget: string
+  ConsumableHealAdjustment: number
+  SelfHealAdjustment: number
+  WeaponBaseDamageAdjustment: number
+}
+
+export interface PvpbalanceOpenworld {
+  BalanceCategory: string
+  BalanceTarget: string
+  WeaponBaseDamageAdjustment: number
+}
+
+export interface PvpbalanceOutpostrush {
+  BalanceCategory: string
+  BalanceTarget: string
+  ConsumableHealAdjustment: number
+  SelfHealAdjustment: number
+  WeaponBaseDamageAdjustment: number
+}
+
+export interface PvpbalanceWar {
+  BalanceCategory: string
+  BalanceTarget: string
+  ConsumableHealAdjustment: number
+  SelfHealAdjustment: number
+  WeaponBaseDamageAdjustment: number
 }
 
 export interface Spelltable {

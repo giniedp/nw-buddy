@@ -568,6 +568,12 @@ export const COLS_CATEGORICALPROGRESSION = {
   "ShowAsObjectiveReward": "boolean",
   "UsesGlobalProgressionMod": "boolean",
 }
+export const COLS_COOLDOWNSPLAYER = {
+  "AbilityID": "string",
+  "ID": "number",
+  "Time": "number",
+  "WeaponTag": "string",
+}
 export const COLS_COSTUMECHANGES = {
   "CHEST_SLOT_Left": "string",
   "CHEST_SLOT_Right": "string",
@@ -4126,6 +4132,32 @@ export const COLS_PVPSTORE = {
   "Type1": "string",
   "Type2": "string",
   "Type3": "string",
+}
+export const COLS_PVPBALANCEARENA = {
+  "BalanceCategory": "string",
+  "BalanceTarget": "string",
+  "ConsumableHealAdjustment": "number",
+  "SelfHealAdjustment": "number",
+  "WeaponBaseDamageAdjustment": "number",
+}
+export const COLS_PVPBALANCEOPENWORLD = {
+  "BalanceCategory": "string",
+  "BalanceTarget": "string",
+  "WeaponBaseDamageAdjustment": "number",
+}
+export const COLS_PVPBALANCEOUTPOSTRUSH = {
+  "BalanceCategory": "string",
+  "BalanceTarget": "string",
+  "ConsumableHealAdjustment": "number",
+  "SelfHealAdjustment": "number",
+  "WeaponBaseDamageAdjustment": "number",
+}
+export const COLS_PVPBALANCEWAR = {
+  "BalanceCategory": "string",
+  "BalanceTarget": "string",
+  "ConsumableHealAdjustment": "number",
+  "SelfHealAdjustment": "number",
+  "WeaponBaseDamageAdjustment": "number",
 }
 export const COLS_SPELLTABLE = {
   "AbilityId": "string",
