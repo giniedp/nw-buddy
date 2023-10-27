@@ -4,7 +4,7 @@ import { groupBy, sum } from 'lodash'
 import { combineLatest, map, tap } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
-import { getItemGsBonus, getPerkMultiplier } from '@nw-data/common'
+import { getItemGsBonus, getPerkMultiplier, isPerkGenerated } from '@nw-data/common'
 import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
@@ -25,20 +25,29 @@ export class StackedPerksComponent {
     abilities: this.db.abilitiesMap,
   }).pipe(
     map(({ perks, effects, abilities }) => {
-      const activePerks = perks.filter(({ perk, affix }) => {
-        if (!perk.ScalingPerGearScore) {
+      return {
+        effects,
+        abilities,
+        perks: perks.filter(({ perk, affix }) => {
+          if (!perk.ScalingPerGearScore) {
+            return false
+          }
+          if (perk.EquipAbility?.some((it) => abilities.get(it)?.IsStackableAbility)) {
+            return true
+          }
+          const effect = effects.get(affix?.StatusEffect)
+          if (effect && effect.StackMax !== 1) {
+            return true
+          }
+          if (isPerkGenerated(perk) && !perk.EquipAbility && !affix?.StatusEffect) {
+            return true
+          }
           return false
-        }
-        if (perk.EquipAbility?.some((it) => abilities.get(it)?.IsStackableAbility)) {
-          return true
-        }
-        const effect = effects.get(affix?.StatusEffect)
-        if (effect && effect.StackMax !== 1) {
-          return true
-        }
-        return false
-      })
-      return Array.from(Object.values(groupBy(activePerks, (it) => it.perk.PerkID)))
+        }),
+      }
+    }),
+    map(({ perks, abilities }) => {
+      return Array.from(Object.values(groupBy(perks, (it) => it.perk.PerkID)))
         .map((group) => {
           const { perk, gearScore, item } = group[0]
           const scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
@@ -68,6 +77,7 @@ export class StackedPerksComponent {
           }
         })
         .filter((it) => it.stackLimit == null || it.stackLimit > 1)
+        .filter((it) => it.stackTotal > 1)
     }),
     tap((it) => {
       if (it?.length) {
