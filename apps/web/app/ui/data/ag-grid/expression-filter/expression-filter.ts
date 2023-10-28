@@ -3,6 +3,7 @@ import { ExpressionNode, evaluateExpression, isGroup } from '~/ui/expression-tre
 
 export interface ExpressionFilterParams {
   fields: string[]
+  fieldPaths?: string[]
 }
 
 export class ExpressionFilter implements IFilterComp {
@@ -16,6 +17,10 @@ export class ExpressionFilter implements IFilterComp {
 
   public get knownFields() {
     return this.params?.fields
+  }
+
+  public get knownPaths() {
+    return this.params?.fieldPaths
   }
 
   public init(params: IFilterParams & ExpressionFilterParams) {

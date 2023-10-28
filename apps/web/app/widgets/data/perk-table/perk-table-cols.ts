@@ -1,5 +1,5 @@
 import { explainPerk, explainPerkMods, getPerkItemClassGSBonus, getPerkItemClassGsBonus } from '@nw-data/common'
-import { Ability, Affixstats, COLS_PERKS, Perks } from '@nw-data/generated'
+import { Ability, Affixstats, COLS_ABILITY, COLS_AFFIXSTATS, COLS_PERKS, Perks } from '@nw-data/generated'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwTextContextService } from '~/nw/expression'
 import { SelectFilter } from '~/ui/data/ag-grid'
@@ -22,6 +22,10 @@ export function perkColIcon(util: PerkTableUtils) {
     filter: ExpressionFilter,
     filterParams: ExpressionFilter.params({
       fields: Object.keys(COLS_PERKS),
+      fieldPaths: [
+        ...Object.keys(COLS_AFFIXSTATS).map((it) => `$affix.${it}`),
+        ...Object.keys(COLS_ABILITY).map((it) => `$ability.${it}`)
+      ],
     }),
     pinned: true,
     width: 62,

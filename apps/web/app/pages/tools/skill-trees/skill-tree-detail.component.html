@@ -81,7 +81,17 @@
               [freeMode]="true"
               [assigned]="item.record.attrs"
               (assignedChanged)="updateAttributes(item.record, $event)"
+              #attrs
             ></nwb-attributes-editor>
+            <!-- <nwb-attributes-scale
+              class="mt-4"
+              [weaponTag]="builder.weaponTag"
+              [attrDex]="attrs.totalDex$ | async"
+              [attrStr]="attrs.totalStr$ | async"
+              [attrInt]="attrs.totalInt$ | async"
+              [attrFoc]="attrs.totalFoc$ | async"
+            >
+            </nwb-attributes-scale> -->
           </div>
         </div>
       </div>

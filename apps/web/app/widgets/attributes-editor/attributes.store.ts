@@ -85,6 +85,12 @@ export class AttributesStore extends ComponentStore<AttributesState> {
     return rows
   })
 
+  public readonly totalDex$ = this.select(this.stats$, (stats) => selectStatTotal(stats, 'dex'))
+  public readonly totalStr$ = this.select(this.stats$, (stats) => selectStatTotal(stats, 'str'))
+  public readonly totalInt$ = this.select(this.stats$, (stats) => selectStatTotal(stats, 'int'))
+  public readonly totalFoc$ = this.select(this.stats$, (stats) => selectStatTotal(stats, 'foc'))
+  public readonly totalCon$ = this.select(this.stats$, (stats) => selectStatTotal(stats, 'con'))
+
   public constructor(private nwDb: NwDbService) {
     super({
       level: NW_MAX_CHARACTER_LEVEL,
@@ -158,4 +164,9 @@ function sum(values: number[]) {
     result += value || 0
   }
   return result
+}
+
+function selectStatTotal(stats: Array<AttributeState>, ref: AttributeRef) {
+  const row = stats.find((it) => it.ref === ref)
+  return row ? row.total : 0
 }

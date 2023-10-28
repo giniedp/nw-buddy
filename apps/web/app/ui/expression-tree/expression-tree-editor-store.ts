@@ -6,7 +6,7 @@ import { ExpressionCondition, ExpressionGroup, ExpressionNode, isCondition, isGr
 
 export interface ExpressionTreeState {
   root: ExpressionNode
-  knownFields: Array<{ id: string; label: string }>
+  knownFields: Array<{ id: string; isPath: boolean, label: string }>
 }
 
 export const GROUP_OPERATORS = ['and', 'or']
@@ -68,7 +68,8 @@ export class ExpressionTreeStore extends ComponentStore<ExpressionTreeState> {
   }
 
   public setFieldId(node: ExpressionCondition, field: string) {
-    this.updateNode(node, (step) => ({ ...step, field }))
+    const fieldIsPath = !!this.knowFields$().find((it) => it.id === field)?.isPath
+    this.updateNode(node, (step) => ({ ...step, fieldIsPath, field }))
   }
 
   public setOperator(node: ExpressionNode, operator: string) {
@@ -95,12 +96,14 @@ export class ExpressionTreeStore extends ComponentStore<ExpressionTreeState> {
     this.updateTree((step) => {
       if (isGroup(step) && step === parent) {
         const lastChild = step.children[step.children.length - 1]
-        const lastField = lastChild && isCondition(lastChild) ? lastChild.field : null
+        const lastCondition = lastChild && isCondition(lastChild) ? lastChild : null
+        const firstField = this.knowFields$()[0]
         return {
           ...step,
           children: [
             createCondition({
-              field: lastField || this.knowFields$()[0]?.id,
+              field: lastCondition ? lastCondition.field : firstField?.id,
+              fieldIsPath: lastCondition ? lastCondition.fieldIsPath : firstField?.isPath,
               operator: CONDITION_DEFAULT_OPERATOR,
             }),
             ...step.children,
@@ -160,6 +163,7 @@ export function createCondition(options: Partial<ExpressionCondition> = {}): Exp
     negate: false,
     operator: null,
     field: null,
+    fieldIsPath: false,
     value: null,
     ...options,
     type: 'condition',

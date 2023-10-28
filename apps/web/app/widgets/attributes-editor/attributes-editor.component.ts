@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, Input, OnInit, Output } from '@angu
 import { FormsModule } from '@angular/forms'
 import { AttributeRef, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 import { isEqual } from 'lodash'
-import { BehaviorSubject, combineLatest, distinctUntilChanged, map, of, switchMap } from 'rxjs'
+import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { NwAttributesService } from '~/nw/attributes'
 import { IconsModule } from '~/ui/icons'
@@ -106,6 +106,12 @@ export class AttributesEditorComponent implements OnInit {
     int: 0,
     str: 0,
   })
+
+  public readonly totalDex$ = this.store.totalDex$.pipe(debounceTime(300))
+  public readonly totalStr$ = this.store.totalStr$.pipe(debounceTime(300))
+  public readonly totalInt$ = this.store.totalInt$.pipe(debounceTime(300))
+  public readonly totalFoc$ = this.store.totalFoc$.pipe(debounceTime(300))
+  public readonly totalCon$ = this.store.totalCon$.pipe(debounceTime(300))
 
   public constructor(private store: AttributesStore, private attrs: NwAttributesService, private db: NwDbService) {
     //

@@ -79,3 +79,4 @@ export const svgThumbtack = require('!!raw-loader!./thumbtack.svg').default
 export const svgTrashCan = require('!!raw-loader!./trash-can.svg').default
 export const svgXmark = require('!!raw-loader!./xmark.svg').default
 export const svgFilterCircleXmark = require('!!raw-loader!./filter-circle-xmark.svg').default
+export const svgChartLine = require('!!raw-loader!./chart-line.svg').default

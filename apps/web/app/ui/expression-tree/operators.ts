@@ -12,6 +12,9 @@ export function equals(a: unknown, b: string): boolean {
   if (typeof a === 'number') {
     return a === Number(b)
   }
+  if (typeof a === 'boolean' && (b === 'true' || b === 'false')) {
+    return a === (b === 'true')
+  }
   if (a == null && isFinite(Number(b))) {
     return 0 === Number(b)
   }

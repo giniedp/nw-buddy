@@ -21,5 +21,6 @@ export interface ExpressionGroup extends ExpressionNode {
 export interface ExpressionCondition extends ExpressionNode {
   readonly type: 'condition'
   readonly field: string
+  readonly fieldIsPath: boolean
   readonly value: any
 }

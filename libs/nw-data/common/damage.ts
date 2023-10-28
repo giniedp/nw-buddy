@@ -29,17 +29,27 @@ export function damageFactorForGS(gearScore: number) {
   return factorLow * factorHigh
 }
 
+export function damageScaleAttrs(weapon: Pick<ItemdefinitionsWeapons, 'ScalingDexterity' | 'ScalingStrength' | 'ScalingIntelligence' | 'ScalingFocus'>): Record<AttributeRef, number> {
+  return {
+    str: weapon?.ScalingStrength || 0,
+    dex: weapon?.ScalingDexterity || 0,
+    int: weapon?.ScalingIntelligence || 0,
+    foc: weapon?.ScalingFocus || 0,
+    con: 0,
+  }
+}
+
 export function damageFactorForAttrs({
   weapon,
   attrSums,
 }: {
-  weapon: Pick<ItemdefinitionsWeapons, 'ScalingDexterity' | 'ScalingFocus' | 'ScalingIntelligence' | 'ScalingStrength'>
+  weapon: Record<AttributeRef, number>
   attrSums: Record<AttributeRef, number>
 }) {
-  const str = (attrSums.str || 0) * (weapon?.ScalingStrength || 0)
-  const dex = (attrSums.dex || 0) * (weapon?.ScalingDexterity || 0)
-  const int = (attrSums.int || 0) * (weapon?.ScalingIntelligence || 0)
-  const foc = (attrSums.foc || 0) * (weapon?.ScalingFocus || 0)
+  const str = (attrSums.str || 0) * (weapon?.str || 0)
+  const dex = (attrSums.dex || 0) * (weapon?.dex || 0)
+  const int = (attrSums.int || 0) * (weapon?.int || 0)
+  const foc = (attrSums.foc || 0) * (weapon?.foc || 0)
   return str + dex + int + foc
 }
 
@@ -57,11 +67,13 @@ export function damageForTooltip({
   playerLevel,
   gearScore,
   weapon,
+  weaponScale,
   attrSums,
 }: {
   playerLevel: number
   gearScore: number
   weapon: ItemdefinitionsWeapons
+  weaponScale?: Record<AttributeRef, number>
   attrSums: Record<AttributeRef, number>
 }) {
   return (
@@ -71,7 +83,7 @@ export function damageForTooltip({
     (1 +
       damageFactorForLevel(playerLevel) +
       damageFactorForAttrs({
-        weapon: weapon,
+        weapon: weaponScale || damageScaleAttrs(weapon),
         attrSums: attrSums,
       }))
   )

@@ -28,7 +28,7 @@ export class ExpressionTreeEditorComponent implements ControlValueAccessor {
   protected readonly root$ = this.store.root$
 
   @Input()
-  public set knownFields(value: Array<{ id: string; label: string }>) {
+  public set knownFields(value: Array<{ id: string; isPath: boolean, label: string }>) {
     this.store.patchState({ knownFields: value })
   }
 

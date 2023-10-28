@@ -1,6 +1,6 @@
 import { patchPrecision } from '@nw-data/common'
 import { EXPRESSION_OPERATORS } from './operators'
-import { ExpressionNode, isCondition, isGroup } from './types'
+import { ExpressionCondition, ExpressionNode, isCondition, isGroup } from './types'
 
 export function evaluateExpression(object: any, expression: ExpressionNode): boolean {
   if (!object || !expression) {
@@ -10,7 +10,7 @@ export function evaluateExpression(object: any, expression: ExpressionNode): boo
     return true
   }
   if (isCondition(expression)) {
-    const value1 = fixValue(object[expression.field])
+    const value1 = fixValue(lookupValue(object, expression))
     const value2 = expression.value || ''
     const operator = EXPRESSION_OPERATORS.find((it) => it.id === expression.operator)?.apply
     if (!operator) {
@@ -46,4 +46,20 @@ function fixValue(value: unknown) {
     return patchPrecision(value)
   }
   return value
+}
+
+function lookupValue(object: any, condition: ExpressionCondition) {
+  if (!object || !condition?.field) {
+    return null
+  }
+  if (!condition.fieldIsPath) {
+    return object[condition.field]
+  }
+  const path = condition.field.split('.')
+  let result = object
+  while (path.length) {
+    const key = path.shift()
+    result = result?.[key]
+  }
+  return result
 }

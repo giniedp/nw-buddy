@@ -3,7 +3,6 @@ import { Component, Input, ViewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { ComponentStore } from '@ngrx/component-store'
-import { isEqual } from 'lodash'
 import { Observable, asyncScheduler, debounceTime, skip, startWith, subscribeOn, switchMap } from 'rxjs'
 import {
   ExpressionGroup,
@@ -26,7 +25,7 @@ import { ExpressionFilter } from '../../ag-grid/expression-filter'
 })
 export class TableGridExpressionPanelComponent extends ComponentStore<{
   grid: AgGrid<any>
-  knownFields: Array<{ id: string; label: string }>
+  knownFields: Array<{ id: string; isPath: boolean; label: string }>
   expression: ExpressionNode
 }> {
   @Input()
@@ -104,10 +103,21 @@ function getColumnWithFilter(grid: AgGrid) {
 function getKnownFields(grid: AgGrid) {
   const found = getColumnWithFilter(grid)
   const knowFields = found?.filter?.knownFields || []
-  return knowFields.map((field) => {
-    return {
-      id: field,
-      label: humanize(field),
-    }
-  })
+  const knowPaths = found?.filter?.knownPaths || []
+  return [
+    ...knowFields.map((field) => {
+      return {
+        id: field,
+        isPath: false,
+        label: humanize(field),
+      }
+    }),
+    ...knowPaths.map((field) => {
+      return {
+        id: field,
+        isPath: true,
+        label: humanize(field),
+      }
+    }),
+  ]
 }

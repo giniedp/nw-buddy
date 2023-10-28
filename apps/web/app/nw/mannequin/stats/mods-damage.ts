@@ -2,6 +2,7 @@ import {
   damageFactorForAttrs,
   damageFactorForGS,
   damageFactorForLevel,
+  damageScaleAttrs,
   getDamageTypesOfCategory,
   getItemIconPath,
 } from '@nw-data/common'
@@ -22,7 +23,7 @@ export function selectWeaponDamage(
   const base = (weapon?.BaseDamage || 0) * damageFactorForGS(gearScore)
   const scaleLevel = damageFactorForLevel(state.level)
   const scaleAttrs = damageFactorForAttrs({
-    weapon: weapon,
+    weapon: damageScaleAttrs(weapon),
     attrSums: {
       str: mods.attributes.str.scale,
       dex: mods.attributes.dex.scale,
@@ -50,12 +51,7 @@ export function selectWeaponDamage(
   if (split) {
     const scale = split.affix.DamagePercentage
     const scaleSplit = damageFactorForAttrs({
-      weapon: {
-        ScalingDexterity: split.affix.ScalingDexterity ?? 0,
-        ScalingStrength: split.affix.ScalingStrength ?? 0,
-        ScalingIntelligence: split.affix.ScalingIntelligence ?? 0,
-        ScalingFocus: split.affix.ScalingFocus ?? 0,
-      },
+      weapon: damageScaleAttrs(split.affix),
       attrSums: {
         str: mods.attributes.str.scale,
         dex: mods.attributes.dex.scale,

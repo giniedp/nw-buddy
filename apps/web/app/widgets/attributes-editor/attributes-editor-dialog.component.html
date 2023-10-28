@@ -8,7 +8,50 @@
   [magnify]="data.magnify"
   (assignedChanged)="setResult($event)"
   class="p-3"
+  #attrs
 ></nwb-attributes-editor>
+
+<ng-container *ngIf="data.weapon1ItemId || data.weapon2ItemId">
+  <div class="tabs ">
+    <a class="tab tab-bordered flex-1" (click)="tab = data.weapon1ItemId" [class.tab-active]="tab && tab === data.weapon1ItemId">
+      {{ weapon1.name$ | async | nwText }} ({{ scale1.damage$ | async | number: '0.1-1' }})
+    </a>
+
+    <a class="tab tab-bordered flex-1" (click)="tab = data.weapon2ItemId" [class.tab-active]="tab && tab === data.weapon2ItemId">
+      {{ weapon2.name$ | async | nwText }} ({{ scale2.damage$ | async | number: '0.1-1' }})
+    </a>
+  </div>
+
+  <nwb-attributes-scale
+    class="p-1"
+    [nwbItemDetail]="data.weapon1ItemId"
+    #weapon1="itemDetail"
+    #scale1
+    [class.hidden]="tab !== data.weapon1ItemId"
+    [attrDex]="attrs.totalDex$ | async"
+    [attrStr]="attrs.totalStr$ | async"
+    [attrInt]="attrs.totalInt$ | async"
+    [attrFoc]="attrs.totalFoc$ | async"
+    [weaponItemId]="data.weapon1ItemId"
+    [gearScore]="data.weapon1GearScore"
+    [affixId]="data.weapon1AffixId"
+  />
+
+  <nwb-attributes-scale
+    class="p-1"
+    [nwbItemDetail]="data.weapon2ItemId"
+    #weapon2="itemDetail"
+    #scale2
+    [class.hidden]="tab !== data.weapon2ItemId"
+    [attrDex]="attrs.totalDex$ | async"
+    [attrStr]="attrs.totalStr$ | async"
+    [attrInt]="attrs.totalInt$ | async"
+    [attrFoc]="attrs.totalFoc$ | async"
+    [weaponItemId]="data.weapon2ItemId"
+    [gearScore]="data.weapon2GearScore"
+    [affixId]="data.weapon2AffixId"
+  />
+</ng-container>
 
 <div class="flex justify-end gap-1 layout-pad">
   <div class="btn-group">
