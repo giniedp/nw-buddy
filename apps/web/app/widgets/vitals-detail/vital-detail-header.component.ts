@@ -34,7 +34,7 @@ import { humanize } from '~/utils'
     </a>
     <div class="relative flex items-center justify-center -mt-4 pointer-events-none">
       <img [nwImage]="typeMarker" class="h-10 w-36 object-cover" />
-      <span *ngIf="vital.Level" class="absolute top-2 mx-auto"> {{ vital.Level }}</span>
+      <span *ngIf="vital.Level" class="absolute top-2 mx-auto"> {{ level || vital.Level }}</span>
     </div>
   `,
 })
@@ -46,6 +46,10 @@ export class VitalDetailHeaderComponent {
     this.combatInfo = getVitalCategoryInfo(value)
     this.typeMarker = getVitalTypeMarker(value)
   }
+
+  @Input()
+  public level: number
+
   public get vital() {
     return this.vitalValue
   }

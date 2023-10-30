@@ -41,6 +41,8 @@ export type ExpressionResource =
   | 'StaminaCosts_Player'
   | 'SwordAbilityTable'
   | 'Type_AbilityData'
+  | 'Type_AffixStatData'
+  | 'Type_DamageData'
   | 'Type_StatusEffectData'
   | 'Vitals_Player'
   | 'VoidGauntletAbilityTable'

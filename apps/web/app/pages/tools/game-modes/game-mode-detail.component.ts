@@ -11,12 +11,13 @@ import {
   ViewChild,
 } from '@angular/core'
 import { DomSanitizer, SafeResourceUrl, SafeUrl } from '@angular/platform-browser'
-import { ActivatedRoute, RouterModule } from '@angular/router'
-import { Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty } from '@nw-data/generated'
+import { ActivatedRoute, Router, RouterModule } from '@angular/router'
+import { Cursemutations, Elementalmutations, Gamemodes, Housingitems, ItemDefinitionMaster, Mutationdifficulty, Promotionmutations } from '@nw-data/generated'
 import { BehaviorSubject, ReplaySubject, combineLatest, debounceTime, defer, map, of, switchMap, takeUntil } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwModule } from '~/nw'
 
+import { FormsModule } from '@angular/forms'
 import {
   NW_MAX_CHARACTER_LEVEL,
   getItemIconPath,
@@ -30,6 +31,7 @@ import {
   isItemWeapon,
   isMasterItem,
 } from '@nw-data/common'
+import { uniqBy } from 'lodash'
 import { DifficultyRank, DungeonPreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
@@ -41,8 +43,9 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { LootModule } from '~/widgets/loot'
 import { VitalsDetailModule } from '~/widgets/vitals-detail'
 import { GameModeDetailStore } from './game-mode-detail.store'
-import { FormsModule } from '@angular/forms'
-import { uniqBy } from 'lodash'
+import { MutaElementTileComponent } from './muta-element-tile.component'
+import { MutaCurseTileComponent } from './muta-curse-tile.component'
+import { MutaPromotionTileComponent } from './muta-promotion-tile.component'
 
 const DIFFICULTY_TIER_NAME = {
   1: 'Normal',
@@ -92,6 +95,9 @@ export interface Tab {
     PaginationModule,
     RouterModule,
     VitalsDetailModule,
+    MutaElementTileComponent,
+    MutaCurseTileComponent,
+    MutaPromotionTileComponent
   ],
   providers: [GameModeDetailStore],
   host: {
@@ -114,17 +120,22 @@ export class GameModeDetailComponent implements OnInit {
   public trackByTabId: TrackByFunction<Tab> = (i, item) => item.id
 
   protected paramGameMode$ = selectStream(observeRouteParam(this.route, 'id'))
-  protected paramDifficulty$ = selectStream(observeQueryParam(this.route, 'mutation'), (it) => Number(it) || null)
+  protected paramDifficulty$ = selectStream(observeQueryParam(this.route, 'difficulty'), (it) => Number(it) || null)
+  protected paramElement$ = selectStream(observeQueryParam(this.route, 'element'), (it) => it || null)
+  protected paramPromotion$ = selectStream(observeQueryParam(this.route, 'promotion'), (it) => it || null)
+  protected paramCurse$ = selectStream(observeQueryParam(this.route, 'curse'), (it) => it || null)
   protected paramTab$ = selectStream(observeQueryParam(this.route, 'tab'))
   protected paramPlayerLevel$ = selectStream(observeQueryParam(this.route, 'lvl'))
   protected adjustLevel$ = new BehaviorSubject<boolean>(false)
   protected adjustedLevel$ = new BehaviorSubject<number>(NW_MAX_CHARACTER_LEVEL)
 
   public iconExtern = svgSquareArrowUpRight
-  public dungeon$ = this.store.dungeon$
-  public bosses$ = this.store.bosses$
+  public dungeon$ = this.store.gameMode$
+  public creaturesBosses$ = this.store.creaturesBosses$
+  public creaturesNamed$ = this.store.creaturesNamed$
+  public creatureLevel$ = this.store.enemyLevelOverride$
   public difficulties$ = this.store.difficulties$
-  public difficulty$ = this.store.difficulty$.pipe(shareReplayRefCount(1))
+  public difficulty$ = this.store.mutaDifficulty$
   public dungeonLoot$ = this.store.lootNormalMode$.pipe(map((it) => this.filterAndSort(it)))
   public dungeonMutatedLoot$ = this.store.lootMutatedMode.pipe(map((it) => this.filterAndSort(it)))
   public dungeonDifficultyLoot$ = this.store.lootDifficulty$.pipe(map((it) => this.filterAndSort(it)))
@@ -248,6 +259,9 @@ export class GameModeDetailComponent implements OnInit {
   @ViewChild('tplDungeonBosses', { static: true })
   public tplDungeonBosses: TemplateRef<unknown>
 
+  @ViewChild('tplDungeonNamed', { static: true })
+  public tplDungeonNamed: TemplateRef<unknown>
+
   @ViewChild('tplRewards', { static: true })
   public tplRewards: TemplateRef<unknown>
 
@@ -275,7 +289,7 @@ export class GameModeDetailComponent implements OnInit {
     return this.dungeon?.BackgroundImagePath
   }
   public get requiredLevel() {
-    return this.dungeon?.RequiredLevel
+    return this.difficulty ? NW_MAX_CHARACTER_LEVEL : this.dungeon?.RequiredLevel
   }
   public get recommendedLevel() {
     return this.dungeon?.RecommendedLevel
@@ -304,9 +318,10 @@ export class GameModeDetailComponent implements OnInit {
   public constructor(
     private db: NwDbService,
     private route: ActivatedRoute,
+    private router: Router,
     private cdRef: ChangeDetectorRef,
     private domSanitizer: DomSanitizer,
-    private store: GameModeDetailStore,
+    protected store: GameModeDetailStore,
     private preferences: DungeonPreferencesService,
     private dialog: Dialog,
     private i18n: TranslateService,
@@ -315,19 +330,6 @@ export class GameModeDetailComponent implements OnInit {
   ) {}
 
   public ngOnInit(): void {
-    const dungeon$ = this.db.gameMode(this.paramGameMode$)
-    const difficulty$ = combineLatest({
-      dungeon: dungeon$,
-      difficulty: this.paramDifficulty$,
-      difficulties: this.db.mutatorDifficulties,
-    }).pipe(
-      map(({ dungeon, difficulties, difficulty }) => {
-        if (dungeon.IsMutable) {
-          return difficulties?.find((it) => it.MutationDifficulty === Number(difficulty))
-        }
-        return null
-      })
-    )
     const playerLevel$ = combineLatest({
       enabled: this.adjustLevel$,
       level: this.adjustedLevel$,
@@ -338,12 +340,17 @@ export class GameModeDetailComponent implements OnInit {
         return (enabled ? level : Number(queryLevel)) || null
       })
     )
-    const input$ = combineLatest({
-      playerLevel: playerLevel$,
-      dungeon: dungeon$,
-      difficulty: difficulty$,
-    })
-    this.store.update(input$)
+
+    this.store.patchState(
+      combineLatest({
+        playerLevel: playerLevel$,
+        gameModeId: this.paramGameMode$,
+        mutationDifficultyId: this.paramDifficulty$,
+        mutationElementId: this.paramElement$,
+        mutationPromotionId: this.paramPromotion$,
+        mutationCurseId: this.paramCurse$,
+      })
+    )
 
     combineLatest({
       dungeon: this.dungeon$,
@@ -377,6 +384,11 @@ export class GameModeDetailComponent implements OnInit {
           id: 'bosses',
           label: 'Bosses',
           tpl: this.tplDungeonBosses,
+        })
+        this.tabs.push({
+          id: 'named',
+          label: 'Named',
+          tpl: this.tplDungeonNamed,
         })
 
         const mapUrl = MAP_EMBED_URLS[dungeon.GameModeId]
@@ -510,5 +522,35 @@ export class GameModeDetailComponent implements OnInit {
         }
         return getItemId(a).localeCompare(getItemId(b))
       })
+  }
+
+  protected onMutaElementSelected(value: Elementalmutations) {
+    this.router.navigate(['.'], {
+      relativeTo: this.route,
+      queryParams: {
+        element: value?.CategoryWildcard || null,
+      },
+      queryParamsHandling: 'merge',
+    })
+  }
+
+  protected onMutaPromotionSelected(value: Promotionmutations) {
+    this.router.navigate(['.'], {
+      relativeTo: this.route,
+      queryParams: {
+        promotion: value?.PromotionMutationId || null,
+      },
+      queryParamsHandling: 'merge',
+    })
+  }
+
+  protected onMutaCurseSelected(value: Cursemutations) {
+    this.router.navigate(['.'], {
+      relativeTo: this.route,
+      queryParams: {
+        curse: value?.CurseMutationId || null,
+      },
+      queryParamsHandling: 'merge',
+    })
   }
 }

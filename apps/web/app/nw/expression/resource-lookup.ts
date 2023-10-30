@@ -1,6 +1,6 @@
 import { Observable, of } from 'rxjs'
-import { ExpressionResource } from './types'
 import { NwDbService } from '../nw-db.service'
+import { ExpressionResource } from './types'
 
 export function resourceLookup(
   resource: ExpressionResource,
@@ -16,10 +16,14 @@ export function resourceLookup(
     case 'DamageTable': {
       return db.damageTableMap
     }
+    case 'Type_DamageData': {
+      return db.dmgTableEliteAffixMap
+    }
     case 'ConsumableItemDefinitions': {
       return db.itemsConsumablesMap
     }
-    case 'AffixStatDataTable': {
+    case 'AffixStatDataTable':
+    case 'Type_AffixStatData': {
       return db.affixStatsMap
     }
     case 'Afflictions': {

@@ -40,7 +40,7 @@ export interface VitalTab {
   },
   template: `
     <ng-container *ngIf="vm$ | async; let vm">
-      <nwb-vital-detail-header [vital]="vm.vital"></nwb-vital-detail-header>
+      <nwb-vital-detail-header [vital]="vm.vital" [level]="store.level$ | async"></nwb-vital-detail-header>
       <div class="tabs rounded-none justify-center bg-base-300" *ngIf="vm.tabs?.length > 1">
         <ng-container *ngFor="let tab of vm.tabs">
           <a
@@ -59,7 +59,7 @@ export interface VitalTab {
         class="w-full bg-transparent"
       ></nwb-vital-detail-weakness>
 
-      <nwb-vital-damage-table [vitalId]="vm.id" *ngIf="vm.isSectionDamage"></nwb-vital-damage-table>
+      <nwb-vital-damage-table [vitalId]="vm.id" [level]="store.level$ | async" *ngIf="vm.isSectionDamage"></nwb-vital-damage-table>
 
       <nwb-model-viewer [models]="vm.models" *ngIf="vm.isSectionModel" class="aspect-square"></nwb-model-viewer>
     </ng-container>
@@ -78,6 +78,11 @@ export class VitalDetailComponent extends ComponentStore<{
   @Input()
   public set vitalId(value: string) {
     this.store.patchState({ vitalId: value })
+  }
+
+  @Input()
+  public set level(value: number) {
+    this.store.patchState({ level: value })
   }
 
   @Input()
@@ -119,7 +124,7 @@ export class VitalDetailComponent extends ComponentStore<{
 
   protected isTransparent$ = toSignal(this.vm$.pipe(map((it) => !it.isSectionModel)))
 
-  public constructor(private store: VitalDetailStore, private viewerService: ModelViewerService) {
+  public constructor(protected store: VitalDetailStore, private viewerService: ModelViewerService) {
     super({
       enableSections: false,
       enableViewer: false,

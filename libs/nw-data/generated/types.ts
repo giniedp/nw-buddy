@@ -558,6 +558,30 @@ export interface Attributestrength {
   StaminaRate: number
 }
 
+export interface Buffbuckets {
+  Buff1: string
+  Buff2: string
+  Buff3: string
+  Buff4: string
+  Buff5: string
+  Buff6: string
+  BuffBucketId: string
+  BuffPotency1: number
+  BuffPotency2: number
+  BuffPotency3: number
+  BuffPotency4: number
+  BuffPotency5: number
+  BuffPotency6: number
+  BuffType1: BuffType
+  BuffType2: BuffType
+  BuffType3: BuffType
+  BuffType4: BuffType
+  BuffType5: BuffType
+  BuffType6: BuffType
+  MaxRoll: number
+  TableType: BuffTableType
+}
+
 export interface Categoricalprogression {
   AchievementIdOnMaxRank: string
   AllowOverflow: boolean
@@ -5567,6 +5591,14 @@ export type AttackType =
   | 'Heavy'
   | 'Light'
   | 'Magic'
+export type BuffTableType =
+  | 'AND'
+  | 'OR'
+export type BuffType =
+  | 'Ability'
+  | 'BuffBucket'
+  | 'Promotion'
+  | 'StatusEffect'
 export type CDRImmediatelyOptions =
   | 'AbilitySpecific'
   | 'ActiveWeapon'

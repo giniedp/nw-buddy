@@ -1,0 +1,20 @@
+<nwb-item-header class="gap-2">
+  <a [nwbItemIcon]="icon$ | async" class="w-[48px] h-[48px]"> </a>
+  <nwb-item-header-content
+    class="z-10"
+    [title]="name$ | async | nwText | nwTextBreak : ' - '"
+    [text1]="'Promotion'"
+  ></nwb-item-header-content>
+</nwb-item-header>
+<div class="p-3 flex flex-col gap-2">
+  <div *ngFor="let item of statusEffects$ | async" class="flex flex-row gap-1">
+    <picture class="flex-none">
+      <img [nwImage]="item.icon" class="w-6 h-6" />
+    </picture>
+    <div class="text-sky-600">
+      <b>{{ item.label | nwText }}: </b>
+      {{ item.text | nwText }}
+    </div>
+  </div>
+  <ng-content></ng-content>
+</div>

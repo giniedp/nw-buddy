@@ -1,0 +1,40 @@
+<picture class="w-12 h-12 aspect-square m-0">
+  <img [nwImage]="selection()?.IconPath" />
+</picture>
+<div class="flex flex-col leading-none gap-1">
+  <span class="text-white uppercase font-nimbus">Curse</span>
+  <span class="font-caslon text-2xl leading-none">
+    {{ selection()?.Name | nwText }}
+  </span>
+</div>
+
+<ng-template #tplTip>
+  <nwb-muta-curse-detail [curseId]="selection()?.CurseMutationId" [wildcard]="mutaElement()?.CategoryWildcard" class="w-80"></nwb-muta-curse-detail>
+</ng-template>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="cdkOrigin"
+  [cdkConnectedOverlayOpen]="isMenuOpen"
+  [cdkConnectedOverlayHasBackdrop]="true"
+  [cdkConnectedOverlayOffsetY]="5"
+  (overlayOutsideClick)="isMenuOpen = false"
+  (backdropClick)="isMenuOpen = false"
+  (detach)="isMenuOpen = false"
+>
+  <div class="w-80 max-h-[80vh] overflow-auto bg-base-200 border border-base-100 rounded-md shadow-lg">
+    <ul class="menu menu-compact menu-vertical">
+      <li *ngFor="let item of options()">
+        <a (click)="select(item.object)">
+          <picture>
+            <img [nwImage]="item.icon" class="w-4 h-4" />
+          </picture>
+          <div class="flex flex-col leading-none">
+            <span>{{ item.label | nwText }}</span>
+            <!-- <span class="text-xs opacity-75">Resize based on the visible cell content</span> -->
+          </div>
+        </a>
+      </li>
+    </ul>
+  </div>
+</ng-template>

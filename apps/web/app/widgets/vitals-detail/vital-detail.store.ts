@@ -4,10 +4,11 @@ import { Damagetable, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { shareReplayRefCount } from '~/utils'
-import { ItemModelInfo, ModelViewerService } from '../model-viewer'
+import { ModelViewerService } from '../model-viewer'
 
 export interface State {
   vitalId: string
+  level?: number
   enableDamage?: boolean
 }
 
@@ -20,7 +21,14 @@ export interface DamageTableFile {
 export class VitalDetailStore extends ComponentStore<State> {
   public readonly vitalId$ = this.select(({ vitalId }) => vitalId)
   public readonly vital$ = this.select(this.db.vital(this.vitalId$), (it) => it)
-  public readonly level$ = this.select(this.vital$, (it) => it?.Level)
+
+  public readonly levelOverride$ = this.select(({ level }) => level)
+  public readonly level$ = this.select(this.vital$, this.levelOverride$, (vital, level) => level ?? vital?.Level)
+  public readonly vitalLevel$ = this.select(this.db.vitalsLevel(this.level$), (it) => it)
+
+  public readonly creatureTypeId$ = this.select(this.vital$, (it) => it?.CreatureType)
+  public readonly vitalModifier$ = this.select(this.db.vitalsModifier(this.creatureTypeId$), (it) => it)
+
   public readonly metadata$ = this.select(this.vitalId$, this.db.vitalsMetadataMap, (id, data) => data.get(id))
   public readonly modelFiles$ = this.select(this.vs.byVitalsId(this.vitalId$), (it) => it)
 
