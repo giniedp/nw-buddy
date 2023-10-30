@@ -71,7 +71,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_onehanded_weapons',
     IconPath: 'assets/icons/weapons/1hflail.png',
     IconPathSmall: 'assets/icons/weapons/1hflailsmall.png',
-    DamageTablePrefix: 'Flail_',
+    DamageTablePrefix: '1H_Flail_',
   },
   // TWO HANDED
   {

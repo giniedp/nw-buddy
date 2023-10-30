@@ -194,7 +194,13 @@ export function selectPerkAbilities({ abilities, effects }: DbSlice, perks: Acti
         const ability = abilities.get(id)
         return {
           ability: ability,
-          selfEffects: ability?.SelfApplyStatusEffect?.map((id) => effects.get(id)),
+          selfEffects: ability?.SelfApplyStatusEffect?.map((id) => {
+            const effect = effects.get(id)
+            if (!effect) {
+              console.warn(`missing effect ${id}`)
+            }
+            return effect
+          }).filter((it) => !!it),
           perk: activePerk,
           scale: getAbilityScale(ability, state),
         }
@@ -217,7 +223,13 @@ export function selectActiveAbilities(
     selectAttributeAbilities(db, attributes).map((it): ActiveAbility => {
       return {
         ability: it,
-        selfEffects: it?.SelfApplyStatusEffect?.map((id) => db.effects.get(id)),
+        selfEffects: it?.SelfApplyStatusEffect?.map((id) => {
+          const effect = db.effects.get(id)
+          if (!effect) {
+            console.warn(`missing effect ${id}`)
+          }
+          return effect
+        }).filter((it) => !!it),
         attribute: true,
         scale: getAbilityScale(it, state),
       }
@@ -226,7 +238,13 @@ export function selectActiveAbilities(
     selectWeaponAbilities(db, weapon, state).map((it): ActiveAbility => {
       return {
         ability: it,
-        selfEffects: it?.SelfApplyStatusEffect?.map((id) => db.effects.get(id)),
+        selfEffects: it?.SelfApplyStatusEffect?.map((id) => {
+          const effect = db.effects.get(id)
+          if (!effect) {
+            console.warn(`missing effect ${id}`)
+          }
+          return effect
+        }).filter((it) => !!it),
         weapon: weapon,
         scale: getAbilityScale(it, state),
       }
@@ -584,7 +602,7 @@ const REJECT_ABILITIES_WITH_PROPS: Array<keyof Ability> = [
 ]
 
 function isActiveAbility(ability: Ability, attack: Damagetable, state: MannequinState) {
-  if (!ability) {
+  if (!ability || !attack) {
     return false
   }
   // filter by attack type: Light, Heavy, Ability, Magic
@@ -598,7 +616,7 @@ function isActiveAbility(ability: Ability, attack: Damagetable, state: Mannequin
     if (!ability.OnHit) {
       return false
     }
-    if (attack.IsRanged) {
+    if (attack?.IsRanged) {
       return false
     }
   }
@@ -606,12 +624,12 @@ function isActiveAbility(ability: Ability, attack: Damagetable, state: Mannequin
     if (!ability.OnHit) {
       return false
     }
-    if (!attack.IsRanged) {
+    if (!attack?.IsRanged) {
       return false
     }
   }
   if (ability.DamageTableRow?.length) {
-    if (!ability.DamageTableRow.includes(attack.DamageID)) {
+    if (!ability.DamageTableRow.includes(attack?.DamageID)) {
       return false
     }
     if (!ability.OnHit) {
