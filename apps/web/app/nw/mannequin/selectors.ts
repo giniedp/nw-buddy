@@ -475,12 +475,9 @@ export function selectAttributes(db: DbSlice, mods: AttributeModsSource, state: 
       assigned: assigned,
       total: value,
       magnify: 0,
-      health: levels[key].find((it) => it.Level === value)?.Health,
-      scale: levels[key].find((it) => it.Level === value)?.ModifierValueSum,
-      abilities: levels[key]
-        .filter((it) => it.Level <= value && it.EquipAbilities?.length)
-        .map((it) => it.EquipAbilities)
-        .flat(),
+      health: 0,
+      scale: 0,
+      abilities: [],
     }
   }
   const result: ActiveAttributes = {
@@ -498,6 +495,15 @@ export function selectAttributes(db: DbSlice, mods: AttributeModsSource, state: 
     result[key].total += value
   })
 
+  Object.keys(result).forEach((key: 'dex') => {
+    const value = result[key].total
+    result[key].health = levels[key].find((it) => it.Level === value)?.Health
+    result[key].scale = levels[key].find((it) => it.Level === value)?.ModifierValueSum
+    result[key].abilities = levels[key]
+      .filter((it) => it.Level <= value && it.EquipAbilities?.length)
+      .map((it) => it.EquipAbilities)
+      .flat()
+  })
   return result
 }
 
