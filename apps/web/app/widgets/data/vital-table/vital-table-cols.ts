@@ -7,7 +7,7 @@ import {
   getVitalTypeMarker,
   isVitalCombatCategory,
 } from '@nw-data/common'
-import { Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/generated'
+import { Gamemodes, Vitals, VitalsCategory, Vitalscategories, Vitalsmetadata } from '@nw-data/generated'
 import { RangeFilter, SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize } from '~/utils'
@@ -61,40 +61,41 @@ export function vitalColIcon(util: VitalTableUtils) {
   })
 }
 export function vitalColName(util: VitalTableUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'name',
     headerValueGetter: () => 'Name',
     width: 200,
-    valueGetter: util.valueGetter(({ data }) => {
+    valueGetter: ({ data }) => {
       const name = util.i18n.get(data.DisplayName)
       const alias = util.i18n.get(getVitalAliasName(data.$categories))
       if (alias && name !== alias) {
         return [name, alias]
       }
       return [name]
-    }),
+    },
     cellRenderer: util.cellRenderer(({ value }) => {
       const [name, alias] = value
       if (!alias) {
         return name
       }
       return `
-      <span>${alias}</span><br>
-      <span class="italic opacity-50">${name}</span>
-    `
+        <span>${alias}</span><br>
+        <span class="italic opacity-50">${name}</span>
+      `
     }),
     getQuickFilterText: ({ value }) => value.join(' '),
   })
 }
 export function vitalColLevel(util: VitalTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'level',
     headerValueGetter: () => 'Level',
+    getQuickFilterText: () => '',
     width: 150,
     minWidth: 150,
     maxWidth: 150,
     resizable: false,
-    field: util.fieldName('Level'),
+    field: 'Level',
     cellClass: '',
     cellRenderer: util.cellRenderer(({ data, value }) => {
       const icon = assetUrl(getVitalTypeMarker(data))
@@ -105,18 +106,18 @@ export function vitalColLevel(util: VitalTableUtils) {
   })
 }
 export function vitalColFamily(util: VitalTableUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'family',
     headerValueGetter: () => 'Family',
-    valueGetter: util.valueGetter(({ data: { $familyInfo, Family, $combatInfo } }) => {
+    valueGetter: ({ data: { $familyInfo, Family, $combatInfo } }) => {
       if ($combatInfo) {
         return [$familyInfo.ID, $combatInfo.ID]
       }
       return [$familyInfo.ID]
-    }),
-    valueFormatter: util.valueFormatter(({ data: { $familyInfo, Family, $combatInfo } }) => {
+    },
+    valueFormatter: ({ data: { $familyInfo, Family, $combatInfo } }) => {
       return util.i18n.get($familyInfo.Name) || Family || ''
-    }),
+    },
     cellRenderer: util.cellRenderer(({ data: { $familyInfo, Family, $combatInfo } }) => {
       const familyName = util.i18n.get($familyInfo.Name) || Family || ''
       const combatName = $combatInfo ? util.i18n.get($combatInfo.Name) || '' : ''
@@ -135,7 +136,7 @@ export function vitalColFamily(util: VitalTableUtils) {
       return `<span>${familyName}</span>`
     }),
     width: 125,
-    getQuickFilterText: ({ value }) => value,
+    getQuickFilterText: ({ value }) => value?.join(' '),
     filter: SelectFilter,
   })
 }
@@ -152,13 +153,13 @@ export function vitalColCreatureType(util: VitalTableUtils) {
   })
 }
 export function vitalColCategories(util: VitalTableUtils) {
-  return util.colDef({
+  return util.colDef<VitalsCategory[]>({
     colId: 'categories',
     headerValueGetter: () => 'Categories',
     width: 200,
-    valueGetter: util.valueGetter(({ data }) => {
+    valueGetter: ({ data }) => {
       return data.VitalsCategories || null
-    }),
+    },
     cellRenderer: util.tagsRenderer({
       transform: humanize,
       getClass: (value) => {
@@ -172,14 +173,15 @@ export function vitalColCategories(util: VitalTableUtils) {
   })
 }
 export function vitalColLootDropChance(util: VitalTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'lootDropChance',
     headerValueGetter: () => 'Loot Drop Chance',
     cellClass: 'text-right',
     width: 150,
     filter: RangeFilter,
-    valueGetter: util.valueGetter(({ data }) => Math.round((Number(data.LootDropChance) || 0) * 100)),
+    valueGetter: ({ data }) => Math.round((Number(data.LootDropChance) || 0) * 100),
     valueFormatter: ({ value }) => `${value}%`,
+    getQuickFilterText: () => '',
   })
 }
 export function vitalColLootTableId(util: VitalTableUtils) {
@@ -210,15 +212,15 @@ export function vitalColLootTags(util: VitalTableUtils) {
   })
 }
 export function vitalColExpedition(util: VitalTableUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'expedition',
     headerValueGetter: () => 'Occurance in',
-    valueGetter: util.valueGetter(({ data }) => data?.$dungeons?.map((it) => util.i18n.get(it.DisplayName))),
+    valueGetter: ({ data }) => data?.$dungeons?.map((it) => util.i18n.get(it.DisplayName)),
     filter: SelectFilter,
   })
 }
 export function vitalColDmgEffectivenessSlash(util: VitalTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'dmgEffectivenessSlash',
     headerValueGetter: () => 'Slash',
     filter: false,
@@ -226,12 +228,13 @@ export function vitalColDmgEffectivenessSlash(util: VitalTableUtils) {
     minWidth: 80,
     maxWidth: 80,
     resizable: false,
-    valueGetter: util.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Slash')),
+    valueGetter: ({ data }) => getVitalDamageEffectivenessPercent(data, 'Slash'),
     cellRenderer: cellRendererDamage,
+    getQuickFilterText: () => '',
   })
 }
 export function vitalColDmgEffectivenessThrust(util: VitalTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'dmgEffectivenessThrust',
     headerValueGetter: () => 'Thrust',
     filter: false,
@@ -239,12 +242,13 @@ export function vitalColDmgEffectivenessThrust(util: VitalTableUtils) {
     minWidth: 80,
     maxWidth: 80,
     resizable: false,
-    valueGetter: util.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Thrust')),
+    valueGetter: ({ data }) => getVitalDamageEffectivenessPercent(data, 'Thrust'),
     cellRenderer: cellRendererDamage,
+    getQuickFilterText: () => '',
   })
 }
 export function vitalColDmgEffectivenessStrike(util: VitalTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'dmgEffectivenessStrike',
     headerValueGetter: () => 'Strike',
     filter: false,
@@ -252,12 +256,13 @@ export function vitalColDmgEffectivenessStrike(util: VitalTableUtils) {
     minWidth: 80,
     maxWidth: 80,
     resizable: false,
-    valueGetter: util.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Strike')),
+    valueGetter: ({ data }) => getVitalDamageEffectivenessPercent(data, 'Strike'),
     cellRenderer: cellRendererDamage,
+    getQuickFilterText: () => '',
   })
 }
 export function vitalColDmgEffectivenessFire(util: VitalTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'dmgEffectivenessFire',
     headerValueGetter: () => 'Fire',
     filter: false,
@@ -265,12 +270,13 @@ export function vitalColDmgEffectivenessFire(util: VitalTableUtils) {
     minWidth: 80,
     maxWidth: 80,
     resizable: false,
-    valueGetter: util.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Fire')),
+    valueGetter: ({ data }) => getVitalDamageEffectivenessPercent(data, 'Fire'),
     cellRenderer: cellRendererDamage,
+    getQuickFilterText: () => '',
   })
 }
 export function vitalColDmgEffectivenessIce(util: VitalTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'dmgEffectivenessIce',
     headerValueGetter: () => 'Ice',
     filter: false,
@@ -278,12 +284,13 @@ export function vitalColDmgEffectivenessIce(util: VitalTableUtils) {
     minWidth: 80,
     maxWidth: 80,
     resizable: false,
-    valueGetter: util.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Ice')),
+    valueGetter: ({ data }) => getVitalDamageEffectivenessPercent(data, 'Ice'),
     cellRenderer: cellRendererDamage,
+    getQuickFilterText: () => '',
   })
 }
 export function vitalColDmgEffectivenessNature(util: VitalTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'dmgEffectivenessNature',
     headerValueGetter: () => 'Nature',
     filter: false,
@@ -291,12 +298,13 @@ export function vitalColDmgEffectivenessNature(util: VitalTableUtils) {
     minWidth: 80,
     maxWidth: 80,
     resizable: false,
-    valueGetter: util.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Nature')),
+    valueGetter: ({ data }) => getVitalDamageEffectivenessPercent(data, 'Nature'),
     cellRenderer: cellRendererDamage,
+    getQuickFilterText: () => '',
   })
 }
 export function vitalColDmgEffectivenessVoid(util: VitalTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'dmgEffectivenessVoid',
     headerValueGetter: () => 'Void',
     filter: false,
@@ -304,12 +312,13 @@ export function vitalColDmgEffectivenessVoid(util: VitalTableUtils) {
     minWidth: 80,
     maxWidth: 80,
     resizable: false,
-    valueGetter: util.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Corruption')),
+    valueGetter: ({ data }) => getVitalDamageEffectivenessPercent(data, 'Corruption'),
     cellRenderer: cellRendererDamage,
+    getQuickFilterText: () => '',
   })
 }
 export function vitalColDmgEffectivenessLighting(util: VitalTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'dmgEffectivenessLighting',
     headerValueGetter: () => 'Lighting',
     filter: false,
@@ -317,12 +326,13 @@ export function vitalColDmgEffectivenessLighting(util: VitalTableUtils) {
     minWidth: 80,
     maxWidth: 80,
     resizable: false,
-    valueGetter: util.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Lightning')),
+    valueGetter: ({ data }) => getVitalDamageEffectivenessPercent(data, 'Lightning'),
     cellRenderer: cellRendererDamage,
+    getQuickFilterText: () => '',
   })
 }
 export function vitalColDmgEffectivenessArcane(util: VitalTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'dmgEffectivenessArcane',
     headerValueGetter: () => 'Arcane',
     filter: false,
@@ -330,7 +340,8 @@ export function vitalColDmgEffectivenessArcane(util: VitalTableUtils) {
     minWidth: 80,
     maxWidth: 80,
     resizable: false,
-    valueGetter: util.valueGetter(({ data }) => getVitalDamageEffectivenessPercent(data, 'Arcane')),
+    valueGetter: ({ data }) => getVitalDamageEffectivenessPercent(data, 'Arcane'),
     cellRenderer: cellRendererDamage,
+    getQuickFilterText: () => '',
   })
 }

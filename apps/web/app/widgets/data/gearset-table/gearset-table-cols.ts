@@ -9,43 +9,38 @@ export type GearsetTableUtils = TableGridUtils<GearsetTableRecord>
 export type GearsetTableRecord = GearsetRow
 
 export function gearsetColName(util: GearsetTableUtils) {
-  //
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'name',
     headerValueGetter: () => 'Name',
-    // TODO:
-    //pinned: !util.layout.isHandset,
     sortable: true,
     filter: true,
     width: 250,
-    valueGetter: util.valueGetter(({ data }) => data.record.name),
-    getQuickFilterText: ({ value }) => value,
+    valueGetter: ({ data }) => data.record.name,
   })
 }
 
 export function gearsetColWeight(util: GearsetTableUtils) {
-  //
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'weight',
     headerValueGetter: () => 'Weight',
     sortable: true,
     filter: true,
     width: 100,
-    valueGetter: util.valueGetter(({ data }) => data.weight),
+    field: 'weight',
     valueFormatter: ({ value }) => getWeightLabel(value),
-    getQuickFilterText: ({ value }) => value,
+    getQuickFilterText: ({ value }) => getWeightLabel(value),
   })
 }
 
 export function gearsetColGearScore(util: GearsetTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'gearScore',
     headerValueGetter: () => 'GS',
     sortable: true,
     filter: true,
     width: 100,
-    valueGetter: util.valueGetter(({ data }) => data.gearScore),
-    getQuickFilterText: ({ value }) => value,
+    field: 'gearScore',
+    getQuickFilterText: () => ''
   })
 }
 

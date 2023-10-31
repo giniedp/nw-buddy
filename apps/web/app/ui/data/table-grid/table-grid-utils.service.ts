@@ -62,11 +62,11 @@ export class TableGridUtils<T = any> {
     return fn as any
   }
 
-  public colDef(data: ColDef & Required<Pick<ColDef, 'colId' | 'headerValueGetter'>>): ColDef {
+  public colDef<V>(data: ColDef<T, V> & Required<Pick<ColDef, 'colId' | 'headerValueGetter'>>): ColDef {
     return data
   }
 
-  public colGroupDef(data: ColDef & ColGroupDef & Required<Pick<ColGroupDef, 'children' | 'headerName'>>): ColDef {
+  public colGroupDef<V>(data: ColDef<T, V> & ColGroupDef & Required<Pick<ColGroupDef, 'children' | 'headerName'>>): ColDef {
     return data
   }
 

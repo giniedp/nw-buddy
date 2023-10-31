@@ -1,5 +1,6 @@
 import {
   LootBucketRow,
+  LootBucketTag,
   NW_FALLBACK_ICON,
   getItemIconPath,
   getItemId,
@@ -49,63 +50,61 @@ export function lootBucketColIcon(util: LootBucketTableUtils) {
 }
 
 export function lootBucketColName(util: LootBucketTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'lootBucket',
     headerValueGetter: () => 'Bucket',
     width: 250,
-    valueGetter: util.valueGetter(({ data }) => {
-      return data.LootBucket
-    }),
-    getQuickFilterText: ({ value }) => value,
+    field: 'LootBucket',
   })
 }
 
 export function lootBucketColColumn(util: LootBucketTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'clumn',
     headerValueGetter: () => 'Column',
-    field: util.fieldName('Column'),
+    field: 'Column',
+    getQuickFilterText: () => '',
     width: 130,
   })
 }
 
 export function lootBucketColItem(util: LootBucketTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'item',
     headerValueGetter: () => 'Item',
-    valueGetter: util.valueGetter(({ data }) => {
-      return util.tl8(data.$item.Name)
-    }),
+    valueGetter: ({ data }) => util.tl8(data.$item.Name),
     getQuickFilterText: ({ data }) => [data.Item, util.tl8(data.$item.Name)].join(' '),
     width: 250,
   })
 }
 
 export function lootBucketColMatchOne(util: LootBucketTableUtils) {
-  return util.colDef({
+  return util.colDef<boolean>({
     colId: 'matchOne',
     headerValueGetter: () => 'Match One',
-    field: util.fieldName('MatchOne'),
+    field: 'MatchOne',
+    getQuickFilterText: () => '',
     width: 130,
   })
 }
 
 export function lootBucketColQuantity(util: LootBucketTableUtils) {
-  return util.colDef({
+  return util.colDef<number[]>({
     colId: 'quantity',
     headerValueGetter: () => 'Quantity',
-    field: util.fieldName('Quantity'),
+    getQuickFilterText: () => '',
+    field: 'Quantity',
     width: 130,
   })
 }
 
 export function lootBucketColTags(util: LootBucketTableUtils) {
-  return util.colDef({
+  return util.colDef<LootBucketTag[]>({
     colId: 'tags',
     headerValueGetter: () => 'Tags',
-    valueGetter: util.valueGetter(({ data }) => {
+    valueGetter: ({ data }) => {
       return Array.from(data.Tags.values())
-    }),
+    },
     cellRenderer: util.tagsRenderer({
       transform: (it) => {
         if (!it.Value) {

@@ -63,25 +63,24 @@ export function itemColIcon(util: ItemTableUtils) {
 }
 
 export function itemColName(util: ItemTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'name',
     headerValueGetter: () => 'Name',
     sortable: true,
     filter: true,
     width: 250,
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.Name)),
+    valueGetter: ({ data }) => util.i18n.get(data.Name),
     cellRenderer: util.cellRenderer(({ value }) => util.lineBreaksToHtml(value)),
     cellClass: ['multiline-cell', 'py-2'],
     autoHeight: true,
-    getQuickFilterText: ({ value }) => value,
   })
 }
 
 export function itemColItemId(util: ItemTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'itemId',
     headerValueGetter: () => 'Item ID',
-    field: util.fieldName('ItemID'),
+    field: 'ItemID',
     hide: true,
   })
 }
@@ -89,12 +88,13 @@ export function itemColItemId(util: ItemTableUtils) {
 export function itemColPerks(
   util: TableGridUtils<ItemDefinitionMaster & { $perks?: Perks[]; $perkBuckets?: string[] }>
 ) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'perks',
     width: 175,
     sortable: false,
     headerValueGetter: () => 'Perks',
-    valueGetter: util.valueGetter(({ data }) => data.$perks?.map((it) => it?.PerkID)),
+    getQuickFilterText: () => '',
+    valueGetter: ({ data }) => data.$perks?.map((it) => it?.PerkID),
     cellRenderer: util.cellRenderer(({ data }) => {
       const perks = data.$perks || []
       const buckets = data.$perkBuckets || []
@@ -146,10 +146,10 @@ export function itemColPerks(
 }
 
 export function itemColRarity(util: ItemTableUtils) {
-  return util.colDef({
+  return util.colDef<ItemRarity>({
     colId: 'rarity',
     headerValueGetter: () => 'Rarity',
-    valueGetter: util.valueGetter(({ data }) => getItemRarity(data)),
+    valueGetter: ({ data }) => getItemRarity(data),
     valueFormatter: ({ value }) => util.i18n.get(getItemRarityLabel(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getItemRarityLabel(value)),
     filter: SelectFilter,
@@ -162,24 +162,26 @@ export function itemColRarity(util: ItemTableUtils) {
 }
 
 export function itemColTier(util: ItemTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'tier',
     headerValueGetter: () => 'Tier',
+    getQuickFilterText: () => '',
     width: 80,
-    valueGetter: util.valueGetter(({ data }) => data.Tier || null),
+    valueGetter: ({ data }) => data.Tier || null,
     valueFormatter: ({ value }) => getItemTierAsRoman(value),
     filter: SelectFilter,
   })
 }
 
 export function itemColBookmark(util: TableGridUtils<ItemDefinitionMaster>) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'userBookmark',
     headerValueGetter: () => 'Bookmark',
+    getQuickFilterText: () => '',
     width: 100,
     cellClass: 'cursor-pointer',
     filter: ItemTrackerFilter,
-    valueGetter: util.valueGetter(({ data }) => util.itemPref.get(data.ItemID)?.mark || 0),
+    valueGetter: ({ data }) => util.itemPref.get(data.ItemID)?.mark || 0,
     cellRenderer: BookmarkCell,
     cellRendererParams: BookmarkCell.params({
       getId: (value: ItemDefinitionMaster) => getItemId(value),
@@ -189,12 +191,13 @@ export function itemColBookmark(util: TableGridUtils<ItemDefinitionMaster>) {
 }
 
 export function itemColStockCount(util: TableGridUtils<ItemDefinitionMaster>) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'userStockCount',
     headerValueGetter: () => 'In Stock',
+    getQuickFilterText: () => '',
     suppressMenu: false,
     headerTooltip: 'Number of items currently owned',
-    valueGetter: util.valueGetter(({ data }) => util.itemPref.get(data.ItemID)?.stock),
+    valueGetter: ({ data }) => util.itemPref.get(data.ItemID)?.stock,
     cellRenderer: TrackingCell,
     cellRendererParams: TrackingCell.params({
       getId: (value: ItemDefinitionMaster) => getItemId(value),
@@ -207,11 +210,12 @@ export function itemColStockCount(util: TableGridUtils<ItemDefinitionMaster>) {
 }
 
 export function itemColOwnedWithGS(util: TableGridUtils<ItemDefinitionMaster>) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'userOwnedWithGS',
     headerValueGetter: () => 'Owned GS',
+    getQuickFilterText: () => '',
     headerTooltip: 'Item owned with this gear score',
-    valueGetter: util.valueGetter(({ data }) => util.itemPref.get(data.ItemID)?.gs),
+    valueGetter: ({ data }) => util.itemPref.get(data.ItemID)?.gs,
     cellRenderer: TrackingCell,
     cellRendererParams: TrackingCell.params({
       getId: (value: ItemDefinitionMaster) => getItemId(value),
@@ -222,12 +226,13 @@ export function itemColOwnedWithGS(util: TableGridUtils<ItemDefinitionMaster>) {
   })
 }
 export function itemColPrice(util: TableGridUtils<ItemDefinitionMaster>) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'userPrice',
     headerValueGetter: () => 'Price',
+    getQuickFilterText: () => '',
     headerTooltip: 'Current price in Trading post',
     cellClass: 'text-right',
-    valueGetter: util.valueGetter(({ data }) => util.itemPref.get(data.ItemID)?.price),
+    valueGetter: ({ data }) => util.itemPref.get(data.ItemID)?.price,
     cellRenderer: TrackingCell,
     cellRendererParams: TrackingCell.params({
       getId: (value: ItemDefinitionMaster) => getItemId(value),
@@ -241,9 +246,10 @@ export function itemColPrice(util: TableGridUtils<ItemDefinitionMaster>) {
 }
 
 export function itemColGearScore(util: ItemTableUtils) {
-  return util.colDef({
+  return util.colDef<[number, number]>({
     colId: 'gearScore',
     headerValueGetter: () => 'Gear Score',
+    getQuickFilterText: () => '',
     width: 120,
     cellClass: 'text-right',
     comparator: (a, b) => {
@@ -252,11 +258,11 @@ export function itemColGearScore(util: ItemTableUtils) {
       }
       return (a[0] || 0) - (b[0] || 0)
     },
-    valueGetter: util.valueGetter(({ data }) => {
+    valueGetter: ({ data }) => {
       let min = getItemMinGearScore(data, false)
       let max = getItemMaxGearScore(data, false)
       return [min, max]
-    }),
+    },
     valueFormatter: ({ value }) => {
       if (value[0] === value[1]) {
         return String(value[0] ?? '')
@@ -268,22 +274,24 @@ export function itemColGearScore(util: ItemTableUtils) {
 }
 
 export function itemColSource(util: ItemTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'source',
     headerValueGetter: () => 'Source',
-    valueGetter: util.fieldGetter('$source' as any),
+    valueGetter: ({ data }) => data['$source'],
     valueFormatter: ({ value }) => humanize(value),
+    getQuickFilterText: ({ value }) => humanize(value),
     width: 125,
     filter: SelectFilter,
   })
 }
 
 export function itemColEvent(util: ItemTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'attributionId',
     headerValueGetter: () => 'Event',
     width: 180,
-    valueGetter: util.fieldGetter('AttributionId'),
+    field: 'AttributionId',
+    getQuickFilterText: ({ data }) => util.i18n.get(getItemAttribution(data)?.label),
     cellRenderer: util.cellRenderer(({ data }) => {
       const expansion = getItemAttribution(data)
       if (!expansion) {
@@ -298,9 +306,9 @@ export function itemColEvent(util: ItemTableUtils) {
       ])
     }),
     filter: SelectFilter,
-    filterParams: SelectFilter.params({
+    filterParams: SelectFilter.params<ItemTableRecord>({
       optionsGetter: ({ data }) => {
-        const it = getItemAttribution(data as ItemDefinitionMaster)
+        const it = getItemAttribution(data)
         return it
           ? [
               {
@@ -316,12 +324,13 @@ export function itemColEvent(util: ItemTableUtils) {
 }
 
 export function itemColExpansion(util: ItemTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'requiredExpansion',
     headerValueGetter: () => 'Expansion',
     width: 180,
-    valueGetter: util.fieldGetter('RequiredExpansionId'),
-    cellRenderer: util.cellRenderer(({ data }) => {
+    field: 'RequiredExpansionId',
+    getQuickFilterText: ({ data }) => util.i18n.get(getItemExpansion(data?.RequiredExpansionId)?.label),
+    cellRenderer: ({ data }) => {
       const expansion = getItemExpansion(data?.RequiredExpansionId)
       if (!expansion) {
         return null
@@ -333,9 +342,9 @@ export function itemColExpansion(util: ItemTableUtils) {
         }),
         util.el('span', { text: util.i18n.get(expansion.label) }),
       ])
-    }),
+    },
     filter: SelectFilter,
-    filterParams: SelectFilter.params({
+    filterParams: SelectFilter.params<ItemTableRecord>({
       optionsGetter: ({ data }) => {
         const it = getItemExpansion(data?.RequiredExpansionId)
         return it
@@ -353,10 +362,10 @@ export function itemColExpansion(util: ItemTableUtils) {
 }
 
 export function itemColItemTypeName(util: ItemTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'itemTypeDisplayName',
     headerValueGetter: () => 'Item Type Name',
-    valueGetter: util.valueGetter(({ data }) => data.ItemTypeDisplayName),
+    field: 'ItemTypeDisplayName',
     valueFormatter: ({ value }) => util.i18n.get(value) || humanize(value),
     getQuickFilterText: ({ value }) => util.i18n.get(value) || humanize(value),
     width: 150,
@@ -365,10 +374,10 @@ export function itemColItemTypeName(util: ItemTableUtils) {
 }
 
 export function itemColItemType(util: ItemTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'itemType',
     headerValueGetter: () => 'Item Type',
-    valueGetter: util.valueGetter(({ data }) => data.ItemType),
+    field: 'ItemType',
     valueFormatter: ({ value }) => util.i18n.get(getItemTypeLabel(value) || humanize(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getItemTypeLabel(value) || humanize(value)),
     width: 125,
@@ -377,12 +386,12 @@ export function itemColItemType(util: ItemTableUtils) {
 }
 
 export function itemColItemClass(util: ItemTableUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'itemClass',
     headerValueGetter: () => 'Item Class',
     width: 250,
+    field: 'ItemClass',
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    valueGetter: util.valueGetter(({ data }) => data.ItemClass),
     filter: SelectFilter,
     filterParams: SelectFilter.params({
       showSearch: true,
@@ -391,11 +400,12 @@ export function itemColItemClass(util: ItemTableUtils) {
 }
 
 export function itemColTradingGroup(util: ItemTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'tradingGroup',
     headerValueGetter: () => 'Trading Group',
-    valueGetter: util.valueGetter(({ data }) => data.TradingGroup),
-    valueFormatter: util.valueFormatter<string>(({ value }) => util.i18n.get(getItemTradingGroupLabel(value))),
+    field: 'TradingGroup',
+    valueFormatter: ({ value }) => util.i18n.get(getItemTradingGroupLabel(value)),
+    getQuickFilterText: ({ value }) => util.i18n.get(getItemTradingGroupLabel(value)),
     filter: SelectFilter,
     filterParams: SelectFilter.params({
       showSearch: true,
@@ -404,12 +414,13 @@ export function itemColTradingGroup(util: ItemTableUtils) {
 }
 
 export function itemColTradingFamily(util: ItemTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'tradingFamily',
     headerValueGetter: () => 'Trading Family',
     width: 125,
-    valueGetter: util.valueGetter(({ data }) => data.TradingFamily),
-    valueFormatter: util.valueFormatter<string>(({ value }) => util.i18n.get(getItemTradingFamilyLabel(value))),
+    field: 'TradingFamily',
+    valueFormatter: ({ value }) => util.i18n.get(getItemTradingFamilyLabel(value)),
+    getQuickFilterText: ({ value }) => util.i18n.get(getItemTradingFamilyLabel(value)),
     filter: SelectFilter,
     filterParams: SelectFilter.params({
       showSearch: true,
@@ -418,12 +429,13 @@ export function itemColTradingFamily(util: ItemTableUtils) {
 }
 
 export function itemColTradingCategory(util: ItemTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'tradingCategory',
     headerValueGetter: () => 'Trading Category',
     width: 125,
-    valueGetter: util.valueGetter(({ data }) => data.TradingCategory),
-    valueFormatter: util.valueFormatter<string>(({ value }) => util.i18n.get(getTradingCategoryLabel(value))),
+    field: 'TradingCategory',
+    valueFormatter: ({ value }) => util.i18n.get(getTradingCategoryLabel(value)),
+    getQuickFilterText: ({ value }) => util.i18n.get(getTradingCategoryLabel(value)),
     filter: SelectFilter,
   })
 }

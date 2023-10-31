@@ -12,6 +12,7 @@ export function damageColIcon(util: DamageTableUtils) {
   return util.colDef({
     colId: 'icon',
     headerValueGetter: () => 'Icon',
+    getQuickFilterText: () => '',
     resizable: false,
     sortable: false,
     filter: ExpressionFilter,
@@ -29,14 +30,11 @@ export function damageColIcon(util: DamageTableUtils) {
   })
 }
 export function damageColID(util: DamageTableUtils) {
-  //
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'id',
     headerValueGetter: () => 'ID',
     width: 200,
-    valueGetter: util.valueGetter(({ data }) => {
-      return data.DamageID
-    }),
+    field: 'DamageID',
     getQuickFilterText: ({ value }) => value,
   })
 }
@@ -45,7 +43,7 @@ export function damageColDamageType(util: DamageTableUtils) {
   return util.colDef({
     colId: 'damageType',
     headerValueGetter: () => 'DamageType',
-    valueGetter: util.valueGetter(({ data }) => data.DamageType),
+    field: 'DamageType',
     width: 200,
     filter: SelectFilter,
   })
@@ -55,7 +53,7 @@ export function damageColAttackType(util: DamageTableUtils) {
   return util.colDef({
     colId: 'attackType',
     headerValueGetter: () => 'AttackType',
-    valueGetter: util.valueGetter(({ data }) => data.AttackType),
+    field: 'AttackType',
     width: 200,
     filter: SelectFilter,
   })
@@ -65,8 +63,8 @@ export function damageColDmgCoef(util: DamageTableUtils) {
   return util.colDef({
     colId: 'dmgCoef',
     headerValueGetter: () => 'DmgCoef',
-    field: util.fieldName('DmgCoef'),
-    ...util.precision,
+    field: 'DmgCoef',
+    ...util.precision as any,
   })
 }
 
@@ -74,8 +72,8 @@ export function damageColDmgCoefCrit(util: DamageTableUtils) {
   return util.colDef({
     colId: 'dmgCoefCrit',
     headerValueGetter: () => 'DmgCoefCrit',
-    field: util.fieldName('DmgCoefCrit'),
-    ...util.precision,
+    field: 'DmgCoefCrit',
+    ...util.precision as any,
   })
 }
 
@@ -83,8 +81,8 @@ export function damageColDmgCoefHead(util: DamageTableUtils) {
   return util.colDef({
     colId: 'dmgCoefHead',
     headerValueGetter: () => 'DmgCoefHead',
-    field: util.fieldName('DmgCoefHead'),
-    ...util.precision,
+    field: 'DmgCoefHead',
+    ...util.precision as any,
   })
 }
 
@@ -92,7 +90,7 @@ export function damageColCanCrit(util: DamageTableUtils) {
   return util.colDef({
     colId: 'canCrit',
     headerValueGetter: () => 'CanCrit',
-    field: util.fieldName('CanCrit'),
+    field: 'CanCrit',
   })
 }
 
@@ -100,7 +98,7 @@ export function damageColCritHitStun(util: DamageTableUtils) {
   return util.colDef({
     colId: 'critHitStun',
     headerValueGetter: () => 'CritHitStun',
-    field: util.fieldName('CritHitStun'),
+    field: 'CritHitStun',
   })
 }
 
@@ -108,7 +106,7 @@ export function damageColCritPowerLevel(util: DamageTableUtils) {
   return util.colDef({
     colId: 'critPowerLevel',
     headerValueGetter: () => 'CritPowerLevel',
-    field: util.fieldName('CritPowerLevel'),
+    field: 'CritPowerLevel',
   })
 }
 
@@ -116,7 +114,7 @@ export function damageColAffixes(util: DamageTableUtils) {
   return util.colDef({
     colId: 'affixes',
     headerValueGetter: () => 'Affixes',
-    valueGetter: util.valueGetter(({ data }) => data.Affixes),
+    field: 'Affixes',
     width: 200,
     filter: SelectFilter,
   })
@@ -126,7 +124,7 @@ export function damageColAffliction(util: DamageTableUtils) {
   return util.colDef({
     colId: 'affliction',
     headerValueGetter: () => 'Affliction',
-    valueGetter: util.fieldGetter('Affliction'),
+    field: 'Affliction',
     width: 200,
     filter: SelectFilter,
   })

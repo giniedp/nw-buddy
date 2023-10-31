@@ -32,87 +32,92 @@ export function questColIcon(util: QuestTableUtils) {
   })
 }
 export function questColObjectiveID(util: QuestTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'objectiveID',
     headerValueGetter: () => 'ID',
+    field: 'ObjectiveID',
     hide: true,
   })
 }
 export function questColTitle(util: QuestTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'title',
     headerValueGetter: () => 'Title',
     width: 250,
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.Title)),
-    getQuickFilterText: ({ value }) => value,
+    valueGetter: ({ data }) => util.i18n.get(data.Title),
   })
 }
 export function questColDescription(util: QuestTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'description',
     headerValueGetter: () => 'Description',
     width: 350,
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.Description)),
+    valueGetter: ({ data }) => util.i18n.get(data.Description),
     cellRenderer: util.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
     cellClass: ['multiline-cell', 'py-2'],
     autoHeight: true,
   })
 }
 export function questColPlayerPrompt(util: QuestTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'playerPrompt',
     headerValueGetter: () => 'Player Prompt',
     width: 350,
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.PlayerPrompt)),
-    cellRenderer: util.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
+    valueGetter: ({ data }) => util.i18n.get(data.PlayerPrompt),
+    valueFormatter: ({ value }) => value?.replace(/\\n/g, '<br>'),
+    cellRenderer: ({ value }) => value,
     cellClass: ['multiline-cell', 'py-2'],
     autoHeight: true,
     hide: true,
   })
 }
 export function questColObjectiveProposalResponse(util: QuestTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'objectiveProposalResponse',
     headerValueGetter: () => 'Objective Proposal Response',
     width: 350,
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.ObjectiveProposalResponse)),
-    cellRenderer: util.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
+    valueGetter: ({ data }) => util.i18n.get(data.ObjectiveProposalResponse),
+    valueFormatter: ({ value }) => value?.replace(/\\n/g, '<br>'),
+    cellRenderer: ({ value }) => value,
     cellClass: ['multiline-cell', 'py-2'],
     autoHeight: true,
     hide: true,
   })
 }
 export function questColInProgressResponse(util: QuestTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'inProgressResponse',
     headerValueGetter: () => 'In Progress Response',
     width: 350,
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.InProgressResponse)),
-    cellRenderer: util.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
+    valueGetter: ({ data }) => util.i18n.get(data.InProgressResponse),
+    valueFormatter: ({ value }) => value?.replace(/\\n/g, '<br>'),
+    cellRenderer: ({ value }) => value,
     cellClass: ['multiline-cell', 'py-2'],
     autoHeight: true,
     hide: true,
   })
 }
 export function questColDestinationCompletionAvailablePrompt(util: QuestTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'destinationCompletionAvailablePrompt',
     headerValueGetter: () => 'Destination Completion Available Prompt',
     width: 350,
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.DestinationCompletionAvailablePrompt)),
-    cellRenderer: util.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
+    valueGetter: ({ data }) => util.i18n.get(data.DestinationCompletionAvailablePrompt),
+    valueFormatter: ({ value }) => value?.replace(/\\n/g, '<br>'),
+    cellRenderer: ({ value }) => value,
     cellClass: ['multiline-cell', 'py-2'],
     autoHeight: true,
     hide: true,
   })
 }
 export function questColDestinationCompletionAvailableResponse(util: QuestTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'destinationCompletionAvailableResponse',
     headerValueGetter: () => 'Destination Completion Available Response',
     width: 350,
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.DestinationCompletionAvailableResponse)),
-    cellRenderer: util.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
+    valueGetter: ({ data }) => util.i18n.get(data.DestinationCompletionAvailableResponse),
+    valueFormatter: ({ value }) => value?.replace(/\\n/g, '<br>'),
+    cellRenderer: ({ value }) => value,
     cellClass: ['multiline-cell', 'py-2'],
     autoHeight: true,
     hide: true,
@@ -120,35 +125,37 @@ export function questColDestinationCompletionAvailableResponse(util: QuestTableU
 }
 
 export function questColDifficultyLevel(util: QuestTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'difficultyLevel',
     headerValueGetter: () => 'Difficulty Level',
-    field: util.fieldName('DifficultyLevel'),
+    getQuickFilterText: () => '',
+    field: 'DifficultyLevel',
     filter: 'agNumberColumnFilter',
   })
 }
 export function questColRequiredLevel(util: QuestTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'requiredLevel',
     headerValueGetter: () => 'Required Level',
-    field: util.fieldName('RequiredLevel'),
+    getQuickFilterText: () => '',
+    field: 'RequiredLevel',
     filter: 'agNumberColumnFilter',
     hide: true,
   })
 }
 export function questColAchievementId(util: QuestTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'achievementId',
     headerValueGetter: () => 'Achievement Id',
-    field: util.fieldName('AchievementId'),
+    field: 'AchievementId',
     hide: true,
   })
 }
 export function questColRequiredAchievementId(util: QuestTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'requiredAchievementId',
     headerValueGetter: () => 'Required Achievement Id',
-    field: util.fieldName('RequiredAchievementId'),
+    field: 'RequiredAchievementId',
     hide: true,
   })
 }

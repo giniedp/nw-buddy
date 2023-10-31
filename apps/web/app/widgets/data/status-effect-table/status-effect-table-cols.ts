@@ -3,7 +3,7 @@ import { COLS_STATUSEFFECT, Statuseffect } from '@nw-data/generated'
 import { sanitizeHtml } from '~/nw'
 import { SelectFilter } from '~/ui/data/ag-grid'
 import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
-import { TableGridUtils } from '~/ui/data/table-grid'
+import { TableGridUtils, colDefPrecision } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
 export type StatusEffectTableUtils = TableGridUtils<StatusEffectTableRecord>
@@ -46,19 +46,19 @@ export function statusEffectColIcon(util: StatusEffectTableUtils) {
   })
 }
 export function statusEffectColStatusID(util: StatusEffectTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'statusID',
     hide: true,
     headerValueGetter: () => 'Status ID',
-    valueGetter: util.fieldGetter('StatusID'),
+    field: 'StatusID',
   })
 }
 export function statusEffectColSource(util: StatusEffectTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'source',
     hide: true,
     headerValueGetter: () => 'Source',
-    valueGetter: util.fieldGetter('$source' as any),
+    valueGetter: ({ data }) => data['$source'],
     filter: SelectFilter,
     filterParams: SelectFilter.params({
       showSearch: true,
@@ -66,23 +66,46 @@ export function statusEffectColSource(util: StatusEffectTableUtils) {
   })
 }
 export function statusEffectColName(util: StatusEffectTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'name',
     headerValueGetter: () => 'Name',
     headerName: 'Name',
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.DisplayName) || data.StatusID),
+    valueGetter: ({ data }) => {
+      if (data.DisplayName) {
+        return util.i18n.get(data.DisplayName)
+      }
+      return data.StatusID
+    },
+    cellRenderer: util.cellRenderer(({ data, value }) => {
+      if (data.DisplayName) {
+        return value
+      }
+      return util.el('code.opacity-50', { text: value })
+    }),
     width: 300,
   })
 }
 export function statusEffectColDescription(util: StatusEffectTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'description',
     headerValueGetter: () => 'Description',
     width: 300,
     wrapText: true,
     autoHeight: true,
-    cellClass: ['multiline-cell', 'text-primary', 'italic', 'py-2'],
-    valueGetter: ({ data }) => util.i18n.get(data.Description),
+    cellClass: ['multiline-cell', 'text-nw-description', 'italic', 'py-2'],
+    valueGetter: ({ data }) => {
+      if (data.Description) {
+        return util.i18n.get(data.Description)
+      }
+      if (data.StatusID.startsWith('Mut_')) {
+        const key = `${data.StatusID}_Tooltip`
+        const value = util.i18n.get(key)
+        if (key !== value) {
+          return value
+        }
+      }
+      return null
+    },
     cellRenderer: util.cellRendererAsync(),
     cellRendererParams: util.cellRendererAsyncParams<string>({
       source: ({ data, value }) =>
@@ -99,22 +122,24 @@ export function statusEffectColDescription(util: StatusEffectTableUtils) {
   })
 }
 export function statusEffectColBaseDuration(util: StatusEffectTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'baseDuration',
     headerValueGetter: () => 'Duration',
-    field: util.fieldName('BaseDuration'),
+    getQuickFilterText: () => '',
+    field: 'BaseDuration',
+    ...colDefPrecision as any,
   })
 }
 export function statusEffectColEffectCategories(util: StatusEffectTableUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'effectCategories',
     autoHeight: true,
     headerValueGetter: () => 'Effect Categories',
-    valueGetter: util.fieldGetter('EffectCategories'),
+    field: 'EffectCategories',
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     filter: SelectFilter,
     filterParams: SelectFilter.params({
       showSearch: true,
-    }),
+    })
   })
 }

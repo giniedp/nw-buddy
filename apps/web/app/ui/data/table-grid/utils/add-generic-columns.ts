@@ -19,6 +19,7 @@ export function addGenericColumns(
     }
     const colDef: ColDef = {
       colId: field,
+      getQuickFilterText: () => '',
       headerValueGetter: () => humanize(field),
       valueGetter: ({ data }) => {
         if (scope) {

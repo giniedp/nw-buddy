@@ -155,8 +155,15 @@ export class TableGridComponent<T> implements OnInit {
       )
       .pipe(skip(1)) // skip initial value
       .pipe(takeUntil(this.store.destroy$))
-      .subscribe(({ api }) => {
+      .subscribe(({ api, columnApi }) => {
+        // force re-render with new locale
         api.refreshCells({ force: true })
+        // force quick filter cache reset
+        api.resetQuickFilter()
+        // force column filter cache reset
+        columnApi.getColumns().forEach((it) => {
+          api.destroyFilter(it.getColId())
+        })
       })
   }
 
@@ -364,5 +371,7 @@ function selectGridOptions(options: GridOptions) {
       sortable: true,
       filter: true,
     },
-  }
+    includeHiddenColumnsInQuickFilter: options.includeHiddenColumnsInQuickFilter ?? true,
+    cacheQuickFilter: true
+  } satisfies GridOptions
 }

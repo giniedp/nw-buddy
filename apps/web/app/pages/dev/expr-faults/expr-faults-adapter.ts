@@ -71,27 +71,27 @@ export class ExprFaultsAdapter implements DataViewAdapter<FaultRow> {
             )
           }),
         }),
-        utils.colDef({
+        utils.colDef<string>({
           colId: 'name',
           headerValueGetter: () => 'Name',
           sortable: true,
           filter: true,
           width: 250,
-          valueGetter: utils.valueGetter(({ data }) => utils.i18n.get(data.perk.DisplayName)),
+          valueGetter: ({ data }) => utils.i18n.get(data.perk.DisplayName),
           cellRenderer: utils.lineBreaksRenderer(),
           cellClass: ['multiline-cell', 'py-2'],
           autoHeight: true,
           getQuickFilterText: ({ value }) => value,
         }),
         ...KNOWN_LANG.map((it, i) =>
-          utils.colDef({
+          utils.colDef<string>({
             colId: `lang-${it.value}`,
             filter: false,
             cellClass: ['multiline-cell', 'py-2'],
             autoHeight: true,
             headerValueGetter: () => it.label,
             width: 400,
-            valueGetter: utils.valueGetter(({ data }) => data.expressions[i].expr),
+            valueGetter: ({ data }) => data.expressions[i].expr,
           })
         ),
       ],

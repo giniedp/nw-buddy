@@ -52,58 +52,61 @@ export function housingColIcon(util: HousingTableUtils) {
 }
 
 export function housingColName(util: HousingTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'name',
     headerValueGetter: () => 'Name',
     width: 300,
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.Name)),
-    getQuickFilterText: ({ value }) => value,
+    valueGetter: ({ data }) => util.i18n.get(data.Name),
+    getQuickFilterText: ({ data }) => util.i18n.get(data.Name),
   })
 }
 
 export function housingColID(util: HousingTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'houseItemId',
     headerValueGetter: () => 'Item ID',
-    field: util.fieldName('HouseItemID'),
+    field: 'HouseItemID',
     hide: true,
   })
 }
 
 export function housingColRarity(util: HousingTableUtils) {
-  return util.colDef({
+  return util.colDef<ItemRarity>({
     colId: 'rarity',
+    width: 130,
     headerValueGetter: () => 'Rarity',
-    valueGetter: ({ data }) => String(getItemRarity(data)),
+    valueGetter: ({ data }) => getItemRarity(data),
     valueFormatter: ({ value }) => util.i18n.get(getItemRarityLabel(value)),
+    getQuickFilterText: ({ value }) => util.i18n.get(getItemRarityLabel(value)),
     filter: SelectFilter,
     filterParams: SelectFilter.params({
       comaparator: (a, b) => getItemRarityWeight(b.id as ItemRarity) - getItemRarityWeight(a.id as ItemRarity),
     }),
-    width: 130,
-    getQuickFilterText: ({ value }) => value,
     comparator: (a, b) => getItemRarityWeight(a) - getItemRarityWeight(b),
   })
 }
 
 export function housingColTier(util: HousingTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'tier',
     headerValueGetter: () => 'Tier',
     width: 80,
     filter: SelectFilter,
-    valueGetter: ({ data }) => getItemTierAsRoman(data.Tier),
+    valueGetter: ({ data }) => data.Tier || null,
+    valueFormatter: ({ value }) => getItemTierAsRoman(value),
+    getQuickFilterText: () => ''
   })
 }
 
 export function housingColUserBookmark(util: HousingTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'userBookmark',
     headerValueGetter: () => 'Bookmark',
+    getQuickFilterText: () => '',
     width: 100,
     cellClass: 'cursor-pointer',
     filter: ItemTrackerFilter,
-    valueGetter: util.valueGetter(({ data }) => util.itemPref.get(data.HouseItemID)?.mark || 0),
+    valueGetter: ({ data }) => util.itemPref.get(data.HouseItemID)?.mark || 0,
     cellRenderer: BookmarkCell,
     cellRendererParams: BookmarkCell.params({
       getId: (value: Housingitems) => getItemId(value),
@@ -113,11 +116,12 @@ export function housingColUserBookmark(util: HousingTableUtils) {
 }
 
 export function housingColUserStockValue(util: HousingTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'userStockValue',
     headerValueGetter: () => 'In Stock',
+    getQuickFilterText: () => '',
     headerTooltip: 'Number of items currently owned',
-    valueGetter: util.valueGetter(({ data }) => util.itemPref.get(data.HouseItemID)?.stock),
+    valueGetter: ({ data }) => util.itemPref.get(data.HouseItemID)?.stock,
     cellRenderer: TrackingCell,
     cellRendererParams: TrackingCell.params({
       getId: (value: Housingitems) => getItemId(value),
@@ -130,12 +134,13 @@ export function housingColUserStockValue(util: HousingTableUtils) {
 }
 
 export function housingColUserPrice(util: HousingTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'userPrice',
     headerValueGetter: () => 'Price',
+    getQuickFilterText: () => '',
     headerTooltip: 'Current price in Trading post',
     cellClass: 'text-right',
-    valueGetter: util.valueGetter(({ data }) => util.itemPref.get(data.HouseItemID)?.price),
+    valueGetter: ({ data }) => util.itemPref.get(data.HouseItemID)?.price,
     cellRenderer: TrackingCell,
     cellRendererParams: TrackingCell.params({
       getId: (value: Housingitems) => getItemId(value),
@@ -148,22 +153,23 @@ export function housingColUserPrice(util: HousingTableUtils) {
 }
 
 export function housingColHousingTag1Placed(util: HousingTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'housingTag1Placed',
     headerValueGetter: () => 'Placement',
     headerName: 'Placement',
-    valueGetter: util.fieldGetter('HousingTag1 Placed'),
+    field: 'HousingTag1 Placed',
     valueFormatter: ({ value }) => humanize(value),
+    getQuickFilterText: ({ value }) => humanize(value),
     filter: SelectFilter,
     width: 150,
   })
 }
 
 export function housingColUiHousingCategory(util: HousingTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'uiHousingCategory',
     headerValueGetter: () => 'Housing Category',
-    valueGetter: util.valueGetter(({ data }) => data.UIHousingCategory),
+    field: 'UIHousingCategory',
     valueFormatter: ({ value }) => util.i18n.get(getUIHousingCategoryLabel(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getUIHousingCategoryLabel(value)),
     filter: SelectFilter,
@@ -172,24 +178,23 @@ export function housingColUiHousingCategory(util: HousingTableUtils) {
 }
 
 export function housingColHowToObtain(util: HousingTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'howToObtain',
     headerValueGetter: () => 'Obtain',
-    valueGetter: util.fieldGetter('HowToOptain (Primarily)'),
+    field: 'HowToOptain (Primarily)',
     valueFormatter: ({ value }) => humanize(value),
+    getQuickFilterText: ({ value }) => humanize(value),
     filter: SelectFilter,
     width: 150,
   })
 }
 
 export function housingColHousingTags(util: HousingTableUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'housingTags',
     headerValueGetter: () => 'Housing Tags',
     width: 250,
-    valueGetter: util.valueGetter(({ data }) => {
-      return data.HousingTags
-    }),
+    field: 'HousingTags',
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     filter: SelectFilter,
     filterParams: SelectFilter.params({

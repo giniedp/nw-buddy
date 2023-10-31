@@ -1,5 +1,5 @@
 import { NumberFilter } from '@ag-grid-community/core'
-import { NW_FALLBACK_ICON, getItemExpansion } from '@nw-data/common'
+import { LootTableRow, NW_FALLBACK_ICON, getItemExpansion } from '@nw-data/common'
 import { Gatherables } from '@nw-data/generated'
 import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
@@ -11,6 +11,7 @@ export function gatherableColIcon(util: GatherableTableUtils) {
   return util.colDef({
     colId: 'icon',
     headerValueGetter: () => 'Icon',
+    getQuickFilterText: () => '',
     resizable: false,
     sortable: false,
     filter: false,
@@ -35,20 +36,20 @@ export function gatherableColIcon(util: GatherableTableUtils) {
 }
 
 export function gatherableColName(util: GatherableTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'displayName',
     headerValueGetter: () => 'Name',
     sortable: true,
     filter: true,
     width: 250,
-    valueGetter: util.valueGetter(({ data }) => {
+    valueGetter: ({ data }) => {
       let name = util.i18n.get(data.DisplayName)
       const size = data.FinalLootTable?.match(/(Tiny|Small|Medium|Large|Huge)/)?.[1]
       if (size) {
         name = `${name} - ${size}`
       }
       return name
-    }),
+    },
     cellRenderer: util.cellRenderer(({ value }) => util.lineBreaksToHtml(value)),
     cellClass: ['multiline-cell', 'py-2'],
     autoHeight: true,
@@ -57,30 +58,30 @@ export function gatherableColName(util: GatherableTableUtils) {
 }
 
 export function gatherableColID(util: GatherableTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'gatherableId',
     headerValueGetter: () => 'Gatherable ID',
-    field: util.fieldName('GatherableID'),
+    field: 'GatherableID',
     hide: true,
   })
 }
 
 export function gatherableColTradeSkill(util: GatherableTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'tradeSkill',
     headerValueGetter: () => 'Trade Skill',
     width: 120,
-    valueGetter: util.valueGetter(({ data }) => data.Tradeskill),
+    field: 'Tradeskill',
     filter: SelectFilter,
   })
 }
 
 export function gatherableColLootTable(util: GatherableTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'finalLootTable',
     headerValueGetter: () => 'Loot Table',
     width: 120,
-    valueGetter: util.valueGetter(({ data }) => data.FinalLootTable),
+    field: 'FinalLootTable',
     filter: SelectFilter,
     filterParams: SelectFilter.params({
       showSearch: true
@@ -90,47 +91,49 @@ export function gatherableColLootTable(util: GatherableTableUtils) {
 
 
 export function gatherableColGatherTime(util: GatherableTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'baseGatherTime',
     headerValueGetter: () => 'Gather Time',
+    getQuickFilterText: () => '',
     width: 150,
-    valueGetter: util.valueGetter(({ data }) => data.BaseGatherTime),
-    valueFormatter: util.valueFormatter(({ value }) => secondsToDuration(value as number)),
+    field: 'BaseGatherTime',
+    valueFormatter: ({ value }) => secondsToDuration(value),
     filter: NumberFilter,
   })
 }
 export function gatherableColMinRespawnTime(util: GatherableTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'minRespawnRate',
     headerValueGetter: () => 'Min Respawn Rate',
+    getQuickFilterText: () => '',
     width: 150,
-    valueGetter: util.valueGetter(({ data }) => data.MinRespawnRate),
-    valueFormatter: util.valueFormatter(({ value }) => secondsToDuration(value as number)),
+    field: 'MinRespawnRate',
+    valueFormatter: ({ value }) => secondsToDuration(value),
     filter: NumberFilter,
   })
 }
 
 export function gatherableColMaxRespawnTime(util: GatherableTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'maxRespawnRate',
     headerValueGetter: () => 'Max Respawn Rate',
+    getQuickFilterText: () => '',
     width: 150,
-    valueGetter: util.valueGetter(({ data }) => data.MaxRespawnRate),
-    valueFormatter: util.valueFormatter(({ value }) => secondsToDuration(value as number)),
+    valueGetter: ({ data }) => data.MaxRespawnRate,
+    valueFormatter: ({ value }) => secondsToDuration(value),
     filter: NumberFilter,
   })
 }
 
 
 export function gatherableColExpansion(util: GatherableTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'expansionIdUnlock',
     headerValueGetter: () => 'Expansion',
     width: 190,
-    valueGetter: util.fieldGetter('ExpansionIdUnlock'),
+    valueGetter: ({ data}) => util.i18n.get(getItemExpansion(data?.ExpansionIdUnlock)?.label) ,
     cellRenderer: util.cellRenderer(({ data }) => {
       const expansion = getItemExpansion(data?.ExpansionIdUnlock)
-
       if (!expansion) {
         return null
       }
@@ -144,9 +147,9 @@ export function gatherableColExpansion(util: GatherableTableUtils) {
       ])
     }),
     filter: SelectFilter,
-    filterParams: SelectFilter.params({
+    filterParams: SelectFilter.params<GatherableTableRecord>({
       optionsGetter: ({ data }) => {
-        const it = getItemExpansion(data?.RequiredExpansion)
+        const it = getItemExpansion(data?.ExpansionIdUnlock)
         return it
           ? [
               {

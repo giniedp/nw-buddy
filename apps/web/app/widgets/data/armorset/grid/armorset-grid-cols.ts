@@ -48,10 +48,10 @@ export function armorsetColWeight(util: ArmorsetGridUtils) {
   })
 }
 export function armorsetColPerks(util: ArmorsetGridUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'perks',
     headerValueGetter: () => 'Common Perks',
-    valueGetter: util.valueGetter(({ data }) => data.perks?.map((it) => it.PerkID)),
+    valueGetter: ({ data }) => data.perks?.map((it) => it.PerkID),
     width: 110,
     cellRenderer: util.cellRenderer(({ data }) => {
       return util.el(

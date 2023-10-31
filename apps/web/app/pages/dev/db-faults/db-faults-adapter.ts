@@ -75,36 +75,36 @@ export class DbFaultsTableAdapter implements DataViewAdapter<FaultRow> {
             )
           }),
         }),
-        utils.colDef({
+        utils.colDef<string>({
           colId: 'name',
           headerValueGetter: () => 'Name',
           sortable: true,
           filter: true,
           width: 250,
-          valueGetter: utils.valueGetter(({ data }) => utils.i18n.get(data.item.Name)),
+          valueGetter: ({ data }) => utils.i18n.get(data.item.Name),
           cellRenderer: utils.lineBreaksRenderer(),
           cellClass: ['multiline-cell', 'py-2'],
           autoHeight: true,
           getQuickFilterText: ({ value }) => value,
         }),
-        utils.colDef({
+        utils.colDef<string>({
           colId: 'source',
           headerValueGetter: () => 'Source',
           sortable: true,
           width: 250,
-          valueGetter: utils.valueGetter(({ data }) => data.item['$source']),
+          valueGetter: ({ data }) => data.item['$source'],
           getQuickFilterText: ({ value }) => value,
           filter: SelectFilter,
           filterParams: SelectFilter.params({
             showSearch: false,
           }),
         }),
-        utils.colDef({
+        utils.colDef<string[]>({
           colId: 'faultType',
           headerValueGetter: () => 'Fault Type',
           sortable: true,
           width: 250,
-          valueGetter: utils.valueGetter(({ data }) => {
+          valueGetter: ({ data }) => {
             const result = []
             if (data.gemFault) {
               result.push('gem')
@@ -116,18 +116,18 @@ export class DbFaultsTableAdapter implements DataViewAdapter<FaultRow> {
               result.push('perk')
             }
             return result
-          }),
-          getQuickFilterText: ({ value }) => value,
+          },
+          getQuickFilterText: ({ value }) => value?.join(' '),
           filter: SelectFilter,
           filterParams: SelectFilter.params({
             showSearch: false,
           }),
         }),
-        utils.colDef({
+        utils.colDef<string[]>({
           colId: 'itemClass',
           headerValueGetter: () => 'Item Class',
           width: 250,
-          valueGetter: utils.valueGetter(({ data }) => data.item?.ItemClass),
+          field: 'item.ItemClass',
           cellRenderer: utils.tagsRenderer({ transform: humanize }),
           filter: SelectFilter,
           filterParams: SelectFilter.params({
@@ -135,12 +135,12 @@ export class DbFaultsTableAdapter implements DataViewAdapter<FaultRow> {
           }),
         }),
         ...[0, 1, 2, 3, 4].map((i) =>
-          utils.colDef({
+          utils.colDef<string[]>({
             colId: `perk-${i}`,
             filter: false,
             headerValueGetter: () => `Perk ${i + 1}`,
             width: 250,
-            valueGetter: utils.valueGetter(({ data }) => data.perks[i]?.perk?.ItemClass || []),
+            valueGetter: ({ data }) => data.perks[i]?.perk?.ItemClass || [],
             cellClass: ({ data }) => {
               if (!data.perks[i]?.perk) {
                 return ''

@@ -11,15 +11,15 @@ export interface SelectFilterOption {
   order?: number
 }
 
-export interface SelectFilterParams {
+export interface SelectFilterParams<TData = any> {
   showSearch?: boolean
   conditionAND?: boolean
-  optionsGetter?: (node: IRowNode) => SelectFilterOption[]
+  optionsGetter?: (node: IRowNode<TData>) => SelectFilterOption[]
   comaparator?: (a: SelectFilterOption, b: SelectFilterOption) => number
 }
 
 export class SelectFilter implements IFilterComp {
-  public static params(params: SelectFilterParams): SelectFilterParams {
+  public static params<TData = any>(params: SelectFilterParams<TData>): SelectFilterParams<TData> {
     return params
   }
 

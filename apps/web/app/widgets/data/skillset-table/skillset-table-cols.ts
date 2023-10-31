@@ -7,27 +7,25 @@ export type SkillsetTableUtils = TableGridUtils<SkillsetTableRecord>
 export type SkillsetTableRecord = SkillBuildRow
 
 export function skillsetColName(util: SkillsetTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'name',
     headerValueGetter: () => 'Name',
     // pinned: !util.layout.isHandset,
     sortable: true,
     filter: true,
     width: 250,
-    valueGetter: util.valueGetter(({ data }) => data.record.name),
-    getQuickFilterText: ({ value }) => value,
+    valueGetter: ({ data }) => data.record.name,
   })
 }
 export function skillsetColWeapon(util: SkillsetTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'weapon',
     headerValueGetter: () => 'Weapon',
     pinned: false,
     sortable: true,
     filter: true,
     width: 100,
-    valueGetter: util.valueGetter(({ data }) => humanize(data.record.weapon)),
-    getQuickFilterText: ({ value }) => value,
+    valueGetter: ({ data }) => humanize(data.record.weapon),
   })
 }
 export function skillsetColSkills(util: SkillsetTableUtils) {

@@ -43,27 +43,41 @@ export function perkColIcon(util: PerkTableUtils) {
   })
 }
 
+export function perkColId(util: PerkTableUtils) {
+  return util.colDef<string>({
+    colId: 'perkId',
+    headerValueGetter: () => 'Perk ID',
+    field: 'PerkID',
+    hide: true,
+  })
+}
+
 export function perkColName(util: PerkTableUtils) {
-  return util.colDef({
+  return util.colDef<{ name: string, secondary: string, suffix: string, prefix: string }>({
     colId: 'name',
     headerValueGetter: () => 'Name',
     wrapText: true,
     autoHeight: true,
     width: 300,
-    valueGetter: util.valueGetter(({ data }) => {
+    comparator: (a, b) => {
+      const nameA = a.name || a.secondary || ''
+      const nameB = b.name || b.secondary || ''
+      return nameA.localeCompare(nameB)
+    },
+    valueGetter: ({ data }) => {
       return {
         name: data.DisplayName && util.i18n.get(data.DisplayName),
         secondary: data.SecondaryEffectDisplayName && util.i18n.get(data.SecondaryEffectDisplayName),
         suffix: data.AppliedSuffix && util.i18n.get(data.AppliedSuffix),
         prefix: data.AppliedPrefix && util.i18n.get(data.AppliedPrefix),
       }
-    }),
+    },
     filterValueGetter: ({ data }) => {
       const name = data.DisplayName && util.i18n.get(data.DisplayName)
       const secondary = data.SecondaryEffectDisplayName && util.i18n.get(data.SecondaryEffectDisplayName)
       const suffix = data.AppliedSuffix && util.i18n.get(data.AppliedSuffix)
       const prefix = data.AppliedPrefix && util.i18n.get(data.AppliedPrefix)
-      return [name || '', secondary || '', suffix || '', prefix || ''].join(' ')
+      return [name || '', secondary || '', suffix || '', prefix || ''].join(' ') as any
     },
     cellRenderer: util.cellRenderer(({ value }) => {
       return util.el('div.flex.flex-col.text-sm', {}, [
@@ -77,15 +91,15 @@ export function perkColName(util: PerkTableUtils) {
 }
 
 export function perkColDescription(util: PerkTableUtils, ctx: NwTextContextService) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'description',
     headerValueGetter: () => 'Description',
     width: 500,
     wrapText: true,
     autoHeight: true,
     cellClass: ['multiline-cell', 'py-2'],
-    filterValueGetter: ({ data }) => util.i18n.get(data.Description),
     valueGetter: ({ data }) => util.i18n.get(data.Description),
+    filterValueGetter: ({ data }) => util.i18n.get(data.Description),
     cellRenderer: util.cellRendererAsync(),
     cellRendererParams: util.cellRendererAsyncParams<string>({
       source: ({ data }) => {
@@ -141,12 +155,12 @@ export function perkColDescription(util: PerkTableUtils, ctx: NwTextContextServi
     }),
   })
 }
+
 export function perkColPerkType(util: PerkTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'perkType',
     headerValueGetter: () => 'Type',
-    field: util.fieldName('PerkType'),
-    valueGetter: util.fieldGetter('PerkType'),
+    field: 'PerkType',
     width: 120,
     filter: SelectFilter,
   })
@@ -155,16 +169,17 @@ export function perkColPerkType(util: PerkTableUtils) {
 export function perkColItemClassGSBonus(util: PerkTableUtils) {
   return util.colGroupDef({
     colId: 'itemClassGSBonus',
-    field: util.fieldName('ItemClassGSBonus'),
+    field: 'ItemClassGSBonus',
     headerName: 'Item Class GS Bonus',
     marryChildren: true,
     children: [
-      util.colDef({
+      util.colDef<string[]>({
         colId: 'itemClassGSBonusClass',
         headerValueGetter: () => 'Class',
-        valueGetter: util.valueGetter(({ data }) => {
+        getQuickFilterText: () => '',
+        valueGetter: ({ data }) => {
           return getPerkItemClassGsBonus(data).map(({ itemClass }) => itemClass)
-        }),
+        },
         cellRenderer: ({ value }) => `
           <span class="flex flex-col">
            ${value?.map((it: string) => `<span>${it}</span>`)?.join('')}
@@ -179,10 +194,11 @@ export function perkColItemClassGSBonus(util: PerkTableUtils) {
       util.colDef({
         colId: 'itemClassGSBonusGS',
         headerValueGetter: () => 'GS',
+        getQuickFilterText: () => '',
         headerName: 'GS',
-        valueGetter: util.valueGetter(({ data }) => {
+        valueGetter: ({ data }) => {
           return getPerkItemClassGsBonus(data).map(({ bonus }) => bonus)
-        }),
+        },
         cellRenderer: ({ value }) => `
           <span class="flex flex-col">
             ${value?.map((it: string) => `<span>${it}</span>`)?.join('')}
@@ -197,11 +213,11 @@ export function perkColItemClassGSBonus(util: PerkTableUtils) {
   })
 }
 export function perkColItemClass(util: PerkTableUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'itemClass',
     headerValueGetter: () => 'Item Class',
     width: 500,
-    field: util.fieldName('ItemClass'),
+    field: 'ItemClass',
     valueGetter: util.fieldGetter('ItemClass'),
     wrapText: true,
     autoHeight: true,
@@ -214,10 +230,10 @@ export function perkColItemClass(util: PerkTableUtils) {
   })
 }
 export function perkColExclusiveLabels(util: PerkTableUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'exclusiveLabels',
     headerValueGetter: () => 'Exclusive Labels',
-    field: util.fieldName('ExclusiveLabels'),
+    field: 'ExclusiveLabels',
     valueGetter: util.fieldGetter('ExclusiveLabels'),
     wrapText: true,
     autoHeight: true,
@@ -230,11 +246,11 @@ export function perkColExclusiveLabels(util: PerkTableUtils) {
   })
 }
 export function perkColExcludeItemClass(util: PerkTableUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'excludeItemClass',
     headerValueGetter: () => 'Exclude Item Class',
-    field: util.fieldName('ExcludeItemClass'),
-    valueGetter: util.fieldGetter('ExcludeItemClass'),
+    getQuickFilterText: () => '',
+    field: 'ExcludeItemClass',
     wrapText: true,
     autoHeight: true,
     cellClass: ['multiline-cell', 'py-2'],
@@ -244,13 +260,14 @@ export function perkColExcludeItemClass(util: PerkTableUtils) {
   })
 }
 export function perkColIsStackableAbility(util: PerkTableUtils) {
-  return util.colDef({
+  return util.colDef<boolean>({
     colId: 'isStackableAbility',
     headerValueGetter: () => 'Is Stackable Ability',
     filter: SelectFilter,
-    valueGetter: util.valueGetter(({ data }) => {
+    getQuickFilterText: () => '',
+    valueGetter: ({ data }) => {
       const ability = data.$ability
       return ability?.IsStackableAbility
-    }),
+    },
   })
 }

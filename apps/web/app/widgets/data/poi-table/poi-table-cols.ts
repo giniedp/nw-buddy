@@ -34,11 +34,11 @@ export function poiColIcon(util: PoiTableUtils) {
   })
 }
 export function poiColName(util: PoiTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'name',
     headerValueGetter: () => 'Name',
     width: 250,
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.NameLocalizationKey)),
+    valueGetter: ({ data }) => util.i18n.get(data.NameLocalizationKey),
     cellRenderer: util.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
     cellClass: ['multiline-cell', 'py-2'],
     autoHeight: true,
@@ -46,11 +46,11 @@ export function poiColName(util: PoiTableUtils) {
   })
 }
 export function poiColDescription(util: PoiTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'description',
     headerValueGetter: () => 'Description',
     width: 250,
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(`${data.NameLocalizationKey}_description`)),
+    valueGetter: ({ data }) => util.i18n.get(`${data.NameLocalizationKey}_description`),
     cellRenderer: util.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
     cellClass: ['multiline-cell', 'py-2'],
     autoHeight: true,
@@ -58,18 +58,19 @@ export function poiColDescription(util: PoiTableUtils) {
   })
 }
 export function poiColGroupSize(util: PoiTableUtils) {
-  return util.colDef({
+  return util.colDef<string | number>({
     colId: 'groupSize',
     headerValueGetter: () => 'groupSize',
-    valueGetter: util.fieldGetter('GroupSize'),
+    getQuickFilterText: () => '',
+    field: 'GroupSize',
     hide: true,
   })
 }
 export function poiColLootTags(util: PoiTableUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'lootTags',
     headerValueGetter: () => 'Loot Tags',
-    valueGetter: util.fieldGetter('LootTags'),
+    field: 'LootTags',
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     filter: SelectFilter,
     filterParams: SelectFilter.params({
@@ -78,18 +79,19 @@ export function poiColLootTags(util: PoiTableUtils) {
   })
 }
 export function poiColLevelRange(util: PoiTableUtils) {
-  return util.colDef({
+  return util.colDef<string | number>({
     colId: 'levelRange',
     headerValueGetter: () => 'Level Range',
-    valueGetter: util.fieldGetter('LevelRange'),
+    getQuickFilterText: () => '',
+    field: 'LevelRange',
     hide: false,
   })
 }
 export function poiColVitalsCategory(util: PoiTableUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'vitalsCategory',
     headerValueGetter: () => 'Vitals Category',
-    valueGetter: util.fieldGetter('VitalsCategory'),
+    field: 'VitalsCategory',
     hide: false,
   })
 }

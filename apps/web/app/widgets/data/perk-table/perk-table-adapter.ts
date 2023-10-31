@@ -24,6 +24,7 @@ import {
   perkColExcludeItemClass,
   perkColExclusiveLabels,
   perkColIcon,
+  perkColId,
   perkColIsStackableAbility,
   perkColItemClass,
   perkColName,
@@ -93,6 +94,7 @@ export function buildPerkTableOptions(util: TableGridUtils<PerkTableRecord>, ctx
   const result: GridOptions<PerkTableRecord> = {
     columnDefs: [
       perkColIcon(util),
+      perkColId(util),
       perkColName(util),
       perkColDescription(util, ctx),
       perkColPerkType(util),
@@ -116,6 +118,7 @@ export function buildPerkTablePickerOptions(util: TableGridUtils<PerkTableRecord
   const result: GridOptions<PerkTableRecord> = {
     columnDefs: [
       perkColIcon(util),
+      perkColId(util),
       perkColName(util),
       perkColDescription(util, ctx),
       perkColItemClass(util),

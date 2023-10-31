@@ -31,36 +31,22 @@ export function territoryColIcon(util: TerritoryUtils) {
 }
 
 export function territoryColName(util: TerritoryUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'name',
     headerValueGetter: () => 'Name',
     wrapText: true,
     autoHeight: true,
     width: 300,
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.NameLocalizationKey)),
+    valueGetter: ({ data }) => util.i18n.get(data.NameLocalizationKey),
   })
 }
 
-export function territoryColDescription(util: TerritoryUtils) {
-  return util.colDef({
-    colId: 'description',
-    headerValueGetter: () => 'Description',
-    width: 500,
-    wrapText: true,
-    autoHeight: true,
-    cellClass: ['multiline-cell', 'py-2'],
-    filterValueGetter: ({ data }) => util.i18n.get(data.Description),
-    valueGetter: ({ data }) => util.i18n.get(data.Description),
-  })
-}
 export function territoryColLootTags(util: TerritoryUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'lootTags',
     headerValueGetter: () => 'Loot Tags',
     width: 200,
-    valueGetter: util.valueGetter(({ data }) => {
-      return data.LootTags || null
-    }),
+    field: 'LootTags',
     cellRenderer: util.tagsRenderer({
       transform: humanize,
     }),
@@ -71,11 +57,12 @@ export function territoryColLootTags(util: TerritoryUtils) {
   })
 }
 export function territoryColRecommendedLevel(util: TerritoryUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'recommendedLevel',
     headerValueGetter: () => 'Recommended Level',
+    getQuickFilterText: () => '',
     width: 200,
-    valueGetter: util.valueGetter(({ data }) => data.RecommendedLevel),
+    field: 'RecommendedLevel',
     filter: SelectFilter,
     filterParams: SelectFilter.params({}),
   })

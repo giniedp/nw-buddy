@@ -1,4 +1,5 @@
 import {
+  ItemRarity,
   NW_FALLBACK_ICON,
   getAffixMODs,
   getItemIconPath,
@@ -50,26 +51,27 @@ export function inventoryColIcon(util: InventoryTableUtils, dnd: DnDService) {
   })
 }
 export function inventoryColName(util: InventoryTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'name',
     headerValueGetter: () => 'Name',
     sortable: true,
     filter: true,
     width: 250,
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.item.Name)),
+    valueGetter: ({ data }) => util.i18n.get(data.item.Name),
+    getQuickFilterText: ({ data }) => util.i18n.get(data.item.Name),
     cellRenderer: util.lineBreaksRenderer(),
     cellClass: ['multiline-cell', 'py-2'],
     autoHeight: true,
-    getQuickFilterText: ({ value }) => value,
   })
 }
 export function inventoryColPerks(util: InventoryTableUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'perks',
     width: 150,
     sortable: false,
     headerValueGetter: () => 'Perks',
-    valueGetter: util.valueGetter(({ data }) => data.perks?.map((it) => it?.perk?.PerkID)),
+    getQuickFilterText: () => '',
+    valueGetter: ({ data }) => data.perks?.map((it) => it?.perk?.PerkID),
     cellRenderer: util.cellRenderer(({ data }) => {
       const perks = data.perks || []
       if (!perks.length) {
@@ -118,35 +120,38 @@ export function inventoryColPerks(util: InventoryTableUtils) {
   })
 }
 export function inventoryColRarity(util: InventoryTableUtils) {
-  return util.colDef({
+  return util.colDef<ItemRarity>({
     colId: 'rarity',
     headerValueGetter: () => 'Rarity',
-    valueGetter: util.valueGetter(({ data }) => String(data.rarity)),
+    field: 'rarity',
     valueFormatter: ({ value }) => util.i18n.get(getItemRarityLabel(value)),
+    getQuickFilterText: ({ value }) => util.i18n.get(getItemRarityLabel(value)),
     filter: SelectFilter,
     width: 80,
-    getQuickFilterText: ({ value }) => value,
   })
 }
 export function inventoryColTier(util: InventoryTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'tier',
     headerValueGetter: () => 'Tier',
+    getQuickFilterText: () => '',
     width: 60,
-    valueGetter: util.valueGetter(({ data }) => getItemTierAsRoman(data.item.Tier)),
+    field: 'item.Tier',
+    valueFormatter: ({ value }) => getItemTierAsRoman(value),
     filter: SelectFilter,
   })
 }
 export function inventoryColGearScore(util: InventoryTableUtils) {
-  return util.colDef({
+  return util.colDef<[number, number]>({
     colId: 'gearScore',
     headerValueGetter: () => 'GS',
+    getQuickFilterText: () => '',
     width: 60,
     cellClass: 'text-right',
     comparator: (a, b) => a[1] - b[1],
-    valueGetter: util.valueGetter(({ data }) => {
+    valueGetter: ({ data }) => {
       return [data.record.gearScore, data.record.gearScore]
-    }),
+    },
     valueFormatter: ({ value }) => {
       if (value[0] === value[1]) {
         return String(value[0])
@@ -157,39 +162,38 @@ export function inventoryColGearScore(util: InventoryTableUtils) {
   })
 }
 export function inventoryColAttributeMods(util: InventoryTableUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'attributeMods',
     headerValueGetter: () => 'Attr. Mods',
     width: 100,
-    valueGetter: util.valueGetter(({ data }) => {
+    valueGetter: ({ data }) => {
       return data.perks
         ?.map((it) => it?.affix)
         .filter((it) => !!it)
         .map((it) => getAffixMODs(it, 0))
         .flat(1)
         .map((it) => util.i18n.get(it.labelShort))
-    }),
+    },
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     filter: SelectFilter,
     filterParams: SelectFilter.params({}),
   })
 }
 export function inventoryColItemType(util: InventoryTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'itemType',
     headerValueGetter: () => 'Item Type',
-    valueGetter: util.valueGetter(({ data }) => data.item.ItemType),
+    field: 'item.ItemType',
     width: 100,
     filter: SelectFilter,
-    getQuickFilterText: ({ value }) => value,
   })
 }
 export function inventoryColItemClass(util: InventoryTableUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'itemClass',
     headerValueGetter: () => 'Item Class',
     width: 250,
-    valueGetter: util.valueGetter(({ data }) => data.item.ItemClass),
+    field: 'item.ItemClass',
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     filter: SelectFilter,
     filterParams: SelectFilter.params({}),

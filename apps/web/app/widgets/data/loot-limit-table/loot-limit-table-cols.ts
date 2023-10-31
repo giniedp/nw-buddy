@@ -46,31 +46,33 @@ export function lootLimitColIcon(util: LootLimitTableUtils) {
   })
 }
 export function lootLimitColName(util: LootLimitTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'name',
     headerValueGetter: () => 'Name',
     width: 200,
-    valueGetter: util.valueGetter(({ data }) => {
+    valueGetter: ({ data }) => {
       return data.$item ? util.i18n.get(data.$item?.Name) : data.LootLimitID
-    }),
+    },
     getQuickFilterText: ({ value }) => value,
   })
 }
 export function lootLimitColCountLimit(util: LootLimitTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'countLimit',
     headerValueGetter: () => 'Count Limit',
-    field: util.fieldName('CountLimit'),
+    getQuickFilterText: () => '',
+    field: 'CountLimit',
     width: 130,
   })
 }
 export function lootLimitColTimeBetweenDrops(util: LootLimitTableUtils) {
-  return util.colDef({
+  return util.colDef<[number, number]>({
     colId: 'timeBetweenDrops',
     headerValueGetter: () => 'Time Between Drops',
-    valueGetter: util.valueGetter(({ data }) => {
+    getQuickFilterText: () => '',
+    valueGetter: ({ data }) => {
       return [data.MinLimitSeconds, data.MaxLimitSeconds]
-    }),
+    },
     valueFormatter: ({ value }) => {
       return (value as Number[])
         .filter((it) => !!it)
@@ -85,10 +87,10 @@ export function lootLimitColTimeBetweenDrops(util: LootLimitTableUtils) {
   })
 }
 export function lootLimitColLimitExpiresAfter(util: LootLimitTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'limitExpiresAfter',
     headerValueGetter: () => 'Cooldown',
-    field: util.fieldName('LimitExpireSeconds'),
+    field: 'LimitExpireSeconds',
     valueFormatter: ({ value }) => {
       const now = new Date()
       const then = addSeconds(now, value)

@@ -19,7 +19,6 @@ import { selectStream } from '~/utils'
 
 import {
   TerritoryRecord,
-  territoryColDescription,
   territoryColIcon,
   territoryColLootTags,
   territoryColName,

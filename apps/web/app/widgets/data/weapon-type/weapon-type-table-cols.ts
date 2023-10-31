@@ -25,29 +25,29 @@ export function weaponTypeColIcon(util: WeaponTypeTableUtils) {
 }
 
 export function weaponTypeColName(util: WeaponTypeTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'name',
     headerValueGetter: () => 'Name',
     width: 300,
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.MasteryName)),
+    valueGetter: ({ data }) => util.i18n.get(data.MasteryName),
     getQuickFilterText: ({ value }) => value,
   })
 }
 
 export function weaponTypeColID(util: WeaponTypeTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'weaponTypeID',
     headerValueGetter: () => 'ID',
-    field: util.fieldName('WeaponTypeID'),
+    field: 'WeaponTypeID',
     hide: true,
   })
 }
 export function weaponTypeColGroupName(util: WeaponTypeTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'groupName',
     headerValueGetter: () => 'Group Name',
     width: 300,
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.GroupName)),
+    valueGetter: ({ data }) => util.i18n.get(data.GroupName),
     getQuickFilterText: ({ value }) => value,
   })
 }

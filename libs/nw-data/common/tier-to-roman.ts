@@ -12,6 +12,6 @@ const ROMAN = {
   4: 'IV',
   5: 'V',
 }
-export function getItemTierAsRoman(tier: number, unicode = false) {
+export function getItemTierAsRoman(tier: number, unicode = false): string {
   return (unicode ? ROMAN_UNICODE : ROMAN)[tier] || ''
 }

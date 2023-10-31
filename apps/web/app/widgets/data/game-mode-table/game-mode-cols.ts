@@ -13,6 +13,7 @@ export function gameModeColIcon(util: GameModeUtils) {
   return util.colDef({
     colId: 'icon',
     headerValueGetter: () => 'Icon',
+    getQuickFilterText: () => '',
     resizable: false,
     sortable: false,
     filter: ExpressionFilter,
@@ -31,36 +32,34 @@ export function gameModeColIcon(util: GameModeUtils) {
 }
 
 export function gameModeColName(util: GameModeUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'name',
     headerValueGetter: () => 'Name',
     wrapText: true,
     autoHeight: true,
     width: 300,
-    valueGetter: util.valueGetter(({ data }) => util.i18n.get(data.DisplayName)),
+    valueGetter: ({ data }) => util.i18n.get(data.DisplayName),
   })
 }
 
 export function gameModeColDescription(util: GameModeUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'description',
     headerValueGetter: () => 'Description',
     width: 500,
     wrapText: true,
     autoHeight: true,
     cellClass: ['multiline-cell', 'py-2'],
-    filterValueGetter: ({ data }) => util.i18n.get(data.Description),
     valueGetter: ({ data }) => util.i18n.get(data.Description),
+    filterValueGetter: ({ data }) => util.i18n.get(data.Description),
   })
 }
 export function gameModeColLootTags(util: GameModeUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'lootTags',
     headerValueGetter: () => 'Loot Tags',
     width: 200,
-    valueGetter: util.valueGetter(({ data }) => {
-      return data.LootTags || null
-    }),
+    valueGetter: ({ data }) => data.LootTags || null,
     cellRenderer: util.tagsRenderer({
       transform: humanize,
     }),
@@ -72,13 +71,11 @@ export function gameModeColLootTags(util: GameModeUtils) {
 }
 
 export function gameModeColMutLootTags(util: GameModeUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'mutLootTagsOverride',
     headerValueGetter: () => 'Mutation Loot Tags',
     width: 200,
-    valueGetter: util.valueGetter(({ data }) => {
-      return data.MutLootTagsOverride || null
-    }),
+    valueGetter: ({ data }) => data.MutLootTagsOverride || null,
     cellRenderer: util.tagsRenderer({
       transform: humanize,
     }),

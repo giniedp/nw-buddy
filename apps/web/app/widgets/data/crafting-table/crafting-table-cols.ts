@@ -60,35 +60,34 @@ export function craftingColIcon(util: CraftingTableUtils) {
 }
 
 export function craftingColName(util: CraftingTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'name',
     headerValueGetter: () => 'Name',
     width: 250,
     headerName: 'Name',
-    valueGetter: util.valueGetter(({ data }) => {
-      return util.i18n.get(data.RecipeNameOverride || data.$item?.Name)
-    }),
+    valueGetter: ({ data }) => util.i18n.get(data.RecipeNameOverride || data.$item?.Name),
     getQuickFilterText: ({ value }) => value,
   })
 }
 
 export function craftingColID(util: CraftingTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'itemId',
     headerValueGetter: () => 'Item ID',
-    field: util.fieldName('ItemID'),
+    field: 'ItemID',
     hide: true,
   })
 }
 
 export function craftingColIngredients(util: CraftingTableUtils) {
-  return util.colDef({
+  return util.colDef<string[]>({
     colId: 'ingredients',
     headerValueGetter: () => 'Ingredients',
     width: 200,
     sortable: false,
     headerName: 'Ingredients',
-    valueGetter: util.valueGetter(({ data }) => data.$ingredients?.map(getItemId)),
+    valueGetter: ({ data }) => data.$ingredients?.map(getItemId),
+    getQuickFilterText: ({ data }) => data.$ingredients?.map(({ Name }) => util.tl8(Name)).join(' '),
     cellRenderer: util.cellRenderer(({ data }) => {
       const items = data.$ingredients || []
       return util.el(
@@ -125,14 +124,14 @@ export function craftingColIngredients(util: CraftingTableUtils) {
 }
 
 export function craftingColExpansion(util: CraftingTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'requiredExpansion',
     headerValueGetter: () => 'Expansion',
     width: 180,
-    valueGetter: util.fieldGetter('RequiredExpansion'),
+    field: 'RequiredExpansion',
+    getQuickFilterText: ({ data }) => util.i18n.get(getItemExpansion(data?.RequiredExpansion)?.label),
     cellRenderer: util.cellRenderer(({ data }) => {
       const expansion = getItemExpansion(data?.RequiredExpansion)
-
       if (!expansion) {
         return null
       }
@@ -164,13 +163,14 @@ export function craftingColExpansion(util: CraftingTableUtils) {
 }
 
 export function craftingColBookmark(util: CraftingTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'userBookmark',
     headerValueGetter: () => 'Bookmark',
+    getQuickFilterText: () => '',
     width: 100,
     cellClass: 'cursor-pointer',
     filter: ItemTrackerFilter,
-    valueGetter: util.valueGetter(({ data }) => util.itemPref.get(getItemId(data.$item))?.mark || 0),
+    valueGetter: ({ data }) => util.itemPref.get(getItemId(data.$item))?.mark || 0,
     cellRenderer: BookmarkCell,
     cellRendererParams: BookmarkCell.params({
       getId: (data: CraftingTableRecord) => getItemId(data.$item),
@@ -180,11 +180,12 @@ export function craftingColBookmark(util: CraftingTableUtils) {
 }
 
 export function craftingColInStock(util: CraftingTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'userStock',
     headerValueGetter: () => 'In Stock',
     headerTooltip: 'Number of items currently owned',
-    valueGetter: util.valueGetter(({ data }) => util.itemPref.get(getItemId(data.$item))?.stock),
+    getQuickFilterText: () => '',
+    valueGetter: ({ data }) => util.itemPref.get(getItemId(data.$item))?.stock,
     cellRenderer: TrackingCell,
     cellRendererParams: TrackingCell.params({
       getId: (data: CraftingTableRecord) => getItemId(data.$item),
@@ -197,12 +198,13 @@ export function craftingColInStock(util: CraftingTableUtils) {
 }
 
 export function craftingColPrice(util: CraftingTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'userPrice',
     headerValueGetter: () => 'Price',
     headerTooltip: 'Current price in Trading post',
+    getQuickFilterText: () => '',
+    valueGetter: ({ data }) => util.itemPref.get(getItemId(data.$item))?.price,
     cellClass: 'text-right',
-    valueGetter: util.valueGetter(({ data }) => util.itemPref.get(getItemId(data.$item))?.price),
     cellRenderer: TrackingCell,
     cellRendererParams: TrackingCell.params({
       getId: (data: CraftingTableRecord) => getItemId(data.$item),
@@ -215,28 +217,27 @@ export function craftingColPrice(util: CraftingTableUtils) {
 }
 
 export function craftingColTradeskill(util: CraftingTableUtils) {
-  //
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'tradeskill',
     headerValueGetter: () => 'Tradeskill',
     width: 120,
-    valueGetter: util.valueGetter(({ data }) => data.Tradeskill),
-    valueFormatter: util.valueFormatter<string>(({ value }) => util.i18n.get(getTradeSkillLabel(value))),
+    valueGetter: ({ data }) => data.Tradeskill,
+    valueFormatter: ({ value }) => util.i18n.get(getTradeSkillLabel(value)),
+    getQuickFilterText: ({ value }) => util.i18n.get(getTradeSkillLabel(value)),
     filter: SelectFilter,
   })
 }
 
 export function craftingColCanCraft(util: CraftingTableUtils, skills: Signal<Record<string, number>>) {
-  return util.colDef({
+  return util.colDef<boolean>({
     colId: 'userCanCraft',
     headerValueGetter: () => 'Can Craft',
     width: 100,
     cellClass: 'cursor-pointer',
     filter: SelectFilter,
     headerTooltip: 'Whether you can craft this item based on your current tradeskill level',
-    valueGetter: util.valueGetter(({ data }) => {
-      return skills()?.[data.Tradeskill] >= data.RecipeLevel
-    }),
+    valueGetter: ({ data }) => skills()?.[data.Tradeskill] >= data.RecipeLevel,
+    getQuickFilterText: () => '',
     cellRenderer: util.cellRenderer(({ value }) => {
       return util.el('span.badge.badge-sm', {
         class: value ? ['badge-success', 'badge-outline'] : 'badge-error',
@@ -247,25 +248,28 @@ export function craftingColCanCraft(util: CraftingTableUtils, skills: Signal<Rec
 }
 
 export function craftingColCategory(util: CraftingTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'craftingCategory',
     headerValueGetter: () => 'Crafting Category',
     width: 150,
-    valueGetter: util.valueGetter(({ data }) => data.CraftingCategory),
-    valueFormatter: util.valueFormatter<string>(({ value }) => util.i18n.get(getCraftingCategoryLabel(value))),
+    valueGetter: ({ data }) => data.CraftingCategory,
+    valueFormatter: ({ value }) => util.i18n.get(getCraftingCategoryLabel(value)),
+    getQuickFilterText: ({ value }) => util.i18n.get(getCraftingCategoryLabel(value)),
     filter: SelectFilter,
     filterParams: SelectFilter.params({
       showSearch: true,
     }),
   })
 }
+
 export function craftingColGroup(util: CraftingTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'craftingGroup',
     headerValueGetter: () => 'Crafting Group',
     width: 150,
-    valueGetter: util.valueGetter(({ data }) => data.CraftingGroup),
-    valueFormatter: util.valueFormatter<string>(({ value }) => util.i18n.get(getCraftingGroupLabel(value))),
+    valueGetter: ({ data }) => data.CraftingGroup,
+    valueFormatter: ({ value }) => util.i18n.get(getCraftingGroupLabel(value)),
+    getQuickFilterText: ({ value }) => util.i18n.get(getCraftingGroupLabel(value)),
     filter: SelectFilter,
     filterParams: SelectFilter.params({
       showSearch: true,
@@ -273,12 +277,12 @@ export function craftingColGroup(util: CraftingTableUtils) {
   })
 }
 export function craftingColRecipeLevel(util: CraftingTableUtils) {
-  //
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'recipeLevel',
     headerValueGetter: () => 'Recipe Level',
+    getQuickFilterText: () => '',
     width: 120,
-    field: util.fieldName('RecipeLevel'),
+    field: 'RecipeLevel',
     filter: RangeFilter,
     cellStyle: {
       'text-align': 'right',
@@ -287,12 +291,13 @@ export function craftingColRecipeLevel(util: CraftingTableUtils) {
 }
 
 export function craftingColItemChance(util: CraftingTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'bonusItemChance',
     headerValueGetter: () => 'Bonus Chance',
+    getQuickFilterText: () => '',
     width: 120,
-    field: util.fieldName('BonusItemChance'),
-    valueGetter: util.valueGetter(({ data }) => Math.round((data.BonusItemChance || 0) * 100)),
+    field: 'BonusItemChance',
+    valueGetter: ({ data }) => Math.round((data.BonusItemChance || 0) * 100),
     valueFormatter: ({ value }) => `${value}%`,
     filter: RangeFilter,
     cellStyle: {
@@ -302,14 +307,13 @@ export function craftingColItemChance(util: CraftingTableUtils) {
 }
 
 export function craftingColCooldownQuantity(util: CraftingTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'cooldownQuantity',
     headerValueGetter: () => 'Cooldown Quantity',
-    field: util.fieldName('CooldownQuantity'),
+    getQuickFilterText: () => '',
+    field: 'CooldownQuantity',
     filter: RangeFilter,
-    valueFormatter: ({ value }) => {
-      return value ? value : ''
-    },
+    valueFormatter: ({ value }) => String(value ? value : ''),
     cellStyle: {
       'text-align': 'right',
     },
@@ -317,11 +321,11 @@ export function craftingColCooldownQuantity(util: CraftingTableUtils) {
   })
 }
 export function craftingColCooldownCeconds(util: CraftingTableUtils) {
-  //
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'cooldownSeconds',
     headerValueGetter: () => 'Cooldown Time',
-    field: util.fieldName('CooldownSeconds'),
+    getQuickFilterText: () => '',
+    field: 'CooldownSeconds',
     valueFormatter: ({ value }) => {
       if (!value) {
         return ''

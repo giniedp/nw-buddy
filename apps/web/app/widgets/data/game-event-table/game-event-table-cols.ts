@@ -16,87 +16,94 @@ export type GameEventTableUtils = TableGridUtils<GameEventTableRecord>
 export type GameEventTableRecord = GameEvent
 
 export function gameEventColID(util: GameEventTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'eventID',
     headerValueGetter: () => 'ID',
-    field: util.fieldName('EventID'),
+    field: 'EventID',
     width: 300,
-    getQuickFilterText: ({ value }) => value,
   })
 }
 
 export function gameEventColLevel(util: GameEventTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'level',
     headerValueGetter: () => 'Level',
-    field: util.fieldName('Level'),
+    field: 'Level',
+    getQuickFilterText: () => '',
   })
 }
 
 export function gameEventColType(util: GameEventTableUtils) {
-  return util.colDef({
+  return util.colDef<string>({
     colId: 'gameEventType',
     headerValueGetter: () => 'Event Type',
-    valueGetter: util.fieldGetter('GameEventType'),
+    valueGetter: 'GameEventType',
     filter: SelectFilter,
   })
 }
 
 export function gameEventColPvpXP(util: GameEventTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'pvpXp',
     headerValueGetter: () => 'Pvp Xp',
-    field: util.fieldName('PvpXp'),
+    field: 'PvpXp',
+    getQuickFilterText: () => '',
   })
 }
 
 export function gameEventColSeasonXP(util: GameEventTableUtils) {
-  return util.colDef({
+  return util.colDef<number>({
     colId: 'seasonsXp',
     headerValueGetter: () => 'Seasons Xp',
-    field: util.fieldName('SeasonsXp'),
+    field: 'SeasonsXp',
+    getQuickFilterText: () => '',
   })
 }
 
 export function gameEventColUniversalXP(util: GameEventTableUtils) {
-  return util.colDef({
+  return util.colDef<string | number>({
     colId: 'universalExpAmount',
     headerValueGetter: () => 'Universal Xp',
-    field: util.fieldName('UniversalExpAmount'),
+    field: 'UniversalExpAmount',
+    getQuickFilterText: () => '',
   })
 }
 
 export function gameEventColRestedXP(util: GameEventTableUtils) {
-  return util.colDef({
+  return util.colDef<string | number>({
     colId: 'useRestedExp',
     headerValueGetter: () => 'Use Rested Exp',
-    field: util.fieldName('UseRestedExp'),
+    field: 'UseRestedExp',
+    getQuickFilterText: () => '',
   })
 }
 
 export function gameEventColAzothReward(util: GameEventTableUtils) {
-  return util.colDef({
+  return util.colDef<string | number>({
     colId: 'azothReward',
     headerValueGetter: () => 'Azoth Reward',
-    field: util.fieldName('AzothReward'),
+    field: 'AzothReward',
+    getQuickFilterText: () => '',
     hide: true,
   })
 }
 
 export function gameEventColAzothRewardChance(util: GameEventTableUtils) {
-  return util.colDef({
+  return util.colDef<string | number>({
     colId: 'azothRewardChance',
     headerValueGetter: () => 'Azoth Reward Chance',
-    field: util.fieldName('AzothRewardChance'),
+    field: 'AzothRewardChance',
+    getQuickFilterText: () => '',
     hide: true,
   })
 }
 
 export function gameEventColAzothSalt(util: GameEventTableUtils) {
-  return util.colDef({
+  return util.colDef<string | number>({
     colId: 'azothSalt',
     headerValueGetter: () => 'Azoth Salt',
-    field: util.fieldName('AzothSalt'),
+    field: 'AzothSalt',
+    getQuickFilterText: () => '',
   })
 }
 
@@ -104,7 +111,8 @@ export function gameEventColAzothSaltChance(util: GameEventTableUtils) {
   return util.colDef({
     colId: 'azothSaltChance',
     headerValueGetter: () => 'Azoth Salt Chance',
-    field: util.fieldName('AzothSaltChance'),
+    field: 'AzothSaltChance',
+    getQuickFilterText: () => '',
     hide: true,
   })
 }
@@ -113,7 +121,7 @@ export function gameEventColCategoricalProgressionID(util: GameEventTableUtils) 
   return util.colDef({
     colId: 'categoricalProgressionId',
     headerValueGetter: () => 'Progression',
-    field: util.fieldName('CategoricalProgressionId'),
+    field: 'CategoricalProgressionId',
   })
 }
 
@@ -121,7 +129,7 @@ export function gameEventColCategoricalProgressionReward(util: GameEventTableUti
   return util.colDef({
     colId: 'categoricalProgressionReward',
     headerValueGetter: () => 'Progression Reward',
-    field: util.fieldName('CategoricalProgressionReward'),
+    field: 'CategoricalProgressionReward',
     hide: true,
   })
 }
@@ -130,7 +138,8 @@ export function gameEventColCoinRewardChance(util: GameEventTableUtils) {
   return util.colDef({
     colId: 'coinRewardChance',
     headerValueGetter: () => 'Coin Reward Chance',
-    field: util.fieldName('CoinRewardChance'),
+    field: 'CoinRewardChance',
+    getQuickFilterText: () => '',
   })
 }
 
@@ -138,7 +147,7 @@ export function gameEventColCreatureType(util: GameEventTableUtils) {
   return util.colDef({
     colId: 'CreatureType',
     headerValueGetter: () => 'Creature Type',
-    field: util.fieldName('CreatureType'),
+    field: 'CreatureType',
   })
 }
 
@@ -146,7 +155,8 @@ export function gameEventColCurrencyReward(util: GameEventTableUtils) {
   return util.colDef({
     colId: 'currencyReward',
     headerValueGetter: () => 'Currency Reward',
-    field: util.fieldName('CurrencyReward'),
+    field: 'CurrencyReward',
+    getQuickFilterText: () => '',
   })
 }
 
@@ -154,7 +164,8 @@ export function gameEventColFactionInfluenceAmount(util: GameEventTableUtils) {
   return util.colDef({
     colId: 'factionInfluenceAmount',
     headerValueGetter: () => 'Faction Influence Amount',
-    field: util.fieldName('FactionInfluenceAmount'),
+    field: 'FactionInfluenceAmount',
+    getQuickFilterText: () => '',
   })
 }
 
@@ -162,7 +173,8 @@ export function gameEventColFActionInfluenceSrc(util: GameEventTableUtils) {
   return util.colDef({
     colId: 'factionInfluenceSrc',
     headerValueGetter: () => 'Faction Influence Src',
-    field: util.fieldName('FactionInfluenceSrc'),
+    field: 'FactionInfluenceSrc',
+    getQuickFilterText: () => '',
   })
 }
 
@@ -170,7 +182,8 @@ export function gameEventColFactionReputation(util: GameEventTableUtils) {
   return util.colDef({
     colId: 'factionReputation',
     headerValueGetter: () => 'Faction Reputation',
-    field: util.fieldName('FactionReputation'),
+    field: 'FactionReputation',
+    getQuickFilterText: () => '',
   })
 }
 
@@ -178,7 +191,8 @@ export function gameEventColFactionTokens(util: GameEventTableUtils) {
   return util.colDef({
     colId: 'factionTokens',
     headerValueGetter: () => 'Faction Tokens',
-    field: util.fieldName('FactionTokens'),
+    field: 'FactionTokens',
+    getQuickFilterText: () => '',
   })
 }
 
@@ -186,7 +200,8 @@ export function gameEventColGearScoreRange(util: GameEventTableUtils) {
   return util.colDef({
     colId: 'gearScoreRange',
     headerValueGetter: () => 'Gear Score Range',
-    field: util.fieldName('GearScoreRange'),
+    field: 'GearScoreRange',
+    getQuickFilterText: () => '',
   })
 }
 
@@ -194,7 +209,8 @@ export function gameEventColItemReward(util: GameEventTableUtils) {
   return util.colDef({
     colId: 'itemReward',
     headerValueGetter: () => 'Item Reward',
-    field: util.fieldName('ItemReward'),
+    field: 'ItemReward',
+    getQuickFilterText: () => '',
   })
 }
 
@@ -202,7 +218,8 @@ export function gameEventColItemRewardQty(util: GameEventTableUtils) {
   return util.colDef({
     colId: 'itemRewardQty',
     headerValueGetter: () => 'Item Reward Qty',
-    field: util.fieldName('ItemRewardQty'),
+    field: 'ItemRewardQty',
+    getQuickFilterText: () => '',
   })
 }
 
@@ -210,7 +227,8 @@ export function gameEventColLeaderboardValue(util: GameEventTableUtils) {
   return util.colDef({
     colId: 'leaderboardValue',
     headerValueGetter: () => 'Leaderboard Value',
-    field: util.fieldName('LeaderboardValue'),
+    field: 'LeaderboardValue',
+    getQuickFilterText: () => '',
   })
 }
 
@@ -218,7 +236,8 @@ export function gameEventColLootLimitId(util: GameEventTableUtils) {
   return util.colDef({
     colId: 'lootLimitId',
     headerValueGetter: () => 'Loot Limit Id',
-    field: util.fieldName('LootLimitId'),
+    field: 'LootLimitId',
+    getQuickFilterText: () => '',
   })
 }
 
@@ -226,7 +245,8 @@ export function gameEventColLootLimitReachedGameEventId(util: GameEventTableUtil
   return util.colDef({
     colId: 'lootLimitReachedGameEventId',
     headerValueGetter: () => 'Loot Limit Reached GameEvent Id',
-    field: util.fieldName('LootLimitReachedGameEventId'),
+    field: 'LootLimitReachedGameEventId',
+    getQuickFilterText: () => '',
   })
 }
 
@@ -234,6 +254,7 @@ export function gameEventColLootTags(util: GameEventTableUtils) {
   return util.colDef({
     colId: 'lootTags',
     headerValueGetter: () => 'Loot Tags',
-    field: util.fieldName('LootTags'),
+    field: 'LootTags',
+    getQuickFilterText: () => '',
   })
 }
