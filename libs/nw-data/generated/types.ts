@@ -1936,7 +1936,6 @@ export interface Lootbuckets {
   Item341: string
   Item342: string
   Item343: string
-  Item344: string
   Item346: string
   Item347: string
   Item348: string
@@ -2702,7 +2701,6 @@ export interface Lootbuckets {
   MatchOne341: string
   MatchOne342: boolean
   MatchOne343: boolean
-  MatchOne344: boolean
   MatchOne346: string
   MatchOne347: boolean
   MatchOne348: boolean
@@ -3093,7 +3091,6 @@ export interface Lootbuckets {
   Quantity341: number
   Quantity342: number
   Quantity343: number
-  Quantity344: number
   Quantity346: number
   Quantity347: number
   Quantity348: number
