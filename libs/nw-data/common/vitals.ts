@@ -259,7 +259,7 @@ export function getVitalDungeons(
   // "WorldBounds": "4480.0,4096.0,608.0,544.0"
   return dungeons.filter((it) => {
     if (!it.MapId || eqCaseInsensitive(it.MapId, 'newworld_vitaeeterna')) {
-      // dynasty dungeon is in the open world map
+      // dynasty dungeon and trials are in the open world map
       // all mobs have mapId set to 'newworld_vitaeeterna'
       // we check for bounds
       const [x, y, w, h] = (it.WorldBounds?.split(',') || []).map(Number)
