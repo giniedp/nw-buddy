@@ -22,9 +22,9 @@ export default {
 export const Example: StoryObj<ExpressionTreeEditorComponent> = {
   args: {
     knownFields: [
-      { id: 'foo', label: 'Foo' },
-      { id: 'bar', label: 'Bar' },
-      { id: 'baz', label: 'Baz' },
+      { id: 'foo', label: 'Foo', isPath: false },
+      { id: 'bar', label: 'Bar', isPath: false },
+      { id: 'baz', label: 'Baz', isPath: false },
     ],
   },
 }

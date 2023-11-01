@@ -44,7 +44,7 @@
   <div *ngFor="let table of tables" class="mb-8">
     <div class="text-center text-primary capitalize font-bold text-2xl">{{ table.name | nwHumanize }}</div>
     <div *ngFor="let row of table.rows" class="flex flex-row items-start gap-1 py-1">
-      <picture class="p-1">
+      <picture class="p-1 flex-none">
         <img [nwImage]="row.DamageTypeIcon" class="w-8 h-8 flex-none aspect-square" />
       </picture>
       <div class="flex flex-col leading-none">
@@ -56,9 +56,10 @@
             <span class="text-sm">{{ row.WeaponCategory | nwText }}</span>
           </div>
           <div class="flex flex-row gap-1">
-            <span class="badge badge-xs badge-primary">{{ row.DmgCoef | percent }}</span>
+            <span class="badge badge-xs badge-primary">{{ row.Damage | number:'0.0-0' }}</span>
             <span class="badge badge-xs">{{ row.DamageTypeName | nwText }}</span>
             <span class="badge badge-xs badge-secondary" *ngIf="row.AttackType; let text">{{ text | nwText }}</span>
+            <span class="badge badge-xs badge-info" *ngIf="row.IsRanged">Ranged</span>
           </div>
         </div>
       </div>

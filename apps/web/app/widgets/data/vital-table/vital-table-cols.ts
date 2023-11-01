@@ -46,7 +46,7 @@ export function vitalColIcon(util: VitalTableUtils) {
     cellRenderer: util.cellRenderer(({ data }) => {
       return util.elA(
         {
-          attrs: { target: '_blank', href: util.tipLink('perk', String(data.VitalsID)) },
+          attrs: { target: '_blank', href: util.tipLink('vitals', String(data.VitalsID)) },
         },
         util.elPicture(
           {

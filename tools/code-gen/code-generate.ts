@@ -129,6 +129,15 @@ const ENUMS = {
     CreatureType: 'CreatureType',
     LootTags: 'LootTag',
   },
+  Buffbuckets: {
+    TableType: 'BuffTableType',
+    BuffType1: 'BuffType',
+    BuffType2: 'BuffType',
+    BuffType3: 'BuffType',
+    BuffType4: 'BuffType',
+    BuffType5: 'BuffType',
+    BuffType6: 'BuffType',
+  },
   Itemappearancedefinitions: {
     ItemClass: 'ItemClass',
   },

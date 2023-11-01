@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { getWeaponTagLabel } from '@nw-data/common'
-import { map } from 'rxjs'
+import { combineLatest, map } from 'rxjs'
 import { NwModule } from '~/nw'
 import { damageTypeIcon } from '~/nw/weapon-types'
 import { IconsModule } from '~/ui/icons'
@@ -9,9 +9,10 @@ import { svgInfo } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
-import { humanize, rejectKeys, shareReplayRefCount } from '~/utils'
+import { humanize, rejectKeys, selectStream, shareReplayRefCount } from '~/utils'
 import { ScreenshotModule } from '../screenshot'
 import { VitalDetailStore } from './vital-detail.store'
+import { ComponentStore } from '@ngrx/component-store'
 
 @Component({
   standalone: true,
@@ -30,24 +31,44 @@ export class VitalDamageTableComponent {
     this.store.patchState({ vitalId: id })
   }
 
+  @Input()
+  public set level(level: number) {
+    this.store.patchState({ level: level })
+  }
+
   protected iconInfo = svgInfo
 
-  protected tables$ = this.store.damageTables$
+  protected tables$ = selectStream(combineLatest({
+    vital: this.store.vital$,
+    categories: this.store.categories$,
+    tables: this.store.damageTables$,
+    level: this.store.vitalLevel$,
+    modifier: this.store.vitalModifier$
+  }))
     .pipe(
-      map((tables) => {
+      map(({ vital, level, tables, categories, modifier }) => {
         return tables.map((table) => {
           return {
             name: table.file.replace(/\.xml$/, '').replace(/^.*javelindata_damagetable/, ''),
             rows: table.rows
               ?.map((row) => {
+                const baseDamage = level.BaseDamage
+                const dmgCoef = row.DmgCoef
+                const dmgMod = vital?.DamageMod || 1
+                const categoryDamageMod = modifier?.CategoryDamageMod || 1
+                const addDmg = row.AddDmg || 0
+
+                // VitalsLevel.BaseDamage * (1 + AIAbilityTable.BaseDamage - AbilityTable.BaseDamageReduction + (Empower)) * DamageTable.DmgCoef * Vitals.DamageMod * VitalsLevel.CategoryDamageMod + DamageTable.AddDmg
                 return {
                   Name: humanize(row.DamageID.replace(/^Attack/, '')),
                   DamageTypeName: row.DamageType ? `${row.DamageType}_DamageName` : '',
                   DamageTypeIcon: damageTypeIcon(row.DamageType),
                   WeaponCategory: getWeaponTagLabel(row.WeaponCategory) || row.WeaponCategory,
                   AttackType: row.AttackType,
+                  IsRanged: row.IsRanged,
                   DmgCoef: row.DmgCoef,
                   Props: rejectKeys(row, (it) => !row[it]),
+                  Damage: baseDamage * (1 + 0 - 0 + 0) * dmgCoef * dmgMod * categoryDamageMod + addDmg,
                 }
               })
               .sort((a, b) => b.DmgCoef - a.DmgCoef),

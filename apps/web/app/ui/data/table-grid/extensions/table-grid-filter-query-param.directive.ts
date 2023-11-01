@@ -42,7 +42,8 @@ export class DataGridFilterQueryParamDirective {
           })
         }),
         tap(({ filterModel, filterParam }) => {
-          setQueryParam(this.router, filterParam, filterModel)
+          // TODO: enable filter param
+          // setQueryParam(this.router, filterParam, filterModel)
         })
       )
       .pipe(takeUntilDestroyed())

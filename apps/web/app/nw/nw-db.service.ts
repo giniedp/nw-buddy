@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core'
 import {
+  convertBuffBuckets,
   convertLootbuckets,
   convertLoottables,
   convertPerkBuckets,
@@ -209,6 +210,13 @@ export class NwDbService {
   public damageTableMap = indexBy(() => this.damageTables, 'DamageID')
   public damageTable = lookup(() => this.damageTableMap)
 
+  public dmgTableEliteAffix = table(() =>
+    [
+      this.data.charactertablesEliteaffixDatatablesDamagetableEliteAffix()
+    ]
+  )
+  public dmgTableEliteAffixMap = indexBy(() => this.dmgTableEliteAffix, 'DamageID')
+
   public gatherables = table(() => [this.data.gatherables()])
   public gatherablesMap = indexBy(() => this.gatherables, 'GatherableID')
   public gatherable = lookup(() => this.gatherablesMap)
@@ -405,7 +413,27 @@ export class NwDbService {
   )
 
   public milestoneRewards = table(() => this.data.milestonerewards())
+
   public mutatorDifficulties = table(() => this.data.gamemodemutatorsMutationdifficulty())
+  public mutatorDifficultiesMap = indexBy(() => this.mutatorDifficulties, 'MutationDifficulty')
+  public mutatorDifficulty = lookup(() => this.mutatorDifficultiesMap)
+
+  public mutatorElements = table(() => this.data.gamemodemutatorsElementalmutations())
+  public mutatorElementsMap = indexBy(() => this.mutatorElements, 'ElementalMutationId')
+  public mutatorElement = lookup(() => this.mutatorElementsMap)
+
+  public mutatorElementsPerks = table(() => this.data.gamemodemutatorsElementalmutationperks())
+  public mutatorElementsPerksMap = indexBy(() => this.mutatorElementsPerks, 'ElementalMutationTypeId')
+  public mutatorElementPerk = lookup(() => this.mutatorElementsPerksMap)
+
+  public mutatorPromotions = table(() => this.data.gamemodemutatorsPromotionmutations())
+  public mutatorPromotionsMap = indexBy(() => this.mutatorPromotions, 'PromotionMutationId')
+  public mutatorPromotion = lookup(() => this.mutatorPromotionsMap)
+
+  public mutatorCurses = table(() => this.data.gamemodemutatorsCursemutations())
+  public mutatorCursesMap = indexBy(() => this.mutatorCurses, 'CurseMutationId')
+  public mutatorCurse = lookup(() => this.mutatorCursesMap)
+
   public viewGemPerksWithAffix = table(() => queryGemPerksWithAffix(this))
   public viewMutatorDifficultiesWithRewards = table(() => queryMutatorDifficultiesWithRewards(this))
 
@@ -429,6 +457,10 @@ export class NwDbService {
 
   public lootLimits = table(() => [this.data.lootlimits()])
   public lootLimitsMap = indexBy(() => this.lootLimits, 'LootLimitID')
+
+  public buffBuckets = table(() => this.data.buffbuckets().pipe(map(convertBuffBuckets)))
+  public buffBucketsMap = indexBy(() => this.buffBuckets, 'BuffBucketId')
+  public buffBucket = lookup(() => this.buffBucketsMap)
 
   public xpAmounts = this.data.xpamountsbylevel().pipe(shareReplay(1))
   public weaponMastery = this.data.weaponmastery().pipe(shareReplay(1))
