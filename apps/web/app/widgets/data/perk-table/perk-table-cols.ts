@@ -24,7 +24,7 @@ export function perkColIcon(util: PerkTableUtils) {
       fields: Object.keys(COLS_PERKS),
       fieldPaths: [
         ...Object.keys(COLS_AFFIXSTATS).map((it) => `$affix.${it}`),
-        ...Object.keys(COLS_ABILITY).map((it) => `$ability.${it}`)
+        ...Object.keys(COLS_ABILITY).map((it) => `$ability.${it}`),
       ],
     }),
     pinned: true,
@@ -53,7 +53,7 @@ export function perkColId(util: PerkTableUtils) {
 }
 
 export function perkColName(util: PerkTableUtils) {
-  return util.colDef<{ name: string, secondary: string, suffix: string, prefix: string }>({
+  return util.colDef<{ name: string; secondary: string; suffix: string; prefix: string }>({
     colId: 'name',
     headerValueGetter: () => 'Name',
     wrapText: true,
@@ -87,6 +87,15 @@ export function perkColName(util: PerkTableUtils) {
         value.suffix ? util.el('span', { text: `… ${value.suffix}`, class: ['italic', 'text-accent'] }) : null,
       ])
     }),
+    cellClass: ({ data, value }) => {
+      if (value.name && data.DisplayName !== value.name) {
+        return null
+      }
+      if (data.SecondaryEffectDisplayName && data.SecondaryEffectDisplayName !== value.secondary) {
+        return null
+      }
+      return ['font-mono', 'text-neutral-content', 'text-opacity-50']
+    },
   })
 }
 
@@ -97,9 +106,14 @@ export function perkColDescription(util: PerkTableUtils, ctx: NwTextContextServi
     width: 500,
     wrapText: true,
     autoHeight: true,
-    cellClass: ['multiline-cell', 'py-2'],
     valueGetter: ({ data }) => util.i18n.get(data.Description),
     filterValueGetter: ({ data }) => util.i18n.get(data.Description),
+    cellClass: ({ data, value }) => {
+      if (data.Description !== value) {
+        return ['multiline-cell', 'py-2', 'text-nw-description', 'italic']
+      }
+      return ['font-mono', 'text-neutral-content', 'text-opacity-50']
+    },
     cellRenderer: util.cellRendererAsync(),
     cellRendererParams: util.cellRendererAsyncParams<string>({
       source: ({ data }) => {
@@ -134,16 +148,14 @@ export function perkColDescription(util: PerkTableUtils, ctx: NwTextContextServi
                     ...context,
                     ...(mod.context || {}),
                   })
-                  .pipe(map((it) => `<span class="text-sky-600"> ${it} </span>`))
+                  .pipe(map((it) => `<span class="text-sky-600 not-italic"> ${it} </span>`))
               )
             }
             result.push(
-              util.expr
-                .solve({
-                  text: util.i18n.get(data.Description || data.StatDisplayText),
-                  ...context,
-                })
-                .pipe(map((it) => `<span class="text-nw-description italic"> ${it} </span>`))
+              util.expr.solve({
+                text: util.i18n.get(data.Description || data.StatDisplayText),
+                ...context,
+              })
             )
             return combineLatest(result).pipe(map((it) => it.join('<br>')))
           })

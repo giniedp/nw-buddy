@@ -76,12 +76,12 @@ export function statusEffectColName(util: StatusEffectTableUtils) {
       }
       return data.StatusID
     },
-    cellRenderer: util.cellRenderer(({ data, value }) => {
+    cellClass: ({ data, value }) => {
       if (data.DisplayName && data.DisplayName !== value) {
-        return value
+        return null
       }
-      return util.el('code.opacity-50', { text: value })
-    }),
+      return ['font-mono', 'text-neutral-content', 'text-opacity-50']
+    },
     width: 300,
   })
 }
@@ -92,7 +92,7 @@ export function statusEffectColDescription(util: StatusEffectTableUtils) {
     width: 300,
     wrapText: true,
     autoHeight: true,
-    cellClass: ['multiline-cell', 'text-nw-description', 'italic', 'py-2'],
+
     valueGetter: ({ data }) => {
       if (data.Description) {
         return util.i18n.get(data.Description)
@@ -105,6 +105,12 @@ export function statusEffectColDescription(util: StatusEffectTableUtils) {
         }
       }
       return null
+    },
+    cellClass: ({ data, value }) => {
+      if (data.Description && data.Description !== value) {
+        return ['multiline-cell', 'text-nw-description', 'italic', 'py-2']
+      }
+      return ['font-mono', 'text-neutral-content', 'text-opacity-50']
     },
     cellRenderer: util.cellRendererAsync(),
     cellRendererParams: util.cellRendererAsyncParams<string>({

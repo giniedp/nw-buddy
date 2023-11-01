@@ -66,18 +66,18 @@ export function abilityColName(util: AbilityTableUtils) {
     colId: 'name',
     headerValueGetter: () => 'Name',
     width: 250,
-    valueGetter:({ data }) => {
+    valueGetter: ({ data }) => {
       if (data.DisplayName) {
         return util.i18n.get(data.DisplayName)
       }
       return data.AbilityID
     },
-    cellRenderer: util.cellRenderer(({ data, value }) => {
-      if (data.DisplayName) {
-        return value
+    cellClass: ({ data, value }) => {
+      if (data.DisplayName && data.DisplayName !== value) {
+        return null
       }
-      return util.el('code.opacity-50', { text: value })
-    })
+      return ['font-mono', 'text-neutral-content', 'text-opacity-50']
+    },
   })
 }
 
