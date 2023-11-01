@@ -41,9 +41,9 @@
       </div>
     </div>
   </div>
-  <div *ngFor="let table of tables" class="mb-8">
+  <div *ngFor="let table of tables" class="flex flex-col gap-2 my-2">
     <div class="text-center text-primary capitalize font-bold text-2xl">{{ table.name | nwHumanize }}</div>
-    <div *ngFor="let row of table.rows" class="flex flex-col gap-1 px-2 mb-2">
+    <div *ngFor="let row of table.rows" class="flex flex-col gap-1 px-3 mb-2">
       <div class="text-lg leading-tight font-bold">
         <a [routerLink]="['/damage/table', row.DamageID]" class="link-hover">
           {{ row.AttackName }}
@@ -51,7 +51,7 @@
       </div>
       <div class="flex flex-row gap-1">
         <span
-          class="badge bg-opacity-50"
+          class="badge badge-sm bg-opacity-50"
           *ngIf="row.AttackType; let text"
           [class.badge-error]="text === 'Heavy'"
           [class.badge-success]="text === 'Light'"
@@ -59,10 +59,10 @@
         >
           {{ text }}</span
         >
-        <span class="badge badge-info" *ngIf="row.IsRanged">Ranged</span>
+        <span class="badge badge-sm badge-info" *ngIf="row.IsRanged">Ranged</span>
         <ng-container *ngIf="!row.Secondary && row.Damage">
-          <span class="badge badge-primary cursor-help" [tooltip]="tipDamage">
-            <img [nwImage]="row.Primary.Icon" class="w-4 h-4 flex-none aspect-square mr-1" />
+          <span class="badge badge-sm badge-primary cursor-help" [tooltip]="tipDamage">
+            <img [nwImage]="row.Primary.Icon" class="w-4 h-4 flex-none aspect-square mr-1 filter brightness-0" />
             {{ row.Damage | number : '0.0-0' }}
             <ng-template #tipDamage>
               {{ row.Primary.Type | nwText }}
@@ -71,11 +71,11 @@
         </ng-container>
 
         <ng-container *ngIf="row.Secondary">
-          <span class="badge badge-primary" *ngIf="row.Damage">
+          <span class="badge badge-sm badge-primary" *ngIf="row.Damage">
             {{ row.Damage | number : '0.0-0' }}
           </span>
 
-          <span class="badge cursor-help" [tooltip]="tipPrimary">
+          <span class="badge badge-sm cursor-help" [tooltip]="tipPrimary">
             <img [nwImage]="row.Primary.Icon" class="w-4 h-4 flex-none aspect-square mr-1" />
             {{ row.Primary.Value | number : '0.0-0' }}
             <ng-template #tipPrimary>
@@ -83,7 +83,7 @@
             </ng-template>
           </span>
 
-          <span class="badge cursor-help" [tooltip]="tipSecondary">
+          <span class="badge badge-sm cursor-help" [tooltip]="tipSecondary">
             <img [nwImage]="row.Secondary.Icon" class="w-4 h-4 flex-none aspect-square mr-1" />
             {{ row.Secondary.Value | number : '0.0-0' }}
             <ng-template #tipSecondary>
