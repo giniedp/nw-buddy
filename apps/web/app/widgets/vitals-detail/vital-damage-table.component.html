@@ -43,25 +43,54 @@
   </div>
   <div *ngFor="let table of tables" class="mb-8">
     <div class="text-center text-primary capitalize font-bold text-2xl">{{ table.name | nwHumanize }}</div>
-    <div *ngFor="let row of table.rows" class="flex flex-row items-start gap-1 py-1">
-      <picture class="p-1 flex-none">
-        <img [nwImage]="row.DamageTypeIcon" class="w-8 h-8 flex-none aspect-square" />
-      </picture>
-      <div class="flex flex-col leading-none">
-        <div class="text-lg leading-tight font-bold">
-          <span>{{ row.Name }}</span>
-        </div>
-        <div class="flex flex-col">
-          <div>
-            <span class="text-sm">{{ row.WeaponCategory | nwText }}</span>
-          </div>
-          <div class="flex flex-row gap-1">
-            <span class="badge badge-xs badge-primary">{{ row.Damage | number:'0.0-0' }}</span>
-            <span class="badge badge-xs">{{ row.DamageTypeName | nwText }}</span>
-            <span class="badge badge-xs badge-secondary" *ngIf="row.AttackType; let text">{{ text | nwText }}</span>
-            <span class="badge badge-xs badge-info" *ngIf="row.IsRanged">Ranged</span>
-          </div>
-        </div>
+    <div *ngFor="let row of table.rows" class="flex flex-col gap-1 px-2 mb-2">
+      <div class="text-lg leading-tight font-bold">
+        <a [routerLink]="['/damage/table', row.DamageID]" class="link-hover">
+          {{ row.AttackName }}
+        </a>
+      </div>
+      <div class="flex flex-row gap-1">
+        <span
+          class="badge bg-opacity-50"
+          *ngIf="row.AttackType; let text"
+          [class.badge-error]="text === 'Heavy'"
+          [class.badge-success]="text === 'Light'"
+          [class.badge-secondary]="text === 'Magic'"
+        >
+          {{ text }}</span
+        >
+        <span class="badge badge-info" *ngIf="row.IsRanged">Ranged</span>
+        <ng-container *ngIf="!row.Secondary && row.Damage">
+          <span class="badge badge-primary cursor-help" [tooltip]="tipDamage">
+            <img [nwImage]="row.Primary.Icon" class="w-4 h-4 flex-none aspect-square mr-1" />
+            {{ row.Damage | number : '0.0-0' }}
+            <ng-template #tipDamage>
+              {{ row.Primary.Type | nwText }}
+            </ng-template>
+          </span>
+        </ng-container>
+
+        <ng-container *ngIf="row.Secondary">
+          <span class="badge badge-primary" *ngIf="row.Damage">
+            {{ row.Damage | number : '0.0-0' }}
+          </span>
+
+          <span class="badge cursor-help" [tooltip]="tipPrimary">
+            <img [nwImage]="row.Primary.Icon" class="w-4 h-4 flex-none aspect-square mr-1" />
+            {{ row.Primary.Value | number : '0.0-0' }}
+            <ng-template #tipPrimary>
+              {{ row.Primary.Percent | percent }} as {{ row.Primary.Type | nwText }}
+            </ng-template>
+          </span>
+
+          <span class="badge cursor-help" [tooltip]="tipSecondary">
+            <img [nwImage]="row.Secondary.Icon" class="w-4 h-4 flex-none aspect-square mr-1" />
+            {{ row.Secondary.Value | number : '0.0-0' }}
+            <ng-template #tipSecondary>
+              {{ row.Secondary.Percent | percent }} as {{ row.Secondary.Type | nwText }}
+            </ng-template>
+          </span>
+        </ng-container>
       </div>
     </div>
   </div>
