@@ -9,7 +9,7 @@ export const LOCALE_KEYS_TO_KEEP = [
   'ui_ring_slot_tooltip',
   'ui_unlock_token_slot',
   'ui_amulet_slot_tooltip',
-  /^RarityLevel_.*/i,
+  /^RarityLevel\d_.*/i,
   'ui_dungeon_mutator_bronze',
   'ui_dungeon_mutator_silver',
   'ui_dungeon_mutator_gold',
