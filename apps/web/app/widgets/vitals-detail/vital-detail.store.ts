@@ -1,15 +1,27 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { Damagetable, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/generated'
+import { BuffBucket } from '@nw-data/common'
+import {
+  Ability,
+  Damagetable,
+  Elementalmutations,
+  Statuseffect,
+  Vitals,
+  Vitalscategories,
+  Vitalsmetadata,
+} from '@nw-data/generated'
+import { tap, uniqBy } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { shareReplayRefCount } from '~/utils'
+import { shareReplayRefCount, tapDebug } from '~/utils'
 import { ModelViewerService } from '../model-viewer'
 
 export interface State {
   vitalId: string
   level?: number
   enableDamage?: boolean
+  mutaElementId?: string
+  mutaDifficulty?: number
 }
 
 export interface DamageTableFile {
@@ -28,6 +40,22 @@ export class VitalDetailStore extends ComponentStore<State> {
 
   public readonly creatureTypeId$ = this.select(this.vital$, (it) => it?.CreatureType)
   public readonly vitalModifier$ = this.select(this.db.vitalsModifier(this.creatureTypeId$), (it) => it)
+
+  public readonly mutaElementId$ = this.select(({ mutaElementId }) => mutaElementId)
+  public readonly mutaElement$ = this.select(this.db.mutatorElement(this.mutaElementId$), (it) => it)
+  public readonly mutaBuffs$ = this.select(
+    combineLatest({
+      element: this.mutaElement$,
+      buffMap: this.db.buffBucketsMap,
+      effectMap: this.db.statusEffectsMap,
+      abilitiesMap: this.db.abilitiesMap,
+      creatureType: this.creatureTypeId$,
+    }),
+    (data) => selectBuffs(data)
+  )
+
+  public readonly mutaDifficultyId$ = this.select(({ mutaDifficulty }) => mutaDifficulty)
+  public readonly mutaDifficulty$ = this.select(this.db.mutatorDifficulty(this.mutaDifficultyId$), (it) => it)
 
   public readonly metadata$ = this.select(this.vitalId$, this.db.vitalsMetadataMap, (id, data) => data.get(id))
   public readonly modelFiles$ = this.select(this.vs.byVitalsId(this.vitalId$), (it) => it)
@@ -78,4 +106,54 @@ function selectDamageTableNames(id: string, meta: Vitalsmetadata) {
     tables = tables.filter((it) => it.toLowerCase().includes('dryad_siren'))
   }
   return tables
+}
+
+function selectBuffs({
+  element,
+  buffMap,
+  effectMap,
+  abilitiesMap,
+  creatureType,
+}: {
+  element: Elementalmutations
+  buffMap: Map<string, BuffBucket>
+  effectMap: Map<string, Statuseffect>
+  abilitiesMap: Map<string, Ability>
+  creatureType: string
+}) {
+  const statusEffects: Array<Statuseffect> = []
+  const abilities: Array<Ability> = []
+
+  function collect(bucket: BuffBucket) {
+    if (!bucket) {
+      return
+    }
+    for (const buff of bucket.Buffs) {
+      if (buff.BuffType === 'StatusEffect') {
+        statusEffects.push(effectMap.get(buff.Buff))
+        continue
+      }
+      if (buff.BuffType === 'BuffBucket') {
+        collect(buffMap.get(buff.Buff))
+        continue
+      }
+      if (buff.BuffType === 'Ability') {
+        abilities.push(abilitiesMap.get(buff.Buff))
+        continue
+      }
+      if (buff.BuffType === 'Promotion') {
+        continue
+      }
+    }
+  }
+  collect(buffMap.get(element?.[creatureType]))
+
+  if (!statusEffects.length && !abilities.length) {
+    return null
+  }
+
+  return {
+    effects: uniqBy(statusEffects, 'StatusID'),
+    abilities: uniqBy(abilities, 'AbilityID'),
+  }
 }

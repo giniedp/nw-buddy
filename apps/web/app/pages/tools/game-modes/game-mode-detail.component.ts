@@ -56,16 +56,16 @@ import { IconsModule } from '~/ui/icons'
 import { svgInfoCircle, svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { PaginationModule } from '~/ui/pagination'
+import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, observeQueryParam, observeRouteParam, selectStream, shareReplayRefCount } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { LootModule } from '~/widgets/loot'
 import { VitalsDetailModule } from '~/widgets/vitals-detail'
 import { GameModeDetailStore } from './game-mode-detail.store'
-import { MutaElementTileComponent } from './muta-element-tile.component'
 import { MutaCurseTileComponent } from './muta-curse-tile.component'
+import { MutaElementTileComponent } from './muta-element-tile.component'
 import { MutaPromotionTileComponent } from './muta-promotion-tile.component'
-import { TooltipModule } from '~/ui/tooltip'
 
 const DIFFICULTY_TIER_NAME = {
   1: 'Normal',
@@ -158,6 +158,7 @@ export class GameModeDetailComponent implements OnInit {
   public creaturesNamed$ = this.store.creaturesNamed$
   public creatures$ = this.store.dingeonCommonCreatures$
   public creatureLevel$ = this.store.enemyLevelOverride$
+  public mutaElementId$ = this.store.mutaElement$.pipe(map((it) => it?.ElementalMutationId))
 
   public difficulties$ = this.store.difficulties$
   public difficulty$ = this.store.mutaDifficulty$

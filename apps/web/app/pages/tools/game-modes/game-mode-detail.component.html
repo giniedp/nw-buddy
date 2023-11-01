@@ -282,6 +282,8 @@
       *ngFor="let item of creaturesBosses$ | async; trackBy: trackByIndex"
       [vital]="item"
       [level]="creatureLevel$ | async"
+      [mutaElement]="mutaElementId$ | async"
+      [mutaDifficulty]="difficultyLevel"
       [enableSections]="true"
     ></nwb-vital-detail>
   </div>
@@ -293,6 +295,8 @@
       *ngFor="let item of creaturesNamed$ | async; trackBy: trackByIndex"
       [vital]="item"
       [level]="creatureLevel$ | async"
+      [mutaElement]="mutaElementId$ | async"
+      [mutaDifficulty]="difficultyLevel"
       [enableSections]="true"
     ></nwb-vital-detail>
   </div>
@@ -303,6 +307,9 @@
     <nwb-vital-detail
       *ngFor="let item of creatures$ | async; trackBy: trackByIndex"
       [vital]="item"
+      [level]="creatureLevel$ | async"
+      [mutaElement]="mutaElementId$ | async"
+      [mutaDifficulty]="difficultyLevel"
       [enableSections]="true"
     ></nwb-vital-detail>
   </div>

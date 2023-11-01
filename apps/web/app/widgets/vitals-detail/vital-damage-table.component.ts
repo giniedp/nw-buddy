@@ -1,6 +1,15 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
-import { Affixstats, Damagetable, Statuseffect, Vitals, Vitalsleveldata, Vitalsmodifierdata } from '@nw-data/generated'
+import { RouterModule } from '@angular/router'
+import {
+  Affixstats,
+  Damagetable,
+  Mutationdifficulty,
+  Statuseffect,
+  Vitals,
+  Vitalsleveldata,
+  Vitalsmodifierdata,
+} from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { damageTypeIcon } from '~/nw/weapon-types'
@@ -12,7 +21,6 @@ import { TooltipModule } from '~/ui/tooltip'
 import { humanize, selectStream, shareReplayRefCount } from '~/utils'
 import { ScreenshotModule } from '../screenshot'
 import { VitalDetailStore } from './vital-detail.store'
-import { RouterModule } from '@angular/router'
 
 @Component({
   standalone: true,
@@ -47,6 +55,16 @@ export class VitalDamageTableComponent {
     this.store.patchState({ level: level })
   }
 
+  @Input()
+  public set mutaElementId(value: string) {
+    //this.store.patchState({ level: level })
+  }
+
+  @Input()
+  public set mutaDifficulty(value: number) {
+    this.store.patchState({ mutaDifficulty: value })
+  }
+
   protected iconInfo = svgInfo
 
   protected tables$ = selectStream(
@@ -55,13 +73,14 @@ export class VitalDamageTableComponent {
       vitalLevel: this.store.vitalLevel$,
       vitalCategories: this.store.categories$,
       vitalMod: this.store.vitalModifier$,
+      difficulty: this.store.mutaDifficulty$,
       tables: this.store.damageTables$,
       affixMap: this.db.affixstatsMap,
       effectMap: this.db.statusEffectsMap,
     })
   )
     .pipe(
-      map(({ vital, vitalMod, vitalLevel, vitalCategories, tables, affixMap, effectMap }) => {
+      map(({ vital, vitalMod, vitalLevel, vitalCategories, difficulty, tables, affixMap, effectMap }) => {
         return tables.map((table) => {
           return {
             name: table.file.replace(/\.xml$/, '').replace(/^.*javelindata_damagetable/, ''),
@@ -74,6 +93,7 @@ export class VitalDamageTableComponent {
                   damageTable: row,
                   affixMap,
                   effectMap,
+                  difficulty,
                 })
               })
               .filter((it) => !!it.Damage)
@@ -94,6 +114,7 @@ function selectDamageInfo({
   vitalLevel,
   vitalMod,
   damageTable,
+  difficulty,
   affixMap,
   effectMap,
 }: {
@@ -101,6 +122,7 @@ function selectDamageInfo({
   vitalLevel: Vitalsleveldata
   vitalMod: Vitalsmodifierdata
   damageTable: Damagetable
+  difficulty: Mutationdifficulty
   affixMap: Map<string, Affixstats>
   effectMap: Map<string, Statuseffect>
 }) {
@@ -111,9 +133,12 @@ function selectDamageInfo({
   const categoryDamageMod = vitalMod?.CategoryDamageMod || 1
   const addDmg = damageTable.AddDmg || 0
 
+  //const dmgIncMod = effectMap.get(difficulty?.DamageIncreaseMod)?.['DMG' + damageTable.DamageType] || 0
+  //const dmgPotency = 1 + (difficulty?.[`DamagePotency_${vital.CreatureType}`] || 0) / 100
+
+  const totalDamage = baseDamage * dmgCoef * dmgMod * categoryDamageMod + addDmg
+
   // VitalsLevel.BaseDamage * (1 + AIAbilityTable.BaseDamage - AbilityTable.BaseDamageReduction + (Empower)) * DamageTable.DmgCoef * Vitals.DamageMod * VitalsLevel.CategoryDamageMod + DamageTable.AddDmg
-  // TODO: add ability multiplier
-  const totalDamage = baseDamage * (1 + 0 - 0 + 0) * dmgCoef * dmgMod * categoryDamageMod + addDmg
   const affix = affixMap.get(damageTable.Affixes)
 
   return {

@@ -12,8 +12,9 @@ import { VitalDetailHeaderComponent } from './vital-detail-header.component'
 import { VitalDetailInfosComponent } from './vital-detail-infos.component'
 import { VitalDetailWeaknessComponent } from './vital-detail-weakness.component'
 import { VitalDetailStore } from './vital-detail.store'
+import { VitalDetailBuffsComponent } from './vital-detail-buffs.component'
 
-export type VitalSection = 'weakness' | 'damage' | 'model'
+export type VitalSection = 'weakness' | 'damage' | 'buffs' | 'model'
 export interface VitalTab {
   id: VitalSection
   label: string
@@ -29,6 +30,7 @@ export interface VitalTab {
     VitalDetailHeaderComponent,
     VitalDetailInfosComponent,
     VitalDamageTableComponent,
+    VitalDetailBuffsComponent,
     ModelViewerModule,
   ],
   providers: [VitalDetailStore],
@@ -59,7 +61,15 @@ export interface VitalTab {
         class="w-full bg-transparent"
       ></nwb-vital-detail-weakness>
 
-      <nwb-vital-damage-table [vitalId]="vm.id" [level]="store.level$ | async" *ngIf="vm.isSectionDamage"></nwb-vital-damage-table>
+      <nwb-vital-damage-table
+        [vitalId]="vm.id"
+        [level]="store.level$ | async"
+        [mutaDifficulty]="store.mutaDifficultyId$ | async"
+        [mutaElementId]="store.mutaElementId$ | async"
+        *ngIf="vm.isSectionDamage"
+      ></nwb-vital-damage-table>
+
+      <nwb-vital-detail-buffs *ngIf="vm.isSectionBuffs"></nwb-vital-detail-buffs>
 
       <nwb-model-viewer [models]="vm.models" *ngIf="vm.isSectionModel" class="aspect-square"></nwb-model-viewer>
     </ng-container>
@@ -86,6 +96,16 @@ export class VitalDetailComponent extends ComponentStore<{
   }
 
   @Input()
+  public set mutaElement(value: string) {
+    this.store.patchState({ mutaElementId: value })
+  }
+
+  @Input()
+  public set mutaDifficulty(value: number) {
+    this.store.patchState({ mutaDifficulty: value })
+  }
+
+  @Input()
   public set enableSections(value: boolean) {
     this.patchState({ enableSections: value })
   }
@@ -97,7 +117,13 @@ export class VitalDetailComponent extends ComponentStore<{
   public dungeons: Gamemodes[]
 
   protected sectionsEnabled$ = this.select(({ enableSections }) => enableSections)
-  protected tabs$ = this.select(this.sectionsEnabled$, this.store.hasDamageTable$, this.store.modelFiles$, selectTabs)
+  protected tabs$ = this.select(
+    this.sectionsEnabled$,
+    this.store.hasDamageTable$,
+    this.store.modelFiles$,
+    this.store.mutaBuffs$.pipe(map((it) => !!it)),
+    selectTabs
+  )
 
   protected vm$ = selectStream(
     {
@@ -118,6 +144,7 @@ export class VitalDetailComponent extends ComponentStore<{
         isSectionWeakness: data.selectedTab === 'weakness',
         isSectionDamage: data.selectedTab === 'damage',
         isSectionModel: data.selectedTab === 'model',
+        isSectionBuffs: data.selectedTab === 'buffs',
       }
     }
   )
@@ -139,7 +166,7 @@ export class VitalDetailComponent extends ComponentStore<{
   }
 }
 
-function selectTabs(sectionsEnabled: boolean, hasDamageTable: boolean, modelFiles: ItemModelInfo[]) {
+function selectTabs(sectionsEnabled: boolean, hasDamageTable: boolean, modelFiles: ItemModelInfo[], hasBuffs: boolean) {
   const tabs: VitalTab[] = []
   if (!sectionsEnabled) {
     return tabs
@@ -152,6 +179,12 @@ function selectTabs(sectionsEnabled: boolean, hasDamageTable: boolean, modelFile
     tabs.push({
       id: 'damage',
       label: 'Damage',
+    })
+  }
+  if (hasBuffs) {
+    tabs.push({
+      id: 'buffs',
+      label: 'Buffs',
     })
   }
   if (modelFiles?.length > 0) {

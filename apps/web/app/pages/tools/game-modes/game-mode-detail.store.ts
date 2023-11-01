@@ -77,7 +77,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         return null
       }
       return values
-        .filter((it) => it.ElementalDifficultyTier === difficulty.DifficultyTier)
+        .filter((it) => it.ElementalDifficultyTier === difficulty?.DifficultyTier)
         .map((it) => {
           return {
             label: it.Name,
@@ -86,6 +86,9 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
             object: it,
           }
         })
+    },
+    {
+      debounce: true,
     }
   )
   public readonly mutaElement$ = this.select(
@@ -95,7 +98,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       ref: this.mutaElementId$,
     }),
     ({ available, options, ref }) => {
-      if (!available) {
+      if (!available || !options?.length) {
         return null
       }
       return options.find((it) => it.value === ref)?.object || options[0].object
