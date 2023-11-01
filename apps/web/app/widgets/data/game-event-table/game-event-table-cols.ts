@@ -37,7 +37,7 @@ export function gameEventColType(util: GameEventTableUtils) {
   return util.colDef<string>({
     colId: 'gameEventType',
     headerValueGetter: () => 'Event Type',
-    valueGetter: 'GameEventType',
+    field: 'GameEventType',
     filter: SelectFilter,
   })
 }
