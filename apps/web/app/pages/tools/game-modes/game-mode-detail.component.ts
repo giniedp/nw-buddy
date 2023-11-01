@@ -123,6 +123,7 @@ export class GameModeDetailComponent implements OnInit {
   public iconExtern = svgSquareArrowUpRight
   public dungeon$ = this.store.dungeon$
   public bosses$ = this.store.bosses$
+  public creatures$ = this.store.dingeonCommonCreatures$
   public difficulties$ = this.store.difficulties$
   public difficulty$ = this.store.difficulty$.pipe(shareReplayRefCount(1))
   public dungeonLoot$ = this.store.lootNormalMode$.pipe(map((it) => this.filterAndSort(it)))
@@ -248,6 +249,9 @@ export class GameModeDetailComponent implements OnInit {
   @ViewChild('tplDungeonBosses', { static: true })
   public tplDungeonBosses: TemplateRef<unknown>
 
+  @ViewChild('tplDungeonCreatures', { static: true })
+  public tplDungeonCreatures: TemplateRef<unknown>
+
   @ViewChild('tplRewards', { static: true })
   public tplRewards: TemplateRef<unknown>
 
@@ -371,6 +375,13 @@ export class GameModeDetailComponent implements OnInit {
             id: 'difficulty',
             label: 'Difficulty Drops',
             tpl: this.tplDungeonDifficultyLoot,
+          })
+        }
+        if (dungeon.IsRaidTrial || dungeon.IsSoloTrial) {
+          this.tabs.push({
+            id: 'creatures',
+            label: 'Creatures',
+            tpl: this.tplDungeonCreatures,
           })
         }
         this.tabs.push({

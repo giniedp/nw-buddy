@@ -97,6 +97,10 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
     }
   )
 
+  public readonly dingeonCommonCreatures$ = selectStream(this.creatures$, (list) => {
+    return list.filter((it) => it.CreatureType !== 'Boss' && it.CreatureType !== 'DungeonMiniBoss')
+  })
+
   public readonly bosses$ = selectStream(
     {
       dungeonId: this.dungeonId$,

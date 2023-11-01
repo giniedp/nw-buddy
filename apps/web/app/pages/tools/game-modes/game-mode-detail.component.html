@@ -243,6 +243,16 @@
   </div>
 </ng-template>
 
+<ng-template #tplDungeonCreatures>
+  <div class="grid layout-gap">
+    <nwb-vital-detail
+      *ngFor="let item of creatures$ | async; trackBy: trackByIndex"
+      [vital]="item"
+      [enableSections]="true"
+    ></nwb-vital-detail>
+  </div>
+</ng-template>
+
 <ng-template #tplDungeonMap>
   <iframe [attr.src]="mapEmbed" class="map-frame"></iframe>
 </ng-template>
