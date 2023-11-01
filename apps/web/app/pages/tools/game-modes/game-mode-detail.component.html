@@ -73,7 +73,13 @@
 
       <section class="font-nimbus" *ngIf="!!difficulty">
         <h2 class="mb-0 font-bold font-caslon tracking-wider uppercase text-nw-description">
-          <span>Weekly Mutations</span>
+          <span>Weekly Mutations </span>
+          <nwb-icon
+            [icon]="iconInfo"
+            class="w-5 h-5 text-info"
+            [tooltip]="'Mutations are work in progress'"
+            [tooltipClass]="'text-primary'"
+          ></nwb-icon>
         </h2>
         <div class="nw-item-divider max-w-lg mb-2"></div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 max-w-3xl">
@@ -93,7 +99,7 @@
 
       <section>
         <h2 class="mb-0 font-bold font-caslon tracking-wider uppercase text-nw-description">
-          <span>Available Rewards</span>
+          <span>Available Rewards </span>
         </h2>
         <div class="nw-item-divider max-w-lg"></div>
 
@@ -271,7 +277,7 @@
 </ng-template>
 
 <ng-template #tplDungeonBosses>
-  <div class="grid layout-gap">
+  <div class="grid grid-vitals layout-gap">
     <nwb-vital-detail
       *ngFor="let item of creaturesBosses$ | async; trackBy: trackByIndex"
       [vital]="item"
@@ -282,7 +288,7 @@
 </ng-template>
 
 <ng-template #tplDungeonNamed>
-  <div class="grid layout-gap">
+  <div class="grid grid-vitals layout-gap">
     <nwb-vital-detail
       *ngFor="let item of creaturesNamed$ | async; trackBy: trackByIndex"
       [vital]="item"
@@ -293,7 +299,7 @@
 </ng-template>
 
 <ng-template #tplDungeonCreatures>
-  <div class="grid layout-gap">
+  <div class="grid grid-vitals layout-gap">
     <nwb-vital-detail
       *ngFor="let item of creatures$ | async; trackBy: trackByIndex"
       [vital]="item"

@@ -21,7 +21,18 @@ import {
   Mutationdifficulty,
   Promotionmutations,
 } from '@nw-data/generated'
-import { BehaviorSubject, ReplaySubject, combineLatest, debounceTime, defer, map, of, switchMap, takeUntil } from 'rxjs'
+import {
+  BehaviorSubject,
+  ReplaySubject,
+  combineLatest,
+  debounceTime,
+  defer,
+  filter,
+  map,
+  of,
+  switchMap,
+  takeUntil,
+} from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwDbService, NwModule } from '~/nw'
 
@@ -42,7 +53,7 @@ import {
 import { uniqBy } from 'lodash'
 import { DifficultyRank, DungeonPreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
-import { svgSquareArrowUpRight } from '~/ui/icons/svg'
+import { svgInfoCircle, svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { PaginationModule } from '~/ui/pagination'
 import { HtmlHeadService, observeQueryParam, observeRouteParam, selectStream, shareReplayRefCount } from '~/utils'
@@ -54,6 +65,7 @@ import { GameModeDetailStore } from './game-mode-detail.store'
 import { MutaElementTileComponent } from './muta-element-tile.component'
 import { MutaCurseTileComponent } from './muta-curse-tile.component'
 import { MutaPromotionTileComponent } from './muta-promotion-tile.component'
+import { TooltipModule } from '~/ui/tooltip'
 
 const DIFFICULTY_TIER_NAME = {
   1: 'Normal',
@@ -106,6 +118,7 @@ export interface Tab {
     MutaElementTileComponent,
     MutaCurseTileComponent,
     MutaPromotionTileComponent,
+    TooltipModule,
   ],
   providers: [GameModeDetailStore],
   host: {
@@ -138,8 +151,9 @@ export class GameModeDetailComponent implements OnInit {
   protected adjustedLevel$ = new BehaviorSubject<number>(NW_MAX_CHARACTER_LEVEL)
 
   public iconExtern = svgSquareArrowUpRight
+  public iconInfo = svgInfoCircle
 
-  public dungeon$ = this.store.gameMode$
+  public dungeon$ = this.store.gameMode$.pipe(filter((it) => !!it))
   public creaturesBosses$ = this.store.creaturesBosses$
   public creaturesNamed$ = this.store.creaturesNamed$
   public creatures$ = this.store.dingeonCommonCreatures$
@@ -402,14 +416,14 @@ export class GameModeDetailComponent implements OnInit {
           })
         }
         this.tabs.push({
-          id: 'bosses',
-          label: 'Bosses',
-          tpl: this.tplDungeonBosses,
-        })
-        this.tabs.push({
           id: 'named',
           label: 'Named',
           tpl: this.tplDungeonNamed,
+        })
+        this.tabs.push({
+          id: 'bosses',
+          label: 'Bosses',
+          tpl: this.tplDungeonBosses,
         })
 
         const mapUrl = MAP_EMBED_URLS[dungeon.GameModeId]

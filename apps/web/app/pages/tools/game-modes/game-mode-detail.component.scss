@@ -1,5 +1,6 @@
 :host {
-  .grid.grid-loot {
+  .grid.grid-loot,
+  .grid.grid-vitals {
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   }
 
