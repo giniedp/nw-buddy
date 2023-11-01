@@ -3727,7 +3727,7 @@ export const COLS_OBJECTIVE = {
   "PlayerPrompt": "string",
   "ProgressionReward": "string",
   "QuestArcTag": "string",
-  "Repeatable": "string",
+  "Repeatable": "number",
   "RequiredAchievementId": "string",
   "RequiredFaction": "string",
   "RequiredLevel": "number",
