@@ -62,7 +62,7 @@
           <span [nwText]="requirementText"></span>
         </div>
         <div *ngIf="groupSize">
-          <span>{{ groupSize }} - 5 </span>
+          <span>{{ groupSize }} - {{ teamCapacity || 5 }} </span>
           <span>Players</span>
         </div>
         <div *ngIf="requiredLevel">
