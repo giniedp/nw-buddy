@@ -77,7 +77,7 @@ export function statusEffectColName(util: StatusEffectTableUtils) {
       return data.StatusID
     },
     cellRenderer: util.cellRenderer(({ data, value }) => {
-      if (data.DisplayName) {
+      if (data.DisplayName && data.DisplayName !== value) {
         return value
       }
       return util.el('code.opacity-50', { text: value })
@@ -127,7 +127,7 @@ export function statusEffectColBaseDuration(util: StatusEffectTableUtils) {
     headerValueGetter: () => 'Duration',
     getQuickFilterText: () => '',
     field: 'BaseDuration',
-    ...colDefPrecision as any,
+    ...(colDefPrecision as any),
   })
 }
 export function statusEffectColEffectCategories(util: StatusEffectTableUtils) {
@@ -140,6 +140,6 @@ export function statusEffectColEffectCategories(util: StatusEffectTableUtils) {
     filter: SelectFilter,
     filterParams: SelectFilter.params({
       showSearch: true,
-    })
+    }),
   })
 }
