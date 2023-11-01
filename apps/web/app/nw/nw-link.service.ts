@@ -14,7 +14,7 @@ export class NwLinkService implements OnDestroy {
     private locale: LocaleService,
     private pref: AppPreferencesService,
     @Inject(DOCUMENT)
-    private document: Document,
+    private document: Document
   ) {
     this.pref.tooltipProvider
       .observe()
@@ -30,6 +30,9 @@ export class NwLinkService implements OnDestroy {
   }
 
   public link(type: NwLinkResource, id: string) {
+    if (!id || !type) {
+      return null
+    }
     if (this.provider === 'nwguide') {
       return nwguideLinkUrl({
         id: id,

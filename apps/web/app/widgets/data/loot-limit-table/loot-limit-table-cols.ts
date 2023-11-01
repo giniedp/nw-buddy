@@ -27,11 +27,12 @@ export function lootLimitColIcon(util: LootLimitTableUtils) {
     width: 62,
     cellClass: ['overflow-visible'],
     cellRenderer: util.cellRenderer(({ data }) => {
+      const link = util.tipLink('item', getItemId(data.$item)) || ''
       return util.elA(
         {
           attrs: {
-            href: util.tipLink('item', getItemId(data.$item)),
-            target: '_blank',
+            href: link,
+            target: link ? '_blank' : '',
           },
         },
         util.elItemIcon({
@@ -53,6 +54,12 @@ export function lootLimitColName(util: LootLimitTableUtils) {
     valueGetter: ({ data }) => {
       return data.$item ? util.i18n.get(data.$item?.Name) : data.LootLimitID
     },
+    cellRenderer: util.cellRenderer(({ data, value }) => {
+      if (data.$item) {
+        return value
+      }
+      return util.el('code.opacity-50', { text: value })
+    }),
     getQuickFilterText: ({ value }) => value,
   })
 }
