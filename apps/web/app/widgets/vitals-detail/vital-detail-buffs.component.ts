@@ -20,7 +20,7 @@ import { AbilityDetailModule } from '../data/ability-detail'
   },
   template: `
     <a
-      *ngFor="let item of effects$ | async"
+      *ngFor="let item of effects$ | async; trackBy: trackByIndex"
       class="flex flex-row gap-2 link-hover text-sky-600"
       [routerLink]="['/status-effects/table', item.id]"
       [tooltip]="tplEffectTip"
@@ -39,7 +39,7 @@ import { AbilityDetailModule } from '../data/ability-detail'
     </a>
 
     <a
-      *ngFor="let item of abilities$ | async"
+      *ngFor="let item of abilities$ | async; trackBy: trackByIndex"
       class="flex flex-row gap-2 link-hover text-sky-600"
       [routerLink]="['/abilities/table', item.id]"
       [tooltip]="tplAbilityTip"
@@ -59,6 +59,7 @@ import { AbilityDetailModule } from '../data/ability-detail'
 })
 export class VitalDetailBuffsComponent {
   private store = inject(VitalDetailStore)
+  protected trackByIndex = (index: number) => index
   protected effects$ = this.store.mutaBuffs$.pipe(
     map((list) => {
       return list?.effects?.map((it) => {

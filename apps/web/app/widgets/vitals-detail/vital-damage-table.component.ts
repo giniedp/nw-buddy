@@ -66,7 +66,7 @@ export class VitalDamageTableComponent {
   }
 
   protected iconInfo = svgInfo
-
+  protected trackByIndex = (index: number) => index
   protected tables$ = selectStream(
     combineLatest({
       vital: this.store.vital$,

@@ -41,9 +41,9 @@
       </div>
     </div>
   </div>
-  <div *ngFor="let table of tables" class="flex flex-col gap-2 my-2">
+  <div *ngFor="let table of tables; trackBy: trackByIndex" class="flex flex-col gap-2 my-2">
     <div class="text-center text-primary capitalize font-bold text-2xl">{{ table.name | nwHumanize }}</div>
-    <div *ngFor="let row of table.rows" class="flex flex-col gap-1 px-3 mb-2">
+    <div *ngFor="let row of table.rows; trackBy: trackByIndex" class="flex flex-col gap-1 px-3 mb-2">
       <div class="text-lg leading-tight font-bold">
         <a [routerLink]="['/damage/table', row.DamageID]" class="link-hover">
           {{ row.AttackName }}
