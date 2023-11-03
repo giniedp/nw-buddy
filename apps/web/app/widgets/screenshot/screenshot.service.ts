@@ -1,9 +1,10 @@
 import { Dialog } from '@angular/cdk/dialog'
-import { ElementRef, Injectable } from '@angular/core'
+import { ElementRef, Injectable, inject } from '@angular/core'
 import { saveAs } from 'file-saver'
 import { BehaviorSubject } from 'rxjs'
 import { ScreenshotSaveDialogComponent } from './screenshot-save-dialog.component'
 import { cloneElement, getScreenshotOverlay, renderScreenshot } from './utils'
+import { DOCUMENT } from '@angular/common'
 
 export interface ScreenshotFrame {
   elementRef: ElementRef<HTMLElement>
@@ -21,6 +22,11 @@ export class ScreenshotService {
     this.frames$.next(value)
   }
 
+  public get isClipboardSupported() {
+    return !!this.window['ClipboardItem']
+  }
+
+  private window = inject(DOCUMENT).defaultView
   private frames$ = new BehaviorSubject<ScreenshotFrame[]>([])
 
   public constructor(private dialog: Dialog) {
@@ -65,7 +71,10 @@ export class ScreenshotService {
   }
 
   public saveBlobToClipoard(blob: Blob) {
-    navigator.clipboard.write([
+    if (!this.isClipboardSupported) {
+      throw new Error('Clipboard is not supported')
+    }
+    return navigator.clipboard.write([
       new ClipboardItem({
         'image/png': blob,
       }),
@@ -91,6 +100,7 @@ export class ScreenshotService {
       data: {
         previewUrl: URL.createObjectURL(blob),
         filename: filename + '.png',
+        enableClipboard: this.isClipboardSupported,
       },
     }).closed.subscribe((result) => {
       if (!result) {

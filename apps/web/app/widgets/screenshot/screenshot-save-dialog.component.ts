@@ -7,6 +7,7 @@ import { NwModule } from '~/nw'
 export interface ScreenshotSaveDialogData {
   previewUrl: string
   filename: string
+  enableClipboard: boolean
 }
 
 export interface ScreenshotSaveOption {
@@ -37,6 +38,7 @@ export class ScreenshotSaveDialogComponent {
 
   protected previewUrl: string
   protected filename: string
+  protected enableClipboard: boolean
 
   public constructor(
     private dialog: DialogRef<ScreenshotSaveOption, ScreenshotSaveDialogData>,
@@ -45,6 +47,7 @@ export class ScreenshotSaveDialogComponent {
   ) {
     this.previewUrl = data.previewUrl
     this.filename = data.filename
+    this.enableClipboard = data.enableClipboard
   }
 
   protected close(value: ScreenshotSaveOption['action'] = null) {
