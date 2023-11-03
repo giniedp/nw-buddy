@@ -17,7 +17,7 @@
   <span class="italic font-caslon">{{ tierLabel }}</span>
   <ng-content select=".icon-overlay"></ng-content>
 </a>
-<a
+<nwb-item-header-content
   class="z-10"
   nwbItemHeaderContent
   [title]="name | nwText | nwTextBreak : ' - '"
@@ -40,5 +40,5 @@
     ></nwb-gs-tracker>
   </div>
   <ng-content select=".content"></ng-content>
-</a>
+</nwb-item-header-content>
 <ng-content></ng-content>

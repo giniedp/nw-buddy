@@ -1,14 +1,15 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { ElementRef, Injectable } from '@angular/core'
 import { saveAs } from 'file-saver'
-import { toBlob } from 'html-to-image'
 import { BehaviorSubject } from 'rxjs'
 import { ScreenshotSaveDialogComponent } from './screenshot-save-dialog.component'
+import { cloneElement, getScreenshotOverlay, renderScreenshot } from './utils'
 
 export interface ScreenshotFrame {
   elementRef: ElementRef<HTMLElement>
   description: string
   width: number
+  mode: 'detached' | 'attached'
 }
 
 @Injectable({ providedIn: 'root' })
@@ -22,7 +23,9 @@ export class ScreenshotService {
 
   private frames$ = new BehaviorSubject<ScreenshotFrame[]>([])
 
-  public constructor(private dialog: Dialog) {}
+  public constructor(private dialog: Dialog) {
+    //
+  }
 
   public register(frame: ScreenshotFrame) {
     if (this.frames.includes(frame)) {
@@ -42,19 +45,22 @@ export class ScreenshotService {
   }
 
   public async makeScreenshot(frame: ScreenshotFrame): Promise<Blob> {
-    const el = frame.elementRef.nativeElement
+    const overlay = getScreenshotOverlay()
+    const elOriginal = frame.elementRef.nativeElement
+    const el = frame.mode === 'detached' ? detachFrame(elOriginal, overlay) : elOriginal
     el.classList.add('screenshot-capture')
-    if (frame.width) {
-      el.style.width = `${frame.width}px`
-    }
-    const result = await this.capture(frame).catch((err) => {
+    const result = await this.capture({
+      el: el,
+      overlay: overlay,
+      width: frame.width,
+      isDetached: frame.mode === 'detached',
+    }).catch((err) => {
       console.error(err)
       return null
     })
     el.classList.remove('screenshot-capture')
-    if (frame.width) {
-      el.style.width = null
-    }
+    overlay.remove()
+
     return result
   }
 
@@ -99,8 +105,12 @@ export class ScreenshotService {
     })
   }
 
-  private async capture(frame: ScreenshotFrame) {
-    const el = frame.elementRef.nativeElement
+  private async capture(options: { el: HTMLElement; overlay: HTMLElement; width: number; isDetached: boolean }) {
+    const el = options.el
+    if (options.width) {
+      el.style.width = `${options.width}px`
+    }
+
     const lazyElements = el.querySelectorAll('[loading=lazy]')
     lazyElements.forEach((it) => {
       it.setAttribute('loading', 'eager')
@@ -111,8 +121,15 @@ export class ScreenshotService {
       it.dataset['screenshotHidden'] = it.style.display
       it.style.display = 'none'
     })
+    // HINT: wait for lazy images to load
     await new Promise((resolve) => setTimeout(resolve, 1000))
-    const result = await toBlob(frame.elementRef.nativeElement)
+    const result = renderScreenshot(options).catch((err) => {
+      console.error('Failed to capture screenshot', err)
+    })
+
+    if (options.width) {
+      el.style.width = null
+    }
     lazyElements.forEach((it) => {
       it.setAttribute('loading', 'lazy')
     })
@@ -129,6 +146,7 @@ async function writeFile(fileHandle, contents: Blob) {
   await writable.write(contents)
   await writable.close()
 }
+
 async function verifyPermission(fileHandle) {
   const options = {
     mode: 'readwrite',
@@ -143,4 +161,10 @@ async function verifyPermission(fileHandle) {
   }
   // The user didn't grant permission, so return false.
   return false
+}
+
+function detachFrame(original: HTMLElement, parent: HTMLElement) {
+  const result = cloneElement(original)
+  parent.appendChild(result)
+  return result
 }

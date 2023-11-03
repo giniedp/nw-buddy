@@ -12,12 +12,19 @@ export class ScreenshotFrameDirective implements ScreenshotFrame, OnInit, OnDest
   @Input()
   public nwbScreenshotWidth: number
 
+  @Input()
+  public nwbScreenshotMode: 'detached' | 'attached' = 'attached'
+
   public get description() {
     return this.nwbScreenshotFrame
   }
 
   public get width() {
     return this.nwbScreenshotWidth
+  }
+
+  public get mode() {
+    return this.nwbScreenshotMode
   }
 
   public constructor(private service: ScreenshotService, public readonly elementRef: ElementRef<HTMLElement>) {

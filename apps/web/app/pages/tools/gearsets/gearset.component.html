@@ -3,7 +3,8 @@
     *ngIf="!swiper"
     class="p-4 rounded-b-md flex flex-col xl:flex-row layout-gap"
     [nwbScreenshotFrame]="name$ | async"
-    [nwbScreenshotWidth]="2200"
+    [nwbScreenshotWidth]="1660"
+    [nwbScreenshotMode]="'detached'"
   >
     <div class="flex-1 grid grid-cols-fill-sm layout-gap" [@list]="slots?.length">
       <ng-container *ngTemplateOutlet="tplContentAvatar"></ng-container>
@@ -39,7 +40,7 @@
   <ng-template #tplContentAvatar>
     <div
       [@fade]="true"
-      class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative"
+      class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative screenshot-head"
     >
       <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
       <nwb-gearset-pane-main class="relative" [class.text-xs]="compact" [disabled]="disabled">
@@ -140,7 +141,7 @@
   <ng-template #tplContentStats>
     <div
       [@fade]="true"
-      class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad"
+      class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad screenshot-head"
     >
       <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
       <nwb-gearset-pane-stats class="relative"></nwb-gearset-pane-stats>
@@ -150,7 +151,7 @@
   <ng-template #tplContentSkills>
     <div
       [@fade]="true"
-      class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad"
+      class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad screenshot-head"
     >
       <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
       <nwb-gearset-pane-skill
@@ -163,7 +164,7 @@
 
     <div
       [@fade]="true"
-      class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad"
+      class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad screenshot-head"
     >
       <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
       <nwb-gearset-pane-skill
@@ -177,7 +178,7 @@
 
   <ng-template #tplContentSlots>
     <nwb-gearset-pane-slot
-      class="swiper-slide"
+      class="swiper-slide screenshot-body"
       [@fade]="true"
       *ngFor="let slot of slots; trackBy: trackByIndex"
       [slot]="slot"
