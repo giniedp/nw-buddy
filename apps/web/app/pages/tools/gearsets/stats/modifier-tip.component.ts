@@ -25,15 +25,6 @@ export class ModifierTipComponent {
     this.hasCapped = this.source.some((it) => it['capped'])
     this.hasUncapped = this.source.some((it) => !it['capped'])
     this.isOvershoot = this.value !== this.sumValue
-    console.log({
-      data,
-      value: this.value,
-      sumValue: this.sumValue,
-      showSum: this.showSum,
-      hasCapped: this.hasCapped,
-      hasUncapped: this.hasUncapped,
-      isOvershoot: this.isOvershoot,
-    })
   }
 
   @Input()
