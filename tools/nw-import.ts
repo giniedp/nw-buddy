@@ -1,9 +1,14 @@
 import { program } from 'commander'
+import { cpus } from 'os'
 import * as path from 'path'
 import { environment, NW_USE_PTR } from '../env'
 import { generateTypes } from './code-gen/code-generate'
 import { extractExpressions } from './importer/extractExpressions'
 import { importImages } from './importer/images'
+import { importLocales, LOCALE_KEYS_TO_KEEP } from './importer/locales'
+import { generateSearch } from './importer/search'
+import { importSlices } from './importer/slices/import-slices'
+import { importSpells } from './importer/slices/import-spells'
 import {
   importDatatables,
   pathToDatatables,
@@ -11,12 +16,7 @@ import {
   TABLE_GLOB_PATTERNS,
   TABLE_REMAP_RULES,
 } from './importer/tables'
-import { importLocales, LOCALE_KEYS_TO_KEEP } from './importer/locales'
-import { importSlices } from './importer/slices/import-slices'
 import { withProgressBar, writeJSONFile } from './utils'
-import { cpus } from 'os'
-import { generateSearch } from './importer/search'
-import { extractLootTags } from './importer/extractLootTags'
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
 }
@@ -65,6 +65,18 @@ program
     }
 
     if (hasFilter(Importer.vitals, options.module)) {
+      console.log('Spells')
+      await importSpells({
+        inputDir: inputDir,
+      }).then((data) => {
+        // write it into input directory, so table loader will pick it up
+        writeJSONFile(data, path.join(pathToDatatables(inputDir), 'generated_spellsmetadata.json'), {
+          createDir: true,
+        })
+        writeJSONFile(data, path.join('tmp', 'spells.json'), {
+          createDir: true,
+        })
+      })
       console.log('Slices')
       await importSlices({
         inputDir,

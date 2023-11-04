@@ -13108,20 +13108,6 @@ export type WeaponTag =
   | 'Warhammer'
 
 
-export interface Vitalsmetadata {
-    mapIDs:   string[];
-    models:   string[];
-    spawns:   Spawn[];
-    tables:   string[];
-    vitalsID: string;
-}
-
-export interface Spawn {
-    category?:    null | string;
-    damagetable?: string;
-    level:        number | null;
-    position:     number[];
-}
 export interface SandelementalHeavySandworm {
     AddDmg:                  number;
     AttackType?:             string;
@@ -13163,4 +13149,32 @@ export interface SandelementalHeavySandworm {
     SurfaceImpactEffect:     string;
     TargetCameraShakeID:     string;
     WeaponCategory:          string;
+}
+export interface Gatherablesmetadata {
+    gatherableID: string;
+    mapIDs:       string[];
+    spawns:       Spawn[];
+}
+
+export interface Spawn {
+    lootTable: string;
+    position:  number[];
+}
+export interface Spellsmetadata {
+    AreaStatusEffects: string[];
+    PrefabPath:        string;
+}
+export interface Vitalsmetadata {
+    mapIDs:   string[];
+    models:   string[];
+    spawns:   Spawn[];
+    tables:   string[];
+    vitalsID: string;
+}
+
+export interface Spawn {
+    category?:    null | string;
+    damagetable?: string;
+    level:        number | null;
+    position:     number[];
 }

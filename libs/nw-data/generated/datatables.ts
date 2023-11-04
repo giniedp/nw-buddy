@@ -25,6 +25,7 @@ import type {
   GameEvent,
   Gamemodes,
   Gatherables,
+  Gatherablesmetadata,
   Housetypes,
   Housingitems,
   ItemDefinitionMaster,
@@ -61,6 +62,7 @@ import type {
   PvpbalanceOutpostrush,
   PvpbalanceWar,
   SandelementalHeavySandworm,
+  Spellsmetadata,
   Spelltable,
   StaminacostsPlayer,
   Statuseffect,
@@ -886,6 +888,12 @@ export abstract class NwDataLoader {
   }
   public gatherables() {
     return this.load<Gatherables[]>('javelindata_gatherables.json')
+  }
+  public generatedGatherablesmetadata() {
+    return this.load<Gatherablesmetadata[]>('generated_gatherablesmetadata.json')
+  }
+  public generatedSpellsmetadata() {
+    return this.load<Spellsmetadata[]>('generated_spellsmetadata.json')
   }
   public generatedVitalsmetadata() {
     return this.load<Vitalsmetadata[]>('generated_vitalsmetadata.json')
