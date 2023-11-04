@@ -5,6 +5,7 @@ import {
   Affixstats,
   Damagetable,
   Mutationdifficulty,
+  Spellsmetadata,
   Statuseffect,
   Vitals,
   Vitalsleveldata,
@@ -18,9 +19,12 @@ import { svgInfo } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
-import { humanize, selectStream, shareReplayRefCount } from '~/utils'
+import { eqCaseInsensitive, humanize, selectStream, shareReplayRefCount } from '~/utils'
 import { ScreenshotModule } from '../screenshot'
 import { VitalDetailStore } from './vital-detail.store'
+import { NW_FALLBACK_ICON } from '@nw-data/common'
+import { StatusEffectDetailModule } from '../data/status-effect-detail'
+import { DamageRowDetailModule } from '../data/damage-detail'
 
 @Component({
   standalone: true,
@@ -36,6 +40,8 @@ import { VitalDetailStore } from './vital-detail.store'
     ItemFrameModule,
     ScreenshotModule,
     RouterModule,
+    StatusEffectDetailModule,
+    DamageRowDetailModule
   ],
   providers: [VitalDetailStore],
   host: {
@@ -77,26 +83,35 @@ export class VitalDamageTableComponent {
       tables: this.store.damageTables$,
       affixMap: this.db.affixstatsMap,
       effectMap: this.db.statusEffectsMap,
+      spellsByDamageMap: this.db.spellsByDamageTable,
+      spellsMetaMap: this.db.spellsMetadataMap,
     })
   )
     .pipe(
-      map(({ vital, vitalMod, vitalLevel, vitalCategories, difficulty, tables, affixMap, effectMap }) => {
+      map(({ vital, vitalMod, vitalLevel, vitalCategories, difficulty, tables, affixMap, effectMap, spellsByDamageMap, spellsMetaMap  }) => {
         return tables.map((table) => {
+          const name = table.file.replace(/\.xml$/, '').replace(/^.*javelindata_damagetable/, '')
+          const tableName = humanize(`${name}_damagetable`).replaceAll(' ', '')
+          const spells = Array.from(spellsByDamageMap.get(tableName)?.values() || [])
           return {
-            name: table.file.replace(/\.xml$/, '').replace(/^.*javelindata_damagetable/, ''),
+            name: name,
             rows: table.rows
               ?.map((row) => {
+                const spell = spells.find((it) => eqCaseInsensitive(it.DamageTableRow, row.DamageID))
+                const spellMeta = spellsMetaMap.get(spell?.SpellPrefabPath)
+
                 return selectDamageInfo({
                   vital,
                   vitalLevel,
                   vitalMod,
                   damageTable: row,
+                  spellMeta: spellMeta,
                   affixMap,
                   effectMap,
                   difficulty,
                 })
               })
-              .filter((it) => !!it.Damage)
+              .filter((it) => !!it.Damage || !!it.AoeEffects?.length)
               .sort((a, b) => b.Damage - a.Damage),
           }
         })
@@ -117,11 +132,13 @@ function selectDamageInfo({
   difficulty,
   affixMap,
   effectMap,
+  spellMeta,
 }: {
   vital: Vitals
   vitalLevel: Vitalsleveldata
   vitalMod: Vitalsmodifierdata
   damageTable: Damagetable
+  spellMeta: Spellsmetadata
   difficulty: Mutationdifficulty
   affixMap: Map<string, Affixstats>
   effectMap: Map<string, Statuseffect>
@@ -141,6 +158,14 @@ function selectDamageInfo({
   // VitalsLevel.BaseDamage * (1 + AIAbilityTable.BaseDamage - AbilityTable.BaseDamageReduction + (Empower)) * DamageTable.DmgCoef * Vitals.DamageMod * VitalsLevel.CategoryDamageMod + DamageTable.AddDmg
   const affix = affixMap.get(damageTable.Affixes)
 
+  const aoeEffectIds = spellMeta?.AreaStatusEffects || []
+  const aoeEffects = aoeEffectIds.map((it) => effectMap.get(it)).filter((it) => !!it)
+  if (aoeEffects.length !== aoeEffectIds.length) {
+    console.warn('Missing AOE effects', aoeEffectIds.filter((it) => !effectMap.get(it)))
+  }
+  if (aoeEffects.length) {
+    console.debug('AOE effects', aoeEffects)
+  }
   return {
     DamageID: damageTable.DamageID,
     AttackName: humanize(damageTable.DamageID.replace(/^Attack/, '')),
@@ -161,5 +186,12 @@ function selectDamageInfo({
           Percent: affix.DamagePercentage,
         }
       : null,
+    AoeEffects: aoeEffects.map((it) => {
+      return {
+        StatusID: it.StatusID,
+        Icon: it.PlaceholderIcon || damageTypeIcon(it.DamageType) || NW_FALLBACK_ICON,
+        Label: it.DisplayName || humanize(it.StatusID),
+      }
+    })
   }
 }

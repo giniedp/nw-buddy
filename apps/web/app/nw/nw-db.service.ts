@@ -257,6 +257,14 @@ export class NwDbService {
   )
   public spellsMap = indexBy(() => this.spells, 'SpellID')
   public spell = lookup(() => this.spellsMap)
+  public spellsByDamageTable = indexGroupSetBy(
+    () => this.spells,
+    (it) => it.DamageTable
+  )
+
+  public spellsMetadata = table(() => [this.data.generatedSpellsmetadata()])
+  public spellsMetadataMap = indexBy(() => this.spellsMetadata, 'PrefabPath')
+  public spellsMeta = lookup(() => this.spellsMetadataMap)
 
   public gameModes = table(() => [this.data.gamemodes()])
   public gameModesMap = indexBy(() => this.gameModes, 'GameModeId')

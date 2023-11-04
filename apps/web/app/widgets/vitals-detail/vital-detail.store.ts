@@ -10,10 +10,10 @@ import {
   Vitalscategories,
   Vitalsmetadata,
 } from '@nw-data/generated'
-import { tap, uniqBy } from 'lodash'
+import { uniqBy } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { shareReplayRefCount, tapDebug } from '~/utils'
+import { shareReplayRefCount } from '~/utils'
 import { ModelViewerService } from '../model-viewer'
 
 export interface State {

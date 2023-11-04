@@ -45,11 +45,11 @@
     <div class="text-center text-primary capitalize font-bold text-2xl">{{ table.name | nwHumanize }}</div>
     <div *ngFor="let row of table.rows; trackBy: trackByIndex" class="flex flex-col gap-1 px-3 mb-2">
       <div class="text-lg leading-tight font-bold">
-        <a [routerLink]="['/damage/table', row.DamageID]" class="link-hover">
+        <span>
           {{ row.AttackName }}
-        </a>
+        </span>
       </div>
-      <div class="flex flex-row gap-1">
+      <div class="flex flex-row flex-wrap gap-1">
         <span
           class="badge badge-sm bg-opacity-50"
           *ngIf="row.AttackType; let text"
@@ -90,6 +90,16 @@
               {{ row.Secondary.Percent | percent }} as {{ row.Secondary.Type | nwText }}
             </ng-template>
           </span>
+        </ng-container>
+
+        <ng-container *ngFor="let item of row.AoeEffects">
+          <a class="badge badge-sm link-hover" [tooltip]="tipEffect" [tooltipClass]="'p-0'" [routerLink]="['/status-effects/table', item.StatusID]">
+            <img [nwImage]="item.Icon" class="w-4 h-4 flex-none aspect-square mr-1" />
+            {{ item.Label | nwText }}
+            <ng-template #tipEffect>
+              <nwb-status-effect-detail [effectId]="item.StatusID"></nwb-status-effect-detail>
+            </ng-template>
+          </a>
         </ng-container>
       </div>
     </div>
