@@ -21,6 +21,7 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
   public readonly level$ = this.select(({ current }) => current?.level ?? NW_MAX_CHARACTER_LEVEL)
   public readonly tradeskills$ = this.select(({ current }) => current?.tradeskillLevels)
   public readonly tradeskillSets$ = this.select(({ current }) => current?.tradeskillSets)
+  public readonly tradeskillBonus$ = this.select(({ current }) => current?.tradeskillBonus)
   public readonly craftingFlBonus$ = this.select(({ current }) => current?.craftingFlBonus)
   public readonly weapons$ = this.select(({ current }) => current?.weaponLevels)
   public readonly imageId$ = this.select(({ current }) => current?.imageId)
@@ -44,6 +45,15 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
       map((it) => {
         const data = new CaseInsensitiveMap(Object.entries(it || {}))
         return data.get(skill) || []
+      })
+    )
+  }
+
+  public selectCustomYieldBonus(skill: string) {
+    return this.tradeskillBonus$.pipe(
+      map((it) => {
+        const data = new CaseInsensitiveMap(Object.entries(it || {}))
+        return data.get(skill) || 0
       })
     )
   }
@@ -94,6 +104,21 @@ export class CharacterStore extends ComponentStore<CharacterStoreState> {
           tradeskillLevels: {
             ...current.tradeskillLevels,
             [skill]: Math.min(Math.max(0, level), NW_MAX_TRADESKILL_LEVEL),
+          },
+        })
+      })
+    )
+  })
+
+  public readonly updateSkillBonus = this.effect<{ skill: string; value: number }>((value$) => {
+    return value$.pipe(
+      tap(({ skill, value }) => {
+        const current = this.get().current
+        this.writeRecord({
+          ...current,
+          tradeskillBonus: {
+            ...current.tradeskillBonus,
+            [skill]: value,
           },
         })
       })

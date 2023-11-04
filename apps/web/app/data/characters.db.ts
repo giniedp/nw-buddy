@@ -46,6 +46,10 @@ export interface CharacterRecord {
    */
   tradeskillSets: Record<string, string[]>
   /**
+   * Cusom trade skill yield bonus
+   */
+  tradeskillBonus: Record<string, number>
+  /**
    * Crafting preference: first light bonus
    */
   craftingFlBonus: boolean

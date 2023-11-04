@@ -4,6 +4,10 @@
       <th></th>
       <th class="text-center">Level</th>
       <th class="text-center">Gear</th>
+      <th class="text-center">
+        Bonus
+        <nwb-icon [icon]="iconInfo" class="w-4 h-4 cursor-help" [tooltip]="'Custom yield bonus value. Adjust here, if ingame value is different.'"></nwb-icon>
+      </th>
     </tr>
   </thead>
   <tbody>
@@ -33,9 +37,23 @@
           </button>
         </div>
       </td>
+      <td>
+        <div class="btn-group">
+          <input
+            type="number"
+            class="input input-xs input-bordered w-14"
+            step="1"
+            [ngModel]="row.bonus"
+            (ngModelChange)="updateSkillBonus(row.skill.ID, $event)"
+            (wheel)="$event"
+            [min]="-200"
+            [max]="200"
+          />
+        </div>
+      </td>
     </tr>
     <tr>
-      <td colspan="3">
+      <td colspan="4">
         <div class="form-control w-full">
           <label class="cursor-pointer label">
             <span class="label-text">Refining Yield Boost (Weaver's Fen)</span>

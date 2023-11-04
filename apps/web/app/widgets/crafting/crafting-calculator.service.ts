@@ -228,19 +228,21 @@ export class CraftingCalculatorService {
         return combineLatest({
           skillLevel: this.char.selectTradeSkillLevel(recipe.Tradeskill),
           skillSet: this.char.selectTradeSet(recipe.Tradeskill),
+          customBonus: this.char.selectCustomYieldBonus(recipe.Tradeskill),
           flBonus: this.char.craftingFlBonus$,
           ingredients: this.findItemsOrSelectedItems(step.steps),
         }).pipe(
-          map(({ skillLevel, skillSet, flBonus, ingredients }) => {
+          map(({ skillLevel, skillSet, customBonus, flBonus, ingredients }) => {
             const flBonusChance = flBonus ? 0.1 : 0 // 10% first light bonus
             const gearScale = recipe.Tradeskill === 'Arcana' ? 0 : recipe.Tradeskill === 'Cooking' ? 0.04 : 0.02 // 2% per gear item
             const gearBonus = skillSet.length * gearScale
+
             return calculateBonusItemChance({
               item: item,
               ingredients: ingredients,
               recipe: recipe,
               skill: skillLevel || 0,
-              customChance: gearBonus + flBonusChance,
+              customChance: gearBonus + flBonusChance + (customBonus || 0) / 100,
             })
           })
         )
