@@ -5,19 +5,22 @@ import {
   damageScaleAttrs,
   getDamageTypesOfCategory,
   getItemIconPath,
+  isItemOfAnyClass,
 } from '@nw-data/common'
-import { Damagetable } from '@nw-data/generated'
+import { Damagetable, ItemClass, ItemDefinitionMaster, PvpbalanceArena } from '@nw-data/generated'
 
 import { eachModifier, modifierAdd, ModifierKey, modifierResult, modifierSum } from '../modifier'
-import { ActiveMods, ActiveWeapon, MannequinState } from '../types'
+import { ActiveMods, ActiveWeapon, DbSlice, MannequinState } from '../types'
 
 export function selectWeaponDamage(
   mods: ActiveMods,
-  { weapon, ammo, gearScore }: ActiveWeapon,
+  { item, weapon, ammo, gearScore }: ActiveWeapon,
   attack: Damagetable,
   equipLoad: number,
+  db: DbSlice,
   state: MannequinState
 ) {
+  const pvpBalance = selectPvpBalance(item, db, state)
   const split = mods.perks.find((it) => it.affix?.DamagePercentage && it.weapon?.WeaponID === weapon?.WeaponID)
   const scale = 1 - (split?.affix?.DamagePercentage || 0)
   const base = (weapon?.BaseDamage || 0) * damageFactorForGS(gearScore)
@@ -45,7 +48,6 @@ export function selectWeaponDamage(
     scale: scaleAttrs,
     source: { label: `Attributes (x${scaleAttrs.toFixed(3)})` },
   })
-
   const convertDamage = modifierResult()
 
   if (split) {
@@ -83,7 +85,23 @@ export function selectWeaponDamage(
     }
   }
   const baseDamageMod = sumCategory('BaseDamage', mods, attack.DamageType)
+  // modifierAdd(baseDamageMod, {
+  //   value: pvpBalance?.value || 0,
+  //   scale: 1,
+  //   source: {
+  //     label: 'PvP Balance'
+  //   }
+  // })
+
   const convertDamageMod = sumCategory('BaseDamage', mods, split?.affix?.DamageType)
+  // modifierAdd(convertDamageMod, {
+  //   value: pvpBalance?.value || 0,
+  //   scale: 1,
+  //   source: {
+  //     label: 'PvP Balance'
+  //   }
+  // })
+
   const healMod = sumCategory('HealScalingValueMultiplier', mods, attack.DamageType)
   if (equipLoad < 13) {
     modifierAdd(baseDamageMod, { value: 0.2, scale: 1, source: { label: 'Light Equip Load' } })
@@ -115,7 +133,42 @@ export function selectWeaponDamage(
           source: { label: 'Ammo Stat' },
         })
       : null,
+    DamagePvpBalance: pvpBalance,
   }
+}
+
+function selectPvpBalance(item: ItemDefinitionMaster, db: DbSlice, state: MannequinState) {
+  let balance: Array<Pick<PvpbalanceArena, 'BalanceCategory' | 'BalanceTarget' | 'WeaponBaseDamageAdjustment'>> = []
+  let source: string
+  if (state.combatMode === 'pvpArena') {
+    balance = db.pvpBalanceArena
+    source = 'PvP Arena'
+  }
+  if (state.combatMode === 'pvpOpenworld') {
+    balance = db.pvpBalanceOpenworld
+    source = 'PvP Open World'
+  }
+  if (state.combatMode === 'pvpWar') {
+    balance = db.pvpBalanceWar
+    source = 'PvP War'
+  }
+  if (state.combatMode === 'pvpOutpostrush') {
+    balance = db.pvpBalanceOutpostrush
+    source = 'PvP Outpost Rush'
+  }
+
+  const balanceRow = balance.find(
+    (it) => it.BalanceCategory === 'ItemClass' && isItemOfAnyClass(item, [it.BalanceTarget as ItemClass])
+  )
+  if (!balanceRow) {
+    return null
+  }
+
+  return modifierResult({
+    value: balanceRow.WeaponBaseDamageAdjustment,
+    scale: 1,
+    source: { label: source },
+  })
 }
 
 export function selectDamageMods(mods: ActiveMods, weapon: ActiveWeapon, state: MannequinState) {

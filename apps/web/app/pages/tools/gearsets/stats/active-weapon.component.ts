@@ -1,12 +1,12 @@
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Damagetable } from '@nw-data/generated'
 import { combineLatest, firstValueFrom, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
-import { Mannequin } from '~/nw/mannequin'
-import { damageTypeIcon, NW_WEAPON_TYPES } from '~/nw/weapon-types'
+import { CombatMode, Mannequin } from '~/nw/mannequin'
+import { NW_WEAPON_TYPES, damageTypeIcon } from '~/nw/weapon-types'
 import { IconsModule } from '~/ui/icons'
 import { svgBurst, svgPeopleGroup } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
@@ -23,6 +23,29 @@ import { humanize, mapFilter, mapProp } from '~/utils'
   },
 })
 export class ActiveWeaponComponent {
+  protected combatModeOptions: Array<{ label: string; value: CombatMode }> = [
+    {
+      label: 'PvE',
+      value: 'pve',
+    },
+    {
+      label: 'PvP Arena',
+      value: 'pvpArena',
+    },
+    {
+      label: 'PvP Openworld',
+      value: 'pvpOpenworld',
+    },
+    {
+      label: 'PvP War',
+      value: 'pvpWar',
+    },
+    {
+      label: 'PvP Outpostrush',
+      value: 'pvpOutpostrush',
+    },
+  ]
+
   protected dmgMain$ = this.mannequin.statDamageBase$.pipe(
     map((it) => {
       if (!it.BaseDamage?.value) {
@@ -46,7 +69,7 @@ export class ActiveWeaponComponent {
       const dmgCoef = dmgBase.DamageCoef?.value ?? 1
       const ammoCoef = dmgBase.DamageCoefAmmo?.value ?? 1
       const dmgMod = 1 + dmgBase.BaseDamageMod.value
-      const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.BaseDamageType as 'Arcane']?.value ?? 0)
+      const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.BaseDamageType]?.value ?? 0)
 
       return weaponDamage * dmgCoef * ammoCoef * dmgMod * empower
     })
@@ -62,7 +85,7 @@ export class ActiveWeaponComponent {
       const dmgCoef = dmgBase.DamageCoef?.value ?? 1
       const ammoCoef = dmgBase.DamageCoefAmmo?.value ?? 1
       const dmgMod = 1 + dmgBase.BaseDamageMod.value
-      const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.BaseDamageType as 'Arcane']?.value ?? 0)
+      const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.BaseDamageType]?.value ?? 0)
       const critMod = Math.max(dmgMods.Crit?.value || 0, 0)
 
       return weaponDamage * dmgCoef * ammoCoef * (dmgMod + critMod) * empower
@@ -92,7 +115,7 @@ export class ActiveWeaponComponent {
       const dmgCoef = dmgBase.DamageCoef?.value ?? 1
       const ammoCoef = dmgBase.DamageCoefAmmo?.value ?? 1
       const dmgMod = 1 + dmgBase.BaseDamageMod.value
-      const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.ConvertedDamageType as 'Arcane']?.value ?? 0)
+      const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.ConvertedDamageType]?.value ?? 0)
 
       return weaponDamage * dmgCoef * ammoCoef * dmgMod * empower
     })
@@ -108,7 +131,7 @@ export class ActiveWeaponComponent {
       const dmgCoef = dmgBase.DamageCoef?.value ?? 1
       const ammoCoef = dmgBase.DamageCoefAmmo?.value ?? 1
       const dmgMod = 1 + dmgBase.BaseDamageMod.value
-      const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.ConvertedDamageType as 'Arcane']?.value ?? 0)
+      const empower = 1 + (dmgEmpower.DamageCategories[dmgBase.ConvertedDamageType]?.value ?? 0)
       const critMod = Math.max(0, dmgMods.Crit?.value || 0)
 
       return weaponDamage * dmgCoef * ammoCoef * (dmgMod + critMod) * empower
@@ -123,6 +146,7 @@ export class ActiveWeaponComponent {
     attackOptions: this.mannequin.activeWeaponAttacks$.pipe(mapFilter((it) => it.AttackType !== 'Ability')),
     attackSelection: this.mannequin.activeDamageTableRow$,
     attackName: this.mannequin.activeDamageTableRow$.pipe(map((it) => humanize(it?.DamageID))),
+    combatMode: this.mannequin.combatMode$,
     numAroundMe: this.mannequin.numAroundMe$,
     numHits: this.mannequin.numHits$,
     DmgMain: combineLatest({
@@ -152,14 +176,13 @@ export class ActiveWeaponComponent {
   }
 
   protected async toggleSheathed() {
-    const state = await firstValueFrom(this.mannequin.state$)
+    const state = this.mannequin.state()
     this.mannequin.patchState({
       weaponUnsheathed: !state.weaponUnsheathed,
     })
   }
 
   protected async commitAttack(row: Damagetable) {
-    const state = await firstValueFrom(this.mannequin.state$)
     this.mannequin.patchState({
       selectedAttack: row?.DamageID,
     })
@@ -174,6 +197,12 @@ export class ActiveWeaponComponent {
   protected async commitNumHits(value: number) {
     this.mannequin.patchState({
       numHits: value,
+    })
+  }
+
+  protected async commitCombatMode(value: CombatMode) {
+    this.mannequin.patchState({
+      combatMode: value,
     })
   }
 

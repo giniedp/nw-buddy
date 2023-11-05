@@ -14,7 +14,7 @@
         [class.badge-primary]="row.AttackType === 'Heavy'"
         [class.badge-secondary]="row.AttackType === 'Ability'"
         [class.badge-info]="row.AttackType === 'Magic'"
-        >{{ row.AttackType  }}</span
+        >{{ row.AttackType }}</span
       >
     </ng-container>
   </button>
@@ -23,13 +23,13 @@
       <img [nwImage]="row.base?.icon" class="w-8 h-8" />
       <div class="flex flex-col justify-center items-center">
         <span class="text-2xl leading-none opacity-25">
-          {{ row.base?.value | number: '0.0-0' }}
+          {{ row.base?.value | number : '0.0-0' }}
         </span>
         <span class="text-2xl leading-none">
-          {{ row.standard | number: '0.0-0' }}
+          {{ row.standard | number : '0.0-0' }}
         </span>
         <span class="text-2xl leading-none text-primary">
-          {{ row.crit | number: '0.0-0' }}
+          {{ row.crit | number : '0.0-0' }}
         </span>
       </div>
     </div>
@@ -37,24 +37,35 @@
       <img [nwImage]="row.base?.icon" class="w-8 h-8" />
       <div class="flex flex-col justify-center items-center">
         <span class="text-2xl leading-none opacity-25">
-          {{ row.base?.value | number: '0.0-0' }}
+          {{ row.base?.value | number : '0.0-0' }}
         </span>
         <span class="text-2xl leading-none">
-          {{ row.standard | number: '0.0-0' }}
+          {{ row.standard | number : '0.0-0' }}
         </span>
         <span class="text-2xl leading-none text-primary">
-          {{ row.crit | number: '0.0-0' }}
+          {{ row.crit | number : '0.0-0' }}
         </span>
       </div>
     </div>
   </div>
 
+  <button class="btn btn-sm" [tooltip]="'PvP Balance'" [cdkMenuTriggerFor]="tplCombatMode">{{ vm.combatMode | nwHumanize }}</button>
   <button class="btn btn-sm gap-1" [tooltip]="'Number of enemies around me'" [cdkMenuTriggerFor]="tplNumAroundMe">
     <nwb-icon [icon]="iconGroup" class="w-5 h-5"></nwb-icon> {{ vm.numAroundMe }}
   </button>
   <button class="btn btn-sm gap-1" [tooltip]="'Number of hits'" [cdkMenuTriggerFor]="tplNumHits">
     <nwb-icon [icon]="iconBurst" class="w-5 h-5"></nwb-icon> {{ vm.numHits }}
   </button>
+
+  <ng-template #tplCombatMode>
+    <ul class="menu menu-compact bg-base-100 rounded-md shadow" cdkMenu>
+      <li *ngFor="let it of combatModeOptions">
+        <a (click)="commitCombatMode(it.value)" cdkMenuItem>
+          {{ it.label }}
+        </a>
+      </li>
+    </ul>
+  </ng-template>
 
   <ng-template #tplAttackOptions>
     <ul class="menu menu-compact bg-base-100 rounded-md shadow" cdkMenu *ngIf="vm$ | async; let vm">
@@ -79,13 +90,27 @@
 
   <ng-template #tplNumAroundMe>
     <div cdkMenu>
-      <input type="range" min="1" max="10" class="range range-primary" [ngModel]="vm.numAroundMe" (ngModelChange)="commitNumAroundMe($event)" />
+      <input
+        type="range"
+        min="1"
+        max="10"
+        class="range range-primary"
+        [ngModel]="vm.numAroundMe"
+        (ngModelChange)="commitNumAroundMe($event)"
+      />
     </div>
   </ng-template>
 
   <ng-template #tplNumHits>
     <div cdkMenu>
-      <input type="range" min="1" max="10" class="range range-primary" [ngModel]="vm.numHits" (ngModelChange)="commitNumHits($event)" />
+      <input
+        type="range"
+        min="1"
+        max="10"
+        class="range range-primary"
+        [ngModel]="vm.numHits"
+        (ngModelChange)="commitNumHits($event)"
+      />
     </div>
   </ng-template>
 </div>

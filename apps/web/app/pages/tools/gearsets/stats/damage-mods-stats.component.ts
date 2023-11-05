@@ -31,15 +31,33 @@ export class DamageModsStatsComponent {
 
       result.push({ prefix: '+', label: `Damage Coefficient`, ...base.DamageCoef })
 
+      if (base.DamagePvpBalance) {
+        result.push({
+          prefix: base.DamagePvpBalance.value < 0 ? '-' : '+',
+          label: `Damage PvP Balance`,
+          ...base.DamagePvpBalance,
+        })
+      }
+
       if (base.DamageCoefAmmo) {
         result.push({ prefix: '+', label: `Ammo Coefficient`, ...base.DamageCoefAmmo })
       }
 
       if (base.BaseDamageMod?.value) {
-        result.push({ prefix: '+', label: `Damage Bonus`,  icon: damageTypeIcon(base.BaseDamageType), ...base.BaseDamageMod })
+        result.push({
+          prefix: '+',
+          label: `Damage Bonus`,
+          icon: damageTypeIcon(base.BaseDamageType),
+          ...base.BaseDamageMod,
+        })
       }
       if (base.ConvertedDamageMod?.value) {
-        result.push({ prefix: '+', label: `Damage Bonus`,  icon: damageTypeIcon(base.ConvertedDamageType), ...base.ConvertedDamageMod })
+        result.push({
+          prefix: '+',
+          label: `Damage Bonus`,
+          icon: damageTypeIcon(base.ConvertedDamageType),
+          ...base.ConvertedDamageMod,
+        })
       }
 
       result.push({ prefix: '+', label: 'Crit Bonus', ...mods.Crit })

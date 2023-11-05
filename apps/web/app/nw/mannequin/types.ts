@@ -16,12 +16,17 @@ import {
   ItemdefinitionsRunes,
   ItemdefinitionsWeapons,
   Perks,
+  PvpbalanceArena,
+  PvpbalanceOpenworld,
+  PvpbalanceOutpostrush,
+  PvpbalanceWar,
   Statuseffect,
   Statuseffectcategories,
   WeaponTag,
 } from '@nw-data/generated'
 import { Observable } from 'rxjs'
 
+export type CombatMode = 'pve' | 'pvpArena' | 'pvpOpenworld' | 'pvpWar' | 'pvpOutpostrush'
 export interface MannequinState {
   /**
    * Current character level
@@ -69,8 +74,8 @@ export interface MannequinState {
    */
   selectedAttack?: string
 
+  combatMode?: CombatMode
   isInCombat?: boolean
-  isPvP?: string
   distFromDefender?: number
   myHealthPercent?: number
   myManaPercent?: number
@@ -99,6 +104,11 @@ export interface DbSlice {
   attrInt: Attributeintelligence[]
   attrFoc: Attributefocus[]
   attrCon: Attributeconstitution[]
+
+  pvpBalanceArena: Array<PvpbalanceArena>
+  pvpBalanceOpenworld: Array<PvpbalanceOpenworld>
+  pvpBalanceWar: Array<PvpbalanceWar>
+  pvpBalanceOutpostrush: Array<PvpbalanceOutpostrush>
 }
 
 export interface EquippedItem {
@@ -202,4 +212,4 @@ export interface AttributeModsSource {
   effects: ActiveEffect[]
 }
 
-export type SelectorOf<T> = { [K in keyof T]: Observable<T[K]> }
+export type Observed<T> = { [K in keyof T]: Observable<T[K]> }

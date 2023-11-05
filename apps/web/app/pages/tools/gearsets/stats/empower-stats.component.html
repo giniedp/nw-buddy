@@ -10,9 +10,9 @@
         <span
           *ngFor="let entry of group.entries; trackBy: trackBy"
           [tooltip]="tplTip"
-          [tooltipClass]="'p-0'"
+          [tooltipClass]="'p-0 w-full max-w-sm'"
           [class.bg-error]="entry.capped"
-          class="rounded-sm"
+          class="rounded-sm cursor-help"
         >
           <img [nwImage]="entry.icon" class="w-6 h-6" />
           <ng-template #tplTip>
@@ -27,9 +27,9 @@
         <span
           *ngFor="let entry of group.entries; trackBy: trackBy"
           [tooltip]="tplTip"
-          [tooltipClass]="'p-0'"
+          [tooltipClass]="'p-0 w-full max-w-sm'"
           [class.bg-error]="entry.capped"
-          class="rounded-sm"
+          class="rounded-sm cursor-help"
         >
           <img [nwImage]="entry.icon" class="w-6 h-6" />
           <ng-template #tplTip>
