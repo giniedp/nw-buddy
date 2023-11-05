@@ -672,6 +672,9 @@ function isActiveAbility(ability: Ability, attack: Damagetable, state: Mannequin
 }
 
 function checkBumAroundMe(ability: Ability, state: MannequinState) {
+  if (!ability) {
+    return false
+  }
   const actual = state.numAroundMe
   const limit = ability.NumAroundMe
   switch (ability.NumAroundComparisonType) {
@@ -690,6 +693,9 @@ function checkBumAroundMe(ability: Ability, state: MannequinState) {
 }
 
 function checkNumConsecutiveHits(ability: Ability, state: MannequinState) {
+  if (!ability) {
+    return false
+  }
   const actual = state.numHits
   const limit = ability.NumConsecutiveHits
   if (actual >= limit) {
@@ -700,6 +706,9 @@ function checkNumConsecutiveHits(ability: Ability, state: MannequinState) {
 
 function getAbilityScale(ability: Ability, state: MannequinState) {
   let scale = 1
+  if (!ability) {
+    return scale
+  }
   if (ability.NumAroundMe && ability.MaxNumAroundMe) {
     return Math.max(1, Math.min(state.numAroundMe, ability.MaxNumAroundMe))
   }
