@@ -84,6 +84,7 @@ const MAP_EMBED_URLS = {
   DungeonRestlessShores01: 'https://aeternum-map.gg/The%20Depths?embed=true',
   DungeonShatteredObelisk: 'https://aeternum-map.gg/Starstone%20Barrows?embed=true',
   DungeonShatterMtn00: "https://aeternum-map.gg/Tempest's%20Heart?embed=true",
+  DungeonFirstLight01: "https://aeternum-map.gg/The%20Savage%20Divide?embed=true",
   QuestApophis: null,
 }
 
