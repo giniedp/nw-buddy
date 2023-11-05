@@ -974,7 +974,7 @@ export interface Gamemodes {
   OverrideDungeonTimeout: number
   PauseTimeOfDay: boolean
   PossibleItemDropIds: string[]
-  PossibleItemDropIdsByLevel01: string
+  PossibleItemDropIdsByLevel01: string[]
   PossibleJourneyIds: string
   PreserveOldGroup: boolean
   Priority: number

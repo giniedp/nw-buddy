@@ -950,7 +950,7 @@ export const COLS_GAMEMODES = {
   "OverrideDungeonTimeout": "number",
   "PauseTimeOfDay": "boolean",
   "PossibleItemDropIds": "[]",
-  "PossibleItemDropIdsByLevel01": "string",
+  "PossibleItemDropIdsByLevel01": "[]",
   "PossibleJourneyIds": "string",
   "PreserveOldGroup": "boolean",
   "Priority": "number",

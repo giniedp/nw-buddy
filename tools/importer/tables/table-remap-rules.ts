@@ -15,7 +15,7 @@ export const TABLE_REMAP_RULES = [
     file: /javelindata_gamemodes\.json/,
     rules: [
       splitToArrayRule({
-        properties: ['PossibleItemDropIds', 'LootTags', 'MutLootTagsOverride'],
+        properties: ['PossibleItemDropIds', 'PossibleItemDropIdsByLevel01', 'LootTags', 'MutLootTagsOverride'],
         separator: ',',
       }),
     ],
