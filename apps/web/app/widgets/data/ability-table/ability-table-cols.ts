@@ -156,7 +156,7 @@ export function abilityColAttackType(util: AbilityTableUtils) {
   return util.colDef<string[]>({
     colId: 'attackType',
     headerValueGetter: () => 'Attack Type',
-    field: 'AttackType',
+    valueGetter: util.fieldGetter('AttackType'),
     filter: SelectFilter,
     cellRenderer: util.tagsRenderer({ transform: humanize }),
   })
@@ -166,7 +166,7 @@ export function abilityColDamageTable(util: AbilityTableUtils) {
   return util.colDef<string[]>({
     colId: 'damageTableRow',
     headerValueGetter: () => 'Damage Table Row',
-    field: 'DamageTableRow',
+    valueGetter: util.fieldGetter('DamageTableRow'),
     filter: SelectFilter,
     cellRenderer: util.tagsRenderer({ transform: humanize }),
   })
@@ -176,7 +176,7 @@ export function abilityColDamageTableOverride(util: AbilityTableUtils) {
   return util.colDef<string[]>({
     colId: 'damageTableRowOverride',
     headerValueGetter: () => 'Damage Table Row Override',
-    field: 'DamageTableRowOverride',
+    valueGetter: util.fieldGetter('DamageTableRowOverride'),
     filter: SelectFilter,
     cellRenderer: util.tagsRenderer({ transform: humanize }),
   })
@@ -186,7 +186,7 @@ export function abilityColRemoteDamageTable(util: AbilityTableUtils) {
   return util.colDef<string[]>({
     colId: 'remoteDamageTableRow',
     headerValueGetter: () => 'Remote Damage TableRow',
-    field: 'RemoteDamageTableRow',
+    valueGetter: util.fieldGetter('RemoteDamageTableRow'),
     filter: SelectFilter,
     cellRenderer: util.tagsRenderer({ transform: humanize }),
   })

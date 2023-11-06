@@ -390,7 +390,7 @@ export function itemColItemClass(util: ItemTableUtils) {
     colId: 'itemClass',
     headerValueGetter: () => 'Item Class',
     width: 250,
-    field: 'ItemClass',
+    valueGetter: util.fieldGetter('ItemClass'),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     filter: SelectFilter,
     filterParams: SelectFilter.params({
