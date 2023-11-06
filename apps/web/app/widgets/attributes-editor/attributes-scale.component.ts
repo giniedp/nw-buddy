@@ -96,6 +96,13 @@ export class AttributesScaleComponent {
     })
   }
 
+  @Input()
+  public set level(value: number) {
+    this.store.patchState({
+      playerLevel: value
+    })
+  }
+
   protected readonly config$ = this.store.chartConfig$
   protected readonly showTotal$ = this.store.showTotal$
   protected readonly modeIcon = svgChartLine
