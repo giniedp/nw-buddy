@@ -8,6 +8,7 @@ import {
   ItemdefinitionsWeapons,
   Perks,
 } from '@nw-data/generated'
+import { flatten, groupBy } from 'lodash'
 import type { AttributeRef } from './attributes'
 import {
   NW_ITEM_RARITY_DATA,
@@ -18,9 +19,9 @@ import {
   NW_ROLL_PERK_ON_UPGRADE_TIER,
 } from './constants'
 import { damageForTooltip } from './damage'
-import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
 import { eqCaseInsensitive } from './utils/caseinsensitive-compare'
-import { flatten, groupBy } from 'lodash'
+import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
+import { PickByPrefix } from './utils/ts-types'
 
 export function isMasterItem(item: unknown): item is ItemDefinitionMaster {
   return item != null && typeof item === 'object' && 'ItemID' in item
@@ -169,43 +170,55 @@ export interface ItemPerkInfo {
 }
 
 export function getItemPerkInfos(item: ItemDefinitionMaster, overrides?: Record<string, string>): ItemPerkInfo[] {
-  return [
-    ...getItemPerkKeys(item)
-      .map((key) => {
-        return {
-          key: key,
-          perkId: overrides?.[key] || item[key],
-        }
+  const result: ItemPerkInfo[] = []
+  for (const key of getItemPerkKeys(item)) {
+    result.push({
+      key: key,
+      perkId: overrides?.[key] || item[key],
+    })
+  }
+  for (const key of getItemPerkBucketKeys(item)) {
+    if (item[key]) {
+      result.push({
+        key: key,
+        perkId: overrides?.[key],
+        bucketId: item[key],
       })
-      .filter((it) => !!it.perkId),
-    ...getItemPerkBucketKeys(item)
-      .map((key) => {
-        return {
-          key: key,
-          perkId: overrides?.[key],
-          bucketId: item[key],
-        }
-      })
-      .filter((it) => !!it.bucketId),
-  ]
+    }
+  }
+  return result
 }
 
-export function getItemPerks(item: ItemDefinitionMaster, perks: Map<string, Perks>) {
-  return (
-    item &&
-    getItemPerkIds(item)
-      .map((it) => perks.get(it))
-      .filter((it) => it != null)
-  )
-}
+const PERK_KEYS: Array<keyof PickByPrefix<ItemDefinitionMaster, 'Perk'>> = ['Perk1', 'Perk2', 'Perk3', 'Perk4', 'Perk5']
+const PERK_BUCKET_KEYS: Array<keyof PickByPrefix<ItemDefinitionMaster, 'PerkBucket'>> = [
+  'PerkBucket1',
+  'PerkBucket2',
+  'PerkBucket3',
+  'PerkBucket4',
+  'PerkBucket5',
+]
 
-const PERK_KEYS = ['Perk1', 'Perk2', 'Perk3', 'Perk4', 'Perk5'] as const
+export function getItemPerks(item: ItemDefinitionMaster, perks: Map<string, Perks>): Perks[] {
+  const result: Perks[] = []
+  for (const id of getItemPerkIds(item)) {
+    const perk = perks.get(id)
+    if (perk) {
+      result.push(perk)
+    }
+  }
+  return result
+}
 export function getItemPerkKeys(item: ItemDefinitionMaster): string[] {
-  return PERK_KEYS.filter((it) => item && it in item)
+  const result: string[] = []
+  for (const key of PERK_KEYS) {
+    if (item && key in item) {
+      result.push(key)
+    }
+  }
+  return result
 }
-
-export function getItemPerkIds(item: ItemDefinitionMaster) {
-  const result = []
+export function getItemPerkIds(item: ItemDefinitionMaster): string[] {
+  const result: string[] = []
   for (const key of PERK_KEYS) {
     if (item && item[key]) {
       result.push(item[key])
@@ -214,44 +227,48 @@ export function getItemPerkIds(item: ItemDefinitionMaster) {
   return result
 }
 
-const PERK_SLOT_KEYS = ['PerkSlot1', 'PerkSlot2', 'PerkSlot3', 'PerkSlot4', 'PerkSlot5'] as const
-const PERK_BUCKET_KEYS = ['PerkBucket1', 'PerkBucket2', 'PerkBucket3', 'PerkBucket4', 'PerkBucket5'] as const
-
 export function getItemPerkBucketKeys(item: ItemDefinitionMaster): string[] {
-  return PERK_BUCKET_KEYS.filter((it) => item && it in item)
+  const result: string[] = []
+  for (const key of PERK_BUCKET_KEYS) {
+    if (item && key in item) {
+      result.push(key)
+    }
+  }
+  return result
 }
 export function getItemPerkBucketIds(item: ItemDefinitionMaster) {
-  return [item.PerkBucket1, item.PerkBucket2, item.PerkBucket3, item.PerkBucket4, item.PerkBucket5].filter((it) => !!it)
+  const result = []
+  for (const key of PERK_BUCKET_KEYS) {
+    if (item && item[key]) {
+      result.push(item[key])
+    }
+  }
+  return result
 }
 
 export interface ItemPerkSlot {
-  slotKey: string
-  slotId: string
   perkKey: string
   perkId?: string
   bucketKey: string
   bucketId?: string
 }
 
-export function getItemPerkSlots(item: ItemDefinitionMaster) {
-  if (!item) {
-    return []
-  }
+export function getItemPerkSlots(item: ItemDefinitionMaster): ItemPerkSlot[] {
   const result: ItemPerkSlot[] = []
-  for (let i = 0; i < PERK_SLOT_KEYS.length; i++) {
-    const slotKey = PERK_SLOT_KEYS[i]
-    const perkKey = PERK_KEYS[i]
-    const bucketKey = PERK_BUCKET_KEYS[i]
-    if (!(slotKey in item) && !(perkKey in item) && !(bucketKey in item)) {
-      continue
-    }
+  for (const key of getItemPerkKeys(item)) {
     result.push({
-      slotKey: slotKey,
-      slotId: item[slotKey],
-      perkKey: perkKey,
-      perkId: item[perkKey],
-      bucketKey: bucketKey,
-      bucketId: item[bucketKey],
+      perkKey: key,
+      perkId: item[key],
+      bucketKey: null,
+      bucketId: null,
+    })
+  }
+  for (const key of getItemPerkBucketKeys(item)) {
+    result.push({
+      perkKey: null,
+      perkId: null,
+      bucketKey: key,
+      bucketId: item[key],
     })
   }
   return result

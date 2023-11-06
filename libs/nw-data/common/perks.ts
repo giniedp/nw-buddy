@@ -31,9 +31,20 @@ export function isPerkApplicableToItem(perk: Pick<Perks, 'ItemClass'>, item: Pic
   if (!perk || !item || !perk.ItemClass || !item.ItemClass) {
     return false
   }
-  const a = perk.ItemClass.map((it) => it.toLowerCase())
-  const b = item.ItemClass.map((it) => it.toLowerCase())
-  return a.some((it) => b.includes(it))
+  return doListsIntersect(perk.ItemClass, item.ItemClass, eqIgnoreCase)
+}
+
+export function isPerkExcludedFromItem(perk: Pick<Perks, 'ExcludeItemClass' | 'PerkType'>, item: Pick<ItemDefinitionMaster, 'ItemClass'>) {
+  if (!perk || !item) {
+    return false
+  }
+  if (doListsIntersect(perk.ExcludeItemClass, item.ItemClass, eqIgnoreCase)) {
+    return true
+  }
+  if (isPerkGem(perk) && doesListInclude(item.ItemClass, 'NoGem', eqIgnoreCase)) {
+    return true
+  }
+  return false
 }
 
 export function hasPerkInherentAffix(perk: Perks): boolean {
@@ -223,4 +234,12 @@ export function getItemGsBonus(perk: Perks, item: ItemDefinitionMaster) {
 
 function eqIgnoreCase(a: string, b: string) {
   return a?.toLowerCase() === b?.toLowerCase()
+}
+
+function doesListInclude<T>(list: T[], value: T, eq: (a: T, b: T) => boolean) {
+  return list?.some((it) => eq(it, value)) ?? false
+}
+
+function doListsIntersect<T>(list1: T[], list2: T[], eq: (a: T, b: T) => boolean) {
+  return list1?.some((it) => doesListInclude(list2, it, eq)) ?? false
 }

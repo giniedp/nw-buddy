@@ -16,6 +16,7 @@ import {
   isItemJewelery,
   isItemWeapon,
   isPerkApplicableToItem,
+  isPerkExcludedFromItem,
   isPerkGem,
   isPerkInherent,
 } from '@nw-data/common'
@@ -158,6 +159,7 @@ export class InventoryPickerService {
   }
 
   public pickPerkForItem(record: ItemInstance, perkSlot: string): Observable<Perks> {
+
     return combineLatest({
       items: this.db.itemsMap,
       perks: this.db.perksMap,
@@ -165,15 +167,15 @@ export class InventoryPickerService {
     }).pipe(
       switchMap(({ items, perks, buckets }) => {
         const item = items.get(record.itemId)
-        const perkId: string = record.perks?.[perkSlot] || item?.[perkSlot]
-        const perkOrBucket = perks.get(perkId) || buckets.get(perkId)
+        const selection = record.perks?.[perkSlot]
+
         return (
-          this.openPerksPicker(item, perkOrBucket)
+          this.openPerksPicker(item, selection, perkSlot)
             .closed.pipe(take(1))
             // cancelled selection
             .pipe(filter((it) => it !== undefined))
             // unchanged selection
-            .pipe(filter((it) => !isEqual(it, [perkId])))
+            .pipe(filter((it) => !isEqual(it, [selection])))
             .pipe(map((it) => it?.[0]))
             .pipe(map((it: string) => perks.get(it)))
         )
@@ -258,14 +260,14 @@ export class InventoryPickerService {
     })
   }
 
-  private openPerksPicker(item: ItemDefinitionMaster, perkOrBucket: Perks | PerkBucket) {
+  private openPerksPicker(item: ItemDefinitionMaster, selectedPerkId: string, slotKey: string) {
     return DataViewPicker.open(this.dialog, {
       title: 'Choose Perk',
-      selection: [('PerkID' in perkOrBucket ? perkOrBucket : null)?.PerkID].filter((it) => !!it),
+      selection: selectedPerkId ? [selectedPerkId] : null,
       displayMode: ['grid'],
       dataView: {
         adapter: PerkTableAdapter,
-        source: this.getAplicablePerks(item, perkOrBucket),
+        source: this.getAplicablePerks(item, slotKey),
       },
       config: {
         maxWidth: 1400,
@@ -321,7 +323,6 @@ export class InventoryPickerService {
   }
 
   private openAttributePickerForItems(items: ItemDefinitionMaster[]) {
-    console.log(items)
     return DataViewPicker.open(this.dialog, {
       title: 'Pick Attribute Mod',
       displayMode: ['grid'],
@@ -353,24 +354,36 @@ export class InventoryPickerService {
     })
   }
 
-  public getAplicablePerks(item: ItemDefinitionMaster, perkOrBucket: Perks | PerkBucket) {
+  public getAplicablePerks(item: ItemDefinitionMaster, slotKey: string) {
     return combineLatest({
       perks: this.db.perks,
       perksMap: this.db.perksMap,
+      bucketsMap: this.db.perkBucketsMap
     }).pipe(
-      map(({ perks, perksMap }) => {
-        const isWeapon = isItemWeapon(item)
-        const isArmor = isItemArmor(item) || isItemJewelery(item)
-        const isArtifact = isItemArtifact(item)
-        const itemHasGemSlot = getItemPerkIds(item)?.some((id) => isPerkGem(perksMap.get(id)))
+      map(({ perks, perksMap, bucketsMap }) => {
 
-        const bucket = 'PerkBucketID' in perkOrBucket ? perkOrBucket : null
-        const bucketIsGem = isPerkGem(bucket)
-        const perk = 'PerkID' in perkOrBucket ? perkOrBucket : null
+        const perk = perksMap.get(item[slotKey])
         const perkIsGem = isPerkGem(perk)
+
+        const bucketId = item[slotKey]
+        const bucket = bucketsMap.get(bucketId)
+
+        const bucketIsGem = isPerkGem(bucket)
         const perkIds = getPerkBucketPerkIDs(bucket)
+        const bucketPerks = perkIds.map((id) => perksMap.get(id))
+
+        const isWeapon = isItemWeapon(item)
+        const isArmor = isItemArmor(item)
+        const isJewelery = isItemJewelery(item)
+        const isArtifact = isItemArtifact(item)
+
+        const canHaveGem = isArtifact || bucketPerks.some(isPerkGem) || isPerkGem(perksMap.get(bucketId))
 
         return perks.filter((it) => {
+          if (isPerkExcludedFromItem(it, item)) {
+            return false
+          }
+
           let isApplicable = isPerkApplicableToItem(it, item)
           if (isArmor && !isApplicable) {
             isApplicable = it.ItemClass?.includes('Armor')
@@ -392,14 +405,7 @@ export class InventoryPickerService {
             return perk.PerkType === it.PerkType
           }
           if (bucket) {
-            if (bucket.PerkType === it.PerkType) {
-              return true
-            }
-            if (isArtifact && !itemHasGemSlot && isPerkGem(it)) {
-              // artifacts without a gem slot can have gemslot added via craft mod
-              return true
-            }
-            return false
+            return bucket.PerkType === it.PerkType
           }
           if (perk) {
             return perk.PerkType === it.PerkType
