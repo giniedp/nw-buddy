@@ -388,7 +388,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       const dungeonOverrideTags = dungeon.MutLootTagsOverride || dungeonTags
       const regionTag = DUNGEON_LOOT_TAGS.find((it) => dungeonTags.includes(it))
       const regionExcludeTags = DUNGEON_LOOT_TAGS.filter((it) => !dungeonTags.includes(it))
-      //console.log({ dungeon })
+
       const tags = uniq([
         // required to access global loot table
         'GlobalMod',
@@ -398,12 +398,10 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
         ...MUTATION_LOOT_TAGS,
       ]).filter((it) => !!it && !regionExcludeTags.includes(it))
 
-      //console.log('container level', dungeon.ContainerLevel, dungeon.RequiredLevel, dungeon.RecommendedLevel)
-
       return {
         tags: [...tags],
         values: {
-          MinContLevel: Math.max(70, dungeon.ContainerLevel),
+          MinContLevel: Math.max(64, dungeon.ContainerLevel),
           EnemyLevel: Math.max(70, dungeon.ContainerLevel),
           Level: (playerLevel || NW_MAX_CHARACTER_LEVEL) - 1,
         },
@@ -441,7 +439,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       if (!dungeon || !difficulty) {
         return null
       }
-      // console.log({ dungeon, difficulty })
+
       const mutationTags = [
         ...difficulty.InjectedLootTags,
         difficulty.InjectedCreatureLoot,
@@ -451,7 +449,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       const dungeonOverrideTags = dungeon.MutLootTagsOverride || dungeonTags
       const regionTag = DUNGEON_LOOT_TAGS.find((it) => dungeonTags.includes(it))
       const regionExcludeTags = DUNGEON_LOOT_TAGS.filter((it) => !dungeonTags.includes(it))
-      //console.log('container level', dungeon.ContainerLevel)
+
       const tags = uniq([
         // required to access global loot table
         'GlobalMod',
@@ -465,7 +463,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       return {
         tags: [...tags],
         values: {
-          MinContLevel: Math.max(70, dungeon.ContainerLevel),
+          MinContLevel: Math.max(64, dungeon.ContainerLevel),
           EnemyLevel: Math.max(70, dungeon.ContainerLevel),
           Level: (playerLevel || NW_MAX_CHARACTER_LEVEL) - 1,
         },
