@@ -29,6 +29,9 @@ import {
   abilityColSource,
   abilityColUiCategory,
   abilityColWeaponTag,
+  abilityStatusEffectCategories,
+  abilityStatusEffectCategoriesList,
+  abilityTargetStatusEffectCategory,
 } from './ability-table-cols'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -106,6 +109,9 @@ function buildOptions(util: TableGridUtils<AbilityTableRecord>) {
       abilityColRemoteDamageTable(util),
       abilityColAfterAction(util),
       abilityColOnAction(util),
+      abilityStatusEffectCategories(util),
+      abilityStatusEffectCategoriesList(util),
+      abilityTargetStatusEffectCategory(util),
     ],
   }
   addGenericColumns(result, {

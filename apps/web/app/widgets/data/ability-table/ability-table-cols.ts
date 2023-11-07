@@ -220,3 +220,49 @@ export function abilityColOnAction(util: AbilityTableUtils) {
     }),
   })
 }
+
+export function abilityStatusEffectCategories(util: AbilityTableUtils) {
+  return util.colDef<string[]>({
+    colId: 'statusEffectCategories',
+    autoHeight: true,
+    hide: true,
+    headerValueGetter: () => 'Status Effect Categories',
+    valueGetter: util.fieldGetter('StatusEffectCategories'),
+    cellRenderer: util.tagsRenderer({ transform: humanize }),
+    filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      showSearch: true,
+    }),
+  })
+}
+
+export function abilityStatusEffectCategoriesList(util: AbilityTableUtils) {
+  return util.colDef<string[]>({
+    colId: 'statusEffectCategoriesList',
+    autoHeight: true,
+    hide: true,
+    headerValueGetter: () => 'Status Effect Categories List',
+    valueGetter: util.fieldGetter('StatusEffectCategoriesList'),
+    cellRenderer: util.tagsRenderer({ transform: humanize }),
+    filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      showSearch: true,
+    }),
+  })
+}
+
+
+export function abilityTargetStatusEffectCategory(util: AbilityTableUtils) {
+  return util.colDef<string>({
+    colId: 'targetStatusEffectCategory',
+    autoHeight: true,
+    hide: true,
+    headerValueGetter: () => 'Target Status Effect Category',
+    valueGetter: util.fieldGetter('TargetStatusEffectCategory'),
+    cellRenderer: util.tagsRenderer({ transform: humanize }),
+    filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      showSearch: true,
+    }),
+  })
+}

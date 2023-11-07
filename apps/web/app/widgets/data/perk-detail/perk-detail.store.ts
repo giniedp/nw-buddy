@@ -5,7 +5,7 @@ import { Affixstats, Perks } from '@nw-data/generated'
 import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { NwTextContextService } from '~/nw/expression'
-import { rejectKeys } from '~/utils'
+import { rejectKeys, selectStream } from '~/utils'
 
 @Injectable()
 export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
@@ -16,11 +16,11 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
   @Output()
   public readonly perk$ = this.select(this.db.perk(this.perkId$), (it) => it)
 
-  public readonly textContext$ = this.select(
-    combineLatest({
+  public readonly textContext$ = selectStream(
+    {
       perk: this.perk$,
       context: this.context.state$,
-    }),
+    },
     ({ perk, context }) => {
       const result = {
         itemId: perk?.PerkID,
@@ -32,14 +32,15 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
         result.gearScore += gsBonus?.value || 0
       }
       return result
-    }
+    },
+    { debounce: true }
   )
 
-  public readonly textContextClass$ = this.select(
-    combineLatest({
+  public readonly textContextClass$ = selectStream(
+    {
       perk: this.perk$,
       context: this.context.state$,
-    }),
+    },
     ({ perk, context }) => {
       const result = {
         itemId: perk?.PerkID,
@@ -49,7 +50,8 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
       const gsBonus = getPerkItemClassGSBonus(perk)
       result.gearScore += gsBonus?.value || 0
       return result
-    }
+    },
+    { debounce: true }
   )
 
   public readonly scalesWithGearScore$ = this.select(this.perk$, (it) => !!it.ScalingPerGearScore)
@@ -86,7 +88,39 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
   )
 
   public readonly refAbilities$ = this.perk$.pipe(map((it) => (it?.EquipAbility?.length ? it?.EquipAbility : null)))
-  public readonly refEffects$ = this.affix$.pipe(map((it) => (it?.StatusEffect ? [it.StatusEffect] : null)))
+  public readonly abilities$ = selectStream(
+    {
+      ref: this.refAbilities$,
+      map: this.db.abilitiesMap,
+    },
+    ({ ref, map }) => {
+      return ref?.map((id) => map.get(id)).filter((it) => !!it)
+    },
+    { debounce: true }
+  )
+
+  public readonly refEffects$ = selectStream(
+    {
+      affix: this.affix$,
+      abilities: this.abilities$,
+    },
+    ({ affix, abilities }) => {
+      const result: string[] = []
+      if (affix?.StatusEffect) {
+        result.push(affix.StatusEffect)
+      }
+      abilities?.forEach((it) => {
+        if (it.SelfApplyStatusEffect?.length) {
+          result.push(...it.SelfApplyStatusEffect)
+        }
+        if (it.OtherApplyStatusEffect) {
+          result.push(it.OtherApplyStatusEffect)
+        }
+        it.StatusEffect
+      })
+      return result.length ? result : null
+    }
+  )
 
   public constructor(private db: NwDbService) {
     super({ perkId: null })

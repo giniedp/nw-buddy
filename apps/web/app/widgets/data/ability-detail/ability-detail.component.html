@@ -24,3 +24,34 @@
   </ng-container>
   <ng-content></ng-content>
 </div>
+
+<ng-template [nwbGridValue] let-cell #tplCategory>
+  <span
+    [class.text-secondary]="!detail.hasLimitsSig()"
+    [class.text-error]="detail.hasLimitsSig()"
+    [nwbStatusEffectCategoryDetail]="cell.value"
+    #detail="detail"
+    class="inline-flex flex-row gap-1 items-center mr-1"
+  >
+    <span>
+      {{ cell.value }}
+    </span>
+    <span *ngIf="detail.hasLimitsSig()" [tooltip]="tplCategoryTip" [tooltipClass]="'max-w-none'">
+      <nwb-icon [icon]="iconInfo" class="w-3 h-3 opacity-50 hover:opacity-100 cursor-help"></nwb-icon>
+    </span>
+    <ng-template #tplCategoryTip>
+      <nwb-status-effect-limits-table [categoryId]="cell.value"></nwb-status-effect-limits-table>
+    </ng-template>
+  </span>
+</ng-template>
+
+<ng-template [nwbGridValue] let-cell #tplCategoryInfo>
+  <ng-container [nwbStatusEffectCategoryDetailByProp]="cell.value" #detail="detail">
+    <span *ngIf="detail.hasLimitsSig()" [tooltip]="tplCategoryTip" [tooltipClass]="'max-w-none'" class="text-error inline-flex">
+      <nwb-icon [icon]="iconInfo" class="w-3 h-3 opacity-50 hover:opacity-100 cursor-help"></nwb-icon>
+    </span>
+    <ng-template #tplCategoryTip>
+      <nwb-status-effect-limits-table [property]="cell.value"></nwb-status-effect-limits-table>
+    </ng-template>
+  </ng-container>
+</ng-template>

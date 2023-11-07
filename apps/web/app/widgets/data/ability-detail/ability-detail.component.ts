@@ -1,10 +1,14 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, forwardRef } from '@angular/core'
 import { Ability } from '@nw-data/generated'
 import { NwDbService, NwModule } from '~/nw'
+import { IconsModule } from '~/ui/icons'
+import { svgInfoCircle } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { PropertyGridCell } from '~/ui/property-grid/property-grid-cell.directive'
+import { TooltipModule } from '~/ui/tooltip'
+import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
 import { AbilityDetailStore } from './ability-detail.store'
 
 @Component({
@@ -13,7 +17,16 @@ import { AbilityDetailStore } from './ability-detail.store'
   templateUrl: './ability-detail.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, DecimalPipe],
+  imports: [
+    CommonModule,
+    NwModule,
+    ItemFrameModule,
+    PropertyGridModule,
+    DecimalPipe,
+    TooltipModule,
+    IconsModule,
+    StatusEffectCategoryDetailModule,
+  ],
   providers: [
     DecimalPipe,
     {
@@ -33,6 +46,14 @@ export class AbilityDetailComponent extends AbilityDetailStore {
 
   @Input()
   public disableProperties: boolean
+
+  @ViewChild('tplCategory', { static: true })
+  protected tplCategory: TemplateRef<any>
+
+  @ViewChild('tplCategoryInfo', { static: true })
+  protected tplCategoryInfo: TemplateRef<any>
+
+  protected iconInfo = svgInfoCircle
 
   public constructor(db: NwDbService, private decimals: DecimalPipe) {
     super(db)
@@ -72,6 +93,24 @@ export class AbilityDetailComponent extends AbilityDetailStore {
       }
       case 'AttackType': {
         return damageCells(value as Ability['AttackType'])
+      }
+      case 'StatusEffectCategories': {
+        return (value as Ability['StatusEffectCategories']).map((it) => ({
+          value: String(it),
+          template: this.tplCategory,
+        }))
+      }
+      case 'StatusEffectCategoriesList': {
+        return (value as Ability['StatusEffectCategoriesList']).map((it) => ({
+          value: String(it),
+          template: this.tplCategory,
+        }))
+      }
+      case 'TargetStatusEffectCategory': {
+        return (value as Ability['TargetStatusEffectCategory']).map((it) => ({
+          value: String(it),
+          template: this.tplCategory,
+        }))
       }
       default: {
         if (Array.isArray(value)) {
