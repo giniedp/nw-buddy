@@ -32,8 +32,7 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
         result.gearScore += gsBonus?.value || 0
       }
       return result
-    },
-    { debounce: true }
+    }
   )
 
   public readonly textContextClass$ = selectStream(
@@ -50,8 +49,7 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
       const gsBonus = getPerkItemClassGSBonus(perk)
       result.gearScore += gsBonus?.value || 0
       return result
-    },
-    { debounce: true }
+    }
   )
 
   public readonly scalesWithGearScore$ = this.select(this.perk$, (it) => !!it.ScalingPerGearScore)
