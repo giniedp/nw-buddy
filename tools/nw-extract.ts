@@ -66,6 +66,12 @@ program
           fixLua: true,
           decompressAzcs: true,
           threads: options.threads,
+          exclude: [
+            '(shaders|pregame|server|sounds|timelines)[/\\\\]',
+            'lyshineui[/\\\\].*\\.dynamicslice$',
+            '\\.dynamicuicanvas$',
+            '\\.timeline$',
+          ],
         })
         break
       }
