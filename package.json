@@ -1,6 +1,6 @@
 {
   "name": "nw-buddy",
-  "version": "3.0.2-1",
+  "version": "ptr-4.0.0-0",
   "description": "New World Buddy",
   "keywords": [],
   "main": "dist/electron/main.js",
@@ -248,5 +248,6 @@
   },
   "bugs": {
     "url": "https://github.com/giniedp/nw-buddy/issues"
-  }
+  },
+  "packageManager": "yarn@1.22.1"
 }
