@@ -1,82 +1,83 @@
-export const svgAngleLeft = require('!!raw-loader!./angle-left.svg').default
-export const svgAnglesLeft = require('!!raw-loader!./angles-left.svg').default
-export const svgArrowRightArrowLeft = require('!!raw-loader!./arrow-right-arrow-left.svg').default
-export const svgArrowsLeftRight = require('!!raw-loader!./arrows-left-right.svg').default
-export const svgBars = require('!!raw-loader!./bars.svg').default
-export const svgBrush = require('!!raw-loader!./brush.svg').default
-export const svgBurst = require('!!raw-loader!./burst.svg').default
-export const svgCalculator = require('!!raw-loader!./calculator.svg').default
-export const svgCamera = require('!!raw-loader!./camera.svg').default
-export const svgChevronLeft = require('!!raw-loader!./chevron-left.svg').default
-export const svgCircleCheck = require('!!raw-loader!./circle-check.svg').default
-export const svgCircleExclamation = require('!!raw-loader!./circle-exclamation.svg').default
-export const svgCircleNotch = require('!!raw-loader!./circle-notch.svg').default
-export const svgClipboard = require('!!raw-loader!./clipboard.svg').default
-export const svgClone = require('!!raw-loader!./clone.svg').default
-export const svgCode = require('!!raw-loader!./code.svg').default
-export const svgCompress = require('!!raw-loader!./compress.svg').default
-export const svgCopy = require('!!raw-loader!./copy.svg').default
-export const svgDiagramProject = require('!!raw-loader!./diagram-project.svg').default
-export const svgDiscord = require('!!raw-loader!./discord.svg').default
-export const svgDockLeft = require('!!raw-loader!./dock-left.svg').default
-export const svgDockRight = require('!!raw-loader!./dock-right.svg').default
-export const svgDollarSign = require('!!raw-loader!./dollar-sign.svg').default
-export const svgEllipsis = require('!!raw-loader!./ellipsis.svg').default
-export const svgEllipsisVertical = require('!!raw-loader!./ellipsis-vertical.svg').default
-export const svgEquals = require('!!raw-loader!./equals.svg').default
-export const svgEraser = require('!!raw-loader!./eraser.svg').default
-export const svgExclamation = require('!!raw-loader!./exclamation.svg').default
-export const svgExpand = require('!!raw-loader!./expand.svg').default
-export const svgEye = require('!!raw-loader!./eye.svg').default
-export const svgEyeSlash = require('!!raw-loader!./eye-slash.svg').default
-export const svgFileArrowDownload = require('!!raw-loader!./file-arrow-download.svg').default
-export const svgFileCode = require('!!raw-loader!./file-code.svg').default
-export const svgFileCsv = require('!!raw-loader!./file-csv.svg').default
-export const svgFileExport = require('!!raw-loader!./file-export.svg').default
-export const svgFileImport = require('!!raw-loader!./file-import.svg').default
-export const svgFilter = require('!!raw-loader!./filter.svg').default
-export const svgFilterSlash = require('!!raw-loader!./filter-slash.svg').default
-export const svgFloppyDisk = require('!!raw-loader!./floppy-disk.svg').default
-export const svgFloppyDiskArrow = require('!!raw-loader!./floppy-disk-arrow.svg').default
-export const svgFloppyDiskPen = require('!!raw-loader!./floppy-disk-pen.svg').default
-export const svgFolderOpen = require('!!raw-loader!./folder-open.svg').default
-export const svgFunction = require('!!raw-loader!./function.svg').default
-export const svgGear = require('!!raw-loader!./gear.svg').default
-export const svgGears = require('!!raw-loader!./gears.svg').default
-export const svgGithub = require('!!raw-loader!./github.svg').default
-export const svgGrid = require('!!raw-loader!./grid.svg').default
-export const svgGrip = require('!!raw-loader!./grip.svg').default
-export const svgImage = require('!!raw-loader!./image.svg').default
-export const svgInfo = require('!!raw-loader!./info.svg').default
-export const svgInfoCircle = require('!!raw-loader!./info-circle.svg').default
-export const svgLayerPlus = require('!!raw-loader!./layer-plus.svg').default
-export const svgLink = require('!!raw-loader!./link.svg').default
-export const svgLink16p = require('!!raw-loader!./link-16p.svg').default
-export const svgLinkSlash = require('!!raw-loader!./link-slash.svg').default
-export const svgLinkSlash16p = require('!!raw-loader!./link-slash-16p.svg').default
-export const svgLock = require('!!raw-loader!./lock.svg').default
-export const svgLockOpen = require('!!raw-loader!./lock-open.svg').default
-export const svgMagnifyingGlass = require('!!raw-loader!./magnifying-glass.svg').default
-export const svgMap = require('!!raw-loader!./map.svg').default
-export const svgMoon = require('!!raw-loader!./moon.svg').default
-export const svgNotEqual = require('!!raw-loader!./not-equal.svg').default
-export const svgPaste = require('!!raw-loader!./paste.svg').default
-export const svgPen = require('!!raw-loader!./pen.svg').default
-export const svgPeopleGroup = require('!!raw-loader!./people-group.svg').default
-export const svgPercent = require('!!raw-loader!./percent.svg').default
-export const svgPlus = require('!!raw-loader!./plus.svg').default
-export const svgRepeat = require('!!raw-loader!./repeat.svg').default
-export const svgRotate = require('!!raw-loader!./rotate.svg').default
-export const svgSackDollar = require('!!raw-loader!./sack-dollar.svg').default
-export const svgShareNodes = require('!!raw-loader!./share-nodes.svg').default
-export const svgSliders = require('!!raw-loader!./sliders.svg').default
-export const svgSquareArrowUpRight = require('!!raw-loader!./square-arrow-up-right.svg').default
-export const svgSun = require('!!raw-loader!./sun.svg').default
-export const svgTableCells = require('!!raw-loader!./table-cells.svg').default
-export const svgTableList = require('!!raw-loader!./table-list.svg').default
-export const svgTags = require('!!raw-loader!./tags.svg').default
-export const svgThumbtack = require('!!raw-loader!./thumbtack.svg').default
-export const svgTrashCan = require('!!raw-loader!./trash-can.svg').default
-export const svgXmark = require('!!raw-loader!./xmark.svg').default
-export const svgFilterCircleXmark = require('!!raw-loader!./filter-circle-xmark.svg').default
-export const svgChartLine = require('!!raw-loader!./chart-line.svg').default
+export * from './angle-left'
+export * from './angles-left'
+export * from './arrow-right-arrow-left'
+export * from './arrows-left-right'
+export * from './bars'
+export * from './brush'
+export * from './burst'
+export * from './calculator'
+export * from './camera'
+export * from './chart-line'
+export * from './chevron-left'
+export * from './circle-check'
+export * from './circle-exclamation'
+export * from './circle-notch'
+export * from './clipboard'
+export * from './clone'
+export * from './code'
+export * from './compress'
+export * from './copy'
+export * from './diagram-project'
+export * from './discord'
+export * from './dock-left'
+export * from './dock-right'
+export * from './dollar-sign'
+export * from './ellipsis-vertical'
+export * from './ellipsis'
+export * from './equals'
+export * from './eraser'
+export * from './exclamation'
+export * from './expand'
+export * from './eye-slash'
+export * from './eye'
+export * from './file-arrow-download'
+export * from './file-code'
+export * from './file-csv'
+export * from './file-export'
+export * from './file-import'
+export * from './filter-circle-xmark'
+export * from './filter-slash'
+export * from './filter'
+export * from './floppy-disk-arrow'
+export * from './floppy-disk-pen'
+export * from './floppy-disk'
+export * from './folder-open'
+export * from './function'
+export * from './gear'
+export * from './gears'
+export * from './github'
+export * from './grid'
+export * from './grip'
+export * from './image'
+export * from './info-circle'
+export * from './info'
+export * from './layer-plus'
+export * from './left-right'
+export * from './link-16p'
+export * from './link-slash-16p'
+export * from './link-slash'
+export * from './link'
+export * from './lock-open'
+export * from './lock'
+export * from './magnifying-glass'
+export * from './map'
+export * from './moon'
+export * from './not-equal'
+export * from './paste'
+export * from './pen'
+export * from './people-group'
+export * from './percent'
+export * from './plus'
+export * from './repeat'
+export * from './rotate'
+export * from './sack-dollar'
+export * from './share-nodes'
+export * from './sliders'
+export * from './square-arrow-up-right'
+export * from './sun'
+export * from './table-cells'
+export * from './table-list'
+export * from './tags'
+export * from './thumbtack'
+export * from './trash-can'
+export * from './xmark'

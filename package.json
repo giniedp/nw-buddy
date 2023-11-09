@@ -42,8 +42,8 @@
     "nw-extract": "yarn build:tools && env-cmd -f .env node ./dist/tools/nw-extract.js",
     "nw-convert": "yarn build:tools && env-cmd -f .env node ./dist/tools/nw-convert.js",
     "nw-import": "yarn build:tools && env-cmd -f .env node ./dist/tools/nw-import.js",
-    "nw-codegen": "yarn build:tools && env-cmd -f .env node ./dist/tools/nw-codegen.js",
     "nw-data-update": "yarn nw-extract && yarn nw-convert -u && yarn nw-import -u",
+    "nw-generate": "yarn build:tools && env-cmd -f .env node ./dist/tools/nw-generate.js",
     "cap:sync": "npx cap sync",
     "cap:android:open": "npx cap open android",
     "cap:android:run": "npx cap run android",
@@ -238,7 +238,7 @@
     "zone.js": "~0.13.3"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.13.0"
   },
   "browserslist": [
     "chrome 91"
@@ -248,6 +248,5 @@
   },
   "bugs": {
     "url": "https://github.com/giniedp/nw-buddy/issues"
-  },
-  "packageManager": "yarn@1.22.1"
+  }
 }
