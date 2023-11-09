@@ -35,6 +35,7 @@ export interface PerkSlot {
   bucket?: PerkBucket
   editable?: boolean
   explain: PerkExplanation[]
+  isInvalid: boolean
 }
 
 export function selectItemGearscore(item: ItemDefinitionMaster, gsOverride?: number) {
@@ -108,6 +109,7 @@ export function selectPerkSlots({
         editable: false,
         perkId: perk?.PerkID,
         perk: perk,
+        isInvalid: false,
         explain: explainPerk({
           perk: perk,
           affix: affixes.get(perk?.Affix),
@@ -133,6 +135,7 @@ export function selectPerkSlots({
       bucketId: slot.bucketId,
       bucket: bucket,
       editable: !!bucket || (item.CanReplaceGem && isPerkGem(perk)),
+      isInvalid: false,
       explain: explainPerk({
         perk: perk,
         affix: affixes.get(perk?.Affix),
@@ -144,6 +147,25 @@ export function selectPerkSlots({
   result.sort((a, b) => {
     return getPerkTypeWeight(a.perk?.PerkType) - getPerkTypeWeight(b.perk?.PerkType)
   })
+  for (const slot of result) {
+    const labels = slot.perk?.ExclusiveLabels
+    if (!labels?.length) {
+      continue
+    }
+    for (const other of result) {
+      if (other === slot) {
+        continue
+      }
+      const otherLabels = other.perk?.ExclusiveLabels
+      if (!otherLabels?.length) {
+        continue
+      }
+      if (labels.some((it) => otherLabels.includes(it))) {
+        slot.isInvalid = true
+        break
+      }
+    }
+  }
   return result
 }
 

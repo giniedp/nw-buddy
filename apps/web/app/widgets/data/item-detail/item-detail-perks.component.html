@@ -27,7 +27,15 @@
       – Missing –
     </nwb-item-perk>
   </ng-container>
-  <ng-container *ngIf="isSlotEditable(item)">
-    <nwb-icon [icon]="editIcon" class="w-3 h-3 absolute top-1 -left-3 opacity-50 screenshot-hidden"></nwb-icon>
-  </ng-container>
+  <span *ngIf="isSlotEditable(item)" class="absolute top-1 -left-3 opacity-50 screenshot-hidden">
+    <nwb-icon [icon]="iconEdit" class="w-3 h-3" />
+  </span>
+  <span
+    *ngIf="item.isInvalid"
+    class="absolute top-1 -right-3 opacity-50 screenshot-hidden text-error cursor-help"
+    [tooltip]="'Invalid perk combination'"
+    [tooltipClass]="'bg-error-content text-error'"
+  >
+    <nwb-icon [icon]="iconWarn" class="w-3 h-3" />
+  </span>
 </div>

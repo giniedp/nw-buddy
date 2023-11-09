@@ -1,19 +1,20 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemDetailStore } from './item-detail.store'
 import { IconsModule } from '~/ui/icons'
-import { svgEllipsisVertical, svgPen } from '~/ui/icons/svg'
+import { svgCircleExclamation, svgEllipsisVertical, svgPen } from '~/ui/icons/svg'
 import { PerkSlot } from './selectors'
+import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
   standalone: true,
   selector: 'nwb-item-detail-perks',
   templateUrl: './item-detail-perks.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, IconsModule],
+  imports: [CommonModule, NwModule, ItemFrameModule, IconsModule, TooltipModule],
   host: {
     class: 'flex flex-col gap-1',
   },
@@ -23,7 +24,9 @@ export class ItemDetailPerksComponent {
   protected editable$ = toSignal(this.store.perkEditable$)
 
   protected trackByIndex = (i: number) => i
-  protected editIcon = svgEllipsisVertical
+  protected iconEdit = svgEllipsisVertical
+  protected iconWarn = svgCircleExclamation
+
   public constructor(private store: ItemDetailStore) {
     //
   }
