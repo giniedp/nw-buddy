@@ -841,6 +841,39 @@ export abstract class NwDataLoader {
   public crafting() {
     return this.load<Crafting[]>('javelindata_crafting.json')
   }
+  public craftingArcana() {
+    return this.load<Crafting[]>('javelindata_crafting_arcana.json')
+  }
+  public craftingArmorer() {
+    return this.load<Crafting[]>('javelindata_crafting_armorer.json')
+  }
+  public craftingCooking() {
+    return this.load<Crafting[]>('javelindata_crafting_cooking.json')
+  }
+  public craftingDungeon() {
+    return this.load<Crafting[]>('javelindata_crafting_dungeon.json')
+  }
+  public craftingEngineer() {
+    return this.load<Crafting[]>('javelindata_crafting_engineer.json')
+  }
+  public craftingGypkilm() {
+    return this.load<Crafting[]>('javelindata_crafting_gypkilm.json')
+  }
+  public craftingJeweler() {
+    return this.load<Crafting[]>('javelindata_crafting_jeweler.json')
+  }
+  public craftingMisc() {
+    return this.load<Crafting[]>('javelindata_crafting_misc.json')
+  }
+  public craftingRefining() {
+    return this.load<Crafting[]>('javelindata_crafting_refining.json')
+  }
+  public craftingSeasons() {
+    return this.load<Crafting[]>('javelindata_crafting_seasons.json')
+  }
+  public craftingWeapon() {
+    return this.load<Crafting[]>('javelindata_crafting_weapon.json')
+  }
   public craftingcategories() {
     return this.load<Craftingcategories[]>('javelindata_craftingcategories.json')
   }

@@ -37,15 +37,17 @@ const MUTATION_LOOT_TAGS = ['MutatorLoot_Fire', 'MutatorLoot_Ice', 'MutatorLoot_
 
 const DUNGEON_LOOT_TAGS = [
   'Amrine',
-  'Edengrove00',
-  'ShatteredObelisk',
-  'RestlessShores01',
-  'Reekwater00',
-  'Ebonscale00',
-  'ShatterMtn00',
-  'CutlassKeys00',
   'BrimstoneSands00',
+  'CutlassKeys00',
+  'Ebonscale00',
+  'Edengrove00',
   'EXPFirstLight01',
+  'GreatCleave00',
+  'GreatCleave01',
+  'Reekwater00',
+  'RestlessShores01',
+  'ShatteredObelisk',
+  'ShatterMtn00',
 ]
 
 const TAB_NAMED_CREATURES: Array<CreatureType> = ['Dungeon+', 'Elite+']

@@ -210,11 +210,7 @@ export class NwDbService {
   public damageTableMap = indexBy(() => this.damageTables, 'DamageID')
   public damageTable = lookup(() => this.damageTableMap)
 
-  public dmgTableEliteAffix = table(() =>
-    [
-      this.data.charactertablesEliteaffixDatatablesDamagetableEliteAffix()
-    ]
-  )
+  public dmgTableEliteAffix = table(() => [this.data.charactertablesEliteaffixDatatablesDamagetableEliteAffix()])
   public dmgTableEliteAffixMap = indexBy(() => this.dmgTableEliteAffix, 'DamageID')
 
   public gatherables = table(() => [this.data.gatherables()])
@@ -286,7 +282,11 @@ export class NwDbService {
     (it) => getQuestRequiredAchuevmentIds(it)
   )
 
-  public recipes = table(() => [this.data.crafting()])
+  public recipes = table(() =>
+    this.data
+      .apiMethodsByPrefix('crafting', 'crafting')
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+  )
   public recipesMap = indexBy(() => this.recipes, 'RecipeID')
   public recipesMapByItemId = indexGroupSetBy(
     () => this.recipes,

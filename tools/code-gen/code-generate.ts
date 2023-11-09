@@ -53,6 +53,10 @@ const PATH_TO_TYPE_RULES = [
     name: 'ConversationTopic',
   },
   {
+    test: /javelindata_crafting[._]/,
+    name: 'Crafting',
+  },
+  {
     test: /_damagetable[._]/,
     name: 'Damagetable',
   },

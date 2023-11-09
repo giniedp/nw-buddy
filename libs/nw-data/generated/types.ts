@@ -634,7 +634,6 @@ export interface Costumechanges {
 
 export interface Crafting {
   AdditionalFilterText: string
-  AttributeCost: number
   BaseGearScore: number
   BaseTier: number
   BonusItemChance: number
@@ -646,15 +645,12 @@ export interface Crafting {
   CraftingCategory: string
   CraftingFee: number
   CraftingGroup: string
-  CraftingTime: number
   DisplayIngredients: string
-  ExpertiseBumpChanceOverride: number
   FirstCraftAchievementId: string
   'Game Event Validation': boolean
   GameEventID: string
   GearScoreBonus: string
   GearScoreReduction: string
-  GemSlotCost: number
   Ingredient1: string
   Ingredient2: string
   Ingredient3: string
@@ -662,7 +658,6 @@ export interface Crafting {
   Ingredient5: string
   Ingredient6: string
   Ingredient7: string
-  IsExpertiseBasedGS: boolean
   IsProcedural: boolean
   IsRefining: boolean
   IsTemporary: boolean
@@ -671,11 +666,6 @@ export interface Crafting {
   OutputQty: number
   PerkCost: number
   PerkItemsBucketPush: boolean
-  ProceduralTierID1: string
-  ProceduralTierID2: string
-  ProceduralTierID3: string
-  ProceduralTierID4: string
-  ProceduralTierID5: string
   Qty1: number
   Qty2: number
   Qty3: number
@@ -709,6 +699,7 @@ export interface Crafting {
   bKnownByDefault: boolean
   bListedByDefault: boolean
 }
+
 export interface Craftingcategories {
   CategoryID: string
   Description: string
