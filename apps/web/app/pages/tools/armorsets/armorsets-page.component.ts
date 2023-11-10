@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, TrackByFunction, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, TrackByFunction, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { IonicModule } from '@ionic/angular'
-import { ItemDefinitionMaster } from '@nw-data/generated'
+import { IonHeader } from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
-import { DataViewAdapter, DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
-import { DataGridModule, TableGridAdapter } from '~/ui/data/table-grid'
+import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
+import { DataGridModule } from '~/ui/data/table-grid'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
@@ -25,7 +24,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     NwModule,
     QuicksearchModule,
     ScreenshotModule,
-    IonicModule,
+    IonHeader,
     TooltipModule,
     DataViewModule,
     DataGridModule,

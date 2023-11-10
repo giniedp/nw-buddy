@@ -3,22 +3,21 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { IonicModule } from '@ionic/angular'
+import { IonHeader } from '@ionic/angular/standalone'
 import { firstValueFrom, map } from 'rxjs'
 import { CharacterStore } from '~/data'
 import { NwModule } from '~/nw'
 import { NwTextContextService } from '~/nw/expression'
+import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
 import { DataGridModule } from '~/ui/data/table-grid'
-import { DataViewAdapter, DataViewModule, provideDataView } from '~/ui/data/data-view'
-import { DataViewService } from '~/ui/data/data-view'
+import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
 import { svgFunction, svgGrid, svgTableList } from '~/ui/icons/svg'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { VirtualGridModule } from '~/ui/data/virtual-grid'
-import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
-import { PerkTableRecord, PerkTableAdapter } from '~/widgets/data/perk-table'
+import { HtmlHeadService, eqCaseInsensitive, observeRouteParam } from '~/utils'
+import { PerkTableAdapter, PerkTableRecord } from '~/widgets/data/perk-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
@@ -29,7 +28,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   imports: [
     CommonModule,
     FormsModule,
-    IonicModule,
+    IonHeader,
     NavbarModule,
     NwModule,
     OverlayModule,

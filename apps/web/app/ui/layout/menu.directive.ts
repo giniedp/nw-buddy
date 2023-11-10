@@ -1,5 +1,5 @@
 import { Directive, HostListener, OnDestroy, OnInit } from '@angular/core'
-import { IonMenu } from '@ionic/angular'
+import { IonMenu } from '@ionic/angular/standalone'
 import { firstValueFrom } from 'rxjs'
 import { LayoutService } from './layout.service'
 

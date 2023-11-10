@@ -9,10 +9,11 @@ import {
   OnInit,
 } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
-import type * as monaco from 'monaco-editor'
+//import type * as monaco from 'monaco-editor'
 
 async function loadLibrary() {
-  return import('monaco-editor')
+  return null
+  // return import('monaco-editor')
 }
 
 @Component({
@@ -47,7 +48,7 @@ export class CodeEditorComponent implements ControlValueAccessor, OnInit, OnDest
   protected touched = false
   protected value: string
 
-  protected editor: monaco.editor.IStandaloneCodeEditor
+  protected editor: any// monaco.editor.IStandaloneCodeEditor
 
   public constructor(private elRef: ElementRef<HTMLElement>, private cdRef: ChangeDetectorRef) {
     //

@@ -1,6 +1,6 @@
 import { ArgTypes } from '@storybook/angular'
-import type { ArgType } from '@storybook/api'
 
+export type ArgType = ArgTypes['args'] extends infer T ? T : never
 export interface CommonArgType<T> extends ArgType {
   defaultValue?: T
   value?: T

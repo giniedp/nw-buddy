@@ -2,10 +2,11 @@ import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { IonicModule } from '@ionic/angular'
+import { IonHeader } from '@ionic/angular/standalone'
 import { filter, map } from 'rxjs'
 import { SkillBuildRow, SkillBuildsStore } from '~/data'
 import { NwModule } from '~/nw'
+import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
 import { IconsModule } from '~/ui/icons'
 import { svgPlus } from '~/ui/icons/svg'
 import { ConfirmDialogComponent } from '~/ui/layout'
@@ -13,9 +14,8 @@ import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService } from '~/utils'
-import { SkillTreesListComponent } from './skill-trees-list.component'
 import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
-import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
+import { SkillTreesListComponent } from './skill-trees-list.component'
 
 @Component({
   standalone: true,
@@ -30,7 +30,7 @@ import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
     NavbarModule,
     IconsModule,
     TooltipModule,
-    IonicModule,
+    IonHeader,
     SkillTreesListComponent,
   ],
   providers: [QuicksearchService, SkillBuildsStore],

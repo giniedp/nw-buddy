@@ -1,8 +1,9 @@
 import { program } from 'commander'
 import * as fs from 'fs'
 import * as path from 'path'
-import { environment } from '../env'
-import { glob } from './utils/file-utils'
+import { z } from 'zod'
+import { CDN_URL, NW_USE_PTR, PACKAGE_VERSION, environment } from '../env'
+import { glob, readJSONFile } from './utils/file-utils'
 
 program
   .command('icons')
@@ -31,7 +32,47 @@ program
       fs.writeFileSync(tsFile, lines.join('\n'))
     }
   })
-  .parse(process.argv)
+
+program
+  .command('env')
+  .description('Generates environment variables')
+  .requiredOption('-c, --config <config>', 'Configuration name')
+  .action(async ({ config }: { config: string}) => {
+
+    const ngConfig = await readJSONFile(
+      path.join(environment.cwd, 'angular.json'),
+      z.object({
+        projects: z.record(
+          z.object({
+            architect: z.object({
+              build: z.object({
+                configurations: z.record(
+                  z.object({
+                    baseHref: z.string().optional(),
+                  })
+                ),
+              }),
+            }),
+          })
+        ),
+      })
+    )
+
+    const envFile = path.join(environment.appsDir('web', 'environments', 'env.generated.ts'))
+    const env = {
+      version: PACKAGE_VERSION,
+      isPTR: NW_USE_PTR,
+      cdnUrl: CDN_URL,
+      deployUrl: ngConfig.projects['nw-buddy'].architect.build.configurations[config].baseHref || '/',
+    }
+    console.log(env)
+    fs.writeFileSync(
+      envFile,
+      ['export type EnvVars = typeof env', `export const env = ${JSON.stringify(env, null, 2)}`].join('\n')
+    )
+  })
+
+program.parse(process.argv)
 // program
 //   .option('--ptr', 'PTR mode', NW_USE_PTR)
 //   .action(async () => {

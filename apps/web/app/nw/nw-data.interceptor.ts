@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core'
 import { CanActivateFn } from '@angular/router'
-import { getEnvDataVersionPath } from 'apps/web/environments/env'
+import { getEnvDataVersionPath } from 'apps/web/environments/utils'
 import { environment } from 'apps/web/environments/environment'
 import { map, Observable } from 'rxjs'
 

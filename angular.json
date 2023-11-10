@@ -24,14 +24,14 @@
       },
       "architect": {
         "build": {
-          "builder": "@angular-builders/custom-webpack:browser",
+          "builder": "@angular-devkit/build-angular:application",
           "options": {
             "outputPath": "dist/web",
             "index": "apps/web/index.html",
-            "main": "apps/web/main.ts",
+            "browser": "apps/web/main.ts",
             "tsConfig": "apps/web/tsconfig.app.json",
             "webWorkerTsConfig": "apps/web/tsconfig.worker.json",
-            "polyfills": "apps/web/polyfills.ts",
+            "polyfills": ["apps/web/polyfills.ts"],
             "assets": [
               "apps/web/_routes.json",
               "apps/web/favicon.ico",
@@ -61,6 +61,7 @@
             ],
             "stylePreprocessorOptions": {
               "includePaths": [
+                "",
                 "./node_modules"
               ]
             },
@@ -68,66 +69,36 @@
               "apps/web/styles/main.scss"
             ],
             "inlineStyleLanguage": "scss",
-            "scripts": [],
-            "customWebpackConfig": {
-              "path": "./angular.webpack.js",
-              "replaceDuplicatePlugins": true
-            }
+            "scripts": []
           },
           "configurations": {
             "dev": {
               "optimization": false,
-              "outputHashing": "none",
+              "extractLicenses": false,
               "sourceMap": true,
-              "namedChunks": false,
-              "aot": false,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": false,
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",
                   "with": "apps/web/environments/environment.dev.ts"
+                },
+                {
+                  "replace": "apps/web/environments/env.ts",
+                  "with": "apps/web/environments/env.generated.ts"
                 }
               ]
             },
             "web": {
-              "optimization": true,
+              "outputPath": "dist/web",
               "outputHashing": "all",
-              "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
+              "baseHref": "/",
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",
                   "with": "apps/web/environments/environment.web.ts"
-                }
-              ]
-            },
-            "cloud": {
-              "outputPath": "dist/web-cloud",
-              "assets": [
-                "apps/web/_routes.json",
-                "apps/web/favicon.ico",
-                "apps/web/robots.txt",
-                "apps/web/sitemap.txt",
-                "apps/web/assets"
-              ],
-              "optimization": true,
-              "outputHashing": "all",
-              "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
-              "fileReplacements": [
+                },
                 {
-                  "replace": "apps/web/environments/environment.ts",
-                  "with": "apps/web/environments/environment.web.ts"
+                  "replace": "apps/web/environments/env.ts",
+                  "with": "apps/web/environments/env.generated.ts"
                 }
               ]
             },
@@ -135,16 +106,19 @@
               "outputPath": "dist/web-capacitor",
               "optimization": true,
               "outputHashing": "all",
+              "baseHref": "./",
               "sourceMap": false,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",
                   "with": "apps/web/environments/environment.capacitor.ts"
+                },
+                {
+                  "replace": "apps/web/environments/env.ts",
+                  "with": "apps/web/environments/env.generated.ts"
                 }
               ]
             },
@@ -152,81 +126,41 @@
               "outputPath": "dist/web-electron",
               "optimization": true,
               "outputHashing": "all",
+              "baseHref": "./",
               "sourceMap": false,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
               "fileReplacements": [
                 {
                   "replace": "apps/web/environments/environment.ts",
                   "with": "apps/web/environments/environment.electron.ts"
-                }
-              ]
-            },
-            "overwolf": {
-              "index": {
-                "input": "apps/web/index.overwolf.html",
-                "output": "../index.html"
-              },
-              "outputPath": "dist/web-overwolf/nw-buddy",
-              "optimization": {
-                "scripts": true,
-                "styles": {
-                  "minify": true,
-                  "inlineCritical": false
                 },
-                "fonts": true
-              },
-              "outputHashing": "none",
-              "sourceMap": false,
-              "namedChunks": false,
-              "aot": true,
-              "extractLicenses": true,
-              "vendorChunk": false,
-              "buildOptimizer": true,
-              "baseHref": "./",
-              "deployUrl": "nw-buddy/",
-              "fileReplacements": [
                 {
-                  "replace": "apps/web/environments/environment.ts",
-                  "with": "apps/web/environments/environment.overwolf.ts"
+                  "replace": "apps/web/environments/env.ts",
+                  "with": "apps/web/environments/env.generated.ts"
                 }
               ]
             }
           }
         },
         "serve": {
-          "builder": "@angular-builders/custom-webpack:dev-server",
-          "options": {
-            "browserTarget": "nw-buddy:build"
-          },
+          "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "dev": {
-              "browserTarget": "nw-buddy:build:dev"
+              "buildTarget": "nw-buddy:build:dev"
             },
             "web": {
-              "browserTarget": "nw-buddy:build:web"
+              "buildTarget": "nw-buddy:build:web"
             },
             "production": {
-              "browserTarget": "nw-buddy:build:production"
+              "buildTarget": "nw-buddy:build:production"
             }
           }
         },
-        "extract-i18n": {
-          "builder": "@angular-devkit/build-angular:extract-i18n",
-          "options": {
-            "browserTarget": "nw-buddy:build"
-          }
-        },
         "test": {
-          "builder": "@angular-builders/custom-webpack:karma",
+          "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "customWebpackConfig": {
-              "path": "./angular.webpack.js",
-              "replaceDuplicatePlugins": true
-            },
             "main": "apps/web/test.ts",
             "polyfills": "apps/web/polyfills.ts",
             "tsConfig": "apps/web/tsconfig.spec.json",
@@ -236,6 +170,7 @@
             "include": ["**/*.spec.ts", "../../libs/**/*.spec.ts"],
             "stylePreprocessorOptions": {
               "includePaths": [
+                "",
                 "./node_modules"
               ]
             },
@@ -254,15 +189,6 @@
                 "input": "dist/nw-data",
                 "output": "/nw-data/"
               }
-            ]
-          }
-        },
-        "lint": {
-          "builder": "@angular-eslint/builder:lint",
-          "options": {
-            "lintFilePatterns": [
-              "apps/web/**/*.ts",
-              "apps/web/**/*.html"
             ]
           }
         },
@@ -322,7 +248,7 @@
           "defaultConfiguration": "production"
         },
         "serve-ssr": {
-          "builder": "@nguniversal/builders:ssr-dev-server",
+          "builder": "@angular-devkit/build-angular:ssr-dev-server",
           "configurations": {
             "dev": {
               "browserTarget": "nw-buddy:build:dev",
@@ -336,7 +262,7 @@
           "defaultConfiguration": "dev"
         },
         "prerender": {
-          "builder": "@nguniversal/builders:prerender",
+          "builder": "@angular-devkit/build-angular:prerender",
           "options": {
             "routes": [
               "/"

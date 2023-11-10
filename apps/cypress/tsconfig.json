@@ -1,8 +1,0 @@
-{
-  "extends": "../web/tsconfig.app.json",
-  "include": ["../web/**/*.ts", "**/*.ts"],
-  "compilerOptions": {
-    "sourceMap": false,
-    "types": ["cypress", "node"]
-  }
-}

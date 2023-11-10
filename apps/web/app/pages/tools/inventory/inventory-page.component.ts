@@ -2,25 +2,25 @@ import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { IonicModule } from '@ionic/angular'
+import { IonHeader } from '@ionic/angular/standalone'
 import { EQUIP_SLOTS, getItemId, getItemMaxGearScore } from '@nw-data/common'
 import { filter, firstValueFrom, map, take } from 'rxjs'
 import { GearsetsStore, ItemInstanceRow, ItemInstancesStore } from '~/data'
 import { NwModule } from '~/nw'
-import { DataGridModule } from '~/ui/data/table-grid'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
+import { DataGridModule } from '~/ui/data/table-grid'
+import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
 import { svgImage, svgPlus, svgTrashCan } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
 import { InventoryTableAdapter, InventoryTableRecord } from '~/widgets/data/inventory-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { GearImporterDialogComponent } from './gear-importer-dialog.component'
 import { GearsetFormComponent } from './gearset-form.component'
 import { InventoryPickerService } from './inventory-picker.service'
-import { LayoutModule } from '~/ui/layout'
 
 @Component({
   standalone: true,
@@ -33,7 +33,7 @@ import { LayoutModule } from '~/ui/layout'
     DataViewModule,
     GearsetFormComponent,
     IconsModule,
-    IonicModule,
+    IonHeader,
     NwModule,
     QuicksearchModule,
     RouterModule,

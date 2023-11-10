@@ -1,7 +1,7 @@
 import 'zone.js/node'
 
 import { program } from 'commander'
-import { isAbsolute, join } from 'path'
+import { isAbsolute, join } from 'node:path'
 import { initServer } from './server'
 
 program

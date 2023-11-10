@@ -22,6 +22,7 @@ import { UpdateAlertModule, VersionService } from './widgets/update-alert'
 import { TitleBarComponent } from './title-bar.component'
 import { FullscreenOverlayContainer, OverlayContainer } from '@angular/cdk/overlay'
 import { DialogModule } from '@angular/cdk/dialog'
+import { IonApp, IonButton, IonButtons, IonContent, IonSplitPane } from '@ionic/angular/standalone'
 
 @Component({
   standalone: true,
@@ -41,6 +42,11 @@ import { DialogModule } from '@angular/cdk/dialog'
     TitleBarComponent,
     TooltipModule,
     UpdateAlertModule,
+    IonApp,
+    IonContent,
+    IonSplitPane,
+    IonButtons,
+    IonButton,
   ],
   providers: [{ provide: OverlayContainer, useClass: FullscreenOverlayContainer }],
   animations: [

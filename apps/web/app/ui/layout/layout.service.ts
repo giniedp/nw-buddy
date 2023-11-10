@@ -1,7 +1,7 @@
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout'
 import { Injectable } from '@angular/core'
 import { BehaviorSubject, defer } from 'rxjs'
-import { IonMenu } from '@ionic/angular'
+import { IonMenu } from '@ionic/angular/standalone'
 
 @Injectable({ providedIn: 'root' })
 export class LayoutService {
