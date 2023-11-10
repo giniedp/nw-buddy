@@ -248,6 +248,5 @@
   },
   "bugs": {
     "url": "https://github.com/giniedp/nw-buddy/issues"
-  },
-  "packageManager": "yarn@1.22.1"
+  }
 }
