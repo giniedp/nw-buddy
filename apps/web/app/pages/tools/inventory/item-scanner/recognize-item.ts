@@ -37,6 +37,11 @@ export interface ItemData {
   slots: ItemPerkSlot[]
 }
 
+export interface ItemRecognitionResult {
+  name: string
+  instance: ItemInstance
+}
+
 export type TranslateFn = (key: string) => string
 
 export async function recognizeItemFromImage(options: {
@@ -59,7 +64,7 @@ export async function recognizeItemFromImage(options: {
   const scannedAttributes = getAttributeCandidates(perksAttrs, scanInfo.attrNames)
   const scannedPerks = scanInfo.perkNames.map((scannedName) => getBestMatchingPerk(perksOther, scannedName))
 
-  const results: Array<{ name: string; instance: ItemInstance }> = []
+  const results: Array<ItemRecognitionResult> = []
   for (const item of items) {
     const result = buildItem(item, scannedAttributes, scannedPerks)
     if (result.attrConsumed && result.gemConsumed && result.perksConsumed) {

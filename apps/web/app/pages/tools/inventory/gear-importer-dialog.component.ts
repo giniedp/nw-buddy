@@ -14,7 +14,7 @@ import { svgAngleLeft } from '~/ui/icons/svg'
 import { imageFileFromPaste, imageFromDropEvent } from '~/utils/image-file-from-paste'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { GearImporterStore } from './gear-importer.store'
-import { recognizeItemFromImage } from './item-scanner'
+import { ItemRecognitionResult, recognizeItemFromImage } from './item-scanner'
 
 export interface GearImporterDialogState {
   file: File
@@ -151,7 +151,7 @@ export class GearImporterDialogComponent implements OnInit {
             this.store.patchState({
               hasError: true,
             })
-            return null
+            return null as ItemRecognitionResult[]
           })
         }),
         takeUntil(this.store.destroy$)

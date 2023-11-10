@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { EQUIP_SLOTS, EquipSlotId } from '@nw-data/common'
 import { ItemInstance } from '~/data'
+import { ItemRecognitionResult } from './item-scanner'
 
 export interface GearImporterState {
   file: File
@@ -10,7 +11,7 @@ export interface GearImporterState {
   filter: string
   isScanning: boolean
   hasError: boolean
-  results: Array<{ name: string; item: ItemInstance }>
+  results: Array<ItemRecognitionResult>
 }
 
 @Injectable()
