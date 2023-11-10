@@ -86,7 +86,7 @@ jobs:
             corepack prepare pnpm@latest-8 --activate
       - run:
           name: Install Dependencies
-          command: pnpm install
+          command: pnpm i --frozen-lockfile
       - run:
           name: Download nw-data
           command: pnpm nw-cdn download --ptr
