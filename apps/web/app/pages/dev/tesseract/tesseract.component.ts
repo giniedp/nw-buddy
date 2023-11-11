@@ -19,9 +19,7 @@ import { LootModule } from '~/widgets/loot'
 })
 export class DevTesseractComponent {
   protected readonly worker$ = defer(() => {
-    return createWorker({
-
-    })
+    return createWorker('eng')
   }).pipe(shareReplayRefCount(1))
 
   protected readonly paste$ = defer(() => {
@@ -37,22 +35,21 @@ export class DevTesseractComponent {
 
   protected readonly recognition = combineLatest({
     worker: this.worker$,
-    image: this.paste$
-  }).pipe(switchMap(async ({ worker, image }) => {
-    const url = URL.createObjectURL(image)
+    image: this.paste$,
+  }).pipe(
+    switchMap(async ({ worker, image }) => {
+      const url = URL.createObjectURL(image)
 
-    return recognize(url, null, {
-
-    })
-      .then((res) => {
-        console.log({
-          words: res.data.words.filter((it) => it.confidence > 80).map((it) => it.text),
-          data: res.data,
+      return recognize(url, null, {})
+        .then((res) => {
+          console.log({
+            words: res.data.words.filter((it) => it.confidence > 80).map((it) => it.text),
+            data: res.data,
+          })
         })
-      })
-      .catch(console.error)
-  }))
-
+        .catch(console.error)
+    })
+  )
 
   public constructor(private sanitizer: DomSanitizer) {
     this.recognition.subscribe(() => {})
