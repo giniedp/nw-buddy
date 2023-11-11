@@ -53,6 +53,7 @@ export async function recognizeItemFromImage(options: {
   tl8: TranslateFn
 }) {
   const items = selectItems(options)
+  console.log('Image: ', options.image)
 
   const perkList = Array.from(options.perksMap.values()).map((it) => getPerkData(it, options.affixMap, options.tl8))
   const perksAttrs = perkList.filter((it) => isPerkInherent(it.perk))
@@ -78,31 +79,55 @@ export async function recognizeItemFromImage(options: {
 }
 
 export async function recognizeTextFromImage(image: ImageLike) {
+  const processedImage = await processAndTransformImage(image)
   const minConfidence = 10
   const tesseract = await useTesseract()
-  const result = await tesseract.recognize(image)
+  const result = await tesseract.recognize(processedImage)
   const lines = result.data.lines.map((line) => {
     return line.words
       .filter((it) => it.confidence >= minConfidence)
       .map((it) => it.text.trim())
       .join(' ')
   })
+  console.log(lines)
   return lines
 }
 
 export async function scanRecognizedText(lines: string[], tl8: TranslateFn) {
-  // const rarity
-  // if we could recognize rarity, we can use all text before rarity as item name
-  const itemName = lines[0]
+  // Find the rarity line index and use it to get entire item name
+  const ITEM_RARITIES = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Artifact']
+  const rarity = ITEM_RARITIES.find((r) => lines.find((it) => it.includes(r)))
+  const rarityIndex = lines.indexOf(rarity)
+  let itemName = rarityIndex > -1 ? lines.slice(0, rarityIndex).join(' ').trim() : lines[0].trim()
+
+  // Slice end off "of the" suffix if it exists
+  const indexOfOfThe = itemName.indexOf('of the')
+  if (indexOfOfThe !== -1) {
+    itemName = itemName.slice(0, indexOfOfThe)
+  }
 
   // attributes names from text like "+26 Dexterity"
   const attrNames = lines
-    .filter((it) => !it.includes(':'))
-    .map((it) => it.match(/\+\s*\d+\s*(.*)/)?.[1])
-    .filter((it) => !!it && !it.includes('%'))
+    .map((it) => {
+      console.log(it)
+      return it.match(/\+\s*\d+\s*(\w+)?/)?.[1]
+    })
+    .filter((it) => {
+      console.log(it)
+      return !!it && !it.includes('%')
+    })
 
-  // perk names usually follow the pattern: "name: description"
-  const perkNames = lines.filter((it) => it.includes(':')).map((it) => it.split(':')[0])
+  // perk names usually follow the pattern: "name: description" but ignore magnify "highest attribute:"
+  const perkNames = lines
+    .filter((it) => it.includes(':') && !it.includes('highest')) // take only lines with ':'
+    .map((it) => it.split(':')[0]) // take only name
+    .filter((it) => !!it) // remove empty lines
+
+  console.log({
+    itemName,
+    attrNames,
+    perkNames,
+  })
   return {
     itemName,
     attrNames,
@@ -266,7 +291,6 @@ function buildItem(item: ItemData, attrPerks: PerkData[], otherPerks: PerkData[]
     }
   }
 
-
   const restPerks = otherPerks.filter((it) => isPerkGenerated(it.perk))
   const fixedSlots = item.slots
     .filter((it) => !!it.perkId)
@@ -305,4 +329,66 @@ function isGemPerkIdOrBucket(id: string) {
 function isAttributePerkIdOrBucket(id: string) {
   id = (id || '').toLowerCase()
   return id.includes('attribute') || id.includes('_stat_')
+}
+
+async function processAndTransformImage(imageBlob: any) {
+  // Create an in-memory canvas
+  const canvas = document.createElement('canvas')
+  const ctx = canvas.getContext('2d')
+
+  // Create and load image from the blob
+  const img = new Image()
+  const imageUrl = URL.createObjectURL(imageBlob)
+  await new Promise<void>((resolve, reject) => {
+    img.onload = () => {
+      URL.revokeObjectURL(imageUrl)
+      resolve()
+    }
+    img.onerror = reject
+    img.src = imageUrl
+  })
+
+  // Resize canvas to maintain aspect ratio with a max width of 480
+  const shrinkRatio = 480 / img.width
+  canvas.width = img.width * shrinkRatio
+  canvas.height = img.height * shrinkRatio
+
+  // Draw the image onto the canvas
+  ctx.drawImage(img, 0, 0)
+
+  // Grayscale conversion and curves effect
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
+  const data = imageData.data
+  const brightnessMin = 85
+
+  // Loop through each pixel and apply the effects
+  for (let i = 0; i < data.length; i += 4) {
+    // Convert to grayscale
+    const avg = (data[i] + data[i + 1] + data[i + 2]) / 3
+    data[i] = data[i + 1] = data[i + 2] = avg
+
+    // Apply curves effect
+    const brightness = avg
+    if (brightness > brightnessMin) {
+      const increase = (255 - brightness) * 1
+      data[i] = data[i + 1] = data[i + 2] = Math.min(255, avg + increase)
+    } else {
+      const decrease = brightness * 1
+      data[i] = data[i + 1] = data[i + 2] = Math.max(0, avg - decrease)
+    }
+  }
+
+  ctx.putImageData(imageData, 0, 0)
+
+  // Draw black squares on the canvas to cover up icons that can confuse Tesseract
+  ctx.fillStyle = 'black'
+  ctx.fillRect(0, 0, 135, 135)
+  ctx.fillRect(0, 0, 58, canvas.height)
+
+  // Convert canvas to a data URL and then to a blob
+  const dataURL = canvas.toDataURL('image/jpeg', 1.0)
+  console.log(dataURL)
+  const processedBlob = await fetch(dataURL).then((res) => res.blob())
+
+  return processedBlob
 }
