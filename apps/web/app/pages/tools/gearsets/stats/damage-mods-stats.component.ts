@@ -43,20 +43,20 @@ export class DamageModsStatsComponent {
         result.push({ prefix: '+', label: `Ammo Coefficient`, ...base.DamageCoefAmmo })
       }
 
-      if (base.BaseDamageMod?.value) {
+      if (base.MainDamageMod?.value) {
         result.push({
           prefix: '+',
           label: `Damage Bonus`,
-          icon: damageTypeIcon(base.BaseDamageType),
-          ...base.BaseDamageMod,
+          icon: damageTypeIcon(base.MainDamageType),
+          ...base.MainDamageMod,
         })
       }
-      if (base.ConvertedDamageMod?.value) {
+      if (base.ElemDamageMod?.value) {
         result.push({
           prefix: '+',
           label: `Damage Bonus`,
-          icon: damageTypeIcon(base.ConvertedDamageType),
-          ...base.ConvertedDamageMod,
+          icon: damageTypeIcon(base.ElemDamageType),
+          ...base.ElemDamageMod,
         })
       }
 

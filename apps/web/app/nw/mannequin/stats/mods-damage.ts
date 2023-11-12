@@ -1,7 +1,5 @@
 import {
-  damageFactorForAttrs,
-  damageFactorForGS,
-  damageFactorForLevel,
+  damageForWeapon,
   damageScaleAttrs,
   getDamageTypesOfCategory,
   getItemIconPath,
@@ -14,77 +12,31 @@ import { ActiveMods, ActiveWeapon, DbSlice, MannequinState } from '../types'
 
 export function selectWeaponDamage(
   mods: ActiveMods,
-  { item, weapon, ammo, gearScore }: ActiveWeapon,
+  activeWeapon: ActiveWeapon,
   attack: Damagetable,
   equipLoad: number,
   db: DbSlice,
   state: MannequinState
 ) {
+  const { weapon, item, ammo, gearScore } = activeWeapon
+
   const pvpBalance = selectPvpBalance(item, db, state)
-  const split = mods.perks.find((it) => it.affix?.DamagePercentage && it.weapon?.WeaponID === weapon?.WeaponID)
-  const scale = 1 - (split?.affix?.DamagePercentage || 0)
-  const base = (weapon?.BaseDamage || 0) * damageFactorForGS(gearScore)
-  const scaleLevel = damageFactorForLevel(state.level)
-  const scaleAttrs = damageFactorForAttrs({
-    weapon: damageScaleAttrs(weapon),
-    attrSums: {
-      str: mods.attributes.str.scale,
-      dex: mods.attributes.dex.scale,
-      int: mods.attributes.int.scale,
-      foc: mods.attributes.foc.scale,
-      con: mods.attributes.con.scale,
-    },
-  })
+  const splitAffix = mods.perks.find(
+    (it) => it.affix?.DamagePercentage && it.weapon?.WeaponID === weapon?.WeaponID
+  )?.affix
+  const splitElem = splitAffix?.DamagePercentage || 0
+  const splitMain = 1 - splitElem
 
-  const mainDamage = modifierResult()
-  modifierAdd(mainDamage, { value: base * scale, scale: 1, source: { label: 'GS Base Damage' } })
-  modifierAdd(mainDamage, {
-    value: base * scale,
-    scale: scaleLevel,
-    source: { label: `Level (x${scaleLevel.toFixed(3)})` },
-  })
-  modifierAdd(mainDamage, {
-    value: base * scale,
-    scale: scaleAttrs,
-    source: { label: `Attributes (x${scaleAttrs.toFixed(3)})` },
-  })
-  const convertDamage = modifierResult()
-
-  if (split) {
-    const scale = split.affix.DamagePercentage
-    const scaleSplit = damageFactorForAttrs({
-      weapon: damageScaleAttrs(split.affix),
-      attrSums: {
-        str: mods.attributes.str.scale,
-        dex: mods.attributes.dex.scale,
-        int: mods.attributes.int.scale,
-        foc: mods.attributes.foc.scale,
-        con: 0,
-      },
-    })
-
-    modifierAdd(convertDamage, { value: base * scale, scale: 1, source: { label: 'GS Base Damage' } })
-    modifierAdd(convertDamage, {
-      value: base * scale,
-      scale: scaleLevel,
-      source: { label: `Level (x${scaleLevel.toFixed(3)})` },
-    })
-
-    if (split.affix.PreferHigherScaling && scaleSplit > scaleAttrs) {
-      modifierAdd(convertDamage, {
-        value: base * scale,
-        scale: scaleSplit,
-        source: { label: `Attributes (x${scaleSplit.toFixed(3)} of Gem)` },
-      })
-    } else {
-      modifierAdd(convertDamage, {
-        value: base * scale,
-        scale: scaleAttrs,
-        source: { label: `Attributes (x${scaleAttrs.toFixed(3)})` },
-      })
-    }
+  let scaleMain = damageScaleAttrs(weapon)
+  let scaleElem = damageScaleAttrs(splitAffix)
+  const attrSums = {
+    str: mods.attributes.str.scale,
+    dex: mods.attributes.dex.scale,
+    int: mods.attributes.int.scale,
+    foc: mods.attributes.foc.scale,
+    con: mods.attributes.con.scale,
   }
-  const baseDamageMod = sumCategory('BaseDamage', mods, attack.DamageType)
+
   // modifierAdd(baseDamageMod, {
   //   value: pvpBalance?.value || 0,
   //   scale: 1,
@@ -92,8 +44,6 @@ export function selectWeaponDamage(
   //     label: 'PvP Balance'
   //   }
   // })
-
-  const convertDamageMod = sumCategory('BaseDamage', mods, split?.affix?.DamageType)
   // modifierAdd(convertDamageMod, {
   //   value: pvpBalance?.value || 0,
   //   scale: 1,
@@ -102,25 +52,108 @@ export function selectWeaponDamage(
   //   }
   // })
 
+  const critMod = selectCritMod(mods, activeWeapon, state)
+  const mainDamageMod = sumCategory('BaseDamage', mods, attack.DamageType)
+  const elemDamageMod = sumCategory('BaseDamage', mods, splitAffix?.DamageType)
   const healMod = sumCategory('HealScalingValueMultiplier', mods, attack.DamageType)
   if (equipLoad < 13) {
-    modifierAdd(baseDamageMod, { value: 0.2, scale: 1, source: { label: 'Light Equip Load' } })
+    modifierAdd(mainDamageMod, { value: 0.2, scale: 1, source: { label: 'Light Equip Load' } })
+    modifierAdd(elemDamageMod, { value: 0.2, scale: 1, source: { label: 'Light Equip Load' } })
     modifierAdd(healMod, { value: 0.3, scale: 1, source: { label: 'Light Equip Load' } })
   } else if (equipLoad < 23) {
-    modifierAdd(baseDamageMod, { value: 0.1, scale: 1, source: { label: 'Medium Equip Load' } })
+    modifierAdd(mainDamageMod, { value: 0.1, scale: 1, source: { label: 'Medium Equip Load' } })
+    modifierAdd(elemDamageMod, { value: 0.1, scale: 1, source: { label: 'Medium Equip Load' } })
   } else {
     modifierAdd(healMod, { value: -0.3, scale: 1, source: { label: 'Heavy Equip Load' } })
   }
 
-  return {
-    BaseDamage: mainDamage,
-    BaseDamageType: attack.DamageType,
-    BaseDamageMod: baseDamageMod,
-    ConvertedDamage: convertDamage,
-    ConvertedDamageType: split?.affix?.DamageType,
-    ConvertedDamageMod: convertDamageMod,
-    HealMod: healMod,
+  console.debug('calc main damage')
+  let mainDamage = damageForWeapon({
+    playerLevel: state.level,
+    weaponBaseDamage: weapon?.BaseDamage,
+    weaponGearScore: gearScore,
+    weaponScale: scaleMain,
+    attrSums: attrSums,
+    dmgCoef: attack?.DmgCoef,
+  })
+  console.debug('calc elem damage')
+  let elemDamage = damageForWeapon({
+    playerLevel: state.level,
+    weaponBaseDamage: weapon?.BaseDamage,
+    weaponGearScore: gearScore,
+    weaponScale: scaleElem,
+    attrSums: attrSums,
+    dmgCoef: attack?.DmgCoef,
+  })
 
+  if (elemDamage > mainDamage) {
+    console.debug('use element scaling')
+    scaleMain = scaleElem
+  } else {
+    console.debug('use main scaling')
+    scaleElem = scaleMain
+  }
+
+  console.debug('calc main damage (mods)')
+  const mainDamageStandard = damageForWeapon({
+    playerLevel: state.level,
+    weaponBaseDamage: weapon?.BaseDamage,
+    weaponGearScore: gearScore,
+    weaponScale: scaleMain,
+    attrSums: attrSums,
+    dmgCoef: attack?.DmgCoef,
+    dmgMod: mainDamageMod.value,
+  })
+
+  console.debug('calc elem damage (mods)')
+  const elemDamageStandard = damageForWeapon({
+    playerLevel: state.level,
+    weaponBaseDamage: weapon?.BaseDamage,
+    weaponGearScore: gearScore,
+    weaponScale: scaleElem,
+    attrSums: attrSums,
+    dmgCoef: attack?.DmgCoef,
+    dmgMod: elemDamageMod.value,
+  })
+
+  console.debug('calc main damage (mods + crits)')
+  const mainDamageCrit = damageForWeapon({
+    playerLevel: state.level,
+    weaponBaseDamage: weapon?.BaseDamage,
+    weaponGearScore: gearScore,
+    weaponScale: scaleMain,
+    attrSums: attrSums,
+    dmgCoef: attack?.DmgCoef,
+    dmgMod: mainDamageMod.value,
+    critMod: critMod.value,
+  })
+
+  console.debug('calc elem damage (mods + crits)')
+  const elemDamageCrit = damageForWeapon({
+    playerLevel: state.level,
+    weaponBaseDamage: weapon?.BaseDamage,
+    weaponGearScore: gearScore,
+    weaponScale: scaleElem,
+    attrSums: attrSums,
+    dmgCoef: attack?.DmgCoef,
+    dmgMod: elemDamageMod.value,
+    critMod: critMod.value,
+  })
+
+  return {
+    MainDamageType: attack.DamageType,
+    MainDamage: mainDamage * splitMain,
+    MainDamageStandard: mainDamageStandard * splitMain,
+    MainDamageCrit: mainDamageCrit * splitMain,
+    //
+    ElemDamageType: splitAffix?.DamageType,
+    ElemDamage: elemDamage * splitElem,
+    ElemDamageStandard: elemDamageStandard * splitElem,
+    ElemDamageCrit: elemDamageCrit * splitElem,
+    //
+    HealMod: healMod,
+    MainDamageMod: mainDamageMod,
+    ElemDamageMod: elemDamageMod,
     DamageCoef: modifierResult({
       value: attack.DmgCoef,
       scale: 1,

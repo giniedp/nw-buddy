@@ -1,4 +1,4 @@
-import { inject } from '@angular/core'
+import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { AttributeRef, NW_MAX_CHARACTER_LEVEL, damageForTooltip, damageScaleAttrs } from '@nw-data/common'
 import { Affixstats, Attributedexterity, ItemdefinitionsWeapons } from '@nw-data/generated'
@@ -16,7 +16,15 @@ export interface AttributesScalingState {
   showTotal: boolean
 }
 const COLORS = ['#003f5c', '#2f4b7c', '#665191', '#a05195', '#d45087', '#f95d6a', '#ff7c43', '#ffa600'].reverse()
+const STAT_COLORS: Record<AttributeRef, string> = {
+  dex: COLORS[0],
+  str: COLORS[1],
+  int: COLORS[2],
+  foc: COLORS[3],
+  con: COLORS[4],
+}
 
+@Injectable()
 export class AttributesScalingStore extends ComponentStore<AttributesScalingState> {
   private db = inject(NwDbService)
 
@@ -102,6 +110,7 @@ export class AttributesScalingStore extends ComponentStore<AttributesScalingStat
 }
 
 export interface WeaponDamageStats {
+  invalidValue?: number
   value: number
   scale: Record<AttributeRef, number>
 }
@@ -142,16 +151,16 @@ function selectWeaponDamage({
     foc: selectModifierValue(tables.foc, stats.foc),
     con: selectModifierValue(tables.con, stats.con),
   }
-  const splitScale = damageScaleAttrs(affix)
+  const affixScale = damageScaleAttrs(affix)
   const weaponScale = damageScaleAttrs(weapon)
-  const splitPercent = affix?.DamagePercentage || 0
-  const weaponPercent = 1 - splitPercent
-  const splitDamage = damageForTooltip({
+  const affixPercent = affix?.DamagePercentage || 0
+  const weaponPercent = 1 - affixPercent
+  const affixDamage = damageForTooltip({
     attrSums,
     playerLevel,
     gearScore,
     weapon,
-    weaponScale: splitScale,
+    weaponScale: affixScale,
   })
   const weaponDamage = damageForTooltip({
     attrSums,
@@ -160,27 +169,15 @@ function selectWeaponDamage({
     weapon,
     weaponScale: weaponScale,
   })
-  // console.log({
-  //   gearScore,
-  //   //splitDamage,
-  //   weaponDamage,
-  //   //splitScale,
-  //   weaponScale,
-  //   //splitPercent,
-  //   weaponPercent,
-  // })
-  if (!affix?.PreferHigherScaling || splitDamage > weaponDamage) {
+
+  if (affix?.PreferHigherScaling && affixDamage > weaponDamage) {
     return {
-      value: weaponDamage * weaponPercent + splitDamage * splitPercent,
-      scale: {
-        dex: weaponScale.dex * weaponPercent + splitScale.dex * splitPercent,
-        str: weaponScale.str * weaponPercent + splitScale.str * splitPercent,
-        int: weaponScale.int * weaponPercent + splitScale.int * splitPercent,
-        foc: weaponScale.foc * weaponPercent + splitScale.foc * splitPercent,
-        con: 0,
-      },
+      invalidValue: weaponDamage * weaponPercent + affixDamage * affixPercent,
+      value: affixDamage,
+      scale: affixScale,
     }
   }
+
   return {
     value: weaponDamage,
     scale: weaponScale,
@@ -233,7 +230,7 @@ function selectChartConfig({
               }
               return table[index]?.ModifierValue * scale[key] || 0
             }),
-            backgroundColor: COLORS[i],
+            backgroundColor: STAT_COLORS[key],
           }
         }),
       ],

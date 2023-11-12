@@ -19,32 +19,35 @@
     </ng-container>
   </button>
   <div class="flex flex-row justify-around gap-2 w-full font-bold my-4">
-    <div *ngIf="vm.DmgMain; let row" class="flex flex-row items-center">
-      <img [nwImage]="row.base?.icon" class="w-8 h-8" />
-      <div class="flex flex-col justify-center items-center">
-        <span class="text-2xl leading-none opacity-25">
-          {{ row.base?.value | number : '0.0-0' }}
-        </span>
-        <span class="text-2xl leading-none">
-          {{ row.standard | number : '0.0-0' }}
-        </span>
-        <span class="text-2xl leading-none text-primary">
-          {{ row.crit | number : '0.0-0' }}
-        </span>
+    <div class="flex flex-col gap-s items-center cursor-help" [tooltip]="'Standard damage'" [tooltipClass]="'bg-base-100'">
+      <div *ngIf="vm.isSplit" class="text-3xl">
+        <span>{{ (vm.DmgMain.standard + vm.DmgElem.standard) | number }}</span>
+      </div>
+      <div class="flex flex-row flex-wrap gap-1" [class.text-3xl]="!vm.isSplit">
+        <div class="flex flex-row items-center justify-center gap-1" *ngIf="vm.DmgMain; let row">
+          <img [nwImage]="row.icon" [class.w-5]="vm.isSplit" [class.w-8]="!vm.isSplit" />
+          <span>{{ row.standard | number }}</span>
+        </div>
+        <div class="flex flex-row items-center justify-center gap-1" *ngIf="vm.DmgElem; let row">
+          <img [nwImage]="row.icon" [class.w-5]="vm.isSplit" [class.w-8]="!vm.isSplit" />
+          <span>{{ row.standard | number }}</span>
+        </div>
       </div>
     </div>
-    <div *ngIf="vm.DmgConverted; let row" class="flex flex-row items-center">
-      <img [nwImage]="row.base?.icon" class="w-8 h-8" />
-      <div class="flex flex-col justify-center items-center">
-        <span class="text-2xl leading-none opacity-25">
-          {{ row.base?.value | number : '0.0-0' }}
-        </span>
-        <span class="text-2xl leading-none">
-          {{ row.standard | number : '0.0-0' }}
-        </span>
-        <span class="text-2xl leading-none text-primary">
-          {{ row.crit | number : '0.0-0' }}
-        </span>
+
+    <div class="flex flex-col items-center text-primary cursor-help" [tooltip]="'Crit damage'" [tooltipClass]="'bg-base-100'">
+      <div *ngIf="vm.DmgMain && vm.DmgElem" class="text-3xl">
+        <span>{{ (vm.DmgMain.crit + vm.DmgElem.crit) | number }}</span>
+      </div>
+      <div class="flex flex-row flex-wrap gap-1" [class.text-3xl]="!vm.isSplit">
+        <div class="flex flex-row items-center justify-center gap-1" *ngIf="vm.DmgMain; let row">
+          <img [nwImage]="row.icon" [class.w-5]="vm.isSplit" [class.w-8]="!vm.isSplit" />
+          <span>{{ row.crit | number }}</span>
+        </div>
+        <div class="flex flex-row items-center justify-center gap-1" *ngIf="vm.DmgElem; let row">
+          <img [nwImage]="row.icon" [class.w-5]="vm.isSplit" [class.w-8]="!vm.isSplit" />
+          <span>{{ row.crit | number }}</span>
+        </div>
       </div>
     </div>
   </div>
