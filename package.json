@@ -31,7 +31,7 @@
     "build:tools": "tsc -p ./tools/tsconfig.json",
     "build:server": "ng run nw-buddy:server:production",
     "build:storybook": "pnpm storybook:build",
-    "build:web": "pnpm nw-generate env -c web && ng build -c web",
+    "build:web": "pnpm nw-generate env -c web && ng build -c web && pnpm nw-generate version",
     "build:web-electron": "pnpm nw-generate env -c electron && ng build -c electron",
     "build:web-capacitor": "pnpm nw-generate env -c capacitor && ng build -c capacitor",
     "electron:tsc": "tsc -p apps/electron/tsconfig.json",
