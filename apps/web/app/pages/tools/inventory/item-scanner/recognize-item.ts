@@ -53,8 +53,6 @@ export async function recognizeItemFromImage(options: {
   tl8: TranslateFn
 }) {
   const items = selectItems(options)
-  console.log('Image: ', options.image)
-
   const perkList = Array.from(options.perksMap.values()).map((it) => getPerkData(it, options.affixMap, options.tl8))
   const perksAttrs = perkList.filter((it) => isPerkInherent(it.perk))
   const perksOther = perkList.filter((it) => !isPerkInherent(it.perk))
@@ -89,45 +87,40 @@ export async function recognizeTextFromImage(image: ImageLike) {
       .map((it) => it.text.trim())
       .join(' ')
   })
-  console.log(lines)
   return lines
 }
 
 export async function scanRecognizedText(lines: string[], tl8: TranslateFn) {
   // Find the rarity line index and use it to get entire item name
-  const ITEM_RARITIES = ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Artifact']
-  const rarity = ITEM_RARITIES.find((r) => lines.find((it) => it.includes(r)))
+  const LOCALIZED_ITEM_RARITIES = [
+    tl8('RarityLevel0_DisplayName'),
+    tl8('RarityLevel1_DisplayName'),
+    tl8('RarityLevel2_DisplayName'),
+    tl8('RarityLevel3_DisplayName'),
+    tl8('RarityLevel4_DisplayName'),
+    tl8('ui_artifact'),
+  ]
+  const rarity = LOCALIZED_ITEM_RARITIES.find((r) => lines.find((it) => it.includes(r)))
   const rarityIndex = lines.indexOf(rarity)
   let itemName = rarityIndex > -1 ? lines.slice(0, rarityIndex).join(' ').trim() : lines[0].trim()
 
   // Slice end off "of the" suffix if it exists
+  // TODO: handle other languages that have translated "of the" suffixes
   const indexOfOfThe = itemName.indexOf('of the')
   if (indexOfOfThe !== -1) {
     itemName = itemName.slice(0, indexOfOfThe)
   }
 
   // attributes names from text like "+26 Dexterity"
-  const attrNames = lines
-    .map((it) => {
-      console.log(it)
-      return it.match(/\+\s*\d+\s*(\w+)?/)?.[1]
-    })
-    .filter((it) => {
-      console.log(it)
-      return !!it && !it.includes('%')
-    })
+  const attrNames = lines.map((it) => it.match(/\+\s*\d+\s*(\w+)?/)?.[1]).filter((it) => !!it && !it.includes('%'))
 
   // perk names usually follow the pattern: "name: description" but ignore magnify "highest attribute:"
+  // TODO: find a better way to exclude "highest attribute:" from perk names, this would only work for English
   const perkNames = lines
-    .filter((it) => it.includes(':') && !it.includes('highest')) // take only lines with ':'
+    .filter((it) => it.includes(':') && !it.includes('highest')) // take only lines with ':' and ignore "highest attribute:"
     .map((it) => it.split(':')[0]) // take only name
     .filter((it) => !!it) // remove empty lines
 
-  console.log({
-    itemName,
-    attrNames,
-    perkNames,
-  })
   return {
     itemName,
     attrNames,
@@ -331,7 +324,13 @@ function isAttributePerkIdOrBucket(id: string) {
   return id.includes('attribute') || id.includes('_stat_')
 }
 
-async function processAndTransformImage(imageBlob: any) {
+// Takes in the image and does some processing to make it easier for Tesseract to recognize the text we want
+async function processAndTransformImage(imageBlob: ImageLike) {
+  // Check if imageBlob is Blob or MediaSource, if not, return it early without processing it
+  if (!(imageBlob instanceof Blob) && !(imageBlob instanceof MediaSource)) {
+    return imageBlob
+  }
+
   // Create an in-memory canvas
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
@@ -359,7 +358,7 @@ async function processAndTransformImage(imageBlob: any) {
   // Grayscale conversion and curves effect
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height)
   const data = imageData.data
-  const brightnessMin = 85
+  const brightnessMin = 89 // Adjust this to tweak the how extreme the curve effect is, 89 seems to be a consistent min
 
   // Loop through each pixel and apply the effects
   for (let i = 0; i < data.length; i += 4) {
@@ -387,8 +386,9 @@ async function processAndTransformImage(imageBlob: any) {
 
   // Convert canvas to a data URL and then to a blob
   const dataURL = canvas.toDataURL('image/jpeg', 1.0)
-  console.log(dataURL)
-  const processedBlob = await fetch(dataURL).then((res) => res.blob())
+  // For debugging, copy this to your browser to see what the image looks like
+  // console.log(dataURL)
 
+  const processedBlob = await fetch(dataURL).then((res) => res.blob())
   return processedBlob
 }
