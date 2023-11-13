@@ -7,7 +7,7 @@ export const env = {
   /**
    * Whether this is a New World PTR build
    */
-  isPTR: true,
+  isPTR: false,
   /**
    * The path where models are located
    */
