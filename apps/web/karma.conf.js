@@ -45,9 +45,10 @@ module.exports = function (config) {
     //     nocache: false,
     //   },
     // ],
-    // proxies: {
-    //   '/nw-data/': '../../dist/nw-data/',
-    // },
+    proxies: {
+      '/nw-data/': '../../dist/nw-data/',
+      '/docs/': '../../docs/',
+    },
     reporters: ['mocha'],
     mochaReporter: {
       ignoreSkipped: true,
