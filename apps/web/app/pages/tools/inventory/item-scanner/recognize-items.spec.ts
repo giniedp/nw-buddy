@@ -10,7 +10,7 @@ function sampleUrl(file: string) {
   return `/app/pages/tools/inventory/item-scanner/samples/${file}`
 }
 
-fdescribe('item-scanner', () => {
+describe('item-scanner', () => {
   let db: NwDbService
   let translate: TranslateService
   let http: HttpClient
