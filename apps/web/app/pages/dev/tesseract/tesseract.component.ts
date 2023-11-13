@@ -19,7 +19,7 @@ import { LootModule } from '~/widgets/loot'
 })
 export class DevTesseractComponent {
   protected readonly worker$ = defer(() => {
-    return createWorker('eng')
+    return createWorker('deu+eng+spa+fra+ita+pol+por')
   }).pipe(shareReplayRefCount(1))
 
   protected readonly paste$ = defer(() => {
