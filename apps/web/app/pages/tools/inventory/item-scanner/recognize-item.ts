@@ -75,8 +75,6 @@ export async function recognizeItemFromImage(options: {
     return 1 - diceCoefficient(it.name, scanInfo.itemName)
   })
 
-  console.log(result[0])
-
   return result
 }
 
@@ -131,12 +129,6 @@ export async function scanRecognizedText(lines: string[], tl8: TranslateFn) {
     .filter((it) => it.includes(':') && !it.includes('highest')) // take only lines with ':' and ignore "highest attribute:"
     .map((it) => it.split(':')[0]) // take only name
     .filter((it) => !!it) // remove empty lines
-
-  console.log({
-    itemName,
-    attrNames,
-    perkNames,
-  })
 
   return {
     itemName,

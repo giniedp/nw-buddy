@@ -7,126 +7,123 @@ import { NwDbService } from '~/nw'
 import { AppTestingModule } from '~/test'
 import { recognizeItemFromImage } from './recognize-item'
 
-const sampleTestItems = [
-  {
-    lang: 'en',
-    items: [
-      {
-        imageFile: 'blunderbuss_legendary_named_warhorn.png',
-        itemClass: ['Blunderbuss'],
-        expectedResult: {
-          name: 'Warhorn',
-          instance: {
-            itemId: '2hBlunderbuss_Warhorn',
-            gearScore: 700,
-            perks: {
-              Perk3: 'PerkID_Gem_GambitGem4',
-              PerkBucket5: 'PerkID_Weapon_DmgCrit',
-            },
+const sampleTestItems = {
+  en: [
+    {
+      imageFile: 'blunderbuss_legendary_named_warhorn.png',
+      itemClass: ['Blunderbuss'],
+      expectedResult: {
+        name: 'Warhorn',
+        instance: {
+          itemId: '2hBlunderbuss_Warhorn',
+          gearScore: 700,
+          perks: {
+            Perk3: 'PerkID_Gem_GambitGem4',
+            PerkBucket5: 'PerkID_Weapon_DmgCrit',
           },
-          gemConsumed: true,
-          attrConsumed: true,
-          perksConsumed: true,
         },
+        gemConsumed: true,
+        attrConsumed: true,
+        perksConsumed: true,
       },
-      {
-        imageFile: 'chest_rare_light_desecrated_cloth.png',
-        itemClass: ['EquippableChest'],
-        expectedResult: {
-          name: 'Desecrated Cloth Shirt',
-          instance: {
-            itemId: 'LightChest_LostElite1T3',
-            gearScore: 400,
-            perks: {
-              PerkBucket3: 'PerkID_Gem_EmptyGemSlot',
-              PerkBucket1: 'PerkID_Stat_ArmorSentry',
-              PerkBucket2: 'PerkID_Common_CDR',
-            },
+    },
+    {
+      imageFile: 'chest_rare_light_desecrated_cloth.png',
+      itemClass: ['EquippableChest'],
+      expectedResult: {
+        name: 'Desecrated Cloth Shirt',
+        instance: {
+          itemId: 'LightChest_LostElite1T3',
+          gearScore: 400,
+          perks: {
+            PerkBucket3: 'PerkID_Gem_EmptyGemSlot',
+            PerkBucket1: 'PerkID_Stat_ArmorSentry',
+            PerkBucket2: 'PerkID_Common_CDR',
           },
-          gemConsumed: true,
-          attrConsumed: true,
-          perksConsumed: true,
         },
+        gemConsumed: true,
+        attrConsumed: true,
+        perksConsumed: true,
       },
-      {
-        imageFile: 'feet_uncommon_corrupted_leather_boots.png',
-        itemClass: ['EquippableFeet'],
-        expectedResult: {
-          name: 'Corrupted Leather Boots',
-          instance: {
-            itemId: 'MediumFeet_CorruptedElite1T4',
-            gearScore: 500,
-            perks: {
-              PerkBucket1: 'PerkID_Stat_ArmorScholar',
-              PerkBucket4: 'PerkID_Armor_DefGrit',
-            },
+    },
+    {
+      imageFile: 'feet_uncommon_corrupted_leather_boots.png',
+      itemClass: ['EquippableFeet'],
+      expectedResult: {
+        name: 'Corrupted Leather Boots',
+        instance: {
+          itemId: 'MediumFeet_CorruptedElite1T4',
+          gearScore: 500,
+          perks: {
+            PerkBucket1: 'PerkID_Stat_ArmorScholar',
+            PerkBucket4: 'PerkID_Armor_DefGrit',
           },
-          gemConsumed: true,
-          attrConsumed: true,
-          perksConsumed: true,
         },
+        gemConsumed: true,
+        attrConsumed: true,
+        perksConsumed: true,
       },
-      {
-        imageFile: 'hatchet_legendary_scheming_dryad.png',
-        itemClass: ['Hatchet'],
-        expectedResult: {
-          name: 'Dryad Hatchet',
-          instance: {
-            itemId: '1hThrowingAxeAngryEarthEliteT5',
-            gearScore: 600,
-            perks: {
-              PerkBucket3: 'PerkID_Gem_GambitGem4',
-              PerkBucket1: 'PerkID_Stat_TwoHandSoldier',
-              PerkBucket4: 'PerkID_Weapon_DmgCrit',
-              PerkBucket5: 'PerkID_Weapon_DodgeSuccess_ArcaneDMG',
-              PerkBucket2: 'PerkID_Ability_Hatchet_Berserk',
-            },
+    },
+    {
+      imageFile: 'hatchet_legendary_scheming_dryad.png',
+      itemClass: ['Hatchet'],
+      expectedResult: {
+        name: 'Dryad Hatchet',
+        instance: {
+          itemId: '1hThrowingAxeAngryEarthEliteT5',
+          gearScore: 600,
+          perks: {
+            PerkBucket3: 'PerkID_Gem_GambitGem4',
+            PerkBucket1: 'PerkID_Stat_TwoHandSoldier',
+            PerkBucket4: 'PerkID_Weapon_DmgCrit',
+            PerkBucket5: 'PerkID_Weapon_DodgeSuccess_ArcaneDMG',
+            PerkBucket2: 'PerkID_Ability_Hatchet_Berserk',
           },
-          gemConsumed: true,
-          attrConsumed: true,
-          perksConsumed: true,
         },
+        gemConsumed: true,
+        attrConsumed: true,
+        perksConsumed: true,
       },
-      {
-        imageFile: 'legs_legendary_heavy_guardian_plate_greaves.png',
-        itemClass: ['EquippableLegs'],
-        expectedResult: {
-          name: 'Guardian Plate Greaves',
-          instance: {
-            itemId: 'HeavyLegs_CraftedDungeon6T5',
-            gearScore: 600,
-            perks: {
-              PerkBucket3: 'PerkID_Gem_ElementalWard4',
-              PerkBucket4: 'PerkID_Armor_DurCC',
-              PerkBucket5: 'PerkID_Armor_DodgeSuccess_Fortify',
-              PerkBucket2: 'PerkID_Armor_Conditioning_Thrust',
-            },
+    },
+    {
+      imageFile: 'legs_legendary_heavy_guardian_plate_greaves.png',
+      itemClass: ['EquippableLegs'],
+      expectedResult: {
+        name: 'Guardian Plate Greaves',
+        instance: {
+          itemId: 'HeavyLegs_CraftedDungeon6T5',
+          gearScore: 600,
+          perks: {
+            PerkBucket3: 'PerkID_Gem_ElementalWard4',
+            PerkBucket4: 'PerkID_Armor_DurCC',
+            PerkBucket5: 'PerkID_Armor_DodgeSuccess_Fortify',
+            PerkBucket2: 'PerkID_Armor_Conditioning_Thrust',
           },
-          gemConsumed: true,
-          attrConsumed: true,
-          perksConsumed: true,
         },
+        gemConsumed: true,
+        attrConsumed: true,
+        perksConsumed: true,
       },
-      {
-        imageFile: 'ring_legendary_named_heart_of_anhurawak.png',
-        itemClass: ['Jewelry'],
-        expectedResult: {
-          name: 'Heart of Anhurawak',
-          instance: {
-            itemId: 'RingT5_HeartOfAnhurawak_V2',
-            gearScore: 625,
-            perks: {
-              Perk2: 'PerkID_Gem_FireWard4',
-            },
+    },
+    {
+      imageFile: 'ring_legendary_named_heart_of_anhurawak.png',
+      itemClass: ['Jewelry'],
+      expectedResult: {
+        name: 'Heart of Anhurawak',
+        instance: {
+          itemId: 'RingT5_HeartOfAnhurawak_V2',
+          gearScore: 625,
+          perks: {
+            Perk2: 'PerkID_Gem_FireWard4',
           },
-          gemConsumed: true,
-          attrConsumed: true,
-          perksConsumed: true,
         },
+        gemConsumed: true,
+        attrConsumed: true,
+        perksConsumed: true,
       },
-    ],
-  },
-]
+    },
+  ],
+}
 
 function sampleUrl(file: string) {
   return `/app/pages/tools/inventory/item-scanner/samples/${file}`
@@ -160,8 +157,13 @@ describe('item-scanner', async () => {
     expect(items.length).toBeGreaterThan(0)
   })
 
-  for (const { lang, items } of sampleTestItems) {
-    it(`recognizes items: ${lang}`, async () => {
+  // Loop over all languages and test all items
+  for (const [lang, items] of Object.entries(sampleTestItems)) {
+    testItemImagesByLang(lang, items)
+  }
+
+  async function testItemImagesByLang(lang: string, items: any) {
+    it(`recognizes sample item images for lang: ${lang}`, async () => {
       for (const { imageFile, itemClass, expectedResult } of items) {
         const result = await recognizeItemFromImage({
           affixMap: await firstValueFrom(db.affixStatsMap),
