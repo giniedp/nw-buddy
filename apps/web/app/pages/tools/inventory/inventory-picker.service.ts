@@ -5,6 +5,7 @@ import {
   EquipSlotId,
   EquipSlotItemType,
   getEquipSlotForId,
+  getItemPerkIds,
   getItemPerkSlots,
   getPerkBucketPerkIDs,
   isItemArmor,
@@ -394,6 +395,7 @@ export class InventoryPickerService {
         const bucketIsGem = isPerkGem(bucket)
         const bucketPerkIds = getPerkBucketPerkIDs(bucket)
         // const bucketPerks = bucketPerkIds.map((id) => perksMap.get(id))
+        const hasGemSlot = getItemPerkIds(item).some((it) => isPerkGem(perksMap.get(it)) )
 
         const isWeapon = isItemWeapon(item)
         const isArmor = isItemArmor(item)
@@ -416,7 +418,7 @@ export class InventoryPickerService {
             if (!isApplicable) {
               return false
             }
-            if (isArtifact) {
+            if (isArtifact && !hasGemSlot) {
               // artifacts only have one custom perk slot
               // user may choose either gem or perk (no attribute however)
               return isApplicable && !isPerkInherent(it)
