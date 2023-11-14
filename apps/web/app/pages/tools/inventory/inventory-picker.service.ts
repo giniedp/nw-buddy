@@ -392,15 +392,13 @@ export class InventoryPickerService {
         const bucket = bucketsMap.get(bucketId)
 
         const bucketIsGem = isPerkGem(bucket)
-        const perkIds = getPerkBucketPerkIDs(bucket)
-        const bucketPerks = perkIds.map((id) => perksMap.get(id))
+        const bucketPerkIds = getPerkBucketPerkIDs(bucket)
+        // const bucketPerks = bucketPerkIds.map((id) => perksMap.get(id))
 
         const isWeapon = isItemWeapon(item)
         const isArmor = isItemArmor(item)
-        const isJewelery = isItemJewelery(item)
+        // const isJewelery = isItemJewelery(item)
         const isArtifact = isItemArtifact(item)
-
-        const canHaveGem = isArtifact || bucketPerks.some(isPerkGem) || isPerkGem(perksMap.get(bucketId))
 
         return perks
           .filter((it) => {
@@ -418,8 +416,14 @@ export class InventoryPickerService {
             if (!isApplicable) {
               return false
             }
+            if (isArtifact) {
+              // artifacts only have one custom perk slot
+              // user may choose either gem or perk (no attribute however)
+              return isApplicable && !isPerkInherent(it)
+            }
 
-            if (perkIds.includes(it.PerkID)) {
+            if (bucketPerkIds.includes(it.PerkID)) {
+              // always allow whatever is in the bucket
               return true
             }
             if (bucketIsGem) {
