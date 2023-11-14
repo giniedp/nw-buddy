@@ -71,9 +71,13 @@ export async function recognizeItemFromImage(options: {
     }
   }
 
-  return sortBy(results, (it) => {
+  const result = sortBy(results, (it) => {
     return 1 - diceCoefficient(it.name, scanInfo.itemName)
   })
+
+  console.log(result[0])
+
+  return result
 }
 
 export async function recognizeTextFromImage(image: ImageLike) {
@@ -104,11 +108,18 @@ export async function scanRecognizedText(lines: string[], tl8: TranslateFn) {
   const rarityIndex = lines.indexOf(rarity)
   let itemName = rarityIndex > -1 ? lines.slice(0, rarityIndex).join(' ').trim() : lines[0].trim()
 
-  // Slice end off "of the" suffix if it exists
+  // Check if name includes "Imbued" and remove it if it does
+  // TODO: handle other languages that have translated "Imbued" suffixes
+  const isImbued = itemName.includes('Imbued')
+  if (isImbued) {
+    itemName = itemName.replace('Imbued', '').trim()
+  }
+
+  // Remove "of the" suffix if it exists
   // TODO: handle other languages that have translated "of the" suffixes
   const indexOfOfThe = itemName.indexOf('of the')
   if (indexOfOfThe !== -1) {
-    itemName = itemName.slice(0, indexOfOfThe)
+    itemName = itemName.slice(0, indexOfOfThe).trim()
   }
 
   // attributes names from text like "+26 Dexterity"
@@ -120,6 +131,12 @@ export async function scanRecognizedText(lines: string[], tl8: TranslateFn) {
     .filter((it) => it.includes(':') && !it.includes('highest')) // take only lines with ':' and ignore "highest attribute:"
     .map((it) => it.split(':')[0]) // take only name
     .filter((it) => !!it) // remove empty lines
+
+  console.log({
+    itemName,
+    attrNames,
+    perkNames,
+  })
 
   return {
     itemName,
