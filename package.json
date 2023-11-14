@@ -1,6 +1,6 @@
 {
   "name": "nw-buddy",
-  "version": "ptr-3.0.2-1",
+  "version": "3.0.3-0",
   "description": "New World Buddy",
   "keywords": [],
   "main": "dist/electron/main.js",
@@ -16,8 +16,8 @@
   "scripts": {
     "lint": "ng lint",
     "dev": "pnpm nw-generate env -c dev && npm-run-all -p dev:electron dev:web",
-    "dev:web": "pnpm nw-generate env -c dev && ng serve --host 0.0.0.0 --disable-host-check -c dev -o",
     "dev:electron": "pnpm electron:serve",
+    "dev:web": "pnpm nw-generate env -c dev && ng serve --host 0.0.0.0 --disable-host-check -c dev -o",
     "dev:server": "ng run nw-buddy:serve-ssr",
     "dev:tools": "pnpm build:tools -w",
     "dev:storybook": "ng run nw-buddy:storybook",

@@ -127,9 +127,11 @@ function createWindow(): BrowserWindow {
     winState.manage(mainWindow)
   })
 
-  mainWindow.webContents.on('new-window', function (e, url) {
-    e.preventDefault()
+  mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url)
+    return {
+      action: 'deny'
+    }
   })
 
   if (serve) {
@@ -141,7 +143,7 @@ function createWindow(): BrowserWindow {
     // win.webContents.openDevTools()
     mainWindow.loadURL(
       url.format({
-        pathname: path.join(__dirname, '../web-electron/index.html'),
+        pathname: path.join(__dirname, '../web-electron/browser/index.html'),
         protocol: 'file:',
         slashes: true,
       })

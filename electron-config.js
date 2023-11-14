@@ -5,6 +5,6 @@ module.exports = {
   ...config,
   files: [
     ...config.files,
-    `!dist/web-electron/nw-data/${env.NW_USE_PTR ? 'live' : 'ptr'}`,
+    `!dist/web-electron/browser/nw-data/${env.NW_USE_PTR ? 'live' : 'ptr'}`,
   ]
 }
