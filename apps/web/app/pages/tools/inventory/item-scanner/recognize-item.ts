@@ -106,13 +106,6 @@ export async function scanRecognizedText(lines: string[], tl8: TranslateFn) {
   const rarityIndex = lines.indexOf(rarity)
   let itemName = rarityIndex > -1 ? lines.slice(0, rarityIndex).join(' ').trim() : lines[0].trim()
 
-  // Check if name includes "Imbued" and remove it if it does
-  // TODO: handle other languages that have translated "Imbued" suffixes
-  const isImbued = itemName.includes('Imbued')
-  if (isImbued) {
-    itemName = itemName.replace('Imbued', '').trim()
-  }
-
   // Remove "of the" suffix if it exists
   // TODO: handle other languages that have translated "of the" suffixes
   const indexOfOfThe = itemName.indexOf('of the')
