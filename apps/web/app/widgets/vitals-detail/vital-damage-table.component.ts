@@ -41,7 +41,7 @@ import { DamageRowDetailModule } from '../data/damage-detail'
     ScreenshotModule,
     RouterModule,
     StatusEffectDetailModule,
-    DamageRowDetailModule
+    DamageRowDetailModule,
   ],
   providers: [VitalDetailStore],
   host: {
@@ -88,34 +88,47 @@ export class VitalDamageTableComponent {
     })
   )
     .pipe(
-      map(({ vital, vitalMod, vitalLevel, vitalCategories, difficulty, tables, affixMap, effectMap, spellsByDamageMap, spellsMetaMap  }) => {
-        return tables.map((table) => {
-          const name = table.file.replace(/\.xml$/, '').replace(/^.*javelindata_damagetable/, '')
-          const tableName = humanize(`${name}_damagetable`).replaceAll(' ', '')
-          const spells = Array.from(spellsByDamageMap.get(tableName)?.values() || [])
-          return {
-            name: name,
-            rows: table.rows
-              ?.map((row) => {
-                const spell = spells.find((it) => eqCaseInsensitive(it.DamageTableRow, row.DamageID))
-                const spellMeta = spellsMetaMap.get(spell?.SpellPrefabPath)
+      map(
+        ({
+          vital,
+          vitalMod,
+          vitalLevel,
+          vitalCategories,
+          difficulty,
+          tables,
+          affixMap,
+          effectMap,
+          spellsByDamageMap,
+          spellsMetaMap,
+        }) => {
+          return tables.map((table) => {
+            const name = table.file.replace(/\.xml$/, '').replace(/^.*javelindata_damagetable/, '')
+            const tableName = humanize(`${name}_damagetable`).replaceAll(' ', '')
+            const spells = Array.from(spellsByDamageMap.get(tableName)?.values() || [])
+            return {
+              name: name,
+              rows: table.rows
+                ?.map((row) => {
+                  const spell = spells.find((it) => eqCaseInsensitive(it.DamageTableRow, row.DamageID))
+                  const spellMeta = spellsMetaMap.get(spell?.SpellPrefabPath)
 
-                return selectDamageInfo({
-                  vital,
-                  vitalLevel,
-                  vitalMod,
-                  damageTable: row,
-                  spellMeta: spellMeta,
-                  affixMap,
-                  effectMap,
-                  difficulty,
+                  return selectDamageInfo({
+                    vital,
+                    vitalLevel,
+                    vitalMod,
+                    damageTable: row,
+                    spellMeta: spellMeta,
+                    affixMap,
+                    effectMap,
+                    difficulty,
+                  })
                 })
-              })
-              .filter((it) => !!it.Damage || !!it.AoeEffects?.length)
-              .sort((a, b) => b.Damage - a.Damage),
-          }
-        })
-      })
+                .filter((it) => !!it.Damage || !!it.AoeEffects?.length)
+                .sort((a, b) => b.Damage - a.Damage),
+            }
+          })
+        }
+      )
     )
     .pipe(shareReplayRefCount(1))
 
@@ -151,9 +164,9 @@ function selectDamageInfo({
   const addDmg = damageTable.AddDmg || 0
 
   //const dmgIncMod = effectMap.get(difficulty?.DamageIncreaseMod)?.['DMG' + damageTable.DamageType] || 0
-  //const dmgPotency = 1 + (difficulty?.[`DamagePotency_${vital.CreatureType}`] || 0) / 100
+  const dmgPotency = 1 + (difficulty?.[`DamagePotency_${vital.CreatureType}`] || 0) / 100
 
-  const totalDamage = baseDamage * dmgCoef * dmgMod * categoryDamageMod + addDmg
+  const totalDamage = baseDamage * dmgCoef * dmgMod * dmgPotency * categoryDamageMod + addDmg
 
   // VitalsLevel.BaseDamage * (1 + AIAbilityTable.BaseDamage - AbilityTable.BaseDamageReduction + (Empower)) * DamageTable.DmgCoef * Vitals.DamageMod * VitalsLevel.CategoryDamageMod + DamageTable.AddDmg
   const affix = affixMap.get(damageTable.Affixes)
@@ -161,7 +174,10 @@ function selectDamageInfo({
   const aoeEffectIds = spellMeta?.AreaStatusEffects || []
   const aoeEffects = aoeEffectIds.map((it) => effectMap.get(it)).filter((it) => !!it)
   if (aoeEffects.length !== aoeEffectIds.length) {
-    console.warn('Missing AOE effects', aoeEffectIds.filter((it) => !effectMap.get(it)))
+    console.warn(
+      'Missing AOE effects',
+      aoeEffectIds.filter((it) => !effectMap.get(it))
+    )
   }
   if (aoeEffects.length) {
     console.debug('AOE effects', aoeEffects)
@@ -192,6 +208,6 @@ function selectDamageInfo({
         Icon: it.PlaceholderIcon || damageTypeIcon(it.DamageType) || NW_FALLBACK_ICON,
         Label: it.DisplayName || humanize(it.StatusID),
       }
-    })
+    }),
   }
 }
