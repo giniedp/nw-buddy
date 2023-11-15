@@ -223,7 +223,8 @@
     "node": ">=18.13.0"
   },
   "browserslist": [
-    "chrome 91"
+    "defaults and fully supports es6-module",
+    "chrome 86"
   ],
   "optionalDependencies": {
     "nw-extract": "1.2.1"
