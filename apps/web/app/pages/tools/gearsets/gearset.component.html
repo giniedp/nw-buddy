@@ -6,7 +6,7 @@
     [nwbScreenshotWidth]="1660"
     [nwbScreenshotMode]="'detached'"
   >
-    <div class="flex-1 grid grid-cols-fill-sm layout-gap" [@list]="slots?.length">
+    <div class="flex-1 grid grid-cols-fill-sm layout-gap grid-rows-1" [@list]="slots?.length">
       <ng-container *ngTemplateOutlet="tplContentAvatar"></ng-container>
       <ng-container *ngTemplateOutlet="tplContentStats"></ng-container>
       <ng-container *ngTemplateOutlet="tplContentSkills"></ng-container>
