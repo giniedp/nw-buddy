@@ -1,10 +1,9 @@
 import {
   ItemPerkSlot,
   NW_MAX_GEAR_SCORE,
+  explainPerkMods,
   getItemMaxGearScore,
   getItemPerkSlots,
-  getPerkMultiplier,
-  getPerksInherentMODs,
   isItemArmor,
   isItemJewelery,
   isItemOfAnyClass,
@@ -27,7 +26,7 @@ export interface PerkData {
   perk: Perks
   suffix?: string
   prefix?: string
-  mods?: Array<{ label: string; value: number }>
+  mods?: Array<{ label: string; value: string }>
   rating?: number
 }
 
@@ -75,6 +74,14 @@ export async function recognizeItemFromImage(options: {
     return 1 - diceCoefficient(it.name, scanInfo.itemName)
   })
 
+  // console.debug({
+  //   lines,
+  //   scanInfo,
+  //   scannedAttributes,
+  //   scannedPerks,
+  //   results,
+  //   result,
+  // })
   return result
 }
 
@@ -119,7 +126,7 @@ export async function scanRecognizedText(lines: string[], tl8: TranslateFn) {
   // perk names usually follow the pattern: "name: description" but ignore magnify "highest attribute:"
   // TODO: find a better way to exclude "highest attribute:" from perk names, this would only work for English
   const perkNames = lines
-    .filter((it) => it.includes(':') && !it.includes('highest')) // take only lines with ':' and ignore "highest attribute:"
+    .filter((it) => it.includes(':') && !it.includes('highest') && !it.includes('Stacks:')) // take only lines with ':' and ignore "highest attribute:"
     .map((it) => it.split(':')[0]) // take only name
     .filter((it) => !!it) // remove empty lines
 
@@ -173,12 +180,16 @@ function getPerkData(perk: Perks, affixMap: Map<string, Affixstats>, tl8: Transl
     perk: perk,
     mods: !isPerkInherent(perk)
       ? null
-      : getPerksInherentMODs(perk, affixMap.get(perk.Affix), getPerkMultiplier(perk, NW_MAX_GEAR_SCORE))
+      : explainPerkMods({
+          perk: perk,
+          affix: affixMap.get(perk.Affix),
+          gearScore: NW_MAX_GEAR_SCORE,
+        })
           .map((it) => ({
-            label: tl8(it.label),
-            value: Math.floor(it.value),
+            label: tl8(it.description),
+            value: it.label,
           }))
-          .sort((a, b) => b.value - a.value),
+          .sort((a, b) => a.label.localeCompare(b.label)),
   }
 }
 
@@ -350,9 +361,10 @@ async function processAndTransformImage(imageBlob: ImageLike) {
   })
 
   // Resize canvas to maintain aspect ratio with a max width of 480
-  const shrinkRatio = 480 / img.width
-  canvas.width = img.width * shrinkRatio
-  canvas.height = img.height * shrinkRatio
+  const rectSize = img.width * 0.28
+  const stripeSize = img.width * 0.14
+  canvas.width = img.width
+  canvas.height = img.height
 
   // Draw the image onto the canvas
   ctx.drawImage(img, 0, 0)
@@ -369,22 +381,22 @@ async function processAndTransformImage(imageBlob: ImageLike) {
     data[i] = data[i + 1] = data[i + 2] = avg
 
     // Apply curves effect
-    const brightness = avg
-    if (brightness > brightnessMin) {
-      const increase = (255 - brightness) * 1
-      data[i] = data[i + 1] = data[i + 2] = Math.min(255, avg + increase)
-    } else {
-      const decrease = brightness * 1
-      data[i] = data[i + 1] = data[i + 2] = Math.max(0, avg - decrease)
-    }
+    // const brightness = avg
+    // if (brightness > brightnessMin) {
+    //   const increase = (255 - brightness) * 1
+    //   data[i] = data[i + 1] = data[i + 2] = Math.min(255, avg + increase)
+    // } else {
+    //   const decrease = brightness * 1
+    //   data[i] = data[i + 1] = data[i + 2] = Math.max(0, avg - decrease)
+    // }
   }
 
   ctx.putImageData(imageData, 0, 0)
 
   // Draw black squares on the canvas to cover up icons that can confuse Tesseract
   ctx.fillStyle = 'black'
-  ctx.fillRect(0, 0, 135, 135)
-  ctx.fillRect(0, 0, 58, canvas.height)
+  ctx.fillRect(0, 0, rectSize, rectSize)
+  ctx.fillRect(0, 0, stripeSize, canvas.height)
 
   // Convert canvas to a data URL and then to a blob
   const dataURL = canvas.toDataURL('image/jpeg', 1.0)
