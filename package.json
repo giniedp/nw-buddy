@@ -224,7 +224,9 @@
   },
   "browserslist": [
     "defaults and fully supports es6-module",
-    "chrome 86"
+    "ios_saf >= 14",
+    "safari >= 14",
+    "chrome >= 86"
   ],
   "optionalDependencies": {
     "nw-extract": "1.2.1"
