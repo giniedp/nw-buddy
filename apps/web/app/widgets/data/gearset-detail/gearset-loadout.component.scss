@@ -1,7 +1,7 @@
 :host {
   display: grid;
   grid-template-columns: 4fr 2fr;
-  @screen sm {
+  @media (min-width: 576px) {
     grid-template-columns: 6fr 2fr;
   }
 }
