@@ -36,18 +36,18 @@ module.exports = function (config) {
         { type: 'cobertura', subdir: '.', file: 'cobertura.xml' },
       ],
     },
-    // files: [
-    //   {
-    //     pattern: '../../dist/nw-data/**/*.json',
-    //     watched: false,
-    //     included: false,
-    //     served: true,
-    //     nocache: false,
-    //   },
-    // ],
-    // proxies: {
-    //   '/nw-data/': '../../dist/nw-data/',
-    // },
+    files: [
+      {
+        pattern: 'app/**/*.png',
+        type: 'png',
+        watched: true,
+        included: false,
+        served: true,
+      },
+    ],
+    proxies: {
+      '/app/': '/base/app/',
+    },
     reporters: ['mocha'],
     mochaReporter: {
       ignoreSkipped: true,

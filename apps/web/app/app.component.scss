@@ -1,9 +1,11 @@
 :host {
-  .navbar {
+
+  ion-toolbar {
     -webkit-app-region: drag;
-    > * {
-      -webkit-app-region: no-drag;
-    }
+  }
+
+  ion-buttons, .no-drag {
+    -webkit-app-region: no-drag;
   }
 
   ion-content::part(scroll) {

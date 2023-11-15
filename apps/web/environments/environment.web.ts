@@ -1,4 +1,5 @@
-import { Environment, env, getEnvDataCdnUrl, getEnvDataDeployUrl, getEnvModelsUrl } from './env'
+import { env } from './env'
+import { Environment, getEnvDataDeployUrl, getEnvModelsUrl } from './utils'
 
 export const environment: Environment = {
   ...env,

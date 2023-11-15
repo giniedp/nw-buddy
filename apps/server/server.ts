@@ -2,7 +2,7 @@ import 'zone.js/node'
 
 import compression from 'compression'
 import express from 'express'
-import { join } from 'path'
+import { join } from 'node:path'
 
 import { LRUCache } from 'lru-cache'
 export * from '../web/main.server'

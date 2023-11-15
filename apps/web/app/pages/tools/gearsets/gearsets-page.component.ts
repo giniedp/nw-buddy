@@ -2,7 +2,7 @@ import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { Component, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { IonicModule } from '@ionic/angular'
+import { IonHeader} from '@ionic/angular/standalone'
 import { filter } from 'rxjs'
 import { GearsetsStore } from '~/data'
 import { NwModule } from '~/nw'
@@ -26,7 +26,7 @@ import { GearsetLoadoutListComponent } from './loadout'
     NavbarModule,
     IconsModule,
     TooltipModule,
-    IonicModule,
+    IonHeader,
     GearsetLoadoutListComponent,
   ],
   providers: [QuicksearchService, GearsetsStore],

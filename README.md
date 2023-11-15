@@ -30,30 +30,46 @@ This repository does not contain the ingame data. Ingame data must be extracted 
 
 The software and development stack is based on the following technologies:
 
-- Yarn
+- pnpm
 - Angular
 - Tailwind css (Daisy UI)
 - Electron
 
 For build commands, see package.json
 
-## Prerequirements
+## Quickstart
 
-1. Review the [tools/bin](tools/bin) directory. Those binaries are used during data import.
-2. Requirements of https://github.com/giniedp/nw-extract do apply.
-  - `oo2core_8_win64.dll` and `texconv.exe` are already in the tools/bin directory
-3. Install [ImageMagick](https://imagemagick.org/), which is required to convert images
-4. Install `yarn` (https://yarnpkg.com/) and run `yarn install`
-5. create a `.env` file and copy contents of `.env.example`. Adjust env variables as you need
-  - When working on PTR change the `NW_USE_PTR=true` in `.env` or switch to the `ptr` branch
+```bash
+git clone git@github.com:giniedp/nw-buddy.git
+cd nw-buddy
+# create a .env file from example file
+cp .env.example .env
+# install dependencies
+pnpm install
+# download recent new world data files
+pnpm nw-cdn download
+# start development server
+pnpm dev:web
+```
 
 ## Game Data Extraction
+
+You can download game data from CDN (see quickstart) and skip the extraction step.
+
+### Prerequirements
+
+- Review the [tools/bin](tools/bin) directory. Those binaries are used during data import.
+- Requirements of https://github.com/giniedp/nw-extract do apply.
+  - `oo2core_8_win64.dll` and `texconv.exe` are already in the tools/bin directory
+- Install [ImageMagick](https://imagemagick.org/), which is required to convert images
+- Copy `.env.example` to `.env` and adjust env variables as you need
+  - When working on PTR use the `NW_USE_PTR=true` variable or switch to the `ptr` branch
 
 ### Unpack (optional)
 
 If you have already unpacked the game folder, adjust the `NW_UNPACK_LIVE` and/or `NW_UNPACK_PTR` env variables accordingly and skip the rest of this step.
 
-Run `yarn nw-extract`. This will extract all the necessary game data to whatever `NW_UNPACK_LIVE` and/or `NW_UNPACK_PTR` is set to.
+Run `pnpm nw-extract`. This will extract all the necessary game data to whatever `NW_UNPACK_LIVE` and/or `NW_UNPACK_PTR` is set to.
 
 ### Convert (mandatory)
 This will read files from the unpacked game data folder, convert them and place the results in `tmp/nw-data/live` (or `tmp/nw-data/ptr`). The conversion includes:
@@ -74,8 +90,8 @@ The results are written to `dist/nw-data/live` (or `dist/nw-data/ptr`)
 
 ## Running dev server
 
-Run `yarn dev`. Starts both, the electron app and a web browser in parallel
-Run `yarn dev:web` if you only need a web browser for development
+Run `pnpm dev`. Starts both, the electron app and a web browser in parallel
+Run `pnpm dev:web` if you only need a web browser for development
 
 ## Building the app
 
@@ -86,7 +102,3 @@ Run `build:electron`. This will build the electron frame, the web app with elect
 
 ### Web App
 Run `build:web`. This will build the web app that can be uploaded and hosted on a server. The result is written to `dist/web`
-
-### Webserver in docker image
-Run `build:docker`. This will build the express server, the web app and then bundle it into a docker image. The image is called `nw-buddy:latest`
-Run `yarn docker:start` to start the container. Navigate to `http://0.0.0.0:4200`

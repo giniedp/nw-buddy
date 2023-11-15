@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { IonicModule } from '@ionic/angular'
+import { IonHeader } from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
 import { DataGridModule } from '~/ui/data/table-grid'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
@@ -24,7 +24,7 @@ import { PriceImporterModule } from '~/widgets/price-importer/price-importer.mod
     DataGridModule,
     DataViewModule,
     IconsModule,
-    IonicModule,
+    IonHeader,
     NwModule,
     QuicksearchModule,
     RouterModule,

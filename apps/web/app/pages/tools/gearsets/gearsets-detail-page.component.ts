@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common'
 import { Component, TrackByFunction } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
-import { IonicModule } from '@ionic/angular'
 import { LetModule } from '@ngrx/component'
 import {
   EquipSlotId,
@@ -53,6 +52,7 @@ import { InventoryPickerService } from '../inventory/inventory-picker.service'
 import { SlotsPickerComponent } from './dialogs'
 import { GearsetDetailComponent } from './gearset.component'
 import { GEARSET_TAGS } from './tags'
+import { IonHeader } from '@ionic/angular/standalone'
 
 @Component({
   standalone: true,
@@ -67,7 +67,7 @@ import { GEARSET_TAGS } from './tags'
     RouterModule,
     ScreenshotModule,
     TooltipModule,
-    IonicModule,
+    IonHeader,
     GearsetDetailComponent,
     LayoutModule,
     LetModule,

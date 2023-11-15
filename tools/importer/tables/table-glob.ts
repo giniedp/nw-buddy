@@ -12,6 +12,7 @@ export const TABLE_GLOB_PATTERNS = [
   '*_categoricalprogression',
   '*_cooldowns_player',
   '*_crafting',
+  '*_crafting_*',
   '*_craftingcategories',
   '*_damagetable_*',
   '*_damagetable',

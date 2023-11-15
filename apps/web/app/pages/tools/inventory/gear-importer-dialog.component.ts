@@ -1,18 +1,20 @@
 import { A11yModule } from '@angular/cdk/a11y'
 import { DIALOG_DATA, Dialog, DialogConfig, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, HostListener, Inject, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { EquipSlotId } from '@nw-data/common'
-import { catchError, combineLatest, firstValueFrom, fromEvent, map, of, switchMap, takeUntil } from 'rxjs'
+import { ItemClass } from '@nw-data/generated'
+import { combineLatest, firstValueFrom, fromEvent, map, of, switchMap, takeUntil } from 'rxjs'
 import { ItemInstance } from '~/data'
-import { NwModule } from '~/nw'
+import { TranslateService } from '~/i18n'
+import { NwDbService, NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft } from '~/ui/icons/svg'
 import { imageFileFromPaste, imageFromDropEvent } from '~/utils/image-file-from-paste'
-import { useTesseract } from '~/utils/use-tesseract'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { GearImporterStore } from './gear-importer.store'
+import { ItemRecognitionResult, recognizeItemFromImage } from './item-scanner'
 
 export interface GearImporterDialogState {
   file: File
@@ -43,7 +45,6 @@ export class GearImporterDialogComponent implements OnInit {
   }
 
   protected vm$ = combineLatest({
-    recognition: this.store.recognition$,
     result: this.store.result$,
     filteredResult: this.store.filteredResult$,
     selection: this.store.selection$,
@@ -52,8 +53,7 @@ export class GearImporterDialogComponent implements OnInit {
     itemType: this.store.itemType$,
   }).pipe(
     map((data) => {
-      console.log(data)
-      const items = data.filteredResult
+      const items = data.filteredResult || []
       return {
         items: items,
         itemCount: items.length,
@@ -67,6 +67,8 @@ export class GearImporterDialogComponent implements OnInit {
   )
 
   protected iconLeft = svgAngleLeft
+  private db = inject(NwDbService)
+  private tl8 = inject(TranslateService)
 
   public constructor(
     private dialog: DialogRef<ItemInstance>,
@@ -85,25 +87,17 @@ export class GearImporterDialogComponent implements OnInit {
     this.dialog.close(null)
   }
 
-  protected async back() {
-    const state = await firstValueFrom(this.store.state$)
+  protected back() {
+    const state = this.store.state()
     if (!state.file) {
       return this.close()
     }
     this.store.patchState({
       file: null,
-      recognition: null,
+      results: null,
       selection: 0,
       filter: null,
     })
-  }
-
-  @HostListener('paste', ['$event'])
-  protected onPaste(e: ClipboardEvent) {
-    // console.debug('paste', e)
-    // this.store.patchState({
-    //   file: imageFileFromPaste(e),
-    // })
   }
 
   @HostListener('drop', ['$event'])
@@ -127,36 +121,46 @@ export class GearImporterDialogComponent implements OnInit {
           file: imageFileFromPaste(e),
         })
       })
-    this.store.imageFile$
+
+    combineLatest({
+      image: this.store.imageFile$,
+      itemClass: this.store.itemType$,
+      items: this.db.items,
+      affixMap: this.db.affixstatsMap,
+      perksMap: this.db.perksMap,
+    })
       .pipe(
-        switchMap(async (image) => {
-          if (!image) {
-            return null
+        switchMap(({ image, itemClass, items, affixMap, perksMap }) => {
+          if (!image || !itemClass) {
+            return of(null)
           }
           this.store.patchState({
-            recognition: null,
-            selection: 0,
-            filter: null,
+            results: null,
+            isScanning: true,
+            hasError: false,
           })
-          const tesseract = await useTesseract()
-          return tesseract.recognize(image).then((res) => {
-            const lines = res.data.lines.map((line) => {
-              return line.words
-                .filter((it) => it.confidence >= 10)
-                .map((it) => it.text.trim())
-                .join(' ')
+          return recognizeItemFromImage({
+            image,
+            itemClass: [itemClass as ItemClass],
+            items,
+            affixMap,
+            perksMap,
+            tl8: (key) => this.tl8.get(key),
+          }).catch((err) => {
+            console.error(err)
+            this.store.patchState({
+              hasError: true,
             })
-            return lines
+            return null as ItemRecognitionResult[]
           })
         }),
-        catchError(() => of(null))
+        takeUntil(this.store.destroy$)
       )
-      .pipe(takeUntil(this.store.destroy$))
-      .subscribe((res) => {
+      .subscribe((results) => {
         this.store.patchState({
-          recognition: res,
+          results: results,
           selection: 0,
-          filter: null,
+          isScanning: false,
         })
       })
   }

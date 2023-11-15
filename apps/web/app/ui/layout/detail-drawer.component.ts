@@ -1,3 +1,4 @@
+import { Platform } from '@angular/cdk/platform'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -9,11 +10,10 @@ import {
   TemplateRef,
   ViewChild,
 } from '@angular/core'
-import { IonicModule, IonMenu, IonModal } from '@ionic/angular'
+import { IonContent, IonMenu, IonModal } from '@ionic/angular/standalone'
 import { BehaviorSubject, combineLatest, map, merge, of, startWith, switchMap } from 'rxjs'
-import { BreakpointName, BREAKPOINTS } from './breakpoints'
+import { BREAKPOINTS, BreakpointName } from './breakpoints'
 import { LayoutService } from './layout.service'
-import { Platform } from '@angular/cdk/platform'
 
 export class DetailDrawerContext {
   public $implicit = this
@@ -39,7 +39,7 @@ export class DetailDrawerContent {
   selector: 'nwb-detail-drawer',
   templateUrl: './detail-drawer.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, IonicModule],
+  imports: [CommonModule, IonModal, IonContent, IonMenu],
   host: {
     class: 'block overflow-hidden',
   },

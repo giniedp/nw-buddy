@@ -345,14 +345,15 @@ export function getItemIdFromRecipe(item: Crafting): string {
   if (item.ItemID) {
     return item.ItemID
   }
-  return (
-    item &&
-    (item.ProceduralTierID5 ||
-      item.ProceduralTierID4 ||
-      item.ProceduralTierID3 ||
-      item.ProceduralTierID2 ||
-      item.ProceduralTierID1)
-  )
+  return null
+  // return (
+  //   item &&
+  //   (item.ProceduralTierID5 ||
+  //     item.ProceduralTierID4 ||
+  //     item.ProceduralTierID3 ||
+  //     item.ProceduralTierID2 ||
+  //     item.ProceduralTierID1)
+  // )
 }
 
 export function getRecipeForItem(item: ItemDefinitionMaster | Housingitems, recipes: Map<string, Set<Crafting>>) {

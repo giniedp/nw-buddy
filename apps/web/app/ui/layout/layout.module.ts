@@ -1,13 +1,13 @@
-import { NgModule } from '@angular/core'
+import { DialogModule } from '@angular/cdk/dialog'
 import { LayoutModule as CdkLayoutModule } from '@angular/cdk/layout'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { OverlayModule } from '@angular/cdk/overlay'
-import { DialogModule } from '@angular/cdk/dialog'
+import { NgModule } from '@angular/core'
 
-import { MenuCloseDirective, MenuConnectorDirective as MenuConnectorDirective } from './menu.directive'
+import { IonButton, IonButtons, IonHeader, IonMenu, IonMenuToggle, IonModal, IonToolbar } from '@ionic/angular/standalone'
 import { DetailDrawerComponent, DetailDrawerContent } from './detail-drawer.component'
+import { MenuCloseDirective, MenuConnectorDirective } from './menu.directive'
 import { ConfirmDialogComponent, PromptDialogComponent } from './modal'
-import { IonicModule } from '@ionic/angular'
 
 const COMPONENTS = [
   CdkLayoutModule,
@@ -20,8 +20,12 @@ const COMPONENTS = [
   DetailDrawerContent,
   ConfirmDialogComponent,
   PromptDialogComponent,
-  IonicModule,
-  OverlayModule
+  IonModal,
+  IonMenu,
+  IonHeader,
+  IonToolbar,
+  IonMenuToggle,
+  OverlayModule,
 ]
 @NgModule({
   imports: [...COMPONENTS],

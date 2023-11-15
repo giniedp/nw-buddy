@@ -21,18 +21,18 @@
     "strict": false,
     "target": "ES2022",
     "useDefineForClassFields": false,
-    "lib": ["es2019", "dom", "esnext"],
+    "lib": [
+      "ES2022",
+      "dom"
+    ],
     "emitDecoratorMetadata": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "allowJs": true,
-    "typeRoots": ["node_modules/@types"],
     "paths": {
       "~/*": ["apps/web/app/*"],
-      "@cypress/*": ["apps/cypress/support/*"],
       "@nw-data/generated": ["libs/nw-data/generated"],
-      "@nw-data/common": ["libs/nw-data/common"],
-      "@nw-cms/*": ["tina/__generated__/*"]
+      "@nw-data/common": ["libs/nw-data/common"]
     }
   },
   "angularCompilerOptions": {

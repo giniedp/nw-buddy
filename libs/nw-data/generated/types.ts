@@ -213,7 +213,7 @@ export interface Ability {
   TargetStatusEffectDurationList: string[]
   TargetStatusEffectDurationMod: number
   TargetStatusEffectDurationMult: number
-  TargetStatusEffectStackSize: number
+  TargetStatusEffectStackSize: number | string
   TargetVitalsCategory: VitalsCategory
   ThreatDamage: number
   ToolDurabilityLossMod: number
@@ -1051,7 +1051,6 @@ export interface Gatherables {
   IsLootContainer: boolean
   ItemRestrictionId: string
   ItemRestrictionQuantity: string
-  LandmarkIconPath: string
   MaxRespawnRate: number
   MinRespawnRate: number
   MountGatherers: string
@@ -1062,11 +1061,9 @@ export interface Gatherables {
   RequiredStatusEffect: string
   RequiredTradeskillLevel: number
   RequiredWhisperId: string
-  RequirementDescription: string
   ResetGatherTimeOnEndInteraction: boolean
   Restriction: string
   SongRewardId: string
-  TooltipImage: string
   Tradeskill: string
   WaitForImpact: boolean
 }
@@ -2010,12 +2007,10 @@ export interface Lootbuckets {
   Item416: string
   Item417: string
   Item418: string
-  Item419: string
   Item421: string
   Item422: string
   Item423: string
   Item424: string
-  Item425: string
   Item426: string
   Item427: string
   Item428: string
@@ -2388,12 +2383,10 @@ export interface Lootbuckets {
   LootBucket416: string
   LootBucket417: string
   LootBucket418: string
-  LootBucket419: string
   LootBucket421: string
   LootBucket422: string
   LootBucket423: string
   LootBucket424: string
-  LootBucket425: string
   LootBucket426: string
   LootBucket427: string
   LootBucket428: string
@@ -2774,12 +2767,10 @@ export interface Lootbuckets {
   MatchOne416: boolean
   MatchOne417: boolean
   MatchOne418: boolean
-  MatchOne419: boolean
   MatchOne421: string
   MatchOne422: boolean
   MatchOne423: boolean
   MatchOne424: boolean
-  MatchOne425: boolean
   MatchOne426: string
   MatchOne427: string
   MatchOne428: string
@@ -3165,12 +3156,10 @@ export interface Lootbuckets {
   Quantity416: number
   Quantity417: number
   Quantity418: number
-  Quantity419: number
   Quantity421: number
   Quantity422: number
   Quantity423: number
   Quantity424: number
-  Quantity425: number
   Quantity426: number
   Quantity427: number
   Quantity428: number
@@ -6034,7 +6023,6 @@ export type LootTag =
   | 'Euthyphro'
   | 'EvilKnightGruntmaster'
   | 'Ezra'
-  | 'Fae'
   | 'Fallen'
   | 'Fangsnap'
   | 'Farlet'
@@ -10198,7 +10186,6 @@ export type VitalsCategory =
   | 'FTUE_Sailor_z1'
   | 'FTUE_Sailor_z2'
   | 'FTUE_Sailor_z3'
-  | 'Fae'
   | 'Forged'
   | 'Ghost'
   | 'Ghost_Affix'
@@ -10540,10 +10527,6 @@ export type VitalsCategory =
   | 'Goat_Mountain_66'
   | 'Goat_Mountain_67'
   | 'Goat_Mountain_Named_00'
-  | 'Gourdspewer_Halloween_2022'
-  | 'Gourdspewer_VineLeg_Minion_Halloween_2022'
-  | 'HalloweenBoss'
-  | 'Halloween_2022_Plaguer'
   | 'Haunted'
   | 'Hercyne'
   | 'Hercyne_Boar'
@@ -11009,7 +10992,6 @@ export type VitalsCategory =
   | 'Primal_Lion_Desert'
   | 'Primal_Lion_Desert_Cub'
   | 'Primal_Lion_Named_10WS01'
-  | 'Pumpklin_Halloween_2022'
   | 'Rabbit'
   | 'Rabbit_Corrupted_40'
   | 'Rabbit_Corrupted_41'
@@ -13086,7 +13068,6 @@ export type VitalsFamily =
   | 'AncientGuardian'
   | 'AngryEarth'
   | 'Corrupted'
-  | 'Fae'
   | 'Human'
   | 'Lost'
   | 'Wildlife'
