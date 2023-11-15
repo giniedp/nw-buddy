@@ -446,7 +446,7 @@ export class GearsetsDetailPageComponent {
               title: 'Gear Score',
               positive: 'OK',
               negative: 'Cancel',
-              input: NW_MAX_GEAR_SCORE.toString(),
+              input: String(NW_MAX_GEAR_SCORE),
               type: 'number',
               min: NW_MIN_GEAR_SCORE,
               max: NW_MAX_GEAR_SCORE,
