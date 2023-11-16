@@ -89,7 +89,6 @@ export async function recognizeTextFromImage(image: ImageLike) {
   const processedImage = await processAndTransformImage(image)
   const minConfidence = 10
   const tesseract = await useTesseract()
-  console.log({ tesseract })
   const result = await tesseract.recognize(processedImage)
   const lines = result.data.lines.map((line) => {
     return line.words
