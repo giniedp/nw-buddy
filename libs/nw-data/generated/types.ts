@@ -214,7 +214,7 @@ export interface Ability {
   TargetStatusEffectDurationList: string[]
   TargetStatusEffectDurationMod: number
   TargetStatusEffectDurationMult: number
-  TargetStatusEffectStackSize: number | string
+  TargetStatusEffectStackSize: number
   TargetVitalsCategory: VitalsCategory
   ThreatDamage: number
   ToolDurabilityLossMod: number
