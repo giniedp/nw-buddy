@@ -2,63 +2,67 @@
   <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
   <span class="relative top-1">Fortify & Ward</span>
 </h3>
-<div class="grid grid-cols-dl gap-x-1">
-  <ng-container *ngIf="vm$ | async; let vm">
-    <ng-container *ngFor="let group of vm.DamageTypes; trackBy: trackBy">
-      <span class="font-bold"> {{ group.value | percent : '0.1-1' }} </span>
+@if (rowCount()) {
+  <div class="grid grid-cols-dl gap-x-1" [@fade]="rowCount()">
+    @for (group of damageTypes(); track group.track) {
+      <span class="font-bold" nwbFlash> {{ group.value | percent: '0.1-1' }} </span>
       <div class="flex flex-row gap-[1px]">
-        <span
-          *ngFor="let entry of group.entries; trackBy: trackBy"
-          [tooltip]="tplTip"
-          [tooltipClass]="'p-0 w-full max-w-sm'"
-          [class.bg-error]="entry.capped"
-          class="rounded-sm cursor-help"
-        >
-          <img [nwImage]="entry.icon" class="w-6 h-6" />
-          <ng-template #tplTip>
-            <nwb-modifier-tip [data]="entry" [title]="entry.category"></nwb-modifier-tip>
-          </ng-template>
-        </span>
+        @for (entry of group.entries; track $index) {
+          <span
+            [tooltip]="tplTip"
+            [tooltipClass]="'p-0 w-full max-w-sm'"
+            [class.bg-error]="entry.capped"
+            class="rounded-sm cursor-help"
+          >
+            <img [nwImage]="entry.icon" class="w-6 h-6" />
+            <ng-template #tplTip>
+              <nwb-modifier-tip [data]="entry" [title]="entry.category"></nwb-modifier-tip>
+            </ng-template>
+          </span>
+        }
       </div>
-    </ng-container>
-    <ng-container *ngFor="let group of vm.VitalsTypes; trackBy: trackBy">
-      <span class="font-bold"> {{ group.value | percent : '0.1-1' }} </span>
+    }
+    @for (group of vitalTypes(); track group.track) {
+      <span class="font-bold" nwbFlash> {{ group.value | percent: '0.1-1' }} </span>
       <div class="flex flex-row gap-[1px]">
-        <span
-          *ngFor="let entry of group.entries; trackBy: trackBy"
-          [tooltip]="tplTip"
-          [tooltipClass]="'p-0 w-full max-w-sm'"
-          [class.bg-error]="entry.capped"
-          class="rounded-sm cursor-help"
-        >
-          <img [nwImage]="entry.icon" class="w-6 h-6" />
-          <ng-template #tplTip>
-            <nwb-modifier-tip [data]="entry" [title]="'Ward'"></nwb-modifier-tip>
-          </ng-template>
-        </span>
+        @for (entry of group.entries; track $index) {
+          <span
+            [tooltip]="tplTip"
+            [tooltipClass]="'p-0 w-full max-w-sm'"
+            [class.bg-error]="entry.capped"
+            class="rounded-sm cursor-help"
+          >
+            <img [nwImage]="entry.icon" class="w-6 h-6" />
+            <ng-template #tplTip>
+              <nwb-modifier-tip [data]="entry" [title]="'Ward'"></nwb-modifier-tip>
+            </ng-template>
+          </span>
+        }
       </div>
-    </ng-container>
-    <ng-container *ngIf="vm.Physical.value && vm.Physical; let entry">
-      <span class="font-bold"> {{ entry.value | percent : '0.1-1' }} </span>
+    }
+
+    @if (physicalArmor()?.value) {
+      <span class="font-bold" nwbFlash> {{ physicalArmor().value | percent: '0.1-1' }} </span>
       <div class="flex flex-row gap-[1px]">
         <span [tooltip]="tplTip" [tooltipClass]="'p-0 w-full max-w-md'" class="rounded-sm cursor-help">
           Physical Armor
           <ng-template #tplTip>
-            <nwb-modifier-tip [data]="entry" [title]="'Physical'"></nwb-modifier-tip>
+            <nwb-modifier-tip [data]="physicalArmor()" [title]="'Physical'"></nwb-modifier-tip>
           </ng-template>
         </span>
       </div>
-    </ng-container>
-    <ng-container *ngIf="vm.Elemental.value && vm.Elemental; let entry">
-      <span class="font-bold"> {{ entry.value | percent : '0.1-1' }} </span>
+    }
+
+    @if (elementalArmor()?.value) {
+      <span class="font-bold" nwbFlash> {{ elementalArmor().value | percent: '0.1-1' }} </span>
       <div class="flex flex-row gap-[1px]">
         <span [tooltip]="tplTip" [tooltipClass]="'p-0 w-full max-w-md'" class="rounded-sm cursor-help">
           Elemental Armor
           <ng-template #tplTip>
-            <nwb-modifier-tip [data]="entry" [title]="'Elemental'"></nwb-modifier-tip>
+            <nwb-modifier-tip [data]="elementalArmor()" [title]="'Elemental'"></nwb-modifier-tip>
           </ng-template>
         </span>
       </div>
-    </ng-container>
-  </ng-container>
-</div>
+    }
+  </div>
+}

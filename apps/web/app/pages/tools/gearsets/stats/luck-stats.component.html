@@ -2,21 +2,18 @@
   <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
   <span class="relative top-1">Luck</span>
 </h3>
-<div class="grid grid-cols-dl gap-x-1 font-nimbus items-baseline">
-  <ng-container *ngFor="let entry of vm$ | async; trackBy: trackBy">
-    <span class="text-right font-bold"> {{ entry.value / 100 | number : '0.1-1' }}% </span>
-    <div class="flex flex-row" [tooltip]="tplTip">
-      <span class="opacity-50">
-        {{ entry.category }}
-      </span>
-      <ng-template #tplTip>
-        <nwb-modifier-tip
-          [data]="entry"
-          [title]="entry.category"
-          [percent]="false"
-          [format]="'0.1-1'"
-        ></nwb-modifier-tip>
-      </ng-template>
-    </div>
-  </ng-container>
-</div>
+@if(rowCount(); as count) {
+  <div class="grid grid-cols-dl gap-x-1 font-nimbus items-baseline" [@fade]="count">
+    @for (row of rows(); track row.category) {
+      <span class="text-right font-bold" nwbFlash> {{ row.value / 100 | number: '0.1-1' }}% </span>
+      <div class="flex flex-row" [tooltip]="tplTip">
+        <span class="opacity-50">
+          {{ row.category }}
+        </span>
+        <ng-template #tplTip>
+          <nwb-modifier-tip [data]="row" [title]="row.category" [percent]="false" [format]="'0.1-1'"></nwb-modifier-tip>
+        </ng-template>
+      </div>
+    }
+  </div>
+}

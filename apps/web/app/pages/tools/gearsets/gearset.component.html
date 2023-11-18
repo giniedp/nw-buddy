@@ -44,93 +44,96 @@
     >
       <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
       <nwb-gearset-pane-main class="relative" [class.text-xs]="compact" [disabled]="disabled">
-        <div>
+        <div [class.screenshot-hidden]="ammoAndSlotsAreEmpty()">
           <h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
             <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
             <span class="relative top-1">Buffs & Ammo</span>
           </h3>
           <div class="flex items-center justify-center">
             <div class="inline-grid grid-cols-4 gap-1 mx-auto">
-              <nwb-gearset-pane-slot
-                *ngFor="let slot of buffSlots; trackBy: trackByIndex"
-                [slot]="slot"
-                [gearset]="data"
-                [compact]="compact"
-                [disabled]="disabled"
-                [square]="true"
-                (itemRemove)="onItemRemove(slot.id)"
-                (itemUnlink)="onItemUnlink(slot, $event)"
-                (itemInstantiate)="onItemInstantiate(slot, $event)"
-              ></nwb-gearset-pane-slot>
-
-              <nwb-gearset-pane-slot
-                *ngFor="let slot of ammoSlots; trackBy: trackByIndex; let first = first"
-                [class.col-start-2]="first"
-                [slot]="slot"
-                [gearset]="data"
-                [compact]="compact"
-                [disabled]="disabled"
-                [square]="true"
-                (itemRemove)="onItemRemove(slot.id)"
-                (itemUnlink)="onItemUnlink(slot, $event)"
-                (itemInstantiate)="onItemInstantiate(slot, $event)"
-              ></nwb-gearset-pane-slot>
+              @for (slot of buffSlots; track $index) {
+                <nwb-gearset-pane-slot
+                  [slot]="slot"
+                  [gearset]="data"
+                  [compact]="compact"
+                  [disabled]="disabled"
+                  [square]="true"
+                  (itemRemove)="onItemRemove(slot.id)"
+                  (itemUnlink)="onItemUnlink(slot, $event)"
+                  (itemInstantiate)="onItemInstantiate(slot, $event)"
+                />
+              }
+              @for (slot of ammoSlots; track $index; let first = $first) {
+                <nwb-gearset-pane-slot
+                  [class.col-start-2]="first"
+                  [slot]="slot"
+                  [gearset]="data"
+                  [compact]="compact"
+                  [disabled]="disabled"
+                  [square]="true"
+                  (itemRemove)="onItemRemove(slot.id)"
+                  (itemUnlink)="onItemUnlink(slot, $event)"
+                  (itemInstantiate)="onItemInstantiate(slot, $event)"
+                />
+              }
             </div>
           </div>
         </div>
-        <div *ngIf="vmQuickSlots$ | async; let vm" [class.screenshot-hidden]="vm.empty">
+        <div [class.screenshot-hidden]="quickSlotsAreEmpty()">
           <h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
             <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
             <span class="relative top-1">Consumables</span>
           </h3>
           <div class="flex items-center justify-center">
             <div class="inline-grid grid-cols-5 gap-1">
-              <nwb-gearset-pane-slot
-                *ngFor="let slot of vm.slots; trackBy: trackByIndex"
-                [slot]="slot"
-                [gearset]="data"
-                [compact]="compact"
-                [disabled]="disabled"
-                [square]="true"
-                (itemRemove)="onItemRemove(slot.id)"
-              ></nwb-gearset-pane-slot>
+              @for (slot of quickSlotsToDisplay$ | async; track $index) {
+                <nwb-gearset-pane-slot
+                  [slot]="slot"
+                  [gearset]="data"
+                  [compact]="compact"
+                  [disabled]="disabled"
+                  [square]="true"
+                  (itemRemove)="onItemRemove(slot.id)"
+                />
+              }
             </div>
           </div>
         </div>
-        <div *ngIf="vmTrophies$ | async; let vm" [class.screenshot-hidden]="vm.empty">
+        <div [class.screenshot-hidden]="trophiesSlotsAreEmpty()">
           <h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
             <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
             <span class="relative top-1">Trophies</span>
           </h3>
           <div class="flex items-center justify-center">
             <div class="inline-grid grid-cols-5 gap-1">
-              <nwb-gearset-pane-slot
-                *ngFor="let slot of vm.slots; trackBy: trackByIndex"
-                [slot]="slot"
-                [gearset]="data"
-                [compact]="compact"
-                [disabled]="disabled"
-                [square]="true"
-                (itemRemove)="onItemRemove(slot.id)"
-              ></nwb-gearset-pane-slot>
+              @for (slot of trophiesSlotsToDisplay$ | async; track $index) {
+                <nwb-gearset-pane-slot
+                  [slot]="slot"
+                  [gearset]="data"
+                  [compact]="compact"
+                  [disabled]="disabled"
+                  [square]="true"
+                  (itemRemove)="onItemRemove(slot.id)"
+                />
+              }
             </div>
           </div>
         </div>
-        <div>
+        <div [class.screenshot-hidden]="townBuffEffectsAreEmpty()">
           <h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
             <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
             <span class="relative top-1">Town Buffs</span>
           </h3>
           <div class="flex items-center justify-center">
             <div class="inline-grid grid-cols-5 gap-1">
-              <nwb-gearset-pane-effect
-                *ngFor="let id of vmTownBuffs$ | async; trackBy: trackByIndex"
-                [effectId]="id"
-                [max]="1"
-                [disabled]="disabled"
-                (effectChange)="onEffectChange($event)"
-              >
-              </nwb-gearset-pane-effect>
+              @for (id of townBuffEffectsToDisplay$ | async; track $index) {
+                <nwb-gearset-pane-effect
+                  [effectId]="id"
+                  [max]="1"
+                  [disabled]="disabled"
+                  (effectChange)="onEffectChange($event)"
+                />
+              }
             </div>
           </div>
         </div>

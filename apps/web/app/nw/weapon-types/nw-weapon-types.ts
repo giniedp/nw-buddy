@@ -1,3 +1,4 @@
+import { StatusEffectCategory } from '@nw-data/generated'
 import { CaseInsensitiveMap } from '~/utils'
 
 export interface NwWeaponType {
@@ -288,4 +289,22 @@ export const NW_WARD_TYPE_ICONS = new CaseInsensitiveMap(
 
 export function damageTypeIcon(type: string) {
   return NW_DAMAGE_TYPE_ICONS.get(type) || NW_DAMAGE_TYPE_ICONS.get('unknown')
+}
+
+export const NW_SE_CATEGORY_ICONS = new CaseInsensitiveMap(
+  Object.entries({
+    Bleed: 'assets/icons/tooltip/se_bleedt1.png',
+    Burn: 'assets/icons/tooltip/se_burnt1.png',
+    Disease: 'assets/icons/tooltip/se_diseaset1.png',
+    Empower: 'assets/icons/tooltip/se_empowert1.png',
+    Fortify: 'assets/icons/tooltip/se_fortifyt1.png',
+    ArmorFortify: 'assets/icons/tooltip/se_fortifyt1.png',
+    Haste: 'assets/icons/tooltip/se_haste.png',
+    Poison: 'assets/icons/tooltip/se_poisont1.png',
+    Frostbite: 'assets/icons/tooltip/se_icemagicfreeze.png',
+  } satisfies Partial<Record<StatusEffectCategory, string>> )
+)
+
+export function statusEffectCategoryIcon(type: string) {
+  return NW_SE_CATEGORY_ICONS.get(type)
 }

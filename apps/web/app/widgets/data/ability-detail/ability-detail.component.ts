@@ -94,20 +94,12 @@ export class AbilityDetailComponent extends AbilityDetailStore {
       case 'AttackType': {
         return damageCells(value as Ability['AttackType'])
       }
-      case 'StatusEffectCategories': {
+      case 'StatusEffectCategories':
+      case 'StatusEffectCategoriesList':
+      case 'StatusEffectDurationCats':
+      case 'TargetStatusEffectCategory':
+      case 'TargetStatusEffectDurationCats': {
         return (value as Ability['StatusEffectCategories']).map((it) => ({
-          value: String(it),
-          template: this.tplCategory,
-        }))
-      }
-      case 'StatusEffectCategoriesList': {
-        return (value as Ability['StatusEffectCategoriesList']).map((it) => ({
-          value: String(it),
-          template: this.tplCategory,
-        }))
-      }
-      case 'TargetStatusEffectCategory': {
-        return (value as Ability['TargetStatusEffectCategory']).map((it) => ({
           value: String(it),
           template: this.tplCategory,
         }))

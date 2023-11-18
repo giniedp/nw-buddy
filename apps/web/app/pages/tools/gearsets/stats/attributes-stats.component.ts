@@ -1,71 +1,63 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { map } from 'rxjs'
 import { NwModule } from '~/nw'
-import { Mannequin } from '~/nw/mannequin'
+import { ActiveAttribute, Mannequin } from '~/nw/mannequin'
 import { IconsModule } from '~/ui/icons'
 import { TooltipModule } from '~/ui/tooltip'
+import { selectSignal } from '~/utils'
+import { FlashDirective } from './utils/flash.directive'
 
 @Component({
   standalone: true,
   selector: 'nwb-attributes-stats',
   templateUrl: './attributes-stats.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, IconsModule, TooltipModule],
+  imports: [CommonModule, NwModule, IconsModule, TooltipModule, FlashDirective],
   host: {
     class: 'block',
   },
 })
 export class AttributesStatsComponent {
-  protected trackBy = (i: number) => i
-  protected readonly vm$ = this.mannequin.activeAttributes$.pipe(
-    map((data) => {
+  private mannequin = inject(Mannequin)
+  protected attributes = selectSignal(
+    {
+      attributes: this.mannequin.activeAttributes$,
+    },
+    map(({ attributes }) => {
       return [
         {
           label: 'ui_Strength_short',
-          base: data.str.base,
-          assigned: data.str.assigned,
-          bonus: data.str.bonus,
-          total: data.str.total,
-          magnify: data.str.magnify,
+          ...buildRow(attributes?.str),
         },
         {
           label: 'ui_Dexterity_short',
-          base: data.dex.base,
-          assigned: data.dex.assigned,
-          bonus: data.dex.bonus,
-          total: data.dex.total,
-          magnify: data.dex.magnify,
+          ...buildRow(attributes?.dex),
         },
         {
           label: 'ui_Intelligence_short',
-          base: data.int.base,
-          assigned: data.int.assigned,
-          bonus: data.int.bonus,
-          total: data.int.total,
-          magnify: data.int.magnify,
+          ...buildRow(attributes?.int),
         },
         {
           label: 'ui_Focus_short',
-          base: data.foc.base,
-          assigned: data.foc.assigned,
-          bonus: data.foc.bonus,
-          total: data.foc.total,
-          magnify: data.foc.magnify,
+          ...buildRow(attributes?.foc),
         },
         {
           label: 'ui_Constitution_short',
-          base: data.con.base,
-          assigned: data.con.assigned,
-          bonus: data.con.bonus,
-          total: data.con.total,
-          magnify: data.con.magnify,
+          ...buildRow(attributes?.con),
         },
       ]
-    })
+    }),
   )
+}
 
-  public constructor(private mannequin: Mannequin) {
-    //
+function buildRow(attr: ActiveAttribute) {
+  return {
+    base: attr?.base ?? 0,
+    assigned: attr?.assigned ?? 0,
+    bonus: attr?.bonus ?? 0,
+    total: attr?.total ?? 0,
+    magnify: attr?.magnify ?? 0,
   }
 }

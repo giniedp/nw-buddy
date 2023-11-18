@@ -190,12 +190,12 @@ export interface Ability {
   StatusEffect: string
   StatusEffectBeingApplied: string
   StatusEffectCategories: StatusEffectCategory[]
-  StatusEffectCategoriesList: string[]
+  StatusEffectCategoriesList: StatusEffectCategory[]
   StatusEffectCategoryToTransfer: string
   StatusEffectComparison: string
   StatusEffectDamageTableIdForRowOverride: string
   StatusEffectDamageTableRowOverride: string
-  StatusEffectDurationCats: string
+  StatusEffectDurationCats: StatusEffectCategory[]
   StatusEffectDurationMod: number
   StatusEffectDurationMult: number
   StatusEffectDurationReduction: number
@@ -210,7 +210,7 @@ export interface Ability {
   TargetStatusEffect: string
   TargetStatusEffectCategory: StatusEffectCategory[]
   TargetStatusEffectComparison: string
-  TargetStatusEffectDurationCats: string
+  TargetStatusEffectDurationCats: StatusEffectCategory[]
   TargetStatusEffectDurationList: string[]
   TargetStatusEffectDurationMod: number
   TargetStatusEffectDurationMult: number
@@ -4465,7 +4465,7 @@ export interface Statuseffect {
   EXPWeaving: number
   EXPWoodworking: number | string
   EffectCategories: StatusEffectCategory[]
-  EffectDurationMods: string
+  EffectDurationMods: string[]
   EffectDurationMods_Tooltip: number
   EffectPotencyMods: number | string
   ElementalArmor: number

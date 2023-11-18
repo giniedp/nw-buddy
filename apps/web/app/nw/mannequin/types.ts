@@ -7,6 +7,7 @@ import {
   Attributefocus,
   Attributeintelligence,
   Attributestrength,
+  CooldownsPlayer,
   Damagetable,
   Housingitems,
   ItemDefinitionMaster,
@@ -104,7 +105,7 @@ export interface DbSlice {
   attrInt: Attributeintelligence[]
   attrFoc: Attributefocus[]
   attrCon: Attributeconstitution[]
-
+  cooldowns: Map<string, CooldownsPlayer>
   pvpBalanceArena: Array<PvpbalanceArena>
   pvpBalanceOpenworld: Array<PvpbalanceOpenworld>
   pvpBalanceWar: Array<PvpbalanceWar>
@@ -159,6 +160,7 @@ export interface ActiveAbility {
   weapon?: ActiveWeapon
   perk?: ActivePerk
   attribute?: boolean
+  cooldown?: CooldownsPlayer
 }
 
 export interface ActivePerk {

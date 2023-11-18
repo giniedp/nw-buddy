@@ -53,12 +53,12 @@ export function* eachEffect({ effects }: ActiveMods) {
 }
 
 export function* eachAbility({ abilities }: ActiveMods) {
-  const stack = new Map<string, number>()
+  const stack: Record<string, number> = {}
   for (const it of abilities) {
-    if (it.ability.IsStackableAbility || !stack.has(it.ability.AbilityID)) {
+    stack[it.ability.AbilityID] = (stack[it.ability.AbilityID] || 0) + 1
+    if (!it.ability.IsStackableAbility || !it.ability.IsStackableMax || stack[it.ability.AbilityID] <= it.ability.IsStackableMax) {
       yield it
     }
-    stack.set(it.ability.AbilityID, 1)
   }
 }
 
@@ -70,7 +70,7 @@ export function* eachPerk({ perks }: ActiveMods) {
 
 export function* eachModifier<T extends number | string>(
   key: ModifierKey<T>,
-  mods: ActiveMods
+  mods: ActiveMods,
 ): Generator<ModifierValue<T>> {
   for (const { effect, perk, ability, item } of eachEffect(mods)) {
     let value = effect[key as any]
@@ -192,10 +192,13 @@ export function* eachModifier<T extends number | string>(
   }
 }
 
-export function modifierSum(key: ModifierKey<number>, mods: ActiveMods): ModifierResult {
+export function modifierSum(key: ModifierKey<number>, mods: ActiveMods, predicate?: (it: ModifierValue<number>) => boolean): ModifierResult {
+  predicate = predicate || (() => true)
   const result = modifierResult()
   for (const value of eachModifier<number>(key, mods)) {
-    modifierAdd(result, value)
+    if (predicate(value)) {
+      modifierAdd(result, value)
+    }
   }
   return result
 }

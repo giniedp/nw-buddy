@@ -36,7 +36,7 @@ export class ModifierSourceLabelComponent {
     if (data.perk) {
       return {
         icon: data.perk.IconPath || data.icon,
-        label: data.perk.DisplayName || data.label,
+        label: data.perk.DisplayName || data.perk.SecondaryEffectDisplayName || data.label,
       }
     }
     if (data.item) {

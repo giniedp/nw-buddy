@@ -1,0 +1,42 @@
+<h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
+  <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
+  <span class="relative top-1">Cooldowns</span>
+</h3>
+@if (rowCount(); as count) {
+  <div class="grid grid-cols-dl gap-x-1 items-center" [@fade]="count">
+    @for (row of rows(); track row.label) {
+      <span [tooltip]="row.label | nwText" class="cursor-help">
+        <img class="aspect-square nw-icon w-5 h-5" [class]="'bg-ability-' + row.category" [nwImage]="row.icon" />
+      </span>
+      <span class="flex flex-row gap-1">
+        <span
+          [tooltip]="tplTip"
+          class="cursor-help w-10 text-right"
+          [class.text-primary]="row.label === modValue().group"
+        >
+          @if (row.label === modValue().group) {
+            {{ row.cooldown + modValue().value | number: '0.1-1' }}s
+          } @else {
+            {{ row.cooldown | number: '0.1-1' }}s
+          }
+          <ng-template #tplTip> Default Cooldown Time </ng-template>
+        </span>
+        @for (cell of row.reductions; track cell.label) {
+          <span
+            [tooltip]="tplTip"
+            [tooltipClass]="'p-0'"
+            class="cursor-help w-10 text-right hover:text-primary"
+            nwbFlash
+            (mouseenter)="setMod(row.label, cell.value)"
+            (mouseleave)="setMod('', 0)"
+          >
+            {{ cell.value | number: '0.1-1' }}s
+            <ng-template #tplTip>
+              <nwb-modifier-tip [data]="cell.mod" [title]="cell.label" [format]="'0.2-2'"></nwb-modifier-tip>
+            </ng-template>
+          </span>
+        }
+      </span>
+    }
+  </div>
+}

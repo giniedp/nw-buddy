@@ -8,6 +8,7 @@ import {
   selectActivePerks,
   selectActiveWeapon,
   selectActveEffects,
+  selectAllAbilities,
   selectAttributes,
   selectConsumableEffects,
   selectDamageTableRow,
@@ -32,6 +33,8 @@ import { selectModsCraftingGS } from './stats/mods-gs-crafting'
 import { selectModsROL } from './stats/mods-rol'
 import { selectMaxHealth, selectMaxMana, selectMaxStamina } from './stats/vitality'
 import { ActiveMods, AttributeModsSource, DbSlice, MannequinState, Observed } from './types'
+import { selectStatusEffectReduction } from './stats/mods-effect-reduction'
+import { selectCooldownMods } from './stats/mods-cooldowns'
 
 const config = {
   debounce: true,
@@ -58,6 +61,7 @@ export class Mannequin extends ComponentStore<MannequinState> {
       attrInt: this.db.attrInt,
       attrFoc: this.db.attrFoc,
       attrCon: this.db.attrCon,
+      cooldowns: this.db.cooldownsPlayerMap,
       damagaTable: this.db.damageTable0,
       pvpBalanceArena: this.db.data.pvpbalancetablesPvpbalanceArena(),
       pvpBalanceOpenworld: this.db.data.pvpbalancetablesPvpbalanceOpenworld(),
@@ -146,6 +150,17 @@ export class Mannequin extends ComponentStore<MannequinState> {
     config
   )
 
+  public readonly allAbilities$ = this.select(
+    this.db$,
+    this.activeAttributes$,
+    this.activeWeapon$,
+    this.activeDamageTableRow$,
+    this.activePerks$,
+    this.state$,
+    selectAllAbilities,
+    config
+  )
+
   public readonly activeEffects$ = this.select(this.db$, this.activePerks$, this.state$, selectActveEffects)
 
   public readonly activeMods$ = this.select<Observed<ActiveMods>>(
@@ -153,6 +168,18 @@ export class Mannequin extends ComponentStore<MannequinState> {
       // damageRow: this.activeDamageTableRow$,
       attributes: this.activeAttributes$,
       abilities: this.activeAbilities$,
+      effects: this.activeEffects$,
+      perks: this.activePerks$,
+      consumables: this.activeConsumables$,
+    },
+    config
+  )
+
+  public readonly allMods$ = this.select<Observed<ActiveMods>>(
+    {
+      // damageRow: this.activeDamageTableRow$,
+      attributes: this.activeAttributes$,
+      abilities: this.allAbilities$,
       effects: this.activeEffects$,
       perks: this.activePerks$,
       consumables: this.activeConsumables$,
@@ -176,6 +203,7 @@ export class Mannequin extends ComponentStore<MannequinState> {
     config
   )
 
+  public readonly statCooldown$ = this.select(this.db$, this.allMods$, selectCooldownMods, config)
   public readonly statHealth$ = this.select(this.db$, this.activeMods$, this.state$, selectMaxHealth, config)
   public readonly statMana$ = this.select(this.activeMods$, selectMaxMana, config)
   public readonly statStamina$ = this.select(this.activeMods$, selectMaxStamina, config)
@@ -207,6 +235,12 @@ export class Mannequin extends ComponentStore<MannequinState> {
   public readonly statArmor$ = this.select(this.db$, this.activeMods$, this.state$, selectModsArmor, config)
   public readonly statRol$ = this.select(this.activeMods$, this.state$, selectModsROL, config)
   public readonly statCraftGS$ = this.select(this.activeMods$, selectModsCraftingGS, config)
+  public readonly statEffectReduction$ = this.select(
+    this.db$,
+    this.allMods$,
+    selectStatusEffectReduction,
+    { debounce: true }
+  )
 
   public constructor(private db: NwDbService) {
     super({

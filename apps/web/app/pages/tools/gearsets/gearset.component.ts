@@ -1,10 +1,12 @@
-import { animate, animateChild, query, stagger, state, style, transition, trigger } from '@angular/animations'
+import { animate, animateChild, query, stagger, style, transition, trigger } from '@angular/animations'
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { AfterContentInit, ChangeDetectionStrategy, Component, ElementRef, Input, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
-import { Statuseffect } from '@nw-data/generated'
+import { EQUIP_SLOTS, EquipSlot, EquipSlotId, getStatusEffectTownBuffIds } from '@nw-data/common'
 import { combineLatest, filter, map, of, switchMap } from 'rxjs'
+import { SwiperOptions } from 'swiper/types/swiper-options'
 import {
   CharacterStore,
   GearsetRecord,
@@ -15,20 +17,18 @@ import {
   SkillBuild,
   SkillBuildsDB,
 } from '~/data'
+import { NwTextContextService } from '~/nw/expression'
 import { ActiveAttribute, ActiveAttributes, EquippedItem, Mannequin, MannequinState } from '~/nw/mannequin'
-import { EquipSlot, EquipSlotId, EQUIP_SLOTS, getStatusEffectTownBuffIds } from '@nw-data/common'
 import { IconsModule } from '~/ui/icons'
+import { svgChevronLeft } from '~/ui/icons/svg'
 import { ConfirmDialogComponent } from '~/ui/layout'
+import { SwiperDirective } from '~/utils/directives/swiper.directive'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { GearsetPaneEffectComponent } from './panes/gearset-pane-effect.component'
 import { GearsetPaneMainComponent } from './panes/gearset-pane-main.component'
 import { GearsetPaneSkillComponent } from './panes/gearset-pane-skill.component'
 import { GearsetPaneSlotComponent } from './panes/gearset-pane-slot.component'
 import { GearsetPaneStatsComponent } from './panes/gearset-pane-stats.component'
-import { SwiperDirective } from '~/utils/directives/swiper.directive'
-import { svgChevronLeft } from '~/ui/icons/svg'
-import { SwiperOptions } from 'swiper/types/swiper-options'
-import { NwTextContextService } from '~/nw/expression'
 
 @Component({
   standalone: true,
@@ -93,53 +93,53 @@ export class GearsetDetailComponent {
   protected iconChevronLeft = svgChevronLeft
 
   protected slots = EQUIP_SLOTS.filter(
-    (it) => it.itemType !== 'Consumable' && it.itemType !== 'Ammo' && it.itemType !== 'Trophies'
+    (it) => it.itemType !== 'Consumable' && it.itemType !== 'Ammo' && it.itemType !== 'Trophies',
   )
   protected ammoSlots = EQUIP_SLOTS.filter((it) => it.itemType === 'Ammo')
   protected buffSlots = EQUIP_SLOTS.filter((it) => it.id.startsWith('buff'))
+  protected ammoAndSlotsAreEmpty$ = this.store.gearsetSlots$.pipe(
+    map((slots) => areSlotsEmtpy(this.ammoSlots, slots) && areSlotsEmtpy(this.buffSlots, slots)),
+  )
+  protected ammoAndSlotsAreEmpty = toSignal(this.ammoAndSlotsAreEmpty$)
 
-  protected vmQuickSlots$ = combineLatest({
-    slots: of(EQUIP_SLOTS.filter((it) => it.id.startsWith('quick'))),
-    gearset: this.gearset$,
-  }).pipe(
-    map(({ slots, gearset }) => {
-      const gsSlots = gearset?.slots || []
-      slots = [...slots]
-      slots.length = Math.max(...slots.map((it, index) => (gsSlots[it.id] ? index + 1 : 0))) + 1
+  protected quickSlots = EQUIP_SLOTS.filter((it) => it.id.startsWith('quick'))
+  protected quickSlotsAreEmpty$ = this.store.gearsetSlots$.pipe(map((slots) => areSlotsEmtpy(this.quickSlots, slots)))
+  protected quickSlotsAreEmpty = toSignal(this.quickSlotsAreEmpty$)
+  protected quickSlotsToDisplay$ = this.store.gearsetSlots$.pipe(
+    map((gearSlots) => {
+      const slots = [...this.quickSlots]
+      slots.length = Math.max(...slots.map((it, index) => (gearSlots[it.id] ? index + 1 : 0))) + 1
       slots.length = Math.min(slots.length, 4)
-      return {
-        slots,
-        empty: slots.every((slot) => !gsSlots[slot.id]),
-      }
-    })
+      return slots
+    }),
   )
 
-  protected vmTrophies$ = combineLatest({
-    slots: of(EQUIP_SLOTS.filter((it) => it.itemType === 'Trophies')),
-    gearset: this.gearset$,
-  }).pipe(
-    map(({ slots, gearset }) => {
-      const gsSlots = gearset?.slots || []
-      slots = [...slots]
-      slots.length = Math.max(...slots.map((it, index) => (gsSlots[it.id] ? index + 1 : 0))) + 1
+  protected trophiesSlots = EQUIP_SLOTS.filter((it) => it.itemType === 'Trophies')
+  protected trophiesSlotsAreEmpty$ = this.store.gearsetSlots$.pipe(
+    map((slots) => areSlotsEmtpy(this.trophiesSlots, slots)),
+  )
+  protected trophiesSlotsAreEmpty = toSignal(this.trophiesSlotsAreEmpty$)
+  protected trophiesSlotsToDisplay$ = this.store.gearsetSlots$.pipe(
+    map((gearSlots) => {
+      const slots = [...this.trophiesSlots]
+      slots.length = Math.max(...slots.map((it, index) => (gearSlots[it.id] ? index + 1 : 0))) + 1
       slots.length = Math.min(slots.length, 15)
-      return {
-        slots,
-        empty: slots.every((slot) => !gsSlots[slot.id]),
-      }
-    })
+      return slots
+    }),
   )
 
-  protected vmTownBuffs$ = this.gearset$.pipe(
-    map((it) => {
-      const townEffects = getStatusEffectTownBuffIds()
-      const effects = (it.enforceEffects || [])
-        .filter((it) => townEffects.some((id) => it.id === id))
-        .map((it) => it.id)
-      effects.length = Math.min(effects.length + 1, 9)
-      return effects
-    })
+  protected townBuffEffectIds = getStatusEffectTownBuffIds()
+  protected townBuffEffectsToDisplay$ = this.store.gearsetEnforcedEffects$.pipe(
+    map((effects) => {
+      effects = [...(effects || [])]
+      effects = effects.filter((it) => this.townBuffEffectIds.some((id) => it.id === id))
+      const result = effects.map((it) => it.id)
+      result.length = Math.min(effects.length + 1, 9)
+      return result
+    }),
   )
+  protected townBuffEffectsAreEmpty$ = this.townBuffEffectsToDisplay$.pipe(map((it) => it.every((el) => !el)))
+  protected townBuffEffectsAreEmpty = toSignal(this.townBuffEffectsAreEmpty$)
 
   protected trackByIndex = (i: number) => i
 
@@ -151,7 +151,7 @@ export class GearsetDetailComponent {
     private character: CharacterStore,
     private items: ItemInstancesDB,
     private skillBuilds: SkillBuildsDB,
-    private ctx: NwTextContextService
+    private ctx: NwTextContextService,
   ) {
     itemsStore.loadAll()
     ctx.patchState({
@@ -175,7 +175,7 @@ export class GearsetDetailComponent {
           })
           .sort((a, b) => b.value - a.value)
         return sorted[index].key
-      })
+      }),
     )
   }
 
@@ -245,7 +245,7 @@ export class GearsetDetailComponent {
           enforcedEffects: it.enforcedEffects,
           enforcedAbilities: it.enforcedAbilities,
         }
-      })
+      }),
     )
     this.mannequin.patchState(src)
   }
@@ -260,7 +260,7 @@ export class GearsetDetailComponent {
             slot: slotId as EquipSlotId,
             gearScore: instance.gearScore,
           }
-        })
+        }),
       )
     })
     if (slots$.length === 0) {
@@ -286,4 +286,8 @@ export class GearsetDetailComponent {
   protected onEffectChange(data: Array<{ id: string; stack: number }>) {
     this.store.updateStatusEffect(data)
   }
+}
+
+function areSlotsEmtpy(slots: EquipSlot[], gearSlots: Record<string, string | ItemInstance>) {
+  return !gearSlots || !slots || !slots.length || slots.every((it) => !gearSlots[it.id])
 }

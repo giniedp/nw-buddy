@@ -14,9 +14,25 @@ export function categorySum({
   mods: ActiveMods
   base: number
 }): ModifierResult {
+  return categorySumFromList({
+    base,
+    modifiers: Array.from(eachModifier<number>(key, mods)),
+    categoryLimit: (mod) => getCategoryLimit(key, mod.source.effect?.EffectCategories, categories)
+  })
+}
+
+export function categorySumFromList({
+  base,
+  modifiers,
+  categoryLimit
+}: {
+  base: number
+  modifiers: Array<ModifierValue<number>>,
+  categoryLimit: (mod: ModifierValue<number>) => ({ category: string, limit: number })
+}): ModifierResult {
   const value = cappedValue()
-  const modifiers = Array.from(eachModifier<number>(key, mods)).map((mod) => {
-    const limit = getLimit(key, mod.source.effect?.EffectCategories, categories)
+  const mods = modifiers.map((mod) => {
+    const limit = categoryLimit(mod)
     return {
       mod,
       category: limit?.category,
@@ -24,12 +40,12 @@ export function categorySum({
     }
   })
 
-  for (const { mod, limit } of modifiers) {
+  for (const { mod, limit } of mods) {
     if (!limit) {
       value.add(mod.value * mod.scale)
     }
   }
-  for (const { mod, limit } of modifiers) {
+  for (const { mod, limit } of mods) {
     if (limit) {
       value.add(mod.value * mod.scale, limit - base)
     }
@@ -37,7 +53,7 @@ export function categorySum({
 
   const capped: Array<ModifierValue<number> & { category: string; limit: number; capped: boolean }> = []
   const uncapped: Array<ModifierValue<number> & { capped: false }> = []
-  for (const { mod, category, limit } of modifiers) {
+  for (const { mod, category, limit } of mods) {
     if (limit) {
       capped.push({
         ...mod,
@@ -57,7 +73,7 @@ export function categorySum({
   }
 }
 
-function getLimit(key: ModifierKey<number>, categoryIds: string[], categories: Map<string, Statuseffectcategories>) {
+export function getCategoryLimit(key: string, categoryIds: string[], categories: Map<string, Statuseffectcategories>) {
   if (!categoryIds?.length) {
     return null
   }

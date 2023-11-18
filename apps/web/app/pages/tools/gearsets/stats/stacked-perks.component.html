@@ -4,23 +4,25 @@
 </h3>
 
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-1 font-nimbus">
-  <div *ngFor="let info of vm$ | async; trackBy: trackBy" class="flex flex-row gap-x-2">
-    <a [nwLink]="info.id" [nwLinkResource]="'perk'" class="flex-none">
-      <img [nwImage]="info.icon" class="w-8 h-8" />
-    </a>
-    <div class="text-sky-600 flex-1">
-      <b [nwText]="info.name"></b>
-      <b class="text-primary"> &times; {{ info.stackCount }} </b>
-      <span>
-        {{ info.description | nwText : { perkMultiplier: info.multiplier } }}
-      </span>
-      <ng-container *ngIf="info.stackLimit">
-        <span [class.text-warning]="info.stackTotal > info.stackLimit">
-          Perk Stacks:
-          <span class="whitespace-nowrap"> {{ info.stackTotal }} / {{ info.stackLimit }} </span>
-          <ng-container *ngIf="info.stackTotal > info.stackLimit"> (over max) </ng-container>
+  @for(info of stacks(); track $index) {
+    <div class="flex flex-row gap-x-2">
+      <a [nwLink]="info.id" [nwLinkResource]="'perk'" class="flex-none">
+        <img [nwImage]="info.icon" class="w-8 h-8" />
+      </a>
+      <div class="text-sky-600 flex-1">
+        <b [nwText]="info.name"></b>
+        <b class="text-primary"> &times; {{ info.stackCount }} </b>
+        <span>
+          {{ info.description | nwText : { perkMultiplier: info.multiplier } }}
         </span>
-      </ng-container>
+        <ng-container *ngIf="info.stackLimit">
+          <span [class.text-warning]="info.stackTotal > info.stackLimit">
+            Perk Stacks:
+            <span class="whitespace-nowrap"> {{ info.stackTotal }} / {{ info.stackLimit }} </span>
+            <ng-container *ngIf="info.stackTotal > info.stackLimit"> (over max) </ng-container>
+          </span>
+        </ng-container>
+      </div>
     </div>
-  </div>
+  }
 </div>

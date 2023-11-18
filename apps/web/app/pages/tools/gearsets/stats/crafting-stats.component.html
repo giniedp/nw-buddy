@@ -2,22 +2,24 @@
   <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
   <span class="relative top-1">Crafting</span>
 </h3>
-<div class="grid grid-cols-dl2 gap-x-1 font-nimbus items-baseline">
-  <ng-container *ngFor="let row of vm$ | async; trackBy: trackBy">
-    <div class="text-right opacity-50">
-      {{ row.category }}
-    </div>
-    <div [class.opacity-20]="!row.min.value" [tooltip]="tplMin" [tooltipClass]="'p-0'">
-      min GS <span class="font-bold">+{{ row.min.value | number : '0.0-0' }}</span>
-      <ng-template #tplMin>
-        <nwb-modifier-tip [data]="row.min" [percent]="false" title="{{ row.category }} min GS"></nwb-modifier-tip>
-      </ng-template>
-    </div>
-    <div [class.opacity-20]="!row.max.value" [tooltip]="tplMax" [tooltipClass]="'p-0'">
-      max GS <span class="font-bold">+{{ row.max.value | number : '0.0-0' }}</span>
-      <ng-template #tplMax>
-        <nwb-modifier-tip [data]="row.max" [percent]="false" title="{{ row.category }} max GS"></nwb-modifier-tip>
-      </ng-template>
-    </div>
-  </ng-container>
-</div>
+@if (rowCount(); as count) {
+  <div class="grid grid-cols-dl2 gap-x-1 font-nimbus items-baseline" [@fade]="count">
+    @for (row of rows(); track row.category) {
+      <div class="text-right opacity-50">
+        {{ row.category }}
+      </div>
+      <div [class.opacity-20]="!row.min.value" [tooltip]="tplMin" [tooltipClass]="'p-0'">
+        min GS <span class="font-bold" nwbFlash>+{{ row.min.value | number: '0.0-0' }}</span>
+        <ng-template #tplMin>
+          <nwb-modifier-tip [data]="row.min" [percent]="false" title="{{ row.category }} min GS"></nwb-modifier-tip>
+        </ng-template>
+      </div>
+      <div [class.opacity-20]="!row.max.value" [tooltip]="tplMax" [tooltipClass]="'p-0'">
+        max GS <span class="font-bold" nwbFlash>+{{ row.max.value | number: '0.0-0' }}</span>
+        <ng-template #tplMax>
+          <nwb-modifier-tip [data]="row.max" [percent]="false" title="{{ row.category }} max GS"></nwb-modifier-tip>
+        </ng-template>
+      </div>
+    }
+  </div>
+}

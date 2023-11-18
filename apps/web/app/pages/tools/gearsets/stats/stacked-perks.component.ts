@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, Renderer2 } from '@angular/core'
-import { groupBy, sum } from 'lodash'
+import { ChangeDetectionStrategy, Component, ElementRef, Renderer2, computed, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { getItemGsBonus, getPerkMultiplier, isPerkGenerated } from '@nw-data/common'
+import { Ability, Statuseffect } from '@nw-data/generated'
+import { groupBy } from 'lodash'
 import { combineLatest, map, tap } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
-import { Mannequin } from '~/nw/mannequin'
-import { getItemGsBonus, getPerkMultiplier, isPerkGenerated } from '@nw-data/common'
+import { ActivePerk, Mannequin } from '~/nw/mannequin'
 import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
@@ -14,86 +16,86 @@ import { TooltipModule } from '~/ui/tooltip'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, TooltipModule],
   host: {
-    class: 'block hidden',
+    class: 'block',
+    '[class.hidden]': '!hasStacks()'
   },
 })
 export class StackedPerksComponent {
-  protected trackBy = (i: number) => i
-  protected vm$ = combineLatest({
-    perks: this.mannequin.activePerks$,
-    effects: this.db.statusEffectsMap,
-    abilities: this.db.abilitiesMap,
-  }).pipe(
-    map(({ perks, effects, abilities }) => {
+  private db = inject(NwDbService)
+  private mannequin = inject(Mannequin)
+  private data = toSignal(
+    combineLatest({
+      perks: this.mannequin.activePerks$,
+      effects: this.db.statusEffectsMap,
+      abilities: this.db.abilitiesMap,
+    }),
+  )
+  protected stacks = computed(() => {
+    const { perks, effects, abilities } = (this.data() || {})
+    if (!perks || !effects || !abilities) {
+      return null
+    }
+    const stackable = selectStackablePerks(perks, effects, abilities)
+    const stacks = selectPerkStacks(stackable, abilities)
+    return stacks
+  })
+  protected hasStacks = computed(() => this.stacks()?.length > 0)
+
+}
+
+function selectStackablePerks(
+  perks: ActivePerk[],
+  effects: Map<string, Statuseffect>,
+  abilities: Map<string, Ability>,
+) {
+  return perks.filter(({ perk, affix }) => {
+    if (!perk.ScalingPerGearScore) {
+      return false
+    }
+    if (perk.EquipAbility?.some((it) => abilities.get(it)?.IsStackableAbility)) {
+      return true
+    }
+    const effect = effects.get(affix?.StatusEffect)
+    if (effect && effect.StackMax !== 1) {
+      return true
+    }
+    if (isPerkGenerated(perk) && !perk.EquipAbility && !affix?.StatusEffect) {
+      return true
+    }
+    return false
+  })
+}
+
+function selectPerkStacks(perks: ActivePerk[], abilities: Map<string, Ability>) {
+  return Array.from(Object.values(groupBy(perks, (it) => it.perk.PerkID)))
+    .map((group) => {
+      const { perk, gearScore, item } = group[0]
+      const scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
+      const stackTotal = group.length
+      let stackLimit: number = null
+      perk.EquipAbility?.forEach((it) => {
+        const stackMax = abilities.get(it)?.IsStackableMax
+        if (stackMax) {
+          if (stackLimit === null) {
+            stackLimit = stackMax
+          } else {
+            stackLimit = Math.min(stackLimit, stackMax)
+          }
+        }
+      })
+      const stackCount = stackLimit ? Math.min(stackTotal, stackLimit) : stackTotal
       return {
-        effects,
-        abilities,
-        perks: perks.filter(({ perk, affix }) => {
-          if (!perk.ScalingPerGearScore) {
-            return false
-          }
-          if (perk.EquipAbility?.some((it) => abilities.get(it)?.IsStackableAbility)) {
-            return true
-          }
-          const effect = effects.get(affix?.StatusEffect)
-          if (effect && effect.StackMax !== 1) {
-            return true
-          }
-          if (isPerkGenerated(perk) && !perk.EquipAbility && !affix?.StatusEffect) {
-            return true
-          }
-          return false
-        }),
-      }
-    }),
-    map(({ perks, abilities }) => {
-      return Array.from(Object.values(groupBy(perks, (it) => it.perk.PerkID)))
-        .map((group) => {
-          const { perk, gearScore, item } = group[0]
-          const scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
-          const stackTotal = group.length
-          let stackLimit: number = null
-          perk.EquipAbility?.forEach((it) => {
-            const stackMax = abilities.get(it)?.IsStackableMax
-            if (stackMax) {
-              if (stackLimit === null) {
-                stackLimit = stackMax
-              } else {
-                stackLimit = Math.min(stackLimit, stackMax)
-              }
-            }
-          })
-          const stackCount = stackLimit ? Math.min(stackTotal, stackLimit) : stackTotal
-          return {
-            id: perk.PerkID,
-            icon: perk.IconPath,
-            total: group.length,
-            stackTotal,
-            stackLimit,
-            stackCount,
-            multiplier: stackCount * scale,
-            description: perk.Description,
-            name: perk.DisplayName,
-          }
-        })
-        .filter((it) => it.stackLimit == null || it.stackLimit > 1)
-        .filter((it) => it.stackTotal > 1)
-    }),
-    tap((it) => {
-      if (it?.length) {
-        this.renderer.removeClass(this.elRef.nativeElement, 'hidden')
-      } else {
-        this.renderer.addClass(this.elRef.nativeElement, 'hidden')
+        id: perk.PerkID,
+        icon: perk.IconPath,
+        total: group.length,
+        stackTotal,
+        stackLimit,
+        stackCount,
+        multiplier: stackCount * scale,
+        description: perk.Description,
+        name: perk.DisplayName,
       }
     })
-  )
-
-  public constructor(
-    private mannequin: Mannequin,
-    private db: NwDbService,
-    private elRef: ElementRef<HTMLElement>,
-    private renderer: Renderer2
-  ) {
-    //
-  }
+    .filter((it) => it.stackLimit == null || it.stackLimit > 1)
+    .filter((it) => it.stackTotal > 1)
 }

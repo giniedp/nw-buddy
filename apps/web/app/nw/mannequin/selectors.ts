@@ -6,7 +6,7 @@ import {
   getWeaponTagFromWeapon,
   solveAttributePlacingMods,
 } from '@nw-data/common'
-import { Ability, Damagetable, ItemdefinitionsAmmo } from '@nw-data/generated'
+import { Ability, ComparisonType, Damagetable, ItemdefinitionsAmmo, Statuseffect } from '@nw-data/generated'
 import { minBy, sum } from 'lodash'
 import { eqCaseInsensitive } from '~/utils'
 
@@ -35,6 +35,7 @@ import {
   EquippedItem,
   MannequinState,
 } from './types'
+import { checkAllConditions } from './conditions'
 
 export function selectLevel({ level }: MannequinState) {
   return level
@@ -42,7 +43,7 @@ export function selectLevel({ level }: MannequinState) {
 
 export function selectActiveWeapon(
   { items, weapons, ammos }: DbSlice,
-  { weaponActive, weaponUnsheathed, equippedItems }: MannequinState
+  { weaponActive, weaponUnsheathed, equippedItems }: MannequinState,
 ): ActiveWeapon {
   const equpped = equippedItems.find((it) => isWeaponActive(weaponActive, it.slot))
   const item = items.get(equpped?.itemId)
@@ -84,7 +85,7 @@ export function selectDamageTableRow(rows: Damagetable[], state: MannequinState)
 export function selectEquipLoad(
   { items, weapons, armors }: DbSlice,
   { equippedItems }: MannequinState,
-  perks: ActivePerk[]
+  perks: ActivePerk[],
 ) {
   const weights = equippedItems
     .map((it) => items.get(it.itemId))
@@ -133,7 +134,7 @@ export function selectPlacedHousings({ housings }: DbSlice, { equippedItems }: M
 
 export function selectEquippedPerks(
   { items, perks, affixes, weapons, armors, runes }: DbSlice,
-  { equippedItems }: MannequinState
+  { equippedItems }: MannequinState,
 ) {
   return equippedItems
     .map((it) => {
@@ -164,10 +165,16 @@ export function selectActivePerks(db: DbSlice, state: MannequinState) {
 }
 
 export function selectAttributeAbilities({ abilities }: DbSlice, attributes: ActiveAttributes) {
-  return Object.values(attributes)
-    .map((it) => it.abilities)
-    .flat()
-    .map((it) => abilities.get(it))
+  const result: Ability[] = []
+  for (const attr of Object.values(attributes)) {
+    for (const abilityId of attr.abilities) {
+      const ability = abilities.get(abilityId)
+      if (ability) {
+        result.push(ability)
+      }
+    }
+  }
+  return result
 }
 
 export function selectActivatedAbilities({ abilities }: DbSlice, { activatedAbilities }: MannequinState) {
@@ -177,7 +184,7 @@ export function selectActivatedAbilities({ abilities }: DbSlice, { activatedAbil
 export function selectWeaponAbilities(
   { abilities }: DbSlice,
   { weaponTag }: ActiveWeapon,
-  { equppedSkills1, equppedSkills2 }: MannequinState
+  { equppedSkills1, equppedSkills2 }: MannequinState,
 ) {
   return [equppedSkills1, equppedSkills2]
     .filter((it) => eqCaseInsensitive(it?.weapon, weaponTag))
@@ -188,26 +195,22 @@ export function selectWeaponAbilities(
 }
 
 export function selectPerkAbilities({ abilities, effects }: DbSlice, perks: ActivePerk[], state: MannequinState) {
-  return perks
-    .map((activePerk): ActiveAbility[] => {
-      return (activePerk.perk.EquipAbility || []).map((id) => {
-        const ability = abilities.get(id)
-        return {
-          ability: ability,
-          selfEffects: ability?.SelfApplyStatusEffect?.map((id) => {
-            const effect = effects.get(id)
-            if (!effect) {
-              console.warn(`missing effect ${id}`)
-            }
-            return effect
-          }).filter((it) => !!it),
-          perk: activePerk,
-          scale: getAbilityScale(ability, state),
-        }
+  const result: ActiveAbility[] = []
+  for (const activePerk of perks) {
+    for (const abilityId of activePerk.perk.EquipAbility || []) {
+      const ability = abilities.get(abilityId)
+      if (!ability) {
+        continue
+      }
+      result.push({
+        ability: ability,
+        selfEffects: getStatusEffectList(ability.SelfApplyStatusEffect, effects),
+        perk: activePerk,
+        scale: getAbilityScale(ability, state),
       })
-    })
-    .flat(2)
-    .filter(({ ability }) => !!ability)
+    }
+  }
+  return result
 }
 
 export function selectActiveAbilities(
@@ -216,20 +219,27 @@ export function selectActiveAbilities(
   weapon: ActiveWeapon,
   attack: Damagetable,
   perks: ActivePerk[],
-  state: MannequinState
+  state: MannequinState,
+) {
+  return selectAllAbilities(db, attributes, weapon, attack, perks, state).filter(({ ability }) =>
+    isActiveAbility(ability, attack, state),
+  )
+}
+
+export function selectAllAbilities(
+  db: DbSlice,
+  attributes: ActiveAttributes,
+  weapon: ActiveWeapon,
+  attack: Damagetable,
+  perks: ActivePerk[],
+  state: MannequinState,
 ) {
   return [
     //
     selectAttributeAbilities(db, attributes).map((it): ActiveAbility => {
       return {
         ability: it,
-        selfEffects: it?.SelfApplyStatusEffect?.map((id) => {
-          const effect = db.effects.get(id)
-          if (!effect) {
-            console.warn(`missing effect ${id}`)
-          }
-          return effect
-        }).filter((it) => !!it),
+        selfEffects: getStatusEffectList(it?.SelfApplyStatusEffect, db.effects),
         attribute: true,
         scale: getAbilityScale(it, state),
       }
@@ -238,22 +248,15 @@ export function selectActiveAbilities(
     selectWeaponAbilities(db, weapon, state).map((it): ActiveAbility => {
       return {
         ability: it,
-        selfEffects: it?.SelfApplyStatusEffect?.map((id) => {
-          const effect = db.effects.get(id)
-          if (!effect) {
-            console.warn(`missing effect ${id}`)
-          }
-          return effect
-        }).filter((it) => !!it),
+        selfEffects: getStatusEffectList(it?.SelfApplyStatusEffect, db.effects),
         weapon: weapon,
         scale: getAbilityScale(it, state),
+        cooldown: db.cooldowns.get(it?.AbilityID),
       }
     }),
     //
     selectPerkAbilities(db, perks, state),
-  ]
-    .flat()
-    .filter(({ ability }) => isActiveAbility(ability, attack, state))
+  ].flat()
 }
 
 export function selectActveEffects(db: DbSlice, perks: ActivePerk[], state: MannequinState) {
@@ -382,7 +385,7 @@ function isPerkActive({ slot, perk, affix, item }: ActivePerk, weapon: ActiveWea
 
 export function selectEquppedAttributes(
   { attrCon, attrDex, attrFoc, attrInt, attrStr }: DbSlice,
-  { perks }: AttributeModsSource
+  { perks }: AttributeModsSource,
 ) {
   const result: Record<AttributeRef, number> = {
     con: minBy(attrCon, (it) => it.Level).Level,
@@ -510,7 +513,7 @@ export function selectAttributes(db: DbSlice, mods: AttributeModsSource, state: 
 export function selectGearScore(items: EquippedItem[], level: number) {
   return getAverageGearScore(
     items.map((it) => ({ id: it.slot, gearScore: it.gearScore })),
-    level
+    level,
   )
 }
 
@@ -585,8 +588,8 @@ const REJECT_ABILITIES_WITH_PROPS: Array<keyof Ability> = [
   // 'MaxConsecutiveHits',
   // 'ResetConsecutiveOnSuccess',
   'IgnoreResetConsecutiveOnDeath',
-  'LoadedAmmoCount',
-  'LoadedAmmoCountComparisonType',
+  // 'LoadedAmmoCount',
+  // 'LoadedAmmoCountComparisonType',
   'PerStatusEffectOnTarget',
   'PerStatusEffectOnTargetMax',
   'PerStatusEffectOnSelf',
@@ -611,6 +614,14 @@ function isActiveAbility(ability: Ability, attack: Damagetable, state: Mannequin
   if (!ability || !attack) {
     return false
   }
+  if (ability.AbilityID === 'PerkID_Common_CDRonDodge') {
+    //console.log("Rejected", ability, state)
+    debugger
+  }
+  if (!checkAllConditions(ability, state)) {
+    return false
+  }
+
   // filter by attack type: Light, Heavy, Ability, Magic
   if (ability.AttackType?.length) {
     if (!attack || !ability.AttackType.includes(attack.AttackType as any)) {
@@ -643,65 +654,19 @@ function isActiveAbility(ability: Ability, attack: Damagetable, state: Mannequin
     }
   }
 
-  // TODO: filter by equip load: Fast, Medium
-  // TODO: filter by health percent
-  // TODO: filter by mana percent
-  // TODO: filter by stamina percent
-  // TODO: filter by target.health percent
-  // TODO: filter by target.mana percent
-  // TODO: filter by target.stamina percent
-
-  if (ability.NumAroundMe > 0) {
-    if (!checkBumAroundMe(ability, state)) {
-      return false
+  if (ability.CDRImmediatelyOptions === 'ActiveWeapon') {
+    if (ability.OnHitTaken) {
+      return true
     }
-    //
-  }
-
-  if (ability.NumConsecutiveHits > 0) {
-    if (!checkNumConsecutiveHits(ability, state)) {
-      return false
+    if (ability.OnHit) {
+      return true
     }
-    //
   }
 
   if (REJECT_ABILITIES_WITH_PROPS.some((key) => !!ability[key])) {
     return false
   }
   return true
-}
-
-function checkBumAroundMe(ability: Ability, state: MannequinState) {
-  if (!ability) {
-    return false
-  }
-  const actual = state.numAroundMe
-  const limit = ability.NumAroundMe
-  switch (ability.NumAroundComparisonType) {
-    case 'Equal':
-      return actual === limit
-    case 'GreaterThan':
-      return actual > limit
-    case 'GreaterThanOrEqual':
-      return actual >= limit
-    case 'LessThan':
-      return actual < limit
-    case 'LessThanOrEqual':
-      return actual <= limit
-  }
-  return false
-}
-
-function checkNumConsecutiveHits(ability: Ability, state: MannequinState) {
-  if (!ability) {
-    return false
-  }
-  const actual = state.numHits
-  const limit = ability.NumConsecutiveHits
-  if (actual >= limit) {
-    return true
-  }
-  return false
 }
 
 function getAbilityScale(ability: Ability, state: MannequinState) {
@@ -716,4 +681,16 @@ function getAbilityScale(ability: Ability, state: MannequinState) {
     return Math.max(1, Math.min(state.numHits, 10)) // TODO: read from effect
   }
   return scale
+}
+
+function getStatusEffectList(ids: string[], effects: Map<string, Statuseffect>) {
+  const result: Statuseffect[] = []
+  for (const id of ids || []) {
+    const effect = effects.get(id)
+    if (!effect) {
+      console.warn(`missing effect ${id}`)
+    }
+    result.push(effect)
+  }
+  return result
 }
