@@ -1,42 +1,44 @@
 <div *ngIf="gearset$ | async; let data">
-  <div
-    *ngIf="!swiper"
-    class="p-4 rounded-b-md flex flex-col xl:flex-row layout-gap"
-    [nwbScreenshotFrame]="name$ | async"
-    [nwbScreenshotWidth]="1660"
-    [nwbScreenshotMode]="'detached'"
-  >
-    <div class="flex-1 grid grid-cols-fill-sm layout-gap grid-rows-1" [@list]="slots?.length">
-      <ng-container *ngTemplateOutlet="tplContentAvatar"></ng-container>
-      <ng-container *ngTemplateOutlet="tplContentStats"></ng-container>
-      <ng-container *ngTemplateOutlet="tplContentSkills"></ng-container>
-      <ng-container *ngTemplateOutlet="tplContentSlots"></ng-container>
-    </div>
-  </div>
-
-  <div *ngIf="swiper" class="p-2">
-    <div class="swiper" [nwbSwiper]="swiperOptions" #nwbSwiper="nwbSwiper">
-      <div class="swiper-wrapper flex flex-row relative z-10" #swiperRef>
-        <ng-container *ngTemplateOutlet="tplContentSlots"></ng-container>
-        <ng-container *ngTemplateOutlet="tplContentSkills"></ng-container>
-        <ng-container *ngTemplateOutlet="tplContentStats"></ng-container>
-        <ng-container *ngTemplateOutlet="tplContentAvatar"></ng-container>
-      </div>
-      <div
-        class="absolute left-0 top-0 bottom-0 p-4 flex items-center justify-center z-50 bg-base-100 bg-opacity-25 hover:bg-opacity-50 transition-all cursor-pointer"
-        (click)="nwbSwiper.slidePrev()"
-      >
-        <nwb-icon [icon]="iconChevronLeft" class="w-8 h-8"></nwb-icon>
-      </div>
-      <div
-        class="absolute right-0 top-0 bottom-0 p-4 flex items-center justify-center z-50 bg-base-100 bg-opacity-25 hover:bg-opacity-50 transition-all cursor-pointer"
-        (click)="nwbSwiper.slideNext()"
-      >
-        <nwb-icon [icon]="iconChevronLeft" class="w-8 h-8 rotate-180"></nwb-icon>
+  @if (!swiper) {
+    <div
+      class="p-4 rounded-b-md flex flex-col xl:flex-row layout-gap"
+      [nwbScreenshotFrame]="name$ | async"
+      [nwbScreenshotWidth]="1660"
+      [nwbScreenshotMode]="'detached'"
+    >
+      <div class="flex-1 grid grid-cols-fill-sm layout-gap grid-rows-1" [@list]="slots?.length">
+        <ng-container *ngTemplateOutlet="tplContentAvatar" />
+        <ng-container *ngTemplateOutlet="tplContentStats" />
+        <ng-container *ngTemplateOutlet="tplContentSkills" />
+        <ng-container *ngTemplateOutlet="tplContentSlots" />
       </div>
     </div>
-  </div>
+  }
 
+  @if (swiper) {
+    <div class="p-2">
+      <div class="swiper" [nwbSwiper]="swiperOptions" #nwbSwiper="nwbSwiper">
+        <div class="swiper-wrapper flex flex-row relative z-10" #swiperRef>
+          <ng-container *ngTemplateOutlet="tplContentSlots" />
+          <ng-container *ngTemplateOutlet="tplContentSkills" />
+          <ng-container *ngTemplateOutlet="tplContentStats" />
+          <ng-container *ngTemplateOutlet="tplContentAvatar" />
+        </div>
+        <div
+          class="absolute left-0 top-0 bottom-0 p-4 flex items-center justify-center z-50 bg-base-100 bg-opacity-25 hover:bg-opacity-50 transition-all cursor-pointer"
+          (click)="nwbSwiper.slidePrev()"
+        >
+          <nwb-icon [icon]="iconChevronLeft" class="w-8 h-8" />
+        </div>
+        <div
+          class="absolute right-0 top-0 bottom-0 p-4 flex items-center justify-center z-50 bg-base-100 bg-opacity-25 hover:bg-opacity-50 transition-all cursor-pointer"
+          (click)="nwbSwiper.slideNext()"
+        >
+          <nwb-icon [icon]="iconChevronLeft" class="w-8 h-8 rotate-180" />
+        </div>
+      </div>
+    </div>
+  }
   <ng-template #tplContentAvatar>
     <div
       [@fade]="true"
@@ -147,7 +149,7 @@
       class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad screenshot-head"
     >
       <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-      <nwb-gearset-pane-stats class="relative"></nwb-gearset-pane-stats>
+      <nwb-gearset-pane-stats class="relative" />
     </div>
   </ng-template>
 
@@ -157,12 +159,7 @@
       class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad screenshot-head"
     >
       <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-      <nwb-gearset-pane-skill
-        class="relative"
-        [slot]="'primary'"
-        [gearset]="data"
-        [disabled]="disabled"
-      ></nwb-gearset-pane-skill>
+      <nwb-gearset-pane-skill class="relative" [slot]="'primary'" [gearset]="data" [disabled]="disabled" />
     </div>
 
     <div
@@ -170,27 +167,23 @@
       class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad screenshot-head"
     >
       <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-      <nwb-gearset-pane-skill
-        class="relative"
-        [slot]="'secondary'"
-        [gearset]="data"
-        [disabled]="disabled"
-      ></nwb-gearset-pane-skill>
+      <nwb-gearset-pane-skill class="relative" [slot]="'secondary'" [gearset]="data" [disabled]="disabled" />
     </div>
   </ng-template>
 
   <ng-template #tplContentSlots>
-    <nwb-gearset-pane-slot
-      class="swiper-slide screenshot-body"
-      [@fade]="true"
-      *ngFor="let slot of slots; trackBy: trackByIndex"
-      [slot]="slot"
-      [gearset]="data"
-      [compact]="compact"
-      [disabled]="disabled"
-      (itemRemove)="onItemRemove(slot.id)"
-      (itemUnlink)="onItemUnlink(slot, $event)"
-      (itemInstantiate)="onItemInstantiate(slot, $event)"
-    ></nwb-gearset-pane-slot>
+    @for (slot of slots; track $index) {
+      <nwb-gearset-pane-slot
+        class="swiper-slide screenshot-body"
+        [@fade]="true"
+        [slot]="slot"
+        [gearset]="data"
+        [compact]="compact"
+        [disabled]="disabled"
+        (itemRemove)="onItemRemove(slot.id)"
+        (itemUnlink)="onItemUnlink(slot, $event)"
+        (itemInstantiate)="onItemInstantiate(slot, $event)"
+      />
+    }
   </ng-template>
 </div>
