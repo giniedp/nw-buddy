@@ -1,33 +1,23 @@
-<ng-container *ngIf="vm$ | async; let vm">
-  <div class="relative" *ngIf="vm.instance">
-    <nwb-skill-builder
-      [ngModel]="vm.instance"
-      (ngModelChange)="updateSkill($event)"
-      [disabled]="disabled"
-      #builder
-    ></nwb-skill-builder>
-    <button
-      class="btn btn-ghost btn-square absolute top-0 right-0 screenshot-hidden"
-      [cdkMenuTriggerFor]="menu"
-      *ngIf="!disabled"
-    >
-      <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>
+<div class="relative">
+  @if (instance()) {
+    <nwb-skill-builder [ngModel]="instance()" (ngModelChange)="updateSkill($event)" [disabled]="disabled" #builder />
+  } @else {
+    <img
+      [nwImage]="'assets/loaders/crafting_rune_clockwise.png'"
+      class="w-64 h-64 text-white opacity-30 absolute top-1/2 left-1/2 -translate-x-1/2"
+    />
+  }
+  @if (!disabled) {
+    <button class="btn btn-ghost btn-square absolute top-0 right-0 screenshot-hidden" [cdkMenuTriggerFor]="menu">
+      <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
     </button>
-  </div>
-  <div *ngIf="!vm.instance && !vm.loading" class="relative flex-1 flex flex-col layout-gap items-center justify-center">
-    <img [nwImage]="'assets/loaders/crafting_rune_clockwise.png'" class="w-64 h-64 text-white opacity-30" />
-
-    <button class="btn btn-ghost btn-square absolute top-0 right-0" [cdkMenuTriggerFor]="menu" *ngIf="!disabled">
-      <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>
-    </button>
-  </div>
-</ng-container>
+  }
+</div>
 
 <ng-template #menu>
   <ul
     class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg text-shadow-sm shadow-black"
     cdkMenu
-    *ngIf="vm$ | async; let vm"
   >
     <li>
       <a cdkMenuItem (click)="createNew()">
