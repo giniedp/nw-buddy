@@ -36,7 +36,7 @@
   <div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col px-4 overflow-auto pb-20">
     <div class="prose-base mt-8 flex-none">
       <section class="font-nimbus">
-        <h1 class="mb-0 font-bold font-caslon tracking-wider">
+        <h1 class="mb-0 font-normal font-serif tracking-wider ">
           <span [nwText]="title"></span>
           @if (difficultyLevel) {
            <span>, Difficulty {{ difficultyLevel }}</span>
@@ -57,7 +57,7 @@
       </section>
 
       <section class="font-nimbus">
-        <h2 class="mb-0 font-bold font-caslon tracking-wider uppercase text-nw-description">
+        <h2 class="mb-0 font-normal font-serif tracking-wider uppercase ">
           <span>Requirements</span>
         </h2>
         <div class="nw-item-divider max-w-lg"></div>
@@ -82,7 +82,7 @@
       </section>
 
       <section class="font-nimbus" *ngIf="!!difficulty">
-        <h2 class="mb-0 font-bold font-caslon tracking-wider uppercase text-nw-description">
+        <h2 class="mb-0 font-normal font-serif tracking-wider uppercase x">
           <span>Weekly Mutations </span>
           <nwb-icon
             [icon]="iconInfo"
@@ -106,7 +106,7 @@
       </section>
 
       <section>
-        <h2 class="mb-0 font-bold font-caslon tracking-wider uppercase text-nw-description">
+        <h2 class="mb-0 font-normal font-serif  tracking-wider uppercase">
           <span>Available Rewards </span>
         </h2>
         <div class="nw-item-divider max-w-lg"></div>

@@ -91,7 +91,7 @@ module.exports = {
     },
     fontFamily: {
       ...defaultTheme.fontFamily,
-      serif: ['"New World"', ...defaultTheme.fontFamily.serif],
+      serif: ['"New-World"', ...defaultTheme.fontFamily.serif],
       caslon: ['"Caslon-Antique"', ...defaultTheme.fontFamily.serif],
       nimbus: ['"Nimbus"', ...defaultTheme.fontFamily.sans],
     },
