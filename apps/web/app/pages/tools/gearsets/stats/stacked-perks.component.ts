@@ -1,13 +1,14 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, Renderer2, computed, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { getItemGsBonus, getPerkMultiplier, isPerkGenerated } from '@nw-data/common'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
+import { NwExpEval, NwExpJoin, getItemGsBonus, getPerkMultiplier, isPerkGenerated, parseNwExpression, walkNwExpression } from '@nw-data/common'
 import { Ability, Statuseffect } from '@nw-data/generated'
-import { groupBy } from 'lodash'
-import { combineLatest, map, tap } from 'rxjs'
+import { groupBy, sumBy } from 'lodash'
+import { map } from 'rxjs'
+import { LocaleService, TranslateService } from '~/i18n'
 import { NwDbService, NwModule } from '~/nw'
 import { ActivePerk, Mannequin } from '~/nw/mannequin'
 import { TooltipModule } from '~/ui/tooltip'
+import { selectSignal } from '~/utils'
 
 @Component({
   standalone: true,
@@ -17,46 +18,66 @@ import { TooltipModule } from '~/ui/tooltip'
   imports: [CommonModule, NwModule, TooltipModule],
   host: {
     class: 'block',
-    '[class.hidden]': '!hasStacks()'
+    '[class.hidden]': '!rowCount()',
   },
 })
 export class StackedPerksComponent {
   private db = inject(NwDbService)
   private mannequin = inject(Mannequin)
-  private data = toSignal(
-    combineLatest({
+  private i18n = inject(LocaleService)
+  private tl8 = inject(TranslateService)
+  protected rowCount = computed(() => this.rows()?.length)
+  protected rows = selectSignal(
+    {
       perks: this.mannequin.activePerks$,
       effects: this.db.statusEffectsMap,
       abilities: this.db.abilitiesMap,
-    }),
+      locale: this.i18n.value$,
+    },
+    map(({ perks, effects, abilities }) => selectRows({ perks, effects, abilities, tl8: this.tl8 })),
   )
-  protected stacks = computed(() => {
-    const { perks, effects, abilities } = (this.data() || {})
-    if (!perks || !effects || !abilities) {
-      return null
-    }
-    const stackable = selectStackablePerks(perks, effects, abilities)
-    const stacks = selectPerkStacks(stackable, abilities)
-    return stacks
-  })
-  protected hasStacks = computed(() => this.stacks()?.length > 0)
-
 }
 
-function selectStackablePerks(
-  perks: ActivePerk[],
-  effects: Map<string, Statuseffect>,
-  abilities: Map<string, Ability>,
-) {
+function selectRows({
+  perks,
+  effects,
+  abilities,
+  tl8
+}: {
+  perks: ActivePerk[]
+  effects: Map<string, Statuseffect>
+  abilities: Map<string, Ability>
+  tl8: TranslateService
+}) {
+  if (!perks || !effects || !abilities) {
+    return []
+  }
+  const stackable = selectStackablePerks({ perks, effects, abilities })
+  const stacks = selectPerkStacks(stackable, abilities, tl8)
+  return stacks
+}
+
+function selectStackablePerks({
+  perks,
+  effects,
+  abilities,
+}: {
+  perks: ActivePerk[]
+  effects: Map<string, Statuseffect>
+  abilities: Map<string, Ability>
+}) {
+
   return perks.filter(({ perk, affix }) => {
-    if (!perk.ScalingPerGearScore) {
-      return false
-    }
+    // if (!perk.ScalingPerGearScore) {
+    //   // HINT: in order to show correct number on tooltip, we need ScalingPerGearScore to be present
+    //   return false
+    // }
     if (perk.EquipAbility?.some((it) => abilities.get(it)?.IsStackableAbility)) {
       return true
     }
     const effect = effects.get(affix?.StatusEffect)
     if (effect && effect.StackMax !== 1) {
+      // HINT: StackMax may be set or not. Reject only if it is explicitly set to 1
       return true
     }
     if (isPerkGenerated(perk) && !perk.EquipAbility && !affix?.StatusEffect) {
@@ -66,23 +87,32 @@ function selectStackablePerks(
   })
 }
 
-function selectPerkStacks(perks: ActivePerk[], abilities: Map<string, Ability>) {
+function selectPerkStacks(perks: ActivePerk[], abilities: Map<string, Ability>, tl8: TranslateService) {
   return Array.from(Object.values(groupBy(perks, (it) => it.perk.PerkID)))
     .map((group) => {
       const { perk, gearScore, item } = group[0]
+
+      let description = tl8.get(perk.Description)
+      let scaleInjected = true
+      if (!perk.ScalingPerGearScore) {
+        const withInjection = injectMultiplierIntoDescription(description)
+        if (withInjection) {
+          description = withInjection
+        } else {
+          scaleInjected = false
+        }
+      }
+      description = injectFontColor(description)
+
       const scale = getPerkMultiplier(perk, gearScore + getItemGsBonus(perk, item))
       const stackTotal = group.length
       let stackLimit: number = null
-      perk.EquipAbility?.forEach((it) => {
-        const stackMax = abilities.get(it)?.IsStackableMax
+      for (const abilityId of perk.EquipAbility || []) {
+        const stackMax = abilities.get(abilityId)?.IsStackableMax
         if (stackMax) {
-          if (stackLimit === null) {
-            stackLimit = stackMax
-          } else {
-            stackLimit = Math.min(stackLimit, stackMax)
-          }
+          stackLimit = Math.min(stackLimit ?? stackMax, stackMax)
         }
-      })
+      }
       const stackCount = stackLimit ? Math.min(stackTotal, stackLimit) : stackTotal
       return {
         id: perk.PerkID,
@@ -92,10 +122,53 @@ function selectPerkStacks(perks: ActivePerk[], abilities: Map<string, Ability>) 
         stackLimit,
         stackCount,
         multiplier: stackCount * scale,
-        description: perk.Description,
+        description: description,
+        scaleInjected,
         name: perk.DisplayName,
       }
     })
     .filter((it) => it.stackLimit == null || it.stackLimit > 1)
     .filter((it) => it.stackTotal > 1)
+}
+
+function injectMultiplierIntoDescription(description: string): string | null {
+  const parts: Array<{ lParen?: string, text: string, rParen?: string }> = []
+  walkNwExpression(description, {
+    onText: (text) => parts.push({ text }),
+    onExpression: (lParen, text, rParen) => {
+      parts.push({ lParen, text, rParen })
+    },
+  })
+
+  const forceInjection = sumBy(parts, (it) => it.lParen ? 1 : 0) === 1
+  let isInjected = false
+  const result = parts.map(({ lParen, text, rParen }) => {
+    if (!lParen) {
+      return text
+    }
+    if (forceInjection || text.includes('*')) {
+      isInjected = true
+      text = '{perkMultiplier} * ' + text
+    }
+    return [lParen, text, rParen].join('')
+  })
+  if (isInjected) {
+    return result.join('')
+  }
+  return null
+}
+
+function injectFontColor(description: string) {
+  const result: string[] = []
+  walkNwExpression(description, {
+    onText: (text) => result.push(text),
+    onExpression: (lParen, text, rParen) => {
+      text = [lParen, text, rParen].join('')
+      if (text.includes('{perkMultiplier}')) {
+        text = `<span class="text-primary font-bold">${text}</span>`
+      }
+      result.push(text)
+    },
+  })
+  return result.join('')
 }
