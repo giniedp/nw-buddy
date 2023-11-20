@@ -71,6 +71,8 @@ export class Mannequin extends ComponentStore<MannequinState> {
     config
   )
 
+  public readonly dbReady$ = this.select(this.db$, () => true)
+
   public readonly level$ = this.select(({ level }) => level)
   public readonly myHpPercent$ = this.select(({ myHealthPercent }) => myHealthPercent)
   public readonly myManaPercent$ = this.select(({ myManaPercent }) => myManaPercent)
@@ -244,6 +246,20 @@ export class Mannequin extends ComponentStore<MannequinState> {
 
   public constructor(private db: NwDbService) {
     super({
+      level: 1,
+      equippedItems: [],
+      weaponActive: 'primary',
+      weaponUnsheathed: true,
+      myHealthPercent: 1,
+      myManaPercent: 1,
+      myStaminaPercent: 1,
+      numAroundMe: 1,
+      numHits: 1,
+    })
+  }
+
+  public reset() {
+    this.patchState({
       level: 1,
       equippedItems: [],
       weaponActive: 'primary',

@@ -18,19 +18,19 @@ export function checkAllConditions(ability: Ability, state: MannequinState) {
 }
 
 export function checkHealthCondition(state: MannequinState, ability: Ability) {
-  return !!ability && checkCondition(state.myHealthPercent, ability.MyHealthPercent, ability.MyComparisonType)
+  return !!ability && checkCondition(state.myHealthPercent, ability.MyHealthPercent / 100, ability.MyComparisonType)
 }
 export function checkManaCondition(state: MannequinState, ability: Ability) {
-  return !!ability && checkCondition(state.myManaPercent, ability.MyManaPercent, ability.MyManaComparisonType)
+  return !!ability && checkCondition(state.myManaPercent, ability.MyManaPercent / 100, ability.MyManaComparisonType)
 }
 export function checkStaminaCondition(state: MannequinState, ability: Ability) {
-  return !!ability && checkCondition(state.myStaminaPercent, ability.MyStaminaPercent, ability.MyStaminaComparisonType)
+  return !!ability && checkCondition(state.myStaminaPercent, ability.MyStaminaPercent / 100, ability.MyStaminaComparisonType)
 }
 export function checkAmmoCountCondition(state: MannequinState, ability: Ability) {
-  return false // !!ability && checkCondition(0, ability.LoadedAmmoCount, ability.LoadedAmmoCountComparisonType)
+  return !!ability// && checkCondition(0, ability.LoadedAmmoCount, ability.LoadedAmmoCountComparisonType)
 }
 export function checkAbilityCooldownCondition(state: MannequinState, ability: Ability) {
-  return false // !!ability && checkCondition(0, 0, ability.AbilityCooldownComparisonType)
+  return !!ability// && checkCondition(0, 0, ability.AbilityCooldownComparisonType)
 }
 export function checkNumberOfHitsCondition(state: MannequinState, ability: Ability) {
   return !!ability && checkCondition(state.numHits, ability.NumberOfTrackedHits, ability.NumberOfHitsComparisonType)
@@ -39,7 +39,7 @@ export function checkNumAroundMeCondition(state: MannequinState, ability: Abilit
   return !!ability && checkCondition(state.numAroundMe, ability.NumAroundMe, ability.NumAroundComparisonType)
 }
 export function checkTargetHealthCondition(state: MannequinState, ability: Ability) {
-  return !!ability && checkCondition(1, ability.TargetHealthPercent, ability.TargetComparisonType)
+  return !!ability && checkCondition(1, ability.TargetHealthPercent / 100, ability.TargetComparisonType)
 }
 export function checkDistanceCondition(state: MannequinState, ability: Ability) {
   return !!ability && checkCondition(1, ability.DistFromDefender, ability.DistComparisonType)
@@ -58,7 +58,7 @@ export function checkTargetEffectCondition(state: MannequinState, ability: Abili
       ability.TargetStatusEffectComparison as ComparisonType,
     )
   }
-  return false
+  return true
 }
 export function checkNumConsecutiveHits(state: MannequinState, ability: Ability) {
   if (!ability) {
