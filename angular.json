@@ -67,7 +67,7 @@
               ]
             },
             "styles": [
-              "apps/web/styles/main.scss"
+              "apps/web/style.scss"
             ],
             "inlineStyleLanguage": "scss",
             "scripts": []
@@ -176,9 +176,15 @@
               ]
             },
             "styles": [
-              "apps/web/styles/main.scss"
+              "apps/web/style.scss"
             ],
             "inlineStyleLanguage": "scss",
+            "fileReplacements": [
+              {
+                "replace": "apps/web/environments/env.ts",
+                "with": "apps/web/environments/env.generated.ts"
+              }
+            ],
             "assets": [
               "apps/web/assets",
               {
@@ -201,7 +207,7 @@
             "port": 5200,
             "compodoc": false,
             "styles": [
-              "apps/web/styles/main.scss"
+              "apps/web/style.scss"
             ]
           }
         },
@@ -212,7 +218,7 @@
             "browserTarget": "nw-buddy:build",
             "compodoc": false,
             "styles": [
-              "apps/web/styles/main.scss"
+              "apps/web/style.scss"
             ],
             "outputDir": "dist/web-storybook",
             "quiet": true,
