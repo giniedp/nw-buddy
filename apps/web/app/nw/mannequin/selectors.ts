@@ -6,7 +6,7 @@ import {
   getWeaponTagFromWeapon,
   solveAttributePlacingMods,
 } from '@nw-data/common'
-import { Ability, ComparisonType, Damagetable, ItemdefinitionsAmmo, Statuseffect } from '@nw-data/generated'
+import { Ability, Damagetable, ItemdefinitionsAmmo, Statuseffect } from '@nw-data/generated'
 import { minBy, sum } from 'lodash'
 import { eqCaseInsensitive } from '~/utils'
 
@@ -22,6 +22,7 @@ import {
   isItemWeapon,
 } from '@nw-data/common'
 import { NW_WEAPON_TYPES } from '../weapon-types/nw-weapon-types'
+import { checkAllConditions } from './conditions'
 import {
   ActiveAbility,
   ActiveAttribute,
@@ -35,7 +36,6 @@ import {
   EquippedItem,
   MannequinState,
 } from './types'
-import { checkAllConditions } from './conditions'
 
 export function selectLevel({ level }: MannequinState) {
   return level
@@ -613,10 +613,6 @@ const REJECT_ABILITIES_WITH_PROPS: Array<keyof Ability> = [
 function isActiveAbility(ability: Ability, attack: Damagetable, state: MannequinState) {
   if (!ability || !attack) {
     return false
-  }
-  if (ability.AbilityID === 'PerkID_Common_CDRonDodge') {
-    //console.log("Rejected", ability, state)
-    debugger
   }
   if (!checkAllConditions(ability, state)) {
     return false
