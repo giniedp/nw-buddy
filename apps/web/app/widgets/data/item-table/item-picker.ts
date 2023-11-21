@@ -1,12 +1,11 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { Injector } from '@angular/core'
-import { map } from 'rxjs'
+import { getItemRarityWeight, isItemJewelery } from '@nw-data/common'
 import { NwDbService } from '~/nw'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { eqCaseInsensitive } from '~/utils'
 import { ItemTableAdapter, buildPickerItemGridOptions } from './item-table-adapter'
 import { ItemTableRecord } from './item-table-cols'
-import { getItemRarity, getItemRarityWeight, isItemArmor, isItemWeapon } from '@nw-data/common'
 
 export function openItemsPicker(options: {
   db: NwDbService
@@ -57,9 +56,12 @@ function itemFilter(categories: string[], noSkins: boolean) {
     if (!it.ItemClass?.some((cls) => categories.some((it) => eqCaseInsensitive(cls, it)))) {
       return false
     }
-    if (noSkins && (it.ItemType === 'Armor' || it.ItemType === 'Weapon') && (!it.CanHavePerks || !it.ItemStatsRef)) {
-      return false
+    if (!noSkins) {
+      return true
     }
-    return true
+    if (isItemJewelery(it)) {
+      return true // can not have skins
+    }
+    return (it.ItemType === 'Armor' || it.ItemType === 'Weapon') && (!it.CanHavePerks || !it.ItemStatsRef)
   }
 }
