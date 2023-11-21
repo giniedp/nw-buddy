@@ -108,7 +108,7 @@ export class GearsetDetailComponent {
   protected quickSlotsToDisplay$ = this.store.gearsetSlots$.pipe(
     map((gearSlots) => {
       const slots = [...this.quickSlots]
-      slots.length = Math.max(...slots.map((it, index) => (gearSlots[it.id] ? index + 1 : 0))) + 1
+      slots.length = Math.max(...slots.map((it, index) => (gearSlots?.[it.id] ? index + 1 : 0))) + 1
       slots.length = Math.min(slots.length, 4)
       return slots
     }),
@@ -122,7 +122,7 @@ export class GearsetDetailComponent {
   protected trophiesSlotsToDisplay$ = this.store.gearsetSlots$.pipe(
     map((gearSlots) => {
       const slots = [...this.trophiesSlots]
-      slots.length = Math.max(...slots.map((it, index) => (gearSlots[it.id] ? index + 1 : 0))) + 1
+      slots.length = Math.max(...slots.map((it, index) => (gearSlots?.[it.id] ? index + 1 : 0))) + 1
       slots.length = Math.min(slots.length, 15)
       return slots
     }),
