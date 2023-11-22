@@ -1,6 +1,6 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { Injector } from '@angular/core'
-import { getItemRarityWeight, isItemJewelery } from '@nw-data/common'
+import { getItemRarityWeight, isItemHeartGem, isItemJewelery } from '@nw-data/common'
 import { NwDbService } from '~/nw'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { eqCaseInsensitive } from '~/utils'
@@ -59,9 +59,12 @@ function itemFilter(categories: string[], noSkins: boolean) {
     if (!noSkins) {
       return true
     }
-    if (isItemJewelery(it)) {
+    if (isItemJewelery(it) || isItemHeartGem(it)) {
       return true // can not have skins
     }
-    return (it.ItemType === 'Armor' || it.ItemType === 'Weapon') && (!it.CanHavePerks || !it.ItemStatsRef)
+    if ((it.ItemType === 'Armor' || it.ItemType === 'Weapon') && (!it.CanHavePerks || !it.ItemStatsRef)) {
+      return false
+    }
+    return true
   }
 }

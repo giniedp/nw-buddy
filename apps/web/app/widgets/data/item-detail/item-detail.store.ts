@@ -19,7 +19,7 @@ import {
   getItemTypeName,
   getItemVersionString,
   isItemArtifact,
-  isItemHeargem,
+  isItemHeartGem,
   isItemNamed,
   isItemOfAnyClass,
   isPerkGem,
@@ -151,7 +151,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public readonly isDeprecated$ = this.select(this.source$, (it) => /depricated/i.test(it || ''))
   public readonly isNamed$ = this.select(this.item$, isItemNamed)
   public readonly isArtifact$ = this.select(this.item$, isItemArtifact)
-  public readonly isRune$ = this.select(this.item$, isItemHeargem)
+  public readonly isRune$ = this.select(this.item$, isItemHeartGem)
   public readonly isBindOnEquip$ = this.select(this.item$, (it) => !!it?.BindOnEquip)
   public readonly isBindOnPickup$ = this.select(this.entity$, (it) => !!it?.BindOnPickup)
   public readonly canReplaceGem$ = this.select(this.item$, (it) => it && it.CanHavePerks && it.CanReplaceGem)
