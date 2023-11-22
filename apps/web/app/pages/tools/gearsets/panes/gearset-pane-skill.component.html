@@ -1,5 +1,5 @@
 <div class="relative">
-  @if (instance()) {
+  @if (instance()?.weapon) {
     <nwb-skill-builder [ngModel]="instance()" (ngModelChange)="updateSkill($event)" [disabled]="disabled" #builder />
   } @else {
     <img

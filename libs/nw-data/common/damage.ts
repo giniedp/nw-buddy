@@ -123,18 +123,18 @@ export function damageForWeapon(options: {
     (1 + dmgMod + critMod) *
     (1 + empowerMod)
 
-  console.table({
-    dmgBase,
-    dmgCoef,
-    factorFromGS,
-    levelScaling,
-    statsScaling,
-    ammoMod,
-    dmgMod,
-    critMod,
-    empowerMod,
-  })
-  console.debug('damageForWeapon', result)
+  // console.table({
+  //   dmgBase,
+  //   dmgCoef,
+  //   factorFromGS,
+  //   levelScaling,
+  //   statsScaling,
+  //   ammoMod,
+  //   dmgMod,
+  //   critMod,
+  //   empowerMod,
+  // })
+  // console.debug('damageForWeapon', result)
   return result
 }
 
