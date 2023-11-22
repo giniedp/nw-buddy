@@ -67,7 +67,7 @@ export function isItemSwordOrShield(item: Pick<ItemDefinitionMaster, 'ItemClass'
   return item?.ItemClass?.includes('Sword') || item?.ItemClass?.includes('Shield')
 }
 
-export function isItemHeargem(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
+export function isItemHeartGem(item: Pick<ItemDefinitionMaster, 'ItemClass'> | null) {
   return item?.ItemClass?.includes('HeartGem')
 }
 
