@@ -51,7 +51,7 @@ export class ActiveWeaponComponent {
     weaponTag: this.mannequin.activeWeapon$.pipe(mapProp('weaponTag')),
     weaponUnsheathed: this.mannequin.activeWeapon$.pipe(mapProp('unsheathed')),
     ammoType: this.mannequin.activeWeapon$.pipe(map((it) => it.ammo?.AmmoType)),
-    attackOptions: this.mannequin.activeWeaponAttacks$.pipe(mapFilter((it) => it.AttackType !== 'Ability')),
+    attackOptions: this.mannequin.activeWeaponAttacks$,
     attackSelection: this.mannequin.activeDamageTableRow$,
     attackName: this.mannequin.activeDamageTableRow$.pipe(map((it) => humanize(it?.DamageID))),
     combatMode: this.mannequin.combatMode$,

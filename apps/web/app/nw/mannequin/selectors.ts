@@ -74,8 +74,29 @@ export function selectWeaponAttacks(db: DbSlice, weapon: ActiveWeapon, state: Ma
   if (weapon.weaponTag && !weaponSpec) {
     return []
   }
+  //const abilities = selectWeaponAbilities(db, weapon, state).filter((it) => it.IsActiveAbility)
   const tablePrefix = weaponSpec?.DamageTablePrefix || 'Unarmed_'
-  return db.damagaTable.filter((it) => it.DamageID.startsWith(tablePrefix))
+  const result: Damagetable[] = []
+  for (const row of db.damagaTable) {
+    if (!row.DmgCoef) {
+      continue
+    }
+    if (!row.DamageID.startsWith(tablePrefix)) {
+      continue
+    }
+    if (row.AttackType === 'Light' || row.AttackType === 'Heavy') {
+      result.push(row)
+      continue
+    }
+    // if (row.AttackType === 'Ability') {
+    //   for (const ability of abilities) {
+    //     if (eqCaseInsensitive(ability.DamageTableRow?.[0], row.DamageID)) {
+    //       result.push(Object.assign({}, row, { $ability: ability }))
+    //     }
+    //   }
+    // }
+  }
+  return result
 }
 
 export function selectDamageTableRow(rows: Damagetable[], state: MannequinState) {

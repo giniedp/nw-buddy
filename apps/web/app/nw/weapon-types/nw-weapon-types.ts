@@ -30,7 +30,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_onehanded_weapons',
     IconPath: 'assets/icons/weapons/1hsword.png',
     IconPathSmall: 'assets/icons/weapons/1hswordsmall.png',
-    DamageTablePrefix: '1H_Sword',
+    DamageTablePrefix: '1H_Sword_',
   },
   {
     UIName: 'ui_rapier',
@@ -44,7 +44,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_onehanded_weapons',
     IconPath: 'assets/icons/weapons/1hrapier.png',
     IconPathSmall: 'assets/icons/weapons/1hrapiersmall.png',
-    DamageTablePrefix: '1H_Rapier',
+    DamageTablePrefix: '1H_Rapier_',
   },
   {
     UIName: 'ui_hatchet',
@@ -145,7 +145,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_ranged_weapons',
     IconPath: 'assets/icons/weapons/2hmusketa.png',
     IconPathSmall: 'assets/icons/weapons/2hmusketasmall.png',
-    DamageTablePrefix: 'Musket_',
+    DamageTablePrefix: 'Musket',
   },
   {
     UIName: 'ui_bow',
