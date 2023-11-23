@@ -1,12 +1,12 @@
 <div class="outer-grid gap-x-3 gap-y-2" *ngIf="vm$ | async; let vm">
   <ng-container *ngIf="!disableHead">
-    <h3 class="text-lg uppercase relative font-caslon text-center text-nw-description col-span-2">
+    <h3 class="text-lg uppercase relative font-serif text-center text-nw-description col-span-2">
       <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
       <span class="relative top-1">{{ vm.gearset ? vm.name : 'New Gearset' }}</span>
     </h3>
     <div class="flex flex-row">
       <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-8 h-8" />
-      <span class="font-caslon text-3xl font-bold">{{ vm.gearscore | number : '0.0-0' }}</span>
+      <span class="font-serif text-3xl font-bold">{{ vm.gearscore | number : '0.0-0' }}</span>
     </div>
     <div>
       <a class="btn btn-sm btn-block btn-outline btn-primary" [routerLink]="[vm.gearset.id]" *ngIf="vm.gearset">

@@ -22,6 +22,8 @@ export type EquipSlotId =
   | 'buff2'
   | 'buff3'
   | 'buff4'
+  | 'buff5'
+  | 'buff6'
   | 'trophy1'
   | 'trophy2'
   | 'trophy3'
@@ -199,6 +201,20 @@ export const EQUIP_SLOTS: Array<EquipSlot> = [
   },
   {
     id: 'buff4',
+    icon: 'assets/icons/slots/iconquickslot.png',
+    iconSlot: 'assets/icons/slots/iconquickslot.png',
+    name: 'ui_quickslot4',
+    itemType: 'Consumable',
+  },
+  {
+    id: 'buff5',
+    icon: 'assets/icons/slots/iconquickslot.png',
+    iconSlot: 'assets/icons/slots/iconquickslot.png',
+    name: 'ui_quickslot4',
+    itemType: 'Consumable',
+  },
+  {
+    id: 'buff6',
     icon: 'assets/icons/slots/iconquickslot.png',
     iconSlot: 'assets/icons/slots/iconquickslot.png',
     name: 'ui_quickslot4',

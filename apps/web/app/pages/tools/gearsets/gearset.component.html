@@ -47,7 +47,7 @@
       <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
       <nwb-gearset-pane-main class="relative" [class.text-xs]="compact" [disabled]="disabled">
         <div [class.screenshot-hidden]="ammoAndSlotsAreEmpty()">
-          <h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
+          <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
             <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
             <span class="relative top-1">Buffs & Ammo</span>
           </h3>
@@ -67,7 +67,6 @@
               }
               @for (slot of ammoSlots; track $index; let first = $first) {
                 <nwb-gearset-pane-slot
-                  [class.col-start-2]="first"
                   [slot]="slot"
                   [gearset]="data"
                   [compact]="compact"
@@ -82,7 +81,7 @@
           </div>
         </div>
         <div [class.screenshot-hidden]="quickSlotsAreEmpty()">
-          <h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
+          <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
             <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
             <span class="relative top-1">Consumables</span>
           </h3>
@@ -102,7 +101,7 @@
           </div>
         </div>
         <div [class.screenshot-hidden]="trophiesSlotsAreEmpty()">
-          <h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
+          <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
             <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
             <span class="relative top-1">Trophies</span>
           </h3>
@@ -122,7 +121,7 @@
           </div>
         </div>
         <div [class.screenshot-hidden]="townBuffEffectsAreEmpty()">
-          <h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
+          <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
             <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
             <span class="relative top-1">Town Buffs</span>
           </h3>

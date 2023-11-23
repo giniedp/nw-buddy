@@ -546,7 +546,7 @@ const REJECT_ABILITIES_WITH_PROPS: Array<keyof Ability> = [
   'OnContributedKill',
   //'OnCrit',
   //'OnCritTaken',
-  //'OnBlockedHit',
+  'OnBlockedHit',
   'OnBlockedHitTaken',
   //'OnHit',
   'OnHitBehind',
@@ -635,6 +635,9 @@ function isActiveAbility(ability: Ability, attack: Damagetable, state: Mannequin
   if (!ability || !attack) {
     return false
   }
+  // if (ability.AbilityID === 'Passive_Greataxe_Mauler_DmgWhenFoesNear') {
+  //   debugger
+  // }
   if (!checkAllConditions(ability, state)) {
     return false
   }

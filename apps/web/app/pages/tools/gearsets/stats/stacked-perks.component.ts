@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { NwExpEval, NwExpJoin, getItemGsBonus, getPerkMultiplier, isPerkGenerated, parseNwExpression, walkNwExpression } from '@nw-data/common'
 import { Ability, Statuseffect } from '@nw-data/generated'
-import { groupBy, sumBy } from 'lodash'
+import { groupBy, sortBy, sumBy } from 'lodash'
 import { map } from 'rxjs'
 import { LocaleService, TranslateService } from '~/i18n'
 import { NwDbService, NwModule } from '~/nw'
@@ -54,7 +54,8 @@ function selectRows({
   }
   const stackable = selectStackablePerks({ perks, effects, abilities })
   const stacks = selectPerkStacks(stackable, abilities, tl8)
-  return stacks
+  // HINT: sort by length of description helps to reduce gaps in layout
+  return sortBy(stacks, (it) => it.description.length)
 }
 
 function selectStackablePerks({
