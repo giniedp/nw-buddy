@@ -11,7 +11,7 @@ import { AppMenuComponent } from './app-menu.component'
 import { NwModule } from './nw'
 import { AppPreferencesService } from './preferences'
 import { IconsModule } from './ui/icons'
-import { svgMap } from './ui/icons/svg'
+import { svgDiscord, svgGithub, svgMap } from './ui/icons/svg'
 import { LayoutModule, LayoutService } from './ui/layout'
 import { TooltipModule } from './ui/tooltip'
 import { mapProp } from './utils'
@@ -116,6 +116,8 @@ export class AppComponent implements OnInit, OnDestroy {
   protected mapIcon = svgMap
   protected mapActive = false
   protected mapCollapsed = false
+  protected iconGithub = svgGithub
+  protected iconDiscord = svgDiscord
 
   private destroy$ = new Subject<void>()
   protected versionChanged$ = this.version.versionChanged$

@@ -1,9 +1,10 @@
 <ion-app>
-  <nwb-title-bar *ngIf="isElectron"></nwb-title-bar>
-
-  <ng-container *ngIf="unfoldMenu$ | async">
-    <ng-container *ngTemplateOutlet="tplHeader"></ng-container>
-  </ng-container>
+  @if (isElectron) {
+    <nwb-title-bar />
+  }
+  @if (unfoldMenu$ | async) {
+    <ng-container *ngTemplateOutlet="tplHeader" />
+  }
 
   <ion-content [scrollY]="false">
     <ion-split-pane [attr.when]="unfoldMenuWhen$ | async" contentId="main-content">
@@ -19,7 +20,7 @@
             <div class="layout-col layout-gap">
               <ul class="menu menu-compact flex-none m-0" *ngIf="versionChanged$ | async">
                 <li>
-                  <nwb-update-alert-button></nwb-update-alert-button>
+                  <nwb-update-alert-button />
                 </li>
               </ul>
               <app-menu></app-menu>
@@ -28,17 +29,17 @@
         </ion-content>
       </ion-menu>
       <ion-content id="main-content" [scrollY]="false">
-        <ng-container *ngIf="!(unfoldMenu$ | async)">
-          <ng-container *ngTemplateOutlet="tplHeader"></ng-container>
-        </ng-container>
+        @if (!(unfoldMenu$ | async)) {
+          <ng-container *ngTemplateOutlet="tplHeader" />
+        }
         <ion-content [scrollY]="false" class="bg-base-200">
           <div class="h-full layout-row">
             <div class="layout-col flex-1" *ngIf="langLoaded">
-              <router-outlet></router-outlet>
+              <router-outlet />
             </div>
-            <ng-container *ngIf="!isOverwolf">
-              <nwb-aeternum-map-integration class="embed-hidden"></nwb-aeternum-map-integration>
-            </ng-container>
+            @if (!isOverwolf) {
+              <nwb-aeternum-map-integration class="embed-hidden" />
+            }
           </div>
         </ion-content>
       </ion-content>
@@ -52,7 +53,9 @@
       <ion-buttons slot="start">
         <ion-menu-toggle menu="main-menu">
           <span class="indicator">
-            <span class="indicator-item badge badge-xs badge-primary" *ngIf="versionChanged$ | async"></span>
+            @if (versionChanged$ | async) {
+              <span class="indicator-item badge badge-xs badge-primary"></span>
+            }
             <button class="btn btn-square btn-ghost text-primary">
               <svg fill="none" viewBox="0 0 24 24" class="inline-block w-5 h-5 stroke-current">
                 <path
@@ -75,16 +78,41 @@
             [class.hidden]="isOverwolf"
           />
           <span class="indicator whitespace-nowrap min-w-[20px]" [class.pl-4]="isOverwolf">
-            <span class="indicator-item badge badge-sm badge-primary" *ngIf="isPtr">PTR</span>
+            @if (isPtr) {
+              <span class="indicator-item badge badge-sm badge-primary">PTR</span>
+            }
             <span class="hidden sm:inline"> New World Buddy</span>
           </span>
         </a>
         <span class="flex-1"></span>
-        <nwb-global-search-input class="no-drag"></nwb-global-search-input>
       </div>
-
       <ion-buttons slot="end">
-        <button class="btn btn-square btn-ghost no-drag" [cdkMenuTriggerFor]="tplLangMenu">
+        <!-- <a
+          href="https://github.com/giniedp/nw-buddy"
+          target="_blank"
+          class="btn btn-square btn-ghost no-drag hidden md:flex"
+          [tooltip]="'Source code on github'"
+          [tooltipPlacement]="'bottom'"
+        >
+          <nwb-icon [icon]="iconGithub" class="w-7 h-7" />
+        </a>
+        <a
+          href=" https://discord.gg/PWxUwUagVX"
+          target="_blank"
+          rel="nofollow"
+          class="btn btn-square btn-ghost no-drag hidden md:flex"
+          [tooltip]="'Join Discord'"
+          [tooltipPlacement]="'bottom'"
+        >
+          <nwb-icon [icon]="iconDiscord" class="w-7 h-7" />
+        </a> -->
+        <nwb-global-search-input class="no-drag" />
+        <button
+          class="btn btn-square btn-ghost no-drag"
+          [cdkMenuTriggerFor]="tplLangMenu"
+          [tooltip]="'Switch language'"
+          [tooltipPlacement]="'bottom'"
+        >
           {{ lang }}
         </button>
       </ion-buttons>
@@ -94,10 +122,12 @@
 
 <ng-template #tplLangMenu>
   <ul class="menu menu-compact bg-base-300 rounded-md w-40 shadow-md" cdkMenu>
-    <li *ngFor="let item of langOptions">
-      <button (click)="language = item.value" cdkMenuItem>
-        {{ item.label }}
-      </button>
-    </li>
+    @for (option of langOptions; track $index) {
+      <li>
+        <button (click)="language = option.value" cdkMenuItem>
+          {{ option.label }}
+        </button>
+      </li>
+    }
   </ul>
 </ng-template>
