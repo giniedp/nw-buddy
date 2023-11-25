@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common'
 import { Component, TrackByFunction } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
-import { LetModule } from '@ngrx/component'
 import {
   EquipSlotId,
   NW_MAX_GEAR_SCORE,
@@ -70,7 +69,6 @@ import { IonHeader } from '@ionic/angular/standalone'
     IonHeader,
     GearsetDetailComponent,
     LayoutModule,
-    LetModule,
     ChipsInputModule,
     OverlayModule,
   ],

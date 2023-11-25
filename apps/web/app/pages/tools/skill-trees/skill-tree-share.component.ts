@@ -4,7 +4,6 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ActivatedRoute, Router } from '@angular/router'
-import { LetModule } from '@ngrx/component'
 import { environment } from 'apps/web/environments'
 import { filter, of, switchMap, throwError } from 'rxjs'
 import { SkillBuildRecord, SkillBuildsDB, SkillBuildsStore } from '~/data'
@@ -15,6 +14,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
 import { PromptDialogComponent } from '~/ui/layout'
 import { HtmlHeadService } from '~/utils'
+import { suspensify } from '~/utils/rx-suspensify'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { SkillBuilderComponent } from '~/widgets/skill-builder'
 
@@ -23,22 +23,20 @@ import { SkillBuilderComponent } from '~/widgets/skill-builder'
   selector: 'nwb-skill-tree-share',
   templateUrl: './skill-tree-share.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, IconsModule, LetModule, SkillBuilderComponent, AttributesEditorModule],
+  imports: [CommonModule, NwModule, FormsModule, IconsModule, SkillBuilderComponent, AttributesEditorModule],
   host: {
     class: 'layout-content bg-base-300',
   },
 })
 export class SkillBuildsShareComponent {
-  protected record$ = this.route.paramMap
+  protected vm$ = this.route.paramMap
     .pipe(
       switchMap((it) => {
         if (it.has('cid')) {
           return this.web3.downloadbyCid(it.get('cid'))
         }
         return this.web3.downloadByName(it.get('name'))
-      })
-    )
-    .pipe(
+      }),
       switchMap((it) => {
         if (it?.type === 'skill-build' && it.data) {
           const record: SkillBuildRecord = it.data
@@ -46,7 +44,8 @@ export class SkillBuildsShareComponent {
           return of(record)
         }
         return throwError(() => new Error(`invalid data`))
-      })
+      }),
+      suspensify<SkillBuildRecord>()
     )
 
   protected iconInfo = svgCircleExclamation
