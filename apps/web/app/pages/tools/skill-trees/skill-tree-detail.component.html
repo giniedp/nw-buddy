@@ -20,13 +20,11 @@
               [nwbScreenshotBtn]
               class="btn btn-ghost btn-square"
               [tooltip]="'Screenshot'"
-              [color]="'info'"
             ></button>
             <button
               class="btn btn-ghost btn-square"
               (click)="onShareClicked(item.record)"
               [tooltip]="'Create share URL'"
-              [color]="'info'"
             >
               <nwb-icon [icon]="iconShare" class="w-4 h-4"></nwb-icon>
             </button>
@@ -34,7 +32,6 @@
               class="btn btn-ghost btn-square"
               (click)="builder.switchWeapon()"
               [tooltip]="'Change Weapon'"
-              [color]="'info'"
             >
               <nwb-icon [icon]="iconReset" class="w-4 h-4"></nwb-icon>
             </button>
@@ -44,7 +41,6 @@
               (click)="toggleAttributes(item.record)"
               [class.text-primary]="!!(attrs$ | async)"
               [tooltip]="'Toggle Attributes'"
-              [color]="'info'"
             >
               <nwb-icon [icon]="iconAttrs" class="w-4 h-4"></nwb-icon>
             </button>
@@ -53,7 +49,6 @@
               class="btn btn-ghost btn-square"
               (click)="onCloneClicked(item.record)"
               [tooltip]="'Create a copy'"
-              [color]="'info'"
             >
               <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
             </button>
@@ -61,7 +56,6 @@
               class="btn btn-ghost btn-square"
               (click)="onDeleteClicked(item.record)"
               [tooltip]="'Delete'"
-              [color]="'error'"
             >
               <nwb-icon [icon]="iconDelete" class="w-4 h-4"></nwb-icon>
             </button>

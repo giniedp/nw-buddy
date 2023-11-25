@@ -8,15 +8,13 @@ const DEFAULT_CLASS = [
   'block',
   'rounded-md',
   'text-sm',
-  'px-2',
-  'py-1',
-  'm-1',
   'shadow-md',
   'bg-black',
   'bg-opacity-90',
-  'shadow-md',
+  'border',
+  'border-base-100',
   'overflow-clip',
-  'max-w-sm'
+  'max-w-sm',
 ]
 
 @Component({
@@ -61,20 +59,24 @@ export class TooltipComponent {
     this.component = null
     if (typeof value === 'string') {
       this.elRef.nativeElement.innerHTML = sanitizeHtml(value)
+      this.hostClass.ngClass = twMerge(DEFAULT_CLASS, ['px-2', 'py-1'], this.ngClass)
     } else if (value instanceof TemplateRef) {
       this.tpl = value
+      this.hostClass.ngClass = twMerge(DEFAULT_CLASS, this.ngClass)
     } else {
       this.component = value
+      this.hostClass.ngClass = twMerge(DEFAULT_CLASS, this.ngClass)
     }
-    this.hostClass.ngClass = twMerge(DEFAULT_CLASS, this.ngClass)
   }
 
   protected text: string
   protected tpl: TemplateRef<any>
   protected component: Type<any>
 
-  public constructor(private hostClass: NgClass, private elRef: ElementRef<HTMLElement>) {
+  public constructor(
+    private hostClass: NgClass,
+    private elRef: ElementRef<HTMLElement>,
+  ) {
     //
-
   }
 }

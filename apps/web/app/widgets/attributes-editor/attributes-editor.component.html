@@ -4,100 +4,130 @@
     <span class="font-bold text-center">{{ pointsAvailable$ | async }}</span>
     <span></span>
   </div>
-  <div *ngFor="let stat of stats$ | async; trackBy: trackById" class="flex flex-col gap-1">
-    <div class="flex flex-row gap-4">
-      <label class="inline-block w-16 font-bold uppercase text-center">
-        {{ stat.name | nwText }}
-      </label>
-      <div>
-        <span class="inline-block text-right font-bold uppercase"> {{ stat.total }} </span>
-        <ng-container *ngIf="stat.assigned || stat.buffs || stat.magnify">
-          <span> ( </span>
-          <span class="inline-block text-right text-attr-base">{{ stat.base }}</span>
-          <ng-container *ngIf="stat.assigned">
-            <span> + </span>
-            <span class="text-attr-assign text-opacity-75">{{ stat.assigned }}</span>
-          </ng-container>
-          <ng-container *ngIf="stat.buffs">
-            <span> + </span>
-            <span class="text-attr-buff text-opacity-75">{{ stat.buffs }}</span>
-          </ng-container>
-          <ng-container *ngIf="stat.magnify">
-            <span> + </span>
-            <span class="text-attr-magnify text-opacity-75">{{ stat.magnify }}</span>
-          </ng-container>
-          <span> ) </span>
-        </ng-container>
-      </div>
-    </div>
-    <div class="flex flex-row gap-4">
-      <input
-        type="number"
-        class="flex-none input input-bordered input-sm w-16 px-1 text-right text-attr-assign"
-        [min]="stat.inputMin"
-        [max]="stat.inputMax"
-        [ngModel]="stat.assigned"
-        (ngModelChange)="attributeInput(stat, $event)"
-        (focus)="attributeFocus($event)"
-        (blur)="attributeBlur(stat, $event)"
-        (wheel)="($event)"
-        (wheel)="attributeWheel(stat, $event)"
-      />
-      <div class="flex-1 flex flex-row justify-between items-center relative">
-        <div class="tracker absolute left-0 w-full flex flex-row overflow-hidden">
-          <span
-            *ngIf="stat.base"
-            class="flex-none bg-attr-base rounded-l-md"
-            [style.width.%]="(stat.base / stat.sliderEnd) * 100"
-          ></span>
-          <span
-            *ngIf="stat.buffs"
-            class="flex-none bg-attr-buff"
-            [class.rounded-r-md]="!stat.assigned && !stat.magnify"
-            [style.width.%]="(stat.buffs / stat.sliderEnd) * 100"
-          ></span>
-          <span
-            *ngIf="stat.assigned"
-            [class.rounded-r-md]="!stat.magnify"
-            class="flex-none bg-attr-assign"
-            [style.width.%]="(stat.assigned / stat.sliderEnd) * 100"
-          ></span>
-          <span
-            *ngIf="stat.magnify"
-            class="flex-none bg-attr-magnify rounded-r-md"
-            [style.width.%]="(stat.magnify / stat.sliderEnd) * 100"
-          ></span>
-        </div>
-        <div class="flex-1 flex flex-row justify-between items-center relative mr-[-10px]">
-          <ng-container *ngFor="let step of steps$ | async; trackBy: trackById">
-            <div
-              class="segment relative h-5 cursor-pointer"
-              [style.flex]="step.weight"
-              (click)="attributeToggle(stat, step.value)"
+  @for (stat of stats$ | async; track $index) {
+    <div class="flex flex-col gap-1">
+      <div class="flex flex-row gap-4">
+        <label class="inline-block w-16 font-bold uppercase text-center">
+          {{ stat.name | nwText }}
+        </label>
+        <div>
+          <span class="inline-block text-right font-bold uppercase"> {{ stat.total }} </span>
+          @if (stat.assigned || stat.buffs || stat.magnify) {
+            <span> ( </span>
+            <span
+              class="inline-block text-right text-attr-base cursor-help"
+              [tooltip]="'Equipment'"
+              [tooltipClass]="'text-attr-base'"
             >
+              {{ stat.base }}
+            </span>
+            @if (stat.assigned) {
+              <span> + </span>
               <span
-                *ngIf="getBulletColor(stat, step.value); let col"
-                class="badge absolute right-0"
-                [class.bg-zinc-800]="col === 'zink'"
-                [class.bg-attr-base]="col === 'base'"
-                [class.bg-attr-buff]="col === 'buff'"
-                [class.bg-attr-assign]="col === 'assign'"
-                [class.bg-attr-magnify]="col === 'magnify'"
-                [tooltip]="tip"
-                [tooltipClass]="'p-0'"
+                class="text-attr-assign text-opacity-75 cursor-help"
+                [tooltip]="'Assigned'"
+                [tooltipClass]="'text-attr-assign'"
               >
+                {{ stat.assigned }}
               </span>
-              <ng-template #tip>
-                <div *ngIf="getAbilities(stat, step.value) | async; let list" class="py-2 px-3">
-                  <div *ngFor="let item of list" [class.text-success]="stat.total >= step.value">
-                    <span [nwHtml]="item.Description | nwText | nwTextBreak"></span>
+            }
+            @if (stat.buffs) {
+              <span> + </span>
+              <span
+                class="text-attr-buff text-opacity-75 cursor-help"
+                [tooltip]="'Item Buffs'"
+                [tooltipClass]="'text-attr-buff'"
+              >
+                {{ stat.buffs }}
+              </span>
+            }
+            @if (stat.magnify) {
+              <span> + </span>
+              <span
+                class="text-attr-magnify text-opacity-75 cursor-help"
+                [tooltip]="'Magnify'"
+                [tooltipClass]="'text-attr-magnify'"
+              >
+                {{ stat.magnify }}
+              </span>
+            }
+            <span> ) </span>
+          }
+        </div>
+      </div>
+      <div class="flex flex-row gap-4">
+        <input
+          type="number"
+          class="flex-none input input-bordered input-sm w-16 px-1 text-right text-attr-assign"
+          [min]="stat.inputMin"
+          [max]="stat.inputMax"
+          [ngModel]="stat.assigned"
+          (ngModelChange)="attributeInput(stat, $event)"
+          (focus)="attributeFocus($event)"
+          (blur)="attributeBlur(stat, $event)"
+          (wheel)="($event)"
+          (wheel)="attributeWheel(stat, $event)"
+        />
+        <div class="flex-1 flex flex-row justify-between items-center relative">
+          <div class="tracker absolute left-0 w-full flex flex-row overflow-hidden">
+            <span
+              *ngIf="stat.base"
+              class="flex-none bg-attr-base rounded-l-md"
+              [style.width.%]="(stat.base / stat.sliderEnd) * 100"
+            ></span>
+            <span
+              *ngIf="stat.buffs"
+              class="flex-none bg-attr-buff"
+              [class.rounded-r-md]="!stat.assigned && !stat.magnify"
+              [style.width.%]="(stat.buffs / stat.sliderEnd) * 100"
+            ></span>
+            <span
+              *ngIf="stat.assigned"
+              [class.rounded-r-md]="!stat.magnify"
+              class="flex-none bg-attr-assign"
+              [style.width.%]="(stat.assigned / stat.sliderEnd) * 100"
+            ></span>
+            <span
+              *ngIf="stat.magnify"
+              class="flex-none bg-attr-magnify rounded-r-md"
+              [style.width.%]="(stat.magnify / stat.sliderEnd) * 100"
+            ></span>
+          </div>
+
+          <div class="flex-1 flex flex-row justify-between items-center relative mr-[-10px]">
+            @for (step of steps$ | async; track $index) {
+              <div
+                class="segment relative h-5 cursor-pointer"
+                [style.flex]="step.weight"
+                (click)="attributeToggle(stat, step.value)"
+              >
+                <span
+                  *ngIf="getBulletColor(stat, step.value); let col"
+                  class="badge absolute right-0"
+                  [class.bg-zinc-800]="col === 'zink'"
+                  [class.bg-attr-base]="col === 'base'"
+                  [class.bg-attr-buff]="col === 'buff'"
+                  [class.bg-attr-assign]="col === 'assign'"
+                  [class.bg-attr-magnify]="col === 'magnify'"
+                  [tooltip]="tip"
+                >
+                </span>
+                <ng-template #tip>
+                  <div class="w-80 p-3">
+                    <div [class.text-success]="stat.total >= step.value">
+                      @for (item of getAbilities(stat, step.value) | async; track $index) {
+                        <span [nwHtml]="item.Description | nwText | nwTextBreak"></span>
+                      }
+                    </div>
+                    <div class="nw-item-divider my-3"></div>
+                    <div>{{ 'ui_attributemodifier_required_points' | nwText }} {{ step.value }}</div>
                   </div>
-                </div>
-              </ng-template>
-            </div>
-          </ng-container>
+                </ng-template>
+              </div>
+            }
+          </div>
         </div>
       </div>
     </div>
-  </div>
+  }
 </div>

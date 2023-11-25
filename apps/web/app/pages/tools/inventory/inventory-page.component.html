@@ -13,13 +13,13 @@
         </a>
       </li>
       <span class="flex-1"></span>
-      <li [tooltip]="'Create new item'" [color]="'accent'">
+      <li [tooltip]="'Create new item'" [tooltipClass]="'bg-accent'">
         <span (click)="createItem()">
           <nwb-icon [icon]="svgPlus" class="w-4 h-4"></nwb-icon>
         </span>
       </li>
       <ng-container *ngIf="service.category$ | async; let category">
-        <li [tooltip]="'Scan new item'" [color]="'accent'" *ngIf="isScanSupported(category)">
+        <li [tooltip]="'Scan new item'" [tooltipClass]="'bg-accent'" *ngIf="isScanSupported(category)">
           <span (click)="scanItem(category)">
             <nwb-icon [icon]="svgImage" class="w-4 h-4"></nwb-icon>
           </span>

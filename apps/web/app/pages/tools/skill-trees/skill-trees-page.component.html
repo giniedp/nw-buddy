@@ -2,7 +2,7 @@
   <div class="flex flex-col-reverse md:flex-row">
     <nwb-navbar [buttons]="tplButtons" class="flex-1">
       <ng-template #tplButtons>
-        <li [tooltip]="'Create new skill tree'" [color]="'accent'">
+        <li [tooltip]="'Create new skill tree'" [tooltipClass]="'bg-accent'">
           <span (click)="createItem()">
             <nwb-icon [icon]="iconCreate" class="w-4 h-4"></nwb-icon>
           </span>
