@@ -46,6 +46,7 @@ export class ExportDialogComponent {
 
   protected exportAllCols: boolean = false
   protected exportAllRows: boolean = false
+  protected exportOnlySelected: boolean = false
   protected skipHeader: boolean = false
   protected columnSeparator: string = ','
   protected suppressQuotes: boolean = false
@@ -118,9 +119,7 @@ export class ExportDialogComponent {
     return this.grid.getDataAsCsv({
       allColumns: this.exportAllCols,
       exportedRows: this.exportAllRows ? 'all' : 'filteredAndSorted',
-      processCellCallback: (params) => {
-        return params.value
-      },
+      onlySelected: this.exportOnlySelected,
       columnSeparator: this.columnSeparator,
       suppressQuotes: this.suppressQuotes,
       skipColumnGroupHeaders: true,

@@ -21,6 +21,12 @@
     </div>
     <div class="form-control w-full">
       <label class="label cursor-pointer">
+        <span class="label-text">Export only selected</span>
+        <input type="checkbox" class="toggle toggle-primary" [disabled]="isLoading" [(ngModel)]="exportOnlySelected" />
+      </label>
+    </div>
+    <div class="form-control w-full">
+      <label class="label cursor-pointer">
         <span class="label-text">Skip header</span>
         <input type="checkbox" class="toggle toggle-primary" [disabled]="isLoading" [(ngModel)]="skipHeader" />
       </label>
