@@ -1,0 +1,81 @@
+<div class="flex-none bg-black flex flex-row gap-1 flex-wrap items-center p-1 h-12">
+  <h3 class="font-bold text-lg px-2">
+    {{ title }}
+  </h3>
+  <span class="flex-1"></span>
+</div>
+<div class="p-2 flex flex-col gap-1 overflow-auto">
+  @if(!data) {
+
+    <div class="form-control w-full">
+      <label class="label cursor-pointer">
+        <span class="label-text">Export all columns</span>
+        <input type="checkbox" class="toggle toggle-primary" [disabled]="isLoading" [(ngModel)]="exportAllCols" />
+      </label>
+    </div>
+    <div class="form-control w-full">
+      <label class="label cursor-pointer">
+        <span class="label-text">Export all rows</span>
+        <input type="checkbox" class="toggle toggle-primary" [disabled]="isLoading" [(ngModel)]="exportAllRows" />
+      </label>
+    </div>
+    <div class="form-control w-full">
+      <label class="label cursor-pointer">
+        <span class="label-text">Skip header</span>
+        <input type="checkbox" class="toggle toggle-primary" [disabled]="isLoading" [(ngModel)]="skipHeader" />
+      </label>
+    </div>
+    <div class="form-control w-full">
+      <label class="label cursor-pointer">
+        <span class="label-text">Suppress quotes</span>
+        <input type="checkbox" class="toggle toggle-primary" [disabled]="isLoading" [(ngModel)]="suppressQuotes" />
+      </label>
+    </div>
+    <div class="form-control w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">Column separator</span>
+      </label>
+      <input type="text" class="input input-bordered" [disabled]="isLoading" [(ngModel)]="columnSeparator" />
+    </div>
+    <div class="alert alert-error" *ngIf="hasError">
+      <div class="overflow-hidden w-full">
+        <nwb-icon [icon]="iconError" class="w-6 h-6"></nwb-icon>
+        <div class="w-full">
+          <div class="text-xs">Something went wrong.</div>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="form-control w-full max-w-xs ">
+      <label class="label">
+        <span class="label-text">File size</span>
+      </label>
+      <input type="text" class="input input-bordered" disabled [ngModel]="(data.size / 1024 / 1024 | number) + ' MB'"/>
+    </div>
+    <div class="form-control w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">File name</span>
+      </label>
+      <input type="text" class="input input-bordered" [disabled]="isLoading" [(ngModel)]="filename" />
+    </div>
+  }
+
+  <div class="alert alert-error" *ngIf="hasError">
+    <div class="overflow-hidden w-full">
+      <nwb-icon [icon]="iconError" class="w-6 h-6"></nwb-icon>
+      <div class="w-full">
+        <div class="text-xs">Something went wrong.</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="flex-none modal-action flex-row justify-end layout-pad mt-0 bg-base-200">
+  <div class="btn-group" *ngIf="!data">
+    <button type="button" class="btn" (click)="close()">Cancel</button>
+    <button type="button" class="btn btn-primary" [disabled]="isLoading" (click)="export()" [class.loading]="isLoading">Export</button>
+  </div>
+  <div class="btn-group" *ngIf="data">
+    <button type="button" class="btn" (click)="copyData()">Copy to clipboard</button>
+    <button type="button" class="btn btn-primary" (click)="downloadData()">Download</button>
+  </div>
+</div>

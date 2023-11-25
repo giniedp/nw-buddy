@@ -3,7 +3,7 @@
   <a class="tab tab-bordered flex-1" [class.tab-active]="showColumns" (click)="showColumns = !showColumns">Columns</a>
 </div>
 <div class="flex-1 overflow-auto h-full">
-  <ng-container *ngIf="!showColumns">
+  @if(!showColumns) {
     <ul class="menu menu-compact menu-vertical">
       <li>
         <a (click)="autosizeColumns()">
@@ -49,7 +49,7 @@
         </a>
       </li>
     </ul>
-    <ng-container *ngIf="sigPersistKey()">
+    @if(sigPersistKey()) {
       <div class="divider divider-vertical h-[1px] my-0"></div>
       <ul class="menu menu-compact menu-vertical">
         <li>
@@ -71,21 +71,20 @@
           </a>
         </li>
       </ul>
-    </ng-container>
-    <!-- <div class="divider divider-vertical h-[1px] my-0"></div>
+    }
+    <div class="divider divider-vertical h-[1px] my-0"></div>
     <ul class="menu menu-compact menu-vertical">
       <li>
-        <a (click)="openCode()">
-          <nwb-icon [icon]="svgCode" class="w-4 h-4"></nwb-icon>
+        <a (click)="openExporter()">
+          <nwb-icon [icon]="svgFileCsv" class="w-4 h-4"></nwb-icon>
           <div class="flex flex-col leading-none">
-            <span>Raw data</span>
-            <span class="text-xs opacity-75">Opens an editor showing the raw JSON data</span>
+            <span>CSV Export</span>
+            <span class="text-xs opacity-75">Exports all or selected data as CSV</span>
           </div>
         </a>
       </li>
-    </ul> -->
-  </ng-container>
-  <ng-container *ngIf="showColumns">
+    </ul>
+  } @else {
     <div class="px-2 py-1">
       <nwb-quicksearch-input [placeholder]="'Search column name'" [bordered]="true"></nwb-quicksearch-input>
     </div>
@@ -105,5 +104,5 @@
         <span class="whitespace-nowrap truncate" [class.opacity-10]="it.hide">{{ it.name || it.colId }}</span>
       </div>
     </div>
-  </ng-container>
+  }
 </div>
