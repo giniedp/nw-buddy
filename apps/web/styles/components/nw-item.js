@@ -1,4 +1,4 @@
-export default ({ addComponents }) => {
+module.exports = ({ addComponents }) => {
   addComponents({
     '.is-embed': {
       '.embed-hidden': {
