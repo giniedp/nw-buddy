@@ -20,6 +20,15 @@ export class ItemDetailDirective extends ItemDetailStore {
     this.patchState({ entityId: value })
   }
 
+  @Input()
+  public set gsOverride(value: number) {
+    this.patchState({ gsOverride: value })
+  }
+
+  @Input()
+  public set perkOverride(value: Record<string, string>) {
+    this.patchState({ perkOverride: value })
+  }
   public constructor(db: NwDbService, models: ModelViewerService, cdRef: ChangeDetectorRef) {
     super(db, models, cdRef)
   }

@@ -16,6 +16,7 @@ import { TableGridUtils } from '~/ui/data/table-grid'
 import { svgTrashCan } from '~/ui/icons/svg'
 import { humanize } from '~/utils'
 import { DnDService } from '~/utils/services/dnd.service'
+import { IconComponent } from './cell-components/icon-component'
 
 export type InventoryTableUtils = TableGridUtils<InventoryTableRecord>
 export type InventoryTableRecord = ItemInstanceRow
@@ -32,22 +33,23 @@ export function inventoryColIcon(util: InventoryTableUtils, dnd: DnDService) {
     minWidth: 100,
     maxWidth: 100,
     dndSource: true,
+    cellRenderer: IconComponent,
     dndSourceOnRowDrag: (params) => {
       const data = params.rowNode.data as InventoryTableRecord
       const json = JSON.stringify(data)
       params.dragEvent.dataTransfer.setData('application/json', json)
       dnd.data = data
     },
-    cellRenderer: util.cellRenderer(({ data }) => {
-      const item = data.item
-      return util.elItemIcon({
-        class: ['transition-all translate-x-0 hover:translate-x-1'],
-        icon: getItemIconPath(item) || NW_FALLBACK_ICON,
-        isArtifact: isMasterItem(item) && isItemArtifact(item),
-        isNamed: isMasterItem(item) && isItemNamed(item),
-        rarity: getItemRarity(item),
-      })
-    }),
+    // cellRenderer: util.cellRenderer(({ data }) => {
+    //   const item = data.item
+    //   return util.elItemIcon({
+    //     class: ['transition-all translate-x-0 hover:translate-x-1'],
+    //     icon: getItemIconPath(item) || NW_FALLBACK_ICON,
+    //     isArtifact: isMasterItem(item) && isItemArtifact(item),
+    //     isNamed: isMasterItem(item) && isItemNamed(item),
+    //     rarity: getItemRarity(item),
+    //   })
+    // }),
   })
 }
 export function inventoryColName(util: InventoryTableUtils) {

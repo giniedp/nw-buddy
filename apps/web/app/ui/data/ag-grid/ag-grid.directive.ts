@@ -1,20 +1,20 @@
 import { AgGridEvent, Grid, GridOptions, GridReadyEvent } from '@ag-grid-community/core'
-import { Directive, ElementRef, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
 import {
-  Observable,
-  ReplaySubject,
-  Subject,
-  defer,
-  filter,
-  merge,
-  skipWhile,
-  switchMap,
-  take,
-  takeUntil,
-  tap,
-} from 'rxjs'
+  Directive,
+  ElementRef,
+  Input,
+  NgZone,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewContainerRef,
+  inject,
+} from '@angular/core'
+import { ComponentStore } from '@ngrx/component-store'
+import { Observable, ReplaySubject, Subject, defer, filter, merge, skipWhile, take, takeUntil, tap } from 'rxjs'
 import { runOutsideZone } from '~/utils/run-in-zone'
+import { AngularFrameworkComponentWrapper } from './component-wrapper/angular-framework-component-wrapper'
+import { AngularFrameworkOverrides } from './component-wrapper/angular-framework-overrides'
 import { fromGridEvent } from './from-grid-event'
 import { AgGrid, AgGridEvents } from './types'
 
@@ -25,6 +25,7 @@ import { AgGrid, AgGridEvents } from './types'
     '[class.ag-grid]': 'true',
     '[class.ag-theme-alpine-dark]': 'true',
   },
+  providers: [AngularFrameworkOverrides, AngularFrameworkComponentWrapper],
 })
 export class AgGridDirective<T = any>
   extends ComponentStore<{ data: T[]; options: GridOptions<T> }>
@@ -47,11 +48,20 @@ export class AgGridDirective<T = any>
   protected readonly options$ = this.select((it) => it.options)
   private dispose$ = new Subject<void>()
 
-  public constructor(private elRef: ElementRef<HTMLElement>, private zone: NgZone) {
+  private angularFrameworkOverrides = inject(AngularFrameworkOverrides)
+  private frameworkComponentWrapper = inject(AngularFrameworkComponentWrapper)
+  private viewRef = inject(ViewContainerRef)
+
+  public constructor(
+    private elRef: ElementRef<HTMLElement>,
+    private zone: NgZone,
+  ) {
     super({ data: null, options: null })
   }
 
   public ngOnInit(): void {
+    this.frameworkComponentWrapper.setViewContainerRef(this.viewRef)
+
     this.options$
       .pipe(
         runOutsideZone(this.zone),
@@ -64,7 +74,7 @@ export class AgGridDirective<T = any>
             }
           },
         }),
-        takeUntil(this.destroy$)
+        takeUntil(this.destroy$),
       )
       .subscribe()
   }
@@ -74,13 +84,22 @@ export class AgGridDirective<T = any>
   }
 
   private createGrid(options: GridOptions) {
-    const grid = new Grid(this.elRef.nativeElement, {
-      ...(options || {}),
-      context: {
-        destroy$: defer(() => this.dispose$),
+    const grid = new Grid(
+      this.elRef.nativeElement,
+      {
+        ...(options || {}),
+        context: {
+          destroy$: defer(() => this.dispose$),
+        },
+        onGridReady: (e) => this.onGridReady(e, options),
       },
-      onGridReady: (e) => this.onGridReady(e, options),
-    })
+      {
+        frameworkOverrides: this.angularFrameworkOverrides as any,
+        providedBeanInstances: {
+          frameworkComponentWrapper: this.frameworkComponentWrapper,
+        },
+      },
+    )
     this.dispose$.pipe(take(1)).subscribe(() => {
       grid.destroy()
     })
