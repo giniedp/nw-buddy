@@ -31,6 +31,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { shareReplayRefCount } from '~/utils'
 import { SaveStateDialogComponent } from './save-state-dialog.component'
 import { LoadStateDialogComponent } from './load-state-dialog.component'
+import { ExportDialogComponent } from './export-dialog.component'
 
 @Component({
   standalone: true,
@@ -228,6 +229,14 @@ export class TableGridPanelComponent extends ComponentStore<{
         })
         grid.api.setFilterModel(state.filter)
       })
+  }
+
+  protected openExporter() {
+    ExportDialogComponent.open(this.dialog, {
+      title: 'CSV Export',
+      grid: this.get(({ grid }) => grid.api),
+      config: {},
+    })
   }
 
   private submitState(state: ColumnState[]) {

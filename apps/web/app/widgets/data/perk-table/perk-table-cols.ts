@@ -64,6 +64,7 @@ export function perkColName(util: PerkTableUtils) {
       const nameB = b.name || b.secondary || ''
       return nameA.localeCompare(nameB)
     },
+
     valueGetter: ({ data }) => {
       return {
         name: data.DisplayName && util.i18n.get(data.DisplayName),
@@ -72,6 +73,14 @@ export function perkColName(util: PerkTableUtils) {
         prefix: data.AppliedPrefix && util.i18n.get(data.AppliedPrefix),
       }
     },
+    valueFormatter: ({ data }) => {
+      const name = data.DisplayName && util.i18n.get(data.DisplayName)
+      const secondary = data.SecondaryEffectDisplayName && util.i18n.get(data.SecondaryEffectDisplayName)
+      const suffix = data.AppliedSuffix && util.i18n.get(data.AppliedSuffix)
+      const prefix = data.AppliedPrefix && util.i18n.get(data.AppliedPrefix)
+      return [name || '', secondary || '', suffix || '', prefix || ''].join(' ') as any
+    },
+    useValueFormatterForExport: true,
     filterValueGetter: ({ data }) => {
       const name = data.DisplayName && util.i18n.get(data.DisplayName)
       const secondary = data.SecondaryEffectDisplayName && util.i18n.get(data.SecondaryEffectDisplayName)
