@@ -1,3 +1,6 @@
 .screenshot-capture {
   @apply bg-base-100;
 }
+.screenshot-capture * {
+  overflow: hidden;
+}
