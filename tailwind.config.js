@@ -18,8 +18,8 @@ module.exports = {
     },
     extend: {
       animation: {
-        'spin-cw': 'spin-cw 3s linear infinite',
-        'spin-ccw': 'spin-ccw 3s linear infinite',
+        'spin-cw': 'spin-cw 100s linear infinite',
+        'spin-ccw': 'spin-ccw 100s linear infinite',
       },
       keyframes: {
         'spin-cw': {

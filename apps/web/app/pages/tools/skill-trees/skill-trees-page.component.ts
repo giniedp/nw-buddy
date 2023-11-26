@@ -1,21 +1,25 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Injector } from '@angular/core'
-import { RouterModule } from '@angular/router'
+import { ChangeDetectionStrategy, Component, Injector, inject } from '@angular/core'
+import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
-import { filter, map } from 'rxjs'
+import { filter, map, switchMap } from 'rxjs'
 import { SkillBuildRow, SkillBuildsStore } from '~/data'
 import { NwModule } from '~/nw'
 import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
+import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
+import { DataGridModule } from '~/ui/data/table-grid'
+import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
-import { svgPlus } from '~/ui/icons/svg'
-import { ConfirmDialogComponent } from '~/ui/layout'
-import { NavbarModule } from '~/ui/nav-toolbar'
+import { svgEllipsisVertical, svgPlus } from '~/ui/icons/svg'
+import { ConfirmDialogComponent, LayoutModule } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService } from '~/utils'
+import { HtmlHeadService, observeQueryParam, selectStream } from '~/utils'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
+import { SkillsetTableAdapter } from '~/widgets/data/skillset-table'
 import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
-import { SkillTreesListComponent } from './skill-trees-list.component'
+import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   standalone: true,
@@ -27,29 +31,60 @@ import { SkillTreesListComponent } from './skill-trees-list.component'
     RouterModule,
     NwModule,
     QuicksearchModule,
-    NavbarModule,
-    IconsModule,
-    TooltipModule,
+    ScreenshotModule,
     IonHeader,
-    SkillTreesListComponent,
+    TooltipModule,
+    DataViewModule,
+    DataGridModule,
+    ItemDetailModule,
+    VirtualGridModule,
+    LayoutModule,
+    IconsModule,
   ],
-  providers: [QuicksearchService, SkillBuildsStore],
   host: {
     class: 'layout-col',
   },
+  providers: [
+    provideDataView({
+      adapter: SkillsetTableAdapter,
+      factory: () => {
+        return {
+          source: inject(SkillBuildsStore).selectedRows$,
+        }
+      },
+    }),
+    QuicksearchService.provider({
+      queryParam: 'search',
+    }),
+  ],
 })
 export class SkillBuildsComponent {
-  protected iconCreate = svgPlus
+  protected title = 'Skill Trees'
+  protected filterParam = 'filter'
+  protected selectionParam = 'id'
+  protected persistKey = 'skilltrees-table'
+  protected categoryParam = 'category'
+  protected categoryParam$ = observeQueryParam(inject(ActivatedRoute), this.categoryParam)
+  protected category$ = selectStream(this.categoryParam$, (it) => {
+    return it ? it : null
+  })
 
-  protected records$ = this.store.records$
+  protected iconCreate = svgPlus
+  protected iconMore = svgEllipsisVertical
+  protected tags$ = this.store.tags$
+
+  private router = inject(Router)
+  private route = inject(ActivatedRoute)
 
   public constructor(
     private store: SkillBuildsStore,
     protected search: QuicksearchService,
     private dialog: Dialog,
     private injector: Injector,
-    head: HtmlHeadService
+    protected service: DataViewService<any>,
+    head: HtmlHeadService,
   ) {
+    service.patchState({ mode: 'grid', modes: ['grid'] })
     head.updateMetadata({
       title: 'Skill Builder',
       description: 'A Skill Buider tool for New World. Build your skill tree and share with your mates.',
@@ -63,18 +98,25 @@ export class SkillBuildsComponent {
     })
       .closed.pipe(
         filter((it) => !!it?.length),
-        map((it) => NW_WEAPON_TYPES.find((type) => type.WeaponTypeID === String(it[0])))
+        map((it) => NW_WEAPON_TYPES.find((type) => type.WeaponTypeID === String(it[0]))),
       )
-      .subscribe((weapon) => {
-        this.store.createRecord({
-          record: {
-            id: null,
-            name: `New Skill Tree`,
-            tree1: null,
-            tree2: null,
-            weapon: weapon.WeaponTag,
-          },
-        })
+      .pipe(
+        switchMap((weapon) => {
+          return this.store.createRecord({
+            record: {
+              id: null,
+              name: `New Skill Tree`,
+              tree1: null,
+              tree2: null,
+              weapon: weapon.WeaponTag,
+            },
+          })
+        }),
+      )
+      .subscribe((result) => {
+        if (result) {
+          this.router.navigate(['.', result.id], { relativeTo: this.route })
+        }
       })
   }
 
@@ -91,5 +133,10 @@ export class SkillBuildsComponent {
       .subscribe(() => {
         this.store.destroyRecord({ recordId: item.record.id })
       })
+  }
+
+  protected toggleTag(value: string) {
+    console.log('toggleTag', value)
+    this.store.toggleTag(value)
   }
 }

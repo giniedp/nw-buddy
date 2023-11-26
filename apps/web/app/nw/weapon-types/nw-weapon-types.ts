@@ -1,5 +1,5 @@
 import { StatusEffectCategory } from '@nw-data/generated'
-import { CaseInsensitiveMap } from '~/utils'
+import { CaseInsensitiveMap, eqCaseInsensitive } from '~/utils'
 
 export interface NwWeaponType {
   WeaponTypeID: string
@@ -307,4 +307,8 @@ export const NW_SE_CATEGORY_ICONS = new CaseInsensitiveMap(
 
 export function statusEffectCategoryIcon(type: string) {
   return NW_SE_CATEGORY_ICONS.get(type)
+}
+
+export function getWeaponTypeInfo(byWeaponTag: string) {
+  return NW_WEAPON_TYPES.find((it) => eqCaseInsensitive(it.WeaponTag, byWeaponTag))
 }

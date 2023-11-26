@@ -19,21 +19,21 @@ export const routes: Routes = [
     component: SkillBuildsEmbedComponent,
   },
   {
+    path: 'share/ipns/:name',
+    component: SkillBuildsShareComponent,
+  },
+  {
+    path: 'share/ipfs/:cid',
+    component: SkillBuildsShareComponent,
+  },
+  {
+    path: 'share/:cid',
+    component: SkillBuildsShareComponent,
+  },
+  {
     path: '',
     component: SkillBuildsComponent,
     children: [
-      {
-        path: 'share/ipns/:name',
-        component: SkillBuildsShareComponent,
-      },
-      {
-        path: 'share/ipfs/:cid',
-        component: SkillBuildsShareComponent,
-      },
-      {
-        path: 'share/:cid',
-        component: SkillBuildsShareComponent,
-      },
       {
         path: ':id',
         component: SkillBuildsDetailComponent,

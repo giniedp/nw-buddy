@@ -1,0 +1,12 @@
+:host {
+  img.absolute {
+    filter: grayscale(1) sepia(0.5) opacity(0.15);
+    transition: filter 0.3s ease-in-out;
+  }
+
+  &:hover, &.is-selected {
+    img.absolute {
+      filter: grayscale(1) sepia(0.5) opacity(0.5);
+    }
+  }
+}
