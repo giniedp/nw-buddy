@@ -1,6 +1,5 @@
-<div class="skill-tree-title text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
-  <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
-  <span class="relative top-1">{{ title$ | async | nwText }} - {{ value?.length || 0 }}</span>
+<div class="skill-tree-title text-lg uppercase text-center font-serif text-nw-description nw-bg-title bg-bottom pt-4">
+  {{ title$ | async | nwText }} - <span class="font-caslon">{{ value?.length || 0 }}</span>
 </div>
 <div class="skill-tree-content grid p-3 relative" [class]="colsClass | async">
   @for (row of rows(); track $index) {
@@ -34,6 +33,7 @@
           (keydown.space)="toggle(cell)"
           (keydown.enter)="toggle(cell)"
           [tooltip]="tip"
+          [tooltipDelay]="0"
           [tooltipClass]="'p-0 bg-opacity-100'"
         >
           <ng-template #tip>

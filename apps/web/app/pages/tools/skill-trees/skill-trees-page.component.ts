@@ -11,7 +11,7 @@ import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data
 import { DataGridModule } from '~/ui/data/table-grid'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
-import { svgEllipsisVertical, svgPlus } from '~/ui/icons/svg'
+import { svgFilterList, svgPlus } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
@@ -70,7 +70,7 @@ export class SkillBuildsComponent {
   })
 
   protected iconCreate = svgPlus
-  protected iconMore = svgEllipsisVertical
+  protected iconMore = svgFilterList
   protected tags$ = this.store.tags$
 
   private router = inject(Router)
@@ -136,7 +136,6 @@ export class SkillBuildsComponent {
   }
 
   protected toggleTag(value: string) {
-    console.log('toggleTag', value)
     this.store.toggleTag(value)
   }
 }

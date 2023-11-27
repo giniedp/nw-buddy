@@ -16,10 +16,10 @@
       <span class="flex-1"></span>
       <li>
         <button class="btn btn-square btn-ghost" [cdkMenuTriggerFor]="tplMenu" [tooltip]="'Filter by tag'">
-          <nwb-icon [icon]="iconMore" class="w-5 h-5"/>
+          <nwb-icon [icon]="iconMore" class="w-5 h-5" />
         </button>
         <ng-template #tplMenu>
-          <ul class="menu menu-compact bg-base-100 w-60 rounded-b-md z-10">
+          <ul class="menu menu-compact bg-base-100 w-60 rounded-b-md z-10" cdkMenu>
             <li *ngFor="let item of tags$ | async">
               <a (click)="toggleTag(item.tag)" [class.active]="item.active">
                 {{ item.tag }}
@@ -30,7 +30,7 @@
       </li>
       <li>
         <button class="btn btn-square btn-ghost" (click)="createItem()" [tooltip]="'Create new entry'">
-          <nwb-icon [icon]="iconCreate" class="w-5 h-5"/>
+          <nwb-icon [icon]="iconCreate" class="w-5 h-5" />
         </button>
       </li>
     </ul>
@@ -69,7 +69,7 @@
         @if (!outlet.isActivated) {
           <div class="p-4 flex flex-row items-center justify-center">
             <button (click)="createItem()" class="btn btn-primary gap-1">
-              <nwb-icon [icon]="iconCreate" class="w-5 h-5"/>
+              <nwb-icon [icon]="iconCreate" class="w-5 h-5" />
               <span>Create New</span>
             </button>
           </div>
