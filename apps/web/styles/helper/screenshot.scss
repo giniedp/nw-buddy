@@ -1,5 +1,5 @@
 .screenshot-capture {
-  @apply bg-base-100;
+  @apply bg-base-300;
 }
 .screenshot-capture * {
   overflow: visible; // scrollbars are terrible for screenshots, this removes them
