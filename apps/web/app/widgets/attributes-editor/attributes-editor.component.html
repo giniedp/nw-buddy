@@ -1,17 +1,17 @@
-<div class="flex flex-col gap-4 pr-[10px] font-nimbus">
+<div class="flex flex-col gap-2 pr-[10px] font-nimbus">
   <div class="flex flex-row gap-1">
     <span class="font-bold">Points</span>
     <span class="font-bold text-center">{{ pointsAvailable$ | async }}</span>
     <span></span>
   </div>
   @for (stat of stats$ | async; track $index) {
-    <div class="flex flex-col gap-1">
+    <div class="flex flex-col">
       <div class="flex flex-row gap-4">
-        <label class="inline-block w-16 font-bold uppercase text-center">
+        <label class="inline-block w-16 font-serif text-nw-description uppercase text-center">
           {{ stat.name | nwText }}
         </label>
-        <div>
-          <span class="inline-block text-right font-bold uppercase"> {{ stat.total }} </span>
+        <div class="font-nimbus font-bold">
+          <span class="inline-block text-right "> {{ stat.total }} </span>
           @if (stat.assigned || stat.buffs || stat.magnify) {
             <span> ( </span>
             <span
