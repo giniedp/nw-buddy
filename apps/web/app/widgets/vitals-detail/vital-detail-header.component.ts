@@ -28,13 +28,27 @@ import { humanize } from '~/utils'
     >
       <img [nwImage]="icon" class="w-12 h-12" />
     </a>
-
-    <a class="flex flex-row items-center gap-1 hover:underline" [routerLink]="['/vitals/table', vital.VitalsID]">
+    <a
+      class="flex flex-row uppercase text-sm font-serif items-center gap-1 hover:underline leading-none"
+      [routerLink]="['/vitals/table', vital.VitalsID]"
+    >
       <span>{{ vital.DisplayName | nwText }}</span>
     </a>
+    <div
+      class="
+        w-52 flex flex-row items-center justify-center leading-none
+        border border-error-content rounded-sm
+        bg-gradient-to-r from-red-600 via-red-950 to-red-600
+        font-nimbus font-bold text-center text-xs shadow-black text-shadow-sm
+      "
+    >
+      {{ hp | number }}
+    </div>
     <div class="relative flex items-center justify-center -mt-4 pointer-events-none">
       <img [nwImage]="typeMarker" class="h-10 w-36 object-cover" />
-      <span *ngIf="vital.Level" class="absolute top-2 mx-auto"> {{ level || vital.Level }}</span>
+      <span *ngIf="vital.Level" class="absolute top-2 mx-auto text-shadow-sm shadow-black">
+        {{ level || vital.Level }}</span
+      >
     </div>
   `,
 })
@@ -49,6 +63,9 @@ export class VitalDetailHeaderComponent {
 
   @Input()
   public level: number
+
+  @Input()
+  public hp: number
 
   public get vital() {
     return this.vitalValue

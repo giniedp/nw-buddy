@@ -13,7 +13,7 @@ import {
 import { uniqBy } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { shareReplayRefCount } from '~/utils'
+import { selectStream, shareReplayRefCount } from '~/utils'
 import { ModelViewerService } from '../model-viewer'
 
 export interface State {
@@ -31,6 +31,7 @@ export interface DamageTableFile {
 
 @Injectable()
 export class VitalDetailStore extends ComponentStore<State> {
+
   public readonly vitalId$ = this.select(({ vitalId }) => vitalId)
   public readonly vital$ = this.select(this.db.vital(this.vitalId$), (it) => it)
 
@@ -67,6 +68,17 @@ export class VitalDetailStore extends ComponentStore<State> {
     .pipe(shareReplayRefCount(1))
 
   public readonly hasDamageTable$ = this.select(this.damageTableNames$, (it) => !!it?.length)
+
+  public totalHP$ = selectStream({
+    vital: this.vital$,
+    mods: this.vitalModifier$,
+    levels: this.vitalLevel$,
+    difficulty: this.mutaDifficulty$,
+  }, ({ vital, mods, levels, difficulty }) => {
+    const potency = 1 + (difficulty?.[`HealthPotency_${vital.CreatureType}`] || 0) / 100
+    return Math.floor(levels.BaseMaxHealth * vital.HealthMod * mods.CategoryHealthMod * potency)
+  })
+
   public constructor(private db: NwDbService, private vs: ModelViewerService) {
     super({
       vitalId: null,
