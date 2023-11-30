@@ -76,7 +76,7 @@ export class VitalDetailStore extends ComponentStore<State> {
     difficulty: this.mutaDifficulty$,
   }, ({ vital, mods, levels, difficulty }) => {
     const potency = 1 + (difficulty?.[`HealthPotency_${vital.CreatureType}`] || 0) / 100
-    return Math.floor(levels.BaseMaxHealth * vital.HealthMod * mods.CategoryHealthMod * potency)
+    return Math.floor(Math.floor(levels.BaseMaxHealth * vital.HealthMod * mods.CategoryHealthMod) * potency)
   })
 
   public constructor(private db: NwDbService, private vs: ModelViewerService) {
