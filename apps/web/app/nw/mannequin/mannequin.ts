@@ -8,6 +8,7 @@ import {
   selectActivePerks,
   selectActiveWeapon,
   selectActveEffects,
+  selectAllAbilities,
   selectAttributes,
   selectConsumableEffects,
   selectDamageTableRow,
@@ -24,9 +25,11 @@ import {
 } from './selectors'
 import { selectElementalRating, selectModsArmor, selectPhysicalRating } from './stats/armoring'
 import { selectModsABS } from './stats/mods-abs'
+import { selectCooldownMods } from './stats/mods-cooldowns'
 import { selectDamageMods, selectWeaponDamage } from './stats/mods-damage'
 import { selectModsDMG } from './stats/mods-dmg'
 import { selectModsEFF, selectModsMULT } from './stats/mods-eff'
+import { selectStatusEffectReduction } from './stats/mods-effect-reduction'
 import { selectModsEXP } from './stats/mods-exp'
 import { selectModsCraftingGS } from './stats/mods-gs-crafting'
 import { selectModsROL } from './stats/mods-rol'
@@ -58,14 +61,17 @@ export class Mannequin extends ComponentStore<MannequinState> {
       attrInt: this.db.attrInt,
       attrFoc: this.db.attrFoc,
       attrCon: this.db.attrCon,
+      cooldowns: this.db.cooldownsPlayerMap,
       damagaTable: this.db.damageTable0,
       pvpBalanceArena: this.db.data.pvpbalancetablesPvpbalanceArena(),
       pvpBalanceOpenworld: this.db.data.pvpbalancetablesPvpbalanceOpenworld(),
       pvpBalanceOutpostrush: this.db.data.pvpbalancetablesPvpbalanceOutpostrush(),
       pvpBalanceWar: this.db.data.pvpbalancetablesPvpbalanceWar(),
     },
-    config
+    config,
   )
+
+  public readonly dbReady$ = this.select(this.db$, () => true)
 
   public readonly level$ = this.select(({ level }) => level)
   public readonly myHpPercent$ = this.select(({ myHealthPercent }) => myHealthPercent)
@@ -94,20 +100,20 @@ export class Mannequin extends ComponentStore<MannequinState> {
     this.activeWeapon$,
     this.state$,
     selectWeaponAttacks,
-    config
+    config,
   )
   public readonly activeWeaponAbilities$ = this.select(
     this.db$,
     this.activeWeapon$,
     this.state$,
     selectWeaponAbilities,
-    config
+    config,
   )
   public readonly activeDamageTableRow$ = this.select(
     this.activeWeaponAttacks$,
     this.state$,
     selectDamageTableRow,
-    config
+    config,
   )
 
   public readonly activePerks$ = this.select(this.db$, this.state$, selectActivePerks, config)
@@ -121,7 +127,7 @@ export class Mannequin extends ComponentStore<MannequinState> {
     }),
     this.state$,
     selectAttributes,
-    config
+    config,
   )
 
   public readonly activeMagnify$ = this.select(
@@ -132,7 +138,7 @@ export class Mannequin extends ComponentStore<MannequinState> {
     }),
     this.state$,
     selectPlacingMods,
-    config
+    config,
   )
 
   public readonly activeAbilities$ = this.select(
@@ -143,7 +149,18 @@ export class Mannequin extends ComponentStore<MannequinState> {
     this.activePerks$,
     this.state$,
     selectActiveAbilities,
-    config
+    config,
+  )
+
+  public readonly allAbilities$ = this.select(
+    this.db$,
+    this.activeAttributes$,
+    this.activeWeapon$,
+    this.activeDamageTableRow$,
+    this.activePerks$,
+    this.state$,
+    selectAllAbilities,
+    config,
   )
 
   public readonly activeEffects$ = this.select(this.db$, this.activePerks$, this.state$, selectActveEffects)
@@ -157,7 +174,19 @@ export class Mannequin extends ComponentStore<MannequinState> {
       perks: this.activePerks$,
       consumables: this.activeConsumables$,
     },
-    config
+    config,
+  )
+
+  public readonly allMods$ = this.select<Observed<ActiveMods>>(
+    {
+      // damageRow: this.activeDamageTableRow$,
+      attributes: this.activeAttributes$,
+      abilities: this.allAbilities$,
+      effects: this.activeEffects$,
+      perks: this.activePerks$,
+      consumables: this.activeConsumables$,
+    },
+    config,
   )
 
   public readonly statRatingElemental$ = this.select(
@@ -165,7 +194,7 @@ export class Mannequin extends ComponentStore<MannequinState> {
     this.activeMods$,
     this.state$,
     selectElementalRating,
-    config
+    config,
   )
 
   public readonly statRatingPhysical$ = this.select(
@@ -173,9 +202,17 @@ export class Mannequin extends ComponentStore<MannequinState> {
     this.activeMods$,
     this.state$,
     selectPhysicalRating,
-    config
+    config,
   )
 
+  public readonly statCooldown$ = this.select(
+    this.db$,
+    this.activeConsumables$,
+    this.activeWeaponAbilities$,
+    this.allMods$,
+    selectCooldownMods,
+    config,
+  )
   public readonly statHealth$ = this.select(this.db$, this.activeMods$, this.state$, selectMaxHealth, config)
   public readonly statMana$ = this.select(this.activeMods$, selectMaxMana, config)
   public readonly statStamina$ = this.select(this.activeMods$, selectMaxStamina, config)
@@ -191,7 +228,7 @@ export class Mannequin extends ComponentStore<MannequinState> {
     this.db$,
     this.state$,
     selectWeaponDamage,
-    { debounce: true }
+    { debounce: true },
   )
 
   public readonly statDamageMods$ = this.select(
@@ -199,7 +236,7 @@ export class Mannequin extends ComponentStore<MannequinState> {
     this.activeWeapon$,
     this.state$,
     selectDamageMods,
-    config
+    config,
   )
 
   public readonly statDmg$ = this.select(this.db$, this.activeMods$, this.state$, selectModsDMG, config)
@@ -207,9 +244,26 @@ export class Mannequin extends ComponentStore<MannequinState> {
   public readonly statArmor$ = this.select(this.db$, this.activeMods$, this.state$, selectModsArmor, config)
   public readonly statRol$ = this.select(this.activeMods$, this.state$, selectModsROL, config)
   public readonly statCraftGS$ = this.select(this.activeMods$, selectModsCraftingGS, config)
+  public readonly statEffectReduction$ = this.select(this.db$, this.allMods$, selectStatusEffectReduction, {
+    debounce: true,
+  })
 
   public constructor(private db: NwDbService) {
     super({
+      level: 1,
+      equippedItems: [],
+      weaponActive: 'primary',
+      weaponUnsheathed: true,
+      myHealthPercent: 1,
+      myManaPercent: 1,
+      myStaminaPercent: 1,
+      numAroundMe: 1,
+      numHits: 1,
+    })
+  }
+
+  public reset() {
+    this.patchState({
       level: 1,
       equippedItems: [],
       weaponActive: 'primary',

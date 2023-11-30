@@ -1,12 +1,12 @@
 import { Injectable, NgIterable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
+import { groupBy, isEqual } from 'lodash'
 import { TranslateService } from '~/i18n'
+import { SectionGroup } from './types'
 import { VirtualGridCellContext } from './virtual-grid-cell.directive'
 import { QuickFilterGetterFn } from './virtual-grid-options'
 import { VirtualGridRowContext } from './virtual-grid-row.directive'
-import { groupBy, isEqual } from 'lodash'
-import { SectionGroup, VirtualGridSection } from './types'
-import { CaseInsensitiveMap } from '~/utils'
+import { map, tap } from 'rxjs'
 
 export interface VirtualGridState<T> {
   data: T[]
@@ -49,14 +49,15 @@ export interface VirtualGridState<T> {
 
 @Injectable()
 export class VirtualGridStore<T> extends ComponentStore<VirtualGridState<T>> {
-  public readonly identifyBy$ = this.selectSignal(({ identifyBy }) => identifyBy)
+  public readonly identifyBy = this.selectSignal(({ identifyBy }) => identifyBy)
+  public readonly quickfilter = this.selectSignal(({ quickfilter }) => quickfilter)
   public readonly quickfilter$ = this.select(({ quickfilter }) => quickfilter)
-  public readonly itemSize$ = this.select(({ itemHeight }) => itemHeight)
-  public readonly ngClass$ = this.select(({ ngClass }) => ngClass)
-  public readonly quickfilterGetter$ = this.select(({ quickfilterGetter }) => quickfilterGetter)
-  public readonly sectionGetter$ = this.select(({ getItemSection }) => getItemSection)
-  public readonly data$ = this.select(({ data }) => data || [])
-  public readonly dataSections$ = this.select(this.data$, this.sectionGetter$, selectSections)
+  public readonly itemSize = this.selectSignal(({ itemHeight }) => itemHeight)
+  public readonly ngClass = this.selectSignal(({ ngClass }) => ngClass)
+  public readonly quickfilterGetter = this.selectSignal(({ quickfilterGetter }) => quickfilterGetter)
+  public readonly sectionGetter = this.selectSignal(({ getItemSection }) => getItemSection)
+  public readonly data = this.selectSignal(({ data }) => data || [])
+  public readonly dataSections = this.selectSignal(this.data, this.sectionGetter, selectSections)
 
   public readonly selection$ = this.select<Array<string | number>>(
     ({ selection }) => {
@@ -64,22 +65,21 @@ export class VirtualGridStore<T> extends ComponentStore<VirtualGridState<T>> {
     },
     {
       equal: isEqual,
-    }
+    },
   )
   public readonly selection = this.selectSignal(({ selection }) => selection || [])
-  public readonly dataFiltered$ = this.select(
-    this.dataSections$,
-    this.quickfilter$,
-    this.quickfilterGetter$,
-    (list, query, getter) => selectSectionsFiltered(list, query, getter, this.tl8)
+  public readonly dataFiltered = this.selectSignal(
+    this.dataSections,
+    this.quickfilter,
+    this.quickfilterGetter,
+    (list, query, getter) => selectSectionsFiltered(list, query, getter, this.tl8),
   )
 
-  public readonly colCount$ = this.select(this.state$, selectColumnCount)
-  public readonly rows$ = this.select(this.dataFiltered$, this.colCount$, selectRows, {
-    debounce: true,
-  })
-  public readonly rowCount$ = this.select(this.rows$, (it) => it.length)
-  protected trackBy = (i: number) => i
+  public readonly layout = this.selectSignal(this.state, selectLayout)
+  public readonly colCount = this.selectSignal(this.layout, (it) => it.cols)
+  public readonly gridSize = this.selectSignal(this.layout, (it) => it.size)
+  public readonly rows = this.selectSignal(this.dataFiltered, this.colCount, selectRows)
+  public readonly rowCount = this.selectSignal(this.rows, (it) => it.length)
 
   public constructor(private tl8: TranslateService) {
     super({
@@ -93,30 +93,71 @@ export class VirtualGridStore<T> extends ComponentStore<VirtualGridState<T>> {
   }
 
   public ngOnInit(): void {}
+
+  public withSize = this.effect<number>((size) => {
+    return size.pipe(map((value) => {
+      this.patchState({ size: value })
+    }))
+  })
 }
 
-function selectColumnCount({
+export function selectLayout({
   size,
   itemWidth,
   colCount,
 }: Pick<VirtualGridState<any>, 'size' | 'itemWidth' | 'colCount'>) {
-  let [minColumns, maxColumns] = decodeMinmax(colCount)
 
+  if (!size || size < 0) {
+    return {
+      size: size,
+      cols: 1,
+    }
+  }
+
+  let [minColumns, maxColumns] = decodeMinmax(colCount)
   if (!minColumns) {
     minColumns = 1
   }
-  if (!size || size < 0) {
-    return minColumns
+  if (maxColumns && maxColumns < minColumns) {
+    maxColumns = minColumns
   }
 
   let [minWidth, maxWidth] = decodeMinmax(itemWidth)
-  // TODO: research how max width can be used
   if (!minWidth) {
     minWidth = Math.ceil(size / minColumns)
   }
+  if (maxWidth && maxWidth < minWidth) {
+    maxWidth = minWidth
+  }
 
-  let cols = Math.floor(size / minWidth)
-  return Math.min(Math.max(cols, minColumns), maxColumns || cols)
+  // console.log({
+  //   size,
+  //   minWidth,
+  //   maxWidth,
+  //   minColumns,
+  //   maxColumns,
+  // })
+
+  let cols = 1
+  if (maxWidth) {
+    const m1 = size % minWidth
+    const m2 = size % maxWidth
+    if (m1 <= m2) {
+      cols = Math.floor(size / minWidth)
+      size = cols * minWidth
+    } else {
+      cols = Math.floor(size / maxWidth)
+      size = cols * maxWidth
+    }
+  } else {
+    cols = Math.floor(size / minWidth)
+    cols = Math.min(Math.max(cols, minColumns), maxColumns || cols)
+  }
+  // console.log({cols, size})
+  return {
+    size: size,
+    cols: cols
+  }
 }
 
 function decodeMinmax(value: number | [number, number]) {
@@ -217,7 +258,7 @@ function selectSectionsFiltered<T>(
   sections: Array<SectionGroup<T>>,
   query: string,
   getter: QuickFilterGetterFn<T>,
-  tl8: TranslateService
+  tl8: TranslateService,
 ) {
   if (!query || !getter) {
     return sections

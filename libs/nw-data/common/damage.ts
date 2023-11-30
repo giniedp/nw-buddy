@@ -1,4 +1,4 @@
-import { ItemdefinitionsRunes, ItemdefinitionsWeapons, WeaponTag } from '@nw-data/generated'
+import { ItemdefinitionsWeapons, WeaponTag } from '@nw-data/generated'
 import type { AttributeRef } from './attributes'
 import {
   NW_BASE_DAMAGE_COMPOUND_INCREASE,
@@ -29,7 +29,9 @@ export function damageFactorForGS(gearScore: number) {
   return factorLow * factorHigh
 }
 
-export function damageScaleAttrs(weapon: Pick<ItemdefinitionsWeapons, 'ScalingDexterity' | 'ScalingStrength' | 'ScalingIntelligence' | 'ScalingFocus'>): Record<AttributeRef, number> {
+export function damageScaleAttrs(
+  weapon: Pick<ItemdefinitionsWeapons, 'ScalingDexterity' | 'ScalingStrength' | 'ScalingIntelligence' | 'ScalingFocus'>
+): Record<AttributeRef, number> {
   return {
     str: weapon?.ScalingStrength || 0,
     dex: weapon?.ScalingDexterity || 0,
@@ -76,17 +78,64 @@ export function damageForTooltip({
   weaponScale?: Record<AttributeRef, number>
   attrSums: Record<AttributeRef, number>
 }) {
-  return (
-    weapon.BaseDamage *
-    damageCoefForWeaponTag(getWeaponTagFromWeapon(weapon)) *
-    damageFactorForGS(gearScore) *
-    (1 +
-      damageFactorForLevel(playerLevel) +
-      damageFactorForAttrs({
-        weapon: weaponScale || damageScaleAttrs(weapon),
-        attrSums: attrSums,
-      }))
-  )
+  return damageForWeapon({
+    playerLevel,
+    weaponBaseDamage: weapon.BaseDamage,
+    weaponGearScore: gearScore,
+    weaponScale: weaponScale || damageScaleAttrs(weapon),
+    attrSums,
+    dmgCoef: damageCoefForWeaponTag(getWeaponTagFromWeapon(weapon)),
+  })
+}
+
+export function damageForWeapon(options: {
+  playerLevel: number
+  weaponBaseDamage: number
+  weaponGearScore: number
+  weaponScale: Record<AttributeRef, number>
+  attrSums: Record<AttributeRef, number>
+  dmgCoef: number
+  ammoMod?: number
+  dmgMod?: number
+  critMod?: number
+  empowerMod?: number
+}) {
+  const dmgBase = options.weaponBaseDamage ?? 0
+  const dmgCoef = options.dmgCoef ?? 1
+  const factorFromGS = damageFactorForGS(options.weaponGearScore) ?? 1
+  const levelScaling = damageFactorForLevel(options.playerLevel) ?? 0
+  const statsScaling =
+    damageFactorForAttrs({
+      weapon: options.weaponScale,
+      attrSums: options.attrSums,
+    }) ?? 0
+  const ammoMod = options.ammoMod ?? 0
+  const dmgMod = options.dmgMod ?? 0
+  const critMod = options.critMod ?? 0
+  const empowerMod = options.empowerMod ?? 0
+
+  const result =
+    dmgBase *
+    dmgCoef *
+    factorFromGS *
+    (1 + levelScaling + statsScaling) *
+    (1 + ammoMod) *
+    (1 + dmgMod + critMod) *
+    (1 + empowerMod)
+
+  // console.table({
+  //   dmgBase,
+  //   dmgCoef,
+  //   factorFromGS,
+  //   levelScaling,
+  //   statsScaling,
+  //   ammoMod,
+  //   dmgMod,
+  //   critMod,
+  //   empowerMod,
+  // })
+  // console.debug('damageForWeapon', result)
+  return result
 }
 
 const WEAPON_EFFECT_TO_TAG: Record<string, WeaponTag> = {

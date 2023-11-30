@@ -9,7 +9,7 @@
           class="flex-1 btn btn-sm btn-ghost btn-square inline-flex"
           [routerLink]="['/gearsets', vm.gearset.id]"
           [tooltip]="'Open full editor'"
-          [color]="'info'"
+          [tooltipClass]="'bg-info'"
         >
           <nwb-icon [icon]="iconNav" class="w-4 h-4"></nwb-icon>
         </a>
@@ -33,10 +33,10 @@
             (ngModelChange)="updateName($event)"
             [ngModelOptions]="{ updateOn: 'blur' }"
           />
-          <button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu" [tooltip]="'Change mode'" [color]="'info'">
+          <button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu" [tooltip]="'Change mode'" [tooltipClass]="'bg-info'">
             <nwb-icon [icon]="vm.isLinkMode ? iconLink : iconCopy" class="w-4 h-4"></nwb-icon>
           </button>
-          <a class="btn btn-ghost btn-square inline-flex" [routerLink]="['/gearsets', vm.gearset.id]"  [tooltip]="'Open in big editor'" [color]="'info'" >
+          <a class="btn btn-ghost btn-square inline-flex" [routerLink]="['/gearsets', vm.gearset.id]"  [tooltip]="'Open in big editor'"  [tooltipClass]="'bg-info'" >
             <label>
               <nwb-icon [icon]="iconNav" class="w-4 h-4"></nwb-icon>
             </label>

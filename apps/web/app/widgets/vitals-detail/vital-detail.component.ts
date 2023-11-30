@@ -42,7 +42,7 @@ export interface VitalTab {
   },
   template: `
     <ng-container *ngIf="vm$ | async; let vm">
-      <nwb-vital-detail-header [vital]="vm.vital" [level]="store.level$ | async"></nwb-vital-detail-header>
+      <nwb-vital-detail-header [vital]="vm.vital" [hp]="store.totalHP$ | async" [level]="store.level$ | async"></nwb-vital-detail-header>
       <div class="tabs rounded-none justify-center bg-base-300" *ngIf="vm.tabs?.length > 1">
         <ng-container *ngFor="let tab of vm.tabs">
           <a

@@ -1,13 +1,13 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { defer, filter, take } from 'rxjs'
+import { defer, filter } from 'rxjs'
 import { SkillBuildsStore } from '~/data'
 import { NwDbService } from '~/nw'
-import { augmentWithTransactions } from '~/ui/data/ag-grid'
-import { TABLE_GRID_ADAPTER_OPTIONS, TableGridUtils } from '~/ui/data/table-grid'
+import { getWeaponTypeInfo } from '~/nw/weapon-types'
 import { DataViewAdapter } from '~/ui/data/data-view'
+import { DataTableCategory, TABLE_GRID_ADAPTER_OPTIONS, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { shareReplayRefCount } from '~/utils'
+import { SkillsetCellComponent } from './skillset-cell.component'
 import { SkillsetTableRecord, skillsetColName, skillsetColSkills, skillsetColWeapon } from './skillset-table-cols'
 
 @Injectable()
@@ -20,12 +20,22 @@ export class SkillsetTableAdapter implements DataViewAdapter<SkillsetTableRecord
     return item.record.id
   }
 
-  public entityCategories(item: SkillsetTableRecord) {
-    return null
+  public entityCategories(item: SkillsetTableRecord): DataTableCategory[] {
+    const info = getWeaponTypeInfo(item.record?.weapon)
+    return [
+      {
+        id: item.record.weapon,
+        label: info?.UIName || item.record.weapon,
+        icon: info?.IconPathSmall,
+      },
+    ]
   }
 
   public virtualOptions(): VirtualGridOptions<SkillsetTableRecord> {
-    return null
+    if (this.config?.virtualOptions) {
+      return this.config.virtualOptions()
+    }
+    return SkillsetCellComponent.buildGridOptions()
   }
 
   public gridOptions(): GridOptions<SkillsetTableRecord> {
@@ -38,11 +48,6 @@ export class SkillsetTableAdapter implements DataViewAdapter<SkillsetTableRecord
     if (!options.getRowId) {
       options.getRowId = ({ data }) => data.record.id
     }
-    augmentWithTransactions(options, {
-      onCreate: this.store.rowCreated$,
-      onUpdate: this.store.rowUpdated$,
-      onDestroy: this.store.rowDestroyed$,
-    })
     return options
   }
 
@@ -50,10 +55,16 @@ export class SkillsetTableAdapter implements DataViewAdapter<SkillsetTableRecord
     return this.entities
   }
 
-  public entities = defer(() => this.config?.source || this.store.rows$)
-    .pipe(filter((it) => it != null))
-    .pipe(take(1))
-    .pipe(shareReplayRefCount(1))
+  public entities = defer(() => {
+    return this.config?.source || this.store.rows$
+  }).pipe(
+    filter((it) => {
+      if (!it) {
+        return false
+      }
+      return this.config?.filter ? this.config.filter(it) : true
+    }),
+  )
 }
 
 function buildOptions(util: TableGridUtils<SkillsetTableRecord>) {

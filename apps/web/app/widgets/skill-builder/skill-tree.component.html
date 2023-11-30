@@ -1,61 +1,62 @@
-<div class="skill-tree-title text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
-  <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
-  <span class="relative top-1">{{ title$ | async | nwText }} - {{ value?.length || 0 }}</span>
+<div class="skill-tree-title text-lg uppercase text-center font-serif text-nw-description nw-bg-title bg-bottom pt-4">
+  {{ title$ | async | nwText }} - <span class="font-caslon">{{ value?.length || 0 }}</span>
 </div>
 <div class="skill-tree-content grid p-3 relative" [class]="colsClass | async">
-  <ng-container *ngFor="let row of rows$ | async; trackBy: trackByIndex">
-    <ng-container *ngFor="let cell of row; trackBy: trackByIndex">
-      <div
-        *ngIf="!cell.ability"
-        [class.is-unlocked]="cell.unlocked"
-        [class.is-invalid]="cell.invalid"
-        class="grid-cell aspect-square"
-        [class.edge-t]="cell.edgeTop"
-        [class.edge-l]="cell.edgeLeft"
-        [class.edge-r]="cell.edgeRight"
-        [class.edge-tl]="cell.edgeTopLeft"
-        [class.edge-tr]="cell.edgeTopRight"
-      ></div>
-      <div
-        *ngIf="cell.ability; let ability"
-        [tabindex]="cell.unlocked ? 0 : -1"
-        class="grid-cell aspect-square flex items-center justify-center transition-opacity relative"
-        [class.is-disabled]="!cell.unlocked"
-        [class.is-unlocked]="cell.unlocked"
-        [class.is-invalid]="cell.invalid"
-        [class.is-checked]="cell.checked"
-        [class.is-small]="cell.shrink"
-        [class.edge-t]="cell.edgeTop"
-        [class.edge-l]="cell.edgeLeft"
-        [class.edge-r]="cell.edgeRight"
-        [class.edge-tl]="cell.edgeTopLeft"
-        [class.edge-tr]="cell.edgeTopRight"
-        (click)="toggle(cell)"
-        (keydown.space)="toggle(cell)"
-        (keydown.enter)="toggle(cell)"
-        [tooltip]="tip"
-        [tooltipClass]="'p-0 bg-opacity-100'"
-      >
-        <ng-template #tip>
-          <div class="text-lg font-bold px-3 py-2 flex flex-row items-center bg-base-300 gap-3">
-            <img class="aspect-square w-6" [nwImage]="ability.Icon" />
-            <span>
-              {{ ability.DisplayName | nwText }}
-            </span>
-          </div>
-          <div [nwHtml]="ability.Description | nwText | nwTextBreak" class="p-3"></div>
-          <div *ngIf="cell.tooltip" class="p-3 text-warning rounded-md">
-            {{ cell.tooltip | nwText }}
-          </div>
-        </ng-template>
-        <picture
-          class="border-[2px] aspect-square"
-          [class.rounded-full]="!cell.square"
-          [class.rounded-sm]="cell.square"
+  @for (row of rows(); track $index) {
+    @for (cell of row; track $index) {
+      @if(!cell.ability) {
+        <div
+          [class.is-unlocked]="cell.unlocked"
+          [class.is-invalid]="cell.invalid"
+          class="grid-cell aspect-square"
+          [class.edge-t]="cell.edgeTop"
+          [class.edge-l]="cell.edgeLeft"
+          [class.edge-r]="cell.edgeRight"
+          [class.edge-tl]="cell.edgeTopLeft"
+          [class.edge-tr]="cell.edgeTopRight"
+        ></div>
+      } @else {
+        <div
+          [tabindex]="cell.unlocked ? 0 : -1"
+          class="grid-cell aspect-square flex items-center justify-center transition-opacity relative"
+          [class.is-disabled]="!cell.unlocked"
+          [class.is-unlocked]="cell.unlocked"
+          [class.is-invalid]="cell.invalid"
+          [class.is-checked]="cell.checked"
+          [class.is-small]="cell.shrink"
+          [class.edge-t]="cell.edgeTop"
+          [class.edge-l]="cell.edgeLeft"
+          [class.edge-r]="cell.edgeRight"
+          [class.edge-tl]="cell.edgeTopLeft"
+          [class.edge-tr]="cell.edgeTopRight"
+          (click)="toggle(cell)"
+          (keydown.space)="toggle(cell)"
+          (keydown.enter)="toggle(cell)"
+          [tooltip]="tip"
+          [tooltipDelay]="0"
+          [tooltipClass]="'p-0 bg-opacity-100'"
         >
-          <img class="aspect-square w-full nw-icon" [class]="'bg-ability-' + cell.type" [nwImage]="cell.ability.Icon" />
-        </picture>
-      </div>
-    </ng-container>
-  </ng-container>
+          <ng-template #tip>
+            <div class="text-lg font-bold px-3 py-2 flex flex-row items-center bg-base-300 gap-3">
+              <img class="aspect-square w-6" [nwImage]="cell.ability.Icon" />
+              <span>
+                {{ cell.ability.DisplayName | nwText }}
+              </span>
+            </div>
+            <div [nwHtml]="cell.ability.Description | nwText | nwTextBreak" class="p-3"></div>
+            <div *ngIf="cell.tooltip" class="p-3 text-warning rounded-md">
+              {{ cell.tooltip | nwText }}
+            </div>
+          </ng-template>
+          <picture
+            class="border-[2px] aspect-square"
+            [class.rounded-full]="!cell.square"
+            [class.rounded-sm]="cell.square"
+          >
+            <img class="aspect-square w-full nw-icon" [class]="'bg-ability-' + cell.type" [nwImage]="cell.ability.Icon" />
+          </picture>
+        </div>
+      }
+    }
+  }
 </div>

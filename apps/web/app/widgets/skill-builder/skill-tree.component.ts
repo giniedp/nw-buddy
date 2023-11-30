@@ -19,6 +19,7 @@ import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { SkillTreeCell } from './skill-tree.model'
 import { SkillTreeStore } from './skill-tree.store'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -65,7 +66,7 @@ export class SkillTreeComponent implements ControlValueAccessor, OnInit {
   @Input()
   public disabled = false
 
-  protected rows$ = this.store.rows$
+  protected rows = toSignal(this.store.rows$)
   protected spent$ = this.store.selection$.pipe(map((it) => it?.length || 0))
   protected colsClass = this.store.numCols$.pipe(map((it) => `grid-cols-${it}`))
   protected weaponType$ = defer(() => this.weapon$).pipe(switchMap((tag) => this.weaponTypes.forWeaponTag(tag)))
@@ -74,7 +75,7 @@ export class SkillTreeComponent implements ControlValueAccessor, OnInit {
       type: this.weaponType$,
       id: this.treeID$,
     })
-  ).pipe(map(({ type, id }) => (id === 0 ? type.Tree1Name : type.Tree2Name)))
+  ).pipe(map(({ type, id }) => (id === 0 ? type?.Tree1Name : type?.Tree2Name)))
 
   private resultValue: string[]
   private weapon$ = new ReplaySubject<string>(1)

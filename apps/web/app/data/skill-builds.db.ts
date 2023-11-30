@@ -40,6 +40,10 @@ export interface SkillBuildRecord extends SkillBuild {
    * Assigned attribute points
    */
   attrs?: Record<AttributeRef, number>
+  /**
+   * User defined tags
+   */
+  tags?: string[]
 }
 
 export const DBT_SKILL_BUILDS = 'skillbuilds'

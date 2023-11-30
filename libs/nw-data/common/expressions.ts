@@ -2,30 +2,43 @@ import { catchError, combineLatest, map, Observable, of, startWith } from 'rxjs'
 import { TextReader } from './text-reader'
 
 export function parseNwExpression(text: string, skipPreprocess = false): NwExp {
+  const expr: NwExp[] = []
+  walkNwExpression(text, {
+    disablePatch: skipPreprocess,
+    onText: (text) => expr.push(parseText(text)),
+    onExpression: (lParen, text, rParen) => expr.push(new NwExpEval(parseExpression(text))),
+  })
+  return new NwExpJoin(expr, '')
+}
+
+export function walkNwExpression(text: string, options: {
+  disablePatch?: boolean
+  onText: (text: string) => void
+  onExpression: (lParen: string, text: string, rParen: string) => void
+}): void {
   text = text || ''
-  if (!skipPreprocess) {
+  if (!options.disablePatch) {
     text = preprocessExpression(text)
   }
   let outside = true
-  const expr: NwExp[] = []
   let start = 0
   for (let i = 0; i < text.length; i++) {
     if (outside && exprBegin(text, i)) {
       const value = text.substring(start, i)
       start = i + 2
       outside = !outside
-      expr.push(parseText(value))
+      options.onText(value)
     }
     if (!outside && exprEnd(text, i)) {
       const value = text.substring(start, i)
       start = i + 2
       outside = !outside
-      expr.push(new NwExpEval(parseExpression(value)))
+      options.onExpression('{[', value, ']}')
     }
   }
-  expr.push(parseText(text.substring(start, text.length)))
-  return new NwExpJoin(expr, '')
+  options.onText(text.substring(start, text.length))
 }
+
 
 function exprBegin(text: string, i: number) {
   return text[i] === '{' && text[i + 1] === '['

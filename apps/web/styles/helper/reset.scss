@@ -4,8 +4,8 @@ body {
   font-weight: 500;
 }
 
-html:not(.cypress),
-body:not(.cypress) {
+html.nw-buddy,
+html.nw-buddy body {
   position: fixed;
   top: 0;
   left: 0;
@@ -20,6 +20,3 @@ router-outlet {
   display: none;
 }
 
-.screenshot-capture * {
-  overflow: hidden;
-}

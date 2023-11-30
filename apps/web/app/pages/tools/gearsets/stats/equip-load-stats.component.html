@@ -1,20 +1,20 @@
-<h3 class="text-lg uppercase relative text-center font-caslon text-nw-description mb-3">
+<h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
   <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
-  <span class="relative top-1">Equip Load {{ load$() }}</span>
+  <span class="relative top-1">Equip Load {{ weightLabel() }}</span>
 </h3>
 
-<div class="grid grid-cols-dl gap-x-1 font-nimbus items-baseline" *ngIf="vm$ | async; let vm">
-  <span class="text-right font-bold">{{ vm.weight | number : '0.0-1' }} </span>
+<div class="grid grid-cols-dl gap-x-1 font-nimbus items-baseline">
+  <span class="text-right font-bold w-12" nwbFlash>{{ (weight() ?? 0) | number : '0.0-1' }} </span>
   <div>
     <span class="opacity-50"> Weight </span>
   </div>
 
-  <span class="text-right font-bold">{{ vm.healing >= 0 ? '+' : '' }}{{ vm.healing | percent }} </span>
+  <span class="text-right font-bold" nwbFlash>{{ healing() >= 0 ? '+' : '' }}{{ healing() | percent }} </span>
   <div>
     <span class="opacity-50"> Healing </span>
   </div>
 
-  <span class="text-right font-bold">{{ vm.damage >= 0 ? '+' : '' }}{{ vm.damage | percent }} </span>
+  <span class="text-right font-bold" nwbFlash>{{ damage() >= 0 ? '+' : '' }}{{ damage() | percent }} </span>
   <div>
     <span class="opacity-50"> Damage </span>
   </div>

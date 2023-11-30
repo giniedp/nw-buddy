@@ -1,14 +1,17 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, Injector, Input, Renderer2 } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, Injector, Input, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { BehaviorSubject, combineLatest, filter, map, switchMap, tap } from 'rxjs'
+import { BehaviorSubject, combineLatest, filter, map, switchMap } from 'rxjs'
 
-import { NwModule } from '~/nw'
+import { NwDbService, NwModule } from '~/nw'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
+import { EquipSlotId, getWeaponTagFromWeapon } from '@nw-data/common'
 import { GearsetRecord, GearsetSkillSlot, GearsetSkillStore, SkillBuild, SkillBuildsDB } from '~/data'
+import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
 import {
@@ -23,11 +26,9 @@ import {
 } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { deferStateFlat, shareReplayRefCount } from '~/utils'
 import { SkillsetTableAdapter } from '~/widgets/data/skillset-table'
-import { SkillTreeModule } from '~/widgets/skill-builder'
 import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
-import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
+import { SkillTreeModule } from '~/widgets/skill-builder'
 
 export interface GearsetSkillVM {
   slot?: GearsetSkillSlot
@@ -57,6 +58,7 @@ export interface GearsetSkillVM {
   providers: [GearsetSkillStore],
   host: {
     class: 'block flex flex-col',
+    '[class.screenshot-hidden]': '!instance()',
   },
 })
 export class GearsetPaneSkillComponent {
@@ -91,36 +93,18 @@ export class GearsetPaneSkillComponent {
   protected iconPlus = svgPlus
   protected iconOpen = svgFolderOpen
 
-  protected vm$ = deferStateFlat<GearsetSkillVM>(() =>
-    combineLatest({
-      slot: this.slot$,
-      gearset: this.gearset$,
-      instance: this.store.instance$,
-      canRemove: this.store.canRemove$,
-      canBreak: this.store.canBreak$,
-    })
-  )
-    .pipe(
-      tap((it) => {
-        if (it?.instance) {
-          this.renderer.removeClass(this.elRef.nativeElement, 'screenshot-hidden')
-        } else {
-          this.renderer.addClass(this.elRef.nativeElement, 'screenshot-hidden')
-        }
-      })
-    )
-    .pipe(shareReplayRefCount(1))
+  protected instance = toSignal(this.store.instance$)
 
   private slot$ = new BehaviorSubject<GearsetSkillSlot>(null)
   private gearset$ = new BehaviorSubject<GearsetRecord>(null)
+  private destroyRef = inject(DestroyRef)
 
   public constructor(
     private store: GearsetSkillStore,
     private skillsDB: SkillBuildsDB,
-    private renderer: Renderer2,
-    private elRef: ElementRef<HTMLElement>,
     private dialog: Dialog,
-    private injector: Injector
+    private injector: Injector,
+    private db: NwDbService,
   ) {
     //
   }
@@ -130,8 +114,11 @@ export class GearsetPaneSkillComponent {
       combineLatest({
         gearset: this.gearset$,
         slot: this.slot$,
-      })
+      }),
     )
+    if (!this.disabled) {
+      this.attachAutoSwitchSkill()
+    }
   }
 
   protected updateSkill(value: SkillBuild) {
@@ -145,7 +132,7 @@ export class GearsetPaneSkillComponent {
     })
       .closed.pipe(
         filter((it) => !!it?.length),
-        map((it) => NW_WEAPON_TYPES.find((type) => type.WeaponTypeID === String(it[0])))
+        map((it) => NW_WEAPON_TYPES.find((type) => type.WeaponTypeID === String(it[0]))),
       )
       .subscribe((weapon) => {
         this.store.updateSlot({
@@ -183,6 +170,51 @@ export class GearsetPaneSkillComponent {
             tree2: value.tree2,
           },
         })
+      })
+  }
+
+  private attachAutoSwitchSkill() {
+    combineLatest({
+      items: this.db.itemsMap,
+      stats: this.db.weaponsMap,
+      itemId: combineLatest({
+        gearset: this.gearset$,
+        slot: this.slot$,
+      }).pipe(
+        map(({ gearset, slot }) => {
+          const slotId: EquipSlotId = slot === 'primary' ? 'weapon1' : 'weapon2'
+          const it = gearset?.slots?.[slotId]
+          if (!it) {
+            return null
+          }
+          if (typeof it === 'string') {
+            return it
+          }
+          return it.itemId
+        }),
+      ),
+    })
+      .pipe(
+        map(({ items, stats, itemId }) => {
+          const item = items.get(itemId)
+          const weapon = stats.get(item?.ItemStatsRef)
+          return {
+            item,
+            weapon,
+          }
+        }),
+      )
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(({ item, weapon }) => {
+        const instance = this.instance()
+        const weaponTag = getWeaponTagFromWeapon(weapon)
+        if (!instance || instance.weapon !== weaponTag) {
+          this.updateSkill({
+            weapon: weaponTag,
+            tree1: [],
+            tree2: [],
+          })
+        }
       })
   }
 }

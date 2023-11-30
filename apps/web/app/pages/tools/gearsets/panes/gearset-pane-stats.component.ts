@@ -10,6 +10,8 @@ import { FortifyStatsComponent } from '../stats/fortify-stats.component'
 import { LuckStatsComponent } from '../stats/luck-stats.component'
 import { StackedPerksComponent } from '../stats/stacked-perks.component'
 import { VitalityStatsComponent } from '../stats/vitality-stats.component'
+import { EffectDurationStatsComponent } from '../stats/effect-duration-stats.component'
+import { CooldownRedutionStatsComponent } from '../stats/cooldown-stats.component'
 
 @Component({
   standalone: true,
@@ -28,6 +30,8 @@ import { VitalityStatsComponent } from '../stats/vitality-stats.component'
     CraftingStatsComponent,
     StackedPerksComponent,
     ActiveWeaponComponent,
+    EffectDurationStatsComponent,
+    CooldownRedutionStatsComponent
   ],
 
   host: {

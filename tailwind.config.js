@@ -18,8 +18,8 @@ module.exports = {
     },
     extend: {
       animation: {
-        'spin-cw': 'spin-cw 3s linear infinite',
-        'spin-ccw': 'spin-ccw 3s linear infinite',
+        'spin-cw': 'spin-cw 100s linear infinite',
+        'spin-ccw': 'spin-ccw 100s linear infinite',
       },
       keyframes: {
         'spin-cw': {
@@ -59,12 +59,12 @@ module.exports = {
           description: '#e1cb99',
         },
         rarity: {
-          common: '#c8c8c8',
-          uncommon: '#07c02f',
-          rare: '#00cbe9',
-          epic: '#ff16f7',
-          legendary: '#f7a22d',
-          artifact: '#991d14',
+          common: '#666666',
+          uncommon: '#00ab1a',
+          rare: '#31bdeb',
+          epic: '#e600de',
+          legendary: '#ffa535',
+          artifact: '#b42e0a',
         },
         syndicate: {
           light: '#8732d3',
@@ -82,16 +82,16 @@ module.exports = {
           dark: '#895f0d',
         },
         attr: {
-          base: '#4CB1FC',
-          buff: '#B150E6',
-          assign: '#F5D15E',
-          magnify: '#991d14',
+          base: '#36b6eb',
+          buff: '#a65ace',
+          assign: '#ffdb7a',
+          magnify: '#b42e0a',
         },
       },
     },
     fontFamily: {
       ...defaultTheme.fontFamily,
-      serif: ['"New World"', ...defaultTheme.fontFamily.serif],
+      serif: ['"New-World"', ...defaultTheme.fontFamily.serif],
       caslon: ['"Caslon-Antique"', ...defaultTheme.fontFamily.serif],
       nimbus: ['"Nimbus"', ...defaultTheme.fontFamily.sans],
     },

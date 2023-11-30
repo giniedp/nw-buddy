@@ -13,8 +13,9 @@
   <li class="menu-title mt-4 hidden xl:block">
     <span>Mutated</span>
   </li>
-  <ng-container *ngIf="difficulties$ | async; let items">
-    <li *ngFor="let item of items" [class.bordered]="item.MutationDifficulty == difficultyLevel">
+
+  @for(item of difficulties$ | async; track $index) {
+    <li [class.bordered]="item.MutationDifficulty == difficultyLevel">
       <a
         rel="nofollow"
         [routerLink]="['.']"
@@ -25,8 +26,9 @@
         {{ item.MutationDifficulty }} ({{ difficultyTier(item) }})
       </a>
     </li>
-  </ng-container>
+  }
 </ul>
+
 <div class="flex-1 relative rounded-r-md bg-base-100 overflow-clip" [class.rounded-l-md]="!isMutable">
   <picture class="absolute top-0 left-0 right-0 bottom-0 pointer-events-none">
     <img [nwImage]="backgroundImage" class="block w-full h-full object-cover blur-sm" />
@@ -34,45 +36,53 @@
   <div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col px-4 overflow-auto pb-20">
     <div class="prose-base mt-8 flex-none">
       <section class="font-nimbus">
-        <h1 class="mb-0 font-bold font-caslon tracking-wider">
+        <h1 class="mb-0 font-normal font-serif tracking-wider ">
           <span [nwText]="title"></span>
-          <span *ngIf="difficultyLevel">, Difficulty {{ difficultyLevel }}</span>
+          @if (difficultyLevel) {
+           <span>, Difficulty {{ difficultyLevel }}</span>
+          }
         </h1>
         <div>
-          <ng-container *ngIf="recommendedLevel && !requiredGearScore">
+          @if(recommendedLevel && !requiredGearScore) {
             <span>Recommended Level: </span>
             <span class="font-semibold text-accent">{{ recommendedLevel }}</span>
-          </ng-container>
-          <ng-container *ngIf="requiredGearScore">
+          }
+          @if(requiredGearScore) {
             <span>Required Minimum Gear Score: </span>
             <span class="font-semibold text-accent">{{ requiredGearScore }}</span>
-          </ng-container>
+          }
         </div>
         <div class="nw-item-divider max-w-lg"></div>
         <div [nwText]="description" class="text-nw-description"></div>
       </section>
 
       <section class="font-nimbus">
-        <h2 class="mb-0 font-bold font-caslon tracking-wider uppercase text-nw-description">
+        <h2 class="mb-0 font-normal font-serif tracking-wider uppercase ">
           <span>Requirements</span>
         </h2>
         <div class="nw-item-divider max-w-lg"></div>
-        <div *ngIf="requirementText">
-          <span class="text-primary">Your group must have at least </span>
-          <span [nwText]="requirementText"></span>
-        </div>
-        <div *ngIf="groupSize">
-          <span>{{ groupSize }} - {{ teamCapacity || 5 }} </span>
-          <span>Players</span>
-        </div>
-        <div *ngIf="requiredLevel">
-          <span>Level: </span>
-          <span class="font-semibold text-accent">{{ requiredLevel }}</span>
-        </div>
+        @if(requirementText) {
+          <div>
+            <span class="text-primary">Your group must have at least </span>
+            <span [nwText]="requirementText"></span>
+          </div>
+        }
+        @if(groupSize) {
+          <div>
+            <span>{{ groupSize }} - {{ teamCapacity || 5 }} </span>
+            <span>Players</span>
+          </div>
+        }
+        @if(requiredLevel) {
+          <div>
+            <span>Level: </span>
+            <span class="font-semibold text-accent">{{ requiredLevel }}</span>
+          </div>
+        }
       </section>
 
       <section class="font-nimbus" *ngIf="!!difficulty">
-        <h2 class="mb-0 font-bold font-caslon tracking-wider uppercase text-nw-description">
+        <h2 class="mb-0 font-normal font-serif tracking-wider uppercase x">
           <span>Weekly Mutations </span>
           <nwb-icon
             [icon]="iconInfo"
@@ -83,22 +93,20 @@
         </h2>
         <div class="nw-item-divider max-w-lg mb-2"></div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 max-w-3xl">
-          <ng-container *ngIf="store.mutaElementAvailable$ | async">
-            <nwb-muta-element-tile (selectionChanged)="onMutaElementSelected($event)"></nwb-muta-element-tile>
-          </ng-container>
-
-          <ng-container *ngIf="store.mutaPromotionAvailable$ | async">
-            <nwb-muta-promotion-tile (selectionChanged)="onMutaPromotionSelected($event)"></nwb-muta-promotion-tile>
-          </ng-container>
-
-          <ng-container *ngIf="store.mutaCurseAvailable$ | async">
-            <nwb-muta-curse-tile (selectionChanged)="onMutaCurseSelected($event)"></nwb-muta-curse-tile>
-          </ng-container>
+          @if(store.mutaElementAvailable$ | async) {
+            <nwb-muta-element-tile (selectionChanged)="onMutaElementSelected($event)" />
+          }
+          @if(store.mutaPromotionAvailable$ | async) {
+            <nwb-muta-promotion-tile (selectionChanged)="onMutaPromotionSelected($event)" />
+          }
+          @if(store.mutaCurseAvailable$ | async) {
+            <nwb-muta-curse-tile (selectionChanged)="onMutaCurseSelected($event)" />
+          }
         </div>
       </section>
 
       <section>
-        <h2 class="mb-0 font-bold font-caslon tracking-wider uppercase text-nw-description">
+        <h2 class="mb-0 font-normal font-serif  tracking-wider uppercase">
           <span>Available Rewards </span>
         </h2>
         <div class="nw-item-divider max-w-lg"></div>
@@ -192,11 +200,11 @@
     </div>
 
     <div class="flex-1 mt-4">
-      <ng-container *ngFor="let item of tabs; trackBy: trackByTabId">
-        <ng-container *ngIf="item.id === tab">
+      @for(item of tabs; track item.id) {
+        @if(item.id === tab) {
           <ng-container *ngTemplateOutlet="item.tpl"></ng-container>
-        </ng-container>
-      </ng-container>
+        }
+      }
     </div>
   </div>
 </div>

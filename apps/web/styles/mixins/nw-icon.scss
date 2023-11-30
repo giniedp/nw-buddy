@@ -62,12 +62,12 @@ $nw-rarity-header-bg-sprite: (
   '4': url('../../assets/icons/item/named_bg_4.webp'),
 );
 $nw-rarity-color: (
-  '0': rgb(200, 200, 200),
-  '1': rgb(7, 192, 47),
-  '2': rgb(0, 203, 233),
-  '3': rgb(255, 22, 247),
-  '4': rgb(247, 162, 45),
-  'artifact': rgb(251, 124, 89),
+  '0': rgb(204,204,204),
+  '1': rgb(7,191,46),
+  '2': rgb(69,209,255),
+  '3': rgb(255,22,247),
+  '4': rgb(255,135,23),
+  'artifact': rgb(255,124,85),
 );
 
 @mixin bgRarity($bg, $fg) {

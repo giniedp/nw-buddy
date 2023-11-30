@@ -241,7 +241,7 @@ export function abilityStatusEffectCategoriesList(util: AbilityTableUtils) {
     colId: 'statusEffectCategoriesList',
     autoHeight: true,
     hide: true,
-    headerValueGetter: () => 'Status Effect Categories List',
+    headerValueGetter: () => 'SE Categories List',
     valueGetter: util.fieldGetter('StatusEffectCategoriesList'),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     filter: SelectFilter,
@@ -250,15 +250,43 @@ export function abilityStatusEffectCategoriesList(util: AbilityTableUtils) {
     }),
   })
 }
-
+export function abilityStatusEffectDurationCats(util: AbilityTableUtils) {
+  return util.colDef<string[]>({
+    colId: 'statusEffectDurationCats',
+    autoHeight: true,
+    hide: true,
+    headerValueGetter: () => 'SE Duration Cats',
+    valueGetter: util.fieldGetter('StatusEffectDurationCats'),
+    cellRenderer: util.tagsRenderer({ transform: humanize }),
+    filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      showSearch: true,
+    }),
+  })
+}
 
 export function abilityTargetStatusEffectCategory(util: AbilityTableUtils) {
   return util.colDef<string>({
     colId: 'targetStatusEffectCategory',
     autoHeight: true,
     hide: true,
-    headerValueGetter: () => 'Target Status Effect Category',
+    headerValueGetter: () => 'Target SE Category',
     valueGetter: util.fieldGetter('TargetStatusEffectCategory'),
+    cellRenderer: util.tagsRenderer({ transform: humanize }),
+    filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      showSearch: true,
+    }),
+  })
+}
+
+export function abilityTargetStatusEffectDurationCategories(util: AbilityTableUtils) {
+  return util.colDef<string>({
+    colId: 'targetStatusEffectDurationCats',
+    autoHeight: true,
+    hide: true,
+    headerValueGetter: () => 'Target SE Duration Cats',
+    valueGetter: util.fieldGetter('TargetStatusEffectDurationCats'),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     filter: SelectFilter,
     filterParams: SelectFilter.params({

@@ -1,58 +1,60 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, Renderer2 } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { groupBy, sumBy } from 'lodash'
-import { combineLatest, map, tap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { ModifierResult } from '~/nw/mannequin/modifier'
 import { damageTypeIcon } from '~/nw/weapon-types'
 import { TooltipModule } from '~/ui/tooltip'
 import { ModifierTipComponent } from './modifier-tip.component'
+import { LIST_COUNT_ANIMATION } from './utils/animation'
+import { FlashDirective } from './utils/flash.directive'
 
 @Component({
   standalone: true,
   selector: 'nwb-fortify-stats',
   templateUrl: './fortify-stats.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, TooltipModule, ModifierTipComponent],
+  imports: [CommonModule, NwModule, TooltipModule, ModifierTipComponent, FlashDirective],
   host: {
-    class: 'block hidden',
+    class: 'block',
+    '[class.hidden]': '!rowCount()',
   },
+  animations: [LIST_COUNT_ANIMATION],
 })
 export class FortifyStatsComponent {
-  protected trackBy = (i: number) => i
-  protected vm$ = combineLatest({
-    abs: this.mannequin.statAbs$,
-    armor: this.mannequin.statArmor$,
-  }).pipe(
-    map(({ abs, armor }) => {
-      return {
-        DamageTypes: collect(abs.DamageCategories),
-        VitalsTypes: collect(abs.VitalsCategories),
-        Physical: armor.PhysicalArmor,
-        Elemental: armor.ElementalArmor,
-      }
-    }),
-    tap((it) => {
-      if (it.DamageTypes.length || it.VitalsTypes.length || it.Physical.value || it.Elemental.value) {
-        this.renderer.removeClass(this.elRef.nativeElement, 'hidden')
-      } else {
-        this.renderer.addClass(this.elRef.nativeElement, 'hidden')
-      }
-    })
-  )
+  private mannequin = inject(Mannequin)
+  private absStat = toSignal(this.mannequin.statAbs$)
+  private armorStat = toSignal(this.mannequin.statArmor$)
 
-  public constructor(
-    private mannequin: Mannequin,
-    private elRef: ElementRef<HTMLElement>,
-    private renderer: Renderer2
-  ) {
-    //
-  }
+  protected damageTypes = computed(() => {
+    return collect(this.absStat()?.DamageCategories)
+  })
+  protected vitalTypes = computed(() => {
+    return collect(this.absStat()?.VitalsCategories)
+  })
+  protected physicalArmor = computed(() => {
+    return this.armorStat()?.PhysicalArmor
+  })
+  protected elementalArmor = computed(() => {
+    return this.armorStat()?.ElementalArmor
+  })
+  protected hasStats = computed(() => {
+    return this.rowCount() > 0
+  })
+  protected rowCount = computed(() => {
+    return (
+      (this.damageTypes()?.length || 0) +
+      (this.vitalTypes()?.length || 0) +
+      (this.physicalArmor()?.value ? 1 : 0) +
+      (this.elementalArmor()?.value ? 1 : 0)
+    )
+  })
 }
 
-function collect(data: Record<string, ModifierResult>) {
-  const entires = Object.entries(data)
+function collect(data: Record<string, ModifierResult> | null) {
+  const entires = Object.entries(data || {})
     .map(([key, entry]) => {
       return {
         category: key,
@@ -70,6 +72,7 @@ function collect(data: Record<string, ModifierResult>) {
     return {
       value: Number(value),
       entries: entries,
+      track: entries.map((it) => it.category).join(',')
     }
   })
 }

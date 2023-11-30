@@ -15,6 +15,7 @@ import { gridDisplayRowCount } from '../ag-grid/utils'
 export interface DataViewCategoryMenuState {
   showCounter?: boolean
   routePrefix?: string
+  queryParam?: string
   defaultTitle?: string
   defaultIcon?: string
   defaultRoute?: string
@@ -47,6 +48,13 @@ export class DataViewCategoryMenuComponent extends ComponentStore<DataViewCatego
     })
   }
 
+  @Input()
+  public set queryParam(value: string) {
+    this.patchState({
+      queryParam: value,
+    })
+  }
+
   @Input({ required: true })
   public set defaultTitle(value: string) {
     this.patchState({ defaultTitle: value })
@@ -57,7 +65,7 @@ export class DataViewCategoryMenuComponent extends ComponentStore<DataViewCatego
     this.patchState({ defaultIcon: value })
   }
 
-  @Input({ required: true })
+  @Input()
   public set defaultRoute(value: string) {
     this.patchState({ defaultRoute: value })
   }
@@ -86,6 +94,7 @@ export class DataViewCategoryMenuComponent extends ComponentStore<DataViewCatego
       categories: this.service.categories$,
       category: this.service.category$,
       routePrefix: this.select((it) => it.routePrefix),
+      queryParam: this.select((it) => it.queryParam),
     },
     collectCategories
   )
@@ -112,22 +121,43 @@ function collectCategories({
   categories,
   category,
   routePrefix,
+  queryParam
 }: {
   categories: DataViewCategory[]
   category: string | number | null
   routePrefix: string
+  queryParam: string
 }) {
   categories = categories || []
   return categories.map((it) => {
+    if (queryParam) {
+      return {
+        ...it,
+        route: [routePrefix || './'],
+        query: { [queryParam]: it.id },
+        active: eqCaseInsensitive(String(it.id), String(category)),
+      }
+    }
     return {
       ...it,
       route: [routePrefix || './', it.id.toLowerCase()],
+      query: {},
       active: eqCaseInsensitive(String(it.id), String(category)),
     }
   })
 }
 
-function selectDefaultCategory({ defaultTitle, defaultRoute, defaultIcon, routePrefix }: DataViewCategoryMenuState) {
+function selectDefaultCategory({ defaultTitle, defaultRoute, defaultIcon, routePrefix, queryParam }: DataViewCategoryMenuState) {
+  defaultRoute = defaultRoute || ''
+  if (queryParam) {
+    return {
+      id: defaultRoute,
+      route: [routePrefix || './'],
+      query: { [queryParam]: defaultRoute ? defaultRoute.toLowerCase() : undefined },
+      label: defaultTitle,
+      icon: defaultIcon,
+    }
+  }
   return {
     id: defaultRoute,
     route: [routePrefix || './', defaultRoute.toLowerCase()],

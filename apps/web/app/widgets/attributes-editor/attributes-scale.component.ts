@@ -107,6 +107,7 @@ export class AttributesScaleComponent {
   protected readonly showTotal$ = this.store.showTotal$
   protected readonly modeIcon = svgChartLine
   public readonly damage$ = this.store.damageStats$.pipe(map((it) => it.value))
+  public readonly damageInvalid$ = this.store.damageStats$.pipe(map((it) => it.invalidValue))
 
   public constructor(private store: AttributesScalingStore, private db: NwDbService) {
     //

@@ -32,7 +32,7 @@
   <div class="w-80 max-h-[80vh] overflow-auto bg-base-200 border border-base-100 rounded-md shadow-lg">
     <ul class="menu menu-compact">
       <li *ngIf="defaultCategory$ | async; let cat">
-        <a class="flex flex-row" [routerLink]="cat.route" (click)="isPanelOpen = false">
+        <a class="flex flex-row" [routerLink]="cat.route" [queryParams]="cat.query" [queryParamsHandling]="'merge'" (click)="isPanelOpen = false">
           <picture [nwIcon]="cat.icon" class="w-8 h-w-8" *ngIf="cat.icon"></picture>
           <div class="flex-1 normal-case">
             <h3 class="font-bold">{{ cat.label | nwText }}</h3>
@@ -40,7 +40,7 @@
         </a>
       </li>
       <li *ngFor="let cat of categories$ | async">
-        <a class="flex flex-row" [routerLink]="cat.route" (click)="isPanelOpen = false">
+        <a class="flex flex-row" [routerLink]="cat.route" [queryParams]="cat.query" [queryParamsHandling]="'merge'" (click)="isPanelOpen = false">
           <picture [nwIcon]="cat.icon" class="w-8 h-w-8" *ngIf="cat.icon"></picture>
           <div class="flex-1 normal-case">
             <h3 class="font-bold">{{ cat.label | nwText }}</h3>

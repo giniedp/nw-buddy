@@ -1,4 +1,4 @@
-module.exports =  ({ addUtilities }) => {
+module.exports = ({ addUtilities }) => {
   addUtilities({
     '.content-auto': {
       'content-visibility': 'auto',

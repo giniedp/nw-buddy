@@ -1,5 +1,5 @@
-<ng-container *ngrxLet="vm$ as vm; suspenseTpl: tplLoading">
-  <ng-container *ngIf="vm.record; let data">
+@if (vm$ | async; as vm) {
+  @if (vm.record; as data) {
     <ion-header class="bg-base-300">
       <div class="form-control p-1">
         <div class="input-group overflow-x-auto">
@@ -146,8 +146,7 @@
     <div class="layout-content" cdkScrollable>
       <nwb-gearset [gearset]="data" [compact]="compact"></nwb-gearset>
     </div>
-  </ng-container>
-  <ng-container *ngIf="!vm.record">
+  } @else {
     <div class="alert alert-error shadow-lg">
       <div>
         <svg
@@ -166,11 +165,9 @@
         <span>Gearset not found</span>
       </div>
     </div>
-  </ng-container>
-</ng-container>
-
-<ng-template #tplLoading>
+  }
+} @else {
   <div class="flex items-center justify-center py-20">
     <button class="btn loading">loading...</button>
   </div>
-</ng-template>
+}

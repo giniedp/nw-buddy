@@ -1,0 +1,37 @@
+<h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
+  <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
+  <span class="relative top-1">Effect Duration</span>
+</h3>
+@if (rowCount()) {
+  <div class="grid grid-cols-dl gap-x-1" [@fade]="rowCount()">
+    @for (group of mods(); track group.track) {
+      <span class="font-bold" [tooltip]="timeTip" [tooltipClass]="'p-0 w-full max-w-md'" nwbFlash>
+        {{ group.value > 0 ? '+' : '' }}{{ group.value | percent: '0.1-1' }}
+        <ng-template #timeTip>
+          <div class="grid grid-cols-3">
+            @for (second of seconds; track $index) {
+              <span class="font-mono text-right p-1"> {{ second }}s </span>
+              <span class="text-center p-1">⇒</span>
+              <span class="text-right p-1"> {{ second * (1 + group.value) | number: '0.2-2' }}s </span>
+            }
+          </div>
+        </ng-template>
+      </span>
+      <div class="flex flex-row items-center flex-wrap gap-1">
+        @for (entry of group.entries; track $index) {
+          <span
+            [tooltip]="tplTip"
+            [tooltipClass]="'p-0 w-full max-w-md'"
+            class="cursor-help badge badge-sm badge-secondary bg-opacity-50"
+          >
+            <img [nwImage]="entry.icon" *ngIf="entry.icon" class="w-4 h-4 mr-1" />
+            {{ entry.name }}
+            <ng-template #tplTip>
+              <nwb-modifier-tip [data]="entry.mod" [title]="entry.name"></nwb-modifier-tip>
+            </ng-template>
+          </span>
+        }
+      </div>
+    }
+  </div>
+}

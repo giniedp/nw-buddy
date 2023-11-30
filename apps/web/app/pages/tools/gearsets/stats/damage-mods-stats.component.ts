@@ -1,32 +1,41 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, Renderer2 } from '@angular/core'
-import { combineLatest, map, tap } from 'rxjs'
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core'
+import { map } from 'rxjs'
 import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { ModifierResult } from '~/nw/mannequin/modifier'
 import { damageTypeIcon } from '~/nw/weapon-types'
 import { TooltipModule } from '~/ui/tooltip'
+import { selectSignal } from '~/utils'
 import { ModifierTipComponent } from './modifier-tip.component'
+import { FlashDirective } from './utils/flash.directive'
 
 @Component({
   standalone: true,
   selector: 'nwb-damage-mods-stats',
   templateUrl: './damage-mods-stats.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, TooltipModule, ModifierTipComponent],
+  imports: [CommonModule, NwModule, TooltipModule, ModifierTipComponent, FlashDirective],
   host: {
-    class: 'block hidden',
+    class: 'block',
+    '[class.hidden]': '!rowCount()',
   },
 })
 export class DamageModsStatsComponent {
   protected trackBy = (i: number) => i
 
-  protected vm$ = combineLatest({
-    base: this.mannequin.statDamageBase$,
-    mods: this.mannequin.statDamageMods$,
-    attack: this.mannequin.activeDamageTableRow$,
-  }).pipe(
+  protected rowCount = computed(() => this.rows().length)
+  protected rows = selectSignal(
+    {
+      base: this.mannequin.statDamageBase$,
+      mods: this.mannequin.statDamageMods$,
+      attack: this.mannequin.activeDamageTableRow$,
+    },
     map(({ base, mods, attack }) => {
+      if (!base || !mods) {
+        return []
+      }
+
       const result: Array<ModifierResult & { label: string; icon?: string; prefix?: string }> = []
 
       result.push({ prefix: '+', label: `Damage Coefficient`, ...base.DamageCoef })
@@ -43,20 +52,20 @@ export class DamageModsStatsComponent {
         result.push({ prefix: '+', label: `Ammo Coefficient`, ...base.DamageCoefAmmo })
       }
 
-      if (base.BaseDamageMod?.value) {
+      if (base.MainDamageMod?.value) {
         result.push({
           prefix: '+',
           label: `Damage Bonus`,
-          icon: damageTypeIcon(base.BaseDamageType),
-          ...base.BaseDamageMod,
+          icon: damageTypeIcon(base.MainDamageType),
+          ...base.MainDamageMod,
         })
       }
-      if (base.ConvertedDamageMod?.value) {
+      if (base.ElemDamageMod?.value && base.ElemDamageType) {
         result.push({
           prefix: '+',
           label: `Damage Bonus`,
-          icon: damageTypeIcon(base.ConvertedDamageType),
-          ...base.ConvertedDamageMod,
+          icon: damageTypeIcon(base.ElemDamageType),
+          ...base.ElemDamageMod,
         })
       }
 
@@ -78,7 +87,10 @@ export class DamageModsStatsComponent {
       //   result.push({ prefix: '+', label: 'Armor Penetration Headshot', ...mods.ArmorPenetrationHead })
       // }
 
-      result.push({ prefix: '', label: 'Crit Chance', ...mods.ChritChance })
+      if (mods.CritChance.value) {
+        result.push({ prefix: '', label: 'Crit Chance', ...mods.CritChance })
+        //result.push({ prefix: '', label: 'Effective crit', source: [], value: avgCritrate(0, mods.CritChance.value)})
+      }
 
       // result.push({ prefix: '+', label: `Base Damage Reduction`, ...mods.BaseReduction })
       // result.push({ prefix: '+', label: 'Crit Damage Reduction', ...mods.CritReduction })
@@ -86,20 +98,30 @@ export class DamageModsStatsComponent {
 
       return result.filter((it) => !!it.value)
     }),
-    tap((it) => {
-      if (it?.length) {
-        this.renderer.removeClass(this.elRef.nativeElement, 'hidden')
-      } else {
-        this.renderer.addClass(this.elRef.nativeElement, 'hidden')
-      }
-    })
   )
 
-  public constructor(
-    private mannequin: Mannequin,
-    private elRef: ElementRef<HTMLElement>,
-    private renderer: Renderer2
-  ) {
+  public constructor(private mannequin: Mannequin) {
     //
   }
+}
+function avgCritrate(p: number, p_0: number) {
+  // computes average crit rate with bad luck protection
+  // assuming a total crit of p and a base crit of p0
+  let sum: number = 0
+  let maxHits: number = 0
+  if (!p_0) {
+    return p
+  }
+  maxHits = Math.ceil((1 - p + p_0) / p_0)
+  for (let hit = 0; hit < maxHits; hit++) {
+    sum += (hit + 1) * prod(0, hit, p, p_0) * Math.min(p + hit * p_0, 1) // changed (hits * p) to min(hits * p, 1)
+  }
+  return 1 / sum
+}
+function prod(start: number, end: number, p: number, p_0: number) {
+  let result = 1
+  for (let m = start; m < end; m++) {
+    result = result * Math.max(1 - (p + m * p_0), 0)
+  }
+  return result
 }

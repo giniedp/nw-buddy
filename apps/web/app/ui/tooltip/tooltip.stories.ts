@@ -6,7 +6,10 @@ import { storyControls } from '~/test/story-utils'
 import { TooltipDirective } from './tooltip.directive'
 import { TooltipModule } from './tooltip.module'
 
-type StoryArgs = Pick<TooltipDirective, 'tooltip' | 'color' | 'tooltipDelay' | 'tooltipOffset' | 'tooltipPlacement'>
+type StoryArgs = Pick<
+  TooltipDirective,
+  'tooltip' | 'tooltipClass' | 'tooltipDelay' | 'tooltipOffset' | 'tooltipPlacement' | 'tooltipSticky'
+>
 
 export default {
   title: 'UI / [tooltip]',
@@ -24,25 +27,38 @@ export default {
       defaultValue: 'Tooltip Text',
     })
     b.number('tooltipDelay')
-    b.number('tooltipOffset')
-    b.select('color', {
-      options: ['primary', 'secondary', 'accent', 'info', 'success', 'warning', 'error'],
-    })
+    b.number('tooltipOffset', { defaultValue: 4 })
+    b.boolean('tooltipSticky')
     b.select('tooltipPlacement', {
-      options: ['auto', 'top', 'right', 'bottom', 'left'],
+      options: [
+        'auto',
+        'top',
+        'top-left',
+        'top-right',
+        'right',
+        'right-top',
+        'right-bottom',
+        'bottom',
+        'bottom-left',
+        'bottom-right',
+        'left',
+        'left-top',
+        'left-bottom',
+      ],
     })
   }),
   render: (args) => {
     return {
       template: `
-        <span
-          class="m-4"
+        <div
+          class="w-60 bg-primary text-white aspect-square"
           [tooltip]='${JSON.stringify(args.tooltip)}'
-          [color]='${JSON.stringify(args.color)}'
+          [tooltipClass]="'bg-primary text-white'"
+          [tooltipSticky]='${JSON.stringify(args.tooltipSticky)}'
           [tooltipPlacement]='${JSON.stringify(args.tooltipPlacement)}'
           [tooltipDelay]='${JSON.stringify(args.tooltipDelay)}'
           [tooltipOffset]='${JSON.stringify(args.tooltipOffset)}'
-        > hover over me </span>
+        > This is a box with tooltip </div>
       `,
     }
   },

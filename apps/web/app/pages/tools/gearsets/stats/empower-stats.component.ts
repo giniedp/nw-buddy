@@ -1,52 +1,49 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, Renderer2 } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { groupBy, sumBy } from 'lodash'
-import { map, tap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { ModifierResult } from '~/nw/mannequin/modifier'
 import { damageTypeIcon } from '~/nw/weapon-types'
 import { TooltipModule } from '~/ui/tooltip'
+import { FlashDirective } from './utils/flash.directive'
 import { ModifierTipComponent } from './modifier-tip.component'
+import { animate, query, stagger, style, transition, trigger } from '@angular/animations'
+import { LIST_COUNT_ANIMATION } from './utils/animation'
 
 @Component({
   standalone: true,
   selector: 'nwb-empower-stats',
   templateUrl: './empower-stats.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, TooltipModule, ModifierTipComponent],
+  imports: [CommonModule, NwModule, TooltipModule, ModifierTipComponent, FlashDirective],
   host: {
-    class: 'block hidden',
+    class: 'block',
+    '[class.hidden]': '!rowCount()',
   },
+  animations: [
+    LIST_COUNT_ANIMATION
+  ],
 })
 export class EmpowerStatsComponent {
-  protected trackBy = (i: number) => i
-  protected vm$ = this.mannequin.statDmg$.pipe(
-    map((data) => {
-      return {
-        DamageTypes: collect(data.DamageCategories),
-        VitalsTypes: collect(data.VitalsCategories),
-      }
-    }),
-    tap((it) => {
-      if (it.DamageTypes.length || it.VitalsTypes.length) {
-        this.renderer.removeClass(this.elRef.nativeElement, 'hidden')
-      } else {
-        this.renderer.addClass(this.elRef.nativeElement, 'hidden')
-      }
-    })
-  )
-
-  public constructor(
-    private mannequin: Mannequin,
-    private elRef: ElementRef<HTMLElement>,
-    private renderer: Renderer2
-  ) {
-    //
-  }
+  private mannequin = inject(Mannequin)
+  private dmgStats = toSignal(this.mannequin.statDmg$)
+  protected damageTypes = computed(() => {
+    return collect(this.dmgStats()?.DamageCategories)
+  })
+  protected vitalTypes = computed(() => {
+    return collect(this.dmgStats()?.VitalsCategories)
+  })
+  protected rowCount = computed(() => {
+    return (this.damageTypes()?.length || 0) + (this.vitalTypes()?.length || 0)
+  })
 }
 
 function collect(data: Record<string, ModifierResult>) {
+  if (!data) {
+    return null
+  }
   const entires = Object.entries(data)
     .map(([key, entry]) => {
       return {
@@ -65,6 +62,7 @@ function collect(data: Record<string, ModifierResult>) {
     return {
       value: Number(value),
       entries: entries,
+      track: entries.map((it) => it.category).join(','),
     }
   })
 }

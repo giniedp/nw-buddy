@@ -1,0 +1,82 @@
+<h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
+  <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
+  <span class="relative top-1">Cooldowns</span>
+</h3>
+<div class="flex flex-col gap-2">
+  @if (rowCount(); as count) {
+    <div class="grid grid-cols-2 gap-x-1 items-center" [@fade]="count">
+      @for (row of abilities(); track row.label) {
+        <div class="col-span-2 flex flex-row gap-1">
+          <span [tooltip]="row.label | nwText" class="cursor-help">
+            <img class="aspect-square nw-icon w-5 h-5" [class]="'bg-ability-' + row.category" [nwImage]="row.icon" />
+          </span>
+          <span
+            [tooltip]="tplTip"
+            class="cursor-help w-11 text-right"
+            [class.text-primary]="row.label === modValue().group"
+          >
+            @if (row.label === modValue().group) {
+              {{ row.cooldown + modValue().value | number: '0.1-1' }}s
+            } @else {
+              {{ row.cooldown | number: '0.1-1' }}s
+            }
+            <ng-template #tplTip> Default Cooldown Time </ng-template>
+          </span>
+          <div class="flex flex-row flex-wrap gap-1">
+            @for (cell of row.reductions; track cell.label) {
+              <span
+                [tooltip]="tplTip"
+                [tooltipClass]="'p-0'"
+                class="cursor-help w-11 text-right hover:text-primary"
+                nwbFlash
+                (mouseenter)="setMod(row.label, cell.value)"
+                (mouseleave)="setMod('', 0)"
+              >
+                {{ cell.value | number: '0.1-1' }}s
+                <ng-template #tplTip>
+                  <nwb-modifier-tip [data]="cell.mod" [title]="cell.label" [format]="'0.2-2'"></nwb-modifier-tip>
+                </ng-template>
+              </span>
+            }
+          </div>
+        </div>
+      }
+    </div>
+    <div class="grid grid-cols-2 gap-x-1 items-center" [@fade]="count">
+      @for (row of consumables(); track row.label) {
+        <div class="flex flex-row gap-1">
+          <span [tooltip]="row.label | nwText" class="cursor-help">
+            <img class="aspect-square nw-icon w-5 h-5" [class]="'bg-ability-' + row.category" [nwImage]="row.icon" />
+          </span>
+          <span
+            [tooltip]="tplTip"
+            class="cursor-help w-11 text-right"
+            [class.text-primary]="row.label === modValue().group"
+          >
+            @if (row.label === modValue().group) {
+              {{ row.cooldown + modValue().value | number: '0.1-1' }}s
+            } @else {
+              {{ row.cooldown | number: '0.1-1' }}s
+            }
+            <ng-template #tplTip> Default Cooldown Time </ng-template>
+          </span>
+          @for (cell of row.reductions; track cell.label) {
+            <span
+              [tooltip]="tplTip"
+              [tooltipClass]="'p-0'"
+              class="cursor-help w-11 text-right hover:text-primary"
+              nwbFlash
+              (mouseenter)="setMod(row.label, cell.value)"
+              (mouseleave)="setMod('', 0)"
+            >
+              {{ cell.value > 0 ? '+' : ''}}{{ cell.value | number: '0.1-1' }}s
+              <ng-template #tplTip>
+                <nwb-modifier-tip [data]="cell.mod" [title]="cell.label" [format]="'0.2-2'"></nwb-modifier-tip>
+              </ng-template>
+            </span>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

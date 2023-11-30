@@ -1,27 +1,27 @@
 <ng-container *ngIf="vm$ | async; let vm">
-  <div *ngIf="vm.weaponType; let type" class="weapon-input flex flex-col items-center py-2 relative font-caslon uppercase text-nw-description">
-    <img [nwImage]="'assets/loaders/crafting_rune_clockwise.png'" class="w-48 h-48 text-white opacity-30 absolute -top-6 "/>
+  <div
+    *ngIf="vm.weaponType; let type"
+    class="weapon-input flex flex-col items-center py-2 relative uppercase text-nw-description"
+  >
+    <img
+      [nwImage]="'assets/loaders/crafting_rune_clockwise.png'"
+      class="w-48 h-48 text-white opacity-30 absolute -top-6 animate-spin-cw"
+    />
     <picture class="block aspect-[7/4] w-52 relative select-none mx-auto z-0">
       <img [nwImage]="type.IconPath" class="w-full h-full object-contain" />
-      <div class="absolute inset-0 flex flex-col items-center justify-center">
-        <ng-container *ngIf="vm.pointsAvailable; let points">
-          <span class="font-bold text-lg whitespace-nowrap overflow-hidden text-ellipsis z-10">
-            {{ type.UIName | nwText }}
-          </span>
-          <span class="text-5xl font-bold">{{ points }}</span>
-          <span>{{ 'ui_available_points' | nwText }}</span>
-          <span>{{ 'ui_level' | nwText }} {{ vm.weaponLevel }} / {{ vm.weaponLevelMax }}</span>
-        </ng-container>
-        <ng-container *ngIf="!vm.pointsAvailable">
-          <span class="font-bold text-lg whitespace-nowrap overflow-hidden text-ellipsis z-10">
-            {{ type.UIName | nwText }}
-          </span>
-          <span>{{ 'ui_level' | nwText }} {{ vm.weaponLevel }} / {{ vm.weaponLevelMax }}</span>
-        </ng-container>
+      <div class="font-serif absolute inset-0 flex flex-col items-center justify-center">
+        <span class="whitespace-nowrap overflow-hidden text-ellipsis z-10">
+          {{ type.UIName | nwText }}
+        </span>
+        @if (vm.pointsAvailable; as points) {
+          <span class="text-5xl font-bold font-caslon">{{ points }}</span>
+          <span class="font-serif">{{ 'ui_available_points' | nwText }}</span>
+        }
+        <span class="font-caslon">{{ 'ui_level' | nwText }} {{ vm.weaponLevel }} / {{ vm.weaponLevelMax }}</span>
       </div>
     </picture>
   </div>
-  <div class="grid layout-gap">
+  <div class="grid">
     <nwb-skill-tree
       class="rounded-md"
       [points]="vm.pointsTree1"
@@ -42,4 +42,3 @@
     ></nwb-skill-tree>
   </div>
 </ng-container>
-

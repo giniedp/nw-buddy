@@ -17,6 +17,7 @@ import {
   svgClipboard,
   svgShareNodes,
   svgSliders,
+  svgTags,
   svgTrashCan
 } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, PromptDialogComponent } from '~/ui/layout'
@@ -25,6 +26,8 @@ import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { SkillBuildValue, SkillBuilderComponent } from '~/widgets/skill-builder'
+import { GEARSET_TAGS } from '../gearsets/tags'
+import { ChipsInputModule } from '~/ui/chips-input'
 
 @Component({
   standalone: true,
@@ -42,9 +45,10 @@ import { SkillBuildValue, SkillBuilderComponent } from '~/widgets/skill-builder'
     TooltipModule,
     LayoutModule,
     AttributesEditorModule,
+    ChipsInputModule
   ],
   host: {
-    class: 'hidden xl:flex xl:flex-1 flex-col',
+    class: 'block',
   },
 })
 export class SkillBuildsDetailComponent {
@@ -68,6 +72,9 @@ export class SkillBuildsDetailComponent {
   protected iconShare = svgShareNodes
   protected iconCopy = svgClipboard
   protected iconDelete = svgTrashCan
+  protected iconTags = svgTags
+  protected isTagEditorOpen = false
+  protected presetTags = GEARSET_TAGS.map((it) => it.value)
 
   public constructor(
     private store: SkillBuildsStore,
@@ -215,7 +222,6 @@ export class SkillBuildsDetailComponent {
         })
       )
       .subscribe((result) => {
-        this.store.notifyCreated(result)
         this.router.navigate(['..', result.id], { relativeTo: this.route })
       })
   }
@@ -236,5 +242,12 @@ export class SkillBuildsDetailComponent {
           relativeTo: this.route,
         })
       })
+  }
+
+  protected updateTags(record: SkillBuildRecord, tags: string[]) {
+    this.skillDb.update(record.id, {
+      ...record,
+      tags: tags || [],
+    })
   }
 }

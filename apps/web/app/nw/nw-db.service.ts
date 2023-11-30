@@ -509,6 +509,10 @@ export class NwDbService {
   public objectiveTasksMap = indexBy(() => this.objectiveTasks, 'TaskID')
   public objectiveTask = lookup(() => this.objectiveTasksMap)
 
+  public cooldownsPlayer = table(() => this.data.cooldownsPlayer())
+  public cooldownsPlayerMap = indexBy(() => this.cooldownsPlayer, 'AbilityID')
+  public cooldownPlayer = lookup(() => this.cooldownsPlayerMap)
+
   public constructor(public readonly data: NwDataService) {
     //
   }

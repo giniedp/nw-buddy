@@ -85,6 +85,7 @@ export interface Ability {
   IsStackableAbility: boolean
   IsStackableMax: number
   Knockback: number
+  KnockbackReduction: number
   LinearlyScaleToDistance: number
   LoadedAmmoCount: number
   LoadedAmmoCountComparisonType: ComparisonType
@@ -189,12 +190,12 @@ export interface Ability {
   StatusEffect: string
   StatusEffectBeingApplied: string
   StatusEffectCategories: StatusEffectCategory[]
-  StatusEffectCategoriesList: string[]
+  StatusEffectCategoriesList: StatusEffectCategory[]
   StatusEffectCategoryToTransfer: string
   StatusEffectComparison: string
   StatusEffectDamageTableIdForRowOverride: string
   StatusEffectDamageTableRowOverride: string
-  StatusEffectDurationCats: string
+  StatusEffectDurationCats: StatusEffectCategory[]
   StatusEffectDurationMod: number
   StatusEffectDurationMult: number
   StatusEffectDurationReduction: number
@@ -209,11 +210,11 @@ export interface Ability {
   TargetStatusEffect: string
   TargetStatusEffectCategory: StatusEffectCategory[]
   TargetStatusEffectComparison: string
-  TargetStatusEffectDurationCats: string
+  TargetStatusEffectDurationCats: StatusEffectCategory[]
   TargetStatusEffectDurationList: string[]
   TargetStatusEffectDurationMod: number
   TargetStatusEffectDurationMult: number
-  TargetStatusEffectStackSize: number | string
+  TargetStatusEffectStackSize: number
   TargetVitalsCategory: VitalsCategory
   ThreatDamage: number
   ToolDurabilityLossMod: number
@@ -335,6 +336,7 @@ export interface Affixstats {
   StaminaRate: number
   StatusEffect: string
   StatusID: string
+  UseAffixScalingOnBaseDamage: boolean
   UseCountMultiplier: number
   WeaponEffectType: string
   WeightMultiplier: number
@@ -374,6 +376,7 @@ export interface Areadefinitions {
   NameLocalizationKey: string
   POILevel: number
   POITag: string
+  PhasingMode: string
   PoiDiscoveryXpModifier: number
   TerritoryID: number
 }
@@ -607,6 +610,7 @@ export interface Categoricalprogression {
 export interface CooldownsPlayer {
   AbilityID: string
   ID: number
+  MinTime: number
   Time: number
   WeaponTag: string
 }
@@ -630,7 +634,6 @@ export interface Costumechanges {
 
 export interface Crafting {
   AdditionalFilterText: string
-  AttributeCost: number
   BaseGearScore: number
   BaseTier: number
   BonusItemChance: number
@@ -642,15 +645,12 @@ export interface Crafting {
   CraftingCategory: string
   CraftingFee: number
   CraftingGroup: string
-  CraftingTime: number
   DisplayIngredients: string
-  ExpertiseBumpChanceOverride: number
   FirstCraftAchievementId: string
   'Game Event Validation': boolean
   GameEventID: string
   GearScoreBonus: string
   GearScoreReduction: string
-  GemSlotCost: number
   Ingredient1: string
   Ingredient2: string
   Ingredient3: string
@@ -658,7 +658,6 @@ export interface Crafting {
   Ingredient5: string
   Ingredient6: string
   Ingredient7: string
-  IsExpertiseBasedGS: boolean
   IsProcedural: boolean
   IsRefining: boolean
   IsTemporary: boolean
@@ -667,11 +666,6 @@ export interface Crafting {
   OutputQty: number
   PerkCost: number
   PerkItemsBucketPush: boolean
-  ProceduralTierID1: string
-  ProceduralTierID2: string
-  ProceduralTierID3: string
-  ProceduralTierID4: string
-  ProceduralTierID5: string
   Qty1: number
   Qty2: number
   Qty3: number
@@ -777,7 +771,7 @@ export interface Damagetable {
   IgnoreSheatheStatus: boolean
   ImpactDecayRate: number
   ImpactDistanceX: number
-  ImpactDistanceY: number
+  ImpactDistanceY: number | string
   ImpactDistanceZ: number
   ImpactRating: number | string
   IsAbility: boolean
@@ -911,6 +905,7 @@ export interface Gamemodes {
   AILevelAdjustedPerceptionEnabled: boolean
   AIPreventEnemyTraining: boolean
   AISpawnRadius: string
+  ActivityType: string
   AdvanceThroughStatesOnUpdate: string
   AllowPvpValueAccumulation: boolean
   AutoEquipQuickslot: boolean
@@ -975,7 +970,6 @@ export interface Gamemodes {
   PauseTimeOfDay: boolean
   PossibleItemDropIds: string[]
   PossibleItemDropIdsByLevel01: string[]
-  PossibleJourneyIds: string
   PreserveOldGroup: boolean
   Priority: number
   PriorityAddMax: number
@@ -1111,7 +1105,7 @@ export interface Housingitems {
   ItemRarity: string
   ItemType: ItemType
   ItemTypeDisplayName: string
-  MaxPotentialPoints: number
+  MaxPotentialPoints: number | string
   MaxStackSize: number
   Name: string
   Nonremovable: boolean
@@ -1120,7 +1114,7 @@ export interface Housingitems {
   PointModifier: number
   PrefabPath: string
   'Primary Color': string
-  RankingPoints: number
+  RankingPoints: number | string
   RankingPointsDuplicateLimit: number
   RankingPointsNegativeLimit: number
   RepairDustModifier: number
@@ -1152,7 +1146,6 @@ export interface ItemDefinitionMaster {
   BindOnPickup: number
   CanHavePerks: number
   CanReplaceGem: number
-  CanRollPerkOnUpgrade: number
   ConfirmBeforeUse: number
   ConfirmDestroy: number
   ConsumeOnUse: number
@@ -1202,6 +1195,7 @@ export interface ItemDefinitionMaster {
   Name: string
   Nonremovable: number
   NotDroppable: boolean
+  NotDroppableNotificationOverride: string
   Notes: string
   ObtainableReleaseVersion: string
   OnEquipObjectiveId: string
@@ -2015,6 +2009,8 @@ export interface Lootbuckets {
   Item427: string
   Item428: string
   Item429: string
+  Item431: string
+  Item432: string
   Item48: string
   Item49: string
   Item5: string
@@ -2154,18 +2150,28 @@ export interface Lootbuckets {
   LootBucket171: string
   LootBucket172: string
   LootBucket173: string
+  LootBucket174: string
+  LootBucket175: string
   LootBucket176: string
   LootBucket177: string
   LootBucket18: string
   LootBucket19: string
+  LootBucket194: string
+  LootBucket196: string
+  LootBucket197: string
+  LootBucket198: string
+  LootBucket199: string
   LootBucket2: string
   LootBucket20: string
+  LootBucket200: string
+  LootBucket201: string
   LootBucket202: string
   LootBucket203: string
   LootBucket204: string
   LootBucket205: string
   LootBucket206: string
   LootBucket207: string
+  LootBucket208: string
   LootBucket209: string
   LootBucket21: string
   LootBucket210: string
@@ -2221,6 +2227,7 @@ export interface Lootbuckets {
   LootBucket257: string
   LootBucket258: string
   LootBucket259: string
+  LootBucket26: string
   LootBucket260: string
   LootBucket261: string
   LootBucket262: string
@@ -2231,6 +2238,7 @@ export interface Lootbuckets {
   LootBucket267: string
   LootBucket268: string
   LootBucket269: string
+  LootBucket27: string
   LootBucket270: string
   LootBucket271: string
   LootBucket272: string
@@ -2252,6 +2260,7 @@ export interface Lootbuckets {
   LootBucket287: string
   LootBucket288: string
   LootBucket289: string
+  LootBucket29: string
   LootBucket290: string
   LootBucket291: string
   LootBucket292: string
@@ -2272,6 +2281,7 @@ export interface Lootbuckets {
   LootBucket305: string
   LootBucket306: string
   LootBucket307: string
+  LootBucket308: string
   LootBucket309: string
   LootBucket31: string
   LootBucket310: string
@@ -2391,6 +2401,9 @@ export interface Lootbuckets {
   LootBucket427: string
   LootBucket428: string
   LootBucket429: string
+  LootBucket430: string
+  LootBucket431: string
+  LootBucket432: string
   LootBucket48: string
   LootBucket49: string
   LootBucket5: string
@@ -2775,6 +2788,9 @@ export interface Lootbuckets {
   MatchOne427: string
   MatchOne428: string
   MatchOne429: boolean
+  MatchOne430: boolean
+  MatchOne431: string
+  MatchOne432: boolean
   MatchOne48: string
   MatchOne49: string
   MatchOne5: string
@@ -3164,6 +3180,9 @@ export interface Lootbuckets {
   Quantity427: number
   Quantity428: number
   Quantity429: number
+  Quantity430: number
+  Quantity431: number
+  Quantity432: number
   Quantity48: number
   Quantity49: number
   Quantity5: number
@@ -3435,6 +3454,7 @@ export interface Lootbuckets {
   Tags427: string[]
   Tags428: string[]
   Tags429: string[]
+  Tags432: string[]
   Tags48: string[]
   Tags49: string[]
   Tags5: string[]
@@ -3770,6 +3790,7 @@ export interface Objective {
   RewardType: string
   RewardWithPlayerLevel: boolean
   ScheduleId: string
+  ShouldResetInProgressQuestOnScheduleEnd: boolean
   ShouldResetOnFactionChange: boolean
   SkipReqAchievmentWhenInvalid: boolean
   SuccessGameEventId: string
@@ -3986,7 +4007,12 @@ export interface Perkbuckets {
   Perk254: string
   Perk255: string
   Perk256: string
+  Perk257: string
+  Perk258: string
+  Perk259: string
   Perk26: string
+  Perk260: string
+  Perk261: string
   Perk27: string
   Perk28: string
   Perk29: string
@@ -4129,7 +4155,7 @@ export interface PoiDefinition {
   OutpostId: string
   POIObjectiveAchievementId: string
   POITag: string
-  RecommendedLevel: number | string
+  RecommendedLevel: number
   TerritoryID: number
   TooltipBackground: string
   UnchartedIcon: string
@@ -4202,7 +4228,6 @@ export interface PvpStore {
 export interface PvpbalanceArena {
   BalanceCategory: string
   BalanceTarget: string
-  ConsumableHealAdjustment: number
   SelfHealAdjustment: number
   WeaponBaseDamageAdjustment: number
 }
@@ -4216,7 +4241,6 @@ export interface PvpbalanceOpenworld {
 export interface PvpbalanceOutpostrush {
   BalanceCategory: string
   BalanceTarget: string
-  ConsumableHealAdjustment: number
   SelfHealAdjustment: number
   WeaponBaseDamageAdjustment: number
 }
@@ -4224,12 +4248,12 @@ export interface PvpbalanceOutpostrush {
 export interface PvpbalanceWar {
   BalanceCategory: string
   BalanceTarget: string
-  ConsumableHealAdjustment: number
   SelfHealAdjustment: number
   WeaponBaseDamageAdjustment: number
 }
 
 export interface Spelltable {
+  AOECharRelRotOffsetZ: number
   AbilityId: string
   AmmoSlot: string
   AttachProjectileOnCollision: boolean
@@ -4366,6 +4390,7 @@ export interface Statuseffect {
   Afflictions: string
   AllowAddIfDead: boolean
   AllowSelfOnlyAsSourceForAbilities: boolean
+  AlwaysCastSpellToDefaultTargets: boolean
   AntirequisiteEffectCategories: string
   ApplicationCooldown: number
   AttributePlacingMods: number
@@ -4412,7 +4437,9 @@ export interface Statuseffect {
   DisableSupportContributionRewards: boolean
   DisableTelemetry: boolean | string
   DismissMount: boolean
+  'DismissMount ': boolean
   DisplayName: string
+  DmgPctToHealthHealMod: number
   DontApplyOnEndEffectOnRemove: boolean
   DontApplyOnEndEffectOnTimeOutDeath: boolean
   DontReplaceStack: boolean
@@ -4438,8 +4465,9 @@ export interface Statuseffect {
   EXPWeaving: number
   EXPWoodworking: number | string
   EffectCategories: StatusEffectCategory[]
-  EffectDurationMods: string
-  EffectPotencyMods: string
+  EffectDurationMods: string[]
+  EffectDurationMods_Tooltip: number
+  EffectPotencyMods: number | string
   ElementalArmor: number
   Encumbrance: number
   EquipAbility: string
@@ -4475,12 +4503,12 @@ export interface Statuseffect {
   HitCondition: HitCondition
   INSLogging: number
   INSMining: number
-  IgnoreDiminishingReturns: boolean | string
+  IgnoreDiminishingReturns: boolean | number | string
   IgnoreFxScriptWhenPotencyIsZero: boolean
   IgnoreInvulnerable: boolean
   InheritDuration: boolean | number | string
   InheritTotalDuration: boolean | number | string
-  InitialStackSize: boolean
+  InitialStackSize: boolean | number
   IsClientPredicted: boolean | number | string
   IsNegative: boolean | string
   IsServerOnly: boolean
@@ -4541,7 +4569,7 @@ export interface Statuseffect {
   PhysicalArmor: number
   PlaceholderIcon: string
   PotencyAttbScalingMaxValue: number
-  PotencyMax: number
+  PotencyMax: number | string
   PotencyPerLevel: number
   PreventMirrorBeams: boolean
   PreventPassiveAbilitiesOnEquip: boolean
@@ -5204,6 +5232,7 @@ export interface Vitals {
   RESDisease: number
   RESFrostbite: number
   RESPoison: number
+  ShouldTriggerPassivesOnDeath: boolean
   StaminaBaseMax: number
   StaminaBaseTickRate: number
   StaminaCostMitigation: number
@@ -5626,6 +5655,7 @@ export type CreatureType =
   | 'Solo-'
   | 'Solo-_StarterBeach'
   | 'SoloBoss'
+  | 'Solo_Quest'
   | 'Solo_StarterBeach'
 export type DamageCategory =
   | 'Elemental'
@@ -5896,6 +5926,7 @@ export type LootTag =
   | 'Articulon'
   | 'Asterus'
   | 'Attalus'
+  | 'Attendant'
   | 'Atumnem'
   | 'Aviva'
   | 'Baines'
@@ -5920,6 +5951,7 @@ export type LootTag =
   | 'Borvarn'
   | 'BossTrophyArtifact'
   | 'Bow'
+  | 'Bralgorn'
   | 'Bridge'
   | 'BridgeCyclops'
   | 'Brighteye'
@@ -5952,10 +5984,12 @@ export type LootTag =
   | 'CleaveWolf02'
   | 'Clift'
   | 'Coffman'
+  | 'Coldfang'
   | 'ColossusKarnak'
   | 'ColossusMemnon'
   | 'Commander'
   | 'CommanderChen'
+  | 'CommanderLoth'
   | 'Common'
   | 'Cook'
   | 'Corlew'
@@ -6043,6 +6077,7 @@ export type LootTag =
   | 'Fulgda'
   | 'Fyodor'
   | 'Gawain'
+  | 'Gelus'
   | 'Giroux'
   | 'Goblin'
   | 'Goldstein'
@@ -6077,6 +6112,9 @@ export type LootTag =
   | 'Horon'
   | 'Horus'
   | 'Hugh'
+  | 'IceGolemBoss'
+  | 'IceGuardian'
+  | 'IceVariant'
   | 'Icetooth'
   | 'Ifel'
   | 'Ifrit'
@@ -6174,6 +6212,7 @@ export type LootTag =
   | 'MegaFlora'
   | 'Melee'
   | 'Mightytusk'
+  | 'Milosh'
   | 'Min'
   | 'Minos'
   | 'Mire'
@@ -6181,6 +6220,7 @@ export type LootTag =
   | 'Montore'
   | 'Montukahl'
   | 'Mordici'
+  | 'Mordred'
   | 'Morgolf'
   | 'Morphian'
   | 'Musketeermanny'
@@ -6255,10 +6295,13 @@ export type LootTag =
   | 'Robertson'
   | 'Ronaldo'
   | 'Rosellen'
+  | 'Roth'
   | 'Rufus'
   | 'Rulav'
+  | 'S04_Q2'
   | 'Sah'
   | 'SakhrGeb'
+  | 'Sanctifier'
   | 'Sandworm'
   | 'Sangarion'
   | 'Saturninus'
@@ -6275,6 +6318,7 @@ export type LootTag =
   | 'Seret'
   | 'Sesa'
   | 'Setcheh'
+  | 'Shadowfrost'
   | 'Shai'
   | 'Shamgar'
   | 'ShatterMtn00'
@@ -6306,6 +6350,7 @@ export type LootTag =
   | 'SpearmanChiu'
   | 'Spewspitter'
   | 'Splitlimb'
+  | 'Spring'
   | 'Stace'
   | 'StaffFire'
   | 'StaffLife'
@@ -6349,6 +6394,7 @@ export type LootTag =
   | 'Tiger'
   | 'Tolos'
   | 'Torbjorn'
+  | 'TorsoBossIce'
   | 'Tusk'
   | 'TwinDoors'
   | 'Ug'
@@ -6363,6 +6409,7 @@ export type LootTag =
   | 'Visti'
   | 'Vitrioulsor'
   | 'Vladislav'
+  | 'Vokar'
   | 'Vroeg'
   | 'Walsh'
   | 'WellGuardian'
@@ -6442,6 +6489,7 @@ export type StatusEffectCategory =
   | 'Frost'
   | 'FrostBuff'
   | 'Frostbite'
+  | 'Frozen'
   | 'GSOffenseOnly'
   | 'GatherBoost'
   | 'GreatswordBuff'
@@ -6449,6 +6497,7 @@ export type StatusEffectCategory =
   | 'HarvestHP'
   | 'HarvestMana'
   | 'Haste'
+  | 'HasteDuration'
   | 'Heal'
   | 'Hearty'
   | 'HousingDmgBeasts'
@@ -6512,6 +6561,7 @@ export type StatusEffectCategory =
   | 'Timer'
   | 'TokenGatherBoost'
   | 'Tracker'
+  | 'Tracking'
   | 'TradeSkill'
   | 'TrapRoot'
   | 'Trapper'
@@ -6877,10 +6927,24 @@ export type VitalsCategory =
   | 'Alligator_Young_Named_04NW10b'
   | 'Ancient'
   | 'AncientGuardian'
+  | 'AncientGuardian_Bowman_IceVariant'
+  | 'AncientGuardian_Bowman_IceVariant_GreatCleave_00'
+  | 'AncientGuardian_Bowman_IceVariant_Raid10'
+  | 'AncientGuardian_Bowman_IceVariant_Raid10-'
+  | 'AncientGuardian_Bowman_IceVariant_Raid10_Named'
+  | 'AncientGuardian_Bowman_IceVariant_Solo'
+  | 'AncientGuardian_Greatsword_IceVariant'
+  | 'AncientGuardian_Greatsword_IceVariant_DG_Greatcleave_00'
+  | 'AncientGuardian_Greatsword_IceVariant_Named'
+  | 'AncientGuardian_Greatsword_IceVariant_Raid10'
+  | 'AncientGuardian_Greatsword_IceVariant_Raid10-'
+  | 'AncientGuardian_Greatsword_IceVariant_Raid10_Named'
   | 'AncientGuardian_Heavy_Boss'
   | 'AncientGuardian_Heavy_Boss_BoneThrow_Spawner'
   | 'AncientGuardian_Heavy_Boss_Named_DG_Everfall_00'
   | 'AncientGuardian_Heavy_Boss_Named_DG_GreatCleave_01'
+  | 'AncientGuardian_Heavy_DG_GreatCleave_00_00'
+  | 'AncientGuardian_Heavy_DG_GreatCleave_00_01'
   | 'AncientGuardian_Heavy_Named_00'
   | 'AncientGuardian_Javelineer_12'
   | 'AncientGuardian_Javelineer_14'
@@ -6949,6 +7013,8 @@ export type VitalsCategory =
   | 'AncientGuardian_Javelineer_Named_DG_Everfall_01'
   | 'AncientGuardian_Javelineer_Named_DG_Reekwater_00'
   | 'AncientGuardian_Javelineer_Named_DG_Reekwater_01'
+  | 'AncientGuardian_Javelineer_Raid10'
+  | 'AncientGuardian_Javelineer_Raid10-'
   | 'AncientGuardian_Mage_12MB02'
   | 'AncientGuardian_Mage_20'
   | 'AncientGuardian_Mage_28'
@@ -6975,6 +7041,8 @@ export type VitalsCategory =
   | 'AncientGuardian_Mage_62'
   | 'AncientGuardian_Mage_67_ELITE'
   | 'AncientGuardian_Mage_DG_Everfall_00'
+  | 'AncientGuardian_Mage_DG_GreatCleave_00_00'
+  | 'AncientGuardian_Mage_DG_GreatCleave_00_01'
   | 'AncientGuardian_Mage_DG_GreatCleave_01'
   | 'AncientGuardian_Mage_ELITE'
   | 'AncientGuardian_Mage_MSQ_Defense_Encounter_Boss'
@@ -7001,6 +7069,7 @@ export type VitalsCategory =
   | 'AncientGuardian_Mage_Minion_62'
   | 'AncientGuardian_Mage_Minion_67_ELITE'
   | 'AncientGuardian_Mage_Minion_DG_Everfall_00'
+  | 'AncientGuardian_Mage_Minion_S4'
   | 'AncientGuardian_Mage_Named_00'
   | 'AncientGuardian_Mage_Named_01'
   | 'AncientGuardian_Mage_Named_05WC09_WaveEvent'
@@ -7013,6 +7082,8 @@ export type VitalsCategory =
   | 'AncientGuardian_Mage_Named_DG_GreatCleave_00'
   | 'AncientGuardian_Mage_Named_DG_Reekwater_00_01'
   | 'AncientGuardian_Mage_Named_DG_Reekwater_00_02'
+  | 'AncientGuardian_Mage_Named_S4'
+  | 'AncientGuardian_Mage_S4_Named_Jehan'
   | 'AncientGuardian_Reaver'
   | 'AncientGuardian_Reaver_10WS02'
   | 'AncientGuardian_Reaver_10WS04'
@@ -7050,6 +7121,7 @@ export type VitalsCategory =
   | 'AncientGuardian_Reaver_63'
   | 'AncientGuardian_Reaver_64'
   | 'AncientGuardian_Reaver_DG_Everfall_00'
+  | 'AncientGuardian_Reaver_DG_GreatCleave_00'
   | 'AncientGuardian_Reaver_DG_GreatCleave_01'
   | 'AncientGuardian_Reaver_DG_Reekwater_00'
   | 'AncientGuardian_Reaver_ELITE'
@@ -7062,6 +7134,8 @@ export type VitalsCategory =
   | 'AncientGuardian_Reaver_Named_DG_Everfall_00'
   | 'AncientGuardian_Reaver_Named_DG_Everfall_01'
   | 'AncientGuardian_Reaver_Named_DG_Reekwater_00'
+  | 'AncientGuardian_Reaver_Raid10'
+  | 'AncientGuardian_Reaver_Raid10-'
   | 'AncientGuardian_Spearman'
   | 'AncientGuardian_Spearman_20'
   | 'AncientGuardian_Spearman_25'
@@ -7106,24 +7180,48 @@ export type VitalsCategory =
   | 'AncientGuardian_Spearman_63'
   | 'AncientGuardian_Spearman_64'
   | 'AncientGuardian_Spearman_DG_Everfall_00'
+  | 'AncientGuardian_Spearman_DG_GreatCleave_00_00'
+  | 'AncientGuardian_Spearman_DG_GreatCleave_00_01'
   | 'AncientGuardian_Spearman_DG_GreatCleave_01'
   | 'AncientGuardian_Spearman_DG_Reekwater_00'
   | 'AncientGuardian_Spearman_ELITE'
+  | 'AncientGuardian_Spearman_IceVariant'
+  | 'AncientGuardian_Spearman_IceVariant_Named'
+  | 'AncientGuardian_Spearman_IceVariant_Raid10'
+  | 'AncientGuardian_Spearman_IceVariant_Raid10-'
+  | 'AncientGuardian_Spearman_IceVariant_Raid10_Named'
+  | 'AncientGuardian_Spearman_IceVariant_Solo'
   | 'AncientGuardian_Spearman_Named_00'
   | 'AncientGuardian_Spearman_Named_01'
   | 'AncientGuardian_Spearman_Named_10WS04'
   | 'AncientGuardian_Spearman_Named_DG_Everfall_00'
   | 'AncientGuardian_Spearman_Named_DG_Reekwater_00'
   | 'AncientGuardian_Spearman_Named_DG_Reekwater_01'
+  | 'AncientGuardian_Warhammer_IceVariant'
+  | 'AncientGuardian_Warhammer_IceVariant_DG_Greatcleave_00'
+  | 'AncientGuardian_Warhammer_IceVariant_DG_Named_Greatcleave_00'
+  | 'AncientGuardian_Warhammer_IceVariant_Named'
+  | 'AncientGuardian_Warhammer_IceVariant_Raid10'
+  | 'AncientGuardian_Warhammer_IceVariant_Raid10-'
+  | 'AncientGuardian_Warhammer_IceVariant_Raid10_Named'
   | 'Ancient_Amalgam'
   | 'Ancient_Amalgam_Elite'
   | 'Ancient_Amalgam_Named_16BS11a'
   | 'Ancient_Amalgam_Named_16BS11b'
+  | 'Ancient_Amalgam_Named_DG_GreatCleave_00'
   | 'Ancient_Amalgam_Remnant'
   | 'Ancient_Guardian_Javelineer_Named_07SM07'
   | 'Ancient_Guardian_Mage_Named_07SM07'
   | 'Ancient_Guardian_Mage_Named_09A_S7'
   | 'Ancient_Guardian_Reaver_03GC10'
+  | 'Ancient_Ice_Dragon'
+  | 'Ancient_Ice_Dragon_Fragment'
+  | 'Ancient_Ice_Dragon_Fragment_Solo'
+  | 'Ancient_Ice_Dragon_Lesser_Shattered'
+  | 'Ancient_Ice_Dragon_Lesser_Shattered_Solo'
+  | 'Ancient_Ice_Dragon_Shattered'
+  | 'Ancient_Ice_Dragon_Shattered_Solo'
+  | 'Ancient_Ice_Dragon_Solo'
   | 'Ancient_Javelineer'
   | 'Ancient_Mage'
   | 'AngryEarth'
@@ -7253,6 +7351,7 @@ export type VitalsCategory =
   | 'Anubian_Scarab_Named_00'
   | 'Anubian_Scarab_Named_01'
   | 'Anubian_Scarab_Named_02'
+  | 'Archer_Torso_Boss_Ice_Minion'
   | 'Armadillo'
   | 'Avalancher'
   | 'Avalancher_Frostgrip'
@@ -7717,6 +7816,7 @@ export type VitalsCategory =
   | 'Brother_Umberto_Melee'
   | 'Brother_Umberto_Ranged'
   | 'Brute'
+  | 'Caster_Torso_Boss_Ice_Minion'
   | 'Churro'
   | 'Corbenic_Altar'
   | 'Corbenic_Idol'
@@ -7734,6 +7834,8 @@ export type VitalsCategory =
   | 'CorruptedLegion_Cyclops_DG_BrimstoneSands_Crassus_Minion'
   | 'CorruptedLegion_Cyclops_DG_BrimstoneSands_Named_00'
   | 'CorruptedLegion_Cyclops_ELITE'
+  | 'CorruptedLegion_Cyclops_LOC_BOSS_00'
+  | 'CorruptedLegion_Cyclops_LOC_BOSS_01'
   | 'CorruptedLegion_Cyclops_Named_00'
   | 'CorruptedLegion_Cyclops_Named_01'
   | 'CorruptedLegion_Cyclops_Named_02_ELITE'
@@ -7766,6 +7868,7 @@ export type VitalsCategory =
   | 'Corrupted_Ogre_61'
   | 'Corrupted_Ogre_62'
   | 'Corrupted_Ogre_62_ELITE'
+  | 'Corrupted_Ogre_DG_GreatCleave_00'
   | 'Corrupted_Ogre_DG_Restless_00'
   | 'Corrupted_Ogre_DG_ShatterMtn_00'
   | 'Corrupted_Ogre_DT1'
@@ -7863,6 +7966,7 @@ export type VitalsCategory =
   | 'Corruption_Impaler_08QP08'
   | 'Corruption_Impaler_08QP08_ELITE'
   | 'Corruption_Impaler_56'
+  | 'Corruption_Impaler_DG_GreatCleave_00'
   | 'Corruption_Impaler_DG_Restless_00'
   | 'Corruption_Impaler_DT1'
   | 'Corruption_Impaler_DT2'
@@ -7871,6 +7975,7 @@ export type VitalsCategory =
   | 'Corruption_Impaler_DT5'
   | 'Corruption_Impaler_DT6'
   | 'Corruption_Impaler_Minion_RestlessShores'
+  | 'Corruption_Impaler_Named_DG_GreatCleave_00'
   | 'Corruption_Swarmer'
   | 'Corruption_Swarmer_03GC03_ELITE'
   | 'Corruption_Swarmer_07SM02b_ELITE'
@@ -7892,6 +7997,7 @@ export type VitalsCategory =
   | 'Corruption_Swarmer_62'
   | 'Corruption_Swarmer_Chaplain_Minion'
   | 'Corruption_Swarmer_DG_Ebonscale_00'
+  | 'Corruption_Swarmer_DG_GreatCleave_00'
   | 'Corruption_Swarmer_DG_Restless_00'
   | 'Corruption_Swarmer_DG_ShatterMtn_00'
   | 'Corruption_Swarmer_DT1'
@@ -8004,6 +8110,7 @@ export type VitalsCategory =
   | 'Damned_1H_Swordsman_M-F_60'
   | 'Damned_1H_Swordsman_M-F_61'
   | 'Damned_1H_Swordsman_M-F_62'
+  | 'Damned_1H_Swordsman_M-F_DG_GreatCleave_00'
   | 'Damned_1H_Swordsman_M-F_DG_Restless_00'
   | 'Damned_1H_Swordsman_M-F_DG_ShatterMtn_00'
   | 'Damned_1H_Swordsman_M-F_MSQ_35'
@@ -8043,6 +8150,7 @@ export type VitalsCategory =
   | 'Damned_2H_Spearman_M-F_60'
   | 'Damned_2H_Spearman_M-F_61'
   | 'Damned_2H_Spearman_M-F_62'
+  | 'Damned_2H_Spearman_M-F_DG_GreatCleave_00'
   | 'Damned_2H_Spearman_M-F_DG_ShatterMtn_00'
   | 'Damned_2H_Spearman_M-F_Named_DG_Restless_00'
   | 'Damned_Acolyte'
@@ -8118,8 +8226,10 @@ export type VitalsCategory =
   | 'Damned_Axeman_M-F_60'
   | 'Damned_Axeman_M-F_61'
   | 'Damned_Axeman_M-F_62'
+  | 'Damned_Axeman_M-F_DG_GreatCleave_00'
   | 'Damned_Axeman_M-F_DG_Restless_00'
   | 'Damned_Axeman_M-F_DG_ShatterMtn_00'
+  | 'Damned_Axeman_Named_DG_GreatCleave_00'
   | 'Damned_Bowman'
   | 'Damned_Bowman_10WS06'
   | 'Damned_Bowman_25'
@@ -8215,6 +8325,7 @@ export type VitalsCategory =
   | 'Damned_Cultist_60'
   | 'Damned_Cultist_61'
   | 'Damned_Cultist_62'
+  | 'Damned_Cultist_DG_GreatCleave_00'
   | 'Damned_Cultist_DG_Restless_00'
   | 'Damned_Cultist_DG_ShatterMtn_00'
   | 'Damned_Cultist_DT1'
@@ -8258,10 +8369,12 @@ export type VitalsCategory =
   | 'Damned_GreatAxeman_M-F_60'
   | 'Damned_GreatAxeman_M-F_61'
   | 'Damned_GreatAxeman_M-F_62'
+  | 'Damned_GreatAxeman_M-F_DG_GreatCleave_00'
   | 'Damned_GreatAxeman_M-F_DG_Restless_00'
   | 'Damned_GreatAxeman_M-F_DG_ShatterMtn_00'
   | 'Damned_GreatAxeman_M-F_Named_01'
   | 'Damned_GreatAxeman_M-F_Named_02'
+  | 'Damned_GreatAxeman_M-F_Named_DG_GreatCleave_00'
   | 'Damned_GreatAxeman_M-F_Named_DG_ShatterMtn_00'
   | 'Damned_GreatAxeman_M-F_Named_DG_ShatterMtn_01'
   | 'Damned_GreatHammer_Named_01'
@@ -8276,6 +8389,7 @@ export type VitalsCategory =
   | 'Damned_Grunt_63'
   | 'Damned_Grunt_64'
   | 'Damned_Grunt_DG_Ebonscale_Isabella_00'
+  | 'Damned_Grunt_DG_GreatCleave_00'
   | 'Damned_Grunt_DG_Restless_00'
   | 'Damned_Grunt_DG_ShatterMtn_00'
   | 'Damned_Hound_03GC06'
@@ -8386,9 +8500,11 @@ export type VitalsCategory =
   | 'Damned_Pistoleer_M-F_60'
   | 'Damned_Pistoleer_M-F_61'
   | 'Damned_Pistoleer_M-F_62'
+  | 'Damned_Pistoleer_M-F_DG_GreatCleave_00'
   | 'Damned_Pistoleer_M-F_DG_ShatterMtn_00'
   | 'Damned_Pistoleer_M-F_Named_DG_ShatterMtn_00'
   | 'Damned_Priest'
+  | 'Damned_Priest_DG_GreatCleave_00'
   | 'Damned_Priest_DG_ShatterMtn_00'
   | 'Damned_Priest_Hound_46'
   | 'Damned_Priest_Hound_62'
@@ -8398,6 +8514,7 @@ export type VitalsCategory =
   | 'Damned_Priest_Named_07SM06'
   | 'Damned_Priest_Named_07SM06a_ELITE'
   | 'Damned_Priest_Named_07SM06b_ELITE'
+  | 'Damned_Priest_Named_DG_GreatCleave_00'
   | 'Damned_Priest_Named_DG_Restless_00'
   | 'Damned_Priest_Named_DG_ShatterMtn_00_01'
   | 'Damned_Priest_Named_DG_ShatterMtn_00_02'
@@ -8440,6 +8557,7 @@ export type VitalsCategory =
   | 'Damned_Rifleman_M-F_64'
   | 'Damned_Rifleman_M-F_DG_Ebonscale_00'
   | 'Damned_Rifleman_M-F_DG_Ebonscale_Isabella_00'
+  | 'Damned_Rifleman_M-F_DG_GreatCleave_00'
   | 'Damned_Rifleman_M-F_DG_ShatterMtn_00'
   | 'Damned_Rifleman_MD_Named_Coy'
   | 'Damned_Rifleman_Male_Named_01'
@@ -9700,15 +9818,19 @@ export type VitalsCategory =
   | 'Dynasty_Heavy_08QP08_ELITE'
   | 'Dynasty_Heavy_57'
   | 'Dynasty_Heavy_DG_Ebonscale_00'
+  | 'Dynasty_Heavy_DG_GreatCleave_00'
   | 'Dynasty_Heavy_DG_ShatterMtn_00'
   | 'Dynasty_Heavy_Named_08QP04'
   | 'Dynasty_Heavy_Named_08QP06'
   | 'Dynasty_Heavy_Named_08QP07'
   | 'Dynasty_Heavy_Named_08QP08'
+  | 'Dynasty_Heavy_Named_08QP08a'
   | 'Dynasty_Heavy_Named_DG_Ebonscale_00'
+  | 'Dynasty_Heavy_Named_DG_GreatCleave_00'
   | 'Dynasty_Heavy_Named_DG_ShatterMtn_00'
   | 'Dynasty_Maiden'
   | 'Dynasty_Maiden_DG_Ebonscale_00'
+  | 'Dynasty_Maiden_DG_GreatCleave_00'
   | 'Dynasty_Maiden_DG_ShatterMtn_00'
   | 'Dynasty_Maiden_Named_08QP06'
   | 'Dynasty_Maiden_Named_08QP07'
@@ -9716,6 +9838,7 @@ export type VitalsCategory =
   | 'Dynasty_Maiden_Named_DG_Ebonscale_00'
   | 'Dynasty_Maiden_Named_DG_Ebonscale_01'
   | 'Dynasty_Maiden_Named_DG_Ebonscale_02'
+  | 'Dynasty_Maiden_Named_DG_GreatCleave_00'
   | 'Dynasty_Maiden_Named_DG_ShatterMtn_00'
   | 'Dynasty_Maiden_WWGreatAxe_Named'
   | 'Dynasty_Musketeer'
@@ -9739,8 +9862,10 @@ export type VitalsCategory =
   | 'Dynasty_Musketeer_62'
   | 'Dynasty_Musketeer_DG_Ebonscale_00'
   | 'Dynasty_Musketeer_DG_Ebonscale_00_Defend'
+  | 'Dynasty_Musketeer_DG_GreatCleave_00'
   | 'Dynasty_Musketeer_DG_ShatterMtn_00'
   | 'Dynasty_Musketeer_Empress'
+  | 'Dynasty_Musketeer_Empress_Solo'
   | 'Dynasty_Musketeer_Named_08QP02'
   | 'Dynasty_Spearman'
   | 'Dynasty_Spearman_08QP08'
@@ -9760,8 +9885,10 @@ export type VitalsCategory =
   | 'Dynasty_Spearman_61'
   | 'Dynasty_Spearman_62'
   | 'Dynasty_Spearman_DG_Ebonscale_00'
+  | 'Dynasty_Spearman_DG_GreatCleave_00'
   | 'Dynasty_Spearman_DG_ShatterMtn_00'
   | 'Dynasty_Spearman_Empress'
+  | 'Dynasty_Spearman_Empress_Solo'
   | 'Dynasty_Spearman_Named_08QP02'
   | 'Dynasty_Spearman_Named_08QP03'
   | 'Dynasty_Spearman_Named_08QP07'
@@ -9785,13 +9912,16 @@ export type VitalsCategory =
   | 'Dynasty_Summoner_61'
   | 'Dynasty_Summoner_62'
   | 'Dynasty_Summoner_DG_Ebonscale_00'
+  | 'Dynasty_Summoner_DG_GreatCleave_00'
   | 'Dynasty_Summoner_DG_ShatterMtn_00'
   | 'Dynasty_Summoner_Empress'
+  | 'Dynasty_Summoner_Empress_Solo'
   | 'Dynasty_Summoner_Named_08QP07'
   | 'Dynasty_Summoner_Named_08QP08'
   | 'Dynasty_Summoner_Named_16BS02'
   | 'Dynasty_Summoner_Named_DG_Ebonscale_00'
   | 'Dynasty_Summoner_Named_DG_Ebonscale_01'
+  | 'Dynasty_Summoner_Named_DG_GreatCleave_00'
   | 'Dynasty_Trainee'
   | 'Dynasty_Trainee_08QP08'
   | 'Dynasty_Trainee_DG_Ebonscale_00'
@@ -9816,8 +9946,10 @@ export type VitalsCategory =
   | 'Dynasty_Warrior_62'
   | 'Dynasty_Warrior_DG_Ebonscale_00'
   | 'Dynasty_Warrior_DG_Ebonscale_00_Defend'
+  | 'Dynasty_Warrior_DG_GreatCleave_00'
   | 'Dynasty_Warrior_DG_ShatterMtn_00'
   | 'Dynasty_Warrior_Empress'
+  | 'Dynasty_Warrior_Empress_Solo'
   | 'Dynasty_Warrior_Named_08QP01'
   | 'Dynasty_Warrior_Named_08QP02'
   | 'Dynasty_Warrior_Named_08QP08'
@@ -10007,9 +10139,13 @@ export type VitalsCategory =
   | 'Evil_Knight_Bow_32'
   | 'Evil_Knight_Bow_DG_GreatCleave01_00'
   | 'Evil_Knight_Bow_DG_GreatCleave01_01'
+  | 'Evil_Knight_Bow_DG_GreatCleave_00_00'
+  | 'Evil_Knight_Bow_DG_GreatCleave_00_01'
   | 'Evil_Knight_Bow_Elite'
   | 'Evil_Knight_Bow_Elite_08QP02'
   | 'Evil_Knight_Bow_FireVariant'
+  | 'Evil_Knight_Bow_IceVariant'
+  | 'Evil_Knight_Bow_IceVariant_Named'
   | 'Evil_Knight_Bow_Named_09FL07'
   | 'Evil_Knight_Bow_Named_DG_GreatCleave_01'
   | 'Evil_Knight_Caster'
@@ -10023,6 +10159,8 @@ export type VitalsCategory =
   | 'Evil_Knight_Caster_32'
   | 'Evil_Knight_Caster_DG_GreatCleave01_00'
   | 'Evil_Knight_Caster_DG_GreatCleave01_01'
+  | 'Evil_Knight_Caster_DG_GreatCleave_00_00'
+  | 'Evil_Knight_Caster_DG_GreatCleave_00_01'
   | 'Evil_Knight_Caster_Elite'
   | 'Evil_Knight_Caster_Elite_08QP02'
   | 'Evil_Knight_Caster_FireVariant'
@@ -10061,18 +10199,27 @@ export type VitalsCategory =
   | 'Evil_Knight_Greataxe_30'
   | 'Evil_Knight_Greataxe_31'
   | 'Evil_Knight_Greataxe_32'
+  | 'Evil_Knight_Greataxe_DG_Greatcleave_00_00'
+  | 'Evil_Knight_Greataxe_DG_Greatcleave_00_01'
   | 'Evil_Knight_Greataxe_Elite'
   | 'Evil_Knight_Greataxe_Elite_08QP02'
   | 'Evil_Knight_Greataxe_FireVariant'
+  | 'Evil_Knight_Greataxe_IceVariant'
+  | 'Evil_Knight_Greataxe_IceVariant_Named'
   | 'Evil_Knight_Greataxe_Named_12MB01'
+  | 'Evil_Knight_Greataxe_Named_DG_Greatcleave_00'
   | 'Evil_Knight_Gruntmaster'
   | 'Evil_Knight_Heavy'
+  | 'Evil_Knight_Heavy_CommanderLoth_Boss'
+  | 'Evil_Knight_Heavy_DG_GreatCleave_00'
+  | 'Evil_Knight_Heavy_DG_GreatCleave_01'
   | 'Evil_Knight_Heavy_DG_GreatCleave_02'
   | 'Evil_Knight_Heavy_Elite'
   | 'Evil_Knight_Heavy_Elite_08QP02'
   | 'Evil_Knight_Heavy_FireVariant'
   | 'Evil_Knight_Heavy_Named_08QP02'
   | 'Evil_Knight_Heavy_Named_14AC13'
+  | 'Evil_Knight_Heavy_Named_DG_GreatCleave_00'
   | 'Evil_Knight_Heavy_Named_DG_GreatCleave_01'
   | 'Evil_Knight_Hound'
   | 'Evil_Knight_Hound_25'
@@ -10084,13 +10231,19 @@ export type VitalsCategory =
   | 'Evil_Knight_Hound_31'
   | 'Evil_Knight_Hound_32'
   | 'Evil_Knight_Hound_DG_GreatCleave01_00'
+  | 'Evil_Knight_Hound_DG_GreatCleave_00_00'
   | 'Evil_Knight_Hound_Elite'
   | 'Evil_Knight_Hound_Elite_08QP02'
   | 'Evil_Knight_Hound_Named_14AC06'
+  | 'Evil_Knight_IceStaff_IceVariant'
+  | 'Evil_Knight_IceStaff_IceVariant_Named'
   | 'Evil_Knight_LifeStaff'
   | 'Evil_Knight_LifeStaff_DG_GreatCleave01_00'
+  | 'Evil_Knight_LifeStaff_DG_GreatCleave_00_00'
   | 'Evil_Knight_LifeStaff_Elite_08QP02'
   | 'Evil_Knight_LifeStaff_FireVariant'
+  | 'Evil_Knight_LifeStaff_IceVariant'
+  | 'Evil_Knight_LifeStaff_IceVariant_Named'
   | 'Evil_Knight_LifeStaff_Named_DG_GreatCleave_01'
   | 'Evil_Knight_Longsword'
   | 'Evil_Knight_Longsword_16'
@@ -10112,9 +10265,13 @@ export type VitalsCategory =
   | 'Evil_Knight_Longsword_32'
   | 'Evil_Knight_Longsword_DG_GreatCleave01_00'
   | 'Evil_Knight_Longsword_DG_GreatCleave01_01'
+  | 'Evil_Knight_Longsword_DG_GreatCleave_00_00'
+  | 'Evil_Knight_Longsword_DG_GreatCleave_00_01'
   | 'Evil_Knight_Longsword_Elite'
   | 'Evil_Knight_Longsword_Elite_08QP02'
   | 'Evil_Knight_Longsword_FireVariant'
+  | 'Evil_Knight_Longsword_IceVariant'
+  | 'Evil_Knight_Longsword_IceVariant_Named'
   | 'Evil_Knight_Longsword_Named_02BW02'
   | 'Evil_Knight_Longsword_Named_DG_GreatCleave_01'
   | 'Evil_Knight_Mace'
@@ -10136,12 +10293,17 @@ export type VitalsCategory =
   | 'Evil_Knight_Mace_31'
   | 'Evil_Knight_Mace_32'
   | 'Evil_Knight_Mace_DG_GreatCleave01_00'
+  | 'Evil_Knight_Mace_DG_GreatCleave_00_00'
+  | 'Evil_Knight_Mace_DG_GreatCleave_00_01'
   | 'Evil_Knight_Mace_Elite'
   | 'Evil_Knight_Mace_Elite_08QP02'
   | 'Evil_Knight_Mace_FireVariant'
+  | 'Evil_Knight_Mace_IceVariant'
+  | 'Evil_Knight_Mace_IceVariant_Named'
   | 'Evil_Knight_Mace_Named_04NW02'
   | 'Evil_Knight_Mace_Named_08QP02'
   | 'Evil_Knight_Mace_Named_10WS04'
+  | 'Evil_Knight_Mace_Named_DG_GreatCleave_00'
   | 'Evil_Knight_Mace_Named_WaveEvent'
   | 'Evil_Knight_Spear'
   | 'Evil_Knight_Spear_25'
@@ -10152,10 +10314,14 @@ export type VitalsCategory =
   | 'Evil_Knight_Spear_30'
   | 'Evil_Knight_Spear_31'
   | 'Evil_Knight_Spear_32'
+  | 'Evil_Knight_Spear_DG_GreatCleave_00_00'
   | 'Evil_Knight_Spear_Elite'
   | 'Evil_Knight_Spear_Elite_08QP02'
   | 'Evil_Knight_Spear_FireVariant'
+  | 'Evil_Knight_Spear_IceVariant'
+  | 'Evil_Knight_Spear_IceVariant_Named'
   | 'Evil_Knight_Spear_Named_02BW07'
+  | 'Evil_Knight_Spear_Named_DG_GreatCleave_00_00'
   | 'Evil_Knight_VoidGauntlet'
   | 'Evil_Knight_Warhammer'
   | 'Evil_Knight_Warhammer_25'
@@ -10166,10 +10332,14 @@ export type VitalsCategory =
   | 'Evil_Knight_Warhammer_30'
   | 'Evil_Knight_Warhammer_31'
   | 'Evil_Knight_Warhammer_32'
+  | 'Evil_Knight_Warhammer_DG_GreatCleave_00'
   | 'Evil_Knight_Warhammer_Elite'
   | 'Evil_Knight_Warhammer_Elite_08QP02'
   | 'Evil_Knight_Warhammer_FireVariant'
+  | 'Evil_Knight_Warhammer_IceVariant'
+  | 'Evil_Knight_Warhammer_IceVariant_Named'
   | 'Evil_Knight_Warhammer_Named_10WS04'
+  | 'Evil_Knight_Warhammer_Named_DG_GreatCleave_00'
   | 'Evil_Knight_Warhammer_Named_DG_GreatCleave_01'
   | 'Explosive_Sprout_Fire'
   | 'Explosive_Sprout_Fire_Pulse'
@@ -10262,6 +10432,8 @@ export type VitalsCategory =
   | 'Ghost_Frozen_EGGreatAxe'
   | 'Ghost_Frozen_Named_00'
   | 'Ghost_Frozen_Named_DG_Windsward_00'
+  | 'Ghost_Frozen_Named_S4_1'
+  | 'Ghost_Frozen_Named_S4_2'
   | 'Ghost_Plagued'
   | 'Ghost_Plagued_08QP07'
   | 'Ghost_Plagued_13WF08a'
@@ -10496,6 +10668,7 @@ export type VitalsCategory =
   | 'Ghost_Starved_Named_99A_Enc_Torment_SW01'
   | 'Ghost_Starved_Named_99A_Enc_Torment_SW02'
   | 'Ghost_Starved_Named_99A_Enc_Torment_SW03'
+  | 'Ghost_Starved_S4Q2'
   | 'Goat'
   | 'Goat_Mountain_03GC10'
   | 'Goat_Mountain_40'
@@ -10557,6 +10730,7 @@ export type VitalsCategory =
   | 'IceDryad_Range_Frostgrip_61'
   | 'IceDryad_Range_Frostgrip_62'
   | 'IceDryad_Range_Frostgrip_65_ELITE'
+  | 'IceGolem'
   | 'Imhotep'
   | 'Inert_Remnant'
   | 'Invasion_Bear'
@@ -10588,6 +10762,7 @@ export type VitalsCategory =
   | 'Jackrabbit_66'
   | 'Jackrabbit_67'
   | 'Jackrabbit_Named_00'
+  | 'King_Idris'
   | 'Legion'
   | 'Legion_AxeThrower_M-F_62'
   | 'Legion_AxeThrower_M-F_63'
@@ -10617,7 +10792,9 @@ export type VitalsCategory =
   | 'Legion_Legionnaire_DG_BrimstoneSands_Named_00'
   | 'Legion_Legionnaire_Ethereal'
   | 'Legion_Legionnaire_Ethereal_ELITE'
+  | 'Legion_Legionnaire_Ethereal_LOC_BOSS'
   | 'Legion_Legionnaire_Ethereal_Named_05_ELITE'
+  | 'Legion_Legionnaire_LOC_BOSS'
   | 'Legion_Legionnaire_Named_00'
   | 'Legion_Legionnaire_Named_01'
   | 'Legion_Legionnaire_Named_02'
@@ -10629,6 +10806,7 @@ export type VitalsCategory =
   | 'Legion_Legionnaire_NoShield_DG_BrimstoneSands_00'
   | 'Legion_Legionnaire_NoShield_DG_BrimstoneSands_Crassus_Minion'
   | 'Legion_Legionnaire_NoShield_ELITE'
+  | 'Legion_Legionnaire_NoShield_LOC_BOSS'
   | 'Legion_Legionnaire_Physical'
   | 'Legion_Legionnaire_Physical_ELITE'
   | 'Legion_Sagittarii'
@@ -10643,6 +10821,7 @@ export type VitalsCategory =
   | 'Legion_Sagittarii_DG_BrimstoneSands_00'
   | 'Legion_Sagittarii_DG_BrimstoneSands_Minion'
   | 'Legion_Sagittarii_ELITE'
+  | 'Legion_Sagittarii_LOC_BOSS'
   | 'Legion_Sagittarii_Named_00'
   | 'Legion_Sagittarii_Named_01'
   | 'Legion_Signifer'
@@ -10659,6 +10838,7 @@ export type VitalsCategory =
   | 'Legion_Signifer_DG_BrimstoneSands_Minion'
   | 'Legion_Signifer_DG_BrimstoneSands_Named_00'
   | 'Legion_Signifer_ELITE'
+  | 'Legion_Signifer_LOC_BOSS'
   | 'Legion_Signifer_Named_00'
   | 'Legion_Signifer_Named_01'
   | 'Legion_Signifer_Named_02'
@@ -10745,6 +10925,7 @@ export type VitalsCategory =
   | 'Lost_Merc_Pikeman'
   | 'Lost_Merc_Tank'
   | 'Lost_Monarch'
+  | 'Lost_Monarch_S4'
   | 'Lost_Pikeman'
   | 'Lost_Pikeman_06SW09'
   | 'Lost_Pikeman_12MB04'
@@ -10858,6 +11039,13 @@ export type VitalsCategory =
   | 'Mountain_Lion_Named_10WS01'
   | 'Naga'
   | 'Naga_AncientGuardian'
+  | 'Naga_AncientGuardian_IceGuardian'
+  | 'Naga_AncientGuardian_IceGuardian_Cturret'
+  | 'Naga_AncientGuardian_IceGuardian_Cturret_Solo'
+  | 'Naga_AncientGuardian_IceGuardian_Entomb'
+  | 'Naga_AncientGuardian_IceGuardian_Rturret'
+  | 'Naga_AncientGuardian_IceGuardian_Rturret_Solo'
+  | 'Naga_AncientGuardian_IceGuardian_Solo'
   | 'Naga_AngryEarth'
   | 'Naga_AngryEarth_Minion'
   | 'Naga_Corrupted'
@@ -11322,6 +11510,9 @@ export type VitalsCategory =
   | 'Season_02_Malek'
   | 'Season_02_Malek_BloodOfTheSands'
   | 'Season_02_Malek_Mirage'
+  | 'Season_04_Daichi'
+  | 'Season_04_Frost_King'
+  | 'Season_04_Mordred_AI'
   | 'Sheep'
   | 'Sheep_Churro_13'
   | 'Sheep_Churro_15'
@@ -11415,6 +11606,8 @@ export type VitalsCategory =
   | 'Skeleton_1H_Sword_MSQ_13'
   | 'Skeleton_1H_Sword_MSQ_39'
   | 'Skeleton_1H_Sword_MSQ_Defense_Encounter'
+  | 'Skeleton_1H_Sword_Raid10'
+  | 'Skeleton_1H_Sword_Raid10-'
   | 'Skeleton_1H_Sword_agheavy_minion'
   | 'Skeleton_2H_Sword_03GC10'
   | 'Skeleton_2H_Sword_10WS02'
@@ -11819,6 +12012,7 @@ export type VitalsCategory =
   | 'Tendril_Corruption_60'
   | 'Tendril_Corruption_61'
   | 'Tendril_Corruption_62'
+  | 'Tendril_Corruption_DG_GreatCleave_00'
   | 'Tendril_Corruption_DG_Restless_00'
   | 'Tendril_Corruption_DG_ShatterMtn_00'
   | 'Tendril_Corruption_DT1'
@@ -11863,7 +12057,12 @@ export type VitalsCategory =
   | 'Torso_Boss'
   | 'Torso_Boss_Arcane_Conduit'
   | 'Torso_Boss_Arcane_Orb'
+  | 'Torso_Boss_Ice'
+  | 'Torso_Boss_Ice_Bomb'
+  | 'Torso_Boss_Ice_Bridge'
+  | 'Torso_Boss_Ice_WeakPoint'
   | 'Totem_Dryad_Nest_DG_Edengrove_00'
+  | 'Totem_LOC_BOSS'
   | 'Totem_Pirate_Cursed'
   | 'Totem_Pirate_Cursed_58'
   | 'Totem_Pirate_Cursed_59'
@@ -12792,6 +12991,7 @@ export type VitalsCategory =
   | 'Wolf_Alpha_Named_03GC04_01'
   | 'Wolf_Alpha_Named_03GC04_02'
   | 'Wolf_Alpha_Named_08QP05'
+  | 'Wolf_Alpha_Named_S4_1'
   | 'Wolf_Alpha_Named_WaveEventBoss'
   | 'Wolf_B'
   | 'Wolf_Black_03GC02'
@@ -12911,6 +13111,7 @@ export type VitalsCategory =
   | 'Wolf_Elemental_Ice_65_ELITE'
   | 'Wolf_Elemental_Ice_Named_001_03GC11'
   | 'Wolf_Elemental_Ice_Named_002_03GC11'
+  | 'Wolf_Elemental_Ice_Named_S4_1'
   | 'Wolf_Grey_03GC11'
   | 'Wolf_Grey_10'
   | 'Wolf_Grey_10WS07'
@@ -12984,6 +13185,7 @@ export type VitalsCategory =
   | 'Wolf_Minion_50_03GC04'
   | 'Wolf_Minion_7'
   | 'Wolf_Minion_9'
+  | 'Wolf_Minion_S4_1'
   | 'Wolf_T2'
   | 'Wolf_T3'
   | 'Wolf_T4'
@@ -13062,6 +13264,8 @@ export type VitalsCategory =
   | 'Yeti_Named_12MB07'
   | 'Yeti_Named_14AC01'
   | 'Yeti_Named_14AC18'
+  | 'Yeti_Named_S4_1'
+  | 'Yeti_Named_S4_2'
   | 'Yonas_MSQ'
   | 'Yonas_MSQ2'
 export type VitalsFamily =

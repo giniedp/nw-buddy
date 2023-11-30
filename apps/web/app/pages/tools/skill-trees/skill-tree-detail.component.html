@@ -1,100 +1,103 @@
-<nwb-detail-drawer class="flex-1 hidden lg:block" [breakOn]="'xl'">
-  <div *nwbDetailDrawerContent class="layout-col relative bg-base-300">
-    <ng-container *ngIf="item$ | async; let item">
-      <div class="relative flex-none p-1 bg-base-300 bg-opacity-100">
-        <div class="form-control">
-          <div class="input-group overflow-x-auto">
-            <a class="btn btn-ghost btn-square inline-flex" [routerLink]="'..'">
-              <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
-            </a>
-            <input
-              type="text"
-              placeholder=""
-              class="input input-bordered w-full min-w-[200px]"
-              maxlength="100"
-              [ngModel]="item.record.name"
-              (ngModelChange)="updateName(item.record, $event)"
-              [ngModelOptions]="{ updateOn: 'blur' }"
-            />
-            <button
-              [nwbScreenshotBtn]
-              class="btn btn-ghost btn-square"
-              [tooltip]="'Screenshot'"
-              [color]="'info'"
-            ></button>
-            <button
-              class="btn btn-ghost btn-square"
-              (click)="onShareClicked(item.record)"
-              [tooltip]="'Create share URL'"
-              [color]="'info'"
-            >
-              <nwb-icon [icon]="iconShare" class="w-4 h-4"></nwb-icon>
-            </button>
-            <button
-              class="btn btn-ghost btn-square"
-              (click)="builder.switchWeapon()"
-              [tooltip]="'Change Weapon'"
-              [color]="'info'"
-            >
-              <nwb-icon [icon]="iconReset" class="w-4 h-4"></nwb-icon>
-            </button>
-
-            <button
-              class="btn btn-ghost btn-square"
-              (click)="toggleAttributes(item.record)"
-              [class.text-primary]="!!(attrs$ | async)"
-              [tooltip]="'Toggle Attributes'"
-              [color]="'info'"
-            >
-              <nwb-icon [icon]="iconAttrs" class="w-4 h-4"></nwb-icon>
-            </button>
-
-            <button
-              class="btn btn-ghost btn-square"
-              (click)="onCloneClicked(item.record)"
-              [tooltip]="'Create a copy'"
-              [color]="'info'"
-            >
-              <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
-            </button>
-            <button
-              class="btn btn-ghost btn-square"
-              (click)="onDeleteClicked(item.record)"
-              [tooltip]="'Delete'"
-              [color]="'error'"
-            >
-              <nwb-icon [icon]="iconDelete" class="w-4 h-4"></nwb-icon>
-            </button>
+@if(item$ | async; as item) {
+  <div class="relative flex-none p-1 bg-base-300 bg-opacity-100">
+    <div class="form-control">
+      <div class="input-group overflow-x-auto">
+        <a class="btn btn-ghost btn-square inline-flex" [routerLink]="'..'">
+          <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
+        </a>
+        <input
+          type="text"
+          placeholder=""
+          class="input input-bordered w-full min-w-[200px]"
+          maxlength="100"
+          [ngModel]="item.record.name"
+          (ngModelChange)="updateName(item.record, $event)"
+          [ngModelOptions]="{ updateOn: 'blur' }"
+        />
+        <button [nwbScreenshotBtn] class="btn btn-ghost btn-square" [tooltip]="'Screenshot'"></button>
+        <button
+          class="btn btn-ghost btn-square"
+          cdkOverlayOrigin
+          #overlay="cdkOverlayOrigin"
+          (click)="isTagEditorOpen = !isTagEditorOpen"
+          [tooltip]="'Edit Tags'"
+          [tooltipClass]="'bg-info'"
+        >
+          <nwb-icon [icon]="iconTags" class="w-4 h-4"></nwb-icon>
+        </button>
+        <ng-template
+          cdkConnectedOverlay
+          [cdkConnectedOverlayOrigin]="overlay"
+          [cdkConnectedOverlayOpen]="isTagEditorOpen"
+          [cdkConnectedOverlayHasBackdrop]="true"
+          [cdkConnectedOverlayOffsetY]="5"
+          [cdkConnectedOverlayPositions]="[{ originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top' }]"
+          (backdropClick)="isTagEditorOpen = false"
+          (detach)="isTagEditorOpen = false"
+        >
+          <div class="p-2 bg-base-200 border border-base-100 rounded-md shadow-lg">
+            <nwb-chips-input-pane
+              [tags]="presetTags"
+              [placeholder]="'custom tags'"
+              [ngModel]="item.record?.tags"
+              (ngModelChange)="updateTags(item.record, $event)"
+            ></nwb-chips-input-pane>
           </div>
-        </div>
-      </div>
-      <div class="layout-content relative">
-        <div [nwbScreenshotFrame]="item.record.name" class="bg-base-300">
-          <nwb-skill-builder
-            [ngModel]="item.record"
-            (ngModelChange)="updateModel(item.record, $event)"
-            #builder
-          ></nwb-skill-builder>
+        </ng-template>
+        <button
+          class="btn btn-ghost btn-square"
+          (click)="onShareClicked(item.record)"
+          [tooltip]="'Create share URL'"
+        >
+          <nwb-icon [icon]="iconShare" class="w-4 h-4"></nwb-icon>
+        </button>
+        <button class="btn btn-ghost btn-square" (click)="builder.switchWeapon()" [tooltip]="'Change Weapon'">
+          <nwb-icon [icon]="iconReset" class="w-4 h-4"></nwb-icon>
+        </button>
 
-          <div *ngIf="item.record.attrs" class="layout-pad">
-            <nwb-attributes-editor
-              [freeMode]="true"
-              [assigned]="item.record.attrs"
-              (assignedChanged)="updateAttributes(item.record, $event)"
-              #attrs
-            ></nwb-attributes-editor>
-            <!-- <nwb-attributes-scale
-              class="mt-4"
-              [weaponTag]="builder.weaponTag"
-              [attrDex]="attrs.totalDex$ | async"
-              [attrStr]="attrs.totalStr$ | async"
-              [attrInt]="attrs.totalInt$ | async"
-              [attrFoc]="attrs.totalFoc$ | async"
-            >
-            </nwb-attributes-scale> -->
-          </div>
-        </div>
+        <button
+          class="btn btn-ghost btn-square"
+          (click)="toggleAttributes(item.record)"
+          [class.text-primary]="!!(attrs$ | async)"
+          [tooltip]="'Toggle Attributes'"
+        >
+          <nwb-icon [icon]="iconAttrs" class="w-4 h-4"></nwb-icon>
+        </button>
+
+        <button class="btn btn-ghost btn-square" (click)="onCloneClicked(item.record)" [tooltip]="'Create a copy'">
+          <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
+        </button>
+        <button class="btn btn-ghost btn-square" (click)="onDeleteClicked(item.record)" [tooltip]="'Delete'">
+          <nwb-icon [icon]="iconDelete" class="w-4 h-4"></nwb-icon>
+        </button>
       </div>
-    </ng-container>
+    </div>
   </div>
-</nwb-detail-drawer>
+  <div class="layout-content relative">
+    <div [nwbScreenshotFrame]="item.record.name" class="bg-base-300">
+      <nwb-skill-builder
+        [ngModel]="item.record"
+        (ngModelChange)="updateModel(item.record, $event)"
+        #builder
+      ></nwb-skill-builder>
+
+      <div *ngIf="item.record.attrs" class="layout-pad">
+        <nwb-attributes-editor
+          [freeMode]="true"
+          [assigned]="item.record.attrs"
+          (assignedChanged)="updateAttributes(item.record, $event)"
+          #attrs
+        ></nwb-attributes-editor>
+        <!-- <nwb-attributes-scale
+          class="mt-4"
+          [weaponTag]="builder.weaponTag"
+          [attrDex]="attrs.totalDex$ | async"
+          [attrStr]="attrs.totalStr$ | async"
+          [attrInt]="attrs.totalInt$ | async"
+          [attrFoc]="attrs.totalFoc$ | async"
+        >
+        </nwb-attributes-scale> -->
+      </div>
+    </div>
+  </div>
+}

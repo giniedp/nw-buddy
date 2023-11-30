@@ -1,5 +1,6 @@
 import { AttackType, Statuseffect } from '@nw-data/generated'
 import { Ability, Affixstats, Damagetable, Damagetypes } from '@nw-data/generated'
+import { KeysWithPrefix } from './utils/ts-types'
 
 const WEAPON_TAG_NAME = {
   Sword: 'ui_straightsword',
@@ -113,4 +114,16 @@ export function doesAbilityTriggerStatusEffect(
   }
 
   return true
+}
+
+export type AbilityActionKey = KeysWithPrefix<Ability, 'On'>
+
+export function getAbilityActionKeys(ability: Ability) {
+  const result: AbilityActionKey[]  = []
+  for (const key in ability) {
+    if (ability[key] && key.startsWith('On')) {
+      result.push(key as AbilityActionKey)
+    }
+  }
+  return result
 }

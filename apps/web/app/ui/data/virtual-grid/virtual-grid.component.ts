@@ -12,18 +12,16 @@ import {
   Type,
   ViewChild,
 } from '@angular/core'
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
-import { combineLatest, filter, map, skip, takeUntil } from 'rxjs'
+import { map, skip } from 'rxjs'
 import { NwModule } from '~/nw'
 import { ResizeObserverService } from '~/utils/services/resize-observer.service'
 import { VirtualGridCellComponent } from './virtual-grid-cell.component'
 import { VirtualGridCellDirective } from './virtual-grid-cell.directive'
 import { VirtualGridOptions } from './virtual-grid-options'
 import { VirtualGridRowDirective } from './virtual-grid-row.directive'
-import { VirtualGridStore } from './virtual-grid.store'
-import { VirtualGridSectionDirective } from './virtual-grid-section.directive'
 import { VirtualGridSectionComponent } from './virtual-grid-section.component'
-import { VirtualGridSection } from './types'
+import { VirtualGridSectionDirective } from './virtual-grid-section.directive'
+import { VirtualGridStore } from './virtual-grid.store'
 
 @Component({
   standalone: true,
@@ -144,39 +142,33 @@ export class VirtualGridComponent<T> {
   @Output()
   public selection$ = this.store.selection$.pipe(skip(1))
 
-  protected rows$ = toSignal(this.store.rows$)
-  protected colCount$ = toSignal(this.store.colCount$)
-  protected rowCount$ = toSignal(this.store.rowCount$)
-  protected itemSize$ = toSignal(this.store.itemSize$)
+  protected rows = this.store.rows
+  protected colCount = this.store.colCount
+  protected rowCount = this.store.rowCount
+  protected itemSize = this.store.itemSize
 
   protected trackBy = (i: number) => i
 
   public constructor(
     elRef: ElementRef<HTMLElement>,
     resize: ResizeObserverService,
-    cdRef: ChangeDetectorRef,
 
-    protected store: VirtualGridStore<T>
+    protected store: VirtualGridStore<T>,
   ) {
-    const size$ = resize.observe(elRef.nativeElement).pipe(
-      map((entries) => {
-        return entries.width
-      })
-    )
-    this.store.patchState(combineLatest({ size: size$ }))
-    this.store.rows$.pipe(takeUntil(this.store.destroy$)).subscribe(() => {
-      cdRef.detectChanges()
-    })
-    combineLatest({
-      rows: this.store.rows$.pipe(filter((it) => !!it.length)),
-      selection: this.store.selection$.pipe(map((it) => it[0])),
-    })
-      .pipe(takeUntilDestroyed())
-      .subscribe(({ selection }) => this.scrollToItem(selection))
+    this.store.withSize(resize.observe(elRef.nativeElement).pipe(map((entries) => entries.width)))
+    // this.store.rows$.pipe(takeUntil(this.store.destroy$)).subscribe(() => {
+    //   cdRef.detectChanges()
+    // })
+    // combineLatest({
+    //   rows: this.store.rows$.pipe(filter((it) => !!it.length)),
+    //   selection: this.store.selection$.pipe(map((it) => it[0])),
+    // })
+    //   .pipe(takeUntilDestroyed())
+    //   .subscribe(({ selection }) => this.scrollToItem(selection))
   }
 
   public handleItemEvent(item: T, e: Event) {
-    const identifyBy = this.store.identifyBy$()
+    const identifyBy = this.store.identifyBy()
 
     const itemId = identifyBy?.(item)
     const selection = this.store.selection()
@@ -222,13 +214,13 @@ export class VirtualGridComponent<T> {
   public isSelected = (it: T) => {
     return this.store.selection$.pipe(
       map((selection) => {
-        const identify = this.store.identifyBy$()
+        const identify = this.store.identifyBy()
         if (!identify) {
           return false
         }
         const id = identify(it)
         return selection?.includes(id)
-      })
+      }),
     )
   }
 
@@ -236,8 +228,8 @@ export class VirtualGridComponent<T> {
     if (id == null) {
       return
     }
-    const identify = this.store.identifyBy$()
-    const rows = this.rows$()
+    const identify = this.store.identifyBy()
+    const rows = this.rows()
     const index = rows.findIndex((row) => {
       if (!(row.$implicit && 'items' in row.$implicit)) {
         return false

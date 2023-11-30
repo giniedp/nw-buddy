@@ -1,4 +1,5 @@
-import { CaseInsensitiveMap } from '~/utils'
+import { StatusEffectCategory } from '@nw-data/generated'
+import { CaseInsensitiveMap, eqCaseInsensitive } from '~/utils'
 
 export interface NwWeaponType {
   WeaponTypeID: string
@@ -29,7 +30,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_onehanded_weapons',
     IconPath: 'assets/icons/weapons/1hsword.png',
     IconPathSmall: 'assets/icons/weapons/1hswordsmall.png',
-    DamageTablePrefix: '1H_Sword',
+    DamageTablePrefix: '1H_Sword_',
   },
   {
     UIName: 'ui_rapier',
@@ -43,7 +44,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_onehanded_weapons',
     IconPath: 'assets/icons/weapons/1hrapier.png',
     IconPathSmall: 'assets/icons/weapons/1hrapiersmall.png',
-    DamageTablePrefix: '1H_Rapier',
+    DamageTablePrefix: '1H_Rapier_',
   },
   {
     UIName: 'ui_hatchet',
@@ -144,7 +145,7 @@ export const NW_WEAPON_TYPES: Array<NwWeaponType> = [
     CategoryName: 'ui_ranged_weapons',
     IconPath: 'assets/icons/weapons/2hmusketa.png',
     IconPathSmall: 'assets/icons/weapons/2hmusketasmall.png',
-    DamageTablePrefix: 'Musket_',
+    DamageTablePrefix: 'Musket',
   },
   {
     UIName: 'ui_bow',
@@ -288,4 +289,26 @@ export const NW_WARD_TYPE_ICONS = new CaseInsensitiveMap(
 
 export function damageTypeIcon(type: string) {
   return NW_DAMAGE_TYPE_ICONS.get(type) || NW_DAMAGE_TYPE_ICONS.get('unknown')
+}
+
+export const NW_SE_CATEGORY_ICONS = new CaseInsensitiveMap(
+  Object.entries({
+    Bleed: 'assets/icons/tooltip/se_bleedt1.png',
+    Burn: 'assets/icons/tooltip/se_burnt1.png',
+    Disease: 'assets/icons/tooltip/se_diseaset1.png',
+    Empower: 'assets/icons/tooltip/se_empowert1.png',
+    Fortify: 'assets/icons/tooltip/se_fortifyt1.png',
+    ArmorFortify: 'assets/icons/tooltip/se_fortifyt1.png',
+    Haste: 'assets/icons/tooltip/se_haste.png',
+    Poison: 'assets/icons/tooltip/se_poisont1.png',
+    Frostbite: 'assets/icons/tooltip/se_icemagicfreeze.png',
+  } satisfies Partial<Record<StatusEffectCategory, string>> )
+)
+
+export function statusEffectCategoryIcon(type: string) {
+  return NW_SE_CATEGORY_ICONS.get(type)
+}
+
+export function getWeaponTypeInfo(byWeaponTag: string) {
+  return NW_WEAPON_TYPES.find((it) => eqCaseInsensitive(it.WeaponTag, byWeaponTag))
 }
