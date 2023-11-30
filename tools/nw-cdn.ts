@@ -40,7 +40,7 @@ program
       })
       .parse(data)
 
-    const zipUrl = `${CDN_URL}/nw-data/${options.version}.zip`
+    const zipUrl = `${CDN_URL}/nw-data/${options.version}.zip?cache=${Date.now()}`
     const zipFile = environment.nwDataDir(options.ptr) + '.zip'
     const zipDir = path.dirname(zipFile)
     console.log(options)
@@ -181,8 +181,13 @@ program.parse(process.argv)
 
 async function download(url: string, target: string, onProgress?: (downloaded: number, total: number) => void) {
   const file = fs.createWriteStream(target)
+
   return new Promise((resolve, reject) => {
-    http.get(url, (response) => {
+    http.get(url, {
+      headers: {
+        'Cache-Control': 'no-cache',
+      },
+    }, (response) => {
       const total = Number(response.headers['content-length'])
       let downloaded = 0
       response.on('data', (chunk) => {
