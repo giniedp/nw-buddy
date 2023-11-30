@@ -12,7 +12,7 @@ import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { EquipSlotId, getWeaponTagFromWeapon } from '@nw-data/common'
 import { GearsetRecord, GearsetSkillSlot, GearsetSkillStore, SkillBuild, SkillBuildsDB } from '~/data'
 import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
-import { DataViewPicker } from '~/ui/data/data-view'
+import { DataViewAdapterOptions, DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
 import {
   svgDiagramProject,
@@ -26,9 +26,10 @@ import {
 } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { SkillsetTableAdapter } from '~/widgets/data/skillset-table'
+import { SkillsetTableAdapter, SkillsetTableRecord } from '~/widgets/data/skillset-table'
 import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
 import { SkillTreeModule } from '~/widgets/skill-builder'
+import { eqCaseInsensitive } from '~/utils'
 
 export interface GearsetSkillVM {
   slot?: GearsetSkillSlot
@@ -57,7 +58,7 @@ export interface GearsetSkillVM {
   ],
   providers: [GearsetSkillStore],
   host: {
-    class: 'block flex flex-col',
+    class: 'flex flex-col relative',
     '[class.screenshot-hidden]': '!instance()',
   },
 })
@@ -145,13 +146,15 @@ export class GearsetPaneSkillComponent {
       })
   }
 
-  protected openExisting() {
-    DataViewPicker.open(this.dialog, {
+  protected openExisting(weapon: string) {
+    DataViewPicker.open<SkillsetTableRecord>(this.dialog, {
       title: 'Choose Skill Tree',
       selection: null,
       dataView: {
         adapter: SkillsetTableAdapter,
+        filter: (it) => eqCaseInsensitive(it.record?.weapon, weapon),
       },
+      displayMode: ['grid'],
       config: {
         maxWidth: 1400,
         maxHeight: 1200,
@@ -171,6 +174,16 @@ export class GearsetPaneSkillComponent {
           },
         })
       })
+  }
+
+  protected reset() {
+    this.store.updateSlot({
+      instance: {
+        weapon: this.instance()?.weapon,
+        tree1: [],
+        tree2: [],
+      },
+    })
   }
 
   private attachAutoSwitchSkill() {
