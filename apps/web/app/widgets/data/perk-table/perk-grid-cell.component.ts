@@ -38,7 +38,7 @@ import { PerkTableRecord } from './perk-table-cols'
       </nwb-item-header-content>
     </nwb-item-header>
     <ng-template #tplTip>
-      <div class="flex flex-col gap-1">
+      <div class="flex flex-col gap-1 px-2 py-1">
         <ng-container *ngIf="store.mods$ | async; let parts">
           <div>
             <ng-container *ngFor="let part of parts; trackBy: trackByIndex">
@@ -140,6 +140,7 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
 
   public ngOnInit() {
     this.tip.tooltip = this.tplTip
+    this.tip.tooltipDelay = 0
   }
 }
 

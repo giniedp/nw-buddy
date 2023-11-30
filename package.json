@@ -97,6 +97,7 @@
     "@ngrx/component": "17.0.0",
     "@ngrx/component-store": "17.0.0",
     "@ngrx/effects": "17.0.0",
+    "@ngrx/signals": "17.0.1",
     "@ngrx/store": "17.0.0",
     "@ngrx/store-devtools": "17.0.0",
     "@ngx-translate/core": "15.0.0",

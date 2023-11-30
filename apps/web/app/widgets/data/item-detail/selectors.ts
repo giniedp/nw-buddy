@@ -12,6 +12,7 @@ import {
   getPerkBucketPerks,
   getPerkTypeWeight,
   hasItemGearScore,
+  isPerkApplicableToItem,
   isPerkGem,
   isPerkInherent,
   isPerkItemIngredient,
@@ -35,7 +36,9 @@ export interface PerkSlot {
   bucket?: PerkBucket
   editable?: boolean
   explain: PerkExplanation[]
-  isInvalid: boolean
+  activationCooldown: number
+  violatesItemClass: boolean
+  violatesExclusivity: boolean
 }
 
 export function selectItemGearscore(item: ItemDefinitionMaster, gsOverride?: number) {
@@ -109,7 +112,9 @@ export function selectPerkSlots({
         editable: false,
         perkId: perk?.PerkID,
         perk: perk,
-        isInvalid: false,
+        activationCooldown: null,
+        violatesExclusivity: false,
+        violatesItemClass: false,
         explain: explainPerk({
           perk: perk,
           affix: affixes.get(perk?.Affix),
@@ -128,6 +133,8 @@ export function selectPerkSlots({
     const perkIdOverride = perkOverride?.[key]
     const perk = perks.get(perkIdOverride || perkId)
     const bucket = buckets.get(slot.bucketId)
+    const equippedAbilities = perk?.EquipAbility?.map((it) => abilities.get(it))
+    const activationCooldown = equippedAbilities?.find((it) => it?.ActivationCooldown)?.ActivationCooldown
     result.push({
       key: key,
       perkId: perkIdOverride || perkId,
@@ -135,11 +142,13 @@ export function selectPerkSlots({
       bucketId: slot.bucketId,
       bucket: bucket,
       editable: !!bucket || (item.CanReplaceGem && isPerkGem(perk)),
-      isInvalid: false,
+      violatesExclusivity: false,
+      violatesItemClass: !!perk && !isPerkApplicableToItem(perk, item),
+      activationCooldown: activationCooldown,
       explain: explainPerk({
         perk: perk,
         affix: affixes.get(perk?.Affix),
-        abilities: perk?.EquipAbility?.map((it) => abilities.get(it)),
+        abilities: equippedAbilities,
         gearScore: itemGS + (getItemGsBonus(perk, item) || 0),
       }),
     })
@@ -161,7 +170,7 @@ export function selectPerkSlots({
         continue
       }
       if (labels.some((it) => otherLabels.includes(it))) {
-        slot.isInvalid = true
+        slot.violatesExclusivity = true
         break
       }
     }

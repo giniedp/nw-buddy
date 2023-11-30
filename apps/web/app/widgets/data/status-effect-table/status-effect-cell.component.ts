@@ -26,7 +26,7 @@ import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
       ></nwb-item-header-content>
     </nwb-item-header>
     <ng-template #tplTip>
-      <div [nwHtml]="description | nwText | nwTextBreak"></div>
+      <div [nwHtml]="description | nwText | nwTextBreak" class="px-2 py-1"></div>
     </ng-template>
   `,
   imports: [CommonModule, ItemFrameModule, NwModule, TooltipModule, ItemDetailModule],

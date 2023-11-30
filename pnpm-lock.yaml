@@ -120,6 +120,9 @@ devDependencies:
   '@ngrx/effects':
     specifier: 17.0.0
     version: 17.0.0(@angular/core@17.0.4)(@ngrx/store@17.0.0)(rxjs@7.8.1)
+  '@ngrx/signals':
+    specifier: 17.0.1
+    version: 17.0.1(@angular/core@17.0.4)(rxjs@7.8.1)
   '@ngrx/store':
     specifier: 17.0.0
     version: 17.0.0(@angular/core@17.0.4)(rxjs@7.8.1)
@@ -5934,6 +5937,20 @@ packages:
     peerDependencies:
       rxjs: ^6.5.3 || ^7.4.0
     dependencies:
+      rxjs: 7.8.1
+      tslib: 2.6.2
+    dev: true
+
+  /@ngrx/signals@17.0.1(@angular/core@17.0.4)(rxjs@7.8.1):
+    resolution: {integrity: sha512-YxnYoDlm0Q0Wighspwg3mgUqnOuIiGP3jvqcr1R/ZMIQ2e0IyzJR2QhtZ1etFxB6NhyDuGtG8FWU2+0cgc0w/w==}
+    peerDependencies:
+      '@angular/core': ^17.0.0
+      rxjs: ^6.5.3 || ^7.4.0
+    peerDependenciesMeta:
+      rxjs:
+        optional: true
+    dependencies:
+      '@angular/core': 17.0.4(rxjs@7.8.1)(zone.js@0.14.2)
       rxjs: 7.8.1
       tslib: 2.6.2
     dev: true
