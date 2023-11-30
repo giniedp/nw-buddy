@@ -39,12 +39,12 @@ export class PreferencesComponent implements OnInit {
   protected set collapseMenu(value: boolean) {
     this.app.collapseMenuMode.set(value ? 'always' : 'auto')
   }
-  protected get web3token() {
-    return this.app.web3token.get()
-  }
-  protected set web3token(value: string) {
-    this.app.web3token.set(value as any)
-  }
+  // protected get web3token() {
+  //   return this.app.web3token.get()
+  // }
+  // protected set web3token(value: string) {
+  //   this.app.web3token.set(value as any)
+  // }
 
   protected get web3gateway() {
     return this.app.web3gateway.get()

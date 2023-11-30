@@ -56,8 +56,8 @@ export interface ShareDialogState {
   ipnsEnabled?: boolean
   ipnsKey?: string
   ipnsName?: string
-  web3Enabled?: boolean
-  web3Token?: string
+  // web3Enabled?: boolean
+  // web3Token?: string
 
   error?: boolean
   ipfsCid?: string
@@ -124,13 +124,13 @@ export class ShareDialogComponent extends ComponentStore<ShareDialogState> {
         ipnsName: data.ipnsName,
       })
     }
-    const web3token = preferences.web3token.get()
-    if (web3token) {
-      this.patchState({
-        web3Token: web3token,
-        web3Enabled: true,
-      })
-    }
+    // const web3token = preferences.web3token.get()
+    // if (web3token) {
+    //   this.patchState({
+    //     web3Token: web3token,
+    //     web3Enabled: true,
+    //   })
+    // }
   }
 
   protected async copy(value: string) {
@@ -181,7 +181,7 @@ export class ShareDialogComponent extends ComponentStore<ShareDialogState> {
         content: this.data.content,
         enableIpns: this.get((state) => state.ipnsEnabled),
         ipnsKey: this.get((state) => state.ipnsKey),
-        web3ApiToken: this.preferences.web3token.get(),
+        //web3ApiToken: this.preferences.web3token.get(),
       })
       .then((it) => {
         this.data.published({

@@ -22,7 +22,7 @@ export interface UploadOptions<T> {
   /**
    * If set, web3 storage will be used as upload target
    */
-  web3ApiToken?: string
+ // web3ApiToken?: string
 }
 
 export interface UploadContent<T> {
@@ -59,12 +59,12 @@ export interface ShareInfo {
   providedIn: 'root',
 })
 export class ShareService {
-  public async upload({ content, web3ApiToken, enableIpns, ipnsKey }: UploadOptions<any>) {
+  public async upload({ content, enableIpns, ipnsKey }: UploadOptions<any>) {
     content = {
       app: APPLICATION_NAME,
       ...content,
     }
-    const result = await this.uploadContent({ web3ApiToken, content })
+    const result = await this.uploadContent({ content })
     if (enableIpns) {
       const { key, name } = await udpateIpnsRevision(ipnsKey, `/ipfs/${result.cid}`)
       result.privateKey = key
@@ -98,10 +98,10 @@ export class ShareService {
     return `${url}/${fileName}`
   }
 
-  protected uploadContent({ content, web3ApiToken }: UploadOptions<any>) {
-    if (web3ApiToken) {
-      return this.uploadToWeb3(web3ApiToken, content)
-    }
+  protected uploadContent({ content }: UploadOptions<any>) {
+    // if (web3ApiToken) {
+    //   return this.uploadToWeb3(web3ApiToken, content)
+    // }
     return this.uploadToIpfs(content)
   }
 

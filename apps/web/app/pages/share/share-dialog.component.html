@@ -17,7 +17,7 @@
         <a href="https://ipfs.tech/#how" target="_blank" class="link link-primary">Read more info about IPFS</a>.
       </p>
 
-      <ng-container *ngIf="vm.web3Token">
+      <!-- <ng-container *ngIf="vm.web3Token">
         <p>
           In order to keep your shared data on the ipfs network and to prevent it from expiring, check the following
           option
@@ -33,13 +33,13 @@
             />
           </label>
         </div>
-      </ng-container>
+      </ng-container> -->
 
-      <p *ngIf="!vm.web3Token">
+      <!-- <p *ngIf="!vm.web3Token">
         In order to keep your shared data on the ipfs network and to prevent it from expiring, you may want to upload
         the data to your Web3 Storage account.
         <a [routerLink]="'/preferences'" class="link link-primary">See preferences</a>
-      </p>
+      </p> -->
 
       <p>
         If your content changes, the share URL changes as well. If you want to create a permanent URL, check the
