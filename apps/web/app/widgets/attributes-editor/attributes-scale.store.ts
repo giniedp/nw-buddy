@@ -172,11 +172,24 @@ function selectWeaponDamage({
 
   if (affix?.PreferHigherScaling && affixDamage > weaponDamage) {
     return {
-      invalidValue: weaponDamage * weaponPercent + affixDamage * affixPercent,
-      value: affixDamage,
-      scale: affixScale,
+      value: weaponDamage * weaponPercent + affixDamage * affixPercent,
+      scale: {
+        dex: weaponScale.dex * weaponPercent + affixScale.dex * affixPercent,
+        str: weaponScale.str * weaponPercent + affixScale.str * affixPercent,
+        int: weaponScale.int * weaponPercent + affixScale.int * affixPercent,
+        foc: weaponScale.foc * weaponPercent + affixScale.foc * affixPercent,
+        con: weaponScale.con * weaponPercent + affixScale.con * affixPercent,
+      },
     }
   }
+
+  // if (affix?.PreferHigherScaling && affixDamage > weaponDamage) {
+  //   return {
+  //     invalidValue: weaponDamage * weaponPercent + affixDamage * affixPercent,
+  //     value: affixDamage,
+  //     scale: affixScale,
+  //   }
+  // }
 
   return {
     value: weaponDamage,

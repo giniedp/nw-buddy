@@ -69,7 +69,7 @@ export function selectWeaponDamage(
   }
 
   // console.debug('calc main damage')
-  let mainDamage = damageForWeapon({
+  const mainDamage = damageForWeapon({
     playerLevel: state.level,
     weaponBaseDamage: weapon?.BaseDamage,
     weaponGearScore: gearScore,
@@ -78,7 +78,7 @@ export function selectWeaponDamage(
     dmgCoef: attack?.DmgCoef,
   })
   // console.debug('calc elem damage')
-  let elemDamage = damageForWeapon({
+  const elemDamage = damageForWeapon({
     playerLevel: state.level,
     weaponBaseDamage: weapon?.BaseDamage,
     weaponGearScore: gearScore,
@@ -89,7 +89,8 @@ export function selectWeaponDamage(
 
   if (elemDamage > mainDamage) {
     // console.debug('use element scaling')
-    scaleWeapon = scaleAffix
+    // TODO: uncomment for next PTR
+    // scaleWeapon = scaleAffix
   } else {
     // console.debug('use main scaling')
     scaleAffix = scaleWeapon
