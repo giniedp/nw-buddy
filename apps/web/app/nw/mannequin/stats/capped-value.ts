@@ -11,6 +11,16 @@ export function cappedValue() {
       value = overflow
       overflow = 0
     }
+
+    if (!limit) {
+      total += value
+      return
+    }
+    if (total >= limit) {
+      overflow += value
+      return
+    }
+
     total += value
     if (total > limit) {
       overflow += total - limit
