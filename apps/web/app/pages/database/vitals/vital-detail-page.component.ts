@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { getVitalFamilyInfo } from '@nw-data/common'
 import { Vitals } from '@nw-data/generated'
@@ -7,13 +7,13 @@ import { map } from 'rxjs'
 import { TranslateService } from '~/i18n'
 
 import { toSignal } from '@angular/core/rxjs-interop'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgPen } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, observeQueryParam, observeRouteParam, selectStream } from '~/utils'
-import { VitalDetailModule } from '~/widgets/data/vital-detail'
+import { VitalDetailModule, VitalDetailStore } from '~/widgets/data/vital-detail'
 import { LootModule } from '~/widgets/loot'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ModelViewerModule } from '../../../widgets/model-viewer'
@@ -38,40 +38,51 @@ export type DetailTabId = 'stats' | 'loot-items' | 'loot-table' | 'damage-table'
     TooltipModule,
     IconsModule,
   ],
+  providers: [VitalDetailStore],
   host: {
     class: 'flex-none flex flex-col',
   },
 })
 export class VitalDetailComponent {
-  protected vitalId$ = observeRouteParam(this.route, 'id')
-  protected vitalId = toSignal(this.vitalId$)
+  protected store = inject(VitalDetailStore)
+
+  protected vital = toSignal(this.store.vital$)
+  protected vitalId = toSignal(this.store.vitalId$)
 
   protected tabId$ = observeQueryParam(this.route, 'tab').pipe(map((it: DetailTabId): DetailTabId => it || 'stats'))
   protected tab = toSignal(this.tabId$)
 
+  protected difficulty$ = observeQueryParam(this.route, 'difficulty').pipe(map((it) => Number(it) || null))
+  protected difficulty = toSignal(this.store.mutaDifficultyId$)
+
   protected iconEdit = svgPen
 
-  protected vital$ = selectStream(this.db.vital(this.vitalId$), (it) => {
-    this.onEntity(it)
-    return it
-  })
-
-  protected lootTableId$ = selectStream(this.vital$, (it) => it.LootTableId)
+  protected lootTableId$ = selectStream(this.store.vital$, (it) => it.LootTableId)
 
   public constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private db: NwDbService,
     private i18n: TranslateService,
     private head: HtmlHeadService,
   ) {
-    //
+    this.store.loadById(observeRouteParam(this.route, 'id'))
+    this.store.loadMutaDifficulty(observeQueryParam(this.route, 'difficulty').pipe(map((it) => Number(it) || null)))
   }
 
-  public openTab(tab: DetailTabId) {
+  public selectTab(tab: DetailTabId) {
     this.router.navigate([], {
       queryParams: {
         tab: tab,
+      },
+      queryParamsHandling: 'merge',
+      relativeTo: this.route,
+    })
+  }
+
+  public selectDifficulty(value: number) {
+    this.router.navigate([], {
+      queryParams: {
+        difficulty: this.difficulty() === value ? null : value,
       },
       queryParamsHandling: 'merge',
       relativeTo: this.route,

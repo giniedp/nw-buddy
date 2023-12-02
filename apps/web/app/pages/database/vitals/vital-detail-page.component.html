@@ -3,34 +3,70 @@
   [breakpoints]="[0.25, 0.5, 1]"
 >
   <div *nwbDetailDrawerContent class="layout-col layout-gap bg-base-200 layout-pad">
-    <nwb-vital-detail [vitalId]="vitalId()">
+    <div class="border border-base-100 rounded-md overflow-clip relative">
+      <nwb-vital-detail-header class="bg-base-300" />
+      @if (store.isVitalFromDungeon$ | async) {
+        <div class="absolute top-0 right-0 p-2 flex flex-row">
+          <button
+            class="btn btn-xs btn-square btn-ghost"
+            (click)="selectDifficulty(1)"
+            [tooltip]="'Mutation Difficulty 1'"
+            [tooltipPlacement]="'top-right'"
+          >
+            <img src="assets/icons/menu/expeditions.png" class="w-4 h-4" [class.opacity-50]="!(difficulty() >= 1)" />
+          </button>
+          <button
+            class="btn btn-xs btn-square btn-ghost"
+            (click)="selectDifficulty(2)"
+            [tooltip]="'Mutation Difficulty 2'"
+            [tooltipPlacement]="'top-right'"
+          >
+            <img src="assets/icons/menu/expeditions.png" class="w-4 h-4" [class.opacity-50]="!(difficulty() >= 2)" />
+          </button>
+          <button
+            class="btn btn-xs btn-square btn-ghost"
+            (click)="selectDifficulty(3)"
+            [tooltip]="'Mutation Difficulty 3'"
+            [tooltipPlacement]="'top-right'"
+          >
+            <img src="assets/icons/menu/expeditions.png" class="w-4 h-4" [class.opacity-50]="!(difficulty() >= 3)" />
+          </button>
+        </div>
+      }
+
       <div class="tabs flex-none justify-center bg-base-300">
-        <a class="tab tab-bordered flex-1" [class.tab-active]="tab() === 'stats'" (click)="openTab('stats')"> Stats </a>
-        <a class="tab tab-bordered flex-1" [class.tab-active]="tab() === 'loot-table'" (click)="openTab('loot-table')">
+        <a class="tab tab-bordered flex-1" [class.tab-active]="tab() === 'stats'" (click)="selectTab('stats')">
+          Stats
+        </a>
+        <a
+          class="tab tab-bordered flex-1"
+          [class.tab-active]="tab() === 'loot-table'"
+          (click)="selectTab('loot-table')"
+        >
           Loot Table
         </a>
         <a
           class="tab tab-bordered flex-1"
           [class.tab-active]="tab() === 'damage-table'"
-          (click)="openTab('damage-table')"
+          (click)="selectTab('damage-table')"
         >
           Attacks
         </a>
-        <a class="tab tab-bordered flex-1" [class.tab-active]="tab() === '3d-model'" (click)="openTab('3d-model')">
+        <a class="tab tab-bordered flex-1" [class.tab-active]="tab() === '3d-model'" (click)="selectTab('3d-model')">
           3D
         </a>
       </div>
-      @if (tab() === 'stats') {
-        <nwb-vital-detail-stats class="p-4" />
-      }
-      @if (tab() === 'damage-table') {
-        <nwb-vital-detail-attacks class="p-4" />
-      }
-      @if (tab() === '3d-model') {
-        <nwb-vital-detail-models />
-      }
-      @if (tab() === 'loot-table') {
-        <div class="layout-content">
+      <div class="layout-content p-4">
+        @if (tab() === 'stats') {
+          <nwb-vital-detail-stats />
+        }
+        @if (tab() === 'damage-table') {
+          <nwb-vital-detail-attacks />
+        }
+        @if (tab() === '3d-model') {
+          <nwb-vital-detail-models class="-m-4" />
+        }
+        @if (tab() === 'loot-table') {
           <div class="alert shadow-lg my-2 bg-base-100">
             <div>
               <svg
@@ -56,15 +92,15 @@
             </div>
           </div>
 
-          <nwb-loot-context-editor [size]="'sm'" [vitalId]="vitalId$ | async" #editor class="p-1 mb-2" />
+          <nwb-loot-context-editor [size]="'sm'" [vitalId]="vitalId()" #editor class="p-1 mb-2" />
 
           <nwb-loot-graph
             [tags]="editor.contextTags | async"
             [tagValues]="editor.contextTagValues | async"
             [tableId]="lootTableId$ | async"
           />
-        </div>
-      }
-    </nwb-vital-detail>
+        }
+      </div>
+    </div>
   </div>
 </nwb-detail-drawer>

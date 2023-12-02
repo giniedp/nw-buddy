@@ -23,11 +23,11 @@ import { VitalDetailHeaderComponent } from './vital-detail-header.component'
   ],
   providers: [VitalDetailStore],
   host: {
-    class: 'block rounded-md overflow-clip',
+    class: 'flex flex-col rounded-md overflow-clip',
   },
 })
 export class VitalDetailComponent {
-  private store = inject(VitalDetailStore)
+  public readonly store = inject(VitalDetailStore)
 
   @Input({ required: true })
   public set vitalId(value: string) {

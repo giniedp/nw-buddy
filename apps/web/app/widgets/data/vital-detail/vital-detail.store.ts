@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { BuffBucket, getVitalArmor, getVitalHealth } from '@nw-data/common'
+import { BuffBucket, NW_MAX_ENEMY_LEVEL, getVitalArmor, getVitalDungeons, getVitalHealth } from '@nw-data/common'
 import {
   Ability,
   Damagetable,
@@ -31,6 +31,7 @@ export interface DamageTableFile {
 @Injectable()
 export class VitalDetailStore extends ComponentStore<VitalDetailState> {
   private db = inject(NwDbService)
+
   readonly vitalId$ = this.select(({ vitalId }) => vitalId)
   readonly vital$ = selectStream(this.db.vital(this.vitalId$))
   readonly creatureType$ = this.select(this.vital$, (it) => it?.CreatureType)
@@ -46,8 +47,18 @@ export class VitalDetailStore extends ComponentStore<VitalDetailState> {
   readonly levelData$ = selectStream(this.db.vitalsLevel(this.level$))
   readonly gearScore$ = selectStream(this.levelData$, (it) => it?.GearScore)
 
+  readonly dungeons$ = selectStream(
+    {
+      vital: this.vital$,
+      dungeons: this.db.gameModes,
+      meta: this.db.vitalsMetadataMap,
+    },
+    ({ vital, dungeons, meta }) => getVitalDungeons(vital, dungeons, meta),
+  )
+  readonly isVitalFromDungeon$ = this.select(this.dungeons$, (it) => !!it?.length)
+
   readonly mutaDifficultyId$ = this.select(({ mutaDifficulty }) => mutaDifficulty)
-  readonly mutaDifficulty$ = this.select(this.db.mutatorDifficulty(this.mutaDifficultyId$), (it) => it)
+  readonly mutaDifficulty$ = selectStream(this.db.mutatorDifficulty(this.mutaDifficultyId$))
 
   readonly mutaElementId$ = this.select(({ mutaElementId }) => mutaElementId)
   readonly mutaElement$ = selectStream(this.db.mutatorElement(this.mutaElementId$))
@@ -93,6 +104,29 @@ export class VitalDetailStore extends ComponentStore<VitalDetailState> {
       vitalId: null,
     })
   }
+
+  readonly loadById = this.effect((id$: Observable<string>) => {
+    return id$.pipe(map((id) => this.patchState({ vitalId: id })))
+  })
+
+  readonly loadMutaDifficulty = this.effect((difficulty$: Observable<number>) => {
+    return combineLatest({
+      appearsInDungeon: this.isVitalFromDungeon$,
+      difficulty: difficulty$,
+    }).pipe(map(({ appearsInDungeon, difficulty }) => {
+      if (!appearsInDungeon) {
+        this.patchState({
+          mutaDifficulty: null,
+          level: null,
+        })
+      } else {
+        this.patchState({
+          mutaDifficulty: difficulty,
+          level: difficulty ? NW_MAX_ENEMY_LEVEL : null,
+        })
+      }
+    }))
+  })
 
   protected loadDamageTables(files: string[]): Observable<Array<DamageTableFile>> {
     if (!files?.length) {
