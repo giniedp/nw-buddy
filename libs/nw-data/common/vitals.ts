@@ -301,14 +301,14 @@ export function getVitalHealth({
   const healthMod = vital.HealthMod
   const categoryHealthMod = modifier.CategoryHealthMod
   const potency = (difficulty?.[`HealthPotency_${vital.CreatureType}`] || 0)
-  const result = Math.floor(Math.floor(baseMaxHealth * healthMod * categoryHealthMod) * ((potency / 100) || 1))
-  console.table({
-    baseMaxHealth,
-    healthMod,
-    categoryHealthMod,
-    potency,
-    result,
-  })
+  const result = Math.floor(Math.floor(baseMaxHealth * healthMod * categoryHealthMod) * ((potency / 100) + 1))
+  // console.table({
+  //   baseMaxHealth,
+  //   healthMod,
+  //   categoryHealthMod,
+  //   potency,
+  //   result,
+  // })
   return result
 }
 
