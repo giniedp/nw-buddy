@@ -50,7 +50,7 @@
       *ngIf="!square"
       class="relative flex=1"
       [entityId]="vm.instance.itemId"
-      [gsOverride]="gearScore || vm.instance.gearScore"
+      [gsOverride]="gsValue || vm.instance.gearScore"
       [gsEditable]="!disabled && !vm.isEqupment"
       (gsEdit)="openGsEditor($event)"
       [perkOverride]="vm.instance.perks"
@@ -89,7 +89,7 @@
         <nwb-gs-slider
           [bars]="true"
           [values]="true"
-          [ngModel]="gearScore || vm.instance.gearScore"
+          [ngModel]="gsValue || vm.instance.gearScore"
           (ngModelChange)="updateGearScore($event)"
           (wheel)="stepGearScore($event)"
           class="w-full"

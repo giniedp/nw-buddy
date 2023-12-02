@@ -18,7 +18,7 @@ import { BehaviorSubject, combineLatest, defer, filter, firstValueFrom, map, tak
 import { NwModule } from '~/nw'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
-import { EQUIP_SLOTS, EquipSlot, EquipSlotId, getItemId, getItemMaxGearScore } from '@nw-data/common'
+import { EQUIP_SLOTS, EquipSlot, EquipSlotId, NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE, getItemId, getItemMaxGearScore } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { GearsetRecord, GearsetSlotStore, ItemInstance, ItemInstancesStore } from '~/data'
 import { GsSliderComponent } from '~/ui/gs-input'
@@ -169,7 +169,7 @@ export class GearsetPaneSlotComponent {
   private slot$ = new BehaviorSubject<EquipSlot>(null)
   private gearset$ = new BehaviorSubject<GearsetRecord>(null)
 
-  protected gearScore: number
+  protected gsValue: number
   protected gsTarget: Element
 
   public constructor(
@@ -249,7 +249,9 @@ export class GearsetPaneSlotComponent {
   }
   protected closeGsEditor() {
     this.gsTarget = null
-    this.commitGearScore()
+    if (this.gsValue) {
+      this.store.updateGearScore({ gearScore: this.gsValue })
+    }
   }
 
   protected pickPerk({ instance }: GearsetSlotVM, key: string) {
@@ -279,20 +281,17 @@ export class GearsetPaneSlotComponent {
   }
 
   protected updateGearScore(value: number) {
-    this.gearScore = value
+    this.gsValue = value
   }
 
   protected stepGearScore(event: WheelEvent) {
     if (event.deltaY < 0) {
-      this.gearScore += 1
+      this.gsValue += 1
     }
     if (event.deltaY > 0) {
-      this.gearScore -= 1
+      this.gsValue -= 1
     }
-  }
-
-  protected commitGearScore() {
-    this.store.updateGearScore({ gearScore: this.gearScore })
+    this.gsValue = Math.max(NW_MIN_GEAR_SCORE, Math.min(NW_MAX_GEAR_SCORE, this.gsValue))
   }
 
   protected async breakLink() {
