@@ -1,0 +1,41 @@
+@if (effects()?.length) {
+  @for (item of effects(); track $index) {
+    <a
+      class="flex flex-row gap-2 link-hover text-sky-600"
+      [routerLink]="['/status-effects/table', item.id]"
+      [tooltip]="tplEffectTip"
+      [tooltipClass]="'p-0 w-full max-w-sm'"
+    >
+      <picture class="flex-none">
+        <img [nwImage]="item.icon" class="w-6 h-6" />
+      </picture>
+      <div>
+        <b>{{ item.label | nwText }}: </b>
+        {{ item.text | nwText }}
+      </div>
+      <ng-template #tplEffectTip>
+        <nwb-status-effect-detail [effectId]="item.id" />
+      </ng-template>
+    </a>
+  }
+}
+@if (abilities()?.length) {
+  @for (item of abilities(); track $index) {
+    <a
+      class="flex flex-row gap-2 link-hover text-sky-600"
+      [routerLink]="['/abilities/table', item.id]"
+      [tooltip]="tplAbilityTip"
+      [tooltipClass]="'p-0 w-full max-w-sm'"
+    >
+      <picture class="flex-none">
+        <img [nwImage]="item.icon" class="w-6 h-6" />
+      </picture>
+      <div>
+        <code>{{ item.label | nwText }} </code>
+      </div>
+      <ng-template #tplAbilityTip>
+        <nwb-ability-detail [abilityId]="item.id"/>
+      </ng-template>
+    </a>
+  }
+}

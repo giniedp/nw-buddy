@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core'
+import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { BuffBucket } from '@nw-data/common'
+import { BuffBucket, getVitalArmor, getVitalHealth } from '@nw-data/common'
 import {
   Ability,
   Damagetable,
@@ -14,9 +14,8 @@ import { uniqBy } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { selectStream, shareReplayRefCount } from '~/utils'
-import { ModelViewerService } from '../model-viewer'
 
-export interface State {
+export interface VitalDetailState {
   vitalId: string
   level?: number
   enableDamage?: boolean
@@ -30,56 +29,66 @@ export interface DamageTableFile {
 }
 
 @Injectable()
-export class VitalDetailStore extends ComponentStore<State> {
+export class VitalDetailStore extends ComponentStore<VitalDetailState> {
+  private db = inject(NwDbService)
+  readonly vitalId$ = this.select(({ vitalId }) => vitalId)
+  readonly vital$ = selectStream(this.db.vital(this.vitalId$))
+  readonly creatureType$ = this.select(this.vital$, (it) => it?.CreatureType)
+  readonly metadata$ = selectStream(this.db.vitalsMeta(this.vitalId$))
+  readonly modifier$ = selectStream(this.db.vitalsModifier(this.creatureType$))
+  readonly level$ = selectStream(
+    {
+      vital: this.vital$,
+      level: this.select(({ level }) => level),
+    },
+    ({ vital, level }) => level ?? vital?.Level,
+  )
+  readonly levelData$ = selectStream(this.db.vitalsLevel(this.level$))
+  readonly gearScore$ = selectStream(this.levelData$, (it) => it?.GearScore)
 
-  public readonly vitalId$ = this.select(({ vitalId }) => vitalId)
-  public readonly vital$ = this.select(this.db.vital(this.vitalId$), (it) => it)
+  readonly mutaDifficultyId$ = this.select(({ mutaDifficulty }) => mutaDifficulty)
+  readonly mutaDifficulty$ = this.select(this.db.mutatorDifficulty(this.mutaDifficultyId$), (it) => it)
 
-  public readonly levelOverride$ = this.select(({ level }) => level)
-  public readonly level$ = this.select(this.vital$, this.levelOverride$, (vital, level) => level ?? vital?.Level)
-  public readonly vitalLevel$ = this.select(this.db.vitalsLevel(this.level$), (it) => it)
-
-  public readonly creatureTypeId$ = this.select(this.vital$, (it) => it?.CreatureType)
-  public readonly vitalModifier$ = this.select(this.db.vitalsModifier(this.creatureTypeId$), (it) => it)
-
-  public readonly mutaElementId$ = this.select(({ mutaElementId }) => mutaElementId)
-  public readonly mutaElement$ = this.select(this.db.mutatorElement(this.mutaElementId$), (it) => it)
-  public readonly mutaBuffs$ = this.select(
+  readonly mutaElementId$ = this.select(({ mutaElementId }) => mutaElementId)
+  readonly mutaElement$ = selectStream(this.db.mutatorElement(this.mutaElementId$))
+  readonly mutaBuffs$ = this.select(
     combineLatest({
       element: this.mutaElement$,
       buffMap: this.db.buffBucketsMap,
       effectMap: this.db.statusEffectsMap,
       abilitiesMap: this.db.abilitiesMap,
-      creatureType: this.creatureTypeId$,
+      creatureType: this.creatureType$,
     }),
-    (data) => selectBuffs(data)
+    (data) => selectBuffs(data),
   )
 
-  public readonly mutaDifficultyId$ = this.select(({ mutaDifficulty }) => mutaDifficulty)
-  public readonly mutaDifficulty$ = this.select(this.db.mutatorDifficulty(this.mutaDifficultyId$), (it) => it)
-
-  public readonly metadata$ = this.select(this.vitalId$, this.db.vitalsMetadataMap, (id, data) => data.get(id))
-  public readonly modelFiles$ = this.select(this.vs.byVitalsId(this.vitalId$), (it) => it)
-
-  public readonly categories$ = this.select(this.vital$, this.db.vitalsCategoriesMap, selectCategories)
-  public readonly damageTableNames$ = this.select(this.vitalId$, this.metadata$, selectDamageTableNames)
-  public readonly damageTables$ = this.damageTableNames$
+  readonly categories$ = this.select(this.vital$, this.db.vitalsCategoriesMap, selectCategories)
+  readonly damageTableNames$ = this.select(this.vitalId$, this.metadata$, selectDamageTableNames)
+  readonly damageTables$ = this.damageTableNames$
     .pipe(switchMap((files) => this.loadDamageTables(files)))
     .pipe(shareReplayRefCount(1))
 
-  public readonly hasDamageTable$ = this.select(this.damageTableNames$, (it) => !!it?.length)
+  readonly hasDamageTable$ = this.select(this.damageTableNames$, (it) => !!it?.length)
 
-  public totalHP$ = selectStream({
-    vital: this.vital$,
-    mods: this.vitalModifier$,
-    levels: this.vitalLevel$,
-    difficulty: this.mutaDifficulty$,
-  }, ({ vital, mods, levels, difficulty }) => {
-    const potency = ((difficulty?.[`HealthPotency_${vital.CreatureType}`] || 0) / 100) || 1
-    return Math.floor(Math.floor(levels.BaseMaxHealth * vital.HealthMod * mods.CategoryHealthMod) * potency)
-  })
+  readonly health$ = selectStream(
+    {
+      vital: this.vital$,
+      level: this.levelData$,
+      modifier: this.modifier$,
+      difficulty: this.mutaDifficulty$,
+    },
+    (data) => getVitalHealth(data),
+  )
 
-  public constructor(private db: NwDbService, private vs: ModelViewerService) {
+  readonly armor$ = selectStream(
+    {
+      vital: this.vital$,
+      level: this.levelData$,
+    },
+    ({ vital, level }) => getVitalArmor(vital, level),
+  )
+
+  public constructor() {
     super({
       vitalId: null,
     })
@@ -97,9 +106,9 @@ export class VitalDetailStore extends ComponentStore<State> {
               file: file,
               rows: rows,
             }
-          })
+          }),
         )
-      })
+      }),
     )
   }
 }

@@ -60,8 +60,8 @@ import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, observeQueryParam, observeRouteParam, selectStream, shareReplayRefCount } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
+import { VitalDetailModule } from '~/widgets/data/vital-detail'
 import { LootModule } from '~/widgets/loot'
-import { VitalsDetailModule } from '~/widgets/vitals-detail'
 import { GameModeDetailStore } from './game-mode-detail.store'
 import { MutaCurseTileComponent } from './muta-curse-tile.component'
 import { MutaElementTileComponent } from './muta-element-tile.component'
@@ -84,7 +84,7 @@ const MAP_EMBED_URLS = {
   DungeonRestlessShores01: 'https://aeternum-map.gg/The%20Depths?embed=true',
   DungeonShatteredObelisk: 'https://aeternum-map.gg/Starstone%20Barrows?embed=true',
   DungeonShatterMtn00: "https://aeternum-map.gg/Tempest's%20Heart?embed=true",
-  DungeonFirstLight01: "https://aeternum-map.gg/The%20Savage%20Divide?embed=true",
+  DungeonFirstLight01: 'https://aeternum-map.gg/The%20Savage%20Divide?embed=true',
   QuestApophis: null,
 }
 
@@ -115,7 +115,8 @@ export interface Tab {
     NwModule,
     PaginationModule,
     RouterModule,
-    VitalsDetailModule,
+    //VitalsDetailModule,
+    VitalDetailModule,
     MutaElementTileComponent,
     MutaCurseTileComponent,
     MutaPromotionTileComponent,
@@ -185,7 +186,7 @@ export class GameModeDetailComponent implements OnInit {
           return this.store.lootTagsMutatedMode$
         }
         return this.store.lootTagsNormalMode$
-      })
+      }),
     ),
   }).pipe(
     map(({ item, context }) => {
@@ -194,14 +195,14 @@ export class GameModeDetailComponent implements OnInit {
         item,
         itemId: getItemId(item),
       }
-    })
+    }),
   )
 
   public difficultiesRank$ = defer(() =>
     combineLatest({
       dungeon: this.dungeon$,
       difficulties: this.difficulties$,
-    })
+    }),
   )
     .pipe(
       switchMap(({ dungeon, difficulties }) =>
@@ -211,9 +212,9 @@ export class GameModeDetailComponent implements OnInit {
               difficulty: of(it),
               rank: this.difficultyRank(dungeon, it),
             })
-          })
-        )
-      )
+          }),
+        ),
+      ),
     )
     .pipe(shareReplayRefCount(1))
 
@@ -224,7 +225,7 @@ export class GameModeDetailComponent implements OnInit {
       events: this.db.gameEventsMap,
       items: this.db.itemsMap,
       loot: this.db.lootTablesMap,
-    })
+    }),
   ).pipe(
     map(({ rank, difficulty, events, items, loot }) => {
       if (!difficulty) {
@@ -264,14 +265,14 @@ export class GameModeDetailComponent implements OnInit {
           }
         })
         .filter((it) => !!it)
-    })
+    }),
   )
 
   public difficultyRank$ = defer(() =>
     combineLatest({
       dungeon: this.dungeon$,
       difficulty: this.difficulty$,
-    })
+    }),
   ).pipe(switchMap(({ dungeon, difficulty }) => this.difficultyRank(dungeon, difficulty)))
 
   @ViewChild('tplDungeonLoot', { static: true })
@@ -356,7 +357,7 @@ export class GameModeDetailComponent implements OnInit {
     private dialog: Dialog,
     private i18n: TranslateService,
     private head: HtmlHeadService,
-    private platform: PlatformService
+    private platform: PlatformService,
   ) {}
 
   public ngOnInit(): void {
@@ -368,7 +369,7 @@ export class GameModeDetailComponent implements OnInit {
       debounceTime(300),
       map(({ enabled, level, queryLevel }) => {
         return (enabled ? level : Number(queryLevel)) || null
-      })
+      }),
     )
 
     this.store.patchState(
@@ -379,7 +380,7 @@ export class GameModeDetailComponent implements OnInit {
         mutationElementId: this.paramElement$,
         mutationPromotionId: this.paramPromotion$,
         mutationCurseId: this.paramCurse$,
-      })
+      }),
     )
 
     combineLatest({
@@ -489,7 +490,7 @@ export class GameModeDetailComponent implements OnInit {
           return null // unlocked
         }
         return `assets/icons/expedition/icon_lock_small.png`
-      })
+      }),
     )
   }
 

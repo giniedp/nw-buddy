@@ -1,0 +1,123 @@
+@if (tables$ | async; as tables) {
+  @if (!tables.length) {
+    <div class="alert shadow-lg my-2 bg-base-100">
+      <div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          class="stroke-error flex-shrink-0 w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          ></path>
+        </svg>
+        <div>
+          <h3 class="font-bold">No damage tables found</h3>
+          <div class="text-xs">This creature either has no damage tables or is not in game.</div>
+        </div>
+      </div>
+    </div>
+  }
+  @if (tables.length > 1) {
+    <div class="alert shadow-lg my-2 bg-base-200">
+      <div>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          class="stroke-warning flex-shrink-0 w-6 h-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          ></path>
+        </svg>
+        <div>
+          <h3 class="font-bold">Multiple damage tables found</h3>
+          <div class="text-xs">This creature has multiple variations.</div>
+        </div>
+      </div>
+    </div>
+  }
+  @for (table of tables; track $index) {
+    <div class="flex flex-col gap-1 mb-2">
+      <div class="text-center text-primary capitalize font-bold text-xl">
+        {{ table.name | nwHumanize }}
+      </div>
+      @for (row of table.rows; track $index) {
+        <div class="flex flex-col gap-1 mb-2">
+          <div class="leading-tight font-bold">
+            <span>
+              {{ row.AttackName }}
+            </span>
+          </div>
+          <div class="flex flex-row flex-wrap gap-1">
+            <span
+              class="badge badge-sm bg-opacity-50"
+              *ngIf="row.AttackType; let text"
+              [class.badge-error]="text === 'Heavy'"
+              [class.badge-success]="text === 'Light'"
+              [class.badge-secondary]="text === 'Magic'"
+            >
+              {{ text }}</span
+            >
+            <span class="badge badge-sm badge-info" *ngIf="row.IsRanged">Ranged</span>
+            <ng-container *ngIf="!row.Secondary && row.Damage">
+              <span class="badge badge-sm badge-primary cursor-help" [tooltip]="tipDamage">
+                <img [nwImage]="row.Primary.Icon" class="w-4 h-4 flex-none aspect-square mr-1 filter brightness-0" />
+                {{ row.Damage | number: '0.0-0' }}
+                <ng-template #tipDamage>
+                  {{ row.Primary.Type | nwText }}
+                </ng-template>
+              </span>
+            </ng-container>
+
+            <ng-container *ngIf="row.Secondary">
+              <span class="badge badge-sm badge-primary" *ngIf="row.Damage">
+                {{ row.Damage | number: '0.0-0' }}
+              </span>
+
+              <span class="badge badge-sm cursor-help" [tooltip]="tipPrimary">
+                <img [nwImage]="row.Primary.Icon" class="w-4 h-4 flex-none aspect-square mr-1" />
+                {{ row.Primary.Value | number: '0.0-0' }}
+                <ng-template #tipPrimary>
+                  {{ row.Primary.Percent | percent }} as {{ row.Primary.Type | nwText }}
+                </ng-template>
+              </span>
+
+              <span class="badge badge-sm cursor-help" [tooltip]="tipSecondary">
+                <img [nwImage]="row.Secondary.Icon" class="w-4 h-4 flex-none aspect-square mr-1" />
+                {{ row.Secondary.Value | number: '0.0-0' }}
+                <ng-template #tipSecondary>
+                  {{ row.Secondary.Percent | percent }} as {{ row.Secondary.Type | nwText }}
+                </ng-template>
+              </span>
+            </ng-container>
+
+            <ng-container *ngFor="let item of row.AoeEffects">
+              <a
+                class="badge badge-sm link-hover"
+                [tooltip]="tipEffect"
+                [tooltipClass]="'p-0'"
+                [routerLink]="['/status-effects/table', item.StatusID]"
+              >
+                <img [nwImage]="item.Icon" class="w-4 h-4 flex-none aspect-square mr-1" />
+                {{ item.Label | nwText }}
+                <ng-template #tipEffect>
+                  <nwb-status-effect-detail [effectId]="item.StatusID"></nwb-status-effect-detail>
+                </ng-template>
+              </a>
+            </ng-container>
+          </div>
+        </div>
+      }
+    </div>
+  }
+}
+<div *ngIf="tables$ | async; let tables"></div>

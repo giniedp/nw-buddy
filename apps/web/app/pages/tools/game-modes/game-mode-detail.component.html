@@ -286,40 +286,41 @@
 
 <ng-template #tplDungeonBosses>
   <div class="grid grid-vitals layout-gap">
-    <nwb-vital-detail
-      *ngFor="let item of creaturesBosses$ | async; trackBy: trackByIndex"
-      [vital]="item"
-      [level]="creatureLevel$ | async"
-      [mutaElement]="mutaElementId$ | async"
-      [mutaDifficulty]="difficultyLevel"
-      [enableSections]="true"
-    ></nwb-vital-detail>
+    @for(item of creaturesBosses$ | async; track $index) {
+      <nwb-vital-detail-card
+        [vitalId]="item?.VitalsID"
+        [level]="creatureLevel$ | async"
+        [mutaElement]="mutaElementId$ | async"
+        [mutaDifficulty]="difficultyLevel"
+      />
+    }
   </div>
 </ng-template>
 
 <ng-template #tplDungeonNamed>
   <div class="grid grid-vitals layout-gap">
-    <nwb-vital-detail
-      *ngFor="let item of creaturesNamed$ | async; trackBy: trackByIndex"
-      [vital]="item"
-      [level]="creatureLevel$ | async"
-      [mutaElement]="mutaElementId$ | async"
-      [mutaDifficulty]="difficultyLevel"
-      [enableSections]="true"
-    ></nwb-vital-detail>
+    @for(item of creaturesNamed$ | async; track $index) {
+      <nwb-vital-detail-card
+        [vitalId]="item?.VitalsID"
+        [level]="creatureLevel$ | async"
+        [mutaElement]="mutaElementId$ | async"
+        [mutaDifficulty]="difficultyLevel"
+      />
+    }
+
   </div>
 </ng-template>
 
 <ng-template #tplDungeonCreatures>
   <div class="grid grid-vitals layout-gap">
-    <nwb-vital-detail
-      *ngFor="let item of creatures$ | async; trackBy: trackByIndex"
-      [vital]="item"
-      [level]="creatureLevel$ | async"
-      [mutaElement]="mutaElementId$ | async"
-      [mutaDifficulty]="difficultyLevel"
-      [enableSections]="true"
-    ></nwb-vital-detail>
+    @for(item of creatures$ | async; track $index) {
+      <nwb-vital-detail-card
+        [vitalId]="item?.VitalsID"
+        [level]="creatureLevel$ | async"
+        [mutaElement]="mutaElementId$ | async"
+        [mutaDifficulty]="difficultyLevel"
+      />
+    }
   </div>
 </ng-template>
 

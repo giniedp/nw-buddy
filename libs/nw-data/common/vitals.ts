@@ -1,4 +1,15 @@
-import { Gamemodes, Vitals, Vitalscategories, Vitalsmetadata } from '@nw-data/generated'
+import {
+  DamageType,
+  Damagetable,
+  Gamemodes,
+  Mutationdifficulty,
+  Spellsmetadata,
+  Vitals,
+  Vitalscategories,
+  Vitalsleveldata,
+  Vitalsmetadata,
+  Vitalsmodifierdata,
+} from '@nw-data/generated'
 
 const NAMED_FAIMILY_TYPES = ['DungeonBoss', 'Dungeon+', 'DungeonMiniBoss', 'Elite+', 'EliteMiniBoss']
 const CREATURE_TYPE_MARKER = {
@@ -118,18 +129,8 @@ const VITAL_CATEGORIES_KEYS = Object.keys(VITAL_CATEGORIES)
 const ICON_STRONG_ATTACK = 'assets/icons/strongattack.png'
 const ICON_WEAK_ATTACK = 'assets/icons/weakattack.png'
 
-export type VitalDamageType =
-  | 'Arcane'
-  | 'Corruption'
-  | 'Fire'
-  | 'Ice'
-  | 'Lightning'
-  | 'Nature'
-  | 'Siege'
-  | 'Slash'
-  | 'Standard'
-  | 'Strike'
-  | 'Thrust'
+export type VitalDamageType = DamageType
+
 
 export function getVitalTypeMarker(vitalOrcreatureType: string | Vitals): string {
   if (typeof vitalOrcreatureType !== 'string') {
@@ -250,7 +251,7 @@ export function getVitalDamageEffectivenessIcon(vital: Vitals, damageType: Vital
 export function getVitalDungeons(
   vital: Vitals,
   dungeons: Gamemodes[],
-  vitalsMeta: Map<string, Vitalsmetadata>
+  vitalsMeta: Map<string, Vitalsmetadata>,
 ): Gamemodes[] {
   const meta = vitalsMeta.get(vital.VitalsID)
   if (!meta) {
@@ -280,4 +281,58 @@ export function getVitalDungeon(vital: Vitals, dungeons: Gamemodes[], vitalsMeta
 
 function eqCaseInsensitive(a: string, b: string) {
   return a?.toLowerCase() === b?.toLowerCase()
+}
+
+export function getVitalHealth({
+  vital,
+  level,
+  modifier,
+  difficulty,
+}: {
+  vital: Vitals
+  level: Vitalsleveldata
+  modifier: Vitalsmodifierdata
+  difficulty?: Mutationdifficulty
+}) {
+  if (!vital || !level || !modifier) {
+    return 0
+  }
+  const potency = (difficulty?.[`HealthPotency_${vital.CreatureType}`] || 0) / 100 || 1
+  return Math.floor(Math.floor(level.BaseMaxHealth * vital.HealthMod * modifier.CategoryHealthMod) * potency)
+}
+
+export function getVitalArmor(vital: Vitals, level: Vitalsleveldata) {
+  if (!vital || !level) {
+    return null
+  }
+  return {
+    elementalMitigation: vital.ElementalMitigation,
+    physicalMitigation: vital.PhysicalMitigation,
+    elementalRating: Math.floor(Math.pow(level.GearScore, 1.2) * (1 / (1 - vital.ElementalMitigation) - 1)) ,
+    physicalRating: Math.floor(Math.pow(level.GearScore, 1.2) * (1 / (1 - vital.PhysicalMitigation) - 1)),
+  }
+}
+
+export function getVitalDamage({
+  vital,
+  level,
+  modifier,
+  damageTable,
+  difficulty,
+}: {
+  vital: Vitals
+  level: Vitalsleveldata
+  damageTable: Damagetable
+  modifier?: Vitalsmodifierdata
+  difficulty?: Mutationdifficulty
+}) {
+  //
+  const baseDamage = level.BaseDamage
+  const dmgCoef = damageTable.DmgCoef
+  const dmgMod = vital?.DamageMod || 1
+  const categoryDamageMod = modifier?.CategoryDamageMod || 1
+  const addDmg = damageTable.AddDmg || 0
+  //const dmgIncMod = effectMap.get(difficulty?.DamageIncreaseMod)?.['DMG' + damageTable.DamageType] || 0
+  const dmgPotency = 1 + (difficulty?.[`DamagePotency_${vital.CreatureType}`] || 0) / 100
+  return baseDamage * dmgCoef * dmgMod * dmgPotency * categoryDamageMod + addDmg
 }

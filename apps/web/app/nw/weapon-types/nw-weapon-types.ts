@@ -1,4 +1,4 @@
-import { StatusEffectCategory } from '@nw-data/generated'
+import { DamageType, StatusEffectCategory } from '@nw-data/generated'
 import { CaseInsensitiveMap, eqCaseInsensitive } from '~/utils'
 
 export interface NwWeaponType {
@@ -12,7 +12,7 @@ export interface NwWeaponType {
   CategoryName: string
   IconPath: string
   IconPathSmall: string
-  DamageType: string
+  DamageType: DamageType
   DamageTablePrefix: string
 }
 
@@ -311,4 +311,8 @@ export function statusEffectCategoryIcon(type: string) {
 
 export function getWeaponTypeInfo(byWeaponTag: string) {
   return NW_WEAPON_TYPES.find((it) => eqCaseInsensitive(it.WeaponTag, byWeaponTag))
+}
+
+export function getWeaponTypes() {
+  return NW_WEAPON_TYPES
 }

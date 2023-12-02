@@ -1,0 +1,46 @@
+<table class="table">
+  <tr>
+    <td class="text-right font-bold text-white py-0 px-1">{{ gearScore() }}</td>
+    <td class="py-0 px-1">Gear Score</td>
+  </tr>
+
+  @if (armor(); as armor) {
+    <tr>
+      <td class="py-1 px-0 text-nw-description" colspan="2">Armor</td>
+    </tr>
+    <tr>
+      <td class="text-right font-bold text-white py-0 px-1">{{ armor.physicalRating }}</td>
+      <td class="py-0 px-1">Armor Rating - Physical</td>
+    </tr>
+    <tr>
+      <td class="text-right font-bold text-white py-0 px-1">{{ armor.elementalRating }}</td>
+      <td class="py-0 px-1">Armor Rating - Elemental</td>
+    </tr>
+    <tr>
+      <td class="text-right font-bold text-white py-0 px-1">{{ armor.physicalMitigation | percent }}</td>
+      <td class="py-0 px-1">Damage Mitigation - Physical</td>
+    </tr>
+    <tr>
+      <td class="text-right font-bold text-white py-0 px-1">{{ armor.elementalMitigation | percent }}</td>
+      <td class="py-0 px-1">Damage Mitigation - Elemental</td>
+    </tr>
+  }
+  @if (effectiveness(); as rows) {
+    <tr>
+      <td class="py-1 px-0 text-nw-description" colspan="2">Weakness</td>
+    </tr>
+    @for (row of rows; track $index) {
+      <tr>
+        <td class="text-right font-bold text-white py-0 px-1">
+          {{ row.value | percent }}
+        </td>
+        <td class="py-0 px-1">
+          <div class="flex flex-row gap-1">
+            <img [nwImage]="row.icon" class="w-5 h-5" />
+            <span>{{ row.name }}</span>
+          </div>
+        </td>
+      </tr>
+    }
+  }
+</table>

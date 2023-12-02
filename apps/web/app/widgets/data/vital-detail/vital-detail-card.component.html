@@ -1,0 +1,19 @@
+<div class="bg-base-300 flex flex-col">
+  <nwb-vital-detail-header />
+  <div class="tabs justify-center">
+    @for (tab of tabs(); track tab.id) {
+      <a class="tab tab-bordered" [class.tab-active]="tab.active" (click)="currentTab.set(tab.id)">
+        {{ tab.label }}
+      </a>
+    }
+  </div>
+</div>
+<div class="p-4">
+  @for (tab of tabs(); track tab.id) {
+    @if (tab.active) {
+      <div [class.-m-4]="tab.id === 'models'">
+        <ng-container [ngComponentOutlet]="tab.component"></ng-container>
+      </div>
+    }
+  }
+</div>
