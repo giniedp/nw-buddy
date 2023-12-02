@@ -1,4 +1,5 @@
-import { Injectable, NgZone } from '@angular/core'
+import { DOCUMENT } from '@angular/common'
+import { Injectable, NgZone, inject } from '@angular/core'
 import { Router } from '@angular/router'
 
 import type { ipcRenderer } from 'electron'
@@ -9,12 +10,13 @@ import { Subject } from 'rxjs'
 })
 export class ElectronService {
   private ipcRenderer: typeof ipcRenderer
+  private window = inject(DOCUMENT).defaultView
 
   public windowChange = new Subject()
 
   public constructor(private router: Router, private zone: NgZone) {
     if (this.isElectron) {
-      this.ipcRenderer = window.require('electron').ipcRenderer
+      this.ipcRenderer = this.window.require('electron').ipcRenderer
       this.ipcRenderer.addListener('window-change', () => {
         this.windowChange.next(null)
       })
@@ -25,7 +27,7 @@ export class ElectronService {
   }
 
   get isElectron(): boolean {
-    return !!(window && window.process && window.process.type)
+    return !!(this.window && this.window.process && this.window.process.type)
   }
 
   public sendWindowClose() {

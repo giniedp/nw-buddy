@@ -1,5 +1,5 @@
 import { DialogModule } from '@angular/cdk/dialog'
-import { HttpClientModule } from '@angular/common/http'
+import { HttpClientModule, provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi } from '@angular/common/http'
 import { ApplicationConfig, importProvidersFrom } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { BrowserModule } from '@angular/platform-browser'
@@ -23,16 +23,22 @@ export const appConfig: ApplicationConfig = {
           !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(win.navigator.userAgent),
       },
     }),
+    provideHttpClient(
+      withFetch(),
+      withInterceptorsFromDi()
+      // TODO: refactor to use withInterceptors() instead
+      // withInterceptors([]),
+    ),
+    NwDataInterceptor.provide(),
     importProvidersFrom(
       BrowserModule,
       BrowserAnimationsModule,
       FormsModule,
       DialogModule,
-      HttpClientModule,
       TranslateModule.forRoot(),
       StoreModule.forRoot({}),
       EffectsModule.forRoot(),
     ),
-    NwDataInterceptor.provide(),
+
   ],
 }

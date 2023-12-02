@@ -1,7 +1,7 @@
 import { environment } from 'apps/web/environments'
-import DOMPurify from 'dompurify'
+import { addHook, sanitize } from 'isomorphic-dompurify'
 
-DOMPurify.addHook('afterSanitizeAttributes', (node) => {
+addHook('afterSanitizeAttributes', (node) => {
   if (node.tagName === 'IMG') {
     node.classList.add('inline')
     let src = node.getAttribute('src') || ''
@@ -45,5 +45,5 @@ DOMPurify.addHook('afterSanitizeAttributes', (node) => {
 })
 
 export function sanitizeHtml(text: string) {
-  return DOMPurify.sanitize(text)
+  return sanitize(text)
 }

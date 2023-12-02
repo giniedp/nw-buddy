@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core'
-import { StorageApiNode, StorageScopeNode } from './storage'
+import { Injectable, PLATFORM_ID, inject } from '@angular/core'
+import { StorageApiNode, StorageScopeNode, memStorage } from './storage'
+import { isPlatformServer } from '@angular/common'
 
 const PREFIX = 'nwb:'
 
@@ -9,8 +10,11 @@ export class PreferencesService {
   public readonly session: StorageScopeNode
 
   public constructor() {
-    this.storage = new StorageScopeNode(StorageApiNode.localStorage(), PREFIX)
-    this.session = new StorageScopeNode(StorageApiNode.sessionStorage(), PREFIX)
+    const isServer = isPlatformServer(inject(PLATFORM_ID))
+    const storage = isServer ? memStorage() : localStorage
+    const session = isServer ? memStorage() : sessionStorage
+    this.storage = new StorageScopeNode(new StorageApiNode(storage), PREFIX)
+    this.session = new StorageScopeNode(new StorageApiNode(session), PREFIX)
   }
 
   public export() {

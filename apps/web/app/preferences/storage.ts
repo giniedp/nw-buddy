@@ -38,17 +38,54 @@ export class StorageProperty<T> {
   }
 }
 
+export function nullStorage(): Storage {
+  return {
+    length: 0,
+    clear() {
+      //
+    },
+    getItem() {
+      return null
+    },
+    key() {
+      return null
+    },
+    removeItem() {
+      //
+    },
+    setItem() {
+      //
+    },
+  }
+}
+
+export function memStorage(): Storage {
+  const data = new Map<string, string>()
+  return {
+    get length() {
+      return data.size
+    },
+    clear() {
+      data.clear()
+    },
+    getItem(key: string) {
+      return data.get(key) ?? null
+    },
+    key(index: number) {
+      return Array.from(data.keys())[index]
+    },
+    removeItem(key: string) {
+      data.delete(key)
+    },
+    setItem(key: string, value: string) {
+      data.set(key, value)
+    },
+  }
+}
+
 export class StorageApiNode implements StorageNode {
   private cache = new Map<string, any>()
   private change$ = new Subject<{ key: string; value: any }>()
-
-  public static localStorage() {
-    return new StorageApiNode(localStorage)
-  }
-
-  public static sessionStorage() {
-    return new StorageApiNode(sessionStorage)
-  }
 
   public constructor(private storage: Storage) {
     //

@@ -1,11 +1,10 @@
-FROM node:16-alpine
+FROM node:20-alpine
 EXPOSE 4200
 ENV NODE_ENV production
 
 USER node
 WORKDIR /home/node
 
-COPY --chown=node:node ./dist/web ./web
-COPY --chown=node:node ./dist/server ./server
+COPY --chown=node:node ./dist/web ./app
 
-CMD ["node", "server/main.js"]
+CMD ["node", "app/server/main.js"]

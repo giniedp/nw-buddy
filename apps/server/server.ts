@@ -1,29 +1,31 @@
 import 'zone.js/node'
 
+import { APP_BASE_HREF } from '@angular/common'
+import { CommonEngine } from '@angular/ssr'
 import compression from 'compression'
 import express from 'express'
 import { join } from 'node:path'
-
 import { LRUCache } from 'lru-cache'
-export * from '../web/main.server'
+import bootstrap from '../web/main.server'
 
 export interface AppOptions {
   host: string
   port: string
   publicDir: string
-  storyDir: string
 }
-export function initServer({ host, port, publicDir, storyDir }: AppOptions) {
+export function server({ host, port, publicDir }: AppOptions) {
   const cache = new LRUCache({
     max: 1000,
   })
   const server = express()
+  const commonEngine = new CommonEngine()
+  const indexHtml = join(publicDir, 'index.server.html')
 
   server.use(compression({}))
   server.use(express.json({}))
 
   server.get(
-    '*.*',
+    '*',
     express.static(publicDir, {
       cacheControl: false,
       etag: true,
@@ -31,7 +33,18 @@ export function initServer({ host, port, publicDir, storyDir }: AppOptions) {
   )
 
   server.get('*', (req, res, next) => {
-    res.sendFile(join(publicDir, 'index.html'))
+    console.log('GET', req.url)
+    const { protocol, originalUrl, baseUrl, headers } = req
+    commonEngine
+      .render({
+        bootstrap,
+        documentFilePath: indexHtml,
+        url: `${protocol}://${headers.host}${originalUrl}`,
+        publicPath: publicDir,
+        providers: [{ provide: APP_BASE_HREF, useValue: baseUrl }],
+      })
+      .then((html) => res.send(html))
+      .catch((err) => next(err))
   })
 
   return server
