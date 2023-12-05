@@ -3,20 +3,16 @@ import { SAMPLES, sampleUrl } from './samples'
 
 import { HttpClient } from '@angular/common/http'
 import { TestBed } from '@angular/core/testing'
-import { Affixstats, ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { firstValueFrom } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { AppTestingModule } from '~/test'
-import { recognizeItemFromImage } from './recognize-item'
+import { recognizeItemDetails } from './recognize-item-details'
+import { recognizeTextFromImage } from './recognize-text-from-image'
 
-fdescribe('item-scanner / recognize', async () => {
+fdescribe('item-scanner / scan', async () => {
   let db: NwDbService
   let translate: TranslateService
   let http: HttpClient
-
-  let items: ItemDefinitionMaster[]
-  let affixMap: Map<string, Affixstats>
-  let perksMap: Map<string, Perks>
 
   describe('en-us', () => {
     beforeAll(async () => {
@@ -28,26 +24,30 @@ fdescribe('item-scanner / recognize', async () => {
       translate = TestBed.inject(TranslateService)
       http = TestBed.inject(HttpClient)
 
-      items = await firstValueFrom(db.items)
-      affixMap = await firstValueFrom(db.affixStatsMap)
-      perksMap = await firstValueFrom(db.perksMap)
-
       await translate.whenLocaleReady('en-us')
     })
 
     for (const sample of SAMPLES.en) {
       it(sample.file, async () => {
         const image = await firstValueFrom(http.get(sampleUrl(`en/${sample.file}`), { responseType: 'blob' }))
-        const results = await recognizeItemFromImage({
-          image: image,
-          itemClass: sample.itemClass,
-          items: items,
-          affixMap: affixMap,
-          perksMap: perksMap,
-          tl8: (key) => translate.get(key),
-        })
-        const result = results[0].instance
-        expect(sample.instance).toEqual(result)
+        const lines = await recognizeTextFromImage(image)
+        const result = await recognizeItemDetails(lines, (key) => translate.get(key))
+        expect(result.name).toContain(sample.scan.name)
+        if (sample.scan.type) {
+          expect(result.type).toContain(sample.scan.type)
+        }
+        if (sample.scan.rarity) {
+          expect(result.rarity).toContain(sample.scan.rarity)
+        }
+        if (sample.scan.attributes) {
+          expect(result.attributes).toEqual(sample.scan.attributes)
+        }
+        if (sample.scan.perks) {
+          expect(result.perks).toEqual(sample.scan.perks)
+        }
+        if (sample.scan.gearScore) {
+          expect(result.gearScore).toEqual(sample.scan.gearScore)
+        }
       })
     }
   })

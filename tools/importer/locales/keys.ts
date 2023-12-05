@@ -83,4 +83,6 @@ export const LOCALE_KEYS_TO_KEEP = [
   'ui_quickslot2',
   'ui_quickslot3',
   'ui_quickslot4',
+  'perktooltips_stacks',
+  'perktooltips_max_stacks'
 ]
