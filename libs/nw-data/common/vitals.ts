@@ -3,7 +3,6 @@ import {
   Damagetable,
   Gamemodes,
   Mutationdifficulty,
-  Spellsmetadata,
   Vitals,
   Vitalscategories,
   Vitalsleveldata,
@@ -131,7 +130,6 @@ const ICON_WEAK_ATTACK = 'assets/icons/weakattack.png'
 
 export type VitalDamageType = DamageType
 
-
 export function getVitalTypeMarker(vitalOrcreatureType: string | Vitals): string {
   if (typeof vitalOrcreatureType !== 'string') {
     vitalOrcreatureType = vitalOrcreatureType?.CreatureType
@@ -253,6 +251,9 @@ export function getVitalDungeons(
   dungeons: Gamemodes[],
   vitalsMeta: Map<string, Vitalsmetadata>,
 ): Gamemodes[] {
+  if (!vital || !dungeons?.length) {
+    return []
+  }
   const meta = vitalsMeta.get(vital.VitalsID)
   if (!meta) {
     return []
@@ -300,8 +301,8 @@ export function getVitalHealth({
   const baseMaxHealth = level.BaseMaxHealth
   const healthMod = vital.HealthMod
   const categoryHealthMod = modifier.CategoryHealthMod
-  const potency = (difficulty?.[`HealthPotency_${vital.CreatureType}`] || 0)
-  const result = Math.floor(Math.floor(baseMaxHealth * healthMod * categoryHealthMod) * ((potency / 100) + 1))
+  const potency = difficulty?.[`HealthPotency_${vital.CreatureType}`] || 0
+  const result = Math.floor(Math.floor(baseMaxHealth) * healthMod * categoryHealthMod * (1 + potency * 0.01))
   // console.table({
   //   baseMaxHealth,
   //   healthMod,
@@ -319,7 +320,7 @@ export function getVitalArmor(vital: Vitals, level: Vitalsleveldata) {
   return {
     elementalMitigation: vital.ElementalMitigation,
     physicalMitigation: vital.PhysicalMitigation,
-    elementalRating: Math.floor(Math.pow(level.GearScore, 1.2) * (1 / (1 - vital.ElementalMitigation) - 1)) ,
+    elementalRating: Math.floor(Math.pow(level.GearScore, 1.2) * (1 / (1 - vital.ElementalMitigation) - 1)),
     physicalRating: Math.floor(Math.pow(level.GearScore, 1.2) * (1 / (1 - vital.PhysicalMitigation) - 1)),
   }
 }
