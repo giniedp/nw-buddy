@@ -1,0 +1,3 @@
+[submodule "dist/nw-data"]
+	path = dist/nw-data
+	url = git@github.com:giniedp/nw-buddy-data.git

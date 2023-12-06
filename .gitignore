@@ -1,7 +1,9 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
+dist/*
+!dist/nw-data
+
 # compiled output
-/dist
 /tmp
 /out-tsc
 /app-builds
@@ -23,7 +25,6 @@ yarn-error.log
 *.sublime-workspace
 .angular
 .env
-/nw-data
 
 # IDE - VSCode
 .vscode/*
