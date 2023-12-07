@@ -14,7 +14,7 @@
     <span>Mutated</span>
   </li>
 
-  @for(item of difficulties$ | async; track $index) {
+  @for (item of difficulties$ | async; track $index) {
     <li [class.bordered]="item.MutationDifficulty == difficultyLevel">
       <a
         rel="nofollow"
@@ -36,18 +36,18 @@
   <div class="absolute top-0 left-0 right-0 bottom-0 flex flex-col px-4 overflow-auto pb-20">
     <div class="prose-base mt-8 flex-none">
       <section class="font-nimbus">
-        <h1 class="mb-0 font-normal font-serif tracking-wider ">
+        <h1 class="mb-0 font-normal font-serif tracking-wider">
           <span [nwText]="title"></span>
           @if (difficultyLevel) {
-           <span>, Difficulty {{ difficultyLevel }}</span>
+            <span>, Difficulty {{ difficultyLevel }}</span>
           }
         </h1>
         <div>
-          @if(recommendedLevel && !requiredGearScore) {
+          @if (recommendedLevel && !requiredGearScore) {
             <span>Recommended Level: </span>
             <span class="font-semibold text-accent">{{ recommendedLevel }}</span>
           }
-          @if(requiredGearScore) {
+          @if (requiredGearScore) {
             <span>Required Minimum Gear Score: </span>
             <span class="font-semibold text-accent">{{ requiredGearScore }}</span>
           }
@@ -57,23 +57,23 @@
       </section>
 
       <section class="font-nimbus">
-        <h2 class="mb-0 font-normal font-serif tracking-wider uppercase ">
+        <h2 class="mb-0 font-normal font-serif tracking-wider uppercase">
           <span>Requirements</span>
         </h2>
         <div class="nw-item-divider max-w-lg"></div>
-        @if(requirementText) {
+        @if (requirementText) {
           <div>
             <span class="text-primary">Your group must have at least </span>
             <span [nwText]="requirementText"></span>
           </div>
         }
-        @if(groupSize) {
+        @if (groupSize) {
           <div>
             <span>{{ groupSize }} - {{ teamCapacity || 5 }} </span>
             <span>Players</span>
           </div>
         }
-        @if(requiredLevel) {
+        @if (requiredLevel) {
           <div>
             <span>Level: </span>
             <span class="font-semibold text-accent">{{ requiredLevel }}</span>
@@ -82,31 +82,35 @@
       </section>
 
       <section class="font-nimbus" *ngIf="!!difficulty">
-        <h2 class="mb-0 font-normal font-serif tracking-wider uppercase x">
+        <h2 class="mb-0 font-normal font-serif tracking-wider uppercase flex flex-row items-center gap-2">
           <span>Weekly Mutations </span>
-          <nwb-icon
-            [icon]="iconInfo"
-            class="w-5 h-5 text-info"
-            [tooltip]="'Mutations are work in progress'"
-            [tooltipClass]="'text-primary'"
-          ></nwb-icon>
+          @if (isMutated$ | async) {
+
+            <picture class="inline-block w-8 m-0 animate-pulse" [@fade]="true">
+              <img
+                [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
+                class="w-full aspect-square rounded-full animate-spin-cw"
+              />
+            </picture>
+            <span>Active </span>
+          }
         </h2>
         <div class="nw-item-divider max-w-lg mb-2"></div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 max-w-3xl">
-          @if(store.mutaElementAvailable$ | async) {
+          @if (store.mutaElementAvailable$ | async) {
             <nwb-muta-element-tile (selectionChanged)="onMutaElementSelected($event)" />
           }
-          @if(store.mutaPromotionAvailable$ | async) {
+          @if (store.mutaPromotionAvailable$ | async) {
             <nwb-muta-promotion-tile (selectionChanged)="onMutaPromotionSelected($event)" />
           }
-          @if(store.mutaCurseAvailable$ | async) {
+          @if (store.mutaCurseAvailable$ | async) {
             <nwb-muta-curse-tile (selectionChanged)="onMutaCurseSelected($event)" />
           }
         </div>
       </section>
 
       <section>
-        <h2 class="mb-0 font-normal font-serif  tracking-wider uppercase">
+        <h2 class="mb-0 font-normal font-serif tracking-wider uppercase">
           <span>Available Rewards </span>
         </h2>
         <div class="nw-item-divider max-w-lg"></div>
@@ -200,8 +204,8 @@
     </div>
 
     <div class="flex-1 mt-4">
-      @for(item of tabs; track item.id) {
-        @if(item.id === tab) {
+      @for (item of tabs; track item.id) {
+        @if (item.id === tab) {
           <ng-container *ngTemplateOutlet="item.tpl"></ng-container>
         }
       }

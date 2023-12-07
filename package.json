@@ -21,6 +21,7 @@
     "dev:server": "ng run nw-buddy:serve-ssr",
     "dev:tools": "pnpm build:tools -w",
     "dev:storybook": "ng run nw-buddy:storybook",
+    "dev:wrangler": "npx wrangler pages dev dist/web/browser",
     "test:storybook": "concurrently -n SERVER,STORY -c red,green -k -s first \"pnpm storybook:serve --silent\" \"pnpm storybook:wait && pnpm storybook:test\"",
     "test:storybook:coverage": "concurrently -n SERVER,STORY -c red,green -k -s first \"pnpm storybook:serve --silent\" \"pnpm storybook:wait && pnpm storybook:test --coverage\"",
     "test:unit": "ng test --watch=false",

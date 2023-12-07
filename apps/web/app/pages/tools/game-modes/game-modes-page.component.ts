@@ -6,8 +6,10 @@ import { NwDbService, NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft } from '~/ui/icons/svg'
 import { NavbarModule } from '~/ui/nav-toolbar'
-import { selectStream } from '~/utils'
+import { eqCaseInsensitive, selectStream } from '~/utils'
 import { GameModesStore } from './game-modes.store'
+import { MutationEntry, MutationList, injectCurrentMutation } from './current-mutation.service'
+import { animate, style, transition, trigger } from '@angular/animations'
 
 type GameModeCategories = 'expeditions' | 'trials' | 'pvp'
 
@@ -22,8 +24,15 @@ type GameModeCategories = 'expeditions' | 'trials' | 'pvp'
   host: {
     class: 'layout-col bg-base-300 rounded-md overflow-clip',
   },
+  animations: [
+    trigger('fade', [
+      transition(':enter', [style({ opacity: 0 }), animate('0.150s ease-out', style({ opacity: 1 }))]),
+      transition(':leave', [style({ opacity: 1 }), animate('0.150s ease-out', style({ opacity: 0 }))]),
+    ]),
+  ],
 })
 export class GameModesPageComponent {
+
   protected groups$ = selectStream(this.db.data.gamemodes(), groupByCategory)
   protected categories$ = selectStream(this.groups$, (it) => Object.keys(it).sort())
   protected categoryId$ = selectStream(this.route.paramMap, (it) => it.get('category'))
@@ -31,8 +40,9 @@ export class GameModesPageComponent {
     {
       categories: this.groups$,
       category: this.categoryId$,
+      mutations: injectCurrentMutation(),
     },
-    ({ categories, category }) => selectCategory(categories, category)
+    ({ categories, category, mutations }) => selectCategory(categories, category, mutations)
   )
 
   @ViewChild(RouterOutlet, { static: true })
@@ -57,16 +67,29 @@ function groupByCategory(modes: Gamemodes[]) {
   return groups
 }
 
-function selectCategory(categories: Record<string, Gamemodes[]>, category: string) {
-  let result: Gamemodes[] = []
+function selectCategory(categories: Record<string, Gamemodes[]>, category: string, mutations: MutationList) {
+
+  let modes: Gamemodes[] = []
   if (category === 'all') {
-    result = Object.entries(categories)
+    modes = Object.entries(categories)
       .map(([_, value]) => value)
       .flat(1)
   } else {
-    result = categories[category] || []
+    modes = categories[category] || []
   }
-  return result.sort((a, b) => a.RequiredLevel - b.RequiredLevel)
+
+  return modes.sort((a, b) => a.RequiredLevel - b.RequiredLevel).map((mode) => {
+    const mutation = mutations?.find((it) => eqCaseInsensitive(it.expedition, mode.GameModeId))
+    return {
+      id: mode.GameModeId,
+      icon: mode.IconPath,
+      backgroundImage: mode.BackgroundImagePath,
+      name: mode.DisplayName,
+      isMutable: mode.IsMutable,
+      isMutated: !!mutation,
+      mutation: mutation
+    }
+  })
 }
 
 function detectCategory(mode?: Gamemodes): GameModeCategories {

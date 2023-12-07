@@ -11,22 +11,31 @@
 
   <div class="layout-content p-3">
     <div class="w-full max-w-screen-3xl mx-auto grid grid-cols-fill gap-4">
-      <a
-        [routerLink]="[item.GameModeId]"
-        [queryParamsHandling]="'preserve'"
-        *ngFor="let item of modes$ | async"
-        class="bg-base-300 aspect-video rounded-md border border-base-100 hover:border-primary relative overflow-clip"
-      >
-        <picture class="block w-full h-full">
-          <img [nwImage]="item.BackgroundImagePath" class="w-full h-full object-cover" />
-        </picture>
-        <h3
-          class="absolute bottom-0 left-0 right-0 p-2 z-10 bg-black bg-opacity-50 flex flex-row gap-2 items-center text-2xl"
+      @for (item of modes$ | async; track $index) {
+        <a
+          [routerLink]="[item.id]"
+          [queryParamsHandling]="'preserve'"
+          class="bg-base-300 aspect-video rounded-md border border-base-100 hover:border-primary relative"
         >
-          <img *ngIf="item.IconPath" [nwImage]="item.IconPath" class="w-6 h-6 scale-150" />
-          <span [nwText]="item.DisplayName"></span>
-        </h3>
-      </a>
+          <picture class="block w-full h-full rounded-md overflow-clip">
+            <img [nwImage]="item.backgroundImage" class="w-full h-full object-cover" />
+          </picture>
+          @if (item.isMutated) {
+            <div class="absolute top-2 right-2 w-1/6 aspect-square animate-pulse" [@fade]="item.isMutated">
+              <img
+                [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
+                class="w-full aspect-square animate-spin-cw bg-opacity-40 bg-black rounded-full"
+              />
+            </div>
+          }
+          <h3
+            class="absolute bottom-0 left-0 right-0 p-2 z-10 bg-black bg-opacity-50 flex flex-row gap-2 items-center text-2xl rounded-b-md"
+          >
+            <img *ngIf="item.icon" [nwImage]="item.icon" class="w-6 h-6 scale-150" />
+            <span class="font-serif text-nw-description">{{ item.name | nwText }} </span>
+          </h3>
+        </a>
+      }
     </div>
   </div>
 </ng-template>
@@ -40,9 +49,19 @@
         </a>
       </li>
       <li *ngFor="let item of modes$ | async" [routerLinkActive]="'bordered'">
-        <a [routerLink]="[item.GameModeId]" [queryParamsHandling]="item.IsMutable ? 'preserve' : null">
-          <picture [nwIcon]="item.IconPath" class="w-6 h-6 scale-150"></picture>
-          <span [nwText]="item.DisplayName"></span>
+        <a [routerLink]="[item.id]" [queryParamsHandling]="item.isMutable ? 'preserve' : null">
+          <picture class="w-6 h-6 scale-150 relative">
+            <img [nwImage]="item.icon" />
+            @if (item.isMutated) {
+              <div class="absolute top-0 left-0 w-full h-full animate-spin-cw">
+                <img
+                  [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
+                  class="w-full aspect-square scale-150"
+                />
+              </div>
+            }
+          </picture>
+          <span>{{ item.name | nwText }} </span>
         </a>
       </li>
     </ng-container>

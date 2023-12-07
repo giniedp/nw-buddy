@@ -57,11 +57,19 @@ import { svgInfoCircle, svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { PaginationModule } from '~/ui/pagination'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, observeQueryParam, observeRouteParam, selectStream, shareReplayRefCount } from '~/utils'
+import {
+  HtmlHeadService,
+  eqCaseInsensitive,
+  observeQueryParam,
+  observeRouteParam,
+  selectStream,
+  shareReplayRefCount,
+} from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { VitalDetailModule } from '~/widgets/data/vital-detail'
 import { LootModule } from '~/widgets/loot'
+import { injectCurrentMutation } from './current-mutation.service'
 import { GameModeDetailStore } from './game-mode-detail.store'
 import { MutaCurseTileComponent } from './muta-curse-tile.component'
 import { MutaElementTileComponent } from './muta-element-tile.component'
@@ -143,14 +151,42 @@ export class GameModeDetailComponent implements OnInit {
   public trackByTabId: TrackByFunction<Tab> = (i, item) => item.id
 
   protected paramGameMode$ = selectStream(observeRouteParam(this.route, 'id'))
+  protected paramMutation$ = selectStream(
+    {
+      mutations: injectCurrentMutation(),
+      gameModeId: this.paramGameMode$,
+    },
+    ({ mutations, gameModeId }) => mutations?.find((it) => eqCaseInsensitive(it.expedition, gameModeId)),
+  )
+
   protected paramDifficulty$ = selectStream(observeQueryParam(this.route, 'difficulty'), (it) => Number(it) || null)
-  protected paramElement$ = selectStream(observeQueryParam(this.route, 'element'), (it) => it || null)
-  protected paramPromotion$ = selectStream(observeQueryParam(this.route, 'promotion'), (it) => it || null)
-  protected paramCurse$ = selectStream(observeQueryParam(this.route, 'curse'), (it) => it || null)
+  protected paramElement$ = selectStream(
+    {
+      mutation: this.paramMutation$,
+      element: observeQueryParam(this.route, 'element'),
+    },
+    ({ mutation, element }) => element || mutation?.element || null,
+  )
+  protected paramPromotion$ = selectStream(
+    {
+      mutation: this.paramMutation$,
+      promotion: observeQueryParam(this.route, 'promotion'),
+    },
+    ({ mutation, promotion }) => promotion || mutation?.promotion || null,
+  )
+  protected paramCurse$ = selectStream(
+    {
+      mutation: this.paramMutation$,
+      curse: observeQueryParam(this.route, 'curse'),
+    },
+    ({ mutation, curse }) => curse || mutation?.curse || null,
+  )
+
   protected paramTab$ = selectStream(observeQueryParam(this.route, 'tab'))
   protected paramPlayerLevel$ = selectStream(observeQueryParam(this.route, 'lvl'))
   protected adjustLevel$ = new BehaviorSubject<boolean>(false)
   protected adjustedLevel$ = new BehaviorSubject<number>(NW_MAX_CHARACTER_LEVEL)
+  protected isMutated$ = this.paramMutation$.pipe(map((it) => !!it))
 
   public iconExtern = svgSquareArrowUpRight
   public iconInfo = svgInfoCircle
