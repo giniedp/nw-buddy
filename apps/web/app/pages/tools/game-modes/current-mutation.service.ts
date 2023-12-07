@@ -16,7 +16,7 @@ export type MutationList = z.infer<typeof MutationListSchema>
 export type MutationEntry = z.infer<typeof MutationEntrySchema>
 
 const THROTTLE_IN_MINUTES = 5
-const API_ENDPOINT = 'https://www.nw-buddy.de/api/mutation'
+const API_ENDPOINT = 'https://www.nw-buddy.de/api/mutations'
 
 export const CURRENT_MUTATION = new InjectionToken<Observable<MutationList>>('CURRENT_MUTATION', {
   providedIn: 'root',
