@@ -1143,11 +1143,7 @@ export interface ItemDefinitionMaster {
   ArmorAppearanceF: string
   ArmorAppearanceM: string
   AttributionId: string
-  AudioCreated: string
   AudioDestroyed: string
-  AudioPickup: string
-  AudioPlace: string
-  AudioUse: string
   BindOnEquip: number
   BindOnPickup: number
   CanHavePerks: number
@@ -1251,10 +1247,6 @@ export interface ItemDefinitionMaster {
 export interface ItemDefinitionMtx {
   ArmorAppearanceF: string
   ArmorAppearanceM: string
-  AudioCreated: string
-  AudioPickup: string
-  AudioPlace: string
-  AudioUse: string
   BindOnPickup: number
   ConfirmBeforeUse: number
   ConsumeOnUse: number
@@ -2449,388 +2441,72 @@ export interface Lootbuckets {
   LootBucket99: string
   MatchOne1: string
   MatchOne10: string
-  MatchOne100: string
-  MatchOne101: string
-  MatchOne102: string
-  MatchOne103: string
-  MatchOne104: string
-  MatchOne105: string
-  MatchOne106: string
-  MatchOne107: string
-  MatchOne108: string
   MatchOne109: string
-  MatchOne11: string
   MatchOne110: string
-  MatchOne111: string
-  MatchOne112: string
   MatchOne113: string
   MatchOne114: string
-  MatchOne115: string
-  MatchOne116: string
   MatchOne117: string
   MatchOne118: string
-  MatchOne119: string
   MatchOne12: string
-  MatchOne120: string
   MatchOne121: string
   MatchOne122: string
-  MatchOne123: string
-  MatchOne124: string
-  MatchOne125: string
-  MatchOne126: string
-  MatchOne127: string
-  MatchOne128: string
-  MatchOne129: string
   MatchOne13: string
-  MatchOne130: string
-  MatchOne131: string
-  MatchOne132: string
-  MatchOne133: string
-  MatchOne134: string
-  MatchOne135: string
-  MatchOne136: string
-  MatchOne137: string
-  MatchOne138: string
-  MatchOne139: string
-  MatchOne14: string
   MatchOne140: string
-  MatchOne141: string
-  MatchOne142: string
-  MatchOne143: string
-  MatchOne144: string
-  MatchOne145: string
-  MatchOne146: string
-  MatchOne147: string
-  MatchOne148: string
+  MatchOne142: boolean
   MatchOne149: string
-  MatchOne15: string
+  MatchOne15: boolean
   MatchOne150: string
-  MatchOne151: string
-  MatchOne152: string
-  MatchOne153: string
-  MatchOne154: string
-  MatchOne155: string
-  MatchOne156: string
-  MatchOne157: string
-  MatchOne158: string
-  MatchOne159: string
-  MatchOne16: string
-  MatchOne160: string
-  MatchOne161: string
-  MatchOne162: string
-  MatchOne163: string
-  MatchOne164: string
-  MatchOne165: string
-  MatchOne166: string
-  MatchOne167: string
-  MatchOne168: string
-  MatchOne169: string
-  MatchOne17: string
-  MatchOne170: string
-  MatchOne171: string
-  MatchOne172: string
-  MatchOne173: string
-  MatchOne176: string
-  MatchOne177: string
-  MatchOne18: string
-  MatchOne19: string
-  MatchOne194: string
-  MatchOne196: string
-  MatchOne197: string
-  MatchOne198: string
-  MatchOne199: string
-  MatchOne2: string
-  MatchOne20: string
-  MatchOne200: string
-  MatchOne201: string
-  MatchOne202: string
-  MatchOne203: string
-  MatchOne204: string
-  MatchOne205: string
-  MatchOne206: string
-  MatchOne207: string
-  MatchOne209: string
-  MatchOne21: string
-  MatchOne210: string
-  MatchOne211: string
-  MatchOne212: string
+  MatchOne153: boolean
+  MatchOne154: boolean
+  MatchOne155: boolean
+  MatchOne156: boolean
+  MatchOne157: boolean
+  MatchOne158: boolean
+  MatchOne16: boolean
+  MatchOne168: boolean
+  MatchOne169: boolean
+  MatchOne170: boolean
+  MatchOne202: boolean
+  MatchOne21: boolean
   MatchOne213: string
-  MatchOne214: string
-  MatchOne215: string
-  MatchOne216: string
-  MatchOne217: string
-  MatchOne218: string
-  MatchOne219: string
-  MatchOne22: string
-  MatchOne220: string
-  MatchOne221: string
-  MatchOne222: string
-  MatchOne223: string
-  MatchOne224: string
-  MatchOne225: string
-  MatchOne226: string
-  MatchOne227: string
-  MatchOne228: string
-  MatchOne229: string
-  MatchOne23: string
-  MatchOne231: string
-  MatchOne232: string
-  MatchOne233: string
-  MatchOne234: string
-  MatchOne235: string
-  MatchOne236: string
-  MatchOne237: string
-  MatchOne238: string
-  MatchOne239: string
-  MatchOne24: string
-  MatchOne240: string
-  MatchOne241: string
-  MatchOne242: string
-  MatchOne243: string
-  MatchOne244: string
-  MatchOne245: string
+  MatchOne22: boolean
+  MatchOne225: boolean
+  MatchOne23: boolean
+  MatchOne233: boolean
+  MatchOne235: boolean
+  MatchOne24: boolean
+  MatchOne240: boolean
   MatchOne246: string
-  MatchOne247: string
-  MatchOne248: string
-  MatchOne249: string
-  MatchOne25: boolean
-  MatchOne250: string
-  MatchOne251: string
-  MatchOne252: string
-  MatchOne253: string
-  MatchOne254: string
-  MatchOne255: string
-  MatchOne256: string
-  MatchOne257: string
-  MatchOne258: string
-  MatchOne259: string
-  MatchOne26: boolean
-  MatchOne260: string
-  MatchOne261: string
-  MatchOne262: string
-  MatchOne263: string
-  MatchOne264: string
-  MatchOne265: string
-  MatchOne266: string
-  MatchOne267: string
-  MatchOne268: string
-  MatchOne269: string
-  MatchOne27: boolean
-  MatchOne270: string
-  MatchOne271: string
-  MatchOne272: string
-  MatchOne273: string
-  MatchOne274: string
-  MatchOne275: string
   MatchOne276: string
-  MatchOne277: string
-  MatchOne278: string
-  MatchOne279: string
-  MatchOne28: boolean
-  MatchOne280: string
-  MatchOne281: string
-  MatchOne282: string
-  MatchOne283: string
-  MatchOne284: string
-  MatchOne285: string
-  MatchOne286: string
-  MatchOne287: string
-  MatchOne288: string
-  MatchOne289: string
-  MatchOne29: boolean
-  MatchOne290: string
-  MatchOne291: string
-  MatchOne292: string
-  MatchOne293: string
-  MatchOne294: string
-  MatchOne295: string
-  MatchOne296: string
-  MatchOne297: string
-  MatchOne298: string
-  MatchOne299: string
   MatchOne3: string
-  MatchOne30: boolean
-  MatchOne300: boolean
-  MatchOne301: string
-  MatchOne302: string
-  MatchOne303: string
-  MatchOne304: string
-  MatchOne305: string
-  MatchOne306: string
-  MatchOne307: string
-  MatchOne309: string
-  MatchOne31: boolean
-  MatchOne310: string
-  MatchOne311: string
-  MatchOne312: string
-  MatchOne313: string
-  MatchOne314: string
-  MatchOne315: string
   MatchOne316: string
-  MatchOne317: string
-  MatchOne318: string
-  MatchOne319: string
-  MatchOne320: string
-  MatchOne321: string
-  MatchOne322: string
-  MatchOne323: string
-  MatchOne324: string
-  MatchOne325: string
-  MatchOne326: string
-  MatchOne327: string
-  MatchOne328: string
-  MatchOne329: string
-  MatchOne330: string
-  MatchOne331: string
-  MatchOne332: string
-  MatchOne333: string
-  MatchOne334: string
-  MatchOne335: string
-  MatchOne336: string
-  MatchOne337: string
-  MatchOne338: string
-  MatchOne339: string
-  MatchOne340: string
-  MatchOne341: string
-  MatchOne342: boolean
-  MatchOne343: boolean
-  MatchOne346: string
-  MatchOne347: boolean
-  MatchOne348: boolean
-  MatchOne349: boolean
+  MatchOne332: boolean
+  MatchOne333: boolean
+  MatchOne334: boolean
+  MatchOne335: boolean
+  MatchOne336: boolean
+  MatchOne340: boolean
   MatchOne350: string
-  MatchOne351: string
-  MatchOne352: string
-  MatchOne353: string
-  MatchOne354: string
-  MatchOne355: boolean
-  MatchOne356: boolean
-  MatchOne357: boolean
-  MatchOne358: string
-  MatchOne359: string
-  MatchOne360: string
-  MatchOne361: string
-  MatchOne362: string
-  MatchOne363: string
-  MatchOne364: string
-  MatchOne365: string
-  MatchOne366: string
-  MatchOne367: string
-  MatchOne368: string
-  MatchOne369: string
-  MatchOne370: string
-  MatchOne371: string
-  MatchOne372: string
-  MatchOne373: string
-  MatchOne374: string
-  MatchOne375: string
-  MatchOne376: string
-  MatchOne377: string
-  MatchOne378: string
-  MatchOne379: string
-  MatchOne380: string
-  MatchOne381: string
-  MatchOne382: string
-  MatchOne383: string
-  MatchOne384: string
-  MatchOne385: string
-  MatchOne386: string
   MatchOne387: string
-  MatchOne388: string
-  MatchOne389: string
-  MatchOne391: string
-  MatchOne392: string
-  MatchOne393: string
   MatchOne394: string
-  MatchOne395: string
-  MatchOne396: string
-  MatchOne397: string
-  MatchOne398: string
-  MatchOne399: string
   MatchOne4: string
-  MatchOne400: string
-  MatchOne401: boolean
-  MatchOne402: string
-  MatchOne403: string
-  MatchOne404: string
-  MatchOne405: string
-  MatchOne406: boolean
-  MatchOne407: boolean
-  MatchOne408: boolean
-  MatchOne409: boolean
-  MatchOne410: string
-  MatchOne411: boolean
+  MatchOne403: boolean
+  MatchOne404: boolean
   MatchOne412: boolean
   MatchOne413: boolean
-  MatchOne414: boolean
-  MatchOne415: boolean
-  MatchOne416: boolean
-  MatchOne417: boolean
-  MatchOne418: boolean
-  MatchOne421: string
-  MatchOne422: boolean
-  MatchOne423: boolean
-  MatchOne424: boolean
   MatchOne426: string
-  MatchOne427: string
-  MatchOne428: string
-  MatchOne429: boolean
-  MatchOne48: string
-  MatchOne49: string
-  MatchOne5: string
-  MatchOne50: string
-  MatchOne51: string
   MatchOne52: string
   MatchOne53: string
-  MatchOne55: string
-  MatchOne56: string
   MatchOne57: string
   MatchOne58: string
-  MatchOne59: string
-  MatchOne6: string
-  MatchOne60: string
-  MatchOne61: string
   MatchOne62: string
-  MatchOne63: string
   MatchOne64: string
   MatchOne65: string
   MatchOne66: string
-  MatchOne67: string
-  MatchOne68: string
-  MatchOne69: string
-  MatchOne7: string
-  MatchOne70: string
-  MatchOne71: string
-  MatchOne72: string
-  MatchOne73: string
-  MatchOne74: string
-  MatchOne75: string
-  MatchOne76: string
+  MatchOne76: boolean
   MatchOne77: string
-  MatchOne78: string
-  MatchOne79: string
-  MatchOne8: string
-  MatchOne80: string
-  MatchOne81: string
-  MatchOne82: string
-  MatchOne83: string
-  MatchOne84: string
-  MatchOne85: string
-  MatchOne86: string
+  MatchOne81: boolean
   MatchOne87: string
-  MatchOne88: string
-  MatchOne89: string
-  MatchOne9: string
-  MatchOne90: string
-  MatchOne91: string
-  MatchOne92: string
-  MatchOne93: string
-  MatchOne94: string
-  MatchOne95: string
-  MatchOne96: string
-  MatchOne97: string
-  MatchOne98: string
-  MatchOne99: string
   Quantity1: number
   Quantity10: number
   Quantity100: number
@@ -2883,7 +2559,6 @@ export interface Lootbuckets {
   Quantity143: number
   Quantity144: number
   Quantity145: number
-  Quantity146: number
   Quantity147: string
   Quantity148: number
   Quantity149: number
@@ -2914,8 +2589,6 @@ export interface Lootbuckets {
   Quantity171: number
   Quantity172: number
   Quantity173: number
-  Quantity174: number
-  Quantity175: number
   Quantity176: number
   Quantity177: number
   Quantity18: string
@@ -2935,7 +2608,6 @@ export interface Lootbuckets {
   Quantity205: number
   Quantity206: number
   Quantity207: number
-  Quantity208: number
   Quantity209: number
   Quantity21: string
   Quantity210: number
@@ -2991,7 +2663,6 @@ export interface Lootbuckets {
   Quantity257: number
   Quantity258: number
   Quantity259: number
-  Quantity26: number
   Quantity260: number
   Quantity261: number
   Quantity262: number
@@ -3002,7 +2673,6 @@ export interface Lootbuckets {
   Quantity267: number
   Quantity268: number
   Quantity269: number
-  Quantity27: number
   Quantity270: number
   Quantity271: number
   Quantity272: string
@@ -3024,7 +2694,6 @@ export interface Lootbuckets {
   Quantity287: number
   Quantity288: number
   Quantity289: number
-  Quantity29: number
   Quantity290: number
   Quantity291: number
   Quantity292: number
@@ -3045,7 +2714,6 @@ export interface Lootbuckets {
   Quantity305: number
   Quantity306: number
   Quantity307: number
-  Quantity308: number
   Quantity309: number
   Quantity31: number
   Quantity310: number
@@ -5142,24 +4810,9 @@ export interface Vitals {
   DeathsDoorTime: number
   DifficultyTierOverride: number
   DisplayName: string
-  DrinkBaseMax: number
-  DrinkBaseTickRate: number
-  DrinkFullyDepletedDelay: number
-  DrinkInitial: number
-  DrinkLowerThreshold: number
-  DrinkMin: number
-  DrinkTickDelay: number
-  DrinkUpperThreshold: number
   ElementalArmorRatingOverride: string
   ElementalMitigation: number
   Family: VitalsFamily
-  FoodBaseMax: number
-  FoodBaseTickRate: number
-  FoodFullyDepletedDelay: number
-  FoodInitial: number
-  FoodLowerThreshold: number
-  FoodTickDelay: number
-  FoodUpperThreshold: number
   GearScoreOverride: string
   HealthBaseMax: string
   HealthBaseTickRate: number
@@ -5272,24 +4925,9 @@ export interface VitalsFirstlight {
   DeathsDoorTime: number
   DifficultyTierOverride: number
   DisplayName: string
-  DrinkBaseMax: number
-  DrinkBaseTickRate: number
-  DrinkFullyDepletedDelay: number
-  DrinkInitial: number
-  DrinkLowerThreshold: number
-  DrinkMin: number
-  DrinkTickDelay: number
-  DrinkUpperThreshold: number
   ElementalArmorRatingOverride: number
   ElementalMitigation: number
   Family: string
-  FoodBaseMax: number
-  FoodBaseTickRate: number
-  FoodFullyDepletedDelay: number
-  FoodInitial: number
-  FoodLowerThreshold: number
-  FoodTickDelay: number
-  FoodUpperThreshold: number
   GearScoreOverride: number
   HealthBaseMax: number
   HealthBaseTickRate: number
@@ -5400,23 +5038,8 @@ export interface VitalsPlayer {
   DeathsDoorDelay: number
   DeathsDoorTime: number
   DisplayName: string
-  DrinkBaseMax: number
-  DrinkBaseTickRate: number
-  DrinkFullyDepletedDelay: number
-  DrinkInitial: number
-  DrinkLowerThreshold: number
-  DrinkMin: number
-  DrinkTickDelay: number
-  DrinkUpperThreshold: number
   ElementalArmorRatingOverride: string
   ElementalMitigation: number
-  FoodBaseMax: number
-  FoodBaseTickRate: number
-  FoodFullyDepletedDelay: number
-  FoodInitial: number
-  FoodLowerThreshold: number
-  FoodTickDelay: number
-  FoodUpperThreshold: number
   GearScoreOverride: string
   HealthBaseMax: string
   HealthBaseTickRate: number
@@ -5486,7 +5109,6 @@ export interface Vitalscategories {
   Icon: string
   IsDynamicPoiTarget: boolean
   IsNamed: boolean
-  LocStringGenerationHelper: string
   LocationHint: string
   LootDropChanceOverride: number
   MtlOverride: string
@@ -5847,10 +5469,6 @@ export type ItemClass =
   | 'WeaponOil'
   | 'WeaponSchematic'
   | 'Wood'
-  | 'flail'
-  | 'light'
-  | 'medium'
-  | 'roundShield'
 export type ItemType =
   | 'Ammo'
   | 'Armor'
@@ -13089,6 +12707,34 @@ export type WeaponTag =
   | 'Warhammer'
 
 
+export interface Gatherablesmetadata {
+    gatherableID: string;
+    mapIDs:       string[];
+    spawns:       Spawn[];
+}
+
+export interface Spawn {
+    lootTable: string;
+    position:  number[];
+}
+export interface Spellsmetadata {
+    AreaStatusEffects: string[];
+    PrefabPath:        string;
+}
+export interface Vitalsmetadata {
+    mapIDs:   string[];
+    models:   string[];
+    spawns:   Spawn[];
+    tables:   string[];
+    vitalsID: string;
+}
+
+export interface Spawn {
+    category?:    null | string;
+    damagetable?: string;
+    level:        number | null;
+    position:     number[];
+}
 export interface SandelementalHeavySandworm {
     AddDmg:                  number;
     AttackType?:             string;
@@ -13130,32 +12776,4 @@ export interface SandelementalHeavySandworm {
     SurfaceImpactEffect:     string;
     TargetCameraShakeID:     string;
     WeaponCategory:          string;
-}
-export interface Gatherablesmetadata {
-    gatherableID: string;
-    mapIDs:       string[];
-    spawns:       Spawn[];
-}
-
-export interface Spawn {
-    lootTable: string;
-    position:  number[];
-}
-export interface Spellsmetadata {
-    AreaStatusEffects: string[];
-    PrefabPath:        string;
-}
-export interface Vitalsmetadata {
-    mapIDs:   string[];
-    models:   string[];
-    spawns:   Spawn[];
-    tables:   string[];
-    vitalsID: string;
-}
-
-export interface Spawn {
-    category?:    null | string;
-    damagetable?: string;
-    level:        number | null;
-    position:     number[];
 }

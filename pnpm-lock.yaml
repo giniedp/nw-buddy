@@ -222,6 +222,9 @@ devDependencies:
   '@types/mime-types':
     specifier: 2.1.4
     version: 2.1.4
+  '@types/minimatch':
+    specifier: 5.1.2
+    version: 5.1.2
   '@types/mithril':
     specifier: 2.2.6
     version: 2.2.6
@@ -405,6 +408,9 @@ devDependencies:
   mime-types:
     specifier: 2.1.35
     version: 2.1.35
+  minimatch:
+    specifier: 9.0.3
+    version: 9.0.3
   mithril:
     specifier: 2.2.2
     version: 2.2.2
@@ -9439,6 +9445,10 @@ packages:
 
   /@types/minimatch@3.0.5:
     resolution: {integrity: sha512-Klz949h02Gz2uZCMGwDUSDS1YBlTdDDgbWHi+81l29tQALUtvz4rAYi5uoVhE5Lagoq6DeqAUlbrHvW/mXDgdQ==}
+    dev: true
+
+  /@types/minimatch@5.1.2:
+    resolution: {integrity: sha512-K0VQKziLUWkVKiRVrx4a40iPaxTUefQmjtkQofBkYRcoaaL/8rhwDWww9qWbrgicNOgnpIsMxyNIUM4+n6dUIA==}
     dev: true
 
   /@types/minimist@1.2.5:

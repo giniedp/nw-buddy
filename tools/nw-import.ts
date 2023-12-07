@@ -1,4 +1,5 @@
 import { program } from 'commander'
+import * as fs from 'fs'
 import { cpus } from 'os'
 import * as path from 'path'
 import { environment, NW_USE_PTR } from '../env'
@@ -9,14 +10,8 @@ import { importLocales, LOCALE_KEYS_TO_KEEP } from './importer/locales'
 import { generateSearch } from './importer/search'
 import { importSlices } from './importer/slices/import-slices'
 import { importSpells } from './importer/slices/import-spells'
-import {
-  importDatatables,
-  pathToDatatables,
-  rewriteImagePathRule,
-  TABLE_GLOB_PATTERNS,
-  TABLE_REMAP_RULES,
-} from './importer/tables'
-import { withProgressBar, writeJSONFile } from './utils'
+import { importDatatables, pathToDatatables } from './importer/tables'
+import { glob, withProgressBar, writeJSONFile } from './utils'
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
 }
@@ -53,6 +48,7 @@ program
     const distDir = environment.nwDataDir(options.ptr)!
     const typesDir = environment.libsDir('nw-data', 'generated')
     const threads = options.threads || cpus().length
+    const tablesOutDir = path.join(distDir, 'datatables')
 
     console.log('[IMPORT]', inputDir)
     console.log('     to:', distDir)
@@ -103,12 +99,7 @@ program
     }
 
     console.log('Tables')
-    const tables = await importDatatables({
-      inputDir: inputDir,
-      patterns: TABLE_GLOB_PATTERNS,
-      remap: TABLE_REMAP_RULES,
-      rewrite: [rewriteImagePathRule(inputDir)],
-    })
+    const tables = await importDatatables(inputDir)
 
     if (hasFilter(Importer.locales, options.module)) {
       console.log('Locales')
@@ -225,14 +216,45 @@ program
 
     if (hasFilter(Importer.tables, options.module)) {
       console.log('Tables')
-      await withProgressBar({ barName: 'Write', tasks: tables }, async ({ relative, data }, _, log) => {
-        const jsonPath = path.join(distDir, 'datatables', relative)
+
+      const oldFiles = await glob(path.join(tablesOutDir, '**/javelindata_*.json'))
+      const newFiles = tables
+        .map(({ file }) => path.join(tablesOutDir, file))
+        .map((it) => it.toLowerCase().replace(/\\/g, '/'))
+      const toRemove = oldFiles
+        .map((it) => it.toLowerCase().replace(/\\/g, '/'))
+        .filter((it) => {
+          return !newFiles.includes(it)
+        })
+
+      if (toRemove.length) {
+        await withProgressBar({ barName: 'Remove', tasks: toRemove }, async (file, _, log) => {
+          await fs.promises.unlink(file)
+        })
+      }
+      await withProgressBar({ barName: 'Write', tasks: tables }, async ({ file, data }, _, log) => {
+        const jsonPath = path.join(tablesOutDir, file)
         log(jsonPath)
         await writeJSONFile(data, jsonPath, {
           createDir: true,
         })
       })
 
+      const stats = newFiles.map((file) => {
+        const stat = fs.statSync(file)
+        return {
+          file, size: stat.size
+        }
+      })
+      const totalSizeInMB = stats.reduce((acc, { size }) => acc + size, 0) / 1024 / 1024
+      console.log(`Tables total size in MB:`, Number(totalSizeInMB.toFixed(2)))
+      const filesLargerThan10MB = stats.filter(({ size }) => size > 5 * 1024 * 1024).sort((a, b) => b.size - a.size)
+      if (filesLargerThan10MB.length) {
+        console.log(`Table files larger than 5 MB`)
+        for (const file of filesLargerThan10MB) {
+          console.log('  ', Number((file.size / 1024 / 1024).toFixed(2)), 'MB |',  file.file)
+        }
+      }
       // console.log('collect abilities')
       // await extractAbilities(inputDir, 'tmp')
 

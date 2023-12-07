@@ -1,6 +1,5 @@
-import { DataTableSource } from './tables'
 
-export function checkDamageTables(tables: DataTableSource[]) {
+export function checkDamageTables(tables: Array<{ file: string, data: any }>) {
   const ids = new Map<string, number>()
   tables
     .filter((it) => it.file.includes('_damagetable'))

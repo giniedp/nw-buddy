@@ -1,17 +1,16 @@
 import * as path from 'path'
 import * as fs from 'fs'
 
-import { DataTableSource } from '../importer/tables'
 import { generateApiService } from './generate-api-service'
 import { generateTableColumns } from './generate-table-columns'
 import { generateTableTypes } from './generate-table-types'
 import { generateInterfaces } from './generate-interfaces'
 
-export async function generateTypes(output: string, tables: DataTableSource[], format: 'json' | 'csv' = 'json') {
+export async function generateTypes(output: string, tables: Array<{ file: string, data: Array<any> }>, format: 'json' | 'csv' = 'json') {
   const javelinSamples = new Map<string, any[]>()
   const otherSamples = new Map<string, any[]>()
   const files = new Map<string, any[]>()
-  for (const { file, relative, data } of tables) {
+  for (const { file, data } of tables) {
     const type = pathToTypeName(file)
     const isJavelin = file.includes('javelindata_')
     if (isJavelin) {
@@ -27,7 +26,7 @@ export async function generateTypes(output: string, tables: DataTableSource[], f
       }
       otherSamples.get(type).push(data)
     }
-    files.get(type).push(relative.replace(/\.json$/, `.${format}`))
+    files.get(type).push(file.replace(/\.json$/, `.${format}`))
   }
 
   const javelinCols = generateTableColumns(javelinSamples)
