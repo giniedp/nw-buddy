@@ -74,7 +74,6 @@ jobs:
     resource_class: large
     environment:
       NODE_OPTIONS: --max_old_space_size=6144
-      NW_USE_PTR: true
     steps:
       - checkout
       - node/install:
@@ -89,7 +88,7 @@ jobs:
           command: pnpm i --frozen-lockfile
       - run:
           name: Download nw-data
-          command: pnpm nw-cdn download --ptr
+          command: pnpm nw-cdn download
       - run:
           name: Build Website
           command: pnpm build:web
