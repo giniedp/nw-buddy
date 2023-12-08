@@ -707,10 +707,11 @@ function getStatusEffectList(ids: string[], effects: Map<string, Statuseffect>) 
   const result: Statuseffect[] = []
   for (const id of ids || []) {
     const effect = effects.get(id)
-    if (!effect) {
+    if (effect) {
+      result.push(effect)
+    } else {
       console.warn(`missing effect ${id}`)
     }
-    result.push(effect)
   }
   return result
 }
