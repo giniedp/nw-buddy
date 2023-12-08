@@ -1,5 +1,5 @@
 export async function onRequest(context) {
-  const response = await fetch(`https://5ccmutations.azurewebsites.net/api/http_trigger`)
+  const response = await fetch(`https://mutations.5con.club/api/http_trigger`)
 	const data = await response.json()
   const result = Object.keys(data).map((key) => {
     const node = data[key]
