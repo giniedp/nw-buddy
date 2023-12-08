@@ -129,34 +129,48 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
     }),
   })
 
-  const resultVitals = Array.from(vitals.entries()).map(([id, { tables, spawns, mapIDs, models }]) => {
-    return {
-      vitalsID: id,
-      tables: Array.from(tables.values()).sort(),
-      mapIDs: Array.from(mapIDs.values()).sort(),
-      models: Array.from(models.values()).sort(),
-      spawns: uniqBy(spawns || [], ({ category, level, position, damagetable }) => {
-        return JSON.stringify({
-          category: (category || '').toLowerCase(),
-          level,
-          position: (position || []).map((it) => Number(it.toFixed(3))),
-          damagetable,
-        })
-      }),
-    }
-  })
-  const resultGatherables = Array.from(gatherables.entries()).map(([id, { spawns, mapIDs }]) => {
-    return {
-      gatherableID: id,
-      mapIDs: Array.from(mapIDs.values()).sort(),
-      spawns: uniqBy(spawns || [], ({ position, lootTable }) => {
-        return JSON.stringify({
-          position: (position || []).map((it) => Number(it.toFixed(3))),
-          loot: lootTable,
-        })
-      }),
-    }
-  })
+  const resultVitals = Array.from(vitals.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([id, { tables, spawns, mapIDs, models }]) => {
+      return {
+        vitalsID: id,
+        tables: Array.from(tables.values()).sort(),
+        mapIDs: Array.from(mapIDs.values()).sort(),
+        models: Array.from(models.values()).sort(),
+        spawns: uniqBy(spawns || [], ({ category, level, position, damagetable }) => {
+          return JSON.stringify({
+            category: (category || '').toLowerCase(),
+            level,
+            position: (position || []).map((it) => Number(it.toFixed(3))),
+            damagetable,
+          })
+        }).sort((a, b) => {
+          if (a.level !== b.level) {
+            return (a.level || 0) - (b.level || 0)
+          }
+          if (a.category !== b.category) {
+            return (a.category || '').localeCompare(b.category || '')
+          }
+          return String(a.position).localeCompare(String(b.position))
+        }),
+      }
+    })
+  const resultGatherables = Array.from(gatherables.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([id, { spawns, mapIDs }]) => {
+      return {
+        gatherableID: id,
+        mapIDs: Array.from(mapIDs.values()).sort(),
+        spawns: uniqBy(spawns || [], ({ position, lootTable }) => {
+          return JSON.stringify({
+            position: (position || []).map((it) => Number(it.toFixed(3))),
+            loot: lootTable,
+          })
+        }).sort((a, b) => {
+          return String(a.position).localeCompare(String(b.position))
+        }),
+      }
+    })
   return {
     vitals: sortBy(resultVitals, (it) => it.vitalsID),
     gatherables: sortBy(resultGatherables, (it) => it.gatherableID),
