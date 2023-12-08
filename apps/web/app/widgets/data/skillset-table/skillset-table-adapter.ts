@@ -1,12 +1,13 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { defer, filter } from 'rxjs'
+import { defer } from 'rxjs'
 import { SkillBuildsStore } from '~/data'
 import { NwDbService } from '~/nw'
 import { getWeaponTypeInfo } from '~/nw/weapon-types'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import { DataTableCategory, TABLE_GRID_ADAPTER_OPTIONS, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { selectStream } from '~/utils'
 import { SkillsetCellComponent } from './skillset-cell.component'
 import { SkillsetTableRecord, skillsetColName, skillsetColSkills, skillsetColWeapon } from './skillset-table-cols'
 
@@ -55,16 +56,20 @@ export class SkillsetTableAdapter implements DataViewAdapter<SkillsetTableRecord
     return this.entities
   }
 
-  public entities = defer(() => {
-    return this.config?.source || this.store.rows$
-  }).pipe(
-    filter((it) => {
-      if (!it) {
-        return false
+  public entities = selectStream({
+    items: defer(() => this.config?.source || this.store.rows$)
+  }, ({ items }) => {
+    items = items || []
+    const filter = this.config?.filter
+      if (filter) {
+        items = items.filter(filter)
       }
-      return this.config?.filter ? this.config.filter(it) : true
-    }),
-  )
+      const sort = this.config?.sort
+      if (sort) {
+        items = [...items].sort(sort)
+      }
+      return items
+  })
 }
 
 function buildOptions(util: TableGridUtils<SkillsetTableRecord>) {
