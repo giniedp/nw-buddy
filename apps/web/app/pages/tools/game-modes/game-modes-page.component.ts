@@ -1,17 +1,27 @@
+import { animate, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core'
 import { ActivatedRoute, RouterModule, RouterOutlet } from '@angular/router'
-import { Gamemodes } from '@nw-data/generated'
+import { Cursemutations, Elementalmutations, Gamemodes, PoiDefinition, Promotionmutations } from '@nw-data/generated'
 import { NwDbService, NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft } from '~/ui/icons/svg'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { eqCaseInsensitive, selectStream } from '~/utils'
+import { injectCurrentMutation } from './current-mutation.service'
 import { GameModesStore } from './game-modes.store'
-import { MutationEntry, MutationList, injectCurrentMutation } from './current-mutation.service'
-import { animate, style, transition, trigger } from '@angular/animations'
+import { MutaCurseTileComponent } from './muta-curse-tile.component'
+import { MutaElementTileComponent } from './muta-element-tile.component'
+import { MutaPromotionTileComponent } from './muta-promotion-tile.component'
 
 type GameModeCategories = 'expeditions' | 'trials' | 'pvp'
+
+export interface CurrentMutation {
+  expedition: string
+  element: Elementalmutations
+  promotion: Promotionmutations
+  curse: Cursemutations
+}
 
 @Component({
   standalone: true,
@@ -19,7 +29,16 @@ type GameModeCategories = 'expeditions' | 'trials' | 'pvp'
   templateUrl: './game-modes-page.component.html',
   styleUrls: ['./game-modes-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, NwModule, NavbarModule, IconsModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    NwModule,
+    NavbarModule,
+    IconsModule,
+    MutaElementTileComponent,
+    MutaCurseTileComponent,
+    MutaPromotionTileComponent,
+  ],
   providers: [GameModesStore],
   host: {
     class: 'layout-col bg-base-300 rounded-md overflow-clip',
@@ -32,24 +51,44 @@ type GameModeCategories = 'expeditions' | 'trials' | 'pvp'
   ],
 })
 export class GameModesPageComponent {
-
   protected groups$ = selectStream(this.db.data.gamemodes(), groupByCategory)
   protected categories$ = selectStream(this.groups$, (it) => Object.keys(it).sort())
   protected categoryId$ = selectStream(this.route.paramMap, (it) => it.get('category'))
   protected modes$ = selectStream(
     {
+      pois: this.db.pois,
       categories: this.groups$,
       category: this.categoryId$,
       mutations: injectCurrentMutation(),
+      cursesMap: this.db.mutatorCursesMap,
+      elements: this.db.mutatorElements,
+      promotionsMap: this.db.mutatorPromotionsMap,
     },
-    ({ categories, category, mutations }) => selectCategory(categories, category, mutations)
+    ({ pois, categories, category, mutations, cursesMap, elements, promotionsMap }) => {
+      return selectCategory(
+        pois,
+        categories,
+        category,
+        mutations?.map((it) => {
+          return {
+            expedition: it.expedition,
+            element: elements.find((el) => el.CategoryWildcard === el.CategoryWildcard && el.ElementalDifficultyTier === 3),
+            promotion: promotionsMap.get(it.promotion),
+            curse: cursesMap.get(it.curse),
+          }
+        }) || [],
+      )
+    },
   )
 
   @ViewChild(RouterOutlet, { static: true })
   protected outlet: RouterOutlet
   protected iconBack = svgChevronLeft
 
-  public constructor(private db: NwDbService, private route: ActivatedRoute) {
+  public constructor(
+    private db: NwDbService,
+    private route: ActivatedRoute,
+  ) {
     //
   }
 }
@@ -67,8 +106,8 @@ function groupByCategory(modes: Gamemodes[]) {
   return groups
 }
 
-function selectCategory(categories: Record<string, Gamemodes[]>, category: string, mutations: MutationList) {
-
+function selectCategory(pois: PoiDefinition[], categories: Record<string, Gamemodes[]>, category: string, mutations: Array<CurrentMutation>) {
+  pois = pois.filter((it) => !!it.GameMode)
   let modes: Gamemodes[] = []
   if (category === 'all') {
     modes = Object.entries(categories)
@@ -78,18 +117,23 @@ function selectCategory(categories: Record<string, Gamemodes[]>, category: strin
     modes = categories[category] || []
   }
 
-  return modes.sort((a, b) => a.RequiredLevel - b.RequiredLevel).map((mode) => {
-    const mutation = mutations?.find((it) => eqCaseInsensitive(it.expedition, mode.GameModeId))
-    return {
-      id: mode.GameModeId,
-      icon: mode.IconPath,
-      backgroundImage: mode.BackgroundImagePath,
-      name: mode.DisplayName,
-      isMutable: mode.IsMutable,
-      isMutated: !!mutation,
-      mutation: mutation
-    }
-  })
+  return modes
+    .sort((a, b) => a.RequiredLevel - b.RequiredLevel)
+    .map((mode) => {
+      const poi = pois.find((it) => eqCaseInsensitive(it.GameMode, mode.GameModeId))
+      const mutation = mutations?.find((it) => eqCaseInsensitive(it.expedition, mode.GameModeId))
+
+      return {
+        id: mode.GameModeId,
+        icon: mode.IconPath,
+        backgroundImage: mode.BackgroundImagePath,
+        title: poi?.NameLocalizationKey || mode.DisplayName,
+        description: poi ? `${poi.NameLocalizationKey}_description` : mode.Description,
+        isMutable: mode.IsMutable,
+        isMutated: !!mutation,
+        mutation: mutation,
+      }
+    })
 }
 
 function detectCategory(mode?: Gamemodes): GameModeCategories {

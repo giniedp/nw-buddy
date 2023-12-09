@@ -1,10 +1,19 @@
-import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, HostListener, OnInit, Output, TemplateRef, ViewChild, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { Cursemutations } from '@nw-data/generated'
-import { NwModule } from '~/nw'
-import { GameModeDetailStore } from './game-mode-detail.store'
 import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay'
+import { CommonModule } from '@angular/common'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  HostBinding,
+  HostListener,
+  Input,
+  Output,
+  TemplateRef,
+  ViewChild,
+  inject,
+} from '@angular/core'
+import { Cursemutations, Elementalmutations } from '@nw-data/generated'
+import { NwModule } from '~/nw'
 import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
 import { MutaCurseDetailModule } from '~/widgets/data/muta-curse-detail'
 
@@ -20,22 +29,27 @@ import { MutaCurseDetailModule } from '~/widgets/data/muta-curse-detail'
   },
 })
 export class MutaCurseTileComponent {
-  private store = inject(GameModeDetailStore)
   protected cdkOrigin = inject(CdkOverlayOrigin)
   protected tip = inject(TooltipDirective)
 
-  public selection = toSignal(this.store.mutaCurse$)
-  public options = toSignal(this.store.mutaCurseOptions$)
-  public mutaElement = toSignal(this.store.mutaElement$)
+  @Input({ required: true })
+  public mutaCurse: Cursemutations
+
+  @Input({ required: true })
+  public mutaElement: Elementalmutations
+
+  @Input()
+  public options: Array<{ label: string; value: string; icon: string; object: Cursemutations }>
+
 
   @HostBinding('style.background-color')
   protected get backgroundColor() {
-    return `rgba(${this.mutaElement()?.BackgroundColor}, 0.75)`
+    return `rgba(${this.mutaElement?.BackgroundColor}, 0.75)`
   }
 
   @HostBinding('style.color')
   protected get textColor() {
-    return `rgb(${this.mutaElement()?.TextColor})`
+    return `rgb(${this.mutaElement?.TextColor})`
   }
 
   @ViewChild('tplTip')
@@ -45,18 +59,17 @@ export class MutaCurseTileComponent {
   }
 
   @Output()
-  public selectionChanged = new EventEmitter<Cursemutations>()
+  public mutaCurseChanged = new EventEmitter<Cursemutations>()
 
   protected isMenuOpen = false
 
   @HostListener('click')
   public onClick() {
-    this.isMenuOpen = true
+    this.isMenuOpen = this.options?.length > 0
   }
 
   protected select(value: Cursemutations) {
     this.isMenuOpen = false
-    this.selectionChanged.emit(value)
+    this.mutaCurseChanged.emit(value)
   }
-
 }

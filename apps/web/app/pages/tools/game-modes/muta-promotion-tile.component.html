@@ -1,17 +1,17 @@
 <picture class="w-12 h-12 aspect-square m-0">
-  <img [nwImage]="selection()?.IconPath" />
+  <img [nwImage]="mutaPromotion?.IconPath" />
 </picture>
 <div class="flex flex-col leading-none gap-1">
   <span class="text-white uppercase font-nimbus">Promotion</span>
   <span class="font-caslon text-2xl leading-none">
-    {{ selection()?.Name | nwText }}
+    {{ mutaPromotion?.Name | nwText }}
   </span>
 </div>
 
 <ng-template #tplTip>
   <nwb-muta-promotion-detail
-    [promotionId]="selection()?.PromotionMutationId"
-    [elementId]="mutaElement()?.ElementalMutationId"
+    [promotionId]="mutaPromotion?.PromotionMutationId"
+    [elementId]="mutaElement?.ElementalMutationId"
     class="w-80"
   ></nwb-muta-promotion-detail>
 </ng-template>
@@ -28,7 +28,7 @@
 >
   <div class="w-80 max-h-[80vh] overflow-auto bg-base-200 border border-base-100 rounded-md shadow-lg">
     <ul class="menu menu-compact menu-vertical">
-      <li *ngFor="let item of options()">
+      <li *ngFor="let item of options">
         <a (click)="select(item.object)">
           <picture>
             <img [nwImage]="item.icon" class="w-4 h-4" />

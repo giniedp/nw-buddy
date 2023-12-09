@@ -6,13 +6,14 @@ import {
   EventEmitter,
   HostBinding,
   HostListener,
+  Input,
   Output,
   TemplateRef,
   ViewChild,
   inject,
 } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { Promotionmutations } from '@nw-data/generated'
+import { Elementalmutations, Promotionmutations } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { GameModeDetailStore } from './game-mode-detail.store'
 import { MutaPromotionDetailModule } from '~/widgets/data/muta-promotion-detail'
@@ -30,22 +31,27 @@ import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
   },
 })
 export class MutaPromotionTileComponent {
-  private store = inject(GameModeDetailStore)
+
   protected cdkOrigin = inject(CdkOverlayOrigin)
   protected tip = inject(TooltipDirective)
 
-  public selection = toSignal(this.store.mutaPromotion$)
-  public options = toSignal(this.store.mutaPromotionOptions$)
-  public mutaElement = toSignal(this.store.mutaElement$)
+  @Input({ required: true })
+  public mutaPromotion: Promotionmutations
+
+  @Input({ required: true })
+  public mutaElement: Elementalmutations
+
+  @Input()
+  public options: Array<{ label: string; value: string; icon: string; object: Promotionmutations }>
 
   @HostBinding('style.background-color')
   protected get backgroundColor() {
-    return `rgba(${this.selection()?.BackgroundColor}, 0.75)`
+    return `rgba(${this.mutaPromotion?.BackgroundColor}, 0.75)`
   }
 
   @HostBinding('style.color')
   protected get textColor() {
-    return `rgb(${this.selection()?.TextColor})`
+    return `rgb(${this.mutaPromotion?.TextColor})`
   }
 
   @ViewChild('tplTip')
@@ -55,17 +61,17 @@ export class MutaPromotionTileComponent {
   }
 
   @Output()
-  public selectionChanged = new EventEmitter<Promotionmutations>()
+  public mutaPromotionChanged = new EventEmitter<Promotionmutations>()
 
   protected isMenuOpen = false
 
   @HostListener('click')
   public onClick() {
-    this.isMenuOpen = true
+    this.isMenuOpen = this.options?.length > 0
   }
 
   protected select(value: Promotionmutations) {
     this.isMenuOpen = false
-    this.selectionChanged.emit(value)
+    this.mutaPromotionChanged.emit(value)
   }
 }

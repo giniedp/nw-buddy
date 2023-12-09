@@ -85,7 +85,6 @@
         <h2 class="mb-0 font-normal font-serif tracking-wider uppercase flex flex-row items-center gap-2">
           <span>Weekly Mutations </span>
           @if (isMutated$ | async) {
-
             <picture class="inline-block w-8 m-0 animate-pulse" [@fade]="true">
               <img
                 [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
@@ -98,13 +97,27 @@
         <div class="nw-item-divider max-w-lg mb-2"></div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 max-w-3xl">
           @if (store.mutaElementAvailable$ | async) {
-            <nwb-muta-element-tile (selectionChanged)="onMutaElementSelected($event)" />
+            <nwb-muta-element-tile
+              [mutaElement]="store.mutaElement$ | async"
+              (mutaElementChanged)="onMutaElementSelected($event)"
+              [options]="store.mutaElementOptions$ | async"
+            />
           }
           @if (store.mutaPromotionAvailable$ | async) {
-            <nwb-muta-promotion-tile (selectionChanged)="onMutaPromotionSelected($event)" />
+            <nwb-muta-promotion-tile
+              [mutaPromotion]="store.mutaPromotion$ | async"
+              [mutaElement]="store.mutaElement$ | async"
+              (mutaPromotionChanged)="onMutaPromotionSelected($event)"
+              [options]="store.mutaPromotionOptions$ | async"
+            />
           }
           @if (store.mutaCurseAvailable$ | async) {
-            <nwb-muta-curse-tile (selectionChanged)="onMutaCurseSelected($event)" />
+            <nwb-muta-curse-tile
+              [mutaCurse]="store.mutaCurse$ | async"
+              [mutaElement]="store.mutaElement$ | async"
+              (mutaCurseChanged)="onMutaCurseSelected($event)"
+              [options]="store.mutaCurseOptions$ | async"
+            />
           }
         </div>
       </section>
@@ -290,7 +303,7 @@
 
 <ng-template #tplDungeonBosses>
   <div class="grid grid-vitals layout-gap">
-    @for(item of creaturesBosses$ | async; track $index) {
+    @for (item of creaturesBosses$ | async; track $index) {
       <nwb-vital-detail-card
         [vitalId]="item?.VitalsID"
         [level]="creatureLevel$ | async"
@@ -303,7 +316,7 @@
 
 <ng-template #tplDungeonNamed>
   <div class="grid grid-vitals layout-gap">
-    @for(item of creaturesNamed$ | async; track $index) {
+    @for (item of creaturesNamed$ | async; track $index) {
       <nwb-vital-detail-card
         [vitalId]="item?.VitalsID"
         [level]="creatureLevel$ | async"
@@ -311,13 +324,12 @@
         [mutaDifficulty]="difficultyLevel"
       />
     }
-
   </div>
 </ng-template>
 
 <ng-template #tplDungeonCreatures>
   <div class="grid grid-vitals layout-gap">
-    @for(item of creatures$ | async; track $index) {
+    @for (item of creatures$ | async; track $index) {
       <nwb-vital-detail-card
         [vitalId]="item?.VitalsID"
         [level]="creatureLevel$ | async"

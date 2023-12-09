@@ -1,13 +1,21 @@
+import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, EventEmitter, HostBinding, HostListener, Output, TemplateRef, ViewChild, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  EventEmitter,
+  HostBinding,
+  HostListener,
+  Input,
+  Output,
+  TemplateRef,
+  ViewChild,
+  inject,
+} from '@angular/core'
 import { Elementalmutations } from '@nw-data/generated'
 import { NwModule } from '~/nw'
-import { GameModeDetailStore } from './game-mode-detail.store'
-import { CdkMenuModule } from '@angular/cdk/menu'
-import { CdkOverlayOrigin, OverlayModule } from '@angular/cdk/overlay'
-import { MutaElementDetailModule } from '~/widgets/data/muta-element-detail'
 import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
+import { MutaElementDetailModule } from '~/widgets/data/muta-element-detail'
 
 @Component({
   standalone: true,
@@ -21,21 +29,23 @@ import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
   },
 })
 export class MutaElementTileComponent {
-  private store = inject(GameModeDetailStore)
   protected cdkOrigin = inject(CdkOverlayOrigin)
   protected tip = inject(TooltipDirective)
 
-  public selection = toSignal(this.store.mutaElement$)
-  public options = toSignal(this.store.mutaElementOptions$)
+  @Input({ required: true })
+  public mutaElement: Elementalmutations
+
+  @Input()
+  public options: Array<{ label: string; value: string; icon: string; object: Elementalmutations }>
 
   @HostBinding('style.background-color')
   protected get backgroundColor() {
-    return `rgba(${this.selection()?.BackgroundColor}, 0.75)`
+    return `rgba(${this.mutaElement?.BackgroundColor}, 0.75)`
   }
 
   @HostBinding('style.color')
   protected get textColor() {
-    return `rgb(${this.selection()?.TextColor})`
+    return `rgb(${this.mutaElement?.TextColor})`
   }
 
   @ViewChild('tplTip')
@@ -45,17 +55,17 @@ export class MutaElementTileComponent {
   }
 
   @Output()
-  public selectionChanged = new EventEmitter<Elementalmutations>()
+  public mutaElementChanged = new EventEmitter<Elementalmutations>()
 
   protected isMenuOpen = false
 
   @HostListener('click')
   public onClick() {
-    this.isMenuOpen = true
+    this.isMenuOpen = this.options?.length > 0
   }
 
   protected select(value: Elementalmutations) {
     this.isMenuOpen = false
-    this.selectionChanged.emit(value)
+    this.mutaElementChanged.emit(value)
   }
 }
