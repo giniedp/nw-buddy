@@ -7,7 +7,7 @@ import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { HtmlHeadService } from '~/utils'
-import { combineLatestOrEmpty } from '~/utils/combine-latest-or-empty'
+import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
 import { TrophiesRecord, TrophiesTableAdapter } from './adapter'
 
 @Component({

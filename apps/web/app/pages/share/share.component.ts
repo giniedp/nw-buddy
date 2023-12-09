@@ -9,10 +9,12 @@ import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgShareNodes } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/layout'
-import { deferState, observeRouteParam } from '~/utils'
+import { observeRouteParam } from '~/utils'
+import { suspensify } from '~/utils/rx/suspensify'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { SkillBuilderComponent } from '~/widgets/skill-builder'
 import { ShareService } from './share.service'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -29,16 +31,16 @@ export class ShareComponent {
   protected iconInfo = svgCircleExclamation
   protected iconShare = svgShareNodes
 
-  protected state$ = deferState(() =>
-    observeRouteParam(this.route, 'cid').pipe(switchMap((info) => this.web3.downloadbyCid(info)))
-  )
+  protected cid$ = observeRouteParam(this.route, 'cid')
+  protected data$ = this.cid$.pipe(switchMap((info) => this.web3.downloadbyCid(info)))
+  protected state = toSignal(this.data$.pipe(suspensify()))
 
   public constructor(
     private route: ActivatedRoute,
     private router: Router,
     private web3: ShareService,
     private dialog: Dialog,
-    private skillsDb: SkillBuildsDB
+    private skillsDb: SkillBuildsDB,
   ) {
     //
   }
@@ -62,7 +64,7 @@ export class ShareComponent {
             name: name,
           }
           return this.skillsDb.create(record)
-        })
+        }),
       )
       .subscribe({
         next: (record) => {

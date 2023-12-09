@@ -12,7 +12,7 @@ import {
 } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { Observable, ReplaySubject, Subject, defer, filter, merge, skipWhile, take, takeUntil, tap } from 'rxjs'
-import { runOutsideZone } from '~/utils/run-in-zone'
+import { runOutsideZone } from '~/utils/rx/run-in-zone'
 import { AngularFrameworkComponentWrapper } from './component-wrapper/angular-framework-component-wrapper'
 import { AngularFrameworkOverrides } from './component-wrapper/angular-framework-overrides'
 import { fromGridEvent } from './from-grid-event'

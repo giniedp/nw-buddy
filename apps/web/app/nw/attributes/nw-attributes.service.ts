@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { Attributeconstitution } from '@nw-data/generated'
 import { map, of } from 'rxjs'
-import { shareReplayRefCount } from '~/utils'
+import { shareReplayRefCount } from '~/utils/rx'
 import { NwDbService } from '../nw-db.service'
 import { AttributeRef, NW_ATTRIBUTE_TYPES } from '@nw-data/common'
 

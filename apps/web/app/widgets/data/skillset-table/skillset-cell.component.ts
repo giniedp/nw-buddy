@@ -8,7 +8,7 @@ import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } fr
 import { NW_FALLBACK_ICON, getAbilityCategoryTag } from '@nw-data/common'
 import { Observable, ReplaySubject, combineLatest, map, of, switchMap } from 'rxjs'
 import { selectSignal } from '~/utils'
-import { combineLatestOrEmpty } from '~/utils/combine-latest-or-empty'
+import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
 import { EmptyComponent } from '~/widgets/empty'
 import { SkillTreeStore } from '~/widgets/skill-builder/skill-tree.store'
 import { SkillsetTableRecord } from './skillset-table-cols'

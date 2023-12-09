@@ -6,7 +6,7 @@ import { Observable, combineLatest, from, map, of, switchMap, tap } from 'rxjs'
 
 import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { NwDbService } from '~/nw'
-import { combineLatestOrEmpty } from '~/utils/combine-latest-or-empty'
+import { combineLatestOrEmpty } from '~/utils/rx/combine-latest-or-empty'
 import { GearsetCreateMode, GearsetRecord, GearsetsDB } from './gearsets.db'
 import { ImagesDB } from './images.db'
 import { ItemInstance, ItemInstancesDB } from './item-instances.db'

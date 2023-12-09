@@ -28,7 +28,7 @@ import {
   takeUntil,
 } from 'rxjs'
 import { shareReplayRefCount } from '~/utils'
-import { runInZone } from '~/utils/run-in-zone'
+import { runInZone } from '~/utils/rx/run-in-zone'
 import { TooltipComponent } from './tooltip.component'
 
 export declare type TooltipDirectionX = 'left' | 'right'

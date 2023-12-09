@@ -11,7 +11,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
 import { HtmlHeadService } from '~/utils'
 import { EmbedHeightDirective } from '~/utils/directives/embed-height.directive'
-import { suspensify } from '~/utils/rx-suspensify'
+import { suspensify } from '~/utils/rx/suspensify'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { SkillBuilderComponent } from '~/widgets/skill-builder'
 

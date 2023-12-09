@@ -30,8 +30,8 @@ import {
 import { LocaleService } from '~/i18n'
 import { AgGrid, AgGridDirective } from '~/ui/data/ag-grid'
 import { gridDisplayRowCount, gridGetPinnedTopData } from '~/ui/data/ag-grid/utils'
-import { runInZone } from '~/utils/run-in-zone'
-import { debounceSync, selectStream, tapDebug } from '~/utils/rx-operators'
+import { runInZone } from '~/utils/rx/run-in-zone'
+import { debounceSync, selectStream, tapDebug } from '~/utils'
 import { TableGridPersistenceService } from './table-grid-persistence.service'
 import { TableGridStore } from './table-grid.store'
 

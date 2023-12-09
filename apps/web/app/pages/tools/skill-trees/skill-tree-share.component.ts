@@ -14,7 +14,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
 import { PromptDialogComponent } from '~/ui/layout'
 import { HtmlHeadService } from '~/utils'
-import { suspensify } from '~/utils/rx-suspensify'
+import { suspensify } from '~/utils/rx/suspensify'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { SkillBuilderComponent } from '~/widgets/skill-builder'
 

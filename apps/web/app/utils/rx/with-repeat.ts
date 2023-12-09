@@ -1,8 +1,8 @@
 import { Observable, map, startWith, switchMap } from 'rxjs'
 
-export function withUpdate<T>(source: Observable<unknown>) {
+export function withRepeat<T>(repeater$: Observable<unknown>) {
   return switchMap((value: T) => {
-    return source.pipe(
+    return repeater$.pipe(
       map(() => value),
       startWith(value)
     )

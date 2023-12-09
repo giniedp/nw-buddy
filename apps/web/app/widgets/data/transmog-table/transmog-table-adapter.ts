@@ -19,7 +19,7 @@ import { TRANSMOG_CATEGORIES, isAppearanceInTransmogCategory } from '../transmog
 import { TransmogService } from '../transmog/transmog.service'
 import { TransmogCellComponent } from './transmog-cell.component'
 import { TransmogRecord } from './types'
-import { withUpdate } from '~/utils'
+import { withRepeat } from '~/utils'
 
 @Injectable()
 export class TransmogTableAdapter implements TableGridAdapter<TransmogRecord>, DataViewAdapter<TransmogRecord> {
@@ -64,7 +64,7 @@ export class TransmogTableAdapter implements TableGridAdapter<TransmogRecord>, D
   }
 
   private source$ = this.service.transmogItems$.pipe(
-    withUpdate(this.i18n.locale.value$),
+    withRepeat(this.i18n.locale.value$),
     map((list) => {
       if (this.config?.filter) {
         list = list.filter(this.config.filter)
