@@ -558,6 +558,57 @@ export interface Attributestrength {
   StaminaRate: number
 }
 
+export interface Backstorydata {
+  AchievementUnlockOverride: string[]
+  AddToLoadouts: boolean
+  Arcana: number
+  Armoring: number
+  Azoth: number
+  AzothStaff: number
+  BackstoryID: string
+  BackstoryName: string
+  BackstoryText: string
+  CampUnlockTier: number
+  CategoricalProgression: string[]
+  Constitution: number
+  ConversationUnlockOverride: string
+  Cooking: number
+  Currency: number
+  Dexterity: number
+  Engineering: number
+  FactionOverride: string
+  FactionReputation: number
+  FactionTokens: number
+  Focus: number
+  Furnishing: number
+  Harvesting: number
+  Intelligence: number
+  InventoryItem: string[]
+  Jewelcrafting: number
+  Leatherworking: number
+  LevelOverride: number
+  Logging: number
+  LootTableIndex: number
+  Mining: number
+  Musician: number
+  ObjectiveUnlockOverride: string[]
+  OutpostRushMaxMMROverride: number
+  OutpostRushMinMMROverride: number
+  PlaytestType: string
+  Purpose: string
+  PvPFlag: boolean
+  RepairParts: number
+  RespawnPointTerritories: string[]
+  Skinning: number
+  Smelting: number
+  Stonecutting: number
+  Strength: number
+  WeaponMasteries: string[]
+  Weaponsmithing: number
+  Weaving: number
+  Woodworking: number
+}
+
 export interface Buffbuckets {
   Buff1: string
   Buff2: string

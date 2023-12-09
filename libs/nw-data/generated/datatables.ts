@@ -10,6 +10,7 @@ import type {
   Attributefocus,
   Attributeintelligence,
   Attributestrength,
+  Backstorydata,
   Buffbuckets,
   Categoricalprogression,
   CooldownsPlayer,
@@ -135,6 +136,9 @@ export abstract class NwDataLoader {
   }
   public attributestrength() {
     return this.load<Attributestrength[]>('javelindata_attributestrength.json')
+  }
+  public backstorydata() {
+    return this.load<Backstorydata[]>('javelindata_backstorydata.json')
   }
   public buffbuckets() {
     return this.load<Buffbuckets[]>('javelindata_buffbuckets.json')

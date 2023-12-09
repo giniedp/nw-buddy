@@ -17,7 +17,7 @@ const ITEM_CLASS_FIXES = {
 }
 
 const COMPARE_TYPE_FIXES = {
-  LessthanOrEqual: 'LessThanOrEqual'
+  LessthanOrEqual: 'LessThanOrEqual',
 }
 
 export const TABLE_IMPORT_RULES = [
@@ -99,6 +99,19 @@ export const TABLE_IMPORT_RULES = [
   tableSource('javelindata_gamemodes', [
     mapPropToArray({
       keys: ['PossibleItemDropIds', 'PossibleItemDropIdsByLevel01', 'LootTags', 'MutLootTagsOverride'],
+      separator: ',',
+    }),
+  ]),
+  tableSource('javelindata_backstorydata', [
+    mapPropToArray({
+      keys: [
+        'ObjectiveUnlockOverride',
+        'AchievementUnlockOverride',
+        'WeaponMasteries',
+        'CategoricalProgression',
+        'RespawnPointTerritories',
+        'InventoryItem',
+      ],
       separator: ',',
     }),
   ]),
@@ -219,8 +232,8 @@ export const TABLE_IMPORT_RULES = [
   tableSource('weaponabilities/*_ability_*', [
     mapProp(['NumberOfHitsComparisonType'], (value: string) => {
       value = value.replace('&#160;', '')
-        value = COMPARE_TYPE_FIXES[value] || value
-        return value
+      value = COMPARE_TYPE_FIXES[value] || value
+      return value
     }),
     mapPropToArray({
       keys: [
