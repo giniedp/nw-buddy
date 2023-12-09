@@ -1,19 +1,8 @@
-import {
-  NW_FALLBACK_ICON,
-  NW_MAX_CHARACTER_LEVEL,
-  NW_MAX_GEAR_SCORE_BASE,
-  getAbilityCategoryTag,
-  getWeaponTagLabel,
-} from '@nw-data/common'
-import { Ability, COLS_ABILITY, Statuseffect } from '@nw-data/generated'
-import { map, switchMap } from 'rxjs'
-import { sanitizeHtml } from '~/nw'
-import { NwWeaponType } from '~/nw/weapon-types'
+import { NumberFilter } from '@ag-grid-community/core'
 import { SelectFilter } from '~/ui/data/ag-grid'
-import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
-import { ArmorWeightSet, SLOT_IDS } from './armor-weights.store'
+import { ArmorWeightSet } from './armor-weights.store'
 
 export type ArmorWeightTableUtils = TableGridUtils<ArmorWeightTableRecord>
 export type ArmorWeightTableRecord = ArmorWeightSet
@@ -27,29 +16,29 @@ export function armorWeightColIcon(util: ArmorWeightTableUtils) {
     pinned: true,
     width: 62,
     cellClass: ['overflow-visible'],
-  //   cellRenderer: util.cellRenderer(({ data }) => {
-  //     return util.elA(
-  //       {
-  //         attrs: {
-  //           href: util.tipLink('ability', data.AbilityID),
-  //           target: '_blank',
-  //         },
-  //       },
-  //       util.elImg({
-  //         src: data.Icon || NW_FALLBACK_ICON,
-  //         class: [
-  //           'aspect-square',
-  //           'transition-all',
-  //           'translate-x-0',
-  //           'hover:translate-x-1',
-  //           'nw-icon',
-  //           `bg-ability-${getAbilityCategoryTag(data)}`,
-  //           data?.IsActiveAbility ? 'rounded-sm' : 'rounded-full',
-  //           data?.WeaponTag ? 'border' : null,
-  //         ],
-  //       })
-  //     )
-  //   }),
+    //   cellRenderer: util.cellRenderer(({ data }) => {
+    //     return util.elA(
+    //       {
+    //         attrs: {
+    //           href: util.tipLink('ability', data.AbilityID),
+    //           target: '_blank',
+    //         },
+    //       },
+    //       util.elImg({
+    //         src: data.Icon || NW_FALLBACK_ICON,
+    //         class: [
+    //           'aspect-square',
+    //           'transition-all',
+    //           'translate-x-0',
+    //           'hover:translate-x-1',
+    //           'nw-icon',
+    //           `bg-ability-${getAbilityCategoryTag(data)}`,
+    //           data?.IsActiveAbility ? 'rounded-sm' : 'rounded-full',
+    //           data?.WeaponTag ? 'border' : null,
+    //         ],
+    //       })
+    //     )
+    //   }),
   })
 }
 
@@ -65,7 +54,7 @@ export function armorWeightColHead(util: ArmorWeightTableUtils) {
       'text-success': ({ value }) => value === 'Light',
       'text-primary': ({ value }) => value === 'Medium',
       'text-error': ({ value }) => value === 'Heavy',
-    }
+    },
   })
 }
 
@@ -82,7 +71,7 @@ export function armorWeightColChest(util: ArmorWeightTableUtils) {
       'text-success': ({ value }) => value === 'Light',
       'text-primary': ({ value }) => value === 'Medium',
       'text-error': ({ value }) => value === 'Heavy',
-    }
+    },
   })
 }
 export function armorWeightColHands(util: ArmorWeightTableUtils) {
@@ -97,7 +86,7 @@ export function armorWeightColHands(util: ArmorWeightTableUtils) {
       'text-success': ({ value }) => value === 'Light',
       'text-primary': ({ value }) => value === 'Medium',
       'text-error': ({ value }) => value === 'Heavy',
-    }
+    },
   })
 }
 export function armorWeightColLegs(util: ArmorWeightTableUtils) {
@@ -112,7 +101,7 @@ export function armorWeightColLegs(util: ArmorWeightTableUtils) {
       'text-success': ({ value }) => value === 'Light',
       'text-primary': ({ value }) => value === 'Medium',
       'text-error': ({ value }) => value === 'Heavy',
-    }
+    },
   })
 }
 export function armorWeightColFeet(util: ArmorWeightTableUtils) {
@@ -127,7 +116,7 @@ export function armorWeightColFeet(util: ArmorWeightTableUtils) {
       'text-success': ({ value }) => value === 'Light',
       'text-primary': ({ value }) => value === 'Medium',
       'text-error': ({ value }) => value === 'Heavy',
-    }
+    },
   })
 }
 export function armorWeightColShield(util: ArmorWeightTableUtils) {
@@ -143,7 +132,7 @@ export function armorWeightColShield(util: ArmorWeightTableUtils) {
       'text-success': ({ value }) => value === 'RoundShield',
       'text-primary': ({ value }) => value === 'KiteShield',
       'text-error': ({ value }) => value === 'TowerShield',
-    }
+    },
   })
 }
 
@@ -160,10 +149,11 @@ export function armorWeightColWeight(util: ArmorWeightTableUtils) {
     colId: 'weight',
     headerValueGetter: () => 'Weight',
     valueGetter: ({ data }) => data.weight,
+    filter: NumberFilter,
     cellClassRules: {
       'text-success': ({ data }) => data.weightClass === 'light',
       'text-primary': ({ data }) => data.weightClass === 'medium',
       'text-error': ({ data }) => data.weightClass === 'heavy',
-    }
+    },
   })
 }
