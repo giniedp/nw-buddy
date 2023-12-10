@@ -77,7 +77,7 @@ export class GearsetPaneMainComponent {
         weapons: this.mannequin.equippedWeapons$,
         items: this.db.itemsMap,
         perks: this.db.perksMap,
-        affix: this.db.affixstatsMap,
+        affix: this.db.affixStatsMap,
       }).pipe(
         map(({ weapons, items, perks, affix }) => {
           const weapon1 = weapons.find((it) => it.slot === 'weapon1')

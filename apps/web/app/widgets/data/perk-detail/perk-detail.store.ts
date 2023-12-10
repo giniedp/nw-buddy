@@ -66,7 +66,7 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
   )
 
   public readonly affixId$ = this.select(this.perk$, (it) => it?.Affix)
-  public readonly affix$ = this.select(this.db.affixstat(this.affixId$), (it) => it)
+  public readonly affix$ = this.select(this.db.affixStat(this.affixId$), (it) => it)
   public readonly affixProps$ = this.select(this.affix$, selectAffixProperties)
 
   public readonly mods$ = this.select(

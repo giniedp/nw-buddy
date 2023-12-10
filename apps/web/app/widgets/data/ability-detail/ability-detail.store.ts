@@ -1,4 +1,4 @@
-import { Injectable, Output } from '@angular/core'
+import { Injectable, Output, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { Ability } from '@nw-data/generated'
@@ -8,6 +8,8 @@ import { humanize, rejectKeys } from '~/utils'
 
 @Injectable()
 export class AbilityDetailStore extends ComponentStore<{ abilityId: string }> {
+  protected db = inject(NwDbService)
+
   public readonly abilityId$ = this.select(({ abilityId }) => abilityId)
 
   @Output()
@@ -50,7 +52,7 @@ export class AbilityDetailStore extends ComponentStore<{ abilityId: string }> {
     )
   })
 
-  public constructor(protected db: NwDbService) {
+  public constructor() {
     super({ abilityId: null })
   }
 

@@ -22,7 +22,4 @@ export class StatusEffectDetailDirective extends StatusEffectDetailStore {
   @Output()
   public nwbStatusEffectChange = this.effect$
 
-  public constructor(db: NwDbService) {
-    super(db)
-  }
 }

@@ -846,7 +846,7 @@ export interface Damagetable {
   StaggerDmgModifier: number | string
   StaggerResistModifier: number
   StaminaDmg: number
-  StatusEffect: string
+  StatusEffect: string[]
   StunBreakoutIncrement: number
   SurfaceImpactEffect: string
   TargetCameraShakeID: string

@@ -1,9 +1,13 @@
 <nwb-detail-drawer class="hidden lg:block lg:w-[420px]">
   <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
     <nwb-damage-row-detail [rowId]="id$ | async" #detail class="bg-black"> </nwb-damage-row-detail>
-    <ng-container *ngIf="detail.statusEffectId$ | async; let id">
+    @if(detail.effectIds() && detail.effectIds().length > 0) {
       <h3 class="prose mt-2">Referenced effect:</h3>
-      <nwb-status-effect-detail [effectId]="id" class="bg-black"></nwb-status-effect-detail>
-    </ng-container>
+      <div class="flex flex-col gap-2">
+        @for(id of detail.effectIds(); track $index) {
+          <nwb-status-effect-detail [effectId]="id" class="bg-black"/>
+        }
+      </div>
+    }
   </div>
 </nwb-detail-drawer>

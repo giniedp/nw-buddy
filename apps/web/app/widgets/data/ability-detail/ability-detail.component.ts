@@ -1,5 +1,5 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, forwardRef } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, forwardRef, inject } from '@angular/core'
 import { Ability } from '@nw-data/generated'
 import { NwDbService, NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -10,6 +10,7 @@ import { PropertyGridCell } from '~/ui/property-grid/property-grid-cell.directiv
 import { TooltipModule } from '~/ui/tooltip'
 import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
 import { AbilityDetailStore } from './ability-detail.store'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -29,19 +30,17 @@ import { AbilityDetailStore } from './ability-detail.store'
   ],
   providers: [
     DecimalPipe,
-    {
-      provide: AbilityDetailStore,
-      useExisting: forwardRef(() => AbilityDetailComponent),
-    },
+    AbilityDetailStore
   ],
   host: {
     class: 'block rounded-md overflow-clip',
   },
 })
-export class AbilityDetailComponent extends AbilityDetailStore {
+export class AbilityDetailComponent {
+
   @Input()
   public set abilityId(value: string) {
-    this.patchState({ abilityId: value })
+    this.store.patchState({ abilityId: value })
   }
 
   @Input()
@@ -53,11 +52,17 @@ export class AbilityDetailComponent extends AbilityDetailStore {
   @ViewChild('tplCategoryInfo', { static: true })
   protected tplCategoryInfo: TemplateRef<any>
 
+  protected decimals = inject(DecimalPipe)
   protected iconInfo = svgInfoCircle
+  protected store = inject(AbilityDetailStore)
 
-  public constructor(db: NwDbService, private decimals: DecimalPipe) {
-    super(db)
-  }
+  protected icon = toSignal(this.store.icon$)
+  protected recordId = toSignal(this.store.abilityId$)
+  protected displayName = toSignal(this.store.nameForDisplay$)
+  protected description = toSignal(this.store.description$)
+  protected properties = toSignal(this.store.properties$)
+  protected weaponOrSource = toSignal(this.store.weaponOrSource$)
+  protected uiCategory = toSignal(this.store.uiCategory$)
 
   public formatValue = (value: any, key: keyof Ability): PropertyGridCell | PropertyGridCell[] => {
     switch (key) {

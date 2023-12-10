@@ -1,51 +1,53 @@
 <nwb-item-header class="gap-2">
   <a
-    [nwbItemIcon]="icon$ | async"
-    [nwLink]="effectId$ | async"
+    [nwbItemIcon]="icon()"
+    [nwLink]="recordId()"
     [nwLinkResource]="'ability'"
     class="w-[76px] h-[76px] nw-status-bg p-2"
-    [class.negative]="isNegative$ | async"
+    [class.negative]="isNegative()"
   >
   </a>
   <nwb-item-header-content
     class="z-10"
-    [title]="nameForDisplay$ | async | nwText | nwTextBreak : ' - '"
-    [text1]="source$ | async"
+    [title]="displayName() | nwText | nwTextBreak: ' - '"
+    [text1]="source()"
     [text2]="'Status Effect'"
-  ></nwb-item-header-content>
+  />
 </nwb-item-header>
 <div class="p-3 flex flex-col gap-2">
-  <ng-container *ngIf="description$ | async | nwText | nwTextBreak; let description">
+  @if (description() | nwText | nwTextBreak; as description) {
     <div [innerHTML]="description" class="text-nw-description italic"></div>
     <nwb-item-divider></nwb-item-divider>
-  </ng-container>
+  }
 
-  <ng-container *ngIf="!disableProperties">
+  @if (!disableProperties && properties()) {
     <nwb-property-grid
       class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
-      [item]="properties$ | async"
+      [item]="properties()"
       [valueFormatter]="formatValue"
-    ></nwb-property-grid>
-    <ng-container *ngIf="affixProps$ | async; let affix">
-      <nwb-item-divider></nwb-item-divider>
-      <nwb-property-grid
-        class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
-        [item]="affix"
-      ></nwb-property-grid>
-    </ng-container>
-  </ng-container>
+    />
+  }
+  @if (!disableProperties && affixProperties()) {
+    <nwb-item-divider></nwb-item-divider>
+    <nwb-property-grid
+      class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
+      [item]="affixProperties()"
+    />
+  }
 
-  <div *ngIf="costumeModel$ | async; let models" class="flex flex-col gap-2">
-    <div *ngIf="viewerActive" class="aspect-square rounded-md overflow-clip">
-      <nwb-model-viewer [models]="models" [hideFloor]="true" class="w-full h-full"></nwb-model-viewer>
+  @if(costumeModels(); as models) {
+    <div class="flex flex-col gap-2">
+      <div *ngIf="viewerActive" class="aspect-square rounded-md overflow-clip">
+        <nwb-model-viewer [models]="models" [hideFloor]="true" class="w-full h-full"></nwb-model-viewer>
+      </div>
+      <button
+        class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50 w-full"
+        (click)="viewerActive = !viewerActive"
+      >
+        {{ viewerActive ? 'Close' : 'View 3D Model' }}
+      </button>
     </div>
-    <button
-      class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50 w-full"
-      (click)="viewerActive = !viewerActive"
-    >
-      {{ viewerActive ? 'Close' : 'View 3D Model' }}
-    </button>
-  </div>
+  }
 
   <ng-content></ng-content>
 </div>
@@ -72,7 +74,12 @@
 
 <ng-template [nwbGridValue] let-cell #tplCategoryInfo>
   <ng-container [nwbStatusEffectCategoryDetailByProp]="cell.value" #detail="detail">
-    <span *ngIf="detail.hasLimitsSig()" [tooltip]="tplCategoryTip" [tooltipClass]="'max-w-none'" class="text-error inline-flex">
+    <span
+      *ngIf="detail.hasLimitsSig()"
+      [tooltip]="tplCategoryTip"
+      [tooltipClass]="'max-w-none'"
+      class="text-error inline-flex"
+    >
       <nwb-icon [icon]="iconInfo" class="w-3 h-3 opacity-50 hover:opacity-100 cursor-help"></nwb-icon>
     </span>
     <ng-template #tplCategoryTip>

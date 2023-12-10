@@ -40,7 +40,7 @@ export class PerkTableAdapter implements TableGridAdapter<PerkTableRecord>, Data
   private source$: Observable<PerkTableRecord[]> = selectStream(
     {
       perks: this.config?.source || this.db.perks,
-      affixstats: this.db.affixstatsMap,
+      affixstats: this.db.affixStatsMap,
       abilities: this.db.abilitiesMap,
     },
     ({ perks, affixstats, abilities }) => {

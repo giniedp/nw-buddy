@@ -65,6 +65,7 @@ export class PerkDetailComponent extends PerkDetailStore {
 
   public formatValue = (value: any, key: keyof Perks): PropertyGridCell[] => {
     switch (key) {
+
       case 'PerkID': {
         return [
           {
@@ -140,6 +141,9 @@ export class PerkDetailComponent extends PerkDetailStore {
 
   public formatAffixValue = (value: any, key: keyof Affixstats): PropertyGridCell[] => {
     switch (key) {
+      case 'StatusEffect': {
+        return statusEffectCells(value)
+      }
       default: {
         if (typeof value === 'number') {
           return [
@@ -171,6 +175,18 @@ function createTags(value: string[]): PropertyGridCell[] {
     return {
       value: it,
       secondary: true,
+    }
+  })
+}
+
+function statusEffectCells(list: string | string[]): PropertyGridCell[] {
+  list = typeof list === 'string' ? [list] : list
+  return list?.map((it) => {
+    const isLink = it !== 'All'
+    return {
+      value: String(it),
+      accent: isLink,
+      routerLink: isLink ? ['/status-effects/table', it] : null,
     }
   })
 }

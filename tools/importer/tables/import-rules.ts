@@ -188,6 +188,15 @@ export const TABLE_IMPORT_RULES = [
       }),
     ],
   ),
+  tableSource(
+    ['**/*_damagetable_*', '**/*_damagetable'],
+    [
+      mapPropToArray({
+        keys: ['StatusEffect'],
+        separator: ',',
+      }),
+    ],
+  ),
   tableSource('javelindata_itemdefinitions_consumables', [
     mapPropToArray({
       keys: ['AddStatusEffects', 'RemoveStatusEffectCategories', 'RemoveStatusEffects'],

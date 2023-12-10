@@ -7,32 +7,49 @@
     #detail="effectDetail"
   >
     <div class="flex flex-col gap-2 bg-base-200" [nwbScreenshotFrame]="itemId | async">
-      <nwb-status-effect-detail [effectId]="itemId | async" class="bg-black"> </nwb-status-effect-detail>
+      <nwb-status-effect-detail [effectId]="itemId | async" class="bg-black"/>
 
-      <ng-container *ngFor="let effectId of detail.refEffects$ | async; let isFirst = first">
-        <h3 *ngIf="isFirst" class="prose">Referenced Status Effects:</h3>
-        <nwb-status-effect-detail [effectId]="effectId" class="bg-black"></nwb-status-effect-detail>
-      </ng-container>
+      @for (effectId of detail.refEffects$ | async; track $index; let isFirst = $first) {
+        @if (isFirst) {
+          <h3 class="prose">Referenced Status Effects:</h3>
+        }
+        <nwb-status-effect-detail [effectId]="effectId" class="bg-black" />
+      }
 
-      <ng-container *ngFor="let abilityId of detail.refAbilities$ | async; let isFirst = first">
-        <h3 *ngIf="isFirst" class="prose">Referenced Abilities:</h3>
-        <nwb-ability-detail [abilityId]="abilityId" class="bg-black"></nwb-ability-detail>
-      </ng-container>
+      @for (abilityId of detail.refAbilities$ | async; track $index; let isFirst = $first) {
+        @if (isFirst) {
+          <h3 class="prose">Referenced Abilities:</h3>
+        }
+        <nwb-ability-detail [abilityId]="abilityId" class="bg-black" />
+      }
 
-      <ng-container *ngFor="let itemId of detail.foreignItems$ | async; let isFirst = first">
-        <h3 *ngIf="isFirst" class="prose">Referenced By Items:</h3>
-        <nwb-item-card [entityId]="itemId" [disableInfo]="true" [enableLink]="true" class="bg-black"></nwb-item-card>
-      </ng-container>
+      @for (itemId of detail.foreignItems$ | async; track $index; let isFirst = $first) {
+        @if (isFirst) {
+          <h3 class="prose">Referenced By Items:</h3>
+        }
+        <nwb-item-card [entityId]="itemId" [disableInfo]="true" [enableLink]="true" class="bg-black" />
+      }
 
-      <ng-container *ngFor="let abilityId of detail.foreignAbilities$ | async; let isFirst = first">
-        <h3 *ngIf="isFirst" class="prose">Referenced By Abilities:</h3>
-        <nwb-ability-detail [abilityId]="abilityId" class="bg-black"></nwb-ability-detail>
-      </ng-container>
+      @for (abilityId of detail.foreignAbilities$ | async; track $index; let isFirst = $first) {
+        @if (isFirst) {
+          <h3 class="prose">Referenced By Abilities:</h3>
+        }
+        <nwb-ability-detail [abilityId]="abilityId" class="bg-black" />
+      }
 
-      <ng-container *ngFor="let perkId of detail.foreignPerks$ | async; let isFirst = first">
-        <h3 *ngIf="isFirst" class="prose">Referenced By Perks:</h3>
-        <nwb-perk-detail [perkId]="perkId" class="bg-black"></nwb-perk-detail>
-      </ng-container>
+      @for (perkId of detail.foreignPerks$ | async; track $index; let isFirst = $first) {
+        @if (isFirst) {
+          <h3 class="prose">Referenced By Perks:</h3>
+        }
+        <nwb-perk-detail [perkId]="perkId" class="bg-black" />
+      }
+
+      @for (dmg of detail.foreignDamageTables$ | async; track $index; let isFirst = $first) {
+        @if (isFirst) {
+          <h3 class="prose">Referenced By Damage Tables:</h3>
+        }
+        <nwb-damage-row-detail [rowId]="dmg.DamageID" class="bg-black"/>
+      }
     </div>
   </div>
 </nwb-detail-drawer>

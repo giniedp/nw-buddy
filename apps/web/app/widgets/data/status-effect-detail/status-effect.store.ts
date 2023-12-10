@@ -1,15 +1,16 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON, getItemId } from '@nw-data/common'
-import { Affixstats, Perks, Statuseffect } from '@nw-data/generated'
+import { Affixstats, Statuseffect } from '@nw-data/generated'
 import { flatten, uniq } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { humanize, mapList, rejectKeys, tapDebug } from '~/utils'
+import { humanize, mapList, rejectKeys } from '~/utils'
 import { ModelViewerService } from '~/widgets/model-viewer'
 
 @Injectable()
 export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }> {
+  protected readonly db = inject(NwDbService)
   public readonly effectId$ = this.select(({ effectId }) => effectId)
   public readonly effect$ = this.select(this.db.statusEffect(this.effectId$), (it) => it)
 
@@ -21,7 +22,7 @@ export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }
   public readonly description$ = this.select(this.effect$, (it) => it?.Description)
   public readonly properties$ = this.select(this.effect$, selectProperties)
   public readonly onHitAffixId$ = this.select(this.effect$, (it) => it?.OnHitAffixes)
-  public readonly affix$ = this.select(this.db.affixstat(this.onHitAffixId$), (it) => it)
+  public readonly affix$ = this.select(this.db.affixStat(this.onHitAffixId$), (it) => it)
   public readonly affixProps$ = this.select(this.affix$, selectAffixProperties)
 
   public readonly refEffects$ = this.select(this.effect$, selectStatusEffectReferences)
@@ -33,6 +34,7 @@ export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }
   public readonly foreignAbilities$ = combineLatest([
     this.db.abilitiesByStatusEffect(this.effectId$).pipe(map((set) => Array.from(set?.values() || []))),
     this.db.abilitiesBySelfApplyStatusEffect(this.effectId$).pipe(map((set) => Array.from(set?.values() || []))),
+    this.db.abilitiesByOtherApplyStatusEffect(this.effectId$).pipe(map((set) => Array.from(set?.values() || []))),
   ])
     .pipe(map(flatten))
     .pipe(mapList((it) => it.AbilityID))
@@ -62,10 +64,16 @@ export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }
       .pipe(mapList((it) => it.ConsumableID)),
   ]).pipe(map((list) => list.flat()))
 
+  public readonly foreignDamageTables$ = combineLatest([
+    this.db
+      .damageTablesByStatusEffect(this.effectId$)
+      .pipe(map((it) => Array.from(it?.values() || [])))
+  ]).pipe(map((list) => list.flat()))
+
   public readonly costumeChangeId$ = this.select(this.effect$, (it) => it?.CostumeChangeId)
   public readonly costumeModel$ = inject(ModelViewerService).byCostumeId(this.costumeChangeId$)
 
-  public constructor(private db: NwDbService) {
+  public constructor() {
     super({ effectId: null })
   }
 
@@ -96,7 +104,7 @@ function selectStatusEffectReferences(item: Statuseffect) {
       item?.OnStackStatusEffect,
       item?.OnTickStatusEffect,
       item?.RemoveStatusEffects,
-    ])
+    ]),
   )
     .filter((e) => !!e && e !== 'Debuff')
     .filter((e) => e !== item.StatusID)
@@ -109,7 +117,7 @@ function perksByAffix(affix: string[], db: NwDbService): Observable<string[]> {
   return combineLatest(
     affix.map((it) => {
       return db.perksByAffix(it).pipe(map((set) => Array.from(set?.values() || [])))
-    })
+    }),
   )
     .pipe(map(flatten))
     .pipe(mapList((it) => it.PerkID))
@@ -122,7 +130,7 @@ function perksByAbilities(abilities: string[], db: NwDbService): Observable<stri
   return combineLatest(
     abilities.map((it) => {
       return db.perksByEquipAbility(it).pipe(map((set) => Array.from(set?.values() || [])))
-    })
+    }),
   )
     .pipe(map(flatten))
     .pipe(mapList((it) => it.PerkID))

@@ -29,7 +29,7 @@ export class AttributesScalingStore extends ComponentStore<AttributesScalingStat
   private db = inject(NwDbService)
 
   protected readonly scalingAffixId$ = this.select(({ affixId }) => affixId)
-  protected readonly scalingAffix$ = this.select(this.db.affixstat(this.scalingAffixId$), (it) => it)
+  protected readonly scalingAffix$ = this.select(this.db.affixStat(this.scalingAffixId$), (it) => it)
   protected readonly weaponId$ = this.select(({ weaponId }) => weaponId)
   protected readonly weapon$ = this.select(this.db.weapon(this.weaponId$), (it) => it)
 

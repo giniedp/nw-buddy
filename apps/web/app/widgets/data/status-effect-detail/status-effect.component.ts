@@ -1,15 +1,16 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, forwardRef, Input, TemplateRef, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { Statuseffect } from '@nw-data/generated'
-import { NwDbService, NwModule } from '~/nw'
-import { ItemFrameModule } from '~/ui/item-frame'
-import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
-import { StatusEffectDetailStore } from './status-effect.store'
-import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
-import { TooltipModule } from '~/ui/tooltip'
+import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgInfoCircle } from '~/ui/icons/svg'
+import { ItemFrameModule } from '~/ui/item-frame'
+import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
+import { TooltipModule } from '~/ui/tooltip'
 import { ModelViewerModule } from '~/widgets/model-viewer'
+import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
+import { StatusEffectDetailStore } from './status-effect.store'
 
 @Component({
   standalone: true,
@@ -27,21 +28,15 @@ import { ModelViewerModule } from '~/widgets/model-viewer'
     StatusEffectCategoryDetailModule,
     ModelViewerModule,
   ],
-  providers: [
-    DecimalPipe,
-    {
-      provide: StatusEffectDetailStore,
-      useExisting: forwardRef(() => StatusEffectDetailComponent),
-    },
-  ],
+  providers: [DecimalPipe, StatusEffectDetailStore],
   host: {
     class: 'block rounded-md overflow-clip',
   },
 })
-export class StatusEffectDetailComponent extends StatusEffectDetailStore {
+export class StatusEffectDetailComponent {
   @Input()
   public set effectId(value: string) {
-    this.patchState({ effectId: value })
+    this.store.patchState({ effectId: value })
   }
 
   @Input()
@@ -53,11 +48,20 @@ export class StatusEffectDetailComponent extends StatusEffectDetailStore {
   @ViewChild('tplCategoryInfo', { static: true })
   protected tplCategoryInfo: TemplateRef<any>
 
+  protected store = inject(StatusEffectDetailStore)
+  protected decimals = inject(DecimalPipe)
   protected viewerActive = false
   protected iconInfo = svgInfoCircle
-  public constructor(db: NwDbService, private decimals: DecimalPipe) {
-    super(db)
-  }
+
+  protected icon = toSignal(this.store.icon$)
+  protected recordId = toSignal(this.store.effectId$)
+  protected isNegative = toSignal(this.store.isNegative$)
+  protected displayName = toSignal(this.store.nameForDisplay$)
+  protected source = toSignal(this.store.source$)
+  protected description = toSignal(this.store.description$)
+  protected properties = toSignal(this.store.properties$)
+  protected affixProperties = toSignal(this.store.affixProps$)
+  protected costumeModels = toSignal(this.store.costumeModel$)
 
   public formatValue = (value: any, key: keyof Statuseffect): PropertyGridCell[] => {
     switch (key) {
@@ -80,7 +84,7 @@ export class StatusEffectDetailComponent extends StatusEffectDetailStore {
           },
         ]
       }
-      case 'EffectCategories' : {
+      case 'EffectCategories': {
         return value.map((it) => ({
           value: String(it),
           template: this.tplCategory,

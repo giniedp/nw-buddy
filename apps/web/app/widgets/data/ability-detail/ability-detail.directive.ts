@@ -21,8 +21,4 @@ export class AbilityDetailDirective extends AbilityDetailStore {
 
   @Output()
   public nwbAbilityChange = this.ability$
-
-  public constructor(db: NwDbService) {
-    super(db)
-  }
 }

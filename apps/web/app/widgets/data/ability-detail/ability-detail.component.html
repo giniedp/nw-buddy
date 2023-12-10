@@ -1,28 +1,26 @@
 <nwb-item-header class="gap-2">
-  <a [nwbItemIcon]="icon$ | async" [nwLink]="abilityId$ | async" [nwLinkResource]="'ability'" class="w-[76px] h-[76px]">
-  </a>
+  <a [nwbItemIcon]="icon()" [nwLink]="recordId()" [nwLinkResource]="'ability'" class="w-[76px] h-[76px]"> </a>
   <nwb-item-header-content
     class="z-10"
-    [title]="nameForDisplay$ | async | nwText | nwTextBreak : ' - '"
+    [title]="displayName() | nwText | nwTextBreak: ' - '"
     [text1]="'Ability'"
-    [text2]="weaponOrSource$ | async"
-    [text3]="uiCategory$ | async"
-  ></nwb-item-header-content>
+    [text2]="weaponOrSource()"
+    [text3]="uiCategory()"
+  />
 </nwb-item-header>
 <div class="p-3 flex flex-col gap-2">
-  <ng-container *ngIf="description$ | async | nwText | nwTextBreak; let description">
+  @if (description() | nwText | nwTextBreak; as description) {
     <div [nwHtml]="description" class="text-nw-description italic"></div>
-    <nwb-item-divider></nwb-item-divider>
-  </ng-container>
-
-  <ng-container *ngIf="!disableProperties">
+    <nwb-item-divider/>
+  }
+  @if (!disableProperties && properties()) {
     <nwb-property-grid
       class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
-      [item]="properties$ | async"
+      [item]="properties()"
       [valueFormatter]="formatValue"
-    ></nwb-property-grid>
-  </ng-container>
-  <ng-content></ng-content>
+    />
+  }
+  <ng-content/>
 </div>
 
 <ng-template [nwbGridValue] let-cell #tplCategory>
@@ -47,7 +45,12 @@
 
 <ng-template [nwbGridValue] let-cell #tplCategoryInfo>
   <ng-container [nwbStatusEffectCategoryDetailByProp]="cell.value" #detail="detail">
-    <span *ngIf="detail.hasLimitsSig()" [tooltip]="tplCategoryTip" [tooltipClass]="'max-w-none'" class="text-error inline-flex">
+    <span
+      *ngIf="detail.hasLimitsSig()"
+      [tooltip]="tplCategoryTip"
+      [tooltipClass]="'max-w-none'"
+      class="text-error inline-flex"
+    >
       <nwb-icon [icon]="iconInfo" class="w-3 h-3 opacity-50 hover:opacity-100 cursor-help"></nwb-icon>
     </span>
     <ng-template #tplCategoryTip>

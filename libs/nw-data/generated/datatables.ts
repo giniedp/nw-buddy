@@ -854,6 +854,9 @@ export abstract class NwDataLoader {
   public ftueDamagetableUndeadGrenadier() {
     return this.load<Damagetable[]>('javelindata_ftue_damagetable_undead_grenadier.json')
   }
+  public ftwDamagetableRisenFtw() {
+    return this.load<Damagetable[]>('ftw/javelindata_damagetable_risen_ftw.json')
+  }
   public gameevents() {
     return this.load<GameEvent[]>('javelindata_gameevents.json')
   }

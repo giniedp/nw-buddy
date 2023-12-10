@@ -55,7 +55,7 @@
       class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
       [item]="properties$ | async"
       [valueFormatter]="formatValue"
-    ></nwb-property-grid>
+    />
 
     <ng-container *ngIf="affixProps$ | async; let affix">
       <nwb-item-divider></nwb-item-divider>
@@ -63,7 +63,7 @@
         class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
         [item]="affix"
         [valueFormatter]="formatAffixValue"
-      ></nwb-property-grid>
+      />
     </ng-container>
   </ng-container>
   <ng-content></ng-content>

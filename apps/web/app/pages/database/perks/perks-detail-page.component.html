@@ -7,17 +7,21 @@
     #detail="perkDetail"
   >
     <div class="flex flex-col gap-2 bg-base-200" [nwbScreenshotFrame]="itemId | async">
-      <nwb-perk-detail [perkId]="itemId | async" class="bg-black"> </nwb-perk-detail>
+      <nwb-perk-detail [perkId]="itemId | async" class="bg-black" />
 
-      <ng-container *ngFor="let abilityId of detail.refAbilities$ | async; let isFirst = first">
-        <h3 *ngIf="isFirst" class="prose">Referenced Abilities:</h3>
+      @for (abilityId of detail.refAbilities$ | async; track $index; let isFirst = $first) {
+        @if (isFirst) {
+          <h3 class="prose">Referenced Abilities:</h3>
+        }
         <nwb-ability-detail [abilityId]="abilityId" class="bg-black"></nwb-ability-detail>
-      </ng-container>
+      }
 
-      <ng-container *ngFor="let effectId of detail.refEffects$ | async; let isFirst = first">
-        <h3 *ngIf="isFirst" class="prose">Referenced Status Effects:</h3>
-        <nwb-status-effect-detail [effectId]="effectId" class="bg-black"></nwb-status-effect-detail>
-      </ng-container>
+      @for (effectId of detail.refEffects$ | async; track $index; let isFirst = $first) {
+        @if (isFirst) {
+          <h3 class="prose">Referenced Status Effects:</h3>
+        }
+        <nwb-status-effect-detail [effectId]="effectId" class="bg-black" />
+      }
     </div>
   </div>
 </nwb-detail-drawer>

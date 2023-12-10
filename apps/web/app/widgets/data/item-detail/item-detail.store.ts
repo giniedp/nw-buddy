@@ -111,7 +111,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
       itemGS: this.itemGS$,
       perks: this.db.perksMap,
       buckets: this.db.perkBucketsMap,
-      affixes: this.db.affixstatsMap,
+      affixes: this.db.affixStatsMap,
       abilities: this.db.abilitiesMap,
       perkOverride: this.perkOverride$,
     },

@@ -6,16 +6,14 @@ import {
   EquipSlotId,
   NW_MAX_GEAR_SCORE,
   getArmorRatingPhysical,
-  getEquipSlotForId,
-  getItemPerkBucketIds,
   getItemPerkIds,
-  getWeightLabel,
+  getWeightLabel
 } from '@nw-data/common'
 import { ItemClass, ItemDefinitionMaster } from '@nw-data/generated'
 import { sumBy } from 'lodash'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { eqCaseInsensitive, selectStream, tapDebug } from '~/utils'
+import { eqCaseInsensitive, selectStream } from '~/utils'
 
 const ITEM_IDS = [
   'Artifact_Set1_LightChest',
@@ -133,36 +131,38 @@ function selectItem(db: NwDbService, itemId: string) {
         armor: db.armor(item.ItemStatsRef),
         weapon: db.weapon(item.ItemStatsRef),
         perks: db.perksMap,
-        affix: db.affixstatsMap,
+        affix: db.affixStatsMap,
       }).pipe(
         map(({ armor, weapon, perks, affix }): SlotItem => {
-          const slot = EQUIP_SLOTS.filter((it) => SLOT_IDS.includes(it.id)).find((slot) =>
-            item.ItemClass?.some((it) => eqCaseInsensitive(it, slot.itemType))
+          const slot = EQUIP_SLOTS.filter((it) => SLOT_IDS.includes(it.id)).find(
+            (slot) => item.ItemClass?.some((it) => eqCaseInsensitive(it, slot.itemType)),
           )
           const mult =
             1 +
             (getItemPerkIds(item)
               .map((id) => affix.get(perks.get(id)?.Affix))
               .find((it) => it?.WeightMultiplier)?.WeightMultiplier || 0)
-              const weight = (mult * Math.floor(armor?.WeightOverride || weapon?.WeightOverride || item.Weight)) / 10
+          const weight = (mult * Math.floor(armor?.WeightOverride || weapon?.WeightOverride || item.Weight)) / 10
           return {
             item: item,
             slot: slot,
             weight: weight,
             rating: getArmorRatingPhysical(armor || weapon, NW_MAX_GEAR_SCORE),
-            label: !weight ? 'Weightless' : item.ItemClass?.find(
-              (it) =>
-                it === 'Light' ||
-                it === 'Medium' ||
-                it === 'Heavy' ||
-                it === 'RoundShield' ||
-                it === 'KiteShield' ||
-                it === 'TowerShield'
-            ),
+            label: !weight
+              ? 'Weightless'
+              : item.ItemClass?.find(
+                  (it) =>
+                    it === 'Light' ||
+                    it === 'Medium' ||
+                    it === 'Heavy' ||
+                    it === 'RoundShield' ||
+                    it === 'KiteShield' ||
+                    it === 'TowerShield',
+                ),
           }
-        })
+        }),
       )
-    })
+    }),
   )
 }
 
@@ -181,7 +181,7 @@ function selectItemSet(items: SlotItem[]): ArmorWeightSet {
 function selectItemSets(items: SlotItem[]) {
   const groups = SLOT_IDS.map((id) => {
     const groupItems = items.filter((it) => it.slot.id === id)
-    if (id === 'weapon3')  {
+    if (id === 'weapon3') {
       return [null, ...groupItems]
     }
     return groupItems

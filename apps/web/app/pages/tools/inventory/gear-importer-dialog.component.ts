@@ -126,7 +126,7 @@ export class GearImporterDialogComponent implements OnInit {
       image: this.store.imageFile$,
       itemClass: this.store.itemType$,
       items: this.db.items,
-      affixMap: this.db.affixstatsMap,
+      affixMap: this.db.affixStatsMap,
       perksMap: this.db.perksMap,
     })
       .pipe(

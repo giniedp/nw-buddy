@@ -15,6 +15,7 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
+import { DamageRowDetailModule } from '~/widgets/data/damage-detail'
 
 @Component({
   standalone: true,
@@ -32,6 +33,7 @@ import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
     StatusEffectDetailModule,
     PerkDetailModule,
     ItemDetailModule,
+    DamageRowDetailModule,
   ],
   host: {
     class: 'flex-none flex flex-col',

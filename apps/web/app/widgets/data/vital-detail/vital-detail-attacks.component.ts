@@ -41,7 +41,7 @@ export class VitalDetailAttacksComponent {
       modifier: this.store.modifier$,
       difficulty: this.store.mutaDifficulty$,
       tables: this.store.damageTables$,
-      affixMap: this.db.affixstatsMap,
+      affixMap: this.db.affixStatsMap,
       effectMap: this.db.statusEffectsMap,
       spellsByDamageMap: this.db.spellsByDamageTable,
       spellsMetaMap: this.db.spellsMetadataMap,

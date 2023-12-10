@@ -160,6 +160,11 @@ export class NwDbService {
     (it) => it.SelfApplyStatusEffect
   )
   public abilitiesBySelfApplyStatusEffect = lookup(() => this.abilitiesBySelfApplyStatusEffectMap)
+  public abilitiesByOtherApplyStatusEffectMap = indexGroupSetBy(
+    () => this.abilities,
+    (it) => it.OtherApplyStatusEffect
+  )
+  public abilitiesByOtherApplyStatusEffect = lookup(() => this.abilitiesByOtherApplyStatusEffectMap)
 
   public statusEffects = table(() =>
     this.data
@@ -209,6 +214,11 @@ export class NwDbService {
   )
   public damageTableMap = indexBy(() => this.damageTables, 'DamageID')
   public damageTable = lookup(() => this.damageTableMap)
+  public damageTablesByStatusEffectMap = indexGroupSetBy(
+    () => this.damageTables,
+    (it) => it.StatusEffect
+  )
+  public damageTablesByStatusEffect = lookup(() => this.damageTablesByStatusEffectMap)
 
   public dmgTableEliteAffix = table(() => [this.data.charactertablesEliteaffixDatatablesDamagetableEliteAffix()])
   public dmgTableEliteAffixMap = indexBy(() => this.dmgTableEliteAffix, 'DamageID')
@@ -399,10 +409,6 @@ export class NwDbService {
   public damagetypes = table(() => this.data.damagetypes())
   public damagetypesMap = indexBy(() => this.damagetypes, 'TypeID')
   public damagetype = lookup(() => this.damagetypesMap)
-
-  public affixstats = table(() => this.data.affixstats())
-  public affixstatsMap = indexBy(() => this.affixstats, 'StatusID')
-  public affixstat = lookup(() => this.affixstatsMap)
 
   public territories = table(() => this.data.territorydefinitions())
   public territoriesMap = indexBy(() => this.territories, 'TerritoryID')
