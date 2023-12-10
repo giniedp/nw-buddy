@@ -6,6 +6,7 @@ import { objectStreamConverter } from './bin/object-stream-converter'
 import { cpus } from 'os'
 import { glob, copyFile } from './utils/file-utils'
 import z from 'zod'
+import { withProgressBar } from './utils'
 
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
@@ -104,24 +105,30 @@ program
 
     if (hasFilter(Converter.slices, options.module)) {
       console.log('Convert Slices')
-      await objectStreamConverter({
-        exe: 'tools/bin/object-stream-converter.exe',
-        input: path.join(inputDir),
-        output: path.join(outputDir),
-        pretty: true,
-        threads: Math.min(options.threads, 10),
+      await withProgressBar({ tasks: ['coatgen', 'sharedassets', 'slices'] }, async (dir, i, log) => {
+        log(dir)
+        await objectStreamConverter({
+          exe: 'tools/bin/object-stream-converter.exe',
+          input: path.join(inputDir, dir),
+          output: path.join(outputDir, dir),
+          pretty: true,
+          threads: Math.min(options.threads, 10),
+        }, {
+          stdio: 'ignore'
+        })
       })
     }
 
     console.log('Copy JSON files')
     const files = await glob([path.join(inputDir, '**', '*.json')])
-    for (const file of files) {
+    await withProgressBar({ tasks: files }, async (file, i, log) => {
+      log(file)
       const relPath = path.relative(inputDir, file)
       const outPath = path.join(outputDir, relPath)
       await copyFile(file, outPath, {
         createDir: true,
       })
-    }
+    })
   })
 
 program.parse()
