@@ -13,6 +13,7 @@ import {
   getPerkBucketPerks,
   getPerkTypeWeight,
   hasItemGearScore,
+  isMasterItem,
   isPerkApplicableToItem,
   isPerkGem,
   isPerkInherent,
@@ -69,7 +70,10 @@ export function selectFinalRarity({
 }
 
 export function selectSalvageInfo(item: ItemDefinitionMaster | Housingitems, playerLevel: number) {
-  const recipe = item?.RepairRecipe
+  if (!item || (isMasterItem(item) && !item.IsSalvageable)) {
+    return null
+  }
+  const recipe = item.RepairRecipe
   if (!recipe?.startsWith('[LTID]')) {
     return null
   }
