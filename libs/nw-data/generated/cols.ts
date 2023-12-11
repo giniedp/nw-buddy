@@ -1284,7 +1284,7 @@ export const COLS_ITEMDEFINITIONMASTER = {
   "SalvageAchievement": "string",
   "SalvageGameEventID": "string",
   "SalvageGuaranteedPerkCount": "number",
-  "SalvageLootTags": "string",
+  "SalvageLootTags": "[]",
   "SalvageResources": "number",
   "SoundTableID": "string",
   "Tier": "number",
@@ -3960,7 +3960,7 @@ export const COLS_PVPBALANCEWAR = {
 }
 export const COLS_REWARDDATA = {
   "DisplayItemId": "string",
-  "EntitlementIds": "string",
+  "EntitlementIds": "[]",
   "IsHighValue": "string",
   "ItemId": "string",
   "LimitingEntitlementId": "string",

@@ -2,9 +2,9 @@ import { ChangeDetectorRef, EventEmitter, Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import {
   AttributeRef,
+  NW_MAX_CHARACTER_LEVEL,
   getFirstItemClassOf,
   getItemAttribution,
-  getItemCostumeId,
   getItemExpansion,
   getItemGsBonus,
   getItemIconPath,
@@ -21,9 +21,9 @@ import {
   isItemArtifact,
   isItemHeartGem,
   isItemNamed,
-  isItemOfAnyClass,
   isPerkGem,
 } from '@nw-data/common'
+import { ItemDefinitionMaster } from '@nw-data/generated'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { humanize, mapProp, selectStream, shareReplayRefCount } from '~/utils'
@@ -42,7 +42,6 @@ import {
   selectSalvageInfo,
   selectStatusEffectIds,
 } from './selectors'
-import { ItemClass, ItemDefinitionMaster } from '@nw-data/generated'
 
 export interface ItemDetailState {
   entityId?: string
@@ -62,7 +61,10 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public readonly perkOverride$ = this.select(({ perkOverride }) => perkOverride)
   public readonly perkEditable$ = this.select(({ perkEditable }) => perkEditable)
   public readonly attrValueSums$ = this.select(({ attrValueSums }) => attrValueSums)
-  public readonly playerLevel$ = this.select(({ playerLevel }) => playerLevel)
+  public readonly playerLevel$ = selectStream({
+    playerLevel: of(null),
+    overrideLevel: this.select(({ playerLevel }) => playerLevel)
+  }, ({ playerLevel, overrideLevel }) => overrideLevel || playerLevel || NW_MAX_CHARACTER_LEVEL)
 
   public readonly gsEdit$ = new EventEmitter<MouseEvent>()
   public readonly perkEdit$ = new EventEmitter<PerkSlot>()
@@ -125,7 +127,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
         abilities: it.abilities,
         perkOverride: it.perkOverride,
       })
-    }
+    },
   )
 
   public readonly itemModels$ = this.ms.byItemId(this.entityId$)
@@ -156,22 +158,28 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public readonly isBindOnPickup$ = this.select(this.entity$, (it) => !!it?.BindOnPickup)
   public readonly canReplaceGem$ = this.select(this.item$, (it) => it && it.CanHavePerks && it.CanReplaceGem)
   public readonly cantReplaceGem$ = this.select(this.item$, (it) => it && it.CanHavePerks && !it.CanReplaceGem)
-  public readonly salvageInfo$ = this.select(this.entity$, selectSalvageInfo)
+  public readonly salvageInfo$ = selectStream(
+    {
+      entity: this.entity$,
+      playerLevel: this.playerLevel$,
+    },
+    ({ entity, playerLevel }) => selectSalvageInfo(entity, playerLevel),
+  )
   public readonly appearanceM$ = this.select(
     this.db.itemAppearance(this.item$.pipe(mapProp('ArmorAppearanceM'))),
-    (it) => it
+    (it) => it,
   )
   public readonly appearanceF$ = this.select(
     this.db.itemAppearance(this.item$.pipe(mapProp('ArmorAppearanceF'))),
-    (it) => it
+    (it) => it,
   )
   public readonly weaponAppearance$ = this.select(
     this.db.weaponAppearance(this.item$.pipe(mapProp('WeaponAppearanceOverride'))),
-    (it) => it
+    (it) => it,
   )
   public readonly instrumentAppearance$ = this.select(
     this.db.instrumentAppearance(this.item$.pipe(mapProp('WeaponAppearanceOverride'))),
-    (it) => it
+    (it) => it,
   )
   public readonly ingredientCategories$ = this.select(this.db.recipeCategoriesMap, this.item$, selectCraftingCategories)
   public readonly statusEffectsIds$ = this.select(this.consumable$, this.housingItem$, selectStatusEffectIds)
@@ -182,7 +190,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
       perkDetails: this.perkSlots$,
       perkOverride: this.perkOverride$,
     }),
-    selectFinalRarity
+    selectFinalRarity,
   )
   public readonly finalRarityName$ = this.select(this.isArtifact$, this.finalRarity$, (isArtifact, rarity) => {
     return getItemRarityLabel(rarity)
@@ -202,7 +210,9 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
       armor: this.armorStats$,
       item: this.item$,
     }).pipe(
-      map(({ weapon, armor, item }) => Math.floor(weapon?.WeightOverride || armor?.WeightOverride || item?.Weight) / 10)
+      map(
+        ({ weapon, armor, item }) => Math.floor(weapon?.WeightOverride || armor?.WeightOverride || item?.Weight) / 10,
+      ),
     ),
     durability: this.item$.pipe(mapProp('Durability')),
     maxStackSize: this.entity$.pipe(mapProp('MaxStackSize')),
@@ -236,7 +246,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
           ...getItemStatsArmor(item, armor, gs),
         ],
       }
-    })
+    }),
   )
 
   public readonly vmPerks$ = selectStream(
@@ -255,7 +265,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
           editable: editable && detail?.editable,
         }
       })
-    }
+    },
   )
 
   public readonly artifactPerkTasks$ = this.item$.pipe(
@@ -264,10 +274,14 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
         return collectArtifactTasks(it, this.db)
       }
       return of(null)
-    })
+    }),
   )
 
-  public constructor(protected db: NwDbService, private ms: ModelViewerService, protected cdRef: ChangeDetectorRef) {
+  public constructor(
+    protected db: NwDbService,
+    private ms: ModelViewerService,
+    protected cdRef: ChangeDetectorRef,
+  ) {
     super({})
   }
 
@@ -290,7 +304,7 @@ function collectArtifactTasks(item: ItemDefinitionMaster, db: NwDbService) {
         perk3: tasks.get(task.SubTask3),
         perk4: tasks.get(task.SubTask4),
       }
-    })
+    }),
   )
 }
 export interface ItemCollections {

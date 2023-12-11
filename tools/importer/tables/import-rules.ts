@@ -103,6 +103,12 @@ export const TABLE_IMPORT_RULES = [
     'seasonsrewards/**/*_seasonpassdata_*',
     'seasonsrewards/**/*_rewarddata_*',
   ]),
+  tableSource('seasonsrewards/**/*_rewarddata_*', [
+    mapPropToArray({
+      keys: ['EntitlementIds'],
+      separator: ',',
+    }),
+  ]),
   tableSource('javelindata_gamemodes', [
     mapPropToArray({
       keys: ['PossibleItemDropIds', 'PossibleItemDropIdsByLevel01', 'LootTags', 'MutLootTagsOverride'],
@@ -308,6 +314,10 @@ export const TABLE_IMPORT_RULES = [
       mapPropToArray({
         keys: ['IngredientCategories'],
         separator: ',',
+      }),
+      mapPropToArray({
+        keys: ['SalvageLootTags'],
+        separator: /[,+]/,
       }),
       deleteProp(['AudioPickup', 'AudioPlace', 'AudioUse', 'AudioCreated']),
     ],

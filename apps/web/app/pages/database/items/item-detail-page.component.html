@@ -13,7 +13,7 @@
     >
       <div *ngIf="card.itemModels$ | async; let models" class="pb-4 px-4 flex flex-col gap-2">
         <div *ngIf="viewerActive" class="aspect-square rounded-md overflow-clip">
-          <nwb-model-viewer [models]="models" [hideFloor]="true" class="w-full h-full"></nwb-model-viewer>
+          <nwb-model-viewer [models]="models" [hideFloor]="true" class="w-full h-full"/>
         </div>
         <button
           class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50 w-full"
@@ -45,8 +45,8 @@
               [tableId]="salvage.tableId"
               [tags]="salvage.tags"
               [tagValues]="salvage.tagValues"
-              [showLocked]="true"
-            ></nwb-loot-graph>
+              [showLocked]="false"
+            />
             <div class="flex flex-row justify-end p-2">
               <button class="btn btn-sm btn-primary" (click)="closeDialog()">Close</button>
             </div>

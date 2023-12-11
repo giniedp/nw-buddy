@@ -8,6 +8,7 @@ import {
   getItemMaxGearScore,
   getItemPerkSlots,
   getItemRarity,
+  getItemRarityNumeric,
   getPerkBucketPerkIDs,
   getPerkBucketPerks,
   getPerkTypeWeight,
@@ -67,17 +68,18 @@ export function selectFinalRarity({
   return getItemRarity(item, perkIds)
 }
 
-export function selectSalvageInfo(item: ItemDefinitionMaster | Housingitems) {
+export function selectSalvageInfo(item: ItemDefinitionMaster | Housingitems, playerLevel: number) {
   const recipe = item?.RepairRecipe
   if (!recipe?.startsWith('[LTID]')) {
     return null
   }
   return {
     tableId: recipe.replace('[LTID]', ''),
-    tags: ((item as ItemDefinitionMaster)?.SalvageLootTags || '').split(/[+,]/),
+    tags: (item as ItemDefinitionMaster)?.SalvageLootTags,
     tagValues: {
+      Level: playerLevel - 1,
       MinContLevel: (item as ItemDefinitionMaster)?.ContainerLevel,
-      SalvageItemRarity: getItemRarity(item),
+      SalvageItemRarity: getItemRarityNumeric(item),
       SalvageItemTier: item.Tier,
     },
   }

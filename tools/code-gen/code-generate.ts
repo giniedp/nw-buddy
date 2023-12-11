@@ -136,6 +136,10 @@ const ENUMS = {
     CreatureType: 'CreatureType',
     LootTags: 'LootTag',
   },
+  Entitlements: {
+    RewardType: 'EntitlementRewardType',
+    SourceType: 'EntitlementSourceType',
+  },
   Buffbuckets: {
     TableType: 'BuffTableType',
     BuffType1: 'BuffType',

@@ -946,8 +946,8 @@ export interface Entitlements {
   Notes: string
   RequiredEntitlements: string
   'Reward(s)': string[]
-  RewardType: string
-  SourceType: string
+  RewardType: EntitlementRewardType
+  SourceType: EntitlementSourceType
   UniqueTagID: string
 }
 
@@ -1315,7 +1315,7 @@ export interface ItemDefinitionMaster {
   SalvageAchievement: string
   SalvageGameEventID: string
   SalvageGuaranteedPerkCount: number
-  SalvageLootTags: string
+  SalvageLootTags: string[]
   SalvageResources: number
   SoundTableID: string
   Tier: number
@@ -4027,7 +4027,7 @@ export interface PvpbalanceWar {
 
 export interface Rewarddata {
   DisplayItemId: string
-  EntitlementIds: string
+  EntitlementIds: string[]
   IsHighValue: string
   ItemId: string
   LimitingEntitlementId: string
@@ -5429,6 +5429,38 @@ export type DamageType =
 export type DayPhases =
   | 'Day'
   | 'Night'
+export type EntitlementRewardType =
+  | 'CampSkin'
+  | 'Emote'
+  | 'Entitlement'
+  | 'Expansion2023'
+  | 'FictionalCurrency'
+  | 'GuildCrest'
+  | 'HousingItem'
+  | 'InventoryItem'
+  | 'ItemDye'
+  | 'ItemMountDye'
+  | 'ItemSkin'
+  | 'Loadout'
+  | 'Misc'
+  | 'Mount'
+  | 'MountAttachment'
+  | 'PlayerTitle'
+  | 'SeasonsRewards'
+  | 'Service'
+  | 'StatusEffect'
+  | 'TransmogToken'
+  | 'WorldId'
+export type EntitlementSourceType =
+  | 'Leaderboards'
+  | 'Preorder'
+  | 'Prime'
+  | 'SaltTrack'
+  | 'SeasonJourney'
+  | 'SeasonPass'
+  | 'SeasonRewardTrack'
+  | 'Store'
+  | 'Twitch'
 export type EquipLoadCategory =
   | 'Fast'
   | 'Normal'

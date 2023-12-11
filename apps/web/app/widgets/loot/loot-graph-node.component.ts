@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { ComponentStore } from '@ngrx/component-store'
 import { LootTable } from '@nw-data/common'
@@ -9,11 +9,13 @@ import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgCircleExclamation, svgCode, svgLink, svgLock, svgLockOpen } from '~/ui/icons/svg'
 import { PaginationModule } from '~/ui/pagination'
 import { TooltipModule } from '~/ui/tooltip'
-import { ItemDetailModule } from '../data/item-detail'
+
 import { VirtualGridModule, VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { LootGraphGridCellComponent } from './loot-graph-grid-cell.component'
-import { eqCaseInsensitive } from '~/utils'
 import { PropertyGridModule } from '~/ui/property-grid'
+import { eqCaseInsensitive } from '~/utils'
+import { ItemDetailHeaderComponent } from '../data/item-detail/item-detail-header.component'
+import { ItemDetailComponent } from '../data/item-detail/item-detail.component'
+import { LootGraphGridCellComponent } from './loot-graph-grid-cell.component'
 
 export interface LootGraphNodeState<T = LootNode> {
   node: T
@@ -28,6 +30,7 @@ export interface LootGraphNodeVM {
   chanceRel: number
   childGrid: boolean
   children: LootNode[]
+  childrenAreItems: boolean
   displayName: string
   expandable: boolean
   highlight: boolean
@@ -63,7 +66,8 @@ export interface LootGraphNodeVM {
     CommonModule,
     NwModule,
     IconsModule,
-    ItemDetailModule,
+    ItemDetailComponent,
+    ItemDetailHeaderComponent,
     TooltipModule,
     RouterModule,
     PaginationModule,
@@ -166,6 +170,9 @@ function selectVM(state: LootGraphNodeState) {
 
 function initVM(state: LootGraphNodeState): LootGraphNodeVM {
   const { node, showLocked, expand } = state
+  const children = showLocked ? node?.children : node?.children?.filter((it) => !!it.unlocked && !!it.unlockedItemcount)
+  const childrenAreItems = children?.every((it) => it.type === 'table-item' || it.type === 'bucket-row')
+
   return {
     ...state,
     unlocked: node?.unlocked,
@@ -184,7 +191,8 @@ function initVM(state: LootGraphNodeState): LootGraphNodeVM {
     itemTags: null,
     expandable: false,
     childGrid: false,
-    children: showLocked ? node?.children : node?.children?.filter((it) => !!it.unlocked && !!it.unlockedItemcount),
+    children: children,
+    childrenAreItems: childrenAreItems,
     itemIds: null,
     tagValue: null,
     rollThreshold: null,
@@ -219,10 +227,15 @@ function vmFromTableItemNode(vm: LootGraphNodeVM, { node }: LootGraphNodeState<L
 
 function vmFromBucketNode(vm: LootGraphNodeVM, { node }: LootGraphNodeState<LootBucketNode>) {
   vm.expandable = true
-  vm.childGrid = true
   vm.typeName = `bucket`
   vm.displayName = node.ref
-  vm.gridOptions = LootGraphGridCellComponent.buildGridOptions()
+  if (vm.children?.length > 8) {
+    vm.childGrid = true
+    vm.gridOptions = LootGraphGridCellComponent.buildGridOptions()
+  } else {
+    vm.childGrid = false
+    vm.gridOptions = null
+  }
 }
 
 function vmFromBucketRowNode(vm: LootGraphNodeVM, { node }: LootGraphNodeState<LootBucketRowNode>) {

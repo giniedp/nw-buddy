@@ -106,6 +106,15 @@ export function getItemRarityWeight(item: ItemDefinitionMaster | Housingitems | 
   }
   return ITEM_RARITIES.indexOf(rarity) ?? ITEM_RARITIES.length
 }
+export function getItemRarityNumeric(item: ItemDefinitionMaster | Housingitems | ItemRarity) {
+  let rarity: ItemRarity
+  if (typeof item !== 'string') {
+    rarity = getItemRarity(item)
+  } else {
+    rarity = item
+  }
+  return ITEM_RARITIES.indexOf(rarity) ?? 0
+}
 export function getItemRarity(item: ItemDefinitionMaster | Housingitems, itemPerkIds?: string[]): ItemRarity {
   if (!item) {
     return ITEM_RARITIES[0]

@@ -1,14 +1,14 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TemplateRef, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { map, switchMap } from 'rxjs'
+import { map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { mapProp, observeRouteParam, selectSignal } from '~/utils'
+import { EntitlementDetailModule } from '~/widgets/data/entitlement-detail'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { LootModule } from '~/widgets/loot'
 
@@ -17,7 +17,16 @@ import { LootModule } from '~/widgets/loot'
   selector: 'nwb-season-pass-detail-page',
   templateUrl: './season-pass-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, LayoutModule, ItemDetailModule, RouterModule, LootModule, IconsModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    LayoutModule,
+    ItemDetailModule,
+    RouterModule,
+    LootModule,
+    IconsModule,
+    EntitlementDetailModule,
+  ],
   host: {
     class: 'flex-none flex flex-col',
   },
@@ -37,16 +46,22 @@ export class SeasonPassDetailPageComponent {
       data: this.data$,
       freeReward: this.freeReward$,
       premiumReward: this.premiumReward$,
+      entitlementsMap: this.db.entitlementsMap,
     },
-    map(({ data, freeReward, premiumReward }) => {
+    map(({ data, freeReward, premiumReward, entitlementsMap }) => {
+      if (!data || !entitlementsMap) {
+        return []
+      }
       return [
         {
           title: 'Free Reward',
           itemId: freeReward?.DisplayItemId || freeReward?.ItemId,
+          entitlementIds: freeReward?.EntitlementIds,
         },
         {
           title: 'Premium Reward',
           itemId: premiumReward?.DisplayItemId || premiumReward?.ItemId,
+          entitlementIds: premiumReward?.EntitlementIds,
         },
       ].filter((it) => it.itemId)
     }),

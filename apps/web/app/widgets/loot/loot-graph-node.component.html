@@ -9,7 +9,7 @@
       <div class="flex flex-row flex-wrap items-center gap-x-1">
         <span *ngIf="vm.rollThreshold" class="badge badge-sm badge-primary">
           >= {{ vm.rollThreshold }}
-          <ng-container *ngIf="vm.chanceRel"> ({{ vm.chanceRel | percent : '0.0-6' }}) </ng-container>
+          <ng-container *ngIf="vm.chanceRel"> ({{ vm.chanceRel | percent: '0.0-6' }}) </ng-container>
         </span>
         <span *ngIf="vm.tagValue" class="badge badge-sm badge-secondary whitespace-nowrap"> >= {{ vm.tagValue }} </span>
         <span *ngIf="vm.itemQuantity && vm.itemQuantity != '1'" class="whitespace-nowrap">
@@ -41,7 +41,7 @@
         <span> | </span>
         <ng-container *ngIf="vm.showChance">
           <span class="min-w-[40px] cursor-help inline-flex flex-col text-right">
-            <span> {{ vm.chanceAbs | percent : '0.0-6' }} </span>
+            <span> {{ vm.chanceAbs | percent: '0.0-6' }} </span>
           </span>
           <span> | </span>
         </ng-container>
@@ -178,19 +178,22 @@
   </ng-container>
 
   <ng-template #tplChildren>
-    <ng-container *ngIf="vm.childGrid && vm.children?.length">
-      <nwb-virtual-grid [data]="vm.children" [options]="vm.gridOptions" class="min-h-[380px] -m-2"> </nwb-virtual-grid>
-    </ng-container>
-    <ng-container *ngIf="!vm.childGrid && vm.children?.length">
-      <div class="flex flex-col gap-2">
-        <ng-container *ngFor="let node of vm.children; trackBy: trackByIndex">
-          <nwb-loot-graph-node
-            [node]="node"
-            [showLocked]="vm.showLocked"
-            [showChance]="vm.showChance"
-          ></nwb-loot-graph-node>
-        </ng-container>
+    @if (!vm.children?.length) {
+      <!-- empty -->
+    } @else if(vm.childGrid) {
+      <nwb-virtual-grid [data]="vm.children" [options]="vm.gridOptions" class="min-h-[380px] -m-2" />
+    } @else if(vm.childrenAreItems) {
+      <div class="grid grid-cols-fill-xs gap-2">
+        @for (node of vm.children; track $index) {
+          <nwb-loot-graph-node [node]="node" [showLocked]="vm.showLocked" [showChance]="vm.showChance" />
+        }
       </div>
-    </ng-container>
+    } @else {
+      <div class="flex flex-col gap-2">
+        @for (node of vm.children; track $index) {
+          <nwb-loot-graph-node [node]="node" [showLocked]="vm.showLocked" [showChance]="vm.showChance" />
+        }
+      </div>
+    }
   </ng-template>
 </ng-container>

@@ -15,7 +15,9 @@ import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
+import { ItemFrameModule } from '~/ui/item-frame'
 import { LayoutModule } from '~/ui/layout'
+import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
@@ -25,8 +27,6 @@ import { ModelViewerComponent, ModelViewerModule } from '~/widgets/model-viewer'
 import { ItemModelInfo } from '~/widgets/model-viewer/model-viewer.service'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ItemTabsComponent } from './item-tabs.component'
-import { ItemFrameModule } from '~/ui/item-frame'
-import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
   standalone: true,
@@ -63,7 +63,7 @@ export class ItemDetailPageComponent {
     private route: ActivatedRoute,
     private dialog: Dialog,
     private head: HtmlHeadService,
-    private i18n: TranslateService
+    private i18n: TranslateService,
   ) {
     //
   }

@@ -541,6 +541,10 @@ export class NwDbService {
   public playerTitlesMap = indexBy(() => this.playerTitles, 'TitleID')
   public playerTitle = lookup(() => this.playerTitlesMap)
 
+  public entitlements = table(() => this.data.entitlements())
+  public entitlementsMap = indexBy(() => this.entitlements, 'UniqueTagID')
+  public entitlement = lookup(() => this.entitlementsMap)
+
   public seasonPassData = table(() =>
     this.data
       .matchingApiMethods<'seasonsrewardsSeason1SeasonpassdataSeason1'>((it) => {
