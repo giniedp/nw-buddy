@@ -4025,6 +4025,18 @@ export interface PvpbalanceWar {
   WeaponBaseDamageAdjustment: number
 }
 
+export interface Rewarddata {
+  DisplayItemId: string
+  EntitlementIds: string
+  IsHighValue: string
+  ItemId: string
+  LimitingEntitlementId: string
+  RewardId: string
+  RewardIndex: number
+  RewardType: string
+  SeasonsXp: number
+}
+
 export interface SeasonPassData {
   FreeRewardId: string
   InfluenceCost: number

@@ -67,6 +67,7 @@ import type {
   PvpbalanceOpenworld,
   PvpbalanceOutpostrush,
   PvpbalanceWar,
+  Rewarddata,
   SandelementalHeavySandworm,
   SeasonPassData,
   Spellsmetadata,
@@ -1385,11 +1386,20 @@ export abstract class NwDataLoader {
   public quests99eMsqEdengrove99eObjectives() {
     return this.load<Objective[]>('quests/99e_msq_edengrove/javelindata_99e_objectives.json')
   }
+  public seasonsrewardsSeason1RewarddataSeason1() {
+    return this.load<Rewarddata[]>('seasonsrewards/season1/javelindata_rewarddata_season1.json')
+  }
   public seasonsrewardsSeason1SeasonpassdataSeason1() {
     return this.load<SeasonPassData[]>('seasonsrewards/season1/javelindata_seasonpassdata_season1.json')
   }
+  public seasonsrewardsSeason2RewarddataSeason2() {
+    return this.load<Rewarddata[]>('seasonsrewards/season2/javelindata_rewarddata_season2.json')
+  }
   public seasonsrewardsSeason2SeasonpassdataSeason2() {
     return this.load<SeasonPassData[]>('seasonsrewards/season2/javelindata_seasonpassdata_season2.json')
+  }
+  public seasonsrewardsSeason3RewarddataSeason3() {
+    return this.load<Rewarddata[]>('seasonsrewards/season3/javelindata_rewarddata_season3.json')
   }
   public seasonsrewardsSeason3SeasonpassdataSeason3() {
     return this.load<SeasonPassData[]>('seasonsrewards/season3/javelindata_seasonpassdata_season3.json')

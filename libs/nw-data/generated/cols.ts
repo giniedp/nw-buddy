@@ -3958,6 +3958,17 @@ export const COLS_PVPBALANCEWAR = {
   "SelfHealAdjustment": "number",
   "WeaponBaseDamageAdjustment": "number",
 }
+export const COLS_REWARDDATA = {
+  "DisplayItemId": "string",
+  "EntitlementIds": "string",
+  "IsHighValue": "string",
+  "ItemId": "string",
+  "LimitingEntitlementId": "string",
+  "RewardId": "string",
+  "RewardIndex": "number",
+  "RewardType": "string",
+  "SeasonsXp": "number",
+}
 export const COLS_SEASONPASSDATA = {
   "FreeRewardId": "string",
   "InfluenceCost": "number",

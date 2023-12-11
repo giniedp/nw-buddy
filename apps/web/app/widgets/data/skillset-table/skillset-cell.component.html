@@ -1,7 +1,9 @@
-@if(icon(); as icon) {
-  <img [nwImage]="icon" class="absolute top-0 bottom-0 left-0 right-0 object-contain z-0">
+@if (icon(); as icon) {
+  <img [nwImage]="icon" class="absolute top-0 bottom-0 left-0 right-0 object-contain z-0" />
 }
-<h3 class="z-10 text-lg uppercase font-serif flex flex-row gap-2 items-center justify-center text-nw-description nw-bg-title bg-bottom pt-4">
+<h3
+  class="z-10 text-lg uppercase font-serif flex flex-row gap-2 items-center justify-center text-nw-description nw-bg-title bg-bottom pt-4"
+>
   {{ recordName() }}
 </h3>
 <div class="z-10 flex flex-row justify-between p-4">

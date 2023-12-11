@@ -1,0 +1,39 @@
+<nwb-detail-drawer class="hidden lg:block lg:w-[420px]">
+  <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
+    @for (reward of itemRewards(); track $index) {
+      <h3 class="px-2 my-2">{{ reward.title }}</h3>
+      <nwb-item-card [entityId]="reward.itemId" [enableInfoLink]="true" [enableLink]="true" #card="card">
+        <div class="pb-4 px-4 btn-group" *ngIf="card.salvageInfo$ | async; let salvage">
+          <button
+            class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50"
+            (click)="openRepairRecipe(tplSalvage)"
+          >
+            Show Loot Table
+          </button>
+          <a
+            class="btn btn-xs flex-none btn-outline btn-ghost rounded-md opacity-50"
+            [routerLink]="['/loot/table', salvage.tableId]"
+          >
+            <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
+          </a>
+
+          <ng-template #tplSalvage>
+            <div class="bg-base-200 flex flex-col rounded-md h-full">
+              <h3 class="bg-base-300 font-bold px-4 py-2">Loot Table</h3>
+              <nwb-loot-graph
+                class="flex-1 layout-content"
+                [tableId]="salvage.tableId"
+                [tags]="salvage.tags"
+                [tagValues]="salvage.tagValues"
+                [showLocked]="true"
+              ></nwb-loot-graph>
+              <div class="flex flex-row justify-end p-2">
+                <button class="btn btn-sm btn-primary" (click)="closeDialog()">Close</button>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </nwb-item-card>
+    }
+  </div>
+</nwb-detail-drawer>

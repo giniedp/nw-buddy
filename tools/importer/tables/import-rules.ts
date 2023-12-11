@@ -100,7 +100,8 @@ export const TABLE_IMPORT_RULES = [
     'quests/**/*_objectives',
     'weaponabilities/*',
     //'quests/**/*_objectivetasks',
-    'seasonsrewards/**/*_seasonpassdata_*'
+    'seasonsrewards/**/*_seasonpassdata_*',
+    'seasonsrewards/**/*_rewarddata_*',
   ]),
   tableSource('javelindata_gamemodes', [
     mapPropToArray({

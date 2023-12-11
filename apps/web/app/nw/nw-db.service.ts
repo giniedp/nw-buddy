@@ -8,6 +8,7 @@ import {
   getItemIdFromRecipe,
   getItemSetFamilyName,
   getQuestRequiredAchuevmentIds,
+  getSeasonPassDataId,
 } from '@nw-data/common'
 import { Housingitems, Vitals } from '@nw-data/generated'
 import { groupBy, sortBy } from 'lodash'
@@ -20,6 +21,14 @@ export function createIndex<T, K extends keyof T>(list: T[], id: K): Map<T[K], T
   const result = new CaseInsensitiveMap<T[K], T>()
   for (const item of list) {
     result.set(item[id], item)
+  }
+  return result
+}
+
+export function createIndexByFn<T>(list: T[], id: (it: T) => string): Map<string, T> {
+  const result = new CaseInsensitiveMap<string, T>()
+  for (const item of list) {
+    result.set(id(item), item)
   }
   return result
 }
@@ -70,6 +79,11 @@ function table<T>(source: () => Observable<T[]> | Array<Observable<T[]>>) {
 function indexBy<T, K extends keyof T>(source: () => Observable<T[]>, key: K) {
   return defer(() => source())
     .pipe(map((items) => createIndex(items, key)))
+    .pipe(shareReplay(1))
+}
+function indexByFn<T>(source: () => Observable<T[]>, key: (it: T) => string) {
+  return defer(() => source())
+    .pipe(map((items) => createIndexByFn(items, key)))
     .pipe(shareReplay(1))
 }
 function indexGroupSetBy<T>(source: () => Observable<T[]>, fn: (it: T) => string[] | string) {
@@ -526,6 +540,26 @@ export class NwDbService {
   public playerTitles = table(() => this.data.playertitles())
   public playerTitlesMap = indexBy(() => this.playerTitles, 'TitleID')
   public playerTitle = lookup(() => this.playerTitlesMap)
+
+  public seasonPassData = table(() =>
+    this.data
+      .matchingApiMethods<'seasonsrewardsSeason1SeasonpassdataSeason1'>((it) => {
+        return !!it.match(/seasonsrewardsSeason\d+SeasonpassdataSeason\d+/i)
+      })
+      .map((it) => this.data[it]().pipe(annotate('$source', it.match(/Season\d+/i)?.[0]))),
+  )
+  public seasonPassDataMap = indexByFn(() => this.seasonPassData, getSeasonPassDataId)
+  public seasonPassRow = lookup(() => this.seasonPassDataMap)
+
+  public seasonPassRewards = table(() =>
+    this.data
+      .matchingApiMethods<'seasonsrewardsSeason1RewarddataSeason1'>((it) => {
+        return !!it.match(/seasonsrewardsSeason\d+RewarddataSeason\d+/i)
+      })
+      .map((it) => this.data[it]().pipe(annotate('$source', it.match(/Season\d+/i)?.[0]))),
+  )
+  public seasonPassRewardsMap = indexBy(() => this.seasonPassRewards, 'RewardId')
+  public seasonPassReward = lookup(() => this.seasonPassRewardsMap)
 
   public constructor(public readonly data: NwDataService) {
     //

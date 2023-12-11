@@ -2,10 +2,6 @@ import { Routes } from '@angular/router'
 import { landingRedirect } from './landing-redirect'
 import { LandingComponent } from './landing.component'
 import { PrivacyComponent } from './privacy.component'
-import { NwDataInterceptor, NwDataService } from './nw'
-import { HttpClient } from '@angular/common/http'
-import { EmptyComponent, LayoutColComponent } from './widgets/empty'
-import { ArchiveComponent } from './archive.component'
 
 const routes: Routes = [
   { path: 'ipfs', loadChildren: () => import('./pages/share').then((m) => m.ShareModule) },
@@ -23,6 +19,10 @@ const routes: Routes = [
   { path: 'quests', loadChildren: () => import('./pages/database/quests').then((m) => m.QuestsPageModule) },
   { path: 'loot', loadChildren: () => import('./pages/database/loot').then((m) => m.LootPageModule) },
   { path: 'damage', loadChildren: () => import('./pages/database/damage').then((m) => m.DamagePageModule) },
+  {
+    path: 'season-pass',
+    loadChildren: () => import('./pages/database/season-pass').then((m) => m.SeasonPassPageModule),
+  },
   { path: 'emotes', loadChildren: () => import('./pages/database/emotes').then((m) => m.EmotesPageModule) },
   {
     path: 'player-titles',
