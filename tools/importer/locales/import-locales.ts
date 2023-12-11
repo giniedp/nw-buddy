@@ -1,4 +1,5 @@
 import * as path from 'path'
+import * as fs from 'fs'
 import { walkJsonStrings } from '../../utils/walk-json-object'
 import { glob, readJSONFile, withProgressBar, writeJSONFile } from '../../utils'
 

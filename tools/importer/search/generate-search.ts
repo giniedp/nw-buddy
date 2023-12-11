@@ -29,7 +29,15 @@ function indexTable() {
     },
     getData: () => {
       console.log('Added', added, 'Skipped', skipped)
-      return [...records]
+      return [...records].sort((a, b) => {
+        if (a.type !== b.type) {
+          return a.type.localeCompare(b.type)
+        }
+        if (a.id !== b.id) {
+          return String(a.id).localeCompare(String(b.id))
+        }
+        return a.text.localeCompare(b.text)
+      })
     },
   }
 }
@@ -51,9 +59,14 @@ export async function generateSearch(options: { localesDir: string; tablesDir: s
     await indexAppearance(item.dict, options.tablesDir, index)
     await indexWeaponAppearance(item.dict, options.tablesDir, index)
     await indexInstrumentAppearance(item.dict, options.tablesDir, index)
-    const data = JSON.stringify(index.getData())
-    const outFile = path.join(options.outDir, `${item.locale}.json`)
-    await writeFile(data, outFile, {
+    const data = index.getData()
+    const json = [
+      '[',
+      data.map((it) => JSON.stringify(it)).join(',\n'),
+      ']',
+    ].join('\n')
+    const file = path.join(options.outDir, `${item.locale}.json`)
+    await writeFile(json, file, {
       createDir: true,
     })
   }

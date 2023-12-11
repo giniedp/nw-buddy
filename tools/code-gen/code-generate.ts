@@ -60,6 +60,10 @@ const PATH_TO_TYPE_RULES = [
     name: 'Damagetable',
   },
   {
+    test: /_seasonpassdata_/,
+    name: 'SeasonPassData',
+  },
+  {
     test: /_gameevents[._]/,
     name: 'GameEvent',
   },

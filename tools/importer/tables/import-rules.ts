@@ -40,6 +40,8 @@ export const TABLE_IMPORT_RULES = [
     '*_damagetable',
     '*_damagetypes',
     '*_dyecolors',
+    '*_emotedefinitions',
+    '*_entitlements',
     '*_gameevents',
     '*_gatherables',
     '*_housetypes',
@@ -58,6 +60,7 @@ export const TABLE_IMPORT_RULES = [
     '*_lootbuckets',
     '*_lootlimits',
     '*_loottables*',
+    '*_loreitems*',
     '*_manacosts_player',
     '*_metaachievements',
     '*_milestonerewards',
@@ -65,6 +68,8 @@ export const TABLE_IMPORT_RULES = [
     '*_objectivetasks',
     '*_perkbuckets',
     '*_perks',
+    '*_playertitles',
+    '*_playertitles_categories',
     '*_spelltable_*',
     '*_spelltable',
     '*_staminacosts_player',
@@ -95,6 +100,7 @@ export const TABLE_IMPORT_RULES = [
     'quests/**/*_objectives',
     'weaponabilities/*',
     //'quests/**/*_objectivetasks',
+    'seasonsrewards/**/*_seasonpassdata_*'
   ]),
   tableSource('javelindata_gamemodes', [
     mapPropToArray({
@@ -180,7 +186,7 @@ export const TABLE_IMPORT_RULES = [
     [
       'javelindata_loottables*',
       'pvp_rewardstrack/javelindata_loottables*'
-  ],
+    ],
     [
       mapPropToArray({
         keys: ['Conditions'],
@@ -189,11 +195,27 @@ export const TABLE_IMPORT_RULES = [
     ],
   ),
   tableSource(
-    ['**/*_damagetable_*', '**/*_damagetable'],
+    // prettier-ignore
+    [
+      '**/*_damagetable_*',
+      '**/*_damagetable',
+    ],
     [
       mapPropToArray({
         keys: ['StatusEffect'],
         separator: ',',
+      }),
+    ],
+  ),
+  tableSource(
+    // prettier-ignore
+    [
+      'javelindata_entitlements',
+    ],
+    [
+      mapPropToArray({
+        keys: ['Reward(s)'],
+        separator: '+',
       }),
     ],
   ),

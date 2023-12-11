@@ -110,6 +110,12 @@ program
         tables: tables.map(({ data }) => data),
         preserveKeys: LOCALE_KEYS_TO_KEEP,
       })
+      await glob(path.join(localesDir, '**/*.json')).then((files) => {
+        for (const file of files) {
+          const stat = fs.statSync(file)
+          console.log('  ', Number((stat.size / 1024 / 1024).toFixed(2)), 'MB |', file)
+        }
+      })
       console.log('Expressions')
       await extractExpressions({
         input: localesDir,
@@ -247,10 +253,10 @@ program
         }
       })
       const totalSizeInMB = stats.reduce((acc, { size }) => acc + size, 0) / 1024 / 1024
-      console.log(`Tables total size in MB:`, Number(totalSizeInMB.toFixed(2)))
+      console.log('  ', Number(totalSizeInMB.toFixed(2)), 'MB |',  'total size')
       const filesLargerThan10MB = stats.filter(({ size }) => size > 5 * 1024 * 1024).sort((a, b) => b.size - a.size)
       if (filesLargerThan10MB.length) {
-        console.log(`Table files larger than 5 MB`)
+        console.log(`  Files larger than 5 MB`)
         for (const file of filesLargerThan10MB) {
           console.log('  ', Number((file.size / 1024 / 1024).toFixed(2)), 'MB |',  file.file)
         }

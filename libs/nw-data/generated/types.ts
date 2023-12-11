@@ -913,6 +913,44 @@ export interface Elementalmutations {
   TextColor: string
 }
 
+export interface Emotedefinitions {
+  AttributionId: string
+  ChatBoxText: string
+  DisplayDescription: string
+  DisplayGroup: string
+  DisplayName: string
+  DisplayPriority: number
+  EmoteDuration: number
+  FragmentName: string
+  GatherableTags: string
+  HasCooldown: number
+  IsEnabled: number
+  IsEntitlement: number
+  IsPremiumEmote: number
+  SecondarySlashCommand: string
+  SlashCommand: string
+  StatusEffectTimer: string
+  UiImage: string
+  UniqueTagID: string
+}
+
+export interface Entitlements {
+  AchievementId: string
+  Description: string
+  DisplayName: string
+  EntitlementIndex: number
+  EntitlementInfo: string
+  Icon: string
+  IsConsumable: boolean
+  IsEnabled: boolean
+  Notes: string
+  RequiredEntitlements: string
+  'Reward(s)': string[]
+  RewardType: string
+  SourceType: string
+  UniqueTagID: string
+}
+
 export interface GameEvent {
   AchievementId: string
   AzothReward: number | string
@@ -3312,6 +3350,24 @@ export interface Loottable {
   UseLevelGS: string
 }
 
+export interface Loreitems {
+  AchievementId: string
+  AssociatedQuest: string
+  Body: string
+  ImagePath: string
+  LocationName: string
+  LocationXY: string
+  LoreID: string
+  LoreNotesLocation: string
+  Order: number
+  ParentID: string
+  RecordingStatus: string
+  Subtitle: string
+  Title: string
+  Type: string
+  Writer: string
+}
+
 export interface ManacostsPlayer {
   CostID: string
   ManaCost: number
@@ -3821,6 +3877,27 @@ export interface Perks {
   WeaponTag: WeaponTag
 }
 
+export interface Playertitles {
+  AchievementId: string
+  CategoricalProgressionId: string
+  Description: string
+  MetaAchievementId: string
+  RequiredCategoricalProgressionLevel: number
+  RequiredPlayerLevel: number
+  TitleFemale: string
+  TitleID: string
+  TitleMale: string
+  TitleNeutral: string
+  TitleType: string
+  UIDisplayCategory: string
+}
+
+export interface PlayertitlesCategories {
+  Index: number
+  MetaAchievementCategoryId: string
+  Title: string
+}
+
 export interface PoiDefinition {
   AudioBank: string
   AudioGroup: string
@@ -3946,6 +4023,14 @@ export interface PvpbalanceWar {
   ConsumableHealAdjustment: number
   SelfHealAdjustment: number
   WeaponBaseDamageAdjustment: number
+}
+
+export interface SeasonPassData {
+  FreeRewardId: string
+  InfluenceCost: number
+  Level: number
+  MaximumInfluence: number
+  PremiumRewardId: string
 }
 
 export interface Spelltable {

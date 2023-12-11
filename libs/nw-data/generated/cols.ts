@@ -889,6 +889,42 @@ export const COLS_ELEMENTALMUTATIONS = {
   "Name": "string",
   "TextColor": "string",
 }
+export const COLS_EMOTEDEFINITIONS = {
+  "AttributionId": "string",
+  "ChatBoxText": "string",
+  "DisplayDescription": "string",
+  "DisplayGroup": "string",
+  "DisplayName": "string",
+  "DisplayPriority": "number",
+  "EmoteDuration": "number",
+  "FragmentName": "string",
+  "GatherableTags": "string",
+  "HasCooldown": "number",
+  "IsEnabled": "number",
+  "IsEntitlement": "number",
+  "IsPremiumEmote": "number",
+  "SecondarySlashCommand": "string",
+  "SlashCommand": "string",
+  "StatusEffectTimer": "string",
+  "UiImage": "string",
+  "UniqueTagID": "string",
+}
+export const COLS_ENTITLEMENTS = {
+  "AchievementId": "string",
+  "Description": "string",
+  "DisplayName": "string",
+  "EntitlementIndex": "number",
+  "EntitlementInfo": "string",
+  "Icon": "string",
+  "IsConsumable": "boolean",
+  "IsEnabled": "boolean",
+  "Notes": "string",
+  "RequiredEntitlements": "string",
+  "Reward(s)": "[]",
+  "RewardType": "string",
+  "SourceType": "string",
+  "UniqueTagID": "string",
+}
 export const COLS_GAMEEVENT = {
   "AchievementId": "string",
   "AzothReward": "number",
@@ -3268,6 +3304,23 @@ export const COLS_LOOTTABLE = {
   "TriggerLimitOnVisit": "string",
   "UseLevelGS": "string",
 }
+export const COLS_LOREITEMS = {
+  "AchievementId": "string",
+  "AssociatedQuest": "string",
+  "Body": "string",
+  "ImagePath": "string",
+  "LocationName": "string",
+  "LocationXY": "string",
+  "LoreID": "string",
+  "LoreNotesLocation": "string",
+  "Order": "number",
+  "ParentID": "string",
+  "RecordingStatus": "string",
+  "Subtitle": "string",
+  "Title": "string",
+  "Type": "string",
+  "Writer": "string",
+}
 export const COLS_MANACOSTSPLAYER = {
   "CostID": "string",
   "ManaCost": "number",
@@ -3431,7 +3484,7 @@ export const COLS_OBJECTIVE = {
   "PlayerPrompt": "string",
   "ProgressionReward": "string",
   "QuestArcTag": "string",
-  "Repeatable": "string",
+  "Repeatable": "number",
   "RequiredAchievementId": "string",
   "RequiredFaction": "string",
   "RequiredLevel": "number",
@@ -3767,6 +3820,25 @@ export const COLS_PERKS = {
   "Tier": "number",
   "WeaponTag": "string",
 }
+export const COLS_PLAYERTITLES = {
+  "AchievementId": "string",
+  "CategoricalProgressionId": "string",
+  "Description": "string",
+  "MetaAchievementId": "string",
+  "RequiredCategoricalProgressionLevel": "number",
+  "RequiredPlayerLevel": "number",
+  "TitleFemale": "string",
+  "TitleID": "string",
+  "TitleMale": "string",
+  "TitleNeutral": "string",
+  "TitleType": "string",
+  "UIDisplayCategory": "string",
+}
+export const COLS_PLAYERTITLESCATEGORIES = {
+  "Index": "number",
+  "MetaAchievementCategoryId": "string",
+  "Title": "string",
+}
 export const COLS_POIDEFINITION = {
   "AudioBank": "string",
   "AudioGroup": "string",
@@ -3885,6 +3957,13 @@ export const COLS_PVPBALANCEWAR = {
   "ConsumableHealAdjustment": "number",
   "SelfHealAdjustment": "number",
   "WeaponBaseDamageAdjustment": "number",
+}
+export const COLS_SEASONPASSDATA = {
+  "FreeRewardId": "string",
+  "InfluenceCost": "number",
+  "Level": "number",
+  "MaximumInfluence": "number",
+  "PremiumRewardId": "string",
 }
 export const COLS_SPELLTABLE = {
   "AbilityId": "string",

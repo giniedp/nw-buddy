@@ -23,6 +23,8 @@ import type {
   Dyecolors,
   Elementalmutationperks,
   Elementalmutations,
+  Emotedefinitions,
+  Entitlements,
   GameEvent,
   Gamemodes,
   Gatherables,
@@ -44,6 +46,7 @@ import type {
   Lootbuckets,
   Lootlimits,
   Loottable,
+  Loreitems,
   ManacostsPlayer,
   Metaachievements,
   Milestonerewards,
@@ -54,6 +57,8 @@ import type {
   Objectivetasks,
   Perkbuckets,
   Perks,
+  Playertitles,
+  PlayertitlesCategories,
   PoiDefinition,
   Promotionmutations,
   PvpRewards,
@@ -63,6 +68,7 @@ import type {
   PvpbalanceOutpostrush,
   PvpbalanceWar,
   SandelementalHeavySandworm,
+  SeasonPassData,
   Spellsmetadata,
   Spelltable,
   StaminacostsPlayer,
@@ -848,6 +854,12 @@ export abstract class NwDataLoader {
   public dyecolors() {
     return this.load<Dyecolors[]>('javelindata_dyecolors.json')
   }
+  public emotedefinitions() {
+    return this.load<Emotedefinitions[]>('javelindata_emotedefinitions.json')
+  }
+  public entitlements() {
+    return this.load<Entitlements[]>('javelindata_entitlements.json')
+  }
   public ftueDamagetableDamned() {
     return this.load<Damagetable[]>('javelindata_ftue_damagetable_damned.json')
   }
@@ -1001,6 +1013,9 @@ export abstract class NwDataLoader {
   public loottablesSeasons() {
     return this.load<Loottable[]>('javelindata_loottables_seasons.json')
   }
+  public loreitems() {
+    return this.load<Loreitems[]>('javelindata_loreitems.json')
+  }
   public manacostsPlayer() {
     return this.load<ManacostsPlayer[]>('javelindata_manacosts_player.json')
   }
@@ -1063,6 +1078,12 @@ export abstract class NwDataLoader {
   }
   public perks() {
     return this.load<Perks[]>('javelindata_perks.json')
+  }
+  public playertitles() {
+    return this.load<Playertitles[]>('javelindata_playertitles.json')
+  }
+  public playertitlesCategories() {
+    return this.load<PlayertitlesCategories[]>('javelindata_playertitles_categories.json')
   }
   public pointofinterestdefinitionsPoidefinitions0102() {
     return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_01_02.json')
@@ -1363,6 +1384,15 @@ export abstract class NwDataLoader {
   }
   public quests99eMsqEdengrove99eObjectives() {
     return this.load<Objective[]>('quests/99e_msq_edengrove/javelindata_99e_objectives.json')
+  }
+  public seasonsrewardsSeason1SeasonpassdataSeason1() {
+    return this.load<SeasonPassData[]>('seasonsrewards/season1/javelindata_seasonpassdata_season1.json')
+  }
+  public seasonsrewardsSeason2SeasonpassdataSeason2() {
+    return this.load<SeasonPassData[]>('seasonsrewards/season2/javelindata_seasonpassdata_season2.json')
+  }
+  public seasonsrewardsSeason3SeasonpassdataSeason3() {
+    return this.load<SeasonPassData[]>('seasonsrewards/season3/javelindata_seasonpassdata_season3.json')
   }
   public spelltable() {
     return this.load<Spelltable[]>('javelindata_spelltable.json')
