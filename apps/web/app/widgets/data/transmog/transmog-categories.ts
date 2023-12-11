@@ -13,7 +13,7 @@ export const TRANSMOG_CATEGORIES: TransmogCategory[] = [
     id: '1handed',
     name: 'categorydata_1handed',
     itemClass: ['EquippableMainHand', 'Melee'],
-    subcategories: ['Sword', 'Rapier', 'Hatchet'],
+    subcategories: ['Sword', 'Rapier', 'Hatchet', 'Flail'],
   },
   {
     id: '2handed',
