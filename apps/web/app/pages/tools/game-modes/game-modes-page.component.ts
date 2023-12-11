@@ -72,7 +72,7 @@ export class GameModesPageComponent {
         mutations?.map((it) => {
           return {
             expedition: it.expedition,
-            element: elements.find((el) => el.CategoryWildcard === el.CategoryWildcard && el.ElementalDifficultyTier === 3),
+            element: elements.find((el) => el.CategoryWildcard === it.element && el.ElementalDifficultyTier === 3),
             promotion: promotionsMap.get(it.promotion),
             curse: cursesMap.get(it.curse),
           }
@@ -106,7 +106,12 @@ function groupByCategory(modes: Gamemodes[]) {
   return groups
 }
 
-function selectCategory(pois: PoiDefinition[], categories: Record<string, Gamemodes[]>, category: string, mutations: Array<CurrentMutation>) {
+function selectCategory(
+  pois: PoiDefinition[],
+  categories: Record<string, Gamemodes[]>,
+  category: string,
+  mutations: Array<CurrentMutation>,
+) {
   pois = pois.filter((it) => !!it.GameMode)
   let modes: Gamemodes[] = []
   if (category === 'all') {
@@ -122,7 +127,6 @@ function selectCategory(pois: PoiDefinition[], categories: Record<string, Gamemo
     .map((mode) => {
       const poi = pois.find((it) => eqCaseInsensitive(it.GameMode, mode.GameModeId))
       const mutation = mutations?.find((it) => eqCaseInsensitive(it.expedition, mode.GameModeId))
-
       return {
         id: mode.GameModeId,
         icon: mode.IconPath,
