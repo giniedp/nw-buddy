@@ -23,6 +23,11 @@ const routes: Routes = [
   { path: 'quests', loadChildren: () => import('./pages/database/quests').then((m) => m.QuestsPageModule) },
   { path: 'loot', loadChildren: () => import('./pages/database/loot').then((m) => m.LootPageModule) },
   { path: 'damage', loadChildren: () => import('./pages/database/damage').then((m) => m.DamagePageModule) },
+  { path: 'emotes', loadChildren: () => import('./pages/database/emotes').then((m) => m.EmotesPageModule) },
+  {
+    path: 'player-titles',
+    loadChildren: () => import('./pages/database/player-titles').then((m) => m.PlayerTitlesPageModule),
+  },
   {
     path: 'game-events',
     loadChildren: () => import('./pages/database/game-events').then((m) => m.GameEventsPageModule),
@@ -42,7 +47,10 @@ const routes: Routes = [
   },
   { path: 'armorsets', redirectTo: 'armor-sets' },
   { path: 'armor-sets', loadChildren: () => import('./pages/tools/armorsets').then((m) => m.ArmorsetsModule) },
-  { path: 'armor-weights', loadChildren: () => import('./pages/tools/armor-weights').then((m) => m.ArmorWeightsModule) },
+  {
+    path: 'armor-weights',
+    loadChildren: () => import('./pages/tools/armor-weights').then((m) => m.ArmorWeightsModule),
+  },
   { path: 'dungeons', redirectTo: 'game-modes' },
   { path: 'game-modes', loadChildren: () => import('./pages/tools/game-modes').then((m) => m.GameModesModule) },
   { path: 'inventory', loadChildren: () => import('./pages/tools/inventory').then((m) => m.InventoryModule) },

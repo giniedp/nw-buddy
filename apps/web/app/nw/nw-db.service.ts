@@ -108,20 +108,20 @@ export class NwDbService {
   public itemsBySalvageAchievement = indexGroupBy(() => this.items, 'SalvageAchievement')
   public itemsByIngredientCategoryMap = indexGroupSetBy(
     () => this.items,
-    (it) => it.IngredientCategories
+    (it) => it.IngredientCategories,
   )
   public itemsByIngredientCategory = lookup(() => this.itemsByIngredientCategoryMap)
   public itemsByAppearanceId = indexGroupSetBy(
     () => this.items,
-    (it) => [it.ArmorAppearanceM, it.ArmorAppearanceF, it.WeaponAppearanceOverride]
+    (it) => [it.ArmorAppearanceM, it.ArmorAppearanceF, it.WeaponAppearanceOverride],
   )
   public itemsByItemTypeMap = indexGroupSetBy(
     () => this.items,
-    (it) => it.ItemType
+    (it) => it.ItemType,
   )
   public itemsBySetFamilyName = indexGroupSetBy(
     () => this.items,
-    (it) => getItemSetFamilyName(it)
+    (it) => getItemSetFamilyName(it),
   )
   public itemSet = lookup(() => this.itemsBySetFamilyName)
 
@@ -133,7 +133,7 @@ export class NwDbService {
   public housingItem = lookup(() => this.housingItemsMap)
   public housingItemsByStatusEffectMap = indexGroupSetBy(
     () => this.housingItems,
-    (it) => it.HousingStatusEffect
+    (it) => it.HousingStatusEffect,
   )
   public housingItemsByStatusEffect = lookup(() => this.housingItemsByStatusEffectMap)
 
@@ -146,30 +146,30 @@ export class NwDbService {
   public abilities = table(() =>
     this.data
       .apiMethodsByPrefix('weaponabilitiesAbility', 'weaponabilitiesAbilityAi')
-      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_'))),
   )
   public abilitiesMap = indexBy(() => this.abilities, 'AbilityID')
   public ability = lookup(() => this.abilitiesMap)
   public abilitiesByStatusEffectMap = indexGroupSetBy(
     () => this.abilities,
-    (it) => it.StatusEffect
+    (it) => it.StatusEffect,
   )
   public abilitiesByStatusEffect = lookup(() => this.abilitiesByStatusEffectMap)
   public abilitiesBySelfApplyStatusEffectMap = indexGroupSetBy(
     () => this.abilities,
-    (it) => it.SelfApplyStatusEffect
+    (it) => it.SelfApplyStatusEffect,
   )
   public abilitiesBySelfApplyStatusEffect = lookup(() => this.abilitiesBySelfApplyStatusEffectMap)
   public abilitiesByOtherApplyStatusEffectMap = indexGroupSetBy(
     () => this.abilities,
-    (it) => it.OtherApplyStatusEffect
+    (it) => it.OtherApplyStatusEffect,
   )
   public abilitiesByOtherApplyStatusEffect = lookup(() => this.abilitiesByOtherApplyStatusEffectMap)
 
   public statusEffects = table(() =>
     this.data
       .apiMethodsByPrefix('statuseffects', 'statuseffectsAi')
-      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_'))),
   )
   public statusEffectsMap = indexBy(() => this.statusEffects, 'StatusID')
   public statusEffect = lookup(() => this.statusEffectsMap)
@@ -183,12 +183,12 @@ export class NwDbService {
   public perk = lookup(() => this.perksMap)
   public perksByEquipAbilityMap = indexGroupSetBy(
     () => this.perks,
-    (it) => it.EquipAbility
+    (it) => it.EquipAbility,
   )
   public perksByEquipAbility = lookup(() => this.perksByEquipAbilityMap)
   public perksByAffixMap = indexGroupSetBy(
     () => this.perks,
-    (it) => it.Affix
+    (it) => it.Affix,
   )
   public perksByAffix = lookup(() => this.perksByAffixMap)
 
@@ -201,7 +201,7 @@ export class NwDbService {
   public affixStat = lookup(() => this.affixStatsMap)
   public affixByStatusEffectMap = indexGroupSetBy(
     () => this.affixStats,
-    (it) => it.StatusEffect
+    (it) => it.StatusEffect,
   )
   public affixByStatusEffect = lookup(() => this.affixByStatusEffectMap)
 
@@ -210,13 +210,13 @@ export class NwDbService {
   public damageTables = table(() =>
     this.data
       .apiMethodsByPrefix('damagetable', 'damagetable')
-      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_'))),
   )
   public damageTableMap = indexBy(() => this.damageTables, 'DamageID')
   public damageTable = lookup(() => this.damageTableMap)
   public damageTablesByStatusEffectMap = indexGroupSetBy(
     () => this.damageTables,
-    (it) => it.StatusEffect
+    (it) => it.StatusEffect,
   )
   public damageTablesByStatusEffect = lookup(() => this.damageTablesByStatusEffectMap)
 
@@ -248,7 +248,7 @@ export class NwDbService {
   public consumable = lookup(() => this.consumablesMap)
   public consumablesByAddStatusEffectsMap = indexGroupSetBy(
     () => this.consumables,
-    (it) => it.AddStatusEffects
+    (it) => it.AddStatusEffects,
   )
   public consumablesByAddStatusEffects = lookup(() => this.consumablesByAddStatusEffectsMap)
 
@@ -259,13 +259,13 @@ export class NwDbService {
   public spells = table(() =>
     this.data
       .apiMethodsByPrefix('spelltable', 'spelltable')
-      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_'))),
   )
   public spellsMap = indexBy(() => this.spells, 'SpellID')
   public spell = lookup(() => this.spellsMap)
   public spellsByDamageTable = indexGroupSetBy(
     () => this.spells,
-    (it) => it.DamageTable
+    (it) => it.DamageTable,
   )
 
   public spellsMetadata = table(() => [this.data.generatedSpellsmetadata()])
@@ -279,28 +279,28 @@ export class NwDbService {
   public quests = table(() =>
     this.data
       .apiMethodsByPrefix('quests', 'quests01Starterbeach01Objectives')
-      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_'))),
   )
   public questsMap = indexBy(() => this.quests, 'ObjectiveID')
   public quest = lookup(() => this.questsMap)
   public questsByAchievementId = indexGroupSetBy(
     () => this.quests,
-    (it) => it.AchievementId
+    (it) => it.AchievementId,
   )
   public questsByRequiredAchievementId = indexGroupSetBy(
     () => this.quests,
-    (it) => getQuestRequiredAchuevmentIds(it)
+    (it) => getQuestRequiredAchuevmentIds(it),
   )
 
   public recipes = table(() =>
     this.data
       .apiMethodsByPrefix('crafting', 'crafting')
-      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_'))),
   )
   public recipesMap = indexBy(() => this.recipes, 'RecipeID')
   public recipesMapByItemId = indexGroupSetBy(
     () => this.recipes,
-    (it) => getItemIdFromRecipe(it)
+    (it) => getItemIdFromRecipe(it),
   )
   public recipesMapByRequiredAchievementId = indexBy(() => this.recipes, 'RequiredAchievementID')
   public recipesMapByIngredients = indexGroupSetBy(
@@ -308,7 +308,7 @@ export class NwDbService {
     (it) =>
       getIngretientsFromRecipe(it)
         .map((it) => it.ingredient)
-        .filter((it) => !!it)
+        .filter((it) => !!it),
   )
   public recipe = lookup(() => this.recipesMap)
   public recipeByAchievementId = lookup(() => this.recipesMapByRequiredAchievementId)
@@ -390,7 +390,7 @@ export class NwDbService {
   public vitalsOfCreatureType = lookup(() => this.vitalsByCreatureType)
 
   public vitalsFamilies = table(() =>
-    this.vitalsByFamily.pipe(map((it) => Array.from(it.keys()) as Array<Vitals['Family']>))
+    this.vitalsByFamily.pipe(map((it) => Array.from(it.keys()) as Array<Vitals['Family']>)),
   )
 
   public vitalsCategories = table(() => [this.data.vitalscategories()])
@@ -417,13 +417,13 @@ export class NwDbService {
   public pois = table(() =>
     this.data
       .apiMethodsByPrefix('pointofinterestdefinitions', 'pointofinterestdefinitionsPoidefinitions0202')
-      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_'))),
   )
   public poisMap = indexBy(() => this.pois, 'TerritoryID')
   public poi = lookup(() => this.poisMap)
   public poiByPoiTag = indexGroupSetBy(
     () => this.pois,
-    (it) => it.POITag?.split(',')
+    (it) => it.POITag?.split(','),
   )
 
   public milestoneRewards = table(() => this.data.milestonerewards())
@@ -460,7 +460,7 @@ export class NwDbService {
       })
       .map((it) => {
         return this.data[it]().pipe(map(convertLoottables)).pipe(annotate('$source', it))
-      })
+      }),
   )
   public lootTablesMap = indexBy(() => this.lootTables, 'LootTableID')
   public lootTable = lookup(() => this.lootTablesMap)
@@ -518,6 +518,14 @@ export class NwDbService {
   public cooldownsPlayer = table(() => this.data.cooldownsPlayer())
   public cooldownsPlayerMap = indexBy(() => this.cooldownsPlayer, 'AbilityID')
   public cooldownPlayer = lookup(() => this.cooldownsPlayerMap)
+
+  public emotes = table(() => this.data.emotedefinitions())
+  public emotesMap = indexBy(() => this.emotes, 'UniqueTagID')
+  public emote = lookup(() => this.emotesMap)
+
+  public playerTitles = table(() => this.data.playertitles())
+  public playerTitlesMap = indexBy(() => this.playerTitles, 'TitleID')
+  public playerTitle = lookup(() => this.playerTitlesMap)
 
   public constructor(public readonly data: NwDataService) {
     //

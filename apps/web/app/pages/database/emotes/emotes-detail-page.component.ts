@@ -1,0 +1,24 @@
+import { CommonModule } from '@angular/common'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { ActivatedRoute } from '@angular/router'
+import { NwModule } from '~/nw'
+import { LayoutModule } from '~/ui/layout'
+import { observeRouteParam } from '~/utils'
+import { EmotesDetailModule } from '~/widgets/data/emotes-detail'
+
+@Component({
+  standalone: true,
+  selector: 'nwb-emotes-detail-page',
+  templateUrl: './emotes-detail-page.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, NwModule, LayoutModule, EmotesDetailModule],
+  host: {
+    class: 'flex-none flex flex-col',
+  },
+})
+export class EmotesDetailPageComponent {
+  protected route = inject(ActivatedRoute)
+  protected id$ = observeRouteParam(this.route, 'id')
+  protected showLocked: boolean
+}

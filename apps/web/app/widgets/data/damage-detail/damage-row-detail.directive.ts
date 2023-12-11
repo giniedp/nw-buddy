@@ -4,8 +4,8 @@ import { DamageRowDetailStore } from './damage-row-detail.store'
 
 @Directive({
   standalone: true,
-  selector: '[nwbSpellDetail]',
-  exportAs: 'abilityDetail',
+  selector: '[nwbDamageRowDetail]',
+  exportAs: 'damageRowDetail',
   providers: [
     {
       provide: DamageRowDetailStore,
