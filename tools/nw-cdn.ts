@@ -30,7 +30,7 @@ const config = {
 program
   .command('download')
   .description('Downloads files from CDN to local workspace')
-  .option('-ws, --workspace', 'ptr or live workspace into which to download data', NW_GAME_VERSION)
+  .option('-ws, --workspace <name>', 'ptr or live workspace into which to download data', NW_GAME_VERSION)
   .option('-v, --version <version>', 'Version name to download', path.basename(environment.nwDataDir(NW_GAME_VERSION)))
   .action(async (data) => {
     const options = z
@@ -87,7 +87,7 @@ program
 program
   .command('upload')
   .description('Zips nw-data folder (live or ptr) and uploads to CDN. Optionally uploads all files unzipped.')
-  .option('-ws, --workspace', 'workspace folder to upload (ptr or live)', NW_GAME_VERSION)
+  .option('-ws, --workspace <name>', 'workspace folder to upload (ptr or live)', NW_GAME_VERSION)
   .option('-v, --version <version>', 'Version name to use for upload', path.basename(environment.nwDataDir(NW_GAME_VERSION)))
   .option('-u, --update', 'Whether to update the zip file before upload', false)
   .option('-f, --files', 'Whether to upload unzipped folder to CDN', false)

@@ -34,12 +34,12 @@ program
   .option('-u, --update', 'Update existing files from previous import')
   .option('-m, --module <module>', 'Specific importer module to run', collect, [])
   .option('-t, --threads <threads>', 'Number of worker threads', Number)
-  .option('-ws, --workspace', 'workspace dir (live or ptr)', NW_GAME_VERSION)
+  .option('-ws, --workspace <name>', 'workspace dir (live or ptr)', NW_GAME_VERSION)
   .action(async () => {
     const options = program.opts<{
       input: string
       output: string
-      workspace: boolean
+      workspace: string
       update: boolean
       module: string[]
       threads: number

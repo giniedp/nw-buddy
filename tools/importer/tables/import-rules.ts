@@ -35,6 +35,7 @@ export const TABLE_IMPORT_RULES = [
     '*_categoricalprogression',
     '*_cooldowns_player',
     '*_crafting',
+    '*_crafting_*',
     '*_craftingcategories',
     '*_damagetable_*',
     '*_damagetable',
