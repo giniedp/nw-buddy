@@ -22,14 +22,11 @@ const isPtr = branchName === 'ptr' || branchName.startsWith('ptr-')
 //const isCI = !!process.env.CI
 const path = require('path')
 const packageVersion = require(path.resolve(process.cwd(), 'package.json')).version
-const config = {
-  NW_GAME_LIVE: process.env.NW_GAME_LIVE,
-  NW_GAME_PTR: process.env.NW_GAME_PTR,
-  NW_UNPACK_LIVE: process.env.NW_UNPACK_LIVE,
-  NW_UNPACK_PTR: process.env.NW_UNPACK_PTR,
-  NW_MODELS_DIR: process.env.NW_MODELS_DIR,
+const gameVersion = process.env.NW_GAME_VERSION
 
-  NW_USE_PTR: ['true', 'yes', '1'].includes(process.env.NW_USE_PTR ?? String(isPtr)),
+const config = {
+  NW_MODELS_DIR: process.env.NW_MODELS_DIR,
+  NW_GAME_VERSION: process.env.NW_GAME_VERSION || (isPtr ? 'PTR' : 'LIVE'),
   BRANCH_NAME: branchName,
   CDN_URL: process.env.CDN_URL,
   CDN_UPLOAD_SPACE: process.env.CDN_UPLOAD_SPACE,
@@ -41,7 +38,7 @@ const config = {
 }
 
 function env(name) {
-  const result = config[name]
+  const result = config[name] || process.env[name]
   if (result == null) {
     throw new Error(`env variable '${name}' is not defined `)
   }
@@ -53,7 +50,15 @@ const appsDir = (...paths) => path.join(cwd, 'apps', ...paths)
 const distDir = (...paths) => path.join(cwd, 'dist', ...paths)
 const tmpDir = (...paths) => path.join(cwd, 'tmp', ...paths)
 const libsDir = (...paths) => path.join(cwd, 'libs', ...paths)
-const dataDir = (isPtr) => path.join('nw-data', isPtr ? 'ptr' : 'live')
+const dataDir = (workspace) => path.join('nw-data', getVersion(workspace).toLowerCase())
+
+function getVersion(workspace) {
+  console.log('getVersion', workspace)
+  if (typeof workspace === 'string') {
+    return workspace.toUpperCase()
+  }
+  return workspace ? 'PTR' : 'LIVE'
+}
 
 const environment = {
   cwd: cwd,
@@ -62,10 +67,10 @@ const environment = {
   libsDir,
   tmpDir,
   dataDir,
-  nwGameDir: (isPtr) => path.resolve(cwd, env(isPtr ? 'NW_GAME_PTR' : 'NW_GAME_LIVE')),
-  nwUnpackDir: (isPtr) => path.resolve(cwd, env(isPtr ? 'NW_UNPACK_PTR' : 'NW_UNPACK_LIVE')),
-  nwConvertDir: (isPtr) => tmpDir(dataDir(isPtr)),
-  nwDataDir: (isPtr) => distDir(dataDir(isPtr)),
+  nwGameDir: (workspace) => path.resolve(cwd, env(`NW_GAME_${getVersion(workspace)}`)),
+  nwUnpackDir: (workspace) => path.resolve(cwd, env(`NW_UNPACK_${getVersion(workspace)}`)),
+  nwConvertDir: (workspace) => tmpDir(dataDir(workspace)),
+  nwDataDir: (workspace) => distDir(dataDir(workspace)),
   nwModelsDir: () => env('NW_MODELS_DIR'),
 }
 

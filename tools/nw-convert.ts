@@ -1,7 +1,7 @@
 import { program } from 'commander'
 import { convert } from 'nw-extract'
 import * as path from 'path'
-import { environment, NW_USE_PTR } from '../env'
+import { environment, NW_GAME_VERSION } from '../env'
 import { objectStreamConverter } from './bin/object-stream-converter'
 import { cpus } from 'os'
 import { glob, copyFile } from './utils/file-utils'
@@ -29,20 +29,20 @@ program
   .option('-u, --update', 'Force update')
   .option('-t, --threads <threads>', 'Number of threads', Number)
   .option('-m, --module <module>', 'Specific converter module to run', collect, [])
-  .option('--ptr', 'PTR mode', NW_USE_PTR)
+  .option('-ws, --workspace <name>', 'workspace (live or ptr)', NW_GAME_VERSION)
   .action(async () => {
     const options = program.opts<{
       input: string
       output: string
-      ptr: boolean
+      workspace: boolean
       update: boolean
       threads: number
       module: string[]
     }>()
     options.update = !!options.update
     options.threads = options.threads || cpus().length
-    const inputDir = options.input || environment.nwUnpackDir(options.ptr)!
-    const outputDir = options.output || environment.nwConvertDir(options.ptr)!
+    const inputDir = options.input || environment.nwUnpackDir(options.workspace)!
+    const outputDir = options.output || environment.nwConvertDir(options.workspace)!
     console.log('[CONVERT]', inputDir)
     console.log('      to:', outputDir)
     console.log('  update:', options.update)

@@ -9,6 +9,10 @@ export const env = {
    */
   isPTR: false,
   /**
+   * nw-data workspace folder
+   */
+  workspace: 'live',
+  /**
    * The path where models are located
    */
   cdnUrl: 'https://cdn.nw-buddy.de',

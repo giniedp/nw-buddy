@@ -2,7 +2,7 @@ import { program } from 'commander'
 import * as fs from 'fs'
 import * as path from 'path'
 import { z } from 'zod'
-import { CDN_URL, COMMIT_HASH, NW_USE_PTR, PACKAGE_VERSION, environment } from '../env'
+import { CDN_URL, COMMIT_HASH, NW_GAME_VERSION, PACKAGE_VERSION, environment } from '../env'
 import { glob, readJSONFile } from './utils/file-utils'
 
 program
@@ -60,7 +60,8 @@ program
     const envFile = path.join(environment.appsDir('web', 'environments', 'env.generated.ts'))
     const env = {
       version: PACKAGE_VERSION + (COMMIT_HASH ? `#${COMMIT_HASH}` : ''),
-      isPTR: NW_USE_PTR,
+      isPTR: NW_GAME_VERSION.toLowerCase() !== 'live',
+      workspace: NW_GAME_VERSION.toLowerCase(),
       cdnUrl: CDN_URL,
       deployUrl: ngConfig.projects['nw-buddy'].architect.build.configurations[config].baseHref || '/',
     }

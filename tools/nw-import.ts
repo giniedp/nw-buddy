@@ -2,7 +2,7 @@ import { program } from 'commander'
 import * as fs from 'fs'
 import { cpus } from 'os'
 import * as path from 'path'
-import { environment, NW_USE_PTR } from '../env'
+import { environment, NW_GAME_VERSION } from '../env'
 import { generateTypes } from './code-gen/code-generate'
 import { extractExpressions } from './importer/extractExpressions'
 import { importImages } from './importer/images'
@@ -34,18 +34,18 @@ program
   .option('-u, --update', 'Update existing files from previous import')
   .option('-m, --module <module>', 'Specific importer module to run', collect, [])
   .option('-t, --threads <threads>', 'Number of worker threads', Number)
-  .option('--ptr', 'PTR mode', NW_USE_PTR)
+  .option('-ws, --workspace', 'workspace dir (live or ptr)', NW_GAME_VERSION)
   .action(async () => {
     const options = program.opts<{
       input: string
       output: string
-      ptr: boolean
+      workspace: boolean
       update: boolean
       module: string[]
       threads: number
     }>()
-    const inputDir = options.input || environment.nwConvertDir(options.ptr)!
-    const distDir = environment.nwDataDir(options.ptr)!
+    const inputDir = options.input || environment.nwConvertDir(options.workspace)!
+    const distDir = environment.nwDataDir(options.workspace)!
     const typesDir = environment.libsDir('nw-data', 'generated')
     const threads = options.threads || cpus().length
     const tablesOutDir = path.join(distDir, 'datatables')

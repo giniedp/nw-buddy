@@ -15,7 +15,7 @@ import {
   CDN_UPLOAD_SECRET,
   CDN_UPLOAD_SPACE,
   CDN_URL,
-  NW_USE_PTR,
+  NW_GAME_VERSION,
   environment,
 } from '../env'
 import { glob } from './utils/file-utils'
@@ -30,18 +30,18 @@ const config = {
 program
   .command('download')
   .description('Downloads files from CDN to local workspace')
-  .option('--ptr', 'Whether to download into the PTR workspace', !!NW_USE_PTR)
-  .option('-v, --version <version>', 'Version name to download', path.basename(environment.nwDataDir(NW_USE_PTR)))
+  .option('-ws, --workspace', 'ptr or live workspace into which to download data', NW_GAME_VERSION)
+  .option('-v, --version <version>', 'Version name to download', path.basename(environment.nwDataDir(NW_GAME_VERSION)))
   .action(async (data) => {
     const options = z
       .object({
         version: z.string(),
-        ptr: z.boolean(),
+        workspace: z.string(),
       })
       .parse(data)
 
     const zipUrl = `${CDN_URL}/nw-data/${options.version}.zip?cache=${Date.now()}`
-    const zipFile = environment.nwDataDir(options.ptr) + '.zip'
+    const zipFile = environment.nwDataDir(options.workspace) + '.zip'
     const zipDir = path.dirname(zipFile)
     console.log(options)
     console.log('[DOWNLOAD]', zipUrl)
@@ -87,21 +87,21 @@ program
 program
   .command('upload')
   .description('Zips nw-data folder (live or ptr) and uploads to CDN. Optionally uploads all files unzipped.')
-  .option('--ptr', 'Whether to upload the PTR folder', !!NW_USE_PTR)
-  .option('-v, --version <version>', 'Version name to use for upload', path.basename(environment.nwDataDir(NW_USE_PTR)))
+  .option('-ws, --workspace', 'workspace folder to upload (ptr or live)', NW_GAME_VERSION)
+  .option('-v, --version <version>', 'Version name to use for upload', path.basename(environment.nwDataDir(NW_GAME_VERSION)))
   .option('-u, --update', 'Whether to update the zip file before upload', false)
   .option('-f, --files', 'Whether to upload unzipped folder to CDN', false)
   .action(async (data) => {
     const options = z
       .object({
         version: z.string(),
-        ptr: z.boolean(),
+        workspace: z.string(),
         update: z.boolean(),
         files: z.boolean(),
       })
       .parse(data)
 
-    const zipDir = environment.nwDataDir(options.ptr)
+    const zipDir = environment.nwDataDir(options.workspace)
     const zipFile = path.join(zipDir, '..', options.version + '.zip')
     const zipFileKey = path.relative(environment.distDir(), zipFile)
     const client = createClient()

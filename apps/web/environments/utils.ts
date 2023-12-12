@@ -4,6 +4,7 @@ export interface Environment {
   environment: string
   production: boolean
   standalone: boolean
+  workspace: string
   isPTR: boolean
   version: string
   cdnUrl: string
@@ -22,7 +23,7 @@ export function getEnvDataVersionPath(version: string) {
 }
 
 export function getEnvDataPath(env: EnvVars) {
-  return getEnvDataVersionPath(env.isPTR ? 'ptr' : 'live')
+  return getEnvDataVersionPath(env.workspace || (env.isPTR ? 'ptr' : 'live'))
 }
 
 export function getEnvDataCdnUrl(env: EnvVars) {

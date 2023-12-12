@@ -2,7 +2,7 @@ import * as path from 'path'
 import { MultiBar, Presets } from 'cli-progress'
 import { program } from 'commander'
 import { extract } from 'nw-extract'
-import { environment, NW_USE_PTR } from '../env'
+import { environment, NW_GAME_VERSION } from '../env'
 import { pakExtractor } from './bin/pak-extractor'
 import { quickbms } from './bin/quickbms'
 
@@ -17,20 +17,21 @@ program
   .option('-o, --output <path>', 'output directory')
   .option('-m, --module <module>', 'unpacker module to use', 'nwtools')
   .option('-t, --threads <threads>', 'Number of threads', Number)
-  .option('--ptr', 'PTR mode', NW_USE_PTR)
+  .option('-ws, --workspace <name>', 'workspace dir (live or ptr)', NW_GAME_VERSION)
   .action(async () => {
     const options = program.opts<{
       game: string
       output: string
-      ptr: boolean
+      workspace: boolean
       threads: number
       full: boolean
       module: Unpacker
     }>()
+
     options.threads = options.threads ? options.threads : 10
 
-    const inputDir = options.game || environment.nwGameDir(options.ptr)!
-    const outputDir = options.output || environment.nwUnpackDir(options.ptr)!
+    const inputDir = options.game || environment.nwGameDir(options.workspace)!
+    const outputDir = options.output || environment.nwUnpackDir(options.workspace)!
     console.log('[UNPACK]', inputDir)
     console.log('     to:', outputDir)
     console.log('  using:', options.module?.length ? options.module : 'ALL')
