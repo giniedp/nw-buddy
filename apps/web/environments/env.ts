@@ -20,4 +20,8 @@ export const env = {
    * The deploy URL for assets and resources
    */
   deployUrl: '/',
+  /**
+   * Whether nwdb.info tooltips should be disabled
+   */
+  disableTooltips: false,
 }

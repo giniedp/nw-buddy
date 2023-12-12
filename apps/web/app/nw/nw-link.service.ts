@@ -1,81 +1,74 @@
 import { DOCUMENT } from '@angular/common'
-import { Inject, Injectable, OnDestroy } from '@angular/core'
+import { DestroyRef, Inject, Injectable } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { env } from 'apps/web/environments/env'
 import { environment } from 'apps/web/environments/environment'
-import { Subject, takeUntil } from 'rxjs'
 import { LocaleService } from '~/i18n'
 import { AppPreferencesService } from '~/preferences/app-preferences.service'
-import { nwdbLinkUrl, NwLinkResource, nwguideLinkUrl } from './nw-link'
+import { NwLinkOptions, NwLinkResource, buddyLinkUrl, nwdbLinkUrl } from './nw-link'
+
+export type NwLinkProvider = 'nwdb' | 'buddy'
 
 @Injectable({ providedIn: 'root' })
-export class NwLinkService implements OnDestroy {
-  private destroy$ = new Subject<void>()
-  private provider: 'nwguide' | 'nwdb'
+export class NwLinkService {
+  private provider: NwLinkProvider = 'buddy'
+  private isEnaled = !env.disableTooltips
+
   public constructor(
     private locale: LocaleService,
     private pref: AppPreferencesService,
+    private dRef: DestroyRef,
     @Inject(DOCUMENT)
-    private document: Document
+    private document: Document,
   ) {
-    this.pref.tooltipProvider
-      .observe()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe((value) => {
-        this.provider = value
-        if (value === 'nwguide') {
-          this.installNwguide()
-        } else {
-          this.installNwdb()
-        }
-      })
+    this.watchSetting()
   }
 
   public link(type: NwLinkResource, id: string) {
     if (!id || !type) {
       return null
     }
-    if (this.provider === 'nwguide') {
-      return nwguideLinkUrl({
-        id: id,
-        type: type,
-        lang: this.locale.value,
-        ptr: environment.isPTR,
-      })
-    }
-    return nwdbLinkUrl({
+    const options: NwLinkOptions = {
       id: id,
       type: type,
       lang: this.locale.value,
       ptr: environment.isPTR,
-    })
+    }
+    if (this.provider === 'nwdb') {
+      return nwdbLinkUrl(options)
+    }
+    if (this.provider === 'buddy') {
+      return buddyLinkUrl(options)
+    }
+    return ''
   }
 
-  public ngOnDestroy(): void {
-    this.destroy$.next()
-    this.destroy$.complete()
-  }
-
-  private installNwdb() {
-    const script = 'https://nwdb.info/embed.js'
-    const found = this.document.head.querySelector(`script[src="${script}"]`)
-    if (found) {
+  private watchSetting() {
+    if (!this.isEnaled) {
       return
     }
-    const el = this.document.createElement('script')
-    el.async = true
-    el.src = script
-    this.document.head.append(el)
+    this.pref.tooltipProvider
+      .observe()
+      .pipe(takeUntilDestroyed(this.dRef))
+      .subscribe((value) => {
+        // nwgide has been temporarily removed
+        // may be enabled when they update their site
+        this.provider = this.isEnaled ? 'nwdb' : 'buddy'
+        if (this.provider === 'nwdb') {
+          installNwdb(this.document)
+        }
+      })
   }
+}
 
-  private installNwguide() {
-    const script = 'https://new-world.guide/static/scripts/tooltip.min.js'
-    const found = this.document.head.querySelector(`script[src="${script}"]`)
-    if (found) {
-      return
-    }
-    const el = this.document.createElement('script')
-    el.async = true
-    el.src = script
-    this.document.defaultView['nwGuideUrl'] = 'https://new-world.guide'
-    this.document.head.append(el)
+function installNwdb(document: Document) {
+  const script = 'https://nwdb.info/embed.js'
+  const found = document.head.querySelector(`script[src="${script}"]`)
+  if (found) {
+    return
   }
+  const el = document.createElement('script')
+  el.async = true
+  el.src = script
+  document.head.append(el)
 }

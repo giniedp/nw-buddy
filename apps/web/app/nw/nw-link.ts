@@ -17,6 +17,33 @@ export interface NwLinkOptions {
   id: string
 }
 
+
+const BUDDY_TYPE_MAP: Partial<Record<NwLinkResource, string>> = {
+  item: 'items/table',
+  recipe: 'crafting/table',
+  ability: 'abilities/table',
+  perk: 'perks/table',
+  vitals: 'vitals/table',
+  'status-effect': 'status-effects/table',
+  poi: 'poi/table',
+  quest: 'quests/table',
+  mount: 'mounts/table',
+  gatherable: 'gatherables/table',
+}
+
+export function buddyLinkUrl(options: NwLinkOptions) {
+  if (!options.type || !options.id) {
+    return ''
+  }
+  const type = BUDDY_TYPE_MAP[options.type]
+  if (!type) {
+    return null
+  }
+
+  return `${type}/${encodeURIComponent(options.id.trim())}`
+}
+
+
 const NWDB_TYPE_MAP: Partial<Record<NwLinkResource, string>> = {
   item: 'item',
   recipe: 'recipe',
@@ -60,31 +87,4 @@ function nwdbLinkLocale(lang: string) {
     lang = ''
   }
   return lang
-}
-
-const NWGUIDE_TYPE_MAP: Partial<Record<NwLinkResource, string>> = {
-  item: 'item',
-  recipe: 'recipe',
-  ability: 'ability',
-  perk: 'perk',
-  vitals: 'mob',
-  'status-effect': 'status-effect',
-}
-
-export function nwguideLinkUrl(options: NwLinkOptions) {
-  if (!options.type || !options.id) {
-    return ''
-  }
-  const type = NWGUIDE_TYPE_MAP[options.type]
-  if (!type) {
-    return null
-  }
-  let lang = options.lang.toLowerCase()
-  if (lang === 'en-us') {
-    lang = ''
-  }
-  if (lang) {
-    lang = `${lang}/`
-  }
-  return `https://new-world.guide/${lang}db/${type}/${encodeURIComponent(options.id.trim().toLowerCase())}`
 }

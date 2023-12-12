@@ -64,6 +64,7 @@ program
       workspace: NW_GAME_VERSION.toLowerCase(),
       cdnUrl: CDN_URL,
       deployUrl: ngConfig.projects['nw-buddy'].architect.build.configurations[config].baseHref || '/',
+      disableTooltips: !['live', 'ptr'].includes(NW_GAME_VERSION.toLowerCase())
     }
     console.log(env)
     fs.writeFileSync(

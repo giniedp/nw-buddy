@@ -8,7 +8,7 @@ export class AppPreferencesService {
   public readonly projectName: StorageProperty<string>
   public readonly language: StorageProperty<string>
   public readonly theme: StorageProperty<string>
-  public readonly tooltipProvider: StorageProperty<'nwdb' | 'nwguide'>
+  public readonly tooltipProvider: StorageProperty<'nwdb'>
   public readonly collapseMenuMode: StorageProperty<'auto' | 'always'>
   public readonly nwmpServer: StorageProperty<string>
   public readonly mapActive: StorageProperty<boolean>
