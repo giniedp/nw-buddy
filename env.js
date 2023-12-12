@@ -50,10 +50,9 @@ const appsDir = (...paths) => path.join(cwd, 'apps', ...paths)
 const distDir = (...paths) => path.join(cwd, 'dist', ...paths)
 const tmpDir = (...paths) => path.join(cwd, 'tmp', ...paths)
 const libsDir = (...paths) => path.join(cwd, 'libs', ...paths)
-const dataDir = (workspace) => path.join('nw-data', getVersion(workspace).toLowerCase())
+const dataDir = (workspace) => path.join('nw-data', getWorkspace(workspace).toLowerCase())
 
-function getVersion(workspace) {
-  console.log('getVersion', workspace)
+function getWorkspace(workspace) {
   if (typeof workspace === 'string') {
     return workspace.toUpperCase()
   }
@@ -67,8 +66,8 @@ const environment = {
   libsDir,
   tmpDir,
   dataDir,
-  nwGameDir: (workspace) => path.resolve(cwd, env(`NW_GAME_${getVersion(workspace)}`)),
-  nwUnpackDir: (workspace) => path.resolve(cwd, env(`NW_UNPACK_${getVersion(workspace)}`)),
+  nwGameDir: (workspace) => path.resolve(cwd, env(`NW_GAME_${getWorkspace(workspace)}`)),
+  nwUnpackDir: (workspace) => path.resolve(cwd, env(`NW_UNPACK_${getWorkspace(workspace)}`)),
   nwConvertDir: (workspace) => tmpDir(dataDir(workspace)),
   nwDataDir: (workspace) => distDir(dataDir(workspace)),
   nwModelsDir: () => env('NW_MODELS_DIR'),
