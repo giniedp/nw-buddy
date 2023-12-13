@@ -5,6 +5,6 @@ module.exports = {
   ...config,
   files: [
     ...config.files,
-    `!dist/web-electron/browser/nw-data/${env.NW_GAME_VERSION.toLowerCase()}`,
+    `dist/web-electron/browser/nw-data/${env.NW_GAME_VERSION.toLowerCase()}`,
   ]
 }
