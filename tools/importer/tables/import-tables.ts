@@ -38,7 +38,7 @@ export async function importDatatables(inputDir: string, rules = TABLE_IMPORT_RU
         }
       }
       if (!didMatch) {
-        throw new Error(`No tables found for ${pattern}`)
+        console.warn(`No tables found for ${pattern}`)
       }
     }
 

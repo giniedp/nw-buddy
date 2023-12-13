@@ -22,6 +22,7 @@ const COMPARE_TYPE_FIXES = {
 
 export const TABLE_IMPORT_RULES = [
   tableSource([
+    '*_achievements',
     '*_affixdefinitions',
     '*_affixstats',
     '*_afflictions',

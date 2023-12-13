@@ -2,10 +2,10 @@ import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { Emotedefinitions } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
-export type EmotesTableUtils = TableGridUtils<EmotesTableRecord>
-export type EmotesTableRecord = Emotedefinitions
+export type EmoteTableUtils = TableGridUtils<EmoteTableRecord>
+export type EmoteTableRecord = Emotedefinitions
 
-export function emoteColIcon(util: EmotesTableUtils) {
+export function emoteColIcon(util: EmoteTableUtils) {
   return util.colDef({
     colId: 'icon',
     headerValueGetter: () => 'Icon',
@@ -22,7 +22,7 @@ export function emoteColIcon(util: EmotesTableUtils) {
     }),
   })
 }
-export function emoteColID(util: EmotesTableUtils) {
+export function emoteColID(util: EmoteTableUtils) {
   return util.colDef<string>({
     colId: 'id',
     headerValueGetter: () => 'ID',
@@ -32,7 +32,7 @@ export function emoteColID(util: EmotesTableUtils) {
     getQuickFilterText: ({ value }) => value,
   })
 }
-export function emoteColName(util: EmotesTableUtils) {
+export function emoteColName(util: EmoteTableUtils) {
   return util.colDef<string>({
     colId: 'displayName',
     headerValueGetter: () => 'Name',
@@ -41,7 +41,7 @@ export function emoteColName(util: EmotesTableUtils) {
     getQuickFilterText: ({ value }) => value,
   })
 }
-export function emoteColDescription(util: EmotesTableUtils) {
+export function emoteColDescription(util: EmoteTableUtils) {
   return util.colDef<string>({
     colId: 'displayDescription',
     headerValueGetter: () => 'Description',
@@ -51,7 +51,7 @@ export function emoteColDescription(util: EmotesTableUtils) {
     getQuickFilterText: ({ value }) => value,
   })
 }
-export function emoteColIsEnabled(util: EmotesTableUtils) {
+export function emoteColIsEnabled(util: EmoteTableUtils) {
   return util.colDef<boolean>({
     colId: 'isEnabled',
     hide: true,
@@ -59,7 +59,7 @@ export function emoteColIsEnabled(util: EmotesTableUtils) {
     valueGetter: ({ data }) => (data.IsEnabled ? true : false),
   })
 }
-export function emoteColIsEntitlement(util: EmotesTableUtils) {
+export function emoteColIsEntitlement(util: EmoteTableUtils) {
   return util.colDef<boolean>({
     colId: 'isEntitlement',
     hide: true,
@@ -67,7 +67,7 @@ export function emoteColIsEntitlement(util: EmotesTableUtils) {
     valueGetter: ({ data }) => (data.IsEntitlement ? true : false),
   })
 }
-export function emoteColIsPremiumEmote(util: EmotesTableUtils) {
+export function emoteColIsPremiumEmote(util: EmoteTableUtils) {
   return util.colDef<boolean>({
     colId: 'isPremiumEmote',
     hide: true,
@@ -75,7 +75,7 @@ export function emoteColIsPremiumEmote(util: EmotesTableUtils) {
     valueGetter: ({ data }) => (data.IsPremiumEmote ? true : false),
   })
 }
-export function emoteColHasCooldown(util: EmotesTableUtils) {
+export function emoteColHasCooldown(util: EmoteTableUtils) {
   return util.colDef<boolean>({
     colId: 'hasCooldown',
     hide: true,
@@ -83,14 +83,14 @@ export function emoteColHasCooldown(util: EmotesTableUtils) {
     valueGetter: ({ data }) => (data.HasCooldown ? true : false),
   })
 }
-export function emoteColDisplayGroup(util: EmotesTableUtils) {
+export function emoteColDisplayGroup(util: EmoteTableUtils) {
   return util.colDef<string>({
     colId: 'displayGroup',
     headerValueGetter: () => 'Display Group',
     field: 'DisplayGroup',
   })
 }
-export function emoteColSlashCommand(util: EmotesTableUtils) {
+export function emoteColSlashCommand(util: EmoteTableUtils) {
   return util.colDef<string>({
     colId: 'slashCommand',
     headerValueGetter: () => 'Command',

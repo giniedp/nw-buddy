@@ -5,14 +5,14 @@ import { ActivatedRoute } from '@angular/router'
 import { NwModule } from '~/nw'
 import { LayoutModule } from '~/ui/layout'
 import { observeRouteParam } from '~/utils'
-import { EmotesDetailModule } from '~/widgets/data/emotes-detail'
+import { EmoteDetailModule } from '~/widgets/data/emote-detail'
 
 @Component({
   standalone: true,
   selector: 'nwb-emotes-detail-page',
   templateUrl: './emotes-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, LayoutModule, EmotesDetailModule],
+  imports: [CommonModule, NwModule, LayoutModule, EmoteDetailModule],
   host: {
     class: 'flex-none flex flex-col',
   },

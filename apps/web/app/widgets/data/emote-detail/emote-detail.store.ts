@@ -1,6 +1,8 @@
 import { Injectable, Output, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
+import { Emotedefinitions } from '@nw-data/generated'
 import { NwDbService } from '~/nw'
+import { rejectKeys } from '~/utils'
 
 @Injectable()
 export class EmotesDetailStore extends ComponentStore<{ emoteId: string }> {
@@ -13,6 +15,8 @@ export class EmotesDetailStore extends ComponentStore<{ emoteId: string }> {
   public readonly name$ = this.select(this.emote$, (it) => it?.DisplayName)
   public readonly description$ = this.select(this.emote$, (it) => it?.DisplayDescription)
   public readonly icon$ = this.select(this.emote$, (it) => it?.UiImage)
+  public readonly group$ = this.select(this.emote$, (it) => it?.DisplayGroup)
+  public readonly properties$ = this.select(this.emote$, selectProperties)
 
   public constructor() {
     super({ emoteId: null })
@@ -21,4 +25,9 @@ export class EmotesDetailStore extends ComponentStore<{ emoteId: string }> {
   public update(emoteId: string) {
     this.patchState({ emoteId: emoteId })
   }
+}
+
+function selectProperties(item: Emotedefinitions) {
+  const reject: Array<keyof Emotedefinitions> = ['DisplayName', 'DisplayGroup', 'UiImage', 'DisplayDescription']
+  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }

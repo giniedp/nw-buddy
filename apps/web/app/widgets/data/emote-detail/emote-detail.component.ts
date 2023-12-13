@@ -8,31 +8,21 @@ import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
 import { StatusEffectCategoryDetailModule } from '../status-effect-category-detail'
 import { StatusEffectDetailModule } from '../status-effect-detail'
-import { EmotesDetailStore } from './emotes-detail.store'
+import { EmotesDetailStore } from './emote-detail.store'
 
 @Component({
   standalone: true,
-  selector: 'nwb-emotes-detail',
-  templateUrl: './emotes-detail.component.html',
+  selector: 'nwb-emote-detail',
+  templateUrl: './emote-detail.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    NwModule,
-    ItemFrameModule,
-    PropertyGridModule,
-    DecimalPipe,
-    StatusEffectCategoryDetailModule,
-    StatusEffectDetailModule,
-    TooltipModule,
-    IconsModule,
-  ],
+  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, TooltipModule, IconsModule],
   providers: [DecimalPipe, EmotesDetailStore],
   host: {
     class: 'block rounded-md overflow-clip',
   },
 })
-export class EmotesDetailComponent {
+export class EmoteDetailComponent {
   public readonly store = inject(EmotesDetailStore)
 
   @Input()
@@ -40,7 +30,9 @@ export class EmotesDetailComponent {
     this.store.patchState({ emoteId: value })
   }
 
-  public name = toSignal(this.store.name$)
+  public title = toSignal(this.store.name$)
   public description = toSignal(this.store.description$)
   public icon = toSignal(this.store.icon$)
+  public group = toSignal(this.store.group$)
+  public properties = toSignal(this.store.properties$)
 }

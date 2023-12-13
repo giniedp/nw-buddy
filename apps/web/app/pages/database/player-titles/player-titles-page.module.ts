@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 
+import { PlayerTitleDetailPageComponent } from './player-title-detail-page.component'
 import { PlayerTitlesPageComponent } from './player-titles-page.component'
-import { EmptyComponent } from '~/widgets/empty'
 
 const ROUTES: Routes = [
   {
@@ -16,7 +16,7 @@ const ROUTES: Routes = [
     children: [
       {
         path: ':id',
-        component: EmptyComponent,
+        component: PlayerTitleDetailPageComponent,
       },
     ],
   },

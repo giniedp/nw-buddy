@@ -1,7 +1,8 @@
 import * as path from 'path'
-import { glob, readJSONFile, writeJSONFile } from '../utils'
+import { glob, withProgressBar } from '../utils'
+import { readLocaleFile } from './locales'
 
-export async function extractExpressions({ input, output }: { input: string; output: string }) {
+export async function extractExpressions(input: string) {
   const expressions = new Set<string>()
   const resources = new Set<string>()
   const constants = new Set<string>()
@@ -10,9 +11,9 @@ export async function extractExpressions({ input, output }: { input: string; out
   const images = new Set<string>()
 
   const files = await glob(path.join(input, '**/*.json'))
-  for (const file of files) {
-    const dict = await readJSONFile<Record<string, string>>(file)
-    for (const text of Object.values(dict)) {
+  await withProgressBar({ barName: '  Expressions', tasks: files }, async (file, _, log) => {
+    for await (let { value } of readLocaleFile(file)) {
+      const text = value || ''
       for (const match of text.matchAll(/<img src="([^"]+)"/g)) {
         images.add(match[1])
       }
@@ -35,19 +36,16 @@ export async function extractExpressions({ input, output }: { input: string; out
         html.add(it)
       }
     }
-  }
+  })
 
-  await writeJSONFile(
-    {
-      images: Array.from(images.values()).sort(),
-      resources: Array.from(resources.values()).sort(),
-      constants: Array.from(constants.values()).sort(),
-      variables: Array.from(variables.values()).sort(),
-      html: Array.from(html.values()).sort(),
-      expressions: Array.from(expressions.values()).sort(),
-    },
-    output
-  )
+  return {
+    images: Array.from(images.values()).sort(),
+    resources: Array.from(resources.values()).sort(),
+    constants: Array.from(constants.values()).sort(),
+    variables: Array.from(variables.values()).sort(),
+    html: Array.from(html.values()).sort(),
+    expressions: Array.from(expressions.values()).sort(),
+  }
 }
 
 /**

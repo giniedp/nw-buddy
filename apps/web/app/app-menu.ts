@@ -44,6 +44,10 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Armor Weights', path: '/armor-weights', icon: 'assets/icons/menu/icon_weight.png' },
       { label: 'Transmog', path: '/transmog', icon: 'assets/icons/menu/transmogtoken.webp' },
       { label: 'Mounts', path: '/mounts', icon: 'assets/icons/menu/reward_type_mount.png' },
+
+      { label: 'Player Titles', path: '/player-titles', icon: 'assets/icons/menu/player-titles.png', divider: true },
+      { label: 'Emotes', path: '/emotes', icon: 'assets/icons/menu/emotes.png' },
+      { label: 'Season Pass', path: '/season-pass', icon: 'assets/icons/menu/season.png' },
     ],
   },
   {

@@ -20,6 +20,10 @@ const routes: Routes = [
   { path: 'loot', loadChildren: () => import('./pages/database/loot').then((m) => m.LootPageModule) },
   { path: 'damage', loadChildren: () => import('./pages/database/damage').then((m) => m.DamagePageModule) },
   {
+    path: 'backstories',
+    loadChildren: () => import('./pages/database/backstories').then((m) => m.BackstoriesPageModule),
+  },
+  {
     path: 'season-pass',
     loadChildren: () => import('./pages/database/season-pass').then((m) => m.SeasonPassPageModule),
   },

@@ -229,6 +229,12 @@ export const COLS_ABILITY = {
   "WeaponAccuracy": "number",
   "WeaponTag": "string",
 }
+export const COLS_ACHIEVEMENTS = {
+  "AchievementID": "string",
+  "AchievementIndex": "number",
+  "Category": "string",
+  "GameEventId": "string",
+}
 export const COLS_AFFIXDEFINITIONS = {
   "AffixDataArmor": "string",
   "AffixDataMisc": "string",

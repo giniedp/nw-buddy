@@ -1,0 +1,19 @@
+<nwb-item-header class="gap-2">
+  <a [nwbItemIcon]="icon()" class="w-[76px] h-[76px]"></a>
+  <nwb-item-header-content
+    class="z-10"
+    [title]="title() | nwText"
+    [text1]="displayCategory()"
+    [text2]="'Meta Achievement'"
+    [text3]="tierLabel() | nwText"
+  />
+</nwb-item-header>
+<div class="p-3 flex flex-col gap-2">
+  @if (description(); as text) {
+    <div [nwHtml]="text | nwText: { number: achievement()?.Total }" class="text-nw-description italic"></div>
+    <nwb-item-divider></nwb-item-divider>
+  }
+  <nwb-property-grid [item]="properties()" class="overflow-auto gap-x-2" />
+
+  <ng-content></ng-content>
+</div>

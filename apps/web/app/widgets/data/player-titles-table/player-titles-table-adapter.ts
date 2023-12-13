@@ -18,6 +18,10 @@ import {
   playerTitleColNameFemale,
   playerTitleColNameMale,
   playerTitleColNameNeutral,
+  playerTitleColRequiredLevel,
+  playerTitleColType,
+  playerTitleColTradeSkill,
+  playerTitleColTradeSkillLevel,
 } from './player-titles-table-cols'
 import { humanize } from '~/utils'
 
@@ -70,6 +74,10 @@ function buildOptions(util: TableGridUtils<PlayertitlesTableRecord>) {
       playerTitleColNameMale(util),
       playerTitleColNameNeutral(util),
       playerTitleColDescription(util),
+      playerTitleColType(util),
+      playerTitleColRequiredLevel(util),
+      playerTitleColTradeSkill(util),
+      playerTitleColTradeSkillLevel(util),
     ],
   }
   addGenericColumns(result, {

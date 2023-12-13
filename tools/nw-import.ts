@@ -12,6 +12,7 @@ import { importSlices } from './importer/slices/import-slices'
 import { importSpells } from './importer/slices/import-spells'
 import { importDatatables, pathToDatatables } from './importer/tables'
 import { glob, withProgressBar, writeJSONFile } from './utils'
+import { extractLocaleDiffs } from './importer/extractLocaleDiffs'
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
 }
@@ -103,23 +104,29 @@ program
 
     if (hasFilter(Importer.locales, options.module)) {
       console.log('Locales')
-      const localesDir = path.join(distDir, 'localization')
+      const localesInputDir = path.join(inputDir, 'localization')
+      const localesOutputDir = path.join(distDir, 'localization')
       await importLocales({
-        input: inputDir,
-        output: localesDir,
+        input: localesInputDir,
+        output: localesOutputDir,
         tables: tables.map(({ data }) => data),
         preserveKeys: LOCALE_KEYS_TO_KEEP,
       })
-      await glob(path.join(localesDir, '**/*.json')).then((files) => {
+      await glob(path.join(localesOutputDir, '**/*.json')).then((files) => {
         for (const file of files) {
           const stat = fs.statSync(file)
           console.log('  ', Number((stat.size / 1024 / 1024).toFixed(2)), 'MB |', file)
         }
       })
-      console.log('Expressions')
-      await extractExpressions({
-        input: localesDir,
-        output: './tmp/expressions.json',
+
+      await extractExpressions(localesInputDir).then((data) => {
+        fs.writeFileSync('./tmp/expressions.json', JSON.stringify(data, null, 2))
+      })
+
+      await extractLocaleDiffs(localesInputDir).then((result) => {
+        for (const { locale, data } of result) {
+          fs.writeFileSync(`./tmp/expressions-diffs-${locale}.csv`, data)
+        }
       })
     }
 
@@ -249,16 +256,17 @@ program
       const stats = newFiles.map((file) => {
         const stat = fs.statSync(file)
         return {
-          file, size: stat.size
+          file,
+          size: stat.size,
         }
       })
       const totalSizeInMB = stats.reduce((acc, { size }) => acc + size, 0) / 1024 / 1024
-      console.log('  ', Number(totalSizeInMB.toFixed(2)), 'MB |',  'total size')
+      console.log('  ', Number(totalSizeInMB.toFixed(2)), 'MB |', 'total size')
       const filesLargerThan10MB = stats.filter(({ size }) => size > 5 * 1024 * 1024).sort((a, b) => b.size - a.size)
       if (filesLargerThan10MB.length) {
         console.log(`  Files larger than 5 MB`)
         for (const file of filesLargerThan10MB) {
-          console.log('  ', Number((file.size / 1024 / 1024).toFixed(2)), 'MB |',  file.file)
+          console.log('  ', Number((file.size / 1024 / 1024).toFixed(2)), 'MB |', file.file)
         }
       }
       // console.log('collect abilities')

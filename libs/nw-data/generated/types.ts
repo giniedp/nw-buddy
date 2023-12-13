@@ -230,6 +230,13 @@ export interface Ability {
   WeaponTag: WeaponTag
 }
 
+export interface Achievements {
+  AchievementID: string
+  AchievementIndex: number
+  Category: string
+  GameEventId: string
+}
+
 export interface Affixdefinitions {
   AffixDataArmor: string
   AffixDataMisc: string

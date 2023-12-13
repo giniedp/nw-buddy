@@ -1,3 +1,4 @@
+import { animate, state, style, transition, trigger } from '@angular/animations'
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TemplateRef, inject } from '@angular/core'

@@ -376,8 +376,13 @@ export class NwDbService {
   public categoriesProgression = table(() => [this.data.categoricalprogression()])
   public categoriesProgressionMap = indexBy(() => this.categoriesProgression, 'CategoricalProgressionId')
 
+  public achievements = table(() => [this.data.achievements()])
+  public achievementsMap = indexBy(() => this.achievements, 'AchievementID')
+  public achievement = lookup(() => this.achievementsMap)
+
   public metaAchievements = table(() => [this.data.metaachievements()])
   public metaAchievementsMap = indexBy(() => this.metaAchievements, 'MetaAchievementId')
+  public metaAchievement = lookup(() => this.metaAchievementsMap)
 
   public tradeskillPostcap = table(() => [this.data.tradeskillpostcap()])
 
@@ -544,6 +549,10 @@ export class NwDbService {
   public entitlements = table(() => this.data.entitlements())
   public entitlementsMap = indexBy(() => this.entitlements, 'UniqueTagID')
   public entitlement = lookup(() => this.entitlementsMap)
+
+  public backstories = table(() => this.data.backstorydata())
+  public backstoriesMap = indexBy(() => this.backstories, 'BackstoryID')
+  public backstory = lookup(() => this.backstoriesMap)
 
   public seasonPassData = table(() =>
     this.data

@@ -7,7 +7,7 @@ export type PlayertitlesTableRecord = Playertitles
 
 export function playerTitleColID(util: PlayertitlesTableUtils) {
   return util.colDef<string>({
-    colId: 'id',
+    colId: 'titleID',
     headerValueGetter: () => 'ID',
     width: 200,
     field: 'TitleID',
@@ -46,11 +46,43 @@ export function playerTitleColNameNeutral(util: PlayertitlesTableUtils) {
 }
 export function playerTitleColDescription(util: PlayertitlesTableUtils) {
   return util.colDef<string>({
-    colId: 'displayDescription',
+    colId: 'description',
     headerValueGetter: () => 'Description',
     width: 400,
     valueGetter: ({ data }) => util.tl8(data.Description),
     cellClass: ['text-nw-description', 'italic'],
     getQuickFilterText: ({ value }) => value,
+  })
+}
+
+export function playerTitleColRequiredLevel(util: PlayertitlesTableUtils) {
+  return util.colDef<number>({
+    colId: 'requiredPlayerLevel',
+    headerValueGetter: () => 'Player Level',
+    field: 'RequiredPlayerLevel',
+  })
+}
+
+export function playerTitleColType(util: PlayertitlesTableUtils) {
+  return util.colDef<string>({
+    colId: 'titleType',
+    headerValueGetter: () => 'Type',
+    field: 'TitleType',
+  })
+}
+
+export function playerTitleColTradeSkill(util: PlayertitlesTableUtils) {
+  return util.colDef<string>({
+    colId: 'categoricalProgressionId',
+    headerValueGetter: () => 'Trade Skill',
+    field: 'CategoricalProgressionId',
+  })
+}
+
+export function playerTitleColTradeSkillLevel(util: PlayertitlesTableUtils) {
+  return util.colDef<number>({
+    colId: 'requiredCategoricalProgressionLevel',
+    headerValueGetter: () => 'Tradeskill Level',
+    field: 'RequiredCategoricalProgressionLevel',
   })
 }

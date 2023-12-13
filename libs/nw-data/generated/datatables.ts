@@ -1,5 +1,6 @@
 import type {
   Ability,
+  Achievements,
   Affixdefinitions,
   Affixstats,
   Afflictions,
@@ -114,6 +115,9 @@ import { Observable } from 'rxjs'
 
 export abstract class NwDataLoader {
   public abstract load<T>(path: string): Observable<T>
+  public achievements() {
+    return this.load<Achievements[]>('javelindata_achievements.json')
+  }
   public affixdefinitions() {
     return this.load<Affixdefinitions[]>('javelindata_affixdefinitions.json')
   }

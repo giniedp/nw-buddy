@@ -13,7 +13,7 @@ import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } f
 import { ItemTableAdapter, ItemTableRecord } from '~/widgets/data/item-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { svgFunction } from '~/ui/icons/svg'
-import { EmotesTableAdapter } from '~/widgets/data/emotes-table'
+import { EmoteTableAdapter } from '~/widgets/data/emote-table'
 
 @Component({
   standalone: true,
@@ -38,7 +38,7 @@ import { EmotesTableAdapter } from '~/widgets/data/emotes-table'
   },
   providers: [
     provideDataView({
-      adapter: EmotesTableAdapter,
+      adapter: EmoteTableAdapter,
     }),
     QuicksearchService.provider({
       queryParam: 'search',

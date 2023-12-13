@@ -1,7 +1,7 @@
 import * as path from 'path'
-import * as fs from 'fs'
+import { glob, withProgressBar, writeJSONFile } from '../../utils'
 import { walkJsonStrings } from '../../utils/walk-json-object'
-import { glob, readJSONFile, withProgressBar, writeJSONFile } from '../../utils'
+import { normalizeLocaleKey, readLocaleFile } from './utils'
 
 export async function importLocales({
   input,
@@ -18,12 +18,12 @@ export async function importLocales({
   const regs: Array<RegExp> = []
   for (const key of preserveKeys || []) {
     if (typeof key === 'string') {
-      keys.add(normalizeKey(key))
+      keys.add(normalizeLocaleKey(key))
     } else {
       regs.push(key)
     }
   }
-  const locales = await loadLocales(input, keys, regs)
+  const locales = await readLocales(input, keys, regs)
   await writeLocales(output, locales)
   return locales
 }
@@ -33,29 +33,27 @@ function extractKeys(tables: Object[]) {
   walkJsonStrings(tables, (key, value, obj) => {
     if (value?.startsWith('@')) {
       obj[key] = value.substring(1) // keep original case in object
-      result.add(normalizeKey(value)) // use lower case for dictionary
+      result.add(normalizeLocaleKey(value)) // use lower case for dictionary
     }
   })
   return result
 }
 
-async function loadLocales(input: string, keys: Set<string>, regs: RegExp[]) {
-  const pattern = path.join(input, '**', '*.loc.json')
+async function readLocales(inputDir: string, keys: Set<string>, regs: RegExp[]) {
+  const pattern = path.join(inputDir, '**', '*.loc.json')
   const files = await glob(pattern)
   const result = new Map<string, Record<string, string>>()
 
   await withProgressBar({ barName: 'Load', tasks: files }, async (file, _, log) => {
     log(file)
-    const json = await readJSONFile(file)
     const lang = path.basename(path.dirname(file))
     const bucket = result.get(lang) || {}
-    result.set(lang, bucket)
-    Object.entries(json).forEach(([key, entry]) => {
-      key = normalizeKey(key)
+    for await (let { key, value } of readLocaleFile(file)) {
+      key = normalizeLocaleKey(key)
       if (keys.has(key) || regs.some((it) => it.test(key))) {
-        bucket[key] = entry['value']
+        bucket[key] = value
       }
-    })
+    }
   })
   return result
 }
@@ -70,12 +68,4 @@ async function writeLocales(output: string, locales: Map<string, Record<string, 
   await withProgressBar({ barName: 'Write', tasks: tasks }, async ({ file, data }) => {
     await writeJSONFile(data, file, { createDir: true })
   })
-}
-
-function normalizeKey(key: string) {
-  key = key || ''
-  if (key.startsWith('@')) {
-    key = key.substring(1)
-  }
-  return key.toLowerCase()
 }

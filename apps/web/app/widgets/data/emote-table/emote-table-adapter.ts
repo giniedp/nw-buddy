@@ -12,7 +12,7 @@ import {
 } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import {
-  EmotesTableRecord,
+  EmoteTableRecord,
   emoteColDescription,
   emoteColHasCooldown,
   emoteColID,
@@ -22,19 +22,19 @@ import {
   emoteColIsPremiumEmote,
   emoteColName,
   emoteColSlashCommand,
-} from './emotes-table-cols'
+} from './emote-table-cols'
 
 @Injectable()
-export class EmotesTableAdapter implements DataViewAdapter<EmotesTableRecord>, TableGridAdapter<EmotesTableRecord> {
+export class EmoteTableAdapter implements DataViewAdapter<EmoteTableRecord>, TableGridAdapter<EmoteTableRecord> {
   private db = inject(NwDbService)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
-  private utils: TableGridUtils<EmotesTableRecord> = inject(TableGridUtils)
+  private utils: TableGridUtils<EmoteTableRecord> = inject(TableGridUtils)
 
-  public entityID(item: EmotesTableRecord): string {
+  public entityID(item: EmoteTableRecord): string {
     return item.UniqueTagID
   }
 
-  public entityCategories(item: EmotesTableRecord): DataTableCategory[] {
+  public entityCategories(item: EmoteTableRecord): DataTableCategory[] {
     if (!item.DisplayGroup) {
       return null
     }
@@ -51,7 +51,7 @@ export class EmotesTableAdapter implements DataViewAdapter<EmotesTableRecord>, T
     return null
   }
 
-  public gridOptions(): GridOptions<EmotesTableRecord> {
+  public gridOptions(): GridOptions<EmoteTableRecord> {
     if (this.config?.gridOptions) {
       return this.config.gridOptions(this.utils)
     }
@@ -63,8 +63,8 @@ export class EmotesTableAdapter implements DataViewAdapter<EmotesTableRecord>, T
   }
 }
 
-function buildOptions(util: TableGridUtils<EmotesTableRecord>) {
-  const result: GridOptions<EmotesTableRecord> = {
+function buildOptions(util: TableGridUtils<EmoteTableRecord>) {
+  const result: GridOptions<EmoteTableRecord> = {
     columnDefs: [
       emoteColIcon(util),
       emoteColID(util),
