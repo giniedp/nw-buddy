@@ -1,6 +1,13 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { BuffBucket, NW_MAX_ENEMY_LEVEL, getVitalArmor, getVitalDungeons, getVitalHealth } from '@nw-data/common'
+import {
+  BuffBucket,
+  NW_MAX_ENEMY_LEVEL,
+  getVitalArmor,
+  getVitalDamage,
+  getVitalDungeons,
+  getVitalHealth,
+} from '@nw-data/common'
 import {
   Ability,
   Damagetable,
@@ -79,6 +86,23 @@ export class VitalDetailStore extends ComponentStore<VitalDetailState> {
     .pipe(switchMap((files) => this.loadDamageTables(files)))
     .pipe(shareReplayRefCount(1))
 
+  readonly damage$ = selectStream(
+    {
+      vital: this.vital$,
+      level: this.levelData$,
+      modifier: this.modifier$,
+      difficulty: this.mutaDifficulty$,
+    },
+    ({ vital, modifier, level, difficulty }) => {
+      return getVitalDamage({
+        vital,
+        level,
+        damageTable: { DmgCoef: 1, AddDmg: 0 },
+        difficulty,
+        modifier,
+      })
+    },
+  )
   readonly hasDamageTable$ = this.select(this.damageTableNames$, (it) => !!it?.length)
 
   readonly health$ = selectStream(
@@ -113,19 +137,21 @@ export class VitalDetailStore extends ComponentStore<VitalDetailState> {
     return combineLatest({
       appearsInDungeon: this.isVitalFromDungeon$,
       difficulty: difficulty$,
-    }).pipe(map(({ appearsInDungeon, difficulty }) => {
-      if (!appearsInDungeon) {
-        this.patchState({
-          mutaDifficulty: null,
-          level: null,
-        })
-      } else {
-        this.patchState({
-          mutaDifficulty: difficulty,
-          level: difficulty ? NW_MAX_ENEMY_LEVEL : null,
-        })
-      }
-    }))
+    }).pipe(
+      map(({ appearsInDungeon, difficulty }) => {
+        if (!appearsInDungeon) {
+          this.patchState({
+            mutaDifficulty: null,
+            level: null,
+          })
+        } else {
+          this.patchState({
+            mutaDifficulty: difficulty,
+            level: difficulty ? NW_MAX_ENEMY_LEVEL : null,
+          })
+        }
+      }),
+    )
   })
 
   protected loadDamageTables(files: string[]): Observable<Array<DamageTableFile>> {

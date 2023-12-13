@@ -7,6 +7,9 @@ import { uniq } from 'lodash'
 import { NwModule } from '~/nw'
 import { damageTypeIcon, getWeaponTypes } from '~/nw/weapon-types'
 import { VitalDetailStore } from './vital-detail.store'
+import { IconsModule } from '~/ui/icons'
+import { svgInfo } from '~/ui/icons/svg'
+import { TooltipModule } from '~/ui/tooltip'
 
 export interface DamageEffectiveness {
   value: number
@@ -23,7 +26,7 @@ export interface DamageEffectiveness {
   selector: 'nwb-vital-detail-stats',
   templateUrl: './vital-detail-stats.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule],
+  imports: [CommonModule, NwModule, IconsModule, TooltipModule],
   host: {
     class: 'block',
   },
@@ -35,6 +38,9 @@ export class VitalDetailStatsComponent {
   protected effectiveness = computed(() => selectEffectiveness(this.vital()))
   protected armor = toSignal(this.store.armor$)
   protected gearScore = toSignal(this.store.gearScore$)
+  protected damage = toSignal(this.store.damage$)
+
+  protected infoIcon = svgInfo
 }
 
 function selectEffectiveness(vital: Vitals): DamageEffectiveness[] {

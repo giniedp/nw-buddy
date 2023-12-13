@@ -334,7 +334,7 @@ export function getVitalDamage({
 }: {
   vital: Vitals
   level: Vitalsleveldata
-  damageTable: Damagetable
+  damageTable: Pick<Damagetable, 'DmgCoef' | 'AddDmg'>
   modifier?: Vitalsmodifierdata
   difficulty?: Mutationdifficulty
 }) {
