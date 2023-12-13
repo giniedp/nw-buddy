@@ -48,6 +48,7 @@ async function readLocales(inputDir: string, keys: Set<string>, regs: RegExp[]) 
     log(file)
     const lang = path.basename(path.dirname(file))
     const bucket = result.get(lang) || {}
+    result.set(lang, bucket)
     for await (let { key, value } of readLocaleFile(file)) {
       key = normalizeLocaleKey(key)
       if (keys.has(key) || regs.some((it) => it.test(key))) {

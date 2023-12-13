@@ -8,7 +8,7 @@ const ROUTES: Routes = [
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: 'season3',
+    redirectTo: 'season4',
   },
   {
     path: ':category',

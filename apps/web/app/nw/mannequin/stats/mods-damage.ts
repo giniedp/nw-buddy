@@ -17,14 +17,13 @@ export function selectWeaponDamage(
   attack: Damagetable,
   equipLoad: number,
   db: DbSlice,
-  state: MannequinState
+  state: MannequinState,
 ) {
   const { weapon, item, ammo, gearScore } = activeWeapon
 
   const pvpBalance = selectPvpBalance(item, db, state)
-  const splitAffix = mods.perks.find(
-    (it) => it.affix?.DamagePercentage && it.weapon?.WeaponID === weapon?.WeaponID
-  )?.affix
+  const splitAffix = mods.perks.find((it) => it.affix?.DamagePercentage && it.weapon?.WeaponID === weapon?.WeaponID)
+    ?.affix
   const percentAffix = splitAffix?.DamagePercentage || 0
   const percentWeapon = 1 - percentAffix
 
@@ -89,8 +88,7 @@ export function selectWeaponDamage(
 
   if (elemDamage > mainDamage) {
     // console.debug('use element scaling')
-    // TODO: uncomment for next PTR
-    // scaleWeapon = scaleAffix
+    scaleWeapon = scaleAffix
   } else {
     // console.debug('use main scaling')
     scaleAffix = scaleWeapon
@@ -165,7 +163,7 @@ export function selectWeaponDamage(
       ? modifierResult({
           value: ammo.DamageModifier,
           scale: 1,
-          source: { label: humanize(ammo.AmmoType)  },
+          source: { label: humanize(ammo.AmmoType) },
         })
       : null,
     DamagePvpBalance: pvpBalance,
@@ -193,7 +191,7 @@ function selectPvpBalance(item: ItemDefinitionMaster, db: DbSlice, state: Manneq
   }
 
   const balanceRow = balance.find(
-    (it) => it.BalanceCategory === 'ItemClass' && isItemOfAnyClass(item, [it.BalanceTarget as ItemClass])
+    (it) => it.BalanceCategory === 'ItemClass' && isItemOfAnyClass(item, [it.BalanceTarget as ItemClass]),
   )
   if (!balanceRow) {
     return null

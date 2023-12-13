@@ -44,7 +44,7 @@ export class AttributesScalingStore extends ComponentStore<AttributesScalingStat
       int: this.db.attrInt,
       foc: this.db.attrFoc,
       con: this.db.attrCon,
-    })
+    }),
   )
 
   public readonly damageStats$ = selectStream(
@@ -67,7 +67,7 @@ export class AttributesScalingStore extends ComponentStore<AttributesScalingStat
       }),
     {
       debounce: true,
-    }
+    },
   )
 
   public chartConfig$ = selectStream(
@@ -88,7 +88,7 @@ export class AttributesScalingStore extends ComponentStore<AttributesScalingStat
       }),
     {
       debounce: true,
-    }
+    },
   )
 
   public constructor() {
@@ -183,13 +183,13 @@ function selectWeaponDamage({
     }
   }
 
-  // if (affix?.PreferHigherScaling && affixDamage > weaponDamage) {
-  //   return {
-  //     invalidValue: weaponDamage * weaponPercent + affixDamage * affixPercent,
-  //     value: affixDamage,
-  //     scale: affixScale,
-  //   }
-  // }
+  if (affix?.PreferHigherScaling && affixDamage > weaponDamage) {
+    return {
+      invalidValue: weaponDamage * weaponPercent + affixDamage * affixPercent,
+      value: affixDamage,
+      scale: affixScale,
+    }
+  }
 
   return {
     value: weaponDamage,
