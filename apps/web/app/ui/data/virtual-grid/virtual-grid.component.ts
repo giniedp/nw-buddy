@@ -1,18 +1,22 @@
 import { CdkVirtualScrollViewport, CdkVirtualScrollableElement, ScrollingModule } from '@angular/cdk/scrolling'
 import { CommonModule } from '@angular/common'
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   ContentChild,
+  DestroyRef,
   ElementRef,
   EventEmitter,
+  Injector,
   Input,
   Output,
   Type,
   ViewChild,
+  inject,
 } from '@angular/core'
-import { map, skip } from 'rxjs'
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
+import { combineLatest, filter, map, skip } from 'rxjs'
 import { NwModule } from '~/nw'
 import { ResizeObserverService } from '~/utils/services/resize-observer.service'
 import { VirtualGridCellComponent } from './virtual-grid-cell.component'
@@ -43,7 +47,7 @@ import { VirtualGridStore } from './virtual-grid.store'
     class: 'block flex-1 w-full h-full relative',
   },
 })
-export class VirtualGridComponent<T> {
+export class VirtualGridComponent<T> implements AfterViewInit {
   @Input()
   public set options(options: VirtualGridOptions<T>) {
     this.gridClass = options.gridClass ?? this.gridClass
@@ -148,6 +152,8 @@ export class VirtualGridComponent<T> {
   protected itemSize = this.store.itemSize
 
   protected trackBy = (i: number) => i
+  private destroyRef = inject(DestroyRef)
+  private injector = inject(Injector)
 
   public constructor(
     elRef: ElementRef<HTMLElement>,
@@ -156,15 +162,24 @@ export class VirtualGridComponent<T> {
     protected store: VirtualGridStore<T>,
   ) {
     this.store.withSize(resize.observe(elRef.nativeElement).pipe(map((entries) => entries.width)))
+
     // this.store.rows$.pipe(takeUntil(this.store.destroy$)).subscribe(() => {
     //   cdRef.detectChanges()
     // })
-    // combineLatest({
-    //   rows: this.store.rows$.pipe(filter((it) => !!it.length)),
-    //   selection: this.store.selection$.pipe(map((it) => it[0])),
-    // })
-    //   .pipe(takeUntilDestroyed())
-    //   .subscribe(({ selection }) => this.scrollToItem(selection))
+  }
+
+  public ngAfterViewInit(): void {
+    combineLatest({
+      rows: toObservable(this.rows, {
+        injector: this.injector,
+      }).pipe(filter((it) => it != null)),
+      selection: this.store.selection$.pipe(filter((it) => it != null)),
+    })
+      .pipe(map(({ selection }) => selection[0]))
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((selection) => {
+        this.scrollToItem(selection)
+      })
   }
 
   public handleItemEvent(item: T, e: Event) {

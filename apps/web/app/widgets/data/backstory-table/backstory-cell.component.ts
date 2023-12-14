@@ -10,12 +10,21 @@ import { EmptyComponent } from '~/widgets/empty'
 import { selectBackgroundImage, selectBackstoryProps, selectBackstoryTradeSkills } from '../backstory-detail/selectors'
 import { ItemDetailModule } from '../item-detail'
 import { BackstoryTableRecord } from './backstory-table-cols'
+import { IntersectionObserverModule } from '~/utils/intersection-observer'
 
 @Component({
   standalone: true,
   selector: 'nwb-backstory-cell',
   templateUrl: './backstory-cell.component.html',
-  imports: [CommonModule, ItemFrameModule, ItemDetailModule, NwModule, TooltipModule, RouterModule],
+  imports: [
+    CommonModule,
+    ItemFrameModule,
+    ItemDetailModule,
+    NwModule,
+    TooltipModule,
+    RouterModule,
+    IntersectionObserverModule,
+  ],
   host: {
     class: 'flex flex-col bg-base-300 rounded-md overflow-clip m-1',
     '[class.outline]': 'selected',
@@ -50,6 +59,8 @@ export class BackstoryCellComponent implements VirtualGridCellComponent<Backstor
 
   @Input()
   public selected: boolean
+
+  public isVisible = false
 
   protected record = signal<BackstoryTableRecord>(null)
   protected playerLevel = computed(() => this.record()?.LevelOverride || 0)

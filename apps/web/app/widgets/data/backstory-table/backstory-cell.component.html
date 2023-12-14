@@ -17,46 +17,50 @@
   [style.background-size]="'100% auto'"
   [style.background-image]="backgroundImage()"
 >
-  <div class="flex-1">
-    <div class="grid grid-cols-2 gap-1">
-      @for (cell of tradeskills(); track $index) {
-        <div class="flex flex-row gap-2 text-shadow-sm shadow-black leading-tight">
-          <img [nwImage]="cell.Icon" class="w-5 h-5" />
-          <span>{{ cell.level }}</span>
-          <span>{{ cell.label | nwText }}</span>
-        </div>
-      }
-    </div>
-    <div class="grid grid-cols-2 gap-1">
-      @for (cell of props(); track $index) {
-        <div class="flex flex-row gap-2 text-shadow-sm shadow-black leading-tight">
-          <img [nwImage]="cell.icon" class="w-5 h-5" />
-          <span>{{ cell.label }}</span>
-        </div>
-      }
-    </div>
+  <div class="flex-1" #refTop>
+    @defer (on viewport(refTop)) {
+      <div class="grid grid-cols-2 gap-1">
+        @for (cell of tradeskills(); track $index) {
+          <div class="flex flex-row gap-2 text-shadow-sm shadow-black leading-tight">
+            <img [nwImage]="cell.Icon" class="w-5 h-5" />
+            <span>{{ cell.level }}</span>
+            <span>{{ cell.label | nwText }}</span>
+          </div>
+        }
+      </div>
+      <div class="grid grid-cols-2 gap-1">
+        @for (cell of props(); track $index) {
+          <div class="flex flex-row gap-2 text-shadow-sm shadow-black leading-tight">
+            <img [nwImage]="cell.icon" class="w-5 h-5" />
+            <span>{{ cell.label }}</span>
+          </div>
+        }
+      </div>
+    }
   </div>
-  <div class="flex-1 p-2 bg-base-300 border border-base-100 rounded-md overflow-auto">
+  <div class="flex-1 p-2 bg-base-300 border border-base-100 rounded-md overflow-auto" #refBottom>
     <div class="grid grid-cols-6 gap-2">
-      @for (cell of data.$inventoryItems; track $index) {
-        <a [routerLink]="['/items/table', cell.itemId]">
-          <nwb-item-icon
-            [nwbItemIcon]="cell.item"
-            [solid]="true"
-            [rarity]="cell.rarity"
-            [isNamed]="cell.isNamed"
-            [tooltip]="tplItem"
-          >
-            <ng-template #tplItem>
-              <nwb-item-card
-                [entityId]="cell.itemId"
-                [gsOverride]="cell.gearScore"
-                [perkOverride]="cell.perks"
-                class="w-80"
-              />
-            </ng-template>
-          </nwb-item-icon>
-        </a>
+      @defer (on viewport(refBottom)) {
+        @for (cell of data.$inventoryItems; track $index) {
+          <a [routerLink]="['/items/table', cell.itemId]">
+            <nwb-item-icon
+              [nwbItemIcon]="cell.item"
+              [solid]="true"
+              [rarity]="cell.rarity"
+              [isNamed]="cell.isNamed"
+              [tooltip]="tplItem"
+            >
+              <ng-template #tplItem>
+                <nwb-item-card
+                  [entityId]="cell.itemId"
+                  [gsOverride]="cell.gearScore"
+                  [perkOverride]="cell.perks"
+                  class="w-80"
+                />
+              </ng-template>
+            </nwb-item-icon>
+          </a>
+        }
       }
     </div>
   </div>
