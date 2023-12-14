@@ -1,19 +1,30 @@
 import { ChangeDetectionStrategy, Component, Input, computed, inject, signal } from '@angular/core'
-import { getItemRarity, isItemNamed, isMasterItem } from '@nw-data/common'
+import { getItemId, getItemRarity, isItemNamed, isMasterItem } from '@nw-data/common'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { ItemFrameModule } from '~/ui/item-frame'
+import { TreeNodeComponent, TreeNodeToggleComponent } from '~/ui/tree'
 import { BackstoryLootTreeStore } from './backstory-loot-tree.store'
 import { BackstoryTreeNode } from './types'
+import { FormsModule } from '@angular/forms'
+import { RouterModule } from '@angular/router'
 
 @Component({
   standalone: true,
   selector: 'nwb-backstory-loot-node',
   templateUrl: './backstory-loot-node.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NwModule, ItemFrameModule, IconsModule],
+  imports: [
+    NwModule,
+    ItemFrameModule,
+    IconsModule,
+    TreeNodeComponent,
+    TreeNodeToggleComponent,
+    FormsModule,
+    RouterModule,
+  ],
   host: {
-    class: 'flex flex-col gap-2',
+    class: 'flex flex-col',
   },
 })
 export class BackstoryLootNodeComponent {
@@ -27,6 +38,9 @@ export class BackstoryLootNodeComponent {
   @Input()
   public hasParent = false
 
+  @Input()
+  public hasNext = true
+
   private record = signal<BackstoryTreeNode>(null)
   protected isOpen = computed(() => this.record()?.expand)
   protected data = computed(() => this.record()?.data)
@@ -37,6 +51,7 @@ export class BackstoryLootNodeComponent {
   protected rarity = computed(() => getItemRarity(this.data()))
   protected label = computed(() => this.data()?.Name)
   protected icon = computed(() => this.data()?.IconPath)
+  protected itemId = computed(() => getItemId(this.data()))
   protected hasChildren = computed(() => this.record()?.children?.length > 0)
   protected children = computed(() => this.record()?.children || [])
 

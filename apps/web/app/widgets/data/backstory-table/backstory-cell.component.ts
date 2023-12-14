@@ -1,26 +1,21 @@
 import { CommonModule } from '@angular/common'
-import { Component, HostListener, Input } from '@angular/core'
-import { getItemPerkInfos, getItemRarity, isHousingItem, isItemNamed, isMasterItem } from '@nw-data/common'
+import { Component, HostListener, Input, computed, signal } from '@angular/core'
+import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
 import { humanize } from '~/utils'
 import { EmptyComponent } from '~/widgets/empty'
-import { BackstoryTableRecord, InventoryItem } from './backstory-table-cols'
-
-const BACKGROUND_IMAGES = {
-  Faction1: 'url(assets/backstories/backstory_image_marauders.png)',
-  Faction2: 'url(assets/backstories/backstory_image_covenant.png)',
-  Faction3: 'url(assets/backstories/backstory_image_syndicate.png)',
-  Default: 'url(assets/backstories/backstory_image_level.png)',
-}
+import { selectBackgroundImage, selectBackstoryProps, selectBackstoryTradeSkills } from '../backstory-detail/selectors'
+import { ItemDetailModule } from '../item-detail'
+import { BackstoryTableRecord } from './backstory-table-cols'
 
 @Component({
   standalone: true,
   selector: 'nwb-backstory-cell',
   templateUrl: './backstory-cell.component.html',
-  imports: [CommonModule, ItemFrameModule, NwModule, TooltipModule],
+  imports: [CommonModule, ItemFrameModule, ItemDetailModule, NwModule, TooltipModule, RouterModule],
   host: {
     class: 'flex flex-col bg-base-300 rounded-md overflow-clip m-1',
     '[class.outline]': 'selected',
@@ -32,7 +27,7 @@ export class BackstoryCellComponent implements VirtualGridCellComponent<Backstor
   public static buildGridOptions(): VirtualGridOptions<BackstoryTableRecord> {
     return {
       height: 800,
-      width: 400,
+      width: [400, 400],
       cellDataView: BackstoryCellComponent,
       cellEmptyView: EmptyComponent,
       getQuickFilterText: (item, tl8) => {
@@ -42,15 +37,28 @@ export class BackstoryCellComponent implements VirtualGridCellComponent<Backstor
   }
 
   @Input()
-  public data: BackstoryTableRecord
-
-  public get backgroundImage() {
-    return BACKGROUND_IMAGES[this.data?.FactionOverride] || BACKGROUND_IMAGES.Default
+  public set data(value: BackstoryTableRecord) {
+    this.record.set(value)
   }
+  public get data() {
+    return this.record()
+  }
+
+  public backgroundImage = computed(() => {
+    return selectBackgroundImage(this.record())
+  })
 
   @Input()
   public selected: boolean
 
+  protected record = signal<BackstoryTableRecord>(null)
+  protected playerLevel = computed(() => this.record()?.LevelOverride || 0)
+  protected tradeskills = computed(() => {
+    return selectBackstoryTradeSkills(this.record())?.filter((it) => !!it.level)
+  })
+  protected props = computed(() => {
+    return selectBackstoryProps(this.record())
+  })
   public constructor(protected grid: VirtualGridComponent<BackstoryTableRecord>) {
     //
   }
@@ -60,19 +68,5 @@ export class BackstoryCellComponent implements VirtualGridCellComponent<Backstor
   @HostListener('keydown', ['$event'])
   public onClick(e: Event) {
     this.grid.handleItemEvent(this.data, e)
-  }
-
-  protected itemRarity(item: InventoryItem) {
-    if (!item.perks || isHousingItem(item.item)) {
-      return getItemRarity(item.item)
-    }
-    const perkIds = getItemPerkInfos(item.item, item.perks)
-      .map((it) => it.perkId)
-      .filter((it) => !!it)
-    return getItemRarity(item.item, perkIds)
-  }
-
-  protected itemNamed(item: InventoryItem) {
-    return isMasterItem(item.item) && isItemNamed(item.item)
   }
 }

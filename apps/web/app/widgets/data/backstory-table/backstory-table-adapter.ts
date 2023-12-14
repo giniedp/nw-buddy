@@ -1,16 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import {
-  BackstoryItem,
-  buildBackstoryItemInstance,
-  buildBackstoryItemPerkOverrides,
-  getBackstoryItems,
-  getItemMaxGearScore,
-  getItemPerkBucketKeys,
-  getItemPerkKeys,
-  isMasterItem,
-} from '@nw-data/common'
-import { COLS_BACKSTORYDATA, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { COLS_BACKSTORYDATA } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { DataViewAdapter } from '~/ui/data/data-view'
@@ -22,10 +12,11 @@ import {
   addGenericColumns,
 } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { tapDebug } from '~/utils'
+import { selectBackstoryItems } from '../backstory-detail/selectors'
 import { BackstoryCellComponent } from './backstory-cell.component'
 import {
   BackstoryTableRecord,
-  InventoryItem,
   backstoryColID,
   backstoryColInventory,
   backstoryColLevel,
@@ -33,7 +24,6 @@ import {
   backstoryColTerritories,
   backstoryColType,
 } from './backstory-table-cols'
-import { tapDebug } from '~/utils'
 
 @Injectable()
 export class BackstoryTableAdapter
@@ -84,18 +74,11 @@ export class BackstoryTableAdapter
         return records.map((record): BackstoryTableRecord => {
           return {
             ...record,
-            $inventoryItems: getBackstoryItems(record).map((it): InventoryItem => {
-              const item = itemsMap.get(it.itemId) || housingMap.get(it.itemId)
-              const instance = buildBackstoryItemInstance(it, {
-                itemsMap,
-                housingMap,
-                perksMap,
-                bucketsMap,
-              })
-              return {
-                ...instance,
-                item
-              }
+            $inventoryItems: selectBackstoryItems(record, {
+              itemsMap,
+              housingMap,
+              perksMap,
+              bucketsMap,
             }),
             $respawnTerritories: (record.RespawnPointTerritories || [])
               .map((it) => {
@@ -105,7 +88,6 @@ export class BackstoryTableAdapter
           }
         })
       }),
-      tapDebug('backstory-table-adapter'),
     )
   }
 }

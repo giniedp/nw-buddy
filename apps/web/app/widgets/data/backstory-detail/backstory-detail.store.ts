@@ -3,6 +3,7 @@ import { ComponentStore } from '@ngrx/component-store'
 import { buildBackstoryItemInstance, getBackstoryItems } from '@nw-data/common'
 import { NwDbService } from '~/nw'
 import { selectStream } from '~/utils'
+import { selectBackstoryTradeSkills } from './selectors'
 
 @Injectable()
 export class BackstoryDetailStore extends ComponentStore<{ backstoryId: string }> {
@@ -12,6 +13,7 @@ export class BackstoryDetailStore extends ComponentStore<{ backstoryId: string }
   @Output()
   public readonly backstory$ = selectStream(this.db.backstory(this.backstoryId$))
 
+  public readonly tradeSkills$ = this.select(this.backstory$, selectBackstoryTradeSkills)
   public readonly inventoryItems$ = selectStream(
     {
       backstory: this.backstory$,

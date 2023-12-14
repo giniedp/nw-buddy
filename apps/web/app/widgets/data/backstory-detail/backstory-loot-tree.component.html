@@ -5,6 +5,6 @@
   [ngModel]="query()"
   (ngModelChange)="updateQuery($event)"
 />
-@for (node of nodes(); track $index) {
-  <nwb-backstory-loot-node [node]="node" />
+@for (node of nodes(); track $index; let isLast = $last) {
+  <nwb-backstory-loot-node [node]="node" [hasParent]="true" [hasNext]="!isLast" />
 }

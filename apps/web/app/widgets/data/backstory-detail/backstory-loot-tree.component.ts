@@ -12,7 +12,7 @@ import { FormsModule } from '@angular/forms'
   providers: [BackstoryLootTreeStore],
   imports: [BackstoryLootNodeComponent, FormsModule],
   host: {
-    class: 'flex flex-col gap-2',
+    class: 'flex flex-col',
     '[class.hidden]': '!hasLoot()',
   },
 })

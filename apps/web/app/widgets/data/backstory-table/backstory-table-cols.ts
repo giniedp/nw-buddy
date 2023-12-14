@@ -1,21 +1,9 @@
-import {
-  NW_FALLBACK_ICON,
-  getItemIconPath,
-  getItemId,
-  getItemRarity,
-  isItemArtifact,
-  isItemNamed,
-  isMasterItem,
-} from '@nw-data/common'
-import { Backstorydata, Housingitems, ItemDefinitionMaster, Territorydefinitions } from '@nw-data/generated'
-import { ItemInstance } from '~/data'
+import { NW_FALLBACK_ICON, getItemIconPath, getItemId } from '@nw-data/common'
+import { Backstorydata, Territorydefinitions } from '@nw-data/generated'
 import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
-
-export interface InventoryItem extends ItemInstance {
-  item: ItemDefinitionMaster | Housingitems
-}
+import { InventoryItem } from '../backstory-detail/types'
 
 export type BackstoryTableUtils = TableGridUtils<BackstoryTableRecord>
 export type BackstoryTableRecord = Backstorydata & {
@@ -98,7 +86,7 @@ export function backstoryColInventory(util: BackstoryTableUtils) {
       return util.el(
         'div.flex.flex-row.flex-wrap.gap-1',
         {},
-        items.map(({ item }) => {
+        items.map(({ item, isNamed, rarity }) => {
           return util.elA(
             {
               attrs: {
@@ -109,9 +97,9 @@ export function backstoryColInventory(util: BackstoryTableUtils) {
             util.elItemIcon({
               class: ['block aspect-square'],
               icon: getItemIconPath(item) || NW_FALLBACK_ICON,
-              isArtifact: isMasterItem(item) && isItemArtifact(item),
-              isNamed: isMasterItem(item) && isItemNamed(item),
-              rarity: getItemRarity(item),
+              isArtifact: rarity === 'artifact',
+              isNamed: isNamed,
+              rarity: rarity,
             }),
           )
         }),

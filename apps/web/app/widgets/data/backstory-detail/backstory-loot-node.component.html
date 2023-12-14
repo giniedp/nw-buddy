@@ -1,16 +1,31 @@
 <div class="flex flex-row items-center" [class.cursor-pointer]="hasChildren()" (click)="toggle()">
-  @if (hasChildren()) {
-    <span class="btn btn-square btn-sm btn-ghost">
-      {{ isOpen() ? '▼' : '►' }}
-    </span>
-  }
-  <nwb-item-icon [nwbItemIcon]="data()" [isNamed]="isNamed()" [rarity]="rarity()" [solid]="true" class="w-8 h-8" />
-  <div class="pl-2">{{ label() | nwText }}</div>
+  <nwb-tree-node-toggle
+    [ngModel]="isOpen()"
+    [disabled]="!hasChildren()"
+    [isLast]="!hasNext"
+    class="w-8 h-10 flex-none"
+  />
+  <nwb-item-icon
+    [nwbItemIcon]="data()"
+    [isNamed]="isNamed()"
+    [rarity]="rarity()"
+    [solid]="true"
+    class="w-8 h-8 flex-none"
+  />
+  <span class="flex-1 pl-2 leading-tight overflow-hidden">
+    {{ label() | nwText }}
+  </span>
 </div>
 @if (isOpen()) {
-  <div class="flex flex-col gap-2">
-    @for (child of children(); track $index) {
-      <nwb-backstory-loot-node [node]="child" class="ml-8" [hasParent]="true" />
+  <div class="flex flex-col">
+    @for (child of children(); track $index; let isLast = $last) {
+      <nwb-backstory-loot-node
+        [node]="child"
+        class="ml-[15px] pl-[15px]"
+        [class.border-l-2]="hasNext"
+        [hasParent]="true"
+        [hasNext]="!isLast"
+      />
     }
   </div>
 }

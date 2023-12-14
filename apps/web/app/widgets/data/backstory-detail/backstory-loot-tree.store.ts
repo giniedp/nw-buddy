@@ -110,8 +110,10 @@ function selectState({
 }) {
   const lootItems = getBackstoryItems(data)
     .map((it) => itemsMap.get(it.itemId))
-    .filter((it) => !!it && isItemOfAnyClass(it, ['LootContainer']))
-  const nodes = lootItems.map((it) => selectLootNode({ item: it, itemsMap, housingMap, lootTableMap }))
+    .filter((it) => !!it)
+  const nodes = lootItems
+    .map((it) => selectLootNode({ item: it, itemsMap, housingMap, lootTableMap }))
+    .sort(compareNodes)
   return {
     hasLoot: lootItems.length > 0,
     nodes,
@@ -216,5 +218,15 @@ function selectFilteredNodes(nodes: BackstoryTreeNode[], query: string, tl8: Tra
       result.push(node)
     }
   }
-  return result
+  return result.sort(compareNodes)
+}
+
+function compareNodes(a: BackstoryTreeNode, b: BackstoryTreeNode) {
+  if (a.children?.length && !b.children?.length) {
+    return -1
+  }
+  if (!a.children?.length && b.children?.length) {
+    return 1
+  }
+  return 0
 }

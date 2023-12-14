@@ -7,9 +7,9 @@ import { IconsModule } from '~/ui/icons'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
-import { InventoryItem } from '../backstory-table'
 import { BackstoryDetailStore } from './backstory-detail.store'
 import { BackstoryLootTreeComponent } from './backstory-loot-tree.component'
+import { InventoryItem } from './types'
 
 const BACKGROUND_IMAGES = {
   Faction1: 'url(assets/backstories/backstory_image_marauders.png)',
@@ -52,18 +52,4 @@ export class BackstoryDetailComponent {
     return BACKGROUND_IMAGES[this.backstory()?.FactionOverride] || BACKGROUND_IMAGES.Default
   })
   public inventoryItems = toSignal(this.store.inventoryItems$)
-
-  protected itemRarity(item: InventoryItem) {
-    if (!item.perks || isHousingItem(item.item)) {
-      return getItemRarity(item.item)
-    }
-    const perkIds = getItemPerkInfos(item.item, item.perks)
-      .map((it) => it.perkId)
-      .filter((it) => !!it)
-    return getItemRarity(item.item, perkIds)
-  }
-
-  protected itemNamed(item: InventoryItem) {
-    return isMasterItem(item.item) && isItemNamed(item.item)
-  }
 }
