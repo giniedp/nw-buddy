@@ -1,8 +1,11 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import {
-  BackstoryItemInstance,
-  getBackstoryInventoryItems,
+  BackstoryItem,
+  buildBackstoryItemInstance,
+  buildBackstoryItemPerkOverrides,
+  getBackstoryItems,
+  getItemMaxGearScore,
   getItemPerkBucketKeys,
   getItemPerkKeys,
   isMasterItem,
@@ -22,6 +25,7 @@ import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { BackstoryCellComponent } from './backstory-cell.component'
 import {
   BackstoryTableRecord,
+  InventoryItem,
   backstoryColID,
   backstoryColInventory,
   backstoryColLevel,
@@ -29,6 +33,7 @@ import {
   backstoryColTerritories,
   backstoryColType,
 } from './backstory-table-cols'
+import { tapDebug } from '~/utils'
 
 @Injectable()
 export class BackstoryTableAdapter
@@ -72,13 +77,25 @@ export class BackstoryTableAdapter
       itemsMap: this.db.itemsMap,
       housingMap: this.db.housingItemsMap,
       territoriesMap: this.db.territoriesMap,
+      perksMap: this.db.perksMap,
+      bucketsMap: this.db.perkBucketsMap,
     }).pipe(
-      map(({ records, itemsMap, housingMap, territoriesMap }) => {
+      map(({ records, itemsMap, housingMap, territoriesMap, perksMap, bucketsMap }) => {
         return records.map((record): BackstoryTableRecord => {
           return {
             ...record,
-            $inventoryItems: getBackstoryInventoryItems(record).map((it) => {
-              return selectInventoryItem(it, itemsMap.get(it.itemId) || housingMap.get(it.itemId))
+            $inventoryItems: getBackstoryItems(record).map((it): InventoryItem => {
+              const item = itemsMap.get(it.itemId) || housingMap.get(it.itemId)
+              const instance = buildBackstoryItemInstance(it, {
+                itemsMap,
+                housingMap,
+                perksMap,
+                bucketsMap,
+              })
+              return {
+                ...instance,
+                item
+              }
             }),
             $respawnTerritories: (record.RespawnPointTerritories || [])
               .map((it) => {
@@ -88,6 +105,7 @@ export class BackstoryTableAdapter
           }
         })
       }),
+      tapDebug('backstory-table-adapter'),
     )
   }
 }
@@ -107,21 +125,4 @@ function buildOptions(util: TableGridUtils<BackstoryTableRecord>) {
     props: COLS_BACKSTORYDATA,
   })
   return result
-}
-
-function selectInventoryItem(record: BackstoryItemInstance, item: ItemDefinitionMaster | Housingitems) {
-  if (isMasterItem(item) && record.perks?.length) {
-    console.log({
-      keys: getItemPerkKeys(item),
-      keys2: getItemPerkBucketKeys(item),
-      perks: record.perks,
-    })
-  }
-  return {
-    item: item,
-    itemId: record.itemId,
-    gearScore: record.gearScore,
-    quantity: record.quantity,
-    perks: {},
-  }
 }

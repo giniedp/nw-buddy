@@ -1,0 +1,10 @@
+<input
+  type="text"
+  placeholder="Search"
+  class="input input-bordered input-sm w-full"
+  [ngModel]="query()"
+  (ngModelChange)="updateQuery($event)"
+/>
+@for (node of nodes(); track $index) {
+  <nwb-backstory-loot-node [node]="node" />
+}

@@ -1,0 +1,16 @@
+<div class="flex flex-row items-center" [class.cursor-pointer]="hasChildren()" (click)="toggle()">
+  @if (hasChildren()) {
+    <span class="btn btn-square btn-sm btn-ghost">
+      {{ isOpen() ? '▼' : '►' }}
+    </span>
+  }
+  <nwb-item-icon [nwbItemIcon]="data()" [isNamed]="isNamed()" [rarity]="rarity()" [solid]="true" class="w-8 h-8" />
+  <div class="pl-2">{{ label() | nwText }}</div>
+</div>
+@if (isOpen()) {
+  <div class="flex flex-col gap-2">
+    @for (child of children(); track $index) {
+      <nwb-backstory-loot-node [node]="child" class="ml-8" [hasParent]="true" />
+    }
+  </div>
+}

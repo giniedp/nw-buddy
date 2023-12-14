@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component, HostListener, Input } from '@angular/core'
-import { Backstorydata } from '@nw-data/generated'
+import { getItemPerkInfos, getItemRarity, isHousingItem, isItemNamed, isMasterItem } from '@nw-data/common'
 import { NwModule } from '~/nw'
 import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -8,7 +8,6 @@ import { TooltipModule } from '~/ui/tooltip'
 import { humanize } from '~/utils'
 import { EmptyComponent } from '~/widgets/empty'
 import { BackstoryTableRecord, InventoryItem } from './backstory-table-cols'
-import { getItemRarity, isItemNamed, isMasterItem } from '@nw-data/common'
 
 const BACKGROUND_IMAGES = {
   Faction1: 'url(assets/backstories/backstory_image_marauders.png)',
@@ -64,8 +63,13 @@ export class BackstoryCellComponent implements VirtualGridCellComponent<Backstor
   }
 
   protected itemRarity(item: InventoryItem) {
-    item.perks
-    return getItemRarity(item.item)
+    if (!item.perks || isHousingItem(item.item)) {
+      return getItemRarity(item.item)
+    }
+    const perkIds = getItemPerkInfos(item.item, item.perks)
+      .map((it) => it.perkId)
+      .filter((it) => !!it)
+    return getItemRarity(item.item, perkIds)
   }
 
   protected itemNamed(item: InventoryItem) {

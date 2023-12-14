@@ -1,0 +1,34 @@
+<nwb-item-header class="gap-2 flex-none">
+  <picture class="flex items-center justify-center w-16 aspect-square relative">
+    <img
+      [nwImage]="'assets/icons/glorydiamonddetailed.png'"
+      class="absolute top-0 left-0 w-full h-full block rotate-45"
+    />
+    <span class="relative text-2xl font-bold font-caslon">{{ backstory()?.LevelOverride }}</span>
+  </picture>
+  <nwb-item-header-content
+    [title]="backstory()?.BackstoryName | nwHumanize"
+    [text1]="backstory()?.PlaytestType"
+    [text2]="'Backstory'"
+  />
+</nwb-item-header>
+<ng-content />
+<!-- <div
+  class="flex-1 flex flex-col gap-4 bg-no-repeat p-4 overflow-hidden"
+  [style.background-size]="'100% auto'"
+  [style.background-image]="backgroundImage()"
+>
+  <div class="flex-1"></div>
+  <div class="flex-1 p-2 bg-base-300 border border-base-100 rounded-md overflow-auto">
+    <div class="grid grid-cols-6 gap-2">
+      @for (cell of inventoryItems(); track $index) {
+        <nwb-item-icon
+          [nwbItemIcon]="cell.item"
+          [solid]="true"
+          [rarity]="itemRarity(cell)"
+          [isNamed]="itemNamed(cell)"
+        />
+      }
+    </div>
+  </div>
+</div> -->

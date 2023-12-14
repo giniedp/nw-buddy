@@ -1,3 +1,9 @@
 <nwb-detail-drawer class="hidden lg:block lg:w-[420px]">
-  <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad"></div>
+  <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
+    <nwb-backstory-detail [backstoryId]="id$ | async" class="bg-base-300">
+      <div class="flex flex-col gap-2 px-2 py-4">
+        <nwb-backstory-loot-tree />
+      </div>
+    </nwb-backstory-detail>
+  </div>
 </nwb-detail-drawer>

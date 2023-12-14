@@ -5,6 +5,7 @@ import { ActivatedRoute } from '@angular/router'
 import { NwModule } from '~/nw'
 import { LayoutModule } from '~/ui/layout'
 import { observeRouteParam } from '~/utils'
+import { BackstoryDetailModule } from '~/widgets/data/backstory-detail'
 import { EmoteDetailModule } from '~/widgets/data/emote-detail'
 
 @Component({
@@ -12,7 +13,7 @@ import { EmoteDetailModule } from '~/widgets/data/emote-detail'
   selector: 'nwb-backstories-detail-page',
   templateUrl: './backstories-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, LayoutModule, EmoteDetailModule],
+  imports: [CommonModule, NwModule, LayoutModule, BackstoryDetailModule],
   host: {
     class: 'flex-none flex flex-col',
   },
