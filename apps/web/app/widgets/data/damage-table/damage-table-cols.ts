@@ -64,7 +64,7 @@ export function damageColDmgCoef(util: DamageTableUtils) {
     colId: 'dmgCoef',
     headerValueGetter: () => 'DmgCoef',
     field: 'DmgCoef',
-    ...util.precision as any,
+    ...(util.precision as any),
   })
 }
 
@@ -73,7 +73,7 @@ export function damageColDmgCoefCrit(util: DamageTableUtils) {
     colId: 'dmgCoefCrit',
     headerValueGetter: () => 'DmgCoefCrit',
     field: 'DmgCoefCrit',
-    ...util.precision as any,
+    ...(util.precision as any),
   })
 }
 
@@ -82,7 +82,7 @@ export function damageColDmgCoefHead(util: DamageTableUtils) {
     colId: 'dmgCoefHead',
     headerValueGetter: () => 'DmgCoefHead',
     field: 'DmgCoefHead',
-    ...util.precision as any,
+    ...(util.precision as any),
   })
 }
 
@@ -91,6 +91,7 @@ export function damageColCanCrit(util: DamageTableUtils) {
     colId: 'canCrit',
     headerValueGetter: () => 'CanCrit',
     field: 'CanCrit',
+    filter: SelectFilter,
   })
 }
 
