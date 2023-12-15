@@ -2,8 +2,11 @@
   class="hidden lg:block lg:w-[400px] 3xl:w-[500px] 4xl:w-[600px] h-full"
   [breakpoints]="[0.25, 0.5, 1]"
 >
-  <div *nwbDetailDrawerContent class="layout-col layout-gap bg-base-200 layout-pad">
-    <div class="border border-base-100 rounded-md overflow-clip relative" [nwbScreenshotFrame]="vital()?.DisplayName | nwText">
+  <div *nwbDetailDrawerContent class="layout-content layout-gap bg-base-200 layout-pad">
+    <div
+      class="border border-base-100 rounded-md overflow-clip relative"
+      [nwbScreenshotFrame]="vital()?.DisplayName | nwText"
+    >
       <nwb-vital-detail-header class="bg-base-300" />
       @if (store.isVitalFromDungeon$ | async) {
         <div class="absolute top-0 right-0 p-2 flex flex-row">
