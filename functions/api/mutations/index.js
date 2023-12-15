@@ -5,9 +5,9 @@ export async function onRequest(context) {
     .then((list) => list.map((it) => {
       return {
         expedition: it.expedition_id,
-        element: node.mutation_id,
-        promotion: node.promotion,
-        curse: node.curse_name,
+        element: it.mutation_id,
+        promotion: it.promotion,
+        curse: it.curse_name,
       }
     }))
   return new Response(JSON.stringify(result), {
