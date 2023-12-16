@@ -7,7 +7,7 @@ import {
   getVitalTypeMarker,
   isVitalCombatCategory,
 } from '@nw-data/common'
-import { Gamemodes, Vitals, VitalsCategory, Vitalscategories, Vitalsmetadata } from '@nw-data/generated'
+import { Gamemodes, Vitals, VitalsCategory, Vitalscategories, VitalsMetadata } from '@nw-data/generated'
 import { RangeFilter, SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize } from '~/utils'
@@ -18,7 +18,7 @@ export type VitalTableRecord = Vitals & {
   $categories: Vitalscategories[]
   $familyInfo: VitalFamilyInfo
   $combatInfo: VitalFamilyInfo | null
-  $metadata: Vitalsmetadata
+  $metadata: VitalsMetadata
 }
 
 const cellRendererDamage = ({ value }: ICellRendererParams<VitalTableRecord>) => {

@@ -282,7 +282,7 @@ export class NwDbService {
     (it) => it.DamageTable,
   )
 
-  public spellsMetadata = table(() => [this.data.generatedSpellsmetadata()])
+  public spellsMetadata = table(() => [this.data.generatedSpellsMetadata()])
   public spellsMetadataMap = indexBy(() => this.spellsMetadata, 'PrefabPath')
   public spellsMeta = lookup(() => this.spellsMetadataMap)
 
@@ -386,7 +386,7 @@ export class NwDbService {
 
   public tradeskillPostcap = table(() => [this.data.tradeskillpostcap()])
 
-  public vitalsMetadata = table(() => [this.data.generatedVitalsmetadata()])
+  public vitalsMetadata = table(() => [this.data.generatedVitalsMetadata()])
   public vitalsMetadataMap = indexBy(() => this.vitalsMetadata, 'vitalsID')
   public vitalsMeta = lookup(() => this.vitalsMetadataMap)
 

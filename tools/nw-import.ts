@@ -68,7 +68,7 @@ program
       }).then((data) => {
         console.log('  ', data.length, 'spells')
         // write it into input directory, so table loader will pick it up
-        writeJSONFile(data, path.join(pathToDatatables(inputDir), 'generated_spellsmetadata.json'), {
+        writeJSONFile(data, path.join(pathToDatatables(inputDir), 'generated_spells_metadata.json'), {
           createDir: true,
         })
         writeJSONFile(data, path.join('tmp', 'spells.json'), {
@@ -85,7 +85,7 @@ program
         console.log('  ', variations.length, 'variations')
         return Promise.all([
           // write it into input directory, so table loader will pick it up
-          writeJSONFile(vitals, path.join(pathToDatatables(inputDir), 'generated_vitalsmetadata.json'), {
+          writeJSONFile(vitals, path.join(pathToDatatables(inputDir), 'generated_vitals_metadata.json'), {
             createDir: true,
           }),
           writeJSONFile(vitals, path.join('tmp', 'vitals.json'), {
@@ -93,7 +93,7 @@ program
           }),
 
           // write it into input directory, so table loader will pick it up
-          writeJSONFile(gatherables, path.join(pathToDatatables(inputDir), 'generated_gatherablesmetadata.json'), {
+          writeJSONFile(gatherables, path.join(pathToDatatables(inputDir), 'generated_gatherables_metadata.json'), {
             createDir: true,
           }),
           writeJSONFile(gatherables, path.join('tmp', 'gatherables.json'), {
@@ -101,7 +101,7 @@ program
           }),
 
            // write it into input directory, so table loader will pick it up
-           writeJSONFile(variations, path.join(pathToDatatables(inputDir), 'generated_variationsmetadata.json'), {
+           writeJSONFile(variations, path.join(pathToDatatables(inputDir), 'generated_variations_metadata.json'), {
             createDir: true,
           }),
           writeJSONFile(variations, path.join('tmp', 'variations.json'), {

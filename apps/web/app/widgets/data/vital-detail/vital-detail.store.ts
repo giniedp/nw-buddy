@@ -15,7 +15,7 @@ import {
   Statuseffect,
   Vitals,
   Vitalscategories,
-  Vitalsmetadata,
+  VitalsMetadata,
 } from '@nw-data/generated'
 import { uniqBy } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
@@ -177,7 +177,7 @@ function selectCategories(vital: Vitals, categories: Map<string, Vitalscategorie
   return vital.VitalsCategories?.map((id) => categories.get(id))
 }
 
-function selectDamageTableNames(id: string, meta: Vitalsmetadata) {
+function selectDamageTableNames(id: string, meta: VitalsMetadata) {
   let tables = meta?.tables || []
   // TODO: fix this in the pipeline
   if (id === 'Isabella_DG_ShatterMtn_Phase2_00') {

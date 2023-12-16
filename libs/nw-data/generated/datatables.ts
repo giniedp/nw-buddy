@@ -29,7 +29,7 @@ import type {
   GameEvent,
   Gamemodes,
   Gatherables,
-  Gatherablesmetadata,
+  GatherablesMetadata,
   Housetypes,
   Housingitems,
   ItemDefinitionMaster,
@@ -71,7 +71,7 @@ import type {
   Rewarddata,
   SandelementalHeavySandworm,
   SeasonPassData,
-  Spellsmetadata,
+  SpellsMetadata,
   Spelltable,
   StaminacostsPlayer,
   Statuseffect,
@@ -101,13 +101,13 @@ import type {
   Tradeskillweaving,
   Tradeskillwoodworking,
   VariationsLockedInteractGatherables,
-  Variationsmetadata,
+  VariationsMetadata,
   Vitals,
   VitalsFirstlight,
+  VitalsMetadata,
   VitalsPlayer,
   Vitalscategories,
   Vitalsleveldata,
-  Vitalsmetadata,
   Vitalsmodifierdata,
   Weaponmastery,
   Xpamountsbylevel,
@@ -992,17 +992,17 @@ export abstract class NwDataLoader {
   public gatherables() {
     return this.load<Gatherables[]>('javelindata_gatherables.json')
   }
-  public generatedGatherablesmetadata() {
-    return this.load<Gatherablesmetadata[]>('generated_gatherablesmetadata.json')
+  public generatedGatherablesMetadata() {
+    return this.load<GatherablesMetadata[]>('generated_gatherables_metadata.json')
   }
-  public generatedSpellsmetadata() {
-    return this.load<Spellsmetadata[]>('generated_spellsmetadata.json')
+  public generatedSpellsMetadata() {
+    return this.load<SpellsMetadata[]>('generated_spells_metadata.json')
   }
-  public generatedVariationsmetadata() {
-    return this.load<Variationsmetadata[]>('generated_variationsmetadata.json')
+  public generatedVariationsMetadata() {
+    return this.load<VariationsMetadata[]>('generated_variations_metadata.json')
   }
-  public generatedVitalsmetadata() {
-    return this.load<Vitalsmetadata[]>('generated_vitalsmetadata.json')
+  public generatedVitalsMetadata() {
+    return this.load<VitalsMetadata[]>('generated_vitals_metadata.json')
   }
   public housetypes() {
     return this.load<Housetypes[]>('javelindata_housetypes.json')

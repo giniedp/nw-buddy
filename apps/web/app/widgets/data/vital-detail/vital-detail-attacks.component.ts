@@ -5,7 +5,7 @@ import {
   Affixstats,
   Damagetable,
   Mutationdifficulty,
-  Spellsmetadata,
+  SpellsMetadata,
   Statuseffect,
   Vitals,
   Vitalsleveldata,
@@ -90,7 +90,7 @@ function selectDamageInfo({
   level: Vitalsleveldata
   modifier: Vitalsmodifierdata
   damageTable: Damagetable
-  metadata: Spellsmetadata
+  metadata: SpellsMetadata
   difficulty: Mutationdifficulty
   affixMap: Map<string, Affixstats>
   effectMap: Map<string, Statuseffect>

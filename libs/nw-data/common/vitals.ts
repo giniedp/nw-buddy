@@ -6,7 +6,7 @@ import {
   Vitals,
   Vitalscategories,
   Vitalsleveldata,
-  Vitalsmetadata,
+  VitalsMetadata,
   Vitalsmodifierdata,
 } from '@nw-data/generated'
 
@@ -249,7 +249,7 @@ export function getVitalDamageEffectivenessIcon(vital: Vitals, damageType: Vital
 export function getVitalDungeons(
   vital: Vitals,
   dungeons: Gamemodes[],
-  vitalsMeta: Map<string, Vitalsmetadata>,
+  vitalsMeta: Map<string, VitalsMetadata>,
 ): Gamemodes[] {
   if (!vital || !dungeons?.length) {
     return []
@@ -276,7 +276,7 @@ export function getVitalDungeons(
   })
 }
 
-export function getVitalDungeon(vital: Vitals, dungeons: Gamemodes[], vitalsMeta: Map<string, Vitalsmetadata>) {
+export function getVitalDungeon(vital: Vitals, dungeons: Gamemodes[], vitalsMeta: Map<string, VitalsMetadata>) {
   return getVitalDungeons(vital, dungeons, vitalsMeta)?.[0]
 }
 

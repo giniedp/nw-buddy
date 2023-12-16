@@ -13098,7 +13098,7 @@ export type WeaponTag =
   | 'Warhammer'
 
 
-export interface Gatherablesmetadata {
+export interface GatherablesMetadata {
     gatherableID: string;
     mapIDs:       string[];
     spawns:       Spawn[];
@@ -13108,16 +13108,16 @@ export interface Spawn {
     lootTable: string;
     position:  number[];
 }
-export interface Spellsmetadata {
+export interface SpellsMetadata {
     AreaStatusEffects: string[];
     PrefabPath:        string;
 }
-export interface Variationsmetadata {
+export interface VariationsMetadata {
     mapIDs:    string[];
     spawns:    Array<number[]>;
     variantID: string;
 }
-export interface Vitalsmetadata {
+export interface VitalsMetadata {
     mapIDs:   string[];
     models:   string[];
     spawns:   Spawn[];
