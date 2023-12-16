@@ -68,10 +68,12 @@ program
       }).then((data) => {
         console.log('  ', data.length, 'spells')
         // write it into input directory, so table loader will pick it up
-        writeJSONFile(data, path.join(pathToDatatables(inputDir), 'generated_spells_metadata.json'), {
+        writeJSONFile(data, {
+          target: path.join(pathToDatatables(inputDir), 'generated_spells_metadata.json'),
           createDir: true,
         })
-        writeJSONFile(data, path.join('tmp', 'spells.json'), {
+        writeJSONFile(data, {
+          target: path.join('tmp', 'spells.json'),
           createDir: true,
         })
       })
@@ -85,26 +87,33 @@ program
         console.log('  ', variations.length, 'variations')
         return Promise.all([
           // write it into input directory, so table loader will pick it up
-          writeJSONFile(vitals, path.join(pathToDatatables(inputDir), 'generated_vitals_metadata.json'), {
+          writeJSONFile(vitals, {
+            target: path.join(pathToDatatables(inputDir), 'generated_vitals_metadata.json'),
             createDir: true,
           }),
-          writeJSONFile(vitals, path.join('tmp', 'vitals.json'), {
+          writeJSONFile(vitals, {
+            target: path.join('tmp', 'vitals.json'),
             createDir: true,
           }),
 
           // write it into input directory, so table loader will pick it up
-          writeJSONFile(gatherables, path.join(pathToDatatables(inputDir), 'generated_gatherables_metadata.json'), {
+          writeJSONFile(gatherables, {
+            target: path.join(pathToDatatables(inputDir), 'generated_gatherables_metadata.json'),
             createDir: true,
           }),
-          writeJSONFile(gatherables, path.join('tmp', 'gatherables.json'), {
+          writeJSONFile(gatherables, {
+            target: path.join('tmp', 'gatherables.json'),
             createDir: true,
           }),
 
+
            // write it into input directory, so table loader will pick it up
-           writeJSONFile(variations, path.join(pathToDatatables(inputDir), 'generated_variations_metadata.json'), {
+          writeJSONFile(variations, {
+            target: path.join(pathToDatatables(inputDir), 'generated_variations_metadata.json'),
             createDir: true,
           }),
-          writeJSONFile(variations, path.join('tmp', 'variations.json'), {
+          writeJSONFile(variations, {
+            target: path.join('tmp', 'variations.json'),
             createDir: true,
           }),
         ])
@@ -260,7 +269,8 @@ program
       await withProgressBar({ barName: 'Write', tasks: tables }, async ({ file, data }, _, log) => {
         const jsonPath = path.join(tablesOutDir, file)
         log(jsonPath)
-        await writeJSONFile(data, jsonPath, {
+        await writeJSONFile(data, {
+          target: jsonPath,
           createDir: true,
         })
       })

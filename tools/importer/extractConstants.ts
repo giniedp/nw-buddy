@@ -82,6 +82,9 @@ export async function extractConstants({ inputDir, outFile }: { inputDir: string
       NW_MAX_POINTS_PER_ATTRIBUTE: pad['max points per attribute'],
       NW_LEVEL_DAMAGE_MULTIPLIER: pad['level damage multiplier'],
     },
-    outFile
+    {
+      target: outFile,
+      createDir: true,
+    }
   )
 }

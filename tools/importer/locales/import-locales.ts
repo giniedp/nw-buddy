@@ -67,6 +67,6 @@ async function writeLocales(output: string, locales: Map<string, Record<string, 
     }
   })
   await withProgressBar({ barName: 'Write', tasks: tasks }, async ({ file, data }) => {
-    await writeJSONFile(data, file, { createDir: true })
+    await writeJSONFile(data, { target: file, createDir: true })
   })
 }

@@ -1,5 +1,5 @@
 import * as path from 'path'
-import { glob, readJSONFile, writeFile } from '../../utils'
+import { glob, readJSONFile, writeUTF8File } from '../../utils'
 
 const ITEM_RARITIES: string[] = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'artifact']
 type IndexTable = ReturnType<typeof indexTable>
@@ -60,13 +60,9 @@ export async function generateSearch(options: { localesDir: string; tablesDir: s
     await indexWeaponAppearance(item.dict, options.tablesDir, index)
     await indexInstrumentAppearance(item.dict, options.tablesDir, index)
     const data = index.getData()
-    const json = [
-      '[',
-      data.map((it) => JSON.stringify(it)).join(',\n'),
-      ']',
-    ].join('\n')
-    const file = path.join(options.outDir, `${item.locale}.json`)
-    await writeFile(json, file, {
+    const json = ['[', data.map((it) => JSON.stringify(it)).join(',\n'), ']'].join('\n')
+    await writeUTF8File(json, {
+      target: path.join(options.outDir, `${item.locale}.json`),
       createDir: true,
     })
   }
@@ -80,7 +76,7 @@ async function loadLocales(dir: string) {
         locale: path.basename(file, '.json'),
         dict: await readJSONFile<Record<string, string>>(file),
       }
-    })
+    }),
   )
 }
 

@@ -116,7 +116,9 @@ export async function extractLootTags({ tablesDir, outFile }: { tablesDir: strin
         .filter((it) => !all1.has(it))
         .sort(),
     },
-    outFile
+    {
+      target: outFile,
+    }
   )
 }
 

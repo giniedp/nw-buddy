@@ -1,8 +1,7 @@
+import * as fastGlob from 'fast-glob'
 import * as fs from 'fs'
 import * as path from 'path'
-import * as fastGlob from 'fast-glob'
 import { ZodSchema } from 'zod'
-
 
 export async function mkdir(dirPath: string, options?: fs.MakeDirectoryOptions) {
   return fs.promises.mkdir(dirPath, options)
@@ -24,20 +23,28 @@ export async function readJSONFile<T>(input: string, schema?: ZodSchema<T>) {
   return json as T
 }
 
-
-export async function writeJSONFile(data: any, output: string, options?: { createDir: boolean }) {
+export async function writeJSONFile<T extends Object>(
+  data: T,
+  options: {
+    target: string
+    serialize?: (input: T) => string | Buffer
+    createDir?: boolean
+  },
+) {
+  const output = options.target
   if (options?.createDir) {
     await mkdir(path.dirname(output), { recursive: true })
   }
-  const dataOut = JSON.stringify(data, null, 1)
+  const dataOut = options.serialize ? options.serialize(data) : JSON.stringify(data, null, 1)
   return fs.promises.writeFile(output, dataOut, 'utf-8')
 }
 
-export async function writeFile(data: any, output: string, options?: { createDir: boolean }) {
+export async function writeUTF8File(data: string | Buffer, options: { target: string; createDir: boolean }) {
+  const outFile = options.target
   if (options?.createDir) {
-    await mkdir(path.dirname(output), { recursive: true })
+    await mkdir(path.dirname(outFile), { recursive: true })
   }
-  return fs.promises.writeFile(output, data, 'utf-8')
+  return fs.promises.writeFile(outFile, data, 'utf-8')
 }
 
 export function replaceExtname(file: string, extname: string) {

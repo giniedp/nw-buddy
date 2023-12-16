@@ -7,7 +7,7 @@ export async function createCrcFile({ values, targetFile }: { values: string[]; 
     const value = it.toLowerCase()
     return [crc32(value), value] as const
   })
-  return writeJSONFile(entries, targetFile)
+  return writeJSONFile(entries, { target: targetFile })
 }
 
 export async function readAndExtractCrcValues<T>({

@@ -1,4 +1,4 @@
-import { sortBy, uniqBy } from 'lodash'
+import { uniqBy } from 'lodash'
 import * as path from 'path'
 import { environment } from '../../../env'
 import { assmebleWorkerTasks, glob, withProgressPool, writeJSONFile } from '../../utils'
@@ -11,9 +11,9 @@ import {
 } from '../tables/schemas'
 
 import { readAndExtractCrcValues } from './create-crc-file'
-import { WORKER_TASKS } from './worker.tasks'
 import { VitalScanRow } from './scan-for-vitals'
 import { GatherableScanRow, VariationScanRow } from './scan-slices.task'
+import { WORKER_TASKS } from './worker.tasks'
 
 interface VitalMetadata {
   tables: Set<string>
@@ -41,28 +41,28 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
       path.join(pathToDatatables(inputDir), 'vitalstables', '*_vitals_*.json'),
     ],
     extract: (row) => row.VitalsID.toLowerCase(),
-  }).then((result) => writeJSONFile(result, crcVitalsFile))
+  }).then((result) => writeJSONFile(result, { target: crcVitalsFile }))
 
   const crcVitalsCategoriesFile = environment.tmpDir('crcVitalsCategories.json')
   await readAndExtractCrcValues({
     schema: VitalsCategoriesTableSchema,
     files: [path.join(pathToDatatables(inputDir), 'javelindata_vitalscategories.json')],
     extract: (row) => row.VitalsCategoryID.toLowerCase(),
-  }).then((result) => writeJSONFile(result, crcVitalsCategoriesFile))
+  }).then((result) => writeJSONFile(result, { target: crcVitalsCategoriesFile }))
 
   const crcGatherablesFile = environment.tmpDir('crcGatherables.json')
   await readAndExtractCrcValues({
     schema: GatherablesTableSchema,
     files: [path.join(pathToDatatables(inputDir), 'javelindata_gatherables.json')],
     extract: (row) => row.GatherableID.toLowerCase(),
-  }).then((result) => writeJSONFile(result, crcGatherablesFile))
+  }).then((result) => writeJSONFile(result, { target: crcGatherablesFile }))
 
   const crcVariationsFile = environment.tmpDir('crcVariations.json')
   await readAndExtractCrcValues({
     schema: VariationsTableSchema,
     files: [path.join(pathToDatatables(inputDir), 'javelindata_variations_*.json')],
     extract: (row) => row.VariantID.toLowerCase(),
-  }).then((result) => writeJSONFile(result, crcVariationsFile))
+  }).then((result) => writeJSONFile(result, { target: crcVariationsFile }))
 
   const vitals = new Map<string, VitalMetadata>()
   const gatherables = new Map<string, GatherableMetadata>()
@@ -115,9 +115,7 @@ function collectVitalsRows(rows: VitalScanRow[], data: Map<string, VitalMetadata
       data.set(vitalID, { tables: new Set(), models: new Set(), mapIDs: new Set(), spawns: [] })
     }
     const bucket = data.get(vitalID)
-    const damagetable = row.damageTable
-      ?.toLowerCase()
-      .replace('sharedassets/springboardentitites/datatables/', '')
+    const damagetable = row.damageTable?.toLowerCase().replace('sharedassets/springboardentitites/datatables/', '')
     if (damagetable) {
       bucket.tables.add(damagetable)
     }
