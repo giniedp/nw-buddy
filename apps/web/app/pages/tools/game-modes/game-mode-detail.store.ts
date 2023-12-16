@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { NW_MAX_CHARACTER_LEVEL, getVitalDungeons } from '@nw-data/common'
+import { NW_MAX_CHARACTER_LEVEL, NW_MAX_ENEMY_LEVEL, getVitalDungeons } from '@nw-data/common'
 import { CreatureType, Mutationdifficulty, Vitals } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest, filter, map, of, switchMap } from 'rxjs'
@@ -465,8 +465,8 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
       return {
         tags: [...tags],
         values: {
-          MinContLevel: Math.max(64, dungeon.ContainerLevel),
-          EnemyLevel: Math.max(70, dungeon.ContainerLevel),
+          MinContLevel: Math.max(65, dungeon.ContainerLevel) - 1,
+          EnemyLevel: NW_MAX_ENEMY_LEVEL,
           Level: (playerLevel || NW_MAX_CHARACTER_LEVEL) - 1,
         },
         tables: lootTables,
@@ -478,6 +478,7 @@ export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
 
   public readonly lootDifficulty$ = this.lootTagsDifficulty$.pipe(
     switchMap(({ tags, values, tables }) => {
+      console.log({ tags, values, tables })
       const ctx = new LootContext({
         tags: tags,
         values: values,
