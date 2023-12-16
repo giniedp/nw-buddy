@@ -13112,6 +13112,11 @@ export interface Spellsmetadata {
     AreaStatusEffects: string[];
     PrefabPath:        string;
 }
+export interface Variationsmetadata {
+    mapIDs:    string[];
+    spawns:    Array<number[]>;
+    variantID: string;
+}
 export interface Vitalsmetadata {
     mapIDs:   string[];
     models:   string[];

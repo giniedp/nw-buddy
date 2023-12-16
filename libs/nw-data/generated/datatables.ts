@@ -101,6 +101,7 @@ import type {
   Tradeskillweaving,
   Tradeskillwoodworking,
   VariationsLockedInteractGatherables,
+  Variationsmetadata,
   Vitals,
   VitalsFirstlight,
   VitalsPlayer,
@@ -996,6 +997,9 @@ export abstract class NwDataLoader {
   }
   public generatedSpellsmetadata() {
     return this.load<Spellsmetadata[]>('generated_spellsmetadata.json')
+  }
+  public generatedVariationsmetadata() {
+    return this.load<Variationsmetadata[]>('generated_variationsmetadata.json')
   }
   public generatedVitalsmetadata() {
     return this.load<Vitalsmetadata[]>('generated_vitalsmetadata.json')

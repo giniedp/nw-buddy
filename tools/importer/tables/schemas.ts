@@ -16,6 +16,11 @@ export const GatherablesSchema = z.object({
 })
 export const GatherablesTableSchema = z.array(GatherablesSchema)
 
+export const VariationsSchema = z.object({
+  VariantID: z.string(),
+})
+export const VariationsTableSchema = z.array(VariationsSchema)
+
 export const TerritoriesSchema = z.object({
   LootTags: z.optional(z.string()),
 })

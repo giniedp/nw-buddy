@@ -16,7 +16,7 @@ import {
   isVitalsComponent,
 } from './types/dynamicslice'
 
-export interface VitalVariant {
+export interface VitalScanRow {
   vitalsID: string
   categoryID: string
   level: number
@@ -25,8 +25,8 @@ export interface VitalVariant {
   position?: number[]
   mapID?: string
 }
-export async function scanForVitals(inputDir: string, sliceName: string, file?: string): Promise<VitalVariant[]> {
-  const result: VitalVariant[] = []
+export async function scanForVitals(inputDir: string, sliceName: string, file?: string): Promise<VitalScanRow[]> {
+  const result: VitalScanRow[] = []
   if (!sliceName && !file) {
     return result
   }

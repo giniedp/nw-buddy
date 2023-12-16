@@ -1,6 +1,6 @@
 import { readJSONFile } from '../../utils'
 import { walkJsonObjects } from '../../utils/walk-json-object'
-import { scanForVitals, VitalVariant } from './scan-for-vitals'
+import { scanForVitals, VitalScanRow } from './scan-for-vitals'
 import { Capital } from './types/capitals'
 import { isRegionMetadataAsset } from './types/metadata'
 
@@ -13,14 +13,21 @@ function loadCrcFile(file: string) {
 }
 
 export interface ScanResult {
-  vitals?: VitalVariant[]
-  gatherables?: GatherableVariant[]
+  vitals?: VitalScanRow[]
+  gatherables?: GatherableScanRow[]
+  variations?: VariationScanRow[]
 }
 
-export interface GatherableVariant {
+export interface GatherableScanRow {
   gatherableID: string
   position: [number, number, number]
   lootTable: string
+  mapID: string
+}
+
+export interface VariationScanRow {
+  variantID: string
+  position: [number, number, number]
   mapID: string
 }
 
@@ -30,12 +37,14 @@ export async function scanSlices({
   crcVitalsFile,
   crcVitalsCategoriesFile,
   crcGatherablesFile,
+  crcVariationsFile
 }: {
   inputDir: string
   file: string
   crcVitalsFile: string
   crcVitalsCategoriesFile: string
   crcGatherablesFile: string
+  crcVariationsFile: string
 }): Promise<ScanResult> {
   if (file.endsWith('.dynamicslice.json')) {
     return {
@@ -45,30 +54,45 @@ export async function scanSlices({
   if (file.endsWith('.capitals.json')) {
     const mapId = file.match(/coatlicue\/(.+)\/regions\//)[1]
     const data = await readJSONFile<Capital>(file)
-    const result: VitalVariant[] = []
+    const vitalsRows: VitalScanRow[] = []
+    const variationsRows: VariationScanRow[] = []
     for (const capital of data?.Capitals || []) {
-      const vitals = await scanForVitals(inputDir, capital.sliceName).catch((err): VitalVariant[] => {
-        console.error(err)
-        return []
-      })
-      for (const vital of vitals || []) {
-        result.push({
-          ...vital,
+      await scanForVitals(inputDir, capital.sliceName)
+        .catch((err) => {
+          console.error(err)
+          return []
+        })
+        .then((vitals) => {
+          for (const vital of vitals || []) {
+            vitalsRows.push({
+              ...vital,
+              position: capital.worldPosition
+                ? [capital.worldPosition.x, capital.worldPosition.y, capital.worldPosition.z]
+                : null,
+              mapID: mapId,
+            })
+          }
+        })
+      if (capital.variantName) {
+        variationsRows.push({
+          mapID: mapId,
+          variantID: capital.variantName,
           position: capital.worldPosition
             ? [capital.worldPosition.x, capital.worldPosition.y, capital.worldPosition.z]
             : null,
-          mapID: mapId,
         })
       }
     }
     return {
-      vitals: result,
+      vitals: vitalsRows,
+      variations: variationsRows,
     }
   }
   if (file.endsWith('.metadata.json')) {
     const mapId = file.match(/coatlicue\/(.+)\/regions\//)[1]
-    const result: VitalVariant[] = []
-    const gatherables: GatherableVariant[] = []
+    const vitalsRows: VitalScanRow[] = []
+    const gatherablesRows: GatherableScanRow[] = []
+    const variationsRows: VariationScanRow[] = []
     walkJsonObjects(await readJSONFile(file), (obj: unknown) => {
       if (!isRegionMetadataAsset(obj)) {
         return false
@@ -78,7 +102,7 @@ export async function scanSlices({
         if (!vitalId) {
           continue
         }
-        result.push({
+        vitalsRows.push({
           vitalsID: vitalId,
           categoryID: loadCrcFile(crcVitalsCategoriesFile)[location.vitalscategoryid?.value],
           level: location.vitalslevel,
@@ -90,20 +114,29 @@ export async function scanSlices({
       }
       for (const location of obj.gatherablelocations || []) {
         const gatherableId = loadCrcFile(crcGatherablesFile)[location.gatherableid?.value]
-        if (!gatherableId) {
-          continue
+        if (gatherableId) {
+          gatherablesRows.push({
+            gatherableID: gatherableId,
+            position: location.worldposition as [number, number, number],
+            lootTable: location.loottableid,
+            mapID: mapId,
+          })
         }
-        gatherables.push({
-          gatherableID: gatherableId,
-          position: location.worldposition as [number, number, number],
-          lootTable: location.loottableid,
-          mapID: mapId,
-        })
+        const variantId = loadCrcFile(crcVariationsFile)[location. gatherableid?.value]
+        if (variantId) {
+          variationsRows.push({
+            variantID: variantId,
+            position: location.worldposition as [number, number, number],
+            //lootTable: location.loottableid,
+            mapID: mapId,
+          })
+        }
       }
     })
     return {
-      vitals: result,
-      gatherables: gatherables,
+      vitals: vitalsRows,
+      gatherables: gatherablesRows,
+      variations: variationsRows,
     }
   }
 }

@@ -1,11 +1,19 @@
 import { sortBy, uniqBy } from 'lodash'
 import * as path from 'path'
 import { environment } from '../../../env'
-import { assmebleWorkerTasks, crc32, glob, readJSONFile, withProgressPool, writeJSONFile } from '../../utils'
+import { assmebleWorkerTasks, glob, withProgressPool, writeJSONFile } from '../../utils'
 import { pathToDatatables } from '../tables'
-import { GatherablesTableSchema, VitalsCategoriesTableSchema, VitalsTableSchema } from '../tables/schemas'
+import {
+  GatherablesTableSchema,
+  VariationsTableSchema,
+  VitalsCategoriesTableSchema,
+  VitalsTableSchema,
+} from '../tables/schemas'
 
+import { readAndExtractCrcValues } from './create-crc-file'
 import { WORKER_TASKS } from './worker.tasks'
+import { VitalScanRow } from './scan-for-vitals'
+import { GatherableScanRow, VariationScanRow } from './scan-slices.task'
 
 interface VitalMetadata {
   tables: Set<string>
@@ -18,44 +26,47 @@ interface GatherableMetadata {
   mapIDs: Set<string>
   spawns: Array<{ position: number[]; lootTable: string }>
 }
+
+interface VariationMetadata {
+  mapIDs: Set<string>
+  spawns: Array<[number, number, number]>
+}
+
 export async function importSlices({ inputDir, threads }: { inputDir: string; threads: number }) {
   const crcVitalsFile = environment.tmpDir('crcVitals.json')
-  await glob([
-    path.join(pathToDatatables(inputDir), 'javelindata_vitals.json'),
-    path.join(pathToDatatables(inputDir), 'vitalstables', '*_vitals_*.json'),
-  ]).then(async (files) => {
-    let result: Record<string, string> = {}
-    for (const file of files) {
-      const crcVitalIDs = await readJSONFile(file, VitalsTableSchema)
-        .then((list) => list.map((it) => it.VitalsID))
-        .then((list) => list.map((it) => it.toLowerCase()).map((value) => [crc32(value), value] as const))
-        .then((list) => Object.fromEntries(list))
-      result = {
-        ...result,
-        ...crcVitalIDs,
-      }
-    }
-    await writeJSONFile(result, crcVitalsFile)
-  })
+  await readAndExtractCrcValues({
+    schema: VitalsTableSchema,
+    files: [
+      path.join(pathToDatatables(inputDir), 'javelindata_vitals.json'),
+      path.join(pathToDatatables(inputDir), 'vitalstables', '*_vitals_*.json'),
+    ],
+    extract: (row) => row.VitalsID.toLowerCase(),
+  }).then((result) => writeJSONFile(result, crcVitalsFile))
 
-  const categoriesTableFile = path.join(pathToDatatables(inputDir), 'javelindata_vitalscategories.json')
-  const crcVitalCategories = await readJSONFile(categoriesTableFile, VitalsCategoriesTableSchema)
-    .then((list) => list.map((it) => it.VitalsCategoryID))
-    .then((list) => list.map((it) => it.toLowerCase()).map((value) => [crc32(value), value] as const))
-    .then((list) => Object.fromEntries(list))
   const crcVitalsCategoriesFile = environment.tmpDir('crcVitalsCategories.json')
-  await writeJSONFile(crcVitalCategories, crcVitalsCategoriesFile)
+  await readAndExtractCrcValues({
+    schema: VitalsCategoriesTableSchema,
+    files: [path.join(pathToDatatables(inputDir), 'javelindata_vitalscategories.json')],
+    extract: (row) => row.VitalsCategoryID.toLowerCase(),
+  }).then((result) => writeJSONFile(result, crcVitalsCategoriesFile))
 
-  const gatherablesTableFile = path.join(pathToDatatables(inputDir), 'javelindata_gatherables.json')
-  const crcGatherables = await readJSONFile(gatherablesTableFile, GatherablesTableSchema)
-    .then((list) => list.map((it) => it.GatherableID))
-    .then((list) => list.map((it) => it.toLowerCase()).map((value) => [crc32(value), value] as const))
-    .then((list) => Object.fromEntries(list))
   const crcGatherablesFile = environment.tmpDir('crcGatherables.json')
-  await writeJSONFile(crcGatherables, crcGatherablesFile)
+  await readAndExtractCrcValues({
+    schema: GatherablesTableSchema,
+    files: [path.join(pathToDatatables(inputDir), 'javelindata_gatherables.json')],
+    extract: (row) => row.GatherableID.toLowerCase(),
+  }).then((result) => writeJSONFile(result, crcGatherablesFile))
+
+  const crcVariationsFile = environment.tmpDir('crcVariations.json')
+  await readAndExtractCrcValues({
+    schema: VariationsTableSchema,
+    files: [path.join(pathToDatatables(inputDir), 'javelindata_variations_*.json')],
+    extract: (row) => row.VariantID.toLowerCase(),
+  }).then((result) => writeJSONFile(result, crcVariationsFile))
 
   const vitals = new Map<string, VitalMetadata>()
   const gatherables = new Map<string, GatherableMetadata>()
+  const variations = new Map<string, VariationMetadata>()
 
   const files = await glob([
     `${inputDir}/**/*.dynamicslice.json`,
@@ -65,7 +76,7 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
   ])
 
   await withProgressPool({
-    barName: 'Vitals',
+    barName: 'Scan All',
     workerScript: path.resolve(__dirname, 'worker.js'),
     workerLimit: threads,
     workerType: 'thread',
@@ -79,58 +90,91 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
           crcVitalsFile,
           crcVitalsCategoriesFile,
           crcGatherablesFile,
+          crcVariationsFile,
         }
       }),
       onTaskFinish: async (result) => {
-        for (const vital of result.vitals || []) {
-          const vitalID = vital.vitalsID.toLowerCase()
-          if (!vitals.has(vitalID)) {
-            vitals.set(vitalID, { tables: new Set(), models: new Set(), mapIDs: new Set(), spawns: [] })
-          }
-          const bucket = vitals.get(vitalID)
-          const damagetable = vital.damageTable
-            ?.toLowerCase()
-            .replace('sharedassets/springboardentitites/datatables/', '')
-          if (damagetable) {
-            bucket.tables.add(damagetable)
-          }
-          if (vital.mapID) {
-            bucket.mapIDs.add(vital.mapID)
-          }
-          if (vital.modelSlice) {
-            bucket.models.add(vital.modelSlice)
-          }
-          if (vital.position) {
-            bucket.spawns.push({
-              category: vital.categoryID,
-              level: vital.level,
-              position: vital.position,
-              damagetable: damagetable,
-            })
-          }
-        }
-        for (const gatherable of result.gatherables || []) {
-          const gatherableID = gatherable.gatherableID
-          if (!gatherables.has(gatherableID)) {
-            gatherables.set(gatherableID, { mapIDs: new Set(), spawns: [] })
-          }
-          const bucket = gatherables.get(gatherableID)
-          if (gatherable.mapID) {
-            bucket.mapIDs.add(gatherable.mapID)
-          }
-          if (gatherable.position) {
-            bucket.spawns.push({
-              position: gatherable.position,
-              lootTable: gatherable.lootTable,
-            })
-          }
-        }
+        collectVitalsRows(result.vitals || [], vitals)
+        collectGatherablesRows(result.gatherables || [], gatherables)
+        collectVariationsRows(result.variations || [], variations)
       },
     }),
   })
 
-  const resultVitals = Array.from(vitals.entries())
-    .sort(([a], [b]) => a.localeCompare(b))
+  return {
+    vitals: buildResultVitals(vitals),
+    gatherables: buildResultGatherables(gatherables),
+    variations: buildResultVariations(variations),
+  }
+}
+
+function collectVitalsRows(rows: VitalScanRow[], data: Map<string, VitalMetadata>) {
+  for (const row of rows || []) {
+    const vitalID = row.vitalsID.toLowerCase()
+    if (!data.has(vitalID)) {
+      data.set(vitalID, { tables: new Set(), models: new Set(), mapIDs: new Set(), spawns: [] })
+    }
+    const bucket = data.get(vitalID)
+    const damagetable = row.damageTable
+      ?.toLowerCase()
+      .replace('sharedassets/springboardentitites/datatables/', '')
+    if (damagetable) {
+      bucket.tables.add(damagetable)
+    }
+    if (row.mapID) {
+      bucket.mapIDs.add(row.mapID)
+    }
+    if (row.modelSlice) {
+      bucket.models.add(row.modelSlice)
+    }
+    if (row.position) {
+      bucket.spawns.push({
+        category: row.categoryID,
+        level: row.level,
+        position: row.position,
+        damagetable: damagetable,
+      })
+    }
+  }
+}
+
+function collectGatherablesRows(rows: GatherableScanRow[], data: Map<string, GatherableMetadata>) {
+  for (const row of rows || []) {
+    const gatherableID = row.gatherableID
+    if (!data.has(gatherableID)) {
+      data.set(gatherableID, { mapIDs: new Set(), spawns: [] })
+    }
+    const bucket = data.get(gatherableID)
+    if (row.mapID) {
+      bucket.mapIDs.add(row.mapID)
+    }
+    if (row.position) {
+      bucket.spawns.push({
+        position: row.position,
+        lootTable: row.lootTable,
+      })
+    }
+  }
+}
+
+function collectVariationsRows(rows: VariationScanRow[], data: Map<string, VariationMetadata>) {
+  for (const row of rows || []) {
+    const variantID = row.variantID
+    if (!data.has(variantID)) {
+      data.set(variantID, { mapIDs: new Set(), spawns: [] })
+    }
+    const bucket = data.get(variantID)
+    if (row.mapID) {
+      bucket.mapIDs.add(row.mapID)
+    }
+    if (row.position) {
+      bucket.spawns.push(row.position)
+    }
+  }
+}
+
+function buildResultVitals(data: Map<string, VitalMetadata>) {
+  return Array.from(data.entries())
     .map(([id, { tables, spawns, mapIDs, models }]) => {
       return {
         vitalsID: id,
@@ -149,14 +193,20 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
             return (a.level || 0) - (b.level || 0)
           }
           if (a.category !== b.category) {
-            return (a.category || '').localeCompare(b.category || '')
+            return compareStrings(a.category || '', b.category || '')
           }
-          return String(a.position).localeCompare(String(b.position))
+
+          return compareStrings(String(a.position), String(b.position))
         }),
       }
     })
-  const resultGatherables = Array.from(gatherables.entries())
-    .sort(([a], [b]) => a.localeCompare(b))
+    .sort((a, b) => {
+      return compareStrings(a.vitalsID, b.vitalsID)
+    })
+}
+
+function buildResultGatherables(data: Map<string, GatherableMetadata>) {
+  return Array.from(data.entries())
     .map(([id, { spawns, mapIDs }]) => {
       return {
         gatherableID: id,
@@ -167,13 +217,31 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
             loot: lootTable,
           })
         }).sort((a, b) => {
-          return String(a.position).localeCompare(String(b.position))
+          return compareStrings(String(a.position), String(b.position))
         }),
       }
     })
-  return {
-    vitals: sortBy(resultVitals, (it) => it.vitalsID),
-    gatherables: sortBy(resultGatherables, (it) => it.gatherableID),
-  }
-  return
+    .sort((a, b) => {
+      return compareStrings(a.gatherableID, b.gatherableID)
+    })
+}
+
+function buildResultVariations(data: Map<string, VariationMetadata>) {
+  return Array.from(data.entries())
+    .map(([id, { spawns, mapIDs }]) => {
+      return {
+        variantID: id,
+        mapIDs: Array.from(mapIDs.values()).sort(),
+        spawns: uniqBy(spawns || [], (it) => {
+          return JSON.stringify(it)
+        }).sort((a, b) => {
+          return compareStrings(String(a), String(b))
+        }),
+      }
+    })
+    .sort((a, b) => compareStrings(a.variantID, b.variantID))
+}
+
+function compareStrings(a: string, b: string) {
+  return String(a).localeCompare(String(b))
 }

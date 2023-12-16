@@ -26,7 +26,7 @@ enum Importer {
   tables = 'tables',
   locales = 'locales',
   images = 'images',
-  vitals = 'vitals',
+  slices = 'slices',
   index = 'index',
 }
 
@@ -61,11 +61,12 @@ program
       throw new Error(`Unknown importer module: ${options.module}`)
     }
 
-    if (hasFilter(Importer.vitals, options.module)) {
+    if (hasFilter(Importer.slices, options.module)) {
       console.log('Spells')
       await importSpells({
         inputDir: inputDir,
       }).then((data) => {
+        console.log('  ', data.length, 'spells')
         // write it into input directory, so table loader will pick it up
         writeJSONFile(data, path.join(pathToDatatables(inputDir), 'generated_spellsmetadata.json'), {
           createDir: true,
@@ -78,7 +79,10 @@ program
       await importSlices({
         inputDir,
         threads,
-      }).then(({ gatherables, vitals }) => {
+      }).then(({ gatherables, vitals, variations }) => {
+        console.log('  ', vitals.length, 'vitals')
+        console.log('  ', gatherables.length, 'gatherables')
+        console.log('  ', variations.length, 'variations')
         return Promise.all([
           // write it into input directory, so table loader will pick it up
           writeJSONFile(vitals, path.join(pathToDatatables(inputDir), 'generated_vitalsmetadata.json'), {
@@ -93,6 +97,14 @@ program
             createDir: true,
           }),
           writeJSONFile(gatherables, path.join('tmp', 'gatherables.json'), {
+            createDir: true,
+          }),
+
+           // write it into input directory, so table loader will pick it up
+           writeJSONFile(variations, path.join(pathToDatatables(inputDir), 'generated_variationsmetadata.json'), {
+            createDir: true,
+          }),
+          writeJSONFile(variations, path.join('tmp', 'variations.json'), {
             createDir: true,
           }),
         ])
