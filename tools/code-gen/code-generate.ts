@@ -44,6 +44,10 @@ export async function generateTypes(output: string, tables: Array<{ file: string
 
 const PATH_TO_TYPE_RULES = [
   {
+    test: /_variations_gatherables_/,
+    name: 'VariationsGatherables',
+  },
+  {
     test: /_conversationstate[._]/,
     name: 'ConversationState',
   },

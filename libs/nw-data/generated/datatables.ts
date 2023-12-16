@@ -54,6 +54,7 @@ import type {
   Mounts,
   Mutationdifficulty,
   Mutationrankdata,
+  Npc,
   Objective,
   Objectivetasks,
   Perkbuckets,
@@ -100,8 +101,14 @@ import type {
   Tradeskillweaponsmithing,
   Tradeskillweaving,
   Tradeskillwoodworking,
+  VariationsAi,
+  VariationsCuttrunks,
+  VariationsDarkness,
+  VariationsGatherables,
   VariationsLockedInteractGatherables,
+  VariationsLootcontainers,
   VariationsMetadata,
+  VariationsRandomencounters,
   Vitals,
   VitalsFirstlight,
   VitalsMetadata,
@@ -1724,8 +1731,92 @@ export abstract class NwDataLoader {
   public tradeskillwoodworking() {
     return this.load<Tradeskillwoodworking[]>('javelindata_tradeskillwoodworking.json')
   }
+  public variationsAi() {
+    return this.load<VariationsAi[]>('javelindata_variations_ai.json')
+  }
+  public variationsCuttrunks() {
+    return this.load<VariationsCuttrunks[]>('javelindata_variations_cuttrunks.json')
+  }
+  public variationsDarkness() {
+    return this.load<VariationsDarkness[]>('javelindata_variations_darkness.json')
+  }
+  public variationsGatherablesAlchemy() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_alchemy.json')
+  }
+  public variationsGatherablesBushes() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_bushes.json')
+  }
+  public variationsGatherablesCinematic() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_cinematic.json')
+  }
+  public variationsGatherablesCyclic() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_cyclic.json')
+  }
+  public variationsGatherablesEssences() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_essences.json')
+  }
+  public variationsGatherablesHoliday() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_holiday.json')
+  }
+  public variationsGatherablesHolidayProximity() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_holiday_proximity.json')
+  }
+  public variationsGatherablesItems() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_items.json')
+  }
+  public variationsGatherablesLockedgates() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_lockedgates.json')
+  }
+  public variationsGatherablesLogs() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_logs.json')
+  }
+  public variationsGatherablesLootcontainers() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_lootcontainers.json')
+  }
+  public variationsGatherablesMinerals() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_minerals.json')
+  }
+  public variationsGatherablesNpcrescue() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_npcrescue.json')
+  }
+  public variationsGatherablesPlants() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_plants.json')
+  }
+  public variationsGatherablesPoiobjects() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_poiobjects.json')
+  }
+  public variationsGatherablesQuest() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_quest.json')
+  }
+  public variationsGatherablesQuestAncientglyph() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_quest_ancientglyph.json')
+  }
+  public variationsGatherablesQuestDamageable() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_quest_damageable.json')
+  }
+  public variationsGatherablesQuestProximity() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_quest_proximity.json')
+  }
+  public variationsGatherablesStones() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_stones.json')
+  }
+  public variationsGatherablesTrees() {
+    return this.load<VariationsGatherables[]>('javelindata_variations_gatherables_trees.json')
+  }
   public variationsLockedInteractGatherables() {
     return this.load<VariationsLockedInteractGatherables[]>('javelindata_variations_locked_interact_gatherables.json')
+  }
+  public variationsLootcontainers() {
+    return this.load<VariationsLootcontainers[]>('javelindata_variations_lootcontainers.json')
+  }
+  public variationsNpcs() {
+    return this.load<Npc[]>('javelindata_variations_npcs.json')
+  }
+  public variationsNpcsWalkaway() {
+    return this.load<Npc[]>('javelindata_variations_npcs_walkaway.json')
+  }
+  public variationsRandomencounters() {
+    return this.load<VariationsRandomencounters[]>('javelindata_variations_randomencounters.json')
   }
   public vitals() {
     return this.load<Vitals[]>('javelindata_vitals.json')
