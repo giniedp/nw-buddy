@@ -78,7 +78,7 @@
               </div>
             }
           </picture>
-          <span>{{ item.title | nwText }} </span>
+          <span [nwHtml]="item.title | nwText "></span>
         </a>
       </li>
     </ng-container>
