@@ -241,6 +241,27 @@ export class NwDbService {
   public gatherablesMap = indexBy(() => this.gatherables, 'GatherableID')
   public gatherable = lookup(() => this.gatherablesMap)
 
+  public gatherablesMetadata = table(() => [this.data.generatedGatherablesMetadata()])
+  public gatherablesMetadataMap = indexBy(() => this.gatherablesMetadata, 'gatherableID')
+  public gatherablesMeta = lookup(() => this.gatherablesMetadataMap)
+
+  public gatherableVariations = table(() =>
+    this.data
+      .apiMethodsByPrefix('variationsGatherables', 'variationsGatherablesAlchemy')
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_'))),
+  )
+  public gatherableVariationsMap = indexBy(() => this.gatherableVariations, 'VariantID')
+  public gatherableVariation = lookup(() => this.gatherableVariationsMap)
+  public gatherableVariationsByGatherableIdMap = indexGroupSetBy(
+    () => this.gatherableVariations,
+    (it) => it.GatherableEntryID || it.GatherableEntryId,
+  )
+  public gatherableVariationsByGatherableId = lookup(() => this.gatherableVariationsByGatherableIdMap)
+
+  public variationsMetadata = table(() => [this.data.generatedVariationsMetadata()])
+  public variationsMetadataMap = indexBy(() => this.variationsMetadata, 'variantID')
+  public variationsMeta = lookup(() => this.variationsMetadataMap)
+
   public mounts = table(() => [this.data.mountsMounts()])
   public mountsMap = indexBy(() => this.mounts, 'MountId')
   public mount = lookup(() => this.mountsMap)

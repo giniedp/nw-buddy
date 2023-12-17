@@ -1,24 +1,58 @@
-import { Injectable, Output } from '@angular/core'
+import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { NW_FALLBACK_ICON } from '@nw-data/common'
+import { NW_FALLBACK_ICON, getGatherableNodeSize, getGatherableNodeSizes } from '@nw-data/common'
 import { Gatherables } from '@nw-data/generated'
 import { NwDbService } from '~/nw'
+import { mapProp, selectStream } from '~/utils'
 
 @Injectable()
-export class GatherableDetailStore extends ComponentStore<{ gatherableId: string }> {
-  public readonly gatherableId$ = this.select(({ gatherableId }) => gatherableId)
+export class GatherableDetailStore extends ComponentStore<{ recordId: string }> {
+  protected db = inject(NwDbService)
 
-  @Output()
-  public readonly gatherable$ = this.select(this.db.gatherable(this.gatherableId$), (it) => it)
+  public readonly recordId$ = this.select(({ recordId }) => recordId)
+
+  public readonly variation$ = selectStream(this.db.gatherableVariation(this.recordId$))
+  public readonly gatherable$ = selectStream(
+    {
+      byId: this.db.gatherable(this.recordId$),
+      byVariation: this.db.gatherable(this.variation$.pipe(mapProp('GatherableEntryID'))),
+    },
+    ({ byVariation, byId }) => byId ?? byVariation,
+  )
+
+  public readonly gatherableId$ = selectStream(this.gatherable$, (it) => it?.GatherableID)
+  public readonly gatherableMeta$ = selectStream(this.db.gatherablesMeta(this.gatherableId$))
 
   public readonly icon$ = this.select(this.gatherable$, (it) => NW_FALLBACK_ICON)
   public readonly name$ = this.select(this.gatherable$, (it) => it?.DisplayName)
-  public readonly size$ = this.select(this.gatherable$, (it) => it?.FinalLootTable?.match(/(Tiny|Small|Medium|Large|Huge)/)?.[0])
+  public readonly size$ = this.select(this.gatherableId$, (id) => (id ? getGatherableNodeSize(id) : null))
   public readonly tradeSkill$ = this.select(this.gatherable$, (it) => it?.Tradeskill)
   public readonly lootTableId$ = this.select(this.gatherable$, (it) => it?.FinalLootTable)
 
+  public readonly siblings$ = selectStream({
+    size: this.size$,
+    gatherableId: this.gatherableId$,
+    gatherablesMap: this.db.gatherablesMap
+  }, ({ size, gatherableId, gatherablesMap }) => {
+    if (!size || !gatherableId) {
+      return null
+    }
+    const result: Gatherables[] = []
+    for (const siblingSize of getGatherableNodeSizes()) {
+      const siblingId = gatherableId.replace(size, siblingSize)
+      const sibling = gatherablesMap.get(siblingId)
+      if (sibling) {
+        result.push(sibling)
+      }
+    }
+    if (!result.length) {
+      return null
+    }
+    return result
+  })
+
   public readonly props$ = this.select(this.gatherable$, (it) => {
-    const result: Array<{ label: string, value: string }> = []
+    const result: Array<{ label: string; value: string }> = []
     if (it?.BaseGatherTime) {
       result.push({ label: 'Gather Time', value: secondsToDuration(it.BaseGatherTime) })
     }
@@ -34,15 +68,15 @@ export class GatherableDetailStore extends ComponentStore<{ gatherableId: string
     return result
   })
 
-  public constructor(protected db: NwDbService) {
-    super({ gatherableId: null })
+  public constructor() {
+    super({ recordId: null })
   }
 
   public load(idOrItem: string | Gatherables) {
     if (typeof idOrItem === 'string') {
-      this.patchState({ gatherableId: idOrItem })
+      this.patchState({ recordId: idOrItem })
     } else {
-      this.patchState({ gatherableId: idOrItem?.GatherableID })
+      this.patchState({ recordId: idOrItem?.GatherableID })
     }
   }
 }

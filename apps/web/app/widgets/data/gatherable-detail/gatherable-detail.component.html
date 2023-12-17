@@ -1,32 +1,22 @@
 <nwb-item-header class="gap-2">
-  <a [nwbItemIcon]="icon$ | async" [nwLink]="gatherableId$ | async" [nwLinkResource]="'gatherable'" class="w-[76px] h-[76px]">
+  <a [nwbItemIcon]="icon()" [nwLink]="recordId()" [nwLinkResource]="'gatherable'" class="w-[76px] h-[76px]">
   </a>
   <nwb-item-header-content
     class="z-10"
-    [title]="name$ | async | nwText | nwTextBreak : ' - '"
+    [title]="name() | nwText | nwTextBreak : ' - '"
     [text1]="'Gatherable'"
-    [text2]="size$ | async"
-    [text3]="tradeSkill$ | async"
+    [text2]="size()"
+    [text3]="tradeSkill()"
   ></nwb-item-header-content>
 </nwb-item-header>
 <div class="p-3 flex flex-col gap-2">
-  <ng-container *ngIf="props$ | async; let props">
+  <ng-container *ngIf="props(); let props">
     <div class="flex flex-row gap-1" *ngFor="let prop of props">
       <span>{{prop.label}}: </span>
       <span>{{prop.value}}</span>
     </div>
   </ng-container>
-  <!-- <ng-container *ngIf="description$ | async | nwText | nwTextBreak; let description">
-    <div [nwHtml]="description" class="text-nw-description italic"></div>
-    <nwb-item-divider></nwb-item-divider>
-  </ng-container>
 
-  <ng-container *ngIf="!disableProperties">
-    <nwb-property-grid
-      class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
-      [item]="properties$ | async"
-      [valueFormatter]="formatValue"
-    ></nwb-property-grid>
-  </ng-container> -->
+  <nwb-gatherable-detail-map/>
   <ng-content></ng-content>
 </div>

@@ -1,0 +1,12 @@
+@if(landmarks()?.length) {
+  <div class="flex flex-row gap-1 items-center bg-base-200 p-1">
+    @for(row of sizes(); track $index) {
+      <span class="badge cursor-help" [style.background-color]="row.color" [tooltip]="row.value">{{ row.label }}: {{row.count}}</span>
+    }
+    <span class="flex-1"></span>
+    <!-- <div>
+      {{ mapId() }}
+    </div> -->
+  </div>
+  <nwb-land-map class="aspect-square" [map]="mapId()" [landmarks]="landmarks()"/>
+}

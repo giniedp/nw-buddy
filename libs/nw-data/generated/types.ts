@@ -13288,13 +13288,34 @@ export type WeaponTag =
 
 export interface GatherablesMetadata {
     gatherableID: string;
+    lootTables:   any[];
     mapIDs:       string[];
-    spawns:       Spawn[];
+    spawns:       Spawns;
 }
 
-export interface Spawn {
-    lootTable: string;
-    position:  number[];
+export interface Spawns {
+    climaxftue_02?:                 Array<number[]>;
+    newworld_vitaeeterna?:          Array<number[]>;
+    nw_arena01?:                    Array<number[]>;
+    nw_arena02?:                    Array<number[]>;
+    nw_dungeon_brimstonesands_00?:  Array<number[]>;
+    nw_dungeon_cutlasskeys_00?:     Array<number[]>;
+    nw_dungeon_edengrove_00?:       Array<number[]>;
+    nw_dungeon_everfall_00?:        Array<number[]>;
+    nw_dungeon_firstlight_01?:      Array<number[]>;
+    nw_dungeon_greatcleave_00?:     Array<number[]>;
+    nw_dungeon_greatcleave_01?:     Array<number[]>;
+    nw_dungeon_reekwater_00?:       Array<number[]>;
+    nw_dungeon_restlessshores_01?:  Array<number[]>;
+    nw_dungeon_shattermtn_00?:      Array<number[]>;
+    nw_dungeon_windsward_00?:       Array<number[]>;
+    nw_ori_eg_questmotherwell?:     Array<number[]>;
+    nw_ori_fl_questadiana?:         Array<number[]>;
+    nw_ori_gc_questnihilo?:         Array<number[]>;
+    nw_trial_season_02?:            Array<number[]>;
+    nw_trial_season_04?:            Array<number[]>;
+    nw_trial_season_04_daichidojo?: Array<number[]>;
+    nw_trial_season_04_deviceroom?: Array<number[]>;
 }
 export interface SpellsMetadata {
     AreaStatusEffects: string[];
@@ -13302,8 +13323,27 @@ export interface SpellsMetadata {
 }
 export interface VariationsMetadata {
     mapIDs:    string[];
-    spawns:    Array<number[]>;
+    spawns:    Spawns;
     variantID: string;
+}
+
+export interface Spawns {
+    newworld_vitaeeterna?:         Array<number[]>;
+    nw_dungeon_brimstonesands_00?: Array<number[]>;
+    nw_dungeon_cutlasskeys_00?:    Array<number[]>;
+    nw_dungeon_edengrove_00?:      Array<number[]>;
+    nw_dungeon_everfall_00?:       Array<number[]>;
+    nw_dungeon_firstlight_01?:     Array<number[]>;
+    nw_dungeon_greatcleave_00?:    Array<number[]>;
+    nw_dungeon_greatcleave_01?:    Array<number[]>;
+    nw_dungeon_reekwater_00?:      Array<number[]>;
+    nw_dungeon_restlessshores_01?: Array<number[]>;
+    nw_dungeon_shattermtn_00?:     Array<number[]>;
+    nw_dungeon_windsward_00?:      Array<number[]>;
+    nw_ori_fl_questadiana?:        Array<number[]>;
+    nw_ori_gc_questnihilo?:        Array<number[]>;
+    nw_trial_season_02?:           Array<number[]>;
+    nw_trial_season_04?:           Array<number[]>;
 }
 export interface VitalsMetadata {
     mapIDs:   string[];

@@ -16,13 +16,10 @@ import { GatherableDetailStore } from './gatherable-detail.store'
 export class GatherableDetailDirective extends GatherableDetailStore {
   @Input()
   public set nwbGatherableDetail(value: string) {
-    this.patchState({ gatherableId: value })
+    this.patchState({ recordId: value })
   }
 
   @Output()
   public nwbGatherableChange = this.gatherable$
 
-  public constructor(db: NwDbService) {
-    super(db)
-  }
 }

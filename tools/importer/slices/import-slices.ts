@@ -24,12 +24,13 @@ interface VitalMetadata {
 
 interface GatherableMetadata {
   mapIDs: Set<string>
-  spawns: Array<{ position: number[]; lootTable: string }>
+  lootTables: Set<string>
+  spawns: Array<{ position: number[]; mapId: string; lootTable: string }>
 }
 
 interface VariationMetadata {
   mapIDs: Set<string>
-  spawns: Array<[number, number, number]>
+  spawns: Array<{ position: number[]; mapId: string }>
 }
 
 export async function importSlices({ inputDir, threads }: { inputDir: string; threads: number }) {
@@ -140,7 +141,7 @@ function collectGatherablesRows(rows: GatherableScanRow[], data: Map<string, Gat
   for (const row of rows || []) {
     const gatherableID = row.gatherableID
     if (!data.has(gatherableID)) {
-      data.set(gatherableID, { mapIDs: new Set(), spawns: [] })
+      data.set(gatherableID, { mapIDs: new Set(), lootTables: new Set(), spawns: [] })
     }
     const bucket = data.get(gatherableID)
     if (row.mapID) {
@@ -150,6 +151,7 @@ function collectGatherablesRows(rows: GatherableScanRow[], data: Map<string, Gat
       bucket.spawns.push({
         position: row.position,
         lootTable: row.lootTable,
+        mapId: row.mapID,
       })
     }
   }
@@ -166,7 +168,10 @@ function collectVariationsRows(rows: VariationScanRow[], data: Map<string, Varia
       bucket.mapIDs.add(row.mapID)
     }
     if (row.position) {
-      bucket.spawns.push(row.position)
+      bucket.spawns.push({
+        mapId: row.mapID,
+        position: row.position,
+      })
     }
   }
 }
@@ -205,19 +210,29 @@ function buildResultVitals(data: Map<string, VitalMetadata>) {
 
 function buildResultGatherables(data: Map<string, GatherableMetadata>) {
   return Array.from(data.entries())
-    .map(([id, { spawns, mapIDs }]) => {
-      return {
+    .map(([id, { spawns, mapIDs, lootTables }]) => {
+      const maps = Array.from(mapIDs.values()).sort()
+      const tables = Array.from(lootTables.values()).sort()
+      const result = {
         gatherableID: id,
-        mapIDs: Array.from(mapIDs.values()).sort(),
-        spawns: uniqBy(spawns || [], ({ position, lootTable }) => {
-          return JSON.stringify({
-            position: (position || []).map((it) => Number(it.toFixed(3))),
-            loot: lootTable,
-          })
-        }).sort((a, b) => {
-          return compareStrings(String(a.position), String(b.position))
-        }),
+        mapIDs: maps,
+        lootTables: tables,
+        spawns: {} as Record<string, number[][]>,
       }
+      for (const spawn of spawns) {
+        const mapId = spawn.mapId || '_'
+        result.spawns[mapId] = result.spawns[mapId] || []
+        result.spawns[mapId].push(spawn.position)
+      }
+
+      for (const key in result.spawns) {
+        result.spawns[key] = uniqBy(result.spawns[key], (it) => {
+          return JSON.stringify(it)
+        }).sort((a, b) => {
+          return compareStrings(String(a), String(b))
+        })
+      }
+      return result
     })
     .sort((a, b) => {
       return compareStrings(a.gatherableID, b.gatherableID)
@@ -227,15 +242,25 @@ function buildResultGatherables(data: Map<string, GatherableMetadata>) {
 function buildResultVariations(data: Map<string, VariationMetadata>) {
   return Array.from(data.entries())
     .map(([id, { spawns, mapIDs }]) => {
-      return {
+      const maps = Array.from(mapIDs.values()).sort()
+      const result = {
         variantID: id,
-        mapIDs: Array.from(mapIDs.values()).sort(),
-        spawns: uniqBy(spawns || [], (it) => {
+        mapIDs: maps,
+        spawns: {} as Record<string, number[][]>,
+      }
+      for (const spawn of spawns) {
+        const mapId = spawn.mapId || '_'
+        result.spawns[mapId] = result.spawns[mapId] || []
+        result.spawns[mapId].push(spawn.position)
+      }
+      for (const key in result.spawns) {
+        result.spawns[key] = uniqBy(result.spawns[key], (it) => {
           return JSON.stringify(it)
         }).sort((a, b) => {
           return compareStrings(String(a), String(b))
-        }),
+        })
       }
+      return result
     })
     .sort((a, b) => compareStrings(a.variantID, b.variantID))
 }

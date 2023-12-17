@@ -1,5 +1,5 @@
 import { NumberFilter } from '@ag-grid-community/core'
-import { LootTableRow, NW_FALLBACK_ICON, getItemExpansion } from '@nw-data/common'
+import { NW_FALLBACK_ICON, getGatherableNodeSize, getItemExpansion } from '@nw-data/common'
 import { Gatherables } from '@nw-data/generated'
 import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
@@ -29,7 +29,7 @@ export function gatherableColIcon(util: GatherableTableUtils) {
         util.elItemIcon({
           class: ['transition-all translate-x-0 hover:translate-x-1'],
           icon: NW_FALLBACK_ICON,
-        })
+        }),
       )
     }),
   })
@@ -44,7 +44,7 @@ export function gatherableColName(util: GatherableTableUtils) {
     width: 250,
     valueGetter: ({ data }) => {
       let name = util.i18n.get(data.DisplayName)
-      const size = data.FinalLootTable?.match(/(Tiny|Small|Medium|Large|Huge)/)?.[1]
+      const size = getGatherableNodeSize(data.GatherableID)
       if (size) {
         name = `${name} - ${size}`
       }
@@ -84,11 +84,10 @@ export function gatherableColLootTable(util: GatherableTableUtils) {
     field: 'FinalLootTable',
     filter: SelectFilter,
     filterParams: SelectFilter.params({
-      showSearch: true
-    })
+      showSearch: true,
+    }),
   })
 }
-
 
 export function gatherableColGatherTime(util: GatherableTableUtils) {
   return util.colDef<number>({
@@ -125,13 +124,12 @@ export function gatherableColMaxRespawnTime(util: GatherableTableUtils) {
   })
 }
 
-
 export function gatherableColExpansion(util: GatherableTableUtils) {
   return util.colDef<string>({
     colId: 'expansionIdUnlock',
     headerValueGetter: () => 'Expansion',
     width: 190,
-    valueGetter: ({ data}) => util.i18n.get(getItemExpansion(data?.ExpansionIdUnlock)?.label) ,
+    valueGetter: ({ data }) => util.i18n.get(getItemExpansion(data?.ExpansionIdUnlock)?.label),
     cellRenderer: util.cellRenderer(({ data }) => {
       const expansion = getItemExpansion(data?.ExpansionIdUnlock)
       if (!expansion) {
