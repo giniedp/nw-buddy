@@ -1,7 +1,7 @@
 import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { groupBy, sortBy } from 'lodash'
 import { TranslateService } from '~/i18n'
-import { getItemGearsetID, getItemRarity } from '@nw-data/common'
+import { getItemRarity, getItemSetFamilyName } from '@nw-data/common'
 import { Armorset, ArmorsetGroup } from './types'
 
 export function findSets(
@@ -11,7 +11,7 @@ export function findSets(
   i18n: TranslateService
 ): ArmorsetGroup[] {
   const groups1 = groupBy(items, (item) => {
-    const family = getItemGearsetID(item)
+    const family = getItemSetFamilyName(item)
     const weight = getItemClass(item)
     const rarity = getItemRarity(item)
     const tier = item.Tier
@@ -27,6 +27,7 @@ export function findSets(
     const sharedPerks = getPerkInfos(items)
       .samePerks.map((it) => perksMap.get(it))
       .filter((it) => it.PerkType !== 'Gem' && it.PerkType !== 'Inherent')
+
     const naming = buildSetName(items, i18n)
 
     const groupKey = sharedPerks

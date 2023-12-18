@@ -18,7 +18,7 @@ import {
   getAppearanceIdName,
   haveAppearancesSameModelFile,
 } from './transmog-item'
-import { getAppearanceGearsetId, getItemGearsetID } from '@nw-data/common'
+import { getAppearanceGearsetId } from '@nw-data/common'
 
 @Injectable({ providedIn: 'root' })
 export class TransmogService {

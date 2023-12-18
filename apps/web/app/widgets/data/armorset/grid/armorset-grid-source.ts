@@ -1,13 +1,13 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { getItemRarity, getItemRarityWeight } from '@nw-data/common'
+import { getItemRarityWeight } from '@nw-data/common'
 import { groupBy } from 'lodash'
-import { Observable, combineLatest, map } from 'rxjs'
+import { Observable } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { shareReplayRefCount } from '~/utils'
+import { selectStream } from '~/utils'
 import { Armorset } from '../types'
 import { findSets } from '../utils'
 import {
@@ -53,11 +53,12 @@ export class ArmorsetGridSource implements DataViewAdapter<ArmorsetGridRecord>, 
     return this.source$
   }
 
-  private source$ = combineLatest({
-    items: this.db.items,
-    perks: this.db.perksMap,
-  }).pipe(
-    map(({ items, perks }) => {
+  private source$ = selectStream(
+    {
+      items: this.db.items,
+      perks: this.db.perksMap,
+    },
+    ({ items, perks }) => {
       const MIN_RARITY = 2
       items = items.filter((it) => it.ItemType === 'Armor').filter((it) => getItemRarityWeight(it) >= MIN_RARITY)
       return Object.entries(groupBy(items, (it) => it['$source']))
@@ -70,8 +71,7 @@ export class ArmorsetGridSource implements DataViewAdapter<ArmorsetGridRecord>, 
         .flat(1)
         .map((it) => it.sets)
         .flat(1)
-    }),
-    shareReplayRefCount(1)
+    },
   )
 }
 

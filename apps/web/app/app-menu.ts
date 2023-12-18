@@ -50,6 +50,7 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Player Titles', path: '/player-titles', icon: 'assets/icons/menu/player-titles.png', divider: true },
       { label: 'Emotes', path: '/emotes', icon: 'assets/icons/menu/emotes.png' },
       { label: 'Season Pass', path: '/season-pass', icon: 'assets/icons/menu/season.png' },
+      { label: 'Backstories - PTR Testing', path: '/backstories', icon: 'assets/icons/menu/backstories.png' },
     ],
   },
   {

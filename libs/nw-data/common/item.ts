@@ -598,57 +598,6 @@ export function getItemExpansion(expansionId: string) {
   }
 }
 
-const ITEM_ID_SUFFIXES = [
-  //
-  'Heavy',
-  'Light',
-  'Medium',
-  '_',
-  //
-  'Head',
-  'Chestguard',
-  'Chest',
-  'Hands',
-  'Legs',
-  'Feet',
-  'Feets',
-  'Legguards',
-  //
-  'Shirt',
-  'Hat',
-  'Pants',
-  'Shoes',
-  'Gloves',
-  //
-  'Coat',
-  'Hat',
-  'Pants',
-  'Boots',
-  'Gloves',
-  //
-  'Breastplate',
-  'Helm',
-  'Greaves',
-  'Boots',
-  'Gauntlets',
-  //
-  'Sabatons',
-  'Shoes',
-  'Thighguards',
-  'Handcovers',
-  'Cowl',
-  //
-  'Masque',
-]
-const ITEM_ID_SUFFIXES_PATTERN = `(${ITEM_ID_SUFFIXES.join('|')})`
-
-export function getItemGearsetID(item: Pick<ItemDefinitionMaster, 'ItemID'>) {
-  if (!item || !item.ItemID) {
-    return null
-  }
-  return item.ItemID.replace(new RegExp(ITEM_ID_SUFFIXES_PATTERN, 'i'), '')
-}
-
 const APPEARANCE_ID_SUFFIXES = [
   'head',
   'hat',
