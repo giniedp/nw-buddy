@@ -4,6 +4,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { DomSanitizer } from '@angular/platform-browser'
 import { BehaviorSubject, ReplaySubject, delay, filter, fromEvent, map, switchMap } from 'rxjs'
 import { selectStream } from '~/utils'
+import { PlatformService } from '~/utils/services/platform.service'
 
 export interface Landmark {
   title: string
@@ -18,16 +19,19 @@ export interface Landmark {
   standalone: true,
   selector: 'nwb-land-map',
   template: `
-    <iframe [src]="iframeSrc$ | async" class="flex-1 w-full h-full" #frame></iframe>
-    <ng-content></ng-content>
+    @if (!isOverwolf)  {
+      <iframe [src]="iframeSrc$ | async" class="flex-1 w-full h-full" #frame></iframe>
+      <ng-content></ng-content>
+    }
   `,
   host: {
     class: 'block',
+    '[class.hidden]': 'isOverwolf',
   },
   imports: [CommonModule],
 })
 export class LandMapComponent implements OnInit {
-  @ViewChild('frame', { static: true })
+  @ViewChild('frame', { static: false })
   protected iframe: ElementRef<HTMLIFrameElement>
 
   @Input()
@@ -56,6 +60,11 @@ export class LandMapComponent implements OnInit {
     this.postMessage({ type: 'SET_EXTERNAL_DATA', payload: data, reproject: true })
   }
 
+  public get isOverwolf() {
+    return this.platform.isOverwolf
+  }
+
+  private platform = inject(PlatformService)
   private sanitizer = inject(DomSanitizer)
   protected ready$ = new ReplaySubject<void>(1)
   protected mapId$ = new BehaviorSubject<string>(null)
@@ -64,6 +73,9 @@ export class LandMapComponent implements OnInit {
   protected iframeSrc$ = selectStream(
     this.mapId$.pipe(
       map((it) => {
+        if (this.isOverwolf) {
+          return ''
+        }
         it = encodeURIComponent(it || 'newworld_vitaeeterna')
         const url = `https://aeternum-map.gg/external.html?map=${it}&embed=true&ref=nwbuddy&fit=true`
         return this.sanitizer.bypassSecurityTrustResourceUrl(url)
