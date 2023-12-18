@@ -108,6 +108,8 @@ import type {
   VariationsLockedInteractGatherables,
   VariationsLootcontainers,
   VariationsMetadata,
+  VariationsNpcs,
+  VariationsNpcsWalkaway,
   VariationsRandomencounters,
   Vitals,
   VitalsFirstlight,
@@ -1398,110 +1400,218 @@ export abstract class NwDataLoader {
   public questgameeventsVoicedloreGameevents() {
     return this.load<GameEvent[]>('questgameevents/javelindata_voicedlore_gameevents.json')
   }
+  public quests01Starterbeach01Npcs() {
+    return this.load<Npc[]>('quests/01_starterbeach/javelindata_01_npcs.json')
+  }
   public quests01Starterbeach01Objectives() {
     return this.load<Objective[]>('quests/01_starterbeach/javelindata_01_objectives.json')
+  }
+  public quests02Brightwood02Npcs() {
+    return this.load<Npc[]>('quests/02_brightwood/javelindata_02_npcs.json')
   }
   public quests02Brightwood02Objectives() {
     return this.load<Objective[]>('quests/02_brightwood/javelindata_02_objectives.json')
   }
+  public quests02aBrightwood02aNpcs() {
+    return this.load<Npc[]>('quests/02a_brightwood/javelindata_02a_npcs.json')
+  }
   public quests02aBrightwood02aObjectives() {
     return this.load<Objective[]>('quests/02a_brightwood/javelindata_02a_objectives.json')
+  }
+  public quests03Greatcleave03Npcs() {
+    return this.load<Npc[]>('quests/03_greatcleave/javelindata_03_npcs.json')
   }
   public quests03Greatcleave03Objectives() {
     return this.load<Objective[]>('quests/03_greatcleave/javelindata_03_objectives.json')
   }
+  public quests04aEverfall04aNpcs() {
+    return this.load<Npc[]>('quests/04a_everfall/javelindata_04a_npcs.json')
+  }
   public quests04aEverfall04aObjectives() {
     return this.load<Objective[]>('quests/04a_everfall/javelindata_04a_objectives.json')
+  }
+  public quests05Reekwater05Npcs() {
+    return this.load<Npc[]>('quests/05_reekwater/javelindata_05_npcs.json')
   }
   public quests05Reekwater05Objectives() {
     return this.load<Objective[]>('quests/05_reekwater/javelindata_05_objectives.json')
   }
+  public quests06Windsward06Npcs() {
+    return this.load<Npc[]>('quests/06_windsward/javelindata_06_npcs.json')
+  }
   public quests06Windsward06Objectives() {
     return this.load<Objective[]>('quests/06_windsward/javelindata_06_objectives.json')
+  }
+  public quests06aWindsward06aNpcs() {
+    return this.load<Npc[]>('quests/06a_windsward/javelindata_06a_npcs.json')
   }
   public quests06aWindsward06aObjectives() {
     return this.load<Objective[]>('quests/06a_windsward/javelindata_06a_objectives.json')
   }
+  public quests07Shatteredmoutain07Npcs() {
+    return this.load<Npc[]>('quests/07_shatteredmoutain/javelindata_07_npcs.json')
+  }
   public quests07Shatteredmoutain07Objectives() {
     return this.load<Objective[]>('quests/07_shatteredmoutain/javelindata_07_objectives.json')
+  }
+  public quests08Queensport08Npcs() {
+    return this.load<Npc[]>('quests/08_queensport/javelindata_08_npcs.json')
   }
   public quests08Queensport08Objectives() {
     return this.load<Objective[]>('quests/08_queensport/javelindata_08_objectives.json')
   }
+  public quests09Firstlight09Npcs() {
+    return this.load<Npc[]>('quests/09_firstlight/javelindata_09_npcs.json')
+  }
   public quests09Firstlight09Objectives() {
     return this.load<Objective[]>('quests/09_firstlight/javelindata_09_objectives.json')
+  }
+  public quests09aFirstlight09aNpcs() {
+    return this.load<Npc[]>('quests/09a_firstlight/javelindata_09a_npcs.json')
   }
   public quests09aFirstlight09aObjectives() {
     return this.load<Objective[]>('quests/09a_firstlight/javelindata_09a_objectives.json')
   }
+  public quests10Cutlasskeys10Npcs() {
+    return this.load<Npc[]>('quests/10_cutlasskeys/javelindata_10_npcs.json')
+  }
   public quests10Cutlasskeys10Objectives() {
     return this.load<Objective[]>('quests/10_cutlasskeys/javelindata_10_objectives.json')
+  }
+  public quests10aCutlasskeys10aNpcs() {
+    return this.load<Npc[]>('quests/10a_cutlasskeys/javelindata_10a_npcs.json')
   }
   public quests10aCutlasskeys10aObjectives() {
     return this.load<Objective[]>('quests/10a_cutlasskeys/javelindata_10a_objectives.json')
   }
+  public quests11Mourningdale11Npcs() {
+    return this.load<Npc[]>('quests/11_mourningdale/javelindata_11_npcs.json')
+  }
   public quests11Mourningdale11Objectives() {
     return this.load<Objective[]>('quests/11_mourningdale/javelindata_11_objectives.json')
+  }
+  public quests12Monarchsbluffs12Npcs() {
+    return this.load<Npc[]>('quests/12_monarchsbluffs/javelindata_12_npcs.json')
   }
   public quests12Monarchsbluffs12Objectives() {
     return this.load<Objective[]>('quests/12_monarchsbluffs/javelindata_12_objectives.json')
   }
+  public quests12aMonarchsbluffs12aNpcs() {
+    return this.load<Npc[]>('quests/12a_monarchsbluffs/javelindata_12a_npcs.json')
+  }
   public quests12aMonarchsbluffs12aObjectives() {
     return this.load<Objective[]>('quests/12a_monarchsbluffs/javelindata_12a_objectives.json')
+  }
+  public quests13Weaversfen13Npcs() {
+    return this.load<Npc[]>('quests/13_weaversfen/javelindata_13_npcs.json')
   }
   public quests13Weaversfen13Objectives() {
     return this.load<Objective[]>('quests/13_weaversfen/javelindata_13_objectives.json')
   }
+  public quests13aWeaversfen13aNpcs() {
+    return this.load<Npc[]>('quests/13a_weaversfen/javelindata_13a_npcs.json')
+  }
   public quests13aWeaversfen13aObjectives() {
     return this.load<Objective[]>('quests/13a_weaversfen/javelindata_13a_objectives.json')
+  }
+  public quests14Edengrove14Npcs() {
+    return this.load<Npc[]>('quests/14_edengrove/javelindata_14_npcs.json')
   }
   public quests14Edengrove14Objectives() {
     return this.load<Objective[]>('quests/14_edengrove/javelindata_14_objectives.json')
   }
+  public quests15Restlessshore15Npcs() {
+    return this.load<Npc[]>('quests/15_restlessshore/javelindata_15_npcs.json')
+  }
   public quests15Restlessshore15Objectives() {
     return this.load<Objective[]>('quests/15_restlessshore/javelindata_15_objectives.json')
+  }
+  public quests16Brimstonesands16Npcs() {
+    return this.load<Npc[]>('quests/16_brimstonesands/javelindata_16_npcs.json')
   }
   public quests16Brimstonesands16Objectives() {
     return this.load<Objective[]>('quests/16_brimstonesands/javelindata_16_objectives.json')
   }
+  public quests74DevworldRed74Npcs() {
+    return this.load<Npc[]>('quests/74_devworld_red/javelindata_74_npcs.json')
+  }
   public quests74DevworldRed74Objectives() {
     return this.load<Objective[]>('quests/74_devworld_red/javelindata_74_objectives.json')
+  }
+  public quests75DevworldBlue75Npcs() {
+    return this.load<Npc[]>('quests/75_devworld_blue/javelindata_75_npcs.json')
   }
   public quests75DevworldBlue75Objectives() {
     return this.load<Objective[]>('quests/75_devworld_blue/javelindata_75_objectives.json')
   }
+  public quests92Weaponsandarmor92Npcs() {
+    return this.load<Npc[]>('quests/92_weaponsandarmor/javelindata_92_npcs.json')
+  }
   public quests92Weaponsandarmor92Objectives() {
     return this.load<Objective[]>('quests/92_weaponsandarmor/javelindata_92_objectives.json')
+  }
+  public quests94Mounts94Npcs() {
+    return this.load<Npc[]>('quests/94_mounts/javelindata_94_npcs.json')
   }
   public quests94Mounts94Objectives() {
     return this.load<Objective[]>('quests/94_mounts/javelindata_94_objectives.json')
   }
+  public quests95S04Seasons95S04Npcs() {
+    return this.load<Npc[]>('quests/95_s04_seasons/javelindata_95_s04_npcs.json')
+  }
   public quests95S04Seasons95S04Objectives() {
     return this.load<Objective[]>('quests/95_s04_seasons/javelindata_95_s04_objectives.json')
+  }
+  public quests95Seasons95Npcs() {
+    return this.load<Npc[]>('quests/95_seasons/javelindata_95_npcs.json')
   }
   public quests95Seasons95Objectives() {
     return this.load<Objective[]>('quests/95_seasons/javelindata_95_objectives.json')
   }
+  public quests95aSeasonsS0295aNpcs() {
+    return this.load<Npc[]>('quests/95a_seasons_s02/javelindata_95a_npcs.json')
+  }
   public quests95aSeasonsS0295aObjectives() {
     return this.load<Objective[]>('quests/95a_seasons_s02/javelindata_95a_objectives.json')
+  }
+  public quests98Factions98Npcs() {
+    return this.load<Npc[]>('quests/98_factions/javelindata_98_npcs.json')
   }
   public quests98Factions98Objectives() {
     return this.load<Objective[]>('quests/98_factions/javelindata_98_objectives.json')
   }
+  public quests99Msq99Npcs() {
+    return this.load<Npc[]>('quests/99_msq/javelindata_99_npcs.json')
+  }
   public quests99Msq99Objectives() {
     return this.load<Objective[]>('quests/99_msq/javelindata_99_objectives.json')
+  }
+  public quests99aMsq99aNpcs() {
+    return this.load<Npc[]>('quests/99a_msq/javelindata_99a_npcs.json')
   }
   public quests99aMsq99aObjectives() {
     return this.load<Objective[]>('quests/99a_msq/javelindata_99a_objectives.json')
   }
+  public quests99bMsqBrightwood99bNpcs() {
+    return this.load<Npc[]>('quests/99b_msq_brightwood/javelindata_99b_npcs.json')
+  }
   public quests99bMsqBrightwood99bObjectives() {
     return this.load<Objective[]>('quests/99b_msq_brightwood/javelindata_99b_objectives.json')
+  }
+  public quests99cMsqWeaversfen99cNpcs() {
+    return this.load<Npc[]>('quests/99c_msq_weaversfen/javelindata_99c_npcs.json')
   }
   public quests99cMsqWeaversfen99cObjectives() {
     return this.load<Objective[]>('quests/99c_msq_weaversfen/javelindata_99c_objectives.json')
   }
+  public quests99dMsqGreatcleave99dNpcs() {
+    return this.load<Npc[]>('quests/99d_msq_greatcleave/javelindata_99d_npcs.json')
+  }
   public quests99dMsqGreatcleave99dObjectives() {
     return this.load<Objective[]>('quests/99d_msq_greatcleave/javelindata_99d_objectives.json')
+  }
+  public quests99eMsqEdengrove99eNpcs() {
+    return this.load<Npc[]>('quests/99e_msq_edengrove/javelindata_99e_npcs.json')
   }
   public quests99eMsqEdengrove99eObjectives() {
     return this.load<Objective[]>('quests/99e_msq_edengrove/javelindata_99e_objectives.json')
@@ -1810,10 +1920,10 @@ export abstract class NwDataLoader {
     return this.load<VariationsLootcontainers[]>('javelindata_variations_lootcontainers.json')
   }
   public variationsNpcs() {
-    return this.load<Npc[]>('javelindata_variations_npcs.json')
+    return this.load<VariationsNpcs[]>('javelindata_variations_npcs.json')
   }
   public variationsNpcsWalkaway() {
-    return this.load<Npc[]>('javelindata_variations_npcs_walkaway.json')
+    return this.load<VariationsNpcsWalkaway[]>('javelindata_variations_npcs_walkaway.json')
   }
   public variationsRandomencounters() {
     return this.load<VariationsRandomencounters[]>('javelindata_variations_randomencounters.json')

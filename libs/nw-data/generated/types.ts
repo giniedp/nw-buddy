@@ -3538,46 +3538,12 @@ export interface Mutationrankdata {
 }
 
 export interface Npc {
-  'AE.0_EventDelayDuration': number
-  'AE.0_RequiredAchievementConditional': string
-  'AE.10_EventDelayDuration': number
-  'AE.10_RequiredAchievementConditional': number
-  'AE.1_EventDelayDuration': number
-  'AE.1_OE.0_OpacityTransitionDuration': number
-  'AE.2_EventDelayDuration': number
-  'AE.3_EventDelayDuration': number
-  'AE.3_RequiredAchievementConditional': string
-  'AE.4_EventDelayDuration': number
-  'AE.4_OE.0_OpacityTransitionDuration': number
-  'AE.5_EventDelayDuration': number
-  'AE.6_EventDelayDuration': number
-  'AE.9_EventDelayDuration': number
-  'AE.9_RequiredAchievementConditional': number
-  AttachedMesh: string
-  AttachmentPositionX: number
-  AttachmentPositionY: number
-  AttachmentPositionZ: number
-  AttachmentRotationX: number
-  AttachmentRotationY: number
-  AttachmentRotationZ: number
-  AudioPreload_SFX_Idle: string
-  ByeTimeline: string
-  CharacterDefinition: string
-  CharacterDefinitionEditor: string
-  GreetTimeline: string
-  IdleTimeline: string
-  InteractOverride_X: number
-  InteractOverride_Y: number
-  InteractOverride_Z: number
-  InteractTimeline: string
-  MarkerOffset_Z: number
+  Comments: string
+  GenericName: string
+  InteractOptionDisplayNameOverride: string
+  Location1: string
   NPCId: string
-  Name: string
-  PlaceholderMesh: string
-  SwapAchievementId: string
-  VariantID: string
-  WalkInTimeline: string
-  WalkawayTimeline: string
+  Title: string
 }
 
 export interface Objective {
@@ -5122,6 +5088,63 @@ export interface VariationsLootcontainers {
   LootTableID: string
   Name: string
   VariantID: string
+}
+
+export interface VariationsNpcs {
+  AttachedMesh: string
+  AttachmentPositionX: number
+  AttachmentPositionY: number
+  AttachmentPositionZ: number
+  AttachmentRotationX: number
+  AttachmentRotationY: number
+  AttachmentRotationZ: number
+  ByeTimeline: string
+  CharacterDefinition: string
+  GreetTimeline: string
+  IdleTimeline: string
+  InteractOverride_X: number
+  InteractOverride_Y: number
+  InteractTimeline: string
+  MarkerOffset_Z: number
+  NPCId: string
+  Name: string
+  PlaceholderMesh: string
+  SwapAchievementId: string
+  VariantID: string
+}
+
+export interface VariationsNpcsWalkaway {
+  'AE.0_EventDelayDuration': number
+  'AE.0_RequiredAchievementConditional': string
+  'AE.10_EventDelayDuration': number
+  'AE.10_RequiredAchievementConditional': number
+  'AE.1_EventDelayDuration': number
+  'AE.1_OE.0_OpacityTransitionDuration': number
+  'AE.2_EventDelayDuration': number
+  'AE.3_EventDelayDuration': number
+  'AE.3_RequiredAchievementConditional': string
+  'AE.4_EventDelayDuration': number
+  'AE.4_OE.0_OpacityTransitionDuration': number
+  'AE.5_EventDelayDuration': number
+  'AE.6_EventDelayDuration': number
+  'AE.9_EventDelayDuration': number
+  'AE.9_RequiredAchievementConditional': number
+  AudioPreload_SFX_Idle: string
+  ByeTimeline: string
+  CharacterDefinition: string
+  CharacterDefinitionEditor: string
+  GreetTimeline: string
+  IdleTimeline: string
+  InteractOverride_Y: number
+  InteractOverride_Z: number
+  InteractTimeline: string
+  MarkerOffset_Z: number
+  NPCId: string
+  Name: string
+  SwapAchievementId: string
+  VariantID: string
+  WalkInTimeline: string
+  WalkawayTimeline: string
 }
 
 export interface VariationsRandomencounters {

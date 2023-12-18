@@ -165,6 +165,23 @@ export class ModelViewerService {
     )
   }
 
+  public byNpcId(npcId$: Observable<string>) {
+    return this.db.npcsVariationsByNpcId(npcId$).pipe(
+      map((it) => Array.from(it ?? [])),
+      map((list): ItemModelInfo[] => {
+        return list.filter((it) => !!it.CharacterDefinition).map((it): ItemModelInfo => {
+          return {
+            name: humanize(it.VariantID),
+            itemId: it.VariantID,
+            label: 'Model',
+            itemClass: [],
+            url: `${this.cdnHost || ''}/npcs/${it.VariantID}-CharacterDefinition.glb`.toString().toLowerCase(),
+          }
+        })
+      })
+    )
+  }
+
   private selectItemModels(item: Itemappearancedefinitions): ItemModelInfo[] {
     const result: ItemModelInfo[] = []
     if (!item) {

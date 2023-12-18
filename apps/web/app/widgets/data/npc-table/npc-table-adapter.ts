@@ -10,7 +10,7 @@ import { DataTableCategory, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { selectStream } from '~/utils'
 import {
-  NpcTableRecord, npcColIcon, npcColId, npcColName,
+  NpcTableRecord, npcColIcon, npcColId, npcColName, npcColTitle,
 
 } from './npc-table-cols'
 import { Observable } from 'rxjs'
@@ -75,6 +75,7 @@ export function buildCommonGatherableGridOptions(util: TableGridUtils<NpcTableRe
       npcColIcon(util),
       npcColId(util),
       npcColName(util),
+      npcColTitle(util),
     ],
   }
   // addGenericColumns(result, {

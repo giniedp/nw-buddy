@@ -1,8 +1,18 @@
 <nwb-detail-drawer class="hidden lg:block lg:w-[500px]">
   <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
-    <nwb-item-header class="gap-2">
-      <a [nwbItemIcon]="icon" [nwLink]="data()?.NPCId" [nwLinkResource]="'npc'" class="w-[76px] h-[76px]"> </a>
-      <nwb-item-header-content class="z-10" [title]="data()?.Name | nwText | nwTextBreak: ' - '" [text1]="'NPC'" />
-    </nwb-item-header>
+    <div class="rounded-md overflow-clip">
+      <nwb-item-header class="gap-2">
+        <a [nwbItemIcon]="icon" [nwLink]="data()?.NPCId" [nwLinkResource]="'npc'" class="w-[76px] h-[76px]"> </a>
+        <nwb-item-header-content
+          class="z-10"
+          [title]="data()?.GenericName | nwText | nwTextBreak: ' - '"
+          [text1]="'NPC'"
+          [text2]="data()?.Title | nwText | nwTextBreak: ' - '"
+        />
+      </nwb-item-header>
+      @if (models()) {
+        <nwb-model-viewer [models]="models()" class="aspect-square" />
+      }
+    </div>
   </div>
 </nwb-detail-drawer>

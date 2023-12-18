@@ -258,9 +258,26 @@ export class NwDbService {
   )
   public gatherableVariationsByGatherableId = lookup(() => this.gatherableVariationsByGatherableIdMap)
 
-  public npcs = table(() => [this.data.variationsNpcs()])
+  public npcs = table(() =>
+    this.data
+    .matchingApiMethods<'quests01Starterbeach01Npcs'>((it) => {
+      return it.endsWith('Npcs') && !it.includes('variations')
+    })
+    .map((it) => {
+      return this.data[it]().pipe(annotate('$source', it))
+    }),
+  )
   public npcsMap = indexBy(() => this.npcs, 'NPCId')
   public npc = lookup(() => this.npcsMap)
+
+  public npcsVariations = table(() => this.data.variationsNpcs())
+  public npcsVariationsMap = indexBy(() => this.npcsVariations, 'VariantID')
+  public npcsVariation = lookup(() => this.npcsVariationsMap)
+  public npcsVariationsByNpcIdMap = indexGroupSetBy(
+    () => this.npcsVariations,
+    (it) => it.NPCId,
+  )
+  public npcsVariationsByNpcId = lookup(() => this.npcsVariationsByNpcIdMap)
 
   public variationsMetadata = table(() => [this.data.generatedVariationsMetadata()])
   public variationsMetadataMap = indexBy(() => this.variationsMetadata, 'variantID')
@@ -322,14 +339,19 @@ export class NwDbService {
   )
   public questsMap = indexBy(() => this.quests, 'ObjectiveID')
   public quest = lookup(() => this.questsMap)
-  public questsByAchievementId = indexGroupSetBy(
+  public questsByAchievementIdMap = indexGroupSetBy(
     () => this.quests,
     (it) => it.AchievementId,
   )
-  public questsByRequiredAchievementId = indexGroupSetBy(
+  public questsByRequiredAchievementIdMap = indexGroupSetBy(
     () => this.quests,
     (it) => getQuestRequiredAchuevmentIds(it),
   )
+  public questsByNpcIdMap = indexGroupSetBy(
+    () => this.quests,
+    (it) => it.NpcDestinationId,
+  )
+  public questsByNpcId = lookup(() => this.questsByNpcIdMap)
 
   public recipes = table(() =>
     this.data

@@ -1,5 +1,10 @@
 :host {
   ::ng-deep {
+    canvas {
+      &:focus {
+        outline: none;
+      }
+    }
     loading-screen {
       position: absolute;
       left: 0;

@@ -101,6 +101,7 @@ export const TABLE_IMPORT_RULES = [
     'pvpbalancetables/*',
     'questgameevents/*',
     'quests/**/*_objectives',
+    'quests/**/*_npcs',
     'weaponabilities/*',
     //'quests/**/*_objectivetasks',
     'seasonsrewards/**/*_seasonpassdata_*',
@@ -407,6 +408,13 @@ export const TABLE_IMPORT_RULES = [
       }),
     ],
   ),
+  tableSource([
+    'quests/**/*_npcs'
+  ], [
+    deleteProp([
+      /ConversationStateId/
+    ])
+  ]),
   tableSource(
     // prettier-ignore
     [

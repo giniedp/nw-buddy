@@ -84,7 +84,7 @@ const PATH_TO_TYPE_RULES = [
     name: 'Housingitems',
   },
   {
-    test: /_npcs[._]/,
+    test: /(?<!variations)_npcs[._]/,
     name: 'Npc',
   },
   {

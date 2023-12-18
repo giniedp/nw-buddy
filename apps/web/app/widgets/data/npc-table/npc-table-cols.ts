@@ -46,9 +46,18 @@ export function npcColId(util: NpcTableUtils) {
 
 export function npcColName(util: NpcTableUtils) {
   return util.colDef<string>({
-    colId: 'name',
+    colId: 'genericName',
     headerValueGetter: () => 'Name',
-    field: 'Name',
-    valueGetter: ({ data }) => util.tl8(data.Name),
+    field: 'GenericName',
+    valueGetter: ({ data }) => util.tl8(data.GenericName),
+  })
+}
+
+export function npcColTitle(util: NpcTableUtils) {
+  return util.colDef<string>({
+    colId: 'title',
+    headerValueGetter: () => 'Title',
+    field: 'Title',
+    valueGetter: ({ data }) => util.tl8(data.Title),
   })
 }

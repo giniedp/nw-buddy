@@ -13,6 +13,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, observeRouteParam, selectSignal, selectStream } from '~/utils'
 import { GatherableDetailModule } from '~/widgets/data/gatherable-detail'
 import { LootModule } from '~/widgets/loot'
+import { ModelViewerModule, ModelViewerService } from '~/widgets/model-viewer'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
@@ -30,7 +31,8 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     TooltipModule,
     GatherableDetailModule,
     LayoutModule,
-    ItemFrameModule
+    ItemFrameModule,
+    ModelViewerModule
   ],
   providers: [],
   host: {
@@ -39,8 +41,14 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 })
 export class NpcDetailPageComponent {
   protected db = inject(NwDbService)
+  protected viewerService = inject(ModelViewerService)
   protected itemId$ = observeRouteParam(this.route, 'id')
   protected data = selectSignal(this.db.npc(this.itemId$))
+  protected variations = selectSignal(this.db.npcsVariationsByNpcId(this.itemId$), (it) => Array.from(it ?? []))
+  protected models = selectSignal(this.viewerService.byNpcId(this.itemId$), (list) => {
+    console.log(list)
+    return list?.length ? list : null
+  })
 
   protected icon = NW_FALLBACK_ICON
   protected iconLink = svgSquareArrowUpRight
