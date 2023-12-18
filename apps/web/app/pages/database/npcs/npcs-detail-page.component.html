@@ -10,9 +10,21 @@
           [text2]="data()?.Title | nwText | nwTextBreak: ' - '"
         />
       </nwb-item-header>
-      @if (models()) {
-        <nwb-model-viewer [models]="models()" class="aspect-square" />
-      }
+      <div class="bg-black">
+        @if (models()) {
+          @if (viewerActive) {
+            <nwb-model-viewer [models]="models()" class="aspect-square" />
+          }
+          <div class="p-4">
+            <button
+              class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50 w-full"
+              (click)="viewerActive = !viewerActive"
+            >
+              {{ viewerActive ? 'Close' : 'View 3D Model' }}
+            </button>
+          </div>
+        }
+      </div>
     </div>
   </div>
 </nwb-detail-drawer>

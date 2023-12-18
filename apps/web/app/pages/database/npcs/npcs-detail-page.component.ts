@@ -46,7 +46,6 @@ export class NpcDetailPageComponent {
   protected data = selectSignal(this.db.npc(this.itemId$))
   protected variations = selectSignal(this.db.npcsVariationsByNpcId(this.itemId$), (it) => Array.from(it ?? []))
   protected models = selectSignal(this.viewerService.byNpcId(this.itemId$), (list) => {
-    console.log(list)
     return list?.length ? list : null
   })
 
