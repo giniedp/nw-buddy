@@ -28,7 +28,7 @@ export class LuckStatsComponent {
     {
       stats: this.mannequin.statRol$,
     },
-    map(({ stats }) => {
+    (({ stats }) => {
       return Object.entries(stats || {})
         .map(([key, entry]) => {
           return {

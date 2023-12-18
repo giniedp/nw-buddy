@@ -31,7 +31,7 @@ export class DamageModsStatsComponent {
       mods: this.mannequin.statDamageMods$,
       attack: this.mannequin.activeDamageTableRow$,
     },
-    map(({ base, mods, attack }) => {
+    (({ base, mods, attack }) => {
       if (!base || !mods) {
         return []
       }

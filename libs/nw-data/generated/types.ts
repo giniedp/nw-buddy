@@ -13346,18 +13346,39 @@ export interface Spawns {
     nw_trial_season_04?:           Array<number[]>;
 }
 export interface VitalsMetadata {
-    mapIDs:   string[];
-    models:   string[];
-    spawns:   Spawn[];
-    tables:   string[];
-    vitalsID: string;
+    lvlSpanws: LvlSpanws;
+    mapIDs:    string[];
+    models:    string[];
+    tables:    string[];
+    vitalsID:  string;
 }
 
-export interface Spawn {
-    category?:    null | string;
-    damagetable?: string;
-    level:        number | null;
-    position:     number[];
+export interface LvlSpanws {
+    climaxftue_02?:                 Climaxftue02[];
+    newworld_vitaeeterna?:          Climaxftue02[];
+    nw_dungeon_brimstonesands_00?:  Climaxftue02[];
+    nw_dungeon_cutlasskeys_00?:     Climaxftue02[];
+    nw_dungeon_edengrove_00?:       Climaxftue02[];
+    nw_dungeon_everfall_00?:        Climaxftue02[];
+    nw_dungeon_firstlight_01?:      Climaxftue02[];
+    nw_dungeon_greatcleave_00?:     Climaxftue02[];
+    nw_dungeon_greatcleave_01?:     Climaxftue02[];
+    nw_dungeon_reekwater_00?:       Climaxftue02[];
+    nw_dungeon_restlessshores_01?:  Climaxftue02[];
+    nw_dungeon_shattermtn_00?:      Climaxftue02[];
+    nw_dungeon_windsward_00?:       Climaxftue02[];
+    nw_ori_eg_questmotherwell?:     Climaxftue02[];
+    nw_ori_fl_questadiana?:         Climaxftue02[];
+    nw_ori_gc_questnihilo?:         Climaxftue02[];
+    nw_trial_season_02?:            Climaxftue02[];
+    nw_trial_season_04?:            Climaxftue02[];
+    nw_trial_season_04_daichidojo?: Climaxftue02[];
+    nw_trial_season_04_deviceroom?: Climaxftue02[];
+}
+
+export interface Climaxftue02 {
+    l: number | null;
+    p: number[];
 }
 export interface SandelementalHeavySandworm {
     AddDmg:                  number;

@@ -33,7 +33,7 @@ export class EffectDurationStatsComponent {
   protected rowCount = computed(() => this.mods()?.length)
   protected mods = selectSignal({
     mods: this.mannequin.statEffectReduction$
-  }, map(({ mods }) => {
+  }, (({ mods }) => {
     return selectMods(mods)
   }))
 

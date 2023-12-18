@@ -34,8 +34,11 @@ export class GatherableDetailStore extends ComponentStore<{ recordId: string }> 
     gatherableId: this.gatherableId$,
     gatherablesMap: this.db.gatherablesMap
   }, ({ size, gatherableId, gatherablesMap }) => {
-    if (!size || !gatherableId) {
+    if (!gatherableId) {
       return null
+    }
+    if (!size) {
+      return [gatherablesMap.get(gatherableId)]
     }
     const result: Gatherables[] = []
     for (const siblingSize of getGatherableNodeSizes()) {

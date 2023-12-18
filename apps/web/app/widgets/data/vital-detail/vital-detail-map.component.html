@@ -10,11 +10,5 @@
         <nwb-icon [icon]="iconExpand" class="w-4 h-4"/>
       </button>
     </div>
-
-    <div class="absolute bottom-0 w-full p-1 flex flex-row justify-center gap-1 bg-opacity-50 bg-black">
-      @for(row of availableSizes(); track $index) {
-        <span class="badge cursor-help" [style.background-color]="row.color" [tooltip]="row.value">{{row.count}}</span>
-      }
-    </div>
   </nwb-land-map>
 }

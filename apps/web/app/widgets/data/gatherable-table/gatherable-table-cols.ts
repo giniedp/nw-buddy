@@ -1,11 +1,15 @@
 import { NumberFilter } from '@ag-grid-community/core'
 import { NW_FALLBACK_ICON, getGatherableNodeSize, getItemExpansion } from '@nw-data/common'
-import { Gatherables } from '@nw-data/generated'
+import { Gatherables, GatherablesMetadata, VariationsGatherables, VariationsMetadata } from '@nw-data/generated'
 import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
 export type GatherableTableUtils = TableGridUtils<GatherableTableRecord>
-export type GatherableTableRecord = Gatherables
+export type GatherableTableRecord = Gatherables & {
+  $meta: GatherablesMetadata
+  $variations: VariationsGatherables[]
+  $variationsMetas: VariationsMetadata[]
+}
 
 export function gatherableColIcon(util: GatherableTableUtils) {
   return util.colDef({
@@ -161,6 +165,46 @@ export function gatherableColExpansion(util: GatherableTableUtils) {
     }),
   })
 }
+
+export function gatherableColVariationCount(util: GatherableTableUtils) {
+  return util.colDef<number>({
+    colId: 'variationCount',
+    headerValueGetter: () => 'Num Variations',
+    getQuickFilterText: () => '',
+    width: 150,
+    valueGetter: ({ data }) => data.$variations?.length ?? 0,
+    filter: NumberFilter,
+  })
+}
+
+export function gatherableColSpawnCount(util: GatherableTableUtils) {
+  return util.colDef<number>({
+    colId: 'variationCount',
+    headerValueGetter: () => 'Num Spawns',
+    getQuickFilterText: () => '',
+    width: 150,
+    valueGetter: ({ data }) => {
+      let sum = 0
+      if (data.$meta?.spawns) {
+        for (const key in data.$meta.spawns) {
+          sum += data.$meta.spawns[key].length
+        }
+      }
+      if (data.$variationsMetas) {
+        for (const variation of data.$variationsMetas) {
+          if (variation.spawns) {
+            for (const key in variation.spawns) {
+              sum += variation.spawns[key].length
+            }
+          }
+        }
+      }
+      return sum
+    },
+    filter: NumberFilter,
+  })
+}
+
 function secondsToDuration(value: number) {
   const milliseconds = Math.floor(value * 1000) % 1000
   const seconds = Math.floor(value % 60)

@@ -49,7 +49,7 @@ export class SeasonPassDetailPageComponent {
       premiumReward: this.premiumReward$,
       entitlementsMap: this.db.entitlementsMap,
     },
-    map(({ data, freeReward, premiumReward, entitlementsMap }) => {
+    (({ data, freeReward, premiumReward, entitlementsMap }) => {
       if (!data || !entitlementsMap) {
         return []
       }

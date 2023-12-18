@@ -45,7 +45,7 @@ export class CooldownRedutionStatsComponent {
       abilities: this.mannequin.activeWeaponAbilities$,
       stats: this.mannequin.statCooldown$,
     },
-    map(({ cooldowns, abilities, stats }) => {
+    (({ cooldowns, abilities, stats }) => {
       if (!cooldowns || !abilities || !stats) {
         return []
       }
@@ -80,7 +80,7 @@ export class CooldownRedutionStatsComponent {
       consumables: this.mannequin.activeConsumables$,
       stats: this.mannequin.statCooldown$,
     },
-    map(({ consumables, stats }) => {
+    (({ consumables, stats }) => {
       if (!consumables) {
         return []
       }

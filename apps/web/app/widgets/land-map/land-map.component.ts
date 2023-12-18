@@ -17,7 +17,10 @@ export interface Landmark {
 @Component({
   standalone: true,
   selector: 'nwb-land-map',
-  template: ` <iframe [src]="iframeSrc$ | async" class="flex-1 w-full h-full" #frame></iframe> `,
+  template: `
+    <iframe [src]="iframeSrc$ | async" class="flex-1 w-full h-full" #frame></iframe>
+    <ng-content></ng-content>
+  `,
   host: {
     class: 'block',
   },

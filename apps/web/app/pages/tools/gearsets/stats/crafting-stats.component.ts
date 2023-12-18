@@ -28,7 +28,7 @@ export class CraftingStatsComponent {
     {
       stats: this.mannequin.statCraftGS$,
     },
-    map(({ stats }) => {
+    (({ stats }) => {
       return Object.entries(stats || {})
         .map(([key, entry]) => {
           return {

@@ -58,6 +58,9 @@
         <a class="tab tab-bordered flex-1" [class.tab-active]="tab() === '3d-model'" (click)="selectTab('3d-model')">
           3D
         </a>
+        <a class="tab tab-bordered flex-1" [class.tab-active]="tab() === 'map'" (click)="selectTab('map')">
+          Map
+        </a>
       </div>
       <div class="layout-content p-4">
         @if (tab() === 'stats') {
@@ -68,6 +71,9 @@
         }
         @if (tab() === '3d-model') {
           <nwb-vital-detail-models class="-m-4" />
+        }
+        @if (tab() === 'map') {
+          <nwb-vital-detail-map  class="-m-4"/>
         }
         @if (tab() === 'loot-table') {
           <div class="alert shadow-lg my-2 bg-base-100">

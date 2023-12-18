@@ -345,3 +345,20 @@ export function vitalColDmgEffectivenessArcane(util: VitalTableUtils) {
     getQuickFilterText: () => '',
   })
 }
+
+export function vitalColSpawnCount(util: VitalTableUtils) {
+  return util.colDef<number>({
+    colId: 'spawnCount',
+    headerValueGetter: () => 'Spawn Count',
+    getQuickFilterText: () => '',
+    valueGetter: ({ data }) => {
+      let count = 0
+      if (data.$metadata?.lvlSpanws) {
+        for (const key in data.$metadata.lvlSpanws ) {
+          count += data.$metadata.lvlSpanws[key]?.length || 0
+        }
+      }
+      return count
+    },
+  })
+}

@@ -265,11 +265,12 @@ export function getVitalDungeons(
       // all mobs have mapId set to 'newworld_vitaeeterna'
       // we check for bounds
       const [x, y, w, h] = (it.WorldBounds?.split(',') || []).map(Number)
-      return meta.spawns.some(({ position }) => {
-        if (!position.length) {
+      const spawns = meta.lvlSpanws?.newworld_vitaeeterna || []
+      return spawns.some(({ p }) => {
+        if (!p.length) {
           return false
         }
-        return position[0] >= x && position[0] <= x + w && position[1] >= y && position[1] <= y + h
+        return p[0] >= x && p[0] <= x + w && p[1] >= y && p[1] <= y + h
       })
     }
     return meta.mapIDs?.some((mapId) => eqCaseInsensitive(mapId, it.MapId))

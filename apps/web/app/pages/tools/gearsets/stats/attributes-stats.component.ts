@@ -25,7 +25,7 @@ export class AttributesStatsComponent {
     {
       attributes: this.mannequin.activeAttributes$,
     },
-    map(({ attributes }) => {
+    (({ attributes }) => {
       return [
         {
           label: 'ui_Strength_short',

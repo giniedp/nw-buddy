@@ -1,9 +1,9 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { COLS_GATHERABLES, COLS_ITEMDEFINITIONMASTER } from '@nw-data/generated'
+import { COLS_GATHERABLES, COLS_ITEMDEFINITIONMASTER, Gatherables } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { NwDbService } from '~/nw'
-import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
+import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridAdapterOptions, TableGridUtils } from '~/ui/data/table-grid'
 
 import { DataViewAdapter } from '~/ui/data/data-view'
 import { DataTableCategory, addGenericColumns } from '~/ui/data/table-grid'
@@ -19,8 +19,11 @@ import {
   gatherableColMaxRespawnTime,
   gatherableColMinRespawnTime,
   gatherableColName,
+  gatherableColSpawnCount,
   gatherableColTradeSkill,
+  gatherableColVariationCount,
 } from './gatherable-table-cols'
+import { Observable } from 'rxjs'
 
 @Injectable()
 export class GatherableTableAdapter
@@ -28,7 +31,7 @@ export class GatherableTableAdapter
 {
   private db = inject(NwDbService)
   private i18n = inject(TranslateService)
-  private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = inject<TableGridAdapterOptions<GatherableTableRecord>>(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<GatherableTableRecord> = inject(TableGridUtils)
 
   public entityID(item: GatherableTableRecord): string {
@@ -60,20 +63,36 @@ export class GatherableTableAdapter
     return this.source$
   }
 
-  private source$ = selectStream(
+  private source$: Observable<GatherableTableRecord[]> = selectStream(
     {
       items: this.config?.source || this.db.gatherables,
+      metaMap: this.db.gatherablesMetadataMap,
+      variationsMap: this.db.gatherableVariationsByGatherableIdMap,
+      variationsMetaMap: this.db.variationsMetadataMap,
     },
-    ({ items }) => {
+    ({ items, metaMap, variationsMap, variationsMetaMap }) => {
+
+      let records: GatherableTableRecord[] = items.map((it): GatherableTableRecord => {
+        const meta = metaMap.get(it.GatherableID)
+        const variations = Array.from(variationsMap.get(it.GatherableID) || []).filter((it) => !!it)
+        const variationsMeta = variations.map((it) => variationsMetaMap.get(it.VariantID)).filter((it) => !!it)
+        return {
+          ...it,
+          $meta: meta,
+          $variations: variations,
+          $variationsMetas: variationsMeta,
+        }
+      })
+
       const filter = this.config?.filter
       if (filter) {
-        items = items.filter(filter)
+        records = records.filter(filter)
       }
       const sort = this.config?.sort
       if (sort) {
-        items = [...items].sort(sort)
+        records = [...records].sort(sort)
       }
-      return items
+      return records
     }
   )
 }
@@ -90,6 +109,8 @@ export function buildCommonGatherableGridOptions(util: TableGridUtils<Gatherable
       gatherableColMaxRespawnTime(util),
       gatherableColLootTable(util),
       gatherableColExpansion(util),
+      gatherableColSpawnCount(util),
+      gatherableColVariationCount(util)
     ],
   }
   addGenericColumns(result, {

@@ -19,7 +19,7 @@ interface VitalMetadata {
   tables: Set<string>
   models: Set<string>
   mapIDs: Set<string>
-  spawns: Array<{ level: number; category: string; position: number[]; damagetable: string }>
+  spawns: Array<{ level: number; mapId: string; category: string; position: number[]; damagetable: string }>
 }
 
 interface GatherableMetadata {
@@ -131,6 +131,7 @@ function collectVitalsRows(rows: VitalScanRow[], data: Map<string, VitalMetadata
         category: row.categoryID,
         level: row.level,
         position: row.position,
+        mapId: row.mapID,
         damagetable: damagetable,
       })
     }
@@ -179,29 +180,29 @@ function collectVariationsRows(rows: VariationScanRow[], data: Map<string, Varia
 function buildResultVitals(data: Map<string, VitalMetadata>) {
   return Array.from(data.entries())
     .map(([id, { tables, spawns, mapIDs, models }]) => {
-      return {
+      const result = {
         vitalsID: id,
-        tables: Array.from(tables.values()).sort(),
-        mapIDs: Array.from(mapIDs.values()).sort(),
-        models: Array.from(models.values()).sort(),
-        spawns: uniqBy(spawns || [], ({ category, level, position, damagetable }) => {
-          return JSON.stringify({
-            category: (category || '').toLowerCase(),
-            level,
-            position: (position || []).map((it) => Number(it.toFixed(3))),
-            damagetable,
-          })
-        }).sort((a, b) => {
-          if (a.level !== b.level) {
-            return (a.level || 0) - (b.level || 0)
-          }
-          if (a.category !== b.category) {
-            return compareStrings(a.category || '', b.category || '')
-          }
-
-          return compareStrings(String(a.position), String(b.position))
-        }),
+        tables: Array.from(tables).sort(),
+        mapIDs: Array.from(mapIDs).sort(),
+        models: Array.from(models).sort(),
+        lvlSpanws: {} as Record<string, Array<{ p: number[], l: number }>>,
       }
+      for (const spawn of spawns) {
+        const mapId = spawn.mapId || '_'
+        result.lvlSpanws[mapId] = result.lvlSpanws[mapId] || []
+        result.lvlSpanws[mapId].push({
+          p: spawn.position,
+          l: spawn.level,
+        })
+      }
+      for (const key in result.lvlSpanws) {
+        result.lvlSpanws[key] = uniqBy(result.lvlSpanws[key], (it) => {
+          return JSON.stringify(it)
+        }).sort((a, b) => {
+          return compareStrings(JSON.stringify(a), JSON.stringify(b))
+        })
+      }
+      return result
     })
     .sort((a, b) => {
       return compareStrings(a.vitalsID, b.vitalsID)

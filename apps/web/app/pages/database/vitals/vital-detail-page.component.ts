@@ -18,7 +18,7 @@ import { LootModule } from '~/widgets/loot'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ModelViewerModule } from '../../../widgets/model-viewer'
 
-export type DetailTabId = 'stats' | 'loot-items' | 'loot-table' | 'damage-table' | '3d-model'
+export type DetailTabId = 'stats' | 'loot-items' | 'loot-table' | 'damage-table' | '3d-model' | 'map'
 
 @Component({
   standalone: true,

@@ -34,7 +34,7 @@ export class StackedPerksComponent {
       abilities: this.db.abilitiesMap,
       locale: this.i18n.value$,
     },
-    map(({ perks, effects, abilities }) => selectRows({ perks, effects, abilities, tl8: this.tl8 })),
+    (({ perks, effects, abilities }) => selectRows({ perks, effects, abilities, tl8: this.tl8 })),
   )
 }
 

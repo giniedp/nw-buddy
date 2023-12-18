@@ -30,6 +30,7 @@ import {
   vitalColLootTableId,
   vitalColLootTags,
   vitalColName,
+  vitalColSpawnCount,
 } from './vital-table-cols'
 
 @Injectable()
@@ -104,6 +105,7 @@ function buildVitalTableOptions(util: TableGridUtils<VitalTableRecord>) {
       vitalColLootTableId(util),
       vitalColLootTags(util),
       vitalColExpedition(util),
+      vitalColSpawnCount(util),
       vitalColDmgEffectivenessSlash(util),
       vitalColDmgEffectivenessThrust(util),
       vitalColDmgEffectivenessStrike(util),
