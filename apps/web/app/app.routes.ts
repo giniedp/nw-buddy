@@ -18,6 +18,7 @@ const routes: Routes = [
   { path: 'poi', loadChildren: () => import('./pages/database/poi').then((m) => m.PoiPageModule) },
   { path: 'quests', loadChildren: () => import('./pages/database/quests').then((m) => m.QuestsPageModule) },
   { path: 'loot', loadChildren: () => import('./pages/database/loot').then((m) => m.LootPageModule) },
+  { path: 'npcs', loadChildren: () => import('./pages/database/npcs').then((m) => m.NpcsPageModule) },
   { path: 'damage', loadChildren: () => import('./pages/database/damage').then((m) => m.DamagePageModule) },
   {
     path: 'backstories',

@@ -9,6 +9,7 @@ export type NwLinkResource =
   | 'quest'
   | 'mount'
   | 'gatherable'
+  | 'npc'
 
 export interface NwLinkOptions {
   ptr: boolean
@@ -29,6 +30,7 @@ const BUDDY_TYPE_MAP: Partial<Record<NwLinkResource, string>> = {
   quest: 'quests/table',
   mount: 'mounts/table',
   gatherable: 'gatherables/table',
+  npc: 'npcs/table',
 }
 
 export function buddyLinkUrl(options: NwLinkOptions) {
@@ -55,6 +57,7 @@ const NWDB_TYPE_MAP: Partial<Record<NwLinkResource, string>> = {
   quest: 'quest',
   mount: 'mount',
   gatherable: 'gatherable',
+  npc: 'npc',
 }
 
 export function nwdbLinkUrl(options: NwLinkOptions) {

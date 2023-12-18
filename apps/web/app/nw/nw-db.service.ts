@@ -258,6 +258,10 @@ export class NwDbService {
   )
   public gatherableVariationsByGatherableId = lookup(() => this.gatherableVariationsByGatherableIdMap)
 
+  public npcs = table(() => [this.data.variationsNpcs()])
+  public npcsMap = indexBy(() => this.npcs, 'NPCId')
+  public npc = lookup(() => this.npcsMap)
+
   public variationsMetadata = table(() => [this.data.generatedVariationsMetadata()])
   public variationsMetadataMap = indexBy(() => this.variationsMetadata, 'variantID')
   public variationsMeta = lookup(() => this.variationsMetadataMap)
