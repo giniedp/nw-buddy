@@ -56,7 +56,7 @@ program
     }
 
     await convertRegionData(inputDir, outputDir)
-    return
+
     if (hasFilter(Converter.datasheets, options.module)) {
       console.log('Convert Datasheets')
       await convert({
