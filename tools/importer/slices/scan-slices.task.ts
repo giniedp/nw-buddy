@@ -54,6 +54,11 @@ export async function scanSlices({
   crcGatherablesFile: string
   crcVariationsFile: string
 }): Promise<ScanResult> {
+  // if (file.endsWith('.distribution.json')) {
+  //   return {
+  //     variations: await scanDistributionForVariants(file)
+  //   }
+  // }
   if (file.endsWith('.dynamicslice.json')) {
     return {
       vitals: await scanForVitals(inputDir, null, file),
@@ -148,8 +153,38 @@ export async function scanSlices({
       variations: variationsRows,
     }
   }
+  return {}
 }
 
+async function scanDistributionForVariants(file: string) {
+  const mapId = file.match(/coatlicue\/(.+)\/regions\//)[1]
+  const result: VariationScanRow[] = []
+  const data = await readJSONFile(file) as {
+    region: [number, number]
+    slices: string[]
+    variants: string[]
+    indices: number[]
+    positions: [number, number][]
+  }
+
+  const regionSize = 2048
+  const maxValue = 65535
+  for (const index of data.indices) {
+    const variant = data.variants[index]
+    const position = data.positions[index]
+    if (variant && position) {
+      const x = (data.region[1] + position[0] / maxValue) * regionSize
+      const y = (data.region[0] + position[1] / maxValue) * regionSize
+      result.push({
+        variantID: variant,
+        position: [x, y, 0],
+        mapID: mapId,
+      })
+    }
+  }
+
+  return result
+}
 async function scanForTerritories(file: string) {
   if (!file.match(/\/pois\/(territories|zones)\//)) {
     return null

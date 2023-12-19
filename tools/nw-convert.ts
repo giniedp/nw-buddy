@@ -1,12 +1,14 @@
 import { program } from 'commander'
 import { convert } from 'nw-extract'
 import * as path from 'path'
+import * as fs from 'fs'
 import { environment, NW_GAME_VERSION } from '../env'
 import { objectStreamConverter } from './bin/object-stream-converter'
 import { cpus } from 'os'
-import { glob, copyFile } from './utils/file-utils'
-import z from 'zod'
+import { glob, copyFile, writeJSONFile } from './utils/file-utils'
+
 import { withProgressBar } from './utils'
+import { BinaryReader } from './utils/binary-reader'
 
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
@@ -53,6 +55,8 @@ program
       throw new Error(`Unknown importer module: ${it}`)
     }
 
+    await convertRegionData(inputDir, outputDir)
+    return
     if (hasFilter(Converter.datasheets, options.module)) {
       console.log('Convert Datasheets')
       await convert({
@@ -132,3 +136,62 @@ program
   })
 
 program.parse()
+
+async function convertRegionData(inputDir: string, outputDir: string) {
+  const files = await glob([path.join(inputDir, '**', 'r_*', 'region.distribution')])
+  await withProgressBar({ tasks: files, barName: 'Regions' }, async (file, i, log) => {
+    const relPath = path.relative(inputDir, file)
+    const outPath = path.join(outputDir, relPath + '.json')
+    log(relPath)
+
+    const tokens = path.basename(path.dirname(file)).split('_')
+    const region = [Number(tokens[1]), Number(tokens[2])]
+    const data = await fs.promises.readFile(file)
+    const reader = new BinaryReader(data.buffer)
+
+    let count = reader.readUShort()
+    const slices = readStringArray(reader, count)
+    const variants = readStringArray(reader, count)
+
+    count = reader.readUInt()
+    const indices = []
+    const positions = []
+    for (let i = 0; i < count; i++) {
+      indices.push(reader.readUShort())
+    }
+    for (let i = 0; i < count; i++) {
+      const x = reader.readUShort()
+      const y = reader.readUShort()
+      positions.push([ x, y])
+    }
+    // if (region[0] === 2 && region[1] === 2) {
+    //   for (let i = 0; i < count; i++) {
+    //     const index = indices[i]
+    //     console.log(index, positions[index][0], positions[index][1], slices[index], variants[index])
+    //     if ( i >= 10) {
+    //       break
+    //     }
+    //   }
+    // }
+    await writeJSONFile({
+      region,
+      slices: slices,
+      variants: variants,
+      indices: indices,
+      positions: positions,
+    }, {
+      target: outPath,
+      createDir: true,
+    })
+  })
+}
+
+function readStringArray(r: BinaryReader, count: number) {
+  const result = []
+  for (let i = 0; i < count; i++) {
+    const c = r.readByte()
+    const v = String.fromCharCode(...r.readByteArray(c) )
+    result.push(v)
+  }
+  return result
+}
