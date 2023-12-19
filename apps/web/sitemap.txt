@@ -24,7 +24,10 @@ https://www.nw-buddy.de/links
 https://www.nw-buddy.de/loot-limits/table
 https://www.nw-buddy.de/perks/table
 https://www.nw-buddy.de/mounts/all
-https://www.nw-buddy.de/poi/table
+https://www.nw-buddy.de/zones/table
+https://www.nw-buddy.de/quests/table
+https://www.nw-buddy.de/npcs/table
+https://www.nw-buddy.de/gatherables/table
 https://www.nw-buddy.de/skill-trees
 https://www.nw-buddy.de/status-effects/table
 https://www.nw-buddy.de/territories/governance

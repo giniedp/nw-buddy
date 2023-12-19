@@ -1,0 +1,13 @@
+<nwb-item-header class="gap-2">
+  <a [nwbItemIcon]="icon()" [nwLink]="recordId()" [nwLinkResource]="'gatherable'" class="w-[76px] h-[76px]">
+  </a>
+  <nwb-item-header-content
+    class="z-10"
+    [title]="name() | nwText | nwTextBreak : ' - '"
+    [text1]="type()"
+  ></nwb-item-header-content>
+</nwb-item-header>
+<div class="flex flex-col gap-2">
+  <nwb-zone-detail-map/>
+  <ng-content></ng-content>
+</div>

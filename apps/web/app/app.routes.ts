@@ -15,7 +15,7 @@ const routes: Routes = [
   { path: 'housing', loadChildren: () => import('./pages/database/housing').then((m) => m.HousingPageModule) },
   { path: 'items', loadChildren: () => import('./pages/database/items').then((m) => m.ItemsPageModule) },
   { path: 'perks', loadChildren: () => import('./pages/database/perks').then((m) => m.PerksPageModule) },
-  { path: 'poi', loadChildren: () => import('./pages/database/poi').then((m) => m.PoiPageModule) },
+  { path: 'zones', loadChildren: () => import('./pages/database/zones').then((m) => m.PoiPageModule) },
   { path: 'quests', loadChildren: () => import('./pages/database/quests').then((m) => m.QuestsPageModule) },
   { path: 'loot', loadChildren: () => import('./pages/database/loot').then((m) => m.LootPageModule) },
   { path: 'npcs', loadChildren: () => import('./pages/database/npcs').then((m) => m.NpcsPageModule) },

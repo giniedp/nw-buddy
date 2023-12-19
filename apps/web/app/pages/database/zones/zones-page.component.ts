@@ -11,13 +11,13 @@ import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
 import { ItemTableRecord } from '~/widgets/data/item-table'
-import { PoiTableAdapter } from '~/widgets/data/poi-table'
+import { ZoneTableAdapter } from '~/widgets/data/zone-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   standalone: true,
-  selector: 'nwb-poi-page',
-  templateUrl: './poi-page.component.html',
+  selector: 'nwb-zones-page',
+  templateUrl: './zones-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -37,19 +37,19 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   },
   providers: [
     provideDataView({
-      adapter: PoiTableAdapter,
+      adapter: ZoneTableAdapter,
     }),
     QuicksearchService.provider({
       queryParam: 'search',
     }),
   ],
 })
-export class PoiPageComponent {
-  protected title = 'Points of Interest'
+export class ZonePageComponent {
+  protected title = 'Zones'
   protected defaultRoute = 'table'
   protected filterParam = 'filter'
   protected selectionParam = 'id'
-  protected persistKey = 'poi-table'
+  protected persistKey = 'zone-table'
   protected categoryParam$ = observeRouteParam(inject(ActivatedRoute), 'category')
   protected category$ = selectStream(this.categoryParam$, (it) => {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
@@ -58,12 +58,12 @@ export class PoiPageComponent {
   public constructor(
     protected service: DataViewService<ItemTableRecord>,
     protected search: QuicksearchService,
-    head: HtmlHeadService
+    head: HtmlHeadService,
   ) {
     service.patchState({ mode: 'table', modes: ['table'] })
     head.updateMetadata({
       url: head.currentUrl,
-      title: 'New World - Points Of Interes DB',
+      title: 'New World - Territories and POIs DB',
     })
   }
 }

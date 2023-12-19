@@ -13344,6 +13344,15 @@ export interface SpellsMetadata {
     AreaStatusEffects: string[];
     PrefabPath:        string;
 }
+export interface TerritoriesMetadata {
+    territoryID: string;
+    zones:       Zone[];
+}
+
+export interface Zone {
+    position: number[];
+    shape:    Array<number[]>;
+}
 export interface VariationsMetadata {
     mapIDs:    string[];
     spawns:    Spawns;

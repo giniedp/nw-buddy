@@ -25,16 +25,11 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Status Effects', path: '/status-effects', icon: 'assets/icons/menu/statuseffects.png' },
       { label: 'Damage Rows', path: '/damage', icon: 'assets/icons/menu/damage.png' },
 
-      {
-        label: 'Points Of Interest',
-        path: '/poi',
-        icon: 'assets/icons/menu/fasttraveliconinactive.png',
-        divider: true,
-      },
+      { label: 'Gatherables', path: '/gatherables', icon: 'assets/icons/menu/gatherable.png', divider: true },
       { label: 'NPCs', path: '/npcs', icon: 'assets/icons/menu/icon_head.png' },
       { label: 'Quests', path: '/quests', icon: 'assets/icons/menu/quests.png' },
       { label: 'Vitals', path: '/vitals', icon: 'assets/icons/menu/vitals.png' },
-      { label: 'Gatherables', path: '/gatherables', icon: 'assets/icons/menu/gatherable.png' },
+      { label: 'Zones', path: '/zones', icon: 'assets/icons/menu/fasttraveliconinactive.png' },
 
       { label: 'Loot Limits', path: '/loot-limits', icon: 'assets/icons/menu/icon_filter_chrono.png', divider: true },
       { label: 'Loot Tables', path: '/loot', icon: 'assets/icons/menu/loot.png' },

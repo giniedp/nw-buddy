@@ -1,0 +1,5 @@
+<nwb-detail-drawer class="hidden lg:block lg:w-[500px]">
+  <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
+    <nwb-zone-detail [zoneId]="itemId$ | async" #detail class="bg-black mb-4"/>
+  </div>
+</nwb-detail-drawer>

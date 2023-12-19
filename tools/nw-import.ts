@@ -81,10 +81,11 @@ program
       await importSlices({
         inputDir,
         threads,
-      }).then(({ gatherables, vitals, variations }) => {
+      }).then(({ gatherables, vitals, variations, territories }) => {
         console.log('  ', vitals.length, 'vitals')
         console.log('  ', gatherables.length, 'gatherables')
         console.log('  ', variations.length, 'variations')
+        console.log('  ', territories.length, 'territories')
         return Promise.all([
           // write it into input directory, so table loader will pick it up
           writeJSONFile(vitals, {
@@ -114,6 +115,16 @@ program
           }),
           writeJSONFile(variations, {
             target: path.join('tmp', 'variations.json'),
+            createDir: true,
+          }),
+
+          // write it into input directory, so table loader will pick it up
+          writeJSONFile(territories, {
+            target: path.join(pathToDatatables(inputDir), 'generated_territories_metadata.json'),
+            createDir: true,
+          }),
+          writeJSONFile(territories, {
+            target: path.join('tmp', 'territories.json'),
             createDir: true,
           }),
         ])

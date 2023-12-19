@@ -1,22 +1,20 @@
+import { Dialog } from '@angular/cdk/dialog'
+import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector, Input, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { combineLatest, filter, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
-import { LootContextEditorStore } from './loot-context-editor.store'
 import { DataViewModule, DataViewPicker } from '~/ui/data/data-view'
-import { Dialog } from '@angular/cdk/dialog'
-import { VitalTableAdapter } from '../data/vital-table'
-import { PoiTableAdapter } from '../data/poi-table'
+import { GsSliderComponent } from '~/ui/gs-input'
+import { IconsModule } from '~/ui/icons'
+import { svgInfoCircle } from '~/ui/icons/svg'
+import { TooltipModule } from '~/ui/tooltip'
 import { GameModeTableAdapter } from '../data/game-mode-table'
 import { TerritoryTableAdapter } from '../data/territory-table'
-import { TooltipModule } from '~/ui/tooltip'
-import { tapDebug } from '~/utils'
-import { GsSliderComponent } from '~/ui/gs-input'
-import { OverlayModule } from '@angular/cdk/overlay'
-import { getVitalDungeons } from '@nw-data/common'
-import { svgInfo, svgInfoCircle } from '~/ui/icons/svg'
-import { IconsModule } from '~/ui/icons'
+import { VitalTableAdapter } from '../data/vital-table'
+import { ZoneTableAdapter } from '../data/zone-table'
+import { LootContextEditorStore } from './loot-context-editor.store'
 
 @Component({
   standalone: true,
@@ -109,7 +107,7 @@ export class LootContextEditorComponent {
     protected store: LootContextEditorStore,
     private dialog: Dialog,
     private injector: Injector,
-    private db: NwDbService
+    private db: NwDbService,
   ) {
     this.store.loadEnemyLevelAndGameMode()
     this.store.loadMinPoiLevel()
@@ -161,7 +159,7 @@ export class LootContextEditorComponent {
   public pickPoi() {
     DataViewPicker.open(this.dialog, {
       title: 'Pick POI',
-      dataView: { adapter: PoiTableAdapter },
+      dataView: { adapter: ZoneTableAdapter },
       config: {
         maxWidth: 1024,
         maxHeight: 1024,

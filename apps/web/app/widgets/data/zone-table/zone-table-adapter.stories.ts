@@ -4,7 +4,7 @@ import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/an
 import { AppTestingModule } from '~/test'
 import { DataGridModule, provideTableGrid } from '~/ui/data/table-grid'
 import { QuicksearchModule } from '~/ui/quicksearch'
-import { PoiTableAdapter } from './poi-table-adapter'
+import { ZoneTableAdapter } from './zone-table-adapter'
 
 @Component({
   standalone: true,
@@ -26,7 +26,7 @@ import { PoiTableAdapter } from './poi-table-adapter'
   imports: [CommonModule, DataGridModule, QuicksearchModule],
   providers: [
     provideTableGrid({
-      type: PoiTableAdapter,
+      type: ZoneTableAdapter,
     }),
   ],
 })

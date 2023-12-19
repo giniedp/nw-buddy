@@ -480,6 +480,14 @@ export class NwDbService {
   public territoriesMap = indexBy(() => this.territories, 'TerritoryID')
   public territory = lookup(() => this.territoriesMap)
 
+  public areas = table(() => this.data.areadefinitions())
+  public areasMap = indexBy(() => this.areas, 'TerritoryID')
+  public area = lookup(() => this.areasMap)
+
+  public territoriesMetadata = table(() => this.data.generatedTerritoriesMetadata())
+  public territoriesMetadataMap = indexBy(() => this.territoriesMetadata, 'territoryID')
+  public territoryMetadata = lookup(() => this.territoriesMetadataMap)
+
   public pois = table(() =>
     this.data
       .apiMethodsByPrefix('pointofinterestdefinitions', 'pointofinterestdefinitionsPoidefinitions0202')

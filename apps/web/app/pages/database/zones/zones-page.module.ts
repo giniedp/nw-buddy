@@ -1,8 +1,8 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 
-import { PoiPageComponent } from './poi-page.component'
-import { EmptyComponent } from '~/widgets/empty'
+import { ZoneDetailPageComponent } from './zones-detail-page.component'
+import { ZonePageComponent } from './zones-page.component'
 
 const ROUTES: Routes = [
   {
@@ -12,11 +12,11 @@ const ROUTES: Routes = [
   },
   {
     path: ':category',
-    component: PoiPageComponent,
+    component: ZonePageComponent,
     children: [
       {
         path: ':id',
-        component: EmptyComponent,
+        component: ZoneDetailPageComponent,
       },
     ],
   },

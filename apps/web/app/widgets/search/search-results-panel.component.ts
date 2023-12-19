@@ -59,8 +59,8 @@ export class SearchResultsPanelComponent {
     if (item.type === 'statuseffect') {
       return ['/status-effects/table', item.id]
     }
-    if (item.type === 'poi') {
-      return ['/poi/table', item.id]
+    if (item.type === 'zone') {
+      return ['/zones/table', item.id]
     }
     if (item.type === 'quest') {
       return ['/quests/table', item.id]

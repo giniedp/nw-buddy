@@ -77,6 +77,7 @@ import type {
   StaminacostsPlayer,
   Statuseffect,
   Statuseffectcategories,
+  TerritoriesMetadata,
   TerritoryStanding,
   Territorydefinitions,
   Territorygovernance,
@@ -1006,6 +1007,9 @@ export abstract class NwDataLoader {
   }
   public generatedSpellsMetadata() {
     return this.load<SpellsMetadata[]>('generated_spells_metadata.json')
+  }
+  public generatedTerritoriesMetadata() {
+    return this.load<TerritoriesMetadata[]>('generated_territories_metadata.json')
   }
   public generatedVariationsMetadata() {
     return this.load<VariationsMetadata[]>('generated_variations_metadata.json')

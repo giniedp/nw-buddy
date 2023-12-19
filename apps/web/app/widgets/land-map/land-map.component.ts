@@ -3,13 +3,22 @@ import { Component, DestroyRef, ElementRef, Input, OnInit, ViewChild, inject } f
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { DomSanitizer } from '@angular/platform-browser'
 import { BehaviorSubject, ReplaySubject, delay, filter, fromEvent, map, switchMap } from 'rxjs'
-import { selectStream } from '~/utils'
+import { selectStream, tapDebug } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 
-export interface Landmark {
+export type Landmark = LandmarkPoint | LandmarkZone
+
+export interface LandmarkPoint extends LandmarkData {
+  point: number[]
+}
+
+export interface LandmarkZone extends LandmarkData {
+  shape: number[][]
+}
+
+export interface LandmarkData {
   title: string
   color: string
-  point: number[]
   outlineColor?: string
   radius?: number
   opacity?: number
@@ -105,28 +114,48 @@ export class LandMapComponent implements OnInit {
       .pipe(
         switchMap(() => this.landmarks$),
         delay(1000),
-        takeUntilDestroyed(this.dRef),
-      )
-      .subscribe((landmarks) => {
-        this.setData(
-          landmarks.map(({ title, color, outlineColor, point, radius, opacity }) => {
-            return {
+        map((landmarks) => {
+          if (!landmarks?.length) {
+            return []
+          }
+          return landmarks.map((data) => {
+            const result = {
               type: 'Feature',
               properties: {
-                'fill-color': color ?? '#52b874',
-                'fill-outline-color': outlineColor ?? '#121212',
-                'circle-stroke-width': 1,
-                'circle-radius': radius ?? 10,
-                'fill-opacity': opacity ?? 1,
-                title: title,
-              },
+                'fill-color': data.color ?? '#52b874',
+                'fill-outline-color': data.outlineColor ?? '#121212',
+                'fill-opacity': data.opacity ?? 1,
+              } as Object,
               geometry: {
                 type: 'Point',
-                coordinates: point,
+                coordinates: [0, 0] as any,
               },
             }
-          }),
-        )
+            if ('point' in data) {
+              result.properties = {
+                ...result.properties,
+                'circle-radius': data.radius ?? 10,
+                'circle-stroke-width': 1,
+                title: data.title
+              }
+              result.geometry = {
+                type: 'Point',
+                coordinates: data.point,
+              }
+            }
+            if ('shape' in data) {
+              result.geometry = {
+                type: 'Polygon',
+                coordinates: [data.shape],
+              }
+            }
+            return result
+          })
+        }),
+        takeUntilDestroyed(this.dRef),
+      )
+      .subscribe((data) => {
+        this.setData(data)
       })
   }
 }

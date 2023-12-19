@@ -1,13 +1,13 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { PoiDefinition } from '@nw-data/generated'
+import { Areadefinitions, PoiDefinition, Territorydefinitions } from '@nw-data/generated'
 import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
-export type PoiTableUtils = TableGridUtils<PoiTableRecord>
-export type PoiTableRecord = PoiDefinition
+export type ZoneTableUtils = TableGridUtils<ZoneTableRecord>
+export type ZoneTableRecord = PoiDefinition | Areadefinitions | Territorydefinitions
 
-export function poiColIcon(util: PoiTableUtils) {
+export function zoneColIcon(util: ZoneTableUtils) {
   return util.colDef({
     colId: 'icon',
     headerValueGetter: () => 'Icon',
@@ -17,23 +17,35 @@ export function poiColIcon(util: PoiTableUtils) {
     pinned: true,
     width: 62,
     cellRenderer: util.cellRenderer(({ data }) => {
-      return util.elA(
-        {
-          attrs: { target: '_blank', href: util.tipLink('perk', String(data.TerritoryID)) },
-        },
-        util.elPicture(
+      const poi = data as PoiDefinition
+      const area = data as Areadefinitions
+      if (area.IsArea) {
+        return util.elA(
           {
-            class: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
+            attrs: { target: '_blank', href: util.tipLink('poi', String(data.TerritoryID)) },
           },
-          util.elImg({
-            src: data.MapIcon || data.CompassIcon || data.TooltipBackground || NW_FALLBACK_ICON,
-          })
+          util.elPicture(
+            {
+              class: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
+            },
+            util.elImg({
+              src: poi.MapIcon || poi.CompassIcon || poi.TooltipBackground || NW_FALLBACK_ICON,
+            })
+          )
         )
+      }
+      return util.elPicture(
+        {
+          class: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
+        },
+        util.elImg({
+          src: poi.MapIcon || poi.CompassIcon || poi.TooltipBackground || NW_FALLBACK_ICON,
+        })
       )
     }),
   })
 }
-export function poiColName(util: PoiTableUtils) {
+export function zoneColName(util: ZoneTableUtils) {
   return util.colDef<string>({
     colId: 'name',
     headerValueGetter: () => 'Name',
@@ -45,19 +57,24 @@ export function poiColName(util: PoiTableUtils) {
     getQuickFilterText: ({ value }) => value,
   })
 }
-export function poiColDescription(util: PoiTableUtils) {
+export function zoneColDescription(util: ZoneTableUtils) {
   return util.colDef<string>({
     colId: 'description',
     headerValueGetter: () => 'Description',
     width: 250,
-    valueGetter: ({ data }) => util.i18n.get(`${data.NameLocalizationKey}_description`),
+    valueGetter: ({ data }) => {
+      if (!data?.IsPOI || !data?.NameLocalizationKey || (data as Areadefinitions)?.IsArea) {
+        return null
+      }
+      return util.i18n.get(`${data.NameLocalizationKey}_description`)
+    },
     cellRenderer: util.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
     cellClass: ['multiline-cell', 'py-2'],
     autoHeight: true,
     getQuickFilterText: ({ value }) => value,
   })
 }
-export function poiColGroupSize(util: PoiTableUtils) {
+export function zoneColGroupSize(util: ZoneTableUtils) {
   return util.colDef<string | number>({
     colId: 'groupSize',
     headerValueGetter: () => 'groupSize',
@@ -66,7 +83,7 @@ export function poiColGroupSize(util: PoiTableUtils) {
     hide: true,
   })
 }
-export function poiColLootTags(util: PoiTableUtils) {
+export function zoneColLootTags(util: ZoneTableUtils) {
   return util.colDef<string[]>({
     colId: 'lootTags',
     headerValueGetter: () => 'Loot Tags',
@@ -78,7 +95,7 @@ export function poiColLootTags(util: PoiTableUtils) {
     }),
   })
 }
-export function poiColLevelRange(util: PoiTableUtils) {
+export function zoneColLevelRange(util: ZoneTableUtils) {
   return util.colDef<string | number>({
     colId: 'levelRange',
     headerValueGetter: () => 'Level Range',
@@ -87,7 +104,7 @@ export function poiColLevelRange(util: PoiTableUtils) {
     hide: false,
   })
 }
-export function poiColVitalsCategory(util: PoiTableUtils) {
+export function zoneColVitalsCategory(util: ZoneTableUtils) {
   return util.colDef<string[]>({
     colId: 'vitalsCategory',
     headerValueGetter: () => 'Vitals Category',

@@ -1,0 +1,9 @@
+@if(data()?.length) {
+  <nwb-land-map class="aspect-square relative" [landmarks]="data()">
+    <div class="w-auto absolute top-2 right-2">
+      <button class="btn btn-square btn-sm" (click)="toggleFullscreen()">
+        <nwb-icon [icon]="iconExpand" class="w-4 h-4"/>
+      </button>
+    </div>
+  </nwb-land-map>
+}

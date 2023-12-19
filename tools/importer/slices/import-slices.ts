@@ -12,7 +12,7 @@ import {
 
 import { readAndExtractCrcValues } from './create-crc-file'
 import { VitalScanRow } from './scan-for-vitals'
-import { GatherableScanRow, VariationScanRow } from './scan-slices.task'
+import { GatherableScanRow, TerritoryScanRow, VariationScanRow } from './scan-slices.task'
 import { WORKER_TASKS } from './worker.tasks'
 
 interface VitalMetadata {
@@ -31,6 +31,10 @@ interface GatherableMetadata {
 interface VariationMetadata {
   mapIDs: Set<string>
   spawns: Array<{ position: number[]; mapId: string }>
+}
+
+interface TerritoryMetadata {
+  zones: Array<{ position: number[], shape: number[][] }>
 }
 
 export async function importSlices({ inputDir, threads }: { inputDir: string; threads: number }) {
@@ -68,6 +72,7 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
   const vitals = new Map<string, VitalMetadata>()
   const gatherables = new Map<string, GatherableMetadata>()
   const variations = new Map<string, VariationMetadata>()
+  const territories = new Map<string, TerritoryMetadata>()
 
   const files = await glob([
     `${inputDir}/**/*.dynamicslice.json`,
@@ -98,6 +103,7 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
         collectVitalsRows(result.vitals || [], vitals)
         collectGatherablesRows(result.gatherables || [], gatherables)
         collectVariationsRows(result.variations || [], variations)
+        collectTerritoriesRows(result.territories || [], territories)
       },
     }),
   })
@@ -106,6 +112,7 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
     vitals: buildResultVitals(vitals),
     gatherables: buildResultGatherables(gatherables),
     variations: buildResultVariations(variations),
+    territories: buildResultTerritories(territories),
   }
 }
 
@@ -172,6 +179,22 @@ function collectVariationsRows(rows: VariationScanRow[], data: Map<string, Varia
       bucket.spawns.push({
         mapId: row.mapID,
         position: row.position,
+      })
+    }
+  }
+}
+
+function collectTerritoriesRows(rows: TerritoryScanRow[], data: Map<string, TerritoryMetadata>) {
+  for (const row of rows || []) {
+    const territoryID = row.territoryID
+    if (!data.has(territoryID)) {
+      data.set(territoryID, { zones: [] })
+    }
+    const bucket = data.get(territoryID)
+    if (row.position) {
+      bucket.zones.push({
+        position: row.position,
+        shape: row.shape,
       })
     }
   }
@@ -264,6 +287,23 @@ function buildResultVariations(data: Map<string, VariationMetadata>) {
       return result
     })
     .sort((a, b) => compareStrings(a.variantID, b.variantID))
+}
+
+function buildResultTerritories(data: Map<string, TerritoryMetadata>) {
+  return Array.from(data.entries())
+    .map(([id, { zones }]) => {
+      const result = {
+        territoryID: id,
+        zones: zones.map((it) => {
+          return {
+            position: it.position,
+            shape: it.shape,
+          }
+        }).sort((a, b) => compareStrings(String(a.position), String(b.position))),
+      }
+      return result
+    })
+    .sort((a, b) => compareStrings(a.territoryID, b.territoryID))
 }
 
 function compareStrings(a: string, b: string) {

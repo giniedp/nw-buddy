@@ -198,7 +198,11 @@ async function indexStatusEffects(dict: Record<string, string>, tablesDir: strin
 }
 
 async function indexPOI(dict: Record<string, string>, tablesDir: string, index: IndexTable) {
-  const itemsTables = await glob([path.join(tablesDir, '**', '*_poidefinitions_*.json')])
+  const itemsTables = await glob([
+    path.join(tablesDir, '**', '*_poidefinitions_*.json'),
+    path.join(tablesDir, '**', '*_areadefinitions.json'),
+    path.join(tablesDir, '**', '*_territorydefinitions.json')
+  ])
   type ItemType = { TerritoryID: string; NameLocalizationKey: string; MapIcon: string; CompassIcon: string }
   for (const file of itemsTables) {
     const table = await readJSONFile<Array<ItemType>>(file)
@@ -206,7 +210,7 @@ async function indexPOI(dict: Record<string, string>, tablesDir: string, index: 
     for (const item of table) {
       index.add({
         id: item.TerritoryID,
-        type: 'poi',
+        type: 'zone',
         text: dict[item.NameLocalizationKey?.toLowerCase()] || '',
         icon: item.MapIcon || item.CompassIcon,
       })
