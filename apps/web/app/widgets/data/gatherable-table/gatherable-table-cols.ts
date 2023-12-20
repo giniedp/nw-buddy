@@ -3,6 +3,7 @@ import { NW_FALLBACK_ICON, getGatherableNodeSize, getItemExpansion } from '@nw-d
 import { Gatherables, GatherablesMetadata, VariationsGatherables, VariationsMetadata } from '@nw-data/generated'
 import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
+import { getGatherableIcon } from '../gatherable-detail/utils'
 
 export type GatherableTableUtils = TableGridUtils<GatherableTableRecord>
 export type GatherableTableRecord = Gatherables & {
@@ -32,7 +33,7 @@ export function gatherableColIcon(util: GatherableTableUtils) {
         },
         util.elItemIcon({
           class: ['transition-all translate-x-0 hover:translate-x-1'],
-          icon: NW_FALLBACK_ICON,
+          icon: getGatherableIcon(data) || NW_FALLBACK_ICON,
         }),
       )
     }),

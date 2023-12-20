@@ -31,6 +31,7 @@ export class GatherableDetailComponent {
   public readonly name = toSignal(this.store.name$)
   public readonly size = toSignal(this.store.size$)
   public readonly tradeSkill = toSignal(this.store.tradeSkill$)
-  public readonly lootTableId = toSignal(this.store.lootTableId$)
+  public readonly lootTableIds = toSignal(this.store.lootTableIds$)
   public readonly props = toSignal(this.store.props$)
+  public readonly siblings = toSignal(this.store.siblings$)
 }

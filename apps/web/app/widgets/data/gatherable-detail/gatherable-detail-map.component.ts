@@ -190,36 +190,24 @@ export class GatherableDetailMapComponent {
     },
   )
 
-  public readonly landmarks = selectSignal(
-    {
-      mapId: this.mapId,
-      data: this.data,
-      disabledSizes: this.disabledSizes,
-    },
-    ({ mapId, data, disabledSizes }) => {
-      if (!data || !mapId || !data[mapId]) {
-        return []
-      }
-      const result = {
-        ...(data[mapId] || {})
-      }
-      for (const size of disabledSizes) {
-        delete result[size]
-      }
-      return Object.values(result).flat()
-    },
-  )
-
   protected limit = signal<number>(5000)
   protected availableLimits = [5000, 10000, 25000, 50000, 75000, 100000, 150000, 0]
   protected vm = selectSignal({
-    landmarks: this.landmarks,
+    mapId: this.mapId,
+    data: this.data,
+    disabledSizes: this.disabledSizes,
     limit: this.limit,
-  }, ({ landmarks, limit }) => {
-    landmarks = landmarks || []
-    if (!landmarks.length) {
+  }, ({ mapId, data, disabledSizes, limit }) => {
+    if (!data || !mapId || !data[mapId]) {
       return null
     }
+    const result = {
+      ...(data[mapId] || {})
+    }
+    for (const size of disabledSizes) {
+      delete result[size]
+    }
+    const landmarks = Object.values(result).flat()
     if (!!limit && (landmarks.length <= limit)) {
       return {
         landmarks,

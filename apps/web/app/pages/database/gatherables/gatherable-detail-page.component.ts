@@ -1,11 +1,13 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
+import { ItemFrameModule } from '~/ui/item-frame'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
@@ -27,7 +29,8 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     IconsModule,
     TooltipModule,
     GatherableDetailModule,
-    LayoutModule
+    LayoutModule,
+    ItemFrameModule
   ],
   providers: [],
   host: {
@@ -35,7 +38,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   },
 })
 export class ItemDetailPageComponent {
-  protected itemId$ = observeRouteParam(this.route, 'id')
+  protected itemId = toSignal(observeRouteParam(this.route, 'id'))
 
   protected iconLink = svgSquareArrowUpRight
   protected viewerActive = false

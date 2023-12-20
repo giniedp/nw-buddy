@@ -6,6 +6,7 @@ import { uniq } from 'lodash'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { combineLatestOrEmpty, mapList, mapProp, selectStream, switchMapCombineLatest } from '~/utils'
+import { getGatherableIcon } from './utils'
 
 @Injectable()
 export class GatherableDetailStore extends ComponentStore<{ recordId: string }> {
@@ -21,15 +22,23 @@ export class GatherableDetailStore extends ComponentStore<{ recordId: string }> 
     },
     ({ byVariation, byId }) => byId ?? byVariation,
   )
+  public readonly variations$ = selectStream(this.db.gatherableVariationsByGatherableId(this.recordId$), (it) => Array.from(it || []))
 
   public readonly gatherableId$ = selectStream(this.gatherable$, (it) => it?.GatherableID)
   public readonly gatherableMeta$ = selectStream(this.db.gatherablesMeta(this.gatherableId$))
 
-  public readonly icon$ = this.select(this.gatherable$, (it) => NW_FALLBACK_ICON)
+  public readonly icon$ = this.select(this.gatherable$, (it) => getGatherableIcon(it) || NW_FALLBACK_ICON)
   public readonly name$ = this.select(this.gatherable$, (it) => it?.DisplayName)
   public readonly size$ = this.select(this.gatherableId$, (id) => (id ? getGatherableNodeSize(id) : null))
   public readonly tradeSkill$ = this.select(this.gatherable$, (it) => it?.Tradeskill)
-  public readonly lootTableId$ = this.select(this.gatherable$, (it) => it?.FinalLootTable)
+  public readonly lootTableIds$ = this.select(this.gatherable$, this.variations$, (gatherable, variations) => {
+    const result = []
+    result.push(gatherable?.FinalLootTable)
+    for (const variation of variations || []) {
+      result.push(variation.LootTableComponent)
+    }
+    return uniq(result.filter((it) => !!it && it !== 'Empty'))
+  })
 
   public readonly siblings$ = selectStream(
     {

@@ -5,7 +5,7 @@ import { GatherableDetailStore } from './gatherable-detail.store'
 @Directive({
   standalone: true,
   selector: '[nwbGatherableDetail]',
-  exportAs: 'abilityDetail',
+  exportAs: 'gatherableDetail',
   providers: [
     {
       provide: GatherableDetailStore,
