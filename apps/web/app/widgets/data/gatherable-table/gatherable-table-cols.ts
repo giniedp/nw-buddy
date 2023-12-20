@@ -192,10 +192,9 @@ export function gatherableColSpawnCount(util: GatherableTableUtils) {
       }
       if (data.$variationsMetas) {
         for (const variation of data.$variationsMetas) {
-          if (variation.spawns) {
-            for (const key in variation.spawns) {
-              sum += variation.spawns[key].length
-            }
+          variation.variantPositions
+          for (const entry of variation.variantPositions) {
+            sum += entry.elementCount
           }
         }
       }

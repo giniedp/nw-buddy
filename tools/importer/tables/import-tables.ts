@@ -66,6 +66,9 @@ export async function importDatatables(inputDir: string, rules = TABLE_IMPORT_RU
         log(file)
         const table = tables.get(file)
         context.current = file
+        if (!table) {
+          continue
+        }
         if (typeof operation === 'function') {
           operation(table, context)
         } else {

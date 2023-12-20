@@ -81,11 +81,12 @@ program
       await importSlices({
         inputDir,
         threads,
-      }).then(({ gatherables, vitals, variations, territories }) => {
+      }).then(async ({ gatherables, vitals, variations, territories }) => {
         console.log('  ', vitals.length, 'vitals')
         console.log('  ', gatherables.length, 'gatherables')
-        console.log('  ', variations.length, 'variations')
+        console.log('  ', variations.variationCount, 'variations', variations.chunks.length, 'chunks', variations.entryCount, 'entries')
         console.log('  ', territories.length, 'territories')
+
         return Promise.all([
           // write it into input directory, so table loader will pick it up
           writeJSONFile(vitals, {
@@ -108,16 +109,21 @@ program
           }),
 
 
-           // write it into input directory, so table loader will pick it up
-          writeJSONFile(variations, {
+          // write it into input directory, so table loader will pick it up
+
+          writeJSONFile(variations.records, {
             target: path.join(pathToDatatables(inputDir), 'generated_variations_metadata.json'),
             createDir: true,
           }),
-          writeJSONFile(variations, {
+          writeJSONFile(variations.records, {
             target: path.join('tmp', 'variations.json'),
             createDir: true,
           }),
-
+          ...variations.chunks.map(async (chunk, index) => {
+            await fs.promises.writeFile(path.join('tmp', `variations.${index}.chunk` ), chunk)
+            await fs.promises.writeFile(path.join(pathToDatatables(inputDir), `generated_variations_metadata.${index}.chunk`), chunk)
+            await fs.promises.writeFile(path.join(tablesOutDir, `generated_variations_metadata.${index}.chunk`), chunk)
+          }),
           // write it into input directory, so table loader will pick it up
           writeJSONFile(territories, {
             target: path.join(pathToDatatables(inputDir), 'generated_territories_metadata.json'),

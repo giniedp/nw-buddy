@@ -64,7 +64,7 @@ export async function generateSearch(options: { localesDir: string; tablesDir: s
     await writeUTF8File(json, {
       target: path.join(options.outDir, `${item.locale}.json`),
       createDir: true,
-    })
+    }).catch(console.error)
   }
 }
 

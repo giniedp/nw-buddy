@@ -13354,28 +13354,17 @@ export interface Zone {
     shape:    Array<number[]>;
 }
 export interface VariationsMetadata {
-    mapIDs:    string[];
-    spawns:    Spawns;
-    variantID: string;
+    mapIDs:           string[];
+    variantID:        string;
+    variantPositions: VariantPosition[];
 }
 
-export interface Spawns {
-    newworld_vitaeeterna?:         Array<number[]>;
-    nw_dungeon_brimstonesands_00?: Array<number[]>;
-    nw_dungeon_cutlasskeys_00?:    Array<number[]>;
-    nw_dungeon_edengrove_00?:      Array<number[]>;
-    nw_dungeon_everfall_00?:       Array<number[]>;
-    nw_dungeon_firstlight_01?:     Array<number[]>;
-    nw_dungeon_greatcleave_00?:    Array<number[]>;
-    nw_dungeon_greatcleave_01?:    Array<number[]>;
-    nw_dungeon_reekwater_00?:      Array<number[]>;
-    nw_dungeon_restlessshores_01?: Array<number[]>;
-    nw_dungeon_shattermtn_00?:     Array<number[]>;
-    nw_dungeon_windsward_00?:      Array<number[]>;
-    nw_ori_fl_questadiana?:        Array<number[]>;
-    nw_ori_gc_questnihilo?:        Array<number[]>;
-    nw_trial_season_02?:           Array<number[]>;
-    nw_trial_season_04?:           Array<number[]>;
+export interface VariantPosition {
+    chunk:         number;
+    elementCount:  number;
+    elementOffset: number;
+    elementSize:   number;
+    mapId:         string;
 }
 export interface VitalsMetadata {
     lvlSpanws: LvlSpanws;

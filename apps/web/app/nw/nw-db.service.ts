@@ -13,7 +13,7 @@ import {
 import { Housingitems, Vitals } from '@nw-data/generated'
 import { groupBy, sortBy } from 'lodash'
 import { Observable, combineLatest, defer, isObservable, map, of, shareReplay } from 'rxjs'
-import { CaseInsensitiveMap, CaseInsensitiveSet } from '~/utils'
+import { CaseInsensitiveMap, CaseInsensitiveSet, tapDebug } from '~/utils'
 import { NwDataService } from './nw-data.service'
 import { queryGemPerksWithAffix, queryMutatorDifficultiesWithRewards } from './nw-db-views'
 
@@ -282,6 +282,18 @@ export class NwDbService {
   public variationsMetadata = table(() => [this.data.generatedVariationsMetadata()])
   public variationsMetadataMap = indexBy(() => this.variationsMetadata, 'variantID')
   public variationsMeta = lookup(() => this.variationsMetadataMap)
+  public variationsChunk(id: number) {
+    return this.data.load(`generated_variations_metadata.${id}.chunk`, 'arrayBuffer').pipe(
+      map((data) => new Float32Array(data)),
+      map((data) => {
+        const points: [number, number][] = []
+        for (let i = 0; i < data.length; i += 2) {
+          points.push([data[i], data[i + 1]])
+        }
+        return points
+      })
+    )
+  }
 
   public mounts = table(() => [this.data.mountsMounts()])
   public mountsMap = indexBy(() => this.mounts, 'MountId')

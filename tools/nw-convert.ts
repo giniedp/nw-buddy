@@ -160,19 +160,11 @@ async function convertRegionData(inputDir: string, outputDir: string) {
       indices.push(reader.readUShort())
     }
     for (let i = 0; i < count; i++) {
-      const x = reader.readUShort()
       const y = reader.readUShort()
-      positions.push([ x, y])
+      const x = reader.readUShort()
+      positions.push([x, y])
     }
-    // if (region[0] === 2 && region[1] === 2) {
-    //   for (let i = 0; i < count; i++) {
-    //     const index = indices[i]
-    //     console.log(index, positions[index][0], positions[index][1], slices[index], variants[index])
-    //     if ( i >= 10) {
-    //       break
-    //     }
-    //   }
-    // }
+
     await writeJSONFile({
       region,
       slices: slices,

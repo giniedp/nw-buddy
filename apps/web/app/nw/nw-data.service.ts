@@ -3,7 +3,7 @@ import {
 } from '@angular/common/http'
 import { Injectable } from '@angular/core'
 import { NwDataLoader } from '@nw-data/generated'
-import { Observable, shareReplay } from 'rxjs'
+import { Observable, map, of, shareReplay, switchMap, tap } from 'rxjs'
 
 export type LocaleData = Record<string, { value: string }>
 
@@ -19,10 +19,24 @@ export class NwDataService extends NwDataLoader {
     super()
   }
 
-  public load<T>(path: string): Observable<T> {
+  public load<T>(path: string): Observable<T>
+  public load<T>(path: string, responseType: 'json'): Observable<T>
+  public load(path: string, responseType: 'arrayBuffer'): Observable<ArrayBuffer>
+  public load(path: string, responseType: 'blob'): Observable<Blob>
+  public load(path: string, responseType: any = 'json'): Observable<unknown> {
     if (!this.cache.has(path)) {
       const url = `datatables/${path}`.toLocaleLowerCase()
-      const src$ = this.http.get(url).pipe(shareReplay(1))
+      const src$ = this.http.request('GET', url, {
+        responseType: responseType === 'json' ? 'json' : 'blob',
+      }).pipe(
+        switchMap((res) => {
+          if (responseType === 'arrayBuffer' && res instanceof Blob) {
+            return res.arrayBuffer()
+          }
+          return of(res)
+        }),
+        shareReplay(1)
+      )
       this.cache.set(path, src$)
     }
     return this.cache.get(path)

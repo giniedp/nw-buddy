@@ -2,8 +2,10 @@ import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON, getGatherableNodeSize, getGatherableNodeSizes } from '@nw-data/common'
 import { Gatherables } from '@nw-data/generated'
+import { uniq } from 'lodash'
+import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { mapProp, selectStream } from '~/utils'
+import { combineLatestOrEmpty, mapList, mapProp, selectStream, switchMapCombineLatest } from '~/utils'
 
 @Injectable()
 export class GatherableDetailStore extends ComponentStore<{ recordId: string }> {
@@ -29,30 +31,69 @@ export class GatherableDetailStore extends ComponentStore<{ recordId: string }> 
   public readonly tradeSkill$ = this.select(this.gatherable$, (it) => it?.Tradeskill)
   public readonly lootTableId$ = this.select(this.gatherable$, (it) => it?.FinalLootTable)
 
-  public readonly siblings$ = selectStream({
-    size: this.size$,
-    gatherableId: this.gatherableId$,
-    gatherablesMap: this.db.gatherablesMap
-  }, ({ size, gatherableId, gatherablesMap }) => {
-    if (!gatherableId) {
-      return null
-    }
-    if (!size) {
-      return [gatherablesMap.get(gatherableId)]
-    }
-    const result: Gatherables[] = []
-    for (const siblingSize of getGatherableNodeSizes()) {
-      const siblingId = gatherableId.replace(size, siblingSize)
-      const sibling = gatherablesMap.get(siblingId)
-      if (sibling) {
-        result.push(sibling)
+  public readonly siblings$ = selectStream(
+    {
+      size: this.size$,
+      gatherableId: this.gatherableId$,
+      gatherablesMap: this.db.gatherablesMap,
+    },
+    ({ size, gatherableId, gatherablesMap }) => {
+      if (!gatherableId) {
+        return null
       }
-    }
-    if (!result.length) {
-      return null
-    }
-    return result
-  })
+      if (!size) {
+        return [gatherablesMap.get(gatherableId)]
+      }
+      const result: Gatherables[] = []
+      for (const siblingSize of getGatherableNodeSizes()) {
+        const siblingId = gatherableId.replace(size, siblingSize)
+        const sibling = gatherablesMap.get(siblingId)
+        if (sibling) {
+          result.push(sibling)
+        }
+      }
+      if (!result.length) {
+        return null
+      }
+      return result
+    },
+  )
+
+  public readonly siblingsVariations$ = selectStream(
+    this.siblings$.pipe(
+      switchMapCombineLatest((it) => this.db.gatherableVariationsByGatherableId(it.GatherableID)),
+      mapList((it) => Array.from(it || [])),
+      map((list) => list.flat()),
+      map((list) => list.filter((it) => !!it))
+    ),
+  )
+
+  public readonly variationsMetadata$ = selectStream(
+    this.siblingsVariations$.pipe(
+      mapList((it) => it.VariantID),
+      map(uniq),
+      switchMapCombineLatest((it) => this.db.variationsMeta(it)),
+      map((list) => list.filter((it) => !!it))
+    ),
+  )
+
+  public readonly variationsMetaChunks$ = selectStream(
+    this.variationsMetadata$.pipe(
+      map((list) => list.filter((it) => it?.variantPositions?.length)),
+      switchMap((list) => {
+        const chunkIds = uniq(list.map((it) => it.variantPositions.map((chunk) => chunk.chunk)).flat())
+        const chunks = combineLatestOrEmpty(
+          chunkIds.map((it) => {
+            return combineLatest({
+              chunk: of(it),
+              data: this.db.variationsChunk(it),
+            })
+          }),
+        )
+        return chunks
+      }),
+    ),
+  )
 
   public readonly props$ = this.select(this.gatherable$, (it) => {
     const result: Array<{ label: string; value: string }> = []

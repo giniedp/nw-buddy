@@ -1,4 +1,4 @@
-import { uniqBy } from 'lodash'
+import { groupBy, sumBy, uniqBy } from 'lodash'
 import * as path from 'path'
 import { environment } from '../../../env'
 import { assmebleWorkerTasks, glob, withProgressPool, writeJSONFile } from '../../utils'
@@ -34,7 +34,7 @@ interface VariationMetadata {
 }
 
 interface TerritoryMetadata {
-  zones: Array<{ position: number[], shape: number[][] }>
+  zones: Array<{ position: number[]; shape: number[][] }>
 }
 
 export async function importSlices({ inputDir, threads }: { inputDir: string; threads: number }) {
@@ -209,7 +209,7 @@ function buildResultVitals(data: Map<string, VitalMetadata>) {
         tables: Array.from(tables).sort(),
         mapIDs: Array.from(mapIDs).sort(),
         models: Array.from(models).sort(),
-        lvlSpanws: {} as Record<string, Array<{ p: number[], l: number }>>,
+        lvlSpanws: {} as Record<string, Array<{ p: number[]; l: number }>>,
       }
       for (const spawn of spawns) {
         const mapId = spawn.mapId || '_'
@@ -265,29 +265,103 @@ function buildResultGatherables(data: Map<string, GatherableMetadata>) {
 }
 
 function buildResultVariations(data: Map<string, VariationMetadata>) {
-  return Array.from(data.entries())
-    .map(([id, { spawns, mapIDs }]) => {
-      const maps = Array.from(mapIDs.values()).sort()
-      const result = {
-        variantID: id,
-        mapIDs: maps,
-        spawns: {} as Record<string, number[][]>,
-      }
-      for (const spawn of spawns) {
-        const mapId = spawn.mapId || '_'
-        result.spawns[mapId] = result.spawns[mapId] || []
-        result.spawns[mapId].push(spawn.position)
-      }
-      for (const key in result.spawns) {
-        result.spawns[key] = uniqBy(result.spawns[key], (it) => {
-          return JSON.stringify(it)
-        }).sort((a, b) => {
-          return compareStrings(String(a), String(b))
-        })
-      }
-      return result
+  type ChunkData = number[]
+  type ChunkRows = Array<{
+    chunk: number
+    variantID: string
+    mapId: string
+    elementSize: 2
+    elementOffset: number
+    elementCount: number
+  }>
+
+  const chunksData: ChunkData[] = []
+  const chunksRecords: ChunkRows[] = []
+  const variationIds = new Set<string>()
+
+  let currentData: ChunkData
+  let currentChunk: ChunkRows
+  let currentChunkIndex: number
+  function add(variantId: string, mapId: string, positions: number[][]) {
+    variationIds.add(variantId)
+    if (!currentData || currentData.length + positions.length > 1000000) {
+      currentChunkIndex = chunksData.length
+      currentData = []
+      currentChunk = []
+      chunksData.push(currentData)
+      chunksRecords.push(currentChunk)
+    }
+    currentChunk.push({
+      chunk: currentChunkIndex,
+      variantID: variantId,
+      mapId: mapId,
+      elementSize: 2,
+      elementOffset: currentData.length / 2,
+      elementCount: positions.length,
     })
-    .sort((a, b) => compareStrings(a.variantID, b.variantID))
+    for (const [x, y] of positions) {
+      currentData.push(x, y)
+    }
+  }
+
+  for (const [variantId, { spawns }] of data.entries()) {
+    const groups = groupBy(spawns, (it) => it.mapId)
+    for (const mapId in groups) {
+      const group = groups[mapId]
+      add(
+        variantId,
+        mapId,
+        group.map((it) => it.position),
+      )
+    }
+  }
+
+  const result: Record<
+    string,
+    {
+      variantID: string
+      mapIDs: string[]
+      variantPositions: Array<{
+        chunk: number
+        mapId: string
+        elementSize: 2
+        elementOffset: number
+        elementCount: number
+      }>
+    }
+  > = {}
+
+  for (const chunk of chunksRecords) {
+    for (const entry of chunk) {
+      if (!result[entry.variantID]) {
+        result[entry.variantID] = {
+          variantID: entry.variantID,
+          mapIDs: [],
+          variantPositions: [],
+        }
+      }
+      if (!result[entry.variantID].mapIDs.includes(entry.mapId)) {
+        result[entry.variantID].mapIDs.push(entry.mapId)
+      }
+      result[entry.variantID].variantPositions.push({
+        chunk: entry.chunk,
+        mapId: entry.mapId,
+        elementSize: entry.elementSize,
+        elementOffset: entry.elementOffset,
+        elementCount: entry.elementCount,
+      })
+    }
+  }
+
+  const resultList = Object.values(result).sort((a, b) => {
+    return compareStrings(a.variantID, b.variantID)
+  })
+  return {
+    variationCount: variationIds.size,
+    entryCount: sumBy(resultList, (record) => sumBy(record.variantPositions, (it) => it.elementCount)),
+    records: resultList,
+    chunks: chunksData.map((it) => new Float32Array(it)),
+  }
 }
 
 function buildResultTerritories(data: Map<string, TerritoryMetadata>) {
@@ -295,12 +369,14 @@ function buildResultTerritories(data: Map<string, TerritoryMetadata>) {
     .map(([id, { zones }]) => {
       const result = {
         territoryID: id,
-        zones: zones.map((it) => {
-          return {
-            position: it.position,
-            shape: it.shape,
-          }
-        }).sort((a, b) => compareStrings(String(a.position), String(b.position))),
+        zones: zones
+          .map((it) => {
+            return {
+              position: it.position,
+              shape: it.shape,
+            }
+          })
+          .sort((a, b) => compareStrings(String(a.position), String(b.position))),
       }
       return result
     })
