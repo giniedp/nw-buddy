@@ -33,6 +33,11 @@
           <nwb-icon [icon]="iconCreate" class="w-5 h-5" />
         </button>
       </li>
+      <li>
+        <button class="btn btn-square btn-ghost" (click)="importItem()" [tooltip]="'Import'">
+          <nwb-icon [icon]="iconImport" class="w-5 h-5" />
+        </button>
+      </li>
     </ul>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
       <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"></nwb-quicksearch-input>

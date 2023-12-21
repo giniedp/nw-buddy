@@ -7,11 +7,12 @@ import { filter, map, switchMap } from 'rxjs'
 import { SkillBuildRow, SkillBuildsStore } from '~/data'
 import { NwModule } from '~/nw'
 import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
+import { ShareService } from '~/pages/share'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
 import { DataGridModule } from '~/ui/data/table-grid'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
-import { svgFilterList, svgPlus } from '~/ui/icons/svg'
+import { svgFileImport, svgFilterList, svgPlus } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
@@ -71,10 +72,12 @@ export class SkillBuildsComponent {
 
   protected iconCreate = svgPlus
   protected iconMore = svgFilterList
+  protected iconImport = svgFileImport
   protected tags$ = this.store.tags$
 
   private router = inject(Router)
   private route = inject(ActivatedRoute)
+  private share = inject(ShareService)
 
   public constructor(
     private store: SkillBuildsStore,
@@ -89,6 +92,10 @@ export class SkillBuildsComponent {
       title: 'Skill Builder',
       description: 'A Skill Buider tool for New World. Build your skill tree and share with your mates.',
     })
+  }
+
+  protected async importItem() {
+    this.share.importItem(this.dialog, this.router)
   }
 
   protected async createItem() {

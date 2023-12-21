@@ -14,6 +14,11 @@
             <nwb-icon [icon]="iconCreate" class="w-4 h-4"/>
           </span>
         </li>
+        <li [tooltip]="'Import Gearset'" [tooltipClass]="'bg-accent'">
+          <span (click)="importItem()">
+            <nwb-icon [icon]="iconImport" class="w-4 h-4"/>
+          </span>
+        </li>
       </ng-template>
     </nwb-navbar>
     <div class="flex-none p-2 w-full md:max-w-[256px]">

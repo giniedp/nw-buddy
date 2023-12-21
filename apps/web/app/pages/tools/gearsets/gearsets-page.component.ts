@@ -1,13 +1,14 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { Component, OnInit } from '@angular/core'
-import { RouterModule } from '@angular/router'
-import { IonHeader} from '@ionic/angular/standalone'
+import { Component, OnInit, inject } from '@angular/core'
+import { Router, RouterModule } from '@angular/router'
+import { IonHeader } from '@ionic/angular/standalone'
 import { filter } from 'rxjs'
 import { GearsetsStore } from '~/data'
 import { NwModule } from '~/nw'
+import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
-import { svgPlus } from '~/ui/icons/svg'
+import { svgFileImport, svgPlus } from '~/ui/icons/svg'
 import { PromptDialogComponent } from '~/ui/layout'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
@@ -36,9 +37,17 @@ import { GearsetLoadoutListComponent } from './loadout'
 })
 export class GearsetsPageComponent implements OnInit {
   protected iconCreate = svgPlus
-  protected tags$ = this.store.tags$
+  protected iconImport = svgFileImport
 
-  public constructor(private store: GearsetsStore, protected search: QuicksearchService, private dialog: Dialog) {
+  protected tags$ = this.store.tags$
+  private share = inject(ShareService)
+  private router = inject(Router)
+
+  public constructor(
+    private store: GearsetsStore,
+    protected search: QuicksearchService,
+    private dialog: Dialog,
+  ) {
     //
   }
 
@@ -63,6 +72,10 @@ export class GearsetsPageComponent implements OnInit {
           name: newName,
         })
       })
+  }
+
+  protected async importItem() {
+    this.share.importItem(this.dialog, this.router)
   }
 
   protected toggleTag(value: string) {

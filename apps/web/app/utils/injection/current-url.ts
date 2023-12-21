@@ -1,7 +1,7 @@
 import { Location } from '@angular/common'
 import { InjectionToken, inject } from '@angular/core'
 import { Router } from '@angular/router'
-import { BehaviorSubject, Observable, defer } from 'rxjs'
+import { BehaviorSubject, Observable, defer, distinctUntilChanged } from 'rxjs'
 
 export const CURRENT_URL = new InjectionToken<Observable<string>>('CURRENT_URL', {
   providedIn: 'root',
@@ -11,10 +11,9 @@ export const CURRENT_URL = new InjectionToken<Observable<string>>('CURRENT_URL',
     const subject = new BehaviorSubject(router.url)
 
     location.onUrlChange((url) => {
-      console.log(router.url, url)
       subject.next(url)
     })
-    return defer(() => subject)
+    return defer(() => subject).pipe(distinctUntilChanged())
   },
 })
 
