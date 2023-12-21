@@ -2,7 +2,7 @@ import { program } from 'commander'
 import * as fs from 'fs'
 import * as path from 'path'
 import { z } from 'zod'
-import { CDN_URL, COMMIT_HASH, NW_GAME_VERSION, PACKAGE_VERSION, environment } from '../env'
+import { CDN_URL, COMMIT_HASH, NW_GAME_VERSION, PACKAGE_VERSION, NW_WATERMARK, environment } from '../env'
 import { glob, readJSONFile } from './utils/file-utils'
 
 program
@@ -64,7 +64,8 @@ program
       workspace: NW_GAME_VERSION.toLowerCase(),
       cdnUrl: CDN_URL,
       deployUrl: ngConfig.projects['nw-buddy'].architect.build.configurations[config].baseHref || '/',
-      disableTooltips: !['live', 'ptr'].includes(NW_GAME_VERSION.toLowerCase())
+      disableTooltips: !['live', 'ptr'].includes(NW_GAME_VERSION.toLowerCase()),
+      watermarkImageUrl: NW_WATERMARK || null,
     }
     console.log(env)
     fs.writeFileSync(

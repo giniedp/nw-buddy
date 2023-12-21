@@ -1,6 +1,6 @@
 import { EnvVars } from "./env"
 
-export interface Environment {
+export interface Environment extends EnvVars {
   environment: string
   production: boolean
   standalone: boolean

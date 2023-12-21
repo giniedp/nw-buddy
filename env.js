@@ -35,6 +35,7 @@ const config = {
   CDN_UPLOAD_ENDPOINT: process.env.CDN_UPLOAD_ENDPOINT,
   PACKAGE_VERSION: packageVersion,
   COMMIT_HASH: commitHash,
+  NW_WATERMARK: process.env.NW_WATERMARK,
 }
 
 function env(name) {

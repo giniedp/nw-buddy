@@ -1,6 +1,6 @@
 import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule, DOCUMENT, Location } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, Renderer2, RendererStyleFlags2, computed, inject, signal } from '@angular/core'
 import { Router, RouterModule } from '@angular/router'
 import { map, of, switchMap } from 'rxjs'
 
@@ -24,6 +24,7 @@ import { PlatformService } from './utils/services/platform.service'
 import { AeternumMapModule } from './widgets/aeternum-map'
 import { GlobalSearchInputComponent } from './widgets/search'
 import { UpdateAlertModule, VersionService } from './widgets/update-alert'
+import { environment } from '../environments'
 
 @Component({
   standalone: true,
@@ -168,6 +169,8 @@ export class AppComponent {
     private layout: LayoutService,
     private version: VersionService,
     private router: Router,
+    elRef: ElementRef<HTMLElement>,
+    renderer: Renderer2,
   ) {
     this.preferences.language
       .observe()
@@ -177,6 +180,10 @@ export class AppComponent {
         this.langLoaded.set(true)
         this.removeLoader()
       })
+
+      if (environment.watermarkImageUrl) {
+        renderer.setStyle(elRef.nativeElement, '--nwb-watermark', `url("${environment.watermarkImageUrl}")`, RendererStyleFlags2.DashCase)
+      }
   }
 
   private removeLoader() {

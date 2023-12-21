@@ -24,4 +24,8 @@ export const env = {
    * Whether nwdb.info tooltips should be disabled
    */
   disableTooltips: false,
+  /**
+   * A watermark image URL
+   */
+  watermarkImageUrl: '',
 }
