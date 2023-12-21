@@ -172,13 +172,12 @@ export class TableGridUtils<T = any> {
     )
   }
 
-  public tagsRenderer = ({
-    transform,
-    getClass,
-  }: {
-    transform: (it: any) => string
+  public tagsRenderer = (options?: {
+    transform?: (it: any) => string
     getClass?: (value: any) => string[]
   }): ICellRendererFunc<T> => {
+    const transform = options?.transform || ((it) => String(it))
+    const getClass = options?.getClass
     return ({ value }) => {
       if (value && !Array.isArray(value)) {
         value = [value]

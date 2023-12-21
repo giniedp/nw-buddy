@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core'
 import {
   convertBuffBuckets,
+  convertGatherableVariations,
   convertLootbuckets,
   convertLoottables,
   convertPerkBuckets,
@@ -13,7 +14,7 @@ import {
 import { Housingitems, Vitals } from '@nw-data/generated'
 import { groupBy, sortBy } from 'lodash'
 import { Observable, combineLatest, defer, isObservable, map, of, shareReplay } from 'rxjs'
-import { CaseInsensitiveMap, CaseInsensitiveSet, tapDebug } from '~/utils'
+import { CaseInsensitiveMap, CaseInsensitiveSet } from '~/utils'
 import { NwDataService } from './nw-data.service'
 import { queryGemPerksWithAffix, queryMutatorDifficultiesWithRewards } from './nw-db-views'
 
@@ -68,12 +69,18 @@ export function dictToMap<V>(record: Record<string, V>): Map<string, V> {
   return new CaseInsensitiveMap<string, V>(Object.entries(record))
 }
 
-function table<T>(source: () => Observable<T[]> | Array<Observable<T[]>>) {
+function table<T>(source: () => Observable<T[]> | Array<Observable<T[]>>): Observable<T[]>
+function table<T, R>(
+  source: () => Observable<T[]> | Array<Observable<T[]>>,
+  transform: (data: T[]) => R[],
+): Observable<R[]>
+function table(source: () => Observable<any[]> | Array<Observable<any[]>>, transform?: (data: any[]) => any[]) {
   return defer(() => {
     const src = source()
     return combineLatest(Array.isArray(src) ? src : [src])
   })
     .pipe(map((it) => it.flat(1)))
+    .pipe(map(transform || ((it) => it)))
     .pipe(shareReplay(1))
 }
 function indexBy<T, K extends keyof T>(source: () => Observable<T[]>, key: K) {
@@ -245,27 +252,27 @@ export class NwDbService {
   public gatherablesMetadataMap = indexBy(() => this.gatherablesMetadata, 'gatherableID')
   public gatherablesMeta = lookup(() => this.gatherablesMetadataMap)
 
-  public gatherableVariations = table(() =>
-    this.data
+  public gatherableVariations = table(() => {
+    return this.data
       .apiMethodsByPrefix('variationsGatherables', 'variationsGatherablesAlchemy')
-      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_'))),
-  )
+      .map((it) => this.data[it.name]().pipe(annotate('$source', it.suffix || '_')))
+  }, convertGatherableVariations)
   public gatherableVariationsMap = indexBy(() => this.gatherableVariations, 'VariantID')
   public gatherableVariation = lookup(() => this.gatherableVariationsMap)
   public gatherableVariationsByGatherableIdMap = indexGroupSetBy(
     () => this.gatherableVariations,
-    (it) => it.GatherableEntryID || it.GatherableEntryId,
+    (it) => it.GatherableID,
   )
   public gatherableVariationsByGatherableId = lookup(() => this.gatherableVariationsByGatherableIdMap)
 
   public npcs = table(() =>
     this.data
-    .matchingApiMethods<'quests01Starterbeach01Npcs'>((it) => {
-      return it.endsWith('Npcs') && !it.includes('variations')
-    })
-    .map((it) => {
-      return this.data[it]().pipe(annotate('$source', it))
-    }),
+      .matchingApiMethods<'quests01Starterbeach01Npcs'>((it) => {
+        return it.endsWith('Npcs') && !it.includes('variations')
+      })
+      .map((it) => {
+        return this.data[it]().pipe(annotate('$source', it))
+      }),
   )
   public npcsMap = indexBy(() => this.npcs, 'NPCId')
   public npc = lookup(() => this.npcsMap)
@@ -291,7 +298,7 @@ export class NwDbService {
           points.push([data[i], data[i + 1]])
         }
         return points
-      })
+      }),
     )
   }
 

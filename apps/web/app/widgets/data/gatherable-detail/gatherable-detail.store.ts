@@ -18,7 +18,7 @@ export class GatherableDetailStore extends ComponentStore<{ recordId: string }> 
   public readonly gatherable$ = selectStream(
     {
       byId: this.db.gatherable(this.recordId$),
-      byVariation: this.db.gatherable(this.variation$.pipe(mapProp('GatherableEntryID'))),
+      byVariation: this.db.gatherable(this.variation$.pipe(mapProp('GatherableID'))),
     },
     ({ byVariation, byId }) => byId ?? byVariation,
   )
@@ -35,7 +35,7 @@ export class GatherableDetailStore extends ComponentStore<{ recordId: string }> 
     const result = []
     result.push(gatherable?.FinalLootTable)
     for (const variation of variations || []) {
-      result.push(variation.LootTableComponent)
+      result.push(variation.LootTable)
     }
     return uniq(result.filter((it) => !!it && it !== 'Empty'))
   })
@@ -73,7 +73,7 @@ export class GatherableDetailStore extends ComponentStore<{ recordId: string }> 
       switchMapCombineLatest((it) => this.db.gatherableVariationsByGatherableId(it.GatherableID)),
       mapList((it) => Array.from(it || [])),
       map((list) => list.flat()),
-      map((list) => list.filter((it) => !!it))
+      map((list) => list.filter((it) => !!it)),
     ),
   )
 
@@ -82,7 +82,7 @@ export class GatherableDetailStore extends ComponentStore<{ recordId: string }> 
       mapList((it) => it.VariantID),
       map(uniq),
       switchMapCombineLatest((it) => this.db.variationsMeta(it)),
-      map((list) => list.filter((it) => !!it))
+      map((list) => list.filter((it) => !!it)),
     ),
   )
 

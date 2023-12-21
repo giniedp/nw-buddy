@@ -108,7 +108,7 @@ export class GatherableDetailMapComponent {
           continue
         }
         const gatherable = gatherables.find((it) =>
-          eqCaseInsensitive(it.GatherableID, variant.GatherableEntryID || variant.GatherableEntryId),
+          eqCaseInsensitive(it.GatherableID, variant.GatherableID),
         )
         if (!gatherable) {
           continue
@@ -207,13 +207,17 @@ export class GatherableDetailMapComponent {
     for (const size of disabledSizes) {
       delete result[size]
     }
+    const showLimit = !limit || limit > 10000
     const landmarks = Object.values(result).flat()
-    if (!!limit && (landmarks.length <= limit)) {
+    landmarks.sort((a, b) => b.radius - a.radius)
+    if (!limit || !!limit && (landmarks.length <= limit)) {
       return {
         landmarks,
         isLimited: false,
         shown: landmarks.length,
         total: landmarks.length,
+        showLimit,
+        limit
       }
     }
     const total = landmarks.length
@@ -222,6 +226,8 @@ export class GatherableDetailMapComponent {
       isLimited: true,
       shown: limit,
       total,
+      showLimit,
+      limit
     }
   })
 

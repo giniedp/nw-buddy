@@ -22,6 +22,7 @@ import {
   gatherableColSpawnCount,
   gatherableColTradeSkill,
   gatherableColVariationCount,
+  gatherableColVariations,
 } from './gatherable-table-cols'
 import { Observable } from 'rxjs'
 
@@ -110,7 +111,8 @@ export function buildCommonGatherableGridOptions(util: TableGridUtils<Gatherable
       gatherableColLootTable(util),
       gatherableColExpansion(util),
       gatherableColSpawnCount(util),
-      gatherableColVariationCount(util)
+      gatherableColVariationCount(util),
+      gatherableColVariations(util)
     ],
   }
   addGenericColumns(result, {

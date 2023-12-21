@@ -1,14 +1,16 @@
 import { NumberFilter } from '@ag-grid-community/core'
-import { NW_FALLBACK_ICON, getGatherableNodeSize, getItemExpansion } from '@nw-data/common'
+import { GatherableVariation, NW_FALLBACK_ICON, getGatherableNodeSize, getItemExpansion } from '@nw-data/common'
 import { Gatherables, GatherablesMetadata, VariationsGatherables, VariationsMetadata } from '@nw-data/generated'
 import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { getGatherableIcon } from '../gatherable-detail/utils'
+import { humanize } from '~/utils'
+import { uniq } from 'lodash'
 
 export type GatherableTableUtils = TableGridUtils<GatherableTableRecord>
 export type GatherableTableRecord = Gatherables & {
   $meta: GatherablesMetadata
-  $variations: VariationsGatherables[]
+  $variations: GatherableVariation[]
   $variationsMetas: VariationsMetadata[]
 }
 
@@ -178,6 +180,40 @@ export function gatherableColVariationCount(util: GatherableTableUtils) {
   })
 }
 
+export function gatherableColVariations(util: GatherableTableUtils) {
+  return util.colDef<string[]>({
+    colId: 'variations',
+    headerValueGetter: () => 'Variations',
+    getQuickFilterText: ({ data }) => {
+      const result = []
+      data.$variations?.forEach((it) => {
+        result.push(it.VariantID)
+      })
+      return result.join(' ')
+    },
+    valueGetter: ({ data }) => {
+      const result = []
+      if (data.$variations) {
+        for (const it of data.$variations) {
+          result.push(it.VariantID)
+        }
+      }
+      result.sort()
+      return result
+    },
+    cellRenderer: util.tagsRenderer({ getClass: () => [`font-mono`] }),
+    sortable: false,
+    wrapText: true,
+    autoHeight: true,
+    hide: true,
+    width: 800,
+    filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      showSearch: true,
+    }),
+  })
+}
+
 export function gatherableColSpawnCount(util: GatherableTableUtils) {
   return util.colDef<number>({
     colId: 'variationCount',
@@ -193,7 +229,6 @@ export function gatherableColSpawnCount(util: GatherableTableUtils) {
       }
       if (data.$variationsMetas) {
         for (const variation of data.$variationsMetas) {
-          variation.variantPositions
           for (const entry of variation.variantPositions) {
             sum += entry.elementCount
           }
