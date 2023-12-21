@@ -1,10 +1,11 @@
 import { DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Renderer2 } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Renderer2, inject } from '@angular/core'
 import { combineLatest, tap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { PlatformService } from '~/utils/services/platform.service'
 import { VersionService } from './version.service'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -13,40 +14,19 @@ import { VersionService } from './version.service'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, DialogModule],
   host: {
-    class: 'btn text-primary hidden',
+    class: 'btn text-primary',
+    '[class.hidden]': '!hasNewVersion()'
   },
 })
 export class UpdateAlertButtonComponent {
-  protected vm$ = combineLatest({
-    current: this.service.currentVersion$,
-    latest: this.service.latestVersion$,
-    changed: this.service.versionChanged$,
-  }).pipe(
-    tap((it) => {
-      if (it.changed) {
-        this.renderer.removeClass(this.elRef.nativeElement, 'hidden')
-      } else {
-        this.renderer.addClass(this.elRef.nativeElement, 'hidden')
-      }
-    })
-  )
+  protected service = inject(VersionService)
+  protected hasNewVersion = toSignal(this.service.versionChanged$, { initialValue: false })
 
-  protected get isWeb() {
-    return !this.platform.env.standalone
-  }
-
-  public constructor(
-    private service: VersionService,
-    private elRef: ElementRef<HTMLElement>,
-    private renderer: Renderer2,
-    private platform: PlatformService
-  ) {
-    //
-  }
+  protected isStandalone = inject(PlatformService).env.standalone
 
   @HostListener('click')
   public show() {
-    if (this.platform.env.standalone) {
+    if (this.isStandalone) {
       window.open('https://github.com/giniedp/nw-buddy/releases/latest', '_blank')
     } else {
       location.reload()

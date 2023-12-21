@@ -18,11 +18,15 @@
         <ion-content [scrollY]="false" [scrollX]="false">
           <div class="h-full w-full layout-content bg-base-300">
             <div class="layout-col layout-gap">
-              <ul class="menu menu-compact flex-none m-0" *ngIf="versionChanged$ | async">
-                <li>
-                  <nwb-update-alert-button />
-                </li>
-              </ul>
+              @defer (on timer(2s)) {
+                @if (versionChanged()) {
+                  <ul class="menu menu-compact flex-none m-0" @versionAlert>
+                    <li>
+                      <nwb-update-alert-button />
+                    </li>
+                  </ul>
+                }
+              }
               <app-menu></app-menu>
             </div>
           </div>
@@ -34,9 +38,11 @@
         }
         <ion-content [scrollY]="false" class="bg-base-200">
           <div class="h-full layout-row">
-            <div class="layout-col flex-1" *ngIf="langLoaded">
-              <router-outlet />
-            </div>
+            @if (langLoaded) {
+              <div class="layout-col flex-1">
+                <router-outlet />
+              </div>
+            }
             @if (!isOverwolf) {
               <nwb-aeternum-map-integration class="embed-hidden" />
             }
@@ -53,8 +59,8 @@
       <ion-buttons slot="start">
         <ion-menu-toggle menu="main-menu">
           <span class="indicator">
-            @if (versionChanged$ | async) {
-              <span class="indicator-item badge badge-xs badge-primary"></span>
+            @if (versionChanged()) {
+              <span class="indicator-item badge badge-xs badge-primary animate-pulse" @appear></span>
             }
             <button class="btn btn-square btn-ghost text-primary">
               <svg fill="none" viewBox="0 0 24 24" class="inline-block w-5 h-5 stroke-current">
@@ -70,7 +76,14 @@
         </ion-menu-toggle>
       </ion-buttons>
       <div class="w-full flex flex-row items-center justify-center lg:justify-start">
-        <a routerLink="/" class="flex flex-row items-center">
+        @if (canGoBack()) {
+          @defer (on timer(1s)) {
+            <button class="btn btn-ghost btn-square" (click)="onBackClicked()" [tooltip]="'Back'" @backButton>
+              <nwb-icon [icon]="iconBack" class="w-4 h-4" />
+            </button>
+          }
+        }
+        <a [routerLink]="'/'" class="flex flex-row items-center">
           <img
             [nwImage]="'assets/icons/favicon.png'"
             class="w-12 aspect-square"
