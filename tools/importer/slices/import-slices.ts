@@ -203,6 +203,7 @@ function collectTerritoriesRows(rows: TerritoryScanRow[], data: Map<string, Terr
 
 function buildResultVitals(data: Map<string, VitalMetadata>) {
   return Array.from(data.entries())
+    .sort((a, b) => compareStrings(a[0], b[0]))
     .map(([id, { tables, spawns, mapIDs, models }]) => {
       const result = {
         vitalsID: id,
@@ -211,6 +212,7 @@ function buildResultVitals(data: Map<string, VitalMetadata>) {
         models: Array.from(models).sort(),
         lvlSpanws: {} as Record<string, Array<{ p: number[]; l: number }>>,
       }
+      spawns.sort((a, b) => compareStrings(a.mapId, b.mapId))
       for (const spawn of spawns) {
         const mapId = spawn.mapId || '_'
         result.lvlSpanws[mapId] = result.lvlSpanws[mapId] || []
@@ -228,13 +230,11 @@ function buildResultVitals(data: Map<string, VitalMetadata>) {
       }
       return result
     })
-    .sort((a, b) => {
-      return compareStrings(a.vitalsID, b.vitalsID)
-    })
 }
 
 function buildResultGatherables(data: Map<string, GatherableMetadata>) {
   return Array.from(data.entries())
+    .sort((a, b) => compareStrings(a[0], b[0]))
     .map(([id, { spawns, mapIDs, lootTables }]) => {
       const maps = Array.from(mapIDs.values()).sort()
       const tables = Array.from(lootTables.values()).sort()
@@ -244,12 +244,12 @@ function buildResultGatherables(data: Map<string, GatherableMetadata>) {
         lootTables: tables,
         spawns: {} as Record<string, number[][]>,
       }
+      spawns.sort((a, b) => compareStrings(a.mapId, b.mapId))
       for (const spawn of spawns) {
         const mapId = spawn.mapId || '_'
         result.spawns[mapId] = result.spawns[mapId] || []
         result.spawns[mapId].push(spawn.position)
       }
-
       for (const key in result.spawns) {
         result.spawns[key] = uniqBy(result.spawns[key], (it) => {
           return JSON.stringify(it)
@@ -258,9 +258,6 @@ function buildResultGatherables(data: Map<string, GatherableMetadata>) {
         })
       }
       return result
-    })
-    .sort((a, b) => {
-      return compareStrings(a.gatherableID, b.gatherableID)
     })
 }
 
@@ -366,6 +363,7 @@ function buildResultVariations(data: Map<string, VariationMetadata>) {
 
 function buildResultTerritories(data: Map<string, TerritoryMetadata>) {
   return Array.from(data.entries())
+    .sort((a, b) => compareStrings(a[0], b[0]))
     .map(([id, { zones }]) => {
       const result = {
         territoryID: id,
@@ -380,7 +378,6 @@ function buildResultTerritories(data: Map<string, TerritoryMetadata>) {
       }
       return result
     })
-    .sort((a, b) => compareStrings(a.territoryID, b.territoryID))
 }
 
 function compareStrings(a: string, b: string) {

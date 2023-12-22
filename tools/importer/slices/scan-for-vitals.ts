@@ -9,9 +9,11 @@ import {
   isAZ__Entity,
   isActionListComponent,
   isAsset,
+  isEncounterComponent,
   isMeshComponent,
   isPointSpawnerComponent,
   isSkinnedMeshComponent,
+  isSliceComponent,
   isSpawnDefinition,
   isVitalsComponent,
 } from './types/dynamicslice'
@@ -90,10 +92,8 @@ async function findVariantSpawner(rootDir: string, sliceName: string, file?: str
 
   return cached(`findVariantSpawner ${file}`, async () => {
     const result: VariantSpawner[] = []
-    walkJsonObjects(await readJSONFile(file), (entity) => {
-      if (!isAZ__Entity(entity)) {
-        return
-      }
+    const sliceComponent = await findSliceComponent(file)
+    sliceComponent?.entities?.forEach((entity) => {
       let vitalsID: string = null
       let categoryID: string = null
       let level: number = null
@@ -143,13 +143,20 @@ async function findSpawnDefinitions(rootDir: string, sliceName: string, file?: s
   }
   return cached(`findSpawnDefinitions ${file}`, async () => {
     const result: SpawnDefinitionResult[] = []
-    walkJsonObjects(await readJSONFile(file), (obj) => {
-      if (!isSpawnDefinition(obj)) {
-        return false
-      }
-      result.push({
-        sliceName: obj.m_sliceasset?.hint,
-        aliasName: obj.m_aliasasset?.hint,
+    const sliceComponent = await findSliceComponent(file)
+    sliceComponent?.entities?.forEach((entity) => {
+      entity?.components?.forEach((component) => {
+        if (!isEncounterComponent(component)) {
+          return
+        }
+        component.m_spawntimeline?.forEach((obj) => {
+          if (isSpawnDefinition(obj)) {
+            result.push({
+              sliceName: obj.m_sliceasset?.hint,
+              aliasName: obj.m_aliasasset?.hint,
+            })
+          }
+        })
       })
     })
     for (const item of result) {
@@ -187,23 +194,26 @@ async function findDamageTable(rootDir: string, sliceName: string, file?: string
     let damageTable: string = null
     let modelSlice: string = null
 
-    walkJsonObjects(await readJSONFile(file), (obj: unknown) => {
-      if (isVitalsComponent(obj)) {
-        vitalsID = vitalsID || obj.m_rowreference
-      }
-      if (isActionListComponent(obj)) {
-        damageTable = damageTable || obj.m_damagetable?.asset?.baseclass1?.assetpath
-      }
-      let hasModel = false
-      hasModel = hasModel || (isSkinnedMeshComponent(obj) && obj['skinned mesh render node']?.visible)
-      hasModel = hasModel || (isMeshComponent(obj) && obj['static mesh render node']?.visible)
-      if (hasModel) {
-        modelSlice = path
-          .relative(rootDir, file)
-          .replace(/\\/gi, '/')
-          .replace(/\.json$/, '.glb')
-          .toLowerCase()
-      }
+    const sliceComponent = await findSliceComponent(file)
+    sliceComponent?.entities?.forEach((entity) => {
+      entity?.components?.forEach((obj) => {
+        if (isVitalsComponent(obj)) {
+          vitalsID = vitalsID || obj.m_rowreference
+        }
+        if (isActionListComponent(obj)) {
+          damageTable = damageTable || obj.m_damagetable?.asset?.baseclass1?.assetpath
+        }
+        let hasModel = false
+        hasModel = hasModel || (isSkinnedMeshComponent(obj) && obj['skinned mesh render node']?.visible)
+        hasModel = hasModel || (isMeshComponent(obj) && obj['static mesh render node']?.visible)
+        if (hasModel) {
+          modelSlice = path
+            .relative(rootDir, file)
+            .replace(/\\/gi, '/')
+            .replace(/\.json$/, '.glb')
+            .toLowerCase()
+        }
+      })
     })
     return {
       vitalsID,
@@ -211,6 +221,19 @@ async function findDamageTable(rootDir: string, sliceName: string, file?: string
       modelSlice,
     }
   })
+}
+
+async function findSliceComponent(file: string) {
+  const data = await readJSONFile(file)
+  if (!isAZ__Entity(data)) {
+    return null
+  }
+  for (const component of data.components || []) {
+    if (isSliceComponent(component)) {
+      return component
+    }
+  }
+  return null
 }
 
 function findDynamicSlice(rootDir: string, sliceName: string, file?: string) {

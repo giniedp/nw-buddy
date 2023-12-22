@@ -93,30 +93,12 @@ program
             target: path.join(pathToDatatables(inputDir), 'generated_vitals_metadata.json'),
             createDir: true,
           }),
-          writeJSONFile(vitals, {
-            target: path.join('tmp', 'vitals.json'),
-            createDir: true,
-          }),
-
-          // write it into input directory, so table loader will pick it up
           writeJSONFile(gatherables, {
             target: path.join(pathToDatatables(inputDir), 'generated_gatherables_metadata.json'),
             createDir: true,
           }),
-          writeJSONFile(gatherables, {
-            target: path.join('tmp', 'gatherables.json'),
-            createDir: true,
-          }),
-
-
-          // write it into input directory, so table loader will pick it up
-
           writeJSONFile(variations.records, {
             target: path.join(pathToDatatables(inputDir), 'generated_variations_metadata.json'),
-            createDir: true,
-          }),
-          writeJSONFile(variations.records, {
-            target: path.join('tmp', 'variations.json'),
             createDir: true,
           }),
           ...variations.chunks.map(async (chunk, index) => {
@@ -129,10 +111,7 @@ program
             target: path.join(pathToDatatables(inputDir), 'generated_territories_metadata.json'),
             createDir: true,
           }),
-          writeJSONFile(territories, {
-            target: path.join('tmp', 'territories.json'),
-            createDir: true,
-          }),
+
         ])
       })
     }

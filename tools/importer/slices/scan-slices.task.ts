@@ -107,10 +107,8 @@ export async function scanSlices({
     const vitalsRows: VitalScanRow[] = []
     const gatherablesRows: GatherableScanRow[] = []
     const variationsRows: VariationScanRow[] = []
-    walkJsonObjects(await readJSONFile(file), (obj: unknown) => {
-      if (!isRegionMetadataAsset(obj)) {
-        return false
-      }
+    const obj = await readJSONFile(file)
+    if (isRegionMetadataAsset(obj)) {
       for (const location of obj.aispawnlocations || []) {
         const vitalId = loadCrcFile(crcVitalsFile)[location.vitalsid?.value]
         if (!vitalId) {
@@ -146,7 +144,7 @@ export async function scanSlices({
           })
         }
       }
-    })
+    }
     return {
       vitals: vitalsRows,
       gatherables: gatherablesRows,
