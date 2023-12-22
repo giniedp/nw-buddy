@@ -1,11 +1,5 @@
-@if(familyIcon(); as icon) {
-  <a
-    [tooltip]="familyTip()"
-    class="absolute left-1"
-    [nwLink]="id()"
-    [nwLinkResource]="'vitals'"
-    target="_blank"
-  >
+@if (familyIcon(); as icon) {
+  <a [tooltip]="familyTip()" class="absolute left-1" [nwLink]="id()" [nwLinkResource]="'vitals'" target="_blank">
     <img [nwImage]="icon" class="w-12 h-12" />
   </a>
 }
@@ -22,7 +16,41 @@
 </div>
 <div class="relative flex items-center justify-center -mt-4 pointer-events-none">
   <img [nwImage]="typeMarker()" class="h-10 w-36 object-cover" />
-  <span class="absolute top-2 mx-auto text-shadow-sm shadow-black">
+  <span
+    class="absolute top-2 mx-auto text-shadow-sm shadow-black pointer-events-auto"
+    [class.cursor-pointer]="editableLevel"
+    #trigger="cdkOverlayOrigin"
+    cdkOverlayOrigin
+    (click)="levelEditorOpen = editableLevel"
+  >
     {{ level() }}
   </span>
+  @if (editableLevel) {
+    <ng-template
+      cdkConnectedOverlay
+      [cdkConnectedOverlayOrigin]="trigger"
+      [cdkConnectedOverlayOpen]="levelEditorOpen"
+      [cdkConnectedOverlayHasBackdrop]="false"
+      [cdkConnectedOverlayPositions]="[
+        { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 2 },
+        { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top', offsetY: 2 },
+        { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 2 }
+      ]"
+      [cdkConnectedOverlayPanelClass]="['bg-base-100', 'bg-opacity-75', 'rounded-md', 'shadow-md', 'p-2']"
+      (overlayOutsideClick)="levelEditorOpen = false"
+      (backdropClick)="levelEditorOpen = false"
+      (detach)="levelEditorOpen = false"
+    >
+      <nwb-gs-slider
+        [ngModel]="level()"
+        (ngModelChange)="setLevel($event)"
+        [min]="minLevel"
+        [max]="maxLevel"
+        [bars]="true"
+        [barsStep]="10"
+        [values]="true"
+        class="block w-96"
+      />
+    </ng-template>
+  }
 </div>

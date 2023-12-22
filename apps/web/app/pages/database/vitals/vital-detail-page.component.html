@@ -7,7 +7,7 @@
       class="border border-base-100 rounded-md overflow-clip relative"
       [nwbScreenshotFrame]="vital()?.DisplayName | nwText"
     >
-      <nwb-vital-detail-header class="bg-base-300" />
+      <nwb-vital-detail-header class="bg-base-300" [editableLevel]="true" />
       @if (store.isVitalFromDungeon$ | async) {
         <div class="absolute top-0 right-0 p-2 flex flex-row">
           <button

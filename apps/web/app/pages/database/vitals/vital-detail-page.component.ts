@@ -29,7 +29,6 @@ export type DetailTabId = 'stats' | 'loot-items' | 'loot-table' | 'damage-table'
     CommonModule,
     RouterModule,
     NwModule,
-    //VitalsDetailModule,
     VitalDetailModule,
     LootModule,
     LayoutModule,
