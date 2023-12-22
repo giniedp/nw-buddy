@@ -53,7 +53,7 @@
       @for (row of table.rows; track $index) {
         <div class="flex flex-col gap-1 mb-2">
           <div class="leading-tight font-bold">
-            <a [routerLink]="['/damage/table']" [queryParams]="{ search: row.DamageID}">
+            <a class="link-hover" [routerLink]="['/damage/table']" [queryParams]="{ search: row.DamageID}">
               {{ row.AttackName }}
             </a>
           </div>
