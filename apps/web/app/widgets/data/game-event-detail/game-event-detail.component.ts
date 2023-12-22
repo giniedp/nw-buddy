@@ -1,10 +1,11 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, forwardRef, inject, Input } from '@angular/core'
 import { GameEvent } from '@nw-data/generated'
 import { NwDbService, NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
 import { GameEventDetailStore } from './game-event-detail.store'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -15,27 +16,36 @@ import { GameEventDetailStore } from './game-event-detail.store'
   imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, DecimalPipe],
   providers: [
     DecimalPipe,
-    {
-      provide: GameEventDetailStore,
-      useExisting: forwardRef(() => GameEventDetailComponent),
-    },
+    GameEventDetailStore
   ],
   host: {
-    class: 'block rounded-md overflow-clip',
+    class: 'block rounded-md overflow-clip bg-black p-2 border border-base-100',
   },
 })
-export class GameEventDetailComponent extends GameEventDetailStore {
+export class GameEventDetailComponent {
+  public readonly store = inject(GameEventDetailStore)
+  protected decimals = inject(DecimalPipe)
+
+  public readonly props = toSignal(this.store.properties$)
+  public readonly rewards = toSignal(this.store.rewards$)
+  public readonly lootTableId = toSignal(this.store.lootTableId$)
+
   @Input()
   public set eventId(value: string) {
-    this.patchState({ eventId: value })
-  }
-
-  public constructor(db: NwDbService, private decimals: DecimalPipe) {
-    super(db)
+    this.store.patchState({ eventId: value })
   }
 
   public formatValue = (value: any, key: keyof GameEvent): PropertyGridCell | PropertyGridCell[] => {
     switch (key) {
+      case 'EventID': {
+        return [
+          {
+            value: String(value),
+            accent: true,
+            routerLink: ['/game-events/table', value],
+          },
+        ]
+      }
       case 'LootLimitReachedGameEventId':
       case 'LootLimitId': {
         return [
@@ -100,27 +110,4 @@ export class GameEventDetailComponent extends GameEventDetailStore {
       }
     }
   }
-}
-
-function statusEffectCells(list: string | string[]): PropertyGridCell[] {
-  list = typeof list === 'string' ? [list] : list
-  return list?.map((it) => {
-    const isLink = it !== 'All'
-    return {
-      value: String(it),
-      accent: isLink,
-      routerLink: isLink ? ['/status-effects/table', it] : null,
-    }
-  })
-}
-
-function abilitiesCells(list: string | string[]): PropertyGridCell[] {
-  list = typeof list === 'string' ? [list] : list
-  return list?.map((it) => {
-    return {
-      value: String(it),
-      accent: true,
-      routerLink: ['/abilities/table', it],
-    }
-  })
 }

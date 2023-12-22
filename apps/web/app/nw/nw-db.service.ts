@@ -438,6 +438,8 @@ export class NwDbService {
   })
   public gameEventsMap = indexBy(() => this.gameEvents, 'EventID')
   public gameEvent = lookup(() => this.gameEventsMap)
+  public gameEventsByLootLimitIdMap = indexGroupBy(() => this.gameEvents, 'LootLimitId')
+  public gameEventsByLootLimitId = lookup(() => this.gameEventsByLootLimitIdMap)
 
   public categoriesProgression = table(() => [this.data.categoricalprogression()])
   public categoriesProgressionMap = indexBy(() => this.categoriesProgression, 'CategoricalProgressionId')
@@ -564,6 +566,7 @@ export class NwDbService {
 
   public lootLimits = table(() => [this.data.lootlimits()])
   public lootLimitsMap = indexBy(() => this.lootLimits, 'LootLimitID')
+  public lootLimit = lookup(() => this.lootLimitsMap)
 
   public buffBuckets = table(() => this.data.buffbuckets().pipe(map(convertBuffBuckets)))
   public buffBucketsMap = indexBy(() => this.buffBuckets, 'BuffBucketId')

@@ -9,6 +9,26 @@ export interface GameEventReward {
   rarity?: ItemRarity
 }
 
+export function selectGameEventItemReward(event: GameEvent) {
+  const itemReward = event?.ItemReward
+  if (!itemReward) {
+    return null
+  }
+  if (itemReward.startsWith('[LTID]')) {
+    return {
+      lootTableId: itemReward.replace('[LTID]', ''),
+    }
+  }
+  if (itemReward.includes('HousingItem')) {
+    return {
+      housingItemId: itemReward,
+    }
+  }
+  return {
+    itemId: itemReward,
+  }
+}
+
 export function selectGameEventRewards(event: GameEvent, item: ItemDefinitionMaster | Housingitems) {
   const result: GameEventReward[] = []
   if (!event) {

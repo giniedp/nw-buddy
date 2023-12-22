@@ -23,7 +23,10 @@ export function convertLoottables(data: Loottable[]): LootTable[] {
     .map((it): LootTable => {
       const qty = findById(data, `${it.LootTableID}_Qty`)
       const probs = findById(data, `${it.LootTableID}_Probs`)
-
+      const limitIds = it.Conditions?.filter((it) => it.startsWith('[LIM]'))?.map((it) => it.replace('[LIM]', ''))
+      if (limitIds?.length > 1) {
+        console.warn('Multiple limits', limitIds, it)
+      }
       return {
         ...it,
         MaxRoll: probs.MaxRoll,
@@ -37,7 +40,7 @@ export function convertLoottables(data: Loottable[]): LootTable[] {
             ItemID: itemID,
             LootBucketID: bucketID,
             LootTableID: tableID,
-            LootLimitID: limitID,
+            LootLimitID: limitID || limitIds?.[0],
             GearScoreRange: probs[key.replace('Item', 'GearScoreRange')],
             Qty: qty?.[key],
             Prob: probs?.[key],

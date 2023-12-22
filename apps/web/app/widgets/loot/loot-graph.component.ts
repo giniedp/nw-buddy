@@ -18,7 +18,7 @@ import { ta } from 'date-fns/locale'
       *ngFor="let node of graph$ | async"
       [node]="node"
       [showLocked]="showLocked"
-      [expand]="true"
+      [expand]="expand"
       [showChance]="showChance"
       [showLink]="true"
     ></nwb-loot-graph-node>
@@ -47,6 +47,9 @@ export class LootGraphComponent extends ComponentStore<{
 
   @Input()
   public showStats = false
+
+  @Input()
+  public expand = true
 
   @Input()
   public set tableId(value: string | string[]) {

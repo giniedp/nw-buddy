@@ -26,7 +26,7 @@
   </div>
   <div *ngIf="rewards$ | async; let rewards" class="flex flex-col gap-1">
     <h3 class="font-bold">Rewards</h3>
-    <nwb-game-event-detail-rewards [rewards]="rewards"></nwb-game-event-detail-rewards>
+    <nwb-game-event-detail-rewards [rewards]="rewards"/>
   </div>
 
   <div *ngIf="previousQuests$ | async; let prev" class="flex flex-col gap-1">
