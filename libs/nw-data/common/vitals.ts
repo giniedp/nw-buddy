@@ -347,5 +347,23 @@ export function getVitalDamage({
   const addDmg = damageTable.AddDmg || 0
   //const dmgIncMod = effectMap.get(difficulty?.DamageIncreaseMod)?.['DMG' + damageTable.DamageType] || 0
   const dmgPotency = 1 + (difficulty?.[`DamagePotency_${vital.CreatureType}`] || 0) / 100
-  return baseDamage * dmgCoef * dmgMod * dmgPotency * categoryDamageMod + addDmg
+
+  const result = baseDamage * dmgCoef * dmgMod * dmgPotency * categoryDamageMod + addDmg
+  console.debug('getVitalDamage', {
+    vital,
+    level,
+    modifier,
+    damageTable,
+    difficulty,
+  })
+  console.debug({
+    baseDamage,
+    dmgCoef,
+    dmgMod,
+    categoryDamageMod,
+    addDmg,
+    dmgPotency,
+    result
+  })
+  return result
 }
