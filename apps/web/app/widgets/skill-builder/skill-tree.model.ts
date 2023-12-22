@@ -194,8 +194,13 @@ function getAbilityParent(ability: Ability, abilities: Ability[]) {
   if (!ability) {
     return null
   }
-  if (ability.RequiredAbilityId && ability.RequiredAbilityId !== 'Ability_Flail_Defense') {
-    return ability.RequiredAbilityId
+  if (ability.RequiredAbilityId) {
+    if (ability.RequiredAbilityId === 'Upgrade_Musket_TrapWeakenAOE') {
+      return 'Upgrade_Musket_TrapLifeSteal'
+    }
+    if (ability.RequiredAbilityId !== 'Ability_Flail_Defense') {
+      return ability.RequiredAbilityId
+    }
   }
   // TODO: hackedy hack, fix this
   if (ability.AbilityID.startsWith('Upgrade_')) {
