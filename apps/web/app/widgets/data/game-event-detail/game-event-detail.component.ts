@@ -1,11 +1,10 @@
-import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, forwardRef, inject, Input } from '@angular/core'
-import { GameEvent } from '@nw-data/generated'
-import { NwDbService, NwModule } from '~/nw'
-import { ItemFrameModule } from '~/ui/item-frame'
-import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
-import { GameEventDetailStore } from './game-event-detail.store'
+import { DecimalPipe } from '@angular/common'
+import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
+import { GameEvent } from '@nw-data/generated'
+import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
+import { GameEventDetailRewardsComponent } from './game-event-detail-rewards.component'
+import { GameEventDetailStore } from './game-event-detail.store'
 
 @Component({
   standalone: true,
@@ -13,13 +12,10 @@ import { toSignal } from '@angular/core/rxjs-interop'
   templateUrl: './game-event-detail.component.html',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, DecimalPipe],
-  providers: [
-    DecimalPipe,
-    GameEventDetailStore
-  ],
+  imports: [PropertyGridModule, DecimalPipe, GameEventDetailRewardsComponent],
+  providers: [DecimalPipe, GameEventDetailStore],
   host: {
-    class: 'block rounded-md overflow-clip bg-black p-2 border border-base-100',
+    class: 'block rounded-md overflow-clip bg-black p-3 border border-base-100',
   },
 })
 export class GameEventDetailComponent {

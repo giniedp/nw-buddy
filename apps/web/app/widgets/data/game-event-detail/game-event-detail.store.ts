@@ -37,6 +37,19 @@ export class GameEventDetailStore extends ComponentStore<{ eventId: string }> {
 }
 
 function selectProperties(item: GameEvent) {
-  const reject = ['$source']
+  const reject: Array<keyof GameEvent> = [
+    '$source' as any,
+    'AzothReward',
+    'AzothSalt',
+    'CurrencyReward',
+    'FactionInfluenceAmount',
+    'FactionReputation',
+    'FactionTokens',
+    'SeasonsXp',
+    'TerritoryStanding',
+    'UniversalExpAmount',
+    'PVPXP',
+    'PvpXp',
+  ]
   return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }

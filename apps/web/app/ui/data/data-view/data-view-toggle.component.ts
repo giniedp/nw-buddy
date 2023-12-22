@@ -21,7 +21,7 @@ export class DataViewToggleComponent {
   protected iconTable = svgTableList
 
   protected icon$ = computed(() => {
-    return this.service.isTableActive$() ? svgTableList : svgGrid
+    return this.service.isTableActive() ? svgTableList : svgGrid
   })
 
   public constructor(protected cdkOrigin: CdkOverlayOrigin, protected service: DataViewService<unknown>) {

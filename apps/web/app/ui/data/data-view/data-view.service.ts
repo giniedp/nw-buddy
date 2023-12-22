@@ -6,6 +6,7 @@ import { DataViewAdapter } from './data-view-adapter'
 import { DataViewCategory } from './data-view-category'
 import { AgGrid, whenGridReady } from '../ag-grid'
 import { AgGridEvent } from '@ag-grid-community/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 export type DataViewMode = 'grid' | 'table'
 export interface DataViewServiceState<T> {
@@ -28,17 +29,18 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
     return selectItemsByCategory(this.adapter, items, category)
   })
 
+  public readonly categoryItems = toSignal(this.categoryItems$)
   public readonly tableGridOptions = this.adapter.gridOptions()
   public readonly virtualOptions = this.adapter.virtualOptions()
 
-  public readonly isTableSupported$ = this.selectSignal(({ modes }) => {
+  public readonly isTableSupported = this.selectSignal(({ modes }) => {
     return modes.includes('table') && !!this.tableGridOptions
   })
   public readonly isVirtualSupported = this.selectSignal(({ modes }) => {
     return modes.includes('grid') && !!this.virtualOptions
   })
 
-  public readonly canToggleMode$ = this.selectSignal(this.isTableSupported$, this.isVirtualSupported, (table, grid) => {
+  public readonly canToggleMode = this.selectSignal(this.isTableSupported, this.isVirtualSupported, (table, grid) => {
     return table && grid
   })
 
@@ -51,8 +53,8 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
     }
     return null
   })
-  public readonly isTableActive$ = this.selectSignal(this.mode$, (mode) => mode === 'table')
-  public readonly isGridActive$ = this.selectSignal(this.mode$, (mode) => mode === 'grid')
+  public readonly isTableActive = this.selectSignal(this.mode$, (mode) => mode === 'table')
+  public readonly isGridActive = this.selectSignal(this.mode$, (mode) => mode === 'grid')
 
   public readonly onTableReady = (it: AgGrid<T>) => {
     return this.patchState({ agGrid: it })
@@ -94,7 +96,7 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
   })
 
   public toggleMode() {
-    if (this.canToggleMode$()) {
+    if (this.canToggleMode()) {
       this.patchState({ mode: this.mode$() === 'table' ? 'grid' : 'table' })
     }
   }

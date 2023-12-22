@@ -1,149 +1,7 @@
-<ng-container *ngIf="vm$ | async; let vm">
-  <div *ngIf="vm.expandable" class="border border-base-100 rounded-l-md class.bg-base-200">
-    <div
-      class="pl-2 py-1 flex flex-row items-center gap-x-1 bg-base-100 cursor-pointer shadow-accent border-l-4"
-      [class.border-l-transparent]="!vm.highlight"
-      [class.border-l-accent]="vm.highlight"
-      (click)="toggle()"
-    >
-      <div class="flex flex-row flex-wrap items-center gap-x-1">
-        <span *ngIf="vm.rollThreshold" class="badge badge-sm badge-primary">
-          >= {{ vm.rollThreshold }}
-          <ng-container *ngIf="vm.chanceRel"> ({{ vm.chanceRel | percent: '0.0-6' }}) </ng-container>
-        </span>
-        <span *ngIf="vm.tagValue" class="badge badge-sm badge-secondary whitespace-nowrap"> >= {{ vm.tagValue }} </span>
-        <span *ngIf="vm.itemQuantity && vm.itemQuantity != '1'" class="whitespace-nowrap">
-          {{ vm.itemQuantity }} &times;
-        </span>
-        @if(vm.showLink) {
-          <a
-            class="btn btn-sm btn-square btn-ghost -ml-2"
-            [routerLink]="vm.link"
-            [tooltip]="vm.showLink ? 'Go to loot table' : ''"
-          >
-            <nwb-icon [icon]="linkIcon" class="w-4 h-4"></nwb-icon>
-          </a>
-        }
-        <span class="flex-1 overflow-hidden whitespace-nowrap inline-flex items-center" >{{ vm.displayName }}</span>
-      </div>
-      <span class="flex-1"></span>
+@if (vm(); as vm) {
+  <ng-container *ngTemplateOutlet="vm.expandable ? tplHead : tplChildren" />
 
-      <div class="text-xs flex flex-row items-center gap-1">
-        <span
-          class="min-w-[40px] cursor-help"
-          [tooltip]="vm.typeName === 'bucket' ? 'This is a loot bucket' : 'This is a loot table'"
-          [class.text-secondary]="vm.typeName == 'bucket'"
-        >
-          {{ vm.typeName }}
-        </span>
-        <span> | </span>
-        <ng-container *ngIf="vm.showChance">
-          <span class="min-w-[40px] cursor-help inline-flex flex-col text-right">
-            <span> {{ vm.chanceAbs | percent: '0.0-6' }} </span>
-          </span>
-          <span> | </span>
-        </ng-container>
-        <span class="min-w-[40px] cursor-help inline-flex flex-col text-right" [tooltip]="tplTip">
-          <span class="text-success" *ngIf="vm.unlockedItemCount && !vm.showLocked">
-            {{ vm.unlockedItemCount }}
-          </span>
-          <span> {{ vm.totalItemCount }} </span>
-          <ng-template #tplTip>
-            <div class="p-2">
-              <div>{{ vm.totalItemCount }} items inside this table (tree)</div>
-              <div class="text-success">{{ vm.unlockedItemCount }} items unlocked with current loot context</div>
-              <div class="text-error">{{ vm.totalItemCount - vm.unlockedItemCount }} items locked</div>
-            </div>
-          </ng-template>
-        </span>
-      </div>
-      <nwb-icon
-        [icon]="iconExpand"
-        class="transition-transform w-4 h-4"
-        [class.rotate-90]="vm.expand"
-        [class.-rotate-90]="!vm.expand"
-        [class.text-error]="!vm.unlocked && !vm.showLocked"
-        [class.text-success]="vm.unlocked || vm.showLocked"
-      ></nwb-icon>
-    </div>
-    <div class="p-3 pr-0 mr-[-1px] flex flex-col gap-2" *ngIf="vm.expand">
-      <div class="flex flex-row flex-wrap gap-1" *ngIf="vm.table">
-        <span *ngIf="vm.table['AND/OR']" class="whitespace-nowrap badge badge-sm badge-info">
-          {{ vm.table['AND/OR'] }}
-        </span>
-        <span *ngIf="vm.table.MaxRoll" class="whitespace-nowrap badge badge-sm badge-primary">
-          MaxRoll: {{ vm.table.MaxRoll }}
-        </span>
-        <span *ngIf="vm.table.RollBonusSetting" class="whitespace-nowrap badge badge-sm badge-accent">
-          {{ vm.table.RollBonusSetting }}
-        </span>
-
-        <span
-          *ngFor="let item of vm.table.Conditions"
-          class="whitespace-nowrap badge badge-sm badge-secondary cursor-help"
-          [tooltip]="'Condition tag'"
-        >
-          {{ item }}
-        </span>
-
-        <span
-          *ngIf="isTrue(vm.table.ConditionOverridesRoll)"
-          class="whitespace-nowrap badge badge-sm badge-secondary cursor-help opacity-50"
-          [tooltip]="'Condition Overrides Roll'"
-        >
-          COR
-        </span>
-        <span
-          *ngIf="isTrue(vm.table.LootBiasingEnabled)"
-          class="whitespace-nowrap badge badge-sm badge-accent cursor-help"
-          [tooltip]="'Loot Biasing Enabled'"
-        >
-          Bias
-        </span>
-        <span
-          *ngIf="vm.table.LootBiasingChanceOverride"
-          class="whitespace-nowrap badge badge-sm badge-accent cursor-help"
-          [tooltip]="'Loot Biasing Chance Override'"
-        >
-          Bias CO: {{ vm.table.LootBiasingChanceOverride }}
-        </span>
-        <span *ngIf="vm.table.GSBonus" class="whitespace-nowrap badge badge-sm badge-outline opacity-50">
-          GSBonus: {{ vm.table.GSBonus }}
-        </span>
-        <span *ngIf="isTrue(vm.table.UseLevelGS)" class="whitespace-nowrap badge badge-sm badge-outline opacity-50">
-          UseLvelGS
-        </span>
-        <span
-          *ngIf="isTrue(vm.table.TriggerLimitOnVisit)"
-          class="whitespace-nowrap badge badge-sm badge-outline opacity-50"
-        >
-          Trigger Limit
-        </span>
-        <span
-          *ngIf="vm.table.PerkBucketOverrides2"
-          class="whitespace-nowrap badge badge-sm badge-outline opacity-50 cursor-help"
-          [tooltip]="'Perk Bucket Override'"
-        >
-          PBO
-        </span>
-
-        <span class="flex-1"></span>
-        <span [tooltip]="tplProps" class="badge badge-sm badge-info cursor-help mr-1">
-          <nwb-icon [icon]="iconCode" class="w-4 h-4 self-end"></nwb-icon>
-          <ng-template #tplProps>
-            <nwb-property-grid [item]="getProps(vm.table)" class="p-2 gap-x-2"/>
-          </ng-template>
-        </span>
-      </div>
-      <ng-container *ngTemplateOutlet="tplChildren"></ng-container>
-    </div>
-  </div>
-
-  <ng-container *ngIf="!vm.expandable">
-    <ng-container *ngTemplateOutlet="tplChildren"></ng-container>
-  </ng-container>
-
-  <ng-container *ngIf="vm.itemId">
+  @if (vm.itemId) {
     <nwb-item-detail
       [entityId]="vm.itemId"
       class="max-w-md rounded-md overflow-hidden border-2"
@@ -153,35 +11,187 @@
     >
       <nwb-item-detail-header class="h-full" [enableLink]="true" [enableInfoLink]="true">
         <div class="content flex flex-row flex-wrap gap-1">
-          <span *ngIf="vm.rollThreshold" class="whitespace-nowrap badge badge-sm badge-primary">
-            >= {{ vm.rollThreshold }}
-          </span>
-          <span *ngIf="vm.tagValue" class="whitespace-nowrap badge badge-sm badge-secondary">
-            >= {{ vm.tagValue }}
-          </span>
-          <span class="badge badge-sm badge-primary whitespace-nowrap" *ngIf="vm.itemQuantity">
-            {{ vm.itemQuantity }} &times;
-          </span>
-          <ng-container *ngIf="vm.itemTags?.length">
-            <span
-              *ngFor="let tag of vm.itemTags; trackBy: trackByIndex"
-              class="badge badge-sm badge-secondary whitespace-nowrap"
-            >
+          @if (vm.rollThreshold) {
+            <span class="whitespace-nowrap badge badge-sm badge-primary"> >= {{ vm.rollThreshold }} </span>
+          }
+          @if (vm.tagValue) {
+            <span class="whitespace-nowrap badge badge-sm badge-secondary"> >= {{ vm.tagValue }} </span>
+          }
+          @if (vm.itemQuantity) {
+            <span class="badge badge-sm badge-primary whitespace-nowrap"> {{ vm.itemQuantity }} &times; </span>
+          }
+          @for (tag of vm.itemTags; track $index) {
+            <span class="badge badge-sm badge-secondary whitespace-nowrap">
               {{ tag }}
             </span>
-          </ng-container>
+          }
         </div>
       </nwb-item-detail-header>
     </nwb-item-detail>
-  </ng-container>
+  }
+
+  <ng-template #tplHead>
+    <div class="border border-base-100 rounded-l-md bg-black">
+      <div
+        class="pl-2 py-1 flex flex-row items-center gap-x-1 bg-base-100 cursor-pointer shadow-accent border-l-4"
+        [class.border-l-transparent]="!vm.highlight"
+        [class.border-l-accent]="vm.highlight"
+        (click)="toggle()"
+      >
+        <div class="flex flex-row flex-wrap items-center gap-x-1">
+          @if (vm.rollThreshold) {
+            <span class="badge badge-sm badge-primary">
+              >= {{ vm.rollThreshold }}
+              @if (vm.chanceRel) {
+                ({{ vm.chanceRel | percent: '0.0-6' }})
+              }
+            </span>
+          }
+          @if (vm.tagValue) {
+            <span class="badge badge-sm badge-secondary whitespace-nowrap"> >= {{ vm.tagValue }} </span>
+          }
+          @if (vm.itemQuantity && vm.itemQuantity != '1') {
+            <span class="whitespace-nowrap"> {{ vm.itemQuantity }} &times; </span>
+          }
+          @if (vm.showLink) {
+            <a
+              class="btn btn-sm btn-square btn-ghost -ml-2"
+              [routerLink]="vm.link"
+              [tooltip]="vm.showLink ? 'Go to loot table' : ''"
+            >
+              <nwb-icon [icon]="linkIcon" class="w-4 h-4"></nwb-icon>
+            </a>
+          }
+          <span class="flex-1 overflow-hidden whitespace-nowrap inline-flex items-center">{{ vm.displayName }}</span>
+        </div>
+        <span class="flex-1"></span>
+
+        <div class="text-xs flex flex-row items-center gap-1">
+          <span
+            class="min-w-[40px] cursor-help"
+            [tooltip]="vm.typeName === 'bucket' ? 'This is a loot bucket' : 'This is a loot table'"
+            [class.text-secondary]="vm.typeName == 'bucket'"
+          >
+            {{ vm.typeName }}
+          </span>
+          <span> | </span>
+          <ng-container *ngIf="vm.showChance">
+            <span class="min-w-[40px] cursor-help inline-flex flex-col text-right">
+              <span> {{ vm.chanceAbs | percent: '0.0-6' }} </span>
+            </span>
+            <span> | </span>
+          </ng-container>
+          <span class="min-w-[40px] cursor-help inline-flex flex-col text-right" [tooltip]="tplTip">
+            @if (vm.unlockedItemCount && !vm.showLocked) {
+              <span class="text-success">
+                {{ vm.unlockedItemCount }}
+              </span>
+            }
+            <span> {{ vm.totalItemCount }} </span>
+            <ng-template #tplTip>
+              <div class="p-2">
+                <div>{{ vm.totalItemCount }} items inside this table (tree)</div>
+                <div class="text-success">{{ vm.unlockedItemCount }} items unlocked with current loot context</div>
+                <div class="text-error">{{ vm.totalItemCount - vm.unlockedItemCount }} items locked</div>
+              </div>
+            </ng-template>
+          </span>
+        </div>
+        <nwb-icon
+          [icon]="iconExpand"
+          class="transition-transform w-4 h-4"
+          [class.rotate-90]="vm.expand"
+          [class.-rotate-90]="!vm.expand"
+          [class.text-error]="!vm.unlocked && !vm.showLocked"
+          [class.text-success]="vm.unlocked || vm.showLocked"
+        />
+      </div>
+      @if (vm.expand) {
+        <div class="p-3 pr-0 mr-[-1px] flex flex-col gap-2" @childContainer>
+          @if (vm.table) {
+            <div class="flex flex-row flex-wrap gap-1">
+              @if (vm.table['AND/OR']; as tagValue) {
+                <span class="whitespace-nowrap badge badge-sm badge-info">
+                  {{ tagValue }}
+                </span>
+              }
+              @if (vm.table.MaxRoll; as tagValue) {
+                <span class="whitespace-nowrap badge badge-sm badge-primary"> MaxRoll: {{ tagValue }} </span>
+              }
+              @if (vm.table.RollBonusSetting; as tagValue) {
+                <span class="whitespace-nowrap badge badge-sm badge-accent">
+                  {{ tagValue }}
+                </span>
+              }
+              @for (item of vm.table.Conditions; track $index) {
+                <span class="whitespace-nowrap badge badge-sm badge-secondary cursor-help" [tooltip]="'Condition tag'">
+                  {{ item }}
+                </span>
+              }
+              @if (isTrue(vm.table.ConditionOverridesRoll)) {
+                <span
+                  class="whitespace-nowrap badge badge-sm badge-secondary cursor-help opacity-50"
+                  [tooltip]="'Condition Overrides Roll'"
+                >
+                  COR
+                </span>
+              }
+              @if (isTrue(vm.table.LootBiasingEnabled)) {
+                <span
+                  class="whitespace-nowrap badge badge-sm badge-accent cursor-help"
+                  [tooltip]="'Loot Biasing Enabled'"
+                >
+                  Bias
+                </span>
+              }
+              @if (vm.table.LootBiasingChanceOverride; as tagValue) {
+                <span
+                  class="whitespace-nowrap badge badge-sm badge-accent cursor-help"
+                  [tooltip]="'Loot Biasing Chance Override'"
+                >
+                  Bias CO: {{ tagValue }}
+                </span>
+              }
+              @if (vm.table.GSBonus; as tagValue) {
+                <span class="whitespace-nowrap badge badge-sm badge-outline opacity-50"> GSBonus: {{ tagValue }} </span>
+              }
+              @if (isTrue(vm.table.UseLevelGS)) {
+                <span class="whitespace-nowrap badge badge-sm badge-outline opacity-50"> UseLvelGS </span>
+              }
+              @if (isTrue(vm.table.TriggerLimitOnVisit)) {
+                <span class="whitespace-nowrap badge badge-sm badge-outline opacity-50"> Trigger Limit </span>
+              }
+              @if (vm.table.PerkBucketOverrides2) {
+                <span
+                  class="whitespace-nowrap badge badge-sm badge-outline opacity-50 cursor-help"
+                  [tooltip]="'Perk Bucket Override'"
+                >
+                  PBO
+                </span>
+              }
+
+              <span class="flex-1"></span>
+              <span [tooltip]="tplProps" class="badge badge-sm badge-info cursor-help mr-1">
+                <nwb-icon [icon]="iconCode" class="w-4 h-4 self-end"></nwb-icon>
+                <ng-template #tplProps>
+                  <nwb-property-grid [item]="getProps(vm.table)" class="p-2 gap-x-2" />
+                </ng-template>
+              </span>
+            </div>
+          }
+          <ng-container *ngTemplateOutlet="tplChildren" />
+        </div>
+      }
+    </div>
+  </ng-template>
 
   <ng-template #tplChildren>
     @if (!vm.children?.length) {
       <!-- empty -->
-    } @else if(vm.childGrid) {
+    } @else if (vm.childGrid) {
       <nwb-virtual-grid [data]="vm.children" [options]="vm.gridOptions" class="min-h-[380px] -m-2" />
-    } @else if(vm.childrenAreItems) {
-      <div class="grid grid-cols-fill-xs gap-2">
+    } @else if (vm.childrenAreItems) {
+      <div class="grid grid-cols-fill-xs gap-2 mr-3">
         @for (node of vm.children; track $index) {
           <nwb-loot-graph-node [node]="node" [showLocked]="vm.showLocked" [showChance]="vm.showChance" />
         }
@@ -194,4 +204,4 @@
       </div>
     }
   </ng-template>
-</ng-container>
+}

@@ -12,7 +12,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgPen } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, observeQueryParam, observeRouteParam, selectStream } from '~/utils'
+import { HtmlHeadService, observeQueryParam, observeRouteParam, selectSignal, selectStream } from '~/utils'
 import { VitalDetailModule, VitalDetailStore } from '~/widgets/data/vital-detail'
 import { LootModule } from '~/widgets/loot'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -57,7 +57,7 @@ export class VitalDetailComponent {
 
   protected iconEdit = svgPen
 
-  protected lootTableId$ = selectStream(this.store.vital$, (it) => it.LootTableId)
+  protected lootTableId = selectSignal(this.store.vital$, (it) => it?.LootTableId)
 
   public constructor(
     private route: ActivatedRoute,

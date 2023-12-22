@@ -31,7 +31,7 @@
       <!-- <li>
         <nwb-data-table-panel-button></nwb-data-table-panel-button>
       </li> -->
-      <li *ngIf="service.canToggleMode$()">
+      <li *ngIf="service.canToggleMode()">
         <button [nwbDataViewToggle]></button>
       </li>
     </ul>
@@ -41,7 +41,7 @@
   </div>
 </ion-header>
 <div class="flex-1 flex flex-row overflow-hidden">
-  <ng-container *ngIf="service.isGridActive$()">
+  <ng-container *ngIf="service.isGridActive()">
     <nwb-virtual-grid
       [enableQuickfilter]="true"
       [data]="service.categoryItems$ | async"
@@ -50,7 +50,7 @@
       [selectionRouteParam]="selectionParam"
     ></nwb-virtual-grid>
   </ng-container>
-  <ng-container *ngIf="service.isTableActive$()">
+  <ng-container *ngIf="service.isTableActive()">
     <nwb-table-grid
       [enableQuickfilter]="true"
       [data]="service.categoryItems$ | async"

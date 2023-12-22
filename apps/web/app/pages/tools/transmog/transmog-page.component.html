@@ -14,11 +14,11 @@
       </li>
       <span class="flex-1"></span>
 
-      <li *ngIf="viewService.canToggleMode$()">
+      <li *ngIf="viewService.canToggleMode()">
         <button [nwbDataViewToggle]></button>
       </li>
       <!-- <li>
-        <button [nwbDataViewOptionsMenu] [disabled]="!viewService.isTableActive$()"></button>
+        <button [nwbDataViewOptionsMenu] [disabled]="!viewService.isTableActive()"></button>
       </li> -->
     </ul>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
@@ -27,7 +27,7 @@
   </div>
 </ion-header>
 <div class="flex-1 flex flex-row overflow-hidden">
-  <ng-container *ngIf="viewService.isGridActive$()">
+  <ng-container *ngIf="viewService.isGridActive()">
     <nwb-virtual-grid
       [enableQuickfilter]="true"
       [data]="viewService.categoryItems$ | async"
@@ -36,7 +36,7 @@
       [selectionRouteParam]="selectionParam"
     ></nwb-virtual-grid>
   </ng-container>
-  <ng-container *ngIf="viewService.isTableActive$()">
+  <ng-container *ngIf="viewService.isTableActive()">
     <nwb-table-grid
       (ready$)="viewService.onTableReady($event)"
       [enableQuickfilter]="true"

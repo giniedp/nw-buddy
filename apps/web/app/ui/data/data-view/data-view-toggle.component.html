@@ -12,13 +12,13 @@
 >
   <div class="w-48 bg-base-200 border border-base-100 rounded-md shadow-lg">
     <ul class="menu menu-compact">
-      <li [class.bordered]="this.service.isTableActive$()">
+      <li [class.bordered]="this.service.isTableActive()">
         <a (click)="activateTable()">
           <nwb-icon [icon]="iconTable" class="w-4 h-4"></nwb-icon>
           Table View
         </a>
       </li>
-      <li [class.bordered]="this.service.isGridActive$()">
+      <li [class.bordered]="this.service.isGridActive()">
         <a (click)="activateGrid()">
           <nwb-icon [icon]="iconGrid" class="w-4 h-4"></nwb-icon>
           Grid View

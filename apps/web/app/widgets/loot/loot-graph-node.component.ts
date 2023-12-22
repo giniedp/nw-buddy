@@ -16,6 +16,7 @@ import { eqCaseInsensitive } from '~/utils'
 import { ItemDetailHeaderComponent } from '../data/item-detail/item-detail-header.component'
 import { ItemDetailComponent } from '../data/item-detail/item-detail.component'
 import { LootGraphGridCellComponent } from './loot-graph-grid-cell.component'
+import { animate, style, transition, trigger } from '@angular/animations'
 
 export interface LootGraphNodeState<T = LootNode> {
   node: T
@@ -77,6 +78,20 @@ export interface LootGraphNodeVM {
   host: {
     class: 'contents',
   },
+  animations: [
+    trigger('childContainer', [
+      transition(':enter', [
+        style({ height: 0, opacity: 0 }),
+        animate('0.15s ease-out', style({ height: '*' })),
+        animate('0.15s ease-out', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [
+        style({ height: '*', opacity: '*' }),
+        animate('0.15s ease-out', style({ opacity: 0 })),
+        animate('0.15s ease-out', style({ height: 0 })),
+      ]),
+    ]),
+  ]
 })
 export class LootGraphNodeComponent extends ComponentStore<LootGraphNodeState> {
   @Input()
@@ -104,7 +119,7 @@ export class LootGraphNodeComponent extends ComponentStore<LootGraphNodeState> {
     this.patchState({ showLink: value })
   }
 
-  protected vm$ = this.select(selectVM)
+  protected vm = this.selectSignal(selectVM)
   protected trackByIndex = (i: number) => i
 
   protected iconExpand = svgAngleLeft
@@ -147,6 +162,9 @@ export class LootGraphNodeComponent extends ComponentStore<LootGraphNodeState> {
 }
 
 function selectVM(state: LootGraphNodeState) {
+  if (!state?.node) {
+    return null
+  }
   const node = state.node
   const vm: LootGraphNodeVM = initVM(state)
   if (!node) {

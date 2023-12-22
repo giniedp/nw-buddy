@@ -17,7 +17,7 @@ import { getItemId } from '@nw-data/common'
   imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule],
   providers: [DecimalPipe, LootLimitDetailStore],
   host: {
-    class: 'block rounded-md overflow-clip bg-black p-2 border border-base-100' ,
+    class: 'block rounded-md overflow-clip bg-black p-3 border border-base-100',
   },
 })
 export class LootLimitDetailComponent {

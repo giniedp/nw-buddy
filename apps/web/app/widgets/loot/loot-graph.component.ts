@@ -5,28 +5,28 @@ import { combineLatest, of, switchMap } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { LootContext } from '~/nw/loot'
 import { LootNode, buildLootGraph, updateLootGraph } from '~/nw/loot/loot-graph'
-import { selectStream } from '~/utils'
+import { selectSignal, selectStream } from '~/utils'
 import { LootContextEditorComponent } from './loot-context-editor.component'
 import { LootGraphNodeComponent } from './loot-graph-node.component'
-import { ta } from 'date-fns/locale'
 
 @Component({
   standalone: true,
   selector: 'nwb-loot-graph',
   template: `
-    <nwb-loot-graph-node
-      *ngFor="let node of graph$ | async"
-      [node]="node"
-      [showLocked]="showLocked"
-      [expand]="expand"
-      [showChance]="showChance"
-      [showLink]="true"
-    ></nwb-loot-graph-node>
+    @for (node of graph(); track $index) {
+      <nwb-loot-graph-node
+        [node]="node"
+        [showLocked]="showLocked"
+        [expand]="expand"
+        [showChance]="showChance"
+        [showLink]="true"
+      />
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, LootGraphNodeComponent, LootContextEditorComponent],
+  imports: [NwModule, LootGraphNodeComponent, LootContextEditorComponent],
   host: {
-    class: 'layout-content',
+    class: 'block ayout-content',
   },
 })
 export class LootGraphComponent extends ComponentStore<{
@@ -95,16 +95,19 @@ export class LootGraphComponent extends ComponentStore<{
       values: this.tagValues$,
     }),
     (params) => LootContext.create(params),
-    { debounce: true }
+    { debounce: true },
   )
-  protected graph$ = this.select(
-    combineLatest({
+  protected graph = selectSignal(
+    {
       graph: this.fullGraph$,
       context: this.context$,
       dropChance: this.dropChance$,
       highlight: this.highlight$,
-    }),
+    },
     ({ graph, context, dropChance, highlight }) => {
+      if (!graph) {
+        return null
+      }
       return graph.map((it) => {
         return updateLootGraph({
           graph: it,
@@ -114,7 +117,7 @@ export class LootGraphComponent extends ComponentStore<{
         })
       })
     },
-    { debounce: true }
+   // { debounce: true },
   )
 
   // protected knownTags$ = this.select(this.graph$, (graph) => {
@@ -146,7 +149,7 @@ export class LootGraphComponent extends ComponentStore<{
         tables: this.db.lootTablesMap,
         buckets: this.db.lootBucketsMap,
       },
-      (data) => buildLootGraph(data)
+      (data) => buildLootGraph(data),
     )
   }
 }

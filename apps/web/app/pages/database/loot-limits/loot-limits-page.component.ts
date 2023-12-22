@@ -1,37 +1,20 @@
-import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
-import { ActivatedRoute, RouterModule } from '@angular/router'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
-import { NwModule } from '~/nw'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
 import { DataGridModule } from '~/ui/data/table-grid'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
-import { IconsModule } from '~/ui/icons'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
-import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
+import { HtmlHeadService, eqCaseInsensitive, injectRouteParam, selectSignal } from '~/utils'
 import { ItemTableRecord } from '~/widgets/data/item-table'
 import { LootLimitTableAdapter } from '~/widgets/data/loot-limit-table'
-import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   standalone: true,
   selector: 'nwb-loot-limits-page',
   templateUrl: './loot-limits-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [
-    CommonModule,
-    DataGridModule,
-    DataViewModule,
-    IonHeader,
-    NwModule,
-    QuicksearchModule,
-    RouterModule,
-    ScreenshotModule,
-    TooltipModule,
-    VirtualGridModule,
-    IconsModule,
-  ],
+  imports: [DataGridModule, DataViewModule, IonHeader, QuicksearchModule, RouterModule, VirtualGridModule],
   host: {
     class: 'layout-col',
   },
@@ -50,15 +33,14 @@ export class LootLimitsPageComponent {
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'loot-limits-table'
-  protected categoryParam$ = observeRouteParam(inject(ActivatedRoute), 'category')
-  protected category$ = selectStream(this.categoryParam$, (it) => {
+  protected category = selectSignal(injectRouteParam('category'), (it) => {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
 
   public constructor(
     protected service: DataViewService<ItemTableRecord>,
     protected search: QuicksearchService,
-    head: HtmlHeadService
+    head: HtmlHeadService,
   ) {
     service.patchState({ mode: 'table', modes: ['table'] })
     head.updateMetadata({

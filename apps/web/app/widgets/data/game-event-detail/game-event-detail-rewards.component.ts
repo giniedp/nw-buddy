@@ -1,15 +1,15 @@
-import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
-import { NwModule } from '~/nw'
 import { RouterModule } from '@angular/router'
+import { NwModule } from '~/nw'
 import { GameEventReward } from './selectors'
+import { DecimalPipe } from '@angular/common'
 
 @Component({
   standalone: true,
   selector: 'nwb-game-event-detail-rewards',
   templateUrl: './game-event-detail-rewards.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, RouterModule],
+  imports: [NwModule, DecimalPipe, RouterModule],
   host: {
     class: 'flex flex-col',
   },

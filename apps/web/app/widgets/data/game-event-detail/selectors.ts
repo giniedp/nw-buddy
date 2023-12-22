@@ -35,42 +35,42 @@ export function selectGameEventRewards(event: GameEvent, item: ItemDefinitionMas
     return null
   }
 
-  if (Number(event.AzothReward)) {
+  if (Number(event.AzothReward) > 0) {
     result.push({
       label: 'Azoth',
       icon: 'assets/icons/rewards/azoth.png',
       quantity: Number(event.AzothReward),
     })
   }
-  if (event.AzothSalt) {
+  if (event.AzothSalt > 0) {
     result.push({
       label: 'Azoth Salt',
       icon: 'assets/icons/rewards/azoth-salt.png',
       quantity: event.AzothSalt,
     })
   }
-  if (Number(event.CurrencyReward)) {
+  if (Number(event.CurrencyReward) > 0) {
     result.push({
       label: 'Coin',
       icon: 'assets/icons/rewards/coin.png',
       quantity: Number(event.CurrencyReward) / 100,
     })
   }
-  if (event.FactionInfluenceAmount) {
+  if (event.FactionInfluenceAmount > 0) {
     result.push({
       label: 'Faction Influence',
       icon: 'assets/icons/rewards/faction-influence.png',
       quantity: event.FactionInfluenceAmount,
     })
   }
-  if (event.FactionReputation) {
+  if (event.FactionReputation > 0) {
     result.push({
       label: 'Faction Reputation',
       icon: 'assets/icons/rewards/faction-reputation.png',
       quantity: event.FactionReputation,
     })
   }
-  if (event.FactionTokens) {
+  if (event.FactionTokens > 0) {
     result.push({
       label: 'Faction Tokens',
       icon: 'assets/icons/rewards/faction-tokens.png',
@@ -78,28 +78,29 @@ export function selectGameEventRewards(event: GameEvent, item: ItemDefinitionMas
     })
   }
 
-  // if (item.PvpXp || item.PVPXP) {
-  //   result.push({
-  //     label: 'PvP XP',
-  //     icon: 'pvp',
-  //     quantity: item.PvpXp || item.PVPXP,
-  //   })
-  // }
-  if (event.SeasonsXp) {
+  if (event.PvpXp || event.PVPXP) {
+    result.push({
+      label: 'PvP XP',
+      icon: 'assets/icons/rewards/pvp-xp.png',
+      quantity: event.PvpXp || event.PVPXP,
+    })
+  }
+
+  if (event.SeasonsXp > 0) {
     result.push({
       label: 'Seasons XP',
-      icon: 'seasons',
+      icon: 'assets/icons/rewards/season.png',
       quantity: event.SeasonsXp,
     })
   }
-  if (Number(event.TerritoryStanding)) {
+  if (Number(event.TerritoryStanding) > 0) {
     result.push({
       label: 'Territory Standing',
       icon: 'assets/icons/rewards/standing.png',
       quantity: Number(event.TerritoryStanding),
     })
   }
-  if (Number(event.UniversalExpAmount)) {
+  if (Number(event.UniversalExpAmount) > 0) {
     result.push({
       label: 'XP',
       icon: 'assets/icons/rewards/xp.png',

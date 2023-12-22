@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { LayoutModule } from '~/ui/layout'
-import { observeRouteParam } from '~/utils'
+import { injectRouteParam, observeRouteParam } from '~/utils'
 import { GameEventDetailModule } from '~/widgets/data/game-event-detail'
 import { LootModule } from '~/widgets/loot'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -19,9 +20,5 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   },
 })
 export class GameEventDetailPageComponent {
-  protected eventId$ = observeRouteParam(this.route, 'id')
-
-  public constructor(private route: ActivatedRoute) {
-    //
-  }
+  protected eventId = toSignal(injectRouteParam('id'))
 }

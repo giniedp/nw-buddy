@@ -2,7 +2,7 @@
   --nwb-vg-cols: 1;
   --nwb-vg-rows: 1;
   --nwb-vg-height: 50px;
-
+  scrollbar-gutter: stable;
   .grid {
     display: grid;
     grid-template-columns: repeat(var(--nwb-vg-cols), minmax(0, 1fr));

@@ -45,7 +45,7 @@
   </div>
 </ion-header>
 <div class="flex-1 flex flex-row overflow-hidden">
-  <ng-container *ngIf="service.isGridActive$()">
+  <ng-container *ngIf="service.isGridActive()">
     <nwb-virtual-grid
       [enableQuickfilter]="true"
       [data]="service.categoryItems$ | async"
@@ -54,7 +54,7 @@
       [selectionRouteParam]="selectionParam"
     ></nwb-virtual-grid>
   </ng-container>
-  <ng-container *ngIf="service.isTableActive$()">
+  <ng-container *ngIf="service.isTableActive()">
     <nwb-table-grid
       (ready$)="service.onTableReady($event)"
       [enableQuickfilter]="true"
