@@ -13,11 +13,16 @@
   />
 </nwb-item-header>
 <div
-  class="flex-1 flex flex-col gap-4 bg-no-repeat p-4 overflow-hidden"
+  class="flex-1 flex flex-col gap-4 bg-no-repeat p-4 overflow-hidden relative"
   [style.background-size]="'100% auto'"
   [style.background-image]="backgroundImage()"
 >
-  <div class="flex-1" #refTop>
+  @if(playerLevel() && !data?.FactionOverride) {
+    <div class="absolute top-0 left-0 w-full aspect-square flex items-center justify-center text-9xl font-caslon pointer-events-none z-0 opacity-75">
+      {{ playerLevel() }}
+    </div>
+  }
+  <div class="flex-1 z-0" #refTop>
     @defer (on viewport(refTop)) {
       <div class="grid grid-cols-2 gap-1">
         @for (cell of tradeskills(); track $index) {
@@ -32,7 +37,7 @@
         @for (cell of props(); track $index) {
           <div class="flex flex-row gap-2 text-shadow-sm shadow-black leading-tight">
             <img [nwImage]="cell.icon" class="w-5 h-5" />
-            <span>{{ cell.label }}</span>
+            <span>{{ cell.value | number }} {{ cell.label }}</span>
           </div>
         }
       </div>

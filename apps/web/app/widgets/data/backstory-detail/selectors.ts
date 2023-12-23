@@ -34,11 +34,12 @@ export function selectBackstoryProps(backstory: Backstorydata) {
   if (!backstory) {
     return null
   }
-  const result: Array<{ icon: string; label: string }> = []
+  const result: Array<{ icon: string; value: number, label: string }> = []
   if (backstory.Currency) {
     result.push({
       icon: 'assets/icons/rewards/coin.png',
-      label: `${backstory.Currency} Gold`,
+      value: backstory.Currency / 100,
+      label: `Gold`,
     })
   }
   // if (backstory.RepairParts) {
@@ -50,19 +51,22 @@ export function selectBackstoryProps(backstory: Backstorydata) {
   if (backstory.Azoth) {
     result.push({
       icon: 'assets/icons/rewards/azoth.png',
-      label: `${backstory.Azoth} Azoth`,
+      value: backstory.Azoth,
+      label: `Azoth`,
     })
   }
   if (backstory.FactionReputation) {
     result.push({
       icon: 'assets/icons/rewards/faction-reputation.png',
-      label: `${backstory.FactionReputation} Faction Reputation`,
+      value: backstory.FactionReputation,
+      label: `Faction Reputation`,
     })
   }
   if (backstory.FactionTokens) {
     result.push({
       icon: 'assets/icons/rewards/faction-tokens.png',
-      label: `${backstory.FactionTokens} Faction Tokens`,
+      value: backstory.FactionTokens,
+      label: `Faction Tokens`,
     })
   }
   return result
