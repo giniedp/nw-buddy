@@ -71,7 +71,6 @@ program
             '(shaders|pregame|server|sounds|timelines)[/\\\\]',
             'lyshineui[/\\\\].*\\.dynamicslice$',
             '\\.dynamicuicanvas$',
-            '\\.timeline$',
           ],
         })
         break

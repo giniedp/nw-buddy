@@ -109,7 +109,7 @@ program
 
     if (hasFilter(Converter.slices, options.module)) {
       console.log('Convert Slices')
-      await withProgressBar({ tasks: ['coatgen', 'sharedassets', 'slices'] }, async (dir, i, log) => {
+      await withProgressBar({ tasks: ['libs', 'coatgen', 'sharedassets', 'slices'] }, async (dir, i, log) => {
         log(dir)
         await objectStreamConverter({
           exe: 'tools/bin/object-stream-converter.exe',
