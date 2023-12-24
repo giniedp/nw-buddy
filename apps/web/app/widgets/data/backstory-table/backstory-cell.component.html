@@ -17,8 +17,10 @@
   [style.background-size]="'100% auto'"
   [style.background-image]="backgroundImage()"
 >
-  @if(playerLevel() && !data?.FactionOverride) {
-    <div class="absolute top-0 left-0 w-full aspect-square flex items-center justify-center text-9xl font-caslon pointer-events-none z-0 opacity-75">
+  @if (playerLevel() && !data?.FactionOverride) {
+    <div
+      class="absolute top-0 left-0 w-full aspect-square flex items-center justify-center text-9xl font-caslon pointer-events-none z-0 opacity-75"
+    >
       {{ playerLevel() }}
     </div>
   }
