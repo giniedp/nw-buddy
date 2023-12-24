@@ -39,7 +39,7 @@
     "electron:serve": "pnpm electron:tsc && electron . --serve",
     "electron:builder": "electron-builder build --publish=never --config=electron-config.js",
     "nw-cdn": "ts-node ./tools/nw-cdn.ts",
-    "nw-generate": "env-cmd -f .env ts-node ./tools/nw-generate.ts",
+    "nw-generate": "ts-node ./tools/nw-generate.ts",
     "nw-extract": "pnpm build:tools && env-cmd -f .env node ./dist/tools/nw-extract.js",
     "nw-convert": "pnpm build:tools && env-cmd -f .env node ./dist/tools/nw-convert.js",
     "nw-import": "pnpm build:tools && env-cmd -f .env node ./dist/tools/nw-import.js",
