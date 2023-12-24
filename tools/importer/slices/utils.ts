@@ -2,7 +2,6 @@ import { readJSONFile, replaceExtname } from "../../../tools/utils"
 import { SliceComponent, isAZ__Entity, isSliceComponent } from "./types/dynamicslice"
 import * as path from 'path'
 import * as fs from 'fs'
-import { cached } from "./cache"
 import { isAliasAsset } from "./types/aliasasset"
 
 export async function readDynamicSliceFile(file: string) {
@@ -61,10 +60,17 @@ export async function resolveDynamicSliceFile(rootDir: string, file: string) {
       return null
   }
 
-  if (fs.existsSync(file)) {
-    return file
+  if (!fs.existsSync(file)) {
+    if (path.basename(file) === 'winterconv_activity_lostpresent_rare_01.dynamicslice.json') {
+      file = path.join(path.dirname(file), 'winterconv_activity_lostpresent_rare_00.dynamicslice.json')
+    }
   }
-  return null
+
+  if (!fs.existsSync(file)) {
+    // console.warn(`File not found: ${file}`)
+    return null
+  }
+  return file
 }
 
 export function findAZEntityById(component: SliceComponent, id: number) {

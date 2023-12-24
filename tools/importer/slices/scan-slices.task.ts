@@ -114,7 +114,7 @@ export async function scanSlices({
         })
       }
       if (capital.sliceName) {
-        await scanForAreaSpawers(inputDir, capital.sliceName)
+        await scanForSpawners(inputDir, capital.sliceName)
           .then((data) => data || { positions: [] })
           .then(({ positions, variantID, gatherableID }) => {
             if (!variantID) {
@@ -278,10 +278,14 @@ async function scanForTerritories(file: string) {
   return result
 }
 
-async function scanForAreaSpawers(
+async function scanForSpawners(
   rootDir: string,
   file: string,
-): Promise<{ variantID?: string; gatherableID?: string; positions: Array<number[]> }> {
+): Promise<{
+  variantID?: string
+  gatherableID?: string
+  positions: Array<number[]>
+}> {
   file = await resolveDynamicSliceFile(rootDir, file)
   if (!file) {
     return null
@@ -314,6 +318,14 @@ async function scanForAreaSpawers(
     const component = await readDynamicSliceFile(slice)
     if (!component) {
       continue
+    }
+    const gatherable = await scanForGatherable(component, rootDir)
+    if (gatherable) {
+      return {
+        variantID: gatherable.variantId,
+        gatherableID: gatherable.gatherableId,
+        positions: areaSpawns.positions,
+      }
     }
     const ammoId = await scanForProjectileComponent(component, rootDir)
     if (ammoId === 'WinterConv_GleamiteLauncher_Projectile') {
@@ -349,8 +361,8 @@ async function scanForAreaSpawners(sliceComponent: SliceComponent, rootDir: stri
         const entity = findAZEntityById(sliceComponent, location.entityid as any)
         const transform = entity?.components?.find((it) => isGameTransformComponent(it)) as GameTransformComponent
         const translation = transform?.m_worldtm?.__value?.['translation'] as number[]
-        if (translation) {
-          positions.push(translation)
+        if (Array.isArray(translation)) {
+          positions.push([...translation])
         }
       }
       break sliceFile

@@ -75,10 +75,10 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
   const territories = new Map<string, TerritoryMetadata>()
 
   const files = await glob([
+    `${inputDir}/sharedassets/coatlicue/**/regions/**/*.capitals.json`,
     `${inputDir}/**/region.distribution.json`,
     `${inputDir}/**/*.dynamicslice.json`,
     `!${inputDir}/lyshineui/**/*`,
-    `${inputDir}/sharedassets/coatlicue/**/regions/**/*.capitals.json`,
     `${inputDir}/sharedassets/coatlicue/**/regions/**/*.metadata.json`,
   ])
 
