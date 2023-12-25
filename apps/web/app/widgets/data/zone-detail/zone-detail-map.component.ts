@@ -33,9 +33,7 @@ export class ZoneDetailMapComponent {
         return null
       }
       const result = data.zones.map((zone): LandmarkZone => {
-        const points = zone.shape.map((point) => {
-          return [point[0] + zone.position[0], point[1] + zone.position[1]]
-        })
+        const points = zone.shape.map((point) => [...point])
         return {
           title: this.tl8.get(record.NameLocalizationKey),
           color: '#DC2626',

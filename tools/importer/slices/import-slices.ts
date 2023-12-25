@@ -1,7 +1,7 @@
-import { groupBy, sumBy, uniqBy } from 'lodash'
+import { chain, groupBy, sortBy, sumBy, uniq } from 'lodash'
 import * as path from 'path'
 import { environment } from '../../../env'
-import { assmebleWorkerTasks, glob, withProgressPool, writeJSONFile } from '../../utils'
+import { arrayAppend, assmebleWorkerTasks, glob, withProgressPool, writeJSONFile } from '../../utils'
 import { pathToDatatables } from '../tables'
 import {
   GatherablesTableSchema,
@@ -10,31 +10,54 @@ import {
   VitalsTableSchema,
 } from '../tables/schemas'
 
+import { CaseInsensitiveSet } from '../../utils/caseinsensitive-set'
 import { readAndExtractCrcValues } from './create-crc-file'
+import { TerritoryScanRow } from './scan-for-territories'
+import { VariationScanRow } from './scan-for-variants'
 import { VitalScanRow } from './scan-for-vitals'
-import { GatherableScanRow, TerritoryScanRow, VariationScanRow } from './scan-slices.task'
+import { GatherableScanRow } from './scan-slices.task'
 import { WORKER_TASKS } from './worker.tasks'
 
 interface VitalMetadata {
-  tables: Set<string>
-  models: Set<string>
-  mapIDs: Set<string>
-  spawns: Array<{ level: number; mapId: string; category: string; position: number[]; damagetable: string }>
+  tables: string[]
+  models: string[]
+  mapIDs: string[]
+  catIDs: string[]
+  levels: number[]
+  spawns: Array<{
+    level: number
+    mapId: string
+    category: string
+    position: number[]
+    damagetable: string
+  }>
 }
 
 interface GatherableMetadata {
-  mapIDs: Set<string>
-  lootTables: Set<string>
-  spawns: Array<{ position: number[]; mapId: string; lootTable: string }>
+  mapIDs: string[]
+  lootTables: string[]
+  spawns: Array<{
+    position: number[]
+    mapId: string
+    lootTable: string
+  }>
 }
 
 interface VariationMetadata {
-  mapIDs: Set<string>
-  spawns: Array<{ position: number[]; mapId: string }>
+  mapIDs: string[]
+  spawns: Array<{
+    position: number[]
+    mapId: string
+  }>
 }
 
 interface TerritoryMetadata {
-  zones: Array<{ position: number[]; shape: number[][] }>
+  zones: Array<{
+    //position: number[]
+    shape: number[][]
+    min: number[]
+    max: number[]
+  }>
 }
 
 export async function importSlices({ inputDir, threads }: { inputDir: string; threads: number }) {
@@ -69,10 +92,10 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
     extract: (row) => row.VariantID.toLowerCase(),
   }).then((result) => writeJSONFile(result, { target: crcVariationsFile }))
 
-  const vitals = new Map<string, VitalMetadata>()
-  const gatherables = new Map<string, GatherableMetadata>()
-  const variations = new Map<string, VariationMetadata>()
-  const territories = new Map<string, TerritoryMetadata>()
+  const vitals: Record<string, VitalMetadata> = {}
+  const gatherables: Record<string, GatherableMetadata> = {}
+  const variations: Record<string, VariationMetadata> = {}
+  const territories: Record<string, TerritoryMetadata> = {}
 
   const files = await glob([
     `${inputDir}/sharedassets/coatlicue/**/regions/**/*.capitals.json`,
@@ -110,130 +133,187 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
   })
 
   return {
-    vitals: buildResultVitals(vitals),
-    gatherables: buildResultGatherables(gatherables),
-    variations: buildResultVariations(variations),
-    territories: buildResultTerritories(territories),
+    vitals: toSortedVitals(vitals),
+    gatherables: toSortedGatherables(gatherables),
+    variations: toSortedVariations(variations),
+    territories: toSortedTerritories(territories),
   }
 }
 
-function collectVitalsRows(rows: VitalScanRow[], data: Map<string, VitalMetadata>) {
+function collectVitalsRows(rows: VitalScanRow[], data: Record<string, VitalMetadata>) {
   for (const row of rows || []) {
     const vitalID = row.vitalsID.toLowerCase()
-    if (!data.has(vitalID)) {
-      data.set(vitalID, { tables: new Set(), models: new Set(), mapIDs: new Set(), spawns: [] })
+    if (!(vitalID in data)) {
+      data[vitalID] = {
+        tables: [],
+        models: [],
+        mapIDs: [],
+        catIDs: [],
+        levels: [],
+        spawns: [],
+      }
     }
-    const bucket = data.get(vitalID)
-    const damagetable = row.damageTable?.toLowerCase().replace('sharedassets/springboardentitites/datatables/', '')
+    const bucket = data[vitalID]
+    const damagetable = row.damageTable?.toLowerCase()?.replace('sharedassets/springboardentitites/datatables/', '')
     if (damagetable) {
-      bucket.tables.add(damagetable)
+      arrayAppend(bucket.tables, damagetable.toLowerCase())
     }
     if (row.mapID) {
-      bucket.mapIDs.add(row.mapID)
+      arrayAppend(bucket.mapIDs, row.mapID.toLowerCase())
     }
     if (row.modelSlice) {
-      bucket.models.add(row.modelSlice)
+      arrayAppend(bucket.models, row.modelSlice.toLowerCase())
+    }
+    if (row.level) {
+      arrayAppend(bucket.levels, row.level)
+    }
+    if (row.categoryID) {
+      arrayAppend(bucket.catIDs, row.categoryID.toLowerCase())
     }
     if (row.position) {
       bucket.spawns.push({
-        category: row.categoryID,
         level: row.level,
-        position: row.position,
-        mapId: row.mapID,
+        position: row.position.map((it) => Number(it.toFixed(3))),
+        mapId: row.mapID?.toLowerCase(),
+        category: row.categoryID?.toLowerCase(),
         damagetable: damagetable,
       })
     }
   }
 }
 
-function collectGatherablesRows(rows: GatherableScanRow[], data: Map<string, GatherableMetadata>) {
+function collectGatherablesRows(rows: GatherableScanRow[], data: Record<string, GatherableMetadata>) {
   for (const row of rows || []) {
-    const gatherableID = row.gatherableID
-    if (!data.has(gatherableID)) {
-      data.set(gatherableID, { mapIDs: new Set(), lootTables: new Set(), spawns: [] })
+    const gatherableID = row.gatherableID.toLowerCase()
+    if (!(gatherableID in data)) {
+      data[gatherableID] = {
+        mapIDs: [],
+        lootTables: [],
+        spawns: [],
+      }
     }
-    const bucket = data.get(gatherableID)
+    const bucket = data[gatherableID]
     if (row.mapID) {
-      bucket.mapIDs.add(row.mapID)
+      arrayAppend(bucket.mapIDs, row.mapID.toLowerCase())
+    }
+    if (row.lootTable) {
+      arrayAppend(bucket.lootTables, row.lootTable.toLowerCase())
     }
     if (row.position) {
       bucket.spawns.push({
-        position: row.position,
-        lootTable: row.lootTable,
-        mapId: row.mapID,
+        position: row.position.map((it) => Number(it.toFixed(3))),
+        lootTable: row.lootTable?.toLowerCase(),
+        mapId: row.mapID?.toLowerCase(),
       })
     }
   }
 }
 
-function collectVariationsRows(rows: VariationScanRow[], data: Map<string, VariationMetadata>) {
+function collectVariationsRows(rows: VariationScanRow[], data: Record<string, VariationMetadata>) {
   for (const row of rows || []) {
-    const variantID = row.variantID
-    if (!data.has(variantID)) {
-      data.set(variantID, { mapIDs: new Set(), spawns: [] })
+    const variantID = row.variantID.toLowerCase()
+    if (!(variantID in data)) {
+      data[variantID] = { mapIDs: [], spawns: [] }
     }
-    const bucket = data.get(variantID)
+    const bucket = data[variantID]
     if (row.mapID) {
-      bucket.mapIDs.add(row.mapID)
+      arrayAppend(bucket.mapIDs, row.mapID.toLowerCase())
     }
     if (row.position) {
       bucket.spawns.push({
-        mapId: row.mapID,
-        position: row.position,
+        mapId: row.mapID?.toLowerCase(),
+        position: row.position.map((it) => Number(it.toFixed(3))),
       })
     }
   }
 }
 
-function collectTerritoriesRows(rows: TerritoryScanRow[], data: Map<string, TerritoryMetadata>) {
+function collectTerritoriesRows(rows: TerritoryScanRow[], data: Record<string, TerritoryMetadata>) {
   for (const row of rows || []) {
-    const territoryID = row.territoryID
-    if (!data.has(territoryID)) {
-      data.set(territoryID, { zones: [] })
+    const territoryID = row.territoryID.toLowerCase()
+    if (!(territoryID in data)) {
+      data[territoryID] = { zones: [] }
     }
-    const bucket = data.get(territoryID)
-    if (row.position) {
+    const bucket = data[territoryID]
+    if (row.position && row.shape.length > 0) {
+      const positions = row.shape.map(([x, y]) => {
+        return [x + (row.position[0] || 0), y + (row.position[1] || 0)]
+      })
+      const min = [null, null]
+      const max = [null, null]
+      for (const [x, y] of positions) {
+        if (min[0] === null || x < min[0]) {
+          min[0] = x
+        }
+        if (min[1] === null || y < min[1]) {
+          min[1] = y
+        }
+        if (max[0] === null || x > max[0]) {
+          max[0] = x
+        }
+        if (max[1] === null || y > max[1]) {
+          max[1] = y
+        }
+      }
       bucket.zones.push({
-        position: row.position,
-        shape: row.shape,
+        shape: positions,
+        min: min,
+        max: max,
       })
     }
   }
 }
 
-function buildResultVitals(data: Map<string, VitalMetadata>) {
-  return Array.from(data.entries())
+function toSortedVitals(data: Record<string, VitalMetadata>) {
+  return Array.from(Object.entries(data))
     .sort((a, b) => compareStrings(a[0], b[0]))
-    .map(([id, { tables, spawns, mapIDs, models }]) => {
+    .map(([id, { tables, spawns, mapIDs, catIDs, levels, models }]) => {
       const result = {
         vitalsID: id,
         tables: Array.from(tables).sort(),
         mapIDs: Array.from(mapIDs).sort(),
         models: Array.from(models).sort(),
-        lvlSpanws: {} as Record<string, Array<{ p: number[]; l: number }>>,
+        catIDs: Array.from(catIDs).sort(),
+        levels: Array.from(levels).sort(),
+        lvlSpanws: {} as Record<
+          string,
+          Array<{
+            p: number[]
+            l: number[]
+            c: string[]
+          }>
+        >,
       }
       spawns.sort((a, b) => compareStrings(a.mapId, b.mapId))
       for (const spawn of spawns) {
         const mapId = spawn.mapId || '_'
         result.lvlSpanws[mapId] = result.lvlSpanws[mapId] || []
         result.lvlSpanws[mapId].push({
+          l: spawn.level ? [spawn.level] : [],
+          c: spawn.category ? [spawn.category] : [],
           p: spawn.position,
-          l: spawn.level,
         })
       }
       for (const key in result.lvlSpanws) {
-        result.lvlSpanws[key] = uniqBy(result.lvlSpanws[key], (it) => {
-          return JSON.stringify(it)
-        }).sort((a, b) => {
-          return compareStrings(JSON.stringify(a), JSON.stringify(b))
-        })
+        result.lvlSpanws[key] = chain(result.lvlSpanws[key])
+          .groupBy((it) => it.p.join(','))
+          .values()
+          .map((it) => {
+            return {
+              p: it[0].p,
+              l: uniq(it.map((it) => it.l).flat()).sort(),
+              c: uniq(it.map((it) => it.c).flat()).sort(),
+            }
+          })
+          .sortBy((it) => it.p.join(','))
+          .value()
       }
       return result
     })
 }
 
-function buildResultGatherables(data: Map<string, GatherableMetadata>) {
-  return Array.from(data.entries())
+function toSortedGatherables(data: Record<string, GatherableMetadata>) {
+  return Array.from(Object.entries(data))
     .sort((a, b) => compareStrings(a[0], b[0]))
     .map(([id, { spawns, mapIDs, lootTables }]) => {
       const maps = Array.from(mapIDs.values()).sort()
@@ -251,17 +331,16 @@ function buildResultGatherables(data: Map<string, GatherableMetadata>) {
         result.spawns[mapId].push(spawn.position)
       }
       for (const key in result.spawns) {
-        result.spawns[key] = uniqBy(result.spawns[key], (it) => {
-          return JSON.stringify(it)
-        }).sort((a, b) => {
-          return compareStrings(String(a), String(b))
-        })
+        result.spawns[key] = chain(result.spawns[key])
+          .uniqBy((it) => it.join(','))
+          .sortBy((it) => it.join(','))
+          .value()
       }
       return result
     })
 }
 
-function buildResultVariations(data: Map<string, VariationMetadata>) {
+function toSortedVariations(data: Record<string, VariationMetadata>) {
   type ChunkData = number[]
   type ChunkRows = Array<{
     chunk: number
@@ -274,7 +353,7 @@ function buildResultVariations(data: Map<string, VariationMetadata>) {
 
   const chunksData: ChunkData[] = []
   const chunksRecords: ChunkRows[] = []
-  const variationIds = new Set<string>()
+  const variationIds = new CaseInsensitiveSet<string>()
 
   let currentData: ChunkData
   let currentChunk: ChunkRows
@@ -301,17 +380,16 @@ function buildResultVariations(data: Map<string, VariationMetadata>) {
     }
   }
 
-  for (const [variantId, { spawns }] of data.entries()) {
-    const groups = groupBy(spawns, (it) => it.mapId)
-    for (const mapId in groups) {
-      const group = groups[mapId]
-      add(
-        variantId,
-        mapId,
-        group.map((it) => it.position),
-      )
-    }
-  }
+  Array.from(Object.entries(data))
+    .sort((a, b) => compareStrings(a[0], b[0]))
+    .forEach(([variantId, { spawns }]) => {
+      Array.from(Object.entries(groupBy(spawns, (it) => it.mapId)))
+        .sort((a, b) => compareStrings(a[0], b[0]))
+        .forEach(([mapId, group]) => {
+          const positions = sortBy(group, (it) => it.position.join(',')).map((it) => it.position)
+          add(variantId, mapId, positions)
+        })
+    })
 
   const result: Record<
     string,
@@ -361,20 +439,13 @@ function buildResultVariations(data: Map<string, VariationMetadata>) {
   }
 }
 
-function buildResultTerritories(data: Map<string, TerritoryMetadata>) {
-  return Array.from(data.entries())
+function toSortedTerritories(data: Record<string, TerritoryMetadata>) {
+  return Array.from(Object.entries(data))
     .sort((a, b) => compareStrings(a[0], b[0]))
     .map(([id, { zones }]) => {
       const result = {
         territoryID: id,
-        zones: zones
-          .map((it) => {
-            return {
-              position: it.position,
-              shape: it.shape,
-            }
-          })
-          .sort((a, b) => compareStrings(String(a.position), String(b.position))),
+        zones: zones,
       }
       return result
     })

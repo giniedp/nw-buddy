@@ -11,7 +11,7 @@ import { generateSearch } from './importer/search'
 import { importSlices } from './importer/slices/import-slices'
 import { importSpells } from './importer/slices/import-spells'
 import { importDatatables, pathToDatatables } from './importer/tables'
-import { glob, withProgressBar, writeJSONFile } from './utils'
+import { glob, jsonStringifyFormatted, withProgressBar, writeJSONFile } from './utils'
 import { extractLocaleDiffs } from './importer/extractLocaleDiffs'
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
@@ -92,26 +92,28 @@ program
           writeJSONFile(vitals, {
             target: path.join(pathToDatatables(inputDir), 'generated_vitals_metadata.json'),
             createDir: true,
+            serialize: jsonStringifyFormatted
+          }),
+          writeJSONFile(territories, {
+            target: path.join(pathToDatatables(inputDir), 'generated_territories_metadata.json'),
+            createDir: true,
+            serialize: jsonStringifyFormatted
           }),
           writeJSONFile(gatherables, {
             target: path.join(pathToDatatables(inputDir), 'generated_gatherables_metadata.json'),
             createDir: true,
+            serialize: jsonStringifyFormatted
           }),
           writeJSONFile(variations.records, {
             target: path.join(pathToDatatables(inputDir), 'generated_variations_metadata.json'),
             createDir: true,
+            serialize: jsonStringifyFormatted
           }),
           ...variations.chunks.map(async (chunk, index) => {
             await fs.promises.writeFile(path.join('tmp', `variations.${index}.chunk` ), chunk)
             await fs.promises.writeFile(path.join(pathToDatatables(inputDir), `generated_variations_metadata.${index}.chunk`), chunk)
             await fs.promises.writeFile(path.join(tablesOutDir, `generated_variations_metadata.${index}.chunk`), chunk)
           }),
-          // write it into input directory, so table loader will pick it up
-          writeJSONFile(territories, {
-            target: path.join(pathToDatatables(inputDir), 'generated_territories_metadata.json'),
-            createDir: true,
-          }),
-
         ])
       })
     }
@@ -265,9 +267,11 @@ program
       await withProgressBar({ barName: 'Write', tasks: tables }, async ({ file, data }, _, log) => {
         const jsonPath = path.join(tablesOutDir, file)
         log(jsonPath)
+        const isGenerated = file.includes('generated')
         await writeJSONFile(data, {
           target: jsonPath,
           createDir: true,
+          serialize: isGenerated ? jsonStringifyFormatted : null,
         })
       })
 

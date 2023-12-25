@@ -1,15 +1,14 @@
-import * as fs from 'fs'
 import * as path from 'path'
 import { z } from 'zod'
 import { fileContext } from '../../utils/file-context'
 import { readJSONFile } from '../../utils/file-utils'
-import { walkJsonObjects } from '../../utils/walk-json-object'
-import { isAreaStatusEffectComponentServerFacet } from './types/dynamicslice'
+import { isAreaStatusEffectComponent, isAreaStatusEffectComponentServerFacet } from './types/dynamicslice'
+import { readDynamicSliceFile, resolveDynamicSliceFile } from './utils'
 
 const SPELL_SCHEMA = z.array(
   z.object({
     SpellPrefabPath: z.string().optional(),
-  })
+  }),
 )
 
 export async function importSpells({ inputDir }: { inputDir: string }) {
@@ -30,28 +29,35 @@ export async function importSpells({ inputDir }: { inputDir: string }) {
       if (!spell.SpellPrefabPath || meta.has(spell.SpellPrefabPath)) {
         continue
       }
-      const slicePath = ctxSlices.path(spell.SpellPrefabPath + '.dynamicslice.json')
-      if (!fs.existsSync(slicePath)) {
+
+      const slicePath = await resolveDynamicSliceFile(inputDir, ctxSlices.path(spell.SpellPrefabPath))
+      const sliceComponent = await readDynamicSliceFile(slicePath)
+      if (!sliceComponent) {
         continue
       }
       const effects = new Set<string>()
-      const sliceData = await readJSONFile(slicePath)
-      walkJsonObjects(sliceData, (obj) => {
-        if (obj && isAreaStatusEffectComponentServerFacet(obj)) {
-          obj.m_addstatuseffects
-            ?.map((it) => it?.m_effectid)
-            .filter((it) => !!it)
-            ?.forEach((effect) => {
-              effects.add(effect)
-            })
+      for (const entity of sliceComponent?.entities || []) {
+        for (const component of entity?.components || []) {
+          if (!isAreaStatusEffectComponent(component)) {
+            continue
+          }
+          const facet = component.baseclass1?.m_serverfacetptr
+          if (!isAreaStatusEffectComponentServerFacet(facet)) {
+            continue
+          }
+          for (const effect of facet.m_addstatuseffects || []) {
+            if (effect?.m_effectid) {
+              effects.add(effect.m_effectid)
+            }
+          }
         }
-      })
+      }
       meta.set(spell.SpellPrefabPath, {
         statusEffects: Array.from(effects),
       })
     }
   }
-  const result: Array<{ PrefabPath: string, AreaStatusEffects: string [] }> = []
+  const result: Array<{ PrefabPath: string; AreaStatusEffects: string[] }> = []
   for (const [slicePath, { statusEffects }] of meta.entries()) {
     if (statusEffects?.length) {
       result.push({

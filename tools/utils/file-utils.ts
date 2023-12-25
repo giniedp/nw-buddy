@@ -27,7 +27,7 @@ export async function writeJSONFile<T extends Object>(
   data: T,
   options: {
     target: string
-    serialize?: (input: T) => string | Buffer
+    serialize?: (input: T) => Promise<string | Buffer> | string | Buffer
     createDir?: boolean
   },
 ) {
@@ -35,7 +35,7 @@ export async function writeJSONFile<T extends Object>(
   if (options?.createDir) {
     await mkdir(path.dirname(output), { recursive: true })
   }
-  const dataOut = options.serialize ? options.serialize(data) : JSON.stringify(data, null, 1)
+  const dataOut = await Promise.resolve(options.serialize ? options.serialize(data) : JSON.stringify(data, null, 1))
   return fs.promises.writeFile(output, dataOut, 'utf-8')
 }
 

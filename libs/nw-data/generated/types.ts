@@ -13311,7 +13311,7 @@ export type WeaponTag =
 
 export interface GatherablesMetadata {
     gatherableID: string;
-    lootTables:   any[];
+    lootTables:   string[];
     mapIDs:       string[];
     spawns:       Spawns;
 }
@@ -13350,8 +13350,9 @@ export interface TerritoriesMetadata {
 }
 
 export interface Zone {
-    position: number[];
-    shape:    Array<number[]>;
+    max:   number[];
+    min:   number[];
+    shape: Array<number[]>;
 }
 export interface VariationsMetadata {
     mapIDs:           string[];
@@ -13367,6 +13368,8 @@ export interface VariantPosition {
     mapId:         string;
 }
 export interface VitalsMetadata {
+    catIDs:    string[];
+    levels:    number[];
     lvlSpanws: LvlSpanws;
     mapIDs:    string[];
     models:    string[];
@@ -13398,7 +13401,8 @@ export interface LvlSpanws {
 }
 
 export interface Climaxftue02 {
-    l: number | null;
+    c: string[];
+    l: number[];
     p: number[];
 }
 export interface SandelementalHeavySandworm {

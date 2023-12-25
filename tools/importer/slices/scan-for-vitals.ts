@@ -1,22 +1,17 @@
-import * as fs from 'fs'
 import * as path from 'path'
-import { readJSONFile, replaceExtname } from '../../utils'
-import { walkJsonObjects } from '../../utils/walk-json-object'
-import { cached } from './cache'
 import {
+  SliceComponent,
   isAIVariantProviderComponent,
   isAIVariantProviderComponentServerFacet,
-  isAZ__Entity,
   isActionListComponent,
-  isAsset,
   isEncounterComponent,
   isMeshComponent,
   isPointSpawnerComponent,
   isSkinnedMeshComponent,
-  isSliceComponent,
   isSpawnDefinition,
   isVitalsComponent,
 } from './types/dynamicslice'
+import { cached, readDynamicSliceFile, resolveDynamicSliceFile } from './utils'
 
 export interface VitalScanRow {
   vitalsID: string
@@ -27,13 +22,20 @@ export interface VitalScanRow {
   position?: number[]
   mapID?: string
 }
-export async function scanForVitals(inputDir: string, sliceName: string, file?: string): Promise<VitalScanRow[]> {
+export async function scanForVitals(inputDir: string, sliceFile: string): Promise<VitalScanRow[]> {
+  sliceFile = await resolveDynamicSliceFile(inputDir, sliceFile)
   const result: VitalScanRow[] = []
-  if (!sliceName && !file) {
+  if (!sliceFile) {
     return result
   }
 
-  const table = await findDamageTable(inputDir, sliceName, file)
+  const sliceComponent = await readDynamicSliceFile(sliceFile)
+  if (!sliceComponent) {
+    return result
+  }
+
+  const table = await scanForDamageTableAndModels(sliceComponent, inputDir, sliceFile)
+
   if (table?.vitalsID) {
     // we are in a character base file
     result.push({
@@ -45,12 +47,14 @@ export async function scanForVitals(inputDir: string, sliceName: string, file?: 
     })
   }
 
-  const variants = await findVariantSpawner(inputDir, sliceName, file)
+  const variants = await scanForAIVariantSpawn(sliceComponent, inputDir, sliceFile)
   for (const item of variants || []) {
     if (!item.vitalsID) {
       continue
     }
-    const table = await findDamageTable(inputDir, item.sliceName)
+    const subSliceFile = await resolveDynamicSliceFile(inputDir, item.slice)
+    const subSlice = await readDynamicSliceFile(subSliceFile)
+    const table = await scanForDamageTableAndModels(subSlice, inputDir, subSliceFile)
     result.push({
       vitalsID: item.vitalsID,
       categoryID: item.categoryID,
@@ -60,9 +64,12 @@ export async function scanForVitals(inputDir: string, sliceName: string, file?: 
     })
   }
 
-  const definitions = await findSpawnDefinitions(inputDir, sliceName, file)
+  const definitions = await scanForSpawnDefinitions(sliceComponent, inputDir, sliceFile)
+
   for (const item of definitions || []) {
-    const table = await findDamageTable(inputDir, item.sliceName)
+    const subSliceFile = await resolveDynamicSliceFile(inputDir, item)
+    const subSlice = await readDynamicSliceFile(subSliceFile)
+    const table = await scanForDamageTableAndModels(subSlice, inputDir, subSliceFile)
     if (!table?.vitalsID) {
       continue
     }
@@ -81,25 +88,18 @@ interface VariantSpawner {
   vitalsID: string
   categoryID: string
   level: number
-  sliceName: string
-  aliasName: string
+  slice: string
 }
-async function findVariantSpawner(rootDir: string, sliceName: string, file?: string) {
-  file = findDynamicSlice(rootDir, sliceName, file)
-  if (!file) {
-    return []
-  }
 
-  return cached(`findVariantSpawner ${file}`, async () => {
+async function scanForAIVariantSpawn(sliceComponent: SliceComponent, rootDir: string, currentFile: string) {
+  return cached(`scanForAIVariantSpawn ${currentFile}`, async () => {
     const result: VariantSpawner[] = []
-    const sliceComponent = await findSliceComponent(file)
-    sliceComponent?.entities?.forEach((entity) => {
+    for (const entity of sliceComponent?.entities || []) {
       let vitalsID: string = null
       let categoryID: string = null
       let level: number = null
-      let sliceName: string = null
-      let aliasName: string = null
-      for (const component of entity.components) {
+      let slice: string = null
+      for (const component of entity.components || []) {
         if (isAIVariantProviderComponent(component)) {
           if (isAIVariantProviderComponentServerFacet(component.baseclass1?.m_serverfacetptr)) {
             vitalsID = vitalsID || component.baseclass1.m_serverfacetptr.m_vitalstablerowid
@@ -108,153 +108,81 @@ async function findVariantSpawner(rootDir: string, sliceName: string, file?: str
           }
         }
         if (isPointSpawnerComponent(component)) {
-          sliceName = sliceName || component.baseclass1.m_sliceasset?.hint
-          aliasName = aliasName || component.baseclass1.m_aliasasset?.hint
+          slice = slice || (await resolveDynamicSliceFile(rootDir, component.baseclass1.m_sliceasset?.hint))
+          slice = slice || (await resolveDynamicSliceFile(rootDir, component.baseclass1.m_aliasasset?.hint))
         }
       }
       if (!vitalsID) {
-        return
+        continue
       }
       result.push({
         vitalsID,
         categoryID,
         level,
-        sliceName,
-        aliasName,
+        slice,
       })
-    })
-    for (const item of result) {
-      if (!item.sliceName && item.aliasName) {
-        item.sliceName = await findAliasedFile(rootDir, item.aliasName)
-      }
     }
     return result
   })
 }
 
-interface SpawnDefinitionResult {
-  sliceName: string
-  aliasName: string
-}
-async function findSpawnDefinitions(rootDir: string, sliceName: string, file?: string) {
-  file = findDynamicSlice(rootDir, sliceName, file)
-  if (!file) {
-    return []
-  }
-  return cached(`findSpawnDefinitions ${file}`, async () => {
-    const result: SpawnDefinitionResult[] = []
-    const sliceComponent = await findSliceComponent(file)
-    sliceComponent?.entities?.forEach((entity) => {
-      entity?.components?.forEach((component) => {
+async function scanForSpawnDefinitions(sliceComponent: SliceComponent, rootDir: string, currentFile: string) {
+  return cached(`scanForSpawnDefinitions ${currentFile}`, async () => {
+    const slices: string[] = []
+    for (const entity of sliceComponent?.entities || []) {
+      for (const component of entity?.components || []) {
         if (!isEncounterComponent(component)) {
-          return
+          continue
         }
-        component.m_spawntimeline?.forEach((obj) => {
-          if (isSpawnDefinition(obj)) {
-            result.push({
-              sliceName: obj.m_sliceasset?.hint,
-              aliasName: obj.m_aliasasset?.hint,
-            })
+        for (const spawn of component.m_spawntimeline || []) {
+          if (!isSpawnDefinition(spawn)) {
+            continue
           }
-        })
-      })
-    })
-    for (const item of result) {
-      if (!item.sliceName && item.aliasName) {
-        item.sliceName = await findAliasedFile(rootDir, item.aliasName)
+          let file: string
+          if (spawn.m_sliceasset?.hint) {
+            file = await resolveDynamicSliceFile(rootDir, spawn.m_sliceasset.hint)
+          } else if (spawn.m_aliasasset?.hint) {
+            file = await resolveDynamicSliceFile(rootDir, spawn.m_aliasasset.hint)
+          }
+          if (file) {
+            slices.push(file)
+          }
+        }
       }
     }
-    return result.filter((it) => it.sliceName)
+    return slices
   })
 }
 
-async function findAliasedFile(rootDir: string, aliasName: string, file?: string) {
-  if (!file && !aliasName) {
-    return null
-  }
-  file = file || path.join(rootDir, aliasName + '.json')
-  return cached(`findAliasedFile ${file}`, async () => {
-    let result: string = null
-    walkJsonObjects(await readJSONFile(file), (obj) => {
-      if (isAsset(obj) && obj.hint) {
-        result = obj.hint
-      }
-    })
-    return result
-  })
-}
-
-async function findDamageTable(rootDir: string, sliceName: string, file?: string) {
-  file = findDynamicSlice(rootDir, sliceName, file)
-  if (!file) {
-    return null
-  }
-  return cached(`findDamageTable ${file}`, async () => {
+async function scanForDamageTableAndModels(sliceComponent: SliceComponent, rootDir: string, currentFile: string) {
+  return cached(`scanForDamageTableAndModels ${currentFile}`, async () => {
     let vitalsID: string = null
     let damageTable: string = null
     let modelSlice: string = null
-
-    const sliceComponent = await findSliceComponent(file)
-    sliceComponent?.entities?.forEach((entity) => {
-      entity?.components?.forEach((obj) => {
-        if (isVitalsComponent(obj)) {
-          vitalsID = vitalsID || obj.m_rowreference
+    for (const entity of sliceComponent?.entities || []) {
+      for (const component of entity?.components || []) {
+        if (isVitalsComponent(component)) {
+          vitalsID = vitalsID || component.m_rowreference
         }
-        if (isActionListComponent(obj)) {
-          damageTable = damageTable || obj.m_damagetable?.asset?.baseclass1?.assetpath
+        if (isActionListComponent(component)) {
+          damageTable = damageTable || component.m_damagetable?.asset?.baseclass1?.assetpath
         }
         let hasModel = false
-        hasModel = hasModel || (isSkinnedMeshComponent(obj) && obj['skinned mesh render node']?.visible)
-        hasModel = hasModel || (isMeshComponent(obj) && obj['static mesh render node']?.visible)
-        if (hasModel) {
+        hasModel = hasModel || (isSkinnedMeshComponent(component) && component['skinned mesh render node']?.visible)
+        hasModel = hasModel || (isMeshComponent(component) && component['static mesh render node']?.visible)
+        if (hasModel && !modelSlice) {
           modelSlice = path
-            .relative(rootDir, file)
+            .relative(rootDir, currentFile)
             .replace(/\\/gi, '/')
             .replace(/\.json$/, '.glb')
             .toLowerCase()
         }
-      })
-    })
+      }
+    }
     return {
       vitalsID,
       damageTable,
       modelSlice,
     }
   })
-}
-
-async function findSliceComponent(file: string) {
-  const data = await readJSONFile(file)
-  if (!isAZ__Entity(data)) {
-    return null
-  }
-  for (const component of data.components || []) {
-    if (isSliceComponent(component)) {
-      return component
-    }
-  }
-  return null
-}
-
-function findDynamicSlice(rootDir: string, sliceName: string, file?: string) {
-  if (!file && sliceName) {
-    file = path.join(rootDir, toDynamicSlice(sliceName))
-  }
-  if (!file || !fs.existsSync(file)) {
-    return null
-  }
-  return file
-}
-
-function toDynamicSlice(fileOrName: string) {
-  if (!path.extname(fileOrName)) {
-    fileOrName = fileOrName + '.dynamicslice'
-  }
-  if (path.extname(fileOrName).toLocaleLowerCase() === '.slice') {
-    fileOrName = replaceExtname(fileOrName, '.dynamicslice')
-  }
-  if (path.extname(fileOrName).toLocaleLowerCase() === '.dynamicslice') {
-    fileOrName = fileOrName + '.json'
-  }
-  return fileOrName
 }

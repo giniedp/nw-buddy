@@ -4,9 +4,24 @@ import * as path from 'path'
 import * as fs from 'fs'
 import { isAliasAsset } from "./types/aliasasset"
 
+const cache = new Map<string, Promise<any>>()
+
+export async function cached<T>(key: string, task: (key: string) => Promise<T>): Promise<T> {
+  if (!cache.has(key)) {
+    cache.set(key, task(key))
+  } else {
+    // console.log('cache hit', key)
+  }
+  return cache.get(key)
+}
+
 export async function readDynamicSliceFile(file: string) {
+  if (!file) {
+    return null
+  }
   const data = await readJSONFile(file)
   if (!isAZ__Entity(data)) {
+    console.log('not an entity', file)
     return null
   }
   for (const component of data.components || []) {
@@ -25,17 +40,34 @@ export async function readAliasFile(file: string) {
   return data
 }
 
-export async function resolveDynamicSliceFile(rootDir: string, file: string) {
-  if (!path.isAbsolute(file)) {
+export async function resolveDynamicSliceFile(rootDir: string, file: string)  {
+  if (!file) {
+    return null
+  }
+  let result = await resolveFile(rootDir, file)
+  if (!result) {
+    result = await resolveFile(path.join(rootDir, 'slices') , file)
+  }
+  // if (!result && file.includes('/')) {
+  //   console.warn(`could not resolve to dynamic slice: ${file}`)
+  // }
+  return result
+}
+
+async function resolveFile(rootDir: string, file: string) {
+  if (!file) {
+    return null
+  }
+  if (!path.isAbsolute(file) && rootDir) {
     file = path.join(rootDir, file)
   }
 
   const ext = path.extname(file)
-  if (ext === '.json') {
-    return resolveDynamicSliceFile(rootDir, replaceExtname(file, ''))
-  }
-
   switch (ext) {
+    case '':
+      return resolveFile(rootDir, file + '.dynamicslice')
+    case '.json':
+      return resolveFile(rootDir, replaceExtname(file, ''))
     case '.dynamicslice':
       file = file + '.json'
       break
@@ -51,7 +83,7 @@ export async function resolveDynamicSliceFile(rootDir: string, file: string) {
       for (const tag of alias.tags || []) {
         for (const slice of tag.slices || []) {
           if (slice.slice.hint) {
-            return resolveDynamicSliceFile(rootDir, slice.slice.hint)
+            return resolveFile(rootDir, slice.slice.hint)
           }
         }
       }
