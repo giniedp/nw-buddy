@@ -19,7 +19,7 @@ import {
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
-import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { Housingitems, ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { RangeFilter, SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize } from '~/utils'
@@ -30,6 +30,8 @@ export type ItemTableUtils = TableGridUtils<ItemTableRecord>
 export type ItemTableRecord = ItemDefinitionMaster & {
   $perks?: Perks[]
   $perkBuckets?: string[]
+  $transformTo?: ItemDefinitionMaster | Housingitems
+  $transformFrom?: Array<ItemDefinitionMaster | Housingitems>
 }
 
 export function itemColIcon(util: ItemTableUtils) {
@@ -56,7 +58,7 @@ export function itemColIcon(util: ItemTableUtils) {
           isArtifact: isMasterItem(data) && isItemArtifact(data),
           isNamed: isMasterItem(data) && isItemNamed(data),
           rarity: getItemRarity(data),
-        })
+        }),
       )
     }),
   })
@@ -85,8 +87,114 @@ export function itemColItemId(util: ItemTableUtils) {
   })
 }
 
+export function itemColTransformTo(util: ItemTableUtils) {
+  return util.colDef<string>({
+    colId: 'transformTo',
+    headerValueGetter: () => 'Transform To',
+    sortable: true,
+    valueGetter: ({ data }) => getItemId(data.$transformTo),
+    cellRenderer: util.cellRenderer(({ data }) => {
+      const item = data.$transformTo
+      if (!item) {
+        return null
+      }
+      return util.el('div.flex.flex-row.items-center.h-full', {}, [
+        util.elA(
+          {
+            class: ['flex', 'flex-row', 'items-center', 'h-full'],
+            attrs: {
+              target: '_blank',
+              href: util.tipLink('item', getItemId(item)),
+            },
+          },
+          [
+            util.elItemIcon({
+              class: ['w-8 h-8 flex-none'],
+              icon: getItemIconPath(item) || NW_FALLBACK_ICON,
+              isArtifact: isMasterItem(item) && isItemArtifact(item),
+              isNamed: isMasterItem(item) && isItemNamed(item),
+              rarity: getItemRarity(item),
+            }),
+           ,
+          ],
+        ),
+        util.el('span.pl-2', { text: util.i18n.get(item.Name) })
+      ])
+    }),
+    filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      showSearch: true,
+      optionsGetter: ({ data }) => {
+        const item = data.$transformTo
+        if (!item) {
+          return []
+        }
+        return [
+          {
+            id: getItemId(item),
+            label: util.i18n.get(item.Name),
+            icon: getItemIconPath(item),
+          },
+        ]
+      },
+    }),
+  })
+}
+
+export function itemColTransformFrom(util: ItemTableUtils) {
+  return util.colDef<string[]>({
+    colId: 'transformFrom',
+    headerValueGetter: () => 'Transform From',
+    sortable: true,
+    valueGetter: ({ data }) => data.$transformFrom?.map(getItemId),
+    cellRenderer: util.cellRenderer(({ data }) => {
+      const items = data.$transformFrom
+      if (!items?.length) {
+        return null
+      }
+      return util.el('div.flex.flex-row.items-center.h-full', {}, [
+        ...items.map((item) =>
+          util.elA(
+            {
+              class: ['block', 'flex-nonw'],
+              attrs: {
+                target: '_blank',
+                href: util.tipLink('item', getItemId(item)),
+              },
+            },
+            util.elItemIcon({
+              class: ['w-8', 'h-8'],
+              icon: getItemIconPath(item) || NW_FALLBACK_ICON,
+              isArtifact: isMasterItem(item) && isItemArtifact(item),
+              isNamed: isMasterItem(item) && isItemNamed(item),
+              rarity: getItemRarity(item),
+            }),
+          ),
+        ),
+      ])
+    }),
+    filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      showSearch: true,
+      optionsGetter: ({ data }) => {
+        const items: ItemTableRecord['$transformFrom'] = data.$transformFrom
+        if (!items?.length) {
+          return []
+        }
+        return items.map((item) => {
+          return {
+            id: getItemId(item),
+            label: util.i18n.get(item.Name),
+            icon: getItemIconPath(item),
+          }
+        })
+      },
+    }),
+  })
+}
+
 export function itemColPerks(
-  util: TableGridUtils<ItemDefinitionMaster & { $perks?: Perks[]; $perkBuckets?: string[] }>
+  util: TableGridUtils<ItemDefinitionMaster & { $perks?: Perks[]; $perkBuckets?: string[] }>,
 ) {
   return util.colDef<string[]>({
     colId: 'perks',
@@ -114,8 +222,8 @@ export function itemColPerks(
             util.elImg({
               class: ['w-7', 'h-7', 'nw-icon'],
               src: perk?.IconPath,
-            })
-          )
+            }),
+          ),
         ),
         ...buckets.map(() => {
           return util.elImg({
@@ -132,7 +240,7 @@ export function itemColPerks(
         const perks: Perks[] = data.$perks || []
         return perks.map((perk) => {
           const text = util.i18n.get(
-            perk.DisplayName || perk.SecondaryEffectDisplayName || perk.AppliedSuffix || perk.AppliedPrefix
+            perk.DisplayName || perk.SecondaryEffectDisplayName || perk.AppliedSuffix || perk.AppliedPrefix,
           )
           return {
             id: perk.PerkID,

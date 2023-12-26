@@ -4,12 +4,13 @@ import { getItemPerkBucketIds, getItemPerks, getItemTypeLabel } from '@nw-data/c
 import { COLS_ITEMDEFINITIONMASTER } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { NwDbService } from '~/nw'
-import { ItemPreferencesService } from '~/preferences'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
 
-import { DataTableCategory } from '~/ui/data/table-grid'
-import { addGenericColumns } from '~/ui/data/table-grid'
+import { DataViewAdapter } from '~/ui/data/data-view'
+import { DataTableCategory, addGenericColumns } from '~/ui/data/table-grid'
+import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { selectStream } from '~/utils'
+import { ItemCellComponent } from './item-cell.component'
 import {
   ItemTableRecord,
   itemColBookmark,
@@ -32,10 +33,9 @@ import {
   itemColTradingCategory,
   itemColTradingFamily,
   itemColTradingGroup,
+  itemColTransformFrom,
+  itemColTransformTo,
 } from './item-table-cols'
-import { DataViewAdapter } from '~/ui/data/data-view'
-import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { ItemCellComponent } from './item-cell.component'
 
 @Injectable()
 export class ItemTableAdapter implements TableGridAdapter<ItemTableRecord>, DataViewAdapter<ItemTableRecord> {
@@ -79,14 +79,23 @@ export class ItemTableAdapter implements TableGridAdapter<ItemTableRecord>, Data
   private source$ = selectStream(
     {
       items: this.config?.source || this.db.items,
-      perks: this.db.perksMap,
+      itemsMap: this.db.itemsMap,
+      housingMap: this.db.housingItemsMap,
+      perksMap: this.db.perksMap,
+      transformsMap: this.db.itemTransformsMap,
+      transformsMapReverse: this.db.itemTransformsByToItemIdMap,
     },
-    ({ items, perks }) => {
+    ({ items, itemsMap, housingMap, perksMap, transformsMap, transformsMapReverse }) => {
+      function getItem(id: string) {
+        return itemsMap.get(id) || housingMap.get(id)
+      }
       items = items.map((it): ItemTableRecord => {
         return {
           ...it,
-          $perks: getItemPerks(it, perks),
+          $perks: getItemPerks(it, perksMap),
           $perkBuckets: getItemPerkBucketIds(it),
+          $transformTo: getItem(transformsMap.get(it.ItemID)?.ToItemId),
+          $transformFrom: Array.from(transformsMapReverse.get(it.ItemID) || []).map((it) => getItem(it.FromItemId)),
         }
       })
       const filter = this.config?.filter
@@ -98,7 +107,7 @@ export class ItemTableAdapter implements TableGridAdapter<ItemTableRecord>, Data
         items = [...items].sort(sort)
       }
       return items
-    }
+    },
   )
 }
 
@@ -126,6 +135,8 @@ export function buildCommonItemGridOptions(util: TableGridUtils<ItemTableRecord>
       itemColTradingGroup(util),
       itemColTradingFamily(util),
       itemColTradingCategory(util),
+      itemColTransformTo(util),
+      itemColTransformFrom(util),
     ],
   }
   addGenericColumns(result, {

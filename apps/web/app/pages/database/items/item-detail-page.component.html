@@ -1,7 +1,7 @@
 <nwb-detail-drawer class="hidden lg:block lg:w-[420px]">
   <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
     <nwb-item-card
-      [entityId]="itemId$ | async"
+      [entityId]="itemId()"
       [enableInfoLink]="true"
       [enableTracker]="true"
       [enableLink]="true"
@@ -13,7 +13,7 @@
     >
       <div *ngIf="card.itemModels$ | async; let models" class="pb-4 px-4 flex flex-col gap-2">
         <div *ngIf="viewerActive" class="aspect-square rounded-md overflow-clip">
-          <nwb-model-viewer [models]="models" [hideFloor]="true" class="w-full h-full"/>
+          <nwb-model-viewer [models]="models" [hideFloor]="true" class="w-full h-full" />
         </div>
         <button
           class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50 w-full"
@@ -53,67 +53,120 @@
           </div>
         </ng-template>
       </div>
-      <div class="pb-4 px-4 flex flex-col gap-2" *ngIf="card.itemSet$ | async; let gearset">
-        <div *ngIf="gearset.items?.length > 1">
-          <h3 class="text-center font-bold mb-1">Set Items</h3>
-          <div class="flex flex-row flex-wrap gap-2 justify-center">
-            <a
-              [tooltip]="item.ItemTypeDisplayName | nwText"
-              [tooltipClass]="'bg-base-200'"
-              [nwbItemIcon]="item"
-              [rarity]="itemRarity(item)"
-              [isNamed]="itemNamed(item)"
-              [solid]="true"
-              *ngFor="let item of gearset.items"
-              [routerLink]="['/items/table', item.ItemID]"
-              [routerLinkActive]="['outline']"
-              [queryParamsHandling]="'preserve'"
-              class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
-            >
-            </a>
+      <div class="pb-4 px-4 flex flex-col gap-2">
+        @if (card.itemSet$ | async; as gearset) {
+          @if (gearset.items?.length > 1) {
+            <div>
+              <h3 class="text-center font-bold mb-1">Set Items</h3>
+              <div class="flex flex-row flex-wrap gap-2 justify-center">
+                @for (item of gearset.items; track $index) {
+                  <a
+                    [tooltip]="item.ItemTypeDisplayName | nwText"
+                    [tooltipClass]="'bg-base-200'"
+                    [nwbItemIcon]="item"
+                    [rarity]="itemRarity(item)"
+                    [isNamed]="itemNamed(item)"
+                    [solid]="true"
+                    [routerLink]="['/items/table', item.ItemID]"
+                    [routerLinkActive]="['outline']"
+                    [queryParamsHandling]="'preserve'"
+                    class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
+                  >
+                  </a>
+                }
+              </div>
+            </div>
+          }
+          @if (gearset.variants?.length > 1) {
+            <div>
+              <h3 class="text-center font-bold mb-1">Variants</h3>
+              <div class="flex flex-row flex-wrap gap-2 justify-center">
+                @for (item of gearset.variants; track $index) {
+                  <a
+                    [tooltip]="itemVersion(item)"
+                    [tooltipClass]="'bg-base-200'"
+                    [nwbItemIcon]="item"
+                    [rarity]="itemRarity(item)"
+                    [isNamed]="itemNamed(item)"
+                    [solid]="true"
+                    [routerLink]="['/items/table', item.ItemID]"
+                    [routerLinkActive]="['outline']"
+                    [queryParamsHandling]="'preserve'"
+                    class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
+                  >
+                  </a>
+                }
+              </div>
+            </div>
+          }
+          @if (gearset.tiers?.length > 1) {
+            <div>
+              <h3 class="text-center font-bold mb-1">Tier Variants</h3>
+              <div class="flex flex-row flex-wrap gap-2 justify-center">
+                @for (item of gearset.tiers; track $index) {
+                  <a
+                    [tooltip]="itemTier(item)"
+                    [tooltipClass]="'bg-base-200'"
+                    [nwbItemIcon]="item"
+                    [rarity]="itemRarity(item)"
+                    [isNamed]="itemNamed(item)"
+                    [solid]="true"
+                    [routerLink]="['/items/table', item.ItemID]"
+                    [routerLinkActive]="['outline']"
+                    [queryParamsHandling]="'preserve'"
+                    class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
+                  >
+                  </a>
+                }
+              </div>
+            </div>
+          }
+        }
+        @if (card.transformToItem$ | async; as item) {
+          <div>
+            <h3 class="text-center font-bold mb-1">Transforms to</h3>
+            <div class="flex flex-row flex-wrap gap-2 justify-center">
+              <a
+                [tooltip]="itemTier(item)"
+                [tooltipClass]="'bg-base-200'"
+                [nwbItemIcon]="item"
+                [rarity]="itemRarity(item)"
+                [isNamed]="itemNamed(item)"
+                [solid]="true"
+                [routerLink]="['/items/table', item.ItemID]"
+                [routerLinkActive]="['outline']"
+                [queryParamsHandling]="'preserve'"
+                class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
+              >
+              </a>
+            </div>
           </div>
-        </div>
-        <div *ngIf="gearset.variants?.length > 1">
-          <h3 class="text-center font-bold mb-1">Variants</h3>
-          <div class="flex flex-row flex-wrap gap-2 justify-center">
-            <a
-              [tooltip]="itemVersion(item)"
-              [tooltipClass]="'bg-base-200'"
-              [nwbItemIcon]="item"
-              [rarity]="itemRarity(item)"
-              [isNamed]="itemNamed(item)"
-              [solid]="true"
-              *ngFor="let item of gearset.variants"
-              [routerLink]="['/items/table', item.ItemID]"
-              [routerLinkActive]="['outline']"
-              [queryParamsHandling]="'preserve'"
-              class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
-            >
-            </a>
+        }
+        @if (card.transformFromItems$ | async; as items) {
+          <div>
+            <h3 class="text-center font-bold mb-1">Transforms from</h3>
+            <div class="flex flex-row flex-wrap gap-2 justify-center">
+              @for (item of items; track $index) {
+                <a
+                  [tooltip]="itemTier(item)"
+                  [tooltipClass]="'bg-base-200'"
+                  [nwbItemIcon]="item"
+                  [rarity]="itemRarity(item)"
+                  [isNamed]="itemNamed(item)"
+                  [solid]="true"
+                  [routerLink]="['/items/table', item.ItemID]"
+                  [routerLinkActive]="['outline']"
+                  [queryParamsHandling]="'preserve'"
+                  class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
+                >
+                </a>
+              }
+            </div>
           </div>
-        </div>
-        <div *ngIf="gearset.tiers?.length > 1">
-          <h3 class="text-center font-bold mb-1">Tier Variants</h3>
-          <div class="flex flex-row flex-wrap gap-2 justify-center">
-            <a
-              [tooltip]="itemTier(item)"
-              [tooltipClass]="'bg-base-200'"
-              [nwbItemIcon]="item"
-              [rarity]="itemRarity(item)"
-              [isNamed]="itemNamed(item)"
-              [solid]="true"
-              *ngFor="let item of gearset.tiers"
-              [routerLink]="['/items/table', item.ItemID]"
-              [routerLinkActive]="['outline']"
-              [queryParamsHandling]="'preserve'"
-              class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
-            >
-            </a>
-          </div>
-        </div>
+        }
       </div>
     </nwb-item-card>
 
-    <nwb-item-page-tabs [itemId]="itemId$ | async" class="mt-2"></nwb-item-page-tabs>
+    <nwb-item-page-tabs [itemId]="itemId()" class="mt-2"></nwb-item-page-tabs>
   </div>
 </nwb-detail-drawer>

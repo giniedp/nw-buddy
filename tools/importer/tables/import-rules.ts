@@ -59,6 +59,7 @@ export const TABLE_IMPORT_RULES = [
     '*_itemdefinitions_weaponappearances_mountattachments',
     '*_itemdefinitions_weaponappearances',
     '*_itemdefinitions_weapons',
+    '*_itemtransformdata',
     '*_lootbuckets',
     '*_lootlimits',
     '*_loottables*',

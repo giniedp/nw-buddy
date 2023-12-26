@@ -1708,6 +1708,11 @@ export const COLS_ITEMDEFINITIONSWEAPONS = {
   "WeaponMasteryCategoryId": "string",
   "WeightOverride": "number",
 }
+export const COLS_ITEMTRANSFORMDATA = {
+  "FromItemId": "string",
+  "KeepPerks": "boolean",
+  "ToItemId": "string",
+}
 export const COLS_LOOTBUCKETS = {
   "FilterLootedItems276": "string",
   "FilterLootedItems277": "string",

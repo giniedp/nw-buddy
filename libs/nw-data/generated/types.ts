@@ -1752,6 +1752,12 @@ export interface ItemdefinitionsWeapons {
   WeightOverride: number
 }
 
+export interface Itemtransformdata {
+  FromItemId: string
+  KeepPerks: boolean
+  ToItemId: string
+}
+
 export interface Lootbuckets {
   FilterLootedItems276: string
   FilterLootedItems277: string

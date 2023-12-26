@@ -164,6 +164,15 @@ export class NwDbService {
       housing: this.housingItem(id),
     }).pipe(map(({ item, housing }) => item || housing))
 
+  public itemTransforms = table(() => this.data.itemtransformdata())
+  public itemTransformsMap = indexBy(() => this.itemTransforms, 'FromItemId')
+  public itemTransform = lookup(() => this.itemTransformsMap)
+  public itemTransformsByToItemIdMap = indexGroupSetBy(
+    () => this.itemTransforms,
+    (it) => it.ToItemId,
+  )
+  public itemTransformsByToItemId = lookup(() => this.itemTransformsByToItemIdMap)
+
   public abilities = table(() =>
     this.data
       .apiMethodsByPrefix('weaponabilitiesAbility', 'weaponabilitiesAbilityAi')

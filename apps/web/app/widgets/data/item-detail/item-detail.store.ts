@@ -26,7 +26,7 @@ import {
 import { ItemDefinitionMaster } from '@nw-data/generated'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { humanize, mapProp, selectStream, shareReplayRefCount } from '~/utils'
+import { humanize, mapProp, selectStream, shareReplayRefCount, switchMapCombineLatest, tapDebug } from '~/utils'
 import { ModelViewerService } from '../../model-viewer/model-viewer.service'
 import {
   PerkSlot,
@@ -61,13 +61,28 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public readonly perkOverride$ = this.select(({ perkOverride }) => perkOverride)
   public readonly perkEditable$ = this.select(({ perkEditable }) => perkEditable)
   public readonly attrValueSums$ = this.select(({ attrValueSums }) => attrValueSums)
-  public readonly playerLevel$ = selectStream({
-    playerLevel: of(null),
-    overrideLevel: this.select(({ playerLevel }) => playerLevel)
-  }, ({ playerLevel, overrideLevel }) => overrideLevel || playerLevel || NW_MAX_CHARACTER_LEVEL)
+  public readonly playerLevel$ = selectStream(
+    {
+      playerLevel: of(null),
+      overrideLevel: this.select(({ playerLevel }) => playerLevel),
+    },
+    ({ playerLevel, overrideLevel }) => overrideLevel || playerLevel || NW_MAX_CHARACTER_LEVEL,
+  )
 
   public readonly gsEdit$ = new EventEmitter<MouseEvent>()
   public readonly perkEdit$ = new EventEmitter<PerkSlot>()
+
+  public readonly transformToId$ = this.select(this.db.itemTransform(this.entityId$), (it) => it?.ToItemId)
+  public readonly transformToItem$ = this.select(this.db.item(this.transformToId$), (it) => it)
+  public readonly transformFromIds$ = this.select(this.db.itemTransformsByToItemId(this.entityId$), (it) =>
+    Array.from(it || []).map((it) => it.FromItemId),
+  )
+  public readonly transformFromItems$ = this.select(
+    this.transformFromIds$.pipe(switchMapCombineLatest((id) => this.db.item(id))),
+    (list) => {
+      return list?.length ? list : null
+    }
+  )
 
   public readonly item$ = this.select(this.db.item(this.entityId$), (it) => it)
   public readonly housingItem$ = this.select(this.db.housingItem(this.entityId$), (it) => it)

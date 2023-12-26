@@ -44,6 +44,7 @@ import type {
   ItemdefinitionsWeaponappearances,
   ItemdefinitionsWeaponappearancesMountattachments,
   ItemdefinitionsWeapons,
+  Itemtransformdata,
   Lootbuckets,
   Lootlimits,
   Loottable,
@@ -1100,6 +1101,9 @@ export abstract class NwDataLoader {
   }
   public itemdefinitionsWeapons() {
     return this.load<ItemdefinitionsWeapons[]>('javelindata_itemdefinitions_weapons.json')
+  }
+  public itemtransformdata() {
+    return this.load<Itemtransformdata[]>('javelindata_itemtransformdata.json')
   }
   public lootbuckets() {
     return this.load<Lootbuckets[]>('javelindata_lootbuckets.json')
