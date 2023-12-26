@@ -186,6 +186,18 @@ export class BinaryReader {
     return result.join('')
   }
 
+  public readNullTerminatedString(): string {
+    let result = []
+    while (this.canRead) {
+      const c = this.view.getUint8(this.position++)
+      if (c === 0) {
+        break
+      }
+      result.push(String.fromCharCode(c))
+    }
+    return result.join('')
+  }
+
   /**
    * Returns a section of the buffer starting at current position
    *

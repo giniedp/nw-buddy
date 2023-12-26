@@ -1,11 +1,11 @@
 import { program } from 'commander'
-import { convert } from 'nw-extract'
-import * as path from 'path'
 import * as fs from 'fs'
+import { convert } from 'nw-extract'
+import { cpus } from 'os'
+import * as path from 'path'
 import { environment, NW_GAME_VERSION } from '../env'
 import { objectStreamConverter } from './bin/object-stream-converter'
-import { cpus } from 'os'
-import { glob, copyFile, writeJSONFile } from './utils/file-utils'
+import { copyFile, glob, writeJSONFile } from './utils/file-utils'
 
 import { withProgressBar } from './utils'
 import { BinaryReader } from './utils/binary-reader'
@@ -55,6 +55,7 @@ program
       throw new Error(`Unknown importer module: ${it}`)
     }
 
+    // await convertAssetCatalog(inputDir, outputDir)
     await convertRegionData(inputDir, outputDir)
 
     if (hasFilter(Converter.datasheets, options.module)) {
@@ -111,15 +112,18 @@ program
       console.log('Convert Slices')
       await withProgressBar({ tasks: ['libs', 'coatgen', 'sharedassets', 'slices'] }, async (dir, i, log) => {
         log(dir)
-        await objectStreamConverter({
-          exe: 'tools/bin/object-stream-converter.exe',
-          input: path.join(inputDir, dir),
-          output: path.join(outputDir, dir),
-          pretty: true,
-          threads: Math.min(options.threads, 10),
-        }, {
-          stdio: 'ignore'
-        })
+        await objectStreamConverter(
+          {
+            exe: 'tools/bin/object-stream-converter.exe',
+            input: path.join(inputDir, dir),
+            output: path.join(outputDir, dir),
+            pretty: true,
+            threads: Math.min(options.threads, 10),
+          },
+          {
+            stdio: 'ignore',
+          },
+        )
       })
     }
 
@@ -165,16 +169,19 @@ async function convertRegionData(inputDir: string, outputDir: string) {
       positions.push([x, y])
     }
 
-    await writeJSONFile({
-      region,
-      slices: slices,
-      variants: variants,
-      indices: indices,
-      positions: positions,
-    }, {
-      target: outPath,
-      createDir: true,
-    })
+    await writeJSONFile(
+      {
+        region,
+        slices: slices,
+        variants: variants,
+        indices: indices,
+        positions: positions,
+      },
+      {
+        target: outPath,
+        createDir: true,
+      },
+    )
   })
 }
 
@@ -182,8 +189,107 @@ function readStringArray(r: BinaryReader, count: number) {
   const result = []
   for (let i = 0; i < count; i++) {
     const c = r.readByte()
-    const v = String.fromCharCode(...r.readByteArray(c) )
+    const v = String.fromCharCode(...r.readByteArray(c))
     result.push(v)
   }
   return result
+}
+
+async function convertAssetCatalog(inputDir: string, outputDir: string) {
+  const file = path.join(inputDir, 'assetcatalog.catalog')
+  const data = await fs.promises.readFile(file)
+  const reader = new BinaryReader(data.buffer)
+
+  const signature = reader.readString(4)
+  const version = reader.readUInt()
+  const fileSize = reader.readUInt()
+  reader.seekRelative(4)
+  console.table({ signature, version, fileSize, position: reader.position })
+
+  const posBlock1 = reader.readUInt()
+  const posBlock2 = reader.readUInt()
+  const posBlock3 = reader.readUInt()
+  const posBlock4 = reader.readUInt()
+  const posBlock0 = reader.position
+
+  reader.seekAbsolute(posBlock1)
+  const uuids: string[] = []
+  while (reader.position < posBlock2) {
+    const value = reader
+      .readBytes(16)
+      .map((it): string => {
+        return it.toString(16).padStart(2, '0')
+      })
+      .join('')
+    uuids.push(value)
+  }
+
+  reader.seekAbsolute(posBlock2)
+  const types: string[] = []
+  while (reader.position < posBlock3) {
+    const value = reader
+      .readBytes(16)
+      .map((it): string => {
+        return it.toString(16).padStart(2, '0')
+      })
+      .join('')
+    types.push(value)
+  }
+
+  reader.seekAbsolute(posBlock3)
+  const directories: string[] = []
+  while (reader.position < posBlock4) {
+    const value = reader.readNullTerminatedString()
+    directories.push(value)
+  }
+
+  reader.seekAbsolute(posBlock4)
+  const fileNames: string[] = []
+  while (reader.position < fileSize) {
+    const value = reader.readNullTerminatedString()
+    fileNames.push(value)
+  }
+
+  console.table([
+    ['block', 'size', 'content', 'count'],
+    [posBlock0, posBlock1 - posBlock0, 'unknown', '?'],
+    [posBlock1, posBlock2 - posBlock1, 'uuids', uuids.length],
+    [posBlock2, posBlock3 - posBlock2, 'types', types.length],
+    [posBlock3, posBlock4 - posBlock3, 'directories', directories.length],
+    [posBlock4, fileSize - posBlock3, 'fileNames', fileNames.length],
+  ])
+
+  const assets = [
+    {
+      guid: '7ec7032d-2e4a-5cdf-b005-46836debe3fc',
+      type: '78802abf-9595-463a-8d2b-d022f906f9b1',
+      //hint: 'slices/holiday/winterconvergence/activities/lostpresent/winterconv_activity_lostpresent_rare_01.dynamicslice',
+      hint: 'slices/holiday/winterconvergence/activities/lostpresent/winterconv_activity_lostpresent_rare_00.dynamicslice',
+    },
+    {
+      guid: '08caecaa-fb11-553d-b133-7c6345f21734',
+      type: 'd52cccdd-9701-45d9-b261-8ea6881a6312',
+      hint: 'objects/landmarks/corruption_core/jav_lm_corruption_core_b.rnr',
+    },
+  ]
+
+  for (const { guid, type, hint } of assets) {
+    console.log(hint)
+    console.log('  guid', uuids.indexOf(guid.replace(/-/g, '')), guid)
+    console.log('  type', types.indexOf(type.replace(/-/g, '')), type)
+    console.log('   dir', directories.indexOf(path.dirname(hint) + '/'), path.dirname(hint) + '/')
+    console.log('  file', fileNames.indexOf(path.basename(hint)), path.basename(hint))
+  }
+
+  // slices/holiday/winterconvergence/activities/lostpresent/winterconv_activity_lostpresent_rare_00.dynamicslice
+  //   guid 249097 7ec7032d-2e4a-5cdf-b005-46836debe3fc                      // 09 CD 03 00
+  //   type 2      78802abf-9595-463a-8d2b-d022f906f9b1                      // 02 00 00 00
+  //    dir 12296  slices/holiday/winterconvergence/activities/lostpresent/  // 08 30 00 00 // 110 files (6E)
+  //   file 746154 winterconv_activity_lostpresent_rare_00.dynamicslice      // AA 62 0B 00
+
+  // objects/landmarks/corruption_core/jav_lm_corruption_core_b.rnr
+  //   guid 209569 08caecaa-fb11-553d-b133-7c6345f21734
+  //   type 8      d52cccdd-9701-45d9-b261-8ea6881a6312
+  //    dir 3504   objects/landmarks/corruption_core/
+  //   file 632607 jav_lm_corruption_core_b.rnr
 }
