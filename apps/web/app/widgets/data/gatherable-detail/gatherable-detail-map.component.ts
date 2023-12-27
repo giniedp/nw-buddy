@@ -103,7 +103,7 @@ export class GatherableDetailMapComponent {
       }
 
       for (const meta of variationsMeta) {
-        const variant = variations.find((it) => it.VariantID === meta.variantID)
+        const variant = variations.find((it) => eqCaseInsensitive(it.VariantID, meta.variantID))
         if (!variant) {
           continue
         }
