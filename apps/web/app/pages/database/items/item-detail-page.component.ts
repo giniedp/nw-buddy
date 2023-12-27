@@ -1,7 +1,8 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TemplateRef } from '@angular/core'
-import { ActivatedRoute, RouterModule } from '@angular/router'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { RouterModule } from '@angular/router'
 import {
   getItemIconPath,
   getItemRarity,
@@ -18,7 +19,7 @@ import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, injectRouteParam, observeRouteParam } from '~/utils'
+import { HtmlHeadService, injectRouteParam } from '~/utils'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
@@ -27,7 +28,8 @@ import { ModelViewerComponent, ModelViewerModule } from '~/widgets/model-viewer'
 import { ItemModelInfo } from '~/widgets/model-viewer/model-viewer.service'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ItemTabsComponent } from './item-tabs.component'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { animate, style, transition, trigger } from '@angular/animations'
+import { GameEventDetailModule } from '~/widgets/data/game-event-detail'
 
 @Component({
   standalone: true,
@@ -49,11 +51,26 @@ import { toSignal } from '@angular/core/rxjs-interop'
     IconsModule,
     ModelViewerModule,
     TooltipModule,
+    GameEventDetailModule
   ],
   providers: [],
   host: {
     class: 'flex-none flex flex-col',
   },
+  animations: [
+    trigger('appear', [
+      transition(':enter', [
+        style({ height: 0, opacity: 0 }),
+        animate('0.15s ease-out', style({ height: '*' })),
+        animate('0.15s ease-out', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [
+        style({ height: '*', opacity: '*' }),
+        animate('0.15s ease-out', style({ opacity: 0 })),
+        animate('0.15s ease-out', style({ height: 0 })),
+      ]),
+    ]),
+  ]
 })
 export class ItemDetailPageComponent {
   protected itemId$ = injectRouteParam('id')
@@ -111,6 +128,9 @@ export class ItemDetailPageComponent {
     return getItemVersionString(item)
   }
   protected itemTier(item: ItemDefinitionMaster) {
+    if (!item?.Tier) {
+      return null
+    }
     return 'Tier ' + getItemTierAsRoman(item.Tier)
   }
 }

@@ -42,7 +42,7 @@ export interface Tab {
 export class ItemTabsComponent extends ItemDetailStore {
   @Input()
   public set itemId(value: string) {
-    this.patchState({ entityId: value })
+    this.patchState({ recordId: value })
   }
 
   protected trackByIndex = (i: number) => i
@@ -58,7 +58,7 @@ export class ItemTabsComponent extends ItemDetailStore {
   )
 
   protected vm$ = combineLatest({
-    entityId: this.select((it) => it.entityId),
+    entityId: this.select((it) => it.recordId),
     grantsEffects: this.statusEffectsIds$,
     resourcePerks: this.resourcePerkIds$,
     unlocksRecipe: this.salvageAchievementRecipe$,

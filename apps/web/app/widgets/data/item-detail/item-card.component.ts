@@ -16,6 +16,7 @@ import { ItemDetailStatsComponent } from './item-detail-stats.component'
 import { ItemDetailStore } from './item-detail.store'
 import { ItemDetailPerkTasksComponent } from './item-detail-perk-tasks.component'
 import { ItemDetailAttributionComponent } from './item-detail-attribution.component'
+import { selectSignal, selectStream } from '~/utils'
 
 @Component({
   standalone: true,
@@ -45,12 +46,12 @@ import { ItemDetailAttributionComponent } from './item-detail-attribution.compon
 export class ItemCardComponent extends ItemDetailStore {
   @Input()
   public set entityId(value: string) {
-    this.patchState({ entityId: value })
+    this.patchState({ recordId: value })
   }
 
   @Input()
   public set entity(value: ItemDefinitionMaster | Housingitems) {
-    this.patchState({ entityId: getItemId(value) })
+    this.patchState({ recordId: getItemId(value) })
   }
 
   @Input()
@@ -134,46 +135,44 @@ export class ItemCardComponent extends ItemDetailStore {
   protected disablePerks$ = new BehaviorSubject(false)
   protected disableDescription$ = new BehaviorSubject(false)
 
-  protected components$ = combineLatest({
+  protected components = selectSignal({
     disableInfo: this.disableInfo$,
     vmDescription: this.disableDescription$.pipe(switchMap((it) => (it ? of(null) : this.description$))),
     vmStats: this.disableStats$.pipe(switchMap((it) => (it ? of(null) : this.vmStats$))),
-    vmInfo: this.disableInfo$.pipe(switchMap((it) => (it ? of(null) : this.vmInfo$))),
     vmPerks: this.disablePerks$.pipe(switchMap((it) => (it ? of(null) : this.vmPerks$))),
     vmPerkTasks: this.artifactPerkTasks$,
     vmWeapon: this.weaponStats$,
     attribution: this.attribution$,
     expansion: this.expansion$,
-  }).pipe(
-    map(({ vmDescription, vmStats, vmInfo, vmPerks, vmWeapon, vmPerkTasks, disableInfo, attribution, expansion }) => {
-      let list: Array<Type<any>> = []
-      if (!disableInfo && (attribution || expansion)) {
-        appendSection(list, ItemDetailAttributionComponent)
+  }, ({ vmDescription, vmStats, vmPerks, vmWeapon, vmPerkTasks, disableInfo, attribution, expansion }) => {
+    let list: Array<Type<any>> = []
+    if (!disableInfo && (attribution || expansion)) {
+      appendSection(list, ItemDetailAttributionComponent)
+    }
+    if (vmDescription?.image) {
+      appendSection(list, ItemDetailDescriptionComponent)
+    }
+    if (vmStats && (vmStats.gsLabel || vmStats.stats?.length)) {
+      appendSection(list, ItemDetailStatsComponent)
+      if (vmWeapon && getWeaponTagFromWeapon(vmWeapon)) {
+        appendSection(list, ItemDetailGsDamage)
       }
-      if (vmDescription?.image) {
-        appendSection(list, ItemDetailDescriptionComponent)
-      }
-      if (vmStats && (vmStats.gsLabel || vmStats.stats?.length)) {
-        appendSection(list, ItemDetailStatsComponent)
-        if (vmWeapon && getWeaponTagFromWeapon(vmWeapon)) {
-          appendSection(list, ItemDetailGsDamage)
-        }
-      }
-      if (vmPerks?.length) {
-        appendSection(list, ItemDetailPerksComponent)
-      }
-      if (!vmDescription?.image && !!vmDescription?.description) {
-        appendSection(list, ItemDetailDescriptionComponent)
-      }
-      if (this.enableTasks && vmPerkTasks) {
-        appendSection(list, ItemDetailPerkTasksComponent)
-      }
-      if (vmInfo) {
-        appendSection(list, ItemDetailInfoComponent)
-      }
-      return list
-    })
-  )
+    }
+    if (vmPerks?.length) {
+      appendSection(list, ItemDetailPerksComponent)
+    }
+    if (!vmDescription?.image && !!vmDescription?.description) {
+      appendSection(list, ItemDetailDescriptionComponent)
+    }
+    if (this.enableTasks && vmPerkTasks) {
+      appendSection(list, ItemDetailPerkTasksComponent)
+    }
+    if (!disableInfo) {
+      appendSection(list, ItemDetailInfoComponent)
+    }
+
+    return list.length ? list : null
+  })
 
   protected trackByIndex = (i: number) => i
 

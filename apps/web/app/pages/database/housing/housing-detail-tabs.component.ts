@@ -38,7 +38,7 @@ export interface Tab {
 export class HousingTabsComponent extends ItemDetailStore {
   @Input()
   public set itemId(value: string) {
-    this.patchState({ entityId: value })
+    this.patchState({ recordId: value })
   }
 
   protected trackByIndex = (i: number) => i

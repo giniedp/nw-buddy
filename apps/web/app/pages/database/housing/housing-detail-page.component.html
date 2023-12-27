@@ -10,8 +10,8 @@
       #card="card"
       class="flex-1"
     >
-      <div class="flex flex-col gap-2 px-4 pb-4">
-        <div class="btn-group" *ngIf="card.salvageInfo$ | async; let salvage">
+      @if (card.salvageInfo$ | async; as salvage) {
+        <div class="btn-group">
           <button
             class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50"
             (click)="openRepairRecipe(tplSalvage)"
@@ -41,19 +41,21 @@
             </div>
           </ng-template>
         </div>
+      }
 
-        <div *ngIf="card.itemModels$ | async; let models" class="flex flex-col gap-2">
-          <div *ngIf="viewerActive" class="aspect-square rounded-md overflow-clip">
+      @if (card.itemModels$ | async; as models) {
+        @if (viewerActive) {
+          <div class="aspect-square rounded-md overflow-clip">
             <nwb-model-viewer [models]="models" [hideFloor]="true" class="w-full h-full"></nwb-model-viewer>
           </div>
-          <button
-            class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50 w-full"
-            (click)="viewerActive = !viewerActive"
-          >
-            {{ viewerActive ? 'Close' : 'View 3D Model' }}
-          </button>
-        </div>
-      </div>
+        }
+        <button
+          class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50 w-full"
+          (click)="viewerActive = !viewerActive"
+        >
+          {{ viewerActive ? 'Close' : 'View 3D Model' }}
+        </button>
+      }
     </nwb-item-card>
 
     <nwb-housing-page-tabs [itemId]="itemId$ | async"> </nwb-housing-page-tabs>

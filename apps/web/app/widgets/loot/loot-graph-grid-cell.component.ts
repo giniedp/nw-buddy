@@ -20,7 +20,7 @@ import { ItemFrameModule } from '~/ui/item-frame'
     >
       <div class="flex-1 flex flex-row gap-1 p-1">
         <a
-          [nwLink]="store.entityId$ | async"
+          [nwLink]="store.recordId$ | async"
           [nwLinkResource]="'item'"
           [nwbItemIcon]="store.entity$ | async"
           class="w-14 h-14"
@@ -94,7 +94,7 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
       return it.Name
     })
 
-    this.store.patchState({ entityId: this.itemId })
+    this.store.patchState({ recordId: this.itemId })
   }
 
   @Input()

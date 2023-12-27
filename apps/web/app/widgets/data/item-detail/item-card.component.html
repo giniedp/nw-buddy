@@ -4,13 +4,13 @@
   [enableLink]="enableLink"
   [disableContent]="square"
 />
-<div class="flex flex-col layout-content" *ngIf="!square">
-  <ng-container *ngIf="components$ | async; let items">
-    <div *ngIf="items?.length" class="flex flex-col gap-2 p-4">
-      <ng-container *ngFor="let comp of components$ | async; trackBy: trackByIndex">
-        <ng-container [ngComponentOutlet]="comp"></ng-container>
-      </ng-container>
-    </div>
-  </ng-container>
-  <ng-content></ng-content>
-</div>
+@if (!square) {
+  <div class="flex flex-col gap-2 p-4 empty:hidden">
+    @if (components(); as components) {
+      @for (component of components; track $index) {
+        <ng-container [ngComponentOutlet]="component" />
+      }
+    }
+    <ng-content></ng-content>
+  </div>
+}

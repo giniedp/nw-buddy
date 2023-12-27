@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, OnInit, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, OnInit, Output, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { AttributeRef, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
+import { Attributeconstitution } from '@nw-data/generated'
 import { isEqual } from 'lodash'
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
-import { NwAttributesService } from '~/nw/attributes'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgAnglesLeft } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
+import { shareReplayRefCount } from '~/utils'
 import { AttributeState, AttributesStore } from './attributes.store'
 
 @Component({
@@ -24,6 +25,9 @@ import { AttributeState, AttributesStore } from './attributes.store'
   },
 })
 export class AttributesEditorComponent implements OnInit {
+  private store = inject(AttributesStore)
+  private db = inject(NwDbService)
+
   @Input()
   public set level(value: number) {
     this.level$.next(value)
@@ -113,10 +117,6 @@ export class AttributesEditorComponent implements OnInit {
   public readonly totalFoc$ = this.store.totalFoc$.pipe(debounceTime(300))
   public readonly totalCon$ = this.store.totalCon$.pipe(debounceTime(300))
 
-  public constructor(private store: AttributesStore, private attrs: NwAttributesService, private db: NwDbService) {
-    //
-  }
-
   public ngOnInit() {
     const src = combineLatest({
       level: this.level$,
@@ -134,7 +134,7 @@ export class AttributesEditorComponent implements OnInit {
             str: 5,
           }
           return of(base)
-        })
+        }),
       ),
       assigned: this.assigned$,
       buffs: this.buffs$,
@@ -184,7 +184,7 @@ export class AttributesEditorComponent implements OnInit {
   protected getAbilities(state: AttributeState, points: number) {
     return combineLatest({
       abilities: this.db.abilitiesMap,
-      levels: this.attrs.abilitiesLevels(state.ref),
+      levels: this.abilitiesLevels(state.ref),
     }).pipe(
       map(({ abilities, levels }) => {
         const ids = levels.find((it) => it.Level === points)?.EquipAbilities || []
@@ -196,7 +196,7 @@ export class AttributesEditorComponent implements OnInit {
             Icon: ability.Icon,
           }
         })
-      })
+      }),
     )
   }
 
@@ -219,4 +219,46 @@ export class AttributesEditorComponent implements OnInit {
     }
     return 'zink' as const
   }
+
+  private attrLevels(ref: AttributeRef) {
+    switch (resolveShortType(ref)) {
+      case 'con':
+        return this.db.attrCon
+      case 'str':
+        return this.db.attrStr
+      case 'foc':
+        return this.db.attrFoc
+      case 'int':
+        return this.db.attrInt
+      case 'dex':
+        return this.db.attrDex
+      default:
+        return of<Attributeconstitution[]>([])
+    }
+  }
+
+  public abilitiesLevels(ref: AttributeRef) {
+    return this.attrLevels(ref)
+      .pipe(
+        map((table) => {
+          return table
+            .filter((it) => it.EquipAbilities?.length)
+            .map((it) => ({
+              Level: it.Level,
+              EquipAbilities: it.EquipAbilities,
+            }))
+        }),
+      )
+      .pipe(shareReplayRefCount(1))
+  }
+}
+
+function resolveShortType(type: string) {
+  if (!type) {
+    return null
+  }
+  if (type.length !== 3) {
+    type = type.substring(0, 3)
+  }
+  return type.toLowerCase()
 }

@@ -1,11 +1,13 @@
 <div class="nw-item-header-bg"></div>
-<div class="nw-item-header-fg" *ngIf="isNamed || isArtifact"></div>
+@if (isNamed() || isArtifact()) {
+  <div class="nw-item-header-fg"></div>
+}
 <a
-  [nwbItemIcon]="iconOverride || entity"
+  [nwbItemIcon]="iconOverride || icon()"
   [cover]="true"
-  [nwLink]="enableInfoLink ? entityId : null"
+  [nwLink]="enableInfoLink ? recordId() : null"
   [nwLinkResource]="'item'"
-  [rarity]="rarity"
+  [rarity]="rarity()"
   class="aspect-square inline-block"
   [class.w-12]="size === 'sm'"
   [class.h-12]="size === 'sm'"
@@ -14,31 +16,31 @@
   [class.w-20]="size === 'lg'"
   [class.h-20]="size === 'lg'"
 >
-  <span class="italic font-caslon">{{ tierLabel }}</span>
-  <ng-content select=".icon-overlay"></ng-content>
+  <span class="italic font-caslon">{{ tierLabel() }}</span>
+  <ng-content select=".icon-overlay" />
 </a>
-<nwb-item-header-content
-  class="z-10"
-  nwbItemHeaderContent
-  [title]="name | nwText | nwTextBreak : ' - '"
-  [titleLink]="enableLink ? entityLink : null"
-  [text1]="rarityName | nwText"
-  [text2]="typeName | nwText"
-  [text3]="size === 'sm' ? null : sourceLabel"
-  [rarity]="rarity"
-  [isNamed]="isNamed"
-  [isSkeleton]="isLoading"
-  *ngIf="!disableContent"
->
-  <div class="header flex flex-col justify-end" *ngIf="enableTracker">
-    <nwb-item-marker [itemId]="entityId" class="text-right"></nwb-item-marker>
-    <nwb-gs-tracker
-      *ngIf="enableGsTracker"
-      [itemId]="entityId"
-      class="text-right mt-1 tooltip-left"
-      [emptyTip]="'Track Gear Score'"
-    ></nwb-gs-tracker>
-  </div>
-  <ng-content select=".content"></ng-content>
-</nwb-item-header-content>
+@if (!disableContent) {
+  <nwb-item-header-content
+    class="z-10"
+    nwbItemHeaderContent
+    [title]="isMissing() ? recordId() : name() | nwText | nwTextBreak: ' - '"
+    [titleLink]="enableLink ? recordLink() : null"
+    [text1]="rarityName() | nwText"
+    [text2]="isMissing() ? 'Missing Item' : typeName() | nwText"
+    [text3]="size === 'sm' ? null : sourceLabel()"
+    [rarity]="rarity()"
+    [isNamed]="isNamed()"
+    [isSkeleton]="isLoading()"
+  >
+    @if (enableTracker && !isMissing()) {
+      <div class="header flex flex-col justify-end">
+        <nwb-item-marker [itemId]="recordId()" class="text-right" />
+        @if (enableGsTracker()) {
+          <nwb-gs-tracker [itemId]="recordId()" class="text-right mt-1 tooltip-left" [emptyTip]="'Track Gear Score'" />
+        }
+      </div>
+    }
+    <ng-content select=".content"></ng-content>
+  </nwb-item-header-content>
+}
 <ng-content></ng-content>

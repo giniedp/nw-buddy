@@ -1,5 +1,4 @@
-import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, Input, HostBinding } from '@angular/core'
+import { ChangeDetectionStrategy, Component, HostBinding, Input } from '@angular/core'
 import { ItemRarity } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { NwModule } from '~/nw'
@@ -9,13 +8,15 @@ import { NwModule } from '~/nw'
   selector: 'nwb-item-icon,a[nwbItemIcon]',
   template: `
     <div class="nw-item-icon-border"></div>
-    <picture class="aspect-square" *ngIf="icon">
-      <img [nwImage]="icon" class="w-full h-full" [class.object-contain]="!cover" [class.object-cover]="cover" />
-    </picture>
-    <ng-content></ng-content>
+    @if (icon) {
+      <picture class="aspect-square">
+        <img [nwImage]="icon" class="w-full h-full" [class.object-contain]="!cover" [class.object-cover]="cover" />
+      </picture>
+    }
+    <ng-content />
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule],
+  imports: [NwModule],
   host: {
     class: 'block nw-item-icon-frame aspect-square relative',
     '[class.nw-item-rarity-common]': 'rarity === "common"',
@@ -44,7 +45,4 @@ export class ItemIconFrameComponent {
 
   @Input()
   public cover: boolean
-  public constructor() {
-    //
-  }
 }

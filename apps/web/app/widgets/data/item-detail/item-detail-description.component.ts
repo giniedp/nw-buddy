@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
 import { NwModule } from '~/nw'
 import { ItemDetailStore } from './item-detail.store'
 
@@ -11,17 +11,14 @@ import { ItemDetailStore } from './item-detail.store'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule],
   host: {
-    class: 'block'
+    class: 'block',
   },
 })
 export class ItemDetailDescriptionComponent {
+  protected store = inject(ItemDetailStore)
 
   @Input()
   public innerClass: string
 
-  protected vm$ = this.detail.description$
-
-  public constructor(protected detail: ItemDetailStore) {
-
-  }
+  protected vm$ = this.store.description$
 }

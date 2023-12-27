@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getItemPerkBucketIds, getItemPerks, getItemTypeLabel } from '@nw-data/common'
-import { COLS_ITEMDEFINITIONMASTER } from '@nw-data/generated'
+import { COLS_ITEMDEFINITIONMASTER, ItemDefinitionMaster } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { NwDbService } from '~/nw'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
@@ -87,7 +87,10 @@ export class ItemTableAdapter implements TableGridAdapter<ItemTableRecord>, Data
     },
     ({ items, itemsMap, housingMap, perksMap, transformsMap, transformsMapReverse }) => {
       function getItem(id: string) {
-        return itemsMap.get(id) || housingMap.get(id)
+        if (!id) {
+          return null
+        }
+        return itemsMap.get(id) || housingMap.get(id) || { ItemID: id } as ItemDefinitionMaster
       }
       items = items.map((it): ItemTableRecord => {
         return {

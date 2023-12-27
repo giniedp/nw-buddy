@@ -64,6 +64,7 @@ import type {
   PlayertitlesCategories,
   PoiDefinition,
   Promotionmutations,
+  PvpRank,
   PvpRewards,
   PvpStore,
   PvpbalanceArena,
@@ -1275,6 +1276,9 @@ export abstract class NwDataLoader {
   }
   public pointofinterestdefinitionsPoidefinitionsDevworld() {
     return this.load<PoiDefinition[]>('pointofinterestdefinitions/javelindata_poidefinitions_devworld.json')
+  }
+  public pvpRank() {
+    return this.load<PvpRank[]>('javelindata_pvp_rank.json')
   }
   public pvpRewardstrackLoottablesPvpRewardsTrack() {
     return this.load<Loottable[]>('pvp_rewardstrack/javelindata_loottables_pvp_rewards_track.json')

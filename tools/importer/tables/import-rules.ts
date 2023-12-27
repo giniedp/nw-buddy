@@ -73,6 +73,7 @@ export const TABLE_IMPORT_RULES = [
     '*_perks',
     '*_playertitles',
     '*_playertitles_categories',
+    '*_pvp_rank.json',
     '*_spelltable_*',
     '*_spelltable',
     '*_staminacosts_player',

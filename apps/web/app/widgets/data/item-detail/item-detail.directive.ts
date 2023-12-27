@@ -17,7 +17,7 @@ import { ItemDetailStore } from './item-detail.store'
 export class ItemDetailDirective extends ItemDetailStore {
   @Input()
   public set nwbItemDetail(value: string) {
-    this.patchState({ entityId: value })
+    this.patchState({ recordId: value })
   }
 
   @Input()

@@ -3927,6 +3927,23 @@ export const COLS_PROMOTIONMUTATIONS = {
   "PromotionMutationId": "string",
   "TextColor": "string",
 }
+export const COLS_PVPRANK = {
+  "AzothSaltReward": "number",
+  "BorderTier": "number",
+  "DisplayName": "string",
+  "GameEventId": "string",
+  "InfluenceCost": "number",
+  "Level": "number",
+  "MaximumInfluence": "number",
+  "RequiredLevel": "number",
+  "RewardDescription": "string",
+  "SkipStage1Salt": "number",
+  "SkipStage2Salt": "number",
+  "SkipStage3Salt": "number",
+  "Stage1XP": "number",
+  "Stage2XP": "number",
+  "Stage3XP": "number",
+}
 export const COLS_PVPREWARDS = {
   "BuyCategoricalProgressionCost": "number",
   "CategoricalProgressionId": "string",

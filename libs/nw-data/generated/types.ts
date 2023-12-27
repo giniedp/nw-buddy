@@ -3991,6 +3991,24 @@ export interface Promotionmutations {
   TextColor: string
 }
 
+export interface PvpRank {
+  AzothSaltReward: number
+  BorderTier: number
+  DisplayName: string
+  GameEventId: string
+  InfluenceCost: number
+  Level: number
+  MaximumInfluence: number
+  RequiredLevel: number
+  RewardDescription: string
+  SkipStage1Salt: number
+  SkipStage2Salt: number
+  SkipStage3Salt: number
+  Stage1XP: number
+  Stage2XP: number
+  Stage3XP: number
+}
+
 export interface PvpRewards {
   BuyCategoricalProgressionCost: number
   CategoricalProgressionId: string

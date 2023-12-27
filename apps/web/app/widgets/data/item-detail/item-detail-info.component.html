@@ -1,30 +1,55 @@
-<ng-container *ngIf="vm$ | async; let vm">
-  <div *ngIf="vm.bindOnEquip" class="text-emerald-500 font-bold">{{ 'ui_bindOnEquip' | nwText }}</div>
-  <div *ngIf="vm.bindOnPickup" class="text-emerald-500 font-bold">{{ 'ui_bindOnPickup' | nwText }}</div>
-  <div *ngIf="vm.canReplaceGem" class="text-emerald-500 font-bold">Can Replace Gem</div>
-  <div *ngIf="vm.cantReplaceGem" class="text-red-600 font-bold">Can't Replace Gem</div>
-  <div *ngIf="vm.tier; let text" class="">
+@if (isMissing()) {
+  <div class="bg-error text-error-content rounded-md p-3">
+    <div>
+      <span class="font-bold">Unknown item ID.</span>
+      Either given ID is wrong or item has been removed from Database</div>
+  </div>
+}
+@if (bindOnEquip()) {
+  <div class="text-emerald-500 font-bold">{{ 'ui_bindOnEquip' | nwText }}</div>
+}
+@if (bindOnPickup()) {
+  <div class="text-emerald-500 font-bold">{{ 'ui_bindOnPickup' | nwText }}</div>
+}
+@if (canReplaceGem()) {
+  <div class="text-emerald-500 font-bold">Can Replace Gem</div>
+}
+@if (cantReplaceGem()) {
+  <div class="text-red-600 font-bold">Can't Replace Gem</div>
+}
+@if (tierLabel(); as text) {
+  <div>
     <span class="text-zinc-500">Tier</span> <span class="font-bold text-white"> {{ text }}</span>
   </div>
-  <div *ngIf="vm.weight; let text" class="">
-    <span class="font-bold text-white">{{ text | number : '1.1-1' }}</span> <span class="text-zinc-500"> Weight</span>
+}
+@if (weight(); as text) {
+  <div>
+    <span class="font-bold text-white">{{ text | number: '1.1-1' }}</span> <span class="text-zinc-500"> Weight</span>
   </div>
-  <div *ngIf="vm.durability; let text">
+}
+@if (durability(); as text) {
+  <div>
     <span class="font-bold text-white">{{ text }}</span> <span class="text-zinc-500"> Durability</span>
   </div>
-  <div *ngIf="vm.requiredLevel; let text">
+}
+@if (requiredLevel(); as text) {
+  <div>
     <span class="text-zinc-500">{{ 'ui_level_requirement' | nwText }}:</span>
     <span class="font-bold text-white"> {{ text }}</span>
   </div>
-  <div *ngIf="vm.maxStackSize; let text">
+}
+@if (maxStackSize(); as text) {
+  <div>
     <span class="text-zinc-500">Max Stack:</span> <span class="font-bold text-white"> {{ text }}</span>
   </div>
-  <div *ngIf="vm.ingredientTypes?.length">
+}
+@if (ingredientTypes()?.length) {
+  <div>
     <span class="text-zinc-500"> {{ 'ui_tooltip_ingredient_types' | nwText }} </span>
     <span class="font-bold text-white">
-      <ng-container *ngFor="let it of vm.ingredientTypes; let last = last">
-        {{ it?.DisplayText | nwText }}<ng-container *ngIf="!last">,</ng-container>
-      </ng-container>
+      @for(it of ingredientTypes(); track $index; let last = $last) {
+        {{ it?.DisplayText | nwText }}{{ last ? '' : ','}}
+      }
     </span>
   </div>
-</ng-container>
+}

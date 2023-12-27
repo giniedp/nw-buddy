@@ -26,12 +26,12 @@ import { ItemDetailStore } from './item-detail.store'
 export class ItemDetailComponent extends ItemDetailStore {
   @Input()
   public set entityId(value: string) {
-    this.patchState({ entityId: value })
+    this.patchState({ recordId: value })
   }
 
   @Input()
   public set entity(value: ItemDefinitionMaster | Housingitems) {
-    this.patchState({ entityId: getItemId(value) })
+    this.patchState({ recordId: getItemId(value) })
   }
   @Input()
   public set perkOverride(value: Record<string, string>) {
