@@ -32,7 +32,7 @@ export function addGenericColumns(
         }
       },
       field: field,
-      hide: !!opts?.defaults?.hide,
+      hide: opts?.defaults?.hide ?? true,
     }
     colDef.filter = SelectFilter
     colDef.filterParams = SelectFilter.params({
