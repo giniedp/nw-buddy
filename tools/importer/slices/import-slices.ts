@@ -12,9 +12,9 @@ import {
 
 import { CaseInsensitiveSet } from '../../utils/caseinsensitive-set'
 import { readAndExtractCrcValues } from './create-crc-file'
-import { TerritoryScanRow } from './scan-for-territories'
 import { VariationScanRow } from './scan-for-variants'
 import { VitalScanRow } from './scan-for-vitals'
+import { TerritoryScanRow } from './scan-for-zones'
 import { GatherableScanRow } from './scan-slices.task'
 import { WORKER_TASKS } from './worker.tasks'
 
@@ -161,8 +161,8 @@ function collectVitalsRows(rows: VitalScanRow[], data: Record<string, VitalMetad
     if (row.mapID) {
       arrayAppend(bucket.mapIDs, row.mapID.toLowerCase())
     }
-    if (row.modelSlice) {
-      arrayAppend(bucket.models, row.modelSlice.toLowerCase())
+    if (row.modelFile) {
+      arrayAppend(bucket.models, row.modelFile.toLowerCase())
     }
     if (row.level) {
       arrayAppend(bucket.levels, row.level)
@@ -173,7 +173,7 @@ function collectVitalsRows(rows: VitalScanRow[], data: Record<string, VitalMetad
     if (row.position) {
       bucket.spawns.push({
         level: row.level,
-        position: row.position.map((it) => Number(it.toFixed(3))),
+        position: [Number(row.position[0].toFixed(3)), Number(row.position[1].toFixed(3))],
         mapId: row.mapID?.toLowerCase(),
         category: row.categoryID?.toLowerCase(),
         damagetable: damagetable,

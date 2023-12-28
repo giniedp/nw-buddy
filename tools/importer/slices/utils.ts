@@ -1,8 +1,8 @@
-import { readJSONFile, replaceExtname } from "../../../tools/utils"
-import { SliceComponent, isAZ__Entity, isSliceComponent } from "./types/dynamicslice"
-import * as path from 'path'
 import * as fs from 'fs'
-import { isAliasAsset } from "./types/aliasasset"
+import * as path from 'path'
+import { readJSONFile, replaceExtname } from '../../../tools/utils'
+import { isAliasAsset } from './types/aliasasset'
+import { SliceComponent, isAZ__Entity, isSliceComponent } from './types/dynamicslice'
 
 const cache = new Map<string, Promise<any>>()
 
@@ -40,21 +40,28 @@ export async function readAliasFile(file: string) {
   return data
 }
 
-export async function resolveDynamicSliceFile(rootDir: string, file: string)  {
+export async function resolveDynamicSliceFile(rootDir: string, file: string): Promise<string> {
+  return resolveDynamicSliceFiles(rootDir, file).then((list) => list?.[0] || null)
+}
+
+export async function resolveDynamicSliceFiles(rootDir: string, file: string): Promise<string[]> {
   if (!file) {
     return null
   }
   let result = await resolveFile(rootDir, file)
   if (!result) {
-    result = await resolveFile(path.join(rootDir, 'slices') , file)
+    result = await resolveFile(path.join(rootDir, 'slices'), file)
   }
   // if (!result && file.includes('/')) {
   //   console.warn(`could not resolve to dynamic slice: ${file}`)
   // }
-  return result
+  if (!result) {
+    return null
+  }
+  return Array.isArray(result) ? result : [result]
 }
 
-async function resolveFile(rootDir: string, file: string) {
+async function resolveFile(rootDir: string, file: string): Promise<string | string[]> {
   if (!file) {
     return null
   }
@@ -80,14 +87,13 @@ async function resolveFile(rootDir: string, file: string) {
         return null
       }
       const alias = await readAliasFile(file)
-      for (const tag of alias.tags || []) {
-        for (const slice of tag.slices || []) {
-          if (slice.slice.hint) {
-            return resolveFile(rootDir, slice.slice.hint)
-          }
-        }
-      }
-      break
+      return Promise.all(
+        (alias.tags || [])
+          .map((tag) => tag.slices?.map((slice) => slice.slice.hint) || [])
+          .flat()
+          .filter((it) => !!it)
+          .map((it) => resolveFile(rootDir, it)),
+      ).then((list) => list.flat())
     default:
       return null
   }
@@ -107,7 +113,7 @@ async function resolveFile(rootDir: string, file: string) {
 
 export function findAZEntityById(component: SliceComponent, id: number) {
   for (const entity of component.entities || []) {
-    if (isAZ__Entity(entity) && (entity as any).id === id || entity.id?.id === id) {
+    if ((isAZ__Entity(entity) && (entity as any).id === id) || entity.id?.id === id) {
       return entity
     }
   }

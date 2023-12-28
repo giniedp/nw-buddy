@@ -18,7 +18,7 @@ export interface VitalScanRow {
   categoryID: string
   level: number
   damageTable: string
-  modelSlice: string
+  modelFile: string
   position?: number[]
   mapID?: string
 }
@@ -35,7 +35,6 @@ export async function scanForVitals(inputDir: string, sliceFile: string): Promis
   }
 
   const table = await scanForDamageTableAndModels(sliceComponent, inputDir, sliceFile)
-
   if (table?.vitalsID) {
     // we are in a character base file
     result.push({
@@ -43,7 +42,7 @@ export async function scanForVitals(inputDir: string, sliceFile: string): Promis
       vitalsID: table.vitalsID,
       categoryID: null,
       damageTable: table.damageTable,
-      modelSlice: table.modelSlice,
+      modelFile: table.modelSlice,
     })
   }
 
@@ -60,7 +59,7 @@ export async function scanForVitals(inputDir: string, sliceFile: string): Promis
       categoryID: item.categoryID,
       level: item.level,
       damageTable: table?.damageTable,
-      modelSlice: table?.modelSlice,
+      modelFile: table?.modelSlice,
     })
   }
 
@@ -78,7 +77,7 @@ export async function scanForVitals(inputDir: string, sliceFile: string): Promis
       categoryID: null,
       level: null,
       damageTable: table.damageTable,
-      modelSlice: table.modelSlice,
+      modelFile: table.modelSlice,
     })
   }
   return result.filter((it) => !!it.vitalsID)

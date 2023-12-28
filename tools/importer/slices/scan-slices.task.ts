@@ -1,6 +1,6 @@
 import { readJSONFile } from '../../utils'
 import { scanForSpawners } from './scan-for-spawners'
-import { TerritoryScanRow, scanForTerritories } from './scan-for-territories'
+import { TerritoryScanRow, scanForZones } from './scan-for-zones'
 import { VariationScanRow, scanForVariantDistributions } from './scan-for-variants'
 import { VitalScanRow, scanForVitals } from './scan-for-vitals'
 import { Capital } from './types/capitals'
@@ -51,7 +51,7 @@ export async function scanSlices({
   if (file.endsWith('.dynamicslice.json')) {
     return {
       vitals: await scanForVitals(inputDir, file),
-      territories: await scanForTerritories(file),
+      territories: await scanForZones(file),
     }
   }
   if (file.endsWith('.capitals.json')) {
@@ -60,22 +60,6 @@ export async function scanSlices({
     const vitalsRows: VitalScanRow[] = []
     const variationsRows: VariationScanRow[] = []
     for (const capital of data?.Capitals || []) {
-      await scanForVitals(inputDir, capital.sliceName)
-        .catch((err) => {
-          console.error(err)
-          return []
-        })
-        .then((vitals) => {
-          for (const vital of vitals || []) {
-            vitalsRows.push({
-              ...vital,
-              position: capital.worldPosition
-                ? [capital.worldPosition.x, capital.worldPosition.y, capital.worldPosition.z]
-                : null,
-              mapID: mapId,
-            })
-          }
-        })
       if (capital.variantName) {
         variationsRows.push({
           mapID: mapId,
@@ -87,22 +71,43 @@ export async function scanSlices({
       }
       if (capital.sliceName) {
         await scanForSpawners(inputDir, capital.sliceName)
-          .then((data) => data || { positions: [] })
-          .then(({ positions, variantID, gatherableID }) => {
-            if (!variantID) {
-              return
-            }
-            for (const position of positions) {
-              if (capital.worldPosition) {
-                position[0] += capital.worldPosition.x
-                position[1] += capital.worldPosition.y
-                position[2] += capital.worldPosition.z
+          .then((data) => data || [{ positions: [] }])
+          .then((res) => {
+            for (const data of res) {
+              if ('variantID' in data && data.variantID) {
+                for (let position of data.positions) {
+                  position = [...position]
+                  if (capital.worldPosition) {
+                    position[0] += capital.worldPosition.x
+                    position[1] += capital.worldPosition.y
+                    position[2] += capital.worldPosition.z
+                  }
+                  variationsRows.push({
+                    mapID: mapId,
+                    variantID: data.variantID,
+                    position: [position[0], position[1], position[2]],
+                  })
+                }
               }
-              variationsRows.push({
-                mapID: mapId,
-                variantID: variantID,
-                position: [position[0], position[1], position[2]],
-              })
+              if ('vitalsID' in data && data.vitalsID) {
+                for (let position of data.positions) {
+                  position = [...position]
+                  if (capital.worldPosition) {
+                    position[0] += capital.worldPosition.x
+                    position[1] += capital.worldPosition.y
+                    position[2] += capital.worldPosition.z
+                  }
+                  vitalsRows.push({
+                    mapID: mapId,
+                    vitalsID: data.vitalsID,
+                    categoryID: null,
+                    level: null,
+                    damageTable: data.damageTable,
+                    modelFile: data.modelFile,
+                    position: [position[0], position[1], position[2]],
+                  })
+                }
+              }
             }
           })
       }
@@ -131,7 +136,7 @@ export async function scanSlices({
           damageTable: null,
           position: location.worldposition,
           mapID: mapId,
-          modelSlice: null,
+          modelFile: null,
         })
       }
       for (const location of obj.gatherablelocations || []) {

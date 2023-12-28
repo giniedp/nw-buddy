@@ -15,7 +15,7 @@ export interface TerritoryScanRow {
   shape: number[][]
 }
 
-export async function scanForTerritories(file: string) {
+export async function scanForZones(file: string) {
   if (!file.match(/\/pois\/(territories|zones)\//)) {
     return null
   }
