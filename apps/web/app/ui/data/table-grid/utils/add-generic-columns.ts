@@ -8,6 +8,9 @@ export function addGenericColumns(
   opts: {
     props: Record<string, string>
     scope?: string
+    defaults?: {
+      hide: boolean
+    }
   }
 ) {
   const fields = Object.entries(opts.props)
@@ -29,7 +32,7 @@ export function addGenericColumns(
         }
       },
       field: field,
-      hide: true,
+      hide: !!opts?.defaults?.hide,
     }
     colDef.filter = SelectFilter
     colDef.filterParams = SelectFilter.params({

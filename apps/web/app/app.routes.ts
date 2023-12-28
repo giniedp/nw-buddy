@@ -28,6 +28,10 @@ const routes: Routes = [
     path: 'season-pass',
     loadChildren: () => import('./pages/database/season-pass').then((m) => m.SeasonPassPageModule),
   },
+  {
+    path: 'pvp-ranks',
+    loadChildren: () => import('./pages/database/pvp-ranks').then((m) => m.PvpRanksPageModule),
+  },
   { path: 'emotes', loadChildren: () => import('./pages/database/emotes').then((m) => m.EmotesPageModule) },
   {
     path: 'player-titles',

@@ -4,10 +4,14 @@ import { getVitalCategoryInfo, getVitalDungeons, getVitalFamilyInfo, getVitalsCa
 import { COLS_VITALS } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
-import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
-import { DataTableCategory } from '~/ui/data/table-grid'
-import { addGenericColumns } from '~/ui/data/table-grid'
 import { DataViewAdapter } from '~/ui/data/data-view'
+import {
+  DataTableCategory,
+  TABLE_GRID_ADAPTER_OPTIONS,
+  TableGridAdapter,
+  TableGridUtils,
+  addGenericColumns,
+} from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import {
   VitalTableRecord,
@@ -86,7 +90,7 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord>, Tab
               $metadata: vitalsMeta.get(vital.VitalsID),
             }
           })
-        })
+        }),
       )
     )
   }

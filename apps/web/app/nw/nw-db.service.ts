@@ -530,6 +530,10 @@ export class NwDbService {
     (it) => it.POITag?.split(','),
   )
 
+  public pvpRanks = table(() => this.data.pvpRank())
+  public pvpRanksMap = indexBy(() => this.pvpRanks, 'Level')
+  public pvpRank = lookup(() => this.pvpRanksMap)
+
   public milestoneRewards = table(() => this.data.milestonerewards())
 
   public mutatorDifficulties = table(() => this.data.gamemodemutatorsMutationdifficulty())
