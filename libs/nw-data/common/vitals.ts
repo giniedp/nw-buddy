@@ -340,7 +340,7 @@ export function getVitalDamage({
   difficulty?: Mutationdifficulty
 }) {
   //
-  const baseDamage = level.BaseDamage
+  const baseDamage = level?.BaseDamage || 0
   const dmgCoef = damageTable.DmgCoef
   const dmgMod = vital?.DamageMod || 1
   const categoryDamageMod = modifier?.CategoryDamageMod || 1
@@ -349,21 +349,21 @@ export function getVitalDamage({
   const dmgPotency = 1 + (difficulty?.[`DamagePotency_${vital.CreatureType}`] || 0) / 100
 
   const result = baseDamage * dmgCoef * dmgMod * dmgPotency * categoryDamageMod + addDmg
-  console.debug('getVitalDamage', damageTable['DamageID'], {
-    vital,
-    level,
-    modifier,
-    damageTable,
-    difficulty,
-  })
-  console.table({
-    baseDamage,
-    dmgCoef,
-    dmgMod,
-    categoryDamageMod,
-    addDmg,
-    dmgPotency,
-    result
-  })
+  // console.debug('getVitalDamage', damageTable['DamageID'], {
+  //   vital,
+  //   level,
+  //   modifier,
+  //   damageTable,
+  //   difficulty,
+  // })
+  // console.table({
+  //   baseDamage,
+  //   dmgCoef,
+  //   dmgMod,
+  //   categoryDamageMod,
+  //   addDmg,
+  //   dmgPotency,
+  //   result
+  // })
   return result
 }
