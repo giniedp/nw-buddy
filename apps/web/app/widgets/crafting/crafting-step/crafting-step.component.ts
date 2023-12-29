@@ -11,6 +11,7 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { TooltipModule } from '~/ui/tooltip'
 import { selectStream, shareReplayRefCount, tapDebug } from '~/utils'
 import { AmountMode, CraftingStep } from '../types'
+import { animate, style, transition, trigger } from '@angular/animations'
 
 @Component({
   standalone: true,
@@ -29,6 +30,23 @@ import { AmountMode, CraftingStep } from '../types'
     TooltipModule,
   ],
   providers: [CraftingStepStore],
+  animations: [
+    trigger('expand', [
+      transition(':enter', [
+        style({
+          height: 0,
+          opacity: 0
+        }),
+        animate('0.15s ease-out', style({ height: '*' })),
+        animate('0.15s ease-out', style({ opacity: 1 })),
+      ]),
+      transition(':leave', [
+        style({ height: '*', opacity: '*' }),
+        animate('0.15s ease-out', style({ opacity: 0 })),
+        animate('0.15s ease-out', style({ height: 0 })),
+      ]),
+    ]),
+  ]
 })
 export class CraftingStepComponent {
   @Input()

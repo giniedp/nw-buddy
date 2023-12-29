@@ -1,0 +1,48 @@
+@if (image(); as img) {
+  @if (isTopic()) {
+    <picture class="w-full h-full absolute top-0 z-0 opacity-25 scale-110">
+      <img [nwImage]="img" class="w-full h-full object-cover" />
+    </picture>
+  } @else {
+    <picture class="w-full absolute bottom-0 z-0 opacity-50">
+      <img [nwImage]="img" class="w-full object-contain" />
+    </picture>
+  }
+}
+<div class="z-0 px-4 pt-4 pb-8 flex flex-col flex-1 gap-2 overflow-auto font-nimbus shadow-black text-shadow-sm">
+  @if (parentTitle(); as text) {
+    <h2 class="text-xl uppercase font-serif text-nw-description flex-none">
+      {{ text | nwText }}
+    </h2>
+    <div class="nw-item-divider"></div>
+  }
+  <h3 class="text-lg uppercase font-serif text-nw-description flex-none">{{ title() | nwText }}</h3>
+  @if (subtitle(); as text) {
+    <h4 class="text-lg font-bold flex-none">{{ text | nwText }}</h4>
+  }
+  @if (body(); as text) {
+    <div class="nw-item-divider"></div>
+    <div [nwHtml]="text | nwText | nwTextBreak"></div>
+  }
+  @if (children()?.length) {
+    <div class="flex flex-col gap-1">
+      @for (child of children(); track i; let i = $index) {
+        <span class="pl-4"> {{ i + 1 }} - {{ child.Title | nwText }} </span>
+      }
+    </div>
+  }
+
+  @if (pageNumber(); as value) {
+    <div class="absolute bottom-2 w-full font-caslon text-lg text-center">
+      <span class="badge badge-lg bg-base-300 border-transparent">
+        @if (isPage()) {
+          Page
+        }
+        @if (isChapter()) {
+          Chapter
+        }
+        {{ value }} / {{ pageCount() }}
+      </span>
+    </div>
+  }
+</div>

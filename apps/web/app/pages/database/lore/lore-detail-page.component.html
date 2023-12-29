@@ -1,0 +1,74 @@
+<nwb-detail-drawer class="hidden lg:block lg:w-[500px]">
+  <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
+    <div class="relative bg-base-300 rounded-md border-base-100 overflow-clip p-4">
+      @if (isTopic() && image()) {
+        <picture class="pointer-events-none w-full h-full absolute top-0 z-0 opacity-25 scale-110">
+          <img [nwImage]="image()" class="w-full h-full object-cover" />
+        </picture>
+      }
+
+      <div class="flex flex-col gap-2 font-nimbus shadow-black text-shadow-sm">
+        @if (parentTitle(); as text) {
+          <h2 class="text-xl uppercase font-serif text-nw-description flex-none">
+            <a
+              [routerLink]="['/lore/table', parentId()]"
+              class="cursor-pointer link-hover hover:text-primary transition-transform translate-x-0 hover:translate-x-4"
+            >
+              <nwb-icon [icon]="chevronLeft" class="w-4 h-4" /> {{ text | nwText }}
+            </a>
+          </h2>
+          <div class="nw-item-divider"></div>
+        }
+        <h3 class="text-lg uppercase font-serif text-nw-description flex-none">
+          {{ title() | nwText }}
+        </h3>
+        @if (subtitle(); as text) {
+          <h4 class="text-lg font-bold flex-none">{{ text | nwText }}</h4>
+        }
+        @if (body(); as text) {
+          <div class="nw-item-divider"></div>
+          <div [nwHtml]="text | nwText | nwTextBreak"></div>
+        }
+        @if (children()?.length) {
+          <div class="flex flex-col gap-1">
+            @for (child of children(); track i; let i = $index) {
+              <a [routerLink]="['/lore/table', child.LoreID]" class="cursor-pointer link-hover hover:text-primary pl-4">
+                {{ i + 1 }} - {{ child.Title | nwText }}
+              </a>
+            }
+          </div>
+        }
+        @if (isChapter() && image()) {
+          <picture class="pointer-events-none w-full">
+            <img [nwImage]="image()" class="w-full object-contain" />
+          </picture>
+        }
+        @if (pageNumber(); as value) {
+          <div class="flex flex-row items-center">
+            @if (prevId() || parentId()) {
+              <a [routerLink]="['/lore/table', prevId() || parentId()]" class="btn btn-circle btn-ghost">
+                <nwb-icon [icon]="chevronLeft" class="w-4 h-4" />
+              </a>
+            }
+            <span class="flex-1"></span>
+            <span class="badge badge-lg bg-base-300 border-transparent">
+              @if (isPage()) {
+                Page
+              }
+              @if (isChapter()) {
+                Chapter
+              }
+              {{ value }} / {{ pageCount() }}
+            </span>
+            <span class="flex-1"></span>
+            @if (nextId()) {
+              <a [routerLink]="['/lore/table', nextId()]" class="btn btn-circle btn-ghost">
+                <nwb-icon [icon]="chevronLeft" class="w-4 h-4 rotate-180" />
+              </a>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</nwb-detail-drawer>

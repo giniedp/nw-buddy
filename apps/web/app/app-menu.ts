@@ -28,6 +28,7 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Gatherables', path: '/gatherables', icon: 'assets/icons/menu/gatherable.png', divider: true },
       { label: 'NPCs', path: '/npcs', icon: 'assets/icons/menu/icon_head.png' },
       { label: 'Quests', path: '/quests', icon: 'assets/icons/menu/quests.png' },
+      { label: 'Lore', path: '/lore', icon: 'assets/icons/menu/lore.png' },
       { label: 'Vitals', path: '/vitals', icon: 'assets/icons/menu/vitals.png' },
       { label: 'Zones', path: '/zones', icon: 'assets/icons/menu/fasttraveliconinactive.png' },
 

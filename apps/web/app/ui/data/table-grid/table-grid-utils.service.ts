@@ -199,8 +199,12 @@ export class TableGridUtils<T = any> {
     return this.sanitizer.sanitize(SecurityContext.HTML, value)
   }
 
-  public lineBreaksToHtml(value: string) {
-    return value?.replace(/\\n/gi, '<br>')
+  public lineBreaksToHtml(value: string, options?: { sanitize?: boolean }) {
+    value = value?.replace(/\\n/gi, '<br>')
+    if (options?.sanitize) {
+      value = this.sanitizeHtml(value)
+    }
+    return value
   }
 
   public lineBreaksRenderer = (): ICellRendererFunc<T> => {

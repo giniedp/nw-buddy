@@ -8,8 +8,8 @@
       (entityChange)="onEntity($event)"
       #card="card"
       class="layout-col"
-    >
-      <nwb-crafting-calculator [recipe]="recipe$ | async" class="flex-1 bg-base-300"></nwb-crafting-calculator>
-    </nwb-item-card>
+    />
+
+    <nwb-crafting-calculator [recipe]="recipe$ | async" class="flex-1 bg-base-300 mt-4 rounded-md overflow-clip" />
   </div>
 </nwb-detail-drawer>

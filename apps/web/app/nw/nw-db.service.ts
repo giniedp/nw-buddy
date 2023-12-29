@@ -360,6 +360,12 @@ export class NwDbService {
   public gameModesMap = indexBy(() => this.gameModes, 'GameModeId')
   public gameMode = lookup(() => this.gameModesMap)
 
+  public loreItems = table(() => [this.data.loreitems()])
+  public loreItemsMap = indexBy(() => this.loreItems, 'LoreID')
+  public loreItem = lookup(() => this.loreItemsMap)
+  public loreItemsByParentIdMap = indexGroupSetBy(() => this.loreItems, (it) => it.ParentID)
+  public loreItemsByParentId = lookup(() => this.loreItemsByParentIdMap)
+
   public quests = table(() =>
     this.data
       .apiMethodsByPrefix('quests', 'quests01Starterbeach01Objectives')

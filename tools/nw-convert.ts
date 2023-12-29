@@ -212,6 +212,15 @@ async function convertAssetCatalog(inputDir: string, outputDir: string) {
   const posBlock4 = reader.readUInt()
   const posBlock0 = reader.position
 
+  console.table({ posBlock1, posBlock2, posBlock3, posBlock4, position: reader.position })
+
+  console.log('read block 0', reader.position)
+  const block0 = []
+  while (reader.position < posBlock1) {
+    block0.push(reader.readInt())
+  }
+  console.log(reader.position)
+  console.log('read block 1', posBlock1)
   reader.seekAbsolute(posBlock1)
   const uuids: string[] = []
   while (reader.position < posBlock2) {
@@ -223,7 +232,8 @@ async function convertAssetCatalog(inputDir: string, outputDir: string) {
       .join('')
     uuids.push(value)
   }
-
+  console.log(reader.position)
+  console.log('read block 2', posBlock2)
   reader.seekAbsolute(posBlock2)
   const types: string[] = []
   while (reader.position < posBlock3) {
@@ -235,14 +245,16 @@ async function convertAssetCatalog(inputDir: string, outputDir: string) {
       .join('')
     types.push(value)
   }
-
+  console.log(reader.position)
+  console.log('read block 3', posBlock3)
   reader.seekAbsolute(posBlock3)
   const directories: string[] = []
   while (reader.position < posBlock4) {
     const value = reader.readNullTerminatedString()
     directories.push(value)
   }
-
+  console.log(reader.position)
+  console.log('read block 4', posBlock4)
   reader.seekAbsolute(posBlock4)
   const fileNames: string[] = []
   while (reader.position < fileSize) {
@@ -251,12 +263,12 @@ async function convertAssetCatalog(inputDir: string, outputDir: string) {
   }
 
   console.table([
-    ['block', 'size', 'content', 'count'],
-    [posBlock0, posBlock1 - posBlock0, 'unknown', '?'],
-    [posBlock1, posBlock2 - posBlock1, 'uuids', uuids.length],
-    [posBlock2, posBlock3 - posBlock2, 'types', types.length],
-    [posBlock3, posBlock4 - posBlock3, 'directories', directories.length],
-    [posBlock4, fileSize - posBlock3, 'fileNames', fileNames.length],
+    ['block', 'size', '(size)', 'content', 'count'],
+    [posBlock0, posBlock1 - posBlock0, sizeOf(posBlock1 - posBlock0), 'unknown', block0.length],
+    [posBlock1, posBlock2 - posBlock1, sizeOf(posBlock2 - posBlock1), 'uuids', uuids.length],
+    [posBlock2, posBlock3 - posBlock2, sizeOf(posBlock3 - posBlock2), 'types', types.length],
+    [posBlock3, posBlock4 - posBlock3, sizeOf(posBlock4 - posBlock3), 'directories', directories.length],
+    [posBlock4, fileSize - posBlock3, sizeOf(fileSize - posBlock3), 'fileNames', fileNames.length],
   ])
 
   const assets = [
@@ -273,12 +285,14 @@ async function convertAssetCatalog(inputDir: string, outputDir: string) {
     },
   ]
 
-  for (const { guid, type, hint } of assets) {
-    console.log(hint)
-    console.log('  guid', uuids.indexOf(guid.replace(/-/g, '')), guid)
-    console.log('  type', types.indexOf(type.replace(/-/g, '')), type)
-    console.log('   dir', directories.indexOf(path.dirname(hint) + '/'), path.dirname(hint) + '/')
-    console.log('  file', fileNames.indexOf(path.basename(hint)), path.basename(hint))
+  for (const asset of assets) {
+    console.log(asset.hint)
+    console.table([
+      ['guid', asset.guid, uuids.indexOf(asset.guid.replace(/-/g, ''))],
+      ['type', asset.type, types.indexOf(asset.type.replace(/-/g, ''))],
+      ['dir', path.dirname(asset.hint) + '/', directories.indexOf(path.dirname(asset.hint) + '/')],
+      ['file', path.basename(asset.hint), fileNames.indexOf(path.basename(asset.hint))],
+    ])
   }
 
   // slices/holiday/winterconvergence/activities/lostpresent/winterconv_activity_lostpresent_rare_00.dynamicslice
@@ -292,4 +306,20 @@ async function convertAssetCatalog(inputDir: string, outputDir: string) {
   //   type 8      d52cccdd-9701-45d9-b261-8ea6881a6312
   //    dir 3504   objects/landmarks/corruption_core/
   //   file 632607 jav_lm_corruption_core_b.rnr
+}
+
+function sizeOf(bytes: number) {
+  if (bytes == 0) { return "0.00 B"; }
+  var e = Math.floor(Math.log(bytes) / Math.log(1024));
+  return (bytes/Math.pow(1024, e)).toFixed(2)+' '+' KMGTP'.charAt(e)+'B';
+}
+
+function maxValue(values: number[], stride: number = 1) {
+  let max: number[] = []
+  for (let i = 0; i < values.length; i += stride) {
+    for (let j = 0; j < stride; j++) {
+      max[j] = Math.max(max[j] || 0, values[i + j])
+    }
+  }
+  return max
 }

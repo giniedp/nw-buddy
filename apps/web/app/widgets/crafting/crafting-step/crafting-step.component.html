@@ -1,14 +1,11 @@
 <ng-container *ngIf="vm$ | async; let vm">
   <div class="flex flex-row items-center gap-1 main-row" data-cy="step" *ngIf="vm.currency; let item">
     <nwb-crafting-step-toggle
-    class="w-8 h-full flex-none"
-    [ngModel]="vm.expand"
-    [disabled]="true"
-  ></nwb-crafting-step-toggle>
-    <picture
-      [nwIcon]="'assets/icons/rewards/azoth.png'"
-      class="w-8 h-8 nw-icon flex-none cursor-default"
-    ></picture>
+      class="w-8 h-full flex-none"
+      [ngModel]="vm.expand"
+      [disabled]="true"
+    />
+    <picture [nwIcon]="'assets/icons/rewards/azoth.png'" class="w-8 h-8 nw-icon flex-none cursor-default"></picture>
     <div class="flex flex-col items-center justify-center">
       <span>
         {{ item.quantity }}
@@ -18,7 +15,6 @@
     <span>
       {{ item.label | nwText }}
     </span>
-
   </div>
   <div class="flex flex-row items-center gap-1 main-row" data-cy="step" *ngIf="vm.item; let item">
     <nwb-crafting-step-toggle
@@ -40,9 +36,9 @@
       <span data-cy="amount">
         {{ vm.amount.net }}
       </span>
-      <span data-cy="bonusPercent" *ngIf="vm.amount.bonus" class="text-xs text-success">
-        +{{ vm.amount.bonusPercent | percent }}
-      </span>
+      @if (vm.amount.bonus) {
+        <span data-cy="bonusPercent" class="text-xs text-success"> +{{ vm.amount.bonusPercent | percent }} </span>
+      }
       <ng-template #bonusTip>
         <div class="p-2">
           {{ vm.amount.net }} + <span class="text-success">{{ vm.amount.bonus }}</span> =
@@ -51,14 +47,11 @@
       </ng-template>
     </div>
     &times;
-    <span
-      data-cy="name"
-      class="overflow-ellipsis overflow-hidden whitespace-nowrap select-text"
-      *ngIf="item.Name | nwText; let name"
-      [title]="name"
-    >
-      {{ name }}
-    </span>
+    @if (item.Name | nwText; as name) {
+      <span data-cy="name" class="overflow-ellipsis overflow-hidden whitespace-nowrap select-text" [title]="name">
+        {{ name }}
+      </span>
+    }
 
     <span class="flex-1"></span>
 
@@ -69,31 +62,35 @@
         [format]="'1.2-2'"
         class="ml-2 tooltip-left tooltip-info text-primary whitespace-nowrap text-xs"
         #itemTracker
-      ></nwb-price-tracker>
-      <ng-container *ngIf="itemTracker.value; let price">
-        <ng-container *ngIf="!vm.amountIsGross">
+      />
+      @if (itemTracker.value; as price) {
+        @if (vm.amountIsGross) {
+          <span [class.text-success]="!!vm.amount.bonus" class="whitespace-nowrap">
+            {{ vm.amount.gross * price | number: '1.2-2' }}
+          </span>
+        } @else {
           <span [class.text-xs]="!!vm.amount.bonus" class="whitespace-nowrap">
-            {{ vm.amount.net * price | number : '1.2-2' }}
+            {{ vm.amount.net * price | number: '1.2-2' }}
           </span>
           <span *ngIf="vm.amount.bonus" class="text-success text-xs whitespace-nowrap">
-            + {{ vm.amount.bonus * price | number : '1.2-2' }}
+            + {{ vm.amount.bonus * price | number: '1.2-2' }}
           </span>
-        </ng-container>
-        <span *ngIf="vm.amountIsGross" [class.text-success]="!!vm.amount.bonus" class="whitespace-nowrap">
-          {{ vm.amount.gross * price | number : '1.2-2' }}
-        </span>
-      </ng-container>
+        }
+      }
     </label>
   </div>
 
-  <div *ngIf="vm.expand && vm.hasChildren" class="steps-container" data-cy="step children">
-    <nwb-crafting-step
-      *ngFor="let step of vm.children; trackBy: trackByIndex"
-      [step]="step"
-      [amount]="vm.amount.net * (step.ingredient?.quantity || 1)"
-      [amountMode]="vm.amountMode"
-    ></nwb-crafting-step>
-  </div>
+  @if (vm.expand && vm.hasChildren) {
+    <div class="steps-container" data-cy="step children">
+      @for (step of vm.children; track $index) {
+        <nwb-crafting-step
+          [step]="step"
+          [amount]="vm.amount.net * (step.ingredient?.quantity || 1)"
+          [amountMode]="vm.amountMode"
+        />
+      }
+    </div>
+  }
 
   <ng-template #tplOptions>
     <ul class="menu menu-compact bg-base-300 rounded-md shadow-md" cdkMenu>
