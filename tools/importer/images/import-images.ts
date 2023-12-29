@@ -82,7 +82,6 @@ function addStaticImages(
       value += '.png'
     }
     const { source, target } = selectImage(value)
-    console.log(source, target)
     images.set(source, target)
   }
   return images
