@@ -67,7 +67,7 @@
         }
         @if (children()?.length) {
           <div class="flex flex-col gap-1">
-            @for (child of children(); track i; let i = $index) {
+            @for (child of children(); track child.LoreID; let i = $index) {
               <a [routerLink]="['/lore/table', child.LoreID]" class="cursor-pointer link-hover hover:text-primary pl-4">
                 {{ i + 1 }} - {{ child.Title | nwText }}
               </a>

@@ -1,7 +1,5 @@
-import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
@@ -9,7 +7,6 @@ import { svgChevronLeft } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { injectRouteParam } from '~/utils'
 import { LoreItemDetailMapComponent, LoreItemDetailStore } from '~/widgets/data/lore-item-detail'
-import { LootModule } from '~/widgets/loot'
 
 @Component({
   standalone: true,
