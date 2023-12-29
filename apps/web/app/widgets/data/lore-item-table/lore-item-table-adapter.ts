@@ -15,7 +15,7 @@ import {
   addGenericColumns,
 } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { eqCaseInsensitive, humanize } from '~/utils'
+import { eqCaseInsensitive, humanize, mapFilter } from '~/utils'
 import { LoreItemCellComponent } from './lore-item-cell.component'
 import {
   LoreItemTableRecord,
@@ -64,15 +64,41 @@ export class LoreItemTableAdapter
   public connect() {
     return (this.config?.source || this.db.loreItems).pipe(
       map((list) => {
-        return sortBy(list, (item) => buildKey(list, item))
+        return list.map((item): LoreItemTableRecord => {
+          return {
+            ...item,
+            $numChildren: list.filter((i) => eqCaseInsensitive(i.ParentID, item.LoreID)).length,
+          }
+        })
       }),
+      map((list) => {
+        return sortBy(list, (item) => buildKey(list, item))
+      })
     )
   }
 }
 
 function buildKey(list: LoreItemTableRecord[], item: LoreItemTableRecord) {
   if (!item.ParentID) {
-    return `${String(item.Order || 0).padStart(3, '0')}-${item.LoreID}`
+    let order = item.Order
+    let label = item.LoreID
+    if (item.Type === 'Default') {
+      order = 999
+    }
+    if (item.Type === 'Chapter') {
+      order = 998
+    }
+    if (item.Type === 'Topic') {
+      order = 1
+      label = item.Title
+      if (!!item.ImagePath) {
+        order = 0
+      }
+      if (!item.$numChildren) {
+        order = 99
+      }
+    }
+    return `${String(order || 0).padStart(3, '0')}-${label}`
   }
   const parent = list.find((i) => eqCaseInsensitive(i.LoreID, item.ParentID))
   const parentKey = buildKey(list, parent)

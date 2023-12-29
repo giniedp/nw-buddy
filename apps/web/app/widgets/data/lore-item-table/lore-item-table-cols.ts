@@ -2,7 +2,9 @@ import { Loreitems } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
 export type LoreItemTableUtils = TableGridUtils<LoreItemTableRecord>
-export type LoreItemTableRecord = Loreitems
+export type LoreItemTableRecord = Loreitems & {
+  $numChildren: number
+}
 
 export function loreColID(util: LoreItemTableUtils) {
   return util.colDef<string>({
