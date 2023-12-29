@@ -125,7 +125,7 @@ function selectLoreData(lore: Loreitems, loreItems: Loreitems[], metaMap: Map<st
     if (!meta) {
       continue
     }
-    const emphasis = lore.LoreID === entry.LoreID || lore.LoreID === entry.ParentID
+    const emphasis = lore.Type === 'Topic' || lore.LoreID === entry.LoreID || lore.LoreID === entry.ParentID
     for (const mapId in meta.loreSpawns || {}) {
       const spawns = meta.loreSpawns[mapId as keyof LoreSpawns]
       for (const spawn of spawns || []) {
@@ -140,6 +140,11 @@ function selectLoreData(lore: Loreitems, loreItems: Loreitems[], metaMap: Map<st
         })
       }
     }
+  }
+  for (const mapId in result) {
+    result[mapId] = result[mapId].sort((a, b) => {
+      return a.opacity - b.opacity
+    })
   }
   return result
 }
