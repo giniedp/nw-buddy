@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
@@ -35,6 +35,8 @@ export class LoreDetailPageComponent {
   protected orderNumber = toSignal(this.store.order$)
   protected parentTitle = toSignal(this.store.parentTitle$)
   protected parentId = toSignal(this.store.parentId$)
+  protected grandParentTitle = toSignal(this.store.grandParentTitle$)
+  protected grandParentId = toSignal(this.store.grandParentId$)
   protected isTopic = toSignal(this.store.isTopic$)
   protected isChapter = toSignal(this.store.isChapter$)
   protected isPage = toSignal(this.store.isPage$)
@@ -43,7 +45,58 @@ export class LoreDetailPageComponent {
   protected prevId = toSignal(this.store.prevId$)
   protected chevronLeft = svgChevronLeft
 
+  protected titleID1 = computed(() => {
+    if (this.isTopic()) {
+      return null
+    }
+    if (this.isChapter()) {
+      return this.parentId()
+    }
+    return this.grandParentId()
+  })
+  protected titleID2 = computed(() => {
+    if (this.isTopic()) {
+      return null
+    }
+    if (this.isChapter()) {
+      return null
+    }
+    return this.parentId()
+  })
+
+  protected title1 = computed(() => {
+    if (this.isTopic()) {
+      return this.title()
+    }
+    if (this.isChapter()) {
+      return this.parentTitle()
+    }
+    return this.grandParentTitle()
+  })
+  protected title2 = computed(() => {
+    if (this.isTopic()) {
+      return null
+    }
+    if (this.isChapter()) {
+      return this.title()
+    }
+    return this.parentTitle()
+  })
+  protected title3 = computed(() => {
+    if (this.isTopic() || this.isChapter()) {
+      return null
+    }
+    return this.title()
+  })
+  protected title4 = computed(() => {
+    return this.subtitle()
+  })
+
   public constructor() {
     this.store.load(this.loreId$)
+  }
+
+  protected linkTo(id: string) {
+    return id ? ['/lore/table', id] : null
   }
 }

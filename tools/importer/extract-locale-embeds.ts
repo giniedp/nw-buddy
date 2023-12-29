@@ -2,7 +2,7 @@ import * as path from 'path'
 import { glob, withProgressBar } from '../utils'
 import { readLocaleFile } from './locales'
 
-export async function extractExpressions(input: string) {
+export async function extractLocaleEmbeds(inputDir: string) {
   const expressions = new Set<string>()
   const resources = new Set<string>()
   const constants = new Set<string>()
@@ -10,12 +10,12 @@ export async function extractExpressions(input: string) {
   const html = new Set<string>()
   const images = new Set<string>()
 
-  const files = await glob(path.join(input, '**/*.json'))
-  await withProgressBar({ barName: '  Expressions', tasks: files }, async (file, _, log) => {
+  const files = await glob(path.join(inputDir, '**/*.json'))
+  await withProgressBar({ barName: '  Inspect', tasks: files }, async (file, _, log) => {
     for await (let { value } of readLocaleFile(file)) {
       const text = value || ''
-      for (const match of text.matchAll(/<img src="([^"]+)"/g)) {
-        images.add(match[1])
+      for (const match of text.matchAll(/<img(\s+\w+="[^"]+")*\ssrc="([^"]+)"/g)) {
+        images.add(match[2])
       }
 
       for (const it of scanForExpressions(text)) {

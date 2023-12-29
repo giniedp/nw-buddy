@@ -9,6 +9,7 @@ addHook('afterSanitizeAttributes', (node) => {
       src = src.replace(/lyshineui\/images/i, environment.nwDataUrl)
       src = src.replace(/\.(png|jpg)$/i, '')
       src = src + '.webp'
+      src = src.toLowerCase()
       node.classList.add('nw-icon')
       node.setAttribute('src', src)
     }

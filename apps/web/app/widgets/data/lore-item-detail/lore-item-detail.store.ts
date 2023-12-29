@@ -11,8 +11,14 @@ export class LoreItemDetailStore extends ComponentStore<{ recordId: string }> {
 
   public readonly recordId$ = this.select(({ recordId }) => recordId)
   public readonly record$ = selectStream(this.db.loreItem(this.recordId$))
+
   public readonly parentId$ = this.select(this.record$, (it) => it?.ParentID)
   public readonly parent$ = selectStream(this.db.loreItem(this.parentId$))
+  public readonly parentTitle$ = selectStream(this.parent$, (it) => it?.Title)
+
+  public readonly grandParentId$ = this.select(this.parent$, (it) => it?.ParentID)
+  public readonly grandParent$ = selectStream(this.db.loreItem(this.grandParentId$))
+  public readonly grandParentTitle$ = selectStream(this.grandParent$, (it) => it?.Title)
 
   public readonly title$ = selectStream(this.record$, (it) => it?.Title)
   public readonly subtitle$ = selectStream(this.record$, (it) => it?.Subtitle)
@@ -22,7 +28,7 @@ export class LoreItemDetailStore extends ComponentStore<{ recordId: string }> {
   public readonly isChapter$ = selectStream(this.type$, (it) => eqCaseInsensitive(it, 'Chapter'))
   public readonly isPage$ = selectStream(this.type$, (it) => eqCaseInsensitive(it, 'Default'))
   public readonly order$ = selectStream(this.record$, (it) => it?.Order)
-  public readonly parentTitle$ = selectStream(this.parent$, (it) => it?.Title)
+
   public readonly siblings$ = selectStream(this.db.loreItemsByParentId(this.parentId$), (it) => Array.from(it || []).sort((a, b) => a.Order - b.Order))
   public readonly children$ = selectStream(this.db.loreItemsByParentId(this.recordId$), (it) => Array.from(it || []).sort((a, b) => a.Order - b.Order))
   public readonly pageCount$ = selectStream(this.siblings$, (it) => it?.length)

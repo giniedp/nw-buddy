@@ -4,7 +4,8 @@ import { cpus } from 'os'
 import * as path from 'path'
 import { environment, NW_GAME_VERSION } from '../env'
 import { generateTypes } from './code-gen/code-generate'
-import { extractExpressions } from './importer/extractExpressions'
+import { extractLocaleDiffs } from './importer/extract-locale-diffs'
+import { extractLocaleEmbeds } from './importer/extract-locale-embeds'
 import { importImages } from './importer/images'
 import { importLocales, LOCALE_KEYS_TO_KEEP } from './importer/locales'
 import { generateSearch } from './importer/search'
@@ -12,7 +13,6 @@ import { importSlices } from './importer/slices/import-slices'
 import { importSpells } from './importer/slices/import-spells'
 import { importDatatables, pathToDatatables } from './importer/tables'
 import { glob, jsonStringifyFormatted, withProgressBar, writeJSONFile } from './utils'
-import { extractLocaleDiffs } from './importer/extractLocaleDiffs'
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
 }
@@ -61,66 +61,77 @@ program
       throw new Error(`Unknown importer module: ${options.module}`)
     }
 
-    if (hasFilter(Importer.slices, options.module)) {
-      console.log('Spells')
-      await importSpells({
-        inputDir: inputDir,
-      }).then((data) => {
-        console.log('  ', data.length, 'spells')
-        // write it into input directory, so table loader will pick it up
-        writeJSONFile(data, {
-          target: path.join(pathToDatatables(inputDir), 'generated_spells_metadata.json'),
-          createDir: true,
-        })
-        writeJSONFile(data, {
-          target: path.join('tmp', 'spells.json'),
-          createDir: true,
-        })
-      })
-      console.log('Slices')
-      await importSlices({
-        inputDir,
-        threads,
-      }).then(async ({ gatherables, vitals, variations, territories }) => {
-        console.log('  ', vitals.length, 'vitals')
-        console.log('  ', gatherables.length, 'gatherables')
-        console.log('  ', variations.variationCount, 'variations', variations.chunks.length, 'chunks', variations.entryCount, 'entries')
-        console.log('  ', territories.length, 'territories')
+    // if (hasFilter(Importer.slices, options.module)) {
+    //   console.log('Spells')
+    //   await importSpells({
+    //     inputDir: inputDir,
+    //   }).then((data) => {
+    //     console.log('  ', data.length, 'spells')
+    //     // write it into input directory, so table loader will pick it up
+    //     writeJSONFile(data, {
+    //       target: path.join(pathToDatatables(inputDir), 'generated_spells_metadata.json'),
+    //       createDir: true,
+    //     })
+    //     writeJSONFile(data, {
+    //       target: path.join('tmp', 'spells.json'),
+    //       createDir: true,
+    //     })
+    //   })
+    //   console.log('Slices')
+    //   await importSlices({
+    //     inputDir,
+    //     threads,
+    //   }).then(async ({ gatherables, vitals, variations, territories }) => {
+    //     console.log('  ', vitals.length, 'vitals')
+    //     console.log('  ', gatherables.length, 'gatherables')
+    //     console.log(
+    //       '  ',
+    //       variations.variationCount,
+    //       'variations',
+    //       variations.chunks.length,
+    //       'chunks',
+    //       variations.entryCount,
+    //       'entries',
+    //     )
+    //     console.log('  ', territories.length, 'territories')
 
-        return Promise.all([
-          // write it into input directory, so table loader will pick it up
-          writeJSONFile(vitals, {
-            target: path.join(pathToDatatables(inputDir), 'generated_vitals_metadata.json'),
-            createDir: true,
-            serialize: jsonStringifyFormatted
-          }),
-          writeJSONFile(territories, {
-            target: path.join(pathToDatatables(inputDir), 'generated_territories_metadata.json'),
-            createDir: true,
-            serialize: jsonStringifyFormatted
-          }),
-          writeJSONFile(gatherables, {
-            target: path.join(pathToDatatables(inputDir), 'generated_gatherables_metadata.json'),
-            createDir: true,
-            serialize: jsonStringifyFormatted
-          }),
-          writeJSONFile(variations.records, {
-            target: path.join(pathToDatatables(inputDir), 'generated_variations_metadata.json'),
-            createDir: true,
-            serialize: jsonStringifyFormatted
-          }),
-          ...variations.chunks.map(async (chunk, index) => {
-            await fs.promises.writeFile(path.join('tmp', `variations.${index}.chunk` ), chunk)
-            await fs.promises.writeFile(path.join(pathToDatatables(inputDir), `generated_variations_metadata.${index}.chunk`), chunk)
-            await fs.promises.writeFile(path.join(tablesOutDir, `generated_variations_metadata.${index}.chunk`), chunk)
-          }),
-        ])
-      })
-    }
+    //     return Promise.all([
+    //       // write it into input directory, so table loader will pick it up
+    //       writeJSONFile(vitals, {
+    //         target: path.join(pathToDatatables(inputDir), 'generated_vitals_metadata.json'),
+    //         createDir: true,
+    //         serialize: jsonStringifyFormatted,
+    //       }),
+    //       writeJSONFile(territories, {
+    //         target: path.join(pathToDatatables(inputDir), 'generated_territories_metadata.json'),
+    //         createDir: true,
+    //         serialize: jsonStringifyFormatted,
+    //       }),
+    //       writeJSONFile(gatherables, {
+    //         target: path.join(pathToDatatables(inputDir), 'generated_gatherables_metadata.json'),
+    //         createDir: true,
+    //         serialize: jsonStringifyFormatted,
+    //       }),
+    //       writeJSONFile(variations.records, {
+    //         target: path.join(pathToDatatables(inputDir), 'generated_variations_metadata.json'),
+    //         createDir: true,
+    //         serialize: jsonStringifyFormatted,
+    //       }),
+    //       ...variations.chunks.map(async (chunk, index) => {
+    //         await fs.promises.writeFile(path.join('tmp', `variations.${index}.chunk`), chunk)
+    //         await fs.promises.writeFile(
+    //           path.join(pathToDatatables(inputDir), `generated_variations_metadata.${index}.chunk`),
+    //           chunk,
+    //         )
+    //         await fs.promises.writeFile(path.join(tablesOutDir, `generated_variations_metadata.${index}.chunk`), chunk)
+    //       }),
+    //     ])
+    //   })
+    // }
 
     console.log('Tables')
     const tables = await importDatatables(inputDir)
-
+    const localeImages: string[] = []
     if (hasFilter(Importer.locales, options.module)) {
       console.log('Locales')
       const localesInputDir = path.join(inputDir, 'localization')
@@ -138,7 +149,12 @@ program
         }
       })
 
-      await extractExpressions(localesInputDir).then((data) => {
+      await extractLocaleEmbeds(localesInputDir).then((data) => {
+        data.images.forEach((img) => {
+          if (!img.includes(`{`)) {
+            localeImages.push(img)
+          }
+        })
         fs.writeFileSync('./tmp/expressions.json', JSON.stringify(data, null, 2))
       })
 
@@ -152,80 +168,7 @@ program
     if (hasFilter(Importer.images, options.module)) {
       console.log('Images')
       await importImages({
-        staticImages: [
-          'LyShineUI/Images/Icon_Crown',
-          'LyShineUI/Images/Icons/Misc/icon_hourglass.png',
-          'LyShineUI/Images/Icons/Misc/icon_hourglass_yellow.png',
-          'LyShineUI/Images/Icons/Misc/icon_question_orange',
-          'LyShineUI/Images/SeasonsRewards/Wild-Stamp-Icon-Small',
-          'LyShineUI/Images/SeasonsRewards/pip',
-          'LyShineUI/Images/icons/misc/icon_character',
-          'LyShineUI/Images/icons/misc/icon_level_simple',
-          'LyShineUI/Images/icons/misc/icon_question_orange',
-          'LyShineUI/Images/icons/twitch/twitch_iconAddGroup',
-          'LyShineUI/Images/icons/twitch/twitch_iconAddGuild',
-          'LyShineUI/Images/socialpane/social_iconAddGroup',
-          'LyShineUI/Images/socialpane/social_iconAddGuild',
-          'lyshineui/images/dungeons/mutator_rank_gold_sm',
-          'lyshineui/images/encumbrance/iconExclamation',
-          'lyshineui/images/icon_crown',
-          'lyshineui/images/icons/contracts/contracts_iconBrowse',
-          'lyshineui/images/icons/contracts/contracts_iconBuy',
-          'lyshineui/images/icons/contracts/contracts_iconMyorders',
-          'lyshineui/images/icons/contracts/contracts_iconSell',
-          'lyshineui/images/icons/crafting/icon_skin_mask',
-          'lyshineui/images/icons/crafting/icon_skin_mask_tan',
-          'lyshineui/images/icons/crossworld/icon_crossworld_identifier',
-          'lyshineui/images/icons/crossworld/icon_crossworld_identifier_tan',
-          'lyshineui/images/icons/hud/vitals/Icon_combatstate',
-          'lyshineui/images/icons/items/currency/transmogtokensmall',
-          'lyshineui/images/icons/misc/Icon_LeftMouseButton',
-          'lyshineui/images/icons/misc/Icon_MiddleMouseButton',
-          'lyshineui/images/icons/misc/Icon_RightMouseButton',
-          'lyshineui/images/icons/misc/arrow_right',
-          'lyshineui/images/icons/misc/icon_azothCurrency',
-          'lyshineui/images/icons/misc/icon_azoth_salt',
-          'lyshineui/images/icons/misc/icon_day',
-          'lyshineui/images/icons/misc/icon_exclamation_white_small',
-          'lyshineui/images/icons/misc/icon_gearscore',
-          'lyshineui/images/icons/misc/icon_gearscore_tan',
-          'lyshineui/images/icons/misc/icon_hourglass',
-          'lyshineui/images/icons/misc/icon_hwm_small_color',
-          'lyshineui/images/icons/misc/icon_hwm_small_red',
-          'lyshineui/images/icons/misc/icon_microphone',
-          'lyshineui/images/icons/misc/icon_night',
-          'lyshineui/images/icons/misc/icon_question_orange',
-          'lyshineui/images/icons/misc/icon_refresh',
-          'lyshineui/images/icons/misc/icon_territoryStanding',
-          'lyshineui/images/icons/misc/icon_upgrade',
-          'lyshineui/images/icons/misc/icon_warsmall_white',
-          'lyshineui/images/icons/misc/icon_xp',
-          'lyshineui/images/icons/misc/icon_xp_boost',
-          'lyshineui/images/icons/misc/infinity_tan',
-          'lyshineui/images/icons/objectives/reward_coin',
-          'lyshineui/images/icons/tooltip/icon_tooltip_arcane_opaque',
-          'lyshineui/images/icons/tooltip/icon_tooltip_bleed_opaque',
-          'lyshineui/images/icons/tooltip/icon_tooltip_bundle',
-          'lyshineui/images/icons/tooltip/icon_tooltip_fire_opaque',
-          'lyshineui/images/icons/tooltip/icon_tooltip_ice_opaque',
-          'lyshineui/images/icons/tooltip/icon_tooltip_nature_opaque',
-          'lyshineui/images/icons/tooltip/icon_tooltip_purchase',
-          'lyshineui/images/icons/tooltip/icon_tooltip_repair',
-          'lyshineui/images/icons/tooltip/icon_tooltip_salvage',
-          'lyshineui/images/icons/tooltip/icon_tooltip_slash_opaque',
-          'lyshineui/images/icons/tooltip/icon_tooltip_strike_opaque',
-          'lyshineui/images/icons/tooltip/icon_tooltip_thrust_opaque',
-          'lyshineui/images/icons/tooltip/icon_tooltip_void_opaque',
-          'lyshineui/images/map/icon/pois/fish_hotspot_sm',
-          'lyshineui/images/map/icon/pois/maudlinbug',
-          'lyshineui/images/map/icon/pois/transmog',
-          'lyshineui/images/mtx/icon_mtx_currency',
-          'lyshineui/images/objectives/journal/guidestab/fasttraveliconactive',
-          'lyshineui/images/objectives/journal/guidestab/fasttraveliconinactive',
-          'lyshineui/images/tooltip/tooltip_bullet',
-          'lyshineui/images/tooltipimages/fishinghotspotactive.png',
-          'lyshineui/images/tooltipimages/fishinghotspotdepleted.png',
-        ],
+        staticImages: [...localeImages],
         input: inputDir,
         output: distDir,
         update: options.update,
