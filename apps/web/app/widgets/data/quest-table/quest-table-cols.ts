@@ -17,7 +17,7 @@ export function questColIcon(util: QuestTableUtils) {
     cellRenderer: util.cellRenderer(({ data }) => {
       return util.elA(
         {
-          attrs: { target: '_blank', href: util.tipLink('perk', String(data.ObjectiveID)) },
+          attrs: { target: '_blank', href: data.ObjectiveID ? util.tipLink('quest', String(data.ObjectiveID)) : '' },
         },
         util.elPicture(
           {
