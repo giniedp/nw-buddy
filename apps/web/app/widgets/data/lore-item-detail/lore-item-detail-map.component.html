@@ -1,0 +1,16 @@
+@if (landmarks()?.length) {
+  <nwb-land-map class="aspect-square relative" [map]="mapId()" [landmarks]="landmarks()">
+    <div
+      class="w-auto flex flex-row rounded-full text-sm text-white overflow-clip bg-base-100 p-[2px] absolute top-[7px] right-[7px]"
+    >
+      <select class="select select-sm max-w-[200px]" [ngModel]="mapId()" (ngModelChange)="selectedMapId.set($event)">
+        @for (value of mapIds(); track $index) {
+          <option [value]="value">{{ value }}</option>
+        }
+      </select>
+      <button class="btn btn-circle btn-ghost btn-sm" (click)="toggleFullscreen()">
+        <nwb-icon [icon]="iconExpand" class="w-4 h-4" />
+      </button>
+    </div>
+  </nwb-land-map>
+}

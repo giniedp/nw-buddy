@@ -48,6 +48,7 @@ import type {
   Lootbuckets,
   Lootlimits,
   Loottable,
+  LoreMetadata,
   Loreitems,
   ManacostsPlayer,
   Metaachievements,
@@ -1006,6 +1007,9 @@ export abstract class NwDataLoader {
   }
   public generatedGatherablesMetadata() {
     return this.load<GatherablesMetadata[]>('generated_gatherables_metadata.json')
+  }
+  public generatedLoreMetadata() {
+    return this.load<LoreMetadata[]>('generated_lore_metadata.json')
   }
   public generatedSpellsMetadata() {
     return this.load<SpellsMetadata[]>('generated_spells_metadata.json')

@@ -8,7 +8,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { injectRouteParam } from '~/utils'
-import { LoreItemDetailStore } from '~/widgets/data/lore-item-detail'
+import { LoreItemDetailMapComponent, LoreItemDetailStore } from '~/widgets/data/lore-item-detail'
 import { LootModule } from '~/widgets/loot'
 
 @Component({
@@ -16,7 +16,7 @@ import { LootModule } from '~/widgets/loot'
   selector: 'nwb-lore-detail-page',
   templateUrl: './lore-detail-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NwModule, LayoutModule, RouterModule, IconsModule],
+  imports: [NwModule, LayoutModule, RouterModule, IconsModule, LoreItemDetailMapComponent],
   providers: [LoreItemDetailStore],
   host: {
     class: 'flex-none flex flex-col',

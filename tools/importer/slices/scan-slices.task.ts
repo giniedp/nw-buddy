@@ -19,6 +19,7 @@ export interface ScanResult {
   gatherables?: GatherableScanRow[]
   variations?: VariationScanRow[]
   territories?: TerritoryScanRow[]
+  loreItems?: LoreScanRow[]
 }
 
 export interface GatherableScanRow {
@@ -27,7 +28,11 @@ export interface GatherableScanRow {
   lootTable: string
   mapID: string
 }
-
+export interface LoreScanRow {
+  loreID: string
+  position: [number, number, number]
+  mapID: string
+}
 export async function scanSlices({
   inputDir,
   file,
@@ -59,6 +64,7 @@ export async function scanSlices({
     const data = await readJSONFile<Capital>(file)
     const vitalsRows: VitalScanRow[] = []
     const variationsRows: VariationScanRow[] = []
+    const loreRows: LoreScanRow[] = []
     for (const capital of data?.Capitals || []) {
       if (capital.variantName) {
         variationsRows.push({
@@ -108,6 +114,15 @@ export async function scanSlices({
                   })
                 }
               }
+              if ('loreID' in data && data.loreID) {
+                loreRows.push({
+                  mapID: mapId,
+                  loreID: data.loreID,
+                  position: capital.worldPosition
+                    ? [capital.worldPosition.x, capital.worldPosition.y, capital.worldPosition.z]
+                    : null,
+                })
+              }
             }
           })
       }
@@ -115,6 +130,7 @@ export async function scanSlices({
     return {
       vitals: vitalsRows,
       variations: variationsRows,
+      loreItems: loreRows,
     }
   }
   if (file.endsWith('.metadata.json')) {

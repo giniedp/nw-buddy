@@ -366,6 +366,9 @@ export class NwDbService {
   public loreItemsByParentIdMap = indexGroupSetBy(() => this.loreItems, (it) => it.ParentID)
   public loreItemsByParentId = lookup(() => this.loreItemsByParentIdMap)
 
+  public loreItemsMeta = table(() => [this.data.generatedLoreMetadata()])
+  public loreItemsMetaMap = indexBy(() => this.loreItemsMeta, 'loreID')
+
   public quests = table(() =>
     this.data
       .apiMethodsByPrefix('quests', 'quests01Starterbeach01Objectives')

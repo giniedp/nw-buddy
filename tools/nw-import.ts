@@ -61,73 +61,79 @@ program
       throw new Error(`Unknown importer module: ${options.module}`)
     }
 
-    // if (hasFilter(Importer.slices, options.module)) {
-    //   console.log('Spells')
-    //   await importSpells({
-    //     inputDir: inputDir,
-    //   }).then((data) => {
-    //     console.log('  ', data.length, 'spells')
-    //     // write it into input directory, so table loader will pick it up
-    //     writeJSONFile(data, {
-    //       target: path.join(pathToDatatables(inputDir), 'generated_spells_metadata.json'),
-    //       createDir: true,
-    //     })
-    //     writeJSONFile(data, {
-    //       target: path.join('tmp', 'spells.json'),
-    //       createDir: true,
-    //     })
-    //   })
-    //   console.log('Slices')
-    //   await importSlices({
-    //     inputDir,
-    //     threads,
-    //   }).then(async ({ gatherables, vitals, variations, territories }) => {
-    //     console.log('  ', vitals.length, 'vitals')
-    //     console.log('  ', gatherables.length, 'gatherables')
-    //     console.log(
-    //       '  ',
-    //       variations.variationCount,
-    //       'variations',
-    //       variations.chunks.length,
-    //       'chunks',
-    //       variations.entryCount,
-    //       'entries',
-    //     )
-    //     console.log('  ', territories.length, 'territories')
+    if (hasFilter(Importer.slices, options.module)) {
+      console.log('Spells')
+      await importSpells({
+        inputDir: inputDir,
+      }).then((data) => {
+        console.log('  ', data.length, 'spells')
+        // write it into input directory, so table loader will pick it up
+        writeJSONFile(data, {
+          target: path.join(pathToDatatables(inputDir), 'generated_spells_metadata.json'),
+          createDir: true,
+        })
+        writeJSONFile(data, {
+          target: path.join('tmp', 'spells.json'),
+          createDir: true,
+        })
+      })
+      console.log('Slices')
+      await importSlices({
+        inputDir,
+        threads,
+      }).then(async ({ gatherables, vitals, variations, territories, loreItems }) => {
+        console.log('  ', vitals.length, 'vitals')
+        console.log('  ', gatherables.length, 'gatherables')
+        console.log(
+          '  ',
+          variations.variationCount,
+          'variations',
+          variations.chunks.length,
+          'chunks',
+          variations.entryCount,
+          'entries',
+        )
+        console.log('  ', territories.length, 'territories')
+        console.log('  ', loreItems.length, 'lore items')
 
-    //     return Promise.all([
-    //       // write it into input directory, so table loader will pick it up
-    //       writeJSONFile(vitals, {
-    //         target: path.join(pathToDatatables(inputDir), 'generated_vitals_metadata.json'),
-    //         createDir: true,
-    //         serialize: jsonStringifyFormatted,
-    //       }),
-    //       writeJSONFile(territories, {
-    //         target: path.join(pathToDatatables(inputDir), 'generated_territories_metadata.json'),
-    //         createDir: true,
-    //         serialize: jsonStringifyFormatted,
-    //       }),
-    //       writeJSONFile(gatherables, {
-    //         target: path.join(pathToDatatables(inputDir), 'generated_gatherables_metadata.json'),
-    //         createDir: true,
-    //         serialize: jsonStringifyFormatted,
-    //       }),
-    //       writeJSONFile(variations.records, {
-    //         target: path.join(pathToDatatables(inputDir), 'generated_variations_metadata.json'),
-    //         createDir: true,
-    //         serialize: jsonStringifyFormatted,
-    //       }),
-    //       ...variations.chunks.map(async (chunk, index) => {
-    //         await fs.promises.writeFile(path.join('tmp', `variations.${index}.chunk`), chunk)
-    //         await fs.promises.writeFile(
-    //           path.join(pathToDatatables(inputDir), `generated_variations_metadata.${index}.chunk`),
-    //           chunk,
-    //         )
-    //         await fs.promises.writeFile(path.join(tablesOutDir, `generated_variations_metadata.${index}.chunk`), chunk)
-    //       }),
-    //     ])
-    //   })
-    // }
+        return Promise.all([
+          // write it into input directory, so table loader will pick it up
+          writeJSONFile(vitals, {
+            target: path.join(pathToDatatables(inputDir), 'generated_vitals_metadata.json'),
+            createDir: true,
+            serialize: jsonStringifyFormatted,
+          }),
+          writeJSONFile(territories, {
+            target: path.join(pathToDatatables(inputDir), 'generated_territories_metadata.json'),
+            createDir: true,
+            serialize: jsonStringifyFormatted,
+          }),
+          writeJSONFile(gatherables, {
+            target: path.join(pathToDatatables(inputDir), 'generated_gatherables_metadata.json'),
+            createDir: true,
+            serialize: jsonStringifyFormatted,
+          }),
+          writeJSONFile(variations.records, {
+            target: path.join(pathToDatatables(inputDir), 'generated_variations_metadata.json'),
+            createDir: true,
+            serialize: jsonStringifyFormatted,
+          }),
+          writeJSONFile(loreItems, {
+            target: path.join(pathToDatatables(inputDir), 'generated_lore_metadata.json'),
+            createDir: true,
+            serialize: jsonStringifyFormatted,
+          }),
+          ...variations.chunks.map(async (chunk, index) => {
+            await fs.promises.writeFile(path.join('tmp', `variations.${index}.chunk`), chunk)
+            await fs.promises.writeFile(
+              path.join(pathToDatatables(inputDir), `generated_variations_metadata.${index}.chunk`),
+              chunk,
+            )
+            await fs.promises.writeFile(path.join(tablesOutDir, `generated_variations_metadata.${index}.chunk`), chunk)
+          }),
+        ])
+      })
+    }
 
     console.log('Tables')
     const tables = await importDatatables(inputDir)

@@ -15,7 +15,7 @@ import { readAndExtractCrcValues } from './create-crc-file'
 import { VariationScanRow } from './scan-for-variants'
 import { VitalScanRow } from './scan-for-vitals'
 import { TerritoryScanRow } from './scan-for-zones'
-import { GatherableScanRow } from './scan-slices.task'
+import { GatherableScanRow, LoreScanRow } from './scan-slices.task'
 import { WORKER_TASKS } from './worker.tasks'
 
 interface VitalMetadata {
@@ -59,6 +59,13 @@ interface TerritoryMetadata {
     max: number[]
   }>
 }
+interface LoreMetadata {
+  mapIDs: string[]
+  spawns: Array<{
+    position: number[]
+    mapId: string
+  }>
+}
 
 export async function importSlices({ inputDir, threads }: { inputDir: string; threads: number }) {
   const crcVitalsFile = environment.tmpDir('crcVitals.json')
@@ -96,6 +103,7 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
   const gatherables: Record<string, GatherableMetadata> = {}
   const variations: Record<string, VariationMetadata> = {}
   const territories: Record<string, TerritoryMetadata> = {}
+  const loreItems: Record<string, LoreMetadata> = {}
 
   const files = await glob([
     `${inputDir}/sharedassets/coatlicue/**/regions/**/*.capitals.json`,
@@ -128,6 +136,7 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
         collectGatherablesRows(result.gatherables || [], gatherables)
         collectVariationsRows(result.variations || [], variations)
         collectTerritoriesRows(result.territories || [], territories)
+        collectLoreRows(result.loreItems || [], loreItems)
       },
     }),
   })
@@ -137,6 +146,26 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
     gatherables: toSortedGatherables(gatherables),
     variations: toSortedVariations(variations),
     territories: toSortedTerritories(territories),
+    loreItems: toSortedLoreItems(loreItems),
+  }
+}
+
+function collectLoreRows(rows: LoreScanRow[], data: Record<string, LoreMetadata>) {
+  for (const row of rows || []) {
+    const loreID = row.loreID.toLowerCase()
+    if (!(loreID in data)) {
+      data[loreID] = { mapIDs: [], spawns: [] }
+    }
+    const bucket = data[loreID]
+    if (row.mapID) {
+      arrayAppend(bucket.mapIDs, row.mapID.toLowerCase())
+    }
+    if (row.position) {
+      bucket.spawns.push({
+        mapId: row.mapID?.toLowerCase(),
+        position: row.position.map((it) => Number(it.toFixed(3))),
+      })
+    }
   }
 }
 
@@ -446,6 +475,36 @@ function toSortedTerritories(data: Record<string, TerritoryMetadata>) {
       const result = {
         territoryID: id,
         zones: zones,
+      }
+      return result
+    })
+}
+
+function toSortedLoreItems(data: Record<string, LoreMetadata>) {
+  return Array.from(Object.entries(data))
+    .sort((a, b) => compareStrings(a[0], b[0]))
+    .map(([id, { mapIDs, spawns }]) => {
+      const result = {
+        loreID: id,
+        mapIDs: Array.from(mapIDs).sort(),
+        loreSpawns: {} as Record<
+          string,
+          Array<number[]>
+        >,
+      }
+      spawns.sort((a, b) => compareStrings(a.mapId, b.mapId))
+      for (const spawn of spawns) {
+        const mapId = spawn.mapId || '_'
+        result.loreSpawns[mapId] = result.loreSpawns[mapId] || []
+        result.loreSpawns[mapId].push(spawn.position)
+      }
+      for (const key in result.loreSpawns) {
+        result.loreSpawns[key] = chain(result.loreSpawns[key])
+          .groupBy((it) => it.join(','))
+          .values()
+          .map((it) => it[0])
+          .sortBy((it) => it.join(','))
+          .value()
       }
       return result
     })

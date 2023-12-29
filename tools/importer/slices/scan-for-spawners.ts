@@ -11,6 +11,7 @@ import {
   isMeshComponent,
   isPrefabSpawnerComponent,
   isProjectileSpawnerComponent,
+  isReadingInteractionComponent,
   isSkinnedMeshComponent,
   isSpawnDefinition,
   isVariationDataComponent,
@@ -18,11 +19,13 @@ import {
 } from './types/dynamicslice'
 
 import { findAZEntityById, readDynamicSliceFile, resolveDynamicSliceFile } from './utils'
+import { arrayAppend } from '../../utils'
 
 export type SpawnerScanResult =
   | {
       variantID?: string
       gatherableID?: string
+      loreID?: string
       positions: Array<number[]>
     }
   | {
@@ -43,6 +46,14 @@ export async function scanForSpawners(rootDir: string, file: string): Promise<Sp
   let sliceComponent = await readDynamicSliceFile(file)
   if (!sliceComponent) {
     return result
+  }
+
+  const loreItems = await scanForReadingInteractions(sliceComponent, rootDir)
+  for (const loreId of loreItems?.loreIds || []) {
+    result.push({
+      loreID: loreId,
+      positions: [],
+    })
   }
 
   const areaSpawns = await scanForAreaSpawners(sliceComponent, rootDir)
@@ -214,6 +225,20 @@ async function scanForPrefabSpawner(sliceComponent: SliceComponent, rootDir: str
   return result
 }
 
+async function scanForReadingInteractions(sliceComponent: SliceComponent, rootDir: string) {
+  let loreIds: string[] = []
+  for (const entity of sliceComponent.entities || []) {
+    for (const component of entity.components || []) {
+      if (isReadingInteractionComponent(component) && component.m_loreid) {
+        arrayAppend(loreIds, component.m_loreid)
+        continue
+      }
+    }
+  }
+  return {
+    loreIds,
+  }
+}
 async function scanForGatherable(sliceComponent: SliceComponent, rootDir: string) {
   let variantId: string
   let gatherableId: string

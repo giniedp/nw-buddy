@@ -13364,6 +13364,25 @@ export interface Spawns {
     nw_trial_season_04_daichidojo?: Array<number[]>;
     nw_trial_season_04_deviceroom?: Array<number[]>;
 }
+export interface LoreMetadata {
+    loreID:     string;
+    loreSpawns: LoreSpawns;
+    mapIDs:     string[];
+}
+
+export interface LoreSpawns {
+    newworld_vitaeeterna?:         Array<number[]>;
+    nw_dungeon_brimstonesands_00?: Array<number[]>;
+    nw_dungeon_cutlasskeys_00?:    Array<number[]>;
+    nw_dungeon_edengrove_00?:      Array<number[]>;
+    nw_dungeon_everfall_00?:       Array<number[]>;
+    nw_dungeon_greatcleave_00?:    Array<number[]>;
+    nw_dungeon_greatcleave_01?:    Array<number[]>;
+    nw_dungeon_reekwater_00?:      Array<number[]>;
+    nw_dungeon_restlessshores_01?: Array<number[]>;
+    nw_dungeon_shattermtn_00?:     Array<number[]>;
+    nw_dungeon_windsward_00?:      Array<number[]>;
+}
 export interface SpellsMetadata {
     AreaStatusEffects: string[];
     PrefabPath:        string;
