@@ -53,12 +53,18 @@ export class PvpStoreTableAdapter
       items: this.db.itemsMap,
       housing: this.db.housingItemsMap,
       rows: this.db.pvpStoreBuckets,
+      rewardsMap: this.db.pvpRewardsMap,
+      gameEventsMap: this.db.gameEventsMap,
     }).pipe(
-      map(({ items, housing, rows }) => {
+      map(({ items, housing, rows, rewardsMap, gameEventsMap }) => {
         return rows.map((it): PvpStoreTableRecord => {
+          const reward = rewardsMap.get(it.RewardId)
+          const itemId = it.Item || reward?.Item
           return {
             ...it,
-            $item: items.get(it.Item) || housing.get(it.Item),
+            $item: items.get(itemId) || housing.get(itemId),
+            $reward: rewardsMap.get(it.RewardId),
+            $gameEvent: gameEventsMap.get(reward?.GameEvent),
           }
         })
       }),

@@ -51,18 +51,20 @@ export class PvpBucketDetailPageComponent {
     const [bucket, row] = id.split('_')
     return buckets.find((it) => it.Bucket === bucket && it.Row === Number(row))
   })
-  protected itemId$ = selectStream(this.data$, (it) => it?.Item)
-  protected item$ = selectStream(this.db.itemOrHousingItem(this.itemId$))
   protected rewardId$ = selectStream(this.data$, (it) => it?.RewardId)
   protected reward$ = selectStream(this.db.pvpReward(this.rewardId$))
-  protected rewardItemId$ = selectStream(this.reward$, (it)=> {
-    if (!it?.Item) {
+  protected rewardItemId$ = selectStream({
+    reward: this.reward$,
+    data: this.data$,
+  }, ({ reward, data })=> {
+    const itemId = reward?.Item || data?.Item
+    if (!itemId) {
       return null
     }
-    if (it.Item.startsWith('[')) {
+    if (itemId.startsWith('[')) {
       return null
     }
-    return it.Item
+    return itemId
   })
   protected rewardLTID$ = selectStream(this.reward$, (it)=> {
     if (!it?.Item) {
@@ -78,8 +80,6 @@ export class PvpBucketDetailPageComponent {
   protected gameEvent$ = selectStream(this.db.gameEvent(this.gameEventId$))
 
   protected data = toSignal(this.data$)
-  protected item = toSignal(this.item$)
-  protected itemId = toSignal(this.itemId$)
   protected reward = toSignal(this.reward$)
   protected rewardItemId = toSignal(this.rewardItemId$)
   protected rewardLTID = toSignal(this.rewardLTID$)

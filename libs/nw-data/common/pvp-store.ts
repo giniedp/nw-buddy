@@ -5,7 +5,7 @@ import { flatten } from 'lodash'
 export function convertPvoStore(data: PvpStore[]): PvpStoreRow[] {
   const firstRow = data.find((it) => it.RowPlaceholders === 'FIRSTROW')
   const result = data.map((row, i) => convertRow(row, firstRow, i))
-  return flatten(result).filter((it) => !!it.Item || !!it.RewardId)
+  return flatten(result)
 }
 
 export type PvpStoreRow = {
@@ -13,7 +13,7 @@ export type PvpStoreRow = {
   Column: number
   Tags: Map<string, PvpStoreTag[]>
   Bucket: string
-  Item: string
+  Item?: string
 
   BudgetContribution?: number
   Entitlement?: number
@@ -46,10 +46,9 @@ function convertRow(data: PvpStore, firstRow: PvpStore, rowId: number): PvpStore
     .map((id): PvpStoreRow => {
       const bucketNameKey = `Bucket${id}`
       return {
-        Column: id,
-        Row: rowId,
-        Item: null as string,
         Bucket: firstRow[bucketNameKey] || '',
+        Row: rowId,
+        Column: id,
         Tags: new CaseInsensitiveMap(),
       }
     })
@@ -71,7 +70,9 @@ function convertRow(data: PvpStore, firstRow: PvpStore, rowId: number): PvpStore
             break
           }
           default: {
-            result[key] = value
+            if (value != null) {
+              result[key] = value
+            }
             break
           }
         }

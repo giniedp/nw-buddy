@@ -15,7 +15,7 @@
       @if (detail.lootTables(); as tables) {
         <h3 class="font-bold px-4">Occurs In Loot Table</h3>
         @for (table of tables; track $index) {
-          <nwb-loot-graph [tableId]="table" [showLocked]="true" [highlight]="limitId()" />
+          <nwb-loot-graph [tableId]="table" [showLocked]="true" [highlight]="limitId()" class="overflow-hidden" />
         }
       }
       @if (detail.eventsBeforeLimit(); as events) {

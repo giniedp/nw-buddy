@@ -9,13 +9,16 @@ import {
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { GameEvent, Housingitems, ItemDefinitionMaster, PvpRewards } from '@nw-data/generated'
 import { RangeFilter, SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
+import { selectGameEventRewards } from '../game-event-detail/selectors'
 
 export type PvpStoreTableUtils = TableGridUtils<PvpStoreTableRecord>
 export type PvpStoreTableRecord = PvpStoreRow & {
   $item: ItemDefinitionMaster | Housingitems
+  $reward: PvpRewards
+  $gameEvent: GameEvent
 }
 
 export function pvpStoreColIcon(util: PvpStoreTableUtils) {
@@ -30,21 +33,37 @@ export function pvpStoreColIcon(util: PvpStoreTableUtils) {
     cellClass: ['overflow-visible'],
     cellRenderer: util.cellRenderer(({ data }) => {
       const item = data.$item
-      return util.elA(
-        {
-          attrs: {
-            href: util.tipLink('item', getItemId(item)),
-            target: '_blank',
+      if (item) {
+        return util.elA(
+          {
+            attrs: {
+              href: util.tipLink('item', getItemId(item)),
+              target: '_blank',
+            },
           },
-        },
-        util.elItemIcon({
-          class: ['transition-all translate-x-0 hover:translate-x-1'],
-          icon: getItemIconPath(item) || NW_FALLBACK_ICON,
-          isArtifact: isMasterItem(data) && isItemArtifact(data),
-          isNamed: isMasterItem(data) && isItemNamed(data),
-          rarity: getItemRarity(item),
-        }),
-      )
+          util.elItemIcon({
+            class: ['transition-all translate-x-0 hover:translate-x-1'],
+            icon: getItemIconPath(item) || NW_FALLBACK_ICON,
+            isArtifact: isMasterItem(data) && isItemArtifact(data),
+            isNamed: isMasterItem(data) && isItemNamed(data),
+            rarity: getItemRarity(item),
+          }),
+        )
+      }
+      if (data.$reward?.IconPath) {
+        return util.elItemIcon({
+          icon: data.$reward?.IconPath,
+        })
+      }
+      const rewards = selectGameEventRewards(data.$gameEvent, null)
+      if (rewards?.length) {
+        return util.elItemIcon({
+          icon: rewards[0]?.icon || NW_FALLBACK_ICON,
+        })
+      }
+      return util.elItemIcon({
+        icon: NW_FALLBACK_ICON,
+      })
     }),
   })
 }
