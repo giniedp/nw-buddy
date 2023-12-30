@@ -88,10 +88,14 @@ export class GearsetPaneMainComponent {
           const perks2 = item2 ? getItemPerkIdsWithOverride(item2, weapon2.perks) : null
           const affix1 = perks1
             ?.map((perkId) => perks.get(perkId)?.Affix)
-            .find((affixId) => !!affix.get(affixId)?.DamagePercentage)
+            .find((affixId) => {
+              return !!affix.get(affixId)?.DamagePercentage || !!affix.get(affixId)?.PreferHigherScaling
+            })
           const affix2 = perks2
             ?.map((perkId) => perks.get(perkId)?.Affix)
-            .find((affixId) => !!affix.get(affixId)?.DamagePercentage)
+            .find((affixId) => {
+              return !!affix.get(affixId)?.DamagePercentage || !!affix.get(affixId)?.PreferHigherScaling
+            })
           return {
             weapon1ItemId: weapon1?.itemId,
             weapon1GearScore: weapon1?.gearScore,

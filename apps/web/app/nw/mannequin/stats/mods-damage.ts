@@ -7,9 +7,9 @@ import {
 } from '@nw-data/common'
 import { Damagetable, ItemClass, ItemDefinitionMaster, PvpbalanceArena } from '@nw-data/generated'
 
+import { humanize } from '~/utils'
 import { eachModifier, modifierAdd, ModifierKey, modifierResult, modifierSum } from '../modifier'
 import { ActiveMods, ActiveWeapon, DbSlice, MannequinState } from '../types'
-import { humanize } from '~/utils'
 
 export function selectWeaponDamage(
   mods: ActiveMods,
@@ -22,8 +22,9 @@ export function selectWeaponDamage(
   const { weapon, item, ammo, gearScore } = activeWeapon
 
   const pvpBalance = selectPvpBalance(item, db, state)
-  const splitAffix = mods.perks.find((it) => it.affix?.DamagePercentage && it.weapon?.WeaponID === weapon?.WeaponID)
-    ?.affix
+  const splitAffix = mods.perks.find(
+    (it) => (it.affix?.DamagePercentage || it.affix?.PreferHigherScaling) && it.weapon?.WeaponID === weapon?.WeaponID,
+  )?.affix
   const percentAffix = splitAffix?.DamagePercentage || 0
   const percentWeapon = 1 - percentAffix
 

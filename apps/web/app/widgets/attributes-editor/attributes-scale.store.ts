@@ -144,6 +144,7 @@ function selectWeaponDamage({
       },
     }
   }
+
   const attrSums: Record<AttributeRef, number> = {
     str: selectModifierValue(tables.str, stats.str),
     dex: selectModifierValue(tables.dex, stats.dex),
@@ -170,18 +171,18 @@ function selectWeaponDamage({
     weaponScale: weaponScale,
   })
 
-  if (affix?.PreferHigherScaling && affixDamage > weaponDamage) {
-    return {
-      value: weaponDamage * weaponPercent + affixDamage * affixPercent,
-      scale: {
-        dex: weaponScale.dex * weaponPercent + affixScale.dex * affixPercent,
-        str: weaponScale.str * weaponPercent + affixScale.str * affixPercent,
-        int: weaponScale.int * weaponPercent + affixScale.int * affixPercent,
-        foc: weaponScale.foc * weaponPercent + affixScale.foc * affixPercent,
-        con: weaponScale.con * weaponPercent + affixScale.con * affixPercent,
-      },
-    }
-  }
+  // console.log('weapon')
+  // console.table({
+  //   ...weaponScale,
+  //   weaponPercent,
+  //   weaponDamage,
+  // })
+  // console.log('affix')
+  // console.table({
+  //   ...affixScale,
+  //   affixPercent,
+  //   affixDamage,
+  // })
 
   if (affix?.PreferHigherScaling && affixDamage > weaponDamage) {
     return {
