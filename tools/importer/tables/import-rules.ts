@@ -210,6 +210,18 @@ export const TABLE_IMPORT_RULES = [
   tableSource(
     // prettier-ignore
     [
+      'pvp_rewardstrack/javelindata_pvp_store_v2'
+    ],
+    [
+      mapPropToArray({
+        keys: [/Tag\d/],
+        separator: ',',
+      }),
+    ],
+  ),
+  tableSource(
+    // prettier-ignore
+    [
       '**/*_damagetable_*',
       '**/*_damagetable',
     ],

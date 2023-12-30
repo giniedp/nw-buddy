@@ -55,6 +55,10 @@ const routes: Routes = [
     path: 'loot-buckets',
     loadChildren: () => import('./pages/database/loot-buckets').then((m) => m.LootBucketsPageModule),
   },
+  {
+    path: 'pvp-buckets',
+    loadChildren: () => import('./pages/database/pvp-buckets').then((m) => m.PvpBucketsPageModule),
+  },
   { path: 'armorsets', redirectTo: 'armor-sets' },
   { path: 'armor-sets', loadChildren: () => import('./pages/tools/armorsets').then((m) => m.ArmorsetsModule) },
   {

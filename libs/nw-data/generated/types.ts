@@ -4052,9 +4052,9 @@ export interface PvpStore {
   SelectOnceOnly1: boolean
   SelectOnceOnly2: boolean
   SelectOnceOnly3: boolean
-  Tag1: string
-  Tag2: string
-  Tag3: string
+  Tag1: string[]
+  Tag2: string[]
+  Tag3: string[]
   Type1: string
   Type2: string
   Type3: string

@@ -5,6 +5,7 @@ import {
   convertLootbuckets,
   convertLoottables,
   convertPerkBuckets,
+  convertPvoStore,
   getIngretientsFromRecipe,
   getItemIdFromRecipe,
   getItemSetFamilyName,
@@ -542,6 +543,14 @@ export class NwDbService {
   public pvpRanks = table(() => this.data.pvpRank())
   public pvpRanksMap = indexBy(() => this.pvpRanks, 'Level')
   public pvpRank = lookup(() => this.pvpRanksMap)
+
+  public pvpStoreBuckets = table(() => this.data.pvpRewardstrackPvpStoreV2().pipe(map(convertPvoStore)))
+  public pvpStoreBucketsMap = indexGroupBy(() => this.pvpStoreBuckets, 'Bucket')
+  public pvpStoreBucket = lookup(() => this.pvpStoreBucketsMap)
+
+  public pvpRewards = table(() => this.data.pvpRewardstrackPvpRewardsV2())
+  public pvpRewardsMap = indexBy(() => this.pvpRewards, 'RewardId')
+  public pvpReward = lookup(() => this.pvpRewardsMap)
 
   public milestoneRewards = table(() => this.data.milestonerewards())
 
