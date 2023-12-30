@@ -3,7 +3,7 @@
     @for (reward of itemRewards(); track $index) {
       <h3 class="px-2 my-2">{{ reward.title }}</h3>
       <nwb-item-card [entityId]="reward.itemId" [enableInfoLink]="true" [enableLink]="true" #card="card">
-        <div class="pb-4 px-4 btn-group" *ngIf="card.salvageInfo$ | async; let salvage">
+        <div class="btn-group" *ngIf="card.salvageInfo$ | async; let salvage">
           <button
             class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50"
             (click)="openRepairRecipe(tplSalvage)"
