@@ -591,7 +591,10 @@ export class NwDbService {
   public lootTablesMap = indexBy(() => this.lootTables, 'LootTableID')
   public lootTable = lookup(() => this.lootTablesMap)
 
-  public lootBuckets = table(() => this.data.lootbuckets().pipe(map(convertLootbuckets)))
+  public lootBuckets = table(() => [
+    this.data.lootbuckets().pipe(map(convertLootbuckets)),
+    this.data.lootbucketsPvp().pipe(map(convertLootbuckets))
+  ])
   public lootBucketsMap = indexGroupBy(() => this.lootBuckets, 'LootBucket')
   public lootBucket = lookup(() => this.lootBucketsMap)
 

@@ -61,6 +61,7 @@ export const TABLE_IMPORT_RULES = [
     '*_itemdefinitions_weapons',
     '*_itemtransformdata',
     '*_lootbuckets',
+    '*_lootbuckets_pvp',
     '*_lootlimits',
     '*_loottables*',
     '*_loreitems*',
@@ -177,7 +178,7 @@ export const TABLE_IMPORT_RULES = [
       separator: ',',
     }),
   ]),
-  tableSource('javelindata_lootbuckets', [
+  tableSource(['javelindata_lootbuckets', 'javelindata_lootbuckets_pvp'], [
     mapPropToArray({
       keys: [/Tags\d+/i],
       separator: ',',

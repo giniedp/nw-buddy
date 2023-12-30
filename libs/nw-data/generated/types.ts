@@ -1937,6 +1937,7 @@ export interface Lootbuckets {
   Item257: string
   Item258: string
   Item259: string
+  Item26: string
   Item260: string
   Item261: string
   Item262: string
@@ -1947,6 +1948,7 @@ export interface Lootbuckets {
   Item267: string
   Item268: string
   Item269: string
+  Item27: string
   Item270: string
   Item271: string
   Item272: string
@@ -1968,6 +1970,7 @@ export interface Lootbuckets {
   Item287: string
   Item288: string
   Item289: string
+  Item29: string
   Item290: string
   Item291: string
   Item292: string
@@ -2000,6 +2003,7 @@ export interface Lootbuckets {
   Item317: string
   Item318: string
   Item319: string
+  Item32: string
   Item320: string
   Item321: string
   Item322: string
@@ -2010,6 +2014,7 @@ export interface Lootbuckets {
   Item327: string
   Item328: string
   Item329: string
+  Item33: string
   Item330: string
   Item331: string
   Item332: string
@@ -2020,6 +2025,7 @@ export interface Lootbuckets {
   Item337: string
   Item338: string
   Item339: string
+  Item34: string
   Item340: string
   Item341: string
   Item342: string
@@ -2028,6 +2034,7 @@ export interface Lootbuckets {
   Item347: string
   Item348: string
   Item349: string
+  Item35: string
   Item350: string
   Item351: string
   Item352: string
@@ -2038,6 +2045,7 @@ export interface Lootbuckets {
   Item357: string
   Item358: string
   Item359: string
+  Item36: string
   Item360: string
   Item361: string
   Item362: string
@@ -2048,6 +2056,7 @@ export interface Lootbuckets {
   Item367: string
   Item368: string
   Item369: string
+  Item37: string
   Item370: string
   Item371: string
   Item372: string
@@ -2058,6 +2067,7 @@ export interface Lootbuckets {
   Item377: string
   Item378: string
   Item379: string
+  Item38: string
   Item380: string
   Item381: string
   Item382: string
@@ -2068,6 +2078,7 @@ export interface Lootbuckets {
   Item387: string
   Item388: string
   Item389: string
+  Item39: string
   Item390: string
   Item391: string
   Item392: string
@@ -2079,6 +2090,7 @@ export interface Lootbuckets {
   Item398: string
   Item399: string
   Item4: string
+  Item40: string
   Item400: string
   Item401: string
   Item402: string
@@ -2108,6 +2120,10 @@ export interface Lootbuckets {
   Item429: string
   Item431: string
   Item432: string
+  Item44: string
+  Item45: string
+  Item46: string
+  Item47: string
   Item48: string
   Item49: string
   Item5: string
@@ -2391,6 +2407,7 @@ export interface Lootbuckets {
   LootBucket317: string
   LootBucket318: string
   LootBucket319: string
+  LootBucket32: string
   LootBucket320: string
   LootBucket321: string
   LootBucket322: string
@@ -2401,6 +2418,7 @@ export interface Lootbuckets {
   LootBucket327: string
   LootBucket328: string
   LootBucket329: string
+  LootBucket33: string
   LootBucket330: string
   LootBucket331: string
   LootBucket332: string
@@ -2411,6 +2429,7 @@ export interface Lootbuckets {
   LootBucket337: string
   LootBucket338: string
   LootBucket339: string
+  LootBucket34: string
   LootBucket340: string
   LootBucket341: string
   LootBucket342: string
@@ -2420,6 +2439,7 @@ export interface Lootbuckets {
   LootBucket347: string
   LootBucket348: string
   LootBucket349: string
+  LootBucket35: string
   LootBucket350: string
   LootBucket351: string
   LootBucket352: string
@@ -2430,6 +2450,7 @@ export interface Lootbuckets {
   LootBucket357: string
   LootBucket358: string
   LootBucket359: string
+  LootBucket36: string
   LootBucket360: string
   LootBucket361: string
   LootBucket362: string
@@ -2440,6 +2461,7 @@ export interface Lootbuckets {
   LootBucket367: string
   LootBucket368: string
   LootBucket369: string
+  LootBucket37: string
   LootBucket370: string
   LootBucket371: string
   LootBucket372: string
@@ -2450,6 +2472,7 @@ export interface Lootbuckets {
   LootBucket377: string
   LootBucket378: string
   LootBucket379: string
+  LootBucket38: string
   LootBucket380: string
   LootBucket381: string
   LootBucket382: string
@@ -2460,6 +2483,7 @@ export interface Lootbuckets {
   LootBucket387: string
   LootBucket388: string
   LootBucket389: string
+  LootBucket39: string
   LootBucket390: string
   LootBucket391: string
   LootBucket392: string
@@ -2471,6 +2495,7 @@ export interface Lootbuckets {
   LootBucket398: string
   LootBucket399: string
   LootBucket4: string
+  LootBucket40: string
   LootBucket400: string
   LootBucket401: string
   LootBucket402: string
@@ -2501,6 +2526,10 @@ export interface Lootbuckets {
   LootBucket430: string
   LootBucket431: string
   LootBucket432: string
+  LootBucket44: string
+  LootBucket45: string
+  LootBucket46: string
+  LootBucket47: string
   LootBucket48: string
   LootBucket49: string
   LootBucket5: string
@@ -2608,11 +2637,13 @@ export interface Lootbuckets {
   MatchOne387: string
   MatchOne394: string
   MatchOne4: string
+  MatchOne40: string
   MatchOne403: boolean
   MatchOne404: boolean
   MatchOne412: boolean
   MatchOne413: boolean
   MatchOne426: string
+  MatchOne44: string
   MatchOne52: string
   MatchOne53: string
   MatchOne57: string
@@ -2648,7 +2679,7 @@ export interface Lootbuckets {
   Quantity117: number
   Quantity118: number
   Quantity119: number
-  Quantity12: number
+  Quantity12: number | string
   Quantity120: number
   Quantity121: number
   Quantity122: number
@@ -2659,7 +2690,7 @@ export interface Lootbuckets {
   Quantity127: number
   Quantity128: number
   Quantity129: number
-  Quantity13: number
+  Quantity13: number | string
   Quantity130: number
   Quantity131: number
   Quantity132: number
@@ -2680,7 +2711,7 @@ export interface Lootbuckets {
   Quantity147: string
   Quantity148: number
   Quantity149: number
-  Quantity15: string
+  Quantity15: number | string
   Quantity150: number
   Quantity151: number
   Quantity152: number
@@ -2691,7 +2722,7 @@ export interface Lootbuckets {
   Quantity157: number
   Quantity158: number
   Quantity159: number
-  Quantity16: string
+  Quantity16: number | string
   Quantity160: number
   Quantity161: number
   Quantity162: number
@@ -2709,15 +2740,15 @@ export interface Lootbuckets {
   Quantity173: number
   Quantity176: number
   Quantity177: number
-  Quantity18: string
-  Quantity19: string
+  Quantity18: number | string
+  Quantity19: number | string
   Quantity194: number
   Quantity196: number
   Quantity197: number
   Quantity198: number
   Quantity199: number
   Quantity2: number
-  Quantity20: string
+  Quantity20: number | string
   Quantity200: number
   Quantity201: number
   Quantity202: number
@@ -2727,7 +2758,7 @@ export interface Lootbuckets {
   Quantity206: number
   Quantity207: number
   Quantity209: number
-  Quantity21: string
+  Quantity21: number | string
   Quantity210: number
   Quantity211: number
   Quantity212: number
@@ -2781,6 +2812,7 @@ export interface Lootbuckets {
   Quantity257: number
   Quantity258: number
   Quantity259: number
+  Quantity26: number
   Quantity260: number
   Quantity261: number
   Quantity262: number
@@ -2791,6 +2823,7 @@ export interface Lootbuckets {
   Quantity267: number
   Quantity268: number
   Quantity269: number
+  Quantity27: number
   Quantity270: number
   Quantity271: number
   Quantity272: string
@@ -2812,6 +2845,7 @@ export interface Lootbuckets {
   Quantity287: number
   Quantity288: number
   Quantity289: number
+  Quantity29: number
   Quantity290: number
   Quantity291: number
   Quantity292: number
@@ -2844,6 +2878,7 @@ export interface Lootbuckets {
   Quantity317: number
   Quantity318: number
   Quantity319: number
+  Quantity32: number
   Quantity320: number
   Quantity321: number
   Quantity322: number
@@ -2854,6 +2889,7 @@ export interface Lootbuckets {
   Quantity327: number
   Quantity328: number
   Quantity329: number
+  Quantity33: number
   Quantity330: number
   Quantity331: number
   Quantity332: number
@@ -2864,6 +2900,7 @@ export interface Lootbuckets {
   Quantity337: number
   Quantity338: number
   Quantity339: number
+  Quantity34: number
   Quantity340: number
   Quantity341: number
   Quantity342: number
@@ -2872,6 +2909,7 @@ export interface Lootbuckets {
   Quantity347: number
   Quantity348: number
   Quantity349: number
+  Quantity35: number
   Quantity350: number
   Quantity351: number
   Quantity352: number
@@ -2882,6 +2920,7 @@ export interface Lootbuckets {
   Quantity357: number
   Quantity358: number
   Quantity359: number
+  Quantity36: number
   Quantity360: number
   Quantity361: number
   Quantity362: string
@@ -2892,6 +2931,7 @@ export interface Lootbuckets {
   Quantity367: number
   Quantity368: number
   Quantity369: number
+  Quantity37: number
   Quantity370: number
   Quantity371: number
   Quantity372: number
@@ -2902,6 +2942,7 @@ export interface Lootbuckets {
   Quantity377: number
   Quantity378: number
   Quantity379: number
+  Quantity38: number
   Quantity380: number
   Quantity381: number
   Quantity382: number
@@ -2912,6 +2953,7 @@ export interface Lootbuckets {
   Quantity387: number
   Quantity388: number
   Quantity389: number
+  Quantity39: number
   Quantity390: number
   Quantity391: number
   Quantity392: number
@@ -2923,6 +2965,7 @@ export interface Lootbuckets {
   Quantity398: number
   Quantity399: number
   Quantity4: number
+  Quantity40: number
   Quantity400: number
   Quantity401: number
   Quantity402: number
@@ -2952,6 +2995,10 @@ export interface Lootbuckets {
   Quantity429: number
   Quantity431: number
   Quantity432: number
+  Quantity44: number
+  Quantity45: number
+  Quantity46: number
+  Quantity47: number
   Quantity48: number
   Quantity49: number
   Quantity5: number
@@ -3120,6 +3167,7 @@ export interface Lootbuckets {
   Tags217: string[]
   Tags218: string[]
   Tags219: string[]
+  Tags22: string[]
   Tags220: string[]
   Tags221: string[]
   Tags223: string[]
@@ -3137,6 +3185,7 @@ export interface Lootbuckets {
   Tags237: string[]
   Tags238: string[]
   Tags239: string[]
+  Tags24: string[]
   Tags240: string[]
   Tags242: string[]
   Tags243: string[]
@@ -3156,6 +3205,7 @@ export interface Lootbuckets {
   Tags257: string[]
   Tags258: string[]
   Tags259: string[]
+  Tags26: string[]
   Tags260: string[]
   Tags261: string[]
   Tags262: string[]
@@ -3164,6 +3214,7 @@ export interface Lootbuckets {
   Tags265: string[]
   Tags266: string[]
   Tags267: string[]
+  Tags27: string[]
   Tags270: string[]
   Tags271: string[]
   Tags272: string[]
@@ -3171,6 +3222,7 @@ export interface Lootbuckets {
   Tags274: string[]
   Tags275: string[]
   Tags28: string[]
+  Tags29: string[]
   Tags298: string[]
   Tags3: string[]
   Tags30: string[]
@@ -3179,6 +3231,8 @@ export interface Lootbuckets {
   Tags310: string[]
   Tags314: string[]
   Tags317: string[]
+  Tags32: string[]
+  Tags33: string[]
   Tags331: string[]
   Tags332: string[]
   Tags333: string[]
@@ -3188,7 +3242,9 @@ export interface Lootbuckets {
   Tags337: string[]
   Tags338: string[]
   Tags339: string[]
+  Tags34: string[]
   Tags340: string[]
+  Tags35: string[]
   Tags350: string[]
   Tags351: string[]
   Tags352: string[]
@@ -3196,10 +3252,15 @@ export interface Lootbuckets {
   Tags354: string[]
   Tags356: string[]
   Tags357: string[]
+  Tags36: string[]
+  Tags37: string[]
+  Tags38: string[]
+  Tags39: string[]
   Tags397: string[]
   Tags398: string[]
   Tags399: string[]
   Tags4: string[]
+  Tags40: string[]
   Tags400: string[]
   Tags402: string[]
   Tags403: string[]
@@ -3224,6 +3285,10 @@ export interface Lootbuckets {
   Tags428: string[]
   Tags429: string[]
   Tags432: string[]
+  Tags44: string[]
+  Tags45: string[]
+  Tags46: string[]
+  Tags47: string[]
   Tags48: string[]
   Tags49: string[]
   Tags5: string[]

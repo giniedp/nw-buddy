@@ -1113,6 +1113,9 @@ export abstract class NwDataLoader {
   public lootbuckets() {
     return this.load<Lootbuckets[]>('javelindata_lootbuckets.json')
   }
+  public lootbucketsPvp() {
+    return this.load<Lootbuckets[]>('javelindata_lootbuckets_pvp.json')
+  }
   public lootlimits() {
     return this.load<Lootlimits[]>('javelindata_lootlimits.json')
   }

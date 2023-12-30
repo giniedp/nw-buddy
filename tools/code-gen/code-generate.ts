@@ -115,6 +115,10 @@ const PATH_TO_TYPE_RULES = [
     test: /_loottables[._]/,
     name: 'Loottable',
   },
+  {
+    test: /_lootbuckets[._]/,
+    name: 'Lootbuckets',
+  },
 ]
 
 function pathToTypeName(filePath: string) {

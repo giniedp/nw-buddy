@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 
 import { LootBucketsPageComponent } from './loot-buckets-page.component'
+import { EmptyComponent } from '~/widgets/empty'
 
 const ROUTES: Routes = [
   {
@@ -12,6 +13,12 @@ const ROUTES: Routes = [
   {
     path: ':category',
     component: LootBucketsPageComponent,
+    children: [
+      {
+        path: ':id',
+        component: EmptyComponent,
+      },
+    ],
   },
 ]
 
