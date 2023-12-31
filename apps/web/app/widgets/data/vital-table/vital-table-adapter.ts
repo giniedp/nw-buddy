@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getVitalCategoryInfo, getVitalDungeons, getVitalFamilyInfo, getVitalsCategories } from '@nw-data/common'
-import { COLS_VITALS } from '@nw-data/generated'
+import { COLS_VITALS, Vitals } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
 import { DataViewAdapter } from '~/ui/data/data-view'
@@ -36,6 +36,7 @@ import {
   vitalColName,
   vitalColSpawnCount,
 } from './vital-table-cols'
+import { CaseInsensitiveSet } from '~/utils'
 
 @Injectable()
 export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord>, TableGridAdapter<VitalTableRecord> {

@@ -7,7 +7,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgCompress, svgExpand } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { selectSignal } from '~/utils'
-import { LandMapComponent, Landmark } from '~/widgets/land-map'
+import { LandMapComponent, Landmark, LandmarkPoint } from '~/widgets/land-map'
 import { VitalDetailStore } from './vital-detail.store'
 
 @Component({
@@ -89,20 +89,21 @@ function selectData(
   tl8: TranslateService,
 ) {
   const result: Record<string, Landmark[]> = {}
-  if (!vital || !meta) {
+  if (!meta) {
     return result
   }
-  const name = tl8.get(vital.DisplayName)
+  const name = tl8.get(vital?.DisplayName) || vital?.VitalsID || meta?.vitalsID
   for (const mapId of meta?.mapIDs || []) {
     for (const spawn of meta.lvlSpanws[mapId as keyof LvlSpanws] || []) {
       result[mapId] ??= []
       result[mapId].push({
-        title: `Name: ${name}<br>Level: ${spawn.l ?? '?'}<br>Location: x: ${spawn.p[0].toFixed(2)} y: ${spawn.p[1].toFixed(2)}`,
+        title: `Name: ${name}<br>Level: ${(spawn.l || vital?.Level) ?? '?'}<br>Location: x: ${spawn.p[0].toFixed(2)} y: ${spawn.p[1].toFixed(2)}`,
         color: '#DC2626',
         outlineColor: '#590e0e',
+        opacity: 1,
         point: spawn.p,
         radius: 10,
-      })
+      } satisfies LandmarkPoint)
     }
   }
   return result

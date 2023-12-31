@@ -79,7 +79,10 @@ export function selectSalvageInfo(item: ItemDefinitionMaster | Housingitems, pla
   }
   return {
     tableId: recipe.replace('[LTID]', ''),
-    tags: (item as ItemDefinitionMaster)?.SalvageLootTags,
+    tags: [
+      'GlobalMod',
+      ...((item as ItemDefinitionMaster)?.SalvageLootTags || [])
+    ],
     tagValues: {
       Level: playerLevel - 1,
       MinContLevel: (item as ItemDefinitionMaster)?.ContainerLevel,

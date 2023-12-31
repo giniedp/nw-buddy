@@ -6,7 +6,7 @@ import { LootTable } from '@nw-data/common'
 import { NwModule } from '~/nw'
 import { LootBucketNode, LootBucketRowNode, LootNode, LootTableItemNode, LootTableNode } from '~/nw/loot/loot-graph'
 import { IconsModule } from '~/ui/icons'
-import { svgAngleLeft, svgCircleExclamation, svgCode, svgLink, svgLock, svgLockOpen } from '~/ui/icons/svg'
+import { svgAngleLeft, svgBucket, svgCircleExclamation, svgCode, svgLink, svgLock, svgLockOpen, svgTableList } from '~/ui/icons/svg'
 import { PaginationModule } from '~/ui/pagination'
 import { TooltipModule } from '~/ui/tooltip'
 
@@ -128,6 +128,8 @@ export class LootGraphNodeComponent extends ComponentStore<LootGraphNodeState> {
   protected iconLockOpen = svgLockOpen
   protected linkIcon = svgLink
   protected iconCode = svgCode
+  protected iconBucket = svgBucket
+  protected iconTable = svgTableList
 
   public constructor() {
     super({

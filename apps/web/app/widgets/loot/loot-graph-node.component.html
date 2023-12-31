@@ -33,15 +33,28 @@
   <ng-template #tplHead>
     <div class="border border-base-100 rounded-l-md bg-black">
       <div
-        class="pl-2 py-1 flex flex-row items-center gap-x-1 bg-base-100 cursor-pointer shadow-accent border-l-4"
+        class="px-2 py-1 flex flex-row items-center gap-x-1 bg-base-100 hover:bg-base-200 transition-colors cursor-pointer shadow-accent border-l-4"
         [class.border-l-transparent]="!vm.highlight"
         [class.border-l-accent]="vm.highlight"
         (click)="toggle()"
       >
         <div class="flex flex-row flex-wrap items-center gap-x-1">
+          @if (vm.typeName === 'bucket') {
+            <nwb-icon [icon]="iconBucket" class="w-4 h-4 mr-1 cursor-help opacity-75" [tooltip]="'This is a loot bucket'"/>
+          } @else if (!vm.showLink) {
+            <nwb-icon [icon]="iconTable" class="w-4 h-4 mr-1 cursor-help opacity-75" [tooltip]="'This is a loot table'"/>
+          } @else {
+            <a
+              class="btn btn-sm btn-square btn-ghost -ml-2"
+              [routerLink]="vm.link"
+              [tooltip]="vm.showLink ? 'Go to loot table' : ''"
+            >
+              <nwb-icon [icon]="linkIcon" class="w-4 h-4"/>
+            </a>
+          }
           @if (vm.rollThreshold) {
             <span class="badge badge-sm badge-primary">
-              >= {{ vm.rollThreshold }}
+              >= {{ vm.rollThreshold | number }}
               @if (vm.chanceRel) {
                 ({{ vm.chanceRel | percent: '0.0-6' }})
               }
@@ -53,58 +66,36 @@
           @if (vm.itemQuantity && vm.itemQuantity != '1') {
             <span class="whitespace-nowrap"> {{ vm.itemQuantity }} &times; </span>
           }
-          @if (vm.showLink) {
-            <a
-              class="btn btn-sm btn-square btn-ghost -ml-2"
-              [routerLink]="vm.link"
-              [tooltip]="vm.showLink ? 'Go to loot table' : ''"
-            >
-              <nwb-icon [icon]="linkIcon" class="w-4 h-4"></nwb-icon>
-            </a>
-          }
-          <span class="flex-1 overflow-hidden whitespace-nowrap inline-flex items-center">{{ vm.displayName }}</span>
+
+          <span class="flex-1 overflow-hidden whitespace-nowrap inline-flex items-center font-mono text-sm">{{
+            vm.displayName
+          }}</span>
         </div>
         <span class="flex-1"></span>
 
-        <div class="text-xs flex flex-row items-center gap-1">
-          <span
-            class="min-w-[40px] cursor-help"
-            [tooltip]="vm.typeName === 'bucket' ? 'This is a loot bucket' : 'This is a loot table'"
-            [class.text-secondary]="vm.typeName == 'bucket'"
-          >
-            {{ vm.typeName }}
+        @if(vm.showChance) {
+          <span class="cursor-help inline-flex flex-col text-right">
+            <span> {{ vm.chanceAbs | percent: '0.0-6' }} </span>
           </span>
           <span> | </span>
-          <ng-container *ngIf="vm.showChance">
-            <span class="min-w-[40px] cursor-help inline-flex flex-col text-right">
-              <span> {{ vm.chanceAbs | percent: '0.0-6' }} </span>
+        }
+        <span class="cursor-help text-xs" [tooltip]="tplTip">
+          @if (vm.unlockedItemCount && !vm.showLocked) {
+            <span class="text-success">
+              {{ vm.unlockedItemCount }}
             </span>
-            <span> | </span>
-          </ng-container>
-          <span class="min-w-[40px] cursor-help inline-flex flex-col text-right" [tooltip]="tplTip">
-            @if (vm.unlockedItemCount && !vm.showLocked) {
-              <span class="text-success">
-                {{ vm.unlockedItemCount }}
-              </span>
-            }
-            <span> {{ vm.totalItemCount }} </span>
-            <ng-template #tplTip>
-              <div class="p-2">
-                <div>{{ vm.totalItemCount }} items inside this table (tree)</div>
-                <div class="text-success">{{ vm.unlockedItemCount }} items unlocked with current loot context</div>
-                <div class="text-error">{{ vm.totalItemCount - vm.unlockedItemCount }} items locked</div>
-              </div>
-            </ng-template>
-          </span>
-        </div>
-        <nwb-icon
-          [icon]="iconExpand"
-          class="transition-transform w-4 h-4"
-          [class.rotate-90]="vm.expand"
-          [class.-rotate-90]="!vm.expand"
-          [class.text-error]="!vm.unlocked && !vm.showLocked"
-          [class.text-success]="vm.unlocked || vm.showLocked"
-        />
+            <span> / </span>
+          }
+          <span> {{ vm.totalItemCount }} </span>
+          <ng-template #tplTip>
+            <div class="p-2">
+              <div>{{ vm.totalItemCount }} items inside this table (tree)</div>
+              <div class="text-success">{{ vm.unlockedItemCount }} items unlocked with current loot context</div>
+              <div class="text-error">{{ vm.totalItemCount - vm.unlockedItemCount }} items locked</div>
+            </div>
+          </ng-template>
+        </span>
+
       </div>
       @if (vm.expand) {
         <div class="p-3 pr-0 mr-[-1px] flex flex-col gap-2" @childContainer>
@@ -116,7 +107,7 @@
                 </span>
               }
               @if (vm.table.MaxRoll; as tagValue) {
-                <span class="whitespace-nowrap badge badge-sm badge-primary"> MaxRoll: {{ tagValue }} </span>
+                <span class="whitespace-nowrap badge badge-sm badge-primary"> MaxRoll: {{ tagValue | number }} </span>
               }
               @if (vm.table.RollBonusSetting; as tagValue) {
                 <span class="whitespace-nowrap badge badge-sm badge-accent">
@@ -174,7 +165,7 @@
               <span [tooltip]="tplProps" class="badge badge-sm badge-info cursor-help mr-1">
                 <nwb-icon [icon]="iconCode" class="w-4 h-4 self-end"></nwb-icon>
                 <ng-template #tplProps>
-                  <nwb-property-grid [item]="getProps(vm.table)" class="p-2 gap-x-2" />
+                  <nwb-property-grid [item]="getProps(vm.table)" class="p-2 gap-x-2 font-mono text-sm" />
                 </ng-template>
               </span>
             </div>
