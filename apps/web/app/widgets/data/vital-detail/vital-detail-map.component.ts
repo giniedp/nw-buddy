@@ -95,9 +95,10 @@ function selectData(
   const name = tl8.get(vital?.DisplayName) || vital?.VitalsID || meta?.vitalsID
   for (const mapId of meta?.mapIDs || []) {
     for (const spawn of meta.lvlSpanws[mapId as keyof LvlSpanws] || []) {
+      const levels = spawn.l.length ? spawn.l : vital?.Level ? [vital.Level] : []
       result[mapId] ??= []
       result[mapId].push({
-        title: `Name: ${name}<br>Level: ${(spawn.l || vital?.Level) ?? '?'}<br>Location: x: ${spawn.p[0].toFixed(2)} y: ${spawn.p[1].toFixed(2)}`,
+        title: `Name: ${name}<br>Level: ${levels}<br>Location: x: ${spawn.p[0].toFixed(2)} y: ${spawn.p[1].toFixed(2)}`,
         color: '#DC2626',
         outlineColor: '#590e0e',
         opacity: 1,

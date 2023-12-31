@@ -145,9 +145,13 @@ export async function scanSlices({
         if (!vitalId) {
           continue
         }
+        if (!location.spawnedbycoatlicue && mapId === 'newworld_vitaeeterna') {
+          continue
+        }
+        const categoryId = loadCrcFile(crcVitalsCategoriesFile)[location.vitalscategoryid?.value]
         vitalsRows.push({
           vitalsID: vitalId,
-          categoryID: loadCrcFile(crcVitalsCategoriesFile)[location.vitalscategoryid?.value],
+          categoryID: categoryId,
           level: location.vitalslevel,
           damageTable: null,
           position: location.worldposition,

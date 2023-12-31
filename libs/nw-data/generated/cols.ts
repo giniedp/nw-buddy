@@ -815,7 +815,7 @@ export const COLS_DAMAGETABLE = {
   "ImpactRating": "number",
   "IsAbility": "boolean",
   "IsEmote": "boolean",
-  "IsRanged": "number",
+  "IsRanged": "boolean",
   "IsSiege": "boolean",
   "IsTaunt": "boolean",
   "LOSCheckVerticalAngleOffset": "number",

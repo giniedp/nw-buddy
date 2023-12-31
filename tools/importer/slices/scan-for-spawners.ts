@@ -63,11 +63,11 @@ export async function scanForSpawners(rootDir: string, file: string): Promise<Sp
 
   const areaSpawns = await scanForAreaSpawners(sliceComponent, rootDir)
   for (const areaSpawn of areaSpawns || []) {
-    if (!areaSpawn.sliceFile || !areaSpawn.positions?.length) {
+    if (!areaSpawn.sliceFile) {
       continue
     }
-    const subSlice = await readDynamicSliceFile(areaSpawn.sliceFile)
-    const gatherable = await scanForGatherable(subSlice, rootDir)
+    const subComponent = await readDynamicSliceFile(areaSpawn.sliceFile)
+    const gatherable = await scanForGatherable(subComponent, rootDir)
     if (gatherable) {
       result.push({
         variantID: gatherable.variantId,
@@ -76,35 +76,53 @@ export async function scanForSpawners(rootDir: string, file: string): Promise<Sp
       })
     }
 
-    const encounterSlices = await scanForEncounterSpawner(subSlice, rootDir)
-    for (const sliceFile of encounterSlices || []) {
-      const component = await readDynamicSliceFile(sliceFile)
-      if (!component) {
+    const encounterSpawns = await scanForEncounterSpawner(subComponent, rootDir)
+    for (const encounter of encounterSpawns || []) {
+      const positions = areaSpawn.positions
+        .map((pos): number[] => {
+          if (!encounter.positions.length) {
+            return pos
+          }
+          return encounter.positions
+            .map((pos2) => {
+              return [pos[0] + pos2[0], pos[1] + pos2[1], pos[2] + pos2[2]]
+            })
+            .flat()
+        })
+      const component = await readDynamicSliceFile(encounter.sliceFile)
+      if (!component || !positions.length) {
         continue
       }
+
+      // if (encounter.positions.length) {
+      //   console.log('encounter', encounter.sliceFile, {
+      //     pos: encounter.positions,
+      //     aPos: areaSpawn.positions,
+      //   })
+      // }
 
       const gatherable = await scanForGatherable(component, rootDir)
       if (gatherable) {
         result.push({
           variantID: gatherable.variantId,
           gatherableID: gatherable.gatherableId,
-          positions: areaSpawn.positions,
+          positions: positions,
         })
       }
       const ammoId = await scanForProjectileComponent(component, rootDir)
       if (ammoId === 'WinterConv_GleamiteLauncher_Projectile') {
         result.push({
           variantID: 'WinterConv_GleamiteChunk',
-          positions: areaSpawn.positions,
+          positions: positions,
         })
       }
       if (ammoId === 'WinterConv_GleamiteLauncher_Projectile_Rapid') {
         result.push({
           variantID: 'WinterConv_GleamiteShard',
-          positions: areaSpawn.positions,
+          positions: positions,
         })
       }
-      const variants = await scanForAIVariantSpawn(component, rootDir, sliceFile)
+      const variants = await scanForAIVariantSpawn(component, rootDir, encounter.sliceFile)
       for (const item of variants || []) {
         const subSliceFile = await resolveDynamicSliceFile(rootDir, item.slice)
         const subSlice = await readDynamicSliceFile(subSliceFile)
@@ -115,16 +133,16 @@ export async function scanForSpawners(rootDir: string, file: string): Promise<Sp
           level: item.level,
           damageTable: vital?.damageTable,
           modelFile: vital?.modelSlice,
-          positions: areaSpawn.positions,
+          positions: positions,
         })
       }
-      const vitals = await scanForVitals(component, rootDir, sliceFile)
+      const vitals = await scanForVitals(component, rootDir, encounter.sliceFile)
       if (vitals?.vitalsID) {
         result.push({
           vitalsID: vitals.vitalsID,
           damageTable: vitals.damageTable,
           modelFile: vitals.modelSlice,
-          positions: areaSpawn.positions,
+          positions: positions,
         })
       }
     }
@@ -147,6 +165,46 @@ export async function scanForSpawners(rootDir: string, file: string): Promise<Sp
     }
   }
 
+  const pointSpawns = await scanForPointSpawners(sliceComponent, rootDir)
+  for (const pointSpawn of pointSpawns || []) {
+    const subComponent = await readDynamicSliceFile(pointSpawn.sliceFile)
+    const encounterSpawns = await scanForEncounterSpawner(subComponent, rootDir)
+    for (const encounter of encounterSpawns || []) {
+      if (!encounter.positions.length) {
+        continue
+      }
+      const component = await readDynamicSliceFile(encounter.sliceFile)
+      if (!component) {
+        continue
+      }
+
+      const variants = await scanForAIVariantSpawn(component, rootDir, encounter.sliceFile)
+      for (const item of variants || []) {
+        const subSliceFile = await resolveDynamicSliceFile(rootDir, item.slice)
+        const subSlice = await readDynamicSliceFile(subSliceFile)
+        const vital = await scanForVitals(subSlice, rootDir, subSliceFile)
+        result.push({
+          vitalsID: item.vitalsID || vital?.vitalsID,
+          categoryID: item.categoryID,
+          level: item.level,
+          damageTable: vital?.damageTable,
+          modelFile: vital?.modelSlice,
+          positions: encounter.positions,
+        })
+      }
+
+      const vitals = await scanForVitals(component, rootDir, encounter.sliceFile)
+      if (vitals?.vitalsID) {
+        result.push({
+          vitalsID: vitals.vitalsID,
+          damageTable: vitals.damageTable,
+          modelFile: vitals.modelSlice,
+          positions: encounter.positions,
+        })
+      }
+    }
+  }
+
   return result
 }
 
@@ -164,11 +222,8 @@ async function scanForAreaSpawners(sliceComponent: SliceComponent, rootDir: stri
       if (!isAreaSpawnerComponentServerFacet(facet)) {
         continue
       }
-      if (facet.m_sliceasset?.hint) {
-        sliceFile = await resolveDynamicSliceFile(rootDir, facet.m_sliceasset.hint)
-      } else if (facet.m_aliasasset?.hint) {
-        sliceFile = await resolveDynamicSliceFile(rootDir, facet.m_aliasasset.hint)
-      }
+      sliceFile = sliceFile || (await resolveDynamicSliceFile(rootDir, facet.m_sliceasset?.hint))
+      sliceFile = sliceFile || (await resolveDynamicSliceFile(rootDir, facet.m_aliasasset?.hint))
       for (const location of facet.m_locations || []) {
         const entity = findAZEntityById(sliceComponent, location.entityid as any)
         const transform = entity?.components?.find((it) => isGameTransformComponent(it)) as GameTransformComponent
@@ -188,8 +243,29 @@ async function scanForAreaSpawners(sliceComponent: SliceComponent, rootDir: stri
   return result
 }
 
+async function scanForPointSpawners(sliceComponent: SliceComponent, rootDir: string) {
+  const result: Array<{ sliceFile: string }> = []
+  for (const entity of sliceComponent.entities || []) {
+    let sliceFile: string
+    for (const component of entity.components || []) {
+      if (!isPointSpawnerComponent(component)) {
+        continue
+      }
+      sliceFile = sliceFile || (await resolveDynamicSliceFile(rootDir, component.baseclass1.m_sliceasset?.hint))
+      sliceFile = sliceFile || (await resolveDynamicSliceFile(rootDir, component.baseclass1.m_aliasasset?.hint))
+    }
+    if (sliceFile) {
+      result.push({
+        sliceFile,
+      })
+    }
+  }
+  return result
+}
+
 async function scanForEncounterSpawner(sliceComponent: SliceComponent, rootDir: string) {
-  const slices: string[] = []
+  const result: Array<{ sliceFile: string; positions: number[][] }> = []
+
   for (const entity of sliceComponent.entities || []) {
     for (const component of entity.components || []) {
       if (!isEncounterComponent(component)) {
@@ -199,19 +275,30 @@ async function scanForEncounterSpawner(sliceComponent: SliceComponent, rootDir: 
         if (!isSpawnDefinition(spawn)) {
           continue
         }
-        let file: string
-        if (spawn.m_sliceasset?.hint) {
-          file = await resolveDynamicSliceFile(rootDir, spawn.m_sliceasset.hint)
-        } else if (spawn.m_aliasasset?.hint) {
-          file = await resolveDynamicSliceFile(rootDir, spawn.m_aliasasset.hint)
+
+        let sliceFile: string
+        sliceFile = sliceFile || (await resolveDynamicSliceFile(rootDir, spawn.m_sliceasset.hint))
+        sliceFile = sliceFile || (await resolveDynamicSliceFile(rootDir, spawn.m_aliasasset.hint))
+        let positions: number[][] = []
+        for (const location of spawn.m_spawnlocations || []) {
+          const entity = findAZEntityById(sliceComponent, location.entityid as any)
+          const transform = entity?.components?.find((it) => isGameTransformComponent(it)) as GameTransformComponent
+          const translation = transform?.m_worldtm?.__value?.['translation'] as number[]
+          if (Array.isArray(translation)) {
+            positions.push([...translation])
+          }
         }
-        if (file) {
-          slices.push(file)
+
+        if (sliceFile) {
+          result.push({
+            sliceFile,
+            positions,
+          })
         }
       }
     }
   }
-  return slices
+  return result
 }
 
 async function scanForPrefabSpawner(sliceComponent: SliceComponent, rootDir: string) {
