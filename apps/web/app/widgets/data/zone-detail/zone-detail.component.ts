@@ -4,8 +4,10 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ZoneDetailStore } from './zone-detail.store'
-import { selectSignal } from '~/utils'
+import { selectSignal, selectStream } from '~/utils'
 import { ZoneDetailMapComponent } from './zone-detail-map.component'
+import { map } from 'rxjs'
+import { Vitals } from '@nw-data/generated'
 
 @Component({
   standalone: true,
@@ -20,7 +22,7 @@ import { ZoneDetailMapComponent } from './zone-detail-map.component'
   },
 })
 export class ZoneDetailComponent {
-  protected store = inject(ZoneDetailStore)
+  public readonly store = inject(ZoneDetailStore)
 
   @Input()
   public set zoneId(value: string | number) {
@@ -33,4 +35,7 @@ export class ZoneDetailComponent {
   public readonly description = toSignal(this.store.description$)
   public readonly type = toSignal(this.store.type$)
 
+  public markVital(vital: Vitals) {
+    this.store.patchState({ markedVitalId: vital?.VitalsID || null })
+  }
 }

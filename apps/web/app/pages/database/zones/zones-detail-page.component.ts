@@ -1,15 +1,18 @@
+import { GridOptions } from '@ag-grid-community/core'
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
+import { DataGridModule, TableGridUtils } from '~/ui/data/table-grid'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, observeRouteParam } from '~/utils'
-import { GatherableDetailModule } from '~/widgets/data/gatherable-detail'
+import { HtmlHeadService, injectRouteParam, observeRouteParam } from '~/utils'
+import { vitalColIcon, vitalColLevel, vitalColName } from '~/widgets/data/vital-table'
 import { ZoneDetailModule } from '~/widgets/data/zone-detail'
 import { LootModule } from '~/widgets/loot'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -28,7 +31,8 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     IconsModule,
     TooltipModule,
     ZoneDetailModule,
-    LayoutModule
+    LayoutModule,
+    DataGridModule
   ],
   providers: [],
   host: {
@@ -36,15 +40,26 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   },
 })
 export class ZoneDetailPageComponent {
-  protected itemId$ = observeRouteParam(this.route, 'id')
+  protected itemId = toSignal(injectRouteParam('id'))
 
   protected iconLink = svgSquareArrowUpRight
-  protected viewerActive = false
+  protected gridUtils = inject(TableGridUtils)
+  protected gridOptions: GridOptions = {
+    columnDefs: [
+      vitalColIcon(this.gridUtils),
+      vitalColName(this.gridUtils),
+      vitalColLevel(this.gridUtils),
+      // vitalColFamily(util),
+      // vitalColCreatureType(util),
+      // vitalColCategories(util),
+    ]
+  }
+
   public constructor(
     private route: ActivatedRoute,
     private dialog: Dialog,
     private head: HtmlHeadService,
-    private i18n: TranslateService
+    private i18n: TranslateService,
   ) {
     //
   }

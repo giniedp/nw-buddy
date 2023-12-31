@@ -1,5 +1,6 @@
-<nwb-detail-drawer class="hidden lg:block lg:w-[500px]">
-  <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
-    <nwb-zone-detail [zoneId]="itemId$ | async" #detail class="bg-black mb-4"/>
+<nwb-detail-drawer class="hidden lg:flex flex-col flex-1 lg:w-[500px]">
+  <div *nwbDetailDrawerContent class="flex-1 flex flex-col bg-base-200 layout-pad">
+    <nwb-zone-detail [zoneId]="itemId()" #detail class="bg-black mb-4 flex-nonw" />
+    <nwb-table-grid [data]="detail.store.vitals$ | async" [options]="gridOptions" (selectedRow$)="detail.markVital($event)" class="flex-1"/>
   </div>
 </nwb-detail-drawer>

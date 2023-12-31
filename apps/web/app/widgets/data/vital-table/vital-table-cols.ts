@@ -67,7 +67,7 @@ export function vitalColName(util: VitalTableUtils) {
     width: 200,
     valueGetter: ({ data }) => {
       const name = util.i18n.get(data.DisplayName)
-      const alias = util.i18n.get(getVitalAliasName(data.$categories))
+      const alias = util.i18n.get(getVitalAliasName(data.$categories || []))
       if (alias && name !== alias) {
         return [name, alias]
       }
