@@ -106,8 +106,8 @@ export async function scanSlices({
                   vitalsRows.push({
                     mapID: mapId,
                     vitalsID: data.vitalsID,
-                    categoryID: null,
-                    level: null,
+                    categoryID: data.categoryID,
+                    level: data.level,
                     damageTable: data.damageTable,
                     modelFile: data.modelFile,
                     position: [position[0], position[1], position[2]],
