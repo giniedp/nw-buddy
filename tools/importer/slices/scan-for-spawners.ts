@@ -78,17 +78,16 @@ export async function scanForSpawners(rootDir: string, file: string): Promise<Sp
 
     const encounterSpawns = await scanForEncounterSpawner(subComponent, rootDir)
     for (const encounter of encounterSpawns || []) {
-      const positions = areaSpawn.positions
-        .map((pos): number[] => {
-          if (!encounter.positions.length) {
-            return pos
-          }
-          return encounter.positions
-            .map((pos2) => {
-              return [pos[0] + pos2[0], pos[1] + pos2[1], pos[2] + pos2[2]]
-            })
-            .flat()
-        })
+      const positions = areaSpawn.positions.map((pos): number[] => {
+        if (!encounter.positions.length) {
+          return pos
+        }
+        return encounter.positions
+          .map((pos2) => {
+            return [pos[0] + pos2[0], pos[1] + pos2[1], pos[2] + pos2[2]]
+          })
+          .flat()
+      })
       const component = await readDynamicSliceFile(encounter.sliceFile)
       if (!component || !positions.length) {
         continue
@@ -129,6 +128,22 @@ export async function scanForSpawners(rootDir: string, file: string): Promise<Sp
           positions: positions,
         })
       }
+
+      const pointSpawns = await scanForPointSpawners(component, rootDir, encounter.sliceFile)
+      for (const pointSpawn of pointSpawns || []) {
+        const subSliceFile = await resolveDynamicSliceFile(rootDir, pointSpawn.sliceFile)
+        const subSlice = await readDynamicSliceFile(subSliceFile)
+        const vitals = await scanForVitals(subSlice, rootDir, subSliceFile)
+        if (vitals?.vitalsID) {
+          result.push({
+            vitalsID: vitals.vitalsID,
+            damageTable: vitals.damageTable,
+            modelFile: vitals.modelSlice,
+            positions: positions,
+          })
+        }
+      }
+
       const vitals = await scanForVitals(component, rootDir, encounter.sliceFile)
       if (vitals?.vitalsID) {
         result.push({
@@ -158,7 +173,7 @@ export async function scanForSpawners(rootDir: string, file: string): Promise<Sp
     }
   }
 
-  const pointSpawns = await scanForPointSpawners(sliceComponent, rootDir)
+  const pointSpawns = await scanForPointSpawners(sliceComponent, rootDir, file)
   for (const pointSpawn of pointSpawns || []) {
     const subComponent = await readDynamicSliceFile(pointSpawn.sliceFile)
     const encounterSpawns = await scanForEncounterSpawner(subComponent, rootDir)
@@ -236,7 +251,7 @@ async function scanForAreaSpawners(sliceComponent: SliceComponent, rootDir: stri
   return result
 }
 
-async function scanForPointSpawners(sliceComponent: SliceComponent, rootDir: string) {
+async function scanForPointSpawners(sliceComponent: SliceComponent, rootDir: string, currentFile: string) {
   const result: Array<{ sliceFile: string }> = []
   for (const entity of sliceComponent.entities || []) {
     let sliceFile: string
