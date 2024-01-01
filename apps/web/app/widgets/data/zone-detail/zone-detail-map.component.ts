@@ -1,4 +1,4 @@
-import { Component, ElementRef, ValueEqualityFn, ViewChild, inject } from '@angular/core'
+import { Component, ElementRef, EventEmitter, Output, ValueEqualityFn, ViewChild, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { crc32 as crc } from 'js-crc'
@@ -10,7 +10,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgCompress, svgExpand } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive, selectSignal, selectStream } from '~/utils'
-import { LandMapComponent, Landmark, LandmarkPoint, LandmarkZone, MapView } from '~/widgets/land-map'
+import { LandMapComponent, Landmark, LandmarkPoint, LandmarkZone, MapViewBounds } from '~/widgets/land-map'
 import { ZoneDetailStore } from './zone-detail.store'
 
 function crc32(value: string) {
@@ -52,30 +52,27 @@ export class ZoneDetailMapComponent {
   @ViewChild(LandMapComponent, { static: false })
   protected mapComponent: LandMapComponent
 
-  protected mapView = toSignal(
+  @Output()
+  public zoneClicked = new EventEmitter<string>()
+
+  @Output()
+  public vitalClicked = new EventEmitter<string>()
+
+  protected bounds = toSignal(
     selectStream(
       {
         type: this.store.type$,
         meta: this.store.metadata$,
       },
-      ({ type, meta }): MapView => {
+      ({ type, meta }): MapViewBounds => {
         if (!meta?.zones?.length) {
           return null
         }
-
         const min = meta.zones[0].min
         const max = meta.zones[0].max
-        const width = max[0] - min[0]
-        const height = max[1] - min[1]
-
-        const view: MapView = {
-          x: min[1] + width / 2,
-          y: min[0] + height / 2,
-          zoom: type === 'Territory' ? 3 : type === 'Area' ? 5 : 6,
-        }
-        return view
+        return { min: [min[1], min[0]], max: [max[1], max[0]] }
       },
-      { equal: isEqual as ValueEqualityFn<MapView> },
+      { equal: isEqual as ValueEqualityFn<MapViewBounds> },
     ),
   )
 
@@ -103,6 +100,7 @@ export class ZoneDetailMapComponent {
         const isSelected = zone.TerritoryID === zoneId
         for (const entry of meta.zones) {
           result.push({
+            id: `zone:${zone.TerritoryID}`,
             title: this.tl8.get(zone.NameLocalizationKey),
             color: isSelected ? COLORS.Info : '#FFFFFF',
             outlineColor: isSelected ? COLORS_DIMMED.Info : COLORS_DIMMED.Error,
@@ -122,6 +120,7 @@ export class ZoneDetailMapComponent {
         const hasMark = !!vitalId
         const isMarked = eqCaseInsensitive(vitalId, spawn.vital.VitalsID)
         result.push({
+          id: `vital:${spawn.vital.VitalsID}`,
           title: `${titles}<br>Level ${levels}<br>Location: x: ${spawn.point[0].toFixed(2)} y: ${spawn.point[1].toFixed(
             2,
           )}`,
@@ -148,6 +147,18 @@ export class ZoneDetailMapComponent {
       document.exitFullscreen()
     } else {
       this.elRef.nativeElement.requestFullscreen()
+    }
+  }
+
+  protected onFeatureClicked(value: string) {
+    if (!value) {
+      return
+    }
+    const [type, id] = value.split(':')
+    if (type === 'zone') {
+      this.zoneClicked.emit(id)
+    } else if (type === 'vital') {
+      this.vitalClicked.emit(id)
     }
   }
 }

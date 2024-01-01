@@ -1,5 +1,5 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -29,6 +29,12 @@ export class ZoneDetailComponent {
     this.store.patchState({ recordId: value })
   }
 
+  @Output()
+  public vitalClicked = new EventEmitter<string>()
+
+  @Output()
+  public zoneClicked = new EventEmitter<string>()
+
   public readonly recordId = selectSignal(this.store.recordId$, (it) => String(it))
   public readonly icon = toSignal(this.store.icon$)
   public readonly name = toSignal(this.store.name$)
@@ -37,5 +43,13 @@ export class ZoneDetailComponent {
 
   public markVital(vital: Vitals) {
     this.store.patchState({ markedVitalId: vital?.VitalsID || null })
+  }
+
+  protected onVitalClicked(vitalId: string) {
+    this.vitalClicked.emit(vitalId)
+  }
+
+  protected onZoneClicked(zoneId: string) {
+    this.zoneClicked.emit(zoneId)
   }
 }

@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common'
-import { Component, DestroyRef, ElementRef, Input, OnInit, ViewChild, inject } from '@angular/core'
+import { Component, DestroyRef, ElementRef, EventEmitter, Input, NgZone, OnInit, Output, ViewChild, inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { DomSanitizer } from '@angular/platform-browser'
 import { BehaviorSubject, ReplaySubject, delay, filter, fromEvent, map, switchMap } from 'rxjs'
-import { selectStream, tapDebug } from '~/utils'
+import { runInZone, runOutsideZone, selectStream, tapDebug } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 
 export type Landmark = LandmarkPoint | LandmarkZone
@@ -17,7 +17,8 @@ export interface LandmarkZone extends LandmarkData {
 }
 
 export interface LandmarkData {
-  title: string
+  id?: string
+  title?: string
   color: string
   outlineColor?: string
   radius?: number
@@ -28,6 +29,11 @@ export interface MapView {
   x: number
   y: number
   zoom: number
+}
+
+export interface MapViewBounds {
+  min: number[]
+  max: number[]
 }
 
 @Component({
@@ -69,6 +75,11 @@ export class LandMapComponent implements OnInit {
     this.view$.next(value)
   }
 
+  @Input()
+  public set bounds(value: MapViewBounds) {
+    this.bounds$.next(value)
+  }
+
   public setZoom(value: number) {
     this.postMessage({ type: 'SET_EXTERNAL_ZOOM', payload: value })
   }
@@ -85,16 +96,25 @@ export class LandMapComponent implements OnInit {
     this.postMessage({ type: 'SET_EXTERNAL_DATA', payload: data, reproject: true })
   }
 
+  public fitBounds(min: number[], max: number[]) {
+    this.postMessage({ type: 'FIT_BOUNDS', payload: [min, max] })
+  }
+
   public get isOverwolf() {
     return this.platform.isOverwolf
   }
 
+  @Output()
+  public featureClicked = new EventEmitter<string>()
+
+  private zone = inject(NgZone)
   private platform = inject(PlatformService)
   private sanitizer = inject(DomSanitizer)
   protected ready$ = new ReplaySubject<void>(1)
   protected mapId$ = new BehaviorSubject<string>(null)
   protected fit$ = new BehaviorSubject<boolean>(true)
   protected view$ = new ReplaySubject<MapView>(null)
+  protected bounds$ = new ReplaySubject<MapViewBounds>(null)
   protected landmarks$ = new ReplaySubject<Landmark[]>(1)
   protected dRef = inject(DestroyRef)
   protected iframeSrc$ = selectStream({
@@ -115,15 +135,19 @@ export class LandMapComponent implements OnInit {
 
   public constructor() {
     fromEvent<MessageEvent>(window, 'message')
+      .pipe(runOutsideZone(this.zone))
       .pipe(filter((it) => it.origin === 'https://aeternum-map.gg'))
       .pipe(map((it) => it.data))
       .pipe(filter((it) => it && it.type && it.payload))
+
       .pipe(takeUntilDestroyed())
       .subscribe(({ type, payload }) => {
         if (type === 'ready') {
           this.ready$.next()
         }
-        console.log(type, payload)
+        if (type === 'click') {
+          this.zone.run(() => this.featureClicked.emit(payload?.properties?.id))
+        }
       })
   }
 
@@ -131,49 +155,13 @@ export class LandMapComponent implements OnInit {
     this.ready$
       .pipe(
         switchMap(() => this.landmarks$),
-        map((landmarks) => {
-          if (!landmarks?.length) {
-            return []
-          }
-          return landmarks.map((data) => {
-            const result = {
-              type: 'Feature',
-              properties: {
-                'fill-color': data.color ?? '#52b874',
-                'fill-outline-color': data.outlineColor ?? '#121212',
-                'fill-opacity': data.opacity ?? 1,
-              } as Object,
-              geometry: {
-                type: 'Point',
-                coordinates: [0, 0] as any,
-              },
-            }
-            if ('point' in data) {
-              result.properties = {
-                ...result.properties,
-                'circle-radius': data.radius ?? 10,
-                'circle-stroke-width': 1,
-                title: data.title
-              }
-              result.geometry = {
-                type: 'Point',
-                coordinates: data.point,
-              }
-            }
-            if ('shape' in data) {
-              result.geometry = {
-                type: 'Polygon',
-                coordinates: [data.shape],
-              }
-            }
-            return result
-          })
-        }),
+        map(landmarkToFeature),
         takeUntilDestroyed(this.dRef),
       )
       .subscribe((data) => {
         this.setData(data)
       })
+
     this.ready$.pipe(
       switchMap(() => this.fit$),
       filter((it) => !it),
@@ -181,9 +169,58 @@ export class LandMapComponent implements OnInit {
       filter((it) => !!it),
       takeUntilDestroyed(this.dRef),
     ).subscribe(({ x, y, zoom }) => {
-      // this.setZoom(zoom)
-      // this.setCenter(x, y)
       this.setView(x, y, zoom)
     })
+
+    this.ready$.pipe(
+      switchMap(() => this.fit$),
+      filter((it) => !it),
+      switchMap(() => this.bounds$),
+      filter((it) => !!it),
+      takeUntilDestroyed(this.dRef),
+    ).subscribe(({ min, max }) => {
+      this.fitBounds(min, max)
+    })
   }
+}
+
+function landmarkToFeature(landmarks: Landmark[]) {
+  if (!landmarks?.length) {
+    return []
+  }
+  return landmarks.map((data) => {
+    const result = {
+      type: 'Feature',
+      properties: {
+        'fill-color': data.color,
+        'fill-outline-color': data.outlineColor ?? '#121212',
+        'fill-opacity': data.opacity ?? 1,
+        title: data.title,
+        id: data.id,
+        interactive: !!data.id || !!data.title,
+      } as Object,
+      geometry: {
+        type: 'Point',
+        coordinates: [0, 0] as any,
+      },
+    }
+    if ('point' in data) {
+      result.properties = {
+        ...result.properties,
+        'circle-radius': data.radius ?? 10,
+        'circle-stroke-width': 1,
+      }
+      result.geometry = {
+        type: 'Point',
+        coordinates: data.point,
+      }
+    }
+    if ('shape' in data) {
+      result.geometry = {
+        type: 'Polygon',
+        coordinates: [data.shape],
+      }
+    }
+    return result
+  })
 }

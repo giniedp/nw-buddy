@@ -2,7 +2,8 @@ import { GridOptions } from '@ag-grid-community/core'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { RouterModule } from '@angular/router'
+import { ActivatedRoute, Router, RouterModule } from '@angular/router'
+import { Vitals } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { DataGridModule, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridComponent } from '~/ui/data/virtual-grid'
@@ -41,6 +42,8 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 })
 export class ZoneDetailPageComponent {
   protected itemId = toSignal(injectRouteParam('id'))
+  private router = inject(Router)
+  private route = inject(ActivatedRoute)
 
   protected iconLink = svgSquareArrowUpRight
   protected gridUtils = inject(TableGridUtils)
@@ -53,5 +56,15 @@ export class ZoneDetailPageComponent {
       // vitalColCreatureType(util),
       // vitalColCategories(util),
     ],
+  }
+
+  protected vitalIdFn = (it: Vitals) => it?.VitalsID
+
+  protected onVitalClicked(vitalId: string) {
+
+  }
+
+  protected onZoneClicked(zoneId: string) {
+    this.router.navigate(['/zones/table', zoneId])
   }
 }
