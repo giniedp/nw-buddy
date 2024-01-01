@@ -1,17 +1,16 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { ActivatedRoute, RouterModule } from '@angular/router'
-import { TranslateService } from '~/i18n'
+import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { DataGridModule, TableGridUtils } from '~/ui/data/table-grid'
+import { VirtualGridComponent } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, injectRouteParam, observeRouteParam } from '~/utils'
+import { injectRouteParam } from '~/utils'
 import { vitalColIcon, vitalColLevel, vitalColName } from '~/widgets/data/vital-table'
 import { ZoneDetailModule } from '~/widgets/data/zone-detail'
 import { LootModule } from '~/widgets/loot'
@@ -32,11 +31,12 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     TooltipModule,
     ZoneDetailModule,
     LayoutModule,
-    DataGridModule
+    DataGridModule,
+    VirtualGridComponent,
   ],
   providers: [],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'flex-1 flex flex-col',
   },
 })
 export class ZoneDetailPageComponent {
@@ -52,27 +52,6 @@ export class ZoneDetailPageComponent {
       // vitalColFamily(util),
       // vitalColCreatureType(util),
       // vitalColCategories(util),
-    ]
+    ],
   }
-
-  public constructor(
-    private route: ActivatedRoute,
-    private dialog: Dialog,
-    private head: HtmlHeadService,
-    private i18n: TranslateService,
-  ) {
-    //
-  }
-
-  // protected onEntity(entity: ItemDefinitionMaster) {
-  //   if (!entity) {
-  //     return
-  //   }
-  //   this.head.updateMetadata({
-  //     title: this.i18n.get(entity.Name),
-  //     description: this.i18n.get(entity.Description),
-  //     url: this.head.currentUrl,
-  //     image: `${this.head.origin}/${getItemIconPath(entity)}`,
-  //   })
-  // }
 }

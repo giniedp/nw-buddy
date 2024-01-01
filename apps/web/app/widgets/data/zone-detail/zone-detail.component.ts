@@ -18,7 +18,7 @@ import { Vitals } from '@nw-data/generated'
   imports: [CommonModule, NwModule, ItemFrameModule, ZoneDetailMapComponent],
   providers: [DecimalPipe, ZoneDetailStore],
   host: {
-    class: 'block rounded-md overflow-clip',
+    class: 'flex flex-col rounded-md overflow-clip',
   },
 })
 export class ZoneDetailComponent {

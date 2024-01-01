@@ -26,6 +26,12 @@ export class ZoneDetailStore extends ComponentStore<{ recordId: string | number,
     ({ territory, area, poi }) => territory || area || poi,
   )
 
+  public readonly allZones$ = selectStream({
+    territories: this.db.territories,
+    areas: this.db.areas,
+    pois: this.db.pois,
+  }, ({ territories, areas, pois }) => [...territories, ...areas, ...pois])
+
   private readonly metaId$ = this.select(this.recordId$, (it) => (it < 10 ? `0${it}` : String(it || '')))
   public readonly metadata$ = selectStream(this.db.territoryMetadata(this.metaId$))
 
@@ -101,11 +107,21 @@ export class ZoneDetailStore extends ComponentStore<{ recordId: string | number,
     return result
   })
 
-  public vitals$ = selectStream(this.spawns$, (list) => {
-    if (!list) {
+  public vitals$ = selectStream({
+    spawn: this.spawns$,
+    categories: this.db.vitalsCategoriesMap,
+  }, ({ spawn, categories }) => {
+    if (!spawn) {
       return null
     }
-    return Object.values(groupBy(list, (it) => it.vital.VitalsID.toLowerCase())).map((it) => it[0].vital)
+    return Object.values(groupBy(spawn, (it) => it.vital.VitalsID.toLowerCase())).map((it) => {
+      const vital = it[0].vital
+      return {
+        ...vital,
+        DisplayName: categories.get(it[0].categories[0])?.DisplayName  || vital.DisplayName,
+        Level: it[0].levels[0] || vital.Level,
+      }
+    })
   })
 
   public constructor() {

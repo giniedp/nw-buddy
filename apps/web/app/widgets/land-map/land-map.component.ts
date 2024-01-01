@@ -24,6 +24,12 @@ export interface LandmarkData {
   opacity?: number
 }
 
+export interface MapView {
+  x: number
+  y: number
+  zoom: number
+}
+
 @Component({
   standalone: true,
   selector: 'nwb-land-map',
@@ -53,6 +59,16 @@ export class LandMapComponent implements OnInit {
     this.landmarks$.next(value)
   }
 
+  @Input()
+  public set fit(value: boolean) {
+    this.fit$.next(value)
+  }
+
+  @Input()
+  public set view(value: MapView) {
+    this.view$.next(value)
+  }
+
   public setZoom(value: number) {
     this.postMessage({ type: 'SET_EXTERNAL_ZOOM', payload: value })
   }
@@ -62,7 +78,7 @@ export class LandMapComponent implements OnInit {
   }
 
   public setView(x: number, y: number, zoom: number) {
-    this.postMessage({ type: 'SET_EXTERNAL_VIEW', payload: { zoom: zoom }, center: [x, y] })
+    this.postMessage({ type: 'SET_EXTERNAL_VIEW', payload: { zoom: zoom, center: [x, y] } })
   }
 
   public setData(data: any) {
@@ -77,20 +93,21 @@ export class LandMapComponent implements OnInit {
   private sanitizer = inject(DomSanitizer)
   protected ready$ = new ReplaySubject<void>(1)
   protected mapId$ = new BehaviorSubject<string>(null)
+  protected fit$ = new BehaviorSubject<boolean>(true)
+  protected view$ = new ReplaySubject<MapView>(null)
   protected landmarks$ = new ReplaySubject<Landmark[]>(1)
   protected dRef = inject(DestroyRef)
-  protected iframeSrc$ = selectStream(
-    this.mapId$.pipe(
-      map((it) => {
-        if (this.isOverwolf) {
-          return ''
-        }
-        it = encodeURIComponent(it || 'newworld_vitaeeterna')
-        const url = `https://aeternum-map.gg/external.html?map=${it}&embed=true&ref=nwbuddy&fit=true`
-        return this.sanitizer.bypassSecurityTrustResourceUrl(url)
-      }),
-    ),
-  )
+  protected iframeSrc$ = selectStream({
+    fit: this.fit$,
+    mapId: this.mapId$,
+  }, ({ fit, mapId }) => {
+    if (this.isOverwolf) {
+      return ''
+    }
+    mapId = encodeURIComponent(mapId || 'newworld_vitaeeterna')
+    const url = `https://aeternum-map.gg/external.html?map=${mapId}&embed=true&ref=nwbuddy&fit=${fit ? 'true' : 'false'}`
+    return this.sanitizer.bypassSecurityTrustResourceUrl(url)
+  })
 
   private postMessage(message: any) {
     this.iframe.nativeElement.contentWindow.postMessage(message, '*')
@@ -102,10 +119,11 @@ export class LandMapComponent implements OnInit {
       .pipe(map((it) => it.data))
       .pipe(filter((it) => it && it.type && it.payload))
       .pipe(takeUntilDestroyed())
-      .subscribe(({ type }) => {
+      .subscribe(({ type, payload }) => {
         if (type === 'ready') {
           this.ready$.next()
         }
+        console.log(type, payload)
       })
   }
 
@@ -113,7 +131,6 @@ export class LandMapComponent implements OnInit {
     this.ready$
       .pipe(
         switchMap(() => this.landmarks$),
-        delay(1000),
         map((landmarks) => {
           if (!landmarks?.length) {
             return []
@@ -157,5 +174,16 @@ export class LandMapComponent implements OnInit {
       .subscribe((data) => {
         this.setData(data)
       })
+    this.ready$.pipe(
+      switchMap(() => this.fit$),
+      filter((it) => !it),
+      switchMap(() => this.view$),
+      filter((it) => !!it),
+      takeUntilDestroyed(this.dRef),
+    ).subscribe(({ x, y, zoom }) => {
+      // this.setZoom(zoom)
+      // this.setCenter(x, y)
+      this.setView(x, y, zoom)
+    })
   }
 }
