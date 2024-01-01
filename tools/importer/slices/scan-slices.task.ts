@@ -1,8 +1,8 @@
 import { readJSONFile } from '../../utils'
 import { scanForSpawners } from './scan-for-spawners'
-import { TerritoryScanRow, scanForZones } from './scan-for-zones'
 import { VariationScanRow, scanForVariantDistributions } from './scan-for-variants'
 import { VitalScanRow, scanForVitals } from './scan-for-vitals'
+import { TerritoryScanRow, scanForZones } from './scan-for-zones'
 import { Capital } from './types/capitals'
 import { isRegionMetadataAsset } from './types/metadata'
 
@@ -98,6 +98,9 @@ export async function scanSlices({
               if ('vitalsID' in data && data.vitalsID) {
                 for (let position of data.positions) {
                   position = [...position]
+                  if (capital.rotation) {
+                    position = rotatePointWithQuat(capital.rotation, position)
+                  }
                   if (capital.worldPosition) {
                     position[0] += capital.worldPosition.x
                     position[1] += capital.worldPosition.y
@@ -187,4 +190,34 @@ export async function scanSlices({
     }
   }
   return {}
+}
+
+function rotatePointWithQuat(quat: { x: number; y: number; z: number; w?: number }, point: number[]): number[] {
+  if (quat?.w == null) {
+    return point
+  }
+  const {x, y, z, w} = quat
+  const [vx, vy, vz] = point
+
+  const x2 = x + x
+  const y2 = y + y
+  const z2 = z + z
+
+  const wx2 = w * x2
+  const wy2 = w * y2
+  const wz2 = w * z2
+
+  const xx2 = x * x2
+  const xy2 = x * y2
+  const xz2 = x * z2
+
+  const yy2 = y * y2
+  const yz2 = y * z2
+  const zz2 = z * z2
+
+  const rx = vx * (1 - yy2 - zz2) + vy * (xy2 - wz2) + vz * (xz2 + wy2)
+  const ry = vx * (xy2 + wz2) + vy * (1 - xx2 - zz2) + vz * (yz2 - wx2)
+  const rz = vx * (xz2 - wy2) + vy * (yz2 + wx2) + vz * (1 - xx2 - yy2)
+
+  return [rx, ry, rz]
 }

@@ -94,13 +94,6 @@ export async function scanForSpawners(rootDir: string, file: string): Promise<Sp
         continue
       }
 
-      // if (encounter.positions.length) {
-      //   console.log('encounter', encounter.sliceFile, {
-      //     pos: encounter.positions,
-      //     aPos: areaSpawn.positions,
-      //   })
-      // }
-
       const gatherable = await scanForGatherable(component, rootDir)
       if (gatherable) {
         result.push({
@@ -148,7 +141,7 @@ export async function scanForSpawners(rootDir: string, file: string): Promise<Sp
     }
   }
 
-  const prefabSpawn = await scanForPrefabSpawner(sliceComponent, rootDir)
+  const prefabSpawn = await scanForPrefabSpawner(sliceComponent, rootDir, file)
   for (const item of prefabSpawn || []) {
     const component = await readDynamicSliceFile(item.sliceFile)
     if (!component) {
@@ -301,18 +294,15 @@ async function scanForEncounterSpawner(sliceComponent: SliceComponent, rootDir: 
   return result
 }
 
-async function scanForPrefabSpawner(sliceComponent: SliceComponent, rootDir: string) {
+async function scanForPrefabSpawner(sliceComponent: SliceComponent, rootDir: string, currentFile: string) {
   const result: Array<{ sliceFile: string; position: number[] }> = []
   for (const entity of sliceComponent.entities || []) {
     let sliceFile: string
     let position: number[]
     for (const component of entity.components || []) {
       if (isPrefabSpawnerComponent(component)) {
-        if (component.m_sliceasset?.hint) {
-          sliceFile = await resolveDynamicSliceFile(rootDir, component.m_sliceasset.hint)
-        } else if (component.m_aliasasset?.hint) {
-          sliceFile = await resolveDynamicSliceFile(rootDir, component.m_aliasasset.hint)
-        }
+        sliceFile = sliceFile || (await resolveDynamicSliceFile(rootDir, component.m_sliceasset?.hint))
+        sliceFile = sliceFile || (await resolveDynamicSliceFile(rootDir, component.m_aliasasset?.hint))
       }
       if (isGameTransformComponent(component)) {
         const translation = component.m_worldtm?.__value?.['translation'] as number[]
