@@ -15,7 +15,7 @@ import { readAndExtractCrcValues } from './create-crc-file'
 import { VariationScanRow } from './scan-for-variants'
 import { VitalScanRow } from './scan-for-vitals'
 import { TerritoryScanRow } from './scan-for-zones'
-import { GatherableScanRow, LoreScanRow } from './scan-slices.task'
+import { GatherableScanRow, LoreScanRow } from './scanner.task'
 import { WORKER_TASKS } from './worker.tasks'
 
 interface VitalMetadata {
@@ -26,6 +26,7 @@ interface VitalMetadata {
   levels: number[]
   spawns: Array<{
     level: number
+    territoryLevel: boolean
     mapId: string
     category: string
     position: number[]
@@ -111,6 +112,7 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
     `${inputDir}/**/*.dynamicslice.json`,
     `!${inputDir}/lyshineui/**/*`,
     `${inputDir}/sharedassets/coatlicue/**/regions/**/*.metadata.json`,
+    // `${inputDir}/sharedassets/coatlicue/**/regions/**/*.slicedata.json`,
   ])
 
   await withProgressPool({
@@ -200,12 +202,15 @@ function collectVitalsRows(rows: VitalScanRow[], data: Record<string, VitalMetad
       arrayAppend(bucket.catIDs, row.categoryID.toLowerCase())
     }
     if (row.position) {
+
       bucket.spawns.push({
         level: row.level,
+        territoryLevel: row.territoryLevel,
         position: [Number(row.position[0].toFixed(3)), Number(row.position[1].toFixed(3))],
         mapId: row.mapID?.toLowerCase(),
         category: row.categoryID?.toLowerCase(),
         damagetable: damagetable,
+
       })
     }
   }
@@ -308,7 +313,7 @@ function toSortedVitals(data: Record<string, VitalMetadata>) {
           string,
           Array<{
             p: number[]
-            l: number[]
+            l: Array<number | string>[]
             c: string[]
           }>
         >,
@@ -316,9 +321,17 @@ function toSortedVitals(data: Record<string, VitalMetadata>) {
       spawns.sort((a, b) => compareStrings(a.mapId, b.mapId))
       for (const spawn of spawns) {
         const mapId = spawn.mapId || '_'
+        const levels = []
+        if (spawn.level) {
+          levels.push(spawn.level)
+        }
+        // TODO: use territory level override
+        // if (spawn.territoryLevel) {
+        //   levels.push('t')
+        // }
         result.lvlSpanws[mapId] = result.lvlSpanws[mapId] || []
         result.lvlSpanws[mapId].push({
-          l: spawn.level ? [spawn.level] : [],
+          l: levels,
           c: spawn.category ? [spawn.category] : [],
           p: spawn.position,
         })

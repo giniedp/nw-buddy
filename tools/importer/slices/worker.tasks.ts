@@ -1,4 +1,4 @@
-import { scanSlices } from './scan-slices.task'
+import { scanSlices } from './scanner.task'
 export const WORKER_TASKS = {
   scanSlices
 } as const

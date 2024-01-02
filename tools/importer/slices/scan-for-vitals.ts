@@ -17,11 +17,13 @@ export interface VitalScanRow {
   vitalsID: string
   categoryID: string
   level: number
+  territoryLevel?: boolean
   damageTable: string
   modelFile: string
   position?: number[]
   mapID?: string
 }
+
 export async function scanForVitals(inputDir: string, sliceFile: string): Promise<VitalScanRow[]> {
   sliceFile = await resolveDynamicSliceFile(inputDir, sliceFile)
   const result: VitalScanRow[] = []
@@ -58,6 +60,7 @@ export async function scanForVitals(inputDir: string, sliceFile: string): Promis
       vitalsID: item.vitalsID,
       categoryID: item.categoryID,
       level: item.level,
+      territoryLevel: item.territoryLevel,
       damageTable: table?.damageTable,
       modelFile: table?.modelSlice,
     })
@@ -88,6 +91,7 @@ interface VariantSpawner {
   categoryID: string
   level: number
   slice: string
+  territoryLevel?: boolean
 }
 
 async function scanForAIVariantSpawn(sliceComponent: SliceComponent, rootDir: string, currentFile: string) {
@@ -98,12 +102,14 @@ async function scanForAIVariantSpawn(sliceComponent: SliceComponent, rootDir: st
       let categoryID: string = null
       let level: number = null
       let slice: string = null
+      let territoryLevel: boolean = false
       for (const component of entity.components || []) {
         if (isAIVariantProviderComponent(component)) {
           if (isAIVariantProviderComponentServerFacet(component.baseclass1?.m_serverfacetptr)) {
             vitalsID = vitalsID || component.baseclass1.m_serverfacetptr.m_vitalstablerowid
             categoryID = categoryID || component.baseclass1.m_serverfacetptr.m_vitalscategorytablerowid
             level = level || component.baseclass1.m_serverfacetptr.m_vitalslevel
+            territoryLevel = territoryLevel || component.baseclass1.m_serverfacetptr.m_useterritoryleveloverride
           }
         }
         if (isPointSpawnerComponent(component)) {
@@ -119,6 +125,7 @@ async function scanForAIVariantSpawn(sliceComponent: SliceComponent, rootDir: st
         categoryID,
         level,
         slice,
+        territoryLevel
       })
     }
     return result

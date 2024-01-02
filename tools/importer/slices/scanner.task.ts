@@ -5,6 +5,7 @@ import { VitalScanRow, scanForVitals } from './scan-for-vitals'
 import { TerritoryScanRow, scanForZones } from './scan-for-zones'
 import { Capital } from './types/capitals'
 import { isRegionMetadataAsset } from './types/metadata'
+import { isRegionSliceDataLookup } from './types/slicedata'
 
 function loadCrcFile(file: string) {
   const result = require(file)
@@ -105,6 +106,7 @@ export async function scanSlices({
                     level: data.level,
                     damageTable: data.damageTable,
                     modelFile: data.modelFile,
+                    territoryLevel: data.territoryLevel,
                     position: [position[0], position[1], position[2]],
                   })
                 }
@@ -180,6 +182,7 @@ export async function scanSlices({
       variations: variationsRows,
     }
   }
+
   return {}
 }
 
