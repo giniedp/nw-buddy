@@ -17,6 +17,12 @@ module.exports = {
       '6xl': '3000px',
     },
     extend: {
+      flex: {
+        '2': '2 2 0%',
+        '3': '3 3 0%',
+        '4': '4 4 0%',
+        '5': '5 5 0%',
+      },
       animation: {
         'spin-cw': 'spin-cw 100s linear infinite',
         'spin-ccw': 'spin-ccw 100s linear infinite',

@@ -97,6 +97,12 @@ export class LandMapComponent implements OnInit {
   }
 
   public fitBounds(min: number[], max: number[]) {
+    if (!min || !max) {
+      return
+    }
+    // swap x/y
+    min = [min[1], min[0]]
+    max = [max[1], max[0]]
     this.postMessage({ type: 'FIT_BOUNDS', payload: [min, max] })
   }
 

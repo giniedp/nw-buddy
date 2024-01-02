@@ -70,7 +70,7 @@ export class ZoneDetailMapComponent {
         }
         const min = meta.zones[0].min
         const max = meta.zones[0].max
-        return { min: [min[1], min[0]], max: [max[1], max[0]] }
+        return { min: min, max: max }
       },
       { equal: isEqual as ValueEqualityFn<MapViewBounds> },
     ),
@@ -111,19 +111,27 @@ export class ZoneDetailMapComponent {
       }
 
       for (const spawn of spawns || []) {
-        const titles = uniq(
-          [...spawn.categories.map((it) => categories.get(it)?.DisplayName), spawn.vital.DisplayName]
-            .filter((it) => !!it)
-            .map((it) => this.tl8.get(it)),
-        ).join('<br>')
+        let title = ''
+        if (spawn.categories.length) {
+          title = categories.get(spawn.categories[0])?.DisplayName
+        }
+        if (!title) {
+          title = spawn.vital.DisplayName
+        }
+        title = this.tl8.get(title)
+
         const levels = spawn.levels.length ? spawn.levels : [spawn.vital.Level]
         const hasMark = !!vitalId
         const isMarked = eqCaseInsensitive(vitalId, spawn.vital.VitalsID)
         result.push({
           id: `vital:${spawn.vital.VitalsID}`,
-          title: `${titles}<br>Level ${levels}<br>Location: x: ${spawn.point[0].toFixed(2)} y: ${spawn.point[1].toFixed(
-            2,
-          )}`,
+          title: `
+            <div style="text-align: left;">
+              <strong>${title}</strong><br>
+              Level ${levels.join(', ')}<br>
+              x: ${spawn.point[0].toFixed(2)} y: ${spawn.point[1].toFixed(2)}
+            </div>
+          `,
           color: toColor(spawn.vital.VitalsID),
           outlineColor: hasMark && isMarked ? '#FFFFFF' : '#000000',
           opacity: isMarked || !hasMark ? 1 : 0.75,

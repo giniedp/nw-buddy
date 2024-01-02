@@ -7,7 +7,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgCompress, svgExpand } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { selectSignal } from '~/utils'
-import { LandMapComponent, Landmark, LandmarkPoint } from '~/widgets/land-map'
+import { LandMapComponent, Landmark, LandmarkPoint, MapViewBounds } from '~/widgets/land-map'
 import { VitalDetailStore } from './vital-detail.store'
 
 @Component({
@@ -62,6 +62,15 @@ export class VitalDetailMapComponent {
       return data[mapId]
     },
   )
+  public readonly bounds = selectSignal(
+    {
+      mapId: this.mapId,
+      meta: this.store.metadata$,
+    },
+    ({ mapId, meta }) => {
+      return selectBounds(meta)[mapId]
+    },
+  )
 
   public hasMap = selectSignal(this.mapIds, (it) => !!it?.length)
 
@@ -76,6 +85,34 @@ export class VitalDetailMapComponent {
       this.elRef.nativeElement.requestFullscreen()
     }
   }
+}
+
+function selectBounds(meta: VitalsMetadata) {
+  const result: Record<string, MapViewBounds> = {}
+  if (!meta) {
+    return result
+  }
+  for (const mapId of meta?.mapIDs || []) {
+    for (const spawn of meta.lvlSpanws[mapId as keyof LvlSpanws] || []) {
+      if (!result[mapId]) {
+        result[mapId] = {
+          min: [...spawn.p],
+          max: [...spawn.p],
+        }
+      }
+      for (let i = 0; i < 2; i++) {
+        result[mapId].min[i] = Math.min(result[mapId].min[i], spawn.p[i])
+        result[mapId].max[i] = Math.max(result[mapId].max[i], spawn.p[i])
+      }
+    }
+    if(result[mapId]) {
+      result[mapId].min[0] -= 30
+      result[mapId].min[1] -= 30
+      result[mapId].max[0] += 30
+      result[mapId].max[1] += 30
+    }
+  }
+  return result
 }
 
 function selectData(

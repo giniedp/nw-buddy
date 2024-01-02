@@ -80,32 +80,24 @@ export async function scanSlices({
           .then((data) => data || [{ positions: [] }])
           .then((res) => {
             for (const data of res) {
-              if ('variantID' in data && data.variantID) {
-                for (let position of data.positions) {
-                  position = [...position]
-                  if (capital.worldPosition) {
-                    position[0] += capital.worldPosition.x
-                    position[1] += capital.worldPosition.y
-                    position[2] += capital.worldPosition.z
-                  }
+              for (let position of data.positions) {
+                position = [...position]
+                if (capital.rotation) {
+                  position = rotatePointWithQuat(capital.rotation, position)
+                }
+                if (capital.worldPosition) {
+                  position[0] += capital.worldPosition.x
+                  position[1] += capital.worldPosition.y
+                  position[2] += capital.worldPosition.z
+                }
+                if ('variantID' in data && data.variantID) {
                   variationsRows.push({
                     mapID: mapId,
                     variantID: data.variantID,
                     position: [position[0], position[1], position[2]],
                   })
                 }
-              }
-              if ('vitalsID' in data && data.vitalsID) {
-                for (let position of data.positions) {
-                  position = [...position]
-                  if (capital.rotation) {
-                    position = rotatePointWithQuat(capital.rotation, position)
-                  }
-                  if (capital.worldPosition) {
-                    position[0] += capital.worldPosition.x
-                    position[1] += capital.worldPosition.y
-                    position[2] += capital.worldPosition.z
-                  }
+                if ('vitalsID' in data && data.vitalsID) {
                   vitalsRows.push({
                     mapID: mapId,
                     vitalsID: data.vitalsID,
@@ -116,15 +108,14 @@ export async function scanSlices({
                     position: [position[0], position[1], position[2]],
                   })
                 }
-              }
-              if ('loreID' in data && data.loreID) {
-                loreRows.push({
-                  mapID: mapId,
-                  loreID: data.loreID,
-                  position: capital.worldPosition
-                    ? [capital.worldPosition.x, capital.worldPosition.y, capital.worldPosition.z]
-                    : null,
-                })
+                if ('loreID' in data && data.loreID) {
+                  loreRows.push({
+                    mapID: mapId,
+                    loreID: data.loreID,
+                    position: [position[0], position[1], position[2]],
+                  })
+                }
+
               }
             }
           })

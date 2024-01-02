@@ -4,15 +4,15 @@ import { readJSONFile, replaceExtname } from '../../../tools/utils'
 import { isAliasAsset } from './types/aliasasset'
 import { SliceComponent, isAZ__Entity, isSliceComponent } from './types/dynamicslice'
 
-const cache = new Map<string, Promise<any>>()
+const cache: Record<string, Promise<any>> = {}
 
 export async function cached<T>(key: string, task: (key: string) => Promise<T>): Promise<T> {
-  if (!cache.has(key)) {
-    cache.set(key, task(key))
+  if (!cache[key]) {
+    cache[key] = task(key)
   } else {
     // console.log('cache hit', key)
   }
-  return cache.get(key)
+  return cache[key]
 }
 
 export async function readDynamicSliceFile(file: string) {
