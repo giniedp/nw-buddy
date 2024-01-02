@@ -31,6 +31,7 @@ export class VitalDetailHeaderComponent {
   protected maxLevel = NW_MAX_ENEMY_LEVEL
   protected id = toSignal(this.store.vitalId$)
   protected name = toSignal(this.store.vital$.pipe(mapProp('DisplayName')))
+  protected aliasNames = toSignal(this.store.aliasNames$)
   protected health = toSignal(this.store.health$)
   protected level = toSignal(this.store.level$)
   protected typeMarker = toSignal(this.store.vital$.pipe(map(getVitalTypeMarker)))

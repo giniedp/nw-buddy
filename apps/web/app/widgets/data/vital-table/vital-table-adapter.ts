@@ -82,10 +82,11 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord>, Tab
           return vitals.map((vital): VitalTableRecord => {
             const familyInfo = getVitalFamilyInfo(vital)
             const combatInfo = getVitalCategoryInfo(vital)
+            const metadata = vitalsMeta.get(vital.VitalsID)
             return {
               ...vital,
               $dungeons: getVitalDungeons(vital, dungeons, vitalsMeta),
-              $categories: getVitalsCategories(vital, categories),
+              $categories: metadata?.catIDs?.map((it) => categories.get(it)),
               $familyInfo: getVitalFamilyInfo(vital),
               $combatInfo: familyInfo.ID !== combatInfo.ID ? combatInfo : null,
               $metadata: vitalsMeta.get(vital.VitalsID),

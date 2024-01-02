@@ -34,11 +34,11 @@
       <td class="py-0 px-1">Damage Mitigation - Elemental</td>
     </tr>
   }
-  @if (effectiveness(); as rows) {
+  @if (effectiveness()?.length) {
     <tr>
       <td class="py-1 px-0 text-nw-description" colspan="2">Weakness</td>
     </tr>
-    @for (row of rows; track $index) {
+    @for (row of effectiveness(); track $index) {
       <tr>
         <td class="text-right font-bold text-white py-0 px-1">
           {{ row.value | percent }}
@@ -48,6 +48,18 @@
             <img [nwImage]="row.icon" class="w-5 h-5" />
             <span>{{ row.name }}</span>
           </div>
+        </td>
+      </tr>
+    }
+  }
+  @if (aliasNames()?.length) {
+    <tr>
+      <td class="py-1 px-0 text-nw-description" colspan="2">Alias Names</td>
+    </tr>
+    @for (row of aliasNames(); track $index) {
+      <tr>
+        <td class="font-bold text-white py-0 px-1" colspan="2">
+          {{ row | nwText}}
         </td>
       </tr>
     }

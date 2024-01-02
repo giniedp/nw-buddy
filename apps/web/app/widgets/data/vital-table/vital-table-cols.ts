@@ -8,6 +8,7 @@ import {
   isVitalCombatCategory,
 } from '@nw-data/common'
 import { Gamemodes, Vitals, VitalsCategory, Vitalscategories, VitalsMetadata } from '@nw-data/generated'
+import { uniqBy } from 'lodash'
 import { RangeFilter, SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize } from '~/utils'
@@ -66,21 +67,20 @@ export function vitalColName(util: VitalTableUtils) {
     headerValueGetter: () => 'Name',
     width: 200,
     valueGetter: ({ data }) => {
-      const name = util.i18n.get(data.DisplayName)
-      const alias = util.i18n.get(getVitalAliasName(data.$categories || []))
-      if (alias && name !== alias) {
-        return [name, alias]
+      const names = [util.i18n.get(data.DisplayName)]
+      for (const cat of data.$categories || []) {
+        names.push(util.i18n.get(cat.DisplayName))
       }
-      return [name]
+      return uniqBy(names, (it) => it.toLowerCase())
     },
     cellRenderer: util.cellRenderer(({ value }) => {
-      const [name, alias] = value
-      if (!alias) {
+      const [name, ...alias] = (value as string[])
+      if (!alias.length) {
         return name
       }
       return `
-        <span>${alias}</span><br>
-        <span class="italic opacity-50">${name}</span>
+        <span>${name}</span><br>
+        <span class="italic">${alias}</span>
       `
     }),
     getQuickFilterText: ({ value }) => value.join(' '),
