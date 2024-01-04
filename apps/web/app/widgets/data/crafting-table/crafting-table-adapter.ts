@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, Signal, inject } from '@angular/core'
-import { getIngretientsFromRecipe, getItemIdFromRecipe, getTradeSkillLabel } from '@nw-data/common'
+import { getCraftingIngredients, getItemIdFromRecipe, getTradeSkillLabel } from '@nw-data/common'
 import { COLS_ABILITY, COLS_CRAFTING } from '@nw-data/generated'
 import { Observable, combineLatest, map } from 'rxjs'
 import { NwDbService } from '~/nw'
@@ -18,6 +18,7 @@ import {
   craftingColCategory,
   craftingColCooldownCeconds,
   craftingColCooldownQuantity,
+  craftingColCraftingXP,
   craftingColExpansion,
   craftingColGroup,
   craftingColID,
@@ -77,15 +78,17 @@ export class CraftingTableAdapter
       items: this.db.itemsMap,
       housing: this.db.housingItemsMap,
       recipes: this.db.recipes,
+      events: this.db.gameEventsMap,
     }).pipe(
-      map(({ items, housing, recipes }) => {
+      map(({ items, housing, recipes, events }) => {
         recipes = recipes.filter((it) => !!it.Tradeskill)
         return recipes.map<CraftingTableRecord>((it) => {
           const itemId = getItemIdFromRecipe(it)
           return {
             ...it,
+            $gameEvent: events.get(it.GameEventID),
             $item: items.get(itemId) || housing.get(itemId),
-            $ingredients: getIngretientsFromRecipe(it)
+            $ingredients: getCraftingIngredients(it)
               .map((ing) => items.get(ing.ingredient) || housing.get(ing.ingredient))
               .filter((it) => !!it),
           }
@@ -106,6 +109,7 @@ function buildOptions(util: TableGridUtils<CraftingTableRecord>, skills: Signal<
       craftingColInStock(util),
       craftingColPrice(util),
       craftingColTradeskill(util),
+      craftingColCraftingXP(util),
       craftingColCategory(util),
       craftingColGroup(util),
       craftingColRecipeLevel(util),

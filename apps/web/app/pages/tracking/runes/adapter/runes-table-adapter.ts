@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { getIngretientsFromRecipe, getItemId, getItemIdFromRecipe } from '@nw-data/common'
+import { getCraftingIngredients, getItemId, getItemIdFromRecipe } from '@nw-data/common'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { NwDbService } from '~/nw'
@@ -84,7 +84,7 @@ function selectSchematics({
         recipe,
         itemId: itemId,
         item: items.get(itemId) || housing.get(itemId),
-        ingredients: getIngretientsFromRecipe(recipe).map((it) => {
+        ingredients: getCraftingIngredients(recipe).map((it) => {
           const item = items.get(it.ingredient) || housing.get(it.ingredient)
           return {
             quantity: it.quantity,

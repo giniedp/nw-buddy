@@ -1,6 +1,6 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { getIngretientsFromRecipe, getItemIdFromRecipe, getItemTierAsRoman } from '@nw-data/common'
+import { getCraftingIngredients, getItemIdFromRecipe, getItemTierAsRoman } from '@nw-data/common'
 import { Crafting, ItemDefinitionMaster } from '@nw-data/generated'
 import { NwDbService } from '~/nw'
 import { TableGridAdapter } from '~/ui/data/table-grid'
@@ -75,7 +75,7 @@ function selectRecords({ items, recipes }: { items: Map<string, ItemDefinitionMa
         itemId: itemId,
         recipeItem: recipeItem,
         recipe: recipe,
-        ingredients: getIngretientsFromRecipe(recipe).map((it) => {
+        ingredients: getCraftingIngredients(recipe).map((it) => {
           return {
             quantity: it.quantity,
             item: items.get(it.ingredient),

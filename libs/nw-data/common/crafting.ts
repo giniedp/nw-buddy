@@ -78,14 +78,20 @@ const CRAFTING_CATEGORY_GRANTING_BONUS = [
 
 ]
 
-export function sumIngredientQuantities(recipe: CraftingIngredients) {
-  return Object.keys(recipe)
-    .filter((it) => it.match(/^Qty\d+$/))
-    .map((key) => recipe[key] || 0)
-    .reduce((a, b) => a + b, 0)
+export function sumCraftingIngredientQuantities(recipe: CraftingIngredients) {
+  if (!recipe) {
+    return 0
+  }
+  let sum = 0
+  for (const key in recipe) {
+    if (key.match(/^Qty\d+$/)) {
+      sum += (recipe[key] || 0)
+    }
+  }
+  return sum
 }
 
-export function getIngretientsFromRecipe(recipe: CraftingIngredients) {
+export function getCraftingIngredients(recipe: CraftingIngredients) {
   return Object.keys(recipe || {})
     .filter((it) => it.match(/^Ingredient\d+$/))
     .map((_, i) => {
@@ -97,8 +103,11 @@ export function getIngretientsFromRecipe(recipe: CraftingIngredients) {
     })
 }
 
-export function calculateCraftingReward(recipe: CraftingIngredients, event: GameEvent) {
-  return sumIngredientQuantities(recipe) * (event.CategoricalProgressionReward || 0)
+export function getCraftingXP(recipe: CraftingIngredients, event: GameEvent) {
+  if (!event?.CategoricalProgressionReward || !recipe) {
+    return 0
+  }
+  return sumCraftingIngredientQuantities(recipe) * (event.CategoricalProgressionReward || 0)
 }
 
 export function calculateBonusItemChance({

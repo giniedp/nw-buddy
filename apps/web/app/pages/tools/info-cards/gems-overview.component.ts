@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { combineLatest, defer, map } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
-import { getIngretientsFromRecipe, getItemIdFromRecipe } from '@nw-data/common'
+import { getCraftingIngredients, getItemIdFromRecipe } from '@nw-data/common'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PaginationModule } from '~/ui/pagination'
 import { ContentVisibilityDirective, HtmlHeadService } from '~/utils'
@@ -75,7 +75,7 @@ export class GemsOverviewComponent {
             ...recipe,
             $itemId: itemId,
             $item: items.get(itemId) || housing.get(itemId),
-            $ingredients: getIngretientsFromRecipe(recipe).map((it) => {
+            $ingredients: getCraftingIngredients(recipe).map((it) => {
               const ingId = it.type === 'Category_Only' ? 'SolventT5' : it.ingredient
               return {
                 quantity: it.quantity,

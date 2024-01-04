@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import {
   calculateBonusItemChance,
-  getIngretientsFromRecipe,
+  getCraftingIngredients,
   getItemIdFromRecipe,
   getRecipeForItem,
 } from '@nw-data/common'
@@ -157,7 +157,7 @@ export class CraftingCalculatorService {
         return {
           itemId,
           recipeId: recipe?.RecipeID,
-          ingredients: getIngretientsFromRecipe(recipe).map((it) => ({
+          ingredients: getCraftingIngredients(recipe).map((it) => ({
             id: it.ingredient,
             type: (it.type as any) || 'Item', // TODO: data needs to be checked for consistency
             quantity: it.quantity,
@@ -172,7 +172,7 @@ export class CraftingCalculatorService {
       map((recipe) => {
         return {
           recipeId: recipeId,
-          ingredients: getIngretientsFromRecipe(recipe).map(
+          ingredients: getCraftingIngredients(recipe).map(
             (it): Ingredient => ({
               id: it.ingredient,
               type: (it.type as any) || 'Item', // TODO: data needs to be checked for consistency

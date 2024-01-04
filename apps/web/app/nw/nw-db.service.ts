@@ -6,7 +6,7 @@ import {
   convertLoottables,
   convertPerkBuckets,
   convertPvoStore,
-  getIngretientsFromRecipe,
+  getCraftingIngredients,
   getItemIdFromRecipe,
   getItemSetFamilyName,
   getQuestRequiredAchuevmentIds,
@@ -405,7 +405,7 @@ export class NwDbService {
   public recipesMapByIngredients = indexGroupSetBy(
     () => this.recipes,
     (it) =>
-      getIngretientsFromRecipe(it)
+      getCraftingIngredients(it)
         .map((it) => it.ingredient)
         .filter((it) => !!it),
   )

@@ -8,7 +8,7 @@ import {
   ValueGetterFunc,
   ValueGetterParams,
 } from '@ag-grid-community/core'
-import { DOCUMENT } from '@angular/common'
+import { DOCUMENT, DecimalPipe } from '@angular/common'
 import { Injectable, NgZone, SecurityContext, Type, inject } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { TranslateService } from '~/i18n'
@@ -21,7 +21,6 @@ import { getIconFrameClass } from '../../item-frame'
 import { colDefPrecision } from './utils'
 import { Router } from '@angular/router'
 import { ItemRarity } from '@nw-data/common'
-import { NwTradeskillService } from '~/nw/tradeskill'
 
 @Injectable({ providedIn: 'root' })
 export class TableGridUtils<T = any> {

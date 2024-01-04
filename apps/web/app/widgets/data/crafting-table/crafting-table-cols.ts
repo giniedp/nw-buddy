@@ -3,6 +3,7 @@ import {
   NW_FALLBACK_ICON,
   getCraftingCategoryLabel,
   getCraftingGroupLabel,
+  getCraftingXP,
   getItemExpansion,
   getItemIconPath,
   getItemId,
@@ -12,7 +13,7 @@ import {
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { Crafting, GameEvent, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
 import { RangeFilter, SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
@@ -23,6 +24,7 @@ export type CraftingTableUtils = TableGridUtils<CraftingTableRecord>
 export type CraftingTableRecord = Crafting & {
   $item: ItemDefinitionMaster | Housingitems
   $ingredients: Array<ItemDefinitionMaster | Housingitems>
+  $gameEvent: GameEvent
 }
 
 export function craftingColIcon(util: CraftingTableUtils) {
@@ -225,6 +227,16 @@ export function craftingColTradeskill(util: CraftingTableUtils) {
     valueFormatter: ({ value }) => util.i18n.get(getTradeSkillLabel(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getTradeSkillLabel(value)),
     filter: SelectFilter,
+  })
+}
+
+export function craftingColCraftingXP(util: CraftingTableUtils) {
+  return util.colDef<number>({
+    colId: 'craftingXP',
+    headerValueGetter: () => 'Crafting XP',
+    width: 120,
+    valueGetter: ({ data }) => getCraftingXP(data, data.$gameEvent),
+    filter: 'agNumberColumnFilter',
   })
 }
 
