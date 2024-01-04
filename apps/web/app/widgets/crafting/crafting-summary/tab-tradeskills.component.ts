@@ -58,7 +58,6 @@ export class TabTradeskillsComponent extends ComponentStore<{
       item: this.service.fetchItem(row.itemId),
     }).pipe(
       map(({ recipe, event, item }) => {
-        console.log({recipe, event, item})
         return {
           item: item,
           recipe: recipe,
@@ -96,7 +95,6 @@ function aggregate(step: CraftingStepWithAmount): SummaryRow[] {
 function aggregateSkills(
   rows: Array<{ recipe: Crafting; item: ItemDefinitionMaster | Housingitems; xp: number; count: number }>
 ) {
-  console.log(rows)
   const result = new Map<string, SkillRow>()
 
   const groups = groupBy(rows, (it) => it.recipe?.Tradeskill)
