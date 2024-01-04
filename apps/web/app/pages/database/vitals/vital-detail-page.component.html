@@ -2,7 +2,11 @@
   class="hidden lg:block lg:w-[400px] 3xl:w-[500px] 4xl:w-[600px] h-full"
   [breakpoints]="[0.25, 0.5, 1]"
 >
-  <div *nwbDetailDrawerContent class="layout-content layout-gap bg-base-200 layout-pad" style="scrollbar-gutter: stable;">
+  <div
+    *nwbDetailDrawerContent
+    class="layout-content layout-gap bg-base-200 layout-pad"
+    style="scrollbar-gutter: stable"
+  >
     <div
       class="border border-base-100 rounded-md overflow-clip relative"
       [nwbScreenshotFrame]="vital()?.DisplayName | nwText"
@@ -55,33 +59,8 @@
       <div class="p-4">
         @if (tab() === 'stats') {
           <nwb-vital-detail-stats />
-          <nwb-vital-detail-map class="mt-4" />
-          @if(lootTableId(); as tableId) {
-            <div class="alert shadow-lg my-2 bg-base-100 mt-4">
-              <div>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  class="stroke-error flex-shrink-0 w-6 h-6"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  ></path>
-                </svg>
-                <div>
-                  <h3 class="font-bold">Manual input required</h3>
-                  <div class="text-xs">
-                    Buddy does not know which creatures spawn in which zone (yet). Adjust the loot context below, to feed
-                    the loot table resolver with POI and other loot tags.
-                  </div>
-                </div>
-              </div>
-            </div>
-
+          <nwb-vital-detail-map class="mt-4" (pointClicked)="onPointClicked($event)"/>
+          @if (lootTableId(); as tableId) {
             <nwb-loot-context-editor [size]="'sm'" [vitalId]="vitalId()" #editor class="p-1 mb-2" />
             <nwb-loot-graph
               [tags]="editor.contextTags | async"

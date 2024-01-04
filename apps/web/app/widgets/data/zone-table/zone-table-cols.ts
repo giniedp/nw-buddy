@@ -1,4 +1,4 @@
-import { NW_FALLBACK_ICON } from '@nw-data/common'
+import { NW_FALLBACK_ICON, getZoneDescription, getZoneIcon, getZoneName } from '@nw-data/common'
 import { Areadefinitions, PoiDefinition, Territorydefinitions } from '@nw-data/generated'
 import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
@@ -17,30 +17,18 @@ export function zoneColIcon(util: ZoneTableUtils) {
     pinned: true,
     width: 62,
     cellRenderer: util.cellRenderer(({ data }) => {
-      const poi = data as PoiDefinition
-      const area = data as Areadefinitions
-      if (area.IsArea) {
-        return util.elA(
-          {
-            attrs: { target: '_blank', href: util.tipLink('poi', String(data.TerritoryID)) },
-          },
-          util.elPicture(
-            {
-              class: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
-            },
-            util.elImg({
-              src: poi.MapIcon || poi.CompassIcon || poi.TooltipBackground || NW_FALLBACK_ICON,
-            })
-          )
-        )
-      }
-      return util.elPicture(
+      return util.elA(
         {
-          class: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
+          attrs: { target: '_blank', href: util.tipLink('poi', String(data.TerritoryID)) },
         },
-        util.elImg({
-          src: poi.MapIcon || poi.CompassIcon || poi.TooltipBackground || NW_FALLBACK_ICON,
-        })
+        util.elPicture(
+          {
+            class: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
+          },
+          util.elImg({
+            src: getZoneIcon(data),
+          })
+        )
       )
     }),
   })
@@ -50,7 +38,7 @@ export function zoneColName(util: ZoneTableUtils) {
     colId: 'name',
     headerValueGetter: () => 'Name',
     width: 250,
-    valueGetter: ({ data }) => util.i18n.get(data.NameLocalizationKey),
+    valueGetter: ({ data }) => util.i18n.get(getZoneName(data)),
     cellRenderer: util.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
     cellClass: ['multiline-cell', 'py-2'],
     autoHeight: true,
@@ -63,24 +51,17 @@ export function zoneColDescription(util: ZoneTableUtils) {
     headerValueGetter: () => 'Description',
     width: 250,
     valueGetter: ({ data }) => {
-      if (!data?.IsPOI || !data?.NameLocalizationKey || (data as Areadefinitions)?.IsArea) {
+      const value = getZoneDescription(data)
+      const result = util.i18n.get(value)
+      if (value === result) {
         return null
       }
-      return util.i18n.get(`${data.NameLocalizationKey}_description`)
+      return result
     },
     cellRenderer: util.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
     cellClass: ['multiline-cell', 'py-2'],
     autoHeight: true,
     getQuickFilterText: ({ value }) => value,
-  })
-}
-export function zoneColGroupSize(util: ZoneTableUtils) {
-  return util.colDef<string | number>({
-    colId: 'groupSize',
-    headerValueGetter: () => 'groupSize',
-    getQuickFilterText: () => '',
-    field: 'GroupSize',
-    hide: true,
   })
 }
 export function zoneColLootTags(util: ZoneTableUtils) {

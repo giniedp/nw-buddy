@@ -17,6 +17,12 @@ const ROUTES: Routes = [
       {
         path: ':id',
         component: ZoneDetailPageComponent,
+        children: [
+          {
+            path: ':vitalId',
+            children: [],
+          },
+        ],
       },
     ],
   },

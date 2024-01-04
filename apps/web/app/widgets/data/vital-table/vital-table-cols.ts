@@ -1,17 +1,16 @@
 import { ICellRendererParams } from '@ag-grid-community/core'
 import {
   VitalFamilyInfo,
-  getVitalAliasName,
   getVitalCategoryInfo,
   getVitalDamageEffectivenessPercent,
   getVitalTypeMarker,
   isVitalCombatCategory,
 } from '@nw-data/common'
-import { Gamemodes, Vitals, VitalsCategory, Vitalscategories, VitalsMetadata } from '@nw-data/generated'
+import { Gamemodes, Vitals, VitalsCategory, VitalsMetadata, Vitalscategories } from '@nw-data/generated'
 import { uniqBy } from 'lodash'
 import { RangeFilter, SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
-import { assetUrl, humanize } from '~/utils'
+import { assetUrl, humanize, stringToColor } from '~/utils'
 
 export type VitalTableUtils = TableGridUtils<VitalTableRecord>
 export type VitalTableRecord = Vitals & {
@@ -35,7 +34,7 @@ const cellRendererDamage = ({ value }: ICellRendererParams<VitalTableRecord>) =>
       </div>
       `
 }
-export function vitalColIcon(util: VitalTableUtils) {
+export function vitalColIcon(util: VitalTableUtils, options?: { color: boolean }) {
   return util.colDef({
     colId: 'icon',
     headerValueGetter: () => 'Icon',
@@ -44,6 +43,15 @@ export function vitalColIcon(util: VitalTableUtils) {
     filter: false,
     pinned: true,
     width: 62,
+    cellStyle: ({ data }) => {
+      const color = options?.color ? stringToColor(data.VitalsID) : ''
+      if (!color) {
+        return null
+      }
+      return {
+        'border-left': `4px solid ${color}`,
+      }
+    },
     cellRenderer: util.cellRenderer(({ data }) => {
       return util.elA(
         {
@@ -55,8 +63,8 @@ export function vitalColIcon(util: VitalTableUtils) {
           },
           util.elImg({
             src: getVitalCategoryInfo(data)?.Icon,
-          })
-        )
+          }),
+        ),
       )
     }),
   })
@@ -74,7 +82,7 @@ export function vitalColName(util: VitalTableUtils) {
       return uniqBy(names, (it) => it.toLowerCase())
     },
     cellRenderer: util.cellRenderer(({ value }) => {
-      const [name, ...alias] = (value as string[])
+      const [name, ...alias] = value as string[]
       if (!alias.length) {
         return name
       }
@@ -354,7 +362,7 @@ export function vitalColSpawnCount(util: VitalTableUtils) {
     valueGetter: ({ data }) => {
       let count = 0
       if (data.$metadata?.lvlSpanws) {
-        for (const key in data.$metadata.lvlSpanws ) {
+        for (const key in data.$metadata.lvlSpanws) {
           count += data.$metadata.lvlSpanws[key]?.length || 0
         }
       }

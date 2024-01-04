@@ -113,6 +113,9 @@ export class LandMapComponent implements OnInit {
   @Output()
   public featureClicked = new EventEmitter<string>()
 
+  @Output()
+  public pointClicked = new EventEmitter<number[]>()
+
   private zone = inject(NgZone)
   private platform = inject(PlatformService)
   private sanitizer = inject(DomSanitizer)
@@ -153,6 +156,7 @@ export class LandMapComponent implements OnInit {
         }
         if (type === 'click') {
           this.zone.run(() => this.featureClicked.emit(payload?.properties?.id))
+          this.zone.run(() => this.pointClicked.emit(payload?.geometry?.coordinates))
         }
       })
   }

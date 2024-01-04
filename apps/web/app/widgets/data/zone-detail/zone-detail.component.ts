@@ -1,13 +1,12 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
+import { Vitals } from '@nw-data/generated'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { ZoneDetailStore } from './zone-detail.store'
-import { selectSignal, selectStream } from '~/utils'
+import { selectSignal } from '~/utils'
 import { ZoneDetailMapComponent } from './zone-detail-map.component'
-import { map } from 'rxjs'
-import { Vitals } from '@nw-data/generated'
+import { ZoneDetailStore } from './zone-detail.store'
 
 @Component({
   standalone: true,

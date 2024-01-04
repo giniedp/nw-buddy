@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Output, ValueEqualityFn, ViewChild, inject } from '@angular/core'
+import { Component, ElementRef, EventEmitter, Input, Output, ValueEqualityFn, ViewChild, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { crc32 as crc } from 'js-crc'
@@ -12,6 +12,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive, selectSignal, selectStream } from '~/utils'
 import { LandMapComponent, Landmark, LandmarkPoint, LandmarkZone, MapViewBounds } from '~/widgets/land-map'
 import { ZoneDetailStore } from './zone-detail.store'
+import { getZoneMetaId } from '@nw-data/common'
 
 function crc32(value: string) {
   return parseInt(crc(value.toLowerCase()), 16)
@@ -40,6 +41,7 @@ const COLORS_DIMMED = {
   selector: 'nwb-zone-detail-map',
   templateUrl: './zone-detail-map.component.html',
   imports: [NwModule, LandMapComponent, TooltipModule, FormsModule, IconsModule],
+
   host: {
     class: 'flex flex-col relative',
   },
@@ -79,20 +81,16 @@ export class ZoneDetailMapComponent {
   protected landmarks = selectSignal(
     {
       zoneId: this.store.recordId$,
-      zoneMeta: this.store.metadata$,
       spawns: this.store.spawns$.pipe(startWith(null)),
       vitalId: this.store.markedVitalId$,
       categories: this.db.vitalsCategoriesMap,
       zones: this.store.allZones$,
       zonesMetaMap: this.db.territoriesMetadataMap,
     },
-    ({ zoneId, zoneMeta, spawns, vitalId, categories, zones, zonesMetaMap }) => {
-      if (!zoneMeta) {
-        return null
-      }
+    ({ zoneId, spawns, vitalId, categories, zones, zonesMetaMap }) => {
       const result: Landmark[] = []
       for (const zone of zones || []) {
-        const metaId = String(zone.TerritoryID).padStart(2, '0')
+        const metaId = getZoneMetaId(zone)
         const meta = zonesMetaMap.get(metaId)
         if (!meta?.zones?.length) {
           continue

@@ -1,19 +1,19 @@
-<nwb-detail-drawer class="hidden lg:flex flex-col flex-1">
-  <div *nwbDetailDrawerContent class="flex-1 flex flex-col 5xl:flex-row gap-4 bg-base-200 layout-pad">
+<nwb-detail-drawer class="hidden lg:flex flex-col flex-1 lg:w-[450px]">
+  <div *nwbDetailDrawerContent class="flex-1 flex flex-col gap-4 bg-base-200 layout-pad">
     <nwb-zone-detail
-      class="flex-1 bg-black"
+      class="flex-none bg-black"
       [zoneId]="itemId()"
       #detail
-      (vitalClicked)="table.selection = [$event]"
-      (zoneClicked)="onZoneClicked($event)"
     />
     <nwb-table-grid
       #table
-      class="flex-1 5xl:flex-none 5xl:w-[400px]"
+      class="flex-1"
       [identifyBy]="vitalIdFn"
       [data]="detail.store.vitals$ | async"
       [options]="gridOptions"
-      (selectedRow$)="detail.markVital($event)"
+      [selection]="[vitalId()]"
+      (selectedRow$)="onVitalClicked($event)"
+      [enableQuickfilter]="true"
     />
   </div>
 </nwb-detail-drawer>

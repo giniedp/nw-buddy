@@ -100,4 +100,8 @@ export class VitalDetailComponent {
       image: info?.Icon,
     })
   }
+
+  protected onPointClicked(point: number[]) {
+    // console.log(point)
+  }
 }

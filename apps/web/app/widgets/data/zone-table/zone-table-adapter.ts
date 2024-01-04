@@ -15,7 +15,6 @@ import {
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import {
   zoneColDescription,
-  zoneColGroupSize,
   zoneColIcon,
   zoneColLevelRange,
   zoneColLootTags,
@@ -83,7 +82,6 @@ function buildPoiTableOptions(util: TableGridUtils<ZoneTableRecord>) {
       zoneColIcon(util),
       zoneColName(util),
       zoneColDescription(util),
-      zoneColGroupSize(util),
       zoneColLootTags(util),
       zoneColLevelRange(util),
       zoneColVitalsCategory(util),

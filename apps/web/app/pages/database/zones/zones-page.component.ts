@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
-import { ActivatedRoute, RouterModule } from '@angular/router'
+import { ChangeDetectionStrategy, Component, ViewChild, computed, inject } from '@angular/core'
+import { ActivatedRoute, Router, RouterModule, RouterOutlet } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
@@ -9,8 +9,9 @@ import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
+import { HtmlHeadService, eqCaseInsensitive, injectUrlParams, selectSignal } from '~/utils'
 import { ItemTableRecord } from '~/widgets/data/item-table'
+import { ZoneDetailModule } from '~/widgets/data/zone-detail'
 import { ZoneTableAdapter } from '~/widgets/data/zone-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
@@ -31,6 +32,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     TooltipModule,
     VirtualGridModule,
     IconsModule,
+    ZoneDetailModule,
   ],
   host: {
     class: 'layout-col',
@@ -50,10 +52,19 @@ export class ZonePageComponent {
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'zone-table'
-  protected categoryParam$ = observeRouteParam(inject(ActivatedRoute), 'category')
-  protected category$ = selectStream(this.categoryParam$, (it) => {
-    return eqCaseInsensitive(it, this.defaultRoute) ? null : it
+  private urlParams$ = injectUrlParams('/zones/:category/:id/:vitalId')
+  protected zoneIdParam = selectSignal(this.urlParams$, (it) => it?.['id'])
+  protected vitalIdParam = selectSignal(this.urlParams$, (it) => it?.['vitalId'])
+  protected categoryParam = selectSignal(this.urlParams$, (it) => it?.['category'])
+  protected category = computed(() => {
+    const category = this.categoryParam()
+    return eqCaseInsensitive(category, this.defaultRoute) ? null : category
   })
+  protected router = inject(Router)
+  protected route = inject(ActivatedRoute)
+
+  @ViewChild(RouterOutlet, { static: true })
+  protected outlet: RouterOutlet
 
   public constructor(
     protected service: DataViewService<ItemTableRecord>,
@@ -65,5 +76,13 @@ export class ZonePageComponent {
       url: head.currentUrl,
       title: 'New World - Territories and POIs DB',
     })
+  }
+
+  protected onZoneClicked(zoneId: string) {
+    this.router.navigate(['/zones/table', zoneId])
+  }
+
+  protected onVitalClicked(vitalId: string) {
+    this.router.navigate(['/zones/table', this.zoneIdParam(), vitalId || ''])
   }
 }

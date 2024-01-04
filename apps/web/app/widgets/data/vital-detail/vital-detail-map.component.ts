@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, signal } from '@angular/core'
+import { Component, ElementRef, EventEmitter, Output, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { LvlSpanws, Vitals, VitalsMetadata } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
@@ -9,6 +9,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { selectSignal } from '~/utils'
 import { LandMapComponent, Landmark, LandmarkPoint, MapViewBounds } from '~/widgets/land-map'
 import { VitalDetailStore } from './vital-detail.store'
+
 
 @Component({
   standalone: true,
@@ -23,6 +24,9 @@ export class VitalDetailMapComponent {
   protected db = inject(NwDbService)
   protected store = inject(VitalDetailStore)
   protected tl8 = inject(TranslateService)
+
+  @Output()
+  public pointClicked = new EventEmitter<number[]>()
 
   protected data = selectSignal(
     {
@@ -84,6 +88,10 @@ export class VitalDetailMapComponent {
     } else {
       this.elRef.nativeElement.requestFullscreen()
     }
+  }
+
+  protected onPointClicked(point: number[]) {
+    this.pointClicked.emit(point)
   }
 }
 

@@ -4,7 +4,7 @@
       <li>
         <button
           [nwbDataCateogryMenu]
-          [category]="category$ | async"
+          [category]="category()"
           [showCounter]="true"
           [defaultRoute]="defaultRoute"
           [defaultTitle]="title"
@@ -26,21 +26,21 @@
       </li>
     </ul>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
-      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"></nwb-quicksearch-input>
+      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'" />
     </div>
   </div>
 </ion-header>
 <div class="flex-1 flex flex-row overflow-hidden">
-  <ng-container *ngIf="service.isGridActive()">
+  @if (service.isGridActive()) {
     <nwb-virtual-grid
       [enableQuickfilter]="true"
       [data]="service.categoryItems$ | async"
       [options]="service.virtualOptions"
       [identifyBy]="service.entityIdGetter"
       [selectionRouteParam]="selectionParam"
-    ></nwb-virtual-grid>
-  </ng-container>
-  <ng-container *ngIf="service.isTableActive()">
+    />
+  }
+  @if (service.isTableActive()) {
     <nwb-table-grid
       (ready$)="service.onTableReady($event)"
       [enableQuickfilter]="true"
@@ -50,7 +50,14 @@
       [persistKey]="persistKey"
       [filterQueryParam]="filterParam"
       [selectionRouteParam]="selectionParam"
-    ></nwb-table-grid>
-  </ng-container>
-  <router-outlet></router-outlet>
+    />
+  }
+  <nwb-zone-detail-map
+    class="hidden 3xl:flex flex-1"
+    [nwbZoneDetail]="zoneIdParam()"
+    [markVital]="vitalIdParam()"
+    (zoneClicked)="onZoneClicked($event)"
+    (vitalClicked)="onVitalClicked($event)"
+  />
+  <router-outlet />
 </div>

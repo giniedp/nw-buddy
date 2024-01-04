@@ -3,6 +3,5 @@
   <nwb-item-header-content class="z-10" [title]="name() | nwText | nwTextBreak: ' - '" [text1]="type()" />
 </nwb-item-header>
 <div class="flex-1 flex flex-col gap-2">
-  <nwb-zone-detail-map class="flex-1" (vitalClicked)="onVitalClicked($event)" (zoneClicked)="onZoneClicked($event)" />
-  <ng-content></ng-content>
+  <ng-content/>
 </div>
