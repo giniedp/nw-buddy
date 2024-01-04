@@ -119,3 +119,24 @@ export function findAZEntityById(component: SliceComponent, id: number) {
   }
   return null
 }
+
+export function translatePositions(positions: Array<number[]>, translation?: number[]) {
+  if (!translation) {
+    return positions
+  }
+  return positions.map(([x, y, z]) => [x + translation[0], y + translation[1], z + translation[2]])
+}
+
+export function matrixMapPositions(primary: Array<number[]>, secondary?: Array<number[]>) {
+  const result = []
+  for (const [px, py, pz] of primary) {
+    if (!secondary?.length) {
+      result.push([px, py, pz])
+      continue
+    }
+    for (const [sx, sy, xz] of secondary) {
+      result.push([px + sx, py + sy, pz + xz])
+    }
+  }
+  return result
+}

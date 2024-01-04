@@ -107,12 +107,15 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
   const loreItems: Record<string, LoreMetadata> = {}
 
   const files = await glob([
+    // `${inputDir}/sharedassets/coatlicue/newworld_vitaeeterna/regions/r_+02_+02/capitals/dungeon_script/dungeon_script.capitals.json`,
+    // `${inputDir}/sharedassets/coatlicue/newworld_vitaeeterna/regions/r_+02_+02/capitals/dungeon_spawners/dungeon_spawners.capitals.json`,
+    //
     `${inputDir}/sharedassets/coatlicue/**/regions/**/*.capitals.json`,
     `${inputDir}/**/region.distribution.json`,
     `${inputDir}/**/*.dynamicslice.json`,
     `!${inputDir}/lyshineui/**/*`,
     `${inputDir}/sharedassets/coatlicue/**/regions/**/*.metadata.json`,
-    // `${inputDir}/sharedassets/coatlicue/**/regions/**/*.slicedata.json`,
+    `${inputDir}/sharedassets/coatlicue/**/regions/**/*.slicedata.json`,
   ])
 
   await withProgressPool({

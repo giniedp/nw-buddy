@@ -1,5 +1,6 @@
 import {
-  scanForAIVariantSpawn,
+  readCached,
+  scanForAIVariant,
   scanForAreaSpawners,
   scanForEncounterSpawner,
   scanForGatherable,
@@ -9,7 +10,8 @@ import {
   scanForReadingInteractions,
   scanForVitals,
 } from './scan-for-spawners-utils'
-import { readDynamicSliceFile, resolveDynamicSliceFiles } from './utils'
+import { SliceComponent } from './types/dynamicslice'
+import { matrixMapPositions, readDynamicSliceFile, resolveDynamicSliceFiles } from './utils'
 
 export type SpawnerScanResult =
   | {
@@ -27,7 +29,6 @@ export type SpawnerScanResult =
       modelFile?: string
       positions: Array<number[]>
     }
-
 
 export async function scanForSpawners(rootDir: string, file: string): Promise<SpawnerScanResult[]> {
   const result: SpawnerScanResult[] = []
@@ -107,7 +108,7 @@ export async function scanForSpawners(rootDir: string, file: string): Promise<Sp
 //     }
 //   }
 
-//   const variants = await scanForAIVariantSpawn(component, rootDir, file)
+//   const variants = await scanForAIVariant(component, rootDir, file)
 //   for (const item of variants || []) {
 //     for (const slice of (await resolveDynamicSliceFiles(rootDir, item.slice)) || []) {
 //       const subSlice = await readDynamicSliceFile(slice)
@@ -201,6 +202,7 @@ export async function scanForSpawners(rootDir: string, file: string): Promise<Sp
 async function scanSpawners(rootDir: string, file: string): Promise<SpawnerScanResult[]> {
   const result: SpawnerScanResult[] = []
 
+  // console.log('scanSpawners', file)
   const sliceComponent = await readDynamicSliceFile(file)
   if (!sliceComponent) {
     return result
@@ -231,16 +233,7 @@ async function scanSpawners(rootDir: string, file: string): Promise<SpawnerScanR
 
     const encounterSpawns = await scanForEncounterSpawner(subComponent, rootDir, areaSpawn.slice)
     for (const encounter of encounterSpawns || []) {
-      const positions = areaSpawn.positions.map((pos): number[] => {
-        if (!encounter.positions.length) {
-          return pos
-        }
-        return encounter.positions
-          .map((pos2) => {
-            return [pos[0] + pos2[0], pos[1] + pos2[1], pos[2] + pos2[2]]
-          })
-          .flat()
-      })
+      const positions = matrixMapPositions(areaSpawn.positions, encounter.positions)
       const component = await readDynamicSliceFile(encounter.slice)
       if (!component || !positions.length) {
         continue
@@ -268,59 +261,47 @@ async function scanSpawners(rootDir: string, file: string): Promise<SpawnerScanR
         })
       }
 
-      {
-        const variants = await scanForAIVariantSpawn(component, rootDir, encounter.slice)
-        for (const spawn of variants || []) {
-          const spawnSlice = await readDynamicSliceFile(spawn.slice)
-          const vital = await scanForVitals(spawnSlice, rootDir, spawn.slice)
+      const pointSpawns = await scanForPointSpawners(component, rootDir, encounter.slice)
+      for (const spawn of pointSpawns || []) {
+        const spawnSlice = await readDynamicSliceFile(spawn.slice)
+        const vitals = await scanForVitals(spawnSlice, rootDir, spawn.slice)
+        if (vitals?.vitalsID) {
           result.push({
-            vitalsID: spawn.vitalsID || vital?.vitalsID,
-            categoryID: spawn.categoryID,
-            level: spawn.level,
-            territoryLevel: spawn.territoryLevel,
-            damageTable: vital?.damageTable,
-            modelFile: vital?.modelSlice,
+            vitalsID: vitals.vitalsID,
+            damageTable: vitals.damageTable,
+            modelFile: vitals.modelSlice,
             positions: positions,
           })
         }
       }
 
-      {
-        const pointSpawns = await scanForPointSpawners(component, rootDir, encounter.slice)
-        for (const spawn of pointSpawns || []) {
-          const spawnSlice = await readDynamicSliceFile(spawn.slice)
-          const vitals = await scanForVitals(spawnSlice, rootDir, spawn.slice)
-          if (vitals?.vitalsID) {
-            result.push({
-              vitalsID: vitals.vitalsID,
-              damageTable: vitals.damageTable,
-              modelFile: vitals.modelSlice,
-              positions: positions,
-            })
-          }
+      const subAreaSpawns = await scanForAreaSpawners(component, rootDir, encounter.slice)
+      for (const spawn of subAreaSpawns || []) {
+        const subSlice = await readDynamicSliceFile(spawn.slice)
+        const vitals = await scanForVitals(subSlice, rootDir, spawn.slice)
+        if (vitals?.vitalsID) {
+          result.push({
+            vitalsID: vitals.vitalsID,
+            damageTable: vitals.damageTable,
+            modelFile: vitals.modelSlice,
+            positions: matrixMapPositions(spawn.positions, positions)
+          })
         }
       }
 
-      {
-        const subAreaSpawns = await scanForAreaSpawners(component, rootDir, encounter.slice)
-        for (const spawn of subAreaSpawns || []) {
-          const subSlice = await readDynamicSliceFile(spawn.slice)
-          const vitals = await scanForVitals(subSlice, rootDir, spawn.slice)
-          if (vitals?.vitalsID) {
-            result.push({
-              vitalsID: vitals.vitalsID,
-              damageTable: vitals.damageTable,
-              modelFile: vitals.modelSlice,
-              positions: spawn.positions.map((pos): number[] => {
-                return positions
-                  .map((pos2) => {
-                    return [pos[0] + pos2[0], pos[1] + pos2[1], pos[2] + pos2[2]]
-                  })
-                  .flat()
-              }),
-            })
-          }
-        }
+      const variants = await scanForAIVariant(component, rootDir, encounter.slice)
+      for (const variant of variants || []) {
+        const spawnSlice = await readDynamicSliceFile(variant.slice)
+        const vital = await scanForVitals(spawnSlice, rootDir, variant.slice)
+        result.push({
+          vitalsID: variant.vitalsID || vital?.vitalsID,
+          categoryID: variant.categoryID,
+          level: variant.level,
+          territoryLevel: variant.territoryLevel,
+          damageTable: vital?.damageTable,
+          modelFile: vital?.modelSlice,
+          positions: positions, // translatePositions(positions, variant.position),
+        })
       }
 
       const vitals = await scanForVitals(component, rootDir, encounter.slice)
@@ -341,13 +322,18 @@ async function scanSpawners(rootDir: string, file: string): Promise<SpawnerScanR
     if (!spawnComponent) {
       continue
     }
+
+    //console.log('|  prefabSpawn', spawn.slice, spawn.position)
     const encounterSpawns = await scanForEncounterSpawner(spawnComponent, rootDir, spawn.slice)
     for (const encounter of encounterSpawns || []) {
       const component = await readDynamicSliceFile(encounter.slice)
-      if (!component || !encounter.positions.length) {
+      if (!component) {
         continue
       }
 
+      const positions = matrixMapPositions([spawn.position], encounter.positions)
+
+      //console.log('|    encounter', encounter.slice, encounter.positions)
       const pointSpawns = await scanForPointSpawners(component, rootDir, encounter.slice)
       for (const spawn of pointSpawns || []) {
         const spawnSlice = await readDynamicSliceFile(spawn.slice)
@@ -357,9 +343,35 @@ async function scanSpawners(rootDir: string, file: string): Promise<SpawnerScanR
             vitalsID: vitals.vitalsID,
             damageTable: vitals.damageTable,
             modelFile: vitals.modelSlice,
-            positions: encounter.positions,
+            positions: positions,
           })
         }
+      }
+
+      const variants = await scanForAIVariant(component, rootDir, encounter.slice)
+      for (const variant of variants || []) {
+        const subSlice = await readDynamicSliceFile(variant.slice)
+        const vital = await scanForVitals(subSlice, rootDir, variant.slice)
+        result.push({
+          vitalsID: variant.vitalsID || vital?.vitalsID,
+          categoryID: variant.categoryID,
+          level: variant.level,
+          territoryLevel: variant.territoryLevel,
+          damageTable: vital?.damageTable,
+          modelFile: vital?.modelSlice,
+          positions: positions, // translatePositions(positions, spawn.position),
+        })
+      }
+
+      const vitals = await scanForVitals(component, rootDir, encounter.slice)
+      if (vitals?.vitalsID) {
+        //console.log('|      vitals', vitals.vitalsID, vitals.modelSlice, vitals.damageTable)
+        result.push({
+          vitalsID: vitals.vitalsID,
+          damageTable: vitals.damageTable,
+          modelFile: vitals.modelSlice,
+          positions: positions,
+        })
       }
     }
 
@@ -387,42 +399,38 @@ async function scanSpawners(rootDir: string, file: string): Promise<SpawnerScanR
         continue
       }
 
-      {
-        const variants = await scanForAIVariantSpawn(component, rootDir, encounter.slice)
-        for (const item of variants || []) {
-          const subSlice = await readDynamicSliceFile(item.slice)
-          const vital = await scanForVitals(subSlice, rootDir, item.slice)
-          result.push({
-            vitalsID: item.vitalsID || vital?.vitalsID,
-            categoryID: item.categoryID,
-            level: item.level,
-            territoryLevel: item.territoryLevel,
-            damageTable: vital?.damageTable,
-            modelFile: vital?.modelSlice,
-            positions: encounter.positions,
-          })
-        }
+      const variants = await scanForAIVariant(component, rootDir, encounter.slice)
+      for (const variant of variants || []) {
+        const subSlice = await readDynamicSliceFile(variant.slice)
+        const vital = await scanForVitals(subSlice, rootDir, variant.slice)
+        result.push({
+          vitalsID: variant.vitalsID || vital?.vitalsID,
+          categoryID: variant.categoryID,
+          level: variant.level,
+          territoryLevel: variant.territoryLevel,
+          damageTable: vital?.damageTable,
+          modelFile: vital?.modelSlice,
+          positions: encounter.positions, // translatePositions(encounter.positions, variant.position),
+        })
       }
 
-      {
-        const subAreaSpawns = await scanForAreaSpawners(component, rootDir, encounter.slice)
-        for (const spawn of subAreaSpawns || []) {
-          const subSlice = await readDynamicSliceFile(spawn.slice)
-          const vitals = await scanForVitals(subSlice, rootDir, spawn.slice)
-          if (vitals?.vitalsID) {
-            result.push({
-              vitalsID: vitals.vitalsID,
-              damageTable: vitals.damageTable,
-              modelFile: vitals.modelSlice,
-              positions: spawn.positions.map((pos): number[] => {
-                return encounter.positions
-                  .map((pos2) => {
-                    return [pos[0] + pos2[0], pos[1] + pos2[1], pos[2] + pos2[2]]
-                  })
-                  .flat()
-              }),
-            })
-          }
+      const subAreaSpawns = await scanForAreaSpawners(component, rootDir, encounter.slice)
+      for (const spawn of subAreaSpawns || []) {
+        const subSlice = await readDynamicSliceFile(spawn.slice)
+        const vitals = await scanForVitals(subSlice, rootDir, spawn.slice)
+        if (vitals?.vitalsID) {
+          result.push({
+            vitalsID: vitals.vitalsID,
+            damageTable: vitals.damageTable,
+            modelFile: vitals.modelSlice,
+            positions: spawn.positions.map((pos): number[] => {
+              return encounter.positions
+                .map((pos2) => {
+                  return [pos[0] + pos2[0], pos[1] + pos2[1], pos[2] + pos2[2]]
+                })
+                .flat()
+            }),
+          })
         }
       }
 
@@ -438,21 +446,50 @@ async function scanSpawners(rootDir: string, file: string): Promise<SpawnerScanR
     }
   }
 
-  const variants = await scanForAIVariantSpawn(sliceComponent, rootDir, file)
-  for (const item of variants || []) {
-    const subSlice = await readDynamicSliceFile(item.slice)
-    const vital = await scanForVitals(subSlice, rootDir, item.slice)
-    if (item.level) {
+  const variants = await scanForAIVariant(sliceComponent, rootDir, file)
+  for (const variant of variants || []) {
+    // console.log('|  variant', variant.vitalsID, variant.position, variant.slice)
+    const subSlice = await readDynamicSliceFile(variant.slice)
+    const vital = await scanForVitals(subSlice, rootDir, variant.slice)
+    if (variant.level) {
       result.push({
-        vitalsID: item.vitalsID || vital?.vitalsID,
-        categoryID: item.categoryID,
-        level: item.level,
-        territoryLevel: item.territoryLevel,
+        vitalsID: variant.vitalsID || vital?.vitalsID,
+        categoryID: variant.categoryID,
+        level: variant.level,
+        territoryLevel: variant.territoryLevel,
         damageTable: vital?.damageTable,
         modelFile: vital?.modelSlice,
-        positions: [[0, 0, 0]],
+        positions: [[0, 0, 0]], // [variant.position || [0, 0, 0]],
       })
     }
+  }
+
+  return result
+}
+
+async function* scanVitalOrPoint(component: SliceComponent, rootDir: string, file: string) {
+  const result: SpawnerScanResult[] = []
+  const variants = await scanForAIVariant(component, rootDir, file)
+  const pointSpawn = await scanForPointSpawners(component, rootDir, file)
+
+  if (variants.length) {
+    for (const variant of variants || []) {
+      const slice = await readDynamicSliceFile(variant.slice)
+      const vital = await scanForVitals(slice, rootDir, variant.slice)
+      result.push({
+        vitalsID: variant.vitalsID || vital?.vitalsID,
+        categoryID: variant.categoryID,
+        level: variant.level,
+        territoryLevel: variant.territoryLevel,
+        damageTable: vital?.damageTable,
+        modelFile: vital?.modelSlice,
+        positions: [[0, 0, 0]], // [variant.position || [0, 0, 0]],
+      })
+    }
+  } else if (pointSpawn) {
+
+  } else {
+    const vitals = scanForVitals(component, rootDir, file)
   }
 
   return result

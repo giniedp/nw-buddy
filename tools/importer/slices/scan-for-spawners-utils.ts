@@ -29,7 +29,7 @@ function cached<T>(key: string, task: (key: string) => Promise<T>): Promise<T> {
   return cache(key, task)
 }
 
-function readCached(file: string) {
+export function readCached(file: string) {
   return cached(`readCached ${file}`, () => {
     return readDynamicSliceFile(file)
   })
@@ -77,10 +77,14 @@ export async function scanForAreaSpawners(sliceComponent: SliceComponent, rootDi
 
 export async function scanForPointSpawners(sliceComponent: SliceComponent, rootDir: string, file: string) {
   return cached(`scanForPointSpawners ${file}`, async () => {
-    const result: Array<{ slice: string }> = []
+    const result: Array<{ slice: string, position: number[] }> = []
     for (const entity of sliceComponent.entities || []) {
       const sliceFiles: string[] = []
+      let position: number[]
       for (const component of entity.components || []) {
+        if (isGameTransformComponent(component)) {
+          position = position || getTranslation(component)
+        }
         if (!isPointSpawnerComponent(component)) {
           continue
         }
@@ -90,6 +94,7 @@ export async function scanForPointSpawners(sliceComponent: SliceComponent, rootD
       for (const slice of sliceFiles) {
         result.push({
           slice,
+          position
         })
       }
     }
@@ -119,9 +124,9 @@ export async function scanForEncounterSpawner(sliceComponent: SliceComponent, ro
           for (const location of spawn.m_spawnlocations || []) {
             const entity = findAZEntityById(sliceComponent, location.entityid as any)
             const transform = entity?.components?.find((it) => isGameTransformComponent(it)) as GameTransformComponent
-            const translation = transform?.m_worldtm?.__value?.['translation'] as number[]
-            if (Array.isArray(translation)) {
-              positions.push([...translation])
+            const position = getTranslation(transform)
+            if (position) {
+              positions.push([...position])
             }
           }
 
@@ -145,15 +150,12 @@ export async function scanForPrefabSpawner(sliceComponent: SliceComponent, rootD
       const sliceFiles: string[] = []
       let position: number[]
       for (const component of entity.components || []) {
+        if (isGameTransformComponent(component)) {
+          position = position || getTranslation(component)
+        }
         if (isPrefabSpawnerComponent(component)) {
           await appendSlices(sliceFiles, rootDir, component.m_sliceasset?.hint)
           await appendSlices(sliceFiles, rootDir, component.m_aliasasset?.hint)
-        }
-        if (isGameTransformComponent(component)) {
-          const translation = component.m_worldtm?.__value?.['translation'] as number[]
-          if (Array.isArray(translation)) {
-            position = [...translation]
-          }
         }
       }
       if (!position) {
@@ -213,24 +215,29 @@ export async function scanForGatherable(sliceComponent: SliceComponent, rootDir:
   })
 }
 
-interface VariantSpawner {
+interface AIVariant {
   vitalsID: string
   categoryID: string
   level: number
   slice: string
   territoryLevel?: boolean
+  position?: number[]
 }
 
-export async function scanForAIVariantSpawn(sliceComponent: SliceComponent, rootDir: string, file: string) {
-  return cached(`scanForAIVariantSpawn ${file}`, async () => {
-    const result: VariantSpawner[] = []
+export async function scanForAIVariant(sliceComponent: SliceComponent, rootDir: string, file: string) {
+  return cached(`scanForAIVariant ${file}`, async () => {
+    const result: AIVariant[] = []
     for (const entity of sliceComponent?.entities || []) {
       let vitalsID: string = null
       let categoryID: string = null
       let level: number = null
       let territoryLevel: boolean = false
+      let position: number[] = null
       const sliceFiles: string[] = []
       for (const component of entity.components || []) {
+        if (isGameTransformComponent(component)) {
+          position = position || getTranslation(component)
+        }
         if (isAIVariantProviderComponent(component)) {
           if (isAIVariantProviderComponentServerFacet(component.baseclass1?.m_serverfacetptr)) {
             vitalsID = vitalsID || component.baseclass1.m_serverfacetptr.m_vitalstablerowid
@@ -254,7 +261,8 @@ export async function scanForAIVariantSpawn(sliceComponent: SliceComponent, root
             categoryID,
             level,
             slice,
-            territoryLevel
+            territoryLevel,
+            position
           })
         }
       } else {
@@ -263,7 +271,8 @@ export async function scanForAIVariantSpawn(sliceComponent: SliceComponent, root
           categoryID,
           level,
           slice: null,
-          territoryLevel
+          territoryLevel,
+          position
         })
       }
     }
@@ -278,6 +287,7 @@ export async function scanForVitals(sliceComponent: SliceComponent, rootDir: str
     let modelFile: string = null
     for (const entity of sliceComponent?.entities || []) {
       for (const component of entity?.components || []) {
+
         if (isVitalsComponent(component)) {
           vitalsID = vitalsID || component.m_rowreference
         }
@@ -322,7 +332,7 @@ export async function scanForProjectileComponent(sliceComponent: SliceComponent,
   })
 }
 
-async function appendSlices(collection: string[], rootDir: string, hint: string) {
+export async function appendSlices(collection: string[], rootDir: string, hint: string) {
   const files = await resolveDynamicSliceFiles(rootDir, hint)
   if (!files) {
     return
@@ -332,4 +342,12 @@ async function appendSlices(collection: string[], rootDir: string, hint: string)
       arrayAppend(collection, file)
     }
   }
+}
+
+export function getTranslation(component: GameTransformComponent) {
+  const translation = component?.m_worldtm?.__value?.['translation'] as number[]
+  if (Array.isArray(translation)) {
+    return [...translation]
+  }
+  return null
 }
