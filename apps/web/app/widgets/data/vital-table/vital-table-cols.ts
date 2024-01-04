@@ -69,7 +69,7 @@ export function vitalColIcon(util: VitalTableUtils, options?: { color: boolean }
     }),
   })
 }
-export function vitalColName(util: VitalTableUtils) {
+export function vitalColName(util: VitalTableUtils, options?: { link: boolean }) {
   return util.colDef<string[]>({
     colId: 'name',
     headerValueGetter: () => 'Name',
@@ -81,15 +81,25 @@ export function vitalColName(util: VitalTableUtils) {
       }
       return uniqBy(names, (it) => it.toLowerCase())
     },
-    cellRenderer: util.cellRenderer(({ value }) => {
+    cellRenderer: util.cellRenderer(({ data, value }) => {
+      let content: string
       const [name, ...alias] = value as string[]
       if (!alias.length) {
-        return name
+        content = name
+      } else {
+        content = `
+          <span>${name}</span><br>
+          <span class="italic">${alias.join(', ')}</span>
+        `
       }
-      return `
-        <span>${name}</span><br>
-        <span class="italic">${alias}</span>
-      `
+      if (!options?.link) {
+        return content
+      }
+      return util.elA({
+        attrs: { target: '_blank', href: `/vitals/table/${data.VitalsID}` },
+        class: ['link-hover'],
+        html: content,
+      })
     }),
     getQuickFilterText: ({ value }) => value.join(' '),
   })

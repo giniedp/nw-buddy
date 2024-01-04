@@ -12,7 +12,7 @@ import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { injectChildRouteParam, injectRouteParam } from '~/utils'
-import { vitalColIcon, vitalColLevel, vitalColName } from '~/widgets/data/vital-table'
+import { VitalGridCellComponent, vitalColIcon, vitalColLevel, vitalColName } from '~/widgets/data/vital-table'
 import { ZoneDetailModule } from '~/widgets/data/zone-detail'
 import { LootModule } from '~/widgets/loot'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -50,14 +50,22 @@ export class ZoneDetailPageComponent {
   protected gridOptions: GridOptions = {
     columnDefs: [
       vitalColIcon(this.gridUtils, { color: true }),
-      vitalColName(this.gridUtils),
+      vitalColName(this.gridUtils, { link: true }),
       vitalColLevel(this.gridUtils),
     ],
   }
 
+  protected virtualGridOptions = VitalGridCellComponent.buildGridOptions()
+
   protected vitalIdFn = (it: Vitals) => it?.VitalsID
 
-  protected onVitalClicked(vital: Vitals) {
-    this.router.navigate(['/zones/table', this.itemId(), this.vitalIdFn(vital) || ''])
+  protected onVitalClicked(vital: Vitals | string | number) {
+    if (typeof vital === 'number') {
+      vital = vital.toString()
+    }
+    if (typeof vital !== 'string') {
+      vital = this.vitalIdFn(vital)
+    }
+    this.router.navigate(['/zones/table', this.itemId(), vital || ''])
   }
 }

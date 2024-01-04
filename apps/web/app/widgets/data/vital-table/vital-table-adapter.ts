@@ -37,6 +37,7 @@ import {
   vitalColSpawnCount,
 } from './vital-table-cols'
 import { CaseInsensitiveSet } from '~/utils'
+import { VitalGridCellComponent } from './vital-cell.component'
 
 @Injectable()
 export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord>, TableGridAdapter<VitalTableRecord> {
@@ -60,7 +61,7 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord>, Tab
     ]
   }
   public virtualOptions(): VirtualGridOptions<VitalTableRecord> {
-    return null
+    return VitalGridCellComponent.buildGridOptions()
   }
   public gridOptions(): GridOptions<VitalTableRecord> {
     if (this.config?.gridOptions) {

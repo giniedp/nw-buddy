@@ -15,5 +15,13 @@
       (selectedRow$)="onVitalClicked($event)"
       [enableQuickfilter]="true"
     />
+    <!-- <nwb-virtual-grid
+      class="flex-1"
+      [identifyBy]="vitalIdFn"
+      [data]="detail.store.vitals$ | async"
+      [options]="virtualGridOptions"
+      [selection]="[vitalId()]"
+      (selection$)="onVitalClicked($event?.[0])"
+    /> -->
   </div>
 </nwb-detail-drawer>
