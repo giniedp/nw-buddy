@@ -1,11 +1,10 @@
+import * as path from 'path'
 import { readJSONFile } from '../../utils'
+import { VitalScanRow, scanForVitals } from './scan-for-models'
 import { scanForSpawners } from './scan-for-spawners'
 import { VariationScanRow, scanForVariantDistributions } from './scan-for-variants'
-import { VitalScanRow, scanForVitals } from './scan-for-vitals'
 import { TerritoryScanRow, scanForZones } from './scan-for-zones'
 import { Capital } from './types/capitals'
-import { isRegionMetadataAsset } from './types/metadata'
-import { isRegionSliceDataLookup } from './types/slicedata'
 
 function loadCrcFile(file: string) {
   const result = require(file)
@@ -26,7 +25,6 @@ export interface ScanResult {
 export interface GatherableScanRow {
   gatherableID: string
   position: [number, number, number]
-  lootTable: string
   mapID: string
 }
 export interface LoreScanRow {
@@ -55,9 +53,21 @@ export async function scanSlices({
     }
   }
   if (file.endsWith('.dynamicslice.json')) {
-    return {
-      vitals: await scanForVitals(inputDir, file), // TODO: try to eliminate this
-      territories: await scanForZones(file),
+    if (
+      isFileInFolder(file, path.join(inputDir, 'slices', 'pois', 'zones')) ||
+      isFileInFolder(file, path.join(inputDir, 'slices', 'pois', 'territories'))
+    ) {
+      return {
+        territories: await scanForZones(file),
+      }
+    }
+    if (
+      isFileInFolder(file, path.join(inputDir, 'slices', 'characters')) ||
+      isFileInFolder(file, path.join(inputDir, 'slices', 'dungeon'))
+    ) {
+      return {
+        vitals: await scanForVitals(inputDir, file),
+      }
     }
   }
   if (file.endsWith('.capitals.json')) {
@@ -92,14 +102,13 @@ export async function scanSlices({
                   position[1] += capital.worldPosition.y
                   position[2] += capital.worldPosition.z
                 }
-                // if (data.gatherableID) {
-                //   gatherableRows.push({
-                //     mapID: mapId,
-                //     gatherableID: data.gatherableID,
-                //     position: [position[0], position[1], position[2]],
-                //     //lootTable: data.lootTable,
-                //   })
-                // }
+                if (data.gatherableID) {
+                  gatherableRows.push({
+                    mapID: mapId,
+                    gatherableID: data.gatherableID,
+                    position: [position[0], position[1], position[2]],
+                  })
+                }
                 if (data.variantID) {
                   variationsRows.push({
                     mapID: mapId,
@@ -140,68 +149,19 @@ export async function scanSlices({
       gatherables: gatherableRows,
     }
   }
-  if (file.endsWith('.metadata.json')) {
-    const mapId = file.match(/coatlicue\/(.+)\/regions\//)[1]
-    const vitalsRows: VitalScanRow[] = []
-    const gatherablesRows: GatherableScanRow[] = []
-    const variationsRows: VariationScanRow[] = []
-    const obj = await readJSONFile(file)
-    if (isRegionMetadataAsset(obj)) {
-      // for (const location of obj.aispawnlocations || []) {
-      //   const vitalId = loadCrcFile(crcVitalsFile)[location.vitalsid?.value]
-      //   if (!vitalId) {
-      //     continue
-      //   }
-      //   if (!location.spawnedbycoatlicue && mapId === 'newworld_vitaeeterna') {
-      //     continue
-      //   }
-      //   const categoryId = loadCrcFile(crcVitalsCategoriesFile)[location.vitalscategoryid?.value]
-      //   vitalsRows.push({
-      //     vitalsID: vitalId,
-      //     categoryID: categoryId,
-      //     level: location.vitalslevel,
-      //     damageTable: null,
-      //     position: location.worldposition,
-      //     mapID: mapId,
-      //     modelFile: null,
-      //   })
-      // }
-      for (const location of obj.gatherablelocations || []) {
-        const gatherableId = loadCrcFile(crcGatherablesFile)[location.gatherableid?.value]
-        if (gatherableId) {
-          gatherablesRows.push({
-            gatherableID: gatherableId,
-            position: location.worldposition as [number, number, number],
-            lootTable: location.loottableid,
-            mapID: mapId,
-          })
-        }
-        const variantId = loadCrcFile(crcVariationsFile)[location.gatherableid?.value]
-        if (variantId) {
-          variationsRows.push({
-            variantID: variantId,
-            position: location.worldposition as [number, number, number],
-            //lootTable: location.loottableid,
-            mapID: mapId,
-          })
-        }
-      }
-    }
-    return {
-      vitals: vitalsRows,
-      gatherables: gatherablesRows,
-      variations: variationsRows,
-    }
-  }
 
   return {}
+}
+
+function isFileInFolder(file: string, folder: string) {
+  return path.normalize(file).startsWith(path.normalize(folder))
 }
 
 function rotatePointWithQuat(quat: { x: number; y: number; z: number; w?: number }, point: number[]): number[] {
   if (quat?.w == null) {
     return point
   }
-  const {x, y, z, w} = quat
+  const { x, y, z, w } = quat
   const [vx, vy, vz] = point
 
   const x2 = x + x

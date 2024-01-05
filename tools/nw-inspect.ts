@@ -3,7 +3,8 @@ import * as fs from 'fs'
 import { sortBy, uniq, uniqBy } from 'lodash'
 import * as path from 'path'
 import { environment } from '../env'
-import { appendSlices } from './importer/slices/scan-for-spawners-utils'
+import { appendSlices, scanForData } from './importer/slices/scan-for-spawners-utils'
+import { scanForZones } from './importer/slices/scan-for-zones'
 import { Capital } from './importer/slices/types/capitals'
 import {
   isAIVariantProviderComponent,
@@ -25,8 +26,50 @@ import { glob, readJSONFile, writeUTF8File } from './utils/file-utils'
 
 program
   .command('slices')
-  .description('File inspection/playground task. Used for inspecting files. Don\'t run it, if you don\'t know what it does')
+  .description(
+    "File inspection/playground task. Used for inspecting files. Don't run it, if you don't know what it does",
+  )
   .action(async () => {
+    await inspectModels()
+  })
+
+async function inspectZones() {
+  const rootDir = environment.nwConvertDir('live')
+  const files = await glob(path.join(rootDir, '**', '*.dynamicslice.json'))
+  await withProgressBar({ barName: 'scan', tasks: files }, async (file, _, log) => {
+    log(file)
+    const data = await scanForZones(file)
+    if (data?.length) {
+      if (!file.startsWith('E:/Projects/nw-buddy/tmp/nw-data/live/slices/pois/territories')) {
+        console.log(file)
+      }
+      // console.log({
+      //   file,
+      //   ids: data.map((it) => it.territoryID),
+      // })
+    }
+  })
+}
+
+async function inspectModels() {
+  const rootDir = environment.nwConvertDir('live')
+  const files = await glob(path.join(rootDir, '**', '*.dynamicslice.json'))
+  await withProgressBar({ barName: 'scan', tasks: files }, async (file, _, log) => {
+    log(file)
+    const component = await readDynamicSliceFile(file)
+    if (!component) {
+      return
+    }
+    const data = scanForData(component, rootDir, file)
+    for (const item of data) {
+      if (item.modelFile && item.vitalsID) {
+        console.log(file)
+      }
+    }
+  })
+}
+
+async function inspectSpawns() {
   const rootDir = environment.nwConvertDir('live')
   const files = await glob(path.join(rootDir, '**', '*.capitals.json'))
   const samples: string[] = []
@@ -56,13 +99,7 @@ program
     target: environment.tmpDir('spawn-tree.txt'),
     createDir: true,
   })
-
-  // const entries = Object.entries(groupBy(samples, (it) => it)).map(([key, value]) => ({
-  //   components: key,
-  //   count: value.length,
-  // }))
-  // sortBy(entries, (it) => it.count).forEach((it) => console.log(it.count, it.components))
-})
+}
 
 function serializeTree(tree: TreeNode, indent = 0, lines: string[] = []): string {
   lines.push('  '.repeat(indent) + tree.components.join(', '))

@@ -369,6 +369,7 @@ export function vitalColSpawnCount(util: VitalTableUtils) {
     colId: 'spawnCount',
     headerValueGetter: () => 'Spawn Count',
     getQuickFilterText: () => '',
+    filter: 'agNumberColumnFilter',
     valueGetter: ({ data }) => {
       let count = 0
       if (data.$metadata?.lvlSpanws) {

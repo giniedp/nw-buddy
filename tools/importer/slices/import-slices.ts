@@ -13,7 +13,7 @@ import {
 import { CaseInsensitiveSet } from '../../utils/caseinsensitive-set'
 import { readAndExtractCrcValues } from './create-crc-file'
 import { VariationScanRow } from './scan-for-variants'
-import { VitalScanRow } from './scan-for-vitals'
+import { VitalScanRow } from './scan-for-models'
 import { TerritoryScanRow } from './scan-for-zones'
 import { GatherableScanRow, LoreScanRow } from './scanner.task'
 import { WORKER_TASKS } from './worker.tasks'
@@ -36,11 +36,9 @@ interface VitalMetadata {
 
 interface GatherableMetadata {
   mapIDs: string[]
-  lootTables: string[]
   spawns: Array<{
     position: number[]
     mapId: string
-    lootTable: string
   }>
 }
 
@@ -54,7 +52,6 @@ interface VariationMetadata {
 
 interface TerritoryMetadata {
   zones: Array<{
-    //position: number[]
     shape: number[][]
     min: number[]
     max: number[]
@@ -227,7 +224,6 @@ function collectGatherablesRows(rows: GatherableScanRow[], data: Record<string, 
     if (!(gatherableID in data)) {
       data[gatherableID] = {
         mapIDs: [],
-        lootTables: [],
         spawns: [],
       }
     }
@@ -235,13 +231,9 @@ function collectGatherablesRows(rows: GatherableScanRow[], data: Record<string, 
     if (row.mapID) {
       arrayAppend(bucket.mapIDs, row.mapID.toLowerCase())
     }
-    if (row.lootTable) {
-      arrayAppend(bucket.lootTables, row.lootTable.toLowerCase())
-    }
     if (row.position) {
       bucket.spawns.push({
         position: row.position.map((it) => Number(it.toFixed(3))),
-        lootTable: row.lootTable?.toLowerCase(),
         mapId: row.mapID?.toLowerCase(),
       })
     }
@@ -362,13 +354,11 @@ function toSortedVitals(data: Record<string, VitalMetadata>) {
 function toSortedGatherables(data: Record<string, GatherableMetadata>) {
   return Array.from(Object.entries(data))
     .sort((a, b) => compareStrings(a[0], b[0]))
-    .map(([id, { spawns, mapIDs, lootTables }]) => {
+    .map(([id, { spawns, mapIDs }]) => {
       const maps = Array.from(mapIDs.values()).sort()
-      const tables = Array.from(lootTables.values()).sort()
       const result = {
         gatherableID: id,
         mapIDs: maps,
-        lootTables: tables,
         spawns: {} as Record<string, number[][]>,
       }
       spawns.sort((a, b) => compareStrings(a.mapId, b.mapId))

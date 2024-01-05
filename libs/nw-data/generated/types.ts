@@ -13400,7 +13400,6 @@ export type WeaponTag =
 
 export interface GatherablesMetadata {
     gatherableID: string;
-    lootTables:   string[];
     mapIDs:       string[];
     spawns:       Spawns;
 }
