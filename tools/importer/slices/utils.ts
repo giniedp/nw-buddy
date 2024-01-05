@@ -127,15 +127,15 @@ export function translatePositions(positions: Array<number[]>, translation?: num
   return positions.map(([x, y, z]) => [x + translation[0], y + translation[1], z + translation[2]])
 }
 
-export function matrixMapPositions(primary: Array<number[]>, secondary?: Array<number[]>) {
+export function matrixMapPositions(parent: Array<number[]>, child?: Array<number[]>) {
   const result = []
-  for (const [px, py, pz] of primary) {
-    if (!secondary?.length) {
+  for (const [px, py, pz] of parent) {
+    if (!child?.length) {
       result.push([px, py, pz])
       continue
     }
-    for (const [sx, sy, xz] of secondary) {
-      result.push([px + sx, py + sy, pz + xz])
+    for (const [cx, cy, cz] of child) {
+      result.push([px + cx, py + cy, pz + cz])
     }
   }
   return result

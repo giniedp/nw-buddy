@@ -109,6 +109,8 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
   const files = await glob([
     // `${inputDir}/sharedassets/coatlicue/newworld_vitaeeterna/regions/r_+02_+02/capitals/dungeon_script/dungeon_script.capitals.json`,
     // `${inputDir}/sharedassets/coatlicue/newworld_vitaeeterna/regions/r_+02_+02/capitals/dungeon_spawners/dungeon_spawners.capitals.json`,
+    // `${inputDir}/sharedassets/coatlicue/newworld_vitaeeterna/regions/r_+02_+02/capitals/**/*.capitals.json`,
+    // `${inputDir}/sharedassets/coatlicue/newworld_vitaeeterna/regions/r_+03_+02/capitals/**/*.capitals.json`,
     //
     `${inputDir}/sharedassets/coatlicue/**/regions/**/*.capitals.json`,
     `${inputDir}/**/region.distribution.json`,

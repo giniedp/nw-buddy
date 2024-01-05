@@ -2,8 +2,7 @@ import { program } from 'commander'
 import * as fs from 'fs'
 import { sortBy, uniq, uniqBy } from 'lodash'
 import * as path from 'path'
-import { z } from 'zod'
-import { CDN_URL, COMMIT_HASH, NW_GAME_VERSION, NW_WATERMARK, PACKAGE_VERSION, environment } from '../env'
+import { environment } from '../env'
 import { appendSlices } from './importer/slices/scan-for-spawners-utils'
 import { Capital } from './importer/slices/types/capitals'
 import {
@@ -24,7 +23,10 @@ import { readDynamicSliceFile, resolveDynamicSliceFiles } from './importer/slice
 import { arrayAppend, withProgressBar } from './utils'
 import { glob, readJSONFile, writeUTF8File } from './utils/file-utils'
 
-program.command('slices').action(async () => {
+program
+  .command('slices')
+  .description('File inspection/playground task. Used for inspecting files. Don\'t run it, if you don\'t know what it does')
+  .action(async () => {
   const rootDir = environment.nwConvertDir('live')
   const files = await glob(path.join(rootDir, '**', '*.capitals.json'))
   const samples: string[] = []
@@ -136,7 +138,13 @@ type TreeNode = {
   child: TreeNode
 }
 
-async function scan(rootDir: string, file: string, fileStack: string[], compStack: any[], crumb: string[]): Promise<TreeNode[]> {
+async function scan(
+  rootDir: string,
+  file: string,
+  fileStack: string[],
+  compStack: any[],
+  crumb: string[],
+): Promise<TreeNode[]> {
   const result: TreeNode[] = []
   if (fileStack.includes(file)) {
     return result
@@ -149,7 +157,13 @@ async function scan(rootDir: string, file: string, fileStack: string[], compStac
   return result
 }
 
-async function scanFile(rootDir: string, file: string, stack: string[], compStack: any[], crumb: string[]): Promise<TreeNode[]> {
+async function scanFile(
+  rootDir: string,
+  file: string,
+  stack: string[],
+  compStack: any[],
+  crumb: string[],
+): Promise<TreeNode[]> {
   const result: TreeNode[] = []
   if (!file) {
     return result
@@ -213,14 +227,18 @@ async function scanFile(rootDir: string, file: string, stack: string[], compStac
         const vitalId = component.baseclass1.m_serverfacetptr?.m_vitalstablerowid
         doSample = doSample || !!vitalId
         if (vitalId) {
-          arrayAppend(localCrumb, vitalId)
+          // localCrumb.push(
+          //   `${component.__type} ${vitalId} ${component.baseclass1.m_serverfacetptr.m_vitalslevel} ${component.baseclass1.m_serverfacetptr.m_useterritoryleveloverride}`,
+          // )
+          arrayAppend(localCrumb, vitalId.toLowerCase())
         }
       }
       if (isVitalsComponent(component)) {
         const vitalId = component.m_rowreference
         doSample = doSample || !!vitalId
         if (vitalId) {
-          arrayAppend(localCrumb, vitalId)
+          // localCrumb.push(`${component.__type} ${vitalId}`)
+          arrayAppend(localCrumb, vitalId.toLowerCase())
         }
       }
       // if (isActionListComponent(component)) {
@@ -246,13 +264,20 @@ async function scanFile(rootDir: string, file: string, stack: string[], compStac
       continue
     }
 
-    if (localCrumb.length > 2) {
-      fs.appendFileSync(environment.tmpDir('slices-scan-dup-vitals.txt'), JSON.stringify({
-        crumb,
-        file: file.replace(/\\/g, '/'),
-        stack: stack.map((it) => it.replace(/\\/g, '/')),
-        compStack: [...compStack, uniq(components).sort()]
-      }, null, 2) + ',\n')
+    if (localCrumb.length && JSON.stringify(compStack).includes('AreaSpawnerComponent-0')) {
+      fs.appendFileSync(
+        environment.tmpDir('slices-scan-area0-vitals.txt'),
+        JSON.stringify(
+          {
+            localCrumb,
+            file: file.replace(/\\/g, '/'),
+            stack: stack.map((it) => it.replace(/\\/g, '/')),
+            compStack: [...compStack, uniq(components).sort()],
+          },
+          null,
+          2,
+        ) + ',\n',
+      )
     }
 
     if (!children.length) {
@@ -263,18 +288,20 @@ async function scanFile(rootDir: string, file: string, stack: string[], compStac
       continue
     }
     for (const child of children) {
-      const tree = await scanFile(rootDir, child, stack, [...compStack, uniq(components).sort()], localCrumb).then((list) => {
-        return list.filter((it) =>
-          treeHasComponents(it, [
-            'VariationDataComponent',
-            'GatherableControllerComponent',
-            'AIVariantProviderComponent',
-            'VitalsComponent',
-            'ActionListComponent',
-            'ProjectileSpawnerComponent',
-          ]),
-        )
-      })
+      const tree = await scanFile(rootDir, child, stack, [...compStack, uniq(components).sort()], localCrumb).then(
+        (list) => {
+          return list.filter((it) =>
+            treeHasComponents(it, [
+              'VariationDataComponent',
+              'GatherableControllerComponent',
+              'AIVariantProviderComponent',
+              'VitalsComponent',
+              'ActionListComponent',
+              'ProjectileSpawnerComponent',
+            ]),
+          )
+        },
+      )
       for (const child of tree) {
         result.push({
           components: uniq(components).sort(),
