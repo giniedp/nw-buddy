@@ -1,7 +1,7 @@
 import { chain, groupBy, sortBy, sumBy, uniq } from 'lodash'
 import * as path from 'path'
 import { environment } from '../../../env'
-import { arrayAppend, assmebleWorkerTasks, glob, withProgressPool, writeJSONFile } from '../../utils'
+import { arrayAppend, assmebleWorkerTasks, glob, readJSONFile, withProgressPool, writeJSONFile } from '../../utils'
 import { pathToDatatables } from '../tables'
 import {
   GatherablesTableSchema,
@@ -10,12 +10,14 @@ import {
   VitalsTableSchema,
 } from '../tables/schemas'
 
+import { z } from 'zod'
 import { CaseInsensitiveSet } from '../../utils/caseinsensitive-set'
 import { readAndExtractCrcValues } from './create-crc-file'
-import { VariationScanRow } from './scan-for-variants'
 import { VitalScanRow } from './scan-for-models'
+import { VariationScanRow } from './scan-for-variants'
 import { TerritoryScanRow } from './scan-for-zones'
 import { GatherableScanRow, LoreScanRow } from './scanner.task'
+import { isPointInAABB, isPointInPolygon } from './utils'
 import { WORKER_TASKS } from './worker.tasks'
 
 interface VitalMetadata {
@@ -145,6 +147,9 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
     }),
   })
 
+  await applyTerritoryLevel(inputDir, vitals, territories)
+  await applyDefaultLevel(inputDir, vitals)
+
   return {
     vitals: toSortedVitals(vitals),
     gatherables: toSortedGatherables(gatherables),
@@ -199,12 +204,12 @@ function collectVitalsRows(rows: VitalScanRow[], data: Record<string, VitalMetad
     }
     if (row.level) {
       arrayAppend(bucket.levels, row.level)
+    } else {
     }
     if (row.categoryID) {
       arrayAppend(bucket.catIDs, row.categoryID.toLowerCase())
     }
     if (row.position) {
-
       bucket.spawns.push({
         level: row.level,
         territoryLevel: row.territoryLevel,
@@ -212,7 +217,6 @@ function collectVitalsRows(rows: VitalScanRow[], data: Record<string, VitalMetad
         mapId: row.mapID?.toLowerCase(),
         category: row.categoryID?.toLowerCase(),
         damagetable: damagetable,
-
       })
     }
   }
@@ -295,6 +299,76 @@ function collectTerritoriesRows(rows: TerritoryScanRow[], data: Record<string, T
   }
 }
 
+async function applyDefaultLevel(rootDir: string, vitals: Record<string, VitalMetadata>) {
+  const dataFiles = await glob([
+    path.join(rootDir, 'sharedassets/springboardentitites/datatables/javelindata_vitals.json'),
+    path.join(rootDir, 'sharedassets/springboardentitites/datatables/**/javelindata_vitals_*.json'),
+  ])
+  const schema = z.array(z.object({ VitalsID: z.string(), Level: z.number().optional() }))
+  const levelMap = await Promise.all(dataFiles.map((file) => readJSONFile(file, schema)))
+    .then((list) => list.flat())
+    .then((list) => new Map(list.map((it) => [it.VitalsID.toLowerCase(), it.Level])))
+
+  for (const [vitalId, vital] of Object.entries(vitals)) {
+    for (const spawn of vital.spawns) {
+      if (spawn.level) {
+        continue
+      }
+      if (!levelMap.has(vitalId.toLowerCase())) {
+        console.log('Missing level for', vitalId)
+        continue
+      }
+      spawn.level = levelMap.get(vitalId.toLowerCase())
+    }
+  }
+
+  return vitals
+}
+
+async function applyTerritoryLevel(
+  rootDir: string,
+  vitals: Record<string, VitalMetadata>,
+  territories: Record<string, TerritoryMetadata>,
+) {
+  // only area definitions have AIVariantLevelOverride
+  const areaDefinitionsFile = path.join(
+    rootDir,
+    'sharedassets/springboardentitites/datatables/javelindata_areadefinitions.json',
+  )
+  const schema = z.array(z.object({ TerritoryID: z.number(), AIVariantLevelOverride: z.number() }))
+  const territoriesWithLevel = await readJSONFile(areaDefinitionsFile, schema).then((list) => {
+    return list.map((it) => {
+      return {
+        level: it.AIVariantLevelOverride,
+        territoryID: it.TerritoryID,
+        ...territories[it.TerritoryID],
+      }
+    })
+  })
+
+  for (const vital of Object.values(vitals)) {
+    for (const territory of territoriesWithLevel) {
+      for (const spawn of vital.spawns) {
+        if (!spawn.territoryLevel) {
+          continue
+        }
+        if (spawn.mapId !== 'newworld_vitaeeterna') {
+          continue
+        }
+        if (!isPointInAABB(spawn.position, territory.zones[0].min, territory.zones[0].max)) {
+          continue
+        }
+        if (!isPointInPolygon(spawn.position, territory.zones[0].shape)) {
+          continue
+        }
+        spawn.level = territory.level
+      }
+    }
+  }
+
+  return vitals
+}
+
 function toSortedVitals(data: Record<string, VitalMetadata>) {
   return Array.from(Object.entries(data))
     .sort((a, b) => compareStrings(a[0], b[0]))
@@ -305,7 +379,7 @@ function toSortedVitals(data: Record<string, VitalMetadata>) {
         mapIDs: Array.from(mapIDs).sort(),
         models: Array.from(models).sort(),
         catIDs: Array.from(catIDs).sort(),
-        levels: Array.from(levels).sort(),
+        levels: [],
         lvlSpanws: {} as Record<
           string,
           Array<{
@@ -322,10 +396,6 @@ function toSortedVitals(data: Record<string, VitalMetadata>) {
         if (spawn.level) {
           levels.push(spawn.level)
         }
-        // TODO: use territory level override
-        // if (spawn.territoryLevel) {
-        //   levels.push('t')
-        // }
         result.lvlSpanws[mapId] = result.lvlSpanws[mapId] || []
         result.lvlSpanws[mapId].push({
           l: levels,
@@ -347,6 +417,13 @@ function toSortedVitals(data: Record<string, VitalMetadata>) {
           .sortBy((it) => it.p.join(','))
           .value()
       }
+      result.levels = uniq(
+        Object.values(result.lvlSpanws)
+          .map((list) => list.map((it) => it.l).flat())
+          .flat(),
+      )
+        .sort()
+        .filter((it) => !!it)
       return result
     })
 }
@@ -495,10 +572,7 @@ function toSortedLoreItems(data: Record<string, LoreMetadata>) {
       const result = {
         loreID: id,
         mapIDs: Array.from(mapIDs).sort(),
-        loreSpawns: {} as Record<
-          string,
-          Array<number[]>
-        >,
+        loreSpawns: {} as Record<string, Array<number[]>>,
       }
       spawns.sort((a, b) => compareStrings(a.mapId, b.mapId))
       for (const spawn of spawns) {

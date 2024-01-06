@@ -24,7 +24,7 @@ export async function scanForVitals(inputDir: string, sliceFile: string): Promis
     return result
   }
 
-  const data = scanForData(sliceComponent, inputDir, sliceFile)
+  const data = await scanForData(sliceComponent, inputDir, sliceFile)
   for (const item of data || []) {
     if (item.vitalsID) {
       result.push({

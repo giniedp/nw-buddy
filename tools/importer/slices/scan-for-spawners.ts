@@ -1,6 +1,6 @@
 import {
   ScannedData,
-  readCached,
+  readDynamicSliceFileCached,
   scanForAreaSpawners,
   scanForData,
   scanForEncounterSpawner,
@@ -8,7 +8,7 @@ import {
   scanForPrefabSpawner,
 } from './scan-for-spawners-utils'
 import { AZ__Entity } from './types/dynamicslice'
-import { matrixMapPositions, resolveDynamicSliceFiles } from './utils'
+import { resolveDynamicSliceFiles, rotatePoints, translatePoints } from './utils'
 
 export type SpawnerScanResult = {
   variantID?: string
@@ -48,6 +48,15 @@ async function* scan(rootDir: string, file: string, stack: string[]) {
     }
   }
 }
+const DEBUG_VITAL = '' // 'Undead_Admiral_Brute_DG_Cutlass_00'
+function debugVital(result: SpawnerScanResult, file: string) {
+  if (!DEBUG_VITAL) {
+    return
+  }
+  if (result?.vitalsID === DEBUG_VITAL) {
+    console.log('DEBUG', result.vitalsID, result.positions)
+  }
+}
 async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncGenerator<SpawnerScanResult> {
   if (!file) {
     return
@@ -56,12 +65,12 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
     return
   }
   stack = [...stack, file]
-  const component = await readCached(file)
+  const component = await readDynamicSliceFileCached(file)
   if (!component) {
     return
   }
 
-  const data = scanForData(component, rootDir, file)
+  const data = await scanForData(component, rootDir, file)
   const unconsumed = [...data]
   function consume(entity: AZ__Entity) {
     const index = unconsumed.findIndex((it) => it.entity === entity)
@@ -92,9 +101,16 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
 
   const pointSpawns = await scanForPointSpawners(component, rootDir, file)
   for (const spawn of pointSpawns || []) {
-    spawn.position = [0, 0, 0]
+    spawn.translation = [0, 0, 0]
     for await (const item of scan(rootDir, spawn.slice, stack)) {
-      const result = mergeData(item, consume(spawn.entity))
+      const result = mergeData(
+        {
+          ...item,
+          positions: translatePoints(rotatePoints(item.positions, spawn.rotation), spawn.translation),
+        },
+        consume(spawn.entity),
+      )
+      debugVital(result, file)
       yield result
     }
   }
@@ -105,49 +121,56 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
       const result = mergeData(
         {
           ...item,
-          positions: matrixMapPositions([spawn.position], item.positions),
+          positions: translatePoints(rotatePoints(item.positions, spawn.rotation), spawn.translation),
         },
         consume(spawn.entity),
       )
+      debugVital(result, file)
       yield result
     }
   }
 
   const encounterSpawns = await scanForEncounterSpawner(component, rootDir, file)
   for (const spawn of encounterSpawns || []) {
-    const positions = matrixMapPositions([[0, 0, 0]], spawn.positions)
+    const locations = spawn.locations?.length ? spawn.locations : [{ translation: [0, 0, 0], rotation: null }]
     for await (const item of scan(rootDir, spawn.slice, stack)) {
-      const result = mergeData(
-        {
-          ...item,
-          positions: matrixMapPositions(positions, item.positions),
-        },
-        consume(spawn.entity),
-      )
-      yield result
+      for (const location of locations) {
+        const result = mergeData(
+          {
+            ...item,
+            positions: translatePoints(rotatePoints(item.positions, location.rotation), location.translation),
+          },
+          consume(spawn.entity),
+        )
+        debugVital(result, file)
+        yield result
+      }
     }
   }
 
   const areaSpawns = await scanForAreaSpawners(component, rootDir, file)
   for (const spawn of areaSpawns || []) {
-    if (!spawn.positions?.length) {
+    if (!spawn.locations?.length) {
       continue
     }
     for await (const item of scan(rootDir, spawn.slice, stack)) {
-      const result = mergeData(
-        {
-          ...item,
-          positions: matrixMapPositions(spawn.positions, item.positions),
-        },
-        consume(spawn.entity),
-      )
-      yield result
+      for (const location of spawn.locations) {
+        const result = mergeData(
+          {
+            ...item,
+            positions: translatePoints(rotatePoints(item.positions, location.rotation), location.translation),
+          },
+          consume(spawn.entity),
+        )
+        debugVital(result, file)
+        yield result
+      }
     }
   }
 
   for (const item of unconsumed) {
     if (item.vitalsID) {
-      yield {
+      const result: SpawnerScanResult = {
         vitalsID: item.vitalsID,
         categoryID: item.categoryID,
         level: item.level,
@@ -156,6 +179,8 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         modelFile: item.modelFile,
         positions: [[0, 0, 0]],
       }
+      debugVital(result, file)
+      yield result
     }
     if (item.gatherableID || item.variantID) {
       yield {

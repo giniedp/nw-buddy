@@ -22,7 +22,7 @@ import {
   isVitalsComponent,
 } from './types/dynamicslice'
 
-import { arrayAppend } from '../../utils'
+import { arrayAppend, readJSONFile } from '../../utils'
 import { cached as cache, findAZEntityById, readDynamicSliceFile, resolveDynamicSliceFiles } from './utils'
 
 function cached<T>(key: string, task: (key: string) => Promise<T>): Promise<T> {
@@ -30,17 +30,27 @@ function cached<T>(key: string, task: (key: string) => Promise<T>): Promise<T> {
   return cache(key, task)
 }
 
-export function readCached(file: string) {
-  return cached(`readCached ${file}`, () => {
+export function readDynamicSliceFileCached(file: string) {
+  return cached(`readDynamicSliceFileCached ${file}`, () => {
     return readDynamicSliceFile(file)
+  })
+}
+
+export function readJsonFileCached<T>(file: string) {
+  return cached(`readJsonFileCached ${file}`, () => {
+    return readJSONFile<T>(file)
   })
 }
 
 export async function scanForAreaSpawners(sliceComponent: SliceComponent, rootDir: string, file) {
   return cached(`scanForAreaSpawners ${file}`, async () => {
-    const result: Array<{ entity: AZ__Entity; slice: string; positions: number[][] }> = []
+    const result: Array<{
+      entity: AZ__Entity
+      slice: string
+      locations: Array<{ translation: number[]; rotation: number[][] }>
+    }> = []
     for (const entity of sliceComponent.entities || []) {
-      const positions: number[][] = []
+      const locations: (typeof result)[0]['locations'] = []
       const sliceFiles: string[] = []
       for (const component of entity.components || []) {
         if (!isAreaSpawnerComponent(component)) {
@@ -56,19 +66,20 @@ export async function scanForAreaSpawners(sliceComponent: SliceComponent, rootDi
         for (const location of facet.m_locations || []) {
           const entity = findAZEntityById(sliceComponent, location.entityid as any)
           const transform = entity?.components?.find((it) => isGameTransformComponent(it)) as GameTransformComponent
-          const translation = transform?.m_worldtm?.__value?.['translation'] as number[]
+          const translation = getTranslation(transform)
+          const rotation = getRotation(transform)
           if (Array.isArray(translation)) {
-            positions.push([...translation])
+            locations.push({
+              translation,
+              rotation,
+            })
           }
         }
-      }
-      if (!positions.length) {
-        continue
       }
       for (const slice of sliceFiles) {
         result.push({
           slice,
-          positions,
+          locations,
           entity,
         })
       }
@@ -79,25 +90,32 @@ export async function scanForAreaSpawners(sliceComponent: SliceComponent, rootDi
 
 export async function scanForPointSpawners(sliceComponent: SliceComponent, rootDir: string, file: string) {
   return cached(`scanForPointSpawners ${file}`, async () => {
-    const result: Array<{ entity: AZ__Entity; slice: string; position: number[] }> = []
+    const result: Array<{
+      entity: AZ__Entity
+      slice: string
+      translation: number[]
+      rotation: number[][]
+    }> = []
     for (const entity of sliceComponent.entities || []) {
       const sliceFiles: string[] = []
-      let position: number[]
+      let translation: number[]
+      let rotation: number[][]
       for (const component of entity.components || []) {
         if (isGameTransformComponent(component)) {
-          position = position || getTranslation(component)
+          translation = translation || getTranslation(component)
+          rotation = rotation || getRotation(component)
         }
-        if (!isPointSpawnerComponent(component)) {
-          continue
+        if (isPointSpawnerComponent(component)) {
+          await appendSlices(sliceFiles, rootDir, component.baseclass1.m_sliceasset?.hint)
+          await appendSlices(sliceFiles, rootDir, component.baseclass1.m_aliasasset?.hint)
         }
-        await appendSlices(sliceFiles, rootDir, component.baseclass1.m_sliceasset?.hint)
-        await appendSlices(sliceFiles, rootDir, component.baseclass1.m_aliasasset?.hint)
       }
       for (const slice of sliceFiles) {
         result.push({
           slice,
-          position,
           entity,
+          rotation,
+          translation,
         })
       }
     }
@@ -107,7 +125,11 @@ export async function scanForPointSpawners(sliceComponent: SliceComponent, rootD
 
 export async function scanForEncounterSpawner(sliceComponent: SliceComponent, rootDir: string, file: string) {
   return cached(`scanForEncounterSpawner ${file}`, async () => {
-    const result: Array<{ entity: AZ__Entity; slice: string; positions: number[][] }> = []
+    const result: Array<{
+      entity: AZ__Entity
+      slice: string
+      locations: Array<{ translation: number[]; rotation: number[][] }>
+    }> = []
 
     for (const entity of sliceComponent.entities || []) {
       for (const component of entity.components || []) {
@@ -123,20 +145,24 @@ export async function scanForEncounterSpawner(sliceComponent: SliceComponent, ro
           await appendSlices(sliceFiles, rootDir, spawn.m_sliceasset.hint)
           await appendSlices(sliceFiles, rootDir, spawn.m_aliasasset.hint)
 
-          let positions: number[][] = []
+          const locations: (typeof result)[0]['locations'] = []
           for (const location of spawn.m_spawnlocations || []) {
             const entity = findAZEntityById(sliceComponent, location.entityid as any)
             const transform = entity?.components?.find((it) => isGameTransformComponent(it)) as GameTransformComponent
-            const position = getTranslation(transform)
-            if (position) {
-              positions.push([...position])
+            const translation = getTranslation(transform)
+            const rotation = getRotation(transform)
+            if (Array.isArray(translation)) {
+              locations.push({
+                translation,
+                rotation,
+              })
             }
           }
 
           for (const slice of sliceFiles) {
             result.push({
               slice,
-              positions,
+              locations,
               entity,
             })
           }
@@ -149,27 +175,35 @@ export async function scanForEncounterSpawner(sliceComponent: SliceComponent, ro
 
 export async function scanForPrefabSpawner(sliceComponent: SliceComponent, rootDir: string, file: string) {
   return cached(`scanForPrefabSpawner ${file}`, async () => {
-    const result: Array<{ entity: AZ__Entity; slice: string; position: number[] }> = []
+    const result: Array<{
+      entity: AZ__Entity
+      slice: string
+      translation: number[]
+      rotation: number[][]
+    }> = []
     for (const entity of sliceComponent.entities || []) {
       const sliceFiles: string[] = []
-      let position: number[]
+      let translation: number[]
+      let rotation: number[][]
       for (const component of entity.components || []) {
         if (isGameTransformComponent(component)) {
-          position = position || getTranslation(component)
+          translation = translation || getTranslation(component)
+          rotation = rotation || getRotation(component)
         }
         if (isPrefabSpawnerComponent(component)) {
           await appendSlices(sliceFiles, rootDir, component.m_sliceasset?.hint)
           await appendSlices(sliceFiles, rootDir, component.m_aliasasset?.hint)
         }
       }
-      if (!position) {
+      if (!translation) {
         continue
       }
       for (const slice of sliceFiles) {
         result.push({
           slice,
-          position,
+          translation,
           entity,
+          rotation,
         })
       }
     }
@@ -193,7 +227,7 @@ export interface ScannedData {
   loreIDs?: string[]
 }
 
-export function scanForData(sliceComponent: SliceComponent, rootDir: string, file: string) {
+export async function scanForData(sliceComponent: SliceComponent, rootDir: string, file: string) {
   const result: ScannedData[] = []
   for (const entity of sliceComponent?.entities || []) {
     const node: ScannedData = {}
@@ -242,7 +276,7 @@ export function scanForData(sliceComponent: SliceComponent, rootDir: string, fil
     if (Object.keys(node).length) {
       result.push({
         entity,
-        ...node
+        ...node,
       })
     }
   }
@@ -250,8 +284,8 @@ export function scanForData(sliceComponent: SliceComponent, rootDir: string, fil
 }
 
 const AMMO_ID_TO_VARIANT_ID = {
-  'WinterConv_GleamiteLauncher_Projectile': 'WinterConv_GleamiteChunk',
-  'WinterConv_GleamiteLauncher_Projectile_Rapid': 'WinterConv_GleamiteShard',
+  WinterConv_GleamiteLauncher_Projectile: 'WinterConv_GleamiteChunk',
+  WinterConv_GleamiteLauncher_Projectile_Rapid: 'WinterConv_GleamiteShard',
 }
 
 export async function appendSlices(collection: string[], rootDir: string, hint: string) {
@@ -272,4 +306,34 @@ export function getTranslation(component: GameTransformComponent) {
     return [...translation]
   }
   return null
+}
+
+export function getRotation(component: GameTransformComponent) {
+  const data = component?.m_worldtm?.__value?.['rotation'] as number[][]
+  if (!Array.isArray(data)) {
+    return null
+  }
+  if (data.length !== 3) {
+    return null
+  }
+  for (const row of data) {
+    if (!Array.isArray(row) || row.length !== 3) {
+      return null
+    }
+  }
+  // skip if it is an identity matrix
+  if (
+    data[0][0] === 1 &&
+    data[0][1] === 0 &&
+    data[0][2] === 0 &&
+    data[1][0] === 0 &&
+    data[1][1] === 1 &&
+    data[1][2] === 0 &&
+    data[2][0] === 0 &&
+    data[2][1] === 0 &&
+    data[2][2] === 1
+  ) {
+    return null
+  }
+  return data
 }

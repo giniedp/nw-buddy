@@ -60,7 +60,7 @@ async function inspectModels() {
     if (!component) {
       return
     }
-    const data = scanForData(component, rootDir, file)
+    const data = await scanForData(component, rootDir, file)
     for (const item of data) {
       if (item.modelFile && item.vitalsID) {
         console.log(file)

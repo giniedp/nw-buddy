@@ -120,23 +120,52 @@ export function findAZEntityById(component: SliceComponent, id: number) {
   return null
 }
 
-export function translatePositions(positions: Array<number[]>, translation?: number[]) {
+export function translatePoints(points: Array<number[]>, translation?: number[]) {
   if (!translation) {
-    return positions
+    return points
   }
-  return positions.map(([x, y, z]) => [x + translation[0], y + translation[1], z + translation[2]])
+  return points.map(([x, y, z]) => [x + translation[0], y + translation[1], z + translation[2]])
 }
 
-export function matrixMapPositions(parent: Array<number[]>, child?: Array<number[]>) {
-  const result = []
-  for (const [px, py, pz] of parent) {
-    if (!child?.length) {
-      result.push([px, py, pz])
-      continue
-    }
-    for (const [cx, cy, cz] of child) {
-      result.push([px + cx, py + cy, pz + cz])
+export function rotatePoints(points: Array<number[]>, mRot3x3?: number[][]) {
+  if (!points?.length || !mRot3x3?.length) {
+    return points
+  }
+  return points.map(([x, y, z]) => [
+    x * mRot3x3[0][0] + y * mRot3x3[1][0] + z * mRot3x3[2][0],
+    x * mRot3x3[0][1] + y * mRot3x3[1][1] + z * mRot3x3[2][1],
+    x * mRot3x3[0][2] + y * mRot3x3[1][2] + z * mRot3x3[2][2],
+  ])
+}
+
+export function isPointInAABB(point: number[], min: number[], max: number[]) {
+  const x = point[0]
+  const y = point[1]
+  if (x < min[0] || x > max[0] || y < min[1] || y > max[1]) {
+    return false
+  }
+  return true
+}
+
+export function isPointInPolygon(point: number[], vs: number[][]) {
+  // ray-casting algorithm based on
+  // https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html
+
+  const x = point[0]
+  const y = point[1]
+
+  let inside = false
+  for (let i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+    const xi = vs[i][0]
+    const yi = vs[i][1]
+    const xj = vs[j][0]
+    const yj = vs[j][1]
+
+    var intersect = yi > y != yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi
+    if (intersect) {
+      inside = !inside
     }
   }
-  return result
+
+  return inside
 }
