@@ -381,3 +381,30 @@ export function vitalColSpawnCount(util: VitalTableUtils) {
     },
   })
 }
+
+export function vitalColSpawnLevels(util: VitalTableUtils) {
+  return util.colDef<number[]>({
+    colId: 'spawnLevels',
+    headerValueGetter: () => 'Spawn Levels',
+    getQuickFilterText: () => '',
+    filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      showSearch: false,
+      optionsGetter: ({ data }) => {
+        const levels: number[] = data?.$metadata?.levels
+        if (!levels?.length) {
+          return []
+        }
+        return levels.map((it) => {
+          return {
+            id: it as any,
+            label: `Level ${String(it).padStart(2, '0')}`,
+          }
+        })
+      }
+    }),
+    valueGetter: ({ data }) => {
+      return data?.$metadata?.levels
+    },
+  })
+}

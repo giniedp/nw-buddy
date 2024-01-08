@@ -52,6 +52,16 @@
       </tr>
     }
   }
+  @if (spawnLevels(); as levels) {
+    <tr>
+      <td class="py-1 px-0 text-nw-description" colspan="2">Spawn Levels</td>
+    </tr>
+    <tr>
+      <td class="font-bold text-white py-0 px-1" colspan="2">
+        {{ levels }}
+      </td>
+    </tr>
+  }
   @if (aliasNames()?.length) {
     <tr>
       <td class="py-1 px-0 text-nw-description" colspan="2">Alias Names</td>

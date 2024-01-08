@@ -10,6 +10,7 @@ import { VitalDetailStore } from './vital-detail.store'
 import { IconsModule } from '~/ui/icons'
 import { svgInfo } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
+import { selectSignal } from '~/utils'
 
 export interface DamageEffectiveness {
   value: number
@@ -40,6 +41,7 @@ export class VitalDetailStatsComponent {
   protected armor = toSignal(this.store.armor$)
   protected gearScore = toSignal(this.store.gearScore$)
   protected damage = toSignal(this.store.damage$)
+  protected spawnLevels = selectSignal(this.store.metadata$, (it) => it?.levels?.join(', '))
 
   protected infoIcon = svgInfo
 }

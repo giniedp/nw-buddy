@@ -35,6 +35,7 @@ import {
   vitalColLootTags,
   vitalColName,
   vitalColSpawnCount,
+  vitalColSpawnLevels
 } from './vital-table-cols'
 import { CaseInsensitiveSet } from '~/utils'
 import { VitalGridCellComponent } from './vital-cell.component'
@@ -113,6 +114,7 @@ function buildVitalTableOptions(util: TableGridUtils<VitalTableRecord>) {
       vitalColLootTags(util),
       vitalColExpedition(util),
       vitalColSpawnCount(util),
+      vitalColSpawnLevels(util),
       vitalColDmgEffectivenessSlash(util),
       vitalColDmgEffectivenessThrust(util),
       vitalColDmgEffectivenessStrike(util),
