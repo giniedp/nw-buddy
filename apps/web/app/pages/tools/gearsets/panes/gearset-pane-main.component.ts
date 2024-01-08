@@ -96,6 +96,7 @@ export class GearsetPaneMainComponent {
             .find((affixId) => {
               return !!affix.get(affixId)?.DamagePercentage || !!affix.get(affixId)?.PreferHigherScaling
             })
+
           return {
             weapon1ItemId: weapon1?.itemId,
             weapon1GearScore: weapon1?.gearScore,

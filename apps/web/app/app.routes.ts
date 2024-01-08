@@ -82,6 +82,8 @@ const routes: Routes = [
   { path: 'about', loadChildren: () => import('./pages/misc/about').then((m) => m.AboutModule) },
   { path: 'preferences', loadChildren: () => import('./pages/misc/preferences').then((m) => m.PreferencesModule) },
 
+  { path: 'dmg-sandbox', loadChildren: () => import('./pages/tools/dmg-sandbox').then((m) => m.DmgSandbocModule) },
+
   {
     path: 'tracking',
     children: [
