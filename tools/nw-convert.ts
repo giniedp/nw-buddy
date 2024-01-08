@@ -102,7 +102,7 @@ program
         conversions: [
           {
             format: 'png',
-            pattern: ['**/images/**/*.dds', '**/images/**/*.png'],
+            pattern: ['**/images/**/*.dds', '**/images/**/*.png', '**/worldtiles/**/*.dds'],
           },
         ],
       })
@@ -309,9 +309,11 @@ async function convertAssetCatalog(inputDir: string, outputDir: string) {
 }
 
 function sizeOf(bytes: number) {
-  if (bytes == 0) { return "0.00 B"; }
-  var e = Math.floor(Math.log(bytes) / Math.log(1024));
-  return (bytes/Math.pow(1024, e)).toFixed(2)+' '+' KMGTP'.charAt(e)+'B';
+  if (bytes == 0) {
+    return '0.00 B'
+  }
+  var e = Math.floor(Math.log(bytes) / Math.log(1024))
+  return (bytes / Math.pow(1024, e)).toFixed(2) + ' ' + ' KMGTP'.charAt(e) + 'B'
 }
 
 function maxValue(values: number[], stride: number = 1) {

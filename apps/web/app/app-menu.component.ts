@@ -16,6 +16,9 @@ import { MenuCloseDirective } from './ui/layout/menu.directive'
   selector: 'app-menu',
   templateUrl: './app-menu.component.html',
   imports: [CommonModule, NwModule, IconsModule, RouterModule, MenuCloseDirective],
+  host: {
+    class: 'flex-1 flex flex-col'
+  },
   animations: [
     trigger('list', [
       state(
@@ -23,14 +26,14 @@ import { MenuCloseDirective } from './ui/layout/menu.directive'
         style({
           overflow: 'hidden',
           height: '*',
-        })
+        }),
       ),
       state(
         'false',
         style({
           overflow: 'hidden',
           height: '36px',
-        })
+        }),
       ),
       transition('* <=> *', [
         group([
@@ -48,7 +51,7 @@ import { MenuCloseDirective } from './ui/layout/menu.directive'
           display: 'block',
           opacity: 1,
           transform: 'translateX(0)',
-        })
+        }),
       ),
       state(
         'false',
@@ -56,7 +59,7 @@ import { MenuCloseDirective } from './ui/layout/menu.directive'
           display: 'none',
           opacity: 0,
           transform: 'translateX(-0.5rem)',
-        })
+        }),
       ),
       transition('true <=> false', [style({ display: 'block' }), animate('0.3s ease')]),
       transition('false <=> true', [style({ display: 'block' }), animate('0.3s ease')]),
@@ -64,20 +67,18 @@ import { MenuCloseDirective } from './ui/layout/menu.directive'
   ],
 })
 export class AppMenuComponent
-  extends ComponentStore<{ menu: AppMenuGroup[]; active: Record<string, boolean> }>
+  extends ComponentStore<{ menu: AppMenuGroup[]; active: string }>
   implements OnInit
 {
-  private readonly menu$ = this.select(({ menu }) => menu)
-  private readonly active$ = this.select(({ active }) => active)
-  protected readonly vm$ = this.select(this.menu$, this.active$, (menu, active) => {
-    return {
-      menu: menu.map((group) => {
-        return {
-          ...group,
-          active: !!(!group.label || active[group.category] || false),
-        }
-      }),
-    }
+  private readonly menu = this.selectSignal(({ menu }) => menu)
+  private readonly active = this.selectSignal(({ active }) => active)
+  protected readonly groups = this.selectSignal(this.menu, this.active, (menu, active) => {
+    return menu.map((group, i) => {
+      return {
+        ...group,
+        active: group.category === active,
+      }
+    })
   })
 
   protected readonly chevronIcon = svgChevronLeft
@@ -85,32 +86,24 @@ export class AppMenuComponent
   public constructor(private preferences: AppPreferencesService) {
     super({
       menu: APP_MENU,
-      active: null,
+      active: APP_MENU[0].category,
     })
   }
 
   public ngOnInit() {
-    const pref = this.preferences.appMenu
-    this.patchState({
-      active: pref.get() || { [APP_MENU[0].category]: true },
-    })
-    this.active$.pipe(takeUntil(this.destroy$)).subscribe((active) => {
-      pref.set(active)
-    })
+    // const pref = this.preferences.appMenu
+    // this.patchState({
+    //   active: APP_MENU[0].category,
+    // })
+    // this.select(({ active }) => active)
+    //   .pipe(takeUntil(this.destroy$))
+    //   .subscribe((active) => {
+    //     pref.set(active)
+    //   })
   }
 
   protected async onGroupActive(category: string) {
-    this.updateGroup(category, true)
+    this.patchState({ active: category})
   }
 
-  protected async updateGroup(category: string, isActive: boolean) {
-    this.patchState({
-      active: this.get(({ active }) => {
-        return {
-          ...(active || {}),
-          [category]: isActive,
-        }
-      }),
-    })
-  }
 }

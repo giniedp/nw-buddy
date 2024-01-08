@@ -16,8 +16,8 @@
         nwbMenu
       >
         <ion-content [scrollY]="false" [scrollX]="false">
-          <div class="h-full w-full layout-content bg-base-300">
-            <div class="layout-col layout-gap">
+          <app-menu class="h-full w-full bg-base-300">
+            <div header>
               @defer (on timer(2s)) {
                 @if (versionChanged()) {
                   <ul class="menu menu-compact flex-none m-0" @versionAlert>
@@ -27,9 +27,8 @@
                   </ul>
                 }
               }
-              <app-menu></app-menu>
             </div>
-          </div>
+          </app-menu>
         </ion-content>
       </ion-menu>
       <ion-content id="main-content" [scrollY]="false">

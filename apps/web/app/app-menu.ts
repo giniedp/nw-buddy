@@ -1,3 +1,5 @@
+import { svgDatabase, svgListCheck, svgUser } from "./ui/icons/svg"
+
 export interface AppMenuEntry {
   label: string
   path: string
@@ -8,13 +10,15 @@ export interface AppMenuEntry {
 export interface AppMenuGroup {
   category: string
   label: string
+  icon: string
   items: AppMenuEntry[]
 }
 
 export const APP_MENU: AppMenuGroup[] = [
   {
-    label: 'Database',
+    label: 'DB',
     category: 'database',
+    icon: svgDatabase,
     items: [
       { label: 'Items', path: '/items', icon: 'assets/icons/menu/items.png' },
       { label: 'Housing', path: '/housing', icon: 'assets/icons/tradeskills/furnishing.png' },
@@ -51,8 +55,9 @@ export const APP_MENU: AppMenuGroup[] = [
     ],
   },
   {
-    label: 'Character',
+    label: 'Char',
     category: 'character',
+    icon: svgUser,
     items: [
       { label: 'Levels', path: '/leveling', icon: 'assets/icons/menu/levels.png' },
       { label: 'Inventory', path: '/inventory', icon: 'assets/icons/menu/storage.png' },
@@ -62,8 +67,9 @@ export const APP_MENU: AppMenuGroup[] = [
     ],
   },
   {
-    label: 'Tracking',
+    label: 'Track',
     category: 'tracking',
+    icon: svgListCheck,
     items: [
       {
         label: 'Artifacts',
@@ -86,15 +92,7 @@ export const APP_MENU: AppMenuGroup[] = [
       },
     ],
   },
-  {
-    label: '',
-    category: 'misc',
-    items: [
-      { label: 'Links', path: '/links' },
-      { label: 'Preferences', path: '/preferences' },
-      { label: 'About', path: '/about' },
-    ],
-  },
+
 ]
 
 export const LANG_OPTIONS = [
