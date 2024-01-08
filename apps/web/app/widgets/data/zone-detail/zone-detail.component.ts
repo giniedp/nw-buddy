@@ -12,6 +12,7 @@ import { ZoneDetailStore } from './zone-detail.store'
   standalone: true,
   selector: 'nwb-zone-detail',
   templateUrl: './zone-detail.component.html',
+  styleUrl: './zone-detail.component.scss',
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ItemFrameModule, ZoneDetailMapComponent],
@@ -37,8 +38,25 @@ export class ZoneDetailComponent {
   public readonly recordId = selectSignal(this.store.recordId$, (it) => String(it))
   public readonly icon = toSignal(this.store.icon$)
   public readonly name = toSignal(this.store.name$)
+  public readonly image = toSignal(this.store.image$)
   public readonly description = toSignal(this.store.description$)
   public readonly type = toSignal(this.store.type$)
+  public readonly subtitle = selectSignal({
+    territory: this.store.territory$,
+    area: this.store.area$,
+    poi: this.store.poi$,
+  }, ({ territory, area, poi }) => {
+    if (territory) {
+      return [territory.RecommendedLevel, territory.MaximumLevel]
+        .filter((it) => !!it)
+        .map((it) => it > 65 ? `${65}+` : it)
+        .join(' - ')
+    }
+    if (area) {
+      return `AI Level: ${area.AIVariantLevelOverride}`
+    }
+    return ''
+  })
 
   public markVital(vital: Vitals) {
     this.store.patchState({ markedVitalId: vital?.VitalsID || null })

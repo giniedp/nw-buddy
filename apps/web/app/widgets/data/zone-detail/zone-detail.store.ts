@@ -45,6 +45,7 @@ export class ZoneDetailStore extends ComponentStore<{ recordId: string | number;
   public readonly metadata$ = selectStream(this.db.territoryMetadata(this.metaId$))
 
   public readonly icon$ = this.select(this.record$, getZoneIcon)
+  public readonly image$ = this.select(this.poi$, (it) => it?.TooltipBackground)
   public readonly name$ = selectStream(this.record$, getZoneName)
   public readonly description$ = selectStream(this.poi$, getZoneDescription)
   public readonly type$ = selectStream(this.record$, getZoneType)
