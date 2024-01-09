@@ -2,10 +2,24 @@ import { CommonModule } from '@angular/common'
 import { Component, computed, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ComponentStore } from '@ngrx/component-store'
-import { AttributeRef, NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE, damageFactorForAttrs, damageFactorForGS, damageFactorForLevel, damageForTooltip, damageForWeapon, damageScaleAttrs, patchPrecision } from '@nw-data/common'
+import {
+  AttributeRef,
+  NW_MAX_CHARACTER_LEVEL,
+  NW_MAX_GEAR_SCORE,
+  damageFactorForAttrs,
+  damageFactorForGS,
+  damageFactorForLevel,
+  damageForWeapon,
+  damageMitigationFactor,
+  damageScaleAttrs,
+  patchPrecision,
+  pvpGearScore,
+} from '@nw-data/common'
 import { takeUntil } from 'rxjs'
 import { NwDbService, NwModule } from '~/nw'
 import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
+import { InputSliderComponent } from '~/ui/input-slider'
+import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { humanize, selectStream } from '~/utils'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
@@ -25,14 +39,27 @@ export interface DmgSandboxState {
   empowerMods: number
   weaponScale: Record<AttributeRef, number>
   attrSums: Record<AttributeRef, number>
+
+  armorPenetration: number
+  attackerAvgGs: number
+  defenderAvgGs: number
+  defenderArmorRating: number
 }
 @Component({
   standalone: true,
   templateUrl: './dmg-sandbox-page.component.html',
-  imports: [CommonModule, FormsModule, NwModule, AttributesEditorModule, TooltipModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    NwModule,
+    AttributesEditorModule,
+    TooltipModule,
+    InputSliderComponent,
+    LayoutModule,
+  ],
   host: {
-    class: 'flex flex-col flex-1 overflow-hidden'
-  }
+    class: 'flex flex-col flex-1 overflow-hidden',
+  },
 })
 export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
   private db = inject(NwDbService)
@@ -54,6 +81,11 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
   public critMods = this.selectSignal(({ critMods }) => critMods)
   public critModsSum = computed(() => Math.max(0, this.critDamage() - 1 + this.critMods()))
   public empowerMods = this.selectSignal(({ empowerMods }) => empowerMods)
+
+  public armorPenetration = this.selectSignal(({ armorPenetration }) => armorPenetration)
+  public attackerAvgGs = this.selectSignal(({ attackerAvgGs }) => attackerAvgGs)
+  public defenderAvgGs = this.selectSignal(({ defenderAvgGs }) => defenderAvgGs)
+  public defenderArmorRating = this.selectSignal(({ defenderArmorRating }) => defenderArmorRating)
 
   protected weaponScale = this.selectSignal(({ weaponScale }) => weaponScale)
   protected attrSums = this.selectSignal(({ attrSums }) => attrSums)
@@ -90,6 +122,22 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
     })
   })
 
+  public dmgStandardMitigation = computed(() => {
+    return this.dmgStandard() * this.damageMitigationFactor()
+  })
+
+  public damageMitigationFactor = computed(() => {
+    return damageMitigationFactor({
+      gearScore: pvpGearScore({
+        attackerAvgGearScore: this.attackerAvgGs(),
+        defenderAvgGearScore: this.defenderAvgGs(),
+        weaponGearScore: this.weaponGearScore(),
+      }),
+      armorPenetration: this.armorPenetration(),
+      armorRating: this.defenderArmorRating(),
+    })
+  })
+
   public dmgCrit = computed(() => {
     return damageForWeapon({
       playerLevel: this.playerLevel(),
@@ -103,6 +151,10 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
       critMod: this.critModsSum(),
       empowerMod: this.empowerMods(),
     })
+  })
+
+  public dmgCritMitigation = computed(() => {
+    return this.dmgCrit() * this.damageMitigationFactor()
   })
 
   protected weaponTypes = NW_WEAPON_TYPES.map((it) => {
@@ -128,19 +180,23 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
       empowerMods: 0,
       attackOptions: [],
       weaponScale: {
-        'dex': 0,
-        'str': 0,
-        'int': 0,
-        'foc': 0,
-        'con': 0,
+        dex: 0,
+        str: 0,
+        int: 0,
+        foc: 0,
+        con: 0,
       },
       attrSums: {
-        'dex': 5,
-        'str': 5,
-        'int': 5,
-        'foc': 5,
-        'con': 5,
-      }
+        dex: 5,
+        str: 5,
+        int: 5,
+        foc: 5,
+        con: 5,
+      },
+      attackerAvgGs: 0,
+      defenderAvgGs: 0,
+      armorPenetration: 0,
+      defenderArmorRating: 0,
     })
 
     selectStream(
@@ -163,8 +219,8 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
               label: [
                 humanize(DamageID.replace(weaponType?.DamageTablePrefix ?? '', '')),
                 `| ${AttackType}`,
-                `| ${patchPrecision(DmgCoef) }`,
-              ].join(' ') ,
+                `| ${patchPrecision(DmgCoef)}`,
+              ].join(' '),
               value: DamageID,
             }
           }),

@@ -18,7 +18,7 @@ import {
   NW_ROLL_PERK_ON_UPGRADE_PERK_COUNT,
   NW_ROLL_PERK_ON_UPGRADE_TIER,
 } from './constants'
-import { damageForTooltip } from './damage'
+import { armorSetRating, damageForTooltip } from './damage'
 import { eqCaseInsensitive } from './utils/caseinsensitive-compare'
 import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
 import { PickByPrefix } from './utils/ts-types'
@@ -399,14 +399,14 @@ export function getArmorRatingElemental(item: ItemdefinitionsArmor | Itemdefinit
   if (!item?.ElementalArmorSetScaleFactor) {
     return 0
   }
-  return Math.pow(gearScore, 1.2) * item.ElementalArmorSetScaleFactor * item.ArmorRatingScaleFactor
+  return armorSetRating(gearScore) * item.ElementalArmorSetScaleFactor * item.ArmorRatingScaleFactor
 }
 
 export function getArmorRatingPhysical(item: ItemdefinitionsArmor | ItemdefinitionsWeapons, gearScore: number) {
   if (!item?.PhysicalArmorSetScaleFactor) {
     return 0
   }
-  return Math.pow(gearScore, 1.2) * item.PhysicalArmorSetScaleFactor * item.ArmorRatingScaleFactor
+  return armorSetRating(gearScore) * item.PhysicalArmorSetScaleFactor * item.ArmorRatingScaleFactor
 }
 
 export function getWeightLabel(weight: number): 'light' | 'medium' | 'heavy' {
@@ -565,7 +565,7 @@ const ATTRIBUTION_ICONS = new CaseInsensitiveMap(
     RabbitSeason: 'assets/icons/attribution/rabbit_season.png',
     Season: 'assets/icons/attribution/season.png',
     Unknown: 'assets/icons/attribution/unknown.png',
-  })
+  }),
 )
 
 export function getItemAttribution(item: ItemDefinitionMaster | Housingitems) {
@@ -584,7 +584,7 @@ export function getItemAttribution(item: ItemDefinitionMaster | Housingitems) {
 const EXPANSION_ICONS = new CaseInsensitiveMap(
   Object.entries({
     Expansion2023: 'assets/icons/attribution/expansion2023.png',
-  })
+  }),
 )
 
 export function getItemExpansion(expansionId: string) {
@@ -735,7 +735,7 @@ export function checkItemSet(items: ItemDefinitionMaster[]) {
 export function getItemSetFamilyName(item: Pick<ItemDefinitionMaster, 'ItemID'>) {
   const tokens = tokenizeItemID(item?.ItemID) || []
   const familyTokens = tokens.filter(
-    (token) => !ITEM_ID_TOKEN_TOKENS.includes(token) && !token.match(/^\d\d\d$/) && !token.match(/^t\d+$/)
+    (token) => !ITEM_ID_TOKEN_TOKENS.includes(token) && !token.match(/^\d\d\d$/) && !token.match(/^t\d+$/),
   )
   return familyTokens.join(' ')
 }

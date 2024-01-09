@@ -1,11 +1,15 @@
 import { ItemdefinitionsWeapons, WeaponTag } from '@nw-data/generated'
 import type { AttributeRef } from './attributes'
 import {
+  NW_ARMOR_SET_RATING_EXPONENT,
   NW_BASE_DAMAGE_COMPOUND_INCREASE,
   NW_BASE_DAMAGE_GEAR_SCORE_INTERVAL,
   NW_COMPOUND_INCREASE_DIMINISHING_MULTIPLIER,
   NW_DIMINISHING_GEAR_SCORE_THRESHOLD,
   NW_LEVEL_DAMAGE_MULTIPLIER,
+  NW_MAX_ARMOR_MITIGATION,
+  NW_MIN_ARMOR_MITIGATION,
+  NW_MIN_GEAR_SCORE,
   NW_MIN_POSSIBLE_WEAPON_GEAR_SCORE,
 } from './constants'
 
@@ -30,7 +34,7 @@ export function damageFactorForGS(gearScore: number) {
 }
 
 export function damageScaleAttrs(
-  weapon: Pick<ItemdefinitionsWeapons, 'ScalingDexterity' | 'ScalingStrength' | 'ScalingIntelligence' | 'ScalingFocus'>
+  weapon: Pick<ItemdefinitionsWeapons, 'ScalingDexterity' | 'ScalingStrength' | 'ScalingIntelligence' | 'ScalingFocus'>,
 ): Record<AttributeRef, number> {
   return {
     str: weapon?.ScalingStrength || 0,
@@ -136,6 +140,39 @@ export function damageForWeapon(options: {
   // })
   // console.debug('damageForWeapon', result)
   return result
+}
+
+export function armorSetRating(gearScore: number) {
+  return Math.pow(gearScore, NW_ARMOR_SET_RATING_EXPONENT)
+}
+
+export function armorRating(options: { gearScore: number; mitigation: number }) {
+  const x = armorSetRating(options.gearScore)
+  const y = options.mitigation
+  return Math.floor((x * y) / (1 - y))
+}
+
+export function armorMitigation(options: { gearScore: number; rating: number }) {
+  const x = armorSetRating(options.gearScore)
+  const y = options.rating
+  return Math.min(NW_MAX_ARMOR_MITIGATION, Math.max(NW_MIN_ARMOR_MITIGATION, y / (x + y)))
+}
+
+export function damageMitigationFactor(options: { gearScore: number; armorRating: number; armorPenetration: number }) {
+  const mitigation = armorMitigation({
+    gearScore: options.gearScore,
+    rating: options.armorRating,
+  })
+  return Math.max(0, 1 - mitigation * Math.max(0, 1 - options.armorPenetration))
+}
+
+export function pvpGearScore(options: {
+  weaponGearScore: number
+  attackerAvgGearScore: number
+  defenderAvgGearScore: number
+}) {
+  const gearScore = options.weaponGearScore + options.defenderAvgGearScore - options.attackerAvgGearScore
+  return Math.max(NW_MIN_GEAR_SCORE, gearScore)
 }
 
 const WEAPON_EFFECT_TO_TAG: Record<string, WeaponTag> = {

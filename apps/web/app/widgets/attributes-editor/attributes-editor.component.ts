@@ -120,7 +120,7 @@ export class AttributesEditorComponent implements OnInit {
   public ngOnInit() {
     const src = combineLatest({
       level: this.level$,
-      points: this.freeMode$.pipe(map((it) => (it ? 270 : 0))), // TODO: calculate points
+      points: this.freeMode$.pipe(map((it) => (it ? 380 : 0))), // TODO: calculate points
       base: this.freeMode$.pipe(
         switchMap((it) => {
           if (!it) {

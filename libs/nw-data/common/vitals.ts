@@ -4,11 +4,12 @@ import {
   Gamemodes,
   Mutationdifficulty,
   Vitals,
+  VitalsMetadata,
   Vitalscategories,
   Vitalsleveldata,
-  VitalsMetadata,
   Vitalsmodifierdata,
 } from '@nw-data/generated'
+import { armorRating } from './damage'
 
 const NAMED_FAIMILY_TYPES = ['DungeonBoss', 'Dungeon+', 'DungeonMiniBoss', 'Elite+', 'EliteMiniBoss']
 const CREATURE_TYPE_MARKER = {
@@ -321,8 +322,14 @@ export function getVitalArmor(vital: Vitals, level: Vitalsleveldata) {
   return {
     elementalMitigation: vital.ElementalMitigation,
     physicalMitigation: vital.PhysicalMitigation,
-    elementalRating: Math.floor(Math.pow(level.GearScore, 1.2) * (1 / (1 - vital.ElementalMitigation) - 1)),
-    physicalRating: Math.floor(Math.pow(level.GearScore, 1.2) * (1 / (1 - vital.PhysicalMitigation) - 1)),
+    elementalRating: armorRating({
+      gearScore: level.GearScore,
+      mitigation: vital.ElementalMitigation,
+    }),
+    physicalRating: armorRating({
+      gearScore: level.GearScore,
+      mitigation: vital.PhysicalMitigation,
+    }),
   }
 }
 

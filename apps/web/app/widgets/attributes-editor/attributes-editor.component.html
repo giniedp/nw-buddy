@@ -1,4 +1,4 @@
-<div class="flex flex-col gap-2 pr-[10px] font-nimbus">
+<div class="flex flex-col gap-2 pr-[10px] font-nimbus overflow-clip">
   <div class="flex flex-row gap-1">
     <span class="font-bold">Points</span>
     <span class="font-bold text-center">{{ pointsAvailable$ | async }}</span>
@@ -11,7 +11,7 @@
           {{ stat.name | nwText }}
         </label>
         <div class="font-nimbus font-bold">
-          <span class="inline-block text-right "> {{ stat.total }} </span>
+          <span class="inline-block text-right"> {{ stat.total }} </span>
           @if (stat.assigned || stat.buffs || stat.magnify) {
             <span> ( </span>
             <span

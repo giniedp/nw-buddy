@@ -55,7 +55,7 @@ import { GsSliderComponent } from './gs-slider.component'
         [size]="size"
         [color]="color"
         class="block w-96"
-      ></nwb-gs-slider>
+      />
     </ng-template>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,

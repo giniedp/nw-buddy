@@ -103,6 +103,7 @@ export class AttributesStore extends ComponentStore<AttributesState> {
   }
 
   public readonly load = this.updater((state, data: Partial<AttributesState>) => {
+
     return {
       ...state,
       base: data.base || state.base || empty(),
