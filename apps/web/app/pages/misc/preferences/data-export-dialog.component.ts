@@ -8,12 +8,13 @@ import { DbService } from '~/data/db.service'
 import { SENSITIVE_KEYS } from '~/data/sensitive-keys'
 import { NwModule } from '~/nw'
 import { AppPreferencesService, PreferencesService } from '~/preferences'
+import { ClipboardService } from '~/ui/clipboard'
+import { CodeEditorModule } from '~/ui/code-editor'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleCheck, svgCircleExclamation, svgCircleNotch, svgFileExport, svgInfoCircle } from '~/ui/icons/svg'
+import { PromptDialogComponent } from '~/ui/layout/modal'
 import { PlatformService } from '~/utils/services/platform.service'
 import { recursivelyEncodeArrayBuffers } from './buffer-encoding'
-import { EditorDialogComponent } from '~/ui/layout/modal'
-import { CodeEditorModule } from '~/ui/code-editor'
 
 export interface DataExportDialogState {
   active?: boolean
@@ -53,7 +54,8 @@ export class DataExportDialogComponent extends ComponentStore<DataExportDialogSt
     private preferences: PreferencesService,
     private dialogRef: DialogRef,
     private dialog: Dialog,
-    private platform: PlatformService
+    private platform: PlatformService,
+    private clipboard: ClipboardService,
   ) {
     super({})
   }
@@ -82,7 +84,7 @@ export class DataExportDialogComponent extends ComponentStore<DataExportDialogSt
       })
   }
 
-  public async openIneditor() {
+  public async openJson() {
     const publicExport = this.get(({ publicExport }) => publicExport)
     const data = this.preferences.export()
     const db = await this.db.export()
@@ -93,12 +95,13 @@ export class DataExportDialogComponent extends ComponentStore<DataExportDialogSt
       removeSensitiveKeys(data)
     }
 
-    EditorDialogComponent.open(this.dialog, {
+    const json = JSON.stringify(data, null, 2)
+    PromptDialogComponent.open(this.dialog, {
       data: {
-        title: '',
-        value: JSON.stringify(data, null, 2),
-        readonly: true,
-        language: 'json',
+        title: 'Data Exported',
+        input: json,
+        textarea: true,
+        body: 'Copy the data below and save it to a file manually.',
         positive: 'Close',
       },
     })

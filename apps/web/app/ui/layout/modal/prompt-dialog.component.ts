@@ -9,11 +9,12 @@ export interface PromptDialogOptions {
   html?: boolean
   input?: string
   type?: 'text' | 'number' | 'password'
+  textarea?: boolean
   min?: number
   max?: number
   placeholder?: string
   positive: string
-  negative: string
+  negative?: string
   neutral?: string
 }
 
@@ -79,6 +80,10 @@ export class PromptDialogComponent {
 
   protected get max() {
     return this.data.max
+  }
+
+  protected get textarea() {
+    return this.data.textarea
   }
 
   protected value: string
