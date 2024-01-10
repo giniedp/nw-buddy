@@ -1,6 +1,6 @@
 {
   "name": "nw-buddy",
-  "version": "4.0.1-0",
+  "version": "4.0.2-0",
   "description": "New World Buddy",
   "keywords": [],
   "main": "dist/electron/main.js",
@@ -41,6 +41,7 @@
     "nw-cdn": "ts-node ./tools/nw-cdn.ts",
     "nw-generate": "ts-node ./tools/nw-generate.ts",
     "nw-inspect": "ts-node ./tools/nw-inspect.ts",
+    "nw-clean": "pnpm build:tools && env-cmd -f .env node ./dist/tools/nw-clean.js",
     "nw-extract": "pnpm build:tools && env-cmd -f .env node ./dist/tools/nw-extract.js",
     "nw-convert": "pnpm build:tools && env-cmd -f .env node ./dist/tools/nw-convert.js",
     "nw-import": "pnpm build:tools && env-cmd -f .env node ./dist/tools/nw-import.js",

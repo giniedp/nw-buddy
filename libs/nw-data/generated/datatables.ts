@@ -309,9 +309,6 @@ export abstract class NwDataLoader {
   public charactertablesBruteDatatablesDamagetableSwampbeast() {
     return this.load<Damagetable[]>('charactertables/brute_datatables/javelindata_damagetable_swampbeast.json')
   }
-  public charactertablesBruteDatatablesDamagetableYeti2022() {
-    return this.load<Damagetable[]>('charactertables/brute_datatables/javelindata_damagetable_yeti_2022.json')
-  }
   public charactertablesChameleonDatatablesDamagetableChameleon() {
     return this.load<Damagetable[]>('charactertables/chameleon_datatables/javelindata_damagetable_chameleon.json')
   }
@@ -536,12 +533,6 @@ export abstract class NwDataLoader {
   }
   public charactertablesIcedryadDatatablesDamagetableIcedryadFrostgrip() {
     return this.load<Damagetable[]>('charactertables/icedryad_datatables/javelindata_damagetable_icedryad_frostgrip.json')
-  }
-  public charactertablesIcedryadDatatablesDamagetableYeti2022FrostfangMinion() {
-    return this.load<Damagetable[]>('charactertables/icedryad_datatables/javelindata_damagetable_yeti_2022_frostfang_minion.json')
-  }
-  public charactertablesIcedryadDatatablesDamagetableYeti2022FrostgripMinion() {
-    return this.load<Damagetable[]>('charactertables/icedryad_datatables/javelindata_damagetable_yeti_2022_frostgrip_minion.json')
   }
   public charactertablesInvasionDatatablesDamagetableInvasionPriest() {
     return this.load<Damagetable[]>('charactertables/invasion_datatables/javelindata_damagetable_invasion_priest.json')

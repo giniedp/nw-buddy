@@ -1142,7 +1142,6 @@ export interface Gatherables {
   IsLootContainer: boolean
   ItemRestrictionId: string
   ItemRestrictionQuantity: string
-  LandmarkIconPath: string
   MaxRespawnRate: number
   MinRespawnRate: number
   MountGatherers: string
@@ -1156,7 +1155,6 @@ export interface Gatherables {
   ResetGatherTimeOnEndInteraction: boolean
   Restriction: string
   SongRewardId: string
-  TooltipImage: string
   Tradeskill: string
   WaitForImpact: boolean
 }
@@ -1321,6 +1319,7 @@ export interface ItemDefinitionMaster {
   SalvageGuaranteedPerkCount: number
   SalvageLootTags: string[]
   SalvageResources: number
+  ScheduleId: string
   SoundTableID: string
   Tier: number
   TradingCategory: TradingCategory
@@ -7466,9 +7465,7 @@ export type VitalsCategory =
   | 'Avalancher_Shivers'
   | 'Avalancher_Shivers_25'
   | 'Avalancher_Shivers_60'
-  | 'Avalancher_Shivers_YetiEncounter'
   | 'Avalancher_Yeti'
-  | 'Avalancher_YetiEncounter'
   | 'Avalancher_Yeti_25'
   | 'Avalancher_Yeti_60'
   | 'Barbary_Lion'
@@ -7942,6 +7939,8 @@ export type VitalsCategory =
   | 'CorruptedLegion_Cyclops_DG_BrimstoneSands_Crassus_Minion'
   | 'CorruptedLegion_Cyclops_DG_BrimstoneSands_Named_00'
   | 'CorruptedLegion_Cyclops_ELITE'
+  | 'CorruptedLegion_Cyclops_LOC_BOSS_00'
+  | 'CorruptedLegion_Cyclops_LOC_BOSS_01'
   | 'CorruptedLegion_Cyclops_Named_00'
   | 'CorruptedLegion_Cyclops_Named_01'
   | 'CorruptedLegion_Cyclops_Named_02_ELITE'
@@ -10826,19 +10825,16 @@ export type VitalsCategory =
   | 'IceDryad_Fiend_Shivers_Frostgrip'
   | 'IceDryad_Fiend_Shivers_Frostgrip_25'
   | 'IceDryad_Fiend_Shivers_Frostgrip_60'
-  | 'IceDryad_Fiend_Shivers_YetiEncounter'
   | 'IceDryad_Melee_Frostfang'
   | 'IceDryad_Melee_Frostfang_25'
   | 'IceDryad_Melee_Frostfang_61'
   | 'IceDryad_Melee_Frostfang_62'
   | 'IceDryad_Melee_Frostfang_65_ELITE'
-  | 'IceDryad_Melee_Frostfang_YetiEncounter'
   | 'IceDryad_Range_Frostgrip'
   | 'IceDryad_Range_Frostgrip_25'
   | 'IceDryad_Range_Frostgrip_61'
   | 'IceDryad_Range_Frostgrip_62'
   | 'IceDryad_Range_Frostgrip_65_ELITE'
-  | 'IceDryad_Range_Frostgrip_YetiEncounter'
   | 'IceGolem'
   | 'IceWolf'
   | 'Imhotep'
@@ -10902,7 +10898,9 @@ export type VitalsCategory =
   | 'Legion_Legionnaire_DG_BrimstoneSands_Named_00'
   | 'Legion_Legionnaire_Ethereal'
   | 'Legion_Legionnaire_Ethereal_ELITE'
+  | 'Legion_Legionnaire_Ethereal_LOC_BOSS'
   | 'Legion_Legionnaire_Ethereal_Named_05_ELITE'
+  | 'Legion_Legionnaire_LOC_BOSS'
   | 'Legion_Legionnaire_Named_00'
   | 'Legion_Legionnaire_Named_01'
   | 'Legion_Legionnaire_Named_02'
@@ -10914,6 +10912,7 @@ export type VitalsCategory =
   | 'Legion_Legionnaire_NoShield_DG_BrimstoneSands_00'
   | 'Legion_Legionnaire_NoShield_DG_BrimstoneSands_Crassus_Minion'
   | 'Legion_Legionnaire_NoShield_ELITE'
+  | 'Legion_Legionnaire_NoShield_LOC_BOSS'
   | 'Legion_Legionnaire_Physical'
   | 'Legion_Legionnaire_Physical_ELITE'
   | 'Legion_Sagittarii'
@@ -10928,6 +10927,7 @@ export type VitalsCategory =
   | 'Legion_Sagittarii_DG_BrimstoneSands_00'
   | 'Legion_Sagittarii_DG_BrimstoneSands_Minion'
   | 'Legion_Sagittarii_ELITE'
+  | 'Legion_Sagittarii_LOC_BOSS'
   | 'Legion_Sagittarii_Named_00'
   | 'Legion_Sagittarii_Named_01'
   | 'Legion_Signifer'
@@ -10944,6 +10944,7 @@ export type VitalsCategory =
   | 'Legion_Signifer_DG_BrimstoneSands_Minion'
   | 'Legion_Signifer_DG_BrimstoneSands_Named_00'
   | 'Legion_Signifer_ELITE'
+  | 'Legion_Signifer_LOC_BOSS'
   | 'Legion_Signifer_Named_00'
   | 'Legion_Signifer_Named_01'
   | 'Legion_Signifer_Named_02'
@@ -12167,6 +12168,7 @@ export type VitalsCategory =
   | 'Torso_Boss_Ice_Bridge'
   | 'Torso_Boss_Ice_WeakPoint'
   | 'Totem_Dryad_Nest_DG_Edengrove_00'
+  | 'Totem_LOC_BOSS'
   | 'Totem_Pirate_Cursed'
   | 'Totem_Pirate_Cursed_58'
   | 'Totem_Pirate_Cursed_59'
@@ -13359,7 +13361,6 @@ export type VitalsCategory =
   | 'Wraith'
   | 'Yeti'
   | 'Yeti_03GC00_Elite'
-  | 'Yeti_2022'
   | 'Yeti_Named_04NW08'
   | 'Yeti_Named_06SW02'
   | 'Yeti_Named_07SM08'

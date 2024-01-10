@@ -1113,7 +1113,6 @@ export const COLS_GATHERABLES = {
   "IsLootContainer": "boolean",
   "ItemRestrictionId": "string",
   "ItemRestrictionQuantity": "string",
-  "LandmarkIconPath": "string",
   "MaxRespawnRate": "number",
   "MinRespawnRate": "number",
   "MountGatherers": "string",
@@ -1127,7 +1126,6 @@ export const COLS_GATHERABLES = {
   "ResetGatherTimeOnEndInteraction": "boolean",
   "Restriction": "string",
   "SongRewardId": "string",
-  "TooltipImage": "string",
   "Tradeskill": "string",
   "WaitForImpact": "boolean",
 }
@@ -1289,6 +1287,7 @@ export const COLS_ITEMDEFINITIONMASTER = {
   "SalvageGuaranteedPerkCount": "number",
   "SalvageLootTags": "[]",
   "SalvageResources": "number",
+  "ScheduleId": "string",
   "SoundTableID": "string",
   "Tier": "number",
   "TradingCategory": "string",
