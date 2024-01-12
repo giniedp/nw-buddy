@@ -1,7 +1,7 @@
-<div *ngIf="gearset$ | async; let data">
+<div *ngIf="gearset$ | async; let data" class="layout-row">
   @if (!swiper) {
     <div
-      class="p-4 rounded-b-md flex flex-col xl:flex-row layout-gap"
+      class="p-4 layout-content"
       [nwbScreenshotFrame]="name$ | async"
       [nwbScreenshotWidth]="1660"
       [nwbScreenshotMode]="'detached'"
@@ -13,9 +13,18 @@
         <ng-container *ngTemplateOutlet="tplContentSlots" />
       </div>
     </div>
-  }
 
-  @if (swiper) {
+    @if (calculator) {
+      <nwb-detail-drawer class="hidden lg:block lg:w-96">
+        <div
+          *nwbDetailDrawerContent
+          class="layout-content p-2 bg-base-200"
+        >
+          <nwb-damage-calculator/>
+        </div>
+      </nwb-detail-drawer>
+    }
+  } @else {
     <div class="p-2">
       <div class="swiper" [nwbSwiper]="swiperOptions" #nwbSwiper="nwbSwiper">
         <div class="swiper-wrapper flex flex-row relative z-10" #swiperRef>
@@ -184,5 +193,9 @@
         (itemInstantiate)="onItemInstantiate(slot, $event)"
       />
     }
+  </ng-template>
+
+  <ng-template #tplCalculator>
+
   </ng-template>
 </div>

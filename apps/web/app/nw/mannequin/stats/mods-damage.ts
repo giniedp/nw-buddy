@@ -30,7 +30,7 @@ export function selectWeaponDamage(
 
   let scaleAffix = damageScaleAttrs(splitAffix)
   let scaleWeapon = damageScaleAttrs(weapon)
-  const attrSums = {
+  const attributes = {
     str: mods.attributes.str.scale,
     dex: mods.attributes.dex.scale,
     int: mods.attributes.int.scale,
@@ -71,20 +71,20 @@ export function selectWeaponDamage(
   // console.debug('calc main damage')
   const mainDamage = damageForWeapon({
     playerLevel: state.level,
-    weaponBaseDamage: weapon?.BaseDamage,
+    baseDamage: weapon?.BaseDamage,
     weaponGearScore: gearScore,
     weaponScale: scaleWeapon,
-    attrSums: attrSums,
-    dmgCoef: attack?.DmgCoef,
+    attributes: attributes,
+    damageCoef: attack?.DmgCoef,
   })
   // console.debug('calc elem damage')
   const elemDamage = damageForWeapon({
     playerLevel: state.level,
-    weaponBaseDamage: weapon?.BaseDamage,
+    baseDamage: weapon?.BaseDamage,
     weaponGearScore: gearScore,
     weaponScale: scaleAffix,
-    attrSums: attrSums,
-    dmgCoef: attack?.DmgCoef,
+    attributes: attributes,
+    damageCoef: attack?.DmgCoef,
   })
 
   if (elemDamage > mainDamage) {
@@ -98,50 +98,51 @@ export function selectWeaponDamage(
   // console.debug('calc main damage (mods)')
   const mainDamageStandard = damageForWeapon({
     playerLevel: state.level,
-    weaponBaseDamage: weapon?.BaseDamage,
+    baseDamage: weapon?.BaseDamage,
     weaponGearScore: gearScore,
     weaponScale: scaleWeapon,
-    attrSums: attrSums,
-    dmgCoef: attack?.DmgCoef,
-    dmgMod: mainDamageMod.value,
+    attributes: attributes,
+    damageCoef: attack?.DmgCoef,
+    baseMod: mainDamageMod.value,
   })
 
   // console.debug('calc elem damage (mods)')
   const elemDamageStandard = damageForWeapon({
     playerLevel: state.level,
-    weaponBaseDamage: weapon?.BaseDamage,
+    baseDamage: weapon?.BaseDamage,
     weaponGearScore: gearScore,
     weaponScale: scaleAffix,
-    attrSums: attrSums,
-    dmgCoef: attack?.DmgCoef,
-    dmgMod: affixDamageMod.value,
+    attributes: attributes,
+    damageCoef: attack?.DmgCoef,
+    baseMod: affixDamageMod.value,
   })
 
   // console.debug('calc main damage (mods + crits)')
   const mainDamageCrit = damageForWeapon({
     playerLevel: state.level,
-    weaponBaseDamage: weapon?.BaseDamage,
+    baseDamage: weapon?.BaseDamage,
     weaponGearScore: gearScore,
     weaponScale: scaleWeapon,
-    attrSums: attrSums,
-    dmgCoef: attack?.DmgCoef,
-    dmgMod: mainDamageMod.value,
+    attributes: attributes,
+    damageCoef: attack?.DmgCoef,
+    baseMod: mainDamageMod.value,
     critMod: critMod.value,
   })
 
   // console.debug('calc elem damage (mods + crits)')
   const elemDamageCrit = damageForWeapon({
     playerLevel: state.level,
-    weaponBaseDamage: weapon?.BaseDamage,
+    baseDamage: weapon?.BaseDamage,
     weaponGearScore: gearScore,
     weaponScale: scaleAffix,
-    attrSums: attrSums,
-    dmgCoef: attack?.DmgCoef,
-    dmgMod: affixDamageMod.value,
+    attributes: attributes,
+    damageCoef: attack?.DmgCoef,
+    baseMod: affixDamageMod.value,
     critMod: critMod.value,
   })
 
   return {
+
     MainDamageType: attack.DamageType,
     MainDamage: mainDamage * percentWeapon,
     MainDamageStandard: mainDamageStandard * percentWeapon,
@@ -155,6 +156,7 @@ export function selectWeaponDamage(
     HealMod: healMod,
     MainDamageMod: mainDamageMod,
     ElemDamageMod: affixDamageMod,
+    CritDamageMod: critMod,
     DamageCoef: modifierResult({
       value: attack.DmgCoef,
       scale: 1,
@@ -168,6 +170,8 @@ export function selectWeaponDamage(
         })
       : null,
     DamagePvpBalance: pvpBalance,
+    ConvertPercent: percentAffix,
+    AffixStats: splitAffix
   }
 }
 

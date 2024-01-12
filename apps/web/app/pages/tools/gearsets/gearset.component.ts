@@ -21,7 +21,7 @@ import { NwTextContextService } from '~/nw/expression'
 import { ActiveAttribute, ActiveAttributes, EquippedItem, Mannequin, MannequinState } from '~/nw/mannequin'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft } from '~/ui/icons/svg'
-import { ConfirmDialogComponent } from '~/ui/layout'
+import { ConfirmDialogComponent, LayoutModule } from '~/ui/layout'
 import { SwiperDirective } from '~/utils/directives/swiper.directive'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { GearsetPaneEffectComponent } from './panes/gearset-pane-effect.component'
@@ -29,6 +29,7 @@ import { GearsetPaneMainComponent } from './panes/gearset-pane-main.component'
 import { GearsetPaneSkillComponent } from './panes/gearset-pane-skill.component'
 import { GearsetPaneSlotComponent } from './panes/gearset-pane-slot.component'
 import { GearsetPaneStatsComponent } from './panes/gearset-pane-stats.component'
+import { DamageCalculatorComponent } from './calculator/damage-calculator.component'
 
 @Component({
   standalone: true,
@@ -49,10 +50,12 @@ import { GearsetPaneStatsComponent } from './panes/gearset-pane-stats.component'
     IconsModule,
     ScreenshotModule,
     SwiperDirective,
+    LayoutModule,
+    DamageCalculatorComponent
   ],
   providers: [GearsetStore, ItemInstancesStore, Mannequin, NwTextContextService],
   host: {
-    class: 'layout-col flex-none',
+    class: 'layout-col',
   },
   animations: [
     trigger('list', [
@@ -76,6 +79,9 @@ export class GearsetDetailComponent {
 
   @Input()
   public disabled: boolean
+
+  @Input()
+  public calculator: boolean = true
 
   @Input()
   public swiper: boolean

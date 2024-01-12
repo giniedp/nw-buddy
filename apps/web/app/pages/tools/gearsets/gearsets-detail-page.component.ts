@@ -33,6 +33,7 @@ import { ShareDialogComponent } from '~/pages/share'
 import { ChipsInputModule } from '~/ui/chips-input'
 import { IconsModule } from '~/ui/icons'
 import {
+  svgCalculator,
   svgCamera,
   svgChevronLeft,
   svgCompress,
@@ -88,6 +89,7 @@ export class GearsetsDetailPageComponent {
   })
 
   protected compact = false
+  protected calculator = false
   protected iconCamera = svgCamera
   protected iconDelete = svgTrashCan
   protected iconCopy = svgPaste
@@ -95,6 +97,7 @@ export class GearsetsDetailPageComponent {
   protected iconCompact = svgCompress
   protected iconShare = svgShareNodes
   protected iconTags = svgTags
+  protected iconCalculator = svgCalculator
   protected iconMenu = svgEllipsisVertical
   protected iconReset = svgEraser
   protected presetTags = GEARSET_TAGS.map((it) => it.value)
@@ -128,6 +131,9 @@ export class GearsetsDetailPageComponent {
     this.compact = !this.compact
   }
 
+  protected onCalculatorClicked() {
+    this.calculator = !this.calculator
+  }
   protected async onCloneClicked() {
     const record = await firstValueFrom(this.record$)
     PromptDialogComponent.open(this.dialog, {

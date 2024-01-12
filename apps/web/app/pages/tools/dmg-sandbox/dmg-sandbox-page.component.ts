@@ -10,7 +10,7 @@ import {
   damageFactorForGS,
   damageFactorForLevel,
   damageForWeapon,
-  damageMitigationFactor,
+  damageMitigationPercent,
   damageScaleAttrs,
   patchPrecision,
   pvpGearScore,
@@ -92,31 +92,31 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
   protected attrScale = computed(() => {
     return damageFactorForAttrs({
       weapon: this.weaponScale(),
-      attrSums: this.attrSums(),
+      attributes: this.attrSums(),
     })
   })
 
   public dmgTooltip = computed(() => {
     return damageForWeapon({
       playerLevel: this.playerLevel(),
-      weaponBaseDamage: this.baseDamage(),
+      baseDamage: this.baseDamage(),
       weaponGearScore: this.weaponGearScore(),
       weaponScale: this.weaponScale(),
-      attrSums: this.attrSums(),
-      dmgCoef: this.damageCoefficient(),
+      attributes: this.attrSums(),
+      damageCoef: this.damageCoefficient(),
     })
   })
 
   public dmgStandard = computed(() => {
     return damageForWeapon({
       playerLevel: this.playerLevel(),
-      weaponBaseDamage: this.baseDamage(),
+      baseDamage: this.baseDamage(),
       weaponGearScore: this.weaponGearScore(),
       weaponScale: this.weaponScale(),
-      attrSums: this.attrSums(),
-      dmgCoef: this.damageCoefficient(),
+      attributes: this.attrSums(),
+      damageCoef: this.damageCoefficient(),
       ammoMod: this.ammoModifier(),
-      dmgMod: this.baseDamageMods(),
+      baseMod: this.baseDamageMods(),
       critMod: 0,
       empowerMod: this.empowerMods(),
     })
@@ -127,7 +127,7 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
   })
 
   public damageMitigationFactor = computed(() => {
-    return damageMitigationFactor({
+    return damageMitigationPercent({
       gearScore: pvpGearScore({
         attackerAvgGearScore: this.attackerAvgGs(),
         defenderAvgGearScore: this.defenderAvgGs(),
@@ -141,13 +141,13 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
   public dmgCrit = computed(() => {
     return damageForWeapon({
       playerLevel: this.playerLevel(),
-      weaponBaseDamage: this.baseDamage(),
+      baseDamage: this.baseDamage(),
       weaponGearScore: this.weaponGearScore(),
       weaponScale: this.weaponScale(),
-      attrSums: this.attrSums(),
-      dmgCoef: this.damageCoefficient(),
+      attributes: this.attrSums(),
+      damageCoef: this.damageCoefficient(),
       ammoMod: this.ammoModifier(),
-      dmgMod: this.baseDamageMods(),
+      baseMod: this.baseDamageMods(),
       critMod: this.critModsSum(),
       empowerMod: this.empowerMods(),
     })

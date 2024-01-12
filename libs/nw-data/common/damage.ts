@@ -47,15 +47,15 @@ export function damageScaleAttrs(
 
 export function damageFactorForAttrs({
   weapon,
-  attrSums,
+  attributes,
 }: {
   weapon: Record<AttributeRef, number>
-  attrSums: Record<AttributeRef, number>
+  attributes: Record<AttributeRef, number>
 }) {
-  const str = (attrSums.str || 0) * (weapon?.str || 0)
-  const dex = (attrSums.dex || 0) * (weapon?.dex || 0)
-  const int = (attrSums.int || 0) * (weapon?.int || 0)
-  const foc = (attrSums.foc || 0) * (weapon?.foc || 0)
+  const str = (attributes.str || 0) * (weapon?.str || 0)
+  const dex = (attributes.dex || 0) * (weapon?.dex || 0)
+  const int = (attributes.int || 0) * (weapon?.int || 0)
+  const foc = (attributes.foc || 0) * (weapon?.foc || 0)
   return str + dex + int + foc
 }
 
@@ -84,47 +84,51 @@ export function damageForTooltip({
 }) {
   return damageForWeapon({
     playerLevel,
-    weaponBaseDamage: weapon.BaseDamage,
+    baseDamage: weapon.BaseDamage,
     weaponGearScore: gearScore,
     weaponScale: weaponScale || damageScaleAttrs(weapon),
-    attrSums,
-    dmgCoef: damageCoefForWeaponTag(getWeaponTagFromWeapon(weapon)),
+    attributes: attrSums,
+    damageCoef: damageCoefForWeaponTag(getWeaponTagFromWeapon(weapon)),
   })
 }
 
 export function damageForWeapon(options: {
   playerLevel: number
-  weaponBaseDamage: number
+  baseDamage: number
   weaponGearScore: number
   weaponScale: Record<AttributeRef, number>
-  attrSums: Record<AttributeRef, number>
-  dmgCoef: number
+  attributes: Record<AttributeRef, number>
+  damageCoef: number
+  pvpMod?: number
   ammoMod?: number
-  dmgMod?: number
+  baseMod?: number
   critMod?: number
   empowerMod?: number
 }) {
-  const dmgBase = options.weaponBaseDamage ?? 0
-  const dmgCoef = options.dmgCoef ?? 1
+  const baseDamage = options.baseDamage ?? 0
+  const damageCoef = options.damageCoef ?? 1
+
   const factorFromGS = damageFactorForGS(options.weaponGearScore) ?? 1
   const levelScaling = damageFactorForLevel(options.playerLevel) ?? 0
   const statsScaling =
     damageFactorForAttrs({
       weapon: options.weaponScale,
-      attrSums: options.attrSums,
+      attributes: options.attributes,
     }) ?? 0
+  const pvpMod = options.pvpMod ?? 0
   const ammoMod = options.ammoMod ?? 0
-  const dmgMod = options.dmgMod ?? 0
+  const baseMod = options.baseMod ?? 0
   const critMod = options.critMod ?? 0
   const empowerMod = options.empowerMod ?? 0
 
   const result =
-    dmgBase *
-    dmgCoef *
+    baseDamage *
+    damageCoef *
     factorFromGS *
+    (1 + pvpMod) *
     (1 + levelScaling + statsScaling) *
     (1 + ammoMod) *
-    (1 + dmgMod + critMod) *
+    (1 + baseMod + critMod) *
     (1 + empowerMod)
 
   // console.table({
@@ -158,12 +162,12 @@ export function armorMitigation(options: { gearScore: number; rating: number }) 
   return Math.min(NW_MAX_ARMOR_MITIGATION, Math.max(NW_MIN_ARMOR_MITIGATION, y / (x + y)))
 }
 
-export function damageMitigationFactor(options: { gearScore: number; armorRating: number; armorPenetration: number }) {
+export function damageMitigationPercent(options: { gearScore: number; armorRating: number; armorPenetration: number }) {
   const mitigation = armorMitigation({
     gearScore: options.gearScore,
     rating: options.armorRating,
   })
-  return Math.max(0, 1 - mitigation * Math.max(0, 1 - options.armorPenetration))
+  return Math.min(1, Math.max(0, mitigation - options.armorPenetration))
 }
 
 export function pvpGearScore(options: {
