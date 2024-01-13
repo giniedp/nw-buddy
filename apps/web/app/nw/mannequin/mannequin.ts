@@ -23,7 +23,7 @@ import {
   selectWeaponAbilities,
   selectWeaponAttacks,
 } from './selectors'
-import { selectElementalRating, selectModsArmor, selectPhysicalRating } from './stats/armoring'
+import { selectElementalArmor, selectModsArmor, selectPhysicalArmor } from './stats/armoring'
 import { selectModsABS } from './stats/mods-abs'
 import { selectCooldownMods } from './stats/mods-cooldowns'
 import { selectDamageMods, selectWeaponDamage } from './stats/mods-damage'
@@ -35,6 +35,7 @@ import { selectModsCraftingGS } from './stats/mods-gs-crafting'
 import { selectModsROL } from './stats/mods-rol'
 import { selectMaxHealth, selectMaxMana, selectMaxStamina } from './stats/vitality'
 import { ActiveMods, AttributeModsSource, DbSlice, MannequinState, Observed } from './types'
+import { selectModsWKN } from './stats/mods-wkn'
 
 const config = {
   debounce: true,
@@ -193,7 +194,7 @@ export class Mannequin extends ComponentStore<MannequinState> {
     this.db$,
     this.activeMods$,
     this.state$,
-    selectElementalRating,
+    selectElementalArmor,
     config,
   )
 
@@ -201,7 +202,7 @@ export class Mannequin extends ComponentStore<MannequinState> {
     this.db$,
     this.activeMods$,
     this.state$,
-    selectPhysicalRating,
+    selectPhysicalArmor,
     config,
   )
 
@@ -239,6 +240,7 @@ export class Mannequin extends ComponentStore<MannequinState> {
     config,
   )
 
+  public readonly statWkn$ = this.select(this.activeMods$, selectModsWKN, config)
   public readonly statDmg$ = this.select(this.db$, this.activeMods$, this.state$, selectModsDMG, config)
   public readonly statAbs$ = this.select(this.db$, this.activeMods$, this.state$, selectModsABS, config)
   public readonly statArmor$ = this.select(this.db$, this.activeMods$, this.state$, selectModsArmor, config)

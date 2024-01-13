@@ -1,6 +1,6 @@
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Damagetable } from '@nw-data/generated'
 import { combineLatest, firstValueFrom, map } from 'rxjs'
@@ -10,7 +10,7 @@ import { NW_WEAPON_TYPES, damageTypeIcon } from '~/nw/weapon-types'
 import { IconsModule } from '~/ui/icons'
 import { svgBurst, svgPeopleGroup } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
-import { humanize, mapFilter, mapProp } from '~/utils'
+import { humanize, mapProp } from '~/utils'
 
 @Component({
   standalone: true,
@@ -23,6 +23,7 @@ import { humanize, mapFilter, mapProp } from '~/utils'
   },
 })
 export class ActiveWeaponComponent {
+  private mannequin = inject(Mannequin)
   protected combatModeOptions: Array<{ label: string; value: CombatMode }> = [
     {
       label: 'PvE',
@@ -57,41 +58,35 @@ export class ActiveWeaponComponent {
     combatMode: this.mannequin.combatMode$,
     numAroundMe: this.mannequin.numAroundMe$,
     numHits: this.mannequin.numHits$,
-    isSplit: this.mannequin.statDamageBase$.pipe(map((it) => !!it.MainDamage && !!it.ElemDamage)),
+    isSplit: this.mannequin.statDamageBase$.pipe(map((it) => !!it.Result.weapon.std && !!it.Result.converted.std)),
     DmgMain: this.mannequin.statDamageBase$.pipe(
       map((it) => {
-        if (!it.MainDamage) {
+        if (!it.Result.weapon.std) {
           return null
         }
         return {
-          icon: damageTypeIcon(it.MainDamageType),
-          base: Math.floor(it.MainDamage),
-          standard: Math.floor(it.MainDamageStandard),
-          crit: Math.floor(it.MainDamageCrit),
+          icon: damageTypeIcon(it.DamageType),
+          standard: Math.floor(it.Result.weapon.std),
+          crit: Math.floor(it.Result.weapon.crit),
         }
-      })
+      }),
     ),
     DmgElem: this.mannequin.statDamageBase$.pipe(
       map((it) => {
-        if (!it.ElemDamage) {
+        if (!it.Result.converted.std) {
           return null
         }
         return {
-          icon: damageTypeIcon(it.ElemDamageType),
-          base: Math.floor(it.ElemDamage),
-          standard: Math.floor(it.ElemDamageStandard),
-          crit: Math.floor(it.ElemDamageCrit),
+          icon: damageTypeIcon(it.ConvertType),
+          standard: Math.floor(it.Result.converted.std),
+          crit: Math.floor(it.Result.converted.crit),
         }
-      })
+      }),
     ),
   })
 
   protected iconGroup = svgPeopleGroup
   protected iconBurst = svgBurst
-
-  public constructor(private mannequin: Mannequin, private db: NwDbService) {
-    //
-  }
 
   protected async toggleWeapon() {
     const state = await firstValueFrom(this.mannequin.state$)

@@ -95,6 +95,14 @@ export function isDamageTypeOfCategory(type: string, category: string) {
   return false
 }
 
+export function isDamageTypeElemental(type: string) {
+  return isDamageTypeOfCategory(type, 'Elemental')
+}
+
+export function isDamageTypePhysical(type: string) {
+  return isDamageTypeOfCategory(type, 'Physical')
+}
+
 function eqCaseInsensitive(a: string, b: string) {
   return a?.toLowerCase() === b?.toLowerCase()
 }

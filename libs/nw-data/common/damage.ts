@@ -104,6 +104,8 @@ export function damageForWeapon(options: {
   baseMod?: number
   critMod?: number
   empowerMod?: number
+  absMod?: number
+  wknMod?: number
 }) {
   const baseDamage = options.baseDamage ?? 0
   const damageCoef = options.damageCoef ?? 1
@@ -120,6 +122,8 @@ export function damageForWeapon(options: {
   const baseMod = options.baseMod ?? 0
   const critMod = options.critMod ?? 0
   const empowerMod = options.empowerMod ?? 0
+  const absMod = options.absMod ?? 0
+  const wknMod = options.wknMod ?? 0
 
   const result =
     baseDamage *
@@ -129,7 +133,10 @@ export function damageForWeapon(options: {
     (1 + levelScaling + statsScaling) *
     (1 + ammoMod) *
     (1 + baseMod + critMod) *
-    (1 + empowerMod)
+    (1 + empowerMod) *
+    // defender
+    (1 - absMod) *
+    (1 + wknMod)
 
   // console.table({
   //   dmgBase,
@@ -177,6 +184,168 @@ export function pvpGearScore(options: {
 }) {
   const gearScore = options.weaponGearScore + options.defenderAvgGearScore - options.attackerAvgGearScore
   return Math.max(NW_MIN_GEAR_SCORE, gearScore)
+}
+
+export function calculateDamage(options: {
+  attackerLevel: number
+  attackerGearScore: number
+  attackerIsPlayer: boolean
+  attributes: Record<AttributeRef, number>
+
+  preferHigherScaling: boolean
+  convertPercent: number
+  convertScaling: Record<AttributeRef, number>
+
+  weaponScaling: Record<AttributeRef, number>
+  weaponGearScore: number
+  baseDamage: number
+  damageCoef: number
+
+  modPvp: number
+  modAmmo: number
+  modBase: number
+  modBaseConvert: number
+  modCrit: number
+  modEmpower: number
+  modEmpowerConvert: number
+
+  armorPenetration: number
+  defenderLevel: number
+  defenderGearScore: number
+  defenderIsPlayer: boolean
+  defenderRatingWeapon: number
+  defenderRatingConvert: number
+  defenderABSWeapon: number
+  defenderABSConvert: number
+  defenderWKNWeapon: number
+  defenderWKNConvert: number
+}) {
+  const attributes = options.attributes
+
+  const convertPercent = options.convertPercent ?? 0
+  const convertScale = damageFactorForAttrs({
+    weapon: options.convertScaling,
+    attributes: attributes,
+  })
+
+  const weaponPercent = 1 - convertPercent
+  const weaponScale = damageFactorForAttrs({
+    weapon: options.weaponScaling,
+    attributes: attributes,
+  })
+
+  let convertScaling = options.convertScaling
+  let weaponScaling = options.weaponScaling
+  if (options.preferHigherScaling) {
+    if (weaponScale > convertScale) {
+      convertScaling = weaponScaling
+    } else {
+      weaponScaling = convertScaling
+    }
+  }
+
+  const inputs = {
+    playerLevel: options.attackerLevel,
+    baseDamage: options.baseDamage,
+    weaponGearScore: options.weaponGearScore,
+    weaponScale: weaponScaling,
+    attributes: attributes,
+    damageCoef: options.damageCoef,
+    pvpMod: options.modPvp,
+    ammoMod: options.modAmmo,
+    baseMod: options.modBase,
+    critMod: options.modCrit,
+    empowerMod: options.modEmpower,
+    absMod: options.defenderABSWeapon,
+    wknMod: options.defenderWKNWeapon,
+  } satisfies Parameters<typeof damageForWeapon>[0]
+
+  const weaponDamage =
+    weaponPercent *
+    damageForWeapon({
+      ...inputs,
+      weaponScale: weaponScaling,
+      critMod: 0,
+    })
+  const weaponDamageCrit =
+    weaponPercent *
+    damageForWeapon({
+      ...inputs,
+      weaponScale: weaponScaling,
+    })
+  const weaponMitigated = damageMitigationPercent({
+    armorPenetration: options.armorPenetration,
+    armorRating: options.defenderRatingWeapon,
+    gearScore: pvpGearScore({
+      attackerAvgGearScore: options.attackerGearScore,
+      defenderAvgGearScore: options.defenderGearScore,
+      weaponGearScore: options.weaponGearScore,
+    }),
+  })
+
+  const convertedDamage =
+    convertPercent *
+    damageForWeapon({
+      ...inputs,
+      weaponScale: convertScaling,
+      critMod: 0,
+      baseMod: options.modBaseConvert,
+      empowerMod: options.modEmpowerConvert,
+      absMod: options.defenderABSConvert,
+      wknMod: options.defenderWKNConvert,
+    })
+  const convertedDamageCrit =
+    convertPercent *
+    damageForWeapon({
+      ...inputs,
+      weaponScale: convertScaling,
+      baseMod: options.modBaseConvert,
+      empowerMod: options.modEmpowerConvert,
+      absMod: options.defenderABSConvert,
+      wknMod: options.defenderWKNConvert,
+    })
+  const convertedMitigated = damageMitigationPercent({
+    armorPenetration: options.armorPenetration,
+    armorRating: options.defenderRatingConvert,
+    gearScore: pvpGearScore({
+      attackerAvgGearScore: options.attackerGearScore,
+      defenderAvgGearScore: options.defenderGearScore,
+      weaponGearScore: options.weaponGearScore,
+    }),
+  })
+
+  const weapon = {
+    std: weaponDamage,
+    stdMitigated: weaponDamage * weaponMitigated,
+    stdFinal: weaponDamage * (1 - weaponMitigated),
+
+    crit: weaponDamageCrit,
+    critMitigated: weaponDamageCrit * weaponMitigated,
+    critFinal: weaponDamageCrit * (1 - weaponMitigated),
+  }
+  const converted = {
+    std: convertedDamage,
+    stdMitigated: convertedDamage * convertedMitigated,
+    stdFinal: convertedDamage * (1 - convertedMitigated),
+
+    crit: convertedDamageCrit,
+    critMitigated: convertedDamageCrit * convertedMitigated,
+    critFinal: convertedDamageCrit * (1 - convertedMitigated),
+  }
+  const total = {
+    std: weapon.std + converted.std,
+    stdMitigated: weapon.stdMitigated + converted.stdMitigated,
+    stdFinal: weapon.stdFinal + converted.stdFinal,
+
+    crit: weapon.crit + converted.crit,
+    critMitigated: weapon.critMitigated + converted.critMitigated,
+    critFinal: weapon.critFinal + converted.critFinal,
+  }
+  return {
+    weapon,
+    converted,
+    total,
+  }
 }
 
 const WEAPON_EFFECT_TO_TAG: Record<string, WeaponTag> = {

@@ -206,19 +206,48 @@ async function convertAssetCatalog(inputDir: string, outputDir: string) {
   reader.seekRelative(4)
   console.table({ signature, version, fileSize, position: reader.position })
 
-  const posBlock1 = reader.readUInt()
-  const posBlock2 = reader.readUInt()
-  const posBlock3 = reader.readUInt()
-  const posBlock4 = reader.readUInt()
+  const posBlock1 = reader.readUInt() // UUID block
+  const posBlock2 = reader.readUInt() // Type block
+  const posBlock3 = reader.readUInt() // Dir block
+  const posBlock4 = reader.readUInt() // File block
+  const fileSize2 = reader.readUInt()
   const posBlock0 = reader.position
 
   console.table({ posBlock1, posBlock2, posBlock3, posBlock4, position: reader.position })
 
-  console.log('read block 0', reader.position)
-  const block0 = []
-  while (reader.position < posBlock1) {
-    block0.push(reader.readInt())
+  console.log('read block 0', posBlock0)
+  reader.seekAbsolute(posBlock0)
+  const count1 = reader.readUByte()
+  for (let i = 0; i < count1; i++) {
+    const uuidIndex1 = reader.readUInt()
+    const subId1 = reader.readUInt()
+    const uuidIndex2 = reader.readUInt()
+    const subId2 = reader.readUInt()
+    const typeIndex = reader.readUInt()
+    const field6 = reader.readUInt()
+    const fileSize = reader.readUInt()
+    const field8 = reader.readUInt()
+    const dirOffset = reader.readUInt()
+    const fileOffset = reader.readUInt()
   }
+  reader.readUInt()
+  const count2 = reader.readUByte()
+  for (let i = 0; i < count2; i++) {
+    const uuidIndex = reader.readUInt()
+    const guidIndex = reader.readUInt()
+    const subId = reader.readUInt()
+  }
+  const count3 = reader.readUByte()
+  for (let i = 0; i < count3; i++) {
+    const legacyGuidIndex = reader.readUInt()
+    const legacySubId = reader.readUInt()
+    const guidIndex = reader.readUInt()
+    const subId = reader.readUInt()
+  }
+  reader.readUInt()
+  reader.readUInt()
+
+
   console.log(reader.position)
   console.log('read block 1', posBlock1)
   reader.seekAbsolute(posBlock1)
@@ -264,7 +293,7 @@ async function convertAssetCatalog(inputDir: string, outputDir: string) {
 
   console.table([
     ['block', 'size', '(size)', 'content', 'count'],
-    [posBlock0, posBlock1 - posBlock0, sizeOf(posBlock1 - posBlock0), 'unknown', block0.length],
+    //[posBlock0, posBlock1 - posBlock0, sizeOf(posBlock1 - posBlock0), 'unknown', block0.length],
     [posBlock1, posBlock2 - posBlock1, sizeOf(posBlock2 - posBlock1), 'uuids', uuids.length],
     [posBlock2, posBlock3 - posBlock2, sizeOf(posBlock3 - posBlock2), 'types', types.length],
     [posBlock3, posBlock4 - posBlock3, sizeOf(posBlock4 - posBlock3), 'directories', directories.length],

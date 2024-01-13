@@ -90,3 +90,7 @@ export function stripAffixProperties(item: Affixstats): Partial<Affixstats> {
       return it
     }, {})
 }
+
+export function hasAffixDamageConversion(item: Affixstats) {
+  return !!item?.DamagePercentage || !!item?.PreferHigherScaling
+}

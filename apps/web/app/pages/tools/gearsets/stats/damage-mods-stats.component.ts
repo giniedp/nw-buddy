@@ -40,32 +40,32 @@ export class DamageModsStatsComponent {
 
       result.push({ prefix: '+', label: `Damage Coefficient`, ...base.DamageCoef })
 
-      if (base.DamagePvpBalance) {
+      if (base.ModPvp) {
         result.push({
-          prefix: base.DamagePvpBalance.value < 0 ? '-' : '+',
+          prefix: base.ModPvp.value < 0 ? '-' : '+',
           label: `Damage PvP Balance`,
-          ...base.DamagePvpBalance,
+          ...base.ModPvp,
         })
       }
 
-      if (base.DamageCoefAmmo) {
-        result.push({ prefix: '+', label: `Ammo Coefficient`, ...base.DamageCoefAmmo })
+      if (base.ModAmmo) {
+        result.push({ prefix: '+', label: `Ammo Coefficient`, ...base.ModAmmo })
       }
 
-      if (base.MainDamageMod?.value) {
+      if (base.ModBase?.value) {
         result.push({
           prefix: '+',
           label: `Damage Bonus`,
-          icon: damageTypeIcon(base.MainDamageType),
-          ...base.MainDamageMod,
+          icon: damageTypeIcon(base.DamageType),
+          ...base.ModBase,
         })
       }
-      if (base.ElemDamageMod?.value && base.ElemDamageType) {
+      if (base.ModBaseConvert?.value && base.ConvertType) {
         result.push({
           prefix: '+',
           label: `Damage Bonus`,
-          icon: damageTypeIcon(base.ElemDamageType),
-          ...base.ElemDamageMod,
+          icon: damageTypeIcon(base.ConvertType),
+          ...base.ModBaseConvert,
         })
       }
 

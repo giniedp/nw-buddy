@@ -1,37 +1,20 @@
-<div class="flex flex-col gap-2">
-  <div class="form-control">
-    <label class="input-group input-group-sm whitespace-nowrap">
-      <span class="flex-1 flex justify-between">
-        <span class="px-0">Player Level</span>
-      </span>
-      <span class="w-20 inline-block text-right pl-0">
-        {{ store.playerLevel() }}
-      </span>
-    </label>
-  </div>
+<div class="flex flex-col gap-1">
+  <nwb-label-control [value]="store.attackerLevel()" [percent]="false" [format]="'0.0-0'">
+    Attacker Level
+  </nwb-label-control>
 
-  <div class="form-control">
-    <label class="input-group input-group-sm whitespace-nowrap">
-      <span class="flex-1 w-32 flex justify-between">
-        <span class="px-0">Weapon GS</span>
-      </span>
-      <span class="w-20 inline-block text-right pl-0">
-        {{ store.weaponGearScore() }}
-      </span>
-    </label>
-  </div>
+  <nwb-label-control [value]="store.attackerGearScore()" [percent]="false" [format]="'0.0-0'">
+    Attacker GS
+  </nwb-label-control>
+
+  <nwb-label-control [value]="store.weaponGearScore()" [percent]="false" [format]="'0.0-0'">
+    Weapon GS
+  </nwb-label-control>
 
   @if (store.convertPercent()) {
-    <div class="form-control text-secondary">
-      <label class="input-group input-group-sm whitespace-nowrap">
-        <span class="flex-1 w-32 flex justify-between">
-          <span class="px-0">Damage Conversion</span>
-        </span>
-        <span class="w-20 inline-block text-right pl-0">
-          {{ store.convertPercent() | percent: '0.0-0' }}
-        </span>
-      </label>
-    </div>
+    <nwb-label-control [value]="store.convertPercent()" [percent]="true" [format]="'0.0-0'" class="text-secondary">
+      Damage Conversion
+    </nwb-label-control>
 
     <!-- <div class="form-control">
       <label class="input-group input-group-sm whitespace-nowrap">
@@ -45,368 +28,426 @@
     </div> -->
   }
 
-  <div class="form-control">
-    <label class="input-group input-group-sm whitespace-nowrap">
-      <span class="flex-none w-52 flex justify-between">
-        <span class="px-0">Base Damage</span>
-        <span class="px-0" [class.text-neutral]="!store.baseDamage()">
-          {{ store.baseDamage() | number: '0.2-2' }}
-        </span>
-      </span>
-      <input
-        class="flex-none w-16 pr-0 input input-sm input-bordered"
-        type="number"
-        step="1"
-        [ngModel]="store.baseDamageTweak()"
-        (ngModelChange)="store.tweakBaseDamage($event)"
-        (wheel)="($event)"
-      />
-      <span class="flex-1" [class.text-primary]="store.baseDamageTweak()" [class.text-neutral]="!store.baseDamageSum()">
-        {{ store.baseDamageSum() | number: '0.2-2' }}
-      </span>
-    </label>
-  </div>
+  <nwb-tweak-control
+    [leftValue]="store.baseDamage()"
+    [rightValue]="store.baseDamageSum()"
+    [tweakValue]="store.baseDamageTweak()"
+    [step]="1"
+    [format]="'0.0-0'"
+    (tweakValueChange)="store.tweakBaseDamage($event)"
+    [tooltip]="baseDamageTip"
+    [tooltipPlacement]="'left'"
+  >
+    <span class="px-0"> Base Damage </span>
+    <ng-template #baseDamageTip>
+      <div class="p-2 prose prose-sm">
+        <h4>Weapons base damage</h4>
+        <p>Use the input field to tweak the value</p>
+      </div>
+    </ng-template>
+  </nwb-tweak-control>
 
-  <div class="form-control">
-    <label class="input-group input-group-sm whitespace-nowrap">
-      <span class="flex-none w-52 flex justify-between">
-        <span class="px-0">Damage Coef</span>
-        <span class="px-0" [class.text-neutral]="!store.damageCoef()">
-          {{ store.damageCoef() | number: '0.2-2' }}
-        </span>
-      </span>
-      <input
-        class="flex-none w-16 pr-0 input input-sm input-bordered"
-        type="number"
-        step="0.01"
-        [ngModel]="store.damageCoefTweak()"
-        (ngModelChange)="store.tweakDamageCoef($event)"
-        (wheel)="($event)"
-      />
-      <span class="flex-1" [class.text-primary]="store.damageCoefTweak()" [class.text-neutral]="!store.damageCoefSum()">
-        {{ store.damageCoefSum() | number: '0.2-2' }}
-      </span>
-    </label>
-  </div>
+  <nwb-tweak-control
+    [leftValue]="store.damageCoef()"
+    [rightValue]="store.damageCoefSum()"
+    [tweakValue]="store.damageCoefTweak()"
+    [step]="1"
+    [percent]="true"
+    [format]="'0.0-0'"
+    (tweakValueChange)="store.tweakDamageCoef($event)"
+    [tooltip]="damageCoefTip"
+    [tooltipPlacement]="'left'"
+  >
+    <span class="px-0"> Damage Coef </span>
+    <ng-template #damageCoefTip>
+      <div class="p-2 prose prose-sm">
+        <h4>Attack Damage Coefficient</h4>
+        <p>Use the input field to tweak the value</p>
+      </div>
+    </ng-template>
+  </nwb-tweak-control>
 
   <br />
 
-  <div class="form-control">
-    <label class="input-group input-group-sm whitespace-nowrap">
-      <span class="flex-none w-52 flex justify-between">
-        <span class="px-0">PvP Mod</span>
-        <span class="px-0" [class.text-neutral]="!store.pvpMods()">
-          {{ store.pvpMods() | number: '0.2-2' }}
-        </span>
-      </span>
-      <input
-        class="flex-none w-16 pr-0 input input-sm input-bordered"
-        type="number"
-        step="0.01"
-        [ngModel]="store.pvpModsTweak()"
-        (ngModelChange)="store.tweakPvpMods($event)"
-        (wheel)="($event)"
-      />
-      <span class="flex-1" [class.text-primary]="store.pvpModsTweak()" [class.text-neutral]="!store.pvpModsSum()">
-        {{ store.pvpModsSum() | number: '0.2-2' }}
-      </span>
-    </label>
-  </div>
+  <nwb-tweak-control
+    [leftValue]="store.pvpMods()"
+    [rightValue]="store.pvpModsSum()"
+    [tweakValue]="store.pvpModsTweak()"
+    [step]="1"
+    [percent]="true"
+    [format]="'0.0-0'"
+    (tweakValueChange)="store.tweakPvpMods($event)"
+    [tooltip]="pvpModsTip"
+    [tooltipPlacement]="'left'"
+  >
+    <span class="px-0"> PvP Mod </span>
+    <ng-template #pvpModsTip>
+      <div class="p-2 prose prose-sm">
+        <h4>PvP Scaling Modifier</h4>
+        <p>
+          Usually active in a PvP game mode for certain weapons.
+        </p>
+      </div>
+    </ng-template>
+  </nwb-tweak-control>
 
-  <div class="form-control">
-    <label class="input-group input-group-sm whitespace-nowrap">
-      <span class="flex-none w-52 flex justify-between">
-        <span class="px-0">Ammo Mod</span>
-        <span class="px-0" [class.text-neutral]="!store.ammoMods()">
-          {{ store.ammoMods() | number: '0.2-2' }}
-        </span>
-      </span>
-      <input
-        class="flex-none w-16 pr-0 input input-sm input-bordered"
-        type="number"
-        step="0.01"
-        [ngModel]="store.ammoModsTweak()"
-        (ngModelChange)="store.tweakAmmoMods($event)"
-        (wheel)="($event)"
-      />
-      <span class="flex-1" [class.text-primary]="store.ammoModsTweak()" [class.text-neutral]="!store.ammoModsSum()">
-        {{ store.ammoModsSum() | number: '0.2-2' }}
-      </span>
-    </label>
-  </div>
+  <nwb-tweak-control
+    [leftValue]="store.ammoMods()"
+    [rightValue]="store.ammoModsSum()"
+    [tweakValue]="store.ammoModsTweak()"
+    [step]="1"
+    [percent]="true"
+    [format]="'0.0-0'"
+    (tweakValueChange)="store.tweakAmmoMods($event)"
+    [tooltip]="ammoModsTip"
+    [tooltipPlacement]="'left'"
+  >
+    <span class="px-0"> Ammo Mod </span>
+    <ng-template #ammoModsTip>
+      <div class="p-2 prose prose-sm">
+        <h4>Ammo Modifier</h4>
+        <p>
+          Ammunition like arrows for bows increase its damage.<br>
+          For example a value of <code>20%</code> simulates a multiplier of<code>x1.2</code>
+        </p>
+      </div>
+    </ng-template>
+  </nwb-tweak-control>
 
-  <div class="form-control">
-    <label class="input-group input-group-sm whitespace-nowrap">
-      <span class="flex-none w-52 flex justify-between">
-        <span class="px-0">
-          Base Mod
-          <img [nwImage]="store.weaponTypeIcon()" class="w-5 h-5 ml-2" />
-        </span>
-        <span class="px-0" [class.text-neutral]="!store.baseMods()">
-          {{ store.baseMods() | number: '0.2-2' }}
-        </span>
-      </span>
-      <input
-        class="flex-none w-16 pr-0 input input-sm input-bordered"
-        type="number"
-        step="0.01"
-        [ngModel]="store.baseModsTweak()"
-        (ngModelChange)="store.tweakBaseMods($event)"
-        (wheel)="($event)"
-      />
-      <span class="flex-1" [class.text-primary]="store.baseModsTweak()" [class.text-neutral]="!store.baseModsSum()">
-        {{ store.baseModsSum() | number: '0.2-2' }}
-      </span>
-    </label>
-  </div>
-
-  @if(store.convertPercent()) {
-
-    <div class="form-control text-secondary">
-      <label class="input-group input-group-sm whitespace-nowrap">
-        <span class="flex-none w-52 flex justify-between">
-          <span class="px-0">
-            Base Mod
-            <img [nwImage]="store.convertTypeIcon()" class="w-5 h-5 ml-2" />
-          </span>
-          <span class="px-0" [class.text-neutral]="!store.convertBaseMods()">
-            {{ store.convertBaseMods() | number: '0.2-2' }}
-          </span>
-        </span>
-        <input
-          class="flex-none w-16 pr-0 input input-sm input-bordered"
-          type="number"
-          step="0.01"
-          [ngModel]="store.convertBaseModsTweak()"
-          (ngModelChange)="store.tweakConvertBaseMods($event)"
-          (wheel)="($event)"
-        />
-        <span class="flex-1" [class.text-primary]="store.convertBaseModsTweak()" [class.text-neutral]="!store.convertBaseModsSum()">
-          {{ store.convertBaseModsSum() | number: '0.2-2' }}
-        </span>
-      </label>
-    </div>
-  }
-
-  <div class="form-control">
-    <label class="input-group input-group-sm whitespace-nowrap">
-      <span class="flex-none w-52 flex justify-between">
-        <span class="px-0">Crit Mod</span>
-        <span class="px-0" [class.text-neutral]="!store.critMods()">
-          {{ store.critMods() | number: '0.2-2' }}
-        </span>
-      </span>
-      <input
-        class="flex-none w-16 pr-0 input input-sm input-bordered"
-        type="number"
-        step="0.01"
-        [ngModel]="store.critModsTweak()"
-        (ngModelChange)="store.tweakCritMods($event)"
-        (wheel)="($event)"
-      />
-      <span class="flex-1" [class.text-primary]="store.critModsTweak()" [class.text-neutral]="!store.critModsSum()">
-        {{ store.critModsSum() | number: '0.2-2' }}
-      </span>
-    </label>
-  </div>
-
-  <div class="form-control">
-    <label class="input-group input-group-sm whitespace-nowrap">
-      <span class="flex-none w-52 flex justify-between">
-        <span class="px-0">
-          Empower Mod
-          <img [nwImage]="store.weaponTypeIcon()" class="w-5 h-5 ml-2" />
-        </span>
-        <span class="px-0" [class.text-neutral]="!store.empowerMods()">
-          {{ store.empowerMods() | number: '0.2-2' }}
-        </span>
-      </span>
-      <input
-        class="flex-none w-16 pr-0 input input-sm input-bordered"
-        type="number"
-        step="0.01"
-        [ngModel]="store.empowerModsTweak()"
-        (ngModelChange)="store.tweakEmpowerMods($event)"
-        (wheel)="($event)"
-      />
-      <span
-        class="flex-1"
-        [class.text-primary]="store.empowerModsTweak()"
-        [class.text-neutral]="!store.empowerModsSum()"
-      >
-        {{ store.empowerModsSum() | number: '0.2-2' }}
-      </span>
-    </label>
-  </div>
+  <nwb-tweak-control
+    [leftValue]="store.baseMods()"
+    [rightValue]="store.baseModsSum()"
+    [tweakValue]="store.baseModsTweak()"
+    [step]="1"
+    [percent]="true"
+    [format]="'0.0-0'"
+    (tweakValueChange)="store.tweakBaseMods($event)"
+    [tooltip]="baseModsTip"
+    [tooltipPlacement]="'left'"
+  >
+    <span class="px-0">
+      <img [nwImage]="store.weaponTypeIcon()" class="w-5 h-5 mr-2" />
+      Base Mod
+    </span>
+    <ng-template #baseModsTip>
+      <div class="p-2 prose prose-sm">
+        <h4>Base Damage Modifier</h4>
+        <p>This is applied to the unconverted weapon damage</p>
+      </div>
+    </ng-template>
+  </nwb-tweak-control>
 
   @if (store.convertPercent()) {
-    <div class="form-control text-secondary">
-      <label class="input-group input-group-sm whitespace-nowrap">
-        <span class="flex-none w-52 flex justify-between">
-          <span class="px-0">
-            Empower Mod
-            <img [nwImage]="store.convertTypeIcon()" class="w-5 h-5 ml-2" />
-          </span>
-          <span class="px-0" [class.text-neutral]="!store.convertEmpowerMods()">
-            {{ store.convertEmpowerMods() | number: '0.2-2' }}
-          </span>
-        </span>
-        <input
-          class="flex-none w-16 pr-0 input input-sm input-bordered"
-          type="number"
-          step="0.01"
-          [ngModel]="store.convertEmpowerModsTweak()"
-          (ngModelChange)="store.tweakConvertEmpowerMods($event)"
-          (wheel)="($event)"
-        />
-        <span
-          class="flex-1"
-          [class.text-primary]="store.convertEmpowerModsTweak()"
-          [class.text-neutral]="!store.convertEmpowerModsSum()"
-        >
-          {{ store.convertEmpowerModsSum() | number: '0.2-2' }}
-        </span>
-      </label>
-    </div>
+    <nwb-tweak-control
+      [leftValue]="store.convertBaseMods()"
+      [rightValue]="store.convertBaseModsSum()"
+      [tweakValue]="store.convertBaseModsTweak()"
+      [step]="1"
+      [percent]="true"
+      [format]="'0.0-0'"
+      (tweakValueChange)="store.tweakConvertBaseMods($event)"
+      [tooltip]="convertBaseModsTip"
+      [tooltipPlacement]="'left'"
+    >
+      <span class="px-0 text-secondary">
+        <img [nwImage]="store.convertTypeIcon()" class="w-5 h-5 mr-2" />
+        Base Mod
+      </span>
+      <ng-template #convertBaseModsTip>
+        <div class="p-2 prose prose-sm">
+          <h4>Base Damage Modifier</h4>
+          <p>This is applied to the <span class="text-secondary">converted</span> damage</p>
+        </div>
+      </ng-template>
+    </nwb-tweak-control>
+  }
+
+  <nwb-tweak-control
+    [leftValue]="store.critMods()"
+    [rightValue]="store.critModsSum()"
+    [tweakValue]="store.critModsTweak()"
+    [step]="1"
+    [percent]="true"
+    [format]="'0.0-0'"
+    (tweakValueChange)="store.tweakCritMods($event)"
+    [tooltip]="critModsTip"
+    [tooltipPlacement]="'left'"
+  >
+    <span class="px-0"> Crit Mod </span>
+    <ng-template #critModsTip>
+      <div class="p-2 prose prose-sm">
+        <h4>Critical Damage Modifier</h4>
+        <p>
+          Increases damage for critical hits. <br />
+          Has an ingame limit of <code>+200%</code>
+        </p>
+      </div>
+    </ng-template>
+  </nwb-tweak-control>
+
+  <nwb-tweak-control
+    [leftValue]="store.empowerMods()"
+    [rightValue]="store.empowerModsSum()"
+    [tweakValue]="store.empowerModsTweak()"
+    [step]="1"
+    [percent]="true"
+    [format]="'0.0-0'"
+    (tweakValueChange)="store.tweakEmpowerMods($event)"
+    [tooltip]="empowerModsTip"
+    [tooltipPlacement]="'left'"
+  >
+    <span class="px-0">
+      <img [nwImage]="store.weaponTypeIcon()" class="w-5 h-5 mr-2" />
+      Empower Mod
+    </span>
+    <ng-template #empowerModsTip>
+      <div class="p-4 prose prose-sm">
+        <h4>Empower / Weaken Modifier</h4>
+        <p class="leading-tight">
+          Increases the <code>DMG</code> multiplier by <code>[-50%, +50%]</code>. <br>
+          These caps can be exceeded in certain scenarios.
+          <br>
+          <br>
+          Use the input field to simulate additional empower (increase value) or weaken (decrease value).
+          <br>
+          <br>
+          This is applied to the unconverted damage
+        </p>
+      </div>
+    </ng-template>
+  </nwb-tweak-control>
+
+  @if (store.convertPercent()) {
+    <nwb-tweak-control
+      class="text-secondary"
+      [leftValue]="store.convertEmpowerMods()"
+      [rightValue]="store.convertEmpowerModsSum()"
+      [tweakValue]="store.convertEmpowerModsTweak()"
+      [step]="1"
+      [percent]="true"
+      [format]="'0.0-0'"
+      (tweakValueChange)="store.tweakConvertEmpowerMods($event)"
+      [tooltip]="convertEmpowerModsTip"
+      [tooltipPlacement]="'left'"
+    >
+      <span class="px-0">
+        <img [nwImage]="store.convertTypeIcon()" class="w-5 h-5 mr-2" />
+        Empower Mod
+      </span>
+      <ng-template #convertEmpowerModsTip>
+        <div class="p-4 prose prose-sm">
+          <h4>Empower / Weaken Modifier</h4>
+          <p class="leading-tight">
+            Increases the <code>DMG</code> multiplier by <code>[-50%, +50%]</code>. <br>
+            These caps can be exceeded in certain scenarios.
+            <br>
+            <br>
+            Use the input field to simulate additional empower (increase value) or weaken (decrease value).
+            <br>
+            <br>
+            This is applied to the <span class="text-secondary">converted</span> damage
+          </p>
+        </div>
+      </ng-template>
+    </nwb-tweak-control>
   }
 
   <br />
-  <div class="form-control">
-    <label class="input-group input-group-sm whitespace-nowrap">
-      <span class="flex-none w-52 flex justify-between">
-        <span class="px-0"> Defender GS </span>
-        <!-- <span class="px-0" [class.text-neutral]="!store.defenderGearScore()">
-          {{ store.defenderGearScore() | number }}
-        </span> -->
-      </span>
-      <input
-        class="flex-none w-16 pr-0 input input-sm input-bordered"
-        type="number"
-        step="1"
-        [ngModel]="store.defenderGearScoreTweak()"
-        (ngModelChange)="store.tweakDefenderGearScore($event)"
-        (wheel)="($event)"
-      />
-      <span
-        class="flex-1"
-        [class.text-primary]="store.defenderGearScoreTweak()"
-        [class.text-neutral]="!store.defenderGearScoreSum()"
-      >
-        {{ store.defenderGearScoreSum() | number }}
-      </span>
-    </label>
-  </div>
+  <nwb-tweak-control
+    [leftValue]="store.defenderLevel()"
+    [rightValue]="store.defenderLevelSum()"
+    [tweakValue]="store.defenderLevelTweak()"
+    [step]="1"
+    [percent]="false"
+    [format]="'0.0-0'"
+    (tweakValueChange)="store.tweakDefenderLevel($event)"
+    [tooltip]="defenderLevelTip"
+    [tooltipPlacement]="'left'"
+  >
+    <span class="px-0"> Defender Level </span>
+    <ng-template #defenderLevelTip>
+      <div class="p-2 prose prose-sm leading-tight">
+        <h4>Defender Level</h4>
+        <p>PvP specific. A defender with lower Gear Score than the attacker will receive less damage.</p>
+      </div>
+    </ng-template>
+  </nwb-tweak-control>
+  <nwb-tweak-control
+    [leftValue]="store.defenderGearScore()"
+    [rightValue]="store.defenderGearScoreSum()"
+    [tweakValue]="store.defenderGearScoreTweak()"
+    [step]="1"
+    [percent]="false"
+    [format]="'0.0-0'"
+    (tweakValueChange)="store.tweakDefenderGearScore($event)"
+    [tooltip]="defenderGearScoreTip"
+    [tooltipPlacement]="'left'"
+  >
+    <span class="px-0" > Defender GS </span>
+    <ng-template #defenderGearScoreTip>
+      <div class="p-2 prose prose-sm leading-tight">
+        <h4>Defender Gear Score</h4>
+        <p>PvP specific. A defender with lower Gear Score than the attacker will receive less damage.</p>
+      </div>
+    </ng-template>
+  </nwb-tweak-control>
 
-  <div class="form-control">
-    <label class="input-group input-group-sm whitespace-nowrap">
-      <span class="flex-none w-52 flex justify-between">
-        <span class="px-0"> Armor Physical </span>
-        <!-- <span class="px-0" [class.text-neutral]="!store.defenderRatingPhys()">
-          {{ store.defenderRatingPhys() | number }}
-        </span> -->
-      </span>
-      <input
-        class="flex-none w-16 pr-0 input input-sm input-bordered"
-        type="number"
-        step="1"
-        [ngModel]="store.defenderRatingPhysTweak()"
-        (ngModelChange)="store.tweakDefenderRatingPhys($event)"
-        (wheel)="($event)"
-      />
-      <span
-        class="flex-1"
-        [class.text-primary]="store.defenderRatingPhysTweak()"
-        [class.text-neutral]="!store.defenderRatingPhysSum()"
-      >
-        {{ store.defenderRatingPhysSum() | number }}
-      </span>
-    </label>
-  </div>
+  <nwb-tweak-control
+    [leftValue]="store.defenderRatingPhys()"
+    [rightValue]="store.defenderRatingPhysSum()"
+    [tweakValue]="store.defenderRatingPhysTweak()"
+    [step]="1"
+    [percent]="false"
+    [format]="'0.0-0'"
+    (tweakValueChange)="store.tweakDefenderRatingPhys($event)"
+    [tooltip]="defenderRatingPhysTip"
+    [tooltipPlacement]="'left'"
+  >
+    <span class="px-0"> Armor Physical </span>
+    <ng-template #defenderRatingPhysTip>
+      <div class="p-2 prose prose-sm leading-tight">
+        <h4>Physical armor rating</h4>
+        <p>The defenders armor rating against physical attacks.</p>
+      </div>
+    </ng-template>
+  </nwb-tweak-control>
 
-  <div class="form-control">
-    <label class="input-group input-group-sm whitespace-nowrap">
-      <span class="flex-none w-52 flex justify-between">
-        <span class="px-0"> Armor Elemental </span>
-        <!-- <span class="px-0" [class.text-neutral]="!store.defenderRatingElem()">
-          {{ store.defenderRatingElem() | number }}
-        </span> -->
-      </span>
-      <input
-        class="flex-none w-16 pr-0 input input-sm input-bordered"
-        type="number"
-        step="1"
-        [ngModel]="store.defenderRatingElemTweak()"
-        (ngModelChange)="store.tweakDefenderRatingElem($event)"
-        (wheel)="($event)"
-      />
-      <span
-        class="flex-1"
-        [class.text-primary]="store.defenderRatingElemTweak()"
-        [class.text-neutral]="!store.defenderRatingElemSum()"
-      >
-        {{ store.defenderRatingElemSum() | number }}
-      </span>
-    </label>
-  </div>
+  <nwb-tweak-control
+    [leftValue]="store.defenderRatingElem()"
+    [rightValue]="store.defenderRatingElemSum()"
+    [tweakValue]="store.defenderRatingElemTweak()"
+    [step]="1"
+    [percent]="false"
+    [format]="'0.0-0'"
+    (tweakValueChange)="store.tweakDefenderRatingElem($event)"
+    [tooltip]="defenderRatingElemTip"
+    [tooltipPlacement]="'left'"
+  >
+    <span class="px-0"> Armor Elemental </span>
+    <ng-template #defenderRatingElemTip>
+      <div class="p-2 prose prose-sm leading-tight">
+        <h4>Elemental armor rating</h4>
+        <p>The defenders armor rating against elemental attacks.</p>
+      </div>
+    </ng-template>
+  </nwb-tweak-control>
 
-  <div class="form-control opacity-50">
-    <label class="input-group input-group-sm whitespace-nowrap">
-      <span class="flex-none w-52 flex justify-between">
-        <span class="px-0">
-          Absorbtion
-          <img [nwImage]="store.weaponTypeIcon()" class="w-5 h-5 ml-2" />
-        </span>
-        <!-- <span class="px-0" [class.text-neutral]="!store.defenderAbsorbWeapon()">
-          {{ store.defenderAbsorbWeapon() | number }}
-        </span> -->
-      </span>
-      <input
-        class="flex-none w-16 pr-0 input input-sm input-bordered"
-        type="number"
-        step="1"
-        [ngModel]="store.defenderAbsorbWeaponTweak()"
-        (ngModelChange)="store.tweakDefenderAbsorbWeapon($event)"
-        (wheel)="($event)"
-      />
-      <span
-        class="flex-1"
-        [class.text-primary]="store.defenderAbsorbWeaponTweak()"
-        [class.text-neutral]="!store.defenderAbsorbWeaponSum()"
-      >
-        {{ store.defenderAbsorbWeaponSum() | number }}
-      </span>
-    </label>
-  </div>
+  <nwb-tweak-control
+    [leftValue]="store.defenderABSWeapon()"
+    [rightValue]="store.defenderABSWeaponSum()"
+    [tweakValue]="store.defenderABSWeaponTweak()"
+    [step]="1"
+    [percent]="true"
+    [format]="'0.0-0'"
+    (tweakValueChange)="store.tweakDefenderABSWeapon($event)"
+    [tooltip]="defenderABSWeaponTip"
+    [tooltipPlacement]="'left'"
+  >
+    <span class="px-0">
+      <img [nwImage]="store.weaponTypeIcon()" class="w-5 h-5 mr-2" />
+      Fortify
+    </span>
+    <ng-template #defenderABSWeaponTip>
+      <div class="p-2 prose prose-sm leading-tight">
+        <h4>Fortify / Rend</h4>
+        <p>
+          Increases the <code>ABS</code> multiplier by <code>[-30%, +50%]</code>. <br>
+          These caps can be exceeded in certain scenarios.
+          <br>
+          <br>
+          Use the input field to simulate additional fortify (increase value) or rend (decrease value).
+          <br>
+          <br>
+          This is applied to the unconverted damage.
+        </p>
+      </div>
+    </ng-template>
+  </nwb-tweak-control>
 
   @if (store.convertPercent()) {
-    <div class="form-control text-secondary opacity-50">
-      <label class="input-group input-group-sm whitespace-nowrap">
-        <span class="flex-none w-52 flex justify-between">
-          <span class="px-0">
-            Absorbtion
-            <img [nwImage]="store.convertTypeIcon()" class="w-5 h-5 ml-2" />
-          </span>
-          <!-- <span class="px-0" [class.text-neutral]="!store.defenderAbsorbConverted()">
-            {{ store.defenderAbsorbConverted() | number }}
-          </span> -->
-        </span>
-        <input
-          class="flex-none w-16 pr-0 input input-sm input-bordered"
-          type="number"
-          step="1"
-          [ngModel]="store.defenderAbsorbConvertedTweak()"
-          (ngModelChange)="store.tweakDefenderAbsorbConverted($event)"
-          (wheel)="($event)"
-        />
-        <span
-          class="flex-1"
-          [class.text-primary]="store.defenderAbsorbConvertedTweak()"
-          [class.text-neutral]="!store.defenderAbsorbConvertedSum()"
-        >
-          {{ store.defenderAbsorbConvertedSum() | number }}
-        </span>
-      </label>
-    </div>
+    <nwb-tweak-control
+      [leftValue]="store.defenderABSConverted()"
+      [rightValue]="store.defenderABSConvertedSum()"
+      [tweakValue]="store.defenderABSConvertedTweak()"
+      [step]="1"
+      [percent]="true"
+      [format]="'0.0-0'"
+      (tweakValueChange)="store.tweakDefenderABSConverted($event)"
+      [tooltip]="defenderABSConvertedTip"
+      [tooltipPlacement]="'left'"
+    >
+      <span class="px-0 text-secondary">
+        <img [nwImage]="store.convertTypeIcon()" class="w-5 h-5 mr-2" />
+        Fortify
+      </span>
+      <ng-template #defenderABSConvertedTip>
+        <div class="p-2 prose prose-sm leading-tight">
+          <h4>Fortify / Rend</h4>
+          <p>
+            Increases the <code>ABS</code> multiplier by <code>[-30%, +50%]</code>. <br>
+            These caps can be exceeded in certain scenarios.
+            <br>
+            <br>
+            Use the input field to simulate additional fortify (increase value) or rend (decrease value).
+            <br>
+            <br>
+            This is applied to the <span class="text-secondary">converted</span> damage.
+          </p>
+        </div>
+      </ng-template>
+    </nwb-tweak-control>
+  }
+
+  <nwb-tweak-control
+    [leftValue]="store.defenderWKNWeapon()"
+    [rightValue]="store.defenderWKNWeaponSum()"
+    [tweakValue]="store.defenderWKNWeaponTweak()"
+    [step]="1"
+    [percent]="true"
+    [format]="'0.0-0'"
+    (tweakValueChange)="store.tweakDefenderWKNWeapon($event)"
+    [tooltip]="defenderWKNWeaponTip"
+    [tooltipPlacement]="'left'"
+  >
+    <span class="px-0">
+      <img [nwImage]="store.weaponTypeIcon()" class="w-5 h-5 mr-2" />
+      Weakness
+    </span>
+    <ng-template #defenderWKNWeaponTip>
+      <div class="p-2 prose prose-sm leading-tight">
+        <h4>Weakness</h4>
+        <p>
+          The weakness agains <img [nwImage]="store.weaponTypeIcon()" class="w-5 h-5 inline m-0" /> damage type.
+        </p>
+      </div>
+    </ng-template>
+  </nwb-tweak-control>
+
+  @if (store.convertPercent()) {
+    <nwb-tweak-control
+      [leftValue]="store.defenderWKNConverted()"
+      [rightValue]="store.defenderWKNConvertedSum()"
+      [tweakValue]="store.defenderWKNConvertedTweak()"
+      [step]="1"
+      [percent]="true"
+      [format]="'0.0-0'"
+      (tweakValueChange)="store.tweakDefenderWKNConverted($event)"
+      [tooltip]="defenderWKNConvertedTip"
+      [tooltipPlacement]="'left'"
+    >
+      <span class="px-0 text-secondary">
+        <img [nwImage]="store.convertTypeIcon()" class="w-5 h-5 mr-2" />
+        Weakness
+      </span>
+      <ng-template #defenderWKNConvertedTip>
+        <div class="p-2 prose prose-sm leading-tight">
+          <h4>Weakness</h4>
+          <p>
+            The weakness agains <img [nwImage]="store.convertTypeIcon()" class="w-5 h-5 inline m-0" /> damage type.
+          </p>
+        </div>
+      </ng-template>
+    </nwb-tweak-control>
   }
 
   <br />
@@ -422,28 +463,26 @@
         <td>
           <img [nwImage]="store.weaponTypeIcon()" class="w-5 h-5 ml-2" />
         </td>
-        <td>{{ damage.std | number: '0.2-2' }}</td>
-        <td>-{{ damage.stdMitigated | number: '0.2-2' }}</td>
-        <td>{{ damage.stdFinal | number: '0.2-2' }}</td>
+        <td class="font-mono">{{ damage.std | floor | number }}</td>
+        <td class="font-mono">-{{ damage.stdMitigated | floor | number }}</td>
+        <td class="font-mono">{{ damage.stdFinal | floor | number }}</td>
       </tr>
       @if (store.convertPercent() && store.output().converted; as damage) {
         <tr class="text-right text-secondary">
           <td>
             <img [nwImage]="store.convertTypeIcon()" class="w-5 h-5 ml-2" />
           </td>
-          <td>{{ damage.std | number: '0.2-2' }}</td>
-          <td>-{{ damage.stdMitigated | number: '0.2-2' }}</td>
-          <td>{{ damage.stdFinal | number: '0.2-2' }}</td>
+          <td class="font-mono">{{ damage.std | floor | number }}</td>
+          <td class="font-mono">-{{ damage.stdMitigated | floor | number }}</td>
+          <td class="font-mono">{{ damage.stdFinal | floor | number }}</td>
         </tr>
       }
       @if (store.convertPercent() && store.output().total; as damage) {
         <tr class="text-right">
-          <td>
-
-          </td>
-          <td>{{ damage.std | number: '0.2-2' }}</td>
-          <td>-{{ damage.stdMitigated | number: '0.2-2' }}</td>
-          <td>{{ damage.stdFinal | number: '0.2-2' }}</td>
+          <td></td>
+          <td class="font-mono">{{ damage.std | floor | number }}</td>
+          <td class="font-mono">-{{ damage.stdMitigated | floor | number }}</td>
+          <td class="font-mono">{{ damage.stdFinal | floor | number }}</td>
         </tr>
       }
     }
@@ -460,29 +499,27 @@
         <td>
           <img [nwImage]="store.weaponTypeIcon()" class="w-5 h-5 ml-2" />
         </td>
-        <td>{{ damage.crit | number: '0.2-2' }}</td>
-        <td>-{{ damage.critMitigated | number: '0.2-2' }}</td>
-        <td>{{ damage.critFinal | number: '0.2-2' }}</td>
+        <td class="font-mono">{{ damage.crit | floor | number }}</td>
+        <td class="font-mono">-{{ damage.critMitigated | floor | number }}</td>
+        <td class="font-mono">{{ damage.critFinal | floor | number }}</td>
       </tr>
       @if (store.convertPercent() && store.output().converted; as damage) {
         <tr class="text-right text-secondary">
           <td>
             <img [nwImage]="store.convertTypeIcon()" class="w-5 h-5 ml-2" />
           </td>
-          <td>{{ damage.crit | number: '0.2-2' }}</td>
-          <td>-{{ damage.critMitigated | number: '0.2-2' }}</td>
-          <td>{{ damage.critFinal | number: '0.2-2' }}</td>
+          <td class="font-mono">{{ damage.crit | floor | number }}</td>
+          <td class="font-mono">-{{ damage.critMitigated | floor | number }}</td>
+          <td class="font-mono">{{ damage.critFinal | floor | number }}</td>
         </tr>
       }
 
       @if (store.convertPercent() && store.output().total; as damage) {
-        <tr class="text-right">
-          <td>
-
-          </td>
-          <td>{{ damage.crit | number: '0.2-2' }}</td>
-          <td>-{{ damage.critMitigated | number: '0.2-2' }}</td>
-          <td>{{ damage.critFinal | number: '0.2-2' }}</td>
+        <tr class="text-right font-bold">
+          <td></td>
+          <td class="font-mono">{{ damage.crit | floor | number }}</td>
+          <td class="font-mono">-{{ damage.critMitigated | floor | number }}</td>
+          <td class="font-mono">{{ damage.critFinal | floor | number }}</td>
         </tr>
       }
     }

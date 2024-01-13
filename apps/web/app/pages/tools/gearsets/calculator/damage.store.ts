@@ -1,11 +1,11 @@
-import { computed } from "@angular/core"
-import { patchState, signalStore, withComputed, withMethods, withState } from "@ngrx/signals"
-import { AttributeRef, NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE, damageFactorForAttrs, damageForWeapon, damageMitigationPercent, pvpGearScore } from "@nw-data/common"
-import { damageTypeIcon } from "~/nw/weapon-types"
+import { computed } from '@angular/core'
+import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
+import { AttributeRef, NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE, calculateDamage, getDamageTypesOfCategory, isDamageTypeElemental } from '@nw-data/common'
+import { damageTypeIcon } from '~/nw/weapon-types'
 
 export interface DamageCalculatorState {
-  playerLevel: number
-  playerGearScore: number,
+  attackerLevel: number
+  attackerGearScore: number
   attributes: Record<AttributeRef, number>
 
   preferHigherScaling: boolean
@@ -47,22 +47,29 @@ export interface DamageCalculatorState {
   armorPenetration: number
   armorPenetrationTweak: number
 
+  defenderIsPlayer: boolean
+  defenderLevel: number
+  defenderLevelTweak: number
   defenderGearScore: number
   defenderGearScoreTweak: number
-  defenderRatingPhys: number,
-  defenderRatingPhysTweak: number,
-  defenderRatingElem: number,
-  defenderRatingElemTweak: number,
-  defenderAbsorbWeapon: number,
-  defenderAbsorbWeaponTweak: number,
-  defenderAbsorbConverted: number,
-  defenderAbsorbConvertedTweak: number,
+  defenderRatingPhys: number
+  defenderRatingPhysTweak: number
+  defenderRatingElem: number
+  defenderRatingElemTweak: number
+  defenderABSWeapon: number
+  defenderABSWeaponTweak: number
+  defenderABSConverted: number
+  defenderABSConvertedTweak: number
+  defenderWKNWeapon: number
+  defenderWKNWeaponTweak: number
+  defenderWKNConverted: number
+  defenderWKNConvertedTweak: number
 }
 
 export const DamageCalculatorStore = signalStore(
   withState<DamageCalculatorState>({
-    playerLevel: NW_MAX_CHARACTER_LEVEL,
-    playerGearScore: NW_MAX_GEAR_SCORE,
+    attackerLevel: NW_MAX_CHARACTER_LEVEL,
+    attackerGearScore: NW_MAX_GEAR_SCORE,
     attributes: {
       str: 5,
       dex: 5,
@@ -122,6 +129,10 @@ export const DamageCalculatorStore = signalStore(
     armorPenetration: 0,
     armorPenetrationTweak: 0,
 
+    defenderIsPlayer: false,
+    defenderLevel: 0,
+    defenderLevelTweak: 0,
+
     defenderGearScore: 0,
     defenderGearScoreTweak: 0,
 
@@ -131,11 +142,16 @@ export const DamageCalculatorStore = signalStore(
     defenderRatingElem: 0,
     defenderRatingElemTweak: 0,
 
-    defenderAbsorbWeapon: 0,
-    defenderAbsorbWeaponTweak: 0,
+    defenderABSWeapon: 0,
+    defenderABSWeaponTweak: 0,
 
-    defenderAbsorbConverted: 0,
-    defenderAbsorbConvertedTweak: 0,
+    defenderABSConverted: 0,
+    defenderABSConvertedTweak: 0,
+
+    defenderWKNWeapon: 0,
+    defenderWKNWeaponTweak: 0,
+    defenderWKNConverted: 0,
+    defenderWKNConvertedTweak: 0,
   }),
   withComputed((store) => {
     return {
@@ -151,132 +167,67 @@ export const DamageCalculatorStore = signalStore(
 
       weaponTypeIcon: computed(() => damageTypeIcon(store.weaponDamageType())),
       convertTypeIcon: computed(() => damageTypeIcon(store.convertDamageType())),
+      weaponIsElemental: computed(() => isDamageTypeElemental(store.weaponDamageType())),
+      convertIsElemental: computed(() => isDamageTypeElemental(store.convertDamageType())),
 
+      defenderLevelSum: computed(() => store.defenderLevel() + store.defenderLevelTweak()),
       defenderGearScoreSum: computed(() => store.defenderGearScore() + store.defenderGearScoreTweak()),
       defenderRatingPhysSum: computed(() => store.defenderRatingPhys() + store.defenderRatingPhysTweak()),
       defenderRatingElemSum: computed(() => store.defenderRatingElem() + store.defenderRatingElemTweak()),
-      defenderAbsorbWeaponSum: computed(() => store.defenderAbsorbWeapon() + store.defenderAbsorbWeaponTweak()),
-      defenderAbsorbConvertedSum: computed(() => store.defenderAbsorbConverted() + store.defenderAbsorbConvertedTweak()),
+      defenderABSWeaponSum: computed(() => store.defenderABSWeapon() + store.defenderABSWeaponTweak()),
+      defenderABSConvertedSum: computed(() => store.defenderABSConverted() + store.defenderABSConvertedTweak()),
+      defenderWKNWeaponSum: computed(() => store.defenderWKNWeapon() + store.defenderWKNWeaponTweak()),
+      defenderWKNConvertedSum: computed(() => store.defenderWKNConverted() + store.defenderWKNConvertedTweak()),
     }
   }),
   withComputed((store) => {
-    const output = computed(() => {
-      const attributes = store.attributes()
-
-      const convertPercent = store.convertPercent() ?? 0
-      const convertScale = damageFactorForAttrs({
-        weapon: store.convertScaling(),
-        attributes: store.attributes(),
-      })
-
-      const weaponPercent = 1 - convertPercent
-      const weaponScale = damageFactorForAttrs({
-        weapon: store.weaponScaling(),
-        attributes: store.attributes(),
-      })
-
-      let convertScaling = store.convertScaling()
-      let weaponScaling = store.weaponScaling()
-      if (store.preferHigherScaling) {
-        if (weaponScale > convertScale) {
-          convertScaling = weaponScaling
-        } else {
-          weaponScaling = convertScaling
-        }
-      }
-
-      const inputs = {
-        playerLevel: store.playerLevel(),
-        baseDamage: store.baseDamageSum(),
-        weaponGearScore: store.weaponGearScore(),
-        weaponScale: weaponScaling,
-        attributes: attributes,
-        damageCoef: store.damageCoefSum(),
-        pvpMod: store.pvpModsSum(),
-        ammoMod: store.ammoModsSum(),
-        baseMod: store.baseModsSum(),
-        critMod: store.critModsSum(),
-        empowerMod: store.empowerModsSum(),
-      } satisfies Parameters<typeof damageForWeapon>[0]
-
-      const weaponDamage = weaponPercent * damageForWeapon({
-        ...inputs,
-        weaponScale: weaponScaling,
-        critMod: 0,
-      })
-      const weaponDamageCrit = weaponPercent * damageForWeapon({
-        ...inputs,
-        weaponScale: weaponScaling,
-      })
-      const weaponMitigated = damageMitigationPercent({
-        armorPenetration: store.armorPenetration(),
-        armorRating: store.defenderRatingPhysSum(),
-        gearScore: pvpGearScore({
-          attackerAvgGearScore: store.playerGearScore(),
-          defenderAvgGearScore: store.defenderGearScore(),
-          weaponGearScore: store.weaponGearScore(),
-        }),
-      })
-
-      const convertedDamage = convertPercent * damageForWeapon({
-        ...inputs,
-        weaponScale: convertScaling,
-        critMod: 0,
-        baseMod: store.convertBaseModsSum(),
-        empowerMod: store.convertEmpowerModsSum(),
-      })
-      const convertedDamageCrit = convertPercent * damageForWeapon({
-        ...inputs,
-        weaponScale: convertScaling,
-        baseMod: store.convertBaseModsSum(),
-        empowerMod: store.convertEmpowerModsSum(),
-      })
-      const convertedMitigated = damageMitigationPercent({
-        armorPenetration: store.armorPenetration(),
-        armorRating: store.defenderRatingElemSum(),
-        gearScore: pvpGearScore({
-          attackerAvgGearScore: store.playerGearScore(),
-          defenderAvgGearScore: store.defenderGearScore(),
-          weaponGearScore: store.weaponGearScore(),
-        }),
-      })
-
-      const weapon = {
-        std: weaponDamage,
-        stdMitigated: weaponDamage * weaponMitigated,
-        stdFinal: weaponDamage * (1 - weaponMitigated),
-
-        crit: weaponDamageCrit,
-        critMitigated: weaponDamageCrit * weaponMitigated,
-        critFinal: weaponDamageCrit * (1 - weaponMitigated),
-      }
-      const converted = {
-        std: convertedDamage,
-        stdMitigated: convertedDamage * convertedMitigated,
-        stdFinal: convertedDamage * (1 - convertedMitigated),
-
-        crit: convertedDamageCrit,
-        critMitigated: convertedDamageCrit * convertedMitigated,
-        critFinal: convertedDamageCrit * (1 - convertedMitigated),
-      }
-      const total = {
-        std: weapon.std + converted.std,
-        stdMitigated: weapon.stdMitigated + converted.stdMitigated,
-        stdFinal: weapon.stdFinal + converted.stdFinal,
-
-        crit: weapon.crit + converted.crit,
-        critMitigated: weapon.critMitigated + converted.critMitigated,
-        critFinal: weapon.critFinal + converted.critFinal,
-      }
-      return {
-        weapon,
-        converted,
-        total,
-      }
-    })
-
     return {
-      output: output
+      defenderRatingWeapon: computed(() => {
+        return store.weaponIsElemental() ? store.defenderRatingElemSum() : store.defenderRatingPhysSum()
+      }),
+      defenderRatingConverted: computed(() => {
+        return store.convertIsElemental() ? store.defenderRatingElemSum() : store.defenderRatingPhysSum()
+      })
+    }
+  }),
+  withComputed((store) => {
+    return {
+      output: computed(() => {
+        return calculateDamage({
+          attackerLevel: store.attackerLevel(),
+          attackerGearScore: store.attackerGearScore(),
+          attackerIsPlayer: true,
+          attributes: store.attributes(),
+
+          preferHigherScaling: store.preferHigherScaling(),
+          convertPercent: store.convertPercent(),
+          convertScaling: store.convertScaling(),
+
+          weaponScaling: store.weaponScaling(),
+          weaponGearScore: store.weaponGearScore(),
+          baseDamage: store.baseDamageSum(),
+          damageCoef: store.damageCoefSum(),
+
+          modPvp: store.pvpModsSum(),
+          modAmmo: store.ammoModsSum(),
+          modBase: store.baseModsSum(),
+          modBaseConvert: store.convertBaseModsSum(),
+          modCrit: store.critModsSum(),
+          modEmpower: store.empowerModsSum(),
+          modEmpowerConvert: store.convertEmpowerModsSum(),
+
+          armorPenetration: store.armorPenetration(),
+          defenderLevel: store.defenderLevelSum(),
+          defenderGearScore: store.defenderGearScoreSum(),
+          defenderIsPlayer: store.defenderIsPlayer(),
+          defenderRatingWeapon: store.defenderRatingWeapon(),
+          defenderRatingConvert: store.defenderRatingConverted(),
+          defenderABSWeapon: store.defenderABSWeaponSum(),
+          defenderABSConvert: store.defenderABSConvertedSum(),
+          defenderWKNWeapon: store.defenderWKNWeaponSum(),
+          defenderWKNConvert: store.defenderWKNConvertedSum(),
+        })
+      }),
     }
   }),
   withMethods((store) => {
@@ -291,11 +242,15 @@ export const DamageCalculatorStore = signalStore(
       tweakConvertEmpowerMods: (value: number) => patchState(store, { convertEmpowerModsTweak: value }),
       tweakAmmoMods: (value: number) => patchState(store, { ammoModsTweak: value }),
       tweakArmorPenetration: (value: number) => patchState(store, { armorPenetrationTweak: value }),
+      tweakDefenderIsPlayer: (value: boolean) => patchState(store, { defenderIsPlayer: value }),
+      tweakDefenderLevel: (value: number) => patchState(store, { defenderLevelTweak: value }),
       tweakDefenderGearScore: (value: number) => patchState(store, { defenderGearScoreTweak: value }),
       tweakDefenderRatingPhys: (value: number) => patchState(store, { defenderRatingPhysTweak: value }),
       tweakDefenderRatingElem: (value: number) => patchState(store, { defenderRatingElemTweak: value }),
-      tweakDefenderAbsorbWeapon: (value: number) => patchState(store, { defenderAbsorbWeaponTweak: value }),
-      tweakDefenderAbsorbConverted: (value: number) => patchState(store, { defenderAbsorbConvertedTweak: value }),
+      tweakDefenderABSWeapon: (value: number) => patchState(store, { defenderABSWeaponTweak: value }),
+      tweakDefenderABSConverted: (value: number) => patchState(store, { defenderABSConvertedTweak: value }),
+      tweakDefenderWKNWeapon: (value: number) => patchState(store, { defenderWKNWeaponTweak: value }),
+      tweakDefenderWKNConverted: (value: number) => patchState(store, { defenderWKNConvertedTweak: value }),
     }
-  })
+  }),
 )

@@ -1,0 +1,33 @@
+<label class="input-group input-group-sm whitespace-nowrap">
+  <span class="flex-none w-52 flex justify-between">
+    <span class="px-0">
+      <ng-content></ng-content>
+      {{ label }}
+      @if (iconPath) {
+        <img [nwImage]="iconPath" class="w-5 h-5 ml-2" />
+      }
+    </span>
+    <span class="px-0" [class.text-neutral]="!leftValue">
+      @if (percent) {
+        {{ leftValue | percent: format }}
+      } @else {
+        {{ leftValue | number: format }}
+      }
+    </span>
+  </span>
+  <input
+    class="flex-none w-16 pr-0 input input-sm input-bordered"
+    type="number"
+    [step]="step"
+    [ngModel]="toModelValue(tweakValue)"
+    (ngModelChange)="tweakValueChange.emit(fromModelValue($event))"
+    (wheel)="($event)"
+  />
+  <span class="flex-1" [class.text-primary]="!!tweakValue" [class.text-neutral]="!rightValue">
+    @if (percent) {
+      {{ rightValue | percent: format }}
+    } @else {
+      {{ rightValue | number: format }}
+    }
+  </span>
+</label>
