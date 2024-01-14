@@ -315,6 +315,10 @@ export function getVitalHealth({
   return result
 }
 
+export function getVitalGearScoreFromLevel(level: number) {
+  return (level  || 0) * 10
+}
+
 export function getVitalArmor(vital: Vitals, level: Vitalsleveldata) {
   if (!vital || !level) {
     return null

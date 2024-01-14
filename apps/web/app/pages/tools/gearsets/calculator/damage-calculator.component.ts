@@ -1,16 +1,22 @@
+import { Dialog } from '@angular/cdk/dialog'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
-import { Component, Pipe, PipeTransform, inject } from '@angular/core'
+import { Component, Injector, Pipe, PipeTransform, inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { patchState } from '@ngrx/signals'
 import { damageScaleAttrs } from '@nw-data/common'
-import { combineLatest } from 'rxjs'
-import { NwModule } from '~/nw'
+import { combineLatest, filter, map, take } from 'rxjs'
+import { GearsetsStore } from '~/data'
+import { NwDbService, NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
+import { CollapsibleComponent } from '~/ui/collapsible'
+import { DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
+import { svgChevronLeft, svgEllipsisVertical } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
-import { DamageCalculatorStore } from './damage.store'
+import { VitalTableAdapter, VitalTableRecord } from '~/widgets/data/vital-table'
+import { DamageCalculatorStore } from './damage-calculator.store'
 import { LabelControlComponent } from './label-control.component'
 import { TweakControlComponent } from './tweak-control.component'
 
@@ -25,7 +31,7 @@ export class FloorPipe implements PipeTransform {
   standalone: true,
   selector: 'nwb-damage-calculator',
   templateUrl: './damage-calculator.component.html',
-  providers: [DamageCalculatorStore, FloorPipe],
+  providers: [DamageCalculatorStore, FloorPipe, GearsetsStore],
   imports: [
     CommonModule,
     NwModule,
@@ -35,8 +41,10 @@ export class FloorPipe implements PipeTransform {
     TooltipModule,
     TweakControlComponent,
     LabelControlComponent,
-    FloorPipe
+    FloorPipe,
+    CollapsibleComponent,
   ],
+
   host: {
     class: 'layout-content',
   },
@@ -44,8 +52,16 @@ export class FloorPipe implements PipeTransform {
 export class DamageCalculatorComponent {
   protected store = inject(DamageCalculatorStore)
   private mannequin = inject(Mannequin)
+  private dialog = inject(Dialog)
+  private injector = inject(Injector)
+  private db = inject(NwDbService)
+  private gearsets = inject(GearsetsStore)
+  protected svgChevronLeft = svgChevronLeft
+  protected svgMore = svgEllipsisVertical
 
   public constructor() {
+    this.gearsets.loadAll()
+
     combineLatest({
       level: this.mannequin.level$,
       gearScore: this.mannequin.gearScore$,
@@ -86,5 +102,41 @@ export class DamageCalculatorComponent {
           convertPercent: damage.ConvertPercent,
         })
       })
+  }
+
+  public pickVitalDefender() {
+    DataViewPicker.open<VitalTableRecord>(this.dialog, {
+      title: 'Pick Vital Defender',
+      selection: [this.store.defenderCreature()?.VitalsID].filter((it) => !!it),
+      dataView: {
+        adapter: VitalTableAdapter,
+      },
+      config: {
+        maxWidth: 1400,
+        maxHeight: 1200,
+        panelClass: ['w-full', 'h-full', 'p-4'],
+        injector: this.injector,
+      },
+    })
+      .closed.pipe(
+        map((it) => it?.[0]),
+        filter((it) => !!it),
+        take(1),
+      )
+      .subscribe((result) => {
+        this.store.loadVital(result)
+      })
+  }
+
+  public setPvPMode() {
+    patchState(this.store, {
+      defenderIsPlayer: true,
+    })
+  }
+
+  public setPvEMode() {
+    patchState(this.store, {
+      defenderIsPlayer: false,
+    })
   }
 }

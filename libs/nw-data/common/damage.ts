@@ -13,6 +13,10 @@ import {
   NW_MIN_POSSIBLE_WEAPON_GEAR_SCORE,
 } from './constants'
 
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value))
+}
+
 export function damageFactorForLevel(level: number) {
   return NW_LEVEL_DAMAGE_MULTIPLIER * (level - 1)
 }
@@ -29,8 +33,16 @@ export function damageFactorForGS(gearScore: number) {
 
   const factorLow = Math.pow(1 + baseDamageCompund, powerLow)
   const factorHigh = Math.pow(1 + baseDamageCompund * compoundDiminishingMulti, powerHigh)
-
-  return factorLow * factorHigh
+  const result = factorLow * factorHigh
+  // console.table({
+  //   gearScore,
+  //   powerLow,
+  //   powerHigh,
+  //   factorLow,
+  //   factorHigh,
+  //   damageFactorForGS: result,
+  // })
+  return result
 }
 
 export function damageScaleAttrs(
@@ -163,18 +175,34 @@ export function armorRating(options: { gearScore: number; mitigation: number }) 
   return Math.floor((x * y) / (1 - y))
 }
 
-export function armorMitigation(options: { gearScore: number; rating: number }) {
+export function armorMitigation(options: { gearScore: number; armorRating: number }) {
+  // 1 / (1 + ARMORRATING*(1+MIN(MAX(FORT-REND,-0.7),2)) / (WeaponGS+DefendersAverageGS-AttackersAvgGS)^1.2)
+  // 1 / (1 + FINAL_ARMOR_RATING) / SET_RATING
+
+  //      1 / (1 + (x / y))  = y / (x + y)
+  // 1 - (1 / (1 + (x / y))) = x / (y + x)
+
   const x = armorSetRating(options.gearScore)
-  const y = options.rating
-  return Math.min(NW_MAX_ARMOR_MITIGATION, Math.max(NW_MIN_ARMOR_MITIGATION, y / (x + y)))
+  const y = options.armorRating
+  const result = y / (x + y)
+  return clamp(result, NW_MIN_ARMOR_MITIGATION, NW_MAX_ARMOR_MITIGATION)
 }
 
-export function damageMitigationPercent(options: { gearScore: number; armorRating: number; armorPenetration: number }) {
+export function damageMitigationPercent({
+  gearScore,
+  armorRating,
+  armorPenetration,
+}: {
+  gearScore: number
+  armorRating: number
+  armorPenetration: number
+}) {
   const mitigation = armorMitigation({
-    gearScore: options.gearScore,
-    rating: options.armorRating,
+    gearScore: gearScore,
+    armorRating: armorRating,
   })
-  return Math.min(1, Math.max(0, mitigation - options.armorPenetration))
+  const result = mitigation * (1 - armorPenetration)
+  return clamp(result, 0, 1)
 }
 
 export function pvpGearScore(options: {
@@ -184,6 +212,12 @@ export function pvpGearScore(options: {
 }) {
   const gearScore = options.weaponGearScore + options.defenderAvgGearScore - options.attackerAvgGearScore
   return Math.max(NW_MIN_GEAR_SCORE, gearScore)
+}
+
+export function pvpScaling(options: { attackerLevel: number; defenderLevel: number }) {
+  const delta = options.attackerLevel - options.defenderLevel
+  const scaling = delta < 0 ? -0.0225 : -0.015
+  return scaling * delta
 }
 
 export function calculateDamage(options: {
@@ -220,6 +254,11 @@ export function calculateDamage(options: {
   defenderWKNWeapon: number
   defenderWKNConvert: number
 }) {
+  options.attackerGearScore = Math.floor(options.attackerGearScore)
+  console.table(options)
+
+
+
   const attributes = options.attributes
 
   const convertPercent = options.convertPercent ?? 0
@@ -260,27 +299,39 @@ export function calculateDamage(options: {
     wknMod: options.defenderWKNWeapon,
   } satisfies Parameters<typeof damageForWeapon>[0]
 
+  const isPvp = options.attackerIsPlayer && options.defenderIsPlayer
+  const effectiveGearScore = isPvp ? pvpGearScore({
+    attackerAvgGearScore: options.attackerGearScore,
+    defenderAvgGearScore: options.defenderGearScore,
+    weaponGearScore: options.weaponGearScore,
+  }) : options.weaponGearScore
+  const pvpScale = isPvp ? pvpScaling({
+    attackerLevel: options.attackerLevel,
+    defenderLevel: options.defenderLevel,
+  }) : 0
+  console.table({
+    isPvp,
+    effectiveGearScore,
+    pvpScale
+  })
+
   const weaponDamage =
     weaponPercent *
     damageForWeapon({
       ...inputs,
       weaponScale: weaponScaling,
       critMod: 0,
-    })
+    }) * (1 + pvpScale)
   const weaponDamageCrit =
     weaponPercent *
     damageForWeapon({
       ...inputs,
       weaponScale: weaponScaling,
-    })
+    }) * (1 + pvpScale)
   const weaponMitigated = damageMitigationPercent({
     armorPenetration: options.armorPenetration,
     armorRating: options.defenderRatingWeapon,
-    gearScore: pvpGearScore({
-      attackerAvgGearScore: options.attackerGearScore,
-      defenderAvgGearScore: options.defenderGearScore,
-      weaponGearScore: options.weaponGearScore,
-    }),
+    gearScore: effectiveGearScore,
   })
 
   const convertedDamage =
@@ -307,11 +358,7 @@ export function calculateDamage(options: {
   const convertedMitigated = damageMitigationPercent({
     armorPenetration: options.armorPenetration,
     armorRating: options.defenderRatingConvert,
-    gearScore: pvpGearScore({
-      attackerAvgGearScore: options.attackerGearScore,
-      defenderAvgGearScore: options.defenderGearScore,
-      weaponGearScore: options.weaponGearScore,
-    }),
+    gearScore: effectiveGearScore,
   })
 
   const weapon = {
@@ -341,6 +388,12 @@ export function calculateDamage(options: {
     critMitigated: weapon.critMitigated + converted.critMitigated,
     critFinal: weapon.critFinal + converted.critFinal,
   }
+
+  console.table({
+    weapon,
+    converted,
+    total,
+  })
   return {
     weapon,
     converted,

@@ -1,19 +1,88 @@
 <div class="flex flex-col gap-1">
-  <nwb-label-control [value]="store.attackerLevel()" [percent]="false" [format]="'0.0-0'">
-    Attacker Level
-  </nwb-label-control>
+  <nwb-tweak-control
+    [leftValue]="store.attackerLevel()"
+    [rightValue]="store.attackerLevelSum()"
+    [tweakValue]="store.attackerLevelTweak()"
+    [step]="1"
+    [format]="'0.0-0'"
+    (tweakValueChange)="store.tweakAttackerLevel($event)"
+    [tooltip]="attackerLevelTip"
+    [tooltipPlacement]="'left'"
+  >
+    <span class="px-0"> Attacker Level </span>
+    <ng-template #attackerLevelTip>
+      <div class="p-2 prose prose-sm leading-tight w-80">
+        <h4>Attacker Level</h4>
+        <p>
+          Damage is scaled off the attacker level.
+          <br />
+          <br />
+          Additionally in PvP game modes the level difference between attacker and defender is taken into account.
+        </p>
+      </div>
+    </ng-template>
+  </nwb-tweak-control>
 
-  <nwb-label-control [value]="store.attackerGearScore()" [percent]="false" [format]="'0.0-0'">
-    Attacker GS
-  </nwb-label-control>
+  <nwb-tweak-control
+    [leftValue]="store.attackerGearScore()"
+    [rightValue]="store.attackerGearScoreSum()"
+    [tweakValue]="store.attackerGearScoreTweak()"
+    [step]="1"
+    [format]="'0.0-0'"
+    (tweakValueChange)="store.tweakAttackerGearScore($event)"
+    [tooltip]="attackerGearScoreTip"
+    [tooltipPlacement]="'left'"
+  >
+    <span class="px-0"> Attacker GS </span>
+    <ng-template #attackerGearScoreTip>
+      <div class="p-2 prose prose-sm leading-tight w-80">
+        <h4>Attacker Gear Score</h4>
+        <p>
+          The average gear score of the attacker.
+          <br />
+          <br />
+          In PvP game modes the gear score difference between attacker and defender is taken into account.
+        </p>
+      </div>
+    </ng-template>
+  </nwb-tweak-control>
 
-  <nwb-label-control [value]="store.weaponGearScore()" [percent]="false" [format]="'0.0-0'">
-    Weapon GS
-  </nwb-label-control>
+  <nwb-tweak-control
+    [leftValue]="store.weaponGearScore()"
+    [rightValue]="store.weaponGearScoreSum()"
+    [tweakValue]="store.weaponGearScoreTweak()"
+    [step]="1"
+    [format]="'0.0-0'"
+    (tweakValueChange)="store.tweakWeaponGearScore($event)"
+    [tooltip]="weaponGearScoreTip"
+    [tooltipPlacement]="'left'"
+  >
+    <span class="px-0"> Weapon GS </span>
+    <ng-template #weaponGearScoreTip>
+      <div class="p-2 prose prose-sm leading-tight w-80">
+        <h4>Weapon Gear Score</h4>
+        <p>The actual gear score of the weapon that is being used.</p>
+      </div>
+    </ng-template>
+  </nwb-tweak-control>
 
   @if (store.convertPercent()) {
-    <nwb-label-control [value]="store.convertPercent()" [percent]="true" [format]="'0.0-0'" class="text-secondary">
+    <nwb-label-control
+      [value]="store.convertPercent()"
+      [percent]="true"
+      [format]="'0.0-0'"
+      class="text-secondary"
+      [tooltip]="convertPercentTip"
+      [tooltipPlacement]="'left'"
+    >
       Damage Conversion
+
+      <ng-template #convertPercentTip>
+        <div class="p-2 prose prose-sm leading-tight w-80">
+          <h4>Damage Conversion</h4>
+          <p>The percentage of weapon damage which is converted to another damage type.</p>
+        </div>
+      </ng-template>
     </nwb-label-control>
 
     <!-- <div class="form-control">
@@ -40,9 +109,9 @@
   >
     <span class="px-0"> Base Damage </span>
     <ng-template #baseDamageTip>
-      <div class="p-2 prose prose-sm">
+      <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Weapons base damage</h4>
-        <p>Use the input field to tweak the value</p>
+        <p>The base damage of the selected weapon type.</p>
       </div>
     </ng-template>
   </nwb-tweak-control>
@@ -60,14 +129,14 @@
   >
     <span class="px-0"> Damage Coef </span>
     <ng-template #damageCoefTip>
-      <div class="p-2 prose prose-sm">
+      <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Attack Damage Coefficient</h4>
-        <p>Use the input field to tweak the value</p>
+        <p>The damage coefficient of current attack.</p>
       </div>
     </ng-template>
   </nwb-tweak-control>
 
-  <br />
+  <span class="my-1"></span>
 
   <nwb-tweak-control
     [leftValue]="store.pvpMods()"
@@ -82,11 +151,9 @@
   >
     <span class="px-0"> PvP Mod </span>
     <ng-template #pvpModsTip>
-      <div class="p-2 prose prose-sm">
+      <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>PvP Scaling Modifier</h4>
-        <p>
-          Usually active in a PvP game mode for certain weapons.
-        </p>
+        <p>In PvP game modes some weapons have a pvp scaling modifier active.</p>
       </div>
     </ng-template>
   </nwb-tweak-control>
@@ -104,10 +171,10 @@
   >
     <span class="px-0"> Ammo Mod </span>
     <ng-template #ammoModsTip>
-      <div class="p-2 prose prose-sm">
+      <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Ammo Modifier</h4>
         <p>
-          Ammunition like arrows for bows increase its damage.<br>
+          Ammunition like arrows for bows increase its damage.<br />
           For example a value of <code>20%</code> simulates a multiplier of<code>x1.2</code>
         </p>
       </div>
@@ -130,7 +197,7 @@
       Base Mod
     </span>
     <ng-template #baseModsTip>
-      <div class="p-2 prose prose-sm">
+      <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Base Damage Modifier</h4>
         <p>This is applied to the unconverted weapon damage</p>
       </div>
@@ -154,7 +221,7 @@
         Base Mod
       </span>
       <ng-template #convertBaseModsTip>
-        <div class="p-2 prose prose-sm">
+        <div class="p-2 prose prose-sm leading-tight w-80">
           <h4>Base Damage Modifier</h4>
           <p>This is applied to the <span class="text-secondary">converted</span> damage</p>
         </div>
@@ -175,7 +242,7 @@
   >
     <span class="px-0"> Crit Mod </span>
     <ng-template #critModsTip>
-      <div class="p-2 prose prose-sm">
+      <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Critical Damage Modifier</h4>
         <p>
           Increases damage for critical hits. <br />
@@ -201,16 +268,17 @@
       Empower Mod
     </span>
     <ng-template #empowerModsTip>
-      <div class="p-4 prose prose-sm">
+      <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Empower / Weaken Modifier</h4>
         <p class="leading-tight">
-          Increases the <code>DMG</code> multiplier by <code>[-50%, +50%]</code>. <br>
+          Affects the <code class="mx-0">DMG</code> multiplier. Common limits are
+          <code class="mx-0 whitespace-nowrap">[-50%, +50%]</code>
           These caps can be exceeded in certain scenarios.
-          <br>
-          <br>
+          <br />
+          <br />
           Use the input field to simulate additional empower (increase value) or weaken (decrease value).
-          <br>
-          <br>
+          <br />
+          <br />
           This is applied to the unconverted damage
         </p>
       </div>
@@ -235,16 +303,17 @@
         Empower Mod
       </span>
       <ng-template #convertEmpowerModsTip>
-        <div class="p-4 prose prose-sm">
+        <div class="p-2 prose prose-sm leading-tight w-80">
           <h4>Empower / Weaken Modifier</h4>
           <p class="leading-tight">
-            Increases the <code>DMG</code> multiplier by <code>[-50%, +50%]</code>. <br>
+            Affects the <code class="mx-0">DMG</code> multiplier. Common limits are
+            <code class="mx-0 whitespace-nowrap">[-50%, +50%]</code>
             These caps can be exceeded in certain scenarios.
-            <br>
-            <br>
+            <br />
+            <br />
             Use the input field to simulate additional empower (increase value) or weaken (decrease value).
-            <br>
-            <br>
+            <br />
+            <br />
             This is applied to the <span class="text-secondary">converted</span> damage
           </p>
         </div>
@@ -252,7 +321,24 @@
     </nwb-tweak-control>
   }
 
-  <br />
+  <span class="my-1"></span>
+
+  <div class="btn-group btn-group-horizontal">
+
+
+  </div>
+  <label class="input-group input-group-sm whitespace-nowrap">
+    <span class="flex-1 flex justify-between">
+      Mode
+    </span>
+    <button (click)="setPvPMode()" class="btn btn-sm" [class.text-primary]="store.defenderIsPlayer()">PvP</button>
+    <button (click)="setPvEMode()" class="btn btn-sm" [class.text-primary]="!store.defenderIsPlayer()">PvE</button>
+    <button (click)="pickVitalDefender()" class="btn btn-sm btn-square" >
+      <nwb-icon [icon]="svgMore" class="w-4 h-4"/>
+    </button>
+  </label>
+
+
   <nwb-tweak-control
     [leftValue]="store.defenderLevel()"
     [rightValue]="store.defenderLevelSum()"
@@ -266,12 +352,18 @@
   >
     <span class="px-0"> Defender Level </span>
     <ng-template #defenderLevelTip>
-      <div class="p-2 prose prose-sm leading-tight">
+      <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Defender Level</h4>
-        <p>PvP specific. A defender with lower Gear Score than the attacker will receive less damage.</p>
+        <p>
+          PvP: Damage scaling based on level difference is active. Attacker with higher level will deal less damage.
+          <br />
+          <br />
+          PvE: The creature level also defines its gear score.
+        </p>
       </div>
     </ng-template>
   </nwb-tweak-control>
+
   <nwb-tweak-control
     [leftValue]="store.defenderGearScore()"
     [rightValue]="store.defenderGearScoreSum()"
@@ -283,54 +375,215 @@
     [tooltip]="defenderGearScoreTip"
     [tooltipPlacement]="'left'"
   >
-    <span class="px-0" > Defender GS </span>
+    <span class="px-0"> Defender GS </span>
     <ng-template #defenderGearScoreTip>
-      <div class="p-2 prose prose-sm leading-tight">
+      <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Defender Gear Score</h4>
-        <p>PvP specific. A defender with lower Gear Score than the attacker will receive less damage.</p>
+        <p>
+          PvP: A defender with lower Gear Score than the attacker will receive less damage.
+          <br />
+          <br />
+          PvE: The gear score is given by creature level.
+        </p>
       </div>
     </ng-template>
   </nwb-tweak-control>
 
-  <nwb-tweak-control
-    [leftValue]="store.defenderRatingPhys()"
-    [rightValue]="store.defenderRatingPhysSum()"
-    [tweakValue]="store.defenderRatingPhysTweak()"
-    [step]="1"
-    [percent]="false"
-    [format]="'0.0-0'"
-    (tweakValueChange)="store.tweakDefenderRatingPhys($event)"
-    [tooltip]="defenderRatingPhysTip"
-    [tooltipPlacement]="'left'"
-  >
-    <span class="px-0"> Armor Physical </span>
-    <ng-template #defenderRatingPhysTip>
-      <div class="p-2 prose prose-sm leading-tight">
-        <h4>Physical armor rating</h4>
-        <p>The defenders armor rating against physical attacks.</p>
-      </div>
-    </ng-template>
-  </nwb-tweak-control>
+  <nwb-collapsible [collapsed]="true" #defenderArmorPhysCol="collapsible" class="bg-base-300 rounded-md overflow-clip">
+    <nwb-label-control
+      label
+      (click)="defenderArmorPhysCol.toggle()"
+      [value]="store.defenderArmorRatingPhys()"
+      [percent]="false"
+      [format]="'0.0-0'"
+      class="cursor-pointer"
+      [tooltip]="defenderArmorPhysTip"
+      [tooltipPlacement]="'left'"
+    >
+      Physical Armor
+      <span end class="pl-0">
+        <nwb-icon
+          [icon]="svgChevronLeft"
+          class="w-4 h-4 transition-transform"
+          [class.-rotate-180]="defenderArmorPhysCol.collapsed"
+          [class.-rotate-90]="!defenderArmorPhysCol.collapsed"
+        />
+      </span>
+      <ng-template #defenderArmorPhysTip>
+        <div class="p-2 prose prose-sm leading-tight w-80">
+          <h4>Physical Armor</h4>
+          <p>The defenders total armor rating against physical attacks.</p>
+        </div>
+      </ng-template>
+    </nwb-label-control>
 
-  <nwb-tweak-control
-    [leftValue]="store.defenderRatingElem()"
-    [rightValue]="store.defenderRatingElemSum()"
-    [tweakValue]="store.defenderRatingElemTweak()"
-    [step]="1"
-    [percent]="false"
-    [format]="'0.0-0'"
-    (tweakValueChange)="store.tweakDefenderRatingElem($event)"
-    [tooltip]="defenderRatingElemTip"
-    [tooltipPlacement]="'left'"
-  >
-    <span class="px-0"> Armor Elemental </span>
-    <ng-template #defenderRatingElemTip>
-      <div class="p-2 prose prose-sm leading-tight">
-        <h4>Elemental armor rating</h4>
-        <p>The defenders armor rating against elemental attacks.</p>
-      </div>
-    </ng-template>
-  </nwb-tweak-control>
+    <div class="flex flex-col gap-[1px] py-1">
+      <nwb-tweak-control
+        [leftValue]="store.defenderArmorPhys()"
+        [rightValue]="store.defenderArmorPhysSum()"
+        [tweakValue]="store.defenderArmorPhysTweak()"
+        [step]="1"
+        [percent]="false"
+        [format]="'0.0-0'"
+        (tweakValueChange)="store.tweakDefenderArmorPhys($event)"
+        [tooltip]="defenderArmorPhysBaseTip"
+        [tooltipPlacement]="'left'"
+      >
+        <span class="px-0"> Armor Base </span>
+        <ng-template #defenderArmorPhysBaseTip>
+          <div class="p-2 prose prose-sm leading-tight w-80">
+            <h4>Physical Armor - Base</h4>
+            <p>
+              The sum of all armor values from equipped gear, except shield. <br />
+            </p>
+          </div>
+        </ng-template>
+      </nwb-tweak-control>
+
+      <nwb-tweak-control
+        [leftValue]="store.defenderArmorPhysFort()"
+        [rightValue]="store.defenderArmorPhysFortSum()"
+        [tweakValue]="store.defenderArmorPhysFortTweak()"
+        [step]="1"
+        [percent]="true"
+        [format]="'0.0-0'"
+        (tweakValueChange)="store.tweakDefenderArmorPhysFort($event)"
+        [tooltip]="defenderArmorPhysFortTip"
+        [tooltipPlacement]="'left'"
+      >
+        <span class="px-0"> Armor Fortify Mod </span>
+        <ng-template #defenderArmorPhysFortTip>
+          <div class="p-2 prose prose-sm leading-tight w-80">
+            <h4>Armor Fortify Modifier</h4>
+            <p>
+              Percentage of base value that adds to final armor rating. <br />
+            </p>
+          </div>
+        </ng-template>
+      </nwb-tweak-control>
+
+      <nwb-tweak-control
+        [leftValue]="store.defenderArmorPhysAdd()"
+        [rightValue]="store.defenderArmorPhysAddSum()"
+        [tweakValue]="store.defenderArmorPhysAddTweak()"
+        [step]="1"
+        [percent]="false"
+        [format]="'0.0-0'"
+        (tweakValueChange)="store.tweakDefenderArmorPhysAdd($event)"
+        [tooltip]="defenderArmorPhysAddTip"
+        [tooltipPlacement]="'left'"
+      >
+        <span class="px-0"> Armor Shield </span>
+        <ng-template #defenderArmorPhysAddTip>
+          <div class="p-2 prose prose-sm leading-tight w-80">
+            <h4>Additional Physical Armor</h4>
+            <p>
+              The additional physical armor that is not affected byt the fortify modifier. <br />
+              This is usually the shield armor value.
+            </p>
+          </div>
+        </ng-template>
+      </nwb-tweak-control>
+    </div>
+  </nwb-collapsible>
+
+  <nwb-collapsible [collapsed]="true" #defenderArmorElemCol="collapsible" class="bg-base-300 rounded-md overflow-clip">
+    <nwb-label-control
+      label
+      (click)="defenderArmorElemCol.toggle()"
+      [value]="store.defenderArmorRatingElem()"
+      [percent]="false"
+      [format]="'0.0-0'"
+      class="cursor-pointer"
+      [tooltip]="defenderArmorElemTip"
+      [tooltipPlacement]="'left'"
+    >
+      Elemental Armor
+      <span end class="pl-0">
+        <nwb-icon
+          [icon]="svgChevronLeft"
+          class="w-4 h-4 transition-transform"
+          [class.-rotate-180]="defenderArmorElemCol.collapsed"
+          [class.-rotate-90]="!defenderArmorElemCol.collapsed"
+        />
+      </span>
+      <ng-template #defenderArmorElemTip>
+        <div class="p-2 prose prose-sm leading-tight w-80">
+          <h4>Elemental Armor</h4>
+          <p>The defenders total armor rating against elemetnal attacks.</p>
+        </div>
+      </ng-template>
+    </nwb-label-control>
+
+    <div class="flex flex-col gap-[1px] py-1">
+      <nwb-tweak-control
+        [leftValue]="store.defenderArmorElem()"
+        [rightValue]="store.defenderArmorElemSum()"
+        [tweakValue]="store.defenderArmorElemTweak()"
+        [step]="1"
+        [percent]="false"
+        [format]="'0.0-0'"
+        (tweakValueChange)="store.tweakDefenderArmorElem($event)"
+        [tooltip]="defenderArmorElemTip"
+        [tooltipPlacement]="'left'"
+      >
+        <span class="px-0"> Armor Base </span>
+        <ng-template #defenderArmorElemTip>
+          <div class="p-2 prose prose-sm leading-tight w-80">
+            <h4>Elemental Armor - Base</h4>
+            <p>
+              The sum of all armor values from equipped gear, except shield. <br />
+            </p>
+          </div>
+        </ng-template>
+      </nwb-tweak-control>
+
+      <nwb-tweak-control
+        [leftValue]="store.defenderArmorElemFort()"
+        [rightValue]="store.defenderArmorElemFortSum()"
+        [tweakValue]="store.defenderArmorElemFortTweak()"
+        [step]="1"
+        [percent]="true"
+        [format]="'0.0-0'"
+        (tweakValueChange)="store.tweakDefenderArmorElemFort($event)"
+        [tooltip]="defenderArmorElemFortTip"
+        [tooltipPlacement]="'left'"
+      >
+        <span class="px-0"> Armor Fortify Mod </span>
+        <ng-template #defenderArmorElemFortTip>
+          <div class="p-2 prose prose-sm leading-tight w-80">
+            <h4>Armor Fortify Modifier</h4>
+            <p>
+              Percentage of base value that adds to final armor rating. <br />
+            </p>
+          </div>
+        </ng-template>
+      </nwb-tweak-control>
+
+      <nwb-tweak-control
+        [leftValue]="store.defenderArmorElemAdd()"
+        [rightValue]="store.defenderArmorElemAddSum()"
+        [tweakValue]="store.defenderArmorElemAddTweak()"
+        [step]="1"
+        [percent]="false"
+        [format]="'0.0-0'"
+        (tweakValueChange)="store.tweakDefenderArmorElemAdd($event)"
+        [tooltip]="defenderArmorElemAddTip"
+        [tooltipPlacement]="'left'"
+      >
+        <span class="px-0"> Armor Shield </span>
+        <ng-template #defenderArmorElemAddTip>
+          <div class="p-2 prose prose-sm leading-tight w-80">
+            <h4>Additional Elemental Armor</h4>
+            <p>
+              The additional elemental armor that is not affected byt the fortify modifier. <br />
+              This is usually the shield armor value.
+            </p>
+          </div>
+        </ng-template>
+      </nwb-tweak-control>
+    </div>
+  </nwb-collapsible>
 
   <nwb-tweak-control
     [leftValue]="store.defenderABSWeapon()"
@@ -348,17 +601,18 @@
       Fortify
     </span>
     <ng-template #defenderABSWeaponTip>
-      <div class="p-2 prose prose-sm leading-tight">
+      <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Fortify / Rend</h4>
         <p>
-          Increases the <code>ABS</code> multiplier by <code>[-30%, +50%]</code>. <br>
+          Affects the <code class="mx-0">ABS</code> multiplier. Common limits are
+          <code class="mx-0 whitespace-nowrap">[-30%, +50%]</code>
           These caps can be exceeded in certain scenarios.
-          <br>
-          <br>
+          <br />
+          <br />
           Use the input field to simulate additional fortify (increase value) or rend (decrease value).
-          <br>
-          <br>
-          This is applied to the unconverted damage.
+          <br />
+          <br />
+          This is applied to the unconverted damage
         </p>
       </div>
     </ng-template>
@@ -381,16 +635,17 @@
         Fortify
       </span>
       <ng-template #defenderABSConvertedTip>
-        <div class="p-2 prose prose-sm leading-tight">
+        <div class="p-2 prose prose-sm leading-tight w-80">
           <h4>Fortify / Rend</h4>
           <p>
-            Increases the <code>ABS</code> multiplier by <code>[-30%, +50%]</code>. <br>
+            Affects the <code class="mx-0">ABS</code> multiplier. Common limits are
+            <code class="mx-0 whitespace-nowrap">[-30%, +50%]</code>
             These caps can be exceeded in certain scenarios.
-            <br>
-            <br>
+            <br />
+            <br />
             Use the input field to simulate additional fortify (increase value) or rend (decrease value).
-            <br>
-            <br>
+            <br />
+            <br />
             This is applied to the <span class="text-secondary">converted</span> damage.
           </p>
         </div>
@@ -414,11 +669,9 @@
       Weakness
     </span>
     <ng-template #defenderWKNWeaponTip>
-      <div class="p-2 prose prose-sm leading-tight">
+      <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Weakness</h4>
-        <p>
-          The weakness agains <img [nwImage]="store.weaponTypeIcon()" class="w-5 h-5 inline m-0" /> damage type.
-        </p>
+        <p>The weakness agains <img [nwImage]="store.weaponTypeIcon()" class="w-5 h-5 inline m-0" /> damage type.</p>
       </div>
     </ng-template>
   </nwb-tweak-control>
@@ -440,88 +693,129 @@
         Weakness
       </span>
       <ng-template #defenderWKNConvertedTip>
-        <div class="p-2 prose prose-sm leading-tight">
+        <div class="p-2 prose prose-sm leading-tight w-80">
           <h4>Weakness</h4>
-          <p>
-            The weakness agains <img [nwImage]="store.convertTypeIcon()" class="w-5 h-5 inline m-0" /> damage type.
-          </p>
+          <p>The weakness agains <img [nwImage]="store.convertTypeIcon()" class="w-5 h-5 inline m-0" /> damage type.</p>
         </div>
       </ng-template>
     </nwb-tweak-control>
   }
 
-  <br />
-  <table class="table table-compact rounded-md overflow-clip text-right">
-    <tr class="bg-base-300">
-      <th>Std</th>
-      <th>Raw</th>
-      <th>Mitigation</th>
-      <th>Effective</th>
-    </tr>
-    @if (store.output().weapon; as damage) {
-      <tr class="text-right">
-        <td>
-          <img [nwImage]="store.weaponTypeIcon()" class="w-5 h-5 ml-2" />
-        </td>
-        <td class="font-mono">{{ damage.std | floor | number }}</td>
-        <td class="font-mono">-{{ damage.stdMitigated | floor | number }}</td>
-        <td class="font-mono">{{ damage.stdFinal | floor | number }}</td>
+  <span class="my-1"></span>
+
+  <nwb-collapsible [collapsed]="true" #stdDmgCol="collapsible" class="bg-base-300 rounded-md overflow-clip">
+    <nwb-label-control
+      label
+      (click)="stdDmgCol.toggle()"
+      [value]="store.output()?.total?.stdFinal"
+      [percent]="false"
+      [format]="'0.0-0'"
+      class="cursor-pointer"
+    >
+      Standard Damage
+      <span end class="pl-0">
+        <nwb-icon
+          [icon]="svgChevronLeft"
+          class="w-4 h-4 transition-transform"
+          [class.-rotate-180]="defenderArmorPhysCol.collapsed"
+          [class.-rotate-90]="!defenderArmorPhysCol.collapsed"
+        />
+      </span>
+    </nwb-label-control>
+
+    <table class="w-full table table-compact rounded-md overflow-clip text-right">
+      <tr class="bg-base-300">
+        <th></th>
+        <th>Raw</th>
+        <th>Mitigation</th>
+        <th>Effective</th>
       </tr>
-      @if (store.convertPercent() && store.output().converted; as damage) {
-        <tr class="text-right text-secondary">
-          <td>
-            <img [nwImage]="store.convertTypeIcon()" class="w-5 h-5 ml-2" />
-          </td>
-          <td class="font-mono">{{ damage.std | floor | number }}</td>
-          <td class="font-mono">-{{ damage.stdMitigated | floor | number }}</td>
-          <td class="font-mono">{{ damage.stdFinal | floor | number }}</td>
-        </tr>
-      }
-      @if (store.convertPercent() && store.output().total; as damage) {
+      @if (store.output().weapon; as damage) {
         <tr class="text-right">
-          <td></td>
+          <td>
+            <img [nwImage]="store.weaponTypeIcon()" class="w-5 h-5 ml-2" />
+          </td>
           <td class="font-mono">{{ damage.std | floor | number }}</td>
           <td class="font-mono">-{{ damage.stdMitigated | floor | number }}</td>
           <td class="font-mono">{{ damage.stdFinal | floor | number }}</td>
         </tr>
+        @if (store.convertPercent() && store.output().converted; as damage) {
+          <tr class="text-right text-secondary">
+            <td>
+              <img [nwImage]="store.convertTypeIcon()" class="w-5 h-5 ml-2" />
+            </td>
+            <td class="font-mono">{{ damage.std | floor | number }}</td>
+            <td class="font-mono">-{{ damage.stdMitigated | floor | number }}</td>
+            <td class="font-mono">{{ damage.stdFinal | floor | number }}</td>
+          </tr>
+        }
+        @if (store.convertPercent() && store.output().total; as damage) {
+          <tr class="text-right">
+            <td></td>
+            <td class="font-mono">{{ damage.std | floor | number }}</td>
+            <td class="font-mono">-{{ damage.stdMitigated | floor | number }}</td>
+            <td class="font-mono">{{ damage.stdFinal | floor | number }}</td>
+          </tr>
+        }
       }
-    }
+    </table>
+  </nwb-collapsible>
 
-    <tr class="bg-base-300">
-      <th class="text-primary">Crit</th>
-      <th>Raw</th>
-      <th>Mitigation</th>
-      <th>Effective</th>
-    </tr>
+  <nwb-collapsible [collapsed]="true" #critDmgCol="collapsible" class="bg-base-300 rounded-md overflow-clip">
+    <nwb-label-control
+      label
+      (click)="critDmgCol.toggle()"
+      [value]="store.output()?.total?.critFinal"
+      [percent]="false"
+      [format]="'0.0-0'"
+      class="cursor-pointer"
+    >
+      Crit Damage
+      <span end class="pl-0">
+        <nwb-icon
+          [icon]="svgChevronLeft"
+          class="w-4 h-4 transition-transform"
+          [class.-rotate-180]="defenderArmorPhysCol.collapsed"
+          [class.-rotate-90]="!defenderArmorPhysCol.collapsed"
+        />
+      </span>
+    </nwb-label-control>
 
-    @if (store.output().weapon; as damage) {
-      <tr class="text-right">
-        <td>
-          <img [nwImage]="store.weaponTypeIcon()" class="w-5 h-5 ml-2" />
-        </td>
-        <td class="font-mono">{{ damage.crit | floor | number }}</td>
-        <td class="font-mono">-{{ damage.critMitigated | floor | number }}</td>
-        <td class="font-mono">{{ damage.critFinal | floor | number }}</td>
+    <table class="w-full table table-compact rounded-md overflow-clip text-right">
+      <tr class="bg-base-300">
+        <th></th>
+        <th>Raw</th>
+        <th>Mitigation</th>
+        <th>Effective</th>
       </tr>
-      @if (store.convertPercent() && store.output().converted; as damage) {
-        <tr class="text-right text-secondary">
+      @if (store.output().weapon; as damage) {
+        <tr class="text-right">
           <td>
-            <img [nwImage]="store.convertTypeIcon()" class="w-5 h-5 ml-2" />
+            <img [nwImage]="store.weaponTypeIcon()" class="w-5 h-5 ml-2" />
           </td>
           <td class="font-mono">{{ damage.crit | floor | number }}</td>
           <td class="font-mono">-{{ damage.critMitigated | floor | number }}</td>
           <td class="font-mono">{{ damage.critFinal | floor | number }}</td>
         </tr>
+        @if (store.convertPercent() && store.output().converted; as damage) {
+          <tr class="text-right text-secondary">
+            <td>
+              <img [nwImage]="store.convertTypeIcon()" class="w-5 h-5 ml-2" />
+            </td>
+            <td class="font-mono">{{ damage.crit | floor | number }}</td>
+            <td class="font-mono">-{{ damage.critMitigated | floor | number }}</td>
+            <td class="font-mono">{{ damage.critFinal | floor | number }}</td>
+          </tr>
+        }
+        @if (store.convertPercent() && store.output().total; as damage) {
+          <tr class="text-right">
+            <td></td>
+            <td class="font-mono">{{ damage.crit | floor | number }}</td>
+            <td class="font-mono">-{{ damage.critMitigated | floor | number }}</td>
+            <td class="font-mono">{{ damage.critFinal | floor | number }}</td>
+          </tr>
+        }
       }
-
-      @if (store.convertPercent() && store.output().total; as damage) {
-        <tr class="text-right font-bold">
-          <td></td>
-          <td class="font-mono">{{ damage.crit | floor | number }}</td>
-          <td class="font-mono">-{{ damage.critMitigated | floor | number }}</td>
-          <td class="font-mono">{{ damage.critFinal | floor | number }}</td>
-        </tr>
-      }
-    }
-  </table>
+    </table>
+  </nwb-collapsible>
 </div>

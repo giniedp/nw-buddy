@@ -42,6 +42,12 @@ export class TweakControlComponent {
   @Input()
   public format: string = '0.2-2'
 
+  @Input()
+  public min: number = null
+
+  @Input()
+  public max: number = null
+
   protected toModelValue(value: number) {
     return this.percent ? Math.round(value * 100) : value
   }
