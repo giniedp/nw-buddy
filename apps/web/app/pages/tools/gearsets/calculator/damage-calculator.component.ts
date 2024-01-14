@@ -1,7 +1,7 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
-import { Component, Injector, Pipe, PipeTransform, inject } from '@angular/core'
+import { Component, Injector, Pipe, PipeTransform, effect, inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { patchState } from '@ngrx/signals'
@@ -31,7 +31,7 @@ export class FloorPipe implements PipeTransform {
   standalone: true,
   selector: 'nwb-damage-calculator',
   templateUrl: './damage-calculator.component.html',
-  providers: [DamageCalculatorStore, FloorPipe, GearsetsStore],
+  providers: [DamageCalculatorStore, FloorPipe],
   imports: [
     CommonModule,
     NwModule,
@@ -54,13 +54,51 @@ export class DamageCalculatorComponent {
   private mannequin = inject(Mannequin)
   private dialog = inject(Dialog)
   private injector = inject(Injector)
-  private db = inject(NwDbService)
-  private gearsets = inject(GearsetsStore)
   protected svgChevronLeft = svgChevronLeft
   protected svgMore = svgEllipsisVertical
 
   public constructor() {
-    this.gearsets.loadAll()
+    const SESSION_KEY = 'damage-calculator'
+    const session = sessionStorage.getItem(SESSION_KEY)
+    if (session) {
+      try {
+        patchState(this.store, JSON.parse(session))
+      } catch (e) {
+        console.error(e)
+      }
+    }
+    effect(() => {
+      const data = JSON.stringify({
+        attackerLevelTweak: this.store.attackerLevelTweak(),
+        attackerGearScoreTweak: this.store.attackerGearScoreTweak(),
+        weaponGearScoreTweak: this.store.weaponGearScoreTweak(),
+        defenderCreature: this.store.defenderCreature(),
+        defenderIsPlayer: this.store.defenderIsPlayer(),
+        baseDamageTweak: this.store.baseDamageTweak(),
+        damageCoefTweak: this.store.damageCoefTweak(),
+        pvpModsTweak: this.store.pvpModsTweak(),
+        baseModsTweak: this.store.baseModsTweak(),
+        critModsTweak: this.store.critModsTweak(),
+        empowerModsTweak: this.store.empowerModsTweak(),
+        convertBaseModsTweak: this.store.convertBaseModsTweak(),
+        convertEmpowerModsTweak: this.store.convertEmpowerModsTweak(),
+        ammoModsTweak: this.store.ammoModsTweak(),
+        armorPenetrationTweak: this.store.armorPenetrationTweak(),
+        defenderLevelTweak: this.store.defenderLevelTweak(),
+        defenderGearScoreTweak: this.store.defenderGearScoreTweak(),
+        defenderArmorPhysTweak: this.store.defenderArmorPhysTweak(),
+        defenderArmorElemTweak: this.store.defenderArmorElemTweak(),
+        defenderArmorPhysFortTweak: this.store.defenderArmorPhysFortTweak(),
+        defenderArmorElemFortTweak: this.store.defenderArmorElemFortTweak(),
+        defenderArmorPhysAddTweak: this.store.defenderArmorPhysAddTweak(),
+        defenderArmorElemAddTweak: this.store.defenderArmorElemAddTweak(),
+        defenderABSWeaponTweak: this.store.defenderABSWeaponTweak(),
+        defenderABSConvertedTweak: this.store.defenderABSConvertedTweak(),
+        defenderWKNWeaponTweak: this.store.defenderWKNWeaponTweak(),
+        defenderWKNConvertedTweak: this.store.defenderWKNConvertedTweak(),
+      })
+      sessionStorage.setItem(SESSION_KEY, data)
+    })
 
     combineLatest({
       level: this.mannequin.level$,

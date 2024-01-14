@@ -21,6 +21,9 @@ export class LabelControlComponent {
   public value: number = 0
 
   @Input()
+  public isTweaked: boolean
+
+  @Input()
   public percent = false
 
   @Input()

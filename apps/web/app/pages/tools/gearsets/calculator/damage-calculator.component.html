@@ -394,6 +394,7 @@
       label
       (click)="defenderArmorPhysCol.toggle()"
       [value]="store.defenderArmorRatingPhys()"
+      [isTweaked]="!!(store.defenderArmorPhysTweak() || store.defenderArmorPhysFortTweak() || store.defenderArmorPhysAddTweak())"
       [percent]="false"
       [format]="'0.0-0'"
       class="cursor-pointer"
@@ -492,6 +493,7 @@
       label
       (click)="defenderArmorElemCol.toggle()"
       [value]="store.defenderArmorRatingElem()"
+      [isTweaked]="!!(store.defenderArmorElemTweak() || store.defenderArmorElemFortTweak() || store.defenderArmorElemAddTweak())"
       [percent]="false"
       [format]="'0.0-0'"
       class="cursor-pointer"

@@ -4,7 +4,7 @@
       <ng-content></ng-content>
     </span>
   </span>
-  <span class="w-20 inline-block text-right pl-0">
+  <span class="w-20 inline-block text-right pl-0" [class.text-primary]="isTweaked">
     @if (percent) {
       {{ value | percent: format }}
     } @else {
