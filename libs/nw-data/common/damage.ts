@@ -104,21 +104,24 @@ export function damageForTooltip({
   })
 }
 
-export function damageForWeapon(options: {
-  playerLevel: number
-  baseDamage: number
-  weaponGearScore: number
-  weaponScale: Record<AttributeRef, number>
-  attributes: Record<AttributeRef, number>
-  damageCoef: number
-  pvpMod?: number
-  ammoMod?: number
-  baseMod?: number
-  critMod?: number
-  empowerMod?: number
-  absMod?: number
-  wknMod?: number
-}) {
+export function damageForWeapon(
+  options: {
+    playerLevel: number
+    baseDamage: number
+    weaponGearScore: number
+    weaponScale: Record<AttributeRef, number>
+    attributes: Record<AttributeRef, number>
+    damageCoef: number
+    pvpMod?: number
+    ammoMod?: number
+    baseMod?: number
+    critMod?: number
+    empowerMod?: number
+    absMod?: number
+    wknMod?: number
+  },
+  trace?: Tracer,
+) {
   const baseDamage = options.baseDamage ?? 0
   const damageCoef = options.damageCoef ?? 1
 
@@ -150,6 +153,17 @@ export function damageForWeapon(options: {
     (1 - absMod) *
     (1 + wknMod)
 
+  trace?.log(`baseDamage                          : ${baseDamage}`)
+  trace?.log(` * damageCoef                       :  * ${damageCoef}`)
+  trace?.log(` * factorFromGS                     :  * ${factorFromGS}`)
+  trace?.log(` * (1 + pvpMod)                     :  * ${1 + pvpMod}`)
+  trace?.log(` * (1 + levelScaling + statsScaling):  * ${1 + levelScaling + statsScaling}`)
+  trace?.log(` * (1 + ammoMod)                    :  * ${1 + ammoMod}`)
+  trace?.log(` * (1 + baseMod + critMod)          :  * ${1 + baseMod + critMod}`)
+  trace?.log(` * (1 + empowerMod)                 :  * ${1 + empowerMod}`)
+  trace?.log(` * (1 - absMod)                     :  * ${1 - absMod}`)
+  trace?.log(` * (1 + wknMod)                     :  * ${1 + wknMod}`)
+  trace?.log(`= ${result}`)
   // console.table({
   //   dmgBase,
   //   dmgCoef,
@@ -175,16 +189,19 @@ export function armorRating(options: { gearScore: number; mitigation: number }) 
   return Math.floor((x * y) / (1 - y))
 }
 
-export function armorMitigation(options: { gearScore: number; armorRating: number }) {
+export function armorMitigation(options: { gearScore: number; armorRating: number }, trace?: Tracer) {
   // 1 / (1 + ARMORRATING*(1+MIN(MAX(FORT-REND,-0.7),2)) / (WeaponGS+DefendersAverageGS-AttackersAvgGS)^1.2)
   // 1 / (1 + FINAL_ARMOR_RATING) / SET_RATING
 
   //      1 / (1 + (x / y))  = y / (x + y)
   // 1 - (1 / (1 + (x / y))) = x / (y + x)
 
-  const x = armorSetRating(options.gearScore)
-  const y = options.armorRating
-  const result = y / (x + y)
+  const gs = armorSetRating(options.gearScore)
+  const rating = options.armorRating
+  const result = rating / (gs + rating)
+  trace?.log(`  gs / (rating + gs)`)
+  trace?.log(`= ${rating} / (${gs} + ${rating})`)
+  trace?.log(`= ${result}`)
   return clamp(result, NW_MIN_ARMOR_MITIGATION, NW_MAX_ARMOR_MITIGATION)
 }
 
@@ -196,28 +213,49 @@ export function damageMitigationPercent({
   gearScore: number
   armorRating: number
   armorPenetration: number
-}) {
+}, trace?: Tracer) {
+  trace?.log(`mitigation =`)
   const mitigation = armorMitigation({
     gearScore: gearScore,
     armorRating: armorRating,
-  })
+  }, trace?.nested())
   const result = mitigation * (1 - armorPenetration)
+  trace?.log(`mitigation * (1 - armorPenetration)`)
+  trace?.log(`= ${mitigation} * (1 - ${armorPenetration})`)
+  trace?.log(`= ${result}`)
   return clamp(result, 0, 1)
 }
 
-export function pvpGearScore(options: {
-  weaponGearScore: number
-  attackerAvgGearScore: number
-  defenderAvgGearScore: number
-}) {
+export function pvpGearScore(
+  options: {
+    weaponGearScore: number
+    attackerAvgGearScore: number
+    defenderAvgGearScore: number
+  },
+  trace?: Tracer,
+) {
   const gearScore = options.weaponGearScore + options.defenderAvgGearScore - options.attackerAvgGearScore
-  return Math.max(NW_MIN_GEAR_SCORE, gearScore)
+  const result = Math.max(NW_MIN_GEAR_SCORE, gearScore)
+  trace?.log(`weaponGearScore + defenderAvgGearScore - attackerAvgGearScore`)
+  trace?.log(`= ${options.weaponGearScore} + ${options.defenderAvgGearScore} - ${options.attackerAvgGearScore}`)
+  trace?.log(`= ${result}`)
+  return result
 }
 
-export function pvpScaling(options: { attackerLevel: number; defenderLevel: number }) {
+export function pvpScaling(options: { attackerLevel: number; defenderLevel: number }, trace?: Tracer) {
   const delta = options.attackerLevel - options.defenderLevel
   const scaling = delta < 0 ? -0.0225 : -0.015
-  return scaling * delta
+  const result = scaling * delta
+  trace?.log(`      delta = attackerLevel - defenderLevel`)
+  trace?.log(`            = ${options.attackerLevel} - ${options.defenderLevel}`)
+  trace?.log(`            = ${delta}`)
+  trace?.log(`    scaling = delta < 0 ? -0.0225 : -0.015`)
+  trace?.log(`            = ${delta} < 0 ? -0.0225 : -0.015`)
+  trace?.log(`            = ${scaling}`)
+  trace?.log(`scaling * delta`)
+  trace?.log(`= ${scaling} * ${delta}`)
+  trace?.log(`= ${result}`)
+  return result
 }
 
 export function calculateDamage(options: {
@@ -255,9 +293,10 @@ export function calculateDamage(options: {
   defenderWKNConvert: number
 }) {
   options.attackerGearScore = Math.floor(options.attackerGearScore)
+  const trace = tracer()
   console.table(options)
-
-
+  trace.log('inputs:')
+  trace.nested().log(JSON.stringify(options, null, 2))
 
   const attributes = options.attributes
 
@@ -266,22 +305,59 @@ export function calculateDamage(options: {
     weapon: options.convertScaling,
     attributes: attributes,
   })
+  trace.log(`convertScale: ${convertScale}`)
 
   const weaponPercent = 1 - convertPercent
   const weaponScale = damageFactorForAttrs({
     weapon: options.weaponScaling,
     attributes: attributes,
   })
+  trace.log(`weaponScale: ${weaponScale}`)
 
   let convertScaling = options.convertScaling
   let weaponScaling = options.weaponScaling
   if (options.preferHigherScaling) {
     if (weaponScale > convertScale) {
+      trace.log('higher scaling is weaponScaling, use that')
       convertScaling = weaponScaling
     } else {
+      trace.log('higher scaling is convertScaling, use that')
       weaponScaling = convertScaling
     }
   }
+
+  const isPvp = options.attackerIsPlayer && options.defenderIsPlayer
+  trace.log(`isPvp: ${isPvp}`)
+  let effectiveGearScore = 0
+  let pvpScale = 0
+  if (isPvp) {
+    trace.log(`effectiveGearScore =`)
+    effectiveGearScore = pvpGearScore(
+      {
+        attackerAvgGearScore: options.attackerGearScore,
+        defenderAvgGearScore: options.defenderGearScore,
+        weaponGearScore: options.weaponGearScore,
+      },
+      trace.nested(),
+    )
+    trace.log(`pvpScaling =`)
+    pvpScale = pvpScaling(
+      {
+        attackerLevel: options.attackerLevel,
+        defenderLevel: options.defenderLevel,
+      },
+      trace.nested(),
+    )
+  } else {
+    effectiveGearScore = options.weaponGearScore
+    pvpScale = 0
+  }
+
+  console.table({
+    isPvp,
+    effectiveGearScore,
+    pvpScale,
+  })
 
   const inputs = {
     playerLevel: options.attackerLevel,
@@ -299,40 +375,40 @@ export function calculateDamage(options: {
     wknMod: options.defenderWKNWeapon,
   } satisfies Parameters<typeof damageForWeapon>[0]
 
-  const isPvp = options.attackerIsPlayer && options.defenderIsPlayer
-  const effectiveGearScore = isPvp ? pvpGearScore({
-    attackerAvgGearScore: options.attackerGearScore,
-    defenderAvgGearScore: options.defenderGearScore,
-    weaponGearScore: options.weaponGearScore,
-  }) : options.weaponGearScore
-  const pvpScale = isPvp ? pvpScaling({
-    attackerLevel: options.attackerLevel,
-    defenderLevel: options.defenderLevel,
-  }) : 0
-  console.table({
-    isPvp,
-    effectiveGearScore,
-    pvpScale
-  })
-
-  const weaponDamage =
-    weaponPercent *
-    damageForWeapon({
+  trace.log(`weaponDamage =`)
+  const weaponDamage = damageForWeapon(
+    {
       ...inputs,
       weaponScale: weaponScaling,
       critMod: 0,
-    }) * (1 + pvpScale)
-  const weaponDamageCrit =
-    weaponPercent *
-    damageForWeapon({
+    },
+    trace.nested(),
+  )
+  const weaponDamageScaled = weaponDamage * weaponPercent * (1 + pvpScale)
+  trace.log(`weaponDamageScaled = weaponDamage * weaponPercent * (1 + pvpScale)`)
+  trace.log(`                   = ${weaponDamage} * ${weaponPercent} * (1 + ${pvpScale})`)
+  trace.log(`                   = ${weaponDamageScaled}`)
+
+  trace.log(`weaponDamageCrit =`)
+  const weaponDamageCrit = damageForWeapon(
+    {
       ...inputs,
       weaponScale: weaponScaling,
-    }) * (1 + pvpScale)
+    },
+    trace.nested(),
+  )
+
+  const weaponDamageCritScaled = weaponDamageCrit * weaponPercent * (1 + pvpScale)
+  trace.log(`weaponDamageCritScaled = weaponDamageCrit * weaponPercent * (1 + pvpScale)`)
+  trace.log(`                   = ${weaponDamageCrit} * ${weaponPercent} * (1 + ${pvpScale})`)
+  trace.log(`                   = ${weaponDamageCritScaled}`)
+
+  trace.log(`mitigationPercent =`)
   const weaponMitigated = damageMitigationPercent({
     armorPenetration: options.armorPenetration,
     armorRating: options.defenderRatingWeapon,
     gearScore: effectiveGearScore,
-  })
+  }, trace?.nested())
 
   const convertedDamage =
     convertPercent *
@@ -362,13 +438,13 @@ export function calculateDamage(options: {
   })
 
   const weapon = {
-    std: weaponDamage,
-    stdMitigated: weaponDamage * weaponMitigated,
-    stdFinal: weaponDamage * (1 - weaponMitigated),
+    std: weaponDamageScaled,
+    stdMitigated: weaponDamageScaled * weaponMitigated,
+    stdFinal: weaponDamageScaled * (1 - weaponMitigated),
 
-    crit: weaponDamageCrit,
-    critMitigated: weaponDamageCrit * weaponMitigated,
-    critFinal: weaponDamageCrit * (1 - weaponMitigated),
+    crit: weaponDamageCritScaled,
+    critMitigated: weaponDamageCritScaled * weaponMitigated,
+    critFinal: weaponDamageCritScaled * (1 - weaponMitigated),
   }
   const converted = {
     std: convertedDamage,
@@ -389,11 +465,15 @@ export function calculateDamage(options: {
     critFinal: weapon.critFinal + converted.critFinal,
   }
 
+  trace.log(`result =`)
+  trace.log(JSON.stringify(weapon, null, 2))
+
   console.table({
     weapon,
     converted,
     total,
   })
+  console.log(trace.text())
   return {
     weapon,
     converted,
@@ -437,4 +517,17 @@ const WEAPON_TAG_TO_AMMO_TYPE: Partial<Record<WeaponTag, string>> = {
 
 export function getAmmoTypeFromWeaponTag(weaponTag: WeaponTag) {
   return WEAPON_TAG_TO_AMMO_TYPE[weaponTag]
+}
+
+export type Tracer = ReturnType<typeof tracer>
+function tracer(log: string[] = [], indent = 0) {
+  return {
+    nested: () => tracer(log, indent + 1),
+    log: (message: string) => {
+      for (const line of message.split('\n')) {
+        log.push('  '.repeat(indent) + line)
+      }
+    },
+    text: () => log.join('\n'),
+  }
 }
