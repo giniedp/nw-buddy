@@ -24,9 +24,9 @@ export type SpawnerScanResult = {
   positions: Array<number[]>
 }
 
-export async function scanForSpawners(rootDir: string, file: string): Promise<SpawnerScanResult[]> {
+export async function scanForSpawners(rootDir: string, file: string, assetId: string): Promise<SpawnerScanResult[]> {
   const result: SpawnerScanResult[] = []
-  const files = await resolveDynamicSliceFiles(rootDir, file)
+  const files = await resolveDynamicSliceFiles(rootDir, file, assetId)
   if (!files) {
     return result
   }

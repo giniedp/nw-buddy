@@ -88,7 +88,7 @@ export async function scanSlices({
         })
       }
       if (capital.sliceName) {
-        await scanForSpawners(inputDir, capital.sliceName)
+        await scanForSpawners(inputDir, capital.sliceName, capital.sliceAssetId)
           .then((data) => data || [{ positions: [] }])
           .then((res) => {
             for (const data of res) {

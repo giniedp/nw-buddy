@@ -55,7 +55,11 @@ program
       throw new Error(`Unknown importer module: ${it}`)
     }
 
-    // await convertAssetCatalog(inputDir, outputDir)
+    await convertAssetCatalog(inputDir, outputDir).then(async (data) => {
+      await writeJSONFile(data, {
+        target: path.join(outputDir, 'assetcatalog-infos.json'),
+      })
+    })
     await convertRegionData(inputDir, outputDir)
 
     if (hasFilter(Converter.datasheets, options.module)) {
@@ -203,138 +207,144 @@ async function convertAssetCatalog(inputDir: string, outputDir: string) {
   const signature = reader.readString(4)
   const version = reader.readUInt()
   const fileSize = reader.readUInt()
-  reader.seekRelative(4)
-  console.table({ signature, version, fileSize, position: reader.position })
+  const field4 = reader.readUInt()
+  console.table({ signature, version, fileSize, field4, position: reader.position })
 
-  const posBlock1 = reader.readUInt() // UUID block
-  const posBlock2 = reader.readUInt() // Type block
-  const posBlock3 = reader.readUInt() // Dir block
-  const posBlock4 = reader.readUInt() // File block
+  const posBlockUUID = reader.readUInt() // UUID block
+  const posBlockType = reader.readUInt() // Type block
+  const posBlockDirs = reader.readUInt() // Dir block
+  const posBlockFile = reader.readUInt() // File block
   const fileSize2 = reader.readUInt()
   const posBlock0 = reader.position
 
-  console.table({ posBlock1, posBlock2, posBlock3, posBlock4, position: reader.position })
+  console.table({
+    posBlockUUID,
+    posBlockType,
+    posBlockDirs,
+    posBlockFile,
+    fileSize2,
+    position: reader.position,
+  })
+
+  const assetInfoRefs: Array<{
+    uuidIndex1: number
+    subId1: number
+    uuidIndex2: number
+    subId2: number
+    typeIndex: number
+    field6: number
+    fileSize: number
+    field8: number
+    dirOffset: number
+    fileOffset: number
+  }> = []
+  const assetPathRefs: Array<{
+    uuidIndex: number
+    guidIndex: number
+    subId: number
+  }> = []
+  const legacyAssetRefs: Array<{
+    legacyGuidIndex: number
+    legacySubId: number
+    guidIndex: number
+    subId: number
+  }> = []
 
   console.log('read block 0', posBlock0)
   reader.seekAbsolute(posBlock0)
-  const count1 = reader.readUByte()
+
+  const count1 = reader.readUInt()
+  console.log('count1', count1)
   for (let i = 0; i < count1; i++) {
-    const uuidIndex1 = reader.readUInt()
-    const subId1 = reader.readUInt()
-    const uuidIndex2 = reader.readUInt()
-    const subId2 = reader.readUInt()
-    const typeIndex = reader.readUInt()
-    const field6 = reader.readUInt()
-    const fileSize = reader.readUInt()
-    const field8 = reader.readUInt()
-    const dirOffset = reader.readUInt()
-    const fileOffset = reader.readUInt()
-  }
-  reader.readUInt()
-  const count2 = reader.readUByte()
-  for (let i = 0; i < count2; i++) {
-    const uuidIndex = reader.readUInt()
-    const guidIndex = reader.readUInt()
-    const subId = reader.readUInt()
-  }
-  const count3 = reader.readUByte()
-  for (let i = 0; i < count3; i++) {
-    const legacyGuidIndex = reader.readUInt()
-    const legacySubId = reader.readUInt()
-    const guidIndex = reader.readUInt()
-    const subId = reader.readUInt()
-  }
-  reader.readUInt()
-  reader.readUInt()
-
-
-  console.log(reader.position)
-  console.log('read block 1', posBlock1)
-  reader.seekAbsolute(posBlock1)
-  const uuids: string[] = []
-  while (reader.position < posBlock2) {
-    const value = reader
-      .readBytes(16)
-      .map((it): string => {
-        return it.toString(16).padStart(2, '0')
-      })
-      .join('')
-    uuids.push(value)
-  }
-  console.log(reader.position)
-  console.log('read block 2', posBlock2)
-  reader.seekAbsolute(posBlock2)
-  const types: string[] = []
-  while (reader.position < posBlock3) {
-    const value = reader
-      .readBytes(16)
-      .map((it): string => {
-        return it.toString(16).padStart(2, '0')
-      })
-      .join('')
-    types.push(value)
-  }
-  console.log(reader.position)
-  console.log('read block 3', posBlock3)
-  reader.seekAbsolute(posBlock3)
-  const directories: string[] = []
-  while (reader.position < posBlock4) {
-    const value = reader.readNullTerminatedString()
-    directories.push(value)
-  }
-  console.log(reader.position)
-  console.log('read block 4', posBlock4)
-  reader.seekAbsolute(posBlock4)
-  const fileNames: string[] = []
-  while (reader.position < fileSize) {
-    const value = reader.readNullTerminatedString()
-    fileNames.push(value)
+    assetInfoRefs.push({
+      uuidIndex1: reader.readUInt(),
+      subId1: reader.readUInt(),
+      uuidIndex2: reader.readUInt(),
+      subId2: reader.readUInt(),
+      typeIndex: reader.readUInt(),
+      field6: reader.readUInt(),
+      fileSize: reader.readUInt(),
+      field8: reader.readUInt(),
+      dirOffset: reader.readUInt(),
+      fileOffset: reader.readUInt(),
+    })
   }
 
-  console.table([
-    ['block', 'size', '(size)', 'content', 'count'],
-    //[posBlock0, posBlock1 - posBlock0, sizeOf(posBlock1 - posBlock0), 'unknown', block0.length],
-    [posBlock1, posBlock2 - posBlock1, sizeOf(posBlock2 - posBlock1), 'uuids', uuids.length],
-    [posBlock2, posBlock3 - posBlock2, sizeOf(posBlock3 - posBlock2), 'types', types.length],
-    [posBlock3, posBlock4 - posBlock3, sizeOf(posBlock4 - posBlock3), 'directories', directories.length],
-    [posBlock4, fileSize - posBlock3, sizeOf(fileSize - posBlock3), 'fileNames', fileNames.length],
-  ])
+  // reader.readUInt()
+  // const count2 = reader.readUInt()
+  // console.log('count2', count2)
+  // for (let i = 0; i < count2; i++) {
+  //   assetPathRefs.push({
+  //     uuidIndex: reader.readUInt(),
+  //     guidIndex: reader.readUInt(),
+  //     subId: reader.readUInt(),
+  //   })
+  // }
+  // const count3 = reader.readUInt()
+  // console.log('count3', count3)
+  // for (let i = 0; i < count3; i++) {
+  //   legacyAssetRefs.push({
+  //     legacyGuidIndex: reader.readUInt(),
+  //     legacySubId: reader.readUInt(),
+  //     guidIndex: reader.readUInt(),
+  //     subId: reader.readUInt(),
+  //   })
+  // }
+  // reader.readUInt()
+  // reader.readUInt()
 
-  const assets = [
-    {
-      guid: '7ec7032d-2e4a-5cdf-b005-46836debe3fc',
-      type: '78802abf-9595-463a-8d2b-d022f906f9b1',
-      //hint: 'slices/holiday/winterconvergence/activities/lostpresent/winterconv_activity_lostpresent_rare_01.dynamicslice',
-      hint: 'slices/holiday/winterconvergence/activities/lostpresent/winterconv_activity_lostpresent_rare_00.dynamicslice',
-    },
-    {
-      guid: '08caecaa-fb11-553d-b133-7c6345f21734',
-      type: 'd52cccdd-9701-45d9-b261-8ea6881a6312',
-      hint: 'objects/landmarks/corruption_core/jav_lm_corruption_core_b.rnr',
-    },
-  ]
+  const assetInfos = assetInfoRefs.map((info) => {
+    reader.seekAbsolute(posBlockUUID + 16 * info.uuidIndex2)
+    const assetId = reader.readUUID()
 
-  for (const asset of assets) {
-    console.log(asset.hint)
-    console.table([
-      ['guid', asset.guid, uuids.indexOf(asset.guid.replace(/-/g, ''))],
-      ['type', asset.type, types.indexOf(asset.type.replace(/-/g, ''))],
-      ['dir', path.dirname(asset.hint) + '/', directories.indexOf(path.dirname(asset.hint) + '/')],
-      ['file', path.basename(asset.hint), fileNames.indexOf(path.basename(asset.hint))],
-    ])
-  }
+    reader.seekAbsolute(posBlockUUID + 16 * info.typeIndex)
+    const type = reader.readUUID()
 
-  // slices/holiday/winterconvergence/activities/lostpresent/winterconv_activity_lostpresent_rare_00.dynamicslice
-  //   guid 249097 7ec7032d-2e4a-5cdf-b005-46836debe3fc                      // 09 CD 03 00
-  //   type 2      78802abf-9595-463a-8d2b-d022f906f9b1                      // 02 00 00 00
-  //    dir 12296  slices/holiday/winterconvergence/activities/lostpresent/  // 08 30 00 00 // 110 files (6E)
-  //   file 746154 winterconv_activity_lostpresent_rare_00.dynamicslice      // AA 62 0B 00
+    reader.seekAbsolute(posBlockDirs + info.dirOffset)
+    const dir = reader.readNullTerminatedString()
 
-  // objects/landmarks/corruption_core/jav_lm_corruption_core_b.rnr
-  //   guid 209569 08caecaa-fb11-553d-b133-7c6345f21734
-  //   type 8      d52cccdd-9701-45d9-b261-8ea6881a6312
-  //    dir 3504   objects/landmarks/corruption_core/
-  //   file 632607 jav_lm_corruption_core_b.rnr
+    reader.seekAbsolute(posBlockFile + info.fileOffset)
+    const file = reader.readNullTerminatedString()
+
+    return {
+      assetId,
+      type,
+      dir,
+      file,
+    }
+  })
+  // const assetPaths = assetPathRefs.map((data) => {
+  //   reader.seekAbsolute(posBlockUUID + 16 * data.uuidIndex)
+  //   const assetId = reader.readUUID()
+
+  //   reader.seekAbsolute(posBlockUUID + 16 * data.guidIndex)
+  //   const guid = reader.readUUID()
+  //   return {
+  //     assetId,
+  //     guid,
+  //     subId: data.subId,
+  //   }
+  // })
+  // const legacyAssets = legacyAssetRefs.map((data) => {
+  //   reader.seekAbsolute(posBlockUUID + 16 * data.legacyGuidIndex)
+  //   const legacyGuid = reader.readUUID()
+
+  //   reader.seekAbsolute(posBlockUUID + 16 * data.guidIndex)
+  //   const guid = reader.readUUID()
+  //   return {
+  //     legacyGuid,
+  //     legacySubId: data.legacySubId,
+  //     guid,
+  //     subId: data.subId,
+  //   }
+  // })
+  const assetDict = assetInfos.reduce((dict, it) => {
+    dict[it.assetId] = path.join(it.dir, it.file).replace(/\\/g, '/')
+    return dict
+  }, {})
+
+  return assetDict
+
 }
 
 function sizeOf(bytes: number) {

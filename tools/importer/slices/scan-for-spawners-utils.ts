@@ -1,6 +1,7 @@
 import * as path from 'path'
 import {
   AZ__Entity,
+  Asset,
   GameTransformComponent,
   SliceComponent,
   isAIVariantProviderComponent,
@@ -60,8 +61,8 @@ export async function scanForAreaSpawners(sliceComponent: SliceComponent, rootDi
         if (!isAreaSpawnerComponentServerFacet(facet)) {
           continue
         }
-        await appendSlices(sliceFiles, rootDir, facet.m_sliceasset?.hint)
-        await appendSlices(sliceFiles, rootDir, facet.m_aliasasset?.hint)
+        await appendSlices(sliceFiles, rootDir, facet.m_sliceasset)
+        await appendSlices(sliceFiles, rootDir, facet.m_aliasasset)
 
         for (const location of facet.m_locations || []) {
           const entity = findAZEntityById(sliceComponent, location.entityid as any)
@@ -106,8 +107,8 @@ export async function scanForPointSpawners(sliceComponent: SliceComponent, rootD
           rotation = rotation || getRotation(component)
         }
         if (isPointSpawnerComponent(component)) {
-          await appendSlices(sliceFiles, rootDir, component.baseclass1.m_sliceasset?.hint)
-          await appendSlices(sliceFiles, rootDir, component.baseclass1.m_aliasasset?.hint)
+          await appendSlices(sliceFiles, rootDir, component.baseclass1.m_sliceasset)
+          await appendSlices(sliceFiles, rootDir, component.baseclass1.m_aliasasset)
         }
       }
       for (const slice of sliceFiles) {
@@ -142,8 +143,8 @@ export async function scanForEncounterSpawner(sliceComponent: SliceComponent, ro
           }
 
           const sliceFiles: string[] = []
-          await appendSlices(sliceFiles, rootDir, spawn.m_sliceasset.hint)
-          await appendSlices(sliceFiles, rootDir, spawn.m_aliasasset.hint)
+          await appendSlices(sliceFiles, rootDir, spawn.m_sliceasset)
+          await appendSlices(sliceFiles, rootDir, spawn.m_aliasasset)
 
           const locations: (typeof result)[0]['locations'] = []
           for (const location of spawn.m_spawnlocations || []) {
@@ -191,8 +192,8 @@ export async function scanForPrefabSpawner(sliceComponent: SliceComponent, rootD
           rotation = rotation || getRotation(component)
         }
         if (isPrefabSpawnerComponent(component)) {
-          await appendSlices(sliceFiles, rootDir, component.m_sliceasset?.hint)
-          await appendSlices(sliceFiles, rootDir, component.m_aliasasset?.hint)
+          await appendSlices(sliceFiles, rootDir, component.m_sliceasset)
+          await appendSlices(sliceFiles, rootDir, component.m_aliasasset)
         }
       }
       if (!translation) {
@@ -288,8 +289,10 @@ const AMMO_ID_TO_VARIANT_ID = {
   WinterConv_GleamiteLauncher_Projectile_Rapid: 'WinterConv_GleamiteShard',
 }
 
-export async function appendSlices(collection: string[], rootDir: string, hint: string) {
-  const files = await resolveDynamicSliceFiles(rootDir, hint)
+export async function appendSlices(collection: string[], rootDir: string, asset: Asset) {
+  const hint = asset?.hint
+  const assetId = asset?.guid
+  const files = await resolveDynamicSliceFiles(rootDir, hint, assetId)
   if (!files) {
     return
   }

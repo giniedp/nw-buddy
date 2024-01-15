@@ -120,20 +120,20 @@ async function scanSamples(rootDir: string, file: string) {
       const slices: string[] = []
       if (isAreaSpawnerComponent(component)) {
         if (isAreaSpawnerComponentServerFacet(component.baseclass1.m_serverfacetptr)) {
-          await appendSlices(slices, rootDir, component.baseclass1.m_serverfacetptr.m_aliasasset?.hint)
-          await appendSlices(slices, rootDir, component.baseclass1.m_serverfacetptr.m_sliceasset?.hint)
+          await appendSlices(slices, rootDir, component.baseclass1.m_serverfacetptr.m_aliasasset)
+          await appendSlices(slices, rootDir, component.baseclass1.m_serverfacetptr.m_sliceasset)
         }
       } else if (isPointSpawnerComponent(component)) {
-        await appendSlices(slices, rootDir, component.baseclass1.m_sliceasset?.hint)
-        await appendSlices(slices, rootDir, component.baseclass1.m_aliasasset?.hint)
+        await appendSlices(slices, rootDir, component.baseclass1.m_sliceasset)
+        await appendSlices(slices, rootDir, component.baseclass1.m_aliasasset)
       } else if (isEncounterComponent(component)) {
         for (const spawn of component.m_spawntimeline) {
-          await appendSlices(slices, rootDir, spawn.m_sliceasset?.hint)
-          await appendSlices(slices, rootDir, spawn.m_aliasasset?.hint)
+          await appendSlices(slices, rootDir, spawn.m_sliceasset)
+          await appendSlices(slices, rootDir, spawn.m_aliasasset)
         }
       } else if (isPrefabSpawnerComponent(component)) {
-        await appendSlices(slices, rootDir, component.m_sliceasset?.hint)
-        await appendSlices(slices, rootDir, component.m_aliasasset?.hint)
+        await appendSlices(slices, rootDir, component.m_sliceasset)
+        await appendSlices(slices, rootDir, component.m_aliasasset)
       }
 
       let doSample = slices.length > 0
@@ -226,24 +226,24 @@ async function scanFile(
       let suffix = ''
       if (isAreaSpawnerComponent(component)) {
         if (isAreaSpawnerComponentServerFacet(component.baseclass1.m_serverfacetptr)) {
-          await appendSlices(slices, rootDir, component.baseclass1.m_serverfacetptr.m_aliasasset?.hint)
-          await appendSlices(slices, rootDir, component.baseclass1.m_serverfacetptr.m_sliceasset?.hint)
+          await appendSlices(slices, rootDir, component.baseclass1.m_serverfacetptr.m_aliasasset)
+          await appendSlices(slices, rootDir, component.baseclass1.m_serverfacetptr.m_sliceasset)
           hasPosition = hasPosition || component.baseclass1.m_serverfacetptr.m_locations?.length > 0
           suffix = hasPosition ? '-1' : '-0'
         }
       } else if (isPointSpawnerComponent(component)) {
-        await appendSlices(slices, rootDir, component.baseclass1.m_sliceasset?.hint)
-        await appendSlices(slices, rootDir, component.baseclass1.m_aliasasset?.hint)
+        await appendSlices(slices, rootDir, component.baseclass1.m_sliceasset)
+        await appendSlices(slices, rootDir, component.baseclass1.m_aliasasset)
       } else if (isEncounterComponent(component)) {
         for (const spawn of component.m_spawntimeline) {
-          await appendSlices(slices, rootDir, spawn.m_sliceasset?.hint)
-          await appendSlices(slices, rootDir, spawn.m_aliasasset?.hint)
+          await appendSlices(slices, rootDir, spawn.m_sliceasset)
+          await appendSlices(slices, rootDir, spawn.m_aliasasset)
           hasPosition = hasPosition || spawn.m_spawnlocations.length > 0
           suffix = hasPosition ? '-1' : '-0'
         }
       } else if (isPrefabSpawnerComponent(component)) {
-        await appendSlices(slices, rootDir, component.m_sliceasset?.hint)
-        await appendSlices(slices, rootDir, component.m_aliasasset?.hint)
+        await appendSlices(slices, rootDir, component.m_sliceasset)
+        await appendSlices(slices, rootDir, component.m_aliasasset)
       }
       if (slices.length) {
         components.push(component.__type + suffix)

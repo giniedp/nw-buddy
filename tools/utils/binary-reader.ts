@@ -172,6 +172,14 @@ export class BinaryReader {
     this.position += position
   }
 
+  public readUUID() {
+    return this.readBytes(16)
+      .map((it): string => {
+        return it.toString(16).padStart(2, '0')
+      })
+      .join('')
+  }
+
   /**
    * Reads a string
    *

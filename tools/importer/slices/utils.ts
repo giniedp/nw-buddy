@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { readJSONFile, replaceExtname } from '../../../tools/utils'
+import { glob, readJSONFile, replaceExtname } from '../../../tools/utils'
 import { isAliasAsset } from './types/aliasasset'
 import { SliceComponent, isAZ__Entity, isSliceComponent } from './types/dynamicslice'
 
@@ -13,6 +13,28 @@ export async function cached<T>(key: string, task: (key: string) => Promise<T>):
     // console.log('cache hit', key)
   }
   return cache[key]
+}
+
+function readAssetCatalog(rootDir: string) {
+  return cached('readAssetCatalog', async () => {
+    const file = path.join(rootDir, 'assetcatalog-infos.json')
+    if (!fs.existsSync(file)) {
+      return null
+    }
+    return readJSONFile<Record<string, string>>(file)
+  })
+}
+
+function cleanUUID(uuid: string) {
+
+  if (!uuid) {
+    return null
+  }
+  let result = uuid.toLowerCase().match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/gi)?.[0]
+  if (!result) {
+    console.log('invalid uuid', uuid)
+  }
+  return result?.replace(/-/g, '')
 }
 
 export async function readDynamicSliceFile(file: string) {
@@ -40,25 +62,38 @@ export async function readAliasFile(file: string) {
   return data
 }
 
-export async function resolveDynamicSliceFile(rootDir: string, file: string): Promise<string> {
-  return resolveDynamicSliceFiles(rootDir, file).then((list) => list?.[0] || null)
+export async function resolveDynamicSliceFile(rootDir: string, file: string, assetId?: string): Promise<string> {
+  return resolveDynamicSliceFiles(rootDir, file, assetId).then((list) => list?.[0] || null)
 }
 
-export async function resolveDynamicSliceFiles(rootDir: string, file: string): Promise<string[]> {
-  if (!file) {
-    return null
-  }
-  let result = await resolveFile(rootDir, file)
-  if (!result) {
-    result = await resolveFile(path.join(rootDir, 'slices'), file)
-  }
-  // if (!result && file.includes('/')) {
-  //   console.warn(`could not resolve to dynamic slice: ${file}`)
-  // }
-  if (!result) {
-    return null
-  }
-  return Array.isArray(result) ? result : [result]
+export async function resolveDynamicSliceFiles(rootDir: string, file: string, assetId?: string): Promise<string[]> {
+  return cached(`resolveDynamicSliceFiles ${file} ${assetId}`, async () => {
+    if (!file || file === '<PLOT>') {
+      return null
+    }
+
+    let result =  await resolveFile(rootDir, file)
+    if (!result && assetId) {
+      const catalog = await readAssetCatalog(rootDir)
+      result = await resolveFile(rootDir, catalog[cleanUUID(assetId)])
+    }
+    if (!result) {
+      result = await resolveFile(path.join(rootDir, 'slices'), file)
+    }
+    if (!result) {
+      const candidates = await glob(path.join(rootDir, 'slices', '**', `${file}.dynamicslice.json`))
+      if (candidates.length === 1) {
+        result = candidates[0]
+      }
+    }
+    // if (!result && assetId) {
+    //   fs.appendFileSync(path.join('tmp', 'missing-asset.txt'), `${cleanUUID(assetId)} ${file}\n`)
+    // }
+    if (!result) {
+      return null
+    }
+    return Array.isArray(result) ? result : [result]
+  })
 }
 
 async function resolveFile(rootDir: string, file: string): Promise<string | string[]> {
