@@ -58,6 +58,7 @@ program
     await convertAssetCatalog(inputDir, outputDir).then(async (data) => {
       await writeJSONFile(data, {
         target: path.join(outputDir, 'assetcatalog-infos.json'),
+        createDir: true,
       })
     })
     await convertRegionData(inputDir, outputDir)
