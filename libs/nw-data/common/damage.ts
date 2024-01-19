@@ -156,13 +156,13 @@ export function damageForWeapon(
   trace?.log(`baseDamage                          : ${baseDamage}`)
   trace?.log(` * damageCoef                       :  * ${damageCoef}`)
   trace?.log(` * factorFromGS                     :  * ${factorFromGS}`)
-  trace?.log(` * (1 + pvpMod)                     :  * ${1 + pvpMod}`)
-  trace?.log(` * (1 + levelScaling + statsScaling):  * ${1 + levelScaling + statsScaling}`)
-  trace?.log(` * (1 + ammoMod)                    :  * ${1 + ammoMod}`)
-  trace?.log(` * (1 + baseMod + critMod)          :  * ${1 + baseMod + critMod}`)
-  trace?.log(` * (1 + empowerMod)                 :  * ${1 + empowerMod}`)
-  trace?.log(` * (1 - absMod)                     :  * ${1 - absMod}`)
-  trace?.log(` * (1 + wknMod)                     :  * ${1 + wknMod}`)
+  trace?.log(` * (1 + pvpMod)                     :  * (1 + ${pvpMod})`)
+  trace?.log(` * (1 + levelScaling + statsScaling):  * (1 + ${levelScaling} + ${statsScaling})`)
+  trace?.log(` * (1 + ammoMod)                    :  * (1 + ${ammoMod})`)
+  trace?.log(` * (1 + baseMod + critMod)          :  * (1 + ${baseMod} + ${critMod})`)
+  trace?.log(` * (1 + empowerMod)                 :  * (1 + ${empowerMod})`)
+  trace?.log(` * (1 - absMod)                     :  * (1 - ${absMod})`)
+  trace?.log(` * (1 + wknMod)                     :  * (1 + ${wknMod})`)
   trace?.log(`= ${result}`)
   // console.table({
   //   dmgBase,
@@ -179,8 +179,12 @@ export function damageForWeapon(
   return result
 }
 
-export function armorSetRating(gearScore: number) {
-  return Math.pow(gearScore, NW_ARMOR_SET_RATING_EXPONENT)
+export function armorSetRating(gearScore: number, trace?: Tracer) {
+  const result = Math.pow(Math.max(gearScore, NW_MIN_GEAR_SCORE), NW_ARMOR_SET_RATING_EXPONENT)
+  trace?.log(`pow(max(gs, MIN_GS), EXPONENT)`)
+  trace?.log(`= pow(max(${gearScore}, ${NW_MIN_GEAR_SCORE}), ${NW_ARMOR_SET_RATING_EXPONENT})`)
+  trace?.log(`= ${result}`)
+  return result
 }
 
 export function armorRating(options: { gearScore: number; mitigation: number }) {
@@ -196,11 +200,13 @@ export function armorMitigation(options: { gearScore: number; armorRating: numbe
   //      1 / (1 + (x / y))  = y / (x + y)
   // 1 - (1 / (1 + (x / y))) = x / (y + x)
 
-  const gs = armorSetRating(options.gearScore)
+  trace?.log(`setRating =`)
+  const setRating = armorSetRating(options.gearScore, trace?.nested())
+  trace?.log(`rating = ${options.armorRating}`)
   const rating = options.armorRating
-  const result = rating / (gs + rating)
-  trace?.log(`  gs / (rating + gs)`)
-  trace?.log(`= ${rating} / (${gs} + ${rating})`)
+  const result = rating / (setRating + rating)
+  trace?.log(`= rating / (setRating + rating)`)
+  trace?.log(`= ${rating} / (${setRating} + ${rating})`)
   trace?.log(`= ${result}`)
   return clamp(result, NW_MIN_ARMOR_MITIGATION, NW_MAX_ARMOR_MITIGATION)
 }
