@@ -1,7 +1,7 @@
 export async function onRequest(context) {
   const response = await fetch(`https://nwmarketprices.com/api/servers/`, {
     headers: {
-      'user-agent': 'NW Buddy Cloudflare Worker'
+      'user-agent': 'nw-buddy'
     }
   })
 	const result = await response.json()
