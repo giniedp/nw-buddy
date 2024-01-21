@@ -180,9 +180,9 @@ export function damageForWeapon(
 }
 
 export function armorSetRating(gearScore: number, trace?: Tracer) {
-  const result = Math.pow(Math.max(gearScore, NW_MIN_GEAR_SCORE), NW_ARMOR_SET_RATING_EXPONENT)
-  trace?.log(`pow(max(gs, MIN_GS), EXPONENT)`)
-  trace?.log(`= pow(max(${gearScore}, ${NW_MIN_GEAR_SCORE}), ${NW_ARMOR_SET_RATING_EXPONENT})`)
+  const result = Math.pow(gearScore, NW_ARMOR_SET_RATING_EXPONENT)
+  trace?.log(`pow(gs, EXPONENT)`)
+  trace?.log(`= pow(${gearScore}, ${NW_ARMOR_SET_RATING_EXPONENT})`)
   trace?.log(`= ${result}`)
   return result
 }
@@ -250,7 +250,7 @@ export function pvpGearScore(
 
 export function pvpScaling(options: { attackerLevel: number; defenderLevel: number }, trace?: Tracer) {
   const delta = options.attackerLevel - options.defenderLevel
-  const scaling = delta < 0 ? -0.0225 : -0.015
+  const scaling = delta < 0 ? -0.0225 : -0.0150
   const result = scaling * delta
   trace?.log(`      delta = attackerLevel - defenderLevel`)
   trace?.log(`            = ${options.attackerLevel} - ${options.defenderLevel}`)
@@ -444,31 +444,31 @@ export function calculateDamage(options: {
   })
 
   const weapon = {
-    std: weaponDamageScaled,
-    stdMitigated: weaponDamageScaled * weaponMitigated,
-    stdFinal: weaponDamageScaled * (1 - weaponMitigated),
+    std: Math.floor(weaponDamageScaled),
+    stdMitigated: Math.floor(weaponDamageScaled * weaponMitigated),
+    stdFinal: Math.floor(weaponDamageScaled * (1 - weaponMitigated)),
 
-    crit: weaponDamageCritScaled,
-    critMitigated: weaponDamageCritScaled * weaponMitigated,
-    critFinal: weaponDamageCritScaled * (1 - weaponMitigated),
+    crit: Math.floor(weaponDamageCritScaled),
+    critMitigated: Math.floor(weaponDamageCritScaled * weaponMitigated),
+    critFinal: Math.floor(weaponDamageCritScaled * (1 - weaponMitigated)),
   }
   const converted = {
-    std: convertedDamage,
-    stdMitigated: convertedDamage * convertedMitigated,
-    stdFinal: convertedDamage * (1 - convertedMitigated),
+    std: Math.floor(convertedDamage),
+    stdMitigated: Math.floor(convertedDamage * convertedMitigated),
+    stdFinal: Math.floor(convertedDamage * (1 - convertedMitigated)),
 
-    crit: convertedDamageCrit,
-    critMitigated: convertedDamageCrit * convertedMitigated,
-    critFinal: convertedDamageCrit * (1 - convertedMitigated),
+    crit: Math.floor(convertedDamageCrit),
+    critMitigated: Math.floor(convertedDamageCrit * convertedMitigated),
+    critFinal: Math.floor(convertedDamageCrit * (1 - convertedMitigated)),
   }
   const total = {
-    std: weapon.std + converted.std,
-    stdMitigated: weapon.stdMitigated + converted.stdMitigated,
-    stdFinal: weapon.stdFinal + converted.stdFinal,
+    std: Math.floor(weapon.std + converted.std),
+    stdMitigated: Math.floor(weapon.stdMitigated + converted.stdMitigated),
+    stdFinal: Math.floor(weapon.stdFinal + converted.stdFinal),
 
-    crit: weapon.crit + converted.crit,
-    critMitigated: weapon.critMitigated + converted.critMitigated,
-    critFinal: weapon.critFinal + converted.critFinal,
+    crit: Math.floor(weapon.crit + converted.crit),
+    critMitigated: Math.floor(weapon.critMitigated + converted.critMitigated),
+    critFinal: Math.floor(weapon.critFinal + converted.critFinal),
   }
 
   trace.log(`result =`)

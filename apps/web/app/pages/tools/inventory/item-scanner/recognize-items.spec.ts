@@ -9,7 +9,7 @@ import { TranslateService } from '~/i18n'
 import { AppTestingModule } from '~/test'
 import { recognizeItemFromImage } from './recognize-item'
 
-fdescribe('item-scanner / recognize', async () => {
+describe('item-scanner / recognize', async () => {
   let db: NwDbService
   let translate: TranslateService
   let http: HttpClient
