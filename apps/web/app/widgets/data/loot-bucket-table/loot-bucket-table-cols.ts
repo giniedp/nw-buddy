@@ -11,6 +11,7 @@ import {
 } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster, Lootlimits } from '@nw-data/generated'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
+import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
 export type LootBucketTableUtils = TableGridUtils<LootBucketTableRecord>
@@ -99,23 +100,30 @@ export function lootBucketColQuantity(util: LootBucketTableUtils) {
 }
 
 export function lootBucketColTags(util: LootBucketTableUtils) {
-  return util.colDef<LootBucketTag[]>({
+  return util.colDef<string[]>({
     colId: 'tags',
     headerValueGetter: () => 'Tags',
     valueGetter: ({ data }) => {
-      return Array.from(data.Tags.values())
+      return Array.from(data.Tags.values()).map(formatTag)
     },
     cellRenderer: util.tagsRenderer({
-      transform: (it) => {
-        if (!it.Value) {
-          return it.Name
-        }
-        if (it.Value.length === 1) {
-          return [it.Name, it.Value[0]].join(': ')
-        }
-        return [it.Name, it.Value.join('-')].join(': ')
-      },
+      //transform: formatTag,
     }),
+    filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      showSearch: true,
+    }),
+    useValueFormatterForExport: true,
     width: 600,
   })
+}
+
+function formatTag(tag: LootBucketTag) {
+  if (!tag.Value) {
+    return tag.Name
+  }
+  if (tag.Value.length === 1) {
+    return [tag.Name, tag.Value[0]].join(': ')
+  }
+  return [tag.Name, tag.Value.join('-')].join(': ')
 }
