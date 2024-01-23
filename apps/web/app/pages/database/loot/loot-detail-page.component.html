@@ -1,5 +1,15 @@
 <nwb-detail-drawer class="hidden lg:block">
   <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
+    @if(parents()?.length) {
+      <h3>Parent Tables</h3>
+      <div class="flex flex-wrap gap-2 mb-4">
+        @for(parent of parents(); track $index) {
+          <a [routerLink]="['/loot/table', parent.LootTableID]" class="btn btn-xs btn-secondary normal-case">
+            {{ parent.LootTableID | nwHumanize }}
+          </a>
+        }
+      </div>
+    }
     <nwb-loot-graph [tableId]="id$ | async" [showLocked]="true" class="overflow-hidden" />
   </div>
 </nwb-detail-drawer>
