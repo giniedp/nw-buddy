@@ -81,7 +81,7 @@ export class GearsetDetailComponent {
   public disabled: boolean
 
   @Input()
-  public calculator: boolean = true
+  public calculator: boolean
 
   @Input()
   public swiper: boolean

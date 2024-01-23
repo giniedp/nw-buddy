@@ -201,26 +201,18 @@ export const DamageCalculatorStore = signalStore(
   }),
   withMethods((store, db = inject(NwDbService)) => {
     return {
-      loadVital: rxMethod(
-        pipe(
-          switchMap((id) => {
-            return db.vital(String(id)).pipe(
-              tap((vital) => {
-                patchState(store, {
-                  defenderIsPlayer: false,
-                  defenderCreature: vital,
-                  defenderArmorElem: 0,
-                  defenderArmorElemAdd: 0,
-                  defenderArmorElemFort: 0,
-                  defenderArmorPhys: 0,
-                  defenderArmorPhysAdd: 0,
-                  defenderArmorPhysFort: 0,
-                })
-              }),
-            )
-          }),
-        ),
-      ),
+      setVitalDefender: (vital: Vitals) => {
+        patchState(store, {
+          defenderIsPlayer: false,
+          defenderCreature: vital,
+          defenderArmorElem: 0,
+          defenderArmorElemAdd: 0,
+          defenderArmorElemFort: 0,
+          defenderArmorPhys: 0,
+          defenderArmorPhysAdd: 0,
+          defenderArmorPhysFort: 0,
+        })
+      },
     }
   }),
   withComputed(

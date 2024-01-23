@@ -4,7 +4,7 @@
       <div class="form-control p-1">
         <div class="input-group overflow-x-auto">
           <a class="btn btn-ghost btn-square inline-flex" (click)="goBack()">
-            <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
+            <nwb-icon [icon]="iconBack" class="w-4 h-4"/>
           </a>
           <input
             type="text"
@@ -24,7 +24,7 @@
             [tooltip]="'Edit Tags'"
             [tooltipClass]="'bg-info'"
           >
-            <nwb-icon [icon]="iconTags" class="w-4 h-4"></nwb-icon>
+            <nwb-icon [icon]="iconTags" class="w-4 h-4"/>
           </button>
           <ng-template
             cdkConnectedOverlay
@@ -54,23 +54,33 @@
 
           <button
             class="btn btn-ghost btn-square"
+            (click)="onCalculatorClicked()"
+            [tooltip]="'Toggle calculator'"
+            [tooltipClass]="'bg-info'"
+            [class.text-primary]="calculator"
+          >
+            <nwb-icon [icon]="iconCalculator" class="w-4 h-4"/>
+          </button>
+
+          <button
+            class="btn btn-ghost btn-square"
             (click)="onCompactClicked()"
             [tooltip]="'Toggle compact mode'"
             [tooltipClass]="'bg-info'"
             [class.text-primary]="compact"
           >
-            <nwb-icon [icon]="iconCompact" class="w-4 h-4"></nwb-icon>
+            <nwb-icon [icon]="iconCompact" class="w-4 h-4"/>
           </button>
 
           <button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
-            <nwb-icon [icon]="iconMenu" class="w-4 h-4"></nwb-icon>
+            <nwb-icon [icon]="iconMenu" class="w-4 h-4"/>
           </button>
 
           <ng-template #menu>
             <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
               <li class="text-shadow-sm shadow-black">
                 <a cdkMenuItem (click)="onShareClicked()">
-                  <nwb-icon [icon]="iconShare" class="w-4 h-4"></nwb-icon>
+                  <nwb-icon [icon]="iconShare" class="w-4 h-4"/>
                   <div class="flex flex-col leading-none">
                     <span>Share</span>
                     <span class="text-xs opacity-75">Upload online and create a share URL</span>
@@ -79,7 +89,7 @@
               </li>
               <li class="text-shadow-sm shadow-black">
                 <a (click)="onCloneClicked()" cdkMenuItem>
-                  <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
+                  <nwb-icon [icon]="iconCopy" class="w-4 h-4"/>
                   <div class="flex flex-col leading-none">
                     <span>Copy</span>
                     <span class="text-xs opacity-75">Create a copy of this set</span>
@@ -131,7 +141,7 @@
               <li class="divider my-0"></li>
               <li class="text-shadow-sm shadow-black">
                 <a (click)="onDeleteClicked()" cdkMenuItem>
-                  <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error"></nwb-icon>
+                  <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error"/>
                   <div class="flex flex-col leading-none">
                     <span>Delete</span>
                     <span class="text-xs opacity-75">Delete this set</span>
@@ -144,7 +154,7 @@
       </div>
     </ion-header>
     <div class="layout-col" cdkScrollable>
-      <nwb-gearset [gearset]="data" [compact]="compact" />
+      <nwb-gearset [gearset]="data" [compact]="compact" [calculator]="calculator" />
     </div>
   } @else {
     <div class="alert alert-error shadow-lg">

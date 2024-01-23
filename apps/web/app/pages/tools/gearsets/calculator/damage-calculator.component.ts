@@ -1,13 +1,23 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
-import { Component, Injector, Pipe, PipeTransform, effect, inject } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import {
+  Component,
+  InjectionToken,
+  Injector,
+  Pipe,
+  PipeTransform,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core'
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { patchState } from '@ngrx/signals'
 import { damageScaleAttrs } from '@nw-data/common'
 import { combineLatest, filter, map, take } from 'rxjs'
-import { GearsetsStore } from '~/data'
+import { GearsetStore, GearsetsDB } from '~/data'
 import { NwDbService, NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { CollapsibleComponent } from '~/ui/collapsible'
@@ -15,11 +25,14 @@ import { DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft, svgEllipsisVertical } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
+import { GearsetTableAdapter } from '~/widgets/data/gearset-table'
 import { VitalTableAdapter, VitalTableRecord } from '~/widgets/data/vital-table'
 import { DamageCalculatorStore } from './damage-calculator.store'
 import { LabelControlComponent } from './label-control.component'
 import { TweakControlComponent } from './tweak-control.component'
 
+const DEFENDER_MANNEQUIN = new InjectionToken<Mannequin>('DEFENDER_MANNEQUIN')
+const DEFENDER_GEARSET = new InjectionToken<GearsetStore>('DEFENDER_GEARSET')
 @Pipe({ standalone: true, name: 'floor' })
 export class FloorPipe implements PipeTransform {
   public transform(value: number): number {
@@ -31,7 +44,18 @@ export class FloorPipe implements PipeTransform {
   standalone: true,
   selector: 'nwb-damage-calculator',
   templateUrl: './damage-calculator.component.html',
-  providers: [DamageCalculatorStore, FloorPipe],
+  providers: [
+    DamageCalculatorStore,
+    FloorPipe,
+    {
+      provide: DEFENDER_MANNEQUIN,
+      useClass: Mannequin,
+    },
+    {
+      provide: DEFENDER_GEARSET,
+      useClass: GearsetStore,
+    },
+  ],
   imports: [
     CommonModule,
     NwModule,
@@ -44,18 +68,26 @@ export class FloorPipe implements PipeTransform {
     FloorPipe,
     CollapsibleComponent,
   ],
-
   host: {
     class: 'layout-content',
   },
 })
 export class DamageCalculatorComponent {
   protected store = inject(DamageCalculatorStore)
+  private db = inject(NwDbService)
+  private gearDb = inject(GearsetsDB)
   private mannequin = inject(Mannequin)
   private dialog = inject(Dialog)
   private injector = inject(Injector)
   protected svgChevronLeft = svgChevronLeft
   protected svgMore = svgEllipsisVertical
+  private defender = signal<{ isGearset: boolean; id: string }>(null)
+  private defenderGearsetId = computed(() => (this.defender()?.isGearset ? this.defender()?.id : null))
+  private defenderVitalId = computed(() => (this.defender()?.isGearset ? null : this.defender()?.id))
+  private defenderVital$ = this.db.vital(toObservable(this.defenderVitalId))
+  private defenderGearset$ = this.gearDb.observeByid(toObservable(this.defenderVitalId))
+  private defenderMannequin = inject(DEFENDER_MANNEQUIN)
+  private defenderGearset = inject(DEFENDER_GEARSET)
 
   public constructor() {
     const SESSION_KEY = 'damage-calculator'
@@ -140,6 +172,13 @@ export class DamageCalculatorComponent {
           convertPercent: damage.ConvertPercent,
         })
       })
+
+    this.defenderVital$
+      .pipe(filter((it) => !!it))
+      .pipe(takeUntilDestroyed())
+      .subscribe((vital) => {
+        this.store.setVitalDefender(vital)
+      })
   }
 
   public pickVitalDefender() {
@@ -162,7 +201,43 @@ export class DamageCalculatorComponent {
         take(1),
       )
       .subscribe((result) => {
-        this.store.loadVital(result)
+        patchState(this.store, {
+          defenderIsPlayer: false,
+        })
+        this.defender.set({
+          isGearset: false,
+          id: String(result),
+        })
+      })
+  }
+
+  public pickGearset() {
+    DataViewPicker.open(this.dialog, {
+      title: 'Pick Opponent Gearset',
+      selection: [this.defenderGearsetId()],
+      dataView: {
+        adapter: GearsetTableAdapter,
+      },
+      config: {
+        maxWidth: 1400,
+        maxHeight: 1200,
+        panelClass: ['w-full', 'h-full', 'p-4'],
+        injector: this.injector,
+      },
+    })
+      .closed.pipe(
+        map((it) => it?.[0]),
+        filter((it) => !!it),
+        take(1),
+      )
+      .subscribe((result) => {
+        patchState(this.store, {
+          defenderIsPlayer: true,
+        })
+        this.defender.set({
+          isGearset: true,
+          id: String(result),
+        })
       })
   }
 
@@ -170,11 +245,19 @@ export class DamageCalculatorComponent {
     patchState(this.store, {
       defenderIsPlayer: true,
     })
+    this.defender.set({
+      isGearset: false,
+      id: null,
+    })
   }
 
   public setPvEMode() {
     patchState(this.store, {
       defenderIsPlayer: false,
+    })
+    this.defender.set({
+      isGearset: false,
+      id: null,
     })
   }
 }
