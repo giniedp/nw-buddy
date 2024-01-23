@@ -6,6 +6,7 @@ import { program } from 'commander'
 import { createHash } from 'crypto'
 import * as fs from 'fs'
 import * as http from 'https'
+import { groupBy } from 'lodash'
 import * as mime from 'mime-types'
 import * as path from 'path'
 import z from 'zod'
@@ -18,7 +19,7 @@ import {
   NW_GAME_VERSION,
   environment,
 } from '../env'
-import { glob } from './utils/file-utils'
+import { glob, writeJSONFile } from './utils/file-utils'
 
 const config = {
   bucket: CDN_UPLOAD_SPACE,
@@ -61,7 +62,7 @@ program
         hideCursor: true,
         format: ' {bar} | {name} | {percentage}%',
       },
-      Presets.shades_grey
+      Presets.shades_grey,
     )
     const b1 = multibar.create(100, 0)
 
@@ -88,7 +89,11 @@ program
   .command('upload')
   .description('Zips nw-data folder (live or ptr) and uploads to CDN. Optionally uploads all files unzipped.')
   .option('-ws, --workspace <name>', 'workspace folder to upload (ptr or live)', NW_GAME_VERSION)
-  .option('-v, --version <version>', 'Version name to use for upload', path.basename(environment.nwDataDir(NW_GAME_VERSION)))
+  .option(
+    '-v, --version <version>',
+    'Version name to use for upload',
+    path.basename(environment.nwDataDir(NW_GAME_VERSION)),
+  )
   .option('-u, --update', 'Whether to update the zip file before upload', false)
   .option('-f, --files', 'Whether to upload unzipped folder to CDN', false)
   .action(async (data) => {
@@ -177,32 +182,76 @@ program
     })
   })
 
+program.command('upload-tiles').action(async () => {
+  const remoteDir = 'worldtiles'
+  const tilesDir = path.join(environment.nwDataDir(), 'lyshineui', remoteDir)
+  const client = createClient()
+
+  const imageFiles = await glob(path.join(tilesDir, '**/*.webp'))
+  const files = await glob(path.join(tilesDir, '**/*.webp')).then((list) => {
+    return list.map((file) => {
+      return {
+        file: file,
+        key: normalizeKey(path.join(remoteDir, path.relative(tilesDir, file))),
+        contentType: 'image/webp',
+        md5: true,
+      }
+    })
+  })
+
+  const groups = groupBy(imageFiles, (file) => path.dirname(file))
+  for (const [dir, dirFiles] of Object.entries(groups)) {
+    const indexFile = path.join(dir, 'tiles.json')
+    const data = dirFiles.map((file) => path.basename(file))
+    await writeJSONFile(data, {
+      target: indexFile,
+    })
+    files.push({
+      file: indexFile,
+      key: normalizeKey(path.join(remoteDir, path.relative(tilesDir, indexFile))),
+      contentType: 'application/json',
+      md5: true,
+    })
+  }
+
+  const toUpload = files
+  console.log('found', files.length, '.webp files', 'to upload', toUpload.length)
+  await uploadFiles({
+    client: client,
+    files: toUpload,
+  })
+})
+
 program.parse(process.argv)
 
 async function download(url: string, target: string, onProgress?: (downloaded: number, total: number) => void) {
   const file = fs.createWriteStream(target)
 
   return new Promise((resolve, reject) => {
-    http.get(url, {
-      headers: {
-        'Cache-Control': 'no-cache',
+    http.get(
+      url,
+      {
+        headers: {
+          'Cache-Control': 'no-cache',
+        },
       },
-    }, (response) => {
-      const total = Number(response.headers['content-length'])
-      let downloaded = 0
-      response.on('data', (chunk) => {
-        downloaded += chunk.length
-        onProgress?.(downloaded, total)
-      })
-      response.pipe(file)
-      file.on('finish', () => {
-        file.close()
-        resolve(null)
-      })
-      file.on('error', (err) => {
-        reject(err)
-      })
-    })
+      (response) => {
+        const total = Number(response.headers['content-length'])
+        let downloaded = 0
+        response.on('data', (chunk) => {
+          downloaded += chunk.length
+          onProgress?.(downloaded, total)
+        })
+        response.pipe(file)
+        file.on('finish', () => {
+          file.close()
+          resolve(null)
+        })
+        file.on('error', (err) => {
+          reject(err)
+        })
+      },
+    )
   })
 }
 
@@ -248,7 +297,7 @@ async function uploadFiles({
       hideCursor: true,
       format: '{percentage}% {value}/{total} {name}',
     },
-    Presets.shades_grey
+    Presets.shades_grey,
   )
   const b1 = multibar.create(totalFiles, 0)
   let filesDone = 0
@@ -298,7 +347,7 @@ async function uploadFiles({
         await upload.done()
       }
       b2.update(batch.length, { name: 'done' })
-    })
+    }),
   )
 
   multibar.stop()
