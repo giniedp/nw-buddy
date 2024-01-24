@@ -297,12 +297,12 @@ export function getVitalHealth({
   modifier: Vitalsmodifierdata
   difficulty?: Mutationdifficulty
 }) {
-  if (!vital || !level || !modifier) {
+  if (!vital || !level) {
     return 0
   }
   const baseMaxHealth = level.BaseMaxHealth
   const healthMod = vital.HealthMod
-  const categoryHealthMod = modifier.CategoryHealthMod
+  const categoryHealthMod = modifier?.CategoryHealthMod || 1
   const potency = difficulty?.[`HealthPotency_${vital.CreatureType}`] || 0
   const result = Math.floor(Math.floor(baseMaxHealth) * healthMod * categoryHealthMod * (1 + potency * 0.01))
   // console.table({
@@ -316,7 +316,7 @@ export function getVitalHealth({
 }
 
 export function getVitalGearScoreFromLevel(level: number) {
-  return (level  || 0) * 10
+  return (level || 0) * 10
 }
 
 export function getVitalArmor(vital: Vitals, level: Vitalsleveldata) {
