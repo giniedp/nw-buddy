@@ -13,10 +13,10 @@ import {
 } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { combineLatest, map, of, pipe, switchMap } from 'rxjs'
-import { mapProp } from '~/utils'
 import { ItemInstance, ItemInstancesDB } from '../items'
 import { NwDataService } from '../nw-data'
 import { GearsetRecord } from './types'
+import { resolveGearsetSlot } from './utils'
 
 export interface WithGearsetSlotState {
   gearset: GearsetRecord
@@ -35,18 +35,16 @@ export function withGearsetSlot() {
       const instance = signal<ItemInstance>(null)
       const item = signal<ItemDefinitionMaster | Housingitems>(null)
 
-      const bind = rxMethod<WithGearsetSlotState>(
+      const connect = rxMethod<WithGearsetSlotState>(
         pipe(
           switchMap(({ gearset, slotId }) => {
-            const slotItem = gearset?.slots?.[slotId]
-            const instanceId = typeof slotItem === 'string' ? slotItem : null
-            const instance = typeof slotItem !== 'string' ? slotItem : null
-            const instance$ = instanceId ? db.live((t) => t.get(instanceId)) : of(instance)
-            const item = data.itemOrHousingItem(instance$.pipe(mapProp('itemId')))
+            return resolveGearsetSlot(db, slotId, gearset?.slots?.[slotId])
+          }),
+          switchMap(({ instance, instanceId }) => {
             return combineLatest({
               instanceId: of(instanceId),
-              instance: instance$,
-              item: item,
+              instance: of(instance),
+              item: data.itemOrHousingItem(instance?.itemId),
             })
           }),
           map((res) => {
@@ -56,14 +54,12 @@ export function withGearsetSlot() {
           }),
         ),
       )
-      effect(() => {
-        bind({
+      connect(computed(() => {
+        return {
           gearset: state.gearset(),
           slotId: state.slotId(),
-        })
-      }, {
-        allowSignalWrites: true,
-      })
+        }
+      }))
 
       return {
         instanceId: computed(() => instanceId()),

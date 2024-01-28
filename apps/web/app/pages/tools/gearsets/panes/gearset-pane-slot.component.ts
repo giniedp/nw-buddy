@@ -95,10 +95,10 @@ export class GearsetPaneSlotComponent {
   })
 
   protected isHidden = computed(() => {
-    return !this.store.hasItem() || this.disabled
+    return this.disabled
   })
   protected isScreenshotHidden = computed(() => {
-    return !this.store.hasItem()
+    return !this.store.hasItem() || this.disabled
   })
 
   protected gsValue: number

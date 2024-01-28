@@ -55,7 +55,7 @@
       >
         <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
         <nwb-gearset-pane-main class="relative" [class.text-xs]="compact" [disabled]="disabled">
-          <div [class.screenshot-hidden]="ammoAndSlotsAreEmpty()">
+          <div [class.screenshot-hidden]="buffSlotsAreEmpty()">
             <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
               <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
               <span class="relative top-1">Buffs & Ammo</span>
@@ -74,7 +74,7 @@
                     (itemInstantiate)="onItemInstantiate(slot, $event)"
                   />
                 }
-                @for (slot of ammoSlots; track $index; let first = $first) {
+                @for (slot of ammoSlots; track $index) {
                   <nwb-gearset-pane-slot
                     [slotId]="slot.id"
                     [gearset]="gearset"
@@ -195,6 +195,5 @@
       }
     </ng-template>
 
-    <ng-template #tplCalculator> </ng-template>
   </div>
 }

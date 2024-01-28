@@ -1,4 +1,4 @@
-import { AttributeRef } from "@nw-data/common"
+import { AttributeRef, EquipSlotId } from "@nw-data/common"
 import { ItemInstance } from "../items/types"
 import { SkillSet } from "../skillbuilds/types"
 
@@ -36,7 +36,7 @@ export interface GearsetRecord {
   /**
    * Item slots for this gear
    */
-  slots?: Record<string, string | ItemInstance>
+  slots?: Partial<Record<EquipSlotId, string | ItemInstance>>
   /**
    * Assigned attribute points
    */

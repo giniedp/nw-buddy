@@ -1,6 +1,6 @@
 <div class="relative">
-  @if (instance()?.weapon) {
-    <nwb-skill-builder [ngModel]="instance()" (ngModelChange)="updateSkill($event)" [disabled]="disabled()" #builder />
+  @if (instance?.weapon) {
+    <nwb-skill-builder [ngModel]="instance" (ngModelChange)="updateSkill($event)" [disabled]="disabled" #builder />
   } @else {
     <picture class="w-64 h-64 text-white absolute left-1/2 -translate-x-1/2">
       <img [nwImage]="'assets/loaders/crafting_rune_clockwise.png'" class="w-full h-full animate-spin-ccw" />
@@ -18,9 +18,9 @@
     class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg text-shadow-sm shadow-black"
     cdkMenu
   >
-    @if (instance()?.weapon; as weapon) {
+    @if (instance?.weapon; as weapon) {
       <li>
-        <a cdkMenuItem (click)="openExisting(weapon)">
+        <a cdkMenuItem (click)="handleOpenSkillSet(weapon)">
           <nwb-icon [icon]="iconOpen" class="w-4 h-4 mr-2"></nwb-icon>
           <div class="flex flex-col leading-none">
             <span>Load</span>
@@ -29,7 +29,7 @@
         </a>
       </li>
       <li>
-        <a cdkMenuItem (click)="reset()">
+        <a cdkMenuItem (click)="handleReset()">
           <nwb-icon [icon]="iconReset" class="w-4 h-4 mr-2"></nwb-icon>
           <div class="flex flex-col leading-none">
             <span>Reset</span>

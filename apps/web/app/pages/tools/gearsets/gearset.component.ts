@@ -1,7 +1,7 @@
 import { animate, animateChild, query, stagger, style, transition, trigger } from '@angular/animations'
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, computed, effect, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { EQUIP_SLOTS, EquipSlot, EquipSlotId, getStatusEffectTownBuffIds } from '@nw-data/common'
 import { filter, map } from 'rxjs'
@@ -103,7 +103,7 @@ export class GearsetDetailComponent {
   )
   protected ammoSlots = EQUIP_SLOTS.filter((it) => it.itemType === 'Ammo')
   protected buffSlots = EQUIP_SLOTS.filter((it) => it.id.startsWith('buff'))
-  protected ammoAndSlotsAreEmpty = computed(() => {
+  protected buffSlotsAreEmpty = computed(() => {
     const slots = this.store.gearsetSlots()
     return areSlotsEmtpy(this.ammoSlots, slots) && areSlotsEmtpy(this.buffSlots, slots)
   })
@@ -138,7 +138,7 @@ export class GearsetDetailComponent {
   protected townBuffEffectsToDisplay = computed(() => {
     let effects = this.store.gearset().enforceEffects
     effects = [...(effects || [])]
-    effects = effects.filter((it) => this.townBuffEffectIds.some((id) => it.id === id))
+    effects = effects.filter((it) => !!it.stack && this.townBuffEffectIds.some((id) => it.id === id))
     const result = effects.map((it) => it.id)
     result.length = Math.min(effects.length + 1, 9)
     return result
@@ -157,6 +157,11 @@ export class GearsetDetailComponent {
       attribute2: this.ctxAttribute(1),
     })
     this.store.connectToMannequin(this.mannequin)
+
+    effect(() => {
+
+      this.store.resolvedSlots().find((it) => it.slot === 'weapon1')
+    })
   }
 
   private ctxAttribute(index: number) {

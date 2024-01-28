@@ -30,7 +30,7 @@
       [ngModel]="vm.tree1"
       (ngModelChange)="updateTree(0, $event)"
       [disabled]="disabled"
-    ></nwb-skill-tree>
+    />
     <nwb-skill-tree
       class="rounded-md"
       [points]="vm.pointsTree2"
@@ -39,6 +39,6 @@
       [ngModel]="vm.tree2"
       (ngModelChange)="updateTree(1, $event)"
       [disabled]="disabled"
-    ></nwb-skill-tree>
+    />
   </div>
 </ng-container>

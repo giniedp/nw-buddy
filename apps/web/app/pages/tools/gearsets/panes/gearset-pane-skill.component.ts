@@ -1,15 +1,15 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, DestroyRef, Injector, computed, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Injector, Input, effect, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { Observable, combineLatest, filter, map, of, switchMap } from 'rxjs'
+import { filter, map, switchMap } from 'rxjs'
 
-import { GearsetsDB, NwDataService } from '~/data'
+import { GearsetsDB } from '~/data'
 import { NwModule } from '~/nw'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
-import { toObservable, toSignal } from '@angular/core/rxjs-interop'
+import { patchState } from '@ngrx/signals'
 import { GearsetRecord, GearsetSkillSlot, SkillBuildsDB, SkillSet } from '~/data'
 import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
 import { DataViewPicker } from '~/ui/data/data-view'
@@ -30,6 +30,7 @@ import { eqCaseInsensitive } from '~/utils'
 import { SkillsetTableAdapter, SkillsetTableRecord } from '~/widgets/data/skillset-table'
 import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
 import { SkillTreeModule } from '~/widgets/skill-builder'
+import { GearsetPaneSkillStore } from './gearset-pane-skill.store'
 
 @Component({
   standalone: true,
@@ -48,31 +49,58 @@ import { SkillTreeModule } from '~/widgets/skill-builder'
     SkillTreeModule,
     TooltipModule,
   ],
+  providers: [GearsetPaneSkillStore],
   host: {
     class: 'flex flex-col relative',
-    '[class.screenshot-hidden]': '!instance()',
+    '[class.screenshot-hidden]': '!instance',
   },
 })
 export class GearsetPaneSkillComponent {
   private db = inject(SkillBuildsDB)
   private gearDb = inject(GearsetsDB)
-  private data = inject(NwDataService)
   private dialog = inject(Dialog)
   private injector = inject(Injector)
-  private destroyRef = inject(DestroyRef)
+  private store = inject(GearsetPaneSkillStore)
 
-  public readonly slot = input.required<GearsetSkillSlot>()
-  public readonly gearset = input.required<GearsetRecord>()
-  public readonly compact = input<boolean>(false)
-  public readonly disabled = input<boolean>(false)
+  @Input()
+  public set slot(value: GearsetSkillSlot) {
+    patchState(this.store, { slot: value })
+  }
+  public get slot() {
+    return this.store.slot()
+  }
 
-  protected skill = toSignal(
-    loadSkill(this.db, {
-      gearset: toObservable(this.gearset),
-      slot: toObservable(this.slot),
-    }),
-  )
-  protected instance = computed(() => this.skill()?.instance)
+  @Input()
+  public set gearset(value: GearsetRecord) {
+    patchState(this.store, { gearset: value })
+  }
+  public get gearset() {
+    return this.store.gearset()
+  }
+
+  @Input()
+  public set compact(value: boolean) {
+    patchState(this.store, { compact: value })
+  }
+  public get compact() {
+    return this.store.compact()
+  }
+
+  @Input()
+  public set disabled(value: boolean) {
+    patchState(this.store, { disabled: value })
+  }
+  public get disabled() {
+    return this.store.compact()
+  }
+
+  protected get instance() {
+    return this.store.instance()
+  }
+
+  protected get equippedTag() {
+    return this.store.equippedWeaponTag()
+  }
 
   protected iconMenu = svgEllipsisVertical
   protected iconRemove = svgTrashCan
@@ -83,16 +111,25 @@ export class GearsetPaneSkillComponent {
   protected iconPlus = svgPlus
   protected iconOpen = svgFolderOpen
 
-  // public ngOnInit(): void {
-  //   if (!this.disabled()) {
-  //     this.attachAutoSwitchSkill()
-  //   }
-  // }
+  constructor() {
+    effect(() => {
+      const equipped = this.equippedTag
+      const slotted = this.instance?.weapon
+      if (!equipped || !slotted || equipped === slotted || this.disabled) {
+        return
+      }
+      this.updateSkill({
+        weapon: equipped,
+        tree1: [],
+        tree2: [],
+      })
+    })
+  }
 
   protected updateSkill(value: SkillSet) {
     saveSkill(this.gearDb, {
-      gearset: this.gearset(),
-      slot: this.slot(),
+      gearset: this.gearset,
+      slot: this.slot,
       instance: value,
     })
   }
@@ -115,7 +152,7 @@ export class GearsetPaneSkillComponent {
       })
   }
 
-  protected openExisting(weapon: string) {
+  protected handleOpenSkillSet(weapon: string) {
     DataViewPicker.open<SkillsetTableRecord>(this.dialog, {
       title: 'Choose Skill Tree',
       selection: null,
@@ -143,34 +180,13 @@ export class GearsetPaneSkillComponent {
       })
   }
 
-  protected reset() {
+  protected handleReset() {
     this.updateSkill({
-      weapon: this.skill()?.instance?.weapon,
+      weapon: this.instance?.weapon,
       tree1: [],
       tree2: [],
     })
   }
-}
-
-function loadSkill(
-  db: SkillBuildsDB,
-  options: {
-    gearset: Observable<GearsetRecord>
-    slot: Observable<GearsetSkillSlot>
-  },
-) {
-  return combineLatest(options).pipe(
-    switchMap(({ gearset, slot: skillSlot }) => {
-      const skillRef = gearset?.skills?.[skillSlot]
-      const instanceId = typeof skillRef === 'string' ? skillRef : null
-      const instance = typeof skillRef !== 'string' ? skillRef : null
-      const query$ = instanceId ? db.live((t) => t.get(instanceId)) : of(instance)
-      return combineLatest({
-        slot: of(skillSlot),
-        instance: query$,
-      })
-    }),
-  )
 }
 
 function saveSkill(

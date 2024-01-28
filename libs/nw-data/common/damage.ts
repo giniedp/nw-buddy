@@ -201,7 +201,7 @@ export function armorMitigation(options: { gearScore: number; armorRating: numbe
   // 1 - (1 / (1 + (x / y))) = x / (y + x)
 
   trace?.log(`setRating =`)
-  const setRating = armorSetRating(options.gearScore, trace?.nested())
+  const setRating = armorSetRating(options.gearScore, trace?.indent())
   trace?.log(`rating = ${options.armorRating}`)
   const rating = options.armorRating
   const result = rating / (setRating + rating)
@@ -224,7 +224,7 @@ export function damageMitigationPercent({
   const mitigation = armorMitigation({
     gearScore: gearScore,
     armorRating: armorRating,
-  }, trace?.nested())
+  }, trace?.indent())
   const result = mitigation * (1 - armorPenetration)
   trace?.log(`mitigation * (1 - armorPenetration)`)
   trace?.log(`= ${mitigation} * (1 - ${armorPenetration})`)
@@ -300,9 +300,8 @@ export function calculateDamage(options: {
 }) {
   options.attackerGearScore = Math.floor(options.attackerGearScore)
   const trace = tracer()
-  console.table(options)
   trace.log('inputs:')
-  trace.nested().log(JSON.stringify(options, null, 2))
+  trace.indent().log(JSON.stringify(options, null, 2))
 
   const attributes = options.attributes
 
@@ -344,7 +343,7 @@ export function calculateDamage(options: {
         defenderAvgGearScore: options.defenderGearScore,
         weaponGearScore: options.weaponGearScore,
       },
-      trace.nested(),
+      trace.indent(),
     )
     trace.log(`pvpScaling =`)
     pvpScale = pvpScaling(
@@ -352,18 +351,18 @@ export function calculateDamage(options: {
         attackerLevel: options.attackerLevel,
         defenderLevel: options.defenderLevel,
       },
-      trace.nested(),
+      trace.indent(),
     )
   } else {
     effectiveGearScore = options.weaponGearScore
     pvpScale = 0
   }
 
-  console.table({
-    isPvp,
-    effectiveGearScore,
-    pvpScale,
-  })
+  // console.table({
+  //   isPvp,
+  //   effectiveGearScore,
+  //   pvpScale,
+  // })
 
   const inputs = {
     playerLevel: options.attackerLevel,
@@ -388,7 +387,7 @@ export function calculateDamage(options: {
       weaponScale: weaponScaling,
       critMod: 0,
     },
-    trace.nested(),
+    trace.indent(),
   )
   const weaponDamageScaled = weaponDamage * weaponPercent * (1 + pvpScale)
   trace.log(`weaponDamageScaled = weaponDamage * weaponPercent * (1 + pvpScale)`)
@@ -401,7 +400,7 @@ export function calculateDamage(options: {
       ...inputs,
       weaponScale: weaponScaling,
     },
-    trace.nested(),
+    trace.indent(),
   )
 
   const weaponDamageCritScaled = weaponDamageCrit * weaponPercent * (1 + pvpScale)
@@ -414,7 +413,7 @@ export function calculateDamage(options: {
     armorPenetration: options.armorPenetration,
     armorRating: options.defenderRatingWeapon,
     gearScore: effectiveGearScore,
-  }, trace?.nested())
+  }, trace?.indent())
 
   const convertedDamage =
     convertPercent *
@@ -474,12 +473,12 @@ export function calculateDamage(options: {
   trace.log(`result =`)
   trace.log(JSON.stringify(weapon, null, 2))
 
-  console.table({
-    weapon,
-    converted,
-    total,
-  })
-  console.log(trace.text())
+  // console.table({
+  //   weapon,
+  //   converted,
+  //   total,
+  // })
+  // console.log(trace.text())
   return {
     weapon,
     converted,
@@ -528,7 +527,7 @@ export function getAmmoTypeFromWeaponTag(weaponTag: WeaponTag) {
 export type Tracer = ReturnType<typeof tracer>
 function tracer(log: string[] = [], indent = 0) {
   return {
-    nested: () => tracer(log, indent + 1),
+    indent: () => tracer(log, indent + 1),
     log: (message: string) => {
       for (const line of message.split('\n')) {
         log.push('  '.repeat(indent) + line)

@@ -7,8 +7,9 @@ import { EquippedItem, Mannequin } from '~/nw/mannequin'
 import { combineLatestOrEmpty } from '~/utils'
 import { ItemInstancesDB } from '../items'
 import { ItemInstance } from '../items/types'
-import { SkillSet } from '../skillbuilds'
+import { SkillBuildsDB } from '../skillbuilds'
 import { GearsetRecord } from './types'
+import { resolveGearsetSkill } from './utils'
 
 export interface WithGearsetToMannequinState {
   gearset: GearsetRecord
@@ -21,6 +22,7 @@ export function withGearsetToMannequin() {
     },
     withMethods(({ gearset, level }) => {
       const itemDB = inject(ItemInstancesDB)
+      const skillDB = inject(SkillBuildsDB)
       const gearset$ = toObservable(gearset)
       const level$ = toObservable(level)
       return {
@@ -28,8 +30,8 @@ export function withGearsetToMannequin() {
           const src$ = combineLatest({
             level: level$,
             equippedItems: gearset$.pipe(switchMap((it) => resolveSlots(itemDB, it.slots))),
-            equippedSkills1: gearset$.pipe(map((it) => resolveSkillBuild(it.skills?.['primary']))),
-            equippedSkills2: gearset$.pipe(map((it) => resolveSkillBuild(it.skills?.['secondary']))),
+            equippedSkills1: gearset$.pipe(switchMap((it) => resolveGearsetSkill(skillDB, it.skills?.['primary']))),
+            equippedSkills2: gearset$.pipe(switchMap((it) => resolveGearsetSkill(skillDB, it.skills?.['secondary']))),
             enforcedEffects: gearset$.pipe(map((it) => it.enforceEffects)),
             enforcedAbilities: gearset$.pipe(map((it) => it.enforceAbilities)),
             assignedAttributes: gearset$.pipe(
@@ -51,14 +53,7 @@ export function withGearsetToMannequin() {
   )
 }
 
-function resolveSkillBuild(skillTree: string | SkillSet) {
-  if (typeof skillTree === 'string') {
-    return null
-  }
-  return skillTree
-}
-
-function resolveSlots(db: ItemInstancesDB, slots: Record<string, string | ItemInstance>) {
+function resolveSlots(db: ItemInstancesDB, slots: GearsetRecord['slots']) {
   return combineLatestOrEmpty(
     Object.entries(slots || {}).map(([slotId, instanceOrId]) => {
       return resolveItemInstance(db, instanceOrId).pipe(

@@ -143,6 +143,7 @@ export function withGearsetMethods() {
               effects.push({ id, stack })
             }
           }
+          record.enforceEffects = effects.filter((it) => it.stack > 0)
           await patchGearset(record)
         },
 
@@ -162,7 +163,7 @@ export function withGearsetMethods() {
         ) {
           const newRecord = makeCopy(gearset())
           for (const { slot, gearScore, perks } of slots) {
-            const { instance, instanceId } = decodeSlot(gearset.slots[slot])
+            const { instance, instanceId } = decodeSlot(gearset()?.slots[slot])
             if (instance) {
               newRecord.slots[slot] = mergeItemInstance(instance, { gearScore, perks })
             } else if (instanceId) {

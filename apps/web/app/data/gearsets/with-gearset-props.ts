@@ -1,19 +1,14 @@
 import { computed, inject, signal } from '@angular/core'
-import { signalStoreFeature, type, withComputed, withMethods } from '@ngrx/signals'
+import { signalStoreFeature, type, withComputed } from '@ngrx/signals'
 import { rxMethod } from '@ngrx/signals/rxjs-interop'
-import { Observable, combineLatest, map, of, pipe, switchMap } from 'rxjs'
+import { map, pipe, switchMap } from 'rxjs'
 
-import { EquipSlotId, gearScoreRelevantSlots, getAverageGearScore } from '@nw-data/common'
-import { combineLatestOrEmpty } from '~/utils'
+import { gearScoreRelevantSlots, getAverageGearScore } from '@nw-data/common'
 import { ItemInstancesDB } from '../items/items.db'
 import { ItemInstance } from '../items/types'
-import { GearsetRecord } from './types'
-
-export interface ResolvedGearsetSlot {
-  slot: EquipSlotId
-  instanceId: string
-  instance: ItemInstance
-}
+import { SkillBuildsDB, SkillSet } from '../skillbuilds'
+import { GearsetRecord, GearsetSkillSlot } from './types'
+import { ResolvedGearsetSlot, resolveGearsetSkills, resolveGearsetSlots } from './utils'
 
 export interface WithGearsetPropsState {
   gearset: GearsetRecord
@@ -45,15 +40,32 @@ export function withGearsetProps() {
     withComputed(({ gearsetSlots }) => {
       const itemDB = inject(ItemInstancesDB)
       const resolvedSlots = signal<ResolvedGearsetSlot[]>([])
-      const syncItems = rxMethod<Record<string, string | ItemInstance>>(
+      const connect = rxMethod<Record<string, string | ItemInstance>>(
         pipe(
-          resolveSlots(itemDB),
+          switchMap((it) => resolveGearsetSlots(itemDB, it)),
           map((slots) => resolvedSlots.set(slots)),
         ),
       )
-      syncItems(gearsetSlots)
+      connect(gearsetSlots)
       return {
         resolvedSlots,
+      }
+    }),
+    withComputed(({ skills }) => {
+      const skillDB = inject(SkillBuildsDB)
+      const resolvedSkills = signal<Record<GearsetSkillSlot, SkillSet>>({
+        primary: null,
+        secondary: null,
+      })
+      const connect = rxMethod<Record<string, string | SkillSet>>(
+        pipe(
+          switchMap((it) => resolveGearsetSkills(skillDB, it)),
+          map((slots) => resolvedSkills.set(slots)),
+        ),
+      )
+      connect(skills)
+      return {
+        resolvedSkills,
       }
     }),
     withComputed(({ resolvedSlots, level }) => {
@@ -73,25 +85,4 @@ export function withGearsetProps() {
       }
     }),
   )
-}
-
-function resolveSlots(db: ItemInstancesDB) {
-  return switchMap((slots: GearsetRecord['slots']) => {
-    return combineLatestOrEmpty(
-      Object.entries(slots || {}).map(([slot, instance]): Observable<ResolvedGearsetSlot> => {
-        if (typeof instance === 'string') {
-          return combineLatest({
-            slot: of(slot as EquipSlotId),
-            instanceId: of(instance),
-            instance: db.live((t) => t.get(instance)),
-          })
-        }
-        return combineLatest({
-          slot: of(slot as EquipSlotId),
-          instanceId: of<string>(null),
-          instance: of(instance),
-        })
-      }),
-    )
-  })
 }
