@@ -28,7 +28,7 @@
         *ngIf="isPersistable()"
         [icon]="iconMenu"
         class="w-4 h-4 absolute top-1 right-1 screenshot-hidden pointer-events-none"
-      ></nwb-icon>
+      />
     </label>
   </div>
 
@@ -37,8 +37,8 @@
     [class.cursor-pointer]="!disabled"
     [class.hover:outline-primary]="!disabled"
     (click)="editAttributes()"
-  ></nwb-attributes-stats>
-  <nwb-equip-load-stats></nwb-equip-load-stats>
-  <nwb-vitality-stats></nwb-vitality-stats>
-  <ng-content></ng-content>
+  />
+  <nwb-equip-load-stats/>
+  <nwb-vitality-stats/>
+  <ng-content/>
 </div>

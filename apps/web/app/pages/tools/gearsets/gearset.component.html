@@ -55,7 +55,7 @@
       >
         <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
         <nwb-gearset-pane-main class="relative" [class.text-xs]="compact" [disabled]="disabled">
-          <div [class.screenshot-hidden]="buffSlotsAreEmpty()">
+          <div [class.screenshot-hidden]="buffSlotsAreEmpty()" [class.hidden]="buffSlotsAreEmpty() && disabled" >
             <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
               <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
               <span class="relative top-1">Buffs & Ammo</span>
@@ -89,7 +89,7 @@
               </div>
             </div>
           </div>
-          <div [class.screenshot-hidden]="quickSlotsAreEmpty()">
+          <div [class.screenshot-hidden]="quickSlotsAreEmpty()" [class.hidden]="quickSlotsAreEmpty() && disabled">
             <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
               <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
               <span class="relative top-1">Consumables</span>
@@ -109,7 +109,7 @@
               </div>
             </div>
           </div>
-          <div [class.screenshot-hidden]="trophiesSlotsAreEmpty()">
+          <div [class.screenshot-hidden]="trophiesSlotsAreEmpty()" [class.hidden]="trophiesSlotsAreEmpty() && disabled">
             <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
               <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
               <span class="relative top-1">Trophies</span>
@@ -129,16 +129,16 @@
               </div>
             </div>
           </div>
-          <div [class.screenshot-hidden]="townBuffEffectsAreEmpty()">
+          <div [class.screenshot-hidden]="townBuffEffectsAreEmpty()" [class.hidden]="townBuffEffectsAreEmpty() && disabled">
             <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
               <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
               <span class="relative top-1">Town Buffs</span>
             </h3>
             <div class="flex items-center justify-center">
               <div class="inline-grid grid-cols-5 gap-1">
-                @for (id of townBuffEffectsToDisplay(); track $index) {
+                @for (effect of townBuffEffectsToDisplay(); track $index) {
                   <nwb-gearset-pane-effect
-                    [effectId]="id"
+                    [effectId]="effect?.id"
                     [max]="1"
                     [disabled]="disabled"
                     (effectChange)="onEffectChange($event)"

@@ -1,7 +1,7 @@
 <ng-container *ngrxLet="record$ as record; error as err; suspenseTpl: tplLoading">
   <ng-container *ngIf="record">
     <div nwbEmbedHeight *ngIf="isEmbed">
-      <nwb-gearset [gearset]="record" [disabled]="true" [swiper]="true"></nwb-gearset>
+      <nwb-gearset [gearset]="record" [disabled]="true" [swiper]="true"/>
     </div>
     <div *ngIf="!isEmbed" class="layout-content">
       <div class="alert bg-base-300 shadow-lg max-w-md mx-auto mt-3">
@@ -19,7 +19,7 @@
           </div>
         </div>
       </div>
-      <nwb-gearset [gearset]="record" [disabled]="true"></nwb-gearset>
+      <nwb-gearset [gearset]="record" [disabled]="true"/>
     </div>
   </ng-container>
   <ng-container *ngIf="err">

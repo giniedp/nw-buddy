@@ -111,7 +111,7 @@ export class GearsetDetailComponent {
   protected quickSlots = EQUIP_SLOTS.filter((it) => it.id.startsWith('quick'))
   protected quickSlotsAreEmpty = computed(() => {
     const slots = this.store.gearsetSlots()
-    areSlotsEmtpy(this.quickSlots, slots)
+    return areSlotsEmtpy(this.quickSlots, slots)
   })
   protected quickSlotsToDisplay = computed(() => {
     const gearSlots = this.store.gearsetSlots()
@@ -139,7 +139,7 @@ export class GearsetDetailComponent {
     let effects = this.store.gearset().enforceEffects
     effects = [...(effects || [])]
     effects = effects.filter((it) => !!it.stack && this.townBuffEffectIds.some((id) => it.id === id))
-    const result = effects.map((it) => it.id)
+    const result = [...effects]
     result.length = Math.min(effects.length + 1, 9)
     return result
   })

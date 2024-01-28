@@ -91,7 +91,7 @@ export class GearsetPaneSkillComponent {
     patchState(this.store, { disabled: value })
   }
   public get disabled() {
-    return this.store.compact()
+    return this.store.disabled()
   }
 
   protected get instance() {
