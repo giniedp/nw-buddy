@@ -29,7 +29,7 @@ export function withItemInstanceMethods() {
     withMethods(({ itemInstance, patchItemInstance }) => {
       return {
         updateItemInstancePerk: async (perkKey: string, perk: Perks) => {
-          const perks = makeCopy(itemInstance).perks || {}
+          const perks = makeCopy(itemInstance()).perks || {}
           if (perk) {
             perks[perkKey] = perk.PerkID
           } else {

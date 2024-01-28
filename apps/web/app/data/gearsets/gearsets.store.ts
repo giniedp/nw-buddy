@@ -33,8 +33,9 @@ export interface GearsetRow {
   slots: Record<string, GearsetRowSlot>
 }
 
-export type GearsetsSignalStore = InstanceType<typeof GearsetsSignalStore>
-export const GearsetsSignalStore = signalStore(
+export type GearsetsStore = InstanceType<typeof GearsetsStore>
+export const GearsetsStore = signalStore(
+  { providedIn: 'root' },
   withGearsetsRows(),
   withHooks({
     onInit(state) {

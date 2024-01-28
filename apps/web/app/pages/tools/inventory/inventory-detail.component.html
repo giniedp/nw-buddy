@@ -1,31 +1,33 @@
-<nwb-item-card
-  [entityId]="instance?.itemId"
-  [gsOverride]="overrideGearScore || instance?.gearScore"
-  [gsEditable]="true"
-  (gsEdit)="handleOpenGsEditor($event)"
-  [perkOverride]="instance?.perks"
-  [perkEditable]="true"
-  (perkEdit)="handlePickPerk($event.key)"
->
-  <ng-template
-    cdkConnectedOverlay
-    [cdkConnectedOverlayOrigin]="gsTarget"
-    [cdkConnectedOverlayOpen]="!!gsTarget"
-    [cdkConnectedOverlayHasBackdrop]="true"
-    (backdropClick)="handleCloseGsEditor()"
-    (detach)="handleCloseGsEditor()"
+@if (!isLoaded || instance) {
+  <nwb-item-card
+    [entityId]="instance?.itemId"
+    [gsOverride]="overrideGearScore || instance?.gearScore"
+    [gsEditable]="true"
+    (gsEdit)="handleOpenGsEditor($event)"
+    [perkOverride]="instance?.perks"
+    [perkEditable]="true"
+    (perkEdit)="handlePickPerk($event.key)"
   >
-    <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
-      <input
-        type="range"
-        min="100"
-        max="700"
-        step="1"
-        [ngModel]="instance?.gearScore"
-        (ngModelChange)="handleGearScoreChange($event)"
-        (blur)="handleGearScoreWrite()"
-        class="range range-sm range-primary"
-      />
-    </div>
-  </ng-template>
-</nwb-item-card>
+    <ng-template
+      cdkConnectedOverlay
+      [cdkConnectedOverlayOrigin]="gsTarget"
+      [cdkConnectedOverlayOpen]="!!gsTarget"
+      [cdkConnectedOverlayHasBackdrop]="true"
+      (backdropClick)="handleCloseGsEditor()"
+      (detach)="handleCloseGsEditor()"
+    >
+      <div class="w-80 p-2 flex flex-row rounded-3xl bg-base-300">
+        <input
+          type="range"
+          min="100"
+          max="700"
+          step="1"
+          [ngModel]="instance?.gearScore"
+          (ngModelChange)="handleGearScoreChange($event)"
+          (blur)="handleGearScoreWrite()"
+          class="range range-sm range-primary"
+        />
+      </div>
+    </ng-template>
+  </nwb-item-card>
+}

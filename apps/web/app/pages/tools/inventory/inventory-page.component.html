@@ -15,13 +15,13 @@
       <span class="flex-1"></span>
       <li [tooltip]="'Create new item'" [tooltipClass]="'bg-accent'">
         <span (click)="createItem()">
-          <nwb-icon [icon]="svgPlus" class="w-4 h-4"></nwb-icon>
+          <nwb-icon [icon]="svgPlus" class="w-4 h-4" />
         </span>
       </li>
       <ng-container *ngIf="service.category$ | async; let category">
         <li [tooltip]="'Scan new item'" [tooltipClass]="'bg-accent'" *ngIf="isScanSupported(category)">
           <span (click)="scanItem(category)">
-            <nwb-icon [icon]="svgImage" class="w-4 h-4"></nwb-icon>
+            <nwb-icon [icon]="svgImage" class="w-4 h-4" />
           </span>
         </li>
       </ng-container>
@@ -36,21 +36,20 @@
       </li>
     </ul>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
-      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"></nwb-quicksearch-input>
+      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'" />
     </div>
   </div>
 </ion-header>
 <div class="flex-1 flex flex-row overflow-hidden">
-  <ng-container *ngIf="service.isGridActive()">
+  @if (service.isGridActive()) {
     <nwb-virtual-grid
       [enableQuickfilter]="true"
       [data]="service.categoryItems$ | async"
       [options]="service.virtualOptions"
       [identifyBy]="service.entityIdGetter"
       [selectionRouteParam]="selectionParam"
-    ></nwb-virtual-grid>
-  </ng-container>
-  <ng-container *ngIf="service.isTableActive()">
+    />
+  } @else if (service.isTableActive()) {
     <nwb-table-grid
       [enableQuickfilter]="true"
       [data]="service.categoryItems$ | async"
@@ -58,13 +57,13 @@
       [identifyBy]="service.entityIdGetter"
       [persistKey]="persistKey"
       [selectionRouteParam]="selectionParam"
-    ></nwb-table-grid>
-  </ng-container>
+    />
+  }
 
   <nwb-detail-drawer class="hidden 2xl:block w-[490px]" [breakOn]="'2xl'">
     <div *nwbDetailDrawerContent class="layout-content bg-base-200 p-2 flex flex-col gap-2">
       <nwb-gearset-form class="hidden 2xl:grid"></nwb-gearset-form>
-      <router-outlet></router-outlet>
+      <router-outlet/>
     </div>
   </nwb-detail-drawer>
 </div>

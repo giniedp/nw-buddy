@@ -40,6 +40,10 @@ export class InventoryDetailComponent {
     return this.store.instance()
   }
 
+  public get isLoaded() {
+    return this.store.isLoaded()
+  }
+
   protected isGearScoreOpen: boolean
   protected overrideGearScore: number
   protected gsTarget: Element

@@ -1,6 +1,6 @@
 @if (!store.hasItem()) {
   <nwb-item-header class="relative font-nimbus gap-2" [rarity]="'common'">
-    <nwb-item-icon [nwbItemIcon]="store.slot().icon" [solid]="false" class="z-10 aspect-square w-full" />
+    <nwb-item-icon [nwbItemIcon]="store.slot()?.icon" [solid]="false" class="z-10 aspect-square w-full" />
     @if (!disabled) {
       <button
         class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-center justify-center"

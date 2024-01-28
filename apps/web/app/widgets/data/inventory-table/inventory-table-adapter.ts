@@ -1,12 +1,11 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Dialog } from '@angular/cdk/dialog'
-import { Injectable, NgZone, Optional, inject } from '@angular/core'
+import { Injectable, Optional, inject } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { EQUIP_SLOTS } from '@nw-data/common'
 import { uniqBy } from 'lodash'
-import { Observable, defer, filter, take } from 'rxjs'
-import { ItemInstanceRow, InventoryItemsStore, NwDataService } from '~/data'
-import { TranslateService } from '~/i18n'
+import { Observable, filter, take } from 'rxjs'
+import { InventoryItemsStore, ItemInstanceRow } from '~/data'
 import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
 import { DataTableCategory, TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -31,8 +30,6 @@ import {
 export class InventoryTableAdapter
   implements TableGridAdapter<InventoryTableRecord>, DataViewAdapter<InventoryTableRecord>
 {
-  private db = inject(NwDataService)
-  private i18n = inject(TranslateService)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<InventoryTableRecord> = inject(TableGridUtils)
 
@@ -87,30 +84,15 @@ export class InventoryTableAdapter
     return this.source$
   }
 
-  private readonly source$: Observable<ItemInstanceRow[]> = defer(
-    () => this.config?.source || toObservable(this.store.rows),
-  )
-  //.pipe(filter((it) => it != null))
-  //.pipe(take(1))
+  private readonly source$: Observable<ItemInstanceRow[]> = this.config?.source || toObservable(this.store.rows)
 
   public constructor(
     @Optional()
     private store: InventoryItemsStore,
     private dnd: DnDService,
     private dialog: Dialog,
-    private zone: NgZone,
   ) {
-    this.attachListener()
-  }
-
-  private attachListener() {
-    // TODO:
-    // this.store?.rowCreated$
-    //   .pipe(debounceTime(100))
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe((item) => {
-    //     this.select.next([item.record.id])
-    //   })
+    //
   }
 }
 

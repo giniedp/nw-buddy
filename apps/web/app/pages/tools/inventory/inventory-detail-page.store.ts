@@ -15,12 +15,16 @@ import {
 
 export interface ItemDetailPageState extends WithGearsetPropsState, WithItemInstanceMethodsState {
   slotId: EquipSlotId
+  gearsetLoaded: boolean
+  itemInstanceLoaded: boolean
 }
 export const ItemDetailPageStore = signalStore(
   withState<ItemDetailPageState>({
     level: null,
     gearset: null,
+    gearsetLoaded: false,
     itemInstance: null,
+    itemInstanceLoaded: false,
     slotId: null,
   }),
   withGearsetProps(),
@@ -48,24 +52,31 @@ export const ItemDetailPageStore = signalStore(
       ),
       syncGearset: rxMethod<string>(
         pipe(
-          switchMap((id) => gearDB.live((t) => t.get(id))),
+          switchMap((id) => gearDB.observeByid(id)),
           map((record) => {
             patchState(state, {
               gearset: record,
+              gearsetLoaded: true,
             })
           }),
         ),
       ),
       syncInstance: rxMethod<string>(
         pipe(
-          switchMap((id) => itemDB.live((t) => t.get(id))),
+          switchMap((id) => itemDB.observeByid(id)),
           map((record) => {
             patchState(state, {
               itemInstance: record,
+              itemInstanceLoaded: true,
             })
           }),
         ),
       ),
     }
   }),
+  withComputed(({ gearsetLoaded, itemInstanceLoaded }) => {
+    return {
+      isLoaded: computed(() => gearsetLoaded() && itemInstanceLoaded()),
+    }
+  })
 )

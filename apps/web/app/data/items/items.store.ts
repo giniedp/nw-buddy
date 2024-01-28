@@ -19,9 +19,10 @@ export const InventoryItemsStore = signalStore(
     }
   }),
   withComputed(({ records, nwData, recordsAreLoaded, nwDataIsLoaded }) => {
+    const isLoaded = computed(() => recordsAreLoaded() && nwDataIsLoaded())
     return {
-      rows: computed(() => buildItemInstanceRows(records(), nwData())),
-      isLoaded: computed(() => recordsAreLoaded() && nwDataIsLoaded()),
+      rows: computed(() => isLoaded() ? buildItemInstanceRows(records(), nwData()) : null),
+      isLoaded: isLoaded,
     }
   }),
   withHooks({
