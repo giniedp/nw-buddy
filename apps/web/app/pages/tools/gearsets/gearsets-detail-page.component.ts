@@ -391,11 +391,13 @@ export class GearsetsDetailPageComponent {
         }),
       )
       .subscribe(({ perk, slots }) => {
-        this.store.updateGearsetSlots(
-          gearSlots
+        const data = gearSlots
             .filter((it) => slots.includes(it.slot as any))
             .map(({ slot, perks, item }) => {
               const found = perks.find((it) => canPlaceMod(it, item))
+              if (!found) {
+                return null
+              }
               return {
                 slot: slot,
                 perks: [
@@ -405,8 +407,9 @@ export class GearsetsDetailPageComponent {
                   },
                 ],
               }
-            }),
-        )
+            })
+            .filter((it) => !!it)
+        this.store.updateGearsetSlots(data)
       })
   }
 
