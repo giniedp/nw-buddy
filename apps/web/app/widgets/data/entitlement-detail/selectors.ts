@@ -1,7 +1,7 @@
 import { ItemRarity, NW_FALLBACK_ICON, getItemIconPath, getItemId, getItemRarity, isHousingItem } from '@nw-data/common'
 import { Entitlements } from '@nw-data/generated'
 import { Observable, map, of } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { combineLatestOrEmpty, humanize } from '~/utils'
 
 export interface EntitlementReward {
@@ -12,7 +12,7 @@ export interface EntitlementReward {
   rarity?: ItemRarity
 }
 
-export function selectEntitlementRewards(entitlement: Entitlements, db: NwDbService): Observable<EntitlementReward[]> {
+export function selectEntitlementRewards(entitlement: Entitlements, db: NwDataService): Observable<EntitlementReward[]> {
   if (!entitlement || !entitlement['Reward(s)']?.length) {
     return of([])
   }

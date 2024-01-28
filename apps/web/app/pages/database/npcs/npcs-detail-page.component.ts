@@ -6,7 +6,8 @@ import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { uniq } from 'lodash'
 import { combineLatest, of, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -43,7 +44,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   },
 })
 export class NpcDetailPageComponent {
-  protected db = inject(NwDbService)
+  protected db = inject(NwDataService)
   protected viewerService = inject(ModelViewerService)
   protected itemId$ = observeRouteParam(this.route, 'id')
   protected npc$ = selectStream(this.db.npc(this.itemId$))

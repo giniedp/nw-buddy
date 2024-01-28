@@ -26,7 +26,7 @@ import {
 } from '@nw-data/common'
 import { ItemDefinitionMaster } from '@nw-data/generated'
 import { combineLatest, map, of, switchMap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { humanize, mapProp, selectStream, shareReplayRefCount } from '~/utils'
 import { ModelViewerService } from '../../model-viewer/model-viewer.service'
 import { selectGameEventItemReward, selectGameEventRewards } from '../game-event-detail/selectors'
@@ -288,7 +288,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   )
 
   public constructor(
-    protected db: NwDbService,
+    protected db: NwDataService,
     private ms: ModelViewerService,
     protected cdRef: ChangeDetectorRef,
   ) {
@@ -300,7 +300,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   }
 }
 
-function collectArtifactTasks(item: ItemDefinitionMaster, db: NwDbService) {
+function collectArtifactTasks(item: ItemDefinitionMaster, db: NwDataService) {
   return db.objectiveTasksMap.pipe(
     map((tasks) => {
       const task = tasks.get(`Task_ContainerPerks_${item.ItemID}`)
@@ -323,7 +323,7 @@ export interface ItemCollections {
   variants?: ItemDefinitionMaster[]
 }
 
-function selectItemSet(item: ItemDefinitionMaster, itemsSet: Set<ItemDefinitionMaster>): ItemCollections {
+function selectItemSet(item: ItemDefinitionMaster, itemsSet: ItemDefinitionMaster[]): ItemCollections {
   if (!item || !itemsSet) {
     return null
   }
@@ -334,7 +334,7 @@ function selectItemSet(item: ItemDefinitionMaster, itemsSet: Set<ItemDefinitionM
   // })
 
   const meta = getItemMeta(item)
-  const items = Array.from(itemsSet.values())
+  const items = itemsSet
     .map(getItemMeta)
     .filter((it) => !!it)
 

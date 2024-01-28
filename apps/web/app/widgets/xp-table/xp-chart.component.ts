@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
 import { combineLatest, count, map } from 'rxjs'
 import { CharacterStore } from '~/data'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 
 @Component({
   selector: 'nwb-xp-chart',
@@ -46,7 +46,7 @@ export class XpChartComponent {
     }
   }))
 
-  public constructor(private db: NwDbService, private char: CharacterStore) {
+  public constructor(private db: NwDataService, private char: CharacterStore) {
     //
   }
 }

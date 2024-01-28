@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { combineLatest, map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { PerkBucketDetailPerksComponent } from './perk-bucket-detail.component'
 import { PerkType } from '@nw-data/generated'
 
@@ -64,7 +64,7 @@ export class PerkBucketDetailTabsComponent extends ComponentStore<{
     tabs: this.tabs$,
   })
 
-  public constructor(private db: NwDbService) {
+  public constructor(private db: NwDataService) {
     super({
       perkBucketIds: null,
       tabId: null,

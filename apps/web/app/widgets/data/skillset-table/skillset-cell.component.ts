@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, HostBinding, HostListener, Input, computed, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { SkillBuildsDB } from '~/data'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
 
 import { NW_FALLBACK_ICON, getAbilityCategoryTag } from '@nw-data/common'
@@ -40,7 +41,7 @@ export class SkillsetCellComponent implements VirtualGridCellComponent<SkillsetT
   }
 
   private store = inject(SkillBuildsDB)
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
 
   private recordId = new ReplaySubject<string>(1)
 

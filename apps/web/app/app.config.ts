@@ -10,7 +10,8 @@ import { EffectsModule } from '@ngrx/effects'
 import { StoreModule } from '@ngrx/store'
 import { ROUTES } from './app.routes'
 import { TranslateModule } from './i18n'
-import { NwDataInterceptor } from './nw'
+import { NwDataInterceptor } from './data'
+
 
 export const appConfig: ApplicationConfig = {
   providers: [

@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
 import { damageCoefForWeaponTag, damageFactorForGS, getWeaponTagFromWeapon, isAffixSplitDamage } from '@nw-data/common'
 import { combineLatest, map, switchMap } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { NwWeaponTypesService, damageTypeIcon } from '~/nw/weapon-types'
 import { IconsModule } from '~/ui/icons'
 import { mapFilter, mapFind, mapList, switchMapCombineLatest } from '~/utils'
@@ -75,7 +76,7 @@ export class ItemDetailGsDamage {
   public constructor(
     protected detail: ItemDetailStore,
     private weapons: NwWeaponTypesService,
-    private db: NwDbService
+    private db: NwDataService
   ) {
     //
   }

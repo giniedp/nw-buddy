@@ -17,8 +17,8 @@ import { FormsModule } from '@angular/forms'
 import { patchState } from '@ngrx/signals'
 import { damageScaleAttrs } from '@nw-data/common'
 import { combineLatest, filter, map, take } from 'rxjs'
-import { GearsetStore, GearsetsDB } from '~/data'
-import { NwDbService, NwModule } from '~/nw'
+import { GearsetSignalStore, GearsetsDB, NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { CollapsibleComponent } from '~/ui/collapsible'
 import { DataViewPicker } from '~/ui/data/data-view'
@@ -32,7 +32,7 @@ import { LabelControlComponent } from './label-control.component'
 import { TweakControlComponent } from './tweak-control.component'
 
 const DEFENDER_MANNEQUIN = new InjectionToken<Mannequin>('DEFENDER_MANNEQUIN')
-const DEFENDER_GEARSET = new InjectionToken<GearsetStore>('DEFENDER_GEARSET')
+const DEFENDER_GEARSET = new InjectionToken<GearsetSignalStore>('DEFENDER_GEARSET')
 @Pipe({ standalone: true, name: 'floor' })
 export class FloorPipe implements PipeTransform {
   public transform(value: number): number {
@@ -53,7 +53,7 @@ export class FloorPipe implements PipeTransform {
     },
     {
       provide: DEFENDER_GEARSET,
-      useClass: GearsetStore,
+      useClass: GearsetSignalStore,
     },
   ],
   imports: [
@@ -74,7 +74,7 @@ export class FloorPipe implements PipeTransform {
 })
 export class DamageCalculatorComponent {
   protected store = inject(DamageCalculatorStore)
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private gearDb = inject(GearsetsDB)
   private mannequin = inject(Mannequin)
   private dialog = inject(Dialog)

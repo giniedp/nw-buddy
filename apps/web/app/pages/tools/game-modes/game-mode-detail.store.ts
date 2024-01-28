@@ -4,7 +4,7 @@ import { NW_MAX_CHARACTER_LEVEL, NW_MAX_ENEMY_LEVEL, getVitalDungeons } from '@n
 import { CreatureType, Mutationdifficulty, Vitals } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest, filter, map, of, switchMap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { LootContext, NwLootService } from '~/nw/loot'
 import { selectStream, shareReplayRefCount } from '~/utils'
 
@@ -64,7 +64,7 @@ const TAB_BOSSES_CREATURES: Array<CreatureType> = [
 
 @Injectable()
 export class GameModeDetailStore extends ComponentStore<GameModeDetailState> {
-  private db: NwDbService = inject(NwDbService)
+  private db: NwDataService = inject(NwDataService)
   private loot: NwLootService = inject(NwLootService)
 
   public readonly gameModeId$ = this.select(({ gameModeId }) => gameModeId)

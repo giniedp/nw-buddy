@@ -4,7 +4,7 @@ import { getWeaponTagLabel } from '@nw-data/common'
 import { COLS_ABILITY } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { NwWeaponTypesService } from '~/nw/weapon-types'
 import {
   TABLE_GRID_ADAPTER_OPTIONS,
@@ -38,7 +38,7 @@ import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 
 @Injectable()
 export class AbilityTableAdapter implements DataViewAdapter<AbilityTableRecord>, TableGridAdapter<AbilityTableRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private utils: TableGridUtils<AbilityTableRecord> = inject(TableGridUtils)
   private weaponTypes: NwWeaponTypesService = inject(NwWeaponTypesService)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })

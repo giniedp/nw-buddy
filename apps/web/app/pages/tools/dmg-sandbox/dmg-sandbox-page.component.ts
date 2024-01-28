@@ -16,7 +16,8 @@ import {
   pvpGearScore,
 } from '@nw-data/common'
 import { takeUntil } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
 import { InputSliderComponent } from '~/ui/input-slider'
 import { LayoutModule } from '~/ui/layout'
@@ -62,7 +63,7 @@ export interface DmgSandboxState {
   },
 })
 export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
 
   public playerLevel = this.selectSignal(({ playerLevel }) => playerLevel)
   public playerLevelFactor = computed(() => damageFactorForLevel(this.playerLevel()))

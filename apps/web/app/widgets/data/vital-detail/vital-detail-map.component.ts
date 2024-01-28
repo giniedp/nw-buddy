@@ -2,7 +2,8 @@ import { Component, ElementRef, EventEmitter, Output, inject, signal } from '@an
 import { FormsModule } from '@angular/forms'
 import { LvlSpanws, Vitals, VitalsMetadata } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgCompress, svgExpand } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
@@ -21,7 +22,7 @@ import { VitalDetailStore } from './vital-detail.store'
   },
 })
 export class VitalDetailMapComponent {
-  protected db = inject(NwDbService)
+  protected db = inject(NwDataService)
   protected store = inject(VitalDetailStore)
   protected tl8 = inject(TranslateService)
 

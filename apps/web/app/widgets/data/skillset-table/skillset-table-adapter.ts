@@ -1,8 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { defer } from 'rxjs'
-import { SkillBuildsStore } from '~/data'
-import { NwDbService } from '~/nw'
+import { NwDataService, SkillBuildsDB, buildSkillSetRow } from '~/data'
 import { getWeaponTypeInfo } from '~/nw/weapon-types'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import { DataTableCategory, TABLE_GRID_ADAPTER_OPTIONS, TableGridUtils } from '~/ui/data/table-grid'
@@ -13,10 +12,10 @@ import { SkillsetTableRecord, skillsetColName, skillsetColSkills, skillsetColWea
 
 @Injectable()
 export class SkillsetTableAdapter implements DataViewAdapter<SkillsetTableRecord> {
-  private db = inject(NwDbService)
+  private db = inject(SkillBuildsDB)
+  private data = inject(NwDataService)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<SkillsetTableRecord> = inject(TableGridUtils)
-  private store = inject(SkillBuildsStore)
   public entityID(item: SkillsetTableRecord): string {
     return item.record.id
   }
@@ -56,11 +55,13 @@ export class SkillsetTableAdapter implements DataViewAdapter<SkillsetTableRecord
     return this.entities
   }
 
-  public entities = selectStream({
-    items: defer(() => this.config?.source || this.store.rows$)
-  }, ({ items }) => {
-    items = items || []
-    const filter = this.config?.filter
+  public entities = selectStream(
+    {
+      items: defer(() => this.config?.source || sourceRows(this.data, this.db)),
+    },
+    ({ items }) => {
+      items = items || []
+      const filter = this.config?.filter
       if (filter) {
         items = items.filter(filter)
       }
@@ -69,7 +70,8 @@ export class SkillsetTableAdapter implements DataViewAdapter<SkillsetTableRecord
         items = [...items].sort(sort)
       }
       return items
-  })
+    },
+  )
 }
 
 function buildOptions(util: TableGridUtils<SkillsetTableRecord>) {
@@ -77,4 +79,16 @@ function buildOptions(util: TableGridUtils<SkillsetTableRecord>) {
     columnDefs: [skillsetColName(util), skillsetColWeapon(util), skillsetColSkills(util)],
   }
   return result
+}
+
+function sourceRows(data: NwDataService, db: SkillBuildsDB) {
+  return selectStream(
+    {
+      items: db.observeAll(),
+      abilities: data.abilitiesMap,
+    },
+    ({ items, abilities }) => {
+      return items.map((it) => buildSkillSetRow(it, abilities))
+    },
+  )
 }

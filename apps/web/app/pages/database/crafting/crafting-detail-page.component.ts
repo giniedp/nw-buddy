@@ -4,7 +4,8 @@ import { ActivatedRoute, RouterModule } from '@angular/router'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { map, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { getItemIconPath, getItemIdFromRecipe } from '@nw-data/common'
 import { LayoutModule } from '~/ui/layout'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
@@ -37,7 +38,7 @@ export class CraftingDetailPageComponent {
 
   public constructor(
     private route: ActivatedRoute,
-    private db: NwDbService,
+    private db: NwDataService,
     private i18n: TranslateService,
     private head: HtmlHeadService
   ) {

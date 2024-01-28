@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core'
 import { NW_FALLBACK_ICON, getAbilityCategoryTag, getItemIconPath } from '@nw-data/common'
 import { map } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { Mannequin } from '~/nw/mannequin'
 import { ModifierResult } from '~/nw/mannequin/modifier'
 import { TooltipModule } from '~/ui/tooltip'
@@ -37,7 +38,7 @@ export interface CooldownRow {
 })
 export class CooldownRedutionStatsComponent {
   private mannequin = inject(Mannequin)
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
 
   protected abilities = selectSignal(
     {

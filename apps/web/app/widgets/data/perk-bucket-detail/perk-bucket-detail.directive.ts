@@ -1,5 +1,5 @@
 import { Directive, forwardRef, Input } from '@angular/core'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { PerkBucketDetailStore } from './perk-bucket-detail.store'
 
 @Directive({
@@ -19,7 +19,7 @@ export class PerkBucketDetailDirective extends PerkBucketDetailStore {
     this.patchState({ perkBucketId: value })
   }
 
-  public constructor(db: NwDbService) {
+  public constructor(db: NwDataService) {
     super(db)
   }
 }

@@ -1,10 +1,11 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector, inject } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { filter, map, switchMap } from 'rxjs'
-import { SkillBuildRow, SkillBuildsStore } from '~/data'
+import { SkillBuildRow } from '~/data'
 import { NwModule } from '~/nw'
 import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
 import { ShareService } from '~/pages/share'
@@ -21,6 +22,7 @@ import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { SkillsetTableAdapter } from '~/widgets/data/skillset-table'
 import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
 import { ScreenshotModule } from '~/widgets/screenshot'
+import { SkillTreesPageStore } from './skill-trees-page.store'
 
 @Component({
   standalone: true,
@@ -46,11 +48,12 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     class: 'layout-col',
   },
   providers: [
+    SkillTreesPageStore,
     provideDataView({
       adapter: SkillsetTableAdapter,
       factory: () => {
         return {
-          source: inject(SkillBuildsStore).selectedRows$,
+          source: toObservable(inject(SkillTreesPageStore).rows),
         }
       },
     }),
@@ -60,6 +63,11 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   ],
 })
 export class SkillBuildsComponent {
+  private router = inject(Router)
+  private route = inject(ActivatedRoute)
+  private share = inject(ShareService)
+  private store = inject(SkillTreesPageStore)
+
   protected title = 'Skill Trees'
   protected filterParam = 'filter'
   protected selectionParam = 'id'
@@ -73,21 +81,18 @@ export class SkillBuildsComponent {
   protected iconCreate = svgPlus
   protected iconMore = svgFilterList
   protected iconImport = svgFileImport
-  protected tags$ = this.store.tags$
-
-  private router = inject(Router)
-  private route = inject(ActivatedRoute)
-  private share = inject(ShareService)
+  protected tags = this.store.filterTags
 
   public constructor(
-    private store: SkillBuildsStore,
     protected search: QuicksearchService,
     private dialog: Dialog,
     private injector: Injector,
-    protected service: DataViewService<any>,
+    protected dataView: DataViewService<any>,
     head: HtmlHeadService,
   ) {
-    service.patchState({ mode: 'grid', modes: ['grid'] })
+    this.store.connectDB()
+
+    dataView.patchState({ mode: 'grid', modes: ['grid'] })
     head.updateMetadata({
       title: 'Skill Builder',
       description: 'A Skill Buider tool for New World. Build your skill tree and share with your mates.',
@@ -110,13 +115,11 @@ export class SkillBuildsComponent {
       .pipe(
         switchMap((weapon) => {
           return this.store.createRecord({
-            record: {
-              id: null,
-              name: `New Skill Tree`,
-              tree1: null,
-              tree2: null,
-              weapon: weapon.WeaponTag,
-            },
+            id: null,
+            name: `New Skill Tree`,
+            tree1: null,
+            tree2: null,
+            weapon: weapon.WeaponTag,
           })
         }),
       )
@@ -138,11 +141,11 @@ export class SkillBuildsComponent {
     })
       .closed.pipe(filter((it) => !!it))
       .subscribe(() => {
-        this.store.destroyRecord({ recordId: item.record.id })
+        this.store.destroyRecord(item.record.id)
       })
   }
 
   protected toggleTag(value: string) {
-    this.store.toggleTag(value)
+    this.store.toggleFilterTag(value)
   }
 }

@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable, inject } from '@angular/core'
-import { EquipSlot } from '@nw-data/common'
+import { EquipSlot, getEquipSlotForId } from '@nw-data/common'
 import { ItemInstanceRecord, ItemInstanceRow } from '~/data'
 import { DnDService } from '~/utils/services/dnd.service'
 import { GersetLoadoutSlotComponent, LoadoutSlotEventHandler } from '~/widgets/data/gearset-detail'
@@ -19,33 +19,36 @@ export class GearsetFormSlotHandler extends LoadoutSlotEventHandler {
 
   public override dragEnter(e: DragEvent, component: GersetLoadoutSlotComponent): void {
     const data = this.dnd.data
-    if (isApplicable(data, component.getSlot())) {
-      component.patchState({ dragState: 'success' })
+    const slot = getEquipSlotForId(component.slotId())
+    if (isApplicable(data, slot)) {
+      component.dragState.set('success')
     } else {
-      component.patchState({ dragState: 'error' })
+      component.dragState.set('error')
     }
   }
 
   public override dragLeave(e: DragEvent, component: GersetLoadoutSlotComponent): void {
-    component.patchState({ dragState: 'idle' })
+    component.dragState.set('idle')
   }
   override dragOver(e: DragEvent, component: GersetLoadoutSlotComponent): void {
     const data = this.dnd.data as ItemInstanceRow
-    if (isApplicable(data, component.getSlot())) {
+    const slot = getEquipSlotForId(component.slotId())
+    if (isApplicable(data, slot)) {
       e.dataTransfer.dropEffect = 'link'
-      component.patchState({ dragState: 'success' })
+      component.dragState.set('success')
     } else {
       e.dataTransfer.dropEffect = 'none'
-      component.patchState({ dragState: 'error' })
+      component.dragState.set('error')
     }
     e.preventDefault()
   }
   override dragDrop(e: DragEvent, component: GersetLoadoutSlotComponent): void {
-    component.patchState({ dragState: 'idle' })
+    component.dragState.set('idle')
+    const slot = getEquipSlotForId(component.slotId())
     const data = this.dnd.data as ItemInstanceRow
-    if (isApplicable(data, component.getSlot())) {
+    if (isApplicable(data, slot)) {
       this.itemDropped.emit({
-        slot: component.getSlot(),
+        slot: slot,
         item: data.record,
       })
     }

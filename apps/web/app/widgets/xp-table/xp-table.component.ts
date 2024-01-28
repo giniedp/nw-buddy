@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
 import { combineLatest, map, Subject, takeUntil } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 
 function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: keyof T) {
   let result = 0
@@ -32,7 +32,7 @@ export class XpTableComponent implements OnInit, OnDestroy {
   public index: number
   private destroy$ = new Subject()
 
-  public constructor(private db: NwDbService, private cdRef: ChangeDetectorRef) {}
+  public constructor(private db: NwDataService, private cdRef: ChangeDetectorRef) {}
 
   public async ngOnInit() {
 

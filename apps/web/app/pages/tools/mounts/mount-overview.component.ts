@@ -3,7 +3,8 @@ import { ChangeDetectionStrategy, Component, ViewChild, inject } from '@angular/
 import { FormsModule } from '@angular/forms'
 import { RouterModule, RouterOutlet } from '@angular/router'
 import { uniq } from 'lodash'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { LayoutModule } from '~/ui/layout'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule } from '~/ui/quicksearch'
@@ -20,7 +21,7 @@ import { selectStream } from '~/utils'
   },
 })
 export class MountOverviewComponent {
-  protected mounts$ = inject(NwDbService).mounts
+  protected mounts$ = inject(NwDataService).mounts
   protected categories$ = selectStream(this.mounts$, (mounts) => {
     return ['all', ...uniq(mounts.map((it) => it.MountType))]
   })

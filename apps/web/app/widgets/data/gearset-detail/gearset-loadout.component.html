@@ -1,122 +1,105 @@
-<ng-container *ngIf="vm$ | async; let vm">
-  <h3 class="text-lg uppercase relative font-caslon text-center text-nw-description col-span-2">
-    <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
-    <span class="relative top-1">{{ vm.gearset ? vm.name : 'New Gearset' }}</span>
-  </h3>
-  <div class="flex flex-row">
-    <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-8 h-8" />
-    <span class="font-caslon text-3xl font-bold">{{ vm.gearscore | number : '0.0-0' }}</span>
-  </div>
-  <div>
-    <ng-container [ngTemplateOutlet]="buttonTemplate"></ng-container>
-  </div>
+<h3 class="text-lg uppercase relative font-caslon text-center text-nw-description col-span-2">
+  <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
+  <span class="relative top-1">{{ gearset ? gearset.name : 'New Gearset' }}</span>
+</h3>
+<div class="flex flex-row">
+  <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-8 h-8" />
+  <span class="font-caslon text-3xl font-bold">{{ gearScore | number: '0.0-0' }}</span>
+</div>
+<div>
+  <ng-container [ngTemplateOutlet]="buttonTemplate"/>
+</div>
 
-  <div class="grid grid-cols-4 sm:grid-cols-6 grid-rows-4 sm:grid-rows-3 gap-1">
-    <nwb-gearset-loadout-slot
-      [disabled]="true"
-      [gearset]="vm.gearset"
-      [menuTemplate]="slotMenuTemplate"
-      [slotId]="'head'"
-    ></nwb-gearset-loadout-slot>
-    <nwb-gearset-loadout-slot
-      [disabled]="true"
-      [gearset]="vm.gearset"
-      [menuTemplate]="slotMenuTemplate"
-      [slotId]="'chest'"
-    ></nwb-gearset-loadout-slot>
-    <nwb-gearset-loadout-slot
-      [disabled]="true"
-      [gearset]="vm.gearset"
-      [menuTemplate]="slotMenuTemplate"
-      [slotId]="'hands'"
-    ></nwb-gearset-loadout-slot>
-    <nwb-gearset-loadout-slot
-      [disabled]="true"
-      [gearset]="vm.gearset"
-      [menuTemplate]="slotMenuTemplate"
-      [slotId]="'legs'"
-    ></nwb-gearset-loadout-slot>
-    <nwb-gearset-loadout-slot
-      [disabled]="true"
-      [gearset]="vm.gearset"
-      [menuTemplate]="slotMenuTemplate"
-      [slotId]="'feet'"
-    ></nwb-gearset-loadout-slot>
-    <nwb-gearset-loadout-slot
-      [disabled]="true"
-      [gearset]="vm.gearset"
-      [menuTemplate]="slotMenuTemplate"
-      [slotId]="'weapon3'"
-    ></nwb-gearset-loadout-slot>
+<div class="grid grid-cols-4 sm:grid-cols-6 grid-rows-4 sm:grid-rows-3 gap-1">
+  <nwb-gearset-loadout-slot [disabled]="true" [gearset]="gearset" [menuTemplate]="slotMenuTemplate" [slotId]="'head'" />
+  <nwb-gearset-loadout-slot
+    [disabled]="true"
+    [gearset]="gearset"
+    [menuTemplate]="slotMenuTemplate"
+    [slotId]="'chest'"
+  />
+  <nwb-gearset-loadout-slot
+    [disabled]="true"
+    [gearset]="gearset"
+    [menuTemplate]="slotMenuTemplate"
+    [slotId]="'hands'"
+  />
+  <nwb-gearset-loadout-slot [disabled]="true" [gearset]="gearset" [menuTemplate]="slotMenuTemplate" [slotId]="'legs'" />
+  <nwb-gearset-loadout-slot [disabled]="true" [gearset]="gearset" [menuTemplate]="slotMenuTemplate" [slotId]="'feet'" />
+  <nwb-gearset-loadout-slot
+    [disabled]="true"
+    [gearset]="gearset"
+    [menuTemplate]="slotMenuTemplate"
+    [slotId]="'weapon3'"
+  />
 
-    <nwb-gearset-loadout-slot
-      [disabled]="true"
-      [gearset]="vm.gearset"
-      [menuTemplate]="slotMenuTemplate"
-      [slotId]="'amulet'"
-      class="col-start-1"
-    ></nwb-gearset-loadout-slot>
-    <nwb-gearset-loadout-slot [disabled]="true" [gearset]="vm.gearset" [slotId]="'ring'"></nwb-gearset-loadout-slot>
-    <nwb-gearset-loadout-slot [disabled]="true" [gearset]="vm.gearset" [slotId]="'earring'"></nwb-gearset-loadout-slot>
+  <nwb-gearset-loadout-slot
+    [disabled]="true"
+    [gearset]="gearset"
+    [menuTemplate]="slotMenuTemplate"
+    [slotId]="'amulet'"
+    class="col-start-1"
+  />
+  <nwb-gearset-loadout-slot [disabled]="true" [gearset]="gearset" [slotId]="'ring'" />
+  <nwb-gearset-loadout-slot [disabled]="true" [gearset]="gearset" [slotId]="'earring'" />
 
-    <nwb-gearset-loadout-slot
-      [disabled]="true"
-      [gearset]="vm.gearset"
-      [menuTemplate]="slotMenuTemplate"
-      [slotId]="'quickslot1'"
-      class="col-start-1"
-    ></nwb-gearset-loadout-slot>
-    <nwb-gearset-loadout-slot
-      [disabled]="true"
-      [gearset]="vm.gearset"
-      [menuTemplate]="slotMenuTemplate"
-      [slotId]="'quickslot2'"
-    ></nwb-gearset-loadout-slot>
-    <nwb-gearset-loadout-slot
-      [disabled]="true"
-      [gearset]="vm.gearset"
-      [menuTemplate]="slotMenuTemplate"
-      [slotId]="'quickslot3'"
-    ></nwb-gearset-loadout-slot>
-    <nwb-gearset-loadout-slot
-      [disabled]="true"
-      [gearset]="vm.gearset"
-      [menuTemplate]="slotMenuTemplate"
-      [slotId]="'quickslot4'"
-    ></nwb-gearset-loadout-slot>
-  </div>
+  <nwb-gearset-loadout-slot
+    [disabled]="true"
+    [gearset]="gearset"
+    [menuTemplate]="slotMenuTemplate"
+    [slotId]="'quickslot1'"
+    class="col-start-1"
+  />
+  <nwb-gearset-loadout-slot
+    [disabled]="true"
+    [gearset]="gearset"
+    [menuTemplate]="slotMenuTemplate"
+    [slotId]="'quickslot2'"
+  />
+  <nwb-gearset-loadout-slot
+    [disabled]="true"
+    [gearset]="gearset"
+    [menuTemplate]="slotMenuTemplate"
+    [slotId]="'quickslot3'"
+  />
+  <nwb-gearset-loadout-slot
+    [disabled]="true"
+    [gearset]="gearset"
+    [menuTemplate]="slotMenuTemplate"
+    [slotId]="'quickslot4'"
+  />
+</div>
 
-  <div class="grid grid-cols-2 grid-rows-4 sm:grid-rows-3 gap-1">
-    <nwb-gearset-loadout-slot
-      [disabled]="true"
-      [gearset]="vm.gearset"
-      [menuTemplate]="slotMenuTemplate"
-      [slotId]="'weapon1'"
-    ></nwb-gearset-loadout-slot>
-    <nwb-gearset-loadout-slot
-      [disabled]="true"
-      [gearset]="vm.gearset"
-      [menuTemplate]="slotMenuTemplate"
-      [slotId]="'weapon2'"
-    ></nwb-gearset-loadout-slot>
-    <nwb-gearset-loadout-slot
-      [disabled]="true"
-      [gearset]="vm.gearset"
-      [menuTemplate]="slotMenuTemplate"
-      [slotId]="'arrow'"
-    ></nwb-gearset-loadout-slot>
-    <nwb-gearset-loadout-slot
-      [disabled]="true"
-      [menuTemplate]="slotMenuTemplate"
-      [gearset]="vm.gearset"
-      [slotId]="'cartridge'"
-    ></nwb-gearset-loadout-slot>
-    <nwb-gearset-loadout-slot
-      [disabled]="true"
-      [menuTemplate]="slotMenuTemplate"
-      [gearset]="vm.gearset"
-      [slotId]="'heartgem'"
-      class="col-start-2"
-    ></nwb-gearset-loadout-slot>
-  </div>
-</ng-container>
+<div class="grid grid-cols-2 grid-rows-4 sm:grid-rows-3 gap-1">
+  <nwb-gearset-loadout-slot
+    [disabled]="true"
+    [gearset]="gearset"
+    [menuTemplate]="slotMenuTemplate"
+    [slotId]="'weapon1'"
+  />
+  <nwb-gearset-loadout-slot
+    [disabled]="true"
+    [gearset]="gearset"
+    [menuTemplate]="slotMenuTemplate"
+    [slotId]="'weapon2'"
+  />
+  <nwb-gearset-loadout-slot
+    [disabled]="true"
+    [gearset]="gearset"
+    [menuTemplate]="slotMenuTemplate"
+    [slotId]="'arrow'"
+  />
+  <nwb-gearset-loadout-slot
+    [disabled]="true"
+    [menuTemplate]="slotMenuTemplate"
+    [gearset]="gearset"
+    [slotId]="'cartridge'"
+  />
+  <nwb-gearset-loadout-slot
+    [disabled]="true"
+    [menuTemplate]="slotMenuTemplate"
+    [gearset]="gearset"
+    [slotId]="'heartgem'"
+    class="col-start-2"
+  />
+</div>

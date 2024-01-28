@@ -1,21 +1,16 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { HttpClient } from '@angular/common/http'
-import { ChangeDetectorRef, Component, EventEmitter, Output } from '@angular/core'
+import { Component, EventEmitter, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { getItemId } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
-import { Observable, combineLatest, defer, from, map, of, pipe, switchMap, take, tap } from 'rxjs'
-import { TranslateService } from '~/i18n'
-import { NwDbService, NwLinkService } from '~/nw'
-import { ItemPreferencesService } from '~/preferences'
-import { DataGridModule } from '~/ui/data/table-grid'
-import { DataViewModule, provideDataView } from '~/ui/data/data-view'
-import { JsonPriceTableAdapter } from './json-price-table-adapter'
-import { JsonPriceItem } from './types'
 import { ComponentStore } from '@ngrx/component-store'
+import { Observable, combineLatest, defer, map, take, tap } from 'rxjs'
+import { NwDataService } from '~/data'
+import { DataViewModule, provideDataView } from '~/ui/data/data-view'
+import { DataGridModule } from '~/ui/data/table-grid'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleNotch } from '~/ui/icons/svg'
+import { JsonPriceTableAdapter } from './json-price-table-adapter'
+import { JsonPriceItem } from './types'
 
 export interface JsonImporterState {
   url?: string
@@ -62,7 +57,7 @@ export class JsonPriceImporterComponent extends ComponentStore<JsonImporterState
   protected scale: number = 1
   protected iconSpin = svgCircleNotch
 
-  public constructor(private db: NwDbService, private http: HttpClient, private adapter: JsonPriceTableAdapter) {
+  public constructor(private db: NwDataService, private http: HttpClient, private adapter: JsonPriceTableAdapter) {
     super({})
   }
 

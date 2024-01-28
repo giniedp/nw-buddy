@@ -3,12 +3,12 @@ import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { Ability } from '@nw-data/generated'
 import { flatten, uniq } from 'lodash'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { humanize, rejectKeys } from '~/utils'
 
 @Injectable()
 export class AbilityDetailStore extends ComponentStore<{ abilityId: string }> {
-  protected db = inject(NwDbService)
+  protected db = inject(NwDataService)
 
   public readonly abilityId$ = this.select(({ abilityId }) => abilityId)
 

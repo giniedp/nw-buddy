@@ -5,7 +5,8 @@ import { Ability, Statuseffect } from '@nw-data/generated'
 import { groupBy, sortBy, sumBy } from 'lodash'
 import { map } from 'rxjs'
 import { LocaleService, TranslateService } from '~/i18n'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { ActivePerk, Mannequin } from '~/nw/mannequin'
 import { TooltipModule } from '~/ui/tooltip'
 import { selectSignal } from '~/utils'
@@ -22,7 +23,7 @@ import { selectSignal } from '~/utils'
   },
 })
 export class StackedPerksComponent {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private mannequin = inject(Mannequin)
   private i18n = inject(LocaleService)
   private tl8 = inject(TranslateService)

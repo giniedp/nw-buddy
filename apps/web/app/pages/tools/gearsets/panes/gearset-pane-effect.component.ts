@@ -4,12 +4,12 @@ import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Ou
 import { FormsModule } from '@angular/forms'
 import { combineLatest, take, tap } from 'rxjs'
 
-import { NwDbService, NwModule } from '~/nw'
+import { NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON, getStatusEffectTownBuffIds } from '@nw-data/common'
-import { GearsetSlotStore } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical, svgLink16p, svgLinkSlash16p, svgPlus, svgRotate, svgTrashCan } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -42,7 +42,6 @@ export interface EffectSlotState {
     TooltipModule,
     ItemFrameModule,
   ],
-  providers: [GearsetSlotStore],
   host: {
     class: 'block bg-black rounded-md flex flex-col overflow-hidden',
   },
@@ -71,7 +70,7 @@ export class GearsetPaneEffectComponent extends ComponentStore<EffectSlotState> 
 
   protected readonly effectId$ = this.select(({ effectId }) => effectId)
   protected readonly effect$ = this.select(this.db.statusEffectsMap, this.effectId$, (effects, effectId) =>
-    effects.get(effectId)
+    effects.get(effectId),
   )
   protected readonly icon$ = this.select(this.effect$, (effect) => effect?.PlaceholderIcon || NW_FALLBACK_ICON)
   protected readonly count$ = this.select(({ count }) => count)
@@ -94,15 +93,15 @@ export class GearsetPaneEffectComponent extends ComponentStore<EffectSlotState> 
     .pipe(
       tap((it) => {
         this.updateClass('screenshot-hidden', !it.effect)
-      })
+      }),
     )
     .pipe(shareReplayRefCount(1))
 
   public constructor(
-    private db: NwDbService,
+    private db: NwDataService,
     private picker: InventoryPickerService,
     private renderer: Renderer2,
-    private elRef: ElementRef<HTMLElement>
+    private elRef: ElementRef<HTMLElement>,
   ) {
     super({
       count: 0,

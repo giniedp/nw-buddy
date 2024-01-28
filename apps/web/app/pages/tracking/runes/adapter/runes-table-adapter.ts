@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core'
 import { getCraftingIngredients, getItemId, getItemIdFromRecipe } from '@nw-data/common'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter } from '~/ui/data/table-grid'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
@@ -19,7 +19,7 @@ import { groupBy } from 'lodash'
 
 @Injectable()
 export class RunesTableAdapter implements TableGridAdapter<RunesRecord>, DataViewAdapter<RunesRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
 
   public entityID(item: RunesRecord): string {
     return item.itemId

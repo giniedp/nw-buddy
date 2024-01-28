@@ -2,7 +2,7 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getItemId } from '@nw-data/common'
 import { ItemDefinitionMaster } from '@nw-data/generated'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { TableGridAdapter } from '~/ui/data/table-grid'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
@@ -16,7 +16,7 @@ import { MusicRecord } from './types'
 
 @Injectable()
 export class RecipesTableAdapter implements TableGridAdapter<MusicRecord>, DataViewAdapter<MusicRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
 
   public entityID(item: MusicRecord): string {
     return getItemId(item)

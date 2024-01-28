@@ -5,7 +5,8 @@ import { FormsModule } from '@angular/forms'
 import { GatherableNodeSize } from '@nw-data/common'
 import { LoreMetadata, LoreSpawns, Loreitems } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCompress, svgExpand } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
@@ -44,7 +45,7 @@ const SIZE_OUTLINE = {
   },
 })
 export class LoreItemDetailMapComponent {
-  protected db = inject(NwDbService)
+  protected db = inject(NwDataService)
   protected store = inject(LoreItemDetailStore)
   protected tl8 = inject(TranslateService)
 

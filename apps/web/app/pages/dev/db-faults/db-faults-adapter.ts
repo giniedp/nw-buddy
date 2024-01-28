@@ -10,7 +10,7 @@ import {
 } from '@nw-data/common'
 import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { Observable, combineLatest, defer, map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
@@ -29,7 +29,7 @@ export interface FaultRow {
 }
 
 export class DbFaultsTableAdapter implements DataViewAdapter<FaultRow> {
-  private db: NwDbService = inject(NwDbService)
+  private db: NwDataService = inject(NwDataService)
   private utils: TableGridUtils<FaultRow> = inject(TableGridUtils)
 
   public entityID(item: FaultRow): string | number {

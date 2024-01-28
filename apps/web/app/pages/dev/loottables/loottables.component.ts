@@ -3,7 +3,7 @@ import { Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
 import { defer, map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { observeRouteParam } from '~/utils'
 import { LootModule } from '~/widgets/loot'
 
@@ -42,7 +42,7 @@ export class DevLootComponent {
 
   protected showLocked = false
 
-  public constructor(private db: NwDbService, private route: ActivatedRoute) {
+  public constructor(private db: NwDataService, private route: ActivatedRoute) {
     //
   }
 }

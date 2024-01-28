@@ -34,7 +34,8 @@ import {
   takeUntil,
 } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 
 import { FormsModule } from '@angular/forms'
 import {
@@ -383,7 +384,7 @@ export class GameModeDetailComponent implements OnInit {
   public tabs: Array<Tab>
 
   public constructor(
-    private db: NwDbService,
+    private db: NwDataService,
     private route: ActivatedRoute,
     private router: Router,
     private cdRef: ChangeDetectorRef,

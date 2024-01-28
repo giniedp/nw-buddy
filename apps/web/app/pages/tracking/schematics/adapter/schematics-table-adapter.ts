@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core'
 import { getCraftingIngredients, getItemId, getItemIdFromRecipe } from '@nw-data/common'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter } from '~/ui/data/table-grid'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
@@ -18,7 +18,7 @@ import { SchematicCellComponent } from './schematic-cell.component'
 
 @Injectable()
 export class SchematicsTableAdapter implements TableGridAdapter<SchematicRecord>, DataViewAdapter<SchematicRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private i18n = inject(TranslateService)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
 

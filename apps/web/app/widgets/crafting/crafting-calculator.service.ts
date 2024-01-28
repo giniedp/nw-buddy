@@ -8,13 +8,13 @@ import {
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { CharacterStore } from '~/data'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { eqCaseInsensitive, shareReplayRefCount } from '~/utils'
 import { AmountDetail, AmountMode, CraftingStep, Ingredient } from './types'
 
 @Injectable({ providedIn: 'root' })
 export class CraftingCalculatorService {
-  public constructor(private db: NwDbService, private char: CharacterStore) {
+  public constructor(private db: NwDataService, private char: CharacterStore) {
     //
   }
 

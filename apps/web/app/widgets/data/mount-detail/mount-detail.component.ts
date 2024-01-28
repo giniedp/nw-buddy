@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
 import { Perks } from '@nw-data/generated'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
 import { MountDetailStore } from './mount-detail.store'
@@ -34,7 +35,7 @@ export class MountDetailComponent extends MountDetailStore {
   public disableProperties: boolean
 
   protected modelViewerOpened: boolean
-  public constructor(db: NwDbService) {
+  public constructor(db: NwDataService) {
     super(db)
   }
 }

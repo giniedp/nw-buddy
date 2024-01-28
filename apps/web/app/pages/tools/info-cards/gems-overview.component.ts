@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { combineLatest, defer, map } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { getCraftingIngredients, getItemIdFromRecipe } from '@nw-data/common'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PaginationModule } from '~/ui/pagination'
@@ -88,7 +89,7 @@ export class GemsOverviewComponent {
     })
   )
 
-  public constructor(private db: NwDbService, head: HtmlHeadService) {
+  public constructor(private db: NwDataService, head: HtmlHeadService) {
     head.updateMetadata({
       title: 'Gems Overview',
       description: 'Overview of all gems and their effect in New World',

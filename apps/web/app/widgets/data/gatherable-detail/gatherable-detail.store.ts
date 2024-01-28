@@ -4,13 +4,13 @@ import { NW_FALLBACK_ICON, getGatherableNodeSize, getGatherableNodeSizes } from 
 import { Gatherables } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest, map, of, switchMap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { combineLatestOrEmpty, mapList, mapProp, selectStream, switchMapCombineLatest } from '~/utils'
 import { getGatherableIcon } from './utils'
 
 @Injectable()
 export class GatherableDetailStore extends ComponentStore<{ recordId: string }> {
-  protected db = inject(NwDbService)
+  protected db = inject(NwDataService)
 
   public readonly recordId$ = this.select(({ recordId }) => recordId)
 

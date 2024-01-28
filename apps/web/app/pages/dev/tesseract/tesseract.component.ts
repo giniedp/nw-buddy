@@ -5,7 +5,7 @@ import { DomSanitizer } from '@angular/platform-browser'
 import { ActivatedRoute } from '@angular/router'
 import { combineLatest, defer, fromEvent, map, switchMap } from 'rxjs'
 import { createWorker, recognize } from 'tesseract.js'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { observeRouteParam, shareReplayRefCount } from '~/utils'
 import { LootModule } from '~/widgets/loot'
 

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
 import { defer, map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 
 @Component({
   selector: 'nwb-standing-chart',
@@ -31,7 +31,7 @@ export class StandingChartComponent {
     })
   )
 
-  public constructor(private db: NwDbService) {
+  public constructor(private db: NwDataService) {
     //
   }
 }

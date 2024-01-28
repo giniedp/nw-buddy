@@ -1,18 +1,14 @@
-import Dexie, { liveQuery, Observable, PromiseExtended, Table } from 'dexie'
+import Dexie, { liveQuery, PromiseExtended, Table } from 'dexie'
 import { customAlphabet } from 'nanoid/non-secure'
-import { defer, from, isObservable, Observable as RxObservable, of, switchMap } from 'rxjs'
+import { defer, isObservable, of, Observable as RxObservable, switchMap } from 'rxjs'
 
 // https://github.com/ai/nanoid
 // https://zelark.github.io/nano-id-cc/
 const createId = customAlphabet('0123456789abcdefghijklmnopqrstuvwxyz-_', 16)
 
 export abstract class DBTable<T extends { id: string }> {
-  public readonly db: Dexie
-  public readonly table: Table<T>
-  public constructor(db: Dexie, name: string) {
-    this.db = db
-    this.table = db.table(name)
-  }
+  public readonly abstract db: Dexie
+  public readonly abstract table: Table<T>
 
   public async resetDB() {
     await this.db.open()

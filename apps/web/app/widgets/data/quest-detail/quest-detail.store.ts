@@ -2,7 +2,7 @@ import { Injectable, Output } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { getItemIconPath, getItemId, getItemRarity, getQuestRequiredAchuevmentIds, getQuestTypeIcon, isHousingItem } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster, Objective } from '@nw-data/generated'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { FollowUpQuest } from './types'
 import { humanize } from '~/utils'
 import { flatten } from 'lodash'
@@ -49,7 +49,7 @@ export class QuestDetailStore extends ComponentStore<{ questId: string }> {
     })
   })
 
-  public constructor(protected db: NwDbService) {
+  public constructor(protected db: NwDataService) {
     super({ questId: null })
   }
 
@@ -60,17 +60,17 @@ export class QuestDetailStore extends ComponentStore<{ questId: string }> {
 
 function selectFollowupQuests(
   quest: Objective,
-  questsByRequiredAchievementId: Map<string, Set<Objective>>
+  questsByRequiredAchievementId: Map<string, Objective[]>
 ): FollowUpQuest[] {
   if (!quest.AchievementId) {
     return null
   }
   const quests = questsByRequiredAchievementId.get(quest.AchievementId)
-  if (!quests?.size) {
+  if (!quests?.length) {
     return null
   }
 
-  return Array.from(quests).map((it) => {
+  return quests.map((it) => {
     return {
       quest: it,
       next: selectFollowupQuests(it, questsByRequiredAchievementId),
@@ -78,8 +78,8 @@ function selectFollowupQuests(
   })
 }
 
-function selectPreviousQuests(quest: Objective, questsByAchievementId: Map<string, Set<Objective>>): Objective[] {
-  const quests = getQuestRequiredAchuevmentIds(quest).map((id) => Array.from(questsByAchievementId.get(id) || []))
+function selectPreviousQuests(quest: Objective, questsByAchievementId: Map<string, Objective[]>): Objective[] {
+  const quests = getQuestRequiredAchuevmentIds(quest).map((id) => questsByAchievementId.get(id) || [])
   return flatten(quests)
 }
 

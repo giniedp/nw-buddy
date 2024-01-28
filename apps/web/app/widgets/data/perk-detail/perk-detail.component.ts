@@ -3,7 +3,8 @@ import { ChangeDetectionStrategy, Component, Input, TemplateRef, ViewChild, forw
 import { FormsModule } from '@angular/forms'
 import { parseScalingPerGearScore } from '@nw-data/common'
 import { Affixstats, Perks } from '@nw-data/generated'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { GsInputComponent } from '~/ui/gs-input'
 import { IconsModule } from '~/ui/icons'
 import { svgInfoCircle } from '~/ui/icons/svg'
@@ -53,7 +54,7 @@ export class PerkDetailComponent extends PerkDetailStore {
   protected trackByIndex = (i: number) => i
   @ViewChild('tplCategoryInfo', { static: true })
   protected tplCategoryInfo: TemplateRef<any>
-  public constructor(db: NwDbService, protected decimals: DecimalPipe) {
+  public constructor(db: NwDataService, protected decimals: DecimalPipe) {
     super(db)
   }
 

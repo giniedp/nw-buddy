@@ -10,12 +10,12 @@ import {
 } from '@nw-data/common'
 import { PoiDefinition, Vitals } from '@nw-data/generated'
 import { groupBy } from 'lodash'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { selectStream } from '~/utils'
 
 @Injectable()
 export class ZoneDetailStore extends ComponentStore<{ recordId: string | number; markedVitalId?: string }> {
-  protected db = inject(NwDbService)
+  protected db = inject(NwDataService)
 
   public readonly recordId$ = this.select(({ recordId }) => (recordId ? Number(recordId) : null))
   public readonly markedVitalId$ = this.select(({ markedVitalId }) => markedVitalId)

@@ -8,7 +8,8 @@ import { ItemClass } from '@nw-data/generated'
 import { combineLatest, firstValueFrom, fromEvent, map, of, switchMap, takeUntil } from 'rxjs'
 import { ItemInstance } from '~/data'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft } from '~/ui/icons/svg'
 import { imageFileFromPaste, imageFromDropEvent } from '~/utils/image-file-from-paste'
@@ -67,7 +68,7 @@ export class GearImporterDialogComponent implements OnInit {
   )
 
   protected iconLeft = svgAngleLeft
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private tl8 = inject(TranslateService)
 
   public constructor(

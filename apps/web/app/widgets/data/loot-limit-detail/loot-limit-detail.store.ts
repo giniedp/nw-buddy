@@ -4,12 +4,12 @@ import { getItemId } from '@nw-data/common'
 import { Lootlimits } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { eqCaseInsensitive, mapList, rejectKeys, selectStream, switchMapCombineLatest } from '~/utils'
 
 @Injectable()
 export class LootLimitDetailStore extends ComponentStore<{ limitId: string }> {
-  protected db = inject(NwDbService)
+  protected db = inject(NwDataService)
 
   public readonly limitId$ = this.select(({ limitId }) => limitId)
   public readonly lootLimit$ = selectStream(this.db.lootLimit(this.limitId$))

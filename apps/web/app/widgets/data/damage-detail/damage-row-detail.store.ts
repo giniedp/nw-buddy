@@ -2,7 +2,7 @@ import { Injectable, Output } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { Affixstats, Damagetable } from '@nw-data/generated'
 import { switchMap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { combineLatestOrEmpty, rejectKeys } from '~/utils'
 
 @Injectable()
@@ -23,7 +23,7 @@ export class DamageRowDetailStore extends ComponentStore<{ rowId: string }> {
     switchMap((ids) => combineLatestOrEmpty(ids.map((id) => this.db.statusEffect(id)))),
   )
 
-  public constructor(protected db: NwDbService) {
+  public constructor(protected db: NwDataService) {
     super({ rowId: null })
   }
 

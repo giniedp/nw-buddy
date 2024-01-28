@@ -2,12 +2,12 @@ import { Injectable, Output, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { Metaachievements } from '@nw-data/generated'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { humanize, rejectKeys, selectStream, tapDebug } from '~/utils'
 
 @Injectable()
 export class MetaAchievementDetailStore extends ComponentStore<{ achievementId: string }> {
-  protected db = inject(NwDbService)
+  protected db = inject(NwDataService)
 
   public readonly achievementId$ = this.select(({ achievementId }) => achievementId)
   public readonly achievement$ = selectStream(this.db.metaAchievement(this.achievementId$))

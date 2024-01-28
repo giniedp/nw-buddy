@@ -8,7 +8,8 @@ import { ItemDefinitionMaster } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { map } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { LayoutModule } from '~/ui/layout'
 import {
   HtmlHeadService,

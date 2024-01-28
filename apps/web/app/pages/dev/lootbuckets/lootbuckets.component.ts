@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
 import { defer, map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 
 @Component({
   standalone: true,
@@ -34,5 +34,5 @@ export class LootbucketsComponent {
     })
   )
 
-  public constructor(private db: NwDbService) {}
+  public constructor(private db: NwDataService) {}
 }

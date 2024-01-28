@@ -5,7 +5,8 @@ import { crc32 as crc } from 'js-crc'
 import { isEqual, uniq } from 'lodash'
 import { startWith } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgCompress, svgExpand } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
@@ -47,7 +48,7 @@ const COLORS_DIMMED = {
   },
 })
 export class ZoneDetailMapComponent {
-  protected db = inject(NwDbService)
+  protected db = inject(NwDataService)
   protected store = inject(ZoneDetailStore)
   protected tl8 = inject(TranslateService)
 

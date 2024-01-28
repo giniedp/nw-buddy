@@ -1,10 +1,10 @@
 import { Observable, of } from 'rxjs'
-import { NwDbService } from '../nw-db.service'
 import { ExpressionResource } from './types'
+import { NwDataService } from '~/data'
 
 export function resourceLookup(
   resource: ExpressionResource,
-  db: NwDbService
+  db: NwDataService
 ): Observable<Map<string | number, unknown>> {
   switch (resource) {
     case 'AttributeThresholdAbilityTable': {

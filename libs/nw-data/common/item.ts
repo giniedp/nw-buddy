@@ -365,7 +365,7 @@ export function getItemIdFromRecipe(item: Crafting): string {
   // )
 }
 
-export function getRecipeForItem(item: ItemDefinitionMaster | Housingitems, recipes: Map<string, Set<Crafting>>) {
+export function getRecipeForItem(item: ItemDefinitionMaster | Housingitems, recipes: Map<string, Crafting[]>) {
   const id = getItemId(item)
   if (!id) {
     return null

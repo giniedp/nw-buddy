@@ -3,7 +3,7 @@ import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON, explainPerkMods, getAffixMODs, getPerkItemClassGSBonus } from '@nw-data/common'
 import { Affixstats, Perks } from '@nw-data/generated'
 import { combineLatest, defer, map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
 import { rejectKeys, selectStream } from '~/utils'
 
@@ -120,7 +120,7 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
     }
   )
 
-  public constructor(private db: NwDbService) {
+  public constructor(private db: NwDataService) {
     super({ perkId: null })
   }
 

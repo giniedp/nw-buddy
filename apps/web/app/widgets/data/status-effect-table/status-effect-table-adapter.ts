@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core'
 import { COLS_STATUSEFFECT, Statuseffect } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
 import { DataTableCategory } from '~/ui/data/table-grid'
 import { addGenericColumns } from '~/ui/data/table-grid'
@@ -26,7 +26,7 @@ import { selectStream } from '~/utils'
 export class StatusEffectTableAdapter
   implements DataViewAdapter<StatusEffectTableRecord>, TableGridAdapter<StatusEffectTableRecord>
 {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private utils: TableGridUtils<StatusEffectTableRecord> = inject(TableGridUtils)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
 

@@ -1,12 +1,12 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { Playertitles } from '@nw-data/generated'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { rejectKeys, selectStream } from '~/utils'
 
 @Injectable()
 export class PlayerTitleDetailStore extends ComponentStore<{ titleId: string }> {
-  protected db = inject(NwDbService)
+  protected db = inject(NwDataService)
 
   public readonly titleId$ = this.select(({ titleId }) => titleId)
   public readonly titleRecord$ = selectStream(this.db.playerTitle(this.titleId$))

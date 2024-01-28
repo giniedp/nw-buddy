@@ -1,5 +1,5 @@
 import { Directive, forwardRef, Input } from '@angular/core'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { GameEventDetailStore } from './game-event-detail.store'
 
 @Directive({
@@ -19,7 +19,7 @@ export class GameEventDetailDirective extends GameEventDetailStore {
     this.patchState({ eventId: value })
   }
 
-  public constructor(db: NwDbService) {
+  public constructor(db: NwDataService) {
     super(db)
   }
 }

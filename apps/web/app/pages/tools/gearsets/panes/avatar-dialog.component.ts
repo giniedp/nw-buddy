@@ -1,10 +1,10 @@
-import { Dialog, DialogConfig, DialogRef, DIALOG_DATA } from '@angular/cdk/dialog'
+import { DIALOG_DATA, Dialog, DialogConfig, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, HostListener, Inject, OnInit } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ComponentStore } from '@ngrx/component-store'
 import { combineLatest, filter, fromEvent, map, of, switchMap, take, takeUntil } from 'rxjs'
-import { ImagesDB } from '~/data/images.db'
+import { ImagesDB } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgTrashCan } from '~/ui/icons/svg'
 import { ConfirmDialogComponent } from '~/ui/layout'
@@ -36,7 +36,7 @@ export interface AvatarDialogResult {
 export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> implements OnInit {
   public static open(
     dialog: Dialog,
-    config: DialogConfig<AvatarDialogOptions, DialogRef<AvatarDialogResult, AvatarDialogComponent>>
+    config: DialogConfig<AvatarDialogOptions, DialogRef<AvatarDialogResult, AvatarDialogComponent>>,
   ) {
     return dialog.open(AvatarDialogComponent, {
       maxWidth: 400,
@@ -55,12 +55,12 @@ export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> imp
     state: this.state$,
     imageUrl: this.imageUrl$,
     filePreview: this.filePreviewUrl$,
-    maxFileSizeInMb: this.maxFileSizeInMb$
+    maxFileSizeInMb: this.maxFileSizeInMb$,
   }).pipe(
     map(({ state, imageUrl, filePreview, maxFileSizeInMb }) => {
       let fileTooLarge = false
       if (state.file) {
-        fileTooLarge = state.file.size > (1024 * 1024 * maxFileSizeInMb)
+        fileTooLarge = state.file.size > 1024 * 1024 * maxFileSizeInMb
       }
 
       return {
@@ -69,9 +69,9 @@ export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> imp
         filePreview,
         previewUrl: imageUrl || filePreview,
         fileTooLarge,
-        maxFileSizeInMb
+        maxFileSizeInMb,
       }
-    })
+    }),
   )
 
   public constructor(
@@ -80,7 +80,7 @@ export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> imp
     private dialog: Dialog,
     private dialogRef: DialogRef<AvatarDialogResult>,
     private imagesDb: ImagesDB,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
   ) {
     super({
       imageId: data.imageId,
@@ -184,7 +184,6 @@ export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> imp
     })
     return result
   }
-
 
   // protected showFileTooLargeError() {
   //   ConfirmDialogComponent.open(this.dialog, {

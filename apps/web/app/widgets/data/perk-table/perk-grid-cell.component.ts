@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common'
 import { Component, HostListener, Input, OnInit, TemplateRef, ViewChild } from '@angular/core'
 import { NW_FALLBACK_ICON, getAffixMODs } from '@nw-data/common'
 import { Perks } from '@nw-data/generated'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
 import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -125,7 +126,7 @@ export class PerkGridCellComponent implements VirtualGridCellComponent<PerkTable
     protected grid: VirtualGridComponent<Perks>,
     protected context: NwTextContextService,
     protected store: PerkDetailStore,
-    protected db: NwDbService,
+    protected db: NwDataService,
     protected tip: TooltipDirective
   ) {
     //

@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { territoryImage } from '@nw-data/common'
 import { BehaviorSubject, combineLatest, defer, map, of, switchMap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { TerritoriesPreferencesService } from '~/preferences/territories-preferences.service'
 import { shareReplayRefCount } from '~/utils'
 
@@ -66,7 +66,7 @@ export class StandingInputComponent {
 
   private territoryId$ = new BehaviorSubject<number>(null)
 
-  public constructor(private db: NwDbService, private pref: TerritoriesPreferencesService) {
+  public constructor(private db: NwDataService, private pref: TerritoriesPreferencesService) {
     //
   }
 }

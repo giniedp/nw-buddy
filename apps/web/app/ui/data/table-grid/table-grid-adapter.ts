@@ -65,7 +65,4 @@ export abstract class TableGridAdapter<T> {
   public abstract gridOptions(): GridOptions
   public abstract connect(): Observable<T[]>
 
-  public onEntityCreate?: Observable<T>
-  public onEntityUpdate?: Observable<T>
-  public onEntityDestroy?: Observable<string>
 }

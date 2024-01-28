@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core'
 import { getVitalCategoryInfo, getVitalDungeons, getVitalFamilyInfo, getVitalsCategories } from '@nw-data/common'
 import { COLS_VITALS, Vitals } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import {
   DataTableCategory,
@@ -42,7 +42,7 @@ import { VitalGridCellComponent } from './vital-cell.component'
 
 @Injectable()
 export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord>, TableGridAdapter<VitalTableRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private utils: TableGridUtils<VitalTableRecord> = inject(TableGridUtils)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
 

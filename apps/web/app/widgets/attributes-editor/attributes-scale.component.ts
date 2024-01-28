@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { WeaponTag } from '@nw-data/generated'
 import { firstValueFrom, map } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { ChartModule } from '~/ui/chart'
 import { IconsModule } from '~/ui/icons'
 import { svgChartLine } from '~/ui/icons/svg'
@@ -109,7 +110,7 @@ export class AttributesScaleComponent {
   public readonly damage$ = this.store.damageStats$.pipe(map((it) => it.value))
   public readonly damageInvalid$ = this.store.damageStats$.pipe(map((it) => it.invalidValue))
 
-  public constructor(private store: AttributesScalingStore, private db: NwDbService) {
+  public constructor(private store: AttributesScalingStore, private db: NwDataService) {
     //
   }
 

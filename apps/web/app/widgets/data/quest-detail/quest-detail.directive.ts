@@ -1,5 +1,5 @@
 import { Directive, forwardRef, Input, Output } from '@angular/core'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { QuestDetailStore } from './quest-detail.store'
 
 @Directive({
@@ -22,7 +22,7 @@ export class QuestDetailDirective extends QuestDetailStore {
   @Output()
   public nwbQuestChange = this.quest$
 
-  public constructor(db: NwDbService) {
+  public constructor(db: NwDataService) {
     super(db)
   }
 }

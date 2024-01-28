@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { filter, switchMap } from 'rxjs'
-import { SkillBuildRecord, SkillBuildsDB } from '~/data'
+import { SkillSetRecord, SkillBuildsDB } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgShareNodes } from '~/ui/icons/svg'
@@ -45,7 +45,7 @@ export class ShareComponent {
     //
   }
 
-  public importSkillBuild(value: SkillBuildRecord) {
+  public importSkillBuild(value: SkillSetRecord) {
     PromptDialogComponent.open(this.dialog, {
       data: {
         title: 'Name',

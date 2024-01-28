@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { firstValueFrom, map } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { StatusEffectCategoryDetailStore } from './status-effect-category.store'
 import { extractLimits } from './utils'
 
@@ -48,7 +49,7 @@ export class StatusEffectLimitsTableComponent {
 
   protected catId: string
   protected propId: string
-  public constructor(protected db: NwDbService, protected store: StatusEffectCategoryDetailStore) {
+  public constructor(protected db: NwDataService, protected store: StatusEffectCategoryDetailStore) {
     //
   }
 

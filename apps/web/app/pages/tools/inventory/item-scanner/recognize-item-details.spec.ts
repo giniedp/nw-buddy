@@ -1,4 +1,4 @@
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { SAMPLES, sampleUrl } from './samples'
 
 import { HttpClient } from '@angular/common/http'
@@ -10,7 +10,7 @@ import { recognizeItemDetails } from './recognize-item-details'
 import { recognizeTextFromImage } from './recognize-text-from-image'
 
 describe('item-scanner / scan', async () => {
-  let db: NwDbService
+  let db: NwDataService
   let translate: TranslateService
   let http: HttpClient
 
@@ -20,7 +20,7 @@ describe('item-scanner / scan', async () => {
         imports: [AppTestingModule],
         teardown: { destroyAfterEach: false },
       })
-      db = TestBed.inject(NwDbService)
+      db = TestBed.inject(NwDataService)
       translate = TestBed.inject(TranslateService)
       http = TestBed.inject(HttpClient)
 

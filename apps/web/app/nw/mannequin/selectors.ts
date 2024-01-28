@@ -205,9 +205,9 @@ export function selectActivatedAbilities({ abilities }: DbSlice, { activatedAbil
 export function selectWeaponAbilities(
   { abilities }: DbSlice,
   { weaponTag }: ActiveWeapon,
-  { equppedSkills1, equppedSkills2 }: MannequinState,
+  { equippedSkills1, equippedSkills2 }: MannequinState,
 ) {
-  return [equppedSkills1, equppedSkills2]
+  return [equippedSkills1, equippedSkills2]
     .filter((it) => eqCaseInsensitive(it?.weapon, weaponTag))
     .map((it) => [it?.tree1 || [], it?.tree2 || []])
     .flat(2)

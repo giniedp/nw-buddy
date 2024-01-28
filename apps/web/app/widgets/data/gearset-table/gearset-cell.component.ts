@@ -1,22 +1,13 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { combineLatest, defer, map, of, switchMap } from 'rxjs'
-import {
-  CharacterStore,
-  GearsetRecord,
-  GearsetRow,
-  GearsetStore,
-  ItemInstance,
-  ItemInstanceRecord,
-  ItemInstancesDB,
-} from '~/data'
+import { patchState } from '@ngrx/signals'
+import { CharacterStore, GearsetRecord, GearsetRow, GearsetSignalStore } from '~/data'
 import { NwModule } from '~/nw'
-import { gearScoreRelevantSlots, getAverageGearScore } from '@nw-data/common'
-import { GersetSquareSlotComponent } from './gearset-cell-slot.component'
 import { VirtualGridCellComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { GearsetTableRecord } from './gearset-table-cols'
 import { EmptyComponent } from '~/widgets/empty'
+import { GersetSquareSlotComponent } from './gearset-cell-slot.component'
+import { GearsetTableRecord } from './gearset-table-cols'
 
 @Component({
   standalone: true,
@@ -25,7 +16,7 @@ import { EmptyComponent } from '~/widgets/empty'
   styleUrls: ['./gearset-cell.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, GersetSquareSlotComponent, RouterModule],
-  providers: [GearsetStore],
+  providers: [GearsetSignalStore],
 })
 export class GearsetLoadoutItemComponent implements VirtualGridCellComponent<GearsetTableRecord> {
   public static buildGridOptions(): VirtualGridOptions<GearsetTableRecord> {
@@ -37,10 +28,7 @@ export class GearsetLoadoutItemComponent implements VirtualGridCellComponent<Gea
     }
   }
 
-  @Input()
-  public set geasrsetId(value: string) {
-    this.store.loadById(value)
-  }
+  protected store = inject(GearsetSignalStore)
 
   @Output()
   public delete = new EventEmitter<GearsetRecord>()
@@ -48,64 +36,34 @@ export class GearsetLoadoutItemComponent implements VirtualGridCellComponent<Gea
   @Output()
   public create = new EventEmitter<void>()
 
-  protected vm$ = combineLatest({
-    id: this.store.gearsetId$,
-    name: this.store.gearsetName$,
-    gearset: this.store.gearset$,
-    isLoading: this.store.isLoading$,
-    gearscore: defer(() => this.gearscore$),
-  })
+  protected get gearset() {
+    return this.store.gearset()
+  }
 
-  private readonly gearscore$ = combineLatest({
-    level: this.char.level$,
-    slots: this.store.gearset$.pipe(switchMap((it) => this.selectGearscoreSlots(it))),
-  }).pipe(map(({ level, slots }) => getAverageGearScore(slots, level)))
+  protected get gearScore() {
+    return this.store.gearScore()
+  }
 
-  public constructor(private char: CharacterStore, private itemsDb: ItemInstancesDB, private store: GearsetStore) {
-    // store.gearsetSlots$
+  public constructor(char: CharacterStore) {
+    this.store.connectLevel(char.level$)
   }
 
   @Input()
   public set data(value: GearsetRow) {
-    this.store.patchState({
+    patchState(this.store, {
       gearset: value.record,
-      isLoading: false,
+      isLoaded: true,
     })
   }
 
   @Input()
   public selected: boolean
 
-  protected createClicked() {
+  protected handleCreate() {
     this.create.emit()
   }
 
-  protected deleteClicked(gearset: GearsetRecord) {
+  protected handleDelete(gearset: GearsetRecord) {
     this.delete.emit(gearset)
-  }
-
-  private selectGearscoreSlots(record: GearsetRecord) {
-    return combineLatest(
-      gearScoreRelevantSlots().map((slot) => {
-        return this.resolveItemInstance(record?.slots?.[slot.id]).pipe(
-          map((instance) => {
-            return {
-              ...slot,
-              gearScore: instance?.gearScore || 0,
-            }
-          })
-        )
-      })
-    )
-  }
-
-  private resolveItemInstance(itemInstance: string | ItemInstance) {
-    if (!itemInstance) {
-      return of(null)
-    }
-    if (typeof itemInstance === 'string') {
-      return this.itemsDb.live((t) => t.get(itemInstance))
-    }
-    return of(itemInstance)
   }
 }

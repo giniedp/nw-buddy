@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core'
 import { getSeasonPassDataId } from '@nw-data/common'
 import { COLS_SEASONPASSDATA } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import {
   DataTableCategory,
@@ -27,7 +27,7 @@ import { humanize } from '~/utils'
 export class SeasonPassTableAdapter
   implements DataViewAdapter<SeasonPassTableRecord>, TableGridAdapter<SeasonPassTableRecord>
 {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<SeasonPassTableRecord> = inject(TableGridUtils)
 

@@ -1,5 +1,5 @@
 import { Directive, forwardRef, Input } from '@angular/core'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { SpellDetailStore } from './spell-detail.store'
 
 @Directive({
@@ -19,7 +19,7 @@ export class SpellDetailDirective extends SpellDetailStore {
     this.patchState({ spellId: value })
   }
 
-  public constructor(db: NwDbService) {
+  public constructor(db: NwDataService) {
     super(db)
   }
 }

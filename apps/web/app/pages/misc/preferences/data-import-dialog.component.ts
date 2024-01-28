@@ -1,13 +1,12 @@
 import { Dialog, DialogConfig, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, HostListener } from '@angular/core'
+import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { DbService } from '~/data/db.service'
 import { NwModule } from '~/nw'
 import { PreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleCheck, svgCircleExclamation, svgCircleNotch, svgFileImport, svgInfoCircle } from '~/ui/icons/svg'
-import { imageFromDropEvent } from '~/utils/image-file-from-paste'
 import { recursivelyDecodeArrayBuffers } from './buffer-encoding'
 
 export interface DataImportDialogState {

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { AttributeRef, NW_ATTRIBUTE_TYPES, NW_MAX_CHARACTER_LEVEL, solveAttributePlacingMods } from '@nw-data/common'
 import { Observable, combineLatest, of, switchMap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 
 // TODO: research if we can get these from playerattributes base file
 const ATTRIBUTE_STEPS = [25, 50, 100, 150, 200, 250, 300, 350]
@@ -91,7 +91,7 @@ export class AttributesStore extends ComponentStore<AttributesState> {
   public readonly totalFoc$ = this.select(this.stats$, (stats) => selectStatTotal(stats, 'foc'))
   public readonly totalCon$ = this.select(this.stats$, (stats) => selectStatTotal(stats, 'con'))
 
-  public constructor(private nwDb: NwDbService) {
+  public constructor(private nwDb: NwDataService) {
     super({
       level: NW_MAX_CHARACTER_LEVEL,
       points: 0,

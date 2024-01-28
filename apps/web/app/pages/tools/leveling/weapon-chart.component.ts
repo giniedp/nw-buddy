@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ChartConfiguration } from 'chart.js'
 import { combineLatest, map } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { ChartModule } from '~/ui/chart'
 
 @Component({
@@ -41,7 +42,7 @@ export class WeaponChartComponent {
     }
   }))
 
-  public constructor(private db: NwDbService) {
+  public constructor(private db: NwDataService) {
     //
   }
 }

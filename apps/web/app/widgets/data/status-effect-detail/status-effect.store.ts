@@ -4,13 +4,13 @@ import { NW_FALLBACK_ICON, getItemId } from '@nw-data/common'
 import { Affixstats, Statuseffect } from '@nw-data/generated'
 import { flatten, uniq } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { humanize, mapList, rejectKeys } from '~/utils'
 import { ModelViewerService } from '~/widgets/model-viewer'
 
 @Injectable()
 export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }> {
-  protected readonly db = inject(NwDbService)
+  protected readonly db = inject(NwDataService)
   public readonly effectId$ = this.select(({ effectId }) => effectId)
   public readonly effect$ = this.select(this.db.statusEffect(this.effectId$), (it) => it)
 
@@ -110,7 +110,7 @@ function selectStatusEffectReferences(item: Statuseffect) {
     .filter((e) => e !== item.StatusID)
 }
 
-function perksByAffix(affix: string[], db: NwDbService): Observable<string[]> {
+function perksByAffix(affix: string[], db: NwDataService): Observable<string[]> {
   if (!affix?.length) {
     return of<string[]>([])
   }
@@ -123,7 +123,7 @@ function perksByAffix(affix: string[], db: NwDbService): Observable<string[]> {
     .pipe(mapList((it) => it.PerkID))
 }
 
-function perksByAbilities(abilities: string[], db: NwDbService): Observable<string[]> {
+function perksByAbilities(abilities: string[], db: NwDataService): Observable<string[]> {
   if (!abilities?.length) {
     return of<string[]>([])
   }

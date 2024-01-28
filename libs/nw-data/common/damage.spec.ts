@@ -1,7 +1,7 @@
 import { calculateDamage } from './damage'
 import { DAMAGE_SAMPLES, descriveSample } from './damage-samples'
 
-fdescribe('calculateDamage', () => {
+describe('calculateDamage', () => {
   for (const test of DAMAGE_SAMPLES) {
     it(descriveSample(test.input), () => {
       const result = calculateDamage(test.input)

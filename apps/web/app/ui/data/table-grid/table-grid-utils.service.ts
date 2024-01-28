@@ -12,7 +12,7 @@ import { DOCUMENT, DecimalPipe } from '@angular/common'
 import { Injectable, NgZone, SecurityContext, Type, inject } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwLinkResource, NwLinkService } from '~/nw'
+import { NwLinkResource, NwLinkService } from '~/nw'
 import { NwExpressionService } from '~/nw/expression'
 import { ItemPreferencesService } from '~/preferences'
 import { ElementChildren, ElementProps, TagName, createEl } from '~/utils'
@@ -21,10 +21,11 @@ import { getIconFrameClass } from '../../item-frame'
 import { colDefPrecision } from './utils'
 import { Router } from '@angular/router'
 import { ItemRarity } from '@nw-data/common'
+import { NwDataService } from '~/data'
 
 @Injectable({ providedIn: 'root' })
 export class TableGridUtils<T = any> {
-  public readonly db = inject(NwDbService)
+  public readonly db = inject(NwDataService)
   public readonly document: Document = inject(DOCUMENT)
   public readonly expr = inject(NwExpressionService)
   public readonly i18n = inject(TranslateService)

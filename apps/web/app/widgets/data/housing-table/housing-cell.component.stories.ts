@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, importProvidersFrom, inject } from '@angular/core'
 import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { AppTestingModule } from '~/test'
 import { VirtualGridComponent } from '~/ui/data/virtual-grid'
 import { HousingCellComponent } from './housing-cell.component'
@@ -16,7 +16,7 @@ import { VirtualGridCellDirective } from '~/ui/data/virtual-grid/virtual-grid-ce
   },
 })
 export class StoryComponent {
-  protected items$ = inject(NwDbService).housingItems
+  protected items$ = inject(NwDataService).housingItems
   protected gridOptions = HousingCellComponent.buildGridOptions()
 }
 

@@ -2,14 +2,14 @@ import { Injectable } from '@angular/core'
 import { getPerkMultiplier, parseNwExpression } from '@nw-data/common'
 import { Observable, catchError, isObservable, map, of, throwError } from 'rxjs'
 import { eqCaseInsensitive } from '~/utils'
-import { NwDbService } from '../nw-db.service'
 import { NwExpressionContext } from './nw-expression-context.service'
 import { resourceLookup } from './resource-lookup'
 import { ExpressionConstant } from './types'
+import { NwDataService } from '~/data'
 
 @Injectable({ providedIn: 'root' })
 export class NwExpressionService {
-  public constructor(private db: NwDbService) {}
+  public constructor(private db: NwDataService) {}
 
   public parse(expression: string) {
     return parseNwExpression(expression)

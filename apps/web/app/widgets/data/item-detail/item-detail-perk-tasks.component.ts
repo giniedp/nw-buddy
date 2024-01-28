@@ -1,17 +1,17 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
-import { NwDbService, NwLinkService, NwModule } from '~/nw'
+import { getQuestTypeIcon } from '@nw-data/common'
+import { Objectivetasks, PoiDefinition } from '@nw-data/generated'
+import { combineLatest, defer, map, of, switchMap } from 'rxjs'
+import { NwDataService } from '~/data'
+import { TranslateService } from '~/i18n'
+import { NwLinkService, NwModule } from '~/nw'
+import { NwExpressionContext } from '~/nw/expression'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { ItemDetailStore } from './item-detail.store'
-import { Objectivetasks, PoiDefinition } from '@nw-data/generated'
 import { selectStream } from '~/utils'
-import { Observable, combineLatest, defer, map, of, switchMap, tap } from 'rxjs'
-import { getQuestTypeIcon } from '@nw-data/common'
-import { TranslateService } from '~/i18n'
-import { NwExpressionContext } from '~/nw/expression'
-import { takeRight } from 'lodash'
+import { ItemDetailStore } from './item-detail.store'
 
 export interface PerkTask {
   icon: string
@@ -30,7 +30,7 @@ export interface PerkTask {
   },
 })
 export class ItemDetailPerkTasksComponent {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private tl8 = inject(TranslateService)
   private nwdb = inject(NwLinkService)
 
@@ -44,7 +44,7 @@ export class ItemDetailPerkTasksComponent {
         return null
       }
       return list.map((task) => this.selectTask(task))
-    })
+    }),
   )
 
   protected trackByIndex = (i: number) => i
@@ -92,23 +92,19 @@ export class ItemDetailPerkTasksComponent {
               return `<a href="${link}" target="_blank" class="link">${it}</a>`
             }
             return it
-          })
+          }),
         )
       }),
       map((text) => {
         return task.TargetQty > 1 ? `${task.TargetQty} ${text} ` : text
-      })
+      }),
     )
   }
 
   private resolvePOITags(task: Objectivetasks) {
     return this.db.poiByPoiTag
       .pipe(map((pois) => pois.get(task.POITag)))
-      .pipe(
-        map((it): PoiDefinition => {
-          return it?.size ? it.values().next().value : null
-        })
-      )
+      .pipe(map((it): PoiDefinition => it?.[0] || null))
       .pipe(
         switchMap((poi) => {
           if (!poi) {
@@ -118,9 +114,9 @@ export class ItemDetailPerkTasksComponent {
             map((it) => {
               const link = this.nwdb.link('poi', String(poi.TerritoryID))
               return `<a href="${link}" target="_blank" class="link">${it}</a>`
-            })
+            }),
           )
-        })
+        }),
       )
   }
 
@@ -134,9 +130,9 @@ export class ItemDetailPerkTasksComponent {
           map((it) => {
             const link = this.nwdb.link('poi', String(task.TerritoryID))
             return `<a href="${link}" target="_blank" class="link">${it}</a>`
-          })
+          }),
         )
-      })
+      }),
     )
   }
 }

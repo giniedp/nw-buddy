@@ -3,7 +3,7 @@ import { ComponentStore } from '@ngrx/component-store'
 import { PerkBucket, resolvePerkBucketPerksForItem } from '@nw-data/common'
 import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { shareReplayRefCount } from '~/utils'
 
 export interface PerkBucketDetailState {
@@ -29,7 +29,7 @@ export class PerkBucketDetailStore extends ComponentStore<PerkBucketDetailState>
   public readonly type$ = this.select(this.bucket$, (it) => it?.PerkType)
   public readonly perks$ = this.select(this.bucket$, (it) => it?.Perks)
 
-  public constructor(private db: NwDbService) {
+  public constructor(private db: NwDataService) {
     super({
       itemId: null,
       perkBucketId: null,

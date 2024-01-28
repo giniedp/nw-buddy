@@ -2,7 +2,7 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { NW_FALLBACK_ICON, getQuestTypeIcon } from '@nw-data/common'
 import { COLS_OBJECTIVE, Objective } from '@nw-data/generated'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
 import { DataTableCategory } from '~/ui/data/table-grid'
 import { addGenericColumns } from '~/ui/data/table-grid'
@@ -28,7 +28,7 @@ import {
 
 @Injectable()
 export class QuestTableAdapter implements DataViewAdapter<QuestTableRecord>, TableGridAdapter<QuestTableRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<QuestTableRecord> = inject(TableGridUtils)
 

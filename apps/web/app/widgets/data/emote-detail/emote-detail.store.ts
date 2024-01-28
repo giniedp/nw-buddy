@@ -1,12 +1,12 @@
 import { Injectable, Output, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { Emotedefinitions } from '@nw-data/generated'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { rejectKeys } from '~/utils'
 
 @Injectable()
 export class EmotesDetailStore extends ComponentStore<{ emoteId: string }> {
-  protected db = inject(NwDbService)
+  protected db = inject(NwDataService)
   public readonly emoteId$ = this.select(({ emoteId }) => emoteId)
 
   @Output()

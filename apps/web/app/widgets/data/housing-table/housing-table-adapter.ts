@@ -4,7 +4,7 @@ import { getUIHousingCategoryLabel } from '@nw-data/common'
 import { COLS_HOUSINGITEMS, Housingitems } from '@nw-data/generated'
 import { map } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import {
   TABLE_GRID_ADAPTER_OPTIONS,
   TableGridAdapter,
@@ -34,7 +34,7 @@ import { selectStream } from '~/utils'
 
 @Injectable()
 export class HousingTableAdapter implements TableGridAdapter<HousingTableRecord>, DataViewAdapter<HousingTableRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private i18n = inject(TranslateService)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<HousingTableRecord> = inject(TableGridUtils)

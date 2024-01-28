@@ -4,7 +4,7 @@ import { NW_FALLBACK_ICON, getQuestTypeIcon } from '@nw-data/common'
 import { COLS_LOREITEMS } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import {
   DataTableCategory,
@@ -30,7 +30,7 @@ import {
 export class LoreItemTableAdapter
   implements DataViewAdapter<LoreItemTableRecord>, TableGridAdapter<LoreItemTableRecord>
 {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private config = inject<TableGridAdapterOptions<LoreItemTableRecord>>(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<LoreItemTableRecord> = inject(TableGridUtils)
 

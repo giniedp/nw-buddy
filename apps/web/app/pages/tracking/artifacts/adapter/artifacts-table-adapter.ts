@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getItemId, isItemArtifact } from '@nw-data/common'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { TableGridAdapter } from '~/ui/data/table-grid'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
@@ -15,7 +15,7 @@ import { ArtifactRecord } from './types'
 
 @Injectable()
 export class ArtifactsTableAdapter implements TableGridAdapter<ArtifactRecord>, DataViewAdapter<ArtifactRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
 
   public entityID(item: ArtifactRecord): string {
     return getItemId(item)

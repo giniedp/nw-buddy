@@ -1,14 +1,14 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { Injector } from '@angular/core'
 import { map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { eqCaseInsensitive } from '~/utils'
 import { HousingTableAdapter, buildPickerHousingGridOptions } from './housing-table-adapter'
 import { HousingTableRecord } from './housing-table-cols'
 
 export function openHousingItemsPicker(options: {
-  db: NwDbService
+  db: NwDataService
   dialog: Dialog
   injector?: Injector
   title?: string

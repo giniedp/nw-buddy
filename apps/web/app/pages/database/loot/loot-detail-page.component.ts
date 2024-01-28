@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { LayoutModule } from '~/ui/layout'
 import { observeRouteParam, selectSignal } from '~/utils'
 import { LootModule } from '~/widgets/loot'
@@ -18,7 +19,7 @@ import { LootModule } from '~/widgets/loot'
   },
 })
 export class LootDetailPageComponent {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   protected id$ = observeRouteParam(this.route, 'id')
   protected parents = selectSignal(this.db.lootTablesByLootTableId(this.id$), (it) => {
     return it ? Array.from(it.values()) : null

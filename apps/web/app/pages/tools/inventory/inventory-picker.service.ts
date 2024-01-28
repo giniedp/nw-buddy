@@ -10,7 +10,6 @@ import {
   getPerkBucketPerkIDs,
   isItemArmor,
   isItemArtifact,
-  isItemJewelery,
   isItemWeapon,
   isPerkApplicableToItem,
   isPerkExcludedFromItem,
@@ -20,8 +19,7 @@ import {
 import { ItemClass, ItemDefinitionMaster, Perks, Statuseffect } from '@nw-data/generated'
 import { isEqual } from 'lodash'
 import { Observable, combineLatest, filter, map, switchMap, take } from 'rxjs'
-import { ItemInstance, ItemInstancesStore } from '~/data'
-import { NwDbService } from '~/nw'
+import { ItemInstance, NwDataService } from '~/data'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { eqCaseInsensitive, matchMapTo } from '~/utils'
 import { openHousingItemsPicker } from '~/widgets/data/housing-table'
@@ -32,7 +30,11 @@ import { StatusEffectTableAdapter } from '~/widgets/data/status-effect-table'
 
 @Injectable({ providedIn: 'root' })
 export class InventoryPickerService {
-  public constructor(private db: NwDbService, private dialog: Dialog, private injector: Injector) {
+  public constructor(
+    private db: NwDataService,
+    private dialog: Dialog,
+    private injector: Injector,
+  ) {
     //
   }
 
@@ -137,16 +139,14 @@ export class InventoryPickerService {
     selection,
     multiple,
     category,
-    store,
   }: {
     title?: string
     selection?: string[]
     multiple?: boolean
     category?: string
-    store: ItemInstancesStore
   }) {
     return (
-      this.openInstancePicker({ selection, title, multiple, category, store })
+      this.openInstancePicker({ selection, title, multiple, category })
         .closed.pipe(take(1))
         // cancelled selection
         .pipe(filter((it) => it !== undefined))
@@ -188,7 +188,7 @@ export class InventoryPickerService {
             .pipe(map((it) => it?.[0]))
             .pipe(map((it: string) => perks.get(it)))
         )
-      })
+      }),
     )
   }
 
@@ -236,13 +236,11 @@ export class InventoryPickerService {
     selection,
     multiple,
     category,
-    store,
   }: {
     title?: string
     selection?: string[]
     multiple?: boolean
     category?: string
-    store: ItemInstancesStore
   }) {
     let types: Set<string>
     if (category) {
@@ -258,7 +256,7 @@ export class InventoryPickerService {
       persistKey: 'inventory-picker-table',
       dataView: {
         adapter: InventoryTableAdapter,
-        source: store.rows$.pipe(map((items) => items.filter((it) => it.item?.ItemClass?.some((e) => types.has(e))))),
+        filter: (it) => it.item?.ItemClass?.some((e) => types.has(e)),
       },
       config: {
         maxWidth: 1400,
@@ -275,7 +273,7 @@ export class InventoryPickerService {
       selectedPerkid: string
       slotKey: string
       exclusiveLabels: string[]
-    }
+    },
   ) {
     return DataViewPicker.open(this.dialog, {
       title: 'Choose Perk',
@@ -374,11 +372,11 @@ export class InventoryPickerService {
     item: ItemDefinitionMaster,
     {
       slotKey,
-      exclusiveLabels
+      exclusiveLabels,
     }: {
       slotKey: string
       exclusiveLabels: string[]
-    }
+    },
   ) {
     return combineLatest({
       perks: this.db.perks,
@@ -395,7 +393,7 @@ export class InventoryPickerService {
         const bucketIsGem = isPerkGem(bucket)
         const bucketPerkIds = getPerkBucketPerkIDs(bucket)
         // const bucketPerks = bucketPerkIds.map((id) => perksMap.get(id))
-        const hasGemSlot = getItemPerkIds(item).some((it) => isPerkGem(perksMap.get(it)) )
+        const hasGemSlot = getItemPerkIds(item).some((it) => isPerkGem(perksMap.get(it)))
 
         const isWeapon = isItemWeapon(item)
         const isArmor = isItemArmor(item)
@@ -451,7 +449,7 @@ export class InventoryPickerService {
               }),
             }
           })
-      })
+      }),
     )
   }
 }

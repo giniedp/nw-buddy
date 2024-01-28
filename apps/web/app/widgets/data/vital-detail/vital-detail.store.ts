@@ -19,7 +19,7 @@ import {
 } from '@nw-data/generated'
 import { uniqBy } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { selectStream, shareReplayRefCount } from '~/utils'
 
 export interface VitalDetailState {
@@ -37,7 +37,7 @@ export interface DamageTableFile {
 
 @Injectable()
 export class VitalDetailStore extends ComponentStore<VitalDetailState> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
 
   readonly vitalId$ = this.select(({ vitalId }) => vitalId)
   readonly vital$ = selectStream(this.db.vital(this.vitalId$))

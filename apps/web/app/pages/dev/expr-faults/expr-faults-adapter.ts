@@ -3,7 +3,7 @@ import { inject } from '@angular/core'
 import { NW_FALLBACK_ICON, NwExpEval, NwExpJoin, parseNwExpression } from '@nw-data/common'
 import { Perks } from '@nw-data/generated'
 import { Observable, combineLatest, defer, map, of, switchMap, tap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -29,7 +29,7 @@ const KNOWN_LANG = [
 ]
 
 export class ExprFaultsAdapter implements DataViewAdapter<FaultRow> {
-  private db: NwDbService = inject(NwDbService)
+  private db: NwDataService = inject(NwDataService)
   private utils: TableGridUtils<FaultRow> = inject(TableGridUtils)
 
   public entityID(item: FaultRow): string | number {

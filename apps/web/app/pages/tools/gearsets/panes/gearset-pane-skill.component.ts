@@ -1,18 +1,18 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, DestroyRef, Injector, Input, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, Injector, computed, inject, input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { BehaviorSubject, combineLatest, filter, map, switchMap } from 'rxjs'
+import { Observable, combineLatest, filter, map, of, switchMap } from 'rxjs'
 
-import { NwDbService, NwModule } from '~/nw'
+import { GearsetsDB, NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
-import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
-import { EquipSlotId, getWeaponTagFromWeapon } from '@nw-data/common'
-import { GearsetRecord, GearsetSkillSlot, GearsetSkillStore, SkillBuild, SkillBuildsDB } from '~/data'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
+import { GearsetRecord, GearsetSkillSlot, SkillBuildsDB, SkillSet } from '~/data'
 import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
-import { DataViewAdapterOptions, DataViewPicker } from '~/ui/data/data-view'
+import { DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
 import {
   svgDiagramProject,
@@ -26,18 +26,10 @@ import {
 } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
+import { eqCaseInsensitive } from '~/utils'
 import { SkillsetTableAdapter, SkillsetTableRecord } from '~/widgets/data/skillset-table'
 import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
 import { SkillTreeModule } from '~/widgets/skill-builder'
-import { eqCaseInsensitive } from '~/utils'
-
-export interface GearsetSkillVM {
-  slot?: GearsetSkillSlot
-  gearset?: GearsetRecord
-  instance?: SkillBuild
-  canRemove?: boolean
-  canBreak?: boolean
-}
 
 @Component({
   standalone: true,
@@ -56,34 +48,31 @@ export interface GearsetSkillVM {
     SkillTreeModule,
     TooltipModule,
   ],
-  providers: [GearsetSkillStore],
   host: {
     class: 'flex flex-col relative',
     '[class.screenshot-hidden]': '!instance()',
   },
 })
 export class GearsetPaneSkillComponent {
-  @Input()
-  public set slot(value: GearsetSkillSlot) {
-    this.slot$.next(value)
-  }
-  public get slot() {
-    return this.slot$.value
-  }
+  private db = inject(SkillBuildsDB)
+  private gearDb = inject(GearsetsDB)
+  private data = inject(NwDataService)
+  private dialog = inject(Dialog)
+  private injector = inject(Injector)
+  private destroyRef = inject(DestroyRef)
 
-  @Input()
-  public set gearset(value: GearsetRecord) {
-    this.gearset$.next(value)
-  }
-  public get gearset() {
-    return this.gearset$.value
-  }
+  public readonly slot = input.required<GearsetSkillSlot>()
+  public readonly gearset = input.required<GearsetRecord>()
+  public readonly compact = input<boolean>(false)
+  public readonly disabled = input<boolean>(false)
 
-  @Input()
-  public compact: boolean
-
-  @Input()
-  public disabled: boolean
+  protected skill = toSignal(
+    loadSkill(this.db, {
+      gearset: toObservable(this.gearset),
+      slot: toObservable(this.slot),
+    }),
+  )
+  protected instance = computed(() => this.skill()?.instance)
 
   protected iconMenu = svgEllipsisVertical
   protected iconRemove = svgTrashCan
@@ -94,36 +83,18 @@ export class GearsetPaneSkillComponent {
   protected iconPlus = svgPlus
   protected iconOpen = svgFolderOpen
 
-  protected instance = toSignal(this.store.instance$)
+  // public ngOnInit(): void {
+  //   if (!this.disabled()) {
+  //     this.attachAutoSwitchSkill()
+  //   }
+  // }
 
-  private slot$ = new BehaviorSubject<GearsetSkillSlot>(null)
-  private gearset$ = new BehaviorSubject<GearsetRecord>(null)
-  private destroyRef = inject(DestroyRef)
-
-  public constructor(
-    private store: GearsetSkillStore,
-    private skillsDB: SkillBuildsDB,
-    private dialog: Dialog,
-    private injector: Injector,
-    private db: NwDbService,
-  ) {
-    //
-  }
-
-  public ngOnInit(): void {
-    this.store.useSlot(
-      combineLatest({
-        gearset: this.gearset$,
-        slot: this.slot$,
-      }),
-    )
-    if (!this.disabled) {
-      this.attachAutoSwitchSkill()
-    }
-  }
-
-  protected updateSkill(value: SkillBuild) {
-    this.store.updateSlot({ instance: value })
+  protected updateSkill(value: SkillSet) {
+    saveSkill(this.gearDb, {
+      gearset: this.gearset(),
+      slot: this.slot(),
+      instance: value,
+    })
   }
 
   protected createNew() {
@@ -136,12 +107,10 @@ export class GearsetPaneSkillComponent {
         map((it) => NW_WEAPON_TYPES.find((type) => type.WeaponTypeID === String(it[0]))),
       )
       .subscribe((weapon) => {
-        this.store.updateSlot({
-          instance: {
-            weapon: weapon.WeaponTag,
-            tree1: [],
-            tree2: [],
-          },
+        this.updateSkill({
+          weapon: weapon.WeaponTag,
+          tree1: [],
+          tree2: [],
         })
       })
   }
@@ -164,70 +133,65 @@ export class GearsetPaneSkillComponent {
     })
       .closed.pipe(map((it) => it?.[0]))
       .pipe(filter((it) => !!it))
-      .pipe(switchMap((id: string) => this.skillsDB.read(id)))
+      .pipe(switchMap((id: string) => this.db.read(id)))
       .subscribe((value) => {
-        this.store.updateSlot({
-          instance: {
-            weapon: value.weapon,
-            tree1: value.tree1,
-            tree2: value.tree2,
-          },
+        this.updateSkill({
+          weapon: value.weapon,
+          tree1: value.tree1,
+          tree2: value.tree2,
         })
       })
   }
 
   protected reset() {
-    this.store.updateSlot({
-      instance: {
-        weapon: this.instance()?.weapon,
-        tree1: [],
-        tree2: [],
-      },
+    this.updateSkill({
+      weapon: this.skill()?.instance?.weapon,
+      tree1: [],
+      tree2: [],
     })
   }
+}
 
-  private attachAutoSwitchSkill() {
-    combineLatest({
-      items: this.db.itemsMap,
-      stats: this.db.weaponsMap,
-      itemId: combineLatest({
-        gearset: this.gearset$,
-        slot: this.slot$,
-      }).pipe(
-        map(({ gearset, slot }) => {
-          const slotId: EquipSlotId = slot === 'primary' ? 'weapon1' : 'weapon2'
-          const it = gearset?.slots?.[slotId]
-          if (!it) {
-            return null
-          }
-          if (typeof it === 'string') {
-            return it
-          }
-          return it.itemId
-        }),
-      ),
-    })
-      .pipe(
-        map(({ items, stats, itemId }) => {
-          const item = items.get(itemId)
-          const weapon = stats.get(item?.ItemStatsRef)
-          return {
-            item,
-            weapon,
-          }
-        }),
-      )
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe(({ item, weapon }) => {
-        const instance = this.instance()
-        const weaponTag = getWeaponTagFromWeapon(weapon)
-        if (!instance || instance.weapon !== weaponTag) {
-          this.updateSkill({
-            weapon: weaponTag,
-            tree1: [],
-            tree2: [],
-          })
-        }
+function loadSkill(
+  db: SkillBuildsDB,
+  options: {
+    gearset: Observable<GearsetRecord>
+    slot: Observable<GearsetSkillSlot>
+  },
+) {
+  return combineLatest(options).pipe(
+    switchMap(({ gearset, slot: skillSlot }) => {
+      const skillRef = gearset?.skills?.[skillSlot]
+      const instanceId = typeof skillRef === 'string' ? skillRef : null
+      const instance = typeof skillRef !== 'string' ? skillRef : null
+      const query$ = instanceId ? db.live((t) => t.get(instanceId)) : of(instance)
+      return combineLatest({
+        slot: of(skillSlot),
+        instance: query$,
       })
+    }),
+  )
+}
+
+function saveSkill(
+  db: GearsetsDB,
+  options: {
+    gearset: GearsetRecord
+    slot: GearsetSkillSlot
+    instance?: SkillSet
+  },
+) {
+  const { gearset, slot, instance } = options
+  const record = clone(gearset)
+  record.skills = record.skills || {}
+  if (!instance) {
+    delete record.skills[slot]
+  } else {
+    record.skills[slot] = instance
   }
+  return db.update(record.id, record)
+}
+
+function clone<T>(it: T): T {
+  return JSON.parse(JSON.stringify(it))
 }

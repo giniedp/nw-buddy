@@ -1,8 +1,8 @@
 import { ColumnApi, ColumnState, GridApi } from '@ag-grid-community/core'
 import { EventEmitter, Injectable, inject } from '@angular/core'
+import { TableStateDB, TableStateRecord } from '~/data'
 import { PreferencesService, StorageNode } from '~/preferences'
 import { gridGetPinnedBottomData, gridGetPinnedTopData } from '../ag-grid/utils'
-import { TablePresetDB, TableStateDB, TableStateRecord } from '~/data/table-preset.db'
 
 @Injectable()
 export class TableGridPersistenceService {

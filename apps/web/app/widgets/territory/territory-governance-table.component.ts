@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { combineLatest, defer, map } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { shareReplayRefCount } from '~/utils'
 
 export interface StandingRow {
@@ -49,7 +50,7 @@ export class TerritoryGovernanceTableComponent {
     })
   )
 
-  public constructor(private db: NwDbService) {
+  public constructor(private db: NwDataService) {
     //
   }
 }

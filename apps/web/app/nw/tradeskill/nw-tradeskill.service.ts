@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core'
 import { Tradeskillpostcap } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, shareReplay, switchMap } from 'rxjs'
+import { NwDataService } from '~/data'
+import { tableIndexBy } from '~/data/nw-data/dsl'
 import { shareReplayRefCount } from '~/utils'
-import { NwDbService, createIndex } from '../nw-db.service'
 import { NW_TRADESKILLS_INFOS_MAP } from './nw-tradeskill'
 
 export interface NwTradeskillInfo {
@@ -50,24 +51,22 @@ export class NwTradeskillService {
             })
             .filter((it) => !!it)
         )
-      })
+      }),
     )
     .pipe(
       shareReplay({
         refCount: true,
         bufferSize: 1,
-      })
+      }),
     )
 
-  public skillsMap = defer(() => this.skills)
-    .pipe(map((it) => createIndex(it, 'ID')))
-    .pipe(shareReplayRefCount(1))
+  public skillsMap = tableIndexBy(() => this.skills, 'ID')
 
   public categories = defer(() => this.skills)
     .pipe(map((it) => uniq(it.map((i) => i.Category))))
     .pipe(shareReplayRefCount(1))
 
-  public constructor(private db: NwDbService) {
+  public constructor(private db: NwDataService) {
     //
   }
 
@@ -78,7 +77,7 @@ export class NwTradeskillService {
     }).pipe(
       map(({ cat, skills }) => {
         return skills.filter((it) => !cat || it.Category === cat)
-      })
+      }),
     )
   }
 
@@ -100,7 +99,7 @@ export class NwTradeskillService {
           return of<NwTradeskillLevel[]>([])
         }
         return this.db.data[fnName]() as Observable<NwTradeskillLevel[]>
-      })
+      }),
     )
   }
 

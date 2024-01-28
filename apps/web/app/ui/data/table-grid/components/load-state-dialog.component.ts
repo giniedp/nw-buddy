@@ -2,7 +2,7 @@ import { DIALOG_DATA, Dialog, DialogConfig, DialogRef } from '@angular/cdk/dialo
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { TablePreset } from '~/data/table-preset.db'
+import { TablePreset } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { TooltipModule } from '~/ui/tooltip'

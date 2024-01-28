@@ -1,13 +1,13 @@
 import { Injectable, Output, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { switchMap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { selectStream } from '~/utils'
 import { selectEntitlementRewards } from './selectors'
 
 @Injectable()
 export class EntitlementDetailStore extends ComponentStore<{ entitlementId: string }> {
-  protected db = inject(NwDbService)
+  protected db = inject(NwDataService)
   public readonly entitlementId$ = this.select(({ entitlementId }) => entitlementId)
 
   @Output()

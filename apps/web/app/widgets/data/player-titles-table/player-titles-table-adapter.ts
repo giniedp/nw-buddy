@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_PLAYERTITLES, Playertitles } from '@nw-data/generated'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import {
   DataTableCategory,
@@ -29,7 +29,7 @@ import { humanize } from '~/utils'
 export class PlayerTitlesTableAdapter
   implements DataViewAdapter<PlayertitlesTableRecord>, TableGridAdapter<PlayertitlesTableRecord>
 {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<PlayertitlesTableRecord> = inject(TableGridUtils)
 

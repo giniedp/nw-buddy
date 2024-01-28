@@ -5,7 +5,7 @@ import { Territorydefinitions } from '@nw-data/generated'
 import { sortBy } from 'lodash'
 import { combineLatest, defer, map, switchMap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { TerritoriesService } from '~/nw/territories'
 import { QuicksearchService } from '~/ui/quicksearch'
 import { shareReplayRefCount } from '~/utils'
@@ -33,7 +33,7 @@ export class TerritoriesListComponent {
   protected trackById: TrackByFunction<Territorydefinitions> = (i, it) => it?.TerritoryID
 
   public constructor(
-    private db: NwDbService,
+    private db: NwDataService,
     private i18n: TranslateService,
     private search: QuicksearchService,
     private service: TerritoriesService

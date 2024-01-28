@@ -3,7 +3,8 @@ import { FormsModule } from '@angular/forms'
 import { GatherableNodeSize, getGatherableNodeSize } from '@nw-data/common'
 import { Spawns } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCompress, svgExpand } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
@@ -57,7 +58,7 @@ const SIZE_ORDER = ['Tiny', 'Small', 'Medium', 'Large', 'Huge']
   },
 })
 export class GatherableDetailMapComponent {
-  protected db = inject(NwDbService)
+  protected db = inject(NwDataService)
   protected store = inject(GatherableDetailStore)
   protected tl8 = inject(TranslateService)
 

@@ -1,5 +1,5 @@
 import { Directive, forwardRef, Input } from '@angular/core'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { DamageRowDetailStore } from './damage-row-detail.store'
 
 @Directive({
@@ -19,7 +19,7 @@ export class DamageRowDetailDirective extends DamageRowDetailStore {
     this.patchState({ rowId: value })
   }
 
-  public constructor(db: NwDbService) {
+  public constructor(db: NwDataService) {
     super(db)
   }
 }

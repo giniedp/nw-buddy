@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Input } from '@angular/core'
 import { getItemId } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { ModelViewerService } from '../../model-viewer/model-viewer.service'
 import { ItemDetailStore } from './item-detail.store'
 
@@ -37,7 +37,7 @@ export class ItemDetailComponent extends ItemDetailStore {
   public set perkOverride(value: Record<string, string>) {
     this.patchState({ perkOverride: value })
   }
-  public constructor(db: NwDbService, ms: ModelViewerService, cdRef: ChangeDetectorRef) {
+  public constructor(db: NwDataService, ms: ModelViewerService, cdRef: ChangeDetectorRef) {
     super(db, ms, cdRef)
   }
 }

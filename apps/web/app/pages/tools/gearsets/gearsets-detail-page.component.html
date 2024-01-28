@@ -1,183 +1,181 @@
-@if (vm$ | async; as vm) {
-  @if (vm.record; as data) {
-    <ion-header class="bg-base-300">
-      <div class="form-control p-1">
-        <div class="input-group overflow-x-auto">
-          <a class="btn btn-ghost btn-square inline-flex" (click)="goBack()">
-            <nwb-icon [icon]="iconBack" class="w-4 h-4"/>
-          </a>
-          <input
-            type="text"
-            placeholder=""
-            class="input input-bordered w-full min-w-[200px]"
-            maxlength="100"
-            [ngModel]="vm.name"
-            (ngModelChange)="updateName($event)"
-            [ngModelOptions]="{ updateOn: 'blur' }"
-          />
-
-          <button
-            class="btn btn-ghost btn-square"
-            cdkOverlayOrigin
-            #overlay="cdkOverlayOrigin"
-            (click)="isTagEditorOpen = !isTagEditorOpen"
-            [tooltip]="'Edit Tags'"
-            [tooltipClass]="'bg-info'"
-          >
-            <nwb-icon [icon]="iconTags" class="w-4 h-4"/>
-          </button>
-          <ng-template
-            cdkConnectedOverlay
-            [cdkConnectedOverlayOrigin]="overlay"
-            [cdkConnectedOverlayOpen]="isTagEditorOpen"
-            [cdkConnectedOverlayHasBackdrop]="true"
-            [cdkConnectedOverlayOffsetY]="5"
-            (backdropClick)="isTagEditorOpen = false"
-            (detach)="isTagEditorOpen = false"
-          >
-            <div class="p-2 bg-base-200 border border-base-100 rounded-md shadow-lg">
-              <nwb-chips-input-pane
-                [tags]="presetTags"
-                [placeholder]="'custom tags'"
-                [ngModel]="vm.tags"
-                (ngModelChange)="updateTags(vm.record, $event)"
-              ></nwb-chips-input-pane>
-            </div>
-          </ng-template>
-
-          <button
-            [nwbScreenshotBtn]
-            class="btn btn-ghost btn-square"
-            [tooltip]="'Screenshot'"
-            [tooltipClass]="'bg-info'"
-          ></button>
-
-          <button
-            class="btn btn-ghost btn-square"
-            (click)="onCalculatorClicked()"
-            [tooltip]="'Toggle calculator'"
-            [tooltipClass]="'bg-info'"
-            [class.text-primary]="calculator"
-          >
-            <nwb-icon [icon]="iconCalculator" class="w-4 h-4"/>
-          </button>
-
-          <button
-            class="btn btn-ghost btn-square"
-            (click)="onCompactClicked()"
-            [tooltip]="'Toggle compact mode'"
-            [tooltipClass]="'bg-info'"
-            [class.text-primary]="compact"
-          >
-            <nwb-icon [icon]="iconCompact" class="w-4 h-4"/>
-          </button>
-
-          <button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
-            <nwb-icon [icon]="iconMenu" class="w-4 h-4"/>
-          </button>
-
-          <ng-template #menu>
-            <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
-              <li class="text-shadow-sm shadow-black">
-                <a cdkMenuItem (click)="onShareClicked()">
-                  <nwb-icon [icon]="iconShare" class="w-4 h-4"/>
-                  <div class="flex flex-col leading-none">
-                    <span>Share</span>
-                    <span class="text-xs opacity-75">Upload online and create a share URL</span>
-                  </div>
-                </a>
-              </li>
-              <li class="text-shadow-sm shadow-black">
-                <a (click)="onCloneClicked()" cdkMenuItem>
-                  <nwb-icon [icon]="iconCopy" class="w-4 h-4"/>
-                  <div class="flex flex-col leading-none">
-                    <span>Copy</span>
-                    <span class="text-xs opacity-75">Create a copy of this set</span>
-                  </div>
-                </a>
-              </li>
-
-              <li class="menu-title">
-                <span>Batch Edit</span>
-              </li>
-              <li class="text-shadow-sm shadow-black">
-                <a (click)="onBatchGearScoreClicked()" cdkMenuItem>
-                  <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-4 h-4" />
-                  <div class="flex flex-col leading-none">
-                    <span>Gear Score</span>
-                    <span class="text-xs opacity-75">Change gear score for multiple items</span>
-                  </div>
-                </a>
-              </li>
-              <li class="text-shadow-sm shadow-black">
-                <a (click)="onBatchGemClicked()" cdkMenuItem>
-                  <img [nwImage]="'assets/icons/menu/gems.png'" class="w-4 h-4" />
-                  <div class="flex flex-col leading-none">
-                    <span>Gems</span>
-                    <span class="text-xs opacity-75">Pick a gem and apply to multiple items</span>
-                  </div>
-                </a>
-              </li>
-              <li class="text-shadow-sm shadow-black">
-                <a (click)="onBatchAttributeClicked()" cdkMenuItem>
-                  <img [nwImage]="'assets/icons/icon_attribute_arrow.png'" class="w-4 h-4" />
-                  <div class="flex flex-col leading-none">
-                    <span>Attributes</span>
-                    <span class="text-xs opacity-75">Pick an attribute and apply to multiple items</span>
-                  </div>
-                </a>
-              </li>
-
-              <li class="text-shadow-sm shadow-black">
-                <a (click)="onBatchResetClicked()" cdkMenuItem>
-                  <nwb-icon [icon]="iconReset" class="w-4 h-4" />
-                  <div class="flex flex-col leading-none">
-                    <span>Reset Perks</span>
-                    <span class="text-xs opacity-75">Reset perks on multiple items</span>
-                  </div>
-                </a>
-              </li>
-
-              <li class="divider my-0"></li>
-              <li class="text-shadow-sm shadow-black">
-                <a (click)="onDeleteClicked()" cdkMenuItem>
-                  <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error"/>
-                  <div class="flex flex-col leading-none">
-                    <span>Delete</span>
-                    <span class="text-xs opacity-75">Delete this set</span>
-                  </div>
-                </a>
-              </li>
-            </ul>
-          </ng-template>
-        </div>
-      </div>
-    </ion-header>
-    <div class="layout-col" cdkScrollable>
-      <nwb-gearset [gearset]="data" [compact]="compact" [calculator]="calculator" />
-    </div>
-  } @else {
-    <div class="alert alert-error shadow-lg">
-      <div>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="stroke-current flex-shrink-0 h-6 w-6"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-        <span>Gearset not found</span>
-      </div>
-    </div>
-  }
-} @else {
+@if (!isLoaded) {
   <div class="flex items-center justify-center py-20">
     <button class="btn loading">loading...</button>
+  </div>
+} @else if (!gearset) {
+  <div class="alert alert-error shadow-lg">
+    <div>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="stroke-current flex-shrink-0 h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span>Gearset not found</span>
+    </div>
+  </div>
+} @else {
+  <ion-header class="bg-base-300">
+    <div class="form-control p-1">
+      <div class="input-group overflow-x-auto">
+        <a class="btn btn-ghost btn-square inline-flex" (click)="goBack()">
+          <nwb-icon [icon]="iconBack" class="w-4 h-4" />
+        </a>
+        <input
+          type="text"
+          placeholder=""
+          class="input input-bordered w-full min-w-[200px]"
+          maxlength="100"
+          [ngModel]="gearset.name"
+          (ngModelChange)="updateName($event)"
+          [ngModelOptions]="{ updateOn: 'blur' }"
+        />
+
+        <button
+          class="btn btn-ghost btn-square"
+          cdkOverlayOrigin
+          #overlay="cdkOverlayOrigin"
+          (click)="isTagEditorOpen = !isTagEditorOpen"
+          [tooltip]="'Edit Tags'"
+          [tooltipClass]="'bg-info'"
+        >
+          <nwb-icon [icon]="iconTags" class="w-4 h-4" />
+        </button>
+        <ng-template
+          cdkConnectedOverlay
+          [cdkConnectedOverlayOrigin]="overlay"
+          [cdkConnectedOverlayOpen]="isTagEditorOpen"
+          [cdkConnectedOverlayHasBackdrop]="true"
+          [cdkConnectedOverlayOffsetY]="5"
+          (backdropClick)="isTagEditorOpen = false"
+          (detach)="isTagEditorOpen = false"
+        >
+          <div class="p-2 bg-base-200 border border-base-100 rounded-md shadow-lg">
+            <nwb-chips-input-pane
+              [tags]="presetTags"
+              [placeholder]="'custom tags'"
+              [ngModel]="gearset.tags"
+              (ngModelChange)="updateTags(gearset, $event)"
+            />
+          </div>
+        </ng-template>
+
+        <button
+          [nwbScreenshotBtn]
+          class="btn btn-ghost btn-square"
+          [tooltip]="'Screenshot'"
+          [tooltipClass]="'bg-info'"
+        ></button>
+
+        <button
+          class="btn btn-ghost btn-square"
+          (click)="onCalculatorClicked()"
+          [tooltip]="'Toggle calculator'"
+          [tooltipClass]="'bg-info'"
+          [class.text-primary]="calculator"
+        >
+          <nwb-icon [icon]="iconCalculator" class="w-4 h-4" />
+        </button>
+
+        <button
+          class="btn btn-ghost btn-square"
+          (click)="onCompactClicked()"
+          [tooltip]="'Toggle compact mode'"
+          [tooltipClass]="'bg-info'"
+          [class.text-primary]="compact"
+        >
+          <nwb-icon [icon]="iconCompact" class="w-4 h-4" />
+        </button>
+
+        <button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
+          <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
+        </button>
+
+        <ng-template #menu>
+          <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
+            <li class="text-shadow-sm shadow-black">
+              <a cdkMenuItem (click)="onShareClicked()">
+                <nwb-icon [icon]="iconShare" class="w-4 h-4" />
+                <div class="flex flex-col leading-none">
+                  <span>Share</span>
+                  <span class="text-xs opacity-75">Upload online and create a share URL</span>
+                </div>
+              </a>
+            </li>
+            <li class="text-shadow-sm shadow-black">
+              <a (click)="onCloneClicked()" cdkMenuItem>
+                <nwb-icon [icon]="iconCopy" class="w-4 h-4" />
+                <div class="flex flex-col leading-none">
+                  <span>Copy</span>
+                  <span class="text-xs opacity-75">Create a copy of this set</span>
+                </div>
+              </a>
+            </li>
+
+            <li class="menu-title">
+              <span>Batch Edit</span>
+            </li>
+            <li class="text-shadow-sm shadow-black">
+              <a (click)="onBatchGearScoreClicked()" cdkMenuItem>
+                <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-4 h-4" />
+                <div class="flex flex-col leading-none">
+                  <span>Gear Score</span>
+                  <span class="text-xs opacity-75">Change gear score for multiple items</span>
+                </div>
+              </a>
+            </li>
+            <li class="text-shadow-sm shadow-black">
+              <a (click)="onBatchGemClicked()" cdkMenuItem>
+                <img [nwImage]="'assets/icons/menu/gems.png'" class="w-4 h-4" />
+                <div class="flex flex-col leading-none">
+                  <span>Gems</span>
+                  <span class="text-xs opacity-75">Pick a gem and apply to multiple items</span>
+                </div>
+              </a>
+            </li>
+            <li class="text-shadow-sm shadow-black">
+              <a (click)="onBatchAttributeClicked()" cdkMenuItem>
+                <img [nwImage]="'assets/icons/icon_attribute_arrow.png'" class="w-4 h-4" />
+                <div class="flex flex-col leading-none">
+                  <span>Attributes</span>
+                  <span class="text-xs opacity-75">Pick an attribute and apply to multiple items</span>
+                </div>
+              </a>
+            </li>
+
+            <li class="text-shadow-sm shadow-black">
+              <a (click)="onBatchResetClicked()" cdkMenuItem>
+                <nwb-icon [icon]="iconReset" class="w-4 h-4" />
+                <div class="flex flex-col leading-none">
+                  <span>Reset Perks</span>
+                  <span class="text-xs opacity-75">Reset perks on multiple items</span>
+                </div>
+              </a>
+            </li>
+
+            <li class="divider my-0"></li>
+            <li class="text-shadow-sm shadow-black">
+              <a (click)="onDeleteClicked()" cdkMenuItem>
+                <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error" />
+                <div class="flex flex-col leading-none">
+                  <span>Delete</span>
+                  <span class="text-xs opacity-75">Delete this set</span>
+                </div>
+              </a>
+            </li>
+          </ul>
+        </ng-template>
+      </div>
+    </div>
+  </ion-header>
+  <div class="layout-col" cdkScrollable>
+    <nwb-gearset [gearset]="gearset" [compact]="compact" [calculator]="calculator" />
   </div>
 }

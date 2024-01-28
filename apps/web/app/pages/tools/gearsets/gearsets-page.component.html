@@ -2,29 +2,31 @@
   <div class="flex flex-col-reverse md:flex-row">
     <nwb-navbar [menu]="tplMenu" [buttons]="tplButtons" class="flex-1">
       <ng-template #tplMenu>
-        <li *ngFor="let item of tags$ | async">
-          <a (click)="toggleTag(item.tag)" [class.active]="item.active">
-            {{ item.tag }}
-          </a>
-        </li>
+        @for (item of tags; track $index) {
+          <li>
+            <a (click)="toggleTag(item.tag)" [class.active]="item.active">
+              {{ item.tag }}
+            </a>
+          </li>
+        }
       </ng-template>
       <ng-template #tplButtons>
         <li [tooltip]="'Create new gearset'" [tooltipClass]="'bg-accent'">
-          <span (click)="createItem()">
-            <nwb-icon [icon]="iconCreate" class="w-4 h-4"/>
+          <span (click)="handleCreate()">
+            <nwb-icon [icon]="iconCreate" class="w-4 h-4" />
           </span>
         </li>
         <li [tooltip]="'Import Gearset'" [tooltipClass]="'bg-accent'">
-          <span (click)="importItem()">
-            <nwb-icon [icon]="iconImport" class="w-4 h-4"/>
+          <span (click)="handleImport()">
+            <nwb-icon [icon]="iconImport" class="w-4 h-4" />
           </span>
         </li>
       </ng-template>
     </nwb-navbar>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
-      <nwb-quicksearch-input/>
+      <nwb-quicksearch-input />
     </div>
   </div>
 </ion-header>
 
-<nwb-gearset-loadout-list/>
+<nwb-gearset-loadout-list [records]="items" (createClicked)="handleCreate()" (deleteCliced)="handleDelete($event)" />

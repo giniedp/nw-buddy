@@ -3,7 +3,8 @@ import { Component, HostListener, Input, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON, getVitalCategoryInfo, getVitalHealth, getVitalTypeMarker } from '@nw-data/common'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
 import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -76,7 +77,7 @@ export class VitalGridCellComponent
     return this.state()?.vital
   }
 
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   protected vital$ = this.select(({ vital }) => vital)
   protected vitalId$ = this.select(({ vital }) => vital?.VitalsID)
   protected vitalLevel$ = this.select(({ vital }) => vital?.Level)

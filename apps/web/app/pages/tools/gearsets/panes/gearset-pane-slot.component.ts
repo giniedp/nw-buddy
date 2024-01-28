@@ -1,26 +1,15 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { Overlay } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import {
-  ChangeDetectionStrategy,
-  Component,
-  ElementRef,
-  EventEmitter,
-  Input,
-  Output,
-  QueryList,
-  Renderer2,
-  ViewChildren,
-} from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, computed, inject, input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { BehaviorSubject, combineLatest, defer, filter, firstValueFrom, map, take, tap } from 'rxjs'
+import { filter, take } from 'rxjs'
 
 import { NwModule } from '~/nw'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
-import { EQUIP_SLOTS, EquipSlot, EquipSlotId, NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE, getItemId, getItemMaxGearScore } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
-import { GearsetRecord, GearsetSlotStore, ItemInstance, ItemInstancesStore } from '~/data'
+import { EquipSlotId, NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE, getItemId, getItemMaxGearScore } from '@nw-data/common'
+import { GearsetRecord, ItemInstance, GearsetSlotStore } from '~/data'
 import { GsSliderComponent } from '~/ui/gs-input'
 import { IconsModule } from '~/ui/icons'
 import {
@@ -35,23 +24,9 @@ import {
 import { ItemFrameModule } from '~/ui/item-frame'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { shareReplayRefCount } from '~/utils'
-import { ItemDetailComponent } from '~/widgets/data/item-detail/item-detail.component'
+import { selectSignal } from '~/utils'
 import { GearImporterDialogComponent } from '../../inventory/gear-importer-dialog.component'
 import { InventoryPickerService } from '../../inventory/inventory-picker.service'
-
-export interface GearsetSlotVM {
-  slot?: EquipSlot
-  gearset?: GearsetRecord
-  instanceId?: string
-  instance?: ItemInstance
-  canRemove?: boolean
-  canBreak?: boolean
-  canUseImporter?: boolean
-  isEqupment?: boolean
-  isRune?: boolean
-  item?: ItemDefinitionMaster | Housingitems
-}
 
 @Component({
   standalone: true,
@@ -73,29 +48,13 @@ export interface GearsetSlotVM {
   providers: [GearsetSlotStore],
   host: {
     class: 'block bg-black rounded-md flex flex-col overflow-hidden',
+    '[class.hidden]': 'isHidden()',
+    '[class.screenshot-hidden]': 'isScreenshotHidden()',
   },
 })
 export class GearsetPaneSlotComponent {
-  @Input()
-  public set slot(value: EquipSlot) {
-    this.slot$.next(value)
-  }
-  public get slot() {
-    return this.slot$.value
-  }
-
-  @Input()
-  public set slotId(value: EquipSlotId) {
-    this.slot$.next(EQUIP_SLOTS.find((it) => it.id === value))
-  }
-
-  @Input()
-  public set gearset(value: GearsetRecord) {
-    this.gearset$.next(value)
-  }
-  public get gearset() {
-    return this.gearset$.value
-  }
+  public readonly slotId = input<EquipSlotId>()
+  public readonly gearset = input<GearsetRecord>()
 
   @Output()
   public itemRemove = new EventEmitter<void>()
@@ -115,8 +74,8 @@ export class GearsetPaneSlotComponent {
   @Input()
   public disabled: boolean
 
-  @ViewChildren(ItemDetailComponent)
-  protected itemDetail: QueryList<ItemDetailComponent>
+  protected store = inject(GearsetSlotStore)
+
   protected iconRemove = svgTrashCan
   protected iconLink = svgLink16p
   protected iconLinkBreak = svgLinkSlash16p
@@ -127,121 +86,35 @@ export class GearsetPaneSlotComponent {
   protected gsScrollStrat = this.overlay.scrollStrategies.close({
     threshold: 10,
   })
-  protected vm$ = defer(() =>
-    combineLatest({
-      slot: this.slot$,
-      gearset: this.gearset$,
-      instanceId: this.store.instanceId$,
-      instance: this.store.instance$,
-      isEqupment: this.store.isEqupment$,
-      canRemove: this.store.canRemove$,
-      canBreak: this.store.canBreak$,
-      canUseImporter: this.store.slot$.pipe(
-        map((slot) => {
-          const ids: EquipSlotId[] = [
-            'head',
-            'chest',
-            'hands',
-            'legs',
-            'feet',
-            'amulet',
-            'ring',
-            'earring',
-            'weapon1',
-            'weapon2',
-            'weapon3',
-          ]
-          return ids.includes(slot?.id)
-        })
-      ),
-      item: this.store.item$,
-      isRune: this.slot$.pipe(map((it) => it.id === 'heartgem')),
-    })
-  )
-    .pipe(
-      tap((it: GearsetSlotVM) => {
-        this.updateClass('screenshot-hidden', !it?.item)
-        this.updateClass('hidden', !it?.item && this.disabled)
-      })
-    )
-    .pipe(shareReplayRefCount(1))
 
-  private slot$ = new BehaviorSubject<EquipSlot>(null)
-  private gearset$ = new BehaviorSubject<GearsetRecord>(null)
+  protected isGearSlot = computed(() => {
+    return this.store.isArmor() || this.store.isWeapon() || this.store.isJewelry() || this.store.isRune()
+  })
+  protected isEquipmentSlot = computed(() => {
+    return !this.isGearSlot()
+  })
+
+  protected isHidden = computed(() => {
+    return !this.store.hasItem() || this.disabled
+  })
+  protected isScreenshotHidden = computed(() => {
+    return !this.store.hasItem()
+  })
 
   protected gsValue: number
   protected gsTarget: Element
 
   public constructor(
-    private store: GearsetSlotStore,
-    private itemsStore: ItemInstancesStore,
     private picker: InventoryPickerService,
-    private renderer: Renderer2,
-    private elRef: ElementRef<HTMLElement>,
     private dialog: Dialog,
-    private overlay: Overlay
+    private overlay: Overlay,
   ) {
-    //
-  }
-
-  public ngOnInit(): void {
-    this.store.useSlot(
-      combineLatest({
-        gearset: this.gearset$,
-        slot: this.slot$,
-      })
+    this.store.connectState(
+      selectSignal({
+        gearset: this.gearset,
+        slotId: this.slotId,
+      }),
     )
-  }
-
-  protected async pickItem({ slot, instance }: GearsetSlotVM) {
-    if (slot.itemType === 'Trophies') {
-      this.picker
-        .pickHousingItem({
-          title: 'Select a trophy',
-          selection: instance ? [instance.itemId] : [],
-          category: this.slot.itemType,
-        })
-        .pipe(take(1))
-        .subscribe(([item]) => {
-          this.store.updateSlot({
-            instance: {
-              itemId: getItemId(item),
-              gearScore: null,
-              perks: {},
-            },
-          })
-        })
-    } else {
-      this.picker
-        .pickItem({
-          title: 'Select an item',
-          selection: instance ? [instance.itemId] : [],
-          categories: [this.slot.itemType],
-          noSkins: true,
-        })
-        .pipe(take(1))
-        .subscribe(([item]) => {
-          this.store.updateSlot({
-            instance: {
-              itemId: getItemId(item),
-              gearScore: getItemMaxGearScore(item),
-              perks: {},
-            },
-          })
-        })
-    }
-  }
-
-  protected async itemFromImage({ slot, instance }: GearsetSlotVM) {
-    GearImporterDialogComponent.open(this.dialog, {
-      data: slot.id,
-    })
-      .closed.pipe(filter((it) => !!it))
-      .subscribe((instance) => {
-        this.store.updateSlot({
-          instance: instance,
-        })
-      })
   }
 
   protected openGsEditor(event: MouseEvent) {
@@ -250,34 +123,8 @@ export class GearsetPaneSlotComponent {
   protected closeGsEditor() {
     this.gsTarget = null
     if (this.gsValue) {
-      this.store.updateGearScore({ gearScore: this.gsValue })
+      this.store.updateSlotGearScore(this.store.slotId(), this.gsValue)
     }
-  }
-
-  protected pickPerk({ instance }: GearsetSlotVM, key: string) {
-    this.picker
-      .pickPerkForItem(instance, key)
-      .pipe(take(1))
-      .subscribe((perk) => {
-        this.store.updatePerk({ perk, key })
-      })
-  }
-
-  protected async linkItem(it: GearsetSlotVM) {
-    this.picker
-      .pickInstance({
-        title: 'Pick item',
-        store: this.itemsStore,
-        category: it.slot.itemType,
-        selection: [it.instanceId],
-        multiple: false,
-      })
-      .pipe(take(1))
-      .subscribe((it) => {
-        this.store.updateSlot({
-          instanceId: it[0] as string,
-        })
-      })
   }
 
   protected updateGearScore(value: number) {
@@ -294,25 +141,89 @@ export class GearsetPaneSlotComponent {
     this.gsValue = Math.max(NW_MIN_GEAR_SCORE, Math.min(NW_MAX_GEAR_SCORE, this.gsValue))
   }
 
-  protected async breakLink() {
-    const instance = await firstValueFrom(this.store.instance$)
+  protected async handlePickItem() {
+    const slot = this.store.slot()
+    const instance = this.store.instance()
+    if (slot.itemType === 'Trophies') {
+      this.picker
+        .pickHousingItem({
+          title: 'Select a trophy',
+          selection: instance ? [instance.itemId] : [],
+          category: slot.itemType,
+        })
+        .pipe(take(1))
+        .subscribe(([item]) => {
+          this.store.patchSlot(slot.id, {
+            itemId: getItemId(item),
+            gearScore: null,
+            perks: {},
+          })
+        })
+    } else {
+      this.picker
+        .pickItem({
+          title: 'Select an item',
+          selection: instance ? [instance.itemId] : [],
+          categories: [slot.itemType],
+          noSkins: true,
+        })
+        .pipe(take(1))
+        .subscribe(([item]) => {
+          this.store.patchSlot(slot.id, {
+            itemId: getItemId(item),
+            gearScore: getItemMaxGearScore(item),
+            perks: {},
+          })
+        })
+    }
+  }
+
+  protected async handleScanItem() {
+    const slotId = this.slotId()
+    GearImporterDialogComponent.open(this.dialog, {
+      data: slotId,
+    })
+      .closed.pipe(filter((it) => !!it))
+      .subscribe((instance) => {
+        this.store.patchSlot(slotId, instance)
+      })
+  }
+
+  protected handlePickPerk(key: string) {
+    const instance = this.store.instance()
+    this.picker
+      .pickPerkForItem(instance, key)
+      .pipe(take(1))
+      .subscribe((perk) => {
+        this.store.updateSlotPerk(this.store.slotId(), key, perk)
+      })
+  }
+
+  protected async handleLinkItem() {
+    this.picker
+      .pickInstance({
+        title: 'Pick item',
+        category: this.store.slot().itemType,
+        selection: [this.store.instanceId()],
+        multiple: false,
+      })
+      .pipe(take(1))
+      .subscribe((it) => {
+        this.store.patchSlot(this.store.slotId(), it[0] as string)
+      })
+  }
+
+  protected async handleUnlink() {
+    const instance = this.store.instance()
     this.itemUnlink.next(instance)
   }
 
-  protected remove() {
+  protected handleUnequip() {
     this.itemRemove.next()
   }
 
   protected async instantiate() {
-    const instance = await firstValueFrom(this.store.instance$)
+    const instance = this.store.instance()
     this.itemInstantiate.next(instance)
-  }
-
-  private updateClass(name: string, hasClass: boolean) {
-    if (hasClass) {
-      this.renderer.addClass(this.elRef.nativeElement, name)
-    } else {
-      this.renderer.removeClass(this.elRef.nativeElement, name)
-    }
   }
 }

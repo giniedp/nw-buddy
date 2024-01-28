@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ComponentStore } from '@ngrx/component-store'
 import { combineLatest, map } from 'rxjs'
-import { TablePresetDB, TablePresetRecord } from '~/data/table-preset.db'
+import { TablePresetDB, TablePresetRecord } from '~/data'
 import { eqCaseInsensitive } from '~/utils'
 
 @Injectable()

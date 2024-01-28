@@ -2,7 +2,7 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getCraftingIngredients, getItemId, getRecipeForItem } from '@nw-data/common'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { TableGridAdapter } from '~/ui/data/table-grid'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
@@ -18,7 +18,7 @@ import { TrophiesRecord } from './types'
 
 @Injectable()
 export class TrophiesTableAdapter implements TableGridAdapter<TrophiesRecord>, DataViewAdapter<TrophiesRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
 
   public entityID(item: TrophiesRecord): string {
     return item.itemId
@@ -61,7 +61,7 @@ function selectRecords({
   itemsMap,
   housingMap,
 }: {
-  recipes: Map<string, Set<Crafting>>
+  recipes: Map<string, Crafting[]>
   trophies: Housingitems[]
   itemsMap: Map<string, ItemDefinitionMaster>
   housingMap: Map<string, Housingitems>

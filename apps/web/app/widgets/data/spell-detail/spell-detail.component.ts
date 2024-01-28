@@ -1,7 +1,8 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
 import { Spelltable } from '@nw-data/generated'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridModule, PropertyGridCell } from '~/ui/property-grid'
 import { SpellDetailStore } from './spell-detail.store'
@@ -30,7 +31,7 @@ export class SpellDetailComponent extends SpellDetailStore {
     this.patchState({ spellId: value })
   }
 
-  public constructor(db: NwDbService, private decimals: DecimalPipe) {
+  public constructor(db: NwDataService, private decimals: DecimalPipe) {
     super(db)
   }
 

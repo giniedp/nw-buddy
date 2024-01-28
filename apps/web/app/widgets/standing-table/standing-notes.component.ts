@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { BehaviorSubject } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { TerritoriesPreferencesService } from '~/preferences/territories-preferences.service'
 
 @Component({
@@ -32,7 +32,7 @@ export class StandingNotesComponent {
 
   private territoryId$ = new BehaviorSubject<number>(null)
 
-  public constructor(private db: NwDbService, private pref: TerritoriesPreferencesService) {
+  public constructor(private db: NwDataService, private pref: TerritoriesPreferencesService) {
     //
   }
 

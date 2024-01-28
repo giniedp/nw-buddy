@@ -4,7 +4,8 @@ import { ChangeDetectionStrategy, Component, TemplateRef, inject } from '@angula
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { map } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -40,7 +41,7 @@ import { LootModule } from '~/widgets/loot'
   },
 })
 export class PlayerTitleDetailPageComponent {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   protected route = inject(ActivatedRoute)
   protected id$ = observeRouteParam(this.route, 'id')
 

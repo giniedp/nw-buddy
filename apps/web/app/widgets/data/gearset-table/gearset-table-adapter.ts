@@ -1,13 +1,14 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { Observable, defer, filter, take } from 'rxjs'
-import { GearsetRow, GearsetsStore } from '~/data'
+import { toObservable } from '@angular/core/rxjs-interop'
+import { Observable, filter } from 'rxjs'
+import { GearsetRow, GearsetsSignalStore, NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
-import { NwDbService } from '~/nw'
-import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
 import { DataViewAdapter } from '~/ui/data/data-view'
+import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { shareReplayRefCount } from '~/utils'
+import { GearsetLoadoutItemComponent } from './gearset-cell.component'
 import {
   GearsetTableRecord,
   gearsetColGearScore,
@@ -15,16 +16,14 @@ import {
   gearsetColSlots,
   gearsetColWeight,
 } from './gearset-table-cols'
-import { GearsetLoadoutItemComponent } from './gearset-cell.component'
-import { augmentWithTransactions } from '~/ui/data/ag-grid'
 
 @Injectable()
 export class GearsetTableAdapter implements TableGridAdapter<GearsetTableRecord>, DataViewAdapter<GearsetTableRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private i18n = inject(TranslateService)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<GearsetTableRecord> = inject(TableGridUtils)
-  private store = inject(GearsetsStore)
+  private store = inject(GearsetsSignalStore)
 
   public entityID(item: GearsetRow): string {
     return item.record.id
@@ -53,16 +52,6 @@ export class GearsetTableAdapter implements TableGridAdapter<GearsetTableRecord>
     } else {
       options = buildCommonGearsetGridOptions(this.utils)
     }
-    if (this.store) {
-      options.getRowId = ({ data }) => {
-        return this.entityID(data)
-      }
-      augmentWithTransactions(options, {
-        onCreate: this.store.rowCreated$,
-        onDestroy: this.store.rowDestroyed$,
-        onUpdate: this.store.rowUpdated$,
-      })
-    }
     return options
   }
 
@@ -70,10 +59,11 @@ export class GearsetTableAdapter implements TableGridAdapter<GearsetTableRecord>
     return this.source$
   }
 
-  private source$: Observable<GearsetRow[]> = defer(() => this.config?.source || this.store.rows$)
-    .pipe(filter((it) => it != null))
-    .pipe(take(1))
-    .pipe(shareReplayRefCount(1))
+  private source$: Observable<GearsetRow[]> =
+    this.config?.source ||
+    toObservable(this.store.rows)
+      .pipe(filter((it) => it != null))
+      .pipe(shareReplayRefCount(1))
 }
 
 export function buildCommonGearsetGridOptions(util: TableGridUtils<GearsetTableRecord>) {

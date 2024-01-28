@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { combineLatest } from 'rxjs'
-import { NwDbService } from '../nw-db.service'
 import {
   selectActiveAbilities,
   selectActiveConsumables,
@@ -36,6 +35,7 @@ import { selectModsROL } from './stats/mods-rol'
 import { selectMaxHealth, selectMaxMana, selectMaxStamina } from './stats/vitality'
 import { ActiveMods, AttributeModsSource, DbSlice, MannequinState, Observed } from './types'
 import { selectModsWKN } from './stats/mods-wkn'
+import { NwDataService } from '~/data'
 
 const config = {
   debounce: true,
@@ -250,7 +250,7 @@ export class Mannequin extends ComponentStore<MannequinState> {
     debounce: true,
   })
 
-  public constructor(private db: NwDbService) {
+  public constructor(private db: NwDataService) {
     super({
       level: 1,
       equippedItems: [],

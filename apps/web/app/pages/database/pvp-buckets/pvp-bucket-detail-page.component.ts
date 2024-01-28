@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { LayoutModule } from '~/ui/layout'
@@ -41,7 +42,7 @@ import { LootGraphComponent } from '~/widgets/loot/loot-graph.component'
   },
 })
 export class PvpBucketDetailPageComponent {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   protected id$ = injectRouteParam('id')
 
   protected data$ = selectStream({

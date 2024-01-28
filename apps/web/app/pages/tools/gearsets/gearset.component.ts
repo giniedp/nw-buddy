@@ -1,35 +1,25 @@
 import { animate, animateChild, query, stagger, style, transition, trigger } from '@angular/animations'
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { EQUIP_SLOTS, EquipSlot, EquipSlotId, getStatusEffectTownBuffIds } from '@nw-data/common'
-import { combineLatest, filter, map, of, switchMap } from 'rxjs'
+import { filter, map } from 'rxjs'
 import { SwiperOptions } from 'swiper/types/swiper-options'
-import {
-  CharacterStore,
-  GearsetRecord,
-  GearsetStore,
-  ItemInstance,
-  ItemInstancesDB,
-  ItemInstancesStore,
-  SkillBuild,
-  SkillBuildsDB,
-} from '~/data'
+import { GearsetRecord, GearsetSignalStore, ItemInstance, ItemInstancesDB } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
-import { ActiveAttribute, ActiveAttributes, EquippedItem, Mannequin, MannequinState } from '~/nw/mannequin'
+import { ActiveAttribute, ActiveAttributes, Mannequin } from '~/nw/mannequin'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule } from '~/ui/layout'
 import { SwiperDirective } from '~/utils/directives/swiper.directive'
 import { ScreenshotModule } from '~/widgets/screenshot'
+import { DamageCalculatorComponent } from './calculator/damage-calculator.component'
 import { GearsetPaneEffectComponent } from './panes/gearset-pane-effect.component'
 import { GearsetPaneMainComponent } from './panes/gearset-pane-main.component'
 import { GearsetPaneSkillComponent } from './panes/gearset-pane-skill.component'
 import { GearsetPaneSlotComponent } from './panes/gearset-pane-slot.component'
 import { GearsetPaneStatsComponent } from './panes/gearset-pane-stats.component'
-import { DamageCalculatorComponent } from './calculator/damage-calculator.component'
 
 @Component({
   standalone: true,
@@ -51,9 +41,9 @@ import { DamageCalculatorComponent } from './calculator/damage-calculator.compon
     ScreenshotModule,
     SwiperDirective,
     LayoutModule,
-    DamageCalculatorComponent
+    DamageCalculatorComponent,
   ],
-  providers: [GearsetStore, ItemInstancesStore, Mannequin, NwTextContextService],
+  providers: [GearsetSignalStore, Mannequin, NwTextContextService],
   host: {
     class: 'layout-col',
   },
@@ -69,9 +59,15 @@ import { DamageCalculatorComponent } from './calculator/damage-calculator.compon
   ],
 })
 export class GearsetDetailComponent {
+  private store = inject(GearsetSignalStore)
+  private itemDb = inject(ItemInstancesDB)
+
   @Input()
   public set gearset(value: GearsetRecord) {
-    this.store.load(value)
+    this.store.connectGearset(value)
+  }
+  public get gearset() {
+    return this.store.gearset()
   }
 
   @Input()
@@ -93,9 +89,13 @@ export class GearsetDetailComponent {
     //cssMode: true,
   }
 
-  protected gearset$ = this.store.gearset$
-  protected name$ = this.store.gearsetName$
-  protected isLoading$ = this.store.isLoading$
+  protected get name() {
+    return this.store.gearsetName()
+  }
+  protected get isLoading() {
+    return !this.store.isLoaded()
+  }
+
   protected iconChevronLeft = svgChevronLeft
 
   protected slots = EQUIP_SLOTS.filter(
@@ -103,67 +103,60 @@ export class GearsetDetailComponent {
   )
   protected ammoSlots = EQUIP_SLOTS.filter((it) => it.itemType === 'Ammo')
   protected buffSlots = EQUIP_SLOTS.filter((it) => it.id.startsWith('buff'))
-  protected ammoAndSlotsAreEmpty$ = this.store.gearsetSlots$.pipe(
-    map((slots) => areSlotsEmtpy(this.ammoSlots, slots) && areSlotsEmtpy(this.buffSlots, slots)),
-  )
-  protected ammoAndSlotsAreEmpty = toSignal(this.ammoAndSlotsAreEmpty$)
+  protected ammoAndSlotsAreEmpty = computed(() => {
+    const slots = this.store.gearsetSlots()
+    return areSlotsEmtpy(this.ammoSlots, slots) && areSlotsEmtpy(this.buffSlots, slots)
+  })
 
   protected quickSlots = EQUIP_SLOTS.filter((it) => it.id.startsWith('quick'))
-  protected quickSlotsAreEmpty$ = this.store.gearsetSlots$.pipe(map((slots) => areSlotsEmtpy(this.quickSlots, slots)))
-  protected quickSlotsAreEmpty = toSignal(this.quickSlotsAreEmpty$)
-  protected quickSlotsToDisplay$ = this.store.gearsetSlots$.pipe(
-    map((gearSlots) => {
-      const slots = [...this.quickSlots]
-      slots.length = Math.max(...slots.map((it, index) => (gearSlots?.[it.id] ? index + 1 : 0))) + 1
-      slots.length = Math.min(slots.length, 4)
-      return slots
-    }),
-  )
+  protected quickSlotsAreEmpty = computed(() => {
+    const slots = this.store.gearsetSlots()
+    areSlotsEmtpy(this.quickSlots, slots)
+  })
+  protected quickSlotsToDisplay = computed(() => {
+    const gearSlots = this.store.gearsetSlots()
+    const slots = [...this.quickSlots]
+    slots.length = Math.max(...slots.map((it, index) => (gearSlots?.[it.id] ? index + 1 : 0))) + 1
+    slots.length = Math.min(slots.length, 4)
+    return slots
+  })
 
   protected trophiesSlots = EQUIP_SLOTS.filter((it) => it.itemType === 'Trophies')
-  protected trophiesSlotsAreEmpty$ = this.store.gearsetSlots$.pipe(
-    map((slots) => areSlotsEmtpy(this.trophiesSlots, slots)),
-  )
-  protected trophiesSlotsAreEmpty = toSignal(this.trophiesSlotsAreEmpty$)
-  protected trophiesSlotsToDisplay$ = this.store.gearsetSlots$.pipe(
-    map((gearSlots) => {
-      const slots = [...this.trophiesSlots]
-      slots.length = Math.max(...slots.map((it, index) => (gearSlots?.[it.id] ? index + 1 : 0))) + 1
-      slots.length = Math.min(slots.length, 15)
-      return slots
-    }),
-  )
+  protected trophiesSlotsAreEmpty = computed(() => {
+    const slots = this.store.gearsetSlots()
+    return areSlotsEmtpy(this.trophiesSlots, slots)
+  })
+  protected trophiesSlotsToDisplay = computed(() => {
+    const gearSlots = this.store.gearsetSlots()
+    const slots = [...this.trophiesSlots]
+    slots.length = Math.max(...slots.map((it, index) => (gearSlots?.[it.id] ? index + 1 : 0))) + 1
+    slots.length = Math.min(slots.length, 15)
+    return slots
+  })
 
   protected townBuffEffectIds = getStatusEffectTownBuffIds()
-  protected townBuffEffectsToDisplay$ = this.store.gearsetEnforcedEffects$.pipe(
-    map((effects) => {
-      effects = [...(effects || [])]
-      effects = effects.filter((it) => this.townBuffEffectIds.some((id) => it.id === id))
-      const result = effects.map((it) => it.id)
-      result.length = Math.min(effects.length + 1, 9)
-      return result
-    }),
-  )
-  protected townBuffEffectsAreEmpty$ = this.townBuffEffectsToDisplay$.pipe(map((it) => it.every((el) => !el)))
-  protected townBuffEffectsAreEmpty = toSignal(this.townBuffEffectsAreEmpty$)
-
-  protected trackByIndex = (i: number) => i
+  protected townBuffEffectsToDisplay = computed(() => {
+    let effects = this.store.gearset().enforceEffects
+    effects = [...(effects || [])]
+    effects = effects.filter((it) => this.townBuffEffectIds.some((id) => it.id === id))
+    const result = effects.map((it) => it.id)
+    result.length = Math.min(effects.length + 1, 9)
+    return result
+  })
+  protected townBuffEffectsAreEmpty = computed(() => {
+    return this.townBuffEffectsToDisplay().every((it) => !it)
+  })
 
   public constructor(
-    private store: GearsetStore,
-    private itemsStore: ItemInstancesStore,
     private dialog: Dialog,
     private mannequin: Mannequin,
-    private character: CharacterStore,
-    private items: ItemInstancesDB,
-    private skillBuilds: SkillBuildsDB,
-    private ctx: NwTextContextService,
+    ctx: NwTextContextService,
   ) {
-    itemsStore.loadAll()
     ctx.patchState({
       attribute1: this.ctxAttribute(0),
       attribute2: this.ctxAttribute(1),
     })
+    this.store.connectToMannequin(this.mannequin)
   }
 
   private ctxAttribute(index: number) {
@@ -186,7 +179,7 @@ export class GearsetDetailComponent {
   }
 
   protected updateName(value: string) {
-    this.store.updateName({ name: value })
+    this.store.patchGearset({ name: value })
   }
 
   public toggleCompactMode() {
@@ -194,17 +187,14 @@ export class GearsetDetailComponent {
   }
 
   protected onItemRemove(slot: EquipSlotId) {
-    this.store.updateSlot({ slot: slot, value: null })
+    this.store.updateSlot(slot, null)
   }
 
   protected async onItemUnlink(slot: EquipSlot, record: ItemInstance) {
-    this.store.updateSlot({
-      slot: slot.id,
-      value: {
-        gearScore: record.gearScore,
-        itemId: record.itemId,
-        perks: record.perks,
-      },
+    this.store.updateSlot(slot.id, {
+      gearScore: record.gearScore,
+      itemId: record.itemId,
+      perks: record.perks,
     })
   }
 
@@ -219,78 +209,17 @@ export class GearsetDetailComponent {
     })
       .closed.pipe(filter((it) => !!it))
       .subscribe(async () => {
-        const instance = await this.itemsStore.db.create({
+        const instance = await this.itemDb.create({
           gearScore: record.gearScore,
           itemId: record.itemId,
           perks: record.perks,
         })
-        this.store.updateSlot({
-          slot: slot.id,
-          value: instance.id,
-        })
+        this.store.updateSlot(slot.id, instance.id)
       })
   }
 
-  public ngOnInit(): void {
-    const src = combineLatest({
-      equippedItems: this.store.gearsetSlots$.pipe(switchMap((slots) => this.resolveSlots(slots))),
-      level: this.character.level$,
-      assignedAttributes: this.store.gearsetAttrs$,
-      equippedSkills1: this.store.skillsPrimary$.pipe(switchMap((it) => this.resolveSkillBuild(it))),
-      equippedSkills2: this.store.skillsSecondary$.pipe(switchMap((it) => this.resolveSkillBuild(it))),
-      enforcedEffects: this.store.gearsetEnforcedEffects$,
-      enforcedAbilities: this.store.gearsetEnforcedAbilities$,
-    }).pipe(
-      map((it): MannequinState => {
-        return {
-          equippedItems: it.equippedItems,
-          assignedAttributes: it.assignedAttributes,
-          equppedSkills1: it.equippedSkills1,
-          equppedSkills2: it.equippedSkills2,
-          level: it.level,
-          enforcedEffects: it.enforcedEffects,
-          enforcedAbilities: it.enforcedAbilities,
-        }
-      }),
-    )
-    this.mannequin.patchState(src)
-  }
-
-  private resolveSlots(slots: Record<string, string | ItemInstance>) {
-    const slots$ = Object.entries(slots || {}).map(([slotId, instanceOrId]) => {
-      return this.resolveItemInstance(instanceOrId).pipe(
-        map((instance): EquippedItem => {
-          return {
-            itemId: instance.itemId,
-            perks: instance.perks,
-            slot: slotId as EquipSlotId,
-            gearScore: instance.gearScore,
-          }
-        }),
-      )
-    })
-    if (slots$.length === 0) {
-      return of([])
-    }
-    return combineLatest(slots$)
-  }
-
-  private resolveItemInstance(idOrInstance: string | ItemInstance) {
-    if (typeof idOrInstance === 'string') {
-      return this.items.live((t) => t.get(idOrInstance))
-    }
-    return of(idOrInstance)
-  }
-
-  private resolveSkillBuild(idOrInstance: string | SkillBuild) {
-    if (typeof idOrInstance === 'string') {
-      return this.skillBuilds.live((t) => t.get(idOrInstance))
-    }
-    return of(idOrInstance)
-  }
-
   protected onEffectChange(data: Array<{ id: string; stack: number }>) {
-    this.store.updateStatusEffect(data)
+    this.store.updateStatusEffects(data)
   }
 }
 

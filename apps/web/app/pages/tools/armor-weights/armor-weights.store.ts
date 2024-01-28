@@ -12,7 +12,7 @@ import {
 import { ItemClass, ItemDefinitionMaster } from '@nw-data/generated'
 import { sumBy } from 'lodash'
 import { combineLatest, map, of, switchMap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { eqCaseInsensitive, selectStream } from '~/utils'
 
 const ITEM_IDS = [
@@ -74,7 +74,7 @@ export interface ArmorWeightSet {
 
 @Injectable()
 export class ArmorWeightsStore extends ComponentStore<ArmorWeightsState> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private items$ = selectStream(combineLatest(ITEM_IDS.map((id) => selectItem(this.db, id))))
 
   public readonly allVariations$ = this.select(this.items$, selectItemSets)
@@ -121,7 +121,7 @@ export class ArmorWeightsStore extends ComponentStore<ArmorWeightsState> {
   }
 }
 
-function selectItem(db: NwDbService, itemId: string) {
+function selectItem(db: NwDataService, itemId: string) {
   return db.item(itemId).pipe(
     switchMap((item) => {
       if (!item) {

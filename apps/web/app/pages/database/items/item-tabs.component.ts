@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectorRef, Component, Input, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { combineLatest, map } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { PaginationModule } from '~/ui/pagination'
 import { observeQueryParam, shareReplayRefCount } from '~/utils'
 import { CraftingCalculatorComponent } from '~/widgets/crafting'
@@ -127,7 +128,7 @@ export class ItemTabsComponent extends ItemDetailStore {
     )
     .pipe(shareReplayRefCount(1))
 
-  public constructor(db: NwDbService, ms: ModelViewerService, cdref: ChangeDetectorRef) {
+  public constructor(db: NwDataService, ms: ModelViewerService, cdref: ChangeDetectorRef) {
     super(db, ms, cdref)
   }
 }

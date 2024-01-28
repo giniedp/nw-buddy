@@ -8,7 +8,7 @@ import {
 import { environment } from '~/../environments'
 import { uniq } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { humanize } from '~/utils'
 export interface ItemModelInfo {
   name: string
@@ -30,7 +30,7 @@ export interface StatRow {
 export class ModelViewerService {
   private cdnHost = environment.modelsUrl
 
-  public constructor(private db: NwDbService) {
+  public constructor(private db: NwDataService) {
     //
   }
 

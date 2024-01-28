@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms'
 import { ComponentStore } from '@ngrx/component-store'
 import { getItemId } from '@nw-data/common'
 import { combineLatest, map, take, tap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { AppPreferencesService, ItemPreferencesService, StorageProperty } from '~/preferences'
 import { DataViewModule, provideDataView } from '~/ui/data/data-view'
 import { DataGridModule } from '~/ui/data/table-grid'
@@ -58,7 +58,7 @@ export class NwmpPriceImporterComponent extends ComponentStore<NwmpImporterState
 
   public constructor(
     private api: NwmpApiService,
-    private db: NwDbService,
+    private db: NwDataService,
     private pref: ItemPreferencesService,
     protected adapter: NwmpPriceTableAdapter,
     app: AppPreferencesService

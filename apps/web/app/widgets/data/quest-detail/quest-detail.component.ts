@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, forwardRef, Input, Output } from '@angular/core'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { QuestDetailStore } from './quest-detail.store'
 import { QuestDetailFollowUpComponent } from './quest-detail-follow-up.component'
@@ -41,7 +42,7 @@ export class QuestDetailComponent extends QuestDetailStore {
   @Output()
   public questChange = this.quest$
 
-  public constructor(db: NwDbService) {
+  public constructor(db: NwDataService) {
     super(db)
   }
 }

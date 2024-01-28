@@ -2,7 +2,7 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_GATHERABLES, COLS_ITEMDEFINITIONMASTER, Gatherables } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridAdapterOptions, TableGridUtils } from '~/ui/data/table-grid'
 
 import { DataViewAdapter } from '~/ui/data/data-view'
@@ -30,7 +30,7 @@ import { Observable } from 'rxjs'
 export class GatherableTableAdapter
   implements TableGridAdapter<GatherableTableRecord>, DataViewAdapter<GatherableTableRecord>
 {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private i18n = inject(TranslateService)
   private config = inject<TableGridAdapterOptions<GatherableTableRecord>>(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<GatherableTableRecord> = inject(TableGridUtils)

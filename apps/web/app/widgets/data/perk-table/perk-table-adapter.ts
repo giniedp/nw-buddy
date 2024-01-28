@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core'
 import { isPerkGenerated, isPerkInherent } from '@nw-data/common'
 import { COLS_AFFIXSTATS, COLS_PERKS } from '@nw-data/generated'
 import { Observable, combineLatest, map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 
 import { NwTextContextService } from '~/nw/expression'
 import {
@@ -33,7 +33,7 @@ import {
 
 @Injectable()
 export class PerkTableAdapter implements TableGridAdapter<PerkTableRecord>, DataViewAdapter<PerkTableRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private ctx = inject(NwTextContextService)
   private utils: TableGridUtils<PerkTableRecord> = inject(TableGridUtils)
   private config: TableGridAdapterOptions<PerkTableRecord> = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })

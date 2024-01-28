@@ -5,7 +5,7 @@ import { Gamemodes, Mutationdifficulty, PoiDefinition } from '@nw-data/generated
 import { sortBy } from 'lodash'
 import { Observable, combineLatest, filter, map, of, switchMap, tap } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { gameModesTags, mutaDifficultyTags, mutaElementalTags, poiTags, territoriesTags } from '~/nw/loot/loot-tags'
 
 export interface LootTagOption<T = unknown> {
@@ -177,7 +177,7 @@ export class LootContextEditorStore extends ComponentStore<LootContextEditorStat
     })
   )
 
-  public constructor(private db: NwDbService, private tl8: TranslateService) {
+  public constructor(private db: NwDataService, private tl8: TranslateService) {
     super({
       playerLevel: NW_MAX_CHARACTER_LEVEL,
     })

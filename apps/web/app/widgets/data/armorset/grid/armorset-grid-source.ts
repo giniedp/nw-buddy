@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core'
 import { getItemRarityWeight } from '@nw-data/common'
 import { groupBy } from 'lodash'
 import { Observable } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -22,7 +22,7 @@ import {
 
 @Injectable()
 export class ArmorsetGridSource implements DataViewAdapter<ArmorsetGridRecord>, TableGridAdapter<ArmorsetGridRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private utils: TableGridUtils<ArmorsetGridRecord> = inject(TableGridUtils)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
 

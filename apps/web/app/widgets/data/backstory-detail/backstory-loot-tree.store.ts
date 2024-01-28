@@ -4,7 +4,7 @@ import { LootTable, getBackstoryItems, isItemOfAnyClass, isMasterItem } from '@n
 import { Backstorydata, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { combineLatest, debounceTime, map, startWith } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { selectStream } from '~/utils'
 import { BackstoryTreeNode } from './types'
 import { toSignal } from '@angular/core/rxjs-interop'
@@ -17,7 +17,7 @@ export interface BackstoryLootTreeState {
 
 @Injectable()
 export class BackstoryLootTreeStore extends ComponentStore<BackstoryLootTreeState> {
-  protected db = inject(NwDbService)
+  protected db = inject(NwDataService)
   protected tl8 = inject(TranslateService)
   public readonly query$ = this.select(({ query }) => query)
   public readonly nodes$ = this.select(({ nodes }) => nodes)

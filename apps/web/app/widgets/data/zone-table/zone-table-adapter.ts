@@ -2,7 +2,7 @@ import { GridOptions } from '@ag-grid-community/core'
 import { inject, Injectable } from '@angular/core'
 import { Areadefinitions, COLS_AREADEFINITIONS, COLS_POIDEFINITION, COLS_TERRITORYDEFINITIONS, PoiDefinition } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import {
   addGenericColumns,
@@ -25,7 +25,7 @@ import {
 
 @Injectable()
 export class ZoneTableAdapter implements DataViewAdapter<ZoneTableRecord>, TableGridAdapter<ZoneTableRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private utils: TableGridUtils<ZoneTableRecord> = inject(TableGridUtils)
   private config = inject<TableGridAdapterOptions<ZoneTableRecord>>(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
 

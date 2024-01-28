@@ -5,7 +5,7 @@ import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { EQUIP_SLOTS, getItemId, getItemMaxGearScore } from '@nw-data/common'
 import { filter, firstValueFrom, map, take } from 'rxjs'
-import { GearsetsStore, ItemInstanceRow, ItemInstancesStore } from '~/data'
+import { InventoryItemsStore, ItemInstanceRow } from '~/data'
 import { NwModule } from '~/nw'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
 import { DataGridModule } from '~/ui/data/table-grid'
@@ -51,8 +51,6 @@ import { InventoryPickerService } from './inventory-picker.service'
     }),
     QuicksearchService,
     InventoryPickerService,
-    ItemInstancesStore,
-    GearsetsStore,
   ],
 })
 export class InventoryPageComponent implements OnInit {
@@ -68,22 +66,19 @@ export class InventoryPageComponent implements OnInit {
   protected svgPlus = svgPlus
   protected svgTrash = svgTrashCan
   protected svgImage = svgImage
+  private items = inject(InventoryItemsStore)
 
   protected categoryId$ = observeRouteParam(this.route, '')
   public constructor(
-    private sets: GearsetsStore,
-    private items: ItemInstancesStore,
     private picker: InventoryPickerService,
     private dialog: Dialog,
     private route: ActivatedRoute,
-    protected service: DataViewService<InventoryTableRecord>
+    protected service: DataViewService<InventoryTableRecord>,
   ) {
     //
   }
 
   public async ngOnInit() {
-    this.items.loadAll()
-    this.sets.loadAll()
     this.service.loadCateory(this.category$)
   }
 
@@ -103,12 +98,10 @@ export class InventoryPageComponent implements OnInit {
       .subscribe((items) => {
         for (const item of items) {
           this.items.createRecord({
-            record: {
-              id: null,
-              itemId: getItemId(item),
-              gearScore: getItemMaxGearScore(item),
-              perks: {},
-            },
+            id: null,
+            itemId: getItemId(item),
+            gearScore: getItemMaxGearScore(item),
+            perks: {},
           })
         }
       })
@@ -136,15 +129,13 @@ export class InventoryPageComponent implements OnInit {
       .closed.pipe(filter((it) => !!it))
       .subscribe((instance) => {
         this.items.createRecord({
-          record: {
-            id: null,
-            ...instance,
-          },
+          id: null,
+          ...instance,
         })
       })
   }
 
   protected deleteItem(item: ItemInstanceRow) {
-    this.items.destroyRecord({ recordId: item.record.id })
+    this.items.destroyRecord(item.record.id)
   }
 }

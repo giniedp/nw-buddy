@@ -4,12 +4,12 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
 import { of, switchMap, throwError } from 'rxjs'
-import { SkillBuildRecord } from '~/data'
+import { SkillSetRecord } from '~/data'
 import { NwModule } from '~/nw'
 import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
-import { HtmlHeadService } from '~/utils'
+import { HtmlHeadService, injectRouteParam } from '~/utils'
 import { EmbedHeightDirective } from '~/utils/directives/embed-height.directive'
 import { suspensify } from '~/utils/rx/suspensify'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
@@ -38,13 +38,13 @@ export class SkillBuildsEmbedComponent {
       }),
       switchMap((it) => {
         if (it?.type === 'skill-build' && it.data) {
-          const record: SkillBuildRecord = it.data
+          const record: SkillSetRecord = it.data
           delete record.id
           return of(record)
         }
         return throwError(() => new Error(`invalid data`))
       }),
-      suspensify<SkillBuildRecord>()
+      suspensify<SkillSetRecord>()
     )
   protected vm = toSignal(this.vm$, { initialValue: undefined })
 

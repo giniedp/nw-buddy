@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_GAMEEVENT, GameEvent } from '@nw-data/generated'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { humanize } from '~/utils'
 
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
@@ -44,7 +44,7 @@ import {
 export class GameEventTableAdapter
   implements DataViewAdapter<GameEventTableRecord>, TableGridAdapter<GameEventTableRecord>
 {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<GameEventTableRecord> = inject(TableGridUtils)
 

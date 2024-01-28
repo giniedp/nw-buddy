@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { map } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PaginationModule } from '~/ui/pagination'
@@ -46,7 +47,7 @@ import { MountTileComponent } from './mount-tile.component'
   ],
 })
 export class MountComponent {
-  private readonly mounts$ = inject(NwDbService).mounts.pipe(map((list) => list.filter((it) => !!it.DisplayName)))
+  private readonly mounts$ = inject(NwDataService).mounts.pipe(map((list) => list.filter((it) => !!it.DisplayName)))
   private readonly categoryId$ = observeRouteParam(inject(ActivatedRoute), 'category')
   protected readonly data$ = selectStream(
     {

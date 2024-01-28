@@ -5,7 +5,8 @@ import { AttributeRef, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 import { Attributeconstitution } from '@nw-data/generated'
 import { isEqual } from 'lodash'
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgAnglesLeft } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
@@ -26,7 +27,7 @@ import { AttributeState, AttributesStore } from './attributes.store'
 })
 export class AttributesEditorComponent implements OnInit {
   private store = inject(AttributesStore)
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
 
   @Input()
   public set level(value: number) {

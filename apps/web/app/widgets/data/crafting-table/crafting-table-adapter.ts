@@ -3,7 +3,7 @@ import { Injectable, Signal, inject } from '@angular/core'
 import { getCraftingIngredients, getItemIdFromRecipe, getTradeSkillLabel } from '@nw-data/common'
 import { COLS_ABILITY, COLS_CRAFTING } from '@nw-data/generated'
 import { Observable, combineLatest, map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import {
   TABLE_GRID_ADAPTER_OPTIONS,
   DataTableCategory,
@@ -40,7 +40,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
 export class CraftingTableAdapter
   implements DataViewAdapter<CraftingTableRecord>, TableGridAdapter<CraftingTableRecord>
 {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private character = inject(CharacterStore)
   private utils: TableGridUtils<CraftingTableRecord> = inject(TableGridUtils)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })

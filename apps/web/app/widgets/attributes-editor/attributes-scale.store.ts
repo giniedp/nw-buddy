@@ -4,7 +4,7 @@ import { AttributeRef, NW_MAX_CHARACTER_LEVEL, damageForTooltip, damageScaleAttr
 import { Affixstats, Attributedexterity, ItemdefinitionsWeapons } from '@nw-data/generated'
 import { ChartConfiguration } from 'chart.js'
 import { combineLatest, map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { selectStream } from '~/utils'
 
 export interface AttributesScalingState {
@@ -26,7 +26,7 @@ const STAT_COLORS: Record<AttributeRef, string> = {
 
 @Injectable()
 export class AttributesScalingStore extends ComponentStore<AttributesScalingState> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
 
   protected readonly scalingAffixId$ = this.select(({ affixId }) => affixId)
   protected readonly scalingAffix$ = this.select(this.db.affixStat(this.scalingAffixId$), (it) => it)

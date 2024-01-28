@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core'
 import { getItemPerkBucketIds, getItemPerks, getItemTypeLabel } from '@nw-data/common'
 import { COLS_ITEMDEFINITIONMASTER, ItemDefinitionMaster } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
 
 import { DataViewAdapter } from '~/ui/data/data-view'
@@ -39,7 +39,7 @@ import {
 
 @Injectable()
 export class ItemTableAdapter implements TableGridAdapter<ItemTableRecord>, DataViewAdapter<ItemTableRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private i18n = inject(TranslateService)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<ItemTableRecord> = inject(TableGridUtils)

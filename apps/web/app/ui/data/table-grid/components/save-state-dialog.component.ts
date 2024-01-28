@@ -1,9 +1,9 @@
 import { DIALOG_DATA, Dialog, DialogConfig, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Inject, NgZone } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { filter, switchMap } from 'rxjs'
-import { TablePreset } from '~/data/table-preset.db'
+import { TablePreset } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft, svgPen, svgTrashCan } from '~/ui/icons/svg'
@@ -60,7 +60,7 @@ export class SaveStateDialogComponent {
     private dialog: Dialog,
     private dialogRef: DialogRef<Array<string | number>>,
     @Inject(DIALOG_DATA)
-    options: SaveStateDialogOptions<any>
+    options: SaveStateDialogOptions<any>,
   ) {
     this.title = options.title
     this.data = options.data

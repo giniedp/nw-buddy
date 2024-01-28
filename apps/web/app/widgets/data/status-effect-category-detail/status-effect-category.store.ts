@@ -2,13 +2,13 @@ import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { Statuseffectcategories } from '@nw-data/generated'
 import { combineLatest } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { extractLimits, selectLimitsTable } from './utils'
 import { toSignal } from '@angular/core/rxjs-interop'
 
 @Injectable()
 export class StatusEffectCategoryDetailStore extends ComponentStore<{ categoryId: string }> {
-  protected db: NwDbService = inject(NwDbService)
+  protected db: NwDataService = inject(NwDataService)
 
   public readonly categoryId$ = this.select(({ categoryId }) => categoryId)
   public readonly category$ = this.select(this.db.statusEffectCategory(this.categoryId$), (it) => it)

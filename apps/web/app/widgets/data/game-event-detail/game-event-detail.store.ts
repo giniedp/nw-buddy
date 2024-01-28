@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { GameEvent } from '@nw-data/generated'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { rejectKeys, selectStream } from '~/utils'
 import { selectGameEventItemReward, selectGameEventRewards } from './selectors'
 
@@ -27,7 +27,7 @@ export class GameEventDetailStore extends ComponentStore<{ eventId: string }> {
     ({ gameEvent, itemReward }) => selectGameEventRewards(gameEvent, itemReward),
   )
 
-  public constructor(protected db: NwDbService) {
+  public constructor(protected db: NwDataService) {
     super({ eventId: null })
   }
 

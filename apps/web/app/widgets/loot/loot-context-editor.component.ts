@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector, Input, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { combineLatest, filter, map } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { DataViewModule, DataViewPicker } from '~/ui/data/data-view'
 import { GsSliderComponent } from '~/ui/gs-input'
 import { IconsModule } from '~/ui/icons'
@@ -107,7 +108,7 @@ export class LootContextEditorComponent {
     protected store: LootContextEditorStore,
     private dialog: Dialog,
     private injector: Injector,
-    private db: NwDbService,
+    private db: NwDataService,
   ) {
     this.store.loadEnemyLevelAndGameMode()
     this.store.loadMinPoiLevel()

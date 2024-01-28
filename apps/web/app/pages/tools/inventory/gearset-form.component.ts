@@ -1,11 +1,11 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Injector } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Injector, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { EQUIP_SLOTS, EquipSlot } from '@nw-data/common'
-import { combineLatest, filter, firstValueFrom, map, switchMap, take, takeUntil } from 'rxjs'
-import { GearsetStore, GearsetsDB, ItemInstanceRecord } from '~/data'
+import { filter, map, switchMap, take } from 'rxjs'
+import { GearsetSignalStore, GearsetsDB, ItemInstanceRecord } from '~/data'
 import { NwModule } from '~/nw'
 import { PreferencesService } from '~/preferences'
 import { DataViewPicker } from '~/ui/data/data-view'
@@ -23,10 +23,9 @@ import {
 } from '~/ui/icons/svg'
 import { LayoutModule, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
+import { GearsetLoadoutItemComponent, LoadoutSlotEventHandler } from '~/widgets/data/gearset-detail'
 import { GearsetTableAdapter } from '~/widgets/data/gearset-table'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
-import { GearsetLoadoutItemComponent, LoadoutSlotEventHandler } from '~/widgets/data/gearset-detail'
-import { selectStream } from '~/utils'
 import { GearsetFormSlotHandler } from './gearset-form-slot-handler'
 
 @Component({
@@ -47,7 +46,7 @@ import { GearsetFormSlotHandler } from './gearset-form-slot-handler'
     GearsetLoadoutItemComponent,
   ],
   providers: [
-    GearsetStore,
+    GearsetSignalStore,
     GearsetFormSlotHandler,
     {
       provide: LoadoutSlotEventHandler,
@@ -60,15 +59,16 @@ import { GearsetFormSlotHandler } from './gearset-form-slot-handler'
 })
 export class GearsetFormComponent {
   public slots = EQUIP_SLOTS.filter((it) => it.itemType !== 'Consumable')
-  public gearsetId: string
 
-  protected vm$ = combineLatest({
-    gearset: this.store.gearset$,
-    name: this.store.gearsetName$,
-    isLinkMode: this.store.isLinkMode$,
-    isCopyMode: this.store.isCopyMode$,
-    isLoading: this.store.isLoading$,
-  })
+  public get gearset() {
+    return this.store.gearset()
+  }
+  public get isLinkMode() {
+    return this.store.isLinkMode()
+  }
+  public get isCopyMode() {
+    return this.store.isCopyMode()
+  }
 
   protected iconOpen = svgFolderOpen
   protected iconCreate = svgPlus
@@ -79,19 +79,18 @@ export class GearsetFormComponent {
   protected iconLink = svgLink
   protected iconCopy = svgPaste
   protected iconNav = svgSquareArrowUpRight
-  protected currentGearsetId = this.pref.session.storageProperty<string>('recent-gearset-id')
-  protected gearsetId$ = selectStream(this.currentGearsetId.observe())
-  protected gearset$ = selectStream(this.gearDb.observeByid(this.gearsetId$))
+
+  private currentId = this.pref.session.storageProperty<string>('recent-gearset-id')
+  private store = inject(GearsetSignalStore)
 
   public constructor(
-    private store: GearsetStore,
     private gearDb: GearsetsDB,
     private dialog: Dialog,
     private injector: Injector,
     private pref: PreferencesService,
-    private slotEventHandler: GearsetFormSlotHandler
+    slotEventHandler: GearsetFormSlotHandler,
   ) {
-    this.store.load(this.gearset$)
+    this.store.connectGearsetDB(this.currentId.observe())
     slotEventHandler.itemDropped.subscribe((it) => this.onItemDropped(it.slot, it.item))
   }
 
@@ -114,21 +113,20 @@ export class GearsetFormComponent {
             slots: {},
             tags: [],
           })
-        })
+        }),
       )
       .subscribe((newSet) => {
-        this.currentGearsetId.set(newSet.id)
+        this.currentId.set(newSet.id)
       })
   }
 
   protected unloadSet() {
-    this.store.load(null)
-    this.currentGearsetId.set(null)
+    this.currentId.set(null)
   }
 
   protected loadSet() {
     this.pickGearsetId().subscribe((id) => {
-      this.currentGearsetId.set(id)
+      this.currentId.set(id)
     })
   }
 
@@ -151,39 +149,33 @@ export class GearsetFormComponent {
   }
 
   protected updateName(name: string) {
-    this.store.updateName({ name: name })
+    this.store.patchGearset({ name: name })
   }
 
   protected updateMode(mode: 'link' | 'copy') {
-    this.store.updateMode({ mode: mode })
+    this.store.patchGearset({ createMode: mode })
   }
 
   protected onItemRemove(slot: EquipSlot) {
-    this.store.updateSlot({ slot: slot.id, value: null })
+    this.store.updateSlot(slot.id, null)
   }
 
   protected async onItemUnlink(slot: EquipSlot, record: ItemInstanceRecord) {
-    this.store.updateSlot({
-      slot: slot.id,
-      value: {
-        gearScore: record.gearScore,
-        itemId: record.itemId,
-        perks: record.perks,
-      },
+    this.store.updateSlot(slot.id, {
+      gearScore: record.gearScore,
+      itemId: record.itemId,
+      perks: record.perks,
     })
   }
 
   protected async onItemDropped(slot: EquipSlot, record: ItemInstanceRecord) {
-    if (await firstValueFrom(this.store.isLinkMode$)) {
-      this.store.updateSlot({ slot: slot.id, value: record.id })
+    if (this.store.isLinkMode()) {
+      this.store.updateSlot(slot.id, record.id)
     } else {
-      this.store.updateSlot({
-        slot: slot.id,
-        value: {
-          gearScore: record.gearScore,
-          itemId: record.itemId,
-          perks: record.perks,
-        },
+      this.store.updateSlot(slot.id, {
+        gearScore: record.gearScore,
+        itemId: record.itemId,
+        perks: record.perks,
       })
     }
   }

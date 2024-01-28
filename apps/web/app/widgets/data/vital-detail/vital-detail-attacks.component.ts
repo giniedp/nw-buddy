@@ -11,7 +11,8 @@ import {
   Vitalsleveldata,
   Vitalsmodifierdata,
 } from '@nw-data/generated'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { damageTypeIcon } from '~/nw/weapon-types'
 import { eqCaseInsensitive, humanize, selectStream } from '~/utils'
 import { VitalDetailStore } from './vital-detail.store'
@@ -32,7 +33,7 @@ import { RouterLink } from '@angular/router'
 })
 export class VitalDetailAttacksComponent {
   private store = inject(VitalDetailStore)
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
 
   protected tables$ = selectStream(
     {

@@ -24,9 +24,7 @@ export class ArmorWeightTableAdapter
   implements DataViewAdapter<ArmorWeightTableRecord>, TableGridAdapter<ArmorWeightTableRecord>
 {
   public getCategories?: () => DataViewCategory[]
-  public onEntityCreate?: Observable<ArmorWeightSet>
-  public onEntityUpdate?: Observable<ArmorWeightSet>
-  public onEntityDestroy?: Observable<string>
+
 
   private store = inject(ArmorWeightsStore)
   private utils: TableGridUtils<ArmorWeightTableRecord> = inject(TableGridUtils)

@@ -2,7 +2,7 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_GAMEMODES } from '@nw-data/generated'
 import { Observable } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 
 import { NwTextContextService } from '~/nw/expression'
 import { DataViewAdapter } from '~/ui/data/data-view'
@@ -27,7 +27,7 @@ import {
 
 @Injectable()
 export class TerritoryTableAdapter implements TableGridAdapter<TerritoryRecord>, DataViewAdapter<TerritoryRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private ctx = inject(NwTextContextService)
   private utils: TableGridUtils<TerritoryRecord> = inject(TableGridUtils)
   private config: TableGridAdapterOptions<TerritoryRecord> = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })

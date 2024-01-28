@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { Ability } from '@nw-data/generated'
 import { combineLatest, distinctUntilChanged, filter, map, tap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { CaseInsensitiveSet, eqCaseInsensitive, mapDistinct } from '~/utils'
 import { buildGrid, getGridSelection, SkillTreeGrid, updateGrid } from './skill-tree.model'
 
@@ -25,7 +25,7 @@ export class SkillTreeStore extends ComponentStore<SkillTreeEditorState> {
   public readonly rows$ = this.select(({ rows }) => rows)
   public readonly numCols$ = this.select(({ numCols }) => numCols)
 
-  public constructor(private db: NwDbService) {
+  public constructor(private db: NwDataService) {
     super(createState(19, [], []))
   }
 

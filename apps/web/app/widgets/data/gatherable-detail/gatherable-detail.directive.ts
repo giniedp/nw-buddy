@@ -1,5 +1,5 @@
 import { Directive, forwardRef, Input, Output } from '@angular/core'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { GatherableDetailStore } from './gatherable-detail.store'
 
 @Directive({

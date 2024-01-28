@@ -3,7 +3,8 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { AttributeType, NW_ATTRIBUTE_TYPES, PerkBucket, PerkBucketEntry, getItemIconPath, getPerkBucketPerks } from '@nw-data/common'
 import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { of, startWith } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { selectStream } from '~/utils'
 import { ItemDetailModule } from '../data/item-detail'
 
@@ -38,7 +39,7 @@ export class AttributeCraftModsComponent {
     selectMods
   )
 
-  public constructor(private db: NwDbService) {
+  public constructor(private db: NwDataService) {
     //
   }
 }

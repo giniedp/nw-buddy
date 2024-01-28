@@ -2,7 +2,7 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_GAMEMODES } from '@nw-data/generated'
 import { Observable } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 
 import { NwTextContextService } from '~/nw/expression'
 import { DataViewAdapter } from '~/ui/data/data-view'
@@ -28,7 +28,7 @@ import {
 
 @Injectable()
 export class GameModeTableAdapter implements TableGridAdapter<GameModeRecord>, DataViewAdapter<GameModeRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private ctx = inject(NwTextContextService)
   private utils: TableGridUtils<GameModeRecord> = inject(TableGridUtils)
   private config: TableGridAdapterOptions<GameModeRecord> = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })

@@ -20,11 +20,13 @@
         </button>
         <ng-template #tplMenu>
           <ul class="menu menu-compact bg-base-100 w-60 rounded-b-md z-10" cdkMenu>
-            <li *ngFor="let item of tags$ | async">
-              <a (click)="toggleTag(item.tag)" [class.active]="item.active">
-                {{ item.tag }}
-              </a>
-            </li>
+            @for (item of tags(); track $index) {
+              <li>
+                <a (click)="toggleTag(item.tag)" [class.active]="item.active">
+                  {{ item.tag }}
+                </a>
+              </li>
+            }
           </ul>
         </ng-template>
       </li>
@@ -40,33 +42,31 @@
       </li>
     </ul>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
-      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"></nwb-quicksearch-input>
+      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"/>
     </div>
   </div>
 </ion-header>
 <div class="flex-1 flex flex-row overflow-hidden">
-  <ng-container *ngIf="service.isGridActive()">
+  @if (dataView.isGridActive()) {
     <nwb-virtual-grid
       [enableQuickfilter]="true"
-      [data]="service.categoryItems$ | async"
-      [options]="service.virtualOptions"
-      [identifyBy]="service.entityIdGetter"
+      [data]="dataView.categoryItems$ | async"
+      [options]="dataView.virtualOptions"
+      [identifyBy]="dataView.entityIdGetter"
       [selectionRouteParam]="selectionParam"
-    ></nwb-virtual-grid>
-  </ng-container>
-  <ng-container *ngIf="service.isTableActive()">
+    />
+  } @else if (dataView.isTableActive()) {
     <nwb-table-grid
-      (ready$)="service.onTableReady($event)"
+      (ready$)="dataView.onTableReady($event)"
       [enableQuickfilter]="true"
-      [data]="service.categoryItems$ | async"
-      [options]="service.tableGridOptions"
-      [identifyBy]="service.entityIdGetter"
+      [data]="dataView.categoryItems$ | async"
+      [options]="dataView.tableGridOptions"
+      [identifyBy]="dataView.entityIdGetter"
       [persistKey]="persistKey"
       [filterQueryParam]="filterParam"
       [selectionRouteParam]="selectionParam"
-    ></nwb-table-grid>
-  </ng-container>
-
+    />
+  }
   <div class="hidden xl:flex xl:flex-1 flex-col max-w-3xl">
     <nwb-detail-drawer class="flex-1 hidden lg:block" [breakOn]="'xl'">
       <div *nwbDetailDrawerContent class="layout-col relative bg-base-300">

@@ -1,14 +1,14 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { Injector } from '@angular/core'
 import { getItemRarityWeight, isItemHeartGem, isItemJewelery } from '@nw-data/common'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { eqCaseInsensitive } from '~/utils'
 import { ItemTableAdapter, buildPickerItemGridOptions } from './item-table-adapter'
 import { ItemTableRecord } from './item-table-cols'
 
 export function openItemsPicker(options: {
-  db: NwDbService
+  db: NwDataService
   dialog: Dialog
   injector?: Injector
   title?: string

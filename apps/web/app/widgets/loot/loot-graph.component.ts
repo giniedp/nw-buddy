@@ -2,7 +2,8 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { combineLatest, of, switchMap } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { LootContext } from '~/nw/loot'
 import { LootNode, buildLootGraph, updateLootGraph } from '~/nw/loot/loot-graph'
 import { selectSignal, selectStream } from '~/utils'
@@ -125,7 +126,7 @@ export class LootGraphComponent extends ComponentStore<{
   // })
   protected trackByIndex = (i: number) => i
 
-  public constructor(private db: NwDbService) {
+  public constructor(private db: NwDataService) {
     super({
       tableIds: null,
       tags: [],

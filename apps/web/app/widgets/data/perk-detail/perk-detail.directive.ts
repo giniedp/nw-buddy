@@ -1,5 +1,5 @@
 import { Directive, forwardRef, Input, Output } from '@angular/core'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { PerkDetailStore } from './perk-detail.store'
 
 @Directive({
@@ -22,7 +22,7 @@ export class PerkDetailDirective extends PerkDetailStore {
   @Output()
   public nwbPerkChange = this.perk$
 
-  public constructor(db: NwDbService) {
+  public constructor(db: NwDataService) {
     super(db)
   }
 }

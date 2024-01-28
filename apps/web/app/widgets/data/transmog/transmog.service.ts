@@ -7,7 +7,7 @@ import {
 } from '@nw-data/generated'
 import { Observable, combineLatest, map, of } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { CaseInsensitiveMap, selectStream } from '~/utils'
 import { TRANSMOG_CATEGORIES, TransmogCategory, categorizeAppearance } from './transmog-categories'
 import {
@@ -22,7 +22,7 @@ import { getAppearanceGearsetId } from '@nw-data/common'
 
 @Injectable({ providedIn: 'root' })
 export class TransmogService {
-  private readonly db = inject(NwDbService)
+  private readonly db = inject(NwDataService)
   private readonly tl8 = inject(TranslateService)
 
   public readonly categories$ = of(TRANSMOG_CATEGORIES)
@@ -74,7 +74,7 @@ function selectAppearances({
   instrumentAppearances,
   categories,
 }: {
-  itemsMap: Map<string, Set<ItemDefinitionMaster>>
+  itemsMap: Map<string, ItemDefinitionMaster[]>
   itemAppearances: Itemappearancedefinitions[]
   weaponAppearances: ItemdefinitionsWeaponappearances[]
   instrumentAppearances: ItemdefinitionsInstrumentsappearances[]
@@ -85,7 +85,7 @@ function selectAppearances({
   for (const appearance of appearances) {
     const appearanceId = getAppearanceId(appearance)
     const { category, subcategory } = categorizeAppearance(appearance, categories)
-    const sources = Array.from(itemsMap.get(appearanceId)?.values() || [])
+    const sources = itemsMap.get(appearanceId) || []
     const gender = getAppearanceGender(appearance)
 
     const transmog: TransmogItem = {

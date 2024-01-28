@@ -53,11 +53,11 @@ export interface MannequinState {
   /**
    * Skill tree for the equpped weapon
    */
-  equppedSkills1?: EquppedSkills
+  equippedSkills1?: EquppedSkills
   /**
    * Skill tree for the equpped weapon
    */
-  equppedSkills2?: EquppedSkills
+  equippedSkills2?: EquppedSkills
   /**
    * Abilities that have been activated by the user
    */

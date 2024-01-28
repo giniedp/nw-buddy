@@ -1,22 +1,22 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule, DecimalPipe, PercentPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
-import { combineLatest, filter, firstValueFrom, map, shareReplay, switchMap, take } from 'rxjs'
-import { CharacterStore, GearsetStore } from '~/data'
-import { NwDbService, NwModule } from '~/nw'
+import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
+import { getItemPerkIdsWithOverride } from '@nw-data/common'
+import { combineLatest, filter, firstValueFrom, map, take } from 'rxjs'
+import { CharacterStore, GearsetSignalStore, ImagesDB, NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
-import { ConfirmDialogComponent } from '~/ui/layout'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { TooltipModule } from '~/ui/tooltip'
 import { AttributeEditorDialogComponent } from '~/widgets/attributes-editor'
 import { AttributesStatsComponent } from '../stats/attributes-stats.component'
+import { EquipLoadStatsComponent } from '../stats/equip-load-stats.component'
 import { VitalityStatsComponent } from '../stats/vitality-stats.component'
 import { AvatarDialogComponent } from './avatar-dialog.component'
-import { EquipLoadStatsComponent } from '../stats/equip-load-stats.component'
-import { getItemPerkIdsWithOverride, getItemPerks } from '@nw-data/common'
 
 @Component({
   standalone: true,
@@ -41,15 +41,19 @@ import { getItemPerkIdsWithOverride, getItemPerks } from '@nw-data/common'
   },
 })
 export class GearsetPaneMainComponent {
+  private store = inject(GearsetSignalStore)
+
   @Input()
   public disabled: boolean
 
   protected characterLevel$ = this.character.level$
   protected gearScore$ = this.mannequin.gearScore$
 
-  protected image$ = this.gearset.imageUrl$.pipe(shareReplay(1))
-  protected isPersistable$ = this.gearset.isPersistable$
+  protected image$ = inject(ImagesDB).imageUrl(toObservable(this.store.gearsetImageId))
   protected hasImage$ = this.image$.pipe(map((it) => !!it))
+
+  protected isPersistable = computed(() => !!this.store.gearsetId())
+
   protected weaponActive$ = this.mannequin.state$.pipe(map((it) => it?.weaponActive))
   protected weaponUnsheathed$ = this.mannequin.state$.pipe(map((it) => it?.weaponUnsheathed))
 
@@ -58,9 +62,8 @@ export class GearsetPaneMainComponent {
   public constructor(
     private character: CharacterStore,
     private mannequin: Mannequin,
-    private gearset: GearsetStore,
     private dialog: Dialog,
-    private db: NwDbService
+    private db: NwDataService,
   ) {
     //
   }
@@ -105,8 +108,8 @@ export class GearsetPaneMainComponent {
             weapon2GearScore: weapon2?.gearScore,
             weapon2AffixId: affix2,
           }
-        })
-      )
+        }),
+      ),
     )
 
     AttributeEditorDialogComponent.open(this.dialog, {
@@ -144,21 +147,20 @@ export class GearsetPaneMainComponent {
     })
       .closed.pipe(filter((it) => !!it))
       .subscribe((res) => {
-        this.gearset.updateAttrs({ attrs: res })
+        this.store.patchGearset({ attrs: res })
       })
   }
 
-  protected async changeAvatar() {
-    const gearset = await firstValueFrom(this.gearset.gearset$)
+  protected changeAvatar() {
     AvatarDialogComponent.open(this.dialog, {
       data: {
-        imageId: gearset?.imageId,
+        imageId: this.store.gearset()?.imageId,
       },
     })
       .closed.pipe(take(1))
       .pipe(filter((it) => !!it))
       .subscribe(({ imageId }) => {
-        this.gearset.updateImageId({ imageId })
+        this.store.patchGearset({ imageId })
       })
   }
 }

@@ -1,9 +1,7 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TemplateRef } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TemplateRef, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { gearScoreRelevantSlots, getAverageGearScore } from '@nw-data/common'
-import { combineLatest, defer, map, of, switchMap } from 'rxjs'
-import { CharacterStore, GearsetRecord, GearsetStore, ItemInstance, ItemInstancesDB } from '~/data'
+import { CharacterStore, GearsetRecord, GearsetSignalStore } from '~/data'
 import { NwModule } from '~/nw'
 import { GersetLoadoutSlotComponent } from './gearset-loadout-slot.component'
 
@@ -14,15 +12,17 @@ import { GersetLoadoutSlotComponent } from './gearset-loadout-slot.component'
   styleUrls: ['./gearset-loadout.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, GersetLoadoutSlotComponent, RouterModule],
-  providers: [GearsetStore],
+  providers: [GearsetSignalStore],
   host: {
     class: 'grid gap-x-3 gap-y-2',
   },
 })
 export class GearsetLoadoutItemComponent {
+  private store = inject(GearsetSignalStore)
+
   @Input()
   public set geasrsetId(value: string) {
-    this.store.loadById(value)
+    this.store.connectGearsetDB(value)
   }
 
   @Input()
@@ -40,29 +40,20 @@ export class GearsetLoadoutItemComponent {
   @Output()
   public create = new EventEmitter<void>()
 
-  protected vm$ = combineLatest({
-    id: this.store.gearsetId$,
-    name: this.store.gearsetName$,
-    gearset: this.store.gearset$,
-    isLoading: this.store.isLoading$,
-    gearscore: defer(() => this.gearscore$),
-  })
+  protected get gearset() {
+    return this.store.gearset()
+  }
+  protected get gearScore() {
+    return this.store.gearScore()
+  }
 
-  private readonly gearscore$ = combineLatest({
-    level: this.char.level$,
-    slots: this.store.gearset$.pipe(switchMap((it) => this.selectGearscoreSlots(it))),
-  }).pipe(map(({ level, slots }) => getAverageGearScore(slots, level)))
-
-  public constructor(private char: CharacterStore, private itemsDb: ItemInstancesDB, private store: GearsetStore) {
-    // store.gearsetSlots$
+  public constructor(char: CharacterStore) {
+    this.store.connectLevel(char.level$)
   }
 
   @Input()
   public set data(value: GearsetRecord) {
-    this.store.patchState({
-      gearset: value,
-      isLoading: false,
-    })
+    this.store.connectGearset(value)
   }
 
   protected createClicked() {
@@ -71,30 +62,5 @@ export class GearsetLoadoutItemComponent {
 
   protected deleteClicked(gearset: GearsetRecord) {
     this.delete.emit(gearset)
-  }
-
-  private selectGearscoreSlots(record: GearsetRecord) {
-    return combineLatest(
-      gearScoreRelevantSlots().map((slot) => {
-        return this.resolveItemInstance(record?.slots?.[slot.id]).pipe(
-          map((instance) => {
-            return {
-              ...slot,
-              gearScore: instance?.gearScore || 0,
-            }
-          })
-        )
-      })
-    )
-  }
-
-  private resolveItemInstance(itemInstance: string | ItemInstance) {
-    if (!itemInstance) {
-      return of(null)
-    }
-    if (typeof itemInstance === 'string') {
-      return this.itemsDb.live((t) => t.get(itemInstance))
-    }
-    return of(itemInstance)
   }
 }

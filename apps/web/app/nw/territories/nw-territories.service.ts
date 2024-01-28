@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core'
 import { territoryImage } from '@nw-data/common'
 import { combineLatest, isObservable, map, Observable, of, switchMap } from 'rxjs'
+import { NwDataService } from '~/data'
 import { TerritoriesPreferencesService } from '~/preferences/territories-preferences.service'
 import { shareReplayRefCount } from '~/utils'
-import { NwDbService } from '../nw-db.service'
 
 @Injectable({ providedIn: 'root' })
 export class TerritoriesService {
-  public constructor(private db: NwDbService, private pref: TerritoriesPreferencesService) {
+  public constructor(
+    private db: NwDataService,
+    private pref: TerritoriesPreferencesService,
+  ) {
     //
   }
 
@@ -42,7 +45,7 @@ export class TerritoriesService {
       .pipe(
         map(({ level, table }) => {
           return table.filter((it) => !!it.DisplayName && it.Rank <= level).reverse()[0]?.DisplayName
-        })
+        }),
       )
       .pipe(shareReplayRefCount(1))
   }

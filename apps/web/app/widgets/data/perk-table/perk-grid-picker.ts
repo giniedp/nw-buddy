@@ -1,14 +1,14 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { Injector } from '@angular/core'
 import { Observable } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { PerkTableAdapter, buildPerkTablePickerOptions } from './perk-table-adapter'
 import { PerkTableRecord } from './perk-table-cols'
 
 export function openPerksPicker(options: {
-  db: NwDbService
+  db: NwDataService
   dialog: Dialog
   ctx: NwTextContextService
   injector?: Injector

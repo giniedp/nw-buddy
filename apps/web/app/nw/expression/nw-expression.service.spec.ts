@@ -1,21 +1,20 @@
 import { HttpClientModule } from '@angular/common/http'
 import { TestBed } from '@angular/core/testing'
 import { firstValueFrom, lastValueFrom } from 'rxjs'
-import { NwDataInterceptor } from '../nw-data.interceptor'
-import { NwDbService } from '../nw-db.service'
+import { NwDataInterceptor, NwDataService } from '~/data'
 import { NwExpressionService } from './nw-expression.service'
 
 describe('nw-expression.service', () => {
   let service: NwExpressionService
-  let db: NwDbService
+  let db: NwDataService
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientModule],
-      providers: [NwDataInterceptor.provide()]
+      providers: [NwDataInterceptor.provide()],
     })
     service = TestBed.inject(NwExpressionService)
-    db = TestBed.inject(NwDbService)
+    db = TestBed.inject(NwDataService)
   })
 
   const locales = [
@@ -27,7 +26,7 @@ describe('nw-expression.service', () => {
       let data: string[]
       beforeEach(async () => {
         data = await firstValueFrom(db.data.loadTranslations(locale)).then((it) =>
-          Object.values(it).filter((it) => it.includes('{['))
+          Object.values(it).filter((it) => it.includes('{[')),
         )
       })
 
@@ -40,8 +39,8 @@ describe('nw-expression.service', () => {
               gearScore: 600,
               itemId: null,
               ConsumablePotency: 1,
-              perkMultiplier: 1
-            })
+              perkMultiplier: 1,
+            }),
           )
           expect(solved).not.toContain('{[')
           expect(solved).not.toContain('⚠')

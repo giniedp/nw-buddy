@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TemplateRef, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { map } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
@@ -33,7 +34,7 @@ import { LootModule } from '~/widgets/loot'
   },
 })
 export class SeasonPassDetailPageComponent {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private dialog = inject(Dialog)
   protected route = inject(ActivatedRoute)
   protected id$ = observeRouteParam(this.route, 'id')

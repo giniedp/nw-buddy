@@ -1,5 +1,5 @@
 import { Directive, forwardRef, Input, Output } from '@angular/core'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { MountDetailStore } from './mount-detail.store'
 
 @Directive({
@@ -22,7 +22,7 @@ export class MountDetailDirective extends MountDetailStore {
   @Output()
   public nwbMountChange = this.mount$
 
-  public constructor(db: NwDbService) {
+  public constructor(db: NwDataService) {
     super(db)
   }
 }

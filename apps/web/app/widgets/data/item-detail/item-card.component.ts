@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Inpu
 import { AttributeRef, getItemId, getWeaponTagFromWeapon } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { BehaviorSubject, combineLatest, map, of, switchMap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemDividerComponent } from '~/ui/item-frame/item-divider.component'
 import { ModelViewerService } from '../../model-viewer/model-viewer.service'
@@ -176,7 +176,7 @@ export class ItemCardComponent extends ItemDetailStore {
 
   protected trackByIndex = (i: number) => i
 
-  public constructor(db: NwDbService, ms: ModelViewerService, cdRef: ChangeDetectorRef) {
+  public constructor(db: NwDataService, ms: ModelViewerService, cdRef: ChangeDetectorRef) {
     super(db, ms, cdRef)
   }
 }

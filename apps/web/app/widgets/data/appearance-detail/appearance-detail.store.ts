@@ -17,7 +17,7 @@ import {
   ItemdefinitionsWeaponappearances,
 } from '@nw-data/generated'
 import { Observable, combineLatest, map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { eqCaseInsensitive, selectStream } from '~/utils'
 import { ModelViewerService } from '~/widgets/model-viewer'
 import {
@@ -76,7 +76,7 @@ export class AppearanceDetailStore extends ComponentStore<{
     selectItems
   )
 
-  public constructor(protected db: NwDbService, private service: TransmogService) {
+  public constructor(protected db: NwDataService, private service: TransmogService) {
     super({ appearanceId: null, parentItemId: null, vairant: null })
   }
 

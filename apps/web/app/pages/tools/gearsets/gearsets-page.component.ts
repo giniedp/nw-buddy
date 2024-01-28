@@ -1,18 +1,19 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { Component, OnInit, inject } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { Router, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
-import { filter } from 'rxjs'
-import { GearsetsStore } from '~/data'
+import { debounceTime, filter } from 'rxjs'
+import { GearsetRecord } from '~/data'
 import { NwModule } from '~/nw'
 import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
 import { svgFileImport, svgPlus } from '~/ui/icons/svg'
-import { PromptDialogComponent } from '~/ui/layout'
+import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/layout'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
+import { GearsetsPageStore } from './gearsets-page.store'
 import { GearsetLoadoutListComponent } from './loadout'
 
 @Component({
@@ -30,32 +31,35 @@ import { GearsetLoadoutListComponent } from './loadout'
     IonHeader,
     GearsetLoadoutListComponent,
   ],
-  providers: [QuicksearchService, GearsetsStore],
+  providers: [QuicksearchService, GearsetsPageStore],
   host: {
     class: 'layout-col',
   },
 })
-export class GearsetsPageComponent implements OnInit {
+export class GearsetsPageComponent {
   protected iconCreate = svgPlus
   protected iconImport = svgFileImport
 
-  protected tags$ = this.store.tags$
-  private share = inject(ShareService)
+  private store = inject(GearsetsPageStore)
+  private quicksearch = inject(QuicksearchService)
+  private dialog = inject(Dialog)
   private router = inject(Router)
+  private share = inject(ShareService)
 
-  public constructor(
-    private store: GearsetsStore,
-    protected search: QuicksearchService,
-    private dialog: Dialog,
-  ) {
-    //
+  protected get tags() {
+    return this.store.filterTags()
   }
 
-  public async ngOnInit() {
-    this.store.loadAll()
+  protected get items() {
+    return this.store.filteredRecords()
   }
 
-  protected async createItem() {
+  public constructor() {
+    this.store.connectDB()
+    this.store.connectFilterQuery(this.quicksearch.query$.pipe(debounceTime(500)))
+  }
+
+  protected async handleCreate() {
     PromptDialogComponent.open(this.dialog, {
       data: {
         title: 'Create new set',
@@ -74,11 +78,26 @@ export class GearsetsPageComponent implements OnInit {
       })
   }
 
-  protected async importItem() {
+  protected handleDelete(gearset: GearsetRecord) {
+    ConfirmDialogComponent.open(this.dialog, {
+      data: {
+        title: 'Delete Gearset',
+        body: 'Are you sure you want to delete this gearset?',
+        positive: 'Delete',
+        negative: 'Cancel',
+      },
+    })
+      .closed.pipe(filter((it) => !!it))
+      .subscribe(() => {
+        this.store.destroyRecord(gearset.id)
+      })
+  }
+
+  protected async handleImport() {
     this.share.importItem(this.dialog, this.router)
   }
 
   protected toggleTag(value: string) {
-    this.store.toggleTag(value)
+    this.store.toggleFilterTag(value)
   }
 }

@@ -2,7 +2,7 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_BACKSTORYDATA } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import {
   DataTableCategory,
@@ -29,7 +29,7 @@ import {
 export class BackstoryTableAdapter
   implements DataViewAdapter<BackstoryTableRecord>, TableGridAdapter<BackstoryTableRecord>
 {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<BackstoryTableRecord> = inject(TableGridUtils)
 

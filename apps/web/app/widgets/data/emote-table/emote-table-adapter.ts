@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_EMOTEDEFINITIONS, Emotedefinitions } from '@nw-data/generated'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import {
   DataTableCategory,
@@ -26,7 +26,7 @@ import {
 
 @Injectable()
 export class EmoteTableAdapter implements DataViewAdapter<EmoteTableRecord>, TableGridAdapter<EmoteTableRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<EmoteTableRecord> = inject(TableGridUtils)
 

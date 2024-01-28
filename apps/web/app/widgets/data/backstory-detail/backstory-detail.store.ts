@@ -1,13 +1,13 @@
 import { Injectable, Output, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { buildBackstoryItemInstance, getBackstoryItems } from '@nw-data/common'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { selectStream } from '~/utils'
 import { selectBackstoryTradeSkills } from './selectors'
 
 @Injectable()
 export class BackstoryDetailStore extends ComponentStore<{ backstoryId: string }> {
-  protected db = inject(NwDbService)
+  protected db = inject(NwDataService)
   public readonly backstoryId$ = this.select(({ backstoryId }) => backstoryId)
 
   @Output()

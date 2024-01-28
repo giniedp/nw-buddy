@@ -1,22 +1,17 @@
-import { Inject, Injectable } from '@angular/core'
-import Dexie, { Table } from 'dexie'
-import { APP_DB } from './db'
-import { GearsetsDB } from './gearsets.db'
-import { ItemInstancesDB } from './item-instances.db'
+import { Injectable, inject } from '@angular/core'
+import { Table } from 'dexie'
+import { injectAppDB } from './db'
+import { GearsetsDB } from './gearsets'
+import { ItemInstancesDB } from './items'
 
 export type ExportedDB = { name: string; tables: ExportedTable[] }
 export type ExportedTable = { name: string; rows: Object[] }
 
 @Injectable({ providedIn: 'root' })
 export class DbService {
-  public constructor(
-    @Inject(APP_DB)
-    public readonly db: Dexie,
-    public readonly items: ItemInstancesDB,
-    public readonly gearsets: GearsetsDB
-  ) {
-    //
-  }
+  public readonly db = injectAppDB()
+  public readonly items = inject(ItemInstancesDB)
+  public readonly gearsets = inject(GearsetsDB)
 
   public async export(): Promise<ExportedDB> {
     await this.ensureOpen()

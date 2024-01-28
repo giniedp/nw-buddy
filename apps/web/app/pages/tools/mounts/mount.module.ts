@@ -3,7 +3,7 @@ import { ActivatedRouteSnapshot, Router, RouterModule, Routes } from '@angular/r
 import { MountComponent } from './mount.component'
 import { MountOverviewComponent } from './mount-overview.component'
 import { MountItemComponent } from './mount-item.component'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { firstValueFrom } from 'rxjs'
 import { eqCaseInsensitive } from '~/utils'
 
@@ -38,7 +38,7 @@ const ROUTES: Routes = [
 export class MountModule {}
 
 async function redirectToCategory(snap: ActivatedRouteSnapshot) {
-  const db = inject(NwDbService)
+  const db = inject(NwDataService)
   const router = inject(Router)
 
   const category = snap.paramMap.get('category')

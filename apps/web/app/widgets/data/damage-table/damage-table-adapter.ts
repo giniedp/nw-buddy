@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { COLS_DAMAGETABLE, Damagetable } from '@nw-data/generated'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
 import { DataTableCategory } from '~/ui/data/table-grid'
 import { addGenericColumns } from '~/ui/data/table-grid'
@@ -25,7 +25,7 @@ import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 
 @Injectable()
 export class DamageTableAdapter implements DataViewAdapter<DamageTableRecord>, TableGridAdapter<DamageTableRecord> {
-  private db = inject(NwDbService)
+  private db = inject(NwDataService)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<DamageTableRecord> = inject(TableGridUtils)
 

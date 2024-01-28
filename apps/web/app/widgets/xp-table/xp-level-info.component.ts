@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { combineLatest, map } from 'rxjs'
 import { CharacterStore } from '~/data'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 
 function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: keyof T) {
   let result = 0
@@ -50,5 +50,5 @@ export class XpLevelInfoComponent {
       }
     })
   )
-  public constructor(private char: CharacterStore, private db: NwDbService) {}
+  public constructor(private char: CharacterStore, private db: NwDataService) {}
 }

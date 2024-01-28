@@ -17,7 +17,8 @@ import {
 } from '@angular/core'
 import { Itemappearancedefinitions, Mounts } from '@nw-data/generated'
 import { Subject, catchError, firstValueFrom, from, map, of, switchMap, takeUntil, tap } from 'rxjs'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgCamera, svgCircleExclamation, svgExpand, svgMoon, svgSun, svgXmark } from '~/ui/icons/svg'
 import { TranslateService } from '../../i18n'
@@ -121,7 +122,7 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
     private screenshots: ScreenshotService,
     private i18n: TranslateService,
     protected store: ModelViewerStore,
-    private db: NwDbService
+    private db: NwDataService
   ) {
     this.store.patchState({
       canClose: !!ref,

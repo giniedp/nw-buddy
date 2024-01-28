@@ -2,12 +2,12 @@ import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { Loreitems } from '@nw-data/generated'
 import { map } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { eqCaseInsensitive, selectStream } from '~/utils'
 
 @Injectable()
 export class LoreItemDetailStore extends ComponentStore<{ recordId: string }> {
-  protected db = inject(NwDbService)
+  protected db = inject(NwDataService)
 
   public readonly recordId$ = this.select(({ recordId }) => recordId)
   public readonly record$ = selectStream(this.db.loreItem(this.recordId$))

@@ -4,7 +4,7 @@ import { BuffBucket, NW_FALLBACK_ICON } from '@nw-data/common'
 import { Elementalmutations, Promotionmutations, Statuseffect } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { combineLatest } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 
 @Injectable()
 export class MutaPromotionDetailStore extends ComponentStore<{ elementId: string, promotionId: string }> {
@@ -29,7 +29,7 @@ export class MutaPromotionDetailStore extends ComponentStore<{ elementId: string
     }
   )
 
-  public constructor(private db: NwDbService) {
+  public constructor(private db: NwDataService) {
     super({ promotionId: null, elementId: null })
   }
 

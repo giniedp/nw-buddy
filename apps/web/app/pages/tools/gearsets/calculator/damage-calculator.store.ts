@@ -12,7 +12,7 @@ import {
 } from '@nw-data/common'
 import { Vitals } from '@nw-data/generated'
 import { pipe, switchMap, tap } from 'rxjs'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { damageTypeIcon } from '~/nw/weapon-types'
 
 export interface DamageCalculatorState {
@@ -199,7 +199,7 @@ export const DamageCalculatorStore = signalStore(
     defenderWKNConverted: 0,
     defenderWKNConvertedTweak: 0,
   }),
-  withMethods((store, db = inject(NwDbService)) => {
+  withMethods((store, db = inject(NwDataService)) => {
     return {
       setVitalDefender: (vital: Vitals) => {
         patchState(store, {

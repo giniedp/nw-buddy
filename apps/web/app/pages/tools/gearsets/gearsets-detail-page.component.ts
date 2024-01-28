@@ -1,9 +1,10 @@
 import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { Component, TrackByFunction } from '@angular/core'
+import { Component, TrackByFunction, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
+import { IonHeader } from '@ionic/angular/standalone'
 import {
   EquipSlotId,
   NW_MAX_GEAR_SCORE,
@@ -17,18 +18,19 @@ import {
 } from '@nw-data/common'
 import { ItemDefinitionMaster } from '@nw-data/generated'
 import { environment } from 'apps/web/environments'
-import { combineLatest, filter, firstValueFrom, map, switchMap } from 'rxjs'
+import { filter, firstValueFrom, map, switchMap } from 'rxjs'
 import {
   GearsetRecord,
-  GearsetStore,
+  GearsetSignalStore,
   GearsetsDB,
+  ImagesDB,
   ItemInstance,
   ItemInstancesDB,
+  NwDataService,
   ResolvedItemPerkInfo,
   resolveGearsetSlotItems,
 } from '~/data'
-import { ImagesDB } from '~/data/images.db'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
 import { ShareDialogComponent } from '~/pages/share'
 import { ChipsInputModule } from '~/ui/chips-input'
 import { IconsModule } from '~/ui/icons'
@@ -46,13 +48,12 @@ import {
 } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { observeRouteParam } from '~/utils'
+import { injectRouteParam } from '~/utils'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { InventoryPickerService } from '../inventory/inventory-picker.service'
 import { SlotsPickerComponent } from './dialogs'
 import { GearsetDetailComponent } from './gearset.component'
 import { GEARSET_TAGS } from './tags'
-import { IonHeader } from '@ionic/angular/standalone'
 
 @Component({
   standalone: true,
@@ -73,20 +74,13 @@ import { IonHeader } from '@ionic/angular/standalone'
     ChipsInputModule,
     OverlayModule,
   ],
-  providers: [GearsetStore],
+  providers: [GearsetSignalStore],
   host: {
     class: 'layout-col flex-none',
   },
 })
 export class GearsetsDetailPageComponent {
-  protected id$ = observeRouteParam(this.route, 'id')
-  protected record$ = this.gearDb.observeByid(this.id$)
-
-  protected vm$ = combineLatest({
-    record: this.record$,
-    name: this.record$.pipe(map((it) => it?.name)),
-    tags: this.record$.pipe(map((it) => it?.tags || [])),
-  })
+  private store = inject(GearsetSignalStore)
 
   protected compact = false
   protected calculator = false
@@ -105,26 +99,29 @@ export class GearsetsDetailPageComponent {
   protected trackByIndex: TrackByFunction<any> = (i) => i
   protected menuIsOpen = false
 
+  protected get gearset() {
+    return this.store.gearset()
+  }
+  protected get isLoaded() {
+    return this.store.isLoaded()
+  }
+
   public constructor(
     private router: Router,
     private route: ActivatedRoute,
     private gearDb: GearsetsDB,
-    private db: NwDbService,
+    private db: NwDataService,
     private picker: InventoryPickerService,
-    private store: GearsetStore,
+
     private itemsDb: ItemInstancesDB,
     private imagesDb: ImagesDB,
-    private dialog: Dialog
+    private dialog: Dialog,
   ) {
-    store.load(this.record$)
+    this.store.connectGearsetDB(injectRouteParam('id'))
   }
 
-  protected async updateName(value: string) {
-    const record = await firstValueFrom(this.record$)
-    this.gearDb.update(record.id, {
-      ...record,
-      name: value,
-    })
+  protected updateName(value: string) {
+    this.store.patchGearset({ name: value })
   }
 
   protected onCompactClicked() {
@@ -134,8 +131,8 @@ export class GearsetsDetailPageComponent {
   protected onCalculatorClicked() {
     this.calculator = !this.calculator
   }
-  protected async onCloneClicked() {
-    const record = await firstValueFrom(this.record$)
+  protected onCloneClicked() {
+    const record = this.store.gearset()
     PromptDialogComponent.open(this.dialog, {
       data: {
         title: 'Create copy',
@@ -155,15 +152,15 @@ export class GearsetsDetailPageComponent {
             ipnsName: null,
             name: newName,
           })
-        })
+        }),
       )
       .subscribe((newSet) => {
         this.router.navigate(['..', newSet.id], { relativeTo: this.route })
       })
   }
 
-  protected async onDeleteClicked() {
-    const record = await firstValueFrom(this.record$)
+  protected onDeleteClicked() {
+    const record = this.store.gearset()
     ConfirmDialogComponent.open(this.dialog, {
       data: {
         title: 'Delete Gearset',
@@ -185,10 +182,9 @@ export class GearsetsDetailPageComponent {
   }
 
   protected async onShareClicked() {
-    let record = await firstValueFrom(this.record$)
+    const record = this.store.clone()
     const ipnsKey = record.ipnsKey
     const ipnsName = record.ipnsName
-    record = { ...record }
     delete record.imageId
     delete record.createMode
     delete record.ipnsKey
@@ -274,7 +270,7 @@ export class GearsetsDetailPageComponent {
   }
 
   protected async onBatchResetClicked() {
-    const record = await firstValueFrom(this.record$)
+    const record = this.store.gearset()
     const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
     const resetableIds: EquipSlotId[] = [
       'head',
@@ -289,39 +285,38 @@ export class GearsetsDetailPageComponent {
       'weapon2',
       'weapon3',
     ]
-    const perkSlots = recordSlots.filter((it) => resetableIds.includes(it.slot as any))
+    const perkSlots = recordSlots.filter((it) => resetableIds.includes(it.slot as EquipSlotId))
 
     SlotsPickerComponent.open(this.dialog, {
       data: {
         title: 'Select items to reset',
-        slots1: perkSlots.map((it) => it.slot as any),
+        slots1: perkSlots.map((it) => it.slot as EquipSlotId),
         selection: resetableIds,
       },
     })
       .closed.pipe(filter((it) => it?.length > 0))
       .subscribe((slots) => {
-        this.store.updateSlots({
-          slots: perkSlots
-            .filter((it) => slots.includes(it.slot as any))
-            .map(({ slot, perks }) => {
-              return {
-                slot: slot,
-                perks: perks.filter(canResetPerk).map(({ key }) => {
-                  return { key: key, perkId: null }
-                }),
-              }
-            }),
-        })
+        const patch = perkSlots
+          .filter((it) => slots.includes(it.slot as EquipSlotId))
+          .map(({ slot, perks }) => {
+            return {
+              slot: slot,
+              perks: perks.filter(canResetPerk).map(({ key }) => {
+                return { key: key, perkId: null }
+              }),
+            }
+          })
+        this.store.updateGearsetSlots(patch)
       })
   }
 
   protected async onBatchGemClicked() {
-    const record = await firstValueFrom(this.record$)
+    const record = this.store.gearset()
     const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
     const gemSlots = recordSlots.filter(({ item, perks }) =>
       perks.some(
-        ({ perk, bucket }) => isPerkGem(bucket) || isPerkEmptyGemSlot(perk) || (isPerkGem(perk) && item?.CanReplaceGem)
-      )
+        ({ perk, bucket }) => isPerkGem(bucket) || isPerkEmptyGemSlot(perk) || (isPerkGem(perk) && item?.CanReplaceGem),
+      ),
     )
     const armorSlotIds: EquipSlotId[] = ['head', 'chest', 'hands', 'legs', 'feet', 'amulet', 'ring', 'earring']
     const weaponSlotIds: EquipSlotId[] = ['weapon1', 'weapon2']
@@ -343,11 +338,11 @@ export class GearsetsDetailPageComponent {
             .pickGemForSlot({ slots: slots })
             .pipe(filter((it) => it?.length > 0))
             .pipe(map((perks) => ({ slots, perk: perks[0] })))
-        })
+        }),
       )
       .subscribe(({ perk, slots }) => {
-        this.store.updateSlots({
-          slots: gemSlots
+        this.store.updateGearsetSlots(
+          gemSlots
             .filter((it) => slots.includes(it.slot as any))
             .map(({ slot, perks, item }) => {
               const found = perks.find((it) => canReplaceGem(it, item))
@@ -361,12 +356,12 @@ export class GearsetsDetailPageComponent {
                 ],
               }
             }),
-        })
+        )
       })
   }
 
   protected async onBatchAttributeClicked() {
-    const record = await firstValueFrom(this.record$)
+    const record = this.store.gearset()
     const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
     const gearSlots = recordSlots.filter(({ item }) => isItemArmor(item) || isItemWeapon(item) || isItemJewelery(item))
     const armorSlotIds: EquipSlotId[] = ['head', 'chest', 'hands', 'legs', 'feet', 'amulet', 'ring', 'earring']
@@ -393,11 +388,11 @@ export class GearsetsDetailPageComponent {
             })
             .pipe(filter((it) => it?.length > 0))
             .pipe(map((perks) => ({ slots, perk: perks[0] })))
-        })
+        }),
       )
       .subscribe(({ perk, slots }) => {
-        this.store.updateSlots({
-          slots: gearSlots
+        this.store.updateGearsetSlots(
+          gearSlots
             .filter((it) => slots.includes(it.slot as any))
             .map(({ slot, perks, item }) => {
               const found = perks.find((it) => canPlaceMod(it, item))
@@ -411,12 +406,12 @@ export class GearsetsDetailPageComponent {
                 ],
               }
             }),
-        })
+        )
       })
   }
 
   protected async onBatchGearScoreClicked() {
-    const record = await firstValueFrom(this.record$)
+    const record = this.store.gearset()
     const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
     const gearSlotIds: EquipSlotId[] = [
       'head',
@@ -461,13 +456,13 @@ export class GearsetsDetailPageComponent {
             .pipe(
               map((gs) => {
                 return { slots, gs: Number(gs) }
-              })
+              }),
             )
-        })
+        }),
       )
       .subscribe(({ slots, gs }) => {
-        this.store.updateSlots({
-          slots: gearSlots
+        this.store.updateGearsetSlots(
+          gearSlots
             .filter((it) => slots.includes(it.slot as any))
             .map(({ slot }) => {
               return {
@@ -475,7 +470,7 @@ export class GearsetsDetailPageComponent {
                 gearScore: gs,
               }
             }),
-        })
+        )
       })
   }
 }

@@ -6,8 +6,7 @@ import { DomSanitizer } from '@angular/platform-browser'
 import { ActivatedRoute, Router } from '@angular/router'
 import { environment } from 'apps/web/environments'
 import { filter, of, switchMap, throwError } from 'rxjs'
-import { SkillBuildRecord, SkillBuildsDB, SkillBuildsStore } from '~/data'
-import { ElectronService } from '~/electron'
+import { SkillBuildsDB, SkillSetRecord } from '~/data'
 import { NwModule } from '~/nw'
 import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
@@ -29,24 +28,23 @@ import { SkillBuilderComponent } from '~/widgets/skill-builder'
   },
 })
 export class SkillBuildsShareComponent {
-  protected vm$ = this.route.paramMap
-    .pipe(
-      switchMap((it) => {
-        if (it.has('cid')) {
-          return this.web3.downloadbyCid(it.get('cid'))
-        }
-        return this.web3.downloadByName(it.get('name'))
-      }),
-      switchMap((it) => {
-        if (it?.type === 'skill-build' && it.data) {
-          const record: SkillBuildRecord = it.data
-          delete record.id
-          return of(record)
-        }
-        return throwError(() => new Error(`invalid data`))
-      }),
-      suspensify<SkillBuildRecord>()
-    )
+  protected vm$ = this.route.paramMap.pipe(
+    switchMap((it) => {
+      if (it.has('cid')) {
+        return this.web3.downloadbyCid(it.get('cid'))
+      }
+      return this.web3.downloadByName(it.get('name'))
+    }),
+    switchMap((it) => {
+      if (it?.type === 'skill-build' && it.data) {
+        const record: SkillSetRecord = it.data
+        delete record.id
+        return of(record)
+      }
+      return throwError(() => new Error(`invalid data`))
+    }),
+    suspensify<SkillSetRecord>(),
+  )
 
   protected iconInfo = svgCircleExclamation
   protected iconError = svgCircleExclamation
@@ -63,11 +61,9 @@ export class SkillBuildsShareComponent {
     private router: Router,
     private web3: ShareService,
     private dialog: Dialog,
-    private skillsDb: SkillBuildsDB,
-    private store: SkillBuildsStore,
+    private db: SkillBuildsDB,
     private sanitizer: DomSanitizer,
-    private electron: ElectronService,
-    head: HtmlHeadService
+    head: HtmlHeadService,
   ) {
     head.updateMetadata({
       title: 'Shared Skill Build',
@@ -75,7 +71,7 @@ export class SkillBuildsShareComponent {
     })
   }
 
-  protected onimportClicked(record: SkillBuildRecord) {
+  protected onimportClicked(record: SkillSetRecord) {
     PromptDialogComponent.open(this.dialog, {
       data: {
         title: 'Import',
@@ -88,11 +84,11 @@ export class SkillBuildsShareComponent {
       .closed.pipe(filter((it) => !!it))
       .pipe(
         switchMap((name) => {
-          return this.skillsDb.create({
+          return this.db.create({
             ...record,
             name: name,
           })
-        })
+        }),
       )
       .subscribe((record) => {
         this.router.navigate(['/skill-trees', record.id], {

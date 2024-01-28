@@ -3,7 +3,8 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core'
 import { ActivatedRoute, RouterModule, RouterOutlet } from '@angular/router'
 import { Cursemutations, Elementalmutations, Gamemodes, PoiDefinition, Promotionmutations } from '@nw-data/generated'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft } from '~/ui/icons/svg'
 import { NavbarModule } from '~/ui/nav-toolbar'
@@ -86,7 +87,7 @@ export class GameModesPageComponent {
   protected iconBack = svgChevronLeft
 
   public constructor(
-    private db: NwDbService,
+    private db: NwDataService,
     private route: ActivatedRoute,
   ) {
     //

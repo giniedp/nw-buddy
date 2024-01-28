@@ -1,7 +1,7 @@
 import { Injectable, Output } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import { Spelltable } from '@nw-data/generated'
-import { NwDbService } from '~/nw'
+import { NwDataService } from '~/data'
 import { rejectKeys } from '~/utils'
 
 @Injectable()
@@ -13,7 +13,7 @@ export class SpellDetailStore extends ComponentStore<{ spellId: string }> {
 
   public readonly properties$ = this.select(this.spell$, selectProperties)
 
-  public constructor(protected db: NwDbService) {
+  public constructor(protected db: NwDataService) {
     super({ spellId: null })
   }
 

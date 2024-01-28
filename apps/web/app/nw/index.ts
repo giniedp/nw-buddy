@@ -1,7 +1,3 @@
-export * from './nw-data.interceptor'
-export * from './nw-data.service'
-export * from './nw-db-views'
-export * from './nw-db.service'
 export * from './nw-link'
 export * from './nw-link.service'
 export * from './nw.module'

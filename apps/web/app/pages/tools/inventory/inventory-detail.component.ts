@@ -1,23 +1,18 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { ActivatedRoute, RouterModule } from '@angular/router'
-import { combineLatest, map, of, switchMap, take } from 'rxjs'
-import { GearsetRecord, GearsetsDB, GearsetStore, ItemInstance, ItemInstanceRow, ItemInstancesStore } from '~/data'
+import { RouterModule } from '@angular/router'
+import { take } from 'rxjs'
+import { GearsetSignalStore } from '~/data'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { LayoutModule } from '~/ui/layout'
-import { observeRouteParam } from '~/utils'
+import { injectRouteParam } from '~/utils'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
+import { ItemDetailPageStore } from './inventory-detail-page.store'
 import { InventoryPickerService } from './inventory-picker.service'
 
-export interface ItemDetailVM {
-  itemRow: ItemInstanceRow
-  itemSet: GearsetRecord
-  itemSlot: string
-  instance: ItemInstance
-}
 @Component({
   standalone: true,
   selector: 'nwb-inventory-detail',
@@ -33,115 +28,56 @@ export interface ItemDetailVM {
     LayoutModule,
     ItemFrameModule,
   ],
-  providers: [GearsetStore],
+  providers: [GearsetSignalStore, ItemDetailPageStore],
   host: {
     class: 'block',
   },
 })
 export class InventoryDetailComponent {
-  protected routeId$ = observeRouteParam(this.route, 'id')
-  protected routeSlot$ = observeRouteParam(this.route, 'slot')
+  private store = inject(ItemDetailPageStore)
 
-  protected itemRow$ = combineLatest({
-    id: this.routeId$,
-    rows: this.itemsStore.rows$,
-  }).pipe(map(({ id, rows }) => (id ? rows?.find((it) => it.record.id === id) : null)))
-
-  protected gearset$ = this.gearsetDb.observeByid(this.routeSlot$)
-
-  protected vm$ = combineLatest({
-    itemRow: this.itemRow$,
-    itemSet: this.gearset$,
-    itemSlot: this.routeSlot$,
-  }).pipe(
-    map((data): ItemDetailVM => {
-      let instance: ItemInstance
-      if (data.itemRow) {
-        instance = data.itemRow.record
-      }
-      if (data.itemSet) {
-        const slot = data.itemSet.slots[data.itemSlot]
-        if (typeof slot !== 'string') {
-          instance = slot
-        }
-      }
-      return {
-        ...data,
-        instance: instance,
-      }
-    })
-  )
+  public get instance() {
+    return this.store.instance()
+  }
 
   protected isGearScoreOpen: boolean
   protected overrideGearScore: number
   protected gsTarget: Element
 
-  public constructor(
-    private route: ActivatedRoute,
-    private service: InventoryPickerService,
-    private itemsStore: ItemInstancesStore,
-    private gearsetStore: GearsetStore,
-    private gearsetDb: GearsetsDB
-  ) {
-    this.gearsetStore.load(this.gearset$)
+  public constructor(private service: InventoryPickerService) {
+    this.store.syncInstance(injectRouteParam('id'))
+    this.store.syncGearset(injectRouteParam('set'))
+    this.store.syncSlot(injectRouteParam('slot') as any)
   }
 
-  public setGearScore(vm: ItemDetailVM, gearScore: number) {
-    this.overrideGearScore = gearScore
-  }
-  protected openGsEditor(event: MouseEvent) {
+  protected handleOpenGsEditor(event: MouseEvent) {
     this.gsTarget = event.currentTarget as Element
   }
-  protected closeGsEditor() {
+  protected handleCloseGsEditor() {
     this.gsTarget = null
   }
-  public commitGearScore(vm: ItemDetailVM) {
-    const gearScore = this.overrideGearScore
+  public handleGearScoreChange(gearScore: number) {
+    this.overrideGearScore = gearScore
+  }
+  public handleGearScoreWrite() {
+    const value = this.overrideGearScore
     this.overrideGearScore = null
-    if (vm.itemRow) {
-      this.itemsStore.updateRecord({
-        record: {
-          ...vm.itemRow.record,
-          gearScore: gearScore,
-        },
-      })
+    if (this.store.gearset()) {
+      this.store.updateSlotGearScore(this.store.slotId(), value)
     } else {
-      this.gearsetStore.updateSlot({
-        slot: vm.itemSlot,
-        value: {
-          ...vm.instance,
-          gearScore: gearScore,
-        },
-      })
+      this.store.patchItemInstance({ gearScore: value })
     }
   }
 
-  public pickPerk(vm: ItemDetailVM, key: string) {
+  public handlePickPerk(key: string) {
     this.service
-      .pickPerkForItem(vm.instance, key)
+      .pickPerkForItem(this.instance, key)
       .pipe(take(1))
       .subscribe((value) => {
-        if (vm.itemRow) {
-          this.itemsStore.updateRecord({
-            record: {
-              ...vm.itemRow.record,
-              perks: {
-                ...(vm.instance.perks || {}),
-                [key]: value ? value.PerkID : null,
-              },
-            },
-          })
+        if (this.store.gearset()) {
+          this.store.updateSlotPerk(this.store.slotId(), key, value)
         } else {
-          this.gearsetStore.updateSlot({
-            slot: vm.itemSlot,
-            value: {
-              ...vm.instance,
-              perks: {
-                ...(vm.instance.perks || {}),
-                [key]: value ? value.PerkID : null,
-              },
-            },
-          })
+          this.store.updateItemInstancePerk(key, value)
         }
       })
   }

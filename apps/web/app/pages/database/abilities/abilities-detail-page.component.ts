@@ -4,7 +4,8 @@ import { ActivatedRoute, RouterModule } from '@angular/router'
 import { Ability } from '@nw-data/generated'
 import { firstValueFrom, map } from 'rxjs'
 import { TranslateService } from '~/i18n'
-import { NwDbService, NwModule } from '~/nw'
+import { NwModule } from '~/nw'
+import { NwDataService } from '~/data'
 import { NwExpressionService } from '~/nw/expression'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
 import { LayoutModule } from '~/ui/layout'
@@ -51,7 +52,7 @@ export class AbilitiesDetailPageComponent {
     private i18n: TranslateService,
     private expr: NwExpressionService,
     private head: HtmlHeadService,
-    private db: NwDbService
+    private db: NwDataService
   ) {
     //
   }
