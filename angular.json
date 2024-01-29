@@ -40,6 +40,7 @@
               "apps/web/sitemap.txt",
               "apps/web/embed.js",
               "apps/web/assets",
+              "apps/web/version",
               {
                 "glob": "**/*",
                 "ignore": [

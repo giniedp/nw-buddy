@@ -14,7 +14,6 @@ export interface Environment extends EnvVars {
 }
 
 export function getEnvModelsUrl(env: EnvVars) {
-  console.log(env)
   return new URL('models', env.cdnUrl).toString()
 }
 
