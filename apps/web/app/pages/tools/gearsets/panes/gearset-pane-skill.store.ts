@@ -29,7 +29,7 @@ export const GearsetPaneSkillStore = signalStore(
           const slotId = slot === 'primary' ? 'weapon1' : 'weapon2'
           return resolveGearsetSlot(instancesDB, slotId, gearset?.slots?.[slotId]).pipe(
             switchMap(({ instance }) => nwData.item(instance?.itemId)),
-            switchMap((item) => nwData.weapon(item.ItemStatsRef)),
+            switchMap((item) => nwData.weapon(item?.ItemStatsRef)),
             map((it) => equippedWeaponTag.set(getWeaponTagFromWeapon(it))),
           )
         }),
