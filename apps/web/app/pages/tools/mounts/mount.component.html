@@ -1,13 +1,37 @@
-<div class="layout-content p-4">
-  <div class="grid grid-cols-fill-sm gap-4 max-w-screen-3xl mx-auto" [@list]="count$ | async">
-    <a
-      *ngFor="let item of data$ | async; trackBy: trackByIndex"
-      [nwbMountTile]="item"
-      [routerLink]="item.MountId"
-      [routerLinkActive]="'border-primary'"
-      [@fade]="true"
-      class="bg-base-300 rounded-md border border-base-100 hover:border-primary relative transition-all"
-    ></a>
-  </div>
-</div>
-<router-outlet></router-outlet>
+<ion-content>
+  <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-min-width: 320px; --side-max-width: 420px">
+    <div class="ion-page order-2" id="main">
+      <div class="grid grid-cols-fill-sm gap-4 max-w-screen-3xl mx-auto" [@list]="count$ | async">
+        @for (item of data$ | async; track $index) {
+          <a
+            [nwbMountTile]="item"
+            [routerLink]="item.MountId"
+            [routerLinkActive]="'border-primary'"
+            [@fade]="true"
+            class="bg-base-300 rounded-md border border-base-100 hover:border-primary relative transition-all"
+          ></a>
+        }
+      </div>
+    </div>
+    <ion-menu contentId="main" class="order-2">
+      @if (showSidebar()) {
+        <ion-content class="ion-p-4">
+          <router-outlet />
+        </ion-content>
+      }
+    </ion-menu>
+  </ion-split-pane>
+  <ion-modal
+    [isOpen]="showModal()"
+    [initialBreakpoint]="100 | px2vh"
+    [breakpoints]="[12 | px2vh, 100 | px2vh, 0.45, 1]"
+    [backdropBreakpoint]="0.5"
+    [backdropDismiss]="false"
+  >
+    @if (showModal()) {
+      <ion-content class="ion-p-2 bg-base-300">
+        <router-outlet #outlet="outlet" />
+      </ion-content>
+    }
+  </ion-modal>
+</ion-content>

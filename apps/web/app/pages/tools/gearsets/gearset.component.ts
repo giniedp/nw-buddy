@@ -20,6 +20,8 @@ import { GearsetPaneMainComponent } from './panes/gearset-pane-main.component'
 import { GearsetPaneSkillComponent } from './panes/gearset-pane-skill.component'
 import { GearsetPaneSlotComponent } from './panes/gearset-pane-slot.component'
 import { GearsetPaneStatsComponent } from './panes/gearset-pane-stats.component'
+import { injectBreakpoint, injectUrlParams } from '~/utils'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -45,7 +47,7 @@ import { GearsetPaneStatsComponent } from './panes/gearset-pane-stats.component'
   ],
   providers: [GearsetSignalStore, Mannequin, NwTextContextService],
   host: {
-    class: 'layout-col',
+    class: 'ion-page',
   },
   animations: [
     trigger('list', [
@@ -94,6 +96,14 @@ export class GearsetDetailComponent {
   }
   protected get isLoading() {
     return !this.store.isLoaded()
+  }
+
+  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
+  protected get showSidebar() {
+    return this.isLargeContent() && this.calculator
+  }
+  protected get showModal() {
+    return !this.isLargeContent() && this.calculator
   }
 
   protected iconChevronLeft = svgChevronLeft

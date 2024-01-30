@@ -1,22 +1,25 @@
 <ng-content select="header"></ng-content>
-<cdk-virtual-scroll-viewport
-  [itemSize]="itemSize()"
-  class="overflow-hidden mx-auto"
-  [style.width.px]="store.gridSize()"
-  #viewport
->
-  <div
-    class="grid"
-    [ngClass]="gridClass"
-    [style.--nwb-vg-cols]="colCount()"
-    [style.--nwb-vg-rows]="rowCount()"
-    [style.--nwb-vg-height.px]="itemSize()"
+<!-- @defer fixes layout issue -->
+@defer {
+  <cdk-virtual-scroll-viewport
+    [itemSize]="itemSize()"
+    class="overflow-hidden mx-auto"
+    [style.width.px]="store.gridSize()"
+    #viewport
   >
-    <ng-container *cdkVirtualFor="let row of rows(); trackBy: trackBy">
-      <ng-container [ngTemplateOutlet]="customRow?.template || tplRow" [ngTemplateOutletContext]="row"></ng-container>
-    </ng-container>
-  </div>
-</cdk-virtual-scroll-viewport>
+    <div
+      class="grid"
+      [ngClass]="gridClass"
+      [style.--nwb-vg-cols]="colCount()"
+      [style.--nwb-vg-rows]="rowCount()"
+      [style.--nwb-vg-height.px]="itemSize()"
+    >
+      <ng-container *cdkVirtualFor="let row of rows(); trackBy: trackBy">
+        <ng-container [ngTemplateOutlet]="customRow?.template || tplRow" [ngTemplateOutletContext]="row"></ng-container>
+      </ng-container>
+    </div>
+  </cdk-virtual-scroll-viewport>
+}
 <ng-content select="footer" />
 
 <ng-template [nwbVirtualGridRow] let-row #tplRow>

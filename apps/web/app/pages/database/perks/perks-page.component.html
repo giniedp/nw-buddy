@@ -4,7 +4,7 @@
       <li>
         <button
           [nwbDataCateogryMenu]
-          [category]="category$ | async"
+          [category]="category()"
           [showCounter]="true"
           [defaultRoute]="defaultRoute"
           [defaultTitle]="title"
@@ -37,6 +37,59 @@
     </div>
   </div>
 </ion-header>
+<ion-content [scrollY]="false">
+  <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-min-width: 320px; --side-max-width: 420px">
+    <div class="ion-page order-2 flex flex-row" id="main">
+      @if (service.isGridActive()) {
+        <nwb-virtual-grid
+          [enableQuickfilter]="true"
+          [data]="service.categoryItems$ | async"
+          [options]="service.virtualOptions"
+          [identifyBy]="service.entityIdGetter"
+          [selectionRouteParam]="selectionParam"
+        />
+      } @else if (service.isTableActive()) {
+        <nwb-table-grid
+          (ready$)="service.onTableReady($event)"
+          [enableQuickfilter]="true"
+          [data]="service.categoryItems$ | async"
+          [options]="service.tableGridOptions"
+          [identifyBy]="service.entityIdGetter"
+          [persistKey]="persistKey"
+          [filterQueryParam]="filterParam"
+          [selectionRouteParam]="selectionParam"
+        />
+      }
+      @if(isFuncOpen) {
+        <div class="w-[600px] hidden 2xl:block p-2 overflow-auto">
+          <nwb-table-grid-expression-panel [grid]="service.agGrid$ | async"/>
+        </div>
+      }
+    </div>
+    <ion-menu contentId="main" class="order-2">
+      @if (showSidebar()) {
+        <ion-content class="ion-p-4">
+          <router-outlet />
+        </ion-content>
+      }
+    </ion-menu>
+  </ion-split-pane>
+  <ion-modal
+    [isOpen]="showModal()"
+    [initialBreakpoint]="100 | px2vh"
+    [breakpoints]="[12 | px2vh, 100 | px2vh, 0.45, 1]"
+    [backdropBreakpoint]="0.5"
+    [backdropDismiss]="false"
+  >
+    @if (showModal()) {
+      <ion-content class="ion-p-2 bg-base-300">
+        <router-outlet #outlet="outlet" />
+      </ion-content>
+    }
+  </ion-modal>
+</ion-content>
+
+<!--
 <div class="flex-1 flex flex-row overflow-hidden">
   <ng-container *ngIf="service.isGridActive()">
     <nwb-virtual-grid
@@ -60,7 +113,7 @@
     ></nwb-table-grid>
   </ng-container>
   <div class="w-[600px] hidden 2xl:block p-2 overflow-auto" *ngIf="isFuncOpen">
-    <nwb-table-grid-expression-panel [grid]="service.agGrid$ | async"></nwb-table-grid-expression-panel>
+    <nwb-table-grid-expression-panel [grid]="service.agGrid$ | async"/>
   </div>
   <router-outlet></router-outlet>
-</div>
+</div> -->

@@ -31,7 +31,7 @@
         <label class="label">
           <span class="label-text">From File</span>
         </label>
-        <label class="input-group">
+        <label class="join">
           <span>File</span>
           <input type="file" class="hidden" accept=".json" (change)="useFile($event)" [disabled]="isLoading$()" />
           <div class="input input-bordered input-md flex-1 text-start leading-10">{{ file$()?.name }}</div>
@@ -46,7 +46,7 @@
         <label class="label">
           <span class="label-text">From URL</span>
         </label>
-        <label class="input-group">
+        <label class="join">
           <span>URL</span>
           <input
             type="url"
@@ -72,7 +72,7 @@
         <label class="label">
           <span class="label-text">Access key for item id</span>
         </label>
-        <label class="input-group">
+        <label class="join">
           <span>ID Key</span>
           <select [(ngModel)]="keyId" class="input input-bordered input-md flex-1">
             <option *ngFor="let key of keys" [value]="key">{{ key }}</option>
@@ -84,7 +84,7 @@
         <label class="label">
           <span class="label-text">Access key for item price</span>
         </label>
-        <label class="input-group">
+        <label class="join">
           <span>Price Key</span>
           <select [(ngModel)]="keyPrice" class="input input-bordered input-md flex-1">
             <option *ngFor="let key of keys" [value]="key">{{ key }}</option>

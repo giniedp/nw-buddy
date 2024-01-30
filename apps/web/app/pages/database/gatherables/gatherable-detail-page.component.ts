@@ -34,7 +34,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   ],
   providers: [],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class ItemDetailPageComponent {

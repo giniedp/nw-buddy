@@ -22,7 +22,7 @@ export class GatherableDetailStore extends ComponentStore<{ recordId: string }> 
     },
     ({ byVariation, byId }) => byId ?? byVariation,
   )
-  public readonly variations$ = selectStream(this.db.gatherableVariationsByGatherableId(this.recordId$), (it) => Array.from(it || []))
+  public readonly variations$ = selectStream(this.db.gatherableVariationsByGatherableId(this.recordId$), (it) => it || [])
 
   public readonly gatherableId$ = selectStream(this.gatherable$, (it) => it?.GatherableID)
   public readonly gatherableMeta$ = selectStream(this.db.gatherablesMeta(this.gatherableId$))

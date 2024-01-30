@@ -6,7 +6,7 @@ import { NwDataService } from '~/data'
 import { ArmorWeightSet, ArmorWeightsStore } from './armor-weights.store'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
 import { ArmorWeightTableAdapter } from './armor-weight-adapter'
-import { HtmlHeadService, eqCaseInsensitive, humanize, observeRouteParam, selectStream } from '~/utils'
+import { HtmlHeadService, eqCaseInsensitive, humanize, injectRouteParam, observeRouteParam, selectSignal, selectStream } from '~/utils'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { DataGridModule } from '~/ui/data/table-grid'
 import { LayoutModule } from '~/ui/layout'
@@ -33,9 +33,8 @@ import { LayoutModule } from '~/ui/layout'
     }),
   ],
   host: {
-    class: 'layout-col',
+    class: 'ion-page'
   },
-
 })
 export class ArmorWeightsPageComponent {
 
@@ -44,12 +43,10 @@ export class ArmorWeightsPageComponent {
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'armorweights-table'
-  protected categoryParam$ = observeRouteParam(inject(ActivatedRoute), 'category')
-  protected category$ = selectStream(this.categoryParam$, (it) => {
+  protected category = selectSignal(injectRouteParam('category'), (it) => {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
 
-  public trackByIndex: TrackByFunction<any> = (i) => i
   public constructor(head: HtmlHeadService, protected service: DataViewService<ArmorWeightSet>) {
     head.updateMetadata({
       url: head.currentUrl,

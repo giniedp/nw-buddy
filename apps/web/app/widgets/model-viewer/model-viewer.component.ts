@@ -1,4 +1,4 @@
-import { CdkDialogContainer, DIALOG_DATA, Dialog, DialogConfig, DialogModule, DialogRef } from '@angular/cdk/dialog'
+import { DIALOG_DATA, Dialog, DialogConfig, DialogModule, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -13,12 +13,11 @@ import {
   Optional,
   Output,
   ViewChild,
-  forwardRef,
 } from '@angular/core'
 import { Itemappearancedefinitions, Mounts } from '@nw-data/generated'
-import { Subject, catchError, firstValueFrom, from, map, of, switchMap, takeUntil, tap } from 'rxjs'
-import { NwModule } from '~/nw'
+import { Subject, catchError, firstValueFrom, from, of, switchMap, takeUntil, tap } from 'rxjs'
 import { NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgCamera, svgCircleExclamation, svgExpand, svgMoon, svgSun, svgXmark } from '~/ui/icons/svg'
 import { TranslateService } from '../../i18n'
@@ -27,11 +26,11 @@ import { ItemModelInfo } from './model-viewer.service'
 
 import { animate, style, transition, trigger } from '@angular/animations'
 import { ViewerModel } from 'babylonjs-viewer'
+import { DyePanelComponent } from './dye-panel.component'
 import { ModelViewerStore } from './model-viewer.store'
 import { getItemRotation } from './utils/get-item-rotation'
 import { supportsWebGL } from './utils/webgl-support'
 import { viewerUpdateMode, type DefaultViewer } from './viewer'
-import { DyePanelComponent } from './dye-panel.component'
 
 export interface ModelViewerState {
   models: ItemModelInfo[]
@@ -122,7 +121,7 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
     private screenshots: ScreenshotService,
     private i18n: TranslateService,
     protected store: ModelViewerStore,
-    private db: NwDataService
+    private db: NwDataService,
   ) {
     this.store.patchState({
       canClose: !!ref,
@@ -144,9 +143,9 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
               this.store.patchState({ isLoading: false, hasError: true, hasLoaded: true })
               this.disposeViewer()
               return of(null)
-            })
+            }),
           )
-        })
+        }),
       )
       .pipe(takeUntil(this.store.destroy$))
       .subscribe()
@@ -283,7 +282,7 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
     const itemType = (appearance as Mounts).MountId ? 'MountDye' : 'Dye'
     const items = await firstValueFrom(this.db.itemsByItemTypeMap)
       .then((it) => it.get(itemType))
-      .then((it) => Array.from(it?.values() || []))
+      .then((it) => it || [])
       .then((list) => list.map((it) => Number(it.ItemID.match(/\d+/)[0])))
     const colors = await firstValueFrom(this.db.dyeColors).then((list) => {
       return list.filter((it) => items.includes(it.Index))

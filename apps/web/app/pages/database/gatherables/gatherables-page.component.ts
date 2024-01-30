@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
@@ -9,10 +9,12 @@ import { IconsModule } from '~/ui/icons'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
-import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
+import { HtmlHeadService, eqCaseInsensitive, injectBreakpoint, injectRouteParam, injectUrlParams, observeRouteParam, selectSignal, selectStream } from '~/utils'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
 import { GatherableTableAdapter, GatherableTableRecord } from '~/widgets/data/gatherable-table'
+import { LayoutModule } from '~/ui/layout'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -26,6 +28,7 @@ import { GatherableTableAdapter, GatherableTableRecord } from '~/widgets/data/ga
     IconsModule,
     IonHeader,
     NwModule,
+    LayoutModule,
     QuicksearchModule,
     RouterModule,
     ScreenshotModule,
@@ -34,7 +37,7 @@ import { GatherableTableAdapter, GatherableTableRecord } from '~/widgets/data/ga
     PriceImporterModule,
   ],
   host: {
-    class: 'layout-col',
+    class: 'ion-page'
   },
   providers: [
     provideDataView({
@@ -51,10 +54,14 @@ export class GatherablesPageComponent {
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'gatherables-table'
-  protected categoryParam$ = observeRouteParam(inject(ActivatedRoute), 'category')
-  protected category$ = selectStream(this.categoryParam$, (it) => {
+  protected category = selectSignal(injectRouteParam('category'), (it) => {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
+
+  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
+  protected isChildActive = toSignal(injectUrlParams('/:resource/:category/:id', (it) => !!it?.['id']))
+  protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
+  protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
 
   public constructor(
     protected service: DataViewService<GatherableTableRecord>,

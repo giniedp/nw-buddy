@@ -1,12 +1,11 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
-import { FormsModule } from '@angular/forms'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute } from '@angular/router'
 import { NwModule } from '~/nw'
 import { LayoutModule } from '~/ui/layout'
-import { observeRouteParam } from '~/utils'
+import { injectRouteParam, observeRouteParam } from '~/utils'
 import { BackstoryDetailModule } from '~/widgets/data/backstory-detail'
-import { EmoteDetailModule } from '~/widgets/data/emote-detail'
 
 @Component({
   standalone: true,
@@ -15,11 +14,11 @@ import { EmoteDetailModule } from '~/widgets/data/emote-detail'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, LayoutModule, BackstoryDetailModule],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class BackstoriesDetailPageComponent {
   protected route = inject(ActivatedRoute)
-  protected id$ = observeRouteParam(this.route, 'id')
+  protected itemId = toSignal(injectRouteParam('id'))
   protected showLocked: boolean
 }

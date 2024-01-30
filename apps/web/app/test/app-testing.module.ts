@@ -3,8 +3,8 @@ import { NgModule } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations'
 import { RouterTestingModule } from '@angular/router/testing'
+import { NwDataInterceptor } from '~/data'
 import { TranslateModule, TranslateService } from '~/i18n'
-import { NwDataInterceptor } from '~/nw'
 
 @NgModule({
   providers: [NwDataInterceptor.provide()],

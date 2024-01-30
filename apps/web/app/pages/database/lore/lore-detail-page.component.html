@@ -1,86 +1,78 @@
-<nwb-detail-drawer class="hidden lg:block lg:w-[500px]">
-  <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
-    <div class="relative bg-base-300 rounded-md border-base-100 overflow-clip p-4 min-h-[500px]">
-      @if (isTopic() && image()) {
-        <picture class="pointer-events-none w-full h-full absolute top-0 z-0 opacity-25 scale-110">
-          <img [nwImage]="image()" class="w-full h-full object-cover" />
-        </picture>
-      }
+<div class="relative bg-base-300 rounded-md border-base-100 overflow-clip p-4 min-h-[500px]">
+  @if (isTopic() && image()) {
+    <picture class="pointer-events-none w-full h-full absolute top-0 z-0 opacity-25 scale-110">
+      <img [nwImage]="image()" class="w-full h-full object-cover" />
+    </picture>
+  }
 
-      <div class="flex flex-col gap-2 font-nimbus shadow-black text-shadow-sm">
-        <div>
-          @if (title1(); as text) {
-            <h2 class="text-2xl uppercase font-serif text-nw-description flex-none text-center">
-              <a
-                [routerLink]="linkTo(titleID1())"
-                [class.link-hover]="titleID1()"
-                [class.hover:text-primary]="titleID1()"
-              >
-                {{ text | nwText }}
-              </a>
-            </h2>
+  <div class="flex flex-col gap-2 font-nimbus shadow-black text-shadow-sm">
+    <div>
+      @if (title1(); as text) {
+        <h2 class="text-2xl uppercase font-serif text-nw-description flex-none text-center">
+          <a [routerLink]="linkTo(titleID1())" [class.link-hover]="titleID1()" [class.hover:text-primary]="titleID1()">
+            {{ text | nwText }}
+          </a>
+        </h2>
+      }
+      @if (title2(); as text) {
+        <h2 class="text-xl uppercase font-serif text-nw-description flex-none text-center">
+          <a [routerLink]="linkTo(titleID2())" [class.link-hover]="titleID2()" [class.hover:text-primary]="titleID2()">
+            {{ text | nwText }}
+          </a>
+        </h2>
+      }
+      @if (title3(); as text) {
+        <h2 class="text-lg uppercase font-serif text-nw-description flex-none text-center">
+          {{ text | nwText }}
+        </h2>
+      }
+      @if (title4(); as text) {
+        <h4 class="text-lg font-bold flex-none text-center">{{ text | nwText }}</h4>
+      }
+      <div class="nw-item-divider"></div>
+    </div>
+    @if (pageNumber(); as value) {
+      <div class="flex flex-row items-center">
+        <a
+          [routerLink]="linkTo(prevId() || parentId())"
+          class="btn btn-circle btn-ghost"
+          [class.opacity-0]="!(prevId() || parentId())"
+        >
+          <nwb-icon [icon]="chevronLeft" class="w-4 h-4" />
+        </a>
+        <span class="flex-1"></span>
+        <span class="badge badge-lg bg-base-300 border-transparent">
+          @if (isPage()) {
+            Page
           }
-          @if (title2(); as text) {
-            <h2 class="text-xl uppercase font-serif text-nw-description flex-none text-center">
-              <a
-                [routerLink]="linkTo(titleID2())"
-                [class.link-hover]="titleID2()"
-                [class.hover:text-primary]="titleID2()"
-              >
-                {{ text | nwText }}
-              </a>
-            </h2>
+          @if (isChapter()) {
+            Chapter
           }
-          @if (title3(); as text) {
-            <h2 class="text-lg uppercase font-serif text-nw-description flex-none text-center">
-              {{ text | nwText }}
-            </h2>
-          }
-          @if (title4(); as text) {
-            <h4 class="text-lg font-bold flex-none text-center">{{ text | nwText }}</h4>
-          }
-          <div class="nw-item-divider"></div>
-        </div>
-        @if (pageNumber(); as value) {
-          <div class="flex flex-row items-center">
-            <a [routerLink]="linkTo(prevId() || parentId())" class="btn btn-circle btn-ghost" [class.opacity-0]="!(prevId() || parentId())">
-              <nwb-icon [icon]="chevronLeft" class="w-4 h-4" />
-            </a>
-            <span class="flex-1"></span>
-            <span class="badge badge-lg bg-base-300 border-transparent">
-              @if (isPage()) {
-                Page
-              }
-              @if (isChapter()) {
-                Chapter
-              }
-              {{ value }} / {{ pageCount() }}
-            </span>
-            <span class="flex-1"></span>
-            <a [routerLink]="linkTo(nextId())" class="btn btn-circle btn-ghost" [class.opacity-0]="!nextId()">
-              <nwb-icon [icon]="chevronLeft" class="w-4 h-4 rotate-180" />
-            </a>
-          </div>
-        }
-        @if (body(); as text) {
-          <div [nwHtml]="text | nwText | nwTextBreak" class="text-justify"></div>
-        }
-        @if (children()?.length) {
-          <div class="flex flex-col gap-1">
-            @for (child of children(); track child.LoreID; let i = $index) {
-              <a [routerLink]="['/lore/table', child.LoreID]" class="cursor-pointer link-hover hover:text-primary pl-4">
-                {{ i + 1 }} - {{ child.Title | nwText }}
-              </a>
-            }
-          </div>
-        }
-        @if (isChapter() && image()) {
-          <picture class="pointer-events-none w-full">
-            <img [nwImage]="image()" class="w-full object-contain" />
-          </picture>
+          {{ value }} / {{ pageCount() }}
+        </span>
+        <span class="flex-1"></span>
+        <a [routerLink]="linkTo(nextId())" class="btn btn-circle btn-ghost" [class.opacity-0]="!nextId()">
+          <nwb-icon [icon]="chevronLeft" class="w-4 h-4 rotate-180" />
+        </a>
+      </div>
+    }
+    @if (body(); as text) {
+      <div [nwHtml]="text | nwText | nwTextBreak" class="text-justify"></div>
+    }
+    @if (children()?.length) {
+      <div class="flex flex-col gap-1">
+        @for (child of children(); track child.LoreID; let i = $index) {
+          <a [routerLink]="['/lore/table', child.LoreID]" class="cursor-pointer link-hover hover:text-primary pl-4">
+            {{ i + 1 }} - {{ child.Title | nwText }}
+          </a>
         }
       </div>
-    </div>
-    <nwb-lore-item-detail-map class="rounded-md overflow-clip mt-4"/>
+    }
+    @if (isChapter() && image()) {
+      <picture class="pointer-events-none w-full">
+        <img [nwImage]="image()" class="w-full object-contain" />
+      </picture>
+    }
   </div>
-</nwb-detail-drawer>
+</div>
+<nwb-lore-item-detail-map class="rounded-md overflow-clip mt-4" />

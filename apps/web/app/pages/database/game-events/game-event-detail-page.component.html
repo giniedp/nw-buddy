@@ -1,9 +1,5 @@
-<nwb-detail-drawer class="hidden lg:block lg:w-[480px]">
-  <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
-    <nwb-game-event-detail [eventId]="eventId()" #detail>
-      @if(detail.lootTableId(); as table) {
-        <nwb-loot-graph [tableId]="table" [showLocked]="true" [expand]="false" class="mt-2" />
-      }
-    </nwb-game-event-detail>
-  </div>
-</nwb-detail-drawer>
+<nwb-game-event-detail [eventId]="eventId()" #detail>
+  @if (detail.lootTableId(); as table) {
+    <nwb-loot-graph [tableId]="table" [showLocked]="true" [expand]="false" class="mt-2" />
+  }
+</nwb-game-event-detail>

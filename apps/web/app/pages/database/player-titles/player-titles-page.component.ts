@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
@@ -9,11 +9,13 @@ import { IconsModule } from '~/ui/icons'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
-import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
+import { HtmlHeadService, eqCaseInsensitive, injectBreakpoint, injectRouteParam, injectUrlParams, observeRouteParam, selectSignal, selectStream } from '~/utils'
 import { ItemTableAdapter, ItemTableRecord } from '~/widgets/data/item-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { svgFunction } from '~/ui/icons/svg'
 import { PlayerTitlesTableAdapter } from '~/widgets/data/player-titles-table'
+import { LayoutModule } from '~/ui/layout'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -24,17 +26,18 @@ import { PlayerTitlesTableAdapter } from '~/widgets/data/player-titles-table'
     CommonModule,
     DataGridModule,
     DataViewModule,
+    IconsModule,
     IonHeader,
+    LayoutModule,
     NwModule,
     QuicksearchModule,
     RouterModule,
     ScreenshotModule,
     TooltipModule,
     VirtualGridModule,
-    IconsModule,
   ],
   host: {
-    class: 'layout-col',
+    class: 'ion-page'
   },
   providers: [
     provideDataView({
@@ -51,10 +54,15 @@ export class PlayerTitlesPageComponent {
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'player-titles-table'
-  protected categoryParam$ = observeRouteParam(inject(ActivatedRoute), 'category')
-  protected category$ = selectStream(this.categoryParam$, (it) => {
+  protected category = selectSignal(injectRouteParam('category'), (it) => {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
+
+  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
+  protected isChildActive = toSignal(injectUrlParams('/:resource/:category/:id', (it) => !!it?.['id']))
+  protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
+  protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
+
   protected iconFunc = svgFunction
   protected isFuncOpen = false
 

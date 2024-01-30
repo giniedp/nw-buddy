@@ -106,7 +106,6 @@ export function selectLayout({
   itemWidth,
   colCount,
 }: Pick<VirtualGridState<any>, 'size' | 'itemWidth' | 'colCount'>) {
-
   if (!size || size < 0) {
     return {
       size: size,
@@ -153,7 +152,19 @@ export function selectLayout({
     cols = Math.floor(size / minWidth)
     cols = Math.min(Math.max(cols, minColumns), maxColumns || cols)
   }
-  // console.log({cols, size})
+
+  if (maxColumns && cols > maxColumns) {
+    size -= (size / cols) * (cols - maxColumns)
+    cols = maxColumns
+  }
+
+  if (!cols) {
+    return {
+      size: null,
+      cols: 1,
+    }
+  }
+
   return {
     size: size,
     cols: cols
@@ -234,10 +245,6 @@ function selectRawRows<T>(sections: Array<SectionGroup<T>>, columns: number) {
       }
       i++
       row.push(item)
-    }
-    while (i > 0 && i < columns) {
-      i++
-      row.push(null)
     }
   }
   return rows

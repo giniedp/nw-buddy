@@ -1,3 +1,4 @@
+import { animate, style, transition, trigger } from '@angular/animations'
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, TemplateRef } from '@angular/core'
@@ -16,20 +17,15 @@ import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
-import { ItemFrameModule } from '~/ui/item-frame'
-import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, injectRouteParam } from '~/utils'
+import { GameEventDetailModule } from '~/widgets/data/game-event-detail'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
-import { PerkDetailModule } from '~/widgets/data/perk-detail'
-import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { LootModule } from '~/widgets/loot'
 import { ModelViewerComponent, ModelViewerModule } from '~/widgets/model-viewer'
 import { ItemModelInfo } from '~/widgets/model-viewer/model-viewer.service'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ItemTabsComponent } from './item-tabs.component'
-import { animate, style, transition, trigger } from '@angular/animations'
-import { GameEventDetailModule } from '~/widgets/data/game-event-detail'
 
 @Component({
   standalone: true,
@@ -41,21 +37,17 @@ import { GameEventDetailModule } from '~/widgets/data/game-event-detail'
     RouterModule,
     NwModule,
     ItemDetailModule,
-    StatusEffectDetailModule,
-    PerkDetailModule,
     ScreenshotModule,
-    LayoutModule,
     LootModule,
-    ItemTabsComponent,
-    ItemFrameModule,
     IconsModule,
     ModelViewerModule,
     TooltipModule,
-    GameEventDetailModule
+    GameEventDetailModule,
+    ItemTabsComponent
   ],
   providers: [],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
   animations: [
     trigger('appear', [
@@ -70,7 +62,7 @@ import { GameEventDetailModule } from '~/widgets/data/game-event-detail'
         animate('0.15s ease-out', style({ height: 0 })),
       ]),
     ]),
-  ]
+  ],
 })
 export class ItemDetailPageComponent {
   protected itemId$ = injectRouteParam('id')

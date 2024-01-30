@@ -16,7 +16,7 @@ import { LoreItemDetailMapComponent, LoreItemDetailStore } from '~/widgets/data/
   imports: [NwModule, LayoutModule, RouterModule, IconsModule, LoreItemDetailMapComponent],
   providers: [LoreItemDetailStore],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class LoreDetailPageComponent {

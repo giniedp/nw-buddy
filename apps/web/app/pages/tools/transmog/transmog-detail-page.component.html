@@ -1,8 +1,1 @@
-<nwb-detail-drawer class="hidden lg:block lg:w-[420px]">
-  <div *nwbDetailDrawerContent="let isModal = isModal" class="layout-content bg-base-200 layout-pad">
-    <nwb-appearance-detail
-      [appearanceId]="appearanceId$ | async"
-      (appearanceChange$)="onEntity($event)"
-    ></nwb-appearance-detail>
-  </div>
-</nwb-detail-drawer>
+<nwb-appearance-detail [appearanceId]="appearanceId$ | async" (appearanceChange$)="onEntity($event)" />

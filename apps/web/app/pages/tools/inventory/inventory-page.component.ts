@@ -1,6 +1,6 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { EQUIP_SLOTS, getItemId, getItemMaxGearScore } from '@nw-data/common'
@@ -15,12 +15,13 @@ import { svgImage, svgPlus, svgTrashCan } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
+import { eqCaseInsensitive, injectBreakpoint, injectRouteParam, injectUrlParams, observeRouteParam, selectSignal, selectStream } from '~/utils'
 import { InventoryTableAdapter, InventoryTableRecord } from '~/widgets/data/inventory-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { GearImporterDialogComponent } from './gear-importer-dialog.component'
 import { GearsetFormComponent } from './gearset-form.component'
 import { InventoryPickerService } from './inventory-picker.service'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -43,7 +44,7 @@ import { InventoryPickerService } from './inventory-picker.service'
     LayoutModule,
   ],
   host: {
-    class: 'layout-col',
+    class: 'ion-page',
   },
   providers: [
     provideDataView({
@@ -58,10 +59,14 @@ export class InventoryPageComponent implements OnInit {
   protected defaultRoute = 'table'
   protected selectionParam = 'id'
   protected persistKey = 'inventory-table'
-  protected categoryParam$ = observeRouteParam(inject(ActivatedRoute), 'category')
-  protected category$ = selectStream(this.categoryParam$, (it) => {
+  protected category$ = selectStream(injectRouteParam('category'), (it) => {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
+
+  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
+  protected isChildActive = toSignal(injectUrlParams('/:resource/:category/:id', (it) => !!it?.['id']))
+  protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
+  protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
 
   protected svgPlus = svgPlus
   protected svgTrash = svgTrashCan

@@ -1,6 +1,6 @@
 import { animate, animateChild, query, stagger, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { map } from 'rxjs'
 import { NwModule } from '~/nw'
@@ -9,18 +9,20 @@ import { IconsModule } from '~/ui/icons'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PaginationModule } from '~/ui/pagination'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
+import { HtmlHeadService, eqCaseInsensitive, injectBreakpoint, injectRouteParam, injectUrlParams, observeRouteParam, selectStream } from '~/utils'
 import { MountTileComponent } from './mount-tile.component'
+import { LayoutModule } from '~/ui/layout'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
   templateUrl: './mount.component.html',
-  styleUrls: ['./mount.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
     NwModule,
     RouterModule,
+    LayoutModule,
     PaginationModule,
     ItemFrameModule,
     IconsModule,
@@ -28,7 +30,7 @@ import { MountTileComponent } from './mount-tile.component'
     MountTileComponent,
   ],
   host: {
-    class: 'layout-row',
+    class: 'ion-page'
   },
   animations: [
     trigger('list', [
@@ -48,7 +50,7 @@ import { MountTileComponent } from './mount-tile.component'
 })
 export class MountComponent {
   private readonly mounts$ = inject(NwDataService).mounts.pipe(map((list) => list.filter((it) => !!it.DisplayName)))
-  private readonly categoryId$ = observeRouteParam(inject(ActivatedRoute), 'category')
+  private readonly categoryId$ = injectRouteParam('category')
   protected readonly data$ = selectStream(
     {
       mounts: this.mounts$,
@@ -63,7 +65,11 @@ export class MountComponent {
   )
   protected readonly count$ = selectStream(this.data$, (it) => it?.length)
 
-  protected trackByIndex = (index: number) => index
+  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
+  protected isChildActive = toSignal(injectUrlParams('/:resource/:category/:id', (it) => !!it?.['id']))
+  protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
+  protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
+
 
   public constructor(head: HtmlHeadService) {
     head.updateMetadata({

@@ -15,7 +15,7 @@ import { LootModule } from '~/widgets/loot'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, RouterModule, LootModule, FormsModule, LayoutModule],
   host: {
-    class: 'flex-1 flex flex-col',
+    class: 'block',
   },
 })
 export class LootDetailPageComponent {

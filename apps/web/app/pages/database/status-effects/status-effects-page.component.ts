@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
@@ -8,9 +9,10 @@ import { DataGridModule } from '~/ui/data/table-grid'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
 import { svgFunction } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
+import { HtmlHeadService, eqCaseInsensitive, injectBreakpoint, injectRouteParam, injectUrlParams, observeRouteParam, selectSignal, selectStream } from '~/utils'
 import { ItemTableRecord } from '~/widgets/data/item-table'
 import { StatusEffectTableAdapter } from '~/widgets/data/status-effect-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -24,17 +26,18 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     CommonModule,
     DataGridModule,
     DataViewModule,
+    IconsModule,
     IonHeader,
+    LayoutModule,
     NwModule,
     QuicksearchModule,
     RouterModule,
     ScreenshotModule,
     TooltipModule,
     VirtualGridModule,
-    IconsModule,
   ],
   host: {
-    class: 'layout-col',
+    class: 'ion-page'
   },
   providers: [
     provideDataView({
@@ -51,10 +54,15 @@ export class StatusEffectsPageComponent {
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'status-effect-table'
-  protected categoryParam$ = observeRouteParam(inject(ActivatedRoute), 'category')
-  protected category$ = selectStream(this.categoryParam$, (it) => {
+  protected category = selectSignal(injectRouteParam('category'), (it) => {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
+
+  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
+  protected isChildActive = toSignal(injectUrlParams('/:resource/:category/:id', (it) => !!it?.['id']))
+  protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
+  protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
+
   protected iconFunc = svgFunction
   protected isFuncOpen = false
 

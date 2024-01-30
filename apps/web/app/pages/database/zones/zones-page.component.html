@@ -30,34 +30,56 @@
     </div>
   </div>
 </ion-header>
-<div class="flex-1 flex flex-row overflow-hidden">
-  @if (service.isGridActive()) {
-    <nwb-virtual-grid
-      [enableQuickfilter]="true"
-      [data]="service.categoryItems$ | async"
-      [options]="service.virtualOptions"
-      [identifyBy]="service.entityIdGetter"
-      [selectionRouteParam]="selectionParam"
-    />
-  }
-  @if (service.isTableActive()) {
-    <nwb-table-grid
-      (ready$)="service.onTableReady($event)"
-      [enableQuickfilter]="true"
-      [data]="service.categoryItems$ | async"
-      [options]="service.tableGridOptions"
-      [identifyBy]="service.entityIdGetter"
-      [persistKey]="persistKey"
-      [filterQueryParam]="filterParam"
-      [selectionRouteParam]="selectionParam"
-    />
-  }
-  <nwb-zone-detail-map
-    class="hidden 3xl:flex flex-1"
-    [nwbZoneDetail]="zoneIdParam()"
-    [markVital]="vitalIdParam()"
-    (zoneClicked)="onZoneClicked($event)"
-    (vitalClicked)="onVitalClicked($event)"
-  />
-  <router-outlet />
-</div>
+<ion-content [scrollY]="false">
+  <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-min-width: 320px; --side-max-width: 420px">
+    <div class="ion-page order-2 flex flex-row" id="main">
+      @if (service.isGridActive()) {
+        <nwb-virtual-grid
+          [enableQuickfilter]="true"
+          [data]="service.categoryItems$ | async"
+          [options]="service.virtualOptions"
+          [identifyBy]="service.entityIdGetter"
+          [selectionRouteParam]="selectionParam"
+        />
+      } @else if (service.isTableActive()) {
+        <nwb-table-grid
+          (ready$)="service.onTableReady($event)"
+          [enableQuickfilter]="true"
+          [data]="service.categoryItems$ | async"
+          [options]="service.tableGridOptions"
+          [identifyBy]="service.entityIdGetter"
+          [persistKey]="persistKey"
+          [filterQueryParam]="filterParam"
+          [selectionRouteParam]="selectionParam"
+        />
+      }
+      <nwb-zone-detail-map
+        class="hidden 3xl:flex flex-1"
+        [nwbZoneDetail]="zoneIdParam()"
+        [markVital]="vitalIdParam()"
+        (zoneClicked)="onZoneClicked($event)"
+        (vitalClicked)="onVitalClicked($event)"
+      />
+    </div>
+    <ion-menu contentId="main" class="order-2">
+      @if (showSidebar()) {
+        <ion-content class="ion-p-4">
+          <router-outlet />
+        </ion-content>
+      }
+    </ion-menu>
+  </ion-split-pane>
+  <ion-modal
+    [isOpen]="showModal()"
+    [initialBreakpoint]="100 | px2vh"
+    [breakpoints]="[12 | px2vh, 100 | px2vh, 0.45, 1]"
+    [backdropBreakpoint]="0.5"
+    [backdropDismiss]="false"
+  >
+    @if (showModal()) {
+      <ion-content class="ion-p-2 bg-base-300">
+        <router-outlet #outlet="outlet" />
+      </ion-content>
+    }
+  </ion-modal>
+</ion-content>

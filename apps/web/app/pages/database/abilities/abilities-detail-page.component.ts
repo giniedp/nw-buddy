@@ -1,13 +1,13 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
+import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
 import { Ability } from '@nw-data/generated'
 import { firstValueFrom, map } from 'rxjs'
+import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
 import { NwExpressionService } from '~/nw/expression'
-import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
 import { LayoutModule } from '~/ui/layout'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
@@ -36,7 +36,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     SpellDetailModule,
   ],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class AbilitiesDetailPageComponent {
@@ -44,7 +44,7 @@ export class AbilitiesDetailPageComponent {
 
   protected perkIds$ = this.db
     .perksByEquipAbility(this.itemId)
-    .pipe(map((set) => Array.from(set?.values() || [])))
+    .pipe(map((list) => list || []))
     .pipe(map((list) => list.map((it) => it.PerkID)))
 
   public constructor(
@@ -52,7 +52,7 @@ export class AbilitiesDetailPageComponent {
     private i18n: TranslateService,
     private expr: NwExpressionService,
     private head: HtmlHeadService,
-    private db: NwDataService
+    private db: NwDataService,
   ) {
     //
   }
@@ -67,7 +67,7 @@ export class AbilitiesDetailPageComponent {
         gearScore: NW_MAX_GEAR_SCORE_BASE,
         text: this.i18n.get(entity.Description),
         itemId: entity.AbilityID,
-      })
+      }),
     )
     this.head.updateMetadata({
       title: [this.i18n.get(entity.DisplayName), 'Ability'].join(' - '),

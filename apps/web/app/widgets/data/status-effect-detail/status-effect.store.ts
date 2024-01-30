@@ -32,9 +32,9 @@ export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }
   })
 
   public readonly foreignAbilities$ = combineLatest([
-    this.db.abilitiesByStatusEffect(this.effectId$).pipe(map((set) => Array.from(set?.values() || []))),
-    this.db.abilitiesBySelfApplyStatusEffect(this.effectId$).pipe(map((set) => Array.from(set?.values() || []))),
-    this.db.abilitiesByOtherApplyStatusEffect(this.effectId$).pipe(map((set) => Array.from(set?.values() || []))),
+    this.db.abilitiesByStatusEffect(this.effectId$).pipe(map((it) => it || [])),
+    this.db.abilitiesBySelfApplyStatusEffect(this.effectId$).pipe(map((it) => it || [])),
+    this.db.abilitiesByOtherApplyStatusEffect(this.effectId$).pipe(map((it) => it || [])),
   ])
     .pipe(map(flatten))
     .pipe(mapList((it) => it.AbilityID))
@@ -42,7 +42,7 @@ export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }
 
   public readonly foreignAffixStats$ = this.db
     .affixByStatusEffect(this.effectId$)
-    .pipe(map((set) => Array.from(set?.values() || [])))
+    .pipe(map((it) => it || []))
     .pipe(mapList((it) => it.StatusID))
     .pipe(map(uniq))
 
@@ -56,18 +56,16 @@ export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }
   public readonly foreignItems$ = combineLatest([
     this.db
       .housingItemsByStatusEffect(this.effectId$)
-      .pipe(map((it) => Array.from(it?.values() || [])))
+      .pipe(map((it) => it || []))
       .pipe(mapList(getItemId)),
     this.db
       .consumablesByAddStatusEffects(this.effectId$)
-      .pipe(map((it) => Array.from(it?.values() || [])))
+      .pipe(map((it) => it || []))
       .pipe(mapList((it) => it.ConsumableID)),
   ]).pipe(map((list) => list.flat()))
 
   public readonly foreignDamageTables$ = combineLatest([
-    this.db
-      .damageTablesByStatusEffect(this.effectId$)
-      .pipe(map((it) => Array.from(it?.values() || [])))
+    this.db.damageTablesByStatusEffect(this.effectId$).pipe(map((it) => it || [])),
   ]).pipe(map((list) => list.flat()))
 
   public readonly costumeChangeId$ = this.select(this.effect$, (it) => it?.CostumeChangeId)
@@ -116,7 +114,7 @@ function perksByAffix(affix: string[], db: NwDataService): Observable<string[]> 
   }
   return combineLatest(
     affix.map((it) => {
-      return db.perksByAffix(it).pipe(map((set) => Array.from(set?.values() || [])))
+      return db.perksByAffix(it).pipe(map((it) => it || []))
     }),
   )
     .pipe(map(flatten))
@@ -129,7 +127,7 @@ function perksByAbilities(abilities: string[], db: NwDataService): Observable<st
   }
   return combineLatest(
     abilities.map((it) => {
-      return db.perksByEquipAbility(it).pipe(map((set) => Array.from(set?.values() || [])))
+      return db.perksByEquipAbility(it).pipe(map((it) => it || []))
     }),
   )
     .pipe(map(flatten))

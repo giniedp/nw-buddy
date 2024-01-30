@@ -14,7 +14,7 @@ import { EmoteDetailModule } from '~/widgets/data/emote-detail'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, LayoutModule, EmoteDetailModule],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class EmotesDetailPageComponent {

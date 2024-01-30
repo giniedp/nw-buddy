@@ -12,7 +12,7 @@ export const SelectFilterSearch: m.Component<SelectFilterSearchAttrs> = {
       return null
     }
     return m('div.fomr-control', [
-      m('div.input-group.input-group-xs', [
+      m('div.join', [
         m('input.input.input-bordered.input-xs.w-full', {
           type: 'text',
           placeholder: 'search',

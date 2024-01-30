@@ -1,25 +1,17 @@
-<ul class="menu menu-horizontal flex-nowrap flex-1 overflow-x-auto scrollbar-hide">
-  <ng-container *ngTemplateOutlet="menuTemplate; context: ctxHorizontal"></ng-container>
+<ul class="flex flex-row flex-nowrap flex-1 overflow-x-auto scrollbar-hide">
+  <ng-container *ngTemplateOutlet="menuTemplate; context: ctxHorizontal" />
 </ul>
-<ul class="menu menu-horizontal flex-nowrap flex-none">
-  <li cdkOverlayOrigin #overlay="cdkOverlayOrigin" (click)="toggleMenu()">
-    <span class="btn-square">
-      <nwb-icon [icon]="svgEllipsisVertical" class="w-4 h-4"></nwb-icon>
-    </span>
+<ul class="flex flex-row flex-nowrap flex-none">
+  <li>
+    <button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplMenu" [cdkMenuTriggerData]="">
+      <nwb-icon [icon]="svgEllipsisVertical" class="w-4 h-4" />
+    </button>
   </li>
-  <ng-container *ngTemplateOutlet="buttonsTemplate; context: ctxHorizontal"></ng-container>
+  <ng-container *ngTemplateOutlet="buttonsTemplate; context: ctxHorizontal" />
 </ul>
 
-<ng-template
-  cdkConnectedOverlay
-  [cdkConnectedOverlayOrigin]="overlay"
-  [cdkConnectedOverlayOpen]="isMenuOpen"
-  [cdkConnectedOverlayHasBackdrop]="true"
-  (overlayOutsideClick)="closeMenu()"
-  (backdropClick)="closeMenu()"
-  (detach)="closeMenu()"
->
-  <ul class="menu menu-compact bg-base-100 w-60 rounded-b-md z-10" (click)="closeMenu()">
-    <ng-container *ngTemplateOutlet="menuTemplate; context: ctxVertical"></ng-container>
+<ng-template #tplMenu>
+  <ul class="menu menu-compact bg-base-100 w-60 rounded-b-md z-10" (click)="closeMenu()" cdkMenu>
+    <ng-container *ngTemplateOutlet="menuTemplate; context: ctxVertical" />
   </ul>
 </ng-template>

@@ -1,32 +1,40 @@
 <ion-header class="bg-base-300">
   <div class="flex flex-col-reverse md:flex-row">
-    <nwb-navbar [menu]="tplMenu" [buttons]="tplButtons" class="flex-1">
-      <ng-template #tplMenu>
+    <nwb-navbar class="flex-1">
+      <ng-container *nwbNavbarMenu="let ctx">
         @for (item of tags; track $index) {
           <li>
-            <a (click)="toggleTag(item.tag)" [class.active]="item.active">
+            <a
+              (click)="toggleTag(item.tag)"
+              [class.btn]="ctx.isHorizontal"
+              [class.btn-ghost]="ctx.isHorizontal"
+              [class.text-primary]="item.active"
+            >
               {{ item.tag }}
             </a>
           </li>
         }
-      </ng-template>
-      <ng-template #tplButtons>
+      </ng-container>
+      <ng-container *nwbNavbarButtons="let ctx">
         <li [tooltip]="'Create new gearset'" [tooltipClass]="'bg-accent'">
-          <span (click)="handleCreate()">
+          <button (click)="handleCreate()" class="btn btn-ghost">
             <nwb-icon [icon]="iconCreate" class="w-4 h-4" />
-          </span>
+          </button>
         </li>
         <li [tooltip]="'Import Gearset'" [tooltipClass]="'bg-accent'">
-          <span (click)="handleImport()">
+          <button (click)="handleImport()" class="btn btn-ghost">
             <nwb-icon [icon]="iconImport" class="w-4 h-4" />
-          </span>
+          </button>
         </li>
-      </ng-template>
+      </ng-container>
     </nwb-navbar>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
       <nwb-quicksearch-input />
     </div>
   </div>
 </ion-header>
-
-<nwb-gearset-loadout-list [records]="items" (createClicked)="handleCreate()" (deleteCliced)="handleDelete($event)" />
+<ion-content>
+  <nwb-virtual-grid [itemHeight]="272" [itemWidth]="[480, 480]" [columns]="[1, 4]" [gridClass]="['-mx-2']">
+    <nwb-gearset-loadout-item *nwbVirtualGridCell="items; let item" [geasrsetId]="item?.id" class="p-2 self-start" />
+  </nwb-virtual-grid>
+</ion-content>

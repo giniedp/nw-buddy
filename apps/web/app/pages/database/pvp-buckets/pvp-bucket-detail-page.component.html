@@ -1,30 +1,26 @@
-<nwb-detail-drawer class="hidden lg:block lg:w-[420px]">
-  <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
-    <div class="flex flex-col gap-2">
+<div class="flex flex-col gap-2">
 
-      @if(data(); as item) {
-        <nwb-property-grid [item]="item" class="bg-black rounded-md overflow-auto p-3 text-sm font-mono border border-base-100" />
-      }
-      @if(reward(); as item) {
-        <h3>Reward</h3>
-        <nwb-property-grid [item]="item" class="bg-black rounded-md overflow-auto p-3 text-sm font-mono border border-base-100" />
-      }
-      @if(gameEvent(); as event) {
-        <h3>Reward Event</h3>
-        <nwb-game-event-detail [eventId]="event.EventID"/>
-      }
-      @if(rewardItemId(); as item) {
-        <h3>Reward Item</h3>
-        <nwb-item-card [entityId]="item"/>
-      }
-      @if(rewardLTID(); as item) {
-        <h3>Reward Loot</h3>
-        <nwb-loot-graph [tableId]="item" [showLocked]="true" class="overflow-hidden"/>
-      }
-      @if(rewardEntitlement(); as item) {
-        <h3>Reward Entitlement</h3>
-        <nwb-entitlement-detail [entitlementId]="item"/>
-      }
-    </div>
-  </div>
-</nwb-detail-drawer>
+  @if(data(); as item) {
+    <nwb-property-grid [item]="item" class="bg-black rounded-md overflow-auto p-3 text-sm font-mono border border-base-100" />
+  }
+  @if(reward(); as item) {
+    <h3>Reward</h3>
+    <nwb-property-grid [item]="item" class="bg-black rounded-md overflow-auto p-3 text-sm font-mono border border-base-100" />
+  }
+  @if(gameEvent(); as event) {
+    <h3>Reward Event</h3>
+    <nwb-game-event-detail [eventId]="event.EventID"/>
+  }
+  @if(rewardItemId(); as item) {
+    <h3>Reward Item</h3>
+    <nwb-item-card [entityId]="item"/>
+  }
+  @if(rewardLTID(); as item) {
+    <h3>Reward Loot</h3>
+    <nwb-loot-graph [tableId]="item" [showLocked]="true" class="overflow-hidden"/>
+  }
+  @if(rewardEntitlement(); as item) {
+    <h3>Reward Entitlement</h3>
+    <nwb-entitlement-detail [entitlementId]="item"/>
+  }
+</div>

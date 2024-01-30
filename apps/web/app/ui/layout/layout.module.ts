@@ -4,10 +4,22 @@ import { CdkMenuModule } from '@angular/cdk/menu'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { NgModule } from '@angular/core'
 
-import { IonButton, IonButtons, IonHeader, IonMenu, IonMenuToggle, IonModal, IonToolbar } from '@ionic/angular/standalone'
-import { DetailDrawerComponent, DetailDrawerContent } from './detail-drawer.component'
+import {
+  IonContent,
+  IonHeader,
+  IonMenu,
+  IonMenuToggle,
+  IonModal,
+  IonRouterOutlet,
+  IonSplitPane,
+  IonToolbar,
+} from '@ionic/angular/standalone'
+
 import { MenuCloseDirective, MenuConnectorDirective } from './menu.directive'
 import { ConfirmDialogComponent, PromptDialogComponent } from './modal'
+
+import { BreakpointPipe } from './pipes/breakpoint.pipe'
+import { Px2VhPipe } from './pipes/px2vh.pipe'
 
 const COMPONENTS = [
   CdkLayoutModule,
@@ -16,19 +28,24 @@ const COMPONENTS = [
   OverlayModule,
   MenuConnectorDirective,
   MenuCloseDirective,
-  DetailDrawerComponent,
-  DetailDrawerContent,
   ConfirmDialogComponent,
   PromptDialogComponent,
   IonModal,
+  IonContent,
   IonMenu,
   IonHeader,
   IonToolbar,
   IonMenuToggle,
+  IonRouterOutlet,
+  IonSplitPane,
+  IonModal,
   OverlayModule,
+  BreakpointPipe,
+  Px2VhPipe,
 ]
 @NgModule({
   imports: [...COMPONENTS],
   exports: [...COMPONENTS],
+  providers: [BreakpointPipe],
 })
 export class LayoutModule {}

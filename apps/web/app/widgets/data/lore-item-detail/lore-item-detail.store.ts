@@ -29,8 +29,8 @@ export class LoreItemDetailStore extends ComponentStore<{ recordId: string }> {
   public readonly isPage$ = selectStream(this.type$, (it) => eqCaseInsensitive(it, 'Default'))
   public readonly order$ = selectStream(this.record$, (it) => it?.Order)
 
-  public readonly siblings$ = selectStream(this.db.loreItemsByParentId(this.parentId$), (it) => Array.from(it || []).sort((a, b) => a.Order - b.Order))
-  public readonly children$ = selectStream(this.db.loreItemsByParentId(this.recordId$), (it) => Array.from(it || []).sort((a, b) => a.Order - b.Order))
+  public readonly siblings$ = selectStream(this.db.loreItemsByParentId(this.parentId$), (it) => (it || []).sort((a, b) => a.Order - b.Order))
+  public readonly children$ = selectStream(this.db.loreItemsByParentId(this.recordId$), (it) => (it || []).sort((a, b) => a.Order - b.Order))
   public readonly pageCount$ = selectStream(this.siblings$, (it) => it?.length)
   public readonly pageNumber$ = selectStream({
     siblings: this.siblings$,

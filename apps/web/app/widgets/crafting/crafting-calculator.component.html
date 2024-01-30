@@ -1,41 +1,39 @@
 <ng-container *ngIf="vm$ | async; let vm">
   <div class="flex flex-row items-center bg-base-300">
-    <div class="form-control">
-      <label class="input-group flex-w">
-        <span class="font-bold">Amount</span>
-        <input
-          data-cy="amount"
-          type="number"
-          min="1"
-          [ngModel]="vm.amount"
-          (ngModelChange)="amount = $event"
-          class="input input-bordered input-sm pr-0 w-20"
-        />
-      </label>
-    </div>
+    <label class="join ml-2">
+      <span class="join-item btn btn-sm">Amount</span>
+      <input
+        data-cy="amount"
+        type="number"
+        min="1"
+        [ngModel]="vm.amount"
+        (ngModelChange)="amount = $event"
+        class="join-item input input-bordered input-sm pr-0 w-20"
+      />
+    </label>
     <div class="flex-1"></div>
-    <ul class="menu menu-horizontal">
+    <ul class="flex flex-row">
       <li
         [tooltip]="'Edit Bonus Chance'"
         (click)="isToolOpen = !isToolOpen"
         cdkOverlayOrigin
         #chancesOverlay="cdkOverlayOrigin"
       >
-        <a>
-          <nwb-icon [icon]="iconOptions" class="w-4 h-4"></nwb-icon>
-        </a>
+        <button class="btn btn-ghost btn-square">
+          <nwb-icon [icon]="iconOptions" class="w-4 h-4" />
+        </button>
       </li>
       <li
         [tooltip]="'Toggle net/gross mode'"
         (click)="toggleQuantityMode()"
         [class.text-primary]="vm.amountMode === 'gross'"
       >
-        <a>
+        <button class="btn btn-ghost btn-square">
           <nwb-icon [icon]="iconMode" class="w-4 h-4"></nwb-icon>
-        </a>
+        </button>
       </li>
       <li [tooltip]="'Open price importer'">
-        <nwb-price-importer-button></nwb-price-importer-button>
+        <nwb-price-importer-button class="btn btn-ghost btn-square" />
       </li>
     </ul>
   </div>

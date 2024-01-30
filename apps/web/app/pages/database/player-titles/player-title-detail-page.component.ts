@@ -37,7 +37,7 @@ import { LootModule } from '~/widgets/loot'
     MetaAchievementDetailModule,
   ],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class PlayerTitleDetailPageComponent {

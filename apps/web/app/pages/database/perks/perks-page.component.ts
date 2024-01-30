@@ -1,6 +1,7 @@
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
@@ -13,10 +14,11 @@ import { DataGridModule } from '~/ui/data/table-grid'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
 import { svgFunction, svgGrid, svgTableList } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, eqCaseInsensitive, observeRouteParam } from '~/utils'
+import { HtmlHeadService, eqCaseInsensitive, injectBreakpoint, injectRouteParam, injectUrlParams, observeRouteParam, selectSignal } from '~/utils'
 import { PerkTableAdapter, PerkTableRecord } from '~/widgets/data/perk-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
@@ -31,6 +33,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     IonHeader,
     NavbarModule,
     NwModule,
+    LayoutModule,
     OverlayModule,
     QuicksearchModule,
     RouterModule,
@@ -42,7 +45,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     DataViewModule,
   ],
   host: {
-    class: 'layout-col',
+    class: 'ion-page'
   },
   providers: [
     provideDataView({
@@ -60,11 +63,15 @@ export class PerksPageComponent {
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'perks-table'
-  protected category$ = observeRouteParam(inject(ActivatedRoute), 'category').pipe(
-    map((it) => {
-      return eqCaseInsensitive(it, this.defaultRoute) ? null : it
-    })
-  )
+  protected category = selectSignal(injectRouteParam('category'), (it) => {
+    return eqCaseInsensitive(it, this.defaultRoute) ? null : it
+  })
+
+  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
+  protected isChildActive = toSignal(injectUrlParams('/:resource/:category/:id', (it) => !!it?.['id']))
+  protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
+  protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
+
   protected isToolOpen = false
   protected iconList = svgTableList
   protected iconGrid = svgGrid

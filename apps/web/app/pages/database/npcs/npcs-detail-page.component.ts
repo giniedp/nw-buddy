@@ -40,7 +40,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   ],
   providers: [],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class NpcDetailPageComponent {
@@ -49,7 +49,7 @@ export class NpcDetailPageComponent {
   protected itemId$ = observeRouteParam(this.route, 'id')
   protected npc$ = selectStream(this.db.npc(this.itemId$))
   protected data = selectSignal(this.db.npc(this.itemId$))
-  protected variations = selectSignal(this.db.npcsVariationsByNpcId(this.itemId$), (it) => Array.from(it ?? []))
+  protected variations = selectSignal(this.db.npcsVariationsByNpcId(this.itemId$), (it) => it || [])
   protected variationsMeta$ = selectStream(
     {
       npc: this.db.npc(this.itemId$),

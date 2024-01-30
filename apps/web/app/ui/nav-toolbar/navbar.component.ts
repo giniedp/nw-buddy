@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ContentChild, Directive, Input, TemplateRef } from '@angular/core'
 import { IconsModule } from '../icons'
 import { svgEllipsisVertical } from '../icons/svg'
+import { CdkMenuModule } from '@angular/cdk/menu'
 
 export class NavbarContext {
   $implicit: NavbarContext = this
@@ -49,7 +50,7 @@ export class NavbarButtonsDirective {
   selector: 'nwb-navbar',
   templateUrl: './navbar.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, OverlayModule, IconsModule],
+  imports: [CommonModule, OverlayModule, IconsModule, CdkMenuModule],
   host: {
     class: 'flex flex-row overflow-hidden',
   },

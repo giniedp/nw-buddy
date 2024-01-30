@@ -38,7 +38,7 @@ import { LootGraphComponent } from '~/widgets/loot/loot-graph.component'
     EntitlementDetailModule,
   ],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class PvpBucketDetailPageComponent {

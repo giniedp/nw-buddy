@@ -1,63 +1,59 @@
-<nwb-detail-drawer class="hidden lg:block lg:w-[420px]">
-  <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
-    <nwb-item-card
-      [entityId]="itemId$ | async"
-      [enableInfoLink]="true"
-      [enableTracker]="true"
-      [enableLink]="true"
-      [nwbScreenshotFrame]="card.name$ | async | nwText"
-      (housingItemChange)="onEntity($event)"
-      #card="card"
-      class="flex-1"
-    >
-      @if (card.salvageInfo$ | async; as salvage) {
-        <div class="btn-group">
-          <button
-            class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50"
-            (click)="openRepairRecipe(tplSalvage)"
-          >
-            Show Loot Table
-          </button>
-          <a
-            class="btn btn-xs flex-none btn-outline btn-ghost rounded-md opacity-50"
-            [routerLink]="['/loot/table', salvage.tableId]"
-          >
-            <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
-          </a>
+<nwb-item-card
+  [entityId]="itemId()"
+  [enableInfoLink]="true"
+  [enableTracker]="true"
+  [enableLink]="true"
+  [nwbScreenshotFrame]="card.name$ | async | nwText"
+  (housingItemChange)="onEntity($event)"
+  #card="card"
+  class="flex-1"
+>
+  @if (card.salvageInfo$ | async; as salvage) {
+    <div class="btn-group">
+      <button
+        class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50"
+        (click)="openRepairRecipe(tplSalvage)"
+      >
+        Show Loot Table
+      </button>
+      <a
+        class="btn btn-xs flex-none btn-outline btn-ghost rounded-md opacity-50"
+        [routerLink]="['/loot/table', salvage.tableId]"
+      >
+        <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
+      </a>
 
-          <ng-template #tplSalvage>
-            <div class="bg-base-200 flex flex-col rounded-md h-full">
-              <h3 class="bg-base-300 font-bold px-4 py-2">Loot Table</h3>
-              <nwb-loot-graph
-                class="flex-1 layout-content"
-                [tableId]="salvage.tableId"
-                [tags]="salvage.tags"
-                [tagValues]="salvage.tagValues"
-                [showLocked]="false"
-              ></nwb-loot-graph>
-              <div class="flex flex-row justify-end p-2">
-                <button class="btn btn-sm btn-primary" (click)="closeDialog()">Close</button>
-              </div>
-            </div>
-          </ng-template>
-        </div>
-      }
-
-      @if (card.itemModels$ | async; as models) {
-        @if (viewerActive) {
-          <div class="aspect-square rounded-md overflow-clip">
-            <nwb-model-viewer [models]="models" [hideFloor]="true" class="w-full h-full"></nwb-model-viewer>
+      <ng-template #tplSalvage>
+        <div class="bg-base-200 flex flex-col rounded-md h-full">
+          <h3 class="bg-base-300 font-bold px-4 py-2">Loot Table</h3>
+          <nwb-loot-graph
+            class="flex-1 layout-content"
+            [tableId]="salvage.tableId"
+            [tags]="salvage.tags"
+            [tagValues]="salvage.tagValues"
+            [showLocked]="false"
+          ></nwb-loot-graph>
+          <div class="flex flex-row justify-end p-2">
+            <button class="btn btn-sm btn-primary" (click)="closeDialog()">Close</button>
           </div>
-        }
-        <button
-          class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50 w-full"
-          (click)="viewerActive = !viewerActive"
-        >
-          {{ viewerActive ? 'Close' : 'View 3D Model' }}
-        </button>
-      }
-    </nwb-item-card>
+        </div>
+      </ng-template>
+    </div>
+  }
 
-    <nwb-housing-page-tabs [itemId]="itemId$ | async"> </nwb-housing-page-tabs>
-  </div>
-</nwb-detail-drawer>
+  @if (card.itemModels$ | async; as models) {
+    @if (viewerActive) {
+      <div class="aspect-square rounded-md overflow-clip">
+        <nwb-model-viewer [models]="models" [hideFloor]="true" class="w-full h-full"></nwb-model-viewer>
+      </div>
+    }
+    <button
+      class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50 w-full"
+      (click)="viewerActive = !viewerActive"
+    >
+      {{ viewerActive ? 'Close' : 'View 3D Model' }}
+    </button>
+  }
+</nwb-item-card>
+
+<nwb-housing-page-tabs [itemId]="itemId()"/>

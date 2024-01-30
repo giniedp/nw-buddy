@@ -23,7 +23,6 @@ export type DetailTabId = 'stats' | 'loot-items' | 'loot-table' | 'damage-table'
 @Component({
   standalone: true,
   templateUrl: './vital-detail-page.component.html',
-  styleUrls: ['./vital-detail-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
@@ -39,7 +38,7 @@ export type DetailTabId = 'stats' | 'loot-items' | 'loot-table' | 'damage-table'
   ],
   providers: [VitalDetailStore],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class VitalDetailComponent {

@@ -23,6 +23,7 @@ export const appConfig: ApplicationConfig = {
         desktop: (win) =>
           !/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(win.navigator.userAgent),
       },
+      navAnimation: () => null,
     }),
     provideHttpClient(
       withFetch(),

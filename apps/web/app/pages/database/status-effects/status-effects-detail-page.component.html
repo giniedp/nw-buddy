@@ -1,55 +1,47 @@
-<nwb-detail-drawer class="hidden lg:block lg:w-96 2xl:w-[500px]">
-  <div
-    *nwbDetailDrawerContent
-    class="layout-content p-2 bg-base-200"
-    [nwbStatusEffectDetail]="itemId | async"
-    (nwbStatusEffectChange)="onEntity($event)"
-    #detail="effectDetail"
-  >
-    <div class="flex flex-col gap-2 bg-base-200" [nwbScreenshotFrame]="itemId | async">
-      <nwb-status-effect-detail [effectId]="itemId | async" class="bg-black"/>
+<div [nwbStatusEffectDetail]="itemId | async" (nwbStatusEffectChange)="onEntity($event)" #detail="effectDetail">
+  <div class="flex flex-col gap-2 bg-base-200" [nwbScreenshotFrame]="itemId | async">
+    <nwb-status-effect-detail [effectId]="itemId | async" class="bg-black" />
 
-      @for (effectId of detail.refEffects$ | async; track $index; let isFirst = $first) {
-        @if (isFirst) {
-          <h3 class="prose">Referenced Status Effects:</h3>
-        }
-        <nwb-status-effect-detail [effectId]="effectId" class="bg-black" />
+    @for (effectId of detail.refEffects$ | async; track $index; let isFirst = $first) {
+      @if (isFirst) {
+        <h3 class="prose">Referenced Status Effects:</h3>
       }
+      <nwb-status-effect-detail [effectId]="effectId" class="bg-black" />
+    }
 
-      @for (abilityId of detail.refAbilities$ | async; track $index; let isFirst = $first) {
-        @if (isFirst) {
-          <h3 class="prose">Referenced Abilities:</h3>
-        }
-        <nwb-ability-detail [abilityId]="abilityId" class="bg-black" />
+    @for (abilityId of detail.refAbilities$ | async; track $index; let isFirst = $first) {
+      @if (isFirst) {
+        <h3 class="prose">Referenced Abilities:</h3>
       }
+      <nwb-ability-detail [abilityId]="abilityId" class="bg-black" />
+    }
 
-      @for (itemId of detail.foreignItems$ | async; track $index; let isFirst = $first) {
-        @if (isFirst) {
-          <h3 class="prose">Referenced By Items:</h3>
-        }
-        <nwb-item-card [entityId]="itemId" [disableInfo]="true" [enableLink]="true" class="bg-black" />
+    @for (itemId of detail.foreignItems$ | async; track $index; let isFirst = $first) {
+      @if (isFirst) {
+        <h3 class="prose">Referenced By Items:</h3>
       }
+      <nwb-item-card [entityId]="itemId" [disableInfo]="true" [enableLink]="true" class="bg-black" />
+    }
 
-      @for (abilityId of detail.foreignAbilities$ | async; track $index; let isFirst = $first) {
-        @if (isFirst) {
-          <h3 class="prose">Referenced By Abilities:</h3>
-        }
-        <nwb-ability-detail [abilityId]="abilityId" class="bg-black" />
+    @for (abilityId of detail.foreignAbilities$ | async; track $index; let isFirst = $first) {
+      @if (isFirst) {
+        <h3 class="prose">Referenced By Abilities:</h3>
       }
+      <nwb-ability-detail [abilityId]="abilityId" class="bg-black" />
+    }
 
-      @for (perkId of detail.foreignPerks$ | async; track $index; let isFirst = $first) {
-        @if (isFirst) {
-          <h3 class="prose">Referenced By Perks:</h3>
-        }
-        <nwb-perk-detail [perkId]="perkId" class="bg-black" />
+    @for (perkId of detail.foreignPerks$ | async; track $index; let isFirst = $first) {
+      @if (isFirst) {
+        <h3 class="prose">Referenced By Perks:</h3>
       }
+      <nwb-perk-detail [perkId]="perkId" class="bg-black" />
+    }
 
-      @for (dmg of detail.foreignDamageTables$ | async; track $index; let isFirst = $first) {
-        @if (isFirst) {
-          <h3 class="prose">Referenced By Damage Tables:</h3>
-        }
-        <nwb-damage-row-detail [rowId]="dmg.DamageID" class="bg-black"/>
+    @for (dmg of detail.foreignDamageTables$ | async; track $index; let isFirst = $first) {
+      @if (isFirst) {
+        <h3 class="prose">Referenced By Damage Tables:</h3>
       }
-    </div>
+      <nwb-damage-row-detail [rowId]="dmg.DamageID" class="bg-black" />
+    }
   </div>
-</nwb-detail-drawer>
+</div>

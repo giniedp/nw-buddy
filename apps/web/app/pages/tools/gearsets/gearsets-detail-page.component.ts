@@ -76,7 +76,7 @@ import { GEARSET_TAGS } from './tags'
   ],
   providers: [GearsetSignalStore],
   host: {
-    class: 'layout-col flex-none',
+    class: 'ion-page',
   },
 })
 export class GearsetsDetailPageComponent {

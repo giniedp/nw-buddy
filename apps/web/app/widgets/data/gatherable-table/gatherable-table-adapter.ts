@@ -75,7 +75,7 @@ export class GatherableTableAdapter
 
       let records: GatherableTableRecord[] = items.map((it): GatherableTableRecord => {
         const meta = metaMap.get(it.GatherableID)
-        const variations = Array.from(variationsMap.get(it.GatherableID) || []).filter((it) => !!it)
+        const variations = (variationsMap.get(it.GatherableID) || []).filter((it) => !!it)
         const variationsMeta = variations.map((it) => variationsMetaMap.get(it.VariantID)).filter((it) => !!it)
         return {
           ...it,

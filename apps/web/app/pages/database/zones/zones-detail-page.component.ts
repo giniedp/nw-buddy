@@ -37,7 +37,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   ],
   providers: [],
   host: {
-    class: 'block flex flex-col',
+    class: 'ion-page'
   },
 })
 export class ZoneDetailPageComponent {

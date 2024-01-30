@@ -1,13 +1,14 @@
 @if (isLoading) {
 } @else if (!gearset) {
-} @else {
-  <div class="layout-row">
-    @if (!swiper) {
+} @else if (!swiper) {
+  <ion-content [scrollY]="false">
+    <ion-split-pane [when]="showSidebar" contentId="main" style="--side-min-width: 320px; --side-max-width: 420px">
       <div
-        class="p-4 layout-content"
+        class="ion-page order-2 p-4 layout-content"
         [nwbScreenshotFrame]="gearset.name"
         [nwbScreenshotWidth]="1660"
         [nwbScreenshotMode]="'detached'"
+        id="main"
       >
         <div class="flex-1 grid grid-cols-fill-sm layout-gap grid-rows-1" [@list]="slots?.length">
           <ng-container *ngTemplateOutlet="tplContentAvatar" />
@@ -16,184 +17,198 @@
           <ng-container *ngTemplateOutlet="tplContentSlots" />
         </div>
       </div>
-
-      @if (calculator) {
-        <nwb-detail-drawer class="hidden lg:block lg:w-96">
-          <div *nwbDetailDrawerContent class="layout-content p-2 bg-base-200">
+      <ion-menu contentId="main" class="order-2">
+        @if (showSidebar) {
+          <ion-content class="ion-p-4">
             <nwb-damage-calculator />
-          </div>
-        </nwb-detail-drawer>
+          </ion-content>
+        }
+      </ion-menu>
+    </ion-split-pane>
+    <ion-modal
+      [isOpen]="showModal"
+      [initialBreakpoint]="100 | px2vh"
+      [breakpoints]="[12 | px2vh, 100 | px2vh, 0.45, 1]"
+      [backdropBreakpoint]="0.5"
+      [backdropDismiss]="false"
+    >
+      @if (showModal) {
+        <ion-content class="ion-p-2 bg-base-300">
+          <nwb-damage-calculator />
+        </ion-content>
       }
-    } @else {
-      <div class="p-2">
-        <div class="swiper" [nwbSwiper]="swiperOptions" #nwbSwiper="nwbSwiper">
-          <div class="swiper-wrapper flex flex-row relative z-10" #swiperRef>
-            <ng-container *ngTemplateOutlet="tplContentSlots" />
-            <ng-container *ngTemplateOutlet="tplContentSkills" />
-            <ng-container *ngTemplateOutlet="tplContentStats" />
-            <ng-container *ngTemplateOutlet="tplContentAvatar" />
-          </div>
-          <div
-            class="absolute left-0 top-0 bottom-0 p-4 flex items-center justify-center z-50 bg-base-100 bg-opacity-25 hover:bg-opacity-50 transition-all cursor-pointer"
-            (click)="nwbSwiper.slidePrev()"
-          >
-            <nwb-icon [icon]="iconChevronLeft" class="w-8 h-8" />
-          </div>
-          <div
-            class="absolute right-0 top-0 bottom-0 p-4 flex items-center justify-center z-50 bg-base-100 bg-opacity-25 hover:bg-opacity-50 transition-all cursor-pointer"
-            (click)="nwbSwiper.slideNext()"
-          >
-            <nwb-icon [icon]="iconChevronLeft" class="w-8 h-8 rotate-180" />
+    </ion-modal>
+  </ion-content>
+} @else {
+  <div class="layout-row">
+    <div class="p-2">
+      <div class="swiper" [nwbSwiper]="swiperOptions" #nwbSwiper="nwbSwiper">
+        <div class="swiper-wrapper flex flex-row relative z-10" #swiperRef>
+          <ng-container *ngTemplateOutlet="tplContentSlots" />
+          <ng-container *ngTemplateOutlet="tplContentSkills" />
+          <ng-container *ngTemplateOutlet="tplContentStats" />
+          <ng-container *ngTemplateOutlet="tplContentAvatar" />
+        </div>
+        <div
+          class="absolute left-0 top-0 bottom-0 p-4 flex items-center justify-center z-50 bg-base-100 bg-opacity-25 hover:bg-opacity-50 transition-all cursor-pointer"
+          (click)="nwbSwiper.slidePrev()"
+        >
+          <nwb-icon [icon]="iconChevronLeft" class="w-8 h-8" />
+        </div>
+        <div
+          class="absolute right-0 top-0 bottom-0 p-4 flex items-center justify-center z-50 bg-base-100 bg-opacity-25 hover:bg-opacity-50 transition-all cursor-pointer"
+          (click)="nwbSwiper.slideNext()"
+        >
+          <nwb-icon [icon]="iconChevronLeft" class="w-8 h-8 rotate-180" />
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<ng-template #tplContentAvatar>
+  <div
+    [@fade]="true"
+    class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative screenshot-head"
+  >
+    <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
+    <nwb-gearset-pane-main class="relative" [class.text-xs]="compact" [disabled]="disabled">
+      <div [class.screenshot-hidden]="buffSlotsAreEmpty()" [class.hidden]="buffSlotsAreEmpty() && disabled">
+        <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
+          <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
+          <span class="relative top-1">Buffs & Ammo</span>
+        </h3>
+        <div class="flex items-center justify-center">
+          <div class="inline-grid grid-cols-4 gap-1 mx-auto">
+            @for (slot of buffSlots; track $index) {
+              <nwb-gearset-pane-slot
+                [slotId]="slot.id"
+                [gearset]="gearset"
+                [compact]="compact"
+                [disabled]="disabled"
+                [square]="true"
+                (itemRemove)="onItemRemove(slot.id)"
+                (itemUnlink)="onItemUnlink(slot, $event)"
+                (itemInstantiate)="onItemInstantiate(slot, $event)"
+              />
+            }
+            @for (slot of ammoSlots; track $index) {
+              <nwb-gearset-pane-slot
+                [slotId]="slot.id"
+                [gearset]="gearset"
+                [compact]="compact"
+                [disabled]="disabled"
+                [square]="true"
+                (itemRemove)="onItemRemove(slot.id)"
+                (itemUnlink)="onItemUnlink(slot, $event)"
+                (itemInstantiate)="onItemInstantiate(slot, $event)"
+              />
+            }
           </div>
         </div>
       </div>
-    }
-    <ng-template #tplContentAvatar>
-      <div
-        [@fade]="true"
-        class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative screenshot-head"
-      >
-        <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-        <nwb-gearset-pane-main class="relative" [class.text-xs]="compact" [disabled]="disabled">
-          <div [class.screenshot-hidden]="buffSlotsAreEmpty()" [class.hidden]="buffSlotsAreEmpty() && disabled" >
-            <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
-              <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
-              <span class="relative top-1">Buffs & Ammo</span>
-            </h3>
-            <div class="flex items-center justify-center">
-              <div class="inline-grid grid-cols-4 gap-1 mx-auto">
-                @for (slot of buffSlots; track $index) {
-                  <nwb-gearset-pane-slot
-                    [slotId]="slot.id"
-                    [gearset]="gearset"
-                    [compact]="compact"
-                    [disabled]="disabled"
-                    [square]="true"
-                    (itemRemove)="onItemRemove(slot.id)"
-                    (itemUnlink)="onItemUnlink(slot, $event)"
-                    (itemInstantiate)="onItemInstantiate(slot, $event)"
-                  />
-                }
-                @for (slot of ammoSlots; track $index) {
-                  <nwb-gearset-pane-slot
-                    [slotId]="slot.id"
-                    [gearset]="gearset"
-                    [compact]="compact"
-                    [disabled]="disabled"
-                    [square]="true"
-                    (itemRemove)="onItemRemove(slot.id)"
-                    (itemUnlink)="onItemUnlink(slot, $event)"
-                    (itemInstantiate)="onItemInstantiate(slot, $event)"
-                  />
-                }
-              </div>
-            </div>
+      <div [class.screenshot-hidden]="quickSlotsAreEmpty()" [class.hidden]="quickSlotsAreEmpty() && disabled">
+        <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
+          <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
+          <span class="relative top-1">Consumables</span>
+        </h3>
+        <div class="flex items-center justify-center">
+          <div class="inline-grid grid-cols-5 gap-1">
+            @for (slot of quickSlotsToDisplay(); track $index) {
+              <nwb-gearset-pane-slot
+                [slotId]="slot.id"
+                [gearset]="gearset"
+                [compact]="compact"
+                [disabled]="disabled"
+                [square]="true"
+                (itemRemove)="onItemRemove(slot.id)"
+              />
+            }
           </div>
-          <div [class.screenshot-hidden]="quickSlotsAreEmpty()" [class.hidden]="quickSlotsAreEmpty() && disabled">
-            <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
-              <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
-              <span class="relative top-1">Consumables</span>
-            </h3>
-            <div class="flex items-center justify-center">
-              <div class="inline-grid grid-cols-5 gap-1">
-                @for (slot of quickSlotsToDisplay(); track $index) {
-                  <nwb-gearset-pane-slot
-                    [slotId]="slot.id"
-                    [gearset]="gearset"
-                    [compact]="compact"
-                    [disabled]="disabled"
-                    [square]="true"
-                    (itemRemove)="onItemRemove(slot.id)"
-                  />
-                }
-              </div>
-            </div>
+        </div>
+      </div>
+      <div [class.screenshot-hidden]="trophiesSlotsAreEmpty()" [class.hidden]="trophiesSlotsAreEmpty() && disabled">
+        <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
+          <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
+          <span class="relative top-1">Trophies</span>
+        </h3>
+        <div class="flex items-center justify-center">
+          <div class="inline-grid grid-cols-5 gap-1">
+            @for (slot of trophiesSlotsToDisplay(); track $index) {
+              <nwb-gearset-pane-slot
+                [slotId]="slot.id"
+                [gearset]="gearset"
+                [compact]="compact"
+                [disabled]="disabled"
+                [square]="true"
+                (itemRemove)="onItemRemove(slot.id)"
+              />
+            }
           </div>
-          <div [class.screenshot-hidden]="trophiesSlotsAreEmpty()" [class.hidden]="trophiesSlotsAreEmpty() && disabled">
-            <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
-              <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
-              <span class="relative top-1">Trophies</span>
-            </h3>
-            <div class="flex items-center justify-center">
-              <div class="inline-grid grid-cols-5 gap-1">
-                @for (slot of trophiesSlotsToDisplay(); track $index) {
-                  <nwb-gearset-pane-slot
-                    [slotId]="slot.id"
-                    [gearset]="gearset"
-                    [compact]="compact"
-                    [disabled]="disabled"
-                    [square]="true"
-                    (itemRemove)="onItemRemove(slot.id)"
-                  />
-                }
-              </div>
-            </div>
+        </div>
+      </div>
+      <div [class.screenshot-hidden]="townBuffEffectsAreEmpty()" [class.hidden]="townBuffEffectsAreEmpty() && disabled">
+        <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
+          <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
+          <span class="relative top-1">Town Buffs</span>
+        </h3>
+        <div class="flex items-center justify-center">
+          <div class="inline-grid grid-cols-5 gap-1">
+            @for (effect of townBuffEffectsToDisplay(); track $index) {
+              <nwb-gearset-pane-effect
+                [effectId]="effect?.id"
+                [max]="1"
+                [disabled]="disabled"
+                (effectChange)="onEffectChange($event)"
+              />
+            }
           </div>
-          <div [class.screenshot-hidden]="townBuffEffectsAreEmpty()" [class.hidden]="townBuffEffectsAreEmpty() && disabled">
-            <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3">
-              <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
-              <span class="relative top-1">Town Buffs</span>
-            </h3>
-            <div class="flex items-center justify-center">
-              <div class="inline-grid grid-cols-5 gap-1">
-                @for (effect of townBuffEffectsToDisplay(); track $index) {
-                  <nwb-gearset-pane-effect
-                    [effectId]="effect?.id"
-                    [max]="1"
-                    [disabled]="disabled"
-                    (effectChange)="onEffectChange($event)"
-                  />
-                }
-              </div>
-            </div>
-          </div>
-        </nwb-gearset-pane-main>
+        </div>
       </div>
-    </ng-template>
-
-    <ng-template #tplContentStats>
-      <div
-        [@fade]="true"
-        class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad screenshot-head"
-      >
-        <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-        <nwb-gearset-pane-stats class="relative" />
-      </div>
-    </ng-template>
-
-    <ng-template #tplContentSkills>
-      <div
-        [@fade]="true"
-        class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad screenshot-head"
-      >
-        <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-        <nwb-gearset-pane-skill class="relative" [slot]="'primary'" [gearset]="gearset" [disabled]="disabled" />
-      </div>
-
-      <div
-        [@fade]="true"
-        class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad screenshot-head"
-      >
-        <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-        <nwb-gearset-pane-skill class="relative" [slot]="'secondary'" [gearset]="gearset" [disabled]="disabled" />
-      </div>
-    </ng-template>
-
-    <ng-template #tplContentSlots>
-      @for (slot of slots; track $index) {
-        <nwb-gearset-pane-slot
-          class="swiper-slide screenshot-body"
-          [@fade]="true"
-          [slotId]="slot.id"
-          [gearset]="gearset"
-          [compact]="compact"
-          [disabled]="disabled"
-          (itemRemove)="onItemRemove(slot.id)"
-          (itemUnlink)="onItemUnlink(slot, $event)"
-          (itemInstantiate)="onItemInstantiate(slot, $event)"
-        />
-      }
-    </ng-template>
-
+    </nwb-gearset-pane-main>
   </div>
-}
+</ng-template>
+
+<ng-template #tplContentStats>
+  <div
+    [@fade]="true"
+    class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad screenshot-head"
+  >
+    <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
+    <nwb-gearset-pane-stats class="relative" />
+  </div>
+</ng-template>
+
+<ng-template #tplContentSkills>
+  <div
+    [@fade]="true"
+    class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad screenshot-head"
+  >
+    <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
+    <nwb-gearset-pane-skill class="relative" [slot]="'primary'" [gearset]="gearset" [disabled]="disabled" />
+  </div>
+
+  <div
+    [@fade]="true"
+    class="swiper-slide col-span-1 sm:col-span-2 shadow-lg rounded-md overflow-clip bg-black relative layout-pad screenshot-head"
+  >
+    <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
+    <nwb-gearset-pane-skill class="relative" [slot]="'secondary'" [gearset]="gearset" [disabled]="disabled" />
+  </div>
+</ng-template>
+
+<ng-template #tplContentSlots>
+  @for (slot of slots; track $index) {
+    <nwb-gearset-pane-slot
+      class="swiper-slide screenshot-body"
+      [@fade]="true"
+      [slotId]="slot.id"
+      [gearset]="gearset"
+      [compact]="compact"
+      [disabled]="disabled"
+      (itemRemove)="onItemRemove(slot.id)"
+      (itemUnlink)="onItemUnlink(slot, $event)"
+      (itemInstantiate)="onItemInstantiate(slot, $event)"
+    />
+  }
+</ng-template>

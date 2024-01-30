@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { RouterLink } from '@angular/router'
 import { NW_FALLBACK_ICON, getVitalDamage } from '@nw-data/common'
 import {
   Affixstats,
@@ -11,15 +12,14 @@ import {
   Vitalsleveldata,
   Vitalsmodifierdata,
 } from '@nw-data/generated'
-import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 import { damageTypeIcon } from '~/nw/weapon-types'
-import { eqCaseInsensitive, humanize, selectStream } from '~/utils'
-import { VitalDetailStore } from './vital-detail.store'
-import { ScreenshotModule } from '~/widgets/screenshot'
 import { TooltipModule } from '~/ui/tooltip'
+import { eqCaseInsensitive, humanize, selectStream } from '~/utils'
+import { ScreenshotModule } from '~/widgets/screenshot'
 import { StatusEffectDetailModule } from '../status-effect-detail'
-import { RouterLink } from '@angular/router'
+import { VitalDetailStore } from './vital-detail.store'
 
 @Component({
   standalone: true,
@@ -51,7 +51,7 @@ export class VitalDetailAttacksComponent {
       return tables.map((table) => {
         const name = table.file.replace(/\.xml$/, '').replace(/^.*javelindata_damagetable/, '')
         const tableName = humanize(`${name}_damagetable`).replaceAll(' ', '')
-        const spells = Array.from(spellsByDamageMap.get(tableName)?.values() || [])
+        const spells = spellsByDamageMap.get(tableName) || []
         return {
           name: name,
           rows: table.rows

@@ -4,7 +4,7 @@
       <li>
         <button
           [nwbDataCateogryMenu]
-          [category]="category$ | async"
+          [category]="category()"
           [showCounter]="true"
           [defaultRoute]="defaultRoute"
           [defaultTitle]="title"
@@ -30,36 +30,59 @@
     </div>
   </div>
 </ion-header>
-<div class="flex-1 flex flex-row overflow-hidden">
-  <nwb-table-grid
-    (ready$)="service.onTableReady($event)"
-    [enableQuickfilter]="true"
-    [data]="service.categoryItems$ | async"
-    [options]="service.tableGridOptions"
-    [identifyBy]="service.entityIdGetter"
-    [persistKey]="persistKey"
-    [filterQueryParam]="filterParam"
-    [selectionRouteParam]="selectionParam"
-    #grid
-  ></nwb-table-grid>
-
-  <div
-    class="flex-none layout-content xl:max-w-[350px] 4xl:max-w-[30%]"
-    *ngIf="grid.selectedRow$ | async; let armorset"
-  >
-    <div class="grid grid-cols-fill-sm layout-gap p-3" nwbScreenshotFrame="Armor-Set">
-      <nwb-item-card
-        *ngFor="let item of armorset?.items; trackBy: trackByIndex"
-        [entity]="item"
-        [disableInfo]="true"
-        [disableDescription]="true"
-        [enableTracker]="true"
-        [enableInfoLink]="true"
-        [enableLink]="true"
-      >
-      </nwb-item-card>
+<ion-content [scrollY]="false">
+  <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-min-width: 320px; --side-max-width: 420px">
+    <div class="ion-page order-2" id="main">
+      <nwb-table-grid
+        (ready$)="service.onTableReady($event)"
+        [enableQuickfilter]="true"
+        [data]="service.categoryItems$ | async"
+        [options]="service.tableGridOptions"
+        [identifyBy]="service.entityIdGetter"
+        [persistKey]="persistKey"
+        [filterQueryParam]="filterParam"
+        [selectionRouteParam]="selectionParam"
+        #grid
+      />
     </div>
-  </div>
+    <ion-menu contentId="main" class="order-2">
+      @if (showSidebar()) {
+        <ion-content class="ion-p-4">
+          <ng-container *ngTemplateOutlet="tplDetail" />
+          <!-- <router-outlet /> -->
+        </ion-content>
+      }
+    </ion-menu>
+  </ion-split-pane>
+  <ion-modal
+    [isOpen]="showModal()"
+    [initialBreakpoint]="100 | px2vh"
+    [breakpoints]="[12 | px2vh, 100 | px2vh, 0.45, 1]"
+    [backdropBreakpoint]="0.5"
+    [backdropDismiss]="false"
+  >
+    @if (showModal()) {
+      <ion-content class="ion-p-2 bg-base-300">
+        <ng-container *ngTemplateOutlet="tplDetail" />
+        <!-- <router-outlet #outlet="outlet" /> -->
+      </ion-content>
+    }
+  </ion-modal>
+</ion-content>
 
-  <!-- <router-outlet></router-outlet> -->
-</div>
+<ng-template #tplDetail>
+  @if (grid.selectedRow$ | async; as armorset) {
+    <div class="grid grid-cols-fill-sm gap-2" nwbScreenshotFrame="Armor-Set">
+      @for (item of armorset.items; track $index) {
+        <nwb-item-card
+          [entity]="item"
+          [disableInfo]="true"
+          [disableDescription]="true"
+          [enableTracker]="true"
+          [enableInfoLink]="true"
+          [enableLink]="true"
+        />
+      }
+    </div>
+  }
+</ng-template>

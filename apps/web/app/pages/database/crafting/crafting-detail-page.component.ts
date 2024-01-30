@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
-import { ActivatedRoute, RouterModule } from '@angular/router'
-import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
-import { map, tap } from 'rxjs'
+import { RouterModule } from '@angular/router'
+import { getItemIconPath, getItemIdFromRecipe } from '@nw-data/common'
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { map } from 'rxjs'
+import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
-import { getItemIconPath, getItemIdFromRecipe } from '@nw-data/common'
 import { LayoutModule } from '~/ui/layout'
-import { HtmlHeadService, observeRouteParam } from '~/utils'
+import { HtmlHeadService, injectRouteParam } from '~/utils'
 import { CraftingCalculatorComponent } from '~/widgets/crafting'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -28,19 +28,18 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     LayoutModule,
   ],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class CraftingDetailPageComponent {
-  protected id$ = observeRouteParam(this.route, 'id')
+  protected id$ = injectRouteParam('id')
   protected recipe$ = this.db.recipe(this.id$)
   protected itemId$ = this.recipe$.pipe(map((it) => getItemIdFromRecipe(it)))
 
   public constructor(
-    private route: ActivatedRoute,
     private db: NwDataService,
     private i18n: TranslateService,
-    private head: HtmlHeadService
+    private head: HtmlHeadService,
   ) {
     //
   }

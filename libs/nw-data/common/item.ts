@@ -370,7 +370,7 @@ export function getRecipeForItem(item: ItemDefinitionMaster | Housingitems, reci
   if (!id) {
     return null
   }
-  return Array.from(recipes.get(id) || []).find((recipe) => {
+  return (recipes.get(id) || []).find((recipe) => {
     if (recipe.CraftingCategory === 'MaterialConversion' || !recipe.OutputQty) {
       return false
     }

@@ -1,27 +1,23 @@
-<nwb-detail-drawer class="hidden lg:block lg:w-[500px]">
-  <div *nwbDetailDrawerContent class="layout-content bg-base-200 layout-pad">
-    <nwb-gatherable-detail [gatherableId]="itemId()" #detail class="bg-black mb-4">
-      @if (detail.siblings()?.length > 1) {
-        <h3 class="text-nw-description px-3 font-bold">Other Sizes</h3>
-        <div class="flex flex-row gap-2 p-3 pt-0">
-          @for (sibling of detail.siblings(); track $index) {
-            <a
-              class="link-hover"
-              [nwbGatherableDetail]="sibling.GatherableID"
-              #child="gatherableDetail"
-              [routerLink]="['..', sibling.GatherableID]"
-              [routerLinkActive]="'text-primary'"
-            >
-              {{ child.size$ | async }}
-            </a>
-          }
-        </div>
-      }
-    </nwb-gatherable-detail>
-    <div class="flex flex-col gap-2">
-      @for (tableId of detail.lootTableIds(); track $index) {
-        <nwb-loot-graph [tableId]="tableId" [showLocked]="true" />
+<nwb-gatherable-detail [gatherableId]="itemId()" #detail class="bg-black mb-4">
+  @if (detail.siblings()?.length > 1) {
+    <h3 class="text-nw-description px-3 font-bold">Other Sizes</h3>
+    <div class="flex flex-row gap-2 p-3 pt-0">
+      @for (sibling of detail.siblings(); track $index) {
+        <a
+          class="link-hover"
+          [nwbGatherableDetail]="sibling.GatherableID"
+          #child="gatherableDetail"
+          [routerLink]="['..', sibling.GatherableID]"
+          [routerLinkActive]="'text-primary'"
+        >
+          {{ child.size$ | async }}
+        </a>
       }
     </div>
-  </div>
-</nwb-detail-drawer>
+  }
+</nwb-gatherable-detail>
+<div class="flex flex-col gap-2">
+  @for (tableId of detail.lootTableIds(); track $index) {
+    <nwb-loot-graph [tableId]="tableId" [showLocked]="true" />
+  }
+</div>

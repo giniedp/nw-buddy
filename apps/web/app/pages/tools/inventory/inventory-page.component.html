@@ -1,38 +1,56 @@
 <ion-header class="bg-base-300">
   <div class="flex flex-col-reverse md:flex-row">
-    <ul class="menu menu-horizontal w-full flex-nowrap flex-1 overflow-x-auto scrollbar-hide">
-      <li [routerLinkActive]="'bordered'">
-        <a rel="nofollow" [routerLink]="['..', defaultRoute]">
+    <ul class="flex flex-row w-full flex-nowrap flex-1 overflow-x-auto scrollbar-hide">
+      <li routerLinkActive #rla="routerLinkActive">
+        <a
+          rel="nofollow"
+          class="btn btn-ghost"
+          [class.btn-ghost]="!rla.isActive"
+          [class.btn-primary]="rla.isActive"
+          [class.btn-outline]="rla.isActive"
+          [routerLink]="['..', defaultRoute]"
+        >
           <span>ALL</span>
         </a>
       </li>
-      <li *ngFor="let item of service.categories$ | async" [routerLinkActive]="'bordered'">
-        <a rel="nofollow" [routerLink]="['..', item.id]">
-          <img [nwImage]="item.icon" *ngIf="item.icon" class="w-6 h-6" />
-          <span *ngIf="!item.icon">{{ item.label }}</span>
-        </a>
-      </li>
+      @for (item of service.categories$ | async; track $index) {
+        <li routerLinkActive #rla="routerLinkActive">
+          <a
+            rel="nofollow"
+            class="btn btn-ghost"
+            [class.btn-ghost]="!rla.isActive"
+            [class.btn-primary]="rla.isActive"
+            [class.btn-outline]="rla.isActive"
+            [routerLink]="['..', item.id]"
+          >
+            @if (item.icon) {
+              <img [nwImage]="item.icon" class="w-6 h-6" />
+            }
+            <span *ngIf="!item.icon">{{ item.label }}</span>
+          </a>
+        </li>
+      }
       <span class="flex-1"></span>
       <li [tooltip]="'Create new item'" [tooltipClass]="'bg-accent'">
-        <span (click)="createItem()">
+        <button (click)="createItem()" class="btn btn-ghost btn-square">
           <nwb-icon [icon]="svgPlus" class="w-4 h-4" />
-        </span>
+        </button>
       </li>
       <ng-container *ngIf="service.category$ | async; let category">
         <li [tooltip]="'Scan new item'" [tooltipClass]="'bg-accent'" *ngIf="isScanSupported(category)">
-          <span (click)="scanItem(category)">
+          <button (click)="scanItem(category)" class="btn btn-ghost btn-square">
             <nwb-icon [icon]="svgImage" class="w-4 h-4" />
-          </span>
+          </button>
         </li>
       </ng-container>
       <li>
-        <button [nwbScreenshotBtn]></button>
+        <button [nwbScreenshotBtn] class="btn btn-ghost btn-square"></button>
       </li>
       <!-- <li>
         <nwb-data-table-panel-button></nwb-data-table-panel-button>
       </li> -->
       <li *ngIf="service.canToggleMode()">
-        <button [nwbDataViewToggle]></button>
+        <button [nwbDataViewToggle] class="btn btn-ghost btn-square"></button>
       </li>
     </ul>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
@@ -40,30 +58,52 @@
     </div>
   </div>
 </ion-header>
-<div class="flex-1 flex flex-row overflow-hidden">
-  @if (service.isGridActive()) {
-    <nwb-virtual-grid
-      [enableQuickfilter]="true"
-      [data]="service.categoryItems$ | async"
-      [options]="service.virtualOptions"
-      [identifyBy]="service.entityIdGetter"
-      [selectionRouteParam]="selectionParam"
-    />
-  } @else if (service.isTableActive()) {
-    <nwb-table-grid
-      [enableQuickfilter]="true"
-      [data]="service.categoryItems$ | async"
-      [options]="service.tableGridOptions"
-      [identifyBy]="service.entityIdGetter"
-      [persistKey]="persistKey"
-      [selectionRouteParam]="selectionParam"
-    />
-  }
-
-  <nwb-detail-drawer class="hidden 2xl:block w-[490px]" [breakOn]="'2xl'">
-    <div *nwbDetailDrawerContent class="layout-content bg-base-200 p-2 flex flex-col gap-2">
-      <nwb-gearset-form class="hidden 2xl:grid"></nwb-gearset-form>
-      <router-outlet/>
+<ion-content [scrollY]="false">
+  <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-min-width: 320px; --side-max-width: 420px">
+    <div class="ion-page order-2" id="main">
+      @if (service.isGridActive()) {
+        <nwb-virtual-grid
+          [enableQuickfilter]="true"
+          [data]="service.categoryItems$ | async"
+          [options]="service.virtualOptions"
+          [identifyBy]="service.entityIdGetter"
+          [selectionRouteParam]="selectionParam"
+        />
+      } @else if (service.isTableActive()) {
+        <nwb-table-grid
+          [enableQuickfilter]="true"
+          [data]="service.categoryItems$ | async"
+          [options]="service.tableGridOptions"
+          [identifyBy]="service.entityIdGetter"
+          [persistKey]="persistKey"
+          [selectionRouteParam]="selectionParam"
+        />
+      }
     </div>
-  </nwb-detail-drawer>
-</div>
+    <ion-menu contentId="main" class="order-2">
+      @if (showSidebar()) {
+        <ion-content>
+          <ng-container *ngTemplateOutlet="tplDetail" />
+        </ion-content>
+      }
+    </ion-menu>
+  </ion-split-pane>
+  <ion-modal
+    [isOpen]="showModal()"
+    [initialBreakpoint]="100 | px2vh"
+    [breakpoints]="[12 | px2vh, 100 | px2vh, 0.45, 1]"
+    [backdropBreakpoint]="0.5"
+    [backdropDismiss]="false"
+  >
+    @if (showModal()) {
+      <ion-content class="bg-base-300">
+        <ng-container *ngTemplateOutlet="tplDetail" />
+      </ion-content>
+    }
+  </ion-modal>
+</ion-content>
+
+<ng-template #tplDetail>
+  <nwb-gearset-form class="grid" />
+  <router-outlet />
+</ng-template>

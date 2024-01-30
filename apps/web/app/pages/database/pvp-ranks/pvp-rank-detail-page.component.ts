@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
-import { ActivatedRoute, RouterModule } from '@angular/router'
+import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { LayoutModule } from '~/ui/layout'
-import { injectRouteParam, observeRouteParam } from '~/utils'
+import { injectRouteParam } from '~/utils'
 import { GameEventDetailModule } from '~/widgets/data/game-event-detail'
 import { LootModule } from '~/widgets/loot'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -16,7 +16,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, RouterModule, NwModule, GameEventDetailModule, ScreenshotModule, LayoutModule, LootModule],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class PvpRankDetailPageComponent {

@@ -15,7 +15,7 @@ import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, DamageRowDetailModule, FormsModule, LayoutModule, StatusEffectDetailModule],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class DamageDetailPageComponent {

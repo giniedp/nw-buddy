@@ -1,19 +1,19 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
+import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
 import { Perks } from '@nw-data/generated'
-import { firstValueFrom, skip } from 'rxjs'
+import { firstValueFrom } from 'rxjs'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { NwExpressionService } from '~/nw/expression'
-import { NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE_BASE } from '@nw-data/common'
 import { LayoutModule } from '~/ui/layout'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { AbilityDetailModule } from '~/widgets/data/ability-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
-import { ScreenshotModule } from '~/widgets/screenshot'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
+import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   standalone: true,
@@ -32,7 +32,7 @@ import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
     ScreenshotModule,
   ],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class PerksDetailPageComponent {
@@ -42,7 +42,7 @@ export class PerksDetailPageComponent {
     private route: ActivatedRoute,
     private i18n: TranslateService,
     private head: HtmlHeadService,
-    private expr: NwExpressionService
+    private expr: NwExpressionService,
   ) {
     //
   }
@@ -57,7 +57,7 @@ export class PerksDetailPageComponent {
         gearScore: NW_MAX_GEAR_SCORE_BASE,
         text: this.i18n.get(entity.Description),
         itemId: entity.PerkID,
-      })
+      }),
     )
     this.head.updateMetadata({
       title: [this.i18n.get(entity.DisplayName), entity.PerkType].join(' - '),

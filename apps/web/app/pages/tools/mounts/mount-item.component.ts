@@ -14,7 +14,7 @@ import { MountDetailModule } from '~/widgets/data/mount-detail'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, MountDetailModule, LayoutModule],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class MountItemComponent {

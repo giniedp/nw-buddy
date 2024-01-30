@@ -1,7 +1,7 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Injector, inject } from '@angular/core'
-import { toObservable } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, Injector, computed, inject } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { filter, map, switchMap } from 'rxjs'
@@ -17,7 +17,7 @@ import { svgFileImport, svgFilterList, svgPlus } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, observeQueryParam, selectStream } from '~/utils'
+import { HtmlHeadService, injectBreakpoint, injectRouteParam, injectUrlParams, observeQueryParam, selectSignal, selectStream } from '~/utils'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { SkillsetTableAdapter } from '~/widgets/data/skillset-table'
 import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
@@ -45,7 +45,7 @@ import { SkillTreesPageStore } from './skill-trees-page.store'
     IconsModule,
   ],
   host: {
-    class: 'layout-col',
+    class: 'ion-page'
   },
   providers: [
     SkillTreesPageStore,
@@ -72,11 +72,15 @@ export class SkillBuildsComponent {
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'skilltrees-table'
-  protected categoryParam = 'category'
-  protected categoryParam$ = observeQueryParam(inject(ActivatedRoute), this.categoryParam)
-  protected category$ = selectStream(this.categoryParam$, (it) => {
+  protected categoryParam = toSignal(injectRouteParam('category'))
+  protected category = selectSignal(this.categoryParam, (it) => {
     return it ? it : null
   })
+
+  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
+  protected isChildActive = toSignal(injectUrlParams('/:resource/:id', (it) => !!it?.['id']))
+  protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
+  protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
 
   protected iconCreate = svgPlus
   protected iconMore = svgFilterList

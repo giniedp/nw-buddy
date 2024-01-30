@@ -4,7 +4,7 @@
       <li>
         <button
           [nwbDataCateogryMenu]
-          [category]="category$ | async"
+          [category]="category()"
           [showCounter]="true"
           [defaultRoute]="defaultRoute"
           [defaultTitle]="title"
@@ -27,7 +27,5 @@
     [filterQueryParam]="filterParam"
     [selectionRouteParam]="selectionParam"
     #grid
-  ></nwb-table-grid>
-
-  <!-- <router-outlet></router-outlet> -->
+  />
 </div>

@@ -15,8 +15,10 @@ export function injectQueryParam(param: string | Observable<string>): Observable
   return observeQueryParam(inject(ActivatedRoute), param)
 }
 
-export function injectUrlParams(pattern: string): Observable<Record<string, string>> {
-  return observeUrlParams(inject(Router), pattern)
+export function injectUrlParams(pattern: string): Observable<Record<string, string>>
+export function injectUrlParams<T>(pattern: string, project: (it: Record<string, string>) => T): Observable<T>
+export function injectUrlParams(pattern: string, project?: (it: Record<string, string>) => any): any {
+  return observeUrlParams(inject(Router), pattern).pipe(map(project || ((it) => it)))
 }
 
 export function observeRouteParam<T>(route: ActivatedRoute, param: string | Observable<string>): Observable<string> {
@@ -31,6 +33,17 @@ export function observeQueryParam(route: ActivatedRoute, param: string | Observa
     param = of(param)
   }
   return param.pipe(switchMap((key) => route.queryParamMap.pipe(map((map) => map.get(key)))))
+}
+
+export function injectRouteChange<T>(fn: (router: Router, route: ActivatedRoute) => Observable<T>) {
+  return observeRouteChange(inject(Router), inject(ActivatedRoute), fn)
+}
+export function observeRouteChange<T>(
+  router: Router,
+  route: ActivatedRoute,
+  fn: (router: Router, route: ActivatedRoute) => Observable<T>,
+) {
+  return router.events.pipe(filter((it) => it instanceof NavigationEnd)).pipe(switchMap(() => fn(router, route)))
 }
 
 export function observeChildRouteParam(router: Router, route: ActivatedRoute, param: string | Observable<string>) {

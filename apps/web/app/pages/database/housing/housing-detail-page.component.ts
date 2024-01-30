@@ -6,7 +6,7 @@ import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { getItemIconPath } from '@nw-data/common'
 import { LayoutModule } from '~/ui/layout'
-import { HtmlHeadService, observeRouteParam } from '~/utils'
+import { HtmlHeadService, injectRouteParam, observeRouteParam } from '~/utils'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -16,6 +16,7 @@ import { LootModule } from '~/widgets/loot'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { Dialog } from '@angular/cdk/dialog'
 import { ModelViewerModule } from '../../../widgets/model-viewer'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -36,11 +37,11 @@ import { ModelViewerModule } from '../../../widgets/model-viewer'
     ModelViewerModule,
   ],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class HousingDetailPageComponent {
-  protected itemId$ = observeRouteParam(this.route, 'id')
+  protected itemId = toSignal(injectRouteParam('id'))
   protected iconLink = svgSquareArrowUpRight
   protected viewerActive = false
   public constructor(

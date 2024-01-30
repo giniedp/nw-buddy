@@ -17,7 +17,7 @@ import { selectStream } from '~/utils'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, NavbarModule, RouterModule, LayoutModule, QuicksearchModule, FormsModule],
   host: {
-    class: 'layout-col',
+    class: 'ion-page'
   },
 })
 export class MountOverviewComponent {

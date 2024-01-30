@@ -36,7 +36,7 @@ import { DamageRowDetailModule } from '~/widgets/data/damage-detail'
     DamageRowDetailModule,
   ],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class StatusEffectsDetailPageComponent {

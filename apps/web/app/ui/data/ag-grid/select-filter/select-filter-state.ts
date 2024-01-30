@@ -41,7 +41,7 @@ const OptionListItem: m.Component<
   { item: SelectFilterOption } & Pick<SelectFilterStateAttrs, 'onToggleComparator' | 'onRemove'>
 > = {
   view: ({ attrs: { item, onToggleComparator, onRemove } }) => {
-    return m('li.input-group.input-group-sm.flex.flex-row', [
+    return m('li.join.flex.flex-row', [
       m(
         'button.btn.btn-sm',
         {

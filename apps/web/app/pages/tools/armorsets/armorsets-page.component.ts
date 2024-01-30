@@ -1,13 +1,15 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, TrackByFunction, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, TrackByFunction, computed, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
 import { DataGridModule } from '~/ui/data/table-grid'
+import { LayoutModule } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
+import { HtmlHeadService, eqCaseInsensitive, injectBreakpoint, injectRouteParam, injectUrlParams, observeRouteParam, selectSignal, selectStream } from '~/utils'
 import { Armorset } from '~/widgets/data/armorset'
 import { ArmorsetGridSource } from '~/widgets/data/armorset/grid'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
@@ -21,6 +23,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   imports: [
     CommonModule,
     RouterModule,
+    LayoutModule,
     NwModule,
     QuicksearchModule,
     ScreenshotModule,
@@ -31,7 +34,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     ItemDetailModule,
   ],
   host: {
-    class: 'layout-col',
+    class: 'ion-page'
   },
   providers: [
     provideDataView({
@@ -48,12 +51,15 @@ export class ArmorsetsPageComponent {
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'armorsets-table'
-  protected categoryParam$ = observeRouteParam(inject(ActivatedRoute), 'category')
-  protected category$ = selectStream(this.categoryParam$, (it) => {
+  protected category = selectSignal(injectRouteParam('category'), (it) => {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
 
-  public trackByIndex: TrackByFunction<any> = (i) => i
+  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
+  protected isChildActive = toSignal(injectUrlParams('/:resource/:category/:id', (it) => !!it?.['id']))
+  protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
+  protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
+
   public constructor(head: HtmlHeadService, protected service: DataViewService<Armorset>) {
     head.updateMetadata({
       url: head.currentUrl,

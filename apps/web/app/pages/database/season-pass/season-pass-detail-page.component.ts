@@ -30,7 +30,7 @@ import { LootModule } from '~/widgets/loot'
     EntitlementDetailModule,
   ],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class SeasonPassDetailPageComponent {

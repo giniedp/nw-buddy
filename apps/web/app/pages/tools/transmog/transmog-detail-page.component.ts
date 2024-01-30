@@ -18,7 +18,7 @@ import { AppearanceDetailModule } from '~/widgets/data/appearance-detail'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, AppearanceDetailModule, LayoutModule],
   host: {
-    class: 'flex-none flex flex-col',
+    class: 'block',
   },
 })
 export class TransmogDetailPageComponent {

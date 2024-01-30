@@ -1,7 +1,7 @@
 <ng-container *ngIf="vm$ | async; let vm">
-  <div class="tabs flex-nowrap overflow-auto whitespace-nowrap scrollbar-hide">
+  <div class="tabs tabs-bordered flex-nowrap overflow-auto whitespace-nowrap scrollbar-hide">
     <a
-      class="tab tab-bordered"
+      class="tab tab-active"
       [class.tab-active]="vm.tabId === tab.id"
       [routerLink]="[]"
       [queryParams]="{ itemTab: tab.id }"

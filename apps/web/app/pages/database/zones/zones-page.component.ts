@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ViewChild, computed, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, Router, RouterModule, RouterOutlet } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
@@ -7,9 +8,10 @@ import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data
 import { DataGridModule } from '~/ui/data/table-grid'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
+import { LayoutModule } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, eqCaseInsensitive, injectUrlParams, selectSignal } from '~/utils'
+import { HtmlHeadService, eqCaseInsensitive, injectBreakpoint, injectRouteParam, injectUrlParams, selectSignal } from '~/utils'
 import { ItemTableRecord } from '~/widgets/data/item-table'
 import { ZoneDetailModule } from '~/widgets/data/zone-detail'
 import { ZoneTableAdapter } from '~/widgets/data/zone-table'
@@ -24,18 +26,19 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     CommonModule,
     DataGridModule,
     DataViewModule,
+    IconsModule,
     IonHeader,
+    LayoutModule,
     NwModule,
     QuicksearchModule,
     RouterModule,
     ScreenshotModule,
     TooltipModule,
     VirtualGridModule,
-    IconsModule,
     ZoneDetailModule,
   ],
   host: {
-    class: 'layout-col',
+    class: 'ion-page'
   },
   providers: [
     provideDataView({
@@ -55,11 +58,15 @@ export class ZonePageComponent {
   private urlParams$ = injectUrlParams('/zones/:category/:id/:vitalId')
   protected zoneIdParam = selectSignal(this.urlParams$, (it) => it?.['id'])
   protected vitalIdParam = selectSignal(this.urlParams$, (it) => it?.['vitalId'])
-  protected categoryParam = selectSignal(this.urlParams$, (it) => it?.['category'])
-  protected category = computed(() => {
-    const category = this.categoryParam()
-    return eqCaseInsensitive(category, this.defaultRoute) ? null : category
+  protected category = selectSignal(injectRouteParam('category'), (it) => {
+    return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
+
+  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
+  protected isChildActive = toSignal(injectUrlParams('/:resource/:category/:id', (it) => !!it?.['id']))
+  protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
+  protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
+
   protected router = inject(Router)
   protected route = inject(ActivatedRoute)
 

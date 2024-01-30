@@ -1,24 +1,21 @@
 <div class="outer-grid gap-x-3 gap-y-2">
   @if (!disableHead) {
-    <h3 class="text-lg uppercase relative font-serif text-center text-nw-description col-span-2">
-      <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
-      <span class="relative top-1">
-        @if (!isLoaded) {
-          Loading...
-        } @else if (gearset) {
-          {{ gearset.name }}
-        } @else {
-          New Gearset
-        }
-      </span>
+    <h3 class="text-lg uppercase font-serif text-nw-description col-span-2 nw-bg-title bg-bottom h-8 flex items-end justify-center">
+      @if (!isLoaded) {
+        Loading...
+      } @else if (gearset) {
+        {{ gearset.name }}
+      } @else {
+        New Gearset
+      }
     </h3>
-    <div class="flex flex-row">
-      <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-8 h-8" />
-      @if (isLoaded) {
-        <span class="font-caslon text-3xl font-bold">{{ gearScore | number: '0.0-0' }}</span>
+    <div class="h-8 flex flex-row gap-1 items-center">
+      @if (isLoaded && gearset) {
+        <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-8 h-8" />
+        <span class="font-caslon text-3xl leading-none font-bold">{{ gearScore | number: '0.0-0' }}</span>
       }
     </div>
-    <div>
+    <div class="h-8">
       @if (isLoaded) {
         @if (gearset) {
           <a class="btn btn-sm btn-block btn-outline btn-primary" [routerLink]="[gearset.id]"> Show </a>
@@ -34,16 +31,16 @@
     <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'hands'" />
     <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'legs'" />
     <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'feet'" />
-    <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'weapon3'" />
+    <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'weapon3'" class="hidden sm:block"/>
 
-    <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'amulet'" class="col-start-1" />
+    <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'amulet'" class="sm:col-start-1" />
     <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'ring'" />
     <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'earring'" />
 
-    <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'quickslot1'" class="col-start-1" />
-    <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'quickslot2'" />
-    <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'quickslot3'" />
-    <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'quickslot4'" />
+    <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'quickslot1'" class="sm:col-start-1" />
+    <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'quickslot2'"/>
+    <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'quickslot3'"/>
+    <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'quickslot4'"/>
   </div>
 
   <div class="grid grid-cols-2 grid-rows-4 sm:grid-rows-3 gap-1">
@@ -51,6 +48,7 @@
     <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'weapon2'" />
     <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'arrow'" />
     <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'cartridge'" />
+    <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'weapon3'" class="sm:hidden"/>
     <nwb-gearset-square-slot [disabled]="true" [gearset]="gearset" [slotId]="'heartgem'" class="col-start-2" />
   </div>
 </div>

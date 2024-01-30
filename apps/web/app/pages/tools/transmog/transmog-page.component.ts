@@ -1,6 +1,6 @@
 import { animate, animateChild, query, stagger, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { ComponentStore } from '@ngrx/component-store'
 import { NwModule } from '~/nw'
@@ -13,10 +13,11 @@ import { LayoutModule } from '~/ui/layout'
 import { PaginationModule } from '~/ui/pagination'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, eqCaseInsensitive, observeRouteParam, selectStream } from '~/utils'
+import { HtmlHeadService, eqCaseInsensitive, injectBreakpoint, injectRouteParam, injectUrlParams, observeRouteParam, selectSignal, selectStream } from '~/utils'
 import { TransmogRecord, TransmogTableAdapter } from '~/widgets/data/transmog-table'
 import { TransmogItem } from '~/widgets/data/transmog'
 import { uniq } from 'lodash'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -24,17 +25,17 @@ import { uniq } from 'lodash'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
     CommonModule,
-    NwModule,
-    RouterModule,
-    PaginationModule,
-    ItemFrameModule,
-    IconsModule,
-    TooltipModule,
-    DataViewModule,
-    VirtualGridModule,
     DataGridModule,
+    DataViewModule,
+    IconsModule,
+    ItemFrameModule,
     LayoutModule,
+    NwModule,
+    PaginationModule,
     QuicksearchModule,
+    RouterModule,
+    TooltipModule,
+    VirtualGridModule,
   ],
   providers: [
     provideDataView({
@@ -69,15 +70,19 @@ export class TransmogPageComponent extends ComponentStore<{ hoverItem: TransmogI
   protected filterParam = 'filter'
   protected selectionParam = 'id'
   protected persistKey = 'transmog-table'
-  protected categoryParam$ = observeRouteParam(inject(ActivatedRoute), 'category')
-  protected category$ = selectStream(this.categoryParam$, (it) => {
+  protected category = selectSignal(injectRouteParam('category'), (it) => {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
 
-  public constructor(head: HtmlHeadService, protected viewService: DataViewService<TransmogRecord>) {
+  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
+  protected isChildActive = toSignal(injectUrlParams('/:resource/:category/:id', (it) => !!it?.['id']))
+  protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
+  protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
+
+  public constructor(head: HtmlHeadService, protected service: DataViewService<TransmogRecord>) {
     super({ hoverItem: null })
 
-    viewService.patchState({ mode: 'grid', modes: ['grid'] })
+    service.patchState({ mode: 'grid', modes: ['grid'] })
     head.updateMetadata({
       title: 'Transmog',
       description: 'New World transmog database',

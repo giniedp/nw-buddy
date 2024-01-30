@@ -1,33 +1,33 @@
-<nwb-detail-drawer class="hidden lg:block lg:w-96 2xl:w-[500px]">
-  <div
-    *nwbDetailDrawerContent
-    class="layout-content p-2 bg-base-200"
-    [nwbAbilityDetail]="itemId | async"
-    (nwbAbilityChange)="onEntity($event)"
-    #detail="abilityDetail"
-  >
-    <div class="flex flex-col gap-2 bg-base-200" [nwbScreenshotFrame]="itemId | async">
-      <nwb-ability-detail [abilityId]="itemId | async" class="bg-black"> </nwb-ability-detail>
+<div [nwbAbilityDetail]="itemId | async" (nwbAbilityChange)="onEntity($event)" #detail="abilityDetail">
+  <div class="flex flex-col gap-2 bg-base-200" [nwbScreenshotFrame]="itemId | async">
+    <nwb-ability-detail [abilityId]="itemId | async" class="bg-black" />
 
-      <ng-container *ngFor="let effectId of detail.refEffects$ | async; let isFirst = first">
-        <h3 *ngIf="isFirst" class="prose">Referenced Status Effects:</h3>
-        <nwb-status-effect-detail [effectId]="effectId" class="bg-black"></nwb-status-effect-detail>
-      </ng-container>
+    @for (effectId of detail.refEffects$ | async; track i; let i = $index; let isFirst = $first) {
+      @if (isFirst) {
+        <h3 class="prose">Referenced Status Effects:</h3>
+      }
+      <nwb-status-effect-detail [effectId]="effectId" class="bg-black" />
+    }
 
-      <ng-container *ngFor="let abilityId of detail.refAbilities$ | async; let isFirst = first">
-        <h3 *ngIf="isFirst" class="prose">Referenced Abilities:</h3>
-        <nwb-ability-detail [abilityId]="abilityId" class="bg-black"></nwb-ability-detail>
-      </ng-container>
+    @for (abilityId of detail.refAbilities$ | async; track i; let i = $index; let isFirst = $first) {
+      @if (isFirst) {
+        <h3 class="prose">Referenced Abilities:</h3>
+      }
+      <nwb-ability-detail [abilityId]="abilityId" class="bg-black" />
+    }
 
-      <ng-container *ngFor="let spellId of detail.refSpells$ | async; let isFirst = first">
-        <h3 *ngIf="isFirst" class="prose">Referenced Spells:</h3>
-        <nwb-spell-detail [spellId]="spellId" class="bg-black"></nwb-spell-detail>
-      </ng-container>
+    @for (spellId of detail.refSpells$ | async; track i; let i = $index; let isFirst = $first) {
+      @if (isFirst) {
+        <h3 class="prose">Referenced Spells:</h3>
+      }
+      <nwb-spell-detail [spellId]="spellId" class="bg-black" />
+    }
 
-      <ng-container *ngFor="let perkId of perkIds$ | async; let isFirst = first">
-        <h3 *ngIf="isFirst" class="prose">Referenced by Perks:</h3>
-        <nwb-perk-detail [perkId]="perkId" class="bg-black"> </nwb-perk-detail>
-      </ng-container>
-    </div>
+    @for (perkId of perkIds$ | async; track i; let i = $index; let isFirst = $first) {
+      @if (isFirst) {
+        <h3 class="prose">Referenced by Perks:</h3>
+      }
+      <nwb-perk-detail [perkId]="perkId" class="bg-black" />
+    }
   </div>
-</nwb-detail-drawer>
+</div>

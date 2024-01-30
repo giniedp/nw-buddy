@@ -8,7 +8,7 @@ import { TranslateService } from './i18n'
 
 import { FullscreenOverlayContainer, OverlayContainer } from '@angular/cdk/overlay'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
-import { IonApp, IonButton, IonButtons, IonContent, IonSplitPane } from '@ionic/angular/standalone'
+import { IonApp, IonButton, IonButtons, IonContent, IonRouterOutlet, IonSplitPane } from '@ionic/angular/standalone'
 import { LANG_OPTIONS } from './app-menu'
 import { AppMenuComponent } from './app-menu.component'
 import { NwModule } from './nw'
@@ -49,6 +49,7 @@ import { environment } from '../environments'
     IonSplitPane,
     IonButtons,
     IonButton,
+    IonRouterOutlet
   ],
   providers: [{ provide: OverlayContainer, useClass: FullscreenOverlayContainer }],
   animations: [

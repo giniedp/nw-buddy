@@ -4,12 +4,12 @@
       <li>
         <button
           [nwbDataCateogryMenu]
-          [category]="category$ | async"
+          [category]="category()"
           [showCounter]="true"
           [defaultRoute]="''"
           [defaultTitle]="title"
           [routePrefix]="'.'"
-          [queryParam]="categoryParam"
+          [queryParam]="categoryParam()"
           class="btn btn-ghost normal-case text-left"
         ></button>
       </li>
@@ -42,44 +42,65 @@
       </li>
     </ul>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
-      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"/>
+      <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'" />
     </div>
   </div>
 </ion-header>
-<div class="flex-1 flex flex-row overflow-hidden">
-  @if (dataView.isGridActive()) {
-    <nwb-virtual-grid
-      [enableQuickfilter]="true"
-      [data]="dataView.categoryItems$ | async"
-      [options]="dataView.virtualOptions"
-      [identifyBy]="dataView.entityIdGetter"
-      [selectionRouteParam]="selectionParam"
-    />
-  } @else if (dataView.isTableActive()) {
-    <nwb-table-grid
-      (ready$)="dataView.onTableReady($event)"
-      [enableQuickfilter]="true"
-      [data]="dataView.categoryItems$ | async"
-      [options]="dataView.tableGridOptions"
-      [identifyBy]="dataView.entityIdGetter"
-      [persistKey]="persistKey"
-      [filterQueryParam]="filterParam"
-      [selectionRouteParam]="selectionParam"
-    />
+<ion-content [scrollY]="false">
+  <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-min-width: 400px;">
+    <div class="ion-page order-2" id="main">
+      @if (dataView.isGridActive()) {
+        <nwb-virtual-grid
+          [enableQuickfilter]="true"
+          [data]="dataView.categoryItems$ | async"
+          [options]="dataView.virtualOptions"
+          [identifyBy]="dataView.entityIdGetter"
+          [selectionRouteParam]="selectionParam"
+        />
+      } @else if (dataView.isTableActive()) {
+        <nwb-table-grid
+          (ready$)="dataView.onTableReady($event)"
+          [enableQuickfilter]="true"
+          [data]="dataView.categoryItems$ | async"
+          [options]="dataView.tableGridOptions"
+          [identifyBy]="dataView.entityIdGetter"
+          [persistKey]="persistKey"
+          [filterQueryParam]="filterParam"
+          [selectionRouteParam]="selectionParam"
+        />
+      }
+    </div>
+    <ion-menu contentId="main" class="order-2">
+      @if (showSidebar()) {
+        <ion-content>
+          <ng-container *ngTemplateOutlet="tplDetail" />
+        </ion-content>
+      }
+    </ion-menu>
+  </ion-split-pane>
+  <ion-modal
+    [isOpen]="showModal()"
+    [initialBreakpoint]="100 | px2vh"
+    [breakpoints]="[12 | px2vh, 100 | px2vh, 0.45, 1]"
+    [backdropBreakpoint]="0.5"
+    [backdropDismiss]="false"
+  >
+    @if (showModal()) {
+      <ion-content class="bg-base-300">
+        <ng-container *ngTemplateOutlet="tplDetail" />
+      </ion-content>
+    }
+  </ion-modal>
+</ion-content>
+
+<ng-template #tplDetail>
+  <router-outlet #outlet="outlet"></router-outlet>
+  @if (!outlet.isActivated) {
+    <div class="p-4 flex flex-row items-center justify-center">
+      <button (click)="createItem()" class="btn btn-primary gap-1">
+        <nwb-icon [icon]="iconCreate" class="w-5 h-5" />
+        <span>Create New</span>
+      </button>
+    </div>
   }
-  <div class="hidden xl:flex xl:flex-1 flex-col max-w-3xl">
-    <nwb-detail-drawer class="flex-1 hidden lg:block" [breakOn]="'xl'">
-      <div *nwbDetailDrawerContent class="layout-col relative bg-base-300">
-        <router-outlet #outlet="outlet"></router-outlet>
-        @if (!outlet.isActivated) {
-          <div class="p-4 flex flex-row items-center justify-center">
-            <button (click)="createItem()" class="btn btn-primary gap-1">
-              <nwb-icon [icon]="iconCreate" class="w-5 h-5" />
-              <span>Create New</span>
-            </button>
-          </div>
-        }
-      </div>
-    </nwb-detail-drawer>
-  </div>
-</div>
+</ng-template>

@@ -98,7 +98,7 @@ export class ItemTableAdapter implements TableGridAdapter<ItemTableRecord>, Data
           $perks: getItemPerks(it, perksMap),
           $perkBuckets: getItemPerkBucketIds(it),
           $transformTo: getItem(transformsMap.get(it.ItemID)?.ToItemId),
-          $transformFrom: Array.from(transformsMapReverse.get(it.ItemID) || []).map((it) => getItem(it.FromItemId)),
+          $transformFrom: (transformsMapReverse.get(it.ItemID) || []).map((it) => getItem(it.FromItemId)),
         }
       })
       const filter = this.config?.filter

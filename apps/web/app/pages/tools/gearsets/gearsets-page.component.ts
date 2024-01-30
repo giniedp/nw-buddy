@@ -1,8 +1,8 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { Component, inject } from '@angular/core'
+import { Component, computed, inject } from '@angular/core'
 import { Router, RouterModule } from '@angular/router'
-import { IonHeader } from '@ionic/angular/standalone'
+import { IonContent, IonHeader, IonToolbar } from '@ionic/angular/standalone'
 import { debounceTime, filter } from 'rxjs'
 import { GearsetRecord } from '~/data'
 import { NwModule } from '~/nw'
@@ -14,7 +14,8 @@ import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { GearsetsPageStore } from './gearsets-page.store'
-import { GearsetLoadoutListComponent } from './loadout'
+import { GearsetLoadoutItemComponent, GearsetLoadoutListComponent } from './loadout'
+import { VirtualGridModule } from '~/ui/data/virtual-grid'
 
 @Component({
   standalone: true,
@@ -29,11 +30,15 @@ import { GearsetLoadoutListComponent } from './loadout'
     IconsModule,
     TooltipModule,
     IonHeader,
+    IonToolbar,
+    IonContent,
     GearsetLoadoutListComponent,
+    VirtualGridModule,
+    GearsetLoadoutItemComponent
   ],
   providers: [QuicksearchService, GearsetsPageStore],
   host: {
-    class: 'layout-col',
+    class: 'ion-page',
   },
 })
 export class GearsetsPageComponent {
