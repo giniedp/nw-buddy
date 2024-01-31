@@ -222,8 +222,7 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
 
         const weaponType = NW_WEAPON_TYPES.find((it) => it.WeaponTag === weaponTag)
         const weapon = weaponMap?.get(weaponType?.StatsRef)
-        const rows = damageRows?.filter((it) => !!weaponType && it.DamageID.startsWith(weaponType.DamageTablePrefix))
-        console.log({ weaponTag, weaponType, weapon, rows, attrs })
+        const rows = damageRows?.filter((it) => !!weaponType && it.DamageID.toLowerCase().startsWith(weaponType.DamageTablePrefix.toLowerCase()))
         this.patchState({
           baseDamage: weapon?.BaseDamage || 0,
           critDamage: patchPrecision(weapon?.CritDamageMultiplier || 0),
