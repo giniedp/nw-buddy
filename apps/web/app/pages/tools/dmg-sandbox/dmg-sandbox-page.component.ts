@@ -38,8 +38,8 @@ export interface DmgSandboxState {
   critMods: number
   empowerMods: number
   weaponScale: Record<AttributeRef, number>
-  attrSums: Record<AttributeRef, number>
-
+  attrStats: Record<AttributeRef, number>
+  attrTable: Array<{ level: number, scaling: number }>
   armorPenetration: number
   attackerAvgGs: number
   defenderAvgGs: number
@@ -88,7 +88,16 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
   public defenderArmorRating = this.selectSignal(({ defenderArmorRating }) => defenderArmorRating)
 
   protected weaponScale = this.selectSignal(({ weaponScale }) => weaponScale)
-  protected attrSums = this.selectSignal(({ attrSums }) => attrSums)
+  protected attrStats = this.selectSignal(({ attrStats }) => attrStats)
+  protected attrSums = this.selectSignal(({ attrTable, attrStats }) => {
+    return {
+      dex: attrTable[Math.min(attrStats.dex, attrTable.length-1)]?.scaling,
+      str: attrTable[Math.min(attrStats.str, attrTable.length-1)]?.scaling,
+      int: attrTable[Math.min(attrStats.int, attrTable.length-1)]?.scaling,
+      foc: attrTable[Math.min(attrStats.foc, attrTable.length-1)]?.scaling,
+      con: attrTable[Math.min(attrStats.con, attrTable.length-1)]?.scaling,
+    }
+  })
   protected attrScale = computed(() => {
     return damageFactorForAttrs({
       weapon: this.weaponScale(),
@@ -186,13 +195,14 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
         foc: 0,
         con: 0,
       },
-      attrSums: {
+      attrStats: {
         dex: 5,
         str: 5,
         int: 5,
         foc: 5,
         con: 5,
       },
+      attrTable: [],
       attackerAvgGs: 0,
       defenderAvgGs: 0,
       armorPenetration: 0,
@@ -204,16 +214,26 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
         weaponTag: this.select(({ weapon }) => weapon),
         weaponMap: this.db.weaponsMap,
         damageRows: this.db.damageTable0,
+        attrs: this.db.attrStr,
       },
-      ({ weaponTag, weaponMap, damageRows }) => {
+      ({ weaponTag, weaponMap, damageRows, attrs }) => {
+
+
         const weaponType = NW_WEAPON_TYPES.find((it) => it.WeaponTag === weaponTag)
         const weapon = weaponMap?.get(weaponType?.StatsRef)
         const rows = damageRows?.filter((it) => !!weaponType && it.DamageID.startsWith(weaponType.DamageTablePrefix))
+        console.log({ weaponTag, weaponType, weapon, rows, attrs })
         this.patchState({
           baseDamage: weapon?.BaseDamage || 0,
           critDamage: patchPrecision(weapon?.CritDamageMultiplier || 0),
           weaponScale: damageScaleAttrs(weapon),
           attack: rows[0]?.DamageID,
+          attrTable: attrs.map((it) => {
+            return {
+              level: it.Level,
+              scaling: it.ModifierValueSum
+            }
+          }),
           attackOptions: rows.map(({ DamageID, AttackType, DmgCoef }) => {
             return {
               label: [
