@@ -1,9 +1,9 @@
 <div *ngIf="isGroup" class="flex flex-col" [class.opacity-50]="isIgnored && !isRoot">
   <div class="flex flex-row gap-1">
-    <div class="btn-group">
+    <div class="join">
       <button
-        class="btn btn-sm"
-        [class.btn-active]="isNegated"
+        class="join-item btn btn-sm"
+        [class.btn-primary]="isNegated"
         [class.text-opacity-70]="!isNegated"
         (click)="isNegated = !isNegated"
         [tooltip]="'Negate result'"
@@ -11,7 +11,7 @@
         !
       </button>
       <ng-container *ngFor="let op of operatorOptions; trackBy: trackByIndex">
-        <button class="btn btn-sm" [class.btn-active]="operator === op.value" (click)="operator = op.value">
+        <button class="join-item btn btn-sm" [class.btn-primary]="operator === op.value" (click)="operator = op.value">
           {{ op.label }}
         </button>
       </ng-container>

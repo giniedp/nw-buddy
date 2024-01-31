@@ -16,11 +16,11 @@
     >
       {{ item.name || item.id }}
     </div>
-    <div class="btn-group flex-none">
-      <button class="btn btn-square btn-sm btn-ghost" (click)="renameEntry(item.id, item.name)" [tooltip]="'Rename'">
+    <div class="join flex-none">
+      <button class="join-item btn btn-square btn-sm btn-ghost" (click)="renameEntry(item.id, item.name)" [tooltip]="'Rename'">
         <nwb-icon [icon]="iconRename" class="w-4 h-4"></nwb-icon>
       </button>
-      <button class="btn btn-square btn-sm btn-error" (click)="deleteEntry(item.id)" [tooltip]="'Delete'">
+      <button class="join-item btn btn-square btn-sm btn-error" (click)="deleteEntry(item.id)" [tooltip]="'Delete'">
         <nwb-icon [icon]="iconDelete" class="w-4 h-4"></nwb-icon>
       </button>
     </div>
@@ -31,11 +31,11 @@
 </div>
 
 <div class="flex-none modal-action flex-row justify-end layout-pad mt-0 bg-base-200">
-  <div class="btn-group">
-    <button type="button" class="btn" (click)="createEntry()">New Entry</button>
+  <div class="join">
+    <button type="button" class="join-item btn" (click)="createEntry()">New Entry</button>
   </div>
-  <div class="btn-group">
-    <button type="button" class="btn" (click)="close()">Cancel</button>
-    <button type="button" class="btn btn-primary" [disabled]="!store.selection$()" (click)="commit()">Save</button>
+  <div class="join">
+    <button type="button" class="join-item btn" (click)="close()">Cancel</button>
+    <button type="button" class="join-item btn btn-primary" [disabled]="!store.selection$()" (click)="commit()">Save</button>
   </div>
 </div>

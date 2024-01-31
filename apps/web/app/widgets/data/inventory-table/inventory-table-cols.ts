@@ -214,9 +214,9 @@ export function inventoryColActions(
     width: 100,
     rowDragText: ({}) => 'Text',
     cellRenderer: util.cellRenderer(({ data }) => {
-      return util.el('div.btn-group.content-center', {}, [
+      return util.el('div.join.content-center', {}, [
         util.el(
-          'button.btn.btn-ghost',
+          'button.join-item.btn.btn-ghost',
           {
             ev: {
               onclick: (e) => options.destroyAction(e, data),

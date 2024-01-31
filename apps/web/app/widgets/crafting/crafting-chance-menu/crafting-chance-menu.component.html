@@ -24,10 +24,10 @@
         />
       </td>
       <td>
-        <div class="btn-group">
+        <div class="join">
           <button
             *ngFor="let slot of slots; trackBy: trackBy"
-            class="btn btn-sm btn-square btn-ghost"
+            class="join-item btn btn-sm btn-square btn-ghost"
             [class.btn-success]="row.gear.has(slot.id)"
             (click)="toggleSkillSlot(row.skill.ID, slot.id)"
           >
@@ -38,10 +38,10 @@
         </div>
       </td>
       <td>
-        <div class="btn-group">
+        <div class="join">
           <input
             type="number"
-            class="input input-xs input-bordered w-14"
+            class="join-item input input-xs input-bordered w-14"
             step="1"
             [ngModel]="row.bonus"
             (ngModelChange)="updateSkillBonus(row.skill.ID, $event)"

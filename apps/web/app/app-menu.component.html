@@ -1,17 +1,18 @@
-<ng-content select="[header]"/>
 @if (groups(); as data) {
-  <div class="tabs bg-transparent flex-none">
-    @for (node of data; track $index) {
-      <button
-        class="tab tab-bordered flex-1 hover:bg-base-100 h-12"
-        [class.tab-active]="node.active"
-        (click)="onGroupActive(node.category)"
-      >
-        <nwb-icon [icon]="node.icon" class="w-4 h-4 mr-1" />
-      </button>
-    }
-  </div>
-  <div class="layout-content">
+  <ion-header>
+    <div class="tabs tabs-bordered flex-none">
+      @for (node of data; track $index) {
+        <button
+          class="tab flex-1 hover:bg-base-100 h-12"
+          [class.tab-active]="node.active"
+          (click)="onGroupActive(node.category)"
+        >
+          <nwb-icon [icon]="node.icon" class="w-4 h-4 mr-1" />
+        </button>
+      }
+    </div>
+  </ion-header>
+  <ion-content>
     @for (node of data; track $index) {
       <ul class="menu menu-compact flex-none flex-nowrap m-0" [class.hidden]="!node.active">
         @for (item of node.items; track $index) {
@@ -32,12 +33,12 @@
         }
       </ul>
     }
-    <ng-content/>
-  </div>
+  </ion-content>
 }
-<div class="flex-none flex flex-row gap-2 p-4 items-center justify-center">
-  <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="'/links'">Links</a>
-  <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="'/preferences'">Preferences</a>
-  <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="'/about'">About</a>
-</div>
-<ng-content select="[footer]"/>
+<ion-footer>
+  <div class="flex-none flex flex-row gap-2 p-4 items-center justify-center">
+    <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="'/links'">Links</a>
+    <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="'/preferences'">Preferences</a>
+    <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="'/about'">About</a>
+  </div>
+</ion-footer>

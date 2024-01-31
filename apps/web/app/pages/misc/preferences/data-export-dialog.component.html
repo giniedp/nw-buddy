@@ -11,9 +11,9 @@
 
   <div class="flex-1 layout-content prose p-4">
     <ng-container *ngIf="!vm.complete">
-      <div class="btn-group flex">
-        <button class="flex-1 btn" [class.btn-active]="!vm.publicExport" (click)="patchState({ publicExport: false })">Private Backup</button>
-        <button class="flex-1 btn" [class.btn-active]="vm.publicExport" (click)="patchState({ publicExport: true })">
+      <div class="join flex">
+        <button class="join-item flex-1 btn" [class.btn-primary]="!vm.publicExport" (click)="patchState({ publicExport: false })">Private Backup</button>
+        <button class="join-item flex-1 btn" [class.btn-primary]="vm.publicExport" (click)="patchState({ publicExport: true })">
           Public Export
         </button>
       </div>
@@ -51,15 +51,15 @@
   </div>
 
   <div class="flex justify-end gap-1 layout-pad">
-    <div class="btn-group">
-      <button class="btn btn-ghost" (click)="openJson()">Open raw JSON</button>
+    <div class="join">
+      <button class="join-item btn btn-ghost" (click)="openJson()">Open raw JSON</button>
     </div>
     <div class="flex-1"></div>
-    <div class="btn-group">
-      <button class="btn btn-ghost" (click)="close()">Close</button>
+    <div class="join">
+      <button class="join-item btn btn-ghost" (click)="close()">Close</button>
     </div>
-    <div class="btn-group" *ngIf="!vm.complete">
-      <button class="btn btn-primary" [class.loading]="vm.active" (click)="export()" [disabled]="vm.active">
+    <div class="join" *ngIf="!vm.complete">
+      <button class="join-item btn btn-primary" [class.loading]="vm.active" (click)="export()" [disabled]="vm.active">
         Export
       </button>
     </div>

@@ -63,11 +63,11 @@
 
 
   <div class="flex justify-end gap-1 layout-pad">
-    <div class="btn-group">
-      <button class="btn btn-ghost" (click)="close()">Close</button>
+    <div class="join">
+      <button class="join-item btn btn-ghost" (click)="close()">Close</button>
     </div>
-    <div class="btn-group" *ngIf="!vm.complete">
-      <button class="btn btn-primary" [class.loading]="vm.active" (click)="import()" [disabled]="vm.active || !vm.file">
+    <div class="join" *ngIf="!vm.complete">
+      <button class="join-item btn btn-primary" [class.loading]="vm.active" (click)="import()" [disabled]="vm.active || !vm.file">
         Import
       </button>
     </div>

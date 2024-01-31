@@ -126,11 +126,11 @@
   </div>
 
   <div class="flex justify-end gap-1 layout-pad bg-base-300">
-    <div class="btn-group">
-      <button class="btn" (click)="close()">Close</button>
+    <div class="join">
+      <button class="join-item btn" (click)="close()">Close</button>
     </div>
-    <div class="btn-group" *ngIf="!vm.shared">
-      <button class="btn btn-primary" [class.loading]="vm.active" (click)="share()" [disabled]="vm.active">
+    <div class="join-group" *ngIf="!vm.shared">
+      <button class="join-item btn btn-primary" [class.loading]="vm.active" (click)="share()" [disabled]="vm.active">
         Share
       </button>
     </div>

@@ -1,6 +1,6 @@
-<label class="join whitespace-nowrap">
-  <span class="flex-none w-52 flex justify-between">
-    <span class="px-0">
+<label class="join bg-base-300">
+  <span class="join-item flex-none w-52 flex justify-between btn btn-sm no-animation border-0 btn-ghost flex-nowrap">
+    <span class="px-0 inline-flex flex-nowrap items-center">
       <ng-content></ng-content>
       {{ label }}
       @if (iconPath) {
@@ -16,14 +16,18 @@
     </span>
   </span>
   <input
-    class="flex-none w-16 pr-0 input input-sm input-bordered"
+    class="join-item flex-none w-16 pr-0 input input-sm input-bordered"
     type="number"
     [step]="step"
     [ngModel]="toModelValue(tweakValue)"
     (ngModelChange)="tweakValueChange.emit(fromModelValue($event))"
     (wheel)="($event)"
   />
-  <span class="flex-1" [class.text-primary]="!!tweakValue" [class.text-neutral]="!rightValue">
+  <span
+    class="join-item flex-1 btn btn-sm no-animation border-0 btn-ghost text-left"
+    [class.text-primary]="!!tweakValue"
+    [class.text-neutral]="!rightValue"
+  >
     @if (percent) {
       {{ rightValue | percent: format }}
     } @else {

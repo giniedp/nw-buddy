@@ -1,7 +1,7 @@
 <div
   class="flex flex-col relative rounded-md outline outline-2 outline-offset-0 outline-transparent transition-all"
   *ngFor="let item of items$ | async; let isLast = last; trackBy: trackByIndex"
-  [class.hover:outline-primary-focus]="isSlotEditable(item)"
+  [class.hover:outline-primary]="isSlotEditable(item)"
   [class.hover:outline-offset-4]="isSlotEditable(item)"
   [class.hover:cursor-pointer]="isSlotEditable(item)"
   (click)="editPerkClicked(item)"

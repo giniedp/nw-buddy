@@ -32,16 +32,16 @@
     </div>
   }
 
-  <div class="tabs flex-none justify-center bg-base-300">
-    <a class="tab tab-bordered flex-1" [class.tab-active]="tab() === 'stats'" (click)="selectTab('stats')"> Stats </a>
+  <div class="tabs tabs-bordered flex-none justify-center bg-base-300">
+    <a class="tab flex-1" [class.tab-active]="tab() === 'stats'" (click)="selectTab('stats')"> Stats </a>
     <a
-      class="tab tab-bordered flex-1"
+      class="tab flex-1"
       [class.tab-active]="tab() === 'damage-table'"
       (click)="selectTab('damage-table')"
     >
       Attacks
     </a>
-    <a class="tab tab-bordered flex-1" [class.tab-active]="tab() === '3d-model'" (click)="selectTab('3d-model')">
+    <a class="tab flex-1" [class.tab-active]="tab() === '3d-model'" (click)="selectTab('3d-model')">
       3D
     </a>
   </div>

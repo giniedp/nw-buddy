@@ -1,6 +1,6 @@
-<div class="flex-none tabs w-full">
-  <a class="tab tab-bordered flex-1" [class.tab-active]="!showColumns" (click)="showColumns = !showColumns">Actions</a>
-  <a class="tab tab-bordered flex-1" [class.tab-active]="showColumns" (click)="showColumns = !showColumns">Columns</a>
+<div class="flex-none tabs tabs-bordered w-full">
+  <a class="tab flex-1" [class.tab-active]="!showColumns" (click)="showColumns = !showColumns">Actions</a>
+  <a class="tab flex-1" [class.tab-active]="showColumns" (click)="showColumns = !showColumns">Columns</a>
 </div>
 <div class="flex-1 overflow-auto h-full">
   @if(!showColumns) {
@@ -90,14 +90,14 @@
     </div>
     <div class="p-2">
       <div *ngFor="let it of displayCols$ | async" class="flex flex-row gap-2">
-        <div class="btn-group">
-          <button class="btn btn-ghost btn-sm px-1" (click)="toggleHide(it.colId)">
+        <div class="join">
+          <button class="join-item btn btn-ghost btn-sm px-1" (click)="toggleHide(it.colId)">
             <nwb-icon [icon]="it.hide ? svgEyeSlash : svgEye" class="w-4 h-4" [class.opacity-10]="it.hide"></nwb-icon>
           </button>
-          <button class="btn btn-ghost btn-sm px-1" (click)="togglePinLeft(it.colId)">
+          <button class="join-item btn btn-ghost btn-sm px-1" (click)="togglePinLeft(it.colId)">
             <nwb-icon [icon]="svgDockLeft" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'left'"></nwb-icon>
           </button>
-          <button class="btn btn-ghost btn-sm px-1" (click)="togglePinRight(it.colId)">
+          <button class="join-item btn btn-ghost btn-sm px-1" (click)="togglePinRight(it.colId)">
             <nwb-icon [icon]="svgDockRight" class="w-4 h-4" [class.opacity-10]="it.pinned !== 'right'"></nwb-icon>
           </button>
         </div>

@@ -38,10 +38,10 @@
   </div>
   <div class="flex justify-end gap-1 layout-pad">
     <button type="button" class="btn btn-ghost" (click)="cancel()">Cancel</button>
-    <div class="btn-group">
+    <div class="join">
       <button
         type="button"
-        class="btn btn-primary btn-outline"
+        class="join-item btn btn-primary btn-outline"
         (click)="removeImage()"
         [disabled]="!vm.imageId && !vm.file"
       >
@@ -49,7 +49,7 @@
       </button>
       <button
         type="button"
-        class="btn btn-primary"
+        class="join-item btn btn-primary"
         (click)="commit(vm.file)"
         [disabled]="vm.fileTooLarge || (!vm.imageId && !vm.file)"
       >

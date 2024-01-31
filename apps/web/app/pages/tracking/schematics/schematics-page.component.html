@@ -12,9 +12,9 @@
           marks the schematic as "learned"
         </div>
 
-        <div class="tabs flex-nowrap overflow-x-auto p-2">
+        <div class="tabs tabs-bordered flex-nowrap overflow-x-auto p-2">
           <ng-container *ngFor="let category of service.categories$ | async">
-            <a class="tab tab-bordered" [routerLink]="[category.id]" [routerLinkActive]="'tab-active'">
+            <a class="tab" [routerLink]="[category.id]" [routerLinkActive]="'tab-active'">
               {{ category.label }}
             </a>
           </ng-container>

@@ -15,21 +15,18 @@
         class="embed-hidden"
         nwbMenu
       >
-        <ion-content [scrollY]="false" [scrollX]="false">
-          <app-menu class="h-full w-full bg-base-300">
-            <div header>
-              @defer (on timer(2s)) {
-                @if (versionChanged()) {
-                  <ul class="menu menu-compact flex-none m-0" @versionAlert>
-                    <li>
-                      <nwb-update-alert-button />
-                    </li>
-                  </ul>
-                }
-              }
-            </div>
-          </app-menu>
-        </ion-content>
+        @defer (on timer(2s)) {
+          @if (versionChanged()) {
+            <ion-header @versionAlert  class="bg-base-300">
+              <ul class="menu menu-compact flex-none m-0">
+                <li>
+                  <nwb-update-alert-button />
+                </li>
+              </ul>
+            </ion-header>
+          }
+        }
+        <app-menu  class="bg-base-300" />
       </ion-menu>
       <ion-content id="main-content" [scrollY]="false">
         @if (!(unfoldMenu$ | async)) {
@@ -39,7 +36,7 @@
           <div class="h-full layout-row">
             @if (langLoaded) {
               <div class="layout-col flex-1">
-                <router-outlet/>
+                <router-outlet />
               </div>
             }
             @if (!isOverwolf) {

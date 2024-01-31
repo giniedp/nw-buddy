@@ -190,11 +190,11 @@
       </div>
     </div>
 
-    <div class="tabs mt-4 justify-stretch flex-none">
+    <div class="tabs tabs-bordered mt-4 justify-stretch flex-none">
       <ng-container *ngFor="let item of tabs; trackBy: trackByTabId">
         <a
           *ngIf="!item.externUrl"
-          class="tab tab-bordered"
+          class="tab"
           [class.tab-active]="item.id === tab"
           [routerLink]="['.']"
           [queryParams]="{ tab: item.id }"
@@ -205,7 +205,7 @@
         </a>
         <a
           *ngIf="item.externUrl"
-          class="tab tab-bordered"
+          class="tab"
           [class.tab-active]="item.id === tab"
           [href]="item.externUrl"
           target="_blank"
@@ -354,8 +354,8 @@
     ></nwb-loot-graph>
   </ng-container>
   <div class="flex-none modal-action flex-row justify-end layout-pad mt-0">
-    <div class="btn-group">
-      <button class="btn btn-primary" (click)="closeDialog()">Close</button>
+    <div class="join">
+      <button class="join-item btn btn-primary" (click)="closeDialog()">Close</button>
     </div>
   </div>
 </ng-template>

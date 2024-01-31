@@ -96,11 +96,11 @@
         <label class="label">
           <span class="label-text">Price conversion scale</span>
         </label>
-        <div class="btn-group w-full">
-          <button class="flex-1 btn btn-md" (click)="scale = 0.01" [class.btn-active]="scale == 0.01">0.01</button>
-          <button class="flex-1 btn btn-md" (click)="scale = 0.1" [class.btn-active]="scale == 0.1">0.1</button>
-          <button class="flex-1 btn btn-md" (click)="scale = 1" [class.btn-active]="scale == 1">1</button>
-          <button class="flex-1 btn btn-md" (click)="scale = 100" [class.btn-active]="scale == 100">100</button>
+        <div class="join w-full">
+          <button class="join-item flex-1 btn btn-md" (click)="scale = 0.01" [class.btn-primary]="scale == 0.01">0.01</button>
+          <button class="join-item flex-1 btn btn-md" (click)="scale = 0.1" [class.btn-primary]="scale == 0.1">0.1</button>
+          <button class="join-item flex-1 btn btn-md" (click)="scale = 1" [class.btn-primary]="scale == 1">1</button>
+          <button class="join-item flex-1 btn btn-md" (click)="scale = 100" [class.btn-primary]="scale == 100">100</button>
         </div>
       </div>
 

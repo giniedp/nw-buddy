@@ -123,22 +123,22 @@ const ConditionControl: m.Component<ConditionControlAttrs> = {
     return m('div.form-control.flex.flex-row.gap-1', {
       class: isDisabled ? 'opacity-50' : ''
     }, [
-      m('div.btn-group', [
+      m('div.join', [
         m(
-          'button.btn.btn-xs',
+          'button.join-item.btn.btn-xs',
           {
-            class: !isDisabled && isNOT ? 'btn-active' : '',
+            class: !isDisabled && isNOT ? 'btn-primary' : '',
             disabled: isDisabled,
             onclick: onnegate,
           },
           m('i.w-4.h-4.flex.items-center.justify-center', m.trust(svgExclamation))
         ),
       ]),
-      m('div.btn-group.flex-1', [
+      m('div.join.flex-1', [
         m(
-          'button.btn.btn-xs.flex-1',
+          'button.join-item.btn.btn-xs.flex-1',
           {
-            class: !isDisabled && !isAND ? 'btn-active' : '',
+            class: !isDisabled && !isAND ? 'btn-primary' : '',
             disabled: isDisabled,
             onclick: onchange,
           },
@@ -147,7 +147,7 @@ const ConditionControl: m.Component<ConditionControlAttrs> = {
         m(
           'button.btn.btn-xs.flex-1',
           {
-            class: !isDisabled && isAND ? 'btn-active' : '',
+            class: !isDisabled && isAND ? 'btn-primary' : '',
             disabled: isDisabled,
             onclick: onchange,
           },

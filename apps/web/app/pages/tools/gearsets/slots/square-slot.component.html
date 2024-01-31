@@ -3,7 +3,7 @@
   [perkOverride]="store.instance()?.perks"
   class="p-1"
   class="flex flex-row gap-1"
-  [tooltip]="tplTip"
+  [tooltip]="store.instance() ? tplTip : null"
   [tooltipClass]="'p-0'"
   #detail
 >

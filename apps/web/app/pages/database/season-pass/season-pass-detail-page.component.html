@@ -1,15 +1,15 @@
 @for (reward of itemRewards(); track $index) {
   <h3 class="px-2 my-2">{{ reward.title }}</h3>
   <nwb-item-card [entityId]="reward.itemId" [enableInfoLink]="true" [enableLink]="true" #card="card">
-    <div class="btn-group" *ngIf="card.salvageInfo$ | async; let salvage">
+    <div class="join" *ngIf="card.salvageInfo$ | async; let salvage">
       <button
-        class="btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50"
+        class="join-item btn btn-xs flex-1 btn-outline btn-ghost rounded-md opacity-50"
         (click)="openRepairRecipe(tplSalvage)"
       >
         Show Loot Table
       </button>
       <a
-        class="btn btn-xs flex-none btn-outline btn-ghost rounded-md opacity-50"
+        class="join-item btn btn-xs flex-none btn-outline btn-ghost rounded-md opacity-50"
         [routerLink]="['/loot/table', salvage.tableId]"
       >
         <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>

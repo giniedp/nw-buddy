@@ -12,8 +12,8 @@
 ></nwb-attributes-editor>
 
 <ng-container *ngIf="data.weapon1ItemId || data.weapon2ItemId">
-  <div class="tabs ">
-    <a class="tab tab-bordered flex-1" (click)="tab = data.weapon1ItemId" [class.tab-active]="tab && tab === data.weapon1ItemId">
+  <div class="tabs tabs-bordered">
+    <a class="tab flex-1" (click)="tab = data.weapon1ItemId" [class.tab-active]="tab && tab === data.weapon1ItemId">
       {{ weapon1.name$ | async | nwText }}
       (
       <span>
@@ -29,7 +29,7 @@
       )
     </a>
 
-    <a class="tab tab-bordered flex-1" (click)="tab = data.weapon2ItemId" [class.tab-active]="tab && tab === data.weapon2ItemId">
+    <a class="tab flex-1" (click)="tab = data.weapon2ItemId" [class.tab-active]="tab && tab === data.weapon2ItemId">
       {{ weapon2.name$ | async | nwText }}
       (
       <span>
@@ -79,10 +79,10 @@
 </ng-container>
 
 <div class="flex justify-end gap-1 layout-pad">
-  <div class="btn-group">
-    <label class="btn btn-ghost" (click)="close()">Cancel</label>
+  <div class="join">
+    <label class="join-item btn btn-ghost" (click)="close()">Cancel</label>
   </div>
-  <div class="btn-group">
-    <label class="btn btn-primary" (click)="commit()">OK</label>
+  <div class="join">
+    <label class="join-item btn btn-primary" (click)="commit()">OK</label>
   </div>
 </div>

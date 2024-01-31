@@ -18,10 +18,10 @@ module.exports = {
     },
     extend: {
       flex: {
-        '2': '2 2 0%',
-        '3': '3 3 0%',
-        '4': '4 4 0%',
-        '5': '5 5 0%',
+        2: '2 2 0%',
+        3: '3 3 0%',
+        4: '4 4 0%',
+        5: '5 5 0%',
       },
       animation: {
         'spin-cw': 'spin-cw 100s linear infinite',
@@ -114,7 +114,7 @@ module.exports = {
             textShadow: value,
           }),
         },
-        { values: theme('textShadow') }
+        { values: theme('textShadow') },
       )
     }),
   ],
@@ -122,10 +122,26 @@ module.exports = {
     themes: [
       {
         nwbuddy: {
-          ...require('daisyui/src/theming/themes')['halloween'],
+          'color-scheme': 'dark',
           'base-100': '#222222',
           'base-200': '#191919',
           'base-300': '#111111',
+          primary: 'oklch(77.48% 0.204 60.62)',
+          'primary-content': '#131616',
+          secondary: 'oklch(45.98% 0.248 305.03)',
+          'secondary-content': '#E3C4FF',
+          accent: 'oklch(64.8% 0.223 136.07347934356451)',
+          'accent-content': '#DCFFBB',
+          neutral: '#1B1D1D',
+          'neutral-content': '#CFD4D4',
+          info: '#2563EB',
+          'info-content': '#CFDEFF',
+          success: '#16A34A',
+          'success-content': '#BEFFD6',
+          warning: '#D97706',
+          'warning-content': '#2D1800',
+          error: '#DC2626',
+          'error-content': '#FFCDCD',
         },
       },
     ],

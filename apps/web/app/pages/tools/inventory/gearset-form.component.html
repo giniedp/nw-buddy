@@ -1,12 +1,12 @@
 @if (gearset) {
   <nwb-gearset-loadout [geasrsetId]="gearset.id" [buttonTemplate]="tplButton">
     <ng-template #tplButton>
-      <div class="btn-group btn-group-horizontal w-full">
-        <button class="flex-1 btn btn-sm btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
+      <div class="join w-full">
+        <button class="join-item flex-1 btn btn-sm btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
           <nwb-icon [icon]="iconMenu" class="w-4 h-4"/>
         </button>
         <a
-          class="flex-1 btn btn-sm btn-ghost btn-square inline-flex"
+          class="join-item flex-1 btn btn-sm btn-ghost btn-square inline-flex"
           [routerLink]="['/gearsets', gearset.id]"
           [tooltip]="'Open full editor'"
           [tooltipClass]="'bg-info'"

@@ -83,8 +83,8 @@ export function gearsetColSlots(util: GearsetTableUtils) {
 //     resizable: false,
 //     width: 120,
 //     cellRenderer: util.cellRenderer(({ data }) => {
-//       return util.el('div.btn-group.content-center', {}, [
-//         util.el('button.btn.btn-ghost', {
+//       return util.el('div.join.content-center', {}, [
+//         util.el('button.join-item.btn.btn-ghost', {
 //           html: `<span class="w-4 h-4">${svgPen}</span>`,
 //           ev: {
 //             onclick: (e) => {

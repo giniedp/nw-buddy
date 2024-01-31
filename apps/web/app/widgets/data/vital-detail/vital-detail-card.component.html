@@ -1,8 +1,8 @@
 <div class="bg-base-300 flex flex-col">
   <nwb-vital-detail-header />
-  <div class="tabs justify-center">
+  <div class="tabs tabs-bordered justify-center">
     @for (tab of tabs(); track tab.id) {
-      <a class="tab tab-bordered" [class.tab-active]="tab.active" (click)="currentTab.set(tab.id)">
+      <a class="tab" [class.tab-active]="tab.active" (click)="currentTab.set(tab.id)">
         {{ tab.label }}
       </a>
     }

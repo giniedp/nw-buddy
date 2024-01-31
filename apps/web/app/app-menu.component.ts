@@ -2,8 +2,8 @@ import { animate, animateChild, group, query, stagger, state, style, transition,
 import { CommonModule } from '@angular/common'
 import { Component, OnInit } from '@angular/core'
 import { RouterModule } from '@angular/router'
+import { IonContent, IonFooter, IonHeader } from '@ionic/angular/standalone'
 import { ComponentStore } from '@ngrx/component-store'
-import { takeUntil } from 'rxjs'
 import { APP_MENU, AppMenuGroup } from './app-menu'
 import { NwModule } from './nw'
 import { AppPreferencesService } from './preferences'
@@ -15,9 +15,9 @@ import { MenuCloseDirective } from './ui/layout/menu.directive'
   standalone: true,
   selector: 'app-menu',
   templateUrl: './app-menu.component.html',
-  imports: [CommonModule, NwModule, IconsModule, RouterModule, MenuCloseDirective],
+  imports: [CommonModule, NwModule, IconsModule, RouterModule, IonHeader, IonContent, IonFooter, MenuCloseDirective],
   host: {
-    class: 'flex-1 flex flex-col'
+    class: 'ion-page'
   },
   animations: [
     trigger('list', [
@@ -66,10 +66,7 @@ import { MenuCloseDirective } from './ui/layout/menu.directive'
     ]),
   ],
 })
-export class AppMenuComponent
-  extends ComponentStore<{ menu: AppMenuGroup[]; active: string }>
-  implements OnInit
-{
+export class AppMenuComponent extends ComponentStore<{ menu: AppMenuGroup[]; active: string }> implements OnInit {
   private readonly menu = this.selectSignal(({ menu }) => menu)
   private readonly active = this.selectSignal(({ active }) => active)
   protected readonly groups = this.selectSignal(this.menu, this.active, (menu, active) => {
@@ -103,7 +100,6 @@ export class AppMenuComponent
   }
 
   protected async onGroupActive(category: string) {
-    this.patchState({ active: category})
+    this.patchState({ active: category })
   }
-
 }
