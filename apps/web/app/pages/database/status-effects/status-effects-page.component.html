@@ -43,7 +43,7 @@
 </ion-header>
 <div class="flex-1 flex flex-row overflow-hidden">
   <ion-content [scrollY]="false">
-    <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-min-width: 320px; --side-max-width: 420px">
+    <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-max-width: calc(min(max(30%, 400px), 600px))">
       <div class="ion-page order-2" id="main">
         @if (service.isGridActive()) {
           <nwb-virtual-grid

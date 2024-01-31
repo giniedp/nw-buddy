@@ -59,7 +59,7 @@ export class CraftingPageComponent {
     return eqCaseInsensitive(it, this.defaultRoute) ? null : it
   })
 
-  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 992px)'))
+  protected isLargeContent = toSignal(injectBreakpoint('(min-width: 1200px)'))
   protected isChildActive = toSignal(injectUrlParams('/:resource/:category/:id', (it) => !!it?.['id']))
   protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
   protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())

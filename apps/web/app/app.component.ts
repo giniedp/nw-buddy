@@ -1,6 +1,15 @@
 import { animate, query, stagger, state, style, transition, trigger } from '@angular/animations'
 import { CommonModule, DOCUMENT, Location } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, Renderer2, RendererStyleFlags2, computed, inject, signal } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Renderer2,
+  RendererStyleFlags2,
+  computed,
+  inject,
+  signal,
+} from '@angular/core'
 import { Router, RouterModule } from '@angular/router'
 import { map, of, switchMap } from 'rxjs'
 
@@ -9,6 +18,7 @@ import { TranslateService } from './i18n'
 import { FullscreenOverlayContainer, OverlayContainer } from '@angular/cdk/overlay'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { IonApp, IonButton, IonButtons, IonContent, IonRouterOutlet, IonSplitPane } from '@ionic/angular/standalone'
+import { environment } from '../environments'
 import { LANG_OPTIONS } from './app-menu'
 import { AppMenuComponent } from './app-menu.component'
 import { NwModule } from './nw'
@@ -24,7 +34,6 @@ import { PlatformService } from './utils/services/platform.service'
 import { AeternumMapModule } from './widgets/aeternum-map'
 import { GlobalSearchInputComponent } from './widgets/search'
 import { UpdateAlertModule, VersionService } from './widgets/update-alert'
-import { environment } from '../environments'
 
 @Component({
   standalone: true,
@@ -49,7 +58,7 @@ import { environment } from '../environments'
     IonSplitPane,
     IonButtons,
     IonButton,
-    IonRouterOutlet
+    IonRouterOutlet,
   ],
   providers: [{ provide: OverlayContainer, useClass: FullscreenOverlayContainer }],
   animations: [
@@ -170,8 +179,8 @@ export class AppComponent {
     private layout: LayoutService,
     private version: VersionService,
     private router: Router,
-    elRef: ElementRef<HTMLElement>,
-    renderer: Renderer2,
+    private elRef: ElementRef<HTMLElement>,
+    private renderer: Renderer2,
   ) {
     this.preferences.language
       .observe()
@@ -182,9 +191,10 @@ export class AppComponent {
         this.removeLoader()
       })
 
-      if (environment.watermarkImageUrl) {
-        renderer.setStyle(elRef.nativeElement, '--nwb-watermark', `url("${environment.watermarkImageUrl}")`, RendererStyleFlags2.DashCase)
-      }
+    this.installWatermark()
+    if (this.platform.isDesktop) {
+      this.installScrollbarPatch()
+    }
   }
 
   private removeLoader() {
@@ -199,5 +209,58 @@ export class AppComponent {
 
   protected onBackClicked() {
     this.location.back()
+  }
+
+  private installWatermark() {
+    if (environment.watermarkImageUrl) {
+      this.renderer.setStyle(
+        this.elRef.nativeElement,
+        '--nwb-watermark',
+        `url("${environment.watermarkImageUrl}")`,
+        RendererStyleFlags2.DashCase,
+      )
+    }
+  }
+
+  private installScrollbarPatch() {
+    const scrollbarStyle = `
+      ::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+      }
+      ::-webkit-scrollbar-track {
+        background-color: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: rgba(155, 155, 155, 0.5);
+        border-radius: 20px;
+        border: 4px solid transparent;
+        background-clip: content-box;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(155, 155, 155, 0.75);
+      }
+
+      ::-webkit-scrollbar-corner {
+        background: transparent;
+      }
+    `
+    // patch ion-content scrollbar
+    // https://github.com/ionic-team/ionic-framework/issues/17685#issuecomment-587633556
+    new MutationObserver((list) => {
+      for (const it of list) {
+        it.addedNodes.forEach((node) => {
+          if (node instanceof HTMLElement && node.tagName === 'ION-CONTENT') {
+            const styles = document.createElement('style')
+            styles.textContent = scrollbarStyle
+            node.shadowRoot.appendChild(styles)
+          }
+        })
+      }
+    }).observe(document.body, {
+      attributes: false,
+      childList: true,
+      subtree: true,
+    })
   }
 }

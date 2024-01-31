@@ -85,6 +85,10 @@ export class PlatformService {
     return this.doc.defaultView.self !== this.doc.defaultView.top
   }
 
+  public get isDesktop() {
+    return this.ionicPlatform.is('desktop')
+  }
+
   public constructor(
     private angularPlatform: AngularPlatform,
     private ionicPlatform: IonicPlatform,
