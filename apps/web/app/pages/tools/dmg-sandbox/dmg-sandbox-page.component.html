@@ -3,8 +3,8 @@
   <div class="max-w-5xl mx-auto flex flex-col gap-4">
     <nwb-attributes-editor
       [freeMode]="true"
-      [assigned]="attrSums()"
-      (assignedChanged)="patchState({ attrSums: $event })"
+      [assigned]="attrStats()"
+      (assignedChanged)="patchState({ attrStats: $event })"
     />
     <div class="grid gap-4 grid-cols-fill-sm">
       <div class="form-control w-full">
@@ -312,23 +312,21 @@
       <div class="stats shadow">
         <div class="stat">
           <div class="stat-title">Mitigation</div>
-          <div class="stat-value">{{ 1 - damageMitigationFactor() | percent }}</div>
+          <div class="stat-value">{{ damageMitigationFactor() | percent }}</div>
           <div class="stat-desc"></div>
         </div>
         <div class="stat">
           <div class="stat-title">Standard</div>
-          <div class="stat-value">{{ dmgStandardMitigation() | number: '1.2-2' }}</div>
+          <div class="stat-value">{{ dmgStandard() - dmgStandardMitigation() | number: '1.2-2' }}</div>
           <div class="stat-desc">
-            ↘ {{ dmgStandardMitigation() - dmgStandard() | number: '1.2-2' }} ({{
-              damageMitigationFactor() - 1 | percent
-            }})
+            ↘ {{ -dmgStandardMitigation() | number: '1.2-2' }} ({{ damageMitigationFactor() | percent }})
           </div>
         </div>
         <div class="stat">
           <div class="stat-title">Crit</div>
-          <div class="stat-value">{{ dmgCritMitigation() | number: '1.2-2' }}</div>
+          <div class="stat-value">{{ dmgCrit() - dmgCritMitigation() | number: '1.2-2' }}</div>
           <div class="stat-desc">
-            ↘ {{ dmgCritMitigation() - dmgCrit() | number: '1.2-2' }} ({{ damageMitigationFactor() - 1 | percent }})
+            ↘ {{ -dmgCritMitigation() | number: '1.2-2' }} ({{ damageMitigationFactor() | percent }})
           </div>
         </div>
       </div>
