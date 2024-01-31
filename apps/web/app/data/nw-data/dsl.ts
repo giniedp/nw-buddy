@@ -16,7 +16,7 @@ function createIndex(list: any[], id: string | ((it: any) => string)) {
 function createIndexGroup<T, K extends keyof T>(list: T[], id: K): Map<string, T[]>
 function createIndexGroup<T>(list: T[], fn: (it: T) => string | string[]): Map<string, T[]>
 function createIndexGroup<T>(list: T[], id: string | ((it: T) => string | string[])): Map<string, T[]> {
-  const fn = typeof id === 'string' ? () => id : id
+  const fn = typeof id === 'string' ? (item: any) => item?.[id]  : id
   const result = new CaseInsensitiveMap<string, Array<T>>()
   for (const item of list) {
     const keys = uniq(makeArray(fn(item) || []))

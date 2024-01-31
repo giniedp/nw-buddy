@@ -2,8 +2,8 @@ import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
 import { getCraftingIngredients, getItemId, getItemIdFromRecipe } from '@nw-data/common'
 import { Crafting, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
-import { TranslateService } from '~/i18n'
 import { NwDataService } from '~/data'
+import { TranslateService } from '~/i18n'
 import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter } from '~/ui/data/table-grid'
 
 import { DataTableCategory } from '~/ui/data/table-grid'
@@ -13,8 +13,8 @@ import { DataViewAdapter } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 
 import { combineLatest } from 'rxjs'
-import { SchematicRecord } from './types'
 import { SchematicCellComponent } from './schematic-cell.component'
+import { SchematicRecord } from './types'
 
 @Injectable()
 export class SchematicsTableAdapter implements TableGridAdapter<SchematicRecord>, DataViewAdapter<SchematicRecord> {
@@ -59,7 +59,7 @@ export class SchematicsTableAdapter implements TableGridAdapter<SchematicRecord>
       housingItems: this.db.housingItemsMap,
       recipes: this.db.recipes,
     }),
-    selectSchematics
+    selectSchematics,
   )
 }
 
@@ -78,9 +78,11 @@ function selectSchematics({
   itemsBySalvage: Map<string, ItemDefinitionMaster[]>
   housingItems: Map<string, Housingitems>
 }) {
+  console.log(itemsBySalvage)
   return recipes
     .map((recipe): SchematicRecord => {
       const candidates = itemsBySalvage.get(recipe.RequiredAchievementID)
+
       const recipeItem = candidates?.find((it) => isSchematic(it))
       if (!recipeItem || !isSchematic(recipeItem)) {
         return null
