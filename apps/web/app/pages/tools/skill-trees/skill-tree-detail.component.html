@@ -1,109 +1,111 @@
 <div class="relative flex-none p-1 bg-base-300 bg-opacity-100">
-  <div class="form-control">
-    <div class="join overflow-x-auto">
-      <a class="btn btn-ghost btn-square inline-flex" [routerLink]="'..'">
-        <nwb-icon [icon]="iconBack" class="w-4 h-4"></nwb-icon>
-      </a>
-      <input
-        type="text"
-        placeholder=""
-        class="input input-bordered w-full min-w-[200px]"
-        maxlength="100"
-        [disabled]="!canEdit()"
-        [ngModel]="record()?.name"
-        (ngModelChange)="updateName($event)"
-        [ngModelOptions]="{ updateOn: 'blur' }"
-      />
-      <button [nwbScreenshotBtn] class="btn btn-ghost btn-square" [tooltip]="'Screenshot'"></button>
-      <button
-        class="btn btn-ghost btn-square"
-        cdkOverlayOrigin
-        #overlay="cdkOverlayOrigin"
-        (click)="isTagEditorOpen = !isTagEditorOpen"
-        [tooltip]="'Edit Tags'"
-        [tooltipClass]="'bg-info'"
-        [disabled]="!canEdit()"
-      >
-        <nwb-icon [icon]="iconTags" class="w-4 h-4" />
-      </button>
-      <ng-template
-        cdkConnectedOverlay
-        [cdkConnectedOverlayOrigin]="overlay"
-        [cdkConnectedOverlayOpen]="isTagEditorOpen"
-        [cdkConnectedOverlayHasBackdrop]="true"
-        [cdkConnectedOverlayOffsetY]="5"
-        [cdkConnectedOverlayPositions]="[{ originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top' }]"
-        (backdropClick)="isTagEditorOpen = false"
-        (detach)="isTagEditorOpen = false"
-      >
-        <div class="p-2 bg-base-200 border border-base-100 rounded-md shadow-lg">
-          <nwb-chips-input-pane
-            [tags]="presetTags"
-            [placeholder]="'custom tags'"
-            [disabled]="!canEdit()"
-            [ngModel]="record()?.tags"
-            (ngModelChange)="updateTags($event)"
-          />
-        </div>
-      </ng-template>
-      <button
-        class="btn btn-ghost btn-square"
-        (click)="onShareClicked()"
-        [disabled]="!canEdit()"
-        [tooltip]="'Create share URL'"
-      >
-        <nwb-icon [icon]="iconShare" class="w-4 h-4" />
-      </button>
-      <button
-        class="btn btn-ghost btn-square"
-        (click)="builder.switchWeapon()"
-        [disabled]="!canEdit()"
-        [tooltip]="'Change Weapon'"
-      >
-        <nwb-icon [icon]="iconReset" class="w-4 h-4" />
-      </button>
+  <div class="flex flex-row gap-1 overflow-x-auto">
+    <a class="btn btn-ghost btn-square inline-flex" [routerLink]="'..'">
+      <nwb-icon [icon]="iconBack" class="w-4 h-4" />
+    </a>
+    <input
+      type="text"
+      placeholder=""
+      class="input input-bordered w-full min-w-[200px]"
+      maxlength="100"
+      [disabled]="!canEdit"
+      [ngModel]="record?.name"
+      (ngModelChange)="handleUpdateName($event)"
+      [ngModelOptions]="{ updateOn: 'blur' }"
+    />
+    <button [nwbScreenshotBtn] class="btn btn-ghost btn-square" [tooltip]="'Screenshot'"></button>
+    <button
+      class="btn btn-ghost btn-square"
+      cdkOverlayOrigin
 
-      <button
-        class="btn btn-ghost btn-square"
-        (click)="toggleAttributes()"
-        [disabled]="!canEdit()"
-        [class.text-primary]="!!(record()?.attrs)"
-        [tooltip]="'Toggle Attributes'"
-      >
-        <nwb-icon [icon]="iconAttrs" class="w-4 h-4"></nwb-icon>
-      </button>
-
-      <button
-        class="btn btn-ghost btn-square"
-        (click)="onCloneClicked()"
-        [disabled]="!canEdit()"
-        [tooltip]="'Create a copy'"
-      >
-        <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
-      </button>
-      <button class="btn btn-ghost btn-square" (click)="onDeleteClicked()" [disabled]="!canEdit()" [tooltip]="'Delete'">
-        <nwb-icon [icon]="iconDelete" class="w-4 h-4"></nwb-icon>
-      </button>
-    </div>
+      [tooltip]="'Edit Tags'"
+      [tooltipClass]="'bg-info'"
+      [disabled]="!canEdit"
+      [cdkMenuTriggerFor]="tplTags"
+    >
+      <nwb-icon [icon]="iconTags" class="w-4 h-4" />
+    </button>
+    <button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplMenu">
+      <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
+    </button>
   </div>
 </div>
 <div class="layout-content relative">
-  <div [nwbScreenshotFrame]="record()?.name" class="bg-base-300">
-    <nwb-skill-builder
-      [disabled]="!canEdit()"
-      [ngModel]="record()"
-      (ngModelChange)="updateModel($event)"
-      #builder
-    />
+  <div [nwbScreenshotFrame]="record?.name" class="bg-base-300">
+    <nwb-skill-builder [disabled]="!canEdit" [ngModel]="record" (ngModelChange)="updateModel($event)" #builder />
 
-    @if(record()?.attrs; as attrs) {
+    @if (record?.attrs; as attrs) {
       <div class="layout-pad">
         <nwb-attributes-editor
           [freeMode]="true"
           [assigned]="attrs"
-          (assignedChanged)="updateAttributes($event)"
+          (assignedChanged)="handleUpdateAttributes($event)"
         />
       </div>
     }
   </div>
 </div>
+
+<ng-template #tplMenu>
+  <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
+    <li class="text-shadow-sm shadow-black">
+      <button cdkMenuItem (click)="handleShare()">
+        <nwb-icon [icon]="iconShare" class="w-4 h-4" />
+        <div class="flex flex-col leading-none">
+          <span>Share</span>
+          <span class="text-xs opacity-75">Upload online and create a share URL</span>
+        </div>
+      </button>
+    </li>
+    <li class="text-shadow-sm shadow-black">
+      <button cdkMenuItem (click)="handleToggleAttributes()">
+        <nwb-icon [icon]="iconAttrs" class="w-4 h-4" />
+        <div class="flex flex-col leading-none">
+          <span>Toggle Attributes</span>
+          <span class="text-xs opacity-75">Enable or disable the attribute editor</span>
+        </div>
+      </button>
+    </li>
+    <li class="divider my-1 h-[2px]"></li>
+
+    <li class="text-shadow-sm shadow-black">
+      <button (click)="builder.switchWeapon()" [disabled]="!canEdit" cdkMenuItem>
+        <nwb-icon [icon]="iconReset" class="w-4 h-4" />
+        <div class="flex flex-col leading-none">
+          <span>Reset</span>
+          <span class="text-xs opacity-75">Change weapon and reset sheet</span>
+        </div>
+      </button>
+    </li>
+    <li class="text-shadow-sm shadow-black">
+      <button (click)="handleClone()" cdkMenuItem>
+        <nwb-icon [icon]="iconCopy" class="w-4 h-4" />
+        <div class="flex flex-col leading-none">
+          <span>Copy</span>
+          <span class="text-xs opacity-75">Make a copy of this sheet</span>
+        </div>
+      </button>
+    </li>
+    <li class="text-shadow-sm shadow-black">
+      <button (click)="handleDelete()" [disabled]="!canEdit" cdkMenuItem>
+        <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error" />
+        <div class="flex flex-col leading-none">
+          <span>Delete</span>
+          <span class="text-xs opacity-75">Delete this sheet</span>
+        </div>
+      </button>
+    </li>
+  </ul>
+</ng-template>
+
+<ng-template #tplTags>
+  <div class="p-2 bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
+    <nwb-chips-input-pane
+      [tags]="presetTags"
+      [placeholder]="'custom tags'"
+      [disabled]="!canEdit"
+      [ngModel]="record?.tags"
+      (ngModelChange)="handleUpdateTags($event)"
+    />
+  </div>
+</ng-template>

@@ -62,8 +62,12 @@ export class SkillBuildsDetailComponent {
   private store = inject(SkillTreeDetailStore)
   private recordId$ = injectRouteParam('id')
 
-  protected canEdit = this.store.canEdit
-  protected record = this.store.record
+  protected get canEdit() {
+    return this.store.canEdit()
+  }
+  protected get record() {
+    return this.store.record()
+  }
 
   protected iconBack = svgChevronLeft
   protected iconReset = svgArrowRightArrowLeft
@@ -89,7 +93,7 @@ export class SkillBuildsDetailComponent {
   }
 
   protected updateModel(data: SkillBuildValue) {
-    const record = this.record()
+    const record = this.record
     if (!record) {
       return
     }
@@ -101,24 +105,25 @@ export class SkillBuildsDetailComponent {
     })
   }
 
-  protected updateName(name: string) {
+  protected handleUpdateName(name: string) {
     this.store.update({
-      ...this.record(),
+      ...this.record,
       name: name,
     })
   }
 
-  protected updateAttributes(attrs: Record<AttributeRef, number>) {
+  protected handleUpdateAttributes(attrs: Record<AttributeRef, number>) {
     this.store.update({
-      ...this.record(),
+      ...this.record,
       attrs: attrs,
     })
   }
 
-  protected toggleAttributes() {
+  protected handleToggleAttributes() {
+    const record = this.record
     this.store.update({
-      ...this.record(),
-      attrs: this.record.attrs
+      ...record,
+      attrs: record.attrs
         ? null
         : {
             con: 0,
@@ -130,17 +135,17 @@ export class SkillBuildsDetailComponent {
     })
   }
 
-  protected updateTags(tags: string[]) {
+  protected handleUpdateTags(tags: string[]) {
     this.store.update({
-      ...this.record(),
+      ...this.record,
       tags: tags || [],
     })
   }
 
-  protected onShareClicked() {
-    const ipnsKey = this.record().ipnsKey
-    const ipnsName = this.record().ipnsName
-    const record = cloneRecord(this.record())
+  protected handleShare() {
+    const ipnsKey = this.record.ipnsKey
+    const ipnsName = this.record.ipnsName
+    const record = cloneRecord(this.record)
 
     ShareDialogComponent.open(this.dialog, {
       data: {
@@ -197,12 +202,12 @@ export class SkillBuildsDetailComponent {
     })
   }
 
-  protected async onCloneClicked() {
+  protected async handleClone() {
     PromptDialogComponent.open(this.dialog, {
       data: {
         title: 'Create copy',
         body: 'New skill-tree name',
-        input: `${this.record().name} (Copy)`,
+        input: `${this.record.name} (Copy)`,
         positive: 'Create',
         negative: 'Cancel',
       },
@@ -211,7 +216,7 @@ export class SkillBuildsDetailComponent {
       .pipe(
         switchMap((name) => {
           return this.db.create({
-            ...cloneRecord(this.record()),
+            ...cloneRecord(this.record),
             id: null,
             name: name,
           })
@@ -222,7 +227,7 @@ export class SkillBuildsDetailComponent {
       })
   }
 
-  protected onDeleteClicked() {
+  protected handleDelete() {
     ConfirmDialogComponent.open(this.dialog, {
       data: {
         title: 'Delete Skill Tree',

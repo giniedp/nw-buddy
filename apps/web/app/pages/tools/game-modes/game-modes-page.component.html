@@ -1,15 +1,24 @@
 <ng-template #tplIndex>
-  <nwb-navbar class="bg-base-300 rounded-t-md" [menu]="tplMenu">
-    <ng-template #tplMenu>
-      <li *ngFor="let item of categories$ | async" [routerLinkActive]="'bordered'">
-        <a [routerLink]="['..', item]">
-          <span class="uppercase">{{ item }}</span>
-        </a>
-      </li>
-    </ng-template>
-  </nwb-navbar>
-
-  <div class="layout-content p-3">
+  <ion-header>
+    <nwb-navbar class="bg-base-300 rounded-t-md">
+      <ng-container *nwbNavbarMenu="let ctx">
+        @for (item of categories$ | async; track $index) {
+          <li>
+            <a
+              [routerLink]="['..', item]"
+              [routerLinkActive]="'text-primary'"
+              [class.btn]="ctx.isHorizontal"
+              [class.btn-ghost]="ctx.isHorizontal"
+              class="rounded-none justify-start items-center"
+            >
+              <span class="uppercase">{{ item }}</span>
+            </a>
+          </li>
+        }
+      </ng-container>
+    </nwb-navbar>
+  </ion-header>
+  <ion-content class="ion-p-4">
     <div class="w-full max-w-screen-3xl mx-auto grid grid-cols-fill gap-4">
       @for (item of modes$ | async; track $index) {
         <a
@@ -17,7 +26,9 @@
           [queryParamsHandling]="'preserve'"
           class="bg-black rounded-md border border-base-100 hover:border-primary relative min-h-[300px]"
         >
-          <picture class="absolute top-0 left-0 right-0 bottom-0 block w-full h-full rounded-md overflow-clip opacity-75">
+          <picture
+            class="absolute top-0 left-0 right-0 bottom-0 block w-full h-full rounded-md overflow-clip opacity-75"
+          >
             <img [nwImage]="item.backgroundImage" class="w-full h-full object-cover" />
           </picture>
           <div class="relative p-4 shadow-black text-shadow text-nw-description">
@@ -54,36 +65,49 @@
         </a>
       }
     </div>
-  </div>
+  </ion-content>
 </ng-template>
 
 <ng-template #tplModes>
-  <nwb-navbar class="bg-base-300 rounded-t-md">
-    <ng-container *nwbNavbarMenu="let ctx">
-      <li *ngIf="ctx.isHorizontal">
-        <a [routerLink]="'.'" class="btn-square">
-          <nwb-icon [icon]="iconBack" class="w-6 h-6"></nwb-icon>
-        </a>
-      </li>
-      <li *ngFor="let item of modes$ | async" [routerLinkActive]="'bordered'">
-        <a [routerLink]="[item.id]" [queryParamsHandling]="item.isMutable ? 'preserve' : null">
-          <picture class="w-6 h-6 scale-150 relative">
-            <img [nwImage]="item.icon" />
-            @if (item.isMutated) {
-              <div class="absolute top-0 left-0 w-full h-full animate-spin-cw">
-                <img
-                  [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
-                  class="w-full aspect-square scale-150"
-                />
-              </div>
-            }
-          </picture>
-          <span [nwHtml]="item.title | nwText "></span>
-        </a>
-      </li>
-    </ng-container>
-  </nwb-navbar>
+  <ion-header>
+    <nwb-navbar class="bg-base-300 rounded-t-md">
+      <ng-container *nwbNavbarMenu="let ctx">
+        @if (ctx.isHorizontal) {
+          <li>
+            <a [routerLink]="'.'" class="btn btn-ghost btn-square">
+              <nwb-icon [icon]="iconBack" class="w-6 h-6"></nwb-icon>
+            </a>
+          </li>
+        }
+        @for (item of modes$ | async; track $index) {
+          <li>
+            <a
+              [routerLink]="[item.id]"
+              [routerLinkActive]="'text-primary'"
+              [queryParamsHandling]="item.isMutable ? 'preserve' : null"
+              [class.btn]="ctx.isHorizontal"
+              [class.btn-ghost]="ctx.isHorizontal"
+              class="flex-nowrap justify-start items-center gap-2 whitespace-nowrap rounded-none"
+            >
+              <picture class="w-6 h-6 scale-150 relative">
+                <img [nwImage]="item.icon" />
+                @if (item.isMutated) {
+                  <div class="absolute top-0 left-0 w-full h-full animate-spin-cw">
+                    <img
+                      [nwImage]="'assets/icons/expedition/mutated_dungeon_active.png'"
+                      class="w-full aspect-square scale-150"
+                    />
+                  </div>
+                }
+              </picture>
+              <span [nwHtml]="item.title | nwText"></span>
+            </a>
+          </li>
+        }
+      </ng-container>
+    </nwb-navbar>
+  </ion-header>
 </ng-template>
 
-<ng-container *ngIf="outlet.isActivated; then tplModes; else tplIndex"></ng-container>
-<router-outlet></router-outlet>
+<ng-container *ngIf="outlet.isActivated; then tplModes; else tplIndex" />
+<router-outlet />

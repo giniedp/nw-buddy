@@ -14,6 +14,7 @@ import { GameModesStore } from './game-modes.store'
 import { MutaCurseTileComponent } from './muta-curse-tile.component'
 import { MutaElementTileComponent } from './muta-element-tile.component'
 import { MutaPromotionTileComponent } from './muta-promotion-tile.component'
+import { IonContent, IonHeader } from '@ionic/angular/standalone'
 
 type GameModeCategories = 'expeditions' | 'trials' | 'pvp'
 
@@ -36,13 +37,15 @@ export interface CurrentMutation {
     NwModule,
     NavbarModule,
     IconsModule,
+    IonHeader,
+    IonContent,
     MutaElementTileComponent,
     MutaCurseTileComponent,
     MutaPromotionTileComponent,
   ],
   providers: [GameModesStore],
   host: {
-    class: 'layout-col bg-base-300 rounded-md overflow-clip',
+    class: 'ion-page',
   },
   animations: [
     trigger('fade', [

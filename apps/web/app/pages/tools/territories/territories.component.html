@@ -1,16 +1,28 @@
 <div class="flex flex-col-reverse md:flex-row bg-base-300 rounded-t-md">
-  <nwb-navbar class="bg-base-300 rounded-t-md flex-1" [menu]="tplMenu">
-    <ng-template #tplMenu>
-      <li [routerLinkActive]="'bordered'">
+  <nwb-navbar class="bg-base-300 rounded-t-md flex-1">
+    <ng-container *nwbNavbarMenu="let ctx">
+      <li
+        [class.btn]="ctx.isHorizontal"
+        [class.btn-ghost]="ctx.isHorizontal"
+        [routerLinkActive]="'text-primary'"
+      >
         <a [routerLink]="'list'">Territories</a>
       </li>
-      <li [routerLinkActive]="'bordered'">
+      <li
+        [class.btn]="ctx.isHorizontal"
+        [class.btn-ghost]="ctx.isHorizontal"
+        [routerLinkActive]="'text-primary'"
+      >
         <a [routerLink]="'standing'">Standing</a>
       </li>
-      <li [routerLinkActive]="'bordered'">
+      <li
+        [class.btn]="ctx.isHorizontal"
+        [class.btn-ghost]="ctx.isHorizontal"
+        [routerLinkActive]="'text-primary'"
+      >
         <a [routerLink]="'governance'">Governance</a>
       </li>
-    </ng-template>
+    </ng-container>
   </nwb-navbar>
   <div class="flex-none p-2 w-full md:max-w-[256px]">
     <nwb-quicksearch-input #search></nwb-quicksearch-input>

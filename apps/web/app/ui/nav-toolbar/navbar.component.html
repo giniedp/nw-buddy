@@ -11,7 +11,7 @@
 </ul>
 
 <ng-template #tplMenu>
-  <ul class="menu menu-compact bg-base-100 w-60 rounded-b-md z-10" (click)="closeMenu()" cdkMenu>
+  <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg p-0"  (click)="closeMenu()" cdkMenu>
     <ng-container *ngTemplateOutlet="menuTemplate; context: ctxVertical" />
   </ul>
 </ng-template>
