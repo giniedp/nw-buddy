@@ -5,18 +5,16 @@
     </div>
     <div *ngIf="!isEmbed" class="layout-content">
       <div class="alert bg-base-300 shadow-lg max-w-md mx-auto mt-3">
+        <nwb-icon [icon]="iconInfo" class="w-6 h-6 text-info self-start"/>
         <div class="flex-1">
-          <nwb-icon [icon]="iconInfo" class="w-6 h-6 text-info"></nwb-icon>
-          <div class="flex-1">
-            <h3 class="font-bold">Shared Gearset</h3>
-            <p class="text-xs">You can import this set into your collection.</p>
-            <p class="text-xs mt-2" *ngIf="appLink; let link">
-              Or <a [href]="link" class="link link-primary">open in app</a> if you have the app installed.
-            </p>
-          </div>
-          <div class="flex-none">
-            <button class="btn btn-sm btn-primary" (click)="onimportClicked(record)">Import</button>
-          </div>
+          <h3 class="font-bold">Shared Gearset</h3>
+          <p class="text-xs">You can import this set into your collection.</p>
+          <p class="text-xs mt-2" *ngIf="appLink; let link">
+            Or <a [href]="link" class="link link-primary">open in app</a> if you have the app installed.
+          </p>
+        </div>
+        <div class="flex-none">
+          <button class="btn btn-sm btn-primary" (click)="onimportClicked(record)">Import</button>
         </div>
       </div>
       <nwb-gearset [gearset]="record" [disabled]="true"/>
@@ -29,24 +27,20 @@
 
 <ng-template #tplLoading>
   <div class="alert bg-base-300 shadow-lg max-w-sm mx-auto my-3">
-    <div>
-      <nwb-icon [icon]="iconLoading" class="w-6 h-6 animate-spin"></nwb-icon>
-      <div class="flex-1">
-        <h3 class="font-bold">Loading</h3>
-        <div class="text-xs">Fetching data from ipfs network...</div>
-      </div>
+    <nwb-icon [icon]="iconLoading" class="w-6 h-6 animate-spin self-start"/>
+    <div class="flex-1">
+      <h3 class="font-bold">Loading</h3>
+      <div class="text-xs">Fetching data from ipfs network...</div>
     </div>
   </div>
 </ng-template>
 
 <ng-template #tplError>
   <div class="alert bg-base-300 shadow-lg max-w-sm mx-auto my-3">
-    <div>
-      <nwb-icon [icon]="iconError" class="w-6 h-6 text-error"></nwb-icon>
-      <div class="flex-1">
-        <h3 class="font-bold">Error!</h3>
-        <div class="text-xs">Data is unavailable</div>
-      </div>
+    <nwb-icon [icon]="iconError" class="w-6 h-6 text-error self-start"/>
+    <div class="flex-1">
+      <h3 class="font-bold">Error!</h3>
+      <div class="text-xs">Data is unavailable</div>
     </div>
   </div>
 </ng-template>

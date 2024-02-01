@@ -7,7 +7,7 @@
         class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-center justify-center"
         (click)="pickItem()"
       >
-        <nwb-icon [icon]="iconPlus" class="w-4 h-4 mt-2"></nwb-icon>
+        <nwb-icon [icon]="iconPlus" class="w-4 h-4 mt-2"/>
       </button>
     </nwb-item-header>
   </ng-container>
@@ -21,7 +21,7 @@
           class="btn btn-square btn-ghost absolute top-0 right-0 z-10 screenshot-hidden w-full h-full items-start justify-end"
           [cdkMenuTriggerFor]="menu"
         >
-          <nwb-icon [icon]="iconMenu" class="w-4 h-4 mt-2"></nwb-icon>
+          <nwb-icon [icon]="iconMenu" class="w-4 h-4 mt-2"/>
         </button>
       </nwb-item-header>
     </nwb-item-detail>
@@ -31,7 +31,7 @@
     <ul class="menu menu-compact bg-base-100 rounded-md shadow" cdkMenu>
       <li>
         <a (click)="pickItem()" cdkMenuItem>
-          <nwb-icon [icon]="iconPlus" class="w-4 h-4"></nwb-icon>
+          <nwb-icon [icon]="iconPlus" class="w-4 h-4"/>
           <div class="flex flex-col leading-none">
             <span>Pick Effect</span>
           </div>
@@ -40,7 +40,7 @@
 
       <li *ngIf="vm.effect">
         <a (click)="removeItem()" cdkMenuItem>
-          <nwb-icon [icon]="iconRemove" class="w-4 h-4"></nwb-icon>
+          <nwb-icon [icon]="iconRemove" class="w-4 h-4"/>
           <div class="flex flex-col leading-none">
             <span>Remove Effect</span>
           </div>

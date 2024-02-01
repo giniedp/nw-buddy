@@ -13,13 +13,8 @@
     </label>
     <div class="flex-1"></div>
     <ul class="flex flex-row">
-      <li
-        [tooltip]="'Edit Bonus Chance'"
-        (click)="isToolOpen = !isToolOpen"
-        cdkOverlayOrigin
-        #chancesOverlay="cdkOverlayOrigin"
-      >
-        <button class="btn btn-ghost btn-square">
+      <li>
+        <button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplChances" [tooltip]="'Edit Bonus Chance'">
           <nwb-icon [icon]="iconOptions" class="w-4 h-4" />
         </button>
       </li>
@@ -29,7 +24,7 @@
         [class.text-primary]="vm.amountMode === 'gross'"
       >
         <button class="btn btn-ghost btn-square">
-          <nwb-icon [icon]="iconMode" class="w-4 h-4"></nwb-icon>
+          <nwb-icon [icon]="iconMode" class="w-4 h-4"/>
         </button>
       </li>
       <li [tooltip]="'Open price importer'">
@@ -51,14 +46,7 @@
     </a>
   </div>
 
-  <ng-template
-    cdkConnectedOverlay
-    [cdkConnectedOverlayOrigin]="chancesOverlay"
-    [cdkConnectedOverlayOpen]="isToolOpen"
-    [cdkConnectedOverlayHasBackdrop]="true"
-    (backdropClick)="isToolOpen = false"
-    (detach)="isToolOpen = false"
-  >
-    <nwb-crafting-chance-menu></nwb-crafting-chance-menu>
+  <ng-template #tplChances>
+    <nwb-crafting-chance-menu cdkMenu class="menu menu-compact border border-base-200 bg-base-300 rounded-md" />
   </ng-template>
 </ng-container>

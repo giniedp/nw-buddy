@@ -5,7 +5,7 @@
       class="w-4 h-4"
       [class.text-primary]="vm.active"
       [class.animate-spin]="vm.active"
-    ></nwb-icon>
+    />
     Share content
   </div>
   <div class="p-4 prose layout-content ">
@@ -62,22 +62,18 @@
 
     <ng-container *ngIf="vm.shared && vm.error">
       <div class="alert alert-error">
-        <div class="overflow-hidden w-full">
-          <nwb-icon [icon]="iconError" class="w-6 h-6"></nwb-icon>
-          <div class="w-full">
-            <div class="text-xs">Something went wrong.</div>
-          </div>
+        <nwb-icon [icon]="iconError" class="w-6 h-6"/>
+        <div class="w-full">
+          <div class="text-xs">Something went wrong.</div>
         </div>
       </div>
     </ng-container>
 
     <ng-container *ngIf="vm.shared && !vm.error">
       <div class="alert alert-success">
-        <div class="overflow-hidden w-full">
-          <nwb-icon [icon]="iconSuccess" class="w-6 h-6"></nwb-icon>
-          <div class="w-full">
-            <div class="text-xs">Content has been successfully shared.</div>
-          </div>
+        <nwb-icon [icon]="iconSuccess" class="w-6 h-6"/>
+        <div class="w-full">
+          <div class="text-xs">Content has been successfully shared.</div>
         </div>
       </div>
     </ng-container>
@@ -90,7 +86,7 @@
         <label class="join">
           <input type="text" class="input input-bordered w-full" [ngModel]="value" />
           <button class="btn gap-2" [class.btn-success]="copied === value" (click)="copy(value)">
-            <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1"></nwb-icon>
+            <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1"/>
           </button>
         </label>
       </div>
@@ -104,7 +100,7 @@
         <label class="join">
           <input type="text" class="input input-bordered w-full" [ngModel]="value" />
           <button class="btn gap-2" [class.btn-success]="copied === value" (click)="copy(value)">
-            <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1"></nwb-icon>
+            <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1"/>
           </button>
         </label>
       </div>
@@ -118,7 +114,7 @@
         <label class="join join-vertical">
           <textarea class="textarea textarea-bordered textarea-md w-full" rows="4" [ngModel]="value"></textarea>
           <button class="btn gap-2" [class.btn-success]="copied === value" (click)="copy(value)">
-            <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1"></nwb-icon> Copy embed snippet
+            <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1"/> Copy embed snippet
           </button>
         </label>
       </div>

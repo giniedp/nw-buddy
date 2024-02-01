@@ -44,11 +44,9 @@
       <input type="text" class="input input-bordered" [disabled]="isLoading" [(ngModel)]="columnSeparator" />
     </div>
     <div class="alert alert-error" *ngIf="hasError">
-      <div class="overflow-hidden w-full">
-        <nwb-icon [icon]="iconError" class="w-6 h-6"></nwb-icon>
-        <div class="w-full">
-          <div class="text-xs">Something went wrong.</div>
-        </div>
+      <nwb-icon [icon]="iconError" class="w-6 h-6 self-start"/>
+      <div class="w-full">
+        <div class="text-xs">Something went wrong.</div>
       </div>
     </div>
   } @else {
@@ -67,11 +65,9 @@
   }
 
   <div class="alert alert-error" *ngIf="hasError">
-    <div class="overflow-hidden w-full">
-      <nwb-icon [icon]="iconError" class="w-6 h-6"></nwb-icon>
-      <div class="w-full">
-        <div class="text-xs">Something went wrong.</div>
-      </div>
+    <nwb-icon [icon]="iconError" class="w-6 h-6 self-start"/>
+    <div class="w-full">
+      <div class="text-xs">Something went wrong.</div>
     </div>
   </div>
 </div>

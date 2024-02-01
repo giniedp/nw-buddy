@@ -21,7 +21,7 @@ export const SelectFilterState: m.Component<SelectFilterStateAttrs, any> = {
       return null
     }
     return [
-      m(`ul.menu.menu-compact.rounded-md.flex-nowrap.flex-1`, [
+      m(`ul.menu.menu-compact.p-0.rounded-md.flex-nowrap.flex-1`, [
         m.fragment(
           {},
           items.map((option) => {
@@ -43,18 +43,18 @@ const OptionListItem: m.Component<
   view: ({ attrs: { item, onToggleComparator, onRemove } }) => {
     return m('li.join.flex.flex-row', [
       m(
-        'button.btn.btn-sm',
+        'button.join-item.btn.btn-sm',
         {
           onclick: () => onToggleComparator(item.id),
         },
         m('i.aspect-square.w-4.h-4', [m.trust(item.negate ? svgNotEqual : svgEquals)])
       ),
-      m('span.leading-none.py-0.flex-1.rounded-none', [
+      m('span.join-item.leading-none.flex-1.rounded-none', [
         item.icon && m('img.w-6.h-6', { src: item.icon }),
         m.trust(item.label || '-- empty --'),
       ]),
       m(
-        'button.btn.btn-sm',
+        'button.join-item.btn.btn-sm',
         {
           onclick: () => onRemove(item.id),
         },

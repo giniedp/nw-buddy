@@ -15,6 +15,7 @@ import { CraftingChanceMenuComponent } from './crafting-chance-menu'
 import { CraftingStepComponent } from './crafting-step'
 import { CraftingSummaryComponent } from './crafting-summary'
 import { AmountMode } from './types'
+import { CdkMenuModule } from '@angular/cdk/menu'
 
 @Component({
   standalone: true,
@@ -33,6 +34,7 @@ import { AmountMode } from './types'
     OverlayModule,
     CraftingChanceMenuComponent,
     CraftingSummaryComponent,
+    CdkMenuModule,
   ],
   providers: [CraftingCalculatorStore],
   host: {

@@ -15,8 +15,8 @@ export function getScreenshotOverlay(document: Document = window.document) {
         },
       },
       [
-        createEl(document, 'button', {
-          class: 'btn loading btn-primary absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50',
+        createEl(document, 'span', {
+          class: 'btn loading loading-infinity absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50',
           text: 'Capture',
         }),
       ]

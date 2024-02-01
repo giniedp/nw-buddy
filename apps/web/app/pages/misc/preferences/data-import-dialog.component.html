@@ -5,7 +5,7 @@
       [icon]="vm.active ? iconSpinner : iconImport"
       [class.text-primary]="vm.active"
       [class.animate-spin]="vm.active"
-    ></nwb-icon>
+    />
     Import data
   </div>
 
@@ -40,22 +40,18 @@
 
     <ng-container *ngIf="vm.complete && vm.error">
       <div class="alert alert-error">
-        <div class="overflow-hidden w-full">
-          <nwb-icon [icon]="iconError" class="w-6 h-6"></nwb-icon>
-          <div class="w-full">
-            <div class="text-xs">Something went wrong.</div>
-          </div>
+        <nwb-icon [icon]="iconError" class="w-6 h-6"/>
+        <div class="w-full">
+          <div class="text-xs">Something went wrong.</div>
         </div>
       </div>
     </ng-container>
 
     <ng-container *ngIf="vm.complete && !vm.error">
       <div class="alert alert-success">
-        <div class="overflow-hidden w-full">
-          <nwb-icon [icon]="iconSuccess" class="w-6 h-6"></nwb-icon>
-          <div class="w-full">
-            <div class="text-xs">Import complete.</div>
-          </div>
+        <nwb-icon [icon]="iconSuccess" class="w-6 h-6"/>
+        <div class="w-full">
+          <div class="text-xs">Import complete.</div>
         </div>
       </div>
     </ng-container>

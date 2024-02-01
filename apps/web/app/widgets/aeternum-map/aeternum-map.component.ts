@@ -26,13 +26,13 @@ import { LayoutModule } from '~/ui/layout'
   template: `
     <div class="mb-1 flex flex-row gap-1 justify-center sticky top-0 w-full h-0 overflow-visible">
       <button class="btn btn-circle btn-primary btn-sm" (click)="togglePosition()" *ngIf="!isExpanded && isFloating">
-        <nwb-icon [icon]="iconArrows" class="w-4 h-4"></nwb-icon>
+        <nwb-icon [icon]="iconArrows" class="w-4 h-4"/>
       </button>
       <button class="btn btn-circle btn-primary btn-sm" (click)="toggleExpand()" *ngIf="isFloating">
-        <nwb-icon [icon]="isExpanded ? iconCollapse : iconExpand" class="w-4 h-4"></nwb-icon>
+        <nwb-icon [icon]="isExpanded ? iconCollapse : iconExpand" class="w-4 h-4"/>
       </button>
       <button class="btn btn-circle btn-error btn-sm" (click)="close.emit()">
-        <nwb-icon [icon]="iconClose" class="w-4 h-4"></nwb-icon>
+        <nwb-icon [icon]="iconClose" class="w-4 h-4"/>
       </button>
     </div>
     <iframe src="https://aeternum-map.gg" class="flex-1"></iframe>

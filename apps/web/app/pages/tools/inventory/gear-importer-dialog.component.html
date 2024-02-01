@@ -1,7 +1,7 @@
 <ng-container *ngIf="vm$ | async; let vm">
   <div class="flex-none rounded-t-md bg-black flex flex-row flex-wrap items-center p-1">
     <button class="btn btn-ghost btn-square" (click)="back()">
-      <nwb-icon [icon]="iconLeft" class="w-5 h-5"></nwb-icon>
+      <nwb-icon [icon]="iconLeft" class="w-5 h-5"/>
     </button>
     <h3 class="font-bold text-lg">Gear Importer</h3>
   </div>
@@ -31,7 +31,7 @@
     <div class="flex flex-row justify-center">
       <div *ngIf="vm.resultCount > 1" class="join">
         <button class="btn btn-ghost btn-square" (click)="prevItem()" [disabled]="!vm.index">
-          <nwb-icon [icon]="iconLeft" class="w-5 h-5"></nwb-icon>
+          <nwb-icon [icon]="iconLeft" class="w-5 h-5"/>
         </button>
         <input
           type="text"
@@ -41,7 +41,7 @@
           (ngModelChange)="updateFilter($event)"
         />
         <button class="btn btn-ghost btn-square" (click)="nextItem()" [disabled]="vm.index === vm.itemCount - 1">
-          <nwb-icon [icon]="iconLeft" class="w-5 h-5 rotate-180"></nwb-icon>
+          <nwb-icon [icon]="iconLeft" class="w-5 h-5 rotate-180"/>
         </button>
       </div>
       <button class="btn btn-ghost loading" *ngIf="vm.working">Working</button>

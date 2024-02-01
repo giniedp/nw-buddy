@@ -114,32 +114,29 @@
     <h3 class="px-1 py-1">Items with appearance ({{ vm.count }})</h3>
     <div *ngIf="!vm.count">
       <div class="alert shadow-lg my-2 bg-base-100">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          class="stroke-error flex-shrink-0 w-6 h-6 self-start"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+          ></path>
+        </svg>
         <div>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            class="stroke-error flex-shrink-0 w-6 h-6"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            ></path>
-          </svg>
-          <div>
-            <h3 class="font-bold">No Items</h3>
-            <div class="text-xs">There are no items with this appearance</div>
-          </div>
+          <h3 class="font-bold">No Items</h3>
+          <div class="text-xs">There are no items with this appearance</div>
         </div>
       </div>
     </div>
-    <div class="tabs tabs-boxed flex-nowrap gap-1 bg-transparent p-2" *ngIf="vm.tabs.length > 1">
+    <div class="tabs tabs-sm tabs-bordered justify-start flex-nowrap gap-1 bg-transparent" *ngIf="vm.tabs.length > 1">
       <ng-container *ngFor="let tab of vm.tabs; trackBy: trackByIndex">
-        <a class="tab tab-xs p-1 h-auto" [class.tab-active]="tab.active" (click)="similarItemsTab$.next(tab.name)">
-          {{ tab.name }}
-          <span class="badge badge-xs rounded-md ml-1">{{ tab.items.length }}</span>
+        <a class="tab" [class.tab-active]="tab.active" (click)="similarItemsTab$.next(tab.name)">
+          {{ tab.name }} ({{ tab.items.length }})
         </a>
       </ng-container>
     </div>

@@ -1,6 +1,6 @@
-<div class="flex-none tabs flex-nowrap overflow-x-auto">
+<div class="flex-none tabs tabs-lifted flex-nowrap overflow-x-auto">
   <ng-container *ngFor="let category of categories | async; let i = index">
-    <a class="tab tab-lifted" [class.tab-active]="isActive(category, i)" (click)="selected = category">{{ category }}</a>
+    <a class="tab" [class.tab-active]="isActive(category, i)" (click)="selected = category">{{ category }}</a>
   </ng-container>
 </div>
 <div class="flex-1 bg-base-100 rounded-md rounded-tl-none overflow-auto">

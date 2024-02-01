@@ -1,9 +1,9 @@
 <ng-container *ngIf="vm$ | async; let vm">
-  <div class="tabs">
-    <a class="tab tab-lifted flex-1" [class.tab-active]="vm.isTabResources" (click)="patchState({ tab: 'resources' })">
+  <div class="tabs tabs-lifted">
+    <a class="tab flex-1" [class.tab-active]="vm.isTabResources" (click)="patchState({ tab: 'resources' })">
       Buy Order
     </a>
-    <a class="tab tab-lifted flex-1" [class.tab-active]="vm.isTabSkills" (click)="patchState({ tab: 'skills' })">
+    <a class="tab flex-1" [class.tab-active]="vm.isTabSkills" (click)="patchState({ tab: 'skills' })">
       Craft Order
     </a>
   </div>

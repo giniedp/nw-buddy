@@ -3,7 +3,7 @@
   class="w-4 h-4 transition-transform opacity-75"
   [class.-rotate-90]="!isPanelOpen"
   [class.rotate-90]="isPanelOpen"
-></nwb-icon>
+/>
 <div class="flex flex-col flex-nowrap gap-1 items-start justify-center">
   <span class="text-lg leading-none" *ngIf="defaultCategory$ | async; let cat">
     <picture [nwIcon]="cat.icon" class="w-8 h-w-8" *ngIf="cat.icon"></picture>

@@ -19,7 +19,7 @@ import { ItemDetailStore } from './item-detail.store'
         class="btn btn-xs flex-none btn-outline btn-ghost rounded-md opacity-50"
         [routerLink]="['/loot/table', salvage()?.tableId]"
       >
-        <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
+        <nwb-icon [icon]="iconLink" class="w-4 h-4"/>
       </a>
 
       <ng-template #tplDialog>

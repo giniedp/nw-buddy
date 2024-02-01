@@ -1,22 +1,20 @@
 <div class="w-80 bg-base-300 rounded-md p-4 mb-20">
   <div class="alert shadow-lg" (click)="isDevCount = isDevCount + 1">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6 self-start">
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      ></path>
+    </svg>
     <div>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-        ></path>
-      </svg>
-      <div>
-        <h3 class="font-bold">Data Storage!</h3>
-        <div class="text-xs mb-1">
-          Your data is stored <span class="text-primary">locally in the browser</span>. Data is lost when the browser
-          cache is cleared.
-        </div>
-        <div class="text-xs">Please use the functions below to export and backup your data.</div>
+      <h3 class="font-bold">Data Storage!</h3>
+      <div class="text-xs mb-1">
+        Your data is stored <span class="text-primary">locally in the browser</span>. Data is lost when the browser
+        cache is cleared.
       </div>
+      <div class="text-xs">Please use the functions below to export and backup your data.</div>
     </div>
   </div>
 
@@ -57,25 +55,22 @@
 
   <div class="divider"></div>
   <div class="alert shadow-lg">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6 self-start">
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      ></path>
+    </svg>
     <div>
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-info flex-shrink-0 w-6 h-6">
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-        ></path>
-      </svg>
-      <div>
-        <h3 class="font-bold">Item Tooltips!</h3>
-        <div class="text-xs mb-1">
-          Select the preferred website from which you want item tooltips to be displayed. Items will link to this
-          website.
-        </div>
-        <div class="text-xs">
-          <a [routerLink]="'/about'" class="link link-primary">Contact us</a> if you would like to have your web page
-          and tooltips configurable here.
-        </div>
+      <h3 class="font-bold">Item Tooltips!</h3>
+      <div class="text-xs mb-1">
+        Select the preferred website from which you want item tooltips to be displayed. Items will link to this website.
+      </div>
+      <div class="text-xs">
+        <a [routerLink]="'/about'" class="link link-primary">Contact us</a> if you would like to have your web page and
+        tooltips configurable here.
       </div>
     </div>
   </div>
@@ -110,7 +105,7 @@
     <div class="alert rounded-md">
       <div>
         <span>
-          <nwb-icon [icon]="iconInfo" class="w-5 h-5 text-info"></nwb-icon>
+          <nwb-icon [icon]="iconInfo" class="w-5 h-5 text-info"/>
         </span>
         <div>
           <h3 class="font-bold">Link Sharing</h3>
@@ -129,7 +124,7 @@
     <label class="join">
       <input type="text" class="input input-bordered" [(ngModel)]="web3token" />
       <span [tooltip]="tipWeb3token" [tooltipClass]="'p-0'">
-        <nwb-icon [icon]="iconInfo" class="w-5 h-5 text-info"></nwb-icon>
+        <nwb-icon [icon]="iconInfo" class="w-5 h-5 text-info"/>
       </span>
     </label>
     <label class="label">

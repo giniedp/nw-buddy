@@ -5,12 +5,10 @@
     </div>
   } @else if (state.hasError || !state.hasValue) {
     <div class="alert bg-transparent">
+      <nwb-icon [icon]="iconError" class="w-6 h-6 text-error"/>
       <div>
-        <nwb-icon [icon]="iconError" class="w-6 h-6 text-error"></nwb-icon>
-        <div>
-          <h3 class="font-bold">Error!</h3>
-          <div class="text-xs">Data is unavailable</div>
-        </div>
+        <h3 class="font-bold">Error!</h3>
+        <div class="text-xs">Data is unavailable</div>
       </div>
     </div>
   } @else if (state.value.type === 'skill-build') {
@@ -20,8 +18,8 @@
         <nwb-attributes-editor [freeMode]="true" [assigned]="attrs"></nwb-attributes-editor>
       </div>
       <div class="alert alert-info shadow-lg max-w-lg mx-auto">
+        <nwb-icon [icon]="iconInfo" class="w-6 h-6"/>
         <div>
-          <nwb-icon [icon]="iconInfo" class="w-6 h-6"></nwb-icon>
           <span>You can import this build into your collection</span>
         </div>
         <div class="flex-none">

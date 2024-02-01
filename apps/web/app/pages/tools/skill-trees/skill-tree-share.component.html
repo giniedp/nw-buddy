@@ -1,16 +1,14 @@
-@if(vm$ | async; as vm) {
+@if (vm$ | async; as vm) {
   @if (vm.hasValue && vm.value; as record) {
     <div class="layout-content">
       <div class="alert bg-base-200 shadow-lg max-w-md mx-auto mt-3">
-        <div>
-          <nwb-icon [icon]="iconInfo" class="w-6 h-6 text-info"></nwb-icon>
-          <div class="flex-1">
-            <h3 class="font-bold">Shared Skill Tree</h3>
-            <p class="text-xs">You can import this tree into your collection.</p>
-            <p class="text-xs mt-2" *ngIf="appLink; let link">
-              Or <a [href]="link" class="link link-primary">open in app</a> if you have the app installed.
-            </p>
-          </div>
+        <nwb-icon [icon]="iconInfo" class="w-6 h-6 text-info self-start" />
+        <div class="flex-1">
+          <h3 class="font-bold">Shared Skill Tree</h3>
+          <p class="text-xs">You can import this tree into your collection.</p>
+          <p class="text-xs mt-2" *ngIf="appLink; let link">
+            Or <a [href]="link" class="link link-primary">open in app</a> if you have the app installed.
+          </p>
         </div>
         <div class="flex-none join">
           <button class="join-item btn btn-sm btn-primary" (click)="onimportClicked(record)">Import</button>
@@ -22,24 +20,20 @@
         <nwb-attributes-editor [freeMode]="true" [assigned]="attrs"></nwb-attributes-editor>
       </div>
     </div>
-  } @else if(vm.hasError) {
+  } @else if (vm.hasError) {
     <div class="alert bg-base-200 shadow-lg max-w-sm mx-auto my-3">
-      <div>
-        <nwb-icon [icon]="iconError" class="w-6 h-6 text-error"></nwb-icon>
-        <div class="flex-1">
-          <h3 class="font-bold">Error!</h3>
-          <div class="text-xs">Data is unavailable</div>
-        </div>
+      <nwb-icon [icon]="iconError" class="w-6 h-6 text-error slef-start" />
+      <div class="flex-1">
+        <h3 class="font-bold">Error!</h3>
+        <div class="text-xs">Data is unavailable</div>
       </div>
     </div>
-  } @else if(vm.pending) {
+  } @else if (vm.pending) {
     <div class="alert bg-base-200 shadow-lg max-w-sm mx-auto my-3">
-      <div>
-        <nwb-icon [icon]="iconLoading" class="w-6 h-6 animate-spin"></nwb-icon>
-        <div class="flex-1">
-          <h3 class="font-bold">Loading</h3>
-          <div class="text-xs">Fetching data from ipfs network...</div>
-        </div>
+      <nwb-icon [icon]="iconLoading" class="w-6 h-6 animate-spin self-start" />
+      <div class="flex-1">
+        <h3 class="font-bold">Loading</h3>
+        <div class="text-xs">Fetching data from ipfs network...</div>
       </div>
     </div>
   }

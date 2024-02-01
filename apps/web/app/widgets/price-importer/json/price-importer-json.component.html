@@ -36,7 +36,7 @@
           <input type="file" class="hidden" accept=".json" (change)="useFile($event)" [disabled]="isLoading$()" />
           <div class="input input-bordered input-md flex-1 text-start leading-10">{{ file$()?.name }}</div>
           <button class="btn btn-success" [disabled]="!file$() || isLoading$()" (click)="loadFromFile(file$())">
-            <nwb-icon [icon]="iconSpin" class="w-4 h-4 animate-spin mr-2" *ngIf="file$() && isLoading$()"></nwb-icon>
+            <nwb-icon [icon]="iconSpin" class="w-4 h-4 animate-spin mr-2" *ngIf="file$() && isLoading$()"/>
             <ng-container *ngIf="!isLoading$()"> Load </ng-container>
           </button>
         </label>
@@ -56,7 +56,7 @@
             (change)="useUrl($event)"
           />
           <button class="btn btn-success" [disabled]="!url$() || isLoading$()" (click)="loadFromUrl(url$())">
-            <nwb-icon [icon]="iconSpin" class="w-4 h-4 animate-spin mr-2" *ngIf="!!url$() && isLoading$()"></nwb-icon>
+            <nwb-icon [icon]="iconSpin" class="w-4 h-4 animate-spin mr-2" *ngIf="!!url$() && isLoading$()"/>
             <ng-container *ngIf="!isLoading$()"> Load </ng-container>
           </button>
         </label>

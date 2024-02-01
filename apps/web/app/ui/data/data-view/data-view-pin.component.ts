@@ -16,7 +16,7 @@ import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
   standalone: true,
   selector: 'nwb-data-view-pin,[nwbDataViewPin]',
   template: `
-    <nwb-icon [icon]="svgPin" class="w-5 h-5 transition-transform" [class.rotate-45]="!isPinned$()"></nwb-icon>
+    <nwb-icon [icon]="svgPin" class="w-5 h-5 transition-transform" [class.rotate-45]="!isPinned$()"/>
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, IconsModule, TooltipModule],

@@ -6,9 +6,9 @@
         <span
           class="label-text-alt transition-opacity opacity-10 hover:opacity-100 cursor-help"
           [tooltip]="tipPlayerLevel"
-          [tooltipClass]="'w-40'"
+          [tooltipClass]="['w-40', 'p-2']"
         >
-          <nwb-icon [icon]="iconInfo" class="w-4 h-4"></nwb-icon>
+          <nwb-icon [icon]="iconInfo" class="w-4 h-4"/>
         </span>
       </label>
       <ng-template #tipPlayerLevel>
@@ -17,7 +17,7 @@
       </ng-template>
       <input
         type="number"
-        class="input input-bordered w-full max-w-xs"
+        class="input input-bordered w-full max-w-xs pr-0"
         [class.input-sm]="isSm"
         [class.input-xs]="isXs"
         [ngModel]="vm.playerLevel"
@@ -33,9 +33,9 @@
         <span
           class="label-text-alt transition-opacity opacity-10 hover:opacity-100 cursor-help"
           [tooltip]="tipContLevel"
-          [tooltipClass]="'w-40'"
+          [tooltipClass]="['w-40', 'p-2']"
         >
-          <nwb-icon [icon]="iconInfo" class="w-4 h-4"></nwb-icon>
+          <nwb-icon [icon]="iconInfo" class="w-4 h-4"/>
         </span>
       </label>
       <ng-template #tipContLevel>
@@ -44,7 +44,7 @@
       </ng-template>
       <input
         type="number"
-        class="input input-bordered w-full max-w-xs"
+        class="input input-bordered w-full max-w-xs pr-0"
         [class.input-sm]="isSm"
         [class.input-xs]="isXs"
         [ngModel]="vm.minContLevel"
@@ -60,9 +60,9 @@
         <span
           class="label-text-alt transition-opacity opacity-10 hover:opacity-100 cursor-help"
           [tooltip]="tipCreature"
-          [tooltipClass]="'w-56'"
+          [tooltipClass]="['w-56', 'p-2']"
         >
-          <nwb-icon [icon]="iconInfo" class="w-4 h-4"></nwb-icon>
+          <nwb-icon [icon]="iconInfo" class="w-4 h-4"/>
         </span>
       </label>
       <ng-template #tipCreature>
@@ -81,7 +81,7 @@
       <div class="join">
         <button
           type="string"
-          class="input input-bordered flex flex-row gap-1 justify-start items-center w-full max-w-xs overflow-hidden px-1"
+          class="join-item input input-bordered flex flex-row gap-1 justify-start items-center w-full max-w-xs overflow-hidden px-1"
           [class.input-sm]="isSm"
           [class.input-xs]="isXs"
           (click)="pickVital()"
@@ -92,7 +92,7 @@
           </span>
         </button>
         <button
-          class="btn btn-square"
+          class="join-item btn btn-square"
           [class.btn-sm]="isSm"
           [class.btn-xs]="isXs"
           [tooltip]="'Creature Level'"
@@ -133,9 +133,9 @@
           <span
             class="label-text-alt transition-opacity opacity-10 hover:opacity-100 cursor-help"
             [tooltip]="tipTerritory"
-            [tooltipClass]="'w-56'"
+            [tooltipClass]="['w-56', 'p-2']"
           >
-            <nwb-icon [icon]="iconInfo" class="w-4 h-4"></nwb-icon>
+            <nwb-icon [icon]="iconInfo" class="w-4 h-4"/>
           </span>
         </label>
         <ng-template #tipTerritory>
@@ -166,9 +166,9 @@
           <span
             class="label-text-alt transition-opacity opacity-10 hover:opacity-100 cursor-help"
             [tooltip]="tipPoi"
-            [tooltipClass]="'w-56'"
+            [tooltipClass]="['w-56', 'p-2']"
           >
-            <nwb-icon [icon]="iconInfo" class="w-4 h-4"></nwb-icon>
+            <nwb-icon [icon]="iconInfo" class="w-4 h-4"/>
           </span>
         </label>
         <ng-template #tipPoi>
@@ -187,7 +187,7 @@
         <div class="join">
           <button
             type="string"
-            class="input input-bordered flex flex-row gap-1 justify-start items-center w-full max-w-xs overflow-hidden px-1"
+            class="join-item input input-bordered flex flex-row gap-1 justify-start items-center w-full max-w-xs overflow-hidden px-1"
             [class.input-sm]="isSm"
             [class.input-xs]="isXs"
             (click)="pickPoi()"
@@ -198,7 +198,7 @@
             </span>
           </button>
           <button
-            class="btn btn-square"
+            class="join-item btn btn-square"
             [class.btn-sm]="isSm"
             [class.btn-xs]="isXs"
             [tooltip]="'Min POI Content Level'"
@@ -240,9 +240,9 @@
           <span
             class="label-text-alt transition-opacity opacity-10 hover:opacity-100 cursor-help"
             [tooltip]="tipGameMode"
-            [tooltipClass]="'w-56'"
+            [tooltipClass]="['w-56', 'p-2']"
           >
-            <nwb-icon [icon]="iconInfo" class="w-4 h-4"></nwb-icon>
+            <nwb-icon [icon]="iconInfo" class="w-4 h-4"/>
           </span>
         </label>
         <ng-template #tipGameMode>
@@ -257,7 +257,7 @@
         <div class="join">
           <button
             type="button"
-            class="input input-bordered flex flex-row gap-1 justify-start items-center w-full max-w-xs overflow-hidden cursor-pointer px-1"
+            class="join-item input input-bordered flex flex-row gap-1 justify-start items-center w-full max-w-xs overflow-hidden cursor-pointer px-1"
             [class.input-sm]="isSm"
             [class.input-xs]="isXs"
             (click)="pickGameMode()"
@@ -268,7 +268,7 @@
             </span>
           </button>
           <button
-            class="btn btn-square"
+            class="join-item btn btn-square"
             type="button"
             [class.btn-sm]="isSm"
             [class.btn-xs]="isXs"
@@ -290,9 +290,9 @@
           <span
             class="label-text-alt transition-opacity opacity-10 hover:opacity-100 cursor-help"
             [tooltip]="tipMutaLevel"
-            [tooltipClass]="'w-56'"
+            [tooltipClass]="['w-56', 'p-2']"
           >
-            <nwb-icon [icon]="iconInfo" class="w-4 h-4"></nwb-icon>
+            <nwb-icon [icon]="iconInfo" class="w-4 h-4"/>
           </span>
         </label>
         <ng-template #tipMutaLevel>
@@ -326,9 +326,9 @@
           <span
             class="label-text-alt transition-opacity opacity-10 hover:opacity-100 cursor-help"
             [tooltip]="tipMutation"
-            [tooltipClass]="'w-56'"
+            [tooltipClass]="['w-56', 'p-2']"
           >
-            <nwb-icon [icon]="iconInfo" class="w-4 h-4"></nwb-icon>
+            <nwb-icon [icon]="iconInfo" class="w-4 h-4"/>
           </span>
         </label>
         <ng-template #tipMutation>

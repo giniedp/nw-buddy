@@ -14,16 +14,16 @@
   </ion-header>
   <ion-content>
     @for (node of data; track $index) {
-      <ul class="menu menu-compact flex-none flex-nowrap m-0" [class.hidden]="!node.active">
+      <ul class="menu menu-compact flex-none flex-nowrap m-0 p-0 " [class.hidden]="!node.active">
         @for (item of node.items; track $index) {
           @if (item.divider) {
             <li></li>
           }
           <li
-            [routerLinkActive]="['bordered', 'text-primary']"
+            [routerLinkActive]="['border-l-4', 'border-primary']"
             (isActiveChange)="$event ? onGroupActive(node.category) : null"
           >
-            <a [routerLink]="item.path" nwbMenuClose>
+            <a [routerLink]="item.path" nwbMenuClose class="rounded-none">
               @if (item.icon) {
                 <img [nwImage]="item.icon" class="w-5 h-5" />
               }

@@ -130,7 +130,7 @@
 </ng-template>
 
 <ng-template #tplLangMenu>
-  <ul class="menu menu-compact bg-base-300 rounded-md w-40 shadow-md" cdkMenu>
+  <ul class="menu menu-compact bg-base-300 border border-base-200 rounded-md w-40 shadow-md" cdkMenu>
     @for (option of langOptions; track $index) {
       <li>
         <button (click)="language = option.value" cdkMenuItem>

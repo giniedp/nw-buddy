@@ -18,13 +18,13 @@ export const SelectFilterOptions: m.Component<SelectFilterListAttrs, any> = {
       return null
     }
     return [
-      m(`ul.menu.menu-compact.rounded-md.flex-nowrap.flex-1.overflow-y-auto`, [
+      m(`ul.menu.menu-compact.p-0.rounded-md.flex-nowrap.flex-1.overflow-y-auto`, [
         ...items.map((option) => {
           return m('li', [
             m(
-              'a',
+              'a.rounded-none',
               {
-                class: option.active ? 'active' : '',
+                class: option.active ? 'bg-primary' : '',
                 onclick: () => onSelect(option),
               },
               [

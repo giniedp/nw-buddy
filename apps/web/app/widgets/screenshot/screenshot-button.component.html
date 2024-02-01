@@ -23,8 +23,10 @@
   (detach)="isOverlayOpen = false"
 >
   <ul class="menu menu-compact bg-base-100 w-56 p-2 rounded-box">
-    <li *ngFor="let frame of frames">
-      <a (click)="makeScreenshot(frame)">{{ frame.description }}</a>
-    </li>
+    @for (frame of frames; track $index) {
+      <li>
+        <a (click)="makeScreenshot(frame)">{{ frame.description }}</a>
+      </li>
+    }
   </ul>
 </ng-template>

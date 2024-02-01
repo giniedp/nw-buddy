@@ -33,7 +33,7 @@
   <ul class="menu menu-compact bg-base-100 rounded-md w-80" cdkMenu>
     <li class="text-shadow-sm shadow-black">
       <a (click)="createSet()" cdkMenuItem>
-        <nwb-icon [icon]="iconCreate" class="w-4 h-4"></nwb-icon>
+        <nwb-icon [icon]="iconCreate" class="w-4 h-4"/>
         <div class="flex flex-col leading-none">
           <span>Create New</span>
           <span class="text-xs opacity-75">Create a new set and start editing</span>
@@ -42,7 +42,7 @@
     </li>
     <li class="text-shadow-sm shadow-black">
       <a (click)="loadSet()" cdkMenuItem>
-        <nwb-icon [icon]="iconOpen" class="w-4 h-4"></nwb-icon>
+        <nwb-icon [icon]="iconOpen" class="w-4 h-4"/>
         <div class="flex flex-col leading-none">
           <span>Open</span>
           <span class="text-xs opacity-75">Open another set to edit</span>
@@ -51,7 +51,7 @@
     </li>
     <!-- <li class="text-shadow-sm shadow-black">
       <a cdkMenuItem>
-        <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
+        <nwb-icon [icon]="iconCopy" class="w-4 h-4"/>
         <div class="flex flex-col leading-none">
           <span>Clone</span>
           <span class="text-xs opacity-75">Make a copy of this set and start editing</span>
@@ -64,7 +64,7 @@
     </li>
     <li [class.bordered]="isLinkMode" cdkMenuItem>
       <a (click)="updateMode('link')" cdkMenuItem>
-        <nwb-icon [icon]="iconLink" class="w-4 h-4"></nwb-icon>
+        <nwb-icon [icon]="iconLink" class="w-4 h-4"/>
         <div class="flex flex-col leading-none">
           <span>Link Mode</span>
           <span class="text-xs opacity-75">
@@ -75,7 +75,7 @@
     </li>
     <li [class.bordered]="isCopyMode" cdkMenuItem>
       <a (click)="updateMode('copy')" cdkMenuItem>
-        <nwb-icon [icon]="iconCopy" class="w-4 h-4"></nwb-icon>
+        <nwb-icon [icon]="iconCopy" class="w-4 h-4"/>
         <div class="flex flex-col leading-none">
           <span>Copy Mode</span>
           <span class="text-xs opacity-75">
@@ -88,7 +88,7 @@
     <li class="divider"></li>
     <li class="text-shadow-sm shadow-black">
       <a (click)="unloadSet()" cdkMenuItem>
-        <nwb-icon [icon]="iconClose" class="w-4 h-4"></nwb-icon>
+        <nwb-icon [icon]="iconClose" class="w-4 h-4"/>
         <div class="flex flex-col leading-none">
           <span>Close</span>
           <span class="text-xs opacity-75">Close this set and exit editor</span>
@@ -97,7 +97,7 @@
     </li>
     <li class="text-shadow-sm shadow-black">
       <a (click)="unloadSet()" cdkMenuItem>
-        <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error"></nwb-icon>
+        <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error"/>
         <div class="flex flex-col leading-none">
           <span>Delete</span>
           <span class="text-xs opacity-75">Delete this set</span>

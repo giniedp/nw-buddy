@@ -21,7 +21,7 @@
     @if (instance?.weapon; as weapon) {
       <li>
         <a cdkMenuItem (click)="handleOpenSkillSet(weapon)">
-          <nwb-icon [icon]="iconOpen" class="w-4 h-4 mr-2"></nwb-icon>
+          <nwb-icon [icon]="iconOpen" class="w-4 h-4 mr-2"/>
           <div class="flex flex-col leading-none">
             <span>Load</span>
             <span class="text-xs opacity-75">Copy from existing skill tree</span>
@@ -30,7 +30,7 @@
       </li>
       <li>
         <a cdkMenuItem (click)="handleReset()">
-          <nwb-icon [icon]="iconReset" class="w-4 h-4 mr-2"></nwb-icon>
+          <nwb-icon [icon]="iconReset" class="w-4 h-4 mr-2"/>
           <div class="flex flex-col leading-none">
             <span>Reset</span>
             <span class="text-xs opacity-75">Clears all selected skills</span>
@@ -40,7 +40,7 @@
     } @else {
       <li>
         <a>
-          <!-- <nwb-icon [icon]="iconPlus" class="w-4 h-4 mr-2"></nwb-icon> -->
+          <!-- <nwb-icon [icon]="iconPlus" class="w-4 h-4 mr-2"/> -->
           <div class="flex flex-col leading-none text-error">
             <span>Pick weaon below first</span>
           </div>

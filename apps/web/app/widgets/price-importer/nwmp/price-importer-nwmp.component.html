@@ -60,7 +60,7 @@
           </ng-container>
         </select>
         <button class="btn btn-success" [disabled]="!serverId$() || isLoading$()" (click)="load(serverId$())">
-          <nwb-icon [icon]="iconSpin" class="w-4 h-4 animate-spin mr-2" *ngIf="isLoading$()"></nwb-icon>
+          <nwb-icon [icon]="iconSpin" class="w-4 h-4 animate-spin mr-2" *ngIf="isLoading$()"/>
           <ng-container *ngIf="!isLoading$()"> Load </ng-container>
         </button>
       </div>

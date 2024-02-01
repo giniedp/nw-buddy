@@ -64,7 +64,7 @@
       {{ cell.value }}
     </span>
     <span *ngIf="detail.hasLimitsSig()" [tooltip]="tplCategoryTip" [tooltipClass]="'max-w-none'">
-      <nwb-icon [icon]="iconInfo" class="w-3 h-3 opacity-50 hover:opacity-100 cursor-help"></nwb-icon>
+      <nwb-icon [icon]="iconInfo" class="w-3 h-3 opacity-50 hover:opacity-100 cursor-help"/>
     </span>
     <ng-template #tplCategoryTip>
       <nwb-status-effect-limits-table [categoryId]="cell.value"></nwb-status-effect-limits-table>
@@ -80,7 +80,7 @@
       [tooltipClass]="'max-w-none'"
       class="text-error inline-flex"
     >
-      <nwb-icon [icon]="iconInfo" class="w-3 h-3 opacity-50 hover:opacity-100 cursor-help"></nwb-icon>
+      <nwb-icon [icon]="iconInfo" class="w-3 h-3 opacity-50 hover:opacity-100 cursor-help"/>
     </span>
     <ng-template #tplCategoryTip>
       <nwb-status-effect-limits-table [property]="cell.value"></nwb-status-effect-limits-table>

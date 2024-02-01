@@ -145,7 +145,7 @@ const ConditionControl: m.Component<ConditionControlAttrs> = {
           'OR'
         ),
         m(
-          'button.btn.btn-xs.flex-1',
+          'button.join-item.btn.btn-xs.flex-1',
           {
             class: !isDisabled && isAND ? 'btn-primary' : '',
             disabled: isDisabled,
