@@ -1,6 +1,6 @@
 import { EquipSlotId, getItemGsBonus, getPerkMultiplier } from '@nw-data/common'
 import { Ability, Affixstats, Housingitems, ItemDefinitionMaster, Perks, Statuseffect } from '@nw-data/generated'
-import { ActiveMods } from './types'
+import type { ActiveMods } from './types'
 
 export interface ModifierSource {
   label?: string
@@ -68,10 +68,21 @@ export function* eachPerk({ perks }: ActiveMods) {
   }
 }
 
+export function* eachBonus({ bonuses }: ActiveMods) {
+  for (const it of bonuses) {
+    yield it
+  }
+}
+
 export function* eachModifier<T extends number | string>(
   key: ModifierKey<T>,
   mods: ActiveMods,
 ): Generator<ModifierValue<T>> {
+  for (const bonus of eachBonus(mods)) {
+    if (key === bonus.key) {
+      yield { value: bonus.value as any, scale: 1, source: { label: bonus.name } }
+    }
+  }
   for (const { effect, perk, ability, item } of eachEffect(mods)) {
     let value = effect[key as any]
     let scale = 1

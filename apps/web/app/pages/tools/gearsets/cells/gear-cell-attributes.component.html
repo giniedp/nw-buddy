@@ -1,0 +1,34 @@
+@if (!hideTitle) {
+  <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3 nw-bg-title bg-bottom">
+    {{ 'ui_Attributes' | nwText }}
+  </h3>
+}
+<div
+  class="rounded-md transition-all outline outline-transparent outline-2 outline-offset-0 hover:outline-offset-4 relative"
+  [class.cursor-pointer]="isEditable"
+  [class.hover:outline-primary]="isEditable"
+  (click)="handleClicked()"
+>
+  <div class="grid grid-cols-dl gap-x-1 items-baseline">
+    @for (row of stats(); track $index) {
+      <span class="w-12 text-right font-bold uppercase">{{ row.label | nwText }}</span>
+      <span>
+        <span nwbFlash>{{ row.total }}</span>
+        @if (row.assigned || row.bonus || row.magnify) {
+          <span>(</span>
+          <span class="text-attr-base">{{ row.base }}</span>
+          @if (row.bonus) {
+            + <span class="text-attr-buff">{{ row.bonus }}</span>
+          }
+          @if (row.assigned) {
+            + <span class="text-attr-assign">{{ row.assigned }}</span>
+          }
+          @if (row.magnify) {
+            + <span class="text-attr-magnify">{{ row.magnify }}</span>
+          }
+          <span>)</span>
+        }
+      </span>
+    }
+  </div>
+</div>

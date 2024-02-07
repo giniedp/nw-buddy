@@ -26,6 +26,7 @@ import {
   WeaponTag,
 } from '@nw-data/generated'
 import { Observable } from 'rxjs'
+import type { ModifierKey } from './modifier'
 
 export type CombatMode = 'pve' | 'pvpArena' | 'pvpOpenworld' | 'pvpWar' | 'pvpOutpostrush'
 export interface MannequinState {
@@ -153,6 +154,12 @@ export interface ActiveAttribute {
   abilities: string[]
 }
 
+export interface ActiveBonus {
+  key: ModifierKey<number>
+  value: number
+  name: string
+}
+
 export interface ActiveAbility {
   scale: number
   ability: Ability
@@ -179,6 +186,7 @@ export interface ActiveConsumable {
 }
 
 export interface ActiveMods {
+  bonuses: ActiveBonus[]
   attributes: ActiveAttributes
   perks: ActivePerk[]
   effects: ActiveEffect[]

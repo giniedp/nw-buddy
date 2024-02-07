@@ -53,6 +53,7 @@ module.exports = {
         fill: 'repeat(auto-fill, minmax(25rem, 1fr))',
         'fill-lg': 'repeat(auto-fill, minmax(30rem, 1fr))',
         'fill-2lg': 'repeat(auto-fill, minmax(35rem, 1fr))',
+        'fill-3lg': 'repeat(auto-fill, minmax(40rem, 1fr))',
         dl: 'max-content auto',
         dl2: 'repeat(2, max-content) auto',
         dl3: 'repeat(3, max-content) auto',
@@ -104,6 +105,7 @@ module.exports = {
   },
   plugins: [
     require('@tailwindcss/typography'),
+    require('@tailwindcss/container-queries'),
     require('daisyui'),
     require('./apps/web/styles/components/nw-item'),
     require('./apps/web/styles/components/utilities'),

@@ -1,0 +1,19 @@
+@if (!hideTitle) {
+  <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3 nw-bg-title bg-bottom">
+    Equip Load {{ weightLabel() }}
+  </h3>
+}
+<div class="grid grid-cols-dl gap-x-1 font-nimbus items-baseline">
+  <span class="text-right font-bold w-12" nwbFlash>{{ weight() ?? 0 | number: '0.0-1' }} </span>
+  <div>
+    <span class="opacity-50"> Weight </span>
+  </div>
+  <span class="text-right font-bold" nwbFlash>{{ healing() >= 0 ? '+' : '' }}{{ healing() | percent }} </span>
+  <div>
+    <span class="opacity-50"> Healing </span>
+  </div>
+  <span class="text-right font-bold" nwbFlash>{{ damage() >= 0 ? '+' : '' }}{{ damage() | percent }} </span>
+  <div>
+    <span class="opacity-50"> Damage </span>
+  </div>
+</div>

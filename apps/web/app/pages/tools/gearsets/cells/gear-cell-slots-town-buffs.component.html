@@ -1,0 +1,10 @@
+@if (!hideTitle) {
+  <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3 nw-bg-title bg-bottom">
+    Town Buffs
+  </h3>
+}
+<div class="inline-grid grid-cols-5 gap-1 mx-auto">
+  @for (slot of slots(); track $index) {
+    <nwb-gear-cell-slot-effect [effectId]="slot?.id" [max]="1" [disabled]="disabled" (effectChange)="handleEffectChange($event)" />
+  }
+</div>

@@ -1,5 +1,10 @@
+import { DamageType } from "../generated/types"
 
-const DAMAGE_TYPES = [
+const DAMAGE_TYPES: Array<{
+  TypeID: DamageType
+  DisplayName: string
+  Category: string
+}> = [
   {
     TypeID: 'True',
     DisplayName: 'True_DamageName',
@@ -81,6 +86,10 @@ const DAMAGE_TYPES = [
     Category: 'True',
   },
 ]
+
+export function getDamageTypes() {
+  return DAMAGE_TYPES.map((it) => it.TypeID)
+}
 
 export function getDamageTypesOfCategory(category: string) {
   return DAMAGE_TYPES.filter((it) => eqCaseInsensitive(category, it.Category)).map((it) => it.TypeID)

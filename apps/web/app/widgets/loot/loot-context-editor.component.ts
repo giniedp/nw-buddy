@@ -4,8 +4,8 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector, Input, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { combineLatest, filter, map } from 'rxjs'
-import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 import { DataViewModule, DataViewPicker } from '~/ui/data/data-view'
 import { GsSliderComponent } from '~/ui/gs-input'
 import { IconsModule } from '~/ui/icons'
@@ -140,17 +140,12 @@ export class LootContextEditorComponent {
   }
 
   public pickVital() {
-    DataViewPicker.open(this.dialog, {
+    DataViewPicker.from({
+      injector: this.injector,
       title: 'Pick Vital',
       dataView: { adapter: VitalTableAdapter },
-      config: {
-        maxWidth: 1024,
-        maxHeight: 1024,
-        panelClass: ['w-full', 'h-full', 'p-4'],
-        injector: this.injector,
-      },
     })
-      .closed.pipe(filter((it) => it !== undefined))
+      .pipe(filter((it) => it !== undefined))
       .pipe(map((it) => it?.[0] as string))
       .subscribe((it) => {
         this.store.patchState({ vitalId: it })
@@ -158,17 +153,12 @@ export class LootContextEditorComponent {
   }
 
   public pickPoi() {
-    DataViewPicker.open(this.dialog, {
+    DataViewPicker.from({
+      injector: this.injector,
       title: 'Pick POI',
       dataView: { adapter: ZoneTableAdapter },
-      config: {
-        maxWidth: 1024,
-        maxHeight: 1024,
-        panelClass: ['w-full', 'h-full', 'p-4'],
-        injector: this.injector,
-      },
     })
-      .closed.pipe(filter((it) => it !== undefined))
+      .pipe(filter((it) => it !== undefined))
       .pipe(map((it) => it?.[0] as number))
       .subscribe((it) => {
         this.store.patchState({ poiId: it })
@@ -176,17 +166,12 @@ export class LootContextEditorComponent {
   }
 
   public pickGameMode() {
-    DataViewPicker.open(this.dialog, {
+    DataViewPicker.from({
+      injector: this.injector,
       title: 'Pick Game Mode',
       dataView: { adapter: GameModeTableAdapter },
-      config: {
-        maxWidth: 1024,
-        maxHeight: 1024,
-        panelClass: ['w-full', 'h-full', 'p-4'],
-        injector: this.injector,
-      },
     })
-      .closed.pipe(filter((it) => it !== undefined))
+      .pipe(filter((it) => it !== undefined))
       .pipe(map((it) => it?.[0] as string))
       .subscribe((it) => {
         this.store.patchState({ gameModeId: it })
@@ -194,17 +179,12 @@ export class LootContextEditorComponent {
   }
 
   public pickTerritory() {
-    DataViewPicker.open(this.dialog, {
+    DataViewPicker.from({
+      injector: this.injector,
       title: 'Pick Territory',
       dataView: { adapter: TerritoryTableAdapter },
-      config: {
-        maxWidth: 1024,
-        maxHeight: 1024,
-        panelClass: ['w-full', 'h-full', 'p-4'],
-        injector: this.injector,
-      },
     })
-      .closed.pipe(filter((it) => it !== undefined))
+      .pipe(filter((it) => it !== undefined))
       .pipe(map((it) => it?.[0] as number))
       .subscribe((it) => {
         this.store.patchState({ territoryId: it })

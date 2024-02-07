@@ -13,6 +13,7 @@ import {
 import { Vitals } from '@nw-data/generated'
 import { pipe, switchMap, tap } from 'rxjs'
 import { NwDataService } from '~/data'
+import { Mannequin } from '~/nw/mannequin'
 import { damageTypeIcon } from '~/nw/weapon-types'
 
 export interface DamageCalculatorState {
@@ -93,6 +94,24 @@ export interface DamageCalculatorState {
   defenderWKNWeaponTweak: number
   defenderWKNConverted: number
   defenderWKNConvertedTweak: number
+}
+
+export interface DefenderStats {
+  defenderIsPlayer: boolean
+  defenderLevel: number
+  defenderGearScore: number
+
+  defenderArmorPhys: number
+  defenderArmorElem: number
+  defenderArmorPhysFort: number
+  defenderArmorElemFort: number
+  defenderArmorPhysAdd: number
+  defenderArmorElemAdd: number
+
+  defenderABSWeapon: number
+  defenderABSConverted: number
+  defenderWKNWeapon: number
+  defenderWKNConverted: number
 }
 
 export const DamageCalculatorStore = signalStore(
@@ -199,20 +218,27 @@ export const DamageCalculatorStore = signalStore(
     defenderWKNConverted: 0,
     defenderWKNConvertedTweak: 0,
   }),
-  withMethods((store, db = inject(NwDataService)) => {
+  // withMethods((store) => {
+  //   return {
+  //     setVitalDefender: (vital: Vitals) => {
+  //       patchState(store, {
+  //         defenderIsPlayer: false,
+  //         defenderCreature: vital,
+  //         defenderArmorElem: 0,
+  //         defenderArmorElemAdd: 0,
+  //         defenderArmorElemFort: 0,
+  //         defenderArmorPhys: 0,
+  //         defenderArmorPhysAdd: 0,
+  //         defenderArmorPhysFort: 0,
+  //       })
+  //     },
+  //   }
+  // }),
+  withMethods((store) => {
     return {
-      setVitalDefender: (vital: Vitals) => {
-        patchState(store, {
-          defenderIsPlayer: false,
-          defenderCreature: vital,
-          defenderArmorElem: 0,
-          defenderArmorElemAdd: 0,
-          defenderArmorElemFort: 0,
-          defenderArmorPhys: 0,
-          defenderArmorPhysAdd: 0,
-          defenderArmorPhysFort: 0,
-        })
-      },
+      setDefenderStats: (stats: DefenderStats) => {
+        patchState(store, stats)
+      }
     }
   }),
   withComputed(

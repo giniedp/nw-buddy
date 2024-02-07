@@ -17,7 +17,8 @@ export function openItemsPicker(options: {
   categories?: string[]
   noSkins?: boolean
 }) {
-  return DataViewPicker.open(options.dialog, {
+  return DataViewPicker.from({
+    injector: options.injector,
     title: options.title || 'Pick item',
     selection: options.selection,
     persistKey: `picker:items-grid:${options.categories?.join('-') || 'default'}`,
@@ -37,12 +38,6 @@ export function openItemsPicker(options: {
           rowSelection: options.multiple ? 'multiple' : 'single',
         }
       },
-    },
-    config: {
-      maxWidth: 1400,
-      maxHeight: 1200,
-      panelClass: ['w-full', 'h-full', 'p-4'],
-      injector: options.injector,
     },
   })
 }

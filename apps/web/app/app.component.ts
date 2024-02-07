@@ -192,9 +192,6 @@ export class AppComponent {
       })
 
     this.installWatermark()
-    if (this.platform.isDesktop) {
-      this.installScrollbarPatch()
-    }
   }
 
   private removeLoader() {
@@ -222,45 +219,4 @@ export class AppComponent {
     }
   }
 
-  private installScrollbarPatch() {
-    const scrollbarStyle = `
-      ::-webkit-scrollbar {
-        width: 12px;
-        height: 12px;
-      }
-      ::-webkit-scrollbar-track {
-        background-color: transparent;
-      }
-      ::-webkit-scrollbar-thumb {
-        background-color: rgba(155, 155, 155, 0.5);
-        border-radius: 20px;
-        border: 4px solid transparent;
-        background-clip: content-box;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background-color: rgba(155, 155, 155, 0.75);
-      }
-
-      ::-webkit-scrollbar-corner {
-        background: transparent;
-      }
-    `
-    // patch ion-content scrollbar
-    // https://github.com/ionic-team/ionic-framework/issues/17685#issuecomment-587633556
-    new MutationObserver((list) => {
-      for (const it of list) {
-        it.addedNodes.forEach((node) => {
-          if (node instanceof HTMLElement && node.tagName === 'ION-CONTENT') {
-            const styles = document.createElement('style')
-            styles.textContent = scrollbarStyle
-            node.shadowRoot.appendChild(styles)
-          }
-        })
-      }
-    }).observe(document.body, {
-      attributes: false,
-      childList: true,
-      subtree: true,
-    })
-  }
 }

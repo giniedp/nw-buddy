@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 import { GearsetsDetailPageComponent } from './gearsets-detail-page.component'
-import { GearsetsPageComponent } from './gearsets-page.component'
+import { GearsetsListPageComponent } from './gearsets-list-page.component'
 import { GearsetsSharePageComponent } from './gearsets-share-page.component'
 
 const ipfsRoutes: Routes = [
@@ -30,7 +30,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    component: GearsetsPageComponent,
+    component: GearsetsListPageComponent,
   },
   {
     path: ':id',

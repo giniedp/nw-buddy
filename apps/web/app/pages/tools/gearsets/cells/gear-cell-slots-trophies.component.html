@@ -1,0 +1,10 @@
+@if(!hideTitle) {
+  <h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3 nw-bg-title bg-bottom">
+    Trophies
+  </h3>
+}
+<div class="grid grid-cols-4 gap-[2px] mx-auto w-fit">
+  @for (slot of displayTrophySlots(); track $index) {
+    <nwb-gear-cell-slot [slotId]="slot.id" [gearset]="gearset" [disabled]="disabled" [square]="true" />
+  }
+</div>

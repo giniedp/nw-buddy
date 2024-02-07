@@ -6,12 +6,14 @@ import { NgModule } from '@angular/core'
 
 import {
   IonContent,
+  IonFooter,
   IonHeader,
   IonMenu,
   IonMenuToggle,
   IonModal,
   IonRouterOutlet,
   IonSplitPane,
+  IonTitle,
   IonToolbar,
 } from '@ionic/angular/standalone'
 
@@ -20,28 +22,33 @@ import { ConfirmDialogComponent, PromptDialogComponent } from './modal'
 
 import { BreakpointPipe } from './pipes/breakpoint.pipe'
 import { Px2VhPipe } from './pipes/px2vh.pipe'
+import { IonContentDirective } from './ion-content.directive'
+import { SizeObserverDirective } from './resize-observer.directive'
 
 const COMPONENTS = [
+  BreakpointPipe,
   CdkLayoutModule,
   CdkMenuModule,
-  DialogModule,
-  OverlayModule,
-  MenuConnectorDirective,
-  MenuCloseDirective,
   ConfirmDialogComponent,
-  PromptDialogComponent,
-  IonModal,
+  DialogModule,
   IonContent,
-  IonMenu,
+  IonContentDirective,
+  IonFooter,
   IonHeader,
-  IonToolbar,
+  IonTitle,
+  IonMenu,
   IonMenuToggle,
+  IonModal,
   IonRouterOutlet,
   IonSplitPane,
-  IonModal,
+  IonToolbar,
+  MenuCloseDirective,
+  MenuConnectorDirective,
   OverlayModule,
-  BreakpointPipe,
+  OverlayModule,
+  PromptDialogComponent,
   Px2VhPipe,
+  SizeObserverDirective,
 ]
 @NgModule({
   imports: [...COMPONENTS],

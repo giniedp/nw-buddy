@@ -106,8 +106,8 @@ devDependencies:
     specifier: 2.2.0
     version: 2.2.0(rxjs@7.8.1)(typescript@5.2.2)
   '@ionic/angular':
-    specifier: 7.6.6
-    version: 7.6.6(@angular/core@17.1.1)(@angular/forms@17.1.1)(@angular/router@17.1.1)(rxjs@7.8.1)(zone.js@0.14.3)
+    specifier: 7.7.0
+    version: 7.7.0(@angular/core@17.1.1)(@angular/forms@17.1.1)(@angular/router@17.1.1)(rxjs@7.8.1)(zone.js@0.14.3)
   '@jsdevtools/coverage-istanbul-loader':
     specifier: 3.0.5
     version: 3.0.5
@@ -183,6 +183,9 @@ devDependencies:
   '@storybook/theming':
     specifier: ^7.6.10
     version: 7.6.10(react-dom@18.2.0)(react@18.2.0)
+  '@tailwindcss/container-queries':
+    specifier: 0.1.1
+    version: 0.1.1(tailwindcss@3.4.1)
   '@tailwindcss/typography':
     specifier: 0.5.10
     version: 0.5.10(tailwindcss@3.4.1)
@@ -6247,8 +6250,8 @@ packages:
     resolution: {integrity: sha512-6EwiSjwWYP7pTckG6I5eyFANjPhmPjUX9JRLUSfNPC7FX7zK9gyZAfUEaECL6ALTpGX5AjnBq3C9XmVWPitNpw==}
     dev: true
 
-  /@ionic/angular@7.6.6(@angular/core@17.1.1)(@angular/forms@17.1.1)(@angular/router@17.1.1)(rxjs@7.8.1)(zone.js@0.14.3):
-    resolution: {integrity: sha512-IuXkDRnmaTpeyBCO7qEcw6Xt9/itIRRf91fU5MOI/cTRwVqOX2QvsktpExeal5aYxJcyp887LCu+zJeyfkslyA==}
+  /@ionic/angular@7.7.0(@angular/core@17.1.1)(@angular/forms@17.1.1)(@angular/router@17.1.1)(rxjs@7.8.1)(zone.js@0.14.3):
+    resolution: {integrity: sha512-jEPgg8J1ZX5mBiz80LUOmAOtMOZuVFE5ZVNxSuMzTFdD6j4rSFowuOmci4DZoewyveQgPx5h4Kg+rLuQrxTYow==}
     peerDependencies:
       '@angular/core': '>=14.0.0'
       '@angular/forms': '>=14.0.0'
@@ -6259,7 +6262,7 @@ packages:
       '@angular/core': 17.1.1(rxjs@7.8.1)(zone.js@0.14.3)
       '@angular/forms': 17.1.1(@angular/common@17.1.1)(@angular/core@17.1.1)(@angular/platform-browser@17.1.1)(rxjs@7.8.1)
       '@angular/router': 17.1.1(@angular/common@17.1.1)(@angular/core@17.1.1)(@angular/platform-browser@17.1.1)(rxjs@7.8.1)
-      '@ionic/core': 7.6.6
+      '@ionic/core': 7.7.0
       ionicons: 7.2.2
       jsonc-parser: 3.2.1
       rxjs: 7.8.1
@@ -6278,10 +6281,10 @@ packages:
       - supports-color
     dev: true
 
-  /@ionic/core@7.6.6:
-    resolution: {integrity: sha512-WstnLHiR8ipW2ASdO/eqSwgMHCuVvJE3qsUNPHWkup9f08/bcbKYZpOfaWNLw/ftNqEpFbjiRuocoYYyLP0/gw==}
+  /@ionic/core@7.7.0:
+    resolution: {integrity: sha512-ewbvX8u4+FNRBAw1nqBuCy4dI8OLTxoqZgm4qRs4zbrNLJInwTpYjCPzYueN0KE9ufP0n9HhS23lfcrQzJC7Hg==}
     dependencies:
-      '@stencil/core': 4.12.0
+      '@stencil/core': 4.12.1
       ionicons: 7.2.2
       tslib: 2.6.2
     dev: true
@@ -8290,8 +8293,8 @@ packages:
     resolution: {integrity: sha512-+9jVqKhRSpsc591z5vX+X5Yyw+he/HCB4iQ/RYxw35CEPaY1gnsNE43nf9n9AaYjAQrTiI/mOwKUKdUs9vf7Xg==}
     dev: true
 
-  /@stencil/core@4.12.0:
-    resolution: {integrity: sha512-qAQcfNmp2sdxAh1DlyUhHfDmIUS7mhI+5LAhPphg74zK9sKgFL5vpLzgjs0wohpjlmI4msgJFYiRB8lxVPqjPg==}
+  /@stencil/core@4.12.1:
+    resolution: {integrity: sha512-l7UUCEV+4Yr1i6BL2DGSQPAzM3x/V4Fx9n9Z0/gdAgX11I25xY0MnH5jbQ69ug6ms/8KUV6SouS1R7MjjM/JnQ==}
     engines: {node: '>=16.0.0', npm: '>=7.10.0'}
     hasBin: true
     dev: true
@@ -9771,6 +9774,14 @@ packages:
     engines: {node: '>=10'}
     dependencies:
       defer-to-connect: 2.0.1
+    dev: true
+
+  /@tailwindcss/container-queries@0.1.1(tailwindcss@3.4.1):
+    resolution: {integrity: sha512-p18dswChx6WnTSaJCSGx6lTmrGzNNvm2FtXmiO6AuA1V4U5REyoqwmT6kgAsIMdjo07QdAfYXHJ4hnMtfHzWgA==}
+    peerDependencies:
+      tailwindcss: '>=3.2.0'
+    dependencies:
+      tailwindcss: 3.4.1(ts-node@10.9.2)
     dev: true
 
   /@tailwindcss/typography@0.5.10(tailwindcss@3.4.1):
@@ -12811,6 +12822,23 @@ packages:
     optionalDependencies:
       fsevents: 2.3.3
     dev: true
+
+  /chokidar@3.6.0:
+    resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
+    engines: {node: '>= 8.10.0'}
+    requiresBuild: true
+    dependencies:
+      anymatch: 3.1.3
+      braces: 3.0.2
+      glob-parent: 5.1.2
+      is-binary-path: 2.1.0
+      is-glob: 4.0.3
+      normalize-path: 3.0.0
+      readdirp: 3.6.0
+    optionalDependencies:
+      fsevents: 2.3.3
+    dev: true
+    optional: true
 
   /chownr@1.1.4:
     resolution: {integrity: sha512-jJ0bqzaylmJtVnNgzTeSOs8DPavpbYgEr/b0YL8/2GO3xJEhInFmhKMUnEJQjZumK7KXGFhUy89PrsJWlakBVg==}
@@ -17202,7 +17230,7 @@ packages:
   /ionicons@7.2.2:
     resolution: {integrity: sha512-I3iYIfc9Q9FRifWyFSwTAvbEABWlWY32i0sAVDDPGYnaIZVugkLCZFbEcrphW6ixVPg8tt1oLwalo/JJwbEqnA==}
     dependencies:
-      '@stencil/core': 4.12.0
+      '@stencil/core': 4.12.1
     dev: true
 
   /ip-regex@4.3.0:
@@ -25781,7 +25809,7 @@ packages:
       graceful-fs: 4.2.11
       neo-async: 2.6.2
     optionalDependencies:
-      chokidar: 3.5.3
+      chokidar: 3.6.0
       watchpack-chokidar2: 2.0.1
     transitivePeerDependencies:
       - supports-color

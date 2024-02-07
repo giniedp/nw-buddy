@@ -1,27 +1,27 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ActivatedRoute, Router } from '@angular/router'
-import { LetDirective } from '@ngrx/component'
 import { environment } from 'apps/web/environments'
 import { filter, map, switchMap } from 'rxjs'
 import { GearsetRecord, GearsetsDB } from '~/data'
-import { ElectronService } from '~/electron'
 import { NwModule } from '~/nw'
 import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
-import { PromptDialogComponent } from '~/ui/layout'
-import { GearsetDetailComponent } from './gearset.component'
+import { LayoutModule, PromptDialogComponent } from '~/ui/layout'
 import { EmbedHeightDirective } from '~/utils/directives/embed-height.directive'
+import { suspensify } from '~/utils'
+import { GearsetGridComponent } from './gearset/gearset-grid.component'
+import { GearsetHostDirective } from './gearset/gearset-host.directive'
 
 @Component({
   standalone: true,
   selector: 'nwb-gearsets-share-page',
   templateUrl: './gearsets-share-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, GearsetDetailComponent, LetDirective, IconsModule, EmbedHeightDirective],
+  imports: [CommonModule, NwModule, GearsetHostDirective, GearsetGridComponent, IconsModule, LayoutModule, EmbedHeightDirective],
   host: {
     class: 'layout-col flex-none',
   },
@@ -34,9 +34,7 @@ export class GearsetsSharePageComponent {
           return this.web3.downloadbyCid(it.get('cid'))
         }
         return this.web3.downloadByName(it.get('name'))
-      })
-    )
-    .pipe(
+      }),
       map((it): GearsetRecord => {
         if (it.type === 'gearset') {
           const record: GearsetRecord = it.data
@@ -44,7 +42,8 @@ export class GearsetsSharePageComponent {
           return record
         }
         return null
-      })
+      }),
+      suspensify()
     )
 
   protected get appLink() {
@@ -67,8 +66,7 @@ export class GearsetsSharePageComponent {
     private web3: ShareService,
     private dialog: Dialog,
     private gearsetDb: GearsetsDB,
-    private electron: ElectronService,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
   ) {
     //
   }
@@ -90,7 +88,7 @@ export class GearsetsSharePageComponent {
             ...record,
             name: name,
           })
-        })
+        }),
       )
       .subscribe((record) => {
         this.router.navigate(['/gearsets', record.id], {

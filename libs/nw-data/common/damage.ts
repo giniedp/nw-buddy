@@ -264,6 +264,42 @@ export function pvpScaling(options: { attackerLevel: number; defenderLevel: numb
   return result
 }
 
+export interface DamageAttackingStats {
+  level: number
+  gearScore: number
+  isPlayer: boolean
+  attributes: Record<AttributeRef, number>
+
+  preferHigherScaling: boolean
+  convertPercent: number
+  convertScaling: Record<AttributeRef, number>
+  weaponScaling: Record<AttributeRef, number>
+  weaponGearScore: number
+  baseDamage: number
+  damageCoef: number
+
+  modPvp: number
+  modAmmo: number
+  modBase: number
+  modBaseConvert: number
+  modCrit: number
+  modEmpower: number
+  modEmpowerConvert: number
+  armorPenetration: number
+}
+
+export interface DamageDefendintStats {
+  level: number
+  gearScore: number
+  isPlayer: boolean
+  ratingWeapon: number
+  ratingConvert: number
+  modABSWeapon: number
+  modABSConvert: number
+  modWKNWeapon: number
+  modWKNConvert: number
+}
+
 export function calculateDamage(options: {
   attackerLevel: number
   attackerGearScore: number
@@ -450,6 +486,8 @@ export function calculateDamage(options: {
     crit: Math.floor(weaponDamageCritScaled),
     critMitigated: Math.floor(weaponDamageCritScaled * weaponMitigated),
     critFinal: Math.floor(weaponDamageCritScaled * (1 - weaponMitigated)),
+
+    mitigation: weaponMitigated,
   }
   const converted = {
     std: Math.floor(convertedDamage),
@@ -459,6 +497,8 @@ export function calculateDamage(options: {
     crit: Math.floor(convertedDamageCrit),
     critMitigated: Math.floor(convertedDamageCrit * convertedMitigated),
     critFinal: Math.floor(convertedDamageCrit * (1 - convertedMitigated)),
+
+    mitigation: convertedMitigated,
   }
   const total = {
     std: Math.floor(weapon.std + converted.std),
@@ -468,6 +508,8 @@ export function calculateDamage(options: {
     crit: Math.floor(weapon.crit + converted.crit),
     critMitigated: Math.floor(weapon.critMitigated + converted.critMitigated),
     critFinal: Math.floor(weapon.critFinal + converted.critFinal),
+
+    mitigation: weaponMitigated * weaponPercent + convertedMitigated * convertPercent
   }
 
   trace.log(`result =`)

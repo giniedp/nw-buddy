@@ -1,6 +1,5 @@
 import { Dialog } from '@angular/cdk/dialog'
 import { Injector } from '@angular/core'
-import { map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { eqCaseInsensitive } from '~/utils'
@@ -16,7 +15,8 @@ export function openHousingItemsPicker(options: {
   multiple?: boolean
   category?: string
 }) {
-  return DataViewPicker.open<HousingTableRecord>(options.dialog, {
+  return DataViewPicker.from<HousingTableRecord>({
+    injector: options.injector,
     title: options.title || 'Pick item',
     selection: options.selection,
     persistKey: 'housing-grid-picker',
@@ -30,12 +30,6 @@ export function openHousingItemsPicker(options: {
           rowSelection: options.multiple ? 'multiple' : 'single',
         }
       },
-    },
-    config: {
-      maxWidth: 1400,
-      maxHeight: 1200,
-      panelClass: ['w-full', 'h-full', 'p-4'],
-      injector: options.injector,
     },
   })
 }

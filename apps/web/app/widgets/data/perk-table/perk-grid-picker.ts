@@ -17,7 +17,8 @@ export function openPerksPicker(options: {
   multiple?: boolean
   source: Observable<PerkTableRecord[]>
 }) {
-  return DataViewPicker.open(options.dialog, {
+  return DataViewPicker.from({
+    injector: options.injector,
     title: options.title || 'Pick perk',
     selection: options.selection,
     // persistKey: `picker:perks-grid:${options.category || 'default'}`,
@@ -31,27 +32,5 @@ export function openPerksPicker(options: {
         }
       },
     },
-    config: {
-      maxWidth: 1400,
-      maxHeight: 1200,
-      panelClass: ['w-full', 'h-full', 'p-4'],
-      injector: options.injector,
-    },
   })
 }
-
-// private openPerksPicker(item: ItemDefinitionMaster, perkOrBucket: Perks | PerkBucket) {
-//   return DataTablePickerDialog.open(this.dialog, {
-//     title: 'Choose Perk',
-//     selection: ('PerkID' in perkOrBucket ? perkOrBucket : null)?.PerkID,
-//     adapter: PerksTableAdapter.provider({
-//       source: this.getAplicablePerks(item, perkOrBucket),
-//     }),
-//     config: {
-//       maxWidth: 1400,
-//       maxHeight: 1200,
-//       panelClass: ['w-full', 'h-full', 'p-4'],
-//       injector: this.injector,
-//     },
-//   })
-// }

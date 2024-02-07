@@ -1,13 +1,12 @@
+import { DialogModule } from '@angular/cdk/dialog'
+import { CommonModule } from '@angular/common'
 import { ChangeDetectorRef, Component, Injector, importProvidersFrom } from '@angular/core'
 import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
-import { AppTestingModule } from '~/test'
-import { of, take } from 'rxjs'
-import { CommonModule } from '@angular/common'
-import { DataViewModule } from './data-view.module'
-import { DataViewPicker } from './data-view-picker-dialog.component'
-import { Dialog, DialogModule } from '@angular/cdk/dialog'
-import { ItemTableAdapter } from '~/widgets/data/item-table'
 import { NwModule } from '~/nw'
+import { AppTestingModule } from '~/test'
+import { ItemTableAdapter } from '~/widgets/data/item-table'
+import { DataViewPicker } from './data-view-picker.component'
+import { DataViewModule } from './data-view.module'
 import { DataViewMode } from './data-view.service'
 
 @Component({
@@ -24,27 +23,24 @@ import { DataViewMode } from './data-view.service'
 export class StoryComponent {
   public result: any
 
-  public constructor(private dialog: Dialog, private injector: Injector, private cdRef: ChangeDetectorRef) {
+  public constructor(
+    private injector: Injector,
+    private cdRef: ChangeDetectorRef,
+  ) {
     //
   }
   public pickItem(mode: DataViewMode = null) {
-    DataViewPicker.open(this.dialog, {
+    DataViewPicker.open({
+      injector: this.injector,
       title: 'Pick Item',
       selection: this.result,
       displayMode: mode ? [mode] : null,
       dataView: {
         adapter: ItemTableAdapter,
       },
-      config: {
-        width: '50vw',
-        height: '50vh',
-        injector: this.injector,
-      },
+    }).then((result) => {
+      this.result = result
     })
-      .closed.pipe(take(1))
-      .subscribe((result) => {
-        this.result = result
-      })
   }
 }
 

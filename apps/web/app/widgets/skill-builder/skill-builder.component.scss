@@ -1,11 +1,4 @@
 :host {
-  .grid {
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    width: 100%;
-  }
-  nwb-skill-tree {
-    width: 100%;
-  }
   img {
     filter: grayscale(1) sepia(0.5) opacity(0.5);
     // transform: scale(1.5);

@@ -1,6 +1,24 @@
-import { Injectable } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
-import { combineLatest } from 'rxjs'
+import { Injectable, computed, inject } from '@angular/core'
+import { patchState, signalState } from '@ngrx/signals'
+import { NwDataService } from '~/data'
+import { selectSignal } from '~/utils'
+import { selectElementalArmor, selectModsArmor, selectPhysicalArmor } from './mods/armoring'
+import { selectModsABS } from './mods/mods-abs'
+import { selectModsArmorPenetration } from './mods/mods-armor-penetration'
+import { selectModsCooldown } from './mods/mods-cooldowns'
+import { selectModsCraftingGS } from './mods/mods-crafting-gs'
+import { selectModsCrit } from './mods/mods-crit'
+import { selectDamageCoef, selectModAmmo, selectModBaseDamage, selectModBaseDamageConversion, selectPvpBalance } from './mods/mods-damage'
+import { selectModsDMG } from './mods/mods-dmg'
+import { selectModsEFF, selectModsMULT } from './mods/mods-eff'
+import { selectModsEffectReduction } from './mods/mods-effect-reduction'
+import { selectModsEXP } from './mods/mods-exp'
+import { selectModMaxHealth } from './mods/mods-max-health'
+import { selectModMaxMana } from './mods/mods-max-mana'
+import { selectModMaxStamina } from './mods/mods-max-stamina'
+import { selectModsROL } from './mods/mods-rol'
+import { selectModsThreat } from './mods/mods-threat'
+import { selectModsWKN } from './mods/mods-wkn'
 import {
   selectActiveAbilities,
   selectActiveConsumables,
@@ -12,6 +30,7 @@ import {
   selectConsumableEffects,
   selectDamageTableRow,
   selectEquipLoad,
+  selectEquipLoadBonus,
   selectEquppedArmor,
   selectEquppedConsumables,
   selectEquppedTools,
@@ -22,28 +41,26 @@ import {
   selectWeaponAbilities,
   selectWeaponAttacks,
 } from './selectors'
-import { selectElementalArmor, selectModsArmor, selectPhysicalArmor } from './stats/armoring'
-import { selectModsABS } from './stats/mods-abs'
-import { selectCooldownMods } from './stats/mods-cooldowns'
-import { selectDamageMods, selectWeaponDamage } from './stats/mods-damage'
-import { selectModsDMG } from './stats/mods-dmg'
-import { selectModsEFF, selectModsMULT } from './stats/mods-eff'
-import { selectStatusEffectReduction } from './stats/mods-effect-reduction'
-import { selectModsEXP } from './stats/mods-exp'
-import { selectModsCraftingGS } from './stats/mods-gs-crafting'
-import { selectModsROL } from './stats/mods-rol'
-import { selectMaxHealth, selectMaxMana, selectMaxStamina } from './stats/vitality'
-import { ActiveMods, AttributeModsSource, DbSlice, MannequinState, Observed } from './types'
-import { selectModsWKN } from './stats/mods-wkn'
-import { NwDataService } from '~/data'
-
-const config = {
-  debounce: true,
-}
+import { ActiveMods, DbSlice, MannequinState } from './types'
+import { DamageAttackingStats, damageScaleAttrs } from '@nw-data/common'
 
 @Injectable()
-export class Mannequin extends ComponentStore<MannequinState> {
-  public readonly db$ = this.select<Observed<DbSlice>>(
+export class Mannequin {
+  private db = inject(NwDataService)
+
+  public readonly state = signalState<MannequinState>({
+    level: 1,
+    equippedItems: [],
+    weaponActive: 'primary',
+    weaponUnsheathed: true,
+    myHealthPercent: 1,
+    myManaPercent: 1,
+    myStaminaPercent: 1,
+    numAroundMe: 1,
+    numHits: 1,
+  })
+
+  public readonly data = selectSignal<DbSlice>(
     {
       items: this.db.itemsMap,
       housings: this.db.housingItemsMap,
@@ -69,203 +86,172 @@ export class Mannequin extends ComponentStore<MannequinState> {
       pvpBalanceOutpostrush: this.db.data.pvpbalancetablesPvpbalanceOutpostrush(),
       pvpBalanceWar: this.db.data.pvpbalancetablesPvpbalanceWar(),
     },
-    config,
-  )
-
-  public readonly dbReady$ = this.select(this.db$, () => true)
-
-  public readonly level$ = this.select(({ level }) => level)
-  public readonly myHpPercent$ = this.select(({ myHealthPercent }) => myHealthPercent)
-  public readonly myManaPercent$ = this.select(({ myManaPercent }) => myManaPercent)
-  public readonly myStaminaPercent$ = this.select(({ myStaminaPercent }) => myStaminaPercent)
-  public readonly numAroundMe$ = this.select(({ numAroundMe }) => numAroundMe)
-  public readonly numHits$ = this.select(({ numHits }) => numHits)
-  public readonly combatMode$ = this.select(({ combatMode }) => combatMode || 'pve')
-  public readonly isPvP$ = this.select(this.combatMode$, (it) => it !== 'pve')
-  public readonly isPvE$ = this.select(this.combatMode$, (it) => it === 'pve')
-  public readonly gearScore$ = this.select(({ equippedItems, level }) => selectGearScore(equippedItems, level))
-  public readonly equippedItems$ = this.select(({ equippedItems }) => equippedItems)
-
-  public readonly equippedArmor$ = this.select(this.db$, this.state$, selectEquppedArmor, config)
-  public readonly equippedWeapons$ = this.select(this.db$, this.state$, selectEquppedWeapons, config)
-  public readonly equippedConsumables$ = this.select(this.db$, this.state$, selectEquppedConsumables, config)
-  public readonly equippedTools$ = this.select(this.db$, this.state$, selectEquppedTools, config)
-  public readonly equippedTrophies$ = this.select(this.db$, this.state$, selectPlacedHousings, config)
-
-  public readonly activeConsumables$ = this.select(this.db$, this.state$, selectActiveConsumables, config)
-  public readonly consumableEffects$ = this.select(this.db$, this.state$, selectConsumableEffects, config)
-
-  public readonly activeWeapon$ = this.select(this.db$, this.state$, selectActiveWeapon, config)
-  public readonly activeWeaponAttacks$ = this.select(
-    this.db$,
-    this.activeWeapon$,
-    this.state$,
-    selectWeaponAttacks,
-    config,
-  )
-  public readonly activeWeaponAbilities$ = this.select(
-    this.db$,
-    this.activeWeapon$,
-    this.state$,
-    selectWeaponAbilities,
-    config,
-  )
-  public readonly activeDamageTableRow$ = this.select(
-    this.activeWeaponAttacks$,
-    this.state$,
-    selectDamageTableRow,
-    config,
-  )
-
-  public readonly activePerks$ = this.select(this.db$, this.state$, selectActivePerks, config)
-  public readonly equipLoad$ = this.select(this.db$, this.state$, this.activePerks$, selectEquipLoad, config)
-
-  public readonly activeAttributes$ = this.select(
-    this.db$,
-    combineLatest<Observed<AttributeModsSource>>({
-      perks: this.activePerks$,
-      effects: this.consumableEffects$,
-    }),
-    this.state$,
-    selectAttributes,
-    config,
-  )
-
-  public readonly activeMagnify$ = this.select(
-    this.db$,
-    combineLatest<Observed<AttributeModsSource>>({
-      perks: this.activePerks$,
-      effects: this.consumableEffects$,
-    }),
-    this.state$,
-    selectPlacingMods,
-    config,
-  )
-
-  public readonly activeAbilities$ = this.select(
-    this.db$,
-    this.activeAttributes$,
-    this.activeWeapon$,
-    this.activeDamageTableRow$,
-    this.activePerks$,
-    this.state$,
-    selectActiveAbilities,
-    config,
-  )
-
-  public readonly allAbilities$ = this.select(
-    this.db$,
-    this.activeAttributes$,
-    this.activeWeapon$,
-    this.activeDamageTableRow$,
-    this.activePerks$,
-    this.state$,
-    selectAllAbilities,
-    config,
-  )
-
-  public readonly activeEffects$ = this.select(this.db$, this.activePerks$, this.state$, selectActveEffects)
-
-  public readonly activeMods$ = this.select<Observed<ActiveMods>>(
-    {
-      // damageRow: this.activeDamageTableRow$,
-      attributes: this.activeAttributes$,
-      abilities: this.activeAbilities$,
-      effects: this.activeEffects$,
-      perks: this.activePerks$,
-      consumables: this.activeConsumables$,
+    (it) => {
+      return {
+        items: it?.items ?? new Map(),
+        housings: it?.housings ?? new Map(),
+        weapons: it?.weapons ?? new Map(),
+        runes: it?.runes ?? new Map(),
+        armors: it?.armors ?? new Map(),
+        ammos: it?.ammos ?? new Map(),
+        consumables: it?.consumables ?? new Map(),
+        perks: it?.perks ?? new Map(),
+        effects: it?.effects ?? new Map(),
+        effectCategories: it?.effectCategories ?? new Map(),
+        abilities: it?.abilities ?? new Map(),
+        affixes: it?.affixes ?? new Map(),
+        attrStr: it?.attrStr ?? [],
+        attrDex: it?.attrDex ?? [],
+        attrInt: it?.attrInt ?? [],
+        attrFoc: it?.attrFoc ?? [],
+        attrCon: it?.attrCon ?? [],
+        cooldowns: it?.cooldowns ?? new Map(),
+        damagaTable: it?.damagaTable ?? [],
+        pvpBalanceArena: it?.pvpBalanceArena ?? [],
+        pvpBalanceOpenworld: it?.pvpBalanceOpenworld ?? [],
+        pvpBalanceOutpostrush: it?.pvpBalanceOutpostrush ?? [],
+        pvpBalanceWar: it?.pvpBalanceWar ?? [],
+      }
     },
-    config,
   )
 
-  public readonly allMods$ = this.select<Observed<ActiveMods>>(
-    {
-      // damageRow: this.activeDamageTableRow$,
-      attributes: this.activeAttributes$,
-      abilities: this.allAbilities$,
-      effects: this.activeEffects$,
-      perks: this.activePerks$,
-      consumables: this.activeConsumables$,
-    },
-    config,
-  )
+  public readonly dbReady = computed(() => !!this.data())
 
-  public readonly statRatingElemental$ = this.select(
-    this.db$,
-    this.activeMods$,
-    this.state$,
-    selectElementalArmor,
-    config,
-  )
+  public readonly level = computed(() => this.state().level)
+  public readonly myHpPercent = computed(() => this.state().myHealthPercent)
+  public readonly myManaPercent = computed(() => this.state().myManaPercent)
+  public readonly myStaminaPercent = computed(() => this.state().myStaminaPercent)
+  public readonly numAroundMe = computed(() => this.state().numAroundMe)
+  public readonly numHits = computed(() => this.state().numHits)
+  public readonly combatMode = computed(() => this.state().combatMode || 'pve')
+  public readonly isPvP = computed(() => this.combatMode() !== 'pve')
+  public readonly isPvE = computed(() => this.combatMode() !== 'pve')
+  public readonly gearScore = computed(() => selectGearScore(this.equippedItems(), this.level()))
+  public readonly equippedItems = computed(() => this.state().equippedItems)
 
-  public readonly statRatingPhysical$ = this.select(
-    this.db$,
-    this.activeMods$,
-    this.state$,
-    selectPhysicalArmor,
-    config,
-  )
+  public readonly equippedArmor = computed(() => selectEquppedArmor(this.data(), this.equippedItems()))
+  public readonly equippedWeapons = computed(() => selectEquppedWeapons(this.data(), this.equippedItems()))
+  public readonly equippedConsumables = computed(() => selectEquppedConsumables(this.data(), this.equippedItems()))
+  public readonly equippedTools = computed(() => selectEquppedTools(this.data(), this.equippedItems()))
+  public readonly equippedTrophies = computed(() => selectPlacedHousings(this.data(), this.equippedItems()))
 
-  public readonly statCooldown$ = this.select(
-    this.db$,
-    this.activeConsumables$,
-    this.activeWeaponAbilities$,
-    this.allMods$,
-    selectCooldownMods,
-    config,
-  )
-  public readonly statHealth$ = this.select(this.db$, this.activeMods$, this.state$, selectMaxHealth, config)
-  public readonly statMana$ = this.select(this.activeMods$, selectMaxMana, config)
-  public readonly statStamina$ = this.select(this.activeMods$, selectMaxStamina, config)
-  public readonly statExperienceBonus$ = this.select(this.activeMods$, this.state$, selectModsEXP, config)
-  public readonly statEffectivenessBonus$ = this.select(this.activeMods$, this.state$, selectModsEFF, config)
-  public readonly statYieldBonus$ = this.select(this.activeMods$, this.state$, selectModsMULT, config)
+  public readonly activeConsumables = computed(() => selectActiveConsumables(this.data(), this.equippedItems()))
+  public readonly consumableEffects = computed(() => selectConsumableEffects(this.data(), this.equippedItems()))
 
-  public readonly statDamageBase$ = this.select(
-    this.activeMods$,
-    this.activeWeapon$,
-    this.activeDamageTableRow$,
-    this.equipLoad$,
-    this.db$,
-    this.state$,
-    selectWeaponDamage,
-    { debounce: true },
-  )
-
-  public readonly statDamageMods$ = this.select(
-    this.activeMods$,
-    this.activeWeapon$,
-    this.state$,
-    selectDamageMods,
-    config,
-  )
-
-  public readonly statWkn$ = this.select(this.activeMods$, selectModsWKN, config)
-  public readonly statDmg$ = this.select(this.db$, this.activeMods$, this.state$, selectModsDMG, config)
-  public readonly statAbs$ = this.select(this.db$, this.activeMods$, this.state$, selectModsABS, config)
-  public readonly statArmor$ = this.select(this.db$, this.activeMods$, this.state$, selectModsArmor, config)
-  public readonly statRol$ = this.select(this.activeMods$, this.state$, selectModsROL, config)
-  public readonly statCraftGS$ = this.select(this.activeMods$, selectModsCraftingGS, config)
-  public readonly statEffectReduction$ = this.select(this.db$, this.allMods$, selectStatusEffectReduction, {
-    debounce: true,
+  public readonly activeWeapon = computed(() => {
+    return selectActiveWeapon(this.data(), this.state())
+  })
+  public readonly activeWeaponAttacks = computed(() => {
+    return selectWeaponAttacks(this.data(), this.activeWeapon())
+  })
+  public readonly activeWeaponAbilities = computed(() => {
+    return selectWeaponAbilities(this.data(), this.state(), this.activeWeapon())
+  })
+  public readonly activeDamageTableRow = computed(() => {
+    return selectDamageTableRow(this.activeWeaponAttacks(), this.state())
+  })
+  public readonly activePerks = computed(() => {
+    return selectActivePerks(this.data(), this.state(), this.activeWeapon())
+  })
+  public readonly equipLoad = computed(() => {
+    return selectEquipLoad(this.data(), this.state(), this.activePerks())
+  })
+  public readonly activeBonuses = computed(() => {
+    return selectEquipLoadBonus(this.equipLoad())
+  })
+  public readonly activeAttributes = computed(() => {
+    return selectAttributes(this.data(), this.state(), {
+      perks: this.activePerks(),
+      effects: this.consumableEffects(),
+    })
+  })
+  public readonly activeMagnify = computed(() => {
+    return selectPlacingMods(this.data(), {
+      perks: this.activePerks(),
+      effects: this.consumableEffects(),
+    })
+  })
+  public readonly activeAbilities = computed(() => {
+    return selectActiveAbilities(
+      this.data(),
+      this.state(),
+      this.activeAttributes(),
+      this.activeWeapon(),
+      this.activeDamageTableRow(),
+      this.activePerks(),
+    )
+  })
+  public readonly allAbilities = computed(() => {
+    return selectAllAbilities(
+      this.data(),
+      this.state(),
+      this.activeAttributes(),
+      this.activeWeapon(),
+      this.activePerks(),
+    )
+  })
+  public readonly activeEffects = computed(() => {
+    return selectActveEffects(this.data(), this.state(), this.activePerks())
+  })
+  public readonly activeMods = computed<ActiveMods>(() => {
+    return {
+      bonuses: this.activeBonuses(),
+      attributes: this.activeAttributes(),
+      abilities: this.activeAbilities(),
+      effects: this.activeEffects(),
+      perks: this.activePerks(),
+      consumables: this.activeConsumables(),
+    }
+  })
+  public readonly allMods = computed<ActiveMods>(() => {
+    return {
+      bonuses: this.activeBonuses(),
+      attributes: this.activeAttributes(),
+      abilities: this.allAbilities(),
+      effects: this.activeEffects(),
+      perks: this.activePerks(),
+      consumables: this.activeConsumables(),
+    }
   })
 
-  public constructor(private db: NwDataService) {
-    super({
-      level: 1,
-      equippedItems: [],
-      weaponActive: 'primary',
-      weaponUnsheathed: true,
-      myHealthPercent: 1,
-      myManaPercent: 1,
-      myStaminaPercent: 1,
-      numAroundMe: 1,
-      numHits: 1,
-    })
-  }
+  public readonly statRatingElemental = computed(() => {
+    return selectElementalArmor(this.data(), this.activeMods(), this.state())
+  })
+
+  public readonly statRatingPhysical = computed(() => {
+    return selectPhysicalArmor(this.data(), this.activeMods(), this.state())
+  })
+
+  public readonly modCooldownReduction = computed(() => selectModsCooldown(this.activeConsumables(), this.allMods()))
+  public readonly modEffectReduction = computed(() => selectModsEffectReduction(this.activeMods()))
+
+  public readonly modMaxHealth = computed(() => selectModMaxHealth(this.data(), this.activeMods(), this.state()))
+  public readonly modMaxMana = computed(() => selectModMaxMana(this.activeMods()))
+  public readonly modMaxStamina = computed(() => selectModMaxStamina(this.activeMods()))
+
+  public readonly modEXP = computed(() => selectModsEXP(this.activeMods()))
+  public readonly modEFF = computed(() => selectModsEFF(this.activeMods()))
+  public readonly modMULT = computed(() => selectModsMULT(this.activeMods()))
+  public readonly modROL = computed(() => selectModsROL(this.activeMods()))
+  public readonly modCraftGS = computed(() => selectModsCraftingGS(this.activeMods()))
+
+  public readonly modWKN = computed(() => selectModsWKN(this.activeMods()))
+  public readonly modDMG = computed(() => selectModsDMG(this.data(), this.activeMods()))
+  public readonly modABS = computed(() => selectModsABS(this.data(), this.activeMods()))
+  public readonly modArmor = computed(() => selectModsArmor(this.data(), this.activeMods(), this.state()))
+
+  public readonly modPvP = computed(() => selectPvpBalance(this.data(), this.state(), this.activeWeapon()))
+  public readonly modAmmo = computed(() => selectModAmmo(this.activeWeapon()))
+  public readonly modCrit = computed(() => selectModsCrit(this.activeMods(), this.activeWeapon()))
+  public readonly modBaseDamage = computed(() => selectModBaseDamage(this.activeMods(), this.activeDamageTableRow()))
+  public readonly modBaseConversion = computed(() =>  selectModBaseDamageConversion(this.activeMods(), this.activeWeapon()))
+
+  public readonly modThreat = computed(() => selectModsThreat(this.activeMods()))
+  public readonly modArmorPenetration = computed(() => selectModsArmorPenetration(this.activeMods()))
+  public readonly modDmgCoef = computed(() => selectDamageCoef(this.activeDamageTableRow()))
 
   public reset() {
-    this.patchState({
+    patchState(this.state, {
       level: 1,
       equippedItems: [],
       weaponActive: 'primary',

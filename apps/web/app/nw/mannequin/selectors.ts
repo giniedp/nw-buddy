@@ -27,6 +27,7 @@ import {
   ActiveAbility,
   ActiveAttribute,
   ActiveAttributes,
+  ActiveBonus,
   ActiveConsumable,
   ActiveEffect,
   ActivePerk,
@@ -36,10 +37,6 @@ import {
   EquippedItem,
   MannequinState,
 } from './types'
-
-export function selectLevel({ level }: MannequinState) {
-  return level
-}
 
 export function selectActiveWeapon(
   { items, weapons, ammos }: DbSlice,
@@ -69,7 +66,17 @@ export function selectActiveWeapon(
   }
 }
 
-export function selectWeaponAttacks(db: DbSlice, weapon: ActiveWeapon, state: MannequinState) {
+function isWeaponActive(weapon: 'primary' | 'secondary', slot: EquipSlotId) {
+  if (weapon === 'primary' && slot === 'weapon1') {
+    return true
+  }
+  if (weapon === 'secondary' && slot === 'weapon2') {
+    return true
+  }
+  return false
+}
+
+export function selectWeaponAttacks(db: DbSlice, weapon: ActiveWeapon) {
   const weaponSpec = NW_WEAPON_TYPES.find((it) => it.WeaponTag === weapon.weaponTag)
   if (weapon.weaponTag && !weaponSpec) {
     return []
@@ -103,6 +110,9 @@ export function selectDamageTableRow(rows: Damagetable[], state: MannequinState)
   return rows?.find((it) => it.DamageID === state.selectedAttack) || rows?.[0]
 }
 
+
+
+
 export function selectEquipLoad(
   { items, weapons, armors }: DbSlice,
   { equippedItems }: MannequinState,
@@ -121,35 +131,35 @@ export function selectEquipLoad(
   return sum(weights)
 }
 
-export function selectEquppedArmor({ items }: DbSlice, { equippedItems }: MannequinState) {
+export function selectEquppedArmor({ items }: DbSlice, equippedItems: EquippedItem[]) {
   return equippedItems.filter((it) => {
     const item = items.get(it.itemId)
     return isItemArmor(item) || isItemJewelery(item)
   })
 }
 
-export function selectEquppedWeapons({ items }: DbSlice, { equippedItems }: MannequinState) {
+export function selectEquppedWeapons({ items }: DbSlice, equippedItems: EquippedItem[]) {
   return equippedItems.filter((it) => {
     const item = items.get(it.itemId)
     return isItemWeapon(item) || isItemShield(item)
   })
 }
 
-export function selectEquppedTools({ items }: DbSlice, { equippedItems }: MannequinState) {
+export function selectEquppedTools({ items }: DbSlice, equippedItems: EquippedItem[]) {
   return equippedItems.filter((it) => {
     const item = items.get(it.itemId)
     return isItemTool(item)
   })
 }
 
-export function selectEquppedConsumables({ items }: DbSlice, { equippedItems }: MannequinState) {
+export function selectEquppedConsumables({ items }: DbSlice, equippedItems: EquippedItem[]) {
   return equippedItems.filter((it) => {
     const item = items.get(it.itemId)
     return isItemConsumable(item)
   })
 }
 
-export function selectPlacedHousings({ housings }: DbSlice, { equippedItems }: MannequinState) {
+export function selectPlacedHousings({ housings }: DbSlice, equippedItems: EquippedItem[]) {
   return equippedItems.filter((it) => !!housings.get(it.itemId)?.HousingStatusEffect)
 }
 
@@ -180,8 +190,7 @@ export function selectEquippedPerks(
     .filter((it) => !!it?.perk)
 }
 
-export function selectActivePerks(db: DbSlice, state: MannequinState) {
-  const weapon = selectActiveWeapon(db, state)
+export function selectActivePerks(db: DbSlice, state: MannequinState, weapon: ActiveWeapon) {
   return selectEquippedPerks(db, state).filter((it) => isPerkActive(it, weapon))
 }
 
@@ -204,8 +213,8 @@ export function selectActivatedAbilities({ abilities }: DbSlice, { activatedAbil
 
 export function selectWeaponAbilities(
   { abilities }: DbSlice,
-  { weaponTag }: ActiveWeapon,
   { equippedSkills1, equippedSkills2 }: MannequinState,
+  { weaponTag }: ActiveWeapon,
 ) {
   return [equippedSkills1, equippedSkills2]
     .filter((it) => eqCaseInsensitive(it?.weapon, weaponTag))
@@ -236,24 +245,23 @@ export function selectPerkAbilities({ abilities, effects }: DbSlice, perks: Acti
 
 export function selectActiveAbilities(
   db: DbSlice,
+  state: MannequinState,
   attributes: ActiveAttributes,
   weapon: ActiveWeapon,
   attack: Damagetable,
   perks: ActivePerk[],
-  state: MannequinState,
 ) {
-  return selectAllAbilities(db, attributes, weapon, attack, perks, state).filter(({ ability }) =>
+  return selectAllAbilities(db, state, attributes, weapon, perks).filter(({ ability }) =>
     isActiveAbility(ability, attack, state),
   )
 }
 
 export function selectAllAbilities(
   db: DbSlice,
+  state: MannequinState,
   attributes: ActiveAttributes,
   weapon: ActiveWeapon,
-  attack: Damagetable,
   perks: ActivePerk[],
-  state: MannequinState,
 ) {
   return [
     //
@@ -266,7 +274,7 @@ export function selectAllAbilities(
       }
     }),
     //
-    selectWeaponAbilities(db, weapon, state).map((it): ActiveAbility => {
+    selectWeaponAbilities(db, state, weapon).map((it): ActiveAbility => {
       return {
         ability: it,
         selfEffects: getStatusEffectList(it?.SelfApplyStatusEffect, db.effects),
@@ -280,12 +288,12 @@ export function selectAllAbilities(
   ].flat()
 }
 
-export function selectActveEffects(db: DbSlice, perks: ActivePerk[], state: MannequinState) {
+export function selectActveEffects(db: DbSlice, state: MannequinState, perks: ActivePerk[]) {
   return [
     // assume consumable as being consumed and active
-    selectConsumableEffects(db, state),
+    selectConsumableEffects(db, state.equippedItems),
     // housing effects are always active
-    selectHousingEffects(db, state),
+    selectHousingEffects(db, state.equippedItems),
     //
     selectPerkEffects(db, perks),
     // enforced effects like town buffs
@@ -295,7 +303,7 @@ export function selectActveEffects(db: DbSlice, perks: ActivePerk[], state: Mann
     .filter((it) => !!it)
 }
 
-export function selectActiveConsumables({ items, consumables, effects }: DbSlice, { equippedItems }: MannequinState) {
+export function selectActiveConsumables({ items, consumables }: DbSlice, equippedItems: EquippedItem[]) {
   return equippedItems
     .map((it): ActiveConsumable => {
       const item = items.get(it.itemId)
@@ -308,7 +316,7 @@ export function selectActiveConsumables({ items, consumables, effects }: DbSlice
     .filter((it) => !!it?.consumable)
 }
 
-export function selectConsumableEffects({ items, consumables, effects }: DbSlice, { equippedItems }: MannequinState) {
+export function selectConsumableEffects({ items, consumables, effects }: DbSlice, equippedItems: EquippedItem[]) {
   return equippedItems
     .map((it): ActiveEffect[] => {
       const consumable = consumables.get(it.itemId)
@@ -326,7 +334,7 @@ export function selectConsumableEffects({ items, consumables, effects }: DbSlice
     .filter((it) => !!it?.effect)
 }
 
-export function selectHousingEffects({ housings, effects }: DbSlice, { equippedItems }: MannequinState) {
+export function selectHousingEffects({ housings, effects }: DbSlice, equippedItems: EquippedItem[]) {
   return equippedItems
     .map((it): ActiveEffect[] => {
       const housing = housings.get(it.itemId)
@@ -372,17 +380,7 @@ export function selectEnforcedEffects({ effects }: DbSlice, { enforcedEffects }:
     .filter((it) => !!it.effect)
 }
 
-function isWeaponActive(weapon: 'primary' | 'secondary', slot: EquipSlotId) {
-  if (weapon === 'primary' && slot === 'weapon1') {
-    return true
-  }
-  if (weapon === 'secondary' && slot === 'weapon2') {
-    return true
-  }
-  return false
-}
-
-function isPerkActive({ slot, perk, affix, item }: ActivePerk, weapon: ActiveWeapon) {
+function isPerkActive({ slot, perk, item }: ActivePerk, weapon: ActiveWeapon) {
   let condition = perk?.ConditionEvent
   if (condition === 'OnEquip') {
     return true
@@ -409,11 +407,11 @@ export function selectEquppedAttributes(
   { perks }: AttributeModsSource,
 ) {
   const result: Record<AttributeRef, number> = {
-    con: minBy(attrCon, (it) => it.Level).Level,
-    dex: minBy(attrDex, (it) => it.Level).Level,
-    foc: minBy(attrFoc, (it) => it.Level).Level,
-    int: minBy(attrInt, (it) => it.Level).Level,
-    str: minBy(attrStr, (it) => it.Level).Level,
+    con: minBy(attrCon, (it) => it.Level)?.Level ?? 0,
+    dex: minBy(attrDex, (it) => it.Level)?.Level ?? 0,
+    foc: minBy(attrFoc, (it) => it.Level)?.Level ?? 0,
+    int: minBy(attrInt, (it) => it.Level)?.Level ?? 0,
+    str: minBy(attrStr, (it) => it.Level)?.Level ?? 0,
   }
 
   for (const { perk, gearScore, affix, item } of perks) {
@@ -476,7 +474,21 @@ export function selectPlacingMods(db: DbSlice, { perks }: AttributeModsSource) {
   return result.map((it) => it || 0)
 }
 
-export function selectAttributes(db: DbSlice, mods: AttributeModsSource, state: MannequinState): ActiveAttributes {
+export function selectEquipLoadBonus(equipLoad: number): ActiveBonus[] {
+  const result: ActiveBonus[] = []
+  if (equipLoad < 13) {
+    result.push({ key: 'BaseDamage', value: 0.2, name: 'Light Equip Load' })
+    result.push({ key: 'HealScalingValueMultiplier', value: 0.3, name: 'Light Equip Load' })
+  } else if (equipLoad < 23) {
+    result.push({ key: 'BaseDamage', value: 0.1, name: 'Medium Equip Load' })
+    result.push({ key: 'HealScalingValueMultiplier', value: 0.1, name: 'Medium Equip Load' })
+  } else {
+    result.push({ key: 'HealScalingValueMultiplier', value: -0.3, name: 'Heavy Equip Load' })
+  }
+  return result
+}
+
+export function selectAttributes(db: DbSlice, state: MannequinState, mods: AttributeModsSource): ActiveAttributes {
   const attrsBase = selectEquppedAttributes(db, mods)
   const attrsBonus = selectBonusAttributes(db, mods)
   const attrsAssigned = state.assignedAttributes

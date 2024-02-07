@@ -1,0 +1,64 @@
+<h3 class="text-lg uppercase relative text-center font-serif text-nw-description mb-3 nw-bg-title bg-bottom">
+  Vitality
+</h3>
+<div class="grid grid-cols-dl gap-x-1 font-nimbus items-baseline">
+  <span class="text-right font-bold min-w-14 cursor-help" [tooltip]="tplHealth" [tooltipClass]="'p-0'" nwbFlash>
+    {{ health()?.value ?? 0 | number: '0.0-0' }}
+  </span>
+  <div>
+    <span class="opacity-50 cursor-help" [tooltip]="tplHealth" [tooltipClass]="'p-0'">
+      {{ 'ui_health' | nwText }}
+    </span>
+    <ng-template #tplHealth>
+      <nwb-modifier-tip [data]="health()" [title]="'ui_health'" [percent]="false" [format]="'0.1-1'" />
+    </ng-template>
+  </div>
+
+  <span class="text-right font-bold cursor-help" nwbFlash [tooltip]="tplMana" [tooltipClass]="'p-0'">
+    {{ mana()?.value ?? 0 | number: '0.0-0' }}
+  </span>
+  <div>
+    <span class="opacity-50 cursor-help" [tooltip]="tplMana" [tooltipClass]="'p-0'">
+      {{ 'ui_mana' | nwText }}
+    </span>
+    <ng-template #tplMana>
+      <nwb-modifier-tip [data]="mana()" [title]="'ui_mana'" [percent]="false" [format]="'0.0-0'" />
+    </ng-template>
+  </div>
+
+  <span class="text-right font-bold cursor-help" nwbFlash [tooltip]="tplStamina" [tooltipClass]="'p-0'">
+    {{ stamina()?.value ?? 0 | number: '0.0-0' }}
+  </span>
+  <div>
+    <span class="opacity-50 cursor-help" [tooltip]="tplStamina" [tooltipClass]="'p-0'">
+      {{ 'ui_stamina' | nwText }}
+    </span>
+    <ng-template #tplStamina>
+      <nwb-modifier-tip [data]="stamina()" [title]="'ui_stamina'" [percent]="false" [format]="'0.0-0'" />
+    </ng-template>
+  </div>
+
+  <span class="text-right font-bold cursor-help" nwbFlash [tooltip]="tplPhysical" [tooltipClass]="'p-0'">
+    {{ physicalRating()?.value ?? 0 | number: '0.0-0' }}
+  </span>
+  <div>
+    <span class="opacity-50 cursor-help" [tooltip]="tplPhysical" [tooltipClass]="'p-0'">
+      {{ 'ui_physical' | nwText }}
+    </span>
+    <ng-template #tplPhysical>
+      <nwb-modifier-tip [data]="physicalRating()" [title]="'ui_physical'" [percent]="false" [format]="'0.1-1'" />
+    </ng-template>
+  </div>
+
+  <span class="text-right font-bold cursor-help" nwbFlash [tooltip]="tplElemental" [tooltipClass]="'p-0'">
+    {{ elementalRating()?.value ?? 0 | number: '0.0-0' }}
+  </span>
+  <div>
+    <span class="opacity-50 cursor-help" [tooltip]="tplElemental" [tooltipClass]="'p-0'">
+      {{ 'ui_elemental' | nwText }}
+    </span>
+    <ng-template #tplElemental>
+      <nwb-modifier-tip [data]="elementalRating()" [title]="'ui_elemental'" [percent]="false" [format]="'0.1-1'" />
+    </ng-template>
+  </div>
+</div>

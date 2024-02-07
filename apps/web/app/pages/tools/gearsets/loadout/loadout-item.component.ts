@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject
 import { RouterModule } from '@angular/router'
 import { CharacterStore, GearsetRecord, GearsetSignalStore } from '~/data'
 import { NwModule } from '~/nw'
-import { GersetSquareSlotComponent } from '../slots'
+import { GersetSquareSlotComponent } from './square-slot.component'
 
 @Component({
   standalone: true,
@@ -21,6 +21,17 @@ export class GearsetLoadoutItemComponent {
   public set geasrsetId(value: string) {
     this.store.connectGearsetDB(value)
   }
+  public get gearsetId() {
+    return this.store.gearset()?.id
+  }k
+
+  @Input()
+  public set gearset(value: GearsetRecord) {
+    this.store.connectGearset(value)
+  }
+  public get gearset() {
+    return this.store.gearset()
+  }
 
   @Input()
   public disableHead = false
@@ -31,9 +42,6 @@ export class GearsetLoadoutItemComponent {
   @Output()
   public createClicked = new EventEmitter<void>()
 
-  protected get gearset() {
-    return this.store.gearset()
-  }
 
   protected get gearScore() {
     return this.store.gearScore()

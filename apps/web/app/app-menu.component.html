@@ -1,40 +1,36 @@
-@if (groups(); as data) {
-  <ion-header>
-    <div class="tabs tabs-bordered flex-none">
-      @for (node of data; track $index) {
-        <button
-          class="tab flex-1 hover:bg-base-100 h-12"
-          [class.tab-active]="node.active"
-          (click)="onGroupActive(node.category)"
-        >
-          <nwb-icon [icon]="node.icon" class="w-4 h-4 mr-1" />
-        </button>
+<ion-header>
+  <ion-toolbar>
+    <ion-segment [value]="active" (ionChange)="handleSegmentChange($event)">
+      @for (node of menu; track $index) {
+        <ion-segment-button [value]="node.category">
+          <nwb-icon [icon]="node.icon" class="w-4 h-4" />
+        </ion-segment-button>
       }
-    </div>
-  </ion-header>
-  <ion-content>
-    @for (node of data; track $index) {
-      <ul class="menu menu-compact flex-none flex-nowrap m-0 p-0 " [class.hidden]="!node.active">
-        @for (item of node.items; track $index) {
-          @if (item.divider) {
-            <li></li>
-          }
-          <li
-            [routerLinkActive]="['border-l-4', 'border-primary']"
-            (isActiveChange)="$event ? onGroupActive(node.category) : null"
-          >
-            <a [routerLink]="item.path" nwbMenuClose class="rounded-none">
-              @if (item.icon) {
-                <img [nwImage]="item.icon" class="w-5 h-5" />
-              }
-              {{ item.label }}
-            </a>
-          </li>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  @for (node of menu; track $index) {
+    <ul class="menu menu-compact flex-none flex-nowrap m-0 p-0" [class.hidden]="node.category !== active">
+      @for (item of node.items; track $index) {
+        @if (item.divider) {
+          <li></li>
         }
-      </ul>
-    }
-  </ion-content>
-}
+        <li
+          [routerLinkActive]="['border-l-4', 'border-primary']"
+          (isActiveChange)="$event ? onGroupActive(node.category) : null"
+        >
+          <a [routerLink]="item.path" nwbMenuClose class="rounded-none">
+            @if (item.icon) {
+              <img [nwImage]="item.icon" class="w-5 h-5" />
+            }
+            {{ item.label }}
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</ion-content>
 <ion-footer>
   <div class="flex-none flex flex-row gap-2 p-4 items-center justify-center">
     <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="'/links'">Links</a>

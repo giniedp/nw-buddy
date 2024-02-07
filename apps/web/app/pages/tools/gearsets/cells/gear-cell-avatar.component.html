@@ -1,0 +1,31 @@
+@if (title) {
+  <h3 class="flex-none text-lg uppercase relative text-center font-serif text-nw-description mb-3 nw-bg-title bg-bottom">
+    {{ title | nwText }}
+  </h3>
+}
+<picture
+  class="
+    flex-1 block w-full aspect-video
+    relative rounded-md transition-all shadow-md
+    outline outline-transparent outline-2 outline-offset-0 hover:outline-offset-4
+  "
+  [class.cursor-pointer]="isEditable"
+  [class.hover:outline-primary]="isEditable"
+  (click)="handleAvatarClicked()"
+  [tabIndex]="isEditable ? 0 : -1"
+>
+  @if (image()) {
+    <img [src]="image()" class="absolute top-0 left-0 w-full h-full object-cover rounded-md" />
+  } @else {
+    <img [nwImage]="'assets/landing.webp'" class="absolute top-0 left-0 w-full h-full object-cover rounded-md" />
+  }
+  <img [nwImage]="'assets/landing-animation.webp'" class="absolute bottom-0 left-0 w-full" />
+
+  <div class="absolute bottom-0 left-0 p-2 flex flex-row items-center">
+    <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-14 h-14" />
+    <div class="text-6xl font-caslon relative top-1">{{ gearScore() | number: '0.0-0' }}</div>
+  </div>
+  @if (isEditable) {
+    <nwb-icon [icon]="iconMenu" class="w-4 h-4 absolute top-1 right-1 screenshot-hidden pointer-events-none" />
+  }
+</picture>

@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, Injector, inject } from '@angular/c
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { EQUIP_SLOTS, EquipSlot } from '@nw-data/common'
-import { filter, map, switchMap, take } from 'rxjs'
+import { filter, switchMap } from 'rxjs'
 import { GearsetSignalStore, GearsetsDB, ItemInstanceRecord } from '~/data'
 import { NwModule } from '~/nw'
 import { PreferencesService } from '~/preferences'
@@ -124,28 +124,21 @@ export class GearsetFormComponent {
     this.currentId.set(null)
   }
 
-  protected loadSet() {
-    this.pickGearsetId().subscribe((id) => {
+  protected async loadSet() {
+    const id = await this.pickGearsetId()
+    if (id != null) {
       this.currentId.set(id)
-    })
+    }
   }
 
-  private pickGearsetId() {
-    return DataViewPicker.open(this.dialog, {
+  private async pickGearsetId() {
+    return DataViewPicker.open({
+      injector: this.injector,
       title: 'Choose a set',
       dataView: {
         adapter: GearsetTableAdapter,
       },
-      config: {
-        maxWidth: 1024,
-        maxHeight: 1024,
-        panelClass: ['w-full', 'h-full', 'p-4'],
-        injector: this.injector,
-      },
-    })
-      .closed.pipe(map((it) => it?.[0] as string))
-      .pipe(filter((it) => it != null))
-      .pipe(take(1))
+    }).then((it) => it?.[0] as string)
   }
 
   protected updateName(name: string) {

@@ -18,7 +18,7 @@ import {
 } from '@nw-data/common'
 import { ItemClass, ItemDefinitionMaster, Perks, Statuseffect } from '@nw-data/generated'
 import { isEqual } from 'lodash'
-import { Observable, combineLatest, filter, map, switchMap, take } from 'rxjs'
+import { Observable, combineLatest, filter, from, map, switchMap, take } from 'rxjs'
 import { ItemInstance, NwDataService } from '~/data'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { eqCaseInsensitive, matchMapTo } from '~/utils'
@@ -60,9 +60,8 @@ export class InventoryPickerService {
           title,
           multiple,
           category,
-        }).closed,
+        }),
       })
-        .pipe(take(1))
         // cancelled selection
         .pipe(filter(({ result }) => result !== undefined))
         // unchanged selection
@@ -97,7 +96,7 @@ export class InventoryPickerService {
           multiple,
           categories,
           noSkins,
-        }).closed,
+        }),
       })
         .pipe(take(1))
         // cancelled selection
@@ -112,7 +111,7 @@ export class InventoryPickerService {
     return (
       combineLatest({
         data: this.db.perksMap,
-        result: this.openGemsPickerForSlot(slots).closed,
+        result: this.openGemsPickerForSlot(slots),
       })
         .pipe(take(1))
         // cancelled selection
@@ -125,7 +124,7 @@ export class InventoryPickerService {
     return (
       combineLatest({
         data: this.db.perksMap,
-        result: this.openAttributePickerForItems(items).closed,
+        result: this.openAttributePickerForItems(items),
       })
         .pipe(take(1))
         // cancelled selection
@@ -147,7 +146,6 @@ export class InventoryPickerService {
   }) {
     return (
       this.openInstancePicker({ selection, title, multiple, category })
-        .closed.pipe(take(1))
         // cancelled selection
         .pipe(filter((it) => it !== undefined))
         // unchanged selection
@@ -180,7 +178,6 @@ export class InventoryPickerService {
             selectedPerkid: selection,
             slotKey,
           })
-            .closed.pipe(take(1))
             // cancelled selection
             .pipe(filter((it) => it !== undefined))
             // unchanged selection
@@ -206,7 +203,8 @@ export class InventoryPickerService {
     return (
       combineLatest({
         data: this.db.statusEffectsMap,
-        result: DataViewPicker.open(this.dialog, {
+        result: DataViewPicker.open({
+          injector: this.injector,
           title: title || 'Pick effect',
           selection: selection,
           displayMode: ['grid'],
@@ -214,13 +212,7 @@ export class InventoryPickerService {
             adapter: StatusEffectTableAdapter,
             filter: predicate,
           },
-          config: {
-            maxWidth: 1400,
-            maxHeight: 1200,
-            panelClass: ['w-full', 'h-full', 'p-4'],
-            injector: this.injector,
-          },
-        }).closed,
+        }),
       })
         .pipe(take(1))
         // cancelled selection
@@ -249,22 +241,19 @@ export class InventoryPickerService {
       types = new Set<string>(EQUIP_SLOTS.map((it) => it.itemType))
     }
 
-    return DataViewPicker.open(this.dialog, {
-      title: title || 'Pick from inventory',
-      selection: selection,
-      // multiselect: !!multiple,
-      persistKey: 'inventory-picker-table',
-      dataView: {
-        adapter: InventoryTableAdapter,
-        filter: (it) => it.item?.ItemClass?.some((e) => types.has(e)),
-      },
-      config: {
-        maxWidth: 1400,
-        maxHeight: 1200,
-        panelClass: ['w-full', 'h-full', 'layout-pad', 'shadow'],
+    return from(
+      DataViewPicker.open({
         injector: this.injector,
-      },
-    })
+        title: title || 'Pick from inventory',
+        selection: selection,
+        // multiselect: !!multiple,
+        persistKey: 'inventory-picker-table',
+        dataView: {
+          adapter: InventoryTableAdapter,
+          filter: (it) => it.item?.ItemClass?.some((e) => types.has(e)),
+        },
+      }),
+    )
   }
 
   private openPerksPicker(
@@ -275,21 +264,18 @@ export class InventoryPickerService {
       exclusiveLabels: string[]
     },
   ) {
-    return DataViewPicker.open(this.dialog, {
-      title: 'Choose Perk',
-      selection: options.selectedPerkid ? [options.selectedPerkid] : null,
-      displayMode: ['grid'],
-      dataView: {
-        adapter: PerkTableAdapter,
-        source: this.getAplicablePerksSource(item, options),
-      },
-      config: {
-        maxWidth: 1400,
-        maxHeight: 1200,
-        panelClass: ['w-full', 'h-full', 'p-4'],
+    return from(
+      DataViewPicker.open({
         injector: this.injector,
-      },
-    })
+        title: 'Choose Perk',
+        selection: options.selectedPerkid ? [options.selectedPerkid] : null,
+        displayMode: ['grid'],
+        dataView: {
+          adapter: PerkTableAdapter,
+          source: this.getAplicablePerksSource(item, options),
+        },
+      }),
+    )
   }
 
   private openGemsPickerForSlot(slots: EquipSlotId[]) {
@@ -307,65 +293,59 @@ export class InventoryPickerService {
       })
     })
 
-    return DataViewPicker.open(this.dialog, {
-      title: 'Pick Gem',
-      displayMode: ['grid'],
-      dataView: {
-        adapter: PerkTableAdapter,
-        filter: (perk) => {
-          if (!itemGroups?.length) {
-            return false
-          }
-          if (!isPerkGem(perk)) {
-            return false
-          }
-          if (!perk.ItemClass?.length) {
-            return false
-          }
-          return itemGroups.every((group) => {
-            return !!group?.length && perk.ItemClass?.some((cls) => group.includes(cls))
-          })
-        },
-      },
-      config: {
-        maxWidth: 1400,
-        maxHeight: 1200,
-        panelClass: ['w-full', 'h-full', 'p-4'],
+    return from(
+      DataViewPicker.open({
         injector: this.injector,
-      },
-    })
+        title: 'Pick Gem',
+        displayMode: ['grid'],
+        dataView: {
+          adapter: PerkTableAdapter,
+          filter: (perk) => {
+            if (!itemGroups?.length) {
+              return false
+            }
+            if (!isPerkGem(perk)) {
+              return false
+            }
+            if (!perk.ItemClass?.length) {
+              return false
+            }
+            return itemGroups.every((group) => {
+              return !!group?.length && perk.ItemClass?.some((cls) => group.includes(cls))
+            })
+          },
+        },
+      }),
+    )
   }
 
   private openAttributePickerForItems(items: ItemDefinitionMaster[]) {
-    return DataViewPicker.open(this.dialog, {
-      title: 'Pick Attribute Mod',
-      displayMode: ['grid'],
-      dataView: {
-        adapter: PerkTableAdapter,
-        filter: (perk) => {
-          if (!isPerkInherent(perk)) {
-            return false
-          }
-          return items.every((item) => {
-            let isApplicable = isPerkApplicableToItem(perk, item)
-            if (!isApplicable && isItemArmor(item)) {
-              isApplicable = perk.ItemClass?.includes('Armor')
-            }
-            if (!isApplicable && isItemWeapon(item)) {
-              isApplicable =
-                perk.ItemClass?.includes('EquippableMainHand') || perk.ItemClass?.includes('EquippableTwoHand')
-            }
-            return isApplicable
-          })
-        },
-      },
-      config: {
-        maxWidth: 1400,
-        maxHeight: 1200,
-        panelClass: ['w-full', 'h-full', 'p-4'],
+    return from(
+      DataViewPicker.open({
         injector: this.injector,
-      },
-    })
+        title: 'Pick Attribute Mod',
+        displayMode: ['grid'],
+        dataView: {
+          adapter: PerkTableAdapter,
+          filter: (perk) => {
+            if (!isPerkInherent(perk)) {
+              return false
+            }
+            return items.every((item) => {
+              let isApplicable = isPerkApplicableToItem(perk, item)
+              if (!isApplicable && isItemArmor(item)) {
+                isApplicable = perk.ItemClass?.includes('Armor')
+              }
+              if (!isApplicable && isItemWeapon(item)) {
+                isApplicable =
+                  perk.ItemClass?.includes('EquippableMainHand') || perk.ItemClass?.includes('EquippableTwoHand')
+              }
+              return isApplicable
+            })
+          },
+        },
+      }),
+    )
   }
 
   public getAplicablePerksSource(

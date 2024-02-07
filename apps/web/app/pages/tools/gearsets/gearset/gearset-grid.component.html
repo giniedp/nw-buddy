@@ -1,0 +1,35 @@
+<div
+  class="flex flex-col gap-4 @lg:grid grid-auto-fill-[320px] grid-flow-dense"
+  [nwbScreenshotFrame]="gearset?.name"
+  [nwbScreenshotWidth]="1660"
+  [nwbScreenshotMode]="'detached'"
+>
+  <div class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2">
+    <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
+    <nwb-gearset-pane-main class="relative min-h-80 p-4 gap-4 grid grid-auto-fit-[290px]" />
+  </div>
+
+  <div class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2">
+    <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
+    <nwb-gearset-pane-stats class="relative min-h-80 p-4 gap-4 grid grid-auto-fit-[290px]" />
+  </div>
+
+  <div class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2">
+    <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
+    <nwb-gearset-pane-skill class="relative min-h-80 p-4 block" [slot]="'primary'" [gearset]="gearset" />
+  </div>
+
+  <div class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2">
+    <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
+    <nwb-gearset-pane-skill class="relative min-h-80 p-4 block" [slot]="'secondary'" [gearset]="gearset" />
+  </div>
+
+  @for (group of slotGroups(); track $index) {
+    @for (slot of group; track $index) {
+      @if (slot) {
+        <nwb-gear-cell-slot class="min-h-80 creenshot-body" [slotId]="slot.id" [gearset]="gearset" />
+      }
+    }
+  }
+
+</div>

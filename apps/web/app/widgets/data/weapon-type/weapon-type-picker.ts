@@ -12,18 +12,13 @@ export function openWeaponTypePicker(options: {
   multiple?: boolean
   category?: string
 }) {
-  return DataViewPicker.open<WeaponTypeTableRecord>(options.dialog, {
+  return DataViewPicker.from<WeaponTypeTableRecord>({
+    injector: options.injector,
     title: options.title || 'Select Weapon Type',
     selection: options.selection,
     displayMode: ['grid'],
     dataView: {
       adapter: WeaponTypeTableAdapter,
-    },
-    config: {
-      maxWidth: 800,
-      maxHeight: 890,
-      panelClass: ['w-full', 'h-full', 'p-4'],
-      injector: options.injector,
     },
   })
 }

@@ -1,23 +1,12 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
-import {
-  Component,
-  InjectionToken,
-  Injector,
-  Pipe,
-  PipeTransform,
-  computed,
-  effect,
-  inject,
-  signal,
-} from '@angular/core'
+import { Component, Injector, Input, Pipe, PipeTransform, computed, effect, inject, signal } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { patchState } from '@ngrx/signals'
 import { damageScaleAttrs } from '@nw-data/common'
-import { combineLatest, filter, map, take } from 'rxjs'
-import { GearsetSignalStore, GearsetsDB, NwDataService } from '~/data'
+import { BehaviorSubject, EMPTY, combineLatest, map, switchMap } from 'rxjs'
+import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { CollapsibleComponent } from '~/ui/collapsible'
@@ -30,9 +19,9 @@ import { VitalTableAdapter, VitalTableRecord } from '~/widgets/data/vital-table'
 import { DamageCalculatorStore } from './damage-calculator.store'
 import { LabelControlComponent } from './label-control.component'
 import { TweakControlComponent } from './tweak-control.component'
+import { IonContent, IonFooter } from '@ionic/angular/standalone'
+import { LayoutModule } from '~/ui/layout'
 
-const DEFENDER_MANNEQUIN = new InjectionToken<Mannequin>('DEFENDER_MANNEQUIN')
-const DEFENDER_GEARSET = new InjectionToken<GearsetSignalStore>('DEFENDER_GEARSET')
 @Pipe({ standalone: true, name: 'floor' })
 export class FloorPipe implements PipeTransform {
   public transform(value: number): number {
@@ -44,23 +33,13 @@ export class FloorPipe implements PipeTransform {
   standalone: true,
   selector: 'nwb-damage-calculator',
   templateUrl: './damage-calculator.component.html',
-  providers: [
-    DamageCalculatorStore,
-    FloorPipe,
-    {
-      provide: DEFENDER_MANNEQUIN,
-      useClass: Mannequin,
-    },
-    {
-      provide: DEFENDER_GEARSET,
-      useClass: GearsetSignalStore,
-    },
-  ],
+  providers: [DamageCalculatorStore, FloorPipe],
   imports: [
     CommonModule,
     NwModule,
     CdkMenuModule,
     FormsModule,
+    LayoutModule,
     IconsModule,
     TooltipModule,
     TweakControlComponent,
@@ -69,15 +48,13 @@ export class FloorPipe implements PipeTransform {
     CollapsibleComponent,
   ],
   host: {
-    class: 'layout-content',
-  },
+    class: 'ion-page'
+  }
 })
 export class DamageCalculatorComponent {
   protected store = inject(DamageCalculatorStore)
   private db = inject(NwDataService)
-  private gearDb = inject(GearsetsDB)
-  private mannequin = inject(Mannequin)
-  private dialog = inject(Dialog)
+
   private injector = inject(Injector)
   protected svgChevronLeft = svgChevronLeft
   protected svgMore = svgEllipsisVertical
@@ -85,9 +62,18 @@ export class DamageCalculatorComponent {
   private defenderGearsetId = computed(() => (this.defender()?.isGearset ? this.defender()?.id : null))
   private defenderVitalId = computed(() => (this.defender()?.isGearset ? null : this.defender()?.id))
   private defenderVital$ = this.db.vital(toObservable(this.defenderVitalId))
-  private defenderGearset$ = this.gearDb.observeByid(toObservable(this.defenderVitalId))
-  private defenderMannequin = inject(DEFENDER_MANNEQUIN)
-  private defenderGearset = inject(DEFENDER_GEARSET)
+
+  private player$ = new BehaviorSubject<Mannequin>(null)
+  @Input()
+  public set player(value: Mannequin) {
+    this.player$.next(value)
+  }
+
+  private opponent$ = new BehaviorSubject<Mannequin>(null)
+  @Input()
+  public set opponent(value: Mannequin) {
+    this.opponent$.next(value)
+  }
 
   public constructor() {
     const SESSION_KEY = 'damage-calculator'
@@ -116,6 +102,7 @@ export class DamageCalculatorComponent {
         convertEmpowerModsTweak: this.store.convertEmpowerModsTweak(),
         ammoModsTweak: this.store.ammoModsTweak(),
         armorPenetrationTweak: this.store.armorPenetrationTweak(),
+
         defenderLevelTweak: this.store.defenderLevelTweak(),
         defenderGearScoreTweak: this.store.defenderGearScoreTweak(),
         defenderArmorPhysTweak: this.store.defenderArmorPhysTweak(),
@@ -131,114 +118,50 @@ export class DamageCalculatorComponent {
       })
       sessionStorage.setItem(SESSION_KEY, data)
     })
-
-    combineLatest({
-      level: this.mannequin.level$,
-      gearScore: this.mannequin.gearScore$,
-      weapon: this.mannequin.activeWeapon$,
-      damage: this.mannequin.statDamageBase$,
-      empowerMods: this.mannequin.statDmg$,
-      attributes: this.mannequin.activeAttributes$,
-    })
-      .pipe(takeUntilDestroyed())
-      .subscribe(({ level, gearScore, weapon, damage, empowerMods, attributes }) => {
-        patchState(this.store, {
-          attackerLevel: level,
-          attackerGearScore: gearScore,
-          attributes: {
-            str: attributes.str.scale,
-            dex: attributes.dex.scale,
-            int: attributes.int.scale,
-            foc: attributes.foc.scale,
-            con: attributes.con.scale,
-          },
-          convertScaling: damageScaleAttrs(damage.ConvertAffix),
-          weaponGearScore: weapon.gearScore,
-          weaponScaling: damageScaleAttrs(weapon.weapon),
-          baseDamage: weapon.weapon?.BaseDamage ?? 0,
-          damageCoef: damage.DamageCoef?.value ?? 0,
-          pvpMods: damage.ModPvp?.value ?? 0,
-          ammoMods: damage.ModAmmo?.value ? damage.ModAmmo?.value - 1 : 0,
-          baseMods: damage.ModBase?.value ?? 0,
-          convertBaseMods: damage.ModBaseConvert?.value ?? 0,
-          critMods: damage.ModCrit?.value ?? 0,
-
-          weaponDamageType: damage.DamageType,
-          convertDamageType: damage.ConvertType,
-
-          empowerMods: empowerMods.DamageCategories[damage.DamageType]?.value ?? 0,
-          convertEmpowerMods: empowerMods.DamageCategories[damage.ConvertType]?.value ?? 0,
-
-          convertPercent: damage.ConvertPercent,
-        })
-      })
-
-    this.defenderVital$
-      .pipe(filter((it) => !!it))
-      .pipe(takeUntilDestroyed())
-      .subscribe((vital) => {
-        this.store.setVitalDefender(vital)
-      })
+    this.connectPlayer()
+    this.connectOpponent()
   }
 
-  public pickVitalDefender() {
-    DataViewPicker.open<VitalTableRecord>(this.dialog, {
+  public async pickVitalDefender() {
+    const result = await DataViewPicker.open<VitalTableRecord>({
       title: 'Pick Vital Defender',
       selection: [this.store.defenderCreature()?.VitalsID].filter((it) => !!it),
       dataView: {
         adapter: VitalTableAdapter,
       },
-      config: {
-        maxWidth: 1400,
-        maxHeight: 1200,
-        panelClass: ['w-full', 'h-full', 'p-4'],
-        injector: this.injector,
-      },
+      injector: this.injector,
     })
-      .closed.pipe(
-        map((it) => it?.[0]),
-        filter((it) => !!it),
-        take(1),
-      )
-      .subscribe((result) => {
-        patchState(this.store, {
-          defenderIsPlayer: false,
-        })
-        this.defender.set({
-          isGearset: false,
-          id: String(result),
-        })
-      })
+    if (!result) {
+      return
+    }
+    patchState(this.store, {
+      defenderIsPlayer: false,
+    })
+    this.defender.set({
+      isGearset: false,
+      id: String(result),
+    })
   }
 
-  public pickGearset() {
-    DataViewPicker.open(this.dialog, {
+  public async pickGearset() {
+    const result = await DataViewPicker.open({
       title: 'Pick Opponent Gearset',
       selection: [this.defenderGearsetId()],
       dataView: {
         adapter: GearsetTableAdapter,
       },
-      config: {
-        maxWidth: 1400,
-        maxHeight: 1200,
-        panelClass: ['w-full', 'h-full', 'p-4'],
-        injector: this.injector,
-      },
+      injector: this.injector,
     })
-      .closed.pipe(
-        map((it) => it?.[0]),
-        filter((it) => !!it),
-        take(1),
-      )
-      .subscribe((result) => {
-        patchState(this.store, {
-          defenderIsPlayer: true,
-        })
-        this.defender.set({
-          isGearset: true,
-          id: String(result),
-        })
-      })
+    if (!result) {
+      return
+    }
+    patchState(this.store, {
+      defenderIsPlayer: true,
+    })
+    this.defender.set({
+      isGearset: true,
+      id: String(result),
+    })
   }
 
   public setPvPMode() {
@@ -259,5 +182,110 @@ export class DamageCalculatorComponent {
       isGearset: false,
       id: null,
     })
+  }
+
+  private connectPlayer() {
+    this.player$
+      .pipe(
+        switchMap((mannequin) => {
+          if (!mannequin) {
+            return EMPTY
+          }
+          return combineLatest({
+            level: toObservable(mannequin.level, { injector: this.injector }),
+            gearScore: toObservable(mannequin.gearScore, { injector: this.injector }),
+            attributes: toObservable(mannequin.activeAttributes, { injector: this.injector }),
+            weapon: toObservable(mannequin.activeWeapon, { injector: this.injector }),
+            dmgCoef: toObservable(mannequin.modDmgCoef, { injector: this.injector }),
+            modBase: toObservable(mannequin.modBaseDamage, { injector: this.injector }),
+            modConvert: toObservable(mannequin.modBaseConversion, { injector: this.injector }),
+            modCrit: toObservable(mannequin.modCrit, { injector: this.injector }),
+            modDMG: toObservable(mannequin.modDMG, { injector: this.injector }),
+            modPvP: toObservable(mannequin.modPvP, { injector: this.injector }),
+            modAmmo: toObservable(mannequin.modAmmo, { injector: this.injector }),
+          })
+        }),
+        takeUntilDestroyed(),
+      )
+      .subscribe(
+        ({ level, gearScore, attributes, weapon, dmgCoef, modBase, modConvert, modCrit, modDMG, modPvP, modAmmo }) => {
+          patchState(this.store, {
+            attackerLevel: level,
+            attackerGearScore: gearScore,
+            attributes: {
+              str: attributes?.str?.scale,
+              dex: attributes?.dex?.scale,
+              int: attributes?.int?.scale,
+              foc: attributes?.foc?.scale,
+              con: attributes?.con?.scale,
+            },
+            convertScaling: damageScaleAttrs(modConvert?.Affix),
+            weaponGearScore: weapon?.gearScore,
+            weaponScaling: damageScaleAttrs(weapon?.weapon),
+            baseDamage: weapon?.weapon?.BaseDamage ?? 0,
+            damageCoef: dmgCoef?.value ?? 0,
+            pvpMods: modPvP?.value ?? 0,
+            ammoMods: modAmmo?.value ? modAmmo.value - 1 : 0,
+            critMods: modCrit?.Damage.value ?? 0,
+            baseMods: modBase?.Damage.value ?? 0,
+            convertBaseMods: modConvert?.Damage.value ?? 0,
+
+            weaponDamageType: modBase?.Type,
+            convertDamageType: modConvert?.Type,
+
+            empowerMods: modDMG?.byDamageType[modBase.Type]?.value ?? 0,
+            convertEmpowerMods: modDMG?.byDamageType[modConvert.Type]?.value ?? 0,
+
+            convertPercent: modConvert?.Percent,
+          })
+        },
+      )
+  }
+
+  private connectOpponent() {
+    combineLatest({
+      player: this.player$,
+      opponent: this.opponent$,
+    })
+      .pipe(
+        switchMap(({ player, opponent }) => {
+          if (!player || !opponent) {
+            return EMPTY
+          }
+          const dmgTypeWeapon$ = toObservable(player.modBaseDamage, { injector: this.injector }).pipe(
+            map((it) => it?.Type),
+          )
+          const dmgTypeConvert$ = toObservable(player.modBaseConversion, { injector: this.injector }).pipe(
+            map((it) => it?.Type),
+          )
+          return combineLatest({
+            dmgTypeWeapon: dmgTypeWeapon$,
+            dmgTypeConvert: dmgTypeConvert$,
+            level: toObservable(opponent.level, { injector: this.injector }),
+            gearScore: toObservable(opponent.gearScore, { injector: this.injector }),
+            modAbs: toObservable(opponent.modABS, { injector: this.injector }),
+            modWKN: toObservable(opponent.modWKN, { injector: this.injector }),
+            modArmor: toObservable(opponent.modArmor, { injector: this.injector }),
+          })
+        }),
+        takeUntilDestroyed(),
+      )
+      .subscribe(({ dmgTypeWeapon, dmgTypeConvert, level, gearScore, modAbs, modWKN, modArmor }) => {
+        this.store.setDefenderStats({
+          defenderLevel: level,
+          defenderGearScore: gearScore,
+          defenderIsPlayer: true,
+          defenderABSWeapon: modAbs?.DamageCategories[dmgTypeWeapon]?.value ?? 0,
+          defenderABSConverted: modAbs?.DamageCategories[dmgTypeConvert]?.value ?? 0,
+          defenderWKNWeapon: modWKN?.[dmgTypeWeapon]?.value ?? 0,
+          defenderWKNConverted: modWKN?.[dmgTypeConvert]?.value ?? 0,
+          defenderArmorPhys: modArmor?.PhysicalBase?.armorRating ?? 0,
+          defenderArmorPhysFort: modArmor?.Physical?.value ?? 0,
+          defenderArmorPhysAdd: modArmor?.PhysicalBase?.weaponRating ?? 0,
+          defenderArmorElem: modArmor?.ElementalBase?.armorRating ?? 0,
+          defenderArmorElemFort: modArmor?.Elemental?.value ?? 0,
+          defenderArmorElemAdd: modArmor?.ElementalBase?.weaponRating ?? 0,
+        })
+      })
   }
 }

@@ -112,7 +112,7 @@ export class SkillBuildsComponent {
       dialog: this.dialog,
       injector: this.injector,
     })
-      .closed.pipe(
+      .pipe(
         filter((it) => !!it?.length),
         map((it) => NW_WEAPON_TYPES.find((type) => type.WeaponTypeID === String(it[0]))),
       )

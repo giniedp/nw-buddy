@@ -1,0 +1,54 @@
+<ion-header class="bg-black">
+  <ion-toolbar>
+    <ion-title>{{ title }}</ion-title>
+    <div slot="primary">
+      @if (service.canToggleMode()) {
+        <button class="btn btn-square btn-ghost" [nwbDataViewToggle]></button>
+      }
+      @if (service.isTableSupported()) {
+        <button
+          class="btn btn-square btn-ghost"
+          [nwbDataViewOptionsMenu]
+          [disabled]="!service.isTableActive()"
+        ></button>
+      }
+    </div>
+    <nwb-quicksearch-input slot="end" [autofocus]="true" class="mr-1" />
+  </ion-toolbar>
+</ion-header>
+<ion-content class="bg-base-200">
+  @if (service.isGridActive()) {
+    <nwb-virtual-grid
+      [enableQuickfilter]="true"
+      [selection]="selection"
+      [data]="service.categoryItems$ | async"
+      [options]="service.virtualOptions"
+      [identifyBy]="service.entityIdGetter"
+      (selection$)="onSelectionChange($event)"
+      (cellDoubleClicked)="commit()"
+    />
+  } @else if (service.isTableActive()) {
+    <nwb-table-grid
+      (ready$)="service.onTableReady($event)"
+      [enableQuickfilter]="true"
+      [selection]="selection"
+      [data]="service.categoryItems$ | async"
+      [options]="service.tableGridOptions"
+      [identifyBy]="service.entityIdGetter"
+      [persistKey]="persistKey"
+      (selectionChanged$)="onSelectionChange($event.ids)"
+      (rowDoubleClicked$)="commit()"
+    />
+  }
+</ion-content>
+<ion-footer class="bg-base-300 ">
+  <ion-toolbar>
+    <div class="join mr-1" slot="secondary">
+      <button type="join-item button" class="btn btn-ghost" (click)="close()">Cancel</button>
+    </div>
+    <div class="join mr-1" slot="primary">
+      <button type="button" class="join-item btn btn-ghost" (click)="clear()">Clear selection</button>
+      <button type="button" class="join-item btn btn-primary" (click)="commit()">OK</button>
+    </div>
+  </ion-toolbar>
+</ion-footer>
