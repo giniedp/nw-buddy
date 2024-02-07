@@ -3,14 +3,14 @@ import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, DestroyRef, Injector, Input, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { BehaviorSubject, combineLatest, filter, map, switchMap } from 'rxjs'
+import { BehaviorSubject, combineLatest, filter, map, of, switchMap } from 'rxjs'
 
 import { NwDbService, NwModule } from '~/nw'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { EquipSlotId, getWeaponTagFromWeapon } from '@nw-data/common'
-import { GearsetRecord, GearsetSkillSlot, GearsetSkillStore, SkillBuild, SkillBuildsDB } from '~/data'
+import { GearsetRecord, GearsetSkillSlot, GearsetSkillStore, ItemInstancesDB, SkillBuild, SkillBuildsDB } from '~/data'
 import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
 import { DataViewAdapterOptions, DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
@@ -103,6 +103,7 @@ export class GearsetPaneSkillComponent {
   public constructor(
     private store: GearsetSkillStore,
     private skillsDB: SkillBuildsDB,
+    private itemsDB: ItemInstancesDB,
     private dialog: Dialog,
     private injector: Injector,
     private db: NwDbService,
@@ -194,16 +195,16 @@ export class GearsetPaneSkillComponent {
         gearset: this.gearset$,
         slot: this.slot$,
       }).pipe(
-        map(({ gearset, slot }) => {
+        switchMap(({ gearset, slot }) => {
           const slotId: EquipSlotId = slot === 'primary' ? 'weapon1' : 'weapon2'
           const it = gearset?.slots?.[slotId]
           if (!it) {
-            return null
+            return of(null)
           }
           if (typeof it === 'string') {
-            return it
+            return this.itemsDB.observeByid(it).pipe(map((it) => it?.itemId))
           }
-          return it.itemId
+          return of(it.itemId)
         }),
       ),
     })
