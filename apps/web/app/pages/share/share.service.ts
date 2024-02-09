@@ -1,11 +1,10 @@
 import { Injectable } from '@angular/core'
-import { ThirdwebStorage } from '@thirdweb-dev/storage'
-import { Web3Storage } from 'web3.storage'
-import { getIpnsRevision, udpateIpnsRevision } from './utils/ipns-revision'
-import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/layout'
-import { Dialog } from '@angular/cdk/dialog'
-import { combineLatest, filter, map, of, switchMap } from 'rxjs'
 import { Router } from '@angular/router'
+import { ThirdwebStorage } from '@thirdweb-dev/storage'
+import { combineLatest, filter, map, of, switchMap } from 'rxjs'
+import { Web3Storage } from 'web3.storage'
+import { ConfirmDialogComponent, ModalService, PromptDialogComponent } from '~/ui/layout'
+import { getIpnsRevision, udpateIpnsRevision } from './utils/ipns-revision'
 
 const ENTRY_FILE_NAME = 'nw-buddy.json'
 const APPLICATION_NAME = 'nw-buddy'
@@ -63,19 +62,18 @@ export interface ShareInfo {
   providedIn: 'root',
 })
 export class ShareService {
-
-  public async importItem(dialog: Dialog, router: Router) {
-    PromptDialogComponent.open(dialog, {
-      data: {
+  public async importItem(modal: ModalService, router: Router) {
+    PromptDialogComponent.open(modal, {
+      inputs: {
         title: 'Import',
         body: 'Paste a shared URL or Content ID here',
-        input: '',
+        value: '',
         placeholder: 'URL or CID',
         positive: 'Import',
         negative: 'Cancel',
       },
     })
-      .closed.pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .pipe(
         map((input) => {
           if (input.includes('ipfs/')) {
@@ -84,10 +82,12 @@ export class ShareService {
           return input
         }),
         switchMap((input) => this.resolveCidFromString(input)),
-        switchMap((cid) => combineLatest({
-          type: this.downloadbyCid(cid).then((it) => it?.type),
-          cid: of(cid)
-        })),
+        switchMap((cid) =>
+          combineLatest({
+            type: this.downloadbyCid(cid).then((it) => it?.type),
+            cid: of(cid),
+          }),
+        ),
       )
       .subscribe({
         next: ({ type, cid }) => {
@@ -96,8 +96,8 @@ export class ShareService {
           } else if (type === 'skill-build') {
             router.navigate(['skill-trees', 'share', 'ipfs', cid])
           } else {
-            ConfirmDialogComponent.open(dialog, {
-              data: {
+            ConfirmDialogComponent.open(modal, {
+              inputs: {
                 title: 'Error',
                 body: 'Unknown or invalid CID',
                 positive: 'OK',
@@ -106,8 +106,8 @@ export class ShareService {
           }
         },
         error: (err) => {
-          ConfirmDialogComponent.open(dialog, {
-            data: {
+          ConfirmDialogComponent.open(modal, {
+            inputs: {
               title: 'Error',
               body: err.message,
               positive: 'OK',

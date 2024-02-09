@@ -1,4 +1,3 @@
-import { DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
 
@@ -12,7 +11,7 @@ import { GearsetLoadoutItemComponent } from './loadout-item.component'
   templateUrl: './loadout-list.component.html',
   styleUrls: ['./loadout-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, GearsetLoadoutItemComponent, DialogModule],
+  imports: [CommonModule, NwModule, GearsetLoadoutItemComponent],
   host: {
     class: 'layout-content layout-pad',
   },

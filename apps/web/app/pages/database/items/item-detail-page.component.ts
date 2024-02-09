@@ -1,7 +1,6 @@
 import { animate, style, transition, trigger } from '@angular/animations'
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, TemplateRef } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
 import {
@@ -17,13 +16,13 @@ import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, injectRouteParam } from '~/utils'
 import { GameEventDetailModule } from '~/widgets/data/game-event-detail'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { LootModule } from '~/widgets/loot'
-import { ModelViewerComponent, ModelViewerModule } from '~/widgets/model-viewer'
-import { ItemModelInfo } from '~/widgets/model-viewer/model-viewer.service'
+import { ModelViewerModule } from '~/widgets/model-viewer'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ItemTabsComponent } from './item-tabs.component'
 
@@ -39,11 +38,12 @@ import { ItemTabsComponent } from './item-tabs.component'
     ItemDetailModule,
     ScreenshotModule,
     LootModule,
+    LayoutModule,
     IconsModule,
     ModelViewerModule,
     TooltipModule,
     GameEventDetailModule,
-    ItemTabsComponent
+    ItemTabsComponent,
   ],
   providers: [],
   host: {
@@ -71,18 +71,10 @@ export class ItemDetailPageComponent {
   protected iconLink = svgSquareArrowUpRight
   protected viewerActive = false
   public constructor(
-    private dialog: Dialog,
     private head: HtmlHeadService,
     private i18n: TranslateService,
   ) {
     //
-  }
-
-  protected openViewer(models: ItemModelInfo[]) {
-    ModelViewerComponent.open(this.dialog, {
-      panelClass: ['w-full', 'h-full'],
-      data: models,
-    })
   }
 
   protected onEntity(entity: ItemDefinitionMaster) {
@@ -95,16 +87,6 @@ export class ItemDetailPageComponent {
       url: this.head.currentUrl,
       image: `${this.head.origin}/${getItemIconPath(entity)}`,
     })
-  }
-
-  protected openRepairRecipe(tpl: TemplateRef<any>) {
-    this.dialog.open(tpl, {
-      panelClass: ['w-full', 'h-full', 'max-w-4xl', 'layout-pad', 'shadow'],
-    })
-  }
-
-  protected closeDialog() {
-    this.dialog.closeAll()
   }
 
   protected itemRarity(item: ItemDefinitionMaster) {

@@ -1,4 +1,3 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { Component, EventEmitter, OnInit, Output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -9,11 +8,11 @@ import { NwDataService } from '~/data'
 import { AppPreferencesService, ItemPreferencesService, StorageProperty } from '~/preferences'
 import { DataViewModule, provideDataView } from '~/ui/data/data-view'
 import { DataGridModule } from '~/ui/data/table-grid'
+import { IconsModule } from '~/ui/icons'
+import { svgCircleNotch } from '~/ui/icons/svg'
 import { NwmpPriceTableAdapter } from './nwmp-price-table-adapter'
 import { NwmpApiService } from './nwmp.service'
 import { NwmpPriceItem, NwmpServerOption } from './types'
-import { svgCircleNotch } from '~/ui/icons/svg'
-import { IconsModule } from '~/ui/icons'
 
 export interface NwmpImporterState {
   serverId: string
@@ -61,7 +60,7 @@ export class NwmpPriceImporterComponent extends ComponentStore<NwmpImporterState
     private db: NwDataService,
     private pref: ItemPreferencesService,
     protected adapter: NwmpPriceTableAdapter,
-    app: AppPreferencesService
+    app: AppPreferencesService,
   ) {
     super({
       servers: [],
@@ -83,7 +82,7 @@ export class NwmpPriceImporterComponent extends ComponentStore<NwmpImporterState
             this.patchState({ isLoading: true, data: null, servers: null, error: null, isComplete: false })
           },
         }),
-        take(1)
+        take(1),
       )
       .subscribe({
         next: (data) => {
@@ -119,7 +118,7 @@ export class NwmpPriceImporterComponent extends ComponentStore<NwmpImporterState
               updatedAt: it.updatedAt,
             }
           })
-        })
+        }),
       )
 
       .pipe(take(1))

@@ -1,13 +1,13 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
-import { filter, take } from 'rxjs'
+import { filter } from 'rxjs'
 import { GearsetSignalStore, ImagesDB } from '~/data'
 import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
+import { ModalService } from '~/ui/layout'
 import { AvatarDialogComponent } from './ui/avatar-dialog.component'
 
 @Component({
@@ -23,7 +23,7 @@ import { AvatarDialogComponent } from './ui/avatar-dialog.component'
 export class GearCellAvatarComponent {
   private store = inject(GearsetSignalStore)
   private mannequin = inject(Mannequin)
-  private dialog = inject(Dialog)
+  private modal = inject(ModalService)
 
   @Input()
   public disabled: boolean
@@ -43,13 +43,12 @@ export class GearCellAvatarComponent {
     if (!this.isEditable) {
       return
     }
-    AvatarDialogComponent.open(this.dialog, {
-      data: {
+    AvatarDialogComponent.open(this.modal, {
+      inputs: {
         imageId: this.store.gearset()?.imageId,
       },
     })
-      .closed.pipe(take(1))
-      .pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .subscribe(({ imageId }) => {
         this.store.patchGearset({ imageId })
       })

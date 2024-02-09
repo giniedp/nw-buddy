@@ -1,8 +1,8 @@
-import { Dialog, DialogModule } from '@angular/cdk/dialog'
-import { Component, Input, importProvidersFrom } from '@angular/core'
+import { Component, importProvidersFrom } from '@angular/core'
 import { EquipSlotId } from '@nw-data/common'
 import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
 import { AppTestingModule } from '~/test'
+import { ModalService } from '~/ui/layout'
 import { GearImporterDialogComponent } from './gear-importer-dialog.component'
 
 @Component({
@@ -14,22 +14,20 @@ import { GearImporterDialogComponent } from './gear-importer-dialog.component'
     <button class="btn btn-primary" (click)="openDialog('legs')">Scan Legs</button>
     <button class="btn btn-primary" (click)="openDialog('feet')">Scan Feet</button>
   `,
-  imports: [GearImporterDialogComponent, DialogModule],
+  imports: [GearImporterDialogComponent],
   host: {
     class: 'flex flex-row flex-wrap gap-1',
-  }
+  },
 })
 export class StoryComponent {
-
-
-  public constructor(private dialog: Dialog) {
+  public constructor(private modal: ModalService) {
     //
   }
 
   public openDialog(slotId: EquipSlotId) {
-    GearImporterDialogComponent.open(this.dialog, {
-      data: slotId,
-    }).closed.subscribe((res) => {
+    GearImporterDialogComponent.open(this.modal, {
+      inputs: { slotId },
+    }).result$.subscribe((res) => {
       console.log(res)
     })
   }

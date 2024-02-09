@@ -1,11 +1,9 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { Injector } from '@angular/core'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { WeaponTypeTableAdapter } from './weapon-type-table-adapter'
 import { WeaponTypeTableRecord } from './weapon-type-table-cols'
 
 export function openWeaponTypePicker(options: {
-  dialog: Dialog
   injector?: Injector
   title?: string
   selection?: string[]

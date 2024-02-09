@@ -1,13 +1,12 @@
-import { DIALOG_DATA, Dialog, DialogConfig, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, HostListener, Inject, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, HostListener, Input, OnInit } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
 import { ComponentStore } from '@ngrx/component-store'
-import { combineLatest, filter, fromEvent, map, of, switchMap, take, takeUntil } from 'rxjs'
+import { combineLatest, filter, fromEvent, map, of, switchMap, takeUntil } from 'rxjs'
 import { ImagesDB } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgTrashCan } from '~/ui/icons/svg'
-import { ConfirmDialogComponent } from '~/ui/layout'
+import { ConfirmDialogComponent, LayoutModule, ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
 import { imageFileFromPaste } from '~/utils/image-file-from-paste'
 
 export interface AvatarDialogOptions {
@@ -28,22 +27,23 @@ export interface AvatarDialogResult {
   selector: 'nwb-avatar-dialog',
   templateUrl: './avatar-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, IconsModule],
+  imports: [CommonModule, IconsModule, LayoutModule],
   host: {
-    class: 'd-block bg-base-100 border border-base-100 rounded-md overflow-hidden',
+    class: 'ion-page bg-base-100 border border-base-100 rounded-md',
   },
 })
 export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> implements OnInit {
-  public static open(
-    dialog: Dialog,
-    config: DialogConfig<AvatarDialogOptions, DialogRef<AvatarDialogResult, AvatarDialogComponent>>,
-  ) {
-    return dialog.open(AvatarDialogComponent, {
-      maxWidth: 400,
-      panelClass: ['w-full', 'layout-pad', 'self-end', 'sm:self-center', 'shadow'],
-      ...config,
-    })
+  public static open(modal: ModalService, options: ModalOpenOptions<AvatarDialogComponent>) {
+    options.size ??= 'sm'
+    options.content = AvatarDialogComponent
+    return modal.open<AvatarDialogComponent, AvatarDialogResult>(options)
   }
+
+  @Input()
+  public set imageId(id: string) {
+    this.patchState({ imageId: id })
+  }
+
   protected iconDelete = svgTrashCan
   private maxFileSizeInMb$ = of(1.2)
   private imageId$ = this.select(({ imageId }) => imageId)
@@ -75,15 +75,13 @@ export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> imp
   )
 
   public constructor(
-    @Inject(DIALOG_DATA)
-    private data: AvatarDialogOptions,
-    private dialog: Dialog,
-    private dialogRef: DialogRef<AvatarDialogResult>,
+    private modal: ModalService,
+    private modalRef: ModalRef<AvatarDialogResult>,
     private imagesDb: ImagesDB,
     private sanitizer: DomSanitizer,
   ) {
     super({
-      imageId: data.imageId,
+      imageId: null,
     })
   }
   public ngOnInit(): void {
@@ -103,11 +101,11 @@ export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> imp
       const image = await this.saveImageFile(file, imageId)
       imageId = image.id
     }
-    this.dialogRef.close({ imageId })
+    this.modalRef.close({ imageId })
   }
 
   protected cancel() {
-    this.dialogRef.close(null)
+    this.modalRef.close(null)
   }
 
   protected removeImage() {
@@ -121,20 +119,19 @@ export class AvatarDialogComponent extends ComponentStore<AvatarDialogState> imp
     if (!imageId) {
       return
     }
-    ConfirmDialogComponent.open(this.dialog, {
-      data: {
+    ConfirmDialogComponent.open(this.modal, {
+      inputs: {
         title: 'Delete image',
         body: 'This will delete the current image from database',
         positive: 'Delete',
         negative: 'Cancel',
       },
     })
-      .closed.pipe(take(1))
-      .pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .pipe(switchMap(() => this.imagesDb.destroy(imageId)))
       .subscribe(() => {
         this.patchState({ imageId: null })
-        this.dialogRef.close({ imageId: null })
+        this.modalRef.close({ imageId: null })
       })
   }
 

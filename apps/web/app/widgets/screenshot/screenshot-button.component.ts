@@ -1,7 +1,6 @@
-import { Dialog, DialogModule, DialogRef } from '@angular/cdk/dialog'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectorRef, Component, HostBinding, HostListener, Input, TemplateRef, ViewChild } from '@angular/core'
+import { ChangeDetectorRef, Component, HostBinding, HostListener, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ScreenshotFrame, ScreenshotService } from './screenshot.service'
 
@@ -9,7 +8,7 @@ import { ScreenshotFrame, ScreenshotService } from './screenshot.service'
   standalone: true,
   selector: 'nwb-screenshot-button,[nwbScreenshotBtn]',
   templateUrl: './screenshot-button.component.html',
-  imports: [CommonModule, FormsModule, OverlayModule, DialogModule],
+  imports: [CommonModule, FormsModule, OverlayModule],
   host: {
     class: 'flex',
   },
@@ -32,7 +31,10 @@ export class ScreenshotButtonComponent {
   protected isOverlayOpen = false
   protected isBusy = false
 
-  public constructor(private service: ScreenshotService, private cdRef: ChangeDetectorRef) {
+  public constructor(
+    private service: ScreenshotService,
+    private cdRef: ChangeDetectorRef,
+  ) {
     //
   }
 

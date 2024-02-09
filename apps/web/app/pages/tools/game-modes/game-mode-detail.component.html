@@ -211,7 +211,7 @@
           target="_blank"
         >
           {{ item.label }}
-          <nwb-icon [icon]="iconExtern" class="ms-1 w-4 h-4"/>
+          <nwb-icon [icon]="iconExtern" class="ms-1 w-4 h-4" />
         </a>
       </ng-container>
     </div>
@@ -345,25 +345,23 @@
 </ng-template>
 
 <ng-template #tplExplain>
-  <ng-container *ngIf="explainVm$ | async; let vm">
-    <nwb-loot-graph
-      [tags]="vm.tags"
-      [tagValues]="vm.values"
-      [tableId]="vm.tableIds"
-      [highlight]="vm.itemId"
-    ></nwb-loot-graph>
-  </ng-container>
-  <div class="flex-none modal-action flex-row justify-end layout-pad mt-0">
-    <div class="join">
-      <button class="join-item btn btn-primary" (click)="closeDialog()">Close</button>
-    </div>
-  </div>
+  <ion-header>
+    <ion-toolbar class="ion-color ion-color-black border border-base-100 border-b-0 rounded-t-md">
+      <ion-title>Loot Graph</ion-title>
+      <button type="button" slot="end" class="btn btn-ghost btn-circle mr-2 text-xl" [nwbModalClose]>&times;</button>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content [scrollY]="false" class="rounded-b-md bg-base-100">
+    <ng-container *ngIf="explainVm$ | async; let vm">
+      <nwb-loot-graph [tags]="vm.tags" [tagValues]="vm.values" [tableId]="vm.tableIds" [highlight]="vm.itemId" />
+    </ng-container>
+  </ion-content>
 </ng-template>
 
 <ng-template #tplExplainMenu>
   <ul class="menu menu-compact bg-base-100 rounded-md w-40" cdkMenu>
     <li>
-      <button (click)="openExplainDialog()" cdkMenuItem>Explain Drop</button>
+      <button [nwbModalOpen]="{ content: tplExplain, size: 'md' }" cdkMenuItem>Explain Drop</button>
     </li>
   </ul>
 </ng-template>

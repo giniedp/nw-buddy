@@ -1,4 +1,3 @@
-import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector, Input, effect, inject } from '@angular/core'
@@ -24,7 +23,7 @@ import {
   svgRotate,
   svgTrashCan,
 } from '~/ui/icons/svg'
-import { LayoutModule } from '~/ui/layout'
+import { LayoutModule, ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive } from '~/utils'
 import { SkillsetTableAdapter, SkillsetTableRecord } from '~/widgets/data/skillset-table'
@@ -40,7 +39,6 @@ import { GearsetPaneSkillStore } from './gearset-pane-skill.store'
   imports: [
     CommonModule,
     NwModule,
-    DialogModule,
     FormsModule,
     OverlayModule,
     ItemDetailModule,
@@ -57,7 +55,7 @@ import { GearsetPaneSkillStore } from './gearset-pane-skill.store'
 export class GearsetPaneSkillComponent {
   private db = inject(SkillBuildsDB)
   private gearDb = inject(GearsetsDB)
-  private dialog = inject(Dialog)
+  private modal = inject(ModalService)
   private injector = inject(Injector)
   private store = inject(GearsetPaneSkillStore)
 
@@ -135,7 +133,6 @@ export class GearsetPaneSkillComponent {
 
   protected createNew() {
     openWeaponTypePicker({
-      dialog: this.dialog,
       injector: this.injector,
     })
       .pipe(

@@ -1,11 +1,8 @@
-import { animate, state, style, transition, trigger } from '@angular/animations'
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, TemplateRef, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
-import { map } from 'rxjs'
-import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
@@ -35,7 +32,6 @@ import { LootModule } from '~/widgets/loot'
 })
 export class SeasonPassDetailPageComponent {
   private db = inject(NwDataService)
-  private dialog = inject(Dialog)
   protected route = inject(ActivatedRoute)
   protected id$ = observeRouteParam(this.route, 'id')
   protected data$ = this.db.seasonPassRow(this.id$)
@@ -50,7 +46,7 @@ export class SeasonPassDetailPageComponent {
       premiumReward: this.premiumReward$,
       entitlementsMap: this.db.entitlementsMap,
     },
-    (({ data, freeReward, premiumReward, entitlementsMap }) => {
+    ({ data, freeReward, premiumReward, entitlementsMap }) => {
       if (!data || !entitlementsMap) {
         return []
       }
@@ -66,16 +62,6 @@ export class SeasonPassDetailPageComponent {
           entitlementIds: premiumReward?.EntitlementIds,
         },
       ].filter((it) => it.itemId)
-    }),
+    },
   )
-
-  protected openRepairRecipe(tpl: TemplateRef<any>) {
-    this.dialog.open(tpl, {
-      panelClass: ['w-full', 'h-full', 'max-w-4xl', 'layout-pad', 'shadow'],
-    })
-  }
-
-  protected closeDialog() {
-    this.dialog.closeAll()
-  }
 }

@@ -1,4 +1,3 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -11,7 +10,7 @@ import { NwModule } from '~/nw'
 import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
-import { PromptDialogComponent } from '~/ui/layout'
+import { ModalService, PromptDialogComponent } from '~/ui/layout'
 import { HtmlHeadService } from '~/utils'
 import { suspensify } from '~/utils/rx/suspensify'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
@@ -60,7 +59,7 @@ export class SkillBuildsShareComponent {
     private route: ActivatedRoute,
     private router: Router,
     private web3: ShareService,
-    private dialog: Dialog,
+    private modal: ModalService,
     private db: SkillBuildsDB,
     private sanitizer: DomSanitizer,
     head: HtmlHeadService,
@@ -72,16 +71,16 @@ export class SkillBuildsShareComponent {
   }
 
   protected onimportClicked(record: SkillSetRecord) {
-    PromptDialogComponent.open(this.dialog, {
-      data: {
+    PromptDialogComponent.open(this.modal, {
+      inputs: {
         title: 'Import',
         body: 'New skill-tree name',
-        input: record.name,
+        value: record.name,
         positive: 'Import',
         negative: 'Cancel',
       },
     })
-      .closed.pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .pipe(
         switchMap((name) => {
           return this.db.create({

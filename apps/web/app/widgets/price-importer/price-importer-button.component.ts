@@ -1,17 +1,17 @@
-import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, HostListener, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, HostListener, Input } from '@angular/core'
 import { NwModule } from '~/nw'
-import { PriceImporterComponent } from './price-importer.component'
-import { svgSackDollar } from '~/ui/icons/svg'
 import { IconsModule } from '~/ui/icons'
+import { svgSackDollar } from '~/ui/icons/svg'
+import { ModalService } from '~/ui/layout'
+import { PriceImporterComponent } from './price-importer.component'
 
 @Component({
   standalone: true,
   selector: 'nwb-price-importer-button,[nwbPriceImporterButton]',
   templateUrl: './price-importer-button.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, DialogModule, IconsModule, PriceImporterComponent],
+  imports: [CommonModule, NwModule, IconsModule, PriceImporterComponent],
   host: {
     class: 'layout-content',
   },
@@ -19,21 +19,19 @@ import { IconsModule } from '~/ui/icons'
 export class PriceImporterButtonComponent {
   @Input()
   public nwbPriceImporterButton: void
+
   @Input()
   public icon: string | false = svgSackDollar
 
-  public constructor(private dialog: Dialog) {
+  public constructor(private modal: ModalService) {
     //
   }
 
   @HostListener('click')
   public openImporter() {
-    this.dialog.open(PriceImporterComponent, {
-      minHeight: 400,
-      maxHeight: '80vh',
-      minWidth: 320,
-      maxWidth: 800,
-      panelClass: ['w-full', 'layout-pad', 'shadow'],
+    this.modal.open({
+      content: PriceImporterComponent,
+      size: 'md',
     })
   }
 }

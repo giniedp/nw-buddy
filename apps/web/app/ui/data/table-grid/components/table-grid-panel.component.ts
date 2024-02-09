@@ -1,5 +1,4 @@
 import { Column, ColumnState } from '@ag-grid-community/core'
-import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 
@@ -7,7 +6,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { ComponentStore } from '@ngrx/component-store'
 import { BehaviorSubject, combineLatest, filter, firstValueFrom, map, switchMap, tap } from 'rxjs'
 import { AgGrid } from '~/ui/data/ag-grid'
-import { gridGetPinnedTopData, gridHasAnyFilterPresent } from '~/ui/data/ag-grid/utils'
+import { gridHasAnyFilterPresent } from '~/ui/data/ag-grid/utils'
 import { IconsModule } from '~/ui/icons'
 import {
   svgArrowsLeftRight,
@@ -19,26 +18,25 @@ import {
   svgEyeSlash,
   svgFileCode,
   svgFileCsv,
-  svgFilter,
   svgFilterCircleXmark,
   svgFloppyDisk,
   svgFloppyDiskArrow,
   svgThumbtack,
 } from '~/ui/icons/svg'
-import { EditorDialogComponent } from '~/ui/layout'
+import { ModalService } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { shareReplayRefCount } from '~/utils'
-import { SaveStateDialogComponent } from './save-state-dialog.component'
-import { LoadStateDialogComponent } from './load-state-dialog.component'
 import { ExportDialogComponent } from './export-dialog.component'
+import { LoadStateDialogComponent } from './load-state-dialog.component'
+import { SaveStateDialogComponent } from './save-state-dialog.component'
 
 @Component({
   standalone: true,
   selector: 'nwb-table-grid-panel',
   templateUrl: './table-grid-panel.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, IconsModule, DialogModule, TooltipModule, QuicksearchModule],
+  imports: [CommonModule, IconsModule, TooltipModule, QuicksearchModule],
   providers: [QuicksearchService],
   host: {
     class: 'flex flex-col gap-1 h-full overflow-hidden',
@@ -80,9 +78,9 @@ export class TableGridPanelComponent extends ComponentStore<{
                 name: this.getHeaderName(grid, grid.columnApi.getColumn(it.colId)),
               }
             })
-          })
+          }),
         )
-      })
+      }),
     )
     .pipe(shareReplayRefCount(1))
 
@@ -98,7 +96,7 @@ export class TableGridPanelComponent extends ComponentStore<{
       return cols.filter((it) => {
         return it.colId?.toLowerCase()?.includes(search) || it.name?.toLowerCase()?.includes(search)
       })
-    })
+    }),
   )
   private colState = new BehaviorSubject<ColumnState[]>([])
 
@@ -115,7 +113,10 @@ export class TableGridPanelComponent extends ComponentStore<{
   protected svgPin = svgThumbtack
   protected svgDisk = svgFloppyDisk
   protected svgDiskArrow = svgFloppyDiskArrow
-  public constructor(private dialog: Dialog, private qs: QuicksearchService) {
+  public constructor(
+    private modal: ModalService,
+    private qs: QuicksearchService,
+  ) {
     super({ grid: null, persistKey: null })
   }
 
@@ -183,44 +184,29 @@ export class TableGridPanelComponent extends ComponentStore<{
     this.submitState(state)
   }
 
-  protected openCode() {
-    const grid = this.sigGrid()
-    const rows = []
-    grid.api.forEachNode((row) => {
-      rows.push(row.data)
-    })
-    EditorDialogComponent.open(this.dialog, {
-      data: {
-        title: '',
-        value: JSON.stringify(rows, null, 2),
-        readonly: true,
-        language: 'json',
-        positive: 'Close',
-      },
-    })
-  }
-
   protected saveState() {
     const grid = this.sigGrid()
     const key = this.sigPersistKey()
-    SaveStateDialogComponent.open(this.dialog, {
-      title: 'Save State',
-      config: {},
-      key: key,
-      data: {
-        columns: grid.columnApi.getColumnState(),
-        filter: grid.api.getFilterModel(),
+    SaveStateDialogComponent.open(this.modal, {
+      inputs: {
+        title: 'Save State',
+        key: key,
+        data: {
+          columns: grid.columnApi.getColumnState(),
+          filter: grid.api.getFilterModel(),
+        },
       },
     })
   }
 
   protected loadState() {
-    LoadStateDialogComponent.open(this.dialog, {
-      title: 'Load State',
-      config: {},
-      key: this.get(({ persistKey }) => persistKey),
+    LoadStateDialogComponent.open(this.modal, {
+      inputs: {
+        title: 'Load State',
+        key: this.get(({ persistKey }) => persistKey),
+      },
     })
-      .closed.pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .subscribe((state) => {
         const grid = this.get(({ grid }) => grid)
         grid.columnApi.applyColumnState({
@@ -232,10 +218,11 @@ export class TableGridPanelComponent extends ComponentStore<{
   }
 
   protected openExporter() {
-    ExportDialogComponent.open(this.dialog, {
-      title: 'CSV Export',
-      grid: this.get(({ grid }) => grid.api),
-      config: {},
+    ExportDialogComponent.open(this.modal, {
+      inputs: {
+        title: 'CSV Export',
+        grid: this.get(({ grid }) => grid.api),
+      },
     })
   }
 

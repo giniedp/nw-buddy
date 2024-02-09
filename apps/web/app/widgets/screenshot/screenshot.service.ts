@@ -1,10 +1,10 @@
-import { Dialog } from '@angular/cdk/dialog'
+import { DOCUMENT } from '@angular/common'
 import { ElementRef, Injectable, inject } from '@angular/core'
 import { saveAs } from 'file-saver'
 import { BehaviorSubject } from 'rxjs'
+import { ModalService } from '~/ui/layout'
 import { ScreenshotSaveDialogComponent } from './screenshot-save-dialog.component'
 import { cloneElement, getScreenshotOverlay, renderScreenshot } from './utils'
-import { DOCUMENT } from '@angular/common'
 
 export interface ScreenshotFrame {
   elementRef: ElementRef<HTMLElement>
@@ -29,7 +29,7 @@ export class ScreenshotService {
   private window = inject(DOCUMENT).defaultView
   private frames$ = new BehaviorSubject<ScreenshotFrame[]>([])
 
-  public constructor(private dialog: Dialog) {
+  public constructor(private modal: ModalService) {
     //
   }
 
@@ -96,13 +96,13 @@ export class ScreenshotService {
   }
 
   public saveBlobWithDialog(blob: Blob, filename: string = 'Screenshot') {
-    ScreenshotSaveDialogComponent.open(this.dialog, {
-      data: {
+    ScreenshotSaveDialogComponent.open(this.modal, {
+      inputs: {
         previewUrl: URL.createObjectURL(blob),
         filename: filename + '.png',
         enableClipboard: this.isClipboardSupported,
       },
-    }).closed.subscribe((result) => {
+    }).result$.subscribe((result) => {
       if (!result) {
         return
       }

@@ -1,9 +1,8 @@
-import { DIALOG_DATA, Dialog, DialogConfig, DialogModule, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Inject, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { Dyecolors } from '@nw-data/generated'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
+import { LayoutModule, ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 
 export interface DyePickerDialogData {
@@ -16,38 +15,33 @@ export interface DyePickerDialogData {
   selector: 'nwb-dye-picker',
   templateUrl: './dye-picker.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, DialogModule, TooltipModule],
+  imports: [CommonModule, NwModule, TooltipModule, LayoutModule],
   host: {
-    class: 'flex flex-col h-full bg-base-100 border border-base-100 rounded-md overflow-hidden',
+    class: 'ion-page bg-base-100 border border-base-100 rounded-md',
   },
 })
 export class DyePickerComponent {
-  public static open(dialog: Dialog, config: DialogConfig<DyePickerDialogData>) {
-    return dialog.open<Dyecolors, DyePickerDialogData, DyePickerComponent>(DyePickerComponent, {
-      maxWidth: 600,
-      maxHeight: 600,
-      panelClass: ['w-full', 'layout-pad', 'self-end', 'sm:self-center', 'shadow'],
-      ...config,
-    })
+  public static open(modal: ModalService, options: ModalOpenOptions<DyePickerComponent>) {
+    options.size ??= 'sm'
+    options.content = DyePickerComponent
+    return modal.open<DyePickerComponent, Dyecolors>(options)
   }
 
-  protected colors: Dyecolors[]
-  protected color: Dyecolors
+  @Input()
+  public colors: Dyecolors[]
 
-  public constructor(
-    private dialog: DialogRef<Dyecolors, DyePickerDialogData>,
-    @Inject(DIALOG_DATA)
-    protected data: DyePickerDialogData
-  ) {
-    this.colors = data.colors
-    this.color = data.color
+  @Input()
+  public color: Dyecolors
+
+  public constructor(private modalRef: ModalRef<Dyecolors>) {
+    //
   }
 
   protected commit(color = this.color) {
-    this.dialog.close(color)
+    this.modalRef.close(color)
   }
 
   protected cancel() {
-    this.dialog.close()
+    this.modalRef.close()
   }
 }

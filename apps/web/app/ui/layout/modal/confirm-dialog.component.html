@@ -1,14 +1,26 @@
-<h3 class="font-bold text-lg bg-black p-3">{{ title }}</h3>
-<div class="layout-pad">
-  <ng-container *ngIf="isHtml">
-    <div [innerHTML]="body"></div>
-  </ng-container>
-  <ng-container *ngIf="!isHtml">
-    <p>{{ body }}</p>
-  </ng-container>
-</div>
-<div class="modal-action flex-row-reverse justify-start layout-pad gap-1">
-  <button class="btn btn-primary" (click)="confirm()">{{ positive }}</button>
-  <button class="btn btn-ghost" (click)="close()" *ngIf="neutral">{{ neutral }}</button>
-  <button class="btn btn-ghost" (click)="deny()" *ngIf="negative">{{ negative }}</button>
-</div>
+<ion-header>
+  <ion-toolbar class="ion-color ion-color-black rounded-t-md">
+    <ion-title>{{ title }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-p-4">
+  <div class="h-full flex flex-col gap-4 items-center justify-center">
+    @if (isHtml) {
+      <div [innerHTML]="body"></div>
+    } @else {
+      <p>{{ body }}</p>
+    }
+  </div>
+</ion-content>
+
+<ion-footer class="rounded-b-md">
+  <ion-toolbar class="ion-color ion-color-base-300">
+    @if (negative) {
+      <button class="btn btn-ghost mr-1 min-w-28" (click)="deny()" slot="secondary">{{ negative }}</button>
+    }
+    @if (neutral) {
+      <button class="btn btn-ghost mr-1 min-w-28" (click)="close()" slot="secondary">{{ neutral }}</button>
+    }
+    <button class="btn btn-primary mr-1 min-w-28" (click)="confirm()" slot="primary">{{ positive }}</button>
+  </ion-toolbar>
+</ion-footer>

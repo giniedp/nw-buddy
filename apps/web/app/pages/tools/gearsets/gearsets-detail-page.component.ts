@@ -1,10 +1,17 @@
-import { DialogModule } from '@angular/cdk/dialog'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
-import { AfterViewInit, ChangeDetectionStrategy, Component, ContentChildren, QueryList, ViewChildren, inject } from '@angular/core'
+import { AfterViewInit, ChangeDetectionStrategy, Component, QueryList, ViewChildren, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
-import { IonButtons, IonHeader, IonLabel, IonMenuButton, IonSegment, IonSegmentButton, IonSplitPane } from '@ionic/angular/standalone'
+import {
+  IonButtons,
+  IonHeader,
+  IonLabel,
+  IonMenuButton,
+  IonSegment,
+  IonSegmentButton,
+  IonSplitPane,
+} from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
 import { ChipsInputModule } from '~/ui/chips-input'
 import { IconsModule } from '~/ui/icons'
@@ -17,12 +24,12 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { BehaviorSubject, map } from 'rxjs'
 import { GearsetsDB } from '~/data'
 import { Mannequin } from '~/nw/mannequin'
+import { svgCalculator, svgChartLine, svgDiagramProject, svgSwords, svgUser } from '~/ui/icons/svg'
 import { DamageCalculatorComponent } from './calculator/damage-calculator.component'
 import { DamageDuelService } from './calculator/damage-duel.service'
 import { GearsetGridComponent } from './gearset/gearset-grid.component'
 import { GearsetHostDirective } from './gearset/gearset-host.directive'
 import { GearsetToolbarComponent } from './gearset/gearset-toolbar.component'
-import { svgCalculator, svgChartLine, svgDiagramProject, svgSwords, svgUser } from '~/ui/icons/svg'
 
 @Component({
   standalone: true,
@@ -31,7 +38,6 @@ import { svgCalculator, svgChartLine, svgDiagramProject, svgSwords, svgUser } fr
   imports: [
     CommonModule,
     NwModule,
-    DialogModule,
     FormsModule,
     IconsModule,
     RouterModule,

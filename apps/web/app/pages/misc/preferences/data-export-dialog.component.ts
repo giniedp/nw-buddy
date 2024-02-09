@@ -1,20 +1,20 @@
-import { Dialog, DialogConfig, DialogModule, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ComponentStore } from '@ngrx/component-store'
 import saveAs from 'file-saver'
-import { DbService } from '~/data/db.service'
 import { SENSITIVE_KEYS } from '~/data/constants'
+import { DbService } from '~/data/db.service'
 import { NwModule } from '~/nw'
 import { AppPreferencesService, PreferencesService } from '~/preferences'
 import { ClipboardService } from '~/ui/clipboard'
 import { CodeEditorModule } from '~/ui/code-editor'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleCheck, svgCircleExclamation, svgCircleNotch, svgFileExport, svgInfoCircle } from '~/ui/icons/svg'
-import { PromptDialogComponent } from '~/ui/layout/modal'
+import { ModalRef, ModalService, PromptDialogComponent } from '~/ui/layout/modal'
 import { PlatformService } from '~/utils/services/platform.service'
 import { recursivelyEncodeArrayBuffers } from './buffer-encoding'
+import { LayoutModule } from '~/ui/layout'
 
 export interface DataExportDialogState {
   active?: boolean
@@ -29,16 +29,16 @@ export interface DataExportDialogState {
   selector: 'nwb-data-export-dialog',
   templateUrl: './data-export-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, IconsModule, FormsModule, CodeEditorModule, DialogModule],
+  imports: [CommonModule, NwModule, IconsModule, FormsModule, CodeEditorModule, LayoutModule],
   host: {
-    class: 'flex flex-col bg-base-100 border border-base-100 rounded-md overflow-hidden h-full w-full',
+    class: 'ion-page bg-base-100 border border-base-100 rounded-md',
   },
 })
 export class DataExportDialogComponent extends ComponentStore<DataExportDialogState> {
-  public static open(dialog: Dialog, config: DialogConfig<void>) {
-    return dialog.open(DataExportDialogComponent, {
-      panelClass: ['max-h-screen', 'w-screen', 'max-w-md', 'layout-pad', 'shadow', 'self-center'],
-      ...config,
+  public static open(modal: ModalService) {
+    return modal.open({
+      size: 'sm',
+      content: DataExportDialogComponent,
     })
   }
 
@@ -52,8 +52,8 @@ export class DataExportDialogComponent extends ComponentStore<DataExportDialogSt
     private db: DbService,
     private appPreferences: AppPreferencesService,
     private preferences: PreferencesService,
-    private dialogRef: DialogRef,
-    private dialog: Dialog,
+    private modalRef: ModalRef,
+    private modal: ModalService,
     private platform: PlatformService,
     private clipboard: ClipboardService,
   ) {
@@ -61,7 +61,7 @@ export class DataExportDialogComponent extends ComponentStore<DataExportDialogSt
   }
 
   protected close() {
-    this.dialogRef.close()
+    this.modalRef.close()
   }
 
   public async export() {
@@ -96,15 +96,16 @@ export class DataExportDialogComponent extends ComponentStore<DataExportDialogSt
     }
 
     const json = JSON.stringify(data, null, 2)
-    PromptDialogComponent.open(this.dialog, {
-      data: {
+    PromptDialogComponent.open(this.modal, {
+      inputs: {
         title: 'Data Exported',
-        input: json,
-        textarea: true,
+        value: json,
+        inputType: 'textarea',
         body: 'Copy the data below and save it to a file manually.',
         positive: 'Close',
       },
     })
+    this.close()
   }
 
   protected async performExport() {

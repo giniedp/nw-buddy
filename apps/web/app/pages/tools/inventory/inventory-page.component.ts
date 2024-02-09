@@ -1,6 +1,6 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
 import { EQUIP_SLOTS, getItemId, getItemMaxGearScore } from '@nw-data/common'
@@ -12,16 +12,22 @@ import { DataGridModule } from '~/ui/data/table-grid'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
 import { svgImage, svgPlus, svgTrashCan } from '~/ui/icons/svg'
-import { LayoutModule } from '~/ui/layout'
+import { LayoutModule, ModalService } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { eqCaseInsensitive, injectBreakpoint, injectRouteParam, injectUrlParams, observeRouteParam, selectSignal, selectStream } from '~/utils'
+import {
+  eqCaseInsensitive,
+  injectBreakpoint,
+  injectRouteParam,
+  injectUrlParams,
+  observeRouteParam,
+  selectStream,
+} from '~/utils'
 import { InventoryTableAdapter, InventoryTableRecord } from '~/widgets/data/inventory-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { GearImporterDialogComponent } from './gear-importer-dialog.component'
 import { GearsetFormComponent } from './gearset-form.component'
 import { InventoryPickerService } from './inventory-picker.service'
-import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -76,7 +82,7 @@ export class InventoryPageComponent implements OnInit {
   protected categoryId$ = observeRouteParam(this.route, '')
   public constructor(
     private picker: InventoryPickerService,
-    private dialog: Dialog,
+    private modal: ModalService,
     private route: ActivatedRoute,
     protected service: DataViewService<InventoryTableRecord>,
   ) {
@@ -128,10 +134,10 @@ export class InventoryPageComponent implements OnInit {
     if (!slot) {
       return
     }
-    GearImporterDialogComponent.open(this.dialog, {
-      data: slot.id,
+    GearImporterDialogComponent.open(this.modal, {
+      inputs: { slotId: slot.id },
     })
-      .closed.pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .subscribe((instance) => {
         this.items.createRecord({
           id: null,

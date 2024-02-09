@@ -1,23 +1,14 @@
 import { GridApi } from '@ag-grid-community/core'
-import { DIALOG_DATA, Dialog, DialogConfig, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, inject } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NwModule } from '~/nw'
 import { ClipboardService } from '~/ui/clipboard'
 import { IconsModule } from '~/ui/icons'
-import { svgChevronLeft, svgCircleExclamation, svgPen, svgTrashCan } from '~/ui/icons/svg'
+import { svgCircleExclamation } from '~/ui/icons/svg'
+import { ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { SaveStateDialogStore } from './save-state-dialog.store'
-
-export interface ExportDialogOptions<T> {
-  title: string
-  grid: GridApi
-  /**
-   * Dialog configuration
-   */
-  config: DialogConfig<void>
-}
 
 @Component({
   standalone: true,
@@ -31,18 +22,18 @@ export interface ExportDialogOptions<T> {
   },
 })
 export class ExportDialogComponent {
-  public static open<T>(dialog: Dialog, options: ExportDialogOptions<T>) {
-    return dialog.open<Array<string | number>>(ExportDialogComponent, {
-      panelClass: ['max-h-screen', 'w-screen', 'max-w-xs', 'm-2', 'shadow', 'self-end', 'sm:self-center'],
-      ...options.config,
-      data: options,
-    })
+  public static open(modal: ModalService, options: ModalOpenOptions<ExportDialogComponent>) {
+    options.content = ExportDialogComponent
+    return modal.open<ExportDialogComponent, Array<string | number>>(options)
   }
 
   protected iconError = svgCircleExclamation
 
-  protected title: string
-  protected grid: GridApi
+  @Input()
+  public title: string
+
+  @Input()
+  public grid: GridApi
 
   protected exportAllCols: boolean = false
   protected exportAllRows: boolean = false
@@ -58,19 +49,14 @@ export class ExportDialogComponent {
 
   public constructor(
     protected store: SaveStateDialogStore,
-    private dialog: Dialog,
-    private dialogRef: DialogRef<Array<string | number>>,
+    private modalRef: ModalRef<Array<string | number>>,
     private cdRef: ChangeDetectorRef,
-    @Inject(DIALOG_DATA)
-    options: ExportDialogOptions<any>
   ) {
-    this.title = options.title
-    this.grid = options.grid
-
+    //
   }
 
   protected close() {
-    this.dialogRef.close()
+    this.modalRef.close()
   }
 
   protected async export() {
@@ -90,29 +76,35 @@ export class ExportDialogComponent {
   }
 
   protected async commit() {
-    this.dialogRef.close()
+    this.modalRef.close()
   }
 
   protected copyData() {
     const blob = this.data
-    this.clipboard.saveBlobToClipoard(blob, blob.type).then(() => {
-      this.dialogRef.close()
-    }).catch((err) => {
-      console.error(err)
-      this.hasError = true
-      this.cdRef.markForCheck()
-    })
+    this.clipboard
+      .saveBlobToClipoard(blob, blob.type)
+      .then(() => {
+        this.modalRef.close()
+      })
+      .catch((err) => {
+        console.error(err)
+        this.hasError = true
+        this.cdRef.markForCheck()
+      })
   }
 
   protected downloadData() {
     const blob = this.data
-    this.clipboard.saveBlobToFile(blob, this.filename).then(() => {
-      this.dialogRef.close()
-    }).catch((err) => {
-      console.error(err)
-      this.hasError = true
-      this.cdRef.markForCheck()
-    })
+    this.clipboard
+      .saveBlobToFile(blob, this.filename)
+      .then(() => {
+        this.modalRef.close()
+      })
+      .catch((err) => {
+        console.error(err)
+        this.hasError = true
+        this.cdRef.markForCheck()
+      })
   }
 
   private getData() {

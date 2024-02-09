@@ -1,27 +1,18 @@
-import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  ViewContainerRef,
-} from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, Output } from '@angular/core'
 import { Dyecolors } from '@nw-data/generated'
 import { filter } from 'rxjs'
 import { NwModule } from '~/nw'
-import { DyePickerComponent } from './dye-picker.component'
-import { FullscreenOverlayContainer, OverlayContainer } from '@angular/cdk/overlay'
+import { ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
+import { DyePickerComponent } from './dye-picker.component'
 
 @Component({
   standalone: true,
   selector: 'nwb-dye-panel',
   templateUrl: './dye-panel.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, DialogModule, DyePickerComponent, TooltipModule],
+  imports: [CommonModule, NwModule, DyePickerComponent, TooltipModule],
   host: {
     class: 'flex flex-row gap-1 padding-2',
   },
@@ -61,18 +52,21 @@ export class DyePanelComponent {
   @Input()
   public dyeADisabled: boolean
 
-  public constructor(private dialog: Dialog, private cdRef: ChangeDetectorRef) {
+  public constructor(
+    private modal: ModalService,
+    private cdRef: ChangeDetectorRef,
+  ) {
     //
   }
 
   protected pickR() {
-    DyePickerComponent.open(this.dialog, {
-      data: {
+    DyePickerComponent.open(this.modal, {
+      inputs: {
         colors: this.dyeColors,
         color: this.dyeR,
       },
     })
-      .closed.pipe(filter((it) => it !== undefined))
+      .result$.pipe(filter((it) => it !== undefined))
       .subscribe((value) => {
         this.dyeR = value
         this.dyeRChange.emit(value)
@@ -81,13 +75,13 @@ export class DyePanelComponent {
   }
 
   protected pickG() {
-    DyePickerComponent.open(this.dialog, {
-      data: {
+    DyePickerComponent.open(this.modal, {
+      inputs: {
         colors: this.dyeColors,
         color: this.dyeG,
       },
     })
-      .closed.pipe(filter((it) => it !== undefined))
+      .result$.pipe(filter((it) => it !== undefined))
       .subscribe((value) => {
         this.dyeG = value
         this.dyeGChange.emit(value)
@@ -96,13 +90,13 @@ export class DyePanelComponent {
   }
 
   protected pickB() {
-    DyePickerComponent.open(this.dialog, {
-      data: {
+    DyePickerComponent.open(this.modal, {
+      inputs: {
         colors: this.dyeColors,
         color: this.dyeB,
       },
     })
-      .closed.pipe(filter((it) => it !== undefined))
+      .result$.pipe(filter((it) => it !== undefined))
       .subscribe((value) => {
         this.dyeB = value
         this.dyeBChange.emit(value)
@@ -111,13 +105,13 @@ export class DyePanelComponent {
   }
 
   protected pickA() {
-    DyePickerComponent.open(this.dialog, {
-      data: {
+    DyePickerComponent.open(this.modal, {
+      inputs: {
         colors: this.dyeColors,
         color: this.dyeA,
       },
     })
-      .closed.pipe(filter((it) => it !== undefined))
+      .result$.pipe(filter((it) => it !== undefined))
       .subscribe((value) => {
         this.dyeA = value
         this.dyeAChange.emit(value)

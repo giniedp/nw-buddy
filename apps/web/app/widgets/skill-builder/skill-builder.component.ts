@@ -1,4 +1,3 @@
-import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector, Input, TemplateRef, ViewChild } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
@@ -11,8 +10,8 @@ import { NW_WEAPON_TYPES, NwWeaponType, NwWeaponTypesService } from '~/nw/weapon
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { mapDistinct } from '~/utils'
-import { SkillTreeComponent } from './skill-tree.component'
 import { openWeaponTypePicker } from '../data/weapon-type'
+import { SkillTreeComponent } from './skill-tree.component'
 
 export interface SkillBuildValue {
   weapon: string
@@ -26,7 +25,7 @@ export interface SkillBuildValue {
   templateUrl: './skill-builder.component.html',
   styleUrls: ['./skill-builder.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, TooltipModule, SkillTreeComponent, FormsModule, LayoutModule, DialogModule],
+  imports: [CommonModule, NwModule, TooltipModule, SkillTreeComponent, FormsModule, LayoutModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -35,7 +34,7 @@ export interface SkillBuildValue {
     },
   ],
   host: {
-    class: 'flex flex-col layout-gap',
+    class: 'flex flex-col layout-gap @container',
   },
 })
 export class SkillBuilderComponent implements ControlValueAccessor {
@@ -97,7 +96,7 @@ export class SkillBuilderComponent implements ControlValueAccessor {
         points1: points1,
         points2: points - points1,
       }
-    })
+    }),
   )
 
   protected vm$ = defer(() =>
@@ -112,7 +111,7 @@ export class SkillBuilderComponent implements ControlValueAccessor {
       pointsAvailable: this.points$.pipe(mapDistinct(({ available }) => available)),
       pointsTree1: this.points$.pipe(mapDistinct(({ points1 }) => points1)),
       pointsTree2: this.points$.pipe(mapDistinct(({ points2 }) => points2)),
-    })
+    }),
   ).pipe(subscribeOn(asyncScheduler))
 
   protected touched = false
@@ -123,8 +122,7 @@ export class SkillBuilderComponent implements ControlValueAccessor {
   public constructor(
     private types: NwWeaponTypesService,
     private char: CharacterStore,
-    private dialog: Dialog,
-    private injector: Injector
+    private injector: Injector,
   ) {
     //
   }
@@ -190,12 +188,11 @@ export class SkillBuilderComponent implements ControlValueAccessor {
 
   public switchWeapon() {
     openWeaponTypePicker({
-      dialog: this.dialog,
       injector: this.injector,
     })
       .pipe(
         filter((it) => !!it?.length),
-        map((it) => NW_WEAPON_TYPES.find((type) => type.WeaponTypeID === String(it[0])))
+        map((it) => NW_WEAPON_TYPES.find((type) => type.WeaponTypeID === String(it[0]))),
       )
       .subscribe((weapon) => {
         this.commit({

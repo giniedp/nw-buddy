@@ -1,4 +1,3 @@
-import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -21,7 +20,7 @@ import {
   svgTrashCan,
   svgXmark,
 } from '~/ui/icons/svg'
-import { LayoutModule, PromptDialogComponent } from '~/ui/layout'
+import { LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { GearsetLoadoutItemComponent, LoadoutSlotEventHandler } from '~/widgets/data/gearset-detail'
 import { GearsetTableAdapter } from '~/widgets/data/gearset-table'
@@ -37,7 +36,6 @@ import { GearsetFormSlotHandler } from './gearset-form-slot-handler'
     CommonModule,
     FormsModule,
     NwModule,
-    DialogModule,
     LayoutModule,
     IconsModule,
     ItemDetailModule,
@@ -85,7 +83,7 @@ export class GearsetFormComponent {
 
   public constructor(
     private gearDb: GearsetsDB,
-    private dialog: Dialog,
+    private modal: ModalService,
     private injector: Injector,
     private pref: PreferencesService,
     slotEventHandler: GearsetFormSlotHandler,
@@ -95,16 +93,16 @@ export class GearsetFormComponent {
   }
 
   protected createSet() {
-    PromptDialogComponent.open(this.dialog, {
-      data: {
+    PromptDialogComponent.open(this.modal, {
+      inputs: {
         title: 'Create new set',
-        body: 'Give this set a name',
-        input: 'New Gearset',
+        body: 'Name for the new gearset',
+        value: 'New Gearset',
         positive: 'Create',
         negative: 'Cancel',
       },
     })
-      .closed.pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .pipe(
         switchMap((newName) => {
           return this.gearDb.create({

@@ -68,7 +68,7 @@ program
           decompressAzcs: true,
           threads: options.threads,
           exclude: [
-            '(shaders|pregame|server|sounds|timelines)[/\\\\]',
+            '(shaders|pregame|server|timelines)[/\\\\]',
             'lyshineui[/\\\\].*\\.dynamicslice$',
             '\\.dynamicuicanvas$',
           ],

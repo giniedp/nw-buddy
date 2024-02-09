@@ -1,13 +1,12 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { getItemPerkIdsWithOverride } from '@nw-data/common'
 import { combineLatest, filter, firstValueFrom, map, of } from 'rxjs'
 import { GearsetSignalStore, NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { ActiveAttribute, Mannequin } from '~/nw/mannequin'
 import { IconsModule } from '~/ui/icons'
+import { ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { AttributeEditorDialogComponent } from '~/widgets/attributes-editor'
 import { FlashDirective } from './ui/flash.directive'
@@ -26,7 +25,7 @@ export class GearCellAttributesComponent {
   private db = inject(NwDataService)
   private store = inject(GearsetSignalStore)
   private mannequin = inject(Mannequin)
-  private dialog = inject(Dialog)
+  private modal = inject(ModalService)
 
   @Input()
   public hideTitle = false
@@ -109,8 +108,8 @@ export class GearCellAttributesComponent {
       ),
     )
 
-    AttributeEditorDialogComponent.open(this.dialog, {
-      data: {
+    AttributeEditorDialogComponent.open(this.modal, {
+      inputs: {
         level: level,
         assigned: {
           str: attrs.str.assigned,
@@ -142,7 +141,7 @@ export class GearCellAttributesComponent {
         magnify: magnify,
       },
     })
-      .closed.pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .subscribe((res) => {
         this.store.patchGearset({ attrs: res })
       })

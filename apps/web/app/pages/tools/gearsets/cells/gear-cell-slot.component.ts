@@ -1,4 +1,3 @@
-import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { Overlay } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, computed, inject, input } from '@angular/core'
@@ -22,7 +21,7 @@ import {
   svgTrashCan,
 } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
-import { ConfirmDialogComponent, LayoutModule } from '~/ui/layout'
+import { ConfirmDialogComponent, LayoutModule, ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { selectSignal } from '~/utils'
 import { GearImporterDialogComponent } from '../../inventory/gear-importer-dialog.component'
@@ -36,7 +35,6 @@ import { InventoryPickerService } from '../../inventory/inventory-picker.service
   imports: [
     CommonModule,
     NwModule,
-    DialogModule,
     FormsModule,
     ItemDetailModule,
     IconsModule,
@@ -108,7 +106,7 @@ export class GearCellSlotComponent {
 
   public constructor(
     private picker: InventoryPickerService,
-    private dialog: Dialog,
+    private modal: ModalService,
     private overlay: Overlay,
   ) {
     this.store.connectState(
@@ -182,10 +180,10 @@ export class GearCellSlotComponent {
 
   protected async handleScanItem() {
     const slotId = this.slotId()
-    GearImporterDialogComponent.open(this.dialog, {
-      data: slotId,
+    GearImporterDialogComponent.open(this.modal, {
+      inputs: { slotId },
     })
-      .closed.pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .subscribe((instance) => {
         this.store.patchSlot(slotId, instance)
       })
@@ -230,15 +228,15 @@ export class GearCellSlotComponent {
 
   protected async instantiate() {
     const record = this.store.instance()
-    ConfirmDialogComponent.open(this.dialog, {
-      data: {
+    ConfirmDialogComponent.open(this.modal, {
+      inputs: {
         title: 'Convert to link',
         body: 'This will create a new item in your inventory and link it to the slot.',
         positive: 'Convert',
         negative: 'Cancel',
       },
     })
-      .closed.pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .subscribe(async () => {
         const instance = await this.itemDb.create({
           gearScore: record.gearScore,

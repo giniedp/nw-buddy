@@ -1,10 +1,12 @@
-import { Dialog, DialogConfig, DialogRef, DIALOG_DATA } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { RouterModule } from '@angular/router'
 import { ComponentStore } from '@ngrx/component-store'
 import { environment } from 'apps/web/environments/environment'
+import { combineLatest, map } from 'rxjs'
 import { NwModule } from '~/nw'
+import { AppPreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
 import {
   svgCircleCheck,
@@ -14,11 +16,9 @@ import {
   svgInfoCircle,
   svgShareNodes,
 } from '~/ui/icons/svg'
+import { LayoutModule, ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { UploadContent, ShareService } from './share.service'
-import { AppPreferencesService } from '~/preferences'
-import { RouterModule } from '@angular/router'
-import { combineLatest, map } from 'rxjs'
+import { ShareService, UploadContent } from './share.service'
 
 export interface ShareOptions {
   /**
@@ -62,6 +62,8 @@ export interface ShareDialogState {
   error?: boolean
   ipfsCid?: string
   shared?: boolean
+
+  data: ShareOptions
 }
 
 @Component({
@@ -69,17 +71,33 @@ export interface ShareDialogState {
   selector: 'nwb-share-dialog',
   templateUrl: './share-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, IconsModule, TooltipModule, RouterModule, FormsModule],
+  imports: [CommonModule, NwModule, FormsModule, IconsModule, TooltipModule, RouterModule, FormsModule, LayoutModule],
   host: {
-    class: 'flex flex-col bg-base-100 border border-base-100 rounded-md overflow-hidden h-full w-full m-2',
+    class: 'ion-page bg-base-100 border border-base-100 rounded-md',
   },
 })
 export class ShareDialogComponent extends ComponentStore<ShareDialogState> {
-  public static open(dialog: Dialog, config: DialogConfig<ShareOptions>) {
-    return dialog.open(ShareDialogComponent, {
-      panelClass: ['max-h-screen', 'w-screen', 'max-w-md'],
-      ...config,
+  public static open(modal: ModalService, options: ModalOpenOptions<ShareDialogComponent>) {
+    options.size ??= ['x-sm', 'y-md']
+    options.content = ShareDialogComponent
+    return modal.open(options)
+  }
+
+  @Input()
+  public set data(value: ShareOptions) {
+    this.patchState({
+      data: value,
     })
+    if (value.ipnsKey) {
+      this.patchState({
+        ipnsEnabled: true,
+        ipnsKey: value.ipnsKey,
+        ipnsName: value.ipnsName,
+      })
+    }
+  }
+  public get data() {
+    return this.get((state) => state.data)
   }
 
   protected iconInfo = svgInfoCircle
@@ -104,26 +122,20 @@ export class ShareDialogComponent extends ComponentStore<ShareDialogState> {
         embedUrl,
         embedSnippet,
       }
-    })
+    }),
   )
 
   protected copied: string = null
   public constructor(
-    @Inject(DIALOG_DATA)
-    private data: ShareOptions,
-    private dialog: DialogRef,
+    // @Inject(DIALOG_DATA)
+    // private data: ShareOptions,
+    private modalRef: ModalRef,
     private web3: ShareService,
     private cdRef: ChangeDetectorRef,
-    private preferences: AppPreferencesService
+    private preferences: AppPreferencesService,
   ) {
-    super({ active: false })
-    if (data.ipnsKey) {
-      this.patchState({
-        ipnsEnabled: true,
-        ipnsKey: data.ipnsKey,
-        ipnsName: data.ipnsName,
-      })
-    }
+    super({ active: false, data: null })
+
     // const web3token = preferences.web3token.get()
     // if (web3token) {
     //   this.patchState({
@@ -145,7 +157,7 @@ export class ShareDialogComponent extends ComponentStore<ShareDialogState> {
   }
 
   protected close() {
-    this.dialog.close()
+    this.modalRef.close()
   }
 
   protected prependHostname(path: string) {

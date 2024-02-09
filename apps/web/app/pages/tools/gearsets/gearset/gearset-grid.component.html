@@ -1,8 +1,5 @@
 <div
   class="flex flex-col gap-4 @lg:grid grid-auto-fill-[320px] grid-flow-dense"
-  [nwbScreenshotFrame]="gearset?.name"
-  [nwbScreenshotWidth]="1660"
-  [nwbScreenshotMode]="'detached'"
 >
   <div class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2">
     <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
@@ -27,7 +24,7 @@
   @for (group of slotGroups(); track $index) {
     @for (slot of group; track $index) {
       @if (slot) {
-        <nwb-gear-cell-slot class="min-h-80 creenshot-body" [slotId]="slot.id" [gearset]="gearset" />
+        <nwb-gear-cell-slot class="min-h-80 screenshot-body" [slotId]="slot.id" [gearset]="gearset" />
       }
     }
   }

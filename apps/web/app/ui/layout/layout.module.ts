@@ -1,4 +1,3 @@
-import { DialogModule } from '@angular/cdk/dialog'
 import { LayoutModule as CdkLayoutModule } from '@angular/cdk/layout'
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { OverlayModule } from '@angular/cdk/overlay'
@@ -18,11 +17,11 @@ import {
 } from '@ionic/angular/standalone'
 
 import { MenuCloseDirective, MenuConnectorDirective } from './menu.directive'
-import { ConfirmDialogComponent, PromptDialogComponent } from './modal'
+import { ConfirmDialogComponent, ModalCloseDirective, ModalOpenDirective, PromptDialogComponent } from './modal'
 
+import { IonContentDirective } from './ion-content.directive'
 import { BreakpointPipe } from './pipes/breakpoint.pipe'
 import { Px2VhPipe } from './pipes/px2vh.pipe'
-import { IonContentDirective } from './ion-content.directive'
 import { SizeObserverDirective } from './resize-observer.directive'
 
 const COMPONENTS = [
@@ -30,7 +29,6 @@ const COMPONENTS = [
   CdkLayoutModule,
   CdkMenuModule,
   ConfirmDialogComponent,
-  DialogModule,
   IonContent,
   IonContentDirective,
   IonFooter,
@@ -44,6 +42,8 @@ const COMPONENTS = [
   IonToolbar,
   MenuCloseDirective,
   MenuConnectorDirective,
+  ModalOpenDirective,
+  ModalCloseDirective,
   OverlayModule,
   OverlayModule,
   PromptDialogComponent,

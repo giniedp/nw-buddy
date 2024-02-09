@@ -1,4 +1,3 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { DomSanitizer } from '@angular/platform-browser'
@@ -10,9 +9,9 @@ import { NwModule } from '~/nw'
 import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
-import { LayoutModule, PromptDialogComponent } from '~/ui/layout'
-import { EmbedHeightDirective } from '~/utils/directives/embed-height.directive'
+import { LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { suspensify } from '~/utils'
+import { EmbedHeightDirective } from '~/utils/directives/embed-height.directive'
 import { GearsetGridComponent } from './gearset/gearset-grid.component'
 import { GearsetHostDirective } from './gearset/gearset-host.directive'
 
@@ -21,30 +20,37 @@ import { GearsetHostDirective } from './gearset/gearset-host.directive'
   selector: 'nwb-gearsets-share-page',
   templateUrl: './gearsets-share-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, GearsetHostDirective, GearsetGridComponent, IconsModule, LayoutModule, EmbedHeightDirective],
+  imports: [
+    CommonModule,
+    NwModule,
+    GearsetHostDirective,
+    GearsetGridComponent,
+    IconsModule,
+    LayoutModule,
+    EmbedHeightDirective,
+  ],
   host: {
     class: 'layout-col flex-none',
   },
 })
 export class GearsetsSharePageComponent {
-  protected record$ = this.route.paramMap
-    .pipe(
-      switchMap((it) => {
-        if (it.has('cid')) {
-          return this.web3.downloadbyCid(it.get('cid'))
-        }
-        return this.web3.downloadByName(it.get('name'))
-      }),
-      map((it): GearsetRecord => {
-        if (it.type === 'gearset') {
-          const record: GearsetRecord = it.data
-          delete record.id
-          return record
-        }
-        return null
-      }),
-      suspensify()
-    )
+  protected record$ = this.route.paramMap.pipe(
+    switchMap((it) => {
+      if (it.has('cid')) {
+        return this.web3.downloadbyCid(it.get('cid'))
+      }
+      return this.web3.downloadByName(it.get('name'))
+    }),
+    map((it): GearsetRecord => {
+      if (it.type === 'gearset') {
+        const record: GearsetRecord = it.data
+        delete record.id
+        return record
+      }
+      return null
+    }),
+    suspensify(),
+  )
 
   protected get appLink() {
     if (environment.standalone) {
@@ -64,7 +70,7 @@ export class GearsetsSharePageComponent {
     private route: ActivatedRoute,
     private router: Router,
     private web3: ShareService,
-    private dialog: Dialog,
+    private modal: ModalService,
     private gearsetDb: GearsetsDB,
     private sanitizer: DomSanitizer,
   ) {
@@ -72,16 +78,16 @@ export class GearsetsSharePageComponent {
   }
 
   protected onimportClicked(record: GearsetRecord) {
-    PromptDialogComponent.open(this.dialog, {
-      data: {
+    PromptDialogComponent.open(this.modal, {
+      inputs: {
         title: 'Import',
         body: 'New gearset name',
-        input: record.name,
+        value: record.name,
         positive: 'Import',
         negative: 'Cancel',
       },
     })
-      .closed.pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .pipe(
         switchMap((name) => {
           return this.gearsetDb.create({

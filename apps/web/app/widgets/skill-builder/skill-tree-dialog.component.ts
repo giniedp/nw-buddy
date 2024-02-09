@@ -1,10 +1,9 @@
-import { Dialog, DialogConfig, DialogRef, DIALOG_DATA } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NwModule } from '~/nw'
-import { SkillBuilderComponent, SkillBuildValue } from './skill-builder.component'
-
+import { ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
+import { SkillBuildValue, SkillBuilderComponent } from './skill-builder.component'
 
 @Component({
   standalone: true,
@@ -17,30 +16,24 @@ import { SkillBuilderComponent, SkillBuildValue } from './skill-builder.componen
   },
 })
 export class AttributeEditorDialogComponent {
-  public static open(dialog: Dialog, config: DialogConfig<SkillBuildValue>) {
-    return dialog.open<SkillBuildValue, SkillBuildValue, AttributeEditorDialogComponent>(
-      AttributeEditorDialogComponent,
-      {
-        ...config,
-      }
-    )
+  public static open(modal: ModalService, options: ModalOpenOptions<AttributeEditorDialogComponent>) {
+    options.size ??= ['x-md', 'y-lg']
+    options.content = AttributeEditorDialogComponent
+    return modal.open<AttributeEditorDialogComponent, SkillBuildValue>(options)
   }
 
-  protected value: SkillBuildValue
+  @Input()
+  public value: SkillBuildValue
 
-  public constructor(
-    private dialog: DialogRef<SkillBuildValue, SkillBuildValue>,
-    @Inject(DIALOG_DATA)
-    data: SkillBuildValue
-  ) {
-    this.value = data
+  public constructor(private modalRef: ModalRef<SkillBuildValue>) {
+    //
   }
 
   protected close() {
-    this.dialog.close()
+    this.modalRef.close()
   }
 
   protected commit() {
-    this.dialog.close(this.value)
+    this.modalRef.close(this.value)
   }
 }

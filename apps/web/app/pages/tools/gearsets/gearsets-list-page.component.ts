@@ -1,21 +1,20 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { Component, computed, inject } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { Router, RouterModule } from '@angular/router'
 import { IonContent, IonHeader, IonToolbar } from '@ionic/angular/standalone'
 import { debounceTime, filter } from 'rxjs'
 import { GearsetRecord } from '~/data'
 import { NwModule } from '~/nw'
 import { ShareService } from '~/pages/share'
+import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
 import { svgFileImport, svgPlus } from '~/ui/icons/svg'
-import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/layout'
+import { ConfirmDialogComponent, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { GearsetsListPageStore } from './gearsets-list-page.store'
 import { GearsetLoadoutItemComponent, GearsetLoadoutListComponent } from './loadout'
-import { VirtualGridModule } from '~/ui/data/virtual-grid'
 
 @Component({
   standalone: true,
@@ -34,7 +33,7 @@ import { VirtualGridModule } from '~/ui/data/virtual-grid'
     IonContent,
     GearsetLoadoutListComponent,
     VirtualGridModule,
-    GearsetLoadoutItemComponent
+    GearsetLoadoutItemComponent,
   ],
   providers: [QuicksearchService, GearsetsListPageStore],
   host: {
@@ -47,7 +46,7 @@ export class GearsetsListPageComponent {
 
   private store = inject(GearsetsListPageStore)
   private quicksearch = inject(QuicksearchService)
-  private dialog = inject(Dialog)
+  private modal = inject(ModalService)
   private router = inject(Router)
   private share = inject(ShareService)
 
@@ -65,16 +64,16 @@ export class GearsetsListPageComponent {
   }
 
   protected async handleCreate() {
-    PromptDialogComponent.open(this.dialog, {
-      data: {
+    PromptDialogComponent.open(this.modal, {
+      inputs: {
         title: 'Create new set',
-        body: 'Give this set a name',
-        input: `New Gearset`,
+        body: 'Name for the new gearset',
+        value: `New Gearset`,
         positive: 'Create',
         negative: 'Cancel',
       },
     })
-      .closed.pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .subscribe((newName) => {
         this.store.createRecord({
           id: null,
@@ -84,22 +83,22 @@ export class GearsetsListPageComponent {
   }
 
   protected handleDelete(gearset: GearsetRecord) {
-    ConfirmDialogComponent.open(this.dialog, {
-      data: {
+    ConfirmDialogComponent.open(this.modal, {
+      inputs: {
         title: 'Delete Gearset',
         body: 'Are you sure you want to delete this gearset?',
         positive: 'Delete',
         negative: 'Cancel',
       },
     })
-      .closed.pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .subscribe(() => {
         this.store.destroyRecord(gearset.id)
       })
   }
 
   protected async handleImport() {
-    this.share.importItem(this.dialog, this.router)
+    this.share.importItem(this.modal, this.router)
   }
 
   protected toggleTag(value: string) {

@@ -1,14 +1,12 @@
-import { ChangeDetectorRef, Component, Injector, importProvidersFrom } from '@angular/core'
-import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
-import { AppTestingModule } from '~/test'
-import { of, take } from 'rxjs'
 import { CommonModule } from '@angular/common'
-import { Dialog, DialogModule } from '@angular/cdk/dialog'
-import { ItemTableAdapter } from '~/widgets/data/item-table'
+import { Component, importProvidersFrom } from '@angular/core'
+import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
+import { of } from 'rxjs'
 import { NwModule } from '~/nw'
+import { AppTestingModule } from '~/test'
+import { LayoutModule } from '~/ui/layout'
 import { ModelViewerModule } from './model-viewer.module'
 import { ModelViewerService } from './model-viewer.service'
-import { LayoutModule } from '~/ui/layout'
 
 @Component({
   standalone: true,
@@ -28,7 +26,7 @@ export default {
   tags: ['autodocs'],
   decorators: [
     applicationConfig({
-      providers: [importProvidersFrom(AppTestingModule, DialogModule, NwModule)],
+      providers: [importProvidersFrom(AppTestingModule, NwModule)],
     }),
     moduleMetadata({
       imports: [StoryComponent],

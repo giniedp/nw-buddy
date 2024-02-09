@@ -1,40 +1,50 @@
-<h3 class="font-bold text-lg bg-black p-3">{{ title }}</h3>
-<div class="flex-colr layout-pad">
-  <ng-container *ngIf="isHtml">
-    <div [innerHTML]="body"></div>
-  </ng-container>
-  <ng-container *ngIf="!isHtml">
-    <p>{{ body }}</p>
-  </ng-container>
+<ion-header>
+  <ion-toolbar class="ion-color ion-color-black rounded-t-md">
+    <ion-title>{{ title }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-p-4">
+  <div class="h-full flex flex-col gap-4 items-center justify-center">
+    @if (isHtml) {
+      <div [innerHTML]="body"></div>
+    } @else {
+      <p>{{ body }}</p>
+    }
 
-  @if(type === 'number') {
-    <input
-      [(ngModel)]="value"
-      [type]="type"
-      [min]="min"
-      [max]="max"
-      [placeholder]="placeholder"
-      class="input input-bordered w-full max-w-xs mt-3"
-    />
-  } @else if(textarea) {
-    <textarea
-      [(ngModel)]="value"
-      [placeholder]="placeholder"
-      rows="20"
-      class="input input-bordered w-full h-96 mt-3"
-    ></textarea>
-  } @else {
-    <input
-      [(ngModel)]="value"
-      [type]="type || 'text'"
-      [placeholder]="placeholder"
-      class="input input-bordered w-full max-w-xs mt-3"
-    />
-  }
-
-</div>
-<div class="modal-action flex-row-reverse justify-start layout-pad gap-1">
-  <button class="btn btn-primary" (click)="submit()">{{ positive }}</button>
-  <button class="btn btn-ghost" (click)="close()" *ngIf="neutral">{{ neutral }}</button>
-  <button class="btn btn-ghost" (click)="abort()" *ngIf="negative">{{ negative }}</button>
-</div>
+    @if (inputType === 'number') {
+      <input
+        [(ngModel)]="value"
+        [type]="inputType"
+        [min]="min"
+        [max]="max"
+        [placeholder]="placeholder"
+        class="input input-bordered w-full max-w-60"
+      />
+    } @else if (inputType === 'textarea') {
+      <textarea
+        [(ngModel)]="value"
+        [placeholder]="placeholder"
+        rows="20"
+        class="input input-bordered w-full h-96"
+      ></textarea>
+    } @else {
+      <input
+        [(ngModel)]="value"
+        [type]="inputType || 'text'"
+        [placeholder]="placeholder"
+        class="input input-bordered w-full max-w-60"
+      />
+    }
+  </div>
+</ion-content>
+<ion-footer class="rounded-b-md">
+  <ion-toolbar class="ion-color ion-color-base-300">
+    @if (negative) {
+      <button class="btn btn-ghost mr-1 min-w-28" (click)="abort()" slot="secondary">{{ negative }}</button>
+    }
+    @if (neutral) {
+      <button class="btn btn-ghost mr-1 min-w-28" (click)="close()" slot="secondary">{{ neutral }}</button>
+    }
+    <button class="btn btn-primary mr-1 min-w-28" (click)="submit()" slot="primary">{{ positive }}</button>
+  </ion-toolbar>
+</ion-footer>

@@ -1,7 +1,0 @@
-<h3 class="font-bold text-lg bg-black p-3">{{ title }}</h3>
-<nwb-code-editor [(ngModel)]="value" [readonly]="readonly" [language]="language" class="flex-1 w-full"></nwb-code-editor>
-<div class="modal-action flex-row-reverse justify-start layout-pad mt-0 gap-1">
-  <button class="btn btn-primary" (click)="submit()">{{ positive }}</button>
-  <button class="btn btn-ghost" (click)="close()" *ngIf="neutral">{{ neutral }}</button>
-  <button class="btn btn-ghost" (click)="abort()">{{ negative }}</button>
-</div>

@@ -1,14 +1,8 @@
-import { DIALOG_DATA, Dialog, DialogConfig, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NwModule } from '~/nw'
-
-export interface ScreenshotSaveDialogData {
-  previewUrl: string
-  filename: string
-  enableClipboard: boolean
-}
+import { ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
 
 export interface ScreenshotSaveOption {
   action: 'clipboard' | 'download'
@@ -26,32 +20,24 @@ export interface ScreenshotSaveOption {
   },
 })
 export class ScreenshotSaveDialogComponent {
-  public static open(dialog: Dialog, config: DialogConfig<ScreenshotSaveDialogData>) {
-    return dialog.open<ScreenshotSaveOption, ScreenshotSaveDialogData, ScreenshotSaveDialogComponent>(
-      ScreenshotSaveDialogComponent,
-      {
-        panelClass: ['max-h-screen', 'w-screen', 'max-w-xl', 'm-2', 'shadow', 'self-end', 'sm:self-center'],
-        ...config,
-      }
-    )
+  public static open(modal: ModalService, options: ModalOpenOptions<ScreenshotSaveDialogComponent>) {
+    options.content = ScreenshotSaveDialogComponent
+    return modal.open<ScreenshotSaveDialogComponent, ScreenshotSaveOption>(options)
   }
 
-  protected previewUrl: string
-  protected filename: string
-  protected enableClipboard: boolean
+  @Input()
+  public previewUrl: string
+  @Input()
+  public filename: string
+  @Input()
+  public enableClipboard: boolean
 
-  public constructor(
-    private dialog: DialogRef<ScreenshotSaveOption, ScreenshotSaveDialogData>,
-    @Inject(DIALOG_DATA)
-    data: ScreenshotSaveDialogData
-  ) {
-    this.previewUrl = data.previewUrl
-    this.filename = data.filename
-    this.enableClipboard = data.enableClipboard
+  public constructor(private modalRef: ModalRef<ScreenshotSaveOption>) {
+    //
   }
 
   protected close(value: ScreenshotSaveOption['action'] = null) {
-    this.dialog.close({
+    this.modalRef.close({
       action: value,
       filename: this.filename,
     })

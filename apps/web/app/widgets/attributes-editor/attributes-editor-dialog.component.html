@@ -1,88 +1,93 @@
-<div class="text-xl text-center bg-base-300 px-2 py-3">Attributes</div>
-
-<nwb-attributes-editor
-  [level]="data.level"
-  [base]="data.base"
-  [assigned]="data.assigned"
-  [buffs]="data.buffs"
-  [magnify]="data.magnify"
-  (assignedChanged)="setResult($event)"
-  class="p-3"
-  #attrs
-></nwb-attributes-editor>
-
-<ng-container *ngIf="data.weapon1ItemId || data.weapon2ItemId">
-  <div class="tabs tabs-bordered">
-    <a class="tab flex-1" (click)="tab = data.weapon1ItemId" [class.tab-active]="tab && tab === data.weapon1ItemId">
-      {{ weapon1.name$ | async | nwText }}
-      (
-      <span>
-        @if(scale1.damageInvalid$ | async; as value) {
-          <span class="line-through opacity-50"> {{ value | number: '0.1-1' }} </span>
-        }
-        @if(scale1.damage$ | async; as value) {
-          <span> {{ value | number: '0.1-1' }} </span>
-        } @else {
-          <span> 0 </span>
-        }
-      </span>
-      )
-    </a>
-
-    <a class="tab flex-1" (click)="tab = data.weapon2ItemId" [class.tab-active]="tab && tab === data.weapon2ItemId">
-      {{ weapon2.name$ | async | nwText }}
-      (
-      <span>
-        @if(scale2.damageInvalid$ | async; as value) {
-          <span class="line-through opacity-50"> {{ value | number: '0.1-1' }} </span>
-        }
-        @if(scale2.damage$ | async; as value) {
-          <span> {{ value | number: '0.1-1' }} </span>
-        } @else {
-          <span> 0 </span>
-        }
-      </span>
-      )
-    </a>
-  </div>
-
-  <nwb-attributes-scale
-    class="p-1"
-    [nwbItemDetail]="data.weapon1ItemId"
-    #weapon1="itemDetail"
-    #scale1
-    [class.hidden]="tab !== data.weapon1ItemId"
-    [attrDex]="attrs.totalDex$ | async"
-    [attrStr]="attrs.totalStr$ | async"
-    [attrInt]="attrs.totalInt$ | async"
-    [attrFoc]="attrs.totalFoc$ | async"
-    [level]="data.level"
-    [weaponItemId]="data.weapon1ItemId"
-    [gearScore]="data.weapon1GearScore"
-    [affixId]="data.weapon1AffixId"
+<ion-header>
+  <ion-toolbar class="ion-color ion-color-black rounded-t-md">
+    <ion-title>Attributes</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-p-4">
+  <nwb-attributes-editor
+    [level]="level"
+    [base]="base"
+    [assigned]="assigned"
+    [buffs]="buffs"
+    [magnify]="magnify"
+    (assignedChanged)="setResult($event)"
+    #attrs
   />
+  @if (weapon1ItemId || weapon2ItemId) {
+    <ion-segment [value]="tab">
+      <ion-segment-button [value]="weapon1ItemId" (click)="tab = weapon1ItemId">
+        <span>
+          {{ weapon1.name$ | async | nwText }}
+        </span>
+        <span>
+          (
+          @if (scale1.damageInvalid$ | async; as value) {
+            <span class="line-through opacity-50"> {{ value | number: '0.1-1' }} </span>
+          }
+          @if (scale1.damage$ | async; as value) {
+            <span> {{ value | number: '0.1-1' }} </span>
+          } @else {
+            <span> 0 </span>
+          }
+          )
+        </span>
+      </ion-segment-button>
+      <ion-segment-button [value]="weapon2ItemId" (click)="tab = weapon2ItemId">
+        <span>
+          {{ weapon2.name$ | async | nwText }}
+        </span>
+        <span>
+          (
+          @if (scale2.damageInvalid$ | async; as value) {
+            <span class="line-through opacity-50"> {{ value | number: '0.1-1' }} </span>
+          }
+          @if (scale2.damage$ | async; as value) {
+            <span> {{ value | number: '0.1-1' }} </span>
+          } @else {
+            <span> 0 </span>
+          }
+          )
+        </span>
+      </ion-segment-button>
+    </ion-segment>
 
-  <nwb-attributes-scale
-    class="p-1"
-    [nwbItemDetail]="data.weapon2ItemId"
-    #weapon2="itemDetail"
-    #scale2
-    [class.hidden]="tab !== data.weapon2ItemId"
-    [attrDex]="attrs.totalDex$ | async"
-    [attrStr]="attrs.totalStr$ | async"
-    [attrInt]="attrs.totalInt$ | async"
-    [attrFoc]="attrs.totalFoc$ | async"
-    [weaponItemId]="data.weapon2ItemId"
-    [gearScore]="data.weapon2GearScore"
-    [affixId]="data.weapon2AffixId"
-  />
-</ng-container>
+    <nwb-attributes-scale
+      class="p-1"
+      [nwbItemDetail]="weapon1ItemId"
+      #weapon1="itemDetail"
+      #scale1
+      [class.hidden]="tab !== weapon1ItemId"
+      [attrDex]="attrs.totalDex$ | async"
+      [attrStr]="attrs.totalStr$ | async"
+      [attrInt]="attrs.totalInt$ | async"
+      [attrFoc]="attrs.totalFoc$ | async"
+      [level]="level"
+      [weaponItemId]="weapon1ItemId"
+      [gearScore]="weapon1GearScore"
+      [affixId]="weapon1AffixId"
+    />
 
-<div class="flex justify-end gap-1 layout-pad">
-  <div class="join">
-    <label class="join-item btn btn-ghost" (click)="close()">Cancel</label>
-  </div>
-  <div class="join">
-    <label class="join-item btn btn-primary" (click)="commit()">OK</label>
-  </div>
-</div>
+    <nwb-attributes-scale
+      class="p-1"
+      [nwbItemDetail]="weapon2ItemId"
+      #weapon2="itemDetail"
+      #scale2
+      [class.hidden]="tab !== weapon2ItemId"
+      [attrDex]="attrs.totalDex$ | async"
+      [attrStr]="attrs.totalStr$ | async"
+      [attrInt]="attrs.totalInt$ | async"
+      [attrFoc]="attrs.totalFoc$ | async"
+      [weaponItemId]="weapon2ItemId"
+      [gearScore]="weapon2GearScore"
+      [affixId]="weapon2AffixId"
+    />
+  }
+</ion-content>
+
+<ion-footer class="rounded-b-md">
+  <ion-toolbar class="ion-color ion-color-base-300">
+    <button class="btn btn-ghost mr-1 min-w-28" (click)="close()" slot="secondary">Cancel</button>
+
+    <button class="btn btn-primary mr-1 min-w-28" (click)="commit()" slot="primary">OK</button>
+  </ion-toolbar>
+</ion-footer>

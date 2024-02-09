@@ -1,76 +1,65 @@
-import { Dialog, DialogConfig, DialogRef, DIALOG_DATA } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, Optional } from '@angular/core'
+import { IonContent, IonFooter, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone'
+import { IonContentDirective } from '../ion-content.directive'
+import { ModalOpenOptions, ModalRef, ModalService } from './modal.service'
 
-export interface ConfirmDialogOptions {
-  title: string
-  body: string
-  html?: boolean
-  positive: string
-  negative?: string
-  neutral?: string
-}
+export type ConfirmDialogOptions = Pick<
+  ConfirmDialogComponent,
+  'title' | 'body' | 'isHtml' | 'positive' | 'negative' | 'neutral'
+>
 
 @Component({
   standalone: true,
   selector: 'nwb-confirm-dialog',
   templateUrl: './confirm-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule],
+  imports: [CommonModule, IonContent, IonContentDirective, IonFooter, IonHeader, IonToolbar, IonTitle],
   host: {
-    class: 'd-block bg-base-100 border border-base-100 rounded-md overflow-hidden',
+    class: 'ion-page bg-base-100 border border-base-100 rounded-md',
   },
 })
 export class ConfirmDialogComponent {
-  public static open(dialog: Dialog, config: DialogConfig<ConfirmDialogOptions, DialogRef<boolean | null, ConfirmDialogComponent>>) {
-    return dialog.open(ConfirmDialogComponent, {
-      maxWidth: 400,
-      panelClass: ['w-full', 'layout-pad', 'self-end', 'sm:self-center', 'shadow'],
-      ...config
-    })
+  public static open(modal: ModalService, options: ModalOpenOptions<ConfirmDialogComponent>) {
+    options.size ??= 'sm'
+    options.content = ConfirmDialogComponent
+    return modal.open<ConfirmDialogComponent, boolean | null>(options)
   }
 
-  protected get title() {
-    return this.data.title
-  }
+  @Input()
+  public title: string
 
-  protected get body() {
-    return this.data.body
-  }
+  @Input()
+  public body: string
 
-  protected get isHtml() {
-    return this.data.html
-  }
+  @Input()
+  public isHtml: boolean
 
-  protected get positive() {
-    return this.data.positive
-  }
+  @Input()
+  public positive: string
 
-  protected get negative() {
-    return this.data.negative
-  }
+  @Input()
+  public negative: string
 
-  protected get neutral() {
-    return this.data.neutral
-  }
+  @Input()
+  public neutral: string
 
   public constructor(
-    @Inject(DIALOG_DATA)
-    private data: ConfirmDialogOptions,
-    private dialog: DialogRef<boolean | null>
+    @Optional()
+    private dialog: ModalRef<boolean>,
   ) {
-
+    //
   }
 
   public confirm() {
-    this.dialog.close(true)
+    this.dialog?.close(true)
   }
 
   public deny() {
-    this.dialog.close(false)
+    this.dialog?.close(false)
   }
 
   public close() {
-    this.dialog.close(null)
+    this.dialog?.close(null)
   }
 }

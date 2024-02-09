@@ -1,20 +1,19 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { filter, switchMap } from 'rxjs'
-import { SkillSetRecord, SkillBuildsDB } from '~/data'
+import { SkillBuildsDB, SkillSetRecord } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgShareNodes } from '~/ui/icons/svg'
-import { ConfirmDialogComponent, PromptDialogComponent } from '~/ui/layout'
+import { ConfirmDialogComponent, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { observeRouteParam } from '~/utils'
 import { suspensify } from '~/utils/rx/suspensify'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { SkillBuilderComponent } from '~/widgets/skill-builder'
 import { ShareService } from './share.service'
-import { toSignal } from '@angular/core/rxjs-interop'
 
 @Component({
   standalone: true,
@@ -39,23 +38,23 @@ export class ShareComponent {
     private route: ActivatedRoute,
     private router: Router,
     private web3: ShareService,
-    private dialog: Dialog,
+    private modal: ModalService,
     private skillsDb: SkillBuildsDB,
   ) {
     //
   }
 
   public importSkillBuild(value: SkillSetRecord) {
-    PromptDialogComponent.open(this.dialog, {
-      data: {
+    PromptDialogComponent.open(this.modal, {
+      inputs: {
         title: 'Name',
         body: 'Choose a name for this build',
-        input: value.name,
+        value: value.name,
         positive: 'OK',
         negative: 'Cancel',
-      },
+      }
     })
-      .closed.pipe(filter((it) => it != null))
+      .result$.pipe(filter((it) => it != null))
       .pipe(
         switchMap((name) => {
           const record = {
@@ -71,8 +70,8 @@ export class ShareComponent {
           this.router.navigate(['skill-trees', record.id])
         },
         error: () => {
-          ConfirmDialogComponent.open(this.dialog, {
-            data: {
+          ConfirmDialogComponent.open(this.modal, {
+            inputs: {
               title: 'Error',
               body: 'Failed to import',
               positive: 'Close',

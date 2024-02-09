@@ -1,4 +1,3 @@
-import { DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, Output, Renderer2 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -33,7 +32,6 @@ export interface EffectSlotState {
   imports: [
     CommonModule,
     NwModule,
-    DialogModule,
     FormsModule,
     ItemDetailModule,
     StatusEffectDetailModule,

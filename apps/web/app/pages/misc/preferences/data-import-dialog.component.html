@@ -1,27 +1,22 @@
 <ng-container *ngIf="vm$ | async; let vm">
-  <div class="text-xl flex flex-row items-center gap-2 bg-base-300 p-3">
-    <nwb-icon
-      class="w-4 h-4"
-      [icon]="vm.active ? iconSpinner : iconImport"
-      [class.text-primary]="vm.active"
-      [class.animate-spin]="vm.active"
-    />
-    Import data
-  </div>
+  <ion-header>
+    <ion-toolbar class="ion-color ion-color-black rounded-t-md">
+      <ion-title>
+        <nwb-icon
+          class="w-4 h-4 mr-4"
+          [icon]="vm.active ? iconSpinner : iconImport"
+          [class.text-primary]="vm.active"
+          [class.animate-spin]="vm.active"
+        />
+        Import data
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-  <div class="flex-1 layout-content prose p-4">
+  <ion-content class="ion-p-4 prose">
     <div
       *ngIf="!vm.complete"
-      class="
-        border
-        rounded-md
-        border-dashed
-        aspect-square
-        flex flex-col
-        items-center
-        justify-center
-        gap-1
-      "
+      class="border rounded-md border-dashed h-full flex flex-col items-center justify-center gap-1"
       [class.border-primary]="!vm.file"
       [class.border-transparent]="!!vm.file"
     >
@@ -40,7 +35,7 @@
 
     <ng-container *ngIf="vm.complete && vm.error">
       <div class="alert alert-error">
-        <nwb-icon [icon]="iconError" class="w-6 h-6"/>
+        <nwb-icon [icon]="iconError" class="w-6 h-6" />
         <div class="w-full">
           <div class="text-xs">Something went wrong.</div>
         </div>
@@ -49,23 +44,29 @@
 
     <ng-container *ngIf="vm.complete && !vm.error">
       <div class="alert alert-success">
-        <nwb-icon [icon]="iconSuccess" class="w-6 h-6"/>
+        <nwb-icon [icon]="iconSuccess" class="w-6 h-6" />
         <div class="w-full">
           <div class="text-xs">Import complete.</div>
         </div>
       </div>
     </ng-container>
-  </div>
+  </ion-content>
 
+  <ion-footer class="rounded-b-md">
+    <ion-toolbar class="ion-color ion-color-base-300">
+      <button slot="secondary" class="join-item btn btn-ghost mr-1" (click)="close()">Close</button>
+      @if (!vm.complete) {
+        <button
+          slot="primary"
+          class="btn btn-primary mr-1"
+          [class.loading]="vm.active"
+          (click)="import()"
+          [disabled]="vm.active || !vm.file"
+        >
+          Import
+        </button>
+      }
+    </ion-toolbar>
+  </ion-footer>
 
-  <div class="flex justify-end gap-1 layout-pad">
-    <div class="join">
-      <button class="join-item btn btn-ghost" (click)="close()">Close</button>
-    </div>
-    <div class="join" *ngIf="!vm.complete">
-      <button class="join-item btn btn-primary" [class.loading]="vm.active" (click)="import()" [disabled]="vm.active || !vm.file">
-        Import
-      </button>
-    </div>
-  </div>
 </ng-container>

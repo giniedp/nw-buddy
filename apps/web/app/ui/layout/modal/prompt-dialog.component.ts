@@ -1,110 +1,92 @@
-import { Dialog, DialogConfig, DialogRef, DIALOG_DATA } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, Optional } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { IonContent, IonFooter, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone'
+import { IonContentDirective } from '../ion-content.directive'
+import { ModalOpenOptions, ModalRef, ModalService } from './modal.service'
 
-export interface PromptDialogOptions {
-  title: string
-  body: string
-  html?: boolean
-  input?: string
-  type?: 'text' | 'number' | 'password'
-  textarea?: boolean
-  min?: number
-  max?: number
-  placeholder?: string
-  positive: string
-  negative?: string
-  neutral?: string
-}
+export type PromptDialogOptions<T extends string | number> = Pick<
+  PromptDialogComponent<T>,
+  | 'title'
+  | 'body'
+  | 'isHtml'
+  | 'placeholder'
+  | 'positive'
+  | 'negative'
+  | 'neutral'
+  | 'inputType'
+  | 'min'
+  | 'max'
+  | 'value'
+>
 
 @Component({
   standalone: true,
   selector: 'nwb-prompt-dialog',
   templateUrl: './prompt-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, IonContent, IonContentDirective, IonFooter, IonHeader, IonToolbar, IonTitle],
   host: {
-    class: 'd-block bg-base-100 border border-base-100 rounded-md overflow-hidden',
+    class: 'ion-page bg-base-100 border border-base-100 rounded-md',
   },
 })
-export class PromptDialogComponent {
-  public static open(
-    dialog: Dialog,
-    config: DialogConfig<PromptDialogOptions, DialogRef<string | null, PromptDialogComponent>>
+export class PromptDialogComponent<T extends string | number> {
+  public static open<T extends string | number>(
+    modal: ModalService,
+    options: ModalOpenOptions<PromptDialogComponent<T>>,
   ) {
-    return dialog.open(PromptDialogComponent, {
-      maxWidth: 600,
-      maxHeight: 800,
-      minHeight: 320,
-      minWidth: 300,
-      ...config,
-    })
+    options.size ??= 'sm'
+    options.content = PromptDialogComponent
+    return modal.open<PromptDialogComponent<T>, T>(options)
   }
 
-  protected get title() {
-    return this.data.title
-  }
+  @Input()
+  public title: string
 
-  protected get body() {
-    return this.data.body
-  }
+  @Input()
+  public body: string
 
-  protected get isHtml() {
-    return this.data.html
-  }
+  @Input()
+  public isHtml: boolean
 
-  protected get placeholder() {
-    return this.data.placeholder
-  }
+  @Input()
+  public placeholder: string
 
-  protected get positive() {
-    return this.data.positive
-  }
+  @Input()
+  public positive: string
 
-  protected get negative() {
-    return this.data.negative
-  }
+  @Input()
+  public negative: string
 
-  protected get neutral() {
-    return this.data.neutral
-  }
+  @Input()
+  public neutral: string
 
-  protected get type() {
-    return this.data.type
-  }
+  @Input()
+  public inputType: 'textarea' | 'text' | 'number' | 'password'
 
-  protected get min() {
-    return this.data.min
-  }
+  @Input()
+  public min: number
 
-  protected get max() {
-    return this.data.max
-  }
+  @Input()
+  public max: number
 
-  protected get textarea() {
-    return this.data.textarea
-  }
-
-  protected value: string
+  @Input()
+  public value: T
 
   public constructor(
-    @Inject(DIALOG_DATA)
-    private data: PromptDialogOptions,
-    private dialog: DialogRef<string | null>
-  ) {
-    this.value = data.input
-  }
+    @Optional()
+    private dialog: ModalRef<T>,
+  ) {}
 
   public submit() {
-    this.dialog.close(this.value)
+    this.dialog?.close(this.value)
   }
 
   public abort() {
-    this.dialog.close(void 0)
+    this.dialog?.close(void 0)
   }
 
   public close() {
-    this.dialog.close(null)
+    this.dialog?.close(null)
   }
 }

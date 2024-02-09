@@ -1,22 +1,24 @@
-import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { Component, importProvidersFrom } from '@angular/core'
 import { NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
 import { AppTestingModule } from '~/test'
+import { ModalService } from '~/ui/layout'
 import { AttributeEditorDialogComponent } from './attributes-editor-dialog.component'
 import { AttributesEditorModule } from './attributes-editor.module'
 
 @Component({
   standalone: true,
   template: ` <button class="btn btn-primary" (click)="openDialog()">Open Dialog</button> `,
-  imports: [AttributesEditorModule, DialogModule],
+  imports: [AttributesEditorModule],
 })
 export class StoryComponent {
-  public constructor(private dialog: Dialog) {}
+  public constructor(private modal: ModalService) {
+    //
+  }
 
   public openDialog() {
-    AttributeEditorDialogComponent.open(this.dialog, {
-      data: {
+    AttributeEditorDialogComponent.open(this.modal, {
+      inputs: {
         level: NW_MAX_CHARACTER_LEVEL,
         magnify: [],
         assigned: {
@@ -41,7 +43,7 @@ export class StoryComponent {
           str: 0,
         },
       },
-    }).closed.subscribe((res) => {
+    }).result$.subscribe((res) => {
       console.log(res)
     })
   }

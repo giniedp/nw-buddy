@@ -1,24 +1,12 @@
-import { DIALOG_DATA, Dialog, DialogConfig, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { TablePreset } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
+import { ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { SaveStateDialogStore } from './save-state-dialog.store'
-
-export interface SaveStateDialogOptions<T> {
-  /**
-   * The dialog title
-   */
-  title: string
-  key: string
-  /**
-   * Dialog configuration
-   */
-  config: DialogConfig<void>
-}
 
 @Component({
   standalone: true,
@@ -32,32 +20,32 @@ export interface SaveStateDialogOptions<T> {
   },
 })
 export class LoadStateDialogComponent {
-  public static open<T>(dialog: Dialog, options: SaveStateDialogOptions<T>) {
-    return dialog.open<TablePreset>(LoadStateDialogComponent, {
-      panelClass: ['max-h-screen', 'w-screen', 'max-w-2xl', 'm-2', 'shadow', 'self-end', 'sm:self-center'],
-      ...options.config,
-      data: options,
-    })
+  public static open(modal: ModalService, options: ModalOpenOptions<LoadStateDialogComponent>) {
+    options.content = LoadStateDialogComponent
+    return modal.open<LoadStateDialogComponent, TablePreset>(options)
   }
 
-  protected title: string
+  @Input()
+  public title: string
+
+  @Input()
+  public set key(value: string) {
+    this.store.patchState({ key: value })
+  }
 
   public constructor(
     protected store: SaveStateDialogStore,
-    private dialogRef: DialogRef<TablePreset>,
-    @Inject(DIALOG_DATA)
-    options: SaveStateDialogOptions<any>
+    private modalRef: ModalRef<TablePreset>,
   ) {
-    this.title = options.title
-    this.store.patchState({ key: options.key })
+    //
   }
 
   protected close() {
-    this.dialogRef.close()
+    this.modalRef.close()
   }
 
   protected async commit() {
-    this.dialogRef.close(this.store.selectedData$())
+    this.modalRef.close(this.store.selectedData$())
   }
 
   protected selectEntry(id: string) {

@@ -1,19 +1,33 @@
 <ng-container *ngIf="vm$ | async; let vm">
-  <div class="text-xl flex flex-row items-center gap-2 bg-base-300 p-3">
-    <nwb-icon
-      class="w-4 h-4"
-      [icon]="vm.active ? iconSpinner : iconExport"
-      [class.text-primary]="vm.active"
-      [class.animate-spin]="vm.active"
-    />
-    Export data
-  </div>
+  <ion-header>
+    <ion-toolbar class="ion-color ion-color-black rounded-t-md">
+      <ion-title>
+        <nwb-icon
+          class="w-4 h-4 mr-4"
+          [icon]="vm.active ? iconSpinner : iconExport"
+          [class.text-primary]="vm.active"
+          [class.animate-spin]="vm.active"
+        />
+        Export data
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
 
-  <div class="flex-1 layout-content prose p-4">
+  <ion-content class="ion-p-4 prose">
     <ng-container *ngIf="!vm.complete">
       <div class="join flex">
-        <button class="join-item flex-1 btn" [class.btn-primary]="!vm.publicExport" (click)="patchState({ publicExport: false })">Private Backup</button>
-        <button class="join-item flex-1 btn" [class.btn-primary]="vm.publicExport" (click)="patchState({ publicExport: true })">
+        <button
+          class="join-item flex-1 btn"
+          [class.btn-primary]="!vm.publicExport"
+          (click)="patchState({ publicExport: false })"
+        >
+          Private Backup
+        </button>
+        <button
+          class="join-item flex-1 btn"
+          [class.btn-primary]="vm.publicExport"
+          (click)="patchState({ publicExport: true })"
+        >
           Public Export
         </button>
       </div>
@@ -29,7 +43,7 @@
 
     <ng-container *ngIf="vm.complete && vm.error">
       <div class="alert alert-error">
-        <nwb-icon [icon]="iconError" class="w-6 h-6"/>
+        <nwb-icon [icon]="iconError" class="w-6 h-6" />
         <div class="w-full">
           <div class="text-xs">Something went wrong.</div>
         </div>
@@ -38,26 +52,32 @@
 
     <ng-container *ngIf="vm.complete && !vm.error">
       <div class="alert alert-success">
-        <nwb-icon [icon]="iconSuccess" class="w-6 h-6"/>
+        <nwb-icon [icon]="iconSuccess" class="w-6 h-6" />
         <div class="w-full">
           <div class="text-xs">Export complete.</div>
         </div>
       </div>
     </ng-container>
-  </div>
+  </ion-content>
 
-  <div class="flex justify-end gap-1 layout-pad">
-    <div class="join">
-      <button class="join-item btn btn-ghost" (click)="openJson()">Open raw JSON</button>
-    </div>
-    <div class="flex-1"></div>
-    <div class="join">
-      <button class="join-item btn btn-ghost" (click)="close()">Close</button>
-    </div>
-    <div class="join" *ngIf="!vm.complete">
-      <button class="join-item btn btn-primary" [class.loading]="vm.active" (click)="export()" [disabled]="vm.active">
-        Export
-      </button>
-    </div>
-  </div>
+  <ion-footer class="rounded-b-md">
+    <ion-toolbar class="ion-color ion-color-base-300">
+      <div slot="end">
+        <div class="join mr-1">
+          <button class="join-item btn btn-ghost" (click)="close()">Close</button>
+        </div>
+        <div class="join mr-1" *ngIf="!vm.complete">
+          <button class="join-item btn btn-ghost" (click)="openJson()">Open raw JSON</button>
+          <button
+            class="join-item btn btn-primary"
+            [class.loading]="vm.active"
+            (click)="export()"
+            [disabled]="vm.active"
+          >
+            Export
+          </button>
+        </div>
+      </div>
+    </ion-toolbar>
+  </ion-footer>
 </ng-container>

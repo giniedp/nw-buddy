@@ -1,4 +1,3 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -21,7 +20,7 @@ import {
   svgTags,
   svgTrashCan,
 } from '~/ui/icons/svg'
-import { ConfirmDialogComponent, LayoutModule, PromptDialogComponent } from '~/ui/layout'
+import { ConfirmDialogComponent, LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, injectRouteParam } from '~/utils'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
@@ -56,7 +55,7 @@ import { SkillTreeDetailStore } from './skill-tree-detail.store'
 export class SkillBuildsDetailComponent {
   private route = inject(ActivatedRoute)
   private router = inject(Router)
-  private dialog = inject(Dialog)
+  private modal = inject(ModalService)
 
   private db = inject(SkillBuildsDB)
   private store = inject(SkillTreeDetailStore)
@@ -147,72 +146,74 @@ export class SkillBuildsDetailComponent {
     const ipnsName = this.record.ipnsName
     const record = cloneRecord(this.record)
 
-    ShareDialogComponent.open(this.dialog, {
-      data: {
-        ipnsKey: ipnsKey,
-        ipnsName: ipnsName,
-        content: {
-          ref: record.id,
-          type: 'skill-build',
-          data: record,
-        },
-        buildEmbedSnippet: (url: string) => {
-          if (!url) {
-            return null
-          }
-          const host = environment.standalone ? 'https://www.nw-buddy.de' : location.origin
-          return [
-            `<script src="${host}/embed.js"></script>`,
-            `<object data="${url}" style="width: 100%"></object>`,
-          ].join('\n')
-        },
-        buildEmbedUrl: (cid, name) => {
-          if (!cid && !name) {
-            return null
-          }
-          const command = name ? ['../embed/ipns', name] : ['../embed/ipfs', cid]
-          return this.router
-            .createUrlTree(command, {
-              relativeTo: this.route,
+    ShareDialogComponent.open(this.modal, {
+      inputs: {
+        data: {
+          ipnsKey: ipnsKey,
+          ipnsName: ipnsName,
+          content: {
+            ref: record.id,
+            type: 'skill-build',
+            data: record,
+          },
+          buildEmbedSnippet: (url: string) => {
+            if (!url) {
+              return null
+            }
+            const host = environment.standalone ? 'https://www.nw-buddy.de' : location.origin
+            return [
+              `<script src="${host}/embed.js"></script>`,
+              `<object data="${url}" style="width: 100%"></object>`,
+            ].join('\n')
+          },
+          buildEmbedUrl: (cid, name) => {
+            if (!cid && !name) {
+              return null
+            }
+            const command = name ? ['../embed/ipns', name] : ['../embed/ipfs', cid]
+            return this.router
+              .createUrlTree(command, {
+                relativeTo: this.route,
+              })
+              .toString()
+          },
+          buildShareUrl: (cid, name) => {
+            if (!cid && !name) {
+              return null
+            }
+            const command = name ? ['../share/ipns', name] : ['../share/ipfs', cid]
+            return this.router
+              .createUrlTree(command, {
+                relativeTo: this.route,
+              })
+              .toString()
+          },
+          published: (res) => {
+            if (!res.ipnsKey) {
+              return
+            }
+            this.store.update({
+              ...record,
+              ipnsKey: res.ipnsKey,
+              ipnsName: res.ipnsName,
             })
-            .toString()
-        },
-        buildShareUrl: (cid, name) => {
-          if (!cid && !name) {
-            return null
-          }
-          const command = name ? ['../share/ipns', name] : ['../share/ipfs', cid]
-          return this.router
-            .createUrlTree(command, {
-              relativeTo: this.route,
-            })
-            .toString()
-        },
-        published: (res) => {
-          if (!res.ipnsKey) {
-            return
-          }
-          this.store.update({
-            ...record,
-            ipnsKey: res.ipnsKey,
-            ipnsName: res.ipnsName,
-          })
+          },
         },
       },
     })
   }
 
   protected async handleClone() {
-    PromptDialogComponent.open(this.dialog, {
-      data: {
+    PromptDialogComponent.open(this.modal, {
+      inputs: {
         title: 'Create copy',
         body: 'New skill-tree name',
-        input: `${this.record.name} (Copy)`,
+        value: `${this.record.name} (Copy)`,
         positive: 'Create',
         negative: 'Cancel',
       },
     })
-      .closed.pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .pipe(
         switchMap((name) => {
           return this.db.create({
@@ -228,15 +229,15 @@ export class SkillBuildsDetailComponent {
   }
 
   protected handleDelete() {
-    ConfirmDialogComponent.open(this.dialog, {
-      data: {
+    ConfirmDialogComponent.open(this.modal, {
+      inputs: {
         title: 'Delete Skill Tree',
         body: 'Are you sure you want to delete this skill tree?',
         positive: 'Delete',
         negative: 'Cancel',
       },
     })
-      .closed.pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .subscribe(() => {
         this.store.destroy()
         this.router.navigate(['..'], {

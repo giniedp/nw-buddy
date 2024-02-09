@@ -1,14 +1,18 @@
 <ng-container *ngIf="vm$ | async; let vm">
-  <div class="text-xl flex flex-row items-center gap-2 bg-base-300 p-3">
-    <nwb-icon
-      [icon]="vm.active ? iconSpinner : iconShare"
-      class="w-4 h-4"
-      [class.text-primary]="vm.active"
-      [class.animate-spin]="vm.active"
-    />
-    Share content
-  </div>
-  <div class="p-4 prose layout-content ">
+  <ion-header>
+    <ion-toolbar class="ion-color ion-color-black rounded-t-md">
+      <ion-title>
+        <nwb-icon
+          [icon]="vm.active ? iconSpinner : iconShare"
+          class="w-4 h-4 mr-4"
+          [class.text-primary]="vm.active"
+          [class.animate-spin]="vm.active"
+        />
+        Share content
+      </ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-p-4 prose">
     <div *ngIf="!vm.shared">
       <p>
         Your data will be uploaded to the IPFS network and is publicly available to anyone. As long as there is a copy
@@ -46,7 +50,7 @@
         following option.
       </p>
 
-      <div class="form-control ">
+      <div class="form-control">
         <label class="label cursor-pointer">
           <span class="label-text flex flex-row"> Create Permalink </span>
           <input
@@ -57,78 +61,82 @@
           />
         </label>
       </div>
-
     </div>
 
-    <ng-container *ngIf="vm.shared && vm.error">
+    @if (vm.shared && vm.error) {
       <div class="alert alert-error">
-        <nwb-icon [icon]="iconError" class="w-6 h-6"/>
+        <nwb-icon [icon]="iconError" class="w-6 h-6" />
         <div class="w-full">
           <div class="text-xs">Something went wrong.</div>
         </div>
       </div>
-    </ng-container>
+    }
 
-    <ng-container *ngIf="vm.shared && !vm.error">
+    @if (vm.shared && !vm.error) {
       <div class="alert alert-success">
-        <nwb-icon [icon]="iconSuccess" class="w-6 h-6"/>
+        <nwb-icon [icon]="iconSuccess" class="w-6 h-6" />
         <div class="w-full">
           <div class="text-xs">Content has been successfully shared.</div>
         </div>
       </div>
-    </ng-container>
+    }
 
-    <ng-container *ngIf="vm.shareUrl; let value">
+    @if (vm.shareUrl; as value) {
       <div class="form-control">
         <label class="label">
           <span class="label-text">Share URL</span>
         </label>
         <label class="join">
-          <input type="text" class="input input-bordered w-full" [ngModel]="value" />
-          <button class="btn gap-2" [class.btn-success]="copied === value" (click)="copy(value)">
-            <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1"/>
+          <input type="text" class="join-item input input-bordered w-full" [ngModel]="value" />
+          <button class="join-item btn gap-2" [class.btn-success]="copied === value" (click)="copy(value)">
+            <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1" />
           </button>
         </label>
       </div>
-    </ng-container>
-
-    <ng-container *ngIf="vm.embedUrl; let value">
+    }
+    @if (vm.embedUrl; as value) {
       <div class="form-control">
         <label class="label">
           <span class="label-text">Embed URL</span>
         </label>
         <label class="join">
-          <input type="text" class="input input-bordered w-full" [ngModel]="value" />
-          <button class="btn gap-2" [class.btn-success]="copied === value" (click)="copy(value)">
-            <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1"/>
+          <input type="text" class="join-item input input-bordered w-full" [ngModel]="value" />
+          <button class="join-item btn gap-2" [class.btn-success]="copied === value" (click)="copy(value)">
+            <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1" />
           </button>
         </label>
       </div>
-    </ng-container>
+    }
 
-    <ng-container *ngIf="vm.embedSnippet; let value">
+    @if(vm.embedSnippet; as value) {
       <div class="form-control">
         <label class="label">
           <span class="label-text">Embed Snippet</span>
         </label>
         <label class="join join-vertical">
-          <textarea class="textarea textarea-bordered textarea-md w-full" rows="4" [ngModel]="value"></textarea>
-          <button class="btn gap-2" [class.btn-success]="copied === value" (click)="copy(value)">
-            <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1"/> Copy embed snippet
+          <textarea class="join-item textarea textarea-bordered textarea-md w-full" rows="4" [ngModel]="value"></textarea>
+          <button class="join-item btn gap-2" [class.btn-success]="copied === value" (click)="copy(value)">
+            <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1" /> Copy embed snippet
           </button>
         </label>
       </div>
-    </ng-container>
-  </div>
+    }
+  </ion-content>
 
-  <div class="flex justify-end gap-1 layout-pad bg-base-300">
-    <div class="join">
-      <button class="join-item btn" (click)="close()">Close</button>
-    </div>
-    <div class="join-group" *ngIf="!vm.shared">
-      <button class="join-item btn btn-primary" [class.loading]="vm.active" (click)="share()" [disabled]="vm.active">
-        Share
-      </button>
-    </div>
-  </div>
+  <ion-footer class="rounded-b-md">
+    <ion-toolbar class="ion-color ion-color-base-300">
+      <button slot="secondary" class="btn btn-ghost mr-1" (click)="close()">Close</button>
+      @if (!vm.shared) {
+        <button
+          slot="primary"
+          class="btn btn-primary mr-1"
+          [class.loading]="vm.active"
+          (click)="share()"
+          [disabled]="vm.active"
+        >
+          Share
+        </button>
+      }
+    </ion-toolbar>
+  </ion-footer>
 </ng-container>

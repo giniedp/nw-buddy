@@ -1,5 +1,4 @@
 import { animate, animateChild, query, stagger, style, transition, trigger } from '@angular/animations'
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
@@ -33,9 +32,9 @@ import {
   switchMap,
   takeUntil,
 } from 'rxjs'
+import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
 
 import { FormsModule } from '@angular/forms'
 import {
@@ -391,11 +390,12 @@ export class GameModeDetailComponent implements OnInit {
     private domSanitizer: DomSanitizer,
     protected store: GameModeDetailStore,
     private preferences: DungeonPreferencesService,
-    private dialog: Dialog,
     private i18n: TranslateService,
     private head: HtmlHeadService,
     private platform: PlatformService,
-  ) {}
+  ) {
+    //
+  }
 
   public ngOnInit(): void {
     const playerLevel$ = combineLatest({
@@ -560,18 +560,6 @@ export class GameModeDetailComponent implements OnInit {
   public explainItemDrop(item: ItemDefinitionMaster | Housingitems, mode: 'normal' | 'mutated' | 'difficulty') {
     this.explainItem$.next(item)
     this.explainMode$.next(mode)
-  }
-
-  public openExplainDialog() {
-    this.dialog.open(this.tplExplain, {
-      maxWidth: 1600,
-      maxHeight: 1200,
-      panelClass: ['w-full', 'h-full', 'bg-base-300'],
-    })
-  }
-
-  public closeDialog() {
-    this.dialog.closeAll()
   }
 
   private filterAndSort(items: Array<ItemDefinitionMaster | Housingitems>) {

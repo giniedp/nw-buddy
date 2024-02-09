@@ -1,10 +1,8 @@
-import { DIALOG_DATA, Dialog, DialogConfig, DialogModule, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import {
   ChangeDetectionStrategy,
   Component,
   ElementRef,
-  Inject,
   Input,
   NO_ERRORS_SCHEMA,
   NgZone,
@@ -26,6 +24,7 @@ import { ItemModelInfo } from './model-viewer.service'
 
 import { animate, style, transition, trigger } from '@angular/animations'
 import { ViewerModel } from 'babylonjs-viewer'
+import { ModalRef } from '~/ui/layout'
 import { DyePanelComponent } from './dye-panel.component'
 import { ModelViewerStore } from './model-viewer.store'
 import { getItemRotation } from './utils/get-item-rotation'
@@ -47,7 +46,7 @@ export interface ModelViewerState {
   templateUrl: './model-viewer.component.html',
   styleUrls: ['./model-viewer.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, DialogModule, IconsModule, ScreenshotModule, DyePanelComponent],
+  imports: [CommonModule, NwModule, IconsModule, ScreenshotModule, DyePanelComponent],
   providers: [ModelViewerStore],
   host: {
     class: 'layout-col bg-gradient-to-b from-base-300 to-black relative z-0',
@@ -61,10 +60,6 @@ export interface ModelViewerState {
   ],
 })
 export class ModelViewerComponent implements OnInit, OnDestroy {
-  public static open(dialog: Dialog, options: DialogConfig<ItemModelInfo[]>) {
-    return dialog.open(ModelViewerComponent, options)
-  }
-
   @Input()
   public set models(value: ItemModelInfo[]) {
     this.store.patchState({ models: value })
@@ -112,10 +107,7 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
 
   public constructor(
     @Optional()
-    private ref: DialogRef,
-    @Inject(DIALOG_DATA)
-    @Optional()
-    data: ItemModelInfo[],
+    private ref: ModalRef,
     private elRef: ElementRef<HTMLElement>,
     private zone: NgZone,
     private screenshots: ScreenshotService,

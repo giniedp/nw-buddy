@@ -1,17 +1,17 @@
 import { A11yModule } from '@angular/cdk/a11y'
-import { DIALOG_DATA, Dialog, DialogConfig, DialogRef } from '@angular/cdk/dialog'
+import { DIALOG_DATA } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, HostListener, Inject, OnInit, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, HostListener, Inject, Input, OnInit, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { EquipSlotId } from '@nw-data/common'
 import { ItemClass } from '@nw-data/generated'
 import { combineLatest, firstValueFrom, fromEvent, map, of, switchMap, takeUntil } from 'rxjs'
-import { ItemInstance } from '~/data'
+import { ItemInstance, NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft } from '~/ui/icons/svg'
+import { ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
 import { imageFileFromPaste, imageFromDropEvent } from '~/utils/image-file-from-paste'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { GearImporterStore } from './gear-importer.store'
@@ -35,14 +35,15 @@ export interface GearImporterDialogState {
   },
 })
 export class GearImporterDialogComponent implements OnInit {
-  public static open(dialog: Dialog, config: DialogConfig<EquipSlotId>) {
-    return dialog.open<ItemInstance>(GearImporterDialogComponent, {
-      maxWidth: 800,
-      panelClass: ['w-full', 'layout-pad', 'self-end', 'sm:self-center', 'shadow'],
-      autoFocus: true,
 
-      ...config,
-    })
+  public static open(modal: ModalService, options: ModalOpenOptions<GearImporterDialogComponent>) {
+    options.content = GearImporterDialogComponent
+    return modal.open<GearImporterDialogComponent, ItemInstance>(options)
+  }
+
+  @Input()
+  public set slotId(value: EquipSlotId) {
+    this.store.patchState({ slotId: value })
   }
 
   protected vm$ = combineLatest({
@@ -64,7 +65,7 @@ export class GearImporterDialogComponent implements OnInit {
         working: data.working,
         filter: data.filter,
       }
-    })
+    }),
   )
 
   protected iconLeft = svgAngleLeft
@@ -72,20 +73,20 @@ export class GearImporterDialogComponent implements OnInit {
   private tl8 = inject(TranslateService)
 
   public constructor(
-    private dialog: DialogRef<ItemInstance>,
+    private modalRef: ModalRef<ItemInstance>,
     private store: GearImporterStore,
     @Inject(DIALOG_DATA)
-    slotId: EquipSlotId
+    slotId: EquipSlotId,
   ) {
     store.patchState({ slotId })
   }
 
   protected submit(item: ItemInstance) {
-    this.dialog.close(item)
+    this.modalRef.close(item)
   }
 
   protected close() {
-    this.dialog.close(null)
+    this.modalRef.close(null)
   }
 
   protected back() {
@@ -155,7 +156,7 @@ export class GearImporterDialogComponent implements OnInit {
             return null as ItemRecognitionResult[]
           })
         }),
-        takeUntil(this.store.destroy$)
+        takeUntil(this.store.destroy$),
       )
       .subscribe((results) => {
         this.store.patchState({

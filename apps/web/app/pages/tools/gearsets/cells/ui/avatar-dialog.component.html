@@ -1,6 +1,11 @@
+<ion-header>
+  <ion-toolbar class="ion-color ion-color-black rounded-t-md">
+    <ion-title>Avatar image</ion-title>
+  </ion-toolbar>
+</ion-header>
+
 <ng-container *ngIf="vm$ | async; let vm">
-  <h3 class="font-bold text-lg bg-black p-3">Avatar image</h3>
-  <div class="layout-content p-4">
+  <ion-content class="ion-p-4">
     <div *ngIf="vm.previewUrl; let url" class="relative text-center flex flex-col">
       <img [src]="url" class="w-full rounded-md" />
       <ng-container *ngIf="vm.file; let file">
@@ -19,7 +24,7 @@
         class="
           border border-dashed border-primary
           rounded-md
-          aspect-square
+          h-full
           flex flex-col
           items-center
           justify-center
@@ -35,26 +40,30 @@
         </ng-container>
       </div>
     </ng-container>
-  </div>
-  <div class="flex justify-end gap-1 layout-pad">
-    <button type="button" class="btn btn-ghost" (click)="cancel()">Cancel</button>
-    <div class="join">
-      <button
-        type="button"
-        class="join-item btn btn-primary btn-outline"
-        (click)="removeImage()"
-        [disabled]="!vm.imageId && !vm.file"
-      >
-        <nwb-icon [icon]="iconDelete" class="w-5 h-5"/>
-      </button>
-      <button
-        type="button"
-        class="join-item btn btn-primary"
-        (click)="commit(vm.file)"
-        [disabled]="vm.fileTooLarge || (!vm.imageId && !vm.file)"
-      >
-        OK
-      </button>
-    </div>
-  </div>
+  </ion-content>
+
+  <ion-footer class="rounded-b-md">
+    <ion-toolbar class="ion-color ion-color-base-300">
+
+      <button type="button" slot="secondary" class="btn btn-ghost mr-1" (click)="cancel()">Cancel</button>
+      <div slot="primary" class="join mr-1" >
+        <button
+          type="button"
+          class="join-item btn btn-primary btn-outline"
+          (click)="removeImage()"
+          [disabled]="!vm.imageId && !vm.file"
+        >
+          <nwb-icon [icon]="iconDelete" class="w-5 h-5"/>
+        </button>
+        <button
+          type="button"
+          class="join-item btn btn-primary"
+          (click)="commit(vm.file)"
+          [disabled]="vm.fileTooLarge || (!vm.imageId && !vm.file)"
+        >
+          OK
+        </button>
+      </div>
+    </ion-toolbar>
+  </ion-footer>
 </ng-container>

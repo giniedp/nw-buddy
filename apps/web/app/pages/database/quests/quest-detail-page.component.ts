@@ -1,4 +1,3 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
@@ -40,9 +39,8 @@ export class QuestDetailPageComponent {
   protected iconLink = svgSquareArrowUpRight
   public constructor(
     private route: ActivatedRoute,
-    private dialog: Dialog,
     private head: HtmlHeadService,
-    private i18n: TranslateService
+    private i18n: TranslateService,
   ) {
     //
   }
@@ -58,14 +56,4 @@ export class QuestDetailPageComponent {
       image: `${this.head.origin}/${getQuestTypeIcon(entity.Type)}`,
     })
   }
-
-  // protected openRepairRecipe(tpl: TemplateRef<any>) {
-  //   this.dialog.open(tpl, {
-  //     panelClass: ['w-full', 'h-full', 'max-w-4xl', 'layout-pad', 'shadow'],
-  //   })
-  // }
-
-  // protected closeDialog() {
-  //   this.dialog.closeAll()
-  // }
 }

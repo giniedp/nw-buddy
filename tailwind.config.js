@@ -109,6 +109,7 @@ module.exports = {
     require('daisyui'),
     require('./apps/web/styles/components/nw-item'),
     require('./apps/web/styles/components/utilities'),
+    require('./apps/web/styles/plugins/ionic'),
     plugin(function ({ matchUtilities, theme }) {
       matchUtilities(
         {

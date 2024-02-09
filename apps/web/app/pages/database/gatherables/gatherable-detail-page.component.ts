@@ -1,4 +1,3 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
@@ -30,7 +29,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     TooltipModule,
     GatherableDetailModule,
     LayoutModule,
-    ItemFrameModule
+    ItemFrameModule,
   ],
   providers: [],
   host: {
@@ -44,9 +43,8 @@ export class ItemDetailPageComponent {
   protected viewerActive = false
   public constructor(
     private route: ActivatedRoute,
-    private dialog: Dialog,
     private head: HtmlHeadService,
-    private i18n: TranslateService
+    private i18n: TranslateService,
   ) {
     //
   }

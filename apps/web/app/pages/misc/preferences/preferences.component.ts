@@ -1,14 +1,13 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
-import { filter, take } from 'rxjs'
+import { filter } from 'rxjs'
 import { DbService } from '~/data/db.service'
 import { AppPreferencesService, ItemPreferencesService, PreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
 import { svgInfoCircle } from '~/ui/icons/svg'
-import { ConfirmDialogComponent, LayoutModule } from '~/ui/layout'
+import { ConfirmDialogComponent, LayoutModule, ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService } from '~/utils'
 import { PriceImporterModule } from '~/widgets/price-importer/price-importer.module'
@@ -68,8 +67,8 @@ export class PreferencesComponent implements OnInit {
     public preferences: PreferencesService,
     public appDb: DbService,
     private itemPref: ItemPreferencesService,
-    private dialog: Dialog,
-    head: HtmlHeadService
+    private modal: ModalService,
+    head: HtmlHeadService,
   ) {
     head.updateMetadata({
       title: 'Preferences',
@@ -79,28 +78,27 @@ export class PreferencesComponent implements OnInit {
   public ngOnInit(): void {}
 
   public async exportPreferences() {
-    DataExportDialogComponent.open(this.dialog, {})
+    DataExportDialogComponent.open(this.modal)
   }
 
   public async importPreferences() {
-    DataImportDialogComponent.open(this.dialog, {})
+    DataImportDialogComponent.open(this.modal)
   }
 
   protected clearPrices() {
-    ConfirmDialogComponent.open(this.dialog, {
-      data: {
+    ConfirmDialogComponent.open(this.modal, {
+      inputs: {
         title: 'Clear prices',
         body: 'This will clear all previously imported market prices for all items',
         negative: 'Cancel',
         positive: 'Clear',
       },
     })
-      .closed.pipe(take(1))
-      .pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .subscribe(() => {
         this.itemPref.clearPrices()
-        ConfirmDialogComponent.open(this.dialog, {
-          data: {
+        ConfirmDialogComponent.open(this.modal, {
+          inputs: {
             title: 'Clear prices',
             body: 'Prices cleared.',
             positive: 'Close',

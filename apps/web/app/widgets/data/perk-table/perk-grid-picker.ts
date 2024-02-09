@@ -1,4 +1,3 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { Injector } from '@angular/core'
 import { Observable } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -9,7 +8,6 @@ import { PerkTableRecord } from './perk-table-cols'
 
 export function openPerksPicker(options: {
   db: NwDataService
-  dialog: Dialog
   ctx: NwTextContextService
   injector?: Injector
   title?: string

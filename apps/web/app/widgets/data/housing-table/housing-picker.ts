@@ -1,4 +1,3 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { Injector } from '@angular/core'
 import { NwDataService } from '~/data'
 import { DataViewPicker } from '~/ui/data/data-view'
@@ -8,7 +7,6 @@ import { HousingTableRecord } from './housing-table-cols'
 
 export function openHousingItemsPicker(options: {
   db: NwDataService
-  dialog: Dialog
   injector?: Injector
   title?: string
   selection?: string[]

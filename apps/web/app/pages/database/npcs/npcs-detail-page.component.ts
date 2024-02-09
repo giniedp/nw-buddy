@@ -1,13 +1,12 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
 import { ActivatedRoute, RouterModule } from '@angular/router'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { uniq } from 'lodash'
 import { combineLatest, of, switchMap } from 'rxjs'
+import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
@@ -154,7 +153,6 @@ export class NpcDetailPageComponent {
   protected viewerActive = false
   public constructor(
     private route: ActivatedRoute,
-    private dialog: Dialog,
     private head: HtmlHeadService,
     private i18n: TranslateService,
   ) {

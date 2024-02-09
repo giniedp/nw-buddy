@@ -1,4 +1,3 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { Injectable, Injector } from '@angular/core'
 import {
   EQUIP_SLOTS,
@@ -21,6 +20,7 @@ import { isEqual } from 'lodash'
 import { Observable, combineLatest, filter, from, map, switchMap, take } from 'rxjs'
 import { ItemInstance, NwDataService } from '~/data'
 import { DataViewPicker } from '~/ui/data/data-view'
+import { ModalService } from '~/ui/layout'
 import { eqCaseInsensitive, matchMapTo } from '~/utils'
 import { openHousingItemsPicker } from '~/widgets/data/housing-table'
 import { InventoryTableAdapter } from '~/widgets/data/inventory-table'
@@ -32,7 +32,7 @@ import { StatusEffectTableAdapter } from '~/widgets/data/status-effect-table'
 export class InventoryPickerService {
   public constructor(
     private db: NwDataService,
-    private dialog: Dialog,
+    private modal: ModalService,
     private injector: Injector,
   ) {
     //
@@ -54,7 +54,6 @@ export class InventoryPickerService {
         data: this.db.housingItemsMap,
         result: openHousingItemsPicker({
           db: this.db,
-          dialog: this.dialog,
           injector: this.injector,
           selection: selection,
           title,
@@ -88,7 +87,6 @@ export class InventoryPickerService {
         data: this.db.itemsMap,
         result: openItemsPicker({
           db: this.db,
-          dialog: this.dialog,
           injector: this.injector,
           selection: selection,
 

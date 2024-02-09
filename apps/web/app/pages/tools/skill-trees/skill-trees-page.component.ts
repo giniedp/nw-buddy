@@ -1,4 +1,3 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector, computed, inject } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
@@ -14,10 +13,10 @@ import { DataGridModule } from '~/ui/data/table-grid'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
 import { svgFileImport, svgFilterList, svgPlus } from '~/ui/icons/svg'
-import { ConfirmDialogComponent, LayoutModule } from '~/ui/layout'
+import { ConfirmDialogComponent, LayoutModule, ModalService } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, injectBreakpoint, injectRouteParam, injectUrlParams, observeQueryParam, selectSignal, selectStream } from '~/utils'
+import { HtmlHeadService, injectBreakpoint, injectRouteParam, injectUrlParams, selectSignal } from '~/utils'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { SkillsetTableAdapter } from '~/widgets/data/skillset-table'
 import { openWeaponTypePicker } from '~/widgets/data/weapon-type'
@@ -45,7 +44,7 @@ import { SkillTreesPageStore } from './skill-trees-page.store'
     IconsModule,
   ],
   host: {
-    class: 'ion-page'
+    class: 'ion-page',
   },
   providers: [
     SkillTreesPageStore,
@@ -89,7 +88,7 @@ export class SkillBuildsComponent {
 
   public constructor(
     protected search: QuicksearchService,
-    private dialog: Dialog,
+    private modal: ModalService,
     private injector: Injector,
     protected dataView: DataViewService<any>,
     head: HtmlHeadService,
@@ -104,12 +103,11 @@ export class SkillBuildsComponent {
   }
 
   protected async importItem() {
-    this.share.importItem(this.dialog, this.router)
+    this.share.importItem(this.modal, this.router)
   }
 
   protected async createItem() {
     openWeaponTypePicker({
-      dialog: this.dialog,
       injector: this.injector,
     })
       .pipe(
@@ -135,15 +133,15 @@ export class SkillBuildsComponent {
   }
 
   protected deleteItem(item: SkillBuildRow) {
-    ConfirmDialogComponent.open(this.dialog, {
-      data: {
+    ConfirmDialogComponent.open(this.modal, {
+      inputs: {
         title: 'Delete Skill Tree',
         body: 'Are you sure you want to delete this skill tree?',
         positive: 'Delete',
         negative: 'Cancel',
       },
     })
-      .closed.pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .subscribe(() => {
         this.store.destroyRecord(item.record.id)
       })

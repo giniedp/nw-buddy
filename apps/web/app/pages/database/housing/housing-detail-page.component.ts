@@ -1,22 +1,21 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, TemplateRef } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { ActivatedRoute, RouterModule } from '@angular/router'
+import { getItemIconPath } from '@nw-data/common'
 import { Housingitems } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
-import { getItemIconPath } from '@nw-data/common'
+import { IconsModule } from '~/ui/icons'
+import { svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
-import { HtmlHeadService, injectRouteParam, observeRouteParam } from '~/utils'
+import { HtmlHeadService, injectRouteParam } from '~/utils'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
-import { ScreenshotModule } from '~/widgets/screenshot'
-import { HousingTabsComponent } from './housing-detail-tabs.component'
-import { IconsModule } from '~/ui/icons'
 import { LootModule } from '~/widgets/loot'
-import { svgSquareArrowUpRight } from '~/ui/icons/svg'
-import { Dialog } from '@angular/cdk/dialog'
+import { ScreenshotModule } from '~/widgets/screenshot'
 import { ModelViewerModule } from '../../../widgets/model-viewer'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { HousingTabsComponent } from './housing-detail-tabs.component'
 
 @Component({
   standalone: true,
@@ -47,8 +46,7 @@ export class HousingDetailPageComponent {
   public constructor(
     private route: ActivatedRoute,
     private i18n: TranslateService,
-    private dialog: Dialog,
-    private head: HtmlHeadService
+    private head: HtmlHeadService,
   ) {
     //
   }
@@ -63,15 +61,5 @@ export class HousingDetailPageComponent {
       url: this.head.currentUrl,
       image: `${this.head.origin}/${getItemIconPath(entity)}`,
     })
-  }
-
-  protected openRepairRecipe(tpl: TemplateRef<any>) {
-    this.dialog.open(tpl, {
-      panelClass: ['w-full', 'h-full', 'max-w-4xl', 'layout-pad', 'shadow'],
-    })
-  }
-
-  protected closeDialog() {
-    this.dialog.closeAll()
   }
 }

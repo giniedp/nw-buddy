@@ -1,4 +1,3 @@
-import { Dialog, DialogModule } from '@angular/cdk/dialog'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { Component, Injector, Input, inject } from '@angular/core'
@@ -50,7 +49,7 @@ import {
   svgTrashCan,
   svgXmark,
 } from '~/ui/icons/svg'
-import { ConfirmDialogComponent, LayoutModule, PromptDialogComponent } from '~/ui/layout'
+import { ConfirmDialogComponent, LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { injectQueryParam } from '~/utils'
 import { GearsetTableAdapter } from '~/widgets/data/gearset-table'
@@ -74,7 +73,6 @@ export const GEARSET_TAGS = [
   imports: [
     CommonModule,
     NwModule,
-    DialogModule,
     FormsModule,
     IconsModule,
     RouterModule,
@@ -130,7 +128,7 @@ export class GearsetToolbarComponent {
 
     private itemsDb: ItemInstancesDB,
     private imagesDb: ImagesDB,
-    private dialog: Dialog,
+    private modal: ModalService,
   ) {}
 
   protected updateName(value: string) {
@@ -146,16 +144,16 @@ export class GearsetToolbarComponent {
   }
   protected onCloneClicked() {
     const record = this.store.gearset()
-    PromptDialogComponent.open(this.dialog, {
-      data: {
+    PromptDialogComponent.open(this.modal, {
+      inputs: {
         title: 'Create copy',
         body: 'New gearset name',
-        input: `${record.name} (Copy)`,
+        value: `${record.name} (Copy)`,
         positive: 'Create',
         negative: 'Cancel',
       },
     })
-      .closed.pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .pipe(
         switchMap((newName) => {
           return this.gearDb.create({
@@ -174,15 +172,15 @@ export class GearsetToolbarComponent {
 
   protected onDeleteClicked() {
     const record = this.store.gearset()
-    ConfirmDialogComponent.open(this.dialog, {
-      data: {
+    ConfirmDialogComponent.open(this.modal, {
+      inputs: {
         title: 'Delete Gearset',
         body: 'Are you sure you want to delete this gearset?',
         positive: 'Delete',
         negative: 'Cancel',
       },
     })
-      .closed.pipe(filter((it) => !!it))
+      .result$.pipe(filter((it) => !!it))
       .subscribe(() => {
         if (record.imageId) {
           this.imagesDb.destroy(record.imageId)
@@ -218,54 +216,56 @@ export class GearsetToolbarComponent {
       }
     }
 
-    ShareDialogComponent.open(this.dialog, {
-      data: {
-        ipnsKey: ipnsKey,
-        ipnsName: ipnsName,
-        content: {
-          ref: record.id,
-          type: 'gearset',
-          data: record,
-        },
-        published: (res) => {
-          if (res.ipnsKey) {
-            this.gearDb.update(record.id, {
-              ipnsName: res.ipnsName,
-              ipnsKey: res.ipnsKey,
-            })
-          }
-        },
-        buildEmbedSnippet: (url: string) => {
-          if (!url) {
-            return null
-          }
-          const host = environment.standalone ? 'https://www.nw-buddy.de' : location.origin
-          return [
-            `<script src="${host}/embed.js"></script>`,
-            `<object data="${url}" style="width: 100%"></object>`,
-          ].join('\n')
-        },
-        buildEmbedUrl: (cid, name) => {
-          if (!cid && !name) {
-            return null
-          }
-          const command = name ? ['../embed/ipns', name] : ['../embed/ipfs', cid]
-          return this.router
-            .createUrlTree(command, {
-              relativeTo: this.route,
-            })
-            .toString()
-        },
-        buildShareUrl: (cid, name) => {
-          if (!cid && !name) {
-            return null
-          }
-          const command = name ? ['../share/ipns', name] : ['../share/ipfs', cid]
-          return this.router
-            .createUrlTree(command, {
-              relativeTo: this.route,
-            })
-            .toString()
+    ShareDialogComponent.open(this.modal, {
+      inputs: {
+        data: {
+          ipnsKey: ipnsKey,
+          ipnsName: ipnsName,
+          content: {
+            ref: record.id,
+            type: 'gearset',
+            data: record,
+          },
+          published: (res) => {
+            if (res.ipnsKey) {
+              this.gearDb.update(record.id, {
+                ipnsName: res.ipnsName,
+                ipnsKey: res.ipnsKey,
+              })
+            }
+          },
+          buildEmbedSnippet: (url: string) => {
+            if (!url) {
+              return null
+            }
+            const host = environment.standalone ? 'https://www.nw-buddy.de' : location.origin
+            return [
+              `<script src="${host}/embed.js"></script>`,
+              `<object data="${url}" style="width: 100%"></object>`,
+            ].join('\n')
+          },
+          buildEmbedUrl: (cid, name) => {
+            if (!cid && !name) {
+              return null
+            }
+            const command = name ? ['../embed/ipns', name] : ['../embed/ipfs', cid]
+            return this.router
+              .createUrlTree(command, {
+                relativeTo: this.route,
+              })
+              .toString()
+          },
+          buildShareUrl: (cid, name) => {
+            if (!cid && !name) {
+              return null
+            }
+            const command = name ? ['../share/ipns', name] : ['../share/ipfs', cid]
+            return this.router
+              .createUrlTree(command, {
+                relativeTo: this.route,
+              })
+              .toString()
+          },
         },
       },
     })
@@ -308,14 +308,14 @@ export class GearsetToolbarComponent {
     ]
     const perkSlots = recordSlots.filter((it) => resetableIds.includes(it.slot as EquipSlotId))
 
-    SlotsPickerComponent.open(this.dialog, {
-      data: {
+    SlotsPickerComponent.open(this.modal, {
+      inputs: {
         title: 'Select items to reset',
         slots1: perkSlots.map((it) => it.slot as EquipSlotId),
         selection: resetableIds,
       },
     })
-      .closed.pipe(filter((it) => it?.length > 0))
+      .result$.pipe(filter((it) => it?.length > 0))
       .subscribe((slots) => {
         const patch = perkSlots
           .filter((it) => slots.includes(it.slot as EquipSlotId))
@@ -344,15 +344,15 @@ export class GearsetToolbarComponent {
     const armorSlots = gemSlots.filter((it) => armorSlotIds.includes(it.slot as any))
     const weaponSlots = gemSlots.filter((it) => weaponSlotIds.includes(it.slot as any))
 
-    SlotsPickerComponent.open(this.dialog, {
-      data: {
+    SlotsPickerComponent.open(this.modal, {
+      inputs: {
         title: 'Which slots to update',
         slots1: armorSlots.map((it) => it.slot as any),
         slots2: weaponSlots.map((it) => it.slot as any),
         selection: null,
       },
     })
-      .closed.pipe(filter((it) => it?.length > 0))
+      .result$.pipe(filter((it) => it?.length > 0))
       .pipe(
         switchMap((slots) => {
           return this.picker
@@ -390,16 +390,17 @@ export class GearsetToolbarComponent {
     const armorSlots = gearSlots.filter((it) => armorSlotIds.includes(it.slot as any))
     const weaponSlots = gearSlots.filter((it) => weaponSlotIds.includes(it.slot as any))
 
-    SlotsPickerComponent.open(this.dialog, {
-      data: {
-        title: 'Which slots to update',
+    SlotsPickerComponent.open(this.modal, {
+      inputs: {
+        title: 'Choose slots for Attribute update',
         slots1: armorSlots.map((it) => it.slot as any),
         slots2: weaponSlots.map((it) => it.slot as any),
         selection: null,
         positive: 'Next',
       },
     })
-      .closed.pipe(
+      .result$.pipe(filter((it) => it?.length > 0))
+      .pipe(
         switchMap((slots) => {
           return this.picker
             .pickAttributeForItems({
@@ -474,29 +475,29 @@ export class GearsetToolbarComponent {
       .filter(({ item }) => isItemArmor(item) || isItemWeapon(item) || isItemJewelery(item))
       .filter((it) => gearSlotIds.includes(it.slot as any))
 
-    SlotsPickerComponent.open(this.dialog, {
-      data: {
-        title: 'Which slots to update',
+    SlotsPickerComponent.open(this.modal, {
+      inputs: {
+        title: 'Choose slots to change GS',
         slots1: gearSlots.map((it) => it.slot as any),
         selection: gearSlots.map((it) => it.slot as any),
       },
     })
-      .closed.pipe(filter((it) => it?.length > 0))
+      .result$.pipe(filter((it) => it?.length > 0))
       .pipe(
         switchMap((slots) => {
-          return PromptDialogComponent.open(this.dialog, {
-            data: {
+          return PromptDialogComponent.open(this.modal, {
+            inputs: {
               title: 'Gear Score',
               positive: 'OK',
               negative: 'Cancel',
-              input: String(NW_MAX_GEAR_SCORE),
-              type: 'number',
+              value: String(NW_MAX_GEAR_SCORE),
+              inputType: 'number',
               min: NW_MIN_GEAR_SCORE,
               max: NW_MAX_GEAR_SCORE,
               body: 'Enter the new gear score',
             },
           })
-            .closed.pipe(filter((it) => !!it && isFinite(Number(it))))
+            .result$.pipe(filter((it) => !!it && isFinite(Number(it))))
             .pipe(
               map((gs) => {
                 return { slots, gs: Number(gs) }

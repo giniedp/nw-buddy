@@ -1,4 +1,3 @@
-import { Dialog } from '@angular/cdk/dialog'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector, Input, Output } from '@angular/core'
@@ -106,7 +105,6 @@ export class LootContextEditorComponent {
 
   public constructor(
     protected store: LootContextEditorStore,
-    private dialog: Dialog,
     private injector: Injector,
     private db: NwDataService,
   ) {

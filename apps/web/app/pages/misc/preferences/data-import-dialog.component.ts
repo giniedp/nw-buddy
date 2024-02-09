@@ -1,4 +1,3 @@
-import { Dialog, DialogConfig, DialogRef } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, HostListener } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
@@ -7,6 +6,7 @@ import { NwModule } from '~/nw'
 import { PreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleCheck, svgCircleExclamation, svgCircleNotch, svgFileImport, svgInfoCircle } from '~/ui/icons/svg'
+import { LayoutModule, ModalRef, ModalService } from '~/ui/layout'
 import { recursivelyDecodeArrayBuffers } from './buffer-encoding'
 
 export interface DataImportDialogState {
@@ -21,16 +21,16 @@ export interface DataImportDialogState {
   selector: 'nwb-data-import-dialog',
   templateUrl: './data-import-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, IconsModule],
+  imports: [CommonModule, NwModule, IconsModule, LayoutModule],
   host: {
-    class: 'flex flex-col bg-base-100 border border-base-100 rounded-md overflow-hidden h-full w-full',
+    class: 'ion-page bg-base-100 border border-base-100 rounded-md',
   },
 })
 export class DataImportDialogComponent extends ComponentStore<DataImportDialogState> {
-  public static open(dialog: Dialog, config: DialogConfig<void>) {
-    return dialog.open(DataImportDialogComponent, {
-      panelClass: ['max-h-screen', 'w-screen', 'max-w-md', 'layout-pad', 'shadow', 'self-center'],
-      ...config,
+  public static open(modal: ModalService) {
+    return modal.open({
+      size: 'sm',
+      content: DataImportDialogComponent,
     })
   }
 
@@ -40,12 +40,18 @@ export class DataImportDialogComponent extends ComponentStore<DataImportDialogSt
   protected iconSpinner = svgCircleNotch
   protected iconImport = svgFileImport
   protected vm$ = this.state$
-  public constructor(public preferences: PreferencesService, public appDb: DbService, private dialog: DialogRef) {
-    super({})
+  public constructor(
+    public preferences: PreferencesService,
+    public appDb: DbService,
+    private modalRef: ModalRef,
+  ) {
+    super({
+      //
+    })
   }
 
   protected close() {
-    this.dialog.close()
+    this.modalRef.close()
   }
 
   protected async pickFile() {

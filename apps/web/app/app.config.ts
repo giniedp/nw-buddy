@@ -1,5 +1,4 @@
-import { DialogModule } from '@angular/cdk/dialog'
-import { HttpClientModule, provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi } from '@angular/common/http'
+import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http'
 import { ApplicationConfig, importProvidersFrom } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { BrowserModule } from '@angular/platform-browser'
@@ -9,9 +8,8 @@ import { provideIonicAngular } from '@ionic/angular/standalone'
 import { EffectsModule } from '@ngrx/effects'
 import { StoreModule } from '@ngrx/store'
 import { ROUTES } from './app.routes'
-import { TranslateModule } from './i18n'
 import { NwDataInterceptor } from './data'
-
+import { TranslateModule } from './i18n'
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,7 +25,7 @@ export const appConfig: ApplicationConfig = {
     }),
     provideHttpClient(
       withFetch(),
-      withInterceptorsFromDi()
+      withInterceptorsFromDi(),
       // TODO: refactor to use withInterceptors() instead
       // withInterceptors([]),
     ),
@@ -36,11 +34,9 @@ export const appConfig: ApplicationConfig = {
       BrowserModule,
       BrowserAnimationsModule,
       FormsModule,
-      DialogModule,
       TranslateModule.forRoot(),
       StoreModule.forRoot({}),
       EffectsModule.forRoot(),
     ),
-
   ],
 }

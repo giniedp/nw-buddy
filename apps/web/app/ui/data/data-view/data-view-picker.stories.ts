@@ -1,4 +1,3 @@
-import { DialogModule } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectorRef, Component, Injector, importProvidersFrom } from '@angular/core'
 import { Meta, StoryObj, applicationConfig, moduleMetadata } from '@storybook/angular'
@@ -18,7 +17,7 @@ import { DataViewMode } from './data-view.service'
     <button class="btn" (click)="pickItem('grid')">Pick (virtual mode)</button>
     <div>Picked Item: {{ result | json }}</div>
   `,
-  imports: [CommonModule, NwModule, DataViewModule, DialogModule],
+  imports: [CommonModule, NwModule, DataViewModule],
 })
 export class StoryComponent {
   public result: any

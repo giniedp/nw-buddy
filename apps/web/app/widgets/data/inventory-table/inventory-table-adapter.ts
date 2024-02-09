@@ -1,15 +1,14 @@
 import { GridOptions } from '@ag-grid-community/core'
-import { Dialog } from '@angular/cdk/dialog'
 import { Injectable, Optional, inject } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { EQUIP_SLOTS } from '@nw-data/common'
 import { uniqBy } from 'lodash'
-import { Observable, filter, take } from 'rxjs'
+import { Observable, filter } from 'rxjs'
 import { InventoryItemsStore, ItemInstanceRow } from '~/data'
 import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
 import { DataTableCategory, TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridUtils } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { ConfirmDialogComponent } from '~/ui/layout'
+import { ConfirmDialogComponent, ModalService } from '~/ui/layout'
 import { DnDService } from '~/utils/services/dnd.service'
 import { InventoryCellComponent } from './inventory-cell.component'
 import {
@@ -72,7 +71,7 @@ export class InventoryTableAdapter
     } else {
       options = buildCommonInventoryGridOptions(this.utils, {
         dnd: this.dnd,
-        dialog: this.dialog,
+        modal: this.modal,
         store: this.store,
       })
     }
@@ -90,7 +89,7 @@ export class InventoryTableAdapter
     @Optional()
     private store: InventoryItemsStore,
     private dnd: DnDService,
-    private dialog: Dialog,
+    private modal: ModalService,
   ) {
     //
   }
@@ -101,7 +100,7 @@ export function buildCommonInventoryGridOptions(
   options: {
     dnd: DnDService
     store: InventoryItemsStore
-    dialog: Dialog
+    modal: ModalService
   },
 ) {
   const result: GridOptions<InventoryTableRecord> = {
@@ -119,16 +118,15 @@ export function buildCommonInventoryGridOptions(
         destroyAction: (e: Event, data: InventoryTableRecord) => {
           e.stopImmediatePropagation()
           util.zone.run(() => {
-            ConfirmDialogComponent.open(options.dialog, {
-              data: {
+            ConfirmDialogComponent.open(options.modal, {
+              inputs: {
                 title: 'Delete Item',
                 body: 'Are you sure you want to delete this item? Gearsets linking to this item will loose the reference.',
                 positive: 'Delete',
                 negative: 'Cancel',
               },
             })
-              .closed.pipe(take(1))
-              .pipe(filter((it) => !!it))
+              .result$.pipe(filter((it) => !!it))
               .subscribe(() => {
                 options.store.destroyRecord(data.record.id)
               })

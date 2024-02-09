@@ -1,41 +1,43 @@
-<div class="text-xl text-center bg-base-300 px-2 py-3">Pick a Dye</div>
-
-<div class="grid grid-cols-fill-5xs gap-4 p-2 overflow-auto">
-  <button
-    *ngFor="let color of colors"
-    [tooltip]="tplTip"
-    class="btn w-full"
-    [style.background-color]="color.Color"
-    (click)="commit(color)"
-  >
-    <ng-template #tplTip>
-      <div class="flex flex-col gap-1">
-        <h4 class="font-bold">{{ color.Name }} - {{ color.Category }}</h4>
-        <div class="flex flex-row gap-1">
-          <span
-            class="inline-block w-4 h-4 rounded-sm"
-            [style.background-color]="color.Color"
-            [style.opacity]="color.ColorAmount"
-          ></span>
-          <span>Color</span>
-        </div>
-        <div class="flex flex-row gap-1">
-          <span
-            class="inline-block w-4 h-4 rounded-sm"
-            [style.background-color]="color.SpecColor"
-            [style.opacity]="color.SpecAmount"
-          ></span>
-          <span>Tint</span>
-        </div>
-        <div class="grid grid-cols-2"></div>
-      </div>
-    </ng-template>
-  </button>
-</div>
-
-<div class="flex justify-end gap-1 layout-pad">
-  <div class="join">
-    <label class="join-item btn btn-ghost" [tooltip]="'Clears current color'" (click)="commit(null)">Clear</label>
-    <label class="join-item btn btn-ghost" (click)="cancel()">Close</label>
+<ion-header>
+  <ion-toolbar class="ion-color ion-color-black rounded-t-md">
+    <ion-title>Dye Color Picker</ion-title>
+    <button type="button" slot="end" class="btn btn-ghost btn-circle mr-2 text-xl" [nwbModalClose]>&times;</button>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-p-4">
+  <div class="flex flex-row gap-2 flex-wrap">
+    <button [tooltip]="'Clears current color'" class="btn btn-square btn-ghost" (click)="commit(null)">&times;</button>
+    @for (color of colors; track $index) {
+      <button
+        [tooltip]="tplTip"
+        [tooltipClass]="'p-2'"
+        class="btn btn-square"
+        [style.background-color]="color.Color"
+        (click)="commit(color)"
+      >
+        <ng-template #tplTip>
+          <div class="flex flex-col gap-1">
+            <h4 class="font-bold">{{ color.Name }} - {{ color.Category }}</h4>
+            <div class="flex flex-row gap-1">
+              <span
+                class="inline-block w-4 h-4 rounded-sm"
+                [style.background-color]="color.Color"
+                [style.opacity]="color.ColorAmount"
+              ></span>
+              <span>Color</span>
+            </div>
+            <div class="flex flex-row gap-1">
+              <span
+                class="inline-block w-4 h-4 rounded-sm"
+                [style.background-color]="color.SpecColor"
+                [style.opacity]="color.SpecAmount"
+              ></span>
+              <span>Tint</span>
+            </div>
+            <div class="grid grid-cols-2"></div>
+          </div>
+        </ng-template>
+      </button>
+    }
   </div>
-</div>
+</ion-content>
