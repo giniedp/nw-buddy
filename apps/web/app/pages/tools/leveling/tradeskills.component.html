@@ -1,42 +1,51 @@
-<div class="max-w-[1600px] mx-auto">
-  <div class="alert mb-3 bg-base-100">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      class="stroke-info flex-shrink-0 w-6 h-6 slef-start"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-      ></path>
-    </svg>
-    <div>
-      <div>Track your tradeskill levels here.</div>
-      <div>These values are used in the crafting calculator.</div>
+<ion-header>
+  <ion-toolbar class="bg-base-300">
+    <ion-segment [value]="tab()">
+      @for (category of categories(); track $index) {
+        <ion-segment-button [value]="category" [routerLink]="['..', category]">
+          {{ category }}
+        </ion-segment-button>
+      }
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-p-4">
+  <div class="max-w-[1600px] mx-auto">
+    <div class="alert mb-3 bg-base-100">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        class="stroke-info flex-shrink-0 w-6 h-6 slef-start"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+        ></path>
+      </svg>
+      <div>
+        <div>Track your tradeskill levels here.</div>
+        <div>These values are used in the crafting calculator.</div>
+      </div>
+    </div>
+
+    <div class="flex-1 bg-base-100 rounded-b-md overflow-auto">
+      @for (category of categories(); track $index) {
+        @if (tab() === category) {
+          <div class="grid items-start grid-cols-1 2xl:grid-cols-12 min-w-[400px]">
+            <div class="xl:col-span-5 input-grid layout-gap layout-pad">
+              @for (skill of skillsByCategory(category) | async; track $index) {
+                <nwb-tradeskill-input [tradeskill]="skill.ID" />
+              }
+            </div>
+            <div class="xl:col-span-7 overflow-hidden">
+              <nwb-tradeskill-chart [category]="category"/>
+            </div>
+          </div>
+        }
+      }
     </div>
   </div>
-
-  <div class="flex-none tabs tabs-boxed bg-base-100 rounded-b-none flex-nowrap overflow-x-auto">
-    <ng-container *ngFor="let category of categories | async; let i = index">
-      <a class="tab" [class.tab-active]="isActive(category, i)" (click)="selected = category">{{ category }}</a>
-    </ng-container>
-  </div>
-  <div class="flex-1 bg-base-100 rounded-b-md overflow-auto">
-    <ng-container *ngFor="let category of categories | async; let i = index">
-      <div class="grid items-start grid-cols-1 2xl:grid-cols-12 min-w-[400px]" *ngIf="isActive(category, i)">
-        <div class="xl:col-span-5 input-grid layout-gap layout-pad">
-          <nwb-tradeskill-input
-            *ngFor="let skill of skillsByCategory(category) | async"
-            [tradeskill]="skill.ID"
-          ></nwb-tradeskill-input>
-        </div>
-        <div class="xl:col-span-7 overflow-hidden">
-          <nwb-tradeskill-chart [category]="category"></nwb-tradeskill-chart>
-        </div>
-      </div>
-    </ng-container>
-  </div>
-</div>
+</ion-content>

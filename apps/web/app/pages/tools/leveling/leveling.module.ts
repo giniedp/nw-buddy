@@ -1,34 +1,47 @@
 import { NgModule } from '@angular/core'
 import { RouterModule, Routes } from '@angular/router'
 import { LevelXpComponent } from './level-xp.component'
-import { LevelingComponent } from './leveling.component'
 import { TradeskillsComponent } from './tradeskills.component'
 import { WeaponsComponent } from './weapons.component'
 
 const routes: Routes = [
   {
     path: '',
-    component: LevelingComponent,
+    pathMatch: 'full',
+    redirectTo: 'xp',
+  },
+  {
+    path: 'xp',
     children: [
       {
         path: '',
         pathMatch: 'full',
-        redirectTo: 'xp'
+        redirectTo: 'progress',
       },
       {
-        path: 'xp',
+        path: ':tab',
         component: LevelXpComponent,
       },
+    ],
+  },
+  {
+    path: 'tradeskills',
+    children: [
       {
-        path: 'tradeskills',
-        component: TradeskillsComponent,
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'crafting',
       },
       {
-        path: 'weapons',
-        component: WeaponsComponent,
-      }
-    ]
-  }
+        path: ':tab',
+        component: TradeskillsComponent,
+      },
+    ],
+  },
+  {
+    path: 'weapons',
+    component: WeaponsComponent,
+  },
 ]
 @NgModule({
   imports: [RouterModule.forChild(routes)],

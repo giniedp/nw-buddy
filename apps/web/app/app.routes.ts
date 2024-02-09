@@ -73,7 +73,7 @@ const routes: Routes = [
   { path: 'transmog', loadChildren: () => import('./pages/tools/transmog').then((m) => m.TransmogModule) },
   { path: 'mounts', loadChildren: () => import('./pages/tools/mounts').then((m) => m.MountModule) },
   { path: 'info-cards', loadChildren: () => import('./pages/tools/info-cards').then((m) => m.InfoCardsModule) },
-  { path: 'level-xp', loadChildren: () => import('./pages/tools/level-xp').then((m) => m.LevelXpModule) },
+
   { path: 'territories', loadChildren: () => import('./pages/tools/territories').then((m) => m.TerritoriesModule) },
   { path: 'leveling', loadChildren: () => import('./pages/tools/leveling').then((m) => m.LevelingModule) },
 

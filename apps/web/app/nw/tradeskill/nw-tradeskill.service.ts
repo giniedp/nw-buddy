@@ -4,7 +4,7 @@ import { uniq } from 'lodash'
 import { combineLatest, defer, isObservable, map, Observable, of, shareReplay, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { tableIndexBy } from '~/data/nw-data/dsl'
-import { shareReplayRefCount } from '~/utils'
+import { eqCaseInsensitive, shareReplayRefCount } from '~/utils'
 import { NW_TRADESKILLS_INFOS_MAP } from './nw-tradeskill'
 
 export interface NwTradeskillInfo {
@@ -76,7 +76,7 @@ export class NwTradeskillService {
       skills: this.skills,
     }).pipe(
       map(({ cat, skills }) => {
-        return skills.filter((it) => !cat || it.Category === cat)
+        return skills.filter((it) => !cat || eqCaseInsensitive(it.Category, cat))
       }),
     )
   }

@@ -68,7 +68,6 @@ export class TradeskillChartComponent {
     })
   )
 
-  private destroy$ = new Subject()
   private category$ = new BehaviorSubject<string>(null)
 
   private skillInfo$ = defer(() => this.category$)

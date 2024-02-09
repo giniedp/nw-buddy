@@ -59,7 +59,9 @@ export const APP_MENU: AppMenuGroup[] = [
     category: 'character',
     icon: svgUser,
     items: [
-      { label: 'Levels', path: '/leveling', icon: 'assets/icons/menu/levels.png' },
+      { label: 'Levels', path: '/leveling/xp', icon: 'assets/icons/menu/levels.png' },
+      { label: 'Tradeskills', path: '/leveling/tradeskills', icon: 'assets/icons/tradeskills/weaving.png' },
+      { label: 'Weapons', path: '/leveling/weapons', icon: 'assets/icons/weapons/1hsword.png' },
       { label: 'Inventory', path: '/inventory', icon: 'assets/icons/menu/storage.png' },
       { label: 'Gear Sets', path: '/gearsets', icon: 'assets/icons/menu/gearsets.png' },
       { label: 'Skill Trees', path: '/skill-trees', icon: 'assets/icons/menu/skill-trees.png' },

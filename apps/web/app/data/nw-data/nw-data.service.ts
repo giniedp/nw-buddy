@@ -481,6 +481,7 @@ export class NwDataService {
   public buffBucket = tableLookup(() => this.buffBucketsMap)
 
   public xpAmounts = this.data.xpamountsbylevel().pipe(shareReplay(1))
+  public mileStoneRewards = table(() => this.data.milestonerewards())
   public weaponMastery = this.data.weaponmastery().pipe(shareReplay(1))
 
   public attrCon = this.data.attributeconstitution().pipe(shareReplay(1))

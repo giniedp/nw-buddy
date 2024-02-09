@@ -1,16 +1,16 @@
-<dl *ngIf="data$ | async; let data" class="grid grid-cols-2 gap-x-1">
-  <ng-container *ngIf="data.xpToNext">
-    <dt>XP to next</dt>
-    <dd>{{ data.xpToNext | number }} </dd>
-  </ng-container>
-  <ng-container *ngIf="data.xpToLast">
-    <dt>XP to 60</dt>
-    <dd>{{ data.xpToLast | number }} ({{ data.xpToLastPercent | percent }}) </dd>
-  </ng-container>
-  <dt>Attribute points</dt>
-  <dd>{{ data.attributePoints }}</dd>
-  <dt>Respec costs</dt>
-  <dd>{{ data.respecCosts | currency }}</dd>
-  <dt>Max equippable GS</dt>
-  <dd>{{ data.maxEquipGs }}</dd>
+<dl class="grid grid-cols-2 gap-x-4">
+  @if (xpToNext) {
+    <dt class="text-right">XP to next</dt>
+    <dd>{{ xpToNext | number }}</dd>
+  }
+  @if (xpToMax) {
+    <dt class="text-right">XP to {{ maxLevel }}</dt>
+    <dd>{{ xpToMax | number }} ({{ xpToMaxPercent | percent }})</dd>
+  }
+  <dt class="text-right">Attribute points</dt>
+  <dd>{{ attributePoints }}</dd>
+  <dt class="text-right">Respec costs</dt>
+  <dd>{{ respecCosts | currency }}</dd>
+  <dt class="text-right">Max equippable GS</dt>
+  <dd>{{ maxEquipGs }}</dd>
 </dl>

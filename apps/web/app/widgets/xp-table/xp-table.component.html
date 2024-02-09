@@ -9,14 +9,16 @@
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let row of data; let i = index">
-      <td>{{ row.Level | number }}</td>
-      <td class="text-right">{{ row.XPToLevel | number }}</td>
-      <td class="text-right">{{ row.XPTotal | number }}</td>
-      <td class="text-right">{{ row.AttributePoints | number }}</td>
-      <td class="text-right">({{ row.AttributePointsTotal | number }})</td>
-      <td class="text-right">{{ row.AttributeRespecCost / 100 | currency }}</td>
-    </tr>
+    @for(row of data(); track $index) {
+      <tr>
+        <td>{{ row.Level | number }}</td>
+        <td class="text-right">{{ row.XPToLevel | number }}</td>
+        <td class="text-right">{{ row.XPTotal | number }}</td>
+        <td class="text-right">{{ row.AttributePoints | number }}</td>
+        <td class="text-right">({{ row.AttributePointsTotal | number }})</td>
+        <td class="text-right">{{ row.AttributeRespecCost / 100 | currency }}</td>
+      </tr>
+    }
   </tbody>
 </table>
 

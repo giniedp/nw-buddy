@@ -1,0 +1,85 @@
+<ul class="timeline timeline-vertical">
+  @for (row of data(); track $index; let first = $first; let last = $last; let odd = $odd) {
+    <li>
+      @if (!first) {
+        <hr [class.bg-primary]="level() >= row.level" />
+      }
+
+      <div class="timeline-start flex-col gap-2 p-2 hidden" [class.sm:flex]="odd">
+        @if (row.reward; as reward) {
+          <picture class="relative">
+            <img [nwImage]="reward.Image" class="rounded-md relative" />
+            <div class="absolute inset-0 flex flex-col items-center">
+              <div class="flex-2"></div>
+              <div class="flex-1">
+                <div class="inline-flex flex-row items-center gap-2">
+                  <img [nwImage]="reward.Icon" class="w-8 h-8" />
+                  <span>
+                    {{ reward.Name | nwText }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </picture>
+        }
+        @for (reward of row.rewards; track $index) {
+          <div class="inline-flex flex-row items-center gap-2" [tooltip]="reward.Tooltip ? tip : null">
+            <ng-template #tip>
+              <div class="p-2" [nwHtml]="reward.Tooltip | nwText"></div>
+            </ng-template>
+            <img [nwImage]="reward.Icon" class="w-8 h-8"/>
+            <span>
+              {{ reward.Name | nwText }}
+            </span>
+          </div>
+        }
+      </div>
+
+      <div class="timeline-middle">
+        <picture
+          class="flex items-center justify-center relative aspect-square w-8"
+          (click)="handleLevelClick(row.level)"
+        >
+          <div class="absolute inset-0 rotate-45 border-4 border-primary" [class.grayscale]="level() < row.level"></div>
+          {{ row.level }}
+        </picture>
+      </div>
+      <div class="timeline-end flex flex-col gap-2 p-2" [class.sm:hidden]="odd">
+        @if (row.reward; as reward) {
+          <picture class="relative">
+            <img [nwImage]="reward.Image" class="rounded-md relative" />
+            <div class="absolute inset-0 flex flex-col items-center">
+              <div class="flex-2"></div>
+              <div class="flex-1">
+                <div class="inline-flex flex-row items-center gap-2" [tooltip]="reward.Tooltip ? tip : null">
+                  <ng-template #tip>
+                    <div class="p-2" [nwHtml]="reward.Tooltip | nwText"></div>
+                  </ng-template>
+                  <img [nwImage]="reward.Icon" class="w-8 h-8" />
+                  <span>
+                    {{ reward.Name | nwText }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </picture>
+        }
+        @for (reward of row.rewards; track $index) {
+          <div class="inline-flex flex-row items-center gap-2" [tooltip]="reward.Tooltip ? tip : null">
+            <ng-template #tip>
+              <div class="p-2" [nwHtml]="reward.Tooltip | nwText"></div>
+            </ng-template>
+            <img [nwImage]="reward.Icon" class="w-8 h-8" />
+            <span>
+              {{ reward.Name | nwText }}
+            </span>
+          </div>
+        }
+      </div>
+
+      @if (!last) {
+        <hr [class.bg-primary]="level() > row.level" />
+      }
+    </li>
+  }
+</ul>

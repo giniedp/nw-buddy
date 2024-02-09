@@ -1,15 +1,22 @@
-import { CommonModule } from '@angular/common'
 import { NgModule } from '@angular/core'
 
-import { ChartModule } from '~/ui/chart'
-import { XpChartComponent } from './xp-chart.component'
+import { XpChartPerLevelComponent } from './xp-chart-per-level.component'
+import { XpChartTotalComponent } from './xp-chart-total.component'
 import { XpLevelInfoComponent } from './xp-level-info.component'
 import { XpTableComponent } from './xp-table.component'
+import { XpUnlockLineComponent } from './xp-unlock-line.component'
 
-const COMPONENTS = [XpLevelInfoComponent]
+const COMPONENTS = [
+  XpLevelInfoComponent,
+  XpTableComponent,
+  XpChartPerLevelComponent,
+  XpChartTotalComponent,
+  XpUnlockLineComponent,
+]
 @NgModule({
-  imports: [CommonModule, ChartModule, ...COMPONENTS],
-  declarations: [XpTableComponent, XpChartComponent],
-  exports: [XpTableComponent, XpChartComponent, ...COMPONENTS],
+  imports: [...COMPONENTS],
+  exports: [...COMPONENTS],
 })
-export class XpTableModule {}
+export class XpTableModule {
+  //
+}

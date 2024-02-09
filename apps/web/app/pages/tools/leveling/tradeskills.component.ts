@@ -1,8 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
-import { Subject } from 'rxjs'
+import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 import { NwTradeskillService } from '~/nw/tradeskill'
+import { LayoutModule } from '~/ui/layout'
+import { injectRouteParam, selectSignal } from '~/utils'
 import { TradeskillsModule } from '~/widgets/tradeskills'
 
 @Component({
@@ -11,18 +14,17 @@ import { TradeskillsModule } from '~/widgets/tradeskills'
   templateUrl: './tradeskills.component.html',
   styleUrls: ['./tradeskills.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, RouterModule, TradeskillsModule],
+  imports: [CommonModule, RouterModule, TradeskillsModule, LayoutModule, IonSegment, IonSegmentButton],
   host: {
-    class: 'block layout-pad',
+    class: 'ion-page',
   },
 })
-export class TradeskillsComponent implements OnInit, OnDestroy {
-  public skills = this.service.skills
-
-  public categories = this.service.categories
-  public selected: string
-
-  private destroy$ = new Subject()
+export class TradeskillsComponent {
+  protected tab = toSignal(injectRouteParam('tab'))
+  protected categories = selectSignal(this.service.categories, (list) => {
+    return (list || []).map((it) => it.toLowerCase())
+  })
+  protected skills = toSignal(this.service.skills)
 
   public constructor(private service: NwTradeskillService) {
     //
@@ -30,19 +32,5 @@ export class TradeskillsComponent implements OnInit, OnDestroy {
 
   public skillsByCategory(name: string) {
     return this.service.skillsByCategory(name)
-  }
-
-  public ngOnInit(): void {}
-
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
-  }
-
-  public isActive(category: string, index: number) {
-    if (!this.selected) {
-      return index == 0
-    }
-    return this.selected === category
   }
 }

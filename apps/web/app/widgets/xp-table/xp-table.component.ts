@@ -1,11 +1,14 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core'
-import { combineLatest, map, Subject, takeUntil } from 'rxjs'
+import { CommonModule } from '@angular/common'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { Subject, combineLatest, map, takeUntil } from 'rxjs'
 import { NwDataService } from '~/data'
+import { selectSignal } from '~/utils'
 
 function accumulate<T>(data: T[], startIndex: number, endIndex: number, key: keyof T) {
   let result = 0
   for (let i = startIndex; i <= endIndex; i++) {
-    result += (data[i] as any) [key] as number
+    result += (data[i] as any)[key] as number
   }
   return result
 }
@@ -20,46 +23,28 @@ export interface LevelingRow {
 }
 
 @Component({
+  standalone: true,
   selector: 'nwb-xp-table',
   templateUrl: './xp-table.component.html',
-  styleUrls: ['./xp-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule],
+  host: {
+    class: 'block',
+  },
 })
-export class XpTableComponent implements OnInit, OnDestroy {
+export class XpTableComponent {
 
-  public limit: number
-  public data: LevelingRow[]
-  public index: number
-  private destroy$ = new Subject()
-
-  public constructor(private db: NwDataService, private cdRef: ChangeDetectorRef) {}
-
-  public async ngOnInit() {
-
-    combineLatest({
-      data: this.db.xpAmounts
-    }).pipe(map(({ data }) => {
-      return data.map((row, i): LevelingRow => {
-        return {
-          Level: row['Level Number'] + 1,
-          XPToLevel: row.XPToLevel || 0,
-          XPTotal: accumulate(data, 0, i, 'XPToLevel'),
-          AttributePoints: row.AttributePoints,
-          AttributePointsTotal: accumulate(data, 0, i, 'AttributePoints'),
-          AttributeRespecCost: row.AttributeRespecCost
-        }
-      })
-    }))
-    .pipe(takeUntil(this.destroy$))
-    .subscribe((data) => {
-      this.data = data
-      this.limit = Math.max(...data.map((it) => it['Level Number'])) + 1
-      this.cdRef.markForCheck()
+  protected data = selectSignal(inject(NwDataService).xpAmounts, (data) => {
+    return (data || []).map((row, i): LevelingRow => {
+      return {
+        Level: row['Level Number'] + 1,
+        XPToLevel: row.XPToLevel - data[i > 0 ? i - 1 : i]['XPToLevel'] || 0,
+        XPTotal: row.XPToLevel || 0,
+        AttributePoints: row.AttributePoints,
+        AttributePointsTotal: accumulate(data, 0, i, 'AttributePoints'),
+        AttributeRespecCost: row.AttributeRespecCost,
+      }
     })
-  }
+  })
 
-  public ngOnDestroy(): void {
-    this.destroy$.next(null)
-    this.destroy$.complete()
-  }
 }
