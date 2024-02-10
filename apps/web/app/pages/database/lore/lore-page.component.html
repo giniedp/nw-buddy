@@ -1,33 +1,29 @@
 <ion-header class="bg-base-300">
   <div class="flex flex-col-reverse md:flex-row">
-    <ul class="flex flex-row flex-nowrap flex-1 w-full overflow-x-auto scrollbar-hide gap-1">
-      <li>
-        <button
-          [nwbDataCateogryMenu]
-          [category]="category()"
-          [showCounter]="true"
-          [defaultRoute]="defaultRoute"
-          [defaultTitle]="title"
-          [routePrefix]="'..'"
-          class="btn btn-ghost normal-case text-left"
-        ></button>
-      </li>
+    <div class="flex flex-row flex-nowrap flex-1 w-full overflow-x-auto scrollbar-hide gap-1">
+      <button
+        [nwbDataCateogryMenu]
+        [category]="category()"
+        [showCounter]="true"
+        [defaultRoute]="defaultRoute"
+        [defaultTitle]="title"
+        [routePrefix]="'..'"
+        class="btn btn-ghost normal-case text-left"
+      ></button>
       <span class="flex-1"></span>
-      <li>
-        <button class="btn btn-square btn-ghost" [nwbDataViewPin]></button>
-      </li>
-      <li *ngIf="service.canToggleMode()">
-        <button class="btn btn-square btn-ghost" [nwbDataViewToggle]></button>
-      </li>
-      <li>
+      <div class="join">
+        <button class="join-item btn btn-square btn-ghost" [nwbDataViewPin]></button>
+        @if(service.canToggleMode()) {
+          <button class="join-item btn btn-square btn-ghost" [nwbDataViewToggle]></button>
+        }
         <button
-          class="btn btn-square btn-ghost"
+          class="join-item btn btn-square btn-ghost"
           [nwbDataViewOptionsMenu]
           [persistKey]="persistKey"
           [disabled]="!service.isTableActive()"
         ></button>
-      </li>
-    </ul>
+      </div>
+    </div>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
       <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"/>
     </div>

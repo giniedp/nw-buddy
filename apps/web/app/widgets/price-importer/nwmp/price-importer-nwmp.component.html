@@ -50,7 +50,7 @@
       <h3 class="font-bold">Server</h3>
       <div class="join w-full">
         <select
-          class="select select-bordered flex-1"
+          class="join-item select select-bordered flex-1"
           [ngModel]="serverId$()"
           (ngModelChange)="patchState({ serverId: $event })"
         >
@@ -59,7 +59,7 @@
             <option [value]="server.id">{{ server.name }}</option>
           </ng-container>
         </select>
-        <button class="btn btn-success" [disabled]="!serverId$() || isLoading$()" (click)="load(serverId$())">
+        <button class="join-item btn btn-success" [disabled]="!serverId$() || isLoading$()" (click)="load(serverId$())">
           <nwb-icon [icon]="iconSpin" class="w-4 h-4 animate-spin mr-2" *ngIf="isLoading$()"/>
           <ng-container *ngIf="!isLoading$()"> Load </ng-container>
         </button>
@@ -76,5 +76,5 @@
 </ng-template>
 
 <ng-template #tplDataTable>
-  <nwb-table-grid class="flex-none h-screen max-h-[60vh]" [data]="data$()" [options]="girdOptions"></nwb-table-grid>
+  <nwb-table-grid [data]="data$()" [options]="girdOptions"></nwb-table-grid>
 </ng-template>
