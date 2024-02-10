@@ -28,7 +28,7 @@
         <nwb-level-input [ngModel]="level()" (ngModelChange)="updateLevel($event)" class="flex-none self-center w-32" />
         <nwb-xp-level-info />
       </div>
-      <nwb-xp-unlock-line />
+      <nwb-xp-unlock-line (levelClicked)="updateLevel($event)" />
 
     }
     @if(tab() === 'charts') {

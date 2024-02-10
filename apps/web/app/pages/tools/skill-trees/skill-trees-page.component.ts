@@ -86,6 +86,14 @@ export class SkillBuildsComponent {
   protected iconImport = svgFileImport
   protected tags = this.store.filterTags
 
+  protected get isTagFilterActive() {
+    return this.store.filterTags()?.some((it) => it.active)
+  }
+
+  protected get filterTags() {
+    return this.store.filterTags()
+  }
+
   public constructor(
     protected search: QuicksearchService,
     private modal: ModalService,

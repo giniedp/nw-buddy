@@ -13,7 +13,7 @@
     <div [nwHtml]="text | nwText: { number: achievement()?.Total }" class="text-nw-description italic"></div>
     <nwb-item-divider></nwb-item-divider>
   }
-  <nwb-property-grid [item]="properties()" class="overflow-auto gap-x-2" />
+  <nwb-property-grid [item]="properties()" class="overflow-auto gap-x-2 font-mono text-sm" />
 
   <ng-content></ng-content>
 </div>

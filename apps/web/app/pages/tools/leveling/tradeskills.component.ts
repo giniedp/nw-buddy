@@ -20,7 +20,8 @@ import { TradeskillsModule } from '~/widgets/tradeskills'
   },
 })
 export class TradeskillsComponent {
-  protected tab = toSignal(injectRouteParam('tab'))
+  protected tab$ = injectRouteParam('tab')
+  protected tab = toSignal(this.tab$)
   protected categories = selectSignal(this.service.categories, (list) => {
     return (list || []).map((it) => it.toLowerCase())
   })

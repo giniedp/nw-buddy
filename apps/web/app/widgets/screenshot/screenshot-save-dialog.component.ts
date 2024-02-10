@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NwModule } from '~/nw'
-import { ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
+import { LayoutModule, ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
 
 export interface ScreenshotSaveOption {
   action: 'clipboard' | 'download'
@@ -14,9 +14,9 @@ export interface ScreenshotSaveOption {
   selector: 'nwb-screenshot-save-dialog',
   templateUrl: './screenshot-save-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule],
+  imports: [CommonModule, NwModule, FormsModule, LayoutModule],
   host: {
-    class: 'flex flex-col h-full bg-base-100 border border-base-100 rounded-md overflow-hidden',
+    class: 'ion-page bg-base-100 border border-base-100 rounded-md',
   },
 })
 export class ScreenshotSaveDialogComponent {

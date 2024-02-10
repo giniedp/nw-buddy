@@ -1,54 +1,69 @@
 <ng-container *ngIf="vm$ | async; let vm">
-  <div class="flex-none rounded-t-md bg-black flex flex-row flex-wrap items-center p-1">
-    <button class="btn btn-ghost btn-square" (click)="back()">
-      <nwb-icon [icon]="iconLeft" class="w-5 h-5"/>
-    </button>
-    <h3 class="font-bold text-lg">Gear Importer</h3>
-  </div>
-  <div class="overflow-y-auto h-[650px] max-h-[650px] relative">
-    <div class="p-4 flex flex-col items-center gap-4">
-      <ng-container *ngIf="!vm.item">
+  <ion-header>
+    <ion-toolbar class="ion-color ion-color-black rounded-t-md">
+      <button slot="start" class="btn btn-ghost btn-square" (click)="back()">
+        <nwb-icon [icon]="iconLeft" class="w-5 h-5" />
+      </button>
+      <ion-title>Gear Importer</ion-title>
+
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-content>
+    <div class="h-full p-4 flex flex-col items-center relative overflow-auto">
+      @if (vm.item) {
+        <nwb-item-card
+          class="max-w-xs"
+          [entityId]="vm.item.instance.itemId"
+          [perkOverride]="vm.item.instance.perks"
+          [disableInfo]="true"
+        />
+      } @else {
         <div class="text-center">
           Open the windows snipping tool <kbd class="kbd">shift</kbd> + <kbd class="kbd">win</kbd> +
           <kbd class="kbd">s</kbd> and capture the tooltip section as shown below. Then paste or drop the screenshot
           into this window.
         </div>
         <img [nwImage]="'assets/gear-crop.jpg'" class="rounded mx-8 max-w-md pointer-events-none" />
-
-      </ng-container>
-      <nwb-item-card
-        *ngIf="vm.item"
-        class="max-w-xs"
-        [entityId]="vm.item.instance.itemId"
-        [perkOverride]="vm.item.instance.perks"
-        [disableInfo]="true"
-      ></nwb-item-card>
+      }
     </div>
-  </div>
 
-  <div class="modal-action grid gap-2 layout-pad mt-0" style="grid-template-columns: 1fr auto 1fr">
-    <div></div>
-    <div class="flex flex-row justify-center">
-      <div *ngIf="vm.resultCount > 1" class="join">
-        <button class="btn btn-ghost btn-square" (click)="prevItem()" [disabled]="!vm.index">
-          <nwb-icon [icon]="iconLeft" class="w-5 h-5"/>
-        </button>
-        <input
-          type="text"
-          placeholder="filter"
-          class="input input-bordered"
-          [ngModel]="vm.filter"
-          (ngModelChange)="updateFilter($event)"
-        />
-        <button class="btn btn-ghost btn-square" (click)="nextItem()" [disabled]="vm.index === vm.itemCount - 1">
-          <nwb-icon [icon]="iconLeft" class="w-5 h-5 rotate-180"/>
-        </button>
+    @if(vm.resultCount > 1) {
+      <div class="absolute bottom-2 left-2 right-2 flex items-center justify-center">
+        <div class="join bg-base-300 rounded-md">
+          <button class="join-item btn btn-square" (click)="prevItem()" [disabled]="!vm.index">
+            <nwb-icon [icon]="iconLeft" class="w-5 h-5" />
+          </button>
+          <input
+            type="text"
+            placeholder="filter"
+            class="join-item input input-bordered"
+            [ngModel]="vm.filter"
+            (ngModelChange)="updateFilter($event)"
+          />
+          <button
+            class="join-item btn btn-square"
+            (click)="nextItem()"
+            [disabled]="vm.index === vm.itemCount - 1"
+          >
+            <nwb-icon [icon]="iconLeft" class="w-5 h-5 rotate-180" />
+          </button>
+        </div>
       </div>
-      <button class="btn btn-ghost loading" *ngIf="vm.working">Working</button>
-    </div>
-    <div class="flex flex-row-reverse gap-1">
-      <button class="btn btn-primary" (click)="submit(vm.item.instance)" [disabled]="!vm.item">OK</button>
-      <button class="btn btn-ghost" (click)="close()">Cancel</button>
-    </div>
-  </div>
+    }
+    @if(vm.working) {
+      <div class="absolute inset-0 flex items-center justify-center">
+        <button slot="end" class="btn btn-ghost loading"></button>
+      </div>
+    }
+  </ion-content>
+
+  <ion-footer class="rounded-b-md">
+    <ion-toolbar class="ion-color ion-color-base-300">
+      <div slot="end" class="join">
+        <button class="join-item btn btn-ghost" (click)="close()">Cancel</button>
+        <button class="join-item btn btn-primary" (click)="submit(vm.item.instance)" [disabled]="!vm.item">OK</button>
+      </div>
+    </ion-toolbar>
+  </ion-footer>
 </ng-container>

@@ -1,33 +1,45 @@
 <ion-header class="bg-base-300">
   <div class="flex flex-col-reverse md:flex-row">
-    <nwb-navbar class="flex-1">
-      <ng-container *nwbNavbarMenu="let ctx">
-        @for (item of tags; track $index) {
-          <li>
-            <a
-              (click)="toggleTag(item.tag)"
-              [class.btn]="ctx.isHorizontal"
-              [class.btn-ghost]="ctx.isHorizontal"
-              [class.text-primary]="item.active"
-            >
-              {{ item.tag }}
-            </a>
-          </li>
-        }
-      </ng-container>
-      <ng-container *nwbNavbarButtons="let ctx">
-        <li [tooltip]="'Create new gearset'" [tooltipClass]="'bg-accent'">
-          <button (click)="handleCreate()" class="btn btn-ghost">
-            <nwb-icon [icon]="iconCreate" class="w-4 h-4" />
-          </button>
-        </li>
-        <li [tooltip]="'Import Gearset'" [tooltipClass]="'bg-accent'">
-          <button (click)="handleImport()" class="btn btn-ghost">
-            <nwb-icon [icon]="iconImport" class="w-4 h-4" />
-          </button>
-        </li>
-      </ng-container>
-    </nwb-navbar>
+    <span class="flex-1"></span>
+    <div class="join">
+      <button class="join-item btn btn-square btn-ghost" [cdkMenuTriggerFor]="tplMenu" [tooltip]="'Filter by tag'">
+        <span class="indicator">
+          <nwb-icon [icon]="iconMore" class="w-5 h-5" />
+          @if (isTagFilterActive) {
+            <span class="indicator-item badge badge-xs badge-primary scale-75"></span>
+          }
+        </span>
+      </button>
+
+      <ng-template #tplMenu>
+        <div class="bg-base-200 border border-base-100 w-60 rounded-b-md z-10 p-2" cdkMenu>
+          <div class="grid grid-cols-3 gap-1">
+            @for (item of filterTags; track $index) {
+              <button class="btn btn-sm btn-primary" [class.btn-outline]="!item.active" (click)="toggleTag(item.tag)">
+                {{ item.tag }}
+              </button>
+            }
+          </div>
+        </div>
+      </ng-template>
+
+      <button
+        (click)="handleCreate()"
+        class="join-item btn btn-ghost"
+        [tooltip]="'Create new gearset'"
+        [tooltipClass]="'bg-accent'"
+      >
+        <nwb-icon [icon]="iconCreate" class="w-4 h-4" />
+      </button>
+      <button
+        (click)="handleImport()"
+        class="join-item btn btn-ghost"
+        [tooltip]="'Import Gearset'"
+        [tooltipClass]="'bg-accent'"
+      >
+        <nwb-icon [icon]="iconImport" class="w-4 h-4" />
+      </button>
+    </div>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
       <nwb-quicksearch-input />
     </div>
@@ -35,6 +47,11 @@
 </ion-header>
 <ion-content>
   <nwb-virtual-grid [itemHeight]="272" [itemWidth]="[480, 480]" [columns]="[1, 4]" [gridClass]="['-mx-2']">
-    <nwb-gearset-loadout-item *nwbVirtualGridCell="items; let item" [geasrsetId]="item?.id" class="p-2 self-start" />
+    <nwb-gearset-loadout-item
+      *nwbVirtualGridCell="items; let item"
+      [geasrsetId]="item?.id"
+      class="p-2 self-start"
+      (createClicked)="handleCreate()"
+    />
   </nwb-virtual-grid>
 </ion-content>

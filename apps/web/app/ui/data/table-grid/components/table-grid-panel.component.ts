@@ -1,6 +1,6 @@
 import { Column, ColumnState } from '@ag-grid-community/core'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
 
 import { toSignal } from '@angular/core/rxjs-interop'
 import { ComponentStore } from '@ngrx/component-store'
@@ -23,7 +23,7 @@ import {
   svgFloppyDiskArrow,
   svgThumbtack,
 } from '~/ui/icons/svg'
-import { ModalService } from '~/ui/layout'
+import { LayoutModule, ModalService } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { shareReplayRefCount } from '~/utils'
@@ -36,7 +36,7 @@ import { SaveStateDialogComponent } from './save-state-dialog.component'
   selector: 'nwb-table-grid-panel',
   templateUrl: './table-grid-panel.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, IconsModule, TooltipModule, QuicksearchModule],
+  imports: [CommonModule, IconsModule, TooltipModule, QuicksearchModule, LayoutModule],
   providers: [QuicksearchService],
   host: {
     class: 'flex flex-col gap-1 h-full overflow-hidden',
@@ -55,6 +55,9 @@ export class TableGridPanelComponent extends ComponentStore<{
   public set persistKey(value: string) {
     this.patchState({ persistKey: value })
   }
+
+  @Output()
+  public close = new EventEmitter()
 
   private grid$ = this.select(({ grid }) => grid)
   private persistKey$ = this.select(({ persistKey }) => persistKey)
@@ -218,6 +221,7 @@ export class TableGridPanelComponent extends ComponentStore<{
   }
 
   protected openExporter() {
+    this.close.emit()
     ExportDialogComponent.open(this.modal, {
       inputs: {
         title: 'CSV Export',

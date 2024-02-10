@@ -24,6 +24,7 @@
         "
         placeholder="0"
         [(ngModel)]="modelValue"
+        (focus)="isSliderOpen = true"
       />
     </div>
   </div>
@@ -31,3 +32,29 @@
 <h2 class="p-2 pt-0 text-center font-bold text-lg text-ellipsis overflow-hidden">
   <span [nwText]="label" class="whitespace-nowrap"></span>
 </h2>
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="cdkOrigin"
+  [cdkConnectedOverlayOpen]="isSliderOpen"
+  [cdkConnectedOverlayHasBackdrop]="false"
+  [cdkConnectedOverlayPositions]="[
+    { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 2 },
+    { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top', offsetY: 2 },
+    { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 2 }
+  ]"
+  [cdkConnectedOverlayPanelClass]="['bg-base-100', 'bg-opacity-75', 'rounded-md', 'shadow-md', 'p-2']"
+  (overlayOutsideClick)="onOutsideClick()"
+  (backdropClick)="isSliderOpen = false"
+  (detach)="isSliderOpen = false"
+>
+  <nwb-input-slider
+    [(ngModel)]="modelValue"
+    [min]="0"
+    [max]="maxLevelValue"
+    [bars]="true"
+    [barsStep]="50"
+    [values]="true"
+    class="block w-96"
+  />
+</ng-template>

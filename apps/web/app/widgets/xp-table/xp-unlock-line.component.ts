@@ -55,6 +55,6 @@ export class XpUnlockLineComponent {
   protected iconUnchecked = svgCircle
 
   protected handleLevelClick(value: number) {
-    this.handleLevelClick(value)
+    this.levelClicked.emit(value)
   }
 }

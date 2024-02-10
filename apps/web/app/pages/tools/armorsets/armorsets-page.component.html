@@ -30,6 +30,7 @@
     </div>
   </div>
 </ion-header>
+
 <ion-content [scrollY]="false">
   <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-max-width: calc(min(max(35%, 400px), 1000px))">
     <div class="ion-page order-2" id="main">
@@ -44,6 +45,7 @@
         [selectionRouteParam]="selectionParam"
         #grid
       />
+
     </div>
     <ion-menu contentId="main" class="order-2">
       @if (showSidebar()) {

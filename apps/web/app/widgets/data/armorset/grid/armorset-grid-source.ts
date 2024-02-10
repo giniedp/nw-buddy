@@ -89,6 +89,5 @@ function buildOptions(util: TableGridUtils<ArmorsetGridRecord>) {
         .flat(1),
     ],
   }
-  console.log(result)
   return result
 }

@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, ViewChild } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
-import { NW_MAX_GEAR_SCORE, NW_MIN_GEAR_SCORE } from '@nw-data/common'
 
 interface Bar {
   flex: number
@@ -31,14 +30,20 @@ interface Bar {
       [disabled]="disabled"
       #input
     />
-    <div class="w-full flex text-xs px-2" *ngIf="bars || values">
-      <ng-container *ngFor="let bar of barNodes; trackBy: trackByIndex">
-        <span [style.flex]="bar.flex" class="w-[1px] flex flex-col gap-1">
-          <span *ngIf="bar.value && bars"> | </span>
-          <span class="w-full flex justify-center" *ngIf="values">{{ bar.value }}</span>
-        </span>
-      </ng-container>
-    </div>
+    @if (bars || values) {
+      <div class="w-full flex text-xs px-2">
+        @for (bar of barNodes; track $index) {
+          <span [style.flex]="bar.flex" class="w-[1px] flex flex-col gap-1">
+            @if (bar.value != null && bars) {
+              <span> | </span>
+            }
+            @if (values) {
+              <span class="w-full flex justify-center">{{ bar.value }}</span>
+            }
+          </span>
+        }
+      </div>
+    }
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule],

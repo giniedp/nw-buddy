@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar class="bg-base-300">
-    <ion-segment [value]="tab()">
+    <ion-segment [value]="tab$ | async">
       @for (category of categories(); track $index) {
         <ion-segment-button [value]="category" [routerLink]="['..', category]">
           {{ category }}

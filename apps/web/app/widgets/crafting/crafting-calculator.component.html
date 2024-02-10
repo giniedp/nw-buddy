@@ -12,25 +12,21 @@
       />
     </label>
     <div class="flex-1"></div>
-    <ul class="flex flex-row">
-      <li>
-        <button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplChances" [tooltip]="'Edit Bonus Chance'">
-          <nwb-icon [icon]="iconOptions" class="w-4 h-4" />
-        </button>
-      </li>
-      <li
+    <div class="join my-2 mr-2">
+      <button class="join-item btn btn-sm btn-ghost btn-square" [nwbModalOpen]="{ content: tplChances }" [tooltip]="'Edit Bonus Chance'">
+        <nwb-icon [icon]="iconOptions" class="w-4 h-4" />
+      </button>
+
+      <button
+        class="join-item btn btn-sm btn-ghost btn-square"
         [tooltip]="'Toggle net/gross mode'"
         (click)="toggleQuantityMode()"
         [class.text-primary]="vm.amountMode === 'gross'"
       >
-        <button class="btn btn-ghost btn-square">
-          <nwb-icon [icon]="iconMode" class="w-4 h-4"/>
-        </button>
-      </li>
-      <li [tooltip]="'Open price importer'">
-        <nwb-price-importer-button class="btn btn-ghost btn-square" />
-      </li>
-    </ul>
+        <nwb-icon [icon]="iconMode" class="w-4 h-4" />
+      </button>
+      <nwb-price-importer-button class="join-item btn btn-sm btn-ghost btn-square" [tooltip]="'Open price importer'" />
+    </div>
   </div>
   <div data-cy="body" class="p-4 pt-0" *ngIf="vm.recipe">
     <nwb-crafting-step [step]="vm.tree" [amount]="vm.amount" [amountMode]="vm.amountMode"></nwb-crafting-step>
@@ -47,6 +43,14 @@
   </div>
 
   <ng-template #tplChances>
-    <nwb-crafting-chance-menu cdkMenu class="menu menu-compact border border-base-200 bg-base-300 rounded-md" />
+    <ion-header class="bg-base-300">
+      <ion-toolbar>
+        <ion-title>Bonus Chance Editor</ion-title>
+        <button slot="end" class="btn btn-sm btn-circle btn-neutral mr-2" [nwbModalClose]>&times;</button>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="bg-base-200">
+      <nwb-crafting-chance-menu/>
+    </ion-content>
   </ng-template>
 </ng-container>

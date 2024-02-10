@@ -6,28 +6,28 @@
     <input
       type="text"
       placeholder=""
-      class="input input-bordered w-full min-w-[200px]"
+      class="input input-bordered w-full h-10 my-1 min-w-[200px]"
       maxlength="100"
       [disabled]="!canEdit"
       [ngModel]="record?.name"
       (ngModelChange)="handleUpdateName($event)"
       [ngModelOptions]="{ updateOn: 'blur' }"
     />
-    <button [nwbScreenshotBtn] class="btn btn-ghost btn-square" [tooltip]="'Screenshot'"></button>
-    <button
-      class="btn btn-ghost btn-square"
-      cdkOverlayOrigin
-
-      [tooltip]="'Edit Tags'"
-      [tooltipClass]="'bg-info'"
-      [disabled]="!canEdit"
-      [cdkMenuTriggerFor]="tplTags"
-    >
-      <nwb-icon [icon]="iconTags" class="w-4 h-4" />
-    </button>
-    <button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplMenu">
-      <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
-    </button>
+    <div class="join">
+      <button [nwbScreenshotBtn] class="join-item btn btn-ghost btn-square" [tooltip]="'Screenshot'"></button>
+      <button
+        class="join-item btn btn-ghost btn-square"
+        cdkOverlayOrigin
+        [tooltip]="'Edit Tags'"
+        [disabled]="!canEdit"
+        [cdkMenuTriggerFor]="tplTags"
+      >
+        <nwb-icon [icon]="iconTags" class="w-4 h-4" />
+      </button>
+      <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplMenu">
+        <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
+      </button>
+    </div>
   </div>
 </div>
 <div class="layout-content relative">

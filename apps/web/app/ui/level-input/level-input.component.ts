@@ -7,8 +7,13 @@ import {
   HostListener,
   Input,
   ViewChild,
+  inject,
 } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
+import { InputSliderComponent } from '../input-slider'
+import { NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
+import { CdkOverlayOrigin } from '@angular/cdk/overlay'
+import { LayoutModule } from '../layout'
 
 @Component({
   standalone: true,
@@ -16,7 +21,7 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
   templateUrl: './level-input.component.html',
   styleUrls: ['./level-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, InputSliderComponent, LayoutModule],
   host: {
     class: 'aspect-square',
   },
@@ -27,6 +32,7 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
       useExisting: LevelInputComponent,
     },
   ],
+  hostDirectives: [CdkOverlayOrigin]
 })
 export class LevelInputComponent implements ControlValueAccessor {
   @Input()
@@ -39,6 +45,11 @@ export class LevelInputComponent implements ControlValueAccessor {
   protected get inputEl() {
     return this.input.nativeElement
   }
+
+  protected cdkOrigin = inject(CdkOverlayOrigin)
+  protected isSliderOpen = false
+  protected minLevelValue = 1
+  protected maxLevelValue = NW_MAX_CHARACTER_LEVEL
 
   protected onChange = (value: unknown) => {}
   protected onTouched = () => {}
@@ -68,6 +79,11 @@ export class LevelInputComponent implements ControlValueAccessor {
   }
   protected commitValue() {
     this.onChange(this.value)
+  }
+  protected onOutsideClick() {
+    if (document.activeElement !== this.input.nativeElement) {
+      this.isSliderOpen = false
+    }
   }
 
   @HostListener('click')

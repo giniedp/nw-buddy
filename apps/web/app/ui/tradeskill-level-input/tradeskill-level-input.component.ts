@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, HostBinding, HostListener, Input, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, HostBinding, HostListener, Input, ViewChild, inject } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { NwModule } from '~/nw'
+import { InputSliderComponent } from '../input-slider'
+import { LayoutModule } from '../layout'
+import { CdkOverlayOrigin } from '@angular/cdk/overlay'
+import { NW_MAX_TRADESKILL_LEVEL } from '@nw-data/common'
 
 @Component({
   standalone: true,
@@ -9,7 +13,7 @@ import { NwModule } from '~/nw'
   templateUrl: './tradeskill-level-input.component.html',
   styleUrls: ['./tradeskill-level-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, NwModule],
+  imports: [CommonModule, FormsModule, NwModule, InputSliderComponent, LayoutModule],
   host: {
     class: 'bg-base-100 shadow-xl rounded-md aspect-square flex flex-col',
   },
@@ -19,7 +23,8 @@ import { NwModule } from '~/nw'
       multi:true,
       useExisting: TradeskillLevelInputComponent
     }
-  ]
+  ],
+  hostDirectives: [CdkOverlayOrigin]
 })
 export class TradeskillLevelInputComponent implements ControlValueAccessor {
 
@@ -42,6 +47,11 @@ export class TradeskillLevelInputComponent implements ControlValueAccessor {
   protected get inputEl() {
     return this.input.nativeElement
   }
+
+  protected cdkOrigin = inject(CdkOverlayOrigin)
+  protected isSliderOpen = false
+  protected minLevelValue = 1
+  protected maxLevelValue = NW_MAX_TRADESKILL_LEVEL
 
   protected onChange = (value: unknown) => {}
   protected onTouched = () => {}
@@ -71,6 +81,12 @@ export class TradeskillLevelInputComponent implements ControlValueAccessor {
   }
   protected commitValue() {
     this.onChange(this.value)
+  }
+
+  protected onOutsideClick() {
+    if (document.activeElement !== this.input.nativeElement) {
+      this.isSliderOpen = false
+    }
   }
 
   @HostListener('click')

@@ -1,18 +1,26 @@
-<div class="text-xl text-center bg-base-300 px-2 py-3">Save Screenshot</div>
-<div class="flex flex-col gap-3 p-3 pb-0">
-  <picture class="block w-full aspect-square">
-    <img [src]="previewUrl" class="w-full h-full rounded-md overflow-clip block aspect-square object-contain" />
-  </picture>
-  <div class="form-control w-full">
-    <label class="join w-full">
-      <span> Filename</span>
-      <input type="text" class="input input-bordered w-full" [(ngModel)]="filename" />
-    </label>
+<ion-header>
+  <ion-toolbar class="ion-color ion-color-black rounded-t-md">
+    <ion-title>Save Screenshot</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content [scrollY]="false" class="ion-p-4">
+  <div class="h-full flex flex-col gap-2">
+    <picture class="block flex-1 relative">
+      <img [src]="previewUrl" class="w-full h-full absolute inset-0 object-contain" />
+    </picture>
+    <div class="flex-none form-control w-full">
+      <label class="join my-1 ">
+        <button class="join-item btn btn-sm"> Filename</button>
+        <input type="text" class="join-item input input-sm input-bordered w-full" [(ngModel)]="filename" />
+      </label>
+    </div>
   </div>
-</div>
-<div class="flex justify-end gap-1 p-3">
-  <div class="join w-full">
-    <button class="join-item flex-1 btn" (click)="close('clipboard')" *ngIf="enableClipboard">Save to clipboard</button>
-    <button class="join-item flex-1 btn btn-primary" (click)="close('download')">Download File</button>
-  </div>
-</div>
+</ion-content>
+<ion-footer class="rounded-b-md">
+  <ion-toolbar class="ion-color ion-color-base-300">
+    <div class="join my-1 px-1 w-full">
+      <button class="join-item flex-1 btn" (click)="close('clipboard')" *ngIf="enableClipboard">Save to clipboard</button>
+      <button class="join-item flex-1 btn btn-primary" (click)="close('download')">Download File</button>
+    </div>
+  </ion-toolbar>
+</ion-footer>

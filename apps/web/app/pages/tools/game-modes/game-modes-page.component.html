@@ -1,22 +1,23 @@
+<router-outlet />
+
+@if(outlet.isActivated) {
+  <ng-container [ngTemplateOutlet]="tplModes" />
+} @else {
+  <ng-container [ngTemplateOutlet]="tplIndex" />
+}
+
+
 <ng-template #tplIndex>
   <ion-header>
-    <nwb-navbar class="bg-base-300 rounded-t-md">
-      <ng-container *nwbNavbarMenu="let ctx">
+    <ion-toolbar>
+      <ion-segment [value]="categoryId$ | async">
         @for (item of categories$ | async; track $index) {
-          <li>
-            <a
-              [routerLink]="['..', item]"
-              [routerLinkActive]="'text-primary'"
-              [class.btn]="ctx.isHorizontal"
-              [class.btn-ghost]="ctx.isHorizontal"
-              class="rounded-none justify-start items-center"
-            >
-              <span class="uppercase">{{ item }}</span>
-            </a>
-          </li>
+          <ion-segment-button [value]="item" [routerLink]="['..', item]" [routerLinkActive]="'text-primary'">
+            {{ item }}
+          </ion-segment-button>
         }
-      </ng-container>
-    </nwb-navbar>
+      </ion-segment>
+    </ion-toolbar>
   </ion-header>
   <ion-content class="ion-p-4">
     <div class="w-full max-w-screen-3xl mx-auto grid grid-cols-fill gap-4">
@@ -75,7 +76,7 @@
         @if (ctx.isHorizontal) {
           <li>
             <a [routerLink]="'.'" class="btn btn-ghost btn-square">
-              <nwb-icon [icon]="iconBack" class="w-6 h-6"/>
+              <nwb-icon [icon]="iconBack" class="w-6 h-6" />
             </a>
           </li>
         }
@@ -109,5 +110,3 @@
   </ion-header>
 </ng-template>
 
-<ng-container *ngIf="outlet.isActivated; then tplModes; else tplIndex" />
-<router-outlet />

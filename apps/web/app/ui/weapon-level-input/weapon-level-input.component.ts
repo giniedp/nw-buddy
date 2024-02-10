@@ -1,7 +1,11 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Input, ViewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, HostListener, Input, ViewChild, inject } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { NwModule } from '~/nw'
+import { InputSliderComponent } from '../input-slider'
+import { LayoutModule } from '../layout'
+import { CdkOverlayOrigin } from '@angular/cdk/overlay'
+import { NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
 
 @Component({
   standalone: true,
@@ -9,10 +13,9 @@ import { NwModule } from '~/nw'
   templateUrl: './weapon-level-input.component.html',
   styleUrls: ['./weapon-level-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, NwModule],
+  imports: [CommonModule, FormsModule, NwModule, InputSliderComponent, LayoutModule],
   host: {
-    class:
-      'bg-base-100 rounded-md flex flex-col cursor-pointer',
+    class: 'bg-base-100 rounded-md flex flex-col cursor-pointer',
   },
   providers: [
     {
@@ -21,6 +24,7 @@ import { NwModule } from '~/nw'
       useExisting: WeaponLevelInputComponent,
     },
   ],
+  hostDirectives: [CdkOverlayOrigin]
 })
 export class WeaponLevelInputComponent implements ControlValueAccessor {
   @Input()
@@ -38,6 +42,11 @@ export class WeaponLevelInputComponent implements ControlValueAccessor {
   protected get inputEl() {
     return this.input.nativeElement
   }
+
+  protected cdkOrigin = inject(CdkOverlayOrigin)
+  protected isSliderOpen = false
+  protected minLevelValue = 1
+  protected maxLevelValue = NW_MAX_WEAPON_LEVEL
 
   protected onChange = (value: unknown) => {}
   protected onTouched = () => {}
@@ -67,6 +76,11 @@ export class WeaponLevelInputComponent implements ControlValueAccessor {
   }
   protected commitValue() {
     this.onChange(this.value)
+  }
+  protected onOutsideClick() {
+    if (document.activeElement !== this.input.nativeElement) {
+      this.isSliderOpen = false
+    }
   }
 
   @HostListener('click')

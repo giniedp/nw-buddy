@@ -8,13 +8,14 @@ import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft } from '~/ui/icons/svg'
 import { NavbarModule } from '~/ui/nav-toolbar'
-import { eqCaseInsensitive, selectStream } from '~/utils'
+import { eqCaseInsensitive, injectChildRouteParam, selectStream } from '~/utils'
 import { injectCurrentMutation } from './current-mutation.service'
 import { GameModesStore } from './game-modes.store'
 import { MutaCurseTileComponent } from './muta-curse-tile.component'
 import { MutaElementTileComponent } from './muta-element-tile.component'
 import { MutaPromotionTileComponent } from './muta-promotion-tile.component'
-import { IonContent, IonHeader } from '@ionic/angular/standalone'
+import { IonContent, IonHeader, IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
+import { LayoutModule } from '~/ui/layout'
 
 type GameModeCategories = 'expeditions' | 'trials' | 'pvp'
 
@@ -36,9 +37,10 @@ export interface CurrentMutation {
     RouterModule,
     NwModule,
     NavbarModule,
+    LayoutModule,
+    IonSegment,
+    IonSegmentButton,
     IconsModule,
-    IonHeader,
-    IonContent,
     MutaElementTileComponent,
     MutaCurseTileComponent,
     MutaPromotionTileComponent,
@@ -55,6 +57,7 @@ export interface CurrentMutation {
   ],
 })
 export class GameModesPageComponent {
+  protected gameModeId$ = injectChildRouteParam(':id')
   protected groups$ = selectStream(this.db.data.gamemodes(), groupByCategory)
   protected categories$ = selectStream(this.groups$, (it) => Object.keys(it).sort())
   protected categoryId$ = selectStream(this.route.paramMap, (it) => it.get('category'))

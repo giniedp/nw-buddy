@@ -8,8 +8,8 @@ import { NwModule } from '~/nw'
 import { ShareService } from '~/pages/share'
 import { VirtualGridModule } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
-import { svgFileImport, svgPlus } from '~/ui/icons/svg'
-import { ConfirmDialogComponent, ModalService, PromptDialogComponent } from '~/ui/layout'
+import { svgFileImport, svgFilterList, svgPlus } from '~/ui/icons/svg'
+import { ConfirmDialogComponent, LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { NavbarModule } from '~/ui/nav-toolbar'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
@@ -28,9 +28,7 @@ import { GearsetLoadoutItemComponent, GearsetLoadoutListComponent } from './load
     NavbarModule,
     IconsModule,
     TooltipModule,
-    IonHeader,
-    IonToolbar,
-    IonContent,
+    LayoutModule,
     GearsetLoadoutListComponent,
     VirtualGridModule,
     GearsetLoadoutItemComponent,
@@ -43,6 +41,7 @@ import { GearsetLoadoutItemComponent, GearsetLoadoutListComponent } from './load
 export class GearsetsListPageComponent {
   protected iconCreate = svgPlus
   protected iconImport = svgFileImport
+  protected iconMore = svgFilterList
 
   private store = inject(GearsetsListPageStore)
   private quicksearch = inject(QuicksearchService)
@@ -50,10 +49,12 @@ export class GearsetsListPageComponent {
   private router = inject(Router)
   private share = inject(ShareService)
 
-  protected get tags() {
+  protected get filterTags() {
     return this.store.filterTags()
   }
-
+  protected get isTagFilterActive() {
+    return this.store.filterTags()?.some((it) => it.active)
+  }
   protected get items() {
     return this.store.filteredRecords()
   }

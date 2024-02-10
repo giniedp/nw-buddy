@@ -20,12 +20,6 @@ const routes: Routes = [
       {
         path: 'list',
         component: TerritoriesListComponent,
-        children: [
-          {
-            path: ':id',
-            component: EmptyComponent,
-          },
-        ],
       },
       {
         path: 'standing',

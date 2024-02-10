@@ -1,7 +1,6 @@
 import { A11yModule } from '@angular/cdk/a11y'
-import { DIALOG_DATA } from '@angular/cdk/dialog'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, HostListener, Inject, Input, OnInit, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, HostListener, Input, OnInit, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { EquipSlotId } from '@nw-data/common'
 import { ItemClass } from '@nw-data/generated'
@@ -11,7 +10,7 @@ import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft } from '~/ui/icons/svg'
-import { ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
+import { LayoutModule, ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
 import { imageFileFromPaste, imageFromDropEvent } from '~/utils/image-file-from-paste'
 import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { GearImporterStore } from './gear-importer.store'
@@ -28,14 +27,13 @@ export interface GearImporterDialogState {
   selector: 'nwb-gear-importer-dialog',
   templateUrl: './gear-importer-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemDetailModule, IconsModule, FormsModule, A11yModule],
+  imports: [CommonModule, NwModule, ItemDetailModule, IconsModule, FormsModule, A11yModule, LayoutModule],
   providers: [GearImporterStore],
   host: {
     class: 'flex flex-col h-full bg-base-100 rounded-md border border-base-100',
   },
 })
 export class GearImporterDialogComponent implements OnInit {
-
   public static open(modal: ModalService, options: ModalOpenOptions<GearImporterDialogComponent>) {
     options.content = GearImporterDialogComponent
     return modal.open<GearImporterDialogComponent, ItemInstance>(options)
@@ -75,10 +73,8 @@ export class GearImporterDialogComponent implements OnInit {
   public constructor(
     private modalRef: ModalRef<ItemInstance>,
     private store: GearImporterStore,
-    @Inject(DIALOG_DATA)
-    slotId: EquipSlotId,
   ) {
-    store.patchState({ slotId })
+    //
   }
 
   protected submit(item: ItemInstance) {

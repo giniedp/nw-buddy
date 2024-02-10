@@ -14,10 +14,10 @@
   (detach)="isPanelOpen = false"
 >
   <div class="w-80 max-h-[80vh] overflow-auto bg-base-200 border border-base-100 rounded-md shadow-lg">
-    <ng-container [ngTemplateOutlet]="nwbDataViewOptionsMenu"></ng-container>
+    <ng-container [ngTemplateOutlet]="nwbDataViewOptionsMenu"/>
     <ng-container *ngIf="service.isTableActive()">
-      <nwb-table-grid-panel [persistKey]="persistKey" [grid]="service.agGrid$ | async"></nwb-table-grid-panel>
+      <nwb-table-grid-panel [persistKey]="persistKey" [grid]="service.agGrid$ | async" (close)="isPanelOpen = false"/>
     </ng-container>
-    <ng-content></ng-content>
+    <ng-content/>
   </div>
 </ng-template>

@@ -11,9 +11,9 @@ export const SkillTreesPageStore = signalStore(
       abilities: db.abilitiesMap,
     }
   }),
-  withComputed(({ records, nwData, recordsAreLoaded, nwDataIsLoaded }) => {
+  withComputed(({ filteredRecords, nwData, recordsAreLoaded, nwDataIsLoaded }) => {
     return {
-      rows: computed(() => buildSkillSetRows(records(), nwData()?.abilities)),
+      rows: computed(() => buildSkillSetRows(filteredRecords(), nwData()?.abilities)),
       isLoaded: computed(() => recordsAreLoaded() && nwDataIsLoaded()),
     }
   }),

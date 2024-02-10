@@ -12,4 +12,32 @@
   class="input focus:outline-none bg-transparent h-full w-full p-0 text-center font-bold text-3xl appearance-none font-caslon"
   placeholder="0"
   [(ngModel)]="modelValue"
+  (focus)="isSliderOpen = true"
 />
+
+<ng-template
+  cdkConnectedOverlay
+  [cdkConnectedOverlayOrigin]="cdkOrigin"
+  [cdkConnectedOverlayOpen]="isSliderOpen"
+  [cdkConnectedOverlayHasBackdrop]="false"
+  [cdkConnectedOverlayPositions]="[
+    { originX: 'start', originY: 'bottom', overlayX: 'start', overlayY: 'top', offsetY: 2 },
+    { originX: 'center', originY: 'bottom', overlayX: 'center', overlayY: 'top', offsetY: 2 },
+    { originX: 'end', originY: 'bottom', overlayX: 'end', overlayY: 'top', offsetY: 2 }
+  ]"
+  [cdkConnectedOverlayPanelClass]="['bg-base-100', 'bg-opacity-75', 'rounded-md', 'shadow-md', 'p-2']"
+  (overlayOutsideClick)="onOutsideClick()"
+  (backdropClick)="isSliderOpen = false"
+  (detach)="isSliderOpen = false"
+>
+  <nwb-input-slider
+    [(ngModel)]="modelValue"
+    [min]="minLevelValue"
+    [max]="maxLevelValue"
+    [bars]="true"
+    [barsStep]="5"
+    [values]="true"
+    class="block w-96"
+  />
+</ng-template>
+

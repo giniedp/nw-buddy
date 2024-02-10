@@ -1,4 +1,3 @@
-import { LayoutModule } from '@angular/cdk/layout'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core'
@@ -16,6 +15,7 @@ import { CraftingStepComponent } from './crafting-step'
 import { CraftingSummaryComponent } from './crafting-summary'
 import { AmountMode } from './types'
 import { CdkMenuModule } from '@angular/cdk/menu'
+import { LayoutModule } from '~/ui/layout'
 
 @Component({
   standalone: true,
