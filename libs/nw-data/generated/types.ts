@@ -994,6 +994,7 @@ export interface GameEvent {
   UseRestedExp: string
   WhisperID: string
   WhisperId: string
+  XpOfCurrentLevel: number
 }
 
 export interface Gamemodes {
@@ -1002,6 +1003,7 @@ export interface Gamemodes {
   AILevelAdjustedPerceptionEnabled: boolean
   AIPreventEnemyTraining: boolean
   AISpawnRadius: string
+  AchievementIdForCompletingMaxRank: string
   ActivityType: string
   AdvanceThroughStatesOnUpdate: string
   AllowPvpValueAccumulation: boolean
@@ -1054,6 +1056,19 @@ export interface Gamemodes {
   LootLimitId: string
   LootTags: string[]
   MapId: string
+  MatchmakingMaxDPS: number
+  MatchmakingMaxHealers: number
+  MatchmakingMaxLevel: number
+  MatchmakingMaxTanks: number
+  MatchmakingMinDPS: number
+  MatchmakingMinGS: number
+  MatchmakingMinHealers: number
+  MatchmakingMinLevel: number
+  MatchmakingMinTanks: number
+  MatchmakingPriority: number
+  MatchmakingRequiredHealingFocus: number
+  MatchmakingRequiredHealingMastery: number
+  MatchmakingRequiresTauntGem: boolean
   MaxAI: string
   MaxPlayerLevelToUseGearScoreOverride: number
   MinAcceptedInvites: number
@@ -1108,8 +1123,10 @@ export interface Gamemodes {
   TrialIconPath: string
   UiInteractOption: string
   UniqueRewardIds: string
+  UseMMBuff: boolean
   UsePendingListMatchmaking: boolean
   UseTeamNamePlate: boolean
+  UsesRoleSelection: boolean
   VictoryDelaySec: number
   WarBoardAttackerTeamIdx: number
   WarBoardDefenderTeamIdx: number
@@ -2117,6 +2134,7 @@ export interface Lootbuckets {
   Item427: string
   Item428: string
   Item429: string
+  Item430: string
   Item431: string
   Item432: string
   Item44: string
@@ -2992,6 +3010,7 @@ export interface Lootbuckets {
   Quantity427: number
   Quantity428: number
   Quantity429: number
+  Quantity430: number
   Quantity431: number
   Quantity432: number
   Quantity44: number
@@ -3283,6 +3302,7 @@ export interface Lootbuckets {
   Tags427: string[]
   Tags428: string[]
   Tags429: string[]
+  Tags430: string[]
   Tags432: string[]
   Tags44: string[]
   Tags45: string[]
@@ -3589,6 +3609,18 @@ export interface Mutationdifficulty {
   InjectedCreatureLoot: string
   InjectedLootTags: string[]
   LootGSRangeOverride: string
+  MatchmakingMaxDPS: number
+  MatchmakingMaxHealers: number
+  MatchmakingMaxLevel: number
+  MatchmakingMaxTanks: number
+  MatchmakingMinDPS: number
+  MatchmakingMinGS: number
+  MatchmakingMinHealers: number
+  MatchmakingMinLevel: number
+  MatchmakingMinTanks: number
+  MatchmakingRequiredHealingFocus: number
+  MatchmakingRequiredHealingMastery: number
+  MatchmakingRequiresTauntGem: boolean
   MutationDifficulty: number
   PerkRollMult1: number
   PerkRollMult2: number
@@ -3596,6 +3628,8 @@ export interface Mutationdifficulty {
   PerkRollMult4: number
   PerkRollMult5: number
   RecommendedGearScore: number
+  UseMMBuff: boolean
+  UsesRoleSelection: boolean
 }
 
 export interface Mutationrankdata {
@@ -6265,6 +6299,7 @@ export type LootTag =
   | 'Knight'
   | 'Kotemos'
   | 'Krockes'
+  | 'LNY_GiftLimit'
   | 'LaCuran'
   | 'Ladimere'
   | 'LadyBridgett'
@@ -9925,6 +9960,7 @@ export type VitalsCategory =
   | 'Dynasty_Heavy_DG_Ebonscale_00'
   | 'Dynasty_Heavy_DG_GreatCleave_00'
   | 'Dynasty_Heavy_DG_ShatterMtn_00'
+  | 'Dynasty_Heavy_LunarNewYear'
   | 'Dynasty_Heavy_Named_08QP04'
   | 'Dynasty_Heavy_Named_08QP06'
   | 'Dynasty_Heavy_Named_08QP07'
@@ -9945,6 +9981,7 @@ export type VitalsCategory =
   | 'Dynasty_Maiden_Named_DG_Ebonscale_02'
   | 'Dynasty_Maiden_Named_DG_GreatCleave_00'
   | 'Dynasty_Maiden_Named_DG_ShatterMtn_00'
+  | 'Dynasty_Maiden_Named_LunarNewYear'
   | 'Dynasty_Maiden_WWGreatAxe_Named'
   | 'Dynasty_Musketeer'
   | 'Dynasty_Musketeer_08QP07'
