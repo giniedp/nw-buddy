@@ -15,6 +15,7 @@ import { TerritoryTableAdapter } from '../data/territory-table'
 import { VitalTableAdapter } from '../data/vital-table'
 import { ZoneTableAdapter } from '../data/zone-table'
 import { LootContextEditorStore } from './loot-context-editor.store'
+import { tapDebug } from '~/utils'
 
 @Component({
   standalone: true,
@@ -156,8 +157,9 @@ export class LootContextEditorComponent {
       title: 'Pick POI',
       dataView: { adapter: ZoneTableAdapter },
     })
+    .pipe(tapDebug('pickPoi'))
       .pipe(filter((it) => it !== undefined))
-      .pipe(map((it) => it?.[0] as number))
+      .pipe(map((it) => Number(it?.[0])))
       .subscribe((it) => {
         this.store.patchState({ poiId: it })
       })

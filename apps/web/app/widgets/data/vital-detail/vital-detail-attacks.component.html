@@ -66,7 +66,7 @@
             >
             <span class="badge badge-sm badge-info" *ngIf="row.IsRanged">Ranged</span>
             <ng-container *ngIf="!row.Secondary && row.Damage">
-              <span class="badge badge-sm badge-primary cursor-help" [tooltip]="tipDamage">
+              <span class="badge badge-sm badge-primary cursor-help" [tooltip]="tipDamage" [tooltipClass]="'p-2'">
                 <img [nwImage]="row.Primary.Icon" class="w-4 h-4 flex-none aspect-square mr-1 filter brightness-0" />
                 {{ row.Damage | number: '0.0-0' }}
                 <ng-template #tipDamage>
@@ -80,7 +80,7 @@
                 {{ row.Damage | number: '0.0-0' }}
               </span>
 
-              <span class="badge badge-sm cursor-help" [tooltip]="tipPrimary">
+              <span class="badge badge-sm cursor-help" [tooltip]="tipPrimary" [tooltipClass]="'p-2'">
                 <img [nwImage]="row.Primary.Icon" class="w-4 h-4 flex-none aspect-square mr-1" />
                 {{ row.Primary.Value | number: '0.0-0' }}
                 <ng-template #tipPrimary>
@@ -88,7 +88,7 @@
                 </ng-template>
               </span>
 
-              <span class="badge badge-sm cursor-help" [tooltip]="tipSecondary">
+              <span class="badge badge-sm cursor-help" [tooltip]="tipSecondary" [tooltipClass]="'p-2'">
                 <img [nwImage]="row.Secondary.Icon" class="w-4 h-4 flex-none aspect-square mr-1" />
                 {{ row.Secondary.Value | number: '0.0-0' }}
                 <ng-template #tipSecondary>
@@ -101,7 +101,7 @@
               <a
                 class="badge badge-sm link-hover"
                 [tooltip]="tipEffect"
-                [tooltipClass]="'p-0'"
+                [tooltipClass]="'p-2'"
                 [routerLink]="['/status-effects/table', item.StatusID]"
               >
                 <img [nwImage]="item.Icon" class="w-4 h-4 flex-none aspect-square mr-1" />
