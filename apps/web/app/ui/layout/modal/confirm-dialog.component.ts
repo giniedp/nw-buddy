@@ -21,7 +21,7 @@ export type ConfirmDialogOptions = Pick<
 })
 export class ConfirmDialogComponent {
   public static open(modal: ModalService, options: ModalOpenOptions<ConfirmDialogComponent>) {
-    options.size ??= 'sm'
+    options.size ??= ['y-auto', 'x-sm']
     options.content = ConfirmDialogComponent
     return modal.open<ConfirmDialogComponent, boolean | null>(options)
   }

@@ -64,7 +64,7 @@ export interface DataViewPickerOptions<T = unknown> {
   ],
   providers: [QuicksearchService],
   host: {
-    //class: 'layout-col bg-base-100 border border-base-100 rounded-md overflow-hidden',
+    class: 'ion-page bg-base-100 border border-base-100 rounded-md',
   },
 })
 export class DataViewPicker<T> {
@@ -90,7 +90,7 @@ export class DataViewPicker<T> {
         selection: options.selection,
         persistKey: options.persistKey,
       },
-      cssClass: 'ion-modal-full xl:ion-modal-md',
+      cssClass: 'ion-modal-full xl:ion-modal-lg',
     })
     modal.present()
     const { data, role } = await modal.onWillDismiss()

@@ -14,7 +14,7 @@
     #attrs
   />
   @if (weapon1ItemId || weapon2ItemId) {
-    <ion-segment [value]="tab">
+    <ion-segment [value]="tab" class="mt-4">
       <ion-segment-button [value]="weapon1ItemId" (click)="tab = weapon1ItemId">
         <span>
           {{ weapon1.name$ | async | nwText }}
@@ -86,8 +86,9 @@
 
 <ion-footer class="rounded-b-md">
   <ion-toolbar class="ion-color ion-color-base-300">
-    <button class="btn btn-ghost mr-1 min-w-28" (click)="close()" slot="secondary">Cancel</button>
-
-    <button class="btn btn-primary mr-1 min-w-28" (click)="commit()" slot="primary">OK</button>
+    <div slot="end" class="join px-1 w-full sm:w-auto">
+      <button class="join-item flex-1 btn btn-ghost min-w-28" (click)="close()">Cancel</button>
+      <button class="join-item flex-1 btn btn-ghost text-primary min-w-28" (click)="commit()">OK</button>
+    </div>
   </ion-toolbar>
 </ion-footer>

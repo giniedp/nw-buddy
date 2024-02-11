@@ -78,7 +78,7 @@ export interface ShareDialogState {
 })
 export class ShareDialogComponent extends ComponentStore<ShareDialogState> {
   public static open(modal: ModalService, options: ModalOpenOptions<ShareDialogComponent>) {
-    options.size ??= ['x-sm', 'y-md']
+    options.size ??= ['x-sm', 'y-auto']
     options.content = ShareDialogComponent
     return modal.open(options)
   }

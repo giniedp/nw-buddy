@@ -34,8 +34,14 @@ import { LayoutModule, ModalOpenOptions, ModalRef, ModalService } from '~/ui/lay
     </ion-content>
     <ion-footer class="rounded-b-md">
       <ion-toolbar class="ion-color ion-color-base-300">
-        <button slot="secondary" class="btn btn-ghost mr-1" (click)="cancel()">{{ negative || 'Cancel' }}</button>
-        <button slot="primary" class="btn btn-primary mr-1" (click)="close()">{{ positive || 'OK' }}</button>
+        <div slot="end" class="join px-1 w-full">
+          <button slot="secondary" class="join-item flex-1 btn btn-ghost" (click)="cancel()">
+            {{ negative || 'Cancel' }}
+          </button>
+          <button slot="primary" class="join-item flex-1 btn btn-ghost text-primary" (click)="close()">
+            {{ positive || 'OK' }}
+          </button>
+        </div>
       </ion-toolbar>
     </ion-footer>
   `,
@@ -47,7 +53,7 @@ import { LayoutModule, ModalOpenOptions, ModalRef, ModalService } from '~/ui/lay
 })
 export class SlotsPickerComponent implements OnChanges {
   public static open(modal: ModalService, options: ModalOpenOptions<SlotsPickerComponent>) {
-    options.size ??= ['x-sm', 'y-md']
+    options.size ??= ['y-auto', 'x-sm']
     options.content = SlotsPickerComponent
     return modal.open<SlotsPickerComponent, EquipSlotId[]>(options)
   }

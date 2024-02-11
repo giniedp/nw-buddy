@@ -108,13 +108,17 @@
       </div>
     }
 
-    @if(vm.embedSnippet; as value) {
+    @if (vm.embedSnippet; as value) {
       <div class="form-control">
         <label class="label">
           <span class="label-text">Embed Snippet</span>
         </label>
         <label class="join join-vertical">
-          <textarea class="join-item textarea textarea-bordered textarea-md w-full" rows="4" [ngModel]="value"></textarea>
+          <textarea
+            class="join-item textarea textarea-bordered textarea-md w-full"
+            rows="4"
+            [ngModel]="value"
+          ></textarea>
           <button class="join-item btn gap-2" [class.btn-success]="copied === value" (click)="copy(value)">
             <nwb-icon [icon]="iconCopy" class="w-4 h-4 mr-1" /> Copy embed snippet
           </button>
@@ -125,18 +129,19 @@
 
   <ion-footer class="rounded-b-md">
     <ion-toolbar class="ion-color ion-color-base-300">
-      <button slot="secondary" class="btn btn-ghost mr-1" (click)="close()">Close</button>
-      @if (!vm.shared) {
-        <button
-          slot="primary"
-          class="btn btn-primary mr-1"
-          [class.loading]="vm.active"
-          (click)="share()"
-          [disabled]="vm.active"
-        >
-          Share
-        </button>
-      }
+      <div slot="end" class="join px-1 w-full sm:w-auto">
+        <button class="join-item flex-1 btn btn-ghost min-w-28" (click)="close()">Close</button>
+        @if (!vm.shared) {
+          <button
+            class="join-item flex-1 btn btn-ghost text-primary min-w-28"
+            [class.loading]="vm.active"
+            (click)="share()"
+            [disabled]="vm.active"
+          >
+            Share
+          </button>
+        }
+      </div>
     </ion-toolbar>
   </ion-footer>
 </ng-container>

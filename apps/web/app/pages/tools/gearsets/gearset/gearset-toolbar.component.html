@@ -13,36 +13,39 @@
 <input
   type="text"
   placeholder=""
-  class="input input-bordered w-full h-10 mt-1 min-w-[200px]"
+  class="input input-bordered w-full h-10 min-w-[200px]"
   maxlength="100"
   [ngModel]="gearset?.name"
   (ngModelChange)="updateName($event)"
   [ngModelOptions]="{ updateOn: 'blur' }"
 />
 
-<button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplTagPicker" [tooltip]="'Edit Tags'">
-  <nwb-icon [icon]="iconTags" class="w-4 h-4" />
-</button>
-<ng-template #tplTagPicker>
-  <div class="p-2 bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
-    <nwb-chips-input-pane
-      [tags]="presetTags"
-      [placeholder]="'custom tags'"
-      [ngModel]="gearset?.tags"
-      (ngModelChange)="updateTags(gearset, $event)"
-    />
-  </div>
-</ng-template>
+<div class="join">
 
-<button [nwbScreenshotBtn] class="btn btn-ghost btn-square" [tooltip]="'Screenshot'"></button>
+  <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplTagPicker" [tooltip]="'Edit Tags'">
+    <nwb-icon [icon]="iconTags" class="w-4 h-4" />
+  </button>
+  <ng-template #tplTagPicker>
+    <div class="p-2 bg-base-200 border border-base-100 rounded-md shadow-lg" cdkMenu>
+      <nwb-chips-input-pane
+        [tags]="presetTags"
+        [placeholder]="'custom tags'"
+        [ngModel]="gearset?.tags"
+        (ngModelChange)="updateTags(gearset, $event)"
+      />
+    </div>
+  </ng-template>
 
-<button class="btn btn-ghost btn-square" (click)="handleOpponentSelection()" [tooltip]="'Select Opponent'">
-  <nwb-icon [icon]="iconSwords" class="w-4 h-4" />
-</button>
+  <button [nwbScreenshotBtn] class="join-item btn btn-ghost btn-square" [tooltip]="'Screenshot'"></button>
 
-<button class="btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
-  <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
-</button>
+  <button class="join-item btn btn-ghost btn-square" (click)="handleOpponentSelection()" [tooltip]="'Select Opponent'">
+    <nwb-icon [icon]="iconSwords" class="w-4 h-4" />
+  </button>
+
+  <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
+    <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
+  </button>
+</div>
 
 <ng-template #menu>
   <ul class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg p-0" cdkMenu>

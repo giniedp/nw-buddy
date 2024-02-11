@@ -62,21 +62,19 @@
 
   <ion-footer class="rounded-b-md">
     <ion-toolbar class="ion-color ion-color-base-300">
-      <div slot="end">
-        <div class="join mr-1">
-          <button class="join-item btn btn-ghost" (click)="close()">Close</button>
-        </div>
-        <div class="join mr-1" *ngIf="!vm.complete">
-          <button class="join-item btn btn-ghost" (click)="openJson()">Open raw JSON</button>
+      <div slot="end" class="join px-1 w-full sm:w-auto">
+        <button class="join-item flex-1 sm:flex-none btn btn-ghost" (click)="close()">Close</button>
+        <button class="join-item flex-1 sm:flex-none btn btn-ghost min-w-28" (click)="openJson()">Open raw JSON</button>
+        @if (!vm.complete) {
           <button
-            class="join-item btn btn-primary"
+            class="join-item flex-1 sm:flex-none btn btn-ghost text-primary"
             [class.loading]="vm.active"
             (click)="export()"
             [disabled]="vm.active"
           >
             Export
           </button>
-        </div>
+        }
       </div>
     </ion-toolbar>
   </ion-footer>

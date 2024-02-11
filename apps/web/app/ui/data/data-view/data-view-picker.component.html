@@ -1,13 +1,13 @@
-<ion-header class="bg-black">
-  <ion-toolbar>
+<ion-header >
+  <ion-toolbar class="ion-color ion-color-black rounded-t-md">
     <ion-title>{{ title }}</ion-title>
-    <div slot="primary">
+    <div slot="primary" class="join">
       @if (service.canToggleMode()) {
-        <button class="btn btn-square btn-ghost" [nwbDataViewToggle]></button>
+        <button class="join-item btn btn-square btn-ghost" [nwbDataViewToggle]></button>
       }
       @if (service.isTableSupported()) {
         <button
-          class="btn btn-square btn-ghost"
+          class="join-item btn btn-square btn-ghost"
           [nwbDataViewOptionsMenu]
           [disabled]="!service.isTableActive()"
         ></button>
@@ -41,14 +41,12 @@
     />
   }
 </ion-content>
-<ion-footer class="bg-base-300 ">
-  <ion-toolbar>
-    <div class="join mr-1" slot="secondary">
-      <button type="join-item button" class="btn btn-ghost" (click)="close()">Cancel</button>
-    </div>
-    <div class="join mr-1" slot="primary">
-      <button type="button" class="join-item btn btn-ghost" (click)="clear()">Clear selection</button>
-      <button type="button" class="join-item btn btn-primary" (click)="commit()">OK</button>
+<ion-footer class="rounded-b-md">
+  <ion-toolbar class="ion-color ion-color-base-300">
+    <div class="join px-1 w-full sm:w-auto" slot="end">
+      <button class="join-item flex-1 btn btn-ghost sm:min-w-28" (click)="close()">Cancel</button>
+      <button class="join-item flex-1 btn btn-ghost sm:min-w-28" (click)="clear()">Clear selection</button>
+      <button class="join-item flex-1 btn btn-ghost text-primary sm:min-w-28" (click)="commit()">OK</button>
     </div>
   </ion-toolbar>
 </ion-footer>

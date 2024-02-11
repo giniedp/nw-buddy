@@ -86,6 +86,10 @@ module.exports = ({ addUtilities, theme, matchUtilities, variants }) => {
       '--height': '100%',
       '--max-height': 'calc(max(600px, min(900px, 100% - 4rem)))',
     },
+
+    [`.ion-modal-y-auto`]: {
+      '--height': 'auto',
+    },
   })
 
   const COLORS = {

@@ -83,15 +83,14 @@
 </ion-content>
 <ion-footer class="rounded-b-md">
   <ion-toolbar class="ion-color ion-color-base-300">
-    <div slot="end" class="join m-1" *ngIf="!data">
+    <div slot="end" class="join px-1">
       @if (data) {
-        <button type="button" class="join-item btn" (click)="copyData()">Copy to clipboard</button>
-        <button type="button" class="join-item btn btn-primary" (click)="downloadData()">Download</button>
+        <button class="join-item btn btn-ghost" (click)="copyData()">Copy to clipboard</button>
+        <button class="join-item btn btn-ghost text-primary" (click)="downloadData()">Download</button>
       } @else {
-        <button type="button" class="join-item btn" (click)="close()">Cancel</button>
+        <button class="join-item btn btn-ghost" (click)="close()">Cancel</button>
         <button
-          type="button"
-          class="join-item btn btn-primary"
+          class="join-item btn btn-ghost text-primary"
           [disabled]="isLoading"
           (click)="export()"
           [class.loading]="isLoading"

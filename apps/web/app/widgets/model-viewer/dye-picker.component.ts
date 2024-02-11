@@ -22,7 +22,7 @@ export interface DyePickerDialogData {
 })
 export class DyePickerComponent {
   public static open(modal: ModalService, options: ModalOpenOptions<DyePickerComponent>) {
-    options.size ??= 'sm'
+    options.size ??= ['y-auto', 'x-sm']
     options.content = DyePickerComponent
     return modal.open<DyePickerComponent, Dyecolors>(options)
   }

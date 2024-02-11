@@ -1,11 +1,7 @@
 <ng-container *ngIf="vm$ | async; let vm">
   <ion-header>
     <ion-toolbar class="ion-color ion-color-black rounded-t-md">
-      <button slot="start" class="btn btn-ghost btn-square" (click)="back()">
-        <nwb-icon [icon]="iconLeft" class="w-5 h-5" />
-      </button>
       <ion-title>Gear Importer</ion-title>
-
     </ion-toolbar>
   </ion-header>
 
@@ -28,7 +24,7 @@
       }
     </div>
 
-    @if(vm.resultCount > 1) {
+    @if (vm.resultCount > 1) {
       <div class="absolute bottom-2 left-2 right-2 flex items-center justify-center">
         <div class="join bg-base-300 rounded-md">
           <button class="join-item btn btn-square" (click)="prevItem()" [disabled]="!vm.index">
@@ -41,17 +37,13 @@
             [ngModel]="vm.filter"
             (ngModelChange)="updateFilter($event)"
           />
-          <button
-            class="join-item btn btn-square"
-            (click)="nextItem()"
-            [disabled]="vm.index === vm.itemCount - 1"
-          >
+          <button class="join-item btn btn-square" (click)="nextItem()" [disabled]="vm.index === vm.itemCount - 1">
             <nwb-icon [icon]="iconLeft" class="w-5 h-5 rotate-180" />
           </button>
         </div>
       </div>
     }
-    @if(vm.working) {
+    @if (vm.working) {
       <div class="absolute inset-0 flex items-center justify-center">
         <button slot="end" class="btn btn-ghost loading"></button>
       </div>
@@ -60,9 +52,15 @@
 
   <ion-footer class="rounded-b-md">
     <ion-toolbar class="ion-color ion-color-base-300">
-      <div slot="end" class="join">
-        <button class="join-item btn btn-ghost" (click)="close()">Cancel</button>
-        <button class="join-item btn btn-primary" (click)="submit(vm.item.instance)" [disabled]="!vm.item">OK</button>
+      <div slot="end" class="join w-full sm:w-auto">
+        <button class="join-item flex-1 btn btn-ghost min-w-28" (click)="close()">Cancel</button>
+        <button
+          class="join-item flex-1 btn btn-ghost text-primary min-w-28"
+          (click)="submit(vm.item.instance)"
+          [disabled]="!vm.item"
+        >
+          OK
+        </button>
       </div>
     </ion-toolbar>
   </ion-footer>

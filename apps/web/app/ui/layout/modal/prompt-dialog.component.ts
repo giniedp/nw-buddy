@@ -35,7 +35,7 @@ export class PromptDialogComponent<T extends string | number> {
     modal: ModalService,
     options: ModalOpenOptions<PromptDialogComponent<T>>,
   ) {
-    options.size ??= 'sm'
+    options.size ??= ['y-auto', 'x-sm']
     options.content = PromptDialogComponent
     return modal.open<PromptDialogComponent<T>, T>(options)
   }

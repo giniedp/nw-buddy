@@ -54,19 +54,19 @@
 
   <ion-footer class="rounded-b-md">
     <ion-toolbar class="ion-color ion-color-base-300">
-      <button slot="secondary" class="join-item btn btn-ghost mr-1" (click)="close()">Close</button>
-      @if (!vm.complete) {
-        <button
-          slot="primary"
-          class="btn btn-primary mr-1"
-          [class.loading]="vm.active"
-          (click)="import()"
-          [disabled]="vm.active || !vm.file"
-        >
-          Import
-        </button>
-      }
+      <div slot="end" class="join px-1 w-full sm:w-auto">
+        <button class="join-item btn btn-ghost" (click)="close()">Close</button>
+        @if (!vm.complete) {
+          <button
+            class="join-item btn btn-ghost text-primary"
+            [class.loading]="vm.active"
+            (click)="import()"
+            [disabled]="vm.active || !vm.file"
+          >
+            Import
+          </button>
+        }
+      </div>
     </ion-toolbar>
   </ion-footer>
-
 </ng-container>

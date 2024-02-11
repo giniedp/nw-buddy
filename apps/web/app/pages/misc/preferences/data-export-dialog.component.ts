@@ -37,7 +37,7 @@ export interface DataExportDialogState {
 export class DataExportDialogComponent extends ComponentStore<DataExportDialogState> {
   public static open(modal: ModalService) {
     return modal.open({
-      size: 'sm',
+      size: ['y-auto', 'x-sm'],
       content: DataExportDialogComponent,
     })
   }

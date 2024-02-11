@@ -39,12 +39,14 @@
 </ion-content>
 <ion-footer class="rounded-b-md">
   <ion-toolbar class="ion-color ion-color-base-300">
-    @if (negative) {
-      <button class="btn btn-ghost mr-1 min-w-28" (click)="abort()" slot="secondary">{{ negative }}</button>
-    }
-    @if (neutral) {
-      <button class="btn btn-ghost mr-1 min-w-28" (click)="close()" slot="secondary">{{ neutral }}</button>
-    }
-    <button class="btn btn-primary mr-1 min-w-28" (click)="submit()" slot="primary">{{ positive }}</button>
+    <div slot="end" class="join px-1 w-full">
+      @if (negative) {
+        <button class="join-item flex-1 btn btn-ghost" (click)="abort()">{{ negative }}</button>
+      }
+      @if (neutral) {
+        <button class="join-item flex-1 btn btn-ghost" (click)="close()">{{ neutral }}</button>
+      }
+      <button class="join-item flex-1 btn btn-ghost text-primary" (click)="submit()">{{ positive }}</button>
+    </div>
   </ion-toolbar>
 </ion-footer>

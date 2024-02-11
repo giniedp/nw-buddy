@@ -84,7 +84,7 @@ export const GEARSET_TAGS = [
     OverlayModule,
   ],
   host: {
-    class: 'flex-1 flex flex-row gap-1 overflow-x-auto',
+    class: 'flex-1 flex flex-row items-center gap-1 overflow-x-auto',
   },
 })
 export class GearsetToolbarComponent {

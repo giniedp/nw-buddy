@@ -17,6 +17,7 @@ export type ModalSize =
   | 'y-sm'
   | 'y-md'
   | 'y-lg'
+  | 'y-auto'
 export interface ModalOpenOptions<T> extends Omit<ModalOptions, 'component' | 'componentProps'> {
   content?: TemplateRef<T> | Type<T>
   inputs?: Partial<T>
