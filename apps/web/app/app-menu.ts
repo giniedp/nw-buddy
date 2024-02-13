@@ -61,11 +61,12 @@ export const APP_MENU: AppMenuGroup[] = [
     items: [
       { label: 'Levels', path: '/leveling/xp', icon: 'assets/icons/menu/levels.png' },
       { label: 'Tradeskills', path: '/leveling/tradeskills', icon: 'assets/icons/tradeskills/weaving.png' },
+      { label: 'Territories', path: '/territories', icon: 'assets/icons/menu/territories.png' },
       { label: 'Weapons', path: '/leveling/weapons', icon: 'assets/icons/weapons/1hsword.png' },
-      { label: 'Inventory', path: '/inventory', icon: 'assets/icons/menu/storage.png' },
+      { label: 'Inventory', path: '/inventory', icon: 'assets/icons/menu/storage.png', divider: true },
       { label: 'Gear Sets', path: '/gearsets', icon: 'assets/icons/menu/gearsets.png' },
       { label: 'Skill Trees', path: '/skill-trees', icon: 'assets/icons/menu/skill-trees.png' },
-      { label: 'Territories', path: '/territories', icon: 'assets/icons/menu/territories.png' },
+      { label: 'Calculator', path: '/damage-calculator', icon: 'assets/icons/menu/skill-trees.png' },
     ],
   },
   {
