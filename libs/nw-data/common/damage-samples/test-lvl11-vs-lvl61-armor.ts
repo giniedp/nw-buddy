@@ -61,6 +61,7 @@ export default {
       crit: 0,          // unset
       critMitigated: 0, // unset
       critFinal: 0,     // unset
+      mitigation: 0,
     },
     converted: {
       std: 0,
@@ -69,6 +70,7 @@ export default {
       crit: 0,
       critFinal: 0,
       critMitigated: 0,
+      mitigation: 0,
     },
     total: {
       std: 264,
@@ -77,6 +79,7 @@ export default {
       crit: 0,          // unset
       critMitigated: 0, // unset
       critFinal: 0,     // unset
+      mitigation: 0,
     }
   }
 } satisfies {

@@ -18,7 +18,7 @@ import {
   NW_ROLL_PERK_ON_UPGRADE_PERK_COUNT,
   NW_ROLL_PERK_ON_UPGRADE_TIER,
 } from './constants'
-import { armorSetRating, damageForTooltip } from './damage'
+import { getArmorSetRating, getDamageForTooltip } from './damage'
 import { eqCaseInsensitive } from './utils/caseinsensitive-compare'
 import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
 import { PickByPrefix } from './utils/ts-types'
@@ -399,14 +399,14 @@ export function getArmorRatingElemental(item: ItemdefinitionsArmor | Itemdefinit
   if (!item?.ElementalArmorSetScaleFactor) {
     return 0
   }
-  return armorSetRating(gearScore) * item.ElementalArmorSetScaleFactor * item.ArmorRatingScaleFactor
+  return getArmorSetRating(gearScore) * item.ElementalArmorSetScaleFactor * item.ArmorRatingScaleFactor
 }
 
 export function getArmorRatingPhysical(item: ItemdefinitionsArmor | ItemdefinitionsWeapons, gearScore: number) {
   if (!item?.PhysicalArmorSetScaleFactor) {
     return 0
   }
-  return armorSetRating(gearScore) * item.PhysicalArmorSetScaleFactor * item.ArmorRatingScaleFactor
+  return getArmorSetRating(gearScore) * item.PhysicalArmorSetScaleFactor * item.ArmorRatingScaleFactor
 }
 
 export function getWeightLabel(weight: number): 'light' | 'medium' | 'heavy' {
@@ -467,7 +467,7 @@ export function getItemStatsWeapon({
     result.push({
       item,
       label: 'ui_tooltip_damage',
-      value: damageForTooltip({
+      value: getDamageForTooltip({
         playerLevel,
         attrSums: attrValueSums,
         gearScore: gearScore,

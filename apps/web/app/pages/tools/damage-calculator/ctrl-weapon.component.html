@@ -1,0 +1,100 @@
+<label class="label">
+  <span class="label-text"> Weapon </span>
+  <span class="label-text" [class.text-primary]="scalingIsHigher"> Scaling {{ scalingSum | number: '0.2-2' }} </span>
+</label>
+<span class="join">
+  <button class="join-item btn btn-sm flex-1" [class.btn-error]="!weaponTag.value" [cdkMenuTriggerFor]="tplWeaponTag">
+    @if (weapon(); as wpn) {
+      <img [nwImage]="wpn.icon" class="w-5 h-5" />
+      <span>{{ wpn.name | nwText }}</span>
+    } @else {
+      <span class="italic"> - none - </span>
+    }
+  </button>
+  <ng-template #tplWeaponTag>
+    <ul class="menu menu-compact bg-base-200 border border-base-100 rounded-md w-80" cdkMenu>
+      @for (item of weaponOptions(); track $index) {
+        <li class="text-shadow-sm shadow-black" cdkMenuItem>
+          <a (click)="weaponTag.value = item.value">
+            <img [nwImage]="item.icon" class="w-5 h-5 ml-2" />
+            <span>{{ item.label | nwText }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </ng-template>
+</span>
+<span class="join mt-1" [cdkMenuTriggerFor]="tplGsSlider">
+  <button class="join-item btn btn-sm w-20">GS</button>
+  <input
+    type="number"
+    class="join-item input input-sm input-bordered w-full text-right pr-0"
+    [min]="gsMin"
+    [max]="gsMax"
+    [step]="1"
+    [(ngModel)]="gearScore.value"
+    (wheel)="($event)"
+  />
+  <ng-template #tplGsSlider>
+    <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
+      <nwb-input-slider
+        class="w-full"
+        [size]="'xs'"
+        [min]="gsMin"
+        [max]="gsMax"
+        [step]="1"
+        [bars]="true"
+        [barsStep]="100"
+        [values]="true"
+        [(ngModel)]="gearScore.value"
+      />
+    </div>
+  </ng-template>
+
+  <button class="join-item btn btn-sm w-20">
+    {{ gearScoreFactor | number: '0.2-2' }}
+  </button>
+</span>
+<span class="join mt-1" [cdkMenuTriggerFor]="tplDamageSlider">
+  <button class="join-item btn btn-sm w-20">Damage</button>
+  <input
+    type="number"
+    class="join-item input input-sm input-bordered w-full text-right pe-"
+    [min]="1"
+    [max]="100"
+    [step]="1"
+    [(ngModel)]="weaponDamage.value"
+    (wheel)="($event)"
+  />
+  <ng-template #tplDamageSlider>
+    <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
+      <nwb-input-slider
+        class="w-full"
+        [size]="'xs'"
+        [min]="0"
+        [max]="100"
+        [step]="1"
+        [bars]="true"
+        [barsStep]="10"
+        [values]="true"
+        [(ngModel)]="weaponDamage.value"
+      />
+    </div>
+  </ng-template>
+</span>
+<span class="join mt-1">
+  <button class="join-item btn btn-sm w-20 px-1">Scaling %</button>
+  @for (item of scaling; track $index) {
+    <input
+      type="number"
+      class="join-item w-full felx-1 input input-sm input-bordered pr-0 text-xs"
+      [class.opacity-25]="!item.access.value"
+      [placeholder]="item.label"
+      [min]="0"
+      [max]="100"
+      [step]="1"
+      [(ngModel)]="item.access.value"
+      (wheel)="($event)"
+    />
+  }
+</span>

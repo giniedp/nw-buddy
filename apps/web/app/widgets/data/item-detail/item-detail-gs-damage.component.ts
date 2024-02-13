@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common'
 import { Component } from '@angular/core'
-import { damageCoefForWeaponTag, damageFactorForGS, getWeaponTagFromWeapon, isAffixSplitDamage } from '@nw-data/common'
+import { getDamageCoefForWeaponTag, getDamageFactorForGearScore, getWeaponTagFromWeapon, isAffixSplitDamage } from '@nw-data/common'
 import { combineLatest, map, switchMap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
@@ -36,8 +36,8 @@ export class ItemDetailGsDamage {
   )
 
   protected vm$ = combineLatest({
-    dmgGS: this.detail.itemGS$.pipe(map(damageFactorForGS)),
-    dmgCoef: this.weaponTag$.pipe(map(damageCoefForWeaponTag)),
+    dmgGS: this.detail.itemGS$.pipe(map(getDamageFactorForGearScore)),
+    dmgCoef: this.weaponTag$.pipe(map(getDamageCoefForWeaponTag)),
     dmgBase: this.detail.weaponStats$.pipe(map((it) => it?.BaseDamage || 0)),
     dmgType: this.damageType$,
     split: this.splitDamage$,

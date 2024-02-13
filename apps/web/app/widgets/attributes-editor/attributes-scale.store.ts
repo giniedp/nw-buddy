@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
-import { AttributeRef, NW_MAX_CHARACTER_LEVEL, damageForTooltip, damageScaleAttrs } from '@nw-data/common'
+import { AttributeRef, NW_MAX_CHARACTER_LEVEL, getDamageForTooltip, getDamageScalingForWeapon } from '@nw-data/common'
 import { Affixstats, Attributedexterity, ItemdefinitionsWeapons } from '@nw-data/generated'
 import { ChartConfiguration } from 'chart.js'
 import { combineLatest, map } from 'rxjs'
@@ -152,18 +152,18 @@ function selectWeaponDamage({
     foc: selectModifierValue(tables.foc, stats.foc),
     con: selectModifierValue(tables.con, stats.con),
   }
-  const affixScale = damageScaleAttrs(affix)
-  const weaponScale = damageScaleAttrs(weapon)
+  const affixScale = getDamageScalingForWeapon(affix)
+  const weaponScale = getDamageScalingForWeapon(weapon)
   const affixPercent = affix?.DamagePercentage || 0
   const weaponPercent = 1 - affixPercent
-  const affixDamage = damageForTooltip({
+  const affixDamage = getDamageForTooltip({
     attrSums,
     playerLevel,
     gearScore,
     weapon,
     weaponScale: affixScale,
   })
-  const weaponDamage = damageForTooltip({
+  const weaponDamage = getDamageForTooltip({
     attrSums,
     playerLevel,
     gearScore,

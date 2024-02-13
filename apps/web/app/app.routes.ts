@@ -83,6 +83,7 @@ const routes: Routes = [
   { path: 'preferences', loadChildren: () => import('./pages/misc/preferences').then((m) => m.PreferencesModule) },
 
   { path: 'dmg-sandbox', loadChildren: () => import('./pages/tools/dmg-sandbox').then((m) => m.DmgSandbocModule) },
+  { path: 'damage-calculator', loadChildren: () => import('./pages/tools/damage-calculator').then((m) => m.DamageCalculatorModule) },
 
   {
     path: 'tracking',

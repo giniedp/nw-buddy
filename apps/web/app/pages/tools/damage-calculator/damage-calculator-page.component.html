@@ -1,0 +1,11 @@
+<ion-header class="bg-base-300">
+  <ion-toolbar>
+    <ion-title>
+      Damage Calculator
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="sm:ion-p-4">
+  <nwb-damage-calculator [state]="queryState" (stateChange)="handleStateChange($event)" class="p-4 bg-base-300 sm:rounded-lg max-w-5xl mx-auto"/>
+
+</ion-content>

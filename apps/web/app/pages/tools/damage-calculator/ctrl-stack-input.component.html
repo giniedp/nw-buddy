@@ -1,0 +1,106 @@
+<div class="form-control w-full">
+  <label class="label" [class.hidden]="labelHidden">
+    <span class="label-text">
+      <ng-content [select]="'[slot=label]'" />
+    </span>
+    <span class="label-text">
+      <ng-content select="[slot='end-label']"/>
+    </span>
+  </label>
+  <div class="flex flex-col bg-base-200 rounded-md join">
+    <label class="join">
+      <ng-content select="[slot='start']"/>
+      @if (inlineInputDisabled) {
+        <input
+          type="number"
+          class="join-item input input-sm input-bordered w-full pr-0"
+          [min]="min"
+          [step]="step"
+          [value]="total"
+          [disabled]="true"
+        />
+      } @else {
+        <input
+          type="number"
+          class="join-item input input-sm input-bordered w-full pr-0"
+          [min]="min"
+          [step]="step"
+          [(ngModel)]="inlineValue"
+          [disabled]="inlineInputDisabled"
+          (wheel)="($event)"
+        />
+      }
+      <button class="join-item btn btn-sm no-animation" (click)="isOpen = !isOpen">
+        <nwb-icon [icon]="iconMore" class="w-4 h-4" />
+      </button>
+      <ng-content select="[slot='end']"/>
+    </label>
+    @if (isOpen) {
+      <label class="join grid">
+        <button class="join-item btn btn-sm no-animation text-left justify-start">Value</button>
+        <input
+          type="number"
+          [min]="min"
+          [step]="step"
+          placeholder="Value"
+          class="join-item input input-sm input-bordered w-full text-right pr-0"
+          [(ngModel)]="inlineValue"
+          (wheel)="($event)"
+        />
+        <input
+          class="join-item input input-sm input-bordered w-full italic text-right justify-end"
+          value="Uncapped"
+          disabled
+        />
+        <button class="btn btn-sm no-animation" disabled></button>
+      </label>
+
+      @for (row of stack; track $index) {
+        <label class="join grid">
+          <input
+            class="join-item input input-sm w-full"
+            placeholder="Label"
+            [ngModel]="row.label"
+            (ngModelChange)="setStackItemLabel($index, $event)"
+          />
+          <input
+            type="number"
+            [step]="step"
+            placeholder="Value"
+            class="join-item input input-sm w-full text-right pr-0"
+            [min]="min"
+            [ngModel]="row.value"
+            (ngModelChange)="setStackItemValue($index, $event)"
+            (wheel)="($event)"
+          />
+          <input
+            type="number"
+            [step]="step"
+            placeholder="Cap"
+            class="join-item input input-sm w-full text-right pr-0"
+            [ngModel]="row.cap"
+            (ngModelChange)="setStackItemCap($index, $event)"
+            (wheel)="($event)"
+          />
+          <button class="btn btn-sm text-error no-animation" (click)="removeFromStack($index)">
+            <nwb-icon [icon]="iconDelete" class="w-4 h-4" />
+          </button>
+        </label>
+      }
+
+      @if (total || overflow) {
+        <div class="flex flex-row items-center justify-center gap-2 py-2">
+          @if (total) {
+            <span class="text-primary">Total: {{ total | number: '0.2-2' }}</span>
+          }
+          @if (overflow) {
+            <span class="text-error">Overflow: {{ overflow | number: '0.2-2' }}</span>
+          }
+        </div>
+      }
+      <button class="btn btn-sm text-primary no-animation rounded-t-none" (click)="addToStack()">
+        <nwb-icon [icon]="iconAdd" class="w-4 h-4" /> add value
+      </button>
+    }
+  </div>
+</div>

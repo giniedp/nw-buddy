@@ -1,0 +1,103 @@
+<div class="stats shadow w-full bg-base-300 border border-base-200 rounded-md overflow-visible">
+  @if (store.output().total; as damage) {
+    <div class="stat place-items-center cursor-help" [tooltip]="tplStdDmg">
+      <div class="stat-title">Standard</div>
+      <div class="stat-value">{{ damage.stdFinal | number }}</div>
+      <div class="stat-desc">
+        Mitigation {{ damage.stdMitigated | number }}
+        @if (damage.mitigation) {
+          ({{ damage.mitigation | percent: '0.1-1' }})
+        }
+      </div>
+    </div>
+
+    <div class="stat place-items-center cursor-help" [tooltip]="tplCritDmg">
+      <div class="stat-title">Crit</div>
+      <div class="stat-value text-primary">{{ damage.critFinal | number }}</div>
+      <div class="stat-desc">
+        Mitigation {{ damage.critMitigated | number }}
+        @if (damage.mitigation) {
+          ({{ damage.mitigation | percent: '0.1-1' }})
+        }
+      </div>
+    </div>
+  }
+</div>
+
+<ng-template #tplStdDmg>
+  <table class="w-full table table-compact rounded-md overflow-clip text-right">
+    <tr class="bg-base-300">
+      <th></th>
+      <th>Raw</th>
+      <th>Mitigation</th>
+      <th>Effective</th>
+    </tr>
+    @if (store.output().weapon; as damage) {
+      <tr class="text-right">
+        <td>
+          <img [nwImage]="store.offenderWeaponDamageTypeIcon()" class="w-5 h-5 ml-2" />
+        </td>
+        <td class="font-mono">{{ damage.std | floor | number }}</td>
+        <td class="font-mono">-{{ damage.stdMitigated | floor | number }}</td>
+        <td class="font-mono">{{ damage.stdFinal | floor | number }}</td>
+      </tr>
+      @if (store.offenderConvertPercent() && store.output().converted; as damage) {
+        <tr class="text-right text-secondary">
+          <td>
+            <img [nwImage]="store.offenderConvertDamageTypeIcon()" class="w-5 h-5 ml-2" />
+          </td>
+          <td class="font-mono">{{ damage.std | floor | number }}</td>
+          <td class="font-mono">-{{ damage.stdMitigated | floor | number }}</td>
+          <td class="font-mono">{{ damage.stdFinal | floor | number }}</td>
+        </tr>
+      }
+      @if (store.offenderConvertPercent() && store.output().total; as damage) {
+        <tr class="text-right">
+          <td></td>
+          <td class="font-mono">{{ damage.std | floor | number }}</td>
+          <td class="font-mono">-{{ damage.stdMitigated | floor | number }}</td>
+          <td class="font-mono">{{ damage.stdFinal | floor | number }}</td>
+        </tr>
+      }
+    }
+  </table>
+</ng-template>
+
+<ng-template #tplCritDmg>
+  <table class="w-full table table-compact rounded-md overflow-clip text-right">
+    <tr class="bg-base-300">
+      <th></th>
+      <th>Raw</th>
+      <th>Mitigation</th>
+      <th>Effective</th>
+    </tr>
+    @if (store.output().weapon; as damage) {
+      <tr class="text-right">
+        <td>
+          <img [nwImage]="store.offenderWeaponDamageTypeIcon()" class="w-5 h-5 ml-2" />
+        </td>
+        <td class="font-mono">{{ damage.crit | floor | number }}</td>
+        <td class="font-mono">-{{ damage.critMitigated | floor | number }}</td>
+        <td class="font-mono">{{ damage.critFinal | floor | number }}</td>
+      </tr>
+      @if (store.offenderConvertPercent() && store.output().converted; as damage) {
+        <tr class="text-right text-secondary">
+          <td>
+            <img [nwImage]="store.offenderConvertDamageTypeIcon()" class="w-5 h-5 ml-2" />
+          </td>
+          <td class="font-mono">{{ damage.crit | floor | number }}</td>
+          <td class="font-mono">-{{ damage.critMitigated | floor | number }}</td>
+          <td class="font-mono">{{ damage.critFinal | floor | number }}</td>
+        </tr>
+      }
+      @if (store.offenderConvertPercent() && store.output().total; as damage) {
+        <tr class="text-right">
+          <td></td>
+          <td class="font-mono">{{ damage.crit | floor | number }}</td>
+          <td class="font-mono">-{{ damage.critMitigated | floor | number }}</td>
+          <td class="font-mono">{{ damage.critFinal | floor | number }}</td>
+        </tr>
+      }
+    }
+  </table>
+</ng-template>

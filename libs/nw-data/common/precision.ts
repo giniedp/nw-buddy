@@ -1,3 +1,3 @@
-export function patchPrecision(value: number) {
-  return value ? Number(value.toFixed(7)) : value
+export function patchPrecision(value: number, precision = 7) {
+  return value ? Number(value.toFixed(precision)) : value
 }

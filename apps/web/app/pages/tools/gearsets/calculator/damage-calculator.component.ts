@@ -4,7 +4,7 @@ import { Component, Injector, Input, Pipe, PipeTransform, computed, effect, inje
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { patchState } from '@ngrx/signals'
-import { damageScaleAttrs } from '@nw-data/common'
+import { getDamageScalingForWeapon } from '@nw-data/common'
 import { BehaviorSubject, EMPTY, combineLatest, map, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
@@ -219,9 +219,9 @@ export class DamageCalculatorComponent {
               foc: attributes?.foc?.scale,
               con: attributes?.con?.scale,
             },
-            convertScaling: damageScaleAttrs(modConvert?.Affix),
+            convertScaling: getDamageScalingForWeapon(modConvert?.Affix),
             weaponGearScore: weapon?.gearScore,
-            weaponScaling: damageScaleAttrs(weapon?.weapon),
+            weaponScaling: getDamageScalingForWeapon(weapon?.weapon),
             baseDamage: weapon?.weapon?.BaseDamage ?? 0,
             damageCoef: dmgCoef?.value ?? 0,
             pvpMods: modPvP?.value ?? 0,

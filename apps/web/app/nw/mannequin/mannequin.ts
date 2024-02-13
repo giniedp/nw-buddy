@@ -8,7 +8,13 @@ import { selectModsArmorPenetration } from './mods/mods-armor-penetration'
 import { selectModsCooldown } from './mods/mods-cooldowns'
 import { selectModsCraftingGS } from './mods/mods-crafting-gs'
 import { selectModsCrit } from './mods/mods-crit'
-import { selectDamageCoef, selectModAmmo, selectModBaseDamage, selectModBaseDamageConversion, selectPvpBalance } from './mods/mods-damage'
+import {
+  selectDamageCoef,
+  selectModAmmo,
+  selectModBaseDamage,
+  selectModBaseDamageConversion,
+  selectPvpBalance,
+} from './mods/mods-damage'
 import { selectModsDMG } from './mods/mods-dmg'
 import { selectModsEFF, selectModsMULT } from './mods/mods-eff'
 import { selectModsEffectReduction } from './mods/mods-effect-reduction'
@@ -42,7 +48,6 @@ import {
   selectWeaponAttacks,
 } from './selectors'
 import { ActiveMods, DbSlice, MannequinState } from './types'
-import { DamageAttackingStats, damageScaleAttrs } from '@nw-data/common'
 
 @Injectable()
 export class Mannequin {
@@ -80,7 +85,7 @@ export class Mannequin {
       attrFoc: this.db.attrFoc,
       attrCon: this.db.attrCon,
       cooldowns: this.db.cooldownsPlayerMap,
-      damagaTable: this.db.damageTable0,
+      damagaTable: this.db.damageTables0,
       pvpBalanceArena: this.db.data.pvpbalancetablesPvpbalanceArena(),
       pvpBalanceOpenworld: this.db.data.pvpbalancetablesPvpbalanceOpenworld(),
       pvpBalanceOutpostrush: this.db.data.pvpbalancetablesPvpbalanceOutpostrush(),
@@ -244,7 +249,9 @@ export class Mannequin {
   public readonly modAmmo = computed(() => selectModAmmo(this.activeWeapon()))
   public readonly modCrit = computed(() => selectModsCrit(this.activeMods(), this.activeWeapon()))
   public readonly modBaseDamage = computed(() => selectModBaseDamage(this.activeMods(), this.activeDamageTableRow()))
-  public readonly modBaseConversion = computed(() =>  selectModBaseDamageConversion(this.activeMods(), this.activeWeapon()))
+  public readonly modBaseConversion = computed(() =>
+    selectModBaseDamageConversion(this.activeMods(), this.activeWeapon()),
+  )
 
   public readonly modThreat = computed(() => selectModsThreat(this.activeMods()))
   public readonly modArmorPenetration = computed(() => selectModsArmorPenetration(this.activeMods()))

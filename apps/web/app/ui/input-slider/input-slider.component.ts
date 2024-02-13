@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, ViewChild } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
+import { sumBy } from 'lodash'
 
 interface Bar {
   flex: number
@@ -116,15 +117,23 @@ export class InputSliderComponent implements ControlValueAccessor, OnChanges {
     const step = this.barsStep
     const bars: Bar[] = []
 
-    for (let i = min; i < max; i += step) {
-      bars.push({ flex: 0, value: i })
-      bars.push({
-        flex: (Math.min(max, i + step) - i) / step,
-        value: null,
-      })
+    for (let i = min; i <= max; i++) {
+      if (i === min || i === max || i % step === 0) {
+        bars.push({ flex: 0, value: i })
+      }
     }
-    bars.push({ flex: 0, value: max })
     this.barNodes = bars
+      .map((it, i, list) => {
+        const next = list[i + 1] || list[list.length - 1]
+        return [
+          it,
+          {
+            flex: (next.value - it.value) / step,
+            value: null,
+          },
+        ]
+      })
+      .flat()
   }
 
   protected change() {

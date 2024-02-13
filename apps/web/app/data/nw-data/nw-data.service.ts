@@ -116,7 +116,9 @@ export class NwDataService {
   public affixByStatusEffectMap = tableGroupBy(() => this.affixStats, 'StatusEffect')
   public affixByStatusEffect = tableLookup(() => this.affixByStatusEffectMap)
 
-  public damageTable0 = table(() => [this.data.damagetable()])
+  public damageTables0 = table(() => [this.data.damagetable()])
+  public damageTables0Map = tableIndexBy(() => this.damageTables0, 'DamageID')
+  public damageTable0 = tableLookup(() => this.damageTables0Map)
 
   public damageTables = table(() =>
     apiMethodsByPrefix<'damagetable'>(this.data, 'damagetable').map((it) => {
@@ -484,11 +486,17 @@ export class NwDataService {
   public mileStoneRewards = table(() => this.data.milestonerewards())
   public weaponMastery = this.data.weaponmastery().pipe(shareReplay(1))
 
-  public attrCon = this.data.attributeconstitution().pipe(shareReplay(1))
-  public attrStr = this.data.attributestrength().pipe(shareReplay(1))
-  public attrDex = this.data.attributedexterity().pipe(shareReplay(1))
-  public attrFoc = this.data.attributefocus().pipe(shareReplay(1))
-  public attrInt = this.data.attributeintelligence().pipe(shareReplay(1))
+  public attrCon = table(() => this.data.attributeconstitution())
+  public attrStr = table(() => this.data.attributestrength())
+  public attrDex = table(() => this.data.attributedexterity())
+  public attrFoc = table(() => this.data.attributefocus())
+  public attrInt = table(() => this.data.attributeintelligence())
+
+  public attrConByLevel = tableIndexBy(() => this.attrCon, 'Level')
+  public attrStrByLevel = tableIndexBy(() => this.attrStr, 'Level')
+  public attrDexByLevel = tableIndexBy(() => this.attrDex, 'Level')
+  public attrFocByLevel = tableIndexBy(() => this.attrFoc, 'Level')
+  public attrIntByLevel = tableIndexBy(() => this.attrInt, 'Level')
 
   public itemAppearances = table(() => this.data.itemappearancedefinitions())
   public itemAppearancesMap = tableIndexBy(() => this.itemAppearances, 'ItemID')

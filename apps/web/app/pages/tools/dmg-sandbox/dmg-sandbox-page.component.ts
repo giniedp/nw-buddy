@@ -6,14 +6,14 @@ import {
   AttributeRef,
   NW_MAX_CHARACTER_LEVEL,
   NW_MAX_GEAR_SCORE,
-  damageFactorForAttrs,
-  damageFactorForGS,
-  damageFactorForLevel,
-  damageForWeapon,
-  damageMitigationPercent,
-  damageScaleAttrs,
+  getDamageScalingSumForWeapon,
+  getDamageFactorForGearScore,
+  getDamageScalingForLevel,
+  getDamageForWeapon,
+  getDamageMitigationPercent,
+  getDamageScalingForWeapon,
   patchPrecision,
-  pvpGearScore,
+  getPvPGearScore,
 } from '@nw-data/common'
 import { takeUntil } from 'rxjs'
 import { NwModule } from '~/nw'
@@ -66,7 +66,7 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
   private db = inject(NwDataService)
 
   public playerLevel = this.selectSignal(({ playerLevel }) => playerLevel)
-  public playerLevelFactor = computed(() => damageFactorForLevel(this.playerLevel()))
+  public playerLevelFactor = computed(() => getDamageScalingForLevel(this.playerLevel()))
 
   public weapon = this.selectSignal(({ weapon }) => weapon)
   public attack = this.selectSignal(({ attack }) => attack)
@@ -74,7 +74,7 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
   public critDamage = this.selectSignal(({ critDamage }) => critDamage)
 
   public weaponGearScore = this.selectSignal(({ weaponGearScore }) => weaponGearScore)
-  public weaponGearScoreFactor = computed(() => damageFactorForGS(this.weaponGearScore()))
+  public weaponGearScoreFactor = computed(() => getDamageFactorForGearScore(this.weaponGearScore()))
 
   public damageCoefficient = this.selectSignal(({ damageCoefficient }) => damageCoefficient)
   public ammoModifier = this.selectSignal(({ ammoModifier }) => ammoModifier)
@@ -100,35 +100,35 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
     }
   })
   protected attrScale = computed(() => {
-    return damageFactorForAttrs({
+    return getDamageScalingSumForWeapon({
       weapon: this.weaponScale(),
-      attributes: this.attrSums(),
+      modifierSums: this.attrSums(),
     })
   })
 
   public dmgTooltip = computed(() => {
-    return damageForWeapon({
-      playerLevel: this.playerLevel(),
-      baseDamage: this.baseDamage(),
-      weaponGearScore: this.weaponGearScore(),
+    return getDamageForWeapon({
+      level: this.playerLevel(),
+      weaponDamage: this.baseDamage(),
+      gearScore: this.weaponGearScore(),
       weaponScale: this.weaponScale(),
-      attributes: this.attrSums(),
+      modifierSums: this.attrSums(),
       damageCoef: this.damageCoefficient(),
     })
   })
 
   public dmgStandard = computed(() => {
-    return damageForWeapon({
-      playerLevel: this.playerLevel(),
-      baseDamage: this.baseDamage(),
-      weaponGearScore: this.weaponGearScore(),
+    return getDamageForWeapon({
+      level: this.playerLevel(),
+      weaponDamage: this.baseDamage(),
+      gearScore: this.weaponGearScore(),
       weaponScale: this.weaponScale(),
-      attributes: this.attrSums(),
+      modifierSums: this.attrSums(),
       damageCoef: this.damageCoefficient(),
-      ammoMod: this.ammoModifier(),
-      baseMod: this.baseDamageMods(),
-      critMod: 0,
-      empowerMod: this.empowerMods(),
+      modAmmo: this.ammoModifier(),
+      modBase: this.baseDamageMods(),
+      modCrit: 0,
+      modDMG: this.empowerMods(),
     })
   })
 
@@ -137,8 +137,8 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
   })
 
   public damageMitigationFactor = computed(() => {
-    return damageMitigationPercent({
-      gearScore: pvpGearScore({
+    return getDamageMitigationPercent({
+      gearScore: getPvPGearScore({
         attackerAvgGearScore: this.attackerAvgGs(),
         defenderAvgGearScore: this.defenderAvgGs(),
         weaponGearScore: this.weaponGearScore(),
@@ -149,17 +149,17 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
   })
 
   public dmgCrit = computed(() => {
-    return damageForWeapon({
-      playerLevel: this.playerLevel(),
-      baseDamage: this.baseDamage(),
-      weaponGearScore: this.weaponGearScore(),
+    return getDamageForWeapon({
+      level: this.playerLevel(),
+      weaponDamage: this.baseDamage(),
+      gearScore: this.weaponGearScore(),
       weaponScale: this.weaponScale(),
-      attributes: this.attrSums(),
+      modifierSums: this.attrSums(),
       damageCoef: this.damageCoefficient(),
-      ammoMod: this.ammoModifier(),
-      baseMod: this.baseDamageMods(),
-      critMod: this.critModsSum(),
-      empowerMod: this.empowerMods(),
+      modAmmo: this.ammoModifier(),
+      modBase: this.baseDamageMods(),
+      modCrit: this.critModsSum(),
+      modDMG: this.empowerMods(),
     })
   })
 
@@ -214,7 +214,7 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
       {
         weaponTag: this.select(({ weapon }) => weapon),
         weaponMap: this.db.weaponsMap,
-        damageRows: this.db.damageTable0,
+        damageRows: this.db.damageTables0,
         attrs: this.db.attrStr,
       },
       ({ weaponTag, weaponMap, damageRows, attrs }) => {
@@ -226,7 +226,7 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
         this.patchState({
           baseDamage: weapon?.BaseDamage || 0,
           critDamage: patchPrecision(weapon?.CritDamageMultiplier || 0),
-          weaponScale: damageScaleAttrs(weapon),
+          weaponScale: getDamageScalingForWeapon(weapon),
           attack: rows[0]?.DamageID,
           attrTable: attrs.map((it) => {
             return {
@@ -253,7 +253,7 @@ export class DmgSandboxPageComponent extends ComponentStore<DmgSandboxState> {
     selectStream(
       {
         attack: this.select(({ attack }) => attack),
-        damageRows: this.db.damageTable0,
+        damageRows: this.db.damageTables0,
       },
       ({ attack, damageRows }) => {
         this.patchState({

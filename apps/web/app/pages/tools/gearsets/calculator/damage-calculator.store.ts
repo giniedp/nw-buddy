@@ -1,19 +1,15 @@
-import { computed, inject } from '@angular/core'
+import { computed } from '@angular/core'
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals'
-import { rxMethod } from '@ngrx/signals/rxjs-interop'
 import {
   AttributeRef,
   NW_MAX_CHARACTER_LEVEL,
   NW_MAX_GEAR_SCORE,
-  armorRating,
+  getArmorRating,
   calculateDamage,
   getVitalGearScoreFromLevel,
   isDamageTypeElemental,
 } from '@nw-data/common'
 import { Vitals } from '@nw-data/generated'
-import { pipe, switchMap, tap } from 'rxjs'
-import { NwDataService } from '~/data'
-import { Mannequin } from '~/nw/mannequin'
 import { damageTypeIcon } from '~/nw/weapon-types'
 
 export interface DamageCalculatorState {
@@ -238,7 +234,7 @@ export const DamageCalculatorStore = signalStore(
     return {
       setDefenderStats: (stats: DefenderStats) => {
         patchState(store, stats)
-      }
+      },
     }
   }),
   withComputed(
@@ -283,7 +279,7 @@ export const DamageCalculatorStore = signalStore(
           if (!isPvE()) {
             return defenderArmorPhys()
           }
-          return armorRating({
+          return getArmorRating({
             gearScore: vitalGearScore(),
             mitigation: defenderCreature().PhysicalMitigation,
           })
@@ -292,7 +288,7 @@ export const DamageCalculatorStore = signalStore(
           if (!isPvE()) {
             return defenderArmorElem()
           }
-          return armorRating({
+          return getArmorRating({
             gearScore: vitalGearScore(),
             mitigation: defenderCreature().ElementalMitigation,
           })
@@ -388,38 +384,45 @@ export const DamageCalculatorStore = signalStore(
     return {
       output: computed(() => {
         return calculateDamage({
-          attackerIsPlayer: true,
-          attackerLevel: store.attackerLevelSum(),
-          attackerGearScore: store.attackerGearScoreSum(),
-          attributes: store.attributes(),
+          attacker: {
+            isPlayer: true,
+            level: store.attackerLevelSum(),
+            gearScore: store.attackerGearScoreSum(),
+            attributeModSums: store.attributes(),
 
-          preferHigherScaling: store.preferHigherScaling(),
-          convertPercent: store.convertPercent(),
-          convertScaling: store.convertScaling(),
+            preferHigherScaling: store.preferHigherScaling(),
+            convertPercent: store.convertPercent(),
+            convertScaling: store.convertScaling(),
 
-          weaponScaling: store.weaponScaling(),
-          weaponGearScore: store.weaponGearScoreSum(),
-          baseDamage: store.baseDamageSum(),
-          damageCoef: store.damageCoefSum(),
+            weaponScaling: store.weaponScaling(),
+            weaponGearScore: store.weaponGearScoreSum(),
+            weaponDamage: store.baseDamageSum(),
+            damageCoef: store.damageCoefSum(),
 
-          modPvp: store.pvpModsSum(),
-          modAmmo: store.ammoModsSum(),
-          modBase: store.baseModsSum(),
-          modBaseConvert: store.convertBaseModsSum(),
-          modCrit: store.critModsSum(),
-          modEmpower: store.empowerModsSum(),
-          modEmpowerConvert: store.convertEmpowerModsSum(),
+            modPvp: store.pvpModsSum(),
+            modAmmo: store.ammoModsSum(),
+            modBase: store.baseModsSum(),
+            modBaseAFfix: store.convertBaseModsSum(),
+            modCrit: store.critModsSum(),
+            modDMG: store.empowerModsSum(),
+            modDMGAffix: store.convertEmpowerModsSum(),
+            armorPenetration: store.armorPenetrationSum(),
+          },
+          defender: {
+            level: store.defenderLevelSum(),
+            gearScore: store.defenderGearScoreSum(),
+            isPlayer: store.defenderIsPlayer(),
+            armorRating: store.defenderArmorWeapon(),
+            armorRatingAffix: store.defenderArmorConverted(),
+            modABS: store.defenderABSWeaponSum(),
+            modABSAffix: store.defenderABSConvertedSum(),
+            modWKN: store.defenderWKNWeaponSum(),
+            modWKNAffix: store.defenderWKNConvertedSum(),
+            reductionCrit: 0,
+            reductionBase: 0,
+            reductionBaseAffix: 0,
+          }
 
-          armorPenetration: store.armorPenetrationSum(),
-          defenderLevel: store.defenderLevelSum(),
-          defenderGearScore: store.defenderGearScoreSum(),
-          defenderIsPlayer: store.defenderIsPlayer(),
-          defenderRatingWeapon: store.defenderArmorWeapon(),
-          defenderRatingConvert: store.defenderArmorConverted(),
-          defenderABSWeapon: store.defenderABSWeaponSum(),
-          defenderABSConvert: store.defenderABSConvertedSum(),
-          defenderWKNWeapon: store.defenderWKNWeaponSum(),
-          defenderWKNConvert: store.defenderWKNConvertedSum(),
         })
       }),
     }
@@ -454,5 +457,4 @@ export const DamageCalculatorStore = signalStore(
       tweakDefenderWKNConverted: (value: number) => patchState(store, { defenderWKNConvertedTweak: value }),
     }
   }),
-
 )
