@@ -2,27 +2,34 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { patchState } from '@ngrx/signals'
-import { AttributeRef, NW_MAX_CHARACTER_LEVEL, NW_MAX_GEAR_SCORE, NW_MAX_POINTS_PER_ATTRIBUTE, NW_MIN_GEAR_SCORE, NW_MIN_POINTS_PER_ATTRIBUTE, patchPrecision } from '@nw-data/common'
+import {
+  AttributeRef,
+  NW_MAX_CHARACTER_LEVEL,
+  NW_MAX_GEAR_SCORE,
+  NW_MAX_POINTS_PER_ATTRIBUTE,
+  NW_MIN_POINTS_PER_ATTRIBUTE,
+  patchPrecision,
+} from '@nw-data/common'
 import { NwModule } from '~/nw'
 import { InputSliderComponent } from '~/ui/input-slider'
-import { DamageCalculatorStore, OffenderState } from './damage-calculator.store'
 import { LayoutModule } from '~/ui/layout'
+import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
 
 @Component({
   standalone: true,
-  selector: 'nwb-ctrl-offender',
-  templateUrl: './ctrl-offender.component.html',
+  selector: 'nwb-offender-stats-control',
+  templateUrl: './offender-stats-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, FormsModule, InputSliderComponent, LayoutModule],
   host: {
     class: 'form-control',
   },
 })
-export class CtrlOffenderComponent {
+export class OffenderStatsControlComponent {
   protected store = inject(DamageCalculatorStore)
 
-  protected level = accessor(this.store, 'level')
-  protected gearScore = accessor(this.store, 'gearScore')
+  protected level = offenderAccessor(this.store, 'level')
+  protected gearScore = offenderAccessor(this.store, 'gearScore')
   protected attrPoints = [
     { label: 'STR', access: attributeAccessor(this.store, 'str') },
     { label: 'DEX', access: attributeAccessor(this.store, 'dex') },
@@ -44,25 +51,6 @@ export class CtrlOffenderComponent {
 
   protected attrMin = NW_MIN_POINTS_PER_ATTRIBUTE
   protected attrMax = NW_MAX_POINTS_PER_ATTRIBUTE
-}
-
-function accessor<K extends keyof OffenderState>(store: DamageCalculatorStore, key: K) {
-  return {
-    get value(): OffenderState[K] {
-      return store.offender()?.[key] as OffenderState[K]
-    },
-    set value(value: OffenderState[K]) {
-      patchState(store, (state) => {
-        return {
-          ...state,
-          offender: {
-            ...state.offender,
-            [key]: value,
-          },
-        }
-      })
-    },
-  }
 }
 
 function attributeAccessor(store: DamageCalculatorStore, key: AttributeRef) {

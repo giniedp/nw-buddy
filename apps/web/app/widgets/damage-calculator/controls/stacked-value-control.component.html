@@ -4,16 +4,16 @@
       <ng-content [select]="'[slot=label]'" />
     </span>
     <span class="label-text">
-      <ng-content select="[slot='end-label']"/>
+      <ng-content select="[slot='end-label']" />
     </span>
   </label>
-  <div class="flex flex-col bg-base-200 rounded-md join">
+  <div class="flex flex-col bg-base-200 rounded-md">
     <label class="join">
-      <ng-content select="[slot='start']"/>
+      <ng-content select="[slot='start']" />
       @if (inlineInputDisabled) {
         <input
           type="number"
-          class="join-item input input-sm input-bordered w-full pr-0"
+          class="join-item appearance-none input input-sm input-bordered text-right w-full"
           [min]="min"
           [step]="step"
           [value]="total"
@@ -22,7 +22,7 @@
       } @else {
         <input
           type="number"
-          class="join-item input input-sm input-bordered w-full pr-0"
+          class="join-item appearance-none input input-sm input-bordered text-right w-full"
           [min]="min"
           [step]="step"
           [(ngModel)]="inlineValue"
@@ -33,32 +33,30 @@
       <button class="join-item btn btn-sm no-animation" (click)="isOpen = !isOpen">
         <nwb-icon [icon]="iconMore" class="w-4 h-4" />
       </button>
-      <ng-content select="[slot='end']"/>
+      <ng-content select="[slot='end']" />
     </label>
     @if (isOpen) {
-      <label class="join grid">
-        <button class="join-item btn btn-sm no-animation text-left justify-start">Value</button>
+      <label class="join">
+        <span class="join-item input input-sm input-ghost rounded-none w-24"> Value </span>
         <input
           type="number"
           [min]="min"
           [step]="step"
           placeholder="Value"
-          class="join-item input input-sm input-bordered w-full text-right pr-0"
+          class="join-item appearance-none input input-sm rounded-none text-right w-20"
           [(ngModel)]="inlineValue"
           (wheel)="($event)"
         />
-        <input
-          class="join-item input input-sm input-bordered w-full italic text-right justify-end"
-          value="Uncapped"
-          disabled
-        />
-        <button class="btn btn-sm no-animation" disabled></button>
+        <span class="join-item flex-1"></span>
+        <button class="join-item btn btn-sm btn-square text-primary no-animation rounded-none" (click)="addToStack()">
+          <nwb-icon [icon]="iconAdd" class="w-4 h-4" />
+        </button>
       </label>
 
       @for (row of stack; track $index) {
-        <label class="join grid">
+        <label class="join">
           <input
-            class="join-item input input-sm w-full"
+            class="join-item input input-sm rounded-none w-24"
             placeholder="Label"
             [ngModel]="row.label"
             (ngModelChange)="setStackItemLabel($index, $event)"
@@ -67,7 +65,7 @@
             type="number"
             [step]="step"
             placeholder="Value"
-            class="join-item input input-sm w-full text-right pr-0"
+            class="join-item appearance-none input input-sm rounded-none text-right w-20"
             [min]="min"
             [ngModel]="row.value"
             (ngModelChange)="setStackItemValue($index, $event)"
@@ -77,30 +75,28 @@
             type="number"
             [step]="step"
             placeholder="Cap"
-            class="join-item input input-sm w-full text-right pr-0"
+            class="join-item appearance-none input input-sm rounded-none text-right min-w-0 flex-1"
             [ngModel]="row.cap"
             (ngModelChange)="setStackItemCap($index, $event)"
             (wheel)="($event)"
           />
-          <button class="btn btn-sm text-error no-animation" (click)="removeFromStack($index)">
-            <nwb-icon [icon]="iconDelete" class="w-4 h-4" />
+          <span class="join-item btn btn-sm btn-square rounded-none" (click)="toggleInStack($index)">
+            <input type="checkbox" class="checkbox checkbox-sm" [ngModel]="!row.disabled" />
+          </span>
+          <button class="join-item btn btn-sm btn-square rounded-none no-animation" (click)="removeFromStack($index)">
+            <nwb-icon [icon]="iconAdd" class="w-4 h-4 rotate-45 text-error" />
           </button>
         </label>
       }
 
-      @if (total || overflow) {
-        <div class="flex flex-row items-center justify-center gap-2 py-2">
-          @if (total) {
-            <span class="text-primary">Total: {{ total | number: '0.2-2' }}</span>
-          }
-          @if (overflow) {
-            <span class="text-error">Overflow: {{ overflow | number: '0.2-2' }}</span>
-          }
-        </div>
-      }
-      <button class="btn btn-sm text-primary no-animation rounded-t-none" (click)="addToStack()">
-        <nwb-icon [icon]="iconAdd" class="w-4 h-4" /> add value
-      </button>
+      <div class="flex flex-row items-center justify-center gap-2 py-2">
+        Value:
+        <span class="text-primary">{{ total | number: '0.2-2' }}</span>
+        @if (overflow) {
+          Overflow:
+          <span class="text-error">{{ overflow | number: '0.2-2' }}</span>
+        }
+      </div>
     }
   </div>
 </div>

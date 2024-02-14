@@ -1,0 +1,51 @@
+<label class="label">
+  <span class="label-text"> Attack </span>
+  <span class="label-text"> Coef </span>
+</label>
+<span class="join" [cdkMenuTriggerFor]="attackOptions().length ? tplAttacks : null">
+  <button class="join-item btn btn-sm w-full" [disabled]="!attackOptions().length" >
+    @if(!damageRow.value) {
+      <span class="italic"> -- none -- </span>
+    } @else {
+      {{ damageRow.value | nwHumanize }}
+    }
+  </button>
+  <ng-template #tplAttacks>
+    <ul class="menu menu-compact bg-base-200 border border-base-100 rounded-md w-80" cdkMenu>
+      @for (item of attackOptions(); track $index) {
+        <li class="text-shadow-sm shadow-black" cdkMenuItem>
+          <a (click)="damageRow.value = item.value">
+            <!-- <img [nwImage]="item.icon" class="w-5 h-5 ml-2" /> -->
+            <span>{{ item.label | nwText }}</span>
+          </a>
+        </li>
+      }
+    </ul>
+  </ng-template>
+</span>
+<span class="join mt-1">
+  <button class="join-item btn btn-sm w-40">
+    Damage Coef
+  </button>
+  <input
+    type="number"
+    class="join-item appearance-none input input-sm input-bordered text-right w-full"
+    [min]="0"
+    [max]="10"
+    [step]="0.01"
+    [(ngModel)]="damageCoef.value"
+    (wheel)="($event)"
+  />
+</span>
+<span class="join mt-1">
+  <button class="join-item btn btn-sm w-40">
+    Damage Add
+  </button>
+  <input
+    type="number"
+    class="join-item appearance-none input input-sm input-bordered text-right w-full"
+    [step]="1"
+    [(ngModel)]="damageAdd.value"
+    (wheel)="($event)"
+  />
+</span>

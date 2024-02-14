@@ -1,11 +1,13 @@
 <ion-header class="bg-base-300">
   <ion-toolbar>
-    <ion-title>
-      Damage Calculator
-    </ion-title>
+    <ion-title>Damage Calculator</ion-title>
+    <!-- <ion-segment>
+      <ion-segment-button>PvP</ion-segment-button>
+      <ion-segment-button>PvE</ion-segment-button>
+      <ion-segment-button>EvP</ion-segment-button>
+    </ion-segment> -->
   </ion-toolbar>
 </ion-header>
 <ion-content class="sm:ion-p-4">
-  <nwb-damage-calculator [state]="queryState" (stateChange)="handleStateChange($event)" class="p-4 bg-base-300 sm:rounded-lg max-w-5xl mx-auto"/>
-
+  <nwb-damage-calculator standalone [state]="queryState" (stateChange)="handleStateChange($event)" class="p-4 bg-base-300 sm:rounded-lg max-w-5xl mx-auto"/>
 </ion-content>

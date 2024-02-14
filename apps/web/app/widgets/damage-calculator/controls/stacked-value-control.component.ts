@@ -6,13 +6,12 @@ import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft, svgEllipsisVertical, svgPlus, svgTrashCan } from '~/ui/icons/svg'
 import { InputSliderComponent } from '~/ui/input-slider'
-import { ValueStack, ValueStackItem, valueStackSum } from './damage-calculator.store'
+import { ValueStack, ValueStackItem, valueStackSum } from '../damage-calculator.store'
 
 @Component({
   standalone: true,
-  selector: 'nwb-ctrl-stack-input',
-  templateUrl: './ctrl-stack-input.component.html',
-  styleUrl: './ctrl-stack-input.component.scss',
+  selector: 'nwb-stacked-value-control',
+  templateUrl: './stacked-value-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, FormsModule, InputSliderComponent, IconsModule],
   host: {
@@ -22,11 +21,11 @@ import { ValueStack, ValueStackItem, valueStackSum } from './damage-calculator.s
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: CtrlStackInputComponent,
+      useExisting: StackedValueControlComponent,
     },
   ],
 })
-export class CtrlStackInputComponent implements ControlValueAccessor {
+export class StackedValueControlComponent implements ControlValueAccessor {
   @Input()
   public step: number = 0.1
 
@@ -84,7 +83,8 @@ export class CtrlStackInputComponent implements ControlValueAccessor {
       stack: [
         ...stack,
         {
-          value: 0,
+          value: stack[stack.length - 1]?.value ?? 0,
+          cap: stack[stack.length - 1]?.cap ?? null,
         },
       ],
     }))
@@ -100,6 +100,10 @@ export class CtrlStackInputComponent implements ControlValueAccessor {
 
   protected toggleInStack(index: number) {
     this.patchStackItem(index, { disabled: !this.state().stack[index]?.disabled })
+  }
+
+  protected setStackItemEnabled(index: number, value: boolean) {
+    this.patchStackItem(index, { disabled: !value })
   }
 
   protected setStackItemLabel(index: number, label: string) {

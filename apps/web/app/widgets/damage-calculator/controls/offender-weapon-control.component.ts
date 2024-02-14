@@ -10,19 +10,19 @@ import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical } from '~/ui/icons/svg'
 import { InputSliderComponent } from '~/ui/input-slider'
 import { LayoutModule } from '~/ui/layout'
-import { DamageCalculatorStore, OffenderState } from './damage-calculator.store'
+import { DamageCalculatorStore, OffenderState } from '../damage-calculator.store'
 
 @Component({
   standalone: true,
-  selector: 'nwb-ctrl-weapon',
-  templateUrl: './ctrl-weapon.component.html',
+  selector: 'nwb-offender-weapon-control',
+  templateUrl: './offender-weapon-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, FormsModule, InputSliderComponent, IconsModule, LayoutModule],
   host: {
     class: 'form-control',
   },
 })
-export class CtrlWeaponCompontnt {
+export class OffenderWeaponControlComponent {
   private data = inject(NwDataService)
   private injector = inject(Injector)
   protected store = inject(DamageCalculatorStore)

@@ -2,7 +2,9 @@ import { CommonModule } from '@angular/common'
 import { Component, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { LayoutModule } from '~/ui/layout'
-import { DamageCalculatorComponent } from './damage-calculator.component'
+
+import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
+import { DamageCalculatorComponent } from '~/widgets/damage-calculator'
 
 @Component({
   standalone: true,
@@ -11,7 +13,7 @@ import { DamageCalculatorComponent } from './damage-calculator.component'
   host: {
     class: 'ion-page',
   },
-  imports: [CommonModule, LayoutModule, DamageCalculatorComponent],
+  imports: [CommonModule, LayoutModule, DamageCalculatorComponent, IonSegment, IonSegmentButton],
 })
 export class DamageCalculatorPageComponent {
   private router = inject(Router)

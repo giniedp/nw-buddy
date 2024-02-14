@@ -9,10 +9,11 @@ import {
   NW_MAX_POINTS_PER_ATTRIBUTE,
   NW_MIN_POINTS_PER_ATTRIBUTE,
   calculateDamage,
-  getDamageScalingSumForWeapon,
   getDamageFactorForGearScore,
   getDamageScalingForLevel,
+  getDamageScalingSumForWeapon,
   isDamageTypeElemental,
+  patchPrecision,
 } from '@nw-data/common'
 import { combineLatest, map, of, pipe, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
@@ -279,7 +280,6 @@ export const DamageCalculatorStore = signalStore(
       output: computed(() => {
         return calculateDamage({
           attacker: {
-
             isPlayer: true,
             level: state.offenderLevel(),
             gearScore: state.offenderGearScore(),
@@ -316,7 +316,7 @@ export const DamageCalculatorStore = signalStore(
             reductionCrit: state.defenderModCritReduction().value,
             reductionBase: state.defenderModBaseReduction().value,
             reductionBaseAffix: state.defenderModBaseReductionConv().value,
-          }
+          },
         })
       }),
     }
@@ -352,6 +352,7 @@ export const DamageCalculatorStore = signalStore(
                 offender: {
                   ...offender,
                   damageCoef: damageRow?.DmgCoef ?? 1,
+                  damageAdd: damageRow?.AddDmg ?? 0,
                   weaponTag: weaponType?.WeaponTag,
                   weaponDamage: weapon?.BaseDamage ?? 0,
                   weaponDamageType: weaponType?.DamageType,
@@ -436,7 +437,7 @@ export const DamageCalculatorStore = signalStore(
       ),
       setState: (input: DamageCalculatorState) => {
         patchState(state, input)
-      }
+      },
     }
   }),
 )
@@ -449,54 +450,99 @@ function valueStack() {
 }
 
 export function valueStackSum(data: ValueStack) {
-  const value = cappedValue()
-  value.add(data.value)
-  for (const item of data.stack) {
-    if (!item.disabled) {
-      value.add(item.value, item.cap)
+  const result = cappedValue()
+  result.add(data.value)
+
+  const uncapped = data.stack.filter((it) => !it.disabled && !it.value)
+  for (const item of uncapped) {
+    result.add(item.value)
+  }
+
+  const capped = data.stack.filter((it) => !it.disabled && !!it.value)
+  for (const item of capped) {
+    result.add(item.value, item.cap)
+  }
+
+  return {
+    value: result.total,
+    overflow: result.overflow,
+  }
+}
+
+export function updateOffender<T extends { offender: OffenderState }>(input: Partial<OffenderState>) {
+  return (state: T): T => {
+    return {
+      ...state,
+      offender: {
+        ...state.offender,
+        ...input,
+      },
     }
   }
-  return {
-    value: value.total,
-    overflow: value.overflow,
+}
+
+export function updateDefender<T extends { defender: DefenderState }>(input: Partial<DefenderState>) {
+  return (state: T): T => {
+    return {
+      ...state,
+      defender: {
+        ...state.defender,
+        ...input,
+      },
+    }
   }
 }
 
-
-export function offenderAccessor<K extends keyof OffenderState>(store: DamageCalculatorStore, key: K) {
+export function offenderAccessor<K extends keyof OffenderState>(
+  store: DamageCalculatorStore,
+  key: K,
+  options?: { scale?: number; precision?: number },
+) {
+  const scale = options?.scale ?? 1
+  const precision = options?.precision
   return {
     get value(): OffenderState[K] {
-      return store.offender()?.[key] as OffenderState[K]
+      let value = store.offender?.[key]() as OffenderState[K]
+      if (typeof value === 'number') {
+        value = (value * scale) as OffenderState[K]
+      }
+      if (typeof value === 'number' && precision) {
+        value = patchPrecision(value, precision) as OffenderState[K]
+      }
+      return value
     },
     set value(value: OffenderState[K]) {
-      patchState(store, (state) => {
-        return {
-          ...state,
-          offender: {
-            ...state.offender,
-            [key]: value,
-          },
-        }
-      })
+      if (typeof value === 'number') {
+        value = (value / scale) as OffenderState[K]
+      }
+      patchState(store, updateOffender({ [key]: value }))
     },
   }
 }
 
-export function defenderAccessor<K extends keyof DefenderState>(store: DamageCalculatorStore, key: K) {
+export function defenderAccessor<K extends keyof DefenderState>(
+  store: DamageCalculatorStore,
+  key: K,
+  options?: { scale?: number; precision?: number },
+) {
+  const scale = options?.scale ?? 1
+  const precision = options?.precision
   return {
     get value(): DefenderState[K] {
-      return store.defender()?.[key] as DefenderState[K]
+      let value = store.defender?.[key]() as DefenderState[K]
+      if (typeof value === 'number') {
+        value = (value * scale) as DefenderState[K]
+      }
+      if (typeof value === 'number' && precision) {
+        value = patchPrecision(value, precision) as DefenderState[K]
+      }
+      return value
     },
     set value(value: DefenderState[K]) {
-      patchState(store, (state) => {
-        return {
-          ...state,
-          defender: {
-            ...state.defender,
-            [key]: value,
-          },
-        }
-      })
+      if (typeof value === 'number') {
+        value = (value / scale) as DefenderState[K]
+      }
+      patchState(store, updateDefender({ [key]: value }))
     },
   }
 }

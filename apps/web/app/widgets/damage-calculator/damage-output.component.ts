@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { NwModule } from '~/nw'
 import { TooltipModule } from '~/ui/tooltip'
 import { DamageCalculatorStore } from './damage-calculator.store'
-import { FloorPipe } from './floor.pipe'
+import { FloorPipe } from './pipes/floor.pipe'
 
 @Component({
   standalone: true,

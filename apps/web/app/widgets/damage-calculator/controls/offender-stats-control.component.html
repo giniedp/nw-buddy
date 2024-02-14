@@ -5,16 +5,16 @@
   <button class="join-item btn btn-sm w-20">Level</button>
   <input
     type="number"
-    class="join-item input input-sm input-bordered w-full justify-end text-right pr-0"
+    class="join-item appearance-none input input-sm input-bordered text-right w-full"
     [min]="levelMin"
     [max]="levelMax"
     [step]="1"
     [(ngModel)]="level.value"
     (wheel)="($event)"
   />
-  <button class="join-item btn btn-sm w-20">
+  <span class="join-item input input-sm bg-base-200">
     {{ store.offenderLevelFactor() | number: '0.2-2' }}
-  </button>
+  </span>
   <ng-template #tplSliderLevel>
     <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
       <nwb-input-slider
@@ -35,7 +35,7 @@
   <button class="join-item btn btn-sm w-20">GS</button>
   <input
     type="number"
-    class="join-item input input-sm input-bordered w-full justify-end text-right pr-0"
+    class="join-item w-full appearance-none input input-sm input-bordered text-right"
     [min]="gsMin"
     [max]="gsMax"
     [step]="1"
@@ -64,7 +64,7 @@
   @for (stat of attrPoints; track $index) {
     <input
       type="number"
-      class="join-item input input-sm input-bordered w-full text-center px-0"
+      class="join-item w-full appearance-none input input-sm input-bordered text-right"
       [min]="attrMin"
       [max]="attrMax"
       [step]="1"
@@ -81,7 +81,7 @@
           [max]="attrMax"
           [step]="1"
           [bars]="true"
-          [barsStep]="50"
+          [barsStep]="100"
           [values]="true"
           [(ngModel)]="stat.access.value"
         />
@@ -94,7 +94,7 @@
   <span class="join-item btn btn-sm w-20"> Levels </span>
   @for (stat of attrLevels; track $index) {
     <input
-      class="join-item input input-sm input-bordered w-full text-center px-0"
+      class="join-item w-full appearance-none input input-sm input-bordered text-right"
       [class.opacity-25]="!stat.access.value"
       [ngModel]="stat.access.value"
       (wheel)="($event)"

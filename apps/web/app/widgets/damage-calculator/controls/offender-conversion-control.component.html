@@ -32,16 +32,17 @@
   </button>
 </span>
 <span class="join mt-1" [cdkMenuTriggerFor]="tplSlider">
-  <button class="join-item btn btn-sm w-20 px-0">Amount %</button>
+  <button class="join-item btn btn-sm w-20 px-0">Convert</button>
   <input
     type="number"
-    class="join-item flex-1 input input-sm input-bordered w-14 pr-0"
+    class="join-item flex-1 appearance-none input input-sm input-bordered text-right"
     [min]="0"
     [max]="100"
     [step]="1"
     [(ngModel)]="convertPercent.value"
     (wheel)="($event)"
   />
+  <span class="join-item input input-sm bg-base-200"> % </span>
   <ng-template #tplSlider>
     <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
       <nwb-input-slider
@@ -50,17 +51,20 @@
         [min]="0"
         [max]="100"
         [step]="1"
+        [bars]="true"
+        [barsStep]="20"
+        [values]="true"
         [(ngModel)]="convertPercent.value"
       />
     </div>
   </ng-template>
 </span>
 <span class="join mt-1">
-  <button class="join-item btn btn-sm w-20 px-0">Scaling %</button>
+  <button class="join-item btn btn-sm w-20 px-0">Scaling</button>
   @for (item of scaling; track $index) {
     <input
       type="number"
-      class="join-item w-full felx-1 input input-sm input-bordered pr-0 text-xs"
+      class="join-item w-full appearance-none input input-sm input-bordered text-right text-xs"
       [class.opacity-25]="!item.access.value"
       [placeholder]="item.label"
       [min]="0"
@@ -70,4 +74,5 @@
       (wheel)="($event)"
     />
   }
+  <span class="join-item input input-sm bg-base-200"> % </span>
 </span>
