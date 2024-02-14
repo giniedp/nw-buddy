@@ -1,6 +1,7 @@
-import { EquipSlotId, getItemGsBonus, getPerkMultiplier } from '@nw-data/common'
+import { EquipSlotId, getItemGsBonus, getItemIconPath, getPerkMultiplier } from '@nw-data/common'
 import { Ability, Affixstats, Housingitems, ItemDefinitionMaster, Perks, Statuseffect } from '@nw-data/generated'
 import type { ActiveMods } from './types'
+import { humanize } from '~/utils'
 
 export interface ModifierSource {
   label?: string
@@ -16,6 +17,8 @@ export interface ModifierValue<T extends string | number> {
   value: T
   scale: number
   source: ModifierSource
+  capped?: boolean
+  limit?: number
 }
 
 export interface GroupModifier {
@@ -232,5 +235,40 @@ export function modifierResult(base?: ModifierValue<number>): ModifierResult {
   return {
     value: base ? base.value : 0,
     source: base ? [base] : [],
+  }
+}
+
+export function describeModifierSource(data: ModifierSource) {
+  if (data.perk) {
+    return {
+      icon: data.perk.IconPath || data.icon,
+      label: data.perk.DisplayName || data.perk.SecondaryEffectDisplayName || data.label,
+    }
+  }
+  if (data.item) {
+    return {
+      icon: getItemIconPath(data.item),
+      label: data.item.Name,
+    }
+  }
+  if (data.ability) {
+    let label = data.ability.DisplayName || data.label || data.ability.AbilityID
+    if (data.ability.AbilityID.match(/_Bonus_\d+_\d$/)) {
+      label = humanize(data.ability.AbilityID.replace(/_\d$/, ''))
+    }
+    return {
+      icon: data.ability.Icon || data.icon,
+      label: label,
+    }
+  }
+  if (data.effect) {
+    return {
+      icon: data.effect.PlaceholderIcon || data.icon,
+      label: data.effect.DisplayName || data.label,
+    }
+  }
+  return {
+    icon: data.icon,
+    label: data.label,
   }
 }

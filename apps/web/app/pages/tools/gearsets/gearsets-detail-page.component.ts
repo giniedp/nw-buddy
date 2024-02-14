@@ -25,8 +25,8 @@ import { BehaviorSubject, map } from 'rxjs'
 import { GearsetsDB } from '~/data'
 import { Mannequin } from '~/nw/mannequin'
 import { svgCalculator, svgChartLine, svgDiagramProject, svgSwords, svgUser } from '~/ui/icons/svg'
-import { DamageCalculatorComponent } from './calculator/damage-calculator.component'
-import { DamageDuelService } from './calculator/damage-duel.service'
+
+import { DamageCalculatorComponent } from '~/widgets/damage-calculator'
 import { GearsetGridComponent } from './gearset/gearset-grid.component'
 import { GearsetHostDirective } from './gearset/gearset-host.directive'
 import { GearsetToolbarComponent } from './gearset/gearset-toolbar.component'
@@ -58,7 +58,6 @@ import { GearsetToolbarComponent } from './gearset/gearset-toolbar.component'
     GearsetToolbarComponent,
     DamageCalculatorComponent,
   ],
-  providers: [DamageDuelService],
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'ion-page',

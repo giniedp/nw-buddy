@@ -9,7 +9,6 @@ import { IconsModule } from '~/ui/icons'
 import { LayoutModule } from '~/ui/layout'
 import { SwiperDirective } from '~/utils/directives/swiper.directive'
 import { ScreenshotFrameDirective, ScreenshotModule } from '~/widgets/screenshot'
-import { DamageCalculatorComponent } from '../calculator/damage-calculator.component'
 import { GearCellSlotComponent } from '../cells/gear-cell-slot.component'
 import { GearsetPaneMainComponent } from '../cells/gearset-pane-main.component'
 import { GearsetPaneSkillComponent } from '../cells/gearset-pane-skill.component'
@@ -26,7 +25,6 @@ import { GearsetToolbarComponent } from './gearset-toolbar.component'
 
   imports: [
     CommonModule,
-    DamageCalculatorComponent,
     FormsModule,
     GearCellSlotComponent,
     GearsetLoadoutItemComponent,
