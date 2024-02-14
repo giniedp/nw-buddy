@@ -25,7 +25,7 @@
   </ng-template>
 </span>
 <span class="join mt-1" [cdkMenuTriggerFor]="tplGsSlider">
-  <button class="join-item btn btn-sm w-20">GS</button>
+  <button class="join-item btn btn-sm w-20 justify-start text-left">GS</button>
   <input
     type="number"
     class="join-item appearance-none input input-sm input-bordered text-right w-full"
@@ -56,7 +56,7 @@
   </span>
 </span>
 <span class="join mt-1" [cdkMenuTriggerFor]="tplDamageSlider">
-  <button class="join-item btn btn-sm w-20">Damage</button>
+  <button class="join-item btn btn-sm w-20 justify-start text-left">Damage</button>
   <input
     type="number"
     class="join-item appearance-none input input-sm input-bordered text-right w-full"
@@ -83,7 +83,7 @@
   </ng-template>
 </span>
 <span class="join mt-1">
-  <button class="join-item btn btn-sm w-20 px-1">Scaling</button>
+  <button class="join-item btn btn-sm w-20 justify-start text-left">Scaling</button>
   @for (item of scaling; track $index) {
     <input
       type="number"

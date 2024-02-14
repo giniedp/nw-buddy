@@ -38,6 +38,7 @@
           >
             <ion-content class="bg-black ion-p-4">
               <nwb-damage-calculator
+                [layoutAsPage]="true"
                 [player]="player$ | async"
                 [opponent]="opponent$ | async"
               />
@@ -107,6 +108,7 @@
               >
                 <ion-content class="bg-black ion-p-4">
                   <nwb-damage-calculator
+                    [layoutAsPage]="true"
                     [opponent]="player$ | async"
                     [player]="opponent$ | async"
                   />

@@ -37,7 +37,7 @@
     </label>
     @if (isOpen) {
       <label class="join">
-        <span class="join-item input input-sm input-ghost rounded-none w-24"> Value </span>
+        <span class="join-item input input-sm input-ghost rounded-none flex-1"> Custom Value </span>
         <input
           type="number"
           [min]="min"
@@ -47,7 +47,10 @@
           [(ngModel)]="inlineValue"
           (wheel)="($event)"
         />
-        <span class="join-item flex-1"></span>
+        <span class="join-item w-14"></span>
+        <span class="join-item btn btn-sm btn-square btn-ghost text-primary no-animation rounded-none cursor-default pointer-events-none">
+
+        </span>
         <button class="join-item btn btn-sm btn-square text-primary no-animation rounded-none" (click)="addToStack()">
           <nwb-icon [icon]="iconAdd" class="w-4 h-4" />
         </button>
@@ -56,7 +59,7 @@
       @for (row of stack; track $index) {
         <label class="join">
           <input
-            class="join-item input input-sm rounded-none w-24"
+            class="join-item input input-sm bg-base-200 rounded-none min-w-0 flex-1"
             placeholder="Label"
             [ngModel]="row.label"
             (ngModelChange)="setStackItemLabel($index, $event)"
@@ -75,7 +78,7 @@
             type="number"
             [step]="step"
             placeholder="Cap"
-            class="join-item appearance-none input input-sm rounded-none text-right min-w-0 flex-1"
+            class="join-item appearance-none input input-sm rounded-none text-right w-14"
             [ngModel]="row.cap"
             (ngModelChange)="setStackItemCap($index, $event)"
             (wheel)="($event)"

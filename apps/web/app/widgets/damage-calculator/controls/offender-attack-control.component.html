@@ -1,6 +1,5 @@
 <label class="label">
   <span class="label-text"> Attack </span>
-  <span class="label-text"> Coef </span>
 </label>
 <span class="join" [cdkMenuTriggerFor]="attackOptions().length ? tplAttacks : null">
   <button class="join-item btn btn-sm w-full" [disabled]="!attackOptions().length" >
@@ -24,7 +23,7 @@
   </ng-template>
 </span>
 <span class="join mt-1">
-  <button class="join-item btn btn-sm w-40">
+  <button class="join-item btn btn-sm justify-start text-left w-40">
     Damage Coef
   </button>
   <input
@@ -38,7 +37,7 @@
   />
 </span>
 <span class="join mt-1">
-  <button class="join-item btn btn-sm w-40">
+  <button class="join-item btn btn-sm justify-start text-left w-40">
     Damage Add
   </button>
   <input

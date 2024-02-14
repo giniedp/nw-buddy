@@ -29,8 +29,9 @@ import { OffenderWeaponControlComponent } from './controls/offender-weapon-contr
 import { StackedValueControlComponent } from './controls/stacked-value-control.component'
 import { DamageCalculatorState, DamageCalculatorStore, ValueStack, updateDefender, updateOffender } from './damage-calculator.store'
 import { DamageOutputComponent } from './damage-output.component'
-import { getDamageScalingForWeapon } from '@nw-data/common'
+import { getDamageScalingForWeapon, patchPrecision } from '@nw-data/common'
 import { ModifierResult, describeModifierSource, modifierResult } from '~/nw/mannequin/modifier'
+import { LayoutModule } from '~/ui/layout'
 
 @Component({
   standalone: true,
@@ -50,9 +51,12 @@ import { ModifierResult, describeModifierSource, modifierResult } from '~/nw/man
     OffenderStatsControlComponent,
     OffenderWeaponControlComponent,
     StackedValueControlComponent,
+    LayoutModule
   ],
   host: {
-    class: 'flex flex-col gap-4',
+    class: 'flex flex-col',
+    '[class.gap-4]': '!layoutAsPage',
+    '[class.ion-page]': 'layoutAsPage',
   },
   providers: [DamageCalculatorStore],
 })
@@ -84,10 +88,17 @@ export class DamageCalculatorComponent implements OnInit {
     this.opponent$.next(value)
   }
 
+  @Input()
+  public layoutAsPage = false
+
   public constructor(@Attribute('standalone') standalone: string) {
     if (booleanAttribute(standalone)) {
-      this.connectState()
+      this.store.connectWeaponTag()
+      this.store.connectAttributes()
+      this.store.connectAffix()
     } else {
+      this.store.connectWeaponTag()
+      this.store.connectAttributes()
       this.connectPlayer()
       this.connectOpponent()
     }
@@ -102,12 +113,6 @@ export class DamageCalculatorComponent implements OnInit {
         injector: this.injector,
       },
     )
-  }
-
-  private connectState() {
-    this.store.connectWeaponTag()
-    this.store.connectAttributes()
-    this.store.connectAffix()
   }
 
   private connectPlayer() {
@@ -139,7 +144,7 @@ export class DamageCalculatorComponent implements OnInit {
             this.store,
             updateOffender({
               level: level,
-              gearScore: gearScore,
+              gearScore: patchPrecision(gearScore),
               attributePoints: {
                 str: attributes?.str?.total,
                 dex: attributes?.dex?.total,
@@ -158,7 +163,7 @@ export class DamageCalculatorComponent implements OnInit {
               convertScaling: getDamageScalingForWeapon(modConvert?.Affix),
               convertDamageType: modConvert?.Type,
               convertPercent: modConvert?.Percent ?? 0,
-              weaponTag: null,
+              weaponTag: weapon?.weaponTag,
               weaponDamage: weapon?.weapon?.BaseDamage ?? 0,
               weaponGearScore: weapon?.gearScore ?? 0,
               weaponScaling: getDamageScalingForWeapon(weapon?.weapon),
@@ -211,9 +216,10 @@ export class DamageCalculatorComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(({ dmgTypeWeapon, dmgTypeConvert, level, gearScore, modAbs, modWKN, modArmor }) => {
+
         patchState(this.store, updateDefender({
           level: level,
-          gearScore: gearScore,
+          gearScore: patchPrecision(gearScore),
           modABS: toStack(modAbs?.DamageCategories[dmgTypeWeapon]),
           modABSConv: toStack(modAbs?.DamageCategories[dmgTypeConvert]),
           modWKN: toStack(modWKN?.[dmgTypeWeapon]),
@@ -222,20 +228,20 @@ export class DamageCalculatorComponent implements OnInit {
           // modBaseReductionConv
           // modCritReduction
           elementalArmor: {
-            value: modArmor?.ElementalBase?.armorRating ?? 0,
+            value: patchPrecision(modArmor?.ElementalBase?.armorRating ?? 0, 1) ,
             stack: []
           },
           elementalArmorAdd: {
-            value: modArmor?.ElementalBase?.weaponRating ?? 0,
+            value: patchPrecision(modArmor?.ElementalBase?.weaponRating ?? 0, 1) ,
             stack: []
           },
           elementalArmorFortify: toStack(modArmor?.Elemental),
           physicalArmor: {
-            value: modArmor?.PhysicalBase?.armorRating ?? 0,
+            value: patchPrecision(modArmor?.PhysicalBase?.armorRating ?? 0, 1) ,
             stack: []
           },
           physicalArmorAdd: {
-            value: modArmor?.PhysicalBase?.weaponRating ?? 0,
+            value: patchPrecision(modArmor?.PhysicalBase?.weaponRating ?? 0, 1) ,
             stack: []
           },
           physicalArmorFortify: toStack(modArmor?.Physical),
@@ -252,11 +258,11 @@ function toStack(mod: ModifierResult): ValueStack {
     }
   }
   return {
-    value: mod.value,
+    value: 0,
     stack: mod.source.map((it) => {
       const source = describeModifierSource(it.source)
       return {
-        value: it.value * it.scale,
+        value: patchPrecision(it.value * it.scale),
         cap: it.limit ?? null,
         label: source.label,
         icon: source.icon,
