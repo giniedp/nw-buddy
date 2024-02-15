@@ -8,7 +8,7 @@ export interface Ability {
   ActivationCooldown: number
   AfterAction: string
   AfterSequence: string
-  AllowSelfDamageForHitEvents: boolean
+  AllowSelfDamageForHitEvents: boolean | string
   ArmorPenetration: number
   AttackType: AttackType[]
   AttackerVitalsCategory: VitalsCategory
@@ -119,15 +119,15 @@ export interface Ability {
   NumTargetStatusEffectsToRemove: number
   NumberOfHitsComparisonType: ComparisonType
   NumberOfTrackedHits: number
-  OnAttachedSpellTargetDied: boolean
+  OnAttachedSpellTargetDied: boolean | string
   OnBlockBreak: boolean
   OnBlockedHit: boolean
   OnBlockedHitTaken: boolean
   OnContributedKill: boolean
   OnCrit: boolean
   OnCritTaken: boolean
-  OnDeath: boolean
-  OnDeathsDoor: boolean
+  OnDeath: boolean | string
+  OnDeathsDoor: boolean | string
   OnDismount: boolean
   OnEquipStatusEffect: string
   OnEventConditionalActivationChance: boolean
@@ -237,6 +237,7 @@ export interface Achievements {
   AchievementIndex: number
   Category: string
   GameEventId: string
+  'Is Deprecated': string
 }
 
 export interface Affixdefinitions {
@@ -380,6 +381,7 @@ export interface Areadefinitions {
   ChartedAchievement: string
   IsArea: boolean
   IsChartable: boolean
+  IsFFA: boolean
   IsPOI: boolean
   NameLocalizationKey: string
   POILevel: number
@@ -744,6 +746,7 @@ export interface Crafting {
   SkipGrantItemsTitle: string
   StationType1: string
   StationType2: string
+  StationType3: string
   Tradeskill: string
   Type1: string
   Type2: string
@@ -821,6 +824,7 @@ export interface Damagetable {
   DurabilityCostOverride: number
   EffectOnlyOnDamage: boolean | number | string
   EffectWhenNotBlocked: boolean
+  ForceAttackToHit: boolean
   HitBlockedRuneCharge: number
   HitRateDmgModifier: number
   HitRuneCharge: number
@@ -858,7 +862,7 @@ export interface Damagetable {
   ThirstDmg: number
   ThreatMultiplier: number
   Unblockable: boolean | number | string
-  UseAttackerPosForReaction: boolean
+  UseAttackerPosForReaction: boolean | number
   WeaponCategory: string
   stunBreakoutIncrementer: number
 }
@@ -985,7 +989,7 @@ export interface GameEvent {
   PvpXp: number
   RemoveStatusEffectCategories: string
   'Reward Type': string
-  RewardModifier: string
+  RewardModifier: number | string
   RewardsNotes: string
   SeasonsXp: number
   StatusEffectId: string
@@ -1006,6 +1010,7 @@ export interface Gamemodes {
   AchievementIdForCompletingMaxRank: string
   ActivityType: string
   AdvanceThroughStatesOnUpdate: string
+  AllowMounts: boolean
   AllowPvpValueAccumulation: boolean
   AutoEquipQuickslot: boolean
   BackfillDelaySec: number
@@ -1075,6 +1080,7 @@ export interface Gamemodes {
   MinGroupSize: number
   MinPlayerLevelToUseGearScoreOverride: number
   ModeNameLocStringId: string
+  MountSummonErrorMsg: string
   MutLootGSRangeOverride: string
   MutLootTagsOverride: string[]
   NumTeams: number
@@ -1133,6 +1139,7 @@ export interface Gamemodes {
   WarBoardStatDefinitions: string
   WeeklyLootLimitId: string
   WorldBounds: string
+  WorldPosToTeleportBackTo: string
 }
 
 export interface Gatherables {
@@ -1303,6 +1310,7 @@ export interface ItemDefinitionMaster {
   MaxStackSize: number | string
   MinGearScore: number
   Name: string
+  NoBindOnPickupChance: number
   Nonremovable: number
   NotDroppable: boolean
   NotDroppableNotificationOverride: string
@@ -2117,6 +2125,7 @@ export interface Lootbuckets {
   Item407: string
   Item408: string
   Item409: string
+  Item41: string
   Item410: string
   Item411: string
   Item412: string
@@ -2126,6 +2135,7 @@ export interface Lootbuckets {
   Item416: string
   Item417: string
   Item418: string
+  Item42: string
   Item421: string
   Item422: string
   Item423: string
@@ -2134,9 +2144,14 @@ export interface Lootbuckets {
   Item427: string
   Item428: string
   Item429: string
+  Item43: string
   Item430: string
   Item431: string
   Item432: string
+  Item435: string
+  Item436: string
+  Item437: string
+  Item438: string
   Item44: string
   Item45: string
   Item46: string
@@ -2148,6 +2163,7 @@ export interface Lootbuckets {
   Item51: string
   Item52: string
   Item53: string
+  Item54: string
   Item55: string
   Item56: string
   Item57: string
@@ -2197,6 +2213,11 @@ export interface Lootbuckets {
   Item97: string
   Item98: string
   Item99: string
+  LootBiasingDisabled311: boolean
+  LootBiasingDisabled32: boolean
+  LootBiasingDisabled5: boolean
+  LootBiasingDisabled6: boolean
+  LootBiasingDisabled7: boolean
   LootBucket1: string
   LootBucket10: string
   LootBucket100: string
@@ -2523,6 +2544,7 @@ export interface Lootbuckets {
   LootBucket407: string
   LootBucket408: string
   LootBucket409: string
+  LootBucket41: string
   LootBucket410: string
   LootBucket411: string
   LootBucket412: string
@@ -2532,6 +2554,7 @@ export interface Lootbuckets {
   LootBucket416: string
   LootBucket417: string
   LootBucket418: string
+  LootBucket42: string
   LootBucket421: string
   LootBucket422: string
   LootBucket423: string
@@ -2540,9 +2563,14 @@ export interface Lootbuckets {
   LootBucket427: string
   LootBucket428: string
   LootBucket429: string
+  LootBucket43: string
   LootBucket430: string
   LootBucket431: string
   LootBucket432: string
+  LootBucket435: string
+  LootBucket436: string
+  LootBucket437: string
+  LootBucket438: string
   LootBucket44: string
   LootBucket45: string
   LootBucket46: string
@@ -2554,6 +2582,7 @@ export interface Lootbuckets {
   LootBucket51: string
   LootBucket52: string
   LootBucket53: string
+  LootBucket54: string
   LootBucket55: string
   LootBucket56: string
   LootBucket57: string
@@ -2615,11 +2644,13 @@ export interface Lootbuckets {
   MatchOne121: string
   MatchOne122: string
   MatchOne13: string
+  MatchOne14: string
   MatchOne140: string
   MatchOne142: boolean
   MatchOne149: string
   MatchOne15: boolean
   MatchOne150: string
+  MatchOne151: string
   MatchOne153: boolean
   MatchOne154: boolean
   MatchOne155: boolean
@@ -2657,10 +2688,13 @@ export interface Lootbuckets {
   MatchOne40: string
   MatchOne403: boolean
   MatchOne404: boolean
+  MatchOne41: string
   MatchOne412: boolean
   MatchOne413: boolean
+  MatchOne42: string
   MatchOne426: string
-  MatchOne44: string
+  MatchOne43: string
+  MatchOne46: string
   MatchOne52: string
   MatchOne53: string
   MatchOne57: string
@@ -2672,7 +2706,11 @@ export interface Lootbuckets {
   MatchOne76: boolean
   MatchOne77: string
   MatchOne81: boolean
+  MatchOne84: string
   MatchOne87: string
+  Odds414: number
+  Odds416: number
+  Odds435: number
   Quantity1: number
   Quantity10: number
   Quantity100: number
@@ -2696,7 +2734,7 @@ export interface Lootbuckets {
   Quantity117: number
   Quantity118: number
   Quantity119: number
-  Quantity12: number | string
+  Quantity12: number
   Quantity120: number
   Quantity121: number
   Quantity122: number
@@ -2707,7 +2745,7 @@ export interface Lootbuckets {
   Quantity127: number
   Quantity128: number
   Quantity129: number
-  Quantity13: number | string
+  Quantity13: number
   Quantity130: number
   Quantity131: number
   Quantity132: number
@@ -2993,6 +3031,7 @@ export interface Lootbuckets {
   Quantity407: number
   Quantity408: number
   Quantity409: number
+  Quantity41: number
   Quantity410: number
   Quantity411: number
   Quantity412: number
@@ -3002,6 +3041,7 @@ export interface Lootbuckets {
   Quantity416: number
   Quantity417: number
   Quantity418: number
+  Quantity42: number
   Quantity421: number
   Quantity422: number
   Quantity423: number
@@ -3010,10 +3050,15 @@ export interface Lootbuckets {
   Quantity427: number
   Quantity428: number
   Quantity429: number
+  Quantity43: number
   Quantity430: number
   Quantity431: number
   Quantity432: number
-  Quantity44: number
+  Quantity435: number
+  Quantity436: number
+  Quantity437: number
+  Quantity438: number
+  Quantity44: string
   Quantity45: number
   Quantity46: number
   Quantity47: number
@@ -3024,6 +3069,7 @@ export interface Lootbuckets {
   Quantity51: number
   Quantity52: number
   Quantity53: number
+  Quantity54: number
   Quantity55: number
   Quantity56: number
   Quantity57: number
@@ -3056,7 +3102,7 @@ export interface Lootbuckets {
   Quantity81: number
   Quantity82: number
   Quantity83: number
-  Quantity84: number
+  Quantity84: string
   Quantity85: number
   Quantity86: number
   Quantity87: number
@@ -3232,7 +3278,6 @@ export interface Lootbuckets {
   Tags265: string[]
   Tags266: string[]
   Tags267: string[]
-  Tags27: string[]
   Tags270: string[]
   Tags271: string[]
   Tags272: string[]
@@ -3240,7 +3285,6 @@ export interface Lootbuckets {
   Tags274: string[]
   Tags275: string[]
   Tags28: string[]
-  Tags29: string[]
   Tags298: string[]
   Tags3: string[]
   Tags30: string[]
@@ -3249,8 +3293,6 @@ export interface Lootbuckets {
   Tags310: string[]
   Tags314: string[]
   Tags317: string[]
-  Tags32: string[]
-  Tags33: string[]
   Tags331: string[]
   Tags332: string[]
   Tags333: string[]
@@ -3260,7 +3302,6 @@ export interface Lootbuckets {
   Tags337: string[]
   Tags338: string[]
   Tags339: string[]
-  Tags34: string[]
   Tags340: string[]
   Tags35: string[]
   Tags350: string[]
@@ -3270,15 +3311,11 @@ export interface Lootbuckets {
   Tags354: string[]
   Tags356: string[]
   Tags357: string[]
-  Tags36: string[]
-  Tags37: string[]
-  Tags38: string[]
   Tags39: string[]
   Tags397: string[]
   Tags398: string[]
   Tags399: string[]
   Tags4: string[]
-  Tags40: string[]
   Tags400: string[]
   Tags402: string[]
   Tags403: string[]
@@ -3304,8 +3341,7 @@ export interface Lootbuckets {
   Tags429: string[]
   Tags430: string[]
   Tags432: string[]
-  Tags44: string[]
-  Tags45: string[]
+  Tags435: string[]
   Tags46: string[]
   Tags47: string[]
   Tags48: string[]
@@ -3378,6 +3414,7 @@ export interface Lootlimits {
   MaxLimitSeconds: number
   MinLimitMult: number
   MinLimitSeconds: number
+  PityTickerOddsMod: number
 }
 
 export interface Loottable {
@@ -3450,7 +3487,6 @@ export interface Loottable {
   Item39: string
   Item4: string
   Item40: string
-  Item41: string
   Item5: string
   Item6: string
   Item7: string
@@ -3487,7 +3523,6 @@ export interface Loreitems {
 export interface ManacostsPlayer {
   CostID: string
   ManaCost: number
-  WeaponTag: string
 }
 
 export interface Metaachievements {
@@ -4017,6 +4052,7 @@ export interface Perks {
   PerkType: PerkType
   ScalingPerGearScore: string
   SecondaryEffectDisplayName: string
+  Sorting: string
   StatDisplayText: string
   Tier: number
   WeaponTag: WeaponTag
@@ -4129,14 +4165,13 @@ export interface PvpStore {
   BudgetContribution1: number
   BudgetContribution2: number
   BudgetContribution3: number
-  Entitlement2: number
+  Entitlement1: string
+  ExcludeTypeShop1: string
   ExcludeTypeStage1: string
   ExcludeTypeStage2: string
   ExcludeTypeStage3: string
   GameEvent1: string
-  GameEvent2: number
-  Item1: string
-  Item2: string
+  GameEvent2: string
   MatchOne1: boolean
   MatchOne2: boolean
   MatchOne3: boolean
@@ -4294,6 +4329,7 @@ export interface Spelltable {
   StoreOffsetWhenStuckToGDE: boolean
   TargetAbilityCondition: string
   TargetTypes: string
+  TerminateExistingSiphonSpellOnConnection: boolean
   TertiarySpellID: string
   TrackNumInVolume: boolean
   TrackableByOwner: boolean
@@ -4361,6 +4397,7 @@ export interface Statuseffect {
   BaseDuration: number
   BlockMultipleEffectsFromSameSource: boolean
   CastSpell: string
+  ConsumableHealMod: number
   CoreTempMod: number
   CostumeChangeId: string
   CritChanceModifier: number
@@ -4420,7 +4457,7 @@ export interface Statuseffect {
   EffectCategories: StatusEffectCategory[]
   EffectDurationMods: string[]
   EffectDurationMods_Tooltip: number
-  EffectPotencyMods: number | string
+  EffectPotencyMods: string
   ElementalArmor: number
   Encumbrance: number
   EquipAbility: string
@@ -4461,7 +4498,7 @@ export interface Statuseffect {
   IgnoreInvulnerable: boolean
   InheritDuration: boolean | number | string
   InheritTotalDuration: boolean | number | string
-  InitialStackSize: boolean | number
+  InitialStackSize: number | string
   IsClientPredicted: boolean | number | string
   IsNegative: boolean | string
   IsServerOnly: boolean
@@ -4576,6 +4613,7 @@ export interface Statuseffect {
   SourceRuneChargeOnApply: number
   SourceRuneChargeOnHealthChangeOnly: boolean
   SourceRuneChargeOnTick: number
+  SpawnSlice: string
   SprintSpeedMod: number
   StackDuration: boolean | number | string
   StackMax: number
@@ -5176,6 +5214,7 @@ export interface VariationsGatherables {
   RotationPercent_2: number
   RotationPercent_3: number
   RotationPercent_4: number
+  SFX_Gathering: string
   SFX_depleted_idle_play: string
   SFX_depleted_idle_stop: string
   SFX_gathering: string
@@ -5290,7 +5329,6 @@ export interface Vitals {
   ABSStrike: number
   ABSThrust: number
   AFAFrostbite: string
-  BaseDamageOverride: string
   BlockDamageMitigation: number
   BlockStaminaCost: number
   BuffBuckets: string
@@ -5325,14 +5363,11 @@ export interface Vitals {
   DeathsDoorTime: number
   DifficultyTierOverride: number
   DisplayName: string
-  ElementalArmorRatingOverride: string
   ElementalMitigation: number
   Family: VitalsFamily
-  GearScoreOverride: string
-  HealthBaseMax: string
   HealthBaseTickRate: number
   HealthFullyDepletedDelay: number
-  HealthInitial: string
+  HealthInitial: number
   HealthLowerThreshold: number
   HealthMin: number
   HealthMod: number
@@ -5364,7 +5399,6 @@ export interface Vitals {
   MutatorDifficultyMod: number
   MutatorPotencyMod: number
   NoExpNoCoin: string
-  PhysicalArmorRatingOverride: string
   PhysicalMitigation: number
   RESBleed: number
   RESBlight: number
@@ -5416,7 +5450,6 @@ export interface VitalsFirstlight {
   ABSThrust: number
   AFADisease: number
   AFAPoison: number
-  BaseDamageOverride: number
   BlockDamageMitigation: number
   BlockStaminaCost: number
   BuffBuckets: string
@@ -5441,11 +5474,8 @@ export interface VitalsFirstlight {
   DeathsDoorTime: number
   DifficultyTierOverride: number
   DisplayName: string
-  ElementalArmorRatingOverride: number
   ElementalMitigation: number
   Family: string
-  GearScoreOverride: number
-  HealthBaseMax: number
   HealthBaseTickRate: number
   HealthFullyDepletedDelay: number
   HealthInitial: number
@@ -5477,7 +5507,6 @@ export interface VitalsFirstlight {
   MinionVitalsId: string
   MutatorPotencyMod: number
   NoExpNoCoin: boolean
-  PhysicalArmorRatingOverride: number
   PhysicalMitigation: number
   RESPoison: number
   StaminaBaseMax: number
@@ -5834,6 +5863,7 @@ export type EntitlementSourceType =
   | 'WinterEvent'
 export type EquipLoadCategory =
   | 'Fast'
+  | 'Fast,Normal'
   | 'Normal'
   | 'Slow'
 export type GatheringTradeskill =
@@ -5921,6 +5951,7 @@ export type ItemClass =
   | 'Cloth'
   | 'Consumable'
   | 'Currency'
+  | 'Drink'
   | 'DungeonItem'
   | 'Dye'
   | 'EquippableAmulet'
@@ -5933,6 +5964,7 @@ export type ItemClass =
   | 'EquippableMount'
   | 'EquippableMouth'
   | 'EquippableOffHand'
+  | 'EquippableOffhand'
   | 'EquippableRing'
   | 'EquippableToken'
   | 'EquippableTool'
@@ -6017,6 +6049,7 @@ export type ItemClass =
   | 'UpgradeMaterial'
   | 'VoidGauntlet'
   | 'Weapon'
+  | 'WeaponConsumable'
   | 'WeaponOil'
   | 'WeaponSchematic'
   | 'Wood'
@@ -6133,6 +6166,7 @@ export type LootTag =
   | 'Cook'
   | 'Corlew'
   | 'Corrupted'
+  | 'Cotheran'
   | 'Crassus'
   | 'Critter'
   | 'CursedOne'
@@ -6268,8 +6302,6 @@ export type LootTag =
   | 'Isabella1'
   | 'Isabella2'
   | 'IsabellaDynasty'
-  | 'IsabellaDynasty2'
-  | 'IsabellaDynasty3'
   | 'Isetem'
   | 'Isvari'
   | 'Ivan'
@@ -6351,6 +6383,7 @@ export type LootTag =
   | 'Matthiasthelonely'
   | 'MegaFlora'
   | 'Melee'
+  | 'Merrill'
   | 'Mightytusk'
   | 'Milosh'
   | 'Min'
@@ -6597,6 +6630,7 @@ export type StatusEffectCategory =
   | 'CarryOrb'
   | 'Cleanse'
   | 'ClearOnReset'
+  | 'CorruptedNagaCoreResist'
   | 'Crit'
   | 'CritDmgReduction'
   | 'DMG'
@@ -6605,6 +6639,7 @@ export type StatusEffectCategory =
   | 'Debilitate'
   | 'Debuff'
   | 'DefBoost'
+  | 'DifficultyFlag'
   | 'Disease'
   | 'DoT'
   | 'Dot'
@@ -6645,6 +6680,7 @@ export type StatusEffectCategory =
   | 'IceRoot'
   | 'IgnoreDebuffs'
   | 'Immortal'
+  | 'ImmunityToSlow'
   | 'InSmoke'
   | 'InfectedThrow'
   | 'LastStand'
@@ -6658,10 +6694,12 @@ export type StatusEffectCategory =
   | 'MutatorEmpower'
   | 'MutatorHearty'
   | 'NonDispellableBuff'
+  | 'NonDispellableCC'
   | 'NonDispellableDebuff'
   | 'NonDispellableEmpower'
   | 'NonDispellableSlow'
   | 'NonDispellableWeaken'
+  | 'NonStoryMode'
   | 'NullChamberBuff'
   | 'OverheatDebuff'
   | 'PassiveFoodRegen'
@@ -6695,6 +6733,7 @@ export type StatusEffectCategory =
   | 'StoneForm'
   | 'Stun'
   | 'SturgeonFishingBuff'
+  | 'Taunt'
   | 'TeamWipeCat'
   | 'Threat'
   | 'ThrowingAxe'
@@ -6971,6 +7010,8 @@ export type UICategory =
 export type VitalsCategory =
   | ''
   | '12'
+  | 'Abominable_Liang_MSQ'
+  | 'Abominable_Liang_MSQ_minion'
   | 'Alligator'
   | 'Alligator_Black_12'
   | 'Alligator_Black_16'
@@ -8476,6 +8517,12 @@ export type VitalsCategory =
   | 'Damned_Cultist_DT6'
   | 'Damned_Cultist_GC_1132_Named_Coy'
   | 'Damned_Cultist_Isabella_Basilica_Summon'
+  | 'Damned_Cultist_Isabella_MSQ2_Named_00'
+  | 'Damned_Cultist_Isabella_MSQ2_Named_01'
+  | 'Damned_Cultist_Isabella_MSQ2_Named_02'
+  | 'Damned_Cultist_Isabella_MSQ2_Named_03'
+  | 'Damned_Cultist_Isabella_MSQ2_Named_04'
+  | 'Damned_Cultist_Isabella_MSQ2_Named_05'
   | 'Damned_Cultist_Minion'
   | 'Damned_Cultist_Minion_RestlessShores'
   | 'Damned_Cultist_Named_00'
@@ -9953,6 +10000,8 @@ export type VitalsCategory =
   | 'Dunewalker_Waterseeker_LifeStaff_Trial_SoloPlus'
   | 'Dynasty_Empress'
   | 'Dynasty_Empress_Pedestal'
+  | 'Dynasty_Empress_Solo'
+  | 'Dynasty_Empress_Solo_Pedestal'
   | 'Dynasty_Heavy'
   | 'Dynasty_Heavy_08QP08'
   | 'Dynasty_Heavy_08QP08_ELITE'
@@ -10896,6 +10945,7 @@ export type VitalsCategory =
   | 'Isabella_DG_ShatterMtn_Phase1_00'
   | 'Isabella_DG_ShatterMtn_Phase2_00'
   | 'Isabella_DG_ShatterMtn_Phase2_Pylon'
+  | 'Isabella_MSQ2'
   | 'Jackrabbit_60'
   | 'Jackrabbit_61'
   | 'Jackrabbit_62'
@@ -13459,8 +13509,10 @@ export interface Spawns {
     nw_dungeon_shattermtn_00?:      Array<number[]>;
     nw_dungeon_windsward_00?:       Array<number[]>;
     nw_ori_eg_questmotherwell?:     Array<number[]>;
+    nw_ori_er_questliang?:          Array<number[]>;
     nw_ori_fl_questadiana?:         Array<number[]>;
     nw_ori_gc_questnihilo?:         Array<number[]>;
+    nw_ori_sm_questisabella?:       Array<number[]>;
     nw_trial_season_02?:            Array<number[]>;
     nw_trial_season_04?:            Array<number[]>;
     nw_trial_season_04_daichidojo?: Array<number[]>;
@@ -13537,8 +13589,10 @@ export interface LvlSpanws {
     nw_dungeon_shattermtn_00?:      Climaxftue02[];
     nw_dungeon_windsward_00?:       Climaxftue02[];
     nw_ori_eg_questmotherwell?:     Climaxftue02[];
+    nw_ori_er_questliang?:          Climaxftue02[];
     nw_ori_fl_questadiana?:         Climaxftue02[];
     nw_ori_gc_questnihilo?:         Climaxftue02[];
+    nw_ori_sm_questisabella?:       Climaxftue02[];
     nw_trial_season_02?:            Climaxftue02[];
     nw_trial_season_04?:            Climaxftue02[];
     nw_trial_season_04_daichidojo?: Climaxftue02[];

@@ -355,6 +355,9 @@ async function applyTerritoryLevel(
         if (spawn.mapId !== 'newworld_vitaeeterna') {
           continue
         }
+        if (!territory.zones?.length) {
+          continue
+        }
         if (!isPointInAABB(spawn.position, territory.zones[0].min, territory.zones[0].max)) {
           continue
         }

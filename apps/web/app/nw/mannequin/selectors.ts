@@ -477,13 +477,17 @@ export function selectPlacingMods(db: DbSlice, { perks }: AttributeModsSource) {
 export function selectEquipLoadBonus(equipLoad: number): ActiveBonus[] {
   const result: ActiveBonus[] = []
   if (equipLoad < 13) {
-    result.push({ key: 'BaseDamage', value: 0.2, name: 'Light Equip Load' })
+    result.push({ key: 'BaseDamage', value: 0.15, name: 'Light Equip Load' })
     result.push({ key: 'HealScalingValueMultiplier', value: 0.3, name: 'Light Equip Load' })
+    // TODO: crit damage taken -0.15
   } else if (equipLoad < 23) {
-    result.push({ key: 'BaseDamage', value: 0.1, name: 'Medium Equip Load' })
-    result.push({ key: 'HealScalingValueMultiplier', value: 0.1, name: 'Medium Equip Load' })
+    result.push({ key: 'BaseDamage', value: 0, name: 'Medium Equip Load' })
+    result.push({ key: 'HealScalingValueMultiplier', value: 0, name: 'Medium Equip Load' })
+    // TODO: crit damage taken -0.20
   } else {
+    result.push({ key: 'BaseDamage', value: -0.15, name: 'Heavy Equip Load' })
     result.push({ key: 'HealScalingValueMultiplier', value: -0.3, name: 'Heavy Equip Load' })
+    // TODO: crit damage taken -0.25
   }
   return result
 }
