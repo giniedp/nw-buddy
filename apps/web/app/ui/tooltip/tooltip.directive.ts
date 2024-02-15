@@ -4,6 +4,7 @@ import {
   ComponentRef,
   Directive,
   ElementRef,
+  HostListener,
   Input,
   NgZone,
   OnDestroy,
@@ -78,6 +79,9 @@ export class TooltipDirective implements OnInit, OnDestroy {
 
   @Input()
   public tooltipKeep: boolean = false
+
+  @Input()
+  public preventClick: boolean
 
   private destroy$ = new Subject<void>()
 
@@ -175,6 +179,14 @@ export class TooltipDirective implements OnInit, OnDestroy {
 
   public hide(): void {
     this.tooltipActive$.next(false)
+  }
+
+  @HostListener ('click', ['$event'])
+  protected handleClick(event: MouseEvent) {
+    if (this.preventClick) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
   }
 
   private showTooltip() {

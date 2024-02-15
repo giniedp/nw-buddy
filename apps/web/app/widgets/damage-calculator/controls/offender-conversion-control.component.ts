@@ -11,18 +11,19 @@ import { NwModule } from '~/nw'
 import { NW_WEAPON_TYPES, damageTypeIcon } from '~/nw/weapon-types'
 import { DataViewPicker } from '~/ui/data/data-view'
 import { IconsModule } from '~/ui/icons'
-import { svgEllipsisVertical } from '~/ui/icons/svg'
+import { svgEllipsisVertical, svgInfo } from '~/ui/icons/svg'
 import { InputSliderComponent } from '~/ui/input-slider'
 import { LayoutModule } from '~/ui/layout'
 import { PerkTableAdapter } from '~/widgets/data/perk-table'
 import { DamageCalculatorStore, OffenderState, offenderAccessor } from '../damage-calculator.store'
+import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
   standalone: true,
   selector: 'nwb-offender-conversion-control',
   templateUrl: './offender-conversion-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, InputSliderComponent, IconsModule, LayoutModule],
+  imports: [CommonModule, NwModule, FormsModule, InputSliderComponent, IconsModule, LayoutModule, TooltipModule],
   host: {
     class: 'form-control',
   },
@@ -33,17 +34,33 @@ export class OffenderConversionControlComponent {
 
   protected store = inject(DamageCalculatorStore)
   protected iconMore = svgEllipsisVertical
+  protected iconInfo = svgInfo
   protected convertType = offenderAccessor(this.store, 'convertDamageType')
   protected convertAffix = offenderAccessor(this.store, 'convertAffix')
   protected convertPercent = offenderAccessor(this.store, 'convertPercent', {
     scale: 100,
   })
-  protected scaling = [
-    { label: 'STR', access: scalingAccessor(this.store, 'str') },
-    { label: 'DEX', access: scalingAccessor(this.store, 'dex') },
-    { label: 'INT', access: scalingAccessor(this.store, 'int') },
-    { label: 'FOC', access: scalingAccessor(this.store, 'foc') },
-  ]
+  private refs: AttributeRef[] = ['str', 'dex', 'int', 'foc']
+  protected scaling = this.refs.map((it) => {
+    return {
+      label: it.toUpperCase(),
+      access: scalingAccessor(this.store, it),
+    }
+  })
+  protected get scalingInfos() {
+    return this.refs.map((it) => {
+      const stat = this.store.offender.attributeModSums[it]()
+      const scaling = this.store.offender.convertScaling()?.[it] || 0
+      const value = stat * scaling
+      return {
+        label: it.toUpperCase(),
+        stat: stat,
+        scaling: scaling,
+        value: value,
+      }
+    })
+  }
+
   protected get scalingSum() {
     return this.store.offenderConvertScalingSum()
   }

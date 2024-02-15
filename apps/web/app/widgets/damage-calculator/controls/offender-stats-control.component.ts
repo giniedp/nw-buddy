@@ -14,13 +14,16 @@ import { NwModule } from '~/nw'
 import { InputSliderComponent } from '~/ui/input-slider'
 import { LayoutModule } from '~/ui/layout'
 import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
+import { svgInfo } from '~/ui/icons/svg'
+import { IconsModule } from '~/ui/icons'
+import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
   standalone: true,
   selector: 'nwb-offender-stats-control',
   templateUrl: './offender-stats-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, InputSliderComponent, LayoutModule],
+  imports: [CommonModule, NwModule, FormsModule, InputSliderComponent, IconsModule, LayoutModule, TooltipModule],
   host: {
     class: 'form-control',
   },
@@ -51,6 +54,8 @@ export class OffenderStatsControlComponent {
 
   protected attrMin = NW_MIN_POINTS_PER_ATTRIBUTE
   protected attrMax = NW_MAX_POINTS_PER_ATTRIBUTE
+
+  protected iconInfo = svgInfo
 }
 
 function attributeAccessor(store: DamageCalculatorStore, key: AttributeRef) {

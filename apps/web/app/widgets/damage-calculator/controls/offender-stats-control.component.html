@@ -11,10 +11,14 @@
     [step]="1"
     [(ngModel)]="level.value"
     (wheel)="($event)"
+
   />
   <span class="join-item input input-sm bg-base-200">
     {{ store.offenderLevelFactor() | number: '0.2-2' }}
   </span>
+  <button class="join-item btn btn-sm btn-square" [tooltip]="tipLevel" [preventClick]="true">
+    <nwb-icon [icon]="iconInfo" class="w-4 h-4"/>
+  </button>
   <ng-template #tplSliderLevel>
     <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
       <nwb-input-slider
@@ -57,6 +61,9 @@
       />
     </div>
   </ng-template>
+  <button class="join-item btn btn-sm btn-square" [tooltip]="tipGearScore" [preventClick]="true">
+    <nwb-icon [icon]="iconInfo" class="w-4 h-4"/>
+  </button>
 </div>
 
 <span class="join mt-1">
@@ -64,7 +71,7 @@
   @for (stat of attrPoints; track $index) {
     <input
       type="number"
-      class="join-item w-full appearance-none input input-sm input-bordered text-right"
+      class="join-item w-full appearance-none input input-sm input-bordered text-center text-xs px-0"
       [min]="attrMin"
       [max]="attrMax"
       [step]="1"
@@ -88,17 +95,71 @@
       </div>
     </ng-template>
   }
+  <button class="join-item btn btn-sm btn-square" [tooltip]="tipStats" [preventClick]="true">
+    <nwb-icon [icon]="iconInfo" class="w-4 h-4"/>
+  </button>
 </span>
 
 <span class="join mt-1">
   <span class="join-item btn btn-sm w-20 justify-start"> Levels </span>
   @for (stat of attrLevels; track $index) {
     <input
-      class="join-item w-full appearance-none input input-sm input-bordered text-right"
+      class="join-item w-full appearance-none input input-sm input-bordered text-center text-xs px-0"
       [class.opacity-25]="!stat.access.value"
       [ngModel]="stat.access.value"
       (wheel)="($event)"
       disabled
     />
   }
+  <button class="join-item btn btn-sm btn-square" [tooltip]="tipLevels" [preventClick]="true">
+    <nwb-icon [icon]="iconInfo" class="w-4 h-4"/>
+  </button>
 </span>
+
+<ng-template #tipLevel>
+  <div class="p-2 prose prose-sm leading-tight w-80">
+    <h4>Level</h4>
+    <p>
+      Damage is scaled off the attacker level.
+      <br />
+      <br />
+      Additionally in PvP game modes the level difference between attacker and defender is taken into account.
+    </p>
+  </div>
+</ng-template>
+
+<ng-template #tipGearScore>
+  <div class="p-2 prose prose-sm leading-tight w-80">
+    <h4>Gear Score</h4>
+    <p>
+      The average gear score of the attacker.
+      <br />
+      <br />
+      In PvP game modes the gear score difference between attacker and defender is taken into account.
+    </p>
+  </div>
+</ng-template>
+
+<ng-template #tipStats>
+  <div class="p-2 prose prose-sm leading-tight w-80">
+    <h4>Attribute Points</h4>
+    <p>
+      The assigned attribute points in the order of:
+      @for (stat of attrPoints; track $index) {
+        <span> {{ stat.label}} </span>
+      }
+    </p>
+  </div>
+</ng-template>
+
+<ng-template #tipLevels>
+  <div class="p-2 prose prose-sm leading-tight w-80">
+    <h4>Attribute Modifier Sums</h4>
+    <p>
+      The sum of the attribute modifiers from assigned attirbute points:
+      @for (stat of attrPoints; track $index) {
+        <span> {{ stat.label}} </span>
+      }
+    </p>
+  </div>
+</ng-template>

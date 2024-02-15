@@ -7,9 +7,10 @@ import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
 import { IconsModule } from '~/ui/icons'
-import { svgEllipsisVertical } from '~/ui/icons/svg'
+import { svgEllipsisVertical, svgInfo } from '~/ui/icons/svg'
 import { InputSliderComponent } from '~/ui/input-slider'
 import { LayoutModule } from '~/ui/layout'
+import { TooltipModule } from '~/ui/tooltip'
 import { DamageCalculatorStore, OffenderState } from '../damage-calculator.store'
 
 @Component({
@@ -17,7 +18,7 @@ import { DamageCalculatorStore, OffenderState } from '../damage-calculator.store
   selector: 'nwb-offender-weapon-control',
   templateUrl: './offender-weapon-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, InputSliderComponent, IconsModule, LayoutModule],
+  imports: [CommonModule, NwModule, FormsModule, InputSliderComponent, IconsModule, LayoutModule, TooltipModule],
   host: {
     class: 'form-control',
   },
@@ -27,6 +28,7 @@ export class OffenderWeaponControlComponent {
   private injector = inject(Injector)
   protected store = inject(DamageCalculatorStore)
   protected iconMore = svgEllipsisVertical
+  protected iconInfo = svgInfo
 
   protected weaponTag = offenderAccessor(this.store, 'weaponTag')
   protected weaponDamage = offenderAccessor(this.store, 'weaponDamage')
@@ -36,12 +38,27 @@ export class OffenderWeaponControlComponent {
   protected get gearScoreFactor() {
     return this.store.offenderWeaponGearScoreFactor()
   }
-  protected scaling = [
-    { label: 'STR', access: scalingAccessor(this.store, 'str') },
-    { label: 'DEX', access: scalingAccessor(this.store, 'dex') },
-    { label: 'INT', access: scalingAccessor(this.store, 'int') },
-    { label: 'FOC', access: scalingAccessor(this.store, 'foc') },
-  ]
+  private refs: AttributeRef[] = ['str', 'dex', 'int', 'foc']
+  protected scaling = this.refs.map((it) => {
+    return {
+      label: it.toUpperCase(),
+      access: scalingAccessor(this.store, it),
+    }
+  })
+  protected get scalingInfos() {
+    return this.refs.map((it) => {
+      const stat = this.store.offender.attributeModSums[it]()
+      const scaling = this.store.offender.weaponScaling()?.[it] || 0
+      const value = stat * scaling
+      return {
+        label: it.toUpperCase(),
+        stat: stat,
+        scaling: scaling,
+        value: value,
+      }
+    })
+  }
+
   protected get scalingSum() {
     return this.store.offenderWeaponScalingSum()
   }

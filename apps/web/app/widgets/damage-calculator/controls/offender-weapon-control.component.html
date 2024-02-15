@@ -54,6 +54,9 @@
   <span class="join-item input input-sm bg-base-200">
     {{ gearScoreFactor | number: '0.2-2' }}
   </span>
+  <button class="join-item btn btn-sm btn-square" [tooltip]="tipGearScore" [preventClick]="true">
+    <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
+  </button>
 </span>
 <span class="join mt-1" [cdkMenuTriggerFor]="tplDamageSlider">
   <button class="join-item btn btn-sm w-20 justify-start text-left">Damage</button>
@@ -81,6 +84,9 @@
       />
     </div>
   </ng-template>
+  <button class="join-item btn btn-sm btn-square" [tooltip]="tipDamage" [preventClick]="true">
+    <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
+  </button>
 </span>
 <span class="join mt-1">
   <button class="join-item btn btn-sm w-20 justify-start text-left">Scaling</button>
@@ -97,5 +103,47 @@
       (wheel)="($event)"
     />
   }
-  <span class="join-item input input-sm bg-base-200"> % </span>
+  <button class="join-item btn btn-sm btn-square" [tooltip]="tipScaling" [preventClick]="true">
+    <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
+  </button>
 </span>
+
+<ng-template #tipGearScore>
+  <div class="p-2 prose prose-sm leading-tight w-80">
+    <h4>Weapon Gear Score</h4>
+    <p>The actual gear score of the weapon that is being used.</p>
+  </div>
+</ng-template>
+
+<ng-template #tipDamage>
+  <div class="p-2 prose prose-sm leading-tight w-80">
+    <h4>Weapon Damage</h4>
+    <p>The base damage of currently selected weapon.</p>
+  </div>
+</ng-template>
+
+<ng-template #tipScaling>
+  <div class="p-2 prose prose-sm leading-tight w-80">
+    <h4>Weapon Scaling</h4>
+    @if (weapon()) {
+      <p>The chosen weapon scales with:</p>
+      <p>
+        @for (item of scalingInfos; track $index) {
+          <div class="grid grid-cols-dl gap-2">
+            @if (item.scaling) {
+              <span>{{ item.scaling * 100 | percent: '0.0-1' }}</span>
+              <div>
+                <span>of {{ item.label }} </span>
+                <span> ({{ item.stat }}) </span>
+                <span> = {{ item.value * 100 | number: '0.0-1' }}% </span>
+              </div>
+            }
+          </div>
+        }
+      </p>
+      <p>Resulting in a total scaling of {{ scalingSum | percent: '0.0-2' }} or {{ scalingSum | number: '0.0-2' }}.</p>
+    } @else {
+      <p>No weapon selected.</p>
+    }
+  </div>
+</ng-template>
