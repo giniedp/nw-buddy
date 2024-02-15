@@ -4,19 +4,23 @@ import { FormsModule } from '@angular/forms'
 import { NwModule } from '~/nw'
 import { StackedValueControlComponent } from './stacked-value-control.component'
 import { DamageCalculatorStore, defenderAccessor } from '../damage-calculator.store'
+import { TooltipModule } from '~/ui/tooltip'
+import { IconsModule } from '~/ui/icons'
+import { svgInfo } from '~/ui/icons/svg'
 
 @Component({
   standalone: true,
   selector: 'nwb-defender-mods-control',
   templateUrl: './defender-mods-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, StackedValueControlComponent],
+  imports: [CommonModule, NwModule, FormsModule, StackedValueControlComponent, TooltipModule, IconsModule],
   host: {
     class: 'form-control',
   },
 })
 export class DefenderModsControlComponent {
   protected store = inject(DamageCalculatorStore)
+  protected iconInfo = svgInfo
 
   protected modABS = defenderAccessor(this.store, 'modABS')
   protected modABSConv = defenderAccessor(this.store, 'modABSConv')
