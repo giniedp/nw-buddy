@@ -113,6 +113,7 @@ export function getDamageForWeapon(
     weaponScale: Record<AttributeRef, number>
     modifierSums: Record<AttributeRef, number>
     damageCoef: number
+    damageAdd?: number
     modPvP?: number
     modAmmo?: number
     modBase?: number
@@ -128,6 +129,7 @@ export function getDamageForWeapon(
 ) {
   const baseDamage = options.weaponDamage ?? 0
   const damageCoef = options.damageCoef ?? 1
+  const damageAdd = options.damageAdd ?? 0
 
   const factorFromGS = getDamageFactorForGearScore(options.gearScore) ?? 1
   const levelScaling = getDamageScalingForLevel(options.level) ?? 0
@@ -147,16 +149,17 @@ export function getDamageForWeapon(
 
   const result =
     baseDamage *
-    damageCoef *
-    factorFromGS *
-    (1 + modPvP) *
-    (1 + levelScaling + statsScaling) *
-    (1 + modAmmo) *
-    (1 + modBase + modCrit) *
-    (1 + modDMG) *
-    (1 - modABS) *
-    (1 + modWKN) *
-    (1 - mitigation)
+      damageCoef *
+      factorFromGS *
+      (1 + modPvP) *
+      (1 + levelScaling + statsScaling) *
+      (1 + modAmmo) *
+      (1 + modBase + modCrit) *
+      (1 + modDMG) *
+      (1 - modABS) *
+      (1 + modWKN) *
+      (1 - mitigation) +
+    damageAdd
 
   trace?.log(`baseDamage                          | ${baseDamage}`)
   trace?.log(` * damageCoef                       |  * ${damageCoef}`)
@@ -169,6 +172,7 @@ export function getDamageForWeapon(
   trace?.log(` * (1 - modABS)                     |  * (1 - ${modABS})`)
   trace?.log(` * (1 + modWKN)                     |  * (1 + ${modWKN})`)
   trace?.log(` * (1 - mitigation)                 |  * (1 - ${mitigation})`)
+  trace?.log(` + damageAdd                        |  + ${damageAdd}`)
   trace?.log(`= ${result}`)
   // console.table({
   //   dmgBase,
@@ -290,6 +294,7 @@ export interface AttackerStats {
   weaponGearScore: number
   weaponDamage: number
   damageCoef: number
+  damageAdd: number
   armorPenetration: number
 
   modPvp: number
@@ -390,6 +395,7 @@ export function calculateDamage({ attacker, defender }: { attacker: AttackerStat
     weaponScale: weaponScaling,
     modifierSums: modifierSums,
     damageCoef: attacker.damageCoef,
+    damageAdd: attacker.damageAdd,
     modPvP: attacker.modPvp,
     modAmmo: attacker.modAmmo,
     modBase: attacker.modBase,

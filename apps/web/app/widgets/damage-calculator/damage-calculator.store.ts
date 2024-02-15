@@ -294,6 +294,7 @@ export const DamageCalculatorStore = signalStore(
             weaponGearScore: state.offenderWeaponGearScore(),
             weaponDamage: state.offenderWeaponDamage(),
             damageCoef: state.offenderDamageCoef(),
+            damageAdd: state.offenderDamageAdd(),
 
             modPvp: state.offenderModPvP().value,
             modAmmo: state.offenderModAmmo().value,

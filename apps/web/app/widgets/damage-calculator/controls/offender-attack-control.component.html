@@ -2,8 +2,8 @@
   <span class="label-text"> Attack </span>
 </label>
 <span class="join" [cdkMenuTriggerFor]="attackOptions().length ? tplAttacks : null">
-  <button class="join-item btn btn-sm w-full" [disabled]="!attackOptions().length" >
-    @if(!damageRow.value) {
+  <button class="join-item btn btn-sm w-full" [disabled]="!attackOptions().length">
+    @if (!damageRow.value) {
       <span class="italic"> -- none -- </span>
     } @else {
       {{ damageRow.value | nwHumanize }}
@@ -23,9 +23,7 @@
   </ng-template>
 </span>
 <span class="join mt-1">
-  <button class="join-item btn btn-sm justify-start text-left w-40">
-    Damage Coef
-  </button>
+  <button class="join-item btn btn-sm justify-start text-left w-40">Damage Coef</button>
   <input
     type="number"
     class="join-item appearance-none input input-sm input-bordered text-right w-full"
@@ -35,11 +33,19 @@
     [(ngModel)]="damageCoef.value"
     (wheel)="($event)"
   />
+  <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipCoef" [preventClick]="true">
+    <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
+  </button>
+  <ng-template #tipCoef>
+    <div class="p-2 prose prose-sm leading-tight w-80">
+      <h4>Damage Coefficient</h4>
+      <p>The strength of the attack</p>
+      <p>Notation: A value of <code>1</code> translates to <code>100%</code> damage.</p>
+    </div>
+  </ng-template>
 </span>
 <span class="join mt-1">
-  <button class="join-item btn btn-sm justify-start text-left w-40">
-    Damage Add
-  </button>
+  <button class="join-item btn btn-sm justify-start text-left w-40">Damage Add</button>
   <input
     type="number"
     class="join-item appearance-none input input-sm input-bordered text-right w-full"
@@ -47,4 +53,13 @@
     [(ngModel)]="damageAdd.value"
     (wheel)="($event)"
   />
+  <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipAdd" [preventClick]="true">
+    <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
+  </button>
+  <ng-template #tipAdd>
+    <div class="p-2 prose prose-sm leading-tight w-80">
+      <h4>Additional damage</h4>
+      <p>Damage that is simply added.</p>
+    </div>
+  </ng-template>
 </span>

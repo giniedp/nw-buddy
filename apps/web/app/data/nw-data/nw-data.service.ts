@@ -568,6 +568,14 @@ export class NwDataService {
   public seasonPassRewardsMap = tableIndexBy(() => this.seasonPassRewards, 'RewardId')
   public seasonPassReward = tableLookup(() => this.seasonPassRewardsMap)
 
+  public pvpBalance = table(() => {
+    return [
+      apiMethodsByPrefix<'pvpbalancetablesPvpbalanceArena'>(this.data, 'pvpbalancetablesPvpbalance').map((it) => {
+        return it.load().pipe(annotate('$source', it.suffix || '_'))
+      }),
+    ].flat()
+  })
+
   public constructor(public readonly data: NwDataLoaderService) {
     //
   }

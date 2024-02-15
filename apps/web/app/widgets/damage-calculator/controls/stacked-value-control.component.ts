@@ -30,6 +30,9 @@ export class StackedValueControlComponent implements ControlValueAccessor {
   public step: number = 0.1
 
   @Input()
+  public percent: boolean = false
+
+  @Input()
   public min: number = null
 
   @Input()
@@ -115,7 +118,7 @@ export class StackedValueControlComponent implements ControlValueAccessor {
   }
 
   protected setStackItemValue(index: number, value: number) {
-    this.patchStackItem(index, { value })
+    this.patchStackItem(index, { value: value })
   }
 
   protected patchStackItem(index: number, data: Partial<ValueStackItem>) {

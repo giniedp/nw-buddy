@@ -1,26 +1,51 @@
 import { CommonModule } from '@angular/common'
-import { Component, ChangeDetectionStrategy, inject } from '@angular/core'
-import { NwModule } from '~/nw'
-import { StackedValueControlComponent } from './stacked-value-control.component'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
+import { NwDataService } from '~/data'
+import { NwModule } from '~/nw'
+import { IconsModule } from '~/ui/icons'
 import { svgInfo } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { IconsModule } from '~/ui/icons'
+import { selectSignal } from '~/utils'
+import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
+import { StackedValueControlComponent } from './stacked-value-control.component'
 
 @Component({
   standalone: true,
   selector: 'nwb-offender-mods-control',
   templateUrl: './offender-mods-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, StackedValueControlComponent, FormsModule, LayoutModule, TooltipModule, IconsModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    StackedValueControlComponent,
+    FormsModule,
+    LayoutModule,
+    TooltipModule,
+    IconsModule,
+  ],
   host: {
     class: 'layout-content',
   },
 })
 export class OffenderModsControlComponent {
   protected store = inject(DamageCalculatorStore)
+  private data = inject(NwDataService)
+  protected balanceMods = selectSignal(this.data.pvpBalance, (rows) => {
+    if (!rows?.length) {
+      return []
+    }
+    return rows
+      .filter((it) => it.WeaponBaseDamageAdjustment)
+      .map((it) => {
+        return {
+          mode: it.$source,
+          weapon: it.BalanceTarget,
+          value: it.WeaponBaseDamageAdjustment,
+        }
+      })
+  })
 
   protected modPvP = offenderAccessor(this.store, 'modPvP')
   protected modAmmo = offenderAccessor(this.store, 'modAmmo')
