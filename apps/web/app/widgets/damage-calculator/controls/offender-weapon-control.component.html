@@ -24,16 +24,16 @@
     </ul>
   </ng-template>
 </span>
-<span class="join mt-1" [cdkMenuTriggerFor]="tplGsSlider">
-  <button class="join-item btn btn-sm w-20 justify-start text-left">GS</button>
-  <input
-    type="number"
-    class="join-item appearance-none input input-sm input-bordered text-right w-full"
+<span class="join mt-1">
+  <button class="join-item btn btn-sm w-20 justify-start text-left" [cdkMenuTriggerFor]="tplGsSlider">GS</button>
+  <nwb-precision-input
+    class="join-item input input-sm input-bordered text-right w-full"
     [min]="gsMin"
     [max]="gsMax"
     [step]="1"
+    [stepShift]="100"
+    [stepCtrl]="10"
     [(ngModel)]="gearScore.value"
-    (wheel)="($event)"
   />
   <ng-template #tplGsSlider>
     <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
@@ -58,16 +58,18 @@
     <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
   </button>
 </span>
-<span class="join mt-1" [cdkMenuTriggerFor]="tplDamageSlider">
-  <button class="join-item btn btn-sm w-20 justify-start text-left">Damage</button>
-  <input
-    type="number"
-    class="join-item appearance-none input input-sm input-bordered text-right w-full"
+<span class="join mt-1">
+  <button class="join-item btn btn-sm w-20 justify-start text-left" [cdkMenuTriggerFor]="tplDamageSlider">
+    Damage
+  </button>
+  <nwb-precision-input
+    class="join-item input input-sm input-bordered text-right w-full"
     [min]="1"
     [max]="100"
     [step]="1"
+    [stepShift]="10"
+    [stepCtrl]="5"
     [(ngModel)]="weaponDamage.value"
-    (wheel)="($event)"
   />
   <ng-template #tplDamageSlider>
     <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
@@ -91,17 +93,19 @@
 <span class="join mt-1">
   <button class="join-item btn btn-sm w-20 justify-start text-left">Scaling</button>
   @for (item of scaling; track $index) {
-    <input
-      type="number"
-      class="join-item appearance-none input input-sm input-bordered text-right w-full text-xs"
-      [class.opacity-25]="!item.access.value"
-      [placeholder]="item.label"
+    <nwb-precision-input
+      class="join-item input input-sm input-bordered w-full"
       [min]="0"
       [max]="100"
       [step]="1"
+      [stepShift]="10"
+      [stepCtrl]="1"
+      [stepAlt]="0.1"
       [(ngModel)]="item.access.value"
-      (wheel)="($event)"
-    />
+      [unit]="'%'"
+    >
+      <span class="absolute top-0 left-0 text-xs leading-none opacity-30 scale-75">{{ item.label }}</span>
+    </nwb-precision-input>
   }
   <button class="join-item btn btn-sm btn-square" [tooltip]="tipScaling" [preventClick]="true">
     <nwb-icon [icon]="iconInfo" class="w-4 h-4" />

@@ -1,22 +1,32 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { NW_WEAPON_TYPES } from '~/nw/weapon-types'
-import { humanize, selectSignal } from '~/utils'
-import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
-import { FormsModule } from '@angular/forms'
-import { LayoutModule } from '~/ui/layout'
-import { TooltipModule } from '~/ui/tooltip'
 import { IconsModule } from '~/ui/icons'
 import { svgInfo } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
+import { TooltipModule } from '~/ui/tooltip'
+import { humanize, selectSignal } from '~/utils'
+import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
+import { StackedValueControlComponent } from './stacked-value-control.component'
+import { PrecisionInputComponent } from './precision-input.component'
 
 @Component({
   standalone: true,
   selector: 'nwb-offender-attack-control',
   templateUrl: './offender-attack-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, LayoutModule, TooltipModule, IconsModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    FormsModule,
+    LayoutModule,
+    TooltipModule,
+    IconsModule,
+    PrecisionInputComponent,
+  ],
   host: {
     class: 'form-control',
   },

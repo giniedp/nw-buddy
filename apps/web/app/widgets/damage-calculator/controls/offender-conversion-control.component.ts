@@ -14,16 +14,18 @@ import { IconsModule } from '~/ui/icons'
 import { svgEllipsisVertical, svgInfo } from '~/ui/icons/svg'
 import { InputSliderComponent } from '~/ui/input-slider'
 import { LayoutModule } from '~/ui/layout'
-import { PerkTableAdapter } from '~/widgets/data/perk-table'
-import { DamageCalculatorStore, OffenderState, offenderAccessor } from '../damage-calculator.store'
 import { TooltipModule } from '~/ui/tooltip'
+import { PerkTableAdapter } from '~/widgets/data/perk-table'
+import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
+import { StackedValueControlComponent } from './stacked-value-control.component'
+import { PrecisionInputComponent } from './precision-input.component'
 
 @Component({
   standalone: true,
   selector: 'nwb-offender-conversion-control',
   templateUrl: './offender-conversion-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, InputSliderComponent, IconsModule, LayoutModule, TooltipModule],
+  imports: [CommonModule, NwModule, FormsModule, InputSliderComponent, IconsModule, LayoutModule, TooltipModule, PrecisionInputComponent],
   host: {
     class: 'form-control',
   },
@@ -37,9 +39,7 @@ export class OffenderConversionControlComponent {
   protected iconInfo = svgInfo
   protected convertType = offenderAccessor(this.store, 'convertDamageType')
   protected convertAffix = offenderAccessor(this.store, 'convertAffix')
-  protected convertPercent = offenderAccessor(this.store, 'convertPercent', {
-    scale: 100,
-  })
+  protected convertPercent = offenderAccessor(this.store, 'convertPercent')
   private refs: AttributeRef[] = ['str', 'dex', 'int', 'foc']
   protected scaling = this.refs.map((it) => {
     return {

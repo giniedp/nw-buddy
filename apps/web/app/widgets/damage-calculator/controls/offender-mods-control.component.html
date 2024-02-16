@@ -2,9 +2,8 @@
   <span class="label-text">Modifiers</span>
 </label>
 <div class="grid gap-x-4 gap-y-1 grid-auto-fit-80">
-  <nwb-stacked-value-control [(ngModel)]="modPvP.value" class="col-start-1" [labelHidden]="true" [step]="0.01">
+  <nwb-stacked-value-control [(ngModel)]="modPvP.value" class="col-start-1" [percent]="true">
     <span slot="start" class="join-item btn btn-sm justify-start text-left w-40"> PvP Balance </span>
-
     <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipModPvP" [preventClick]="true">
       <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
     </button>
@@ -12,11 +11,10 @@
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>PvP Balance Modifier <span class="badge badge-sm badge-info">PvP only</span></h4>
         <p>The weapon base damage adjustment that is active in certain PvP game modes.</p>
-        <p>Notation: A value of <code>-0.15</code> translates to <code>-15%</code> damage decrease.</p>
       </div>
     </ng-template>
   </nwb-stacked-value-control>
-  <nwb-stacked-value-control [(ngModel)]="modAmmo.value" [labelHidden]="true" [step]="0.01">
+  <nwb-stacked-value-control [(ngModel)]="modAmmo.value" [percent]="true">
     <span slot="start" class="join-item btn btn-sm justify-start text-left w-40"> Ammo </span>
 
     <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipModAmmo" [preventClick]="true">
@@ -24,16 +22,12 @@
     </button>
     <ng-template #tipModAmmo>
       <div class="p-2 prose prose-sm leading-tight w-80">
-        <h4>Ammo Modifier </h4>
+        <h4>Ammo Modifier</h4>
         <p>Ammunition like arrows for bows increase its damage.<br /></p>
-        <p>
-          Notation: A value of <code>0.2</code> translates to <code>+20%</code> damage increase. Ingame tooltip shows
-          this as <code>x1.2</code>.
-        </p>
       </div>
     </ng-template>
   </nwb-stacked-value-control>
-  <nwb-stacked-value-control [(ngModel)]="modCrit.value" [labelHidden]="true" [step]="0.01">
+  <nwb-stacked-value-control [(ngModel)]="modCrit.value" [percent]="true">
     <span slot="start" class="join-item btn btn-sm justify-start text-left w-40"> Crit Damage </span>
     <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipModCrit" [preventClick]="true">
       <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
@@ -42,13 +36,12 @@
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Critical Damage Modifier</h4>
         <p>Increases damage for critical hits.</p>
-        <p>Notation: A value of <code>0.2</code> translates to <code>+20%</code> damage increase.</p>
       </div>
     </ng-template>
   </nwb-stacked-value-control>
 
   <div>
-    <nwb-stacked-value-control [(ngModel)]="modBase.value" [labelHidden]="true" [step]="0.01">
+    <nwb-stacked-value-control [(ngModel)]="modBase.value" [percent]="true">
       <span slot="start" class="join-item btn btn-sm justify-start text-left w-40">
         <img [nwImage]="store.offenderWeaponDamageTypeIcon()" class="w-5 h-5" />
         Base Damage
@@ -61,13 +54,12 @@
         <div class="p-2 prose prose-sm leading-tight w-80">
           <h4>Base Damage Modifier</h4>
           <p>This affects only the unconverted weapon damage</p>
-          <p>Notation: A value of <code>0.2</code> translates to <code>+20%</code> damage increase.</p>
         </div>
       </ng-template>
     </nwb-stacked-value-control>
 
     @if (store.offenderConvertIsActive()) {
-      <nwb-stacked-value-control [(ngModel)]="modBaseConv.value" [labelHidden]="true" class="mt-1" [step]="0.01">
+      <nwb-stacked-value-control [(ngModel)]="modBaseConv.value" [percent]="true" class="mt-1">
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 btn-secondary">
           <img [nwImage]="store.offenderConvertDamageTypeIcon()" class="w-5 h-5" />
           Base Damage
@@ -79,7 +71,6 @@
           <div class="p-2 prose prose-sm leading-tight w-80">
             <h4>Base Damage Modifier</h4>
             <p>This affects only the <span class="text-secondary">converted</span> weapon damage</p>
-            <p>Notation: A value of <code>0.2</code> translates to <code>+20%</code> damage increase.</p>
           </div>
         </ng-template>
       </nwb-stacked-value-control>
@@ -87,7 +78,7 @@
   </div>
 
   <div>
-    <nwb-stacked-value-control [(ngModel)]="modDMG.value" [labelHidden]="true" [step]="0.01">
+    <nwb-stacked-value-control [(ngModel)]="modDMG.value" [percent]="true">
       <span slot="start" class="join-item btn btn-sm justify-start text-left w-40">
         <img [nwImage]="store.offenderWeaponDamageTypeIcon()" class="w-5 h-5" />
         DMG
@@ -102,7 +93,6 @@
             Increase the value to simulate <i class="text-success">Empower</i>, or add positives values to the stack
           </p>
           <p>Decrease the value to simulate <i class="text-error">Weaken</i>, or add negative values to the stack</p>
-          <p>Notation: A value of <code>0.2</code> translates to <code>+20%</code> damage increase.</p>
           <p>
             Common caps are
             <code class="mx-0 whitespace-nowrap">
@@ -115,7 +105,7 @@
       </ng-template>
     </nwb-stacked-value-control>
     @if (store.offenderConvertIsActive()) {
-      <nwb-stacked-value-control [(ngModel)]="modDMGConv.value" [labelHidden]="true" [step]="0.01" class="mt-1">
+      <nwb-stacked-value-control [(ngModel)]="modDMGConv.value" [percent]="true" class="mt-1">
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 btn-secondary">
           <img [nwImage]="store.offenderConvertDamageTypeIcon()" class="w-5 h-5" />
           DMG
@@ -130,7 +120,6 @@
               Increase the value to simulate <i class="text-success">Empower</i>, or add positives values to the stack
             </p>
             <p>Decrease the value to simulate <i class="text-error">Weaken</i>, or add negative values to the stack</p>
-            <p>Notation: A value of <code>0.2</code> translates to <code>+20%</code> damage increase.</p>
             <p>
               Common caps are
               <code class="mx-0 whitespace-nowrap">
@@ -145,7 +134,7 @@
     }
   </div>
 
-  <nwb-stacked-value-control [(ngModel)]="armorPenetration.value" [labelHidden]="true" [step]="0.01">
+  <nwb-stacked-value-control [(ngModel)]="armorPenetration.value" [percent]="true">
     <span slot="start" class="join-item btn btn-sm justify-start text-left w-40"> Armor Penetration </span>
     <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipArmorPenetration" [preventClick]="true">
       <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
@@ -154,7 +143,6 @@
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Armor Penetration <span class="badge badge-sm badge-info">PvP only</span></h4>
         <p>Reduces the amount of damage that is mitigated by the target's armor.</p>
-        <p>Notation: A value of <code>+0.2</code> reduces the mitigated damage by<code>-20%</code></p>
       </div>
     </ng-template>
   </nwb-stacked-value-control>

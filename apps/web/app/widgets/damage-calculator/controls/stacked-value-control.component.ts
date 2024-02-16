@@ -1,21 +1,22 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, computed } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
-import { patchState, signalState } from '@ngrx/signals'
+import { PartialStateUpdater, patchState, signalState } from '@ngrx/signals'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft, svgEllipsisVertical, svgPlus, svgTrashCan } from '~/ui/icons/svg'
 import { InputSliderComponent } from '~/ui/input-slider'
 import { ValueStack, ValueStackItem, valueStackSum } from '../damage-calculator.store'
+import { PrecisionInputComponent } from './precision-input.component'
 
 @Component({
   standalone: true,
   selector: 'nwb-stacked-value-control',
   templateUrl: './stacked-value-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, InputSliderComponent, IconsModule],
+  imports: [CommonModule, NwModule, PrecisionInputComponent, FormsModule, InputSliderComponent, IconsModule],
   host: {
-    class: 'form-control',
+    class: 'flex flex-col bg-base-200 rounded-md',
   },
   providers: [
     {
@@ -26,14 +27,44 @@ import { ValueStack, ValueStackItem, valueStackSum } from '../damage-calculator.
   ],
 })
 export class StackedValueControlComponent implements ControlValueAccessor {
+
+  @Input()
+  public set percent(value: boolean) {
+    if (value) {
+      this.stepShift = 10
+      this.stepCtrl = 1
+      this.step = 0.1
+      this.stepAlt = 0.01
+      this.scale = 100
+      this.unit = '%'
+    } else {
+      this.scale = 1
+    }
+  }
+
+  @Input()
+  public scale: number = 1
+
+  @Input()
+  public unit: string = null
+
+  @Input()
+  public min: number = null
+
+  @Input()
+  public max: number = null
+
   @Input()
   public step: number = 0.1
 
   @Input()
-  public percent: boolean = false
+  public stepCtrl: number = null
 
   @Input()
-  public min: number = null
+  public stepShift: number = null
+
+  @Input()
+  public stepAlt: number = null
 
   @Input()
   public labelHidden: boolean = false
@@ -51,7 +82,7 @@ export class StackedValueControlComponent implements ControlValueAccessor {
     stack: [],
   })
 
-  protected sum = computed(() => valueStackSum(this.state()))
+  private sum = computed(() => valueStackSum(this.state()))
   protected iconDelete = svgTrashCan
   protected iconLeft = svgChevronLeft
   protected iconMore = svgEllipsisVertical
@@ -60,15 +91,14 @@ export class StackedValueControlComponent implements ControlValueAccessor {
   protected get inlineInputDisabled() {
     return this.isOpen || this.state().stack.length > 0
   }
-  protected get inlineValue() {
-    return this.state().value
+  protected get value() {
+    return this.state.value()
   }
-  protected set inlineValue(value: number) {
-    patchState(this.state, { value })
-    this.commitValue()
+  protected set value(value: number) {
+    this.patchState({ value })
   }
   protected get stack() {
-    return this.state().stack
+    return this.state.stack()
   }
   protected get total() {
     return this.sum().value
@@ -82,7 +112,7 @@ export class StackedValueControlComponent implements ControlValueAccessor {
   }
 
   protected addToStack() {
-    patchState(this.state, ({ stack }) => ({
+    this.patchState(({ stack }) => ({
       stack: [
         ...stack,
         {
@@ -91,14 +121,12 @@ export class StackedValueControlComponent implements ControlValueAccessor {
         },
       ],
     }))
-    this.commitValue()
   }
 
   protected removeFromStack(index: number) {
-    patchState(this.state, ({ stack }) => ({
+    this.patchState(({ stack }) => ({
       stack: stack.filter((_, i) => i !== index),
     }))
-    this.commitValue()
   }
 
   protected toggleInStack(index: number) {
@@ -122,7 +150,7 @@ export class StackedValueControlComponent implements ControlValueAccessor {
   }
 
   protected patchStackItem(index: number, data: Partial<ValueStackItem>) {
-    patchState(this.state, ({ stack }) => ({
+    this.patchState(({ stack }) => ({
       stack: stack.map((it, i) => {
         if (i !== index) {
           return it
@@ -133,7 +161,6 @@ export class StackedValueControlComponent implements ControlValueAccessor {
         }
       }),
     }))
-    this.commitValue()
   }
 
   protected onChange = (value: ValueStack) => {}
@@ -154,7 +181,9 @@ export class StackedValueControlComponent implements ControlValueAccessor {
   public setDisabledState(isDisabled: boolean): void {
     this.disabled = isDisabled
   }
-  protected commitValue() {
+
+  private patchState(update: Partial<ValueStack> | PartialStateUpdater<ValueStack>) {
+    patchState(this.state, update)
     this.onChange(this.state())
   }
 }

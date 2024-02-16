@@ -4,15 +4,16 @@ import { FormsModule } from '@angular/forms'
 import { NwModule } from '~/nw'
 import { DamageCalculatorStore, defenderAccessor } from '../damage-calculator.store'
 import { StackedValueControlComponent } from './stacked-value-control.component'
+import { PrecisionInputComponent } from './precision-input.component'
 
 @Component({
   standalone: true,
   selector: 'nwb-defender-elemental-armor-control',
   templateUrl: './defender-elemental-armor-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, StackedValueControlComponent],
+  imports: [CommonModule, NwModule, FormsModule, StackedValueControlComponent, PrecisionInputComponent],
   host: {
-    class: 'block',
+    class: 'form-control',
   },
 })
 export class DefenderElementalArmorControlComponent {

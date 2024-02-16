@@ -1,105 +1,110 @@
-<div class="form-control w-full">
-  <label class="label" [class.hidden]="labelHidden">
-    <span class="label-text">
-      <ng-content [select]="'[slot=label]'" />
+<label class="join">
+  <ng-content select="[slot='start']" />
+  @if (inlineInputDisabled) {
+    <nwb-precision-input
+      type="number"
+      class="join-item appearance-none input input-sm input-bordered text-right w-full"
+      [scale]="scale"
+      [ngModel]="total"
+      [disabled]="inlineInputDisabled"
+      [unit]="unit"
+      [disabled]="true"
+    />
+  } @else {
+    <nwb-precision-input
+      class="join-item appearance-none input input-sm input-bordered text-right w-full"
+      [min]="min"
+      [max]="max"
+      [step]="step"
+      [stepAlt]="stepAlt"
+      [stepCtrl]="stepCtrl"
+      [stepShift]="stepShift"
+      [scale]="scale"
+      [(ngModel)]="value"
+      [disabled]="inlineInputDisabled"
+      [unit]="unit"
+    />
+  }
+  <button class="join-item btn btn-sm btn-square no-animation" (click)="isOpen = !isOpen">
+    <nwb-icon [icon]="iconMore" class="w-4 h-4" />
+  </button>
+  <ng-content select="[slot='end']" />
+</label>
+@if (isOpen) {
+  <label class="join">
+    <span class="join-item input input-sm input-ghost rounded-none flex-1"> Custom Value </span>
+    <nwb-precision-input
+      class="join-item appearance-none input input-sm rounded-none text-right w-20"
+      [min]="min"
+      [max]="max"
+      [step]="step"
+      [stepAlt]="stepAlt"
+      [stepCtrl]="stepCtrl"
+      [stepShift]="stepShift"
+      [scale]="scale"
+      [(ngModel)]="value"
+      [unit]="unit"
+    />
+    <span class="join-item w-14"></span>
+    <span
+      class="join-item btn btn-sm btn-square btn-ghost text-primary no-animation rounded-none cursor-default pointer-events-none"
+    >
     </span>
-    <span class="label-text">
-      <ng-content select="[slot='end-label']" />
-    </span>
+    <button class="join-item btn btn-sm btn-square text-primary no-animation rounded-none" (click)="addToStack()">
+      <nwb-icon [icon]="iconAdd" class="w-4 h-4" />
+    </button>
   </label>
-  <div class="flex flex-col bg-base-200 rounded-md">
+
+  @for (row of stack; track $index) {
     <label class="join">
-      <ng-content select="[slot='start']" />
-      @if (inlineInputDisabled) {
-        <input
-          type="number"
-          class="join-item appearance-none input input-sm input-bordered text-right w-full"
-          [min]="min"
-          [step]="step"
-          [value]="total"
-          [disabled]="true"
-        />
-      } @else {
-        <input
-          type="number"
-          class="join-item appearance-none input input-sm input-bordered text-right w-full"
-          [min]="min"
-          [step]="step"
-          [(ngModel)]="inlineValue"
-          [disabled]="inlineInputDisabled"
-          (wheel)="($event)"
-        />
-      }
-      <button class="join-item btn btn-sm btn-square no-animation" (click)="isOpen = !isOpen">
-        <nwb-icon [icon]="iconMore" class="w-4 h-4" />
+      <input
+        class="join-item input input-sm bg-base-200 rounded-none min-w-0 flex-1"
+        placeholder="Label"
+        [ngModel]="row.label"
+        (ngModelChange)="setStackItemLabel($index, $event)"
+      />
+      <nwb-precision-input
+        class="join-item appearance-none input input-sm rounded-none text-right w-20"
+        [min]="min"
+        [max]="max"
+        [step]="step"
+        [stepAlt]="stepAlt"
+        [stepCtrl]="stepCtrl"
+        [stepShift]="stepShift"
+        [scale]="scale"
+        [ngModel]="row.value"
+        (ngModelChange)="setStackItemValue($index, $event)"
+        [unit]="unit"
+      />
+      <nwb-precision-input
+        class="join-item appearance-none input input-sm rounded-none text-right w-14"
+        placeholder="Cap"
+        [min]="min"
+        [max]="max"
+        [step]="step"
+        [stepAlt]="stepAlt"
+        [stepCtrl]="stepCtrl"
+        [stepShift]="stepShift"
+        [scale]="scale"
+        [ngModel]="row.cap"
+        (ngModelChange)="setStackItemCap($index, $event)"
+        [unit]="unit"
+      />
+      <span class="join-item btn btn-sm btn-square rounded-none" (click)="toggleInStack($index)">
+        <input type="checkbox" class="checkbox checkbox-sm" [ngModel]="!row.disabled" />
+      </span>
+      <button class="join-item btn btn-sm btn-square rounded-none no-animation" (click)="removeFromStack($index)">
+        <nwb-icon [icon]="iconAdd" class="w-4 h-4 rotate-45 text-error" />
       </button>
-      <ng-content select="[slot='end']" />
     </label>
-    @if (isOpen) {
-      <label class="join">
-        <span class="join-item input input-sm input-ghost rounded-none flex-1"> Custom Value </span>
-        <input
-          type="number"
-          [min]="min"
-          [step]="step"
-          placeholder="Value"
-          class="join-item appearance-none input input-sm rounded-none text-right w-20"
-          [(ngModel)]="inlineValue"
-          (wheel)="($event)"
-        />
-        <span class="join-item w-14"></span>
-        <span class="join-item btn btn-sm btn-square btn-ghost text-primary no-animation rounded-none cursor-default pointer-events-none">
+  }
 
-        </span>
-        <button class="join-item btn btn-sm btn-square text-primary no-animation rounded-none" (click)="addToStack()">
-          <nwb-icon [icon]="iconAdd" class="w-4 h-4" />
-        </button>
-      </label>
-
-      @for (row of stack; track $index) {
-        <label class="join">
-          <input
-            class="join-item input input-sm bg-base-200 rounded-none min-w-0 flex-1"
-            placeholder="Label"
-            [ngModel]="row.label"
-            (ngModelChange)="setStackItemLabel($index, $event)"
-          />
-          <input
-            type="number"
-            [step]="step"
-            placeholder="Value"
-            class="join-item appearance-none input input-sm rounded-none text-right w-20"
-            [min]="min"
-            [ngModel]="row.value"
-            (ngModelChange)="setStackItemValue($index, $event)"
-            (wheel)="($event)"
-          />
-          <input
-            type="number"
-            [step]="step"
-            placeholder="Cap"
-            class="join-item appearance-none input input-sm rounded-none text-right w-14"
-            [ngModel]="row.cap"
-            (ngModelChange)="setStackItemCap($index, $event)"
-            (wheel)="($event)"
-          />
-          <span class="join-item btn btn-sm btn-square rounded-none" (click)="toggleInStack($index)">
-            <input type="checkbox" class="checkbox checkbox-sm" [ngModel]="!row.disabled" />
-          </span>
-          <button class="join-item btn btn-sm btn-square rounded-none no-animation" (click)="removeFromStack($index)">
-            <nwb-icon [icon]="iconAdd" class="w-4 h-4 rotate-45 text-error" />
-          </button>
-        </label>
-      }
-
-      <div class="flex flex-row items-center justify-center gap-2 py-2">
-        Value:
-        <span class="text-primary">{{ total | number: '0.2-2' }}</span>
-        @if (overflow) {
-          Overflow:
-          <span class="text-error">{{ overflow | number: '0.2-2' }}</span>
-        }
-      </div>
+  <div class="flex flex-row items-center justify-center gap-2 py-2">
+    Value:
+    <span class="text-primary">{{ total | number: '0.2-2' }}</span>
+    @if (overflow) {
+      Overflow:
+      <span class="text-error">{{ overflow | number: '0.2-2' }}</span>
     }
   </div>
-</div>
+}

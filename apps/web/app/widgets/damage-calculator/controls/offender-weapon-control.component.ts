@@ -12,13 +12,23 @@ import { InputSliderComponent } from '~/ui/input-slider'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { DamageCalculatorStore, OffenderState } from '../damage-calculator.store'
+import { PrecisionInputComponent } from './precision-input.component'
 
 @Component({
   standalone: true,
   selector: 'nwb-offender-weapon-control',
   templateUrl: './offender-weapon-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, InputSliderComponent, IconsModule, LayoutModule, TooltipModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    FormsModule,
+    InputSliderComponent,
+    IconsModule,
+    LayoutModule,
+    TooltipModule,
+    PrecisionInputComponent,
+  ],
   host: {
     class: 'form-control',
   },

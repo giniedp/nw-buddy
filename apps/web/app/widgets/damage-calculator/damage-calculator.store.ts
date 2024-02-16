@@ -497,25 +497,18 @@ export function updateDefender<T extends { defender: DefenderState }>(input: Par
 export function offenderAccessor<K extends keyof OffenderState>(
   store: DamageCalculatorStore,
   key: K,
-  options?: { scale?: number; precision?: number },
+  options?: { precision?: number },
 ) {
-  const scale = options?.scale ?? 1
   const precision = options?.precision
   return {
     get value(): OffenderState[K] {
       let value = store.offender?.[key]() as OffenderState[K]
-      if (typeof value === 'number') {
-        value = (value * scale) as OffenderState[K]
-      }
       if (typeof value === 'number' && precision) {
         value = patchPrecision(value, precision) as OffenderState[K]
       }
       return value
     },
     set value(value: OffenderState[K]) {
-      if (typeof value === 'number') {
-        value = (value / scale) as OffenderState[K]
-      }
       patchState(store, updateOffender({ [key]: value }))
     },
   }

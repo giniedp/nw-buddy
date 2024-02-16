@@ -11,19 +11,29 @@ import {
   patchPrecision,
 } from '@nw-data/common'
 import { NwModule } from '~/nw'
+import { IconsModule } from '~/ui/icons'
+import { svgInfo } from '~/ui/icons/svg'
 import { InputSliderComponent } from '~/ui/input-slider'
 import { LayoutModule } from '~/ui/layout'
-import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
-import { svgInfo } from '~/ui/icons/svg'
-import { IconsModule } from '~/ui/icons'
 import { TooltipModule } from '~/ui/tooltip'
+import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
+import { PrecisionInputComponent } from './precision-input.component'
 
 @Component({
   standalone: true,
   selector: 'nwb-offender-stats-control',
   templateUrl: './offender-stats-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, InputSliderComponent, IconsModule, LayoutModule, TooltipModule],
+  imports: [
+    CommonModule,
+    NwModule,
+    FormsModule,
+    InputSliderComponent,
+    IconsModule,
+    LayoutModule,
+    TooltipModule,
+    PrecisionInputComponent,
+  ],
   host: {
     class: 'form-control',
   },
