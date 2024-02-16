@@ -1,6 +1,6 @@
 import { animate, animateChild, query, stagger, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, computed, effect, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 import { EQUIP_SLOTS, EquipSlot } from '@nw-data/common'
@@ -61,6 +61,9 @@ import { GearsetToolbarComponent } from './gearset-toolbar.component'
 })
 export class GearsetGridComponent {
   private store = inject(GearsetSignalStore)
+
+  @Input()
+  public disabled = false
 
   protected get gearset() {
     return this.store.gearset()

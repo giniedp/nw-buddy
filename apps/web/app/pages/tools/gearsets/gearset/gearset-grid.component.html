@@ -3,28 +3,28 @@
 >
   <div class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2">
     <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-    <nwb-gearset-pane-main class="relative min-h-80 p-4 gap-4 grid grid-auto-fit-[290px]" />
+    <nwb-gearset-pane-main class="relative min-h-80 p-4 gap-4 grid grid-auto-fit-[290px]" [disabled]="disabled" />
   </div>
 
   <div class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2">
     <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-    <nwb-gearset-pane-stats class="relative min-h-80 p-4 gap-4 grid grid-auto-fit-[290px]" />
+    <nwb-gearset-pane-stats class="relative min-h-80 p-4 gap-4 grid grid-auto-fit-[290px]" [disabled]="disabled" />
   </div>
 
   <div class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2">
     <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-    <nwb-gearset-pane-skill class="relative min-h-80 p-4 block" [slot]="'primary'" [gearset]="gearset" />
+    <nwb-gearset-pane-skill class="relative min-h-80 p-4 block" [slot]="'primary'" [gearset]="gearset" [disabled]="disabled" />
   </div>
 
   <div class="shadow-lg rounded-md overflow-clip bg-black relative screenshot-head col-span-2">
     <div class="nw-bg-pane absolute inset-0 bg-center bg-cover"></div>
-    <nwb-gearset-pane-skill class="relative min-h-80 p-4 block" [slot]="'secondary'" [gearset]="gearset" />
+    <nwb-gearset-pane-skill class="relative min-h-80 p-4 block" [slot]="'secondary'" [gearset]="gearset" [disabled]="disabled" />
   </div>
 
   @for (group of slotGroups(); track $index) {
     @for (slot of group; track $index) {
       @if (slot) {
-        <nwb-gear-cell-slot class="min-h-80 screenshot-body" [slotId]="slot.id" [gearset]="gearset" />
+        <nwb-gear-cell-slot class="min-h-80 screenshot-body" [slotId]="slot.id" [gearset]="gearset" [disabled]="disabled" />
       }
     }
   }
