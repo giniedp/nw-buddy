@@ -34,7 +34,7 @@ import { PlatformService } from './utils/services/platform.service'
 import { AeternumMapModule } from './widgets/aeternum-map'
 import { GlobalSearchInputComponent } from './widgets/search'
 import { UpdateAlertModule, VersionService } from './widgets/update-alert'
-
+console.debug('environment', environment)
 @Component({
   standalone: true,
   selector: 'nw-buddy-app',

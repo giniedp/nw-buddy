@@ -18,6 +18,7 @@ export interface SearchQueryTasks {
 const index: Record<string, Promise<any>> = {}
 
 function fetchIndex(lang: string): Promise<SearchRecord[]> {
+  console.debug('fetchIndex', environment)
   if (!index[lang]) {
     index[lang] = fetch(`${environment.nwDataUrl}/search/${lang}.json`)
       .then((res) => res.json())
