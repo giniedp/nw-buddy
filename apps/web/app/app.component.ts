@@ -134,7 +134,8 @@ export class AppComponent {
     return LANG_OPTIONS.find((it) => it.value === this.language)?.label
   }
   public get isEmbed() {
-    return this.router.url.split('/').some((it) => it === 'embed')
+    // TODO: pass in from router
+    return location.href.split('/').some((it) => it === 'embed')
   }
 
   protected langOptions = LANG_OPTIONS

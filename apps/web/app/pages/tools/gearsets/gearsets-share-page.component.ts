@@ -14,6 +14,7 @@ import { suspensify } from '~/utils'
 import { EmbedHeightDirective } from '~/utils/directives/embed-height.directive'
 import { GearsetGridComponent } from './gearset/gearset-grid.component'
 import { GearsetHostDirective } from './gearset/gearset-host.directive'
+import { GearsetSliderComponent } from './gearset/gearset-slider.component'
 
 @Component({
   standalone: true,
@@ -25,12 +26,13 @@ import { GearsetHostDirective } from './gearset/gearset-host.directive'
     NwModule,
     GearsetHostDirective,
     GearsetGridComponent,
+    GearsetSliderComponent,
     IconsModule,
     LayoutModule,
     EmbedHeightDirective,
   ],
   host: {
-    class: 'layout-col flex-none',
+    class: 'ion-page',
   },
 })
 export class GearsetsSharePageComponent {

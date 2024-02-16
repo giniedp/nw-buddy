@@ -86,7 +86,7 @@ export class GearCellSlotComponent {
   })
 
   protected isHidden = computed(() => {
-    return this.disabled
+    return !this.store.hasItem() && this.disabled
   })
   protected isScreenshotHidden = computed(() => {
     return !this.store.hasItem() || this.disabled

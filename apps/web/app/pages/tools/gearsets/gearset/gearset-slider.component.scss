@@ -1,0 +1,18 @@
+:host {
+
+  width: 100%;
+  height: 1000px;
+  
+  .swiper {
+    width: 100%;
+    height: 100%;
+  }
+
+  .swiper-slide {
+    width: min(100vw, 400px);
+  }
+  .swiper-slide.swiper-pane {
+    width: min(100vw, 800px);
+  }
+
+}

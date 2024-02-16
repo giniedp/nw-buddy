@@ -1,0 +1,31 @@
+<div class="swiper" #swiperRef>
+  <div class="swiper-wrapper">
+    <div class="swiper-slide swiper-pane p-4 flex flex-col overflow-hidden">
+      <div class="bg-black rounded-md h-full overflow-y-auto">
+        <nwb-gearset-pane-main class="relative min-h-80 p-4 gap-4 grid grid-auto-fit-[290px]" [disabled]="true" />
+      </div>
+    </div>
+    <div class="swiper-slide swiper-pane p-4 flex flex-col overflow-hidden">
+      <div class="bg-black rounded-md h-full overflow-y-auto">
+        <nwb-gearset-pane-stats class="relative min-h-80 p-4 gap-4 grid grid-auto-fit-[290px]" [disabled]="true" />
+      </div>
+    </div>
+    <div class="swiper-slide swiper-pane p-4 flex flex-col overflow-hidden">
+      <div class="bg-black rounded-md h-full overflow-y-auto">
+        <nwb-gearset-pane-skill class="relative min-h-80 p-4 block" [slot]="'primary'" [gearset]="gearset" [disabled]="true" />
+      </div>
+    </div>
+    <div class="swiper-slide swiper-pane p-4 flex flex-col overflow-hidden">
+      <div class="bg-black rounded-md h-full overflow-y-auto">
+        <nwb-gearset-pane-skill class="relative min-h-80 p-4 block" [slot]="'secondary'" [gearset]="gearset" [disabled]="true" />
+      </div>
+    </div>
+    @for (slot of slots(); track $index) {
+      <div class="swiper-slide p-4 flex flex-col  overflow-hidden">
+        <div class="bg-black rounded-md h-full overflow-y-auto">
+          <nwb-gear-cell-slot class="min-h-80 max-w-sm screenshot-body" [slotId]="slot.id" [gearset]="gearset" [disabled]="true" />
+        </div>
+      </div>
+    }
+  </div>
+</div>
