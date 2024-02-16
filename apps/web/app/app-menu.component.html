@@ -23,6 +23,8 @@
           <a [routerLink]="item.path" nwbMenuClose class="rounded-none">
             @if (item.icon) {
               <img [nwImage]="item.icon" class="w-5 h-5" />
+            } @else if(item.svgIcon) {
+              <nwb-icon [icon]="item.svgIcon" class="w-5 h-5" />
             }
             {{ item.label }}
           </a>

@@ -515,7 +515,7 @@ export function calculateDamage({ attacker, defender }: { attacker: AttackerStat
   //   converted,
   //   total,
   // })
-  console.log(trace.text())
+
   return {
     weapon,
     converted,

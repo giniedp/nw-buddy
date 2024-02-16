@@ -104,23 +104,20 @@
 <ng-template #tipLevel>
   <div class="p-2 prose prose-sm leading-tight w-80">
     <h4>Level</h4>
+    <p>Damage is scaled off the attacker level.</p>
     <p>
-      Damage is scaled off the attacker level.
-      <br />
-      <br />
-      Additionally in PvP game modes the level difference between attacker and defender is taken into account.
+      Additionally in <span class="text-info font-bold">PvP</span> game modes the level difference between attacker and
+      defender is taken into account.
     </p>
   </div>
 </ng-template>
 
 <ng-template #tipGearScore>
   <div class="p-2 prose prose-sm leading-tight w-80">
-    <h4>Gear Score</h4>
+    <h4>Average Gear Score <span class="badge badge-info badge-xs">PvP only</span></h4>
     <p>
-      The average gear score of the attacker.
-      <br />
-      <br />
-      In PvP game modes the gear score difference between attacker and defender is taken into account.
+      In <span class="text-info font-bold">PvP</span> game modes the gear score difference between attacker and defender
+      is taken into account.
     </p>
   </div>
 </ng-template>
@@ -128,23 +125,13 @@
 <ng-template #tipStats>
   <div class="p-2 prose prose-sm leading-tight w-80">
     <h4>Attribute Points</h4>
-    <p>
-      The assigned attribute points in the order of:
-      @for (stat of attrPoints; track $index) {
-        <span> {{ stat.label }} </span>
-      }
-    </p>
+    <p>The assigned attribute points.</p>
   </div>
 </ng-template>
 
 <ng-template #tipLevels>
   <div class="p-2 prose prose-sm leading-tight w-80">
     <h4>Attribute Modifier Sums</h4>
-    <p>
-      The sum of the attribute modifiers from assigned attirbute points:
-      @for (stat of attrPoints; track $index) {
-        <span> {{ stat.label }} </span>
-      }
-    </p>
+    <p>The sum of the attribute modifiers from assigned attirbute points</p>
   </div>
 </ng-template>

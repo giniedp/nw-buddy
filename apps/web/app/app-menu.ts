@@ -1,9 +1,10 @@
-import { svgDatabase, svgListCheck, svgUser } from "./ui/icons/svg"
+import { svgCalculate, svgCalculator, svgDatabase, svgListCheck, svgUser } from "./ui/icons/svg"
 
 export interface AppMenuEntry {
   label: string
   path: string
   icon?: string
+  svgIcon?: string
   divider?: boolean
 }
 
@@ -66,7 +67,7 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Inventory', path: '/inventory', icon: 'assets/icons/menu/storage.png', divider: true },
       { label: 'Gear Sets', path: '/gearsets', icon: 'assets/icons/menu/gearsets.png' },
       { label: 'Skill Trees', path: '/skill-trees', icon: 'assets/icons/menu/skill-trees.png' },
-      { label: 'Calculator', path: '/damage-calculator', icon: 'assets/icons/menu/skill-trees.png' },
+      { label: 'Calculator', path: '/damage-calculator', svgIcon: svgCalculator },
     ],
   },
   {

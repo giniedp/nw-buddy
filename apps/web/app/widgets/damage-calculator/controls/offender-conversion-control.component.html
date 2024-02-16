@@ -32,8 +32,8 @@
   </button>
 </span>
 
-<span class="join mt-1" [cdkMenuTriggerFor]="tplSlider">
-  <button class="join-item btn btn-sm justify-start text-left w-20">Convert</button>
+<span class="join mt-1">
+  <button class="join-item btn btn-sm justify-start text-left w-20" [cdkMenuTriggerFor]="tplSlider">Convert</button>
   <nwb-precision-input
     class="join-item flex-1 input input-sm input-bordered text-right"
     [min]="0"
@@ -118,6 +118,6 @@
         }
       </p>
       <p>Resulting in a total scaling of {{ scalingSum | percent: '0.0-2' }} or {{ scalingSum | number: '0.0-2' }}.</p>
-    } @else {}
+    }
   </div>
 </ng-template>
