@@ -2,7 +2,7 @@ import { program } from 'commander'
 import * as fs from 'fs'
 import * as path from 'path'
 import { z } from 'zod'
-import { CDN_URL, COMMIT_HASH, NW_GAME_VERSION, NW_WATERMARK, PACKAGE_VERSION, environment } from '../env'
+import { CDN_URL, COMMIT_HASH, NW_GAME_VERSION, NW_WATERMARK, PACKAGE_VERSION, IS_CI, environment } from '../env'
 import { glob, readJSONFile } from './utils/file-utils'
 
 program
@@ -57,7 +57,8 @@ program
       }),
     )
 
-    const envFile = path.join(environment.appsDir('web', 'environments', 'env.generated.ts'))
+    const envFile = path.join(environment.appsDir('web', 'environments', 'env.ts'))
+    const envFileGenerated = path.join(environment.appsDir('web', 'environments', 'env.generated.ts'))
     const env = {
       version: PACKAGE_VERSION + (COMMIT_HASH ? `#${COMMIT_HASH}` : ''),
       isPTR: NW_GAME_VERSION.toLowerCase() !== 'live',
@@ -68,10 +69,15 @@ program
       watermarkImageUrl: NW_WATERMARK || null,
     }
     console.log(env)
-    fs.writeFileSync(
-      envFile,
-      ['export type EnvVars = typeof env', `export const env = ${JSON.stringify(env, null, 2)}`].join('\n'),
+    const content = ['export type EnvVars = typeof env', `export const env = ${JSON.stringify(env, null, 2)}`].join(
+      '\n',
     )
+    fs.writeFileSync(envFileGenerated, content)
+    if (IS_CI) {
+      // worker somehow does not grab the generated file
+      // so we write it to the original file on CI build
+      fs.writeFileSync(envFile, content)
+    }
   })
 
 program

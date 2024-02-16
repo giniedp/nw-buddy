@@ -19,12 +19,13 @@ const commitHash =
   process.env.GITHUB_SHA || // Github Actions
   process.env.CIRCLE_SHA1 // CircleCI
 const isPtr = branchName === 'ptr' || branchName.startsWith('ptr-')
-//const isCI = !!process.env.CI
+const isCI = !!process.env.CI
 const path = require('path')
 const packageVersion = require(path.resolve(process.cwd(), 'package.json')).version
 const gameVersion = process.env.NW_GAME_VERSION
 
 const config = {
+  IS_CI: isCI,
   NW_MODELS_DIR: process.env.NW_MODELS_DIR,
   NW_GAME_VERSION: process.env.NW_GAME_VERSION || (isPtr ? 'PTR' : 'LIVE'),
   BRANCH_NAME: branchName,
