@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms'
 import { AttributeRef, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 import { Attributeconstitution } from '@nw-data/generated'
 import { isEqual } from 'lodash'
-import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, switchMap } from 'rxjs'
+import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, skip, switchMap } from 'rxjs'
 import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
@@ -78,7 +78,9 @@ export class AttributesEditorComponent implements OnInit {
   }
 
   @Output()
-  public assignedChanged = this.store.assigned$.pipe(distinctUntilChanged((a, b) => isEqual(a, b)))
+  public assignedChanged = this.store.assigned$
+    .pipe(skip(1))
+    .pipe(distinctUntilChanged((a, b) => isEqual(a, b)))
 
   protected stats$ = this.store.stats$
   protected steps$ = this.store.steps$

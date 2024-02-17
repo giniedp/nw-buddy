@@ -16,6 +16,8 @@ import { svgInfo } from '~/ui/icons/svg'
 import { InputSliderComponent } from '~/ui/input-slider'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
+import { AttributesEditorComponent } from '~/widgets/attributes-editor'
+import { AttributesScaleComponent } from '~/widgets/attributes-editor/attributes-scale.component'
 import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
 import { PrecisionInputComponent } from './precision-input.component'
 
@@ -33,6 +35,8 @@ import { PrecisionInputComponent } from './precision-input.component'
     LayoutModule,
     TooltipModule,
     PrecisionInputComponent,
+    AttributesEditorComponent,
+    AttributesScaleComponent,
   ],
   host: {
     class: 'form-control',
@@ -43,6 +47,26 @@ export class OffenderStatsControlComponent {
 
   protected level = offenderAccessor(this.store, 'level')
   protected gearScore = offenderAccessor(this.store, 'gearScore')
+  protected attrs = offenderAccessor(this.store, 'attributePoints')
+  protected get attrsAssigned() {
+    return {
+      str: Math.max(0, this.attrs.value.str - NW_MIN_POINTS_PER_ATTRIBUTE),
+      dex: Math.max(0, this.attrs.value.dex - NW_MIN_POINTS_PER_ATTRIBUTE),
+      int: Math.max(0, this.attrs.value.int - NW_MIN_POINTS_PER_ATTRIBUTE),
+      foc: Math.max(0, this.attrs.value.foc - NW_MIN_POINTS_PER_ATTRIBUTE),
+      con: Math.max(0, this.attrs.value.con - NW_MIN_POINTS_PER_ATTRIBUTE),
+    }
+  }
+  protected set attrsAssigned(value: Record<AttributeRef, number>) {
+    this.attrs.value = {
+      con: value.con + NW_MIN_POINTS_PER_ATTRIBUTE,
+      dex: value.dex + NW_MIN_POINTS_PER_ATTRIBUTE,
+      int: value.int + NW_MIN_POINTS_PER_ATTRIBUTE,
+      str: value.str + NW_MIN_POINTS_PER_ATTRIBUTE,
+      foc: value.foc + NW_MIN_POINTS_PER_ATTRIBUTE,
+    }
+  }
+
   protected attrPoints = [
     { label: 'STR', access: attributeAccessor(this.store, 'str') },
     { label: 'DEX', access: attributeAccessor(this.store, 'dex') },

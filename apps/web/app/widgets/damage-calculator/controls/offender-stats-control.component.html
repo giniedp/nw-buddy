@@ -66,7 +66,7 @@
 </div>
 
 <span class="join mt-1">
-  <span class="join-item btn btn-sm w-20 justify-start"> Stats </span>
+  <span class="join-item btn btn-sm w-20 justify-start" [cdkMenuTriggerFor]="tplToolAttrs"> Stats </span>
   @for (stat of attrPoints; track $index) {
     <nwb-precision-input
       class="join-item w-full input input-sm input-bordered text-center pl-0"
@@ -83,6 +83,16 @@
   <button class="join-item btn btn-sm btn-square" [tooltip]="tipStats" [preventClick]="true">
     <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
   </button>
+
+  <ng-template #tplToolAttrs>
+    <div
+      class="bg-base-200 border border-base-100 rounded-lg p-4"
+      style="width: min(calc(100vw - 2.5rem), 800px)"
+      cdkMenu
+    >
+      <nwb-attributes-editor [freeMode]="true" [assigned]="attrsAssigned" (assignedChanged)="attrsAssigned = $event" />
+    </div>
+  </ng-template>
 </span>
 
 <span class="join mt-1">
