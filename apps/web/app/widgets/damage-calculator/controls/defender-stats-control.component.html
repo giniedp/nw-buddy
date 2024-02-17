@@ -1,17 +1,40 @@
-<label class="label">
-  <span class="label-text"> Player </span>
-</label>
-<div class="join" [cdkMenuTriggerFor]="tplSliderLevel">
-  <button class="join-item btn btn-sm justify-start text-left w-20">Level</button>
-  <input
-    type="number"
-    class="join-item appearance-none input input-sm input-bordered text-right w-full"
+<span class="label">
+  <span class="label-text"> Defender </span>
+  <label class="label-text flex flex-row items-center gap-2 cursor-pointer">
+    <span> Is Player </span>
+    <input
+      type="checkbox"
+      class="toggle toggle-xs toggle-success"
+      [ngModel]="isPlayer.value"
+      (ngModelChange)="setIsPlayer($event)"
+    />
+  </label>
+</span>
+@if (!isPlayer.value) {
+  <div class="join mb-1">
+    <button class="join-item btn btn-sm w-full" (click)="pickVital()">
+      @if (vitalName(); as name) {
+        {{ name | nwText }}
+      } @else {
+        <span class="italic">- select creature -</span>
+      }
+    </button>
+  </div>
+}
+<div class="join">
+  <button class="join-item btn btn-sm justify-start text-left w-20" [cdkMenuTriggerFor]="tplSliderLevel">Level</button>
+  <nwb-precision-input
+    class="join-item input input-sm input-bordered text-right w-full"
     [min]="levelMin"
     [max]="levelMax"
     [step]="1"
+    [stepShift]="10"
+    [stepCtrl]="5"
     [(ngModel)]="level.value"
-    (wheel)="($event)"
   />
+  <button class="join-item btn btn-sm btn-square" [tooltip]="tipLevel">
+    <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
+  </button>
   <ng-template #tplSliderLevel>
     <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
       <nwb-input-slider
@@ -28,17 +51,20 @@
     </div>
   </ng-template>
 </div>
-<div class="join mt-1" [cdkMenuTriggerFor]="tplGearScoreLevel">
-  <button class="join-item btn btn-sm justify-start text-left w-20">GS</button>
-  <input
-    type="number"
-    class="join-item appearance-none input input-sm input-bordered text-right w-full"
+<div class="join mt-1">
+  <button class="join-item btn btn-sm justify-start text-left w-20" [cdkMenuTriggerFor]="tplGearScoreLevel">GS</button>
+  <nwb-precision-input
+    class="join-item input input-sm input-bordered text-right w-full"
     [min]="gsMin"
     [max]="gsMax"
     [step]="1"
+    [stepShift]="100"
+    [stepCtrl]="10"
     [(ngModel)]="gearScore.value"
-    (wheel)="($event)"
   />
+  <button class="join-item btn btn-sm btn-square" [tooltip]="tipGearScore">
+    <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
+  </button>
   <ng-template #tplGearScoreLevel>
     <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
       <nwb-input-slider
@@ -55,3 +81,25 @@
     </div>
   </ng-template>
 </div>
+
+<ng-template #tipLevel>
+  <div class="p-2 prose prose-sm leading-tight w-80">
+    <h4>Level</h4>
+    <p>
+      In <span class="text-info font-bold">PvP</span> game modes the level difference between attacker and defender is
+      taken into account.
+    </p>
+    <p>For <span class="text-success font-bold">PvE</span> Creatures, the level defines the creatures gear score.</p>
+  </div>
+</ng-template>
+
+<ng-template #tipGearScore>
+  <div class="p-2 prose prose-sm leading-tight w-80">
+    <h4>Average Gear Score</h4>
+    <p>
+      In <span class="text-info font-bold">PvP</span> game modes the gear score difference between attacker and defender
+      is taken into account.
+    </p>
+    <p>For <span class="text-success font-bold">PvE</span> Creatures, this has no effect in the calculator.</p>
+  </div>
+</ng-template>

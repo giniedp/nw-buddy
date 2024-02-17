@@ -3,7 +3,7 @@
   @if (inlineInputDisabled) {
     <nwb-precision-input
       type="number"
-      class="join-item appearance-none input input-sm input-bordered text-right w-full"
+      class="join-item appearance-none input input-sm input-bordered text-right w-full opacity-25"
       [scale]="scale"
       [ngModel]="total"
       [disabled]="inlineInputDisabled"
@@ -12,7 +12,9 @@
     />
   } @else {
     <nwb-precision-input
-      class="join-item appearance-none input input-sm input-bordered text-right w-full"
+      class="join-item appearance-none input input-sm text-right w-full"
+      [class.opacity-15]="!value"
+      [class.input-bordered]="!!value"
       [min]="min"
       [max]="max"
       [step]="step"

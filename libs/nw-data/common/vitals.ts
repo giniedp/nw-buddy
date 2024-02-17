@@ -179,6 +179,14 @@ export function isVitalCombatCategory(value: string) {
   return VITAL_CATEGORIES_KEYS.some((it) => it === value)
 }
 
+export function getVitalWKN(vital: Vitals, damageType: VitalDamageType): number {
+  return vital[`WKN${damageType}`] || 0
+}
+
+export function getVitalABS(vital: Vitals, damageType: VitalDamageType): number {
+  return vital[`ABS${damageType}`] || 0
+}
+
 export function getVitalDamageEffectiveness(vital: Vitals, damageType: VitalDamageType) {
   return vital[`WKN${damageType}`] - vital[`ABS${damageType}`] || 0
 }
@@ -332,6 +340,24 @@ export function getVitalArmor(vital: Vitals, level: Vitalsleveldata) {
     }),
     physicalRating: getArmorRating({
       gearScore: level.GearScore,
+      mitigation: vital.PhysicalMitigation,
+    }),
+  }
+}
+
+export function getVitalArmorFromGS(vital: Vitals, gearScore: number) {
+  if (!vital) {
+    return null
+  }
+  return {
+    elementalMitigation: vital.ElementalMitigation,
+    physicalMitigation: vital.PhysicalMitigation,
+    elementalRating: getArmorRating({
+      gearScore: gearScore || 0,
+      mitigation: vital.ElementalMitigation,
+    }),
+    physicalRating: getArmorRating({
+      gearScore: gearScore || 0,
       mitigation: vital.PhysicalMitigation,
     }),
   }

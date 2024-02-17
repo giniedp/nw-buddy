@@ -15,8 +15,14 @@ import {
 } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { getState, patchState } from '@ngrx/signals'
+import { getDamageScalingForWeapon, patchPrecision } from '@nw-data/common'
 import { BehaviorSubject, EMPTY, combineLatest, map, switchMap } from 'rxjs'
 import { Mannequin } from '~/nw/mannequin'
+import { ModifierResult, describeModifierSource } from '~/nw/mannequin/modifier'
+import { IconsModule } from '~/ui/icons'
+import { svgRestartAlt } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
+import { TooltipModule } from '~/ui/tooltip'
 import { DefenderElementalArmorControlComponent } from './controls/defender-elemental-armor-control.component'
 import { DefenderModsControlComponent } from './controls/defender-mods-control.component'
 import { DefenderPhysicalArmorControlComponent } from './controls/defender-physical-armor-control.component'
@@ -27,11 +33,14 @@ import { OffenderModsControlComponent } from './controls/offender-mods-control.c
 import { OffenderStatsControlComponent } from './controls/offender-stats-control.component'
 import { OffenderWeaponControlComponent } from './controls/offender-weapon-control.component'
 import { StackedValueControlComponent } from './controls/stacked-value-control.component'
-import { DamageCalculatorState, DamageCalculatorStore, ValueStack, updateDefender, updateOffender } from './damage-calculator.store'
+import {
+  DamageCalculatorState,
+  DamageCalculatorStore,
+  ValueStack,
+  updateDefender,
+  updateOffender,
+} from './damage-calculator.store'
 import { DamageOutputComponent } from './damage-output.component'
-import { getDamageScalingForWeapon, patchPrecision } from '@nw-data/common'
-import { ModifierResult, describeModifierSource, modifierResult } from '~/nw/mannequin/modifier'
-import { LayoutModule } from '~/ui/layout'
 
 @Component({
   standalone: true,
@@ -51,7 +60,9 @@ import { LayoutModule } from '~/ui/layout'
     OffenderStatsControlComponent,
     OffenderWeaponControlComponent,
     StackedValueControlComponent,
-    LayoutModule
+    LayoutModule,
+    IconsModule,
+    TooltipModule,
   ],
   host: {
     class: 'flex flex-col',
@@ -90,15 +101,18 @@ export class DamageCalculatorComponent implements OnInit {
 
   @Input()
   public layoutAsPage = false
+  protected iconReset = svgRestartAlt
 
   public constructor(@Attribute('standalone') standalone: string) {
     if (booleanAttribute(standalone)) {
       this.store.connectWeaponTag()
       this.store.connectAttributes()
       this.store.connectAffix()
+      this.store.connectVital()
     } else {
       this.store.connectWeaponTag()
       this.store.connectAttributes()
+      this.store.connectVital()
       this.connectPlayer()
       this.connectOpponent()
     }
@@ -113,6 +127,14 @@ export class DamageCalculatorComponent implements OnInit {
         injector: this.injector,
       },
     )
+  }
+
+  protected resetOffender() {
+    this.store.resetOffender()
+  }
+
+  protected resetDefender() {
+    this.store.resetDefender()
   }
 
   private connectPlayer() {
@@ -216,36 +238,39 @@ export class DamageCalculatorComponent implements OnInit {
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(({ dmgTypeWeapon, dmgTypeConvert, level, gearScore, modAbs, modWKN, modArmor }) => {
-
-        patchState(this.store, updateDefender({
-          level: level,
-          gearScore: patchPrecision(gearScore),
-          modABS: toStack(modAbs?.DamageCategories[dmgTypeWeapon]),
-          modABSConv: toStack(modAbs?.DamageCategories[dmgTypeConvert]),
-          modWKN: toStack(modWKN?.[dmgTypeWeapon]),
-          modWKNConv: toStack(modWKN?.[dmgTypeConvert]),
-          // modBaseReduction
-          // modBaseReductionConv
-          // modCritReduction
-          elementalArmor: {
-            value: patchPrecision(modArmor?.ElementalBase?.armorRating ?? 0, 1) ,
-            stack: []
-          },
-          elementalArmorAdd: {
-            value: patchPrecision(modArmor?.ElementalBase?.weaponRating ?? 0, 1) ,
-            stack: []
-          },
-          elementalArmorFortify: toStack(modArmor?.Elemental),
-          physicalArmor: {
-            value: patchPrecision(modArmor?.PhysicalBase?.armorRating ?? 0, 1) ,
-            stack: []
-          },
-          physicalArmorAdd: {
-            value: patchPrecision(modArmor?.PhysicalBase?.weaponRating ?? 0, 1) ,
-            stack: []
-          },
-          physicalArmorFortify: toStack(modArmor?.Physical),
-        }))
+        patchState(
+          this.store,
+          updateDefender({
+            isPlayer: true,
+            level: level,
+            gearScore: patchPrecision(gearScore),
+            modABS: toStack(modAbs?.DamageCategories[dmgTypeWeapon]),
+            modABSConv: toStack(modAbs?.DamageCategories[dmgTypeConvert]),
+            modWKN: toStack(modWKN?.[dmgTypeWeapon]),
+            modWKNConv: toStack(modWKN?.[dmgTypeConvert]),
+            // modBaseReduction
+            // modBaseReductionConv
+            // modCritReduction
+            elementalArmor: {
+              value: patchPrecision(modArmor?.ElementalBase?.armorRating ?? 0, 1),
+              stack: [],
+            },
+            elementalArmorAdd: {
+              value: patchPrecision(modArmor?.ElementalBase?.weaponRating ?? 0, 1),
+              stack: [],
+            },
+            elementalArmorFortify: toStack(modArmor?.Elemental),
+            physicalArmor: {
+              value: patchPrecision(modArmor?.PhysicalBase?.armorRating ?? 0, 1),
+              stack: [],
+            },
+            physicalArmorAdd: {
+              value: patchPrecision(modArmor?.PhysicalBase?.weaponRating ?? 0, 1),
+              stack: [],
+            },
+            physicalArmorFortify: toStack(modArmor?.Physical),
+          }),
+        )
       })
   }
 }
@@ -254,7 +279,7 @@ function toStack(mod: ModifierResult): ValueStack {
   if (!mod) {
     return {
       value: 0,
-      stack: []
+      stack: [],
     }
   }
   return {
@@ -267,6 +292,6 @@ function toStack(mod: ModifierResult): ValueStack {
         label: source.label,
         icon: source.icon,
       }
-    })
+    }),
   }
 }

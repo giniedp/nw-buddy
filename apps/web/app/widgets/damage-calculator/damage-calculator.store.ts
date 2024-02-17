@@ -12,10 +12,13 @@ import {
   getDamageFactorForGearScore,
   getDamageScalingForLevel,
   getDamageScalingSumForWeapon,
+  getVitalABS,
+  getVitalArmor,
+  getVitalWKN,
   isDamageTypeElemental,
   patchPrecision,
 } from '@nw-data/common'
-import { combineLatest, map, of, pipe, switchMap } from 'rxjs'
+import { EMPTY, combineLatest, map, of, pipe, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { cappedValue } from '~/nw/mannequin/mods/capped-value'
 import { NW_WEAPON_TYPES, damageTypeIcon } from '~/nw/weapon-types'
@@ -66,6 +69,8 @@ export interface OffenderState {
 }
 
 export interface DefenderState {
+  isPlayer: boolean
+  vitalId: string
   level: number
   gearScore: number
 
@@ -149,6 +154,8 @@ const DEFAULT_STATE: DamageCalculatorState = {
   },
 
   defender: {
+    isPlayer: true,
+    vitalId: null,
     level: NW_MAX_CHARACTER_LEVEL,
     gearScore: NW_MAX_GEAR_SCORE,
 
@@ -251,6 +258,8 @@ export const DamageCalculatorStore = signalStore(
       offenderModDMG: computed(() => valueStackSum(offender.modDMG())),
       offenderModDMGConv: computed(() => valueStackSum(offender.modDMGConv())),
 
+      defenderIsPlayer: computed(() => defender.isPlayer()),
+      defenderVitalId: computed(() => defender.vitalId()),
       defenderLevel: computed(() => defender.level()),
       defenderGearScore: computed(() => defender.gearScore()),
 
@@ -305,7 +314,7 @@ export const DamageCalculatorStore = signalStore(
             modDMGAffix: state.offenderModDMGConv().value,
           },
           defender: {
-            isPlayer: true,
+            isPlayer: state.defenderIsPlayer(),
             level: state.defenderLevel(),
             gearScore: state.defenderGearScore(),
             armorRating: state.defenderArmorRating(),
@@ -436,8 +445,84 @@ export const DamageCalculatorStore = signalStore(
           }),
         ),
       ),
+      connectVital: rxMethod<void>(
+        pipe(
+          switchMap(() => data.vital(toObservable(state.defender.vitalId, { injector: injector }))),
+          switchMap((vital) => {
+            if (!vital) {
+              return EMPTY
+            }
+            patchState(state, updateDefender({ level: vital.Level }))
+            return combineLatest({
+              dmgTypeWeapon: toObservable(state.offender.weaponDamageType, { injector }),
+              dmgTypeConvert: toObservable(state.offender.convertDamageType, { injector }),
+              vitalLevel: data.vitalsLevel(toObservable(state.defender.level, { injector })),
+              vital: of(vital),
+            })
+          }),
+          map(({ dmgTypeWeapon, dmgTypeConvert, vital, vitalLevel }) => {
+            const armor = getVitalArmor(vital, vitalLevel)
+            patchState(
+              state,
+              updateDefender({
+                isPlayer: false,
+                gearScore: vitalLevel.GearScore,
+                modABS: {
+                  value: getVitalABS(vital, dmgTypeWeapon as any),
+                  stack: state.defender.modABS.stack(),
+                },
+                modABSConv: {
+                  value: getVitalABS(vital, dmgTypeConvert as any),
+                  stack: state.defender.modABSConv.stack(),
+                },
+                modWKN: {
+                  value: getVitalWKN(vital, dmgTypeWeapon as any),
+                  stack: state.defender.modWKN.stack(),
+                },
+                modWKNConv: {
+                  value: getVitalWKN(vital, dmgTypeConvert as any),
+                  stack: state.defender.modWKNConv.stack(),
+                },
+                elementalArmor: {
+                  value: armor.elementalRating,
+                  stack: state.defender.elementalArmor.stack(),
+                },
+                elementalArmorAdd: {
+                  value: 0,
+                  stack: state.defender.elementalArmorAdd.stack(),
+                },
+                elementalArmorFortify: {
+                  value: 0,
+                  stack: state.defender.elementalArmorFortify.stack(),
+                },
+                physicalArmor: {
+                  value: armor.physicalRating,
+                  stack: state.defender.physicalArmor.stack(),
+                },
+                physicalArmorAdd: {
+                  value: 0,
+                  stack: state.defender.physicalArmorAdd.stack(),
+                },
+                physicalArmorFortify: {
+                  value: 0,
+                  stack: state.defender.physicalArmorFortify.stack(),
+                },
+              }),
+            )
+          }),
+        ),
+      ),
       setState: (input: DamageCalculatorState) => {
         patchState(state, input)
+      },
+      reset: () => {
+        patchState(state, DEFAULT_STATE)
+      },
+      resetOffender: () => {
+        patchState(state, updateOffender(DEFAULT_STATE.offender))
+      },
+      resetDefender: () => {
+        patchState(state, updateDefender(DEFAULT_STATE.defender))
       },
     }
   }),

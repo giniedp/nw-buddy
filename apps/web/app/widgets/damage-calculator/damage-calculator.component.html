@@ -16,10 +16,15 @@
 
 <ng-template #tplOffender>
   <div>
-    <h3 class="text-lg uppercase relative text-center font-serif text-nw-description nw-bg-title bg-bottom">
+    <h3
+      class="text-lg uppercase relative text-center font-serif text-nw-description nw-bg-title bg-bottom h-12 flex justify-center items-end"
+    >
       Attacker Stats
+      <button class="btn btn-ghost btn-square absolute top-0 right-0" (click)="resetOffender()" [tooltip]="'Reset Attacker'">
+        <nwb-icon [icon]="iconReset" class="w-5 h-5" />
+      </button>
     </h3>
-    <div>
+    <div class="flex flex-col gap-4 mt-4">
       <div class="grid gap-4 grid-auto-fit-80">
         <nwb-offender-stats-control />
         <nwb-offender-weapon-control />
@@ -33,10 +38,15 @@
 
 <ng-template #tplDefender>
   <div>
-    <h3 class="text-lg uppercase relative text-center font-serif text-nw-description nw-bg-title bg-bottom">
+    <h3
+      class="text-lg uppercase relative text-center font-serif text-nw-description nw-bg-title bg-bottom h-12 flex justify-center items-end"
+    >
       Defender Stats
+      <button class="btn btn-ghost btn-square absolute top-0 right-0" (click)="resetDefender()"  [tooltip]="'Reset Defender'">
+        <nwb-icon [icon]="iconReset" class="w-5 h-5" />
+      </button>
     </h3>
-    <div class="flex flex-col gap-4">
+    <div class="flex flex-col gap-4 mt-4">
       <div class="grid gap-x-4 gap-y-1 grid-auto-fit-80">
         <nwb-defender-stats-control />
         <nwb-defender-physical-armor-control />
@@ -48,7 +58,13 @@
 </ng-template>
 
 <ng-template #tplOutput>
-  <h3 class="text-lg uppercase relative text-center font-serif text-nw-description nw-bg-title bg-bottom">Output</h3>
+  <div>
+    <h3
+      class="text-lg uppercase relative text-center font-serif text-nw-description nw-bg-title bg-bottom h-12 flex justify-center items-end"
+    >
+      Output
+    </h3>
 
-  <nwb-damage-output />
+    <nwb-damage-output />
+  </div>
 </ng-template>

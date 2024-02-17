@@ -26,7 +26,7 @@ import { StackedValueControlComponent } from './stacked-value-control.component'
     IconsModule,
   ],
   host: {
-    class: 'layout-content',
+    class: 'block',
   },
 })
 export class OffenderModsControlComponent {

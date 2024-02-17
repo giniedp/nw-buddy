@@ -161,19 +161,21 @@ export function getDamageForWeapon(
       (1 - mitigation) +
     damageAdd
 
-  trace?.log(`baseDamage                          | ${baseDamage}`)
-  trace?.log(` * damageCoef                       |  * ${damageCoef}`)
-  trace?.log(` * factorFromGS                     |  * ${factorFromGS}`)
-  trace?.log(` * (1 + modPvP)                     |  * (1 + ${modPvP})`)
-  trace?.log(` * (1 + levelScaling + statsScaling)|  * (1 + ${levelScaling} + ${statsScaling})`)
-  trace?.log(` * (1 + modAmmo)                    |  * (1 + ${modAmmo})`)
-  trace?.log(` * (1 + modBase + modCrit)          |  * (1 + ${modBase} + ${modCrit})`)
-  trace?.log(` * (1 + modDMG)                     |  * (1 + ${modDMG})`)
-  trace?.log(` * (1 - modABS)                     |  * (1 - ${modABS})`)
-  trace?.log(` * (1 + modWKN)                     |  * (1 + ${modWKN})`)
-  trace?.log(` * (1 - mitigation)                 |  * (1 - ${mitigation})`)
-  trace?.log(` + damageAdd                        |  + ${damageAdd}`)
-  trace?.log(`= ${result}`)
+  if (trace) {
+    trace.log(`baseDamage                          | ${baseDamage}`)
+    trace.log(` * damageCoef                       |  * ${damageCoef}`)
+    trace.log(` * factorFromGS                     |  * ${factorFromGS}`)
+    trace.log(` * (1 + modPvP)                     |  * (1 + ${modPvP})`)
+    trace.log(` * (1 + levelScaling + statsScaling)|  * (1 + ${levelScaling} + ${statsScaling})`)
+    trace.log(` * (1 + modAmmo)                    |  * (1 + ${modAmmo})`)
+    trace.log(` * (1 + modBase + modCrit)          |  * (1 + ${modBase} + ${modCrit})`)
+    trace.log(` * (1 + modDMG)                     |  * (1 + ${modDMG})`)
+    trace.log(` * (1 - modABS)                     |  * (1 - ${modABS})`)
+    trace.log(` * (1 + modWKN)                     |  * (1 + ${modWKN})`)
+    trace.log(` * (1 - mitigation)                 |  * (1 - ${mitigation})`)
+    trace.log(` + damageAdd                        |  + ${damageAdd}`)
+    trace.log(`= ${result}`)
+  }
   // console.table({
   //   dmgBase,
   //   dmgCoef,
@@ -324,8 +326,6 @@ export interface DefenderStats {
 export function calculateDamage({ attacker, defender }: { attacker: AttackerStats; defender: DefenderStats }) {
   attacker.gearScore = Math.floor(attacker.gearScore)
   const trace = tracer()
-  trace.log('inputs:')
-  //trace.indent().log(JSON.stringify(options, null, 2))
 
   const modifierSums = attacker.attributeModSums
 
