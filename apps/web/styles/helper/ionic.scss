@@ -27,13 +27,13 @@ html.plt-mobile ion-app {
 
 ion-toolbar {
   --min-height: 3rem;
-  .btn {
+  .btn:not(.btn-sm,.btn-xs,.btn-lg) {
     min-height: 2.5rem;
     height: 2.5rem;
-  }
-  .btn.btn-square,
-  .btn.btn-circle {
-    min-width: 2.5rem;
-    width: 2.5rem;
+    &.btn-square,
+    &.btn-circle {
+      min-width: 2.5rem;
+      width: 2.5rem;
+    }
   }
 }
