@@ -8,6 +8,9 @@ import { GearCellModsCraftingComponent } from '../cells/gear-cell-mods-crafting.
 import { GearCellModsDurationComponent } from '../cells/gear-cell-mods-duration.component'
 import { GearCellModsCooldownComponent } from '../cells/gear-cell-mods-cooldown.component'
 import { GearCellModsMiscComponent } from '../cells/gear-cell-mods-misc.component'
+import { injectElementWidth } from '~/ui/layout/resize-observer.directive'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { tapDebug } from '~/utils'
 
 @Component({
   standalone: true,
@@ -33,4 +36,6 @@ import { GearCellModsMiscComponent } from '../cells/gear-cell-mods-misc.componen
 export class GearsetPaneStatsComponent {
   @Input()
   public disabled: boolean
+
+  protected width = toSignal(injectElementWidth().pipe(tapDebug('width')))
 }
