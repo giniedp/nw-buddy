@@ -8,7 +8,7 @@ import {
 } from '@angular/common/http'
 import { Injectable, inject } from '@angular/core'
 import { CanActivateFn } from '@angular/router'
-import { getEnvDataVersionPath } from 'apps/web/environments/utils'
+import { getNwDataPath } from 'apps/web/environments/utils'
 import { environment } from 'apps/web/environments/environment'
 import { map, Observable } from 'rxjs'
 
@@ -43,7 +43,7 @@ export class NwDataInterceptor implements HttpInterceptor {
   public nwDataUrl: string = environment.nwDataUrl.replace(/\/+$/, '')
 
   public setVersion(version: string) {
-    this.nwDataUrl = new URL(getEnvDataVersionPath(version), environment.cdnUrl).toString()
+    this.nwDataUrl = new URL(getNwDataPath(version), environment.cdnUrl).toString()
     console.log(this.nwDataUrl)
   }
 

@@ -63,7 +63,7 @@ You can download game data from CDN (see quickstart) and skip the extraction ste
   - `oo2core_8_win64.dll` and `texconv.exe` are already in the tools/bin directory
 - Install [ImageMagick](https://imagemagick.org/), which is required to convert images
 - Copy `.env.example` to `.env` and adjust env variables as you need
-  - When working on PTR use the `NW_GAME_VERSION=PTR` variable or switch to the `ptr` branch
+  - When working on PTR use the `NW_WORKSPACE=PTR` variable or switch to the `ptr` branch
 
 ### Unpack (optional)
 

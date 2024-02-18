@@ -2,7 +2,7 @@ import * as path from 'path'
 import { MultiBar, Presets } from 'cli-progress'
 import { program } from 'commander'
 import { extract } from 'nw-extract'
-import { environment, NW_GAME_VERSION } from '../env'
+import { environment, NW_WORKSPACE } from '../env'
 import { pakExtractor } from './bin/pak-extractor'
 import { quickbms } from './bin/quickbms'
 
@@ -17,7 +17,7 @@ program
   .option('-o, --output <path>', 'output directory')
   .option('-m, --module <module>', 'unpacker module to use', 'nwtools')
   .option('-t, --threads <threads>', 'Number of threads', Number)
-  .option('-ws, --workspace <name>', 'workspace dir (live or ptr)', NW_GAME_VERSION)
+  .option('-ws, --workspace <name>', 'workspace dir (live or ptr)', NW_WORKSPACE)
   .action(async () => {
     const options = program.opts<{
       game: string

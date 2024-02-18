@@ -47,8 +47,9 @@
                   "*.gz",
                   "*.zip"
                 ],
-                "input": "dist/nw-data",
-                "output": "/nw-data/"
+                "input": "dist/nw-data/.current",
+                "output": "/nw-data/",
+                "followSymlinks": true
               },
               {
                 "glob": "**/*",

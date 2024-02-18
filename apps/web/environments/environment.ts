@@ -1,11 +1,11 @@
 import { env } from './env'
-import { Environment, getEnvDataDeployUrl, getEnvModelsUrl } from './utils'
+import { Environment, getNwDataDeployUrl, getModelsUrl } from './utils'
 
 export const environment: Environment = {
   ...env,
   production: false,
   standalone: false,
   environment: 'LOCAL',
-  modelsUrl: getEnvModelsUrl(env),
-  nwDataUrl: getEnvDataDeployUrl(env),
+  modelsUrl: getModelsUrl(env),
+  nwDataUrl: getNwDataDeployUrl(env),
 }

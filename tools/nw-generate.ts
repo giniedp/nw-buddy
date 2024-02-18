@@ -2,7 +2,7 @@ import { program } from 'commander'
 import * as fs from 'fs'
 import * as path from 'path'
 import { z } from 'zod'
-import { CDN_URL, COMMIT_HASH, NW_GAME_VERSION, NW_WATERMARK, PACKAGE_VERSION, IS_CI, environment } from '../env'
+import { CDN_URL, COMMIT_HASH, NW_WORKSPACE, NW_WATERMARK, PACKAGE_VERSION, IS_CI, environment } from '../env'
 import { glob, readJSONFile } from './utils/file-utils'
 
 program
@@ -59,13 +59,14 @@ program
 
     const envFile = path.join(environment.appsDir('web', 'environments', 'env.ts'))
     const envFileGenerated = path.join(environment.appsDir('web', 'environments', 'env.generated.ts'))
+    const workspace = NW_WORKSPACE
     const env = {
       version: PACKAGE_VERSION + (COMMIT_HASH ? `#${COMMIT_HASH}` : ''),
-      isPTR: NW_GAME_VERSION.toLowerCase() !== 'live',
-      workspace: NW_GAME_VERSION.toLowerCase(),
+      isPTR: workspace.toLowerCase() !== 'live',
+      workspace: workspace.toLowerCase(),
       cdnUrl: CDN_URL,
       deployUrl: ngConfig.projects['nw-buddy'].architect.build.configurations[config].baseHref || '/',
-      disableTooltips: !['live', 'ptr'].includes(NW_GAME_VERSION.toLowerCase()),
+      disableTooltips: !['live', 'ptr'].includes(workspace.toLowerCase()),
       watermarkImageUrl: NW_WATERMARK || null,
     }
     console.log(env)
@@ -78,6 +79,14 @@ program
       // so we write it to the original file on CI build
       fs.writeFileSync(envFile, content)
     }
+
+    const dataSrcDir = environment.nwDataDir(workspace)
+    const dataLinkDir = environment.nwDataDir('.current')
+    console.log('Linking data directory', dataSrcDir, '->', dataLinkDir)
+    if (fs.existsSync(dataLinkDir)) {
+      fs.rmSync(dataLinkDir, { force: true })
+    }
+    fs.symlinkSync(dataSrcDir, dataLinkDir)
   })
 
 program

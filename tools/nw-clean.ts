@@ -1,8 +1,8 @@
 import { program } from 'commander'
 import * as fs from 'fs'
-import { NW_GAME_VERSION, environment } from '../env'
+import { NW_WORKSPACE, environment } from '../env'
 
-program.option('-ws, --workspace <name>', 'workspace dir (live or ptr)', NW_GAME_VERSION).action(async () => {
+program.option('-ws, --workspace <name>', 'workspace dir (live or ptr)', NW_WORKSPACE).action(async () => {
   const options = program.opts<{
     workspace: boolean
   }>()

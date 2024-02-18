@@ -4,7 +4,7 @@ function cmd(cmd) {
   const shell = require('shelljs')
   const result = shell.exec(cmd, { silent: true })
   if (result.code !== 0) {
-    throw new Error('[git-rev-sync] failed to execute command: ' + result.stdout)
+    throw new Error('failed to execute command: ' + result.stdout)
   }
   return result.stdout.toString('utf8').replace(/^\s+|\s+$/g, '')
 }
@@ -22,12 +22,12 @@ const isPtr = branchName === 'ptr' || branchName.startsWith('ptr-')
 const isCI = !!process.env.CI
 const path = require('path')
 const packageVersion = require(path.resolve(process.cwd(), 'package.json')).version
-const gameVersion = process.env.NW_GAME_VERSION
+const gameVersion =  process.env.NW_WORKSPACE || (isPtr ? 'PTR' : 'LIVE')
 
 const config = {
   IS_CI: isCI,
   NW_MODELS_DIR: process.env.NW_MODELS_DIR,
-  NW_GAME_VERSION: process.env.NW_GAME_VERSION || (isPtr ? 'PTR' : 'LIVE'),
+  NW_WORKSPACE: gameVersion,
   BRANCH_NAME: branchName,
   CDN_URL: process.env.CDN_URL,
   CDN_UPLOAD_SPACE: process.env.CDN_UPLOAD_SPACE,
@@ -58,7 +58,7 @@ function getWorkspace(workspace) {
   if (typeof workspace === 'string') {
     return workspace.toUpperCase()
   }
-  return workspace ? 'PTR' : 'LIVE'
+  return gameVersion || 'LIVE'
 }
 
 const environment = {

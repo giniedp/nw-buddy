@@ -16,7 +16,7 @@ import {
   CDN_UPLOAD_SECRET,
   CDN_UPLOAD_SPACE,
   CDN_URL,
-  NW_GAME_VERSION,
+  NW_WORKSPACE,
   environment,
 } from '../env'
 import { glob, writeJSONFile } from './utils/file-utils'
@@ -31,8 +31,8 @@ const config = {
 program
   .command('download')
   .description('Downloads files from CDN to local workspace')
-  .option('-ws, --workspace <name>', 'ptr or live workspace into which to download data', NW_GAME_VERSION)
-  .option('-v, --version <version>', 'Version name to download', path.basename(environment.nwDataDir(NW_GAME_VERSION)))
+  .option('-ws, --workspace <name>', 'ptr or live workspace into which to download data', NW_WORKSPACE)
+  .option('-v, --version <version>', 'Version name to download', path.basename(environment.nwDataDir(NW_WORKSPACE)))
   .action(async (data) => {
     const options = z
       .object({
@@ -88,11 +88,11 @@ program
 program
   .command('upload')
   .description('Zips nw-data folder (live or ptr) and uploads to CDN. Optionally uploads all files unzipped.')
-  .option('-ws, --workspace <name>', 'workspace folder to upload (ptr or live)', NW_GAME_VERSION)
+  .option('-ws, --workspace <name>', 'workspace folder to upload (ptr or live)', NW_WORKSPACE)
   .option(
     '-v, --version <version>',
     'Version name to use for upload',
-    path.basename(environment.nwDataDir(NW_GAME_VERSION)),
+    path.basename(environment.nwDataDir(NW_WORKSPACE)),
   )
   .option('-u, --update', 'Whether to update the zip file before upload', false)
   .option('-f, --files', 'Whether to upload unzipped folder to CDN', false)

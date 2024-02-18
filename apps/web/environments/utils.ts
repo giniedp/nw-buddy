@@ -1,4 +1,5 @@
-import { EnvVars } from "./env"
+import { replace } from 'lodash'
+import { EnvVars } from './env'
 
 export interface Environment extends EnvVars {
   environment: string
@@ -13,22 +14,19 @@ export interface Environment extends EnvVars {
   nwDataUrl: string
 }
 
-export function getEnvModelsUrl(env: EnvVars) {
+export function getModelsUrl(env: EnvVars) {
   return new URL('models', env.cdnUrl).toString()
 }
 
-export function getEnvDataVersionPath(version: string) {
-  return `nw-data/${version}`
+export function getNwDataPath(version: string = null) {
+  console.log('getNwDataPath', version)
+  return `nw-data/${version || ''}`.replace(/\/$/, '')
 }
 
-export function getEnvDataPath(env: EnvVars) {
-  return getEnvDataVersionPath(env.workspace || (env.isPTR ? 'ptr' : 'live'))
+export function getNwDataCdnUrl(env: EnvVars) {
+  return new URL(getNwDataPath(), env.cdnUrl).toString()
 }
 
-export function getEnvDataCdnUrl(env: EnvVars) {
-  return new URL(getEnvDataPath(env), env.cdnUrl).toString()
-}
-
-export function getEnvDataDeployUrl(env: EnvVars) {
-  return env.deployUrl + getEnvDataPath(env)
+export function getNwDataDeployUrl(env: EnvVars) {
+  return env.deployUrl + getNwDataPath()
 }

@@ -7,7 +7,6 @@
   "files": [
     "dist/electron/**/*",
     "dist/web-electron/browser/**/*",
-    "!dist/web-electron/browser/nw-data",
     "!dist/nw-data",
     "!dist/server",
     "!dist/web",

@@ -3,7 +3,7 @@ import * as fs from 'fs'
 import { convert } from 'nw-extract'
 import { cpus } from 'os'
 import * as path from 'path'
-import { environment, NW_GAME_VERSION } from '../env'
+import { environment, NW_WORKSPACE } from '../env'
 import { objectStreamConverter } from './bin/object-stream-converter'
 import { copyFile, glob, writeJSONFile } from './utils/file-utils'
 
@@ -31,7 +31,7 @@ program
   .option('-u, --update', 'Force update')
   .option('-t, --threads <threads>', 'Number of threads', Number)
   .option('-m, --module <module>', 'Specific converter module to run', collect, [])
-  .option('-ws, --workspace <name>', 'workspace (live or ptr)', NW_GAME_VERSION)
+  .option('-ws, --workspace <name>', 'workspace (live or ptr)', NW_WORKSPACE)
   .action(async () => {
     const options = program.opts<{
       input: string

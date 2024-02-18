@@ -34,7 +34,7 @@ jobs:
     resource_class: large
     environment:
       NODE_OPTIONS: --max_old_space_size=6144
-      NW_GAME_VERSION: LIVE
+      NW_WORKSPACE: LIVE
     steps:
       - checkout
       - node/install:
@@ -75,7 +75,7 @@ jobs:
     resource_class: large
     environment:
       NODE_OPTIONS: --max_old_space_size=6144
-      NW_GAME_VERSION: LIVE
+      NW_WORKSPACE: LIVE
     steps:
       - checkout
       - node/install:
@@ -104,7 +104,7 @@ jobs:
     resource_class: large
     environment:
       NODE_OPTIONS: --max_old_space_size=6144
-      NW_GAME_VERSION: PTR
+      NW_WORKSPACE: PTR
     steps:
       - checkout
       - node/install:
