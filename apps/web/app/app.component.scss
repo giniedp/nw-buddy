@@ -23,8 +23,4 @@
     -webkit-app-region: no-drag;
   }
 
-  ion-content::part(scroll) {
-    display: flex;
-    flex-direction: column;
-  }
 }

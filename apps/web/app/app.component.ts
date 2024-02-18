@@ -116,8 +116,8 @@ export class AppComponent {
     return this.platform.env.environment === 'WEB' || this.platform.env.environment === 'DEV'
   }
 
-  public get isPtr() {
-    return this.platform.env.isPTR
+  public get titleBadge() {
+    return this.platform.env.badge
   }
 
   public get isOverwolf() {

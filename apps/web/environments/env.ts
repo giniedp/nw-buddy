@@ -5,9 +5,15 @@ export const env = {
    */
   version: 'v0',
   /**
-   * Whether this is a New World PTR build
+   * Whether the environment is PTR
+   * @remarks
+   * used to determine nwdb tooltip and link target
    */
   isPTR: false,
+  /**
+   * Floating badge text above Site name
+   */
+  badge: '',
   /**
    * nw-data workspace folder
    */

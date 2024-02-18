@@ -2,8 +2,9 @@ import { program } from 'commander'
 import * as fs from 'fs'
 import * as path from 'path'
 import { z } from 'zod'
-import { CDN_URL, COMMIT_HASH, NW_WORKSPACE, NW_WATERMARK, PACKAGE_VERSION, IS_CI, environment } from '../env'
+import { CDN_URL, COMMIT_HASH, NW_WORKSPACE, NW_WATERMARK, PACKAGE_VERSION, IS_CI, environment, NW_BADGE } from '../env'
 import { glob, readJSONFile } from './utils/file-utils'
+import type { EnvVars } from '../apps/web/environments/env'
 
 program
   .command('icons')
@@ -62,13 +63,14 @@ program
     const workspace = NW_WORKSPACE
     const env = {
       version: PACKAGE_VERSION + (COMMIT_HASH ? `#${COMMIT_HASH}` : ''),
-      isPTR: workspace.toLowerCase() !== 'live',
+      isPTR: workspace.toLowerCase() === 'ptr',
+      badge: NW_BADGE,
       workspace: workspace.toLowerCase(),
       cdnUrl: CDN_URL,
       deployUrl: ngConfig.projects['nw-buddy'].architect.build.configurations[config].baseHref || '/',
       disableTooltips: !['live', 'ptr'].includes(workspace.toLowerCase()),
       watermarkImageUrl: NW_WATERMARK || null,
-    }
+    } satisfies EnvVars
     console.log(env)
     const content = ['export type EnvVars = typeof env', `export const env = ${JSON.stringify(env, null, 2)}`].join(
       '\n',

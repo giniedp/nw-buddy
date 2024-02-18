@@ -22,12 +22,12 @@ const isPtr = branchName === 'ptr' || branchName.startsWith('ptr-')
 const isCI = !!process.env.CI
 const path = require('path')
 const packageVersion = require(path.resolve(process.cwd(), 'package.json')).version
-const gameVersion =  process.env.NW_WORKSPACE || (isPtr ? 'PTR' : 'LIVE')
+const nwWorkspace =  process.env.NW_WORKSPACE || (isPtr ? 'PTR' : 'LIVE')
 
 const config = {
   IS_CI: isCI,
   NW_MODELS_DIR: process.env.NW_MODELS_DIR,
-  NW_WORKSPACE: gameVersion,
+  NW_WORKSPACE: nwWorkspace,
   BRANCH_NAME: branchName,
   CDN_URL: process.env.CDN_URL,
   CDN_UPLOAD_SPACE: process.env.CDN_UPLOAD_SPACE,
@@ -36,15 +36,22 @@ const config = {
   CDN_UPLOAD_ENDPOINT: process.env.CDN_UPLOAD_ENDPOINT,
   PACKAGE_VERSION: packageVersion,
   COMMIT_HASH: commitHash,
-  NW_WATERMARK: process.env.NW_WATERMARK,
+  NW_BADGE: env('NW_BADGE', nwWorkspace, ''),
+  NW_WATERMARK: env('NW_WATERMARK', nwWorkspace, ''),
 }
 
-function env(name) {
-  const result = config[name] || process.env[name]
-  if (result == null) {
-    throw new Error(`env variable '${name}' is not defined `)
+function env(name, workspace, fallback) {
+  const nameWS = workspace ? name + '_' + workspace.toUpperCase() : null
+  if (nameWS && process.env[nameWS]) {
+    return process.env[nameWS]
   }
-  return result
+  if (process.env[name]) {
+    return process.env[name]
+  }
+  if (fallback !== undefined) {
+    return fallback
+  }
+  throw new Error(`env variable '${nameWS || name}' is not defined `)
 }
 
 const cwd = process.cwd()
@@ -58,7 +65,7 @@ function getWorkspace(workspace) {
   if (typeof workspace === 'string') {
     return workspace.toUpperCase()
   }
-  return gameVersion || 'LIVE'
+  return nwWorkspace || 'LIVE'
 }
 
 const environment = {
@@ -68,8 +75,8 @@ const environment = {
   libsDir,
   tmpDir,
   dataDir,
-  nwGameDir: (workspace) => path.resolve(cwd, env(`NW_GAME_${getWorkspace(workspace)}`)),
-  nwUnpackDir: (workspace) => path.resolve(cwd, env(`NW_UNPACK_${getWorkspace(workspace)}`)),
+  nwGameDir: (workspace) => path.resolve(cwd, env('NW_GAME', getWorkspace(workspace))),
+  nwUnpackDir: (workspace) => path.resolve(cwd, env('NW_UNPACK', getWorkspace(workspace))),
   nwConvertDir: (workspace) => tmpDir(dataDir(workspace)),
   nwDataDir: (workspace) => distDir(dataDir(workspace)),
   nwModelsDir: () => env('NW_MODELS_DIR'),
