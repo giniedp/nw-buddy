@@ -1,0 +1,18 @@
+FROM node:20-alpine
+EXPOSE 4200
+ENV NODE_ENV production
+RUN npm install --global http-server brotli-cli
+
+USER node
+WORKDIR /home/node
+
+COPY --chown=node:node ./dist/web/browser ./public
+RUN brotli-cli compress --glob "public/**/*.{json,js,css}"
+
+ARG user=""
+ARG pass=""
+ENV BA_USER=$user
+ENV BA_PASS=$pass
+ENTRYPOINT http-server ./public --port 4200 --proxy http://127.0.0.1:4200? --gzip --brotli --username "$BA_USER" --password "$BA_PASS"
+# to build with basic auth:
+#   docker build --build-arg="user=foo" --build-arg="pass=bar" -f .\docker\Dockerfile.static -t nw-buddy:latest .
