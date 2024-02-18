@@ -19,7 +19,6 @@ export function getModelsUrl(env: EnvVars) {
 }
 
 export function getNwDataPath(version: string = null) {
-  console.log('getNwDataPath', version)
   return `nw-data/${version || ''}`.replace(/\/$/, '')
 }
 
