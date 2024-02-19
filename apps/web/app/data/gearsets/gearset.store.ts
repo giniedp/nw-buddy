@@ -20,6 +20,7 @@ export interface GearsetStoreState {
   level: number
   gearset: GearsetRecord
   isLoaded: boolean
+  showCalculator: boolean
 }
 
 export type GearsetStore = InstanceType<typeof GearsetStore>
@@ -29,6 +30,7 @@ export const GearsetStore = signalStore(
     gearset: null,
     isLoaded: false,
     readonly: false,
+    showCalculator: false
   }),
   withGearsetProps(),
   withGearsetMethods(),

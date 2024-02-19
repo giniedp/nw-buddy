@@ -13,6 +13,7 @@
       class="ion-page order-1"
       id="gearset-content"
       nwbGearsetHost
+      #host="gearsetHost"
       [gearset]="playerGeasrset()"
       [mode]="'player'"
       [opponent]="opponentGearset()"
@@ -25,8 +26,8 @@
       <ion-content [scrollY]="false" [nwbSizeObserver] #size="size">
         <ion-split-pane
           [contentId]="'player'"
-          style="--side-min-width: 360px"
-          [when]="!!(oppenentId$ | async) && size.width() >= 768"
+          style="--side-min-width: 360px; --side-max-width: 400px;"
+          [when]="host.showCalculator && size.width() >= 768"
         >
           <ion-menu
             [menuId]="'player-menu'"
@@ -45,23 +46,23 @@
             </ion-content>
           </ion-menu>
           <div class="ion-page order-1" id="player">
-            @if (hasOpponent() && size.width() < 768) {
+            @if (size.width() < 768) {
               <ion-header class="bg-base-300">
                 <ion-toolbar>
                   <ion-segment>
-                    <ion-segment-button>
+                    <ion-segment-button (click)="playerGrid.scrollToMain()">
                       <nwb-icon [icon]="iconTabMain" class="w-6 h-6" />
                     </ion-segment-button>
-                    <ion-segment-button>
+                    <ion-segment-button (click)="playerGrid.scrollToStats()">
                       <nwb-icon [icon]="iconTabStats" class="w-6 h-6" />
                     </ion-segment-button>
-                    <ion-segment-button>
+                    <ion-segment-button (click)="playerGrid.scrollToSkill1()">
                       <nwb-icon [icon]="iconTabSkill" class="w-6 h-6" />
                     </ion-segment-button>
-                    <ion-segment-button>
+                    <ion-segment-button (click)="playerGrid.scrollToSkill2()">
                       <nwb-icon [icon]="iconTabSkill" class="w-6 h-6" />
                     </ion-segment-button>
-                    <ion-segment-button>
+                    <ion-segment-button (click)="playerGrid.scrollToGear()">
                       <nwb-icon [icon]="iconTabGear" class="w-6 h-6" />
                     </ion-segment-button>
                   </ion-segment>
@@ -72,7 +73,7 @@
               </ion-header>
             }
             <ion-content class="ion-p-4">
-              <nwb-gearset-grid />
+              <nwb-gearset-grid #playerGrid />
             </ion-content>
           </div>
         </ion-split-pane>
@@ -84,6 +85,7 @@
         <div
           class="ion-page"
           nwbGearsetHost
+          #host="gearsetHost"
           [gearset]="opponentGearset()"
           [mode]="'opponent'"
           [opponent]="playerGeasrset()"
@@ -96,8 +98,8 @@
           <ion-content [scrollY]="false" [nwbSizeObserver] #size="size">
             <ion-split-pane
               [contentId]="'opponent'"
-              style="--side-min-width: 360px"
-              [when]="hasOpponent() && size.width() >= 768"
+              style="--side-min-width: 360px; --side-max-width: 400px;"
+              [when]="host.showCalculator && size.width() >= 768"
             >
               <ion-menu
                 [menuId]="'opponent-menu'"
@@ -119,19 +121,19 @@
                   <ion-header class="bg-base-300">
                     <ion-toolbar>
                       <ion-segment>
-                        <ion-segment-button>
+                        <ion-segment-button (click)="oponentGrid.scrollToMain()">
                           <nwb-icon [icon]="iconTabMain" class="w-6 h-6" />
                         </ion-segment-button>
-                        <ion-segment-button>
+                        <ion-segment-button (click)="oponentGrid.scrollToStats()">
                           <nwb-icon [icon]="iconTabStats" class="w-6 h-6" />
                         </ion-segment-button>
-                        <ion-segment-button>
+                        <ion-segment-button (click)="oponentGrid.scrollToSkill1()">
                           <nwb-icon [icon]="iconTabSkill" class="w-6 h-6" />
                         </ion-segment-button>
-                        <ion-segment-button>
+                        <ion-segment-button (click)="oponentGrid.scrollToSkill2()">
                           <nwb-icon [icon]="iconTabSkill" class="w-6 h-6" />
                         </ion-segment-button>
-                        <ion-segment-button>
+                        <ion-segment-button (click)="oponentGrid.scrollToGear()">
                           <nwb-icon [icon]="iconTabGear" class="w-6 h-6" />
                         </ion-segment-button>
                       </ion-segment>
@@ -142,7 +144,7 @@
                   </ion-header>
                 }
                 <ion-content class="ion-p-4">
-                  <nwb-gearset-grid />
+                  <nwb-gearset-grid #oponentGrid />
                 </ion-content>
               </div>
             </ion-split-pane>

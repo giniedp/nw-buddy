@@ -56,6 +56,7 @@ import { GearsetTableAdapter } from '~/widgets/data/gearset-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { InventoryPickerService } from '../../inventory/inventory-picker.service'
 import { SlotsPickerComponent } from '../dialogs'
+import { patchState } from '@ngrx/signals'
 
 export const GEARSET_TAGS = [
   { value: 'PvP', icon: '' },
@@ -455,6 +456,10 @@ export class GearsetToolbarComponent {
     })
   }
 
+  protected onToggleCalculatorClicked() {
+    patchState(this.store, { showCalculator: !this.store.showCalculator() })
+  }
+
   protected async onBatchGearScoreClicked() {
     const record = this.store.gearset()
     const recordSlots = await firstValueFrom(resolveGearsetSlotItems(record, this.itemsDb, this.db))
@@ -518,6 +523,7 @@ export class GearsetToolbarComponent {
         )
       })
   }
+
 }
 
 function canResetPerk(info: ResolvedItemPerkInfo) {

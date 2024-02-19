@@ -157,7 +157,6 @@ export class LootContextEditorComponent {
       title: 'Pick POI',
       dataView: { adapter: ZoneTableAdapter },
     })
-    .pipe(tapDebug('pickPoi'))
       .pipe(filter((it) => it !== undefined))
       .pipe(map((it) => Number(it?.[0])))
       .subscribe((it) => {

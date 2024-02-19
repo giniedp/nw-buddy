@@ -1,8 +1,4 @@
-<button
-  class="btn btn-square btn-ghost"
-  [class.text-error]="mode === 'opponent'"
-  (click)="handleBackClicked()"
->
+<button class="btn btn-square btn-ghost" [class.text-error]="mode === 'opponent'" (click)="handleBackClicked()">
   @if (mode === 'opponent') {
     <nwb-icon [icon]="iconClose" class="w-4 h-4" />
   } @else {
@@ -21,7 +17,6 @@
 />
 
 <div class="join">
-
   <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="tplTagPicker" [tooltip]="'Edit Tags'">
     <nwb-icon [icon]="iconTags" class="w-4 h-4" />
   </button>
@@ -37,10 +32,6 @@
   </ng-template>
 
   <button [nwbScreenshotBtn] class="join-item btn btn-ghost btn-square" [tooltip]="'Screenshot'"></button>
-
-  <button class="join-item btn btn-ghost btn-square" (click)="handleOpponentSelection()" [tooltip]="'Select Opponent'">
-    <nwb-icon [icon]="iconSwords" class="w-4 h-4" />
-  </button>
 
   <button class="join-item btn btn-ghost btn-square" [cdkMenuTriggerFor]="menu">
     <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
@@ -105,6 +96,29 @@
         <div class="flex flex-col leading-none">
           <span>Reset Perks</span>
           <span class="text-xs opacity-75">Reset perks on multiple items</span>
+        </div>
+      </a>
+    </li>
+
+    <li class="menu-title">
+      <span>Damage Calculator</span>
+    </li>
+    <li class="text-shadow-sm shadow-black">
+      <a (click)="handleOpponentSelection()" cdkMenuItem class="rounded-none">
+        <nwb-icon [icon]="iconSwords" class="w-4 h-4 mr-2" />
+        <div class="flex flex-col leading-none">
+          <span>Pick Opponent Set</span>
+          <span class="text-xs opacity-75">Pick another gearset for PvP calculation</span>
+        </div>
+      </a>
+    </li>
+
+    <li class="text-shadow-sm shadow-black">
+      <a (click)="onToggleCalculatorClicked()" cdkMenuItem class="rounded-none">
+        <nwb-icon [icon]="iconCalculator" class="w-4 h-4 mr-2" />
+        <div class="flex flex-col leading-none">
+          <span>Toggle calculator</span>
+          <span class="text-xs opacity-75">Toggle damage calculator sidebar</span>
         </div>
       </a>
     </li>

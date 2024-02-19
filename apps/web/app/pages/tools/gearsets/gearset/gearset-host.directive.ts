@@ -41,6 +41,10 @@ export class GearsetHostDirective {
     return this.state.opponent()
   }
 
+  public get showCalculator() {
+    return this.store.showCalculator() || !!this.opponent
+  }
+
   private state = signalState<GearsetHostState>({
     mode: 'player',
     opponent: null,
