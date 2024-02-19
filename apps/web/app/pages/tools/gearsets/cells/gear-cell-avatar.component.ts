@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
 import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { filter } from 'rxjs'
-import { GearsetSignalStore, ImagesDB } from '~/data'
+import { GearsetStore, ImagesDB } from '~/data'
 import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { IconsModule } from '~/ui/icons'
@@ -21,7 +21,7 @@ import { AvatarDialogComponent } from './ui/avatar-dialog.component'
   },
 })
 export class GearCellAvatarComponent {
-  private store = inject(GearsetSignalStore)
+  private store = inject(GearsetStore)
   private mannequin = inject(Mannequin)
   private modal = inject(ModalService)
 

@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { EQUIP_SLOTS, EquipSlot } from '@nw-data/common'
 import { filter, switchMap } from 'rxjs'
-import { GearsetSignalStore, GearsetsDB, ItemInstanceRecord } from '~/data'
+import { GearsetStore, GearsetsDB, ItemInstanceRecord } from '~/data'
 import { NwModule } from '~/nw'
 import { PreferencesService } from '~/preferences'
 import { DataViewPicker } from '~/ui/data/data-view'
@@ -44,7 +44,7 @@ import { GearsetFormSlotHandler } from './gearset-form-slot-handler'
     GearsetLoadoutItemComponent,
   ],
   providers: [
-    GearsetSignalStore,
+    GearsetStore,
     GearsetFormSlotHandler,
     {
       provide: LoadoutSlotEventHandler,
@@ -79,7 +79,7 @@ export class GearsetFormComponent {
   protected iconNav = svgSquareArrowUpRight
 
   private currentId = this.pref.session.storageProperty<string>('recent-gearset-id')
-  private store = inject(GearsetSignalStore)
+  private store = inject(GearsetStore)
 
   public constructor(
     private gearDb: GearsetsDB,

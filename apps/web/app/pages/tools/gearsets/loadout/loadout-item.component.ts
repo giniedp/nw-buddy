@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { CharacterStore, GearsetRecord, GearsetSignalStore } from '~/data'
+import { CharacterStore, GearsetRecord, GearsetStore } from '~/data'
 import { NwModule } from '~/nw'
 import { GersetSquareSlotComponent } from './square-slot.component'
 
@@ -12,10 +12,10 @@ import { GersetSquareSlotComponent } from './square-slot.component'
   styleUrls: ['./loadout-item.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, GersetSquareSlotComponent, RouterModule],
-  providers: [GearsetSignalStore],
+  providers: [GearsetStore],
 })
 export class GearsetLoadoutItemComponent {
-  private store = inject(GearsetSignalStore)
+  private store = inject(GearsetStore)
 
   @Input()
   public set geasrsetId(value: string) {

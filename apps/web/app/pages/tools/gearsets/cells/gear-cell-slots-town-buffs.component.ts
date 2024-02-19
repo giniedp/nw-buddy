@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core'
 import { EQUIP_SLOTS, EquipSlot, getStatusEffectTownBuffIds } from '@nw-data/common'
-import { GearsetSignalStore, ItemInstance } from '~/data'
+import { GearsetStore, ItemInstance } from '~/data'
 import { NwModule } from '~/nw'
 import { GearCellSlotComponent } from './gear-cell-slot.component'
 import { GearCellSlotEffectComponent } from './gear-cell-slot-effect.component'
@@ -25,7 +25,7 @@ export class GearCellSlotsTownBuffsComponent {
   @Input()
   public disabled = false
 
-  private store = inject(GearsetSignalStore)
+  private store = inject(GearsetStore)
 
   protected effects = getStatusEffectTownBuffIds()
   protected slots = computed(() => {

@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TemplateRef, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
-import { CharacterStore, GearsetRecord, GearsetSignalStore } from '~/data'
+import { CharacterStore, GearsetRecord, GearsetStore } from '~/data'
 import { NwModule } from '~/nw'
 import { GersetLoadoutSlotComponent } from './gearset-loadout-slot.component'
 
@@ -12,13 +12,13 @@ import { GersetLoadoutSlotComponent } from './gearset-loadout-slot.component'
   styleUrls: ['./gearset-loadout.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, GersetLoadoutSlotComponent, RouterModule],
-  providers: [GearsetSignalStore],
+  providers: [GearsetStore],
   host: {
     class: 'grid gap-x-3 gap-y-2',
   },
 })
 export class GearsetLoadoutItemComponent {
-  private store = inject(GearsetSignalStore)
+  private store = inject(GearsetStore)
 
   @Input()
   public set geasrsetId(value: string) {

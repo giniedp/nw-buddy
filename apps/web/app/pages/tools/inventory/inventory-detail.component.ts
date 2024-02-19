@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { RouterModule } from '@angular/router'
 import { take } from 'rxjs'
-import { GearsetSignalStore } from '~/data'
+import { GearsetStore } from '~/data'
 import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { LayoutModule } from '~/ui/layout'
@@ -28,7 +28,7 @@ import { InventoryPickerService } from './inventory-picker.service'
     LayoutModule,
     ItemFrameModule,
   ],
-  providers: [GearsetSignalStore, ItemDetailPageStore],
+  providers: [GearsetStore, ItemDetailPageStore],
   host: {
     class: 'block',
   },

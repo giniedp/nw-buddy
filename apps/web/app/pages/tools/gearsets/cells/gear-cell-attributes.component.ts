@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core'
 import { getItemPerkIdsWithOverride } from '@nw-data/common'
 import { combineLatest, filter, firstValueFrom, map, of } from 'rxjs'
-import { GearsetSignalStore, NwDataService } from '~/data'
+import { GearsetStore, NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { ActiveAttribute, Mannequin } from '~/nw/mannequin'
 import { IconsModule } from '~/ui/icons'
@@ -23,7 +23,7 @@ import { FlashDirective } from './ui/flash.directive'
 })
 export class GearCellAttributesComponent {
   private db = inject(NwDataService)
-  private store = inject(GearsetSignalStore)
+  private store = inject(GearsetStore)
   private mannequin = inject(Mannequin)
   private modal = inject(ModalService)
 

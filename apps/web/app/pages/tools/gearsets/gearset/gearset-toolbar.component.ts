@@ -21,7 +21,7 @@ import { environment } from 'apps/web/environments'
 import { filter, firstValueFrom, map, switchMap } from 'rxjs'
 import {
   GearsetRecord,
-  GearsetSignalStore,
+  GearsetStore,
   GearsetsDB,
   ImagesDB,
   ItemInstance,
@@ -88,7 +88,7 @@ export const GEARSET_TAGS = [
   },
 })
 export class GearsetToolbarComponent {
-  private store = inject(GearsetSignalStore)
+  private store = inject(GearsetStore)
   private injector = inject(Injector)
   private router = inject(Router)
   private route = inject(ActivatedRoute)

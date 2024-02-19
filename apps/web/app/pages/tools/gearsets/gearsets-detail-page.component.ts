@@ -69,7 +69,7 @@ export class GearsetsDetailPageComponent implements AfterViewInit {
 
   protected gearsetId$ = injectRouteParam('id')
   protected oppenentId$ = injectQueryParam('vs')
-  protected hasOpponent = toSignal(this.oppenentId$)
+  protected hasOpponent = toSignal(this.oppenentId$.pipe(map((it) => !!it)))
 
   protected playerGeasrset = toSignal(inject(GearsetsDB).observeByid(this.gearsetId$))
   protected player$ = new BehaviorSubject<Mannequin>(null)

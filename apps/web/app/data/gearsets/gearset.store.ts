@@ -15,16 +15,16 @@ import { withGearsetMethods } from './with-gearset-methods'
 import { withGearsetProps } from './with-gearset-props'
 import { withGearsetToMannequin } from './with-gearset-to-mannequin'
 
-export interface GearsetSignalStoreState {
+export interface GearsetStoreState {
   readonly: boolean
   level: number
   gearset: GearsetRecord
   isLoaded: boolean
 }
 
-export type GearsetSignalStore = InstanceType<typeof GearsetSignalStore>
-export const GearsetSignalStore = signalStore(
-  withState<GearsetSignalStoreState>({
+export type GearsetStore = InstanceType<typeof GearsetStore>
+export const GearsetStore = signalStore(
+  withState<GearsetStoreState>({
     level: NW_MAX_CHARACTER_LEVEL,
     gearset: null,
     isLoaded: false,

@@ -1,6 +1,6 @@
 import { Directive, EventEmitter, Input, OnInit, Output, inject } from '@angular/core'
 import { patchState, signalState } from '@ngrx/signals'
-import { CharacterStore, GearsetRecord, GearsetSignalStore } from '~/data'
+import { CharacterStore, GearsetRecord, GearsetStore } from '~/data'
 import { NwTextContextService } from '~/nw/expression'
 import { Mannequin } from '~/nw/mannequin'
 
@@ -13,7 +13,7 @@ interface GearsetHostState {
 @Directive({
   selector: '[nwbGearsetHost]',
   standalone: true,
-  providers: [GearsetSignalStore, Mannequin, NwTextContextService],
+  providers: [GearsetStore, Mannequin, NwTextContextService],
   exportAs: 'gearsetHost',
 })
 export class GearsetHostDirective {
@@ -46,7 +46,7 @@ export class GearsetHostDirective {
     opponent: null,
   })
 
-  private store = inject(GearsetSignalStore)
+  private store = inject(GearsetStore)
   private character = inject(CharacterStore)
   public readonly mannequin = inject(Mannequin)
 

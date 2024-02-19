@@ -4,7 +4,7 @@ import { ChangeDetectionStrategy, Component, Input, computed, effect, inject } f
 import { FormsModule } from '@angular/forms'
 import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 import { EQUIP_SLOTS, EquipSlot } from '@nw-data/common'
-import { GearsetSignalStore } from '~/data'
+import { GearsetStore } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { LayoutModule } from '~/ui/layout'
 import { SwiperDirective } from '~/utils/directives/swiper.directive'
@@ -60,7 +60,7 @@ import { GearsetToolbarComponent } from './gearset-toolbar.component'
   ],
 })
 export class GearsetGridComponent {
-  private store = inject(GearsetSignalStore)
+  private store = inject(GearsetStore)
 
   @Input()
   public disabled = false

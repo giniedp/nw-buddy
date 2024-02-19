@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core'
 import { RouterModule } from '@angular/router'
 import { patchState } from '@ngrx/signals'
-import { CharacterStore, GearsetRecord, GearsetRow, GearsetSignalStore } from '~/data'
+import { CharacterStore, GearsetRecord, GearsetRow, GearsetStore } from '~/data'
 import { NwModule } from '~/nw'
 import { VirtualGridCellComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { EmptyComponent } from '~/widgets/empty'
@@ -16,7 +16,7 @@ import { GearsetTableRecord } from './gearset-table-cols'
   styleUrls: ['./gearset-cell.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, GersetSquareSlotComponent, RouterModule],
-  providers: [GearsetSignalStore],
+  providers: [GearsetStore],
 })
 export class GearsetLoadoutItemComponent implements VirtualGridCellComponent<GearsetTableRecord> {
   public static buildGridOptions(): VirtualGridOptions<GearsetTableRecord> {
@@ -28,7 +28,7 @@ export class GearsetLoadoutItemComponent implements VirtualGridCellComponent<Gea
     }
   }
 
-  protected store = inject(GearsetSignalStore)
+  protected store = inject(GearsetStore)
 
   @Output()
   public delete = new EventEmitter<GearsetRecord>()

@@ -3,7 +3,7 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnInit, 
 import { FormsModule } from '@angular/forms'
 import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 import { EQUIP_SLOTS, EquipSlot } from '@nw-data/common'
-import { GearsetSignalStore } from '~/data'
+import { GearsetStore } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { LayoutModule } from '~/ui/layout'
 import { SwiperDirective } from '~/utils/directives/swiper.directive'
@@ -47,7 +47,7 @@ import { EmbedHeightDirective } from '~/utils/directives/embed-height.directive'
   hostDirectives: [EmbedHeightDirective]
 })
 export class GearsetSliderComponent implements AfterViewInit {
-  private store = inject(GearsetSignalStore)
+  private store = inject(GearsetStore)
   private swiper: Swiper
   @ViewChild('swiperRef', { static: true })
   protected swiperRef: ElementRef<HTMLElement>
