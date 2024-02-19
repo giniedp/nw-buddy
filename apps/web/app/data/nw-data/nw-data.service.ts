@@ -120,11 +120,14 @@ export class NwDataService {
   public damageTables0Map = tableIndexBy(() => this.damageTables0, 'DamageID')
   public damageTable0 = tableLookup(() => this.damageTables0Map)
 
-  public damageTables = table(() =>
-    apiMethodsByPrefix<'damagetable'>(this.data, 'damagetable').map((it) => {
-      return it.load().pipe(annotate('$source', it.suffix || '_'))
-    }),
-  )
+  public damageTables = table(() => {
+    const matcher = [/^charactertables.*damagetable/i, /^damagetable/i]
+    return apiMethods<'damagetable'>(this.data, (it) => matcher.some((reg) => reg.test(it))).map((it) => {
+      const reg = matcher.find((reg) => reg.test(it.name))
+      const source = it.name.replace(reg, () => '') || '_'
+      return it.load().pipe(annotate('$source', source))
+    })
+  })
   public damageTableMap = tableIndexBy(() => this.damageTables, 'DamageID')
   public damageTable = tableLookup(() => this.damageTableMap)
   public damageTablesByStatusEffectMap = tableGroupBy(() => this.damageTables, 'StatusEffect')

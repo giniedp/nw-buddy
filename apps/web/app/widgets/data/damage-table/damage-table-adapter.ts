@@ -19,9 +19,11 @@ import {
   damageColDmgCoefHead,
   damageColID,
   damageColIcon,
+  damageSource,
 } from './damage-table-cols'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { humanize } from '~/utils'
 
 @Injectable()
 export class DamageTableAdapter implements DataViewAdapter<DamageTableRecord>, TableGridAdapter<DamageTableRecord> {
@@ -40,7 +42,7 @@ export class DamageTableAdapter implements DataViewAdapter<DamageTableRecord>, T
     return [
       {
         id: item['$source'],
-        label: item['$source'],
+        label: humanize(item['$source']) || 'unnamed',
         icon: '',
       },
     ]
@@ -67,6 +69,7 @@ function buildOptions(util: TableGridUtils<DamageTableRecord>) {
     columnDefs: [
       damageColIcon(util),
       damageColID(util),
+      damageSource(util),
       damageColDamageType(util),
       damageColAttackType(util),
       damageColDmgCoef(util),

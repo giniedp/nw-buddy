@@ -4,6 +4,7 @@ import { damageTypeIcon } from '~/nw/weapon-types'
 import { SelectFilter } from '~/ui/data/ag-grid'
 import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
 import { TableGridUtils } from '~/ui/data/table-grid'
+import { humanize } from '~/utils'
 
 export type DamageTableUtils = TableGridUtils<DamageTableRecord>
 export type DamageTableRecord = Damagetable
@@ -38,7 +39,17 @@ export function damageColID(util: DamageTableUtils) {
     getQuickFilterText: ({ value }) => value,
   })
 }
-
+export function damageSource(util: DamageTableUtils) {
+  return util.colDef<string>({
+    colId: 'source',
+    headerValueGetter: () => 'Source',
+    width: 200,
+    field: '$source' as any,
+    valueFormatter: ({ value }) => humanize(value),
+    getQuickFilterText: ({ value }) => humanize(value),
+    filter: SelectFilter,
+  })
+}
 export function damageColDamageType(util: DamageTableUtils) {
   return util.colDef({
     colId: 'damageType',
