@@ -1,4 +1,4 @@
-import { svgCalculate, svgCalculator, svgDatabase, svgListCheck, svgSchema, svgUser } from "./ui/icons/svg"
+import { svgCalculate, svgCalculator, svgCodeMerge, svgDatabase, svgListCheck, svgSchema, svgUser } from "./ui/icons/svg"
 
 export interface AppMenuEntry {
   label: string
@@ -66,7 +66,7 @@ export const APP_MENU: AppMenuGroup[] = [
       { label: 'Weapons', path: '/leveling/weapons', icon: 'assets/icons/weapons/1hsword.png' },
       { label: 'Inventory', path: '/inventory', icon: 'assets/icons/menu/storage.png', divider: true },
       { label: 'Gear Sets', path: '/gearsets', icon: 'assets/icons/menu/gearsets.png' },
-      { label: 'Skill Trees', path: '/skill-trees', svgIcon: svgSchema },
+      { label: 'Skill Trees', path: '/skill-trees', svgIcon: svgCodeMerge },
       { label: 'Damage Calculator', path: '/damage-calculator', icon: 'assets/icons/menu/skill-trees.png' },
     ],
   },

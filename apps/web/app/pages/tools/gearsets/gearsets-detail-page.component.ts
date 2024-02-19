@@ -24,7 +24,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { BehaviorSubject, map } from 'rxjs'
 import { GearsetsDB } from '~/data'
 import { Mannequin } from '~/nw/mannequin'
-import { svgCalculator, svgChartLine, svgDiagramProject, svgSwords, svgUser } from '~/ui/icons/svg'
+import { svgCalculator, svgChartLine, svgCodeMerge, svgDiagramProject, svgSwords, svgUser } from '~/ui/icons/svg'
 
 import { DamageCalculatorComponent } from '~/widgets/damage-calculator'
 import { GearsetGridComponent } from './gearset/gearset-grid.component'
@@ -82,7 +82,7 @@ export class GearsetsDetailPageComponent implements AfterViewInit {
 
   protected iconTabMain = svgUser
   protected iconTabStats = svgChartLine
-  protected iconTabSkill = svgDiagramProject
+  protected iconTabSkill = svgCodeMerge
   protected iconTabGear = svgSwords
   protected iconTabCalculator = svgCalculator
 
