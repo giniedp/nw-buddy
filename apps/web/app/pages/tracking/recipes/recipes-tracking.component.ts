@@ -16,7 +16,7 @@ import { map } from 'rxjs'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, VirtualGridModule],
   host: {
-    class: 'layout-col',
+    class: 'ion-page',
   },
 })
 export class RecipesTrackingComponent {

@@ -22,7 +22,7 @@ import { SchematicRecord, SchematicsTableAdapter } from './adapter'
     QuicksearchModule,
   ],
   host: {
-    class: 'layout-col relative',
+    class: 'ion-page',
   },
 })
 export class SchematicsPageComponent implements OnInit {

@@ -22,7 +22,7 @@ import { RunesRecord, RunesTableAdapter } from './adapter'
     QuicksearchModule,
   ],
   host: {
-    class: 'flex flex-col flex-1 overflow-auto relative',
+    class: 'ion-page',
   },
 })
 export class RunesPageComponent implements OnInit {

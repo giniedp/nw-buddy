@@ -23,7 +23,7 @@ import { NwModule } from '~/nw'
     QuicksearchModule,
   ],
   host: {
-    class: 'layout-col relative',
+    class: 'ion-page',
   },
 })
 export class MusicPageComponent implements OnInit {

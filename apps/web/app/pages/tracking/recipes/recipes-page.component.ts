@@ -22,7 +22,7 @@ import { RecipeRecord, RecipesTableAdapter } from './adapter'
     QuicksearchModule,
   ],
   host: {
-    class: 'layout-col relative',
+    class: 'ion-page',
   },
 })
 export class RecipesPageComponent implements OnInit {

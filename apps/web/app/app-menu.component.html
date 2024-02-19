@@ -20,7 +20,7 @@
           [routerLinkActive]="['border-l-4', 'border-primary']"
           (isActiveChange)="$event ? onGroupActive(node.category) : null"
         >
-          <a [routerLink]="item.path" nwbMenuClose class="rounded-none">
+          <a [routerLink]="item.path" nwbMenuClose class="rounded-none" [routerLinkActive]="['active']">
             @if (item.icon) {
               <img [nwImage]="item.icon" class="w-5 h-5" />
             } @else if(item.svgIcon) {

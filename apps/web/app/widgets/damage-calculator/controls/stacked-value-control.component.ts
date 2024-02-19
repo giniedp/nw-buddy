@@ -16,7 +16,7 @@ import { PrecisionInputComponent } from './precision-input.component'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, PrecisionInputComponent, FormsModule, InputSliderComponent, IconsModule],
   host: {
-    class: 'flex flex-col bg-base-200 rounded-md',
+    class: 'flex flex-col self-start bg-base-200 rounded-md',
   },
   providers: [
     {

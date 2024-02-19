@@ -14,7 +14,7 @@ import { MusicRecord } from './adapter'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, VirtualGridModule],
   host: {
-    class: 'layout-col',
+    class: 'ion-page',
   },
 })
 export class MusicTrackingComponent {

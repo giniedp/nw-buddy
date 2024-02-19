@@ -22,7 +22,7 @@ import { ArtifactRecord, ArtifactsTableAdapter } from './adapter'
     QuicksearchModule,
   ],
   host: {
-    class: 'layout-col relative',
+    class: 'ion-page',
   },
 })
 export class ArtifactsPageComponent implements OnInit {
