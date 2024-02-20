@@ -120,6 +120,23 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
     }
   )
 
+  public readonly resourceItems$ = selectStream(
+    {
+      perkId: this.perkId$,
+      perkBuckets: this.db.perkBucketsByPerkIdMap,
+      resources: this.db.resourcesByPerkBucketIdMap,
+      items: this.db.itemsMap,
+    },
+    ({ perkId, perkBuckets, resources, items }) => {
+      const buckets = perkBuckets.get(perkId)
+      const resourcesList = buckets
+        ?.map((it) => resources.get(it.PerkBucketID))
+        .flat()
+        .filter((it) => !!it)
+      return resourcesList?.map((it) => items.get(it.ResourceID)).filter((it) => !!it)
+    }
+  )
+
   public constructor(private db: NwDataService) {
     super({ perkId: null })
   }

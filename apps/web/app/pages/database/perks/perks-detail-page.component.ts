@@ -11,6 +11,7 @@ import { LayoutModule } from '~/ui/layout'
 import { PropertyGridModule } from '~/ui/property-grid'
 import { HtmlHeadService, observeRouteParam } from '~/utils'
 import { AbilityDetailModule } from '~/widgets/data/ability-detail'
+import { ItemDetailModule } from '~/widgets/data/item-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -30,6 +31,7 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     PropertyGridModule,
     RouterModule,
     ScreenshotModule,
+    ItemDetailModule,
   ],
   host: {
     class: 'block',

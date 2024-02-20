@@ -1,5 +1,5 @@
-import { explainPerk, explainPerkMods, getPerkItemClassGSBonus, getPerkItemClassGsBonus } from '@nw-data/common'
-import { Ability, Affixstats, COLS_ABILITY, COLS_AFFIXSTATS, COLS_PERKS, Perks } from '@nw-data/generated'
+import { NW_FALLBACK_ICON, explainPerk, explainPerkMods, getItemIconPath, getItemId, getItemRarity, getPerkItemClassGSBonus, getPerkItemClassGsBonus, isItemArtifact, isItemNamed, isMasterItem } from '@nw-data/common'
+import { Ability, Affixstats, COLS_ABILITY, COLS_AFFIXSTATS, COLS_PERKS, ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwTextContextService } from '~/nw/expression'
 import { SelectFilter } from '~/ui/data/ag-grid'
@@ -11,6 +11,7 @@ export type PerkTableUtils = TableGridUtils<PerkTableRecord>
 export type PerkTableRecord = Perks & {
   $ability?: Ability
   $affix?: Affixstats
+  $items?: ItemDefinitionMaster[]
 }
 
 export function perkColIcon(util: PerkTableUtils) {
@@ -49,6 +50,63 @@ export function perkColId(util: PerkTableUtils) {
     headerValueGetter: () => 'Perk ID',
     field: 'PerkID',
     hide: true,
+  })
+}
+
+export function perkCraftMod(util: PerkTableUtils) {
+  return util.colDef<string[]>({
+    colId: 'perkCraftModIds',
+    headerValueGetter: () => 'Craft Mod',
+    valueGetter: ({ data }) => data.$items?.map((it) => it.ItemID),
+    getQuickFilterText: ({ data }) => {
+      return data.$items?.map((it) => util.tl8(it.Name)).join(', ')
+    },
+    filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      showSearch: true,
+      optionsGetter: ({ data }) => {
+        const items: PerkTableRecord['$items'] = data.$items
+        if (!items?.length) {
+          return []
+        }
+        return items.map((item) => {
+          return {
+            id: getItemId(item),
+            label: util.i18n.get(item.Name),
+            icon: getItemIconPath(item),
+          }
+        })
+      },
+    }),
+    cellRenderer: util.cellRenderer(({ data }) => {
+      const items = data.$items
+      if (!items?.length) {
+        return null
+      }
+      return util.el('div.flex.flex-row.items-center.h-full', {}, [
+        ...items.map((item) =>
+          util.elA(
+            {
+              class: ['block', 'flex-nonw'],
+              attrs: {
+                target: '_blank',
+                href: util.tipLink('item', getItemId(item)),
+              },
+            },
+            util.el('div.flex.flex-row.items-center.h-full', {}, [
+              util.elItemIcon({
+                class: ['w-8', 'h-8'],
+                icon: getItemIconPath(item) || NW_FALLBACK_ICON,
+                isArtifact: isMasterItem(item) && isItemArtifact(item),
+                isNamed: isMasterItem(item) && isItemNamed(item),
+                rarity: getItemRarity(item),
+              }),
+              util.el('span.ml-2', { text: util.tl8(item.Name)  }),
+            ])
+          ),
+        ),
+      ])
+    }),
   })
 }
 

@@ -109,6 +109,10 @@ export class NwDataService {
   public perkBuckets = table(() => [this.data.perkbuckets().pipe(map(convertPerkBuckets))])
   public perkBucketsMap = tableIndexBy(() => this.perkBuckets, 'PerkBucketID')
   public perkBucket = tableLookup(() => this.perkBucketsMap)
+  public perkBucketsByPerkIdMap = tableGroupBy(() => this.perkBuckets, (it) => {
+    return it.Entries.map((it) => 'PerkID' in it && it.PerkID)
+  })
+  public perkBucketsByPerkId = tableLookup(() => this.perkBucketsByPerkIdMap)
 
   public affixStats = table(() => [this.data.affixstats()])
   public affixStatsMap = tableIndexBy(() => this.affixStats, 'StatusID')
@@ -283,6 +287,8 @@ export class NwDataService {
   public resources = table(() => [this.data.itemdefinitionsResources()])
   public resourcesMap = tableIndexBy(() => this.resources, 'ResourceID')
   public resource = tableLookup(() => this.resourcesMap)
+  public resourcesByPerkBucketIdMap = tableGroupBy(() => this.resources, 'PerkBucket')
+  public resourcesByPerkBucketId = tableLookup(() => this.resourcesByPerkBucketIdMap)
 
   public affixDefinitions = table(() => [this.data.affixdefinitions()])
   public affixDefinitionsMap = tableIndexBy(() => this.affixDefinitions, 'AffixID')

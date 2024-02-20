@@ -7,11 +7,25 @@
 >
   <nwb-perk-detail [perkId]="itemId | async" class="bg-black" />
 
+  @for (item of detail.resourceItems$ | async; track $index; let isFirst = $first) {
+    @if (isFirst) {
+      <h3 class="prose">Craft Mods:</h3>
+    }
+    <nwb-item-card
+      [entity]="item"
+      class="bg-black"
+      [enableInfoLink]="true"
+      [enableLink]="true"
+      [disableInfo]="true"
+      [disablePerks]="true"
+    />
+  }
+
   @for (abilityId of detail.refAbilities$ | async; track $index; let isFirst = $first) {
     @if (isFirst) {
       <h3 class="prose">Referenced Abilities:</h3>
     }
-    <nwb-ability-detail [abilityId]="abilityId" class="bg-black"/>
+    <nwb-ability-detail [abilityId]="abilityId" class="bg-black" />
   }
 
   @for (effectId of detail.refEffects$ | async; track $index; let isFirst = $first) {

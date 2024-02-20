@@ -129,7 +129,7 @@ function collectCategories({
   queryParam: string
 }) {
   categories = categories || []
-  return categories.map((it) => {
+  return categories.filter((it) => it?.id).map((it) => {
     if (queryParam) {
       return {
         ...it,

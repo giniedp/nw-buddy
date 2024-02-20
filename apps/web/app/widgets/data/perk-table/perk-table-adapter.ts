@@ -1,22 +1,22 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { isPerkGenerated, isPerkInherent } from '@nw-data/common'
-import { COLS_AFFIXSTATS, COLS_PERKS } from '@nw-data/generated'
-import { Observable, combineLatest, map } from 'rxjs'
+import { PerkBucketEntry, isPerkGenerated, isPerkInherent } from '@nw-data/common'
+import { COLS_AFFIXSTATS, COLS_PERKS, Perks } from '@nw-data/generated'
+import { Observable } from 'rxjs'
 import { NwDataService } from '~/data'
 
 import { NwTextContextService } from '~/nw/expression'
+import { DataViewAdapter } from '~/ui/data/data-view'
 import {
+  DataTableCategory,
   TABLE_GRID_ADAPTER_OPTIONS,
   TableGridAdapter,
   TableGridAdapterOptions,
   TableGridUtils,
+  addGenericColumns,
 } from '~/ui/data/table-grid'
-import { DataTableCategory } from '~/ui/data/table-grid'
-import { addGenericColumns } from '~/ui/data/table-grid'
-import { DataViewAdapter } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
-import { selectStream, shareReplayRefCount } from '~/utils'
+import { selectStream } from '~/utils'
 import { PerkGridCellComponent } from './perk-grid-cell.component'
 import {
   PerkTableRecord,
@@ -29,6 +29,7 @@ import {
   perkColItemClass,
   perkColName,
   perkColPerkType,
+  perkCraftMod,
 } from './perk-table-cols'
 
 @Injectable()
@@ -42,13 +43,23 @@ export class PerkTableAdapter implements TableGridAdapter<PerkTableRecord>, Data
       perks: this.config?.source || this.db.perks,
       affixstats: this.db.affixStatsMap,
       abilities: this.db.abilitiesMap,
+      itemsMap: this.db.itemsMap,
+      perkBucketsByPerkIdMap: this.db.perkBucketsByPerkIdMap,
+      resourcesByPerkBucket: this.db.resourcesByPerkBucketIdMap,
     },
-    ({ perks, affixstats, abilities }) => {
+    ({ perks, affixstats, abilities, itemsMap, perkBucketsByPerkIdMap, resourcesByPerkBucket }) => {
       perks = perks.map((it): PerkTableRecord => {
+        const buckets = perkBucketsByPerkIdMap.get(it.PerkID)
+        const resources = buckets
+          ?.map((it) => resourcesByPerkBucket.get(it.PerkBucketID))
+          .flat()
+          .filter((it) => !!it)
+        const items = resources?.map((it) => itemsMap.get(it.ResourceID)).filter((it) => !!it)
         return {
           ...it,
           $affix: affixstats.get(it.Affix),
           $ability: abilities.get(it.EquipAbility?.[0]),
+          $items: items,
         }
       })
       if (this.config?.filter) {
@@ -58,7 +69,7 @@ export class PerkTableAdapter implements TableGridAdapter<PerkTableRecord>, Data
         perks = [...perks].sort(this.config.sort)
       }
       return perks
-    }
+    },
   )
   public entityID(item: PerkTableRecord): string {
     return item.PerkID
@@ -98,6 +109,7 @@ export function buildPerkTableOptions(util: TableGridUtils<PerkTableRecord>, ctx
       perkColName(util),
       perkColDescription(util, ctx),
       perkColPerkType(util),
+      perkCraftMod(util),
       perkColItemClass(util),
       perkColExclusiveLabels(util),
       perkColExcludeItemClass(util),
@@ -136,3 +148,5 @@ export function buildPerkTablePickerOptions(util: TableGridUtils<PerkTableRecord
   })
   return result
 }
+
+function findResourceItem(perk: Perks, buckets: PerkBucketEntry[]) {}
