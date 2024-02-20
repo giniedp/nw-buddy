@@ -3,6 +3,7 @@ import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 import { ArmorWeightSet } from './armor-weights.store'
+import { EquipSlotId } from '@nw-data/common'
 
 export type ArmorWeightTableUtils = TableGridUtils<ArmorWeightTableRecord>
 export type ArmorWeightTableRecord = ArmorWeightSet
@@ -49,11 +50,13 @@ export function armorWeightColHead(util: ArmorWeightTableUtils) {
     valueGetter: ({ data }) => data.items.find((it) => it?.slot?.id === 'head')?.label,
     tooltipValueGetter: util.tipValueGetter(({ data }) => data.items.find((it) => it?.slot?.id === 'head')?.weight),
     getQuickFilterText: ({ value }) => value,
+    cellRenderer: cellRenderer(util, 'head'),
     filter: SelectFilter,
     cellClassRules: {
       'text-success': ({ value }) => value === 'Light',
       'text-primary': ({ value }) => value === 'Medium',
       'text-error': ({ value }) => value === 'Heavy',
+      'text-info': ({ value }) => value?.includes('-'),
     },
   })
 }
@@ -65,12 +68,14 @@ export function armorWeightColChest(util: ArmorWeightTableUtils) {
     valueGetter: ({ data }) => data.items.find((it) => it?.slot?.id === 'chest')?.label,
     tooltipValueGetter: util.tipValueGetter(({ data }) => data.items.find((it) => it?.slot?.id === 'chest')?.weight),
     getQuickFilterText: ({ value }) => value,
+    cellRenderer: cellRenderer(util, 'chest'),
     filter: SelectFilter,
     cellClassRules: {
       'text-secondary': ({ value }) => value === 'Weightless',
       'text-success': ({ value }) => value === 'Light',
       'text-primary': ({ value }) => value === 'Medium',
       'text-error': ({ value }) => value === 'Heavy',
+      'text-info': ({ value }) => value?.includes('-'),
     },
   })
 }
@@ -81,11 +86,13 @@ export function armorWeightColHands(util: ArmorWeightTableUtils) {
     valueGetter: ({ data }) => data.items.find((it) => it?.slot?.id === 'hands')?.label,
     tooltipValueGetter: ({ data }) => data.items.find((it) => it?.slot?.id === 'hands')?.weight,
     getQuickFilterText: ({ value }) => value,
+    cellRenderer: cellRenderer(util, 'hands'),
     filter: SelectFilter,
     cellClassRules: {
       'text-success': ({ value }) => value === 'Light',
       'text-primary': ({ value }) => value === 'Medium',
       'text-error': ({ value }) => value === 'Heavy',
+      'text-info': ({ value }) => value?.includes('-'),
     },
   })
 }
@@ -96,11 +103,13 @@ export function armorWeightColLegs(util: ArmorWeightTableUtils) {
     valueGetter: ({ data }) => data.items.find((it) => it?.slot?.id === 'legs')?.label,
     tooltipValueGetter: ({ data }) => data.items.find((it) => it?.slot?.id === 'legs')?.weight,
     getQuickFilterText: ({ value }) => value,
+    cellRenderer: cellRenderer(util, 'legs'),
     filter: SelectFilter,
     cellClassRules: {
       'text-success': ({ value }) => value === 'Light',
       'text-primary': ({ value }) => value === 'Medium',
       'text-error': ({ value }) => value === 'Heavy',
+      'text-info': ({ value }) => value?.includes('-'),
     },
   })
 }
@@ -111,11 +120,13 @@ export function armorWeightColFeet(util: ArmorWeightTableUtils) {
     valueGetter: ({ data }) => data.items.find((it) => it?.slot?.id === 'feet')?.label,
     tooltipValueGetter: ({ data }) => data.items.find((it) => it?.slot?.id === 'feet')?.weight,
     getQuickFilterText: ({ value }) => value,
+    cellRenderer: cellRenderer(util, 'feet'),
     filter: SelectFilter,
     cellClassRules: {
       'text-success': ({ value }) => value === 'Light',
       'text-primary': ({ value }) => value === 'Medium',
       'text-error': ({ value }) => value === 'Heavy',
+      'text-info': ({ value }) => value?.includes('-'),
     },
   })
 }
@@ -127,11 +138,13 @@ export function armorWeightColShield(util: ArmorWeightTableUtils) {
     valueFormatter: ({ value }) => humanize(value),
     tooltipValueGetter: ({ data }) => data.items.find((it) => it?.slot?.id === 'weapon3')?.weight,
     getQuickFilterText: ({ value }) => value,
+    cellRenderer: cellRenderer(util, 'weapon3'),
     filter: SelectFilter,
     cellClassRules: {
       'text-success': ({ value }) => value === 'RoundShield',
       'text-primary': ({ value }) => value === 'KiteShield',
       'text-error': ({ value }) => value === 'TowerShield',
+      'text-info': ({ value }) => value?.includes('-'),
     },
   })
 }
@@ -149,11 +162,29 @@ export function armorWeightColWeight(util: ArmorWeightTableUtils) {
     colId: 'weight',
     headerValueGetter: () => 'Weight',
     valueGetter: ({ data }) => data.weight,
+    valueFormatter: ({ value }) => value.toFixed(1),
     filter: NumberFilter,
     cellClassRules: {
       'text-success': ({ data }) => data.weightClass === 'light',
       'text-primary': ({ data }) => data.weightClass === 'medium',
       'text-error': ({ data }) => data.weightClass === 'heavy',
     },
+  })
+}
+
+function cellRenderer(util: ArmorWeightTableUtils, slotId: EquipSlotId) {
+  return util.cellRenderer(({ data }) => {
+    const slot = data.items.find((it) => it?.slot?.id === slotId)
+    const label = slot?.label
+    const subLabel = slot?.subLabel
+    return util.el(
+      'div.flex.flex-col',
+      {},
+      [label, subLabel]
+        .filter((it) => !!it)
+        .map((it, i) => {
+          return util.el('span', { text: it, class: i > 0 ? 'text-white italic text-xs text-opacity-50' : '' })
+        }),
+    )
   })
 }

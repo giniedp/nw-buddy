@@ -7,7 +7,8 @@ import {
   NW_MAX_GEAR_SCORE,
   getArmorRatingPhysical,
   getItemPerkIds,
-  getWeightLabel
+  getWeightLabel,
+  patchPrecision,
 } from '@nw-data/common'
 import { ItemClass, ItemDefinitionMaster } from '@nw-data/generated'
 import { sumBy } from 'lodash'
@@ -17,6 +18,8 @@ import { eqCaseInsensitive, selectStream } from '~/utils'
 
 const ITEM_IDS = [
   'Artifact_Set1_LightChest',
+  'Artifact_Set1_HeavyHead',
+  'Artifact_Set1_HeavyChest',
 
   'LightHead_ClothT52',
   'LightChest_ClothT52',
@@ -41,7 +44,8 @@ const ITEM_IDS = [
   '1hShieldDT52',
 ]
 
-export const SLOT_IDS: EquipSlotId[] = ['head', 'chest', 'hands', 'legs', 'feet', 'weapon3']
+const SLOT_IDS: EquipSlotId[] = ['head', 'chest', 'hands', 'legs', 'feet', 'weapon3']
+const SLOTS = EQUIP_SLOTS.filter((it) => SLOT_IDS.includes(it.id))
 
 export interface ArmorWeightsState {
   selectedHead: string
@@ -61,7 +65,10 @@ export interface SlotItem {
   slot: EquipSlot
   weight: number
   rating: number
+  modArmor: number
+  modWeight: number
   label: string
+  subLabel: string
 }
 
 export interface ArmorWeightSet {
@@ -130,35 +137,62 @@ function selectItem(db: NwDataService, itemId: string) {
       return combineLatest({
         armor: db.armor(item.ItemStatsRef),
         weapon: db.weapon(item.ItemStatsRef),
-        perks: db.perksMap,
-        affix: db.affixStatsMap,
+        perksMap: db.perksMap,
+        affixMap: db.affixStatsMap,
+        abilitiesMap: db.abilitiesMap,
       }).pipe(
-        map(({ armor, weapon, perks, affix }): SlotItem => {
-          const slot = EQUIP_SLOTS.filter((it) => SLOT_IDS.includes(it.id)).find(
-            (slot) => item.ItemClass?.some((it) => eqCaseInsensitive(it, slot.itemType)),
+        map(({ armor, weapon, perksMap, affixMap, abilitiesMap }): SlotItem => {
+          const slot = SLOTS.find((slot) => item.ItemClass?.some((it) => eqCaseInsensitive(it, slot.itemType)))
+          const baseWeight = Math.floor(armor?.WeightOverride || weapon?.WeightOverride || item.Weight)
+          const perks = getItemPerkIds(item)
+            .map((id) => perksMap.get(id))
+            .filter((it) => !!it)
+
+          let modWeight = 0
+          for (const perk of perks) {
+            const affix = affixMap.get(perk.Affix)
+            if (affix?.WeightMultiplier) {
+              modWeight += affix.WeightMultiplier
+            }
+          }
+          let modArmor = 0
+          for (const perk of perks) {
+            for (const id of perk.EquipAbility || []) {
+              const ability = abilitiesMap.get(id)
+              if (ability?.PhysicalArmor) {
+                modArmor += ability.PhysicalArmor
+              }
+            }
+          }
+
+          const weight = ((1 + modWeight) * baseWeight) / 10
+          let label: string = item.ItemClass?.find(
+            (it) =>
+              it === 'Light' ||
+              it === 'Medium' ||
+              it === 'Heavy' ||
+              it === 'RoundShield' ||
+              it === 'KiteShield' ||
+              it === 'TowerShield',
           )
-          const mult =
-            1 +
-            (getItemPerkIds(item)
-              .map((id) => affix.get(perks.get(id)?.Affix))
-              .find((it) => it?.WeightMultiplier)?.WeightMultiplier || 0)
-          const weight = (mult * Math.floor(armor?.WeightOverride || weapon?.WeightOverride || item.Weight)) / 10
+          let subLabel = ''
+          if (!weight) {
+            label = 'Weightless'
+          } else if (modWeight) {
+            subLabel = `Unyielding`
+          }
+          if (modArmor) {
+            subLabel = `Void Darkplate`
+          }
           return {
             item: item,
             slot: slot,
             weight: weight,
+            modArmor: modArmor,
+            modWeight: modWeight,
             rating: getArmorRatingPhysical(armor || weapon, NW_MAX_GEAR_SCORE),
-            label: !weight
-              ? 'Weightless'
-              : item.ItemClass?.find(
-                  (it) =>
-                    it === 'Light' ||
-                    it === 'Medium' ||
-                    it === 'Heavy' ||
-                    it === 'RoundShield' ||
-                    it === 'KiteShield' ||
-                    it === 'TowerShield',
-                ),
+            label: label,
+            subLabel: subLabel,
           }
         }),
       )
@@ -168,7 +202,12 @@ function selectItem(db: NwDataService, itemId: string) {
 
 function selectItemSet(items: SlotItem[]): ArmorWeightSet {
   const weight = sumBy(items, (it) => (it?.weight || 0) * 10) / 10
-  const rating = sumBy(items, (it) => it?.rating || 0)
+  const armorBonus = sumBy(items, (it) => it?.modArmor || 0)
+  const armorItems = items.filter((it) => it?.slot?.id !== 'weapon3')
+  const ratingArmor = sumBy(armorItems, (it) => it?.rating || 0)
+  const ratingShield = items.find((it) => it?.slot?.id === 'weapon3')?.rating || 0
+
+  const rating = ratingArmor * (1 + armorBonus) + ratingShield
   return {
     id: items.map((it) => it?.label || 'none').join('-'),
     items: items,
@@ -200,5 +239,21 @@ function selectItemSets(items: SlotItem[]) {
       })
       .flat(1)
   }
-  return rows.map((it) => selectItemSet(it)).sort((a, b) => b.rating - a.rating)
+  return (
+    rows
+      //
+      .filter((row) => {
+        const countArmorMods = sumBy(row, (it) => (!!it?.modArmor ? 1 : 0))
+        const countWeightMods = sumBy(row, (it) => (!!it?.modWeight ? 1 : 0))
+        if (countArmorMods > 1 || countWeightMods > 1) {
+          return false
+        }
+        if (countArmorMods && countWeightMods) {
+          return false
+        }
+        return true
+      })
+      .map((it) => selectItemSet(it))
+      .sort((a, b) => b.rating - a.rating)
+  )
 }
