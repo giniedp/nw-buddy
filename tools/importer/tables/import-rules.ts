@@ -312,6 +312,7 @@ export const TABLE_IMPORT_RULES = [
         'TargetStatusEffectCategory',
         'TargetStatusEffectDurationCats',
         'TargetStatusEffectDurationList',
+        'EquipLoadCategory'
       ],
       separator: ',',
     }),

@@ -6,7 +6,7 @@ import {
   getWeaponTagFromWeapon,
   solveAttributePlacingMods,
 } from '@nw-data/common'
-import { Ability, Damagetable, ItemdefinitionsAmmo, Statuseffect } from '@nw-data/generated'
+import { Ability, Damagetable, EquipLoadCategory, ItemdefinitionsAmmo, Statuseffect } from '@nw-data/generated'
 import { minBy, sum } from 'lodash'
 import { eqCaseInsensitive } from '~/utils'
 
@@ -250,10 +250,11 @@ export function selectActiveAbilities(
   weapon: ActiveWeapon,
   attack: Damagetable,
   perks: ActivePerk[],
+  equipLoadCategory: EquipLoadCategory,
 ) {
-  return selectAllAbilities(db, state, attributes, weapon, perks).filter(({ ability }) =>
-    isActiveAbility(ability, attack, state),
-  )
+  return selectAllAbilities(db, state, attributes, weapon, perks).filter(({ ability }) => {
+    return isActiveAbility(ability, attack, equipLoadCategory, state)
+  })
 }
 
 export function selectAllAbilities(
@@ -474,6 +475,16 @@ export function selectPlacingMods(db: DbSlice, { perks }: AttributeModsSource) {
   return result.map((it) => it || 0)
 }
 
+export function selectEquipLoadCategory(equipLoad: number): EquipLoadCategory {
+  if (equipLoad < 13) {
+    return 'Fast'
+  }
+  if (equipLoad < 23) {
+    return 'Normal'
+  }
+  return 'Slow'
+}
+
 export function selectEquipLoadBonus(equipLoad: number): ActiveBonus[] {
   const result: ActiveBonus[] = []
   if (equipLoad < 13) {
@@ -565,7 +576,7 @@ const REJECT_ABILITIES_WITH_PROPS: Array<keyof Ability> = [
   'OnBlockedHit',
   'OnBlockedHitTaken',
   //'OnHit',
-  'OnHitBehind',
+  //'OnHitBehind',
   'OnHitTaken',
   'OnHitTakenWhileInvulnerable',
   //'OnHeadShot',
@@ -598,7 +609,7 @@ const REJECT_ABILITIES_WITH_PROPS: Array<keyof Ability> = [
   'CheckStatusEffectsOnTargetOwned',
   // unsupported conditions
   'TargetCollisionFilters',
-  'EquipLoadCategory',
+  //'EquipLoadCategory',
   'ExcludeFromGameModes',
   'AbilityOnCooldownOptions',
   'AbilityCooldownComparisonType',
@@ -647,14 +658,14 @@ const REJECT_ABILITIES_WITH_PROPS: Array<keyof Ability> = [
   'DisableConsecutivePotency',
 ]
 
-function isActiveAbility(ability: Ability, attack: Damagetable, state: MannequinState) {
+function isActiveAbility(ability: Ability, attack: Damagetable, equipLoadCategory: EquipLoadCategory, state: MannequinState) {
   if (!ability || !attack) {
     return false
   }
   // if (ability.AbilityID === 'Passive_Greataxe_Mauler_DmgWhenFoesNear') {
   //   debugger
   // }
-  if (!checkAllConditions(ability, state)) {
+  if (!checkAllConditions(ability, equipLoadCategory, state)) {
     return false
   }
 
@@ -666,7 +677,7 @@ function isActiveAbility(ability: Ability, attack: Damagetable, state: Mannequin
   }
 
   if (ability.DamageIsMelee) {
-    if (!ability.OnHit) {
+    if (!(ability.OnHit || ability.OnCrit || ability.OnHitBehind)) {
       return false
     }
     if (attack?.IsRanged) {
@@ -674,7 +685,7 @@ function isActiveAbility(ability: Ability, attack: Damagetable, state: Mannequin
     }
   }
   if (ability.DamageIsRanged) {
-    if (!ability.OnHit) {
+    if (!(ability.OnHit || ability.OnCrit || ability.OnHitBehind)) {
       return false
     }
     if (!attack?.IsRanged) {

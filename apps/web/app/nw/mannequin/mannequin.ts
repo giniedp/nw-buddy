@@ -37,6 +37,7 @@ import {
   selectDamageTableRow,
   selectEquipLoad,
   selectEquipLoadBonus,
+  selectEquipLoadCategory,
   selectEquppedArmor,
   selectEquppedConsumables,
   selectEquppedTools,
@@ -161,6 +162,9 @@ export class Mannequin {
   public readonly equipLoad = computed(() => {
     return selectEquipLoad(this.data(), this.state(), this.activePerks())
   })
+  public readonly equipLoadCategory = computed(() => {
+    return selectEquipLoadCategory(this.equipLoad())
+  })
   public readonly activeBonuses = computed(() => {
     return selectEquipLoadBonus(this.equipLoad())
   })
@@ -177,26 +181,32 @@ export class Mannequin {
     })
   })
   public readonly activeAbilities = computed(() => {
-    return selectActiveAbilities(
+    const result = selectActiveAbilities(
       this.data(),
       this.state(),
       this.activeAttributes(),
       this.activeWeapon(),
       this.activeDamageTableRow(),
       this.activePerks(),
+      this.equipLoadCategory()
     )
+    console.log('activeAbilities', result)
+    return result
   })
   public readonly allAbilities = computed(() => {
-    return selectAllAbilities(
+    const result = selectAllAbilities(
       this.data(),
       this.state(),
       this.activeAttributes(),
       this.activeWeapon(),
       this.activePerks(),
     )
+
+    return result
   })
   public readonly activeEffects = computed(() => {
-    return selectActveEffects(this.data(), this.state(), this.activePerks())
+    const result = selectActveEffects(this.data(), this.state(), this.activePerks())
+    return result
   })
   public readonly activeMods = computed<ActiveMods>(() => {
     return {

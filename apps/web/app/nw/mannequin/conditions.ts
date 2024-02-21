@@ -1,7 +1,7 @@
-import { Ability, ComparisonType } from '@nw-data/generated'
+import { Ability, ComparisonType, EquipLoadCategory } from '@nw-data/generated'
 import { MannequinState } from './types'
 
-export function checkAllConditions(ability: Ability, state: MannequinState) {
+export function checkAllConditions(ability: Ability, equipLoadCategory: EquipLoadCategory, state: MannequinState) {
   return (
     checkHealthCondition(state, ability) &&
     checkManaCondition(state, ability) &&
@@ -13,7 +13,8 @@ export function checkAllConditions(ability: Ability, state: MannequinState) {
     checkTargetHealthCondition(state, ability) &&
     checkDistanceCondition(state, ability) &&
     checkTargetEffectCondition(state, ability) &&
-    checkNumConsecutiveHits(state, ability)
+    checkNumConsecutiveHits(state, ability) &&
+    checkEquipLoadCategory(ability, equipLoadCategory)
   )
 }
 
@@ -24,13 +25,15 @@ export function checkManaCondition(state: MannequinState, ability: Ability) {
   return !!ability && checkCondition(state.myManaPercent, ability.MyManaPercent / 100, ability.MyManaComparisonType)
 }
 export function checkStaminaCondition(state: MannequinState, ability: Ability) {
-  return !!ability && checkCondition(state.myStaminaPercent, ability.MyStaminaPercent / 100, ability.MyStaminaComparisonType)
+  return (
+    !!ability && checkCondition(state.myStaminaPercent, ability.MyStaminaPercent / 100, ability.MyStaminaComparisonType)
+  )
 }
 export function checkAmmoCountCondition(state: MannequinState, ability: Ability) {
-  return !!ability// && checkCondition(0, ability.LoadedAmmoCount, ability.LoadedAmmoCountComparisonType)
+  return !!ability // && checkCondition(0, ability.LoadedAmmoCount, ability.LoadedAmmoCountComparisonType)
 }
 export function checkAbilityCooldownCondition(state: MannequinState, ability: Ability) {
-  return !!ability// && checkCondition(0, 0, ability.AbilityCooldownComparisonType)
+  return !!ability // && checkCondition(0, 0, ability.AbilityCooldownComparisonType)
 }
 export function checkNumberOfHitsCondition(state: MannequinState, ability: Ability) {
   return !!ability && checkCondition(state.numHits, ability.NumberOfTrackedHits, ability.NumberOfHitsComparisonType)
@@ -71,7 +74,15 @@ export function checkNumConsecutiveHits(state: MannequinState, ability: Ability)
   const limit = ability.NumConsecutiveHits
   return actual >= limit
 }
-
+export function checkEquipLoadCategory(ability: Ability, equipLoadCategory: EquipLoadCategory) {
+  if (!ability) {
+    return false
+  }
+  if (!ability.EquipLoadCategory?.length) {
+    return true
+  }
+  return ability.EquipLoadCategory.includes(equipLoadCategory)
+}
 function checkCondition<T extends string | number>(actual: T, limit: T, comparison: ComparisonType) {
   if (!comparison) {
     return true

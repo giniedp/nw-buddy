@@ -151,7 +151,7 @@ function detectCategory(mode?: Gamemodes): GameModeCategories {
   if (!mode) {
     return null
   }
-  if (mode.GameModeId.startsWith('Dungeon')) {
+  if (mode.GameModeId.startsWith('Dungeon') && mode.IsDungeon) {
     return 'expeditions'
   }
   if (mode.GameModeId.startsWith('Trial') || mode.GameModeId.startsWith('Quest')) {

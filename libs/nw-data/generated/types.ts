@@ -52,7 +52,7 @@ export interface Ability {
   ElementalArmor: number
   EnableHoldConditionIfTrackedSpellExistsOfType: string
   EnableTaunt: boolean
-  EquipLoadCategory: EquipLoadCategory
+  EquipLoadCategory: EquipLoadCategory[]
   EquipWhenUnsheathed: boolean | number
   ExcludeFromGameModes: string
   FastTravelAzothCostMod: number
@@ -5863,7 +5863,6 @@ export type EntitlementSourceType =
   | 'WinterEvent'
 export type EquipLoadCategory =
   | 'Fast'
-  | 'Fast,Normal'
   | 'Normal'
   | 'Slow'
 export type GatheringTradeskill =

@@ -52,7 +52,7 @@ export const COLS_ABILITY = {
   "ElementalArmor": "number",
   "EnableHoldConditionIfTrackedSpellExistsOfType": "string",
   "EnableTaunt": "boolean",
-  "EquipLoadCategory": "string",
+  "EquipLoadCategory": "[]",
   "EquipWhenUnsheathed": "boolean",
   "ExcludeFromGameModes": "string",
   "FastTravelAzothCostMod": "number",
