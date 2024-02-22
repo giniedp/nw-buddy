@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { NwModule } from '~/nw'
 import { environment } from '../environments/environment'
 import { TooltipModule } from './ui/tooltip'
+import { LayoutModule } from './ui/layout'
 
 @Component({
   standalone: true,
@@ -10,9 +11,9 @@ import { TooltipModule } from './ui/tooltip'
   templateUrl: './landing.component.html',
   styleUrls: ['./landing.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, TooltipModule],
+  imports: [CommonModule, NwModule, TooltipModule, LayoutModule],
   host: {
-    class: 'layout-content w-full layout-pad',
+    class: 'ion-page',
   },
 })
 export class LandingComponent {

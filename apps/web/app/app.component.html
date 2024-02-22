@@ -28,7 +28,8 @@
         }
         <app-menu class="bg-base-300" />
       </ion-menu>
-      <ion-content id="main-content" [scrollY]="false">
+      <div id="main-content" class="ion-page">
+
         @if (!(unfoldMenu$ | async)) {
           <ng-container *ngTemplateOutlet="tplHeader" />
         }
@@ -40,7 +41,9 @@
             <nwb-aeternum-map-integration class="embed-hidden" />
           }
         </ion-content>
-      </ion-content>
+      </div>
+      <!-- <ion-content id="main-content" [scrollY]="false">
+      </ion-content> -->
     </ion-split-pane>
   </ion-content>
 </ion-app>
