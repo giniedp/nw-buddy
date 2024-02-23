@@ -34,9 +34,11 @@ export interface ValueStackItem {
   icon?: string
   cap?: number
   disabled?: boolean
+  tag?: string
 }
 
 export interface OffenderState {
+  isBound: boolean // to a gearset
   level: number
   gearScore: number
   attributePoints: Record<AttributeRef, number>
@@ -69,6 +71,7 @@ export interface OffenderState {
 }
 
 export interface DefenderState {
+  isBound: boolean // to a gearset
   isPlayer: boolean
   vitalId: string
   level: number
@@ -98,6 +101,7 @@ export interface DamageCalculatorState {
 
 const DEFAULT_STATE: DamageCalculatorState = {
   offender: {
+    isBound: false,
     level: NW_MAX_CHARACTER_LEVEL,
     gearScore: NW_MAX_GEAR_SCORE,
     attributePoints: {
@@ -154,6 +158,7 @@ const DEFAULT_STATE: DamageCalculatorState = {
   },
 
   defender: {
+    isBound: false,
     isPlayer: true,
     vitalId: null,
     level: NW_MAX_CHARACTER_LEVEL,
@@ -452,7 +457,6 @@ export const DamageCalculatorStore = signalStore(
             if (!vital) {
               return EMPTY
             }
-            patchState(state, updateDefender({ level: vital.Level }))
             return combineLatest({
               dmgTypeWeapon: toObservable(state.offender.weaponDamageType, { injector }),
               dmgTypeConvert: toObservable(state.offender.convertDamageType, { injector }),

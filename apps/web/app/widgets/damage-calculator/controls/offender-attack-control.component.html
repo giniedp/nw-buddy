@@ -1,27 +1,51 @@
 <label class="label">
   <span class="label-text"> Attack </span>
 </label>
-<span class="join" [cdkMenuTriggerFor]="attackOptions().length ? tplAttacks : null">
-  <button class="join-item btn btn-sm w-full" [disabled]="!attackOptions().length">
-    @if (!damageRow.value) {
-      <span class="italic"> -- none -- </span>
-    } @else {
-      {{ damageRow.value | nwHumanize }}
-    }
-  </button>
-  <ng-template #tplAttacks>
-    <ul class="menu menu-compact bg-base-200 border border-base-100 rounded-md w-80" cdkMenu>
-      @for (item of attackOptions(); track $index) {
+@if (!isBound && !!attackOptions().length) {
+  <span class="join" [cdkMenuTriggerFor]="attackOptions().length ? tplAttacks : null">
+    <button class="join-item btn btn-sm w-full" [disabled]="!attackOptions().length">
+      @if (!damageRow.value) {
+        <span class="italic"> -- none -- </span>
+      } @else {
+        {{ damageRow.value | nwHumanize }}
+      }
+    </button>
+    <ng-template #tplAttacks>
+      <ul
+        class="menu menu-compact bg-base-200 border border-base-100 rounded-md w-80 max-h-96 overflow-y-auto flex flex-col flex-nowrap"
+        cdkMenu
+      >
         <li class="text-shadow-sm shadow-black" cdkMenuItem>
-          <a (click)="damageRow.value = item.value">
-            <!-- <img [nwImage]="item.icon" class="w-5 h-5 ml-2" /> -->
-            <span>{{ item.label | nwText }}</span>
+          <a (click)="damageRow.value = null">
+            <span>- none -</span>
           </a>
         </li>
-      }
-    </ul>
-  </ng-template>
-</span>
+        @for (item of attackOptions(); track $index) {
+          <li class="text-shadow-sm shadow-black" cdkMenuItem>
+            <a (click)="damageRow.value = item.value" class="flex flex-row">
+              <span>{{ item.label | nwText }}</span>
+              <span class="flex-1"></span>
+              @if (item.type) {
+                <span
+                  class="badge badge-xs"
+                  [class.badge-success]="item.isLight"
+                  [class.badge-error]="item.isHeavy"
+                  [class.badge-secondary]="item.isAbility"
+                >
+                  {{ item.type }}
+                </span>
+              }
+              @if (item.isRanged) {
+                <span class="badge badge-xs badge-info">Ranged</span>
+              }
+              <span>{{ item.coef | percent: '0.0-1' }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </ng-template>
+  </span>
+}
 
 <span class="join mt-1">
   <button class="join-item btn btn-sm justify-start text-left w-40">Damage Coef</button>
@@ -35,6 +59,7 @@
     [scale]="100"
     [unit]="'%'"
     [(ngModel)]="damageCoef.value"
+    [disabled]="isBound"
   />
   <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipCoef" [preventClick]="true">
     <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
@@ -55,6 +80,7 @@
     [step]="1"
     [(ngModel)]="damageAdd.value"
     (wheel)="($event)"
+    [disabled]="isBound"
   />
   <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipAdd" [preventClick]="true">
     <nwb-icon [icon]="iconInfo" class="w-4 h-4" />

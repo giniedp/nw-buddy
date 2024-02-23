@@ -2,10 +2,17 @@
   <span class="label-text"> Elemental Armor </span>
   <span class="label-text"> Rating {{ rating() | number: '0.1-1' }} </span>
 </label>
-<nwb-stacked-value-control [(ngModel)]="armor.value" [step]="1" [stepShift]="100" [stepCtrl]="10" [stepAlt]="0.1">
+<nwb-stacked-value-control
+  [(ngModel)]="armor.value"
+  [step]="1"
+  [stepShift]="100"
+  [stepCtrl]="10"
+  [stepAlt]="0.1"
+  [lockPreset]="lockPreset"
+>
   <span slot="start" class="join-item btn btn-sm justify-start text-left w-40"> Armor </span>
 </nwb-stacked-value-control>
-<nwb-stacked-value-control [(ngModel)]="armorFortify.value" [percent]="true" class="mt-1">
+<nwb-stacked-value-control [(ngModel)]="armorFortify.value" [percent]="true" [lockPreset]="lockPreset" class="mt-1">
   <span slot="start" class="join-item btn btn-sm justify-start text-left w-40"> Armor Fortify </span>
 </nwb-stacked-value-control>
 <nwb-stacked-value-control
@@ -14,6 +21,7 @@
   [stepShift]="100"
   [stepCtrl]="10"
   [stepAlt]="0.1"
+  [lockPreset]="lockPreset"
   class="mt-1"
 >
   <span slot="start" class="join-item btn btn-sm justify-start text-left w-40"> Shield </span>

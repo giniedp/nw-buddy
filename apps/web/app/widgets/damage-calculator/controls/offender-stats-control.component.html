@@ -35,7 +35,7 @@
   </ng-template>
 </div>
 <div class="join mt-1">
-  <button class="join-item btn btn-sm w-20 justify-start" [cdkMenuTriggerFor]="tplGearScoreLevel">GS</button>
+  <button class="join-item btn btn-sm w-20 justify-start" [cdkMenuTriggerFor]="isBound ? null : tplGearScoreLevel">GS</button>
   <nwb-precision-input
     class="join-item input input-sm input-bordered text-right w-full"
     [min]="gsMin"
@@ -44,6 +44,7 @@
     [stepShift]="100"
     [stepCtrl]="10"
     [(ngModel)]="gearScore.value"
+    [disabled]="isBound"
   />
   <ng-template #tplGearScoreLevel>
     <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
@@ -66,7 +67,7 @@
 </div>
 
 <span class="join mt-1">
-  <span class="join-item btn btn-sm w-20 justify-start" [cdkMenuTriggerFor]="tplToolAttrs"> Stats </span>
+  <span class="join-item btn btn-sm w-20 justify-start" [cdkMenuTriggerFor]="isBound ? null : tplToolAttrs"> Stats </span>
   @for (stat of attrPoints; track $index) {
     <nwb-precision-input
       class="join-item w-full input input-sm input-bordered text-center pl-0"
@@ -76,6 +77,7 @@
       [stepShift]="100"
       [stepCtrl]="10"
       [(ngModel)]="stat.access.value"
+      [disabled]="isBound"
     >
       <span class="absolute top-0 left-0 text-xs leading-none opacity-30 scale-75">{{ stat.label }}</span>
     </nwb-precision-input>

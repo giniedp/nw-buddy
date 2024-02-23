@@ -38,6 +38,9 @@ export class OffenderAttackControlComponent {
   protected damageCoef = offenderAccessor(this.store, 'damageCoef', { precision: 6 })
   protected damageAdd = offenderAccessor(this.store, 'damageAdd')
   protected iconInfo = svgInfo
+  protected get isBound() {
+    return !!this.store.offender.isBound()
+  }
   protected attackOptions = selectSignal(
     {
       weaponTag: this.store.offender.weaponTag,
@@ -54,9 +57,17 @@ export class OffenderAttackControlComponent {
       return tables
         .filter((it) => it.DamageID.toLowerCase().startsWith(prefix.toLowerCase()))
         .map((it) => {
+
           return {
             label: humanize(it.DamageID.replace(prefix, '')),
             value: it.DamageID,
+            coef: it.DmgCoef,
+            isRanged: it.IsRanged,
+            isHeavy: it.AttackType === 'Heavy',
+            isLight: it.AttackType === 'Light',
+            isMagic: it.AttackType === 'Magic',
+            isAbility: it.AttackType === 'Ability',
+            type: it.AttackType
           }
         })
     },

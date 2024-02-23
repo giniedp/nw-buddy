@@ -2,8 +2,9 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector, inject } from '@angular/core'
 import { toObservable } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
+import { patchState } from '@ngrx/signals'
 import { NW_MAX_CHARACTER_LEVEL, NW_MAX_ENEMY_LEVEL, NW_MAX_GEAR_SCORE } from '@nw-data/common'
-import { filter } from 'rxjs'
+import { filter, switchMap, take } from 'rxjs'
 import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { DataViewPicker } from '~/ui/data/data-view'
@@ -14,7 +15,7 @@ import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { selectSignal } from '~/utils'
 import { VitalTableAdapter } from '~/widgets/data/vital-table'
-import { DamageCalculatorStore, defenderAccessor } from '../damage-calculator.store'
+import { DamageCalculatorStore, defenderAccessor, updateDefender } from '../damage-calculator.store'
 import { PrecisionInputComponent } from './precision-input.component'
 
 @Component({
@@ -57,6 +58,16 @@ export class DefenderStatsControlComponent {
   protected gsMin = 0
   protected gsMax = NW_MAX_GEAR_SCORE
 
+  protected get isVitalPickable() {
+    return !this.isPlayer.value
+  }
+  protected get isLevelDisabled() {
+    return false
+  }
+  protected get isGsDisabled() {
+    return !!this.vitalId.value
+  }
+
   protected pickVital() {
     DataViewPicker.from({
       title: 'Select Vital',
@@ -66,9 +77,19 @@ export class DefenderStatsControlComponent {
       },
       selection: [this.store.defenderVitalId()],
     })
-      .pipe(filter((it) => it != null))
-      .subscribe((res: string[]) => {
-        this.vitalId.value = res[0]
+      .pipe(
+        filter((it) => it != null),
+        switchMap((it: string[]) => this.data.vital(it[0])),
+        take(1),
+      )
+      .subscribe((vital) => {
+        patchState(
+          this.store,
+          updateDefender({
+            vitalId: vital?.VitalsID || null,
+            level: vital?.Level || this.levelMin,
+          }),
+        )
       })
   }
 

@@ -16,7 +16,7 @@ import { PrecisionInputComponent } from './precision-input.component'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, PrecisionInputComponent, FormsModule, InputSliderComponent, IconsModule],
   host: {
-    class: 'flex flex-col self-start bg-base-200 rounded-md',
+    class: 'flex flex-col self-start bg-base-200 rounded-md max-w-full',
   },
   providers: [
     {
@@ -70,6 +70,9 @@ export class StackedValueControlComponent implements ControlValueAccessor {
   public labelHidden: boolean = false
 
   @Input()
+  public lockPreset: boolean = false
+
+  @Input()
   public set data(data: ValueStack) {
     patchState(this.state, {
       value: data?.value,
@@ -89,7 +92,7 @@ export class StackedValueControlComponent implements ControlValueAccessor {
   protected iconAdd = svgPlus
   protected isOpen = false
   protected get inlineInputDisabled() {
-    return this.isOpen || this.state().stack.length > 0
+    return this.lockPreset || this.isOpen || this.state().stack.length > 0
   }
   protected get value() {
     return this.state.value()

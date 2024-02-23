@@ -34,8 +34,6 @@ import { PrecisionInputComponent } from './precision-input.component'
   },
 })
 export class OffenderWeaponControlComponent {
-  private data = inject(NwDataService)
-  private injector = inject(Injector)
   protected store = inject(DamageCalculatorStore)
   protected iconMore = svgEllipsisVertical
   protected iconInfo = svgInfo
@@ -47,6 +45,12 @@ export class OffenderWeaponControlComponent {
   protected gearScore = offenderAccessor(this.store, 'weaponGearScore')
   protected get gearScoreFactor() {
     return this.store.offenderWeaponGearScoreFactor()
+  }
+  protected get hasWeaponTag() {
+    return !!this.weaponTag.value
+  }
+  protected get isBound() {
+    return !!this.store.offender.isBound()
   }
   private refs: AttributeRef[] = ['str', 'dex', 'int', 'foc']
   protected scaling = this.refs.map((it) => {

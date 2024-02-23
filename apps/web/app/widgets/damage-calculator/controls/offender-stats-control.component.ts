@@ -45,6 +45,9 @@ import { PrecisionInputComponent } from './precision-input.component'
 export class OffenderStatsControlComponent {
   protected store = inject(DamageCalculatorStore)
 
+  protected get isBound() {
+    return !!this.store.offender.isBound()
+  }
   protected level = offenderAccessor(this.store, 'level')
   protected gearScore = offenderAccessor(this.store, 'gearScore')
   protected attrs = offenderAccessor(this.store, 'attributePoints')

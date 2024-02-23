@@ -50,7 +50,7 @@
   </div>
 
   <div>
-    <nwb-stacked-value-control [(ngModel)]="modABS.value" [percent]="true" >
+    <nwb-stacked-value-control [(ngModel)]="modABS.value" [percent]="true" [lockPreset]="lockAbsPreset">
       <span slot="start" class="join-item btn btn-sm justify-start text-left w-40">
         <img [nwImage]="store.offenderWeaponDamageTypeIcon()" class="w-5 h-5" />
         ABS
@@ -76,7 +76,12 @@
       </ng-template>
     </nwb-stacked-value-control>
     @if (store.offenderConvertIsActive()) {
-      <nwb-stacked-value-control [(ngModel)]="modABSConv.value" [percent]="true"  class="mt-1">
+      <nwb-stacked-value-control
+        [(ngModel)]="modABSConv.value"
+        [percent]="true"
+        [lockPreset]="lockAbsPreset"
+        class="mt-1"
+      >
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 btn-secondary">
           <img [nwImage]="store.offenderConvertDamageTypeIcon()" class="w-5 h-5" />
           ABS
@@ -105,7 +110,7 @@
   </div>
 
   <div>
-    <nwb-stacked-value-control [(ngModel)]="modWKN.value" [percent]="true" >
+    <nwb-stacked-value-control [(ngModel)]="modWKN.value" [percent]="true" [lockPreset]="lockWknPreset">
       <span slot="start" class="join-item btn btn-sm justify-start text-left w-40">
         <img [nwImage]="store.offenderWeaponDamageTypeIcon()" class="w-5 h-5" />
         WKN
@@ -121,7 +126,12 @@
       </ng-template>
     </nwb-stacked-value-control>
     @if (store.offenderConvertIsActive()) {
-      <nwb-stacked-value-control [(ngModel)]="modWKNConv.value" [percent]="true"  class="mt-1">
+      <nwb-stacked-value-control
+        [(ngModel)]="modWKNConv.value"
+        [percent]="true"
+        [lockPreset]="lockWknPreset"
+        class="mt-1"
+      >
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 btn-secondary">
           <img [nwImage]="store.offenderConvertDamageTypeIcon()" class="w-5 h-5" />
           WKN

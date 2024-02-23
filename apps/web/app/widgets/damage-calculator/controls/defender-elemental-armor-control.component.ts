@@ -23,4 +23,8 @@ export class DefenderElementalArmorControlComponent {
   protected armor = defenderAccessor(this.store, 'elementalArmor')
   protected armorFortify = defenderAccessor(this.store, 'elementalArmorFortify')
   protected armorAdd = defenderAccessor(this.store, 'elementalArmorAdd')
+
+  protected get lockPreset() {
+    return !!this.store.defenderVitalId()
+  }
 }

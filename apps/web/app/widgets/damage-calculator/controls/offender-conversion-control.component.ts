@@ -40,6 +40,9 @@ export class OffenderConversionControlComponent {
   protected convertType = offenderAccessor(this.store, 'convertDamageType')
   protected convertAffix = offenderAccessor(this.store, 'convertAffix')
   protected convertPercent = offenderAccessor(this.store, 'convertPercent')
+  protected get isBound() {
+    return this.store.offender.isBound()
+  }
   private refs: AttributeRef[] = ['str', 'dex', 'int', 'foc']
   protected scaling = this.refs.map((it) => {
     return {
@@ -72,7 +75,20 @@ export class OffenderConversionControlComponent {
     const options: Array<{ icon: string; label: string; value: DamageType }> = [
       { icon: null, label: 'None', value: null },
     ]
-    for (const type of uniq(NW_WEAPON_TYPES.map((it) => it.DamageType))) {
+    const types: DamageType[] = [
+      'Arcane',
+      'Corruption',
+      'Fire',
+      'Ice',
+      'Lightning',
+      'Nature',
+      'Slash',
+      'Standard',
+      'Strike',
+      'Thrust',
+      'Void',
+    ]
+    for (const type of types) {
       options.push({
         icon: damageTypeIcon(type),
         label: type,

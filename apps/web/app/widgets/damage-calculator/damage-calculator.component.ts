@@ -142,6 +142,7 @@ export class DamageCalculatorComponent implements OnInit {
       .pipe(
         switchMap((mannequin) => {
           if (!mannequin) {
+            patchState(this.store, updateOffender({ isBound: false }))
             return EMPTY
           }
           return combineLatest({
@@ -156,15 +157,30 @@ export class DamageCalculatorComponent implements OnInit {
             modDMG: toObservable(mannequin.modDMG, { injector: this.injector }),
             modPvP: toObservable(mannequin.modPvP, { injector: this.injector }),
             modAmmo: toObservable(mannequin.modAmmo, { injector: this.injector }),
+            modArmorPenetration: toObservable(mannequin.modArmorPenetration, { injector: this.injector }),
           })
         }),
         takeUntilDestroyed(this.destroyRef),
       )
       .subscribe(
-        ({ level, gearScore, attributes, weapon, dmgCoef, modBase, modConvert, modCrit, modDMG, modPvP, modAmmo }) => {
+        ({
+          level,
+          gearScore,
+          attributes,
+          weapon,
+          dmgCoef,
+          modBase,
+          modConvert,
+          modCrit,
+          modDMG,
+          modPvP,
+          modAmmo,
+          modArmorPenetration,
+        }) => {
           patchState(
             this.store,
             updateOffender({
+              isBound: true,
               level: level,
               gearScore: patchPrecision(gearScore),
               attributePoints: {
@@ -194,15 +210,14 @@ export class DamageCalculatorComponent implements OnInit {
               damageCoef: dmgCoef?.value ?? 0,
               damageAdd: 0,
 
-              modAmmo: toStack(modAmmo),
-              modPvP: toStack(modPvP),
-              modCrit: toStack(modCrit.Damage),
-              modBase: toStack(modBase.Damage),
-              modBaseConv: toStack(modConvert.Damage),
-              modDMG: toStack(modDMG.byDamageType[modBase.Type]),
-              modDMGConv: toStack(modDMG.byDamageType[modConvert.Type]),
-
-              // armorPenetration:
+              armorPenetration: mergeStack(modArmorPenetration.Base, this.store.offender.armorPenetration()),
+              modAmmo: mergeStack(modAmmo, this.store.offender.modAmmo()),
+              modPvP: mergeStack(modPvP, this.store.offender.modPvP()),
+              modCrit: mergeStack(modCrit.Damage, this.store.offender.modCrit()),
+              modBase: mergeStack(modBase.Damage, this.store.offender.modBase()),
+              modBaseConv: mergeStack(modConvert.Damage, this.store.offender.modBaseConv()),
+              modDMG: mergeStack(modDMG.byDamageType[modBase.Type], this.store.offender.modDMG()),
+              modDMGConv: mergeStack(modDMG.byDamageType[modConvert.Type], this.store.offender.modDMGConv()),
             }),
           )
         },
@@ -217,6 +232,7 @@ export class DamageCalculatorComponent implements OnInit {
       .pipe(
         switchMap(({ player, opponent }) => {
           if (!player || !opponent) {
+            patchState(this.store, updateOffender({ isBound: false }))
             return EMPTY
           }
           const dmgTypeWeapon$ = toObservable(player.modBaseDamage, { injector: this.injector }).pipe(
@@ -273,6 +289,47 @@ export class DamageCalculatorComponent implements OnInit {
         )
       })
   }
+}
+
+function mergeStack(mod: ModifierResult, oldStack: ValueStack): ValueStack {
+  const ids: Record<string, number> = {}
+
+  function getId(label: string, limit: number) {
+    const result = `${label} - ${limit ?? ''}`
+    const count = ids[result] || 0
+    ids[result] = count + 1
+    return `${result} - ${count}`
+  }
+
+  const result: ValueStack = {
+    value: oldStack?.value || 0,
+    stack: [],
+  }
+
+  for (const it of mod?.source || []) {
+    const source = describeModifierSource(it.source)
+    const id = getId(source.label, it.limit)
+    result.stack.push({
+      value: patchPrecision(it.value * it.scale),
+      cap: it.limit ?? null,
+      label: source.label,
+      icon: source.icon,
+      tag: id,
+    })
+  }
+
+  for (const it of oldStack?.stack || []) {
+    if (!it.tag) {
+      result.stack.push(it)
+      continue
+    }
+    const found = result.stack.find((it) => it.tag === it.tag)
+    if (found) {
+      found.disabled = it.disabled
+    }
+  }
+
+  return result
 }
 
 function toStack(mod: ModifierResult): ValueStack {

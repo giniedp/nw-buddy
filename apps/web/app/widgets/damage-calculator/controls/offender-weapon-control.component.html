@@ -2,30 +2,37 @@
   <span class="label-text"> Weapon </span>
   <span class="label-text" [class.text-primary]="scalingIsHigher"> Scaling {{ scalingSum | number: '0.2-2' }} </span>
 </label>
-<span class="join">
-  <button class="join-item btn btn-sm flex-1" [class.btn-error]="!weaponTag.value" [cdkMenuTriggerFor]="tplWeaponTag">
-    @if (weapon(); as wpn) {
-      <img [nwImage]="wpn.icon" class="w-5 h-5" />
-      <span>{{ wpn.name | nwText }}</span>
-    } @else {
-      <span class="italic"> - none - </span>
-    }
-  </button>
-  <ng-template #tplWeaponTag>
-    <ul class="menu menu-compact bg-base-200 border border-base-100 rounded-md w-80" cdkMenu>
-      @for (item of weaponOptions(); track $index) {
+@if(!isBound) {
+  <span class="join">
+    <button class="join-item btn btn-sm flex-1" [cdkMenuTriggerFor]="tplWeaponTag">
+      @if (weapon(); as wpn) {
+        <img [nwImage]="wpn.icon" class="w-5 h-5" />
+        <span>{{ wpn.name | nwText }}</span>
+      } @else {
+        <span class="italic"> - not selected - </span>
+      }
+    </button>
+    <ng-template #tplWeaponTag>
+      <ul class="menu menu-compact bg-base-200 border border-base-100 rounded-md w-80" cdkMenu>
         <li class="text-shadow-sm shadow-black" cdkMenuItem>
-          <a (click)="weaponTag.value = item.value">
-            <img [nwImage]="item.icon" class="w-5 h-5 ml-2" />
-            <span>{{ item.label | nwText }}</span>
+          <a (click)="weaponTag.value = null">
+            <span>- none - </span>
           </a>
         </li>
-      }
-    </ul>
-  </ng-template>
-</span>
+        @for (item of weaponOptions(); track $index) {
+          <li class="text-shadow-sm shadow-black" cdkMenuItem>
+            <a (click)="weaponTag.value = item.value">
+              <img [nwImage]="item.icon" class="w-5 h-5 ml-2" />
+              <span>{{ item.label | nwText }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </ng-template>
+  </span>
+}
 <span class="join mt-1">
-  <button class="join-item btn btn-sm w-20 justify-start text-left" [cdkMenuTriggerFor]="tplGsSlider">GS</button>
+  <button class="join-item btn btn-sm w-20 justify-start text-left" [cdkMenuTriggerFor]="isBound ? null : tplGsSlider">GS</button>
   <nwb-precision-input
     class="join-item input input-sm input-bordered text-right w-full"
     [min]="gsMin"
@@ -34,6 +41,7 @@
     [stepShift]="100"
     [stepCtrl]="10"
     [(ngModel)]="gearScore.value"
+    [disabled]="isBound"
   />
   <ng-template #tplGsSlider>
     <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
@@ -70,6 +78,7 @@
     [stepShift]="10"
     [stepCtrl]="5"
     [(ngModel)]="weaponDamage.value"
+    [disabled]="hasWeaponTag"
   />
   <ng-template #tplDamageSlider>
     <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
@@ -103,6 +112,7 @@
       [stepAlt]="0.1"
       [(ngModel)]="item.access.value"
       [unit]="'%'"
+      [disabled]="hasWeaponTag"
     >
       <span class="absolute top-0 left-0 text-xs leading-none opacity-30 scale-75">{{ item.label }}</span>
     </nwb-precision-input>

@@ -3,7 +3,8 @@
   @if (inlineInputDisabled) {
     <nwb-precision-input
       type="number"
-      class="join-item appearance-none input input-sm input-bordered text-right w-full opacity-25"
+      class="join-item appearance-none input input-sm input-bordered text-right w-full"
+      [class.text-primary]="!!total"
       [scale]="scale"
       [ngModel]="total"
       [disabled]="inlineInputDisabled"
@@ -34,9 +35,10 @@
 </label>
 @if (isOpen) {
   <label class="join">
-    <span class="join-item input input-sm input-ghost rounded-none flex-1"> Custom Value </span>
+    <span class="join-item input input-sm input-ghost rounded-none flex-1"> {{ lockPreset ? 'Preset' : 'Adjust' }} </span>
     <nwb-precision-input
       class="join-item appearance-none input input-sm rounded-none text-right w-20"
+      [class.text-primary]="lockPreset && !!value"
       [min]="min"
       [max]="max"
       [step]="step"
@@ -46,6 +48,7 @@
       [scale]="scale"
       [(ngModel)]="value"
       [unit]="unit"
+      [disabled]="lockPreset"
     />
     <span class="join-item w-14"></span>
     <span
@@ -64,6 +67,7 @@
         placeholder="Label"
         [ngModel]="row.label"
         (ngModelChange)="setStackItemLabel($index, $event)"
+        [disabled]="row.disabled || !!row.tag"
       />
       <nwb-precision-input
         class="join-item appearance-none input input-sm rounded-none text-right w-20"
@@ -77,6 +81,8 @@
         [ngModel]="row.value"
         (ngModelChange)="setStackItemValue($index, $event)"
         [unit]="unit"
+        [disabled]="row.disabled || !!row.tag"
+        [class.text-primary]="!row.disabled && !!row.tag && !!row.value"
       />
       <nwb-precision-input
         class="join-item appearance-none input input-sm rounded-none text-right w-14"
@@ -91,11 +97,23 @@
         [ngModel]="row.cap"
         (ngModelChange)="setStackItemCap($index, $event)"
         [unit]="unit"
+        [disabled]="row.disabled || !!row.tag"
+        [class.text-primary]="!row.disabled && !!row.tag && !!row.cap"
       />
       <span class="join-item btn btn-sm btn-square rounded-none" (click)="toggleInStack($index)">
-        <input type="checkbox" class="checkbox checkbox-sm" [ngModel]="!row.disabled" />
+        <input
+          type="checkbox"
+          class="toggle toggle-xs"
+          [class.toggle-success]="!row.disabled"
+          [ngModel]="!row.disabled"
+        />
       </span>
-      <button class="join-item btn btn-sm btn-square rounded-none no-animation" (click)="removeFromStack($index)">
+      <button
+        class="join-item btn btn-sm btn-square rounded-none no-animation"
+        (click)="removeFromStack($index)"
+        [class.grayscale]="!!row.tag"
+        [disabled]="!!row.tag"
+      >
         <nwb-icon [icon]="iconAdd" class="w-4 h-4 rotate-45 text-error" />
       </button>
     </label>
@@ -103,10 +121,10 @@
 
   <div class="flex flex-row items-center justify-center gap-2 py-2">
     Value:
-    <span class="text-primary">{{ total | number: '0.2-2' }}</span>
+    <span class="text-primary">{{ (total * scale) | number: '0.1-2' }}{{unit}}</span>
     @if (overflow) {
       Overflow:
-      <span class="text-error">{{ overflow | number: '0.2-2' }}</span>
+      <span class="text-error">{{ (overflow * scale) | number: '0.1-2' }}{{unit}}</span>
     }
   </div>
 }

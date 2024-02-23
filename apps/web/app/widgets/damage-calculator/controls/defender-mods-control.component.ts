@@ -29,4 +29,11 @@ export class DefenderModsControlComponent {
   protected modCritReduction = defenderAccessor(this.store, 'modCritReduction')
   protected modBaseReduction = defenderAccessor(this.store, 'modBaseReduction')
   protected modBaseReductionConv = defenderAccessor(this.store, 'modBaseReductionConv')
+
+  protected get lockAbsPreset() {
+    return !!this.store.defenderVitalId()
+  }
+  protected get lockWknPreset() {
+    return !!this.store.defenderVitalId()
+  }
 }

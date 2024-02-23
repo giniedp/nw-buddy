@@ -23,6 +23,7 @@ import { patchPrecision } from '@nw-data/common'
       (wheel)="handleWheelEvent($event)"
       (keydown)="handleKeyEvent($event)"
       class="min-w-0 w-full bg-transparent appearance-none text-right"
+      [class.cursor-not-allowed]="disabled"
     />
     <ng-content selector="[end]" />
     @if (unit) {
@@ -41,6 +42,7 @@ import { patchPrecision } from '@nw-data/common'
   ],
   host: {
     class: 'relative',
+    '[class.input-disabled]': 'disabled',
   },
 })
 export class PrecisionInputComponent implements ControlValueAccessor {
@@ -130,7 +132,6 @@ export class PrecisionInputComponent implements ControlValueAccessor {
   }
 
   protected handleKeyEvent(event: KeyboardEvent): void {
-    console.log('handleKeyEvent', event.key)
     let direction = 0
     if (event.key === 'ArrowUp') {
       direction = 1

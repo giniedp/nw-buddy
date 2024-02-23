@@ -22,4 +22,8 @@ export class DefenderPhysicalArmorControlComponent {
   protected armor = defenderAccessor(this.store, 'physicalArmor')
   protected armorFortify = defenderAccessor(this.store, 'physicalArmorFortify')
   protected armorAdd = defenderAccessor(this.store, 'physicalArmorAdd')
+
+  protected get lockPreset() {
+    return !!this.store.defenderVitalId()
+  }
 }

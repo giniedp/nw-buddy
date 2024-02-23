@@ -10,7 +10,7 @@
     />
   </label>
 </span>
-@if (!isPlayer.value) {
+@if (isVitalPickable) {
   <div class="join mb-1">
     <button class="join-item btn btn-sm w-full" (click)="pickVital()">
       @if (vitalName(); as name) {
@@ -22,7 +22,12 @@
   </div>
 }
 <div class="join">
-  <button class="join-item btn btn-sm justify-start text-left w-20" [cdkMenuTriggerFor]="tplSliderLevel">Level</button>
+  <button
+    class="join-item btn btn-sm justify-start text-left w-20"
+    [cdkMenuTriggerFor]="isLevelDisabled ? null : tplSliderLevel"
+  >
+    Level
+  </button>
   <nwb-precision-input
     class="join-item input input-sm input-bordered text-right w-full"
     [min]="levelMin"
@@ -31,6 +36,7 @@
     [stepShift]="10"
     [stepCtrl]="5"
     [(ngModel)]="level.value"
+    [disabled]="isLevelDisabled"
   />
   <button class="join-item btn btn-sm btn-square" [tooltip]="tipLevel">
     <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
@@ -52,7 +58,12 @@
   </ng-template>
 </div>
 <div class="join mt-1">
-  <button class="join-item btn btn-sm justify-start text-left w-20" [cdkMenuTriggerFor]="tplGearScoreLevel">GS</button>
+  <button
+    class="join-item btn btn-sm justify-start text-left w-20"
+    [cdkMenuTriggerFor]="isGsDisabled ? null : tplGearScoreLevel"
+  >
+    GS
+  </button>
   <nwb-precision-input
     class="join-item input input-sm input-bordered text-right w-full"
     [min]="gsMin"
@@ -61,6 +72,7 @@
     [stepShift]="100"
     [stepCtrl]="10"
     [(ngModel)]="gearScore.value"
+    [disabled]="isGsDisabled"
   />
   <button class="join-item btn btn-sm btn-square" [tooltip]="tipGearScore">
     <nwb-icon [icon]="iconInfo" class="w-4 h-4" />

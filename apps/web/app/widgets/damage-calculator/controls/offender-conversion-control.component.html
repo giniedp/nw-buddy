@@ -7,6 +7,7 @@
     class="join-item btn btn-sm flex-1 text-left"
     [class.btn-error]="!!convertPercent.value && !convertType.value"
     [cdkMenuTriggerFor]="tplDamageType"
+    [disabled]="isBound"
   >
     @if (convertType.value) {
       <img [nwImage]="store.offenderConvertDamageTypeIcon()" class="w-5 h-5" />
@@ -27,13 +28,17 @@
       </ul>
     </ng-template>
   </button>
-  <button class="join-item btn btn-sm btn-square" (click)="pickAffix()">
-    <nwb-icon [icon]="iconMore" class="w-4 h-4" />
-  </button>
+  @if (!isBound) {
+    <button class="join-item btn btn-sm btn-square" (click)="pickAffix()">
+      <nwb-icon [icon]="iconMore" class="w-4 h-4" />
+    </button>
+  }
 </span>
 
 <span class="join mt-1">
-  <button class="join-item btn btn-sm justify-start text-left w-20" [cdkMenuTriggerFor]="tplSlider">Convert</button>
+  <button class="join-item btn btn-sm justify-start text-left w-20" [cdkMenuTriggerFor]="isBound ? null : tplSlider">
+    Convert
+  </button>
   <nwb-precision-input
     class="join-item flex-1 input input-sm input-bordered text-right"
     [min]="0"
@@ -45,6 +50,7 @@
     [scale]="100"
     [unit]="'%'"
     [(ngModel)]="convertPercent.value"
+    [disabled]="isBound"
   />
   <button class="join-item btn btn-sm btn-square" [tooltip]="tipConvert" [preventClick]="true">
     <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
@@ -78,6 +84,7 @@
       [max]="100"
       [step]="1"
       [(ngModel)]="item.access.value"
+      [disabled]="isBound"
       (wheel)="($event)"
     />
   }
@@ -90,7 +97,7 @@
   <div class="p-2 prose prose-sm leading-tight w-80">
     <h4>Damage Conversion</h4>
     @if (convertType.value) {
-      <p>Converts {{ convertPercent.value | number: '0.0-1' }}% of the damage to {{ convertType.value }}.</p>
+      <p>Converts {{ convertPercent.value | percent: '0.0-1' }}% of the damage to {{ convertType.value }}.</p>
     } @else {
       <p>Converts a percentage of the damage to a different type.</p>
       <p class="text-error">Choose a damage type to convert to.</p>
