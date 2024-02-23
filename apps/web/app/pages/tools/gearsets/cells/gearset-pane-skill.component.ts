@@ -112,7 +112,7 @@ export class GearsetPaneSkillComponent {
     effect(() => {
       const equipped = this.equippedTag
       const slotted = this.instance?.weapon
-      if (!equipped || !slotted || equipped === slotted || this.disabled) {
+      if ((!equipped && !slotted) || (equipped === slotted) || this.disabled) {
         return
       }
       this.updateSkill({
