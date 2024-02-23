@@ -1,18 +1,29 @@
-import { inject } from '@angular/core'
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router'
+import { Injector, inject } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { ActivatedRoute, NavigationEnd, NavigationExtras, Router } from '@angular/router'
 import { eq } from 'lodash'
 import { Observable, defer, distinctUntilChanged, filter, isObservable, map, of, startWith, switchMap } from 'rxjs'
 
-export function injectRouteParam(param: string | Observable<string>): Observable<string> {
-  return observeRouteParam(inject(ActivatedRoute), param)
+export function injectRouteParam(
+  param: string | Observable<string>,
+  route = inject(ActivatedRoute),
+): Observable<string> {
+  return observeRouteParam(route, param)
 }
 
-export function injectChildRouteParam(param: string | Observable<string>): Observable<string> {
-  return observeChildRouteParam(inject(Router), inject(ActivatedRoute), param)
+export function injectChildRouteParam(
+  param: string | Observable<string>,
+  router = inject(Router),
+  route = inject(ActivatedRoute),
+): Observable<string> {
+  return observeChildRouteParam(router, route, param)
 }
 
-export function injectQueryParam(param: string | Observable<string>): Observable<string> {
-  return observeQueryParam(inject(ActivatedRoute), param)
+export function injectQueryParam(
+  param: string | Observable<string>,
+  route: ActivatedRoute = inject(ActivatedRoute),
+): Observable<string> {
+  return observeQueryParam(route, param)
 }
 
 export function injectUrlParams(pattern: string): Observable<Record<string, string>>
@@ -90,4 +101,36 @@ function childRouteWithParam(route: ActivatedRoute, param: string) {
 function getChildRouteParam(route: ActivatedRoute, param: string) {
   const childRoute = childRouteWithParam(route, param)
   return childRoute?.snapshot?.paramMap?.get(param)
+}
+
+export function queryParamModel(
+  param: string,
+  options?: {
+    router?: Router;
+    route?: ActivatedRoute;
+    injector?: Injector
+  },
+) {
+  const router = options?.router || inject(Router)
+  const route = options?.route || inject(ActivatedRoute)
+  const param$ = injectQueryParam(param, route)
+  const paramSignal = toSignal(param$, {
+    injector: options?.injector,
+  })
+  return {
+    name: param,
+    $: param$,
+    value: paramSignal,
+    update: (value: string, extras?: NavigationExtras) => {
+      return router.navigate(['.'], {
+        queryParams: {
+          [param]: value,
+        },
+        relativeTo: route,
+        queryParamsHandling: 'merge',
+        ...(extras || {}),
+      })
+    }
+  }
+
 }

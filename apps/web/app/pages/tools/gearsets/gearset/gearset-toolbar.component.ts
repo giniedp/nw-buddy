@@ -1,10 +1,10 @@
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { Component, Injector, Input, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { IonHeader } from '@ionic/angular/standalone'
+import { patchState } from '@ngrx/signals'
 import {
   EquipSlotId,
   NW_MAX_GEAR_SCORE,
@@ -51,12 +51,11 @@ import {
 } from '~/ui/icons/svg'
 import { ConfirmDialogComponent, LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { injectQueryParam } from '~/utils'
+import { queryParamModel } from '~/utils'
 import { GearsetTableAdapter } from '~/widgets/data/gearset-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { InventoryPickerService } from '../../inventory/inventory-picker.service'
 import { SlotsPickerComponent } from '../dialogs'
-import { patchState } from '@ngrx/signals'
 
 export const GEARSET_TAGS = [
   { value: 'PvP', icon: '' },
@@ -93,7 +92,8 @@ export class GearsetToolbarComponent {
   private injector = inject(Injector)
   private router = inject(Router)
   private route = inject(ActivatedRoute)
-  private vsQueryParam = toSignal(injectQueryParam('vs'))
+  private vsQueryParam = queryParamModel('vs')
+  private calcQueryParam = queryParamModel('calc')
 
   protected compact = false
   protected calculator = false
@@ -130,7 +130,11 @@ export class GearsetToolbarComponent {
     private itemsDb: ItemInstancesDB,
     private imagesDb: ImagesDB,
     private modal: ModalService,
-  ) {}
+  ) {
+    patchState(this.store, {
+      showCalculator: this.calcQueryParam.value() === 'true',
+    })
+  }
 
   protected updateName(value: string) {
     this.store.patchGearset({ name: value })
@@ -281,11 +285,7 @@ export class GearsetToolbarComponent {
 
   protected handleBackClicked() {
     if (this.mode === 'opponent') {
-      this.router.navigate(['.'], {
-        queryParams: { vs: null },
-        queryParamsHandling: 'merge',
-        relativeTo: this.route,
-      })
+      this.vsQueryParam.update(null)
     } else {
       history.back()
     }
@@ -439,7 +439,7 @@ export class GearsetToolbarComponent {
   protected async handleOpponentSelection() {
     const result = await DataViewPicker.open({
       title: 'Pick Opponent Gearset',
-      selection: [this.vsQueryParam() || null],
+      selection: [this.vsQueryParam.value() || null],
       dataView: {
         adapter: GearsetTableAdapter,
       },
@@ -448,16 +448,17 @@ export class GearsetToolbarComponent {
     if (!result) {
       return
     }
-    this.router.navigate(['.'], {
-      relativeTo: this.route,
-      queryParams: { vs: result },
-      queryParamsHandling: 'merge',
+    this.vsQueryParam.update(result, {
       replaceUrl: true,
     })
   }
 
   protected onToggleCalculatorClicked() {
-    patchState(this.store, { showCalculator: !this.store.showCalculator() })
+    const showCalculator = !this.store.showCalculator()
+    patchState(this.store, { showCalculator })
+    this.calcQueryParam.update(showCalculator ? String(showCalculator) : null, {
+      replaceUrl: true,
+    })
   }
 
   protected async onBatchGearScoreClicked() {
@@ -523,7 +524,6 @@ export class GearsetToolbarComponent {
         )
       })
   }
-
 }
 
 function canResetPerk(info: ResolvedItemPerkInfo) {
