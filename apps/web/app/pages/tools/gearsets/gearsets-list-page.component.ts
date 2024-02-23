@@ -1,8 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, inject } from '@angular/core'
-import { Router, RouterModule } from '@angular/router'
-import { IonContent, IonHeader, IonToolbar } from '@ionic/angular/standalone'
-import { debounceTime, filter } from 'rxjs'
+import { ActivatedRoute, Router, RouterModule } from '@angular/router'
+import { debounceTime, filter, switchMap } from 'rxjs'
 import { GearsetRecord } from '~/data'
 import { NwModule } from '~/nw'
 import { ShareService } from '~/pages/share'
@@ -47,6 +46,7 @@ export class GearsetsListPageComponent {
   private quicksearch = inject(QuicksearchService)
   private modal = inject(ModalService)
   private router = inject(Router)
+  private route = inject(ActivatedRoute)
   private share = inject(ShareService)
 
   protected get filterTags() {
@@ -74,12 +74,17 @@ export class GearsetsListPageComponent {
         negative: 'Cancel',
       },
     })
-      .result$.pipe(filter((it) => !!it))
-      .subscribe((newName) => {
-        this.store.createRecord({
-          id: null,
-          name: newName,
-        })
+      .result$.pipe(
+        filter((it) => !!it),
+        switchMap((newName) => {
+          return this.store.createRecord({
+            id: null,
+            name: newName,
+          })
+        }),
+      )
+      .subscribe((record) => {
+        this.router.navigate([record.id], { relativeTo: this.route })
       })
   }
 
