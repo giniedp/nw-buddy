@@ -6679,7 +6679,6 @@ export type StatusEffectCategory =
   | 'IceRoot'
   | 'IgnoreDebuffs'
   | 'Immortal'
-  | 'ImmunityToSlow'
   | 'InSmoke'
   | 'InfectedThrow'
   | 'LastStand'
