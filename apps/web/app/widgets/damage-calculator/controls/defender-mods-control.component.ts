@@ -30,6 +30,9 @@ export class DefenderModsControlComponent {
   protected modBaseReduction = defenderAccessor(this.store, 'modBaseReduction')
   protected modBaseReductionConv = defenderAccessor(this.store, 'modBaseReductionConv')
 
+  protected get isBound() {
+    return this.store.defender.isBound()
+  }
   protected get lockAbsPreset() {
     return !!this.store.defenderVitalId()
   }

@@ -58,6 +58,9 @@ export class DefenderStatsControlComponent {
   protected gsMin = 0
   protected gsMax = NW_MAX_GEAR_SCORE
 
+  protected get isBound() {
+    return this.store.defender.isBound()
+  }
   protected get isVitalPickable() {
     return !this.isPlayer.value
   }
@@ -65,7 +68,7 @@ export class DefenderStatsControlComponent {
     return false
   }
   protected get isGsDisabled() {
-    return !!this.vitalId.value
+    return !!this.vitalId.value || this.isBound
   }
 
   protected pickVital() {

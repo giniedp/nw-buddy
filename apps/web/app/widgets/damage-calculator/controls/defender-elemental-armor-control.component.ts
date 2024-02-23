@@ -3,8 +3,8 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NwModule } from '~/nw'
 import { DamageCalculatorStore, defenderAccessor } from '../damage-calculator.store'
-import { StackedValueControlComponent } from './stacked-value-control.component'
 import { PrecisionInputComponent } from './precision-input.component'
+import { StackedValueControlComponent } from './stacked-value-control.component'
 
 @Component({
   standalone: true,
@@ -24,7 +24,11 @@ export class DefenderElementalArmorControlComponent {
   protected armorFortify = defenderAccessor(this.store, 'elementalArmorFortify')
   protected armorAdd = defenderAccessor(this.store, 'elementalArmorAdd')
 
+  protected get isBound() {
+    return this.store.defender.isBound()
+  }
+
   protected get lockPreset() {
-    return !!this.store.defenderVitalId()
+    return !!this.store.defenderVitalId() || this.isBound
   }
 }

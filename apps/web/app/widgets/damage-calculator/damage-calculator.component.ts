@@ -258,33 +258,34 @@ export class DamageCalculatorComponent implements OnInit {
           this.store,
           updateDefender({
             isPlayer: true,
+            isBound: true,
             level: level,
             gearScore: patchPrecision(gearScore),
-            modABS: toStack(modAbs?.DamageCategories[dmgTypeWeapon]),
-            modABSConv: toStack(modAbs?.DamageCategories[dmgTypeConvert]),
-            modWKN: toStack(modWKN?.[dmgTypeWeapon]),
-            modWKNConv: toStack(modWKN?.[dmgTypeConvert]),
+            modABS: mergeStack(modAbs?.DamageCategories[dmgTypeWeapon], this.store.defender.modABS()),
+            modABSConv: mergeStack(modAbs?.DamageCategories[dmgTypeConvert], this.store.defender.modABSConv()),
+            modWKN: mergeStack(modWKN?.[dmgTypeWeapon], this.store.defender.modWKN()),
+            modWKNConv: mergeStack(modWKN?.[dmgTypeConvert], this.store.defender.modWKNConv()),
             // modBaseReduction
             // modBaseReductionConv
             // modCritReduction
             elementalArmor: {
               value: patchPrecision(modArmor?.ElementalBase?.armorRating ?? 0, 1),
-              stack: [],
+              stack: this.store.defender.elementalArmor().stack,
             },
             elementalArmorAdd: {
               value: patchPrecision(modArmor?.ElementalBase?.weaponRating ?? 0, 1),
-              stack: [],
+              stack: this.store.defender.elementalArmorAdd().stack,
             },
-            elementalArmorFortify: toStack(modArmor?.Elemental),
+            elementalArmorFortify: mergeStack(modArmor?.Elemental, this.store.defender.elementalArmorFortify()),
             physicalArmor: {
               value: patchPrecision(modArmor?.PhysicalBase?.armorRating ?? 0, 1),
-              stack: [],
+              stack: this.store.defender.physicalArmor().stack,
             },
             physicalArmorAdd: {
               value: patchPrecision(modArmor?.PhysicalBase?.weaponRating ?? 0, 1),
-              stack: [],
+              stack: this.store.defender.physicalArmorAdd().stack,
             },
-            physicalArmorFortify: toStack(modArmor?.Physical),
+            physicalArmorFortify: mergeStack(modArmor?.Physical, this.store.defender.physicalArmorFortify()),
           }),
         )
       })

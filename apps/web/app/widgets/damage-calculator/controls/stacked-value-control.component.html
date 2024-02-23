@@ -35,7 +35,9 @@
 </label>
 @if (isOpen) {
   <label class="join">
-    <span class="join-item input input-sm input-ghost rounded-none flex-1"> {{ lockPreset ? 'Preset' : 'Adjust' }} </span>
+    <span class="join-item input input-sm input-ghost rounded-none flex-1">
+      {{ lockPreset ? 'Preset' : 'Adjust' }}
+    </span>
     <nwb-precision-input
       class="join-item appearance-none input input-sm rounded-none text-right w-20"
       [class.text-primary]="lockPreset && !!value"
@@ -62,13 +64,27 @@
 
   @for (row of stack; track $index) {
     <label class="join">
-      <input
-        class="join-item input input-sm bg-base-200 rounded-none min-w-0 flex-1"
-        placeholder="Label"
-        [ngModel]="row.label"
-        (ngModelChange)="setStackItemLabel($index, $event)"
-        [disabled]="row.disabled || !!row.tag"
-      />
+      @if (row.tag) {
+        @if (row.icon) {
+          <span class="btn btn-ghost btn-sm pointer-events-none pr-0">
+            <img [nwImage]="row.icon" class="w-4 h-4" />
+          </span>
+        }
+        <span
+          class="join-item input input-sm bg-base-200 rounded-none min-w-0 flex-1 text-nowrap truncate"
+          [title]="row.label | nwText"
+        >
+          {{ row.label | nwText }}
+        </span>
+      } @else {
+        <input
+          class="join-item input input-sm bg-base-200 rounded-none min-w-0 flex-1"
+          placeholder="Label"
+          [ngModel]="row.label"
+          (ngModelChange)="setStackItemLabel($index, $event)"
+          [disabled]="row.disabled || !!row.tag"
+        />
+      }
       <nwb-precision-input
         class="join-item appearance-none input input-sm rounded-none text-right w-20"
         [min]="min"
@@ -121,10 +137,10 @@
 
   <div class="flex flex-row items-center justify-center gap-2 py-2">
     Value:
-    <span class="text-primary">{{ (total * scale) | number: '0.1-2' }}{{unit}}</span>
+    <span class="text-primary">{{ total * scale | number: '0.1-2' }}{{ unit }}</span>
     @if (overflow) {
       Overflow:
-      <span class="text-error">{{ (overflow * scale) | number: '0.1-2' }}{{unit}}</span>
+      <span class="text-error">{{ overflow * scale | number: '0.1-2' }}{{ unit }}</span>
     }
   </div>
 }

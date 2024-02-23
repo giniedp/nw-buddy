@@ -23,7 +23,11 @@ export class DefenderPhysicalArmorControlComponent {
   protected armorFortify = defenderAccessor(this.store, 'physicalArmorFortify')
   protected armorAdd = defenderAccessor(this.store, 'physicalArmorAdd')
 
+  protected get isBound() {
+    return this.store.defender.isBound()
+  }
+
   protected get lockPreset() {
-    return !!this.store.defenderVitalId()
+    return !!this.store.defenderVitalId() || this.isBound
   }
 }
