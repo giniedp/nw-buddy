@@ -119,6 +119,10 @@ export class PrecisionInputComponent implements ControlValueAccessor {
   }
 
   protected handleWheelEvent(event: WheelEvent): void {
+    // only when the input is focused
+    if (document.activeElement !== this.input.nativeElement) {
+      return
+    }
     event.preventDefault()
     const step = this.getStep(event)
     const direction = event.deltaY < 0 ? 1 : -1
