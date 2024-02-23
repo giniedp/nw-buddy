@@ -190,7 +190,6 @@ export class Mannequin {
       this.activePerks(),
       this.equipLoadCategory()
     )
-    console.log('activeAbilities', result)
     return result
   })
   public readonly allAbilities = computed(() => {
