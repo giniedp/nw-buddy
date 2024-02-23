@@ -5,6 +5,7 @@ import { LayoutModule } from '~/ui/layout'
 
 import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 import { DamageCalculatorComponent } from '~/widgets/damage-calculator'
+import { PreferencesService } from '~/preferences'
 
 @Component({
   standalone: true,
@@ -18,13 +19,25 @@ import { DamageCalculatorComponent } from '~/widgets/damage-calculator'
 export class DamageCalculatorPageComponent {
   private router = inject(Router)
   private route = inject(ActivatedRoute)
-  protected queryState = decodeState(this.route.snapshot.queryParamMap.get('state'))
+  private preferences = inject(PreferencesService)
+  protected initialState: any = null
+  protected encodedState: string = null
 
   protected handleStateChange(value: any) {
-    this.router.navigate(['.'], {
-      relativeTo: this.route,
-      queryParams: { state: encodeState(value) },
-    })
+    this.preferences.session.set('damage-calculator', value)
+    this.encodedState = encodeState(value)
+  }
+
+  public constructor() {
+    const queryState = decodeState(this.route.snapshot.queryParamMap.get('state'))
+    const sessionState = this.preferences.session.get('damage-calculator')
+    this.initialState = queryState || sessionState || null
+    if (queryState) {
+      this.router.navigate(['.'], {
+        relativeTo: this.route,
+        queryParams: { state: null },
+      })
+    }
   }
 }
 
