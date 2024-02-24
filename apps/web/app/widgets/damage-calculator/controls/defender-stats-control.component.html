@@ -7,6 +7,7 @@
       class="toggle toggle-xs toggle-success"
       [ngModel]="isPlayer.value"
       (ngModelChange)="setIsPlayer($event)"
+      [disabled]="isBound"
     />
   </label>
 </span>

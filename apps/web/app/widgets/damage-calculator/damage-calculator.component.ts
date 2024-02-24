@@ -41,6 +41,7 @@ import {
   updateOffender,
 } from './damage-calculator.store'
 import { DamageOutputComponent } from './damage-output.component'
+import { OffenderDotControlComponent } from './controls/offender-dot-control.component'
 
 @Component({
   standalone: true,
@@ -59,6 +60,7 @@ import { DamageOutputComponent } from './damage-output.component'
     OffenderModsControlComponent,
     OffenderStatsControlComponent,
     OffenderWeaponControlComponent,
+    OffenderDotControlComponent,
     StackedValueControlComponent,
     LayoutModule,
     IconsModule,
@@ -75,6 +77,14 @@ export class DamageCalculatorComponent implements OnInit {
   private injector = inject(Injector)
   private destroyRef = inject(DestroyRef)
   protected store = inject(DamageCalculatorStore)
+
+  protected get isOffenderBound() {
+    return this.store.offender.isBound()
+  }
+
+  protected get isDefenderBound() {
+    return this.store.defender.isBound()
+  }
 
   @Input()
   public set state(value: DamageCalculatorState) {
@@ -232,7 +242,7 @@ export class DamageCalculatorComponent implements OnInit {
       .pipe(
         switchMap(({ player, opponent }) => {
           if (!player || !opponent) {
-            patchState(this.store, updateOffender({ isBound: false }))
+            patchState(this.store, updateDefender({ isBound: false }))
             return EMPTY
           }
           const dmgTypeWeapon$ = toObservable(player.modBaseDamage, { injector: this.injector }).pipe(

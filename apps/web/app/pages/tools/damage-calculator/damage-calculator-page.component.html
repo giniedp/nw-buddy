@@ -6,8 +6,19 @@
       <ion-segment-button>PvE</ion-segment-button>
       <ion-segment-button>EvP</ion-segment-button>
     </ion-segment> -->
+    <div slot="end">
+      <button class="join-item btn btn-square btn-ghost" [nwbScreenshotBtn]></button>
+    </div>
   </ion-toolbar>
 </ion-header>
 <ion-content class="sm:ion-p-4">
-  <nwb-damage-calculator standalone [state]="initialState" (stateChange)="handleStateChange($event)" class="p-4 bg-base-300 sm:rounded-lg max-w-5xl mx-auto"/>
+  <div class="max-w-5xl mx-auto">
+    <nwb-damage-calculator
+      class="p-4 bg-base-300 sm:rounded-lg"
+      standalone
+      [state]="initialState"
+      [nwbScreenshotFrame]="'Damage Calculator'"
+      (stateChange)="handleStateChange($event)"
+    />
+  </div>
 </ion-content>

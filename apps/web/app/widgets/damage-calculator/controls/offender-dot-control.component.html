@@ -1,0 +1,76 @@
+<label class="label">
+  <span class="label-text"> Damage Over Time </span>
+</label>
+<span class="join">
+  <button
+    class="join-item btn btn-sm flex-1 text-left"
+    [class.btn-error]="!!dotPercent.value && !dotType.value"
+    [cdkMenuTriggerFor]="tplDamageType"
+  >
+    @if (dotType.value) {
+      <img [nwImage]="store.offenderDotTypeIcon()" class="w-5 h-5" />
+      <span> {{ dotType.value }} </span>
+    } @else {
+      <span class="italic"> - none - </span>
+    }
+    <ng-template #tplDamageType>
+      <ul class="menu menu-compact bg-base-100 rounded-md w-80" cdkMenu>
+        @for (item of dotTypeOptions(); track $index) {
+          <li class="text-shadow-sm shadow-black" cdkMenuItem>
+            <a (click)="dotType.value = item.value">
+              <img [nwImage]="item.icon" class="w-5 h-5 ml-2" />
+              <span>{{ item.label }}</span>
+            </a>
+          </li>
+        }
+      </ul>
+    </ng-template>
+  </button>
+</span>
+
+<span class="join mt-1">
+  <nwb-precision-input
+    class="join-item flex-1 input input-sm input-bordered text-right"
+    [min]="0"
+    [max]="100"
+    [step]="0.1"
+    [stepShift]="10"
+    [stepCtrl]="1"
+    [stepAlt]="0.01"
+    [scale]="100"
+    [unit]="'%'"
+    [(ngModel)]="dotPercent.value"
+    [class.input-bordered]="!!dotPercent.value"
+    [class.opacity-15]="!dotPercent.value"
+  >
+    <span class="absolute top-0 left-0 text-xs leading-none opacity-30 scale-75">PERCENT</span>
+  </nwb-precision-input>
+  <nwb-precision-input
+    class="join-item flex-1 input input-sm text-right"
+    [min]="0"
+    [max]="100"
+    [step]="1"
+    [stepShift]="10"
+    [stepCtrl]="5"
+    [stepAlt]="0.1"
+    [(ngModel)]="dotDuration.value"
+    [class.input-bordered]="!!dotDuration.value"
+    [class.opacity-15]="!dotDuration.value"
+  >
+    <span class="absolute top-0 left-0 text-xs leading-none opacity-30 scale-75">TIME</span>
+  </nwb-precision-input>
+  <nwb-precision-input
+    class="join-item flex-1 input input-sm text-right"
+    [min]="0"
+    [max]="100"
+    [step]="1"
+    [stepShift]="10"
+    [stepCtrl]="5"
+    [stepAlt]="0.1"
+    [(ngModel)]="dotRate.value"
+    [class.input-bordered]="!!dotRate.value"
+    [class.opacity-15]="!dotRate.value"
+  >
+    <span class="absolute top-0 left-0 text-xs leading-none opacity-30 scale-75">RATE</span>
+  </nwb-precision-input>
+</span>

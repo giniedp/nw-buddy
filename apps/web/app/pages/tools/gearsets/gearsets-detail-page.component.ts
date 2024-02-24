@@ -24,7 +24,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
 import { BehaviorSubject, map } from 'rxjs'
 import { GearsetsDB } from '~/data'
 import { Mannequin } from '~/nw/mannequin'
-import { svgCalculator, svgChartLine, svgCodeMerge, svgDiagramProject, svgSwords, svgUser } from '~/ui/icons/svg'
+import { svgCalculator, svgChartLine, svgCodeMerge, svgSwords, svgUser } from '~/ui/icons/svg'
 
 import { DamageCalculatorComponent } from '~/widgets/damage-calculator'
 import { GearsetGridComponent } from './gearset/gearset-grid.component'
@@ -88,14 +88,24 @@ export class GearsetsDetailPageComponent implements AfterViewInit {
 
   public ngAfterViewInit(): void {
     this.players.changes.subscribe(() => {
-      this.players.forEach((it) => {
-        if (it.mode === 'player') {
-          this.player$.next(it.mannequin)
-        }
-        if (it.mode === 'opponent') {
-          this.opponent$.next(it.mannequin)
-        }
-      })
+      const players = this.players.toArray()
+      console.log({ players })
+      if (players.length === 2) {
+        players.forEach((it) => {
+          if (it.mode === 'player') {
+            this.player$.next(it.mannequin)
+          }
+          if (it.mode === 'opponent') {
+            this.opponent$.next(it.mannequin)
+          }
+        })
+      } else if (players.length === 1) {
+        this.player$.next(players[0].mannequin)
+        this.opponent$.next(null)
+      } else {
+        this.player$.next(null)
+        this.opponent$.next(null)
+      }
     })
     this.players.notifyOnChanges()
   }

@@ -6,6 +6,7 @@ import { LayoutModule } from '~/ui/layout'
 import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 import { DamageCalculatorComponent } from '~/widgets/damage-calculator'
 import { PreferencesService } from '~/preferences'
+import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   standalone: true,
@@ -14,7 +15,7 @@ import { PreferencesService } from '~/preferences'
   host: {
     class: 'ion-page',
   },
-  imports: [CommonModule, LayoutModule, DamageCalculatorComponent, IonSegment, IonSegmentButton],
+  imports: [CommonModule, LayoutModule, DamageCalculatorComponent, IonSegment, IonSegmentButton, ScreenshotModule],
 })
 export class DamageCalculatorPageComponent {
   private router = inject(Router)

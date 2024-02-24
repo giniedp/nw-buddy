@@ -20,9 +20,15 @@
       class="text-lg uppercase relative text-center font-serif text-nw-description nw-bg-title bg-bottom h-12 flex justify-center items-end"
     >
       Attacker Stats
-      <button class="btn btn-ghost btn-square absolute top-0 right-0" (click)="resetOffender()" [tooltip]="'Reset Attacker'">
-        <nwb-icon [icon]="iconReset" class="w-5 h-5" />
-      </button>
+      @if (!isOffenderBound) {
+        <button
+          class="btn btn-ghost btn-square absolute top-0 right-0"
+          (click)="resetOffender()"
+          [tooltip]="'Reset Attacker'"
+        >
+          <nwb-icon [icon]="iconReset" class="w-5 h-5" />
+        </button>
+      }
     </h3>
     <div class="flex flex-col gap-4 mt-4">
       <div class="grid gap-4 grid-auto-fit-80">
@@ -30,6 +36,7 @@
         <nwb-offender-weapon-control />
         <nwb-offender-conversion-control />
         <nwb-offender-attack-control />
+        <!-- <nwb-offender-dot-control /> -->
       </div>
       <nwb-offender-mods-control />
     </div>
@@ -42,9 +49,15 @@
       class="text-lg uppercase relative text-center font-serif text-nw-description nw-bg-title bg-bottom h-12 flex justify-center items-end"
     >
       Defender Stats
-      <button class="btn btn-ghost btn-square absolute top-0 right-0" (click)="resetDefender()"  [tooltip]="'Reset Defender'">
-        <nwb-icon [icon]="iconReset" class="w-5 h-5" />
-      </button>
+      @if (!isDefenderBound) {
+        <button
+          class="btn btn-ghost btn-square absolute top-0 right-0"
+          (click)="resetDefender()"
+          [tooltip]="'Reset Defender'"
+        >
+          <nwb-icon [icon]="iconReset" class="w-5 h-5" />
+        </button>
+      }
     </h3>
     <div class="flex flex-col gap-4 mt-4">
       <div class="grid gap-x-4 gap-y-1 grid-auto-fit-80">

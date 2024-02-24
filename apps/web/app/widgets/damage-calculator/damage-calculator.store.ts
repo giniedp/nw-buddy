@@ -50,6 +50,11 @@ export interface OffenderState {
   convertScaling: Record<AttributeRef, number>
   convertDamageType: string
 
+  dotDamageType: string
+  dotDamagePercent: number
+  dotDamageDuration: number
+  dotDamageRate: number
+
   weaponTag: string
   weaponGearScore: number
   weaponScaling: Record<AttributeRef, number>
@@ -119,6 +124,11 @@ const DEFAULT_STATE: DamageCalculatorState = {
       con: 0,
     },
     armorPenetration: valueStack(),
+
+    dotDamageType: null,
+    dotDamagePercent: 0,
+    dotDamageDuration: 0,
+    dotDamageRate: 1,
 
     convertAffix: null,
     convertPercent: 0,
@@ -210,6 +220,12 @@ export const DamageCalculatorStore = signalStore(
       offenderGearScore: computed(() => offender.gearScore()),
       offenderAttributes: computed(() => offender.attributeModSums()),
       offenderArmorPenetration: computed(() => valueStackSum(offender.armorPenetration())),
+
+      offenderDotPercent: computed(() => offender.dotDamagePercent()),
+      offenderDotDuration: computed(() => offender.dotDamageDuration()),
+      offenderDotRate: computed(() => offender.dotDamageRate()),
+      offenderDotType: computed(() => offender.dotDamageType()),
+      offenderDotTypeIcon: computed(() => damageTypeIcon(offender.dotDamageType())),
 
       offenderConvertPercent: computed(() => offender.convertPercent()),
       offenderConvertScaling: computed(() => offender.convertScaling()),
