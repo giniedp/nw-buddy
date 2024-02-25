@@ -1,17 +1,19 @@
 <ion-content>
   <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-min-width: 320px; --side-max-width: 420px">
     <div class="ion-page order-2" id="main">
-      <div class="grid grid-cols-fill-sm gap-4 max-w-screen-3xl mx-auto" [@list]="count$ | async">
-        @for (item of data$ | async; track $index) {
-          <a
-            [nwbMountTile]="item"
-            [routerLink]="item.MountId"
-            [routerLinkActive]="'border-primary'"
-            [@fade]="true"
-            class="bg-base-300 rounded-md border border-base-100 hover:border-primary relative transition-all"
-          ></a>
-        }
-      </div>
+      <ion-content>
+        <div class="grid grid-cols-fill-sm gap-4 max-w-screen-3xl mx-auto" [@list]="count$ | async">
+          @for (item of data$ | async; track $index) {
+            <a
+              [nwbMountTile]="item"
+              [routerLink]="item.MountId"
+              [routerLinkActive]="'border-primary'"
+              [@fade]="true"
+              class="bg-base-300 rounded-md border border-base-100 hover:border-primary relative transition-all"
+            ></a>
+          }
+        </div>
+      </ion-content>
     </div>
     <ion-menu contentId="main" class="order-2">
       @if (showSidebar()) {

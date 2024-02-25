@@ -46,7 +46,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
     }),
   ],
   host: {
-    class: 'layout-col',
+    class: 'ion-page',
   },
   animations: [
     trigger('list', [
