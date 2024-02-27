@@ -75,18 +75,21 @@
 <span class="join mt-1">
   <button class="join-item btn btn-sm justify-start text-left w-20">Scaling</button>
   @for (item of scaling; track $index) {
-    <input
-      type="number"
-      class="join-item w-full appearance-none input input-sm input-bordered text-right text-xs"
-      [class.opacity-25]="!item.access.value"
-      [placeholder]="item.label"
+    <nwb-precision-input
+      class="join-item input input-bordered input-sm  w-full text-white"
       [min]="0"
       [max]="100"
       [step]="1"
+      [stepShift]="10"
+      [stepCtrl]="1"
+      [stepAlt]="0.1"
       [(ngModel)]="item.access.value"
+      [unit]="'%'"
       [disabled]="isBound"
-      (wheel)="($event)"
-    />
+      [class.text-opacity-25]="!item.access.value"
+    >
+      <span class="absolute top-0 left-0 text-xs leading-none text-opacity-30 text-white scale-75">{{ item.label }}</span>
+    </nwb-precision-input>
   }
   <button class="join-item btn btn-sm btn-square" [tooltip]="tipScaling" [preventClick]="true">
     <nwb-icon [icon]="iconInfo" class="w-4 h-4" />

@@ -4,7 +4,7 @@
     <nwb-precision-input
       type="number"
       class="join-item appearance-none input input-sm input-bordered text-right w-full"
-      [class.text-primary]="!!total"
+      [class.text-white]="!!total"
       [scale]="scale"
       [ngModel]="total"
       [disabled]="inlineInputDisabled"
@@ -40,7 +40,7 @@
     </span>
     <nwb-precision-input
       class="join-item appearance-none input input-sm rounded-none text-right w-20"
-      [class.text-primary]="lockPreset && !!value"
+      [class.text-white]="lockPreset && !!value"
       [min]="min"
       [max]="max"
       [step]="step"
@@ -98,7 +98,7 @@
         (ngModelChange)="setStackItemValue($index, $event)"
         [unit]="unit"
         [disabled]="row.disabled || !!row.tag"
-        [class.text-primary]="!row.disabled && !!row.tag && !!row.value"
+        [class.text-white]="!row.disabled && !!row.tag && !!row.value"
       />
       <nwb-precision-input
         class="join-item appearance-none input input-sm rounded-none text-right w-14"
@@ -114,7 +114,7 @@
         (ngModelChange)="setStackItemCap($index, $event)"
         [unit]="unit"
         [disabled]="row.disabled || !!row.tag"
-        [class.text-primary]="!row.disabled && !!row.tag && !!row.cap"
+        [class.text-white]="!row.disabled && !!row.tag && !!row.cap"
       />
       <span class="join-item btn btn-sm btn-square rounded-none" (click)="toggleInStack($index)">
         <input

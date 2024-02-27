@@ -45,6 +45,7 @@
     [stepCtrl]="10"
     [(ngModel)]="gearScore.value"
     [disabled]="isBound"
+    [class.text-white]="isBound && gearScore.value"
   />
   <ng-template #tplGearScoreLevel>
     <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
@@ -102,7 +103,7 @@
   <span class="join-item btn btn-sm w-20 justify-start"> Levels </span>
   @for (stat of attrLevels; track $index) {
     <input
-      class="join-item w-full appearance-none input input-sm input-bordered text-center text-xs px-0"
+      class="join-item w-full appearance-none bg-base-200 text-center text-xs px-0"
       [class.opacity-25]="!stat.access.value"
       [ngModel]="stat.access.value"
       disabled

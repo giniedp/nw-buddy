@@ -60,6 +60,7 @@
     [unit]="'%'"
     [(ngModel)]="damageCoef.value"
     [disabled]="isBound"
+    [class.text-white]="isBound && damageCoef.value"
   />
   <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipCoef" [preventClick]="true">
     <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
@@ -81,6 +82,7 @@
     [(ngModel)]="damageAdd.value"
     (wheel)="($event)"
     [disabled]="isBound"
+    [class.text-white]="isBound && damageCoef.value"
   />
   <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipAdd" [preventClick]="true">
     <nwb-icon [icon]="iconInfo" class="w-4 h-4" />

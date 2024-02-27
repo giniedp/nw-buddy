@@ -42,6 +42,7 @@
     [stepCtrl]="10"
     [(ngModel)]="gearScore.value"
     [disabled]="isBound"
+    [class.text-white]="isBound && gearScore.value"
     [class.input-error]="!gearScore.value"
   />
   <ng-template #tplGsSlider>
@@ -80,6 +81,7 @@
     [stepCtrl]="5"
     [(ngModel)]="weaponDamage.value"
     [disabled]="hasWeaponTag"
+    [class.text-white]="hasWeaponTag && weaponDamage.value"
     [class.input-error]="!weaponDamage.value"
   />
   <ng-template #tplDamageSlider>
@@ -105,7 +107,7 @@
   <button class="join-item btn btn-sm w-20 justify-start text-left">Scaling</button>
   @for (item of scaling; track $index) {
     <nwb-precision-input
-      class="join-item input input-sm input-bordered w-full"
+      class="join-item input input-sm input-bordered w-full text-white"
       [min]="0"
       [max]="100"
       [step]="1"
@@ -115,8 +117,9 @@
       [(ngModel)]="item.access.value"
       [unit]="'%'"
       [disabled]="hasWeaponTag"
+      [class.text-opacity-25]="!item.access.value"
     >
-      <span class="absolute top-0 left-0 text-xs leading-none opacity-30 scale-75">{{ item.label }}</span>
+      <span class="absolute top-0 left-0 text-xs leading-none text-opacity-30 text-white scale-75">{{ item.label }}</span>
     </nwb-precision-input>
   }
   <button class="join-item btn btn-sm btn-square" [tooltip]="tipScaling" [preventClick]="true">
