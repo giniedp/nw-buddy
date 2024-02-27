@@ -24,11 +24,14 @@ export class DefenderModsControlComponent {
 
   protected modABS = defenderAccessor(this.store, 'modABS')
   protected modABSConv = defenderAccessor(this.store, 'modABSConv')
+  protected modABSDot = defenderAccessor(this.store, 'modABSDot')
   protected modWKN = defenderAccessor(this.store, 'modWKN')
   protected modWKNConv = defenderAccessor(this.store, 'modWKNConv')
-  protected modCritReduction = defenderAccessor(this.store, 'modCritReduction')
+  protected modWKNDot = defenderAccessor(this.store, 'modWKNDot')
   protected modBaseReduction = defenderAccessor(this.store, 'modBaseReduction')
   protected modBaseReductionConv = defenderAccessor(this.store, 'modBaseReductionConv')
+  protected modBaseReductionDot = defenderAccessor(this.store, 'modBaseReductionDot')
+  protected modCritReduction = defenderAccessor(this.store, 'modCritReduction')
 
   protected get isBound() {
     return this.store.defender.isBound()

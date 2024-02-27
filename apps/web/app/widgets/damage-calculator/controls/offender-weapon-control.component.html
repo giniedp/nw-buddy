@@ -42,6 +42,7 @@
     [stepCtrl]="10"
     [(ngModel)]="gearScore.value"
     [disabled]="isBound"
+    [class.input-error]="!gearScore.value"
   />
   <ng-template #tplGsSlider>
     <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
@@ -79,6 +80,7 @@
     [stepCtrl]="5"
     [(ngModel)]="weaponDamage.value"
     [disabled]="hasWeaponTag"
+    [class.input-error]="!weaponDamage.value"
   />
   <ng-template #tplDamageSlider>
     <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>

@@ -6,7 +6,7 @@ import { TablePreset } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgChevronLeft, svgPen, svgTrashCan } from '~/ui/icons/svg'
-import { ConfirmDialogComponent, ModalOpenOptions, ModalRef, ModalService, PromptDialogComponent } from '~/ui/layout'
+import { ConfirmDialogComponent, LayoutModule, ModalOpenOptions, ModalRef, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { SaveStateDialogStore } from './save-state-dialog.store'
 
@@ -15,10 +15,10 @@ import { SaveStateDialogStore } from './save-state-dialog.store'
   selector: 'nwb-save-state-dialog',
   templateUrl: './save-state-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, IconsModule, NwModule, TooltipModule],
+  imports: [CommonModule, FormsModule, IconsModule, NwModule, LayoutModule, TooltipModule],
   providers: [SaveStateDialogStore],
   host: {
-    class: 'layout-col bg-base-100 border border-base-100 rounded-md overflow-hidden',
+    class: 'ion-page bg-base-100 border border-base-100 rounded-md',
   },
 })
 export class SaveStateDialogComponent {

@@ -2,55 +2,78 @@
   <span class="nw-bg-title absolute inset-0 bg-bottom"></span>
   <span class="relative top-1">Weapon</span>
 </h3>
-<div class="flex flex-row flex-wrap justify-center gap-1" *ngIf="vm$ | async; let vm">
-  <button class="btn btn-sm" (click)="toggleWeapon()">{{ vm.weaponTag || 'Unarmed' }}</button>
+<div class="flex flex-row flex-wrap justify-center gap-1">
+  <button class="btn btn-sm" (click)="toggleWeapon()">{{ weaponTag() || 'Unarmed' }}</button>
   <!-- <button class="btn btn-sm" (click)="toggleSheathed()">{{ vm.weaponUnsheathed ? 'Unsheathed' : 'Sheathed' }}</button> -->
   <button class="btn btn-sm indicator" [cdkMenuTriggerFor]="tplAttackOptions">
-    <ng-container *ngIf="vm.attackSelection; let row">
-      <span>{{ labelForAttack(row, vm.weaponTag) | nwHumanize }}</span>
+    @if (selectedAttack(); as row) {
+      <span>{{ labelForAttack(row, weaponTag()) | nwHumanize }}</span>
       <span
         class="indicator-item indicator-center indicator-bottom badge badge-xs"
         [class.badge-success]="row.AttackType === 'Light'"
         [class.badge-primary]="row.AttackType === 'Heavy'"
         [class.badge-secondary]="row.AttackType === 'Ability'"
         [class.badge-info]="row.AttackType === 'Magic'"
-        >{{ row.AttackType }}</span
       >
-    </ng-container>
+        {{ row.AttackType }}
+      </span>
+    }
   </button>
-  <!-- <div class="flex flex-row justify-around gap-2 w-full font-bold my-4">
-    <div class="flex flex-col gap-s items-center cursor-help" [tooltip]="'Standard damage'" [tooltipClass]="'bg-base-100'">
-      <div *ngIf="vm.isSplit" class="text-3xl">
-        <span>{{ (vm.DmgMain.standard + vm.DmgElem.standard) | number }}</span>
-      </div>
-      <div class="flex flex-row flex-wrap gap-1" [class.text-3xl]="!vm.isSplit">
-        <div class="flex flex-row items-center justify-center gap-1" *ngIf="vm.DmgMain; let row">
-          <img [nwImage]="row.icon" [class.w-5]="vm.isSplit" [class.w-8]="!vm.isSplit" />
-          <span>{{ row.standard | number }}</span>
+  @if (damage(); as dmg) {
+    <div class="flex flex-row justify-around gap-2 w-full font-bold my-4">
+      <div
+        class="flex flex-col gap-s items-center cursor-help"
+        [tooltip]="'Standard damage'"
+        [tooltipClass]="'bg-base-100'"
+      >
+        @if (isSplit()) {
+          <div class="text-3xl">
+            <span>{{ totalStdDamage() | number }}</span>
+          </div>
+        }
+        <div class="flex flex-row flex-wrap gap-1" [class.text-3xl]="!isSplit()">
+          @if (weaponStdDamage(); as row) {
+            <div class="flex flex-row items-center justify-center gap-1">
+              <img [nwImage]="row.icon" [class.w-5]="isSplit()" [class.w-8]="!isSplit()" />
+              <span>{{ row.value | number }}</span>
+            </div>
+          }
+          @if (affixStdDamage(); as row) {
+            <div class="flex flex-row items-center justify-center gap-1">
+              <img [nwImage]="row.icon" [class.w-5]="isSplit()" [class.w-8]="!isSplit()" />
+              <span>{{ row.value | number }}</span>
+            </div>
+          }
         </div>
-        <div class="flex flex-row items-center justify-center gap-1" *ngIf="vm.DmgElem; let row">
-          <img [nwImage]="row.icon" [class.w-5]="vm.isSplit" [class.w-8]="!vm.isSplit" />
-          <span>{{ row.standard | number }}</span>
-        </div>
       </div>
-    </div>
 
-    <div class="flex flex-col items-center text-primary cursor-help" [tooltip]="'Crit damage'" [tooltipClass]="'bg-base-100'">
-      <div *ngIf="vm.DmgMain && vm.DmgElem" class="text-3xl">
-        <span>{{ (vm.DmgMain.crit + vm.DmgElem.crit) | number }}</span>
-      </div>
-      <div class="flex flex-row flex-wrap gap-1" [class.text-3xl]="!vm.isSplit">
-        <div class="flex flex-row items-center justify-center gap-1" *ngIf="vm.DmgMain; let row">
-          <img [nwImage]="row.icon" [class.w-5]="vm.isSplit" [class.w-8]="!vm.isSplit" />
-          <span>{{ row.crit | number }}</span>
-        </div>
-        <div class="flex flex-row items-center justify-center gap-1" *ngIf="vm.DmgElem; let row">
-          <img [nwImage]="row.icon" [class.w-5]="vm.isSplit" [class.w-8]="!vm.isSplit" />
-          <span>{{ row.crit | number }}</span>
+      <div
+        class="flex flex-col items-center text-primary cursor-help"
+        [tooltip]="'Crit damage'"
+        [tooltipClass]="'bg-base-100'"
+      >
+        @if (isSplit()) {
+          <div class="text-3xl">
+            <span>{{ totalCritDamage() | number }}</span>
+          </div>
+        }
+        <div class="flex flex-row flex-wrap gap-1" [class.text-3xl]="!isSplit()">
+          @if (weaponCritDamage(); as row) {
+            <div class="flex flex-row items-center justify-center gap-1">
+              <img [nwImage]="row.icon" [class.w-5]="isSplit()" [class.w-8]="!isSplit()" />
+              <span>{{ row.value | number }}</span>
+            </div>
+          }
+          @if (affixCritDamage(); as row) {
+            <div class="flex flex-row items-center justify-center gap-1">
+              <img [nwImage]="row.icon" [class.w-5]="isSplit()" [class.w-8]="!isSplit()" />
+              <span>{{ row.value | number }}</span>
+            </div>
+          }
         </div>
       </div>
     </div>
-  </div> -->
+  }
 
   <!-- <button class="btn btn-sm" [tooltip]="'PvP Balance'" [cdkMenuTriggerFor]="tplCombatMode">{{ vm.combatMode | nwHumanize }}</button>
   <button class="btn btn-sm gap-1" [tooltip]="'Number of enemies around me'" [cdkMenuTriggerFor]="tplNumAroundMe">
@@ -71,23 +94,28 @@
   </ng-template>
 
   <ng-template #tplAttackOptions>
-    <ul class="menu menu-compact bg-base-100 rounded-md shadow" cdkMenu *ngIf="vm$ | async; let vm">
-      <li *ngFor="let row of vm.attackOptions">
-        <a (click)="commitAttack(row)" cdkMenuItem>
-          <img [nwImage]="damageIcon(row.DamageType)" class="w-6 h-6" />
-          <div class="flex flex-col gap-1">
-            <span>{{ labelForAttack(row, vm.weaponTag) | nwHumanize }}</span>
-            <span
-              class="badge badge-xs"
-              [class.badge-success]="row.AttackType === 'Light'"
-              [class.badge-primary]="row.AttackType === 'Heavy'"
-              [class.badge-secondary]="row.AttackType === 'Ability'"
-              [class.badge-info]="row.AttackType === 'Magic'"
-              >{{ row.AttackType }}</span
-            >
-          </div>
-        </a>
-      </li>
+    <ul
+      class="menu menu-compact bg-base-100 rounded-md shadow overflow-y-auto flex flex-col flex-nowrap max-h-96"
+      cdkMenu
+    >
+      @for (row of attackOptions(); track $index) {
+        <li>
+          <a (click)="commitAttack(row)" cdkMenuItem>
+            <img [nwImage]="damageIcon(row.DamageType)" class="w-6 h-6" />
+            <div class="flex flex-col gap-1">
+              <span>{{ labelForAttack(row, weaponTag()) | nwHumanize }}</span>
+              <span
+                class="badge badge-xs"
+                [class.badge-success]="row.AttackType === 'Light'"
+                [class.badge-primary]="row.AttackType === 'Heavy'"
+                [class.badge-secondary]="row.AttackType === 'Ability'"
+                [class.badge-info]="row.AttackType === 'Magic'"
+                >{{ row.AttackType }}</span
+              >
+            </div>
+          </a>
+        </li>
+      }
     </ul>
   </ng-template>
 
@@ -98,7 +126,7 @@
         min="1"
         max="10"
         class="range range-primary"
-        [ngModel]="vm.numAroundMe"
+        [ngModel]="numAroundMe()"
         (ngModelChange)="commitNumAroundMe($event)"
       />
     </div>
@@ -111,7 +139,7 @@
         min="1"
         max="10"
         class="range range-primary"
-        [ngModel]="vm.numHits"
+        [ngModel]="numHits()"
         (ngModelChange)="commitNumHits($event)"
       />
     </div>

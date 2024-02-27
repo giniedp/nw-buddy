@@ -52,8 +52,10 @@ export class OffenderModsControlComponent {
   protected modCrit = offenderAccessor(this.store, 'modCrit')
   protected modBase = offenderAccessor(this.store, 'modBase')
   protected modBaseConv = offenderAccessor(this.store, 'modBaseConv')
+  protected modBaseDot = offenderAccessor(this.store, 'modBaseDot')
   protected modDMG = offenderAccessor(this.store, 'modDMG')
   protected modDMGConv = offenderAccessor(this.store, 'modDMGConv')
+  protected modDMGDot = offenderAccessor(this.store, 'modDMGDot')
   protected armorPenetration = offenderAccessor(this.store, 'armorPenetration')
 
   protected iconInfo = svgInfo

@@ -17,4 +17,11 @@ import { FloorPipe } from './pipes/floor.pipe'
 })
 export class DamageOutputComponent {
   protected store = inject(DamageCalculatorStore)
+
+  protected get dotOutput() {
+    if (!this.store.offenderDotIsActive()){
+      return null
+    }
+    return this.store.output().dot
+  }
 }

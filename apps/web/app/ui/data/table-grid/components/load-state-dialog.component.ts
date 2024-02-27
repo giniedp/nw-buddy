@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms'
 import { TablePreset } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
+import { LayoutModule, ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { SaveStateDialogStore } from './save-state-dialog.store'
 
@@ -13,10 +13,10 @@ import { SaveStateDialogStore } from './save-state-dialog.store'
   selector: 'nwb-load-state-dialog',
   templateUrl: './load-state-dialog.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, FormsModule, IconsModule, NwModule, TooltipModule],
+  imports: [CommonModule, FormsModule, IconsModule, NwModule, LayoutModule, TooltipModule],
   providers: [SaveStateDialogStore],
   host: {
-    class: 'layout-col bg-base-100 border border-base-100 rounded-md overflow-hidden',
+    class: 'ion-page bg-base-100 border border-base-100 rounded-md',
   },
 })
 export class LoadStateDialogComponent {

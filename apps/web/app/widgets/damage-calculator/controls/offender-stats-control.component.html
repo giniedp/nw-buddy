@@ -78,6 +78,7 @@
       [stepCtrl]="10"
       [(ngModel)]="stat.access.value"
       [disabled]="isBound"
+      [class.input-error]="!stat.access.value"
     >
       <span class="absolute top-0 left-0 text-xs leading-none opacity-30 scale-75">{{ stat.label }}</span>
     </nwb-precision-input>

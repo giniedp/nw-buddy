@@ -5,15 +5,36 @@ import { humanize } from '~/utils'
 import { eachModifier, modifierAdd, ModifierKey, modifierResult } from '../modifier'
 import { ActiveMods, ActiveWeapon, DbSlice, MannequinState } from '../types'
 
-export function selectModBaseDamage(mods: ActiveMods, attack: Damagetable) {
+export function selectModBaseDamage(mods: ActiveMods, attack: Damagetable, weapon: ActiveWeapon) {
   return {
-    Damage: sumCategory('BaseDamage', mods, attack?.DamageType),
-    Type: attack?.DamageType,
-    Coef: attack?.DmgCoef,
+    byType: sumDamageCategories(mods),
+    weapon: {
+      Damage: sumCategory('BaseDamage', mods, attack?.DamageType),
+      Type: attack?.DamageType,
+      Coef: attack?.DmgCoef,
+    },
+    affix: selectModBaseDamageConversion(mods, weapon),
   }
 }
 
-export function selectModBaseDamageConversion(mods: ActiveMods, { weapon }: ActiveWeapon) {
+function sumDamageCategories(mods: ActiveMods) {
+  return {
+    Acid: sumCategory('BaseDamage', mods, 'Acid'),
+    Arcane: sumCategory('BaseDamage', mods, 'Arcane'),
+    Corruption: sumCategory('BaseDamage', mods, 'Corruption'),
+    Fire: sumCategory('BaseDamage', mods, 'Fire'),
+    Ice: sumCategory('BaseDamage', mods, 'Ice'),
+    Lightning: sumCategory('BaseDamage', mods, 'Lightning'),
+    Nature: sumCategory('BaseDamage', mods, 'Nature'),
+    Siege: sumCategory('BaseDamage', mods, 'Siege'),
+    Slash: sumCategory('BaseDamage', mods, 'Slash'),
+    Standard: sumCategory('BaseDamage', mods, 'Standard'),
+    Strike: sumCategory('BaseDamage', mods, 'Strike'),
+    Thrust: sumCategory('BaseDamage', mods, 'Thrust'),
+  }
+}
+
+function selectModBaseDamageConversion(mods: ActiveMods, { weapon }: ActiveWeapon) {
   const perk = mods.perks.find((it) => hasAffixDamageConversion(it.affix) && it.weapon?.WeaponID === weapon?.WeaponID)
   const affix = perk?.affix
   const percent = affix?.DamagePercentage || 0

@@ -1,18 +1,16 @@
 import { CdkMenuModule } from '@angular/cdk/menu'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
-import { toObservable } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { patchState } from '@ngrx/signals'
+import { calculateDamage, getDamageScalingForWeapon, getDamageTypes } from '@nw-data/common'
 import { Damagetable } from '@nw-data/generated'
-import { combineLatest, map } from 'rxjs'
 import { NwModule } from '~/nw'
 import { CombatMode, Mannequin } from '~/nw/mannequin'
 import { NW_WEAPON_TYPES, damageTypeIcon } from '~/nw/weapon-types'
 import { IconsModule } from '~/ui/icons'
 import { svgBurst, svgPeopleGroup } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
-import { humanize, mapProp } from '~/utils'
 
 @Component({
   standalone: true,
@@ -49,49 +47,128 @@ export class GearCellWeaponComponent {
     },
   ]
 
-  protected vm$ = combineLatest({
-    weapon: toObservable(this.mannequin.activeWeapon),
-    weaponTag: toObservable(this.mannequin.activeWeapon).pipe(mapProp('weaponTag')),
-    weaponUnsheathed: toObservable(this.mannequin.activeWeapon).pipe(mapProp('unsheathed')),
-    ammoType: toObservable(this.mannequin.activeWeapon).pipe(map((it) => it.ammo?.AmmoType)),
-    attackOptions: toObservable(this.mannequin.activeWeaponAttacks),
-    attackSelection: toObservable(this.mannequin.activeDamageTableRow),
-    attackName: toObservable(this.mannequin.activeDamageTableRow).pipe(map((it) => humanize(it?.DamageID))),
-    combatMode: toObservable(this.mannequin.combatMode),
-    numAroundMe: toObservable(this.mannequin.numAroundMe),
-    numHits: toObservable(this.mannequin.numHits),
-    // isSplit: toObservable(this.mannequin.statDamageBase).pipe(
-    //   map((it) => !!it.Result.weapon.std && !!it.Result.converted.std),
-    // ),
-    // DmgMain: toObservable(this.mannequin.statDamageBase).pipe(
-    //   map((it) => {
-    //     if (!it.Result.weapon.std) {
-    //       return null
-    //     }
-    //     return {
-    //       icon: damageTypeIcon(it.DamageType),
-    //       standard: Math.floor(it.Result.weapon.std),
-    //       crit: Math.floor(it.Result.weapon.crit),
-    //     }
-    //   }),
-    // ),
-    // DmgElem: toObservable(this.mannequin.statDamageBase).pipe(
-    //   map((it) => {
-    //     if (!it.Result.converted.std) {
-    //       return null
-    //     }
-    //     return {
-    //       icon: damageTypeIcon(it.ConvertType),
-    //       standard: Math.floor(it.Result.converted.std),
-    //       crit: Math.floor(it.Result.converted.crit),
-    //     }
-    //   }),
-    // ),
+  protected weapon = this.mannequin.activeWeapon
+  protected weaponTag = computed(() => this.weapon()?.weaponTag)
+  protected weaponUnsheathed = computed(() => this.weapon()?.unsheathed)
+  protected selectedAttack = this.mannequin.activeDamageTableRow
+  protected attackOptions = this.mannequin.activeWeaponAttacks
+
+  protected numAroundMe = this.mannequin.numAroundMe
+  protected numHits = this.mannequin.numHits
+
+  protected isSplit = computed(() => {
+    const it = this.mannequin.modBaseDamage()
+    return !!it.affix?.Percent
   })
 
   protected iconGroup = svgPeopleGroup
   protected iconBurst = svgBurst
 
+  protected totalStdDamage = computed(() => {
+    return this.damage().total.stdFinal
+  })
+  protected totalCritDamage = computed(() => {
+    return this.damage().total.stdFinal
+  })
+
+  protected weaponStdDamage = computed(() => {
+    return {
+      icon: damageTypeIcon(this.mannequin.modBaseDamage().weapon.Type),
+      value: this.damage().weapon.stdFinal
+    }
+  })
+  protected weaponCritDamage = computed(() => {
+    return {
+      icon: damageTypeIcon(this.mannequin.modBaseDamage().weapon.Type),
+      value: this.damage().weapon.critFinal
+    }
+  })
+
+  protected affixStdDamage = computed(() => {
+    if(!this.isSplit()) {
+      return null
+    }
+    return {
+      icon: damageTypeIcon(this.mannequin.modBaseDamage().affix.Type),
+      value: this.damage().affix.stdFinal
+    }
+  })
+  protected affixCritDamage = computed(() => {
+    if(!this.isSplit()) {
+      return null
+    }
+    return {
+      icon: damageTypeIcon(this.mannequin.modBaseDamage().affix.Type),
+      value: this.damage().affix.critFinal
+    }
+  })
+
+  protected damage = computed(() => {
+    const attr = this.mannequin.activeAttributes()
+    const modBase = this.mannequin.modBaseDamage()
+    const weapon = this.mannequin.activeWeapon()
+    const attack = this.mannequin.activeDamageTableRow()
+    const affix = modBase.affix
+
+    return calculateDamage({
+      attacker: {
+        isPlayer: true,
+        level: this.mannequin.level(),
+        gearScore: this.mannequin.gearScore(),
+        attributeModSums: {
+          con: attr.con?.scale || 0,
+          dex: attr.dex?.scale || 0,
+          str: attr.str?.scale || 0,
+          int: attr.int?.scale || 0,
+          foc: attr.foc?.scale || 0,
+        },
+
+        dotCoef: 0,
+        dotRate: 0,
+        dotDuration: 0,
+
+        preferHigherScaling: true,
+        convertPercent: affix?.Percent,
+        convertScaling: getDamageScalingForWeapon(affix?.Affix),
+
+        weaponScaling: getDamageScalingForWeapon(weapon?.weapon),
+        weaponGearScore: weapon?.gearScore,
+        weaponDamage: weapon?.weapon?.BaseDamage,
+        damageCoef: attack?.DmgCoef,
+        damageAdd: attack?.AddDmg,
+        armorPenetration: 0,
+
+        modPvp: 0,
+        modAmmo: 0,
+        modCrit: this.mannequin.modCrit()?.Damage?.value,
+        modBase: modBase?.weapon?.Damage?.value,
+        modBaseAffix: modBase?.affix?.Damage?.value,
+        modBaseDot: 0,
+        modDMG: this.mannequin.modDMG()?.byDamageType?.[modBase?.weapon?.Type]?.value,
+        modDMGAffix: this.mannequin.modDMG()?.byDamageType?.[modBase?.affix?.Type]?.value,
+        modDMGDot: 0,
+
+      },
+      defender: {
+        isPlayer: false,
+        level: 0,
+        gearScore: 0,
+        armorRating: 0,
+        armorRatingAffix: 0,
+        armorRatingDot: 0,
+        reductionBase: 0,
+        reductionBaseAffix: 0,
+        reductionBaseDot: 0,
+        reductionCrit: 0,
+        modABS: 0,
+        modABSAffix: 0,
+        modABSDot: 0,
+        modWKN: 0,
+        modWKNAffix: 0,
+        modWKNDot: 0,
+      }
+    })
+  })
   protected async toggleWeapon() {
     const state = this.mannequin.state()
     patchState(this.mannequin.state, {

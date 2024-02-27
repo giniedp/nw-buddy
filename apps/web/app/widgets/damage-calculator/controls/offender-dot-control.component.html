@@ -1,5 +1,5 @@
 <label class="label">
-  <span class="label-text"> Damage Over Time </span>
+  <span class="label-text text-accent"> Damage Over Time </span>
 </label>
 <span class="join">
   <button
@@ -8,7 +8,7 @@
     [cdkMenuTriggerFor]="tplDamageType"
   >
     @if (dotType.value) {
-      <img [nwImage]="store.offenderDotTypeIcon()" class="w-5 h-5" />
+      <img [nwImage]="store.offenderDotDamageTypeIcon()" class="w-5 h-5" />
       <span> {{ dotType.value }} </span>
     } @else {
       <span class="italic"> - none - </span>
@@ -40,8 +40,9 @@
     [scale]="100"
     [unit]="'%'"
     [(ngModel)]="dotPercent.value"
-    [class.input-bordered]="!!dotPercent.value"
-    [class.opacity-15]="!dotPercent.value"
+    [class.input-error]="!dotPercent.value && !!dotType.value"
+    [class.input-bordered]="!!dotType.value"
+    [class.opacity-15]="!dotType.value"
   >
     <span class="absolute top-0 left-0 text-xs leading-none opacity-30 scale-75">PERCENT</span>
   </nwb-precision-input>
@@ -54,8 +55,9 @@
     [stepCtrl]="5"
     [stepAlt]="0.1"
     [(ngModel)]="dotDuration.value"
-    [class.input-bordered]="!!dotDuration.value"
-    [class.opacity-15]="!dotDuration.value"
+    [class.input-error]="!dotDuration.value && !!dotType.value"
+    [class.input-bordered]="!!dotType.value"
+    [class.opacity-15]="!dotType.value"
   >
     <span class="absolute top-0 left-0 text-xs leading-none opacity-30 scale-75">TIME</span>
   </nwb-precision-input>
@@ -68,8 +70,9 @@
     [stepCtrl]="5"
     [stepAlt]="0.1"
     [(ngModel)]="dotRate.value"
-    [class.input-bordered]="!!dotRate.value"
-    [class.opacity-15]="!dotRate.value"
+    [class.input-error]="!dotRate.value && !!dotType.value"
+    [class.input-bordered]="!!dotType.value"
+    [class.opacity-15]="!dotType.value"
   >
     <span class="absolute top-0 left-0 text-xs leading-none opacity-30 scale-75">RATE</span>
   </nwb-precision-input>

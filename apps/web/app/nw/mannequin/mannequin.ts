@@ -12,7 +12,6 @@ import {
   selectDamageCoef,
   selectModAmmo,
   selectModBaseDamage,
-  selectModBaseDamageConversion,
   selectPvpBalance,
 } from './mods/mods-damage'
 import { selectModsDMG } from './mods/mods-dmg'
@@ -257,10 +256,7 @@ export class Mannequin {
   public readonly modPvP = computed(() => selectPvpBalance(this.data(), this.state(), this.activeWeapon()))
   public readonly modAmmo = computed(() => selectModAmmo(this.activeWeapon()))
   public readonly modCrit = computed(() => selectModsCrit(this.activeMods(), this.activeWeapon()))
-  public readonly modBaseDamage = computed(() => selectModBaseDamage(this.activeMods(), this.activeDamageTableRow()))
-  public readonly modBaseConversion = computed(() =>
-    selectModBaseDamageConversion(this.activeMods(), this.activeWeapon()),
-  )
+  public readonly modBaseDamage = computed(() => selectModBaseDamage(this.activeMods(), this.activeDamageTableRow(), this.activeWeapon()))
 
   public readonly modThreat = computed(() => selectModsThreat(this.activeMods()))
   public readonly modArmorPenetration = computed(() => selectModsArmorPenetration(this.activeMods()))

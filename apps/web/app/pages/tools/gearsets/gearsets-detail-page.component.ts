@@ -89,7 +89,6 @@ export class GearsetsDetailPageComponent implements AfterViewInit {
   public ngAfterViewInit(): void {
     this.players.changes.subscribe(() => {
       const players = this.players.toArray()
-      console.log({ players })
       if (players.length === 2) {
         players.forEach((it) => {
           if (it.mode === 'player') {

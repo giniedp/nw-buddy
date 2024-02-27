@@ -62,7 +62,7 @@ export default {
       critMitigated: 10,
       critFinal: 310,
     },
-    converted: {
+    affix: {
       std: 0,
       stdFinal: 0,
       stdMitigated: 0,

@@ -41,17 +41,23 @@ export class OffenderDotControlComponent {
   protected dotDuration = offenderAccessor(this.store, 'dotDamageDuration')
   protected dotRate = offenderAccessor(this.store, 'dotDamageRate')
 
+  protected get dotDimmed() {
+    return !this.dotType.value
+  }
+
   protected dotTypeOptions = computed(() => {
     const options: Array<{ icon: string; label: string; value: DamageType }> = [
       { icon: null, label: 'None', value: null },
     ]
     const types: DamageType[] = [
+      'Acid',
       'Arcane',
       'Corruption',
       'Fire',
       'Ice',
       'Lightning',
       'Nature',
+      'Siege',
       'Slash',
       'Standard',
       'Strike',

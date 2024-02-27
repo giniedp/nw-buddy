@@ -17,6 +17,7 @@ import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
 import { getState, patchState } from '@ngrx/signals'
 import { getDamageScalingForWeapon, patchPrecision } from '@nw-data/common'
 import { BehaviorSubject, EMPTY, combineLatest, map, switchMap } from 'rxjs'
+import { NwDataService } from '~/data'
 import { Mannequin } from '~/nw/mannequin'
 import { ModifierResult, describeModifierSource } from '~/nw/mannequin/modifier'
 import { IconsModule } from '~/ui/icons'
@@ -29,6 +30,7 @@ import { DefenderPhysicalArmorControlComponent } from './controls/defender-physi
 import { DefenderStatsControlComponent } from './controls/defender-stats-control.component'
 import { OffenderAttackControlComponent } from './controls/offender-attack-control.component'
 import { OffenderConversionControlComponent } from './controls/offender-conversion-control.component'
+import { OffenderDotControlComponent } from './controls/offender-dot-control.component'
 import { OffenderModsControlComponent } from './controls/offender-mods-control.component'
 import { OffenderStatsControlComponent } from './controls/offender-stats-control.component'
 import { OffenderWeaponControlComponent } from './controls/offender-weapon-control.component'
@@ -41,7 +43,6 @@ import {
   updateOffender,
 } from './damage-calculator.store'
 import { DamageOutputComponent } from './damage-output.component'
-import { OffenderDotControlComponent } from './controls/offender-dot-control.component'
 
 @Component({
   standalone: true,
@@ -75,6 +76,7 @@ import { OffenderDotControlComponent } from './controls/offender-dot-control.com
 })
 export class DamageCalculatorComponent implements OnInit {
   private injector = inject(Injector)
+  private data = inject(NwDataService)
   private destroyRef = inject(DestroyRef)
   protected store = inject(DamageCalculatorStore)
 
@@ -155,19 +157,25 @@ export class DamageCalculatorComponent implements OnInit {
             patchState(this.store, updateOffender({ isBound: false }))
             return EMPTY
           }
+          const vitalCategories$ = this.data
+            .vital(toObservable(this.store.defenderVitalId, { injector: this.injector }))
+            .pipe(map((it) => it?.VitalsCategories || []))
+
           return combineLatest({
             level: toObservable(mannequin.level, { injector: this.injector }),
             gearScore: toObservable(mannequin.gearScore, { injector: this.injector }),
             attributes: toObservable(mannequin.activeAttributes, { injector: this.injector }),
             weapon: toObservable(mannequin.activeWeapon, { injector: this.injector }),
+            dotType: toObservable(this.store.offenderDotDamageType, { injector: this.injector }),
             dmgCoef: toObservable(mannequin.modDmgCoef, { injector: this.injector }),
             modBase: toObservable(mannequin.modBaseDamage, { injector: this.injector }),
-            modConvert: toObservable(mannequin.modBaseConversion, { injector: this.injector }),
             modCrit: toObservable(mannequin.modCrit, { injector: this.injector }),
             modDMG: toObservable(mannequin.modDMG, { injector: this.injector }),
             modPvP: toObservable(mannequin.modPvP, { injector: this.injector }),
             modAmmo: toObservable(mannequin.modAmmo, { injector: this.injector }),
             modArmorPenetration: toObservable(mannequin.modArmorPenetration, { injector: this.injector }),
+            vitalCategories: vitalCategories$,
+            isPvP: toObservable(this.store.defender.isPlayer, { injector: this.injector }),
           })
         }),
         takeUntilDestroyed(this.destroyRef),
@@ -178,15 +186,20 @@ export class DamageCalculatorComponent implements OnInit {
           gearScore,
           attributes,
           weapon,
+          dotType,
           dmgCoef,
           modBase,
-          modConvert,
           modCrit,
           modDMG,
           modPvP,
           modAmmo,
           modArmorPenetration,
+          vitalCategories,
+          isPvP,
         }) => {
+          if (isPvP) {
+            vitalCategories = []
+          }
           patchState(
             this.store,
             updateOffender({
@@ -207,15 +220,15 @@ export class DamageCalculatorComponent implements OnInit {
                 foc: attributes?.foc?.scale,
                 con: attributes?.con?.scale,
               },
-              convertAffix: modConvert?.Affix?.StatusID,
-              convertScaling: getDamageScalingForWeapon(modConvert?.Affix),
-              convertDamageType: modConvert?.Type,
-              convertPercent: modConvert?.Percent ?? 0,
+              convertAffix: modBase?.affix?.Affix?.StatusID,
+              convertScaling: getDamageScalingForWeapon(modBase?.affix?.Affix),
+              convertDamageType: modBase?.affix?.Type,
+              convertPercent: modBase?.affix?.Percent ?? 0,
               weaponTag: weapon?.weaponTag,
               weaponDamage: weapon?.weapon?.BaseDamage ?? 0,
               weaponGearScore: weapon?.gearScore ?? 0,
               weaponScaling: getDamageScalingForWeapon(weapon?.weapon),
-              weaponDamageType: modBase?.Type,
+              weaponDamageType: modBase?.weapon?.Type,
               damageRow: null,
               damageCoef: dmgCoef?.value ?? 0,
               damageAdd: 0,
@@ -224,10 +237,18 @@ export class DamageCalculatorComponent implements OnInit {
               modAmmo: mergeStack(modAmmo, this.store.offender.modAmmo()),
               modPvP: mergeStack(modPvP, this.store.offender.modPvP()),
               modCrit: mergeStack(modCrit.Damage, this.store.offender.modCrit()),
-              modBase: mergeStack(modBase.Damage, this.store.offender.modBase()),
-              modBaseConv: mergeStack(modConvert.Damage, this.store.offender.modBaseConv()),
-              modDMG: mergeStack(modDMG.byDamageType[modBase.Type], this.store.offender.modDMG()),
-              modDMGConv: mergeStack(modDMG.byDamageType[modConvert.Type], this.store.offender.modDMGConv()),
+              modBase: mergeStack(modBase.weapon?.Damage, this.store.offender.modBase()),
+              modBaseConv: mergeStack(modBase?.affix?.Damage, this.store.offender.modBaseConv()),
+              modBaseDot: mergeStack(modBase?.byType?.[dotType], this.store.offender.modBaseDot()),
+              modDMG: mergeStack(
+                [
+                  modDMG.byDamageType[modBase.weapon?.Type],
+                  ...vitalCategories.map((category) => modDMG.byVitalsType[category] || []),
+                ],
+                this.store.offender.modDMG(),
+              ),
+              modDMGConv: mergeStack(modDMG.byDamageType[modBase?.affix?.Type], this.store.offender.modDMGConv()),
+              modDMGDot: mergeStack(modDMG.byDamageType[dotType], this.store.offender.modDMGDot()),
             }),
           )
         },
@@ -246,10 +267,10 @@ export class DamageCalculatorComponent implements OnInit {
             return EMPTY
           }
           const dmgTypeWeapon$ = toObservable(player.modBaseDamage, { injector: this.injector }).pipe(
-            map((it) => it?.Type),
+            map((it) => it?.weapon?.Type),
           )
-          const dmgTypeConvert$ = toObservable(player.modBaseConversion, { injector: this.injector }).pipe(
-            map((it) => it?.Type),
+          const dmgTypeConvert$ = toObservable(player.modBaseDamage, { injector: this.injector }).pipe(
+            map((it) => it?.affix?.Type),
           )
           return combineLatest({
             dmgTypeWeapon: dmgTypeWeapon$,
@@ -302,7 +323,7 @@ export class DamageCalculatorComponent implements OnInit {
   }
 }
 
-function mergeStack(mod: ModifierResult, oldStack: ValueStack): ValueStack {
+function mergeStack(mod: ModifierResult | ModifierResult[], oldStack: ValueStack): ValueStack {
   const ids: Record<string, number> = {}
 
   function getId(label: string, limit: number) {
@@ -317,16 +338,26 @@ function mergeStack(mod: ModifierResult, oldStack: ValueStack): ValueStack {
     stack: [],
   }
 
-  for (const it of mod?.source || []) {
-    const source = describeModifierSource(it.source)
-    const id = getId(source.label, it.limit)
-    result.stack.push({
-      value: patchPrecision(it.value * it.scale),
-      cap: it.limit ?? null,
-      label: source.label,
-      icon: source.icon,
-      tag: id,
-    })
+  let mods: ModifierResult[] = []
+  if (Array.isArray(mod)) {
+    mods = mod
+  } else if (mod) {
+    mods = [mod]
+  } else {
+    mods = []
+  }
+  for (const mod of mods) {
+    for (const it of mod?.source || []) {
+      const source = describeModifierSource(it.source)
+      const id = getId(source.label, it.limit)
+      result.stack.push({
+        value: patchPrecision(it.value * it.scale),
+        cap: it.limit ?? null,
+        label: source.label,
+        icon: source.icon,
+        tag: id,
+      })
+    }
   }
 
   for (const it of oldStack?.stack || []) {
@@ -341,25 +372,4 @@ function mergeStack(mod: ModifierResult, oldStack: ValueStack): ValueStack {
   }
 
   return result
-}
-
-function toStack(mod: ModifierResult): ValueStack {
-  if (!mod) {
-    return {
-      value: 0,
-      stack: [],
-    }
-  }
-  return {
-    value: 0,
-    stack: mod.source.map((it) => {
-      const source = describeModifierSource(it.source)
-      return {
-        value: patchPrecision(it.value * it.scale),
-        cap: it.limit ?? null,
-        label: source.label,
-        icon: source.icon,
-      }
-    }),
-  }
 }

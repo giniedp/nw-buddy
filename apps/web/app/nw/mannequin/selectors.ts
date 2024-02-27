@@ -88,20 +88,10 @@ export function selectWeaponAttacks(db: DbSlice, weapon: ActiveWeapon) {
     if (!row.DmgCoef) {
       continue
     }
-    if (!row.DamageID.startsWith(tablePrefix)) {
+    if (!row.DamageID.toLowerCase().startsWith(tablePrefix.toLowerCase())) {
       continue
     }
-    if (row.AttackType === 'Light' || row.AttackType === 'Heavy') {
-      result.push(row)
-      continue
-    }
-    // if (row.AttackType === 'Ability') {
-    //   for (const ability of abilities) {
-    //     if (eqCaseInsensitive(ability.DamageTableRow?.[0], row.DamageID)) {
-    //       result.push(Object.assign({}, row, { $ability: ability }))
-    //     }
-    //   }
-    // }
+    result.push(row)
   }
   return result
 }

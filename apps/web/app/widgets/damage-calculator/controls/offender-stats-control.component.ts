@@ -89,7 +89,7 @@ export class OffenderStatsControlComponent {
   protected gsMin = 0
   protected gsMax = NW_MAX_GEAR_SCORE
 
-  protected attrMin = NW_MIN_POINTS_PER_ATTRIBUTE
+  protected attrMin = 0
   protected attrMax = NW_MAX_POINTS_PER_ATTRIBUTE
 
   protected iconInfo = svgInfo

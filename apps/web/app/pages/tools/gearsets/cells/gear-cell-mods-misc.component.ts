@@ -30,7 +30,6 @@ export class GearCellModsMiscComponent {
     const modPvP = this.mannequin.modPvP()
 
     const modBase = this.mannequin.modBaseDamage()
-    const modConvert = this.mannequin.modBaseConversion()
 
     const result: Array<ModifierResult & { label: string; icon?: string; prefix?: string }> = []
 
@@ -48,20 +47,20 @@ export class GearCellModsMiscComponent {
       result.push({ prefix: '+', label: `Ammo Coefficient`, ...modAmmo })
     }
 
-    if (modBase?.Damage.source.length) {
+    if (modBase?.weapon?.Damage.source.length) {
       result.push({
         prefix: '+',
         label: `Damage Bonus`,
-        icon: damageTypeIcon(modBase.Type),
-        ...modBase.Damage,
+        icon: damageTypeIcon(modBase.weapon?.Type),
+        ...modBase.weapon?.Damage,
       })
     }
-    if (modConvert?.Damage.source.length && modConvert.Percent) {
+    if (modBase?.affix?.Damage?.source?.length && modBase?.affix?.Percent) {
       result.push({
         prefix: '+',
         label: `Damage Bonus`,
-        icon: damageTypeIcon(modConvert.Type),
-        ...modConvert.Damage,
+        icon: damageTypeIcon(modBase.affix.Type),
+        ...modBase.affix.Damage,
       })
     }
 
