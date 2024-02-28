@@ -34,7 +34,7 @@
 <span class="join mt-1">
   <button class="join-item btn btn-sm w-20 justify-start text-left" [cdkMenuTriggerFor]="isBound ? null : tplGsSlider">GS</button>
   <nwb-precision-input
-    class="join-item input input-sm input-bordered text-right w-full"
+    class="join-item input input-sm text-right w-full"
     [min]="gsMin"
     [max]="gsMax"
     [step]="1"
@@ -43,7 +43,7 @@
     [(ngModel)]="gearScore.value"
     [disabled]="isBound"
     [class.text-white]="isBound && gearScore.value"
-    [class.input-error]="!gearScore.value"
+    [class.text-error]="!gearScore.value"
   />
   <ng-template #tplGsSlider>
     <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
@@ -73,7 +73,7 @@
     Damage
   </button>
   <nwb-precision-input
-    class="join-item input input-sm input-bordered text-right w-full"
+    class="join-item input input-sm text-right w-full"
     [min]="0"
     [max]="100"
     [step]="1"
@@ -82,7 +82,7 @@
     [(ngModel)]="weaponDamage.value"
     [disabled]="hasWeaponTag"
     [class.text-white]="hasWeaponTag && weaponDamage.value"
-    [class.input-error]="!weaponDamage.value"
+    [class.text-error]="!weaponDamage.value"
   />
   <ng-template #tplDamageSlider>
     <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
@@ -107,7 +107,7 @@
   <button class="join-item btn btn-sm w-20 justify-start text-left">Scaling</button>
   @for (item of scaling; track $index) {
     <nwb-precision-input
-      class="join-item input input-sm input-bordered w-full text-white"
+      class="join-item input input-sm w-full text-white focus-within:z-10"
       [min]="0"
       [max]="100"
       [step]="1"

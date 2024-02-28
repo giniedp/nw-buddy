@@ -24,13 +24,13 @@
 }
 <div class="join">
   <button
-    class="join-item btn btn-sm justify-start text-left w-20"
+    class="join-item btn btn-sm justify-start text-left w-40"
     [cdkMenuTriggerFor]="isLevelDisabled ? null : tplSliderLevel"
   >
     Level
   </button>
   <nwb-precision-input
-    class="join-item input input-sm input-bordered text-right w-full"
+    class="join-item input input-sm text-right w-full"
     [min]="levelMin"
     [max]="levelMax"
     [step]="1"
@@ -60,13 +60,13 @@
 </div>
 <div class="join mt-1">
   <button
-    class="join-item btn btn-sm justify-start text-left w-20"
+    class="join-item btn btn-sm justify-start text-left w-40"
     [cdkMenuTriggerFor]="isGsDisabled ? null : tplGearScoreLevel"
   >
     GS
   </button>
   <nwb-precision-input
-    class="join-item input input-sm input-bordered text-right w-full"
+    class="join-item input input-sm text-right w-full"
     [min]="gsMin"
     [max]="gsMax"
     [step]="1"

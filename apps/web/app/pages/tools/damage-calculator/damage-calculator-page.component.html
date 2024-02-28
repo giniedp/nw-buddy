@@ -1,13 +1,14 @@
 <ion-header class="bg-base-300">
   <ion-toolbar>
     <ion-title>Damage Calculator</ion-title>
-    <!-- <ion-segment>
-      <ion-segment-button>PvP</ion-segment-button>
-      <ion-segment-button>PvE</ion-segment-button>
-      <ion-segment-button>EvP</ion-segment-button>
-    </ion-segment> -->
+
     <div slot="end">
-      <button class="join-item btn btn-square btn-ghost" [nwbScreenshotBtn]></button>
+      <div class="join pr-1">
+        <button class="join-item btn btn-square btn-ghost" (click)="copyLink()">
+          <nwb-icon [icon]="iconLink" class="w-4 h-4" />
+        </button>
+        <button class="join-item btn btn-square btn-ghost" [nwbScreenshotBtn]></button>
+      </div>
     </div>
   </ion-toolbar>
 </ion-header>

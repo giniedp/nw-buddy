@@ -40,7 +40,7 @@
     Convert
   </button>
   <nwb-precision-input
-    class="join-item flex-1 input input-sm input-bordered text-right"
+    class="join-item flex-1 input input-sm text-right"
     [min]="0"
     [max]="100"
     [step]="0.1"
@@ -76,7 +76,7 @@
   <button class="join-item btn btn-sm justify-start text-left w-20">Scaling</button>
   @for (item of scaling; track $index) {
     <nwb-precision-input
-      class="join-item input input-bordered input-sm  w-full text-white"
+      class="join-item input input-sm  w-full text-white focus-within:z-10"
       [min]="0"
       [max]="100"
       [step]="1"

@@ -3,9 +3,11 @@ import { Component, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { LayoutModule } from '~/ui/layout'
 
-import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
-import { DamageCalculatorComponent } from '~/widgets/damage-calculator'
+import { IonSegment, IonSegmentButton, IonToast, ToastController } from '@ionic/angular/standalone'
 import { PreferencesService } from '~/preferences'
+import { IconsModule } from '~/ui/icons'
+import { svgLink } from '~/ui/icons/svg'
+import { DamageCalculatorComponent } from '~/widgets/damage-calculator'
 import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
@@ -15,7 +17,16 @@ import { ScreenshotModule } from '~/widgets/screenshot'
   host: {
     class: 'ion-page',
   },
-  imports: [CommonModule, LayoutModule, DamageCalculatorComponent, IonSegment, IonSegmentButton, ScreenshotModule],
+  imports: [
+    CommonModule,
+    LayoutModule,
+    DamageCalculatorComponent,
+    IconsModule,
+    IonSegment,
+    IonSegmentButton,
+    IonToast,
+    ScreenshotModule,
+  ],
 })
 export class DamageCalculatorPageComponent {
   private router = inject(Router)
@@ -23,6 +34,8 @@ export class DamageCalculatorPageComponent {
   private preferences = inject(PreferencesService)
   protected initialState: any = null
   protected encodedState: string = null
+  protected iconLink = svgLink
+  private ctrl = inject(ToastController)
 
   protected handleStateChange(value: any) {
     this.preferences.session.set('damage-calculator', value)
@@ -39,6 +52,18 @@ export class DamageCalculatorPageComponent {
         queryParams: { state: null },
       })
     }
+  }
+
+  protected copyLink() {
+    const url = new URL(this.router.url, location.origin)
+    url.searchParams.set('state', this.encodedState)
+    navigator.clipboard.writeText(url.toString())
+    this.ctrl
+      .create({
+        message: 'Copied link to clipboard',
+        duration: 2000,
+      })
+      .then((toast) => toast.present())
   }
 }
 

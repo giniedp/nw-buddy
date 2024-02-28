@@ -4,7 +4,7 @@
 <div class="join">
   <button class="join-item btn btn-sm w-20 text-left justify-start" [cdkMenuTriggerFor]="tplSliderLevel">Level</button>
   <nwb-precision-input
-    class="join-item input input-sm input-bordered text-right w-full"
+    class="join-item input input-sm text-right w-full"
     [min]="levelMin"
     [max]="levelMax"
     [step]="1"
@@ -37,7 +37,7 @@
 <div class="join mt-1">
   <button class="join-item btn btn-sm w-20 justify-start" [cdkMenuTriggerFor]="isBound ? null : tplGearScoreLevel">GS</button>
   <nwb-precision-input
-    class="join-item input input-sm input-bordered text-right w-full"
+    class="join-item input input-sm text-right w-full"
     [min]="gsMin"
     [max]="gsMax"
     [step]="1"
@@ -71,7 +71,7 @@
   <span class="join-item btn btn-sm w-20 justify-start" [cdkMenuTriggerFor]="isBound ? null : tplToolAttrs"> Stats </span>
   @for (stat of attrPoints; track $index) {
     <nwb-precision-input
-      class="join-item w-full input input-sm input-bordered text-center pl-0"
+      class="join-item w-full input input-sm text-center focus-within:z-10 pl-0"
       [min]="attrMin"
       [max]="attrMax"
       [step]="1"

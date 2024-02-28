@@ -50,7 +50,7 @@
 <span class="join mt-1">
   <button class="join-item btn btn-sm justify-start text-left w-40">Damage Coef</button>
   <nwb-precision-input
-    class="join-item input input-sm input-bordered text-right w-full"
+    class="join-item input input-sm text-right w-full"
     [min]="0"
     [step]="0.1"
     [stepShift]="10"
@@ -77,7 +77,7 @@
   <button class="join-item btn btn-sm justify-start text-left w-40">Damage Add</button>
   <input
     type="number"
-    class="join-item appearance-none input input-sm input-bordered text-right w-full"
+    class="join-item appearance-none input input-sm text-right w-full"
     [step]="1"
     [(ngModel)]="damageAdd.value"
     (wheel)="($event)"
