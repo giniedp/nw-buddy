@@ -47,31 +47,25 @@ export class GearCellModsMiscComponent {
       result.push({ prefix: '+', label: `Ammo Coefficient`, ...modAmmo })
     }
 
-    if (modBase?.weapon?.Damage.source.length) {
+    if (modBase?.Weapon?.Damage.source.length) {
       result.push({
         prefix: '+',
         label: `Damage Bonus`,
-        icon: damageTypeIcon(modBase.weapon?.Type),
-        ...modBase.weapon?.Damage,
+        icon: damageTypeIcon(modBase.Weapon?.Type),
+        ...modBase.Weapon?.Damage,
       })
     }
-    if (modBase?.affix?.Damage?.source?.length && modBase?.affix?.Percent) {
+    if (modBase?.Affix?.Damage?.source?.length && modBase?.Affix?.Percent) {
       result.push({
         prefix: '+',
         label: `Damage Bonus`,
-        icon: damageTypeIcon(modBase.affix.Type),
-        ...modBase.affix.Damage,
+        icon: damageTypeIcon(modBase.Affix.Type),
+        ...modBase.Affix.Damage,
       })
     }
 
     if (crit?.Damage) {
       result.push({ prefix: '+', label: 'Crit Bonus', ...crit.Damage })
-    }
-    if (crit?.HitFromBehindDamage) {
-      result.push({ prefix: '+', label: 'Backstab Bonus', ...crit.HitFromBehindDamage })
-    }
-    if (crit?.HeadshotDamage && attack?.IsRanged) {
-      result.push({ prefix: '+', label: 'Headshot Bonus', ...crit.HeadshotDamage })
     }
     if (modThreat?.source.length) {
       result.push({ prefix: '+', label: 'Threat', ...modThreat })

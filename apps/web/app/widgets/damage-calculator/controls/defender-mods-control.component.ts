@@ -23,13 +23,13 @@ export class DefenderModsControlComponent {
   protected iconInfo = svgInfo
 
   protected modABS = defenderAccessor(this.store, 'modABS')
-  protected modABSConv = defenderAccessor(this.store, 'modABSConv')
+  protected modABSAffix = defenderAccessor(this.store, 'modABSAffix')
   protected modABSDot = defenderAccessor(this.store, 'modABSDot')
   protected modWKN = defenderAccessor(this.store, 'modWKN')
-  protected modWKNConv = defenderAccessor(this.store, 'modWKNConv')
+  protected modWKNAffix = defenderAccessor(this.store, 'modWKNAffix')
   protected modWKNDot = defenderAccessor(this.store, 'modWKNDot')
   protected modBaseReduction = defenderAccessor(this.store, 'modBaseReduction')
-  protected modBaseReductionConv = defenderAccessor(this.store, 'modBaseReductionConv')
+  protected modBaseReductionAffix = defenderAccessor(this.store, 'modBaseReductionAffix')
   protected modBaseReductionDot = defenderAccessor(this.store, 'modBaseReductionDot')
   protected modCritReduction = defenderAccessor(this.store, 'modCritReduction')
 

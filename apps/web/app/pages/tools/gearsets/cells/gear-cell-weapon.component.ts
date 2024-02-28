@@ -52,13 +52,14 @@ export class GearCellWeaponComponent {
   protected weaponUnsheathed = computed(() => this.weapon()?.unsheathed)
   protected selectedAttack = this.mannequin.activeDamageTableRow
   protected attackOptions = this.mannequin.activeWeaponAttacks
+  protected critType = this.mannequin.critType
 
   protected numAroundMe = this.mannequin.numAroundMe
   protected numHits = this.mannequin.numHits
 
   protected isSplit = computed(() => {
     const it = this.mannequin.modBaseDamage()
-    return !!it.affix?.Percent
+    return !!it.Affix?.Percent
   })
 
   protected iconGroup = svgPeopleGroup
@@ -73,13 +74,13 @@ export class GearCellWeaponComponent {
 
   protected weaponStdDamage = computed(() => {
     return {
-      icon: damageTypeIcon(this.mannequin.modBaseDamage().weapon.Type),
+      icon: damageTypeIcon(this.mannequin.modBaseDamage().Weapon.Type),
       value: this.damage().weapon.stdFinal
     }
   })
   protected weaponCritDamage = computed(() => {
     return {
-      icon: damageTypeIcon(this.mannequin.modBaseDamage().weapon.Type),
+      icon: damageTypeIcon(this.mannequin.modBaseDamage().Weapon.Type),
       value: this.damage().weapon.critFinal
     }
   })
@@ -89,7 +90,7 @@ export class GearCellWeaponComponent {
       return null
     }
     return {
-      icon: damageTypeIcon(this.mannequin.modBaseDamage().affix.Type),
+      icon: damageTypeIcon(this.mannequin.modBaseDamage().Affix.Type),
       value: this.damage().affix.stdFinal
     }
   })
@@ -98,7 +99,7 @@ export class GearCellWeaponComponent {
       return null
     }
     return {
-      icon: damageTypeIcon(this.mannequin.modBaseDamage().affix.Type),
+      icon: damageTypeIcon(this.mannequin.modBaseDamage().Affix.Type),
       value: this.damage().affix.critFinal
     }
   })
@@ -108,7 +109,7 @@ export class GearCellWeaponComponent {
     const modBase = this.mannequin.modBaseDamage()
     const weapon = this.mannequin.activeWeapon()
     const attack = this.mannequin.activeDamageTableRow()
-    const affix = modBase.affix
+    const affix = modBase.Affix
 
     return calculateDamage({
       attacker: {
@@ -128,8 +129,8 @@ export class GearCellWeaponComponent {
         dotDuration: 0,
 
         preferHigherScaling: true,
-        convertPercent: affix?.Percent,
-        convertScaling: getDamageScalingForWeapon(affix?.Affix),
+        affixPercent: affix?.Percent,
+        affixScaling: getDamageScalingForWeapon(affix?.Affix),
 
         weaponScaling: getDamageScalingForWeapon(weapon?.weapon),
         weaponGearScore: weapon?.gearScore,
@@ -141,11 +142,11 @@ export class GearCellWeaponComponent {
         modPvp: 0,
         modAmmo: 0,
         modCrit: this.mannequin.modCrit()?.Damage?.value,
-        modBase: modBase?.weapon?.Damage?.value,
-        modBaseAffix: modBase?.affix?.Damage?.value,
+        modBase: modBase?.Weapon?.Damage?.value,
+        modBaseAffix: modBase?.Affix?.Damage?.value,
         modBaseDot: 0,
-        modDMG: this.mannequin.modDMG()?.byDamageType?.[modBase?.weapon?.Type]?.value,
-        modDMGAffix: this.mannequin.modDMG()?.byDamageType?.[modBase?.affix?.Type]?.value,
+        modDMG: this.mannequin.modDMG()?.byDamageType?.[modBase?.Weapon?.Type]?.value,
+        modDMGAffix: this.mannequin.modDMG()?.byDamageType?.[modBase?.Affix?.Type]?.value,
         modDMGDot: 0,
 
       },
@@ -214,5 +215,22 @@ export class GearCellWeaponComponent {
 
   protected damageIcon(type: string) {
     return damageTypeIcon(type)
+  }
+
+  protected toggleCritType() {
+    const type = this.critType()
+    if (type === 'crit') {
+      patchState(this.mannequin.state, {
+        critType: 'backstab',
+      })
+    } else if (type === 'backstab') {
+      patchState(this.mannequin.state, {
+        critType: 'headshot',
+      })
+    } else {
+      patchState(this.mannequin.state, {
+        critType: 'crit',
+      })
+    }
   }
 }

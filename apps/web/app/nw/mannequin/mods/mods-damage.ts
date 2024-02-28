@@ -4,33 +4,18 @@ import { Damagetable, ItemClass, PvpbalanceArena } from '@nw-data/generated'
 import { humanize } from '~/utils'
 import { eachModifier, modifierAdd, ModifierKey, modifierResult } from '../modifier'
 import { ActiveMods, ActiveWeapon, DbSlice, MannequinState } from '../types'
+import { byDamageType } from './by-damage-type'
 
 export function selectModBaseDamage(mods: ActiveMods, attack: Damagetable, weapon: ActiveWeapon) {
   return {
-    byType: sumDamageCategories(mods),
-    weapon: {
+    Base: byDamageType((type) => sumCategory('BaseDamage', mods, type)),
+    Reduction: byDamageType((type) => sumCategory('BaseDamageReduction', mods, type)),
+    Weapon: {
       Damage: sumCategory('BaseDamage', mods, attack?.DamageType),
       Type: attack?.DamageType,
       Coef: attack?.DmgCoef,
     },
-    affix: selectModBaseDamageConversion(mods, weapon),
-  }
-}
-
-function sumDamageCategories(mods: ActiveMods) {
-  return {
-    Acid: sumCategory('BaseDamage', mods, 'Acid'),
-    Arcane: sumCategory('BaseDamage', mods, 'Arcane'),
-    Corruption: sumCategory('BaseDamage', mods, 'Corruption'),
-    Fire: sumCategory('BaseDamage', mods, 'Fire'),
-    Ice: sumCategory('BaseDamage', mods, 'Ice'),
-    Lightning: sumCategory('BaseDamage', mods, 'Lightning'),
-    Nature: sumCategory('BaseDamage', mods, 'Nature'),
-    Siege: sumCategory('BaseDamage', mods, 'Siege'),
-    Slash: sumCategory('BaseDamage', mods, 'Slash'),
-    Standard: sumCategory('BaseDamage', mods, 'Standard'),
-    Strike: sumCategory('BaseDamage', mods, 'Strike'),
-    Thrust: sumCategory('BaseDamage', mods, 'Thrust'),
+    Affix: selectModBaseDamageConversion(mods, weapon),
   }
 }
 
@@ -127,73 +112,3 @@ export function selectModAmmo({ ammo }: ActiveWeapon) {
   return result
 }
 
-// export function selectModsDamage(
-//   mods: ActiveMods,
-//   activeWeapon: ActiveWeapon,
-//   attack: Damagetable,
-//   equipLoad: number,
-//   db: DbSlice,
-//   state: MannequinState,
-// ) {
-//   const conversion = selectConversion(mods, activeWeapon)
-
-//   //const modHeal = sumCategory('HealScalingValueMultiplier', mods, attack?.DamageType)
-
-//   // const damage = calculateDamage({
-//   //   attackerLevel: state.level,
-//   //   attackerIsPlayer: true,
-//   //   attackerGearScore: 0,
-//   //   attributes: {
-//   //     str: mods.attributes.str.scale,
-//   //     dex: mods.attributes.dex.scale,
-//   //     int: mods.attributes.int.scale,
-//   //     foc: mods.attributes.foc.scale,
-//   //     con: mods.attributes.con.scale,
-//   //   },
-
-//   //   preferHigherScaling: !!convertAffix?.PreferHigherScaling,
-//   //   convertPercent: convertPercent,
-//   //   convertScaling: damageScaleAttrs(convertAffix),
-
-//   //   weaponScaling: damageScaleAttrs(weapon),
-//   //   weaponGearScore: gearScore,
-//   //   baseDamage: weapon?.BaseDamage,
-//   //   damageCoef: damageCoef.value,
-
-//   //   modPvp: modPvp?.value || 0,
-//   //   modAmmo: modAmmo?.value || 0,
-//   //   modBase: modBase.value,
-//   //   modBaseConvert: modBaseConvert.value,
-//   //   modCrit: modCrit.value,
-//   //   modEmpower: 0,
-//   //   modEmpowerConvert: 0,
-
-//   //   armorPenetration: 0,
-//   //   defenderLevel: 0,
-//   //   defenderGearScore: 0,
-//   //   defenderIsPlayer: false,
-//   //   defenderRatingWeapon: 0,
-//   //   defenderRatingConvert: 0,
-//   //   defenderABSWeapon: 0,
-//   //   defenderABSConvert: 0,
-//   //   defenderWKNWeapon: 0,
-//   //   defenderWKNConvert: 0,
-//   // })
-
-//   return {
-//     DamageCoef: selectDamageCoef(attack),
-
-//     ModPvp: selectPvpBalance(db, state, activeWeapon),
-//     ModAmmo: selectModAmmo(activeWeapon),
-
-//     ModBase: {
-//       Damage: sumCategory('BaseDamage', mods, attack?.DamageType),
-//       Type: attack?.DamageType,
-//     },
-//     ModConverted: {
-//       Damage: sumCategory('BaseDamage', mods, conversion?.affix?.DamageType),
-//       Type: conversion.affix?.DamageType ?? null,
-//       Percent: conversion.percent ?? 0,
-//     },
-//   }
-// }

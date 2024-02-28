@@ -37,9 +37,9 @@ export class OffenderConversionControlComponent {
   protected store = inject(DamageCalculatorStore)
   protected iconMore = svgEllipsisVertical
   protected iconInfo = svgInfo
-  protected convertType = offenderAccessor(this.store, 'convertDamageType')
-  protected convertAffix = offenderAccessor(this.store, 'convertAffix')
-  protected convertPercent = offenderAccessor(this.store, 'convertPercent')
+  protected affixType = offenderAccessor(this.store, 'affixDamageType')
+  protected affixId = offenderAccessor(this.store, 'affixId')
+  protected affixPercent = offenderAccessor(this.store, 'affixPercent')
   protected get isBound() {
     return this.store.offender.isBound()
   }
@@ -53,7 +53,7 @@ export class OffenderConversionControlComponent {
   protected get scalingInfos() {
     return this.refs.map((it) => {
       const stat = this.store.offender.attributeModSums[it]()
-      const scaling = this.store.offender.convertScaling()?.[it] || 0
+      const scaling = this.store.offender.affixScaling()?.[it] || 0
       const value = stat * scaling
       return {
         label: it.toUpperCase(),
@@ -65,10 +65,10 @@ export class OffenderConversionControlComponent {
   }
 
   protected get scalingSum() {
-    return this.store.offenderConvertScalingSum()
+    return this.store.offenderAffixScalingSum()
   }
   protected get scalingIsHigher() {
-    return this.store.offenderConvertScalingSum() > this.store.offenderWeaponScalingSum()
+    return this.store.offenderAffixScalingSum() > this.store.offenderWeaponScalingSum()
   }
 
   protected damageTypeOptions = computed(() => {
@@ -104,7 +104,7 @@ export class OffenderConversionControlComponent {
         ...state,
         offender: {
           ...state.offender,
-          convertDamageType: value,
+          affixDamageType: value,
         },
       }
     })
@@ -126,7 +126,7 @@ export class OffenderConversionControlComponent {
       .pipe(filter((it) => !!it))
       .pipe(switchMap((it) => this.data.perk(it[0])))
       .subscribe((perk) => {
-        this.convertAffix.value = perk?.Affix || null
+        this.affixId.value = perk?.Affix || null
       })
   }
 }
@@ -135,7 +135,7 @@ function scalingAccessor(store: DamageCalculatorStore, key: AttributeRef) {
   const scale = 100_00
   return {
     get value(): number {
-      return patchPrecision(scale * (store.offender.convertScaling()?.[key] || 0), 2)
+      return patchPrecision(scale * (store.offender.affixScaling()?.[key] || 0), 2)
     },
     set value(value: number) {
       patchState(store, (state) => {
@@ -143,8 +143,8 @@ function scalingAccessor(store: DamageCalculatorStore, key: AttributeRef) {
           ...state,
           offender: {
             ...state.offender,
-            convertScaling: {
-              ...state.offender.convertScaling,
+            affixScaling: {
+              ...state.offender.affixScaling,
               [key]: value / scale,
             },
           },

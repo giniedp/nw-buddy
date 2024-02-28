@@ -19,6 +19,9 @@
       </span>
     }
   </button>
+  <button class="btn btn-sm indicator capitalize" (click)="toggleCritType()">
+    {{ critType() }}
+  </button>
   @if (damage(); as dmg) {
     <div class="flex flex-row justify-around gap-2 w-full font-bold my-4">
       <div

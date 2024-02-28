@@ -167,6 +167,7 @@ export class DamageCalculatorComponent implements OnInit {
             attributes: toObservable(mannequin.activeAttributes, { injector: this.injector }),
             weapon: toObservable(mannequin.activeWeapon, { injector: this.injector }),
             dotType: toObservable(this.store.offenderDotDamageType, { injector: this.injector }),
+            damageTable: toObservable(mannequin.activeDamageTableRow, { injector: this.injector }),
             dmgCoef: toObservable(mannequin.modDmgCoef, { injector: this.injector }),
             modBase: toObservable(mannequin.modBaseDamage, { injector: this.injector }),
             modCrit: toObservable(mannequin.modCrit, { injector: this.injector }),
@@ -187,6 +188,7 @@ export class DamageCalculatorComponent implements OnInit {
           attributes,
           weapon,
           dotType,
+          damageTable,
           dmgCoef,
           modBase,
           modCrit,
@@ -220,34 +222,34 @@ export class DamageCalculatorComponent implements OnInit {
                 foc: attributes?.foc?.scale,
                 con: attributes?.con?.scale,
               },
-              convertAffix: modBase?.affix?.Affix?.StatusID,
-              convertScaling: getDamageScalingForWeapon(modBase?.affix?.Affix),
-              convertDamageType: modBase?.affix?.Type,
-              convertPercent: modBase?.affix?.Percent ?? 0,
+              affixId: modBase?.Affix?.Affix?.StatusID,
+              affixScaling: getDamageScalingForWeapon(modBase?.Affix?.Affix),
+              affixDamageType: modBase?.Affix?.Type,
+              affixPercent: modBase?.Affix?.Percent ?? 0,
               weaponTag: weapon?.weaponTag,
               weaponDamage: weapon?.weapon?.BaseDamage ?? 0,
               weaponGearScore: weapon?.gearScore ?? 0,
               weaponScaling: getDamageScalingForWeapon(weapon?.weapon),
-              weaponDamageType: modBase?.weapon?.Type,
+              weaponDamageType: modBase?.Weapon?.Type,
               damageRow: null,
               damageCoef: dmgCoef?.value ?? 0,
-              damageAdd: 0,
+              damageAdd: damageTable?.AddDmg ?? 0,
 
               armorPenetration: mergeStack(modArmorPenetration.Base, this.store.offender.armorPenetration()),
               modAmmo: mergeStack(modAmmo, this.store.offender.modAmmo()),
               modPvP: mergeStack(modPvP, this.store.offender.modPvP()),
               modCrit: mergeStack(modCrit.Damage, this.store.offender.modCrit()),
-              modBase: mergeStack(modBase.weapon?.Damage, this.store.offender.modBase()),
-              modBaseConv: mergeStack(modBase?.affix?.Damage, this.store.offender.modBaseConv()),
-              modBaseDot: mergeStack(modBase?.byType?.[dotType], this.store.offender.modBaseDot()),
+              modBase: mergeStack(modBase.Weapon?.Damage, this.store.offender.modBase()),
+              modBaseAffix: mergeStack(modBase?.Affix?.Damage, this.store.offender.modBaseAffix()),
+              modBaseDot: mergeStack(modBase?.Base?.[dotType], this.store.offender.modBaseDot()),
               modDMG: mergeStack(
                 [
-                  modDMG.byDamageType[modBase.weapon?.Type],
+                  modDMG.byDamageType[modBase.Weapon?.Type],
                   ...vitalCategories.map((category) => modDMG.byVitalsType[category] || []),
                 ],
                 this.store.offender.modDMG(),
               ),
-              modDMGConv: mergeStack(modDMG.byDamageType[modBase?.affix?.Type], this.store.offender.modDMGConv()),
+              modDMGAffix: mergeStack(modDMG.byDamageType[modBase?.Affix?.Type], this.store.offender.modDMGAffix()),
               modDMGDot: mergeStack(modDMG.byDamageType[dotType], this.store.offender.modDMGDot()),
             }),
           )
@@ -267,67 +269,79 @@ export class DamageCalculatorComponent implements OnInit {
             return EMPTY
           }
           const dmgTypeWeapon$ = toObservable(player.modBaseDamage, { injector: this.injector }).pipe(
-            map((it) => it?.weapon?.Type),
+            map((it) => it?.Weapon?.Type),
           )
           const dmgTypeConvert$ = toObservable(player.modBaseDamage, { injector: this.injector }).pipe(
-            map((it) => it?.affix?.Type),
+            map((it) => it?.Affix?.Type),
           )
+          const dmgTypeDot$ = toObservable(this.store.offenderDotDamageType, { injector: this.injector })
           return combineLatest({
             dmgTypeWeapon: dmgTypeWeapon$,
-            dmgTypeConvert: dmgTypeConvert$,
+            dmgTypeAffix: dmgTypeConvert$,
+            dmgTypeDot: dmgTypeDot$,
             level: toObservable(opponent.level, { injector: this.injector }),
             gearScore: toObservable(opponent.gearScore, { injector: this.injector }),
             modAbs: toObservable(opponent.modABS, { injector: this.injector }),
             modWKN: toObservable(opponent.modWKN, { injector: this.injector }),
             modArmor: toObservable(opponent.modArmor, { injector: this.injector }),
+            modCrit: toObservable(opponent.modCrit, { injector: this.injector }),
+            modBase: toObservable(opponent.modBaseDamage, { injector: this.injector }),
           })
         }),
         takeUntilDestroyed(this.destroyRef),
       )
-      .subscribe(({ dmgTypeWeapon, dmgTypeConvert, level, gearScore, modAbs, modWKN, modArmor }) => {
-        patchState(
-          this.store,
-          updateDefender({
-            isPlayer: true,
-            isBound: true,
-            level: level,
-            gearScore: patchPrecision(gearScore),
-            modABS: mergeStack(modAbs?.DamageCategories[dmgTypeWeapon], this.store.defender.modABS()),
-            modABSConv: mergeStack(modAbs?.DamageCategories[dmgTypeConvert], this.store.defender.modABSConv()),
-            modWKN: mergeStack(modWKN?.[dmgTypeWeapon], this.store.defender.modWKN()),
-            modWKNConv: mergeStack(modWKN?.[dmgTypeConvert], this.store.defender.modWKNConv()),
-            // modBaseReduction
-            // modBaseReductionConv
-            // modCritReduction
-            elementalArmor: {
-              value: patchPrecision(modArmor?.ElementalBase?.armorRating ?? 0, 1),
-              stack: this.store.defender.elementalArmor().stack,
-            },
-            elementalArmorAdd: {
-              value: patchPrecision(modArmor?.ElementalBase?.weaponRating ?? 0, 1),
-              stack: this.store.defender.elementalArmorAdd().stack,
-            },
-            elementalArmorFortify: mergeStack(modArmor?.Elemental, this.store.defender.elementalArmorFortify()),
-            physicalArmor: {
-              value: patchPrecision(modArmor?.PhysicalBase?.armorRating ?? 0, 1),
-              stack: this.store.defender.physicalArmor().stack,
-            },
-            physicalArmorAdd: {
-              value: patchPrecision(modArmor?.PhysicalBase?.weaponRating ?? 0, 1),
-              stack: this.store.defender.physicalArmorAdd().stack,
-            },
-            physicalArmorFortify: mergeStack(modArmor?.Physical, this.store.defender.physicalArmorFortify()),
-          }),
-        )
-      })
+      .subscribe(
+        ({ dmgTypeWeapon, dmgTypeAffix, dmgTypeDot, level, gearScore, modAbs, modWKN, modCrit, modBase, modArmor }) => {
+          patchState(
+            this.store,
+            updateDefender({
+              isPlayer: true,
+              isBound: true,
+              level: level,
+              gearScore: patchPrecision(gearScore),
+              modABS: mergeStack(modAbs?.DamageCategories[dmgTypeWeapon], this.store.defender.modABS()),
+              modABSAffix: mergeStack(modAbs?.DamageCategories[dmgTypeAffix], this.store.defender.modABSAffix()),
+              modABSDot: mergeStack(modAbs?.DamageCategories[dmgTypeDot], this.store.defender.modABSDot()),
+              modWKN: mergeStack(modWKN?.[dmgTypeWeapon], this.store.defender.modWKN()),
+              modWKNAffix: mergeStack(modWKN?.[dmgTypeAffix], this.store.defender.modWKNAffix()),
+              modWKNDot: mergeStack(modWKN?.[dmgTypeDot], this.store.defender.modWKNDot()),
+              modBaseReduction: mergeStack(modBase?.Reduction?.[dmgTypeWeapon], this.store.defender.modBaseReduction()),
+              modBaseReductionAffix: mergeStack(
+                modBase?.Reduction?.[dmgTypeAffix],
+                this.store.defender.modBaseReduction(),
+              ),
+              modBaseReductionDot: mergeStack(modBase?.Reduction?.[dmgTypeDot], this.store.defender.modBaseReduction()),
+              modCritReduction: mergeStack(modCrit?.DamageReduction, this.store.defender.modCritReduction()),
+              elementalArmor: {
+                value: patchPrecision(modArmor?.ElementalBase?.armorRating ?? 0, 1),
+                stack: this.store.defender.elementalArmor().stack,
+              },
+              elementalArmorAdd: {
+                value: patchPrecision(modArmor?.ElementalBase?.weaponRating ?? 0, 1),
+                stack: this.store.defender.elementalArmorAdd().stack,
+              },
+              elementalArmorFortify: mergeStack(modArmor?.Elemental, this.store.defender.elementalArmorFortify()),
+              physicalArmor: {
+                value: patchPrecision(modArmor?.PhysicalBase?.armorRating ?? 0, 1),
+                stack: this.store.defender.physicalArmor().stack,
+              },
+              physicalArmorAdd: {
+                value: patchPrecision(modArmor?.PhysicalBase?.weaponRating ?? 0, 1),
+                stack: this.store.defender.physicalArmorAdd().stack,
+              },
+              physicalArmorFortify: mergeStack(modArmor?.Physical, this.store.defender.physicalArmorFortify()),
+            }),
+          )
+        },
+      )
   }
 }
 
 function mergeStack(mod: ModifierResult | ModifierResult[], oldStack: ValueStack): ValueStack {
   const ids: Record<string, number> = {}
 
-  function getId(label: string, limit: number) {
-    const result = `${label} - ${limit ?? ''}`
+  function getId(index: number, label: string, limit: number) {
+    const result = `${label} - ${limit ?? ''} - ${index}`
     const count = ids[result] || 0
     ids[result] = count + 1
     return `${result} - ${count}`
@@ -346,10 +360,11 @@ function mergeStack(mod: ModifierResult | ModifierResult[], oldStack: ValueStack
   } else {
     mods = []
   }
-  for (const mod of mods) {
+  for (let i = 0; i < mods.length; i++) {
+    const mod = mods[i]
     for (const it of mod?.source || []) {
       const source = describeModifierSource(it.source)
-      const id = getId(source.label, it.limit)
+      const id = getId(i, source.label, it.limit)
       result.stack.push({
         value: patchPrecision(it.value * it.scale),
         cap: it.limit ?? null,

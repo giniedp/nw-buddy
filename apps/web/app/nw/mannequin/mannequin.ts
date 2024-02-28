@@ -8,12 +8,7 @@ import { selectModsArmorPenetration } from './mods/mods-armor-penetration'
 import { selectModsCooldown } from './mods/mods-cooldowns'
 import { selectModsCraftingGS } from './mods/mods-crafting-gs'
 import { selectModsCrit } from './mods/mods-crit'
-import {
-  selectDamageCoef,
-  selectModAmmo,
-  selectModBaseDamage,
-  selectPvpBalance,
-} from './mods/mods-damage'
+import { selectDamageCoef, selectModAmmo, selectModBaseDamage, selectPvpBalance } from './mods/mods-damage'
 import { selectModsDMG } from './mods/mods-dmg'
 import { selectModsEFF, selectModsMULT } from './mods/mods-eff'
 import { selectModsEffectReduction } from './mods/mods-effect-reduction'
@@ -58,6 +53,7 @@ export class Mannequin {
     equippedItems: [],
     weaponActive: 'primary',
     weaponUnsheathed: true,
+    critType: 'crit',
     myHealthPercent: 1,
     myManaPercent: 1,
     myStaminaPercent: 1,
@@ -123,6 +119,7 @@ export class Mannequin {
   public readonly dbReady = computed(() => !!this.data())
 
   public readonly level = computed(() => this.state().level)
+  public readonly critType = computed(() => this.state().critType || 'crit')
   public readonly myHpPercent = computed(() => this.state().myHealthPercent)
   public readonly myManaPercent = computed(() => this.state().myManaPercent)
   public readonly myStaminaPercent = computed(() => this.state().myStaminaPercent)
@@ -187,7 +184,7 @@ export class Mannequin {
       this.activeWeapon(),
       this.activeDamageTableRow(),
       this.activePerks(),
-      this.equipLoadCategory()
+      this.equipLoadCategory(),
     )
     return result
   })
@@ -255,8 +252,10 @@ export class Mannequin {
 
   public readonly modPvP = computed(() => selectPvpBalance(this.data(), this.state(), this.activeWeapon()))
   public readonly modAmmo = computed(() => selectModAmmo(this.activeWeapon()))
-  public readonly modCrit = computed(() => selectModsCrit(this.activeMods(), this.activeWeapon()))
-  public readonly modBaseDamage = computed(() => selectModBaseDamage(this.activeMods(), this.activeDamageTableRow(), this.activeWeapon()))
+  public readonly modCrit = computed(() => selectModsCrit(this.activeMods(), this.activeWeapon(), this.critType()))
+  public readonly modBaseDamage = computed(() =>
+    selectModBaseDamage(this.activeMods(), this.activeDamageTableRow(), this.activeWeapon()),
+  )
 
   public readonly modThreat = computed(() => selectModsThreat(this.activeMods()))
   public readonly modArmorPenetration = computed(() => selectModsArmorPenetration(this.activeMods()))

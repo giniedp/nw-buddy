@@ -49,17 +49,17 @@
         <td class="font-mono">-{{ damage.stdMitigated | floor | number }}</td>
         <td class="font-mono">{{ damage.stdFinal | floor | number }}</td>
       </tr>
-      @if (store.offenderConvertPercent() && store.output().affix; as damage) {
+      @if (store.offenderAffixPercent() && store.output().affix; as damage) {
         <tr class="text-right text-secondary">
           <td>
-            <img [nwImage]="store.offenderConvertDamageTypeIcon()" class="w-5 h-5 ml-2" />
+            <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5 ml-2" />
           </td>
           <td class="font-mono">{{ damage.std | floor | number }}</td>
           <td class="font-mono">-{{ damage.stdMitigated | floor | number }}</td>
           <td class="font-mono">{{ damage.stdFinal | floor | number }}</td>
         </tr>
       }
-      @if (store.offenderConvertPercent() && store.output().total; as damage) {
+      @if (store.offenderAffixPercent() && store.output().total; as damage) {
         <tr class="text-right">
           <td></td>
           <td class="font-mono">{{ damage.std | floor | number }}</td>
@@ -88,17 +88,17 @@
         <td class="font-mono">-{{ damage.critMitigated | floor | number }}</td>
         <td class="font-mono">{{ damage.critFinal | floor | number }}</td>
       </tr>
-      @if (store.offenderConvertPercent() && store.output().affix; as damage) {
+      @if (store.offenderAffixPercent() && store.output().affix; as damage) {
         <tr class="text-right text-secondary">
           <td>
-            <img [nwImage]="store.offenderConvertDamageTypeIcon()" class="w-5 h-5 ml-2" />
+            <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5 ml-2" />
           </td>
           <td class="font-mono">{{ damage.crit | floor | number }}</td>
           <td class="font-mono">-{{ damage.critMitigated | floor | number }}</td>
           <td class="font-mono">{{ damage.critFinal | floor | number }}</td>
         </tr>
       }
-      @if (store.offenderConvertPercent() && store.output().total; as damage) {
+      @if (store.offenderAffixPercent() && store.output().total; as damage) {
         <tr class="text-right">
           <td></td>
           <td class="font-mono">{{ damage.crit | floor | number }}</td>

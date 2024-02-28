@@ -29,6 +29,7 @@ import { Observable } from 'rxjs'
 import type { ModifierKey } from './modifier'
 
 export type CombatMode = 'pve' | 'pvpArena' | 'pvpOpenworld' | 'pvpWar' | 'pvpOutpostrush'
+export type CritType = 'crit' | 'backstab' | 'headshot'
 export interface MannequinState {
   /**
    * Current character level
@@ -85,6 +86,7 @@ export interface MannequinState {
   numAroundMe?: number
   numHits?: number
   targetHealthPercent?: number
+  critType?: CritType
 }
 
 export interface DbSlice {

@@ -77,7 +77,7 @@ export class OffenderWeaponControlComponent {
     return this.store.offenderWeaponScalingSum()
   }
   protected get scalingIsHigher() {
-    return this.store.offenderWeaponScalingSum() > this.store.offenderConvertScalingSum()
+    return this.store.offenderWeaponScalingSum() > this.store.offenderAffixScalingSum()
   }
   protected weapon = computed(() => {
     const tag = this.weaponTag.value

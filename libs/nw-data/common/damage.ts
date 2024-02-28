@@ -297,12 +297,13 @@ export interface AttackerStats {
   dotDuration: number
 
   preferHigherScaling: boolean
-  convertPercent: number
-  convertScaling: Record<AttributeRef, number>
+  affixPercent: number
+  affixScaling: Record<AttributeRef, number>
 
   weaponScaling: Record<AttributeRef, number>
   weaponGearScore: number
   weaponDamage: number
+
   damageCoef: number
   damageAdd: number
   armorPenetration: number
@@ -343,9 +344,9 @@ export function calculateDamage({ attacker, defender }: { attacker: AttackerStat
 
   const modifierSums = attacker.attributeModSums
 
-  const convertPercent = attacker.convertPercent ?? 0
+  const convertPercent = attacker.affixPercent ?? 0
   const convertScale = getDamageScalingSumForWeapon({
-    weapon: attacker.convertScaling,
+    weapon: attacker.affixScaling,
     modifierSums: modifierSums,
   })
   trace.log(`convertScale: ${convertScale}`)
@@ -357,7 +358,7 @@ export function calculateDamage({ attacker, defender }: { attacker: AttackerStat
   })
   trace.log(`weaponScale: ${weaponScale}`)
 
-  let convertScaling = attacker.convertScaling
+  let convertScaling = attacker.affixScaling
   let weaponScaling = attacker.weaponScaling
   if (attacker.preferHigherScaling) {
     if (weaponScale > convertScale) {

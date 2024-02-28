@@ -1,7 +1,7 @@
 import { EquipSlotId, getItemGsBonus, getItemIconPath, getPerkMultiplier } from '@nw-data/common'
 import { Ability, Affixstats, Housingitems, ItemDefinitionMaster, Perks, Statuseffect } from '@nw-data/generated'
-import type { ActiveMods } from './types'
 import { humanize } from '~/utils'
+import type { ActiveBonus, ActiveMods } from './types'
 
 export interface ModifierSource {
   label?: string
@@ -33,6 +33,7 @@ export interface ModifierResult {
 
 export type ObjectKey<O, T> = { [K in keyof O]: O[K] extends T ? K : never }[keyof O & string]
 
+export type Modifier = Ability | Statuseffect | Affixstats
 export type ModifierKey<T> = ObjectKey<Ability, T> | ObjectKey<Statuseffect, T> | ObjectKey<Affixstats, T>
 
 export interface ModifierSum {
@@ -59,7 +60,11 @@ export function* eachAbility({ abilities }: ActiveMods) {
   const stack: Record<string, number> = {}
   for (const it of abilities) {
     stack[it.ability.AbilityID] = (stack[it.ability.AbilityID] || 0) + 1
-    if (!it.ability.IsStackableAbility || !it.ability.IsStackableMax || stack[it.ability.AbilityID] <= it.ability.IsStackableMax) {
+    if (
+      !it.ability.IsStackableAbility ||
+      !it.ability.IsStackableMax ||
+      stack[it.ability.AbilityID] <= it.ability.IsStackableMax
+    ) {
       yield it
     }
   }
@@ -77,17 +82,48 @@ export function* eachBonus({ bonuses }: ActiveMods) {
   }
 }
 
-export function* eachModifier<T extends number | string>(
+function modifierMatcher<T>(key: ModifierKey<T>): ModifierMatcherFn<T> {
+  return (mod: ActiveBonus | Statuseffect | Affixstats | Ability): T => {
+    if (!mod) {
+      return null
+    }
+    if ('key' in mod) {
+      return (mod.key === key ? mod.value : null) as T
+    }
+    if (key in mod) {
+      return mod[key as any] as T
+    }
+    return null
+  }
+}
+
+export type ModifierMatcherFn<T> = (mod: ActiveBonus | Statuseffect | Affixstats | Ability) => T
+export function eachModifier<T extends number | string>(
   key: ModifierKey<T>,
   mods: ActiveMods,
+): Generator<ModifierValue<T>>
+export function eachModifier<T extends number | string>(
+  match: ModifierMatcherFn<T>,
+  mods: ActiveMods,
+): Generator<ModifierValue<T>>
+export function* eachModifier<T extends number | string>(
+  keyOrMatch: ModifierKey<T> | ModifierMatcherFn<T>,
+  mods: ActiveMods,
 ): Generator<ModifierValue<T>> {
+  let match: ModifierMatcherFn<T>
+  if (typeof keyOrMatch === 'function') {
+    match = keyOrMatch
+  } else {
+    match = modifierMatcher(keyOrMatch)
+  }
   for (const bonus of eachBonus(mods)) {
-    if (key === bonus.key) {
-      yield { value: bonus.value as any, scale: 1, source: { label: bonus.name } }
+    const value = match(bonus)
+    if (value) {
+      yield { value: value as any, scale: 1, source: { label: bonus.name } }
     }
   }
   for (const { effect, perk, ability, item } of eachEffect(mods)) {
-    let value = effect[key as any]
+    let value = match(effect)
     let scale = 1
     if (!value) {
       continue
@@ -111,7 +147,7 @@ export function* eachModifier<T extends number | string>(
       continue
     }
 
-    let value = affix[key as any]
+    let value = match(affix)
     let scale = 1
     if (!value) {
       continue
@@ -135,7 +171,7 @@ export function* eachModifier<T extends number | string>(
     if (!ability) {
       continue
     }
-    let value = ability[key as any]
+    let value = match(ability)
     let upscale = 1
     if (!value) {
       continue
@@ -162,7 +198,7 @@ export function* eachModifier<T extends number | string>(
       continue
     }
     for (const effect of selfEffects) {
-      let value = effect[key as any]
+      let value = match(effect)
       let upscale = 1
       if (!value) {
         continue
@@ -185,12 +221,13 @@ export function* eachModifier<T extends number | string>(
       yield { value, scale: upscale, source }
     }
   }
-  if (key === 'DMGVitalsCategory') {
+  // TODO:
+  if (keyOrMatch === 'DMGVitalsCategory') {
     for (const { item, consumable } of mods.consumables) {
-      if (!consumable?.[key]) {
+      if (!consumable?.[keyOrMatch]) {
         continue
       }
-      let value = consumable[key as any]
+      let value = consumable[keyOrMatch as any]
       let scale = 1
       const source: Required<ModifierSource> = {
         icon: null,
@@ -206,7 +243,11 @@ export function* eachModifier<T extends number | string>(
   }
 }
 
-export function modifierSum(key: ModifierKey<number>, mods: ActiveMods, predicate?: (it: ModifierValue<number>) => boolean): ModifierResult {
+export function modifierSum(
+  key: ModifierKey<number>,
+  mods: ActiveMods,
+  predicate?: (it: ModifierValue<number>) => boolean,
+): ModifierResult {
   predicate = predicate || (() => true)
   const result = modifierResult()
   for (const value of eachModifier<number>(key, mods)) {

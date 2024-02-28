@@ -1,28 +1,47 @@
 import { getItemIconPath } from '@nw-data/common'
-import { eachModifier, modifierAdd, modifierResult, modifierSum } from '../modifier'
-import { ActiveMods, ActiveWeapon } from '../types'
+import { ModifierKey, eachModifier, modifierAdd, modifierResult, modifierSum } from '../modifier'
+import { ActiveMods, ActiveWeapon, CritType } from '../types'
 
-export function selectModsCrit(mods: ActiveMods, weapon: ActiveWeapon) {
+export function selectModsCrit(mods: ActiveMods, weapon: ActiveWeapon, critType: CritType) {
   return {
     Chance: selectCritChanceMod(mods, weapon),
-    Damage: selectCritMod(mods, weapon),
-    HeadshotDamage: modifierSum('HeadshotDamage', mods),
-    HitFromBehindDamage: modifierSum('HitFromBehindDamage', mods),
-    DamageReduction: modifierSum('CritDamageReduction', mods)
+    Damage: selectCritMod(mods, weapon, critType),
+    DamageReduction: modifierSum('CritDamageReduction', mods),
   } as const
 }
 
-function selectCritMod(mods: ActiveMods, { weapon, item }: ActiveWeapon) {
+function selectCritMod(mods: ActiveMods, { weapon, item }: ActiveWeapon, critType: CritType) {
   const result = modifierResult()
   if (weapon?.CritDamageMultiplier > 1) {
     modifierAdd(result, {
       value: weapon.CritDamageMultiplier - 1,
       scale: 1,
-      source: { label: 'Weapon Stat', icon: getItemIconPath(item) },
+      source: { label: 'Weapon', icon: getItemIconPath(item) },
     })
   }
-  for (const mod of eachModifier<number>('CritDamage', mods)) {
-    modifierAdd(result, mod)
+  let keys: ModifierKey<number>[] = []
+  if (critType === 'crit') {
+    keys = ['CritDamage']
+  }
+  if (critType === 'backstab') {
+    keys = ['CritDamage', 'HitFromBehindDamage']
+  }
+  if (critType === 'headshot') {
+    keys = ['CritDamage', 'HeadshotDamage']
+  }
+  if (keys.length) {
+    const iterator = eachModifier<number>((it) => {
+      if (!it) {
+        return null
+      }
+      if ('key' in it) {
+        return keys.includes(it.key) ? it.value : null
+      }
+      return Math.max(...keys.map((key) => it[key] || 0))
+    }, mods)
+    for (const mod of iterator) {
+      modifierAdd(result, mod)
+    }
   }
   return result
 }
@@ -33,7 +52,7 @@ function selectCritChanceMod(mods: ActiveMods, { weapon, item }: ActiveWeapon) {
     modifierAdd(critChance, {
       value: weapon.CritChance,
       scale: 1,
-      source: { label: 'Weapon Stat', icon: getItemIconPath(item) },
+      source: { label: 'Weapon', icon: getItemIconPath(item) },
     })
   }
   for (const mod of eachModifier<number>('CritChance', mods)) {

@@ -2,29 +2,13 @@ import { Statuseffectcategories } from '@nw-data/generated'
 import { ModifierKey, ModifierResult, eachModifier, modifierAdd, modifierResult } from '../modifier'
 import { ActiveMods, DbSlice } from '../types'
 import { categorySum } from './category-sum'
+import { byDamageType } from './by-damage-type'
 
 export function selectModsDMG({ effectCategories }: DbSlice, mods: ActiveMods) {
   return {
-    byDamageType: sumDamageCategories(mods, effectCategories),
+    byDamageType: byDamageType((type) => sumCategory(`DMG${type}` as any, mods, effectCategories)),
     byVitalsType: sumVitalsCategory(mods),
   } as const
-}
-
-function sumDamageCategories(mods: ActiveMods, categories: Map<string, Statuseffectcategories>) {
-  return {
-    Acid: sumCategory('DMGAcid', mods, categories),
-    Arcane: sumCategory('DMGArcane', mods, categories),
-    Corruption: sumCategory('DMGCorruption', mods, categories),
-    Fire: sumCategory('DMGFire', mods, categories),
-    Ice: sumCategory('DMGIce', mods, categories),
-    Lightning: sumCategory('DMGLightning', mods, categories),
-    Nature: sumCategory('DMGNature', mods, categories),
-    Siege: sumCategory('DMGSiege', mods, categories),
-    Slash: sumCategory('DMGSlash', mods, categories),
-    Standard: sumCategory('DMGStandard', mods, categories),
-    Strike: sumCategory('DMGStrike', mods, categories),
-    Thrust: sumCategory('DMGThrust', mods, categories),
-  }
 }
 
 function sumCategory(

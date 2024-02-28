@@ -2,32 +2,13 @@ import { DamageType, Statuseffectcategories } from '@nw-data/generated'
 import { ModifierKey, ModifierResult, eachModifier, modifierAdd, modifierResult } from '../modifier'
 import { ActiveMods, DbSlice } from '../types'
 import { categorySum } from './category-sum'
+import { byDamageType } from './by-damage-type'
 
 export function selectModsABS({ effectCategories }: DbSlice, mods: ActiveMods) {
   return {
-    DamageCategories: sumDamageCategories(mods, effectCategories),
+    DamageCategories: byDamageType((type) => sumCategory(`ABS${type}` as any, mods, effectCategories)),
     VitalsCategories: sumVitalsCategory(mods),
   }
-}
-
-function sumDamageCategories(
-  mods: ActiveMods,
-  categories: Map<string, Statuseffectcategories>
-): Record<DamageType, ModifierResult> {
-  return {
-    Acid: sumCategory('ABSAcid', mods, categories),
-    Arcane: sumCategory('ABSArcane', mods, categories),
-    Corruption: sumCategory('ABSCorruption', mods, categories),
-    Fire: sumCategory('ABSFire', mods, categories),
-    Ice: sumCategory('ABSIce', mods, categories),
-    Lightning: sumCategory('ABSLightning', mods, categories),
-    Nature: sumCategory('ABSNature', mods, categories),
-    Siege: sumCategory('ABSSiege', mods, categories),
-    Slash: sumCategory('ABSSlash', mods, categories),
-    Standard: sumCategory('ABSStandard', mods, categories),
-    Strike: sumCategory('ABSStrike', mods, categories),
-    Thrust: sumCategory('ABSThrust', mods, categories),
-  } as Record<DamageType, ModifierResult>
 }
 
 function sumCategory(

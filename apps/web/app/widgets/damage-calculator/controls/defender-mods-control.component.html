@@ -30,10 +30,10 @@
         </div>
       </ng-template>
     </nwb-stacked-value-control>
-    @if (store.offenderConvertIsActive()) {
-      <nwb-stacked-value-control [(ngModel)]="modBaseReductionConv.value" [percent]="true" [min]="0" class="mt-1">
+    @if (store.offenderAffixIsActive()) {
+      <nwb-stacked-value-control [(ngModel)]="modBaseReductionAffix.value" [percent]="true" [min]="0" class="mt-1">
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 text-secondary">
-          <img [nwImage]="store.offenderConvertDamageTypeIcon()" class="w-5 h-5" />
+          <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5" />
           Base Reduction
         </span>
         <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipBaseAffix" [preventClick]="true">
@@ -53,10 +53,10 @@
           <img [nwImage]="store.offenderDotDamageTypeIcon()" class="w-5 h-5" />
           Base Reduction
         </span>
-        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipBaseAffix" [preventClick]="true">
+        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipBaseDot" [preventClick]="true">
           <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
         </button>
-        <ng-template #tipBaseAffix>
+        <ng-template #tipBaseDot>
           <div class="p-2 prose prose-sm leading-tight w-80">
             <h4>Base Damage Reduction</h4>
             <p>This value is simply subtracted from attackers base damage modifier.</p>
@@ -92,15 +92,15 @@
         </div>
       </ng-template>
     </nwb-stacked-value-control>
-    @if (store.offenderConvertIsActive()) {
+    @if (store.offenderAffixIsActive()) {
       <nwb-stacked-value-control
-        [(ngModel)]="modABSConv.value"
+        [(ngModel)]="modABSAffix.value"
         [percent]="true"
         [lockPreset]="lockAbsPreset"
         class="mt-1"
       >
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 text-secondary">
-          <img [nwImage]="store.offenderConvertDamageTypeIcon()" class="w-5 h-5" />
+          <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5" />
           ABS
         </span>
         <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipABSAffix" [preventClick]="true">
@@ -135,10 +135,10 @@
           <img [nwImage]="store.offenderDotDamageTypeIcon()" class="w-5 h-5" />
           ABS
         </span>
-        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipABSAffix" [preventClick]="true">
+        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipABSDot" [preventClick]="true">
           <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
         </button>
-        <ng-template #tipABSAffix>
+        <ng-template #tipABSDot>
           <div class="p-2 prose prose-sm leading-tight w-80">
             <h4>Fortify / Rend</h4>
             <p>
@@ -174,15 +174,15 @@
         </div>
       </ng-template>
     </nwb-stacked-value-control>
-    @if (store.offenderConvertIsActive()) {
+    @if (store.offenderAffixIsActive()) {
       <nwb-stacked-value-control
-        [(ngModel)]="modWKNConv.value"
+        [(ngModel)]="modWKNAffix.value"
         [percent]="true"
         [lockPreset]="lockWknPreset"
         class="mt-1"
       >
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 text-secondary">
-          <img [nwImage]="store.offenderConvertDamageTypeIcon()" class="w-5 h-5" />
+          <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5" />
           WKN
         </span>
         <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipWknAffix" [preventClick]="true">
@@ -198,7 +198,7 @@
     }
     @if (store.offenderDotIsActive()) {
       <nwb-stacked-value-control
-        [(ngModel)]="modWKNConv.value"
+        [(ngModel)]="modWKNDot.value"
         [percent]="true"
         [lockPreset]="lockWknPreset"
         class="mt-1"
@@ -207,10 +207,10 @@
           <img [nwImage]="store.offenderDotDamageTypeIcon()" class="w-5 h-5" />
           WKN
         </span>
-        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipWknAffix" [preventClick]="true">
+        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipWknDot" [preventClick]="true">
           <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
         </button>
-        <ng-template #tipWknAffix>
+        <ng-template #tipWknDot>
           <div class="p-2 prose prose-sm leading-tight w-80">
             <h4>Weakness</h4>
             <p>This is applied to the dot damage</p>

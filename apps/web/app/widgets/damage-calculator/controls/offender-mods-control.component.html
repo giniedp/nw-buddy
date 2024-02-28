@@ -58,10 +58,10 @@
       </ng-template>
     </nwb-stacked-value-control>
 
-    @if (store.offenderConvertIsActive()) {
-      <nwb-stacked-value-control [(ngModel)]="modBaseConv.value" [percent]="true" class="mt-1">
+    @if (store.offenderAffixIsActive()) {
+      <nwb-stacked-value-control [(ngModel)]="modBaseAffix.value" [percent]="true" class="mt-1">
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 text-secondary">
-          <img [nwImage]="store.offenderConvertDamageTypeIcon()" class="w-5 h-5" />
+          <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5" />
           Base Damage
         </span>
         <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipBaseDamage" [preventClick]="true">
@@ -121,10 +121,10 @@
         </div>
       </ng-template>
     </nwb-stacked-value-control>
-    @if (store.offenderConvertIsActive()) {
-      <nwb-stacked-value-control [(ngModel)]="modDMGConv.value" [percent]="true" class="mt-1">
+    @if (store.offenderAffixIsActive()) {
+      <nwb-stacked-value-control [(ngModel)]="modDMGAffix.value" [percent]="true" class="mt-1">
         <span slot="start" class="join-item btn btn-sm justify-start text-left w-40 text-secondary">
-          <img [nwImage]="store.offenderConvertDamageTypeIcon()" class="w-5 h-5" />
+          <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5" />
           DMG
         </span>
         <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipModDmg" [preventClick]="true">

@@ -45,10 +45,10 @@ export interface OffenderState {
   attributeModSums: Record<AttributeRef, number>
   armorPenetration: ValueStack
 
-  convertAffix: string
-  convertPercent: number
-  convertScaling: Record<AttributeRef, number>
-  convertDamageType: string
+  affixId: string
+  affixPercent: number
+  affixScaling: Record<AttributeRef, number>
+  affixDamageType: string
 
   dotDamageType: string
   dotDamagePercent: number
@@ -70,11 +70,11 @@ export interface OffenderState {
   modCrit: ValueStack
 
   modBase: ValueStack
-  modBaseConv: ValueStack
   modBaseDot: ValueStack
+  modBaseAffix: ValueStack
   modDMG: ValueStack
-  modDMGConv: ValueStack
   modDMGDot: ValueStack
+  modDMGAffix: ValueStack
 }
 
 export interface DefenderState {
@@ -93,14 +93,14 @@ export interface DefenderState {
   elementalArmorAdd: ValueStack
 
   modABS: ValueStack
-  modABSConv: ValueStack
   modABSDot: ValueStack
+  modABSAffix: ValueStack
   modWKN: ValueStack
-  modWKNConv: ValueStack
   modWKNDot: ValueStack
+  modWKNAffix: ValueStack
   modBaseReduction: ValueStack
-  modBaseReductionConv: ValueStack
   modBaseReductionDot: ValueStack
+  modBaseReductionAffix: ValueStack
   modCritReduction: ValueStack
 }
 
@@ -135,10 +135,10 @@ const DEFAULT_STATE: DamageCalculatorState = {
     dotDamageDuration: 0,
     dotDamageRate: 1,
 
-    convertAffix: null,
-    convertPercent: 0,
-    convertDamageType: null,
-    convertScaling: {
+    affixId: null,
+    affixPercent: 0,
+    affixDamageType: null,
+    affixScaling: {
       str: 0,
       dex: 0,
       int: 0,
@@ -167,10 +167,10 @@ const DEFAULT_STATE: DamageCalculatorState = {
     modCrit: valueStack(),
 
     modBase: valueStack(),
-    modBaseConv: valueStack(),
+    modBaseAffix: valueStack(),
     modBaseDot: valueStack(),
     modDMG: valueStack(),
-    modDMGConv: valueStack(),
+    modDMGAffix: valueStack(),
     modDMGDot: valueStack(),
   },
 
@@ -190,15 +190,15 @@ const DEFAULT_STATE: DamageCalculatorState = {
     elementalArmorAdd: valueStack(),
 
     modABS: valueStack(),
-    modABSConv: valueStack(),
+    modABSAffix: valueStack(),
     modABSDot: valueStack(),
 
     modWKN: valueStack(),
-    modWKNConv: valueStack(),
+    modWKNAffix: valueStack(),
     modWKNDot: valueStack(),
 
     modBaseReduction: valueStack(),
-    modBaseReductionConv: valueStack(),
+    modBaseReductionAffix: valueStack(),
     modBaseReductionDot: valueStack(),
 
     modCritReduction: valueStack(),
@@ -225,7 +225,7 @@ export const DamageCalculatorStore = signalStore(
       return isDamageTypeElemental(offender.weaponDamageType())
     })
     const affixIsElemental = computed(() => {
-      return isDamageTypeElemental(offender.convertDamageType())
+      return isDamageTypeElemental(offender.affixDamageType())
     })
     const dotIsElemental = computed(() => {
       return isDamageTypeElemental(offender.dotDamageType())
@@ -244,27 +244,27 @@ export const DamageCalculatorStore = signalStore(
       offenderDotDamageTypeIcon: computed(() => damageTypeIcon(offender.dotDamageType())),
       offenderDotIsActive: computed(() => !!offender.dotDamagePercent()),
 
-      offenderConvertPercent: computed(() => offender.convertPercent()),
-      offenderConvertScaling: computed(() => offender.convertScaling()),
-      offenderConvertScalingSum: computed(() =>
+      offenderAffixPercent: computed(() => offender.affixPercent()),
+      offenderAffixScaling: computed(() => offender.affixScaling()),
+      offenderAffixScalingSum: computed(() =>
         getDamageScalingSumForWeapon({
-          weapon: offender.convertScaling(),
+          weapon: offender.affixScaling(),
           modifierSums: offender.attributeModSums(),
         }),
       ),
-      offenderConvertDamageType: computed(() => offender.convertDamageType()),
-      offenderConvertDamageTypeIcon: computed(() => {
-        if (offender.convertDamageType()) {
-          return damageTypeIcon(offender.convertDamageType())
+      offenderConvertDamageType: computed(() => offender.affixDamageType()),
+      offenderAffixDamageTypeIcon: computed(() => {
+        if (offender.affixDamageType()) {
+          return damageTypeIcon(offender.affixDamageType())
         }
         return null
       }),
       offenderConvertIsElemental: affixIsElemental,
-      offenderConvertIsActive: computed(() => {
-        if (offender.convertPercent()) {
+      offenderAffixIsActive: computed(() => {
+        if (offender.affixPercent()) {
           return true
         }
-        const scaling = offender.convertScaling()
+        const scaling = offender.affixScaling()
         if (!!scaling.dex || !!scaling.foc || !!scaling.int || !!scaling.str) {
           return true
         }
@@ -292,11 +292,11 @@ export const DamageCalculatorStore = signalStore(
       offenderModAmmo: computed(() => valueStackSum(offender.modAmmo())),
       offenderModCrit: computed(() => valueStackSum(offender.modCrit())),
       offenderModBase: computed(() => valueStackSum(offender.modBase())),
-      offenderModBaseConv: computed(() => valueStackSum(offender.modBaseConv())),
       offenderModBaseDot: computed(() => valueStackSum(offender.modBaseDot())),
+      offenderModBaseAffix: computed(() => valueStackSum(offender.modBaseAffix())),
       offenderModDMG: computed(() => valueStackSum(offender.modDMG())),
-      offenderModDMGConv: computed(() => valueStackSum(offender.modDMGConv())),
       offenderModDMGDot: computed(() => valueStackSum(offender.modDMGDot())),
+      offenderModDMGAffix: computed(() => valueStackSum(offender.modDMGAffix())),
 
       defenderIsPlayer: computed(() => defender.isPlayer()),
       defenderVitalId: computed(() => defender.vitalId()),
@@ -307,20 +307,20 @@ export const DamageCalculatorStore = signalStore(
       defenderElementalArmor: elementalRating,
 
       defenderArmorRating: computed(() => (weaponIsElemental() ? elementalRating() : physicalRating())),
-      defenderArmorRatingConv: computed(() => (affixIsElemental() ? elementalRating() : physicalRating())),
       defenderArmorRatingDot: computed(() => (dotIsElemental() ? elementalRating() : physicalRating())),
+      defenderArmorRatingAffix: computed(() => (affixIsElemental() ? elementalRating() : physicalRating())),
 
       defenderModABS: computed(() => valueStackSum(defender.modABS())),
-      defenderModABSConv: computed(() => valueStackSum(defender.modABSConv())),
       defenderModABSDot: computed(() => valueStackSum(defender.modABSDot())),
+      defendermodABSAffix: computed(() => valueStackSum(defender.modABSAffix())),
 
       defenderModWKN: computed(() => valueStackSum(defender.modWKN())),
-      defenderModWKNConv: computed(() => valueStackSum(defender.modWKN())),
       defenderModWKNDot: computed(() => valueStackSum(defender.modWKNDot())),
+      defenderModWKNAffix: computed(() => valueStackSum(defender.modWKN())),
 
       defenderModBaseReduction: computed(() => valueStackSum(defender.modBaseReduction())),
-      defenderModBaseReductionConv: computed(() => valueStackSum(defender.modBaseReductionConv())),
       defenderModBaseReductionDot: computed(() => valueStackSum(defender.modBaseReductionDot())),
+      defenderModBaseReductionAffix: computed(() => valueStackSum(defender.modBaseReductionAffix())),
 
       defenderModCritReduction: computed(() => valueStackSum(defender.modCritReduction())),
     }
@@ -341,9 +341,9 @@ export const DamageCalculatorStore = signalStore(
             dotDuration: state.offenderDotDuration(),
             dotRate: state.offenderDotRate(),
 
-            preferHigherScaling: !!state.offenderConvertIsActive(),
-            convertPercent: state.offenderConvertPercent(),
-            convertScaling: state.offenderConvertScaling(),
+            preferHigherScaling: !!state.offenderAffixIsActive(),
+            affixPercent: state.offenderAffixPercent(),
+            affixScaling: state.offenderAffixScaling(),
 
             weaponScaling: state.offenderWeaponScaling(),
             weaponGearScore: state.offenderWeaponGearScore(),
@@ -356,11 +356,11 @@ export const DamageCalculatorStore = signalStore(
             modCrit: state.offenderModCrit().value,
 
             modBase: state.offenderModBase().value,
-            modBaseAffix: state.offenderModBaseConv().value,
+            modBaseAffix: state.offenderModBaseAffix().value,
             modBaseDot: state.offenderModBaseDot().value,
 
             modDMG: state.offenderModDMG().value,
-            modDMGAffix: state.offenderModDMGConv().value,
+            modDMGAffix: state.offenderModDMGAffix().value,
             modDMGDot: state.offenderModDMGDot().value,
           },
           defender: {
@@ -369,22 +369,21 @@ export const DamageCalculatorStore = signalStore(
             gearScore: state.defenderGearScore(),
 
             armorRating: state.defenderArmorRating(),
-            armorRatingAffix: state.defenderArmorRatingConv(),
             armorRatingDot: state.defenderArmorRatingDot(),
+            armorRatingAffix: state.defenderArmorRatingAffix(),
 
             modABS: state.defenderModABS().value,
-            modABSAffix: state.defenderModABSConv().value,
             modABSDot: state.defenderModABSDot().value,
+            modABSAffix: state.defendermodABSAffix().value,
 
             modWKN: state.defenderModWKN().value,
-            modWKNAffix: state.defenderModWKNConv().value,
             modWKNDot: state.defenderModWKNDot().value,
-
-            reductionBase: state.defenderModBaseReduction().value,
-            reductionBaseAffix: state.defenderModBaseReductionConv().value,
-            reductionBaseDot: state.defenderModBaseReductionDot().value,
+            modWKNAffix: state.defenderModWKNAffix().value,
 
             reductionCrit: state.defenderModCritReduction().value,
+            reductionBase: state.defenderModBaseReduction().value,
+            reductionBaseDot: state.defenderModBaseReductionDot().value,
+            reductionBaseAffix: state.defenderModBaseReductionAffix().value,
           },
         })
       }),
@@ -477,7 +476,7 @@ export const DamageCalculatorStore = signalStore(
         pipe(
           switchMap(() => {
             return combineLatest({
-              affix: toObservable(state.offender.convertAffix, {
+              affix: toObservable(state.offender.affixId, {
                 injector: injector,
               }),
               affixMap: data.affixStatsMap,
@@ -489,9 +488,9 @@ export const DamageCalculatorStore = signalStore(
               return {
                 offender: {
                   ...offender,
-                  convertPercent: stats?.DamagePercentage ?? 0,
-                  convertDamageType: stats?.DamageType,
-                  convertScaling: {
+                  affixPercent: stats?.DamagePercentage ?? 0,
+                  affixDamageType: stats?.DamageType,
+                  affixScaling: {
                     con: 0,
                     dex: stats?.ScalingDexterity ?? 0,
                     foc: stats?.ScalingFocus ?? 0,
@@ -513,34 +512,46 @@ export const DamageCalculatorStore = signalStore(
             }
             return combineLatest({
               dmgTypeWeapon: toObservable(state.offender.weaponDamageType, { injector }),
-              dmgTypeConvert: toObservable(state.offender.convertDamageType, { injector }),
+              dmgTypeAffix: toObservable(state.offender.affixDamageType, { injector }),
+              dmgTypeDot: toObservable(state.offender.dotDamageType, { injector }),
               vitalLevel: data.vitalsLevel(toObservable(state.defender.level, { injector })),
               vital: of(vital),
             })
           }),
-          map(({ dmgTypeWeapon, dmgTypeConvert, vital, vitalLevel }) => {
+          map(({ dmgTypeWeapon, dmgTypeAffix, dmgTypeDot, vital, vitalLevel }) => {
             const armor = getVitalArmor(vital, vitalLevel)
             patchState(
               state,
               updateDefender({
                 isPlayer: false,
                 gearScore: vitalLevel.GearScore,
+
                 modABS: {
                   value: getVitalABS(vital, dmgTypeWeapon as any),
                   stack: state.defender.modABS.stack(),
                 },
-                modABSConv: {
-                  value: getVitalABS(vital, dmgTypeConvert as any),
-                  stack: state.defender.modABSConv.stack(),
+                modABSDot: {
+                  value: getVitalABS(vital, dmgTypeDot as any),
+                  stack: state.defender.modABSDot.stack(),
                 },
+                modABSAffix: {
+                  value: getVitalABS(vital, dmgTypeAffix as any),
+                  stack: state.defender.modABSAffix.stack(),
+                },
+
                 modWKN: {
                   value: getVitalWKN(vital, dmgTypeWeapon as any),
                   stack: state.defender.modWKN.stack(),
                 },
-                modWKNConv: {
-                  value: getVitalWKN(vital, dmgTypeConvert as any),
-                  stack: state.defender.modWKNConv.stack(),
+                modWKNDot: {
+                  value: getVitalWKN(vital, dmgTypeDot as any),
+                  stack: state.defender.modWKNDot.stack(),
                 },
+                modWKNAffix: {
+                  value: getVitalWKN(vital, dmgTypeAffix as any),
+                  stack: state.defender.modWKNAffix.stack(),
+                },
+
                 elementalArmor: {
                   value: armor.elementalRating,
                   stack: state.defender.elementalArmor.stack(),
@@ -553,6 +564,7 @@ export const DamageCalculatorStore = signalStore(
                   value: 0,
                   stack: state.defender.elementalArmorFortify.stack(),
                 },
+
                 physicalArmor: {
                   value: armor.physicalRating,
                   stack: state.defender.physicalArmor.stack(),
@@ -596,14 +608,18 @@ function valueStack() {
 export function valueStackSum(data: ValueStack) {
   const result = cappedValue()
   if (data) {
+    // add uncapped values first
     result.add(data.value)
 
-    const uncapped = data.stack.filter((it) => !it.disabled && !it.value)
+    const uncapped = data.stack.filter((it) => !it.disabled && !it.cap)
     for (const item of uncapped) {
       result.add(item.value)
     }
 
-    const capped = data.stack.filter((it) => !it.disabled && !!it.value)
+    // add capped values, starting with the lowest cap
+    const capped = data.stack
+      .filter((it) => !it.disabled && !!it.cap)
+      .sort((a, b) => a.cap - b.cap)
     for (const item of capped) {
       result.add(item.value, item.cap)
     }
