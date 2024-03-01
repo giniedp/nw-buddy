@@ -83,7 +83,7 @@ export class AbilityTableAdapter implements DataViewAdapter<AbilityTableRecord>,
               ...it,
               $weaponType: weaponTypes.get(it.WeaponTag),
               $selfApplyStatusEffect: it.SelfApplyStatusEffect?.map((id) => effects.get(id)),
-              $otherApplyStatusEffect: effects.get(it.OtherApplyStatusEffect),
+              $otherApplyStatusEffect: it.OtherApplyStatusEffect?.map((it) => effects.get(it)) ,
             }
           })
           return result

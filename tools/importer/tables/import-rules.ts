@@ -20,6 +20,11 @@ const COMPARE_TYPE_FIXES = {
   LessthanOrEqual: 'LessThanOrEqual',
 }
 
+const STATUS_EFFECT_CAT_FIXES = {
+  // there is DoT and Dot, normalize to Dot
+  DoT: 'Dot',
+}
+
 export const TABLE_IMPORT_RULES = [
   tableSource([
     '*_achievements',
@@ -312,7 +317,8 @@ export const TABLE_IMPORT_RULES = [
         'TargetStatusEffectCategory',
         'TargetStatusEffectDurationCats',
         'TargetStatusEffectDurationList',
-        'EquipLoadCategory'
+        'EquipLoadCategory',
+        'OtherApplyStatusEffect',
       ],
       separator: ',',
     }),
@@ -393,6 +399,7 @@ export const TABLE_IMPORT_RULES = [
       mapPropToArray({
         keys: ['EffectCategories', 'RemoveStatusEffectCategories'],
         separator: '+',
+        map: (value) => STATUS_EFFECT_CAT_FIXES[value] || value,
       }),
       mapPropToArray({
         keys: ['RemoveStatusEffects', 'EffectDurationMods'],

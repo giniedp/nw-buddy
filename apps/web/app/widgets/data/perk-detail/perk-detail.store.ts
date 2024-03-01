@@ -111,8 +111,8 @@ export class PerkDetailStore extends ComponentStore<{ perkId: string }> {
         if (it.SelfApplyStatusEffect?.length) {
           result.push(...it.SelfApplyStatusEffect)
         }
-        if (it.OtherApplyStatusEffect) {
-          result.push(it.OtherApplyStatusEffect)
+        if (it.OtherApplyStatusEffect?.length) {
+          result.push(...it.OtherApplyStatusEffect)
         }
         it.StatusEffect
       })

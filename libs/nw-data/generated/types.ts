@@ -155,7 +155,7 @@ export interface Ability {
   OnUsedConsumable: boolean
   OnWeaponSwap: boolean
   OnlyChangeOwnedStatusEffects: boolean
-  OtherApplyStatusEffect: string
+  OtherApplyStatusEffect: string[]
   PerStatusEffectOnSelf: boolean
   PerStatusEffectOnSelfMax: number
   PerStatusEffectOnTarget: boolean

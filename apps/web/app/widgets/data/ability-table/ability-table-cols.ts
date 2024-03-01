@@ -18,7 +18,7 @@ export type AbilityTableUtils = TableGridUtils<AbilityTableRecord>
 export type AbilityTableRecord = Ability & {
   $weaponType: NwWeaponType
   $selfApplyStatusEffect: Statuseffect[]
-  $otherApplyStatusEffect: Statuseffect
+  $otherApplyStatusEffect: Statuseffect[]
 }
 
 export function abilityColIcon(util: AbilityTableUtils) {
