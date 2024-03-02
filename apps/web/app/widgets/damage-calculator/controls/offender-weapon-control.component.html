@@ -130,14 +130,17 @@
 <ng-template #tipGearScore>
   <div class="p-2 prose prose-sm leading-tight w-80">
     <h4>Weapon Gear Score</h4>
-    <p>The actual gear score of the weapon that is being used.</p>
+    <p>The weapon's actual gear score. </p>
+    <p>
+      In <span class="text-info font-bold">PvP</span>, this value adjusts based on the average gear score difference.
+    </p>
   </div>
 </ng-template>
 
 <ng-template #tipDamage>
   <div class="p-2 prose prose-sm leading-tight w-80">
     <h4>Weapon Damage</h4>
-    <p>The base damage of currently selected weapon.</p>
+    <p>The weapon's base damage.</p>
   </div>
 </ng-template>
 
@@ -145,7 +148,7 @@
   <div class="p-2 prose prose-sm leading-tight w-80">
     <h4>Weapon Scaling</h4>
     @if (weapon()) {
-      <p>The chosen weapon scales with:</p>
+      <p>The weapon scales with:</p>
       <p>
         @for (item of scalingInfos; track $index) {
           <div class="grid grid-cols-dl gap-2">
@@ -160,7 +163,7 @@
           </div>
         }
       </p>
-      <p>Resulting in a total scaling of {{ scalingSum | percent: '0.0-2' }} or {{ scalingSum | number: '0.0-2' }}.</p>
+      <p>Giving a final scaling of {{ scalingSum | percent: '0.0-2' }} or {{ scalingSum | number: '0.0-2' }}.</p>
     } @else {
       <p>No weapon selected.</p>
     }

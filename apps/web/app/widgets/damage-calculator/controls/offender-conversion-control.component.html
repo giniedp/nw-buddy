@@ -1,5 +1,5 @@
 <label class="label">
-  <span class="label-text text-secondary"> Damage Conversion </span>
+  <span class="label-text text-secondary"> Affix </span>
   <span class="label-text" [class.text-primary]="scalingIsHigher"> Scaling {{ scalingSum | number: '0.2-2' }} </span>
 </label>
 <span class="join">
@@ -111,6 +111,9 @@
 <ng-template #tipScaling>
   <div class="p-2 prose prose-sm leading-tight w-80">
     <h4>Affix Scaling</h4>
+    <p>
+      If affix scaling is defined and exceeds the weapon's final scaling, it takes precedence.
+    </p>
     @if (scalingSum) {
       <p>The affix scales with:</p>
       <p>
@@ -127,7 +130,7 @@
           </div>
         }
       </p>
-      <p>Resulting in a total scaling of {{ scalingSum | percent: '0.0-2' }} or {{ scalingSum | number: '0.0-2' }}.</p>
+      <p>Giving a final scaling of {{ scalingSum | percent: '0.0-2' }} or {{ scalingSum | number: '0.0-2' }}.</p>
     }
   </div>
 </ng-template>

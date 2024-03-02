@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { patchState } from '@ngrx/signals'
 import {
@@ -8,6 +8,7 @@ import {
   NW_MAX_GEAR_SCORE,
   NW_MAX_POINTS_PER_ATTRIBUTE,
   NW_MIN_POINTS_PER_ATTRIBUTE,
+  getPvPScaling,
   patchPrecision,
 } from '@nw-data/common'
 import { NwModule } from '~/nw'
@@ -49,6 +50,13 @@ export class OffenderStatsControlComponent {
     return !!this.store.offender.isBound()
   }
   protected level = offenderAccessor(this.store, 'level')
+  protected isPvp = this.store.defenderIsPlayer
+  protected pvpScale = computed(() => {
+    return 1 + getPvPScaling({
+      attackerLevel: this.store.offender.level(),
+      defenderLevel: this.store.defender.level(),
+    })
+  })
   protected gearScore = offenderAccessor(this.store, 'gearScore')
   protected attrs = offenderAccessor(this.store, 'attributePoints')
   protected get attrsAssigned() {

@@ -1,5 +1,8 @@
 <label class="label">
   <span class="label-text"> Player </span>
+  @if (isPvp()) {
+    <span class="label-text"> PvP Scaling {{ pvpScale() | number: '0.2-2' }} </span>
+  }
 </label>
 <div class="join">
   <button class="join-item btn btn-sm w-20 text-left justify-start" [cdkMenuTriggerFor]="tplSliderLevel">Level</button>
@@ -35,7 +38,9 @@
   </ng-template>
 </div>
 <div class="join mt-1">
-  <button class="join-item btn btn-sm w-20 justify-start" [cdkMenuTriggerFor]="isBound ? null : tplGearScoreLevel">GS</button>
+  <button class="join-item btn btn-sm w-20 justify-start" [cdkMenuTriggerFor]="isBound ? null : tplGearScoreLevel">
+    GS
+  </button>
   <nwb-precision-input
     class="join-item input input-sm text-right w-full"
     [min]="gsMin"
@@ -68,7 +73,9 @@
 </div>
 
 <span class="join mt-1">
-  <span class="join-item btn btn-sm w-20 justify-start" [cdkMenuTriggerFor]="isBound ? null : tplToolAttrs"> Stats </span>
+  <span class="join-item btn btn-sm w-20 justify-start" [cdkMenuTriggerFor]="isBound ? null : tplToolAttrs">
+    Stats
+  </span>
   @for (stat of attrPoints; track $index) {
     <nwb-precision-input
       class="join-item w-full input input-sm text-center focus-within:z-10 pl-0"
@@ -119,8 +126,8 @@
     <h4>Level</h4>
     <p>Damage is scaled off the attacker level.</p>
     <p>
-      Additionally in <span class="text-info font-bold">PvP</span> game modes the level difference between attacker and
-      defender is taken into account.
+      In <span class="text-info font-bold">PvP</span>, the level gap between attacker and defender dictates
+      the scaling of PvP damage.
     </p>
   </div>
 </ng-template>
@@ -129,8 +136,8 @@
   <div class="p-2 prose prose-sm leading-tight w-80">
     <h4>Average Gear Score <span class="badge badge-info badge-xs">PvP only</span></h4>
     <p>
-      In <span class="text-info font-bold">PvP</span> game modes the gear score difference between attacker and defender
-      is taken into account.
+      In <span class="text-info font-bold">PvP</span>, attackers' weapon gear score adjusts based on the
+      average gear score difference.
     </p>
   </div>
 </ng-template>
@@ -145,6 +152,6 @@
 <ng-template #tipLevels>
   <div class="p-2 prose prose-sm leading-tight w-80">
     <h4>Attribute Modifier Sums</h4>
-    <p>The sum of the attribute modifiers from assigned attirbute points</p>
+    <p>These values, derived from assigned attribute points, contribute to weapon scaling.</p>
   </div>
 </ng-template>
