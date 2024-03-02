@@ -7,12 +7,6 @@
     <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipCrit" [preventClick]="true">
       <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
     </button>
-    <ng-template #tipCrit>
-      <div class="p-2 prose prose-sm leading-tight w-80">
-        <h4>Crit Damage Reduction</h4>
-        <p>This value is simply subtracted from attackers crit damage modifier.</p>
-      </div>
-    </ng-template>
   </nwb-stacked-value-control>
   <div>
     <nwb-stacked-value-control [(ngModel)]="modBaseReduction.value" [percent]="true" [min]="0">
@@ -23,12 +17,6 @@
       <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipBase" [preventClick]="true">
         <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
       </button>
-      <ng-template #tipBase>
-        <div class="p-2 prose prose-sm leading-tight w-80">
-          <h4>Base Damage Reduction</h4>
-          <p>This value is simply subtracted from attackers base damage modifier.</p>
-        </div>
-      </ng-template>
     </nwb-stacked-value-control>
     @if (store.offenderAffixIsActive()) {
       <nwb-stacked-value-control [(ngModel)]="modBaseReductionAffix.value" [percent]="true" [min]="0" class="mt-1">
@@ -36,15 +24,9 @@
           <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5" />
           Base Reduction
         </span>
-        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipBaseAffix" [preventClick]="true">
+        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipBase" [preventClick]="true">
           <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
         </button>
-        <ng-template #tipBaseAffix>
-          <div class="p-2 prose prose-sm leading-tight w-80">
-            <h4>Base Damage Reduction</h4>
-            <p>This value is simply subtracted from attackers base damage modifier.</p>
-          </div>
-        </ng-template>
       </nwb-stacked-value-control>
     }
     @if (store.offenderDotIsActive()) {
@@ -53,15 +35,9 @@
           <img [nwImage]="store.offenderDotDamageTypeIcon()" class="w-5 h-5" />
           Base Reduction
         </span>
-        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipBaseDot" [preventClick]="true">
+        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipBase" [preventClick]="true">
           <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
         </button>
-        <ng-template #tipBaseDot>
-          <div class="p-2 prose prose-sm leading-tight w-80">
-            <h4>Base Damage Reduction</h4>
-            <p>This value is simply subtracted from attackers base damage modifier.</p>
-          </div>
-        </ng-template>
       </nwb-stacked-value-control>
     }
   </div>
@@ -75,22 +51,6 @@
       <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipABS" [preventClick]="true">
         <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
       </button>
-      <ng-template #tipABS>
-        <div class="p-2 prose prose-sm leading-tight w-80">
-          <h4>Fortify / Rend</h4>
-          <p>
-            Affects the <code class="mx-0">ABS</code> multiplier. Common limits are
-            <code class="mx-0 whitespace-nowrap">[-30%, +50%]</code>
-            These caps can be exceeded in certain scenarios.
-            <br />
-            <br />
-            Use the input field to simulate additional fortify (increase value) or rend (decrease value).
-            <br />
-            <br />
-            This is applied to the unconverted damage
-          </p>
-        </div>
-      </ng-template>
     </nwb-stacked-value-control>
     @if (store.offenderAffixIsActive()) {
       <nwb-stacked-value-control
@@ -103,25 +63,9 @@
           <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5" />
           ABS
         </span>
-        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipABSAffix" [preventClick]="true">
+        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipABS" [preventClick]="true">
           <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
         </button>
-        <ng-template #tipABSAffix>
-          <div class="p-2 prose prose-sm leading-tight w-80">
-            <h4>Fortify / Rend</h4>
-            <p>
-              Affects the <code class="mx-0">ABS</code> multiplier. Common limits are
-              <code class="mx-0 whitespace-nowrap">[-30%, +50%]</code>
-              These caps can be exceeded in certain scenarios.
-              <br />
-              <br />
-              Use the input field to simulate additional fortify (increase value) or rend (decrease value).
-              <br />
-              <br />
-              This is applied to the unconverted damage
-            </p>
-          </div>
-        </ng-template>
       </nwb-stacked-value-control>
     }
     @if (store.offenderDotIsActive()) {
@@ -135,25 +79,9 @@
           <img [nwImage]="store.offenderDotDamageTypeIcon()" class="w-5 h-5" />
           ABS
         </span>
-        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipABSDot" [preventClick]="true">
+        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipABS" [preventClick]="true">
           <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
         </button>
-        <ng-template #tipABSDot>
-          <div class="p-2 prose prose-sm leading-tight w-80">
-            <h4>Fortify / Rend</h4>
-            <p>
-              Affects the <code class="mx-0">ABS</code> multiplier. Common limits are
-              <code class="mx-0 whitespace-nowrap">[-30%, +50%]</code>
-              These caps can be exceeded in certain scenarios.
-              <br />
-              <br />
-              Use the input field to simulate additional fortify (increase value) or rend (decrease value).
-              <br />
-              <br />
-              This is applied to the dot damage
-            </p>
-          </div>
-        </ng-template>
       </nwb-stacked-value-control>
     }
   </div>
@@ -167,12 +95,6 @@
       <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipWkn" [preventClick]="true">
         <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
       </button>
-      <ng-template #tipWkn>
-        <div class="p-2 prose prose-sm leading-tight w-80">
-          <h4>Weakness</h4>
-          <p>This is applied to the unconverted damage</p>
-        </div>
-      </ng-template>
     </nwb-stacked-value-control>
     @if (store.offenderAffixIsActive()) {
       <nwb-stacked-value-control
@@ -185,15 +107,9 @@
           <img [nwImage]="store.offenderAffixDamageTypeIcon()" class="w-5 h-5" />
           WKN
         </span>
-        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipWknAffix" [preventClick]="true">
+        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipWkn" [preventClick]="true">
           <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
         </button>
-        <ng-template #tipWknAffix>
-          <div class="p-2 prose prose-sm leading-tight w-80">
-            <h4>Weakness</h4>
-            <p>This is applied to the converted damage</p>
-          </div>
-        </ng-template>
       </nwb-stacked-value-control>
     }
     @if (store.offenderDotIsActive()) {
@@ -207,16 +123,85 @@
           <img [nwImage]="store.offenderDotDamageTypeIcon()" class="w-5 h-5" />
           WKN
         </span>
-        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipWknDot" [preventClick]="true">
+        <button slot="end" class="join-item btn btn-sm btn-square" [tooltip]="tipWkn" [preventClick]="true">
           <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
         </button>
-        <ng-template #tipWknDot>
-          <div class="p-2 prose prose-sm leading-tight w-80">
-            <h4>Weakness</h4>
-            <p>This is applied to the dot damage</p>
-          </div>
-        </ng-template>
       </nwb-stacked-value-control>
     }
   </div>
 </div>
+
+<ng-template #tipCrit>
+  <div class="p-2 prose prose-sm leading-tight w-80">
+    <h4>Crit Damage Reduction</h4>
+    <p>This value is simply subtracted from attackers crit damage modifier.</p>
+  </div>
+</ng-template>
+
+<ng-template #tipBase>
+  <div class="p-2 prose prose-sm leading-tight w-80">
+    <h4>Base Damage Reduction</h4>
+    <p>This value is simply subtracted from attackers base damage modifier.</p>
+    <hr class="mt-0 mb-3" />
+    <p class="italic text-xs text-nw-description">
+      Modifiers may impact multiple damage types in-game. This calculator requires modifiers to be set for each
+      calculation path.
+      <br />
+      <br />
+      You may need to replicate the same modifier values for each path:
+      <span class="text-white font-bold">Weapon</span>, <span class="text-secondary font-bold">Affix</span>, and
+      <span class="text-accent font-bold">DoT</span>
+      damage.
+    </p>
+  </div>
+</ng-template>
+
+<ng-template #tipABS>
+  <div class="p-2 prose prose-sm leading-tight w-80">
+    <h4>Fortify / Rend Modifier</h4>
+    <p>
+      This value is utilized to both, to <i class="text-primary">Fortify</i>
+      against current attack (reduce damage taken) and to <i class="text-error">Rend</i> (increase damage taken)
+    </p>
+    <p>Increase the value to simulate <i class="text-primary">Fortify</i>, or add positives values to the stack</p>
+    <p>Decrease the value to simulate <i class="text-error">Rend</i>, or add negative values to the stack</p>
+    <p>
+      Common caps are
+      <code class="mx-0 whitespace-nowrap">
+        [<span class="text-error">-30%</span>, <span class="text-primary">+50%</span>]
+      </code>
+      which can be exceeded in certain scenarios.
+    </p>
+    <hr class="mt-0 mb-3" />
+    <p class="italic text-xs text-nw-description">
+      Modifiers may impact multiple damage types in-game. This calculator requires modifiers to be set for each
+      calculation path.
+      <br />
+      <br />
+      You may need to replicate the same modifier values for each path:
+      <span class="text-white font-bold">Weapon</span>, <span class="text-secondary font-bold">Affix</span>, and
+      <span class="text-accent font-bold">DoT</span>
+      damage.
+    </p>
+  </div>
+</ng-template>
+
+<ng-template #tipWkn>
+  <div class="p-2 prose prose-sm leading-tight w-80">
+    <h4>Weakness</h4>
+    <p>
+      Weakness against current attack. Higher values will increase the damage taken.
+    </p>
+    <hr class="mt-0 mb-3" />
+    <p class="italic text-xs text-nw-description">
+      Modifiers may impact multiple damage types in-game. This calculator requires modifiers to be set for each
+      calculation path.
+      <br />
+      <br />
+      You may need to replicate the same modifier values for each path:
+      <span class="text-white font-bold">Weapon</span>, <span class="text-secondary font-bold">Affix</span>, and
+      <span class="text-accent font-bold">DoT</span>
+      damage.
+    </p>
+  </div>
+</ng-template>

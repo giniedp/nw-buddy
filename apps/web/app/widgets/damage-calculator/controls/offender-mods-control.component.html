@@ -125,11 +125,16 @@
   <div class="p-2 prose prose-sm leading-tight w-80">
     <h4>Base Damage Modifier</h4>
     <p>Boosts the weapons base damage.</p>
-    <p class="italic text-xs">
-      Most base damage modifiers affect all damage types in-game. A limitation of this calculator is that you must
-      specify a modifier per type. <br /><br />
-      Therefore, you need to replicate the same modifier values for each damage type, such as weapon,
-      <span class="text-secondary">affix</span>, and <span class="text-accent">DoT</span> damage.
+    <hr class="mt-0 mb-3" />
+    <p class="italic text-xs text-nw-description">
+      Modifiers may impact multiple damage types in-game. This calculator requires modifiers to be set for each
+      calculation path.
+      <br />
+      <br />
+      You may need to replicate the same modifier values for each path:
+      <span class="text-white font-bold">Weapon</span>, <span class="text-secondary font-bold">Affix</span>, and
+      <span class="text-accent font-bold">DoT</span>
+      damage.
     </p>
   </div>
 </ng-template>
@@ -146,15 +151,20 @@
     <p>
       Common caps are
       <code class="mx-0 whitespace-nowrap">
-        [<span class="text-error">-0.5</span>, <span class="text-success">+0.5</span>]
+        [<span class="text-error">-50%</span>, <span class="text-success">+50%</span>]
       </code>
       which can be exceeded in certain scenarios.
     </p>
-    <p class="italic text-xs">
-      Some Empower modifiers affect all damage types in-game. A limitation of this calculator is that you must specify a
-      modifier per type. <br /><br />
-      Therefore, you need to replicate the same modifier values for each damage type, such as weapon,
-      <span class="text-secondary">affix</span>, and <span class="text-accent">DoT</span> damage.
+    <hr class="mt-0 mb-3" />
+    <p class="italic text-xs text-nw-description">
+      Modifiers may impact multiple damage types in-game. This calculator requires modifiers to be set for each
+      calculation path.
+      <br />
+      <br />
+      You may need to replicate the same modifier values for each path:
+      <span class="text-white font-bold">Weapon</span>, <span class="text-secondary font-bold">Affix</span>, and
+      <span class="text-accent font-bold">DoT</span>
+      damage.
     </p>
   </div>
 </ng-template>
