@@ -19,13 +19,19 @@
           </span>
         }
         @if (attackKind.value) {
-          <span class="badge badge-xs badge-info">{{ attackKind.value }}</span>
+          <span
+            class="badge badge-xs"
+            [class.badge-info]="attackKind.value === 'Ranged'"
+            [class.badge-primary]="attackKind.value === 'Melee'"
+          >
+            {{ attackKind.value }}
+          </span>
         }
       }
     </button>
     <ng-template #tplAttacks>
       <ul
-        class="menu menu-compact bg-base-200 border border-base-100 rounded-md w-80 max-h-96 overflow-y-auto flex flex-col flex-nowrap"
+        class="menu menu-compact bg-base-200 border border-base-100 rounded-md w-80 max-h-[80vh] overflow-y-auto flex flex-col flex-nowrap"
         cdkMenu
       >
         <li class="text-shadow-sm shadow-black" cdkMenuItem>

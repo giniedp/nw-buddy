@@ -14,7 +14,7 @@
       <span class="italic"> - none - </span>
     }
     <ng-template #tplDamageType>
-      <ul class="menu menu-compact bg-base-100 rounded-md w-80" cdkMenu>
+      <ul class="menu menu-compact bg-base-200 border border-base-100 rounded-md w-80 max-h-[80vh] overflow-y-auto flex flex-col flex-nowrap" cdkMenu>
         @for (item of dotTypeOptions(); track $index) {
           <li class="text-shadow-sm shadow-black" cdkMenuItem>
             <a (click)="dotType.value = item.value">

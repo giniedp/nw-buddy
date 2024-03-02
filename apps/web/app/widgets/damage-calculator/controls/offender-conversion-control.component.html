@@ -16,7 +16,7 @@
       <span class="italic"> - none - </span>
     }
     <ng-template #tplDamageType>
-      <ul class="menu menu-compact bg-base-100 rounded-md w-80" cdkMenu>
+      <ul class="menu menu-compact bg-base-200 border border-base-100 rounded-md w-80 max-h-[80vh] overflow-y-auto flex flex-col flex-nowrap" cdkMenu>
         @for (item of damageTypeOptions(); track $index) {
           <li class="text-shadow-sm shadow-black" cdkMenuItem>
             <a (click)="affixType.value = item.value">
@@ -56,7 +56,7 @@
     <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
   </button>
   <ng-template #tplSlider>
-    <div class="bg-base-200 bg-opacity-75 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
+    <div class="bg-base-200 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
       <nwb-input-slider
         class="w-full"
         [size]="'xs'"

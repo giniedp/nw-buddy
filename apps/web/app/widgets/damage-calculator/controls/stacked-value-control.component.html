@@ -3,7 +3,7 @@
   @if (inlineInputDisabled) {
     <nwb-precision-input
       type="number"
-      class="join-item appearance-none input input-sm input-bordered text-right w-full"
+      class="join-item appearance-none input input-sm input-bordered text-right w-full focus-within:z-10"
       [class.text-white]="!!total"
       [scale]="scale"
       [ngModel]="total"
@@ -13,7 +13,7 @@
     />
   } @else {
     <nwb-precision-input
-      class="join-item appearance-none input input-sm text-right w-full text-white"
+      class="join-item appearance-none input input-sm text-right w-full text-white focus-within:z-10"
       [class.text-opacity-30]="!value"
       [min]="min"
       [max]="max"
@@ -38,7 +38,7 @@
       {{ lockPreset ? 'Preset' : 'Adjust' }}
     </span>
     <nwb-precision-input
-      class="join-item appearance-none input input-sm rounded-none text-right w-20"
+      class="join-item appearance-none input input-sm rounded-none text-right w-20 focus-within:z-10"
       [class.text-white]="lockPreset && !!value"
       [min]="min"
       [max]="max"
@@ -77,7 +77,7 @@
         </span>
       } @else {
         <input
-          class="join-item input input-sm bg-base-200 rounded-none min-w-0 flex-1"
+          class="join-item input input-sm bg-base-200 rounded-none min-w-0 flex-1 focus:z-10"
           placeholder="Label"
           [ngModel]="row.label"
           (ngModelChange)="setStackItemLabel($index, $event)"
@@ -105,7 +105,7 @@
         }
       </span>
       <nwb-precision-input
-        class="join-item appearance-none input input-sm rounded-none text-right w-20"
+        class="join-item appearance-none input input-sm rounded-none text-right w-20 focus-within:z-10"
         [min]="min"
         [max]="max"
         [step]="step"
@@ -120,7 +120,7 @@
         [class.text-white]="!row.disabled && !!row.ref && !!row.value"
       />
       <nwb-precision-input
-        class="join-item appearance-none input input-sm rounded-none text-right w-14"
+        class="join-item appearance-none input input-sm rounded-none text-right w-14 focus-within:z-10"
         placeholder="Cap"
         [min]="min"
         [max]="max"
