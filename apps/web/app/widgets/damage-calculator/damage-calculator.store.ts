@@ -20,22 +20,9 @@ import {
 } from '@nw-data/common'
 import { EMPTY, combineLatest, map, of, pipe, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
-import { cappedValue } from '~/nw/mannequin/mods/capped-value'
 import { NW_WEAPON_TYPES, damageTypeIcon } from '~/nw/weapon-types'
-
-export interface ValueStack {
-  value: number
-  stack: Array<ValueStackItem>
-}
-
-export interface ValueStackItem {
-  value: number
-  label?: string
-  icon?: string
-  cap?: number
-  disabled?: boolean
-  tag?: string
-}
+import { DamageModStack, damageModStack, damageModSum } from './damage-mod-stack'
+import { AttackType } from '@nw-data/generated'
 
 export interface OffenderState {
   isBound: boolean // to a gearset
@@ -43,7 +30,7 @@ export interface OffenderState {
   gearScore: number
   attributePoints: Record<AttributeRef, number>
   attributeModSums: Record<AttributeRef, number>
-  armorPenetration: ValueStack
+  armorPenetration: DamageModStack
 
   affixId: string
   affixPercent: number
@@ -64,17 +51,19 @@ export interface OffenderState {
   damageRow: string
   damageCoef: number
   damageAdd: number
+  attackType: AttackType
+  attackKind: 'Melee' | 'Ranged'
 
-  modPvP: ValueStack
-  modAmmo: ValueStack
-  modCrit: ValueStack
+  modPvP: DamageModStack
+  modAmmo: DamageModStack
+  modCrit: DamageModStack
 
-  modBase: ValueStack
-  modBaseDot: ValueStack
-  modBaseAffix: ValueStack
-  modDMG: ValueStack
-  modDMGDot: ValueStack
-  modDMGAffix: ValueStack
+  modBase: DamageModStack
+  modBaseDot: DamageModStack
+  modBaseAffix: DamageModStack
+  modDMG: DamageModStack
+  modDMGDot: DamageModStack
+  modDMGAffix: DamageModStack
 }
 
 export interface DefenderState {
@@ -84,24 +73,24 @@ export interface DefenderState {
   level: number
   gearScore: number
 
-  physicalArmor: ValueStack
-  physicalArmorFortify: ValueStack
-  physicalArmorAdd: ValueStack
+  physicalArmor: DamageModStack
+  physicalArmorFortify: DamageModStack
+  physicalArmorAdd: DamageModStack
 
-  elementalArmor: ValueStack
-  elementalArmorFortify: ValueStack
-  elementalArmorAdd: ValueStack
+  elementalArmor: DamageModStack
+  elementalArmorFortify: DamageModStack
+  elementalArmorAdd: DamageModStack
 
-  modABS: ValueStack
-  modABSDot: ValueStack
-  modABSAffix: ValueStack
-  modWKN: ValueStack
-  modWKNDot: ValueStack
-  modWKNAffix: ValueStack
-  modBaseReduction: ValueStack
-  modBaseReductionDot: ValueStack
-  modBaseReductionAffix: ValueStack
-  modCritReduction: ValueStack
+  modABS: DamageModStack
+  modABSDot: DamageModStack
+  modABSAffix: DamageModStack
+  modWKN: DamageModStack
+  modWKNDot: DamageModStack
+  modWKNAffix: DamageModStack
+  modBaseReduction: DamageModStack
+  modBaseReductionDot: DamageModStack
+  modBaseReductionAffix: DamageModStack
+  modCritReduction: DamageModStack
 }
 
 export interface DamageCalculatorState {
@@ -128,7 +117,7 @@ const DEFAULT_STATE: DamageCalculatorState = {
       foc: 0,
       con: 0,
     },
-    armorPenetration: valueStack(),
+    armorPenetration: damageModStack(),
 
     dotDamageType: null,
     dotDamagePercent: 0,
@@ -161,17 +150,19 @@ const DEFAULT_STATE: DamageCalculatorState = {
     damageRow: null,
     damageCoef: 1,
     damageAdd: 0,
+    attackType: null,
+    attackKind: null,
 
-    modPvP: valueStack(),
-    modAmmo: valueStack(),
-    modCrit: valueStack(),
+    modPvP: damageModStack(),
+    modAmmo: damageModStack(),
+    modCrit: damageModStack(),
 
-    modBase: valueStack(),
-    modBaseAffix: valueStack(),
-    modBaseDot: valueStack(),
-    modDMG: valueStack(),
-    modDMGAffix: valueStack(),
-    modDMGDot: valueStack(),
+    modBase: damageModStack(),
+    modBaseAffix: damageModStack(),
+    modBaseDot: damageModStack(),
+    modDMG: damageModStack(),
+    modDMGAffix: damageModStack(),
+    modDMGDot: damageModStack(),
   },
 
   defender: {
@@ -181,27 +172,27 @@ const DEFAULT_STATE: DamageCalculatorState = {
     level: NW_MAX_CHARACTER_LEVEL,
     gearScore: NW_MAX_GEAR_SCORE,
 
-    physicalArmor: valueStack(),
-    physicalArmorFortify: valueStack(),
-    physicalArmorAdd: valueStack(),
+    physicalArmor: damageModStack(),
+    physicalArmorFortify: damageModStack(),
+    physicalArmorAdd: damageModStack(),
 
-    elementalArmor: valueStack(),
-    elementalArmorFortify: valueStack(),
-    elementalArmorAdd: valueStack(),
+    elementalArmor: damageModStack(),
+    elementalArmorFortify: damageModStack(),
+    elementalArmorAdd: damageModStack(),
 
-    modABS: valueStack(),
-    modABSAffix: valueStack(),
-    modABSDot: valueStack(),
+    modABS: damageModStack(),
+    modABSAffix: damageModStack(),
+    modABSDot: damageModStack(),
 
-    modWKN: valueStack(),
-    modWKNAffix: valueStack(),
-    modWKNDot: valueStack(),
+    modWKN: damageModStack(),
+    modWKNAffix: damageModStack(),
+    modWKNDot: damageModStack(),
 
-    modBaseReduction: valueStack(),
-    modBaseReductionAffix: valueStack(),
-    modBaseReductionDot: valueStack(),
+    modBaseReduction: damageModStack(),
+    modBaseReductionAffix: damageModStack(),
+    modBaseReductionDot: damageModStack(),
 
-    modCritReduction: valueStack(),
+    modCritReduction: damageModStack(),
   },
 }
 
@@ -209,16 +200,22 @@ export type DamageCalculatorStore = InstanceType<typeof DamageCalculatorStore>
 export const DamageCalculatorStore = signalStore(
   withState<DamageCalculatorState>(DEFAULT_STATE),
   withComputed(({ offender, defender }) => {
+    const attackContext = computed(() => {
+      return {
+        type: offender.attackType(),
+        kind: offender.attackKind()
+      }
+    })
     const physicalRating = computed(() => {
-      const armor = valueStackSum(defender.physicalArmor()).value
-      const fortify = valueStackSum(defender.physicalArmorFortify()).value
-      const add = valueStackSum(defender.physicalArmorAdd()).value
+      const armor = damageModSum(defender.physicalArmor(), attackContext()).value
+      const fortify = damageModSum(defender.physicalArmorFortify(), attackContext()).value
+      const add = damageModSum(defender.physicalArmorAdd(), attackContext()).value
       return armor + armor * fortify + add
     })
     const elementalRating = computed(() => {
-      const armor = valueStackSum(defender.elementalArmor()).value
-      const fortify = valueStackSum(defender.elementalArmorFortify()).value
-      const add = valueStackSum(defender.elementalArmorAdd()).value
+      const armor = damageModSum(defender.elementalArmor(), attackContext()).value
+      const fortify = damageModSum(defender.elementalArmorFortify(), attackContext()).value
+      const add = damageModSum(defender.elementalArmorAdd(), attackContext()).value
       return armor + armor * fortify + add
     })
     const weaponIsElemental = computed(() => {
@@ -231,11 +228,12 @@ export const DamageCalculatorStore = signalStore(
       return isDamageTypeElemental(offender.dotDamageType())
     })
     return {
+      attackContext,
       offenderLevel: computed(() => offender.level()),
       offenderLevelFactor: computed(() => getDamageScalingForLevel(offender.level())),
       offenderGearScore: computed(() => offender.gearScore()),
       offenderAttributes: computed(() => offender.attributeModSums()),
-      offenderArmorPenetration: computed(() => valueStackSum(offender.armorPenetration())),
+      offenderArmorPenetration: computed(() => damageModSum(offender.armorPenetration(), attackContext())),
 
       offenderDotPercent: computed(() => offender.dotDamagePercent()),
       offenderDotDuration: computed(() => offender.dotDamageDuration()),
@@ -288,15 +286,15 @@ export const DamageCalculatorStore = signalStore(
       offenderDamageCoef: computed(() => offender.damageCoef()),
       offenderDamageAdd: computed(() => offender.damageAdd()),
 
-      offenderModPvP: computed(() => valueStackSum(offender.modPvP())),
-      offenderModAmmo: computed(() => valueStackSum(offender.modAmmo())),
-      offenderModCrit: computed(() => valueStackSum(offender.modCrit())),
-      offenderModBase: computed(() => valueStackSum(offender.modBase())),
-      offenderModBaseDot: computed(() => valueStackSum(offender.modBaseDot())),
-      offenderModBaseAffix: computed(() => valueStackSum(offender.modBaseAffix())),
-      offenderModDMG: computed(() => valueStackSum(offender.modDMG())),
-      offenderModDMGDot: computed(() => valueStackSum(offender.modDMGDot())),
-      offenderModDMGAffix: computed(() => valueStackSum(offender.modDMGAffix())),
+      offenderModPvP: computed(() => damageModSum(offender.modPvP(), attackContext())),
+      offenderModAmmo: computed(() => damageModSum(offender.modAmmo(), attackContext())),
+      offenderModCrit: computed(() => damageModSum(offender.modCrit(), attackContext())),
+      offenderModBase: computed(() => damageModSum(offender.modBase(), attackContext())),
+      offenderModBaseDot: computed(() => damageModSum(offender.modBaseDot(), attackContext())),
+      offenderModBaseAffix: computed(() => damageModSum(offender.modBaseAffix(), attackContext())),
+      offenderModDMG: computed(() => damageModSum(offender.modDMG(), attackContext())),
+      offenderModDMGDot: computed(() => damageModSum(offender.modDMGDot(), attackContext())),
+      offenderModDMGAffix: computed(() => damageModSum(offender.modDMGAffix(), attackContext())),
 
       defenderIsPlayer: computed(() => defender.isPlayer()),
       defenderVitalId: computed(() => defender.vitalId()),
@@ -310,19 +308,19 @@ export const DamageCalculatorStore = signalStore(
       defenderArmorRatingDot: computed(() => (dotIsElemental() ? elementalRating() : physicalRating())),
       defenderArmorRatingAffix: computed(() => (affixIsElemental() ? elementalRating() : physicalRating())),
 
-      defenderModABS: computed(() => valueStackSum(defender.modABS())),
-      defenderModABSDot: computed(() => valueStackSum(defender.modABSDot())),
-      defendermodABSAffix: computed(() => valueStackSum(defender.modABSAffix())),
+      defenderModABS: computed(() => damageModSum(defender.modABS(), attackContext())),
+      defenderModABSDot: computed(() => damageModSum(defender.modABSDot(), attackContext())),
+      defendermodABSAffix: computed(() => damageModSum(defender.modABSAffix(), attackContext())),
 
-      defenderModWKN: computed(() => valueStackSum(defender.modWKN())),
-      defenderModWKNDot: computed(() => valueStackSum(defender.modWKNDot())),
-      defenderModWKNAffix: computed(() => valueStackSum(defender.modWKN())),
+      defenderModWKN: computed(() => damageModSum(defender.modWKN(), attackContext())),
+      defenderModWKNDot: computed(() => damageModSum(defender.modWKNDot(), attackContext())),
+      defenderModWKNAffix: computed(() => damageModSum(defender.modWKN(), attackContext())),
 
-      defenderModBaseReduction: computed(() => valueStackSum(defender.modBaseReduction())),
-      defenderModBaseReductionDot: computed(() => valueStackSum(defender.modBaseReductionDot())),
-      defenderModBaseReductionAffix: computed(() => valueStackSum(defender.modBaseReductionAffix())),
+      defenderModBaseReduction: computed(() => damageModSum(defender.modBaseReduction(), attackContext())),
+      defenderModBaseReductionDot: computed(() => damageModSum(defender.modBaseReductionDot(), attackContext())),
+      defenderModBaseReductionAffix: computed(() => damageModSum(defender.modBaseReductionAffix(), attackContext())),
 
-      defenderModCritReduction: computed(() => valueStackSum(defender.modCritReduction())),
+      defenderModCritReduction: computed(() => damageModSum(defender.modCritReduction(), attackContext())),
     }
   }),
 
@@ -597,39 +595,6 @@ export const DamageCalculatorStore = signalStore(
     }
   }),
 )
-
-function valueStack() {
-  return {
-    value: 0,
-    stack: [],
-  }
-}
-
-export function valueStackSum(data: ValueStack) {
-  const result = cappedValue()
-  if (data) {
-    // add uncapped values first
-    result.add(data.value)
-
-    const uncapped = data.stack.filter((it) => !it.disabled && !it.cap)
-    for (const item of uncapped) {
-      result.add(item.value)
-    }
-
-    // add capped values, starting with the lowest cap
-    const capped = data.stack
-      .filter((it) => !it.disabled && !!it.cap)
-      .sort((a, b) => a.cap - b.cap)
-    for (const item of capped) {
-      result.add(item.value, item.cap)
-    }
-  }
-
-  return {
-    value: result.total,
-    overflow: result.overflow,
-  }
-}
 
 export function updateOffender<T extends { offender: OffenderState }>(input: Partial<OffenderState>) {
   return (state: T): T => {

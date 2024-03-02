@@ -62,8 +62,8 @@
   </label>
 
   @for (row of stack; track $index) {
-    <label class="join">
-      @if (row.tag) {
+    <label class="join relative">
+      @if (row.ref) {
         @if (row.icon) {
           <span class="btn btn-ghost btn-sm pointer-events-none pr-0">
             <img [nwImage]="row.icon" class="w-4 h-4" />
@@ -81,9 +81,29 @@
           placeholder="Label"
           [ngModel]="row.label"
           (ngModelChange)="setStackItemLabel($index, $event)"
-          [disabled]="row.disabled || !!row.tag"
+          [disabled]="!isItemEnabled(row)"
         />
       }
+      <span class="absolute -top-2 left-1">
+        @if (isTagEnabled(row, 'Light')) {
+          <span class="badge badge-xs scale-50 badge-success"></span>
+        }
+        @if (isTagEnabled(row, 'Heavy')) {
+          <span class="badge badge-xs scale-50 badge-error"></span>
+        }
+        @if (isTagEnabled(row, 'Ability')) {
+          <span class="badge badge-xs scale-50 badge-secondary"></span>
+        }
+        @if (isTagEnabled(row, 'Magic')) {
+          <span class="badge badge-xs scale-50 bg-white"></span>
+        }
+        @if (isTagEnabled(row, 'Melee')) {
+          <span class="badge badge-xs scale-50 badge-primary"></span>
+        }
+        @if (isTagEnabled(row, 'Ranged')) {
+          <span class="badge badge-xs scale-50 badge-info"></span>
+        }
+      </span>
       <nwb-precision-input
         class="join-item appearance-none input input-sm rounded-none text-right w-20"
         [min]="min"
@@ -96,8 +116,8 @@
         [ngModel]="row.value"
         (ngModelChange)="setStackItemValue($index, $event)"
         [unit]="unit"
-        [disabled]="row.disabled || !!row.tag"
-        [class.text-white]="!row.disabled && !!row.tag && !!row.value"
+        [disabled]="!isItemEnabled(row) || !!row.ref"
+        [class.text-white]="!row.disabled && !!row.ref && !!row.value"
       />
       <nwb-precision-input
         class="join-item appearance-none input input-sm rounded-none text-right w-14"
@@ -112,8 +132,8 @@
         [ngModel]="row.cap"
         (ngModelChange)="setStackItemCap($index, $event)"
         [unit]="unit"
-        [disabled]="row.disabled || !!row.tag"
-        [class.text-white]="!row.disabled && !!row.tag && !!row.cap"
+        [disabled]="!isItemEnabled(row) || !!row.ref"
+        [class.text-white]="!row.disabled && !!row.ref && !!row.cap"
       />
       <span class="join-item btn btn-sm btn-square rounded-none" (click)="toggleInStack($index)">
         <input
@@ -125,12 +145,89 @@
       </span>
       <button
         class="join-item btn btn-sm btn-square rounded-none no-animation"
-        (click)="removeFromStack($index)"
-        [class.grayscale]="!!row.tag"
-        [disabled]="!!row.tag"
+        [class.grayscale]="!!row.ref"
+        [disabled]="!!row.ref"
+        [cdkMenuTriggerFor]="tplStackMenu"
       >
-        <nwb-icon [icon]="iconAdd" class="w-4 h-4 rotate-45 text-error" />
+        <nwb-icon [icon]="iconMenu" class="w-4 h-4" />
       </button>
+      <ng-template #tplStackMenu>
+        <ul class="menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-md" cdkMenu>
+          <li>
+            <label>
+              <input
+                type="checkbox"
+                [ngModel]="isTagEnabled(row, 'Light')"
+                (ngModelChange)="setStackItemTag($index, 'Light', $event)"
+                class="toggle toggle-xs toggle-success"
+              />
+              <span class="text-success" [class.text-opacity-30]="!isTagEnabled(row, 'Light')"> Light </span>
+            </label>
+          </li>
+          <li>
+            <label>
+              <input
+                type="checkbox"
+                [ngModel]="isTagEnabled(row, 'Heavy')"
+                (ngModelChange)="setStackItemTag($index, 'Heavy', $event)"
+                class="toggle toggle-xs toggle-error"
+              />
+              <span class="text-error" [class.text-opacity-30]="!isTagEnabled(row, 'Heavy')"> Heavy </span>
+            </label>
+          </li>
+          <li>
+            <label>
+              <input
+                type="checkbox"
+                [ngModel]="isTagEnabled(row, 'Ability')"
+                (ngModelChange)="setStackItemTag($index, 'Ability', $event)"
+                class="toggle toggle-xs toggle-secondary"
+              />
+              <span class="text-secondary" [class.text-opacity-30]="!isTagEnabled(row, 'Ability')"> Ability </span>
+            </label>
+          </li>
+          <li>
+            <label>
+              <input
+                type="checkbox"
+                [ngModel]="isTagEnabled(row, 'Magic')"
+                (ngModelChange)="setStackItemTag($index, 'Magic', $event)"
+                class="toggle toggle-xs"
+              />
+              <span class="text-white" [class.text-opacity-30]="!isTagEnabled(row, 'Magic')"> Magic </span>
+            </label>
+          </li>
+          <li>
+            <label>
+              <input
+                type="checkbox"
+                [ngModel]="isTagEnabled(row, 'Melee')"
+                (ngModelChange)="setStackItemTag($index, 'Melee', $event)"
+                class="toggle toggle-xs toggle-warning"
+              />
+              <span class="text-warning" [class.text-opacity-30]="!isTagEnabled(row, 'Melee')"> Melee </span>
+            </label>
+          </li>
+          <li>
+            <label>
+              <input
+                type="checkbox"
+                [ngModel]="isTagEnabled(row, 'Ranged')"
+                (ngModelChange)="setStackItemTag($index, 'Ranged', $event)"
+                class="toggle toggle-xs toggle-info"
+              />
+              <span class="w-20 text-info" [class.text-opacity-30]="!isTagEnabled(row, 'Ranged')"> Ranged </span>
+            </label>
+          </li>
+          <li class="divider py-0 my-0 h-[2px]"></li>
+          <li>
+            <label (click)="removeFromStack($index)">
+              <nwb-icon [icon]="iconDelete" class="w-4 h-4 text-error mx-1" />
+              <span> Remove </span>
+            </label>
+          </li>
+        </ul>
+      </ng-template>
     </label>
   }
 

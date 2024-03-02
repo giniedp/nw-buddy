@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
@@ -12,6 +12,7 @@ import { humanize, selectSignal } from '~/utils'
 import { DamageCalculatorStore, offenderAccessor } from '../damage-calculator.store'
 import { StackedValueControlComponent } from './stacked-value-control.component'
 import { PrecisionInputComponent } from './precision-input.component'
+import { AttackType, Damagetable } from '@nw-data/generated'
 
 @Component({
   standalone: true,
@@ -35,6 +36,12 @@ export class OffenderAttackControlComponent {
   private data = inject(NwDataService)
   protected store = inject(DamageCalculatorStore)
   protected damageRow = offenderAccessor(this.store, 'damageRow')
+  protected attackType = offenderAccessor(this.store, 'attackType')
+  protected attackKind = offenderAccessor(this.store, 'attackKind')
+  protected attackInfo =  computed(() => {
+    return attackInfo(this.attackType.value, this.attackKind.value === 'Ranged')
+  })
+
   protected damageCoef = offenderAccessor(this.store, 'damageCoef', { precision: 6 })
   protected damageAdd = offenderAccessor(this.store, 'damageAdd')
   protected iconInfo = svgInfo
@@ -62,14 +69,26 @@ export class OffenderAttackControlComponent {
             label: humanize(it.DamageID.replace(prefix, '')),
             value: it.DamageID,
             coef: it.DmgCoef,
-            isRanged: it.IsRanged,
-            isHeavy: it.AttackType === 'Heavy',
-            isLight: it.AttackType === 'Light',
-            isMagic: it.AttackType === 'Magic',
-            isAbility: it.AttackType === 'Ability',
-            type: it.AttackType
+            ...attackInfo(it.AttackType, ['1', 'true'].includes(String(it.IsRanged).toLowerCase()))
           }
         })
     },
   )
+
+  protected onAttackSelected(value: string, info: ReturnType<typeof attackInfo>) {
+    this.damageRow.value = value
+    this.attackType.value = info.type as AttackType
+    this.attackKind.value = info.isRanged ? 'Ranged' : 'Melee'
+  }
+}
+
+function attackInfo(type: string, isRanged: boolean) {
+  return {
+    isRanged: isRanged,
+    isHeavy: type === 'Heavy',
+    isLight: type === 'Light',
+    isMagic: type === 'Magic',
+    isAbility: type === 'Ability',
+    type: type
+  }
 }

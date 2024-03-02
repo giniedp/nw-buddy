@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { Component, inject } from '@angular/core'
 import { ActivatedRoute, Router } from '@angular/router'
 import { LayoutModule } from '~/ui/layout'
-
+import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from 'lz-string'
 import { IonSegment, IonSegmentButton, IonToast, ToastController } from '@ionic/angular/standalone'
 import { PreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
@@ -72,7 +72,7 @@ function decodeState(state: string) {
     return null
   }
   try {
-    return JSON.parse(atob(state))
+    return JSON.parse(decompressFromEncodedURIComponent(state))
   } catch (e) {
     console.error('Failed to decode state', e)
     return null
@@ -80,5 +80,5 @@ function decodeState(state: string) {
 }
 
 function encodeState(state: any) {
-  return btoa(JSON.stringify(state))
+  return compressToEncodedURIComponent(JSON.stringify(state))
 }

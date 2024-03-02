@@ -12,6 +12,7 @@ import {
   NW_MIN_GEAR_SCORE,
   NW_MIN_POSSIBLE_WEAPON_GEAR_SCORE,
 } from './constants'
+import { patchPrecision } from './precision'
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
@@ -554,7 +555,7 @@ export function calculateDamage({ attacker, defender }: { attacker: AttackerStat
 
   trace.log(`result =`)
   trace.log(JSON.stringify(weapon, null, 2))
-  // console.log(trace.text())
+  console.log(trace.text())
   // console.table({
   //   weapon,
   //   converted,

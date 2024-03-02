@@ -1,20 +1,23 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, computed } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core'
 import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { PartialStateUpdater, patchState, signalState } from '@ngrx/signals'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgChevronLeft, svgEllipsisVertical, svgPlus, svgTrashCan } from '~/ui/icons/svg'
+import { svgBars, svgChevronLeft, svgEllipsisVertical, svgPlus, svgTrashCan } from '~/ui/icons/svg'
 import { InputSliderComponent } from '~/ui/input-slider'
-import { ValueStack, ValueStackItem, valueStackSum } from '../damage-calculator.store'
+import { DamageCalculatorStore } from '../damage-calculator.store'
+import { DamageModStack, DamageModStackItem, damageModStackItemEnabled, damageModSum } from '../damage-mod-stack'
 import { PrecisionInputComponent } from './precision-input.component'
+import { LayoutModule } from '~/ui/layout'
+import { uniq } from 'lodash'
 
 @Component({
   standalone: true,
   selector: 'nwb-stacked-value-control',
   templateUrl: './stacked-value-control.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, PrecisionInputComponent, FormsModule, InputSliderComponent, IconsModule],
+  imports: [CommonModule, NwModule, PrecisionInputComponent, FormsModule, LayoutModule, InputSliderComponent, IconsModule],
   host: {
     class: 'flex flex-col self-start bg-base-200 rounded-md max-w-full',
   },
@@ -27,6 +30,7 @@ import { PrecisionInputComponent } from './precision-input.component'
   ],
 })
 export class StackedValueControlComponent implements ControlValueAccessor {
+  private store = inject(DamageCalculatorStore)
 
   @Input()
   public set percent(value: boolean) {
@@ -73,22 +77,23 @@ export class StackedValueControlComponent implements ControlValueAccessor {
   public lockPreset: boolean = false
 
   @Input()
-  public set data(data: ValueStack) {
+  public set data(data: DamageModStack) {
     patchState(this.state, {
       value: data?.value,
       stack: data?.stack || [],
     })
   }
 
-  private state = signalState<ValueStack>({
+  private state = signalState<DamageModStack>({
     value: 0,
     stack: [],
   })
 
-  private sum = computed(() => valueStackSum(this.state()))
+  private sum = computed(() => damageModSum(this.state(), this.store.attackContext()))
   protected iconDelete = svgTrashCan
   protected iconLeft = svgChevronLeft
   protected iconMore = svgEllipsisVertical
+  protected iconMenu = svgBars
   protected iconAdd = svgPlus
   protected isOpen = false
   protected get inlineInputDisabled() {
@@ -112,6 +117,14 @@ export class StackedValueControlComponent implements ControlValueAccessor {
 
   public constructor() {
     //
+  }
+
+  protected isItemEnabled(node: DamageModStackItem) {
+    return damageModStackItemEnabled(node, this.store.attackContext())
+  }
+
+  protected isTagEnabled(node: DamageModStackItem, tag: DamageModStackItem['tags'][0]) {
+    return node.tags?.includes(tag)
   }
 
   protected addToStack() {
@@ -152,7 +165,17 @@ export class StackedValueControlComponent implements ControlValueAccessor {
     this.patchStackItem(index, { value: value })
   }
 
-  protected patchStackItem(index: number, data: Partial<ValueStackItem>) {
+  protected setStackItemTag(index: number, tag: DamageModStackItem['tags'][0], enabled: boolean) {
+    const tags = [...(this.state().stack[index]?.tags || [])]
+    if (enabled) {
+      tags.push(tag)
+    } else {
+      tags.splice(tags.indexOf(tag), 1)
+    }
+    this.patchStackItem(index, { tags: uniq(tags) })
+  }
+
+  protected patchStackItem(index: number, data: Partial<DamageModStackItem>) {
     this.patchState(({ stack }) => ({
       stack: stack.map((it, i) => {
         if (i !== index) {
@@ -166,12 +189,12 @@ export class StackedValueControlComponent implements ControlValueAccessor {
     }))
   }
 
-  protected onChange = (value: ValueStack) => {}
+  protected onChange = (value: DamageModStack) => {}
   protected onTouched = () => {}
   protected touched = false
   protected disabled = false
 
-  public writeValue(value: ValueStack): void {
+  public writeValue(value: DamageModStack): void {
     this.data = value
   }
 
@@ -185,7 +208,7 @@ export class StackedValueControlComponent implements ControlValueAccessor {
     this.disabled = isDisabled
   }
 
-  private patchState(update: Partial<ValueStack> | PartialStateUpdater<ValueStack>) {
+  private patchState(update: Partial<DamageModStack> | PartialStateUpdater<DamageModStack>) {
     patchState(this.state, update)
     this.onChange(this.state())
   }

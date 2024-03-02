@@ -8,6 +8,19 @@
         <span class="italic"> -- none -- </span>
       } @else {
         {{ damageRow.value | nwHumanize }}
+        @if (attackType.value) {
+          <span
+            class="badge badge-xs"
+            [class.badge-success]="attackInfo().isLight"
+            [class.badge-error]="attackInfo().isHeavy"
+            [class.badge-secondary]="attackInfo().isAbility"
+          >
+            {{ attackType.value }}
+          </span>
+        }
+        @if (attackKind.value) {
+          <span class="badge badge-xs badge-info">{{ attackKind.value }}</span>
+        }
       }
     </button>
     <ng-template #tplAttacks>
@@ -22,7 +35,7 @@
         </li>
         @for (item of attackOptions(); track $index) {
           <li class="text-shadow-sm shadow-black" cdkMenuItem>
-            <a (click)="damageRow.value = item.value" class="flex flex-row">
+            <a (click)="onAttackSelected(item.value, item)" class="flex flex-row">
               <span>{{ item.label | nwText }}</span>
               <span class="flex-1"></span>
               @if (item.type) {
