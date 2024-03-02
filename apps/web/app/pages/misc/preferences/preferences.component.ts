@@ -21,7 +21,7 @@ import { DataImportDialogComponent } from './data-import-dialog.component'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, FormsModule, PriceImporterModule, LayoutModule, RouterModule, IconsModule, TooltipModule],
   host: {
-    class: 'layout-content layout-pad flex flex-col items-center',
+    class: 'ion-page',
   },
 })
 export class PreferencesComponent implements OnInit {
