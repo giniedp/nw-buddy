@@ -37,6 +37,7 @@ import { StackedValueControlComponent } from './controls/stacked-value-control.c
 import { DamageCalculatorState, DamageCalculatorStore, updateDefender, updateOffender } from './damage-calculator.store'
 import { mergeDamageStacks } from './damage-mod-stack'
 import { DamageOutputComponent } from './damage-output.component'
+import { DamageResultsComponent } from './damage-results.component'
 
 @Component({
   standalone: true,
@@ -47,6 +48,7 @@ import { DamageOutputComponent } from './damage-output.component'
     CommonModule,
     OffenderConversionControlComponent,
     DamageOutputComponent,
+    DamageResultsComponent,
     DefenderElementalArmorControlComponent,
     DefenderModsControlComponent,
     DefenderPhysicalArmorControlComponent,
@@ -63,7 +65,6 @@ import { DamageOutputComponent } from './damage-output.component'
   ],
   host: {
     class: 'flex flex-col',
-    '[class.gap-4]': '!layoutAsPage',
     '[class.ion-page]': 'layoutAsPage',
   },
   providers: [DamageCalculatorStore],
@@ -107,6 +108,9 @@ export class DamageCalculatorComponent implements OnInit {
 
   @Input()
   public layoutAsPage = false
+  @Input()
+  public showLog = false
+
   protected iconReset = svgRestartAlt
 
   public constructor(@Attribute('standalone') standalone: string) {

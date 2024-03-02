@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, NO_ERRORS_SCHEMA, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { NwModule } from '~/nw'
 import { TooltipModule } from '~/ui/tooltip'
 import { DamageCalculatorStore } from './damage-calculator.store'
@@ -7,18 +7,21 @@ import { FloorPipe } from './pipes/floor.pipe'
 
 @Component({
   standalone: true,
-  selector: 'nwb-damage-output',
-  templateUrl: './damage-output.component.html',
+  selector: 'nwb-damage-results',
+  templateUrl: './damage-results.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, FloorPipe, TooltipModule],
   host: {
-    class: 'flex flex-col items-center',
+    class: 'block',
   },
 })
-export class DamageOutputComponent {
+export class DamageResultsComponent {
   protected store = inject(DamageCalculatorStore)
-  protected get trace() {
-    return this.store.output().trace
-  }
 
+  protected get dotOutput() {
+    if (!this.store.offenderDotIsActive()){
+      return null
+    }
+    return this.store.output().dot
+  }
 }

@@ -6,9 +6,10 @@ import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from
 import { IonSegment, IonSegmentButton, IonToast, ToastController } from '@ionic/angular/standalone'
 import { PreferencesService } from '~/preferences'
 import { IconsModule } from '~/ui/icons'
-import { svgLink } from '~/ui/icons/svg'
+import { svgClipboard, svgLink } from '~/ui/icons/svg'
 import { DamageCalculatorComponent } from '~/widgets/damage-calculator'
 import { ScreenshotModule } from '~/widgets/screenshot'
+import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
   standalone: true,
@@ -26,16 +27,20 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     IonSegmentButton,
     IonToast,
     ScreenshotModule,
+    TooltipModule
   ],
 })
 export class DamageCalculatorPageComponent {
   private router = inject(Router)
   private route = inject(ActivatedRoute)
+  private toast = inject(ToastController)
   private preferences = inject(PreferencesService)
+
   protected initialState: any = null
   protected encodedState: string = null
   protected iconLink = svgLink
-  private ctrl = inject(ToastController)
+  protected iconLog = svgClipboard
+  protected showLog = false
 
   protected handleStateChange(value: any) {
     this.preferences.session.set('damage-calculator', value)
@@ -58,7 +63,7 @@ export class DamageCalculatorPageComponent {
     const url = new URL(this.router.url, location.origin)
     url.searchParams.set('state', this.encodedState)
     navigator.clipboard.writeText(url.toString())
-    this.ctrl
+    this.toast
       .create({
         message: 'Copied link to clipboard',
         duration: 2000,

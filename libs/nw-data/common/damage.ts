@@ -12,7 +12,6 @@ import {
   NW_MIN_GEAR_SCORE,
   NW_MIN_POSSIBLE_WEAPON_GEAR_SCORE,
 } from './constants'
-import { patchPrecision } from './precision'
 
 function clamp(value: number, min: number, max: number) {
   return Math.min(max, Math.max(min, value))
@@ -346,37 +345,37 @@ export function calculateDamage({ attacker, defender }: { attacker: AttackerStat
   const modifierSums = attacker.attributeModSums
 
   const convertPercent = attacker.affixPercent ?? 0
-  const convertScale = getDamageScalingSumForWeapon({
+  const affixScale = getDamageScalingSumForWeapon({
     weapon: attacker.affixScaling,
     modifierSums: modifierSums,
   })
-  trace.log(`convertScale: ${convertScale}`)
 
   const weaponPercent = 1 - convertPercent
   const weaponScale = getDamageScalingSumForWeapon({
     weapon: attacker.weaponScaling,
     modifierSums: modifierSums,
   })
-  trace.log(`weaponScale: ${weaponScale}`)
 
-  let convertScaling = attacker.affixScaling
+  let affixScaling = attacker.affixScaling
   let weaponScaling = attacker.weaponScaling
   if (attacker.preferHigherScaling) {
-    if (weaponScale > convertScale) {
-      trace.log('higher scaling is weaponScaling, use that')
-      convertScaling = weaponScaling
+    trace.log(`affixScale: ${affixScale}`)
+    trace.log(`weaponScale: ${weaponScale}`)
+    if (weaponScale > affixScale) {
+      trace.log(`weaponScale is higher, use that for affix`)
+      affixScaling = weaponScaling
     } else {
-      trace.log('higher scaling is convertScaling, use that')
-      weaponScaling = convertScaling
+      trace.log(`affixScale is higher, use that for weapon`)
+      weaponScaling = affixScaling
     }
+    trace.log(``)
   }
 
   const isPvp = attacker.isPlayer && defender.isPlayer
-  trace.log(`isPvp: ${isPvp}`)
   let effectiveGearScore = 0
   let pvpScale = 0
   if (isPvp) {
-    trace.log(`effectiveGearScore =`)
+    trace.log(`pvpGearScore =`)
     effectiveGearScore = getPvPGearScore(
       {
         attackerAvgGearScore: attacker.gearScore,
@@ -385,6 +384,7 @@ export function calculateDamage({ attacker, defender }: { attacker: AttackerStat
       },
       trace.indent(),
     )
+    trace.log(``)
     trace.log(`pvpScaling =`)
     pvpScale = getPvPScaling(
       {
@@ -393,16 +393,11 @@ export function calculateDamage({ attacker, defender }: { attacker: AttackerStat
       },
       trace.indent(),
     )
+    trace.log(``)
   } else {
     effectiveGearScore = attacker.weaponGearScore
     pvpScale = 0
   }
-
-  // console.table({
-  //   isPvp,
-  //   effectiveGearScore,
-  //   pvpScale,
-  // })
 
   const inputs = {
     level: attacker.level,
@@ -425,27 +420,10 @@ export function calculateDamage({ attacker, defender }: { attacker: AttackerStat
     mitigation: 0,
   } satisfies Parameters<typeof getDamageForWeapon>[0]
 
-  trace.log(`weaponDamageStd =`)
-  const weaponDamageStd = getDamageForWeapon(
-    {
-      ...inputs,
-      weaponScale: weaponScaling,
-      damageCoef: attacker.damageCoef * weaponPercent,
-      modCrit: 0,
-    },
-    trace.indent(),
-  )
-  trace.log(`weaponDamageCrit =`)
-  const weaponDamageCrit = getDamageForWeapon(
-    {
-      ...inputs,
-      weaponScale: weaponScaling,
-      damageCoef: attacker.damageCoef * weaponPercent,
-    },
-    trace.indent(),
-  )
-  trace.log(`weaponMitigationPct =`)
-  const weaponMitigationPct = getDamageMitigationPercent(
+  trace.log(`--- WEAPON DAMAGE ---`)
+  trace.log(``)
+  trace.log(`mitigationPercent =`)
+  const weaponMitigationPercent = getDamageMitigationPercent(
     {
       armorPenetration: attacker.armorPenetration,
       armorRating: defender.armorRating,
@@ -453,82 +431,174 @@ export function calculateDamage({ attacker, defender }: { attacker: AttackerStat
     },
     trace?.indent(),
   )
-
-  const damageAffixStd =
-    getDamageForWeapon({
-      ...inputs,
-      weaponScale: convertScaling,
-      damageCoef: attacker.damageCoef * convertPercent,
-      reductionBase: defender.reductionBaseAffix,
-      modCrit: 0,
-      modBase: attacker.modBaseAffix,
-      modDMG: attacker.modDMGAffix,
-      modABS: defender.modABSAffix,
-      modWKN: defender.modWKNAffix,
-    })
-  const damageAffixCrit =
-    getDamageForWeapon({
-      ...inputs,
-      weaponScale: convertScaling,
-      damageCoef: attacker.damageCoef * convertPercent,
-      reductionBase: defender.reductionBaseAffix,
-      modBase: attacker.modBaseAffix,
-      modDMG: attacker.modDMGAffix,
-      modABS: defender.modABSAffix,
-      modWKN: defender.modWKNAffix,
-    })
-  const mitigationAffixPct = getDamageMitigationPercent({
-    armorPenetration: attacker.armorPenetration,
-    armorRating: defender.armorRatingAffix,
-    gearScore: effectiveGearScore,
-  })
-
-  const dotDamage = getDamageForWeapon(
+  trace.log(``)
+  trace.log(`damagePreMitigation =`)
+  const weaponStdPreMitigation = getDamageForWeapon(
     {
       ...inputs,
       weaponScale: weaponScaling,
-      damageCoef: attacker.dotCoef ?? 0,
-      damageAdd: 0,
-      reductionBase: defender.reductionBaseDot,
+      damageCoef: attacker.damageCoef * weaponPercent,
       modCrit: 0,
-      modBase: attacker.modBaseDot,
-      modDMG: attacker.modDMGDot,
-      modABS: defender.modABSDot,
-      modWKN: defender.modWKNDot,
+      mitigation: 0,
     },
     trace.indent(),
   )
-  const dotTicks = Math.floor((attacker.dotDuration ?? 0) / (attacker.dotRate ?? 1))
-  const dotMitigationPct = getDamageMitigationPercent(
+  const weaponStdPostMitigation = getDamageForWeapon({
+    ...inputs,
+    weaponScale: weaponScaling,
+    damageCoef: attacker.damageCoef * weaponPercent,
+    mitigation: weaponMitigationPercent,
+    modCrit: 0,
+  })
+  const weaponStdMitigated = weaponStdPostMitigation - weaponStdPreMitigation
+  trace.log(`damagePostMitigation = ${weaponStdPostMitigation}`)
+  trace.log(`damageMitigated = ${weaponStdPostMitigation} - ${weaponStdPreMitigation} = ${weaponStdMitigated}`)
+
+  trace.log(``)
+  trace.log(`critPreMitigation =`)
+  const weaponCritPreMitigation = getDamageForWeapon(
+    {
+      ...inputs,
+      weaponScale: weaponScaling,
+      damageCoef: attacker.damageCoef * weaponPercent,
+      mitigation: 0,
+    },
+    trace.indent(),
+  )
+  const weaponCritPostMitigation = getDamageForWeapon(
+    {
+      ...inputs,
+      weaponScale: weaponScaling,
+      damageCoef: attacker.damageCoef * weaponPercent,
+      mitigation: weaponMitigationPercent,
+    }
+  )
+  const weaponCritMitigated = weaponCritPostMitigation - weaponCritPreMitigation
+  trace.log(`critPostMitigation = ${weaponCritPostMitigation}`)
+  trace.log(`critMitigated = ${weaponCritPostMitigation} - ${weaponCritPreMitigation} = ${weaponCritMitigated}`)
+
+  trace.log(``)
+  trace.log(`--- AFFIX DAMAGE ---`)
+  trace.log(``)
+  trace.log(`affixMitigationPercent =`)
+  const affixMitigationPercent = getDamageMitigationPercent(
     {
       armorPenetration: attacker.armorPenetration,
-      armorRating: defender.armorRatingDot,
+      armorRating: defender.armorRatingAffix,
       gearScore: effectiveGearScore,
     },
-    trace?.indent(),
+    trace.indent(),
   )
+  trace.log(``)
+  trace.log(`affixDamageStd =`)
+  const affixStdPreMitigation = getDamageForWeapon(
+    {
+      ...inputs,
+      weaponScale: affixScaling,
+      damageCoef: attacker.damageCoef * convertPercent,
+      reductionBase: defender.reductionBaseAffix,
+      modCrit: 0,
+      mitigation: 0,
+      modBase: attacker.modBaseAffix,
+      modDMG: attacker.modDMGAffix,
+      modABS: defender.modABSAffix,
+      modWKN: defender.modWKNAffix,
+    },
+    trace.indent(),
+  )
+  const affixStdPostMitigation = getDamageForWeapon(
+    {
+      ...inputs,
+      weaponScale: affixScaling,
+      damageCoef: attacker.damageCoef * convertPercent,
+      reductionBase: defender.reductionBaseAffix,
+      modCrit: 0,
+      modBase: attacker.modBaseAffix,
+      modDMG: attacker.modDMGAffix,
+      modABS: defender.modABSAffix,
+      modWKN: defender.modWKNAffix,
+      mitigation: affixMitigationPercent,
+    }
+  )
+  const affixStdMitigated = affixStdPostMitigation - affixStdPreMitigation
+  trace.log(`damagePostMitigation = ${affixStdPostMitigation}`)
+  trace.log(`damageMitigated = ${affixStdPostMitigation} - ${affixStdPreMitigation} = ${affixStdMitigated}`)
+
+  trace.log(``)
+  trace.log(`affixDamageCrit =`)
+  const affixCritPreMitigation = getDamageForWeapon(
+    {
+      ...inputs,
+      weaponScale: affixScaling,
+      damageCoef: attacker.damageCoef * convertPercent,
+      reductionBase: defender.reductionBaseAffix,
+      modBase: attacker.modBaseAffix,
+      modDMG: attacker.modDMGAffix,
+      modABS: defender.modABSAffix,
+      modWKN: defender.modWKNAffix,
+      mitigation: 0,
+    },
+    trace.indent(),
+  )
+  const affixCritPostMitigation = getDamageForWeapon(
+    {
+      ...inputs,
+      weaponScale: affixScaling,
+      damageCoef: attacker.damageCoef * convertPercent,
+      reductionBase: defender.reductionBaseAffix,
+      modBase: attacker.modBaseAffix,
+      modDMG: attacker.modDMGAffix,
+      modABS: defender.modABSAffix,
+      modWKN: defender.modWKNAffix,
+      mitigation: affixMitigationPercent,
+    }
+  )
+  const affixCritMitigated = affixCritPostMitigation - affixCritPreMitigation
+  trace.log(`damagePostMitigation = ${affixCritPostMitigation}`)
+  trace.log(`damageMitigated = ${affixCritPostMitigation} - ${affixCritPreMitigation} = ${affixCritMitigated}`)
+
+  trace.log(``)
+
+  const dotDamage = getDamageForWeapon({
+    ...inputs,
+    weaponScale: weaponScaling,
+    damageCoef: attacker.dotCoef ?? 0,
+    damageAdd: 0,
+    reductionBase: defender.reductionBaseDot,
+    modCrit: 0,
+    modBase: attacker.modBaseDot,
+    modDMG: attacker.modDMGDot,
+    modABS: defender.modABSDot,
+    modWKN: defender.modWKNDot,
+  })
+  const dotTicks = Math.floor((attacker.dotDuration ?? 0) / (attacker.dotRate ?? 1))
+  const dotMitigationPct = getDamageMitigationPercent({
+    armorPenetration: attacker.armorPenetration,
+    armorRating: defender.armorRatingDot,
+    gearScore: effectiveGearScore,
+  })
 
   const weapon = {
-    std: Math.floor(weaponDamageStd),
-    stdMitigated: Math.floor(weaponDamageStd * weaponMitigationPct),
-    stdFinal: Math.floor(weaponDamageStd * (1 - weaponMitigationPct)),
+    std: Math.floor(weaponStdPreMitigation),
+    stdMitigated: Math.floor(weaponStdPreMitigation * weaponMitigationPercent),
+    stdFinal: Math.floor(weaponStdPreMitigation * (1 - weaponMitigationPercent)),
 
-    crit: Math.floor(weaponDamageCrit),
-    critMitigated: Math.floor(weaponDamageCrit * weaponMitigationPct),
-    critFinal: Math.floor(weaponDamageCrit * (1 - weaponMitigationPct)),
+    crit: Math.floor(weaponCritPreMitigation),
+    critMitigated: Math.floor(weaponCritPreMitigation * weaponMitigationPercent),
+    critFinal: Math.floor(weaponCritPreMitigation * (1 - weaponMitigationPercent)),
 
-    mitigation: weaponMitigationPct,
+    mitigation: weaponMitigationPercent,
   }
   const affix = {
-    std: Math.floor(damageAffixStd),
-    stdMitigated: Math.floor(damageAffixStd * mitigationAffixPct),
-    stdFinal: Math.floor(damageAffixStd * (1 - mitigationAffixPct)),
+    std: Math.floor(affixStdPreMitigation),
+    stdMitigated: Math.floor(affixStdPreMitigation * affixMitigationPercent),
+    stdFinal: Math.floor(affixStdPreMitigation * (1 - affixMitigationPercent)),
 
-    crit: Math.floor(damageAffixCrit),
-    critMitigated: Math.floor(damageAffixCrit * mitigationAffixPct),
-    critFinal: Math.floor(damageAffixCrit * (1 - mitigationAffixPct)),
+    crit: Math.floor(affixCritPreMitigation),
+    critMitigated: Math.floor(affixCritPreMitigation * affixMitigationPercent),
+    critFinal: Math.floor(affixCritPreMitigation * (1 - affixMitigationPercent)),
 
-    mitigation: mitigationAffixPct,
+    mitigation: affixMitigationPercent,
   }
   const dot = {
     tick: Math.floor(dotDamage),
@@ -550,23 +620,17 @@ export function calculateDamage({ attacker, defender }: { attacker: AttackerStat
     critMitigated: Math.floor(weapon.critMitigated + affix.critMitigated),
     critFinal: Math.floor(weapon.critFinal + affix.critFinal),
 
-    mitigation: weaponMitigationPct * weaponPercent + mitigationAffixPct * convertPercent,
+    mitigation: weaponMitigationPercent * weaponPercent + affixMitigationPercent * convertPercent,
   }
 
-  trace.log(`result =`)
-  trace.log(JSON.stringify(weapon, null, 2))
-  console.log(trace.text())
-  // console.table({
-  //   weapon,
-  //   converted,
-  //   total,
-  // })
+  // console.log(trace.text())
 
   return {
     weapon,
     affix,
     total,
     dot,
+    trace: trace.text()
   }
 }
 

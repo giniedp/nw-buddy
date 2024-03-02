@@ -4,10 +4,13 @@
 
     <div slot="end">
       <div class="join pr-1">
-        <button class="join-item btn btn-square btn-ghost" (click)="copyLink()">
+        <button class="join-item btn btn-square btn-ghost" [class.text-primary]="showLog" (click)="showLog = !showLog" [tooltip]="'Show calulations'">
+          <nwb-icon [icon]="iconLog" class="w-4 h-4" />
+        </button>
+        <button class="join-item btn btn-square btn-ghost" (click)="copyLink()" [tooltip]="'Copy link'">
           <nwb-icon [icon]="iconLink" class="w-4 h-4" />
         </button>
-        <button class="join-item btn btn-square btn-ghost" [nwbScreenshotBtn]></button>
+        <button class="join-item btn btn-square btn-ghost" [nwbScreenshotBtn] [tooltip]="'Screenshot'"></button>
       </div>
     </div>
   </ion-toolbar>
@@ -15,9 +18,10 @@
 <ion-content class="sm:ion-p-4">
   <div class="max-w-5xl mx-auto">
     <nwb-damage-calculator
-      class="p-4 bg-base-300 sm:rounded-lg"
+      class="bg-base-300 sm:rounded-lg"
       standalone
       [state]="initialState"
+      [showLog]="showLog"
       [nwbScreenshotFrame]="'Damage Calculator'"
       (stateChange)="handleStateChange($event)"
     />
