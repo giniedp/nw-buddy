@@ -141,7 +141,7 @@ export function getDamageForWeapon(
     }) ?? 0
   const modPvP = options.modPvP ?? 0
   const modAmmo = options.modAmmo ?? 0
-  const modBase = Math.max(0, (options.modBase ?? 0) - (options.reductionBase ?? 0))
+  const modBase = Math.max(-1, (options.modBase ?? 0) - (options.reductionBase ?? 0))
   const modCrit = Math.max(0, (options.modCrit ?? 0) - (options.reductionCrit ?? 0))
   const modDMG = options.modDMG ?? 0
   const modABS = options.modABS ?? 0
