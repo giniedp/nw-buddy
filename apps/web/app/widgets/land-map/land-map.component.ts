@@ -6,14 +6,16 @@ import { BehaviorSubject, ReplaySubject, delay, filter, fromEvent, map, switchMa
 import { runInZone, runOutsideZone, selectStream, tapDebug } from '~/utils'
 import { PlatformService } from '~/utils/services/platform.service'
 
-export type Landmark = LandmarkPoint | LandmarkZone
+export type Landmark<T = unknown> = LandmarkPoint<T> | LandmarkZone<T>
 
-export interface LandmarkPoint extends LandmarkData {
+export interface LandmarkPoint<T = unknown> extends LandmarkData {
   point: number[]
+  payload?: T
 }
 
-export interface LandmarkZone extends LandmarkData {
+export interface LandmarkZone<T = unknown> extends LandmarkData {
   shape: number[][]
+  payload?: T
 }
 
 export interface LandmarkData {

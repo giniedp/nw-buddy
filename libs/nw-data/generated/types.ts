@@ -13563,13 +13563,14 @@ export interface VariantPosition {
     mapId:         string;
 }
 export interface VitalsMetadata {
-    catIDs:    string[];
-    levels:    number[];
-    lvlSpanws: LvlSpanws;
-    mapIDs:    string[];
-    models:    string[];
-    tables:    string[];
-    vitalsID:  string;
+    catIDs:      string[];
+    levels:      number[];
+    lvlSpanws:   LvlSpanws;
+    mapIDs:      string[];
+    models:      string[];
+    tables:      string[];
+    territories: number[];
+    vitalsID:    string;
 }
 
 export interface LvlSpanws {
@@ -13601,6 +13602,7 @@ export interface Climaxftue02 {
     c: string[];
     l: number[];
     p: number[];
+    t: number[];
 }
 export interface SandelementalHeavySandworm {
     AddDmg:                  number;

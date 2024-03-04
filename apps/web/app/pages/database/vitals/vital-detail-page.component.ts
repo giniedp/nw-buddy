@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ViewChild, inject } from '@angular/core'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { getVitalFamilyInfo } from '@nw-data/common'
 import { Vitals } from '@nw-data/generated'
@@ -17,6 +17,8 @@ import { VitalDetailModule, VitalDetailStore } from '~/widgets/data/vital-detail
 import { LootModule } from '~/widgets/loot'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ModelViewerModule } from '../../../widgets/model-viewer'
+import { VitalPointData } from '~/widgets/data/vital-detail/vital-detail-map.component'
+import { LootContextEditorComponent } from '~/widgets/loot/loot-context-editor.component'
 
 export type DetailTabId = 'stats' | 'loot-items' | 'loot-table' | 'damage-table' | '3d-model' | 'map'
 
@@ -56,6 +58,9 @@ export class VitalDetailComponent {
   protected iconEdit = svgPen
 
   protected lootTableId = selectSignal(this.store.vital$, (it) => it?.LootTableId)
+
+  @ViewChild(LootContextEditorComponent, { static: false })
+  protected editor: LootContextEditorComponent
 
   public constructor(
     private route: ActivatedRoute,
@@ -100,7 +105,21 @@ export class VitalDetailComponent {
     })
   }
 
-  protected onPointClicked(point: number[]) {
-    // console.log(point)
+  protected onPointClicked(payload: VitalPointData) {
+    if (!payload) {
+      return
+    }
+    this.editor.territoryId = null
+    this.editor.poiId = null
+    for (const id of payload.territories) {
+      if (id < 1000) {
+        this.editor.territoryId = id
+      } else if (id < 10000) {
+
+      } else {
+        this.editor.poiId = id
+      }
+    }
+    this.editor.vitalLevel = payload.level
   }
 }

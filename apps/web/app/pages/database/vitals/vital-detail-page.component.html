@@ -48,7 +48,7 @@
   <div class="p-4">
     @if (tab() === 'stats') {
       <nwb-vital-detail-stats />
-      <nwb-vital-detail-map class="mt-4" (pointClicked)="onPointClicked($event)" />
+      <nwb-vital-detail-map class="mt-4" (vitalClicked)="onPointClicked($event)" />
       @if (lootTableId(); as tableId) {
         <nwb-loot-context-editor [size]="'sm'" [vitalId]="vitalId()" #editor class="p-1 mb-2" />
         <nwb-loot-graph

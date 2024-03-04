@@ -67,6 +67,11 @@ export class LootContextEditorComponent {
     this.store.patchState({ isMutation: value })
   }
 
+  @Input()
+  public set vitalLevel(value: number) {
+    this.store.patchState({ enemyLevel: value })
+  }
+
   @Output()
   public context = this.store.context$
 

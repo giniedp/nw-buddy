@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Output, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { LvlSpanws, Vitals, VitalsMetadata } from '@nw-data/generated'
+import { Areadefinitions, LvlSpanws, PoiDefinition, TerritoriesMetadata, Territorydefinitions, Vitals, VitalsMetadata } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
@@ -8,9 +8,15 @@ import { IconsModule } from '~/ui/icons'
 import { svgCompress, svgExpand } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { selectSignal } from '~/utils'
-import { LandMapComponent, Landmark, LandmarkPoint, MapViewBounds } from '~/widgets/land-map'
+import { LandMapComponent, Landmark, LandmarkPoint, LandmarkZone, MapViewBounds } from '~/widgets/land-map'
 import { VitalDetailStore } from './vital-detail.store'
 
+export interface VitalPointData {
+  vitalId: string
+  level: number
+  territories: number[]
+  point: number[]
+}
 
 @Component({
   standalone: true,
@@ -27,12 +33,16 @@ export class VitalDetailMapComponent {
   protected tl8 = inject(TranslateService)
 
   @Output()
-  public pointClicked = new EventEmitter<number[]>()
+  public vitalClicked = new EventEmitter<VitalPointData>()
 
   protected data = selectSignal(
     {
       vital: this.store.vital$,
       meta: this.store.metadata$,
+      poisMap: this.db.poisMap,
+      areasMap: this.db.areasMap,
+      territoriesMap: this.db.territoriesMap,
+      territoriesMetadataMap: this.db.territoriesMetadataMap,
     },
     (data) => selectData(data, this.tl8),
   )
@@ -91,8 +101,11 @@ export class VitalDetailMapComponent {
     }
   }
 
-  protected onPointClicked(point: number[]) {
-    this.pointClicked.emit(point)
+  protected onFeatureClicked(id: string) {
+    const payload = this.landmarks().find((it) => it.id === id)?.payload
+    if (payload?.vitalId) {
+      this.vitalClicked.emit(payload)
+    }
   }
 }
 
@@ -128,29 +141,73 @@ function selectData(
   {
     vital,
     meta,
+    poisMap,
+    areasMap,
+    territoriesMap,
+    territoriesMetadataMap,
   }: {
     vital: Vitals
     meta: VitalsMetadata
+    poisMap: Map<number, PoiDefinition>
+    areasMap: Map<number, Areadefinitions>
+    territoriesMap: Map<number, Territorydefinitions>
+    territoriesMetadataMap: Map<string, TerritoriesMetadata>
   },
   tl8: TranslateService,
 ) {
-  const result: Record<string, Landmark[]> = {}
+  const result: Record<string, Landmark<VitalPointData>[]> = {}
   if (!meta) {
     return result
   }
+  for (const territoryId of [...meta.territories].reverse() ) {
+    const poi = poisMap.get(territoryId)
+    const area = areasMap.get(territoryId)
+    const territory = territoriesMap.get(territoryId)
+    const metadata = territoriesMetadataMap.get(String(territoryId).padStart(2, '0'))
+    const shape = metadata?.zones?.[0]?.shape
+    if (!shape) {
+      continue
+    }
+
+    const mapId = 'newworld_vitaeeterna'
+    result[mapId] ??= []
+    result[mapId].push({
+      title: tl8.get((poi || area || territory).NameLocalizationKey),
+      color: '#FFFFFF',
+      outlineColor: '#590e0e',
+      shape: shape,
+      opacity: 0.075,
+    } satisfies LandmarkZone)
+  }
+
+  let id = 0
   const name = tl8.get(vital?.DisplayName) || vital?.VitalsID || meta?.vitalsID
   for (const mapId of meta?.mapIDs || []) {
     for (const spawn of meta.lvlSpanws[mapId as keyof LvlSpanws] || []) {
+      id++
       const levels = spawn.l.length ? spawn.l : vital?.Level ? [vital.Level] : []
       result[mapId] ??= []
       result[mapId].push({
-        title: `Name: ${name}<br>Level: ${levels}<br>Location: x: ${spawn.p[0].toFixed(2)} y: ${spawn.p[1].toFixed(2)}`,
+        id: `spawn:${id}`,
+        title: `
+          <div style="text-align: left;">
+            <strong>${name}</strong><br>
+            Level ${levels.join(', ')}<br>
+            x: ${spawn.p[0].toFixed(2)} y: ${spawn.p[1].toFixed(2)}
+          </div>
+        `,
         color: '#DC2626',
         outlineColor: '#590e0e',
         opacity: 1,
         point: spawn.p,
         radius: 10,
-      } satisfies LandmarkPoint)
+        payload: {
+          vitalId: vital?.VitalsID,
+          level: Math.max(...spawn.l, vital.Level),
+          territories: spawn.t,
+          point: spawn.p,
+        }
+      } satisfies LandmarkPoint<VitalPointData>)
     }
   }
   return result
