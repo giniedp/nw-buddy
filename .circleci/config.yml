@@ -30,7 +30,7 @@ workflows:
 jobs:
   build_live:
     machine:
-      image: ubuntu-2204:2023.07.2
+      image: default
     resource_class: large
     environment:
       NODE_OPTIONS: --max_old_space_size=6144
@@ -71,7 +71,7 @@ jobs:
 
   build_preview:
     machine:
-      image: ubuntu-2204:2023.07.2
+      image: default
     resource_class: large
     environment:
       NODE_OPTIONS: --max_old_space_size=6144
@@ -100,7 +100,7 @@ jobs:
 
   build_ptr:
     machine:
-      image: ubuntu-2204:2023.07.2
+      image: default
     resource_class: large
     environment:
       NODE_OPTIONS: --max_old_space_size=6144
