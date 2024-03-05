@@ -1,4 +1,4 @@
-import { ColumnApi, ColumnState, GridApi } from '@ag-grid-community/core'
+import { ColumnState, GridApi } from '@ag-grid-community/core'
 import { EventEmitter, Injectable, inject } from '@angular/core'
 import { TableStateDB, TableStateRecord } from '~/data'
 import { PreferencesService, StorageNode } from '~/preferences'
@@ -12,7 +12,7 @@ export class TableGridPersistenceService {
   public onFilterApplied = new EventEmitter()
   public onFilterSaved = new EventEmitter()
 
-  public async resetColumnState(api: ColumnApi, key: string) {
+  public async resetColumnState(api: GridApi, key: string) {
     if (!api || !key) {
       return
     }
@@ -20,7 +20,7 @@ export class TableGridPersistenceService {
     this.writeColumnState(api, key, null)
   }
 
-  public async saveColumnState(api: ColumnApi, key: string) {
+  public async saveColumnState(api: GridApi, key: string) {
     if (!api) {
       return
     }
@@ -28,7 +28,7 @@ export class TableGridPersistenceService {
     this.writeColumnState(api, key, state)
   }
 
-  private async writeColumnState(api: ColumnApi, key: string, state: ColumnState[]) {
+  private async writeColumnState(api: GridApi, key: string, state: ColumnState[]) {
     if (!key || !api) {
       return
     }
@@ -55,7 +55,7 @@ export class TableGridPersistenceService {
     this.onFilterSaved.next(filterState)
   }
 
-  public async loadColumnState(api: ColumnApi, key: string) {
+  public async loadColumnState(api: GridApi, key: string) {
     if (!key || !api) {
       return
     }
@@ -67,7 +67,7 @@ export class TableGridPersistenceService {
     }
   }
 
-  public loadFilterState(api: GridApi, key: string) {
+  public async loadFilterState(api: GridApi, key: string) {
     const data = this.filterStorage.get(key)?.filter
     this.applyFilterState(api, data)
   }
@@ -86,8 +86,10 @@ export class TableGridPersistenceService {
     const state = await this.storage.read(key).catch(() => null as TableStateRecord)
     const pinnedTop = resolvePinnedData(api, state?.pinnedTop, identify) || []
     const pinnedBottom = resolvePinnedData(api, state?.pinnedBottom, identify) || []
-    api.setPinnedTopRowData(pinnedTop)
-    api.setPinnedBottomRowData(pinnedBottom)
+    api.updateGridOptions({
+      pinnedTopRowData: pinnedTop,
+      pinnedBottomRowData: pinnedBottom,
+    })
   }
 
   public async savePinnedState(api: GridApi, key: string, identify: (item: any) => string | number) {

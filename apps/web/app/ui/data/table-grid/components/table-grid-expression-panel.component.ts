@@ -88,7 +88,7 @@ function getColumnWithFilter(grid: AgGrid) {
   if (!grid) {
     return null
   }
-  for (const col of grid.columnApi.getColumns()) {
+  for (const col of grid.api.getColumns()) {
     const instance = grid.api.getFilterInstance(col.getColId())
     if (instance instanceof ExpressionFilter) {
       return {

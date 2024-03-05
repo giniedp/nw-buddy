@@ -29,7 +29,6 @@ export function gridDisplayRowCount(grid$: Observable<AgGrid>) {
   return merge(
     grid$,
     fromGridEvent(grid$, 'rowDataUpdated'),
-    fromGridEvent(grid$, 'rowDataChanged'),
     fromGridEvent(grid$, 'firstDataRendered'),
     fromGridEvent(grid$, 'filterChanged')
   ).pipe(
@@ -61,9 +60,9 @@ export function gridGetPinnedBottomData(api: GridApi) {
 }
 
 export function gridClearPinnedRowsTop(api: GridApi) {
-  return api.setPinnedTopRowData()
+  return api.setGridOption('pinnedTopRowData', [])
 }
 
 export function gridClearPinnedRowsBottom(api: GridApi) {
-  return api.setPinnedBottomRowData()
+  return api.setGridOption('pinnedBottomRowData', [])
 }

@@ -67,9 +67,9 @@ export class DataViewPinComponent {
     const pinned = await firstValueFrom(this.pinnedItems$)
     const grid = await firstValueFrom(this.grid$)
     if (this.isPinned$()) {
-      grid.api.setPinnedTopRowData((pinned || []).filter((it) => it !== item))
+      grid.api.setGridOption('pinnedTopRowData', (pinned || []).filter((it) => it !== item))
     } else {
-      grid.api.setPinnedTopRowData([...(pinned || []), item])
+      grid.api.setGridOption('pinnedTopRowData', [...(pinned || []), item])
     }
   }
 }

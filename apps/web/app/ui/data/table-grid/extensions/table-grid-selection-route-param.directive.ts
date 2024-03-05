@@ -17,7 +17,11 @@ export class DataGridSelectionRouteParamDirective {
 
   private selectionRouteParam$ = new ReplaySubject<string>(1)
 
-  public constructor(private route: ActivatedRoute, private router: Router, private store: TableGridStore<unknown>) {
+  public constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private store: TableGridStore<unknown>,
+  ) {
     this.selectionRouteParam$
       .pipe(switchMap((param) => (param ? of(param) : NEVER)))
       .pipe(switchMap((param) => merge(this.handleRouteChange(param), this.handleSelectionChange(param))))
@@ -37,7 +41,7 @@ export class DataGridSelectionRouteParamDirective {
           queryParamsHandling: 'preserve',
           preserveFragment: true,
         })
-      })
+      }),
     )
   }
 
@@ -50,7 +54,7 @@ export class DataGridSelectionRouteParamDirective {
         this.store.patchState({
           selection: value ? [value] : [],
         })
-      })
+      }),
     )
   }
 

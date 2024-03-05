@@ -1,22 +1,34 @@
-import { AgGridEvent, Grid, GridOptions, GridReadyEvent } from '@ag-grid-community/core'
+import { AgGridEvent, GridApi, GridOptions, GridParams, GridReadyEvent, createGrid } from '@ag-grid-community/core'
 import {
+  AfterViewInit,
   Directive,
   ElementRef,
+  EventEmitter,
   Input,
   NgZone,
   OnDestroy,
-  OnInit,
   Output,
   ViewContainerRef,
   inject,
 } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
-import { Observable, ReplaySubject, Subject, defer, filter, merge, skipWhile, take, takeUntil, tap } from 'rxjs'
+import {
+  Observable,
+  ReplaySubject,
+  defer,
+  filter,
+  firstValueFrom,
+  map,
+  shareReplay,
+  skipWhile,
+  switchMap,
+  take,
+  takeUntil,
+} from 'rxjs'
 import { runOutsideZone } from '~/utils/rx/run-in-zone'
 import { AngularFrameworkComponentWrapper } from './component-wrapper/angular-framework-component-wrapper'
 import { AngularFrameworkOverrides } from './component-wrapper/angular-framework-overrides'
 import { fromGridEvent } from './from-grid-event'
-import { AgGrid, AgGridEvents } from './types'
+import { AgGridEvents } from './types'
 
 @Directive({
   standalone: true,
@@ -27,97 +39,116 @@ import { AgGrid, AgGridEvents } from './types'
   },
   providers: [AngularFrameworkOverrides, AngularFrameworkComponentWrapper],
 })
-export class AgGridDirective<T = any>
-  extends ComponentStore<{ data: T[]; options: GridOptions<T> }>
-  implements OnInit, OnDestroy
-{
+export class AgGridDirective<T = any> implements AfterViewInit, OnDestroy {
   @Input()
   public set gridData(value: T[]) {
-    this.patchState({ data: value })
+    this.data$.next(value)
   }
 
   @Input()
   public set gridOptions(value: GridOptions<T>) {
-    this.patchState({ options: value })
+    this.options$.next(value)
   }
 
   @Output()
-  public onReady = new ReplaySubject<AgGrid>(1)
+  public onReady = defer(() => this.events.gridReady).pipe(shareReplay(1))
 
-  protected readonly data$ = this.select((it) => it.data)
-  protected readonly options$ = this.select((it) => it.options)
-  private dispose$ = new Subject<void>()
+  @Output()
+  public onDestroy = new ReplaySubject<void>(1)
+
+  protected readonly data$ = new ReplaySubject<T[]>(1)
+  protected readonly options$ = new ReplaySubject<GridOptions<T>>(1)
+  private initialized$ = new ReplaySubject<void>(1)
 
   private angularFrameworkOverrides = inject(AngularFrameworkOverrides)
   private frameworkComponentWrapper = inject(AngularFrameworkComponentWrapper)
   private viewRef = inject(ViewContainerRef)
+  private elRef = inject(ElementRef)
+  private zone = inject(NgZone)
 
-  public constructor(
-    private elRef: ElementRef<HTMLElement>,
-    private zone: NgZone,
-  ) {
-    super({ data: null, options: null })
+  public ngOnDestroy(): void {
+    this.onDestroy.next()
   }
 
-  public ngOnInit(): void {
-    this.frameworkComponentWrapper.setViewContainerRef(this.viewRef)
+  public ngAfterViewInit(): void {
+    this.angularFrameworkOverrides.runOutsideAngular(() => {
+      this.frameworkComponentWrapper.setViewContainerRef(this.viewRef, this.angularFrameworkOverrides)
+    })
 
+    let grid: GridApi = null
     this.options$
       .pipe(
         runOutsideZone(this.zone),
-        tap({
-          finalize: () => this.disposeGrid(),
-          next: (options) => {
-            this.disposeGrid()
-            if (options) {
-              this.createGrid(options)
-            }
-          },
+        map((options) => {
+          return {
+            animateRows: false,
+            ...(options || {}),
+            context: this,
+          }
         }),
-        takeUntil(this.destroy$),
+        takeUntil(this.onDestroy),
       )
-      .subscribe()
-  }
+      .subscribe((options) => {
+        if (!grid) {
+          grid = this.createGrid(options)
+        } else {
+          grid.updateGridOptions(options)
+        }
+      })
 
-  private disposeGrid() {
-    this.dispose$.next()
+    this.onReady
+      .pipe(
+        take(1),
+        switchMap(() => this.data$),
+        skipWhile((it) => it == null),
+        filter((it) => it != null),
+        takeUntil(this.onDestroy),
+      )
+      .subscribe((data) => {
+        if (grid) {
+          grid.setGridOption('rowData', data)
+        }
+      })
+
+    this.onDestroy.pipe(take(1)).subscribe(() => {
+      if (grid) {
+        grid.destroy()
+        grid = null
+      }
+    })
+    this.initialized$.next()
   }
 
   private createGrid(options: GridOptions) {
-    const grid = new Grid(
-      this.elRef.nativeElement,
-      {
-        ...(options || {}),
-        context: {
-          destroy$: defer(() => this.dispose$),
-        },
-        onGridReady: (e) => this.onGridReady(e, options),
+    const params: GridParams = {
+      globalEventListener: this.eventEmitter.bind(this),
+      frameworkOverrides: this.angularFrameworkOverrides,
+      providedBeanInstances: {
+        frameworkComponentWrapper: this.frameworkComponentWrapper,
       },
-      {
-        frameworkOverrides: this.angularFrameworkOverrides as any,
-        providedBeanInstances: {
-          frameworkComponentWrapper: this.frameworkComponentWrapper,
-        },
-      },
-    )
-    this.dispose$.pipe(take(1)).subscribe(() => {
-      grid.destroy()
-    })
-  }
-
-  private onGridReady(e: GridReadyEvent, options: GridOptions) {
-    this.zone.run(() => {
-      this.onReady.next(e)
-      options?.onGridReady?.(e)
-    })
-    this.data$
-      .pipe(skipWhile((it) => it == null))
-      .pipe(filter((it) => it != null))
-      .pipe(takeUntil(merge(this.destroy$, this.dispose$)))
-      .subscribe((data) => e.api.setRowData(data))
+    }
+    return createGrid(this.elRef.nativeElement, options, params)
   }
 
   public onEvent(event: AgGridEvents): Observable<AgGridEvent<T>> {
     return fromGridEvent(this.onReady, event)
+  }
+
+  private eventEmitter = (eventType: string, event: any) => {
+    const emitter = <EventEmitter<any>>this.events[eventType]
+    if (!emitter) {
+      return
+    }
+    this.angularFrameworkOverrides.runInsideAngular(() => {
+      if (eventType === 'gridReady') {
+        firstValueFrom(this.initialized$).then(() => emitter.emit(event))
+      } else {
+        emitter.emit(event)
+      }
+    })
+  }
+
+  private events = {
+    gridReady: new EventEmitter<GridReadyEvent<T>>(),
   }
 }

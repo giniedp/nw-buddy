@@ -71,14 +71,14 @@ export class TableGridPanelComponent extends ComponentStore<{
   protected columns$ = this.grid$
     .pipe(filter((it) => !!it))
     .pipe(
-      tap(({ columnApi }) => this.colState.next(columnApi.getColumnState())),
+      tap(({ api }) => this.colState.next(api.getColumnState())),
       switchMap((grid) => {
         return this.colState.pipe(
           map((state) => {
             return state.map((it) => {
               return {
                 ...it,
-                name: this.getHeaderName(grid, grid.columnApi.getColumn(it.colId)),
+                name: this.getHeaderName(grid, grid.api.getColumn(it.colId)),
               }
             })
           }),
@@ -132,29 +132,29 @@ export class TableGridPanelComponent extends ComponentStore<{
 
   protected sizeToFit() {
     const grid = this.sigGrid()
-    grid?.columnApi.sizeColumnsToFit(900)
+    grid?.api.sizeColumnsToFit(900)
   }
 
   protected autosizeColumns() {
     const grid = this.sigGrid()
-    grid?.columnApi.autoSizeAllColumns()
+    grid?.api.autoSizeAllColumns()
   }
 
   protected resetColumns() {
     const grid = this.sigGrid()
-    grid?.columnApi.resetColumnState()
-    this.colState.next(grid.columnApi.getColumnState())
+    grid?.api.resetColumnState()
+    this.colState.next(grid.api.getColumnState())
   }
 
   protected resetFilter() {
     const grid = this.sigGrid()
     grid.api.setFilterModel({})
-    grid.api.setQuickFilter('')
+    grid.api.setGridOption('quickFilterText', '')
   }
 
   protected clearPins() {
     const grid = this.sigGrid()
-    grid.api.setPinnedTopRowData()
+    grid.api.setGridOption('pinnedTopRowData', [])
   }
 
   protected toggleHide(id: string) {
@@ -195,7 +195,7 @@ export class TableGridPanelComponent extends ComponentStore<{
         title: 'Save State',
         key: key,
         data: {
-          columns: grid.columnApi.getColumnState(),
+          columns: grid.api.getColumnState(),
           filter: grid.api.getFilterModel(),
         },
       },
@@ -212,7 +212,7 @@ export class TableGridPanelComponent extends ComponentStore<{
       .result$.pipe(filter((it) => !!it))
       .subscribe((state) => {
         const grid = this.get(({ grid }) => grid)
-        grid.columnApi.applyColumnState({
+        grid.api.applyColumnState({
           state: state.columns,
           applyOrder: true,
         })
@@ -232,10 +232,10 @@ export class TableGridPanelComponent extends ComponentStore<{
 
   private submitState(state: ColumnState[]) {
     const grid = this.sigGrid()
-    grid.columnApi.applyColumnState({
+    grid.api.applyColumnState({
       state: state,
     })
-    this.colState.next(grid.columnApi.getColumnState())
+    this.colState.next(grid.api.getColumnState())
   }
 
   private getHeaderName(grid: AgGrid<any, unknown>, col: Column) {

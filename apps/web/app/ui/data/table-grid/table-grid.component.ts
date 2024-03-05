@@ -14,7 +14,6 @@ import {
 import { isEqual } from 'lodash'
 import {
   ReplaySubject,
-  asyncScheduler,
   combineLatest,
   debounceTime,
   defer,
@@ -22,7 +21,6 @@ import {
   map,
   merge,
   skip,
-  subscribeOn,
   switchMap,
   takeUntil,
   tap,
@@ -30,8 +28,8 @@ import {
 import { LocaleService } from '~/i18n'
 import { AgGrid, AgGridDirective } from '~/ui/data/ag-grid'
 import { gridDisplayRowCount, gridGetPinnedTopData } from '~/ui/data/ag-grid/utils'
+import { selectStream } from '~/utils'
 import { runInZone } from '~/utils/rx/run-in-zone'
-import { debounceSync, selectStream, tapDebug } from '~/utils'
 import { TableGridPersistenceService } from './table-grid-persistence.service'
 import { TableGridStore } from './table-grid.store'
 
@@ -110,18 +108,19 @@ export class TableGridComponent<T> implements OnInit {
 
   public readonly rowCount$ = defer(() => gridDisplayRowCount(this.ready$))
 
+  protected gridData$ = this.store.gridData$
+  protected gridOptions$ = this.store.gridOptions$.pipe(map(selectGridOptions))
+
   public constructor(
     private locale: LocaleService,
-    //private grid: AgGridDirective<T>,
     private persistence: TableGridPersistenceService,
     protected store: TableGridStore<T>,
-    private zone: NgZone
+    private zone: NgZone,
   ) {
     //
   }
 
   public async ngOnInit() {
-    this.grid.onReady.pipe(takeUntil(this.store.destroy$)).subscribe(this.ready$)
     this.attachBootloader()
     this.attachPersistence()
     this.attachPinBinding()
@@ -133,35 +132,20 @@ export class TableGridComponent<T> implements OnInit {
     this.ready$.pipe(takeUntil(this.store.destroy$)).subscribe((grid) => {
       this.store.patchState({ grid: grid, hasLoaded: true })
     })
-    // grid initialization
-    combineLatest({
-      data: this.store.gridData$,
-      options: this.store.gridOptions$.pipe(map(selectGridOptions)),
-    })
-      .pipe(debounceSync())
-      .pipe(takeUntil(this.store.destroy$))
-      .subscribe(({ data, options }) => {
-        this.grid.gridData = data
-        this.grid.gridOptions = options
-      })
   }
 
   private attachAutoRefresh() {
     this.ready$
-      .pipe(
-        switchMap((it) => {
-          return this.locale.value$.pipe(map(() => it))
-        })
-      )
+      .pipe(switchMap((it) => this.locale.value$.pipe(map(() => it))))
       .pipe(skip(1)) // skip initial value
       .pipe(takeUntil(this.store.destroy$))
-      .subscribe(({ api, columnApi }) => {
+      .subscribe(({ api }) => {
         // force re-render with new locale
         api.refreshCells({ force: true })
         // force quick filter cache reset
         api.resetQuickFilter()
         // force column filter cache reset
-        columnApi.getColumns().forEach((it) => {
+        api.getColumns().forEach((it) => {
           api.destroyFilter(it.getColId())
         })
       })
@@ -170,17 +154,18 @@ export class TableGridComponent<T> implements OnInit {
   private attachPersistence() {
     merge(
       // load column and filter state
-      this.ready$.pipe(
-        tap(({ columnApi, api }) => {
-          this.persistence.loadColumnState(columnApi, this.persistKey)
-          this.persistence.loadFilterState(api, this.persistKey)
-        })
+      this.grid.onReady.pipe(
+        switchMap(async (e) => {
+          await this.persistence.loadColumnState(e.api, this.persistKey).catch(console.error)
+          await this.persistence.loadFilterState(e.api, this.persistKey).catch(console.error)
+          this.ready$.next(e)
+        }),
       ),
       // load pinned data state
       merge(this.grid.onEvent('firstDataRendered'), this.grid.onEvent('rowDataChanged')).pipe(
         tap(({ api }) => {
           this.persistence.loadPinnedState(api, this.persistKey, this.store.identifyBy$())
-        })
+        }),
       ),
       // save pinned data state
       this.grid
@@ -189,7 +174,7 @@ export class TableGridComponent<T> implements OnInit {
         .pipe(
           tap(({ api }) => {
             this.persistence.savePinnedState(api, this.persistKey, this.store.identifyBy$())
-          })
+          }),
         ),
       // save column state whenever a column has changed
       merge(
@@ -197,13 +182,13 @@ export class TableGridComponent<T> implements OnInit {
         this.grid.onEvent('columnPinned'),
         this.grid.onEvent('columnVisible'),
         this.grid.onEvent('columnResized'),
-        this.grid.onEvent('sortChanged')
+        this.grid.onEvent('sortChanged'),
       )
         .pipe(debounceTime(500))
         .pipe(
-          tap(({ columnApi }: AgGridEvent) => {
-            this.persistence.saveColumnState(columnApi, this.persistKey)
-          })
+          tap(({ api }: AgGridEvent) => {
+            this.persistence.saveColumnState(api, this.persistKey)
+          }),
         ),
       // save filter state whenever a filter has changed
       this.grid
@@ -212,8 +197,8 @@ export class TableGridComponent<T> implements OnInit {
         .pipe(
           tap(({ api }: AgGridEvent) => {
             this.persistence.saveFilterState(api, this.persistKey)
-          })
-        )
+          }),
+        ),
     )
       .pipe(takeUntil(this.store.destroy$))
       .subscribe()
@@ -229,7 +214,7 @@ export class TableGridComponent<T> implements OnInit {
           const rows = gridGetPinnedTopData(api)
           const ids = identifyBy ? rows.map(identifyBy) : null
           this.store.patchState({ pinned: ids })
-        })
+        }),
       )
       .pipe(takeUntil(this.store.destroy$))
       .subscribe()
@@ -260,8 +245,9 @@ export class TableGridComponent<T> implements OnInit {
     // pull selection from grid -> store
     this.grid
       .onEvent('selectionChanged')
-      .pipe(runInZone(this.zone))
       .pipe(
+        filter((e) => !!(e as any).source),
+        runInZone(this.zone),
         tap(({ api }) => {
           const identifyBy = this.store.identifyBy$()
           const rows = api.getSelectedRows()
@@ -271,7 +257,7 @@ export class TableGridComponent<T> implements OnInit {
             rows,
             ids,
           })
-        })
+        }),
       )
       .pipe(takeUntil(this.store.destroy$))
       .subscribe()
@@ -279,12 +265,10 @@ export class TableGridComponent<T> implements OnInit {
     // sync selection from store -> grid
     combineLatest({
       selection: this.store.selection$,
-      change: merge(this.grid.onEvent('firstDataRendered'), this.grid.onEvent('rowDataChanged')),
+      change: merge(this.grid.onEvent('firstDataRendered'), this.grid.onEvent('rowDataUpdated')),
       grid: this.ready$,
     })
-      .pipe(subscribeOn(asyncScheduler))
-      .pipe(runInZone(this.zone))
-      .pipe(takeUntil(this.store.destroy$))
+      .pipe(runInZone(this.zone), debounceTime(0), takeUntil(this.store.destroy$))
       .subscribe(({ selection, grid }) => {
         this.syncSelection({
           toSelect: selection,
@@ -311,11 +295,12 @@ export class TableGridComponent<T> implements OnInit {
     if (isEqual(toSelect, api.getSelectedRows().map(identifyBy))) {
       return
     }
+
     api.forEachNode((it) => {
       if (toSelect && toSelect.includes(identifyBy(it.data))) {
-        it.setSelected(true, false, 'api')
+        it.setSelected(true, false, null)
       } else if (it.isSelected()) {
-        it.setSelected(false, false, 'api')
+        it.setSelected(false, false, null)
       }
     })
     const selectedNode = api.getSelectedNodes()?.[0]
@@ -336,7 +321,7 @@ export class TableGridComponent<T> implements OnInit {
         dataToPin.push(it.data)
       }
     })
-    api.setPinnedTopRowData(dataToPin)
+    api.setGridOption('pinnedTopRowData', dataToPin)
   }
 }
 
@@ -372,6 +357,6 @@ function selectGridOptions(options: GridOptions) {
       filter: true,
     },
     includeHiddenColumnsInQuickFilter: options.includeHiddenColumnsInQuickFilter ?? true,
-    cacheQuickFilter: true
+    cacheQuickFilter: true,
   } satisfies GridOptions
 }

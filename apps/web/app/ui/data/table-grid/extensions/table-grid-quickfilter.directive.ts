@@ -26,7 +26,7 @@ export class DataGridQuickfilterDirective {
       .pipe(
         tap(({ query, grid, enabled }) => {
           query = enabled ? query : ''
-          grid.api.setQuickFilter(query || '')
+          grid.api.setGridOption('quickFilterText', query || '')
         })
       )
       .pipe(takeUntilDestroyed())

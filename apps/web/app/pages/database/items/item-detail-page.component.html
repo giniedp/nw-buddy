@@ -144,7 +144,6 @@
           [isNamed]="itemDetail.isNamed$ | async"
           [solid]="true"
           [routerLink]="['/items/table', itemId]"
-          [target]="(itemDetail.isMissing$ | async) ? '_blank' : ''"
           class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
         >
         </a>
@@ -165,7 +164,6 @@
             [isNamed]="itemDetail.isNamed$ | async"
             [solid]="true"
             [routerLink]="['/items/table', itemId]"
-            [target]="(itemDetail.isMissing$ | async) ? '_blank' : ''"
             class="w-full max-w-[42px] aspect-square outline-primary outline-offset-1 outline-1"
           >
           </a>

@@ -1,5 +1,6 @@
-import { ComponentRef, Injectable, ViewContainerRef } from '@angular/core'
 import { BaseComponentWrapper, FrameworkComponentWrapper, WrappableInterface } from '@ag-grid-community/core'
+import { ComponentRef, Injectable, ViewContainerRef } from '@angular/core'
+import { AngularFrameworkOverrides } from './angular-framework-overrides'
 import { AgFrameworkComponent } from './interfaces'
 
 @Injectable()
@@ -8,22 +9,26 @@ export class AngularFrameworkComponentWrapper
   implements FrameworkComponentWrapper
 {
   private viewContainerRef: ViewContainerRef
+  private angularFrameworkOverrides: AngularFrameworkOverrides
 
-  public setViewContainerRef(viewContainerRef: ViewContainerRef) {
+  public setViewContainerRef(viewContainerRef: ViewContainerRef, angularFrameworkOverrides: AngularFrameworkOverrides) {
     this.viewContainerRef = viewContainerRef
+    this.angularFrameworkOverrides = angularFrameworkOverrides
   }
 
-  public createWrapper(OriginalConstructor: { new (): any }): WrappableInterface {
+  createWrapper(OriginalConstructor: { new (): any }, compType: any): WrappableInterface {
+    let angularFrameworkOverrides = this.angularFrameworkOverrides
     let that = this
-
     class DynamicAgNg2Component extends BaseGuiComponent<any, AgFrameworkComponent<any>> implements WrappableInterface {
       override init(params: any): void {
-        super.init(params)
-        this.componentRef.changeDetectorRef.detectChanges()
+        angularFrameworkOverrides.runInsideAngular(() => {
+          super.init(params)
+          this._componentRef.changeDetectorRef.detectChanges()
+        })
       }
 
       protected createComponent(): ComponentRef<AgFrameworkComponent<any>> {
-        return that.createComponent(OriginalConstructor)
+        return angularFrameworkOverrides.runInsideAngular(() => that.createComponent(OriginalConstructor))
       }
 
       hasMethod(name: string): boolean {
@@ -32,15 +37,16 @@ export class AngularFrameworkComponentWrapper
 
       callMethod(name: string, args: IArguments): void {
         const componentRef = this.getFrameworkComponentInstance()
-        return wrapper.getFrameworkComponentInstance()[name].apply(componentRef, args)
+        return angularFrameworkOverrides.runInsideAngular(() =>
+          wrapper.getFrameworkComponentInstance()[name].apply(componentRef, args),
+        )
       }
 
       addMethod(name: string, callback: Function): void {
         ;(wrapper as any)[name] = callback
       }
     }
-
-    let wrapper: DynamicAgNg2Component = new DynamicAgNg2Component()
+    let wrapper = new DynamicAgNg2Component()
     return wrapper
   }
 
@@ -50,31 +56,44 @@ export class AngularFrameworkComponentWrapper
 }
 
 abstract class BaseGuiComponent<P, T extends AgFrameworkComponent<P>> {
-  protected params: P
-  protected componentRef: ComponentRef<T>
+  protected _params: P
+  protected _eGui: HTMLElement
+  protected _componentRef: ComponentRef<T>
+  protected _agAwareComponent: T
+  protected _frameworkComponentInstance: any // the users component - for accessing methods they create
 
   protected init(params: P): void {
-    this.params = params
-    this.componentRef = this.createComponent()
-    this.componentRef.instance.agInit(this.params)
+    this._params = params
+
+    this._componentRef = this.createComponent()
+    this._agAwareComponent = this._componentRef.instance
+    this._frameworkComponentInstance = this._componentRef.instance
+    this._eGui = this._componentRef.location.nativeElement
+
+    this._agAwareComponent.agInit(this._params)
   }
 
   public getGui(): HTMLElement {
-    return this.componentRef.location.nativeElement
+    return this._eGui
+  }
+
+  /** `getGui()` returns the `ng-component` element. This returns the actual root element. */
+  public getRootElement(): HTMLElement {
+    const firstChild = this._eGui.firstChild
+    return firstChild as HTMLElement
   }
 
   public destroy(): void {
-    const instance = this.componentRef.instance
-    if (instance && 'destroy' in instance && typeof instance.destroy === 'function') {
-      instance.destroy()
+    if (this._frameworkComponentInstance && typeof this._frameworkComponentInstance.destroy === 'function') {
+      this._frameworkComponentInstance.destroy()
     }
-    if (this.componentRef) {
-      this.componentRef.destroy()
+    if (this._componentRef) {
+      this._componentRef.destroy()
     }
   }
 
   public getFrameworkComponentInstance(): any {
-    return this.componentRef.instance
+    return this._frameworkComponentInstance
   }
 
   protected abstract createComponent(): ComponentRef<T>

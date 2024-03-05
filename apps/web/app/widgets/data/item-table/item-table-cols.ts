@@ -303,7 +303,7 @@ export function itemColStockCount(util: TableGridUtils<ItemDefinitionMaster>) {
     colId: 'userStockCount',
     headerValueGetter: () => 'In Stock',
     getQuickFilterText: () => '',
-    suppressMenu: false,
+    suppressHeaderMenuButton: false,
     headerTooltip: 'Number of items currently owned',
     valueGetter: ({ data }) => util.itemPref.get(data.ItemID)?.stock,
     cellRenderer: TrackingCell,
@@ -560,7 +560,7 @@ export function colDefPin(util: ItemTableUtils) {
         class: [],
         tap: (el: HTMLElement) => {
           el.addEventListener('click', () => {
-            api.setPinnedTopRowData([node.data])
+            api.setGridOption('pinnedTopRowData', [node.data])
           })
         },
       })

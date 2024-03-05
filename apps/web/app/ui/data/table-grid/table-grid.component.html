@@ -14,4 +14,4 @@
     />
   </picture>
 </div>
-<div nwbGrid class="h-full w-full"></div>
+<div nwbGrid [gridOptions]="gridOptions$ | async" [gridData]="gridData$ | async" class="h-full w-full"></div>
