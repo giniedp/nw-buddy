@@ -18,7 +18,9 @@ export function fromGridEvent<T extends AgGridEvent = AgGridEvent>(
         api.addEventListener(event as string, handler)
         return () => {
           try {
-            api.removeEventListener(event as string, handler)
+            if (!api.isDestroyed()) {
+              api.removeEventListener(event as string, handler)
+            }
           } catch (err) {
             // TODO: use destroy event to unsubscribe before grid is destroyed
             console.error(err)
