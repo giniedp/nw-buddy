@@ -48,6 +48,19 @@ export function getZoneDescription(zone: ZoneDefinition) {
   return null
 }
 
+export function getZoneInfo(zone: ZoneDefinition) {
+  if (isZoneArea(zone)) {
+    return `AI Level: ${zone.AIVariantLevelOverride}`
+  }
+  if (isZoneTerritory(zone)) {
+    return [zone.RecommendedLevel, zone.MaximumLevel]
+      .filter((it) => !!it)
+      .map((it) => it > 65 ? `${65}+` : it)
+      .join(' - ')
+  }
+  return ''
+}
+
 export function getZoneIcon(zone: ZoneDefinition) {
   if (!zone) {
     return null

@@ -1,9 +1,19 @@
 import { Component, ElementRef, EventEmitter, Output, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { Areadefinitions, LvlSpanws, PoiDefinition, TerritoriesMetadata, Territorydefinitions, Vitals, VitalsMetadata } from '@nw-data/generated'
+import { getZoneInfo, getZoneName } from '@nw-data/common'
+import {
+  Areadefinitions,
+  LvlSpanws,
+  PoiDefinition,
+  TerritoriesMetadata,
+  Territorydefinitions,
+  Vitals,
+  VitalsMetadata,
+} from '@nw-data/generated'
+import { sortBy } from 'lodash'
+import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgCompress, svgExpand } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
@@ -12,10 +22,10 @@ import { LandMapComponent, Landmark, LandmarkPoint, LandmarkZone, MapViewBounds 
 import { VitalDetailStore } from './vital-detail.store'
 
 export interface VitalPointData {
-  vitalId: string
-  level: number
+  vitalId?: string
+  level?: number
   territories: number[]
-  point: number[]
+  point?: number[]
 }
 
 @Component({
@@ -127,7 +137,7 @@ function selectBounds(meta: VitalsMetadata) {
         result[mapId].max[i] = Math.max(result[mapId].max[i], spawn.p[i])
       }
     }
-    if(result[mapId]) {
+    if (result[mapId]) {
       result[mapId].min[0] -= 30
       result[mapId].min[1] -= 30
       result[mapId].max[0] += 30
@@ -159,25 +169,46 @@ function selectData(
   if (!meta) {
     return result
   }
-  for (const territoryId of [...meta.territories].reverse() ) {
-    const poi = poisMap.get(territoryId)
-    const area = areasMap.get(territoryId)
-    const territory = territoriesMap.get(territoryId)
+
+  const territories = sortBy(meta.territories, (id) => {
+    if (territoriesMap.has(id)) {
+      return 1
+    }
+    if (areasMap.has(id)) {
+      return 10
+    }
+    if (poisMap.has(id)) {
+      return 100
+    }
+    return 0
+  })
+  for (const territoryId of territories) {
     const metadata = territoriesMetadataMap.get(String(territoryId).padStart(2, '0'))
     const shape = metadata?.zones?.[0]?.shape
     if (!shape) {
       continue
     }
 
+    const zone = poisMap.get(territoryId) || areasMap.get(territoryId) || territoriesMap.get(territoryId)
+    const name = getZoneName(zone)
+    const info = getZoneInfo(zone)
     const mapId = 'newworld_vitaeeterna'
     result[mapId] ??= []
     result[mapId].push({
-      title: tl8.get((poi || area || territory).NameLocalizationKey),
+      id: `territory:${territoryId}`,
+      title: `
+      <div style="text-align: left;">
+        <strong>${tl8.get(name)}</strong><br>${info}
+      </div>
+      `,
       color: '#FFFFFF',
       outlineColor: '#590e0e',
       shape: shape,
       opacity: 0.075,
-    } satisfies LandmarkZone)
+      payload: {
+        territories: [territoryId],
+      },
+    } satisfies LandmarkZone<VitalPointData>)
   }
 
   let id = 0
@@ -206,7 +237,7 @@ function selectData(
           level: Math.max(...spawn.l, vital.Level),
           territories: spawn.t,
           point: spawn.p,
-        }
+        },
       } satisfies LandmarkPoint<VitalPointData>)
     }
   }
