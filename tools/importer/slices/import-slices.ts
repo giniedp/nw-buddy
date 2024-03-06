@@ -344,13 +344,14 @@ async function applyTerritoryToVital(
   .then((list) => list.flat())
   .then((list) => {
     return list.map((it) => {
-      if (!territories[it.TerritoryID]?.zones?.length) {
+      const territory = territories[it.TerritoryID] || territories[String(it.TerritoryID).padStart(2, '0')]
+      if (!territory?.zones?.length) {
         return null
       }
       return {
         level: it.AIVariantLevelOverride,
         territoryID: it.TerritoryID,
-        ...territories[it.TerritoryID],
+        ...territory,
       }
     })
   })
