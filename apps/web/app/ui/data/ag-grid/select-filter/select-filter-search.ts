@@ -12,8 +12,8 @@ export const SelectFilterSearch: m.Component<SelectFilterSearchAttrs> = {
       return null
     }
     return m('div.fomr-control', [
-      m('div.join', [
-        m('input.input.input-bordered.input-xs.w-full', {
+      m('div.join.w-full', [
+        m('input.join-item.input.input-bordered.input-xs.w-full', {
           type: 'text',
           placeholder: 'search',
           value: value,
@@ -22,7 +22,7 @@ export const SelectFilterSearch: m.Component<SelectFilterSearchAttrs> = {
           },
         }),
         m(
-          'button.btn.btn-ghost.btn-xs',
+          'button.join-item.btn.btn-xs',
           {
             onclick: () => onchange(''),
           },
