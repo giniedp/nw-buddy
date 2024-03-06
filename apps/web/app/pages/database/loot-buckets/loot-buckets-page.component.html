@@ -31,7 +31,7 @@
   </div>
 </ion-header>
 <ion-content [scrollY]="false">
-  <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-min-width: 320px; --side-max-width: 420px">
+  <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-max-width: calc(min(max(50%, 400px), 1000px))">
     <div class="ion-page order-2" id="main">
       @if (service.isGridActive()) {
         <nwb-virtual-grid
@@ -54,15 +54,15 @@
         />
       }
     </div>
-    <!-- <ion-menu contentId="main" class="order-2">
+    <ion-menu contentId="main" class="order-2">
       @if (showSidebar()) {
         <ion-content class="ion-p-4">
           <router-outlet />
         </ion-content>
       }
-    </ion-menu> -->
+    </ion-menu>
   </ion-split-pane>
-  <!-- <ion-modal
+  <ion-modal
     [isOpen]="showModal()"
     [initialBreakpoint]="100 | px2vh"
     [breakpoints]="[12 | px2vh, 100 | px2vh, 0.45, 1]"
@@ -74,5 +74,5 @@
         <router-outlet #outlet="outlet" />
       </ion-content>
     }
-  </ion-modal> -->
+  </ion-modal>
 </ion-content>

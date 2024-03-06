@@ -1,0 +1,12 @@
+<nwb-loot-bucket-detail #detail [bucket]="bucketId$ | async" [row]="rowId$ | async" class="bg-black">
+  @if(detail.lootTableCount()) {
+    <nwb-item-divider/>
+    <div class="flex flex-col gap-2">
+      <h3 class="font-bold mb-1">Loot tables with this bucket</h3>
+      @for(table of detail.lootTables(); track $index) {
+        <nwb-loot-graph [tableId]="table.LootTableID" [showLocked]="true" [expand]="false" />
+      }
+    </div>
+  }
+</nwb-loot-bucket-detail>
+

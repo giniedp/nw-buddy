@@ -25,7 +25,7 @@ export class LootBucketTableAdapter
   private utils: TableGridUtils<LootBucketTableRecord> = inject(TableGridUtils)
 
   public entityID(item: LootBucketTableRecord): string {
-    return `${item.LootBucket}_${item.Row}`
+    return `${item.LootBucket}-${item.Row}`
   }
 
   public entityCategories(item: LootBucketTableRecord): DataTableCategory[] {
@@ -53,7 +53,7 @@ export class LootBucketTableAdapter
             ...it,
             $item: items.get(it.Item) || housing.get(it.Item),
           }
-        })
+        }).sort((a, b) => this.entityID(a).localeCompare(this.entityID(b)))
       })
     )
   }
@@ -71,6 +71,7 @@ function buildOptions(util: TableGridUtils<LootBucketTableRecord>) {
       lootBucketColTags(util),
     ],
   }
+
   // addGenericColumns(result, {
   //   props: COLS_LOOTLIMITS,
   // })

@@ -23,7 +23,7 @@ export type LootBucketTag = {
   Value?: null | [number] | [number, number]
 }
 
-function convertRow(data: Lootbuckets, firstRow: Lootbuckets, rowId): LootBucketRow[] {
+function convertRow(data: Lootbuckets, firstRow: Lootbuckets, rowId: number): LootBucketRow[] {
   const keys = new Set<string>()
   const ids = new Set<number>()
   for (const key of Object.keys(data)) {
@@ -33,6 +33,7 @@ function convertRow(data: Lootbuckets, firstRow: Lootbuckets, rowId): LootBucket
       ids.add(Number(match[2]))
     }
   }
+
   return Array.from(ids)
     .sort()
     .map((id): LootBucketRow => {
@@ -69,7 +70,14 @@ function convertRow(data: Lootbuckets, firstRow: Lootbuckets, rowId): LootBucket
             break
           }
           default: {
-            result[key] = value
+            if (key === 'LootBucket') {
+              if (value && (value !== result[key])) {
+                //console.log('LootBucket', result.Column, value, result[key], result.Item)
+                result[key] = value
+              }
+            } else {
+              result[key] = value
+            }
             break
           }
         }
