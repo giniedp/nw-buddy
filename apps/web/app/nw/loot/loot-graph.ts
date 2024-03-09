@@ -6,6 +6,7 @@ import { LootContext } from './loot-context'
 export type LootNode = LootBucketNode | LootBucketRowNode | LootTableNode | LootTableItemNode // | LootTableRowNode
 
 export interface LootNodeBase<T> {
+  trackId: string
   parent?: LootNode
   children: LootNode[]
   unlocked?: boolean
@@ -80,6 +81,7 @@ export function buildLootGraph({
 
 function buildTableNode(value: LootTable, parent: LootNode, row?: LootTableRow): LootTableNode {
   const node: LootTableNode = {
+    trackId: value.LootTableID,
     type: 'table',
     data: value,
     row: row,
@@ -96,6 +98,7 @@ function buildTableNode(value: LootTable, parent: LootNode, row?: LootTableRow):
 
 function buildTableItemNode(value: LootTableRow, parent: LootNode): LootTableItemNode {
   const node: LootTableItemNode = {
+    trackId: value.LootBucketID || value.LootTableID || value.ItemID,
     type: 'table-item',
     row: value,
     prob: getProb(value),
@@ -112,6 +115,7 @@ function buildTableItemNode(value: LootTableRow, parent: LootNode): LootTableIte
 
 function buildBucketNode(value: LootBucketRow, parent: LootNode, row?: LootTableRow): LootBucketNode {
   const node: LootBucketNode = {
+    trackId: String(value.Row),
     type: 'bucket',
     data: value.LootBucket,
     row: row,
@@ -128,6 +132,7 @@ function buildBucketNode(value: LootBucketRow, parent: LootNode, row?: LootTable
 
 function buildBucketRowNode(value: LootBucketRow, parent: LootNode): LootBucketRowNode {
   const node: LootBucketRowNode = {
+    trackId: String(value.Row),
     type: 'bucket-row',
     data: value,
     parent: parent,
@@ -173,29 +178,6 @@ export function collectLootIds(node: LootNode, result = new CaseInsensitiveSet<s
     for (const child of node.children) {
       collectLootIds(child, result)
     }
-  }
-  return result
-}
-
-export function extractLootTagsFromGraph(graph: LootNode, result = new Set<string>()) {
-  let tags: string[] = []
-  if (graph.type === 'table') {
-    tags = graph.data.Conditions || []
-  }
-  if (graph.type === 'table-item') {
-    //
-  }
-  if (graph.type === 'bucket') {
-    //
-  }
-  if (graph.type === 'bucket-row') {
-    tags = Array.from(graph.data.Tags.keys())
-  }
-  for (const tag of tags) {
-    result.add(tag)
-  }
-  for (const child of graph.children) {
-    extractLootTagsFromGraph(child, result)
   }
   return result
 }
@@ -346,12 +328,9 @@ function walkUp(node: LootNode, fn: (node: LootNode) => void) {
   walkUp(node.parent, fn)
 }
 
-function walk(nodes: LootNode[], fn: (node: LootNode) => void | boolean) {
+function walk(nodes: LootNode[], fn: (node: LootNode) => void | boolean): void {
   for (const child of nodes) {
-    if (fn(child) === false) {
-      //return false
-    }
+    fn(child)
     walk(child.children, fn)
   }
-  return true
 }

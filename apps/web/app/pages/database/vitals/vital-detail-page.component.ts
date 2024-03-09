@@ -48,6 +48,7 @@ export class VitalDetailComponent {
 
   protected vital = toSignal(this.store.vital$)
   protected vitalId = toSignal(this.store.vitalId$)
+  protected vitalLevel = toSignal(this.store.level$)
 
   protected tabId$ = observeQueryParam(this.route, 'tab').pipe(map((it: DetailTabId): DetailTabId => it || 'stats'))
   protected tab = toSignal(this.tabId$)

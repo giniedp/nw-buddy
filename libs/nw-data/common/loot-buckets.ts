@@ -1,6 +1,7 @@
 import { Lootbuckets } from '@nw-data/generated'
 import { CaseInsensitiveMap } from './utils/caseinsensitive-map'
 import { flatten } from 'lodash'
+import { ParsedLootTag, parseLootTag } from './loot'
 
 export function convertLootbuckets(data: Lootbuckets[]): LootBucketRow[] {
   const firstRow = data.find((it) => it.RowPlaceholders === 'FIRSTROW')
@@ -15,12 +16,7 @@ export type LootBucketRow = {
   LootBucket: string
   MatchOne: boolean
   Quantity: number[]
-  Tags: Map<string, LootBucketTag>
-}
-
-export type LootBucketTag = {
-  Name: string
-  Value?: null | [number] | [number, number]
+  Tags: Map<string, ParsedLootTag>
 }
 
 function convertRow(data: Lootbuckets, firstRow: Lootbuckets, rowId: number): LootBucketRow[] {
@@ -53,10 +49,10 @@ function convertRow(data: Lootbuckets, firstRow: Lootbuckets, rowId: number): Lo
         const value = data[`${key}${result.Column}`]
         switch (key) {
           case 'Tags': {
-            const tags = ((value as string[]) || []).map(lootBucketTag)
+            const tags = ((value as string[]) || []).map(parseLootTag)
             for (const tag of tags) {
               if (tag) {
-                result.Tags.set(tag.Name, tag)
+                result.Tags.set(tag.name, tag)
               }
             }
             break
@@ -84,20 +80,4 @@ function convertRow(data: Lootbuckets, firstRow: Lootbuckets, rowId: number): Lo
       }
       return result
     })
-}
-
-function lootBucketTag(value: string): LootBucketTag {
-  if (!value) {
-    return null
-  }
-  if (!value.includes(':')) {
-    return {
-      Name: value,
-    }
-  }
-  const [name, range] = value.split(':')
-  return {
-    Name: name,
-    Value: (range || '').split('-').map(Number) as any,
-  }
 }

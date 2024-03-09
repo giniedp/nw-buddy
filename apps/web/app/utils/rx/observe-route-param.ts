@@ -114,22 +114,34 @@ export function queryParamModel(
   const router = options?.router || inject(Router)
   const route = options?.route || inject(ActivatedRoute)
   const param$ = injectQueryParam(param, route)
-  const paramSignal = toSignal(param$, {
+  const getter = toSignal(param$, {
     injector: options?.injector,
   })
+  const setter = (value: string, extras?: NavigationExtras) => {
+    return router.navigate(['.'], {
+      queryParams: {
+        [param]: value,
+      },
+      relativeTo: route,
+      queryParamsHandling: 'merge',
+      ...(extras || {}),
+    })
+  }
+
   return {
     name: param,
     $: param$,
-    value: paramSignal,
-    update: (value: string, extras?: NavigationExtras) => {
-      return router.navigate(['.'], {
-        queryParams: {
-          [param]: value,
-        },
-        relativeTo: route,
-        queryParamsHandling: 'merge',
-        ...(extras || {}),
-      })
+    value: getter,
+    update: setter,
+    model: {
+      get value(): string {
+        return getter()
+      },
+      set value(value: string) {
+        setter(value, {
+          replaceUrl: true,
+        })
+      }
     }
   }
 

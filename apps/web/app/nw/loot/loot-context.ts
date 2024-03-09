@@ -29,42 +29,9 @@ export type LootBucketConditionNames =
   | 'HWMLootToken'
   | 'HWMLootVoidGauntlet'
 
-export type LootTableConditionNames = 'Level' | 'EnemyLevel' | 'MinPOIContLevel' // zone
+export type LootTableConditionNames = 'Level' | 'EnemyLevel' | 'MinPOIContLevel'
 
-export type LootTableTags =
-  | 'GlobalMod'
-  // mobs
-  | 'Common'
-  | 'Elite'
-  | 'Named'
-  | 'Goblin'
-  // dungeons
-  | 'Amrine'
-  | 'CutlassKeys00'
-  | 'Ebonscale00'
-  | 'Ebonscale00_Mut'
-  | 'Edengrove00'
-  | 'Reekwater00'
-  | 'RestlessShores01'
-  | 'ShatterMtn00'
-  | 'ShatteredObelisk'
-  | 'MutDiff'
-  // dungeon mutations
-  | 'Fire'
-  | 'Ice'
-  | 'Void'
-  | 'Nature'
-  // fishing
-  | 'FishRarity'
-  | 'FishSize'
-  | 'Fresh'
-  | 'Salt'
-  | 'SummerFishRarity'
-  | 'LootTableDiverted'
-  // gypsum conditions
-  | 'GypsumBlack'
-  | 'GypsumBlue'
-  | 'GypsumYellow'
+
 
 export class LootContext {
   /**
@@ -204,12 +171,12 @@ function testBucketCondition(condition: string, context: LootContext, item: Loot
   if (context.values.has(condition)) {
     const tag = item.Tags?.get(condition)
     const value = context.values.get(condition)
-    switch (tag?.Value?.length) {
+    switch (tag?.value?.length) {
       case 1: {
-        return tag.Value[0] <= Number(value)
+        return tag.value[0] <= Number(value)
       }
       case 2: {
-        return tag.Value[0] <= Number(value) && Number(value) <= tag.Value[1]
+        return tag.value[0] <= Number(value) && Number(value) <= tag.value[1]
       }
     }
   }

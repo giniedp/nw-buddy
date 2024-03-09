@@ -1,5 +1,7 @@
 import { Loottable } from '@nw-data/generated'
+import { parseLootRef } from './loot'
 import { OmitByPrefix } from './utils/ts-types'
+import { eqCaseInsensitive } from './utils/caseinsensitive-compare'
 
 export type LootTableBase = OmitByPrefix<Loottable, 'Item' | 'GearScoreRange'>
 export interface LootTable extends LootTableBase {
@@ -23,7 +25,9 @@ export function convertLoottables(data: Loottable[]): LootTable[] {
     .map((it): LootTable => {
       const qty = findById(data, `${it.LootTableID}_Qty`)
       const probs = findById(data, `${it.LootTableID}_Probs`)
-      const limitIds = it.Conditions?.filter((it) => it.startsWith('[LIM]'))?.map((it) => it.replace('[LIM]', ''))
+      const limitIds = it.Conditions?.map(parseLootRef)
+        ?.filter((it) => it?.prefix === 'LIM')
+        ?.map((it) => it.name)
       if (limitIds?.length > 1) {
         console.warn('Multiple limits', limitIds, it)
       }
@@ -32,9 +36,10 @@ export function convertLoottables(data: Loottable[]): LootTable[] {
         MaxRoll: probs.MaxRoll,
         Items: extractItemKeys(it).map((key): LootTableRow => {
           const id = String(it[key] || '')
-          const bucketID = id.startsWith('[LBID]') ? id.replace('[LBID]', '') : null
-          const tableID = id.startsWith('[LTID]') ? id.replace('[LTID]', '') : null
-          const limitID = id.startsWith('[LIM]') ? id.replace('[LIM]', '') : null
+          const idRef = parseLootRef(id)
+          const bucketID = idRef?.prefix === 'LBID' ? idRef.name : null
+          const tableID = idRef?.prefix === 'LTID' ? idRef.name : null
+          const limitID = idRef?.prefix === 'LIM' ? idRef.name : null
           const itemID = bucketID || tableID ? null : id
           return {
             ItemID: itemID,
@@ -52,7 +57,7 @@ export function convertLoottables(data: Loottable[]): LootTable[] {
 }
 
 function findById(items: Loottable[], id: string) {
-  return items.find((qty) => qty.LootTableID === id)
+  return items.find((qty) => eqCaseInsensitive(qty.LootTableID, id))
 }
 
 function extractItemKeys(item: Loottable) {

@@ -19,10 +19,10 @@ export class LootbucketsComponent {
       const conditions = new Set<string>()
       buckets.forEach((it) => {
         it.Tags.forEach((tag) => {
-          if (tag.Value != null) {
-            conditions.add(tag.Name)
+          if (tag.value != null) {
+            conditions.add(tag.name)
           } else {
-            tags.add(tag.Name)
+            tags.add(tag.name)
           }
         })
       })

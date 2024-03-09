@@ -45,13 +45,15 @@
       3D
     </a>
   </div>
-  <div class="p-4">
+  <div class="p-4 bg-base-300 space-y-4">
     @if (tab() === 'stats') {
       <nwb-vital-detail-stats />
-      <nwb-vital-detail-map class="mt-4" (vitalClicked)="onPointClicked($event)" />
+      <nwb-vital-detail-map (vitalClicked)="onPointClicked($event)" />
       @if (lootTableId(); as tableId) {
-        <nwb-loot-context-editor [size]="'sm'" [vitalId]="vitalId()" #editor class="p-1 mb-2" />
+        <nwb-loot-context-editor [vitalId]="vitalId()" [vitalLevel]="vitalLevel()" #editor />
         <nwb-loot-graph
+          [tagsEditable]="true"
+          (addTagClicked)="editor.addTag($event)"
           [tags]="editor.contextTags | async"
           [tagValues]="editor.contextTagValues | async"
           [tableId]="tableId"

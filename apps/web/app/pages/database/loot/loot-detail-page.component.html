@@ -8,4 +8,16 @@
     }
   </div>
 }
-<nwb-loot-graph [tableId]="id$ | async" [showLocked]="true" class="overflow-hidden" />
+<nwb-loot-context-editor #editor class="mb-4" />
+<nwb-loot-graph
+  [tableId]="id$ | async"
+  [tags]="editor.contextTags | async"
+  [tagValues]="editor.contextTagValues | async"
+  [(showLocked)]="showLocked"
+  [tagsEditable]="true"
+  [showLink]="true"
+
+  (addTagClicked)="editor.addTag($event)"
+  (removeTagClicked)="editor.removeTag($event)"
+  class="overflow-hidden"
+/>

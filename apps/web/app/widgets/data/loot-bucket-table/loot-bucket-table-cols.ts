@@ -1,6 +1,5 @@
 import {
   LootBucketRow,
-  LootBucketTag,
   NW_FALLBACK_ICON,
   getItemIconPath,
   getItemId,
@@ -9,8 +8,8 @@ import {
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster, Lootlimits } from '@nw-data/generated'
-import { addSeconds, formatDistanceStrict } from 'date-fns'
+import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
+import { ParsedLootTag } from 'libs/nw-data/common/loot'
 import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
@@ -44,7 +43,7 @@ export function lootBucketColIcon(util: LootBucketTableUtils) {
           isArtifact: isMasterItem(data) && isItemArtifact(data),
           isNamed: isMasterItem(data) && isItemNamed(data),
           rarity: getItemRarity(item),
-        })
+        }),
       )
     }),
   })
@@ -118,12 +117,12 @@ export function lootBucketColTags(util: LootBucketTableUtils) {
   })
 }
 
-function formatTag(tag: LootBucketTag) {
-  if (!tag.Value) {
-    return tag.Name
+function formatTag(tag: ParsedLootTag) {
+  if (!tag.value) {
+    return tag.name
   }
-  if (tag.Value.length === 1) {
-    return [tag.Name, tag.Value[0]].join(': ')
+  if (tag.value.length === 1) {
+    return [tag.name, tag.value[0]].join(': ')
   }
-  return [tag.Name, tag.Value.join('-')].join(': ')
+  return [tag.name, tag.value.join('-')].join(': ')
 }

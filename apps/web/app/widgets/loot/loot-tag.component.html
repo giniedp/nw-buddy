@@ -1,0 +1,24 @@
+@if(tag()) {
+  {{ tag() | nwHumanize }}
+}
+@if(tag() && tagValue()) {
+  :
+}
+@if(tagValue()) {
+  {{ tagValue() }}
+}
+<ng-content/>
+@if (isEditable) {
+  <label
+    class="swap swap-rotate w-4 h-4 aspect-square translate-x-1 opacity-75"
+    (mouseenter)="mouseEnter()"
+    (mouseleave)="mouseLeave()"
+    [class.swap-active]="!isEditable || isChecked && !isHover()"
+    [class.cursor-pointer]="isEditable"
+    [class.hover:opacity-100]="isEditable"
+    (click)="onActionClicked()"
+  >
+    <nwb-icon [icon]="iconCheck" class="swap-on w-4 h-4" />
+    <nwb-icon [icon]="iconPlus" class="swap-off w-4 h-4 transition-all" [class.rotate-45]="canRemove" />
+  </label>
+}

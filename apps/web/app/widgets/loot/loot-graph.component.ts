@@ -1,140 +1,127 @@
-import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
-import { combineLatest, of, switchMap } from 'rxjs'
-import { NwModule } from '~/nw'
+import { ChangeDetectionStrategy, Component, Input, Output, inject } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
+import { patchState } from '@ngrx/signals'
+import { combineLatest, of, skip, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
-import { LootContext } from '~/nw/loot'
+import { NwModule } from '~/nw'
 import { LootNode, buildLootGraph, updateLootGraph } from '~/nw/loot/loot-graph'
 import { selectSignal, selectStream } from '~/utils'
 import { LootContextEditorComponent } from './loot-context-editor.component'
 import { LootGraphNodeComponent } from './loot-graph-node.component'
+import { LootGraphService } from './loot-graph.service'
+import { LootGraphStore } from './loot-graph.store'
 
 @Component({
   standalone: true,
   selector: 'nwb-loot-graph',
-  template: `
-    @for (node of graph(); track $index) {
-      <nwb-loot-graph-node
-        [node]="node"
-        [showLocked]="showLocked"
-        [expand]="expand"
-        [showChance]="showChance"
-        [showLink]="true"
-      />
-    }
-  `,
+  templateUrl: './loot-graph.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [NwModule, LootGraphNodeComponent, LootContextEditorComponent],
+  providers: [LootGraphStore, LootGraphService],
   host: {
     class: 'block ayout-content',
   },
 })
-export class LootGraphComponent extends ComponentStore<{
-  tableIds: string[]
-  tags: string[]
-  tagValues: Record<string, string | number>
-  dropChance: number
-  highlight: string
-}> {
-  @Input()
-  public showLocked = false
+export class LootGraphComponent {
+  private service = inject(LootGraphService)
+  private store = inject(LootGraphStore)
+  private db = inject(NwDataService)
 
   @Input()
-  public showEditor = true
+  public set showLocked(value: boolean) {
+    patchState(this.store, { showLocked: value })
+  }
+  public get showLocked() {
+    return this.store.showLocked()
+  }
+  @Output()
+  public showLockedChange = toObservable(this.store.showLocked).pipe(skip(1))
 
   @Input()
-  public showChance = false
+  public set showChance(value: boolean) {
+    patchState(this.store, { showChance: value })
+  }
+  public get showChance() {
+    return this.store.showChance()
+  }
+  @Output()
+  public showChanceChange = toObservable(this.store.showChance).pipe(skip(1))
 
   @Input()
-  public showStats = false
+  public set showStats(value: boolean) {
+    patchState(this.store, { showStats: value })
+  }
+
+  @Input()
+  public set tagsEditable(value: boolean) {
+    patchState(this.store, { tagsEditable: value })
+  }
 
   @Input()
   public expand = true
 
   @Input()
+  public showLink = true
+
+  @Input()
   public set tableId(value: string | string[]) {
     if (Array.isArray(value)) {
-      this.patchState({ tableIds: value })
+      patchState(this.store, { tableIds: value })
     } else if (typeof value === 'string') {
-      this.patchState({ tableIds: [value] })
+      patchState(this.store, { tableIds: [value] })
     } else {
-      this.patchState({ tableIds: [] })
+      patchState(this.store, { tableIds: [] })
     }
   }
 
   @Input()
   public set tags(value: string[]) {
-    this.patchState({ tags: value })
+    patchState(this.store, { tags: value })
   }
 
   @Input()
   public set tagValues(value: Record<string, string | number>) {
-    this.patchState({ tagValues: value })
+    patchState(this.store, { tagValues: value })
   }
 
   @Input()
   public set dropChance(value: number) {
-    this.patchState({ dropChance: value })
+    patchState(this.store, { dropChance: value })
   }
 
   @Input()
   public set highlight(value: string) {
-    this.patchState({ highlight: value })
+    patchState(this.store, { highlight: value })
   }
 
-  protected tableIds$ = this.select((s) => s.tableIds)
-  protected tags$ = this.select((s) => s.tags)
-  protected tagValues$ = this.select((s) => s.tagValues)
-  protected dropChance$ = this.select((s) => s.dropChance)
-  protected highlight$ = this.select((s) => s.highlight)
-  protected fullGraph$ = this.select(this.tableIds$.pipe(switchMap((ids) => this.lootGraph(ids))), (it) => it)
+  @Output()
+  public addTagClicked = this.service.addTagClicked
 
-  protected context$ = this.select(
-    combineLatest({
-      tags: this.tags$,
-      values: this.tagValues$,
-    }),
-    (params) => LootContext.create(params),
-    { debounce: true },
-  )
+  @Output()
+  public removeTagClicked = this.service.removeTagClicked
+
   protected graph = selectSignal(
     {
-      graph: this.fullGraph$,
-      context: this.context$,
-      dropChance: this.dropChance$,
-      highlight: this.highlight$,
+      graph: toObservable(this.store.tableIds).pipe(switchMap((ids) => this.lootGraph(ids))),
+      context: this.store.context,
+      dropChance: this.store.dropChance,
+      highlight: this.store.highlight,
+      showLocked: this.store.showLocked
     },
-    ({ graph, context, dropChance, highlight }) => {
+    ({ graph, context, dropChance, highlight, showLocked }) => {
       if (!graph) {
         return null
       }
       return graph.map((it) => {
         return updateLootGraph({
           graph: it,
-          context: this.showLocked ? null : context,
+          context: showLocked ? null : context,
           dropChance,
           highlight,
         })
       })
     },
-   // { debounce: true },
   )
-
-  // protected knownTags$ = this.select(this.graph$, (graph) => {
-  //   return Array.from(extractLootTagsFromGraph(graph))
-  // })
-  protected trackByIndex = (i: number) => i
-
-  public constructor(private db: NwDataService) {
-    super({
-      tableIds: null,
-      tags: [],
-      tagValues: {},
-      dropChance: 1,
-      highlight: null,
-    })
-  }
 
   private lootGraph(tableIds: string[]) {
     if (!tableIds || !tableIds.length) {
