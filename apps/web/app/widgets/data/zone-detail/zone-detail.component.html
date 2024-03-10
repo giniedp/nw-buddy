@@ -1,5 +1,5 @@
 <nwb-item-header class="gap-2 flex-none">
-  <a [nwbItemIcon]="icon()" [nwLink]="recordId()" [nwLinkResource]="'gatherable'" class="w-[76px] h-[76px]"> </a>
+  <a [nwbItemIcon]="icon()" [nwLink]="recordId()" [nwLinkResource]="'poi'" class="w-[76px] h-[76px]"> </a>
   <nwb-item-header-content class="z-10" [title]="name() | nwText | nwTextBreak: ' - '" [text1]="type()" [text2]="subtitle()" />
 </nwb-item-header>
 <div class="flex-1 flex flex-col gap-2 empty:hidden p-4 relative" [class.min-h-[200px]]="!!image()">

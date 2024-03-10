@@ -1,44 +1,39 @@
 <div class="grid grid-cols-fill-xs gap-x-2 gap-y-1">
+
   <div class="join bg-base-200">
     <button
-      class="join-item btn btn-sm btn-ghost flex-1 text-left justify-start"
-      [cdkMenuTriggerFor]="playerLevelSlider"
+      class="join-item btn btn-sm btn-ghost flex-1 justify-start flex-nowrap truncate"
+      [class.justify-start]="!!territoryId"
+      [class.italic]="!territoryId"
+      (click)="pickTerritory()"
     >
-      Player Level
+      @if (territoryId) {
+        @if (territoryIcon; as icon) {
+          <img [src]="icon" class="w-6 h-6" />
+        }
+        {{ territoryName | nwText }}
+      } @else {
+        - Territory -
+      }
     </button>
-    <input
-      type="number"
-      class="join-item input input-sm w-20 appearance-none text-right"
-      [(ngModel)]="playerLevel"
-      [min]="playerLevelMin"
-      [max]="playerLevelMax"
-      (wheel)="($event)"
-    />
-    <button class="join-item btn btn-sm btn-ghost btn-square" [tooltip]="playerLevelTip" [preventClick]="true">
+
+    <button class="join-item btn btn-sm btn-ghost btn-square" [tooltip]="territoryTip" [preventClick]="true">
       <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
     </button>
-    <ng-template #playerLevelTip>
+    <ng-template #territoryTip>
       <div class="p-2 prose prose-sm leading-tight w-80">
-        <h4>Player level</h4>
+        <h4>Territory</h4>
         <p>
-          Accounts for player level or player level range condition tags, e.g.
-          <span class="badge badge-secondary badge-sm">Player {{ playerLevel || 60 }}</span>
+          When selecting a territory, the Content Level is updated and loot tags are added to the context.
         </p>
-      </div>
-    </ng-template>
-    <ng-template #playerLevelSlider>
-      <div class="bg-base-200 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
-        <nwb-input-slider
-          class="w-full"
-          [size]="'xs'"
-          [min]="playerLevelMin"
-          [max]="playerLevelMax"
-          [step]="1"
-          [bars]="true"
-          [barsStep]="10"
-          [values]="true"
-          [(ngModel)]="playerLevel"
-        />
+        @if(territoryTags?.length) {
+          <p>
+            Added Tags:
+            @for(tag of territoryTags; track $index) {
+              <span class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
+            }
+          </p>
+        }
       </div>
     </ng-template>
   </div>
@@ -53,7 +48,7 @@
     <input
       type="number"
       class="join-item input input-sm w-20 appearance-none text-right"
-      [(ngModel)]="minContLevel"
+      [(ngModel)]="contLevel"
       [min]="contentLevelMin"
       [max]="contentLevelMax"
       (wheel)="($event)"
@@ -65,8 +60,11 @@
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Minimum Content Level</h4>
         <p>
-          Accounts for content level condition tags, e.g.
-          <span class="badge badge-secondary badge-sm">MinContLevel {{ minContLevel || 60 }}</span>
+          Accounts for tags like <span class="badge badge-secondary badge-sm">MinContLevel: X</span> or <span class="badge badge-secondary badge-sm">MinContLevel: X-Y</span>.
+        </p>
+        <p>
+          Values in tag conditions are zero-based.
+          E.g. <span class="badge badge-secondary badge-sm">MinContLevel: 19</span> will match level 20 and above.
         </p>
       </div>
     </ng-template>
@@ -81,87 +79,7 @@
           [bars]="true"
           [barsStep]="10"
           [values]="true"
-          [(ngModel)]="minContLevel"
-        />
-      </div>
-    </ng-template>
-  </div>
-
-  <div class="join bg-base-200">
-    <button
-      class="join-item btn btn-sm btn-ghost flex-1 justify-start"
-      [class.justify-start]="!!vitalId"
-      [class.italic]="!vitalId"
-      (click)="pickVital()"
-    >
-      @if (vitalId) {
-        @if (vitalIcon; as icon) {
-          <img [src]="icon" class="w-6 h-6" />
-        }
-        {{ vitalName | nwText }}
-      } @else {
-        Creature
-      }
-    </button>
-    <button class="join-item btn btn-sm btn-ghost btn-square" [tooltip]="creatureTip" [preventClick]="true">
-      <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
-    </button>
-    <ng-template #creatureTip>
-      <div class="p-2 prose prose-sm leading-tight w-80">
-        The vital level accounts for enemy level condition tag, e.g.
-        <span class="badge badge-secondary badge-sm">EnemyLevel {{ vitalLevel || 60 }}</span>
-        <br />
-        <br />
-        Selected creature adds loot tags to context
-        <br />
-        <!-- <ng-container *ngIf="vm.vital?.tags?.length">
-          <br />
-          Added Tags:
-          <span *ngFor="let tag of vm.vital.tags" class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
-        </ng-container> -->
-      </div>
-    </ng-template>
-  </div>
-
-  <div class="join bg-base-200">
-    <button
-      class="join-item btn btn-sm btn-ghost flex-1 text-left justify-start"
-      [cdkMenuTriggerFor]="enemyLevelSlider"
-    >
-      Enemy Level
-    </button>
-    <input
-      type="number"
-      class="join-item input input-sm w-20 appearance-none text-right"
-      [(ngModel)]="vitalLevel"
-      [min]="enemyLevelMin"
-      [max]="enemyLevelMax"
-      (wheel)="($event)"
-    />
-    <button class="join-item btn btn-sm btn-ghost btn-square" [tooltip]="enemyLevelTip" [preventClick]="true">
-      <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
-    </button>
-    <ng-template #enemyLevelTip>
-      <div class="p-2 prose prose-sm leading-tight w-80">
-        <h4>Enemy Level</h4>
-        <p>
-          Accounts for enemy level condition tags, e.g.
-          <span class="badge badge-secondary badge-sm">EnemyLevel {{ vitalLevel || 60 }}</span>
-        </p>
-      </div>
-    </ng-template>
-    <ng-template #enemyLevelSlider>
-      <div class="bg-base-200 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
-        <nwb-input-slider
-          class="w-full"
-          [size]="'xs'"
-          [min]="enemyLevelMin"
-          [max]="enemyLevelMax"
-          [step]="1"
-          [bars]="true"
-          [barsStep]="10"
-          [values]="true"
-          [(ngModel)]="vitalLevel"
+          [(ngModel)]="contLevel"
         />
       </div>
     </ng-template>
@@ -191,26 +109,28 @@
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Point Of Interest</h4>
         <p>
-          Selected POI adds loot tags to context, if it has any.
-          <br />
-          <!-- <ng-container *ngIf="territory?.tags?.length">
-                      <br />
-          Added Tags:
-          <span *ngFor="let tag of poi.tags" class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
-          </ng-container> -->
+          When selecting a POI, its loot tags are added to the context
         </p>
+        @if(poiTags?.length) {
+          <p>
+            Added Tags:
+            @for(tag of poiTags; track $index) {
+              <span class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
+            }
+          </p>
+        }
       </div>
     </ng-template>
   </div>
 
   <div class="join bg-base-200">
     <button class="join-item btn btn-sm btn-ghost flex-1 text-left justify-start" [cdkMenuTriggerFor]="poiLevelSlider">
-      Min POI Level
+      POI Level
     </button>
     <input
       type="number"
       class="join-item input input-sm w-20 max-w-xs appearance-none text-right"
-      [(ngModel)]="minPoiLevel"
+      [(ngModel)]="poiLevel"
       [min]="poiLevelMin"
       [max]="poiLevelMax"
       (wheel)="($event)"
@@ -220,7 +140,7 @@
     </button>
     <ng-template #poiLevelTip>
       <div class="p-2 prose prose-sm leading-tight w-80">
-        <h4>Min POI Level</h4>
+        <h4>Point Of Intereset Level</h4>
         <p></p>
       </div>
     </ng-template>
@@ -235,7 +155,92 @@
           [bars]="true"
           [barsStep]="10"
           [values]="true"
-          [(ngModel)]="minPoiLevel"
+          [(ngModel)]="poiLevel"
+        />
+      </div>
+    </ng-template>
+  </div>
+
+
+  <div class="join bg-base-200">
+    <button
+      class="join-item btn btn-sm btn-ghost flex-1 justify-start"
+      [class.justify-start]="!!vitalId"
+      [class.italic]="!vitalId"
+      (click)="pickVital()"
+    >
+      @if (vitalId) {
+        @if (vitalIcon; as icon) {
+          <img [src]="icon" class="w-6 h-6" />
+        }
+        {{ vitalName | nwText }}
+      } @else {
+        Creature
+      }
+    </button>
+    <button class="join-item btn btn-sm btn-ghost btn-square" [tooltip]="creatureTip" [preventClick]="true">
+      <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
+    </button>
+    <ng-template #creatureTip>
+      <div class="p-2 prose prose-sm leading-tight w-80">
+        <h4>Creature</h4>
+        <p>
+          When selecting a creature, its loot tags are added to the context
+        </p>
+        @if(vitalTags?.length) {
+          <p>
+            Added Tags:
+            @for(tag of vitalTags; track $index) {
+              <span class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
+            }
+          </p>
+        }
+      </div>
+    </ng-template>
+  </div>
+
+  <div class="join bg-base-200">
+    <button
+      class="join-item btn btn-sm btn-ghost flex-1 text-left justify-start"
+      [cdkMenuTriggerFor]="enemyLevelSlider"
+    >
+      Enemy Level
+    </button>
+    <input
+      type="number"
+      class="join-item input input-sm w-20 appearance-none text-right"
+      [(ngModel)]="vitalLevel"
+      [min]="enemyLevelMin"
+      [max]="enemyLevelMax"
+      (wheel)="($event)"
+    />
+    <button class="join-item btn btn-sm btn-ghost btn-square" [tooltip]="enemyLevelTip" [preventClick]="true">
+      <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
+    </button>
+    <ng-template #enemyLevelTip>
+      <div class="p-2 prose prose-sm leading-tight w-80">
+        <h4>Enemy level</h4>
+        <p>
+          Accounts for tags like <span class="badge badge-secondary badge-sm">EnemyLevel: X</span> or <span class="badge badge-secondary badge-sm">EnemyLevel: X-Y</span>.
+        </p>
+        <p>
+          Values in tag conditions are zero-based.
+          E.g. <span class="badge badge-secondary badge-sm">EnemyLevel: 19</span> will match level 20 and above.
+        </p>
+      </div>
+    </ng-template>
+    <ng-template #enemyLevelSlider>
+      <div class="bg-base-200 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
+        <nwb-input-slider
+          class="w-full"
+          [size]="'xs'"
+          [min]="enemyLevelMin"
+          [max]="enemyLevelMax"
+          [step]="1"
+          [bars]="true"
+          [barsStep]="10"
+          [values]="true"
+          [(ngModel)]="vitalLevel"
         />
       </div>
     </ng-template>
@@ -243,39 +248,51 @@
 
   <div class="join bg-base-200">
     <button
-      class="join-item btn btn-sm btn-ghost flex-1 justify-start flex-nowrap truncate"
-      [class.justify-start]="!!territoryId"
-      [class.italic]="!territoryId"
-      (click)="pickTerritory()"
+      class="join-item btn btn-sm btn-ghost flex-1 text-left justify-start"
+      [cdkMenuTriggerFor]="playerLevelSlider"
     >
-      @if (territoryId) {
-        @if (territoryIcon; as icon) {
-          <img [src]="icon" class="w-6 h-6" />
-        }
-        {{ territoryName | nwText }}
-      } @else {
-        - Territory -
-      }
+      Player Level
     </button>
-
-    <button class="join-item btn btn-sm btn-ghost btn-square" [tooltip]="territoryTip" [preventClick]="true">
+    <input
+      type="number"
+      class="join-item input input-sm w-20 appearance-none text-right"
+      [(ngModel)]="playerLevel"
+      [min]="playerLevelMin"
+      [max]="playerLevelMax"
+      (wheel)="($event)"
+    />
+    <button class="join-item btn btn-sm btn-ghost btn-square" [tooltip]="playerLevelTip" [preventClick]="true">
       <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
     </button>
-    <ng-template #territoryTip>
+    <ng-template #playerLevelTip>
       <div class="p-2 prose prose-sm leading-tight w-80">
-        <h4>Territory</h4>
+        <h4>Player level</h4>
         <p>
-          Selected territory updates the Content Level and adds loot tags to context
-          <br />
-          <!-- <ng-container *ngIf="territory?.tags?.length">
-            <br />
-            Added Tags:
-            <span *ngFor="let tag of territory.tags" class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
-          </ng-container> -->
+          Accounts for tags like <span class="badge badge-secondary badge-sm">Level: X</span> or <span class="badge badge-secondary badge-sm">Level: X-Y</span>.
+        </p>
+        <p>
+          Values in tag conditions are zero-based.
+          E.g. <span class="badge badge-secondary badge-sm">Level: 19</span> will match level 20 and above.
         </p>
       </div>
     </ng-template>
+    <ng-template #playerLevelSlider>
+      <div class="bg-base-200 border border-base-100 rounded-lg p-4 w-80" cdkMenu>
+        <nwb-input-slider
+          class="w-full"
+          [size]="'xs'"
+          [min]="playerLevelMin"
+          [max]="playerLevelMax"
+          [step]="1"
+          [bars]="true"
+          [barsStep]="10"
+          [values]="true"
+          [(ngModel)]="playerLevel"
+        />
+      </div>
+    </ng-template>
   </div>
+
 
   <div class="join bg-base-200">
     <button
@@ -315,14 +332,16 @@
   @if (gameModeIsMutable) {
     <div class="join bg-base-200">
       <button class="join-item btn btn-sm btn-ghost flex-1 text-left justify-start">Difficulty</button>
-      <input
+      <select
         type="number"
-        class="join-item input input-sm w-20 appearance-none text-right"
+        class="join-item input input-sm w-20 min-w-0 appearance-none"
         [(ngModel)]="mutaDifficultyId"
-        [min]="mutaDifficultyMin"
-        [max]="mutaDifficultyMax"
-        (wheel)="($event)"
-      />
+      >
+        <option [value]="null" class="italic">Normal</option>
+        @for (option of mutaDifficultyOptions(); track $index) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
       <button class="join-item btn btn-sm btn-ghost btn-square" [tooltip]="mutaDifficultyTip" [preventClick]="true">
         <nwb-icon [icon]="iconInfo" class="w-4 h-4" />
       </button>

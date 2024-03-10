@@ -17,7 +17,7 @@ export function getGameModeLootTags(
     ...(mutation.InjectedLootTags || []),
     mutation.InjectedCreatureLoot || null,
     mutation.InjectedContainerLoot || null,
-    ...(element?.InjectedLootTags || []),
+    element?.InjectedLootTags || null,
     element?.InjectedCreatureLoot || null,
     element?.InjectedContainerLoot || null,
   ].filter((it) => !!it)

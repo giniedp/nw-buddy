@@ -9,8 +9,8 @@ export interface LootContextEditorState {
   isLoaded: boolean
 
   playerLevel: number
-  minContLevel: number
-  minPoiLevel: number
+  contLevel: number
+  poiLevel: number
   enemyLevel: number
   vitalId: string
   vitalLevel: number
@@ -32,8 +32,8 @@ export interface LootContextEditorState {
 const DEFAULT_STATE: LootContextEditorState = {
   isLoaded: false,
   playerLevel: null,
-  minContLevel: null,
-  minPoiLevel: null,
+  contLevel: null,
+  poiLevel: null,
   enemyLevel: null,
   vitalId: null,
   vitalLevel: null,
@@ -69,6 +69,7 @@ export const LootContextEditorStore = signalStore(
     }
   }),
   withComputed(({ nwData, vitalId, territoryId, poiId, gameModeId, mutaDifficultyId, mutaElementTypeId }) => {
+
     return {
       vital: computed(() => nwData()?.vitalsMap?.get(vitalId())),
       poi: computed(() => nwData()?.pois?.find((it) => it.TerritoryID === poiId())),
@@ -133,8 +134,8 @@ export const LootContextEditorStore = signalStore(
     ({
       playerLevel,
       enemyLevel,
-      minContLevel,
-      minPoiLevel,
+      contLevel,
+      poiLevel,
       salvageItemGearScore,
       salvageItemRarity,
       salvageItemTier,
@@ -144,8 +145,8 @@ export const LootContextEditorStore = signalStore(
           const values: Record<string, string | number> = {
             Level: playerLevel(),
             EnemyLevel: enemyLevel(),
-            MinContLevel: minContLevel(),
-            MinPOIContLevel: minPoiLevel(),
+            MinContLevel: contLevel(),
+            MinPOIContLevel: poiLevel(),
             SalvageItemGearScore: salvageItemGearScore(),
             SalvageItemRarity: salvageItemRarity(),
             SalvageItemTier: salvageItemTier(),

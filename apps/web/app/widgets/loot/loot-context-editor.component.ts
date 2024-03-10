@@ -1,3 +1,4 @@
+import { animate, style, transition, trigger } from '@angular/animations'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Injector, Input, Output, computed, inject } from '@angular/core'
@@ -28,7 +29,6 @@ import { VitalTableAdapter } from '../data/vital-table'
 import { ZoneTableAdapter } from '../data/zone-table'
 import { LootContextEditorState, LootContextEditorStore } from './loot-context-editor.store'
 import { LootTagComponent } from './loot-tag.component'
-import { animate, style, transition, trigger } from '@angular/animations'
 
 @Component({
   standalone: true,
@@ -47,7 +47,7 @@ import { animate, style, transition, trigger } from '@angular/animations'
     IconsModule,
     InputSliderComponent,
     LayoutModule,
-    LootTagComponent
+    LootTagComponent,
   ],
   providers: [LootContextEditorStore],
   host: {
@@ -73,30 +73,31 @@ export class LootContextEditorComponent {
   private injector = inject(Injector)
 
   @Output()
-  public stateChange = toObservable(computed(() => {
-    const state = getState(this.store)
-    return {
+  public stateChange = toObservable(
+    computed(() => {
+      const state = getState(this.store)
+      return {
+        playerLevel: state.playerLevel,
+        contLevel: state.contLevel,
+        poiLevel: state.poiLevel,
+        enemyLevel: state.enemyLevel,
+        vitalId: state.vitalId,
+        vitalLevel: state.vitalLevel,
 
-      playerLevel: state.playerLevel,
-      minContLevel: state.minContLevel,
-      minPoiLevel: state.minPoiLevel,
-      enemyLevel: state.enemyLevel,
-      vitalId: state.vitalId,
-      vitalLevel: state.vitalLevel,
+        salvageItemGearScore: state.salvageItemGearScore,
+        salvageItemRarity: state.salvageItemRarity,
+        salvageItemTier: state.salvageItemTier,
 
-      salvageItemGearScore: state.salvageItemGearScore,
-      salvageItemRarity: state.salvageItemRarity,
-      salvageItemTier: state.salvageItemTier,
+        territoryId: state.territoryId,
+        poiId: state.poiId,
+        gameModeId: state.gameModeId,
+        mutaDifficultyId: state.mutaDifficultyId,
+        mutaElementTypeId: state.mutaElementTypeId,
 
-      territoryId: state.territoryId,
-      poiId: state.poiId,
-      gameModeId: state.gameModeId,
-      mutaDifficultyId: state.mutaDifficultyId,
-      mutaElementTypeId: state.mutaElementTypeId,
-
-      customTags: state.customTags
-    }
-  }))
+        customTags: state.customTags,
+      }
+    }),
+  )
 
   @Input()
   public set vitalId(value: string) {
@@ -114,13 +115,8 @@ export class LootContextEditorComponent {
   public get vitalIcon() {
     return getVitalFamilyInfo(this.store.vital())?.Icon
   }
-
-  @Input()
-  public set vitalLevel(value: number) {
-    patchState(this.store, { enemyLevel: (value - 1) || 0 })
-  }
-  public get vitalLevel() {
-    return (this.store.enemyLevel() + 1) || 0
+  public get vitalTags() {
+    return this.store.vitalTags()
   }
 
   @Input()
@@ -139,6 +135,9 @@ export class LootContextEditorComponent {
   public get territoryIcon() {
     return getZoneIcon(this.store.territory())
   }
+  public get territoryTags() {
+    return this.store.territoryTags()
+  }
 
   @Input()
   public set poiId(value: number) {
@@ -155,6 +154,9 @@ export class LootContextEditorComponent {
   }
   public get poiIcon() {
     return getZoneIcon(this.store.poi())
+  }
+  public get poiTags() {
+    return this.store.poiTags()
   }
 
   @Input()
@@ -178,12 +180,21 @@ export class LootContextEditorComponent {
   }
 
   @Input()
-  public set mutaDifficultyId(value: number) {
-    patchState(this.store, { mutaDifficultyId: value })
+  public set mutaDifficultyId(value: number | string) {
+    patchState(this.store, { mutaDifficultyId: Number(value) })
   }
   public get mutaDifficultyId() {
     return this.store.mutaDifficultyId()
   }
+  public mutaDifficultyOptions = computed(() => {
+    const items = this.store.nwData()?.mutaDifficulties || []
+    return items.map((it) => {
+      return {
+        value: it.MutationDifficulty,
+        label: `M${it.MutationDifficulty}`,
+      }
+    })
+  })
 
   @Input()
   public set mutaElementTypeId(value: string) {
@@ -204,26 +215,34 @@ export class LootContextEditorComponent {
 
   @Input()
   public set playerLevel(value: number) {
-    patchState(this.store, { playerLevel: (value - 1) || 0 })
+    patchState(this.store, { playerLevel: value - 1 || 0 })
   }
   public get playerLevel() {
-    return (this.store.playerLevel() + 1) || 0
+    return (this.store.playerLevel() || 0) + 1
   }
 
   @Input()
-  public set minContLevel(value: number) {
-    patchState(this.store, { minContLevel: value })
+  public set contLevel(value: number) {
+    patchState(this.store, { contLevel: value - 1 || 0 })
   }
-  public get minContLevel() {
-    return this.store.minContLevel()
+  public get contLevel() {
+    return (this.store.contLevel() || 0) + 1
   }
 
   @Input()
-  public set minPoiLevel(value: number) {
-    patchState(this.store, { minPoiLevel: value })
+  public set poiLevel(value: number) {
+    patchState(this.store, { poiLevel: value - 1 || 0 })
   }
-  public get minPoiLevel() {
-    return this.store.minPoiLevel()
+  public get poiLevel() {
+    return (this.store.poiLevel() || 0) + 1
+  }
+
+  @Input()
+  public set vitalLevel(value: number) {
+    patchState(this.store, { enemyLevel: value - 1 || 0 })
+  }
+  public get vitalLevel() {
+    return (this.store.enemyLevel() || 0) + 1
   }
 
   @Output()
@@ -292,10 +311,31 @@ export class LootContextEditorComponent {
       title: 'Pick Vital',
       dataView: { adapter: VitalTableAdapter },
     })
-      .pipe(filter((it) => it !== undefined))
-      .pipe(map((it) => it?.[0] as string))
-      .subscribe((it) => {
-        patchState(this.store, { vitalId: it })
+      .pipe(
+        filter((it) => it !== undefined),
+        map((it) => it?.[0] as string),
+        map((id) => this.store.nwData().vitalsMap.get(id)),
+      )
+      .subscribe((vital) => {
+        this.vitalId = vital?.VitalsID
+        this.vitalLevel = vital?.Level
+      })
+  }
+
+  public pickTerritory() {
+    DataViewPicker.from({
+      injector: this.injector,
+      title: 'Pick Territory',
+      dataView: { adapter: TerritoryTableAdapter },
+    })
+      .pipe(
+        filter((it) => it !== undefined),
+        map((it) => it?.[0] as number),
+        map((it) => this.store.nwData().territoriesMap.get(it)),
+      )
+      .subscribe((territory) => {
+        this.territoryId = territory?.TerritoryID
+        this.contLevel = territory?.RecommendedLevel
       })
   }
 
@@ -305,10 +345,18 @@ export class LootContextEditorComponent {
       title: 'Pick POI',
       dataView: { adapter: ZoneTableAdapter },
     })
-      .pipe(filter((it) => it !== undefined))
-      .pipe(map((it) => Number(it?.[0])))
-      .subscribe((it) => {
-        patchState(this.store, { poiId: it })
+      .pipe(
+        filter((it) => it !== undefined),
+        map((it) => Number(it?.[0])),
+        map((id) => this.store.nwData().poisMap.get(id)),
+      )
+      .subscribe((poi) => {
+        this.poiId = poi?.TerritoryID
+        if (poi?.LevelRange) {
+          this.poiLevel = Number(String(poi.LevelRange).split('-')[0])
+        } else {
+          this.poiLevel = null
+        }
       })
   }
 
@@ -322,19 +370,6 @@ export class LootContextEditorComponent {
       .pipe(map((it) => it?.[0] as string))
       .subscribe((it) => {
         patchState(this.store, { gameModeId: it })
-      })
-  }
-
-  public pickTerritory() {
-    DataViewPicker.from({
-      injector: this.injector,
-      title: 'Pick Territory',
-      dataView: { adapter: TerritoryTableAdapter },
-    })
-      .pipe(filter((it) => it !== undefined))
-      .pipe(map((it) => it?.[0] as number))
-      .subscribe((it) => {
-        patchState(this.store, { territoryId: it })
       })
   }
 
