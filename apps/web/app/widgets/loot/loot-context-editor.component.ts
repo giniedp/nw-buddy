@@ -178,6 +178,9 @@ export class LootContextEditorComponent {
   public get gameModeIsMutable() {
     return this.store.gameModeIsMutable()
   }
+  public get gameModeTags() {
+    return this.store.gameModeTags()
+  }
 
   @Input()
   public set mutaDifficultyId(value: number | string) {
@@ -319,6 +322,7 @@ export class LootContextEditorComponent {
       .subscribe((vital) => {
         this.vitalId = vital?.VitalsID
         this.vitalLevel = vital?.Level
+        this.poiLevel = vital?.Level
       })
   }
 
@@ -352,11 +356,6 @@ export class LootContextEditorComponent {
       )
       .subscribe((poi) => {
         this.poiId = poi?.TerritoryID
-        if (poi?.LevelRange) {
-          this.poiLevel = Number(String(poi.LevelRange).split('-')[0])
-        } else {
-          this.poiLevel = null
-        }
       })
   }
 

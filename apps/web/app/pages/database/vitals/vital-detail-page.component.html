@@ -50,7 +50,7 @@
       <nwb-vital-detail-stats />
       <nwb-vital-detail-map (vitalClicked)="onPointClicked($event)" />
       @if (lootTableId(); as tableId) {
-        <nwb-loot-context-editor [vitalId]="vitalId()" [vitalLevel]="vitalLevel()" #editor />
+        <nwb-loot-context-editor [vitalId]="vitalId()" [vitalLevel]="vitalLevel()" [contLevel]="vitalLevel()" #editor />
         <nwb-loot-graph
           [tagsEditable]="true"
           (addTagClicked)="editor.addTag($event)"

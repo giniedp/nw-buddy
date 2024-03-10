@@ -1,13 +1,17 @@
-import { eqCaseInsensitive } from "./utils/caseinsensitive-compare"
+import { eqCaseInsensitive } from './utils/caseinsensitive-compare'
 
+// prettier-ignore
 const LOOT_CONDITION_TAG = [
   'Level',
   'EnemyLevel',
-  'MinContLevel',
-  'MinPOIContLevel',
+  'MinContLevel',    // used heavily in loot buckets
+  'MinPOIContLevel', // used only about 3 times atm.
   'SalvageItemGearScore',
   'SalvageItemRarity',
   'SalvageItemTier',
+  // currently unused condition tags
+  'POILevel',
+  'MinEnemyContLevel',
 ]
 
 export function isLootTagKnownCondition(tag: string) {
@@ -85,7 +89,12 @@ export function parseLootTagValue(value: string): [number] | [number, number] {
   return value.split('-').map(Number) as any
 }
 
-export function testLootContextTag({ contextTags, contextValues, tag, tagValue }: {
+export function testLootContextTag({
+  contextTags,
+  contextValues,
+  tag,
+  tagValue,
+}: {
   contextTags: Set<string>
   contextValues: Map<string, string | number>
   tag: string

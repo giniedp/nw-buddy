@@ -60,7 +60,7 @@
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Minimum Content Level</h4>
         <p>
-          Accounts for tags like <span class="badge badge-secondary badge-sm">MinContLevel: X</span> or <span class="badge badge-secondary badge-sm">MinContLevel: X-Y</span>.
+          Accounts for <span class="badge badge-secondary badge-sm">MinContLevel</span> tags.
         </p>
         <p>
           Values in tag conditions are zero-based.
@@ -111,6 +111,9 @@
         <p>
           When selecting a POI, its loot tags are added to the context
         </p>
+        <p>
+          This will NOT updated the POI level.
+        </p>
         @if(poiTags?.length) {
           <p>
             Added Tags:
@@ -141,7 +144,17 @@
     <ng-template #poiLevelTip>
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Point Of Intereset Level</h4>
-        <p></p>
+        <p>
+          Accounts for <span class="badge badge-secondary badge-sm">MinPOILevel</span> tags.
+        </p>
+        <p>
+          Values in tag conditions are zero-based.
+          E.g. <span class="badge badge-secondary badge-sm">MinPOILevel: 19</span> will match level 20 and above.
+        </p>
+        <p class="text-nw-description italic">
+          It is currently not possible to resolve the POI level from selected POI. For convenience this value is updated
+          whenever the selected Crature is changed. Update this value manually. Read the level from ingame screen when entering an area.
+        </p>
       </div>
     </ng-template>
     <ng-template #poiLevelSlider>
@@ -185,7 +198,7 @@
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Creature</h4>
         <p>
-          When selecting a creature, its loot tags are added to the context
+          When selecting a creature, its loot tags are added to the context. Also, the POI level is updated.
         </p>
         @if(vitalTags?.length) {
           <p>
@@ -221,7 +234,7 @@
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Enemy level</h4>
         <p>
-          Accounts for tags like <span class="badge badge-secondary badge-sm">EnemyLevel: X</span> or <span class="badge badge-secondary badge-sm">EnemyLevel: X-Y</span>.
+          Accounts for <span class="badge badge-secondary badge-sm">EnemyLevel</span> tags.
         </p>
         <p>
           Values in tag conditions are zero-based.
@@ -268,7 +281,7 @@
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Player level</h4>
         <p>
-          Accounts for tags like <span class="badge badge-secondary badge-sm">Level: X</span> or <span class="badge badge-secondary badge-sm">Level: X-Y</span>.
+          Accounts for <span class="badge badge-secondary badge-sm">Level</span> tags.
         </p>
         <p>
           Values in tag conditions are zero-based.
@@ -318,13 +331,17 @@
       <div class="p-2 prose prose-sm leading-tight w-80">
         <h4>Game Mode</h4>
         <p>
-          <br />
-          <!-- <ng-container *ngIf="territory?.tags?.length">
-            <br />
-            Added Tags:
-            <span *ngFor="let tag of territory.tags" class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
-          </ng-container> -->
+          When selecting a game mode, its loot tags are added to the context.
+          Tags are also added for the selected difficulty and mutation.
         </p>
+        @if(gameModeTags?.length) {
+          <p>
+            Added Tags:
+            @for(tag of gameModeTags; track $index) {
+              <span class="badge badge-sm badge-secondary mx-1">{{ tag }}</span>
+            }
+          </p>
+        }
       </div>
     </ng-template>
   </div>
@@ -348,7 +365,9 @@
       <ng-template #mutaDifficultyTip>
         <div class="p-2 prose prose-sm leading-tight w-80">
           <h4>Mutation Difficulty</h4>
-          <p></p>
+          <p>
+            When selecting a difficulty, its loot tags are added to the context.
+          </p>
         </div>
       </ng-template>
     </div>
@@ -372,7 +391,9 @@
       <ng-template #mutaElementTip>
         <div class="p-2 prose prose-sm leading-tight w-80">
           <h4>Mutation Element</h4>
-          <p></p>
+          <p>
+            When selecting a mutation, its loot tags are added to the context.
+          </p>
         </div>
       </ng-template>
     </div>

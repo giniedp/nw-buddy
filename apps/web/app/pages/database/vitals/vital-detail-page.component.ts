@@ -7,18 +7,19 @@ import { map } from 'rxjs'
 import { TranslateService } from '~/i18n'
 
 import { toSignal } from '@angular/core/rxjs-interop'
+import { NwDataService } from '~/data'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgPen } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, observeQueryParam, observeRouteParam, selectSignal, selectStream } from '~/utils'
+import { HtmlHeadService, observeQueryParam, observeRouteParam, selectSignal } from '~/utils'
 import { VitalDetailModule, VitalDetailStore } from '~/widgets/data/vital-detail'
+import { VitalPointData } from '~/widgets/data/vital-detail/vital-detail-map.component'
 import { LootModule } from '~/widgets/loot'
+import { LootContextEditorComponent } from '~/widgets/loot/loot-context-editor.component'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { ModelViewerModule } from '../../../widgets/model-viewer'
-import { VitalPointData } from '~/widgets/data/vital-detail/vital-detail-map.component'
-import { LootContextEditorComponent } from '~/widgets/loot/loot-context-editor.component'
 
 export type DetailTabId = 'stats' | 'loot-items' | 'loot-table' | 'damage-table' | '3d-model' | 'map'
 
@@ -63,6 +64,7 @@ export class VitalDetailComponent {
   @ViewChild(LootContextEditorComponent, { static: false })
   protected editor: LootContextEditorComponent
 
+  private db = inject(NwDataService)
   public constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -116,11 +118,13 @@ export class VitalDetailComponent {
       if (id < 1000) {
         this.editor.territoryId = id
       } else if (id < 10000) {
-
+        //
       } else {
         this.editor.poiId = id
       }
     }
     this.editor.vitalLevel = payload.level
+    this.editor.contLevel = payload.level
+    this.editor.poiLevel = payload.level
   }
 }
