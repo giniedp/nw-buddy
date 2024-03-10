@@ -2,7 +2,7 @@ import m from 'mithril'
 import { svgEquals, svgNotEqual, svgTrashCan } from '~/ui/icons/svg'
 
 export interface SelectFilterOption {
-  id: string
+  id: string | number
   label: string
   icon?: string
   negate?: boolean
@@ -11,8 +11,8 @@ export interface SelectFilterOption {
 export interface SelectFilterStateAttrs {
   items: SelectFilterOption[]
   onClear: () => void
-  onRemove: (id: string) => void
-  onToggleComparator: (id: string) => void
+  onRemove: (id: string | number) => void
+  onToggleComparator: (id: string | number) => void
 }
 
 export const SelectFilterState: m.Component<SelectFilterStateAttrs, any> = {

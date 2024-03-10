@@ -1,7 +1,7 @@
 import m from 'mithril'
 
 export interface SelectFilterOption {
-  id: string
+  id: string | number
   label: string
   icon?: string
   active?: boolean

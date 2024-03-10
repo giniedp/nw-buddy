@@ -1,7 +1,7 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { getVitalCategoryInfo, getVitalDungeons, getVitalFamilyInfo, getVitalsCategories } from '@nw-data/common'
-import { COLS_VITALS, Vitals } from '@nw-data/generated'
+import { getVitalCategoryInfo, getVitalDungeons, getVitalFamilyInfo } from '@nw-data/common'
+import { COLS_VITALS } from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { DataViewAdapter } from '~/ui/data/data-view'
@@ -13,6 +13,7 @@ import {
   addGenericColumns,
 } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { VitalGridCellComponent } from './vital-cell.component'
 import {
   VitalTableRecord,
   vitalColCategories,
@@ -34,11 +35,12 @@ import {
   vitalColLootTableId,
   vitalColLootTags,
   vitalColName,
+  vitalColSpawnAreas,
   vitalColSpawnCount,
-  vitalColSpawnLevels
+  vitalColSpawnLevels,
+  vitalColSpawnPois,
+  vitalColSpawnTerritories,
 } from './vital-table-cols'
-import { CaseInsensitiveSet } from '~/utils'
-import { VitalGridCellComponent } from './vital-cell.component'
 
 @Injectable()
 export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord>, TableGridAdapter<VitalTableRecord> {
@@ -79,12 +81,20 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord>, Tab
         vitalsMeta: this.db.vitalsMetadataMap,
         dungeons: this.db.gameModes,
         categories: this.db.vitalsCategoriesMap,
+        territoriesMap: this.db.territoriesMap,
+        areasMap: this.db.areasMap,
+        poisMap: this.db.poisMap,
       }).pipe(
-        map(({ vitals, vitalsMeta, dungeons, categories }) => {
+        map(({ vitals, vitalsMeta, dungeons, categories, territoriesMap, areasMap, poisMap }) => {
           return vitals.map((vital): VitalTableRecord => {
             const familyInfo = getVitalFamilyInfo(vital)
             const combatInfo = getVitalCategoryInfo(vital)
             const metadata = vitalsMeta.get(vital.VitalsID)
+            const zones = metadata?.territories
+              ?.map((id) => {
+                return territoriesMap.get(id) || areasMap.get(id) || poisMap.get(id)
+              })
+              .filter((it) => !!it)
             return {
               ...vital,
               $dungeons: getVitalDungeons(vital, dungeons, vitalsMeta),
@@ -92,6 +102,7 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord>, Tab
               $familyInfo: getVitalFamilyInfo(vital),
               $combatInfo: familyInfo.ID !== combatInfo.ID ? combatInfo : null,
               $metadata: vitalsMeta.get(vital.VitalsID),
+              $zones: zones,
             }
           })
         }),
@@ -115,6 +126,9 @@ function buildVitalTableOptions(util: TableGridUtils<VitalTableRecord>) {
       vitalColExpedition(util),
       vitalColSpawnCount(util),
       vitalColSpawnLevels(util),
+      vitalColSpawnTerritories(util),
+      vitalColSpawnAreas(util),
+      vitalColSpawnPois(util),
       vitalColDmgEffectivenessSlash(util),
       vitalColDmgEffectivenessThrust(util),
       vitalColDmgEffectivenessStrike(util),

@@ -5,7 +5,7 @@ import { evaluateFilter, SelectFilterGroup } from './filter'
 import { SelectFilterPanel } from './select-filter-panel'
 
 export interface SelectFilterOption {
-  id: string
+  id: string | number
   label: string
   icon?: string
   order?: number

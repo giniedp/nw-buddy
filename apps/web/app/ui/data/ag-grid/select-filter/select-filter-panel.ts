@@ -6,7 +6,7 @@ import { SelectFilterSearch } from './select-filter-search'
 import { SelectFilterState } from './select-filter-state'
 
 export interface SelectFilterItem {
-  id: string
+  id: string | number
   label: string
   icon?: string
 }
@@ -104,7 +104,7 @@ function filterItem(item: SelectFilterItem, query: string) {
   if (item.label.toLocaleLowerCase().includes(query)) {
     return true
   }
-  if (item.id.toLocaleLowerCase().includes(query)) {
+  if (typeof item.id === 'string' && item.id.toLocaleLowerCase().includes(query)) {
     return true
   }
   return false

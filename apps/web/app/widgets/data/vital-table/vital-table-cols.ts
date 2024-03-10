@@ -1,14 +1,20 @@
-import { ICellRendererParams } from '@ag-grid-community/core'
+import { ICellRendererParams, IRowNode } from '@ag-grid-community/core'
 import {
   VitalFamilyInfo,
+  ZoneDefinition,
   getVitalCategoryInfo,
   getVitalDamageEffectivenessPercent,
   getVitalTypeMarker,
+  getZoneIcon,
+  getZoneName,
   isVitalCombatCategory,
+  isZoneArea,
+  isZonePoi,
+  isZoneTerritory,
 } from '@nw-data/common'
 import { Gamemodes, Vitals, VitalsCategory, VitalsMetadata, Vitalscategories } from '@nw-data/generated'
 import { uniqBy } from 'lodash'
-import { RangeFilter, SelectFilter } from '~/ui/data/ag-grid'
+import { RangeFilter, SelectFilter, SelectFilterOption } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize, stringToColor } from '~/utils'
 
@@ -19,6 +25,7 @@ export type VitalTableRecord = Vitals & {
   $familyInfo: VitalFamilyInfo
   $combatInfo: VitalFamilyInfo | null
   $metadata: VitalsMetadata
+  $zones: ZoneDefinition[]
 }
 
 const cellRendererDamage = ({ value }: ICellRendererParams<VitalTableRecord>) => {
@@ -174,7 +181,7 @@ export function vitalColCategories(util: VitalTableUtils) {
   return util.colDef<VitalsCategory[]>({
     colId: 'categories',
     headerValueGetter: () => 'Categories',
-    width: 200,
+    width: 250,
     valueGetter: ({ data }) => {
       return data.VitalsCategories || null
     },
@@ -196,6 +203,7 @@ export function vitalColLootDropChance(util: VitalTableUtils) {
     headerValueGetter: () => 'Loot Drop Chance',
     cellClass: 'text-right',
     width: 150,
+    hide: true,
     filter: RangeFilter,
     valueGetter: ({ data }) => Math.round((Number(data.LootDropChance) || 0) * 100),
     valueFormatter: ({ value }) => `${value}%`,
@@ -387,6 +395,11 @@ export function vitalColSpawnLevels(util: VitalTableUtils) {
     colId: 'spawnLevels',
     headerValueGetter: () => 'Spawn Levels',
     getQuickFilterText: () => '',
+    valueGetter: ({ data }) => {
+      return data?.$metadata?.levels
+    },
+    width: 150,
+    wrapText: true,
     filter: SelectFilter,
     filterParams: SelectFilter.params({
       showSearch: false,
@@ -403,8 +416,90 @@ export function vitalColSpawnLevels(util: VitalTableUtils) {
         })
       }
     }),
-    valueGetter: ({ data }) => {
-      return data?.$metadata?.levels
+
+  })
+}
+
+export function vitalColSpawnTerritories(util: VitalTableUtils) {
+  const zoneFilter = isZoneTerritory
+  return util.colDef<number[]>({
+    colId: 'spawnTerritories',
+    headerValueGetter: () => 'Spawn Territories',
+    getQuickFilterText: () => '',
+    valueGetter: ({ data }) => data.$zones?.filter(zoneFilter).map((it) => it.TerritoryID),
+    valueFormatter: ({ data }) => {
+      const items = data.$zones?.filter(zoneFilter) || []
+      return items.map((it) => util.tl8(getZoneName(it))).join(', ')
     },
+    filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      showSearch: true,
+      optionsGetter: ({ data }: IRowNode<VitalTableRecord>) => {
+        const items = data.$zones?.filter(zoneFilter) || []
+        return items.map((it): SelectFilterOption => {
+          return {
+            id: it.TerritoryID as any,
+            label: util.tl8(getZoneName(it)),
+            icon: getZoneIcon(it),
+          }
+        })
+      }
+    }),
+  })
+}
+
+export function vitalColSpawnAreas(util: VitalTableUtils) {
+  const zoneFilter = isZoneArea
+  return util.colDef<number[]>({
+    colId: 'spawnAreas',
+    headerValueGetter: () => 'Spawn Areas',
+    getQuickFilterText: () => '',
+    valueGetter: ({ data }) => data.$zones?.filter(zoneFilter).map((it) => it.TerritoryID),
+    valueFormatter: ({ data }) => {
+      const items = data.$zones?.filter(zoneFilter) || []
+      return items.map((it) => util.tl8(getZoneName(it))).join(', ')
+    },
+    filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      showSearch: true,
+      optionsGetter: ({ data }: IRowNode<VitalTableRecord>) => {
+        const items = data.$zones?.filter(zoneFilter) || []
+        return items.map((it): SelectFilterOption => {
+          return {
+            id: it.TerritoryID as any,
+            label: util.tl8(getZoneName(it)),
+            icon: getZoneIcon(it),
+          }
+        })
+      }
+    }),
+  })
+}
+
+export function vitalColSpawnPois(util: VitalTableUtils) {
+  const zoneFilter = isZonePoi
+  return util.colDef<number[]>({
+    colId: 'spawnPois',
+    headerValueGetter: () => 'Spawn POIs',
+    getQuickFilterText: () => '',
+    valueGetter: ({ data }) => data.$zones?.filter(zoneFilter).map((it) => it.TerritoryID),
+    valueFormatter: ({ data }) => {
+      const items = data.$zones?.filter(zoneFilter) || []
+      return items.map((it) => util.tl8(getZoneName(it))).join(', ')
+    },
+    filter: SelectFilter,
+    filterParams: SelectFilter.params({
+      showSearch: true,
+      optionsGetter: ({ data }: IRowNode<VitalTableRecord>) => {
+        const items = data.$zones?.filter(zoneFilter) || []
+        return items.map((it): SelectFilterOption => {
+          return {
+            id: it.TerritoryID as any,
+            label: util.tl8(getZoneName(it)),
+            icon: getZoneIcon(it),
+          }
+        })
+      }
+    }),
   })
 }
