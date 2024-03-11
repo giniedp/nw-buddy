@@ -42,12 +42,17 @@ export function withGearsetMethods() {
           }
 
           const instance = gearset().slots?.[slot] || null
+          console.log('patchSlot', {slot, patchValue, instance})
           if (typeof instance === 'string') {
             // patch the item instance
             const data = await itemDB.read(instance)
             await itemDB.update(instance, {
               ...data,
               ...patchValue,
+              perks: {
+                ...(data.perks || {}),
+                ...(patchValue.perks || {}),
+              }
             })
             return
           }
@@ -57,6 +62,10 @@ export function withGearsetMethods() {
           record.slots[slot] = {
             ...instance,
             ...patchValue,
+            perks: {
+              ...(instance.perks || {}),
+              ...(patchValue.perks || {}),
+            }
           }
           gearDB.update(record.id, record)
         },
