@@ -1,5 +1,6 @@
-import { NW_FALLBACK_ICON, getZoneDescription, getZoneIcon, getZoneName } from '@nw-data/common'
+import { getZoneDescription, getZoneDevName, getZoneIcon, getZoneName } from '@nw-data/common'
 import { Areadefinitions, PoiDefinition, Territorydefinitions } from '@nw-data/generated'
+import { uniq } from 'lodash'
 import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
@@ -27,8 +28,8 @@ export function zoneColIcon(util: ZoneTableUtils) {
           },
           util.elImg({
             src: getZoneIcon(data),
-          })
-        )
+          }),
+        ),
       )
     }),
   })
@@ -38,11 +39,24 @@ export function zoneColName(util: ZoneTableUtils) {
     colId: 'name',
     headerValueGetter: () => 'Name',
     width: 250,
-    valueGetter: ({ data }) => util.i18n.get(getZoneName(data)),
-    cellRenderer: util.cellRenderer(({ value }) => value?.replace(/\\n/g, '<br>')),
+    valueGetter: ({ data }) => {
+      const name1 = getZoneName(data)
+      const name2 = getZoneDevName(data)
+      const names = [name1, name2]
+      .map((it) => {
+        const value = util.i18n.get(it)
+        if (!value || value.startsWith('@')) {
+          return null
+        }
+        return value
+      })
+      .filter((it) => !!it)
+      return uniq(names).join(', ')
+    },
+    getQuickFilterText: ({ value }) => value,
+    cellRenderer: util.cellRenderer(({ value }) => value.replace(/\\n/g, '<br>')),
     cellClass: ['multiline-cell', 'py-2'],
     autoHeight: true,
-    getQuickFilterText: ({ value }) => value,
   })
 }
 export function zoneColDescription(util: ZoneTableUtils) {

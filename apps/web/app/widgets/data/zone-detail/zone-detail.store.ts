@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core'
 import { ComponentStore } from '@ngrx/component-store'
 import {
+  ZoneDefinition,
   getZoneDescription,
   getZoneIcon,
   getZoneMetaId,
@@ -11,7 +12,7 @@ import {
 import { PoiDefinition, Vitals } from '@nw-data/generated'
 import { groupBy } from 'lodash'
 import { NwDataService } from '~/data'
-import { selectStream } from '~/utils'
+import { rejectKeys, selectStream } from '~/utils'
 
 @Injectable()
 export class ZoneDetailStore extends ComponentStore<{ recordId: string | number; markedVitalId?: string }> {
@@ -48,6 +49,7 @@ export class ZoneDetailStore extends ComponentStore<{ recordId: string | number;
   public readonly image$ = this.select(this.poi$, (it) => it?.TooltipBackground)
   public readonly name$ = selectStream(this.record$, getZoneName)
   public readonly description$ = selectStream(this.poi$, getZoneDescription)
+  public readonly properties$ = this.select(this.record$, selectProperties)
   public readonly type$ = selectStream(this.record$, getZoneType)
 
   public readonly spawns$ = selectStream(
@@ -121,4 +123,9 @@ export class ZoneDetailStore extends ComponentStore<{ recordId: string | number;
       this.patchState({ recordId: idOrItem.TerritoryID })
     }
   }
+}
+
+function selectProperties(item: ZoneDefinition) {
+  const reject = ['$source', 'NameLocalizationKey', 'MapIcon', 'Description', 'IconPath', 'TooltipBackground']
+  return rejectKeys(item, (key) => !item[key] || reject.includes(key))
 }

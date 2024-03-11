@@ -38,8 +38,19 @@ export function getZoneRecommendedLevel(zone: ZoneDefinition) {
 }
 
 export function getZoneName(zone: ZoneDefinition) {
-  return zone?.NameLocalizationKey
+  if (!zone) {
+    return null
+  }
+  return zone.NameLocalizationKey
 }
+
+export function getZoneDevName(zone: ZoneDefinition) {
+  if (isZonePoi(zone)) {
+    return zone.DevName
+  }
+  return null
+}
+
 
 export function getZoneDescription(zone: ZoneDefinition) {
   if (isZonePoi(zone) && zone.NameLocalizationKey) {

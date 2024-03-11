@@ -4,10 +4,17 @@
 </nwb-item-header>
 <div class="flex-1 flex flex-col gap-2 empty:hidden p-4 relative" [class.min-h-[200px]]="!!image()">
   @if(image(); as img) {
-    <img [nwImage]="img" class="absolute top-0 right-0 left-0 aspect-video object-cover w-full" />
+    <img [nwImage]="img" class="absolute top-0 right-0 left-0 aspect-video object-cover w-full select-none" />
   }
   @if(description(); as text){
     <div [nwHtml]="text | nwText | nwTextBreak" class="z-0 shadow-black text-shadow-sm"></div>
+  }
+  @if(properties(); as props){
+    <nwb-property-grid
+      class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight z-0"
+      [item]="properties()"
+      [valueFormatter]="formatValue"
+    />
   }
   <ng-content/>
 </div>
