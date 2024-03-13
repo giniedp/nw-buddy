@@ -1,6 +1,14 @@
 import {
   AttributeRef,
   EquipSlotId,
+  NW_EQUIP_LOAD_DAMAGE_MULT_FAST,
+  NW_EQUIP_LOAD_DAMAGE_MULT_NORMAL,
+  NW_EQUIP_LOAD_DAMAGE_MULT_SLOW,
+  NW_EQUIP_LOAD_HEAL_MULT_FAST,
+  NW_EQUIP_LOAD_HEAL_MULT_NORMAL,
+  NW_EQUIP_LOAD_HEAL_MULT_SLOW,
+  NW_EQUIP_LOAD_RATIO_NORMAL,
+  NW_EQUIP_LOAD_RATIO_SLOW,
   getAmmoTypeFromWeaponTag,
   getAverageGearScore,
   getWeaponTagFromWeapon,
@@ -99,9 +107,6 @@ export function selectWeaponAttacks(db: DbSlice, weapon: ActiveWeapon) {
 export function selectDamageTableRow(rows: Damagetable[], state: MannequinState) {
   return rows?.find((it) => it.DamageID === state.selectedAttack) || rows?.[0]
 }
-
-
-
 
 export function selectEquipLoad(
   { items, weapons, armors }: DbSlice,
@@ -466,29 +471,39 @@ export function selectPlacingMods(db: DbSlice, { perks }: AttributeModsSource) {
 }
 
 export function selectEquipLoadCategory(equipLoad: number): EquipLoadCategory {
-  if (equipLoad < 13) {
+  if (equipLoad * 2 < NW_EQUIP_LOAD_RATIO_NORMAL) {
     return 'Fast'
   }
-  if (equipLoad < 23) {
+  if (equipLoad * 2 < NW_EQUIP_LOAD_RATIO_SLOW) {
     return 'Normal'
   }
   return 'Slow'
 }
 
 export function selectEquipLoadBonus(equipLoad: number): ActiveBonus[] {
+  const cat = selectEquipLoadCategory(equipLoad)
   const result: ActiveBonus[] = []
-  if (equipLoad < 13) {
-    result.push({ key: 'BaseDamage', value: 0.15, name: 'Light Equip Load' })
-    result.push({ key: 'HealScalingValueMultiplier', value: 0.3, name: 'Light Equip Load' })
-    // TODO: crit damage taken -0.15
-  } else if (equipLoad < 23) {
-    result.push({ key: 'BaseDamage', value: 0, name: 'Medium Equip Load' })
-    result.push({ key: 'HealScalingValueMultiplier', value: 0, name: 'Medium Equip Load' })
-    // TODO: crit damage taken -0.20
-  } else {
-    result.push({ key: 'BaseDamage', value: -0.15, name: 'Heavy Equip Load' })
-    result.push({ key: 'HealScalingValueMultiplier', value: -0.3, name: 'Heavy Equip Load' })
-    // TODO: crit damage taken -0.25
+  if (cat === 'Fast') {
+    result.push({ key: 'BaseDamage', value: NW_EQUIP_LOAD_DAMAGE_MULT_FAST, name: 'Light Equip Load' })
+    result.push({
+      key: 'HealScalingValueMultiplier',
+      value: NW_EQUIP_LOAD_HEAL_MULT_FAST - 1,
+      name: 'Light Equip Load',
+    })
+  } else if (cat === 'Normal') {
+    result.push({ key: 'BaseDamage', value: NW_EQUIP_LOAD_DAMAGE_MULT_NORMAL, name: 'Medium Equip Load' })
+    result.push({
+      key: 'HealScalingValueMultiplier',
+      value: NW_EQUIP_LOAD_HEAL_MULT_NORMAL - 1,
+      name: 'Medium Equip Load',
+    })
+  } else if (cat === 'Slow') {
+    result.push({ key: 'BaseDamage', value: NW_EQUIP_LOAD_DAMAGE_MULT_SLOW, name: 'Heavy Equip Load' })
+    result.push({
+      key: 'HealScalingValueMultiplier',
+      value: NW_EQUIP_LOAD_HEAL_MULT_SLOW - 1,
+      name: 'Heavy Equip Load',
+    })
   }
   return result
 }
@@ -648,7 +663,12 @@ const REJECT_ABILITIES_WITH_PROPS: Array<keyof Ability> = [
   'DisableConsecutivePotency',
 ]
 
-function isActiveAbility(ability: Ability, attack: Damagetable, equipLoadCategory: EquipLoadCategory, state: MannequinState) {
+function isActiveAbility(
+  ability: Ability,
+  attack: Damagetable,
+  equipLoadCategory: EquipLoadCategory,
+  state: MannequinState,
+) {
   if (!ability || !attack) {
     return false
   }

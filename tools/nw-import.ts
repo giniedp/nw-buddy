@@ -4,6 +4,8 @@ import { cpus } from 'os'
 import * as path from 'path'
 import { environment, NW_WORKSPACE } from '../env'
 import { generateTypes } from './code-gen/code-generate'
+import { generateConstants } from './code-gen/generate-constants'
+import { extractConstants } from './importer/extract-constants'
 import { extractLocaleDiffs } from './importer/extract-locale-diffs'
 import { extractLocaleEmbeds } from './importer/extract-locale-embeds'
 import { importImages } from './importer/images'
@@ -12,7 +14,7 @@ import { generateSearch } from './importer/search'
 import { importSlices } from './importer/slices/import-slices'
 import { importSpells } from './importer/slices/import-spells'
 import { importDatatables, pathToDatatables } from './importer/tables'
-import { glob, jsonStringifyFormatted, withProgressBar, writeJSONFile } from './utils'
+import { formatTs, glob, jsonStringifyFormatted, withProgressBar, writeJSONFile, writeUTF8File } from './utils'
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
 }
@@ -253,6 +255,14 @@ program
     if (hasFilter(Importer.types, options.module)) {
       console.log('generate types')
       await generateTypes(typesDir, tables)
+      await extractConstants(inputDir)
+        .then((data) => formatTs(generateConstants(data)))
+        .then((content) => {
+          return writeUTF8File(content, {
+            target: path.join(typesDir, 'constants.ts'),
+            createDir: true,
+          })
+        })
     }
 
     if (hasFilter(Importer.index, options.module)) {

@@ -1,7 +1,14 @@
 import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
-import { getWeightLabel } from '@nw-data/common'
+import {
+  NW_EQUIP_LOAD_DAMAGE_MULT_FAST,
+  NW_EQUIP_LOAD_DAMAGE_MULT_NORMAL,
+  NW_EQUIP_LOAD_DAMAGE_MULT_SLOW,
+  NW_EQUIP_LOAD_HEAL_MULT_FAST,
+  NW_EQUIP_LOAD_HEAL_MULT_NORMAL,
+  NW_EQUIP_LOAD_HEAL_MULT_SLOW,
+  getWeightLabel,
+} from '@nw-data/common'
 import { NwModule } from '~/nw'
 import { Mannequin } from '~/nw/mannequin'
 import { FlashDirective } from './ui/flash.directive'
@@ -17,7 +24,6 @@ import { FlashDirective } from './ui/flash.directive'
   },
 })
 export class GearCellEquipLoadComponent {
-
   @Input()
   public hideTitle = false
 
@@ -25,15 +31,27 @@ export class GearCellEquipLoadComponent {
   protected weight = this.mannequin.equipLoad
   protected weightLabel = computed(() => getWeightLabel(this.weight()))
   protected healing = computed(() => {
-    if (!this.weight()) {
-      return 0
+    if (this.weightLabel() === 'light') {
+      return NW_EQUIP_LOAD_HEAL_MULT_FAST - 1
     }
-    return this.weightLabel() === 'light' ? 0.3 : this.weightLabel() === 'medium' ? 0 : -0.3
+    if (this.weightLabel() === 'medium') {
+      return NW_EQUIP_LOAD_HEAL_MULT_NORMAL - 1
+    }
+    if (this.weightLabel() === 'heavy') {
+      return NW_EQUIP_LOAD_HEAL_MULT_SLOW - 1
+    }
+    return 0
   })
   protected damage = computed(() => {
-    if (!this.weight()) {
-      return 0
+    if (this.weightLabel() === 'light') {
+      return NW_EQUIP_LOAD_DAMAGE_MULT_FAST
     }
-    return this.weightLabel() === 'light' ? 0.2 : this.weightLabel() === 'medium' ? 0.1 : 0
+    if (this.weightLabel() === 'medium') {
+      return NW_EQUIP_LOAD_DAMAGE_MULT_NORMAL
+    }
+    if (this.weightLabel() === 'heavy') {
+      return NW_EQUIP_LOAD_DAMAGE_MULT_SLOW
+    }
+    return 0
   })
 }

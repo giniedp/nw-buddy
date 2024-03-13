@@ -11,6 +11,8 @@ import {
 import { flatten, groupBy } from 'lodash'
 import type { AttributeRef } from './attributes'
 import {
+  NW_EQUIP_LOAD_RATIO_NORMAL,
+  NW_EQUIP_LOAD_RATIO_SLOW,
   NW_ITEM_RARITY_DATA,
   NW_MAX_GEAR_SCORE,
   NW_MAX_GEAR_SCORE_UPGRADABLE,
@@ -411,10 +413,10 @@ export function getArmorRatingPhysical(item: ItemdefinitionsArmor | Itemdefiniti
 
 export function getWeightLabel(weight: number): 'light' | 'medium' | 'heavy' {
   let label: 'light' | 'medium' | 'heavy' = 'light'
-  if (weight >= 13) {
+  if (weight * 2 >= NW_EQUIP_LOAD_RATIO_NORMAL) {
     label = 'medium'
   }
-  if (weight >= 23) {
+  if (weight * 2 >= NW_EQUIP_LOAD_RATIO_SLOW) {
     label = 'heavy'
   }
   return label
