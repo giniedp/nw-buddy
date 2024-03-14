@@ -55,23 +55,26 @@
     </div>
     <ion-menu contentId="main" class="order-2">
       @if (showSidebar()) {
-        <ion-content class="ion-p-4">
-          <router-outlet />
-        </ion-content>
+        <ng-container [ngTemplateOutlet]="tplDetail" />
       }
     </ion-menu>
   </ion-split-pane>
-  <ion-modal
+  <nwb-detail-content
     [isOpen]="showModal()"
     [initialBreakpoint]="100 | px2vh"
     [breakpoints]="[12 | px2vh, 100 | px2vh, 0.45, 1]"
     [backdropBreakpoint]="0.5"
     [backdropDismiss]="false"
-  >
-    @if (showModal()) {
-      <ion-content class="ion-p-2 bg-base-300">
-        <router-outlet #outlet="outlet" />
-      </ion-content>
-    }
-  </ion-modal>
+    [template]="tplDetail"
+  />
 </ion-content>
+
+<ng-template #tplDetail>
+  <ion-content
+    [class.ion-p-4]="showSidebar()"
+    [class.ion-p-2]="showModal()"
+    [class.bg-base-300]="true"
+  >
+    <router-outlet />
+  </ion-content>
+</ng-template>

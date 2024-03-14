@@ -4,23 +4,23 @@
     <nwb-property-grid [item]="item" class="bg-black rounded-md overflow-auto p-3 text-sm font-mono border border-base-100" />
   }
   @if(reward(); as item) {
-    <h3>Reward</h3>
+    <h3 class="prose mt-2">Reward</h3>
     <nwb-property-grid [item]="item" class="bg-black rounded-md overflow-auto p-3 text-sm font-mono border border-base-100" />
   }
   @if(gameEvent(); as event) {
-    <h3>Reward Event</h3>
+    <h3 class="prose mt-2">Reward Event</h3>
     <nwb-game-event-detail [eventId]="event.EventID"/>
   }
   @if(rewardItemId(); as item) {
-    <h3>Reward Item</h3>
+    <h3 class="prose mt-2">Reward Item</h3>
     <nwb-item-card [entityId]="item"/>
   }
   @if(rewardLTID(); as item) {
-    <h3>Reward Loot</h3>
+    <h3 class="prose mt-2">Reward Loot</h3>
     <nwb-loot-graph [tableId]="item" [showLocked]="true" class="overflow-hidden"/>
   }
   @if(rewardEntitlement(); as item) {
-    <h3>Reward Entitlement</h3>
+    <h3 class="prose mt-2">Reward Entitlement</h3>
     <nwb-entitlement-detail [entitlementId]="item"/>
   }
 </div>

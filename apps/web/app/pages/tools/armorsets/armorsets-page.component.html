@@ -49,42 +49,39 @@
     </div>
     <ion-menu contentId="main" class="order-2">
       @if (showSidebar()) {
-        <ion-content class="ion-p-4">
-          <ng-container *ngTemplateOutlet="tplDetail" />
-          <!-- <router-outlet /> -->
-        </ion-content>
+        <ng-container [ngTemplateOutlet]="tplDetail" />
       }
     </ion-menu>
   </ion-split-pane>
-  <ion-modal
+  <nwb-detail-content
     [isOpen]="showModal()"
     [initialBreakpoint]="100 | px2vh"
     [breakpoints]="[12 | px2vh, 100 | px2vh, 0.45, 1]"
     [backdropBreakpoint]="0.5"
     [backdropDismiss]="false"
-  >
-    @if (showModal()) {
-      <ion-content class="ion-p-2 bg-base-300">
-        <ng-container *ngTemplateOutlet="tplDetail" />
-        <!-- <router-outlet #outlet="outlet" /> -->
-      </ion-content>
-    }
-  </ion-modal>
+    [template]="tplDetail"
+  />
 </ion-content>
 
 <ng-template #tplDetail>
-  @if (grid.selectedRow$ | async; as armorset) {
-    <div class="grid grid-cols-fill-sm gap-2" nwbScreenshotFrame="Armor-Set">
-      @for (item of armorset.items; track $index) {
-        <nwb-item-card
-          [entity]="item"
-          [disableInfo]="true"
-          [disableDescription]="true"
-          [enableTracker]="true"
-          [enableInfoLink]="true"
-          [enableLink]="true"
-        />
-      }
-    </div>
-  }
+  <ion-content
+    [class.ion-p-4]="showSidebar()"
+    [class.ion-p-2]="showModal()"
+    [class.bg-base-300]="true"
+  >
+    @if (grid.selectedRow$ | async; as armorset) {
+      <div class="grid grid-cols-fill-sm gap-2" nwbScreenshotFrame="Armor-Set">
+        @for (item of armorset.items; track $index) {
+          <nwb-item-card
+            [entity]="item"
+            [disableInfo]="true"
+            [disableDescription]="true"
+            [enableTracker]="true"
+            [enableInfoLink]="true"
+            [enableLink]="true"
+          />
+        }
+      </div>
+    }
+  </ion-content>
 </ng-template>

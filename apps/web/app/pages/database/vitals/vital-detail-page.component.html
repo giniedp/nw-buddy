@@ -1,5 +1,5 @@
 <div
-  class="border border-base-100 rounded-md overflow-clip relative"
+  class="overflow-clip relative"
   [nwbScreenshotFrame]="vital()?.DisplayName | nwText"
 >
   <nwb-vital-detail-header class="bg-base-300" [editableLevel]="true" />
@@ -32,7 +32,7 @@
     </div>
   }
 
-  <div class="tabs tabs-bordered flex-none justify-center bg-base-300">
+  <div class="flex tabs tabs-bordered flex-none justify-center bg-base-300">
     <a class="tab flex-1" [class.tab-active]="tab() === 'stats'" (click)="selectTab('stats')"> Stats </a>
     <a
       class="tab flex-1"

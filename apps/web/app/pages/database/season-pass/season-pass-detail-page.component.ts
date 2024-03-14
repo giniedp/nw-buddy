@@ -27,7 +27,7 @@ import { LootModule } from '~/widgets/loot'
     EntitlementDetailModule,
   ],
   host: {
-    class: 'block',
+    class: 'flex flex-col gap-2',
   },
 })
 export class SeasonPassDetailPageComponent {

@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
@@ -17,6 +18,7 @@ import { LootLimitTableAdapter } from '~/widgets/data/loot-limit-table'
   templateUrl: './loot-limits-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
+    CommonModule,
     DataGridModule,
     DataViewModule,
     IonHeader,

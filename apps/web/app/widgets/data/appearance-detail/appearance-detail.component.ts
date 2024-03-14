@@ -45,7 +45,7 @@ import { TRANSMOG_CATEGORIES } from '../transmog'
     },
   ],
   host: {
-    class: 'flex flex-col gap-1',
+    class: 'flex flex-col gap-2',
   },
 })
 export class AppearanceDetailComponent extends AppearanceDetailStore implements OnInit {

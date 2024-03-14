@@ -74,35 +74,34 @@
     </div>
     <ion-menu contentId="main" class="order-2">
       @if (showSidebar()) {
-        <ion-content class="bg-base-300">
-          <ng-container *ngTemplateOutlet="tplDetail" />
-        </ion-content>
+        <ng-container [ngTemplateOutlet]="tplDetail" />
       }
     </ion-menu>
   </ion-split-pane>
-  <ion-modal
+  <nwb-detail-content
     [isOpen]="showModal()"
     [initialBreakpoint]="100 | px2vh"
     [breakpoints]="[12 | px2vh, 100 | px2vh, 0.45, 1]"
     [backdropBreakpoint]="0.5"
     [backdropDismiss]="false"
-  >
-    @if (showModal()) {
-      <ion-content class="bg-base-300">
-        <ng-container *ngTemplateOutlet="tplDetail" />
-      </ion-content>
-    }
-  </ion-modal>
+    [template]="tplDetail"
+  />
 </ion-content>
 
 <ng-template #tplDetail>
-  <router-outlet #outlet="outlet"></router-outlet>
-  @if (!outlet.isActivated) {
-    <div class="p-4 flex flex-row items-center justify-center">
-      <button (click)="createItem()" class="btn btn-primary gap-1">
-        <nwb-icon [icon]="iconCreate" class="w-5 h-5" />
-        <span>Create New</span>
-      </button>
-    </div>
-  }
+  <ion-content
+    [class.ion-p-4]="showSidebar()"
+    [class.ion-p-2]="showModal()"
+    [class.bg-base-300]="true"
+  >
+    <router-outlet #outlet="outlet"></router-outlet>
+    @if (!outlet.isActivated) {
+      <div class="p-4 flex flex-row items-center justify-center">
+        <button (click)="createItem()" class="btn btn-primary gap-1">
+          <nwb-icon [icon]="iconCreate" class="w-5 h-5" />
+          <span>Create New</span>
+        </button>
+      </div>
+    }
+  </ion-content>
 </ng-template>

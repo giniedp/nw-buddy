@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core'
+import { toObservable, toSignal } from '@angular/core/rxjs-interop'
 import { RouterModule } from '@angular/router'
+import { ModalController } from '@ionic/angular/standalone'
 import { NwModule } from '~/nw'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
 import { DataGridModule } from '~/ui/data/table-grid'
@@ -68,6 +69,7 @@ export class ItemsPageComponent {
   protected isChildActive = toSignal(injectUrlParams('/:resource/:category/:id', (it) => !!it?.['id']))
   protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
   protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
+  protected showModal$ = toObservable(this.showModal)
 
   public constructor(
     protected service: DataViewService<ItemTableRecord>,
@@ -80,4 +82,5 @@ export class ItemsPageComponent {
       title: 'New World - Items DB',
     })
   }
+
 }

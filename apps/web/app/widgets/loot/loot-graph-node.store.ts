@@ -134,7 +134,7 @@ function selectCondition(node: LootNode, service: LootGraphService) {
   if (table.MaxRoll) {
     return null
   }
-  const condition = table.Conditions.find(isLootTagKnownCondition)
+  const condition = table.Conditions?.find(isLootTagKnownCondition)
   if (!condition) {
     return null
   }
