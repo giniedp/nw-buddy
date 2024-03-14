@@ -7,67 +7,61 @@
       [queryParams]="{ itemTab: tab.id }"
       [queryParamsHandling]="'merge'"
       *ngFor="let tab of vm.tabs"
-      >{{ tab.label }}</a
     >
+      {{ tab.label }}
+    </a>
   </div>
+  <div class="flex flex-col gap-2 pt-2">
+    @switch (vm.tabId) {
+      @case ('effects') {
+        @for (id of vm.grantsEffects; track $index) {
+          <nwb-status-effect-detail [effectId]="id" class="bg-black" />
+        }
+      }
+      @case ('perks') {
+        @for (id of vm.resourcePerks; track $index) {
+          <nwb-perk-detail [perkId]="id" class="bg-black" />
+        }
 
-  <ng-container *ngIf="vm.tabId === 'effects'">
-    <div class="flex flex-col gap-2">
-      <nwb-status-effect-detail
-        *ngFor="let id of vm.grantsEffects"
-        [effectId]="id"
-        class="bg-black"
-      ></nwb-status-effect-detail>
-    </div>
-  </ng-container>
-
-  <ng-container *ngIf="vm.tabId === 'perks'">
-    <div class="flex flex-col gap-2">
-      <nwb-perk-detail *ngFor="let id of vm.resourcePerks" [perkId]="id" class="bg-black"></nwb-perk-detail>
-    </div>
-  </ng-container>
-
-  <ng-container *ngIf="vm.tabId === 'unlocks'">
-    <nwb-item-card [entityId]="vm.unlocksRecipe.ItemID" [enableInfoLink]="true" [enableLink]="true"></nwb-item-card>
-  </ng-container>
-
-  <ng-container *ngIf="vm.tabId === 'recipes'">
-    <nwb-crafting-calculator
-      *ngFor="let item of vm.recipes"
-      [recipe]="item.recipe"
-      class="bg-base-300 rounded-b-md"
-    ></nwb-crafting-calculator>
-  </ng-container>
-
-  <ng-container *ngIf="vm.tabId === 'perks'">
-    <nwb-perk-bucket-detail-tabs
-      [perkBucketIds]="vm.perkBucketIds"
-      [itemId]="vm.entityId"
-      class="bg-base-300 rounded-b-md"
-    ></nwb-perk-bucket-detail-tabs>
-  </ng-container>
-
-  <ng-container *ngIf="vm.tabId === 'transmog'">
-    <div class="flex flex-col gap-2">
-      <nwb-appearance-detail [appearance]="vm.appearance" [parentItemId]="vm.entityId"></nwb-appearance-detail>
-    </div>
-  </ng-container>
-
-  <ng-container *ngIf="vm.tabId === 'craftable'">
-    <div
-      class="flex flex-col gap-2"
-      [nwbInfniteScroll]="vm.craftableRecipes"
-      [nwbInfniteScrollPerPage]="10"
-      #scroll="infiniteScroll"
-    >
-      <nwb-item-detail
-        *ngFor="let item of scroll.data$ | async; trackBy: trackByIndex"
-        [entityId]="item.itemId"
-        class="rounded-md overflow-clip"
-      >
-        <nwb-item-detail-header [enableInfoLink]="true" [enableLink]="true" [size]="'sm'"></nwb-item-detail-header>
-      </nwb-item-detail>
-      <button class="btn loading" *ngIf="scroll.canLoad$ | async" nwbInfiniteScrollTrigger>loading</button>
-    </div>
-  </ng-container>
+        <nwb-perk-bucket-detail-tabs
+          [perkBucketIds]="vm.perkBucketIds"
+          [itemId]="vm.entityId"
+          class="bg-base-300 rounded-b-md"
+        />
+      }
+      @case ('unlocks') {
+        <nwb-item-card [entityId]="vm.unlocksRecipe.ItemID" [enableInfoLink]="true" [enableLink]="true" />
+      }
+      @case ('recipes') {
+        @for (item of vm.recipes; track $index) {
+          <nwb-crafting-calculator [recipe]="item.recipe" class="bg-base-300 rounded-b-md" />
+        }
+      }
+      @case ('transmog') {
+        <nwb-appearance-detail [appearance]="vm.appearance" [parentItemId]="vm.entityId" />
+      }
+      @case ('craftable') {
+        <div
+          class="flex flex-col gap-2"
+          [nwbInfniteScroll]="vm.craftableRecipes"
+          [nwbInfniteScrollPerPage]="10"
+          #scroll="infiniteScroll"
+        >
+          @for (item of scroll.data$ | async; track $index) {
+            <nwb-item-detail [entityId]="item.itemId" class="rounded-md overflow-clip">
+              <nwb-item-detail-header [enableInfoLink]="true" [enableLink]="true" [size]="'sm'" />
+            </nwb-item-detail>
+          }
+          @if (scroll.canLoad$ | async) {
+            <button class="btn loading" nwbInfiniteScrollTrigger>loading</button>
+          }
+        </div>
+      }
+      @case ('loot') {
+        @for (tableId of vm.lootTableIds; track $index) {
+          <nwb-loot-graph [tableId]="tableId" [expand]="false" [showLocked]="true" [highlight]="recordId$ | async" />
+        }
+      }
+    }
+  </div>
 </ng-container>

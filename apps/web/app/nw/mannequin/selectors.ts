@@ -532,6 +532,7 @@ export function selectAttributes(db: DbSlice, state: MannequinState, mods: Attri
       total: value,
       magnify: 0,
       health: 0,
+      heal: 0,
       scale: 0,
       abilities: [],
     }
@@ -551,10 +552,14 @@ export function selectAttributes(db: DbSlice, state: MannequinState, mods: Attri
     result[key].total += value
   })
 
-  Object.keys(result).forEach((key: 'dex') => {
+  Object.keys(result).forEach((key: AttributeRef) => {
     const value = result[key].total
     result[key].health = levels[key].find((it) => it.Level === value)?.Health
     result[key].scale = levels[key].find((it) => it.Level === value)?.ModifierValueSum
+    result[key].heal = 0
+    if (key === 'foc') {
+      result[key].heal = levels[key].find((it) => it.Level === value)?.ScalingValue
+    }
     result[key].abilities = levels[key]
       .filter((it) => it.Level <= value && it.EquipAbilities?.length)
       .map((it) => it.EquipAbilities)

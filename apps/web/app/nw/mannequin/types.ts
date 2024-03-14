@@ -152,6 +152,7 @@ export interface ActiveAttribute {
   magnify: number
   total: number
   health?: number
+  heal?: number
   scale: number
   abilities: string[]
 }

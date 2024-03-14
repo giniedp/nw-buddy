@@ -25,9 +25,10 @@ import {
   isPerkGem,
 } from '@nw-data/common'
 import { ItemDefinitionMaster } from '@nw-data/generated'
+import { uniq } from 'lodash'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
-import { humanize, mapProp, selectStream, shareReplayRefCount } from '~/utils'
+import { humanize, mapProp, selectStream } from '~/utils'
 import { ModelViewerService } from '../../model-viewer/model-viewer.service'
 import { selectGameEventItemReward, selectGameEventRewards } from '../game-event-detail/selectors'
 import {
@@ -88,7 +89,6 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   public readonly entity$ = this.select(this.item$, this.housingItem$, (item, housingItem) => item || housingItem)
   public readonly salvageGameEventId$ = this.select(this.item$, (it) => it?.SalvageGameEventID)
   public readonly salvageGameEvent$ = selectStream(this.db.gameEvent(this.salvageGameEventId$))
-
   public readonly salvageGameEventItemReward$ = selectStream(this.salvageGameEvent$, (it) =>
     selectGameEventItemReward(it),
   )
@@ -108,6 +108,28 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
   )
   public readonly salvageAchievementId$ = this.select(this.item$, (it) => it?.SalvageAchievement)
   public readonly salvageAchievementRecipe$ = selectStream(this.db.recipeByAchievementId(this.salvageAchievementId$))
+  public readonly dropTableIds$ = selectStream(
+    {
+      tablesByBycketMap: this.db.lootTablesByLootBucketIdMap,
+      tables: this.db.lootTablesByLootItemId(this.recordId$),
+      buckets: this.db.lootBucketsByItemId(this.recordId$),
+    },
+    ({ tablesByBycketMap, tables, buckets }) => {
+      const result: string[] = []
+      for (const table of tables || []) {
+        result.push(table.LootTableID)
+      }
+      for (const bucket of buckets || []) {
+        for (const table of tablesByBycketMap?.get(bucket.LootBucket) || []) {
+          if (table) {
+            result.push(table.LootTableID)
+          }
+        }
+      }
+      return uniq(result)
+    },
+  )
+
   public readonly itemGS$ = this.select(this.item$, this.gsOverride$, selectItemGearscore)
   public readonly itemGSLabel$ = this.select(this.item$, this.gsOverride$, selectItemGearscoreLabel)
   public readonly craftableRecipes$ = this.select(this.db.recipesByIngredientId(this.recordId$), (it) => {

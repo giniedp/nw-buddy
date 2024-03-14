@@ -482,6 +482,8 @@ export class NwDataService {
   ])
   public lootBucketsMap = tableGroupBy(() => this.lootBuckets, 'LootBucket')
   public lootBucket = tableLookup(() => this.lootBucketsMap)
+  public lootBucketsByItemIdMap = tableGroupBy(() => this.lootBuckets, (it) => it.Item)
+  public lootBucketsByItemId = tableLookup(() => this.lootBucketsByItemIdMap)
 
   public lootLimits = table(() => [this.data.lootlimits()])
   public lootLimitsMap = tableIndexBy(() => this.lootLimits, 'LootLimitID')

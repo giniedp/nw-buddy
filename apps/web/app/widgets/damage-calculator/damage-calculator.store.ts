@@ -30,6 +30,7 @@ export interface OffenderState {
   gearScore: number
   attributePoints: Record<AttributeRef, number>
   attributeModSums: Record<AttributeRef, number>
+  attributeHealSum: number
   armorPenetration: DamageModStack
 
   affixId: string
@@ -117,6 +118,7 @@ const DEFAULT_STATE: DamageCalculatorState = {
       foc: 0,
       con: 0,
     },
+    attributeHealSum: 0,
     armorPenetration: damageModStack(),
 
     dotDamageType: null,
@@ -457,6 +459,7 @@ export const DamageCalculatorStore = signalStore(
               return {
                 offender: {
                   ...offender,
+                  attributeHealSum:  focMap.get(index(attributes.foc))?.ScalingValue ?? 0,
                   attributeModSums: {
                     con: conMap.get(index(attributes.con))?.ModifierValueSum ?? 0,
                     dex: dexMap.get(index(attributes.dex))?.ModifierValueSum ?? 0,

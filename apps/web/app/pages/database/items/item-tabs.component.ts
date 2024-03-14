@@ -13,9 +13,10 @@ import { PerkBucketDetailModule } from '~/widgets/data/perk-bucket-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
 import { ModelViewerService } from '~/widgets/model-viewer'
+import { LootGraphComponent } from '~/widgets/loot/loot-graph.component'
 
 export interface Tab {
-  id: 'effects' | 'perks' | 'unlocks' | 'craftable' | 'recipes' | 'perks' | 'transmog' | 'gearset'
+  id: 'effects' | 'perks' | 'unlocks' | 'craftable' | 'recipes' | 'transmog' | 'gearset' | 'loot'
   label: string
 }
 
@@ -35,6 +36,7 @@ export interface Tab {
     PaginationModule,
     PerkBucketDetailModule,
     AppearanceDetailModule,
+    LootGraphComponent,
   ],
   host: {
     class: 'block',
@@ -65,6 +67,7 @@ export class ItemTabsComponent extends ItemDetailStore {
     unlocksRecipe: this.salvageAchievementRecipe$,
     craftableRecipes: this.craftableRecipes$,
     perkBucketIds: this.perkBucketIds$,
+    lootTableIds: this.dropTableIds$,
     recipes: this.recipes$,
     tabId: observeQueryParam(inject(ActivatedRoute), 'itemTab'),
     appearance: this.appearance$,
@@ -115,6 +118,13 @@ export class ItemTabsComponent extends ItemDetailStore {
           tabs.push({
             id: 'transmog',
             label: `Transmog`,
+          })
+        }
+
+        if (data.lootTableIds?.length) {
+          tabs.push({
+            id: 'loot',
+            label: 'Drop Tables',
           })
         }
 
