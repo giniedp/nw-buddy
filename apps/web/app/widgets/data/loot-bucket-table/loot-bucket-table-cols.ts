@@ -10,7 +10,6 @@ import {
 } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { ParsedLootTag } from 'libs/nw-data/common/loot'
-import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
 export type LootBucketTableUtils = TableGridUtils<LootBucketTableRecord>
@@ -108,12 +107,12 @@ export function lootBucketColTags(util: LootBucketTableUtils) {
     cellRenderer: util.tagsRenderer({
       //transform: formatTag,
     }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
     useValueFormatterForExport: true,
     width: 600,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 

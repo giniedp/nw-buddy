@@ -1,7 +1,5 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { COLS_PERKS, Gamemodes, Territorydefinitions } from '@nw-data/generated'
-import { NwTextContextService } from '~/nw/expression'
-import { SelectFilter } from '~/ui/data/ag-grid'
+import { COLS_PERKS, Territorydefinitions } from '@nw-data/generated'
 import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
@@ -50,10 +48,10 @@ export function territoryColLootTags(util: TerritoryUtils) {
     cellRenderer: util.tagsRenderer({
       transform: humanize,
     }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 export function territoryColRecommendedLevel(util: TerritoryUtils) {
@@ -63,7 +61,8 @@ export function territoryColRecommendedLevel(util: TerritoryUtils) {
     getQuickFilterText: () => '',
     width: 200,
     field: 'RecommendedLevel',
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({}),
+    ...util.selectFilter({
+      order: 'asc',
+    }),
   })
 }

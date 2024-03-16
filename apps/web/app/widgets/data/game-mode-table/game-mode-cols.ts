@@ -1,7 +1,5 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { COLS_PERKS, Gamemodes } from '@nw-data/generated'
-import { NwTextContextService } from '~/nw/expression'
-import { SelectFilter } from '~/ui/data/ag-grid'
 import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
@@ -63,10 +61,10 @@ export function gameModeColLootTags(util: GameModeUtils) {
     cellRenderer: util.tagsRenderer({
       transform: humanize,
     }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 
@@ -79,9 +77,9 @@ export function gameModeColMutLootTags(util: GameModeUtils) {
     cellRenderer: util.tagsRenderer({
       transform: humanize,
     }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
     }),
   })
 }

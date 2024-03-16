@@ -578,6 +578,10 @@ export class NwDataService {
   )
   public seasonPassRewardsMap = tableIndexBy(() => this.seasonPassRewards, 'RewardId')
   public seasonPassReward = tableLookup(() => this.seasonPassRewardsMap)
+  public seasonPassRewardsByDisplayItemIdMap = tableGroupBy(() => this.seasonPassRewards, 'DisplayItemId')
+  public seasonPassRewardsByDisplayItemId = tableLookup(() => this.seasonPassRewardsByDisplayItemIdMap)
+  public seasonPassRewardsByItemIdMap = tableGroupBy(() => this.seasonPassRewards, 'ItemId')
+  public seasonPassRewardsByItemId = tableLookup(() => this.seasonPassRewardsByItemIdMap)
 
   public pvpBalance = table(() => {
     return [

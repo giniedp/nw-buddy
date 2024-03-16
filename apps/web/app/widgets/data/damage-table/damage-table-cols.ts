@@ -1,7 +1,6 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { COLS_DAMAGETABLE, Damagetable } from '@nw-data/generated'
 import { damageTypeIcon } from '~/nw/weapon-types'
-import { SelectFilter } from '~/ui/data/ag-grid'
 import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
@@ -47,7 +46,9 @@ export function damageSource(util: DamageTableUtils) {
     field: '$source' as any,
     valueFormatter: ({ value }) => humanize(value),
     getQuickFilterText: ({ value }) => humanize(value),
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 export function damageColDamageType(util: DamageTableUtils) {
@@ -56,7 +57,9 @@ export function damageColDamageType(util: DamageTableUtils) {
     headerValueGetter: () => 'DamageType',
     field: 'DamageType',
     width: 200,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 
@@ -66,7 +69,9 @@ export function damageColAttackType(util: DamageTableUtils) {
     headerValueGetter: () => 'AttackType',
     field: 'AttackType',
     width: 200,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 
@@ -102,7 +107,9 @@ export function damageColCanCrit(util: DamageTableUtils) {
     colId: 'canCrit',
     headerValueGetter: () => 'CanCrit',
     field: 'CanCrit',
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 
@@ -128,7 +135,9 @@ export function damageColAffixes(util: DamageTableUtils) {
     headerValueGetter: () => 'Affixes',
     field: 'Affixes',
     width: 200,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 
@@ -138,6 +147,8 @@ export function damageColAffliction(util: DamageTableUtils) {
     headerValueGetter: () => 'Affliction',
     field: 'Affliction',
     width: 200,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    }),
   })
 }

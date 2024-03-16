@@ -7,15 +7,10 @@ import {
   getItemRarityLabel,
   getItemRarityWeight,
   getItemTierAsRoman,
-  getUIHousingCategoryLabel,
-  isItemArtifact,
-  isItemNamed,
-  isMasterItem,
+  getUIHousingCategoryLabel
 } from '@nw-data/common'
 import { Housingitems } from '@nw-data/generated'
-import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
-import { getIconFrameClass } from '~/ui/item-frame'
 import { humanize } from '~/utils'
 import { BookmarkCell, TrackingCell } from '~/widgets/adapter/components'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
@@ -78,11 +73,19 @@ export function housingColRarity(util: HousingTableUtils) {
     valueGetter: ({ data }) => getItemRarity(data),
     valueFormatter: ({ value }) => util.i18n.get(getItemRarityLabel(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getItemRarityLabel(value)),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      comaparator: (a, b) => getItemRarityWeight(b.id as ItemRarity) - getItemRarityWeight(a.id as ItemRarity),
-    }),
     comparator: (a, b) => getItemRarityWeight(a) - getItemRarityWeight(b),
+    ...util.selectFilter({
+      order: 'asc',
+      getOptions: ({ data }) => {
+        const value = getItemRarity(data)
+        return [{
+          id: value,
+          label: util.i18n.get(getItemRarityLabel(value)),
+          order: getItemRarityWeight(value),
+          class: ['text-rarity-' + value],
+        }]
+      },
+    })
   })
 }
 
@@ -91,10 +94,12 @@ export function housingColTier(util: HousingTableUtils) {
     colId: 'tier',
     headerValueGetter: () => 'Tier',
     width: 80,
-    filter: SelectFilter,
     valueGetter: ({ data }) => data.Tier || null,
     valueFormatter: ({ value }) => getItemTierAsRoman(value),
-    getQuickFilterText: () => ''
+    getQuickFilterText: () => '',
+    ...util.selectFilter({
+      order: 'asc'
+    })
   })
 }
 
@@ -160,8 +165,10 @@ export function housingColHousingTag1Placed(util: HousingTableUtils) {
     field: 'HousingTag1 Placed',
     valueFormatter: ({ value }) => humanize(value),
     getQuickFilterText: ({ value }) => humanize(value),
-    filter: SelectFilter,
     width: 150,
+    ...util.selectFilter({
+      order: 'asc'
+    })
   })
 }
 
@@ -172,8 +179,10 @@ export function housingColUiHousingCategory(util: HousingTableUtils) {
     field: 'UIHousingCategory',
     valueFormatter: ({ value }) => util.i18n.get(getUIHousingCategoryLabel(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getUIHousingCategoryLabel(value)),
-    filter: SelectFilter,
     width: 150,
+    ...util.selectFilter({
+      order: 'asc'
+    })
   })
 }
 
@@ -184,8 +193,11 @@ export function housingColHowToObtain(util: HousingTableUtils) {
     field: 'HowToOptain (Primarily)',
     valueFormatter: ({ value }) => humanize(value),
     getQuickFilterText: ({ value }) => humanize(value),
-    filter: SelectFilter,
     width: 150,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 
@@ -196,9 +208,9 @@ export function housingColHousingTags(util: HousingTableUtils) {
     width: 250,
     field: 'HousingTags',
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }

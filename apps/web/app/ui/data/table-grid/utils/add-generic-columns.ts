@@ -1,6 +1,6 @@
 import { ColDef, GridOptions } from '@ag-grid-community/core'
-import { SelectFilter } from '~/ui/data/ag-grid'
 import { eqCaseInsensitive, humanize } from '~/utils'
+import { GridSelectFilter } from '../../ag-grid/grid-select-filter'
 import { colDefPrecision } from './col-defs'
 
 export function addGenericColumns(
@@ -34,10 +34,10 @@ export function addGenericColumns(
       field: field,
       hide: opts?.defaults?.hide ?? true,
     }
-    colDef.filter = SelectFilter
-    colDef.filterParams = SelectFilter.params({
-      showSearch: true,
-    })
+    colDef.filter = GridSelectFilter
+    colDef.filterParams = {
+      search: true,
+    }
     if (type.includes('number')) {
       Object.assign(colDef, colDefPrecision)
     }

@@ -1,0 +1,51 @@
+import { CommonModule } from '@angular/common'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { NwModule } from '~/nw'
+import { PaginationModule } from '~/ui/pagination'
+import { GridSelectFilterStore } from './grid-select-filter.store'
+import { GridSelectFilterOption } from './types'
+
+@Component({
+  standalone: true,
+  selector: 'nwb-grid-select-options',
+  template: `
+    @for (item of options; track $index) {
+      <li class="overflow-hidden">
+        <button
+          class="flex flex-row flex-nowrap max-w-full truncate text-nowrap btn btn-sm justify-start no-animation shadow-black"
+          [class.btn-ghost]="!isSelected(item)"
+          [class.btn-primary]="isSelected(item)"
+          [class.text-shadow-sm]="!!item.class"
+          (click)="onOptionClicked(item)"
+          [ngClass]="item.class"
+        >
+          @if (item.icon) {
+            <img class="w-6 h-6" [src]="item.icon" />
+          }
+          {{ item.label }}
+        </button>
+      </li>
+    }
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, NwModule, PaginationModule],
+  host: {
+    class: 'flex-1 menu menu-compact flex-nowrap overflow-y-auto',
+    '[style.max-height]': '"calc(min(800px, 30vh))"',
+  },
+})
+export class GridSelectOptionsComponent {
+  private store = inject(GridSelectFilterStore)
+
+  protected get options() {
+    return this.store.displayOptions()
+  }
+
+  protected isSelected(item: GridSelectFilterOption) {
+    return !!this.store.getFilterForOption(item)
+  }
+
+  protected onOptionClicked(item: GridSelectFilterOption) {
+    this.store.toggleSelection(item)
+  }
+}

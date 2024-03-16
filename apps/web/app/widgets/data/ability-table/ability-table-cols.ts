@@ -9,7 +9,6 @@ import { Ability, COLS_ABILITY, Statuseffect } from '@nw-data/generated'
 import { map, switchMap } from 'rxjs'
 import { sanitizeHtml } from '~/nw'
 import { NwWeaponType } from '~/nw/weapon-types'
-import { SelectFilter } from '~/ui/data/ag-grid'
 import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
@@ -128,7 +127,9 @@ export function abilityColUiCategory(util: AbilityTableUtils) {
     colId: 'uiCategory',
     headerValueGetter: () => 'UI Category',
     field: 'UICategory',
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 
@@ -138,7 +139,9 @@ export function abilityColWeaponTag(util: AbilityTableUtils) {
     headerValueGetter: () => 'Weapon Tag',
     field: 'WeaponTag',
     valueFormatter: ({ value }) => util.i18n.get(getWeaponTagLabel(value)),
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 
@@ -148,7 +151,9 @@ export function abilityColSource(util: AbilityTableUtils) {
     headerValueGetter: () => 'Source',
     valueGetter: ({ data }) => data['$source'],
     hide: true,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    }),
   })
 }
 
@@ -157,7 +162,9 @@ export function abilityColAttackType(util: AbilityTableUtils) {
     colId: 'attackType',
     headerValueGetter: () => 'Attack Type',
     valueGetter: util.fieldGetter('AttackType'),
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    }),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
   })
 }
@@ -167,7 +174,9 @@ export function abilityColDamageTable(util: AbilityTableUtils) {
     colId: 'damageTableRow',
     headerValueGetter: () => 'Damage Table Row',
     valueGetter: util.fieldGetter('DamageTableRow'),
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    }),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
   })
 }
@@ -177,7 +186,9 @@ export function abilityColDamageTableOverride(util: AbilityTableUtils) {
     colId: 'damageTableRowOverride',
     headerValueGetter: () => 'Damage Table Row Override',
     valueGetter: util.fieldGetter('DamageTableRowOverride'),
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    }),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
   })
 }
@@ -187,7 +198,9 @@ export function abilityColRemoteDamageTable(util: AbilityTableUtils) {
     colId: 'remoteDamageTableRow',
     headerValueGetter: () => 'Remote Damage TableRow',
     valueGetter: util.fieldGetter('RemoteDamageTableRow'),
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    }),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
   })
 }
@@ -197,7 +210,9 @@ export function abilityColAfterAction(util: AbilityTableUtils) {
     colId: 'afterAction',
     headerValueGetter: () => 'After Action',
     field: 'AfterAction',
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    }),
   })
 }
 
@@ -214,9 +229,9 @@ export function abilityColOnAction(util: AbilityTableUtils) {
       return result.length ? result : null
     },
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
     }),
   })
 }
@@ -229,10 +244,10 @@ export function abilityStatusEffectCategories(util: AbilityTableUtils) {
     headerValueGetter: () => 'Status Effect Categories',
     valueGetter: util.fieldGetter('StatusEffectCategories'),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 
@@ -244,10 +259,10 @@ export function abilityStatusEffectCategoriesList(util: AbilityTableUtils) {
     headerValueGetter: () => 'SE Categories List',
     valueGetter: util.fieldGetter('StatusEffectCategoriesList'),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 export function abilityStatusEffectDurationCats(util: AbilityTableUtils) {
@@ -258,10 +273,10 @@ export function abilityStatusEffectDurationCats(util: AbilityTableUtils) {
     headerValueGetter: () => 'SE Duration Cats',
     valueGetter: util.fieldGetter('StatusEffectDurationCats'),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 
@@ -273,10 +288,10 @@ export function abilityTargetStatusEffectCategory(util: AbilityTableUtils) {
     headerValueGetter: () => 'Target SE Category',
     valueGetter: util.fieldGetter('TargetStatusEffectCategory'),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 
@@ -288,9 +303,9 @@ export function abilityTargetStatusEffectDurationCategories(util: AbilityTableUt
     headerValueGetter: () => 'Target SE Duration Cats',
     valueGetter: util.fieldGetter('TargetStatusEffectDurationCats'),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
     }),
   })
 }

@@ -1,7 +1,6 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { COLS_STATUSEFFECT, Statuseffect } from '@nw-data/generated'
 import { sanitizeHtml } from '~/nw'
-import { SelectFilter } from '~/ui/data/ag-grid'
 import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
 import { TableGridUtils, colDefPrecision } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
@@ -59,10 +58,10 @@ export function statusEffectColSource(util: StatusEffectTableUtils) {
     hide: true,
     headerValueGetter: () => 'Source',
     valueGetter: ({ data }) => data['$source'],
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 export function statusEffectColName(util: StatusEffectTableUtils) {
@@ -143,9 +142,9 @@ export function statusEffectColEffectCategories(util: StatusEffectTableUtils) {
     headerValueGetter: () => 'Effect Categories',
     field: 'EffectCategories',
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
     }),
   })
 }

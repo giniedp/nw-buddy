@@ -22,6 +22,8 @@ import { colDefPrecision } from './utils'
 import { Router } from '@angular/router'
 import { ItemRarity } from '@nw-data/common'
 import { NwDataService } from '~/data'
+import { GridSelectFilterParams } from '../ag-grid/grid-select-filter/types'
+import { GridSelectFilter } from '../ag-grid/grid-select-filter'
 
 @Injectable({ providedIn: 'root' })
 export class TableGridUtils<T = any> {
@@ -215,5 +217,9 @@ export class TableGridUtils<T = any> {
 
   public tipLink(type: NwLinkResource, id: string) {
     return this.nwLink.link(type, id)
+  }
+
+  public selectFilter(params: GridSelectFilterParams<T>) {
+    return GridSelectFilter.colFilter(params)
   }
 }

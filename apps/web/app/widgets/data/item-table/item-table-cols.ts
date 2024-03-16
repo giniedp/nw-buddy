@@ -20,7 +20,7 @@ import {
   isMasterItem,
 } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster, Perks } from '@nw-data/generated'
-import { RangeFilter, SelectFilter } from '~/ui/data/ag-grid'
+import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize } from '~/utils'
 import { BookmarkCell, TrackingCell } from '~/widgets/adapter/components'
@@ -121,10 +121,10 @@ export function itemColTransformTo(util: ItemTableUtils) {
         util.el('span.pl-2', { text: util.i18n.get(item.Name) })
       ])
     }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-      optionsGetter: ({ data }) => {
+    ...util.selectFilter({
+      search: true,
+      order: 'asc',
+      getOptions: ({ data }) => {
         const item = data.$transformTo
         if (!item) {
           return []
@@ -173,19 +173,19 @@ export function itemColTransformFrom(util: ItemTableUtils) {
         ),
       ])
     }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-      optionsGetter: ({ data }) => {
-        const items: ItemTableRecord['$transformFrom'] = data.$transformFrom
+    ...util.selectFilter({
+      search: true,
+      order: 'asc',
+      getOptions: ({ data }) => {
+        const items = data.$transformFrom
         if (!items?.length) {
           return []
         }
         return items.map((item) => {
           return {
             id: getItemId(item),
-            label: util.i18n.get(item.Name),
-            icon: getItemIconPath(item),
+            label: util.i18n.get(item.Name) || humanize(getItemId(item)),
+            icon: getItemIconPath(item) || NW_FALLBACK_ICON,
           }
         })
       },
@@ -233,10 +233,10 @@ export function itemColPerks(
         }),
       ])
     }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-      optionsGetter: ({ data }) => {
+    ...util.selectFilter({
+      search: true,
+      order: 'asc',
+      getOptions: ({ data }) => {
         const perks: Perks[] = data.$perks || []
         return perks.map((perk) => {
           const text = util.i18n.get(
@@ -244,11 +244,11 @@ export function itemColPerks(
           )
           return {
             id: perk.PerkID,
-            label: text,
+            label: text || perk.PerkID,
             icon: perk.IconPath,
           }
         })
-      },
+      }
     }),
   })
 }
@@ -260,12 +260,21 @@ export function itemColRarity(util: ItemTableUtils) {
     valueGetter: ({ data }) => getItemRarity(data),
     valueFormatter: ({ value }) => util.i18n.get(getItemRarityLabel(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getItemRarityLabel(value)),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      comaparator: (a, b) => getItemRarityWeight(b.id as ItemRarity) - getItemRarityWeight(a.id as ItemRarity),
-    }),
-    comparator: (a, b) => getItemRarityWeight(a) - getItemRarityWeight(b),
     width: 130,
+    cellClass: ({ value }) => 'text-rarity-' + value,
+    comparator: (a, b) => getItemRarityWeight(a) - getItemRarityWeight(b),
+    ...util.selectFilter({
+      order: 'asc',
+      getOptions: ({ data }) => {
+        const value = getItemRarity(data)
+        return [{
+          id: value,
+          label: util.i18n.get(getItemRarityLabel(value)),
+          order: getItemRarityWeight(value),
+          class: ['text-rarity-' + value],
+        }]
+      },
+    })
   })
 }
 
@@ -277,7 +286,9 @@ export function itemColTier(util: ItemTableUtils) {
     width: 80,
     valueGetter: ({ data }) => data.Tier || null,
     valueFormatter: ({ value }) => getItemTierAsRoman(value),
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc'
+    })
   })
 }
 
@@ -389,7 +400,10 @@ export function itemColSource(util: ItemTableUtils) {
     valueFormatter: ({ value }) => humanize(value),
     getQuickFilterText: ({ value }) => humanize(value),
     width: 125,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 
@@ -413,15 +427,16 @@ export function itemColEvent(util: ItemTableUtils) {
         util.el('span', { text: util.i18n.get(expansion.label) }),
       ])
     }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params<ItemTableRecord>({
-      optionsGetter: ({ data }) => {
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+      getOptions: ({ data }) => {
         const it = getItemAttribution(data)
         return it
           ? [
               {
                 id: it.id,
-                label: util.i18n.get(it.label),
+                label: util.i18n.get(it.label) + (it.year ? ` (${it.year})`:'') ,
                 icon: it.icon,
               },
             ]
@@ -451,9 +466,10 @@ export function itemColExpansion(util: ItemTableUtils) {
         util.el('span', { text: util.i18n.get(expansion.label) }),
       ])
     },
-    filter: SelectFilter,
-    filterParams: SelectFilter.params<ItemTableRecord>({
-      optionsGetter: ({ data }) => {
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+      getOptions: ({ data }) => {
         const it = getItemExpansion(data?.RequiredExpansionId)
         return it
           ? [
@@ -477,7 +493,10 @@ export function itemColItemTypeName(util: ItemTableUtils) {
     valueFormatter: ({ value }) => util.i18n.get(value) || humanize(value),
     getQuickFilterText: ({ value }) => util.i18n.get(value) || humanize(value),
     width: 150,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 
@@ -489,7 +508,10 @@ export function itemColItemType(util: ItemTableUtils) {
     valueFormatter: ({ value }) => util.i18n.get(getItemTypeLabel(value) || humanize(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getItemTypeLabel(value) || humanize(value)),
     width: 125,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 
@@ -500,10 +522,10 @@ export function itemColItemClass(util: ItemTableUtils) {
     width: 250,
     valueGetter: util.fieldGetter('ItemClass'),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      search: true,
+      order: 'asc'
+    })
   })
 }
 
@@ -514,10 +536,10 @@ export function itemColTradingGroup(util: ItemTableUtils) {
     field: 'TradingGroup',
     valueFormatter: ({ value }) => util.i18n.get(getItemTradingGroupLabel(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getItemTradingGroupLabel(value)),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 
@@ -529,10 +551,10 @@ export function itemColTradingFamily(util: ItemTableUtils) {
     field: 'TradingFamily',
     valueFormatter: ({ value }) => util.i18n.get(getItemTradingFamilyLabel(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getItemTradingFamilyLabel(value)),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 
@@ -544,7 +566,10 @@ export function itemColTradingCategory(util: ItemTableUtils) {
     field: 'TradingCategory',
     valueFormatter: ({ value }) => util.i18n.get(getTradingCategoryLabel(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getTradingCategoryLabel(value)),
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 

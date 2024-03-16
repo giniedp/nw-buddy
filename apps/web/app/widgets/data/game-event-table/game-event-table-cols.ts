@@ -1,16 +1,5 @@
-import {
-  NW_FALLBACK_ICON,
-  NW_MAX_CHARACTER_LEVEL,
-  NW_MAX_GEAR_SCORE_BASE,
-  getAbilityCategoryTag,
-  getWeaponTagLabel,
-} from '@nw-data/common'
-import { Ability, GameEvent, Statuseffect } from '@nw-data/generated'
-import { map, switchMap } from 'rxjs'
-import { NwWeaponType } from '~/nw/weapon-types'
-import { SelectFilter } from '~/ui/data/ag-grid'
+import { GameEvent } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
-import { humanize } from '~/utils'
 
 export type GameEventTableUtils = TableGridUtils<GameEventTableRecord>
 export type GameEventTableRecord = GameEvent
@@ -38,7 +27,9 @@ export function gameEventColType(util: GameEventTableUtils) {
     colId: 'gameEventType',
     headerValueGetter: () => 'Event Type',
     field: 'GameEventType',
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    }),
   })
 }
 

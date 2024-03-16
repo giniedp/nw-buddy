@@ -1,6 +1,5 @@
 import { NW_FALLBACK_ICON, getItemIconPath, getItemId } from '@nw-data/common'
 import { Backstorydata, Territorydefinitions } from '@nw-data/generated'
-import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 import { InventoryItem } from '../backstory-detail/types'
@@ -65,9 +64,9 @@ export function backstoryColTerritories(util: BackstoryTableUtils) {
     valueGetter: ({ data }) => data.$respawnTerritories?.map((it) => it.NameLocalizationKey),
     getQuickFilterText: ({ value }) => value.map((it) => util.tl8(it)).join(' '),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
     }),
   })
 }

@@ -162,7 +162,9 @@ export function vitalColFamily(util: VitalTableUtils) {
     }),
     width: 125,
     getQuickFilterText: ({ value }) => value?.join(' '),
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc'
+    })
   })
 }
 export function vitalColCreatureType(util: VitalTableUtils) {
@@ -174,7 +176,9 @@ export function vitalColCreatureType(util: VitalTableUtils) {
     valueGetter: util.fieldGetter('CreatureType'),
     valueFormatter: ({ value }) => humanize(value),
     getQuickFilterText: ({ value }) => value,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc'
+    })
   })
 }
 export function vitalColCategories(util: VitalTableUtils) {
@@ -191,10 +195,10 @@ export function vitalColCategories(util: VitalTableUtils) {
         return isVitalCombatCategory(value) ? ['badge-error', 'bg-error'] : []
       },
     }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 export function vitalColLootDropChance(util: VitalTableUtils) {
@@ -216,7 +220,9 @@ export function vitalColLootTableId(util: VitalTableUtils) {
     hide: true,
     headerValueGetter: () => 'Loot Table',
     valueGetter: util.fieldGetter('LootTableId'),
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc'
+    })
   })
 }
 export function vitalColLootTags(util: VitalTableUtils) {
@@ -231,10 +237,10 @@ export function vitalColLootTags(util: VitalTableUtils) {
         return isVitalCombatCategory(value) ? ['badge-error', 'bg-error'] : []
       },
     }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 export function vitalColExpedition(util: VitalTableUtils) {
@@ -242,7 +248,9 @@ export function vitalColExpedition(util: VitalTableUtils) {
     colId: 'expedition',
     headerValueGetter: () => 'Occurance in',
     valueGetter: ({ data }) => data?.$dungeons?.map((it) => util.i18n.get(it.DisplayName)),
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 export function vitalColDmgEffectivenessSlash(util: VitalTableUtils) {
@@ -499,7 +507,7 @@ export function vitalColSpawnPois(util: VitalTableUtils) {
             icon: getZoneIcon(it),
           }
         })
-      }
+      },
     }),
   })
 }

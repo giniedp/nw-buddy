@@ -1,5 +1,4 @@
 import { LootTable } from '@nw-data/common'
-import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
@@ -35,7 +34,9 @@ export function lootTableColSource(util: LootTableGridUtils) {
       return data['$source']
     },
     getQuickFilterText: ({ value }) => value,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 export function lootTableColConditions(util: LootTableGridUtils) {
@@ -45,8 +46,10 @@ export function lootTableColConditions(util: LootTableGridUtils) {
     width: 200,
     field: 'Conditions',
     getQuickFilterText: ({ value }) => value?.join(' '),
-    filter: SelectFilter,
     cellRenderer: util.tagsRenderer({ transform: humanize }),
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 export function lootTableColMaxRoll(util: LootTableGridUtils) {
@@ -69,6 +72,8 @@ export function lootTableColParents(util: LootTableGridUtils) {
     field: '$parents',
     getQuickFilterText: () => '',
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    }),
   })
 }

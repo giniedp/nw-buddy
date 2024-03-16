@@ -10,7 +10,6 @@ import {
   isMasterItem,
 } from '@nw-data/common'
 import { GameEvent, Housingitems, ItemDefinitionMaster, PvpRewards } from '@nw-data/generated'
-import { RangeFilter, SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { selectGameEventRewards } from '../game-event-detail/selectors'
 
@@ -74,7 +73,9 @@ export function pvpStoreColName(util: PvpStoreTableUtils) {
     headerValueGetter: () => 'Bucket',
     width: 250,
     field: 'Bucket',
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 
@@ -85,7 +86,9 @@ export function pvpStoreColColumn(util: PvpStoreTableUtils) {
     field: 'Column',
     getQuickFilterText: () => '',
     width: 130,
-    filter: RangeFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 
@@ -96,7 +99,9 @@ export function pvpStoreColItem(util: PvpStoreTableUtils) {
     valueGetter: ({ data }) => util.tl8(data.$item?.Name),
     getQuickFilterText: ({ data }) => util.tl8(data.$item?.Name),
     width: 250,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    }),
   })
 }
 
@@ -138,7 +143,9 @@ export function pvpStoreColExcludeType(util: PvpStoreTableUtils) {
     field: 'ExcludeTypeStage',
     getQuickFilterText: () => '',
     width: 130,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 export function pvpStoreColGameEvent(util: PvpStoreTableUtils) {
@@ -184,7 +191,9 @@ export function pvpStoreType(util: PvpStoreTableUtils) {
     field: 'Type',
     getQuickFilterText: () => '',
     width: 130,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    }),
   })
 }
 export function pvpStoreColTags(util: PvpStoreTableUtils) {

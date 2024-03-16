@@ -226,7 +226,9 @@ export function craftingColTradeskill(util: CraftingTableUtils) {
     valueGetter: ({ data }) => data.Tradeskill,
     valueFormatter: ({ value }) => util.i18n.get(getTradeSkillLabel(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getTradeSkillLabel(value)),
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 
@@ -246,7 +248,6 @@ export function craftingColCanCraft(util: CraftingTableUtils, skills: Signal<Rec
     headerValueGetter: () => 'Can Craft',
     width: 100,
     cellClass: 'cursor-pointer',
-    filter: SelectFilter,
     headerTooltip: 'Whether you can craft this item based on your current tradeskill level',
     valueGetter: ({ data }) => skills()?.[data.Tradeskill] >= data.RecipeLevel,
     getQuickFilterText: () => '',
@@ -256,6 +257,9 @@ export function craftingColCanCraft(util: CraftingTableUtils, skills: Signal<Rec
         text: value ? 'Yes' : 'No',
       })
     }),
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 
@@ -267,10 +271,10 @@ export function craftingColCategory(util: CraftingTableUtils) {
     valueGetter: ({ data }) => data.CraftingCategory,
     valueFormatter: ({ value }) => util.i18n.get(getCraftingCategoryLabel(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getCraftingCategoryLabel(value)),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 
@@ -282,9 +286,9 @@ export function craftingColGroup(util: CraftingTableUtils) {
     valueGetter: ({ data }) => data.CraftingGroup,
     valueFormatter: ({ value }) => util.i18n.get(getCraftingGroupLabel(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getCraftingGroupLabel(value)),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
     }),
   })
 }

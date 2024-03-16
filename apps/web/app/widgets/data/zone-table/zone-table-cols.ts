@@ -1,7 +1,6 @@
 import { getZoneDescription, getZoneDevName, getZoneIcon, getZoneName } from '@nw-data/common'
 import { Areadefinitions, PoiDefinition, Territorydefinitions } from '@nw-data/generated'
 import { uniq } from 'lodash'
-import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
@@ -84,9 +83,9 @@ export function zoneColLootTags(util: ZoneTableUtils) {
     headerValueGetter: () => 'Loot Tags',
     field: 'LootTags',
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
     }),
   })
 }

@@ -1,14 +1,8 @@
 import {
   ItemRarity,
-  NW_FALLBACK_ICON,
   getAffixMODs,
-  getItemIconPath,
-  getItemRarity,
   getItemRarityLabel,
-  getItemTierAsRoman,
-  isItemArtifact,
-  isItemNamed,
-  isMasterItem,
+  getItemTierAsRoman
 } from '@nw-data/common'
 import { ItemInstanceRow } from '~/data'
 import { RangeFilter, SelectFilter } from '~/ui/data/ag-grid'
@@ -128,8 +122,10 @@ export function inventoryColRarity(util: InventoryTableUtils) {
     field: 'rarity',
     valueFormatter: ({ value }) => util.i18n.get(getItemRarityLabel(value)),
     getQuickFilterText: ({ value }) => util.i18n.get(getItemRarityLabel(value)),
-    filter: SelectFilter,
     width: 80,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 export function inventoryColTier(util: InventoryTableUtils) {
@@ -140,7 +136,9 @@ export function inventoryColTier(util: InventoryTableUtils) {
     width: 60,
     field: 'item.Tier',
     valueFormatter: ({ value }) => getItemTierAsRoman(value),
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 export function inventoryColGearScore(util: InventoryTableUtils) {
@@ -177,8 +175,9 @@ export function inventoryColAttributeMods(util: InventoryTableUtils) {
         .map((it) => util.i18n.get(it.labelShort))
     },
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({}),
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 export function inventoryColItemType(util: InventoryTableUtils) {
@@ -187,7 +186,9 @@ export function inventoryColItemType(util: InventoryTableUtils) {
     headerValueGetter: () => 'Item Type',
     field: 'item.ItemType',
     width: 100,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 export function inventoryColItemClass(util: InventoryTableUtils) {
@@ -197,8 +198,9 @@ export function inventoryColItemClass(util: InventoryTableUtils) {
     width: 250,
     field: 'item.ItemClass',
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({}),
+    ...util.selectFilter({
+      order: 'asc',
+    }),
   })
 }
 export function inventoryColActions(

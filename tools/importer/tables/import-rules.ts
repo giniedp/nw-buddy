@@ -358,7 +358,7 @@ export const TABLE_IMPORT_RULES = [
     [
       mapPropToArray({
         keys: ['HousingTags'],
-        separator: '+',
+        separator: /[,+]/,
       }),
     ],
   ),

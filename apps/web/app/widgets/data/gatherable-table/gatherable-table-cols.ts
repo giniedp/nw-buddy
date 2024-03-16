@@ -1,11 +1,9 @@
 import { NumberFilter } from '@ag-grid-community/core'
 import { GatherableVariation, NW_FALLBACK_ICON, getGatherableNodeSize, getItemExpansion } from '@nw-data/common'
-import { Gatherables, GatherablesMetadata, VariationsGatherables, VariationsMetadata } from '@nw-data/generated'
+import { Gatherables, GatherablesMetadata, VariationsMetadata } from '@nw-data/generated'
 import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { getGatherableIcon } from '../gatherable-detail/utils'
-import { humanize } from '~/utils'
-import { uniq } from 'lodash'
 
 export type GatherableTableUtils = TableGridUtils<GatherableTableRecord>
 export type GatherableTableRecord = Gatherables & {
@@ -79,7 +77,9 @@ export function gatherableColTradeSkill(util: GatherableTableUtils) {
     headerValueGetter: () => 'Trade Skill',
     width: 120,
     field: 'Tradeskill',
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 
@@ -89,10 +89,10 @@ export function gatherableColLootTable(util: GatherableTableUtils) {
     headerValueGetter: () => 'Loot Table',
     width: 120,
     field: 'FinalLootTable',
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 
@@ -207,9 +207,9 @@ export function gatherableColVariations(util: GatherableTableUtils) {
     autoHeight: true,
     hide: true,
     width: 800,
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
     }),
   })
 }

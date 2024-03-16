@@ -1,4 +1,4 @@
-import { NW_FALLBACK_ICON, explainPerk, explainPerkMods, getItemIconPath, getItemId, getItemRarity, getPerkItemClassGSBonus, getPerkItemClassGsBonus, isItemArtifact, isItemNamed, isMasterItem } from '@nw-data/common'
+import { NW_FALLBACK_ICON, explainPerkMods, getItemIconPath, getItemId, getItemRarity, getPerkItemClassGSBonus, getPerkItemClassGsBonus, isItemArtifact, isItemNamed, isMasterItem } from '@nw-data/common'
 import { Ability, Affixstats, COLS_ABILITY, COLS_AFFIXSTATS, COLS_PERKS, ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwTextContextService } from '~/nw/expression'
@@ -241,7 +241,9 @@ export function perkColPerkType(util: PerkTableUtils) {
     headerValueGetter: () => 'Type',
     field: 'PerkType',
     width: 120,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 
@@ -268,7 +270,9 @@ export function perkColItemClassGSBonus(util: PerkTableUtils) {
         minWidth: 90,
         maxWidth: 90,
         resizable: false,
-        filter: SelectFilter,
+        ...util.selectFilter({
+          order: 'asc',
+        })
       }),
       util.colDef({
         colId: 'itemClassGSBonusGS',
@@ -301,11 +305,11 @@ export function perkColItemClass(util: PerkTableUtils) {
     wrapText: true,
     autoHeight: true,
     cellClass: ['multiline-cell', 'py-2'],
-    filter: SelectFilter,
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 export function perkColExclusiveLabels(util: PerkTableUtils) {
@@ -317,11 +321,11 @@ export function perkColExclusiveLabels(util: PerkTableUtils) {
     wrapText: true,
     autoHeight: true,
     cellClass: ['multiline-cell', 'py-2'],
-    filter: SelectFilter,
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filterParams: SelectFilter.params({
-      showSearch: true,
-    }),
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    })
   })
 }
 export function perkColExcludeItemClass(util: PerkTableUtils) {
@@ -333,9 +337,10 @@ export function perkColExcludeItemClass(util: PerkTableUtils) {
     wrapText: true,
     autoHeight: true,
     cellClass: ['multiline-cell', 'py-2'],
-    filter: SelectFilter,
     cellRenderer: util.tagsRenderer({ transform: humanize }),
-    filterParams: SelectFilter.params({}),
+    ...util.selectFilter({
+      order: 'asc',
+    }),
   })
 }
 export function perkColIsStackableAbility(util: PerkTableUtils) {

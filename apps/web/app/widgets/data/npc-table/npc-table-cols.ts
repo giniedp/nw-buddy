@@ -1,7 +1,5 @@
-import { NumberFilter } from '@ag-grid-community/core'
-import { NW_FALLBACK_ICON, getGatherableNodeSize, getItemExpansion } from '@nw-data/common'
-import { Gatherables, GatherablesMetadata, Npc, VariationsGatherables, VariationsMetadata } from '@nw-data/generated'
-import { SelectFilter } from '~/ui/data/ag-grid'
+import { NW_FALLBACK_ICON } from '@nw-data/common'
+import { Npc } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
 
 export type NpcTableUtils = TableGridUtils<NpcTableRecord>

@@ -9,7 +9,7 @@ import {
 } from '@nw-data/common'
 import m from 'mithril'
 import { merge, skip, takeUntil } from 'rxjs'
-import { SelectFilter, mithrilCell } from '~/ui/data/ag-grid'
+import { mithrilCell } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { ItemMarkerCell, ItemTrackerCell } from '~/widgets/item-tracker'
 import { Armorset } from '../types'
@@ -34,7 +34,9 @@ export function armorsetColTier(util: ArmorsetGridUtils) {
     headerValueGetter: () => 'Tier',
     valueGetter: util.fieldGetter('tier', getItemTierAsRoman),
     width: 60,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    })
   })
 }
 
@@ -44,7 +46,9 @@ export function armorsetColWeight(util: ArmorsetGridUtils) {
     headerValueGetter: () => 'Weight',
     valueGetter: util.fieldGetter('weight'),
     width: 80,
-    filter: SelectFilter,
+    ...util.selectFilter({
+      order: 'asc',
+    }),
   })
 }
 export function armorsetColPerks(util: ArmorsetGridUtils) {
