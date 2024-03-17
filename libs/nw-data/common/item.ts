@@ -566,6 +566,7 @@ const ATTRIBUTION_ICONS = new CaseInsensitiveMap(
     TurkeyTerror: 'assets/icons/attribution/turkey_terror.png',
     RabbitSeason: 'assets/icons/attribution/rabbit_season.png',
     Season: 'assets/icons/attribution/season.png',
+    PvPRewardTrack: 'assets/icons/attribution/pvptrack.png',
     Unknown: 'assets/icons/attribution/unknown.png',
   }),
 )
@@ -593,10 +594,17 @@ export function getItemExpansion(expansionId: string) {
   if (!expansionId) {
     return null
   }
+  if (EXPANSION_ICONS.has(expansionId)) {
+    return {
+      id: expansionId,
+      label: `ui_${expansionId}_title`,
+      icon: EXPANSION_ICONS.get(expansionId),
+    }
+  }
   return {
     id: expansionId,
-    label: `ui_${expansionId}_title`,
-    icon: EXPANSION_ICONS.get(expansionId) || ATTRIBUTION_ICONS.get('Unknown'),
+    label: expansionId,
+    icon: ATTRIBUTION_ICONS.get(expansionId) || ATTRIBUTION_ICONS.get('Unknown'),
   }
 }
 
