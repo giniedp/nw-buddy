@@ -190,7 +190,6 @@ export function housingColHowToObtain(util: HousingTableUtils) {
   return util.colDef<string>({
     colId: 'howToObtain',
     headerValueGetter: () => 'Obtain',
-    field: 'HowToOptain (Primarily)',
     valueFormatter: ({ value }) => humanize(value),
     getQuickFilterText: ({ value }) => humanize(value),
     width: 150,
@@ -206,7 +205,7 @@ export function housingColHousingTags(util: HousingTableUtils) {
     colId: 'housingTags',
     headerValueGetter: () => 'Housing Tags',
     width: 250,
-    field: 'HousingTags',
+    valueGetter: util.fieldGetter('HousingTags'),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     ...util.selectFilter({
       order: 'asc',

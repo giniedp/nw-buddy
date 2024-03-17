@@ -37,11 +37,18 @@ export const GridSelectFilterStore = signalStore(
   withComputed(({ model, taggedOptions, search }) => {
     const activeOptions = computed(() => taggedOptions().filter((it) => it.active))
     const displayOptions = computed(() => {
-      if (!search()) {
+      const query = (search() || '').toLowerCase().trim()
+      if (!query) {
         return taggedOptions()
       }
       return taggedOptions().filter((option) => {
-        return option.label.toLowerCase().includes(search().toLowerCase())
+        if (option.label != null && String(option.label).toLowerCase().includes(query)) {
+          return true
+        }
+        if (option.id != null && String(option.id).toLowerCase().includes(query)) {
+          return true
+        }
+        return false
       })
     })
     const displayConditions = computed(() => {

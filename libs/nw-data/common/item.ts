@@ -106,7 +106,7 @@ export function getItemRarityWeight(item: ItemDefinitionMaster | Housingitems | 
   } else {
     rarity = item
   }
-  return ITEM_RARITIES.indexOf(rarity) ?? ITEM_RARITIES.length
+  return ITEM_RARITIES.indexOf(rarity?.toLowerCase() as any) ?? ITEM_RARITIES.length
 }
 export function getItemRarityNumeric(item: ItemDefinitionMaster | Housingitems | ItemRarity) {
   let rarity: ItemRarity

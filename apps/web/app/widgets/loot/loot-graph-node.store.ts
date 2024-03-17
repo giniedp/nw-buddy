@@ -77,7 +77,7 @@ function selectChildren(children: LootNode[], showLocked: boolean) {
     items: children,
     count: children.length,
     gridOptions: LootGraphGridCellComponent.buildGridOptions(),
-    isOnlyItems: children.every((it) => it.type === 'table-item' || it.type === 'bucket-row'),
+    isOnlyItems: children.every((it) => it.type === 'bucket-row'),
   }
 }
 
@@ -169,7 +169,7 @@ function selectTags(node: LootNode, service: LootGraphService) {
   if (node?.type !== 'bucket-row') {
     return null
   }
-  return Array.from(node.data.Tags.values()).map((it) => {
+  return Array.from(node.data?.Tags?.values() || []).map((it) => {
     return {
       tag: it.name,
       value: it.value?.join('-'),

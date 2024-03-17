@@ -89,9 +89,9 @@ export class GridSelectFilter<T> implements IFilterAngularComp {
     })
     let result = Array.from(values.values())
     if (this.params.order === 'asc') {
-      result = sortBy(result, (it) => it.order || it.label)
+      result = sortBy(result, (it) => it.order ?? it.label)
     } else if (this.params.order === 'desc') {
-      result = sortBy(result, (it) => it.order || it.label).reverse()
+      result = sortBy(result, (it) => it.order ?? it.label).reverse()
     }
     patchState(this.store, {
       options: result,
@@ -99,19 +99,21 @@ export class GridSelectFilter<T> implements IFilterAngularComp {
   }
 
   protected extractOptionsFromNode(node: IRowNode): GridSelectFilterOption[] {
-    const value = this.getValue(node, node.data)
+    const value =  this.getValue(node, node.data)
     if (Array.isArray(value)) {
       return value.map((it) => {
         return {
           id: valueToId(it),
-          label: humanize(it),
+          label: it == null ? '- not set -' : humanize(it),
+          class: it == null ? ['italic'] : null
         }
       })
     }
     return [
       {
         id: valueToId(value),
-        label: this.getLabel(node, node.data, value),
+        label: value == null ? '- not set -' : this.getLabel(node, node.data, value),
+        class: value == null ? ['italic'] : null,
       },
     ]
   }

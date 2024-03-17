@@ -209,7 +209,7 @@ export function abilityColAfterAction(util: AbilityTableUtils) {
   return util.colDef<string>({
     colId: 'afterAction',
     headerValueGetter: () => 'After Action',
-    field: 'AfterAction',
+    valueGetter: util.fieldGetter('AfterAction'),
     ...util.selectFilter({
       order: 'asc',
     }),

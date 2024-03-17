@@ -1,4 +1,4 @@
-import { getZoneDescription, getZoneDevName, getZoneIcon, getZoneName } from '@nw-data/common'
+import { getZoneDescription, getZoneDevName, getZoneIcon, getZoneName, isZonePoi, isZoneTerritory } from '@nw-data/common'
 import { Areadefinitions, PoiDefinition, Territorydefinitions } from '@nw-data/generated'
 import { uniq } from 'lodash'
 import { TableGridUtils } from '~/ui/data/table-grid'
@@ -81,7 +81,7 @@ export function zoneColLootTags(util: ZoneTableUtils) {
   return util.colDef<string[]>({
     colId: 'lootTags',
     headerValueGetter: () => 'Loot Tags',
-    field: 'LootTags',
+    valueGetter: ({ data }) => (isZonePoi(data) || isZoneTerritory(data) ? data.LootTags : null),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     ...util.selectFilter({
       order: 'asc',
@@ -104,5 +104,9 @@ export function zoneColVitalsCategory(util: ZoneTableUtils) {
     headerValueGetter: () => 'Vitals Category',
     field: 'VitalsCategory',
     hide: false,
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+    }),
   })
 }
