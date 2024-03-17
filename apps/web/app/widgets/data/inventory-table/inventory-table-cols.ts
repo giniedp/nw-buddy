@@ -5,7 +5,7 @@ import {
   getItemTierAsRoman
 } from '@nw-data/common'
 import { ItemInstanceRow } from '~/data'
-import { RangeFilter, SelectFilter } from '~/ui/data/ag-grid'
+import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { svgTrashCan } from '~/ui/icons/svg'
 import { humanize } from '~/utils'
@@ -97,11 +97,11 @@ export function inventoryColPerks(util: InventoryTableUtils) {
         }),
       ])
     }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-      optionsGetter: (node) => {
-        const perks = (node.data as ItemInstanceRow).perks || []
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+      getOptions: ({ data }) => {
+        const perks = data.perks || []
         return perks
           .filter((it) => !!it?.perk)
           .map(({ perk }) => {

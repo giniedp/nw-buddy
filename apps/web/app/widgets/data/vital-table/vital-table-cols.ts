@@ -14,7 +14,7 @@ import {
 } from '@nw-data/common'
 import { Gamemodes, Vitals, VitalsCategory, VitalsMetadata, Vitalscategories } from '@nw-data/generated'
 import { uniqBy } from 'lodash'
-import { RangeFilter, SelectFilter, SelectFilterOption } from '~/ui/data/ag-grid'
+import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize, stringToColor } from '~/utils'
 
@@ -408,10 +408,9 @@ export function vitalColSpawnLevels(util: VitalTableUtils) {
     },
     width: 150,
     wrapText: true,
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: false,
-      optionsGetter: ({ data }) => {
+    ...util.selectFilter({
+      order: 'asc',
+      getOptions: ({ data }) => {
         const levels: number[] = data?.$metadata?.levels
         if (!levels?.length) {
           return []
@@ -439,12 +438,12 @@ export function vitalColSpawnTerritories(util: VitalTableUtils) {
       const items = data.$zones?.filter(zoneFilter) || []
       return items.map((it) => util.tl8(getZoneName(it))).join(', ')
     },
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-      optionsGetter: ({ data }: IRowNode<VitalTableRecord>) => {
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+      getOptions: ({ data }) => {
         const items = data.$zones?.filter(zoneFilter) || []
-        return items.map((it): SelectFilterOption => {
+        return items.map((it) => {
           return {
             id: it.TerritoryID as any,
             label: util.tl8(getZoneName(it)),
@@ -467,12 +466,12 @@ export function vitalColSpawnAreas(util: VitalTableUtils) {
       const items = data.$zones?.filter(zoneFilter) || []
       return items.map((it) => util.tl8(getZoneName(it))).join(', ')
     },
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-      optionsGetter: ({ data }: IRowNode<VitalTableRecord>) => {
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+      getOptions: ({ data }) => {
         const items = data.$zones?.filter(zoneFilter) || []
-        return items.map((it): SelectFilterOption => {
+        return items.map((it) => {
           return {
             id: it.TerritoryID as any,
             label: util.tl8(getZoneName(it)),
@@ -495,12 +494,12 @@ export function vitalColSpawnPois(util: VitalTableUtils) {
       const items = data.$zones?.filter(zoneFilter) || []
       return items.map((it) => util.tl8(getZoneName(it))).join(', ')
     },
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-      optionsGetter: ({ data }: IRowNode<VitalTableRecord>) => {
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+      getOptions: ({ data }) => {
         const items = data.$zones?.filter(zoneFilter) || []
-        return items.map((it): SelectFilterOption => {
+        return items.map((it) => {
           return {
             id: it.TerritoryID as any,
             label: util.tl8(getZoneName(it)),

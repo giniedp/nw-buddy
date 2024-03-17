@@ -15,7 +15,7 @@ import {
 } from '@nw-data/common'
 import { Crafting, GameEvent, Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { addSeconds, formatDistanceStrict } from 'date-fns'
-import { RangeFilter, SelectFilter } from '~/ui/data/ag-grid'
+import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { BookmarkCell, TrackingCell } from '~/widgets/adapter/components'
 import { ItemTrackerFilter } from '~/widgets/item-tracker'
@@ -108,11 +108,11 @@ export function craftingColIngredients(util: CraftingTableUtils) {
         })
       )
     }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-      optionsGetter: (node) => {
-        const items = (node.data as CraftingTableRecord).$ingredients || []
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+      getOptions: ({ data }) => {
+        const items = data.$ingredients || []
         return items.map((item) => {
           return {
             id: getItemId(item),
@@ -146,9 +146,10 @@ export function craftingColExpansion(util: CraftingTableUtils) {
         util.el('span', { text: util.i18n.get(expansion.label) }),
       ])
     }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      optionsGetter: ({ data }) => {
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+      getOptions: ({ data }) => {
         const it = getItemExpansion(data?.RequiredExpansion)
         return it
           ? [

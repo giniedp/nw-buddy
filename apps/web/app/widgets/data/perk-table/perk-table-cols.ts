@@ -2,7 +2,6 @@ import { NW_FALLBACK_ICON, explainPerkMods, getItemIconPath, getItemId, getItemR
 import { Ability, Affixstats, COLS_ABILITY, COLS_AFFIXSTATS, COLS_PERKS, ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { Observable, combineLatest, map, switchMap } from 'rxjs'
 import { NwTextContextService } from '~/nw/expression'
-import { SelectFilter } from '~/ui/data/ag-grid'
 import { ExpressionFilter } from '~/ui/data/ag-grid/expression-filter'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
@@ -61,11 +60,11 @@ export function perkCraftMod(util: PerkTableUtils) {
     getQuickFilterText: ({ data }) => {
       return data.$items?.map((it) => util.tl8(it.Name)).join(', ')
     },
-    filter: SelectFilter,
-    filterParams: SelectFilter.params({
-      showSearch: true,
-      optionsGetter: ({ data }) => {
-        const items: PerkTableRecord['$items'] = data.$items
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+      getOptions: ({ data }) => {
+        const items = data.$items
         if (!items?.length) {
           return []
         }
@@ -347,11 +346,13 @@ export function perkColIsStackableAbility(util: PerkTableUtils) {
   return util.colDef<boolean>({
     colId: 'isStackableAbility',
     headerValueGetter: () => 'Is Stackable Ability',
-    filter: SelectFilter,
     getQuickFilterText: () => '',
     valueGetter: ({ data }) => {
       const ability = data.$ability
       return ability?.IsStackableAbility
     },
+    ...util.selectFilter({
+      order: 'asc'
+    })
   })
 }

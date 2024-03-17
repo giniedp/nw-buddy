@@ -6,3 +6,7 @@
   display: flex !important;
   flex-direction: column;
 }
+
+cdk-virtual-scroll-viewport .cdk-virtual-scroll-content-wrapper {
+  max-width: 100% !important;
+}

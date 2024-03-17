@@ -1,7 +1,6 @@
 import { NumberFilter } from '@ag-grid-community/core'
 import { GatherableVariation, NW_FALLBACK_ICON, getGatherableNodeSize, getItemExpansion } from '@nw-data/common'
 import { Gatherables, GatherablesMetadata, VariationsMetadata } from '@nw-data/generated'
-import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { getGatherableIcon } from '../gatherable-detail/utils'
 
@@ -151,9 +150,10 @@ export function gatherableColExpansion(util: GatherableTableUtils) {
         util.el('span', { text: util.i18n.get(expansion.label) }),
       ])
     }),
-    filter: SelectFilter,
-    filterParams: SelectFilter.params<GatherableTableRecord>({
-      optionsGetter: ({ data }) => {
+    ...util.selectFilter({
+      order: 'asc',
+      search: true,
+      getOptions: ({ data }) => {
         const it = getItemExpansion(data?.ExpansionIdUnlock)
         return it
           ? [

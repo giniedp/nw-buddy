@@ -11,7 +11,6 @@ import {
 import { ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { Observable, combineLatest, defer, map } from 'rxjs'
 import { NwDataService } from '~/data'
-import { SelectFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { DataViewAdapter, DataViewCategory } from '~/ui/data/data-view'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
@@ -94,10 +93,6 @@ export class DbFaultsTableAdapter implements DataViewAdapter<FaultRow> {
           width: 250,
           valueGetter: ({ data }) => data.item['$source'],
           getQuickFilterText: ({ value }) => value,
-          filter: SelectFilter,
-          filterParams: SelectFilter.params({
-            showSearch: false,
-          }),
         }),
         utils.colDef<string[]>({
           colId: 'faultType',
@@ -118,10 +113,6 @@ export class DbFaultsTableAdapter implements DataViewAdapter<FaultRow> {
             return result
           },
           getQuickFilterText: ({ value }) => value?.join(' '),
-          filter: SelectFilter,
-          filterParams: SelectFilter.params({
-            showSearch: false,
-          }),
         }),
         utils.colDef<string[]>({
           colId: 'itemClass',
@@ -129,10 +120,6 @@ export class DbFaultsTableAdapter implements DataViewAdapter<FaultRow> {
           width: 250,
           field: 'item.ItemClass',
           cellRenderer: utils.tagsRenderer({ transform: humanize }),
-          filter: SelectFilter,
-          filterParams: SelectFilter.params({
-            showSearch: true,
-          }),
         }),
         ...[0, 1, 2, 3, 4].map((i) =>
           utils.colDef<string[]>({
