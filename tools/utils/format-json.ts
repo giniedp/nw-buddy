@@ -5,5 +5,5 @@ export async function jsonStringifyFormatted(object: Object): Promise<string> {
 }
 
 export async function formatTs(data: string): Promise<string> {
-  return format(data, { parser: 'ts' })
+  return format(data, { parser: 'typescript' })
 }
