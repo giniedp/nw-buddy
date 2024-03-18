@@ -48,6 +48,18 @@
           </div>
         </a>
       </li>
+
+      <li>
+        <a (click)="copyURL()">
+          <nwb-icon [icon]="svgLink" class="w-4 h-4"/>
+          <div class="flex flex-col leading-none">
+            <span>Copy URL</span>
+            <span class="text-xs opacity-75">
+              Copies a URL with current table column and filter state
+            </span>
+          </div>
+        </a>
+      </li>
     </ul>
     @if(sigPersistKey()) {
       <div class="divider divider-vertical h-[1px] my-0"></div>

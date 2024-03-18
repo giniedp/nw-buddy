@@ -82,8 +82,9 @@ export class LootDetailPageComponent implements OnInit {
     navigator.clipboard.writeText(url.toString())
     this.toast
       .create({
-        message: 'Copied link to clipboard',
+        message: 'Link was copied to clipboard',
         duration: 2000,
+        position: 'top',
       })
       .then((toast) => toast.present())
   }

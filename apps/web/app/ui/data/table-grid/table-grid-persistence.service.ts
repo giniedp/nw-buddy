@@ -3,10 +3,17 @@ import { EventEmitter, Injectable, inject } from '@angular/core'
 import { TableStateDB, TableStateRecord } from '~/data'
 import { PreferencesService, StorageNode } from '~/preferences'
 import { gridGetPinnedBottomData, gridGetPinnedTopData } from '../ag-grid/utils'
+import { ActivatedRoute, Router } from '@angular/router'
+import { compressQueryParam, decompressQueryParam } from '~/utils'
+
+const QUERY_PARAM_GRID_STATE = 'gridState'
 
 @Injectable()
 export class TableGridPersistenceService {
   private storage = inject(TableStateDB)
+  private route = inject(ActivatedRoute)
+  private router = inject(Router)
+
   private filterStorage: StorageNode<{ filter: unknown }> = inject(PreferencesService).session.storageScope('grid:')
 
   public onFilterApplied = new EventEmitter()
@@ -55,20 +62,28 @@ export class TableGridPersistenceService {
     this.onFilterSaved.next(filterState)
   }
 
-  public async loadColumnState(api: GridApi, key: string) {
+  public async restoreState(api: GridApi, key: string, ignoreQueryParams = false) {
+    const qState = ignoreQueryParams ? null : this.fromQueryParams()
+
+    await this.loadColumnState(api, key, qState?.columns).catch(console.error)
+    await this.loadFilterState(api, key, qState?.filter).catch(console.error)
+    await this.clearQueryParams()
+  }
+
+  public async loadColumnState(api: GridApi, key: string, state?: ColumnState[]) {
     if (!key || !api) {
       return
     }
 
     const current = await this.storage.read(key).catch(() => null as TableStateRecord)
-    const data = current?.columns
+    const data = state ?? current?.columns
     if (data) {
       api.applyColumnState({ state: data, applyOrder: true })
     }
   }
 
-  public async loadFilterState(api: GridApi, key: string) {
-    const data = this.filterStorage.get(key)?.filter
+  public async loadFilterState(api: GridApi, key: string, state?: any) {
+    const data = state ?? this.filterStorage.get(key)?.filter
     this.applyFilterState(api, data)
   }
 
@@ -108,6 +123,31 @@ export class TableGridPersistenceService {
       pinnedBottom: pinnedBottom,
     })
   }
+
+  private getQueryParam() {
+    return this.route.snapshot.queryParamMap.get(QUERY_PARAM_GRID_STATE)
+  }
+  private fromQueryParams() {
+    const param = this.getQueryParam()
+    const state = decompressQueryParam<{ columns: any, filter: any }>(param)
+    return {
+      columns: state?.columns as ColumnState[],
+      filter: state?.filter,
+    }
+  }
+
+  private async clearQueryParams() {
+    const param = this.getQueryParam()
+    if (!param) {
+      return true
+    }
+    return this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { [QUERY_PARAM_GRID_STATE]: null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    })
+  }
 }
 
 function resolvePinnedData(api: GridApi, ids: Array<string | number>, identify: (item: any) => string | number) {
@@ -121,4 +161,13 @@ function resolvePinnedData(api: GridApi, ids: Array<string | number>, identify: 
     }
   })
   return result
+}
+
+export function gridStateToQueryParams(api: GridApi) {
+  return {
+    [QUERY_PARAM_GRID_STATE]: compressQueryParam({
+      columns: api.getColumnState(),
+      filter: api.getFilterModel(),
+    }),
+  }
 }

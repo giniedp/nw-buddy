@@ -156,8 +156,7 @@ export class TableGridComponent<T> implements OnInit {
       // load column and filter state
       this.grid.onReady.pipe(
         switchMap(async (e) => {
-          await this.persistence.loadColumnState(e.api, this.persistKey).catch(console.error)
-          await this.persistence.loadFilterState(e.api, this.persistKey).catch(console.error)
+          await this.persistence.restoreState(e.api, this.persistKey).catch(console.error)
           this.ready$.next(e)
         }),
       ),

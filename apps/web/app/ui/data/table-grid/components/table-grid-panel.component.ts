@@ -1,8 +1,9 @@
 import { Column, ColumnState } from '@ag-grid-community/core'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output, inject } from '@angular/core'
 
 import { toSignal } from '@angular/core/rxjs-interop'
+import { ToastController } from '@ionic/angular/standalone'
 import { ComponentStore } from '@ngrx/component-store'
 import { BehaviorSubject, combineLatest, filter, firstValueFrom, map, switchMap, tap } from 'rxjs'
 import { AgGrid } from '~/ui/data/ag-grid'
@@ -21,12 +22,14 @@ import {
   svgFilterCircleXmark,
   svgFloppyDisk,
   svgFloppyDiskArrow,
+  svgLink,
   svgThumbtack,
 } from '~/ui/icons/svg'
 import { LayoutModule, ModalService } from '~/ui/layout'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
 import { shareReplayRefCount } from '~/utils'
+import { gridStateToQueryParams } from '../table-grid-persistence.service'
 import { ExportDialogComponent } from './export-dialog.component'
 import { LoadStateDialogComponent } from './load-state-dialog.component'
 import { SaveStateDialogComponent } from './save-state-dialog.component'
@@ -116,18 +119,15 @@ export class TableGridPanelComponent extends ComponentStore<{
   protected svgPin = svgThumbtack
   protected svgDisk = svgFloppyDisk
   protected svgDiskArrow = svgFloppyDiskArrow
+  protected svgLink = svgLink
+
+  private toast = inject(ToastController)
+
   public constructor(
     private modal: ModalService,
     private qs: QuicksearchService,
   ) {
     super({ grid: null, persistKey: null })
-  }
-
-  protected async exportCsv() {
-    const grid = await firstValueFrom(this.grid$)
-    //const data = grid.api.getDataAsCsv({})
-    // console.log(data)
-    // saveAs(data)
   }
 
   protected sizeToFit() {
@@ -188,6 +188,7 @@ export class TableGridPanelComponent extends ComponentStore<{
   }
 
   protected saveState() {
+    this.close.emit()
     const grid = this.sigGrid()
     const key = this.sigPersistKey()
     SaveStateDialogComponent.open(this.modal, {
@@ -203,6 +204,7 @@ export class TableGridPanelComponent extends ComponentStore<{
   }
 
   protected loadState() {
+    this.close.emit()
     LoadStateDialogComponent.open(this.modal, {
       inputs: {
         title: 'Load State',
@@ -218,6 +220,24 @@ export class TableGridPanelComponent extends ComponentStore<{
         })
         grid.api.setFilterModel(state.filter)
       })
+  }
+
+  protected copyURL() {
+    this.close.emit()
+    const grid = this.sigGrid()
+    const params = gridStateToQueryParams(grid.api)
+    const url = new URL(window.location.href)
+    for (const key in params) {
+      url.searchParams.set(key, params[key])
+    }
+    navigator.clipboard.writeText(url.toString())
+    this.toast
+      .create({
+        message: 'Link was copied to clipboard',
+        duration: 2000,
+        position: 'top',
+      })
+      .then((toast) => toast.present())
   }
 
   protected openExporter() {
