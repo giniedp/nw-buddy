@@ -42,7 +42,6 @@ export function withGearsetMethods() {
           }
 
           const instance = gearset().slots?.[slot] || null
-          console.log('patchSlot', {slot, patchValue, instance})
           if (typeof instance === 'string') {
             // patch the item instance
             const data = await itemDB.read(instance)
@@ -60,11 +59,11 @@ export function withGearsetMethods() {
           const record = makeCopy(gearset())
           record.slots = record.slots || {}
           record.slots[slot] = {
-            ...instance,
-            ...patchValue,
+            ...(instance || { itemId: null, gearScore: null }),
+            ...(patchValue || {}),
             perks: {
-              ...(instance.perks || {}),
-              ...(patchValue.perks || {}),
+              ...(instance?.perks || {}),
+              ...(patchValue?.perks || {}),
             }
           }
           gearDB.update(record.id, record)
