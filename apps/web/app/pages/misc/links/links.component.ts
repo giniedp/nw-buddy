@@ -11,12 +11,6 @@ export const LINKS = [
     url: 'https://nwdb.info',
   },
   {
-    name: 'New World Tools',
-    description:
-      "Damage calculator for New World. Try out item, stat, and mastery combinations and see how much you'd be hitting for.",
-    url: 'https://www.nw-tools.info',
-  },
-  {
     name: 'gaming.tools',
     image: 'https://gaming.tools/newworld/images/trade-skills/armoring.png',
     description:
