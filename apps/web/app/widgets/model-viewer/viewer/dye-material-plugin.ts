@@ -141,48 +141,39 @@ export class DyeMaterialPlugin extends BABYLON.MaterialPluginBase {
     return {
       CUSTOM_FRAGMENT_DEFINITIONS: `
         uniform sampler2D dyeMask;
+        vec3 overlayBlend(vec3 luminance, vec3 color) {
+          vec3 c0 = 2.0f * luminance * color;
+          vec3 c1 = 1.0f - 2.0f * (1.0f - luminance) * (1.0f - color);
+          return mix(c0, c1, step(vec3(0.5f, 0.5f, 0.5f), luminance));
+        }
       `,
       CUSTOM_FRAGMENT_UPDATE_ALBEDO: `
         #ifdef NW_DYE_ENABLED
-          vec4 maskTexture = texture2D(dyeMask, vAlbedoUV);  
 
-          float luminance = dot(surfaceAlbedo.rgb, vec3(0.299, 0.587, 0.114));
+          vec4 maskTexture = texture2D(dyeMask, vAlbedoUV);
 
-          vec3 surfaceDyeR = mix(luminance * dyeColorR.rgb, dyeColorR.rgb, dyeOverride.r);
-          vec3 surfaceDyeG = mix(luminance * dyeColorG.rgb, dyeColorG.rgb, dyeOverride.g);
-          vec3 surfaceDyeB = mix(luminance * dyeColorB.rgb, dyeColorB.rgb, dyeOverride.b);
-          vec3 surfaceDyeA = mix(luminance * dyeColorA.rgb, dyeColorA.rgb, dyeOverride.a);
+          float luminance = dot(surfaceAlbedo.rgb, vec3(0.2125, 0.7154, 0.0721));
 
-          surfaceAlbedo.rgb = mix(surfaceAlbedo.rgb, surfaceDyeR, maskTexture.r * dyeColorR.a);
-          surfaceAlbedo.rgb = mix(surfaceAlbedo.rgb, surfaceDyeG, maskTexture.g * dyeColorG.a);
-          surfaceAlbedo.rgb = mix(surfaceAlbedo.rgb, surfaceDyeB, maskTexture.b * dyeColorB.a);
-          surfaceAlbedo.rgb = mix(surfaceAlbedo.rgb, surfaceDyeA, maskTexture.a);
+          vec3 maskColorR = mix(overlayBlend(vec3(luminance), dyeColorR.rgb), dyeColorR.rgb * dyeColorR.rgb, dyeOverride.r);
+          vec3 maskColorG = mix(overlayBlend(vec3(luminance), dyeColorG.rgb), dyeColorG.rgb * dyeColorG.rgb, dyeOverride.g);
+          vec3 maskColorB = mix(overlayBlend(vec3(luminance), dyeColorB.rgb), dyeColorB.rgb * dyeColorB.rgb, dyeOverride.b);
+
+          surfaceAlbedo.rgb = mix(surfaceAlbedo.rgb, maskColorR, maskTexture.r * dyeColorR.a);
+          surfaceAlbedo.rgb = mix(surfaceAlbedo.rgb, maskColorG, maskTexture.g * dyeColorG.a);
+          surfaceAlbedo.rgb = mix(surfaceAlbedo.rgb, maskColorB, maskTexture.b * dyeColorB.a);
 
           #ifdef NW_DYE_DEBUG
-          //surfaceAlbedo.rgb = dyeColorA.rgb * maskTexture.a;
           surfaceAlbedo.rgb = mix(maskTexture.rgb, vec3(1.0, 0.0, 1.0), maskTexture.a);
           #endif
         #endif
       `,
-      // '!vec4\\ssurfaceMetallicOrReflectivityColorMap\\s\\=\\stexture\\(reflectivitySampler,\\svReflectivityUV\\+uvOffset\\);': `
-      //   vec4 surfaceMetallicOrReflectivityColorMap = texture(reflectivitySampler, vReflectivityUV + uvOffset);
-      //   #ifdef NW_DYE_ENABLED
-      //     vec3 dyeSpecColor = dyeColorA.rgb;
-      //     float dyeSpecAmount = texture2D(dyeMask, vReflectivityUV + uvOffset).a;
-      //     float dyeSpecShift = dyeOverride.a;
-      //     vec3 refColor = surfaceMetallicOrReflectivityColorMap.rgb;
-      //     float luminance = dot(refColor.rgb, vec3(0.299, 0.587, 0.114));
-
-      //     //dyeSpecColor = mix(luminance * dyeSpecColor, dyeSpecColor, dyeSpecShift);
-      //     //refColor.rgb = mix(refColor.rgb, dyeSpecColor.rgb, mask * dyeSpecAmount);
-
-      //     surfaceMetallicOrReflectivityColorMap.rgb = refColor.rgb;
-
-      //     #ifdef NW_DYE_DEBUG
-
-      //     #endif
-      //   #endif
-      // `,
+      '!float\\smicroSurface=reflectivityOut\.microSurface;':`
+        #ifdef NW_DYE_ENABLED
+          vec4 maskTexture = texture2D(dyeMask, vAlbedoUV);
+          reflectivityOut.surfaceReflectivityColor = mix(reflectivityOut.surfaceReflectivityColor, dyeColorA.rgb, maskTexture.a * dyeOverride.a) ;
+        #endif
+        float microSurface=reflectivityOut.microSurface;
+      `,
     }
   }
 }
