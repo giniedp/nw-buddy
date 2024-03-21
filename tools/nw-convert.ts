@@ -5,10 +5,11 @@ import { cpus } from 'os'
 import * as path from 'path'
 import { environment, NW_WORKSPACE } from '../env'
 import { objectStreamConverter } from './bin/object-stream-converter'
-import { copyFile, glob, writeJSONFile } from './utils/file-utils'
+import { copyFile, glob, writeJSONFile, writeUTF8File } from './utils/file-utils'
 
 import { withProgressBar } from './utils'
 import { BinaryReader } from './utils/binary-reader'
+import { readShader } from './utils/shader-reader'
 
 function collect(value: string, previous: string[]) {
   return previous.concat(value.split(','))
@@ -23,6 +24,7 @@ enum Converter {
   datasheets = 'datasheets',
   locales = 'locales',
   images = 'images',
+  shader = 'shader',
 }
 
 program
@@ -93,6 +95,22 @@ program
             pattern: ['**/*.loc.xml'],
           },
         ],
+      })
+    }
+
+    if (hasFilter(Converter.shader, options.module)) {
+      console.log('Convert Shader Files')
+      const files = await glob([
+        path.join(inputDir, 'shaders', 'cache', 'd3d11', '*.cfib'),
+        path.join(inputDir, 'shaders', 'cache', 'd3d11', '*.cfxb')
+      ])
+      await withProgressBar({ tasks: files }, async (file, i, log) => {
+        log(file)
+        const code = await readShader(file)
+        await writeUTF8File(code, {
+          target: path.join(outputDir, path.relative(inputDir, file) + '.hlsl'),
+          createDir: true,
+        })
       })
     }
 

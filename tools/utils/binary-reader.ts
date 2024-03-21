@@ -47,6 +47,14 @@ export class BinaryReader {
   public get byte() {
     return this.view.getUint8(this.position)
   }
+
+  public get length() {
+    return this.data.byteLength
+  }
+
+  public get remaining() {
+    return this.data.byteLength - this.position
+  }
   /**
    * Reads a specified number of bytes
    *

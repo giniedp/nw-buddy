@@ -50,7 +50,7 @@ program
             '!pregame/**/*',
             '!objects/**/*',
             '!sounds/**/*',
-            '!shaders/**/*',
+            //'!shaders/**/*',
             '!textures/**/*',
             '!**/*.wem', // audio
             '!**/*.bnk', // video
@@ -68,7 +68,7 @@ program
           decompressAzcs: true,
           threads: options.threads,
           exclude: [
-            '(shaders|pregame|server|timelines)[/\\\\]',
+            '(pregame|server|timelines)[/\\\\]',
             'lyshineui[/\\\\].*\\.dynamicslice$',
             '\\.dynamicuicanvas$',
           ],
