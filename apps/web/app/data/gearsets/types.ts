@@ -42,6 +42,10 @@ export interface GearsetRecord {
    */
   attrs?: Record<AttributeRef, number>
   /**
+   * Where magnify attributes are assigned to
+   */
+  magnify?: AttributeRef
+  /**
    * Weapon skill builds
    */
   skills?: Partial<Record<GearsetSkillSlot, string | SkillSet>>

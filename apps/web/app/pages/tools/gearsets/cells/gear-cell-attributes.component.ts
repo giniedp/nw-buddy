@@ -71,6 +71,7 @@ export class GearCellAttributesComponent {
     const level = this.mannequin.level()
     const attrs = this.mannequin.activeAttributes()
     const magnify = this.mannequin.activeMagnify()
+    const magnifyPlacement = this.mannequin.magnifyPlacement()
     const weapons = await firstValueFrom(
       combineLatest({
         weapons: of(this.mannequin.equippedWeapons()),
@@ -139,11 +140,12 @@ export class GearCellAttributesComponent {
           con: attrs.con.bonus,
         },
         magnify: magnify,
+        magnifyPlacement
       },
     })
       .result$.pipe(filter((it) => !!it))
       .subscribe((res) => {
-        this.store.patchGearset({ attrs: res })
+        this.store.patchGearset({ attrs: res.assigned, magnify: res.magnify})
       })
   }
 }

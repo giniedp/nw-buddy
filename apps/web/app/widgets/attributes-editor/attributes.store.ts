@@ -15,6 +15,7 @@ export interface AttributesState {
   assigned: Record<AttributeRef, number>
   buffs: Record<AttributeRef, number>
   magnify: number[]
+  magnifyPlacement: AttributeRef
 }
 
 export interface AttributeState {
@@ -38,6 +39,7 @@ export class AttributesStore extends ComponentStore<AttributesState> {
   public readonly base$ = this.select(({ base }) => base)
   public readonly buffs$ = this.select(({ buffs }) => buffs)
   public readonly assigned$ = this.select(({ assigned }) => assigned)
+  public readonly magnifyPlacement$ = this.select(({ magnifyPlacement }) => magnifyPlacement)
   public readonly steps$ = this.select(of(ATTRIBUTE_STEPS), (list) => {
     return list.map((step, i) => {
       return {
@@ -48,7 +50,7 @@ export class AttributesStore extends ComponentStore<AttributesState> {
   })
 
   public readonly pointsAvailable$ = this.select(({ points, assigned }) => points - sum(Object.values(assigned)))
-  public readonly stats$ = this.select(({ points, base, assigned, buffs, magnify }) => {
+  public readonly stats$ = this.select(({ points, base, assigned, buffs, magnify, magnifyPlacement }) => {
     const rows = NW_ATTRIBUTE_TYPES.map(({ ref, shortName, description }): AttributeState => {
       const vBase = base?.[ref] || 0
       const vBuff = buffs?.[ref] || 0
@@ -73,6 +75,7 @@ export class AttributesStore extends ComponentStore<AttributesState> {
         return { key: it.ref, value: it.total }
       }),
       placingMods: magnify,
+      placement: magnifyPlacement
     })
     boost.forEach(({ key, value }) => {
       const row = rows.find((it) => it.ref === key)
@@ -99,6 +102,7 @@ export class AttributesStore extends ComponentStore<AttributesState> {
       assigned: empty(),
       buffs: empty(),
       magnify: [],
+      magnifyPlacement: null,
     })
   }
 
@@ -112,6 +116,7 @@ export class AttributesStore extends ComponentStore<AttributesState> {
       level: data.level,
       points: data.points,
       magnify: data.magnify || state.magnify || [],
+      magnifyPlacement: data.magnifyPlacement !== undefined ? data.magnifyPlacement : state.magnifyPlacement,
     }
   })
 

@@ -15,7 +15,7 @@
     <div class="max-w-7xl mx-auto">
       <nwb-skill-builder [ngModel]="state.value.data" [disabled]="true"></nwb-skill-builder>
       <div *ngIf="state.value.data.attrs; let attrs" class="layout-pad">
-        <nwb-attributes-editor [freeMode]="true" [assigned]="attrs"></nwb-attributes-editor>
+        <nwb-attributes-editor [freeMode]="true" [assigned]="attrs"/>
       </div>
       <div class="alert alert-info shadow-lg max-w-lg mx-auto">
         <nwb-icon [icon]="iconInfo" class="w-6 h-6"/>

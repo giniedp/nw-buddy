@@ -45,6 +45,10 @@ export interface MannequinState {
    */
   assignedAttributes?: Record<AttributeRef, number>
   /**
+   * Where magnify attributes are assigned to
+   */
+  magnifyPlacement?: AttributeRef
+  /**
    * Enforced status effects
    */
   enforcedEffects?: Array<{ id: string; stack: number }>

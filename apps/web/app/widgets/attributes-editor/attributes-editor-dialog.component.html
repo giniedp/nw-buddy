@@ -10,7 +10,9 @@
     [assigned]="assigned"
     [buffs]="buffs"
     [magnify]="magnify"
-    (assignedChanged)="setResult($event)"
+    [magnifyPlacement]="magnifyPlacement"
+    (assignedChanged)="setAssigned($event)"
+    (magnifyPlacementChanged)="setMagnifyPlacement($event)"
     #attrs
   />
   @if (weapon1ItemId || weapon2ItemId) {

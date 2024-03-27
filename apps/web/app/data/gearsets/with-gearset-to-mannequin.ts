@@ -33,6 +33,7 @@ export function withGearsetToMannequin() {
         equippedSkills2: gearset$.pipe(switchMap((it) => resolveGearsetSkill(skillDB, it?.skills?.['secondary']))),
         enforcedEffects: gearset$.pipe(map((it) => it?.enforceEffects)),
         enforcedAbilities: gearset$.pipe(map((it) => it?.enforceAbilities)),
+        magnifyPlacement: gearset$.pipe(map((it) => it?.magnify)),
         assignedAttributes: gearset$.pipe(
           map((it): Record<AttributeRef, number> => {
             return {

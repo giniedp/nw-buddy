@@ -48,9 +48,11 @@ export const NW_ATTRIBUTE_TYPES: AttributeType[] = [
 export function solveAttributePlacingMods({
   stats,
   placingMods,
+  placement
 }: {
   stats: Array<{ key: AttributeRef; value: number }>
   placingMods: number[]
+  placement: AttributeRef
 }): Array<{ key: AttributeRef; value: number }> {
   const result = stats.map((it) => {
     return { key: it.key, value: 0 }
@@ -64,19 +66,27 @@ export function solveAttributePlacingMods({
     return b.value - a.value
   })
 
-  placingMods.forEach((value, index) => {
-    // index == 0 then highest stat is magnified
-    // index == 1 then second highest stat is magnified
-    // index == 2 etc...
-    const stat = stats[index]
-    const candidates = stats.filter((it) => it.value === stat.value)
-    const boost = value / candidates.length
-    candidates.forEach((it) => {
-      const slot = result.find((slot) => slot.key === it.key)
-      if (boost > slot.value) {
-        slot.value = Math.floor(boost)
-      }
+  if (!placement) {
+    placingMods.forEach((value, index) => {
+      // index == 0 then highest stat is magnified
+      // index == 1 then second highest stat is magnified
+      // index == 2 etc...
+      const stat = stats[index]
+      const candidates = stats.filter((it) => it.value === stat.value)
+      const boost = value / candidates.length
+      candidates.forEach((it) => {
+        const slot = result.find((slot) => slot.key === it.key)
+        if (boost > slot.value) {
+          slot.value = Math.floor(boost)
+        }
+      })
     })
-  })
+  } else {
+    for (const value of placingMods) {
+      const slot = result.find((slot) => slot.key === placement)
+      slot.value += value
+    }
+  }
+
   return result
 }

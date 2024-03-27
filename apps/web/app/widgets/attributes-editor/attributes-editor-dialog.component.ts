@@ -8,6 +8,11 @@ import { AttributesEditorComponent } from './attributes-editor.component'
 import { AttributesScaleComponent } from './attributes-scale.component'
 import { IonSegment, IonSegmentButton } from '@ionic/angular/standalone'
 
+export interface AttributeEditorValue {
+  assigned: Record<AttributeRef, number>
+  magnify: AttributeRef
+}
+
 @Component({
   standalone: true,
   selector: 'nwb-attributes-editor-dialog',
@@ -31,7 +36,7 @@ export class AttributeEditorDialogComponent implements OnInit {
   public static open(modal: ModalService, options: ModalOpenOptions<AttributeEditorDialogComponent>) {
     options.size ??= ['x-md', 'y-lg']
     options.content = AttributeEditorDialogComponent
-    return modal.open<AttributeEditorDialogComponent, Record<AttributeRef, number>>(options)
+    return modal.open<AttributeEditorDialogComponent, AttributeEditorValue>(options)
   }
 
   @Input()
@@ -44,6 +49,8 @@ export class AttributeEditorDialogComponent implements OnInit {
   public buffs?: Record<AttributeRef, number>
   @Input()
   public magnify: number[]
+  @Input()
+  public magnifyPlacement: AttributeRef
 
   @Input()
   public weapon1ItemId?: string
@@ -58,10 +65,19 @@ export class AttributeEditorDialogComponent implements OnInit {
   @Input()
   public weapon2GearScore?: number
 
-  private result: Record<AttributeRef, number>
+  private result: AttributeEditorValue = {
+    assigned: {
+      con: 0,
+      dex: 0,
+      foc: 0,
+      int: 0,
+      str: 0,
+    },
+    magnify: null,
+  }
   protected tab: string = null
 
-  public constructor(private modalRef: ModalRef<Record<AttributeRef, number>>) {
+  public constructor(private modalRef: ModalRef<AttributeEditorValue>) {
     //
   }
 
@@ -69,8 +85,12 @@ export class AttributeEditorDialogComponent implements OnInit {
     this.tab = this.weapon1ItemId || this.weapon2ItemId
   }
 
-  protected setResult(value: Record<AttributeRef, number>) {
-    this.result = value
+  protected setAssigned(value: Record<AttributeRef, number>) {
+    this.result.assigned = value
+  }
+
+  protected setMagnifyPlacement(value: AttributeRef) {
+    this.result.magnify = value
   }
 
   protected close() {

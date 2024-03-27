@@ -547,6 +547,7 @@ export function selectAttributes(db: DbSlice, state: MannequinState, mods: Attri
   solveAttributePlacingMods({
     stats: Object.entries(result).map(([key, stat]) => ({ key: key as AttributeRef, value: stat.total })),
     placingMods: attrsMagnify,
+    placement: state.magnifyPlacement,
   }).forEach(({ key, value }) => {
     result[key].magnify = value
     result[key].total += value

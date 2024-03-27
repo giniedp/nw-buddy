@@ -5,13 +5,14 @@ import { AttributeRef, NW_MAX_CHARACTER_LEVEL } from '@nw-data/common'
 import { Attributeconstitution } from '@nw-data/generated'
 import { isEqual } from 'lodash'
 import { BehaviorSubject, combineLatest, debounceTime, distinctUntilChanged, map, of, skip, switchMap } from 'rxjs'
-import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgAngleLeft, svgAnglesLeft } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { shareReplayRefCount } from '~/utils'
 import { AttributeState, AttributesStore } from './attributes.store'
+import { LayoutModule } from '~/ui/layout'
 
 @Component({
   standalone: true,
@@ -19,7 +20,7 @@ import { AttributeState, AttributesStore } from './attributes.store'
   templateUrl: './attributes-editor.component.html',
   styleUrls: ['./attributes-editor.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, IconsModule, TooltipModule],
+  imports: [CommonModule, NwModule, FormsModule, IconsModule, TooltipModule, LayoutModule],
   providers: [AttributesStore],
   host: {
     class: 'layout-content',
@@ -77,11 +78,27 @@ export class AttributesEditorComponent implements OnInit {
     return this.magnify$.value
   }
 
-  @Output()
-  public assignedChanged = this.store.assigned$
-    .pipe(skip(1))
-    .pipe(distinctUntilChanged((a, b) => isEqual(a, b)))
+  @Input()
+  public set magnifyPlacement(value: AttributeRef) {
+    this.magnifyPlacement$.next(value || null)
+  }
+  public get magnifyPlacement() {
+    return this.magnifyPlacement$.value || null
+  }
 
+  @Output()
+  public assignedChanged = this.store.assigned$.pipe(skip(1)).pipe(distinctUntilChanged((a, b) => isEqual(a, b)))
+
+  @Output()
+  public magnifyPlacementChanged = this.store.magnifyPlacement$.pipe(skip(1)).pipe(distinctUntilChanged())
+
+  protected magnifyOptions: Array<{ label: string, value: AttributeRef }> = [
+    { label: 'ui_Strength_short', value: 'str' },
+    { label: 'ui_Dexterity_short', value: 'dex' },
+    { label: 'ui_Intelligence_short', value: 'int' },
+    { label: 'ui_Focus_short', value: 'foc' },
+    { label: 'ui_Constitution_short', value: 'con' },
+  ]
   protected stats$ = this.store.stats$
   protected steps$ = this.store.steps$
   protected pointsSpent$ = this.store.pointsSpent$
@@ -90,6 +107,7 @@ export class AttributesEditorComponent implements OnInit {
   protected arrowsLeft = svgAnglesLeft
   protected trackById = (i: number) => i
   private magnify$ = new BehaviorSubject<number[]>([])
+  private magnifyPlacement$ = new BehaviorSubject<AttributeRef>(null)
   private freeMode$ = new BehaviorSubject<boolean>(false)
   private level$ = new BehaviorSubject<number>(NW_MAX_CHARACTER_LEVEL)
   private base$ = new BehaviorSubject<Record<AttributeRef, number>>({
@@ -142,6 +160,7 @@ export class AttributesEditorComponent implements OnInit {
       assigned: this.assigned$,
       buffs: this.buffs$,
       magnify: this.magnify$,
+      magnifyPlacement: this.magnifyPlacement$,
     })
     this.store.loadLazy(src)
   }

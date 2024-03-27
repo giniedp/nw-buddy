@@ -123,6 +123,7 @@ export class Mannequin {
   public readonly myHpPercent = computed(() => this.state().myHealthPercent)
   public readonly myManaPercent = computed(() => this.state().myManaPercent)
   public readonly myStaminaPercent = computed(() => this.state().myStaminaPercent)
+  public readonly magnifyPlacement = computed(() => this.state().magnifyPlacement)
   public readonly numAroundMe = computed(() => this.state().numAroundMe)
   public readonly numHits = computed(() => this.state().numHits)
   public readonly combatMode = computed(() => this.state().combatMode || 'pve')
