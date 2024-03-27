@@ -12,6 +12,20 @@ function makeBarName(name: string, limit: number = 10) {
   return name
 }
 
+export async function useProgressBar<T>(barName: string, fn: (bar: Bar) => Promise<T>) {
+  const bar = new Bar(
+    {
+      format: `${makeBarName(barName, 10)}{bar} | {percentage}% | {duration_formatted} | {value}/{total} {log}`,
+      clearOnComplete: false,
+      hideCursor: true,
+    },
+    Presets.shades_grey
+  )
+
+  const result = await fn(bar)
+  bar.stop()
+  return result
+}
 export async function withProgressBar<T>(
   {
     barName,
@@ -22,24 +36,17 @@ export async function withProgressBar<T>(
   },
   task: (input: T, index: number, log: (message: string) => void) => Promise<void>
 ) {
-  const bar = new Bar(
-    {
-      format: `${makeBarName(barName, 10)}{bar} | {percentage}% | {duration_formatted} | {value}/{total} {log}`,
-      clearOnComplete: false,
-      hideCursor: true,
-    },
-    Presets.shades_grey
-  )
-  bar.start(tasks.length, 0, { log: '' })
-  function log(log: string) {
-    bar.update({ log })
-  }
-  for (let i = 0; i < tasks.length; i++) {
-    await task(tasks[i], i, log).catch(console.error)
-    bar.update(i + 1)
-  }
-  log('')
-  bar.stop()
+  await useProgressBar(barName, async (bar) => {
+    bar.start(tasks.length, 0, { log: '' })
+    function log(log: string) {
+      bar.update({ log })
+    }
+    for (let i = 0; i < tasks.length; i++) {
+      await task(tasks[i], i, log).catch(console.error)
+      bar.update(i + 1)
+    }
+    log('')
+  })
 }
 
 export async function withProgressPool<T>(

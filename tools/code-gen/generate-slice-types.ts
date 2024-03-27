@@ -86,11 +86,21 @@ interface TypeInfo {
   generic?: TypeInfo[]
 }
 
-export async function tsFromSliceFiles(files: string[]) {
+export async function tsFromSliceFiles(files: string[], progress?: (file: string, index: number) => void) {
   const objTypes = new Map<string, Map<string, TypeInfo>>()
 
-  for (const file of files) {
-    const json = await readJSONFile(file)
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i]
+    if (progress) {
+      progress(file, i)
+    }
+    const json = await readJSONFile(file).catch((err)=>{
+      console.log(`Error reading file: ${file}`)
+      return null
+    })
+    if (!json) {
+      continue
+    }
     walkJsonObjects(json, (obj: any) => {
       if (!obj || typeof obj !== 'object' || Array.isArray(obj)) {
         return
@@ -111,10 +121,12 @@ export async function tsFromSliceFiles(files: string[]) {
   }
 
   const buffer: string[] = []
-  for (const [typeName, props] of objTypes) {
+  for (const typeName of Array.from(objTypes.keys()).sort()) {
+    const props = objTypes.get(typeName)
     const safeTypeName = toSafeName(typeName)
     buffer.push(`export interface ${safeTypeName} {`)
-    for (const [propName, propType] of props) {
+    for (const propName of Array.from(props.keys()).sort()) {
+      const propType = props.get(propName)
       const safePropType = stringifyType(propType)
       const safePropKey = propName.match(/^[a-zA-Z_][a-zA-Z0-9_]*$/) ? propName : `'${propName}'`
       buffer.push(`  ${safePropKey}: ${safePropType}`)
