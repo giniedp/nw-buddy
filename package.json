@@ -229,6 +229,7 @@
     "web3.storage": "4.5.5",
     "webdriver-manager": "12.1.9",
     "webpack": "5.89.0",
+    "workerpool": "9.1.0",
     "wrangler": "3.25.0",
     "zod": "3.22.4",
     "zone.js": "~0.14.3"

@@ -507,6 +507,9 @@ devDependencies:
   webpack:
     specifier: 5.89.0
     version: 5.89.0(@swc/core@1.3.106)(esbuild@0.17.19)
+  workerpool:
+    specifier: 9.1.0
+    version: 9.1.0
   wrangler:
     specifier: 3.25.0
     version: 3.25.0
@@ -26972,6 +26975,10 @@ packages:
     requiresBuild: true
     dev: false
     optional: true
+
+  /workerpool@9.1.0:
+    resolution: {integrity: sha512-+wRWfm9yyJghvXLSHMQj3WXDxHbibHAQmRrWbqKBfy0RjftZNeQaW+Std5bSYc83ydkrxoPTPOWVlXUR9RWJdQ==}
+    dev: true
 
   /wrangler@3.25.0:
     resolution: {integrity: sha512-eU47Ez1QLu1B/wutm5ow+VwZnY4OqA+D/iy6BORAu5tABujoDr9p1yBxY/1DS/DxxDWqqY3sBBS6TzcC4NSLUQ==}
