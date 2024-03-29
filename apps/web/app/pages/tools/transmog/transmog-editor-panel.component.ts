@@ -289,6 +289,5 @@ export class TransmogEditorPanelComponent {
 }
 
 function toggleBit(value: number, bit: 1 | 2) {
-  console.log(value.toString(2), bit.toString(2), (value ^ bit).toString(2))
   return Math.min(value ^ bit, 3)
 }
