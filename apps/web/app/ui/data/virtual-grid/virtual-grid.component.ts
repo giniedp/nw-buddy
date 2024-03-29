@@ -12,7 +12,6 @@ import {
   Input,
   Output,
   Type,
-  effect,
   inject,
   viewChild
 } from '@angular/core'
@@ -162,14 +161,16 @@ export class VirtualGridComponent<T> implements AfterViewInit {
 
     protected store: VirtualGridStore<T>,
   ) {
-    this.store.withSize(resize.observe(elRef.nativeElement).pipe(map((entries) => entries.width)))
-
-    effect(() => {
-      this.viewport()?.checkViewportSize()
+    const size$ = resize.observe(elRef.nativeElement).pipe(map((entries) => entries.width))
+    this.store.withSize(size$)
+    combineLatest({
+      size: size$,
+      viewport: this.viewport$,
     })
-    // this.store.rows$.pipe(takeUntil(this.store.destroy$)).subscribe(() => {
-    //   cdRef.detectChanges()
-    // })
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        this.viewport()?.checkViewportSize()
+      })
   }
 
   public ngAfterViewInit(): void {
@@ -249,10 +250,12 @@ export class VirtualGridComponent<T> implements AfterViewInit {
   }
 
   public scrollToItem(id: string | number) {
-    if (id == null) {
+    const viewport = this.viewport()
+    if (id == null || !viewport) {
       return
     }
-    console.log('scrollToItem', id)
+    viewport.checkViewportSize()
+
     const identify = this.store.identifyBy()
     const rows = this.rows()
     const index = rows.findIndex((row) => {
@@ -269,12 +272,12 @@ export class VirtualGridComponent<T> implements AfterViewInit {
     if (index < 0) {
       return
     }
-    this.viewport().checkViewportSize()
-    const range = this.viewport().getRenderedRange()
+
+    const range = viewport.getRenderedRange()
     if (index >= range.start && index < range.end) {
       return
     }
     const centerIndex = Math.max(0, index - Math.floor((range.end - range.start) / 2))
-    this.viewport().scrollToIndex(centerIndex, 'instant')
+    viewport.scrollToIndex(centerIndex, 'instant')
   }
 }

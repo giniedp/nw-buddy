@@ -198,6 +198,19 @@ export class TransmogEditorPageComponent implements OnDestroy {
       },
     )
     effect(
+      async () => {
+        const isMale = this.store.gender() === 'male'
+        if (isMale) {
+          await this.viewer.useModel('player', location.origin +'/assets/models/player_male.gltf')
+        } else {
+          await this.viewer.useModel('player', location.origin +'/assets/models/player_female.gltf')
+        }
+      },
+      {
+        injector: this.injector,
+      },
+    )
+    effect(
       () => {
         this.updateDye()
       },
