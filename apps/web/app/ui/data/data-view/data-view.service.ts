@@ -33,10 +33,10 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
   public readonly virtualOptions = this.adapter.virtualOptions()
 
   public readonly isTableSupported = this.selectSignal(({ modes }) => {
-    return modes.includes('table') && !!this.tableGridOptions
+    return modes?.includes('table') && !!this.tableGridOptions
   })
   public readonly isVirtualSupported = this.selectSignal(({ modes }) => {
-    return modes.includes('grid') && !!this.virtualOptions
+    return modes?.includes('grid') && !!this.virtualOptions
   })
 
   public readonly canToggleMode = this.selectSignal(this.isTableSupported, this.isVirtualSupported, (table, grid) => {
@@ -104,7 +104,7 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
     return {
       ...state,
       modes: mode,
-      mode: mode[0],
+      mode: mode?.[0],
     }
   })
 }
