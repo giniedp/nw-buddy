@@ -110,3 +110,7 @@ export function categorizeAppearance(appearance: { ItemClass?: string[] }, categ
     subcategory: subcategory,
   }
 }
+
+export function getTransmogCategory(id: string) {
+  return TRANSMOG_CATEGORIES.find((it) => it.id === id)
+}

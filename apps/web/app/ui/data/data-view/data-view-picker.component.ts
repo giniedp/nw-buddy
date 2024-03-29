@@ -89,6 +89,7 @@ export class DataViewPicker<T> {
         title: options.title,
         selection: options.selection,
         persistKey: options.persistKey,
+        displayMode: options.displayMode,
       },
       cssClass: 'ion-modal-full xl:ion-modal-lg',
     })

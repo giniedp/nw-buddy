@@ -52,6 +52,9 @@ export class TransmogTableAdapter implements TableGridAdapter<TransmogRecord>, D
   }
 
   public virtualOptions(): VirtualGridOptions<TransmogRecord> {
+    if (this.config.virtualOptions) {
+      return this.config.virtualOptions()
+    }
     return TransmogCellComponent.buildGridOptions()
   }
 

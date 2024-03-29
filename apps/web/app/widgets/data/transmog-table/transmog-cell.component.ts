@@ -1,12 +1,37 @@
 import { CommonModule } from '@angular/common'
-import { Component, Input } from '@angular/core'
+import { Component, HostListener, InjectionToken, Input, inject } from '@angular/core'
+import { RouterModule } from '@angular/router'
 import { NwModule } from '~/nw'
 import { VirtualGridCellComponent, VirtualGridComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { EmptyComponent } from '~/widgets/empty'
-import { TransmogTileComponent } from './transmog-tile.component'
 import { TransmogSectionComponent } from './transmog-section.component'
+import { TransmogTileComponent } from './transmog-tile.component'
 import { TransmogRecord } from './types'
-import { RouterModule } from '@angular/router'
+
+const TRANSMOG_CELL_OPTIONS = new InjectionToken<TransmogCellOptions>('TRANSMOG_CELL_OPTIONS', {
+  providedIn: 'root',
+  factory: (): TransmogCellOptions => {
+    return {
+      navigate: true,
+    }
+  },
+})
+
+export interface TransmogCellOptions {
+  navigate: boolean
+}
+
+export function provideTransmogCellOptions(value: TransmogCellOptions) {
+  return {
+    provide: TRANSMOG_CELL_OPTIONS,
+    useValue: value,
+  }
+
+}
+
+export function injectTransmogCellOptions(): TransmogCellOptions {
+  return inject(TRANSMOG_CELL_OPTIONS)
+}
 
 @Component({
   standalone: true,
@@ -14,9 +39,10 @@ import { RouterModule } from '@angular/router'
   template: `
     <a
       [nwbTransmogTile]="item"
-      [routerLink]="item.id"
+      [routerLink]="options.navigate ? item.id : null"
       [routerLinkActive]="'border-primary'"
       class="block w-[130px] h-[130px] mx-auto bg-base-300 rounded-md border border-base-100 hover:border-primary relative transition-all "
+      [class.border-primary]="selected"
     ></a>
   `,
   imports: [CommonModule, NwModule, TransmogTileComponent, RouterModule],
@@ -47,13 +73,22 @@ export class TransmogCellComponent implements VirtualGridCellComponent<TransmogR
   public set data(value: TransmogRecord) {
     this.item = value
   }
+  public get data() {
+    return this.item
+
+  }
 
   @Input()
   public selected: boolean
 
   protected item: TransmogRecord
+  protected options = injectTransmogCellOptions()
+  protected grid = inject(VirtualGridComponent<TransmogRecord>)
 
-  public constructor(protected grid: VirtualGridComponent<TransmogRecord>) {
-    //
+  @HostListener('click', ['$event'])
+  @HostListener('dblclick', ['$event'])
+  @HostListener('keydown', ['$event'])
+  public onEvent(e: Event) {
+    this.grid.handleItemEvent(this.data, e)
   }
 }

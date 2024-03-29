@@ -1,0 +1,50 @@
+<ion-header class="bg-base-300">
+  <ion-toolbar>
+    <ion-title>Transmog Editor</ion-title>
+
+    <div slot="end">
+      <div class="join pr-1">
+        <button class="join-item btn btn-square btn-ghost" (click)="capturePhoto()" [tooltip]="'Capture Screenshot'">
+          <nwb-icon [icon]="iconCamera" class="w-4 h-4"/>
+        </button>
+        <button class="join-item btn btn-square btn-ghost" (click)="copyLink()" [tooltip]="'Copy link'">
+          <nwb-icon [icon]="iconLink" class="w-4 h-4" />
+        </button>
+      </div>
+    </div>
+  </ion-toolbar>
+</ion-header>
+<ion-content [scrollY]="false">
+  <ion-split-pane [when]="showSidebar()" contentId="main" style="--side-min-width: 320px; --side-max-width: 420px">
+    <div class="ion-page order-2" id="main">
+      <canvas #canvas class="w-full h-full focus-visible:outline-none"></canvas>
+    </div>
+    <ion-menu contentId="main" class="order-2">
+      @if (showSidebar()) {
+        <ng-container [ngTemplateOutlet]="tplDetail" />
+      }
+    </ion-menu>
+  </ion-split-pane>
+  <nwb-detail-content
+    [isOpen]="showModal()"
+    [initialBreakpoint]="100 | px2vh"
+    [breakpoints]="[12 | px2vh, 100 | px2vh, 0.45, 1]"
+    [backdropBreakpoint]="0.5"
+    [backdropDismiss]="false"
+    [template]="tplDetail"
+  />
+</ion-content>
+
+<ng-template #tplDetail>
+  <ion-content
+    [class.ion-p-4]="showSidebar()"
+    [class.ion-p-2]="showModal()"
+    [class.bg-base-300]="true"
+  >
+    <nwb-transmog-editor-panel class="w-full"/>
+  </ion-content>
+</ng-template>
+
+
+
+

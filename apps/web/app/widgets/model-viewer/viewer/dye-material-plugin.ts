@@ -179,7 +179,7 @@ export class DyeMaterialPlugin extends BABYLON.MaterialPluginBase {
 }
 
 export function updateDyeChannel(options: {
-  model: ViewerModel
+  //model: ViewerModel
   scene: Scene
   dyeR: Dyecolors | null
   dyeG: Dyecolors | null
@@ -187,8 +187,14 @@ export function updateDyeChannel(options: {
   dyeA: Dyecolors | null
   debugMask: boolean
   dyeEnabled: boolean
+  tag?: string
 }) {
-  options.scene.materials.forEach((material) => {
+  let materials = options.scene.materials
+  if (options.tag) {
+    const meshes = options.scene.getMeshesByTags(options.tag)
+    materials = meshes.map((it) => it.material)
+  }
+  materials.forEach((material) => {
     const dye = DyeMaterialPlugin.getPlugin(material)
     if (!dye) {
       return

@@ -12,11 +12,12 @@ import {
   Input,
   Output,
   Type,
-  ViewChild,
+  effect,
   inject,
+  viewChild
 } from '@angular/core'
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop'
-import { combineLatest, filter, map, skip } from 'rxjs'
+import { asyncScheduler, combineLatest, debounceTime, filter, map, skip, subscribeOn } from 'rxjs'
 import { NwModule } from '~/nw'
 import { ResizeObserverService } from '~/utils/services/resize-observer.service'
 import { VirtualGridCellComponent } from './virtual-grid-cell.component'
@@ -140,8 +141,8 @@ export class VirtualGridComponent<T> implements AfterViewInit {
   @ContentChild(VirtualGridSectionDirective, { static: true })
   protected customSection: VirtualGridSectionDirective
 
-  @ViewChild('viewport')
-  protected viewport: CdkVirtualScrollViewport
+  protected viewport = viewChild('viewport', { read: CdkVirtualScrollViewport })
+  protected viewport$ = toObservable(this.viewport)
 
   @Output()
   public selection$ = this.store.selection$.pipe(skip(1))
@@ -163,6 +164,9 @@ export class VirtualGridComponent<T> implements AfterViewInit {
   ) {
     this.store.withSize(resize.observe(elRef.nativeElement).pipe(map((entries) => entries.width)))
 
+    effect(() => {
+      this.viewport()?.checkViewportSize()
+    })
     // this.store.rows$.pipe(takeUntil(this.store.destroy$)).subscribe(() => {
     //   cdRef.detectChanges()
     // })
@@ -170,13 +174,18 @@ export class VirtualGridComponent<T> implements AfterViewInit {
 
   public ngAfterViewInit(): void {
     combineLatest({
+      viewport: this.viewport$.pipe(filter((it) => it != null)),
       rows: toObservable(this.rows, {
         injector: this.injector,
-      }).pipe(filter((it) => it != null)),
+      }).pipe(filter((rows) => rows?.length > 0)),
       selection: this.store.selection$.pipe(filter((it) => it != null)),
     })
-      .pipe(map(({ selection }) => selection[0]))
-      .pipe(takeUntilDestroyed(this.destroyRef))
+      .pipe(
+        map(({ selection }) => selection[0]),
+        subscribeOn(asyncScheduler),
+        debounceTime(500), // TODO: fix this
+        takeUntilDestroyed(this.destroyRef),
+      )
       .subscribe((selection) => {
         this.scrollToItem(selection)
       })
@@ -243,6 +252,7 @@ export class VirtualGridComponent<T> implements AfterViewInit {
     if (id == null) {
       return
     }
+    console.log('scrollToItem', id)
     const identify = this.store.identifyBy()
     const rows = this.rows()
     const index = rows.findIndex((row) => {
@@ -259,11 +269,12 @@ export class VirtualGridComponent<T> implements AfterViewInit {
     if (index < 0) {
       return
     }
-    const range = this.viewport.getRenderedRange()
+    this.viewport().checkViewportSize()
+    const range = this.viewport().getRenderedRange()
     if (index >= range.start && index < range.end) {
       return
     }
     const centerIndex = Math.max(0, index - Math.floor((range.end - range.start) / 2))
-    this.viewport.scrollToIndex(centerIndex, 'instant')
+    this.viewport().scrollToIndex(centerIndex, 'instant')
   }
 }

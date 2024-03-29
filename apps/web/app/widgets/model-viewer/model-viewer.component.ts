@@ -293,7 +293,6 @@ export class ModelViewerComponent implements OnInit, OnDestroy {
   private async updateDye(model: ViewerModel) {
     const { updateDyeChannel } = await import('./viewer')
     updateDyeChannel({
-      model: model,
       scene: this.viewer.sceneManager.scene,
       dyeR: this.store.dyeR$(),
       dyeG: this.store.dyeG$(),

@@ -101,6 +101,7 @@ export class DataViewService<T> extends ComponentStore<DataViewServiceState<T>> 
   }
 
   public setMode = this.updater<DataViewMode[]>((state, mode) => {
+    console.log('setMode', mode)
     return {
       ...state,
       modes: mode,

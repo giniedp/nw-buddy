@@ -17,9 +17,9 @@
       <li *ngIf="service.canToggleMode()">
         <button [nwbDataViewToggle]></button>
       </li>
-      <!-- <li>
-        <button [nwbDataViewOptionsMenu] [disabled]="!service.isTableActive()"></button>
-      </li> -->
+      <li>
+        <a class="btn btn-sm btn-primary self-center mt-2" [routerLink]="'/transmog/editor'">Open Editor</a>
+      </li>
     </ul>
     <div class="flex-none p-2 w-full md:max-w-[256px]">
       <nwb-quicksearch-input [autofocus]="true" [placeholder]="'Quickfilter'"></nwb-quicksearch-input>

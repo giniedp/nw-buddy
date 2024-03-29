@@ -66,6 +66,7 @@ export async function createViewer(options: {
     })
     return new Promise<DefaultViewer>((resolve) => {
       viewer.onInitDoneObservable.addOnce(() => {
+        console.log(viewer)
         resolve(viewer)
       })
     })
