@@ -105,6 +105,17 @@ export function createTransmogViewer(canvas: HTMLCanvasElement) {
       dyeEnabled: true,
     })
   }
+
+  function hideMeshes(tag: string, names: string[]) {
+    const meshes = scene.getMeshesByTags(tag)
+    if (!meshes.length) {
+      return
+    }
+    for (const mesh of meshes) {
+      mesh.setEnabled(!names.includes(mesh.name))
+    }
+  }
+
   function dispose() {
     engine.stopRenderLoop()
     scene.dispose()
@@ -118,5 +129,6 @@ export function createTransmogViewer(canvas: HTMLCanvasElement) {
     useDye,
     dispose,
     takeScreenshot,
+    hideMeshes,
   }
 }

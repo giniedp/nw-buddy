@@ -205,6 +205,7 @@ export class TransmogEditorPageComponent implements OnDestroy {
         } else {
           await this.viewer.useModel('player', location.origin +'/assets/models/player_female.gltf')
         }
+        this.updateNakedMeshes()
       },
       {
         injector: this.injector,
@@ -218,6 +219,12 @@ export class TransmogEditorPageComponent implements OnDestroy {
         injector: this.injector,
       },
     )
+    effect(() => {
+      this.updateNakedMeshes()
+    }, {
+      injector: this.injector,
+
+    })
     this.isBooted.set(true)
   }
 
@@ -266,6 +273,10 @@ export class TransmogEditorPageComponent implements OnDestroy {
       debugMask: this.store.debug(),
       dyeEnabled: true,
     })
+  }
+
+  private updateNakedMeshes() {
+    this.viewer.hideMeshes('player', this.store.hideNakedMeshes())
   }
 
   protected copyLink() {

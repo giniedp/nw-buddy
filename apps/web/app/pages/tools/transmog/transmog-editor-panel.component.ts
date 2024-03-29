@@ -13,13 +13,16 @@ import { TransmogTableAdapter, provideTransmogCellOptions } from '~/widgets/data
 import { DyePickerComponent } from '~/widgets/model-viewer/dye-picker.component'
 import { TransmogEditorStore, TransmogSlotName } from './transmog-editor-page.store'
 import { ItemFrameModule } from '~/ui/item-frame'
+import { svgEye, svgEyeSlash } from '~/ui/icons/svg'
+import { IconsModule } from '~/ui/icons'
+import { TooltipModule } from '~/ui/tooltip'
 
 @Component({
   standalone: true,
   selector: 'nwb-transmog-editor-panel',
   templateUrl: './transmog-editor-panel.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, ItemFrameModule],
+  imports: [CommonModule, NwModule, ItemFrameModule, IconsModule, TooltipModule],
   host: {
     class: 'block',
   },
@@ -34,6 +37,8 @@ export class TransmogEditorPanelComponent {
   private modal = inject(ModalService)
   private db = inject(NwDataService)
   private injector = inject(Injector)
+  protected iconEye = svgEye
+  protected iconEyeSlash = svgEyeSlash
 
   protected isMale = computed(() => this.store.gender() === 'male')
   protected slots = computed(() => {
@@ -52,6 +57,8 @@ export class TransmogEditorPanelComponent {
             transmogId,
             appearance: appearance,
             debug: this.store.debug(),
+            hideChannel: null,
+            hideValue: this.store.head.h(),
           }
         }
         case 'chest':{
@@ -65,7 +72,9 @@ export class TransmogEditorPanelComponent {
             slot: slot,
             transmogId,
             appearance: appearance,
-            debug: this.store.debug()
+            debug: this.store.debug(),
+            hideChannel: 'all',
+            hideValue: this.store.chest.h(),
           }
         }
         case 'hands':{
@@ -79,7 +88,9 @@ export class TransmogEditorPanelComponent {
             slot: slot,
             transmogId,
             appearance: appearance,
-            debug: this.store.debug()
+            debug: this.store.debug(),
+            hideChannel: 'main',
+            hideValue: this.store.hands.h(),
           }
         }
         case 'legs':{
@@ -93,7 +104,9 @@ export class TransmogEditorPanelComponent {
             slot: slot,
             transmogId,
             appearance: appearance,
-            debug: this.store.debug()
+            debug: this.store.debug(),
+            hideChannel: 'main',
+            hideValue: this.store.legs.h(),
           }
         }
         case 'feet':{
@@ -107,7 +120,9 @@ export class TransmogEditorPanelComponent {
             slot: slot,
             transmogId,
             appearance: appearance,
-            debug: this.store.debug()
+            debug: this.store.debug(),
+            hideChannel: 'main',
+            hideValue: this.store.feet.h(),
           }
         }
       }
@@ -234,4 +249,46 @@ export class TransmogEditorPanelComponent {
       }
     })
   }
+
+  protected toggleHide(slot: EquipSlot){
+    patchState(this.store, (state) => {
+      return {
+        [slot.id]: {
+          ...state[slot.id],
+          h: !state[slot.id].h,
+        },
+      }
+    })
+  }
+
+  protected toggleHide1(slot: EquipSlot){
+    patchState(this.store, (state) => {
+      return {
+        [slot.id]: {
+          ...state[slot.id],
+          h: toggleBit(Number(state[slot.id].h) || 0, 1),
+        },
+      }
+    })
+  }
+
+  protected toggleHide2(slot: EquipSlot){
+    patchState(this.store, (state) => {
+      return {
+        [slot.id]: {
+          ...state[slot.id],
+          h: toggleBit(Number(state[slot.id].h) || 0, 2),
+        },
+      }
+    })
+  }
+
+  protected isBitSet(value: number | boolean, bit: 1 | 2) {
+    return (Number(value) & bit) === bit
+  }
+}
+
+function toggleBit(value: number, bit: 1 | 2) {
+  console.log(value.toString(2), bit.toString(2), (value ^ bit).toString(2))
+  return Math.min(value ^ bit, 3)
 }

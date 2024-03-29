@@ -8,11 +8,18 @@ import { ModelViewerService } from '~/widgets/model-viewer'
 
 export type TransmogSlotName = 'head' | 'chest' | 'hands' | 'legs' | 'feet'
 export interface TransmogSlotState {
+  // transmog item name
   t: string
+  // dye color id
   r: number
+  // dye color id
   g: number
+  // dye color id
   b: number
+  // dye color id
   a: number
+  // hide naked sking
+  h: boolean | 1 | 2 | 3
 }
 
 export interface TransmogEditorState extends Record<TransmogSlotName, TransmogSlotState> {
@@ -30,6 +37,7 @@ export const TransmogEditorStore = signalStore(
       g: null,
       b: null,
       a: null,
+      h: false,
     },
     chest: {
       t: null,
@@ -37,6 +45,7 @@ export const TransmogEditorStore = signalStore(
       g: null,
       b: null,
       a: null,
+      h: false,
     },
     hands: {
       t: null,
@@ -44,6 +53,7 @@ export const TransmogEditorStore = signalStore(
       g: null,
       b: null,
       a: null,
+      h: false,
     },
     legs: {
       t: null,
@@ -51,6 +61,7 @@ export const TransmogEditorStore = signalStore(
       g: null,
       b: null,
       a: null,
+      h: false,
     },
     feet: {
       t: null,
@@ -58,6 +69,7 @@ export const TransmogEditorStore = signalStore(
       g: null,
       b: null,
       a: null,
+      h: false,
     },
   }),
   withComputed(() => {
@@ -73,7 +85,7 @@ export const TransmogEditorStore = signalStore(
   }),
   withComputed(({ head, chest, hands, legs, feet, dyeColorsMap, itemAppearancesMap, transmogMap, gender }) => {
     const modelService = inject(ModelViewerService)
-    function getAppearanceId(name: string){
+    function getAppearanceId(name: string) {
       const transmog = transmogMap().get(name)
       const male = transmog?.male
       const female = transmog?.female
@@ -82,7 +94,7 @@ export const TransmogEditorStore = signalStore(
     function getDye(id: number) {
       return dyeColorsMap().get(id)
     }
-    function getDyeSettings(ts: TransmogSlotState, appearance: Itemappearancedefinitions){
+    function getDyeSettings(ts: TransmogSlotState, appearance: Itemappearancedefinitions) {
       const rDisabled = 1 === Number(appearance?.RDyeSlotDisabled)
       const gDisabled = 1 === Number(appearance?.GDyeSlotDisabled)
       const bDisabled = 1 === Number(appearance?.BDyeSlotDisabled)
@@ -119,6 +131,28 @@ export const TransmogEditorStore = signalStore(
     const handsDye = computed(() => getDyeSettings(hands(), handsAppearance()))
     const legsDye = computed(() => getDyeSettings(legs(), legsAppearance()))
     const feetDye = computed(() => getDyeSettings(feet(), feetAppearance()))
+    const hideNakedMeshes = computed(() => {
+      const list: string[] = []
+      if (head.h()) {
+        list.push('female_naked_head_caucasian', 'male_naked_head_caucasian')
+      }
+      if (chest.h() === true || (Number(chest.h()) & 1) === 1) {
+        list.push('female_naked_chest', 'male_naked_chest')
+      }
+      if (chest.h() === true || (Number(chest.h()) & 2) === 2) {
+        list.push('female_naked_chest_sleeveless', 'male_naked_chest_sleeveless')
+      }
+      if (hands.h()) {
+        list.push('female_naked_forearms', 'male_naked_forearms')
+      }
+      if (legs.h()) {
+        list.push('female_naked_thighs', 'male_naked_thighs')
+      }
+      if (feet.h()) {
+        list.push('female_naked_calves', 'male_naked_calves')
+      }
+      return list
+    })
     return {
       headAppearanceId,
       chestAppearanceId,
@@ -143,6 +177,8 @@ export const TransmogEditorStore = signalStore(
       handsDye,
       legsDye,
       feetDye,
+
+      hideNakedMeshes,
     }
   }),
   withComputed(({ headAppearanceId, chestAppearanceId, handsAppearanceId, legsAppearanceId, feetAppearanceId }) => {
@@ -168,6 +204,7 @@ export const TransmogEditorStore = signalStore(
             g: input.head?.g,
             b: input.head?.b,
             a: input.head?.a,
+            h: !!input.head?.h,
           },
           chest: {
             t: input.chest?.t,
@@ -175,6 +212,7 @@ export const TransmogEditorStore = signalStore(
             g: input.chest?.g,
             b: input.chest?.b,
             a: input.chest?.a,
+            h: input.chest?.h,
           },
           hands: {
             t: input.hands?.t,
@@ -182,6 +220,7 @@ export const TransmogEditorStore = signalStore(
             g: input.hands?.g,
             b: input.hands?.b,
             a: input.hands?.a,
+            h: !!input.hands?.h,
           },
           legs: {
             t: input.legs?.t,
@@ -189,6 +228,7 @@ export const TransmogEditorStore = signalStore(
             g: input.legs?.g,
             b: input.legs?.b,
             a: input.legs?.a,
+            h: !!input.legs?.h,
           },
           feet: {
             t: input.feet?.t,
@@ -196,6 +236,7 @@ export const TransmogEditorStore = signalStore(
             g: input.feet?.g,
             b: input.feet?.b,
             a: input.feet?.a,
+            h: !!input.feet?.h,
           },
         })
       },
