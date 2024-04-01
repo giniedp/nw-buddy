@@ -57,7 +57,7 @@ export class AppMenuComponent {
   )
 
   protected get version() {
-    return environment.version
+    return environment.version?.split('#')?.[0]
   }
 
   private state = signalState({
