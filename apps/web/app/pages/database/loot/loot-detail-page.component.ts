@@ -12,6 +12,7 @@ import { compressToEncodedURIComponent, decompressFromEncodedURIComponent } from
 import { PreferencesService } from '~/preferences'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ToastController } from '@ionic/angular/standalone'
+import { PlatformService } from '~/utils/services/platform.service'
 
 @Component({
   standalone: true,
@@ -30,6 +31,7 @@ export class LootDetailPageComponent implements OnInit {
   private toast = inject(ToastController)
   private dref = inject(DestroyRef)
   private preferences = inject(PreferencesService)
+  private platform = inject(PlatformService)
 
   private hideLockedParam = queryParamModel('hideLocked')
 
@@ -77,7 +79,7 @@ export class LootDetailPageComponent implements OnInit {
     this.encodedState = encodeState(value)
   }
   protected copyLink() {
-    const url = new URL(this.router.url, location.origin)
+    const url = new URL(this.router.url, this.platform.websiteUrl)
     url.searchParams.set('lootContext', this.encodedState)
     navigator.clipboard.writeText(url.toString())
     this.toast

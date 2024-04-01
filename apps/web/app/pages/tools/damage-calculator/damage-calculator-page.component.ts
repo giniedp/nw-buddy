@@ -10,6 +10,7 @@ import { svgClipboard, svgLink } from '~/ui/icons/svg'
 import { DamageCalculatorComponent } from '~/widgets/damage-calculator'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { TooltipModule } from '~/ui/tooltip'
+import { PlatformService } from '~/utils/services/platform.service'
 
 @Component({
   standalone: true,
@@ -35,6 +36,7 @@ export class DamageCalculatorPageComponent {
   private route = inject(ActivatedRoute)
   private toast = inject(ToastController)
   private preferences = inject(PreferencesService)
+  private platform = inject(PlatformService)
 
   protected initialState: any = null
   protected encodedState: string = null
@@ -60,7 +62,7 @@ export class DamageCalculatorPageComponent {
   }
 
   protected copyLink() {
-    const url = new URL(this.router.url, location.origin)
+    const url = new URL(this.router.url, this.platform.websiteUrl)
     url.searchParams.set('state', this.encodedState)
     navigator.clipboard.writeText(url.toString())
     this.toast

@@ -17,7 +17,6 @@ import {
   isPerkInherent,
 } from '@nw-data/common'
 import { ItemDefinitionMaster } from '@nw-data/generated'
-import { environment } from 'apps/web/environments'
 import { filter, firstValueFrom, map, switchMap } from 'rxjs'
 import {
   GearsetRecord,
@@ -56,6 +55,7 @@ import { GearsetTableAdapter } from '~/widgets/data/gearset-table'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { InventoryPickerService } from '../../inventory/inventory-picker.service'
 import { SlotsPickerComponent } from '../dialogs'
+import { PlatformService } from '~/utils/services/platform.service'
 
 export const GEARSET_TAGS = [
   { value: 'PvP', icon: '' },
@@ -130,6 +130,7 @@ export class GearsetToolbarComponent {
     private itemsDb: ItemInstancesDB,
     private imagesDb: ImagesDB,
     private modal: ModalService,
+    private platform: PlatformService
   ) {
     patchState(this.store, {
       showCalculator: this.calcQueryParam.value() === 'true',
@@ -243,9 +244,8 @@ export class GearsetToolbarComponent {
             if (!url) {
               return null
             }
-            const host = environment.standalone ? 'https://www.nw-buddy.de' : location.origin
             return [
-              `<script src="${host}/embed.js"></script>`,
+              `<script src="${this.platform.websiteUrl}/embed.js"></script>`,
               `<object data="${url}" style="width: 100%"></object>`,
             ].join('\n')
           },

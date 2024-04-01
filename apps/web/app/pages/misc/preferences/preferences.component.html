@@ -61,58 +61,6 @@
         </label>
       </div>
 
-      <div class="divider"></div>
-      <div class="alert shadow-lg">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          class="stroke-info flex-shrink-0 w-6 h-6 self-start"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          ></path>
-        </svg>
-        <div>
-          <h3 class="font-bold">Item Tooltips!</h3>
-          <div class="text-xs mb-1">
-            Select the preferred website from which you want item tooltips to be displayed. Items will link to this
-            website.
-          </div>
-          <div class="text-xs">
-            <a [routerLink]="'/about'" class="link link-primary">Contact us</a> if you would like to have your web page
-            and tooltips configurable here.
-          </div>
-        </div>
-      </div>
-
-      <div class="form-control w-full">
-        <label class="label cursor-pointer">
-          <span class="label-text">Use NWDB Tooltips</span>
-          <input
-            type="radio"
-            name="tooltipProvider"
-            class="radio checked:bg-primary"
-            [value]="'nwdb'"
-            [(ngModel)]="tooltipProvider"
-          />
-        </label>
-      </div>
-      <div class="form-control w-full">
-        <label class="label cursor-pointer">
-          <span class="label-text">Use NW Guide Tooltips</span>
-          <input
-            type="radio"
-            name="tooltipProvider"
-            class="radio checked:bg-primary"
-            [value]="'nwguide'"
-            [(ngModel)]="tooltipProvider"
-          />
-        </label>
-      </div>
 
       <!-- <div class="divider"></div>
     <ng-template #tipWeb3token>

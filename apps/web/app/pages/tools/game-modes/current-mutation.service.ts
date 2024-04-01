@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http'
 import { InjectionToken, inject } from '@angular/core'
+import { NW_BUDDY_LIVE } from 'apps/web/environments'
 import { BehaviorSubject, Observable, Subject, defer, firstValueFrom, switchMap, tap, throttleTime } from 'rxjs'
 import { z } from 'zod'
 import { shareReplayRefCount } from '~/utils'
@@ -16,7 +17,7 @@ export type MutationList = z.infer<typeof MutationListSchema>
 export type MutationEntry = z.infer<typeof MutationEntrySchema>
 
 const THROTTLE_IN_MINUTES = 5
-const API_ENDPOINT = 'https://www.nw-buddy.de/api/mutations'
+const API_ENDPOINT = `${NW_BUDDY_LIVE}/api/mutations`
 
 export const CURRENT_MUTATION = new InjectionToken<Observable<MutationList>>('CURRENT_MUTATION', {
   providedIn: 'root',

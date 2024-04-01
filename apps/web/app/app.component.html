@@ -15,18 +15,14 @@
         class="embed-hidden"
         nwbMenu
       >
-        @defer (on timer(2s)) {
-          @if (versionChanged()) {
-            <ion-header @versionAlert class="bg-base-300">
-              <ul class="menu menu-compact flex-none m-0">
-                <li>
-                  <nwb-update-alert-button />
-                </li>
-              </ul>
-            </ion-header>
+
+        <app-menu class="bg-base-300" >
+          @defer (on timer(2s)) {
+            @if (versionChanged()) {
+              <nwb-update-alert-button @versionAlert class="w-full rounded-none bg-base-300"/>
+            }
           }
-        }
-        <app-menu class="bg-base-300" />
+        </app-menu>
       </ion-menu>
       <div id="main-content" class="ion-page">
 
@@ -42,8 +38,7 @@
           }
         </ion-content>
       </div>
-      <!-- <ion-content id="main-content" [scrollY]="false">
-      </ion-content> -->
+
     </ion-split-pane>
   </ion-content>
 </ion-app>

@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router, RouterModule } from '@angular/router'
 import { AttributeRef } from '@nw-data/common'
-import { environment } from 'apps/web/environments'
 import { filter, switchMap } from 'rxjs'
 import { SkillBuildsDB, SkillSetRecord } from '~/data'
 import { NwModule } from '~/nw'
@@ -23,6 +22,7 @@ import {
 import { ConfirmDialogComponent, LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, injectRouteParam } from '~/utils'
+import { PlatformService } from '~/utils/services/platform.service'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { SkillBuildValue, SkillBuilderComponent } from '~/widgets/skill-builder'
@@ -56,6 +56,7 @@ export class SkillBuildsDetailComponent {
   private route = inject(ActivatedRoute)
   private router = inject(Router)
   private modal = inject(ModalService)
+  private platform = inject(PlatformService)
 
   private db = inject(SkillBuildsDB)
   private store = inject(SkillTreeDetailStore)
@@ -160,9 +161,8 @@ export class SkillBuildsDetailComponent {
             if (!url) {
               return null
             }
-            const host = environment.standalone ? 'https://www.nw-buddy.de' : location.origin
             return [
-              `<script src="${host}/embed.js"></script>`,
+              `<script src="${this.platform.websiteUrl}/embed.js"></script>`,
               `<object data="${url}" style="width: 100%"></object>`,
             ].join('\n')
           },

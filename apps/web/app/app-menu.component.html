@@ -1,5 +1,5 @@
 <ion-header>
-<ion-toolbar>
+  <ion-toolbar>
     <ion-segment [value]="active" (ionChange)="handleSegmentChange($event)">
       @for (node of menu; track $index) {
         <ion-segment-button [value]="node.category">
@@ -8,8 +8,10 @@
       }
     </ion-segment>
   </ion-toolbar>
+  <ng-content select="[header]"></ng-content>
 </ion-header>
 <ion-content>
+  <ng-content />
   @for (node of menu; track $index) {
     <ul class="menu menu-compact flex-none flex-nowrap m-0 p-0" [class.hidden]="node.category !== active">
       @for (item of node.items; track $index) {
@@ -23,7 +25,7 @@
           <a [routerLink]="item.path" nwbMenuClose class="rounded-none" [routerLinkActive]="['active']">
             @if (item.icon) {
               <img [nwImage]="item.icon" class="w-5 h-5" />
-            } @else if(item.svgIcon) {
+            } @else if (item.svgIcon) {
               <nwb-icon [icon]="item.svgIcon" class="w-5 h-5" />
             }
             {{ item.label }}
@@ -34,9 +36,29 @@
   }
 </ion-content>
 <ion-footer>
-  <div class="flex-none flex flex-row gap-2 p-4 items-center justify-center">
-    <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="'/links'">Links</a>
-    <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="'/preferences'">Preferences</a>
-    <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="'/about'">About</a>
+  <div class="flex flex-col gap-1 items-center p-4">
+    <div class="flex-none flex flex-row flex-wrap gap-2 items-center justify-center">
+      <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="'/links'">Links</a>
+      <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="'/preferences'">Preferences</a>
+      <a class="link-hover" [routerLinkActive]="'text-primary'" [routerLink]="'/about'">About</a>
+    </div>
+    @if (showPtrSwitch) {
+      <div class="join">
+        <a class="join-item btn btn-xs" [class.btn-primary]="isLive" [href]="liveUrl()" rel="nofollow">
+          Live
+          @if (isLive && version) {
+            <span class="italic">({{ version }})</span>
+          }
+        </a>
+        <a class="join-item btn btn-xs" [class.btn-primary]="isPTR" [href]="ptrUrl()" rel="nofollow">
+          PTR
+          @if (isPTR && version) {
+            <span class="italic">({{ version }})</span>
+          }
+        </a>
+      </div>
+    } @else if (version) {
+      <div class="text-xs italic text-primary text-opacity-75">v{{ version }}</div>
+    }
   </div>
 </ion-footer>

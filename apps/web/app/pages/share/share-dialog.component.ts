@@ -19,6 +19,7 @@ import {
 import { LayoutModule, ModalOpenOptions, ModalRef, ModalService } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { ShareService, UploadContent } from './share.service'
+import { PlatformService } from '~/utils/services/platform.service'
 
 export interface ShareOptions {
   /**
@@ -132,7 +133,7 @@ export class ShareDialogComponent extends ComponentStore<ShareDialogState> {
     private modalRef: ModalRef,
     private web3: ShareService,
     private cdRef: ChangeDetectorRef,
-    private preferences: AppPreferencesService,
+    private platform: PlatformService
   ) {
     super({ active: false, data: null })
 
@@ -164,10 +165,7 @@ export class ShareDialogComponent extends ComponentStore<ShareDialogState> {
     if (!path) {
       return null
     }
-    if (environment.standalone) {
-      return `https://www.nw-buddy.de` + path
-    }
-    return location.origin + path
+    return this.platform.websiteUrl + path
   }
 
   protected buildShareUrl(cid: string, name: string) {

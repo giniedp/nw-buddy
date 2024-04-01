@@ -7,7 +7,7 @@
   &.floating {
     @apply bg-transparent absolute bottom-0 right-0;
     width: calc(max(25vw, 600px));
-    height: calc(max(25vh, 400px));
+    height: calc(max(25vw, 600px) * (9/16));
   }
   &.floating.left {
     right: initial;

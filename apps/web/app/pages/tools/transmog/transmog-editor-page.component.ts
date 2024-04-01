@@ -21,6 +21,7 @@ import { IconsModule } from '~/ui/icons'
 import { ScreenshotService } from '~/widgets/screenshot'
 import type { TransmogViewer } from '~/widgets/model-viewer/viewer'
 import { environment } from 'apps/web/environments'
+import { PlatformService } from '~/utils/services/platform.service'
 
 @Component({
   standalone: true,
@@ -48,6 +49,7 @@ export class TransmogEditorPageComponent implements OnDestroy {
   private toast = inject(ToastController)
   private preferences = inject(PreferencesService)
   private screenshots = inject(ScreenshotService)
+  private platform = inject(PlatformService)
 
   protected encodedState: string = null
   protected iconLink = svgLink
@@ -281,7 +283,7 @@ export class TransmogEditorPageComponent implements OnDestroy {
   }
 
   protected copyLink() {
-    const url = new URL(this.router.url, location.origin)
+    const url = new URL(this.router.url, this.platform.websiteUrl)
     url.searchParams.set('state', this.encodedState)
     navigator.clipboard.writeText(url.toString())
     this.toast

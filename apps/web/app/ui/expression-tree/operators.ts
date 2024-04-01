@@ -1,4 +1,4 @@
-import { isFinite, isNumber } from 'lodash'
+import { isFinite } from 'lodash'
 import { eqCaseInsensitive } from '~/utils'
 
 export function isBlank(a: unknown, b: string): boolean {
@@ -27,7 +27,7 @@ export function notEquals(a: unknown, b: string): boolean {
 
 export function greaterThan(a: unknown, b: string): boolean {
   if (typeof a === 'string') {
-    return a.toLocaleLowerCase() > b
+    return a.toLocaleLowerCase() > b.toLocaleLowerCase()
   }
   if (typeof a === 'number') {
     return a > Number(b)
@@ -40,7 +40,7 @@ export function greaterThan(a: unknown, b: string): boolean {
 
 export function greaterThanOrEquals(a: unknown, b: string): boolean {
   if (typeof a === 'string') {
-    return a.toLocaleLowerCase() >= b
+    return a.toLocaleLowerCase() >= b.toLocaleLowerCase()
   }
   if (typeof a === 'number') {
     return a >= Number(b)
@@ -53,7 +53,7 @@ export function greaterThanOrEquals(a: unknown, b: string): boolean {
 
 export function lessThan(a: unknown, b: string): boolean {
   if (typeof a === 'string') {
-    return a.toLocaleLowerCase() < b
+    return a.toLocaleLowerCase() < b.toLocaleLowerCase()
   }
   if (typeof a === 'number') {
     return a < Number(b)
@@ -66,7 +66,7 @@ export function lessThan(a: unknown, b: string): boolean {
 
 export function lessThanOrEquals(a: unknown, b: string): boolean {
   if (typeof a === 'string') {
-    return a.toLocaleLowerCase() <= b
+    return a.toLocaleLowerCase() <= b.toLocaleLowerCase()
   }
   if (typeof a === 'number') {
     return a <= Number(b)
@@ -91,7 +91,7 @@ export function contains(a: unknown, b: string): boolean {
   if (Array.isArray(a)) {
     return a.some((it) => eqCaseInsensitive(String(it), b))
   }
-  return String(a).toLocaleLowerCase().includes(b)
+  return String(a).toLocaleLowerCase().includes(b.toLocaleLowerCase())
 }
 
 export function startsWith(a: unknown, b: string): boolean {

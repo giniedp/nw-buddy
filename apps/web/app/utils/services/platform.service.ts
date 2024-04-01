@@ -3,7 +3,7 @@ import { DOCUMENT } from '@angular/common'
 import { Inject, Injectable } from '@angular/core'
 import { Platform as IonicPlatform } from '@ionic/angular/standalone'
 import { ElectronService } from '~/electron'
-import { environment } from '../../../environments'
+import { NW_BUDDY_LIVE, environment } from '../../../environments'
 
 @Injectable({ providedIn: 'root' })
 export class PlatformService {
@@ -87,6 +87,17 @@ export class PlatformService {
 
   public get isDesktop() {
     return this.ionicPlatform.is('desktop')
+  }
+
+  protected get isStandalone() {
+    return this.env.standalone
+  }
+
+  public get websiteUrl() {
+    if (this.isStandalone) {
+      return NW_BUDDY_LIVE
+    }
+    return location.origin
   }
 
   public constructor(
