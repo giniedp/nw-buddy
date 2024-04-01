@@ -1,6 +1,5 @@
 /// <reference lib="webworker" />
 import { ItemRarity } from '@nw-data/common'
-import { environment } from 'apps/web/environments'
 import { expose } from 'comlink'
 
 export interface SearchRecord {
@@ -12,28 +11,27 @@ export interface SearchRecord {
   rarity: ItemRarity
 }
 export interface SearchQueryTasks {
-  search: (args: { text: string; lang: string }) => Promise<SearchRecord[]>
+  search: (args: { text: string; lang: string, nwDataUrl: string }) => Promise<SearchRecord[]>
 }
 
 const index: Record<string, Promise<any>> = {}
 
-function fetchIndex(lang: string): Promise<SearchRecord[]> {
-  console.debug('fetchIndex', environment)
+function fetchIndex({ lang, nwDataUrl }: { lang: string, nwDataUrl: string }): Promise<SearchRecord[]> {
   if (!index[lang]) {
-    index[lang] = fetch(`${environment.nwDataUrl}/search/${lang}.json`)
+    index[lang] = fetch(`${nwDataUrl}/search/${lang}.json`)
       .then((res) => res.json())
       .then((data) => {
-        return transformImageUrls(data)
+        return transformImageUrls(data, nwDataUrl)
       })
   }
   return index[lang]
 }
 
-function transformImageUrls(data: any) {
+function transformImageUrls(data: any, nwDataUrl: string) {
   if (!Array.isArray(data)) {
     return data
   }
-  const nwDataUrl = environment.nwDataUrl.replace(/\/+$/, '')
+  nwDataUrl = nwDataUrl.replace(/\/+$/, '')
   return data.map((item) => {
     Object.entries(item).forEach(([key, value]) => {
       if (typeof value === 'string' && value.startsWith('nw-data/')) {
@@ -45,9 +43,9 @@ function transformImageUrls(data: any) {
 }
 
 const api: SearchQueryTasks = {
-  search: async ({ text, lang }) => {
+  search: async ({ text, lang, nwDataUrl }) => {
     text = text.toLocaleLowerCase()
-    const records = await fetchIndex(lang).catch(console.error)
+    const records = await fetchIndex({lang, nwDataUrl}).catch(console.error)
     if (!records) {
       return []
     }

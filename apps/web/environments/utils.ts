@@ -1,4 +1,3 @@
-import { replace } from 'lodash'
 import { EnvVars } from './env'
 
 export interface Environment extends EnvVars {

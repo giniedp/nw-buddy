@@ -23,6 +23,7 @@ import { useTesseract } from '~/utils/use-tesseract'
 import { SEARCH_QUERY_TASKS } from './search-query-tasks'
 import type { SearchQueryTasks, SearchRecord } from './search-query.worker'
 import { SearchResultsPanelComponent } from './search-results-panel.component'
+import { environment } from 'apps/web/environments'
 
 @Component({
   standalone: true,
@@ -114,7 +115,7 @@ export class GlobalSearchInputComponent
     if (!value) {
       return []
     }
-    return this.api.search({ text: value, lang: this.locale.value })
+    return this.api.search({ text: value, lang: this.locale.value, nwDataUrl: environment.nwDataUrl })
   }
 
   protected closePanel() {

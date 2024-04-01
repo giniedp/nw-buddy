@@ -20,6 +20,7 @@ import { TransmogEditorPanelComponent } from './transmog-editor-panel.component'
 import { IconsModule } from '~/ui/icons'
 import { ScreenshotService } from '~/widgets/screenshot'
 import type { TransmogViewer } from '~/widgets/model-viewer/viewer'
+import { environment } from 'apps/web/environments'
 
 @Component({
   standalone: true,
@@ -201,9 +202,9 @@ export class TransmogEditorPageComponent implements OnDestroy {
       async () => {
         const isMale = this.store.gender() === 'male'
         if (isMale) {
-          await this.viewer.useModel('player', location.origin +'/assets/models/player_male.gltf')
+          await this.viewer.useModel('player', environment.deployUrl +'assets/models/player_male.gltf')
         } else {
-          await this.viewer.useModel('player', location.origin +'/assets/models/player_female.gltf')
+          await this.viewer.useModel('player', environment.deployUrl +'assets/models/player_female.gltf')
         }
         this.updateNakedMeshes()
       },
