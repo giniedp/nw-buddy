@@ -333,6 +333,9 @@ export abstract class NwDataLoader {
   public charactertablesDamnedDatatablesDamagetableDamnedCultist() {
     return this.load<Damagetable[]>('charactertables/damned_datatables/javelindata_damagetable_damned_cultist.json')
   }
+  public charactertablesDamnedDatatablesDamagetableDamnedFirstmate() {
+    return this.load<Damagetable[]>('charactertables/damned_datatables/javelindata_damagetable_damned_firstmate.json')
+  }
   public charactertablesDamnedDatatablesDamagetableDamnedGreataxe() {
     return this.load<Damagetable[]>('charactertables/damned_datatables/javelindata_damagetable_damned_greataxe.json')
   }
@@ -405,9 +408,6 @@ export abstract class NwDataLoader {
   public charactertablesExplosivesproutDatatablesDamagetableExplosivesproutFire() {
     return this.load<Damagetable[]>('charactertables/explosivesprout_datatables/javelindata_damagetable_explosivesprout_fire.json')
   }
-  public charactertablesGhastlyDatatablesDamagetableGhastlyVillagerShovel() {
-    return this.load<Damagetable[]>('charactertables/ghastly_datatables/javelindata_damagetable_ghastly_villager_shovel.json')
-  }
   public charactertablesGhostDatatablesDamagetableGhost() {
     return this.load<Damagetable[]>('charactertables/ghost_datatables/javelindata_damagetable_ghost.json')
   }
@@ -434,6 +434,9 @@ export abstract class NwDataLoader {
   }
   public charactertablesGorillaDatatablesDamagetableGorillaboss() {
     return this.load<Damagetable[]>('charactertables/gorilla_datatables/javelindata_damagetable_gorillaboss.json')
+  }
+  public charactertablesGruntDatatablesDamagetableAbominableLiang() {
+    return this.load<Damagetable[]>('charactertables/grunt_datatables/javelindata_damagetable_abominable_liang.json')
   }
   public charactertablesGruntDatatablesDamagetableFlamegrunt() {
     return this.load<Damagetable[]>('charactertables/grunt_datatables/javelindata_damagetable_flamegrunt.json')
@@ -518,6 +521,9 @@ export abstract class NwDataLoader {
   }
   public charactertablesIceDragonDamagetableIcedragon() {
     return this.load<Damagetable[]>('charactertables/ice_dragon/javelindata_damagetable_icedragon.json')
+  }
+  public charactertablesIceDragonDamagetableIcedragonEssencefragment() {
+    return this.load<Damagetable[]>('charactertables/ice_dragon/javelindata_damagetable_icedragon_essencefragment.json')
   }
   public charactertablesIceDragonDamagetableIcedragonSolo() {
     return this.load<Damagetable[]>('charactertables/ice_dragon/javelindata_damagetable_icedragon_solo.json')
@@ -714,6 +720,9 @@ export abstract class NwDataLoader {
   public charactertablesSeasonsDatatablesSeason02DamagetableBabysandworm() {
     return this.load<Damagetable[]>('charactertables/seasons_datatables/season_02/javelindata_damagetable_babysandworm.json')
   }
+  public charactertablesSeasonsDatatablesSeason02DamagetableMalek() {
+    return this.load<Damagetable[]>('charactertables/seasons_datatables/season_02/javelindata_damagetable_malek.json')
+  }
   public charactertablesSeasonsDatatablesSeason04DamagetableAgIceguardianboss() {
     return this.load<Damagetable[]>('charactertables/seasons_datatables/season_04/javelindata_damagetable_ag_iceguardianboss.json')
   }
@@ -890,6 +899,9 @@ export abstract class NwDataLoader {
   }
   public craftingSeasons() {
     return this.load<Crafting[]>('javelindata_crafting_seasons.json')
+  }
+  public craftingSpecialtyshops() {
+    return this.load<Crafting[]>('javelindata_crafting_specialtyshops.json')
   }
   public craftingWeapon() {
     return this.load<Crafting[]>('javelindata_crafting_weapon.json')
@@ -1185,6 +1197,15 @@ export abstract class NwDataLoader {
   public mtxItemdefinitionsMtx20242() {
     return this.load<ItemDefinitionMtx[]>('mtx/javelindata_itemdefinitions_mtx_2024-2.json')
   }
+  public mtxItemdefinitionsMtx20243() {
+    return this.load<ItemDefinitionMtx[]>('mtx/javelindata_itemdefinitions_mtx_2024-3.json')
+  }
+  public mtxItemdefinitionsMtx20244() {
+    return this.load<ItemDefinitionMtx[]>('mtx/javelindata_itemdefinitions_mtx_2024-4.json')
+  }
+  public mtxItemdefinitionsMtx20245() {
+    return this.load<ItemDefinitionMtx[]>('mtx/javelindata_itemdefinitions_mtx_2024-5.json')
+  }
   public mtxLoottablesMtx() {
     return this.load<Loottable[]>('mtx/javelindata_loottables_mtx.json')
   }
@@ -1407,6 +1428,12 @@ export abstract class NwDataLoader {
   public questgameevents99eGameevents() {
     return this.load<GameEvent[]>('questgameevents/javelindata_99e_gameevents.json')
   }
+  public questgameevents99fGameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_99f_gameevents.json')
+  }
+  public questgameevents99gGameevents() {
+    return this.load<GameEvent[]>('questgameevents/javelindata_99g_gameevents.json')
+  }
   public questgameeventsVoicedloreGameevents() {
     return this.load<GameEvent[]>('questgameevents/javelindata_voicedlore_gameevents.json')
   }
@@ -1626,6 +1653,21 @@ export abstract class NwDataLoader {
   public quests99eMsqEdengrove99eObjectives() {
     return this.load<Objective[]>('quests/99e_msq_edengrove/javelindata_99e_objectives.json')
   }
+  public quests99fMsqEbonscale99fNpcs() {
+    return this.load<Npc[]>('quests/99f_msq_ebonscale/javelindata_99f_npcs.json')
+  }
+  public quests99fMsqEbonscale99fObjectives() {
+    return this.load<Objective[]>('quests/99f_msq_ebonscale/javelindata_99f_objectives.json')
+  }
+  public quests99gMsqShattered99gNpcs() {
+    return this.load<Npc[]>('quests/99g_msq_shattered/javelindata_99g_npcs.json')
+  }
+  public quests99gMsqShattered99gObjectives() {
+    return this.load<Objective[]>('quests/99g_msq_shattered/javelindata_99g_objectives.json')
+  }
+  public questsConsoleC08EbonscalereachC08Npcs() {
+    return this.load<Npc[]>('quests/console/c08_ebonscalereach/javelindata_c08_npcs.json')
+  }
   public seasonsrewardsSeason1RewarddataSeason1() {
     return this.load<Rewarddata[]>('seasonsrewards/season1/javelindata_rewarddata_season1.json')
   }
@@ -1649,6 +1691,12 @@ export abstract class NwDataLoader {
   }
   public seasonsrewardsSeason4SeasonpassdataSeason4() {
     return this.load<SeasonPassData[]>('seasonsrewards/season4/javelindata_seasonpassdata_season4.json')
+  }
+  public seasonsrewardsSeason5RewarddataSeason5() {
+    return this.load<Rewarddata[]>('seasonsrewards/season5/javelindata_rewarddata_season5.json')
+  }
+  public seasonsrewardsSeason5SeasonpassdataSeason5() {
+    return this.load<SeasonPassData[]>('seasonsrewards/season5/javelindata_seasonpassdata_season5.json')
   }
   public spelltable() {
     return this.load<Spelltable[]>('javelindata_spelltable.json')

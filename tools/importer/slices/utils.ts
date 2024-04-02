@@ -26,7 +26,6 @@ function readAssetCatalog(rootDir: string) {
 }
 
 function cleanUUID(uuid: string) {
-
   if (!uuid) {
     return null
   }
@@ -72,7 +71,7 @@ export async function resolveDynamicSliceFiles(rootDir: string, file: string, as
       return null
     }
 
-    let result =  await resolveFile(rootDir, file)
+    let result = await resolveFile(rootDir, file)
     if (!result && assetId) {
       const catalog = await readAssetCatalog(rootDir)
       result = await resolveFile(rootDir, catalog[cleanUUID(assetId)])
@@ -148,7 +147,7 @@ async function resolveFile(rootDir: string, file: string): Promise<string | stri
 
 export function findAZEntityById(component: SliceComponent, id: number) {
   for (const entity of component.entities || []) {
-    if ((isAZ__Entity(entity) && (entity as any).id === id) || entity.id?.id === id) {
+    if ((isAZ__Entity(entity) && entity.id === id) || (entity.id as any)?.id === id) {
       return entity
     }
   }
