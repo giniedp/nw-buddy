@@ -1,6 +1,6 @@
 import { chain, groupBy, sortBy, sumBy, uniq } from 'lodash'
 import * as path from 'path'
-import { environment } from '../../../env'
+import { environment, NW_WORKSPACE } from '../../../env'
 import { arrayAppend, assmebleWorkerTasks, glob, readJSONFile, withProgressPool, writeJSONFile } from '../../utils'
 import { pathToDatatables } from '../tables'
 import {
@@ -69,7 +69,8 @@ interface LoreMetadata {
 }
 
 export async function importSlices({ inputDir, threads }: { inputDir: string; threads: number }) {
-  const crcVitalsFile = environment.tmpDir('crcVitals.json')
+  const tmpDir = environment.tmpDir(NW_WORKSPACE)
+  const crcVitalsFile = path.join(tmpDir, 'crcVitals.json')
   await readAndExtractCrcValues({
     schema: VitalsTableSchema,
     files: [
@@ -79,21 +80,21 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
     extract: (row) => row.VitalsID.toLowerCase(),
   }).then((result) => writeJSONFile(result, { target: crcVitalsFile }))
 
-  const crcVitalsCategoriesFile = environment.tmpDir('crcVitalsCategories.json')
+  const crcVitalsCategoriesFile = path.join(tmpDir, 'crcVitalsCategories.json')
   await readAndExtractCrcValues({
     schema: VitalsCategoriesTableSchema,
     files: [path.join(pathToDatatables(inputDir), 'javelindata_vitalscategories.json')],
     extract: (row) => row.VitalsCategoryID.toLowerCase(),
   }).then((result) => writeJSONFile(result, { target: crcVitalsCategoriesFile }))
 
-  const crcGatherablesFile = environment.tmpDir('crcGatherables.json')
+  const crcGatherablesFile = path.join(tmpDir, 'crcGatherables.json')
   await readAndExtractCrcValues({
     schema: GatherablesTableSchema,
     files: [path.join(pathToDatatables(inputDir), 'javelindata_gatherables.json')],
     extract: (row) => row.GatherableID.toLowerCase(),
   }).then((result) => writeJSONFile(result, { target: crcGatherablesFile }))
 
-  const crcVariationsFile = environment.tmpDir('crcVariations.json')
+  const crcVariationsFile = path.join(tmpDir, 'crcVariations.json')
   await readAndExtractCrcValues({
     schema: VariationsTableSchema,
     files: [path.join(pathToDatatables(inputDir), 'javelindata_variations_*.json')],

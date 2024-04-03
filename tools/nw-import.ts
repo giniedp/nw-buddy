@@ -52,6 +52,7 @@ program
     const typesDir = environment.libsDir('nw-data', 'generated')
     const threads = options.threads || cpus().length
     const tablesOutDir = path.join(distDir, 'datatables')
+    const tmpDir = path.join('tmp', options.workspace)
 
     console.log('[IMPORT]', inputDir)
     console.log('     to:', distDir)
@@ -75,7 +76,7 @@ program
           createDir: true,
         })
         writeJSONFile(data, {
-          target: path.join('tmp', 'spells.json'),
+          target: path.join(tmpDir, 'spells.json'),
           createDir: true,
         })
       })
@@ -126,7 +127,7 @@ program
             serialize: jsonStringifyFormatted,
           }),
           ...variations.chunks.map(async (chunk, index) => {
-            await fs.promises.writeFile(path.join('tmp', `variations.${index}.chunk`), chunk)
+            await fs.promises.writeFile(path.join(tmpDir, `variations.${index}.chunk`), chunk)
             await fs.promises.writeFile(
               path.join(pathToDatatables(inputDir), `generated_variations_metadata.${index}.chunk`),
               chunk,
@@ -163,12 +164,13 @@ program
             localeImages.push(img)
           }
         })
-        fs.writeFileSync('./tmp/expressions.json', JSON.stringify(data, null, 2))
+        fs.writeFileSync(path.join(tmpDir, 'expressions.json'), JSON.stringify(data, null, 2))
       })
 
       await extractLocaleDiffs(localesInputDir).then((result) => {
-        for (const { locale, data } of result) {
-          fs.writeFileSync(`./tmp/expressions-diffs-${locale}.csv`, data)
+        for (const { locale, csv, ascii } of result) {
+          fs.writeFileSync(path.join(tmpDir, `expressions-diffs-${locale}.csv`) , csv)
+          fs.writeFileSync(path.join(tmpDir, `expressions-diffs-${locale}.txt`) , ascii)
         }
       })
     }

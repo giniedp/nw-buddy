@@ -3,6 +3,7 @@ import { unparse } from 'papaparse'
 import * as path from 'path'
 import { glob, withProgressBar } from '../utils'
 import { normalizeLocaleKey, readLocaleFile } from './locales'
+import { AsciiTable3 } from 'ascii-table3'
 
 export async function extractLocaleDiffs(inputDir: string) {
   const locales: Record<string, Record<string, string>> = {}
@@ -13,7 +14,7 @@ export async function extractLocaleDiffs(inputDir: string) {
     locales[lang][key] = value || ''
   }
 
-  const result: Array<{ locale: string; data: string }> = []
+  const result: Array<{ locale: string; rows: any[], csv: string, ascii: string }> = []
   const refLang = 'en-us'
   const refDict = locales[refLang] || {}
   const keys = Object.keys(refDict)
@@ -52,13 +53,15 @@ export async function extractLocaleDiffs(inputDir: string) {
     if (!data.length) {
       return
     }
-    data.unshift(['KEY', refLang.toUpperCase(), lang.toUpperCase()])
+    data.unshift(['DICT KEY', refLang.toUpperCase(), lang.toUpperCase()])
     result.push({
       locale: lang,
-      data: unparse(data, {
+      rows: data,
+      csv: unparse(data, {
         delimiter: ';',
         header: true,
       }),
+      ascii: new AsciiTable3().addRowMatrix(data).toString()
     })
   })
 

@@ -258,6 +258,9 @@ devDependencies:
   ansi-colors:
     specifier: 4.1.3
     version: 4.1.3
+  ascii-table3:
+    specifier: 0.9.0
+    version: 0.9.0
   autoprefixer:
     specifier: 10.4.19
     version: 10.4.19(postcss@8.4.38)
@@ -11855,6 +11858,13 @@ packages:
 
   /as-table@1.0.55:
     resolution: {integrity: sha512-xvsWESUJn0JN421Xb9MQw6AsMHRCUknCe0Wjlxvjud80mU4E6hQf1A6NzQKcYNmYw62MfzEtXc+badstZP3JpQ==}
+    dependencies:
+      printable-characters: 1.0.42
+    dev: true
+
+  /ascii-table3@0.9.0:
+    resolution: {integrity: sha512-/JcvVCQRTVQHwLI8TCxSeOS9AcCV01MbCJC4plSP5ulygJH+D30lz85nvMcER5k+qoX2fJ1C/i13Zo1/eoMGTw==}
+    engines: {node: '>=11.14.0'}
     dependencies:
       printable-characters: 1.0.42
     dev: true
