@@ -14,10 +14,13 @@ import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { combineLatest } from 'rxjs'
 import { RecipeCellComponent } from './recipes-cell.component'
 import { RecipeRecord } from './types'
+import { TranslateService } from '~/i18n'
+import { sortBy } from 'lodash'
 
 @Injectable()
 export class RecipesTableAdapter implements TableGridAdapter<RecipeRecord>, DataViewAdapter<RecipeRecord> {
   private db = inject(NwDataService)
+  private tl8 = inject(TranslateService)
 
   public entityID(item: RecipeRecord): string {
     return item.itemId
@@ -47,10 +50,13 @@ export class RecipesTableAdapter implements TableGridAdapter<RecipeRecord>, Data
 
   private source$ = selectStream(
     combineLatest({
+      locale: this.tl8.locale.value$,
       items: this.db.itemsMap,
       recipes: this.db.recipes,
     }),
-    selectRecords
+    (data) => {
+      return sortBy(selectRecords(data), (it) => this.tl8.get(it.item.Name))
+    }
   )
 }
 

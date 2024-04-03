@@ -15,11 +15,12 @@ import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { combineLatest } from 'rxjs'
 import { SchematicCellComponent } from './schematic-cell.component'
 import { SchematicRecord } from './types'
+import { sortBy } from 'lodash'
 
 @Injectable()
 export class SchematicsTableAdapter implements TableGridAdapter<SchematicRecord>, DataViewAdapter<SchematicRecord> {
   private db = inject(NwDataService)
-  private i18n = inject(TranslateService)
+  private tl8 = inject(TranslateService)
   private config = inject(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
 
   public entityID(item: SchematicRecord): string {
@@ -54,12 +55,15 @@ export class SchematicsTableAdapter implements TableGridAdapter<SchematicRecord>
 
   private source$ = selectStream(
     combineLatest({
+      locale: this.tl8.locale.value$,
       items: this.db.itemsMap,
       itemsBySalvage: this.db.itemsBySalvageAchievement,
       housingItems: this.db.housingItemsMap,
       recipes: this.db.recipes,
     }),
-    selectSchematics,
+    (data) => {
+      return sortBy(selectSchematics(data), (it) => this.tl8.get(it.item.Name))
+    },
   )
 }
 
@@ -78,7 +82,6 @@ function selectSchematics({
   itemsBySalvage: Map<string, ItemDefinitionMaster[]>
   housingItems: Map<string, Housingitems>
 }) {
-  console.log(itemsBySalvage)
   return recipes
     .map((recipe): SchematicRecord => {
       const candidates = itemsBySalvage.get(recipe.RequiredAchievementID)
