@@ -391,6 +391,10 @@ export class NwDataService {
   public areas = table(() => this.data.areadefinitions())
   public areasMap = tableIndexBy(() => this.areas, 'TerritoryID')
   public area = tableLookup(() => this.areasMap)
+  public areaByPoiTag = tableGroupBy(
+    () => this.areas,
+    (it) => it.POITag?.split(','),
+  )
 
   public territoriesMetadata = table(() => this.data.generatedTerritoriesMetadata())
   public territoriesMetadataMap = tableIndexBy(() => this.territoriesMetadata, 'territoryID')

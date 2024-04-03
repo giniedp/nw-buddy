@@ -102,9 +102,12 @@ export class ItemDetailPerkTasksComponent {
   }
 
   private resolvePOITags(task: Objectivetasks) {
-    return this.db.poiByPoiTag
-      .pipe(map((pois) => pois.get(task.POITag)))
-      .pipe(map((it): PoiDefinition => it?.[0] || null))
+    return combineLatest({
+      poiByTag: this.db.poiByPoiTag,
+      areaByTag: this.db.areaByPoiTag,
+    })
+      .pipe(map(({ poiByTag, areaByTag }) => poiByTag.get(task.POITag) || areaByTag.get(task.POITag)))
+      .pipe(map((it): PoiDefinition => (it?.[0] || null) as PoiDefinition))
       .pipe(
         switchMap((poi) => {
           if (!poi) {
