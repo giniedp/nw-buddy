@@ -7,18 +7,21 @@ import { EmptyComponent } from '~/widgets/empty'
 import { TransmogSectionComponent } from './transmog-section.component'
 import { TransmogTileComponent } from './transmog-tile.component'
 import { TransmogRecord } from './types'
+import { TooltipModule } from '~/ui/tooltip'
 
 const TRANSMOG_CELL_OPTIONS = new InjectionToken<TransmogCellOptions>('TRANSMOG_CELL_OPTIONS', {
   providedIn: 'root',
   factory: (): TransmogCellOptions => {
     return {
-      navigate: true,
+      navigate: false,
+      tooltips: false
     }
   },
 })
 
 export interface TransmogCellOptions {
-  navigate: boolean
+  navigate?: boolean
+  tooltips?: boolean
 }
 
 export function provideTransmogCellOptions(value: TransmogCellOptions) {
@@ -43,9 +46,10 @@ export function injectTransmogCellOptions(): TransmogCellOptions {
       [routerLinkActive]="'border-primary'"
       class="block w-[130px] h-[130px] mx-auto bg-base-300 rounded-md border border-base-100 hover:border-primary relative transition-all "
       [class.border-primary]="selected"
+      [tooltip]="tooltip | nwText"
     ></a>
   `,
-  imports: [CommonModule, NwModule, TransmogTileComponent, RouterModule],
+  imports: [CommonModule, NwModule, TransmogTileComponent, RouterModule, TooltipModule],
   host: {
     class: 'block m-2',
   },
@@ -75,7 +79,10 @@ export class TransmogCellComponent implements VirtualGridCellComponent<TransmogR
   }
   public get data() {
     return this.item
+  }
 
+  public get tooltip() {
+    return this.options.tooltips ? this.item.appearance.Name : null
   }
 
   @Input()

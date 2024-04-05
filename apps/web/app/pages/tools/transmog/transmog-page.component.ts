@@ -1,7 +1,8 @@
 import { animate, animateChild, query, stagger, style, transition, trigger } from '@angular/animations'
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core'
-import { ActivatedRoute, RouterModule } from '@angular/router'
+import { ChangeDetectionStrategy, Component, computed } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
+import { RouterModule } from '@angular/router'
 import { ComponentStore } from '@ngrx/component-store'
 import { NwModule } from '~/nw'
 import { DataViewModule, DataViewService, provideDataView } from '~/ui/data/data-view'
@@ -13,11 +14,9 @@ import { LayoutModule } from '~/ui/layout'
 import { PaginationModule } from '~/ui/pagination'
 import { QuicksearchModule, QuicksearchService } from '~/ui/quicksearch'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, eqCaseInsensitive, injectBreakpoint, injectRouteParam, injectUrlParams, observeRouteParam, selectSignal, selectStream } from '~/utils'
-import { TransmogRecord, TransmogTableAdapter } from '~/widgets/data/transmog-table'
+import { HtmlHeadService, eqCaseInsensitive, injectBreakpoint, injectRouteParam, injectUrlParams, selectSignal } from '~/utils'
 import { TransmogItem } from '~/widgets/data/transmog'
-import { uniq } from 'lodash'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { TransmogRecord, TransmogTableAdapter, provideTransmogCellOptions } from '~/widgets/data/transmog-table'
 
 @Component({
   standalone: true,
@@ -38,6 +37,10 @@ import { toSignal } from '@angular/core/rxjs-interop'
     VirtualGridModule,
   ],
   providers: [
+    provideTransmogCellOptions({
+      navigate: true,
+      tooltips: true,
+    }),
     provideDataView({
       adapter: TransmogTableAdapter,
     }),
@@ -79,7 +82,10 @@ export class TransmogPageComponent extends ComponentStore<{ hoverItem: TransmogI
   protected showSidebar = computed(() => this.isLargeContent() && this.isChildActive())
   protected showModal = computed(() => !this.isLargeContent() && this.isChildActive())
 
-  public constructor(head: HtmlHeadService, protected service: DataViewService<TransmogRecord>) {
+  public constructor(
+    head: HtmlHeadService,
+    protected service: DataViewService<TransmogRecord>,
+  ) {
     super({ hoverItem: null })
 
     service.patchState({ mode: 'grid', modes: ['grid'] })

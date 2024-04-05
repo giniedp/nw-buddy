@@ -29,6 +29,7 @@ import { TooltipModule } from '~/ui/tooltip'
   providers: [
     provideTransmogCellOptions({
       navigate: false,
+      tooltips: true
     }),
   ]
 })
