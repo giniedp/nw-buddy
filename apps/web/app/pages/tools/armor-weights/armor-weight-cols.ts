@@ -158,10 +158,12 @@ export function armorWeightColShield(util: ArmorWeightTableUtils) {
 }
 
 export function armorWeightColRating(util: ArmorWeightTableUtils) {
-  return util.colDef<string>({
+  return util.colDef<number>({
     colId: 'rating',
     headerValueGetter: () => 'Rating',
-    valueGetter: ({ data }) => data.rating.toFixed(1),
+    valueGetter: ({ data }) => data.rating,
+    valueFormatter: ({ value }) => value.toFixed(1),
+    filter: NumberFilter,
   })
 }
 
