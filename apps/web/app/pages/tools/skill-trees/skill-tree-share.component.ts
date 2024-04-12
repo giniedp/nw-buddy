@@ -10,7 +10,7 @@ import { NwModule } from '~/nw'
 import { ShareService } from '~/pages/share'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCircleNotch } from '~/ui/icons/svg'
-import { ModalService, PromptDialogComponent } from '~/ui/layout'
+import { LayoutModule, ModalService, PromptDialogComponent } from '~/ui/layout'
 import { HtmlHeadService } from '~/utils'
 import { suspensify } from '~/utils/rx/suspensify'
 import { AttributesEditorModule } from '~/widgets/attributes-editor'
@@ -21,9 +21,9 @@ import { SkillBuilderComponent } from '~/widgets/skill-builder'
   selector: 'nwb-skill-tree-share',
   templateUrl: './skill-tree-share.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CommonModule, NwModule, FormsModule, IconsModule, SkillBuilderComponent, AttributesEditorModule],
+  imports: [CommonModule, NwModule, FormsModule, IconsModule, SkillBuilderComponent, AttributesEditorModule, LayoutModule],
   host: {
-    class: 'layout-content bg-base-300',
+    class: 'ion-page',
   },
 })
 export class SkillBuildsShareComponent {
