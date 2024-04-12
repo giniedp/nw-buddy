@@ -14,9 +14,7 @@
               <div class="flex-1">
                 <div class="inline-flex flex-row items-center gap-2">
                   <img [nwImage]="reward.Icon" class="w-8 h-8" />
-                  <span>
-                    {{ reward.Name | nwText }}
-                  </span>
+                  <span [nwText]="reward.Name | nwText | nwTextBreak"> </span>
                 </div>
               </div>
             </div>
@@ -25,12 +23,10 @@
         @for (reward of row.rewards; track $index) {
           <div class="inline-flex flex-row items-center gap-2" [tooltip]="reward.Tooltip ? tip : null">
             <ng-template #tip>
-              <div class="p-2" [nwHtml]="reward.Tooltip | nwText"></div>
+              <div class="p-2" [nwHtml]="reward.Tooltip | nwText | nwTextBreak"></div>
             </ng-template>
-            <img [nwImage]="reward.Icon" class="w-8 h-8"/>
-            <span>
-              {{ reward.Name | nwText }}
-            </span>
+            <img [nwImage]="reward.Icon" class="w-8 h-8" />
+            <span [nwHtml]="reward.Name | nwText | nwTextBreak"> </span>
           </div>
         }
       </div>
@@ -53,12 +49,10 @@
               <div class="flex-1">
                 <div class="inline-flex flex-row items-center gap-2" [tooltip]="reward.Tooltip ? tip : null">
                   <ng-template #tip>
-                    <div class="p-2" [nwHtml]="reward.Tooltip | nwText"></div>
+                    <div class="p-2" [nwHtml]="reward.Tooltip | nwText | nwTextBreak"></div>
                   </ng-template>
                   <img [nwImage]="reward.Icon" class="w-8 h-8" />
-                  <span>
-                    {{ reward.Name | nwText }}
-                  </span>
+                  <span [nwHtml]="reward.Name | nwText | nwTextBreak"> </span>
                 </div>
               </div>
             </div>
@@ -67,12 +61,10 @@
         @for (reward of row.rewards; track $index) {
           <div class="inline-flex flex-row items-center gap-2" [tooltip]="reward.Tooltip ? tip : null">
             <ng-template #tip>
-              <div class="p-2" [nwHtml]="reward.Tooltip | nwText"></div>
+              <div class="p-2" [nwHtml]="reward.Tooltip | nwText | nwTextBreak"></div>
             </ng-template>
             <img [nwImage]="reward.Icon" class="w-8 h-8" />
-            <span>
-              {{ reward.Name | nwText }}
-            </span>
+            <span [nwHtml]="reward.Name | nwText | nwTextBreak"> </span>
           </div>
         }
       </div>

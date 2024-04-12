@@ -7,7 +7,7 @@ export interface Ability {
   AbilityTrigger: string
   ActivationCooldown: number
   AfterAction: string
-  AfterSequence: string
+  AfterSequence: string[]
   AllowSelfDamageForHitEvents: boolean | number
   ArmorPenetration: number
   AttackType: AttackType[]
@@ -47,7 +47,7 @@ export interface Ability {
   DistFromDefender: number
   DmgPctToHealth: number
   DoNotUnequipSelfAppliedSE: boolean
-  DontHaveStatusEffect: string
+  DontHaveStatusEffect: string[]
   Duration: number
   ElementalArmor: number
   EnableHoldConditionIfTrackedSpellExistsOfType: string
@@ -74,7 +74,7 @@ export interface Ability {
   IgnoreResetConsecutiveOnDeath: boolean
   InAction: string
   InActionTime: number
-  InSequence: string
+  InSequence: string[]
   InSequenceTime: number
   IsActiveAbility: boolean
   IsConsumableIds: string
@@ -129,7 +129,7 @@ export interface Ability {
   OnDeath: boolean | string
   OnDeathsDoor: boolean | string
   OnDismount: boolean
-  OnEquipStatusEffect: string
+  OnEquipStatusEffect: string[]
   OnEventConditionalActivationChance: boolean
   OnEventPassiveConditionsPass: boolean
   OnExecuted: boolean
