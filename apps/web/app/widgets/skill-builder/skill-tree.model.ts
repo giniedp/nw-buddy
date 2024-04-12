@@ -1,5 +1,6 @@
 import { getAbilityCategoryTag } from '@nw-data/common'
 import { Ability } from '@nw-data/generated'
+import { NwExpressionContext, NwTextContextService } from '~/nw/expression'
 import { CaseInsensitiveSet } from '~/utils'
 
 export type SkillTreeGrid = SkillTreeCell[][]
@@ -80,6 +81,7 @@ export interface SkillTreeCell {
    * Render connection edge top right
    */
   edgeTopLeft?: boolean
+  parentLabel: string
 }
 
 export function buildGrid(abilities: Ability[]) {
@@ -102,6 +104,7 @@ export function buildGrid(abilities: Ability[]) {
         ability: ability,
         parentId: getAbilityParent(ability, abilities),
         type: getAbilityCategoryTag(ability),
+        parentLabel: null
       }
     })
   })
@@ -254,6 +257,7 @@ function updateConnections(grid: SkillTreeGrid) {
   grid.forEach((row) => {
     row.forEach((cell) => {
       const end = findCell(grid, cell.parentId)
+      cell.parentLabel = end?.label
       connect(grid, cell, end, {
         invalid: cell.invalid,
         unlocked: cell.unlocked,

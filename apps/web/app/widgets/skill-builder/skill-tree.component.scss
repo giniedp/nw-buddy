@@ -52,13 +52,9 @@
     picture {
       width: 80%;
       z-index: 2;
-      overflow: hidden;
       pointer-events: none;
       user-select: none;
-      @apply border-[#70D2E4] transition-colors bg-base-300;
-      &:hover {
-        @apply border-opacity-75;
-      }
+      @apply outline-[#70D2E4] transition-colors bg-base-300;
       img {
         @apply transition-opacity;
         opacity: 0.1;
@@ -69,7 +65,7 @@
 
     &.is-disabled {
       picture {
-        @apply border-white border-opacity-10;
+        @apply outline-neutral;
       }
       &::before,
       &::after {
@@ -87,7 +83,7 @@
 
     &.is-checked {
       picture {
-        @apply border-white;
+        @apply outline-white;
         img {
           opacity: 1;
         }
@@ -100,8 +96,9 @@
 
     &.is-invalid {
       picture {
-        @apply border-error border-opacity-50;
+        @apply outline-error;
         img {
+
           filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg) saturate(600%) contrast(0.8);
         }
       }

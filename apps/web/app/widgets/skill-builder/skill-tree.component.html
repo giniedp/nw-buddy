@@ -4,7 +4,7 @@
 <div class="skill-tree-content grid p-3 relative" [class]="colsClass | async">
   @for (row of rows(); track $index) {
     @for (cell of row; track $index) {
-      @if(!cell.ability) {
+      @if (!cell.ability) {
         <div
           [class.is-unlocked]="cell.unlocked"
           [class.is-invalid]="cell.invalid"
@@ -44,16 +44,31 @@
               </span>
             </div>
             <div [nwHtml]="cell.ability.Description | nwText | nwTextBreak" class="p-3"></div>
-            <div *ngIf="cell.tooltip" class="p-3 text-warning rounded-md">
-              {{ cell.tooltip | nwText }}
-            </div>
+            @if (cell.tooltip) {
+              <div class="p-3 text-warning rounded-md">
+                {{ cell.tooltip | nwText: { parent: cell.parentLabel | nwText } }}
+              </div>
+            }
           </ng-template>
+
           <picture
-            class="border-[2px] aspect-square"
+            class="outline outline-[2px] aspect-square relative"
             [class.rounded-full]="!cell.square"
             [class.rounded-sm]="cell.square"
           >
-            <img class="aspect-square w-full nw-icon" [class]="'bg-ability-' + cell.type" [nwImage]="cell.ability.Icon" />
+            @if (cell.checked && !cell.square) {
+              <img
+                @fade
+                [nwImage]="'assets/icons/skills/masterynodepassiverune.png'"
+                class="block absolute left-[1px] w-full aspect-square scale-[1.3]"
+              />
+            }
+            <img
+              class="aspect-square w-full nw-icon"
+              [class.rounded-full]="!cell.square"
+              [class]="'bg-ability-' + cell.type"
+              [nwImage]="cell.ability.Icon"
+            />
           </picture>
         </div>
       }

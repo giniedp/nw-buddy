@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common'
 import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core'
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms'
 import { NW_MAX_WEAPON_LEVEL } from '@nw-data/common'
-import { isEqual } from 'lodash'
+import { isEqual, transform } from 'lodash'
 import {
   BehaviorSubject,
   ReplaySubject,
@@ -20,6 +20,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { SkillTreeCell } from './skill-tree.model'
 import { SkillTreeStore } from './skill-tree.store'
 import { toSignal } from '@angular/core/rxjs-interop'
+import { animate, state, style, transition, trigger } from '@angular/animations'
 
 @Component({
   standalone: true,
@@ -39,6 +40,12 @@ import { toSignal } from '@angular/core/rxjs-interop'
   host: {
     class: 'layout-content',
   },
+  animations: [
+    trigger('fade', [
+      transition(':enter', [style({ opacity: 0 }), animate('0.150s ease-out', style({ opacity: 1 }))]),
+      transition(':leave', [style({ opacity: 1 }), animate('0.150s ease-out', style({ opacity: 0 }))]),
+    ]),
+  ],
 })
 export class SkillTreeComponent implements ControlValueAccessor, OnInit {
   @Input()
@@ -74,7 +81,7 @@ export class SkillTreeComponent implements ControlValueAccessor, OnInit {
     combineLatest({
       type: this.weaponType$,
       id: this.treeID$,
-    })
+    }),
   ).pipe(map(({ type, id }) => (id === 0 ? type?.Tree1Name : type?.Tree2Name)))
 
   private resultValue: string[]
@@ -88,7 +95,10 @@ export class SkillTreeComponent implements ControlValueAccessor, OnInit {
   protected onChange = (value: unknown) => {}
   protected onTouched = () => {}
 
-  public constructor(private store: SkillTreeStore, private weaponTypes: NwWeaponTypesService) {
+  public constructor(
+    private store: SkillTreeStore,
+    private weaponTypes: NwWeaponTypesService,
+  ) {
     //
   }
 
@@ -99,7 +109,7 @@ export class SkillTreeComponent implements ControlValueAccessor, OnInit {
         tree: this.treeID$,
         points: this.points$,
         selection: this.value$,
-      })
+      }),
     )
 
     this.store.whenLoaded$
