@@ -1,8 +1,9 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, forwardRef, Input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, inject } from '@angular/core'
+import { patchState } from '@ngrx/signals'
 import { Statuseffectcategories } from '@nw-data/generated'
-import { NwModule } from '~/nw'
 import { NwDataService } from '~/data'
+import { NwModule } from '~/nw'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { PropertyGridCell, PropertyGridModule } from '~/ui/property-grid'
 import { StatusEffectCategoryDetailStore } from './status-effect-category.store'
@@ -14,25 +15,19 @@ import { StatusEffectCategoryDetailStore } from './status-effect-category.store'
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ItemFrameModule, PropertyGridModule, DecimalPipe],
-  providers: [
-    DecimalPipe,
-    {
-      provide: StatusEffectCategoryDetailStore,
-      useExisting: forwardRef(() => StatusEffectCategoryDetailComponent),
-    },
-  ],
+  providers: [DecimalPipe, StatusEffectCategoryDetailStore],
   host: {
     class: 'block rounded-md overflow-clip',
   },
 })
-export class StatusEffectCategoryDetailComponent extends StatusEffectCategoryDetailStore {
+export class StatusEffectCategoryDetailComponent {
+  private decimals = inject(DecimalPipe)
+  private db = inject(NwDataService)
+  protected store = inject(StatusEffectCategoryDetailStore)
+
   @Input()
   public set categoryId(value: string) {
-    this.patchState({ categoryId: value })
-  }
-
-  public constructor(private decimals: DecimalPipe) {
-    super()
+    patchState(this.store, { categoryId: value })
   }
 
   public formatValue = (value: any, key: keyof Statuseffectcategories): PropertyGridCell[] => {

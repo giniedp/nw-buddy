@@ -1,38 +1,35 @@
-import { Injectable, inject } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
-import { Statuseffectcategories } from '@nw-data/generated'
-import { combineLatest } from 'rxjs'
-import { NwDataService } from '~/data'
+import { computed, effect } from '@angular/core'
+import { signalStore, withComputed, withHooks, withState } from '@ngrx/signals'
+import { withNwData } from '~/data/with-nw-data'
 import { extractLimits, selectLimitsTable } from './utils'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { withHashLocation } from '@angular/router'
 
-@Injectable()
-export class StatusEffectCategoryDetailStore extends ComponentStore<{ categoryId: string }> {
-  protected db: NwDataService = inject(NwDataService)
-
-  public readonly categoryId$ = this.select(({ categoryId }) => categoryId)
-  public readonly category$ = this.select(this.db.statusEffectCategory(this.categoryId$), (it) => it)
-  public readonly limits$ = this.select(this.category$, (it) => extractLimits(it))
-  public readonly limitsTable$ = this.select(
-    combineLatest({
-      category: this.category$,
-      categories: this.db.statusEffectCategories,
-    }),
-    ({ category, categories }) => selectLimitsTable(category, categories)
-  )
-  public readonly hasLimits$ = this.select(this.limitsTable$, (it) => !!it)
-  public readonly hasLimitsSig = toSignal(this.hasLimits$)
-
-
-  public constructor() {
-    super({ categoryId: null })
-  }
-
-  public load(idOrItem: string | Statuseffectcategories) {
-    if (typeof idOrItem === 'string') {
-      this.patchState({ categoryId: idOrItem })
-    } else {
-      this.patchState({ categoryId: idOrItem?.StatusEffectCategoryID })
-    }
-  }
+export interface StatusEffectCategoryDetailState {
+  categoryId: string
 }
+
+export const StatusEffectCategoryDetailStore = signalStore(
+  withState<StatusEffectCategoryDetailState>({ categoryId: null }),
+  withNwData((db) => {
+    return {
+      categoriesMap: db.statusEffectCategoriesMap,
+      categories: db.statusEffectCategories
+    }
+  }),
+  withComputed(({ categoryId, nwData }) => {
+    const category = computed(() => nwData()?.categoriesMap?.get(categoryId()))
+    const limits = computed(() => extractLimits(category()))
+    const table = computed(() => selectLimitsTable(category(), nwData()?.categories || []))
+    return {
+      category: category,
+      limits: limits,
+      table: table,
+      hasLimits: computed(() => !!table())
+    }
+  }),
+  withHooks({
+    onInit: (state) => {
+      state.loadNwData()
+    }
+  })
+)

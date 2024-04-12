@@ -20,7 +20,7 @@
 <ng-template [nwbGridValue] let-cell #tplCategoryInfo>
   <ng-container [nwbStatusEffectCategoryDetailByProp]="cell.value" #detail="detail">
     <span
-      *ngIf="detail.hasLimitsSig()"
+      *ngIf="detail.hasLimits()"
       [tooltip]="tplCategoryTip"
       [tooltipClass]="'max-w-none'"
       class="text-error inline-flex"

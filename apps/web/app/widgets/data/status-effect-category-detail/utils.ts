@@ -1,5 +1,20 @@
-import { Statuseffectcategories } from "@nw-data/generated"
-import { sortBy } from "lodash"
+import { Statuseffectcategories } from '@nw-data/generated'
+import { sortBy } from 'lodash'
+
+const baseValues = {
+  DMGStandard: 1,
+  DMGSiege: 1,
+  DMGStrike: 1,
+  DMGSlash: 1,
+  DMGThrust: 1,
+  DMGArcane: 1,
+  DMGFire: 1,
+  DMGIce: 1,
+  DMGNature: 1,
+  DMGLightning: 1,
+  DMGCorruption: 1,
+  DMGAcid: 1,
+}
 
 export type ValueLimits = Record<string, number>
 export function selectLimitsTable(category: Statuseffectcategories, categories: Statuseffectcategories[]) {
@@ -13,7 +28,7 @@ export function selectLimitsTable(category: Statuseffectcategories, categories: 
 
   const cols: string[] = []
   const data: Record<string, Record<string, number>> = {}
-  for (const category of categories) {
+  for (const category of categories || []) {
     const limits = extractLimits(category.ValueLimits)
     if (!limits) {
       continue
@@ -26,7 +41,7 @@ export function selectLimitsTable(category: Statuseffectcategories, categories: 
         data[row] = {}
       }
       const col = category.StatusEffectCategoryID
-      data[row][col] = limits[row]
+      data[row][col] = limits[row] - (baseValues[row] || 0)
       if (!cols.includes(col)) {
         cols.push(col)
       }
@@ -48,10 +63,12 @@ export function extractLimits(value: unknown): ValueLimits {
     return value as ValueLimits
   }
   if (typeof value === 'string') {
-    return Object.fromEntries(value.split(',').map((it) => {
-      const [key, value] = it.split(':')
-      return [key, Number(value)]
-    }))
+    return Object.fromEntries(
+      value.split(',').map((it) => {
+        const [key, value] = it.split(':')
+        return [key, Number(value)]
+      }),
+    )
   }
 
   return null

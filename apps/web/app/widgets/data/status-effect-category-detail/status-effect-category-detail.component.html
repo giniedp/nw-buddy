@@ -1,23 +1,23 @@
-<ng-container *ngIf="limitsTable$ | async; let table">
-  <table class="table table-compact">
+@if (store.table(); as table) {
+  <table class="table table-xs">
     <tr>
       <th>Limits Table</th>
-      <th *ngFor="let col of table.cols">
-        <span class="badge badge-sm badge-secondary">{{ col }}</span>
-      </th>
+      @for (col of table.cols; track $index) {
+        <th>
+          <span class="badge badge-sm badge-secondary">{{ col }}</span>
+        </th>
+      }
     </tr>
-    <tr *ngFor="let row of table.rows">
-      <th>{{row}}</th>
-      <th *ngFor="let col of table.cols" class="text-center" [class.text-primary]="col === (categoryId$ | async)">
-        <pre>{{ table.data[row][col] }}</pre>
-      </th>
-    </tr>
+    @for (row of table.rows; track $index) {
+      <tr>
+        <th>{{ row }}</th>
+        @for (col of table.cols; track $index) {
+          <th class="text-center" [class.text-primary]="col === store.categoryId()">
+            <pre>{{ table.data[row][col] }}</pre>
+          </th>
+        }
+      </tr>
+    }
   </table>
-</ng-container>
-
-<!-- <nwb-property-grid
-  class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight"
-  [item]="properties$ | async"
-  [valueFormatter]="formatValue"
-></nwb-property-grid> -->
-<ng-content></ng-content>
+}
+<ng-content/>
