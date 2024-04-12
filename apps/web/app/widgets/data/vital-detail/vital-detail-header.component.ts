@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, Input, computed, inject } from '@an
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { RouterLink } from '@angular/router'
 import { NW_MAX_ENEMY_LEVEL, getVitalCategoryInfo, getVitalFamilyInfo, getVitalTypeMarker } from '@nw-data/common'
-import { map, takeUntil } from 'rxjs'
+import { interval, map, takeUntil } from 'rxjs'
 import { NwModule } from '~/nw'
 import { humanize, mapProp } from '~/utils'
 import { VitalDetailStore } from './vital-detail.store'
@@ -36,17 +36,8 @@ export class VitalDetailHeaderComponent {
   protected level = toSignal(this.store.level$)
   protected typeMarker = toSignal(this.store.vital$.pipe(map(getVitalTypeMarker)))
   protected familyInfo = toSignal(this.store.vital$.pipe(map(getVitalFamilyInfo)))
-  protected categoryInfo = toSignal(this.store.vital$.pipe(map(getVitalCategoryInfo)))
-  protected familyIcon = computed(() => this.categoryInfo()?.IconBane)
-  protected familyTip = computed(() => {
-    if (this.familyInfo()?.ID === this.id()) {
-      return null
-    }
-    if (!this.categoryInfo()?.ID) {
-      return `Not affected by ward, bane or trophy`
-    }
-    return `Is affected by ${humanize(this.categoryInfo().Name)} ward, bane and trophy`
-  })
+  protected categoryInfos = toSignal(this.store.vital$.pipe(map(getVitalCategoryInfo)))
+  protected familyIcon = computed(() => this.categoryInfos()?.[0]?.IconBane)
 
   protected setLevel(value: number) {
     this.store.patchState({ level: value })

@@ -37,6 +37,7 @@ export class VitalDetailStatsComponent {
 
   protected vital = toSignal(this.store.vital$)
   protected aliasNames = toSignal(this.store.aliasNames$)
+  protected combatCategories = toSignal(this.store.combatCategories$)
   protected effectiveness = computed(() => selectEffectiveness(this.vital()))
   protected armor = toSignal(this.store.armor$)
   protected gearScore = toSignal(this.store.gearScore$)

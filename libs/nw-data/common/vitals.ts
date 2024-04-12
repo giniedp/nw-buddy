@@ -48,7 +48,7 @@ const VITAL_FAMILIES = {
     IconWard: 'assets/icons/families/bestialward1.png',
     Img: 'assets/images/missionimage_wolf.png',
     Name: 'VC_Beast',
-  } as VitalFamilyInfo,
+  } satisfies VitalFamilyInfo,
   ancientguardian: {
     ID: 'Ancient',
     Icon: 'assets/icons/families/ancientbane1.png',
@@ -56,7 +56,7 @@ const VITAL_FAMILIES = {
     IconWard: 'assets/icons/families/ancientward1.png',
     Img: 'assets/images/missionimage_ancient1.png',
     Name: 'VC_Ancient',
-  } as VitalFamilyInfo,
+  } satisfies VitalFamilyInfo,
   corrupted: {
     ID: 'Corrupted',
     Icon: 'assets/icons/families/corruptedbane1.png',
@@ -64,7 +64,7 @@ const VITAL_FAMILIES = {
     IconWard: 'assets/icons/families/corruptedward1.png',
     Img: 'assets/images/missionimage_corrupted2.png',
     Name: 'VC_Corrupted',
-  } as VitalFamilyInfo,
+  } satisfies VitalFamilyInfo,
   angryearth: {
     ID: 'AngryEarth',
     Icon: 'assets/icons/families/angryearthbane1.png',
@@ -72,7 +72,7 @@ const VITAL_FAMILIES = {
     IconWard: 'assets/icons/families/angryearthward.png',
     Img: 'assets/images/missionimage_angryearth1.png',
     Name: 'VC_Angryearth',
-  } as VitalFamilyInfo,
+  } satisfies VitalFamilyInfo,
   lost: {
     ID: 'Lost',
     Icon: 'assets/icons/families/lostbane1.png',
@@ -80,7 +80,7 @@ const VITAL_FAMILIES = {
     IconWard: 'assets/icons/families/lostward1.png',
     Img: 'assets/images/missionimage_undead1.png',
     Name: 'VC_Lost',
-  } as VitalFamilyInfo,
+  } satisfies VitalFamilyInfo,
   fae: {
     ID: 'Fae',
     Icon: 'assets/icons/families/marker_icondeathdoor.png',
@@ -88,7 +88,7 @@ const VITAL_FAMILIES = {
     IconWard: null,
     Img: '',
     Name: 'Fae',
-  } as VitalFamilyInfo,
+  } satisfies VitalFamilyInfo,
   human: {
     ID: 'Human',
     Icon: 'assets/icons/families/humanbane1.png',
@@ -96,15 +96,15 @@ const VITAL_FAMILIES = {
     IconWard: 'assets/icons/families/humanward1.png',
     Img: 'assets/images/missionimage_human2.png',
     Name: 'VC_Human',
-  } as VitalFamilyInfo,
+  } satisfies VitalFamilyInfo,
   varangian: {
     ID: 'Varangian',
     Icon: 'assets/icons/families/humanbane1.png',
     IconBane: 'assets/icons/families/humanbane1.png',
     IconWard: 'assets/icons/families/humanward1.png',
     Img: 'assets/images/missionimage_human2.png',
-    Name: 'VC_Human',
-  } as VitalFamilyInfo,
+    Name: 'VC_Varangian',
+  } satisfies VitalFamilyInfo,
   unknown: {
     ID: null,
     Icon: 'assets/icons/families/marker_icondeathdoor.png',
@@ -112,7 +112,7 @@ const VITAL_FAMILIES = {
     IconWard: null,
     Img: '',
     Name: '',
-  } as VitalFamilyInfo,
+  } satisfies VitalFamilyInfo,
 }
 
 const VITAL_CATEGORIES = {
@@ -166,12 +166,13 @@ export function getVitalFamilyInfo(vital: Vitals): VitalFamilyInfo {
   return VITAL_FAMILIES[vital?.Family?.toLowerCase()] || VITAL_FAMILIES.unknown
 }
 
-export function getVitalCategoryInfo(vital: Vitals): VitalFamilyInfo {
-  const key = vital?.VitalsCategories?.find(isVitalCombatCategory)
-  if (key) {
-    return VITAL_CATEGORIES[key.toLowerCase()]
+export function getVitalCategoryInfo(vital: Vitals): VitalFamilyInfo[] {
+  const keys = vital?.VitalsCategories || []
+  const categories = keys.map((key) => VITAL_CATEGORIES[key.toLowerCase()]).filter((it) => !!it)
+  if (!categories.length) {
+    return [VITAL_FAMILIES.unknown]
   }
-  return VITAL_FAMILIES.unknown
+  return categories
 }
 
 export function isVitalCombatCategory(value: string) {

@@ -4,6 +4,7 @@ import {
   BuffBucket,
   NW_MAX_ENEMY_LEVEL,
   getVitalArmor,
+  getVitalCategoryInfo,
   getVitalDamage,
   getVitalDungeons,
   getVitalHealth,
@@ -88,6 +89,7 @@ export class VitalDetailStore extends ComponentStore<VitalDetailState> {
     (data) => selectBuffs(data),
   )
 
+  readonly combatCategories$ = this.select(this.vital$, getVitalCategoryInfo)
   readonly categories$ = this.select(this.vital$, this.db.vitalsCategoriesMap, selectCategories)
   readonly damageTableNames$ = this.select(this.vitalId$, this.metadata$, selectDamageTableNames)
   readonly damageTables$ = this.damageTableNames$

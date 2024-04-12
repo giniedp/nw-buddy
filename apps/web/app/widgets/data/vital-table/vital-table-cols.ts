@@ -23,7 +23,7 @@ export type VitalTableRecord = Vitals & {
   $dungeons: Gamemodes[]
   $categories: Vitalscategories[]
   $familyInfo: VitalFamilyInfo
-  $combatInfo: VitalFamilyInfo | null
+  $combatInfo: VitalFamilyInfo[] | null
   $metadata: VitalsMetadata
   $zones: ZoneDefinition[]
 }
@@ -69,7 +69,7 @@ export function vitalColIcon(util: VitalTableUtils, options?: { color: boolean }
             class: ['transition-all', 'translate-x-0', 'hover:translate-x-1'],
           },
           util.elImg({
-            src: getVitalCategoryInfo(data)?.Icon,
+            src: getVitalCategoryInfo(data)?.[0]?.Icon,
           }),
         ),
       )
@@ -134,37 +134,18 @@ export function vitalColFamily(util: VitalTableUtils) {
   return util.colDef<string[]>({
     colId: 'family',
     headerValueGetter: () => 'Family',
-    valueGetter: ({ data: { $familyInfo, Family, $combatInfo } }) => {
-      if ($combatInfo) {
-        return [$familyInfo.ID, $combatInfo.ID]
-      }
+    valueGetter: ({ data: { $familyInfo } }) => {
       return [$familyInfo.ID]
     },
-    valueFormatter: ({ data: { $familyInfo, Family, $combatInfo } }) => {
+    valueFormatter: ({ data: { $familyInfo, Family } }) => {
       return util.i18n.get($familyInfo.Name) || Family || ''
     },
-    cellRenderer: util.cellRenderer(({ data: { $familyInfo, Family, $combatInfo } }) => {
-      const familyName = util.i18n.get($familyInfo.Name) || Family || ''
-      const combatName = $combatInfo ? util.i18n.get($combatInfo.Name) || '' : ''
-      if (familyName && combatName) {
-        return `
-        <span class="line-through">${familyName}</span><br>
-        <span class="italic opacity-75 text-xs text-primary">${combatName}</span>
-      `
-      }
-      if ($combatInfo && !combatName) {
-        return `
-        <span class="line-through">${familyName}</span><br>
-        <span class="italic opacity-75 text-xs text-primary">is not affected by any ward, bane or trophy</span>
-      `
-      }
-      return `<span>${familyName}</span>`
-    }),
+    hide: true,
     width: 125,
     getQuickFilterText: ({ value }) => value?.join(' '),
     ...util.selectFilter({
-      order: 'asc'
-    })
+      order: 'asc',
+    }),
   })
 }
 export function vitalColCreatureType(util: VitalTableUtils) {
@@ -177,8 +158,8 @@ export function vitalColCreatureType(util: VitalTableUtils) {
     valueFormatter: ({ value }) => humanize(value),
     getQuickFilterText: ({ value }) => value,
     ...util.selectFilter({
-      order: 'asc'
-    })
+      order: 'asc',
+    }),
   })
 }
 export function vitalColCategories(util: VitalTableUtils) {
@@ -198,7 +179,7 @@ export function vitalColCategories(util: VitalTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 export function vitalColLootDropChance(util: VitalTableUtils) {
@@ -221,8 +202,8 @@ export function vitalColLootTableId(util: VitalTableUtils) {
     headerValueGetter: () => 'Loot Table',
     valueGetter: util.fieldGetter('LootTableId'),
     ...util.selectFilter({
-      order: 'asc'
-    })
+      order: 'asc',
+    }),
   })
 }
 export function vitalColLootTags(util: VitalTableUtils) {
@@ -240,7 +221,7 @@ export function vitalColLootTags(util: VitalTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 export function vitalColExpedition(util: VitalTableUtils) {
@@ -250,7 +231,7 @@ export function vitalColExpedition(util: VitalTableUtils) {
     valueGetter: ({ data }) => data?.$dungeons?.map((it) => util.i18n.get(it.DisplayName)),
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 export function vitalColDmgEffectivenessSlash(util: VitalTableUtils) {
@@ -421,9 +402,8 @@ export function vitalColSpawnLevels(util: VitalTableUtils) {
             label: `Level ${String(it).padStart(2, '0')}`,
           }
         })
-      }
+      },
     }),
-
   })
 }
 
@@ -450,7 +430,7 @@ export function vitalColSpawnTerritories(util: VitalTableUtils) {
             icon: getZoneIcon(it),
           }
         })
-      }
+      },
     }),
   })
 }
@@ -478,7 +458,7 @@ export function vitalColSpawnAreas(util: VitalTableUtils) {
             icon: getZoneIcon(it),
           }
         })
-      }
+      },
     }),
   })
 }

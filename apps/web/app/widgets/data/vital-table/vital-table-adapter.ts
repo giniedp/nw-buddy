@@ -99,8 +99,8 @@ export class VitalTableAdapter implements DataViewAdapter<VitalTableRecord>, Tab
               ...vital,
               $dungeons: getVitalDungeons(vital, dungeons, vitalsMeta),
               $categories: metadata?.catIDs?.map((it) => categories.get(it)).filter((it) => !!it),
-              $familyInfo: getVitalFamilyInfo(vital),
-              $combatInfo: familyInfo.ID !== combatInfo.ID ? combatInfo : null,
+              $familyInfo: familyInfo,
+              $combatInfo: combatInfo,
               $metadata: vitalsMeta.get(vital.VitalsID),
               $zones: zones,
             }

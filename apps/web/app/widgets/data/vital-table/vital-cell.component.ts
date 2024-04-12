@@ -109,7 +109,7 @@ export class VitalGridCellComponent
   }
 
   public get familyIcon() {
-    return getVitalCategoryInfo(this.data).IconBane || NW_FALLBACK_ICON
+    return getVitalCategoryInfo(this.data)?.[0]?.IconBane
   }
 
   protected icon = NW_FALLBACK_ICON
