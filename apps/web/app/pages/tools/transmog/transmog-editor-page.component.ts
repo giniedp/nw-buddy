@@ -204,9 +204,9 @@ export class TransmogEditorPageComponent implements OnDestroy {
       async () => {
         const isMale = this.store.gender() === 'male'
         if (isMale) {
-          await this.viewer.useModel('player', environment.deployUrl +'assets/models/player_male.gltf')
+          await this.viewer.useModel('player', location.origin +'/assets/models/player_male.gltf')
         } else {
-          await this.viewer.useModel('player', environment.deployUrl +'assets/models/player_female.gltf')
+          await this.viewer.useModel('player', location.origin +'/assets/models/player_female.gltf')
         }
         this.updateNakedMeshes()
       },
