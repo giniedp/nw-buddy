@@ -3,6 +3,7 @@ import { ComponentStore } from '@ngrx/component-store'
 import { isEqual } from 'lodash'
 import { EXPRESSION_OPERATORS } from './operators'
 import { ExpressionCondition, ExpressionGroup, ExpressionNode, isCondition, isGroup } from './types'
+import { signalStore, withState } from '@ngrx/signals'
 
 export interface ExpressionTreeState {
   root: ExpressionNode
