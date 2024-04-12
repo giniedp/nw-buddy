@@ -880,6 +880,22 @@ export interface Damagetypes {
   UseAllDamageModifiers: string
 }
 
+export interface Darknessdefinitions {
+  AudioGroup: string
+  AudioState: string
+  CompassIcon: string
+  GroupSize: number
+  IsPOI: boolean
+  MapIcon: string
+  NameLocalizationKey: string
+  POITag: string
+  PulseColor: string
+  RecommendedLevel: number
+  RequiredItemId: string
+  TerritoryID: number
+  TooltipBackground: string
+}
+
 export interface Dyecolors {
   Category: string
   Color: string

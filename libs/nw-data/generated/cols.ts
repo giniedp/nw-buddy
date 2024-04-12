@@ -858,6 +858,21 @@ export const COLS_DAMAGETYPES = {
   "TypeID": "string",
   "UseAllDamageModifiers": "string",
 }
+export const COLS_DARKNESSDEFINITIONS = {
+  "AudioGroup": "string",
+  "AudioState": "string",
+  "CompassIcon": "string",
+  "GroupSize": "number",
+  "IsPOI": "boolean",
+  "MapIcon": "string",
+  "NameLocalizationKey": "string",
+  "POITag": "string",
+  "PulseColor": "string",
+  "RecommendedLevel": "number",
+  "RequiredItemId": "string",
+  "TerritoryID": "number",
+  "TooltipBackground": "string",
+}
 export const COLS_DYECOLORS = {
   "Category": "string",
   "Color": "string",
