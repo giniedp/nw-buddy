@@ -316,7 +316,7 @@ export const DamageCalculatorStore = signalStore(
 
       defenderModWKN: computed(() => damageModSum(defender.modWKN(), attackContext())),
       defenderModWKNDot: computed(() => damageModSum(defender.modWKNDot(), attackContext())),
-      defenderModWKNAffix: computed(() => damageModSum(defender.modWKN(), attackContext())),
+      defenderModWKNAffix: computed(() => damageModSum(defender.modWKNAffix(), attackContext())),
 
       defenderModBaseReduction: computed(() => damageModSum(defender.modBaseReduction(), attackContext())),
       defenderModBaseReductionDot: computed(() => damageModSum(defender.modBaseReductionDot(), attackContext())),

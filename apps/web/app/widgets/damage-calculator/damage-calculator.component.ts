@@ -248,7 +248,10 @@ export class DamageCalculatorComponent implements OnInit {
                 this.store.offender.modDMG(),
               ),
               modDMGAffix: mergeDamageStacks(
-                modDMG.byDamageType[modBase?.Affix?.Type],
+                [
+                  modDMG.byDamageType[modBase?.Affix?.Type],
+                  ...vitalCategories.map((category) => modDMG.byVitalsType[category] || []),
+                ],
                 this.store.offender.modDMGAffix(),
               ),
               modDMGDot: mergeDamageStacks(modDMG.byDamageType[dotType], this.store.offender.modDMGDot()),
