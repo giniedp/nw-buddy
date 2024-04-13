@@ -1,24 +1,20 @@
-import { Directive, forwardRef, Input, Output } from '@angular/core'
-import { NwDataService } from '~/data'
+import { Directive, inject, Input, Output } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
 import { AbilityDetailStore } from './ability-detail.store'
 
 @Directive({
   standalone: true,
   selector: '[nwbAbilityDetail]',
   exportAs: 'abilityDetail',
-  providers: [
-    {
-      provide: AbilityDetailStore,
-      useExisting: forwardRef(() => AbilityDetailDirective),
-    },
-  ],
+  providers: [AbilityDetailStore],
 })
-export class AbilityDetailDirective extends AbilityDetailStore {
+export class AbilityDetailDirective {
+  public readonly store = inject(AbilityDetailStore)
   @Input()
   public set nwbAbilityDetail(value: string) {
-    this.patchState({ abilityId: value })
+    this.store.load(value)
   }
 
   @Output()
-  public nwbAbilityChange = this.ability$
+  public nwbAbilityChange = toObservable(this.store.ability)
 }

@@ -2,21 +2,21 @@
   <div class="flex flex-col gap-2" [nwbScreenshotFrame]="itemId | async">
     <nwb-ability-detail [abilityId]="itemId | async" class="bg-black" />
 
-    @for (effectId of detail.refEffects$ | async; track i; let i = $index; let isFirst = $first) {
+    @for (effectId of detail.store.refEffects(); track i; let i = $index; let isFirst = $first) {
       @if (isFirst) {
         <h3 class="prose mt-2">Referenced Status Effects:</h3>
       }
       <nwb-status-effect-detail [effectId]="effectId" class="bg-black" />
     }
 
-    @for (abilityId of detail.refAbilities$ | async; track i; let i = $index; let isFirst = $first) {
+    @for (abilityId of detail.store.refAbilities(); track i; let i = $index; let isFirst = $first) {
       @if (isFirst) {
         <h3 class="prose mt-2">Referenced Abilities:</h3>
       }
       <nwb-ability-detail [abilityId]="abilityId" class="bg-black" />
     }
 
-    @for (spellId of detail.refSpells$ | async; track i; let i = $index; let isFirst = $first) {
+    @for (spellId of detail.store.refSpells(); track i; let i = $index; let isFirst = $first) {
       @if (isFirst) {
         <h3 class="prose mt-2">Referenced Spells:</h3>
       }

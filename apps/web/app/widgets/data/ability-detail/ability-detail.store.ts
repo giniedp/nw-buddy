@@ -1,69 +1,91 @@
-import { Injectable, Output, inject } from '@angular/core'
-import { ComponentStore } from '@ngrx/component-store'
+import { computed } from '@angular/core'
+import { patchState, signalStore, withComputed, withHooks, withMethods, withState } from '@ngrx/signals'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { Ability } from '@nw-data/generated'
 import { flatten, uniq } from 'lodash'
-import { NwDataService } from '~/data'
+import { withNwData } from '~/data/with-nw-data'
 import { humanize, rejectKeys } from '~/utils'
 
-@Injectable()
-export class AbilityDetailStore extends ComponentStore<{ abilityId: string }> {
-  protected db = inject(NwDataService)
-
-  public readonly abilityId$ = this.select(({ abilityId }) => abilityId)
-
-  @Output()
-  public readonly ability$ = this.select(this.db.ability(this.abilityId$), (it) => it)
-
-  public readonly icon$ = this.select(this.ability$, (it) => it?.Icon || NW_FALLBACK_ICON)
-  public readonly name$ = this.select(this.ability$, (it) => it?.DisplayName)
-  public readonly nameForDisplay$ = this.select(this.ability$, (it) => it?.DisplayName || humanize(it?.AbilityID))
-  public readonly weapon$ = this.select(this.ability$, (it) => it?.WeaponTag)
-  public readonly weaponOrSource$ = this.select(this.ability$, (it) => it?.WeaponTag || it?.['$source'])
-  public readonly uiCategory$ = this.select(this.ability$, (it) => it?.UICategory)
-  public readonly description$ = this.select(this.ability$, (it) => it?.Description)
-  public readonly properties$ = this.select(this.ability$, selectProperties)
-
-  public readonly refEffects$ = this.select(this.ability$, (it) => {
-    return uniq(
-      flatten([
-        it?.StatusEffect,
-        it?.TargetStatusEffect,
-        it?.OtherApplyStatusEffect,
-        it?.DontHaveStatusEffect,
-        it?.StatusEffectBeingApplied,
-        it?.OnEquipStatusEffect,
-        it?.DamageTableStatusEffectOverride,
-        it?.TargetStatusEffectDurationList,
-        it?.RemoveTargetStatusEffectsList,
-        it?.StatusEffectsList,
-        it?.SelfApplyStatusEffect,
-      ])
-    ).filter((it) => !!it && it !== 'All')
-  })
-
-  public readonly refSpells$ = this.select(this.ability$, (it) => {
-    return uniq(flatten([it?.CastSpell])).filter((it) => !!it && it !== 'All')
-  })
-
-  public readonly refAbilities$ = this.select(this.ability$, (it) => {
-    return uniq(flatten([it?.RequiredEquippedAbilityId, it?.RequiredAbilityId, it?.AbilityList])).filter(
-      (e) => !!e && e !== it.AbilityID
-    )
-  })
-
-  public constructor() {
-    super({ abilityId: null })
-  }
-
-  public load(idOrItem: string | Ability) {
-    if (typeof idOrItem === 'string') {
-      this.patchState({ abilityId: idOrItem })
-    } else {
-      this.patchState({ abilityId: idOrItem?.AbilityID })
-    }
-  }
+export interface AbilityDetailState {
+  abilityId: string
 }
+
+export const AbilityDetailStore = signalStore(
+  withState<AbilityDetailState>({ abilityId: null }),
+  withNwData((db) => {
+    return {
+      abilitiesMap: db.abilitiesMap,
+    }
+  }),
+  withMethods((state) => {
+    return {
+      load(idOrItem: string | Ability) {
+        if (typeof idOrItem === 'string') {
+          patchState(state, { abilityId: idOrItem })
+        } else {
+          patchState(state, { abilityId: idOrItem?.AbilityID })
+        }
+      },
+    }
+  }),
+  withHooks({
+    onInit: (state) => {
+      state.loadNwData()
+    },
+  }),
+  withComputed(({ abilityId, nwData }) => {
+    const ability = computed(() => nwData()?.abilitiesMap?.get(abilityId()))
+    return {
+      ability,
+      icon: computed(() => ability()?.Icon || NW_FALLBACK_ICON),
+      name: computed(() => ability()?.DisplayName),
+      nameForDisplay: computed(() => ability()?.DisplayName || humanize(ability()?.AbilityID)),
+      weapon: computed(() => ability()?.WeaponTag),
+      weaponOrSource: computed(() => ability()?.WeaponTag || ability()?.$source),
+      source: computed(() => ability()?.$source),
+      uiCategory: computed(() => ability()?.UICategory),
+      description: computed(() => ability()?.Description),
+      properties: computed(() => selectProperties(ability())),
+      refEffects: computed(() => {
+        const it = ability()
+        if (!it) {
+          return []
+        }
+        return uniq(
+          flatten([
+            it.StatusEffect,
+            it.TargetStatusEffect,
+            it.OtherApplyStatusEffect,
+            it.DontHaveStatusEffect,
+            it.StatusEffectBeingApplied,
+            it.OnEquipStatusEffect,
+            it.DamageTableStatusEffectOverride,
+            it.TargetStatusEffectDurationList,
+            it.RemoveTargetStatusEffectsList,
+            it.StatusEffectsList,
+            it.SelfApplyStatusEffect,
+          ]),
+        ).filter((it) => !!it && it !== 'All')
+      }),
+      refSpells: computed(() => {
+        const it = ability()
+        if (!it) {
+          return []
+        }
+        return uniq(flatten([it.CastSpell])).filter((it) => !!it && it !== 'All')
+      }),
+      refAbilities: computed(() => {
+        const it = ability()
+        if (!it) {
+          return []
+        }
+        return uniq(flatten([it.RequiredEquippedAbilityId, it.RequiredAbilityId, it.AbilityList])).filter(
+          (e) => !!e && e !== it.AbilityID,
+        )
+      }),
+    }
+  }),
+)
 
 function selectProperties(item: Ability) {
   const reject = ['$source', 'Icon', 'DisplayName', 'Description', 'Sound']
