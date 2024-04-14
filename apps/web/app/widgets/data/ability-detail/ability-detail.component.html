@@ -37,7 +37,7 @@
       <nwb-icon [icon]="iconInfo" class="w-3 h-3 opacity-50 hover:opacity-100 cursor-help" />
     </span>
     <ng-template #tplCategoryTip>
-      <nwb-status-effect-limits-table [categoryId]="cell.value"/>
+      <nwb-status-effect-limits-table [categoryId]="cell.value" />
     </ng-template>
   </span>
 </ng-template>
@@ -60,4 +60,19 @@
       </nwb-status-effect-limits-table>
     </ng-template>
   </ng-container>
+</ng-template>
+
+<ng-template [nwbGridValue] let-cell #tplCooldownInfo>
+  <span>
+    {{ cell.value }}
+  </span>
+  @if (cooldown()) {
+    <span [tooltip]="tplCooldownTip" [tooltipClass]="'px-2 py-1'" class="text-accent">
+      ({{cooldown().Time}}s)
+      <nwb-icon [icon]="iconInfo" class="w-3 h-3 opacity-50 hover:opacity-100 cursor-help text-error"  />
+    </span>
+  }
+  <ng-template #tplCooldownTip>
+    <nwb-property-grid class="gap-x-2 font-mono w-full overflow-auto text-sm leading-tight" [item]="cooldown()" />
+  </ng-template>
 </ng-template>

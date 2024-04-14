@@ -15,6 +15,7 @@ export const AbilityDetailStore = signalStore(
   withNwData((db) => {
     return {
       abilitiesMap: db.abilitiesMap,
+      cooldownsMap: db.cooldownsByAbilityIdMap,
     }
   }),
   withMethods((state) => {
@@ -34,7 +35,8 @@ export const AbilityDetailStore = signalStore(
     },
   }),
   withComputed(({ abilityId, nwData }) => {
-    const ability = computed(() => nwData()?.abilitiesMap?.get(abilityId()))
+    const ability = computed(() => nwData().abilitiesMap?.get(abilityId()))
+    const cooldown = computed(() => nwData().cooldownsMap?.get(ability()?.CooldownId)?.[0])
     return {
       ability,
       icon: computed(() => ability()?.Icon || NW_FALLBACK_ICON),
@@ -46,6 +48,7 @@ export const AbilityDetailStore = signalStore(
       uiCategory: computed(() => ability()?.UICategory),
       description: computed(() => ability()?.Description),
       properties: computed(() => selectProperties(ability())),
+      cooldown: computed(() => cooldown()),
       refEffects: computed(() => {
         const it = ability()
         if (!it) {

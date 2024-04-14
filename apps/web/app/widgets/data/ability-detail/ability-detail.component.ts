@@ -51,11 +51,15 @@ export class AbilityDetailComponent {
   @ViewChild('tplCategoryInfo', { static: true })
   protected tplCategoryInfo: TemplateRef<any>
 
+  @ViewChild('tplCooldownInfo', { static: true })
+  protected tplCooldownInfo: TemplateRef<any>
+
   protected icon = this.store.icon
   protected recordId = this.store.abilityId
   protected displayName = this.store.nameForDisplay
   protected description = this.store.description
   protected properties = this.store.properties
+  protected cooldown = this.store.cooldown
   protected weapon = this.store.weapon
   protected source = this.store.source
   protected uiCategory = this.store.uiCategory
@@ -94,6 +98,12 @@ export class AbilityDetailComponent {
       }
       case 'AttackType': {
         return damageCells(value as Ability['AttackType'])
+      }
+      case 'CooldownId': {
+        return {
+          value: (value as Ability['CooldownId']),
+          template: this.tplCooldownInfo,
+        }
       }
       case 'StatusEffectCategories':
       case 'StatusEffectCategoriesList':

@@ -123,6 +123,11 @@ export class NwDataService {
   public affixByStatusEffectMap = tableGroupBy(() => this.affixStats, 'StatusEffect')
   public affixByStatusEffect = tableLookup(() => this.affixByStatusEffectMap)
 
+  public cooldowns = table(() => [this.data.cooldownsPlayer()])
+  public cooldownsMap = tableIndexBy(() => this.cooldowns, 'ID')
+  public cooldown = tableLookup(() => this.cooldownsMap)
+  public cooldownsByAbilityIdMap = tableGroupBy(() => this.cooldowns, 'AbilityID')
+
   public damageTables0 = table(() => [this.data.damagetable()])
   public damageTables0Map = tableIndexBy(() => this.damageTables0, 'DamageID')
   public damageTable0 = tableLookup(() => this.damageTables0Map)
