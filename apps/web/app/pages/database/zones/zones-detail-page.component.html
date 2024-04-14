@@ -3,7 +3,7 @@
   #table
   class="flex-1"
   [identifyBy]="vitalIdFn"
-  [data]="detail.store.vitals$ | async"
+  [data]="detail.store.vitals()"
   [options]="gridOptions"
   [selection]="[vitalId()]"
   (selectedRow$)="onVitalClicked($event)"

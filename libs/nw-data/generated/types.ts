@@ -385,7 +385,7 @@ export interface Areadefinitions {
   IsPOI: boolean
   NameLocalizationKey: string
   POILevel: number
-  POITag: string
+  POITag: string[]
   PhasingMode: string
   PoiDiscoveryXpModifier: number
   TerritoryID: number
@@ -404,7 +404,7 @@ export interface Arenadefinitions {
   IsPOI: boolean
   MapIcon: string
   NameLocalizationKey: string
-  POITag: string
+  POITag: string[]
   RecommendedLevel: number
   TerritoryID: number
   TooltipBackground: string
@@ -888,7 +888,7 @@ export interface Darknessdefinitions {
   IsPOI: boolean
   MapIcon: string
   NameLocalizationKey: string
-  POITag: string
+  POITag: string[]
   PulseColor: string
   RecommendedLevel: number
   RequiredItemId: string
@@ -4122,7 +4122,7 @@ export interface PoiDefinition {
   NameLocalizationKey: string
   OutpostId: string
   POIObjectiveAchievementId: string
-  POITag: string
+  POITag: string[]
   RecommendedLevel: number
   TerritoryID: number
   TooltipBackground: string

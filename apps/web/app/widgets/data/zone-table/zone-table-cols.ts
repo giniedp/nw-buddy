@@ -1,11 +1,18 @@
-import { getZoneDescription, getZoneDevName, getZoneIcon, getZoneName, isZonePoi, isZoneTerritory } from '@nw-data/common'
-import { Areadefinitions, PoiDefinition, Territorydefinitions } from '@nw-data/generated'
+import {
+  ZoneDefinition,
+  getZoneDescription,
+  getZoneDevName,
+  getZoneIcon,
+  getZoneName,
+  isZonePoi,
+  isZoneTerritory,
+} from '@nw-data/common'
 import { uniq } from 'lodash'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { humanize } from '~/utils'
 
 export type ZoneTableUtils = TableGridUtils<ZoneTableRecord>
-export type ZoneTableRecord = PoiDefinition | Areadefinitions | Territorydefinitions
+export type ZoneTableRecord = ZoneDefinition
 
 export function zoneColIcon(util: ZoneTableUtils) {
   return util.colDef({
@@ -42,14 +49,14 @@ export function zoneColName(util: ZoneTableUtils) {
       const name1 = getZoneName(data)
       const name2 = getZoneDevName(data)
       const names = [name1, name2]
-      .map((it) => {
-        const value = util.i18n.get(it)
-        if (!value || value.startsWith('@')) {
-          return null
-        }
-        return value
-      })
-      .filter((it) => !!it)
+        .map((it) => {
+          const value = util.i18n.get(it)
+          if (!value || value.startsWith('@')) {
+            return null
+          }
+          return value
+        })
+        .filter((it) => !!it)
       return uniq(names).join(', ')
     },
     getQuickFilterText: ({ value }) => value,
@@ -81,7 +88,7 @@ export function zoneColLootTags(util: ZoneTableUtils) {
   return util.colDef<string[]>({
     colId: 'lootTags',
     headerValueGetter: () => 'Loot Tags',
-    valueGetter: ({ data }) => (isZonePoi(data) || isZoneTerritory(data) ? data.LootTags : null),
+    valueGetter: ({ data }) => ('LootTags' in data ? data.LootTags : null),
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     ...util.selectFilter({
       order: 'asc',
@@ -89,6 +96,7 @@ export function zoneColLootTags(util: ZoneTableUtils) {
     }),
   })
 }
+
 export function zoneColLevelRange(util: ZoneTableUtils) {
   return util.colDef<string | number>({
     colId: 'levelRange',

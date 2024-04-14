@@ -1,4 +1,5 @@
 import { Directive, inject, Input } from '@angular/core'
+import { patchState } from '@ngrx/signals'
 import { ZoneDetailStore } from './zone-detail.store'
 
 @Directive({
@@ -12,12 +13,11 @@ export class ZoneDetailDirective {
 
   @Input()
   public set nwbZoneDetail(value: string | number) {
-    this.store.patchState({ recordId: value })
+    this.store.load(value)
   }
 
   @Input()
   public set markVital(value: string) {
-    this.store.patchState({ markedVitalId: value })
+    patchState(this.store, { markedVitalId: value })
   }
-
 }

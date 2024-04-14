@@ -14,8 +14,8 @@ export class NwLinkDirective {
   }
 
   @Input()
-  public set nwLink(value: string) {
-    this.link = value
+  public set nwLink(value: string | number) {
+    this.link = value == null ? null : String(value)
     this.update()
   }
 

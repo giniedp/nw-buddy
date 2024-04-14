@@ -1,6 +1,12 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { inject, Injectable } from '@angular/core'
-import { Areadefinitions, COLS_AREADEFINITIONS, COLS_POIDEFINITION, COLS_TERRITORYDEFINITIONS, PoiDefinition } from '@nw-data/generated'
+import {
+  Areadefinitions,
+  COLS_AREADEFINITIONS,
+  COLS_POIDEFINITION,
+  COLS_TERRITORYDEFINITIONS,
+  PoiDefinition,
+} from '@nw-data/generated'
 import { combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { DataViewAdapter } from '~/ui/data/data-view'
@@ -71,7 +77,9 @@ export class ZoneTableAdapter implements DataViewAdapter<ZoneTableRecord>, Table
   public connect() {
     return (
       this.config?.source ||
-      combineLatest([this.db.pois, this.db.areas, this.db.territories]).pipe(map((list) => list.flat()))
+      combineLatest([this.db.pois, this.db.areas, this.db.territories, this.db.arenas, this.db.darknesses]).pipe(
+        map((list) => list.flat()),
+      )
     )
   }
 }

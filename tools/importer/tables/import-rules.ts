@@ -184,23 +184,26 @@ export const TABLE_IMPORT_RULES = [
       separator: ',',
     }),
   ]),
-  tableSource(['javelindata_lootbuckets', 'javelindata_lootbuckets_pvp'], [
-    mapPropToArray({
-      keys: [/Tags\d+/i],
-      separator: ',',
-    }),
-    mapProp(/MatchOne\d+/, (value) => {
-      if (value === 'TRUE') {
-        return true
-      }
-      if (value === 'FALSE') {
-        return false
-      }
-      return value
-    }),
-    deleteProp(/Quantity\d+/, (value) => !value),
-    deleteProp(/MatchOne\d+/, (value) => !value),
-  ]),
+  tableSource(
+    ['javelindata_lootbuckets', 'javelindata_lootbuckets_pvp'],
+    [
+      mapPropToArray({
+        keys: [/Tags\d+/i],
+        separator: ',',
+      }),
+      mapProp(/MatchOne\d+/, (value) => {
+        if (value === 'TRUE') {
+          return true
+        }
+        if (value === 'FALSE') {
+          return false
+        }
+        return value
+      }),
+      deleteProp(/Quantity\d+/, (value) => !value),
+      deleteProp(/MatchOne\d+/, (value) => !value),
+    ],
+  ),
   tableSource(
     // prettier-ignore
     [
@@ -413,12 +416,21 @@ export const TABLE_IMPORT_RULES = [
     ],
   ),
 
-  tableSource('pointofinterestdefinitions/*', [
-    mapPropToArray({
-      keys: ['LootTags', 'VitalsCategory'],
-      separator: ',',
-    }),
-  ]),
+  tableSource(
+    [
+      'arenas/*',
+      'pointofinterestdefinitions/*',
+      'javelindata_areadefinitions',
+      'javelindata_darknessdefinitions',
+      'javelindata_territorydefinitions',
+    ],
+    [
+      mapPropToArray({
+        keys: ['LootTags', 'VitalsCategory', 'POITag'],
+        separator: ',',
+      }),
+    ],
+  ),
 
   tableSource(
     // prettier-ignore
@@ -436,13 +448,7 @@ export const TABLE_IMPORT_RULES = [
       }),
     ],
   ),
-  tableSource([
-    'quests/**/*_npcs'
-  ], [
-    deleteProp([
-      /ConversationStateId/
-    ])
-  ]),
+  tableSource(['quests/**/*_npcs'], [deleteProp([/ConversationStateId/])]),
   tableSource(
     // prettier-ignore
     [
@@ -501,25 +507,25 @@ export const TABLE_IMPORT_RULES = [
         'Visual_Healthy',
         'Visual_Depleted',
         'Visual_Frame',
-        "VFX_Burst_1",
-        "VFX_Burst_2",
-        "VFX_Burst_3",
-        "EnableBurstParticle1",
-        "EnableBurstParticle2",
-        "EnableBurstParticle3",
-        "Depleted_SFX",
-        "DetectableObjectRadius",
-        "IdleVFX",
-        "Visual_Loot",
-        "InteractionX",
-        "InteractionY",
-        "InteractionZ",
-        "DetectableX",
-        "DetectableY",
-        "DetectableZ",
-        "MarkerX",
-        "MarkerY",
-        "MarkerZ",
+        'VFX_Burst_1',
+        'VFX_Burst_2',
+        'VFX_Burst_3',
+        'EnableBurstParticle1',
+        'EnableBurstParticle2',
+        'EnableBurstParticle3',
+        'Depleted_SFX',
+        'DetectableObjectRadius',
+        'IdleVFX',
+        'Visual_Loot',
+        'InteractionX',
+        'InteractionY',
+        'InteractionZ',
+        'DetectableX',
+        'DetectableY',
+        'DetectableZ',
+        'MarkerX',
+        'MarkerY',
+        'MarkerZ',
       ]),
     ],
   ),

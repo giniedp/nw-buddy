@@ -1,19 +1,16 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ValueEqualityFn, ViewChild, inject } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { Component, ElementRef, EventEmitter, Output, ViewChild, computed, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { getZoneMetaId } from '@nw-data/common'
 import { crc32 as crc } from 'js-crc'
-import { isEqual, uniq } from 'lodash'
-import { startWith } from 'rxjs'
+import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgCompress, svgExpand } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
-import { eqCaseInsensitive, selectSignal, selectStream } from '~/utils'
-import { LandMapComponent, Landmark, LandmarkPoint, LandmarkZone, MapViewBounds } from '~/widgets/land-map'
+import { eqCaseInsensitive, selectSignal } from '~/utils'
+import { LandMapComponent, Landmark, LandmarkPoint, LandmarkZone } from '~/widgets/land-map'
 import { ZoneDetailStore } from './zone-detail.store'
-import { getZoneMetaId } from '@nw-data/common'
 
 function crc32(value: string) {
   return parseInt(crc(value.toLowerCase()), 16)
@@ -52,96 +49,86 @@ export class ZoneDetailMapComponent {
   protected store = inject(ZoneDetailStore)
   protected tl8 = inject(TranslateService)
 
-  @ViewChild(LandMapComponent, { static: false })
-  protected mapComponent: LandMapComponent
-
   @Output()
   public zoneClicked = new EventEmitter<string>()
 
   @Output()
   public vitalClicked = new EventEmitter<string>()
 
-  protected bounds = toSignal(
-    selectStream(
-      {
-        type: this.store.type$,
-        meta: this.store.metadata$,
-      },
-      ({ type, meta }): MapViewBounds => {
-        if (!meta?.zones?.length) {
-          return null
-        }
-        const min = meta.zones[0].min
-        const max = meta.zones[0].max
-        return { min: min, max: max }
-      },
-      { equal: isEqual as ValueEqualityFn<MapViewBounds> },
-    ),
-  )
+  protected bounds = computed(() => {
+    const meta = this.store.metadata()
+    if (!meta?.zones?.length) {
+      return null
+    }
+    const min = meta.zones[0].min
+    const max = meta.zones[0].max
+    return { min: min, max: max }
+  })
 
-  protected landmarks = selectSignal(
-    {
-      zoneId: this.store.recordId$,
-      spawns: this.store.spawns$.pipe(startWith(null)),
-      vitalId: this.store.markedVitalId$,
-      categories: this.db.vitalsCategoriesMap,
-      zones: this.store.allZones$,
-      zonesMetaMap: this.db.territoriesMetadataMap,
-    },
-    ({ zoneId, spawns, vitalId, categories, zones, zonesMetaMap }) => {
-      const result: Landmark[] = []
-      for (const zone of zones || []) {
-        const metaId = getZoneMetaId(zone)
-        const meta = zonesMetaMap.get(metaId)
-        if (!meta?.zones?.length) {
-          continue
-        }
-        const isSelected = zone.TerritoryID === zoneId
-        for (const entry of meta.zones) {
-          result.push({
-            id: `zone:${zone.TerritoryID}`,
-            title: this.tl8.get(zone.NameLocalizationKey),
-            color: isSelected ? COLORS.Info : '#FFFFFF',
-            outlineColor: isSelected ? COLORS_DIMMED.Info : COLORS_DIMMED.Error,
-            shape: entry.shape.map((point) => [...point]),
-            opacity: isSelected ? 0.25 : 0.05,
-          } satisfies LandmarkZone)
-        }
+  protected landmarks = computed(() => {
+    const result: Landmark[] = []
+    if (!this.store.nwDataIsLoaded()) {
+      return result
+    }
+
+    const zoneId = this.store.recordId()
+    const spawns = this.store.spawns()
+    const vitalId = this.store.markedVitalId()
+    const categories = this.store.nwData().vitalsCategoriesMap
+    const zones = this.store.allZones()
+    const zonesMetaMap = this.store.nwData().territoriesMetadata
+
+    for (const zone of zones || []) {
+      const metaId = getZoneMetaId(zone)
+      const meta = zonesMetaMap.get(metaId)
+      if (!meta?.zones?.length) {
+        continue
       }
-
-      for (const spawn of spawns || []) {
-        let title = ''
-        if (spawn.categories.length) {
-          title = categories.get(spawn.categories[0])?.DisplayName
-        }
-        if (!title) {
-          title = spawn.vital.DisplayName
-        }
-        title = this.tl8.get(title)
-
-        const levels = spawn.levels.length ? spawn.levels : [spawn.vital.Level]
-        const hasMark = !!vitalId
-        const isMarked = eqCaseInsensitive(vitalId, spawn.vital.VitalsID)
+      const isSelected = zone.TerritoryID === zoneId
+      for (const entry of meta.zones) {
         result.push({
-          id: `vital:${spawn.vital.VitalsID}`,
-          title: `
+          id: `zone:${zone.TerritoryID}`,
+          title: this.tl8.get(zone.NameLocalizationKey),
+          color: isSelected ? COLORS.Info : '#FFFFFF',
+          outlineColor: isSelected ? COLORS_DIMMED.Info : COLORS_DIMMED.Error,
+          shape: entry.shape.map((point) => [...point]),
+          opacity: isSelected ? 0.25 : 0.05,
+        } satisfies LandmarkZone)
+      }
+    }
+
+    for (const spawn of spawns || []) {
+      let title = ''
+      if (spawn.categories.length) {
+        title = categories.get(spawn.categories[0])?.DisplayName
+      }
+      if (!title) {
+        title = spawn.vital.DisplayName
+      }
+      title = this.tl8.get(title)
+
+      const levels = spawn.levels.length ? spawn.levels : [spawn.vital.Level]
+      const hasMark = !!vitalId
+      const isMarked = eqCaseInsensitive(vitalId, spawn.vital.VitalsID)
+      result.push({
+        id: `vital:${spawn.vital.VitalsID}`,
+        title: `
             <div style="text-align: left;">
               <strong>${title}</strong><br>
               Level ${levels.join(', ')}<br>
               x: ${spawn.point[0].toFixed(2)} y: ${spawn.point[1].toFixed(2)}
             </div>
           `,
-          color: toColor(spawn.vital.VitalsID),
-          outlineColor: hasMark && isMarked ? '#FFFFFF' : '#000000',
-          opacity: isMarked || !hasMark ? 1 : 0.75,
-          point: spawn.point,
-          radius: isMarked ? 6 : 4,
-        } satisfies LandmarkPoint)
-      }
-      result.sort((a, b) => a.radius - b.radius)
-      return result
-    },
-  )
+        color: toColor(spawn.vital.VitalsID),
+        outlineColor: hasMark && isMarked ? '#FFFFFF' : '#000000',
+        opacity: isMarked || !hasMark ? 1 : 0.75,
+        point: spawn.point,
+        radius: isMarked ? 6 : 4,
+      } satisfies LandmarkPoint)
+    }
+    result.sort((a, b) => a.radius - b.radius)
+    return result
+  })
 
   public hasMap = selectSignal(this.landmarks, (it) => !!it?.length)
 

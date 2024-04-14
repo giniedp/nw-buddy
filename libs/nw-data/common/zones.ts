@@ -1,7 +1,7 @@
-import { Areadefinitions, PoiDefinition, TerritoriesMetadata, Territorydefinitions, Zone } from '../generated/types'
+import { Areadefinitions, Arenadefinitions, Darknessdefinitions, PoiDefinition, TerritoriesMetadata, Territorydefinitions, Zone } from '../generated/types'
 import { NW_FALLBACK_ICON } from './constants'
 
-export type ZoneDefinition = Territorydefinitions | Areadefinitions | PoiDefinition
+export type ZoneDefinition = Territorydefinitions | Areadefinitions | PoiDefinition | Arenadefinitions | Darknessdefinitions
 export type ZoneType = 'Territory' | 'Area' | 'POI'
 
 export function isZoneTerritory(zone: ZoneDefinition): zone is Territorydefinitions {
@@ -72,17 +72,16 @@ export function getZoneInfo(zone: ZoneDefinition) {
   return ''
 }
 
+export function getZoneBackground(zone: ZoneDefinition) {
+  return (zone as PoiDefinition)?.TooltipBackground
+}
+
 export function getZoneIcon(zone: ZoneDefinition) {
   if (!zone) {
     return null
   }
-  if (isZoneTerritory(zone)) {
-    return NW_FALLBACK_ICON
-  }
-  if (isZoneArea(zone)) {
-    return NW_FALLBACK_ICON
-  }
-  return zone.MapIcon || zone.CompassIcon || NW_FALLBACK_ICON
+  const poi = zone as PoiDefinition
+  return poi.MapIcon || poi.CompassIcon || NW_FALLBACK_ICON
 }
 
 export function getZoneMetaId(zone: ZoneDefinition) {

@@ -109,9 +109,12 @@ export class NwDataService {
   public perkBuckets = table(() => [this.data.perkbuckets().pipe(map(convertPerkBuckets))])
   public perkBucketsMap = tableIndexBy(() => this.perkBuckets, 'PerkBucketID')
   public perkBucket = tableLookup(() => this.perkBucketsMap)
-  public perkBucketsByPerkIdMap = tableGroupBy(() => this.perkBuckets, (it) => {
-    return it.Entries.map((it) => 'PerkID' in it && it.PerkID)
-  })
+  public perkBucketsByPerkIdMap = tableGroupBy(
+    () => this.perkBuckets,
+    (it) => {
+      return it.Entries.map((it) => 'PerkID' in it && it.PerkID)
+    },
+  )
   public perkBucketsByPerkId = tableLookup(() => this.perkBucketsByPerkIdMap)
 
   public affixStats = table(() => [this.data.affixstats()])
@@ -308,10 +311,6 @@ export class NwDataService {
   public staminacostsPlayer = table(() => [this.data.staminacostsPlayer()])
   public staminacostsPlayerMap = tableIndexBy(() => this.staminacostsPlayer, 'CostID')
 
-  public arenas = table(() => [this.data.arenasArenadefinitions()])
-  public arenasMap = tableIndexBy(() => this.arenas, 'TerritoryID')
-  public arena = tableLookup(() => this.arenasMap)
-
   public itemsConsumables = table(() => [this.data.itemdefinitionsConsumables()])
   public itemsConsumablesMap = tableIndexBy(() => this.itemsConsumables, 'ConsumableID')
 
@@ -384,6 +383,10 @@ export class NwDataService {
   public damagetypesMap = tableIndexBy(() => this.damagetypes, 'TypeID')
   public damagetype = tableLookup(() => this.damagetypesMap)
 
+  public territoriesMetadata = table(() => this.data.generatedTerritoriesMetadata())
+  public territoriesMetadataMap = tableIndexBy(() => this.territoriesMetadata, 'territoryID')
+  public territoryMetadata = tableLookup(() => this.territoriesMetadataMap)
+
   public territories = table(() => this.data.territorydefinitions())
   public territoriesMap = tableIndexBy(() => this.territories, 'TerritoryID')
   public territory = tableLookup(() => this.territoriesMap)
@@ -393,12 +396,8 @@ export class NwDataService {
   public area = tableLookup(() => this.areasMap)
   public areaByPoiTag = tableGroupBy(
     () => this.areas,
-    (it) => it.POITag?.split(','),
+    (it) => it.POITag,
   )
-
-  public territoriesMetadata = table(() => this.data.generatedTerritoriesMetadata())
-  public territoriesMetadataMap = tableIndexBy(() => this.territoriesMetadata, 'territoryID')
-  public territoryMetadata = tableLookup(() => this.territoriesMetadataMap)
 
   public pois = table(() =>
     apiMethodsByPrefix<'pointofinterestdefinitionsPoidefinitions0202'>(this.data, 'pointofinterestdefinitions').map(
@@ -411,8 +410,16 @@ export class NwDataService {
   public poi = tableLookup(() => this.poisMap)
   public poiByPoiTag = tableGroupBy(
     () => this.pois,
-    (it) => it.POITag?.split(','),
+    (it) => it.POITag,
   )
+
+  public arenas = table(() => [this.data.arenasArenadefinitions()])
+  public arenasMap = tableIndexBy(() => this.arenas, 'TerritoryID')
+  public arena = tableLookup(() => this.arenasMap)
+
+  public darknesses = table(() => [this.data.darknessdefinitions()])
+  public darknessesMap = tableIndexBy(() => this.darknesses, 'TerritoryID')
+  public darkness = tableLookup(() => this.darknessesMap)
 
   public pvpRanks = table(() => this.data.pvpRank())
   public pvpRanksMap = tableIndexBy(() => this.pvpRanks, 'Level')
@@ -486,7 +493,10 @@ export class NwDataService {
   ])
   public lootBucketsMap = tableGroupBy(() => this.lootBuckets, 'LootBucket')
   public lootBucket = tableLookup(() => this.lootBucketsMap)
-  public lootBucketsByItemIdMap = tableGroupBy(() => this.lootBuckets, (it) => it.Item)
+  public lootBucketsByItemIdMap = tableGroupBy(
+    () => this.lootBuckets,
+    (it) => it.Item,
+  )
   public lootBucketsByItemId = tableLookup(() => this.lootBucketsByItemIdMap)
 
   public lootLimits = table(() => [this.data.lootlimits()])
