@@ -69,7 +69,7 @@ export class GearCellWeaponComponent {
     return this.damage().total.stdFinal
   })
   protected totalCritDamage = computed(() => {
-    return this.damage().total.stdFinal
+    return this.damage().total.critFinal
   })
 
   protected weaponStdDamage = computed(() => {
