@@ -285,7 +285,7 @@ export class LootContextEditorComponent {
 
   public constructor() {
     this.store.loadNwData()
-    patchState(this.store, { playerLevel: NW_MAX_CHARACTER_LEVEL })
+    this.playerLevel = NW_MAX_CHARACTER_LEVEL
   }
 
   protected setTerritory(selection: number) {
