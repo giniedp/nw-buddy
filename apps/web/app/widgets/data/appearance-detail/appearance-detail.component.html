@@ -10,8 +10,7 @@
       [text1]="vm.commonText"
       [text2]="'Transmog Appearance'"
       [text3]="vm.category.name | nwText"
-    >
-    </nwb-item-header-content>
+    />
   </nwb-item-header>
   <div class="p-3 leading-snug flex flex-col gap-2">
     <p class="text-nw-description italic" *ngIf="vm.description; let text">{{ text | nwText }}</p>

@@ -8,7 +8,7 @@
   >
     <div
       *ngIf="scalesWithGearScore$ | async"
-      class="sub-header absolute right-1 bottom-1 flex flex-colr gap-1 items-center"
+      class="absolute right-1 bottom-1 flex flex-colr gap-1 items-center"
     >
       <img [nwImage]="'assets/icons/item/icon_gearscore.png'" class="w-6 h-6" [tooltip]="'Selected Gear Score'" />
       <nwb-gs-input
@@ -20,7 +20,7 @@
         [ngModel]="context.gearScore$()"
         (ngModelChange)="context.patchState({ gearScore: $event })"
         class="w-20 text-right"
-      ></nwb-gs-input>
+      />
     </div>
   </nwb-item-header-content>
 </nwb-item-header>

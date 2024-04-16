@@ -4,7 +4,7 @@
     class="z-10"
     [title]="name$ | async | nwText | nwTextBreak : ' - '"
     [text1]="'Curse'"
-  ></nwb-item-header-content>
+  />
 </nwb-item-header>
 <div class="p-3 flex flex-col gap-2">
   <div *ngFor="let item of curses$ | async" class="flex flex-row gap-1">

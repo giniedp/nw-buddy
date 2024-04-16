@@ -3,13 +3,13 @@
   </a>
   <nwb-item-header-content
     class="z-10"
-    [title]="name$ | async | nwText | nwTextBreak : ' - '"
+    [title]="name$ | async | nwText | nwTextBreak: ' - '"
     [text1]="source$ | async"
     [text2]="type$ | async | nwHumanize"
-  ></nwb-item-header-content>
+  />
 </nwb-item-header>
 <div class="p-3 flex flex-col gap-2">
-  <ng-container *ngIf="description$ | async | nwText : { itemId: mountId$ | async } | nwTextBreak; let description">
+  <ng-container *ngIf="description$ | async | nwText: { itemId: mountId$ | async } | nwTextBreak; let description">
     <div [nwHtml]="description" class="text-nw-description italic"></div>
     <nwb-item-divider></nwb-item-divider>
   </ng-container>
@@ -17,28 +17,20 @@
   <!-- <nwb-item-stat [label]="'Note'" *ngIf="note$ | async; let text">{{ text | nwText }}</nwb-item-stat> -->
   <nwb-item-stat [label]="'Unlocked at'" *ngIf="unlockMethod$ | async; let text">{{ text | nwText }}</nwb-item-stat>
 
-  <ng-container *ngIf="models$ | async; let models">
-    <ng-container *ngIf="!modelViewerOpened">
-      <button
-        class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50"
-        (click)="modelViewerOpened = true"
-      >
+  @if (models$ | async; as models) {
+    @if (modelViewerOpened) {
+      <nwb-model-viewer [models]="models" class="w-full rounded-md aspect-square" (close)="modelViewerOpened = false" />
+    }
+    <button
+      class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50"
+      (click)="modelViewerOpened = !modelViewerOpened"
+    >
+      @if (modelViewerOpened) {
         View 3D Model
-      </button>
-    </ng-container>
-    <ng-container *ngIf="modelViewerOpened">
-      <nwb-model-viewer
-        [models]="models"
-        class="w-full rounded-md aspect-square"
-        (close)="modelViewerOpened = false"
-      ></nwb-model-viewer>
-      <button
-        class="btn btn-xs btn-outline btn-block btn-ghost rounded-md opacity-50"
-        (click)="modelViewerOpened = false"
-      >
+      } @else {
         Close
-      </button>
-    </ng-container>
-  </ng-container>
-  <ng-content></ng-content>
+      }
+    </button>
+  }
+  <ng-content />
 </div>

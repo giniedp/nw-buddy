@@ -3,45 +3,59 @@
   </a>
   <nwb-item-header-content
     class="z-10"
-    [title]="title$ | async | nwText | nwTextBreak : ' - '"
+    [title]="title$ | async | nwText | nwTextBreak: ' - '"
     [text1]="type$ | async | nwHumanize"
     [text2]="'quest'"
     [text3]="levelLabel$ | async"
-  ></nwb-item-header-content>
+  />
 </nwb-item-header>
 <div class="p-4 flex flex-col gap-2">
-  <div
-    *ngIf="description$ | async; let text"
-    class="text-nw-description italic"
-    [nwHtml]="text | nwText | nwTextBreak"
-  ></div>
-  <div class="chat chat-start" *ngIf="prompt$ | async; let text">
-    <div class="chat-bubble" [nwText]="text"></div>
-  </div>
-  <div class="chat chat-end" *ngIf="response$ | async; let text">
-    <div class="chat-bubble" [nwText]="text"></div>
-  </div>
-  <div class="chat chat-end" *ngIf="inProgressResponse$ | async; let text">
-    <div class="chat-bubble" [nwText]="text"></div>
-  </div>
-  <div *ngIf="rewards$ | async; let rewards" class="flex flex-col gap-1">
-    <h3 class="font-bold">Rewards</h3>
-    <nwb-game-event-detail-rewards [rewards]="rewards"/>
-  </div>
-
-  <div *ngIf="previousQuests$ | async; let prev" class="flex flex-col gap-1">
-    <h3 class="font-bold">Previous Quests</h3>
-    <div class="flex flex-row items-center gap-1" *ngFor="let quest of prev">
-      <a [nwLink]="quest.id" [nwLinkResource]="'quest'" class="flex-none">
-        <img [nwImage]="quest.icon" class="w-5 h-5" />
-      </a>
-      <a class="flex-1 link-hover" [routerLink]="['/quests/table', quest.id]">
-        <span>{{ quest.title | nwText }}</span>
-      </a>
+  @if (description$ | async; as text) {
+    <div class="text-nw-description italic" [nwHtml]="text | nwText | nwTextBreak"></div>
+  }
+  @if (prompt$ | async; as text) {
+    <div class="chat chat-start">
+      <div class="chat-bubble" [nwText]="text"></div>
     </div>
-  </div>
-  <div *ngIf="followup$ | async; let followup" class="flex flex-col gap-1">
-    <h3 class="font-bold">Follow Up Quests</h3>
-    <nwb-quest-detail-follow-up *ngFor="let row of followup" [data]="row"></nwb-quest-detail-follow-up>
-  </div>
+  }
+  @if (response$ | async; as text) {
+    <div class="chat chat-end">
+      <div class="chat-bubble" [nwText]="text"></div>
+    </div>
+  }
+  @if (inProgressResponse$ | async; as text) {
+    <div class="chat chat-end">
+      <div class="chat-bubble" [nwText]="text"></div>
+    </div>
+  }
+  @if (rewards$ | async; as rewards) {
+    <div class="flex flex-col gap-1">
+      <h3 class="font-bold">Rewards</h3>
+      <nwb-game-event-detail-rewards [rewards]="rewards" />
+    </div>
+  }
+
+  @if (previousQuests$ | async; as prev) {
+    <div class="flex flex-col gap-1">
+      <h3 class="font-bold">Previous Quests</h3>
+      @for (quest of prev; track $index) {
+        <div class="flex flex-row items-center gap-1">
+          <a [nwLink]="quest.id" [nwLinkResource]="'quest'" class="flex-none">
+            <img [nwImage]="quest.icon" class="w-5 h-5" />
+          </a>
+          <a class="flex-1 link-hover" [routerLink]="['/quests/table', quest.id]">
+            <span>{{ quest.title | nwText }}</span>
+          </a>
+        </div>
+      }
+    </div>
+  }
+  @if (followup$ | async; as followup) {
+    <div class="flex flex-col gap-1">
+      <h3 class="font-bold">Follow Up Quests</h3>
+      @for (row of followup; track $index) {
+        <nwb-quest-detail-follow-up [data]="row" />
+      }
+    </div>
+  }
 </div>

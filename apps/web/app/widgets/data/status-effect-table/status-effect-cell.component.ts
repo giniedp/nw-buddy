@@ -23,7 +23,7 @@ import { TooltipDirective } from '~/ui/tooltip/tooltip.directive'
         [title]="name | nwText | nwTextBreak : ' - '"
         [text1]="source"
         [text2]="'Status Effect'"
-      ></nwb-item-header-content>
+      />
     </nwb-item-header>
     <ng-template #tplTip>
       <div [nwHtml]="description | nwText | nwTextBreak" class="px-2 py-1"></div>

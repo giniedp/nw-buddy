@@ -28,7 +28,7 @@ import { WeaponTypeTableRecord } from './weapon-type-table-cols'
         [title]="name | nwText | nwTextBreak : ' - '"
         [text1]="damageType | nwText"
         [text2]="category | nwText"
-      ></nwb-item-header-content>
+      />
     </nwb-item-header>
   `,
   imports: [CommonModule, ItemFrameModule, NwModule, TooltipModule, ItemDetailModule],
