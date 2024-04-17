@@ -1183,6 +1183,7 @@ export interface Gatherables {
   IsLootContainer: boolean
   ItemRestrictionId: string
   ItemRestrictionQuantity: string
+  LandmarkIconPath: string
   MaxRespawnRate: number
   MinRespawnRate: number
   MountGatherers: string
@@ -1196,6 +1197,7 @@ export interface Gatherables {
   ResetGatherTimeOnEndInteraction: boolean
   Restriction: string
   SongRewardId: string
+  TooltipImage: string
   Tradeskill: string
   WaitForImpact: boolean
 }
@@ -5875,6 +5877,7 @@ export type EntitlementSourceType =
   | 'SeasonJourney'
   | 'SeasonPass'
   | 'SeasonRewardTrack'
+  | 'SpringEvent'
   | 'Store'
   | 'Twitch'
   | 'WinterEvent'
@@ -13021,6 +13024,7 @@ export type VitalsCategory =
   | 'Waterfowl_60'
   | 'Waterfowl_61'
   | 'Waterfowl_62'
+  | 'Wispy_Wasp_Swarm'
   | 'Withered'
   | 'Withered_Beetle'
   | 'Withered_Beetle_ELITE'
