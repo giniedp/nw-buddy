@@ -134,6 +134,9 @@ function selectPerkStacks(perks: ActivePerk[], abilities: Map<string, Ability>, 
 }
 
 function injectMultiplierIntoDescription(description: string): string | null {
+  if (description.includes('perkMultiplier')) {
+    return description
+  }
   const parts: Array<{ lParen?: string, text: string, rParen?: string }> = []
   walkNwExpression(description, {
     onText: (text) => parts.push({ text }),
