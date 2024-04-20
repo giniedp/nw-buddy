@@ -23,7 +23,7 @@ import { HousingTableRecord } from './housing-table-cols'
       [enableInfoLink]="true"
       [enableTracker]="true"
       [enableLink]="true"
-    ></nwb-item-detail-header>
+    />
   `,
   imports: [CommonModule, ItemFrameModule, NwModule, TooltipModule, ItemDetailModule],
   host: {

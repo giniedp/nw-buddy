@@ -17,18 +17,18 @@
         *ngFor="let id of vm.grantsEffects"
         [effectId]="id"
         class="bg-black"
-      ></nwb-status-effect-detail>
+      />
     </div>
   </ng-container>
 
   <ng-container *ngIf="vm.tabId === 'perks'">
     <div class="flex flex-col gap-2">
-      <nwb-perk-detail *ngFor="let id of vm.resourcePerks" [perkId]="id" class="bg-black"></nwb-perk-detail>
+      <nwb-perk-detail *ngFor="let id of vm.resourcePerks" [perkId]="id" class="bg-black"/>
     </div>
   </ng-container>
 
   <ng-container *ngIf="vm.tabId === 'unlocks'">
-    <nwb-item-card [entityId]="vm.unlocksRecipe.ItemID" [enableInfoLink]="true" [enableLink]="true"></nwb-item-card>
+    <nwb-item-card [entityId]="vm.unlocksRecipe.ItemID" [enableInfoLink]="true" [enableLink]="true"/>
   </ng-container>
 
   <ng-container *ngIf="vm.tabId === 'recipes'">
@@ -36,7 +36,7 @@
       *ngFor="let item of vm.recipes"
       [recipe]="item.recipe"
       class="bg-base-300 rounded-b-md"
-    ></nwb-crafting-calculator>
+    />
   </ng-container>
 
   <ng-container *ngIf="vm.tabId === 'craftable'">
@@ -51,7 +51,7 @@
         [entityId]="item.itemId"
         class="rounded-md overflow-clip"
       >
-        <nwb-item-detail-header [enableInfoLink]="true" [enableLink]="true" [size]="'sm'"></nwb-item-detail-header>
+        <nwb-item-detail-header [enableInfoLink]="true" [enableLink]="true" [size]="'xs'"/>
       </nwb-item-detail>
       <button class="btn loading" *ngIf="scroll.canLoad$ | async" nwbInfiniteScrollTrigger>loading</button>
     </div>

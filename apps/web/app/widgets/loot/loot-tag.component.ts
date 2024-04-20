@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common'
-import { ChangeDetectionStrategy, Component, EventEmitter, HostListener, Output, input, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, EventEmitter, Output, input, signal } from '@angular/core'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
 import { svgCheck, svgPlus } from '~/ui/icons/svg'
@@ -11,7 +11,7 @@ import { svgCheck, svgPlus } from '~/ui/icons/svg'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, IconsModule],
   host: {
-    class:'badge badge-sm badge-secondary whitespace-nowrap',
+    class: 'badge badge-sm badge-secondary whitespace-nowrap',
     '[class.bg-opacity-25]': '!isChecked',
     '[class.bg-opacity-90]': 'isChecked',
   },
@@ -38,7 +38,6 @@ export class LootTagComponent {
   protected get canRemove() {
     return this.isEditable && this.isChecked
   }
-
 
   @Output()
   public removeClicked = new EventEmitter<string>()

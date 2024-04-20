@@ -5,7 +5,10 @@ import { isLootTagKnownCondition } from '@nw-data/common'
 import { NwModule } from '~/nw'
 import { LootBucketRowNode } from '~/nw/loot/loot-graph'
 import { VirtualGridCellComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
+import { IconsModule } from '~/ui/icons'
+import { svgInfoCircle } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
+import { TooltipModule } from '~/ui/tooltip'
 import { ItemDetailStore } from '../data/item-detail'
 import { EmptyComponent } from '../empty'
 import { LootGraphService } from './loot-graph.service'
@@ -40,9 +43,9 @@ import { LootTagComponent } from './loot-tag.component'
           class="whitespace-nowrap"
         />
       </div>
-      <div class="flex-none flex flex-row gap-1 p-1 bg-black bg-opacity-40 w-full overflow-auto text-shadow-none">
+      <div class="flex-none flex flex-row gap-1 p-1 bg-black bg-opacity-40 w-full overflow-auto">
         @if (roll(); as roll) {
-          <span class="whitespace-nowrap badge badge-sm badge-primary">
+          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none">
             >= {{ roll.threshold }}
             @if (roll.chance; as chance) {
               ({{ chance | percent: '1.0-2' }})
@@ -50,13 +53,24 @@ import { LootTagComponent } from './loot-tag.component'
           </span>
         }
         @if (condition(); as condition) {
-          <nwb-loot-tag
-            [tag]="'>= ' + condition.prob"
-            [checked]="condition.checked"
-          />
+          <nwb-loot-tag [tag]="'>= ' + condition.prob" [checked]="condition.checked" />
         }
         @if (quantity(); as quantity) {
-          <span class="badge badge-sm badge-primary whitespace-nowrap"> {{ quantity }} &times; </span>
+          <span class="badge badge-sm badge-primary text-shadow-none whitespace-nowrap"> {{ quantity }} &times; </span>
+        }
+        @if (matchOne()) {
+          <span
+            class="whitespace-nowrap badge badge-sm cursor-help"
+            [class.badge-error]="!tags()?.length"
+            [class.badge-info]="!!tags()?.length"
+            [tooltip]="
+              !tags()?.length
+                ? 'No tags to match against. This item is not obtainable'
+                : 'Must match only one of the given tags'
+            "
+          >
+            MatchOne
+          </span>
         }
         @for (item of tags(); track $index) {
           <nwb-loot-tag
@@ -71,7 +85,7 @@ import { LootTagComponent } from './loot-tag.component'
       </div>
     </nwb-item-header>
   `,
-  imports: [CommonModule, NwModule, ItemFrameModule, LootTagComponent],
+  imports: [CommonModule, NwModule, ItemFrameModule, LootTagComponent, IconsModule, TooltipModule],
   providers: [ItemDetailStore],
   host: {
     class: 'block rounded-md overflow-clip m-1',
@@ -103,6 +117,7 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
     return this.node()
   }
 
+  protected iconInfo = svgInfoCircle
   protected node = signal<LootBucketRowNode>(null)
   protected row = computed(() => this.node()?.row)
   protected parentTable = computed(() => {
@@ -129,6 +144,10 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
 
   protected quantity = computed(() => {
     return this.node()?.data.Quantity?.join('-')
+  })
+
+  protected matchOne = computed(() => {
+    return this.node()?.data.MatchOne
   })
 
   protected condition = computed(() => {

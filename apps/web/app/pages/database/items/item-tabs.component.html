@@ -49,7 +49,7 @@
         >
           @for (item of scroll.data$ | async; track $index) {
             <nwb-item-detail [entityId]="item.itemId" class="rounded-md overflow-clip">
-              <nwb-item-detail-header [enableInfoLink]="true" [enableLink]="true" [size]="'sm'" />
+              <nwb-item-detail-header [enableInfoLink]="true" [enableLink]="true" [size]="'xs'" />
             </nwb-item-detail>
           }
           @if (scroll.canLoad$ | async) {

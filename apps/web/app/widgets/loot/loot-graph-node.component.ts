@@ -167,10 +167,13 @@ export class LootGraphNodeComponent {
   protected get tags() {
     return this.store.tags()
   }
+  protected get matchOne() {
+    return this.store.matchOne()
+  }
   // protected vm = this.store.vm
 
   protected iconExpand = svgAngleLeft
-  protected iconinfo = svgCircleExclamation
+  protected iconInfo = svgCircleExclamation
   protected iconLock = svgLock
   protected iconLockOpen = svgLockOpen
   protected linkIcon = svgLink

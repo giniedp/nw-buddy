@@ -19,7 +19,7 @@ import { selectSignal } from '~/utils'
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, RouterModule, ItemTrackerModule, ItemFrameModule],
   host: {
-    class: 'nw-item-header relative flex flex-row p-1 gap-2 text-shadow-sm shadow-black',
+    class: 'nw-item-header relative flex flex-col text-shadow-sm shadow-black',
     '[class.bg-base-300]': 'isLoading()',
     '[class.named]': 'isNamed()',
     '[class.artifact]': 'isArtifact()',
@@ -50,7 +50,7 @@ export class ItemDetailHeaderComponent {
   public iconOverride: ItemDefinitionMaster | Housingitems
 
   @Input()
-  public size: 'sm' | 'md' | 'lg' = 'md'
+  public size: 'xs' | 'sm' | 'md' | 'lg' = 'md'
 
   protected name = selectSignal({
     name: this.store.name$,

@@ -2,45 +2,49 @@
 @if (isNamed() || isArtifact()) {
   <div class="nw-item-header-fg"></div>
 }
-<a
-  [nwbItemIcon]="iconOverride || icon()"
-  [cover]="true"
-  [nwLink]="enableInfoLink ? recordId() : null"
-  [nwLinkResource]="'item'"
-  [rarity]="rarity()"
-  class="aspect-square inline-block"
-  [class.w-12]="size === 'sm'"
-  [class.h-12]="size === 'sm'"
-  [class.w-[76px]]="size === 'md'"
-  [class.h-[76px]]="size === 'md'"
-  [class.w-20]="size === 'lg'"
-  [class.h-20]="size === 'lg'"
->
-  <span class="italic font-caslon">{{ tierLabel() }}</span>
-  <ng-content select=".icon-overlay" />
-</a>
-@if (!disableContent) {
-  <nwb-item-header-content
-    class="z-10"
-    nwbItemHeaderContent
-    [title]="isMissing() ? recordId() : name() | nwText | nwTextBreak: ' - '"
-    [titleLink]="enableLink ? recordLink() : null"
-    [text1]="rarityName() | nwText"
-    [text2]="isMissing() ? 'Missing Item' : typeName() | nwText"
-    [text3]="size === 'sm' ? null : sourceLabel()"
+<div class="flex flex-row gap-2 p-1 relative">
+  <a
+    [nwbItemIcon]="iconOverride || icon()"
+    [cover]="true"
+    [nwLink]="enableInfoLink ? recordId() : null"
+    [nwLinkResource]="'item'"
     [rarity]="rarity()"
-    [isNamed]="isNamed()"
-    [isSkeleton]="isLoading()"
+    class="aspect-square inline-block"
+    [class.w-12]="size === 'xs'"
+    [class.h-12]="size === 'xs'"
+    [class.w-14]="size === 'sm'"
+    [class.h-14]="size === 'sm'"
+    [class.w-[76px]]="size === 'md'"
+    [class.h-[76px]]="size === 'md'"
+    [class.w-20]="size === 'lg'"
+    [class.h-20]="size === 'lg'"
   >
-    @if (enableTracker && !isMissing()) {
-      <div class="header flex flex-col justify-end">
-        <nwb-item-marker [itemId]="recordId()" class="text-right" />
-        @if (enableGsTracker()) {
-          <nwb-gs-tracker [itemId]="recordId()" class="text-right mt-1 tooltip-left" [emptyTip]="'Track Gear Score'" />
-        }
-      </div>
-    }
-    <ng-content select=".content"></ng-content>
-  </nwb-item-header-content>
-}
+    <span class="italic font-caslon">{{ tierLabel() }}</span>
+    <ng-content select=".icon-overlay" />
+  </a>
+  @if (!disableContent) {
+    <nwb-item-header-content
+      class="z-10"
+      nwbItemHeaderContent
+      [title]="isMissing() ? recordId() : name() | nwText | nwTextBreak: ' - '"
+      [titleLink]="enableLink ? recordLink() : null"
+      [text1]="rarityName() | nwText"
+      [text2]="isMissing() ? 'Missing Item' : typeName() | nwText"
+      [text3]="size === 'sm' ? null : sourceLabel()"
+      [rarity]="rarity()"
+      [isNamed]="isNamed()"
+      [isSkeleton]="isLoading()"
+    >
+      @if (enableTracker && !isMissing()) {
+        <div class="header flex flex-col justify-end">
+          <nwb-item-marker [itemId]="recordId()" class="text-right" />
+          @if (enableGsTracker()) {
+            <nwb-gs-tracker [itemId]="recordId()" class="text-right mt-1 tooltip-left" [emptyTip]="'Track Gear Score'" />
+          }
+        </div>
+      }
+      <ng-content select=".content"></ng-content>
+    </nwb-item-header-content>
+  }
+</div>
 <ng-content></ng-content>

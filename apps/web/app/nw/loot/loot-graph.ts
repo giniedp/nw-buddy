@@ -257,7 +257,7 @@ function updateChance(node: LootNode, dropChance = 1) {
       if (maxroll && node.prob >= 0) {
         const sorted = sortBy(
           siblings.filter((it) => it.prob >= 0),
-          (it) => it.prob
+          (it) => it.prob,
         )
         const left = node.prob
         const right = sorted.find((it) => it.prob > node.prob)?.prob ?? maxroll

@@ -26,7 +26,7 @@ export default {
     return {
       template: `
       <nwb-item-detail [entityId]="'${arg.entityId}'" #detail="detail">
-        <nwb-item-detail-header></nwb-item-detail-header>
+        <nwb-item-detail-header/>
         <div *ngIf="!(detail.isLoading$ | async)" class="p-4">
           <nwb-item-detail-stats></nwb-item-detail-stats>
           <nwb-item-divider class="my-3"></nwb-item-divider>

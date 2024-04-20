@@ -8,16 +8,26 @@
     [class.border-accent]="highlight"
     #detail="detail"
   >
-    <nwb-item-detail-header class="h-full" [enableLink]="true" [enableInfoLink]="true">
-      <div class="content flex flex-row flex-wrap gap-1 text-shadow-none">
+    <nwb-item-detail-header class="h-full" [size]="'sm'" [enableLink]="true" [enableInfoLink]="true">
+      <div class="flex-none flex flex-row gap-1 p-1 bg-black bg-opacity-40 w-full overflow-auto scrollbar-hide">
         @if (rollThreshold) {
-          <span class="whitespace-nowrap badge badge-sm badge-primary"> >= {{ rollThreshold }} </span>
+          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none"> >= {{ rollThreshold }} </span>
         }
         @if (condition) {
           <nwb-loot-tag [checked]="condition.checked"> >= {{ condition.value }} </nwb-loot-tag>
         }
         @if (itemQuantity) {
-          <span class="whitespace-nowrap badge badge-sm badge-primary"> {{ itemQuantity }} &times; </span>
+          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none"> {{ itemQuantity }} &times; </span>
+        }
+        @if (matchOne) {
+          <span
+            class="whitespace-nowrap badge badge-sm cursor-help"
+            [class.badge-error]="!tags?.length"
+            [class.badge-info]="!!tags?.length"
+            [tooltip]="!tags?.length ? 'No tags to match against. This item is not obtainable' : 'Must match only one of the given tags'"
+          >
+            MatchOne
+          </span>
         }
         @for (item of tags; track $index) {
           <nwb-loot-tag
@@ -116,17 +126,17 @@
     @if (expand) {
       <div class="p-3 pr-0 mr-[-1px] flex flex-col gap-2" @childContainer>
         @if (table) {
-          <div class="flex flex-row flex-wrap gap-1">
+          <div class="flex flex-row flex-wrap gap-1 text-shadow-sm shadow-black">
             @if (table['AND/OR']; as tagValue) {
-              <span class="whitespace-nowrap badge badge-sm badge-info">
+              <span class="whitespace-nowrap badge badge-sm badge-info" >
                 {{ tagValue }}
               </span>
             }
             @if (table.MaxRoll; as tagValue) {
-              <span class="whitespace-nowrap badge badge-sm badge-primary"> MaxRoll: {{ tagValue | number }} </span>
+              <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none"> MaxRoll: {{ tagValue | number }} </span>
             }
             @if (table.RollBonusSetting; as tagValue) {
-              <span class="whitespace-nowrap badge badge-sm badge-accent shadow-black text-shadow-sm">
+              <span class="whitespace-nowrap badge badge-sm badge-accent ">
                 {{ tagValue }}
               </span>
             }
@@ -149,7 +159,7 @@
             }
             @if (isTrue(table.LootBiasingEnabled)) {
               <span
-                class="whitespace-nowrap badge badge-sm badge-accent shadow-black text-shadow-sm cursor-help"
+                class="whitespace-nowrap badge badge-sm badge-accent cursor-help"
                 [tooltip]="'Loot Biasing Enabled'"
               >
                 Bias
@@ -157,7 +167,7 @@
             }
             @if (table.LootBiasingChanceOverride; as tagValue) {
               <span
-                class="whitespace-nowrap badge badge-sm badge-accent shadow-black text-shadow-sm cursor-help"
+                class="whitespace-nowrap badge badge-sm badge-accent cursor-help"
                 [tooltip]="'Loot Biasing Chance Override'"
               >
                 Bias CO: {{ tagValue }}

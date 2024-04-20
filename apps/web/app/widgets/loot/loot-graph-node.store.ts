@@ -49,6 +49,7 @@ export const LootGraphNodeStore = signalStore(
       rollThreshold: computed(() => selectRollThreshold(node())),
       condition: computed(() => selectCondition(node(), service)),
       conditions: computed(() => selectConditions(node(), service)),
+      matchOne: computed(() => selectMatchOne(node())),
       tags: computed(() => selectTags(node(), service)),
 
     }
@@ -106,6 +107,13 @@ function selectItemQuantity(node: LootNode) {
     return node.data.Quantity.join('-')
   }
   return node.row?.Qty
+}
+
+function selectMatchOne(node: LootNode) {
+  if (node?.type === 'bucket-row') {
+    return node.data.MatchOne
+  }
+  return false
 }
 
 function selectRollThreshold(node: LootNode) {
@@ -169,6 +177,7 @@ function selectTags(node: LootNode, service: LootGraphService) {
   if (node?.type !== 'bucket-row') {
     return null
   }
+
   return Array.from(node.data?.Tags?.values() || []).map((it) => {
     return {
       tag: it.name,
