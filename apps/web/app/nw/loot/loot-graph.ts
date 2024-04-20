@@ -289,7 +289,11 @@ function updateChance(node: LootNode, dropChance = 1) {
         node.chance *= Math.max(0, 1 - node.prob / maxroll)
       }
     }
-    node.luckNeeded = Math.max(0, node.prob - maxroll)
+    if (maxroll && node.prob >= 0) {
+      node.luckNeeded = Math.max(0, node.prob - maxroll)
+    } else {
+      node.luckNeeded = 0
+    }
   }
 
   node.chanceCumulative *= node.chance
