@@ -92,7 +92,7 @@ import { LootTagComponent } from './loot-tag.component'
           <td class="text-right font-mono text-accent">{{ chance().relative | percent: '0.5-5' }}</td>
         </tr>
         <tr>
-          <th>Absolute Chance</th>
+          <th>Cumulative chance</th>
           <td class="text-right font-mono text-accent">{{ chance().absolute | percent: '0.5-5' }}</td>
         </tr>
       </table>
