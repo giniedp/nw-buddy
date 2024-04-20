@@ -495,6 +495,7 @@ export class NwDataService {
   public lootBuckets = table(() => [
     this.data.lootbuckets().pipe(map(convertLootbuckets)),
     this.data.lootbucketsPvp().pipe(map(convertLootbuckets)),
+    this.data.fishingLootbucketsFishing().pipe(map(convertLootbuckets))
   ])
   public lootBucketsMap = tableGroupBy(() => this.lootBuckets, 'LootBucket')
   public lootBucket = tableLookup(() => this.lootBucketsMap)

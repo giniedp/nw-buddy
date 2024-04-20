@@ -96,7 +96,6 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
 
   @Input()
   public set data(node: LootBucketRowNode) {
-    console.log('data', node)
     this.node.set(node)
     this.itemStore.patchState({ recordId: node.data.Item })
   }

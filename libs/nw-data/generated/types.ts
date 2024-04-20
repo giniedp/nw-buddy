@@ -973,6 +973,71 @@ export interface Entitlements {
   UniqueTagID: string
 }
 
+export interface FishingBait {
+  ActiveAtDawn: boolean
+  ActiveAtDaytime: boolean
+  ActiveAtDusk: boolean
+  ActiveAtNight: boolean
+  FishRarityRollModifier: number
+  FishSizeRollModifier: number
+  Id: string
+  LootTableId: string
+  RequiredWaterTags: string
+  SummerFishRarityRollModifier: number
+  TimeToNibbleSecondsMultiplier: number
+}
+
+export interface FishingBehaviors {
+  FishBehaviorLocalizationKey: string
+  FishBehaviorPattern: number
+  Id: string
+}
+
+export interface FishingCatchables {
+  FishBehaviors: string
+  FishCharacterDefinitionPath: string
+  FishDistanceSwamAwayPerSecond: number
+  FishLengthRange: string
+  FishScale: number
+  FishSize: string
+  FishWeightRange: string
+  FishingXp: number
+  Id: string
+  LineTensionGainPerSecondMultiplier: number
+  ZoomCameraOnSuccess: boolean
+}
+
+export interface FishingHotspots {
+  DisplayName: string
+  FishRarityRollModifier: number
+  FishSizeRollModifier: number
+  Id: string
+  LootTableId: string
+  LootTag: string
+  Notes: string
+  RequiredLevel: number
+  SummerFishRarityRollModifier: number
+  TimeToBiteSecondsRange: string
+  TimeToNibbleSecondsRange: string
+}
+
+export interface FishingPoles {
+  CastDistanceRange: string
+  FishRarityRollModifier: number
+  FishReelTimeSeconds: number
+  FishSizeRollModifier: number
+  Id: string
+  LineTensionGainPerSecond: number
+  LineTensionRecoverPerSecond: number
+  SummerFishRarityRollModifier: number
+}
+
+export interface FishingWater {
+  Id: string
+  TimeToBiteSecondsRange: string
+  TimeToNibbleSecondsRange: string
+}
+
 export interface GameEvent {
   AchievementId: string
   AzothReward: number | string
@@ -2651,19 +2716,20 @@ export interface Lootbuckets {
   LootBucket97: string
   LootBucket98: string
   LootBucket99: string
-  MatchOne1: string
-  MatchOne10: string
+  MatchOne1: boolean | string
+  MatchOne10: boolean | string
   MatchOne109: string
+  MatchOne11: boolean
   MatchOne110: string
   MatchOne113: string
   MatchOne114: string
   MatchOne117: string
   MatchOne118: string
-  MatchOne12: string
+  MatchOne12: boolean | string
   MatchOne121: string
   MatchOne122: string
-  MatchOne13: string
-  MatchOne14: string
+  MatchOne13: boolean | string
+  MatchOne14: boolean | string
   MatchOne140: string
   MatchOne142: boolean
   MatchOne149: string
@@ -2679,7 +2745,12 @@ export interface Lootbuckets {
   MatchOne16: boolean
   MatchOne168: boolean
   MatchOne169: boolean
+  MatchOne17: boolean
   MatchOne170: boolean
+  MatchOne18: boolean
+  MatchOne19: boolean
+  MatchOne2: boolean
+  MatchOne20: boolean
   MatchOne202: boolean
   MatchOne21: boolean
   MatchOne213: string
@@ -2691,8 +2762,11 @@ export interface Lootbuckets {
   MatchOne24: boolean
   MatchOne240: boolean
   MatchOne246: string
+  MatchOne25: boolean
+  MatchOne26: boolean
+  MatchOne27: boolean
   MatchOne276: string
-  MatchOne3: string
+  MatchOne3: boolean | string
   MatchOne316: string
   MatchOne332: boolean
   MatchOne333: boolean
@@ -2701,9 +2775,10 @@ export interface Lootbuckets {
   MatchOne336: boolean
   MatchOne340: boolean
   MatchOne350: string
+  MatchOne36: boolean
   MatchOne387: string
   MatchOne394: string
-  MatchOne4: string
+  MatchOne4: boolean | string
   MatchOne40: string
   MatchOne403: boolean
   MatchOne404: boolean
@@ -2714,19 +2789,24 @@ export interface Lootbuckets {
   MatchOne426: string
   MatchOne43: string
   MatchOne46: string
+  MatchOne5: boolean
   MatchOne52: string
   MatchOne53: string
   MatchOne57: string
   MatchOne58: string
+  MatchOne6: boolean
   MatchOne62: string
   MatchOne64: string
   MatchOne65: string
   MatchOne66: string
+  MatchOne7: boolean
   MatchOne76: boolean
   MatchOne77: string
+  MatchOne8: boolean
   MatchOne81: boolean
   MatchOne84: string
   MatchOne87: string
+  MatchOne9: boolean
   Odds414: number
   Odds416: number
   Odds435: number
@@ -2897,7 +2977,7 @@ export interface Lootbuckets {
   Quantity267: number
   Quantity268: number
   Quantity269: number
-  Quantity27: number
+  Quantity27: number | string
   Quantity270: number
   Quantity271: number
   Quantity272: string
@@ -2908,7 +2988,7 @@ export interface Lootbuckets {
   Quantity277: number
   Quantity278: number
   Quantity279: number
-  Quantity28: number
+  Quantity28: number | string
   Quantity280: number
   Quantity281: number
   Quantity282: number
@@ -2919,7 +2999,7 @@ export interface Lootbuckets {
   Quantity287: number
   Quantity288: number
   Quantity289: number
-  Quantity29: number
+  Quantity29: number | string
   Quantity290: number
   Quantity291: number
   Quantity292: number
@@ -2931,7 +3011,7 @@ export interface Lootbuckets {
   Quantity298: number
   Quantity299: number
   Quantity3: number
-  Quantity30: number
+  Quantity30: number | string
   Quantity300: number
   Quantity301: number
   Quantity302: number
@@ -2952,7 +3032,7 @@ export interface Lootbuckets {
   Quantity317: number
   Quantity318: number
   Quantity319: number
-  Quantity32: number
+  Quantity32: number | string
   Quantity320: number
   Quantity321: number
   Quantity322: number
@@ -2994,7 +3074,7 @@ export interface Lootbuckets {
   Quantity357: number
   Quantity358: number
   Quantity359: number
-  Quantity36: number
+  Quantity36: number | string
   Quantity360: number
   Quantity361: number
   Quantity362: string
@@ -3005,7 +3085,7 @@ export interface Lootbuckets {
   Quantity367: number
   Quantity368: number
   Quantity369: number
-  Quantity37: number
+  Quantity37: number | string
   Quantity370: number
   Quantity371: number
   Quantity372: number
@@ -3297,6 +3377,7 @@ export interface Lootbuckets {
   Tags265: string[]
   Tags266: string[]
   Tags267: string[]
+  Tags27: string[]
   Tags270: string[]
   Tags271: string[]
   Tags272: string[]
@@ -3330,6 +3411,7 @@ export interface Lootbuckets {
   Tags354: string[]
   Tags356: string[]
   Tags357: string[]
+  Tags36: string[]
   Tags39: string[]
   Tags397: string[]
   Tags398: string[]

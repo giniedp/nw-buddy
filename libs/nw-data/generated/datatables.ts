@@ -27,6 +27,12 @@ import type {
   Elementalmutations,
   Emotedefinitions,
   Entitlements,
+  FishingBait,
+  FishingBehaviors,
+  FishingCatchables,
+  FishingHotspots,
+  FishingPoles,
+  FishingWater,
   GameEvent,
   Gamemodes,
   Gatherables,
@@ -979,6 +985,27 @@ export abstract class NwDataLoader {
   public entitlements() {
     return this.load<Entitlements[]>('javelindata_entitlements.json')
   }
+  public fishingFishingBait() {
+    return this.load<FishingBait[]>('fishing/javelindata_fishing_bait.json')
+  }
+  public fishingFishingBehaviors() {
+    return this.load<FishingBehaviors[]>('fishing/javelindata_fishing_behaviors.json')
+  }
+  public fishingFishingCatchables() {
+    return this.load<FishingCatchables[]>('fishing/javelindata_fishing_catchables.json')
+  }
+  public fishingFishingHotspots() {
+    return this.load<FishingHotspots[]>('fishing/javelindata_fishing_hotspots.json')
+  }
+  public fishingFishingPoles() {
+    return this.load<FishingPoles[]>('fishing/javelindata_fishing_poles.json')
+  }
+  public fishingFishingWater() {
+    return this.load<FishingWater[]>('fishing/javelindata_fishing_water.json')
+  }
+  public fishingLootbucketsFishing() {
+    return this.load<Lootbuckets[]>('fishing/javelindata_lootbuckets_fishing.json')
+  }
   public ftueDamagetableDamned() {
     return this.load<Damagetable[]>('javelindata_ftue_damagetable_damned.json')
   }
@@ -1122,6 +1149,9 @@ export abstract class NwDataLoader {
   }
   public lootbuckets() {
     return this.load<Lootbuckets[]>('javelindata_lootbuckets.json')
+  }
+  public lootbucketsPlaytest() {
+    return this.load<Lootbuckets[]>('javelindata_lootbuckets_playtest.json')
   }
   public lootbucketsPvp() {
     return this.load<Lootbuckets[]>('javelindata_lootbuckets_pvp.json')

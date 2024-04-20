@@ -101,6 +101,7 @@ export const TABLE_IMPORT_RULES = [
     'arenas/*',
     'charactertables/**/*',
     'costumechanges/*_costumechanges',
+    'fishing/*',
     'gamemodemutators/*',
     'generated_*metadata',
     'mounts/*_mounts',
@@ -185,7 +186,7 @@ export const TABLE_IMPORT_RULES = [
     }),
   ]),
   tableSource(
-    ['javelindata_lootbuckets', 'javelindata_lootbuckets_pvp'],
+    ['**/javelindata_lootbuckets*'],
     [
       mapPropToArray({
         keys: [/Tags\d+/i],
