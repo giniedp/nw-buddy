@@ -6,7 +6,7 @@ import { NwModule } from '~/nw'
 import { LootBucketRowNode } from '~/nw/loot/loot-graph'
 import { VirtualGridCellComponent, VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { IconsModule } from '~/ui/icons'
-import { svgInfoCircle } from '~/ui/icons/svg'
+import { svgClover, svgInfoCircle } from '~/ui/icons/svg'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
 import { ItemDetailStore } from '../data/item-detail'
@@ -44,13 +44,26 @@ import { LootTagComponent } from './loot-tag.component'
         />
       </div>
       <div class="flex-none flex flex-row gap-1 p-1 bg-black bg-opacity-40 w-full overflow-auto">
-        @if (roll(); as roll) {
-          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none" [tooltip]="tplChanceTip">
-            ≥ {{ roll.threshold }} ⇒ {{ chance().relative | percent: '0.0-3' }}
-          </span>
-        } @else {
-          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none" [tooltip]="tplChanceTip">
-            {{ chance().relative | percent: '0.0-3' }}
+        @if (chanceRel || rollThreshold) {
+          <span
+            class="whitespace-nowrap badge badge-sm cursor-help"
+            [class.badge-primary]="chanceRel > 0"
+            [class.text-shadow-none]="chanceRel > 0"
+            [class.badge-error]="!(chanceRel > 0)"
+            [tooltip]="tplChanceTip"
+          >
+            @if (rollThreshold) {
+              ≥ {{ rollThreshold }}
+            }
+            @if (chanceRel && rollThreshold) {
+              ⇒
+            }
+            @if (chanceRel) {
+              {{ chanceRel | percent: '0.0-3' }}
+            }
+            @if (luckNeeded) {
+              <nwb-icon [icon]="iconLuck" class="ml-1 -mr-1 w-[14px] h-[14px]" />
+            }
           </span>
         }
         @if (condition(); as condition) {
@@ -89,11 +102,11 @@ import { LootTagComponent } from './loot-tag.component'
       <table class="table table-sm p-1">
         <tr>
           <th>Chance to hit this entry</th>
-          <td class="text-right font-mono text-accent">{{ chance().relative | percent: '0.5-5' }}</td>
+          <td class="text-right font-mono text-accent">{{ chanceRel | percent: '0.5-5' }}</td>
         </tr>
         <tr>
           <th>Cumulative chance</th>
-          <td class="text-right font-mono text-accent">{{ chance().absolute | percent: '0.5-5' }}</td>
+          <td class="text-right font-mono text-accent">{{ chanceAbs | percent: '0.5-5' }}</td>
         </tr>
       </table>
     </ng-template>
@@ -130,7 +143,9 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
     return this.node()
   }
 
+  protected iconLuck = svgClover
   protected iconInfo = svgInfoCircle
+
   protected node = signal<LootBucketRowNode>(null)
   protected row = computed(() => this.node()?.row)
   protected parentTable = computed(() => {
@@ -148,21 +163,32 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
     if (table && row && table.MaxRoll > 0) {
       return {
         threshold: row.Prob,
-        chance: node.chanceRelative,
-        chanceAbsolute: node.chanceAbsolute,
+        chance: node.chance,
+        chanceAbsolute: node.chanceCumulative,
       }
     }
     return null
   })
 
-  protected chance = computed(() => {
-    const node = this.node()
-    return {
-      relative: node.chanceRelative,
-      absolute: node.chanceAbsolute,
+  protected get rollThreshold() {
+    const table = this.parentTable()
+    const row = this.row()
+    if (table && row && table.MaxRoll > 0) {
+      row.Prob
     }
-  })
+    return null
+  }
 
+  protected get chanceRel() {
+    return this.node()?.chance
+  }
+  protected get chanceAbs() {
+    return this.node()?.chanceCumulative
+  }
+
+  protected get luckNeeded() {
+    return this.node()?.luckNeeded
+  }
   protected quantity = computed(() => {
     return this.node()?.data.Quantity?.join('-')
   })

@@ -9,6 +9,7 @@ import {
   svgAngleLeft,
   svgBucket,
   svgCircleExclamation,
+  svgClover,
   svgCode,
   svgEye,
   svgEyeSlash,
@@ -132,22 +133,28 @@ export class LootGraphNodeComponent {
     return this.store.children()
   }
   protected get highlight() {
-    return this.store.highlight()
+    return this.store.isHighlighted()
   }
   protected get chanceRel() {
-    return this.store.chanceRel()
+    return this.store.chance()
   }
   protected get chanceAbs() {
-    return this.store.chanceAbs()
+    return this.store.chanceCumulative()
+  }
+  protected get luckNeeded() {
+    return this.store.luckNeeded()
   }
   protected get unlocked() {
-    return this.store.unlocked()
+    return this.store.isUnlocked()
   }
-  protected get unlockedItemCount() {
-    return this.store.unlockedItemCount()
+  protected get itemCountTotal() {
+    return this.store.itemCountTotal()
   }
-  protected get totalItemCount() {
-    return this.store.totalItemCount()
+  protected get itemCountLocked() {
+    return this.store.itemCountLocked()
+  }
+  protected get itemCountUnlocked() {
+    return this.store.itemCountUnlocked()
   }
   protected get itemId() {
     return this.store.itemId()
@@ -182,6 +189,7 @@ export class LootGraphNodeComponent {
   protected iconTable = svgTableList
   protected iconEye = svgEye
   protected iconEyeSlash = svgEyeSlash
+  protected iconLuck = svgClover
 
   protected toggle() {
     this.store.toggleExpand()

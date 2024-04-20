@@ -115,7 +115,7 @@ export class LootGraphComponent {
       return graph.map((it) => {
         return updateLootGraph({
           graph: it,
-          context: showLocked ? null : context,
+          context,
           dropChance,
           highlight,
         })

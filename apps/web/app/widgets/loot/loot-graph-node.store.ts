@@ -37,12 +37,14 @@ export const LootGraphNodeStore = signalStore(
       link: computed(() => (showLink() ? selectLink(node()) : null)),
       typeName: computed(() => node()?.type),
       displayName: computed(() => node()?.ref),
-      highlight: computed(() => node()?.highlight),
-      unlocked: computed(() => node()?.unlocked),
-      unlockedItemCount: computed(() => node()?.unlockedItemcount),
-      totalItemCount: computed(() => node()?.totalItemCount),
-      chanceAbs: computed(() => node()?.chanceAbsolute),
-      chanceRel: computed(() => node()?.chanceRelative),
+      isHighlighted: computed(() => node()?.isHighlighted),
+      isUnlocked: computed(() => node()?.isUnlocked),
+      itemCountTotal: computed(() => node()?.itemCountTotal),
+      itemCountUnlocked: computed(() => node()?.itemCountUnlocked),
+      itemCountLocked: computed(() => node()?.itemCountTotal - node()?.itemCountUnlocked),
+      chance: computed(() => node()?.chance),
+      chanceCumulative: computed(() => node()?.chanceCumulative),
+      luckNeeded: computed(() => node()?.luckNeeded),
       table: computed(() => selectTable(node())),
       itemId: computed(() => selectItemId(node())),
       itemQuantity: computed(() => selectItemQuantity(node())),
@@ -51,7 +53,6 @@ export const LootGraphNodeStore = signalStore(
       conditions: computed(() => selectConditions(node(), service)),
       matchOne: computed(() => selectMatchOne(node())),
       tags: computed(() => selectTags(node(), service)),
-
     }
   }),
 )
@@ -69,7 +70,7 @@ function selectLink(node: LootNode) {
 
 function selectChildren(children: LootNode[], showLocked: boolean) {
   if (!showLocked) {
-    children = children?.filter((it) => !!it.unlocked && !!it.unlockedItemcount)
+    children = children?.filter((it) => !!it.isUnlocked && !!it.itemCountUnlocked)
   }
   if (!children.length) {
     return null
@@ -183,7 +184,7 @@ function selectTags(node: LootNode, service: LootGraphService) {
       tag: it.name,
       value: it.value?.join('-'),
       checked: service.isTagInContext(it.name, it.value),
-      editable: service.tagsEditable && !it.value
+      editable: service.tagsEditable && !it.value,
     } as const
   })
 }

@@ -1,6 +1,5 @@
 <ng-container *ngTemplateOutlet="expandable ? tplHead : tplChildren" />
 
-
 @if (itemId) {
   <nwb-item-detail
     [entityId]="itemId"
@@ -14,16 +13,8 @@
         @if (condition) {
           <nwb-loot-tag [checked]="condition.checked"> ≥ {{ condition.value }} </nwb-loot-tag>
         }
-        @if (rollThreshold) {
-          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none cursor-help" [tooltip]="tplChanceTip">
-            ≥ {{ rollThreshold }}
-            ⇒ {{ chanceRel | percent: '0.0-3' }}
-          </span>
-        } @else {
-          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none cursor-help" [tooltip]="tplChanceTip">
-            {{ chanceRel | percent: '0.0-3' }}
-          </span>
-        }
+        <ng-container *ngTemplateOutlet="tplRollChanceBadge" />
+
         @if (itemQuantity) {
           <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none">
             {{ itemQuantity }} &times;
@@ -66,7 +57,7 @@
       [class.border-l-accent]="highlight"
       (click)="toggle()"
     >
-      <div class="flex flex-row flex-wrap items-center gap-x-1">
+      <div class="flex flex-row flex-wrap items-center gap-x-1 text-shadow-sm shadow-black">
         @if (typeName === 'bucket') {
           <nwb-icon
             [icon]="iconBucket"
@@ -84,25 +75,16 @@
             <nwb-icon [icon]="linkIcon" class="w-4 h-4" />
           </a>
         }
-        @if (rollThreshold) {
-          <span class="badge badge-sm badge-primary cursor-help" [tooltip]="tplChanceTip">
-            ≥ {{ rollThreshold | number }}
-            @if (chanceRel) {
-              ⇒ {{ chanceRel | percent: '0.0-3' }}
-            }
-          </span>
-        } @else if(!showLink) {
-          <span class="badge badge-sm badge-primary cursor-help" [tooltip]="tplChanceTip">
-            {{ chanceRel | percent: '0.0-3' }}
-          </span>
+        @if (!showLink) {
+          <ng-container *ngTemplateOutlet="tplRollChanceBadge" />
         }
+
         @if (condition) {
           <nwb-loot-tag [checked]="condition.checked"> ≥ {{ condition.value }} </nwb-loot-tag>
         }
         @if (itemQuantity && itemQuantity != '1') {
           <span class="whitespace-nowrap"> {{ itemQuantity }} &times; </span>
         }
-
         <span class="flex-1 overflow-hidden whitespace-nowrap inline-flex items-center font-mono text-sm">
           {{ displayName }}
         </span>
@@ -116,18 +98,19 @@
         <span> | </span>
       }
       <span class="cursor-help text-xs" [tooltip]="tplTip">
-        @if (unlockedItemCount && !showLocked) {
-          <span class="text-success">
-            {{ unlockedItemCount }}
-          </span>
-          <span> / </span>
-        }
-        <span> {{ totalItemCount }} </span>
+        <span [class.text-error]="!itemCountUnlocked" [class.text-success]="!!itemCountUnlocked">
+          {{ itemCountUnlocked }}
+        </span>
+        <span> / </span>
+        <span> {{ itemCountTotal }} </span>
         <ng-template #tplTip>
           <div class="p-2">
-            <div>{{ totalItemCount }} items inside this table (tree)</div>
-            <div class="text-success">{{ unlockedItemCount }} items unlocked with current loot context</div>
-            <div class="text-error">{{ totalItemCount - unlockedItemCount }} items locked</div>
+            <span [class.text-error]="!itemCountUnlocked" [class.text-success]="!!itemCountUnlocked">
+              {{ itemCountUnlocked }}
+            </span>
+            of
+            <span>{{ itemCountTotal }} </span>
+            items unlocked
           </div>
         </ng-template>
       </span>
@@ -246,6 +229,31 @@
   }
 </ng-template>
 
+<ng-template #tplRollChanceBadge>
+  @if (chanceRel || rollThreshold) {
+    <span
+      class="whitespace-nowrap badge badge-sm cursor-help"
+      [class.badge-primary]="chanceRel > 0"
+      [class.text-shadow-none]="chanceRel > 0"
+      [class.badge-error]="!(chanceRel > 0)"
+      [tooltip]="tplChanceTip"
+    >
+      @if (rollThreshold) {
+        ≥ {{ rollThreshold }}
+      }
+      @if (chanceRel && rollThreshold) {
+        ⇒
+      }
+      @if (chanceRel) {
+        {{ chanceRel | percent: '0.0-3' }}
+      }
+      @if (luckNeeded) {
+        <nwb-icon [icon]="iconLuck" class="ml-1 -mr-1 w-[14px] h-[14px]" />
+      }
+    </span>
+  }
+</ng-template>
+
 <ng-template #tplChanceTip>
   <table class="table table-sm p-1">
     <tr>
@@ -256,5 +264,11 @@
       <th>Cumulative chance</th>
       <td class="text-right font-mono text-accent">{{ chanceAbs | percent: '0.5-5' }}</td>
     </tr>
+    @if (luckNeeded) {
+      <tr>
+        <th>Needed luck</th>
+        <td class="text-right font-mono text-accent"> > {{ luckNeeded | number }}</td>
+      </tr>
+    }
   </table>
 </ng-template>
