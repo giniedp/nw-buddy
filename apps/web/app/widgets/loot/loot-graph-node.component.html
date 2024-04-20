@@ -1,5 +1,6 @@
 <ng-container *ngTemplateOutlet="expandable ? tplHead : tplChildren" />
 
+
 @if (itemId) {
   <nwb-item-detail
     [entityId]="itemId"
@@ -10,21 +11,34 @@
   >
     <nwb-item-detail-header class="h-full" [size]="'sm'" [enableLink]="true" [enableInfoLink]="true">
       <div class="flex-none flex flex-row gap-1 p-1 bg-black bg-opacity-40 w-full overflow-auto scrollbar-hide">
-        @if (rollThreshold) {
-          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none"> >= {{ rollThreshold }} </span>
-        }
         @if (condition) {
-          <nwb-loot-tag [checked]="condition.checked"> >= {{ condition.value }} </nwb-loot-tag>
+          <nwb-loot-tag [checked]="condition.checked"> ≥ {{ condition.value }} </nwb-loot-tag>
+        }
+        @if (rollThreshold) {
+          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none cursor-help" [tooltip]="tplChanceTip">
+            ≥ {{ rollThreshold }}
+            ⇒ {{ chanceRel | percent: '0.0-3' }}
+          </span>
+        } @else {
+          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none cursor-help" [tooltip]="tplChanceTip">
+            {{ chanceRel | percent: '0.0-3' }}
+          </span>
         }
         @if (itemQuantity) {
-          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none"> {{ itemQuantity }} &times; </span>
+          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none">
+            {{ itemQuantity }} &times;
+          </span>
         }
         @if (matchOne) {
           <span
             class="whitespace-nowrap badge badge-sm cursor-help"
             [class.badge-error]="!tags?.length"
             [class.badge-info]="!!tags?.length"
-            [tooltip]="!tags?.length ? 'No tags to match against. This item is not obtainable' : 'Must match only one of the given tags'"
+            [tooltip]="
+              !tags?.length
+                ? 'No tags to match against. This item is not obtainable'
+                : 'Must match only one of the given tags'
+            "
           >
             MatchOne
           </span>
@@ -71,15 +85,19 @@
           </a>
         }
         @if (rollThreshold) {
-          <span class="badge badge-sm badge-primary">
-            >= {{ rollThreshold | number }}
+          <span class="badge badge-sm badge-primary cursor-help" [tooltip]="tplChanceTip">
+            ≥ {{ rollThreshold | number }}
             @if (chanceRel) {
-              ({{ chanceRel | percent: '0.0-6' }})
+              ⇒ {{ chanceRel | percent: '0.0-3' }}
             }
+          </span>
+        } @else if(!showLink) {
+          <span class="badge badge-sm badge-primary cursor-help" [tooltip]="tplChanceTip">
+            {{ chanceRel | percent: '0.0-3' }}
           </span>
         }
         @if (condition) {
-          <nwb-loot-tag [checked]="condition.checked"> >= {{ condition.value }} </nwb-loot-tag>
+          <nwb-loot-tag [checked]="condition.checked"> ≥ {{ condition.value }} </nwb-loot-tag>
         }
         @if (itemQuantity && itemQuantity != '1') {
           <span class="whitespace-nowrap"> {{ itemQuantity }} &times; </span>
@@ -128,15 +146,17 @@
         @if (table) {
           <div class="flex flex-row flex-wrap gap-1 text-shadow-sm shadow-black">
             @if (table['AND/OR']; as tagValue) {
-              <span class="whitespace-nowrap badge badge-sm badge-info" >
+              <span class="whitespace-nowrap badge badge-sm badge-info">
                 {{ tagValue }}
               </span>
             }
             @if (table.MaxRoll; as tagValue) {
-              <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none"> MaxRoll: {{ tagValue | number }} </span>
+              <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none">
+                MaxRoll: {{ tagValue | number }}
+              </span>
             }
             @if (table.RollBonusSetting; as tagValue) {
-              <span class="whitespace-nowrap badge badge-sm badge-accent ">
+              <span class="whitespace-nowrap badge badge-sm badge-accent">
                 {{ tagValue }}
               </span>
             }
@@ -224,4 +244,17 @@
       }
     </div>
   }
+</ng-template>
+
+<ng-template #tplChanceTip>
+  <table class="table table-sm p-1">
+    <tr>
+      <th>Chance to hit this entry</th>
+      <td class="text-right font-mono text-accent">{{ chanceRel | percent: '0.5-5' }}</td>
+    </tr>
+    <tr>
+      <th>Absolute Chance</th>
+      <td class="text-right font-mono text-accent">{{ chanceAbs | percent: '0.5-5' }}</td>
+    </tr>
+  </table>
 </ng-template>

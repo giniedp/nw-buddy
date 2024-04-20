@@ -45,11 +45,12 @@ import { LootTagComponent } from './loot-tag.component'
       </div>
       <div class="flex-none flex flex-row gap-1 p-1 bg-black bg-opacity-40 w-full overflow-auto">
         @if (roll(); as roll) {
-          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none">
-            >= {{ roll.threshold }}
-            @if (roll.chance; as chance) {
-              ({{ chance | percent: '1.0-2' }})
-            }
+          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none" [tooltip]="tplChanceTip">
+            ≥ {{ roll.threshold }} ⇒ {{ chance().relative | percent: '0.0-3' }}
+          </span>
+        } @else {
+          <span class="whitespace-nowrap badge badge-sm badge-primary text-shadow-none" [tooltip]="tplChanceTip">
+            {{ chance().relative | percent: '0.0-3' }}
           </span>
         }
         @if (condition(); as condition) {
@@ -84,6 +85,18 @@ import { LootTagComponent } from './loot-tag.component'
         }
       </div>
     </nwb-item-header>
+    <ng-template #tplChanceTip>
+      <table class="table table-sm p-1">
+        <tr>
+          <th>Chance to hit this entry</th>
+          <td class="text-right font-mono text-accent">{{ chance().relative | percent: '0.5-5' }}</td>
+        </tr>
+        <tr>
+          <th>Absolute Chance</th>
+          <td class="text-right font-mono text-accent">{{ chance().absolute | percent: '0.5-5' }}</td>
+        </tr>
+      </table>
+    </ng-template>
   `,
   imports: [CommonModule, NwModule, ItemFrameModule, LootTagComponent, IconsModule, TooltipModule],
   providers: [ItemDetailStore],
@@ -140,6 +153,14 @@ export class LootGraphGridCellComponent extends VirtualGridCellComponent<LootBuc
       }
     }
     return null
+  })
+
+  protected chance = computed(() => {
+    const node = this.node()
+    return {
+      relative: node.chanceRelative,
+      absolute: node.chanceAbsolute,
+    }
   })
 
   protected quantity = computed(() => {

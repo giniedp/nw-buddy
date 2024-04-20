@@ -245,11 +245,14 @@ function updateChance(node: LootNode, dropChance = 1) {
   node.chanceAbsolute = dropChance
 
   const table = getTable(node.parent)
-  if (!table) {
+  const siblings = node.parent?.children?.filter((it) => it.unlocked && it.unlockedItemcount) || []
+  if (node.type === 'bucket-row') {
+    node.chanceRelative = 1 / siblings.length
+  } else if (!table) {
     node.chanceRelative = 1
   } else {
     const maxroll = table.MaxRoll
-    const siblings = node.parent.children.filter((it) => it.unlocked && it.unlockedItemcount)
+
     if (!siblings.length || !node.unlocked) {
       node.chanceRelative = 0
     } else if (table['AND/OR'] === 'OR') {
