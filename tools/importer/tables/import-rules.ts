@@ -411,7 +411,7 @@ export const TABLE_IMPORT_RULES = [
         map: (value) => STATUS_EFFECT_CAT_FIXES[value] || value,
       }),
       mapPropToArray({
-        keys: ['RemoveStatusEffects', 'EffectDurationMods'],
+        keys: ['RemoveStatusEffects', 'EffectDurationMods', 'RemoveStatusEffectCategories', 'PauseInGameModesList'],
         separator: /[,+]/,
       }),
     ],

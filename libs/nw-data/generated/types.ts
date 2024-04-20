@@ -4654,7 +4654,7 @@ export interface Statuseffect {
   OnStackStatusEffect: string
   OnTickStatusEffect: string
   OverrideOtherNameplateText: boolean
-  PauseInGameModesList: string
+  PauseInGameModesList: string[]
   PauseOnDisable: boolean
   PersistEffectInCrossWorldInstances: boolean
   PhysicalArmor: number

@@ -84,13 +84,20 @@ export class StatusEffectDetailComponent {
           },
         ]
       }
-      case 'EffectCategories': {
+      case 'EffectCategories':
+      case 'RemoveStatusEffectCategories': {
         return value.map((it) => ({
           value: String(it),
           template: this.tplCategory,
         }))
       }
       default: {
+        if (Array.isArray(value)) {
+          return value.map((it) => ({
+            value: String(it),
+            secondary: true,
+          }))
+        }
         if (typeof value === 'number') {
           return [
             {
