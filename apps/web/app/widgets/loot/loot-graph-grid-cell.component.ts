@@ -67,7 +67,7 @@ import { LootTagComponent } from './loot-tag.component'
           </span>
         }
         @if (condition(); as condition) {
-          <nwb-loot-tag [tag]="'>= ' + condition.prob" [checked]="condition.checked" />
+          <nwb-loot-tag [tag]="'≥ ' + condition.prob" [checked]="condition.checked" />
         }
         @if (quantity(); as quantity) {
           <span class="badge badge-sm badge-primary text-shadow-none whitespace-nowrap"> {{ quantity }} &times; </span>
