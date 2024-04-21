@@ -161,6 +161,7 @@ export function buildPickerItemGridOptions(util: TableGridUtils<ItemTableRecord>
       // colDefPin(util),
       itemColItemId(util),
       itemColPerks(util),
+      itemColAttributeMods(util),
       itemColRarity(util),
       itemColTier(util),
       itemColItemTypeName(util),
