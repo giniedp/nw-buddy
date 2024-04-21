@@ -74,14 +74,8 @@ import { LootTagComponent } from './loot-tag.component'
         }
         @if (matchOne()) {
           <span
-            class="whitespace-nowrap badge badge-sm cursor-help"
-            [class.badge-error]="!tags()?.length"
-            [class.badge-info]="!!tags()?.length"
-            [tooltip]="
-              !tags()?.length
-                ? 'No tags to match against. This item is not obtainable'
-                : 'Must match only one of the given tags'
-            "
+            class="whitespace-nowrap badge badge-sm cursor-help badge-info"
+            [tooltip]="'Must match only one of the given tags if any are present.'"
           >
             MatchOne
           </span>

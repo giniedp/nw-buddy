@@ -119,6 +119,9 @@ export class LootContext {
     }
     const tags = Array.from(entry.Tags.keys())
     if (entry.MatchOne) {
+      if (tags.length === 0) {
+        return true
+      }
       for (const tag of tags) {
         if (testBucketCondition(tag, this, entry)) {
           return true
