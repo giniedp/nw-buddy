@@ -16,7 +16,7 @@
     class="my-1 menu menu-compact bg-base-200 border border-base-100 rounded-md shadow-lg text-shadow-sm shadow-black"
     cdkMenu
   >
-    @if (instance?.weapon; as weapon) {
+    @if (equippedTag; as weapon) {
       <li>
         <a cdkMenuItem (click)="handleOpenSkillSet(weapon)">
           <nwb-icon [icon]="iconOpen" class="w-4 h-4 mr-2" />

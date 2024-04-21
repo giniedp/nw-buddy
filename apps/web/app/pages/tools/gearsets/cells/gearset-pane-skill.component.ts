@@ -55,7 +55,6 @@ import { GearsetPaneSkillStore } from './gearset-pane-skill.store'
 export class GearsetPaneSkillComponent {
   private db = inject(SkillBuildsDB)
   private gearDb = inject(GearsetsDB)
-  private modal = inject(ModalService)
   private injector = inject(Injector)
   private store = inject(GearsetPaneSkillStore)
 
@@ -110,9 +109,12 @@ export class GearsetPaneSkillComponent {
 
   constructor() {
     effect(() => {
+      if (!this.store.equippedWeaponTag() || !this.store.instanceLoaded()) {
+        return
+      }
       const equipped = this.equippedTag
       const slotted = this.instance?.weapon
-      if ((!equipped || !slotted) || eqCaseInsensitive(equipped, slotted) || this.disabled) {
+      if ((!equipped && !slotted) || eqCaseInsensitive(equipped, slotted) || this.disabled) {
         return
       }
       this.updateSkill({

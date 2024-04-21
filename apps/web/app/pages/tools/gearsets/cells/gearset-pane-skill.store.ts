@@ -23,6 +23,7 @@ export const GearsetPaneSkillStore = signalStore(
     const instancesDB = inject(ItemInstancesDB)
     const nwData = inject(NwDataService)
     const equippedWeaponTag = signal<string>(null)
+    const equippedWeaponTagLoaded = signal<boolean>(false)
     const connect = rxMethod<{ gearset: GearsetRecord; slot: GearsetSkillSlot }>(
       pipe(
         switchMap(({ gearset, slot }) => {
@@ -30,7 +31,10 @@ export const GearsetPaneSkillStore = signalStore(
           return resolveGearsetSlot(instancesDB, slotId, gearset?.slots?.[slotId]).pipe(
             switchMap(({ instance }) => nwData.item(instance?.itemId)),
             switchMap((item) => nwData.weapon(item?.ItemStatsRef)),
-            map((it) => equippedWeaponTag.set(getWeaponTagFromWeapon(it))),
+            map((it) => {
+              equippedWeaponTag.set(getWeaponTagFromWeapon(it))
+              equippedWeaponTagLoaded.set(true)
+            }),
           )
         }),
       ),
@@ -50,10 +54,14 @@ export const GearsetPaneSkillStore = signalStore(
   withComputed((state) => {
     const skillDB = inject(SkillBuildsDB)
     const instance = signal<SkillSet>(null)
+    const instanceLoaded = signal<boolean>(false)
     const connect = rxMethod<{ gearset: GearsetRecord; slot: GearsetSkillSlot }>(
       pipe(
         switchMap(({ gearset, slot }) => resolveGearsetSkill(skillDB, gearset?.skills?.[slot])),
-        map((it) => instance.set(it)),
+        map((it) => {
+          instance.set(it)
+          instanceLoaded.set(true)
+        }),
       ),
     )
     connect(
@@ -66,6 +74,7 @@ export const GearsetPaneSkillStore = signalStore(
     )
     return {
       instance,
+      instanceLoaded
     }
   }),
 )
