@@ -13,6 +13,7 @@ import { selectStream } from '~/utils'
 import { ItemCellComponent } from './item-cell.component'
 import {
   ItemTableRecord,
+  itemColAttributeMods,
   itemColBookmark,
   itemColEvent,
   itemColExpansion,
@@ -82,10 +83,11 @@ export class ItemTableAdapter implements TableGridAdapter<ItemTableRecord>, Data
       itemsMap: this.db.itemsMap,
       housingMap: this.db.housingItemsMap,
       perksMap: this.db.perksMap,
+      affixMap: this.db.affixStatsMap,
       transformsMap: this.db.itemTransformsMap,
       transformsMapReverse: this.db.itemTransformsByToItemIdMap,
     },
-    ({ items, itemsMap, housingMap, perksMap, transformsMap, transformsMapReverse }) => {
+    ({ items, itemsMap, housingMap, perksMap, affixMap, transformsMap, transformsMapReverse }) => {
       function getItem(id: string) {
         if (!id) {
           return null
@@ -93,9 +95,11 @@ export class ItemTableAdapter implements TableGridAdapter<ItemTableRecord>, Data
         return itemsMap.get(id) || housingMap.get(id) || { ItemID: id } as ItemDefinitionMaster
       }
       items = items.map((it): ItemTableRecord => {
+        const perks = getItemPerks(it, perksMap)
         return {
           ...it,
-          $perks: getItemPerks(it, perksMap),
+          $perks: perks,
+          $affixes: perks.map((it) => affixMap.get(it?.Affix)).filter((it) => !!it),
           $perkBuckets: getItemPerkBucketIds(it),
           $transformTo: getItem(transformsMap.get(it.ItemID)?.ToItemId),
           $transformFrom: (transformsMapReverse.get(it.ItemID) || []).map((it) => getItem(it.FromItemId)),
@@ -122,6 +126,7 @@ export function buildCommonItemGridOptions(util: TableGridUtils<ItemTableRecord>
       // colDefPin(util),
       itemColItemId(util),
       itemColPerks(util),
+      itemColAttributeMods(util),
       itemColRarity(util),
       itemColTier(util),
       itemColItemTypeName(util),

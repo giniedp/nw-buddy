@@ -1,6 +1,7 @@
 import {
   ItemRarity,
   NW_FALLBACK_ICON,
+  getAffixMODs,
   getItemAttribution,
   getItemExpansion,
   getItemIconPath,
@@ -19,7 +20,7 @@ import {
   isItemNamed,
   isMasterItem,
 } from '@nw-data/common'
-import { Housingitems, ItemDefinitionMaster, Perks } from '@nw-data/generated'
+import { Affixstats, Housingitems, ItemDefinitionMaster, Perks } from '@nw-data/generated'
 import { RangeFilter } from '~/ui/data/ag-grid'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { assetUrl, humanize } from '~/utils'
@@ -29,6 +30,7 @@ import { ItemTrackerFilter } from '~/widgets/item-tracker'
 export type ItemTableUtils = TableGridUtils<ItemTableRecord>
 export type ItemTableRecord = ItemDefinitionMaster & {
   $perks?: Perks[]
+  $affixes?: Affixstats[]
   $perkBuckets?: string[]
   $transformTo?: ItemDefinitionMaster | Housingitems
   $transformFrom?: Array<ItemDefinitionMaster | Housingitems>
@@ -115,10 +117,10 @@ export function itemColTransformTo(util: ItemTableUtils) {
               isNamed: isMasterItem(item) && isItemNamed(item),
               rarity: getItemRarity(item),
             }),
-           ,
+            ,
           ],
         ),
-        util.el('span.pl-2', { text: util.i18n.get(item.Name) })
+        util.el('span.pl-2', { text: util.i18n.get(item.Name) }),
       ])
     }),
     ...util.selectFilter({
@@ -248,11 +250,42 @@ export function itemColPerks(
             icon: perk.IconPath,
           }
         })
-      }
+      },
     }),
   })
 }
 
+export function itemColAttributeMods(util: ItemTableUtils) {
+  return util.colDef<string[]>({
+    colId: 'attributeMods',
+    headerValueGetter: () => 'Attr. Mods',
+    width: 100,
+    valueGetter: ({ data }) => {
+      return data.$affixes
+        .filter((it) => !!it)
+        .map((it) => {
+          const result = getAffixMODs(it, 0)
+          if (result?.length) {
+            return result
+          }
+          if (it.AttributePlacingMods) {
+            return [
+              {
+                labelShort: 'MAG',
+              },
+            ]
+          }
+          return []
+        })
+        .flat(1)
+        .map((it) => util.i18n.get(it.labelShort))
+    },
+    cellRenderer: util.tagsRenderer({ transform: humanize }),
+    ...util.selectFilter({
+      order: 'asc',
+    }),
+  })
+}
 export function itemColRarity(util: ItemTableUtils) {
   return util.colDef<ItemRarity>({
     colId: 'rarity',
@@ -267,14 +300,16 @@ export function itemColRarity(util: ItemTableUtils) {
       order: 'asc',
       getOptions: ({ data }) => {
         const value = getItemRarity(data)
-        return [{
-          id: value,
-          label: util.i18n.get(getItemRarityLabel(value)),
-          order: getItemRarityWeight(value),
-          class: ['text-rarity-' + value],
-        }]
+        return [
+          {
+            id: value,
+            label: util.i18n.get(getItemRarityLabel(value)),
+            order: getItemRarityWeight(value),
+            class: ['text-rarity-' + value],
+          },
+        ]
       },
-    })
+    }),
   })
 }
 
@@ -287,8 +322,8 @@ export function itemColTier(util: ItemTableUtils) {
     valueGetter: ({ data }) => data.Tier || null,
     valueFormatter: ({ value }) => getItemTierAsRoman(value),
     ...util.selectFilter({
-      order: 'asc'
-    })
+      order: 'asc',
+    }),
   })
 }
 
@@ -403,7 +438,7 @@ export function itemColSource(util: ItemTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 
@@ -436,7 +471,7 @@ export function itemColEvent(util: ItemTableUtils) {
           ? [
               {
                 id: it.id,
-                label: util.i18n.get(it.label) + (it.year ? ` (${it.year})`:'') ,
+                label: util.i18n.get(it.label) + (it.year ? ` (${it.year})` : ''),
                 icon: it.icon,
               },
             ]
@@ -496,7 +531,7 @@ export function itemColItemTypeName(util: ItemTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 
@@ -511,7 +546,7 @@ export function itemColItemType(util: ItemTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 
@@ -524,8 +559,8 @@ export function itemColItemClass(util: ItemTableUtils) {
     cellRenderer: util.tagsRenderer({ transform: humanize }),
     ...util.selectFilter({
       search: true,
-      order: 'asc'
-    })
+      order: 'asc',
+    }),
   })
 }
 
@@ -539,7 +574,7 @@ export function itemColTradingGroup(util: ItemTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 
@@ -554,7 +589,7 @@ export function itemColTradingFamily(util: ItemTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 
@@ -569,7 +604,7 @@ export function itemColTradingCategory(util: ItemTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 
