@@ -9,11 +9,12 @@ import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCompress, svgExpand } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive, selectSignal } from '~/utils'
-import { LandMapComponent, Landmark } from '~/widgets/land-map'
+import { LandMapComponent, Landmark, LandmarkPoint } from '~/widgets/land-map'
 import { GatherableDetailStore } from './gatherable-detail.store'
 import { DecimalPipe } from '@angular/common'
 import { OverlayModule } from '@angular/cdk/overlay'
 import { LayoutModule } from '~/ui/layout'
+import { toSignal } from '@angular/core/rxjs-interop'
 
 const SIZE_COLORS: Record<GatherableNodeSize, string> = {
   Tiny: '#f28c18',
@@ -61,6 +62,9 @@ export class GatherableDetailMapComponent {
   protected db = inject(NwDataService)
   protected store = inject(GatherableDetailStore)
   protected tl8 = inject(TranslateService)
+
+  private gatherable = toSignal(this.store.gatherable$)
+  private gatherableSize = computed(() => getGatherableNodeSize(this.gatherable()?.GatherableID) || ('Nodes' as GatherableNodeSize))
 
   protected data = selectSignal(
     {
@@ -223,12 +227,30 @@ export class GatherableDetailMapComponent {
     }
     const total = landmarks.length
     return {
+
       landmarks: landmarks.slice(0, limit),
       isLimited: true,
       shown: limit,
       total,
       showLimit,
       limit
+    }
+  })
+
+  public spawns = computed(() => {
+    const data =  this.data()
+    const size = this.gatherableSize()
+    const mapId = this.mapId()
+    const gatherable = this.gatherable()
+    if (!data || !mapId || !data[mapId] || !gatherable) {
+      return null
+    }
+    const points = data[mapId][size].map((it: LandmarkPoint) => it.point)
+    return {
+      gatherableID: gatherable.GatherableID,
+      mapID: mapId,
+      size: size,
+      points: points
     }
   })
 
