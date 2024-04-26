@@ -122,6 +122,7 @@ function selectImage(image: string) {
     .toLowerCase()
     .replace(/\\/g, '/')
     .replace(/^\/?lyshineui\/images/, '')
+    .replace(/^\/?lyshineui\/worldtiles/, 'worldtiles')
     .replace(/\s+\.webp$/, '.webp')
   return {
     source: sourcePNG,

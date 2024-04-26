@@ -1,11 +1,13 @@
 @if (landmarks()?.length) {
-  <nwb-land-map
+  <nwb-world-map
     class="aspect-video relative"
     [map]="mapId()"
     [bounds]="bounds()"
     [fit]="false"
     [landmarks]="landmarks()"
     (featureClicked)="onFeatureClicked($event)"
+    [showCoords]="true"
+    [showTooltip]="true"
   >
     <div
       class="w-auto flex flex-row rounded-full text-sm text-white overflow-clip bg-base-100 p-[2px] absolute top-[7px] right-[7px]"
@@ -19,5 +21,5 @@
         <nwb-icon [icon]="iconExpand" class="w-4 h-4" />
       </button>
     </div>
-  </nwb-land-map>
+  </nwb-world-map>
 }

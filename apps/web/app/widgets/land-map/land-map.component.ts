@@ -25,6 +25,7 @@ export interface LandmarkData {
   outlineColor?: string
   radius?: number
   opacity?: number
+  layer?: string
 }
 
 export interface MapView {

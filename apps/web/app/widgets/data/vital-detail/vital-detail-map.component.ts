@@ -18,8 +18,9 @@ import { IconsModule } from '~/ui/icons'
 import { svgCompress, svgExpand } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { selectSignal } from '~/utils'
-import { LandMapComponent, Landmark, LandmarkPoint, LandmarkZone, MapViewBounds } from '~/widgets/land-map'
+import { Landmark, LandmarkPoint, LandmarkZone, MapViewBounds } from '~/widgets/land-map'
 import { VitalDetailStore } from './vital-detail.store'
+import { WorldMapComponent } from '~/widgets/world-map'
 
 export interface VitalPointData {
   vitalId?: string
@@ -32,7 +33,7 @@ export interface VitalPointData {
   standalone: true,
   selector: 'nwb-vital-detail-map',
   templateUrl: './vital-detail-map.component.html',
-  imports: [NwModule, LandMapComponent, TooltipModule, FormsModule, IconsModule],
+  imports: [NwModule, WorldMapComponent, TooltipModule, FormsModule, IconsModule],
   host: {
     class: 'block rounded-md overflow-clip relative',
   },

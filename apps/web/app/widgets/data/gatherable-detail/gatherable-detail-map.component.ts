@@ -1,20 +1,21 @@
+import { OverlayModule } from '@angular/cdk/overlay'
+import { DecimalPipe } from '@angular/common'
 import { Component, ElementRef, computed, inject, signal } from '@angular/core'
+import { toSignal } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { GatherableNodeSize, getGatherableNodeSize } from '@nw-data/common'
 import { Spawns } from '@nw-data/generated'
+import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCompress, svgExpand } from '~/ui/icons/svg'
+import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive, selectSignal } from '~/utils'
-import { LandMapComponent, Landmark, LandmarkPoint } from '~/widgets/land-map'
+import { Landmark, LandmarkPoint } from '~/widgets/land-map'
+import { WorldMapComponent } from '~/widgets/world-map'
 import { GatherableDetailStore } from './gatherable-detail.store'
-import { DecimalPipe } from '@angular/common'
-import { OverlayModule } from '@angular/cdk/overlay'
-import { LayoutModule } from '~/ui/layout'
-import { toSignal } from '@angular/core/rxjs-interop'
 
 const SIZE_COLORS: Record<GatherableNodeSize, string> = {
   Tiny: '#f28c18',
@@ -51,7 +52,16 @@ const SIZE_ORDER = ['Tiny', 'Small', 'Medium', 'Large', 'Huge']
   standalone: true,
   selector: 'nwb-gatherable-detail-map',
   templateUrl: './gatherable-detail-map.component.html',
-  imports: [DecimalPipe, NwModule, LandMapComponent, TooltipModule, FormsModule, OverlayModule, LayoutModule, IconsModule],
+  imports: [
+    DecimalPipe,
+    NwModule,
+    TooltipModule,
+    FormsModule,
+    OverlayModule,
+    LayoutModule,
+    WorldMapComponent,
+    IconsModule,
+  ],
   providers: [DecimalPipe],
   host: {
     class: 'block relative',
@@ -64,7 +74,9 @@ export class GatherableDetailMapComponent {
   protected tl8 = inject(TranslateService)
 
   private gatherable = toSignal(this.store.gatherable$)
-  private gatherableSize = computed(() => getGatherableNodeSize(this.gatherable()?.GatherableID) || ('Nodes' as GatherableNodeSize))
+  private gatherableSize = computed(
+    () => getGatherableNodeSize(this.gatherable()?.GatherableID) || ('Nodes' as GatherableNodeSize),
+  )
 
   protected data = selectSignal(
     {
@@ -112,9 +124,7 @@ export class GatherableDetailMapComponent {
         if (!variant) {
           continue
         }
-        const gatherable = gatherables.find((it) =>
-          eqCaseInsensitive(it.GatherableID, variant.GatherableID),
-        )
+        const gatherable = gatherables.find((it) => eqCaseInsensitive(it.GatherableID, variant.GatherableID))
         if (!gatherable) {
           continue
         }
@@ -197,60 +207,62 @@ export class GatherableDetailMapComponent {
 
   protected limit = signal<number>(5000)
   protected availableLimits = [5000, 10000, 25000, 50000, 75000, 100000, 150000, 0]
-  protected vm = selectSignal({
-    mapId: this.mapId,
-    data: this.data,
-    disabledSizes: this.disabledSizes,
-    limit: this.limit,
-  }, ({ mapId, data, disabledSizes, limit }) => {
-    if (!data || !mapId || !data[mapId]) {
-      return null
-    }
-    const result = {
-      ...(data[mapId] || {})
-    }
-    for (const size of disabledSizes) {
-      delete result[size]
-    }
-    const showLimit = !limit || limit > 10000
-    const landmarks = Object.values(result).flat()
-    landmarks.sort((a, b) => b.radius - a.radius)
-    if (!limit || !!limit && (landmarks.length <= limit)) {
-      return {
-        landmarks,
-        isLimited: false,
-        shown: landmarks.length,
-        total: landmarks.length,
-        showLimit,
-        limit
+  protected vm = selectSignal(
+    {
+      mapId: this.mapId,
+      data: this.data,
+      disabledSizes: this.disabledSizes,
+      limit: this.limit,
+    },
+    ({ mapId, data, disabledSizes, limit }) => {
+      if (!data || !mapId || !data[mapId]) {
+        return null
       }
-    }
-    const total = landmarks.length
-    return {
-
-      landmarks: landmarks.slice(0, limit),
-      isLimited: true,
-      shown: limit,
-      total,
-      showLimit,
-      limit
-    }
-  })
+      const result = {
+        ...(data[mapId] || {}),
+      }
+      for (const size of disabledSizes) {
+        delete result[size]
+      }
+      const showLimit = !limit || limit > 10000
+      const landmarks = Object.values(result).flat()
+      landmarks.sort((a, b) => b.radius - a.radius)
+      if (!limit || (!!limit && landmarks.length <= limit)) {
+        return {
+          landmarks,
+          isLimited: false,
+          shown: landmarks.length,
+          total: landmarks.length,
+          showLimit,
+          limit,
+        }
+      }
+      const total = landmarks.length
+      return {
+        landmarks: landmarks, //.slice(0, limit),
+        isLimited: true,
+        shown: limit,
+        total,
+        showLimit,
+        limit,
+      }
+    },
+  )
 
   public spawns = computed(() => {
-    const data =  this.data()
+    const data = this.data()
     const size = this.gatherableSize()
     const mapId = this.mapId()
     const gatherable = this.gatherable()
     if (!data || !mapId || !data[mapId] || !gatherable) {
       return null
     }
-    const points = data[mapId][size].map((it: LandmarkPoint) => it.point)
+    const points = data[mapId]?.[size]?.map((it: LandmarkPoint) => it.point)
     return {
       gatherableID: gatherable.GatherableID,
       mapID: mapId,
       size: size,
-      points: points
+      points: points,
     }
   })
 

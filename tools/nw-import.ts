@@ -177,11 +177,11 @@ program
 
     if (hasFilter(Importer.images, options.module)) {
       console.log('Images')
-      // const worldTiles = await glob(path.join(inputDir, '**', 'worldtiles', '**', '*.png')).then((files) => {
-      //   return files.map((it) => path.relative(inputDir, it))
-      // })
+      const worldTiles = await glob(path.join(inputDir, '**', 'worldtiles', '**', '*.png')).then((files) => {
+        return files.map((it) => path.relative(inputDir, it))
+      })
       await importImages({
-        staticImages: [...localeImages],
+        staticImages: [...localeImages, ...worldTiles],
         input: inputDir,
         output: distDir,
         update: options.update,

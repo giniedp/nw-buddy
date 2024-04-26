@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Output, ViewChild, computed, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { getZoneMetaId } from '@nw-data/common'
+import { getZoneMetaId, getZoneType } from '@nw-data/common'
 import { crc32 as crc } from 'js-crc'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
@@ -11,6 +11,7 @@ import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive, selectSignal } from '~/utils'
 import { LandMapComponent, Landmark, LandmarkPoint, LandmarkZone } from '~/widgets/land-map'
 import { ZoneDetailStore } from './zone-detail.store'
+import { WorldMapComponent } from '~/widgets/world-map'
 
 function crc32(value: string) {
   return parseInt(crc(value.toLowerCase()), 16)
@@ -38,7 +39,7 @@ const COLORS_DIMMED = {
   standalone: true,
   selector: 'nwb-zone-detail-map',
   templateUrl: './zone-detail-map.component.html',
-  imports: [NwModule, LandMapComponent, TooltipModule, FormsModule, IconsModule],
+  imports: [NwModule, LandMapComponent, WorldMapComponent, TooltipModule, FormsModule, IconsModule],
 
   host: {
     class: 'flex flex-col relative',
@@ -84,6 +85,7 @@ export class ZoneDetailMapComponent {
       if (!meta?.zones?.length) {
         continue
       }
+
       const isSelected = zone.TerritoryID === zoneId
       for (const entry of meta.zones) {
         result.push({
@@ -93,6 +95,7 @@ export class ZoneDetailMapComponent {
           outlineColor: isSelected ? COLORS_DIMMED.Info : COLORS_DIMMED.Error,
           shape: entry.shape.map((point) => [...point]),
           opacity: isSelected ? 0.25 : 0.05,
+          layer: getZoneType(zone)
         } satisfies LandmarkZone)
       }
     }
@@ -119,7 +122,7 @@ export class ZoneDetailMapComponent {
               x: ${spawn.point[0].toFixed(2)} y: ${spawn.point[1].toFixed(2)}
             </div>
           `,
-        color: toColor(spawn.vital.VitalsID),
+        color: toColor(String(spawn.vital.Level)),// VitalsID),
         outlineColor: hasMark && isMarked ? '#FFFFFF' : '#000000',
         opacity: isMarked || !hasMark ? 1 : 0.75,
         point: spawn.point,

@@ -1,74 +1,35 @@
-@if (vm(); as vm) {
-  <nwb-land-map class="aspect-square relative" [map]="mapId()" [landmarks]="vm.landmarks">
-    <div class="w-auto flex flex-row rounded-full text-sm text-white overflow-clip bg-base-100 p-[2px] absolute top-[7px] right-[7px]">
+@if (vm()?.landmarks?.length) {
+  <nwb-world-map class="block aspect-square relative" #map [map]="mapId()" [landmarks]="vm()?.landmarks" [showCoords]="true" [showTooltip]="true">
+
+    <div
+      class="w-auto flex flex-row rounded-full text-sm text-white overflow-clip bg-base-100 p-[2px] absolute top-[7px] right-[7px]"
+    >
       <select class="select select-sm max-w-[200px]" [ngModel]="mapId()" (ngModelChange)="selectedMapId.set($event)">
         @for (value of mapIds(); track $index) {
           <option [value]="value">{{ value }}</option>
         }
       </select>
-      <button class="btn btn-circle btn-ghost btn-sm" (click)="toggleFullscreen()">
+      <button class="btn btn-circle btn-ghost btn-sm" (click)="map.toggleFullscreen()">
         <nwb-icon [icon]="iconExpand" class="w-4 h-4" />
       </button>
     </div>
 
-    @if (vm.isLimited || vm.showLimit) {
-      <div class="rounded-2xl flex flex-row items-center gap-2 px-4 py-2  absolute bottom-8 left-1 right-1 w-auto "
-      [class.bg-error]="vm.isLimited"
-      [class.text-error-content]="vm.isLimited"
-      [class.bg-warning]="!vm.isLimited"
-      [class.text-warning-content]="!vm.isLimited"
-       >
-        <nwb-icon [icon]="iconWarning" class="w-4 h-4 flex-none" />
-        <div class="flex-1 leading-tight text-center">
-          @if(vm.isLimited) {
-            Showing {{ vm.shown | number }} of {{ vm.total | number }} items.
-          } @else if(vm.limit) {
-            Limit is set to {{ vm.limit | number }}.
-          } @else {
-            No limit set.
-          }
-          <a class="link-hover" [cdkMenuTriggerFor]="limitMenu">Click to change limit.</a>
-        </div>
+    @if (availableSizes()?.length) {
+      <div class="absolute bottom-0 w-full p-1 flex flex-row justify-center items-center gap-1 bg-opacity-50 bg-black">
+        @for (row of availableSizes(); track $index) {
+          <span
+            class="badge cursor-pointer"
+            [class.badge-outline]="row.disabled"
+            [class.line-through]="row.disabled"
+            [class.opacity-50]="row.disabled"
+            [style.background-color]="row.color"
+            [tooltip]="row.value"
+            (click)="toggleSize(row.value)"
+          >
+            {{ row.count }}
+          </span>
+        }
       </div>
-
-      <ng-template #limitMenu>
-        <div class="bg-base-200 border border-base-100 rounded-md shadow-lg">
-          <ul class="menu menu-compact menu-vertical" cdkMenu>
-            @for (value of availableLimits; track $index) {
-              <li class="text-shadow-sm shadow-black " cdkMenuItem>
-                <a
-                  (click)="limit.set(value)"
-                  [class.text-success]="!!value && (value < 10000)"
-                  [class.text-warning]="value >= 10000 && value < 20000"
-                  [class.text-error]="!value || (value >= 20000)"
-                >
-                  <span>{{ value ? (value | number) : 'Unlimited' }}</span>
-                  @if (!value) {
-                    <span class="text-xs"> (Please don't)</span>
-                  }
-                </a>
-              </li>
-            }
-          </ul>
-        </div>
-      </ng-template>
     }
-
-    <div class="absolute bottom-0 w-full p-1 flex flex-row justify-center items-center gap-1 bg-opacity-50 bg-black">
-      @for (row of availableSizes(); track $index) {
-        <span
-          class="badge cursor-pointer"
-          [class.badge-outline]="row.disabled"
-          [class.line-through]="row.disabled"
-          [class.opacity-50]="row.disabled"
-          [style.background-color]="row.color"
-          [tooltip]="row.value"
-          (click)="toggleSize(row.value)"
-        >
-          {{ row.count }}
-        </span>
-      }
-
-    </div>
-  </nwb-land-map>
+  </nwb-world-map>
 }
