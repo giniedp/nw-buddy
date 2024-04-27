@@ -93,7 +93,7 @@ export class ZoneDetailMapComponent {
           shape: entry.shape.map((point) => [...point]),
           opacity: isSelected ? 0.25 : 0.05,
           layer: getZoneType(zone),
-          icon: getZoneIcon(zone, null)
+          icon: getZoneIcon(zone, null),
         } satisfies MapZoneMarker)
       }
     }
@@ -127,11 +127,11 @@ export class ZoneDetailMapComponent {
       result.push({
         id: `vital:${spawn.vital.VitalsID}`,
         title: `<strong>${title}</strong> (lvl. ${levels.join(', ')})`,
-        color: toColor(String(spawn.vital.Level)), // VitalsID),
+        color: toColor(String(spawn.vital.VitalsID)),
         outlineColor: hasMark && isMarked ? '#FFFFFF' : '#000000',
         opacity: isMarked || !hasMark ? 1 : 0.75,
         point: spawn.point,
-        radius: isMarked ? 6 : 4,
+        radius: isMarked ? 8 : 4,
       })
     }
 

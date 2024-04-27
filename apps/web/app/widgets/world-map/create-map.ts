@@ -102,6 +102,7 @@ export function createMap({ el, tileBaseUrl }: WorldMapOptions) {
   map.addLayer(zoneLayers)
 
   const iconLayer = new VectorLayer({
+    zIndex: 100,
     source: new VectorSource({ features: [] }),
     minZoom: levels - 3,
     maxZoom: levels + 1,
@@ -123,9 +124,7 @@ export function createMap({ el, tileBaseUrl }: WorldMapOptions) {
     if (!markers) {
       return
     }
-    for (const items of Object.values(
-      groupBy(markers, (it) => [it.color, it.outlineColor, it.opacity, it.layer].join('-')),
-    )) {
+    for (const items of Object.values(groupBy(markers, (it) => it.layer))) {
       let zIndex = 1
       if (items[0].layer === 'Area') {
         zIndex = 2
@@ -133,43 +132,9 @@ export function createMap({ el, tileBaseUrl }: WorldMapOptions) {
       if (items[0].layer === 'POI') {
         zIndex = 3
       }
-      const layer = new VectorLayer({
-        zIndex: zIndex,
-        source: new VectorSource({
-          features: items.map((item) => {
-            const poly = new Polygon([item.shape])
-
-            const feature = new Feature({
-              geometry: poly,
-              item: item,
-              payload: item.payload,
-            })
-            if (item.icon) {
-              const iconFeature = new Feature({
-                geometry: poly.getInteriorPoint(),
-              })
-              iconFeature.setStyle(
-                new Style({
-                  image: new Icon({
-                    width: 48,
-                    height: 48,
-                    src: item.icon,
-                  }),
-                }),
-              )
-              iconLayer.getSource().addFeature(iconFeature)
-            }
-            return feature
-          }),
-        }),
-        style: {
-          'fill-color': getFillColor(items[0]),
-          'stroke-color': items[0].outlineColor ?? '#000',
-          'stroke-width': 1,
-        },
-      })
-      zoneLayers.getLayers().push(layer)
+      zoneLayers.getLayers().push(createZoneLayer(items, zIndex))
     }
+    iconLayer.getSource().addFeatures(createIconFeatures(markers))
   }
 
   function clearPointLayers() {
@@ -181,30 +146,9 @@ export function createMap({ el, tileBaseUrl }: WorldMapOptions) {
     if (!markers) {
       return
     }
-    for (const items of Object.values(
-      groupBy(markers, (it) => [it.color, it.outlineColor, it.opacity, it.layer].join('-')),
-    )) {
-      const source = new VectorSource({
-        features: items.map((item) => {
-          return new Feature({
-            geometry: new Point(item.point),
-            item: item,
-            payload: item.payload,
-          })
-        }),
-      })
-      const layer = new WebGLPointsLayer({
-        zIndex: 100,
-        source,
-        style: {
-          'circle-opacity': items[0].opacity ?? 0.75,
-          'circle-radius': items[0].radius ?? 10,
-          'circle-fill-color': items[0].color ?? '#fff',
-          'circle-stroke-color': items[0].outlineColor ?? '#000',
-          'circle-stroke-width': 1,
-        },
-      })
-      pointLayers.getLayers().push(layer)
+
+    for (const items of Object.values(groupBy(markers, (it) => it.layer ?? 'default'))) {
+      pointLayers.getLayers().push(createColoredPointsLayer(items))
     }
   }
 
@@ -256,4 +200,86 @@ export function hexToRgb(hex: string) {
         g: 255,
         b: 255,
       }
+}
+
+function createColoredPointsLayer(items: MapPointMarker[], zIndex = 1000) {
+  return new WebGLPointsLayer({
+    zIndex,
+    source: new VectorSource({
+      features: items.map((item) => {
+        const c1 = hexToRgb(item.color ?? '#ffffff')
+        const c2 = hexToRgb(item.outlineColor ?? '#000000')
+        return new Feature({
+          geometry: new Point(item.point),
+          item: item,
+          payload: item.payload,
+          c1r: c1.r,
+          c1g: c1.g,
+          c1b: c1.b,
+          c2r: c2.r,
+          c2g: c2.g,
+          c2b: c2.b,
+          opacity: item.opacity ?? 0.75,
+          radius: item.radius ?? 10,
+        })
+      }),
+    }),
+    style: {
+      'circle-opacity': ['get', 'opacity'],
+      'circle-radius': ['get', 'radius'],
+      'circle-fill-color': ['color', ['get', 'c1r'], ['get', 'c1g'], ['get', 'c1b'], ['get', 'opacity']],
+      'circle-stroke-color': ['color', ['get', 'c2r'], ['get', 'c2g'], ['get', 'c2b']],
+      'circle-stroke-width': 1,
+    },
+  })
+}
+
+function createZoneLayer(items: MapZoneMarker[], zIndex = 1) {
+  return new VectorLayer({
+    zIndex,
+    style: {
+      'fill-color': ['get', 'color1'],
+      'stroke-color': ['get', 'color2'],
+      'stroke-width': 1,
+    },
+    source: new VectorSource({
+      features: items.map((item) => {
+        const shape = [...item.shape]
+        if (shape[0][0] !== shape[shape.length - 1][0] || shape[0][1] !== shape[shape.length - 1][1]) {
+          shape.push(shape[0])
+        }
+        const poly = new Polygon([shape])
+        return new Feature({
+          geometry: poly,
+          item: item,
+          payload: item.payload,
+          color1: getFillColor(item),
+          color2: item.outlineColor ?? '#000000',
+        })
+      }),
+    }),
+  })
+}
+
+function createIconFeatures(items: MapZoneMarker[]) {
+  const features: Feature[] = []
+  for (const item of items) {
+    if (!item.icon) {
+      continue
+    }
+    const iconFeature = new Feature({
+      geometry: new Polygon([item.shape]).getInteriorPoint(),
+    })
+    iconFeature.setStyle(
+      new Style({
+        image: new Icon({
+          width: 48,
+          height: 48,
+          src: item.icon,
+        }),
+      }),
+    )
+    features.push(iconFeature)
+  }
+  return features
 }
