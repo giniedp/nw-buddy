@@ -1,18 +1,17 @@
 import { OverlayModule } from '@angular/cdk/overlay'
 import { DecimalPipe } from '@angular/common'
-import { Component, ElementRef, inject, signal } from '@angular/core'
+import { Component, ElementRef, computed, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { GatherableNodeSize } from '@nw-data/common'
 import { LoreMetadata, LoreSpawns, Loreitems } from '@nw-data/generated'
+import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
-import { NwDataService } from '~/data'
 import { IconsModule } from '~/ui/icons'
 import { svgCircleExclamation, svgCompress, svgExpand } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive, selectSignal } from '~/utils'
-import { LandMapComponent, LandmarkPoint } from '~/widgets/land-map'
+import { MapPointMarker, WorldMapComponent } from '~/widgets/world-map'
 import { LoreItemDetailStore } from './lore-item-detail.store'
 
 const SIZE_COLORS = {
@@ -31,7 +30,7 @@ const SIZE_OUTLINE = {
   imports: [
     DecimalPipe,
     NwModule,
-    LandMapComponent,
+    WorldMapComponent,
     TooltipModule,
     FormsModule,
     OverlayModule,
@@ -100,6 +99,30 @@ export class LoreItemDetailMapComponent {
     },
   )
 
+  protected bounds = computed(() => {
+    let min: number[] = null
+    let max: number[] = null
+    for (const item of this.landmarks() || []) {
+      const point = item.point
+      if (!point) {
+        continue
+      }
+      if (!min) {
+        min = [...point]
+        max = [...point]
+      } else {
+        min[0] = Math.min(min[0], point[0])
+        min[1] = Math.min(min[1], point[1])
+        max[0] = Math.max(max[0], point[0])
+        max[1] = Math.max(max[1], point[1])
+      }
+    }
+    if (min && max) {
+      return { min, max }
+    }
+    return null
+  })
+
   public hasMap = selectSignal(this.mapIds, (it) => !!it?.length)
 
   protected iconExpand = svgExpand
@@ -120,7 +143,7 @@ function selectLoreData(lore: Loreitems, loreItems: Loreitems[], metaMap: Map<st
   const root = selectRoot(lore, loreItems)
   const tree = selectTree(root, loreItems)
   const list = selectTreeList(tree)
-  const result: Record<string, LandmarkPoint[]> = {}
+  const result: Record<string, MapPointMarker[]> = {}
   for (const entry of list) {
     const meta = metaMap.get(entry.LoreID)
     if (!meta) {

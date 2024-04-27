@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Output, ViewChild, computed, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { getZoneMetaId, getZoneType } from '@nw-data/common'
+import { getZoneIcon, getZoneMetaId, getZoneType } from '@nw-data/common'
 import { crc32 as crc } from 'js-crc'
 import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
@@ -9,7 +9,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgCompress, svgExpand } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive, selectSignal } from '~/utils'
-import { LandMapComponent, Landmark, LandmarkPoint, LandmarkZone } from '~/widgets/land-map'
+import { MapPointMarker, MapZoneMarker } from '~/widgets/world-map'
 import { ZoneDetailStore } from './zone-detail.store'
 import { WorldMapComponent } from '~/widgets/world-map'
 
@@ -39,7 +39,7 @@ const COLORS_DIMMED = {
   standalone: true,
   selector: 'nwb-zone-detail-map',
   templateUrl: './zone-detail-map.component.html',
-  imports: [NwModule, LandMapComponent, WorldMapComponent, TooltipModule, FormsModule, IconsModule],
+  imports: [NwModule, WorldMapComponent, TooltipModule, FormsModule, IconsModule],
 
   host: {
     class: 'flex flex-col relative',
@@ -66,39 +66,50 @@ export class ZoneDetailMapComponent {
     return { min: min, max: max }
   })
 
-  protected landmarks = computed(() => {
-    const result: Landmark[] = []
+  protected zoneMarkers = computed(() => {
+    const result: MapZoneMarker[] = []
     if (!this.store.nwDataIsLoaded()) {
       return result
     }
 
     const zoneId = this.store.recordId()
-    const spawns = this.store.spawns()
-    const vitalId = this.store.markedVitalId()
-    const categories = this.store.nwData().vitalsCategoriesMap
     const zones = this.store.allZones()
     const zonesMetaMap = this.store.nwData().territoriesMetadata
 
     for (const zone of zones || []) {
       const metaId = getZoneMetaId(zone)
       const meta = zonesMetaMap.get(metaId)
+
       if (!meta?.zones?.length) {
         continue
       }
-
       const isSelected = zone.TerritoryID === zoneId
       for (const entry of meta.zones) {
         result.push({
           id: `zone:${zone.TerritoryID}`,
-          title: this.tl8.get(zone.NameLocalizationKey),
+          title: `${getZoneType(zone)}: ${this.tl8.get(zone.NameLocalizationKey)}`,
           color: isSelected ? COLORS.Info : '#FFFFFF',
           outlineColor: isSelected ? COLORS_DIMMED.Info : COLORS_DIMMED.Error,
           shape: entry.shape.map((point) => [...point]),
           opacity: isSelected ? 0.25 : 0.05,
-          layer: getZoneType(zone)
-        } satisfies LandmarkZone)
+          layer: getZoneType(zone),
+          icon: getZoneIcon(zone, null)
+        } satisfies MapZoneMarker)
       }
     }
+
+    return result
+  })
+
+  protected pointMarkers = computed(() => {
+    const result: MapPointMarker[] = []
+    if (!this.store.nwDataIsLoaded()) {
+      return result
+    }
+
+    const spawns = this.store.spawns()
+    const categories = this.store.nwData().vitalsCategoriesMap
+    const vitalId = this.store.markedVitalId()
 
     for (const spawn of spawns || []) {
       let title = ''
@@ -115,37 +126,23 @@ export class ZoneDetailMapComponent {
       const isMarked = eqCaseInsensitive(vitalId, spawn.vital.VitalsID)
       result.push({
         id: `vital:${spawn.vital.VitalsID}`,
-        title: `
-            <div style="text-align: left;">
-              <strong>${title}</strong><br>
-              Level ${levels.join(', ')}<br>
-              x: ${spawn.point[0].toFixed(2)} y: ${spawn.point[1].toFixed(2)}
-            </div>
-          `,
-        color: toColor(String(spawn.vital.Level)),// VitalsID),
+        title: `<strong>${title}</strong> (lvl. ${levels.join(', ')})`,
+        color: toColor(String(spawn.vital.Level)), // VitalsID),
         outlineColor: hasMark && isMarked ? '#FFFFFF' : '#000000',
         opacity: isMarked || !hasMark ? 1 : 0.75,
         point: spawn.point,
         radius: isMarked ? 6 : 4,
-      } satisfies LandmarkPoint)
+      })
     }
-    result.sort((a, b) => a.radius - b.radius)
+
     return result
   })
 
-  public hasMap = selectSignal(this.landmarks, (it) => !!it?.length)
+  public hasMap = computed(() => this.zoneMarkers().length > 0 || this.pointMarkers().length > 0)
 
   protected iconExpand = svgExpand
   protected iconCompress = svgCompress
   protected elRef = inject(ElementRef<HTMLElement>)
-
-  protected toggleFullscreen() {
-    if (document.fullscreenElement) {
-      document.exitFullscreen()
-    } else {
-      this.elRef.nativeElement.requestFullscreen()
-    }
-  }
 
   protected onFeatureClicked(value: string) {
     if (!value) {

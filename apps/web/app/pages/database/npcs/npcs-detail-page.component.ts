@@ -14,7 +14,7 @@ import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { HtmlHeadService, combineLatestOrEmpty, observeRouteParam, selectSignal, selectStream } from '~/utils'
 import { GatherableDetailModule } from '~/widgets/data/gatherable-detail'
-import { Landmark } from '~/widgets/land-map'
+import { MapMarker } from '~/widgets/world-map'
 import { LootModule } from '~/widgets/loot'
 import { ModelViewerModule, ModelViewerService } from '~/widgets/model-viewer'
 import { ScreenshotModule } from '~/widgets/screenshot'
@@ -92,7 +92,7 @@ export class NpcDetailPageComponent {
       chunks: this.variationsMetaChunks$,
     },
     ({ variationsMeta, chunks }) => {
-      const result: Record<string, Landmark[]> = {}
+      const result: Record<string, MapMarker[]> = {}
       if (!chunks || !variationsMeta) {
         return result
       }

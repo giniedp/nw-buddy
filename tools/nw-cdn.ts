@@ -135,10 +135,10 @@ program
     }
 
     console.log('[UPLOAD]')
-    await uploadFiles({
-      client: client,
-      files: toUpload,
-    })
+    // await uploadFiles({
+    //   client: client,
+    //   files: toUpload,
+    // })
   })
 
 program
@@ -265,7 +265,7 @@ async function unzip(file: string, target: string) {
 
 async function createBundle(dir: string, file: string) {
   const zip = new AdmZip()
-  zip.addLocalFolder(dir, path.basename(dir))
+  zip.addLocalFolder(dir, path.basename(dir), (file) => !file.startsWith('worldtiles'))
   zip.writeZip(file)
 }
 

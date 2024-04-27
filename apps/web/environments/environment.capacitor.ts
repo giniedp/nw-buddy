@@ -1,5 +1,5 @@
 import { env } from './env'
-import { Environment, getNwDataDeployUrl, getModelsUrl } from './utils'
+import { Environment, getNwDataDeployUrl, getModelsUrl, getWorldTilesUrl } from './utils'
 
 export const environment: Environment = {
   ...env,
@@ -8,4 +8,5 @@ export const environment: Environment = {
   environment: 'CAPACITOR',
   modelsUrl: getModelsUrl(env),
   nwDataUrl: getNwDataDeployUrl(env),
+  worldTilesUrl: getWorldTilesUrl(env)
 }

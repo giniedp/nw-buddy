@@ -4,21 +4,18 @@ import { Feature } from 'ol'
 import Map from 'ol/Map'
 import View from 'ol/View'
 import { getCenter } from 'ol/extent'
-import { Point, Polygon, Circle } from 'ol/geom'
-import BaseLayer from 'ol/layer/Base'
+import { Circle, Point, Polygon } from 'ol/geom'
+import LayerGroup from 'ol/layer/Group'
 import VectorLayer from 'ol/layer/Vector'
 import WebGLPointsLayer from 'ol/layer/WebGLPoints'
 import TileLayer from 'ol/layer/WebGLTile'
 import { Projection } from 'ol/proj'
 import { Vector as VectorSource, Zoomify } from 'ol/source'
+import Icon from 'ol/style/Icon'
+import Style from 'ol/style/Style'
 import { TileCoord } from 'ol/tilecoord'
-import { Landmark, LandmarkPoint, LandmarkZone } from '../land-map'
+import { MapMarker, MapPointMarker, MapZoneMarker, MarkerEventData } from './types'
 
-export interface MarkerEventData {
-  pixel: number[]
-  coords: number[]
-  markers: Landmark[]
-}
 const tileSize = 1024
 const regionSize = 2048
 const regionsX = 8
@@ -39,8 +36,12 @@ export function getTileAddress([z, x, y]: TileCoord) {
   return [level, adrX, adrY]
 }
 
+export interface WorldMapOptions {
+  el: HTMLElement
+  tileBaseUrl: string
+}
 export type WorldMap = Awaited<ReturnType<typeof createMap>>
-export function createMap(el: HTMLElement) {
+export function createMap({ el, tileBaseUrl }: WorldMapOptions) {
   const projection = new Projection({
     code: 'pixel-map',
     units: 'pixels',
@@ -63,7 +64,9 @@ export function createMap(el: HTMLElement) {
     const center = [(min[0] + max[0]) / 2, (min[1] + max[1]) / 2]
     const radius = Math.max(max[0] - min[0], max[1] - min[1]) / 2
     const circle = new Circle(center, radius)
-    map.getView().fit(circle)
+    map.getView().fit(circle, {
+      duration: 300,
+    })
   }
   const tileSource = new Zoomify({
     extent: extent,
@@ -84,7 +87,7 @@ export function createMap(el: HTMLElement) {
 
     tileSource.setTileUrlFunction((coord) => {
       const [level, addrX, addrY] = getTileAddress(coord)
-      return `https://cdn.nw-buddy.de/worldtiles/${mapId}/map_l${level}_y${addrY}_x${addrX}.webp`
+      return `${tileBaseUrl}${mapId}/map_l${level}_y${addrY}_x${addrX}.webp`
     })
     map.getLayers().insertAt(0, tileLayer)
   }
@@ -93,32 +96,70 @@ export function createMap(el: HTMLElement) {
   })
   map.addLayer(tileLayer)
 
-  const dataLayers: BaseLayer[] = []
-  function clear() {
-    for (const layer of dataLayers) {
-      map.removeLayer(layer)
-    }
-    dataLayers.length = 0
+  const zoneLayers = new LayerGroup({
+    layers: [],
+  })
+  map.addLayer(zoneLayers)
+
+  const iconLayer = new VectorLayer({
+    source: new VectorSource({ features: [] }),
+    minZoom: levels - 3,
+    maxZoom: levels + 1,
+  })
+  map.addLayer(iconLayer)
+
+  const pointLayers = new LayerGroup({
+    layers: [],
+  })
+  map.addLayer(pointLayers)
+
+  function clearZoneLayers() {
+    zoneLayers.getLayers().clear()
+    iconLayer.getSource().clear()
   }
 
-  function useLandmarks(landmarks: Landmark[]) {
-    clear()
-    if (!landmarks) {
+  function useZoneMarkers(markers: MapZoneMarker[]) {
+    clearZoneLayers()
+    if (!markers) {
       return
     }
-    const zoneMarks = landmarks.filter((landmark) => 'shape' in landmark) as LandmarkZone[]
-    const pointMarks = landmarks.filter((landmark) => 'point' in landmark) as LandmarkPoint[]
-
-    for (const items of Object.values(groupBy(zoneMarks, (it) => [it.color, it.opacity, it.layer].join('-')))) {
+    for (const items of Object.values(
+      groupBy(markers, (it) => [it.color, it.outlineColor, it.opacity, it.layer].join('-')),
+    )) {
+      let zIndex = 1
+      if (items[0].layer === 'Area') {
+        zIndex = 2
+      }
+      if (items[0].layer === 'POI') {
+        zIndex = 3
+      }
       const layer = new VectorLayer({
+        zIndex: zIndex,
         source: new VectorSource({
           features: items.map((item) => {
             const poly = new Polygon([item.shape])
-            return new Feature({
+
+            const feature = new Feature({
               geometry: poly,
               item: item,
               payload: item.payload,
             })
+            if (item.icon) {
+              const iconFeature = new Feature({
+                geometry: poly.getInteriorPoint(),
+              })
+              iconFeature.setStyle(
+                new Style({
+                  image: new Icon({
+                    width: 48,
+                    height: 48,
+                    src: item.icon,
+                  }),
+                }),
+              )
+              iconLayer.getSource().addFeature(iconFeature)
+            }
+            return feature
           }),
         }),
         style: {
@@ -127,12 +168,21 @@ export function createMap(el: HTMLElement) {
           'stroke-width': 1,
         },
       })
-      dataLayers.push(layer)
-      map.addLayer(layer)
+      zoneLayers.getLayers().push(layer)
     }
+  }
 
+  function clearPointLayers() {
+    pointLayers.getLayers().clear()
+  }
+
+  function usePointMarkers(markers: MapPointMarker[]) {
+    clearPointLayers()
+    if (!markers) {
+      return
+    }
     for (const items of Object.values(
-      groupBy(pointMarks, (it) => [it.color, it.outlineColor, it.opacity, it.layer].join('-')),
+      groupBy(markers, (it) => [it.color, it.outlineColor, it.opacity, it.layer].join('-')),
     )) {
       const source = new VectorSource({
         features: items.map((item) => {
@@ -144,6 +194,7 @@ export function createMap(el: HTMLElement) {
         }),
       })
       const layer = new WebGLPointsLayer({
+        zIndex: 100,
         source,
         style: {
           'circle-opacity': items[0].opacity ?? 0.75,
@@ -153,37 +204,40 @@ export function createMap(el: HTMLElement) {
           'circle-stroke-width': 1,
         },
       })
-      dataLayers.push(layer)
-      map.addLayer(layer)
+      pointLayers.getLayers().push(layer)
     }
   }
+
   const hover = signal<MarkerEventData>(null)
   const click = signal<MarkerEventData>(null)
 
   map.on('pointermove', (e) => {
     const pixel = map.getEventPixel(e.originalEvent)
     const coords = map.getEventCoordinate(e.originalEvent)
-    const markers = map.getFeaturesAtPixel(pixel).map((it) => it.get('item') as Landmark)
+    const markers = map.getFeaturesAtPixel(pixel).map((it) => it.get('item') as MapMarker)
     hover.set({ pixel, coords, markers })
   })
 
   map.on('click', (e) => {
     const pixel = map.getEventPixel(e.originalEvent)
     const coords = map.getEventCoordinate(e.originalEvent)
-    const markers = map.getFeaturesAtPixel(pixel).map((it) => it.get('item') as Landmark)
+    const markers = map.getFeaturesAtPixel(pixel).map((it) => it.get('item') as MapMarker)
     click.set({ pixel, coords, markers })
   })
   return {
     useMapId,
-    useLandmarks,
+    useZoneMarkers,
+    usePointMarkers,
+    clearPointLayers,
+    clearZoneLayers,
     fitView,
-    clear,
+    // clear,
     hover,
     click,
   }
 }
 
-function getFillColor(mark: Landmark) {
+function getFillColor(mark: MapMarker) {
   const rgb = hexToRgb(mark.color ?? '#ffffff')
   const opacity = mark.opacity ?? 1
   return `rgba(${rgb.r},${rgb.g},${rgb.b},${opacity})`

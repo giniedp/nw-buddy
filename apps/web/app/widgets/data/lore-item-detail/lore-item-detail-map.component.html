@@ -1,5 +1,13 @@
 @if (landmarks()?.length) {
-  <nwb-land-map class="aspect-square relative" [map]="mapId()" [landmarks]="landmarks()">
+  <nwb-world-map
+    class="aspect-square relative"
+    #map
+    [map]="mapId()"
+    [pointMarkers]="landmarks()"
+    [bounds]="bounds()"
+    [showCoords]="true"
+    [showTooltip]="true"
+  >
     <div
       class="w-auto flex flex-row rounded-full text-sm text-white overflow-clip bg-base-100 p-[2px] absolute top-[7px] right-[7px]"
     >
@@ -8,9 +16,9 @@
           <option [value]="value">{{ value }}</option>
         }
       </select>
-      <button class="btn btn-circle btn-ghost btn-sm" (click)="toggleFullscreen()">
+      <button class="btn btn-circle btn-ghost btn-sm" (click)="map.toggleFullscreen()">
         <nwb-icon [icon]="iconExpand" class="w-4 h-4" />
       </button>
     </div>
-  </nwb-land-map>
+  </nwb-world-map>
 }

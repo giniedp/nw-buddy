@@ -1,10 +1,11 @@
-@if (landmarks()?.length) {
+@if (pointMarkers()?.length) {
   <nwb-world-map
     class="aspect-video relative"
     [map]="mapId()"
     [bounds]="bounds()"
     [fit]="false"
-    [landmarks]="landmarks()"
+    [pointMarkers]="pointMarkers()"
+    [zoneMarkers]="zoneMarkers()"
     (featureClicked)="onFeatureClicked($event)"
     [showCoords]="true"
     [showTooltip]="true"

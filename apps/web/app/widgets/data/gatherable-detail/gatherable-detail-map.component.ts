@@ -13,8 +13,7 @@ import { svgCircleExclamation, svgCompress, svgExpand } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
 import { eqCaseInsensitive, selectSignal } from '~/utils'
-import { Landmark, LandmarkPoint } from '~/widgets/land-map'
-import { WorldMapComponent } from '~/widgets/world-map'
+import { MapPointMarker, WorldMapComponent } from '~/widgets/world-map'
 import { GatherableDetailStore } from './gatherable-detail.store'
 
 const SIZE_COLORS: Record<GatherableNodeSize, string> = {
@@ -94,7 +93,7 @@ export class GatherableDetailMapComponent {
       variationsMeta ??= []
       chunks ??= []
 
-      const result: Record<string, Record<string, Landmark[]>> = {}
+      const result: Record<string, Record<string, MapPointMarker[]>> = {}
 
       if (gatherablesMeta) {
         const gatherable = gatherables.find((it) => eqCaseInsensitive(it.GatherableID, gatherablesMeta.gatherableID))
@@ -205,16 +204,13 @@ export class GatherableDetailMapComponent {
     },
   )
 
-  protected limit = signal<number>(5000)
-  protected availableLimits = [5000, 10000, 25000, 50000, 75000, 100000, 150000, 0]
   protected vm = selectSignal(
     {
       mapId: this.mapId,
       data: this.data,
       disabledSizes: this.disabledSizes,
-      limit: this.limit,
     },
-    ({ mapId, data, disabledSizes, limit }) => {
+    ({ mapId, data, disabledSizes }) => {
       if (!data || !mapId || !data[mapId]) {
         return null
       }
@@ -224,27 +220,14 @@ export class GatherableDetailMapComponent {
       for (const size of disabledSizes) {
         delete result[size]
       }
-      const showLimit = !limit || limit > 10000
+
       const landmarks = Object.values(result).flat()
       landmarks.sort((a, b) => b.radius - a.radius)
-      if (!limit || (!!limit && landmarks.length <= limit)) {
-        return {
-          landmarks,
-          isLimited: false,
-          shown: landmarks.length,
-          total: landmarks.length,
-          showLimit,
-          limit,
-        }
-      }
       const total = landmarks.length
       return {
         landmarks: landmarks, //.slice(0, limit),
         isLimited: true,
-        shown: limit,
         total,
-        showLimit,
-        limit,
       }
     },
   )
@@ -257,7 +240,7 @@ export class GatherableDetailMapComponent {
     if (!data || !mapId || !data[mapId] || !gatherable) {
       return null
     }
-    const points = data[mapId]?.[size]?.map((it: LandmarkPoint) => it.point)
+    const points = data[mapId]?.[size]?.map((it: MapPointMarker) => it.point)
     return {
       gatherableID: gatherable.GatherableID,
       mapID: mapId,

@@ -11,6 +11,7 @@ export interface Environment extends EnvVars {
   deployUrl: string
   modelsUrl: string
   nwDataUrl: string
+  worldTilesUrl: string
 }
 
 export function getModelsUrl(env: EnvVars) {
@@ -21,10 +22,14 @@ export function getNwDataPath(version: string = null) {
   return `nw-data/${version || ''}`.replace(/\/$/, '')
 }
 
-export function getNwDataCdnUrl(env: EnvVars) {
-  return new URL(getNwDataPath(), env.cdnUrl).toString()
-}
-
 export function getNwDataDeployUrl(env: EnvVars) {
   return env.deployUrl + getNwDataPath()
+}
+
+export function getWorldTilesCdnUrl(env: EnvVars) {
+  return new URL('worldtiles', env.cdnUrl) + '/'
+}
+
+export function getWorldTilesUrl(env: EnvVars) {
+  return env.deployUrl + 'nw-data/worldtiles' + '/'
 }

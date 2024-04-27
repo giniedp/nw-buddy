@@ -1,6 +1,12 @@
 @if (vm()?.landmarks?.length) {
-  <nwb-world-map class="block aspect-square relative" #map [map]="mapId()" [landmarks]="vm()?.landmarks" [showCoords]="true" [showTooltip]="true">
-
+  <nwb-world-map
+    class="block aspect-square relative"
+    #map
+    [map]="mapId()"
+    [pointMarkers]="vm()?.landmarks"
+    [showCoords]="true"
+    [showTooltip]="true"
+  >
     <div
       class="w-auto flex flex-row rounded-full text-sm text-white overflow-clip bg-base-100 p-[2px] absolute top-[7px] right-[7px]"
     >

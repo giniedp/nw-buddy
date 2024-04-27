@@ -76,12 +76,12 @@ export function getZoneBackground(zone: ZoneDefinition) {
   return (zone as PoiDefinition)?.TooltipBackground
 }
 
-export function getZoneIcon(zone: ZoneDefinition) {
+export function getZoneIcon(zone: ZoneDefinition, fallback = NW_FALLBACK_ICON) {
   if (!zone) {
     return null
   }
   const poi = zone as PoiDefinition
-  return poi.MapIcon || poi.CompassIcon || NW_FALLBACK_ICON
+  return poi.MapIcon || poi.CompassIcon || fallback
 }
 
 export function getZoneMetaId(zone: ZoneDefinition) {

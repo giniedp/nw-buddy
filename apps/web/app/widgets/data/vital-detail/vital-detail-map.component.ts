@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Output, inject, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { getZoneInfo, getZoneName } from '@nw-data/common'
+import { getZoneInfo, getZoneName, getZoneType } from '@nw-data/common'
 import {
   Areadefinitions,
   LvlSpanws,
@@ -18,7 +18,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgCompress, svgExpand } from '~/ui/icons/svg'
 import { TooltipModule } from '~/ui/tooltip'
 import { selectSignal } from '~/utils'
-import { Landmark, LandmarkPoint, LandmarkZone, MapViewBounds } from '~/widgets/land-map'
+import { MapPointMarker, MapZoneMarker, MapViewBounds } from '~/widgets/world-map'
 import { VitalDetailStore } from './vital-detail.store'
 import { WorldMapComponent } from '~/widgets/world-map'
 
@@ -58,7 +58,7 @@ export class VitalDetailMapComponent {
     (data) => selectData(data, this.tl8),
   )
 
-  protected mapIds = selectSignal(this.data, (it) => Object.keys(it || {}))
+  protected mapIds = selectSignal(this.data, (it) => Object.keys(it?.points || {}))
   protected fallbackMapId = selectSignal(this.mapIds, (it) => it?.[0])
   protected selectedMapId = signal<string>(null)
   protected mapId = selectSignal(
@@ -76,18 +76,36 @@ export class VitalDetailMapComponent {
     },
   )
 
-  public readonly landmarks = selectSignal(
+  public readonly pointMarkers = selectSignal(
     {
       mapId: this.mapId,
       data: this.data,
     },
     ({ mapId, data }) => {
-      if (!data || !mapId || !data[mapId]) {
+      const points = data?.points
+      console.log({ points, mapId })
+      if (!points || !mapId || !points[mapId]) {
         return []
       }
-      return data[mapId]
+
+      return points[mapId]
     },
   )
+
+  public readonly zoneMarkers = selectSignal(
+    {
+      mapId: this.mapId,
+      data: this.data,
+    },
+    ({ mapId, data }) => {
+      const zones = data?.zones
+      if (!zones || !mapId || !zones[mapId]) {
+        return []
+      }
+      return zones[mapId]
+    },
+  )
+
   public readonly bounds = selectSignal(
     {
       mapId: this.mapId,
@@ -113,7 +131,7 @@ export class VitalDetailMapComponent {
   }
 
   protected onFeatureClicked(id: string) {
-    const payload = this.landmarks().find((it) => it.id === id)?.payload
+    const payload = this.pointMarkers().find((it) => it.id === id)?.payload
     if (payload?.vitalId) {
       this.vitalClicked.emit(payload)
     }
@@ -166,9 +184,14 @@ function selectData(
   },
   tl8: TranslateService,
 ) {
-  const result: Record<string, Landmark<VitalPointData>[]> = {}
+  const points: Record<string, MapPointMarker<VitalPointData>[]> = {}
+  const zones: Record<string, MapZoneMarker<VitalPointData>[]> = {}
+
   if (!meta) {
-    return result
+    return {
+      points,
+      zones,
+    }
   }
 
   const territories = sortBy(meta.territories, (id) => {
@@ -194,14 +217,10 @@ function selectData(
     const name = getZoneName(zone)
     const info = getZoneInfo(zone)
     const mapId = 'newworld_vitaeeterna'
-    result[mapId] ??= []
-    result[mapId].push({
+    zones[mapId] ??= []
+    zones[mapId].push({
       id: `territory:${territoryId}`,
-      title: `
-      <div style="text-align: left;">
-        <strong>${tl8.get(name)}</strong><br>${info}
-      </div>
-      `,
+      title: `${getZoneType(zone)}: ${tl8.get(zone.NameLocalizationKey)}`,
       color: '#FFFFFF',
       outlineColor: '#590e0e',
       shape: shape,
@@ -209,7 +228,7 @@ function selectData(
       payload: {
         territories: [territoryId],
       },
-    } satisfies LandmarkZone<VitalPointData>)
+    } satisfies MapZoneMarker<VitalPointData>)
   }
 
   let id = 0
@@ -218,16 +237,10 @@ function selectData(
     for (const spawn of meta.lvlSpanws[mapId as keyof LvlSpanws] || []) {
       id++
       const levels = spawn.l.length ? spawn.l : vital?.Level ? [vital.Level] : []
-      result[mapId] ??= []
-      result[mapId].push({
+      points[mapId] ??= []
+      points[mapId].push({
         id: `spawn:${id}`,
-        title: `
-          <div style="text-align: left;">
-            <strong>${name}</strong><br>
-            Level ${levels.join(', ')}<br>
-            x: ${spawn.p[0].toFixed(2)} y: ${spawn.p[1].toFixed(2)}
-          </div>
-        `,
+        title: `${name} (lvl. ${levels.join(', ')})`,
         color: '#DC2626',
         outlineColor: '#590e0e',
         opacity: 1,
@@ -239,8 +252,11 @@ function selectData(
           territories: spawn.t,
           point: spawn.p,
         },
-      } satisfies LandmarkPoint<VitalPointData>)
+      } satisfies MapPointMarker<VitalPointData>)
     }
   }
-  return result
+  return {
+    points,
+    zones,
+  }
 }

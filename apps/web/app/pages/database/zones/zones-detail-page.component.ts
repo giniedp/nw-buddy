@@ -49,7 +49,7 @@ export class ZoneDetailPageComponent {
   protected gridUtils = inject(TableGridUtils)
   protected gridOptions: GridOptions = {
     columnDefs: [
-      vitalColIcon(this.gridUtils, { color: true }),
+      vitalColIcon(this.gridUtils),
       vitalColName(this.gridUtils, { link: true }),
       vitalColLevel(this.gridUtils),
     ],

@@ -2,10 +2,8 @@ import { CommonModule } from '@angular/common'
 import { Component, ElementRef, inject, input, output, signal } from '@angular/core'
 import { IconsModule } from '~/ui/icons'
 import { svgExpand } from '~/ui/icons/svg'
-import { Landmark, MapView, MapViewBounds } from '../land-map'
-import { MarkerEventData } from './create-map'
+import { MapMarker, MapPointMarker, MapView, MapViewBounds, MapZoneMarker, MarkerEventData } from './types'
 import { WorldMapDirective } from './world-map.directive'
-import { sortBy } from 'lodash'
 
 @Component({
   standalone: true,
@@ -15,6 +13,8 @@ import { sortBy } from 'lodash'
       [nwbWorldMap]
       [map]="map()"
       [landmarks]="landmarks()"
+      [pointMarkers]="pointMarkers()"
+      [zoneMarkers]="zoneMarkers()"
       [fit]="fit()"
       [view]="view()"
       [bounds]="bounds()"
@@ -34,7 +34,7 @@ import { sortBy } from 'lodash'
 
     @if (showTooltip() && cursorPosition() && markersAtCursor()?.length) {
       <div
-        class="absolute bg-base-300 bg-opacity-85 px-2 py-1 border border-base-100 rounded-sm prose prose-sm"
+        class="absolute bg-base-300 bg-opacity-85 px-2 py-1 border border-base-100 rounded-sm text-xs pointer-events-none"
         [style.top.px]="cursorPosition().y + 5"
         [style.left.px]="cursorPosition().x + 5"
       >
@@ -49,12 +49,14 @@ import { sortBy } from 'lodash'
   `,
   imports: [CommonModule, WorldMapDirective, IconsModule],
   host: {
-    class: 'block bg-[#859594] relative',
+    class: 'block bg-[#859594] relative overflow-visible',
   },
 })
 export class WorldMapComponent {
   public map = input<string>('newworld_vitaeeterna')
-  public landmarks = input<Landmark[]>(null)
+  public landmarks = input<MapMarker[]>(null)
+  public pointMarkers = input<MapPointMarker[]>(null)
+  public zoneMarkers = input<MapZoneMarker[]>(null)
   public fit = input(false)
   public view = input<MapView>(null)
   public bounds = input<MapViewBounds>(null)
@@ -66,7 +68,7 @@ export class WorldMapComponent {
   public pointClicked = output<number[]>()
 
   public coordsAtCursor = signal<number[]>([])
-  public markersAtCursor = signal<Landmark[]>([])
+  public markersAtCursor = signal<MapMarker[]>([])
   public cursorPosition = signal<{ x: number; y: number }>(null)
 
   protected iconExpand = svgExpand
@@ -91,10 +93,9 @@ export class WorldMapComponent {
   }
 
   protected onMarkerClick(marker: MarkerEventData) {
-
     if (marker) {
       this.pointClicked.emit(marker.coords)
-      this.featureClicked.emit(sortBy(marker.markers, (it) => it.id)?.[0]?.id)
+      this.featureClicked.emit(marker.markers?.[0]?.id)
     }
   }
 }
