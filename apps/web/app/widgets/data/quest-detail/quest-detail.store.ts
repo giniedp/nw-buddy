@@ -15,6 +15,7 @@ export class QuestDetailStore extends ComponentStore<{ questId: string }> {
   public readonly quest$ = this.select(this.db.quest(this.questId$), (it) => it)
   public readonly title$ = this.select(this.quest$, (it) => it?.Title || humanize(it?.ObjectiveID))
   public readonly type$ = this.select(this.quest$, (it) => it?.Type)
+  public readonly schedule$ = this.select(this.quest$, (it) => it?.ScheduleId)
   public readonly npcDestinationId$ = this.select(this.quest$, (it) => it?.NpcDestinationId)
   public readonly npcDestination$ = this.select(this.db.npc(this.npcDestinationId$), (it) => it)
   public readonly description$ = this.select(this.quest$, (it) => it?.Description)
