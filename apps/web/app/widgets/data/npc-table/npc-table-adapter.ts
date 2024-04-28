@@ -15,6 +15,8 @@ import {
 } from './npc-table-cols'
 import { Observable } from 'rxjs'
 import { NpcGridCellComponent } from './npc-cell.component'
+import { NpcService } from '../npc-detail'
+import { sortBy } from 'lodash'
 
 @Injectable()
 export class NpcsTableAdapter
@@ -24,9 +26,10 @@ export class NpcsTableAdapter
   private i18n = inject(TranslateService)
   private config = inject<TableGridAdapterOptions<NpcTableRecord>>(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
   private utils: TableGridUtils<NpcTableRecord> = inject(TableGridUtils)
+  private service = inject(NpcService)
 
   public entityID(item: NpcTableRecord): string {
-    return item.NPCId
+    return item.id
   }
 
   public entityCategories(item: NpcTableRecord): DataTableCategory[] {
@@ -53,7 +56,7 @@ export class NpcsTableAdapter
 
   private source$: Observable<NpcTableRecord[]> = selectStream(
     {
-      items: this.config?.source || this.db.npcs,
+      items: this.config?.source || this.service.groups$,
     },
     ({ items }) => {
       const filter = this.config?.filter
@@ -63,6 +66,8 @@ export class NpcsTableAdapter
       const sort = this.config?.sort
       if (sort) {
         items = [...items].sort(sort)
+      } else {
+        items = sortBy(items, (it) => it.groupId)
       }
       return items
     }

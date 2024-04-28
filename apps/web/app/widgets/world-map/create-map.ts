@@ -61,11 +61,15 @@ export function createMap({ el, tileBaseUrl }: WorldMapOptions) {
     }),
   })
   function fitView(min: number[], max: number[]) {
-    const center = [(min[0] + max[0]) / 2, (min[1] + max[1]) / 2]
-    const radius = Math.max(max[0] - min[0], max[1] - min[1]) / 2
-    const circle = new Circle(center, radius)
-    map.getView().fit(circle, {
+    if (!min || !max) {
+      return
+    }
+    const padding = 48
+
+    map.getView().fit(new Polygon([[min, [max[0], min[1]], max, [min[0], max[1]], min]]), {
       duration: 300,
+      padding: [padding, padding, padding, padding],
+      maxZoom: levels - 1
     })
   }
   const tileSource = new Zoomify({

@@ -15,6 +15,8 @@ export class QuestDetailStore extends ComponentStore<{ questId: string }> {
   public readonly quest$ = this.select(this.db.quest(this.questId$), (it) => it)
   public readonly title$ = this.select(this.quest$, (it) => it?.Title || humanize(it?.ObjectiveID))
   public readonly type$ = this.select(this.quest$, (it) => it?.Type)
+  public readonly npcDestinationId$ = this.select(this.quest$, (it) => it?.NpcDestinationId)
+  public readonly npcDestination$ = this.select(this.db.npc(this.npcDestinationId$), (it) => it)
   public readonly description$ = this.select(this.quest$, (it) => it?.Description)
   public readonly level$ = this.select(this.quest$, (it) => it?.DifficultyLevel)
   public readonly levelLabel$ = this.select(this.level$, (lvl) => (lvl ? `lvl. ${lvl}` : ''))
@@ -34,6 +36,7 @@ export class QuestDetailStore extends ComponentStore<{ questId: string }> {
   public readonly rewardItemQty$ = this.select(this.quest$, (it) => it?.ItemRewardQty)
   public readonly reward$ = this.select(this.rewardItem$, this.rewardItemQty$, selectReward)
   public readonly rewards$ = this.select(this.eventRewards$, this.reward$, selectRewards)
+
 
   public readonly previousQuests$ = this.select(this.previous$, (list) => {
     if (!list?.length) {

@@ -99,7 +99,7 @@ export class GatherableDetailMapComponent {
         const gatherable = gatherables.find((it) => eqCaseInsensitive(it.GatherableID, gatherablesMeta.gatherableID))
         if (gatherable) {
           const size = getGatherableNodeSize(gatherable.GatherableID) || ('Nodes' as GatherableNodeSize)
-          const name = this.tl8.get(gatherable.DisplayName)
+
 
           for (const mapId in gatherablesMeta.spawns || {}) {
             const spawns = gatherablesMeta.spawns[mapId as keyof Spawns]
@@ -107,7 +107,7 @@ export class GatherableDetailMapComponent {
               result[mapId] ??= {}
               result[mapId][size] ??= []
               result[mapId][size].push({
-                title: `${name}<br/>x:${spawn[0].toFixed(2)} y:${spawn[1].toFixed(2)}`,
+                title: `${name} [${spawn[0].toFixed(2)}, ${spawn[1].toFixed(2)}]`,
                 color: SIZE_COLORS[size] || SIZE_COLORS.Medium,
                 outlineColor: SIZE_OUTLINE[size] || SIZE_OUTLINE.Medium,
                 point: spawn,
@@ -147,8 +147,8 @@ export class GatherableDetailMapComponent {
             result[mapId] ??= {}
             result[mapId][size] ??= []
             result[mapId][size].push({
-              title: `${name}<br/>x:${position[0].toFixed(2)} y:${position[1].toFixed(2)}`,
-              color: SIZE_COLORS[size],
+              title: `${name} [${position[0].toFixed(2)}, ${position[1].toFixed(2)}]`,
+              color: SIZE_COLORS[size] || SIZE_COLORS.Medium,
               outlineColor: SIZE_OUTLINE[size] || SIZE_OUTLINE.Medium,
               point: position,
               radius: SIZE_RADIUS[size] || SIZE_RADIUS.Medium,
@@ -228,6 +228,7 @@ export class GatherableDetailMapComponent {
         landmarks: landmarks, //.slice(0, limit),
         isLimited: true,
         total,
+        bounds: getBounds(landmarks),
       }
     },
   )
@@ -272,4 +273,22 @@ export class GatherableDetailMapComponent {
       this.disabledSizes.set([...disabledSizes, size])
     }
   }
+}
+
+function getBounds(marks: MapPointMarker[]) {
+  let min: number[] = null
+  let max: number[] = null
+  for (const mark of marks) {
+    if (!min) {
+      min = mark.point
+      max = mark.point
+    } else {
+      min = [Math.min(min[0], mark.point[0]), Math.min(min[1], mark.point[1])]
+      max = [Math.max(max[0], mark.point[0]), Math.max(max[1], mark.point[1])]
+    }
+  }
+  if (min && max) {
+    return { min, max }
+  }
+  return null
 }

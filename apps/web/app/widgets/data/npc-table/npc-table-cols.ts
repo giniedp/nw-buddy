@@ -1,9 +1,9 @@
 import { NW_FALLBACK_ICON } from '@nw-data/common'
-import { Npc } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
+import { NpcGroup } from '../npc-detail'
 
 export type NpcTableUtils = TableGridUtils<NpcTableRecord>
-export type NpcTableRecord = Npc
+export type NpcTableRecord = NpcGroup
 
 export function npcColIcon(util: NpcTableUtils) {
   return util.colDef({
@@ -20,7 +20,7 @@ export function npcColIcon(util: NpcTableUtils) {
       return util.elA(
         {
           attrs: {
-            href: util.tipLink('npc', data.NPCId),
+            href: util.tipLink('npc', data.id),
             target: '_blank',
           },
         },
@@ -37,7 +37,7 @@ export function npcColId(util: NpcTableUtils) {
   return util.colDef<string>({
     colId: 'nPCId',
     headerValueGetter: () => 'ID',
-    field: 'NPCId',
+    field: 'id',
     //hide: true,
   })
 }
@@ -46,8 +46,7 @@ export function npcColName(util: NpcTableUtils) {
   return util.colDef<string>({
     colId: 'genericName',
     headerValueGetter: () => 'Name',
-    field: 'GenericName',
-    valueGetter: ({ data }) => util.tl8(data.GenericName),
+    valueGetter: ({ data }) => util.tl8(data.npcs[0].GenericName),
   })
 }
 
@@ -55,7 +54,6 @@ export function npcColTitle(util: NpcTableUtils) {
   return util.colDef<string>({
     colId: 'title',
     headerValueGetter: () => 'Title',
-    field: 'Title',
-    valueGetter: ({ data }) => util.tl8(data.Title),
+    valueGetter: ({ data }) => util.tl8(data.npcs[0].Title),
   })
 }

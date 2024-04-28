@@ -58,4 +58,16 @@
       }
     </div>
   }
+  @if(npcDestination$ | async; as npc){
+    <h3 class="font-bold">Npc Destination</h3>
+    <div class="flex flex-row items-center gap-1">
+      <a [nwLink]="npc.NPCId" [nwLinkResource]="'npc'" class="flex-none">
+        <img [nwImage]="defaultIcon" class="w-5 h-5" />
+      </a>
+      <a class="flex-1 link-hover" [routerLink]="['/npcs/table', npc.NPCId]">
+        <span>{{ npc.GenericName | nwText }}</span>
+      </a>
+    </div>
+
+  }
 </div>

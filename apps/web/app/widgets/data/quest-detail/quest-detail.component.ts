@@ -8,6 +8,7 @@ import { QuestDetailFollowUpComponent } from './quest-detail-follow-up.component
 import { RouterModule } from '@angular/router'
 import { GameEventDetailDirective } from '../game-event-detail/game-event-detail.directive'
 import { GameEventDetailRewardsComponent } from '../game-event-detail/game-event-detail-rewards.component'
+import { NW_FALLBACK_ICON } from '@nw-data/common'
 
 @Component({
   standalone: true,
@@ -42,6 +43,7 @@ export class QuestDetailComponent extends QuestDetailStore {
   @Output()
   public questChange = this.quest$
 
+  protected defaultIcon = NW_FALLBACK_ICON
   public constructor(db: NwDataService) {
     super(db)
   }

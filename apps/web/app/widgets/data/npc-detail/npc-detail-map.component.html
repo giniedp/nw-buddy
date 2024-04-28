@@ -20,23 +20,5 @@
         <nwb-icon [icon]="iconExpand" class="w-4 h-4" />
       </button>
     </div>
-
-    @if (availableSizes()?.length) {
-      <div class="absolute bottom-0 w-full p-1 flex flex-row justify-center items-center gap-1 bg-opacity-50 bg-black">
-        @for (row of availableSizes(); track $index) {
-          <span
-            class="badge cursor-pointer"
-            [class.badge-outline]="row.disabled"
-            [class.line-through]="row.disabled"
-            [class.opacity-50]="row.disabled"
-            [style.background-color]="row.color"
-            [tooltip]="row.value"
-            (click)="toggleSize(row.value)"
-          >
-            {{ row.count }}
-          </span>
-        }
-      </div>
-    }
   </nwb-world-map>
 }

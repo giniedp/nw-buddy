@@ -15,12 +15,12 @@ import { NpcTableRecord } from './npc-table-cols'
   selector: 'nwb-npc-grid-cell',
   template: `
     <nwb-item-header class="gap-2">
-      <a [nwbItemIcon]="icon" [nwLink]="data?.NPCId" [nwLinkResource]="'npc'" class="w-[76px] h-[76px]"> </a>
+      <a [nwbItemIcon]="icon" [nwLink]="data?.id" [nwLinkResource]="'npc'" class="w-[76px] h-[76px]"> </a>
       <nwb-item-header-content
         class="z-10"
-        [title]="data?.GenericName | nwText | nwTextBreak: ' - '"
+        [title]="data?.name | nwText | nwTextBreak: ' - '"
         [text1]="'NPC'"
-        [text2]="data?.Title | nwText | nwTextBreak: ' - '"
+        [text2]="data?.title | nwText | nwTextBreak: ' - '"
       />
     </nwb-item-header>
   `,
@@ -42,7 +42,7 @@ export class NpcGridCellComponent implements VirtualGridCellComponent<NpcTableRe
       cellDataView: NpcGridCellComponent,
       cellEmptyView: EmptyComponent,
       getQuickFilterText: (item, tl8) => {
-        return [tl8(item.GenericName), tl8(item.Title)].filter((it) => !!it).join(' ')
+        return [tl8(item.name), tl8(item.title)].filter((it) => !!it).join(' ')
       },
     }
   }
