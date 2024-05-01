@@ -1,5 +1,5 @@
 import { CommonModule, DecimalPipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, Input, inject, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, Input, inject, input, viewChild } from '@angular/core'
 import { toSignal } from '@angular/core/rxjs-interop'
 import saveAs from 'file-saver'
 import { NwModule } from '~/nw'
@@ -9,6 +9,8 @@ import { ItemFrameModule } from '~/ui/item-frame'
 import { TooltipModule } from '~/ui/tooltip'
 import { GatherableDetailMapComponent } from './gatherable-detail-map.component'
 import { GatherableDetailStore } from './gatherable-detail.store'
+import { GatherableDetailStore2 } from './gatherable-detail.store2'
+import { patchState } from '@ngrx/signals'
 
 @Component({
   standalone: true,
@@ -17,42 +19,71 @@ import { GatherableDetailStore } from './gatherable-detail.store'
   exportAs: 'detail',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule, NwModule, ItemFrameModule, GatherableDetailMapComponent, IconsModule, TooltipModule],
-  providers: [DecimalPipe, GatherableDetailStore],
+  providers: [DecimalPipe, GatherableDetailStore, GatherableDetailStore2],
   host: {
     class: 'block rounded-md overflow-clip',
   },
 })
 export class GatherableDetailComponent {
-  protected store = inject(GatherableDetailStore)
+ protected store = inject(GatherableDetailStore)
+  protected store2 = inject(GatherableDetailStore2)
   protected map = viewChild(GatherableDetailMapComponent)
+
+  public showMap = input(false)
+  public showProps = input(false)
 
   @Input()
   public set gatherableId(value: string) {
+    patchState(this.store2, { gatherableId: value })
     this.store.patchState({ recordId: value })
   }
 
-  public readonly recordId = toSignal(this.store.gatherableId$)
-  public readonly icon = toSignal(this.store.icon$)
-  public readonly name = toSignal(this.store.name$)
-  public readonly size = toSignal(this.store.size$)
-  public readonly tradeSkill = toSignal(this.store.tradeSkill$)
-  public readonly lootTableIds = toSignal(this.store.lootTableIds$)
-  public readonly props = toSignal(this.store.props$)
-  public readonly siblings = toSignal(this.store.siblings$)
+  public get recordId() {
+    return this.store2.gatherableId()
+  }
+
+  public get icon() {
+    return this.store2.icon()
+  }
+  public get name() {
+    return this.store2.name()
+  }
+  public get size() {
+    return this.store2.size()
+  }
+  public get tradeSkill() {
+    return this.store2.tradeSkill()
+  }
+  public get sizeSiblings() {
+    return this.store2.sizeSiblings()
+  }
+  public get variations() {
+    return this.store2.variations()
+  }
+  public get lootTable() {
+    return this.store2.lootTable()
+  }
+  public get lootTables() {
+    return this.store2.lootTables()
+  }
+  public get gatherableIds() {
+    return this.store2.idsForMap()
+  }
 
   protected iconDownload = svgDownload
 
   protected downloadPositions() {
-    const data = this.map().spawns()
-    const fileName = `${data.gatherableID}.json`
-    const object = {
-      gatherableID: data.gatherableID,
-      points: data.points,
-    }
-    const blob = new Blob([JSON.stringify(object, null, 2)], {
-      type: 'application/json',
-    })
-    saveBlobToFile(blob, fileName)
+
+    // const data = this.map().spawns()
+    // const fileName = `${this.gatherableId}.json`
+    // const object = {
+    //   gatherableID: this.gatherableId,
+    //   points: data.points,
+    // }
+    // const blob = new Blob([JSON.stringify(object, null, 2)], {
+    //   type: 'application/json',
+    // })
+    // saveBlobToFile(blob, fileName)
   }
 }
 

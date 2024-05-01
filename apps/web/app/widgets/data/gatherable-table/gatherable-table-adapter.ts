@@ -1,14 +1,20 @@
 import { GridOptions } from '@ag-grid-community/core'
 import { Injectable, inject } from '@angular/core'
-import { COLS_GATHERABLES, COLS_ITEMDEFINITIONMASTER, Gatherables } from '@nw-data/generated'
+import { COLS_GATHERABLES } from '@nw-data/generated'
 import { TranslateService } from '~/i18n'
-import { NwDataService } from '~/data'
-import { TABLE_GRID_ADAPTER_OPTIONS, TableGridAdapter, TableGridAdapterOptions, TableGridUtils } from '~/ui/data/table-grid'
+import {
+  TABLE_GRID_ADAPTER_OPTIONS,
+  TableGridAdapter,
+  TableGridAdapterOptions,
+  TableGridUtils,
+} from '~/ui/data/table-grid'
 
+import { Observable } from 'rxjs'
 import { DataViewAdapter } from '~/ui/data/data-view'
 import { DataTableCategory, addGenericColumns } from '~/ui/data/table-grid'
 import { VirtualGridOptions } from '~/ui/data/virtual-grid'
 import { selectStream } from '~/utils'
+import { GatherableService } from '../gatherable'
 import {
   GatherableTableRecord,
   gatherableColExpansion,
@@ -16,6 +22,7 @@ import {
   gatherableColID,
   gatherableColIcon,
   gatherableColLootTable,
+  gatherableColLootTableCount,
   gatherableColMaxRespawnTime,
   gatherableColMinRespawnTime,
   gatherableColName,
@@ -24,15 +31,16 @@ import {
   gatherableColVariationCount,
   gatherableColVariations,
 } from './gatherable-table-cols'
-import { Observable } from 'rxjs'
 
 @Injectable()
 export class GatherableTableAdapter
   implements TableGridAdapter<GatherableTableRecord>, DataViewAdapter<GatherableTableRecord>
 {
-  private db = inject(NwDataService)
+  private service = inject(GatherableService)
   private i18n = inject(TranslateService)
-  private config = inject<TableGridAdapterOptions<GatherableTableRecord>>(TABLE_GRID_ADAPTER_OPTIONS, { optional: true })
+  private config = inject<TableGridAdapterOptions<GatherableTableRecord>>(TABLE_GRID_ADAPTER_OPTIONS, {
+    optional: true,
+  })
   private utils: TableGridUtils<GatherableTableRecord> = inject(TableGridUtils)
 
   public entityID(item: GatherableTableRecord): string {
@@ -43,10 +51,12 @@ export class GatherableTableAdapter
     if (!item.Tradeskill) {
       return null
     }
-    return [{
-      id: item.Tradeskill,
-      label: item.Tradeskill,
-    }]
+    return [
+      {
+        id: item.Tradeskill,
+        label: item.Tradeskill,
+      },
+    ]
   }
 
   public virtualOptions(): VirtualGridOptions<GatherableTableRecord> {
@@ -66,25 +76,10 @@ export class GatherableTableAdapter
 
   private source$: Observable<GatherableTableRecord[]> = selectStream(
     {
-      items: this.config?.source || this.db.gatherables,
-      metaMap: this.db.gatherablesMetadataMap,
-      variationsMap: this.db.gatherableVariationsByGatherableIdMap,
-      variationsMetaMap: this.db.variationsMetadataMap,
+      items: this.config?.source || this.service.gatherables$,
     },
-    ({ items, metaMap, variationsMap, variationsMetaMap }) => {
-
-      let records: GatherableTableRecord[] = items.map((it): GatherableTableRecord => {
-        const meta = metaMap.get(it.GatherableID)
-        const variations = (variationsMap.get(it.GatherableID) || []).filter((it) => !!it)
-        const variationsMeta = variations.map((it) => variationsMetaMap.get(it.VariantID)).filter((it) => !!it)
-        return {
-          ...it,
-          $meta: meta,
-          $variations: variations,
-          $variationsMetas: variationsMeta,
-        }
-      })
-
+    ({ items }) => {
+      let records = items
       const filter = this.config?.filter
       if (filter) {
         records = records.filter(filter)
@@ -94,7 +89,7 @@ export class GatherableTableAdapter
         records = [...records].sort(sort)
       }
       return records
-    }
+    },
   )
 }
 
@@ -109,10 +104,11 @@ export function buildCommonGatherableGridOptions(util: TableGridUtils<Gatherable
       gatherableColMinRespawnTime(util),
       gatherableColMaxRespawnTime(util),
       gatherableColLootTable(util),
+      gatherableColLootTableCount(util),
       gatherableColExpansion(util),
       gatherableColSpawnCount(util),
       gatherableColVariationCount(util),
-      gatherableColVariations(util)
+      gatherableColVariations(util),
     ],
   }
   addGenericColumns(result, {

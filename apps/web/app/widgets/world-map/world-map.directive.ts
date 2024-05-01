@@ -10,6 +10,7 @@ import { MapMarker, MapPointMarker, MapView, MapViewBounds, MapZoneMarker, Marke
 export class WorldMapDirective {
   public nwbWorldMap = input<void>()
   public map = input<string>(null)
+  public tag = input<string>(null)
   public landmarks = input<MapMarker[]>(null)
   public pointMarkers = input<MapPointMarker[]>(null)
   public zoneMarkers = input<MapZoneMarker[]>(null)
@@ -27,10 +28,10 @@ export class WorldMapDirective {
       tileBaseUrl: environment.worldTilesUrl,
     })
 
-    effect(() => map.useMapId(this.map()))
-    // effect(() => map.useLandmarks(this.landmarks()))
-    effect(() => map.usePointMarkers(this.pointMarkers()))
-    effect(() => map.useZoneMarkers(this.zoneMarkers()))
+    effect(() => map.setMapId(this.map()))
+    effect(() => map.setTag(this.tag()))
+    effect(() => map.setPointMarkers(this.pointMarkers()))
+    effect(() => map.setZoneMarkers(this.zoneMarkers()))
     effect(() => this.markerHovered.emit(map.hover()))
     effect(() => this.markerClicked.emit(map.click()))
     effect(() => {
@@ -39,5 +40,6 @@ export class WorldMapDirective {
         map.fitView(bounds.min, bounds.max)
       }
     })
+
   }
 }

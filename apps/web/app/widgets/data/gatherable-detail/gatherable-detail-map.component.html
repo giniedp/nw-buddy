@@ -1,42 +1,41 @@
-@if (vm()?.landmarks?.length) {
-  <nwb-world-map
-    class="block aspect-square relative"
-    #map
-    [map]="mapId()"
-    [bounds]="vm()?.bounds"
-    [pointMarkers]="vm()?.landmarks"
-    [showCoords]="true"
-    [showTooltip]="true"
+<nwb-world-map
+  class="block aspect-square relative"
+  #map
+  [map]="mapId()"
+  [tag]="tag()"
+  [bounds]="vm()?.bounds"
+  [pointMarkers]="vm()?.landmarks"
+  [showCoords]="true"
+  [showTooltip]="true"
+>
+  <div
+    class="w-auto flex flex-row rounded-full text-sm text-white overflow-clip bg-base-100 p-[2px] absolute top-[7px] right-[7px]"
   >
-    <div
-      class="w-auto flex flex-row rounded-full text-sm text-white overflow-clip bg-base-100 p-[2px] absolute top-[7px] right-[7px]"
-    >
-      <select class="select select-sm max-w-[200px]" [ngModel]="mapId()" (ngModelChange)="selectedMapId.set($event)">
-        @for (value of mapIds(); track $index) {
-          <option [value]="value">{{ value }}</option>
-        }
-      </select>
-      <button class="btn btn-circle btn-ghost btn-sm" (click)="map.toggleFullscreen()">
-        <nwb-icon [icon]="iconExpand" class="w-4 h-4" />
-      </button>
-    </div>
+    <select class="select select-sm max-w-[200px]" [ngModel]="mapId()" (ngModelChange)="selectedMapId.set($event)">
+      @for (value of mapIds(); track $index) {
+        <option [value]="value">{{ value }}</option>
+      }
+    </select>
+    <button class="btn btn-circle btn-ghost btn-sm" (click)="map.toggleFullscreen()">
+      <nwb-icon [icon]="iconExpand" class="w-4 h-4" />
+    </button>
+  </div>
 
-    @if (availableSizes()?.length) {
-      <div class="absolute bottom-0 w-full p-1 flex flex-row justify-center items-center gap-1 bg-opacity-50 bg-black">
-        @for (row of availableSizes(); track $index) {
-          <span
-            class="badge cursor-pointer"
-            [class.badge-outline]="row.disabled"
-            [class.line-through]="row.disabled"
-            [class.opacity-50]="row.disabled"
-            [style.background-color]="row.color"
-            [tooltip]="row.value"
-            (click)="toggleSize(row.value)"
-          >
-            {{ row.count }}
-          </span>
-        }
-      </div>
-    }
-  </nwb-world-map>
-}
+  @if (availableSizes()?.length) {
+    <div class="absolute bottom-0 w-full p-1 flex flex-row justify-center items-center gap-1 bg-opacity-50 bg-black">
+      @for (row of availableSizes(); track $index) {
+        <span
+          class="badge cursor-pointer"
+          [class.badge-outline]="row.disabled"
+          [class.line-through]="row.disabled"
+          [class.opacity-50]="row.disabled"
+          [style.background-color]="row.color"
+          [tooltip]="row.value"
+          (click)="toggleSize(row.value)"
+        >
+          {{ row.count }}
+        </span>
+      }
+    </div>
+  }
+</nwb-world-map>

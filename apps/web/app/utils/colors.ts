@@ -1,6 +1,6 @@
 import { crc32 as crc } from 'js-crc'
 
-function crc32(value: string) {
+export function crc32(value: string) {
   return parseInt(crc(value.toLowerCase()), 16)
 }
 

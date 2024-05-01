@@ -9,5 +9,8 @@ export function getGatherableNodeSizes(): GatherableNodeSize[] {
 }
 
 export function getGatherableNodeSize(gatherableId: string): GatherableNodeSize {
+  if (!gatherableId){
+    return null
+  }
   return gatherableId?.match(SIZE_REGEX)?.[1] as GatherableNodeSize
 }

@@ -2,6 +2,8 @@ import { VariationsGatherables } from '../generated/types'
 
 export interface GatherableVariation {
   VariantID: string
+  Name: string
+  Icon: string
   GatherableID: string
   LootTable?: string
 }
@@ -11,6 +13,8 @@ export function convertGatherableVariations(data: VariationsGatherables[]) {
     const variant = result.get(row.VariantID) || {
       VariantID: row.VariantID,
       GatherableID: row.GatherableEntryID || row.GatherableEntryId,
+      Name: row.Name || row.MapTooltipTitleLocTag,
+      Icon: row.MapIcon,
     }
     result.set(row.VariantID, variant)
     if (!variant.GatherableID) {

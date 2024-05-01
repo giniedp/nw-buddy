@@ -5,14 +5,12 @@ import { ActivatedRoute, RouterModule } from '@angular/router'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgSquareArrowUpRight } from '~/ui/icons/svg'
-import { ItemFrameModule } from '~/ui/item-frame'
+import { svgLink, svgSquareArrowUpRight } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { HtmlHeadService, observeRouteParam } from '~/utils'
+import { HtmlHeadService, injectQueryParam, observeRouteParam } from '~/utils'
 import { GatherableDetailModule } from '~/widgets/data/gatherable-detail'
 import { LootModule } from '~/widgets/loot'
-import { ScreenshotModule } from '~/widgets/screenshot'
 
 @Component({
   standalone: true,
@@ -23,13 +21,11 @@ import { ScreenshotModule } from '~/widgets/screenshot'
     CommonModule,
     RouterModule,
     NwModule,
-    ScreenshotModule,
     LootModule,
     IconsModule,
     TooltipModule,
     GatherableDetailModule,
     LayoutModule,
-    ItemFrameModule,
   ],
   providers: [],
   host: {
@@ -38,8 +34,10 @@ import { ScreenshotModule } from '~/widgets/screenshot'
 })
 export class ItemDetailPageComponent {
   protected itemId = toSignal(observeRouteParam(this.route, 'id'))
+  protected tabId = toSignal(injectQueryParam('tab'))
+  protected tag = toSignal(injectQueryParam('tag'))
 
-  protected iconLink = svgSquareArrowUpRight
+  protected iconLink = svgLink
   protected viewerActive = false
   public constructor(
     private route: ActivatedRoute,

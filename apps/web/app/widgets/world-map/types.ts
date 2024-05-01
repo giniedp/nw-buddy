@@ -20,6 +20,8 @@ export interface MapMarkerBase {
   radius?: number
   opacity?: number
   layer?: string
+  outlineWidth?: number
+  tags?: string[]
 }
 
 export interface MapView {

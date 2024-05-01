@@ -3,13 +3,10 @@ import { GatherableVariation, NW_FALLBACK_ICON, getGatherableNodeSize, getItemEx
 import { Gatherables, GatherablesMetadata, VariationsMetadata } from '@nw-data/generated'
 import { TableGridUtils } from '~/ui/data/table-grid'
 import { getGatherableIcon } from '../gatherable-detail/utils'
+import { GatherableRecord, getGatherableSpawnCount } from '../gatherable'
 
 export type GatherableTableUtils = TableGridUtils<GatherableTableRecord>
-export type GatherableTableRecord = Gatherables & {
-  $meta: GatherablesMetadata
-  $variations: GatherableVariation[]
-  $variationsMetas: VariationsMetadata[]
-}
+export type GatherableTableRecord = GatherableRecord
 
 export function gatherableColIcon(util: GatherableTableUtils) {
   return util.colDef({
@@ -78,7 +75,7 @@ export function gatherableColTradeSkill(util: GatherableTableUtils) {
     field: 'Tradeskill',
     ...util.selectFilter({
       order: 'asc',
-    })
+    }),
   })
 }
 
@@ -91,7 +88,7 @@ export function gatherableColLootTable(util: GatherableTableUtils) {
     ...util.selectFilter({
       order: 'asc',
       search: true,
-    })
+    }),
   })
 }
 
@@ -180,6 +177,17 @@ export function gatherableColVariationCount(util: GatherableTableUtils) {
   })
 }
 
+export function gatherableColLootTableCount(util: GatherableTableUtils) {
+  return util.colDef<number>({
+    colId: 'lootTableCount',
+    headerValueGetter: () => 'Num Loot Tables',
+    getQuickFilterText: () => '',
+    width: 150,
+    valueGetter: ({ data }) => data.$lootTables?.length ?? 0,
+    filter: NumberFilter,
+  })
+}
+
 export function gatherableColVariations(util: GatherableTableUtils) {
   return util.colDef<string[]>({
     colId: 'variations',
@@ -220,22 +228,7 @@ export function gatherableColSpawnCount(util: GatherableTableUtils) {
     headerValueGetter: () => 'Num Spawns',
     getQuickFilterText: () => '',
     width: 150,
-    valueGetter: ({ data }) => {
-      let sum = 0
-      if (data.$meta?.spawns) {
-        for (const key in data.$meta.spawns) {
-          sum += data.$meta.spawns[key].length
-        }
-      }
-      if (data.$variationsMetas) {
-        for (const variation of data.$variationsMetas) {
-          for (const entry of variation.variantPositions) {
-            sum += entry.elementCount
-          }
-        }
-      }
-      return sum
-    },
+    valueGetter: ({ data }) => getGatherableSpawnCount(data),
     filter: NumberFilter,
   })
 }

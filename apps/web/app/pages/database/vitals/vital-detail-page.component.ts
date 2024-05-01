@@ -109,7 +109,7 @@ export class VitalDetailComponent {
   }
 
   protected onPointClicked(payload: VitalPointData) {
-    if (!payload) {
+    if (!payload || !this.editor) {
       return
     }
     this.editor.territoryId = null

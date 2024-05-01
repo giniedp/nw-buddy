@@ -11,10 +11,10 @@ export class LootLimitDetailDirective {
   public readonly store = inject(LootLimitDetailStore)
 
   @Input()
-  public set nwbGatherableDetail(value: string) {
+  public set nwbLootLimitDetail(value: string) {
     this.store.patchState({ limitId: value })
   }
 
   @Output()
-  public nwbLootLimitDetail = this.store.lootLimit$
+  public nwbLootLimitDetailChange = this.store.lootLimit$
 }

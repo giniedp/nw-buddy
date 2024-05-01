@@ -4,7 +4,7 @@ import { Feature } from 'ol'
 import Map from 'ol/Map'
 import View from 'ol/View'
 import { getCenter } from 'ol/extent'
-import { Circle, Point, Polygon } from 'ol/geom'
+import { Point, Polygon } from 'ol/geom'
 import LayerGroup from 'ol/layer/Group'
 import VectorLayer from 'ol/layer/Vector'
 import WebGLPointsLayer from 'ol/layer/WebGLPoints'
@@ -14,6 +14,7 @@ import { Vector as VectorSource, Zoomify } from 'ol/source'
 import Icon from 'ol/style/Icon'
 import Style from 'ol/style/Style'
 import { TileCoord } from 'ol/tilecoord'
+import { crc32 } from '~/utils'
 import { MapMarker, MapPointMarker, MapZoneMarker, MarkerEventData } from './types'
 
 const tileSize = 1024
@@ -69,7 +70,7 @@ export function createMap({ el, tileBaseUrl }: WorldMapOptions) {
     map.getView().fit(new Polygon([[min, [max[0], min[1]], max, [min[0], max[1]], min]]), {
       duration: 300,
       padding: [padding, padding, padding, padding],
-      maxZoom: levels - 1
+      maxZoom: levels - 1,
     })
   }
   const tileSource = new Zoomify({
@@ -80,7 +81,7 @@ export function createMap({ el, tileBaseUrl }: WorldMapOptions) {
     tileSize: tileSize,
     projection: projection,
   })
-  function useMapId(mapId: string) {
+  function setMapId(mapId: string) {
     tileSource.clear()
     map.removeLayer(tileLayer)
 
@@ -113,6 +114,7 @@ export function createMap({ el, tileBaseUrl }: WorldMapOptions) {
   })
   map.addLayer(iconLayer)
 
+  let pointTag: number =  1
   const pointLayers = new LayerGroup({
     layers: [],
   })
@@ -122,8 +124,16 @@ export function createMap({ el, tileBaseUrl }: WorldMapOptions) {
     zoneLayers.getLayers().clear()
     iconLayer.getSource().clear()
   }
+  function setTag(tag: string) {
+    pointTag = tag ? tagToNumber(tag) : 1
+    pointLayers.getLayers().forEach((layer: WebGLPointsLayer<any>) => {
+      layer.updateStyleVariables({
+        tag: pointTag,
+      })
+    })
+  }
 
-  function useZoneMarkers(markers: MapZoneMarker[]) {
+  function setZoneMarkers(markers: MapZoneMarker[]) {
     clearZoneLayers()
     if (!markers) {
       return
@@ -145,37 +155,53 @@ export function createMap({ el, tileBaseUrl }: WorldMapOptions) {
     pointLayers.getLayers().clear()
   }
 
-  function usePointMarkers(markers: MapPointMarker[]) {
+  function setPointMarkers(markers: MapPointMarker[]) {
     clearPointLayers()
     if (!markers) {
       return
     }
 
     for (const items of Object.values(groupBy(markers, (it) => it.layer ?? 'default'))) {
-      pointLayers.getLayers().push(createColoredPointsLayer(items))
+      const layer = createColoredPointsLayer(items)
+      layer.updateStyleVariables({
+        tag: pointTag,
+      })
+      pointLayers.getLayers().push(layer)
     }
   }
 
   const hover = signal<MarkerEventData>(null)
   const click = signal<MarkerEventData>(null)
 
+  let hoverMarker: Feature[]
   map.on('pointermove', (e) => {
     const pixel = map.getEventPixel(e.originalEvent)
     const coords = map.getEventCoordinate(e.originalEvent)
-    const markers = map.getFeaturesAtPixel(pixel).map((it) => it.get('item') as MapMarker)
+    const features = map.getFeaturesAtPixel(pixel)
+    const markers = features.map((it) => it.get('item') as MapMarker)
+    if (hoverMarker) {
+      hoverMarker.forEach((it) => it.set?.('hover', 0))
+    }
+    hoverMarker = features as any
+    if (hoverMarker) {
+      hoverMarker.forEach((it) => it.set?.('hover', 1))
+    }
     hover.set({ pixel, coords, markers })
   })
 
   map.on('click', (e) => {
     const pixel = map.getEventPixel(e.originalEvent)
     const coords = map.getEventCoordinate(e.originalEvent)
-    const markers = map.getFeaturesAtPixel(pixel).map((it) => it.get('item') as MapMarker)
+    const features = map.getFeaturesAtPixel(pixel)
+    const markers = features.map((it) => it.get('item') as MapMarker)
+
     click.set({ pixel, coords, markers })
   })
   return {
-    useMapId,
-    useZoneMarkers,
-    usePointMarkers,
+    setMapId,
+    setTag,
+    setZoneMarkers,
+    setPointMarkers,
     clearPointLayers,
     clearZoneLayers,
     fitView,
@@ -207,12 +233,15 @@ export function hexToRgb(hex: string) {
 }
 
 function createColoredPointsLayer(items: MapPointMarker[], zIndex = 1000) {
+  const exprC1 = ['color', ['get', 'c1r'], ['get', 'c1g'], ['get', 'c1b'], ['get', 'opacity']]
+  const exprC2 = ['color', ['get', 'c2r'], ['get', 'c2g'], ['get', 'c2b']]
   return new WebGLPointsLayer({
     zIndex,
     source: new VectorSource({
       features: items.map((item) => {
         const c1 = hexToRgb(item.color ?? '#ffffff')
         const c2 = hexToRgb(item.outlineColor ?? '#000000')
+        const tags = item.tags || []
         return new Feature({
           geometry: new Point(item.point),
           item: item,
@@ -225,15 +254,42 @@ function createColoredPointsLayer(items: MapPointMarker[], zIndex = 1000) {
           c2b: c2.b,
           opacity: item.opacity ?? 0.75,
           radius: item.radius ?? 10,
+          tag1: tagToNumber(tags[0] || ''),
+          tag2: tagToNumber(tags[1] || ''),
+          tag3: tagToNumber(tags[2] || ''),
         })
       }),
     }),
     style: {
-      'circle-opacity': ['get', 'opacity'],
+      variables: {
+        tag: '',
+      },
       'circle-radius': ['get', 'radius'],
-      'circle-fill-color': ['color', ['get', 'c1r'], ['get', 'c1g'], ['get', 'c1b'], ['get', 'opacity']],
-      'circle-stroke-color': ['color', ['get', 'c2r'], ['get', 'c2g'], ['get', 'c2b']],
-      'circle-stroke-width': 1,
+      'circle-fill-color': exprC1,
+      'circle-stroke-color': [
+        'case',
+        ['==', ['get', 'hover'], 1],
+        '#ffffff',
+        ['==', ['var', 'tag'], ['get', 'tag1']],
+        '#ffffff',
+        ['==', ['var', 'tag'], ['get', 'tag2']],
+        '#ffffff',
+        ['==', ['var', 'tag'], ['get', 'tag3']],
+        '#ffffff',
+        exprC2,
+      ],
+      'circle-stroke-width': [
+        'case',
+        ['==', ['get', 'hover'], 1],
+        2,
+        ['==', ['var', 'tag'], ['get', 'tag1']],
+        2,
+        ['==', ['var', 'tag'], ['get', 'tag2']],
+        2,
+        ['==', ['var', 'tag'], ['get', 'tag3']],
+        2,
+        1,
+      ],
     },
   })
 }
@@ -286,4 +342,8 @@ function createIconFeatures(items: MapZoneMarker[]) {
     features.push(iconFeature)
   }
   return features
+}
+
+function tagToNumber(tag: string) {
+  return tag ? crc32(tag) : -1
 }

@@ -1,25 +1,22 @@
-import { Directive, forwardRef, Input, Output } from '@angular/core'
-import { NwDataService } from '~/data'
-import { GatherableDetailStore } from './gatherable-detail.store'
+import { Directive, inject, Input, Output } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
+import { patchState } from '@ngrx/signals'
+import { GatherableDetailStore2 } from './gatherable-detail.store2'
 
 @Directive({
   standalone: true,
   selector: '[nwbGatherableDetail]',
   exportAs: 'gatherableDetail',
-  providers: [
-    {
-      provide: GatherableDetailStore,
-      useExisting: forwardRef(() => GatherableDetailDirective),
-    },
-  ],
+  providers: [GatherableDetailStore2],
 })
-export class GatherableDetailDirective extends GatherableDetailStore {
+export class GatherableDetailDirective {
+  public store = inject(GatherableDetailStore2)
+
   @Input()
   public set nwbGatherableDetail(value: string) {
-    this.patchState({ recordId: value })
+    patchState(this.store, { gatherableId: value })
   }
 
   @Output()
-  public nwbGatherableChange = this.gatherable$
-
+  public nwbGatherableChange = toObservable(this.store.gatherable)
 }

@@ -1,7 +1,7 @@
 import { OverlayModule } from '@angular/cdk/overlay'
 import { DecimalPipe } from '@angular/common'
-import { Component, ElementRef, computed, inject, signal } from '@angular/core'
-import { toSignal } from '@angular/core/rxjs-interop'
+import { Component, ElementRef, inject, input, signal } from '@angular/core'
+import { toObservable } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { GatherableNodeSize, getGatherableNodeSize } from '@nw-data/common'
 import { Spawns } from '@nw-data/generated'
@@ -9,12 +9,13 @@ import { NwDataService } from '~/data'
 import { TranslateService } from '~/i18n'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgCircleExclamation, svgCompress, svgExpand } from '~/ui/icons/svg'
+import { svgExpand } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { eqCaseInsensitive, selectSignal } from '~/utils'
+import { selectSignal, selectStream } from '~/utils'
 import { MapPointMarker, WorldMapComponent } from '~/widgets/world-map'
-import { GatherableDetailStore } from './gatherable-detail.store'
+import { GatherableService } from '../gatherable/gatherable.service'
+import { isEqual } from 'lodash'
 
 const SIZE_COLORS: Record<GatherableNodeSize, string> = {
   Tiny: '#f28c18',
@@ -69,81 +70,35 @@ const SIZE_ORDER = ['Tiny', 'Small', 'Medium', 'Large', 'Huge']
 })
 export class GatherableDetailMapComponent {
   protected db = inject(NwDataService)
-  protected store = inject(GatherableDetailStore)
   protected tl8 = inject(TranslateService)
+  protected service = inject(GatherableService)
 
-  private gatherable = toSignal(this.store.gatherable$)
-  private gatherableSize = computed(
-    () => getGatherableNodeSize(this.gatherable()?.GatherableID) || ('Nodes' as GatherableNodeSize),
-  )
-
-  protected data = selectSignal(
+  public tag = input<string>()
+  public gatherableIds = input<string[]>()
+  private gatherableIds$ = selectStream(toObservable(this.gatherableIds), (it) => it, { equal: isEqual })
+  private data = selectSignal(
     {
-      gatherables: this.store.siblings$,
-      gatherablesMeta: this.store.gatherableMeta$,
-      variations: this.store.siblingsVariations$,
-      variationsMeta: this.store.variationsMetadata$,
-      chunks: this.store.variationsMetaChunks$,
+      gatherables: this.service.gatherables(this.gatherableIds$),
+      positionChunks: this.service.positionChunks(this.gatherableIds$),
     },
-    ({ gatherables, gatherablesMeta, variations, variationsMeta, chunks }) => {
-      if (!gatherables?.length) {
-        return null
-      }
-      variations ??= []
-      variationsMeta ??= []
-      chunks ??= []
-
+    ({ gatherables, positionChunks }) => {
       const result: Record<string, Record<string, MapPointMarker[]>> = {}
 
-      if (gatherablesMeta) {
-        const gatherable = gatherables.find((it) => eqCaseInsensitive(it.GatherableID, gatherablesMeta.gatherableID))
-        if (gatherable) {
-          const size = getGatherableNodeSize(gatherable.GatherableID) || ('Nodes' as GatherableNodeSize)
-
-
-          for (const mapId in gatherablesMeta.spawns || {}) {
-            const spawns = gatherablesMeta.spawns[mapId as keyof Spawns]
-            for (const spawn of spawns || []) {
-              result[mapId] ??= {}
-              result[mapId][size] ??= []
-              result[mapId][size].push({
-                title: `${name} [${spawn[0].toFixed(2)}, ${spawn[1].toFixed(2)}]`,
-                color: SIZE_COLORS[size] || SIZE_COLORS.Medium,
-                outlineColor: SIZE_OUTLINE[size] || SIZE_OUTLINE.Medium,
-                point: spawn,
-                radius: SIZE_RADIUS[size] || SIZE_RADIUS.Medium,
-              })
-            }
-          }
-        }
-      }
-
-      for (const meta of variationsMeta) {
-        const variant = variations.find((it) => eqCaseInsensitive(it.VariantID, meta.variantID))
-        if (!variant) {
-          continue
-        }
-        const gatherable = gatherables.find((it) => eqCaseInsensitive(it.GatherableID, variant.GatherableID))
-        if (!gatherable) {
-          continue
-        }
-
+      for (const gatherable of gatherables || []) {
+        const name = this.tl8.get(gatherable.DisplayName) || gatherable.GatherableID
         const size = getGatherableNodeSize(gatherable.GatherableID) || ('Nodes' as GatherableNodeSize)
-        const name = this.tl8.get(gatherable.DisplayName)
-        for (const entry of meta.variantPositions || []) {
-          if (!entry?.elementCount) {
-            continue
-          }
-          const chunk = chunks.find((it) => it.chunk === entry.chunk)
-          if (!chunk) {
-            continue
-          }
-          const positions = chunk.data.slice(entry.elementOffset, entry.elementOffset + entry.elementCount)
-          const mapId = entry.mapId
+        const meta = gatherable.$meta
+        const tags: string[] = []
+        if (gatherable.FinalLootTable) {
+          tags.push(gatherable.FinalLootTable.toLowerCase())
+        }
+
+        if (size) {
+          tags.push(size.toLowerCase())
+        }
+        for (const mapId in meta?.spawns || {}) {
+          const positions = meta.spawns[mapId as keyof Spawns]
           for (const position of positions || []) {
-            if (!position) {
-              continue
-            }
             result[mapId] ??= {}
             result[mapId][size] ??= []
             result[mapId][size].push({
@@ -152,7 +107,45 @@ export class GatherableDetailMapComponent {
               outlineColor: SIZE_OUTLINE[size] || SIZE_OUTLINE.Medium,
               point: position,
               radius: SIZE_RADIUS[size] || SIZE_RADIUS.Medium,
+              layer: size,
+              tags: tags,
             })
+          }
+        }
+        for (const variation of gatherable.$variations || []) {
+          const name = this.tl8.get(variation.Name || gatherable.DisplayName) || gatherable.GatherableID
+          const size = getGatherableNodeSize(gatherable.GatherableID) || ('Nodes' as GatherableNodeSize)
+          const tags: string[] = []
+
+          if (variation.VariantID){
+            tags.push(variation.VariantID.toLowerCase())
+          }
+          if (variation.LootTable || gatherable.FinalLootTable) {
+            tags.push((variation.LootTable || gatherable.FinalLootTable).toLowerCase())
+          }
+          if (size) {
+            tags.push(size.toLowerCase())
+          }
+          for (const meta of variation.$meta?.variantPositions || []) {
+            const mapId = meta.mapId
+            const chunk = positionChunks.find((it) => it.chunk === meta.chunk)
+            if (!chunk) {
+              continue
+            }
+            const positions = chunk.data.slice(meta.elementOffset, meta.elementOffset + meta.elementCount)
+            for (const position of positions || []) {
+              result[mapId] ??= {}
+              result[mapId][size] ??= []
+              result[mapId][size].push({
+                title: `${name} [${position[0].toFixed(2)}, ${position[1].toFixed(2)}]`,
+                color: SIZE_COLORS[size] || SIZE_COLORS.Medium,
+                outlineColor: SIZE_OUTLINE[size] || SIZE_OUTLINE.Medium,
+                point: position,
+                radius: SIZE_RADIUS[size] || SIZE_RADIUS.Medium,
+                layer: size,
+                tags: tags,
+              })
+            }
           }
         }
       }
@@ -233,28 +226,26 @@ export class GatherableDetailMapComponent {
     },
   )
 
-  public spawns = computed(() => {
-    const data = this.data()
-    const size = this.gatherableSize()
-    const mapId = this.mapId()
-    const gatherable = this.gatherable()
-    if (!data || !mapId || !data[mapId] || !gatherable) {
-      return null
-    }
-    const points = data[mapId]?.[size]?.map((it: MapPointMarker) => it.point)
-    return {
-      gatherableID: gatherable.GatherableID,
-      mapID: mapId,
-      size: size,
-      points: points,
-    }
-  })
+  // public spawns = computed(() => {
+  //   const data = this.data()
+  //   const size = this.gatherableSize()
+  //   const mapId = this.mapId()
+  //   const gatherable = this.gatherable()
+  //   if (!data || !mapId || !data[mapId] || !gatherable) {
+  //     return null
+  //   }
+  //   const points = data[mapId]?.[size]?.map((it: MapPointMarker) => it.point)
+  //   return {
+  //     gatherableID: gatherable.GatherableID,
+  //     mapID: mapId,
+  //     size: size,
+  //     points: points,
+  //   }
+  // })
 
   public hasMap = selectSignal(this.mapIds, (it) => !!it?.length)
 
   protected iconExpand = svgExpand
-  protected iconCompress = svgCompress
-  protected iconWarning = svgCircleExclamation
   protected elRef = inject(ElementRef<HTMLElement>)
 
   protected toggleFullscreen() {

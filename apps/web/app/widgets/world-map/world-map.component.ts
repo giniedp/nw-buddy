@@ -12,6 +12,7 @@ import { WorldMapDirective } from './world-map.directive'
     <div
       [nwbWorldMap]
       [map]="map()"
+      [tag]="tag()"
       [landmarks]="landmarks()"
       [pointMarkers]="pointMarkers()"
       [zoneMarkers]="zoneMarkers()"
@@ -54,6 +55,7 @@ import { WorldMapDirective } from './world-map.directive'
 })
 export class WorldMapComponent {
   public map = input<string>('newworld_vitaeeterna')
+  public tag = input<string>(null)
   public landmarks = input<MapMarker[]>(null)
   public pointMarkers = input<MapPointMarker[]>(null)
   public zoneMarkers = input<MapZoneMarker[]>(null)
