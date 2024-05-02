@@ -35,7 +35,7 @@ import { WorldMapDirective } from './world-map.directive'
 
     @if (showTooltip() && cursorPosition() && markersAtCursor()?.length) {
       <div
-        class="absolute bg-base-300 bg-opacity-85 px-2 py-1 border border-base-100 rounded-sm text-xs pointer-events-none"
+        class="absolute bg-base-300 bg-opacity-85 px-2 py-1 border border-base-100 rounded-sm text-xs pointer-events-none whitespace-nowrap"
         [style.top.px]="cursorPosition().y + 5"
         [style.left.px]="cursorPosition().x + 5"
       >

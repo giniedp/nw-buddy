@@ -12,7 +12,7 @@ import { IconsModule } from '~/ui/icons'
 import { svgExpand } from '~/ui/icons/svg'
 import { LayoutModule } from '~/ui/layout'
 import { TooltipModule } from '~/ui/tooltip'
-import { selectSignal, selectStream } from '~/utils'
+import { humanize, selectSignal, selectStream } from '~/utils'
 import { MapPointMarker, WorldMapComponent } from '~/widgets/world-map'
 import { GatherableService } from '../gatherable/gatherable.service'
 import { isEqual } from 'lodash'
@@ -116,12 +116,13 @@ export class GatherableDetailMapComponent {
           const name = this.tl8.get(variation.Name || gatherable.DisplayName) || gatherable.GatherableID
           const size = getGatherableNodeSize(gatherable.GatherableID) || ('Nodes' as GatherableNodeSize)
           const tags: string[] = []
-
-          if (variation.VariantID){
+          const lootTable = variation.LootTable || gatherable.FinalLootTable
+          if (variation.VariantID) {
             tags.push(variation.VariantID.toLowerCase())
           }
-          if (variation.LootTable || gatherable.FinalLootTable) {
-            tags.push((variation.LootTable || gatherable.FinalLootTable).toLowerCase())
+
+          if (lootTable) {
+            tags.push(lootTable.toLowerCase())
           }
           if (size) {
             tags.push(size.toLowerCase())
@@ -134,10 +135,17 @@ export class GatherableDetailMapComponent {
             }
             const positions = chunk.data.slice(meta.elementOffset, meta.elementOffset + meta.elementCount)
             for (const position of positions || []) {
+              let title = `
+                ${name}<br>
+                <span class="ml-4">coord: [${position[0].toFixed(2)}, ${position[1].toFixed(2)}]</span>
+              `
+              if (lootTable) {
+                title += `<br><span class="ml-4">loot: ${humanize(lootTable)}</span>`
+              }
               result[mapId] ??= {}
               result[mapId][size] ??= []
               result[mapId][size].push({
-                title: `${name} [${position[0].toFixed(2)}, ${position[1].toFixed(2)}]`,
+                title: `<div class="font-mono">${title}</div>`,
                 color: SIZE_COLORS[size] || SIZE_COLORS.Medium,
                 outlineColor: SIZE_OUTLINE[size] || SIZE_OUTLINE.Medium,
                 point: position,
