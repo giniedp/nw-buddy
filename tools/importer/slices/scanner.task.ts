@@ -58,7 +58,10 @@ export async function scanSlices({
       isFileInFolder(file, path.join(inputDir, 'slices', 'pois', 'territories'))
     ) {
       return {
-        territories: await scanForZones(file),
+        territories: await scanForZones({
+          rootDir: inputDir,
+          file
+        }),
       }
     }
     if (

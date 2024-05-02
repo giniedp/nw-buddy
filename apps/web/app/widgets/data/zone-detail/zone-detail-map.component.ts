@@ -85,15 +85,38 @@ export class ZoneDetailMapComponent {
       }
       const isSelected = zone.TerritoryID === zoneId
       for (const entry of meta.zones) {
+        let outlineColor = '#FFFFFF'
+        let outlineWidth = 1
+        switch (getZoneType(zone)){
+          case 'Territory':{
+            outlineColor = '#FFFFFF'
+            outlineWidth = 4
+            break;
+          }
+          case 'Area':{
+            outlineColor = COLORS.Error
+            outlineWidth = 1
+            break;
+          }
+          case 'POI': {
+            outlineColor ='#FFFFFF'
+            outlineWidth = 1
+            break;
+
+          }
+        }
+
         result.push({
           id: `zone:${zone.TerritoryID}`,
           title: `${getZoneType(zone)}: ${this.tl8.get(zone.NameLocalizationKey)}`,
           color: isSelected ? COLORS.Info : '#FFFFFF',
-          outlineColor: isSelected ? COLORS_DIMMED.Info : COLORS_DIMMED.Error,
+          outlineColor: outlineColor,
+          outlineWidth: outlineWidth,
           shape: entry.shape.map((point) => [...point]),
           opacity: isSelected ? 0.25 : 0.05,
           layer: getZoneType(zone),
           icon: getZoneIcon(zone, null),
+
         } satisfies MapZoneMarker)
       }
     }

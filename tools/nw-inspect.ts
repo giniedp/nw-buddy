@@ -30,7 +30,7 @@ program
     "File inspection/playground task. Used for inspecting files. Don't run it, if you don't know what it does",
   )
   .action(async () => {
-    await inspectModels()
+    await inspectZones()
   })
 
 async function inspectZones() {
@@ -38,7 +38,10 @@ async function inspectZones() {
   const files = await glob(path.join(rootDir, '**', '*.dynamicslice.json'))
   await withProgressBar({ barName: 'scan', tasks: files }, async (file, _, log) => {
     log(file)
-    const data = await scanForZones(file)
+    const data = await scanForZones({
+      rootDir,
+      file,
+    })
     if (data?.length) {
       if (!file.startsWith('E:/Projects/nw-buddy/tmp/nw-data/live/slices/pois/territories')) {
         console.log(file)

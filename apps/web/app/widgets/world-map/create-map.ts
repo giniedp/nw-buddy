@@ -295,14 +295,29 @@ function createColoredPointsLayer(items: MapPointMarker[], zIndex = 1000) {
 }
 
 function createZoneLayer(items: MapZoneMarker[], zIndex = 1) {
+  let minZoom = -1
+  if (zIndex === 3) {
+    minZoom = 3
+  }
+  if (zIndex === 2) {
+    minZoom = 1
+  }
   return new VectorLayer({
     zIndex,
-    style: {
+    style: zIndex ===3 ? {
       'fill-color': ['get', 'color1'],
       'stroke-color': ['get', 'color2'],
-      'stroke-width': 1,
+      'stroke-width': ['get', 'strokeWidth'],
+      'stroke-line-dash': [5, 5],
+
+    } : {
+      'fill-color': ['get', 'color1'],
+      'stroke-color': ['get', 'color2'],
+      'stroke-width': ['get', 'strokeWidth'],
     },
+    minZoom,
     source: new VectorSource({
+
       features: items.map((item) => {
         const shape = [...item.shape]
         if (shape[0][0] !== shape[shape.length - 1][0] || shape[0][1] !== shape[shape.length - 1][1]) {
@@ -315,6 +330,7 @@ function createZoneLayer(items: MapZoneMarker[], zIndex = 1) {
           payload: item.payload,
           color1: getFillColor(item),
           color2: item.outlineColor ?? '#000000',
+          strokeWidth: item.outlineWidth ?? 1,
         })
       }),
     }),

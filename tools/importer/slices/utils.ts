@@ -95,6 +95,11 @@ export async function resolveDynamicSliceFiles(rootDir: string, file: string, as
   })
 }
 
+export async function resolveAssetFile(rootDir: string, assetId: string) {
+  const catalog = await readAssetCatalog(rootDir)
+  return await resolveFile(rootDir, catalog[cleanUUID(assetId)])
+}
+
 async function resolveFile(rootDir: string, file: string): Promise<string | string[]> {
   if (!file) {
     return null
@@ -110,6 +115,9 @@ async function resolveFile(rootDir: string, file: string): Promise<string | stri
     case '.json':
       return resolveFile(rootDir, replaceExtname(file, ''))
     case '.dynamicslice':
+      file = file + '.json'
+      break
+    case '.vshapec':
       file = file + '.json'
       break
     case '.slice':

@@ -1,3 +1,4 @@
+import { z } from 'zod'
 import { readJSONFile } from '../../../tools/utils'
 import {
   isAZ__Entity,
@@ -8,6 +9,7 @@ import {
   isTransform,
   isTransformComponent,
 } from './types/dynamicslice'
+import { resolveAssetFile } from './utils'
 
 export interface TerritoryScanRow {
   territoryID: string
@@ -15,7 +17,7 @@ export interface TerritoryScanRow {
   shape: number[][]
 }
 
-export async function scanForZones(file: string) {
+export async function scanForZones({ rootDir, file }: { rootDir: string; file: string }) {
   if (!file.match(/\/pois\/(territories|zones)\//)) {
     return null
   }
@@ -32,6 +34,7 @@ export async function scanForZones(file: string) {
     let position: [number, number, number]
     let territoryID: string
     let shape: number[][]
+    let vshape: number[][]
     for (const component of entity.components || []) {
       if (isTransformComponent(component)) {
         if (
@@ -53,6 +56,7 @@ export async function scanForZones(file: string) {
       if (isPolygonPrismShapeComponent(component)) {
         if (isPolygonPrismCommon(component.configuration)) {
           shape = component.configuration.polygonprism.vertexcontainer.vertices
+          vshape = await resolveBoundaryShape(rootDir, component['polygon shape asset id']?.guid)
         }
       }
       if (isTerritoryDataProviderComponent(component)) {
@@ -63,9 +67,31 @@ export async function scanForZones(file: string) {
       result.push({
         territoryID,
         position: position || null,
-        shape: shape || null,
+        shape: vshape || shape || null
       })
     }
   }
   return result
+}
+
+const boundarySchema = z.object({
+  vertices: z.array(z.array(z.number())),
+})
+
+async function resolveBoundaryShape(rootDir: string, assetId: string) {
+  if (!assetId) {
+    return null
+  }
+  const assetFiles = await resolveAssetFile(rootDir, assetId)
+  let file: string = null
+  if (typeof assetFiles === 'string') {
+    file = assetFiles
+  } else if (Array.isArray(assetFiles)) {
+    file = assetFiles[0]
+  }
+  if (!file) {
+    return null
+  }
+  const data = await readJSONFile(file, boundarySchema)
+  return data?.vertices
 }
