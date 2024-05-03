@@ -135,10 +135,10 @@ program
     }
 
     console.log('[UPLOAD]')
-    // await uploadFiles({
-    //   client: client,
-    //   files: toUpload,
-    // })
+    await uploadFiles({
+      client: client,
+      files: toUpload,
+    })
   })
 
 program
