@@ -21,6 +21,8 @@ export type SpawnerScanResult = {
   territoryLevel?: boolean
   damageTable?: string
   modelFile?: string
+  mtlFile?: string
+  adbFile?: string
   positions: Array<number[]>
 }
 
@@ -94,8 +96,10 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
       categoryID: meta.categoryID || result.categoryID,
       level: meta.level || result.level,
       territoryLevel: meta.territoryLevel || result.territoryLevel,
-      damageTable: meta.damageTable || result.damageTable,
       modelFile: meta.modelFile || result.modelFile,
+      damageTable: meta.damageTable || result.damageTable,
+      mtlFile: meta.mtlFile || result.mtlFile,
+      adbFile: meta.adbFile || result.adbFile,
     }
   }
 
@@ -178,6 +182,8 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         damageTable: item.damageTable,
         modelFile: item.modelFile,
         positions: [[0, 0, 0]],
+        mtlFile: item.mtlFile,
+        adbFile: item.adbFile,
       }
       debugVital(result, file)
       yield result
@@ -187,12 +193,20 @@ async function* scanFile(rootDir: string, file: string, stack: string[]): AsyncG
         gatherableID: item.gatherableID,
         variantID: item.variantID,
         positions: [[0, 0, 0]],
+        damageTable: null,
+        modelFile: null,
+        mtlFile: null,
+        adbFile: null,
       }
     }
     if (item.loreIDs?.length) {
       yield {
         loreIDs: item.loreIDs,
         positions: [[0, 0, 0]],
+        damageTable: null,
+        modelFile: null,
+        mtlFile: null,
+        adbFile: null,
       }
     }
   }

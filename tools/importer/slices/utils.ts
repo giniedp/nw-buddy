@@ -2,7 +2,7 @@ import * as fs from 'fs'
 import * as path from 'path'
 import { glob, readJSONFile, replaceExtname } from '../../../tools/utils'
 import { isAliasAsset } from './types/aliasasset'
-import { SliceComponent, isAZ__Entity, isSliceComponent } from './types/dynamicslice'
+import { Asset, AssetId, SliceComponent, isAZ__Entity, isSliceComponent } from './types/dynamicslice'
 
 const cache: Record<string, Promise<any>> = {}
 
@@ -17,7 +17,7 @@ export async function cached<T>(key: string, task: (key: string) => Promise<T>):
 
 function readAssetCatalog(rootDir: string) {
   return cached('readAssetCatalog', async () => {
-    const file = path.join(rootDir, 'assetcatalog-infos.json')
+    const file = path.join(rootDir, 'assetcatalog.json')
     if (!fs.existsSync(file)) {
       return null
     }
@@ -82,7 +82,7 @@ export async function resolveDynamicSliceFiles(rootDir: string, file: string, as
     if (!result) {
       const candidates = await glob(path.join(rootDir, 'slices', '**', `${file}.dynamicslice.json`))
       if (candidates.length === 1) {
-        result = candidates[0]
+        result = candidates
       }
     }
     // if (!result && assetId) {
@@ -95,12 +95,20 @@ export async function resolveDynamicSliceFiles(rootDir: string, file: string, as
   })
 }
 
-export async function resolveAssetFile(rootDir: string, assetId: string) {
+export async function lookupAssetPath(rootDir: string, asset: Asset | AssetId) {
+  if (!asset) {
+    return null
+  }
   const catalog = await readAssetCatalog(rootDir)
-  return await resolveFile(rootDir, catalog[cleanUUID(assetId)])
+  return catalog[cleanUUID(asset.guid)] || (asset as Asset).hint
 }
 
-async function resolveFile(rootDir: string, file: string): Promise<string | string[]> {
+export async function resolveAssetFile(rootDir: string, asset: Asset | AssetId) {
+  const path = await lookupAssetPath(rootDir, asset)
+  return await resolveFile(rootDir, path)
+}
+
+async function resolveFile(rootDir: string, file: string): Promise<string[]> {
   if (!file) {
     return null
   }
@@ -150,7 +158,7 @@ async function resolveFile(rootDir: string, file: string): Promise<string | stri
     // console.warn(`File not found: ${file}`)
     return null
   }
-  return file
+  return [file]
 }
 
 export function findAZEntityById(component: SliceComponent, id: number) {

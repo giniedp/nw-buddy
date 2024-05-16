@@ -1,8 +1,11 @@
 import { program } from 'commander'
+import { createHash } from 'crypto'
 import * as fs from 'fs'
-import { sortBy, uniq, uniqBy } from 'lodash'
+import { sortBy, sumBy, uniq, uniqBy } from 'lodash'
 import * as path from 'path'
 import { environment } from '../env'
+import { scanForVitals } from './importer/slices/scan-for-models'
+import { scanForSpawners } from './importer/slices/scan-for-spawners'
 import { appendSlices, scanForData } from './importer/slices/scan-for-spawners-utils'
 import { scanForZones } from './importer/slices/scan-for-zones'
 import { Capital } from './importer/slices/types/capitals'
@@ -30,7 +33,88 @@ program
     "File inspection/playground task. Used for inspecting files. Don't run it, if you don't know what it does",
   )
   .action(async () => {
-    await inspectZones()
+    const rootDir = environment.nwConvertDir('live')
+    const files = await glob([
+      path.join(rootDir, '**', 'slices', 'characters', '**', '*.dynamicslice.json'),
+      path.join(rootDir, '**', 'slices', 'dungeon', '**', '*.dynamicslice.json'),
+      path.join(rootDir, '**', '*.capitals.json'),
+    ])
+    const result: Record<string, any[]> = {}
+    await withProgressBar({ barName: 'scan', tasks: files }, async (file, _, log) => {
+      log(file)
+      if (file.endsWith('.capitals.json')) {
+        const data = await readJSONFile<Capital>(file)
+        for (const capital of data?.Capitals || []) {
+          if (!capital.sliceName) {
+            continue
+          }
+          const res = await scanForSpawners(rootDir, capital.sliceName, capital.sliceAssetId).then((data) => data || [])
+          for (const vital of res) {
+            if (!vital.vitalsID) {
+              continue
+            }
+            if (!vital.modelFile || (!vital.mtlFile && !vital.adbFile && !vital.damageTable)) {
+              continue
+            }
+            if (!result[vital.modelFile]) {
+              result[vital.modelFile] = []
+            }
+            const found = result[vital.modelFile].find((it) => {
+              return (
+                it.model === vital.modelFile &&
+                it.mtl === vital.mtlFile &&
+                it.dmg === vital.damageTable &&
+                it.adb === vital.adbFile
+              )
+            })
+            if (!found) {
+              result[vital.modelFile].push({
+                model: vital.modelFile,
+                mtl: vital.mtlFile,
+                dmg: vital.damageTable,
+                adb: vital.adbFile,
+              })
+            }
+          }
+        }
+      } else if (file.endsWith('.dynamicslice.json')) {
+        const vitals = await scanForVitals(rootDir, file)
+        for (const vital of vitals) {
+          if (!vital.modelFile || (!vital.mtlFile && !vital.adbFile && !vital.damageTable)) {
+            continue
+          }
+          if (!result[vital.modelFile]) {
+            result[vital.modelFile] = []
+          }
+          const found = result[vital.modelFile].find((it) => {
+            return (
+              it.model === vital.modelFile &&
+              it.mtl === vital.mtlFile &&
+              it.dmg === vital.damageTable &&
+              it.adb === vital.adbFile
+            )
+          })
+          if (!found) {
+            result[vital.modelFile].push({
+              model: vital.modelFile,
+              mtl: vital.mtlFile,
+              dmg: vital.damageTable,
+              adb: vital.adbFile,
+            })
+          }
+        }
+      }
+    })
+
+    const data = Object.values(result)
+      .flat()
+      .map((it) => {
+        return {
+          id: createHash('md5').update(JSON.stringify(it)).digest('hex'),
+          ...it,
+        }
+      })
+    fs.writeFileSync(path.join('tmp', 'vitals-by-model.json'), JSON.stringify(data, null, 2))
   })
 
 async function inspectZones() {

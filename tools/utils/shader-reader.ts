@@ -3,7 +3,7 @@ import { BinaryReader } from "./binary-reader";
 
 export async function readShader(filePath: string) {
   const file = await readFile(filePath)
-  const reader = new BinaryReader(file.buffer)
+  const reader = new BinaryReader(file.buffer as any)
 
   const header = readHeader(reader)
   const tokens: EToken[] = []

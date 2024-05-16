@@ -8,6 +8,8 @@ export interface VitalScanRow {
   territoryLevel?: boolean
   damageTable: string
   modelFile: string
+  mtlFile?: string
+  adbFile?: string
   position?: number[]
   mapID?: string
 }
@@ -33,6 +35,8 @@ export async function scanForVitals(inputDir: string, sliceFile: string): Promis
         categoryID: item.categoryID,
         damageTable: item.damageTable,
         modelFile: item.modelFile,
+        mtlFile: item.mtlFile,
+        adbFile: item.adbFile,
       })
     }
   }

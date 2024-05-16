@@ -24,7 +24,13 @@ import {
 } from './types/dynamicslice'
 
 import { arrayAppend, readJSONFile } from '../../utils'
-import { cached as cache, findAZEntityById, readDynamicSliceFile, resolveDynamicSliceFiles } from './utils'
+import {
+  cached as cache,
+  findAZEntityById,
+  lookupAssetPath,
+  readDynamicSliceFile,
+  resolveDynamicSliceFiles,
+} from './utils'
 
 function cached<T>(key: string, task: (key: string) => Promise<T>): Promise<T> {
   key = `scan-for-spawners-utils ${key}`
@@ -220,7 +226,9 @@ export interface ScannedData {
   level?: number
   territoryLevel?: boolean
   damageTable?: string
+  adbFile?: string
   modelFile?: string
+  mtlFile?: string
 
   variantID?: string
   gatherableID?: string
@@ -236,8 +244,9 @@ export async function scanForData(sliceComponent: SliceComponent, rootDir: strin
       if (isVitalsComponent(component) && component.m_rowreference) {
         node.vitalsID = node.vitalsID || component.m_rowreference
       }
-      if (isActionListComponent(component) && component.m_damagetable?.asset?.baseclass1?.assetpath) {
+      if (isActionListComponent(component)) {
         node.damageTable = node.damageTable || component.m_damagetable?.asset?.baseclass1?.assetpath
+        node.adbFile = node.adbFile || component.m_animationdatabase?.baseclass1?.assetpath
       }
       if (isAIVariantProviderComponent(component)) {
         if (isAIVariantProviderComponentServerFacet(component.baseclass1?.m_serverfacetptr)) {
@@ -263,15 +272,17 @@ export async function scanForData(sliceComponent: SliceComponent, rootDir: strin
           node.variantID = AMMO_ID_TO_VARIANT_ID[component.m_ammoid]
         }
       }
-      if (
-        (isSkinnedMeshComponent(component) && component['skinned mesh render node']?.visible) ||
-        (isMeshComponent(component) && component['static mesh render node']?.visible)
-      ) {
-        node.modelFile = path
-          .relative(rootDir, file)
-          .replace(/\\/gi, '/')
-          .replace(/\.json$/, '.glb')
-          .toLowerCase()
+      if (!node.modelFile && isSkinnedMeshComponent(component) && component['skinned mesh render node']?.visible) {
+        const modelAsset = component['skinned mesh render node']['skinned mesh']
+        const materialAsset = component['skinned mesh render node']['material override asset']
+        node.modelFile = await lookupAssetPath(rootDir, modelAsset)
+        node.mtlFile = await lookupAssetPath(rootDir, materialAsset)
+      }
+      if (!node.modelFile && isMeshComponent(component) && component['static mesh render node']?.visible) {
+        const modelAsset = component['static mesh render node']['static mesh']
+        const materialAsset = component['static mesh render node']['material override asset']
+        node.modelFile = await lookupAssetPath(rootDir, modelAsset)
+        node.mtlFile = await lookupAssetPath(rootDir, materialAsset)
       }
     }
     if (Object.keys(node).length) {
@@ -312,31 +323,47 @@ export function getTranslation(component: GameTransformComponent) {
 }
 
 export function getRotation(component: GameTransformComponent) {
-  const data = component?.m_worldtm?.__value?.['rotation'] as number[][]
-  if (!Array.isArray(data)) {
+  const value = component?.m_worldtm?.__value
+  let result: number[][] = null
+  if (value?.['rotation'] && Array.isArray(value?.['rotation'])) {
+    result = value['rotation']
+  }
+  if (value?.['rotation/scale'] && Array.isArray(value?.['rotation/scale'])) {
+    const [
+      x1, y1, z1,
+      x2, y2, z2,
+      x3, y3, z3
+    ] = value['rotation/scale']
+    result = [
+      [x1, y1, z1],
+      [x2, y2, z2],
+      [x3, y3, z3]
+    ]
+  }
+  if (!Array.isArray(result)) {
     return null
   }
-  if (data.length !== 3) {
+  if (result.length !== 3) {
     return null
   }
-  for (const row of data) {
+  for (const row of result) {
     if (!Array.isArray(row) || row.length !== 3) {
       return null
     }
   }
   // skip if it is an identity matrix
   if (
-    data[0][0] === 1 &&
-    data[0][1] === 0 &&
-    data[0][2] === 0 &&
-    data[1][0] === 0 &&
-    data[1][1] === 1 &&
-    data[1][2] === 0 &&
-    data[2][0] === 0 &&
-    data[2][1] === 0 &&
-    data[2][2] === 1
+    result[0][0] === 1 &&
+    result[0][1] === 0 &&
+    result[0][2] === 0 &&
+    result[1][0] === 0 &&
+    result[1][1] === 1 &&
+    result[1][2] === 0 &&
+    result[2][0] === 0 &&
+    result[2][1] === 0 &&
+    result[2][2] === 1
   ) {
     return null
   }
-  return data
+  return result
 }

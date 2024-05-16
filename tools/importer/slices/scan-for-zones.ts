@@ -1,6 +1,8 @@
 import { z } from 'zod'
 import { readJSONFile } from '../../../tools/utils'
 import {
+  Asset,
+  AssetId,
   isAZ__Entity,
   isPolygonPrismCommon,
   isPolygonPrismShapeComponent,
@@ -56,7 +58,7 @@ export async function scanForZones({ rootDir, file }: { rootDir: string; file: s
       if (isPolygonPrismShapeComponent(component)) {
         if (isPolygonPrismCommon(component.configuration)) {
           shape = component.configuration.polygonprism.vertexcontainer.vertices
-          vshape = await resolveBoundaryShape(rootDir, component['polygon shape asset id']?.guid)
+          vshape = await resolveBoundaryShape(rootDir, component['polygon shape asset id'])
         }
       }
       if (isTerritoryDataProviderComponent(component)) {
@@ -78,11 +80,9 @@ const boundarySchema = z.object({
   vertices: z.array(z.array(z.number())),
 })
 
-async function resolveBoundaryShape(rootDir: string, assetId: string) {
-  if (!assetId) {
-    return null
-  }
-  const assetFiles = await resolveAssetFile(rootDir, assetId)
+async function resolveBoundaryShape(rootDir: string, asset: Asset | AssetId) {
+
+  const assetFiles = await resolveAssetFile(rootDir, asset)
   let file: string = null
   if (typeof assetFiles === 'string') {
     file = assetFiles

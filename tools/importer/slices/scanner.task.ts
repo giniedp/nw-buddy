@@ -92,7 +92,7 @@ export async function scanSlices({
       }
       if (capital.sliceName) {
         await scanForSpawners(inputDir, capital.sliceName, capital.sliceAssetId)
-          .then((data) => data || [{ positions: [] }])
+          .then((data) => data || [])
           .then((res) => {
             for (const data of res) {
               for (let position of data.positions) {
@@ -127,6 +127,8 @@ export async function scanSlices({
                     level: data.level,
                     damageTable: data.damageTable,
                     modelFile: data.modelFile,
+                    adbFile: data.adbFile,
+                    mtlFile: data.mtlFile,
                     territoryLevel: data.territoryLevel,
                     position: [position[0], position[1], position[2]],
                   })
