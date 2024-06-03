@@ -1,6 +1,6 @@
 version: 2.1
 orbs:
-  node: circleci/node@5.1.0
+  node: circleci/node@5.2.0
 workflows:
   ci:
     jobs:
@@ -38,7 +38,7 @@ jobs:
     steps:
       - checkout
       - node/install:
-          node-version: '18'
+          node-version: '22'
       - run:
           name: Install pnpm package manager
           command: |
@@ -79,7 +79,7 @@ jobs:
     steps:
       - checkout
       - node/install:
-          node-version: '18'
+          node-version: '22'
       - run:
           name: Install pnpm package manager
           command: |
@@ -108,7 +108,7 @@ jobs:
     steps:
       - checkout
       - node/install:
-          node-version: '18'
+          node-version: '22'
       - run:
           name: Install pnpm package manager
           command: |
