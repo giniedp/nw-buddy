@@ -38,6 +38,7 @@ function sumVitalsCategory(mods: ActiveMods) {
           scale: scale,
           value: Number(value),
           source: source,
+          limit: Number.POSITIVE_INFINITY
         })
       }
     }
@@ -48,6 +49,7 @@ function sumVitalsCategory(mods: ActiveMods) {
         scale: scale,
         value: value,
         source: source,
+        limit: Number.POSITIVE_INFINITY
       })
     }
   }

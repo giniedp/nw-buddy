@@ -4,7 +4,7 @@ import { ControlValueAccessor, FormsModule, NG_VALUE_ACCESSOR } from '@angular/f
 import { PartialStateUpdater, patchState, signalState } from '@ngrx/signals'
 import { NwModule } from '~/nw'
 import { IconsModule } from '~/ui/icons'
-import { svgBars, svgChevronLeft, svgEllipsisVertical, svgPlus, svgTrashCan } from '~/ui/icons/svg'
+import { svgBars, svgChevronLeft, svgEllipsisVertical, svgInfinity, svgPlus, svgTrashCan } from '~/ui/icons/svg'
 import { InputSliderComponent } from '~/ui/input-slider'
 import { DamageCalculatorStore } from '../damage-calculator.store'
 import { DamageModStack, DamageModStackItem, damageModStackItemEnabled, damageModSum } from '../damage-mod-stack'
@@ -94,6 +94,7 @@ export class StackedValueControlComponent implements ControlValueAccessor {
   protected iconLeft = svgChevronLeft
   protected iconMore = svgEllipsisVertical
   protected iconMenu = svgBars
+  protected iconInfinity = svgInfinity
   protected iconAdd = svgPlus
   protected isOpen = false
   protected get inlineInputDisabled() {
@@ -127,16 +128,24 @@ export class StackedValueControlComponent implements ControlValueAccessor {
     return node.tags?.includes(tag)
   }
 
+  protected isInfinite(value: number) {
+    return !!value && !Number.isFinite(value)
+  }
+
   protected addToStack() {
-    this.patchState(({ stack }) => ({
-      stack: [
-        ...stack,
-        {
-          value: stack[stack.length - 1]?.value ?? 0,
-          cap: stack[stack.length - 1]?.cap ?? null,
-        },
-      ],
-    }))
+    this.patchState(({ stack }) => {
+      const value = stack[stack.length - 1]?.value ?? 0
+      const cap = stack[stack.length - 1]?.cap ?? null
+      return {
+        stack: [
+          ...stack,
+          {
+            value: Number.isFinite(value) ? value : 0,
+            cap: Number.isFinite(cap) ? cap : null,
+          },
+        ],
+      }
+    })
   }
 
   protected removeFromStack(index: number) {
