@@ -1,5 +1,5 @@
 import { pool } from 'workerpool'
-import { Bar, Presets } from 'cli-progress'
+import { Bar, Presets, MultiBar } from 'cli-progress'
 
 function makeBarName(name: string, limit: number = 10) {
   name = name || ''
@@ -13,7 +13,7 @@ function makeBarName(name: string, limit: number = 10) {
 }
 
 export async function useProgressBar<T>(barName: string, fn: (bar: Bar) => Promise<T>) {
-  const bar = new Bar(
+  const mBar = new MultiBar(
     {
       format: `${makeBarName(barName, 10)}{bar} | {percentage}% | {duration_formatted} | {value}/{total} {log}`,
       clearOnComplete: false,
@@ -21,9 +21,10 @@ export async function useProgressBar<T>(barName: string, fn: (bar: Bar) => Promi
     },
     Presets.shades_grey
   )
-
+  const bar = mBar.create(100, 0)
   const result = await fn(bar)
   bar.stop()
+  mBar.stop()
   return result
 }
 export async function withProgressBar<T>(
