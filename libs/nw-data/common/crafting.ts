@@ -26,30 +26,28 @@ export type CraftingIngredients = Pick<
   | 'Type7'
 >
 
-const NW_CRAFTING_GROUP_NAMES= {
-
-  Alkahest:'CategoryData_Alkahest',
-  LargeFurnishings:'CategoryData_LargeFurnishings',
-  SmallFurnishings:'CategoryData_SmallFurnishings',
-  MeleeWeapons:'CategoryData_MeleeWeapons',
-  RangedWeapons:'CategoryData_RangedWeapons',
-  Trophies:'CategoryData_Trophies',
-  Potion:'CategoryData_Potion',
-  Metal:'Metal_CategoryName',
-  MetalPrecious:'MetalPrecious_CategoryName',
+const NW_CRAFTING_GROUP_NAMES = {
+  Alkahest: 'CategoryData_Alkahest',
+  LargeFurnishings: 'CategoryData_LargeFurnishings',
+  SmallFurnishings: 'CategoryData_SmallFurnishings',
+  MeleeWeapons: 'CategoryData_MeleeWeapons',
+  RangedWeapons: 'CategoryData_RangedWeapons',
+  Trophies: 'CategoryData_Trophies',
+  Potion: 'CategoryData_Potion',
+  Metal: 'Metal_CategoryName',
+  MetalPrecious: 'MetalPrecious_CategoryName',
   AttributeDex: 'AttributeDex',
   AttributeCon: 'AttributeCon',
   AttributeFoc: 'AttributeFoc',
   AttributeInt: 'AttributeInt',
   AttributeStr: 'AttributeStr',
-  SalvageCreate:'SalvageCreate',
-  SalvageResearch:'SalvageResearch',
+  SalvageCreate: 'SalvageCreate',
+  SalvageResearch: 'SalvageResearch',
   SalvageExtract: 'SalvageExtract',
   PatternRecipes: 'PatternRecipes',
   Keys: 'KeyParts_groupname',
-
 }
-const NW_CRAFTING_CATEGORY_NAMES= {
+const NW_CRAFTING_CATEGORY_NAMES = {
   TimelessShardsCon: 'TimelessShardsCon',
   TimelessShardsDex: 'TimelessShardsDex',
   TimelessShardsFoc: 'TimelessShardsFoc',
@@ -59,10 +57,10 @@ const NW_CRAFTING_CATEGORY_NAMES= {
   SalvageCreate: 'SalvageCreate',
   Pattern: 'Pattern',
   Keys: 'KeyParts_groupname',
-  CorruptedRefining:'CorruptedRefinement_GroupName',
+  CorruptedRefining: 'CorruptedRefinement_GroupName',
   Bags: 'CategoryData_Bags',
-  Tools:'inv_tools',
-  Dyes: 'CategoryData_Dyes'
+  Tools: 'inv_tools',
+  Dyes: 'CategoryData_Dyes',
 }
 const CRAFTING_CATEGORY_GRANTING_BONUS = [
   'ArcanaRefining',
@@ -74,19 +72,24 @@ const CRAFTING_CATEGORY_GRANTING_BONUS = [
   'Dyes',
   'Foods',
   'FuseGems',
-  'RefinedResources'
-
+  'RefinedResources',
 ]
 
-export function sumCraftingIngredientQuantities(recipe: CraftingIngredients) {
+export function sumCraftingIngredientQuantities(recipe: CraftingIngredients, multiplier = 1) {
   if (!recipe) {
     return 0
   }
   let sum = 0
   for (const key in recipe) {
-    if (key.match(/^Qty\d+$/)) {
-      sum += (recipe[key] || 0)
+    if (!key.match(/^Qty\d+$/)) {
+      continue
     }
+    const num = Number(key.replace('Qty', ''))
+    const type = recipe[`Type${num}`]
+    if (type === 'Currency') {
+      continue
+    }
+    sum += Math.floor((recipe[key] || 0) * multiplier)
   }
   return sum
 }
@@ -107,7 +110,7 @@ export function getCraftingXP(recipe: CraftingIngredients, event: GameEvent) {
   if (!event?.CategoricalProgressionReward || !recipe) {
     return 0
   }
-  return sumCraftingIngredientQuantities(recipe) * (event.CategoricalProgressionReward || 0)
+  return sumCraftingIngredientQuantities(recipe, event.CategoricalProgressionReward || 0)
 }
 
 export function calculateBonusItemChance({
@@ -115,7 +118,7 @@ export function calculateBonusItemChance({
   ingredients,
   recipe,
   skill,
-  customChance
+  customChance,
 }: {
   item: ItemDefinitionMaster | Housingitems
   ingredients: Array<ItemDefinitionMaster | Housingitems>
@@ -177,7 +180,7 @@ export function calculateBonusItemChance({
   return Math.max(0, result)
 }
 
-export function getTradeSkillLabel(value: string){
+export function getTradeSkillLabel(value: string) {
   return value != null ? `ui_${value}` : null
 }
 
