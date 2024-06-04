@@ -8,7 +8,7 @@ export interface Ability {
   ActivationCooldown: number
   AfterAction: string
   AfterSequence: string[]
-  AllowSelfDamageForHitEvents: boolean | number
+  AllowSelfDamageForHitEvents: boolean | string
   ArmorPenetration: number
   AttackType: AttackType[]
   AttackerVitalsCategory: VitalsCategory
@@ -386,7 +386,11 @@ export interface Areadefinitions {
   NameLocalizationKey: string
   POILevel: number
   POITag: string[]
+  PhasingBoundsMargin: string
   PhasingMode: string
+  PhasingPopulationMax: number
+  PhasingPopulationTarget: number
+  PhasingSortPriority: number
   PoiDiscoveryXpModifier: number
   TerritoryID: number
 }
@@ -1248,7 +1252,6 @@ export interface Gatherables {
   IsLootContainer: boolean
   ItemRestrictionId: string
   ItemRestrictionQuantity: string
-  LandmarkIconPath: string
   MaxRespawnRate: number
   MinRespawnRate: number
   MountGatherers: string
@@ -1262,7 +1265,6 @@ export interface Gatherables {
   ResetGatherTimeOnEndInteraction: boolean
   Restriction: string
   SongRewardId: string
-  TooltipImage: string
   Tradeskill: string
   WaitForImpact: boolean
 }
@@ -1971,6 +1973,8 @@ export interface Lootbuckets {
   Item171: string
   Item172: string
   Item173: string
+  Item174: string
+  Item175: string
   Item176: string
   Item177: string
   Item18: string
@@ -1990,6 +1994,7 @@ export interface Lootbuckets {
   Item205: string
   Item206: string
   Item207: string
+  Item208: string
   Item209: string
   Item21: string
   Item210: string
@@ -2099,6 +2104,7 @@ export interface Lootbuckets {
   Item305: string
   Item306: string
   Item307: string
+  Item308: string
   Item309: string
   Item31: string
   Item310: string
@@ -2892,6 +2898,8 @@ export interface Lootbuckets {
   Quantity171: number
   Quantity172: number
   Quantity173: number
+  Quantity174: number
+  Quantity175: number
   Quantity176: number
   Quantity177: number
   Quantity18: number | string
@@ -2911,6 +2919,7 @@ export interface Lootbuckets {
   Quantity205: number
   Quantity206: number
   Quantity207: number
+  Quantity208: number
   Quantity209: number
   Quantity21: number | string
   Quantity210: number
@@ -3020,6 +3029,7 @@ export interface Lootbuckets {
   Quantity305: number
   Quantity306: number
   Quantity307: number
+  Quantity308: number
   Quantity309: number
   Quantity31: number
   Quantity310: number
@@ -3299,6 +3309,8 @@ export interface Lootbuckets {
   Tags170: string[]
   Tags172: string[]
   Tags173: string[]
+  Tags174: string[]
+  Tags175: string[]
   Tags176: string[]
   Tags177: string[]
   Tags18: string[]
@@ -3318,6 +3330,7 @@ export interface Lootbuckets {
   Tags205: string[]
   Tags206: string[]
   Tags207: string[]
+  Tags208: string[]
   Tags209: string[]
   Tags21: string[]
   Tags210: string[]
@@ -3389,6 +3402,7 @@ export interface Lootbuckets {
   Tags3: string[]
   Tags30: string[]
   Tags303: string[]
+  Tags308: string[]
   Tags31: string[]
   Tags310: string[]
   Tags314: string[]
@@ -4207,6 +4221,9 @@ export interface PoiDefinition {
   OutpostId: string
   POIObjectiveAchievementId: string
   POITag: string[]
+  PhasingBoundsMargin: string
+  PhasingMode: string
+  PhasingSortPriority: number
   RecommendedLevel: number
   TerritoryID: number
   TooltipBackground: string
@@ -5954,6 +5971,7 @@ export type EntitlementSourceType =
   | 'Leaderboards'
   | 'Preorder'
   | 'Prime'
+  | 'RabbitsRevenge'
   | 'SaltTrack'
   | 'Season4'
   | 'SeasonJourney'
@@ -6555,6 +6573,7 @@ export type LootTag =
   | 'Protector'
   | 'Putris'
   | 'Qebui'
+  | 'RabbitSeason'
   | 'Rafik'
   | 'Rames'
   | 'Ranged'
@@ -13106,7 +13125,6 @@ export type VitalsCategory =
   | 'Waterfowl_60'
   | 'Waterfowl_61'
   | 'Waterfowl_62'
-  | 'Wispy_Wasp_Swarm'
   | 'Withered'
   | 'Withered_Beetle'
   | 'Withered_Beetle_ELITE'
