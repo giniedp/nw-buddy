@@ -83,7 +83,6 @@ export class VitalDetailMapComponent {
     },
     ({ mapId, data }) => {
       const points = data?.points
-      console.log({ points, mapId })
       if (!points || !mapId || !points[mapId]) {
         return []
       }
