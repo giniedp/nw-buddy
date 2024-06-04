@@ -68,7 +68,7 @@ export class PlatformService {
    * Whether the current platform is Overwolf
    */
   public get isOverwolf() {
-    return this.ionicPlatform.testUserAgent('OverwolfClient')
+    return !!this.doc.defaultView['___overwolf___']
   }
 
   /**
