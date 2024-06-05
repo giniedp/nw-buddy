@@ -8,7 +8,6 @@ import {
   getArmorRatingPhysical,
   getItemPerkIds,
   getWeightLabel,
-  patchPrecision,
 } from '@nw-data/common'
 import { ItemClass, ItemDefinitionMaster } from '@nw-data/generated'
 import { sumBy } from 'lodash'
@@ -16,10 +15,13 @@ import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { eqCaseInsensitive, selectStream } from '~/utils'
 
+const UNYIELDING_ID = 'Artifact_Set1_HeavyHead'
+const VOID_DARKPLATE_ID = 'Artifact_Set1_HeavyChest'
+const WEIGHTLESS_CHEST_ID = 'Artifact_Set1_LightChest'
 const ITEM_IDS = [
-  'Artifact_Set1_LightChest',
-  'Artifact_Set1_HeavyHead',
-  'Artifact_Set1_HeavyChest',
+  WEIGHTLESS_CHEST_ID,
+  VOID_DARKPLATE_ID,
+  UNYIELDING_ID,
 
   'LightHead_ClothT52',
   'LightChest_ClothT52',
@@ -178,12 +180,16 @@ function selectItem(db: NwDataService, itemId: string) {
           let subLabel = ''
           if (!weight) {
             label = 'Weightless'
-          } else if (modWeight) {
-            subLabel = `Unyielding`
           }
-          if (modArmor) {
-            subLabel = `Void Darkplate`
+          if (eqCaseInsensitive(item.ItemID, VOID_DARKPLATE_ID)) {
+            subLabel = label
+            label = 'Void Darkplate'
           }
+          if (eqCaseInsensitive(item.ItemID, UNYIELDING_ID)) {
+            subLabel = label
+            label = 'Unyielding'
+          }
+
           return {
             item: item,
             slot: slot,

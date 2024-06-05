@@ -50,7 +50,13 @@ export function armorWeightColHead(util: ArmorWeightTableUtils) {
     tooltipValueGetter: util.tipValueGetter(({ data }) => data.items.find((it) => it?.slot?.id === 'head')?.weight),
     getQuickFilterText: ({ value }) => value,
     cellRenderer: cellRenderer(util, 'head'),
+    ...util.selectFilter({
+      order: 'asc',
+    }),
     cellClassRules: {
+      'text-secondary': ({ value }) => {
+        return value === 'Weightless' || value === 'Unyielding' || value === 'Void Darkplate'
+      },
       'text-success': ({ value }) => value === 'Light',
       'text-primary': ({ value }) => value === 'Medium',
       'text-error': ({ value }) => value === 'Heavy',
@@ -71,7 +77,9 @@ export function armorWeightColChest(util: ArmorWeightTableUtils) {
       order: 'asc',
     }),
     cellClassRules: {
-      'text-secondary': ({ value }) => value === 'Weightless',
+      'text-secondary': ({ value }) => {
+        return value === 'Weightless' || value === 'Unyielding' || value === 'Void Darkplate'
+      },
       'text-success': ({ value }) => value === 'Light',
       'text-primary': ({ value }) => value === 'Medium',
       'text-error': ({ value }) => value === 'Heavy',
