@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, forwardRef, Inpu
 import { getItemId } from '@nw-data/common'
 import { Housingitems, ItemDefinitionMaster } from '@nw-data/generated'
 import { NwDataService } from '~/data'
-import { ModelViewerService } from '../../model-viewer/model-viewer.service'
+import { ModelsService } from '../../model-viewer/model-viewer.service'
 import { ItemDetailStore } from './item-detail.store'
 
 @Component({
@@ -37,7 +37,7 @@ export class ItemDetailComponent extends ItemDetailStore {
   public set perkOverride(value: Record<string, string>) {
     this.patchState({ perkOverride: value })
   }
-  public constructor(db: NwDataService, ms: ModelViewerService, cdRef: ChangeDetectorRef) {
+  public constructor(db: NwDataService, ms: ModelsService, cdRef: ChangeDetectorRef) {
     super(db, ms, cdRef)
   }
 }

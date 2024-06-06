@@ -229,6 +229,7 @@ export interface ScannedData {
   adbFile?: string
   modelFile?: string
   mtlFile?: string
+  tags?: string[]
 
   variantID?: string
   gatherableID?: string
@@ -247,6 +248,7 @@ export async function scanForData(sliceComponent: SliceComponent, rootDir: strin
       if (isActionListComponent(component)) {
         node.damageTable = node.damageTable || component.m_damagetable?.asset?.baseclass1?.assetpath
         node.adbFile = node.adbFile || component.m_animationdatabase?.baseclass1?.assetpath
+        node.tags = [...(component.m_defaulttags || [])]
       }
       if (isAIVariantProviderComponent(component)) {
         if (isAIVariantProviderComponentServerFacet(component.baseclass1?.m_serverfacetptr)) {

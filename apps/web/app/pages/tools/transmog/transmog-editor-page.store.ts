@@ -4,7 +4,7 @@ import { patchState, signalStore, withComputed, withMethods, withState } from '@
 import { Dyecolors, Itemappearancedefinitions } from '@nw-data/generated'
 import { NwDataService } from '~/data'
 import { TransmogItem, TransmogService } from '~/widgets/data/transmog'
-import { ModelViewerService } from '~/widgets/model-viewer'
+import { ModelsService } from '~/widgets/model-viewer'
 
 export type TransmogSlotName = 'head' | 'chest' | 'hands' | 'legs' | 'feet'
 export interface TransmogSlotState {
@@ -84,7 +84,7 @@ export const TransmogEditorStore = signalStore(
     }
   }),
   withComputed(({ head, chest, hands, legs, feet, dyeColorsMap, itemAppearancesMap, transmogMap, gender }) => {
-    const modelService = inject(ModelViewerService)
+    const modelService = inject(ModelsService)
     function getAppearanceId(name: string) {
       const transmog = transmogMap().get(name)
       const male = transmog?.male
@@ -182,7 +182,7 @@ export const TransmogEditorStore = signalStore(
     }
   }),
   withComputed(({ headAppearanceId, chestAppearanceId, handsAppearanceId, legsAppearanceId, feetAppearanceId }) => {
-    const modelService = inject(ModelViewerService)
+    const modelService = inject(ModelsService)
     return {
       headModels: toSignal(modelService.byAppearanceId(toObservable(headAppearanceId))),
       chestModels: toSignal(modelService.byAppearanceId(toObservable(chestAppearanceId))),

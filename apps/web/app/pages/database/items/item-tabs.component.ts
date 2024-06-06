@@ -12,7 +12,7 @@ import { ItemDetailModule, ItemDetailStore } from '~/widgets/data/item-detail'
 import { PerkBucketDetailModule } from '~/widgets/data/perk-bucket-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
-import { ModelViewerService } from '~/widgets/model-viewer'
+import { ModelsService } from '~/widgets/model-viewer'
 import { LootGraphComponent } from '~/widgets/loot/loot-graph.component'
 
 export interface Tab {
@@ -138,7 +138,7 @@ export class ItemTabsComponent extends ItemDetailStore {
     )
     .pipe(shareReplayRefCount(1))
 
-  public constructor(db: NwDataService, ms: ModelViewerService, cdref: ChangeDetectorRef) {
+  public constructor(db: NwDataService, ms: ModelsService, cdref: ChangeDetectorRef) {
     super(db, ms, cdref)
   }
 }

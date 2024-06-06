@@ -16,7 +16,7 @@ import { HtmlHeadService, combineLatestOrEmpty, injectRouteParam, observeRoutePa
 import { GatherableDetailModule } from '~/widgets/data/gatherable-detail'
 import { MapMarker } from '~/widgets/world-map'
 import { LootModule } from '~/widgets/loot'
-import { ModelViewerModule, ModelViewerService } from '~/widgets/model-viewer'
+import { ModelViewerModule, ModelsService } from '~/widgets/model-viewer'
 import { ScreenshotModule } from '~/widgets/screenshot'
 import { NpcDetailModule } from '~/widgets/data/npc-detail'
 import { toSignal } from '@angular/core/rxjs-interop'
@@ -47,7 +47,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
 })
 export class NpcDetailPageComponent {
   protected db = inject(NwDataService)
-  protected viewerService = inject(ModelViewerService)
+  protected viewerService = inject(ModelsService)
   protected itemId = toSignal(injectRouteParam('id'))
   // protected npc$ = selectStream(this.db.npc(this.itemId$))
   // protected data = selectSignal(this.db.npc(this.itemId$))

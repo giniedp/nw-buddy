@@ -19,7 +19,7 @@ import {
 import { Observable, combineLatest, map } from 'rxjs'
 import { NwDataService } from '~/data'
 import { eqCaseInsensitive, selectStream } from '~/utils'
-import { ModelViewerService } from '~/widgets/model-viewer'
+import { ModelsService } from '~/widgets/model-viewer'
 import {
   TransmogAppearance,
   TransmogGender,
@@ -60,7 +60,7 @@ export class AppearanceDetailStore extends ComponentStore<{
   )
   public readonly appearanceId$ = this.select(this.appearance$, getAppearanceId)
   public readonly category$ = this.select(this.appearance$, getAppearanceCategory)
-  public readonly models$ = this.select(inject(ModelViewerService).byAppearanceId(this.appearanceId$), (it) => it)
+  public readonly models$ = this.select(inject(ModelsService).byAppearanceId(this.appearanceId$), (it) => it)
   public readonly icon$ = this.select(this.appearance$, (it) => it?.IconPath || NW_FALLBACK_ICON)
   public readonly name$ = this.select(this.appearance$, (it) => it?.Name)
   public readonly description$ = this.select(this.appearance$, (it) => it?.Description)

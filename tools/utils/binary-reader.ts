@@ -1,11 +1,9 @@
-
 /**
  * A wrapper around the ArrayBuffer and DataView. Simplifies reading binary data.
  *
  * @public
  */
 export class BinaryReader {
-
   /**
    * The underlying data to read
    */
@@ -74,11 +72,11 @@ export class BinaryReader {
    *
    * @param length - The number of bytes to read
    */
-  public readByteArray(length: number): Int8Array {
+  public readByteTypedArray(length: number): Int8Array {
     return new Int8Array(this.slice(length))
   }
 
-  public readBuffer(buffer: number[]|Uint8Array, index: number, length: number) {
+  public readBuffer(buffer: number[] | Uint8Array, index: number, length: number) {
     let end = index + length
     while (index < end) {
       buffer[index++] = this.view.getUint8(this.position++)
@@ -88,78 +86,150 @@ export class BinaryReader {
   /**
    * Reads a single unsigned byte value
    */
-  public readUByte(): number {
+  public readUInt8(): number {
     return this.view.getUint8(this.position++)
+  }
+
+  public readUInt8TypedArray(length: number): Uint8Array {
+    return new Uint8Array(this.slice(length))
+  }
+
+  public readUInt8Array(length: number): number[] {
+    return this.readArray(length, () => this.readUInt8())
   }
 
   /**
    * Reads a single signed byte value
    */
-  public readByte(): number {
+  public readInt8(): number {
     return this.view.getInt8(this.position++)
+  }
+
+  public readInt8TypedArray(length: number): Int8Array {
+    return new Int8Array(this.slice(length))
+  }
+
+  public readInt8Array(length: number): number[] {
+    return this.readArray(length, () => this.readInt8())
   }
 
   /**
    * Reads a single unsigned short value
    */
-  public readUShort(): number {
+  public readUInt16(): number {
     let result = this.view.getUint16(this.position, this.littleEndian)
     this.position += 2
     return result
   }
 
+  public readUInt16TypedArray(length: number): Uint16Array {
+    return new Uint16Array(this.slice(length * 2))
+  }
+
+  public readUInt16Array(length: number): number[] {
+    return this.readArray(length, () => this.readUInt16())
+  }
+
   /**
    * Reads a single signed short value
    */
-  public readShort(): number {
+  public readInt16(): number {
     let result = this.view.getInt16(this.position, this.littleEndian)
     this.position += 2
     return result
   }
 
+  public readInt16TypedArray(length: number): Int16Array {
+    return new Int16Array(this.slice(length * 2))
+  }
+
+  public readInt16Array(length: number): number[] {
+    return this.readArray(length, () => this.readInt16())
+  }
+
   /**
    * Reads a single uint32 value
    */
-  public readUInt(): number {
+  public readUInt32(): number {
     let result = this.view.getUint32(this.position, this.littleEndian)
     this.position += 4
     return result
   }
 
+  public readUInt32TypedArray(length: number): Uint32Array {
+    return new Uint32Array(this.slice(length * 4))
+  }
+
+  public readUInt32Array(length: number): number[] {
+    return this.readArray(length, () => this.readUInt32())
+  }
+
   /**
    * Reads a single int32 value
    */
-  public readInt(): number {
+  public readInt32(): number {
     let result = this.view.getInt32(this.position, this.littleEndian)
     this.position += 4
     return result
   }
 
+  public readInt32TypedArray(length: number): Int32Array {
+    let result = new Int32Array(length)
+    for (let i = 0; i < length; i++) {
+      result[i] = this.readInt32()
+    }
+    return result
+  }
+
+  public readInt32Array(length: number): number[] {
+    return this.readArray(length, () => this.readInt32())
+  }
+
   /**
    * Reads a two uint32 values as low and high bits.
    */
-  public readLong(): number {
-    let lo = this.readUInt()
-    let hi = this.readUInt() << 32
+  public readInt64(): number {
+    let lo = this.readUInt32()
+    let hi = this.readUInt32() << 32
     return hi + lo
+  }
+
+  public readInt64Array(length: number): number[] {
+    return this.readArray(length, () => this.readInt64())
   }
 
   /**
    * Reads a single float32 value
    */
-  public readFloat(): number {
+  public readFloat32(): number {
     let result = this.view.getFloat32(this.position, this.littleEndian)
     this.position += 4
     return result
   }
 
+  public readFloat32TypedArray(length: number): Float32Array {
+    return new Float32Array(this.slice(length * 4))
+  }
+
+  public readFloat32Array(length: number): number[] {
+    return this.readArray(length, () => this.readFloat32())
+  }
+
   /**
    * Reads a single float64 value
    */
-  public readDouble(): number {
+  public readFloat64(): number {
     let result = this.view.getFloat64(this.position, this.littleEndian)
     this.position += 8
     return result
+  }
+
+  public readFloat64TypedArray(length: number): Float64Array {
+    return new Float64Array(this.slice(length * 8))
+  }
+
+  public readFloat64Array(length: number): number[] {
+    return this.readArray(length, () => this.readFloat64())
   }
 
   /**
@@ -180,14 +250,6 @@ export class BinaryReader {
     this.position += position
   }
 
-  public readUUID() {
-    return this.readBytes(16)
-      .map((it): string => {
-        return it.toString(16).padStart(2, '0')
-      })
-      .join('')
-  }
-
   /**
    * Reads a string
    *
@@ -202,14 +264,23 @@ export class BinaryReader {
     return result.join('')
   }
 
-  public readNullTerminatedString(): string {
+  /**
+   * Reads a string
+   *
+   * @param length - The length in bytes to read
+   */
+  public readStringNT(fixedSize: number = null): string {
+    const start = this.position
     let result = []
     while (this.canRead) {
-      const c = this.view.getUint8(this.position++)
-      if (c === 0) {
+      const byte = this.view.getUint8(this.position++)
+      if (byte === 0) {
         break
       }
-      result.push(String.fromCharCode(c))
+      result.push(String.fromCharCode(byte))
+    }
+    if (fixedSize) {
+      this.position = start + fixedSize
     }
     return result.join('')
   }
@@ -224,17 +295,15 @@ export class BinaryReader {
     return this.data.slice(this.position - length, this.position)
   }
 
-  // public subarray(type: Type<Int16Array>, byteLength: number): Int16Array
-  // public subarray(type: Type<Int32Array>, byteLength: number): Int32Array
-  // public subarray(type: Type<Int8Array>, byteLength: number): Int8Array
-  // public subarray(type: Type<Uint16Array>, byteLength: number): Uint16Array
-  // public subarray(type: Type<Uint32Array>, byteLength: number): Uint32Array
-  // public subarray(type: Type<Uint8Array>, byteLength: number): Uint8Array
-  // public subarray(type: Type<Float32Array>, byteLength: number): Float32Array
-  // public subarray(type: Type<Float64Array>, byteLength: number): Float64Array
-  // public subarray(type: any, byteLength: number): any {
-  //   const result = new type(this.data, this.position, byteLength / type.BYTES_PER_ELEMENT)
-  //   this.position += byteLength
-  //   return result
-  // }
+  public readArray<T>(size: number, read: (r: BinaryReader) => T): T[] {
+    let result = []
+    for (let i = 0; i < size; i++) {
+      result.push(read(this))
+    }
+    return result
+  }
+
+  public alignPosition(alignment: number) {
+    this.position = Math.ceil(this.position / alignment) * alignment
+  }
 }

@@ -9,13 +9,21 @@ export interface Environment extends EnvVars {
   version: string
   cdnUrl: string
   deployUrl: string
-  modelsUrl: string
+  modelsUrlLow: string
+  modelsUrlMid: string
+  modelsUrlHigh: string
   nwDataUrl: string
   worldTilesUrl: string
 }
 
-export function getModelsUrl(env: EnvVars) {
-  return new URL('models', env.cdnUrl).toString()
+export function getModelsUrlLowRes(env: EnvVars) {
+  return new URL('models-512', env.cdnUrl).toString()
+}
+export function getModelsUrlMidRes(env: EnvVars) {
+  return new URL('models-1k', env.cdnUrl).toString()
+}
+export function getModelsUrlHiRes(env: EnvVars) {
+  return new URL('models-2k', env.cdnUrl).toString()
 }
 
 export function getNwDataPath(version: string = null) {

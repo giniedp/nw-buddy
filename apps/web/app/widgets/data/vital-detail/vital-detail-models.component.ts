@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common'
 import { Component, ChangeDetectionStrategy, inject } from '@angular/core'
 import { NwModule } from '~/nw'
-import { ModelViewerModule, ModelViewerService } from '~/widgets/model-viewer'
+import { ModelViewerModule, ModelsService } from '~/widgets/model-viewer'
 import { VitalDetailStore } from './vital-detail.store'
 import { toSignal } from '@angular/core/rxjs-interop'
 
@@ -17,7 +17,7 @@ import { toSignal } from '@angular/core/rxjs-interop'
 })
 export class VitalDetailModelsComponent {
   private store = inject(VitalDetailStore)
-  private service = inject(ModelViewerService)
+  private service = inject(ModelsService)
 
   protected models = toSignal(this.service.byVitalsId(this.store.vitalId$))
 

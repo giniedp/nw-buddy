@@ -1,6 +1,6 @@
 import { chain, groupBy, sortBy, sumBy, uniq } from 'lodash'
 import * as path from 'path'
-import { environment, NW_WORKSPACE } from '../../../env'
+import { NW_WORKSPACE, environment } from '../../../env'
 import { arrayAppend, assmebleWorkerTasks, glob, readJSONFile, withProgressPool, writeJSONFile } from '../../utils'
 import { pathToDatatables } from '../tables'
 import {
@@ -10,8 +10,10 @@ import {
   VitalsTableSchema,
 } from '../tables/schemas'
 
+import { createHash } from 'node:crypto'
 import { z } from 'zod'
 import { CaseInsensitiveSet } from '../../utils/caseinsensitive-set'
+import { logger } from '../../utils/logger'
 import { readAndExtractCrcValues } from './create-crc-file'
 import { VitalScanRow } from './scan-for-models'
 import { VariationScanRow } from './scan-for-variants'
@@ -19,7 +21,6 @@ import { TerritoryScanRow } from './scan-for-zones'
 import { GatherableScanRow, LoreScanRow } from './scanner.task'
 import { isPointInAABB, isPointInPolygon } from './utils'
 import { WORKER_TASKS } from './worker.tasks'
-
 interface VitalMetadata {
   tables: string[]
   models: string[]
@@ -34,7 +35,17 @@ interface VitalMetadata {
     category: string
     position: number[]
     damagetable: string
+    model: string
   }>
+}
+
+interface VitalModelMetadata {
+  id: string
+  cdf: string
+  mtl: string
+  adb: string
+  tags: string[]
+  vitalIds: string[]
 }
 
 interface GatherableMetadata {
@@ -102,6 +113,7 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
   }).then((result) => writeJSONFile(result, { target: crcVariationsFile }))
 
   const vitals: Record<string, VitalMetadata> = {}
+  const vitalsModels: Record<string, VitalModelMetadata> = {}
   const gatherables: Record<string, GatherableMetadata> = {}
   const variations: Record<string, VariationMetadata> = {}
   const territories: Record<string, TerritoryMetadata> = {}
@@ -140,7 +152,7 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
         }
       }),
       onTaskFinish: async (result) => {
-        collectVitalsRows(result.vitals || [], vitals)
+        collectVitalsRows(result.vitals || [], vitals, vitalsModels)
         collectGatherablesRows(result.gatherables || [], gatherables)
         collectVariationsRows(result.variations || [], variations)
         collectTerritoriesRows(result.territories || [], territories)
@@ -154,6 +166,12 @@ export async function importSlices({ inputDir, threads }: { inputDir: string; th
 
   return {
     vitals: toSortedVitals(vitals),
+    vitalsModels: Object.values(vitalsModels)
+      .map((it) => {
+        it.tags.sort()
+        return it
+      })
+      .sort((a, b) => compareStrings(a.id, b.id)),
     gatherables: toSortedGatherables(gatherables),
     variations: toSortedVariations(variations),
     territories: toSortedTerritories(territories),
@@ -180,7 +198,11 @@ function collectLoreRows(rows: LoreScanRow[], data: Record<string, LoreMetadata>
   }
 }
 
-function collectVitalsRows(rows: VitalScanRow[], data: Record<string, VitalMetadata>) {
+function collectVitalsRows(
+  rows: VitalScanRow[],
+  data: Record<string, VitalMetadata>,
+  models: Record<string, VitalModelMetadata>,
+) {
   for (const row of rows || []) {
     const vitalID = row.vitalsID.toLowerCase()
     if (!(vitalID in data)) {
@@ -201,12 +223,18 @@ function collectVitalsRows(rows: VitalScanRow[], data: Record<string, VitalMetad
     if (row.mapID) {
       arrayAppend(bucket.mapIDs, row.mapID.toLowerCase())
     }
+    let modelId: string = ''
     if (row.modelFile) {
-      arrayAppend(bucket.models, row.modelFile.toLowerCase())
+      const model = buildModelMetadata(row)
+      modelId = model.id
+      if (!(modelId in models)) {
+        models[modelId] = model
+      }
+      arrayAppend(bucket.models, modelId)
+      arrayAppend(model.vitalIds, vitalID)
     }
     if (row.level) {
       arrayAppend(bucket.levels, row.level)
-    } else {
     }
     if (row.categoryID) {
       arrayAppend(bucket.catIDs, row.categoryID.toLowerCase())
@@ -220,9 +248,23 @@ function collectVitalsRows(rows: VitalScanRow[], data: Record<string, VitalMetad
         category: row.categoryID?.toLowerCase(),
         damagetable: damagetable,
         territories: [],
+        model: modelId,
       })
     }
   }
+}
+
+function buildModelMetadata(vital: VitalScanRow): VitalModelMetadata {
+  const result: VitalModelMetadata = {
+    id: '',
+    cdf: (vital.modelFile?.toLowerCase() || '').replaceAll('\\', '/'),
+    mtl: (vital.mtlFile?.toLowerCase() || '').replaceAll('\\', '/'),
+    adb: (vital.adbFile?.toLowerCase() || '').replaceAll('\\', '/'),
+    tags: (vital.tags || []).filter((it) => !!it),
+    vitalIds: [],
+  }
+  result.id = createHash('md5').update(JSON.stringify(result)).digest('hex')
+  return result
 }
 
 function collectGatherablesRows(rows: GatherableScanRow[], data: Record<string, GatherableMetadata>) {
@@ -318,7 +360,7 @@ async function applyDefaultLevel(rootDir: string, vitals: Record<string, VitalMe
         continue
       }
       if (!levelMap.has(vitalId.toLowerCase())) {
-        console.log('Missing level for', vitalId)
+        logger.warn('Missing level for', vitalId)
         continue
       }
       spawn.level = levelMap.get(vitalId.toLowerCase())
@@ -333,30 +375,30 @@ async function applyTerritoryToVital(
   vitals: Record<string, VitalMetadata>,
   territories: Record<string, TerritoryMetadata>,
 ) {
-
   const schema = z.array(z.object({ TerritoryID: z.number(), AIVariantLevelOverride: z.number().optional() }))
   const pois = await glob([
     path.join(rootDir, 'sharedassets/springboardentitites/datatables/javelindata_areadefinitions.json'),
     path.join(rootDir, 'sharedassets/springboardentitites/datatables/javelindata_territorydefinitions.json'),
     path.join(rootDir, 'sharedassets/springboardentitites/datatables/pointofinterestdefinitions/*.json'),
-  ]).then(async (files) => {
-    return Promise.all(files.map((file) => readJSONFile(file, schema)))
-  })
-  .then((list) => list.flat())
-  .then((list) => {
-    return list.map((it) => {
-      const territory = territories[it.TerritoryID] || territories[String(it.TerritoryID).padStart(2, '0')]
-      if (!territory?.zones?.length) {
-        return null
-      }
-      return {
-        level: it.AIVariantLevelOverride,
-        territoryID: it.TerritoryID,
-        ...territory,
-      }
+  ])
+    .then(async (files) => {
+      return Promise.all(files.map((file) => readJSONFile(file, schema)))
     })
-  })
-  .then((list) => list.filter((it) => !!it))
+    .then((list) => list.flat())
+    .then((list) => {
+      return list.map((it) => {
+        const territory = territories[it.TerritoryID] || territories[String(it.TerritoryID).padStart(2, '0')]
+        if (!territory?.zones?.length) {
+          return null
+        }
+        return {
+          level: it.AIVariantLevelOverride,
+          territoryID: it.TerritoryID,
+          ...territory,
+        }
+      })
+    })
+    .then((list) => list.filter((it) => !!it))
 
   for (const vital of Object.values(vitals)) {
     for (const poi of pois) {
@@ -404,6 +446,7 @@ function toSortedVitals(data: Record<string, VitalMetadata>) {
             l: Array<number | string>[]
             c: string[]
             t: number[]
+            m: string[]
           }>
         >,
       }
@@ -420,6 +463,7 @@ function toSortedVitals(data: Record<string, VitalMetadata>) {
           c: spawn.category ? [spawn.category] : [],
           p: spawn.position,
           t: spawn.territories,
+          m: spawn.model ? [spawn.model] : [],
         })
       }
       for (const key in result.lvlSpanws) {
@@ -432,6 +476,7 @@ function toSortedVitals(data: Record<string, VitalMetadata>) {
               l: uniq(it.map((it) => it.l).flat()).sort(),
               c: uniq(it.map((it) => it.c).flat()).sort(),
               t: uniq(it[0].t).sort(),
+              m: uniq(it.map((it) => it.m).flat()).sort(),
             }
           })
           .sortBy((it) => it.p.join(','))

@@ -6,7 +6,7 @@ import { NwModule } from '~/nw'
 import { AppTestingModule } from '~/test'
 import { LayoutModule } from '~/ui/layout'
 import { ModelViewerModule } from './model-viewer.module'
-import { ModelViewerService } from './model-viewer.service'
+import { ModelsService } from './model-viewer.service'
 
 @Component({
   standalone: true,
@@ -17,7 +17,7 @@ import { ModelViewerService } from './model-viewer.service'
 export class StoryComponent {
   public models = this.service.byMountId(of('Mount_MTX_1_horse'))
 
-  public constructor(private service: ModelViewerService) {}
+  public constructor(private service: ModelsService) {}
 }
 
 export default {

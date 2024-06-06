@@ -14,11 +14,11 @@ export async function extractLocaleEmbeds(inputDir: string) {
   await withProgressBar({ barName: '  Inspect', tasks: files }, async (file, _, log) => {
     for await (let { value } of readLocaleFile(file)) {
       const text = value || ''
-      const matched = text.matchAll(/<img(\s+\w+="[^"]+")*\ssrc="([^"]+)"/g)
-      if (matched) {
-        for (const match of matched) {
-          images.add(match[2])
-        }
+      if (typeof value === 'number') {
+        return
+      }
+      for (const match of text.matchAll(/<img(\s+\w+="[^"]+")*\ssrc="([^"]+)"/g) || []) {
+        images.add(match[2])
       }
 
       for (const it of scanForExpressions(text)) {

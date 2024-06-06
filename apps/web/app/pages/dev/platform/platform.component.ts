@@ -83,7 +83,7 @@ export class PlatformComponent {
         },
         {
           label: 'NW Models URL',
-          description: this.platform.env.modelsUrl,
+          description: this.platform.env.modelsUrlMid,
         },
         {
           label: 'Standalone',

@@ -29,7 +29,7 @@ import { uniq } from 'lodash'
 import { combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { humanize, mapProp, selectStream } from '~/utils'
-import { ModelViewerService } from '../../model-viewer/model-viewer.service'
+import { ModelsService } from '../../model-viewer/model-viewer.service'
 import { selectGameEventItemReward, selectGameEventRewards } from '../game-event-detail/selectors'
 import {
   PerkSlot,
@@ -311,7 +311,7 @@ export class ItemDetailStore extends ComponentStore<ItemDetailState> {
 
   public constructor(
     protected db: NwDataService,
-    private ms: ModelViewerService,
+    private ms: ModelsService,
     protected cdRef: ChangeDetectorRef,
   ) {
     super({})

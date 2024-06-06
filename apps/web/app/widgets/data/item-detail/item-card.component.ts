@@ -6,7 +6,7 @@ import { BehaviorSubject, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { ItemFrameModule } from '~/ui/item-frame'
 import { ItemDividerComponent } from '~/ui/item-frame/item-divider.component'
-import { ModelViewerService } from '../../model-viewer/model-viewer.service'
+import { ModelsService } from '../../model-viewer/model-viewer.service'
 import { ItemDetailDescriptionComponent } from './item-detail-description.component'
 import { ItemDetailGsDamage } from './item-detail-gs-damage.component'
 import { ItemDetailHeaderComponent } from './item-detail-header.component'
@@ -176,7 +176,7 @@ export class ItemCardComponent extends ItemDetailStore {
 
   protected trackByIndex = (i: number) => i
 
-  public constructor(db: NwDataService, ms: ModelViewerService, cdRef: ChangeDetectorRef) {
+  public constructor(db: NwDataService, ms: ModelsService, cdRef: ChangeDetectorRef) {
     super(db, ms, cdRef)
   }
 }

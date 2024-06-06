@@ -8,19 +8,19 @@ export async function readDistributionFile(file: string){
   const data = await fs.promises.readFile(file)
   const reader = new BinaryReader(data.buffer as any)
 
-  let count = reader.readUShort()
+  let count = reader.readUInt16()
   const slices: string[] = readStringArray(reader, count)
   const variants: string[] = readStringArray(reader, count)
 
-  count = reader.readUInt()
+  count = reader.readUInt32()
   const indices: number[] = []
   const positions: number[][] = []
   for (let i = 0; i < count; i++) {
-    indices.push(reader.readUShort())
+    indices.push(reader.readUInt16())
   }
   for (let i = 0; i < count; i++) {
-    const y = reader.readUShort()
-    const x = reader.readUShort()
+    const y = reader.readUInt16()
+    const x = reader.readUInt16()
     positions.push([x, y])
   }
   return {
@@ -35,8 +35,8 @@ export async function readDistributionFile(file: string){
 function readStringArray(r: BinaryReader, count: number) {
   const result: string[] = []
   for (let i = 0; i < count; i++) {
-    const c = r.readByte()
-    const v = String.fromCharCode(...r.readByteArray(c))
+    const c = r.readInt8()
+    const v = String.fromCharCode(...r.readInt8Array(c))
     result.push(v)
   }
   return result

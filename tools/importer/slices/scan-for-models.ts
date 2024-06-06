@@ -10,6 +10,7 @@ export interface VitalScanRow {
   modelFile: string
   mtlFile?: string
   adbFile?: string
+  tags?: string[]
   position?: number[]
   mapID?: string
 }
@@ -29,6 +30,7 @@ export async function scanForVitals(inputDir: string, sliceFile: string): Promis
   const data = await scanForData(sliceComponent, inputDir, sliceFile)
   for (const item of data || []) {
     if (item.vitalsID) {
+      item.tags
       result.push({
         level: item.level,
         vitalsID: item.vitalsID,
@@ -37,6 +39,7 @@ export async function scanForVitals(inputDir: string, sliceFile: string): Promis
         modelFile: item.modelFile,
         mtlFile: item.mtlFile,
         adbFile: item.adbFile,
+        tags: item.tags,
       })
     }
   }

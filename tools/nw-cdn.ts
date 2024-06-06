@@ -20,6 +20,7 @@ import {
   environment,
 } from '../env'
 import { glob, writeJSONFile } from './utils/file-utils'
+import { logger } from './utils/logger'
 
 const config = {
   bucket: CDN_UPLOAD_SPACE,
@@ -143,30 +144,37 @@ program
 
 program
   .command('upload-models')
-  .option('-f, --force', 'Uploads all files, instead of only new')
-  .action(async () => {
+  .option('-f, --force', 'Uploads all files, instead of only new', false)
+  .option('-d, --directory <dirPath>', 'The models directory to upload', environment.nwModelsDir())
+  .option('-t, --target <outPath>', 'The target directory in the CDN', 'models')
+  .option('-dry, --dry-run', 'Dry run, does not upload files', false)
+  .action(async (opts) => {
     const options = z
       .object({
-        force: z.boolean().optional(),
+        force: z.boolean(),
+        directory: z.string(),
+        target: z.string(),
+        dryRun: z.boolean(),
       })
-      .parse(program.opts())
+      .parse(opts)
+    logger.info('Uploading models', options)
 
-    const modelsDir = environment.nwModelsDir()
+    const source = options.directory
+    const target = options.target
     const client = createClient()
 
     const glbObjects = await Promise.resolve(options)
-      .then((it) => {
-        return it.force ? [] : listObjects(client)
-      })
+      .then((it) => it.force ? [] : listObjects(client))
       .then((list) => list.filter((it) => it.Key.endsWith('.glb')))
       .then((list) => list.map((it) => normalizeKey(it.Key)))
       .then((list) => new Set(list))
-    const glbFiles = await glob(path.join(modelsDir, '**/*.glb')).then((list) => {
+
+    const glbFiles = await glob(path.join(source, '**/*.glb')).then((list) => {
       return list.map((file) => {
         const extname = path.extname(file).toLowerCase()
         return {
           file: file,
-          key: normalizeKey(path.join('models', path.relative(modelsDir, file))),
+          key: normalizeKey(path.join(target, path.relative(source, file))),
           contentType: extname == '.gltf' ? 'model/gltf+json' : 'model/gltf-binary',
           md5: true,
         }
@@ -175,7 +183,11 @@ program
     const toUpload = glbFiles.filter((it) => {
       return !glbObjects.has(it.key)
     })
-    console.log('found', glbFiles.length, '.glb files', 'to upload', toUpload.length)
+    logger.info('found', glbFiles.length, '.glb files', 'to upload', toUpload.length)
+    if (options.dryRun) {
+      logger.debug(toUpload.slice(0, 10))
+      return
+    }
     await uploadFiles({
       client: createClient(),
       files: toUpload,

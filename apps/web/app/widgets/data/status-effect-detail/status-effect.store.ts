@@ -6,7 +6,7 @@ import { flatten, uniq } from 'lodash'
 import { Observable, combineLatest, map, of, switchMap } from 'rxjs'
 import { NwDataService } from '~/data'
 import { humanize, mapList, rejectKeys } from '~/utils'
-import { ModelViewerService } from '~/widgets/model-viewer'
+import { ModelsService } from '~/widgets/model-viewer'
 
 @Injectable()
 export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }> {
@@ -69,7 +69,7 @@ export class StatusEffectDetailStore extends ComponentStore<{ effectId: string }
   ]).pipe(map((list) => list.flat()))
 
   public readonly costumeChangeId$ = this.select(this.effect$, (it) => it?.CostumeChangeId)
-  public readonly costumeModel$ = inject(ModelViewerService).byCostumeId(this.costumeChangeId$)
+  public readonly costumeModel$ = inject(ModelsService).byCostumeId(this.costumeChangeId$)
 
   public constructor() {
     super({ effectId: null })

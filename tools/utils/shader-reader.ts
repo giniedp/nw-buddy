@@ -8,7 +8,7 @@ export async function readShader(filePath: string) {
   const header = readHeader(reader)
   const tokens: EToken[] = []
   for (let i = 0; i < header.tokens; i++) {
-    tokens.push(reader.readUInt())
+    tokens.push(reader.readUInt32())
   }
   const params: Record<number, string> = {}
   while (reader.canRead) {
@@ -166,13 +166,13 @@ export async function readShader(filePath: string) {
 
 function readHeader(r: BinaryReader) {
   const magic = r.readString(4)
-  const crc32 = r.readUInt()
-  const versionLow = r.readUShort()
-  const versionHigh = r.readUShort()
-  const offsetStringTable = r.readUInt()
-  const offsetParamsLocal = r.readUInt()
-  const tokens = r.readUInt()
-  const sourceCrc32 = r.readUInt()
+  const crc32 = r.readUInt32()
+  const versionLow = r.readUInt16()
+  const versionHigh = r.readUInt16()
+  const offsetStringTable = r.readUInt32()
+  const offsetParamsLocal = r.readUInt32()
+  const tokens = r.readUInt32()
+  const sourceCrc32 = r.readUInt32()
 
   return {
     magic,
@@ -190,8 +190,8 @@ function readToken(r: BinaryReader) {
   if (r.remaining < 5) {
     return null
   }
-  const token = r.readUInt()
-  const value = r.readNullTerminatedString()
+  const token = r.readUInt32()
+  const value = r.readStringNT()
   return { token, value }
 
 }

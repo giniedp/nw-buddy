@@ -84,8 +84,9 @@ program
       await importSlices({
         inputDir,
         threads,
-      }).then(async ({ gatherables, vitals, variations, territories, loreItems }) => {
+      }).then(async ({ gatherables, vitals, vitalsModels, variations, territories, loreItems }) => {
         console.log('  ', vitals.length, 'vitals')
+        console.log('  ', vitalsModels.length, 'vitals models')
         console.log('  ', gatherables.length, 'gatherables')
         console.log(
           '  ',
@@ -103,6 +104,11 @@ program
           // write it into input directory, so table loader will pick it up
           writeJSONFile(vitals, {
             target: path.join(pathToDatatables(inputDir), 'generated_vitals_metadata.json'),
+            createDir: true,
+            serialize: jsonStringifyFormatted,
+          }),
+          writeJSONFile(vitalsModels, {
+            target: path.join(pathToDatatables(inputDir), 'generated_vitals_models_metadata.json'),
             createDir: true,
             serialize: jsonStringifyFormatted,
           }),

@@ -125,6 +125,7 @@ import type {
   Vitals,
   VitalsFirstlight,
   VitalsMetadata,
+  VitalsModelsMetadata,
   VitalsPlayer,
   Vitalscategories,
   Vitalsleveldata,
@@ -1056,6 +1057,9 @@ export abstract class NwDataLoader {
   }
   public generatedVitalsMetadata() {
     return this.load<VitalsMetadata[]>('generated_vitals_metadata.json')
+  }
+  public generatedVitalsModelsMetadata() {
+    return this.load<VitalsModelsMetadata[]>('generated_vitals_models_metadata.json')
   }
   public housetypes() {
     return this.load<Housetypes[]>('javelindata_housetypes.json')

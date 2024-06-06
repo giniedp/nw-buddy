@@ -10,7 +10,7 @@ import { CraftingCalculatorComponent } from '~/widgets/crafting'
 import { ItemDetailModule, ItemDetailStore } from '~/widgets/data/item-detail'
 import { PerkDetailModule } from '~/widgets/data/perk-detail'
 import { StatusEffectDetailModule } from '~/widgets/data/status-effect-detail'
-import { ModelViewerService } from '~/widgets/model-viewer'
+import { ModelsService } from '~/widgets/model-viewer'
 
 export interface Tab {
   id: 'effects' | 'perks' | 'unlocks' | 'craftable' | 'recipes'
@@ -98,7 +98,7 @@ export class HousingTabsComponent extends ItemDetailStore {
     )
     .pipe(shareReplayRefCount(1))
 
-  public constructor(db: NwDataService, ms: ModelViewerService, cdref: ChangeDetectorRef, private route: ActivatedRoute) {
+  public constructor(db: NwDataService, ms: ModelsService, cdref: ChangeDetectorRef, private route: ActivatedRoute) {
     super(db, ms, cdref)
   }
 }

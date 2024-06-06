@@ -13722,8 +13722,17 @@ export interface LvlSpanws {
 export interface Climaxftue02 {
     c: string[];
     l: number[];
+    m: string[];
     p: number[];
     t: number[];
+}
+export interface VitalsModelsMetadata {
+    adb:      string;
+    cdf:      string;
+    id:       string;
+    mtl:      string;
+    tags:     string[];
+    vitalIds: string[];
 }
 export interface SandelementalHeavySandworm {
     AddDmg:                  number;

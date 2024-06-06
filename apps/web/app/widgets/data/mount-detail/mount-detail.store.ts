@@ -3,7 +3,7 @@ import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { Mounts } from '@nw-data/generated'
 import { NwDataService } from '~/data'
-import { ModelViewerService } from '~/widgets/model-viewer'
+import { ModelsService } from '~/widgets/model-viewer'
 
 @Injectable()
 export class MountDetailStore extends ComponentStore<{ mountId: string }> {
@@ -19,7 +19,7 @@ export class MountDetailStore extends ComponentStore<{ mountId: string }> {
   public readonly description$ = this.select(this.mount$, (it) => it?.Description)
   public readonly unlockMethod$ = this.select(this.mount$, (it) => it?.UnlockMethod)
   public readonly note$ = this.select(this.mount$, (it) => it?.NOTES)
-  public readonly models$ = this.select(inject(ModelViewerService).byMountId(this.mountId$), (it) => it)
+  public readonly models$ = this.select(inject(ModelsService).byMountId(this.mountId$), (it) => it)
 
   public constructor(private db: NwDataService) {
     super({ mountId: null })

@@ -349,6 +349,10 @@ export class NwDataService {
   public vitalsMetadataMap = tableIndexBy(() => this.vitalsMetadata, 'vitalsID')
   public vitalsMeta = tableLookup(() => this.vitalsMetadataMap)
 
+  public vitalsModelsMetadata = table(() => [this.data.generatedVitalsModelsMetadata()])
+  public vitalsModelsMetadataMap = tableIndexBy(() => this.vitalsModelsMetadata, 'id')
+  public vitalsModelMeta = tableLookup(() => this.vitalsModelsMetadataMap)
+
   public vitals = table(() => [
     this.data.vitals(),
     this.data.vitalstablesVitalsFirstlight() as unknown as Observable<Vitals[]>,

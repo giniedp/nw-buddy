@@ -3,7 +3,7 @@ import { ComponentStore } from '@ngrx/component-store'
 import { NW_FALLBACK_ICON } from '@nw-data/common'
 import { Cursemutations, Mounts } from '@nw-data/generated'
 import { NwDataService } from '~/data'
-import { ModelViewerService } from '~/widgets/model-viewer'
+import { ModelsService } from '~/widgets/model-viewer'
 
 @Injectable()
 export class MutaCurseDetailStore extends ComponentStore<{ curseId: string; wildcard: string }> {

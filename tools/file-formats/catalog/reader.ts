@@ -7,16 +7,16 @@ export async function readAssetcatalog(file: string): Promise<Record<string, str
   const reader = new BinaryReader(data.buffer as any)
 
   const signature = reader.readString(4)
-  const version = reader.readUInt()
-  const fileSize = reader.readUInt()
-  const field4 = reader.readUInt()
+  const version = reader.readUInt32()
+  const fileSize = reader.readUInt32()
+  const field4 = reader.readUInt32()
   // console.table({ signature, version, fileSize, field4, position: reader.position })
 
-  const posBlockUUID = reader.readUInt() // UUID block
-  const posBlockType = reader.readUInt() // Type block
-  const posBlockDirs = reader.readUInt() // Dir block
-  const posBlockFile = reader.readUInt() // File block
-  const fileSize2 = reader.readUInt()
+  const posBlockUUID = reader.readUInt32() // UUID block
+  const posBlockType = reader.readUInt32() // Type block
+  const posBlockDirs = reader.readUInt32() // Dir block
+  const posBlockFile = reader.readUInt32() // File block
+  const fileSize2 = reader.readUInt32()
   const posBlock0 = reader.position
 
   // console.table({
@@ -54,34 +54,34 @@ export async function readAssetcatalog(file: string): Promise<Record<string, str
 
   reader.seekAbsolute(posBlock0)
 
-  const count1 = reader.readUInt()
+  const count1 = reader.readUInt32()
   for (let i = 0; i < count1; i++) {
     assetInfoRefs.push({
-      uuidIndex1: reader.readUInt(),
-      subId1: reader.readUInt(),
-      uuidIndex2: reader.readUInt(),
-      subId2: reader.readUInt(),
-      typeIndex: reader.readUInt(),
-      field6: reader.readUInt(),
-      fileSize: reader.readUInt(),
-      field8: reader.readUInt(),
-      dirOffset: reader.readUInt(),
-      fileOffset: reader.readUInt(),
+      uuidIndex1: reader.readUInt32(),
+      subId1: reader.readUInt32(),
+      uuidIndex2: reader.readUInt32(),
+      subId2: reader.readUInt32(),
+      typeIndex: reader.readUInt32(),
+      field6: reader.readUInt32(),
+      fileSize: reader.readUInt32(),
+      field8: reader.readUInt32(),
+      dirOffset: reader.readUInt32(),
+      fileOffset: reader.readUInt32(),
     })
   }
 
   const assetInfos = assetInfoRefs.map((info) => {
     reader.seekAbsolute(posBlockUUID + 16 * info.uuidIndex2)
-    const assetId = reader.readUUID()
+    const assetId = reader.readUInt32()
 
     reader.seekAbsolute(posBlockUUID + 16 * info.typeIndex)
-    const type = reader.readUUID()
+    const type = reader.readUInt32()
 
     reader.seekAbsolute(posBlockDirs + info.dirOffset)
-    const dir = reader.readNullTerminatedString()
+    const dir = reader.readStringNT()
 
     reader.seekAbsolute(posBlockFile + info.fileOffset)
-    const file = reader.readNullTerminatedString()
+    const file = reader.readStringNT()
 
     return {
       assetId,
